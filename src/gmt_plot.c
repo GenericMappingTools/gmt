@@ -5515,7 +5515,8 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		got_lonlat = true;			/* At the end we need to append a 'd' to the scale */
 	}
 	/* Cylindrical projections */
-	else if (!strcmp(prjcode, "cea") || !strcmp(prjcode, "eqc") || !strcmp(prjcode, "tmerc") || !strcmp(prjcode, "mill") || !strcmp(prjcode, "merc") || !strcmp(prjcode, "cass")) {
+	else if (!strcmp(prjcode, "cea") || !strcmp(prjcode, "eqc") || !strcmp(prjcode, "tmerc") ||
+		     !strcmp(prjcode, "mill") || !strcmp(prjcode, "merc") || !strcmp(prjcode, "cass")) {
 		if (!strcmp(prjcode, "tmerc"))     strcat (opt_J, "T");
 		else if (!strcmp(prjcode, "cea"))  strcat (opt_J, "Y");
 		else if (!strcmp(prjcode, "eqc"))  strcat (opt_J, "Q");
@@ -5532,7 +5533,8 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 				//wipe_substr(szProj4, token);
 			}
 		}
-		if (!strcmp(prjcode, "cea") || !strcmp(prjcode, "eqc") || !strcmp(prjcode, "cass") || !strcmp(prjcode, "tmerc") || !strcmp(prjcode, "merc")) {
+		if (!strcmp(prjcode, "cea") || !strcmp(prjcode, "eqc") || !strcmp(prjcode, "cass") ||
+		    !strcmp(prjcode, "tmerc") || !strcmp(prjcode, "merc")) {
 			if (!lon_0[0]) strcat(lon_0, "0");
 			if (!lat_0[0]) strcat(lat_0, "0");
 			strcat(opt_J, lon_0);	strcat (opt_J, "/");
@@ -5543,34 +5545,40 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		}
 	}
 	else if (!strcmp(prjcode, "omerc")) {
-		char lon_1[32] = {""}, lon_2[32] = {""};
+		char lon_1[32] = {""}, lon_2[32] = {""}, lonc[32] = {""}, alpha[32] = {""};
 		strcat (opt_J, "OC");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
-			if ((pch = strstr(token, "lon_1=")) != NULL) {	
+			if ((pch = strstr(token, "lon_1=")) != NULL)
 				strncat(lon_1, &token[6], 31);
-				//wipe_substr(szProj4, token);
-			}
-			else if ((pch = strstr(token, "lat_1=")) != NULL) {
+			else if ((pch = strstr(token, "lat_1=")) != NULL)
 				strncat(lat_1, &token[6], 31);
-				//wipe_substr(szProj4, token);
-			}
-			else if ((pch = strstr(token, "lon_2=")) != NULL) {	
+			else if ((pch = strstr(token, "lon_2=")) != NULL)
 				strncat(lon_2, &token[6], 31);
-				//wipe_substr(szProj4, token);
-			}
-			else if ((pch = strstr(token, "lat_2=")) != NULL) {
+			else if ((pch = strstr(token, "lat_2=")) != NULL)
 				strncat(lat_2, &token[6], 31);
-				//wipe_substr(szProj4, token);
-			}
+			else if ((pch = strstr(token, "lat_0=")) != NULL)
+				strncat(lat_0, &token[6], 31);
+			else if ((pch = strstr(token, "lonc=")) != NULL)
+				strncat(lonc, &token[5], 31);
+			else if ((pch = strstr(token, "alpha=")) != NULL)
+				strncat(alpha, &token[6], 31);
 		}
-		if (!lon_2[0] || !lat_2[0]) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Projection %s needs the lon_2 & lat_2 proj parameters\n", prjcode);
+		if (lon_2[0] && lat_2[0]) {
+			if (!lon_1[0]) strcat(lon_1, "0");
+			if (!lat_1[0]) strcat(lat_1, "0");
+			strcat(opt_J, lon_1);	strcat (opt_J, "/");	strcat(opt_J, lat_1);	strcat (opt_J, "/");
+			strcat(opt_J, lon_2);	strcat (opt_J, "/");	strcat(opt_J, lat_2);	strcat (opt_J, "/");
+		}
+		else if (lonc[0] && alpha[0]) {
+			if (!lat_0[0]) strcat(lat_0, "0");
+			strcat(opt_J, lonc);	strcat (opt_J, "/");	strcat(opt_J, lat_0);	strcat (opt_J, "/");
+			strcat(opt_J, alpha);	strcat (opt_J, "/");
+			opt_J[1] = 'A';
+		}
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: in projection %s proj parameters\n", prjcode);
 			return (pStrOut);
 		}
-		if (!lon_1[0]) strcat(lon_1, "0");
-		if (!lat_1[0]) strcat(lat_1, "0");
-		strcat(opt_J, lon_1);	strcat (opt_J, "/");	strcat(opt_J, lat_1);	strcat (opt_J, "/");
-		strcat(opt_J, lon_2);	strcat (opt_J, "/");	strcat(opt_J, lat_2);	strcat (opt_J, "/");
 	}
 	else if (!strcmp(prjcode, "utm")) {
 		unsigned int zone = 100;
@@ -5647,7 +5655,8 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 	}
 
 	/* Azimuthal projections */
-	else if (!strcmp(prjcode, "stere") || !strcmp(prjcode, "laea") || !strcmp(prjcode, "aeqd") || !strcmp(prjcode, "gnom") || !strcmp(prjcode, "sterea") || !strcmp(prjcode, "stere")) {
+	else if (!strcmp(prjcode, "stere") || !strcmp(prjcode, "laea") || !strcmp(prjcode, "aeqd") || !strcmp(prjcode, "gnom") ||
+	         !strcmp(prjcode, "sterea") || !strcmp(prjcode, "stere")) {
 		if (!strcmp(prjcode, "stere")) strcat (opt_J, "S");
 		else if (!strcmp(prjcode, "laea")) strcat (opt_J, "A");
 		else if (!strcmp(prjcode, "aeqd")) strcat (opt_J, "E");
@@ -5867,8 +5876,10 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 	else
 		strcat(opt_J, scale_c);	/* Append the scale */
 
-	if (strchr(scale_c, ':'))	/* If we have a scale in the 1:xxxx form use lower case codes */
+	if (strchr(scale_c, ':')) {	/* If we have a scale in the 1:xxxx form use lower case codes */
 		opt_J[0] = tolower(opt_J[0]);
+		if (!strcmp(prjcode, "omerc")) opt_J[1] = tolower(opt_J[1]);
+	}
 
 #if 0
 	/* This part is now not particularly useful but let it in case we may need it in future */
