@@ -3325,7 +3325,8 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		
 		if (GMT->current.io.first_rec) {	/* Learn from the 1st record what we can about the type of data record this is */
 			static char *flavor[3] = {"numerical only", "text only", "numerical with trailing text"};
-			GMT->current.io.record_type = gmtio_examine_record (GMT, line, n);
+			uint64_t nn;
+			GMT->current.io.record_type = gmtio_examine_record (GMT, line, &nn);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data record scanned: number of numerical columns = %d record type = %s\n", *n, flavor[GMT->current.io.record_type]);
 			GMT->current.io.first_rec = false;
 			strscan = (GMT->current.io.record_type) ? &strsepzp : &strsepz;	/* Need zp scanner to detect trailing text */

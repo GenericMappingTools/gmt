@@ -1015,7 +1015,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	}
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
 		bool periodic = false, delayed_unit_scaling = false;
-		unsigned int n_warn[3] = {0, 0, 0}, set_type, warn, item, n_times, read_mode;
+		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, read_mode;
 		double in2[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		double xpos[2], width = 0.0;
 		struct GMT_RECORD *In = NULL;
@@ -1027,21 +1027,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 		n_times = (periodic) ? 2 : 1;	/* For periodic boundaries we plot each symbol twice to allow for periodic clipping */
 
-		set_type = GMT_Get_Family (API, GMT_IN, options);
-		if (set_type == GMT_IS_TEXTSET)	/* Input memory objects are textsets */
-			read_mode = GMT_READ_TEXT;
-		else if (S.read_symbol_cmd) {	/* If symbol info is given we must process text records */
-			set_type  = GMT_IS_TEXTSET;
-			read_mode = GMT_READ_TEXT;
-		}
-		else {	/* Here we can process data records (ASCII or binary) */
-			set_type  = GMT_IS_DATASET;
-			read_mode = GMT_READ_DATA;
-		}
-		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, set_type, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {		/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {		/* Enables data input and sets access mode */
 			Return (API->error);
 		}
 		PSL_command (GMT->PSL, "V\n");
@@ -1052,7 +1041,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			delayed_unit_scaling = (S.u_set && S.u != GMT_INCH);
 		}
 		do {	/* Keep returning records until we reach EOF */
-			if ((In = GMT_Get_Record (API, read_mode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				}

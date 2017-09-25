@@ -7523,9 +7523,10 @@ struct GMT_RECORD *api_get_record_fp_first (struct GMTAPI_CTRL *API, unsigned in
 	struct GMT_CTRL *GMT = API->GMT;
 	void *record = api_get_record_fp_sub (API, mode, n_fields, &S);
 
-	if (gmt_M_rec_is_data (GMT) && S->n_expected_fields != GMT_MAX_COLUMNS)
+	if (gmt_M_rec_is_data (GMT) && S->n_expected_fields != GMT_MAX_COLUMNS) {
 		GMT->common.b.ncol[GMT_IN] = S->n_expected_fields;	/* Set the actual column count */
-	API->api_get_record = api_get_record_fp;
+		API->api_get_record = api_get_record_fp;	/* Now we can read just the record */
+	}
 	return record;
 }
 
