@@ -583,7 +583,8 @@ fonts can be found in the :doc:`gmt` man page.
 .. _IO_NC4_CHUNK_SIZE:
 
 **IO_NC4_CHUNK_SIZE**
-    Sets the default chunk size for the horizontal and vertical dimensions of
+    Sets the default chunk size for the vertical (**lat**, **y**) and
+    horizontal (**lon**, **x**) dimensions of
     the **z** variable. Very large chunk sizes and sizes smaller than
     128 should be avoided because they can lead to unexpectedly bad
     performance. Note that a chunk of a single precision floating point
