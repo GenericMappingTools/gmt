@@ -495,7 +495,6 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		if (gmt_M_rec_is_error (GMT)) Return (GMT_RUNTIME_ERROR);
 		if (gmt_M_rec_is_table_header (GMT)) continue;	/* Skip table headers */
 		if ((gmt_M_rec_is_segment_header (GMT) && Ctrl->A.mode != REPORT_PER_SEGMENT)) continue;	/* Since we are not reporting per segment they are just headers as far as we are concerned */
-		in = In->data;	/* Only need to process numerical part here */
 		
 		if (gmt_M_rec_is_segment_header (GMT) || (Ctrl->A.mode == REPORT_PER_TABLE && gmt_M_rec_is_file_break (GMT)) || gmt_M_rec_is_eof (GMT)) {	/* Time to report */
 			if (gmt_M_rec_is_segment_header (GMT) && GMT->current.io.seg_no == 0) continue;	/* Very first segment header means there is no prior segment to report on yet */
@@ -700,6 +699,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write data record to output destination */
 				}
 				else {
+					Out->text = record;
 					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);	/* Write text record to output destination */
 				}
 			}
@@ -717,6 +717,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		if (gmt_M_rec_is_file_break (GMT)) continue;
 
 		/* We get here once we have read a data record */
+		in = In->data;	/* Only need to process numerical part here */
 		
 		if (first_data_record) {	/* First time we read data, we must allocate arrays based on the number of columns */
 
