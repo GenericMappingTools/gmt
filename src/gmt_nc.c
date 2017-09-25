@@ -512,9 +512,12 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		if (GMT->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic) {
 			/* set chunk size */
 			gmt_M_err_trap (nc_def_var_chunking (ncid, z_id, NC_CHUNKED, GMT->current.setting.io_nc4_chunksize));
-			/* set deflation level and shuffle for z variable */
-			if (GMT->current.setting.io_nc4_deflation_level)
+			/* set deflation level and shuffle for x, y, and z variable */
+			if (GMT->current.setting.io_nc4_deflation_level) {
+				gmt_M_err_trap (nc_def_var_deflate (ncid, ids[1], true, true, GMT->current.setting.io_nc4_deflation_level));
+				gmt_M_err_trap (nc_def_var_deflate (ncid, ids[0], true, true, GMT->current.setting.io_nc4_deflation_level));
 				gmt_M_err_trap (nc_def_var_deflate (ncid, z_id, true, true, GMT->current.setting.io_nc4_deflation_level));
+			}
 		} /* GMT->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic */
 	} /* if (job == 'r' || job == 'u') */
 	header->z_id = z_id;
@@ -611,13 +614,13 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			header->z_min = dummy[0], header->z_max = dummy[1];
 		}
 		{
-			/* get deflation and chunking info */
+			/* Get deflation and chunking info */
 			int storage_mode, shuffle, deflate, deflate_level;
 			size_t chunksize[5]; /* chunksize of z */
 			gmt_M_err_trap (nc_inq_var_chunking (ncid, z_id, &storage_mode, chunksize));
 			if (storage_mode == NC_CHUNKED) {
-				header->z_chunksize[0] = chunksize[dims[0]]; /* chunk size of lat */
-				header->z_chunksize[1] = chunksize[dims[1]]; /* chunk size of lon */
+				header->z_chunksize[0] = chunksize[dims[0]]; /* chunk size in vertical dimension */
+				header->z_chunksize[1] = chunksize[dims[1]]; /* chunk size in horizontal dimension */
 			}
 			else { /* NC_CONTIGUOUS */
 				header->z_chunksize[0] = header->z_chunksize[1] = 0;
