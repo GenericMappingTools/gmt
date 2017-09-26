@@ -800,12 +800,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	bool error_x = false, error_y = false, def_err_xy = false;
 	bool default_outline, outline_active, geovector = false;
 	unsigned int n_needed, n_cols_start = 2, justify, tbl;
-	unsigned int i, n_total_read = 0, j, geometry;
+	unsigned int n_total_read = 0, j, geometry;
 	unsigned int bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR;
 
-	char *text_rec = NULL, s_args[GMT_BUFSIZ] = {""};
+	char s_args[GMT_BUFSIZ] = {""};
 
 	double direction, length, dx, dy, d, dim[PSL_MAX_DIMS], *in = NULL;
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;
@@ -1015,7 +1015,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	}
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
 		bool periodic = false, delayed_unit_scaling = false;
-		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, read_mode;
+		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
 		double in2[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		double xpos[2], width = 0.0;
 		struct GMT_RECORD *In = NULL;
@@ -1040,6 +1040,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			GMT->current.io.col_type[GMT_IN][ex1] = GMT_IS_FLOAT;
 			delayed_unit_scaling = (S.u_set && S.u != GMT_INCH);
 		}
+		if (S.read_symbol_cmd) GMT->current.io.read_mixed = true;	/* Must prepare for a rough ride */
+		
 		do {	/* Keep returning records until we reach EOF */
 			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
@@ -1067,37 +1069,13 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 
 			/* Data record to process */
+			
 			in = In->data;
-
 			n_total_read++;
 
-			if (S.read_symbol_cmd) {	/* Must do special processing */
-				int save[2];
-				bool col_reset = false;
-				text_rec = In->text;
-
+			if (S.read_symbol_cmd) {	/* Must do special processing depending on variable symbol */
 				/* First establish the symbol type given at the end of the record */
-				gmt_chop (text_rec);		/* Get rid of \n \r */
-				i = (unsigned int)strlen (text_rec);
-				if (i == 0) continue;	/* A blank line snuck through */
-				i--;
-				while (text_rec[i] && !strchr (" \t", (int)text_rec[i])) i--;
-				if (S.read_symbol_cmd == 1) gmt_parse_symbol_option (GMT, &text_rec[i+1], &S, 0, false);
-				for (j = n_cols_start; j < 6; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
-				for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
-				if ((S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & PSL_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
-					/* Reading 2nd point coordinates so must set column types to be the same as for x,y */
-					col_reset = true;
-					save[GMT_X] = GMT->current.io.col_type[GMT_IN][pos2x];
-					save[GMT_Y] = GMT->current.io.col_type[GMT_IN][pos2y];
-					GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
-					GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
-				}
-				/* Now convert the leading text items to doubles; col_type[GMT_IN] might have been updated above */
-				if (gmt_conv_intext2dbl (GMT, text_rec, 6U)) {	/* Max 6 columns needs to be parsed */
-					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skipped)\n", n_total_read);
-					continue;
-				}
+				if (S.read_symbol_cmd == 1) gmt_parse_symbol_option (GMT, In->text, &S, 0, false);
 				if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC) {	/* One of the vector symbols */
 					if (S.v.status & PSL_VEC_OUTLINE2) {
 						current_pen = S.v.pen, Ctrl->W.active = true;	/* Override -W (if set) with specified pen */
@@ -1113,19 +1091,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						current_fill = default_fill, Ctrl->G.active = true;	/* Return to default fill */
 					}
 				}
-				else if (S.symbol == PSL_DOT && !Ctrl->G.active) {	/* Must switch on default black fill */
+				else if (S.symbol == PSL_DOT && !Ctrl->G.active)	/* Must switch on default black fill */
 					current_fill = black;
-				}
-				if (col_reset) {	/* Reset type above since there may not be +s in the next record */
-					GMT->current.io.col_type[GMT_IN][pos2x] = save[GMT_X];
-					GMT->current.io.col_type[GMT_IN][pos2y] = save[GMT_Y];
-				}
-			}
-			else if (read_mode == GMT_READ_TEXT) {	/* Must unscramble the text record from the API */
-				if (gmt_conv_intext2dbl (GMT, In->text, n_needed)) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skipped)\n", n_total_read);
-					continue;
-				}
 			}
 
 			if (get_rgb) {

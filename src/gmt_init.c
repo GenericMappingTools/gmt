@@ -7252,7 +7252,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			got = gmt_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][icol], &p[i]);
 			if (got & GMT_IS_GEO)
 				GMT->current.io.col_type[GMT_IN][icol] = got;
-			else if (got & GMT_IS_RATIME)
+			else if ((got & GMT_IS_RATIME) || got == GMT_IS_ARGTIME)
 				GMT->current.io.col_type[GMT_IN][icol] = got, GMT->current.proj.xyz_projection[icol] = GMT_TIME;
 		}
 		else {	/* Things are set, do or die */

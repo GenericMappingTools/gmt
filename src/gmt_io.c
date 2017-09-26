@@ -3152,6 +3152,7 @@ GMT_LOCAL struct GMT_DATATABLE *gmtio_alloc_table (struct GMT_CTRL *GMT, struct 
 	return (T);
 }
 
+/*! . */
 GMT_LOCAL void gmtio_set_current_record (struct GMT_CTRL *GMT, char *text) {
 	while (*text && strchr ("#\t ", *text)) text++;	/* Skip header record indicator and leading whitespace */
 	if (*text)	/* Got some text to remember */
@@ -3160,7 +3161,8 @@ GMT_LOCAL void gmtio_set_current_record (struct GMT_CTRL *GMT, char *text) {
 		gmt_M_memset (GMT->current.io.curr_text, GMT_BUFSIZ, char);
 }
 
-GMT_LOCAL unsigned int gmtio_examine_record (struct GMT_CTRL *GMT, char *record, uint64_t *n_columns) {
+/*! . */
+GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char *record, uint64_t *n_columns) {
 	/* Examines this data record to determine the nature of the input.  There
 	 * are three different scenarios:
 	 * 1. Record only contains numerical columns: Set ncols and return GMT_READ_DATA [0].
@@ -3176,38 +3178,49 @@ GMT_LOCAL unsigned int gmtio_examine_record (struct GMT_CTRL *GMT, char *record,
 	bool found_text = false;
 	char token[GMT_BUFSIZ];
 	double value;
-	*n_columns = 0;	/* Initialize column counter */
+	
+	*n_columns = 0;	/* Initialize numerical column counter for this record */
 	while (!found_text && (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, token))) {
 		type = GMT->current.io.col_type[GMT_IN][*n_columns];
-		switch (type) {
-			case GMT_IS_ABSTIME:	/* Here we must read with expected format */
+		switch (type) {	/* Parse token based on what we think we have */
+			case GMT_IS_ABSTIME:	/* Here we must read with expected format set via -J, -R, or -f */
 				got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
 				break;
-			default:	/* Here we can check quite a bit more */
-				if (strchr (token, 'T'))	/* Found a T in the argument - must assume Absolute time or else we got junk */
+			default:	/* Here we can check quite a bit more since expectation is not always matched by reality */
+				if (strchr (token, 'T'))	/* Found a 'T' in the argument - must assume ISO Absolute time or else we got junk (and got -> GMT_IS_NAN) */
 					got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
-				else	/* Let gmt_scanf_arg figure it out for us since ABSTIME is dealt with earlier */
+				else	/* Let gmt_scanf_arg figure it out for us by passing UNKNOWN since ABSTIME has been dealt above */
 					got = gmt_scanf_arg (GMT, token, GMT_IS_UNKNOWN, &value);
 				break;
 		}
-		if (got == GMT_IS_NAN)
-			found_text = true;	/* Parsing failed means we found our first non-number */
-		else {	/* Parsing was successful but perhaps we learned the input was of a different type than expected */
-			/* If input type was not known before, OR if it was the default float but our analysis showed something else, we update the expectation */
-			if (type == GMT_IS_UNKNOWN || (type == GMT_IS_FLOAT && got != (int)type))
+		switch (got) {	/* Decide to keep old type, update type, or maybe we got trailing ext */
+			case GMT_IS_NAN:	/* Parsing failed, which means we found our first non-number */
+				found_text = true;
+				break;
+			case GMT_IS_FLOAT:	/* Resolved to be a float, do we update expecatation? */
+				if (GMT->current.io.read_mixed || type == GMT_IS_UNKNOWN)	/* If it could vary from time to time or we never knew, yes we do */
+					GMT->current.io.col_type[GMT_IN][*n_columns] = got;
+				(*n_columns)++;	/* One more succesful numerical parsing */
+				break;
+			case GMT_IS_UNKNOWN:	/* If we never specified what to expect then we update with what we found */
 				GMT->current.io.col_type[GMT_IN][*n_columns] = got;
-			(*n_columns)++;	/* One more succesful numerical parsing */
+				(*n_columns)++;	/* One more succesful numerical parsing */
+				break;
+			default:	/* This is when we found GMTIS{LON,LAT,GEO,ABSTIME,DURATION,DIMENSION,GEODIMENSION,AZIMUTH,ANGLE} */
+				GMT->current.io.col_type[GMT_IN][*n_columns] = got;
+				(*n_columns)++;	/* One more succesful numerical parsing */
+				break;
 		}
 	}
 	if (found_text) ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
 	return (ret_val);
 }
 
-
 /*! This is the lowest-most input function in GMT.  All ASCII table data are read via
  * gmt_ascii_input.  Changes here affect all programs that read such data. */
 GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
 	uint64_t pos, col_no = 0, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
+	uint64_t n_cols_this_record = GMT_MAX_COLUMNS;
 	int64_t in_col;
 	size_t start_of_text;
 	bool done = false, bad_record, set_nan_flag = false;
@@ -3325,15 +3338,18 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		
 		if (GMT->current.io.first_rec) {	/* Learn from the 1st record what we can about the type of data record this is */
 			static char *flavor[3] = {"numerical only", "text only", "numerical with trailing text"};
-			uint64_t nn;
-			GMT->current.io.record_type = gmtio_examine_record (GMT, line, &nn);
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data record scanned: number of numerical columns = %d record type = %s\n", *n, flavor[GMT->current.io.record_type]);
-			GMT->current.io.first_rec = false;
+			GMT->current.io.record_type = gmtio_examine_current_record (GMT, line, &n_cols_this_record);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Data record scanned: number of numerical columns = %d record type = %s\n", *n, flavor[GMT->current.io.record_type]);
+			if (GMT->current.io.read_mixed)	/* Never finalize # of fields since it can change from rec to rec */
+				*n = GMT_MAX_COLUMNS;
+			else	/* Happily parsed first record and learned a few things.  Now prevent this block from being executed again for the current data file */
+				GMT->current.io.first_rec = false;
 			strscan = (GMT->current.io.record_type) ? &strsepzp : &strsepz;	/* Need zp scanner to detect trailing text */
 		}
 
 		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);	/* Gives the actual columns we need (which may > *n if gap checking is active; if gap check we also update prev_rec) */
 		gmt_update_prev_rec (GMT, n_use);
+		if (GMT->current.io.read_mixed && n_cols_this_record < n_use)  n_use = n_cols_this_record;
 
 		bad_record = set_nan_flag = false;	/* Initialize flags */
 		gmtio_set_current_record (GMT, line);	/* Keep copy of current record around */
@@ -6205,8 +6221,10 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 			/* True if we expect to read a float with no special
 			   formatting (except for an optional trailing 't'), and then
 			   assume it is relative time in user's units since epoch.  */
+#if 0			/* PW: Never accept <number>t in data records.  This is only valid for gmt_scanf_arg */
 			callen = strlen (s) - 1;
 			if (s[callen] == 't') s[callen] = '\0';
+#endif
 			if ((gmt_scanf_float (GMT, s, val)) == GMT_IS_NAN) return (GMT_IS_NAN);
 			return (GMT_IS_ABSTIME);
 			break;
@@ -6298,34 +6316,60 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, doub
 	/* Version of gmt_scanf used for cpt & command line arguments only (not data records).
 	 * It differs from gmt_scanf in that if the expectation is GMT_IS_UNKNOWN it will
 	 * check to see if the argument is (1) an absolute time string, (2) a geographical
-	 * location string, or if not (3) a floating point string.  To ensure backward
-	 * compatibility: if we encounter geographic data it will also set the GMT->current.io.type[]
-	 * variable accordingly so that data i/o will work as in 3.4
+	 * location string, or if not (3) a floating point string, etc.  We carefully check
+	 * to detect free-form strings which should result in a NaN.
 	 */
 
-	char c;
+	unsigned int got;
 
-	if (expectation == GMT_IS_UNKNOWN) {		/* Expectation for this column not set - must be determined if possible */
-		c = s[strlen(s)-1];
-		if (strchr (s, (int)'T'))		/* Found a T in the argument - assume Absolute time */
-			expectation = GMT_IS_ARGTIME;
-		else if (c == 't')			/* Found trailing t - assume Relative time */
-			expectation = GMT_IS_ARGTIME;
-		else if (strchr ("WwEe", (int)c))	/* Found trailing W or E - assume Geographic longitudes */
-			expectation = GMT_IS_LON;
-		else if (strchr ("SsNn", (int)c))	/* Found trailing S or N - assume Geographic latitudes */
-			expectation = GMT_IS_LAT;
-		else if (strchr ("DdGg", (int)c))	/* Found trailing G or D - assume Geographic coordinate */
-			expectation = GMT_IS_GEO;
-		else if (strchr (s, (int)':'))		/* Found a : in the argument - assume Geographic coordinates */
-			expectation = GMT_IS_GEO;
-		else 					/* Found nothing - assume floating point */
+	if (s == NULL) {	/* Cannot do anything here */
+		*val = GMT->session.d_NaN;
+		return GMT_IS_NAN;
+	}
+	
+	if (expectation == GMT_IS_UNKNOWN) {	/* Expectation for this item was not set - must be determined if possible */
+		size_t len = strlen (s);
+		if (len == 0) {	/* Cannot do anything here */
+			*val = GMT->session.d_NaN;
+			return GMT_IS_NAN;
+		}
+		if (len > 1) {		/* Arguments of at least 2 characters can be many things */
+			char c = s[len-1];	/* Trailing letter */
+			if ((s[0] == 'T' && isdigit (s[1])) || strchr (s, 'T'))	/* Found a T in the argument - must be Absolute time or junk */
+				expectation = GMT_IS_ARGTIME;
+			else if (!(isdigit (s[0]) || s[0] == '-' || s[0] == '+' || s[0] == '.')) {	/* All other numbers must be [-|+][<num>[.]<num>][<end>] */
+				*val = GMT->session.d_NaN;
+				return GMT_IS_NAN;	/* Cannot be a number so return as NaN */
+			}
+			else if (c == 't')		/* Found trailing t - assume Relative time */
+				expectation = GMT_IS_ARGTIME;
+			else if (strchr ("WwEe", c))		/* Found trailing W or E - assume Geographic longitudes */
+				expectation = GMT_IS_LON;
+			else if (strchr ("SsNn", c))		/* Found trailing S or N - assume Geographic latitudes */
+				expectation = GMT_IS_LAT;
+			else if (strchr ("DdGg", c))		/* Found trailing G or D - assume Geographic coordinate */
+				expectation = GMT_IS_GEO;
+			else if (strchr (s, ':'))		/* Found a : in the argument - assume Geographic coordinates */
+				expectation = GMT_IS_GEO;
+			else if (strchr (GMT_DIM_UNITS, c))	/* Found a trailing dimension unit (c|i|p) */
+				expectation = GMT_IS_DIMENSION;
+			else if (strchr (GMT_LEN_UNITS, c))	/* Found a trailing geo-length unit (d|m|s|e|f|k|M|n|u) */
+				expectation = GMT_IS_GEODIMENSION;
+			else 					/* Found nothing - assume floating point */
+				expectation = GMT_IS_FLOAT;
+		}
+		else if (isdigit (s[0]))				/* Found a 1-char digit */
 			expectation = GMT_IS_FLOAT;
+		else {	/* Must be a single letter not digit */
+			*val = GMT->session.d_NaN;
+			return GMT_IS_NAN;	/* Cannot be a number so return as NaN */
+		}
 	}
 
 	/* OK, here we have an expectation, now call gmt_scanf */
 
-	return (gmt_scanf (GMT, s, expectation, val));
+	got = gmt_scanf (GMT, s, expectation, val);
+	return (got == GMT_IS_NAN) ? got : expectation;	/* Want to return the actual expectation here since it may be used upstream, unless parsing failed */
 }
 
 /*! . */

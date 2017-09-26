@@ -7017,11 +7017,13 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		else if ((h = strstr (line, "HINGE ="))) {	/* CPT is hinged at this z value */
 			X->mode &= GMT_CPT_HINGED;
 			X->has_hinge = 1;
-			gmt_scanf_arg (GMT, &h[7], GMT_IS_UNKNOWN, &X->hinge);
+			k = 7;	while (h[k] == ' ' || h[k] == '\t') k++;	/* Skip any leading spaces or tabs */
+			gmt_scanf_arg (GMT, &h[k], GMT_IS_UNKNOWN, &X->hinge);
 			continue;	/* Don't want this instruction to be also kept as a comment */
 		}
 		else if ((h = strstr (line, "RANGE ="))) {	/* CPT has a default range */
-			if (sscanf (&h[7], "%[^/]/%s", T1, T2) != 2) {
+			k = 7;	while (h[k] == ' ' || h[k] == '\t') k++;	/* Skip any leading spaces or tabs */
+			if (sscanf (&h[k], "%[^/]/%s", T1, T2) != 2) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not parse RANGE [%s] in %s\n", &h[7], cpt_file);
 				if (close_file) fclose (fp);
 				if (Z) gmt_M_free (GMT, Z);
