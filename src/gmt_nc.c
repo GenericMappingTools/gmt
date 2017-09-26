@@ -298,6 +298,14 @@ GMT_LOCAL void gmtnc_put_units (int ncid, int varid, char *name_units) {
 	}
 	if (name[0]) nc_put_att_text (ncid, varid, "long_name", strlen(name), name);
 	if (units[0]) nc_put_att_text (ncid, varid, "units", strlen(units), units);
+	if (strstr(units, "degrees_east")) {
+		nc_put_att_text (ncid, varid, "standard_name", 9, "longitude");
+		nc_put_att_text (ncid, varid, "axis", 1, "X");
+	}
+	else if (strstr(units, "degrees_north")) {
+		nc_put_att_text (ncid, varid, "standard_name", 8, "latitude");
+		nc_put_att_text (ncid, varid, "axis", 1, "Y");
+	}
 }
 
 GMT_LOCAL void gmtnc_check_step (struct GMT_CTRL *GMT, uint32_t n, double *x, char *varname, char *file) {
@@ -669,9 +677,9 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		const int *nc_vers = gmtnc_netcdf_libvers();
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "netCDF Library version: %d\n", *nc_vers);
 		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_NC_CONVENTION), GMT_NC_CONVENTION));
-		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
+		if (header->title[0]) gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
 		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(header->command), header->command));
-		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(header->remark), header->remark));
+		if (header->remark[0]) gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(header->remark), header->remark));
 		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "GMT_version", strlen(GMT_VERSION), (const char *) GMT_VERSION));
 		if (header->registration == GMT_GRID_PIXEL_REG) {
 			int reg = header->registration;
