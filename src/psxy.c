@@ -1016,7 +1016,6 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
 		bool periodic = false, delayed_unit_scaling = false;
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
-		double in2[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		double xpos[2], width = 0.0;
 		struct GMT_RECORD *In = NULL;
 
@@ -1034,7 +1033,6 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		PSL_command (GMT->PSL, "V\n");
-		if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && S.n_required <= 1) p_in = in2;
 		
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
 			GMT->current.io.col_type[GMT_IN][ex1] = GMT_IS_FLOAT;
@@ -1163,9 +1161,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 			if (S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) {	/* Ellipses and rectangles */
 				if (S.n_required == 0)	/* Degenerate ellipse or rectangle, got diameter via S.size_x */
-					in2[ex2] = in2[ex3] = S.size_x;	/* Duplicate diameter as major and minor axes */
+					in[ex2] = in[ex3] = S.size_x;	/* Duplicate diameter as major and minor axes */
 				else if (S.n_required == 1)	/* Degenerate ellipse or rectangle, expect single diameter via input */
-					in2[ex2] = in2[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
+					in[ex2] = in[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
 			}
 
 			if (S.base_set == 2) {
@@ -1256,53 +1254,53 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					break;
 				case PSL_ROTRECT:
 				case PSL_ELLIPSE:
-					if (gmt_M_is_dnan (p_in[ex1])) {
+					if (gmt_M_is_dnan (in[ex1])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Ellipse/Rectangle angle = NaN near line %d\n", n_total_read);
 						continue;
 					}
-					if (gmt_M_is_dnan (p_in[ex2])) {
+					if (gmt_M_is_dnan (in[ex2])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Ellipse/Rectangle width or major axis = NaN near line %d\n", n_total_read);
 						continue;
 					}
-					if (gmt_M_is_dnan (p_in[ex3])) {
+					if (gmt_M_is_dnan (in[ex3])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Ellipse/Rectangle height or minor axis = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (!S.convert_angles) {	/* Got axes in current plot units, change to inches */
-						dim[0] = p_in[ex1];
+						dim[0] = in[ex1];
 						gmt_flip_angle_d (GMT, &dim[0]);
-						dim[1] = p_in[ex2];
-						dim[2] = p_in[ex3];
+						dim[1] = in[ex2];
+						dim[2] = in[ex3];
 						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					}
 					else if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
-						dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
+						dim[0] = 90.0 - in[ex1];	/* Cartesian azimuth */
 						gmt_flip_angle_d (GMT, &dim[0]);
-						dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
-						dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_X];
+						dim[1] = in[ex2] * GMT->current.proj.scale[GMT_X];
+						dim[2] = in[ex3] * GMT->current.proj.scale[GMT_X];
 						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					}
 					else if (S.symbol == PSL_ELLIPSE) {	/* Got axis in km */
 						if (may_intrude_inside) {	/* Must plot fill and outline separately */
 							gmt_setfill (GMT, &current_fill, 0);
-							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 							gmt_setpen (GMT, &current_pen);
 							PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
-							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 						}
 						else
-							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 					}
 					else {
 						if (may_intrude_inside) {	/* Must plot fill and outline separately */
 							gmt_setfill (GMT, &current_fill, 0);
-							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 							gmt_setpen (GMT, &current_pen);
 							PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
-							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 						}
 						else
-							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 					}
 					break;
 				case GMT_SYMBOL_TEXT:

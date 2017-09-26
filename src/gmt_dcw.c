@@ -454,7 +454,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			lat[k] = (dy[k] == 65535U) ? 0.0 : dy[k] * yscl + south;
 		}
 		if (mode & GMT_DCW_EXTRACT) {	/* Allocate a table with the right number of segments */
-			D->table[tbl] = gmt_create_table (GMT, n_segments, 0, 2, false);
+			D->table[tbl] = gmt_create_table (GMT, n_segments, 0, 2, 0, false);
 		}
 		if (mode & GMT_DCW_PLOT) {	/* Time to consider fill/pen change */
 			new_set = (tbl == 0 || order[tbl] != order[tbl-1]);	/* When item group change it is likely pen/fill changes too */

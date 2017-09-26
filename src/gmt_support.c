@@ -13584,6 +13584,7 @@ struct GMT_DATASET * gmt_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 	 */
 	uint64_t dim[GMT_DIM_SIZE] = {1, 0, 2, 0};	/* Put everything in one table, each segment has 2 points */
 	uint64_t tbl, seg, row, col, new_seg;
+	unsigned int smode;
 	double *data = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
@@ -13716,7 +13717,8 @@ struct GMT_DATASET * gmt_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 		for (tbl = new_row = seg2 = 0; tbl < Din->n_tables; tbl++) {
 			Tin = Din->table[tbl];	/* Current input table */
 			if (S->level == SEGM_TABLE) {	/* Must allocate Tin->n_records for the output table's next segment (one per input table) */
-				gmt_alloc_datasegment (GMT, Tout->segment[seg2], Tin->n_records-1, Tout->n_columns, false);
+				smode = (Tin->segment[0]->text) ? GMT_WITH_STRINGS : 0;
+				gmt_alloc_datasegment (GMT, Tout->segment[seg2], Tin->n_records-1, Tout->n_columns, smode, false);
 				if (Tin->segment[0]->header) Tout->segment[seg2]->header = strdup (Tin->segment[0]->header);	/* Duplicate first segment header in table */
 			}
 			for (seg = 0; seg < Tin->n_segments; seg++) {	/* For each input segment to resample */
@@ -13727,7 +13729,8 @@ struct GMT_DATASET * gmt_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 					off = 1;
 				}
 				if (S->level == SEGM_SEGMENT) {	/* Must allocate Tin->n_records for the output table's next segment (one per input table) */
-					gmt_alloc_datasegment (GMT, Tout->segment[seg2], Tin->segment[seg]->n_rows-1, Tout->n_columns, false);
+					smode = (Tin->segment[seg]->text) ? GMT_WITH_STRINGS : 0;
+					gmt_alloc_datasegment (GMT, Tout->segment[seg2], Tin->segment[seg]->n_rows-1, Tout->n_columns, smode, false);
 					if (Tin->segment[seg]->header) Tout->segment[seg2]->header = strdup (Tin->segment[seg]->header);	/* Duplicate each segment header in table */
 				}
 				for (row = off; row < Tin->segment[seg]->n_rows; row++, new_row++) {	/* For each end point in the new 2-point segments */
@@ -13761,7 +13764,8 @@ struct GMT_DATASET * gmt_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 		for (tbl = seg2 = new_row = 0; tbl < Din->n_tables; tbl++) {
 			Tin = Din->table[tbl];	/* Current input table */
 			if (S->level == SEGM_TABLE) {	/* Must allocate Tin->n_records for the output table's next segment (one per input table) */
-				gmt_alloc_datasegment (GMT, Tout->segment[tbl], Tin->n_records, Tin->n_columns, false);
+				smode = (Tin->segment[0]->text) ? GMT_WITH_STRINGS : 0;
+				gmt_alloc_datasegment (GMT, Tout->segment[tbl], Tin->n_records, Tin->n_columns, smode, false);
 				new_row = 0;	/* Reset output count for this output segment */
 				if (Tin->segment[0]->header) Tout->segment[seg2]->header = strdup (Tin->segment[0]->header);	/* Duplicate first segment header in table */
 			}
@@ -13870,13 +13874,14 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 	/* Create two or more feature segments by splitting them across the Dateline.
 	 * gmtlib_split_line_at_dateline should ONLY be called when we KNOW we must split. */
 	unsigned int n_split;
+	unsigned int smode = (S->text) ? GMT_WITH_STRINGS : 0;
 	uint64_t k, col, seg, row, start, length, *pos = gmt_M_memory (GMT, NULL, S->n_rows, uint64_t);
 	char label[GMT_BUFSIZ] = {""}, *txt = NULL, *feature = "Line";
 	double r;
 	struct GMT_DATASEGMENT **L = NULL, *Sx = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 
 	for (k = 0; k < S->n_rows; k++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->data[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we don't have to check again */
-	gmt_alloc_datasegment (GMT, Sx, 2*S->n_rows, S->n_columns, true);	/* Temp segment with twice the number of points as we will add crossings*/
+	gmt_alloc_datasegment (GMT, Sx, 2*S->n_rows, S->n_columns, smode, true);	/* Temp segment with twice the number of points as we will add crossings*/
 
 	for (k = row = n_split = 0; k < S->n_rows; k++) {	/* Hunt for crossings */
 		if (k && support_straddle_dateline (S->data[GMT_X][k-1], S->data[GMT_X][k])) {	/* Crossed Dateline */

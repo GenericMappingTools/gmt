@@ -365,7 +365,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 
 	nan_flag = gmt_M_memory (GMT, NULL, Din->n_columns, unsigned char);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
-		Tout = gmt_create_table (GMT, Din->table[tbl]->n_segments, 0, Din->n_columns, false);
+		Tout = gmt_create_table (GMT, Din->table[tbl]->n_segments, 0, Din->n_columns, 0U, false);
 		Dout->table[tbl] = Tout;
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */

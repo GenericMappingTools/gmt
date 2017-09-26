@@ -141,7 +141,8 @@ enum GMT_enum_via {
 enum GMT_enum_container {
 	GMT_CONTAINER_AND_DATA	= 0U,    /* Create|Read|write both container and the data array */
 	GMT_CONTAINER_ONLY	= 1U,    /* Create|read|write the container but no data array */
-	GMT_DATA_ONLY		= 2U   /* Create|Read|write the container's array only */
+	GMT_DATA_ONLY		= 2U,   /* Create|Read|write the container's array only */
+	GMT_WITH_STRINGS	= 32U   /* Allocate string array also [DATASET, MATRIX, VECTOR only] */
 };
 
 /*! These are the 6 families of data types, + a coordinate array + 3 help containers for vector, matrix, and coordinates */

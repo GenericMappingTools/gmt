@@ -1638,9 +1638,15 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 	M->type = dim[3];	/* Use selected data type for export */
 	M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;
 	size = M->n_rows * M->n_columns * M->n_layers;	/* Size in bytes of the initial matrix allocation */
-	if (size && (mode & GMT_CONTAINER_ONLY) == 0) {	/* Must allocate memory */
-		if ((error = gmtlib_alloc_univector (API->GMT, &(M->data), M->type, size)) != GMT_NOERROR)
-			return (error);
+	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Must allocate data memory */
+		if (size) {	/* Must allocate data matrix */
+			if ((error = gmtlib_alloc_univector (API->GMT, &(M->data), M->type, size)) != GMT_NOERROR)
+				return (error);
+		}
+		if (mode & GMT_WITH_STRINGS) {	/* Must allocate text pointer array */
+			if ((M->text = gmt_M_memory (API->GMT, NULL, M->n_rows, char *)) == NULL)
+				return (error);
+		}
 		M->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 	return (GMT_NOERROR);
@@ -1666,9 +1672,15 @@ GMT_LOCAL int api_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 	}
 	for (col = 0; col < V->n_columns; col++)	/* Set the same export data type for all vectors */
 		V->type[col] = dim[2];
-	if (V->n_rows && (mode & GMT_CONTAINER_ONLY) == 0) {	/* Must allocate space */
-		if ((error = gmtlib_alloc_vectors (API->GMT, V, V->n_rows)) != GMT_NOERROR)
-			return (error);
+	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Must allocate space */
+		if (V->n_rows) {	/* Must allocate space */
+			if ((error = gmtlib_alloc_vectors (API->GMT, V, V->n_rows)) != GMT_NOERROR)
+				return (error);
+		}
+		if (mode & GMT_WITH_STRINGS) {	/* Must allocate text pointer array */
+			if ((V->text = gmt_M_memory (API->GMT, NULL, V->n_rows, char *)) == NULL)
+				return (error);
+		}
 		V->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 
@@ -8148,7 +8160,7 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 			if (S_obj->family == GMT_IS_DATASET) {
 				struct GMT_DATASET *D_obj = S_obj->resource;
 				if (!D_obj) {	/* First time allocation of the single output table */
-					D_obj = gmtlib_create_dataset (GMT, 1, GMT_TINY_CHUNK, 0, 0, S_obj->geometry, true);	/* 1 table, segments array; no cols or rows yet */
+					D_obj = gmtlib_create_dataset (GMT, 1, GMT_TINY_CHUNK, 0, 0, S_obj->geometry, 0U, true);	/* 1 table, segments array; no cols or rows yet */
 					S_obj->resource = D_obj;	/* Save this pointer for next time we call GMT_Put_Record */
 					GMT->current.io.curr_pos[GMT_OUT][GMT_SEG] = -1;	/* Start at seg = -1 and increment at first segment header */
 					if (GMT->common.b.ncol[GMT_OUT] == 0 && GMT->common.b.ncol[GMT_IN] < GMT_MAX_COLUMNS)
@@ -8757,6 +8769,13 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 	 * However, for the interface containers GMT_VECTOR and GMT_MATRIX they will have their
 	 * direction set to GMT_OUT if the row-dimension is not set.
 	 *
+	 * For containers GMT_IS_DATASET, GMT_IS_MATRIX and GMT_IS VECTOR: If you add the constant
+	 * GMT_WITH_STRINGS to the mode it will allocate the corresponding arrays of string pointers.
+	 * You can then add actual strings in addition to data values.  Note: GMT will assume
+	 * the individual strings was allocated using functions like malloc or strdup and will
+	 * free them when the container goes out of scope.  If you dont want that to happen then
+	 * you must set those pointers to NULL beforehand.
+	 *
 	 * Return: Pointer to resource, or NULL if an error (set via API->error).
 	 */
 
@@ -8836,7 +8855,7 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 			if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
 			if (this_dim[GMT_TBL] > UINT_MAX || this_dim[GMT_ROW] > UINT_MAX)
 				return_null (API, GMT_DIM_TOO_LARGE);
-			if ((new_obj = gmtlib_create_dataset (API->GMT, this_dim[GMT_TBL], this_dim[GMT_SEG], this_dim[GMT_ROW], this_dim[GMT_COL], geometry, false)) == NULL)
+			if ((new_obj = gmtlib_create_dataset (API->GMT, this_dim[GMT_TBL], this_dim[GMT_SEG], this_dim[GMT_ROW], this_dim[GMT_COL], geometry, mode & GMT_WITH_STRINGS, false)) == NULL)
 				return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_TEXTSET:	/* GMT text dataset, allocate the requested tables, segments, and rows */
@@ -11736,13 +11755,14 @@ GMT_LOCAL void *api_matrix2dataset (struct GMTAPI_CTRL *API, struct GMT_MATRIX *
 	 * header controls what we do with headers.
 	 */
 	uint64_t row, col, ij;
+	unsigned int mode = (In->text) ? GMT_WITH_STRINGS : 0;
 	bool alloc = (Out == NULL);
 	struct GMT_CTRL *GMT = API->GMT;
 	struct GMT_DATASEGMENT *SD = NULL;
 	GMT_getfunction api_get_val = NULL;
 	p_func_uint64_t GMT_2D_to_index = NULL;
 	if (header) GMT_Report (API, GMT_MSG_NORMAL, "api_matrix2dataset: Header stripping not implemented yet - ignored!\n");
-	if (alloc && (Out = gmtlib_create_dataset (GMT, 1U, 1U, In->n_rows, In->n_columns, GMT_IS_POINT, true)) == NULL)
+	if (alloc && (Out = gmtlib_create_dataset (GMT, 1U, 1U, In->n_rows, In->n_columns, GMT_IS_POINT, mode, true)) == NULL)
 		return_null (API, GMT_MEMORY_ERROR);
 	SD = Out->table[0]->segment[0];	/* Shorthand to only segment in the dataset */
 	api_get_val = api_select_get_function (API, In->type);
@@ -11752,6 +11772,7 @@ GMT_LOCAL void *api_matrix2dataset (struct GMTAPI_CTRL *API, struct GMT_MATRIX *
 			ij = GMT_2D_to_index (row, col, In->dim);	/* Index into the user data matrix depends on layout (M->shape) */
 			api_get_val (&(In->data), ij, &(SD->data[col][row]));
 		}
+		if (mode) SD->text[row] = strdup (In->text[row]);
 	}
 	return Out;
 }
@@ -11837,18 +11858,23 @@ GMT_LOCAL void *api_vector2dataset (struct GMTAPI_CTRL *API, struct GMT_VECTOR *
 	 * If Out is not NULL then we assume it has enough rows and columns to hold the dataset records.
 	 */
 	uint64_t row, col;
+	unsigned int mode = (In->text) ? GMT_WITH_STRINGS : 0;
 	bool alloc = (Out == NULL);
 	struct GMT_CTRL *GMT = API->GMT;
 	struct GMT_DATASEGMENT *SD = NULL;
 	GMT_getfunction api_get_val;
 	if (header) GMT_Report (API, GMT_MSG_NORMAL, "api_vector2dataset: Header stripping not implemented yet - ignored!\n");
-	if (alloc && (Out = gmtlib_create_dataset (GMT, 1U, 1U, In->n_rows, In->n_columns, GMT_IS_POINT, true)) == NULL)
+	if (alloc && (Out = gmtlib_create_dataset (GMT, 1U, 1U, In->n_rows, In->n_columns, GMT_IS_POINT, mode, true)) == NULL)
 		return_null (API, GMT_MEMORY_ERROR);
 	SD = Out->table[0]->segment[0];	/* Shorthand to only segment in the dataset */
 	for (col = 0; col < In->n_columns; col++) {
 		api_get_val = api_select_get_function (API, In->type[col]);
 		for (row = 0; row < In->n_rows; row++)
 			api_get_val (&(In->data[col]), row, &(SD->data[col][row]));
+	}
+	if (mode) {	/* Duplicate the strings */
+		for (row = 0; row < In->n_rows; row++)
+			SD->text[row] = strdup (In->text[row]);	/* Duplicate the strings */
 	}
 	return Out;
 }
@@ -12072,7 +12098,7 @@ void *GMT_Convert_Data_ (void *In, unsigned int *family_in, void *Out, unsigned 
 }
 #endif
 
-struct GMT_DATASEGMENT *api_alloc_datasegment (void *V_API, uint64_t n_rows, uint64_t n_columns, char *header, struct GMT_DATASEGMENT *Sin) {
+struct GMT_DATASEGMENT *api_alloc_datasegment (void *V_API, uint64_t n_rows, uint64_t n_columns, char *header, unsigned int mode, struct GMT_DATASEGMENT *Sin) {
 	/* Allocates space for a complete data segment and sets the segment header, if given.
 	 * In Sin == NULL then we allocate a new segment; else we reallocate items of the existing segment */
 	struct GMT_DATASEGMENT *S = NULL;
@@ -12084,7 +12110,7 @@ struct GMT_DATASEGMENT *api_alloc_datasegment (void *V_API, uint64_t n_rows, uin
 		first = false;
 	else if ((S = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT)) == NULL) /* Something went wrong */
 		return_null (V_API, GMT_MEMORY_ERROR);
-	if (gmt_alloc_datasegment (API->GMT, S, n_rows, n_columns, first))  {	/* Something went wrong */
+	if (gmt_alloc_datasegment (API->GMT, S, n_rows, n_columns, mode, first))  {	/* Something went wrong */
 		if (first) gmt_M_free (API->GMT, S);
 		return_null (V_API, GMT_MEMORY_ERROR);
 	}
@@ -12118,12 +12144,13 @@ GMT_LOCAL struct GMT_TEXTSEGMENT *api_alloc_textsegment (void *V_API, uint64_t n
 void *GMT_Alloc_Segment (void *V_API, unsigned int family, uint64_t n_rows, uint64_t n_columns, char *header, void *S) {
 	/* Deal with the two segment types or data and text.
 	 * The n_columns is only used for data segments.
-	 * header, if not NULL or blank, sets the segment header. */
+	 * header, if not NULL or blank, sets the segment header.
+	 * if family & GMT_WITH_STRINGS then we also allocate the empty array of string pointers */
 	void *X = NULL;
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
-	switch (family) {	/* Only two supported families */
+	switch (family & 16) {	/* Only two supported families */
 		case GMT_IS_DATASET:
-			X = api_alloc_datasegment (V_API, n_rows, n_columns, header, S);
+			X = api_alloc_datasegment (V_API, n_rows, n_columns, header, family & GMT_WITH_STRINGS, S);
 			break;
 		case GMT_IS_TEXTSET:
 			X = api_alloc_textsegment (V_API, n_rows, header, S);

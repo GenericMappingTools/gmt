@@ -1314,7 +1314,7 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 	west_border = floor (wesn[XLO] / c.bsize) * c.bsize;
 	east_border =  ceil (wesn[XHI] / c.bsize) * c.bsize;
 
-	D = gmtlib_create_dataset (GMT, 0U, 0U, 0U, 2U, GMT_IS_LINE, true);	/* 2 cols but no tables yet */
+	D = gmtlib_create_dataset (GMT, 0U, 0U, 0U, 2U, GMT_IS_LINE, 0, true);	/* 2 cols but no tables yet */
 	D->table = gmt_M_memory (GMT, NULL, c.nb, struct GMT_DATATABLE *);
 
 	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */
@@ -1330,7 +1330,7 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 			for (k = 0; k < np; k++) if (p[k].n) n_seg++;	/* Count number of segments needed */
 		}
 		if (n_seg) {	/* We have a known number of line segments in this bin; this constitutes this table */
-			if ((D->table[tbl] = gmt_create_table (GMT, 0U, 0U, 2U, false)) == NULL) return (NULL);
+			if ((D->table[tbl] = gmt_create_table (GMT, 0U, 0U, 2U, 0U, false)) == NULL) return (NULL);
 			D->table[tbl]->segment = gmt_M_memory (GMT, NULL, n_seg, struct GMT_DATASEGMENT *);
 			D->table[tbl]->n_segments = n_seg;
 			for (seg = k = 0; k < np; k++) {	/* For each line segment from GSHHS */

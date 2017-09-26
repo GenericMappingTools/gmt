@@ -253,11 +253,11 @@ EXTERN_MSC bool gmt_not_numeric (struct GMT_CTRL *GMT, char *text);				/* Rules 
 EXTERN_MSC bool gmt_parse_segment_item (struct GMT_CTRL *GMT, char *in_string, char *pattern, char *out_string);
 EXTERN_MSC int gmt_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expected);
 EXTERN_MSC uint64_t gmt_get_cols (struct GMT_CTRL *GMT, unsigned int direction);
-EXTERN_MSC struct GMT_DATATABLE *gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segments, uint64_t n_rows, uint64_t n_columns, bool alloc_only);
+EXTERN_MSC struct GMT_DATATABLE *gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segments, uint64_t n_rows, uint64_t n_columns, unsigned int mode, bool alloc_only);
 EXTERN_MSC void gmt_adjust_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t n_columns);
 EXTERN_MSC struct GMT_DATASET *gmt_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, uint64_t n_rows, uint64_t n_columns, unsigned int mode);
 EXTERN_MSC struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, unsigned int mode, unsigned int *geometry);
-EXTERN_MSC int gmt_alloc_datasegment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t n_rows, uint64_t n_columns, bool first);
+EXTERN_MSC int gmt_alloc_datasegment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t n_rows, uint64_t n_columns, unsigned int mode, bool first);
 EXTERN_MSC void gmt_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **segment);
 EXTERN_MSC void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table);
 EXTERN_MSC void gmt_free_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET **data);
@@ -544,7 +544,7 @@ EXTERN_MSC struct GMTAPI_CTRL *gmt_get_api_ptr (struct GMTAPI_CTRL *ptr);
 EXTERN_MSC void gmt_show_name_and_purpose (void *API, const char *name, const char *component, const char *purpose);
 EXTERN_MSC bool gmtlib_is_an_object (struct GMT_CTRL *GMT, void *ptr);
 EXTERN_MSC unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name, unsigned int mode);
-EXTERN_MSC struct GMT_DATASEGMENT *api_alloc_datasegment(void *V_API, uint64_t n_rows, uint64_t n_columns, char *header, struct GMT_DATASEGMENT *Sin);
+EXTERN_MSC struct GMT_DATASEGMENT *api_alloc_datasegment(void *V_API, uint64_t n_rows, uint64_t n_columns, char *header, unsigned int mode, struct GMT_DATASEGMENT *Sin);
 
 /* From gmt_stat.c */
 EXTERN_MSC double gmt_bei (struct GMT_CTRL *GMT, double x);

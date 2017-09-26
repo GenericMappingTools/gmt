@@ -7093,7 +7093,7 @@ struct GMT_TEXTSET *gmtlib_duplicate_textset (struct GMT_CTRL *GMT, struct GMT_T
 }
 
 /*! . */
-int gmt_alloc_datasegment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t n_rows, uint64_t n_columns, bool first) {
+int gmt_alloc_datasegment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t n_rows, uint64_t n_columns, unsigned int mode, bool first) {
 	/* (re)allocates memory for a segment of given dimensions. */
 	uint64_t col;
 	if (first && n_columns) {	/* First time we allocate the number of columns needed */
@@ -7118,6 +7118,12 @@ int gmt_alloc_datasegment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint
 		for (col = 0; col < n_columns; col++) {
 			if ((S->data[col] = gmt_M_memory (GMT, S->data[col], n_rows, double)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_alloc_datasegment: Unable to reallocate data column %" PRIu64 " to new length %" PRIu64 "\n", col, n_rows);
+				return 1;
+			}
+		}
+		if (mode) {	/* Also allocate the string pointers */
+			if ((S->text = gmt_M_memory (GMT, S->text, n_rows, char *)) == NULL) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_alloc_datasegment: Unable to reallocate string array new length %" PRIu64 "\n", n_rows);
 				return 1;
 			}
 		}
@@ -7198,7 +7204,7 @@ double *gmtlib_assign_vector (struct GMT_CTRL *GMT, uint64_t n_rows, uint64_t co
 }
 
 /*! . */
-struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segments, uint64_t n_rows, uint64_t n_columns, bool alloc_only) {
+struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segments, uint64_t n_rows, uint64_t n_columns, unsigned int mode, bool alloc_only) {
 	/* Allocate the new Table structure given the specified dimensions.
 	 * If n_columns == 0 it means we don't know that dimension yet.
 	 * If alloc_only is true then we do NOT set the corresponding counters (i.e., n_segments).  */
@@ -7217,7 +7223,7 @@ struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segmen
 	if (n_segments) {
 		T->segment = gmt_M_memory (GMT, NULL, n_segments, struct GMT_DATASEGMENT *);
 		for (seg = 0; n_columns && seg < n_segments; seg++) {
-			if ((T->segment[seg] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_rows, n_columns, NULL, NULL)) == NULL) {
+			if ((T->segment[seg] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET|mode, n_rows, n_columns, NULL, NULL)) == NULL) {
 				while (seg > 0) {
 					gmt_free_segment (GMT, &(T->segment[seg-1])); seg--;
 				}
@@ -7232,7 +7238,7 @@ struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segmen
 }
 
 /*! . */
-struct GMT_DATASET * gmtlib_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables, uint64_t n_segments, uint64_t n_rows, uint64_t n_columns, unsigned int geometry, bool alloc_only) {
+struct GMT_DATASET * gmtlib_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables, uint64_t n_segments, uint64_t n_rows, uint64_t n_columns, unsigned int geometry, unsigned int mode, bool alloc_only) {
 	/* Create an empty data set structure with the required number of empty tables, all set to hold n_segments with n_columns */
 	uint64_t tbl;
 	struct GMT_DATASET *D = NULL;
@@ -7249,7 +7255,7 @@ struct GMT_DATASET * gmtlib_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tab
 	if (!alloc_only) D->n_segments = D->n_tables * n_segments;
 	if (!alloc_only) D->n_records = D->n_segments * n_rows;
 	for (tbl = 0; tbl < n_tables; tbl++)
-		if ((D->table[tbl] = gmt_create_table (GMT, n_segments, n_rows, n_columns, alloc_only)) == NULL)
+		if ((D->table[tbl] = gmt_create_table (GMT, n_segments, n_rows, n_columns, mode, alloc_only)) == NULL)
 			return (NULL);
 	D->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	D->alloc_mode = GMT_ALLOC_INTERNALLY;		/* So GMT_* modules can free this memory. */
@@ -7360,7 +7366,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 
 	/* Allocate the Table structure with GMT_CHUNK segments, but none has any rows or columns */
 
-	T = gmt_create_table (GMT, GMT_CHUNK, 0U, 0U, false);
+	T = gmt_create_table (GMT, GMT_CHUNK, 0U, 0U, 0U, false);
 
 	T->file[GMT_IN] = strdup (file);
 	if (header) T->header = gmt_M_memory (GMT, NULL, n_head_alloc, char *);
