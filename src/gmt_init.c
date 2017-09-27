@@ -11081,7 +11081,7 @@ GMT_LOCAL bool is_PS_module (struct GMTAPI_CTRL *API, const char *name, const ch
 		if ((opt = GMT_Find_Option (API, 'J', options))) return true;	/* -J writes PS regardless of -E */
 		if ((opt = GMT_Find_Option (API, 'E', options)) == NULL) return true;	/* Without -E writes PS */
 		if (strstr (opt->arg, "+g") || strstr (opt->arg, "+p")) return true;	/* -E...+g|p writes PS */
-		if (strstr (opt->arg, "+r") || strstr (opt->arg, "+R")) return false;	/* -E...+r|R writes textset */
+		if (strstr (opt->arg, "+r") || strstr (opt->arg, "+R")) return false;	/* -E...+r|R writes dataset */
 	}
 	else if (!strncmp (name, "grdimage", 8U)) {	/* Check for -A option */
 		if ((opt = GMT_Find_Option (API, 'A', options))) return false;	/* -A writes image */

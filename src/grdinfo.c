@@ -30,7 +30,7 @@
 #define THIS_MODULE_NAME	"grdinfo"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract information from grids"
-#define THIS_MODULE_KEYS	"<G{+,>T},>DC"
+#define THIS_MODULE_KEYS	"<G{+,>D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->RVfh"
 

@@ -497,7 +497,7 @@ enum GMT_enum_geometry {
 	GMT_IS_POLY	= 4U,
 	GMT_IS_PLP	= 7U,	/* Could be any one of POINT, LINE, POLY */
 	GMT_IS_SURFACE	= 8U,
-	GMT_IS_NONE	= 16U	/* Non-geographical items like color palettes and textsets */
+	GMT_IS_NONE	= 16U	/* Non-geographical items like color palettes */
 };
 
 /* These are two polygon modes */

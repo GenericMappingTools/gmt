@@ -904,7 +904,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdcontour main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
-	if (Ctrl->D.active && !Ctrl->D.file) GMT_Report (API, GMT_MSG_VERBOSE, "Contours will be written to standard output\n");
+	if (Ctrl->D.active {
+		GMT_Report (API, GMT_MSG_VERBOSE, "With -D, no plotting will take place\n");
+		if (!Ctrl->D.file) GMT_Report (API, GMT_MSG_VERBOSE, "Contours will be written to standard output\n");
+	}
 
 	GMT->current.map.z_periodic = Ctrl->Z.periodic;	/* Phase data */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Allocate memory and read data file\n");

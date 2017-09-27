@@ -28,7 +28,7 @@ PostScript code is written to stdout.
 #define THIS_MODULE_NAME	"pscoupe"
 #define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot cross-sections of focal mechanisms"
-#define THIS_MODULE_KEYS	"<T{,>X}"
+#define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"dJ"
 #define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehit" GMT_OPT("c")
 

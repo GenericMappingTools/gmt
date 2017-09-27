@@ -32,7 +32,7 @@
 #define THIS_MODULE_NAME	"gmtconnect"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Connect individual lines whose end points match within tolerance"
-#define THIS_MODULE_KEYS	"<D{,>D},CD),LT),QT)"
+#define THIS_MODULE_KEYS	"<D{,>D},CD),LD),QD)"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>Vabdefghios" GMT_OPT("HMm")
 

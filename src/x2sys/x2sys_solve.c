@@ -39,7 +39,7 @@
 #define THIS_MODULE_NAME	"x2sys_solve"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Determine least-squares systematic correction from crossovers"
-#define THIS_MODULE_KEYS	">T}"
+#define THIS_MODULE_KEYS	">D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->Vbd" GMT_ADD_x_OPT
 

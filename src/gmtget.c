@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"gmtget"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Get individual GMT default parameters"
-#define THIS_MODULE_KEYS	">T}"
+#define THIS_MODULE_KEYS	">D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V"
 

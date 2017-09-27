@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"grdhisteq"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Perform histogram equalization for a grid"
-#define THIS_MODULE_KEYS	"<G{,GG},DT)"
+#define THIS_MODULE_KEYS	"<G{,GG},DD)"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-RVh"
 

@@ -949,7 +949,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			uint64_t dim[4] = {1, 1, 1, 2};	/* A single record */
 			struct GMT_DATASET *T = NULL;
 			if ((T = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Subplot: Unable to allocate a textset\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Subplot: Unable to allocate a dataset\n");
 				Return (error);
 			}
 			T->table[0]->segment[0]->data[GMT_X][0] = 0.5 * width;

@@ -124,7 +124,7 @@
  * GMT maintains control over allocating, reallocating, and freeing of GMT objects created by GMT.
  * Because GMT_modules may be given files, memory locations, streams, etc., as input and output we
  * have to impose some structure as how this will work seamlessly.  Here, "GMT object" refers to
- * any of the 5 GMT resources: grids, images, datasets, textsets, and palettes.
+ * any of the 5 GMT resources: grids, images, datasets, palettes, and PostScript.
  *
  * 1. When GMT allocates memory for a GMT object it sets its alloc_mode to GMT_ALLOC_INTERNALLY (1)
  *    and its alloc_level to <module level>.  This is 0 for the gmt.c UNIX application as well as
@@ -238,7 +238,7 @@ static int GMTAPI_session_counter = 0;	/* Keeps track of the ID of new sessions 
  * NOTE: THe order of these depends on the order in the enums in gmt_resources.h! */
 
 static const char *GMT_method[] = {"File", "Stream", "File Descriptor", "Memory Copy", "Memory Reference"};
-static const char *GMT_family[] = {"Data Table", "Grid", "Image", "CPT", "PostScript", "Text Table", "Matrix", "Vector", "Coord"};
+static const char *GMT_family[] = {"Data Table", "Grid", "Image", "CPT", "PostScript", "Matrix", "Vector", "Coord"};
 static const char *GMT_direction[] = {"Input", "Output"};
 static const char *GMT_stream[] = {"Standard", "User-supplied"};
 static const char *GMT_status[] = {"Unused", "In-use", "Used"};
@@ -2011,7 +2011,7 @@ GMT_LOCAL unsigned int api_set_method (struct GMTAPI_DATA_OBJECT *S) {
 /*! . */
 GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int direction) {
 	/* Get ready for the next source/destination (open file, initialize counters, etc.).
-	 * Note this is only a mechanism for dataset and textset files where it is common
+	 * Note this is only a mechanism for dataset files where it is common
 	 * to give many files on the command line (e.g., *.txt) and we do rec-by-rec processing.
 	 * Not used by modules who read entire datasets in one go via GMT_{Read|Write}_Data,
 	 * such as grids, images, palettes, postscript, but also datasets and texsets when
@@ -4956,7 +4956,7 @@ GMT_LOCAL int api_put_data (void *V_API, int object_ID, unsigned int mode, void 
 	/* Function to write data directly from program memory as a set (not record-by-record).
 	 * We can combine the <register resource - export resource > sequence in
 	 * one combined function.  See GMT_Register_IO for details on arguments.
-	 * Here, *data is the pointer to the data object to save (CPT, dataset, textset, Grid)
+	 * Here, *data is the pointer to the data object to save (CPT, dataset, Grid)
 	 * ID is the registered destination.
 	 * While only one output destination is allowed, for DATA|TEXTSETS one can
 	 * have the tables and even segments be written to individual files (see the mode
@@ -6951,7 +6951,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 	/* Function to write data directly from program memory as a set (not record-by-record).
 	 * We can combine the <register resource - export resource > sequence in
 	 * one combined function.  See GMT_Register_IO for details on arguments.
-	 * Here, *data is the pointer to the data object to save (CPT, dataset, textset, Grid)
+	 * Here, *data is the pointer to the data object to save (CPT, dataset, Grid)
 	 * Case 1: outfile != NULL: Register this as the destination and export data.
 	 * Case 2: outfile == NULL: Register stdout as the destination and export data.
 	 * Case 3: geometry == 0: Use a previously registered single destination.
@@ -7800,7 +7800,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	if (!API->registered[direction]) GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: Warning: No %s resources registered\n", GMT_direction[direction]);
 
 	GMT = API->GMT;
-	/* Must initialize record-by-record machinery for dataset or textset */
+	/* Must initialize record-by-record machinery for dataset */
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: Initialize record-by-record access for %s\n", GMT_direction[direction]);
 	API->current_item[direction] = -1;	/* api_next_data_object (below) will wind it to the first item >= 0 */
 	if ((error = api_next_data_object (API, family, direction))) return_error (API, GMT_NO_RESOURCES);	/* Something went bad */
@@ -9606,7 +9606,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	 * X stands for the specific program OPTION (e.g., L for -L, F for -F). For tables or grids read from files or
 	 * tables processed via standard input we use '<', while '>' is used for standard (table) output.
 	 * Y stands for data TYPE (C = CPT, D = Dataset/Point, L = Dataset/Line, P = Dataset/Polygon,
-	 *    G = Grid, I = Image, T = Textset, X = PostScript, ? = type specified via a module option [more later]),
+	 *    G = Grid, I = Image, X = PostScript, ? = type specified via a module option [more later]),
 	 *    while a hyphen (-) means there is NO data when this option is set (see Z for whether this is for in- or output).
 	 * Z stands for PRIMARY inputs '{', primary output '}' OR SECONDARY input '(', or secondary output ')'.
 	 *   Primary inputs and outputs MUST be assigned, and if not explicitly given will result in
@@ -9634,7 +9634,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	 *   the track/point file is not expected so we need to change it to secondary.  We thus add E-< which then will
 	 *   change <D{ to <D(.  A modifier is also possible.  For instance -F<grid>[+d] is used by several modules, such
 	 *   as triangulate, to use the non-NaN nodes in a grid as the input data instead of reading the primary input
-	 *   source.  So F-( would turn of primary input.  However, if +d is present then we want to combine the grid with
+	 *   source.  So F-( would turn off primary input.  However, if +d is present then we want to combine the grid with
 	 *   the primary input and hence we read that as well.
 	 *
 	 *   A few modules will specify Z as some letter not in {|(|}|)|-, which means that normally these modules
@@ -9645,17 +9645,10 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	 *      2. -Z contains ALL the modifiers +a, +b, +c, ...
 	 *      3. -Z contains AT LEAST ONE of the modifers +d, +e, +f.
 	 *   The Z magic is a bit confusing so here are several examples:
-	 *   1. pscoast normally writes PostScript but pscoast -M will instead export data to stdout, so its keys
-	 *      contain the entry ">DM", which means that when -M is active then PostScript key ">X}" morphs into ">D}" and
-	 *      thus allows for data set export instead.
-	 *   2. grdinfo normally writes a textset (key ">T}") but with -C it should write a dataset.  It has the magic
-	 *      key ">DC": If the -C option is given then the ">T}" is morphed to ">D}".
-	 *   3. grdcontour normally writes PostScript but grdcontour -D will instead export data to a file set by -D, so its key
+	 *   1. grdcontour normally writes PostScript but grdcontour -D will instead export data to std (or a file set by -D), so its key
 	 *      contains the entry "DDD": When -D is active then the PostScript key ">X}" morphs into "DD}" and
 	 *      thus allows for a data set export instead.
-	 *   4. gmtspatial : New key ">TN+r" means if -N[...]+r is given then set >T}.  Just giving -N without the given
-	 *      modifier +r will not trigger the change.
-	 *   5. pscoast ">TE+w-rR" means if -E given with modifier +w and one of +r or +R are then set to >T}.
+	 *   2. pscoast ">TE+w-rR" means if -E given with modifier +w and one of +r or +R are then set to >T}.
 	 *
 	 *   After processing, all magic key sequences are set to "---" to render them inactive.
 	 *
@@ -9701,20 +9694,20 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 
 	/* First some special checks related to unusual GMT syntax or hidden modules */
 
-	/* 1a. Check if this is the pscoast module, where output type is either PS, Dataset, or Textset... */
+	/* 1a. Check if this is the pscoast module, where output type is either PostScript or Dataset */
 	if (!strncmp (module, "pscoast", 7U)) {
 		/* Potential problem under modern mode: No -J -R set but will be provided later, and we are doing -E for coloring or lines */
 		if (GMT_Find_Option (API, 'M', *head)) type = 'D';	/* -M means dataset dump */
 		else if (GMT_Find_Option (API, 'C', *head) || GMT_Find_Option (API, 'G', *head) || GMT_Find_Option (API, 'I', *head) || GMT_Find_Option (API, 'N', *head) || GMT_Find_Option (API, 'W', *head)) type = 'X';	/* Clearly plotting GSHHG */
 		else if ((opt = GMT_Find_Option (API, 'E', *head)) && (strstr (opt->arg, "+g") || strstr (opt->arg, "+p"))) type = 'X';	/* Clearly plotting DCW polygons */
-		else if (!GMT_Find_Option (API, 'J', *head)) type = 'T';	/* No -M and no -J means -Rstring as textset */
+		else if (!GMT_Find_Option (API, 'J', *head)) type = 'D';	/* No -M and no -J means -Rstring as dataset */
 		else type = 'X';	/* Otherwise we are still most likely plotting PostScript */
 	}
 	/* 1b. Check if this is psxy or psxyz modules with quoted or decorated lines. For any other -S~|q? flavor we kill the key with ! */
 	else if ((!strncmp (module, "psxy", 4U) || !strncmp (module, "psxyz", 5U)) && (opt = GMT_Find_Option (API, 'S', *head))) {
 		/* Found the -S option, check if we requested quoted or decorated lines via fixed or crossing lines */
 		/* If not f|x then we don't want this at all and set type = ! */
-		type = (!strchr ("~q", opt->arg[0]) || !strchr ("fx", opt->arg[1])) ? '!' : ((opt->arg[1] == 'x') ? 'D' : 'T');
+		type = (!strchr ("~q", opt->arg[0]) || !strchr ("fx", opt->arg[1])) ? '!' : 'D';
 		strip_colon = (type && strchr (opt->arg, ':'));
 		strip_colon_opt = opt->option;
 		if (strip_colon)
@@ -9758,29 +9751,16 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 			|| (opt = GMT_Find_Option (API, 'Q', *head)) || (opt = GMT_Find_Option (API, 'S', *head))))
 				deactivate_output = true;	/* Turn off implicit output since none is in effect */
 	}
-	/* 1h. Check if this is the mgd77list module, which writes text or data depending on -F choices */
-	else if (!strncmp (module, "mgd77list", 9U) && (opt = GMT_Find_Option (API, 'F', *head))) {
-		/* Found the -F option, check if any strings are requested */
-		type = 'D';	/* Default is dataset output unless any of the below were requested */
-		if (strstr (opt->arg, "all") || strstr (opt->arg, "mgd77") || strstr (opt->arg, "id") || strstr (opt->arg, "sln")
-		    || strstr (opt->arg, "sspn") || strstr (opt->arg, "date") || strstr (opt->arg, "recno"))
-			type = 'T';
-	}
-	/* 1i. Check if this is a *contour modules with -Gf|x given. For any other -G? flavor we kill the key with ! */
+	/* 1h. Check if this is a *contour modules with -Gf|x given. For any other -G? flavor we kill the key with ! */
 	else if ((!strncmp (module, "grdcontour", 10U) || !strncmp (module, "pscontour", 9U)) && (opt = GMT_Find_Option (API, 'G', *head))) {
 		/* Found the -G option, check if any strings are requested */
 		/* If not -Gf|x then we don't want this at all and set type = ! */
-		type = (opt->arg[0] == 'f') ? 'T' : ((opt->arg[0] == 'x') ? 'D' : '!');
+		type = (opt->arg[0] == 'f' || opt->arg[0] == 'x') ? 'D' : '!');
 	}
-	/* 1j. Check if this is the talwani3d module, where output type is grid except with -N it is dataset */
+	/* 1i. Check if this is the talwani3d module, where output type is grid except with -N it is dataset */
 	else if (!strncmp (module, "talwani3d", 9U)) {
 		/* If we find the -N option, we set type to D, else G */
 		type = (GMT_Find_Option (API, 'N', *head)) ? 'D' : 'G';
-	}
-	/* 1k. Check if this is the gmtinfo module, where output type is text except with -C and -Ib it is dataset */
-	else if (!strncmp (module, "gmtinfo", 7U)) {
-		/* If we find the -C or -Ib options, we set type to D, else T */
-		type = (GMT_Find_Option (API, 'C', *head) || ((opt = GMT_Find_Option (API, 'I', *head)) && opt->arg[0] == 'b')) ? 'D' : 'T';
 	}
 
 	gmt_M_str_free (module);
@@ -10726,7 +10706,7 @@ GMT_LOCAL void *api_dataset2dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET
 	struct GMT_DATASEGMENT *Sin = NULL;
 	struct GMT_DATASEGMENT *Sout = NULL;
 	s_alloc = t_alloc = alloc = (Out == NULL);
-	if (alloc) {	/* Must allocate output textset */
+	if (alloc) {	/* Must allocate output dataset */
 		Out = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASET);
 		Out->n_tables = (mode == GMT_WRITE_TABLE || mode == GMT_WRITE_TABLE_SEGMENT) ? 1 : In->n_tables;
 		Out->table = gmt_M_memory (GMT, NULL, Out->n_tables, struct GMT_DATATABLE *);
@@ -10973,8 +10953,8 @@ GMT_LOCAL void *api_vector2dataset (struct GMTAPI_CTRL *API, struct GMT_VECTOR *
 }
 
 GMT_LOCAL void *api_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTOR *In, struct GMT_MATRIX *Out, unsigned int header, unsigned int mode) {
-	/* Convert a vector to a textset (one table with one segment).
-	 * If Out is not NULL then we assume it has enough rows to hold the textset records.
+	/* Convert a vector to a matrix.
+	 * If Out is not NULL then we assume it has enough rows to hold the rows.
 	 * header controls what we do with headers.
 	 * If mode > 0 then it is assumed to hold GMT_TYPE-1, else we assume the GMT default setting.
 	 */

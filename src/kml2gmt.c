@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"kml2gmt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract GMT table data from Google Earth KML files"
-#define THIS_MODULE_KEYS	"<T{,>D}"
+#define THIS_MODULE_KEYS	">D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:Vbdh" GMT_OPT("HMm")
 

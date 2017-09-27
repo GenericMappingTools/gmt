@@ -105,18 +105,13 @@
  * gmt_set_seg_minmax
  * gmt_set_tbl_minmax
  * gmt_set_dataset_minmax
- * gmt_set_textset_minmax
  * gmt_parse_segment_header
  * gmt_extract_label
  * gmt_parse_segment_item
  * gmt_duplicate_ogr_seg
  * gmtlib_write_newheaders
  * gmt_set_xycolnames
- * gmtlib_write_textset
  * gmt_adjust_dataset
- * gmtlib_create_textset
- * gmtlib_alloc_textset
- * gmtlib_duplicate_textset
  * gmt_alloc_datasegment
  * gmtlib_assign_segment
  * gmtlib_assign_vector
@@ -129,8 +124,6 @@
  * gmt_free_table
  * gmtlib_free_dataset_ptr
  * gmt_free_dataset
- * gmtlib_free_textset_ptr
- * gmtlib_free_textset
  * gmtlib_create_image
  * gmtlib_duplicate_image
  * gmtlib_free_image_ptr

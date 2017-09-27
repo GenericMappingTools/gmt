@@ -36,7 +36,7 @@
 #define THIS_MODULE_NAME	"grdraster"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract subregion from a binary raster and save as a GMT grid"
-#define THIS_MODULE_KEYS	"GG},TD)"
+#define THIS_MODULE_KEYS	"GG},DD)"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-JRVbdh"
 

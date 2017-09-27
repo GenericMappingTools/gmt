@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"grdflexure"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute flexural deformation of 3-D surfaces for various rheologies"
-#define THIS_MODULE_KEYS	"<G{,GG},LT),TD("
+#define THIS_MODULE_KEYS	"<G{,GG},LD),TD("
 #define THIS_MODULE_NEEDS	"g"
 #define THIS_MODULE_OPTIONS "-Vf"
 
@@ -897,7 +897,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	/* Here, Load[] contains all the input load grids and their load times, ready to go as H(kx,ky) */
 
-	if (Ctrl->L.active) {	/* Must create a textset to hold names of all output grids */
+	if (Ctrl->L.active) {	/* Must create a dataset to hold names of all output grids */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_eval_times, 0};
 		unsigned int k, j;
 		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {

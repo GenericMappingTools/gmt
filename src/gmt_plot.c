@@ -5364,7 +5364,7 @@ int gmt_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 
 	kind = gmt_M_is_geographic (GMT, GMT_IN);
 	if ((G->Out = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create a textset\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create a dataset\n");
 		return (GMT_MEMORY_ERROR);	/* Establishes data output */
 	}
 	/* Write lon, lat, angle, label record */
@@ -5384,7 +5384,7 @@ int gmt_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 }
 
 int gmt_contlabel_save_end (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
-	/* Finalize this textset and write it out */
+	/* Finalize this dataset and write it out */
 	gmt_set_dataset_minmax (GMT, G->Out);
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, G->label_file, G->Out) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create/write to file %s\n", G->label_file);

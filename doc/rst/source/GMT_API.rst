@@ -241,12 +241,15 @@ API that are not backwards compatible with GMT 5:
    now only DATASET segments) but the family variable has been reused as a mode which is
    passed as either GMT_WITH_STRINGS or GMT_NO_STRINGS so that data segments can be allocated
    with or without the optional string array.
+#. We introduce a new structure GMT_RECORD which is used by GMT_Get_Record and GMT_Put_Record.
+   Because such records may have both leading numerical columns and a trailing string these
+   functions needed to work with such a structure rather than either an array or string.
 
 
 GMT resources
 -------------
 
-The GMT API knows how to create, duplicate, read and write six types of data objects common to
+The GMT API knows how to create, duplicate, read and write five types of data objects common to
 GMT operations: Pure data tables (ASCII or binary), grids, images, color
 palette tables (also known as CPT), PostScript documents, and text tables (ASCII,
 usually a mix of data and free-form text).  In addition, we
@@ -261,7 +264,7 @@ functions using opaque pointers (``void *``). Below we provide a brief
 overview of these containers, listing only the most critical members.
 For complete details, see Appendix A.  We will later present how they are used when
 importing or exporting them to or from files, memory locations, or
-streams. The first six are the standard GMT objects, while the latter
+streams. The first five are the standard GMT objects, while the latter
 two are special data containers to facilitate the passing of user
 data in and out of GMT modules. These resources are defined in the include
 file ``gmt_resources.h``; please consult this file to ensure correctness
@@ -523,6 +526,21 @@ The full structure definition can be found in :ref:`GMT_VECTOR <struct-vector>`.
       double               range[2];      /* The min and max limits on t-range (or 0,0) */
   };
 
+Data record
+~~~~~~~~~~~
+
+For record-by-record i/o we use the GMT_RECORD structure.
+
+.. _struct-record:
+
+.. code-block:: c
+
+   struct GMT_RECORD {	/* Single container for an array of GMT tables (files) */
+       double  *data;   /* Pointer to array of double-precision numbers [NULL] */
+       char  *text;     /* Pointer to the trailing string [NULL] */
+   };
+
+
 .. _chapter-overview:
 
 Overview of the GMT C Application Program Interface
@@ -679,7 +697,7 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | constant                 | description                                           |
     +==========================+=======================================================+
-    | GMT_Alloc_Segment_       | Allocate data and text segments                       |
+    | GMT_Alloc_Segment_       | Allocate data segments                                |
     +--------------------------+-------------------------------------------------------+
     | GMT_Append_Option_       | Append new option structure to linked list            |
     +--------------------------+-------------------------------------------------------+
@@ -1371,12 +1389,12 @@ etc.
 Import Data Sets
 ----------------
 
-If your program needs to import any of the six recognized data types
-(data table, grid, image, CPT, PostScript, or text table) you will use
+If your program needs to import any of the five recognized data types
+(data table, grid, image, CPT, or PostScript) you will use
 the GMT_Read_Data_ or GMT_Read_VirtualFile_ functions. The former
 is typically used when reading from files, streams (e.g., ``stdin``), or
 an open file handle, while the latter is only used to read from memory.
-Because of the similarities of these six
+Because of the similarities of these five
 import functions we use an generic form that covers all of them.
 
 All input functions takes a parameter called ``mode``. The ``mode``
@@ -1620,7 +1638,7 @@ where ``filename`` is the name of the virtual file.
 Record-by-record input
 ----------------------
 
-In the case of data and text tables you have the option of selecting
+In the case of data tables you have the option of selecting
 record-by-record reading or writing.  As a general rule, your program
 development simplifies if you can read entire resources into memory with 
 GMT_Read_Data_ or GMT_Read_VirtualFile_.  However, if this leads to
@@ -1637,7 +1655,7 @@ Once all input resources have been registered, we signal the API that we
 are done with the registration phase and are ready to start the actual
 data import. This step is only required when reading one record at the
 time. We initialize record-by-record reading by calling
-GMT_Begin_IO_. This function enables data and text
+GMT_Begin_IO_. This function enables data
 record-by-record reading and prepares the registered sources for the
 upcoming import. The prototype is
 
@@ -1695,9 +1713,8 @@ records within a loop, repeatedly using
 
     void *GMT_Get_Record (void *API, unsigned int mode, int *nfields);
 
-where the returned value is either a pointer to a double array with the
-current row values or to a character string with the current row,
-depending on ``mode``. In either case these pointers point to ephemeral memory
+where the returned value is a pointer to a GMT_RECORD structure, whose
+member pointers data and text point to ephemeral memory
 internal to GMT and should be considered read-only. When we reach
 end-of-file, encounter conversion problems, read header comments, or
 identify segment headers we instead return a NULL pointer. The ``nfields``
@@ -2034,8 +2051,8 @@ API-only modules
 
 There are two general-purpose modules that are not part of the command-line version of
 GMT.  These are the read and write modules.  Both take an option to specify what GMT
-resource is being read of written: **-Tc**\ \|\ **d**\ \|\ **g**\ \|\ **i**\ \|\ **p**\ \|\ **t**,
-which selects CPT, dataset, grid, image, PostScript, or textset, respectively.  In addition
+resource is being read of written: **-Tc**\ \|\ **d**\ \|\ **g**\ \|\ **i**\ \|\ **p**,
+which selects CPT, dataset, grid, image, or PostScript, respectively.  In addition
 both modules accept the *infile* and *outfile* argument for source and destination.  These
 may be actual files of memory locations, of course.
 
@@ -2116,8 +2133,8 @@ encoded in the headers.
 Export Data Sets
 ----------------
 
-If your program needs to write any of the six recognized data types
-(CPTs, data tables, text tables, grids, images, or PostScript) you can use the
+If your program needs to write any of the five recognized data types
+(CPTs, data tables, grids, images, or PostScript) you can use the
 GMT_Write_Data_ function. 
 
 Both of these output functions takes a parameter called ``mode``. The
@@ -2156,7 +2173,7 @@ The prototype for writing to a file (via name, stream, or file handle) is
 * mode -- specific to each data type (\ *see below*)
 * :ref:`wesn <tbl-wesn>`
 * output --
-* data -- A pointer to any of the six families.
+* data -- A pointer to any of the five families.
 * Return: 0 on success, otherwise return -1 and set API->error to reflect to cause.
 
 where ``data`` is a pointer to any of the four structures discussed previously.
@@ -2234,7 +2251,7 @@ aware that the changes you specified were applied to the grid.
 Record-by-record output
 -----------------------
 
-In the case of data and text tables, you may also
+In the case of data tables, you may also
 consider the GMT_Put_Record_ function for record-by-record writing. As a general rule, your
 program organization may simplify if you can write the entire
 resource with GMT_Write_Data_. However, if the program logic is simple
@@ -2289,10 +2306,8 @@ enable record-by-record writing with GMT_Begin_IO_ and then use the
 
     int GMT_Put_Record (void *API, unsigned int mode, void *rec);
 
-where ``rec`` is a pointer to either (a) a double-precision array with
-the current row. Then, ``rec`` is expected to hold at least as many
-items as the current output column setting, which represents the
-number of columns in the output destination. Alternatively (b), ``rec``
+where ``rec`` is a pointer to either (a) a GMT_RECORD structure
+the current row. Alternatively (b), ``rec``
 points to a text string. The ``mode`` parameter must be set to reflect
 what is passed. Using GMT_Put_Record_ requires you to first
 initialize the destination with GMT_Init_IO_. Note that for
@@ -2308,6 +2323,11 @@ actually written:
     For ASCII output mode we write the text string ``rec``. If ``rec``
     is NULL then we use the current (last imported) text record. If
     binary output mode we quietly skip writing this record.
+
+**GMT_WRITE_MIXED**.
+    For ASCII output mode we write the mixed record from the numerical
+    and text information in ``rec``. If
+    binary output mode we quietly skip writing the text portion.
 
 **GMT_WRITE_TABLE_HEADER**.
     For ASCII output mode we write the text string ``rec``. If ``rec``
@@ -3323,10 +3343,10 @@ Data containers
 ---------------
 
 The external interface developer will need to create native data classes or structures that are capable of
-containing the information associated with the 6 GMT objects: data tables, grids, images, color palette tables,
-PostScript documents, and text tables.  In other words, how your external environment will represent these
+containing the information associated with the 5 GMT objects: data tables, grids, images, color palette tables,
+and PostScript documents.  In other words, how your external environment will represent these
 data in memory.  Some of these "containers" may already exist, while others may need to be designed.  Most likely, you will end up with
-a set of six containers that can hold the various GMT data objects and related metadata.  In addition, it may
+a set of five containers that can hold the various GMT data objects and related metadata.  In addition, it may
 be convenient to also consider the two GMT helper objects MATRIX and VECTOR, which may be closer to the native
 representation of your data than, for instance, the native GMT_DATASET.
 
@@ -3384,7 +3404,7 @@ We have built a MATLAB/Octave interface to GMT called the toolbox.  It was our f
 external environment and its development influenced
 how we designed the final GMT C API.  MATLAB represents most data as matrices but there are also structures that
 can hold many different items, including several matrices and text strings.  Thus, we designed several native mex structures
-that represent the six GMT objects.  The main **gmt** function available in MATLAB derives from a small MATLAB script
+that represent the five GMT objects.  The main **gmt** function available in MATLAB derives from a small MATLAB script
 (gmt.m) which handles basic argument testing and then passes the arguments to our C function gmtmex.c.
 Most of the high-level parsing of options and arguments is done in this function, but we also rely on
 a C library (gmtmex_parser.c) that hides the details of the implementation.  It is this library that
@@ -3405,7 +3425,7 @@ To be defined shortly.
 Appendix A: GMT resources
 -------------------------
 
-We earlier introduced the six standard GMT resources (dataset, grid, image, color palette table, PostScript, textset)
+We earlier introduced the five standard GMT resources (dataset, grid, image, color palette table, PostScript)
 as well as the user vector and matrix.  Here are the complete definitions of these structures, including
 all variables accessible via the structures.
 

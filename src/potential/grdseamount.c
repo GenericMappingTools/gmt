@@ -34,7 +34,7 @@
 #define THIS_MODULE_NAME	"grdseamount"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute synthetic seamount (Gaussian, parabolic, cone or disc, circular or elliptical) bathymetry"
-#define THIS_MODULE_KEYS	"<T{,GG},MT),TD("
+#define THIS_MODULE_KEYS	"<T{,GG},TD("
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVbdefhir" GMT_OPT("H")
 
@@ -579,7 +579,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		t1_col = n_expected_fields - 1;
 	}
 	
-	if (Ctrl->M.active) {	/* Must create textset to hold names of all output grids */
+	if (Ctrl->M.active) {	/* Must create dataset to hold names of all output grids */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_times, 0};
 		unsigned int k, j;
 		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {

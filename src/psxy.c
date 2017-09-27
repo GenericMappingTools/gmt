@@ -274,7 +274,7 @@ GMT_LOCAL void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 }
 
 GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
-	/* Accept the textset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
+	/* Accept the dataset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
 	 * Note: The x,y are projected coordinates in inches, hence our -R -J choice below. */
 	size_t len;
 	char string[GMT_LEN16] = {""}, buffer[GMT_BUFSIZ] = {""}, tmp_file[GMT_LEN64] = {""};

@@ -20,7 +20,7 @@
  * Date:	2-May-2013
  * Version:	5 API
  *
- * Brief synopsis: gmt write lets us (read from memory and) write any of the 6 GMT resources.
+ * Brief synopsis: gmt write lets us (read from memory and) write any of the 5 GMT resources.
  *
  */
 
@@ -66,7 +66,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: write <infile> <outfile> -Tc|d|g|i|p|t [%s] [%s]\n", GMT_Rx_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: write <infile> <outfile> -Tc|d|g|i|p [%s] [%s]\n", GMT_Rx_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -77,7 +77,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   g : Grid\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   i : Image\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   p : PostScript\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   t : Textset\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "R,V,.");
 	
@@ -125,7 +124,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GM
 					case 'i': Ctrl->T.mode = GMT_IS_IMAGE;	 break;
 					case 'p': Ctrl->T.mode = GMT_IS_POSTSCRIPT;	 break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized data type %c.  Choose from c, d, g, i, p and t\n");
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized data type %c.  Choose from c, d, g, i, and p\n");
 						n_errors++;
 						break;
 				}

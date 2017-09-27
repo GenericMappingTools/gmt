@@ -21,7 +21,7 @@
 #define THIS_MODULE_NAME	"mgd77path"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Return paths to MGD77 cruises and directories"
-#define THIS_MODULE_KEYS	">T}"
+#define THIS_MODULE_KEYS	">D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V"
 

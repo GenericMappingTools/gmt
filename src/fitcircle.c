@@ -77,7 +77,7 @@
 #define THIS_MODULE_NAME	"fitcircle"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Find mean position and great [or small] circle fit to points on sphere"
-#define THIS_MODULE_KEYS	"<D{,>T},>DF"
+#define THIS_MODULE_KEYS	"<D{,>D},>DF"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>Vabdefghio" GMT_OPT("H")
 

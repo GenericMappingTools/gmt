@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"gmtwhich"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Find full path to specified files"
-#define THIS_MODULE_KEYS	">T}"
+#define THIS_MODULE_KEYS	">D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V"
 

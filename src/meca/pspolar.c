@@ -25,7 +25,7 @@
 #define THIS_MODULE_NAME	"pspolar"
 #define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot polarities on the inferior focal half-sphere on maps"
-#define THIS_MODULE_KEYS	"<T{,>X}"
+#define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"dJ"
 #define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehit" GMT_OPT("c")
 

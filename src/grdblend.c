@@ -43,7 +43,7 @@
 #define THIS_MODULE_NAME	"grdblend"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Blend several partially over-lapping grids into one larger grid"
-#define THIS_MODULE_KEYS	"<T{,GG}"
+#define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVfnr"
 
