@@ -97,7 +97,7 @@ EXTERN_MSC int GMT_Init_VirtualFile   (void *API, unsigned int mode, const char 
 EXTERN_MSC void *GMT_Read_Group       (void *API, unsigned int family, unsigned int method, unsigned int geometry,
                                           unsigned int mode, double wesn[], void *sources, unsigned int *n_items, void *data);
 EXTERN_MSC void *GMT_Convert_Data     (void *API, void *in, unsigned int family_in, void *out, unsigned int family_out, unsigned int flag[]);
-EXTERN_MSC void *GMT_Alloc_Segment    (void *API, unsigned int family, uint64_t n_rows, uint64_t n_columns, char *header, void *segment);
+EXTERN_MSC void *GMT_Alloc_Segment    (void *API, unsigned int mode, uint64_t n_rows, uint64_t n_columns, char *header, void *segment);
 EXTERN_MSC int GMT_Set_Columns        (void *API, unsigned int n_columns, unsigned int mode);
 EXTERN_MSC int GMT_Destroy_Group      (void *API, void *object, unsigned int n_items);
 EXTERN_MSC int GMT_Change_Layout      (void *API, unsigned int family, char *code, unsigned int mode, void *obj, void *data, void *alpha);

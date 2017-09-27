@@ -17,7 +17,7 @@
  *--------------------------------------------------------------------*/
 /*
  * gmt_resources.h contains the definitions for the six GMT resources
- * GMT_DATASET, GMT_GRID, GMT_IMAGE, GMT_PALETTE, GMT_POSTSCRIPT, GMT_TEXTSET
+ * GMT_DATASET, GMT_GRID, GMT_IMAGE, GMT_PALETTE, GMT_POSTSCRIPT
  * as well as the two auxiliary resources GMT_MATRIX and GMT_VECTOR,
  * as well as all named enums.
  *
@@ -128,7 +128,7 @@ enum GMT_enum_method {
 	GMT_IS_OUTPUT	 = 1024		/* When creating a resource as a container for output */
 };
 
-/* A Grid can come from a grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
+/* A Grid can come from a grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix */
 
 enum GMT_enum_via {
 	GMT_VIA_NONE		=   0,	/* No via anything */
@@ -142,21 +142,21 @@ enum GMT_enum_container {
 	GMT_CONTAINER_AND_DATA	= 0U,    /* Create|Read|write both container and the data array */
 	GMT_CONTAINER_ONLY	= 1U,    /* Create|read|write the container but no data array */
 	GMT_DATA_ONLY		= 2U,   /* Create|Read|write the container's array only */
-	GMT_WITH_STRINGS	= 32U   /* Allocate string array also [DATASET, MATRIX, VECTOR only] */
+	GMT_WITH_STRINGS	= 32U,   /* Allocate string array also [DATASET, MATRIX, VECTOR only] */
+	GMT_NO_STRINGS		= 0U    /* Do not allocate string array also [Default] */
 };
 
-/*! These are the 6 families of data types, + a coordinate array + 3 help containers for vector, matrix, and coordinates */
+/*! These are the 5 families of data types, + a coordinate array + 3 help containers for vector, matrix, and coordinates */
 enum GMT_enum_family {
 	GMT_IS_DATASET    = 0,	/* Entity is a data table */
 	GMT_IS_GRID       = 1,	/* Entity is a grid */
 	GMT_IS_IMAGE      = 2,	/* Entity is a 1- or 3-layer unsigned char image */
 	GMT_IS_PALETTE    = 3,	/* Entity is a color palette table */
 	GMT_IS_POSTSCRIPT = 4,	/* Entity is a PostScript content struct */
-	GMT_IS_TEXTSET	  = 5,	/* Entity is a text table */
-	GMT_IS_MATRIX	  = 6,	/* Entity is user matrix */
-	GMT_IS_VECTOR	  = 7,	/* Entity is set of user vectors */
-	GMT_IS_COORD	  = 8,	/* Entity is a double coordinate array */
-	GMT_N_FAMILIES	  = 9	/* Total number of families [API Developers only]  */
+	GMT_IS_MATRIX	  = 5,	/* Entity is user matrix */
+	GMT_IS_VECTOR	  = 6,	/* Entity is set of user vectors */
+	GMT_IS_COORD	  = 7,	/* Entity is a double coordinate array */
+	GMT_N_FAMILIES	  = 8	/* Total number of families [API Developers only]  */
 };
 
 #define GMT_IS_CPT	GMT_IS_PALETTE		/* Backwards compatibility for < 5.3.3; */
@@ -615,61 +615,6 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 	size_t n_alloc;			/* The current allocation length of tables */
 	uint64_t dim[4];		/* Only used by GMT_Duplicate_Data to override dimensions */
 	unsigned int geometry;	/* The geometry of this dataset */
-	unsigned int alloc_level;	/* The level it was allocated at */
-	enum GMT_enum_write io_mode;	/* -1 means write OGR format (requires proper -a),
-					 * 0 means write everything to one destination [Default],
-					 * 1 means use table->file[GMT_OUT] to write separate table,
-					 * 2 means use segment->file[GMT_OUT] to write separate segments.
-					 * 3 is same as 2 but with no filenames we create filenames from tbl and seg numbers */
-	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
-	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
-};
-
-/*============================================================ */
-/*============== GMT_TEXTSET Public Declaration ============== */
-/*============================================================ */
-
-struct GMT_TEXTSEGMENT {		/* For holding segment text records in memory */
-	/* Variables we document for the API: */
-	uint64_t n_rows;		/* Number of rows in this segment */
-	char **data;			/* Array of text records */
-	char *label;			/* Label string (if applicable) */
-	char *header;			/* Segment header (if applicable) */
-/* ---- Variables "hidden" from the API ---- */
-	uint64_t id;			/* The internal number of the table */
-	enum GMT_enum_write mode;	/* 0 = output segment, 1 = output header only, 2 = skip segment */
-	size_t n_alloc;			/* Number of rows allocated for this segment */
-	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
-	char **tvalue;			/* The values of the OGR/GMT aspatial fields */	
-#ifdef GMT_BACKWARDS_API
-	char **record;
-#endif
-};
-
-struct GMT_TEXTTABLE {	/* To hold an array of text segment structures and header information in one container */
-	/* Variables we document for the API: */
-	unsigned int n_headers;		/* Number of file header records (0 if no header) */
-	uint64_t n_segments;		/* Number of segments in the array */
-	uint64_t n_records;		/* Total number of data records across all segments */
-	char **header;			/* Array with all file header records, if any) */
-	struct GMT_TEXTSEGMENT **segment;	/* Pointer to array of segments */
-/* ---- Variables "hidden" from the API ---- */
-	uint64_t id;			/* The internal number of the table */
-	size_t n_alloc;			/* The current allocation length of segments */
-	enum GMT_enum_write mode;	/* 0 = output table, 1 = output header only, 2 = skip table */
-	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
-};
-
-struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files) */
-	/* Variables we document for the API: */
-	uint64_t n_tables;		/* The total number of tables (files) contained */
-	uint64_t n_segments;		/* The total number of segments across all tables */
-	uint64_t n_records;		/* The total number of data records across all tables */
-	struct GMT_TEXTTABLE **table;	/* Pointer to array of tables */
-/* ---- Variables "hidden" from the API ---- */
-	uint64_t id;			/* The internal number of the data set */
-	size_t n_alloc;			/* The current allocation length of tables */
-	unsigned int geometry;		/* The geometry of this dataset */
 	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_write io_mode;	/* -1 means write OGR format (requires proper -a),
 					 * 0 means write everything to one destination [Default],

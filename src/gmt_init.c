@@ -10381,10 +10381,10 @@ int gmt_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *optio
 	struct GMT_RECORD Out;
 	char *param, record[GMT_BUFSIZ] = {""};
 
-	if (GMT_Init_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		return (GMT->parent->error);
 	}
-	if (GMT_Begin_IO (GMT->parent, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
+	if (GMT_Begin_IO (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
 		return (GMT->parent->error);	/* Enables data output and sets access mode */
 	}
 	if (GMT_Set_Geometry (GMT->parent, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
@@ -11167,7 +11167,6 @@ bool geo;
 			break;
 
 		case GMT_IS_DATASET:
-		case GMT_IS_TEXTSET:
 			for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 				if (opt->option != GMT_OPT_INFILE) continue;	/* Look for input files we can append to new list */
 				if ((tmp = GMT_Make_Option (API, GMT_OPT_INFILE, opt->arg)) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)

@@ -432,7 +432,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 				m = row;
 			}
 			/* Readjust the row allocation for the current output segment */
-			Sout = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, m, Din->n_columns, NULL, Tout->segment[seg]);
+			Sout = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, m, Din->n_columns, NULL, Tout->segment[seg]);
 			if (resample_path) {	/* Use resampled path coordinates */
 				gmt_M_memcpy (Sout->data[GMT_X], lon, m, double);
 				gmt_M_memcpy (Sout->data[GMT_Y], lat, m, double);

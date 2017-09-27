@@ -1336,7 +1336,7 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 			for (seg = k = 0; k < np; k++) {	/* For each line segment from GSHHS */
 				if (p[k].n == 0) continue;	/* One of the ones to skip anyway */
 				/* Allocate segment to hold this line segment and memcpy over the coordinates */
-				S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, p[k].n, 2U, NULL, NULL);
+				S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, p[k].n, 2U, NULL, NULL);
 				gmt_M_memcpy (S->data[GMT_X], p[k].lon, S->n_rows, double);
 				gmt_M_memcpy (S->data[GMT_Y], p[k].lat, S->n_rows, double);
 				D->table[tbl]->segment[seg++] = S;	/* Hook onto dataset structure */

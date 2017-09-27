@@ -355,7 +355,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		}
 		else {	/* Return the data points also */
 			/* Place the header in the output data structure */
-			T[seg_no] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, dim[GMT_ROW], dim[GMT_COL], header, NULL);
+			T[seg_no] = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, dim[GMT_ROW], dim[GMT_COL], header, NULL);
 			if (h.id == 0)	/* Special longitude range for Eurasia since it crosses Greenwich and Dateline */
 				T[seg_no]->range = GMT_IS_M180_TO_P270_RANGE;
 			else if (h.id == 4)	/* Special longitude range for Antarctica since it crosses Greenwich and Dateline */

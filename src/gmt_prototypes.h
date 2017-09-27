@@ -262,7 +262,6 @@ EXTERN_MSC int gmt_alloc_datasegment (struct GMT_CTRL *GMT, struct GMT_DATASEGME
 EXTERN_MSC void gmt_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **segment);
 EXTERN_MSC void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table);
 EXTERN_MSC void gmt_free_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET **data);
-EXTERN_MSC int gmt_alloc_textsegment (struct GMT_CTRL *GMT, struct GMT_TEXTSEGMENT *S, uint64_t n_rows);
 EXTERN_MSC void gmt_ascii_format_one (struct GMT_CTRL *GMT, char *text, double x, unsigned int type);
 
 EXTERN_MSC struct GMT_VECTOR *gmt_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns, unsigned int direction);
@@ -282,7 +281,6 @@ EXTERN_MSC void gmt_check_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct
 EXTERN_MSC void gmt_init_io_columns (struct GMT_CTRL *GMT, unsigned int dir);
 EXTERN_MSC bool gmt_input_is_bin (struct GMT_CTRL *GMT, const char *filename);
 EXTERN_MSC bool gmt_skip_output (struct GMT_CTRL *GMT, double *cols, uint64_t n_cols);
-EXTERN_MSC void gmt_set_textset_minmax (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D);
 
 /* gmt_M_memory.c: */
 

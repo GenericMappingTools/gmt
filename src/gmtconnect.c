@@ -261,7 +261,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	bool save_type = false, first, wrap_up = false, done, closed, *skip = NULL;
 
-	unsigned int nearest_end[2][2], j, n_qfiles = 0, end_order;
+	unsigned int nearest_end[2][2], j, n_qfiles = 0, end_order, smode = GMT_NO_STRINGS;
 	unsigned int io_mode = GMT_WRITE_SET, q_mode = GMT_WRITE_SET, d_mode = 0, ii, end;
 
 	size_t n_seg_alloc[2] = {0, 0}, n_alloc_pts, b_alloc = GMT_BUFSIZ, b_len = 0, len;
@@ -414,8 +414,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			distance = gmt_distance (GMT, S->data[GMT_X][0], S->data[GMT_Y][0], S->data[GMT_X][np-1], S->data[GMT_Y][np-1]);
 			if (np > 2 && distance <= closed_dist) {	/* Already a closed segment, just write out and forget in the rest of the program */
 				/* Allocate space for this segment */
+				smode = (S->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				n_rows = (Ctrl->C.active && distance > 0.0) ? np + 1 : np;	/* Add one extra row if closure is not exact */
-				T[CLOSED][out_seg] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_rows, n_columns, S->header, NULL);
+				T[CLOSED][out_seg] = GMT_Alloc_Segment (GMT->parent, smode, n_rows, n_columns, S->header, NULL);
 				if (Ctrl->D.active) {	/* Write closed polygons to individual files */
 					(save_type) ? sprintf (buffer, Ctrl->D.format, 'C', out_seg) : sprintf (buffer, Ctrl->D.format, out_seg);
 					T[CLOSED][out_seg]->file[GMT_OUT] = strdup (buffer);	/* Assign the name of this segment-file */
@@ -432,7 +433,8 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			}
 			else if (Ctrl->C.active) {	/* NOT closed: Copy this open segment to the separate output dataset */
 				/* Allocate space for this segment */
-				T[OPEN][n_open] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, np, n_columns, S->header, NULL);
+				smode = (S->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
+				T[OPEN][n_open] = GMT_Alloc_Segment (GMT->parent, smode, np, n_columns, S->header, NULL);
 				(void) Copy_This_Segment (S, T[OPEN][n_open], 0, 0, np-1);		/* Duplicate input to output */
 				n_open++;	/* Number of open segments placed in T[OPEN] so far */
 			}
@@ -744,7 +746,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		/* This id should be the beginning of a segment.  Now trace forward and dump out the chain */
 
 		/* Get a new segment structure with enough rows */
-		T[CLOSED][out_seg] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_alloc_pts, n_columns, NULL, NULL);
+		T[CLOSED][out_seg] = GMT_Alloc_Segment (GMT->parent, smode, n_alloc_pts, n_columns, NULL, NULL);
 
 		if (n_steps_pass_1 == 1) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Connect %s -> none [1 segment]\n", buffer);
@@ -827,7 +829,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		if (n_steps_pass_2 != n_steps_pass_1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Trouble: Pass 1 found %" PRIu64 " while pass 2 found %" PRIu64 " connections!\n", n_steps_pass_1, n_steps_pass_2);
 		}
-		if (n_seg_length < n_alloc_pts) T[OPEN][out_seg] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_seg_length, n_columns, NULL, T[OPEN][out_seg]);	/* Trim memory allocation */
+		if (n_seg_length < n_alloc_pts) T[OPEN][out_seg] = GMT_Alloc_Segment (GMT->parent, smode, n_seg_length, n_columns, NULL, T[OPEN][out_seg]);	/* Trim memory allocation */
 
 		if (doubleAlmostEqualZero (p_first_x, p_last_x) && doubleAlmostEqualZero (p_first_y, p_last_y)) {	/* Definitively closed polygon resulting from connections */
 			GMT_Report (API, GMT_MSG_VERBOSE, "New closed segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, n_steps_pass_2);

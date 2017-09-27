@@ -1004,7 +1004,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 
 int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	int error = 0;
-	unsigned int geometry = GMT_IS_POLY, internal = 0, external = 0;
+	unsigned int geometry = GMT_IS_POLY, internal = 0, external = 0, smode = GMT_NO_STRINGS;
 	bool mseg = false;
 
 	static char *kind[2] = {"CCW", "CW"};
@@ -1197,7 +1197,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			if (GMT->common.R.active[RSET]) {
 				int geo = gmt_M_is_geographic (GMT, GMT_IN) ? 1 : 0;
 				double info[3], d_expect, R_index;
-				struct GMT_DATASEGMENT *S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, 5, 2, NULL, NULL);
+				struct GMT_DATASEGMENT *S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 5, 2, NULL, NULL);
 				S->data[GMT_X][0] = S->data[GMT_X][3] = S->data[GMT_X][4] = GMT->common.R.wesn[XLO];
 				S->data[GMT_X][1] = S->data[GMT_X][2] = GMT->common.R.wesn[XHI];
 				S->data[GMT_Y][0] = S->data[GMT_Y][1] = S->data[GMT_Y][4] = GMT->common.R.wesn[YLO];
@@ -1369,7 +1369,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						n_alloc_seg = (n_seg == 0) ? D->n_segments : (n_alloc_seg < 1);
 						Dout->table[0]->segment = gmt_M_memory (GMT, Dout->table[0]->segment, n_alloc_seg, struct GMT_DATASEGMENT *);
 					}
-					Sout = GMT_Alloc_Segment (API, GMT_IS_DATASET, S->n_rows, S->n_columns, line, NULL);
+					smode = (S->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
+					Sout = GMT_Alloc_Segment (API, smode, S->n_rows, S->n_columns, line, NULL);
 					for (col = 0; col < S->n_columns; col++) gmt_M_memcpy (Sout->data[col], S->data[col], S->n_rows, double);
 					Dout->table[0]->segment[n_seg] = Sout;
 					if (Ctrl->Q.sort) Q[n_seg].value = out[GMT_Z], Q[n_seg].order = n_seg;
@@ -1643,7 +1644,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			C = D;	/* Compare with itself */
 			same_feature = true;
 			from = in;
-			S2 = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, 0, C->n_columns, NULL, NULL);
+			smode = (C->table[0]->segment[0]->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
+			S2 = GMT_Alloc_Segment (GMT->parent, smode, 0, C->n_columns, NULL, NULL);
 		}
 			
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
@@ -1752,7 +1754,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					S->mode = GMT_WRITE_SKIP;
 					continue;
 				}
-				if (np > S->n_rows) S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, np, S->n_columns, NULL, S);
+				smode = (S->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
+				if (np > S->n_rows) S = GMT_Alloc_Segment (GMT->parent, smode, np, S->n_columns, NULL, S);
 				for (p = 0; p < np; p++) gmt_xy_to_geo (GMT, &cp[GMT_X][p], &cp[GMT_Y][p], cp[GMT_X][p], cp[GMT_Y][p]);
 				for (col = 0; col < 2; col++) {
 					gmt_M_memcpy (S->data[col], cp[col], np, double);

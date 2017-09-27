@@ -21,7 +21,7 @@
  * Rerun gmt_make_enum_dicts.sh after adding or changing enums.
  *
  * Author:      Paul Wessel
- * Date:        26-July-2017
+ * Date:        27-September-2017
  * Version:     6 API
  */
 
@@ -30,7 +30,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 213
+#define GMT_N_API_ENUMS 217
 
 GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -121,7 +121,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_IO_TABLE_HEADER", 1},
 	{"GMT_IO_UNREG", 16384},
 	{"GMT_IS_COL_FORMAT", 1},
-	{"GMT_IS_COORD", 8},
+	{"GMT_IS_COORD", 7},
 	{"GMT_IS_DATASET", 0},
 	{"GMT_IS_DUPLICATE", 3},
 	{"GMT_IS_FDESC", 2},
@@ -129,7 +129,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_IS_GRID", 1},
 	{"GMT_IS_HOLE", 1},
 	{"GMT_IS_LINE", 2},
-	{"GMT_IS_MATRIX", 6},
+	{"GMT_IS_MATRIX", 5},
 	{"GMT_IS_NONE", 16},
 	{"GMT_IS_OUTPUT", 1024},
 	{"GMT_IS_PALETTE", 3},
@@ -141,9 +141,11 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_IS_ROW_FORMAT", 0},
 	{"GMT_IS_STREAM", 1},
 	{"GMT_IS_SURFACE", 8},
-	{"GMT_IS_TEXTSET", 5},
-	{"GMT_IS_VECTOR", 7},
+	{"GMT_IS_VECTOR", 6},
 	{"GMT_LAX_CONVERSION", 2048},
+	{"GMT_LOG_OFF", 0},
+	{"GMT_LOG_ONCE", 1},
+	{"GMT_LOG_SET", 2},
 	{"GMT_LONG", 6},
 	{"GMT_MODULE_CMD", 0},
 	{"GMT_MODULE_EXIST", -3},
@@ -161,7 +163,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_NOERROR", 0},
 	{"GMT_NOTSET", -1},
 	{"GMT_NO_COLORNAMES", 8},
-	{"GMT_N_FAMILIES", 9},
+	{"GMT_N_FAMILIES", 8},
 	{"GMT_N_TYPES", 12},
 	{"GMT_OPT_INFILE", 60},
 	{"GMT_OPT_OUTFILE", 62},
@@ -222,9 +224,11 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_VIA_ULONG", 800},
 	{"GMT_VIA_USHORT", 400},
 	{"GMT_VIA_VECTOR", 128},
+	{"GMT_WITH_STRINGS", 32},
 	{"GMT_WRITE_DATA", 0},
 	{"GMT_WRITE_DOUBLE", 0},
 	{"GMT_WRITE_HEADER", 1},
+	{"GMT_WRITE_MIXED", 2},
 	{"GMT_WRITE_NOLF", 16},
 	{"GMT_WRITE_NORMAL", 0},
 	{"GMT_WRITE_OGR", 1},

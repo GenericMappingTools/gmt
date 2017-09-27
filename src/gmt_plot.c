@@ -3406,7 +3406,7 @@ GMT_LOCAL void plot_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B,
 	step = GMT->current.map.path_step;		/* Use default map-step if given as 0 */
 	n = lrint (ceil (fabs (rot) / step)) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
 	step = D2R * rot / (n - 1);			/* Adjust step for exact fit, convert to radians */
-	L = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, 2*n+1, 2, NULL, NULL);	/* Allocate polygon to draw filled path */
+	L = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 2*n+1, 2, NULL, NULL);	/* Allocate polygon to draw filled path */
 	n2 = 2*n-1;
 	gmtlib_init_rot_matrix (R0, C->P);			/* Get partial rotation matrix since no actual angle is applied yet */
 	for (k = 0; k < n; k++) {	/* March along the arc */
@@ -4696,7 +4696,7 @@ void gmt_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
 			uint64_t np;
 			int outline;
 			double *lon = NULL, *lat = NULL;
-			struct GMT_DATASEGMENT *S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, 0, 2, NULL, NULL);	/* Just get empty array pointers */
+			struct GMT_DATASEGMENT *S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 0, 2, NULL, NULL);	/* Just get empty array pointers */
 			np = gmt_graticule_path (GMT, &lon, &lat, 1, false, B->wesn[XLO], B->wesn[XHI], B->wesn[YLO], B->wesn[YHI]);
 			S->data[GMT_X] = lon;	S->data[GMT_Y] = lat;
 			S->n_rows = np;
@@ -5363,14 +5363,14 @@ int gmt_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	/* Save the lon, lat, angle, text for each annotation to specified file*/
 
 	kind = gmt_M_is_geographic (GMT, GMT_IN);
-	if ((G->Out = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+	if ((G->Out = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create a textset\n");
 		return (GMT_MEMORY_ERROR);	/* Establishes data output */
 	}
 	/* Write lon, lat, angle, label record */
 	sprintf (record, "# %s%s%s%sangle%slabel", xname[kind], GMT->current.setting.io_col_separator, yname[kind],
 		GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
-	GMT_Set_Comment (GMT->parent, GMT_IS_TEXTSET, GMT_COMMENT_IS_TEXT | GMT_COMMENT_IS_COMMAND, record, G->Out);
+	GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_TEXT | GMT_COMMENT_IS_COMMAND, record, G->Out);
 	for (seg = 0; seg < G->n_segments; seg++) {
 		L = G->segment[seg];	/* Pointer to current segment */
 		if (!L->annot || L->n_labels == 0) continue;
@@ -6665,7 +6665,7 @@ void gmt_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major
 	/* Approximate ellipse by a N-sided polygon */
 
 	delta_azimuth = 2.0 * M_PI / N;
-	S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, N+1, 2, NULL, NULL);
+	S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, N+1, 2, NULL, NULL);
 	px = S->data[GMT_X];	py = S->data[GMT_Y];
 
 	for (i = 0; i < N; i++)
@@ -6723,7 +6723,7 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 	if (mode > 1) n_path++;		/* Add apex */
 	if (mode == 3) n_path++;	/* Closed polygon */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Wedge will be approximated by %d-sided polygon\n", n_path);
-	S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_path, 2, NULL, NULL);	/* Add space for apex and explicitly close it */
+	S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, n_path, 2, NULL, NULL);	/* Add space for apex and explicitly close it */
 	rot_start = -az_start;	/* Since we have a right-handed rotation but gave azimuths */
 	d_az = -d_az;		/* Same reason */
 	for (k = kk = 0; k < n_arc; k++, kk++) {

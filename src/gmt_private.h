@@ -74,8 +74,8 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 struct GMTAPI_DATA_OBJECT {
 	/* Information for each input or output data entity, including information
 	 * needed while reading/writing from a table (file or array) */
-	uint64_t rec;				/* Current rec to read [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VECTOR only] */
-	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VECTOR only] */
+	uint64_t rec;				/* Current rec to read [GMT_DATASET to/from MATRIX/VECTOR only] */
+	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET to/from MATRIX/VECTOR only] */
 	uint64_t n_columns;			/* Number of columns to process in this dataset [GMT_DATASET only] */
 	uint64_t n_expected_fields;		/* Number of expected columns for this dataset [GMT_DATASET only] */
 	uint64_t delay;				/* Number of leading NaN-records we oculd not write initially before knowning the row dim */
@@ -108,7 +108,6 @@ struct GMTAPI_DATA_OBJECT {
 	/* Start of temporary variables for API debug - They are only set when building with /DEBUG */
 	struct GMT_GRID *G;
 	struct GMT_DATASET *D;
-	struct GMT_TEXTSET *T;
 	struct GMT_PALETTE *C;
 	struct GMT_POSTSCRIPT *P;
 	struct GMT_MATRIX *M;
@@ -166,8 +165,6 @@ struct GMTAPI_CTRL {
 	uint64_t current_put_n_columns;
 	/*   Items used by api_put_record_dataset */
 	struct GMT_DATATABLE *current_put_D_table;
-	/*   Items used by api_put_record_textset */
-	struct GMT_TEXTTABLE *current_put_T_table;
 	/*   Items used by api_put_record_matrix */
 	struct GMT_MATRIX *current_put_M;
 	p_func_uint64_t current_put_M_index;
@@ -181,8 +178,6 @@ struct GMTAPI_CTRL {
 	bool get_next_record;
 	/*   Items used by api_get_record_dataset */
 	struct GMT_DATASET *current_get_D_set;
-	/*   Items used by api_get_record_dataset */
-	struct GMT_TEXTSET *current_get_T_set;
 	/*   Items used by api_get_record_matrix */
 	struct GMT_MATRIX *current_get_M;
 	p_func_uint64_t current_get_M_index;
