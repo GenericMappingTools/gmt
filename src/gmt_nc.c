@@ -298,6 +298,14 @@ GMT_LOCAL void gmtnc_put_units (int ncid, int varid, char *name_units) {
 	}
 	if (name[0]) nc_put_att_text (ncid, varid, "long_name", strlen(name), name);
 	if (units[0]) nc_put_att_text (ncid, varid, "units", strlen(units), units);
+	if (strstr(units, "degrees_east")) {
+		nc_put_att_text (ncid, varid, "standard_name", 9, "longitude");
+		nc_put_att_text (ncid, varid, "axis", 1, "X");
+	}
+	else if (strstr(units, "degrees_north")) {
+		nc_put_att_text (ncid, varid, "standard_name", 8, "latitude");
+		nc_put_att_text (ncid, varid, "axis", 1, "Y");
+	}
 }
 
 GMT_LOCAL void gmtnc_check_step (struct GMT_CTRL *GMT, uint32_t n, double *x, char *varname, char *file) {
@@ -512,9 +520,12 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		if (GMT->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic) {
 			/* set chunk size */
 			gmt_M_err_trap (nc_def_var_chunking (ncid, z_id, NC_CHUNKED, GMT->current.setting.io_nc4_chunksize));
-			/* set deflation level and shuffle for z variable */
-			if (GMT->current.setting.io_nc4_deflation_level)
+			/* set deflation level and shuffle for x, y, and z variable */
+			if (GMT->current.setting.io_nc4_deflation_level) {
+				gmt_M_err_trap (nc_def_var_deflate (ncid, ids[1], true, true, GMT->current.setting.io_nc4_deflation_level));
+				gmt_M_err_trap (nc_def_var_deflate (ncid, ids[0], true, true, GMT->current.setting.io_nc4_deflation_level));
 				gmt_M_err_trap (nc_def_var_deflate (ncid, z_id, true, true, GMT->current.setting.io_nc4_deflation_level));
+			}
 		} /* GMT->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic */
 	} /* if (job == 'r' || job == 'u') */
 	header->z_id = z_id;
@@ -611,13 +622,13 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			header->z_min = dummy[0], header->z_max = dummy[1];
 		}
 		{
-			/* get deflation and chunking info */
+			/* Get deflation and chunking info */
 			int storage_mode, shuffle, deflate, deflate_level;
 			size_t chunksize[5]; /* chunksize of z */
 			gmt_M_err_trap (nc_inq_var_chunking (ncid, z_id, &storage_mode, chunksize));
 			if (storage_mode == NC_CHUNKED) {
-				header->z_chunksize[0] = chunksize[dims[0]]; /* chunk size of lat */
-				header->z_chunksize[1] = chunksize[dims[1]]; /* chunk size of lon */
+				header->z_chunksize[0] = chunksize[dims[0]]; /* chunk size in vertical dimension */
+				header->z_chunksize[1] = chunksize[dims[1]]; /* chunk size in horizontal dimension */
 			}
 			else { /* NC_CONTIGUOUS */
 				header->z_chunksize[0] = header->z_chunksize[1] = 0;
@@ -666,9 +677,9 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		const int *nc_vers = gmtnc_netcdf_libvers();
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "netCDF Library version: %d\n", *nc_vers);
 		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_NC_CONVENTION), GMT_NC_CONVENTION));
-		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
+		if (header->title[0]) gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
 		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(header->command), header->command));
-		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(header->remark), header->remark));
+		if (header->remark[0]) gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(header->remark), header->remark));
 		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "GMT_version", strlen(GMT_VERSION), (const char *) GMT_VERSION));
 		if (header->registration == GMT_GRID_PIXEL_REG) {
 			int reg = header->registration;

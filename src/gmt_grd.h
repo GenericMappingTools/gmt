@@ -36,7 +36,7 @@
 #define _GMT_GRID_H
 
 /* netcdf convention */
-#define GMT_NC_CONVENTION "COARDS, CF-1.5"
+#define GMT_NC_CONVENTION "CF-1.7"
 
 enum GMT_enum_grdtype {	/* Used in gmt_grdio.c and gmt_nc.c */
 	/* Special cases of geographic grids with periodicity */

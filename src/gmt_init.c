@@ -8815,13 +8815,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.io_nc4_chunksize[0] = k_netcdf_io_chunked_auto;
 			else if (*lower_value == 'c') /* classic */
 				GMT->current.setting.io_nc4_chunksize[0] = k_netcdf_io_classic;
-			else if ((i = sscanf (value, "%" SCNuS " , %" SCNuS, /* chunk size: lat,lon */
+			else if ((i = sscanf (value, "%" SCNuS " , %" SCNuS, /* Chunk size: vert,hor */
 			         &GMT->current.setting.io_nc4_chunksize[0], &GMT->current.setting.io_nc4_chunksize[1])) > 0) {
-				if (i == 1) /* use chunk size of lat for long as well */
+				if (i == 1) /* Use chunk size for both horizontal and vertical dimension */
 					GMT->current.setting.io_nc4_chunksize[1] = GMT->current.setting.io_nc4_chunksize[0];
 				if (GMT->current.setting.io_nc4_chunksize[0] <= k_netcdf_io_chunked_auto ||
 				    GMT->current.setting.io_nc4_chunksize[1] <= k_netcdf_io_chunked_auto)
-					/* chunk size too small */
+					/* Chunk size too small */
 					error = true;
 			}
 			else
@@ -11844,7 +11844,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			opt->arg = file;
 		}
 	}
-	
+
 	/* Here we can call the rest of the initialization */
 
 	return (gmt_begin_module_sub (API, lib_name, mod_name, Ccopy));
@@ -13921,6 +13921,7 @@ unsigned int gmtlib_get_pos_of_filename (const char *url) {
 	pos--;	/* Last character in name */
 	while (url[pos] && pos > 0 && url[pos] != '/') pos--;	/* Wind to first slash */
 	if (url[pos] == '/') pos++;	/* First letter after last slash */
+	if (url[pos] == '@') pos++;	/* Step over leading @ for cache files */
 	return (unsigned int)pos;
 }
 

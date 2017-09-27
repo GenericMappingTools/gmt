@@ -583,14 +583,15 @@ fonts can be found in the :doc:`gmt` man page.
 .. _IO_NC4_CHUNK_SIZE:
 
 **IO_NC4_CHUNK_SIZE**
-    Sets the default chunk size for the **lat** and **lon** dimension of
+    Sets the default chunk size for the vertical (**lat**, **y**) and
+    horizontal (**lon**, **x**) dimensions of
     the **z** variable. Very large chunk sizes and sizes smaller than
     128 should be avoided because they can lead to unexpectedly bad
     performance. Note that a chunk of a single precision floating point
     variable of size 2896x2896 completely fills the chunk cache of
-    32MiB. Specify the chunk size for each dimension separated by a
+    32 MiB. Specify the chunk size for each dimension separated by a
     comma, or **a**\ uto for optimally chosen chunk sizes in the range
-    [128,256). Setting IO_NC4_CHUNK_SIZE will produce netCDF version 4
+    [128,256). Setting **IO_NC4_CHUNK_SIZE** will produce netCDF version 4
     files, which can only be read with the netCDF 4 library, unless all
     dimensions are less than 128 or **c**\ lassic is specified for
     classic netCDF. [auto]
