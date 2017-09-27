@@ -419,7 +419,7 @@ GMT_LOCAL void smart_increments (struct GMT_CTRL *GMT, double inc[], unsigned in
 
 int GMT_grdinfo (void *V_API, int mode, void *args) {
 	int error = 0;
-	unsigned int n_grds = 0, o_type = GMT_IS_TEXTSET, n_cols = 0, col, i_status;
+	unsigned int n_grds = 0, n_cols = 0, col, i_status;
 	bool subset, delay;
 
 	uint64_t ij, n_nan = 0, n = 0;
@@ -473,7 +473,6 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	delay = (Ctrl->D.mode == 1 || (Ctrl->T.mode & 2));	/* Delay the freeing of the (single) grid we read */
 	
 	if (Ctrl->C.active) {
-		if (API->external) o_type = GMT_IS_DATASET;	/* With external interface we are returning doubles */
 		n_cols = 6;	/* w e s n z0 z1 */
 		if (!Ctrl->I.active) {
 			n_cols += 4;				/* Add dx dy n_columns n_rows */
@@ -483,10 +482,10 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			if (Ctrl->L.norm & 4) n_cols += 2;	/* Add mode lmsscale */
 		}
 	}
-	if (GMT_Init_IO (API, o_type, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, o_type, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */

@@ -772,14 +772,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_pscoupe (void *V_API, int mode, void *args) {
-	int ix, iy, n_rec = 0, n_plane_old = 0, form = 0, error, k, n_k;
+	int ix, iy, n_rec = 0, n_plane_old = 0, form = 0, error, n_k;
 	int i, transparence_old = 0, not_defined = 0;
 	FILE *pnew = NULL, *pext = NULL;
 
 	double size, xy[2], plot_x, plot_y, angle = 0.0, n_dep, distance, fault, depth;
-	double P_x, P_y, T_x, T_y;
+	double P_x, P_y, T_x, T_y, *in = NULL;
 
-	char event_title[GMT_BUFSIZ] = {""}, *p = NULL, col[15][GMT_LEN64];
+	char event_title[GMT_BUFSIZ] = {""};
 
 	st_me meca, mecar;
 	struct MOMENT moment;
@@ -814,7 +814,6 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (&meca, 1, meca);
 	gmt_M_memset (&moment, 1, moment);
-	gmt_M_memset (col, GMT_LEN64*15, char);
 
 	if (Ctrl->Z.active) {
 		if ((CPT = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->Z.file, NULL)) == NULL) {
@@ -842,10 +841,10 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);    iy = 1 - ix;
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 
@@ -870,7 +869,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 		n_k = 3;
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((In = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_MIXED, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				fclose (pnew);
 				fclose (pext);
@@ -885,60 +884,20 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 		/* Data record to process */
 
+		in = In->data;
 		n_rec++;
 		size = Ctrl->S.scale;
 
-		if (Ctrl->S.readmode == READ_CMT) {
-			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
-				col[0], col[1], col[2], col[3], col[4], col[5], col[6],
-				col[7], col[8], col[9], col[10], col[11], col[12], event_title);
-			if (strlen (event_title) <= 0) sprintf (event_title,"\n");
-		}
-		else if (Ctrl->S.readmode == READ_AKI) {
-			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %[^\n]\n",
-				col[0], col[1], col[2], col[3], col[4], col[5], col[6],
-				col[7], col[8], event_title);
-			if (strlen (event_title) <= 0) sprintf (event_title,"\n");
-		}
-		else if (Ctrl->S.readmode == READ_PLANES) {
-			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %s %[^\n]\n",
-				col[0], col[1], col[2], col[3], col[4], col[5], col[6],
-				col[7], col[8], col[9], event_title);
-			if (strlen (event_title) <= 0) sprintf (event_title,"\n");
-		}
-		else if (Ctrl->S.readmode == READ_AXIS) {
-			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
-				col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7],
-				col[8], col[9], col[10], col[11], col[12], col[13], col[14], event_title);
-			if (strlen (event_title) <= 0) sprintf (event_title,"\n");
-		}
-		else if (Ctrl->S.readmode == READ_TENSOR) {
-			sscanf (In->text, "%s %s %s %s %s %s %s %s %s %s %s %s %[^\n]\n",
-				col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7],
-				col[8], col[9], col[10], col[11], event_title);
-			if (strlen (event_title) <= 0) sprintf (event_title,"\n");
-		}
-		else if (gmt_M_is_zero (Ctrl->S.scale)) {
-			sscanf (In->text, "%s %s %s %s %[^\n]\n", col[0], col[1], col[2], col[3], event_title);
-			size = gmt_M_to_inch (GMT, col[3]);
-		}
-		else
-			sscanf (In->text, "%s %s %s %[^\n]\n", col[0], col[1], col[2], event_title);
+		strcpy (event_title, In->text);
+		if (strlen (event_title) <= 0) sprintf (event_title,"\n");
+		depth = in[2];
 
- 		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ',')) != NULL) *p = '\0';	/* Chop of trailing command from input field deliminator */
-
-		if ((gmt_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (gmt_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skip)\n", n_rec);
-			continue;
-		}
-		depth = atof (col[2]);
-
-		if (!dans_coupe (xy[0], xy[1], depth, Ctrl->A.xlonref, Ctrl->A.ylatref, Ctrl->A.fuseau, Ctrl->A.PREF.str,
+		if (!dans_coupe (in[GMT_X], in[GMT_Y], depth, Ctrl->A.xlonref, Ctrl->A.ylatref, Ctrl->A.fuseau, Ctrl->A.PREF.str,
 			Ctrl->A.PREF.dip, Ctrl->A.p_length, Ctrl->A.p_width, &distance, &n_dep) && !Ctrl->N.active)
 			continue;
 
-		xy[0] = distance;
-		xy[1] = n_dep;
+		xy[GMT_X] = distance;
+		xy[GMT_Y] = n_dep;
 
 		if (!Ctrl->N.active) {
 			gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
@@ -951,40 +910,40 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 		if (Ctrl->S.symbol) {
 			if (!Ctrl->Q.active) {
-				fprintf (pnew, "%f %f %f %s\n", distance, n_dep, depth, col[3]);
+				fprintf (pnew, "%f %f %f %f\n", distance, n_dep, depth, in[3]);
 				fprintf (pext, "%s\n", In->text);
 			}
 			gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
 			PSL_plotsymbol (PSL, plot_x, plot_y, &size, Ctrl->S.symbol);
 		}
 		else if (Ctrl->S.readmode == READ_CMT) {
-			meca.NP1.str = atof (col[3]);
-			meca.NP1.dip = atof (col[4]);
-			meca.NP1.rake = atof (col[5]);
-			meca.NP2.str = atof (col[6]);
-			meca.NP2.dip = atof (col[7]);
-			meca.NP2.rake = atof (col[8]);
-			moment.mant = atof (col[9]);
-			moment.exponent = atoi (col[10]);
-			if (moment.exponent == 0) meca.magms = atof (col[9]);
+			meca.NP1.str    = in[3];
+			meca.NP1.dip    = in[4];
+			meca.NP1.rake   = in[5];
+			meca.NP2.str    = in[6];
+			meca.NP2.dip    = in[7];
+			meca.NP2.rake   = in[8];
+			moment.mant     = in[9];
+			moment.exponent = irint (in[10]);
+			if (moment.exponent == 0) meca.magms = in[9];
 			rot_meca (meca, Ctrl->A.PREF, &mecar);
 		}
 		else if (Ctrl->S.readmode == READ_AKI) {
-			meca.NP1.str = atof (col[3]);
-			meca.NP1.dip = atof (col[4]);
-			meca.NP1.rake = atof (col[5]);
-			meca.magms = atof (col[6]);
-			moment.mant = meca.magms;
+			meca.NP1.str    = in[3];
+			meca.NP1.dip    = in[4];
+			meca.NP1.rake   = in[5];
+			meca.magms      = in[6];
+			moment.mant     = meca.magms;
 			moment.exponent = 0;
 			meca_define_second_plane (meca.NP1, &meca.NP2);
 			rot_meca (meca, Ctrl->A.PREF, &mecar);
 		}
 		else if (Ctrl->S.readmode == READ_PLANES) {
-			meca.NP1.str = atof (col[3]);
-			meca.NP1.dip = atof (col[4]);
-			meca.NP2.str = atof (col[5]);
-			fault = atof (col[6]);
-			meca.magms = atof (col[7]);
+			meca.NP1.str = in[3];
+			meca.NP1.dip = in[4];
+			meca.NP2.str = in[5];
+			fault        = in[6];
+			meca.magms   = in[7];
 
 			moment.exponent = 0;
 			moment.mant = meca.magms;
@@ -1005,20 +964,20 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 		}
 		else if (Ctrl->S.readmode == READ_AXIS) {
-			T.val = atof (col[3]);
-			T.str = atof (col[4]);
-			T.dip = atof (col[5]);
-			T.e = atoi (col[12]);
+			T.val = in[3];
+			T.str = in[4];
+			T.dip = in[5];
+			T.e = irint (in[12]);
 
-			N.val = atof (col[6]);
-			N.str = atof (col[7]);
-			N.dip = atof (col[8]);
-			N.e = atoi (col[12]);
+			N.val = in[6];
+			N.str = in[7];
+			N.dip = in[8];
+			N.e = irint (in[12]);
 
-			P.val = atof (col[9]);
-			P.str = atof (col[10]);
-			P.dip = atof (col[11]);
-			P.e = atoi (col[12]);
+			P.val = in[9];
+			P.str = in[10];
+			P.dip = in[12];
+			P.e = irint (in[12]);
 
 /*
 F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998, p.167.
@@ -1046,8 +1005,8 @@ Definition of scalar moment.
 			if (Ctrl->S.plotmode == PLOT_DC || Ctrl->T.active) meca_axe2dc (Tr, Pr, &meca.NP1, &meca.NP2);
 		}
 		else if (Ctrl->S.readmode == READ_TENSOR) {
-			for (i = 3; i < 9; i++) mt.f[i-3] = atof (col[i]);
-			mt.expo = atoi (col[i]);
+			for (i = 3; i < 9; i++) mt.f[i-3] = in[i];
+			mt.expo = irint (in[i]);
 
 			moment.exponent = mt.expo;
 /*

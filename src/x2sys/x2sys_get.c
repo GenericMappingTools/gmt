@@ -359,7 +359,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		gmt_M_free (GMT, y_match);
 		gmt_M_free (GMT, n_match);
 		gmt_M_free (GMT, in_bin_flag);
@@ -368,7 +368,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		x2sys_end (GMT, s);
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		gmt_M_free (GMT, y_match);
 		gmt_M_free (GMT, n_match);
 		gmt_M_free (GMT, in_bin_flag);

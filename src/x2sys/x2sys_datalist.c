@@ -151,13 +151,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, str
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'I':
-				if ((Ctrl->I.active = gmt_check_filearg (GMT, 'I', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
+				if ((Ctrl->I.active = gmt_check_filearg (GMT, 'I', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->I.file = strdup (opt->arg);
 				else
 					n_errors++;
 				break;
 			case 'L':	/* Crossover correction table */
-				if ((Ctrl->L.active = gmt_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
+				if ((Ctrl->L.active = gmt_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->L.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -228,7 +228,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	int error = 0, this_col, xpos = -1, ypos = -1, tpos = -1;
 	bool cmdline_files, gmt_formatting = false, skip, *adj_col = NULL;
-	unsigned int ocol, bad, n_data_col_out = 0, k, n_ignore = 0, o_mode;
+	unsigned int ocol, bad, n_data_col_out = 0, k, n_ignore = 0;
 	uint64_t row, trk_no, n_tracks;
 
 	double **data = NULL, *out = NULL, correction = 0.0, aux_dvalue[N_GENERIC_AUX];
@@ -409,7 +409,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		if (s->info[s->out_order[ocol]].format[0] != '-') gmt_formatting = true;
 	}
 
-	if (GMT->common.b.active[GMT_OUT]) gmt_formatting = false;		/* The above lime might very well had set it to true */
+	if (GMT->common.b.active[GMT_OUT]) gmt_formatting = false;		/* The above line might very well had set it to true */
 
 	if (GMT->common.R.active[RSET]) {	/* Restrict output to given domain */
 		if (xpos == -1 || ypos == -1) {
@@ -437,14 +437,13 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Disabling text formatting for external interface\n");
 		gmt_formatting = false;
 	}
-	o_mode = (gmt_formatting) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
-	if (GMT_Init_IO (API, o_mode, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		x2sys_end (GMT, s);
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
 	gmt_set_cols (GMT, GMT_OUT, s->n_out_columns);
-	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		x2sys_end (GMT, s);
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);

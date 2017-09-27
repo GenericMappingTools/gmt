@@ -898,11 +898,11 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	/* Write correction table */
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		error = API->error;
 		goto END;
 	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		error = API->error;
 		goto END;
 	}

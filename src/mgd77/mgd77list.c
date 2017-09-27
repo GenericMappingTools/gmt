@@ -749,7 +749,6 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	
 	uint64_t rec, prevrec;
 	
-	enum GMT_enum_family family;
 	enum GMT_enum_geometry geometry;
 
 	bool negative_depth = false, negative_msd = false, need_distances, need_time;
@@ -1020,14 +1019,12 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	if (strstr (Ctrl->F.flags, "id") || strstr (Ctrl->F.flags, "ngdcid") || strstr (Ctrl->F.flags, "sln")
 	    || strstr (Ctrl->F.flags, "sspn") || strstr (Ctrl->F.flags, "date") || strstr (Ctrl->F.flags, "recno"))
 		string_output = true;
-
-	family = (string_output) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
 	
 	geometry = (string_output) ? GMT_IS_NONE : GMT_IS_POINT;
-	if (GMT_Init_IO (API, family, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, family, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */

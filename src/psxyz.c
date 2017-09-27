@@ -496,17 +496,15 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	bool polygon, penset_OK = true, not_line, old_is_world;
 	bool get_rgb, read_symbol, clip_set = false, fill_active;
 	bool default_outline, outline_active, save_u = false, geovector = false;
-	unsigned int k, j, geometry, tbl, pos2x, pos2y, set_type;
+	unsigned int k, j, geometry, tbl, pos2x, pos2y;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
-	unsigned int bcol, ex1, ex2, ex3, change, n_needed, read_mode;
+	unsigned int bcol, ex1, ex2, ex3, change, n_needed;
 	int error = GMT_NOERROR;
 
 	uint64_t i, n, n_total_read = 0;
 	size_t n_alloc = 0;
 
-	char *text_rec = NULL, s_args[GMT_BUFSIZ] = {""};
-
-	void *record = NULL;	/* Opaque pointer to either a text or double record */
+	char s_args[GMT_BUFSIZ] = {""};
 
 	double dim[PSL_MAX_DIMS], rgb[3][4] = {{-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}};
 	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL;
@@ -682,21 +680,12 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		Return (error);
 	}
 
-	if (read_symbol) {	/* If symbol info is given we must process text records */
-		set_type = GMT_IS_TEXTSET;
-		read_mode = GMT_READ_TEXT;
-	}
-	else {	/* Here we can process data records (ASCII or binary) */
-		set_type = GMT_IS_DATASET;
-		read_mode = GMT_READ_DATA;
-	}
-	in = GMT->current.io.curr_rec;
-
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
 		bool periodic = false, delayed_unit_scaling[2] = {false, false};
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
 		double in2[7] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		double xpos[2], width, d;
+		struct GMT_RECORD *In = NULL;
 		
 		/* Determine if we need to worry about repeating periodic symbols */
 		if (clip_set && (Ctrl->N.mode == PSXYZ_CLIP_REPEAT || Ctrl->N.mode == PSXYZ_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_is_geographic (GMT, GMT_IN)) {
@@ -705,10 +694,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (S.symbol == GMT_SYMBOL_GEOVECTOR) periodic = false;
 		}
 		n_times = (periodic) ? 2 : 1;	/* For periodic boundaries we plot each symbol twice to allow for periodic clipping */
-		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, set_type, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
 		gmt_set_meminc (GMT, GMT_BIG_CHUNK);	/* Only a sizeable amount of PSXZY_DATA structures when we initially allocate */
@@ -733,9 +722,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		}
 		
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
+		if (S.read_symbol_cmd) GMT->current.io.read_mixed = true;	/* Must prepare for a rough ride */
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
-			if ((record = GMT_Get_Record (API, read_mode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -762,24 +752,11 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 			/* Data record to process */
 
+			in = In->data;
 			n_total_read++;
 
 			if (read_symbol) {	/* Must do special processing */
-				text_rec = (char *)record;
-				/* First establish the symbol type given at the end of the record */
-				gmt_chop (text_rec);	/* Get rid of \n \r */
-				i = (unsigned int)strlen (text_rec);
-				if (i == 0) continue;	/* A blank line snuck through */
-				i--;
-				while (text_rec[i] && !strchr (" \t", (int)text_rec[i])) i--;
-				gmt_parse_symbol_option (GMT, &text_rec[i+1], &S, 1, false);
-				for (j = n_cols_start; j < 7; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
-				for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
-				/* Now convert the leading text items to doubles; col_type[GMT_IN] might have been updated above */
-				if (gmt_conv_intext2dbl (GMT, text_rec, 7U)) {	/* Max 7 columns needs to be parsed */
-					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skipped)\n", n_total_read);
-					continue;
-				}
+				gmt_parse_symbol_option (GMT, In->text, &S, 1, false);
 				if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC) {	/* One of the vector symbols */
 					if (S.v.status & PSL_VEC_OUTLINE2) {
 						current_pen = S.v.pen, Ctrl->W.active = true;	/* Override -W (if set) with specified pen */

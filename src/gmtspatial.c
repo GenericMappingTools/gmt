@@ -1415,7 +1415,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->I.active || external) {	/* Crossovers between polygons */
 		bool same_feature, wrap;
-		unsigned int in, wtype;
+		unsigned int in;
 		uint64_t tbl1, tbl2, col, nx, row, seg1, seg2;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
 		struct GMT_XOVER XC;
@@ -1448,15 +1448,14 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		else
 			C = D;	/* Compare with itself */
 		
-		wtype    = (Ctrl->S.active) ? GMT_IS_DATASET : GMT_IS_TEXTSET;
 		geometry = (Ctrl->S.active) ? GMT_IS_PLP     : GMT_IS_NONE;
-		if (wtype == GMT_IS_DATASET && (error = gmt_set_cols (GMT, GMT_OUT, C->n_columns)) != GMT_NOERROR) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, C->n_columns)) != GMT_NOERROR) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, wtype, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, wtype, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		if (GMT_Set_Geometry (API, GMT_OUT, geometry) != GMT_NOERROR) {	/* Sets output geometry */
@@ -1647,11 +1646,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			S2 = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, 0, C->n_columns, NULL, NULL);
 		}
 			
-		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 			gmt_free_segment (GMT, &S2);
 			Return (API->error);	/* Registers default output destination, unless already set */
 		}
-		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
 			gmt_free_segment (GMT, &S2);
 			Return (API->error);				/* Enables data output and sets access mode */
 		}
@@ -1786,10 +1785,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		if (Ctrl->N.mode == 1) {	/* Just report on which polygon contains each feature */
-			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 				Return (API->error);
 			}
-			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 				Return (API->error);
 			}
 			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */

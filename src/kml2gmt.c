@@ -105,7 +105,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)))
+				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;

@@ -349,7 +349,7 @@ GMT_LOCAL double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *
 
 int GMT_fitcircle (void *V_API, int mode, void *args) {
 	bool greenwich = false;
-	unsigned int imin, imax, nrots, j, k, n, np, o_mode, n_cols = 0, col = 0;
+	unsigned int imin, imax, nrots, j, k, n, np, n_cols = 0, col = 0;
 	int error = 0;
 	uint64_t i, n_data;
 	size_t n_alloc;
@@ -429,9 +429,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-	o_mode = (Ctrl->F.active) ? GMT_IS_DATASET : GMT_IS_TEXTSET;
-
-	if (GMT_Init_IO (API, o_mode, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
 	if (Ctrl->F.active) {	/* Must determine number of output columns for this single record */
@@ -446,7 +444,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */

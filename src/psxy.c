@@ -319,7 +319,7 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		else	/* Make unique file in current dir */
 			sprintf (tmp_file2, "GMT_symbol%d.txt", (int)getpid());
 		sprintf (buffer, "-R -J -O -K -SK%s %s", tmp_file, tmp_file2);
-		GMT_Set_Comment (GMT->parent, GMT_IS_TEXTSET, GMT_COMMENT_IS_TEXT | GMT_COMMENT_IS_COMMAND, buffer, D);
+		GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_TEXT | GMT_COMMENT_IS_COMMAND, buffer, D);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary data file for decorated lines saved: %s\n", tmp_file2);
 		gmt_set_tableheader (GMT, GMT_OUT, true);	/* We need to ensure we write the header here */
 		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_RESET, NULL, tmp_file2, D) != GMT_NOERROR) {

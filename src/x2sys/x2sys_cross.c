@@ -167,7 +167,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct
 			/* Processes program-specific parameters */
 			
 			case 'A':	/* Get list of approved filepair combinations to check */
-				if ((Ctrl->A.active = gmt_check_filearg (GMT, 'A', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
+				if ((Ctrl->A.active = gmt_check_filearg (GMT, 'A', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->A.file = strdup (opt->arg);
 				else
 					n_errors++;

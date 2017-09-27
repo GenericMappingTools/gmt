@@ -208,7 +208,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'I':
-				if ((Ctrl->I.active = gmt_check_filearg (GMT, 'I', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
+				if ((Ctrl->I.active = gmt_check_filearg (GMT, 'I', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->I.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -216,7 +216,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 			case 'L':	/* Crossover correction table */
 				Ctrl->L.active = true;
 				if (opt->arg[0]) {
-					if (gmt_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_TEXTSET))
+					if (gmt_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_DATASET))
 						Ctrl->L.file = strdup (opt->arg);
 					else
 						n_errors++;
@@ -308,7 +308,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	bool external = true;	/* false if only internal xovers are needed */
 	uint64_t i, j, k, one, two, n_items, n_tracks;
 	uint64_t p, np_use = 0, nx_use = 0, np, m, nx, *trk_nx = NULL;
-	unsigned int n_weights = 0, coe_kind, n_out, n_output, o_mode;
+	unsigned int n_weights = 0, coe_kind, n_out, n_output;
 	int error = 0, id;
 	double *wesn = NULL, val[2], out[128], corr[2] = {0.0, 0.0}, sec_2_unit = 1.0, w_k, w;
 	double fixed_weight = 1.0, *weights = NULL, *trk_symm = NULL;
@@ -514,15 +514,14 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 		}
 	}
 
-	o_mode = (mixed) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
-	if (GMT_Init_IO (API, o_mode, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		gmt_M_free (GMT, trk_name);
 		gmt_M_free (GMT, trk_nx);
 		gmt_M_free (GMT, weights);
 		Return (API->error);
 	}
 	gmt_set_cols (GMT, GMT_OUT, n_output);
-	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		gmt_M_free (GMT, trk_name);
 		gmt_M_free (GMT, trk_nx);
 		gmt_M_free (GMT, weights);

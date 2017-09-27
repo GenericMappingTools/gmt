@@ -503,10 +503,10 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 	gmt_setfill (GMT, &(Ctrl->F.fill), Ctrl->F.active);
 	PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->M.ech), PSL_CIRCLE);
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 
@@ -523,7 +523,6 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 
 		/* Data record to process */
 
-		for (k = 0; k < (int)strlen (In->text); k++) if (In->text[k] == ',') In->text[k] = ' ';	/* Replace commas with spaces */
 		if (Ctrl->H2.active) {
 			if (Ctrl->S2.active) {
 				n = sscanf (In->text, "%s %s %s %s %lf %lf %c %lf", col[0], col[1], col[2], stacode, &azimut, &ih, col[3], &azS);
