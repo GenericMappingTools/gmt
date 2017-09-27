@@ -605,7 +605,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 			case '<':	/* Input files [Allow for file "=" under API calls] */
 				if (strstr (opt->arg, ".ps-")) halfbaked = true;
 				if (!(GMT->parent->external && !strncmp (opt->arg, "=", 1))) {	/* Can check if file is sane */
-					if (!halfbaked && !gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
+					if (!halfbaked && !gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				}
 				Ctrl->In.n_files++;
 				break;
@@ -620,7 +620,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				strncat (Ctrl->C.arg, opt->arg, GMT_LEN256-1);	/* Append to list of extra GS options */
 				break;
 			case 'D':	/* Change output directory */
-				if ((Ctrl->D.active = gmt_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_TEXTSET)) != 0) {
+				if ((Ctrl->D.active = gmt_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_DATASET)) != 0) {
 					gmt_M_str_free (Ctrl->D.dir);
 					Ctrl->D.dir = strdup (opt->arg);
 				}
@@ -632,7 +632,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				Ctrl->E.dpi = atoi (opt->arg);
 				break;
 			case 'F':	/* Set explicitly the output file name */
-				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_TEXTSET)) != 0) {
+				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_DATASET)) != 0) {
 					Ctrl->F.file = strdup (opt->arg);
 					if (!gmt_M_file_is_memory (Ctrl->F.file)) gmt_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
 				}
@@ -640,7 +640,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 					n_errors++;
 				break;
 			case 'G':	/* Set GS path */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0) {
+				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0) {
 					gmt_M_str_free (Ctrl->G.file);
 					Ctrl->G.file = malloc (strlen (opt->arg)+3);	/* Add space for quotes */
 					sprintf (Ctrl->G.file, "%c%s%c", quote, opt->arg, quote);
@@ -652,7 +652,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				Ctrl->I.active = true;
 				break;
 			case 'L':	/* Give list of files to convert */
-				if ((Ctrl->L.active = gmt_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
+				if ((Ctrl->L.active = gmt_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->L.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -1400,8 +1400,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Multiple files in a file with their names */
 	if (Ctrl->L.active) {
-		struct GMT_TEXTSET *T = NULL;
-		if ((T = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL) {
+		struct GMT_DATASET *T = NULL;
+		if ((T = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL) {
 			gmt_M_free (GMT, line);
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -1409,7 +1409,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		Ctrl->In.n_files = (unsigned int)T->n_records;
 		ps_names = gmt_M_memory (GMT, NULL, T->n_records, char *);
 		for (k = 0; k < T->table[0]->segment[0]->n_rows; k++)	/* Set pointers */
-			ps_names[k] = T->table[0]->segment[0]->data[k];
+			ps_names[k] = T->table[0]->segment[0]->text[k];
 	}
 	else if (Ctrl->In.n_files) {	/* One or more files given on command line */
 		ps_names = gmt_M_memory (GMT, NULL, Ctrl->In.n_files, char *);

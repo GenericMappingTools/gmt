@@ -123,7 +123,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -359,7 +359,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMT_FONT ifont;
 	struct GMT_PEN current_pen;
-	struct GMT_TEXTSET *In = NULL;
+	struct GMT_DATASET *In = NULL;
 	struct GMT_DATASET *D[N_DAT];
 	struct GMT_DATASEGMENT *S[N_DAT];
 	struct GMT_PALETTE *P = NULL;
@@ -397,10 +397,10 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		GMT->current.setting.io_seg_marker[GMT_IN] = '#';
 	}
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
 	}
-	if ((In = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+	if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 
@@ -414,7 +414,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	for (tbl = 0; tbl < In->n_tables; tbl++) {	/* We only expect one table but who knows what the user does */
 		for (seg = 0; seg < In->table[tbl]->n_segments; seg++) {	/* We only expect one segment in each table but again... */
 			for (row = 0; row < In->table[tbl]->segment[seg]->n_rows; row++) {	/* Finally processing the rows */
-				line = In->table[tbl]->segment[seg]->data[row];
+				line = In->table[tbl]->segment[seg]->text[row];
 				if (line[0] == '#' || gmt_is_a_blank_line (line)) continue;	/* Skip all headers or blank lines  */
 
 				/* Data record to process */
@@ -663,7 +663,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	for (tbl = 0; tbl < In->n_tables; tbl++) {	/* We only expect one table but who knows what the user does */
 		for (seg = 0; seg < In->table[tbl]->n_segments; seg++) {	/* We only expect one segment in each table but again... */
 			for (row = 0; row < In->table[tbl]->segment[seg]->n_rows; row++) {	/* Finally processing the rows */
-				line = In->table[tbl]->segment[seg]->data[row];
+				line = In->table[tbl]->segment[seg]->text[row];
 				if (line[0] == '#' || gmt_is_a_blank_line (line)) continue;	/* Skip all headers */
 
 				/* Data record to process */

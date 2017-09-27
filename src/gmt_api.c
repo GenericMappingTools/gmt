@@ -2376,7 +2376,7 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 			break;
 		case GMT_IS_DATASET:	/* Just make sure the min/max values are updated for tables and dataset  */
 		 	D = api_get_dataset_data (data);	/* Get the right dataset pointer */
-			gmtlib_set_dataset_minmax (API->GMT, D);	/* Set the min/max values for the entire dataset */
+			gmt_set_dataset_minmax (API->GMT, D);	/* Set the min/max values for the entire dataset */
 			break;
 		default:	/* Nothing yet for other types */
 			break;
@@ -3698,7 +3698,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 		if (!D_obj->max) D_obj->max = gmt_M_memory (GMT, NULL, D_obj->n_columns, double);
 	}
 	D_obj->geometry = geometry;			/* Since gmtlib_read_table may have changed it */
-	gmtlib_set_dataset_minmax (GMT, D_obj);	/* Set the min/max values for the entire dataset */
+	gmt_set_dataset_minmax (GMT, D_obj);	/* Set the min/max values for the entire dataset */
 	if (!via) API->object[this_item]->resource = D_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
 	return (D_obj);
 }
@@ -3798,7 +3798,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 		gmt_setmode (GMT, GMT_OUT);	/* Windows may need to switch write mode from text to binary */
 #endif
 	}
-	gmtlib_set_dataset_minmax (GMT, D_obj);	/* Update all counters and min/max arrays */
+	gmt_set_dataset_minmax (GMT, D_obj);	/* Update all counters and min/max arrays */
 	D_obj->io_mode = mode;	/* Handles if tables or segments should be written to separate files, according to mode */
 	method = api_set_method (S_obj);	/* Get the actual method to use */
 	switch (method) {	/* File, array, stream, etc. */
@@ -6450,7 +6450,7 @@ GMT_LOCAL int api_end_io_dataset (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 	/* Realloc final number of segments */
 	if (count[GMT_SEG] < (int64_t)T->n_alloc) T->segment = gmt_M_memory (API->GMT, T->segment, T->n_segments, struct GMT_DATASEGMENT *);
 	D->n_segments = T->n_segments;
-	gmtlib_set_dataset_minmax (API->GMT, D);	/* Update the min/max values for this dataset */
+	gmt_set_dataset_minmax (API->GMT, D);	/* Update the min/max values for this dataset */
 	gmtlib_change_dataset (API->GMT, D);		/* Deal with any -o settings */
 	D->n_records = T->n_records = count[GMT_ROW];
 	D->alloc_level = S->alloc_level;	/* Since we are passing it up to the caller */

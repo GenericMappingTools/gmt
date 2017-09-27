@@ -152,7 +152,7 @@ struct GMT_CONTOUR {
 	struct GMT_PEN pen;		/* Pen for drawing textbox outline */
 	struct GMT_PEN line_pen;	/* Pen for drawing the contour line */
 	struct GMT_LABEL **L;		/* Pointers to sorted list of labels */
-	struct GMT_TEXTSET *Out;	/* Textset with positions, angles and labels used in contouring */
+	struct GMT_DATASET *Out;	/* Textset with positions, angles and labels used in contouring */
 	/* Contour line section */
 	
 	struct GMT_CONTOUR_LINE **segment;	/* Array of segments */

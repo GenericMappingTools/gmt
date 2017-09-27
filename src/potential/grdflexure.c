@@ -208,9 +208,9 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 		p[0] = '\0';	/* Chop off the +l modifier */
 	}
 	if (!gmt_access (GMT, arg, F_OK)) {	/* A file with this name exists */
-		struct GMT_TEXTSET *Tin = NULL;
+		struct GMT_DATASET *Tin = NULL;
 		uint64_t seg, row;
-		if ((Tin = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, arg, NULL)) == NULL) {
+		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, arg, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading time file %s\n", arg);
 			return 0;
 		}
@@ -219,7 +219,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 		T = gmt_M_memory (GMT, NULL, n_eval_times, struct GMT_MODELTIME);	/* Array with times */
 		for (seg = 0, k = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
 			for (row = 0; row < Tin->table[0]->segment[seg]->n_rows; row++, k++) {
-				s_time = gmt_get_modeltime (Tin->table[0]->segment[seg]->data[row], &s_unit, &s_scale);
+				s_time = gmt_get_modeltime (Tin->table[0]->segment[seg]->text[row], &s_unit, &s_scale);
 				T[k].value = s_time;
 				T[k].scale = s_scale;
 				T[k].unit  = s_unit;
@@ -799,7 +799,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	struct RHEOLOGY *R = NULL;
 	struct FLX_GRID **Load = NULL, *This_Load = NULL;
 	struct GMT_GRID *Out = NULL;
-	struct GMT_TEXTSET *L = NULL;
+	struct GMT_DATASET *L = NULL;
 	struct GRDFLEXURE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -841,12 +841,12 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		}
 	}
 	else if (Ctrl->In.list) {	/* Must read a list of files and their load times (format: filename loadtime) */
-		struct GMT_TEXTSET *Tin = NULL;
+		struct GMT_DATASET *Tin = NULL;
 		struct GMT_MODELTIME this_time = {0.0, 0.0, 0, 0};
 		uint64_t seg, row;
 		double s_time, s_scale;
 		char t_arg[GMT_LEN256] = {""}, s_unit;
-		if ((Tin = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->In.file, NULL)) == NULL) {
+		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading load file list %s\n", Ctrl->In.file);
 			Return (API->error);
 		}
@@ -855,7 +855,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		Load = gmt_M_memory (GMT, NULL, n_load_times, struct FLX_GRID *);		/* Allocate load grid array structure */
 		for (seg = 0, t_load = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
 			for (row = 0; row < Tin->table[0]->segment[seg]->n_rows; row++, t_load++) {
-				sscanf (Tin->table[0]->segment[seg]->data[row], "%s %s", file, t_arg);
+				sscanf (Tin->table[0]->segment[seg]->text[row], "%s %s", file, t_arg);
 				s_time = gmt_get_modeltime (t_arg, &s_unit, &s_scale);
 				this_time.value = s_time;
 				this_time.scale = s_scale;
@@ -900,7 +900,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active) {	/* Must create a textset to hold names of all output grids */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_eval_times, 0};
 		unsigned int k, j;
-		if ((L = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error creating text set for file %s\n", Ctrl->L.file);
 			if (retain_original) gmt_M_free (GMT, orig_load);
 			Return (GMT_RUNTIME_ERROR);
@@ -1003,13 +1003,13 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			}
 			else
 				sprintf (record, "%s", file);
-			L->table[0]->segment[0]->data[t_eval] = strdup (record);
+			L->table[0]->segment[0]->text[t_eval] = strdup (record);
 			L->table[0]->segment[0]->n_rows++;
 		}
 	}
 
 	error = GMT_NOERROR;
-	if (Ctrl->L.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->L.file, L) != GMT_NOERROR) {
+	if (Ctrl->L.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->L.file, L) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error writing list of grid files to %s\n", Ctrl->L.file);
 		error = API->error;
 	}

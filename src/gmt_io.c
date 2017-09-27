@@ -104,7 +104,7 @@
  * gmtlib_read_texttable
  * gmt_set_seg_minmax
  * gmt_set_tbl_minmax
- * gmtlib_set_dataset_minmax
+ * gmt_set_dataset_minmax
  * gmt_set_textset_minmax
  * gmt_parse_segment_header
  * gmt_extract_label
@@ -6583,7 +6583,7 @@ void gmt_set_tbl_minmax (struct GMT_CTRL *GMT, unsigned int geometry, struct GMT
 }
 
 /*! . */
-void gmtlib_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
+void gmt_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	uint64_t tbl, col;
 	struct GMT_DATATABLE *T = NULL;
 	if (!D) return;	/* No dataset given */
@@ -7717,7 +7717,7 @@ void gmtlib_change_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		D->max = gmt_M_memory (GMT, D->max, GMT->common.o.n_cols, double);
 	}
 	D->n_columns = GMT->common.o.n_cols;	/* New column count */
-	gmtlib_set_dataset_minmax (GMT, D);		/* Update column stats */
+	gmt_set_dataset_minmax (GMT, D);		/* Update column stats */
 }
 
 GMT_LOCAL void gmtio_free_segment_text (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {

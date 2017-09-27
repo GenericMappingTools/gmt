@@ -946,16 +946,17 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot Bopt: [%s]\n", Bopt);
 			
 		if (Ctrl->T.title) {	/* Must call pstext to place the heading */
-			uint64_t dim[3] = {1, 1, 1};	/* A single record */
-			struct GMT_TEXTSET *T = NULL;
-			if ((T = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+			uint64_t dim[4] = {1, 1, 1, 2};	/* A single record */
+			struct GMT_DATASET *T = NULL;
+			if ((T = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Subplot: Unable to allocate a textset\n");
 				Return (error);
 			}
-			sprintf (command, "%g %g %s", 0.5 * width, y_heading, Ctrl->T.title);
-			T->table[0]->segment[0]->data[0] = strdup (command);
+			T->table[0]->segment[0]->data[GMT_X][0] = 0.5 * width;
+			T->table[0]->segment[0]->data[GMT_Y][0] = y_heading;
+			T->table[0]->segment[0]->text[0] = strdup (Ctrl->T.title);
 			T->n_records = T->table[0]->n_records = T->table[0]->segment[0]->n_rows = 1;
-			if (GMT_Open_VirtualFile (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, T, vfile) != GMT_NOERROR) {
+			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, T, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
 			sprintf (command, "-R%g/%g/%g/%g -Jx1i -P -N -F+jBC+f%s %s -X%c%gi -Y%c%gi --GMT_HISTORY=false",

@@ -343,40 +343,36 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					break;
 				}
 				if ((c = strstr (opt->arg, "+l"))) {	/* Gave +l<listofgrids> */
-					struct GMT_TEXTSET *Tin = NULL;
-					char *record = NULL;
-					uint64_t seg, row;
-					if ((Tin = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &c[2], NULL)) == NULL) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Error reading time file %s\n", &c[2]);
+					FILE *fp = NULL;
+					char file[GMT_BUFSIZ] = {""};
+					if ((fp = gmt_fopen (GMT, &c[2], "r")) == NULL) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Error opening list file %s\n", &c[2]);
 						n_errors++;
+						break;
 					}
-					else if ((Tin->n_records + ng) > MAX_GRIDS) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Too many grids given via file %s (max = %d)\n", &c[2], MAX_GRIDS);
-						n_errors++;
-					}
-					else {	/* Process all the grids listed in this text table */
-						char file[GMT_BUFSIZ] = {""};
-						for (seg = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
-							for (row = 0; n_errors == 0 && row < Tin->table[0]->segment[seg]->n_rows; row++) {
-								record = Tin->table[0]->segment[seg]->data[row];
-								gmt_M_memset (file, GMT_BUFSIZ, char);
-								if (sscanf (record, "%s", file) != 1) {
-									GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Could not extract file namke from entry: %s\n", record);
-									n_errors++;
-								}
-								else if (process_one (GMT, file, Ctrl, ng) == 0)
-									n_errors++;
-								else
-									ng++;
-							}
+					/* Process all the grids listed in this text table */
+					while (fgets (file, GMT_BUFSIZ, fp)) {
+						if (file[0] == '#') continue;	/* Skip all headers */
+						if (process_one (GMT, file, Ctrl, ng) == 0)
+							n_errors++;
+						else
+							ng++;
+						if (ng > MAX_GRIDS) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Too many grids given via file %s (max = %d)\n", &c[2], MAX_GRIDS);
+							n_errors++;
 						}
 					}
+					fclose (fp);
 				}
-				else {
+				else {	/* Got a single grid */
 					if (process_one (GMT, opt->arg, Ctrl, ng) == 0)
 						n_errors++;
 					else
 						ng++;
+					if (ng > MAX_GRIDS) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Too many grids given via file %s (max = %d)\n", &c[2], MAX_GRIDS);
+						n_errors++;
+					}
 				}
 				Ctrl->G.active = true;
 				break;

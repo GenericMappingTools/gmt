@@ -2721,12 +2721,14 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 }
 
 /*! . */
-GMT_LOCAL void support_add_decoration (struct GMT_CTRL *GMT, struct GMT_TEXTSEGMENT *S, struct GMT_LABEL *L, struct GMT_DECORATE *G) {
+GMT_LOCAL void support_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_LABEL *L, struct GMT_DECORATE *G) {
 	/* Add a symbol location to the growing segment */
-	char record[GMT_BUFSIZ] = {""};
 	if (S->n_rows == S->n_alloc) {	/* Need more memory for the segment */
+		uint64_t col;
 		S->n_alloc += GMT_SMALL_CHUNK;
-		S->data = gmt_M_memory (GMT, S->data, S->n_alloc, char *);
+		for (col = 0; col < S->n_columns; col++)
+			S->data[col] = gmt_M_memory (GMT, S->data[col], S->n_alloc, double);
+		S->text = gmt_M_memory (GMT, S->text, S->n_alloc, char *);
 	}
 	/* Deal with any justifications or nudging */
 	if (G->nudge_flag) {	/* Must adjust point a bit */
@@ -2738,16 +2740,15 @@ GMT_LOCAL void support_add_decoration (struct GMT_CTRL *GMT, struct GMT_TEXTSEGM
 		L->y += sign * (G->nudge[GMT_X] * s + G->nudge[GMT_Y] * c);
 	}
 	/* Build record with Cartesian (hence col = GMT_Z) "x y angle symbol" since we are using -Jx1i */
-	gmt_add_to_record (GMT, record, L->x, GMT_Z, GMT_IN, 2);
-	gmt_add_to_record (GMT, record, L->y, GMT_Z, GMT_IN, 2);
-	strcat (record, G->size);
-	gmt_add_to_record (GMT, record, L->angle, GMT_Z, GMT_IN, 3);
-	strcat (record, G->symbol_code);
-	S->data[S->n_rows++] = strdup (record);
+	S->data[GMT_X][S->n_rows] = L->x;
+	S->data[GMT_Y][S->n_rows] = L->y;
+	S->data[GMT_Z][S->n_rows] = gmt_M_to_inch (GMT, G->size);
+	S->data[3][S->n_rows] = L->angle;	/* Change this in inches internally instead of string */
+	S->text[S->n_rows++] = strdup (G->symbol_code);
 }
 
 /*! . */
-GMT_LOCAL void support_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, double *yy, uint64_t nn, struct GMT_DECORATE *G, struct GMT_TEXTSET *D, uint64_t seg) {
+GMT_LOCAL void support_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, double *yy, uint64_t nn, struct GMT_DECORATE *G, struct GMT_DATASET *D, uint64_t seg) {
 	/* The xxx, yyy are expected to be projected x/y inches.
 	 * This function is modelled after support_hold_contour_sub but tweaked to deal with
 	 * the placement of psxy-symbols rather that text labels.  This is in most regards
@@ -2760,7 +2761,7 @@ GMT_LOCAL void support_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, dou
 	bool closed;
 	double *track_dist = NULL, *map_dist = NULL, *value_dist = NULL;
 	double dx, dy, width, f, this_dist, step, stept, lon[2], lat[2];
-	struct GMT_TEXTSEGMENT *S = D->table[0]->segment[seg];	/* A single segment */
+	struct GMT_DATASEGMENT *S = D->table[0]->segment[seg];	/* A single segment */
 	struct GMT_LABEL L;	/* Needed to pick up angles */
 	if (nn < 2) return;	/* You, sir, are not a line! */
 
@@ -3607,7 +3608,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		}
 	}
 
-	gmtlib_set_dataset_minmax (GMT, P);	/* Determine min/max for each column */
+	gmt_set_dataset_minmax (GMT, P);	/* Determine min/max for each column */
 
 	/* Free the triangulate arrays that were all allocated internaly */
 	gmt_M_str_free (Out.pointlist);
@@ -9216,7 +9217,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	}
 	gmt_free_table (GMT, D->table[0]);	/* Since we will add our own below */
 	D->table[0] = T;
-	gmtlib_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
+	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
 	return (D);
 }
 
@@ -9231,7 +9232,6 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 	unsigned int error = 0;
 	uint64_t k, i, seg, row, rec;
 	double x, y;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 
 	if (G->spacing && G->dist_kind == 1) {
 		GMT->current.map.dist[GMT_LABEL_DIST].func = GMT->current.map.dist[GMT_CONT_DIST].func;
@@ -9268,15 +9268,18 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		}
 	}
 	else if (G->fixed) {
-		struct GMT_TEXTSET *T = NULL;
-		struct GMT_TEXTSEGMENT *S = NULL;
-		int n_col = 2, n_fields;
-		bool bad_record = false;
+		struct GMT_DATASET *T = NULL;
+		struct GMT_DATASEGMENT *S = NULL;
+		uint64_t n_col = 2;
 		double xy[2];
 		/* Reading this way since file has coordinates and possibly a text label */
-		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {
+		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
+			return (error);
+		}
+		if (T->n_columns < n_col) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Data file %s has only %" PRIu64 " data columns!\n", G->file, n_col);
 			return (error);
 		}
 		G->f_xy[GMT_X] = gmt_M_memory (GMT, NULL, T->n_records, double);
@@ -9284,30 +9287,8 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		for (seg = rec = k = 0; seg < T->table[0]->n_segments; seg++) {
 			S = T->table[0]->segment[seg];	/* Current segment */
 			for (row = 0; row < S->n_rows; row++, rec++) {
-				if (S->data[row][0] == '#' || S->data[row][0] == '>' || S->data[row][0] == '\n') continue;
-				n_fields = sscanf (S->data[row], "%s %s %[^\n]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
-				if (n_fields < n_col) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record with only %d items when %d was expected at line # %"
-					            PRIu64 " in file %s.\n",
-						n_fields, n_col, rec, G->file);
-					continue;
-				}
-				if (gmt_scanf (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &xy[GMT_X]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
-				if (gmt_scanf (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[GMT_Y]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
-				if (bad_record) {
-					GMT->current.io.n_bad_records++;
-					if (GMT->current.io.give_report && (GMT->current.io.n_bad_records == 1)) {	/* Report 1st occurrence */
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Encountered first invalid record near/at line # %" PRIu64 "\n", rec);
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Likely causes:\n");
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n");
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n");
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(3) The -: switch is implied but not set.\n");
-					}
-					continue;
-				}
-				/* Got here if data are OK */
-
-				if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) gmt_M_double_swap (xy[GMT_X], xy[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+				xy[GMT_X] = S->data[GMT_X][row];
+				xy[GMT_Y] = S->data[GMT_Y][row];
 				gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;	/* Outside map region */
 				gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][k], &G->f_xy[GMT_Y][k]);	/* Project -> xy inches */
@@ -9323,7 +9304,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 			gmt_M_free (GMT, G->f_xy[GMT_Y]);
 		}
 		if (GMT_Destroy_Data (GMT->parent, &T) != GMT_NOERROR)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Failed to free TEXTSET allocated to parse %s\n",
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Failed to free DATASET allocated to parse %s\n",
 			            G->flag, G->file);
 	}
 
@@ -9341,7 +9322,6 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 	unsigned int error = 0;
 	uint64_t k, i, seg, row, rec;
 	double x, y;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 
 	gmt_contlabel_free (GMT, G);	/* In case we've been here before */
 
@@ -9396,52 +9376,33 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		}
 	}
 	else if (G->fixed) {
-		struct GMT_TEXTSET *T = NULL;
-		struct GMT_TEXTSEGMENT *S = NULL;
-		int n_col, n_fields;
-		bool bad_record = false;
+		struct GMT_DATASET *T = NULL;
+		struct GMT_DATASEGMENT *S = NULL;
+		uint64_t n_col;
 		double xy[2];
 		/* Reading this way since file has coordinates and possibly a text label */
-		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {
+		n_col = (G->label_type == GMT_LABEL_IS_FFILE) ? 3 : 2;	/* Required number of input columns */
+		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
 			return (error);
 		}
-		n_col = (G->label_type == GMT_LABEL_IS_FFILE) ? 3 : 2;	/* Required number of input columns */
+		if (T->n_columns < n_col) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Data file %s has only %" PRIu64 " data columns!\n", G->file, n_col);
+			return (error);
+		}
 		G->f_xy[GMT_X] = gmt_M_memory (GMT, NULL, T->n_records, double);
 		G->f_xy[GMT_Y] = gmt_M_memory (GMT, NULL, T->n_records, double);
 		if (n_col == 3) G->f_label = gmt_M_memory (GMT, NULL, T->n_records, char *);
 		for (seg = rec = k = 0; seg < T->table[0]->n_segments; seg++) {
 			S = T->table[0]->segment[seg];	/* Curent segment */
 			for (row = 0; row < S->n_rows; row++, rec++) {
-				if (S->data[row][0] == '#' || S->data[row][0] == '>' || S->data[row][0] == '\n') continue;
-				n_fields = sscanf (S->data[row], "%s %s %[^\n]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
-				if (n_fields < n_col) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record with only %d items when %d was expected at line # %" PRIu64 " in file %s.\n",
-						n_fields, n_col, rec, G->file);
-					continue;
-				}
-				if (gmt_scanf (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &xy[GMT_X]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
-				if (gmt_scanf (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[GMT_Y]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
-				if (bad_record) {
-					GMT->current.io.n_bad_records++;
-					if (GMT->current.io.give_report && (GMT->current.io.n_bad_records == 1)) {	/* Report 1st occurrence */
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Encountered first invalid record near/at line # %" PRIu64 "\n", rec);
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Likely causes:\n");
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n");
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n");
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(3) The -: switch is implied but not set.\n");
-					}
-					continue;
-				}
-				/* Got here if data are OK */
-
-				if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) gmt_M_double_swap (xy[GMT_X], xy[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+				xy[GMT_X] = S->data[GMT_X][row];	xy[GMT_Y] = S->data[GMT_Y][row];
 				gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;	/* Outside map region */
 				gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][k], &G->f_xy[GMT_Y][k]);	/* Project -> xy inches */
 				if (n_col == 3)	/* The label part if asked for */
-					G->f_label[k] = strdup (txt_c);
+					G->f_label[k] = strdup (S->text[row]);
 				k++;
 			}
 		}
@@ -9454,7 +9415,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			if (n_col == 3) gmt_M_free (GMT, G->f_label);
 		}
 		if (GMT_Destroy_Data (GMT->parent, &T) != GMT_NOERROR)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Failed to free TEXTSET allocated to parse %s\n",
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Failed to free DATASET allocated to parse %s\n",
 			            G->flag, G->file);
 	}
 
@@ -9795,7 +9756,7 @@ void gmt_hold_contour (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_
 }
 
 /*! . */
-void gmt_decorated_line (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, struct GMT_DECORATE *G, struct GMT_TEXTSET *D, uint64_t seg) {
+void gmt_decorated_line (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, struct GMT_DECORATE *G, struct GMT_DATASET *D, uint64_t seg) {
 	/* The xxx, yyy are expected to be projected x/y inches.
 	 * This function just makes sure that the xxx/yyy are continuous and do not have map jumps.
 	 * If there are jumps we find them and call the main support_decorated_line_sub for each segment
@@ -13814,7 +13775,7 @@ struct GMT_DATASET * gmt_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 		}
 		gmt_M_free (GMT, data);
 	}
-	gmtlib_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
+	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
 
 	return (D);
 }

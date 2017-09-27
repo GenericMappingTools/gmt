@@ -206,7 +206,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_expected_fields, k;
+	unsigned int n_errors = 0;
+	uint64_t n_expected_fields, k;
 	int n;
 	char T1[GMT_LEN32] = {""}, T2[GMT_LEN32] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -426,47 +427,22 @@ GMT_LOCAL double gauss_solver (double in[], double f, double v, bool elliptical)
 	return (phi);
 }
 
-GMT_LOCAL int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, char *record, int n_expected, int rec, bool map, double inv_scale, double *in) {
-	int ix, iy, n_conv, t_col;
+GMT_LOCAL int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, double **data, char **text, uint64_t rec, uint64_t n_expected, bool map, double inv_scale, double *in) {
+	uint64_t col;
 	double s_scale;
-	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], T[5][GMT_LEN64], s_unit;
+	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], s_unit;
+	gmt_M_unused (GMT);
 	
-	n_conv = sscanf (record, "%s %s %lg %lg %s %s %s %s %s", txt_x, txt_y, &in[2], &in[3], T[0], T[1], T[2], T[3], T[4]);
-	if (n_conv < n_expected) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error parsing record %s [Found %d expected %d columns]\n", record, n_conv, n_expected);
-		return 1;
-	}
-	ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
-	if (gmt_scanf (GMT, txt_x, GMT->current.io.col_type[GMT_IN][GMT_X], &in[ix]) == GMT_IS_NAN) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad x coordinate, skipped)\n", rec);
-		return 1;
-	}
-	if (gmt_scanf (GMT, txt_y, GMT->current.io.col_type[GMT_IN][GMT_Y], &in[iy]) == GMT_IS_NAN) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad y coordinate, skipped)\n", rec);
-		return 1;
-	}
-	if (Ctrl->E.active) {	/* Elliptical seamount axes */
-		in[4] = atof (T[0]);
-		in[5] = atof (T[1]);
-		t_col = 2;
-		if (Ctrl->F.mode == TRUNC_FILE) in[6] = atof (T[2]), t_col++;	/* Flattening given via input file */
-		if (Ctrl->T.active) {	/* Force start and stop times to be multiples of the increment */
-			in[n_expected-2] = gmt_get_modeltime (T[t_col++], &s_unit, &s_scale);
-			in[n_expected-1] = gmt_get_modeltime (T[t_col], &s_unit, &s_scale);
-		}
-	}
-	else {
-		t_col = 0;
-		if (Ctrl->F.mode == TRUNC_FILE) in[4] = atof (T[0]), t_col++;	/* Flattening given via input file */
-		if (Ctrl->T.active) {	/* Force start and stop times to be multiples of the increment */
-			in[n_expected-2] = gmt_get_modeltime (T[t_col++], &s_unit, &s_scale);
-			in[n_expected-1] = gmt_get_modeltime (T[t_col], &s_unit, &s_scale);
-		}
+	for (col = 0; col < n_expected; col++) in[col] = data[col][rec];	/* Just copy over this numerical part of the record */
+	if (Ctrl->T.active && text) {	/* Force start and stop times to be multiples of the increment */
+		sscanf (text[rec], "%s %s", txt_x, txt_y);
+		in[n_expected-2] = gmt_get_modeltime (txt_x, &s_unit, &s_scale);
+		in[n_expected-1] = gmt_get_modeltime (txt_y, &s_unit, &s_scale);
 	}
 	
 	if (!map) {	/* Scale horizontal units to meters */
-		in[0] *= inv_scale;
-		in[1] *= inv_scale;
+		in[GMT_X] *= inv_scale;
+		in[GMT_Y] *= inv_scale;
 		if (Ctrl->E.active) {	/* Elliptical seamount axes */
 			in[3] *= inv_scale;
 			in[4] *= inv_scale;
@@ -486,10 +462,10 @@ GMT_LOCAL int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C
 int GMT_grdseamount (void *V_API, int mode, void *args) {
 	int error, scol, srow, scol_0, srow_0;
 	
-	unsigned int n_expected_fields, n_out, nx1, d_mode, row, col, row_0, col_0;
+	unsigned int n_out, nx1, d_mode, row, col, row_0, col_0;
 	unsigned int max_d_col, d_row, *d_col = NULL, t, t_use, build_mode, t0_col = 0, t1_col = 0;
 	
-	uint64_t n_smts = 0, tbl, seg, rec, ij;
+	uint64_t n_expected_fields, n_smts = 0, tbl, seg, rec, ij;
 	
 	bool map = false, periodic = false, replicate, first, empty;
 	
@@ -505,9 +481,9 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	double (*phi_solver) (double in[], double f, double v, bool elliptical);
 	
 	struct GMT_GRID *Grid = NULL;
-	struct GMT_TEXTSET *D = NULL;	/* Pointer to GMT multisegment text table(s) */
-	struct GMT_TEXTSEGMENT *S = NULL;
-	struct GMT_TEXTSET *L = NULL;
+	struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment text table(s) */
+	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_DATASET *L = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct GRDSEAMOUNT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -540,10 +516,10 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 
 	/* Register likely data sources unless the caller has already done so */
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
-	if ((D = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 	switch (Ctrl->C.mode) {
@@ -606,7 +582,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	if (Ctrl->M.active) {	/* Must create textset to hold names of all output grids */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_times, 0};
 		unsigned int k, j;
-		if ((L = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Error creating text set for file %s\n", Ctrl->M.file);
 			gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
 			gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
@@ -626,7 +602,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 			for (rec = 0; rec < S->n_rows; rec++, n_smts++) {
-				if (parse_the_record (GMT, Ctrl, S->data[rec], n_expected_fields, (int)n_smts, map, inv_scale, in)) continue;
+				if (parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
 				for (col = 0; col < n_expected_fields; col++) out[col] = in[col];	/* Copy of record before any scalings */
 				if (Ctrl->E.active) {	/* Elliptical seamount parameters */
 					a = in[3];		/* Semi-major axis */
@@ -703,7 +679,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				for (rec = 0; rec < S->n_rows; rec++,  n_smts++) {
-					if (parse_the_record (GMT, Ctrl, S->data[rec], n_expected_fields, (int)n_smts, map, inv_scale, in)) continue;
+					if (parse_the_record (GMT, Ctrl, S->data, S->text, rec, n_expected_fields, map, inv_scale, in)) continue;
 					
 					if (Ctrl->T.active && (this_user_time >= in[t0_col] || this_user_time < in[t1_col])) continue;	/* Outside time-range */
 					if (gmt_M_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
@@ -905,7 +881,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			}
 			else
 				strcpy (record, file);
-			L->table[0]->segment[0]->data[t_use++] = strdup (record);
+			L->table[0]->segment[0]->text[t_use++] = strdup (record);
 			L->table[0]->segment[0]->n_rows++;
 		}
 		
@@ -929,7 +905,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (Grid->data, data, Grid->header->size, gmt_grdfloat);
 	}
 	if (Ctrl->M.active) L->table[0]->n_records = t_use;
-	if (Ctrl->M.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->M.file, L) != GMT_NOERROR) {
+	if (Ctrl->M.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->M.file, L) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Error writing list of grid files to %s\n", Ctrl->M.file);
 		gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
 		gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);

@@ -202,7 +202,7 @@ EXTERN_MSC int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y
 EXTERN_MSC void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G);
 EXTERN_MSC void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level);
 EXTERN_MSC void gmt_plotcanvas (struct GMT_CTRL *GMT);
-EXTERN_MSC void gmt_add_label_record (struct GMT_CTRL *GMT, struct GMT_TEXTSET *T, double x, double y, double angle, char *label);
+EXTERN_MSC void gmt_add_label_record (struct GMT_CTRL *GMT, struct GMT_DATASET *T, double x, double y, double angle, char *label);
 EXTERN_MSC int gmt_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G);
 EXTERN_MSC int gmt_contlabel_save_end (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G);
 EXTERN_MSC unsigned int gmt_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F);
@@ -215,6 +215,7 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 /* gmt_io.c: */
 
+EXTERN_MSC void gmt_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
 EXTERN_MSC int gmt_scanf_float (struct GMT_CTRL *GMT, char *s, double *val);
 EXTERN_MSC int gmt_remove_file (struct GMT_CTRL *GMT, const char *file);
 EXTERN_MSC int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newfile, unsigned int mode);
@@ -330,7 +331,7 @@ EXTERN_MSC struct GMT_TEXT_SELECTION *gmt_set_text_selection (struct GMT_CTRL *G
 EXTERN_MSC int gmt_flip_justify (struct GMT_CTRL *GMT, unsigned int justify);
 EXTERN_MSC int gmt_get_pair (struct GMT_CTRL *GMT, char *string, unsigned int mode, double par[]);
 EXTERN_MSC void gmt_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *pos, int geo);
-EXTERN_MSC void gmt_decorated_line (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, struct GMT_DECORATE *G, struct GMT_TEXTSET *D, uint64_t seg);
+EXTERN_MSC void gmt_decorated_line (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, struct GMT_DECORATE *G, struct GMT_DATASET *D, uint64_t seg);
 EXTERN_MSC bool gmt_trim_requested (struct GMT_CTRL *GMT, struct GMT_PEN *P);
 EXTERN_MSC unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **x, double **yy, uint64_t *nn, struct GMT_PEN *P);
 EXTERN_MSC void gmt_str_toupper (char *string);

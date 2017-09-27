@@ -326,7 +326,7 @@ GMT_LOCAL void abc_to_xy (double a, double b, double c, double *x, double *y) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC void gmtlib_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
+EXTERN_MSC void gmt_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
 #define PSL_IZ(PSL,z) ((int)lrint ((z) * PSL->internal.dpu))
 
 int GMT_psternary (void *V_API, int mode, void *args) {
@@ -387,7 +387,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 		}
 	}
 	gmt_adjust_dataset (GMT, D, D->n_columns-1);	/* Remove all traces of the extra column */
-	gmtlib_set_dataset_minmax (GMT, D);				/* Update column stats */
+	gmt_set_dataset_minmax (GMT, D);				/* Update column stats */
 	
 	if (Ctrl->M.active) {	/* Just print the converted data and exit */
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, 0, NULL, NULL, D) != GMT_NOERROR) {

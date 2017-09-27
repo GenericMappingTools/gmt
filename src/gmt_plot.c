@@ -5330,28 +5330,25 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 /* Plotting functions related to contours */
 
-void gmt_add_label_record (struct GMT_CTRL *GMT, struct GMT_TEXTSET *T, double x, double y, double angle, char *label) {
+void gmt_add_label_record (struct GMT_CTRL *GMT, struct GMT_DATASET *T, double x, double y, double angle, char *label) {
 	/* Add one record to the output file */
-	char word[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
 	double geo[2];
-	record[0] = 0;	/* Start with blank record */
+	uint64_t col, rec = T->table[0]->segment[0]->n_rows;
+	/* COnvert lon/lat and save x/y */
 	gmt_xy_to_geo (GMT, &geo[GMT_X], &geo[GMT_Y], x, y);
-	gmt_ascii_format_col (GMT, word, geo[GMT_X], GMT_OUT, GMT_X);
-	strcat (record, word);
-	strcat (record, GMT->current.setting.io_col_separator);
-	gmt_ascii_format_col (GMT, word, geo[GMT_Y], GMT_OUT, GMT_Y);
-	strcat (record, word);
-	strcat (record, GMT->current.setting.io_col_separator);
+	T->table[0]->segment[0]->data[GMT_X][rec] = geo[GMT_X];
+	T->table[0]->segment[0]->data[GMT_Y][rec] = geo[GMT_Y];
 	/* Also output the label angle */
-	gmt_ascii_format_col (GMT, word, angle, GMT_OUT, GMT_Z);
-	strcat (record, word);
-	strcat (record, GMT->current.setting.io_col_separator);
-	strncat (record, label, GMT_BUFSIZ-1);
-	T->table[0]->segment[0]->data[T->table[0]->segment[0]->n_rows] = strdup (record);
+	T->table[0]->segment[0]->data[GMT_Z][rec] = angle;
+	/* Then save the label */
+	T->table[0]->segment[0]->text[rec] = strdup (label);
+	/* Increment counter */
 	T->table[0]->segment[0]->n_rows++;
 	if (T->table[0]->segment[0]->n_rows == T->table[0]->segment[0]->n_alloc) {
 		T->table[0]->segment[0]->n_alloc <<= 1;
-		T->table[0]->segment[0]->data = gmt_M_memory (GMT, NULL, T->table[0]->segment[0]->n_alloc, char *);
+		T->table[0]->segment[0]->text = gmt_M_memory (GMT, T->table[0]->segment[0]->text, T->table[0]->segment[0]->n_alloc, char *);
+		for (col = 0; col < T->n_columns; col++)
+			T->table[0]->segment[0]->data[col] = gmt_M_memory (GMT, T->table[0]->segment[0]->data[col], T->table[0]->segment[0]->n_alloc, double);
 	}
 }
 
@@ -5388,8 +5385,8 @@ int gmt_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 
 int gmt_contlabel_save_end (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	/* Finalize this textset and write it out */
-	gmt_set_textset_minmax (GMT, G->Out);
-	if (GMT_Write_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, G->label_file, G->Out) != GMT_NOERROR) {
+	gmt_set_dataset_minmax (GMT, G->Out);
+	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, G->label_file, G->Out) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create/write to file %s\n", G->label_file);
 		return (GMT_ERROR_ON_FOPEN);	/* Establishes data output */
 	}

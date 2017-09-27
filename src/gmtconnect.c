@@ -276,9 +276,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	struct LINK *segment = NULL;
 	struct GMT_DATASET *D[2] = {NULL, NULL}, *C = NULL;
-	struct GMT_TEXTSET *Q = NULL;
+	struct GMT_DATASET *Q = NULL;
 	struct GMT_DATASEGMENT **T[2] = {NULL, NULL}, *S = NULL;
-	struct GMT_TEXTSEGMENT *QT[2] = {NULL, NULL};
+	struct GMT_DATASEGMENT *QT[2] = {NULL, NULL};
 	struct GMTCONNECT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -316,7 +316,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			if (!Ctrl->Q.file) Ctrl->Q.file = strdup ("gmtconnect_list.txt");	/* Default -Q list name if none was given */
 			dim_tscr[GMT_TBL] = n_qfiles = (strstr (Ctrl->Q.file, "%c")) ? 2 : 1;	/* Build one or two tables (closed and open) */
 			/* Allocate one or two tables with 1 segment each */
-			if ((Q = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
+			if ((Q = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for segment lists\n");
 				gmt_M_free (GMT, buffer);
 				Return (API->error);
@@ -329,16 +329,16 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				sprintf (buffer, Ctrl->Q.file, 'O');	Q->table[OPEN]->file[GMT_OUT]   = strdup (buffer);
 				QT[OPEN]->n_alloc = QT[CLOSED]->n_alloc = GMT_CHUNK;	/* Initial allocation sizes */
 				QT[CLOSED] = Q->table[CLOSED]->segment[0];		/* Shorthand for segments in closed polygon list */
-				QT[CLOSED]->data = gmt_M_memory (GMT, NULL, QT[CLOSED]->n_alloc, char *);	/* Allocate n_alloc records for now */
+				QT[CLOSED]->text = gmt_M_memory (GMT, NULL, QT[CLOSED]->n_alloc, char *);	/* Allocate n_alloc records for now */
 				QT[OPEN] = Q->table[OPEN]->segment[0];			/* Shorthand for segments in open polygon list */
-				QT[OPEN]->data = gmt_M_memory (GMT, NULL, QT[OPEN]->n_alloc, char *);		/* Allocate n_alloc records for now */
+				QT[OPEN]->text = gmt_M_memory (GMT, NULL, QT[OPEN]->n_alloc, char *);		/* Allocate n_alloc records for now */
 			}
 			else {	/* A single list will do */
 				q_mode = GMT_WRITE_SET;	/* This means write tables to a single file */
 				Q->table[0]->file[GMT_OUT] = strdup (Ctrl->Q.file);
 				QT[OPEN] = QT[CLOSED] = Q->table[0]->segment[0];	/* The two QT pointers point to the same table, which is 0 [OPEN] */
 				QT[OPEN]->n_alloc = GMT_CHUNK;				/* Initial allocation sizes */
-				QT[OPEN]->data = gmt_M_memory (GMT, NULL, QT[OPEN]->n_alloc, char *);		/* Allocate n_alloc records for now */
+				QT[OPEN]->text = gmt_M_memory (GMT, NULL, QT[OPEN]->n_alloc, char *);		/* Allocate n_alloc records for now */
 			}
 		}
 	}
@@ -420,8 +420,8 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 					(save_type) ? sprintf (buffer, Ctrl->D.format, 'C', out_seg) : sprintf (buffer, Ctrl->D.format, out_seg);
 					T[CLOSED][out_seg]->file[GMT_OUT] = strdup (buffer);	/* Assign the name of this segment-file */
 					if (Ctrl->Q.active) {	/* Also maintain list of such files */
-						QT[CLOSED]->data[QT[CLOSED]->n_rows++] = strdup (buffer);
-						if (QT[CLOSED]->n_rows == QT[CLOSED]->n_alloc) QT[CLOSED]->data = gmt_M_memory (GMT, QT[CLOSED]->data, (QT[CLOSED]->n_alloc <<= 1), char *);
+						QT[CLOSED]->text[QT[CLOSED]->n_rows++] = strdup (buffer);
+						if (QT[CLOSED]->n_rows == QT[CLOSED]->n_alloc) QT[CLOSED]->text = gmt_M_memory (GMT, QT[CLOSED]->text, (QT[CLOSED]->n_alloc <<= 1), char *);
 					}
 				}
 				out_p = Copy_This_Segment (S, T[CLOSED][out_seg], 0, 0, np-1);	/* Duplicate input to output */
@@ -487,9 +487,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (Ctrl->Q.active) {	/* Also finalize link file and write it out to 1 or 2 files depending on q_mode */
-			Q->table[CLOSED]->segment[0]->data = gmt_M_memory (GMT, QT[CLOSED]->data, QT[CLOSED]->n_rows, char *);
-			if (n_qfiles == 2) Q->table[OPEN]->segment[0]->data = gmt_M_memory (GMT, QT[OPEN]->data, QT[OPEN]->n_rows, char *);
-			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, q_mode, NULL, Ctrl->Q.file, Q) != GMT_NOERROR) {
+			Q->table[CLOSED]->segment[0]->text = gmt_M_memory (GMT, QT[CLOSED]->text, QT[CLOSED]->n_rows, char *);
+			if (n_qfiles == 2) Q->table[OPEN]->segment[0]->text = gmt_M_memory (GMT, QT[OPEN]->text, QT[OPEN]->n_rows, char *);
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, q_mode, NULL, Ctrl->Q.file, Q) != GMT_NOERROR) {
 				gmt_M_free (GMT, buffer);
 				Return (API->error);
 			}
@@ -606,13 +606,13 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	/* Done determining distances from endpoints to nearest endpoints for all line segments */
 
 	if (Ctrl->L.active) {	/* We can now write out the link information we found */
-		struct GMT_TEXTSET *LNK = NULL;
+		struct GMT_DATASET *LNK = NULL;
 		char name[GMT_BUFSIZ] = {""}, name0[GMT_BUFSIZ] = {""}, name1[GMT_BUFSIZ] = {""}, fmt[GMT_BUFSIZ] = {""};
 		char *pp = NULL, *s = GMT->current.setting.io_col_separator;
 
 		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtconnect_link.txt");	/* Use default output filename since none was provided */
-		dim_tscr[GMT_TBL] = 1;	dim_tscr[GMT_SEG] = 1;	dim_tscr[GMT_ROW] = ns;	/* Dimensions of single output table with single segment of ns rows */
-		if ((LNK = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
+		dim_tscr[GMT_TBL] = 1;	dim_tscr[GMT_SEG] = 1;	dim_tscr[GMT_ROW] = ns;	dim_tscr[GMT_COL] = 0;	/* Dimensions of single output table with single segment of ns rows */
+		if ((LNK = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for link lists\n");
 			gmt_M_free (GMT, buffer);
 			Return (API->error);
@@ -624,7 +624,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		/* Create a single table header */
 		GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output */
 		sprintf (buffer, "#id%ssegid%s@begin%sb_pt%sb_dist%sb_next%s@end%se_pt%se_dist%se_next", s, s, s, s, s, s, s, s, s);
-		if (GMT_Set_Comment (API, GMT_IS_TEXTSET, GMT_COMMENT_IS_COLNAMES, buffer, LNK)) Return (API->error);
+		if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, buffer, LNK)) Return (API->error);
 		for (iseg = 0; iseg < ns; iseg++) {	/* Loop over open segments */
 			G = segment[iseg].group;	L = segment[iseg].pos;	/* Short hand notation */
 			/* If -L is in the segment header, extract the ID from that, else use the input running number as ID */
@@ -647,10 +647,10 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			/* OK, compose the output record using the format and information provided */
 			sprintf (buffer, fmt, segment[iseg].orig_id, name, name0, BE[segment[iseg].buddy[0].end_order], segment[iseg].buddy[0].dist, segment[iseg].buddy[0].next_dist, name1, \
 				BE[segment[iseg].buddy[1].end_order], segment[iseg].buddy[1].dist, segment[iseg].buddy[1].next_dist);
-			LNK->table[0]->segment[0]->data[iseg] = strdup (buffer);
+			LNK->table[0]->segment[0]->text[iseg] = strdup (buffer);
 		}
 		LNK->table[0]->n_records = LNK->table[0]->segment[0]->n_rows = ns;	/* Number of records for this file */
-		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->L.file, LNK) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->L.file, LNK) != GMT_NOERROR) {
 			gmt_M_free (GMT, buffer);
 			Return (API->error);
 		}
@@ -844,8 +844,8 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "New open segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, n_steps_pass_2);
 		}
 		if (Ctrl->Q.active) {	/* Add this polygon info to the info list */
-			QT[d_mode]->data[QT[d_mode]->n_rows++] = strdup (buffer);
-			if (QT[d_mode]->n_rows == QT[d_mode]->n_alloc) QT[d_mode]->data = gmt_M_memory (GMT, QT[d_mode]->data, (QT[d_mode]->n_alloc <<= 1), char *);
+			QT[d_mode]->text[QT[d_mode]->n_rows++] = strdup (buffer);
+			if (QT[d_mode]->n_rows == QT[d_mode]->n_alloc) QT[d_mode]->text = gmt_M_memory (GMT, QT[d_mode]->text, (QT[d_mode]->n_alloc <<= 1), char *);
 		}
 
 		chain++;	/* Number of composite line segments (closed or open) processed via connecting */
@@ -859,9 +859,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	gmt_set_segmentheader (GMT, GMT_OUT, out_seg > 1);	/* Turn on|off segment headers on output */
 	if (Ctrl->Q.active) {	/* Write out the list(s) with individual file names */
-		Q->table[CLOSED]->segment[0]->data = gmt_M_memory (GMT, QT[CLOSED]->data, QT[CLOSED]->n_rows, char *);
-		if (n_qfiles == 2) Q->table[OPEN]->segment[0]->data = gmt_M_memory (GMT, QT[OPEN]->data, QT[OPEN]->n_rows, char *);
-		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, q_mode, NULL, Ctrl->Q.file, Q) != GMT_NOERROR) {
+		Q->table[CLOSED]->segment[0]->text = gmt_M_memory (GMT, QT[CLOSED]->text, QT[CLOSED]->n_rows, char *);
+		if (n_qfiles == 2) Q->table[OPEN]->segment[0]->text = gmt_M_memory (GMT, QT[OPEN]->text, QT[OPEN]->n_rows, char *);
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, q_mode, NULL, Ctrl->Q.file, Q) != GMT_NOERROR) {
 			gmt_M_free (GMT, buffer);
 			Return (API->error);
 		}
