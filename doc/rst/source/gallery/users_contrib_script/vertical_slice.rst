@@ -57,7 +57,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
  # dump slice grid and reproject X
  #
  gmt grd2xyz slice.nc | awk '{print -67.5,$0}' | gmt mapproject -R-75/-60/-50/-40 -JM-67.5/-45/16 | \
-     awk '{print $2,$3,$4}'> points.d
+     awk '{print $2,$3,$4}'> points.txt
  #
  # calculate projected region X-limits
  #
@@ -66,7 +66,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
  #
  # re-grid slice
  #
- gmt surface points.d -Gslice_cut.nc -R$lMin/$lMax/0/999 -I1500+/2000+ -C0.1 -T0.25
+ gmt surface points.txt -Gslice_cut.nc -R$lMin/$lMax/0/999 -I1500+/2000+ -C0.1 -T0.25
  #
  # create CPT
  #
@@ -122,7 +122,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
  #
  gmt psconvert -Tg -Qt4 -Qg4 -E300 -P mag.ps
  #
- rm -f base.nc points.d slice.nc slice_cut.nc gmt.history gmt.conf
+ rm -f base.nc points.txt slice.nc slice_cut.nc gmt.history gmt.conf
 
 .. figure:: images/vertical_slice.png
    :width: 500 px

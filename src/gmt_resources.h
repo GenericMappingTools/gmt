@@ -607,7 +607,7 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 	/* Variables we document for the API: */
 	uint64_t n_tables;		/* The total number of tables (files) contained */
 	uint64_t n_columns;		/* The number of data columns */
-	uint64_t n_segments;	/* The total number of segments across all tables */
+	uint64_t n_segments;		/* The total number of segments across all tables */
 	uint64_t n_records;		/* The total number of data records across all tables */
 	double *min;			/* Minimum coordinate for each column */
 	double *max;			/* Maximum coordinate for each column */
@@ -616,8 +616,9 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 	uint64_t id;			/* The internal number of the data set */
 	size_t n_alloc;			/* The current allocation length of tables */
 	uint64_t dim[4];		/* Only used by GMT_Duplicate_Data to override dimensions */
-	unsigned int geometry;	/* The geometry of this dataset */
 	unsigned int alloc_level;	/* The level it was allocated at */
+	enum GMT_enum_read type;	/* The datatype (numerical, text, or mixed) of this dataset */
+	enum GMT_enum_geometry geometry;/* The geometry of this dataset */
 	enum GMT_enum_write io_mode;	/* -1 means write OGR format (requires proper -a),
 					 * 0 means write everything to one destination [Default],
 					 * 1 means use table->file[GMT_OUT] to write separate table,

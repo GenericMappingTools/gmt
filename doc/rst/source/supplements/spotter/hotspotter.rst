@@ -145,11 +145,11 @@ Examples
 --------
 
 To create a CVA image from the Pacific (x,y,z,r,t) data in the file
-seamounts.d, using the DC85.d Euler poles, run
+seamounts.txt, using the DC85.txt Euler poles, run
 
    ::
 
-    gmt hotspotter seamounts.d -EDC85.d -GCVA.nc -R130/260/-66/60 -I10m -N145 -T -V
+    gmt hotspotter seamounts.txt -EDC85.txt -GCVA.nc -R130/260/-66/60 -I10m -N145 -T -V
 
 This file can then be plotted with :doc:`grdimage </grdimage>`.
 

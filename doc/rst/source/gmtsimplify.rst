@@ -94,18 +94,18 @@ Optional Arguments
 Examples
 --------
 
-To reduce the geographic line segment.d using a tolerance of 2 km, run
+To reduce the geographic line segment.txt using a tolerance of 2 km, run
 
    ::
 
-    gmt simplify segment.d -T2k > new_segment.d
+    gmt simplify segment.txt -T2k > new_segment.txt
 
-To reduce the Cartesian lines xylines.d using a tolerance of 0.45 and
-write the reduced lines to file new_xylines.d, run
+To reduce the Cartesian lines xylines.txt using a tolerance of 0.45 and
+write the reduced lines to file new_xylines.txt, run
 
    ::
 
-    gmt simplify xylines.d -T0.45 > new_xylines.d
+    gmt simplify xylines.txt -T0.45 > new_xylines.txt
 
 Notes
 -----

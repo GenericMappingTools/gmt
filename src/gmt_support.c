@@ -9227,7 +9227,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 	 * xyz, if not NULL, have the (x,y,z) min and max values for a grid
 	 */
 
-	/* Prepares decoarte line symbols machinery as needed */
+	/* Prepares decorated line symbols machinery as needed */
 
 	unsigned int error = 0;
 	uint64_t k, i, seg, row, rec;
@@ -9270,16 +9270,16 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 	else if (G->fixed) {
 		struct GMT_DATASET *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
-		uint64_t n_col = 2;
 		double xy[2];
-		/* Reading this way since file has coordinates and possibly a text label */
+		/* File is expected to have x,y coordinates */
+		GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX);
 		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
 			return (error);
 		}
-		if (T->n_columns < n_col) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Data file %s has only %" PRIu64 " data columns!\n", G->file, n_col);
+		if (T->n_columns < 2) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Data file %s has only %" PRIu64 " data columns!\n", G->file, T->n_columns);
 			return (error);
 		}
 		G->f_xy[GMT_X] = gmt_M_memory (GMT, NULL, T->n_records, double);
@@ -9298,14 +9298,14 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		G->f_n = (unsigned int)k;
 		if ((G->f_n = (unsigned int)k) == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Fixed position file %s does not have any data records\n",
-			            G->flag, G->file);
+				G->flag, G->file);
 			error++;
 			gmt_M_free (GMT, G->f_xy[GMT_X]);
 			gmt_M_free (GMT, G->f_xy[GMT_Y]);
 		}
 		if (GMT_Destroy_Data (GMT->parent, &T) != GMT_NOERROR)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Failed to free DATASET allocated to parse %s\n",
-			            G->flag, G->file);
+				G->flag, G->file);
 	}
 
 	return (error);
@@ -9378,22 +9378,25 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 	else if (G->fixed) {
 		struct GMT_DATASET *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
-		uint64_t n_col;
 		double xy[2];
-		/* Reading this way since file has coordinates and possibly a text label */
-		n_col = (G->label_type == GMT_LABEL_IS_FFILE) ? 3 : 2;	/* Required number of input columns */
+		/* Reading this way since file has coordinates and possibly a text label.
+		 * If G->label_type == GMT_LABEL_IS_FFILE then we also have text labels.
+		 * Since those could be numbers we force reading 2 columns and get anything
+		 * beyond that as text. */
+		GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX);
 		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
 			return (error);
 		}
-		if (T->n_columns < n_col) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Data file %s has only %" PRIu64 " data columns!\n", G->file, n_col);
+		if (T->n_columns < 2) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Data file %s has only %" PRIu64 " data columns!\n", G->file, T->n_columns);
 			return (error);
 		}
+		/* Repackage this information into the G structure via f_xy and f_label arrays */
 		G->f_xy[GMT_X] = gmt_M_memory (GMT, NULL, T->n_records, double);
 		G->f_xy[GMT_Y] = gmt_M_memory (GMT, NULL, T->n_records, double);
-		if (n_col == 3) G->f_label = gmt_M_memory (GMT, NULL, T->n_records, char *);
+		if (T->type == GMT_READ_MIXED) G->f_label = gmt_M_memory (GMT, NULL, T->n_records, char *);
 		for (seg = rec = k = 0; seg < T->table[0]->n_segments; seg++) {
 			S = T->table[0]->segment[seg];	/* Curent segment */
 			for (row = 0; row < S->n_rows; row++, rec++) {
@@ -9401,7 +9404,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 				gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;	/* Outside map region */
 				gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][k], &G->f_xy[GMT_Y][k]);	/* Project -> xy inches */
-				if (n_col == 3)	/* The label part if asked for */
+				if (S->text)	/* The label part if asked for */
 					G->f_label[k] = strdup (S->text[row]);
 				k++;
 			}
@@ -9412,7 +9415,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			error++;
 			gmt_M_free (GMT, G->f_xy[GMT_X]);
 			gmt_M_free (GMT, G->f_xy[GMT_Y]);
-			if (n_col == 3) gmt_M_free (GMT, G->f_label);
+			if (G->f_label) gmt_M_free (GMT, G->f_label);
 		}
 		if (GMT_Destroy_Data (GMT->parent, &T) != GMT_NOERROR)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Failed to free DATASET allocated to parse %s\n",

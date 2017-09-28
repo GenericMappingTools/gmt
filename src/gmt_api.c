@@ -3342,7 +3342,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 	 */
 
 	int item, first_item = 0, this_item = GMT_NOTSET, last_item, new_item, new_ID, status;
-	unsigned int geometry = GMT_IS_PLP, n_used = 0, method, smode;
+	unsigned int geometry = GMT_IS_PLP, n_used = 0, method, smode, type = GMT_READ_DATA;
 	bool allocate = false, update = false, diff_types, use_GMT_io, greenwich = true;
 	bool via = false, got_data = false;
 	size_t n_alloc, s_alloc = GMT_SMALL_CHUNK;
@@ -3417,7 +3417,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				}
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE,
 				            "Reading %s from %s %s\n", GMT_family[S_obj->family], GMT_method[S_obj->method], S_obj->filename);
-				if ((D_obj->table[D_obj->n_tables] = gmtlib_read_table (GMT, S_obj->filename, S_obj->method, greenwich, &geometry, use_GMT_io)) == NULL)
+				if ((D_obj->table[D_obj->n_tables] = gmtlib_read_table (GMT, S_obj->filename, S_obj->method, greenwich, &geometry, &type, use_GMT_io)) == NULL)
 					continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
 				D_obj->table[D_obj->n_tables]->id = D_obj->n_tables;	/* Give sequential internal object_ID numbers to tables */
 				D_obj->n_tables++;	/* Since we just read one */
@@ -3435,7 +3435,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 					gmt_M_free (GMT, D_obj);	return_null (API, GMT_OGR_ONE_TABLE_ONLY);
 				}
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading %s from %s %" PRIxS "\n", GMT_family[S_obj->family], GMT_method[S_obj->method], (size_t)S_obj->fp);
-				if ((D_obj->table[D_obj->n_tables] = gmtlib_read_table (GMT, S_obj->fp, S_obj->method, greenwich, &geometry, use_GMT_io)) == NULL) continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
+				if ((D_obj->table[D_obj->n_tables] = gmtlib_read_table (GMT, S_obj->fp, S_obj->method, greenwich, &geometry, &type, use_GMT_io)) == NULL) continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
 				D_obj->table[D_obj->n_tables]->id = D_obj->n_tables;	/* Give sequential internal object_ID numbers to tables */
 				D_obj->n_tables++;	/* Since we just read one */
 				update = true;		/* Have reason to update min/max when done */
@@ -3469,6 +3469,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from user matrix location\n");
 				/* Allocate a table with a single segment given matrix dimensions, but if nan-record we may end up with more segments */
 				smode = (M_obj->text) ? GMT_WITH_STRINGS : 0;
+				if (smode) type = GMT_READ_MIXED;	/* If a matrix has text we have a mixed record */
 				n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : M_obj->n_columns;
 				D_obj->table[D_obj->n_tables] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE);
 				D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *);
@@ -3531,6 +3532,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				            V_obj->n_columns, V_obj->n_rows);
 				/* Allocate a single table with one segment - there may be more if there are nan-records */
 				smode = (V_obj->text) ? GMT_WITH_STRINGS : 0;
+				if (smode) type = GMT_READ_MIXED;	/* If a vector has text we have a mixed record */
 				n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : V_obj->n_columns;
 				D_obj->table[D_obj->n_tables] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE);
 				D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *);
@@ -3592,6 +3594,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				}
 				/* Each column double array source becomes preallocated column arrays in a separate table with a single segment */
 				smode = (V_obj->text) ? GMT_WITH_STRINGS : 0;
+				if (smode) type = GMT_READ_MIXED;	/* If a matrix has text we have a mixed record */
 				n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : V_obj->n_columns;
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table from user %" PRIu64 " column arrays of length %" PRIu64 "\n",
 				            V_obj->n_columns, V_obj->n_rows);
@@ -3667,7 +3670,8 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 		if (!D_obj->min) D_obj->min = gmt_M_memory (GMT, NULL, D_obj->n_columns, double);
 		if (!D_obj->max) D_obj->max = gmt_M_memory (GMT, NULL, D_obj->n_columns, double);
 	}
-	D_obj->geometry = geometry;			/* Since gmtlib_read_table may have changed it */
+	D_obj->geometry = geometry;		/* Since gmtlib_read_table may have changed it */
+	D_obj->type = type;				/* Since gmtlib_read_table may have changed it */
 	gmt_set_dataset_minmax (GMT, D_obj);	/* Set the min/max values for the entire dataset */
 	if (!via) API->object[this_item]->resource = D_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
 	return (D_obj);

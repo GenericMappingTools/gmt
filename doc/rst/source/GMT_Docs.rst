@@ -4268,8 +4268,8 @@ Polish Notation" (RPN) calculator that operates on or creates table data:
 
    ::
 
-      gmt math -T0/100/1  T SQRT = sqrt.d
-      gmt math -T0/100/10 T SQRT = sqrt.d10
+      gmt math -T0/100/1  T SQRT = sqrt.txt
+      gmt math -T0/100/10 T SQRT = sqrt10.txt
 
 Cartesian linear transformation (**-Jx** **-JX**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4314,8 +4314,8 @@ The complete commands given to produce this plot were
 
    ::
 
-    gmt psxy -R0/100/0/10 -JX3i/1.5i -Bag -BWSne+gsnow -Wthick,blue,- -P -K sqrt.d > GMT_linear.ps
-    gmt psxy -R -J -St0.1i -N -Gred -Wfaint -O sqrt.d10 >> GMT_linear.ps
+    gmt psxy -R0/100/0/10 -JX3i/1.5i -Bag -BWSne+gsnow -Wthick,blue,- -P -K sqrt.txt > GMT_linear.ps
+    gmt psxy -R -J -St0.1i -N -Gred -Wfaint -O sqrt10.txt >> GMT_linear.ps
 
 Normally, the user's *x*-values will increase to the right and the
 *y*-values will increase upwards. It should be noted that in many
@@ -4424,8 +4424,8 @@ transformation <GMT_log>`)
    ::
 
     gmt psxy -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque \
-             -Wthick,blue,- -P -K -h sqrt.d > GMT_log.ps
-    gmt psxy -R -J -Ss0.1i -N -Gred -W -O -h sqrt.d10 >> GMT_log.ps
+             -Wthick,blue,- -P -K -h sqrt.txt > GMT_log.ps
+    gmt psxy -R -J -Ss0.1i -N -Gred -W -O -h sqrt10.txt >> GMT_log.ps
 
 Note that if *x*- and *y*-scaling are different and a
 :math:`\log_{10}-\log_{10}` plot is desired, the **l** must be
@@ -4457,8 +4457,8 @@ transformation <GMT_pow>`)
    ::
 
     gmt psxy -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory \
-             -Wthick -P -K sqrt.d > GMT_pow.ps
-    gmt psxy -R -J -Sc0.075i -Ggreen -W -O sqrt.d10 >> GMT_pow.ps
+             -Wthick -P -K sqrt.txt > GMT_pow.ps
+    gmt psxy -R -J -Sc0.075i -Ggreen -W -O sqrt10.txt >> GMT_pow.ps
 
 Linear projection with polar coordinates (**-Jp** **-JP**) :ref:`... <-Jp_full>`
 --------------------------------------------------------------------------------

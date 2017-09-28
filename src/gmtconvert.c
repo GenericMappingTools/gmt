@@ -429,7 +429,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 
 	/* Read in the input tables */
 
-	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 

@@ -3165,13 +3165,20 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			static char *flavor[3] = {"numerical only", "text only", "numerical with trailing text"};
 			GMT->current.io.record_type = gmtio_examine_current_record (GMT, line, &n_cols_this_record);
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Data record scanned: number of numerical columns = %d record type = %s\n", *n, flavor[GMT->current.io.record_type]);
-			if (GMT->current.io.read_mixed)	/* Never finalize # of fields since it can change from rec to rec */
+			if (GMT->current.io.read_mixed) {	/* Never finalize # of fields since it can change from rec to rec */
 				*n = GMT_MAX_COLUMNS;
-			else	/* Happily parsed first record and learned a few things.  Now prevent this block from being executed again for the current data file */
+				strscan = (GMT->current.io.record_type) ? &strsepzp : &strsepz;	/* Need zp scanner to detect trailing text */
+			}
+			else {	/* Happily parsed first record and learned a few things.  Now prevent this block from being executed again for the current data file */
 				GMT->current.io.first_rec = false;
-			if (GMT->current.io.max_cols_to_read)
-				*n = GMT->current.io.max_cols_to_read;
-			strscan = (GMT->current.io.record_type) ? &strsepzp : &strsepz;	/* Need zp scanner to detect trailing text */
+				if (GMT->current.io.max_cols_to_read) {	/* A hard column count is enforced at first record */
+					*n = GMT->current.io.max_cols_to_read;
+					GMT->current.io.record_type = GMT_READ_MIXED;	/* Since otherwise we fail to store the trailing text */
+					strscan = &strsepzp;	/* Need zp scanner to detect anything beyond the fixed colus as trailing text */
+				}
+				else	/* Set scanner based on what record type we detected */
+					strscan = (GMT->current.io.record_type) ? &strsepzp : &strsepz;	/* Need zp scanner to detect trailing text */
+			}
 		}
 
 		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);	/* Gives the actual columns we need (which may > *n if gap checking is active; if gap check we also update prev_rec) */
@@ -3220,8 +3227,10 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				}
 			}
 		}
-		if (start_of_text)	/* Save pointer to start of trailing text portion of the record */
+		if (start_of_text) {	/* Save pointer to start of trailing text portion of the record */
+			while (strchr (GMT_TOKEN_SEPARATORS, GMT->current.io.curr_text[start_of_text])) start_of_text++;	/* First wind to start of trailing text */
 			GMT->current.io.record.text = &GMT->current.io.curr_text[start_of_text];
+		}
 
 		if ((add = gmtio_assign_aspatial_cols (GMT))) {	/* We appended <add> columns given via aspatial OGR/GMT values */
 			col_no += add;
@@ -6728,7 +6737,7 @@ struct GMT_DATASET * gmtlib_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tab
 }
 
 /*! . */
-struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, unsigned int source_type, bool greenwich, unsigned int *geometry, bool use_GMT_io) {
+struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, unsigned int source_type, bool greenwich, unsigned int *geometry, unsigned int *data_type, bool use_GMT_io) {
 	/* Reads an entire data set into a single table in memory with any number of segments */
 
 	bool ASCII, close_file = false, header = true, no_segments, first_seg = true, poly, this_is_poly = false;
@@ -6815,6 +6824,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 		}
 	}
 
+	if (GMT->current.io.record.data == NULL) *data_type = GMT_READ_TEXT;
 	In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);	/* Get first record */
 	n_read++;
 	if (gmt_M_rec_is_eof(GMT)) {
@@ -6915,8 +6925,10 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 					if (!greenwich && GMT->hidden.mem_coord[col][row] < 0.0)  GMT->hidden.mem_coord[col][row] += 360.0;
 				}
 			}
-			if (GMT->current.io.record_type == GMT_READ_MIXED)
+			if (GMT->current.io.record_type == GMT_READ_MIXED) {
 				GMT->hidden.mem_txt[row] = strdup (GMT->current.io.record.text);
+				*data_type = GMT_READ_MIXED;
+			}
 
 			row++;
 			In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status);
@@ -7038,6 +7050,7 @@ struct GMT_DATASET * gmt_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET
 
 	D->n_columns = (n_columns) ? n_columns : Din->n_columns;
 	D->geometry = Din->geometry;
+	D->type = Din->type;
 	D->min = gmt_M_memory (GMT, NULL, D->n_columns, double);
 	D->max = gmt_M_memory (GMT, NULL, D->n_columns, double);
 	if (mode) {	/* Pack everything into a single table */

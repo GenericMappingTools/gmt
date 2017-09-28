@@ -248,6 +248,9 @@ API that are not backwards compatible with GMT 5:
    either input or output.  it is rarely needed but some tools that must only read *N* numerical
    columns and treat anything beyond that as trailing text (even if numbers) must set the
    fixed input columns before reading.
+#. The GMT_DATASET structure has gained a new (hidden) enum GMT_enum_read `type' which indicates what
+   record types were read to produce this dataset (GMT_READ_DATA, GMT_READ_TEXT, GMT_READ_MIXED).
+   We also changed the geometry from unsigned int to enum GMT_enum_geometry.
 
 GMT resources
 -------------
@@ -3460,6 +3463,7 @@ structure per segment.
        uint64_t               id;           /* The internal number of the data set */
        size_t                 n_alloc;      /* The current allocation length of tables */
        uint64_t               dim[4];       /* Used by GMT_Duplicate_Data to override dimensions */
+       unsigned int           type;         /* The data record type of this dataset */
        unsigned int           geometry;     /* The geometry of this dataset */
        unsigned int           alloc_level;  /* The level it was allocated at */
        enum GMT_enum_dest     io_mode;      /* -1: write OGR format (requires proper -a),
