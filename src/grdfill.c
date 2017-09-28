@@ -385,7 +385,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			wesn[YHI] = gmt_M_row_to_y (GMT, limit[YLO], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], 0, Grid->header->n_columns);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Hole BB %u: -R: %g/%g/%g/%g [%u nodes]\n", hole_number, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], n_nodes);
 			if (Ctrl->L.active) {
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, Out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 			else {
 				switch (Ctrl->A.mode) {

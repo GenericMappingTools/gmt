@@ -251,6 +251,8 @@ API that are not backwards compatible with GMT 5:
 #. The GMT_DATASET structure has gained a new (hidden) enum GMT_enum_read `type' which indicates what
    record types were read to produce this dataset (GMT_READ_DATA, GMT_READ_TEXT, GMT_READ_MIXED).
    We also changed the geometry from unsigned int to enum GMT_enum_geometry.
+#. The long obsolete enums GMT_READ_DOUBLE and GMT_WRITE_DOUBLE hav now fully been removed;
+   use GMT_READ_DATA and GMT_WRITE_DATA instead.
 
 GMT resources
 -------------

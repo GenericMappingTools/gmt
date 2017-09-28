@@ -223,22 +223,20 @@ enum GMT_enum_ioset {
 };
 
 enum GMT_enum_read {
-	GMT_READ_DATA	= 0,	/* Read ASCII data record and return double array */
-	GMT_READ_DOUBLE = 0,	/* Read ASCII data record and return double array [obsolete, replaced by GMT_READ_DATA for clarity] */
 	GMT_READ_NORMAL = 0,	/* Normal read mode [Default] */
-	GMT_READ_TEXT	= 1,	/* Read ASCII data record and return text string */
-	GMT_READ_MIXED	= 2,	/* Read ASCII data record and return double array but tolerate conversion errors */
+	GMT_READ_DATA	= 1,	/* Read ASCII data record and return double array */
+	GMT_READ_TEXT	= 2,	/* Read ASCII data record and return text string */
+	GMT_READ_MIXED	= 3,	/* Read ASCII data record and return double array but tolerate conversion errors */
 	GMT_READ_FILEBREAK = 4	/* Add to mode to indicate we want to know when each file end is reached [continuous] */
 };
 
 enum GMT_enum_write {
-	GMT_WRITE_DATA = 0,		/* Write double array to output */
-	GMT_WRITE_DOUBLE = 0,		/* Write double array to output [obsolete, replaced by GMT_WRITE_DATA for clarity] */
-	GMT_WRITE_TEXT = 1,		/* Write ASCII current record to output */
-	GMT_WRITE_MIXED = 2,		/* Write mixed numerical/text record to output */
-	GMT_WRITE_SEGMENT_HEADER = 2,	/* Write segment header record to output */
-	GMT_WRITE_TABLE_HEADER = 3,	/* Write current record as table header to output */
-	GMT_WRITE_TABLE_START = 4,	/* Write common header block to output (optional title + command line) */
+	GMT_WRITE_DATA = 1,		/* Write double array to output */
+	GMT_WRITE_TEXT = 2,		/* Write ASCII current record to output */
+	GMT_WRITE_MIXED = 3,		/* Write mixed numerical/text record to output */
+	GMT_WRITE_TABLE_HEADER = 4,	/* Write current record as table header to output */
+	GMT_WRITE_SEGMENT_HEADER = 8,	/* Write segment header record to output */
+	GMT_WRITE_TABLE_START = 16,	/* Write common header block to output (optional title + command line) */
 	GMT_WRITE_SET = 0,		/* Write all output tables and all their segments to one destination [Default] */
 	GMT_WRITE_OGR = 1,		/* Output OGR/GMT format [Requires proper -a setting] */
 	GMT_WRITE_TABLE = 2,		/* Write each output table and all their segments to separate destinations */
@@ -247,7 +245,7 @@ enum GMT_enum_write {
 	GMT_WRITE_NORMAL = 0,		/* Write header and contents of this entity (table or segment) */
 	GMT_WRITE_HEADER = 1,		/* Only write header and not the contents of this entity (table or segment) */
 	GMT_WRITE_SKIP = 2,		/* Entirely skip this entity on output (table or segment) */
-	GMT_WRITE_NOLF = 16,		/* Do not write LF at end of ASCII record, and not increment output rec number */
+	GMT_WRITE_NOLF = 32,		/* Do not write LF at end of ASCII record, and not increment output rec number */
 	GMT_STRICT_CONVERSION = 1024,	/* Do not convert text to double unless is is viable */
 	GMT_LAX_CONVERSION = 2048	/* Convert text to double if at least one field can be converted */
 };

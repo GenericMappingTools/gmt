@@ -63,9 +63,9 @@ GMT_LOCAL void memory_init_tmp_arrays (struct GMT_CTRL *GMT, size_t n_cols) {
 	/* Initialization of GMT coordinate temp arrays - this is called at most once per GMT session  */
 
 	if (!GMT->hidden.mem_set) {
-		if (n_cols == 0 && GMT->current.io.record_type < GMT_READ_TEXT) n_cols = GMT_INITIAL_MEM_COL_ALLOC;	/* Allocate at least this many */
+		if (n_cols == 0 && (GMT->current.io.record_type & GMT_READ_DATA)) n_cols = GMT_INITIAL_MEM_COL_ALLOC;	/* Allocate at least this many */
 	}
-	if (n_cols) {
+	if (n_cols) {	/* Records have numerical content */
 		size_t col;
 		GMT->hidden.mem_coord  = gmt_M_memory (GMT, GMT->hidden.mem_coord, n_cols, double *);	/* These are all NULL */
 		GMT->hidden.mem_cols = n_cols;	/* How many columns we have initialized */
@@ -74,7 +74,7 @@ GMT_LOCAL void memory_init_tmp_arrays (struct GMT_CTRL *GMT, size_t n_cols) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT memory: Initialize %" PRIuS " temporary column double arrays, each of length : %" PRIuS "\n", GMT->hidden.mem_cols, GMT->hidden.mem_rows);
 		GMT->hidden.mem_rows = GMT_INITIAL_MEM_ROW_ALLOC;
 	}
-	if (GMT->current.io.record_type > GMT_READ_DATA) {
+	if (GMT->current.io.record_type & GMT_READ_TEXT) {	/* For text or mixed records */
 		GMT->hidden.mem_txt = gmt_M_memory (GMT, NULL, GMT_INITIAL_MEM_ROW_ALLOC, char *);
 		GMT->hidden.mem_rows = GMT_INITIAL_MEM_ROW_ALLOC;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT memory: Initialize a temporary column char * array of length : %" PRIuS "\n", GMT->hidden.mem_rows);

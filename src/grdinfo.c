@@ -324,7 +324,7 @@ L_use_it:		row = 0;	/* Get here by goto and use is still true */
 					}
 				}
 				if (GMT->parent->external)	/* External interface */
-					GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
+					GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);
 				else if (Ctrl->C.active) {
 					gmt_ascii_format_col (GMT, record, out[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
 					gmt_ascii_format_col (GMT, text, out[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);

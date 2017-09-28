@@ -403,7 +403,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					out[3] += (double)(D->table[tbl]->n_headers);
 				if (D->n_segments == 1) out[4] -= 1.0;	/* Still unsure about this.  How do we know file actually had a segment header? */
 				out[4] = out[3] + out[1] + out[2];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, Out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				break;
 			case GMT_INFO_TABLEINFO:	/* Virtual data set or individual tables */
 			case GMT_INFO_DATAINFO:
@@ -422,7 +422,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 						out[2] = (double)S->n_rows;
 						out[3] = (double)start_rec;
 						out[4] = (double)(start_rec + S->n_rows - 1);
-						GMT_Put_Record (API, GMT_WRITE_DOUBLE, Out);
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 						start_rec += S->n_rows;
 					}
 				}

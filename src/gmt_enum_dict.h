@@ -21,7 +21,7 @@
  * Rerun gmt_make_enum_dicts.sh after adding or changing enums.
  *
  * Author:      Paul Wessel
- * Date:        27-September-2017
+ * Date:        28-September-2017
  * Version:     6 API
  */
 
@@ -30,7 +30,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 217
+#define GMT_N_API_ENUMS 218
 
 GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -52,6 +52,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_COL_ADD", 1},
 	{"GMT_COL_FIX", 0},
 	{"GMT_COL_SUB", 2},
+	{"GMT_COL_VAR", 3},
 	{"GMT_COMMENT_IS_COLNAMES", 128},
 	{"GMT_COMMENT_IS_COMMAND", 2},
 	{"GMT_COMMENT_IS_MULTISEG", 512},
@@ -141,6 +142,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_IS_ROW_FORMAT", 0},
 	{"GMT_IS_STREAM", 1},
 	{"GMT_IS_SURFACE", 8},
+	{"GMT_IS_TEXT", 32},
 	{"GMT_IS_VECTOR", 6},
 	{"GMT_LAX_CONVERSION", 2048},
 	{"GMT_LOG_OFF", 0},
@@ -163,6 +165,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_NOERROR", 0},
 	{"GMT_NOTSET", -1},
 	{"GMT_NO_COLORNAMES", 8},
+	{"GMT_NO_STRINGS", 0},
 	{"GMT_N_FAMILIES", 8},
 	{"GMT_N_TYPES", 12},
 	{"GMT_OPT_INFILE", 60},
@@ -176,12 +179,11 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_PS_EMPTY", 0},
 	{"GMT_PS_HEADER", 1},
 	{"GMT_PS_TRAILER", 2},
-	{"GMT_READ_DATA", 0},
-	{"GMT_READ_DOUBLE", 0},
+	{"GMT_READ_DATA", 1},
 	{"GMT_READ_FILEBREAK", 4},
-	{"GMT_READ_MIXED", 2},
+	{"GMT_READ_MIXED", 3},
 	{"GMT_READ_NORMAL", 0},
-	{"GMT_READ_TEXT", 1},
+	{"GMT_READ_TEXT", 2},
 	{"GMT_RGB", 0},
 	{"GMT_ROW", 2},
 	{"GMT_SEG", 1},
@@ -225,22 +227,21 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_VIA_USHORT", 400},
 	{"GMT_VIA_VECTOR", 128},
 	{"GMT_WITH_STRINGS", 32},
-	{"GMT_WRITE_DATA", 0},
-	{"GMT_WRITE_DOUBLE", 0},
+	{"GMT_WRITE_DATA", 1},
 	{"GMT_WRITE_HEADER", 1},
-	{"GMT_WRITE_MIXED", 2},
-	{"GMT_WRITE_NOLF", 16},
+	{"GMT_WRITE_MIXED", 3},
+	{"GMT_WRITE_NOLF", 32},
 	{"GMT_WRITE_NORMAL", 0},
 	{"GMT_WRITE_OGR", 1},
 	{"GMT_WRITE_SEGMENT", 3},
-	{"GMT_WRITE_SEGMENT_HEADER", 2},
+	{"GMT_WRITE_SEGMENT_HEADER", 8},
 	{"GMT_WRITE_SET", 0},
 	{"GMT_WRITE_SKIP", 2},
 	{"GMT_WRITE_TABLE", 2},
-	{"GMT_WRITE_TABLE_HEADER", 3},
+	{"GMT_WRITE_TABLE_HEADER", 4},
 	{"GMT_WRITE_TABLE_SEGMENT", 4},
-	{"GMT_WRITE_TABLE_START", 4},
-	{"GMT_WRITE_TEXT", 1},
+	{"GMT_WRITE_TABLE_START", 16},
+	{"GMT_WRITE_TEXT", 2},
 	{"GMT_X", 0},
 	{"GMT_XHI", 1},
 	{"GMT_XLO", 0},

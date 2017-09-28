@@ -868,7 +868,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				}
 				/* Explicitly close the polygon */
 				out[GMT_X] = xx[link[ij]];	out[GMT_Y] = yy[link[ij]];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij]];
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, Out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 		}
 		else if (Ctrl->N.active) {	/* Write table of indices */
