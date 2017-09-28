@@ -6626,7 +6626,7 @@ void gmtlib_assign_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uin
 			S->data[col] = GMT->hidden.mem_coord[col];	/* Pass the pointer */
 			GMT->hidden.mem_coord[col] = NULL;		/* Null this out to start over for next segment */
 		}
-		if (GMT->current.io.record_type == GMT_READ_MIXED) {
+		if (GMT->current.io.record_type > GMT_READ_DATA) {
 			if (n_rows < GMT->hidden.mem_rows)
 				GMT->hidden.mem_txt = gmt_M_memory (GMT, GMT->hidden.mem_txt, n_rows, char *);	/* Trim back */
 			S->text = GMT->hidden.mem_txt;	/* Pass the pointer */
@@ -6639,7 +6639,7 @@ void gmtlib_assign_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uin
 			S->data[col] = gmt_M_memory (GMT, S->data[col], n_rows, double);
 			gmt_M_memcpy (S->data[col], GMT->hidden.mem_coord[col], n_rows, double);
 		}
-		if (GMT->current.io.record_type == GMT_READ_MIXED) {
+		if (GMT->current.io.record_type > GMT_READ_DATA) {
 			uint64_t row;
 			S->text = gmt_M_memory (GMT, S->text, n_rows, char *);
 			for (row = 0; row < n_rows; row++) {
@@ -6694,7 +6694,7 @@ struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segmen
 	T->n_columns = n_columns;
 	if (n_segments) {
 		T->segment = gmt_M_memory (GMT, NULL, n_segments, struct GMT_DATASEGMENT *);
-		for (seg = 0; n_columns && seg < n_segments; seg++) {
+		for (seg = 0; seg < n_segments; seg++) {
 			if ((T->segment[seg] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET|mode, n_rows, n_columns, NULL, NULL)) == NULL) {
 				while (seg > 0) {
 					gmt_free_segment (GMT, &(T->segment[seg-1])); seg--;
@@ -6722,6 +6722,7 @@ struct GMT_DATASET * gmtlib_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tab
 	}
 	D->n_columns = n_columns;
 	D->geometry = geometry;
+	D->type = (mode & GMT_WITH_STRINGS) ? ((n_columns == 0) ? GMT_READ_TEXT : GMT_READ_MIXED) : GMT_READ_DATA;
 	if (n_tables) D->table = gmt_M_memory (GMT, NULL, n_tables, struct GMT_DATATABLE *);
 	D->n_alloc = D->n_tables = n_tables;
 	if (!alloc_only) D->n_segments = D->n_tables * n_segments;
@@ -6775,6 +6776,11 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 	if (!ASCII) gmt_setmode (GMT, GMT_IN);
 #endif
 
+	if (ASCII && *geometry == GMT_IS_TEXT) {
+		psave = GMT->current.io.input;			/* Save the previous pointer since we need to change it back at the end */
+		GMT->current.io.input = &gmtio_ascii_textinput;	/* Override and use ASCII text mode */
+		GMT->current.io.record_type = *data_type = GMT_READ_TEXT;
+	}
 	pol_check = check_geometry = ((*geometry & GMT_IS_POLY) && (*geometry & GMT_IS_LINE));	/* Have to determine if these are closed polygons or not */
 	poly = (((*geometry & GMT_IS_POLY) || *geometry == GMT_IS_MULTIPOLYGON) && (*geometry & GMT_IS_LINE) == 0);	/* To enable polar cap assessment in i/o */
 
@@ -6888,7 +6894,10 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 			if (!no_segments) {	/* Read data if we read a segment header up front, but guard against headers which sets in = NULL */
 				while (!gmt_M_rec_is_eof (GMT) && (In = GMT->current.io.input (GMT, fp, &n_expected_fields, &status)) == NULL) n_read++;
 			}
-			T->segment[seg]->n_columns = (n_returned) ? n_returned : n_expected_fields;	/* This is where number of columns are determined */
+			if (GMT->current.io.record_type == GMT_READ_TEXT)
+				T->segment[seg]->n_columns = 0;	/* No numerical data */
+			else
+				T->segment[seg]->n_columns = (n_returned) ? n_returned : n_expected_fields;	/* This is where number of columns are determined */
 			no_segments = false;	/* This has now served its purpose */
 		}
 		if (gmt_M_rec_is_eof (GMT)) continue;	/* At EOF; get out of this loop */
@@ -6925,7 +6934,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 					if (!greenwich && GMT->hidden.mem_coord[col][row] < 0.0)  GMT->hidden.mem_coord[col][row] += 360.0;
 				}
 			}
-			if (GMT->current.io.record_type == GMT_READ_MIXED) {
+			if (GMT->current.io.record_type > GMT_READ_DATA) {
 				GMT->hidden.mem_txt[row] = strdup (GMT->current.io.record.text);
 				*data_type = GMT_READ_MIXED;
 			}

@@ -307,6 +307,7 @@ struct GMT_INTERNAL {
 	 * many GMT functions.  These may change during execution but are not
 	 * modified directly by user interaction. */
 	unsigned int func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  0 is top function */
+	bool mem_set;			/* true when we hvae initialized the tmp memory already */
 	size_t mem_cols;		/* Current number of allocated columns for temp memory */
 	size_t mem_rows;		/* Current number of allocated rows for temp memory */
 	size_t mem_txt_alloc;

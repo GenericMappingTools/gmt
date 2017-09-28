@@ -62,17 +62,24 @@
 GMT_LOCAL void memory_init_tmp_arrays (struct GMT_CTRL *GMT, size_t n_cols) {
 	/* Initialization of GMT coordinate temp arrays - this is called at most once per GMT session  */
 
-	size_t col;
-
-	if (n_cols == 0) n_cols = GMT_INITIAL_MEM_COL_ALLOC;	/* Allocate at least this many */
-	GMT->hidden.mem_coord  = gmt_M_memory (GMT, GMT->hidden.mem_coord, n_cols, double *);	/* These are all NULL */
-	GMT->hidden.mem_cols = n_cols;	/* How many columns we have initialized */
-	for (col = 0; col < n_cols; col++)	/* For each column, reallocate space for n_rows */
-		GMT->hidden.mem_coord[col] = gmt_M_memory (GMT, NULL, GMT_INITIAL_MEM_ROW_ALLOC, double);
-	if (GMT->current.io.record_type == GMT_READ_MIXED)
+	if (!GMT->hidden.mem_set) {
+		if (n_cols == 0 && GMT->current.io.record_type < GMT_READ_TEXT) n_cols = GMT_INITIAL_MEM_COL_ALLOC;	/* Allocate at least this many */
+	}
+	if (n_cols) {
+		size_t col;
+		GMT->hidden.mem_coord  = gmt_M_memory (GMT, GMT->hidden.mem_coord, n_cols, double *);	/* These are all NULL */
+		GMT->hidden.mem_cols = n_cols;	/* How many columns we have initialized */
+		for (col = 0; col < n_cols; col++)	/* For each column, reallocate space for n_rows */
+			GMT->hidden.mem_coord[col] = gmt_M_memory (GMT, NULL, GMT_INITIAL_MEM_ROW_ALLOC, double);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT memory: Initialize %" PRIuS " temporary column double arrays, each of length : %" PRIuS "\n", GMT->hidden.mem_cols, GMT->hidden.mem_rows);
+		GMT->hidden.mem_rows = GMT_INITIAL_MEM_ROW_ALLOC;
+	}
+	if (GMT->current.io.record_type > GMT_READ_DATA) {
 		GMT->hidden.mem_txt = gmt_M_memory (GMT, NULL, GMT_INITIAL_MEM_ROW_ALLOC, char *);
-	GMT->hidden.mem_rows = GMT_INITIAL_MEM_ROW_ALLOC;
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT memory: Initialize %" PRIuS " temporary column arrays, each of length : %" PRIuS "\n", GMT->hidden.mem_cols, GMT->hidden.mem_rows);
+		GMT->hidden.mem_rows = GMT_INITIAL_MEM_ROW_ALLOC;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT memory: Initialize a temporary column char * array of length : %" PRIuS "\n", GMT->hidden.mem_rows);
+	}
+	GMT->hidden.mem_set = true;
 }
 
 GMT_LOCAL int memory_die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size_t size, const char *where) {
@@ -441,16 +448,17 @@ void gmtlib_free_tmp_arrays (struct GMT_CTRL *GMT) {
 		gmt_M_free (GMT, GMT->hidden.mem_coord[col]);
 	}
 	gmt_M_free (GMT, GMT->hidden.mem_coord);
-	if (GMT->current.io.record_type == GMT_READ_MIXED)
+	if (GMT->current.io.record_type > GMT_READ_DATA)
 		gmt_M_free (GMT, GMT->hidden.mem_txt);
 	GMT->hidden.mem_rows = GMT->hidden.mem_cols = 0;
+	GMT->hidden.mem_set = false;	/* Back to where we started */
 }
 
 void gmt_prep_tmp_arrays (struct GMT_CTRL *GMT, size_t row, size_t n_cols) {
 	size_t col;
 
 	/* Check if this is the very first time, if so we initialize the arrays */
-	if (GMT->hidden.mem_cols == 0)
+	if (!GMT->hidden.mem_set)
 		memory_init_tmp_arrays (GMT, n_cols);	/* First time we get here */
 
 	/* Check if we are exceeding our column count so far, if so we must allocate more columns */
@@ -470,7 +478,7 @@ void gmt_prep_tmp_arrays (struct GMT_CTRL *GMT, size_t row, size_t n_cols) {
 	while (row >= GMT->hidden.mem_rows) GMT->hidden.mem_rows = (size_t)lrint (1.5 * GMT->hidden.mem_rows);	/* Increase by 50% */
 	for (col = 0; col < GMT->hidden.mem_cols; col++)	/* Add more memory via realloc */
 		GMT->hidden.mem_coord[col] = gmt_M_memory (GMT, GMT->hidden.mem_coord[col], GMT->hidden.mem_rows, double);
-	if (GMT->current.io.record_type == GMT_READ_MIXED)
+	if (GMT->current.io.record_type > GMT_READ_DATA)
 		GMT->hidden.mem_txt = gmt_M_memory (GMT, GMT->hidden.mem_txt, GMT->hidden.mem_rows, char *);
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT memory: Increase %" PRIuS " temporary column arrays to new length : %" PRIuS "\n", GMT->hidden.mem_cols, GMT->hidden.mem_rows);

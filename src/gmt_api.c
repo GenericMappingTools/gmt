@@ -8277,6 +8277,7 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 
 	switch (actual_family) {	/* dataset, cpt, text, grid , image, vector, matrix */
 		case GMT_IS_GRID:	/* GMT grid, allocate header but not data array */
+			if (mode & GMT_WITH_STRINGS) return_null (API, GMT_NO_STRINGS_ALLOWED);	/* Error if given unsuitable mode */
 			if (mode & GMT_IS_OUTPUT || (mode & GMT_DATA_ONLY) == 0) {	/* Create new grid unless we only ask for data only */
 				if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data pointer is not NULL */
 	 			if ((new_obj = gmt_create_grid (API->GMT)) == NULL)
@@ -8301,6 +8302,7 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 			}
 			break;
 		case GMT_IS_IMAGE:	/* GMT image, allocate header but not data array */
+			if (mode & GMT_WITH_STRINGS) return_null (API, GMT_NO_STRINGS_ALLOWED);	/* Error if given unsuitable mode */
 			if (mode & GMT_IS_OUTPUT || (mode & GMT_DATA_ONLY) == 0) {	/* Create new image unless we only ask for data only */
 				if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
 	 			if ((new_obj = gmtlib_create_image (API->GMT)) == NULL)
@@ -8332,12 +8334,14 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 				return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_PALETTE:	/* GMT CPT, allocate one with space for dim[0] color entries */
+			if (mode & GMT_WITH_STRINGS) return_null (API, GMT_NO_STRINGS_ALLOWED);	/* Error if given unsuitable mode */
 			if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
 			/* If dim is NULL then we ask for 0 color entries as direction here is GMT_OUT for return to an external API */
 		 	if ((new_obj = gmtlib_create_palette (API->GMT, this_dim[0])) == NULL)
 		 		return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_POSTSCRIPT:	/* GMT PS struct, allocate one struct */
+			if (mode & GMT_WITH_STRINGS) return_null (API, GMT_NO_STRINGS_ALLOWED);	/* Error if given unsuitable mode */
 			if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
 		 	if ((new_obj = gmtlib_create_ps (API->GMT, this_dim[0])) == NULL)
 		 		return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
