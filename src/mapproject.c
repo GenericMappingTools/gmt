@@ -66,16 +66,16 @@ enum GMT_mp_Zcodes {	/* Support for -Z parsing */
 	GMT_MP_Z_SPEED = 8	/* Must get speed from input column */
 };
 
-enum GMT_mp_cols {
-	MP_COL_AZ = 0,
-	MP_COL_DS,
-	MP_COL_CS,
-	MP_COL_XN,
-	MP_COL_YN,
-	MP_COL_DT,
-	MP_COL_CT,
-	MP_COL_AT,
-	MP_COL_N
+enum GMT_mp_cols {	/* Index into the extra and ecol_type arrays */
+	MP_COL_AZ = 0,	/* Azimuth between to points */
+	MP_COL_DS,		/* Distance between to points */
+	MP_COL_CS,		/* Cumulative distance since start of segment */
+	MP_COL_XN,		/* Longitude of nearest point in -L check */
+	MP_COL_YN,		/* Latitude of nearest point in -L check */
+	MP_COL_DT,		/* Incremental time bewteen two points */
+	MP_COL_CT,		/* Cumulative time since start of segment */
+	MP_COL_AT,		/* Absolute time at present record */
+	MP_COL_N		/* How many extra items there are to choose from */
 };
 
 struct MAPPROJECT_CTRL {	/* All control options for this program (except common args) */
@@ -496,7 +496,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 					gmt_parse_common_options (GMT, "f", 'f', "g");	/* Implicitly set -fg since user wants spherical distances */
 				if (Ctrl->L.unit == 'c') Ctrl->L.unit = 'X';		/* Internally, this is Cartesian data and distances */
 				if (!gmt_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN, GMT_IS_DATASET)) n_errors++;
-				Ctrl->used[MP_COL_DS] = Ctrl->used[MP_COL_XN] = Ctrl->used[MP_COL_YN] = true;	/* Uutput dist, xnear, ynear */
+				Ctrl->used[MP_COL_DS] = Ctrl->used[MP_COL_XN] = Ctrl->used[MP_COL_YN] = true;	/* Output dist, xnear, ynear */
 				break;
 			case 'N':
 				Ctrl->N.active = true;
@@ -980,18 +980,20 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		Ctrl->C.northing *= u_scale;
 	}
 
-	if (Ctrl->L.mode == GMT_MP_GIVE_FRAC)	/* Want fractional point locations */
-		fmt[0] = fmt[1] = GMT_Z;
-	else {			/* Want nearest point */
-		fmt[0] = GMT_X;
-		fmt[1] = GMT_Y;
-		ecol_type[MP_COL_XN] = GMT_IS_LON;
-		ecol_type[MP_COL_YN] = GMT_IS_LAT;
+	if (Ctrl->L.active)	{	/* Possibly adjust output types */
+		if (Ctrl->L.mode == GMT_MP_GIVE_FRAC)	/* Want fractional point locations */
+			fmt[0] = fmt[1] = GMT_Z;	/* These are just regular floating points */
+		else {			/* Want nearest point coordinates */
+			fmt[0] = GMT_X;
+			fmt[1] = GMT_Y;
+			ecol_type[MP_COL_XN] = GMT_IS_LON;	/* Must change these from floats to geo */
+			ecol_type[MP_COL_YN] = GMT_IS_LAT;
+		}
 	}
 	if (Ctrl->Z.formatted) ecol_type[MP_COL_CT] = GMT_IS_DURATION;
 	if (Ctrl->N.active) lat_mode = Ctrl->N.mode + Ctrl->I.active;
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
@@ -1004,14 +1006,6 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if ((error = gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN))) != 0) Return (error);
-	if (geodetic_calc) {
-		for (col = 0, k = GMT_Z; col < MP_COL_N; col++) {
-			if (Ctrl->used[col]) {
-				GMT->current.io.col_type[GMT_OUT][k] = ecol_type[col];
-				ecol_type[col] = (unsigned int)k++;
-			}
-		}
-	}
 
 	along_track = (Ctrl->G.mode && ((Ctrl->G.mode & GMT_MP_CUMUL_DIST) || (Ctrl->G.mode & GMT_MP_INCR_DIST)));
 	
@@ -1244,12 +1238,10 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					for (col = 0, k = 0; col < MP_COL_N; col++) if (Ctrl->used[col]) k++;
 					gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN) + k);
 					n_output = gmt_get_cols (GMT, GMT_OUT);
-					if (geodetic_calc) {
+					if (geodetic_calc) {	/* Update the output column types to the extra items we added */
 						for (col = 0, k = n_fields; col < MP_COL_N; col++) {
-							if (Ctrl->used[col]) {
-								GMT->current.io.col_type[GMT_OUT][k] = ecol_type[col];
-								ecol_type[col] = (unsigned int)k++;
-							}
+							if (Ctrl->used[col])
+								GMT->current.io.col_type[GMT_OUT][k++] = ecol_type[col];
 						}
 					}
 				}
