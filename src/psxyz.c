@@ -585,9 +585,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	if (gmt_check_binary_io (GMT, n_cols_start + S.n_required))
 		Return (GMT_RUNTIME_ERROR);
 
-	for (j = n_cols_start; j < 7; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;			/* Since these may have units appended */
-	for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles or km, not dimensions */
-
+	if (not_line) {
+		for (j = n_cols_start; j < 7; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;			/* Since these may have units appended */
+		for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles or km, not dimensions */
+	}
 	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
@@ -676,9 +677,6 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	old_is_world = GMT->current.map.is_world;
 	geometry = not_line ? GMT_IS_POINT : ((polygon) ? GMT_IS_POLY: GMT_IS_LINE);
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_needed)) != GMT_NOERROR) {
-		Return (error);
-	}
 
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
 		bool periodic = false, delayed_unit_scaling[2] = {false, false};
@@ -687,6 +685,9 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		double xpos[2], width, d;
 		struct GMT_RECORD *In = NULL;
 		
+		if ((error = gmt_set_cols (GMT, GMT_IN, n_needed)) != GMT_NOERROR) {
+			Return (error);
+		}
 		/* Determine if we need to worry about repeating periodic symbols */
 		if (clip_set && (Ctrl->N.mode == PSXYZ_CLIP_REPEAT || Ctrl->N.mode == PSXYZ_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_is_geographic (GMT, GMT_IN)) {
 			/* Only do this for projection where west and east are split into two separate repeating boundaries */

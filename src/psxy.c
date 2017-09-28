@@ -853,7 +853,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psxy main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "Option -T ignores all input files\n");
+	else GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (Ctrl->E.active && S.symbol == GMT_SYMBOL_LINE)	/* Assume user only wants error bars */
 		S.symbol = GMT_SYMBOL_NONE;
 	/* Do we plot actual symbols, or lines */
@@ -869,8 +870,6 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			error_type[GMT_X] = error_type[GMT_Y] = EBAR_NORMAL;
 		}
 	}
-
-	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Warning: Option -T ignores all input files\n");
 
 	get_rgb = (not_line && Ctrl->C.active);	/* Need to read z-vales from input data file */
 	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
@@ -921,7 +920,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		xy_errors[GMT_X] += (S.read_size + get_rgb);	/* Move 0-2 columns over */
 		xy_errors[GMT_Y] += (S.read_size + get_rgb);
 	}
-	else	/* Here we have the usual x y [z] [size] [other args] [symbol] record */
+	else if (not_line)	/* Here we have the usual x y [z] [size] [other args] [symbol] record */
 		for (j = n_cols_start; j < 6; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
 	for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
 
@@ -1010,15 +1009,16 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	old_is_world = GMT->current.map.is_world;
 	geometry = not_line ? GMT_IS_POINT : ((polygon) ? GMT_IS_POLY: GMT_IS_LINE);
 	in = GMT->current.io.curr_rec;
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_needed)) != GMT_NOERROR) {
-		Return (error);
-	}
+
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
 		bool periodic = false, delayed_unit_scaling = false;
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
 		double xpos[2], width = 0.0;
 		struct GMT_RECORD *In = NULL;
 
+		if ((error = gmt_set_cols (GMT, GMT_IN, n_needed)) != GMT_NOERROR) {
+			Return (error);
+		}
 		/* Determine if we need to worry about repeating periodic symbols */
 		if ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_is_geographic (GMT, GMT_IN)) {
 			/* Only do this for projection where west and east are split into two separate repeating boundaries */
