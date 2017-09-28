@@ -397,7 +397,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		GMT->current.setting.io_seg_marker[GMT_IN] = '#';
 	}
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
 	}
 	if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
@@ -1014,7 +1014,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						if (n == 0 || lspace[0] == '-') sprintf (lspace, "%gi", one_line_spacing);
 						if (n == 0 || tw[0] == '-') sprintf (tw, "%gi", Ctrl->D.dim[GMT_X] - 2.0 * Ctrl->C.off[GMT_X]);
 						if (n == 0 || jj[0] == '-') sprintf (jj, "j");
-						if ((D[PAR] = get_dataset_pointer (API, D[PAR], GMT_IS_NONE, 1U, 64U, 0U, true)) == NULL) return (API->error);
+						if ((D[PAR] = get_dataset_pointer (API, D[PAR], GMT_IS_TEXT, 1U, 64U, 0U, true)) == NULL) return (API->error);
 						sprintf (buffer, "%c %s %s %s %s %s %s %s %s", save_EOF, xx, yy, tmp, angle, key, lspace, tw, jj);
 						S[PAR] = get_segment (D, PAR, 0);	/* We store the header as one of the text records for simplicity */
 						GMT_Report (API, GMT_MSG_DEBUG, "PAR: %s\n", buffer);
@@ -1295,7 +1295,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						break;
 
 					case 'T':	/* paragraph text record: T paragraph-text */
-						if ((D[PAR] = get_dataset_pointer (API, D[PAR], GMT_IS_NONE, 1U, 64U, 0U, true)) == NULL) return (API->error);
+						if ((D[PAR] = get_dataset_pointer (API, D[PAR], GMT_IS_TEXT, 1U, 64U, 0U, true)) == NULL) return (API->error);
 						/* If no previous > record, then use defaults */
 						S[PAR] = get_segment (D, PAR, 0);
 						if (!flush_paragraph) {
@@ -1430,7 +1430,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	}
 	if (D[PAR]) {
 		/* Create option list, register D[PAR] as input source */
-		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, D[PAR], string) != GMT_NOERROR) {
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, D[PAR], string) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -M -F+f+a+j %s --GMT_HISTORY=false", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);

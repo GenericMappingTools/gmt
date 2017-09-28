@@ -702,7 +702,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	/* Process blend parameters and populate blend structure and open input files and seek to first row inside the output grid */
 
 	if (Ctrl->In.n <= 1) {	/* Got a blend file (or stdin) */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */

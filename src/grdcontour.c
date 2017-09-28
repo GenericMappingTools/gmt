@@ -904,7 +904,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdcontour main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
-	if (Ctrl->D.active {
+	if (Ctrl->D.active) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "With -D, no plotting will take place\n");
 		if (!Ctrl->D.file) GMT_Report (API, GMT_MSG_VERBOSE, "Contours will be written to standard output\n");
 	}
@@ -1072,7 +1072,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_EXISTING, 0, options) != GMT_NOERROR) {
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_EXISTING, 0, options) != GMT_NOERROR) {
 			Return (API->error);	/* Establishes data input */
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */

@@ -229,7 +229,7 @@ static int GMTAPI_session_counter = 0;	/* Keeps track of the ID of new sessions 
 /* We asked for subset of grid if the wesn pointer is not NULL and indicates a nonzero region */
 #define full_region(wesn) (!wesn || (wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI]))
 
-/* DATASET and TEXTSET can be given via many individual files. */
+/* DATASET can be given via many individual files. */
 #define multiple_files_ok(family) (family == GMT_IS_DATASET)
 /* GRID and IMAGE can be read it two steps (header, then data). */
 #define a_grid_or_image(family) (family == GMT_IS_GRID || family == GMT_IS_IMAGE)
@@ -242,7 +242,7 @@ static const char *GMT_family[] = {"Data Table", "Grid", "Image", "CPT", "PostSc
 static const char *GMT_direction[] = {"Input", "Output"};
 static const char *GMT_stream[] = {"Standard", "User-supplied"};
 static const char *GMT_status[] = {"Unused", "In-use", "Used"};
-static const char *GMT_geometry[] = {"Not Set", "Point", "Line", "Polygon", "Point|Line|Poly", "Line|Poly", "Surface", "Non-Geographical"};
+static const char *GMT_geometry[] = {"Not Set", "Point", "Line", "Polygon", "Point|Line|Poly", "Line|Poly", "Surface", "Non-Geographical", "Text"};
 static const char *GMT_class[] = {"QUIET", "ERROR", "TIMING", "COMPATIBILITY", "WARNING", "INFORMATION", "DEBUG"};
 static unsigned int GMT_no_pad[4] = {0, 0, 0, 0};
 
@@ -471,6 +471,7 @@ GMT_LOCAL unsigned int api_gmtry (unsigned int geometry) {
 	if ((geometry & GMT_IS_LINE) && (geometry & GMT_IS_POLY)) return 5;
 	if (geometry == GMT_IS_SURFACE) return 6;
 	if (geometry == GMT_IS_NONE)    return 7;
+	if (geometry == GMT_IS_TEXT)    return 8;
 	return 0;
 }
 /* We also need to return the pointer to an object given a void * address of that pointer.
@@ -2154,9 +2155,12 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 
 	/* A few things pertaining only to data/text tables */
 	GMT->current.io.rec_in_tbl_no = 0;	/* Start on new table */
-	S_obj->import = GMT->current.io.input;	/* The latter may point to ASCII or binary input functions */
-	/* Expecting we will need to update S_obj->import when we learn we are reading text later, so commenting this out for use later */
-	//S_obj->import = (S_obj->family == GMT_IS_TEXTSET) ? &gmtio_ascii_textinput : GMT->current.io.input;	/* The latter may point to ASCII or binary input functions */
+	if (S_obj->geometry == GMT_IS_TEXT) {	/* Reading pure text, no coordinates */
+		S_obj->import = &gmtio_ascii_textinput;
+		GMT->current.io.record.data = NULL;	/* Since there isn't any data */
+	}
+	else
+		S_obj->import = GMT->current.io.input;	/* import may point to ASCII or binary (if -b) input functions */
 
 	return (GMT_NOERROR);
 }
@@ -2213,13 +2217,13 @@ GMT_LOCAL bool api_validate_geometry (struct GMTAPI_CTRL *API, int family, int g
 	gmt_M_unused(API);
 	if (geometry == GMT_NOTSET || family == GMT_NOTSET) return false;	/* No errors if nothing to check yet */
 	switch (family) {
-		case GMT_IS_DATASET:     if (!(geometry == GMT_IS_NONE || (geometry & GMT_IS_PLP))) problem = true; break;	/* Datasets can hold many things... */
+		case GMT_IS_DATASET:     if (!(geometry == GMT_IS_NONE || geometry == GMT_IS_TEXT || (geometry & GMT_IS_PLP))) problem = true; break;	/* Datasets can hold many things... */
 		case GMT_IS_GRID:        if (geometry != GMT_IS_SURFACE) problem = true;    break;	/* Only surface is valid */
 		case GMT_IS_IMAGE:       if (geometry != GMT_IS_SURFACE) problem = true;    break;	/* Only surface is valid */
 		case GMT_IS_PALETTE:     if (geometry != GMT_IS_NONE) problem = true;       break;	/* Only text is valid */
 		case GMT_IS_POSTSCRIPT:  if (geometry != GMT_IS_NONE) problem = true;       break;	/* Only text is valid */
 		case GMT_IS_VECTOR:      if ((geometry & GMT_IS_PLP) == 0) problem = true;  break; 	/* Must be one of those three */
-		case GMT_IS_MATRIX:      if (geometry == GMT_IS_NONE) problem = true;       break;	/* Matrix can hold surfaces or TEXTSETs */
+		case GMT_IS_MATRIX:      if (geometry == GMT_IS_NONE) problem = true;       break;	/* Matrix can hold surfaces or DATASETs */
 		case GMT_IS_COORD:       if (geometry != GMT_IS_NONE) problem = true;       break;	/* Only text is valid */
 	}
 	return (problem);
@@ -4958,7 +4962,7 @@ GMT_LOCAL int api_put_data (void *V_API, int object_ID, unsigned int mode, void 
 	 * one combined function.  See GMT_Register_IO for details on arguments.
 	 * Here, *data is the pointer to the data object to save (CPT, dataset, Grid)
 	 * ID is the registered destination.
-	 * While only one output destination is allowed, for DATA|TEXTSETS one can
+	 * While only one output destination is allowed, for DATASETS one can
 	 * have the tables and even segments be written to individual files (see the mode
 	 * description in the documentation for how to enable this feature.)
 	 * Return: false if all is well, true if there was an error (and set API->error).
@@ -5485,7 +5489,7 @@ int gmtapi_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 	/* Checks to see if the given object_ID is listed and of the right direction.  If so
  	 * we return the item number; otherwise return GMT_NOTSET and set API->error to the error code.
 	 * Note: int arguments MAY be GMT_NOTSET, hence we use signed ints.  If object_ID == GMT_NOTSET
-	 * then we only look for TEXTSETS or DATASETS.  Note: module_input controls if we are being very specific
+	 * then we only look for DATASETS.  Note: module_input controls if we are being very specific
 	 * about the type of input resource.  There are module inputs and option inputs. We have:
 	 * module_input = GMT_NOTSET [-1]:	Do not use the resource's module_input status in determining the next ID.
 	 * module_input = GMTAPI_OPTION_INPUT [0]:	Only validate resources with module_input = false.
@@ -6031,7 +6035,7 @@ int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head
 	 * direction:	Either GMT_IN or GMT_OUT
 	 * head:	Head of the list of module options
 	 *
-	 * Returns:	The family value (GMT_IS_DATASET|TEXTSET|CPT|GRID|IMAGE|PS) or GMT_NOTSET if not known
+	 * Returns:	The family value (GMT_IS_DATASET|CPT|GRID|IMAGE|PS) or GMT_NOTSET if not known
 	 */
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_OPTION *current = NULL;
@@ -6074,8 +6078,8 @@ int GMT_Get_Family_ (unsigned int *direction, struct GMT_OPTION *head) {
 int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, unsigned int n_args, void *args) {
 	/* Registers program option file arguments as sources/destinations for the current module.
 	 * All modules planning to use std* and/or command-line file args must call GMT_Init_IO to register these resources.
-	 * family:	The kind of data (GMT_IS_DATASET|TEXTSET|CPT|GRID|IMAGE|PS)
-	 * geometry:	Either GMT_IS_NONE|POINT|LINE|POLYGON|SURFACE
+	 * family:	The kind of data (GMT_IS_DATASET|CPT|GRID|IMAGE|PS)
+	 * geometry:	Either GMT_IS_NONE|TEXT|POINT|LINE|POLYGON|SURFACE
 	 * direction:	Either GMT_IN or GMT_OUT
 	 * mode:	Bitflags composed of 1 = add command line (option) files, 2 = add std* if no other input/output,
 	 *		4 = add std* regardless.  mode must be > 0.
@@ -6630,7 +6634,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 	 * data is pointer to an existing grid container when we read a grid in two steps, otherwise it must be NULL.
 	 * Case 1: infile != NULL: Register input as the source and import data.
 	 * Case 2: infile == NULL: Register stdin as the source and import data.
-	 * Case 3: geometry == 0: Loop over all previously registered AND unread sources and combine as virtual dataset [DATASET|TEXTSET only]
+	 * Case 3: geometry == 0: Loop over all previously registered AND unread sources and combine as virtual dataset [DATASET only]
 	 * Case 4: family is GRID|IMAGE and method = GMT_DATA_ONLY: Just find already registered resource
 	 * Return: Pointer to data container, or NULL if there were errors (passed back via API->error).
 	 */
@@ -6668,7 +6672,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		unsigned int k;
 		char **filelist = NULL;
 		if (!multiple_files_ok (family)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Data: Wildcards only allowed for DATASET and TEXTSET. "
+			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Read_Data: Wildcards only allowed for DATASET. "
 			                                 "Use GMT_Read_Group to read groups of other data types\n");
 			free (input);
 			return_null (API, GMT_ONLY_ONE_ALLOWED);
@@ -6803,7 +6807,7 @@ void *GMT_Read_Group (void *V_API, unsigned int family, unsigned int method, uns
 	 * *n_items = 0: sources is a character string with wildcard-specification for file names.
 	 * *n_items > 0: sources is an array of *n_items character strings with filenames.
 	 * If n_items == NULL then it means 0 but we do not return back the number of items.
-	 * Note: For DATASET and TEXTSET you can also use wildcard expressions in GMT_Read_Data but there we combine then into one data|test-set.
+	 * Note: For DATASET you can also use wildcard expressions in GMT_Read_Data but there we combine then into one data|test-set.
 	 * Return: Pointer to array of data container, or NULL if there were errors (passed back via API->error).
 	 */
 	unsigned int n_files, k;
@@ -6852,7 +6856,7 @@ void *GMT_Read_Group_ (unsigned int *family, unsigned int *method, unsigned int 
 void *GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, void *data) {
 	/* Create an duplicate container of the requested kind and optionally allocate space
 	 * or duplicate content.
-	 * The known families are GMT_IS_{DATASET,TEXTSET,GRID,PALETTE,IMAGE,POSTSCRIPT}.
+	 * The known families are GMT_IS_{DATASET,GRID,PALETTE,IMAGE,POSTSCRIPT}.
  	 * Pass mode as one of GMT_DUPLICATE_{NONE|ALLOC|DATA} to just duplicate the
 	 * container and header structures, allocate space of same dimensions as original,
 	 * or allocate space and duplicate contents.  For GMT_IS_{DATA|TEXT}SET you may add
@@ -6955,7 +6959,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 	 * Case 1: outfile != NULL: Register this as the destination and export data.
 	 * Case 2: outfile == NULL: Register stdout as the destination and export data.
 	 * Case 3: geometry == 0: Use a previously registered single destination.
-	 * While only one output destination is allowed, for DATA|TEXTSETS one can
+	 * While only one output destination is allowed, for DATASETS one can
 	 * have the tables and even segments be written to individual files (see the mode
 	 * description in the documentation for how to enable this feature.)
 	 * Return: false if all is well, true if there was an error (and set API->error).
@@ -7782,7 +7786,7 @@ int GMT_Put_Record_ (unsigned int *mode, void *record) {
 int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsigned int header) {
 	/* Initializes the rec-by-rec i/o mechanism for either input or output (given by direction).
 	 * GMT_Begin_IO must be called before any data i/o is allowed.
-	 * family:	The family of data must be GMT_IS_DATASET or TEXTSET.
+	 * family:	The family of data must be GMT_IS_DATASET.
 	 * direction:	Either GMT_IN or GMT_OUT.
 	 * header:	Either GMT_HEADER_ON|OFF, controls the writing of the table start header info block
 	 * Returns:	false if successful, true if error.
@@ -8185,7 +8189,7 @@ int GMT_Destroy_Group_ (void *object, unsigned int *n_items) {
 /*! . */
 void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[], double *range, double *inc, unsigned int registration, int pad, void *data) {
 	/* Create an empty container of the requested kind and allocate space for content.
-	 * The known families are GMT_IS_{DATASET,TEXTSET,GRID,PALETTE,IMAGE,POSTSCRIPT}, but we
+	 * The known families are GMT_IS_{DATASET,GRID,PALETTE,IMAGE,POSTSCRIPT}, but we
 	 * also allow for creation of the containers for GMT_IS_{VECTOR,MATRIX}. Note
 	 * that for VECTOR|MATRIX we don't allocate space to hold data as it is the users
 	 * responsibility to hook their data pointers in.  The VECTOR allocates the array
@@ -9657,7 +9661,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	unsigned int n_keys, direction = 0, kind, pos = 0, n_items = 0, ku, n_out = 0, nn[2][2];
 	unsigned int output_pos = 0, input_pos = 0, mod_pos;
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_GRID, GMT_IS_PALETTE, GMT_IS_IMAGE */
-	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
+	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
 	int sdir, k, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
 	bool deactivate_output = false, strip_colon = false, strip = false;
 	size_t n_alloc, len;
@@ -9755,7 +9759,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	else if ((!strncmp (module, "grdcontour", 10U) || !strncmp (module, "pscontour", 9U)) && (opt = GMT_Find_Option (API, 'G', *head))) {
 		/* Found the -G option, check if any strings are requested */
 		/* If not -Gf|x then we don't want this at all and set type = ! */
-		type = (opt->arg[0] == 'f' || opt->arg[0] == 'x') ? 'D' : '!');
+		type = (opt->arg[0] == 'f' || opt->arg[0] == 'x') ? 'D' : '!';
 	}
 	/* 1i. Check if this is the talwani3d module, where output type is grid except with -N it is dataset */
 	else if (!strncmp (module, "talwani3d", 9U)) {
@@ -11009,17 +11013,11 @@ void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out
 	 * 	 2 : Headers are preserved, but segment headers are initialized to blank
 	 * 	 3 : All headers headers are eliminated
 	 *	     The GMT Default settings in effect will control any output to files later.
-	 * 	 Finally, if converting from TEXTSET to floating point representations, if the flag contains
-	 *   GMT_STRICT_CONVERSION then we only do the conversion if it is possible, else return NULL.
-	 *   If the flag contains GMT_LAX_CONVERSION then we do the conversion if at least one field converts, else return NULL.
 	 * [Note if that happens it is not considered an error, so API->error is GMT_NOERROR].
-	 * flag[1]: Controls how many columns to expect when converting TEXTSETS only.
-	 *	0 : We determine number of columns by decoding the very first data record
-	 *  >0: We use this value as the number of columns to decode and report.
 	 * flag[2]: Controls the data type to use for MATRIX and VECTOR.
 	 * 	0: Use the GMT default data type [GMT_EXPORT_TYPE]
 	 * 	>0: Assumed to contain datatype + 1 (e.g., GMT_FLOAT+1, GMT_DOUBLE+1)
-	 * If TEXTSET or DATASET, this integer controls the restructuring of the set:
+	 * If DATASET, this integer controls the restructuring of the set:
 	 * 	GMT_WRITE_TABLE_SEGMENT: Combine all segments into a SINGLE segment in ONE table
 	 * 	GMT_WRITE_TABLE: Collect all segments into ONE table.
 	 * 	GMT_WRITE_SEGMENT: Combine segments into ONE segment per table.
@@ -11027,10 +11025,9 @@ void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out
 	 *
 	 * The following conversions are valid; the brackets indicate any side-effects or limitations]
 	 *
-	 * DATASET -> TEXTSET, MATRIX,  VECTOR
-	 * TEXTSET -> DATASET, MATRIX,  VECTOR [May result in NaNs; see GMT_STRICT_CONVERSION to limit conversion]
-	 * MATRIX  -> DATASET, TEXTSET, VECTOR
-	 * VECTOR  -> DATASET, TEXTSET, MATRIX
+	 * DATASET -> MATRIX,  VECTOR
+	 * MATRIX  -> DATASET, VECTOR
+	 * VECTOR  -> DATASET, MATRIX
 	 */
 	int object_ID, item;
 	bool may_fail = false;
@@ -11144,28 +11141,35 @@ void *GMT_Alloc_Segment_ (unsigned int *family, uint64_t *n_rows, uint64_t *n_co
 }
 #endif
 
-int GMT_Set_Columns (void *V_API, unsigned int n_cols, unsigned int mode) {
-	/* Specify how many output columns to use for record-by-record output */
+int GMT_Set_Columns (void *V_API, unsigned int direction, unsigned int n_cols, unsigned int mode) {
+	/* Specify how many input or output columns to use for record-by-record output, if fixed */
 	int error = 0;
 	uint64_t n_in;
 	struct GMTAPI_CTRL *API = NULL;
+	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (V_API, GMT_NOT_A_VALID_DIRECTION);
+	if (direction == GMT_IN && !(mode == GMT_COL_FIX || mode == GMT_COL_VAR)) return_error (V_API, GMT_NOT_A_VALID_MODE);
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 
-	if ((n_in = gmt_get_cols (API->GMT, GMT_IN)) == 0) {	/* Get number of input columns */
-		GMT_Report (API, GMT_MSG_NORMAL, "GMT_Set_Columns: Premature call - number of input columns not known yet\n");
-		return_error (API, GMT_N_COLS_NOT_SET);
-	}
-	/* If no columns specified we set output to the same as input columns */
-	if (n_cols == 0 && (error = gmt_set_cols (API->GMT, GMT_OUT, n_in)) != 0)
+	if (direction == GMT_OUT) {	/* Output */
+		if ((n_in = gmt_get_cols (API->GMT, GMT_IN)) == 0) {	/* Get number of input columns */
+			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Set_Columns: Premature call - number of input columns not known yet\n");
 			return_error (API, GMT_N_COLS_NOT_SET);
-
-	/* Get here when n_cols is not zero, so must consult mode */
+		}
+		/* If no columns specified we set output to the same as input columns */
+		if (n_cols == 0 && (error = gmt_set_cols (API->GMT, GMT_OUT, n_in)) != 0)
+			return_error (API, GMT_N_COLS_NOT_SET);
+	}
+	
+	/* Get here when n_cols is not zero (of we have a special case), so must consult mode */
 
 	switch (mode) {
 		case GMT_COL_FIX:	/* Specific a fixed number of columns */
-			error = gmt_set_cols (API->GMT, GMT_OUT, n_cols);
+			error = gmt_set_cols (API->GMT, direction, n_cols);
+			break;
+		case GMT_COL_VAR:	/* Flag we have a variable number of input columns */
+			API->GMT->current.io.read_mixed = true;
 			break;
 		case GMT_COL_ADD:	/* Add to the number of input columns */
 			error = gmt_set_cols (API->GMT, GMT_OUT, n_in + n_cols);
@@ -11183,9 +11187,9 @@ int GMT_Set_Columns (void *V_API, unsigned int n_cols, unsigned int mode) {
 }
 
 #ifdef FORTRAN_API
-int GMT_Set_Columns_ (unsigned int *n_cols, unsigned int *mode) {
+int GMT_Set_Columns_ (unsigned int *direction, unsigned int *n_cols, unsigned int *mode) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Set_Columns (GMT_FORTRAN, *n_cols, *mode));
+	return (GMT_Set_Columns (GMT_FORTRAN, *direction, *n_cols, *mode));
 }
 #endif
 

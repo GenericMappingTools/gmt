@@ -316,7 +316,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			if (!Ctrl->Q.file) Ctrl->Q.file = strdup ("gmtconnect_list.txt");	/* Default -Q list name if none was given */
 			dim_tscr[GMT_TBL] = n_qfiles = (strstr (Ctrl->Q.file, "%c")) ? 2 : 1;	/* Build one or two tables (closed and open) */
 			/* Allocate one or two tables with 1 segment each */
-			if ((Q = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
+			if ((Q = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_TEXT, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for segment lists\n");
 				gmt_M_free (GMT, buffer);
 				Return (API->error);
@@ -491,7 +491,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.active) {	/* Also finalize link file and write it out to 1 or 2 files depending on q_mode */
 			Q->table[CLOSED]->segment[0]->text = gmt_M_memory (GMT, QT[CLOSED]->text, QT[CLOSED]->n_rows, char *);
 			if (n_qfiles == 2) Q->table[OPEN]->segment[0]->text = gmt_M_memory (GMT, QT[OPEN]->text, QT[OPEN]->n_rows, char *);
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, q_mode, NULL, Ctrl->Q.file, Q) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, q_mode, NULL, Ctrl->Q.file, Q) != GMT_NOERROR) {
 				gmt_M_free (GMT, buffer);
 				Return (API->error);
 			}
@@ -614,7 +614,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtconnect_link.txt");	/* Use default output filename since none was provided */
 		dim_tscr[GMT_TBL] = 1;	dim_tscr[GMT_SEG] = 1;	dim_tscr[GMT_ROW] = ns;	dim_tscr[GMT_COL] = 0;	/* Dimensions of single output table with single segment of ns rows */
-		if ((LNK = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((LNK = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_TEXT, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for link lists\n");
 			gmt_M_free (GMT, buffer);
 			Return (API->error);
@@ -652,7 +652,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			LNK->table[0]->segment[0]->text[iseg] = strdup (buffer);
 		}
 		LNK->table[0]->n_records = LNK->table[0]->segment[0]->n_rows = ns;	/* Number of records for this file */
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->L.file, LNK) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_WRITE_SET, NULL, Ctrl->L.file, LNK) != GMT_NOERROR) {
 			gmt_M_free (GMT, buffer);
 			Return (API->error);
 		}
@@ -863,7 +863,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active) {	/* Write out the list(s) with individual file names */
 		Q->table[CLOSED]->segment[0]->text = gmt_M_memory (GMT, QT[CLOSED]->text, QT[CLOSED]->n_rows, char *);
 		if (n_qfiles == 2) Q->table[OPEN]->segment[0]->text = gmt_M_memory (GMT, QT[OPEN]->text, QT[OPEN]->n_rows, char *);
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, q_mode, NULL, Ctrl->Q.file, Q) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, q_mode, NULL, Ctrl->Q.file, Q) != GMT_NOERROR) {
 			gmt_M_free (GMT, buffer);
 			Return (API->error);
 		}

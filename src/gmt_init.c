@@ -10381,13 +10381,13 @@ int gmt_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *optio
 	struct GMT_RECORD Out;
 	char *param, record[GMT_BUFSIZ] = {""};
 
-	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_TEXT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		return (GMT->parent->error);
 	}
 	if (GMT_Begin_IO (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
 		return (GMT->parent->error);	/* Enables data output and sets access mode */
 	}
-	if (GMT_Set_Geometry (GMT->parent, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+	if (GMT_Set_Geometry (GMT->parent, GMT_OUT, GMT_IS_TEXT) != GMT_NOERROR) {	/* Sets output geometry */
 		return (GMT->parent->error);
 	}
 	Out.data = NULL;

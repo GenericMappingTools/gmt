@@ -381,13 +381,13 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 		uint64_t tbl, seg, start_rec = 0;
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 			Return (API->error);	/* Establishes data files or stdin */
 		}
-		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
@@ -461,20 +461,17 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 	if ((error = gmt_set_cols (GMT, GMT_IN, 0)) != 0) Return (error);
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
-		Return (API->error);
-	}
-	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
 		Return (API->error);
 	}
 

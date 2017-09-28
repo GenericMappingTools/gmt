@@ -3016,6 +3016,12 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 			case GMT_IS_NAN:	/* Parsing failed, which means we found our first non-number */
 				found_text = true;
 				break;
+			case GMT_IS_DIMENSION:	/* Converted something recognized as a dimension, but that is only allowed if requested */
+				if (type == GMT_IS_DIMENSION)
+					(*n_columns)++;	/* One more succesful numerical parsing */
+				else	/* It is text */
+					found_text = true;
+				break;
 			case GMT_IS_FLOAT:	/* Resolved to be a float, do we update expecatation? */
 				if (GMT->current.io.read_mixed || type == GMT_IS_UNKNOWN)	/* If it could vary from time to time or we never knew, yes we do */
 					GMT->current.io.col_type[GMT_IN][*n_columns] = got;
@@ -3163,12 +3169,14 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				*n = GMT_MAX_COLUMNS;
 			else	/* Happily parsed first record and learned a few things.  Now prevent this block from being executed again for the current data file */
 				GMT->current.io.first_rec = false;
+			if (GMT->current.io.max_cols_to_read)
+				*n = GMT->current.io.max_cols_to_read;
 			strscan = (GMT->current.io.record_type) ? &strsepzp : &strsepz;	/* Need zp scanner to detect trailing text */
 		}
 
 		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);	/* Gives the actual columns we need (which may > *n if gap checking is active; if gap check we also update prev_rec) */
 		gmt_update_prev_rec (GMT, n_use);
-		if (GMT->current.io.read_mixed && n_cols_this_record < n_use)  n_use = n_cols_this_record;
+		if (GMT->current.io.read_mixed && n_cols_this_record < n_use) n_use = n_cols_this_record;
 
 		bad_record = set_nan_flag = false;	/* Initialize flags */
 		gmtio_set_current_record (GMT, line);	/* Keep copy of current record around */
@@ -4362,8 +4370,10 @@ int gmt_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 		}
 		GMT->common.b.ncol[direction] = expected;
 	}
-	else
+	else {	/* ascii */
 		GMT->common.b.ncol[direction] = (direction == GMT_IN && expected == 0) ? GMT_MAX_COLUMNS : expected;
+		if (direction == GMT_IN) GMT->current.io.max_cols_to_read = expected;
+	}
 	if (direction == GMT_OUT && GMT->common.b.o_delay) {	/* Issue delayed message (see gmtlib_io_banner) */
 		gmtlib_io_banner (GMT, direction);
 		GMT->common.b.o_delay = false;
@@ -4681,12 +4691,13 @@ void * gmtio_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *
 	gmt_strstrip (line, false); /* Eliminate DOS endings and trailing white space */
 
 	gmtio_set_current_record (GMT, line);
+	GMT->current.io.record.text = GMT->current.io.curr_text;
 
 	GMT->current.io.status = GMT_IO_DATA_RECORD;
 	GMT->current.io.pt_no++;	/* Got a valid text record */
 	*n = 1ULL;			/* We always return 1 item as there are no columns */
 	*status = 1;
-	return (GMT->current.io.curr_text);
+	return (&GMT->current.io.record);
 }
 
 /*! Returns true if we should skip this line (because it is blank) */

@@ -253,7 +253,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active) {	/* Want a text set of headers back */
 		dim[GMT_SEG] = 1;	dim[GMT_COL] = 0;
 		dim[GMT_ROW] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
-		if ((D = GMT_Create_Data (API, GMT_IS_DATASET|GMT_WITH_STRINGS, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET|GMT_WITH_STRINGS, GMT_IS_TEXT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for GSHHG header features.\n");
 			gmt_fclose (GMT, fp);
 			Return (API->error);
@@ -387,7 +387,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 			T[0]->text = gmt_M_memory (GMT, T[0]->text, seg_no, char *);
 		}
 		D->n_records = D->table[0]->n_records = T[0]->n_rows;
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}

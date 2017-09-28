@@ -591,6 +591,52 @@ GMT_LOCAL void add_xy_via_justify (struct GMT_CTRL *GMT, int justify) {
 	GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 }
 
+GMT_LOCAL int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int rec_no, char *record, char buffer[]) {
+	/* Paragraph mode: Parse x,y [and z], check for validity, and return the rest of the text in buffer */
+	int ix, iy, nscan = 0;
+	unsigned int pos = 0;
+	char txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""}, txt_z[GMT_LEN256] = {""};
+
+	ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
+	buffer[0] = '\0';	/* Initialize buffer to NULL */
+
+	if (Ctrl->Z.active) {	/* Expect z in 3rd column */
+		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
+		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
+		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_z)) nscan++;	/* Returns zcol and update pos */
+		strcpy (buffer, &record[pos]);
+		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
+		if ((gmt_scanf (GMT, txt_z, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.io.curr_rec[GMT_Z]) == GMT_IS_NAN)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad z coordinate, skipped)\n", rec_no);
+			return (-1);
+		}
+	}
+	else if (Ctrl->F.R_justify) {
+		gmt_just_to_lonlat (GMT, Ctrl->F.R_justify, gmt_M_is_geographic (GMT, GMT_IN), &GMT->current.io.curr_rec[ix], &GMT->current.io.curr_rec[iy]);
+		nscan = 2;	/* Since x,y are implicit */
+		nscan += sscanf (record, "%[^\n]\n", buffer);
+		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
+	}
+	else {
+		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
+		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
+		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
+		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
+	}
+
+	if (!Ctrl->F.R_justify) {
+		if (gmt_scanf (GMT, txt_x, GMT->current.io.col_type[GMT_IN][GMT_X], &GMT->current.io.curr_rec[ix]) == GMT_IS_NAN) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad x coordinate, skipped)\n", rec_no);
+			return (-1);
+		}
+		if (gmt_scanf (GMT, txt_y, GMT->current.io.col_type[GMT_IN][GMT_Y], &GMT->current.io.curr_rec[iy]) == GMT_IS_NAN) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad y coordinate, skipped)\n", rec_no);
+			return (-1);
+		}
+	}
+	return (nscan);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -602,7 +648,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	
 	bool master_record = false, skip_text_records = false, old_is_world, clip_set = false;
 
-	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col, rmode;
+	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col, rec_mode;
 	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;
 
 	size_t n_alloc = 0;
@@ -611,11 +657,13 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	double offset[2], tmp, *c_x = NULL, *c_y = NULL, *c_angle = NULL;
 
 	const char *token_separator = NULL;
-	char text[GMT_BUFSIZ] = {""}, cp_line[GMT_BUFSIZ] = {""}, label[GMT_BUFSIZ] = {""};
+	char text[GMT_BUFSIZ] = {""}, cp_line[GMT_BUFSIZ] = {""}, label[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""};
 	char pjust_key[5] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_f[GMT_LEN256] = {""};
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
 	char this_size[GMT_LEN256] = {""}, this_font[GMT_LEN256] = {""}, just_key[5] = {""};
-	
+
+	enum GMT_enum_geometry geometry;
+		
 	struct GMT_FONT *c_font = NULL;
 	struct PSTEXT_INFO T;
 	struct GMT_RECORD *In = NULL;
@@ -672,13 +720,22 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		clip_set = true;
 	}
 
-	in = GMT->current.io.curr_rec;
 	text_col = n_expected_cols - 1;
 
 	old_is_world = GMT->current.map.is_world;
 	GMT->current.map.is_world = true;
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+	if (Ctrl->M.active) {	/* There are no coordinates, just text lines */
+		rec_mode = GMT_READ_TEXT;
+		geometry = GMT_IS_TEXT;
+		in   = GMT->current.io.curr_rec;	/* Since text gets parsed and stored in this record */
+	}
+	else {
+		rec_mode = GMT_READ_MIXED;
+		geometry = GMT_IS_NONE;
+		GMT_Set_Columns (API, GMT_IN, 2 + Ctrl->Z.active, GMT_COL_FIX);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
@@ -694,16 +751,14 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	}
 	token_separator = (Ctrl->F.read_font) ? PSTEXT_TOKEN_SEPARATORS : GMT_TOKEN_SEPARATORS;	/* Cannot use commas if fonts are to be read */
 	rec_number = Ctrl->F.first;	/* Number of first output record label if -F+r<first> was selected */
-	rmode = (Ctrl->M.active) ? GMT_READ_TEXT : GMT_READ_MIXED;
 	
 	do {	/* Keep returning records until we have no more files */
-		if ((In = GMT_Get_Record (API, rmode, NULL)) == NULL) {	/* Keep returning records until we have no more files */
+		if ((In = GMT_Get_Record (API, rec_mode, NULL)) == NULL) {	/* Keep returning records until we have no more files */
 			if (gmt_M_rec_is_error (GMT)) {
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if (gmt_M_rec_is_table_header (GMT)) {
+			if (gmt_M_rec_is_table_header (GMT))
 				continue;	/* Skip table headers */
-			}
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 			/* Note: Blank lines may call through below - this is OK; hence no extra continue here */
@@ -711,10 +766,9 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 		/* Data record or segment header (line == NULL) to process */
 
-		in   = In->data;
-		line = In->text;
 		if (Ctrl->M.active) {	/* Paragraph mode */
 			if (gmt_M_rec_is_segment_header (GMT)) {
+				line = GMT->current.io.segment_header;
 				if (line[0] == '\0') continue;	/* Can happen if reading from API memory */
 				skip_text_records = false;
 				if (n_processed) {	/* Must output what we got */
@@ -724,14 +778,17 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					n_paragraphs++;
 				}
 
+				if ((nscan = validate_coord_and_text (GMT, Ctrl, n_read, line, buffer)) == -1) continue;	/* Failure */
+
 				if (Ctrl->F.R_justify) add_xy_via_justify (GMT, Ctrl->F.R_justify);
-				pos = 0;	nscan = 0;
+				
+				pos = 0;
 
 				if (gmt_M_compat_check (GMT, 4)) {
 					if (input_format_version == GMT_NOTSET) input_format_version = get_input_format_version (GMT, line, 1);
 				}
 				if (input_format_version == 4) {	/* Old-style GMT 4 records */
-					nscan += sscanf (line, "%s %lf %s %s %s %s %s\n", this_size, &T.paragraph_angle, this_font, just_key, txt_a, txt_b, pjust_key);
+					nscan += sscanf (buffer, "%s %lf %s %s %s %s %s\n", this_size, &T.paragraph_angle, this_font, just_key, txt_a, txt_b, pjust_key);
 					T.block_justify = gmt_just_decode (GMT, just_key, PSL_NO_DEF);
 					T.line_spacing = gmt_M_to_inch (GMT, txt_a);
 					T.paragraph_width  = gmt_M_to_inch (GMT, txt_b);
@@ -743,10 +800,10 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					n_expected_cols = 9 + Ctrl->Z.active;
 				}
 				else if (!Ctrl->F.nread)	/* All attributes given via -F (or we accept defaults); skip to paragraph attributes */
-					in_txt = line;
+					in_txt = buffer;
 				else {	/* Must pick up 1-3 attributes from data file */
 					for (k = 0; k < Ctrl->F.nread; k++) {
-						nscan += gmt_strtok (line, token_separator, &pos, text);
+						nscan += gmt_strtok (buffer, token_separator, &pos, text);
 						switch (Ctrl->F.read[k]) {
 							case 'f':
 								T.font = Ctrl->F.font;
@@ -760,7 +817,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 								break;
 						}
 					}
-					in_txt = &line[pos];
+					in_txt = &buffer[pos];
 				}
 
 				if (in_txt) {	/* Get the remaining parameters */
@@ -798,6 +855,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				master_record = true;
 			}
 			else {	/* Text block record */
+				line = In->text;
 				assert (line != NULL);	/* Sanity check */
 				if (skip_text_records) continue;	/* Skip all records for this paragraph */
 				if (!master_record) {
@@ -836,6 +894,8 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		}
 		else {	/* Plain style pstext input */
 			if (gmt_M_rec_is_segment_header (GMT)) continue;	/* Skip segment headers (line == NULL) */
+			in   = In->data;
+			line = In->text;
 			assert (line != NULL);
 			if (gmt_is_a_blank_line (line)) continue;	/* Skip blank lines or # comments */
 
@@ -843,7 +903,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			line = cp_line;
 
 			if (Ctrl->F.R_justify) add_xy_via_justify (GMT, Ctrl->F.R_justify);
-			pos = 0;	nscan = 2;
+			pos = 0;	nscan = 3;
 
 			if (gmt_M_compat_check (GMT, 4)) {
 				if (input_format_version == GMT_NOTSET) input_format_version = get_input_format_version (GMT, line, 0);

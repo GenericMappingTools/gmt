@@ -526,13 +526,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 			record[j++] = record[i];
 		}
 		record[j] = '\0';
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
 			return (API->error);
 		}
-		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_TEXT) != GMT_NOERROR) {	/* Sets output geometry */
 			return (API->error);
 		}
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */

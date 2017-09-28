@@ -497,7 +497,8 @@ enum GMT_enum_geometry {
 	GMT_IS_POLY	= 4U,
 	GMT_IS_PLP	= 7U,	/* Could be any one of POINT, LINE, POLY */
 	GMT_IS_SURFACE	= 8U,
-	GMT_IS_NONE	= 16U	/* Non-geographical items like color palettes */
+	GMT_IS_NONE	= 16U,	/* Non-geographical items like color palettes */
+	GMT_IS_TEXT	= 32U	/* Text strings which triggers ascii text reading */
 };
 
 /* These are two polygon modes */
@@ -506,11 +507,12 @@ enum GMT_enum_pol {
 	GMT_IS_HOLE      = 1U
 };
 
-/* Modes for setting output columns for rec-by-rec output */
+/* Modes for setting columns for rec-by-rec input/output */
 enum GMT_enum_columns {
 	GMT_COL_FIX = 0,
 	GMT_COL_ADD = 1,
-	GMT_COL_SUB = 2
+	GMT_COL_SUB = 2,
+	GMT_COL_VAR = 3
 };
 
 /* Return codes for GMT_Get_Record: */

@@ -259,6 +259,7 @@ struct GMT_IO {				/* Used to process input data records */
 	unsigned int io_nan_ncols;	/* Number of columns to consider for -s option */
 	unsigned int record_type;	/* Either GMT_READ_DATA (0), GMT_READ_TEXT (1), or GMT_READ_MIXED (2) */
 	unsigned int n_numerical_cols;	/* As it says */
+	unsigned int max_cols_to_read;	/* For ascii input [all] */
 	enum GMT_ogr_status ogr;	/* Tells us if current input source has OGR/GMT metadata (GMT_OGR_TRUE) or not (GMT_OGR_FALSE) or not set (GMT_OGR_UNKNOWN) */
 	unsigned int status;		/* 0	All is ok
 					   1	Current record is segment header

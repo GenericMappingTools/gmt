@@ -848,7 +848,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	/* Register all data sources */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 		Return (API->error, "Error initializing input\n");
 	}
 	/* Read the input data into memory */

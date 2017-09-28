@@ -1401,7 +1401,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	/* Multiple files in a file with their names */
 	if (Ctrl->L.active) {
 		struct GMT_DATASET *T = NULL;
-		if ((T = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL) {
+		if ((T = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL) {
 			gmt_M_free (GMT, line);
 			Return (GMT_RUNTIME_ERROR);
 		}

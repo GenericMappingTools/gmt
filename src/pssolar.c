@@ -457,7 +457,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			}
 		}
 		else {
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination*/
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination*/
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
@@ -465,7 +465,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
-			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_TEXT) != GMT_NOERROR) {	/* Sets output geometry */
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}

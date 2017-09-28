@@ -5363,7 +5363,7 @@ int gmt_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	/* Save the lon, lat, angle, text for each annotation to specified file*/
 
 	kind = gmt_M_is_geographic (GMT, GMT_IN);
-	if ((G->Out = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+	if ((G->Out = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create a dataset\n");
 		return (GMT_MEMORY_ERROR);	/* Establishes data output */
 	}
@@ -6432,7 +6432,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		P->n_bytes = PSL->internal.n;   /* Length of plot buffer; note P->n_alloc = 0 since we did not allocate this string here */
 		P->mode = PSL->internal.pmode;  /* Mode of plot (GMT_PS_{HEADER,TRAILER,COMPLETE}) */
 		P->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since created in PSL */
-		if (GMT_Write_Data (GMT->parent, GMT_IS_POSTSCRIPT, GMT_IS_REFERENCE, GMT_IS_NONE, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
+		if (GMT_Write_Data (GMT->parent, GMT_IS_POSTSCRIPT, GMT_IS_REFERENCE, GMT_IS_TEXT, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
 		}
 		/* coverity[leaked_storage] */	/* We can't free P because it was written into a 'memory file' */

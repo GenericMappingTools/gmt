@@ -423,13 +423,13 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 		Return (API->error);	/* Establishes data files or stdin */
 	}
 
 	/* Read in the input tables */
 
-	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 

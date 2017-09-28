@@ -1038,7 +1038,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			GMT->current.io.col_type[GMT_IN][ex1] = GMT_IS_FLOAT;
 			delayed_unit_scaling = (S.u_set && S.u != GMT_INCH);
 		}
-		if (S.read_symbol_cmd) GMT->current.io.read_mixed = true;	/* Must prepare for a rough ride */
+		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */
+			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
 		
 		do {	/* Keep returning records until we reach EOF */
 			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */

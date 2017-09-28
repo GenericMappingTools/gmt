@@ -244,7 +244,10 @@ API that are not backwards compatible with GMT 5:
 #. We introduce a new structure GMT_RECORD which is used by GMT_Get_Record and GMT_Put_Record.
    Because such records may have both leading numerical columns and a trailing string these
    functions needed to work with such a structure rather than either an array or string.
-
+#. The unused function GMT_Set_Columns needed to accept *direction* so it could be used for
+   either input or output.  it is rarely needed but some tools that must only read *N* numerical
+   columns and treat anything beyond that as trailing text (even if numbers) must set the
+   fixed input columns before reading.
 
 GMT resources
 -------------
@@ -819,7 +822,7 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Set_Comment_         | Assign a comment to a data resource                   |
     +--------------------------+-------------------------------------------------------+
-    | GMT_Set_Columns_         | Specify how many output columns to use for rec-by-rec |
+    | GMT_Set_Columns_         | Specify how many columns to use for rec-by-rec i/o    |
     +--------------------------+-------------------------------------------------------+
     | GMT_Set_Geometry_        | Specify data geometry for rec-by-rec i/o              |
     +--------------------------+-------------------------------------------------------+
@@ -2275,19 +2278,20 @@ upcoming writing.
 Specifying the number of output columns
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For record-based input/output you will need to specify the number of output
-columns, unless it equals the number of input columns.  This is done with
+For record-based input/output you will need to specify the number of
+columns, unless for output it equals the number of input columns.  This is done with
 the GMT_Set_Columns_ function:
 
 .. _GMT_Set_Columns:
 
   ::
 
-    void *GMT_Set_Columns (void *API, unsigned int n_columns, unsigned int mode);
+    void *GMT_Set_Columns (void *API, unsigned int direction, unsigned int n_columns, unsigned int mode);
 
-The ``n_columns`` is a number related to the number of output columns you plan to write, while
+The ``n_columns`` is a number related to the number of columns you plan to read/write, while
 ``mode`` controls what that number means.  Here, ``mode`` = ``GMT_COL_FIX`` means it is the actual
-number of output columns,  ``mode`` = ``GMT_COL_ADD`` means it should be added to the known number
+number of columns; this is the only mode allowed for input.  For output, you can also select from
+other modes.  Here,  ``mode`` = ``GMT_COL_ADD`` means it should be added to the known number
 of input columns to arrive at the number of final output columns, while ``mode`` = ``GMT_COL_SUB``
 means this value should be subtracted from the number of input columns to find the number of
 output columns.

@@ -354,13 +354,13 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 	off[0] = Grid->header->mx;	off[1] = 1; 	off[2] = -off[0]; off[3] = -off[1];
 	
 	if (Ctrl->L.active) {
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
 		}
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_NOERROR) {	/* We don't really care or know about columns so must use 1 */
