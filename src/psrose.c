@@ -469,7 +469,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	/* Read data and do some stats */
 
 	n = 0;
-	n_in = (GMT->common.i.active && GMT->common.i.n_cols == 1) ? 1 : 2;
+	n_in = (GMT->common.i.select && GMT->common.i.n_cols == 1) ? 1 : 2;
 
 	if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_NOERROR) {
 		Return (error);

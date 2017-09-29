@@ -177,8 +177,8 @@ struct GMT_COMMON {
 		char *multi_segment;    /* To hold a multi-segment string */
 		char string[GMT_LEN256];
 	} h;
-	struct i {	/* -i<col>|<colrange>,... */
-		bool active, orig;
+	struct i {	/* -i[<col>|<colrange>,...][+t[<col>]] */
+		bool active, select, orig;
 		uint64_t n_cols;
 		uint64_t n_actual_cols;
 		char string[GMT_LEN64];
@@ -195,8 +195,8 @@ struct GMT_COMMON {
 		double range[2], half_range[2];	/* For periodic non-geographic grids */
 		char string[GMT_LEN64];	/* Copy of argument */
 	} n;
-	struct o {	/* -o<col>|<colrange>,... */
-		bool active;
+	struct o {	/* -o[<col>|<colrange>,...][+t[<col>]] */
+		bool active, select, orig;
 		uint64_t n_cols;
 	} o;
 	struct p {	/* -p<az>[/<el>[/<z0>]]+wlon0/lat0[/z0]][+vx0[cip]/y0[cip]] */
