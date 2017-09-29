@@ -13064,6 +13064,7 @@ unsigned int gmtlib_get_pos_of_filename (const char *url) {
 	pos--;	/* Last character in name */
 	while (url[pos] && pos > 0 && url[pos] != '/') pos--;	/* Wind to first slash */
 	if (url[pos] == '/') pos++;	/* First letter after last slash */
+	if (url[pos] == '@') pos++;	/* Step over leading @ for cache files */
 	return (unsigned int)pos;
 }
 
