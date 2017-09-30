@@ -221,8 +221,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 						Ctrl->T.active = false;
 						Ctrl->E.rot.w = atof (txt_c);
 						Ctrl->E.rot.age = GMT->session.d_NaN;
-						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->E.rot.lon), txt_a);
-						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->E.rot.lat), txt_b);
+						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], false, &Ctrl->E.rot.lon), txt_a);
+						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], false, &Ctrl->E.rot.lat), txt_b);
 					}
 					else {	/* Must be Ttstart/tstop/tinc */
 						double min, max, inc;

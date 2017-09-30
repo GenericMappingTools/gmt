@@ -208,7 +208,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 					if (Ctrl->A.years)
 						Ctrl->A.time = atof (tfixed);
 					else
-						gmt_scanf_arg (GMT, tfixed, GMT_IS_ABSTIME, &Ctrl->A.time);
+						gmt_scanf_arg (GMT, tfixed, GMT_IS_ABSTIME, false, &Ctrl->A.time);
 				}
 				break;
 			case 'C':	/* Alternate CM4 coefficient file */

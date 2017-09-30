@@ -336,8 +336,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 					++n_errors;
 				}
 				else {
-					gmt_scanf_arg (GMT, txt_a, GMT_IS_UNKNOWN, &Ctrl->T.min);
-					gmt_scanf_arg (GMT, txt_b, GMT_IS_UNKNOWN, &Ctrl->T.max);
+					gmt_scanf_arg (GMT, txt_a, GMT_IS_UNKNOWN, false, &Ctrl->T.min);
+					gmt_scanf_arg (GMT, txt_b, GMT_IS_UNKNOWN, false, &Ctrl->T.max);
 					if (strstr (opt->arg, "+n") || opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of points instead; calculate inc */
 						Ctrl->T.inc = (Ctrl->T.max - Ctrl->T.min) / (Ctrl->T.inc - 1.0);
 					}

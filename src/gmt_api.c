@@ -10445,7 +10445,7 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar) {
 			value /= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Convert to default unit */
 		}
 		else	/* Perhaps coordinates or floats */
-			(void) gmt_scanf_arg (GMT, p, GMT_IS_UNKNOWN, &value);
+			(void) gmt_scanf_arg (GMT, p, GMT_IS_UNKNOWN, false, &value);
 		par[npar++] = value;
 	}
 	/* Reset col_types to what they were before the parsing */

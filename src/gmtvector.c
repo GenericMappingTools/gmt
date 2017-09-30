@@ -233,8 +233,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct G
 						}
 						else if (n == 3) {	/* 3-D spherical rotation */
 							Ctrl->T.mode = DO_ROT3D;
-							n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->T.par[0]), txt_a);
-							n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->T.par[1]), txt_b);
+							n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], false, &Ctrl->T.par[0]), txt_a);
+							n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], false, &Ctrl->T.par[1]), txt_b);
 							Ctrl->T.par[2] = atof (txt_c);
 						}
 						else {
@@ -280,8 +280,8 @@ GMT_LOCAL unsigned int decode_vector (struct GMT_CTRL *GMT, char *arg, double co
 	n_out = n;
 	if (n == 2) {	/* Got lon/lat, r/theta, or x/y */
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {
-			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][ix], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][ix], &coord[ix]), txt_a);
-			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][iy], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][iy], &coord[iy]), txt_b);
+			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][ix], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][ix], false, &coord[ix]), txt_a);
+			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][iy], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][iy], false, &coord[iy]), txt_b);
 			if (geocentric) coord[GMT_Y] = gmt_lat_swap (GMT, coord[GMT_Y], GMT_LATSWAP_G2O);
 			gmt_geo_to_cart (GMT, coord[GMT_Y], coord[GMT_X], coord, true);	/* get x/y/z */
 			n_out = 3;

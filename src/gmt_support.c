@@ -7019,7 +7019,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			X->mode &= GMT_CPT_HINGED;
 			X->has_hinge = 1;
 			k = 7;	while (h[k] == ' ' || h[k] == '\t') k++;	/* Skip any leading spaces or tabs */
-			gmt_scanf_arg (GMT, &h[k], GMT_IS_UNKNOWN, &X->hinge);
+			gmt_scanf_arg (GMT, &h[k], GMT_IS_UNKNOWN, false, &X->hinge);
 			continue;	/* Don't want this instruction to be also kept as a comment */
 		}
 		else if ((h = strstr (line, "RANGE ="))) {	/* CPT has a default range */
@@ -7032,8 +7032,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				gmt_M_free (GMT, X);
 				return (NULL);
 			}
-			gmt_scanf_arg (GMT, T1, GMT_IS_UNKNOWN, &X->minmax[0]);
-			gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, &X->minmax[1]);
+			gmt_scanf_arg (GMT, T1, GMT_IS_UNKNOWN, false, &X->minmax[0]);
+			gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, false, &X->minmax[1]);
 			X->has_range = 1;
 			continue;	/* Don't want this instruction to be also kept as a comment */
 		}
@@ -7161,7 +7161,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		if (nread <= 0) continue;	/* Probably a line with spaces - skip */
 		if (X->model & GMT_CMYK && nread != 10) error = true;	/* CMYK should results in 10 fields */
 		if (!(X->model & GMT_CMYK) && !(nread == 2 || nread == 4 || nread == 8)) error = true;	/* HSV or RGB should result in 8 fields, gray, patterns, or skips in 4 */
-		gmt_scanf_arg (GMT, T0, GMT_IS_UNKNOWN, &X->data[n].z_low);
+		gmt_scanf_arg (GMT, T0, GMT_IS_UNKNOWN, false, &X->data[n].z_low);
 		X->data[n].skip = false;
 		if (T1[0] == '-') {				/* Skip this slice */
 			if (nread != 4) {
@@ -7172,7 +7172,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				gmt_M_free (GMT, X);
 				return (NULL);
 			}
-			gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, &X->data[n].z_high);
+			gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, false, &X->data[n].z_high);
 			X->data[n].skip = true;		/* Don't paint this slice if possible*/
 			gmt_M_rgb_copy (X->data[n].rgb_low,  GMT->current.setting.ps_page_rgb);	/* If we must paint, use page color */
 			gmt_M_rgb_copy (X->data[n].rgb_high, GMT->current.setting.ps_page_rgb);
@@ -7193,7 +7193,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				X->categorical = true;
 			}
 			else if (nread == 4) {
-				gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, &X->data[n].z_high);
+				gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, false, &X->data[n].z_high);
 			}
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: z-slice with pattern fill not in [z0 pattern z1 -] format!\n");
@@ -7218,22 +7218,22 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				X->categorical = true;
 			}
 			else if (nread == 4) {	/* gray shades or color names */
-				gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, &X->data[n].z_high);
+				gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, false, &X->data[n].z_high);
 				snprintf (clo, GMT_LEN64, "%s", T1);
 				snprintf (chi, GMT_LEN64, "%s", T3);
 			}
 			else if (X->model & GMT_CMYK) {
-				gmt_scanf_arg (GMT, T5, GMT_IS_UNKNOWN, &X->data[n].z_high);
+				gmt_scanf_arg (GMT, T5, GMT_IS_UNKNOWN, false, &X->data[n].z_high);
 				snprintf (clo, GMT_LEN64, "%s/%s/%s/%s", T1, T2, T3, T4);
 				snprintf (chi, GMT_LEN64, "%s/%s/%s/%s", T6, T7, T8, T9);
 			}
 			else if (X->model & GMT_HSV) {
-				gmt_scanf_arg (GMT, T4, GMT_IS_UNKNOWN, &X->data[n].z_high);
+				gmt_scanf_arg (GMT, T4, GMT_IS_UNKNOWN, false, &X->data[n].z_high);
 				snprintf (clo, GMT_LEN64, "%s-%s-%s", T1, T2, T3);
 				snprintf (chi, GMT_LEN64, "%s-%s-%s", T5, T6, T7);
 			}
 			else {			/* RGB */
-				gmt_scanf_arg (GMT, T4, GMT_IS_UNKNOWN, &X->data[n].z_high);
+				gmt_scanf_arg (GMT, T4, GMT_IS_UNKNOWN, false, &X->data[n].z_high);
 				snprintf (clo, GMT_LEN64, "%s/%s/%s", T1, T2, T3);
 				snprintf (chi, GMT_LEN64, "%s/%s/%s", T5, T6, T7);
 			}
@@ -9101,15 +9101,15 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			error += support_code_to_lonlat (GMT, txt_a, &S->data[GMT_X][0], &S->data[GMT_Y][0]);
 		}
 		else if (n == 4) {	/* Easy, got lon0/lat0/lon1/lat1 */
-			error += gmt_verify_expectations (GMT, xtype, gmt_scanf_arg (GMT, txt_a, xtype, &S->data[GMT_X][0]), txt_a);
-			error += gmt_verify_expectations (GMT, ytype, gmt_scanf_arg (GMT, txt_b, ytype, &S->data[GMT_Y][0]), txt_b);
-			error += gmt_verify_expectations (GMT, xtype, gmt_scanf_arg (GMT, txt_c, xtype, &S->data[GMT_X][1]), txt_c);
-			error += gmt_verify_expectations (GMT, ytype, gmt_scanf_arg (GMT, txt_d, ytype, &S->data[GMT_Y][1]), txt_d);
+			error += gmt_verify_expectations (GMT, xtype, gmt_scanf_arg (GMT, txt_a, xtype, false, &S->data[GMT_X][0]), txt_a);
+			error += gmt_verify_expectations (GMT, ytype, gmt_scanf_arg (GMT, txt_b, ytype, false, &S->data[GMT_Y][0]), txt_b);
+			error += gmt_verify_expectations (GMT, xtype, gmt_scanf_arg (GMT, txt_c, xtype, false, &S->data[GMT_X][1]), txt_c);
+			error += gmt_verify_expectations (GMT, ytype, gmt_scanf_arg (GMT, txt_d, ytype, false, &S->data[GMT_Y][1]), txt_d);
 		}
 		else if (n == 2) {	/* More complicated: either <code>/<code> or <clon>/<clat> with +a|o|r */
 			if ((p_mode & GMT_GOT_AZIM) || (p_mode & GMT_GOT_ORIENT) || (p_mode & GMT_GOT_RADIUS)) {	/* Got a center point via coordinates */
-				error += gmt_verify_expectations (GMT, xtype, gmt_scanf_arg (GMT, txt_a, xtype, &S->data[GMT_X][0]), txt_a);
-				error += gmt_verify_expectations (GMT, ytype, gmt_scanf_arg (GMT, txt_b, ytype, &S->data[GMT_Y][0]), txt_b);
+				error += gmt_verify_expectations (GMT, xtype, gmt_scanf_arg (GMT, txt_a, xtype, false, &S->data[GMT_X][0]), txt_a);
+				error += gmt_verify_expectations (GMT, ytype, gmt_scanf_arg (GMT, txt_b, ytype, false, &S->data[GMT_Y][0]), txt_b);
 			}
 			else { /* Easy, got <code>/<code> */
 				error += support_code_to_lonlat (GMT, txt_a, &S->data[GMT_X][0], &S->data[GMT_Y][0]);
@@ -9118,13 +9118,13 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 		}
 		else if (n == 3) {	/* More complicated: <code>/<lon>/<lat> or <lon>/<lat>/<code> */
 			if (support_code_to_lonlat (GMT, txt_a, &S->data[GMT_X][0], &S->data[GMT_Y][0])) {	/* Failed, so try the other way */
-				error += gmt_verify_expectations (GMT, xtype, gmt_scanf_arg (GMT, txt_a, xtype, &S->data[GMT_X][0]), txt_a);
-				error += gmt_verify_expectations (GMT, ytype, gmt_scanf_arg (GMT, txt_b, ytype, &S->data[GMT_Y][0]), txt_b);
+				error += gmt_verify_expectations (GMT, xtype, gmt_scanf_arg (GMT, txt_a, xtype, false, &S->data[GMT_X][0]), txt_a);
+				error += gmt_verify_expectations (GMT, ytype, gmt_scanf_arg (GMT, txt_b, ytype, false, &S->data[GMT_Y][0]), txt_b);
 				error += support_code_to_lonlat (GMT, txt_c, &S->data[GMT_X][1], &S->data[GMT_Y][1]);
 			}
 			else {	/* Worked, pick up second point */
-				error += gmt_verify_expectations (GMT, xtype, gmt_scanf_arg (GMT, txt_b, xtype, &S->data[GMT_X][1]), txt_b);
-				error += gmt_verify_expectations (GMT, ytype, gmt_scanf_arg (GMT, txt_c, ytype, &S->data[GMT_Y][1]), txt_c);
+				error += gmt_verify_expectations (GMT, xtype, gmt_scanf_arg (GMT, txt_b, xtype, false, &S->data[GMT_X][1]), txt_b);
+				error += gmt_verify_expectations (GMT, ytype, gmt_scanf_arg (GMT, txt_c, ytype, false, &S->data[GMT_Y][1]), txt_c);
 			}
 		}
 		for (n = 0; n < 2; n++) {	/* Reset any zmin/max settings if used and applicable */

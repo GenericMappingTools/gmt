@@ -219,11 +219,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				if (strchr (opt->arg, '/')) {	/* Got start/stop */
 					Ctrl->S.mode = 1;
 					sscanf (opt->arg, "%[^/]/%s", A, B);
-					gmt_scanf_arg (GMT, A, GMT_IS_UNKNOWN, &Ctrl->S.start);
-					gmt_scanf_arg (GMT, B, GMT_IS_UNKNOWN, &Ctrl->S.stop);
+					gmt_scanf_arg (GMT, A, GMT_IS_UNKNOWN, false, &Ctrl->S.start);
+					gmt_scanf_arg (GMT, B, GMT_IS_UNKNOWN, false, &Ctrl->S.stop);
 				}
 				else
-					gmt_scanf_arg (GMT, opt->arg, GMT_IS_UNKNOWN, &Ctrl->S.start);
+					gmt_scanf_arg (GMT, opt->arg, GMT_IS_UNKNOWN, false, &Ctrl->S.start);
 				break;
 			case 'T':
 				Ctrl->T.active = true;

@@ -350,7 +350,7 @@ GMT_LOCAL double gmtio_convert_aspatial_value (struct GMT_CTRL *GMT, unsigned in
 			value = atof (V);
 			break;
 		case GMT_DATETIME:
-			gmt_scanf_arg (GMT, V, GMT_IS_ABSTIME, &value);
+			gmt_scanf_arg (GMT, V, GMT_IS_ABSTIME, false, &value);
 			break;
 		default:	/* Give NaN */
 			value = GMT->session.d_NaN;
@@ -3023,7 +3023,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 				if (strchr (token, 'T'))	/* Found a 'T' in the argument - must assume ISO Absolute time or else we got junk (and got -> GMT_IS_NAN) */
 					got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
 				else	/* Let gmt_scanf_arg figure it out for us by passing UNKNOWN since ABSTIME has been dealt above */
-					got = gmt_scanf_arg (GMT, token, GMT_IS_UNKNOWN, &value);
+					got = gmt_scanf_arg (GMT, token, GMT_IS_UNKNOWN, false, &value);
 				break;
 		}
 		switch (got) {	/* Decide to keep old type, update type, or maybe we got trailing ext */
@@ -3768,7 +3768,7 @@ GMT_LOCAL int gmtio_load_aspatial_values (struct GMT_CTRL *GMT, struct GMT_OGR *
 				GMT->current.io.curr_rec[GMT->common.a.col[k]] = atof (G->tvalue[id]);
 				break;
 			case GMT_DATETIME:
-				gmt_scanf_arg (GMT, G->tvalue[id], GMT_IS_ABSTIME, &GMT->current.io.curr_rec[GMT->common.a.col[k]]);
+				gmt_scanf_arg (GMT, G->tvalue[id], GMT_IS_ABSTIME, false, &GMT->current.io.curr_rec[GMT->common.a.col[k]]);
 				break;
 			default:	/* Do nothing (string) */
 				break;
@@ -6217,12 +6217,14 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 }
 
 /*! . */
-int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *val) {
+int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool cmd, double *val) {
 	/* Version of gmt_scanf used for cpt & command line arguments only (not data records).
 	 * It differs from gmt_scanf in that if the expectation is GMT_IS_UNKNOWN it will
 	 * check to see if the argument is (1) an absolute time string, (2) a geographical
 	 * location string, or if not (3) a floating point string, etc.  We carefully check
 	 * to detect free-form strings which should result in a NaN.
+	 * When cmd is false then we disallow the check for trailing DdGg meaning geographic
+	 * since that is only valid on command line and in a data record the "d" mans degree.
 	 */
 
 	unsigned int got;
@@ -6252,7 +6254,7 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, doub
 				expectation = GMT_IS_LON;
 			else if (strchr ("SN", c))		/* Found trailing S or N - assume Geographic latitudes */
 				expectation = GMT_IS_LAT;
-			else if (strchr ("DdGg", c))		/* Found trailing G or D - assume Geographic coordinate */
+			else if (cmd && strchr ("DdGg", c))	/* Found trailing G or D - assume Geographic coordinate */
 				expectation = GMT_IS_GEO;
 			else if (strchr (s, ':'))		/* Found a : in the argument - assume Geographic coordinates */
 				expectation = GMT_IS_GEO;

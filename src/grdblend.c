@@ -139,7 +139,7 @@ GMT_LOCAL void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 
 	i = pos = 0;
 	while (!error && (gmt_strtok (string, "/", &pos, text))) {
-		error += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][i/2], gmt_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][i/2], &wesn[i]), text);
+		error += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][i/2], gmt_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][i/2], true, &wesn[i]), text);
 		i++;
 	}
 	if (error || (i != 4) || gmt_check_region (GMT, wesn)) {

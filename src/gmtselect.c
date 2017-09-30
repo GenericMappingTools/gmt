@@ -509,12 +509,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				Ctrl->Z.limit[Ctrl->Z.n_tests].min = -DBL_MAX;
 				Ctrl->Z.limit[Ctrl->Z.n_tests].max = +DBL_MAX;
 				if (!(za[0] == '-' && za[1] == '\0')) n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
-					gmt_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].min), za);
+					gmt_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], false, &Ctrl->Z.limit[Ctrl->Z.n_tests].min), za);
 				if (j == 1)
 					Ctrl->Z.limit[Ctrl->Z.n_tests].equal = true;
 				else {
 					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
-						gmt_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
+						gmt_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], false, &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
 				}
 				n_errors += gmt_M_check_condition (GMT, Ctrl->Z.limit[Ctrl->Z.n_tests].max <= Ctrl->Z.limit[Ctrl->Z.n_tests].min, "Syntax error: -Z must have zmax > zmin!\n");
 				Ctrl->Z.limit[Ctrl->Z.n_tests].col = col;

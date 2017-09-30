@@ -7071,7 +7071,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		}
 		for (icol = GMT_X; icol <= GMT_Y; icol++) {
 			if (GMT->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
-				got = gmt_scanf_arg (GMT, X[icol], GMT->current.io.col_type[GMT_IN][icol], &orig[icol]);
+				got = gmt_scanf_arg (GMT, X[icol], GMT->current.io.col_type[GMT_IN][icol], true, &orig[icol]);
 				if (got & GMT_IS_GEO)
 					GMT->current.io.col_type[GMT_IN][icol] = got;
 				else if (got & GMT_IS_RATIME)
@@ -7249,7 +7249,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		if (inv_project)	/* input is distance units */
 			p[i] = atof (text);
 		else if (GMT->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
-			got = gmt_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][icol], &p[i]);
+			got = gmt_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][icol], true, &p[i]);
 			if (got & GMT_IS_GEO)
 				GMT->current.io.col_type[GMT_IN][icol] = got;
 			else if ((got & GMT_IS_RATIME) || got == GMT_IS_ARGTIME)

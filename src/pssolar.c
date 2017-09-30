@@ -199,7 +199,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 						parse_date_tz(pch, &date, &TZ);
 						Ctrl->I.TZ = TZ;
 						if (date) {
-							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, &t);
+							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, false, &t);
 							gmtlib_gcal_from_dt (GMT, t, &Ctrl->I.calendar);	/* Convert t to a complete calendar structure */
 							gmt_M_str_free (date);
 						}
@@ -219,7 +219,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 						parse_date_tz(pch, &date, &TZ);
 						Ctrl->T.TZ = TZ;
 						if (date) {
-							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, &t);
+							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, false, &t);
 							gmtlib_gcal_from_dt (GMT, t, &Ctrl->T.calendar);	/* Convert t to a complete calendar structure */
 							gmt_M_str_free (date);
 						}
