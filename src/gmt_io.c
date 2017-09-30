@@ -919,6 +919,7 @@ GMT_LOCAL void gmtio_format_geo_output (struct GMT_CTRL *GMT, bool is_lat, doubl
 	int k, n_items, d, m, s, m_sec, h_pos = 0;
 	bool minus;
 	char hemi[3] = {""}, *f = NULL;
+	static char *suffix[2][2] = {{"W", "E"}, {"S", "N"}};	/* Just for decimal degrees when no_sign is true */
 
 	if (is_lat) {	/* Column is supposedly latitudes */
 		if (fabs (geo) > 90.0) {
@@ -930,7 +931,13 @@ GMT_LOCAL void gmtio_format_geo_output (struct GMT_CTRL *GMT, bool is_lat, doubl
 	else gmt_lon_range_adjust (GMT->current.io.geo.range, &geo);	/* Adjust longitudes */
 	if (GMT->current.io.geo.decimal) {	/* Easy */
 		f = (GMT->current.io.o_format[is_lat]) ? GMT->current.io.o_format[is_lat] : GMT->current.setting.format_float_out;
-		sprintf (text, f, geo);
+		if (GMT->current.io.geo.no_sign) {
+			k = (geo < 0.0) ? 0 : 1;
+			sprintf (text, f, fabs(geo));
+			strcat (text, suffix[is_lat][k]);
+		}
+		else
+			sprintf (text, f, geo);
 		return;
 	}
 
@@ -2966,6 +2973,25 @@ void gmtlib_update_outcol_type (struct GMT_CTRL *GMT) {
 		GMT->current.io.col_type[GMT_OUT][col] = gmtio_get_coltype (GMT, col);
 }
 
+GMT_LOCAL unsigned int gmtio_get_coltype_name_index (struct GMT_CTRL *GMT, unsigned int dir, unsigned int col) {
+	unsigned int k;
+	switch (GMT->current.io.col_type[dir][col]) {
+		case GMT_IS_FLOAT:        k = 0;	break;
+		case GMT_IS_LAT:          k = 1;	break;
+		case GMT_IS_LON:          k = 2;	break;
+		case GMT_IS_GEO:          k = 3;	break;
+		case GMT_IS_RELTIME:      k = 4;	break;
+		case GMT_IS_ABSTIME:      k = 5;	break;
+		case GMT_IS_DURATION:     k = 6;	break;
+		case GMT_IS_DIMENSION:    k = 7;	break;
+		case GMT_IS_GEODIMENSION: k = 8;	break;
+		case GMT_IS_AZIMUTH:      k = 9;	break;
+		case GMT_IS_ANGLE:        k = 10;	break;
+		default: k = 0;	break;
+	}
+	return (k);
+}
+
 /*! . */
 GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char *record, size_t *tpos, uint64_t *n_columns) {
 	/* Examines this data record to determine the nature of the input.  There
@@ -3005,27 +3031,29 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 				found_text = true;
 				GMT->current.io.col_type[GMT_OUT][*n_columns] = GMT_IS_STRING;	/* In output type not set we might as well set it to this */
 				break;
+#if 0
 			case GMT_IS_DIMENSION:	/* Converted something recognized as a dimension, but that is only allowed if requested */
 				if (type == GMT_IS_DIMENSION)
 					(*n_columns)++;	/* One more succesful numerical parsing */
 				else	/* It is text */
 					found_text = true;
 				break;
+#endif
 			case GMT_IS_FLOAT:	/* Resolved to be a float, do we update expecatation? */
 				if (GMT->current.io.variable_in_columns || type == GMT_IS_UNKNOWN)	/* If it could vary from time to time or we never knew, yes we do */
 					GMT->current.io.col_type[GMT_IN][*n_columns] = got;
 				(*n_columns)++;	/* One more succesful numerical parsing */
 				break;
-				case GMT_IS_LON:
-				case GMT_IS_LAT:
-				case GMT_IS_GEO:
-				case GMT_IS_ABSTIME:
-				case GMT_IS_DURATION:
-					GMT->current.io.col_type[GMT_IN][*n_columns] = got;
-					if (GMT->current.io.col_type[GMT_OUT][*n_columns] == GMT_IS_UNKNOWN || GMT->current.io.col_type[GMT_OUT][*n_columns] == GMT_IS_FLOAT)
-						GMT->current.io.col_type[GMT_OUT][*n_columns] = got;	/* In output type not set we might as well set it to this */
-					(*n_columns)++;	/* One more succesful numerical parsing */
-					break;
+			case GMT_IS_LON:
+			case GMT_IS_LAT:
+			case GMT_IS_GEO:
+			case GMT_IS_ABSTIME:
+			case GMT_IS_DURATION:
+				GMT->current.io.col_type[GMT_IN][*n_columns] = got;
+				if (GMT->current.io.col_type[GMT_OUT][*n_columns] == GMT_IS_UNKNOWN || GMT->current.io.col_type[GMT_OUT][*n_columns] == GMT_IS_FLOAT)
+					GMT->current.io.col_type[GMT_OUT][*n_columns] = got;	/* In output type not set we might as well set it to this */
+				(*n_columns)++;	/* One more succesful numerical parsing */
+				break;
 			default:	/* This is when we found GMT_IS_{DIMENSION,GEODIMENSION,AZIMUTH,ANGLE} */
 				GMT->current.io.col_type[GMT_IN][*n_columns] = got;
 				(*n_columns)++;	/* One more succesful numerical parsing */
@@ -3039,26 +3067,28 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Tell user how we interpreted their first record */
 		char record[GMT_BUFSIZ] = {""};
 		static char *msg[2] = {"Source", "Selected"};
-		unsigned int k, dir, nn;
+		unsigned int k, dir, nn, col;
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "ASCII source scanned: Number of numerical columns = %" PRIu64 " Record type = %s\n", *n_columns, flavor[ret_val]);
-		for (dir = 0; dir <= GMT_OUT; dir++) {
-			if (dir == GMT_OUT && !(GMT->common.i.select && GMT->common.i.n_cols > 0)) continue;
-			nn = (dir == GMT_IN) ? *n_columns : GMT->common.i.n_cols;
+		for (dir = 0; dir < 2; dir++) {
+			if (dir == 1 && !(GMT->common.i.select && GMT->common.i.n_cols > 0)) continue;
+			nn = (dir == 0) ? *n_columns : GMT->common.i.n_cols;
 			record[0] = '\0';
 			for (pos = 0; pos < nn; pos++) {
-				switch (GMT->current.io.col_type[dir][pos]) {
-					case GMT_IS_FLOAT:        k = 0;	break;
-					case GMT_IS_LAT:          k = 1;	break;
-					case GMT_IS_LON:          k = 2;	break;
-					case GMT_IS_GEO:          k = 3;	break;
-					case GMT_IS_RELTIME:      k = 4;	break;
-					case GMT_IS_ABSTIME:      k = 5;	break;
-					case GMT_IS_DURATION:     k = 6;	break;
-					case GMT_IS_DIMENSION:    k = 7;	break;
-					case GMT_IS_GEODIMENSION: k = 8;	break;
-					case GMT_IS_AZIMUTH:      k = 9;	break;
-					case GMT_IS_ANGLE:        k = 10;	break;
-				}
+				k = gmtio_get_coltype_name_index (GMT, dir, pos);
+				if (pos) strcat (record, ",");
+				strcat (record, GMT_coltype_name[k]);
+			}
+			if (GMT->current.io.trailing_text[GMT_IN]) {
+				if (pos) strcat (record, ",");
+				strcat (record, "String");
+			}
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s col types: (%s)\n", msg[dir], record);
+		}
+		if (GMT->common.o.select) {
+			record[0] = '\0';
+			for (pos = 0; pos < GMT->common.o.n_cols; pos++) {
+				col = GMT->current.io.col[GMT_OUT][pos].col;
+				k = gmtio_get_coltype_name_index (GMT, GMT_OUT, col);
 				if (pos) strcat (record, ",");
 				strcat (record, GMT_coltype_name[k]);
 			}
@@ -3066,7 +3096,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 				if (pos) strcat (record, ",");
 				strcat (record, "String");
 			}
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s col types: (%s)\n", msg[dir], record);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output col types: (%s)\n", record);
 		}
 	}
 	
@@ -6218,9 +6248,9 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, doub
 			}
 			else if (c == 't')		/* Found trailing t - assume Relative time */
 				expectation = GMT_IS_ARGTIME;
-			else if (strchr ("WwEe", c))		/* Found trailing W or E - assume Geographic longitudes */
+			else if (strchr ("WE", c))		/* Found trailing W or E - assume Geographic longitudes */
 				expectation = GMT_IS_LON;
-			else if (strchr ("SsNn", c))		/* Found trailing S or N - assume Geographic latitudes */
+			else if (strchr ("SN", c))		/* Found trailing S or N - assume Geographic latitudes */
 				expectation = GMT_IS_LAT;
 			else if (strchr ("DdGg", c))		/* Found trailing G or D - assume Geographic coordinate */
 				expectation = GMT_IS_GEO;

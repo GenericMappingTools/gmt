@@ -421,7 +421,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gmtconvert main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 		Return (API->error);	/* Establishes data files or stdin */
@@ -633,7 +633,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		unsigned int flag[3] = {0, 0, GMT_WRITE_SEGMENT};
 		struct GMT_DATASET *D2 = NULL;
 		if ((D2 = GMT_Convert_Data (API, D[GMT_OUT], GMT_IS_DATASET, NULL, GMT_IS_DATASET, flag)) == NULL) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Error collating each table's segments into a single segment per table.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Error collating each table's segments into a single segment per table.\n");
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, &D[GMT_OUT]) != GMT_NOERROR) {	/* Remove the previously registered output dataset */
@@ -646,7 +646,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		uint64_t max_len = 0;
 		bool do_it = true;
 		if (Ctrl->N.col >= D[GMT_OUT]->n_columns) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Column selected (%d) as sorting key is outside range of valid columns [0-%d].  No sorting performed\n", (int)Ctrl->N.col, (int)(D[GMT_OUT]->n_columns - 1));
+			GMT_Report (API, GMT_MSG_VERBOSE, "Column selected (%d) as sorting key is outside range of valid columns [0-%d].  No sorting performed\n", (int)Ctrl->N.col, (int)(D[GMT_OUT]->n_columns - 1));
 			do_it = false;
 		}
 		for (tbl = 0; do_it && tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
@@ -677,9 +677,9 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	}
 	if (prevent_seg_headers) GMT->current.io.skip_headers_on_outout = false;	/* Restore to default if it was changed for file output */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " tables %s, %" PRIu64 " records passed (input cols = %d; output cols = %d)\n",
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " tables %s, %" PRIu64 " records passed (input cols = %d; output cols = %d)\n",
 		D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
-	if (Ctrl->Q.active || Ctrl->S.active) GMT_Report (API, GMT_MSG_VERBOSE, "Extracted %" PRIu64 " from a total of %" PRIu64 " segments\n", n_out_seg, D[GMT_OUT]->n_segments);
+	if (Ctrl->Q.active || Ctrl->S.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Extracted %" PRIu64 " from a total of %" PRIu64 " segments\n", n_out_seg, D[GMT_OUT]->n_segments);
 
 	Return (GMT_NOERROR);
 }

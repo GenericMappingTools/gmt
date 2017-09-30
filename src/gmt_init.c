@@ -7457,7 +7457,7 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 		}
 
 		if (!strcmp (p, "t"))	/* Got the trailing test "column" */
-			GMT->current.io.trailing_text[GMT_IN] = true;
+			GMT->current.io.trailing_text[GMT_IN] = GMT->current.io.trailing_text[GMT_OUT] = true;
 		else {	/* Now process column range */
 			if ((inc = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
 
