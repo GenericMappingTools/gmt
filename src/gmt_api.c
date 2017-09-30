@@ -11131,7 +11131,8 @@ void *GMT_Alloc_Segment (void *V_API, unsigned int mode, uint64_t n_rows, uint64
 		first = false;
 	else if ((Snew = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT)) == NULL) /* Something went wrong */
 		return_null (V_API, GMT_MEMORY_ERROR);
-	if (gmt_alloc_datasegment (API->GMT, Snew, n_rows, n_columns, mode, first))  {	/* Something went wrong */
+		/* Only reallocate if desired n_rows differ from current n_rows */
+	if (n_rows && n_rows != Snew->n_rows && gmt_alloc_datasegment (API->GMT, Snew, n_rows, n_columns, mode, first))  {	/* Something went wrong */
 		if (first) gmt_M_free (API->GMT, Snew);
 		return_null (V_API, GMT_MEMORY_ERROR);
 	}

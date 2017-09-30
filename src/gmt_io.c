@@ -3026,7 +3026,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	//fprintf (stderr, "\n");
 	
 	*tpos = pos;
-	while (!found_text && (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, token))) {
+	while (!found_text && (gmt_strtok (record, GMT_TOKEN_SEPARATORS_SCANNER, &pos, token))) {
 		type = GMT->current.io.col_type[GMT_IN][col];
 		switch (type) {	/* Parse token based on what we think we have */
 			case GMT_IS_ABSTIME:	/* Here we must read with expected format set via -J, -R, or -f */
@@ -3263,11 +3263,11 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			}
 			else {	/* Happily parsed first record and learned a few things.  Now prevent this block from being executed again for the current data file */
 				GMT->current.io.first_rec = false;
+				if (start_of_text == 0) GMT->current.io.trailing_text[GMT_IN] = false;	/* Turn off reading text since none present */
 				if (GMT->current.io.max_cols_to_read) {	/* A hard column count is enforced at first record */
 					*n = GMT->current.io.max_cols_to_read;
-					GMT->current.io.record_type = (start_of_text) ? GMT_READ_MIXED : GMT_READ_DATA;	/* Since otherwise we fail to store the trailing text */
-					//strscan = &strsepzp;	/* Need zp scanner to detect anything beyond the fixed columns as trailing text */
-					strscan = &strsepz;	/* Need zp scanner to detect anything beyond the fixed columns as trailing text */
+					GMT->current.io.record_type = (GMT->current.io.trailing_text[GMT_IN]) ? GMT_READ_MIXED : GMT_READ_DATA;	/* Since otherwise we fail to store the trailing text */
+					strscan = (GMT->current.io.trailing_text[GMT_IN]) ? &strsepzp : &strsepz;	/* Need zp scanner to detect anything beyond the fixed columns as trailing text */
 				}
 				else {	/* Set expected cols and the scanner based on what record type we detected */
 					*n = (GMT->common.i.select) ? GMT->common.i.n_cols : n_cols_this_record;
@@ -3326,7 +3326,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			}
 		}
 		if (start_of_text) {	/* Save pointer to start of trailing text portion of the record */
-			while (strchr (GMT_TOKEN_SEPARATORS, GMT->current.io.curr_text[start_of_text])) start_of_text++;	/* First wind to start of trailing text */
+			while (GMT->current.io.curr_text[start_of_text] && strchr (GMT_TOKEN_SEPARATORS, GMT->current.io.curr_text[start_of_text])) start_of_text++;	/* First wind to start of trailing text */
 			GMT->current.io.record.text = &GMT->current.io.curr_text[start_of_text];
 		}
 

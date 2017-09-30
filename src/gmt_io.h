@@ -40,16 +40,17 @@
 #	include <locale.h>
 #endif
 
-static inline const char* __gmt_token_separators (void) {
+static inline const char* __gmt_token_separators (unsigned int skip_comma) {
 	static const char separators[] = ",; \t";
 #ifdef HAVE_SETLOCALE
 	struct lconv *lc = localeconv();
-	if ( (strcmp (lc->decimal_point, ",") == 0) )
+	if (skip_comma || (strcmp (lc->decimal_point, ",") == 0) )
 		return separators + 1; /* Omit comma */
 #endif
 	return separators;
 }
-#define GMT_TOKEN_SEPARATORS __gmt_token_separators() /* Data columns may be separated by any of these characters */
+#define GMT_TOKEN_SEPARATORS __gmt_token_separators(0) /* Data columns may be separated by any of these characters */
+#define GMT_TOKEN_SEPARATORS_SCANNER __gmt_token_separators(1) /* Data columns may be separated by any of these characters */
 
 /* Must add M, m, E, Z, and/or S to the common option processing list */
 #define GMT_OPT(opt) opt
