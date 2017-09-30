@@ -188,6 +188,7 @@ EXTERN_MSC char *gmtapi_create_header_item (struct GMTAPI_CTRL *API, unsigned in
 
 static const char *GMT_type[GMT_N_TYPES] = {"byte", "byte", "integer", "integer", "integer", "integer",
                                             "integer", "integer", "double", "double", "string", "datetime"};
+static const char *GMT_coltype_name[] = {"Number", "Latitude", "Longitude", "Geographic", "Rel.Time", "Abs.Time", "Duration", "Dimension", "Length", "Azimuth", "Angle", "String"};
 
 /* Byteswap widths used with gmt_byteswap_file */
 typedef enum {
@@ -311,22 +312,10 @@ GMT_LOCAL bool gmtio_traverse_dir (const char *file, char *path) {
 #endif /* HAVE_DIRENT_H_ */
 
 /*! . */
-GMT_LOCAL void gmtio_adjust_periodic_x (struct GMT_CTRL *GMT) {
-	while (GMT->current.io.curr_rec[GMT_X] > GMT->common.R.wesn[XHI] && (GMT->current.io.curr_rec[GMT_X] - 360.0) >=
-	       GMT->common.R.wesn[XLO]) GMT->current.io.curr_rec[GMT_X] -= 360.0;
-	while (GMT->current.io.curr_rec[GMT_X] < GMT->common.R.wesn[XLO] && (GMT->current.io.curr_rec[GMT_X] + 360.0) <=
-	       GMT->common.R.wesn[XLO]) GMT->current.io.curr_rec[GMT_X] += 360.0;
-	/* If data is not inside the given range it will satisfy (lon > east) */
-	/* Now it will be outside the region on the same side it started out at */
-}
-
-/*! . */
-GMT_LOCAL void gmtio_adjust_periodic_y (struct GMT_CTRL *GMT) {
-	/* Here, longitude appears as y, probably plotting longitude versus time or similar */
-	while (GMT->current.io.curr_rec[GMT_Y] > GMT->common.R.wesn[YHI] && (GMT->current.io.curr_rec[GMT_Y] - 360.0) >=
-	       GMT->common.R.wesn[YLO]) GMT->current.io.curr_rec[GMT_Y] -= 360.0;
-	while (GMT->current.io.curr_rec[GMT_Y] < GMT->common.R.wesn[YLO] && (GMT->current.io.curr_rec[GMT_Y] + 360.0) <=
-	       GMT->common.R.wesn[YLO]) GMT->current.io.curr_rec[GMT_Y] += 360.0;
+GMT_LOCAL void gmtio_adjust_periodic_lon (struct GMT_CTRL *GMT, double *val) {
+	while (*val > GMT->common.R.wesn[XHI] && (*val - 360.0) >= GMT->common.R.wesn[XLO])
+		*val -= 360.0;
+	while (*val < GMT->common.R.wesn[XLO] && (*val + 360.0) <= GMT->common.R.wesn[XLO]) *val += 360.0;
 	/* If data is not inside the given range it will satisfy (lon > east) */
 	/* Now it will be outside the region on the same side it started out at */
 }
@@ -864,6 +853,16 @@ GMT_LOCAL int gmtio_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64
 }
 
 /*! . */
+GMT_LOCAL int gmtio_ascii_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
+
+	if (gmt_skip_output (GMT, ptr, n)) return (-1);	/* Record was skipped via -s[a|r] */
+
+	fprintf (fp, "%s\n", txt);
+	
+	return (0);
+}
+
+/*! . */
 GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
 	uint64_t i, col, n_out;
 	int e = 0, wn = 0;
@@ -895,48 +894,19 @@ GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint
 	return ((e < 0) ? -1 : 0);
 }
 
-/*! . */
 GMT_LOCAL int gmtio_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
-	uint64_t i, col, last, n_out;
-	int e = 0, wn = 0;
-	double val;
-
-	if (gmt_skip_output (GMT, ptr, n)) return (-1);	/* Record was skipped via -s[a|r] */
-	
 	/* First time we decide if we have floats only or a mix and finalize pointer settings */
-	if (txt) {
-		GMT->current.io.output = gmtio_ascii_output_with_text;	/* Have trailing text */
-		return gmtio_ascii_output_with_text (GMT, fp, n, ptr, txt);
+	if (txt && GMT->current.io.trailing_text[GMT_OUT]) {
+		if (GMT->common.o.select && GMT->common.o.n_cols == 0)
+			GMT->current.io.output = gmtio_ascii_output_trailing_text;	/* Just print trailing text */
+		else
+			GMT->current.io.output = gmtio_ascii_output_with_text;	/* Have trailing text after numerical output */
+		return GMT->current.io.output (GMT, fp, n, ptr, txt);
 	}
 	else {
 		GMT->current.io.output = gmtio_ascii_output_no_text;	/* Just numbers */
 		return gmtio_ascii_output_no_text (GMT, fp, n, ptr, txt);
 	}
-	n_out = (GMT->common.o.select) ? GMT->common.o.n_cols : n;
-
-	last = n_out - 1;				/* Last filed, need to output linefeed instead of delimiter */
-
-	for (i = 0; i < n_out && e >= 0; i++) {		/* Keep writing all fields unless there is a read error (e == -1) */
-		if (GMT->common.o.select)	/* Which data column to pick */
-			col = GMT->current.io.col[GMT_OUT][i].col;
-		else if (GMT->current.setting.io_lonlat_toggle[GMT_OUT] && i < 2)
-			col = 1 - i;	/* Write lat/lon instead of lon/lat */
-		else
-			col = i;	/* Just goto next column */
-		val = (col >= n) ? GMT->session.d_NaN : ptr[col];	/* If we request beyond length of array, return NaN */
-		if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (val))	/* Write this value instead of NaNs */
-			val = GMT->common.d.nan_proxy[GMT_OUT];
-
-		e = gmt_ascii_output_col (GMT, fp, val, col);	/* Write one item without any separator at the end */
-
-		if (i == last)					/* This is the last field, must add newline */
-			putc ('\n', fp);
-		else if (GMT->current.setting.io_col_separator[0])		/* Not last field, and a separator is required */
-			fprintf (fp, "%s", GMT->current.setting.io_col_separator);
-
-		wn += e;
-	}
-	return ((e < 0) ? -1 : 0);
 }
 
 /*! . */
@@ -2980,8 +2950,24 @@ GMT_LOCAL void gmtio_set_current_record (struct GMT_CTRL *GMT, char *text) {
 		gmt_M_memset (GMT->current.io.curr_text, GMT_BUFSIZ, char);
 }
 
+GMT_LOCAL unsigned int gmtio_get_coltype (struct GMT_CTRL *GMT, unsigned int col) {
+	/* After -i, march along internal cols 0, 1, etc and return their colummn types */
+	unsigned int k;
+	for (k = 0; k < GMT->common.i.n_cols; k++)
+		if (GMT->current.io.col[GMT_IN][k].order == col) return (GMT->current.io.col_type[GMT_IN][GMT->current.io.col[GMT_IN][k].col]);
+	return GMT_IS_FLOAT;	/* In case of disaster */
+}
+
+void gmtlib_update_outcol_type (struct GMT_CTRL *GMT) {
+	/* If -i was used we will want to update the output col_type settings so that correct formatting can take place */
+	unsigned int col;
+	if (!GMT->common.i.select || GMT->common.i.n_cols == 0) return;	/* Did not use -i or only selected text */
+	for (col = 0; col < GMT->common.i.n_cols; col++)
+		GMT->current.io.col_type[GMT_OUT][col] = gmtio_get_coltype (GMT, col);
+}
+
 /*! . */
-GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char *record, uint64_t *n_columns) {
+GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char *record, size_t *tpos, uint64_t *n_columns) {
 	/* Examines this data record to determine the nature of the input.  There
 	 * are three different scenarios:
 	 * 1. Record only contains numerical columns: Set ncols and return GMT_READ_DATA [0].
@@ -2997,8 +2983,10 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	bool found_text = false;
 	char token[GMT_BUFSIZ];
 	double value;
+	static char *flavor[4] = {"dummy", "numerical only", "text only", "numerical with trailing text"};
 	
 	*n_columns = 0;	/* Initialize numerical column counter for this record */
+	*tpos = pos;
 	while (!found_text && (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, token))) {
 		type = GMT->current.io.col_type[GMT_IN][*n_columns];
 		switch (type) {	/* Parse token based on what we think we have */
@@ -3015,6 +3003,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		switch (got) {	/* Decide to keep old type, update type, or maybe we got trailing ext */
 			case GMT_IS_NAN:	/* Parsing failed, which means we found our first non-number */
 				found_text = true;
+				GMT->current.io.col_type[GMT_OUT][*n_columns] = GMT_IS_STRING;	/* In output type not set we might as well set it to this */
 				break;
 			case GMT_IS_DIMENSION:	/* Converted something recognized as a dimension, but that is only allowed if requested */
 				if (type == GMT_IS_DIMENSION)
@@ -3033,7 +3022,8 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 				case GMT_IS_ABSTIME:
 				case GMT_IS_DURATION:
 					GMT->current.io.col_type[GMT_IN][*n_columns] = got;
-					if (GMT->current.io.col_type[GMT_OUT][*n_columns] == GMT_IS_UNKNOWN || GMT->current.io.col_type[GMT_OUT][*n_columns] == GMT_IS_FLOAT) GMT->current.io.col_type[GMT_OUT][*n_columns] = got;	/* In output type not set we might as well set it to this */
+					if (GMT->current.io.col_type[GMT_OUT][*n_columns] == GMT_IS_UNKNOWN || GMT->current.io.col_type[GMT_OUT][*n_columns] == GMT_IS_FLOAT)
+						GMT->current.io.col_type[GMT_OUT][*n_columns] = got;	/* In output type not set we might as well set it to this */
 					(*n_columns)++;	/* One more succesful numerical parsing */
 					break;
 			default:	/* This is when we found GMT_IS_{DIMENSION,GEODIMENSION,AZIMUTH,ANGLE} */
@@ -3041,8 +3031,45 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 				(*n_columns)++;	/* One more succesful numerical parsing */
 				break;
 		}
+		*tpos = pos;
 	}
+	gmtlib_update_outcol_type (GMT);	/* If -i was used we wish to update outcol types to match the new order */
 	if (found_text && GMT->current.io.trailing_text[GMT_IN]) ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
+
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Tell user how we interpreted their first record */
+		char record[GMT_BUFSIZ] = {""};
+		static char *msg[2] = {"Source", "Selected"};
+		unsigned int k, dir, nn;
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "ASCII source scanned: Number of numerical columns = %" PRIu64 " Record type = %s\n", *n_columns, flavor[ret_val]);
+		for (dir = 0; dir <= GMT_OUT; dir++) {
+			if (dir == GMT_OUT && !(GMT->common.i.select && GMT->common.i.n_cols > 0)) continue;
+			nn = (dir == GMT_IN) ? *n_columns : GMT->common.i.n_cols;
+			record[0] = '\0';
+			for (pos = 0; pos < nn; pos++) {
+				switch (GMT->current.io.col_type[dir][pos]) {
+					case GMT_IS_FLOAT:        k = 0;	break;
+					case GMT_IS_LAT:          k = 1;	break;
+					case GMT_IS_LON:          k = 2;	break;
+					case GMT_IS_GEO:          k = 3;	break;
+					case GMT_IS_RELTIME:      k = 4;	break;
+					case GMT_IS_ABSTIME:      k = 5;	break;
+					case GMT_IS_DURATION:     k = 6;	break;
+					case GMT_IS_DIMENSION:    k = 7;	break;
+					case GMT_IS_GEODIMENSION: k = 8;	break;
+					case GMT_IS_AZIMUTH:      k = 9;	break;
+					case GMT_IS_ANGLE:        k = 10;	break;
+				}
+				if (pos) strcat (record, ",");
+				strcat (record, GMT_coltype_name[k]);
+			}
+			if (GMT->current.io.trailing_text[dir]) {
+				if (pos) strcat (record, ",");
+				strcat (record, "String");
+			}
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s col types: (%s)\n", msg[dir], record);
+		}
+	}
+	
 	return (ret_val);
 }
 
@@ -3168,7 +3195,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		
 		if (GMT->current.io.first_rec) {	/* Learn from the 1st record what we can about the type of data record this is */
 			static char *flavor[4] = {"dummy", "numerical only", "text only", "numerical with trailing text"};
-			GMT->current.io.record_type = gmtio_examine_current_record (GMT, line, &n_cols_this_record);
+			GMT->current.io.record_type = gmtio_examine_current_record (GMT, line, &start_of_text, &n_cols_this_record);
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Data record scanned: number of numerical columns = %d record type = %s\n", *n, flavor[GMT->current.io.record_type]);
 			if (GMT->current.io.variable_in_columns) {	/* Never finalize # of fields since it can change from rec to rec */
 				*n = GMT_MAX_COLUMNS;
@@ -3207,7 +3234,8 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			}
 			else				/* Default column order */
 				col_pos = col_no;
-			n_convert = gmt_scanf (GMT, token, GMT->current.io.col_type[GMT_IN][col_pos], &val);
+			//n_convert = gmt_scanf (GMT, token, GMT->current.io.col_type[GMT_IN][col_pos], &val);
+			n_convert = gmt_scanf (GMT, token, GMT->current.io.col_type[GMT_IN][in_col], &val);
 			if (n_convert != GMT_IS_NAN && col_pos > 1 && gmt_input_is_nan_proxy (GMT, val))	/* Input matched no-data setting, so change to NaN */
 				n_convert = GMT_IS_NAN;
 			if (n_convert == GMT_IS_NAN) {	/* Got a NaN or it failed to decode the string */
@@ -3222,6 +3250,8 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			}
 			else {					/* Successful decode, assign the value to the input array */
 				gmt_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
+				if (GMT->current.io.col_type[GMT_IN][col_no] & GMT_IS_LON)	/* Must account for periodicity in 360 as per current rule*/
+					gmtio_adjust_periodic_lon (GMT, &val);
 				GMT->current.io.curr_rec[col_pos] = val;
 				col_no++;		/* Count up number of columns found */
 				n_ok++;
@@ -3267,14 +3297,11 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 "\n",
 		            col_no, *n, GMT->current.io.rec_no);
 
-	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && col_no >= 2)
+	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && col_no >= 2) {
 		gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
-	if (GMT->current.proj.inv_coordinates) gmtio_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
-	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_LON)		/* Must account for periodicity in 360 as per current rule*/
-		gmtio_adjust_periodic_x (GMT);
-	else if (GMT->current.io.col_type[GMT_IN][GMT_Y] & GMT_IS_LON)	/* Must account for periodicity in 360 as per current rule*/
-		gmtio_adjust_periodic_y (GMT);
-
+	}
+	else if (GMT->current.proj.inv_coordinates)
+		gmtio_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
 	if (gmtlib_gap_detected (GMT)) {	/* A gap between this an previous record was detected (see -g) so we set status and return 0 */
 		*status = gmtlib_set_gap (GMT);
 		return (&GMT->current.io.record);
@@ -4022,8 +4049,11 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 		if (!gmt_M_is_dnan (GMT->current.io.curr_rec[col_no])) {	/* Clean data */
 			if (col_no > 1 && gmt_input_is_nan_proxy (GMT, GMT->current.io.curr_rec[col_no]))	/* Input matched no-data setting, so change to NaN */
 				GMT->current.io.curr_rec[col_no] = GMT->session.d_NaN;
-			else	/* Still clean, so skip to next column */
+			else {	/* Still clean, so skip to next column */
+				if (GMT->current.io.col_type[GMT_IN][col_no] & GMT_IS_LON)	/* Must account for periodicity in 360 as per current rule */
+					gmtio_adjust_periodic_lon (GMT, &GMT->current.io.curr_rec[col_no]);
 				continue;
+			}
 		}
 		/* We end up here if we found a NaN */
 		if (!GMT->current.setting.io_nan_records && GMT->current.io.skip_if_NaN[col_no]) bad_record = true;	/* This field is not allowed to be NaN */
@@ -4057,8 +4087,6 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && n_read >= 2)
 		gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT->current.proj.inv_coordinates) gmtio_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
-	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_LON) gmtio_adjust_periodic_x (GMT);	/* Must account for periodicity in 360 */
-	else if (GMT->current.io.col_type[GMT_IN][GMT_Y] & GMT_IS_LON) gmtio_adjust_periodic_y (GMT);	/* Must account for periodicity in 360 as per current rule*/
 
 	if (set_nan_flag) GMT->current.io.status |= GMT_IO_NAN;
 	return (0);	/* 0 means OK regular record */
@@ -7634,32 +7662,6 @@ bool gmt_not_numeric (struct GMT_CTRL *GMT, char *text) {
 		if (k > 0 && n_digits == 0) return (true);	/* Probably a file */
 	}
 	return (false);	/* This may in fact be numeric */
-}
-
-/*! . */
-int gmt_conv_intext2dbl (struct GMT_CTRL *GMT, char *record, unsigned int ncols) {
-	/* Used when we read text records and need to obtain doubles */
-	/* Convert the first ncols fields in the record string to numbers that we
-	 * store in GMT->current.io.curr_rec, which is what normal GMT_DATASET processing do.
-	 * We stop if we run out of fields and ignore conversion errors.  */
-
-	unsigned int k = 0, pos = 0;
-	char p[GMT_BUFSIZ];
-
-	while (k < ncols && gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, p)) {	/* Get each field in turn and bail when done */
-		if (!(p[0] == '+' || p[0] == '-' || p[0] == '.' || isdigit ((int)p[0]))) continue;	/* Numbers must be [+|-][.][<digits>] */
-		if (strchr (p, '/')) continue;	/* Somehow got to a color triplet? */
-		gmt_scanf (GMT, p, GMT->current.io.col_type[GMT_IN][k], &GMT->current.io.curr_rec[k]);	/* Be tolerant of errors */
-		k++;
-	}
-	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && k >= 2) gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
-	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_LON)		/* Must account for periodicity in 360 */
-		gmtio_adjust_periodic_x (GMT);
-	else if (GMT->current.io.col_type[GMT_IN][GMT_Y] & GMT_IS_LON)	/* Must account for periodicity in 360 as per current rule*/
-		gmtio_adjust_periodic_y (GMT);
-	if (GMT->current.proj.inv_coordinates)		/* Must apply inverse projection to get lon, lat */
-		gmtio_adjust_projected (GMT);
-	return (0);
 }
 
 /*! . */

@@ -7403,7 +7403,7 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 
 	strncpy (copy, arg, GMT_BUFSIZ-1);
 	
-	GMT->current.io.trailing_text[GMT_IN] = false;	/* When using -i you have to specifically add column t to parse trailing text */
+	GMT->current.io.trailing_text[GMT_IN] = GMT->current.io.trailing_text[GMT_OUT] = false;	/* When using -i you have to specifically add column t to parse trailing text */
 	new_style = (strstr (arg, "+s") || strstr (arg, "+o") || strstr (arg, "+l"));
 
 	strncpy (GMT->common.i.string, arg, GMT_LEN64-1);	/* Verbatim copy */
@@ -7481,6 +7481,14 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 			GMT->common.i.n_actual_cols++;
 	}
 	GMT->common.i.orig = GMT->common.i.select = true;
+	/* As -i was used we wish to update outcol types to match the new order */
+	gmtlib_update_outcol_type (GMT);
+#if 0
+	if (GMT->common.i.n_cols == 0 && GMT->current.io.trailing_text[GMT_IN]) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-it is not allowed, need at least 1-2 leading numerical columns\n");
+		return (GMT_PARSE_ERROR);
+	}
+#endif
 	return (GMT_NOERROR);
 }
 
@@ -13598,7 +13606,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 
 		case 'o':
 			error += (GMT_more_than_once (GMT, GMT->common.o.active) || gmt_parse_o_option (GMT, item));
-			GMT->common.o.active = GMT->common.o.orig;
+			GMT->common.o.active = true;
 			break;
 
 		case 'p':
