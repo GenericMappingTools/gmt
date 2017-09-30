@@ -1509,7 +1509,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	n = m = n_read = 0;
 	r_min = DBL_MAX;	r_max = -DBL_MAX;
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				for (p = 0; p < n_alloc; p++) gmt_M_free (GMT, X[p]);
 				gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);

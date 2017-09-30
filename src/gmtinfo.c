@@ -394,6 +394,9 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 5)) != 0) Return (error);
+		
+		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
+
 		switch (Ctrl->F.mode) {
 			case GMT_INFO_TOTAL:	/* Report total number of tables */
 				out[0] = (double)D->n_tables;

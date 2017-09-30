@@ -392,8 +392,8 @@ void gmt_memtrack_report (struct GMT_CTRL *GMT) {
 		excess = M->n_allocated - M->n_freed;
 	else if (M->n_freed > M->n_allocated)
 		n_multi_frees = M->n_freed - M->n_allocated;
-	/* Only insist on report if a leak or multi free, otherwise requires -Vl: */
-	level = (excess || n_multi_frees) ? GMT_MSG_NORMAL : GMT_MSG_LONG_VERBOSE;
+	/* Only insist on report if a leak or multi free, otherwise requires -Vd: */
+	level = (excess || n_multi_frees) ? GMT_MSG_NORMAL : GMT_MSG_DEBUG;
 	size = gmt_memtrack_mem (M->maximum, &u);
 	GMT_Report (GMT->parent, level, "Max total memory allocated was %.3f %s [%" PRIuS " bytes]\n",
 							size, unit[u], M->maximum);

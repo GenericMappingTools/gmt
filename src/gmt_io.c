@@ -188,7 +188,7 @@ EXTERN_MSC char *gmtapi_create_header_item (struct GMTAPI_CTRL *API, unsigned in
 
 static const char *GMT_type[GMT_N_TYPES] = {"byte", "byte", "integer", "integer", "integer", "integer",
                                             "integer", "integer", "double", "double", "string", "datetime"};
-static const char *GMT_coltype_name[] = {"Number", "Latitude", "Longitude", "Geographic", "Rel.Time", "Abs.Time", "Duration", "Dimension", "Length", "Azimuth", "Angle", "String"};
+static const char *GMT_coltype_name[] = {"String", "Number", "Latitude", "Longitude", "Geographic", "RelTime", "AbsTime", "Duration", "Dimension", "Length", "Azimuth", "Angle", "String"};
 
 /* Byteswap widths used with gmt_byteswap_file */
 typedef enum {
@@ -2965,31 +2965,39 @@ GMT_LOCAL unsigned int gmtio_get_coltype (struct GMT_CTRL *GMT, unsigned int col
 	return GMT_IS_FLOAT;	/* In case of disaster */
 }
 
-void gmtlib_update_outcol_type (struct GMT_CTRL *GMT) {
+void gmtlib_update_outcol_type (struct GMT_CTRL *GMT, uint64_t n_cols) {
 	/* If -i was used we will want to update the output col_type settings so that correct formatting can take place */
-	unsigned int col;
-	if (!GMT->common.i.select || GMT->common.i.n_cols == 0) return;	/* Did not use -i or only selected text */
-	for (col = 0; col < GMT->common.i.n_cols; col++)
-		GMT->current.io.col_type[GMT_OUT][col] = gmtio_get_coltype (GMT, col);
+	uint64_t col;
+	bool update = (GMT->common.i.select && GMT->common.i.n_cols);	/* Use -i to select columns */
+	if (update) n_cols = GMT->common.i.n_cols;
+	for (col = 0; col < n_cols; col++)
+		GMT->current.io.col_type[GMT_OUT][col] = GMT->current.io.col_type[GMT_IN][col];
+	//GMT->current.io.col_type[GMT_OUT][col] = (update) ? gmtio_get_coltype (GMT, col) : GMT->current.io.col_type[GMT_IN][col];
 }
 
-GMT_LOCAL unsigned int gmtio_get_coltype_name_index (struct GMT_CTRL *GMT, unsigned int dir, unsigned int col) {
+GMT_LOCAL unsigned int gmtio_get_type_name_index (unsigned int code) {
 	unsigned int k;
-	switch (GMT->current.io.col_type[dir][col]) {
-		case GMT_IS_FLOAT:        k = 0;	break;
-		case GMT_IS_LAT:          k = 1;	break;
-		case GMT_IS_LON:          k = 2;	break;
-		case GMT_IS_GEO:          k = 3;	break;
-		case GMT_IS_RELTIME:      k = 4;	break;
-		case GMT_IS_ABSTIME:      k = 5;	break;
-		case GMT_IS_DURATION:     k = 6;	break;
-		case GMT_IS_DIMENSION:    k = 7;	break;
-		case GMT_IS_GEODIMENSION: k = 8;	break;
-		case GMT_IS_AZIMUTH:      k = 9;	break;
-		case GMT_IS_ANGLE:        k = 10;	break;
+	switch (code) {
+		case GMT_IS_NAN:          k = 0;	break;
+		case GMT_IS_FLOAT:        k = 1;	break;
+		case GMT_IS_LAT:          k = 2;	break;
+		case GMT_IS_LON:          k = 3;	break;
+		case GMT_IS_GEO:          k = 4;	break;
+		case GMT_IS_RELTIME:      k = 5;	break;
+		case GMT_IS_ABSTIME:      k = 6;	break;
+		case GMT_IS_DURATION:     k = 7;	break;
+		case GMT_IS_DIMENSION:    k = 8;	break;
+		case GMT_IS_GEODIMENSION: k = 9;	break;
+		case GMT_IS_AZIMUTH:      k = 10;	break;
+		case GMT_IS_ANGLE:        k = 11;	break;
+		case GMT_IS_UNKNOWN:      k = 1;	break;
 		default: k = 0;	break;
 	}
 	return (k);
+}
+
+GMT_LOCAL unsigned int gmtio_get_coltype_name_index (struct GMT_CTRL *GMT, unsigned int dir, unsigned int col) {
+	return (gmtio_get_type_name_index (GMT->current.io.col_type[dir][col]));
 }
 
 /*! . */
@@ -3004,17 +3012,22 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	 * (which is what we are handling here) a huge variety of datetime strings are possible via
 	 * the FORMAT_DATE_IN, FORMAT_CLOCK_IN settings.
 	 */
-	unsigned ret_val = GMT_READ_DATA, pos = 0, type;
+	unsigned ret_val = GMT_READ_DATA, pos = 0, type, col = 0, k;
 	int got;
-	bool found_text = false;
-	char token[GMT_BUFSIZ];
+	bool found_text = false, update = !(GMT->common.i.select && GMT->common.i.n_cols);
+	char token[GMT_BUFSIZ], message[GMT_BUFSIZ] = {""};
 	double value;
-	static char *flavor[4] = {"dummy", "numerical only", "text only", "numerical with trailing text"};
+	static char *flavor[4] = {"", "Numerical only", "Text only", "Numerical with trailing text"};
 	
-	*n_columns = 0;	/* Initialize numerical column counter for this record */
+	//fprintf (stderr, "I: ");
+	//for (k = 0; k < 8; k++) fprintf (stderr, " %d", GMT->current.io.col_type[GMT_IN][k]);
+	//fprintf (stderr, "\nO: ");
+	//for (k = 0; k < 8; k++) fprintf (stderr, " %d", GMT->current.io.col_type[GMT_OUT][k]);
+	//fprintf (stderr, "\n");
+	
 	*tpos = pos;
 	while (!found_text && (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, token))) {
-		type = GMT->current.io.col_type[GMT_IN][*n_columns];
+		type = GMT->current.io.col_type[GMT_IN][col];
 		switch (type) {	/* Parse token based on what we think we have */
 			case GMT_IS_ABSTIME:	/* Here we must read with expected format set via -J, -R, or -f */
 				got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
@@ -3026,77 +3039,96 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 					got = gmt_scanf_arg (GMT, token, GMT_IS_UNKNOWN, false, &value);
 				break;
 		}
-		switch (got) {	/* Decide to keep old type, update type, or maybe we got trailing ext */
+		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) && col < 50) {	/* Tell user how we interpreted their first record, but not for excessively long records */
+			k = gmtio_get_type_name_index (got);
+			if (col) strcat (message, ",");
+			strcat (message, GMT_coltype_name[k]);
+			if (col == 49) strcat (message, ",...");
+		}
+		//fprintf (stderr, "Col: %d Got: %d\n", col, got);
+		switch (got) {	/* If no -i, we may update column type if we learn something */
 			case GMT_IS_NAN:	/* Parsing failed, which means we found our first non-number */
 				found_text = true;
-				GMT->current.io.col_type[GMT_OUT][*n_columns] = GMT_IS_STRING;	/* In output type not set we might as well set it to this */
+				if (update) GMT->current.io.col_type[GMT_IN][col] = GMT_IS_STRING;	/* In output type not set we might as well set it to this */
 				break;
-#if 0
-			case GMT_IS_DIMENSION:	/* Converted something recognized as a dimension, but that is only allowed if requested */
-				if (type == GMT_IS_DIMENSION)
-					(*n_columns)++;	/* One more succesful numerical parsing */
-				else	/* It is text */
-					found_text = true;
-				break;
-#endif
 			case GMT_IS_FLOAT:	/* Resolved to be a float, do we update expecatation? */
-				if (GMT->current.io.variable_in_columns || type == GMT_IS_UNKNOWN)	/* If it could vary from time to time or we never knew, yes we do */
-					GMT->current.io.col_type[GMT_IN][*n_columns] = got;
-				(*n_columns)++;	/* One more succesful numerical parsing */
+				if (update && (GMT->current.io.variable_in_columns || type == GMT_IS_UNKNOWN))	/* If it could vary from time to time or we never knew, yes we do */
+					GMT->current.io.col_type[GMT_IN][col] = got;
+				col++;	/* One more succesful numerical parsing */
 				break;
 			case GMT_IS_LON:
 			case GMT_IS_LAT:
 			case GMT_IS_GEO:
 			case GMT_IS_ABSTIME:
 			case GMT_IS_DURATION:
-				GMT->current.io.col_type[GMT_IN][*n_columns] = got;
-				if (GMT->current.io.col_type[GMT_OUT][*n_columns] == GMT_IS_UNKNOWN || GMT->current.io.col_type[GMT_OUT][*n_columns] == GMT_IS_FLOAT)
-					GMT->current.io.col_type[GMT_OUT][*n_columns] = got;	/* In output type not set we might as well set it to this */
-				(*n_columns)++;	/* One more succesful numerical parsing */
+				if (update) GMT->current.io.col_type[GMT_IN][col] = got;
+				//if (update && (GMT->current.io.col_type[GMT_OUT][col] == GMT_IS_UNKNOWN || GMT->current.io.col_type[GMT_OUT][col] == GMT_IS_FLOAT))
+				//	GMT->current.io.col_type[GMT_OUT][col] = got;	/* In output type not set we might as well set it to this */
+				col++;	/* One more succesful numerical parsing */
 				break;
 			default:	/* This is when we found GMT_IS_{DIMENSION,GEODIMENSION,AZIMUTH,ANGLE} */
-				GMT->current.io.col_type[GMT_IN][*n_columns] = got;
-				(*n_columns)++;	/* One more succesful numerical parsing */
+				if (update) GMT->current.io.col_type[GMT_IN][col] = got;
+				col++;	/* One more succesful numerical parsing */
 				break;
 		}
 		*tpos = pos;
 	}
-	gmtlib_update_outcol_type (GMT);	/* If -i was used we wish to update outcol types to match the new order */
-	if (found_text && GMT->current.io.trailing_text[GMT_IN]) ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
+	*n_columns = col;	/* Pass back the numerical column count */
+	if (found_text) {
+		if (GMT->current.io.trailing_text[GMT_IN]) ret_val = (*n_columns) ? GMT_READ_MIXED : GMT_READ_TEXT;	/* Possibly update record type */
+	}
+	else	/* No trailing text found */
+		*tpos = 0;
+		
+
+	/* Tell user how we interpreted their first record */
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Source col types: (%s)\n", message);
+	//fprintf (stderr, "I: ");
+	//for (k = 0; k < 8; k++) fprintf (stderr, " %d", GMT->current.io.col_type[GMT_IN][k]);
+	//fprintf (stderr, "\n");
+
+	gmtlib_update_outcol_type (GMT, *n_columns);	/* If -i was used we wish to update outcol types to match the new order */
+
+	//fprintf (stderr, "O: ");
+	//for (k = 0; k < 8; k++) fprintf (stderr, " %d", GMT->current.io.col_type[GMT_OUT][k]);
+	//fprintf (stderr, "\n");
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Tell user how we interpreted their first record */
-		char record[GMT_BUFSIZ] = {""};
-		static char *msg[2] = {"Source", "Selected"};
-		unsigned int k, dir, nn, col;
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "ASCII source scanned: Number of numerical columns = %" PRIu64 " Record type = %s\n", *n_columns, flavor[ret_val]);
-		for (dir = 0; dir < 2; dir++) {
-			if (dir == 1 && !(GMT->common.i.select && GMT->common.i.n_cols > 0)) continue;
-			nn = (dir == 0) ? *n_columns : GMT->common.i.n_cols;
-			record[0] = '\0';
-			for (pos = 0; pos < nn; pos++) {
-				k = gmtio_get_coltype_name_index (GMT, dir, pos);
-				if (pos) strcat (record, ",");
-				strcat (record, GMT_coltype_name[k]);
+		static char *tt = " NYY";
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "ASCII source scanned: Numerical columns: %" PRIu64 ", Trailing text: %c, Record type: %s\n",
+			*n_columns, tt[ret_val], flavor[ret_val]);
+		if (GMT->common.i.select && GMT->common.i.n_cols > 0) {	/* Made a selection with -i */
+			message[0] = '\0';
+			for (pos = 0; pos < GMT->common.i.n_cols; pos++) {
+				k = gmtio_get_coltype_name_index (GMT, GMT_IN, pos);
+				if (pos < 50) {
+					if (pos) strcat (message, ",");
+					strcat (message, GMT_coltype_name[k]);
+					if (pos == 49) strcat (message, ",...");
+				}
 			}
 			if (GMT->current.io.trailing_text[GMT_IN]) {
-				if (pos) strcat (record, ",");
-				strcat (record, "String");
+				if (pos) strcat (message, ",");
+				strcat (message, "String");
 			}
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s col types: (%s)\n", msg[dir], record);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Selected col types: (%s)\n", message);
 		}
 		if (GMT->common.o.select) {
-			record[0] = '\0';
+			message[0] = '\0';
 			for (pos = 0; pos < GMT->common.o.n_cols; pos++) {
 				col = GMT->current.io.col[GMT_OUT][pos].col;
 				k = gmtio_get_coltype_name_index (GMT, GMT_OUT, col);
-				if (pos) strcat (record, ",");
-				strcat (record, GMT_coltype_name[k]);
+				if (pos < 50) {
+					if (pos) strcat (message, ",");
+					strcat (message, GMT_coltype_name[k]);
+					if (pos == 49) strcat (message, ",...");
+				}
 			}
-			if (GMT->current.io.trailing_text[dir]) {
-				if (pos) strcat (record, ",");
-				strcat (record, "String");
+			if (GMT->current.io.trailing_text[GMT_OUT]) {
+				if (pos) strcat (message, ",");
+				strcat (message, "String");
 			}
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output col types: (%s)\n", record);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output col types: (%s)\n", message);
 		}
 	}
 	
@@ -3224,9 +3256,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		if (GMT->common.e.active && gmt_skip_record (GMT, GMT->common.e.select, line)) continue;	/* Fail a grep test */
 		
 		if (GMT->current.io.first_rec) {	/* Learn from the 1st record what we can about the type of data record this is */
-			static char *flavor[4] = {"dummy", "numerical only", "text only", "numerical with trailing text"};
 			GMT->current.io.record_type = gmtio_examine_current_record (GMT, line, &start_of_text, &n_cols_this_record);
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Data record scanned: number of numerical columns = %d record type = %s\n", *n, flavor[GMT->current.io.record_type]);
 			if (GMT->current.io.variable_in_columns) {	/* Never finalize # of fields since it can change from rec to rec */
 				*n = GMT_MAX_COLUMNS;
 				strscan = (GMT->current.io.record_type & GMT_READ_TEXT) ? &strsepzp : &strsepz;	/* Need zp scanner to detect trailing text */
@@ -3235,8 +3265,9 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				GMT->current.io.first_rec = false;
 				if (GMT->current.io.max_cols_to_read) {	/* A hard column count is enforced at first record */
 					*n = GMT->current.io.max_cols_to_read;
-					GMT->current.io.record_type = GMT_READ_MIXED;	/* Since otherwise we fail to store the trailing text */
-					strscan = &strsepzp;	/* Need zp scanner to detect anything beyond the fixed colus as trailing text */
+					GMT->current.io.record_type = (start_of_text) ? GMT_READ_MIXED : GMT_READ_DATA;	/* Since otherwise we fail to store the trailing text */
+					//strscan = &strsepzp;	/* Need zp scanner to detect anything beyond the fixed columns as trailing text */
+					strscan = &strsepz;	/* Need zp scanner to detect anything beyond the fixed columns as trailing text */
 				}
 				else {	/* Set expected cols and the scanner based on what record type we detected */
 					*n = (GMT->common.i.select) ? GMT->common.i.n_cols : n_cols_this_record;
@@ -3264,8 +3295,8 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			}
 			else				/* Default column order */
 				col_pos = col_no;
-			//n_convert = gmt_scanf (GMT, token, GMT->current.io.col_type[GMT_IN][col_pos], &val);
-			n_convert = gmt_scanf (GMT, token, GMT->current.io.col_type[GMT_IN][in_col], &val);
+			n_convert = gmt_scanf (GMT, token, GMT->current.io.col_type[GMT_IN][col_pos], &val);
+			//n_convert = gmt_scanf (GMT, token, GMT->current.io.col_type[GMT_IN][in_col], &val);
 			if (n_convert != GMT_IS_NAN && col_pos > 1 && gmt_input_is_nan_proxy (GMT, val))	/* Input matched no-data setting, so change to NaN */
 				n_convert = GMT_IS_NAN;
 			if (n_convert == GMT_IS_NAN) {	/* Got a NaN or it failed to decode the string */
@@ -3280,7 +3311,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			}
 			else {					/* Successful decode, assign the value to the input array */
 				gmt_convert_col (GMT->current.io.col[GMT_IN][col_no], val);
-				if (GMT->current.io.col_type[GMT_IN][col_no] & GMT_IS_LON)	/* Must account for periodicity in 360 as per current rule*/
+				if (GMT->current.io.col_type[GMT_IN][col_pos] & GMT_IS_LON)	/* Must account for periodicity in 360 as per current rule */
 					gmtio_adjust_periodic_lon (GMT, &val);
 				GMT->current.io.curr_rec[col_pos] = val;
 				col_no++;		/* Count up number of columns found */

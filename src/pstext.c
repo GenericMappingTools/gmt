@@ -725,15 +725,17 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	old_is_world = GMT->current.map.is_world;
 	GMT->current.map.is_world = true;
 
+	in = GMT->current.io.curr_rec;	/* Since text gets parsed and stored in this record */
 	if (Ctrl->M.active) {	/* There are no coordinates, just text lines */
 		rec_mode = GMT_READ_TEXT;
 		geometry = GMT_IS_TEXT;
-		in   = GMT->current.io.curr_rec;	/* Since text gets parsed and stored in this record */
 	}
 	else {
-		rec_mode = GMT_READ_MIXED;
-		geometry = GMT_IS_NONE;
-		GMT_Set_Columns (API, GMT_IN, 2 + Ctrl->Z.active, GMT_COL_FIX);
+		unsigned int ncol = Ctrl->Z.active;
+		if (Ctrl->F.R_justify == 0) ncol += 2;
+		rec_mode = (ncol) ? GMT_READ_MIXED : GMT_READ_TEXT;
+		geometry = (ncol) ? GMT_IS_NONE : GMT_IS_TEXT;
+		GMT_Set_Columns (API, GMT_IN, ncol, GMT_COL_FIX);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
@@ -894,7 +896,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		}
 		else {	/* Plain style pstext input */
 			if (gmt_M_rec_is_segment_header (GMT)) continue;	/* Skip segment headers (line == NULL) */
-			in   = In->data;
+			in   = (Ctrl->F.R_justify) ? GMT->current.io.curr_rec : In->data;
 			line = In->text;
 			assert (line != NULL);
 			if (gmt_is_a_blank_line (line)) continue;	/* Skip blank lines or # comments */

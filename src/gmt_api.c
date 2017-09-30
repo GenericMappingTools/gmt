@@ -6939,7 +6939,7 @@ void *GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, v
 	API->object[item]->geometry = geometry;	/* Ensure same geometry */
 	API->object[item]->resource = new_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Successfully duplicated a %s\n", GMT_family[family]);
+	GMT_Report (API, GMT_MSG_DEBUG, "Successfully duplicated a %s\n", GMT_family[family]);
 #ifdef DEBUG
 	api_list_objects (API, "GMT_Duplicate_Data");
 #endif
@@ -8834,14 +8834,14 @@ GMT_LOCAL void fft_taper2d (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 	width_percent = irint (F->taper_width);
 
 	if ((Grid->header->n_columns == F->n_columns && Grid->header->n_rows == F->n_rows) || F->taper_mode == GMT_FFT_EXTEND_NONE) {
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data and FFT dimensions are equal - no data extension will take place\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no data extension will take place\n");
 		/* But there may still be interior tapering */
 		if (F->taper_mode != GMT_FFT_EXTEND_NONE) {	/* Nothing to do since no outside pad */
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Data and FFT dimensions are equal - no tapering will be performed\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no tapering will be performed\n");
 			return;
 		}
 		if (F->taper_mode == GMT_FFT_EXTEND_NONE && width_percent == 100) {	/* No interior taper specified */
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No interior tapering will be performed\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No interior tapering will be performed\n");
 			return;
 		}
 	}
@@ -8863,7 +8863,7 @@ GMT_LOCAL void fft_taper2d (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 	one = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : 1;	/* 0 is the boundary point which we want to taper to 0 for the interior taper */
 
 	if (width_percent == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Tapering has been disabled via +t0\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Tapering has been disabled via +t0\n");
 	}
 	if (width_percent == 100 && F->taper_mode == GMT_FFT_EXTEND_NONE) {	/* Means user set +n but did not specify +t<taper> as 100% is unreasonable for interior */
 		width_percent = 0;
