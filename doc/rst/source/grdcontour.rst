@@ -31,7 +31,7 @@ Synopsis
 [ |-W|\ [*type*]\ *pen* ][**+c**\ [**l**\ \|\ **f**]]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ [**+s** \*factor*\ ][**+o**\ *shift*][**+p**] ]
+[ |-Z|\ [**+s**\ *factor*][**+o**\ *shift*][**+p**] ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
 [ **-ho**\ [*n*] ]
@@ -226,7 +226,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ [**+s** \*factor*\ ][**+o**\ *shift*][**+p**]
+**-Z**\ [**+s**\ *factor*][**+o**\ *shift*][**+p**]
     Use to subtract *shift* from the data and multiply the results by
     *factor* before contouring starts [1/0]. (Numbers in **-A**, **-C**,
     **-L** refer to values after this scaling has occurred.) Append
