@@ -7203,9 +7203,9 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 		else {	/* Valid data record */
 			if (M->text)	/* Also have text as part of record */
 				strncpy (GMT->current.io.curr_text, M->text[S->rec-1], GMT_BUFSIZ-1);
+			record = &GMT->current.io.record;
+			*n_fields = API->current_get_n_columns;
 		}
-		*n_fields = API->current_get_n_columns;
-		record = &GMT->current.io.record;
 	}
 	return (record);
 }
@@ -7258,9 +7258,9 @@ struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int 
 		else {	/* Valid data record */
 			if (V->text)	/* Also have text as part of record */
 				strncpy (GMT->current.io.curr_text, V->text[S->rec-1], GMT_BUFSIZ-1);
+			record = &GMT->current.io.record;
+			*n_fields = API->current_get_n_columns;
 		}
-		record = &GMT->current.io.record;
-		*n_fields = API->current_get_n_columns;
 	}
 	return record;
 }
@@ -11007,14 +11007,13 @@ GMT_LOCAL void *api_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTOR *I
 /* New function to convert between objects */
 
 #define GMT_HEADER_MODE	0
-#define GMT_COLUMN_MODE	1
-#define GMT_TYPE_MODE	2
-#define GMT_FORMAT_MODE	2	/* Same as GMT_TYPE_MODE [not a typo] */
+#define GMT_TYPE_MODE	1
+#define GMT_FORMAT_MODE	1	/* Same as GMT_TYPE_MODE [not a typo] */
 
 void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out, unsigned int family_out, unsigned int flag[]) {
 	/* Convert between valid pairs of objects,  If Out == NULL then we allocate an output object,
 	 * otherwise we assume we are given adequate space already.  This is most likely restricted to a GMT_MATRIX.
-	 * flag is an array with three unsigned integers controlling various aspects of the conversion:
+	 * flag is an array with two unsigned integers controlling various aspects of the conversion:
 	 * flag[0]: Controls how headers are handled on output:
 	 * 	 0 : All headers are passed on as is.  For Matrix/Vector all table headers are always ignored but
 	 * 	     segment headers will be encoded as NaN records
@@ -11023,7 +11022,7 @@ void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out
 	 * 	 3 : All headers headers are eliminated
 	 *	     The GMT Default settings in effect will control any output to files later.
 	 * [Note if that happens it is not considered an error, so API->error is GMT_NOERROR].
-	 * flag[2]: Controls the data type to use for MATRIX and VECTOR.
+	 * flag[1]: Controls the data type to use for MATRIX and VECTOR.
 	 * 	0: Use the GMT default data type [GMT_EXPORT_TYPE]
 	 * 	>0: Assumed to contain datatype + 1 (e.g., GMT_FLOAT+1, GMT_DOUBLE+1)
 	 * If DATASET, this integer controls the restructuring of the set:

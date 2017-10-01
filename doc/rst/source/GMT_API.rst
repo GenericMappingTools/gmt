@@ -254,6 +254,8 @@ API that are not backwards compatible with GMT 5:
    We also changed the geometry from unsigned int to enum GMT_enum_geometry.
 #. The long obsolete enums GMT_READ_DOUBLE and GMT_WRITE_DOUBLE hav now fully been removed;
    use GMT_READ_DATA and GMT_WRITE_DATA instead.
+#. The GMT_Convert_Data function's flag array is now of length 2 instead of 3 (because there are no
+   longer any TEXTSET settings), with what used to be flag3 now being given as flag2.
 
 GMT resources
 -------------
@@ -1376,7 +1378,7 @@ In this case you will use
 
 which returns a pointer to the converted resource. Specify the needed
 :ref:`family <tbl-family>` for both the input and output resources and set the
-(up to) three flags passed via the ``flag`` array.  The first ``flag[0]``
+(up to) two flags passed via the ``flag`` array.  The first ``flag[0]``
 determines how table headers and segment headers should be handled.
 By default (``flag[0]`` = 0) they are preserved (to the extent possible).
 E.g., converting a :ref:`GMT_DATASET <struct-dataset>` to MATRIX always means table headers are
@@ -1387,8 +1389,8 @@ values for this flag is 1 (Table headers are not copied, segment headers are pre
 affects duplication of headers.  If the new object is written to file at
 a later stage then it is up to the GMT default setting if headers are written
 to file or not.
-The third ``flag[2]`` controls restructuring of tables and segments within
-a set.  For ``flag[2]`` = 0 we retain the original layout.  Other selections
+The second ``flag[1]`` controls restructuring of tables and segments within
+a set.  For ``flag[1]`` = 0 we retain the original layout.  Other selections
 are ``GMT_WRITE_TABLE_SEGMENT`` (combine all segments into a *single* segment in a *single* table),
 ``GMT_WRITE_TABLE`` (collect all segments into a *single* table), and ``GMT_WRITE_SEGMENT``
 (combine segments into *one* segment per table).

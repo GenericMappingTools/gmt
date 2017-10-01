@@ -36,7 +36,7 @@ int main (int argc, char *argv[]) {
 	struct GMT_GRID **G = NULL;
 	struct GMT_PALETTE **C = NULL;
 	struct GMT_POSTSCRIPT **P = NULL;
-	unsigned int flag[3] = {0, 0, 0};
+	unsigned int flag[2] = {0, 0};
 	gmt_M_unused(argc);
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -70,7 +70,7 @@ int main (int argc, char *argv[]) {
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, "[AB].txt", NULL)) == NULL) exit (EXIT_FAILURE);
 	
 	/* Write a matrix */
-	flag[0] = 3; flag[2] = 0; if ((M = GMT_Convert_Data (API, D, GMT_IS_DATASET, NULL, GMT_IS_MATRIX, flag)) == NULL) exit (EXIT_FAILURE);	/* Convert to matrix */
+	flag[0] = 3; flag[1] = 0; if ((M = GMT_Convert_Data (API, D, GMT_IS_DATASET, NULL, GMT_IS_MATRIX, flag)) == NULL) exit (EXIT_FAILURE);	/* Convert to matrix */
 	if (GMT_Write_Data (API, GMT_IS_MATRIX, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, "AB_dataM.txt", M) != GMT_NOERROR)  exit (EXIT_FAILURE);	/* run module */
 	/* Write a vector */
 	if ((V = GMT_Convert_Data (API, D, GMT_IS_DATASET, NULL, GMT_IS_VECTOR, flag)) == NULL) exit (EXIT_FAILURE);	/* Convert to vector */
