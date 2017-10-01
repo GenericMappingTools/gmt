@@ -1009,22 +1009,24 @@ GMT_LOCAL int gmtinit_parse_c_option (struct GMT_CTRL *GMT, char *arg) {
 GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
-	unsigned int k = 1, ic, pos = 0, code, *col = NULL;
+	unsigned int dir, k = 1, ic, pos = 0, code, *col = NULL;
 	size_t len;
 	int64_t i, start = -1, stop = -1, inc;
 	enum gmt_enum_units unit = GMT_IS_METER;
-	bool both_i_and_o = false;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -f requires an argument */
 
 	if (arg[0] == 'i') {	/* Apply to input columns only */
+		dir = GMT_IN;
 		col = GMT->current.io.col_type[GMT_IN];
 		strncpy (GMT->common.f.string, arg, GMT_LEN64-1);	/* Verbatim copy */
 	}
-	else if (arg[0] == 'o')	/* Apply to output columns only */
+	else if (arg[0] == 'o') {	/* Apply to output columns only */
+		dir = GMT_OUT;
 		col = GMT->current.io.col_type[GMT_OUT];
+	}
 	else {			/* Apply to both input and output columns */
-		both_i_and_o = true;
+		dir = GMT_IO;
 		k = 0;
 		strncpy (GMT->common.f.string, arg, GMT_LEN64-1);	/* Verbatim copy */
 	}
@@ -1032,7 +1034,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 	strncpy (copy, &arg[k], GMT_BUFSIZ-1);	/* arg should NOT have a leading i|o part */
 
 	if (copy[0] == 'c') {	/* Got -f[i|o]c which is shorthand for -f[i|o]0f,1f (Cartesian) */
-		if (both_i_and_o) {
+		if (dir == GMT_IO) {
 			gmt_set_cartesian (GMT, GMT_IN);
 			gmt_set_cartesian (GMT, GMT_OUT);
 		}
@@ -1044,7 +1046,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		start = stop = 1;
 	}
 	else if (copy[0] == 'g' || copy[0] == 'p') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y, or -fp[<unit>] (see below) */
-		if (both_i_and_o) {
+		if (dir == GMT_IO) {
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
 		}
@@ -1098,10 +1100,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 
 		/* Now set the code for these columns */
 
-		if (both_i_and_o)
-			for (i = start; i <= stop; i += inc) GMT->current.io.col_type[GMT_IN][i] = GMT->current.io.col_type[GMT_OUT][i] = code;
-		else
-			for (i = start; i <= stop; i += inc) col[i] = code;
+		for (i = start; i <= stop; i += inc) gmt_set_column (GMT, dir, i, code);
 	}
 	return (GMT_NOERROR);
 }
@@ -3831,8 +3830,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			GMT->current.proj.compute_scale[GMT_X] = GMT->current.proj.compute_scale[GMT_Y] = width_given;
 
 			/* Default is not involving geographical coordinates */
-			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_UNKNOWN;
-
+			gmt_set_column (GMT, GMT_IO, GMT_X, GMT_IS_UNKNOWN);
+			
 			error += (n_slashes > 1) ? 1 : 0;
 
 			/* Find occurrences of /, l, p, t, or d */
@@ -3890,10 +3889,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			}
 			else if (t_pos[GMT_X] > 0) {	/* Add option to append time_systems or epoch/unit later */
 				GMT->current.proj.xyz_projection[GMT_X] = GMT_TIME;
-				GMT->current.io.col_type[GMT_IN][GMT_X] = (args[t_pos[GMT_X]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME;
+				gmt_set_column (GMT, GMT_IN, GMT_X, (args[t_pos[GMT_X]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME);
 			}
 
-			if (d_pos[GMT_X] > 0) GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
+			if (d_pos[GMT_X] > 0) gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_LON);
 
 			if (slash) {	/* Separate y-scaling desired */
 				strncpy (args_cp, &args[slash+1], GMT_BUFSIZ-1);	/* Since gmt_M_to_inch modifies the string */
@@ -3925,16 +3924,16 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				}
 				else if (t_pos[GMT_Y] > 0) {	/* Add option to append time_systems or epoch/unit later */
 					GMT->current.proj.xyz_projection[GMT_Y] = GMT_TIME;
-					GMT->current.io.col_type[GMT_IN][GMT_Y] = (args[t_pos[GMT_Y]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME;
+					gmt_set_column (GMT, GMT_IN, GMT_Y, (args[t_pos[GMT_Y]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME);
 				}
-				if (d_pos[GMT_Y] > 0) GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+				if (d_pos[GMT_Y] > 0) gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
 			}
 			else {	/* Just copy x parameters */
 				GMT->current.proj.xyz_projection[GMT_Y] = GMT->current.proj.xyz_projection[GMT_X];
 				GMT->current.proj.pars[1] = GMT->current.proj.pars[0];
 				GMT->current.proj.pars[3] = GMT->current.proj.pars[2];
 				/* Assume -JX<width>[unit]d means a linear geographic plot so x = lon and y = lat */
-				if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_LON) GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+				if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_LON) gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
 			}
 			/* Not both sizes can be zero, but if one is, we will adjust to the scale of the other */
 			if (GMT->current.proj.pars[GMT_X] == 0.0 && GMT->current.proj.pars[GMT_Y] == 0.0) error++;
@@ -3943,7 +3942,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 		case GMT_ZAXIS:	/* 3D plot */
 			GMT->current.proj.compute_scale[GMT_Z] = width_given;
 			error += (n_slashes > 0) ? 1 : 0;
-			GMT->current.io.col_type[GMT_IN][GMT_Z] = GMT_IS_UNKNOWN;
+			gmt_set_column (GMT, GMT_IN, GMT_Z, GMT_IS_UNKNOWN);
 
 			/* Find occurrences of l, p, or t */
 			for (j = 0; args[j]; j++) {
@@ -3981,14 +3980,15 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			}
 			else if (t_pos[GMT_Z] > 0) {
 				GMT->current.proj.xyz_projection[GMT_Z] = GMT_TIME;
-				GMT->current.io.col_type[GMT_IN][GMT_Z] = (args[t_pos[GMT_Z]] == 'T') ? GMT_IS_ABSTIME : GMT_IS_RELTIME;
+				gmt_set_column (GMT, GMT_IN, GMT_Z, (args[t_pos[GMT_Z]] == 'T') ?  GMT_IS_ABSTIME : GMT_IS_RELTIME);
 			}
 			if (GMT->current.proj.z_pars[0] == 0.0) error++;
 			GMT->current.proj.JZ_set = true;
 			break;
 
 		case GMT_POLAR:		/* Polar (theta,r) */
-			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON, GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
+			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_LON);
+			gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);
 			if (args[0] == 'a' || args[0] == 'A') {
 				GMT->current.proj.got_azimuths = true;	/* using azimuths instead of directions */
 				i = 1;
@@ -7073,9 +7073,11 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			if (GMT->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
 				got = gmt_scanf_arg (GMT, X[icol], GMT->current.io.col_type[GMT_IN][icol], true, &orig[icol]);
 				if (got & GMT_IS_GEO)
-					GMT->current.io.col_type[GMT_IN][icol] = got;
-				else if (got & GMT_IS_RATIME)
-					GMT->current.io.col_type[GMT_IN][icol] = got, GMT->current.proj.xyz_projection[icol] = GMT_TIME;
+					gmt_set_column (GMT, GMT_IN, icol, got);
+				else if (got & GMT_IS_RATIME) {
+					gmt_set_column (GMT, GMT_IN, icol, got);
+					GMT->current.proj.xyz_projection[icol] = GMT_TIME;
+				}
 			}
 			else {	/* Things are set, do or die */
 				expect_to_read = (GMT->current.io.col_type[GMT_IN][icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT->current.io.col_type[GMT_IN][icol];
@@ -7251,9 +7253,11 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		else if (GMT->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
 			got = gmt_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][icol], true, &p[i]);
 			if (got & GMT_IS_GEO)
-				GMT->current.io.col_type[GMT_IN][icol] = got;
-			else if ((got & GMT_IS_RATIME) || got == GMT_IS_ARGTIME)
-				GMT->current.io.col_type[GMT_IN][icol] = got, GMT->current.proj.xyz_projection[icol] = GMT_TIME;
+				gmt_set_column (GMT, GMT_IN, icol, got);
+			else if ((got & GMT_IS_RATIME) || got == GMT_IS_ARGTIME) {
+				gmt_set_column (GMT, GMT_IN, icol, got);
+				GMT->current.proj.xyz_projection[icol] = GMT_TIME;
+			}
 		}
 		else {	/* Things are set, do or die */
 			expect_to_read = (GMT->current.io.col_type[GMT_IN][icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT->current.io.col_type[GMT_IN][icol];
@@ -7465,8 +7469,8 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 
 			for (i = start; i <= stop; i += inc, k++) {
 				GMT->current.io.col_skip[i] = false;	/* Do not skip these */
-				GMT->current.io.col[GMT_IN][k].col = (unsigned int)i;	/* Requested order of columns */
-				GMT->current.io.col[GMT_IN][k].order = k;		/* Requested order of columns */
+				GMT->current.io.col[GMT_IN][k].col = (unsigned int)i;	/* Requested physical column */
+				GMT->current.io.col[GMT_IN][k].order = k;		/* Requested logical order of columns */
 				GMT->current.io.col[GMT_IN][k].convert = convert;
 				GMT->current.io.col[GMT_IN][k].scale = scale;
 				GMT->current.io.col[GMT_IN][k].offset = offset;

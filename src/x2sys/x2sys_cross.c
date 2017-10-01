@@ -362,7 +362,10 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the x2sys_cross main code ----------------------------*/
 
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &Bix, &GMT->current.io), Ctrl->T.TAG);
-	if (!s->geographic) GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_UNKNOWN;
+	if (!s->geographic) {
+		gmt_set_column (GMT, GMT_IO, GMT_X, GMT_IS_UNKNOWN);
+		gmt_set_column (GMT, GMT_IO, GMT_Y, GMT_IS_UNKNOWN);
+	}
 
 	if (s->x_col == -1 || s->y_col == -1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: lon,lat or x,y are not among data columns!\n");

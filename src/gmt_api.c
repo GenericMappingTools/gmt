@@ -936,7 +936,7 @@ GMT_LOCAL double api_select_dataset_value (struct GMT_CTRL *GMT, struct GMT_DATA
 	unsigned int col_pos = api_pick_out_col_number (GMT, col);
 	val = (col_pos >= S->n_columns) ? GMT->session.d_NaN : S->data[col_pos][row];	/* If we request a column beyond length of array, return NaN */
 	if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (val)) val = GMT->common.d.nan_proxy[GMT_OUT];	/* Write this value instead of NaNs */
-	if (GMT->current.io.col_type[GMT_OUT][col_pos] == GMT_IS_LON) gmt_lon_range_adjust (GMT->current.io.geo.range, &val);	/* Set longitude range */
+	if (gmt_M_is_type (GMT, GMT_OUT, col_pos, GMT_IS_LON)) gmt_lon_range_adjust (GMT->current.io.geo.range, &val);	/* Set longitude range */
 	return (val);
 }
 
@@ -947,7 +947,7 @@ GMT_LOCAL double api_select_record_value (struct GMT_CTRL *GMT, double *record, 
 	unsigned int col_pos = api_pick_out_col_number (GMT, col);
 	val = (col_pos >= n_colums) ? GMT->session.d_NaN : record[col_pos];	/* If we request a column beyond length of array, return NaN */
 	if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (val)) val = GMT->common.d.nan_proxy[GMT_OUT];	/* Write this value instead of NaNs */
-	if (GMT->current.io.col_type[GMT_OUT][col_pos] == GMT_IS_LON) gmt_lon_range_adjust (GMT->current.io.geo.range, &val);	/* Set longitude range */
+	if (gmt_M_is_type (GMT, GMT_OUT, col_pos, GMT_IS_LON)) gmt_lon_range_adjust (GMT->current.io.geo.range, &val);	/* Set longitude range */
 	return (val);
 }
 
@@ -973,7 +973,7 @@ GMT_LOCAL double api_get_record_value (struct GMT_CTRL *GMT, double *record, uin
 	col_pos = api_pick_in_col_number (GMT, (unsigned int)col);
 	val = (col_pos >= n_colums) ? GMT->session.d_NaN : record[col_pos];	/* If we request a column beyond length of array, return NaN */
 	if (GMT->common.d.active[GMT_IN] && gmt_M_is_dnan (val)) val = GMT->common.d.nan_proxy[GMT_IN];	/* Write this value instead of NaNs */
-	if (GMT->current.io.col_type[GMT_IN][col_pos] == GMT_IS_LON) gmt_lon_range_adjust (GMT->current.io.geo.range, &val);	/* Set longitude range */
+	if (gmt_M_is_type (GMT, GMT_IN, col_pos, GMT_IS_LON)) gmt_lon_range_adjust (GMT->current.io.geo.range, &val);	/* Set longitude range */
 	return (val);
 }
 
@@ -10414,7 +10414,7 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar) {
 	unsigned int pos = 0, mode, col_type_save[2][2];
 	int npar = 0;
 	size_t len;
-	char p[GMT_BUFSIZ] = {""}, unit;
+	char p[GMT_BUFSIZ] = {""}, unit, col_set_save[2][2];
 	double value;
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_CTRL *GMT = NULL;
@@ -10427,9 +10427,11 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar) {
 	API->error = GMT_NOERROR;
 
 	/* Because gmt_init_distaz and possibly gmt_scanf_arg may decide to change the GMT col_type
-	 * we make a copy here and reset when done */
-	gmt_M_memcpy (col_type_save[GMT_IN], GMT->current.io.col_type[GMT_IN],   2, unsigned int);
-	gmt_M_memcpy (col_type_save[GMT_OUT], GMT->current.io.col_type[GMT_OUT], 2, unsigned int);
+	 * for x and y we make a copy here and reset when done */
+	gmt_M_memcpy (col_type_save[GMT_IN],  GMT->current.io.col_type[GMT_IN],   2, unsigned int);
+	gmt_M_memcpy (col_type_save[GMT_OUT], GMT->current.io.col_type[GMT_OUT],  2, unsigned int);
+	gmt_M_memcpy (col_set_save[GMT_IN],   GMT->current.io.col_set[GMT_IN],    2, char);
+	gmt_M_memcpy (col_set_save[GMT_OUT],  GMT->current.io.col_set[GMT_OUT],   2, char);
 
 	while (gmt_strtok (arg, separators, &pos, p)) {	/* Loop over input aruments */
 		if ((len = strlen (p)) == 0) continue;
@@ -10452,6 +10454,8 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar) {
 	/* Reset col_types to what they were before the parsing */
 	gmt_M_memcpy (GMT->current.io.col_type[GMT_IN],  col_type_save[GMT_IN],  2, unsigned int);
 	gmt_M_memcpy (GMT->current.io.col_type[GMT_OUT], col_type_save[GMT_OUT], 2, unsigned int);
+	gmt_M_memcpy (GMT->current.io.col_set[GMT_IN],   col_set_save[GMT_IN],   2, char);
+	gmt_M_memcpy (GMT->current.io.col_set[GMT_OUT],  col_set_save[GMT_OUT],  2, char);
 
 	return (npar);
 }

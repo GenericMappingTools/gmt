@@ -836,13 +836,11 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (Ctrl->L.unit == 'X') gmt_set_cartesian (GMT, GMT_IN);	/* Cartesian */
 
 	if (Ctrl->G.mode && proj_type != GMT_GEO2CART) {	/* Ensure we use the selected output coordinates */
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = save[GMT_X];
-		GMT->current.io.col_type[GMT_OUT][GMT_Y] = save[GMT_Y];
+		gmt_set_column (GMT, GMT_OUT, GMT_X, save[GMT_X]);
+		gmt_set_column (GMT, GMT_OUT, GMT_Y, save[GMT_Y]);
 	}
-	if (datum_conv_only) {	/* Both input and output is geographic */
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
-	}
+	if (datum_conv_only)	/* Both input and output is geographic */
+		gmt_set_geographic (GMT, GMT_OUT);
 
 	if (Ctrl->C.active) {
 		if (Ctrl->F.active) {
@@ -955,7 +953,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		gmt_set_geographic (GMT, GMT_IN);
 		gmt_set_geographic (GMT, GMT_OUT);
 		o_type[GMT_X] = GMT_X;	o_type[GMT_Y] = GMT_Y;
-		GMT->current.io.col_type[GMT_IN][GMT_Z] = GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
+		gmt_set_column (GMT, GMT_IO, GMT_Z, GMT_IS_FLOAT);
 	}
 	else if (gmt_M_is_geographic (GMT, GMT_OUT)) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Override -fog for normal operation\n");

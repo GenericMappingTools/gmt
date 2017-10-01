@@ -105,7 +105,7 @@ enum GMT_enum_segopt {
 /* Get current setting for in/out columns */
 
 /*! Types of possible column entries in a file: */
-enum gmt_M_col_enum {
+enum gmt_col_enum {
 	GMT_IS_NAN   		=   0,	/* Returned by gmt_scanf routines when read fails */
 	GMT_IS_FLOAT		=   1,	/* Generic (double) data type, no special format */
 	GMT_IS_LAT		=    2,
@@ -279,6 +279,7 @@ struct GMT_IO {				/* Used to process input data records */
 	char curr_text[GMT_BUFSIZ];	/* Current ASCII record */
 	char segment_header[GMT_BUFSIZ];	/* Current ASCII segment header */
 	char filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
+	char col_set[2][GMT_MAX_COLUMNS];	/* Keeps track of which columns have had their type set */
 	char *o_format[GMT_MAX_COLUMNS];	/* Custom output ASCII format to overrule format_float_out */
 	int ncid;			/* NetCDF file ID (when opening netCDF file) */
 	int nvars;			/* Number of requested variablesin netCDF file */

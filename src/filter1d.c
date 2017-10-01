@@ -910,13 +910,13 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 			F.filter_type = FILTER1D_CUSTOM;
 			if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != 0) Return (error, "Error in gmt_set_cols");
 			save_col = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
-			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;	/* Always read the weights as floats */
+			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Always read the weights as floats */
 			gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -F files */
 			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 				Return (API->error, "Error Reading input\n");
 			}
 			gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
-			GMT->current.io.col_type[GMT_IN][GMT_X] = save_col;	/* Reset this col type to whatever it actually is */
+			gmt_set_column (GMT, GMT_IN, GMT_X, save_col);	/* Reset this col type to whatever it actually is */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;
 	}

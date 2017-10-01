@@ -241,7 +241,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	}
 	else
 		gmt_set_cartesian (GMT, GMT_OUT);
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
+	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
 	
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_DIST_SELECTION], &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 

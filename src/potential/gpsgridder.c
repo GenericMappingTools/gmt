@@ -851,7 +851,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			}
 
 			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 2, unsigned int);	/* Save previous x/y output col types */
-			GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
+			gmt_set_cartesian (GMT, GMT_OUT);
 			/* Sort eigenvalues into ascending order */
 			gmt_sort_array (GMT, eig, n_params, GMT_DOUBLE);
 			eig_max = eig[n_params-1];

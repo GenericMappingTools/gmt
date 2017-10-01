@@ -540,7 +540,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->T.mode == DO_DOT) {
 		n_out = 1;	/* Override prior setting since we just will report an angle in one column */
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_FLOAT;
+		gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_FLOAT);
 	}
 	else if (Ctrl->T.mode == DO_ROTVAR2D) {	/* 2D or 3D */
 		if (Din->n_columns == 1) n_out = 2;

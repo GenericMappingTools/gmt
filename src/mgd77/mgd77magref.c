@@ -191,14 +191,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 						case 't':
 							Ctrl->A.fixed_time = true;
 							strncpy (tfixed, &p[1], GMT_LEN64-1);
-							GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;
+							gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
 							break;
 						case 'y':
 							Ctrl->A.years = true;
-							GMT->current.io.col_type[GMT_IN][2] = GMT->current.io.col_type[GMT_OUT][2] = 
-												GMT->current.io.col_type[GMT_IN][3] = 
-												GMT->current.io.col_type[GMT_OUT][3] = 
-												GMT_IS_FLOAT;
+							gmt_set_column (GMT, GMT_IO, 2, GMT_IS_FLOAT);
+							gmt_set_column (GMT, GMT_IO, 3, GMT_IS_FLOAT);
 							break;
 						default:
 							break;
@@ -457,7 +455,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 
 	Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));	/* We need at least a size of one in case a value is given in input */
 	if (!Ctrl->A.fixed_time)			/* Otherwise we don't print the time */
-		GMT->current.io.col_type[GMT_IN][t_col] = GMT->current.io.col_type[GMT_OUT][t_col] = GMT_IS_ABSTIME;
+		gmt_set_column (GMT, GMT_IO, t_col, GMT_IS_ABSTIME);
 
 	/* Shorthand for these */
 	nval = Ctrl->CM4->CM4_F.n_field_components;
@@ -535,10 +533,13 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 		Ctrl->CM4->CM4_DATA.n_times = 1;
 	}
 	else	/* Make sure input time columns are encoded/decoded properly since here we know t_col is set. */
-		GMT->current.io.col_type[GMT_IN][t_col] = GMT->current.io.col_type[GMT_OUT][t_col] = (Ctrl->A.years) ? GMT_IS_FLOAT : GMT_IS_ABSTIME;
+		gmt_set_column (GMT, GMT_IO, t_col, (Ctrl->A.years) ? GMT_IS_FLOAT : GMT_IS_ABSTIME);
 
-	GMT->current.io.col_type[GMT_IN][t_col+1] = GMT->current.io.col_type[GMT_OUT][t_col+1] = GMT_IS_FLOAT;		/* Override any previous t_col = 3 settings */
-	if (!Ctrl->copy_input) GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;	/* No time on output */
+	gmt_set_column (GMT, GMT_IO, t_col+1, GMT_IS_FLOAT);		/* Override any previous t_col = 3 settings */
+	if (!Ctrl->copy_input) {	/* No time on output */
+		gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_FLOAT);
+		gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
+	}
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 		Return (API->error);

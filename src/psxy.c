@@ -910,7 +910,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	pos2y = ex2 - GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd latitude (for VECTORS with two sets of coordinates) */
 
 	if (Ctrl->E.active) {
-		if (S.read_size) GMT->current.io.col_type[GMT_IN][ex1] = GMT_IS_DIMENSION;	/* Must read symbol size from data record */
+		if (S.read_size) gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_DIMENSION);	/* Must read symbol size from data record */
 		if (def_err_xy && GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* With -:, -E should become -Eyx */
 			gmt_M_uint_swap (xy_errors[GMT_X], xy_errors[GMT_Y]);
 			gmt_M_uint_swap (error_type[GMT_X], error_type[GMT_Y]);
@@ -921,8 +921,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		xy_errors[GMT_Y] += (S.read_size + get_rgb);
 	}
 	else if (not_line)	/* Here we have the usual x y [z] [size] [other args] [symbol] record */
-		for (j = n_cols_start; j < 6; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
-	for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
+		for (j = n_cols_start; j < 6; j++) gmt_set_column (GMT, GMT_IN, j, GMT_IS_DIMENSION);		/* Since these may have units appended */
+	for (j = 0; j < S.n_nondim; j++) gmt_set_column (GMT, GMT_IN, S.nondim_col[j]+get_rgb, GMT_IS_FLOAT);	/* Since these are angles, not dimensions */
 
 	n_needed = n_cols_start + S.n_required;
 	if (gmt_check_binary_io (GMT, n_needed))
@@ -976,26 +976,28 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if (S.symbol == GMT_SYMBOL_BARY && !S.base_set) S.base = GMT->common.R.wesn[YLO];	/* Default to south level for vertical log10 bars */
 	if ((S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & PSL_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
 		/* Reading 2nd coordinate so must set column types */
-		GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
-		GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
+		gmt_set_column (GMT, GMT_IN, pos2x, GMT->current.io.col_type[GMT_IN][GMT_X]);
+		gmt_set_column (GMT, GMT_IN, pos2y, GMT->current.io.col_type[GMT_IN][GMT_Y]);
 	}
 	if (S.symbol == PSL_VECTOR && S.v.status & PSL_VEC_COMPONENTS)
-		GMT->current.io.col_type[GMT_IN][pos2y] = GMT_IS_FLOAT;	/* Just the users dy component, not length */
+		gmt_set_column (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Just the users dy component, not length */
 	if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC ) {	/* One of the vector symbols */
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
 		if ((S.v.status & PSL_VEC_FILL) == 0 && !S.v.parsed_v4) Ctrl->G.active = false;	/* Want no fill so override -G */
 		if (S.v.status & PSL_VEC_FILL) S.v.fill = current_fill;		/* Override -G<fill> (if set) with specified head fill */
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
-	if (S.symbol == GMT_SYMBOL_BARX && S.base_set == 2) GMT->current.io.col_type[GMT_IN][bcol] = GMT->current.io.col_type[GMT_IN][GMT_X];
-	if (S.symbol == GMT_SYMBOL_BARY && S.base_set == 2) GMT->current.io.col_type[GMT_IN][bcol] = GMT->current.io.col_type[GMT_IN][GMT_Y];
+	if (S.symbol == GMT_SYMBOL_BARX && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, GMT->current.io.col_type[GMT_IN][GMT_X]);
+	if (S.symbol == GMT_SYMBOL_BARY && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, GMT->current.io.col_type[GMT_IN][GMT_Y]);
 	if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0)
-		GMT->current.io.col_type[GMT_IN][ex2] = GMT_IS_GEODIMENSION;
+		gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
 	else if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && S.convert_angles) {
 		if (S.n_required == 1) 
-			GMT->current.io.col_type[GMT_IN][ex1] = GMT_IS_GEODIMENSION;
-		else
-			GMT->current.io.col_type[GMT_IN][ex2] = GMT->current.io.col_type[GMT_IN][ex3] = GMT_IS_GEODIMENSION;
+			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
+		else {
+			gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
+			gmt_set_column (GMT, GMT_IN, ex3, GMT_IS_GEODIMENSION);
+		}
 	}
 
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
@@ -1035,7 +1037,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		PSL_command (GMT->PSL, "V\n");
 		
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
-			GMT->current.io.col_type[GMT_IN][ex1] = GMT_IS_FLOAT;
+			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
 			delayed_unit_scaling = (S.u_set && S.u != GMT_INCH);
 		}
 		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */

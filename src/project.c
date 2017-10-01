@@ -699,16 +699,16 @@ int GMT_project (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->G.active) {	/* Hardwire 3 output columns and set their types */
 		P.n_outputs = 3;
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LON;
-		GMT->current.io.col_type[GMT_OUT][GMT_Y] = (Ctrl->N.active) ? GMT_IS_FLOAT : (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LAT;
-		GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
+		gmt_set_column (GMT, GMT_OUT, GMT_X, (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LON);
+		gmt_set_column (GMT, GMT_OUT, GMT_Y, (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LAT);
+		gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
 	}
 	else {	/* Decode and set the various output column types */
 		for (col = 0; col < P.n_outputs; col++) {
 			switch (P.output_choice[col]) {
-				case 0: case 4: GMT->current.io.col_type[GMT_OUT][col] = GMT_IS_LON;	break;
-				case 1: case 5: GMT->current.io.col_type[GMT_OUT][col] = GMT_IS_LAT;	break;
-				default: 	GMT->current.io.col_type[GMT_OUT][col] = GMT_IS_FLOAT;	break;
+				case 0: case 4: gmt_set_column (GMT, GMT_OUT, col, GMT_IS_LON);		break;
+				case 1: case 5: gmt_set_column (GMT, GMT_OUT, col, GMT_IS_LAT);		break;
+				default: 	    gmt_set_column (GMT, GMT_OUT, col, GMT_IS_FLOAT);	break;
 			}
 		}
 	}

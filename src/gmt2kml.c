@@ -886,8 +886,8 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	if (get_z) n_coord++;
 	t1_col = 2 + get_z;
 	t2_col = 3 + get_z;
-	if (Ctrl->F.mode == EVENT || Ctrl->F.mode == SPAN) GMT->current.io.col_type[GMT_IN][t1_col] = GMT->current.io.col_type[GMT_OUT][t1_col] = GMT_IS_ABSTIME;
-	if (Ctrl->F.mode == SPAN)  GMT->current.io.col_type[GMT_IN][t2_col] = GMT->current.io.col_type[GMT_OUT][t2_col] = GMT_IS_ABSTIME;
+	if (Ctrl->F.mode == EVENT || Ctrl->F.mode == SPAN) gmt_set_column (GMT, GMT_IO, t1_col, GMT_IS_ABSTIME);
+	if (Ctrl->F.mode == SPAN) gmt_set_column (GMT, GMT_IO, t2_col, GMT_IS_ABSTIME);
 
 	if (Ctrl->F.mode == WIGGLE) {	/* Adjust wiggle scale for units and then take inverse */
 		char unit_name[GMT_LEN16] = {""};

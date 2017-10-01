@@ -874,7 +874,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		else if (Ctrl->N.active) {	/* Write table of indices */
 			/* Set output format to regular float */
 			gmt_set_cartesian (GMT, GMT_OUT);	/* Since output is no longer lon/lat */
-			GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
+			gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
 			for (i = ij = 0; i < np; i++, ij += 3) {
 				for (k = 0; k < 3; k++) out[k] = (double)link[ij+k];
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */

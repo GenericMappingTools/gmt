@@ -401,60 +401,39 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	if (!both) both = !Ctrl->S.active;	/* Two columns for many output choices */
 	n_out = 1 + both;		/* Number of column output for some cols if single is not specified */
 
-	GMT->current.io.col_type[GMT_OUT][GMT_X] = (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT;
-	GMT->current.io.col_type[GMT_OUT][GMT_Y] = (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT;
-	GMT->current.io.col_type[GMT_OUT][GMT_T] = GMT_IS_ABSTIME;
+	gmt_set_column (GMT, GMT_OUT, GMT_X, (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT);
+	gmt_set_column (GMT, GMT_OUT, GMT_Y, (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT);
+	gmt_set_column (GMT, GMT_OUT, GMT_T, GMT_IS_ABSTIME);
 
 	n_items = strlen (Ctrl->F.flags); 
 	for (i = j = 0; !mixed && i < n_items; i++, j++) {	/* Overwrite the above settings */
 		switch (Ctrl->F.flags[i]) {	/* acdhintTvxyz */
 			case 'a':	/* Angle between tracks */
-				GMT->current.io.col_type[GMT_OUT][j] = GMT_IS_FLOAT;
-				break;
 			case 'c':	/* Crossover value */
-				GMT->current.io.col_type[GMT_OUT][j] = GMT_IS_FLOAT;
-				break;
-			case 'd':	/* Distance along track */
-				GMT->current.io.col_type[GMT_OUT][j] = GMT_IS_FLOAT;
-				if (both) GMT->current.io.col_type[GMT_OUT][++j] = GMT_IS_FLOAT;
-				break;
-			case 'h':	/* Heading along track */
-				GMT->current.io.col_type[GMT_OUT][j] = GMT_IS_FLOAT;
-				if (both) GMT->current.io.col_type[GMT_OUT][++j] = GMT_IS_FLOAT;
-				break;
 			case 'I':	/* Time interval (unsigned) */
 			case 'i':	/* Time interval (signed) */
-				GMT->current.io.col_type[GMT_OUT][j] = GMT_IS_FLOAT;
+			case 'v':	/* Speed along track */
+			case 'w':	/* Crossover composite weight */
+				gmt_set_column (GMT, GMT_OUT, j, GMT_IS_FLOAT);
 				break;
+			case 'd':	/* Distance along track */
+			case 'h':	/* Heading along track */
 			case 'n':	/* Names of the track(s) [need this case to fall through] */
 			case 'N':	/* ID numbers of tracks */
-				GMT->current.io.col_type[GMT_OUT][j] = GMT_IS_FLOAT;
-				if (both) GMT->current.io.col_type[GMT_OUT][++j] = GMT_IS_FLOAT;
+			case 'T':	/* Time along track since beginning of the first year of the track */
+			case 'z':	/* Observed value along track */
+				gmt_set_column (GMT, GMT_OUT, j, GMT_IS_FLOAT);
+				if (both) gmt_set_column (GMT, GMT_OUT, ++j, GMT_IS_FLOAT);
 				break;
 			case 't':	/* Time along track */
-				GMT->current.io.col_type[GMT_OUT][j] = GMT_IS_ABSTIME;
-				if (both) GMT->current.io.col_type[GMT_OUT][++j] = GMT_IS_ABSTIME;
-				break;
-			case 'T':	/* Time along track since beginning of the first year of the track */
-				GMT->current.io.col_type[GMT_OUT][j] = GMT_IS_FLOAT;
-				if (both) GMT->current.io.col_type[GMT_OUT][++j] = GMT_IS_FLOAT;
-				break;
-			case 'v':	/* Speed along track */
-				GMT->current.io.col_type[GMT_OUT][j] = GMT_IS_FLOAT;
-				if (both) GMT->current.io.col_type[GMT_OUT][++j] = GMT_IS_FLOAT;
-				break;
-			case 'w':	/* Crossover composite weight */
-				GMT->current.io.col_type[GMT_OUT][j] = GMT_IS_FLOAT;
+				gmt_set_column (GMT, GMT_OUT, j, GMT_IS_ABSTIME);
+				if (both) gmt_set_column (GMT, GMT_OUT, ++j, GMT_IS_ABSTIME);
 				break;
 			case 'x':	/* x coordinate of crossover */
-				GMT->current.io.col_type[GMT_OUT][j] = (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT;
+				gmt_set_column (GMT, GMT_OUT, j, (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT);
 				break;
 			case 'y':	/* y coordinate of crossover */
-				GMT->current.io.col_type[GMT_OUT][j] = (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT;
-				break;
-			case 'z':	/* Observed value along track */
-				GMT->current.io.col_type[GMT_OUT][j] = GMT_IS_FLOAT;
-				if (both) GMT->current.io.col_type[GMT_OUT][++j] = GMT_IS_FLOAT;
+				gmt_set_column (GMT, GMT_OUT, j, (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT);
 				break;
 		}
 	}

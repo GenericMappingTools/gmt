@@ -664,7 +664,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		colvalue = gmt_M_memory (GMT, NULL, n_alloc, double);
 		if (two_cols) {	/* Got an abscissae column as well (dnt: d = dist, n = rec number, t = time) */
 			coldnt = gmt_M_memory (GMT, NULL, n_alloc, double);
-			GMT->current.io.col_type[GMT_IN][GMT_X] = Ctrl->A.kind;
+			gmt_set_column (GMT, GMT_IN, GMT_X, Ctrl->A.kind);
 		}
 		if (strings && !two_cols) {	/* Must read strings directly from file since GMT->current.io.input would barf */
 			ok_to_read = false;

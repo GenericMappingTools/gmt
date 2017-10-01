@@ -100,6 +100,11 @@
 #define d_asind(x) (fabs(x) >= 1.0 ? copysign (90.0, (x)) : asind(x))
 #define d_atan2d(y,x) ((x) == 0.0 && (y) == 0.0 ? 0.0 : atan2d(y,x))
 
+/* Extract column type for given direction and column number */
+#define gmt_M_type(C,dir,col) (C->current.io.col_type[dir][col])
+/* Compare column type to given type -- true if the same */
+#define gmt_M_is_type(C,dir,col,type) (C->current.io.col_type[dir][col] == type)
+
 /*! Macros for swapping misc data types */
 
 #define gmt_M_bool_swap(x, y) {bool bool_tmp; bool_tmp = x, x = y, y = bool_tmp;}

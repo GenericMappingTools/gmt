@@ -248,7 +248,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Process input coefficients\n");
-	for (col = 0; col < 4; col++) GMT->current.io.col_type[GMT_IN][col] = GMT_IS_FLOAT;	/* Not reading lon,lat in this program */
+	for (col = 0; col < 4; col++) gmt_set_column (GMT, GMT_IN, col, GMT_IS_FLOAT);	/* Not reading lon,lat in this program */
 	
 	if ((error = gmt_set_cols (GMT, GMT_IN, 4)) != GMT_NOERROR) {
 		Return (error);

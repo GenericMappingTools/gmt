@@ -605,7 +605,8 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			unsigned int col_type[2];
 			struct GMT_RECORD *Rec = gmt_new_record (GMT, out, NULL);
 			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 2U, unsigned int);	/* Save first 2 current output col types */
-			GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT_IS_FLOAT;
+			gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_FLOAT);
+			gmt_set_column (GMT, GMT_OUT, GMT_Y, GMT_IS_FLOAT);
 			if ((error = gmt_set_cols (GMT, GMT_OUT, 7U)) != GMT_NOERROR) {
 				gmt_M_free (GMT, sum);
 				gmt_M_free (GMT, xx);

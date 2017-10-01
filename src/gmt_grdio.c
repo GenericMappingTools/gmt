@@ -779,15 +779,15 @@ void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 
 		if ((!strncmp (string[i], "longitude", 9U) || strstr (string[i], "degrees_e")) && (header->wesn[XLO] > -360.0 && header->wesn[XHI] <= 360.0)) {
 			/* Input data type is longitude */
-			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_LON;
+			gmt_set_column (GMT, GMT_IN, i, GMT_IS_LON);
 		}
 		else if ((!strncmp (string[i], "latitude", 8U) || strstr (string[i], "degrees_n")) && (header->wesn[YLO] >= -90.0 && header->wesn[YHI] <= 90.0)) {
 			/* Input data type is latitude */
-			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_LAT;
+			gmt_set_column (GMT, GMT_IN, i, GMT_IS_LAT);
 		}
 		else if (!strcmp (string[i], "time") || !strncmp (string[i], "time [", 6U)) {
 			/* Input data type is time */
-			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_RELTIME;
+			gmt_set_column (GMT, GMT_IN, i, GMT_IS_RELTIME);
 			GMT->current.proj.xyz_projection[i] = GMT_TIME;
 
 			/* Determine coordinates epoch and units (default is internal system) */
@@ -1126,11 +1126,12 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	/* Catch some anomalies */
 	if (GMT->current.io.col_type[GMT_OUT][GMT_X] == GMT_IS_LAT) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Output type for X-coordinate of grid %s is LAT. Replaced by LON.\n", header->name);
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
+		gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_LON);
+		
 	}
 	if (GMT->current.io.col_type[GMT_OUT][GMT_Y] == GMT_IS_LON) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Output type for Y-coordinate of grid %s is LON. Replaced by LAT.\n", header->name);
-		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+		gmt_set_column (GMT, GMT_OUT, GMT_Y, GMT_IS_LAT);
 	}
 
 	/* Set unit strings one by one based on output type */

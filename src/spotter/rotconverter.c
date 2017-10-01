@@ -331,9 +331,10 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (out, 20, double);
 	if (Ctrl->G.active) {
-		GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT_IS_FLOAT;
-		GMT->current.io.col_type[GMT_OUT][2] = GMT_IS_LAT;
-		GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_LON;
+		gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_FLOAT);
+		gmt_set_column (GMT, GMT_OUT, 1, GMT_IS_FLOAT);
+		gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_LAT);
+		gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_LON);
 		strcpy (GMT->current.setting.format_float_out, "%g");
 	}
 	

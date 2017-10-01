@@ -214,6 +214,7 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 /* gmt_io.c: */
 
+EXTERN_MSC void gmt_set_column (struct GMT_CTRL *GMT, unsigned int direction, unsigned int col, enum gmt_col_enum type);
 EXTERN_MSC void gmt_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
 EXTERN_MSC int gmt_scanf_float (struct GMT_CTRL *GMT, char *s, double *val);
 EXTERN_MSC int gmt_remove_file (struct GMT_CTRL *GMT, const char *file);

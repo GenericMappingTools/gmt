@@ -3063,7 +3063,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		switch (got) {	/* If no -i, we may update column type if we learn something */
 			case GMT_IS_NAN:	/* Parsing failed, which means we found our first non-number */
 				found_text = true;
-				if (update) GMT->current.io.col_type[GMT_IN][col] = GMT_IS_STRING;	/* In output type not set we might as well set it to this */
+				if (update) gmt_set_column (GMT, GMT_IN, col, GMT_IS_STRING);	/* In output type not set we might as well set it to this */
 				break;
 			case GMT_IS_FLOAT:	/* Resolved to be a float, do we update expecatation? */
 				if (update && (GMT->current.io.variable_in_columns || type == GMT_IS_UNKNOWN))	/* If it could vary from time to time or we never knew, yes we do */
@@ -3744,11 +3744,11 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
 		if (GMT->current.io.col_type[GMT_IN][i] == GMT_IS_FLOAT)
 			{ /* Float type is preset, do not alter */ }
 		else if (!strcmp (long_name, "longitude") || strstr (units, "degrees_e"))
-			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_LON;
+			gmt_set_column (GMT, GMT_IN, i, GMT_IS_LON);
 		else if (!strcmp (long_name, "latitude") || strstr (units, "degrees_n"))
-			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_LAT;
+			gmt_set_column (GMT, GMT_IN, i, GMT_IS_LAT);
 		else if (!strcmp (long_name, "time") || !strcmp (varname, "time")) {
-			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_RELTIME;
+			gmt_set_column (GMT, GMT_IN, i, GMT_IS_RELTIME);
 			gmt_M_memcpy (&time_system, &GMT->current.setting.time_system, 1, struct GMT_TIME_SYSTEM);
 			if (gmt_get_time_system (GMT, units, &time_system) || gmt_init_time_system_structure (GMT, &time_system))
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Time units [%s] in NetCDF file not recognised, defaulting to gmt.conf.\n",
@@ -3761,7 +3761,7 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
 			GMT->current.io.add_offset[i] *= GMT->current.setting.time_system.i_scale;	/* Offset in internal time units */
 		}
 		else if (GMT->current.io.col_type[GMT_IN][i] == GMT_IS_UNKNOWN)
-			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_FLOAT;
+			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);
 	}
 
 	GMT->current.io.input = gmtio_nc_input;
@@ -3871,16 +3871,16 @@ int gmtlib_scanf_geodim (struct GMT_CTRL *GMT, char *s, double *val) {
 /*! . */
 void gmt_set_geographic (struct GMT_CTRL *GMT, unsigned int dir) {
 	/* Eliminate lots of repeated statements to do this: */
-	GMT->current.io.col_type[dir][GMT_X] = GMT_IS_LON;
-	GMT->current.io.col_type[dir][GMT_Y] = GMT_IS_LAT;
+	gmt_set_column (GMT, dir, GMT_X, GMT_IS_LON);
+	gmt_set_column (GMT, dir, GMT_Y, GMT_IS_LAT);
 	if (dir == GMT_IN) gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Default spherical distance calculations are in meters */
 }
 
 /*! . */
 void gmt_set_cartesian (struct GMT_CTRL *GMT, unsigned int dir) {
 	/* Eliminate lots of repeated statements to do this: */
-	GMT->current.io.col_type[dir][GMT_X] = GMT_IS_FLOAT;
-	GMT->current.io.col_type[dir][GMT_Y] = GMT_IS_FLOAT;
+	gmt_set_column (GMT, dir, GMT_X, GMT_IS_FLOAT);
+	gmt_set_column (GMT, dir, GMT_Y, GMT_IS_FLOAT);
 }
 
 /*! Handles non-proxy checking for input z values.  If the input value equals
@@ -5029,8 +5029,10 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 	gmt_init_io_columns (GMT, GMT_IN);	/* Set default input column order */
 	gmt_init_io_columns (GMT, GMT_OUT);	/* Set default output column order */
 	for (i = 0; i < 2; i++) GMT->current.io.skip_if_NaN[i] = true;								/* x/y must be non-NaN */
-	for (i = 0; i < 2; i++) GMT->current.io.col_type[GMT_IN][i] = GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_UNKNOWN;	/* Must be told [or find out] what x/y are */
-	for (i = 2; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_type[GMT_IN][i] = GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_FLOAT;	/* Other columns default to floats */
+	for (i = 0; i < 2; i++) gmt_set_column (GMT, GMT_IO, i, GMT_IS_UNKNOWN);	/* Must be told [or find out] what x/y are */
+	for (i = 2; i < GMT_MAX_COLUMNS; i++) gmt_set_column (GMT, GMT_IO, i, GMT_IS_FLOAT);	/* Other columns default to floats */
+	gmt_M_memset (GMT->current.io.col_set[GMT_X], GMT_MAX_COLUMNS, char);	/* This is the initial state of input columns - all available to be changed by modules */
+	gmt_M_memset (GMT->current.io.col_set[GMT_Y], GMT_MAX_COLUMNS, char);	/* This is the initial state of output columns - all available to be changed by modules */
 	gmt_M_memset (GMT->current.io.curr_rec, GMT_MAX_COLUMNS, double);	/* Initialize current and previous records to zero */
 	gmt_M_memset (GMT->current.io.prev_rec, GMT_MAX_COLUMNS, double);
 	GMT->current.io.record.data = GMT->current.io.curr_rec;
@@ -8020,4 +8022,15 @@ int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newf
 		if (mode == GMT_RENAME_FILE) errno = gmt_remove_file (GMT, oldfile);
 	}
 	return errno;
+}
+
+/*! . */
+void gmt_set_column (struct GMT_CTRL *GMT, unsigned int direction, unsigned int col, enum gmt_col_enum type) {
+	/* Sets the column type for this input or output column or both (dir == GMT_IO) */
+	unsigned int start = (direction == GMT_IO) ? GMT_IN : direction;
+	unsigned int stop  = (direction == GMT_IO) ? GMT_OUT : direction;
+	for (unsigned int dir = start; dir <= stop; dir++) {
+		GMT->current.io.col_type[dir][col] = type;
+		GMT->current.io.col_set[dir][col] = 1;	/* Flag as having been set and thus should not be automatically changed */
+	}
 }
