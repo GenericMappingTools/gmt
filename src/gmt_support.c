@@ -3580,7 +3580,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 				}
 				/* Finalize the polygon */
 				sprintf (header, "Voronoi polygon # %d -L%d", seg, seg);
-				S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, np, 2U, header, P->table[0]->segment[seg]);
+				S = P->table[0]->segment[seg] = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, np, 2U, header, P->table[0]->segment[seg]);
 				gmt_M_memcpy (S->data[GMT_X], xcoord, np, double);
 				gmt_M_memcpy (S->data[GMT_Y], ycoord, np, double);
 				P->table[0]->n_records += np;	/* Update counts */

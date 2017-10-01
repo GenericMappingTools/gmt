@@ -1343,7 +1343,7 @@ double gmt_f_pdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2) {
 	/* Probability density distribution for F */
 	double y;
 
-	y = sqrt (pow (nu1 * F, (double)nu1) * pow ((double)nu2, (double)nu2) / pow (nu1 * F + nu2, (double)(nu1+nu2))) / (F * gmtstat_beta (GMT, 0.5*nu1, 0.5*nu2));
+	y = (F < GMT_CONV8_LIMIT) ? 0.0 : sqrt (pow (nu1 * F, (double)nu1) * pow ((double)nu2, (double)nu2) / pow (nu1 * F + nu2, (double)(nu1+nu2))) / (F * gmtstat_beta (GMT, 0.5*nu1, 0.5*nu2));
 	return (y);
 }
 
@@ -1351,6 +1351,7 @@ double gmt_f_cdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2) {
 	/* Cumulative probability density distribution for F */
 	double y = 0.0;
 
+	if (F < GMT_CONV8_LIMIT) return 0.0;
 	gmtstat_inc_beta (GMT, 0.5*nu1, 0.5*nu2, F*nu1/(F*nu1+nu2), &y);
 
 	return (y);
