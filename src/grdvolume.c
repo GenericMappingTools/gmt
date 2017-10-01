@@ -733,6 +733,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, area);
 	gmt_M_free (GMT, vol);
 	gmt_M_free (GMT, height);
+	gmt_M_free (GMT, Out);
 
 	Return (GMT_NOERROR);
 }

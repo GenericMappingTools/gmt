@@ -1248,6 +1248,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								else { strcat (sub, "+g"); strcat (sub, txt_c);}
 								if (txt_d[0] == '-') strcat (sub, "+p-");
 								else { strcat (sub, "+p"); strcat (sub, txt_d);}
+								S[SYM]->data[GMT_X][0] -= dx;
 								S[SYM]->data[2][0] = x;
 								S[SYM]->data[3][0] = az1;
 								S[SYM]->data[4][0] = az2;
@@ -1266,7 +1267,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								/* We want to center the wedge around its mid-point */
 								m_az = 0.5 * (az1 + az2);
 								dx = 0.25 * x * cosd (m_az);	dy = 0.25 * x * sind (m_az);
-								S[SYM]->data[2][0] = x;
+								S[SYM]->data[GMT_X][0] -= dx;
+								S[SYM]->data[2][0] = x_off + off_ss - dx;
 								S[SYM]->data[3][0] = az1;
 								S[SYM]->data[4][0] = az2;
 							}

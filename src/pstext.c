@@ -644,7 +644,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	int  error = 0, k, fmode, nscan, *c_just = NULL;
 	int input_format_version = GMT_NOTSET, rec_number = 0;
 	
-	bool master_record = false, skip_text_records = false, old_is_world, clip_set = false;
+	bool master_record = false, skip_text_records = false, old_is_world, clip_set = false, no_in_text;
 
 	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col, rec_mode;
 	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;
@@ -697,7 +697,8 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 #endif
 	n_expected_cols = 3 + Ctrl->Z.active + Ctrl->F.nread;
 	if (Ctrl->M.active) n_expected_cols += 3;
-	if (Ctrl->F.get_text) n_expected_cols--;	/* No text in the input record */
+	no_in_text = (Ctrl->F.get_text && Ctrl->F.get_text != GET_CMD_FORMAT);	/* No text in the input record */
+	if (no_in_text) n_expected_cols--;	/* No text in the input record */
 	add = !(T.x_offset == 0.0 && T.y_offset == 0.0);
 	if (add && Ctrl->D.justify) T.boxflag |= 64;
 
@@ -778,7 +779,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					n_paragraphs++;
 				}
 
-				if ((nscan = validate_coord_and_text (GMT, Ctrl, n_read, line, buffer)) == -1) continue;	/* Failure */
+				if (line && (nscan = validate_coord_and_text (GMT, Ctrl, n_read, line, buffer)) == -1) continue;	/* Failure */
 
 				if (Ctrl->F.R_justify) add_xy_via_justify (GMT, Ctrl->F.R_justify);
 				
@@ -896,11 +897,12 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			if (gmt_M_rec_is_segment_header (GMT)) continue;	/* Skip segment headers (line == NULL) */
 			in   = (Ctrl->F.R_justify) ? GMT->current.io.curr_rec : In->data;
 			line = In->text;
-			assert (line != NULL);
-			if (gmt_is_a_blank_line (line)) continue;	/* Skip blank lines or # comments */
-
-			strncpy (cp_line, line, GMT_BUFSIZ-1);	/* Make a copy because in_line may be pointer to a strdup-ed line that we cannot enlarge */
-			line = cp_line;
+			if (!no_in_text) {
+				assert (line != NULL);
+				if (gmt_is_a_blank_line (line)) continue;	/* Skip blank lines or # comments */
+				strncpy (cp_line, line, GMT_BUFSIZ-1);	/* Make a copy because in_line may be pointer to a strdup-ed line that we cannot enlarge */
+				line = cp_line;
+			}
 
 			if (Ctrl->F.R_justify) add_xy_via_justify (GMT, Ctrl->F.R_justify);
 			pos = 0;	nscan = 3;

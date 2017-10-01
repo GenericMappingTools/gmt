@@ -4104,7 +4104,7 @@ void * gmt_z_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
 		GMT->current.io.status = GMT_IO_EOF;
 		return (NULL);
 	}
-	return (GMT->current.io.curr_rec);
+	return (&GMT->current.io.record);
 }
 
 /*! . */
@@ -6306,6 +6306,8 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 				expectation = GMT_IS_GEO;
 			else if (strchr (s, ':'))		/* Found a : in the argument - assume Geographic coordinates */
 				expectation = GMT_IS_GEO;
+			else if (strstr (s, "pi"))	/* Found "pi" in the number - will try scanning as float */
+				expectation = GMT_IS_FLOAT;
 			else if (strchr (GMT_DIM_UNITS, c))	/* Found a trailing dimension unit (c|i|p) */
 				expectation = GMT_IS_DIMENSION;
 			else if (strchr (GMT_LEN_UNITS, c))	/* Found a trailing geo-length unit (d|m|s|e|f|k|M|n|u) */
@@ -6810,7 +6812,7 @@ struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segmen
 	T->n_columns = n_columns;
 	if (n_segments) {
 		T->segment = gmt_M_memory (GMT, NULL, n_segments, struct GMT_DATASEGMENT *);
-		for (seg = 0; T->n_records && seg < n_segments; seg++) {
+		for (seg = 0; seg < n_segments; seg++) {
 			if ((T->segment[seg] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET|mode, n_rows, n_columns, NULL, NULL)) == NULL) {
 				while (seg > 0) {
 					gmt_free_segment (GMT, &(T->segment[seg-1])); seg--;

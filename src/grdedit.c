@@ -353,6 +353,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
+		GMT_Set_Columns (API, GMT_IN, 3, GMT_COL_FIX_NO_TEXT);
 
 		n_data = n_use = 0;
 		do {	/* Keep returning records until we reach EOF */

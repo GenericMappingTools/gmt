@@ -807,7 +807,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 	char s_args[GMT_BUFSIZ] = {""};
 
-	double direction, length, dx, dy, d, dim[PSL_MAX_DIMS], *in = NULL;
+	double direction, length, dx, dy, d, *in = NULL;
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;
 
 	struct GMT_PEN current_pen, default_pen;
@@ -1013,7 +1013,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
 		bool periodic = false, delayed_unit_scaling = false;
 		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
-		double xpos[2], width = 0.0;
+		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS];
 		struct GMT_RECORD *In = NULL;
 
 		if ((error = gmt_set_cols (GMT, GMT_IN, n_needed)) != GMT_NOERROR) {
