@@ -2155,6 +2155,7 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 
 	/* A few things pertaining only to data/text tables */
 	GMT->current.io.rec_in_tbl_no = 0;	/* Start on new table */
+	if (direction == GMT_IN) API->current_get_obj = S_obj;
 	if (S_obj->geometry == GMT_IS_TEXT) {	/* Reading pure text, no coordinates */
 		S_obj->import = &gmtio_ascii_textinput;
 		GMT->current.io.record.data = NULL;	/* Since there isn't any data */
@@ -11122,7 +11123,7 @@ void *GMT_Alloc_Segment (void *V_API, unsigned int mode, uint64_t n_rows, uint64
 	 * if mode == GMT_WITH_STRINGS then we also allocate the empty array of string pointers */
 	struct GMT_DATASEGMENT *Snew = NULL;
 	struct GMTAPI_CTRL *API = NULL;
-	bool first = true;
+	bool first = true, alloc;
 	
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = api_get_api_ptr (V_API);
@@ -11132,7 +11133,8 @@ void *GMT_Alloc_Segment (void *V_API, unsigned int mode, uint64_t n_rows, uint64
 	else if ((Snew = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT)) == NULL) /* Something went wrong */
 		return_null (V_API, GMT_MEMORY_ERROR);
 		/* Only reallocate if desired n_rows differ from current n_rows */
-	if (n_rows && n_rows != Snew->n_rows && gmt_alloc_datasegment (API->GMT, Snew, n_rows, n_columns, mode, first))  {	/* Something went wrong */
+	alloc = (first || (n_rows && n_rows != Snew->n_rows));	/* Alloc first time or reallocate later if necessary */
+	if (alloc && gmt_alloc_datasegment (API->GMT, Snew, n_rows, n_columns, mode, first))  {	/* Something went wrong */
 		if (first) gmt_M_free (API->GMT, Snew);
 		return_null (V_API, GMT_MEMORY_ERROR);
 	}
@@ -11156,7 +11158,7 @@ int GMT_Set_Columns (void *V_API, unsigned int direction, unsigned int n_cols, u
 	uint64_t n_in;
 	struct GMTAPI_CTRL *API = NULL;
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (V_API, GMT_NOT_A_VALID_DIRECTION);
-	if (direction == GMT_IN && !(mode == GMT_COL_FIX || mode == GMT_COL_VAR)) return_error (V_API, GMT_NOT_A_VALID_MODE);
+	if (direction == GMT_IN && !(mode == GMT_COL_FIX || mode == GMT_COL_VAR || mode == GMT_COL_FIX_NO_TEXT)) return_error (V_API, GMT_NOT_A_VALID_MODE);
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
@@ -11174,6 +11176,9 @@ int GMT_Set_Columns (void *V_API, unsigned int direction, unsigned int n_cols, u
 	/* Get here when n_cols is not zero (of we have a special case), so must consult mode */
 
 	switch (mode) {
+		case GMT_COL_FIX_NO_TEXT:	/* Specific a fixed number of columns, and ignore trailing text */
+			API->GMT->current.io.trailing_text[direction] = false;
+			/* Then purposfully fall through missing break to set columns */
 		case GMT_COL_FIX:	/* Specific a fixed number of columns */
 			error = gmt_set_cols (API->GMT, direction, n_cols);
 			break;

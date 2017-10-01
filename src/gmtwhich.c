@@ -148,6 +148,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 	char path[GMT_BUFSIZ] = {""}, file[PATH_MAX] = {""}, *Yes = "Y", *No = "N", cwd[GMT_BUFSIZ] = {""}, *p = NULL;
 	
 	struct GMTWHICH_CTRL *Ctrl = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -185,6 +186,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Unable to determine current working directory!\n");
 	}
 	fmode = (Ctrl->A.active) ? R_OK : F_OK;	/* Either readable or existing files */
+	Out = gmt_new_record (GMT, NULL, path);	//* Place coordinates in data and message in text */
 		
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option != '<') continue;	/* Skip anything but filenames */
@@ -194,24 +196,26 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 			first = gmt_download_file_if_not_found (GMT, opt->arg, Ctrl->G.mode);
 
 		if (gmt_M_file_is_remotedata (opt->arg) && !strstr (opt->arg, ".grd"))
-			sprintf (file, "%s.grd", opt->arg);
+			sprintf (file, "%s.grd", opt->arg);	/* Append the implicit .grd for remote earth_relief grids */
 		else
 			strcpy (file, opt->arg);
 		if (gmt_getdatapath (GMT, &file[first], path, fmode)) {	/* Found the file */
 			if (Ctrl->D.active) {
 				p = strstr (path, &file[first]);	/* Start of filename */
-				if (!strcmp (p, path)) /* Current directory */
-					GMT_Put_Record (API, GMT_WRITE_TEXT, cwd);
-				else {
+				if (!strcmp (p, path)) /* Found in current directory */
+					strcpy (path, cwd);
+				else
 					*(--p) = 0;	/* Chop off file, report directory */
-					GMT_Put_Record (API, GMT_WRITE_TEXT, path);
-				}
 			}
-			else
-				GMT_Put_Record (API, GMT_WRITE_TEXT, ((Ctrl->C.active) ? Yes : path));
+			else if (Ctrl->C.active)	/* Just want a Yes */
+				strcpy (path, Yes);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 		}
-		else {
-			if (Ctrl->C.active) GMT_Put_Record (API, GMT_WRITE_TEXT, No);
+		else {	/* Did not find.  Report no or be quiet */
+			if (Ctrl->C.active) {
+				strcpy (path, No);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
+			}
 			GMT_Report (API, GMT_MSG_VERBOSE, "File %s not found!\n", &file[first]);
 		}
 	}
@@ -219,5 +223,6 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	gmt_M_free (GMT, Out);
 	Return (GMT_NOERROR);
 }

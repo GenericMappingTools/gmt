@@ -732,11 +732,11 @@ GMT_LOCAL unsigned int gmtio_assign_aspatial_cols (struct GMT_CTRL *GMT) {
 }
 
 /*! Returns true if record is NaN NaN [NaN NaN] etc */
-GMT_LOCAL bool gmtio_is_a_NaN_line (char *line) {
+GMT_LOCAL bool gmtio_is_a_NaN_line (struct GMT_CTRL *GMT, char *line) {
 	unsigned int pos = 0;
 	char p[GMT_LEN256] = {""};
 
-	while ((gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p))) {
+	while ((gmt_strtok (line, GMT->current.io.scan_separators, &pos, p))) {
 		gmtlib_str_tolower (p);
 		if (strncmp (p, "nan", 3U)) return (false);
 	}
@@ -2950,7 +2950,8 @@ GMT_LOCAL struct GMT_DATATABLE *gmtio_alloc_table (struct GMT_CTRL *GMT, struct 
 
 /*! . */
 GMT_LOCAL void gmtio_set_current_record (struct GMT_CTRL *GMT, char *text) {
-	while (*text && strchr ("#\t ", *text)) text++;	/* Skip header record indicator and leading whitespace */
+	//while (*text && strchr ("#\t ", *text)) text++;	/* Skip header record indicator and leading whitespace [NO: messes up strsepzp count] */
+	while (*text && strchr ("#", *text)) text++;	/* Skip header record indicator */
 	if (*text)	/* Got some text to remember */
 		strncpy (GMT->current.io.curr_text, text, GMT_BUFSIZ-1);
 	else	/* Nutin' */
@@ -2971,7 +2972,7 @@ void gmtlib_update_outcol_type (struct GMT_CTRL *GMT, uint64_t n_cols) {
 	bool update = (GMT->common.i.select && GMT->common.i.n_cols);	/* Use -i to select columns */
 	if (update) n_cols = GMT->common.i.n_cols;
 	for (col = 0; col < n_cols; col++)
-		GMT->current.io.col_type[GMT_OUT][col] = GMT->current.io.col_type[GMT_IN][col];
+		if (GMT->current.io.col_type[GMT_OUT][col] == GMT_IS_UNKNOWN) GMT->current.io.col_type[GMT_OUT][col] = GMT->current.io.col_type[GMT_IN][col];
 	//GMT->current.io.col_type[GMT_OUT][col] = (update) ? gmtio_get_coltype (GMT, col) : GMT->current.io.col_type[GMT_IN][col];
 }
 
@@ -3026,7 +3027,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	//fprintf (stderr, "\n");
 	
 	*tpos = pos;
-	while (!found_text && (gmt_strtok (record, GMT_TOKEN_SEPARATORS_SCANNER, &pos, token))) {
+	while (!found_text && (gmt_strtok (record, GMT->current.io.scan_separators, &pos, token))) {
 		type = GMT->current.io.col_type[GMT_IN][col];
 		switch (type) {	/* Parse token based on what we think we have */
 			case GMT_IS_ABSTIME:	/* Here we must read with expected format set via -J, -R, or -f */
@@ -3263,9 +3264,10 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			}
 			else {	/* Happily parsed first record and learned a few things.  Now prevent this block from being executed again for the current data file */
 				GMT->current.io.first_rec = false;
-				if (start_of_text == 0) GMT->current.io.trailing_text[GMT_IN] = false;	/* Turn off reading text since none present */
 				if (GMT->current.io.max_cols_to_read) {	/* A hard column count is enforced at first record */
 					*n = GMT->current.io.max_cols_to_read;
+					if (GMT->current.io.max_cols_to_read == n_cols_this_record && start_of_text == 0)
+						GMT->current.io.trailing_text[GMT_IN] = false;	/* Turn off reading text since none present */
 					GMT->current.io.record_type = (GMT->current.io.trailing_text[GMT_IN]) ? GMT_READ_MIXED : GMT_READ_DATA;	/* Since otherwise we fail to store the trailing text */
 					strscan = (GMT->current.io.trailing_text[GMT_IN]) ? &strsepzp : &strsepz;	/* Need zp scanner to detect anything beyond the fixed columns as trailing text */
 				}
@@ -3287,7 +3289,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		start_of_text = 0;			/* Position in current string record */
 
 		stringp = line;
-		while (!bad_record && col_no < n_use && (token = strscan (&stringp, GMT_TOKEN_SEPARATORS, &start_of_text)) != NULL) {	/* Get one field at the time until we run out or have issues */
+		while (!bad_record && col_no < n_use && (token = strscan (&stringp, GMT->current.io.scan_separators, &start_of_text)) != NULL) {	/* Get one field at the time until we run out or have issues */
 			++in_col;	/* This is the actual column number in the input file */
 			if (GMT->common.i.select) {	/* Must do special column-based processing since the -i option was set */
 				if (GMT->current.io.col_skip[in_col]) continue;		/* Just skip and not even count this column */
@@ -3326,7 +3328,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			}
 		}
 		if (start_of_text) {	/* Save pointer to start of trailing text portion of the record */
-			while (GMT->current.io.curr_text[start_of_text] && strchr (GMT_TOKEN_SEPARATORS, GMT->current.io.curr_text[start_of_text])) start_of_text++;	/* First wind to start of trailing text */
+			while (GMT->current.io.curr_text[start_of_text] && strchr (GMT->current.io.scan_separators, GMT->current.io.curr_text[start_of_text])) start_of_text++;	/* First wind to start of trailing text */
 			GMT->current.io.record.text = &GMT->current.io.curr_text[start_of_text];
 		}
 
@@ -4728,7 +4730,7 @@ unsigned int gmt_is_segment_header (struct GMT_CTRL *GMT, char *line)
 	 * Returns 2 if this record is a segment breaker;
 	 * Otherwise returns 0 */
 	if (GMT->current.setting.io_blankline[GMT_IN] && gmt_is_a_blank_line (line)) return (2);	/* Treat blank line as segment break */
-	if (GMT->current.setting.io_nanline[GMT_IN] && gmtio_is_a_NaN_line (line)) return (2);		/* Treat NaN-records as segment break */
+	if (GMT->current.setting.io_nanline[GMT_IN] && gmtio_is_a_NaN_line (GMT, line)) return (2);		/* Treat NaN-records as segment break */
 	if (line[0] == GMT->current.setting.io_seg_marker[GMT_IN]) return (1);	/* Got a regular GMT segment header */
 	return (0);	/* Not a segment header */
 }
@@ -4986,6 +4988,8 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 	GMT->current.io.output = &gmtio_ascii_output;
 
 	GMT->current.io.ogr_parser = &gmtio_ogr_header_parser;		/* Parse OGR header records to start with */
+
+	GMT->current.io.scan_separators = GMT_TOKEN_SEPARATORS;		/* Characters that may separate columns in ascii records */
 
 	/* Assign non-zero/NULL initial values */
 
@@ -7737,7 +7741,7 @@ unsigned int gmtlib_conv_text2datarec (struct GMT_CTRL *GMT, char *record, unsig
 	unsigned int k = 0, pos = 0;
 	char p[GMT_BUFSIZ];
 
-	while (k < ncols && gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, p)) {	/* Get each field in turn and bail when done */
+	while (k < ncols && gmt_strtok (record, GMT->current.io.scan_separators, &pos, p)) {	/* Get each field in turn and bail when done */
 		if (!(p[0] == '+' || p[0] == '-' || p[0] == '.' || isdigit ((int)p[0]))) break;	/* Numbers must be [+|-][.][<digits>] */
 		if (strchr (p, '/')) break;	/* Somehow got to a color triplet? */
 		gmt_scanf (GMT, p, GMT->current.io.col_type[GMT_IN][k], &out[k]);	/* Be tolerant of errors */

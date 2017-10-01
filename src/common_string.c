@@ -545,7 +545,8 @@ char *strsepz (char **stringp, const char *delim, size_t *pos) {
 
 char *strsepzp (char **stringp, const char *delim, size_t *pos) {
 	char *c;
-	while ( (c = strsep(stringp, delim)) != NULL && *c == '\0' ) (*pos)++;
+	while ( (c = strsep(stringp, delim)) != NULL && *c == '\0' )
+		(*pos)++;
 	if (c) (*pos) += strlen (c) + 1;
 	return c;
 }

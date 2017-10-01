@@ -507,10 +507,11 @@ enum GMT_enum_pol {
 
 /* Modes for setting columns for rec-by-rec input/output */
 enum GMT_enum_columns {
-	GMT_COL_FIX = 0,
-	GMT_COL_ADD = 1,
-	GMT_COL_SUB = 2,
-	GMT_COL_VAR = 3
+	GMT_COL_FIX = 0,		/* Specify fixed numerical columns to read, anything beyond is considered trailing text */
+	GMT_COL_ADD = 1,		/* Add to current number of columns */
+	GMT_COL_SUB = 2,		/* Subtract from current number of columns */
+	GMT_COL_VAR = 3,		/* Input ascii records have variable number of columns */
+	GMT_COL_FIX_NO_TEXT = 4		/* Specify fixed numerical columns to read, skip anyt trailing text */
 };
 
 /* Return codes for GMT_Get_Record: */

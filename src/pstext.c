@@ -40,8 +40,6 @@ EXTERN_MSC void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, u
 #define PSTEXT_CLIPPLOT		1
 #define PSTEXT_CLIPONLY		2
 
-#define PSTEXT_TOKEN_SEPARATORS	" \t"		/* Cannot use comma since font-specification has comma */
-
 #define GET_REC_TEXT	0
 #define GET_SEG_LABEL	1
 #define GET_SEG_HEADER	2
@@ -601,9 +599,9 @@ GMT_LOCAL int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL 
 	buffer[0] = '\0';	/* Initialize buffer to NULL */
 
 	if (Ctrl->Z.active) {	/* Expect z in 3rd column */
-		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
-		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
-		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_z)) nscan++;	/* Returns zcol and update pos */
+		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
+		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
+		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_z)) nscan++;	/* Returns zcol and update pos */
 		strcpy (buffer, &record[pos]);
 		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
 		if ((gmt_scanf (GMT, txt_z, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.io.curr_rec[GMT_Z]) == GMT_IS_NAN)) {
@@ -618,8 +616,8 @@ GMT_LOCAL int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL 
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 	}
 	else {
-		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
-		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
+		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
+		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
 		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 	}
@@ -656,7 +654,6 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	double plot_x = 0.0, plot_y = 0.0, save_angle = 0.0, xx[2] = {0.0, 0.0}, yy[2] = {0.0, 0.0}, *in = NULL;
 	double offset[2], tmp, *c_x = NULL, *c_y = NULL, *c_angle = NULL;
 
-	const char *token_separator = NULL;
 	char text[GMT_BUFSIZ] = {""}, cp_line[GMT_BUFSIZ] = {""}, label[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""};
 	char pjust_key[5] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_f[GMT_LEN256] = {""};
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
@@ -726,6 +723,8 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	GMT->current.map.is_world = true;
 
 	in = GMT->current.io.curr_rec;	/* Since text gets parsed and stored in this record */
+	if (Ctrl->F.read_font)
+		GMT->current.io.scan_separators = GMT_TOKEN_SEPARATORS_PSTEXT;		/* Characters that may separate columns in ascii records */
 	if (Ctrl->M.active) {	/* There are no coordinates, just text lines */
 		rec_mode = GMT_READ_TEXT;
 		geometry = GMT_IS_TEXT;
@@ -751,7 +750,6 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		c_just = gmt_M_memory (GMT, NULL, n_alloc, int);
 		c_font = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_FONT);
 	}
-	token_separator = (Ctrl->F.read_font) ? PSTEXT_TOKEN_SEPARATORS : GMT_TOKEN_SEPARATORS;	/* Cannot use commas if fonts are to be read */
 	rec_number = Ctrl->F.first;	/* Number of first output record label if -F+r<first> was selected */
 	
 	do {	/* Keep returning records until we have no more files */
@@ -805,7 +803,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					in_txt = buffer;
 				else {	/* Must pick up 1-3 attributes from data file */
 					for (k = 0; k < Ctrl->F.nread; k++) {
-						nscan += gmt_strtok (buffer, token_separator, &pos, text);
+						nscan += gmt_strtok (buffer, GMT->current.io.scan_separators, &pos, text);
 						switch (Ctrl->F.read[k]) {
 							case 'f':
 								T.font = Ctrl->F.font;
@@ -924,7 +922,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				in_txt = line;
 			else {	/* Must pick up 1-3 attributes from data file */
 				for (k = 0; k < Ctrl->F.nread; k++) {
-					nscan += gmt_strtok (line, token_separator, &pos, text);
+					nscan += gmt_strtok (line, GMT->current.io.scan_separators, &pos, text);
 					switch (Ctrl->F.read[k]) {
 						case 'a': case 'A':
 							T.paragraph_angle = atof (text);
@@ -1122,6 +1120,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		gmt_map_clip_off (GMT);
 
 	GMT->current.map.is_world = old_is_world;
+	GMT->current.io.scan_separators = GMT_TOKEN_SEPARATORS;		/* Reset */
 
 	if (!Ctrl->G.mode) gmt_map_basemap (GMT);	/* Normally we do basemap at the end, except when clipping (-Gc|C) interferes */
 	gmt_plane_perspective (GMT, -1, 0.0);

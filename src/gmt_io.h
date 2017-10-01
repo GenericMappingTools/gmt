@@ -50,7 +50,7 @@ static inline const char* __gmt_token_separators (unsigned int skip_comma) {
 	return separators;
 }
 #define GMT_TOKEN_SEPARATORS __gmt_token_separators(0) /* Data columns may be separated by any of these characters */
-#define GMT_TOKEN_SEPARATORS_SCANNER __gmt_token_separators(1) /* Data columns may be separated by any of these characters */
+#define GMT_TOKEN_SEPARATORS_PSTEXT __gmt_token_separators(1) /* No comma if pstext and fonts are in input records */
 
 /* Must add M, m, E, Z, and/or S to the common option processing list */
 #define GMT_OPT(opt) opt
@@ -237,6 +237,7 @@ struct GMT_IO {				/* Used to process input data records */
 	int (*read_item) (struct GMT_CTRL *, FILE *, uint64_t, double *);		/* Pointer to function reading 1-col z tables in grd2xyz */
 	int (*write_item) (struct GMT_CTRL *, FILE *, uint64_t, double *);		/* Pointer to function writing 1-col z tables in xyz2grd */
 	bool (*ogr_parser) (struct GMT_CTRL *, char *);				/* Set to handle either header or data OGR records */
+	const char *scan_separators;	/* List of characters that separates columns in ascii records */
 
 	unsigned int pad[4];		/* pad[0] = west, pad[1] = east, pad[2] = south, pad[3] = north */
 	unsigned int inc_code[2];

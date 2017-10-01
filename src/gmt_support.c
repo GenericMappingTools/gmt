@@ -9271,8 +9271,8 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		struct GMT_DATASET *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 		double xy[2];
-		/* File is expected to have x,y coordinates */
-		GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX);
+		/* File is expected to have x,y coordinates and we will ignore anything beyond that */
+		GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX_NO_TEXT);
 		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;

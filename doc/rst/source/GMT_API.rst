@@ -245,9 +245,10 @@ API that are not backwards compatible with GMT 5:
    Because such records may have both leading numerical columns and a trailing string these
    functions needed to work with such a structure rather than either an array or string.
 #. The unused function GMT_Set_Columns needed to accept *direction* so it could be used for
-   either input or output.  it is rarely needed but some tools that must only read *N* numerical
+   either input or output.  It is rarely needed but some tools that must only read *N* numerical
    columns and treat anything beyond that as trailing text (even if numbers) must set the
-   fixed input columns before reading.
+   fixed input columns before reading.  We also added one more mode (GMT_COL_FIX_NO_TEXT) to
+   enforce reading of a fixed number of numerical columns and skip any trailing text.
 #. The GMT_DATASET structure has gained a new (hidden) enum GMT_enum_read `type' which indicates what
    record types were read to produce this dataset (GMT_READ_DATA, GMT_READ_TEXT, GMT_READ_MIXED).
    We also changed the geometry from unsigned int to enum GMT_enum_geometry.
@@ -2283,7 +2284,7 @@ upcoming writing.
 Specifying the number of output columns
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For record-based input/output you will need to specify the number of
+For record-based ASCII input/output you will need to specify the number of
 columns, unless for output it equals the number of input columns.  This is done with
 the GMT_Set_Columns_ function:
 
@@ -2294,8 +2295,10 @@ the GMT_Set_Columns_ function:
     void *GMT_Set_Columns (void *API, unsigned int direction, unsigned int n_columns, unsigned int mode);
 
 The ``n_columns`` is a number related to the number of columns you plan to read/write, while
-``mode`` controls what that number means.  Here, ``mode`` = ``GMT_COL_FIX`` means it is the actual
-number of columns; this is the only mode allowed for input.  For output, you can also select from
+``mode`` controls what that number means.  For input, ``mode`` = ``GMT_COL_FIX`` sets the actual
+number of numerical columns to read.  Anything beyond is considered trailing text and is parsed unless
+you use ``GMT_COL_FIX_NO_TEXT`` instead.  If your records have variable number of numerical columns
+then you may use ``GMT_COL_VAR``. For output, you can also select from
 other modes.  Here,  ``mode`` = ``GMT_COL_ADD`` means it should be added to the known number
 of input columns to arrive at the number of final output columns, while ``mode`` = ``GMT_COL_SUB``
 means this value should be subtracted from the number of input columns to find the number of

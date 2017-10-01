@@ -652,7 +652,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	row_base_y = Ctrl->D.refpoint->y + Ctrl->D.dim[GMT_Y] - Ctrl->C.off[GMT_Y];	/* Top justification edge of items inside legend box accounting for clearance  */
 	column_number = 0;	/* Start at first column in multi-column setup */
 	n_columns = 1;		/* Reset to default number of columns */
-	txtcolor[0] = 0;	/* Reset to black text color */
+	txtcolor[0] = '0';	/* Reset to black text color */
 	x_off_col[0] = 0.0;	/* The x-coordinate of left side of first column */
 	x_off_col[n_columns] = Ctrl->D.dim[GMT_X];	/* Holds width of a row */
 
@@ -1012,7 +1012,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->x + Ctrl->D.dim[GMT_X], row_base_y);
 						if (n == 0 || xx[0] == '-') sprintf (xx, "%g", col_left_x);
 						if (n == 0 || yy[0] == '-') sprintf (yy, "%g", row_base_y);
-						if (n == 0 || tmp[0] == '-') sprintf (tmp, "%g,%d,%s", GMT->current.setting.font_annot[GMT_PRIMARY].size, GMT->current.setting.font_annot[GMT_PRIMARY].id, txtcolor);
+						if (n == 0 || tmp[0] == '-') sprintf (tmp, "%gp,%d,%s", GMT->current.setting.font_annot[GMT_PRIMARY].size, GMT->current.setting.font_annot[GMT_PRIMARY].id, txtcolor);
 						if (n == 0 || angle[0] == '-') sprintf (angle, "0");
 						if (n == 0 || key[0] == '-') sprintf (key, "TL");
 						if (n == 0 || lspace[0] == '-') sprintf (lspace, "%gi", one_line_spacing);
@@ -1289,7 +1289,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						if (n_scan == 7) {	/* Place symbol text */
 							if ((D[TXT] = get_dataset_pointer (API, D[TXT], GMT_IS_NONE, 1U, 64U, 2U, true)) == NULL) return (API->error);
 							S[TXT] = get_segment (D, TXT, 0);	/* Since there will only be one table with one segment for each set, except for fronts */
-							sprintf (buffer, "%g,%d,%s BL %s", GMT->current.setting.font_annot[GMT_PRIMARY].size, GMT->current.setting.font_annot[GMT_PRIMARY].id, txtcolor, text);
+							sprintf (buffer, "%gp,%d,%s BL %s", GMT->current.setting.font_annot[GMT_PRIMARY].size, GMT->current.setting.font_annot[GMT_PRIMARY].id, txtcolor, text);
 							S[TXT]->data[GMT_X][krow[TXT]] = x_off + off_tt;
 							S[TXT]->data[GMT_Y][krow[TXT]] = row_base_y + d_off;
 							S[TXT]->text[krow[TXT]++] = strdup (buffer);
@@ -1309,7 +1309,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							S[PAR] = D[PAR]->table[0]->segment[n_para] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, n_par_lines, 0U, NULL, NULL);
 						if (!flush_paragraph) {	/* No header record, create one and add as segment header */
 							d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
-							sprintf (buffer, "%g %g %g,%d,%s 0 TL %gi %gi j", col_left_x, row_base_y - d_off, GMT->current.setting.font_annot[GMT_PRIMARY].size, GMT->current.setting.font_annot[GMT_PRIMARY].id, txtcolor, one_line_spacing, Ctrl->D.dim[GMT_X] - 2.0 * Ctrl->C.off[GMT_X]);
+							sprintf (buffer, "%g %g %gp,%d,%s 0 TL %gi %gi j", col_left_x, row_base_y - d_off, GMT->current.setting.font_annot[GMT_PRIMARY].size, GMT->current.setting.font_annot[GMT_PRIMARY].id, txtcolor, one_line_spacing, Ctrl->D.dim[GMT_X] - 2.0 * Ctrl->C.off[GMT_X]);
 							S[PAR]->header = strdup (buffer);
 							GMT_Report (API, GMT_MSG_DEBUG, "PAR: %s\n", buffer);
 						}
