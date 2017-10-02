@@ -666,7 +666,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 					strcat (record, buffer);
 				}
 				Out->text = record;
-				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 		}
 

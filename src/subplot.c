@@ -948,7 +948,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		if (Ctrl->T.title) {	/* Must call pstext to place the heading */
 			uint64_t dim[4] = {1, 1, 1, 2};	/* A single record */
 			struct GMT_DATASET *T = NULL;
-			if ((T = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+			if ((T = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Subplot: Unable to allocate a dataset\n");
 				Return (error);
 			}
