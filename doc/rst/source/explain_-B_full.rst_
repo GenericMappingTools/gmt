@@ -51,7 +51,7 @@
     the addition of degree symbols, etc. is automatic (and controlled by the GMT
     default setting :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`). However, for other plots you can add
     specific units by adding **+u**\ *unit*.  If any of these text strings contain
-    spaces or special UNIX characters you will need to enclose them in quotes.
+    spaces or special characters you will need to enclose them in quotes.
     The *intervals* specification is a concatenated string made up of substrings
     of the form
 
@@ -124,7 +124,7 @@
        = 0.5 (i.e., sqrt), then equidistant annotations labeled 1-4-9...  will appear.
 
     Finally, if your axis is in radians you can use multiples or fractions of **pi** to
-    set such annotation intervals.  The format is [*n*\ ]**pi**\ [*m*\ ], for an optional
+    set such annotation intervals.  The format is [*n*]\ **pi**\ [*m*], for an optional
     integer *n* and optional *m* fractions 2, 3, or 4.
 
     These GMT parameters can affect the appearance of the map boundary:
