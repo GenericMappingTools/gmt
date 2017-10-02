@@ -492,7 +492,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen);
 
 					justify = plot_vx - plot_x > 0. ? PSL_MR : PSL_ML;
-					if (Ctrl->S.fontsize > 0.0 && strlen(station_name) > 0)	/* 1 inch = 2.54 cm */
+					if (Ctrl->S.fontsize > 0.0 && station_name)	/* 1 inch = 2.54 cm */
 						PSL_plottext (PSL, plot_x + (6 - justify) / 25.4 , plot_y, Ctrl->S.fontsize, station_name, ANGLE, justify, FORM);
 				}
 				else {
@@ -500,7 +500,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 					ssize = GMT_DOT_SIZE;
 					PSL_plotsymbol (PSL, plot_x, plot_y, &ssize, PSL_CIRCLE);
 					justify = PSL_TC;
-					if (Ctrl->S.fontsize > 0.0 && strlen (station_name) > 0) {
+					if (Ctrl->S.fontsize > 0.0 && station_name) {
 						PSL_plottext (PSL, plot_x, plot_y - 1. / 25.4, Ctrl->S.fontsize, station_name, ANGLE, justify, FORM);
 					}
 					/*  1 inch = 2.54 cm */

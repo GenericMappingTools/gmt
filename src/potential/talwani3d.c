@@ -793,7 +793,6 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 			}
 			if (gmt_M_rec_is_table_header (GMT)) 	/* Skip all table headers */
 				continue;
-			in = In->data;	/* Only need to process numerical part here */
 			if (gmt_M_rec_is_segment_header (GMT) || gmt_M_rec_is_eof (GMT)) {	/* Process segment headers or end-of-file */
 				/* First close previous segment */
 				if (!first_slice) {
@@ -861,6 +860,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 		
 		/* Clean data record to process */
 
+		in = In->data;	/* Only need to process numerical part here */
 		if (n && (x[n-1] == x[n] && y[n-1] == y[n])) {	/* Maybe a duplicate point - or it could be the repeated last = first */
 			n_duplicate++;
 			dup_node = n;

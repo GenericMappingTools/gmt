@@ -7485,8 +7485,7 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 			GMT->common.i.n_actual_cols++;
 	}
 	GMT->common.i.orig = GMT->common.i.select = true;
-	/* As -i was used we wish to update outcol types to match the new order */
-	//gmtlib_update_outcol_type (GMT);
+
 #if 0
 	if (GMT->common.i.n_cols == 0 && GMT->current.io.trailing_text[GMT_IN]) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-it is not allowed, need at least 1-2 leading numerical columns\n");

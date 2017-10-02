@@ -888,8 +888,10 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 		n_rec++;
 		size = Ctrl->S.scale;
 
-		strcpy (event_title, In->text);
-		if (strlen (event_title) <= 0) sprintf (event_title,"\n");
+		if (In->text)
+			strcpy (event_title, In->text);
+		else
+			sprintf (event_title,"\n");
 		depth = in[2];
 
 		if (!dans_coupe (in[GMT_X], in[GMT_Y], depth, Ctrl->A.xlonref, Ctrl->A.ylatref, Ctrl->A.fuseau, Ctrl->A.PREF.str,

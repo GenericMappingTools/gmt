@@ -633,7 +633,6 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 			}
 			if (gmt_M_rec_is_table_header (GMT)) 	/* Skip all table headers */
 				continue;
-			in = In->data;	/* Only need to process numerical part here */
 			if (gmt_M_rec_is_segment_header (GMT) || gmt_M_rec_is_eof (GMT)) {	/* Process segment headers or end-of-file */
 				if (!first) {	/* First close previous body */
 					if (!(x[n-1] == x[0] && z[n-1] == z[0])) {	/* Copy first point to last */
@@ -671,9 +670,10 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 				}
 				continue;
 			}
-			assert (in != NULL);						/* Should never get here */
+			assert (In != NULL);						/* Should never get here */
 		}
 		/* Clean data record to process.  Add point unless duplicate */
+		in = In->data;	/* Only need to process numerical part here */
 		if (Ctrl->A.active) in[GMT_Y] = -in[GMT_Y];
 		if (n && (x[n-1] == x[n] && z[n-1] == z[n])) {	/* Maybe a duplicate point - or it could be the repeated last = first */
 			n_duplicate++;

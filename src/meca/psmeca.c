@@ -603,7 +603,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			if (Ctrl->Z.active) gmt_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
 			sscanf (string, "%s %[^\n]\n", In->text, event_title);
 		}
-		else
+		else if (In->text)
 			strncpy (event_title, In->text, GMT_BUFSIZ-1);
 
 		/* Gather and transform the input records, depending on type */

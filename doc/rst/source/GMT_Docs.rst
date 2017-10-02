@@ -1906,9 +1906,10 @@ Input columns selection: The **-i** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-i**\ *columns* option allows you to specify which
-input file data columns to use and in what order. By default, GMT will
+input file physical data columns to use and in what order. By default, GMT will
 read all the data columns in the file, starting with the first column
-(0). Using **-i** modifies that process. For instance, to use the 4th,
+(0). Using **-i** modifies that process and reads in a logical record based
+on columns from the physical record. For instance, to use the 4th,
 7th, and 3rd data column as the required *x,y,z* to
 :doc:`blockmean` you would specify
 **-i**\ 3,6,2 (since 0 is the first column). The chosen data columns
@@ -1918,7 +1919,28 @@ Do so by appending [**l**][\ **s**\ *scale*][\ **o**\ *offset*] to
 each column (or range of columns). All items are optional: The **l**
 implies we should first take :math:`\log_{10}` of the data [leave as
 is]. Next, we may scale the result by the given *scale* [1]. Finally, we
-add in the specified *offset* [0].
+add in the specified *offset* [0].  If you want the trailing text to remain
+part of your subset logical record then also select the special column **t**.
+
+.. _gmt_record:
+
+.. figure:: /_images/GMT_record.png
+   :width: 600 px
+   :align: center
+
+   The physical, logical (input) and output record in GMT.  Here, we are
+   reading a file with 5 numerical columns plus some free-form text at the
+   end.  Our module (here :doc:`psxy`) will be used to plot circles at the
+   given locations but we want to assign color based on the ``depth`` column
+   (which we need to convert from meters to km) and symbol size based on the
+   ``mag`` column (but we want to scale this by 0.01 to get suitable symbol sizes).
+   We use **-i** to pull in the desired columns in the required order and apply
+   the scaling, resulting in the logical record with 4 columns.  The **-f** option
+   can be used to specify column types in the logical record if it is not clear
+   from the data themselves (or you are reading a binary file).  Finally, if
+   a module needs to write out only a portion of the current logical record then
+   you may use the corresponding **-o** option to select desired columns, including
+   the trailing text column **t**.
 
 Grid interpolation parameters: The **-n** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1950,7 +1972,10 @@ write all the data columns produced by the program. Using **-o**
 modifies that process. For instance, to write just the 4th and 2nd data
 column to the output you would use **-o**\ 3,1 (since 0 is the first column).
 You can also use a column more than once, e.g., **-o**\ 3,1,3, to
-duplicate a column on output.
+duplicate a column on output.  Finally, if your logical record in memory
+contains trailing text then you can include that by including the special
+column **t** to your selections.  The text is always written after any
+numerical columns.
 
 Perspective view: The **-p** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

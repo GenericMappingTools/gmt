@@ -900,7 +900,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active) {	/* Must create a dataset to hold names of all output grids */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, Ctrl->T.n_eval_times, 0};
 		unsigned int k, j;
-		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error creating text set for file %s\n", Ctrl->L.file);
 			if (retain_original) gmt_M_free (GMT, orig_load);
 			Return (GMT_RUNTIME_ERROR);
