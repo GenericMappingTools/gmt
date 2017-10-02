@@ -6180,7 +6180,6 @@ GMT_LOCAL int api_end_io_matrix (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 		GMT_2D_to_index = api_get_2d_to_index (API, GMT_IS_ROW_FORMAT, GMT_GRID_IS_REAL);	/* Can only do row-format until end of this function */
 		while (S->delay) {	/* Place delayed NaN-rows(s) up front */
 			S->delay--;
-			M->n_rows++;	/* Since could not be incremented before M was created */
 			for (col = 0; col < M->n_columns; col++) {	/* Place the output items */
 				ij = GMT_2D_to_index (S->delay, col, M->dim);
 				api_put_val (&(M->data), ij, API->GMT->session.d_NaN);
@@ -7542,9 +7541,7 @@ GMT_LOCAL int api_put_record_matrix (struct GMTAPI_CTRL *API, unsigned int mode,
 			ij = API->current_put_M_index (API->current_put_obj->rec, col, M->dim);
 			API->current_put_M_val (&(M->data), ij, GMT->session.d_NaN);
 		}
-		API->current_put_obj->rec++;	/* Since the NaN-record is an actual data record that encodes a segment break */
-		API->current_rec[GMT_OUT]++;	/* Since the NaN-record becomes an actual data record that encodes a segment break */
-		M->n_rows++;					/* Same */
+		M->n_rows++;			/* Since the NaN-record becomes an actual data record that encodes a segment break */
 	}
 	else if (mode == GMT_WRITE_DATA) {	/* Data record */
 		if (!record) {
@@ -7567,6 +7564,12 @@ GMT_LOCAL int api_put_record_matrix (struct GMTAPI_CTRL *API, unsigned int mode,
 			}
 		}
 	}
+	
+	if (!error) {	/* Only increment if we placed a record on the output */
+		API->current_rec[GMT_OUT]++;
+		API->current_put_obj->rec++;
+	}
+	
 	if (API->current_put_obj->n_alloc && API->current_put_obj->rec == API->current_put_obj->n_alloc) {	/* Must allocate more memory for vectors or matrices */
 		API->current_put_obj->n_alloc <<= 1;
 		if ((API->current_put_obj->method == GMT_IS_DUPLICATE || API->current_put_obj->method == GMT_IS_REFERENCE) && API->current_put_obj->actual_family == GMT_IS_MATRIX) {
@@ -7610,6 +7613,12 @@ GMT_LOCAL int api_put_record_vector (struct GMTAPI_CTRL *API, unsigned int mode,
 			}
 		}
 	}
+	
+	if (!error) {	/* Only increment if we placed a record on the output */
+		API->current_rec[GMT_OUT]++;
+		API->current_put_obj->rec++;
+	}
+
 	if (API->current_put_obj->n_alloc && API->current_put_obj->rec == API->current_put_obj->n_alloc) {	/* Must allocate more memory for vectors or matrices */
 		API->current_put_obj->n_alloc <<= 1;
 		if ((error = gmtlib_alloc_vectors (GMT, V, API->current_put_obj->n_alloc)) != GMT_NOERROR) return (error);
@@ -7702,13 +7711,14 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 				}
 				size = S_obj->n_alloc = GMT_CHUNK;
 				M_obj = gmtlib_create_matrix (GMT, 1U, GMT_OUT, 0);
-				M_obj->type = GMT->current.setting.export_type;	/* Use selected data type for export */
+				M_obj->type = S_obj->type;	/* Use selected data type for export */
 				M_obj->dim = M_obj->n_columns = col;	/* If COL_FORMAT the dim will change in end_io_matrix after transpose */
 				size *= M_obj->n_columns;	/* Size in bytes of the initial matrix allocation */
 				if ((error = gmtlib_alloc_univector (GMT, &(M_obj->data), M_obj->type, size)) != GMT_NOERROR) return (gmtapi_report_error (API, error));
 				if (record->text) M_obj->text = gmt_M_memory (GMT, NULL, S_obj->n_alloc, char *);
-				M_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
+				S_obj->alloc_mode = M_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
 				S_obj->resource = M_obj;	/* Save so we can get it next time */
+				M_obj->n_rows = S_obj->rec;	/* So we start on the same output record due to the delayed NaNs */
 			}
 			/* Place current matrix parameters in API */
 			API->current_put_M = M_obj;
@@ -7753,11 +7763,6 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Put_Record called with illegal method\n");
 			return_error (API, GMT_NOT_A_VALID_METHOD);
 			break;
-	}
-
-	if (!error && (mode == GMT_WRITE_DATA || mode == GMT_WRITE_TEXT)) {	/* Only increment if we placed a data record on the output */
-		API->current_rec[GMT_OUT]++;
-		S_obj->rec++;
 	}
 
 	S_obj->status = GMT_IS_USING;	/* Have started writing to this destination */
