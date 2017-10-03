@@ -7250,18 +7250,21 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		/* If column is either RELTIME or ABSTIME, use ARGTIME; if inv_project then just read floats via atof */
 		if (inv_project)	/* input is distance units */
 			p[i] = atof (text);
-		else if (GMT->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
-			got = gmt_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][icol], true, &p[i]);
-			if (got & GMT_IS_GEO)
-				gmt_set_column (GMT, GMT_IN, icol, got);
-			else if ((got & GMT_IS_RATIME) || got == GMT_IS_ARGTIME) {
-				gmt_set_column (GMT, GMT_IN, icol, got);
-				GMT->current.proj.xyz_projection[icol] = GMT_TIME;
+		else {
+			bool maybe_time = gmtlib_maybe_abstime (GMT, text);
+			if (maybe_time || GMT->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
+				got = gmt_scanf_arg (GMT, text, GMT_IS_UNKNOWN, true, &p[i]);
+				if (got & GMT_IS_GEO)
+					gmt_set_column (GMT, GMT_IN, icol, got);
+				else if ((got & GMT_IS_RATIME) || got == GMT_IS_ARGTIME) {
+					gmt_set_column (GMT, GMT_IN, icol, got);
+					GMT->current.proj.xyz_projection[icol] = GMT_TIME;
+				}
 			}
-		}
-		else {	/* Things are set, do or die */
-			expect_to_read = (GMT->current.io.col_type[GMT_IN][icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT->current.io.col_type[GMT_IN][icol];
-			error += gmt_verify_expectations (GMT, expect_to_read, gmt_scanf (GMT, text, expect_to_read, &p[i]), text);
+			else {	/* Things are set, do or die */
+				expect_to_read = (GMT->current.io.col_type[GMT_IN][icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT->current.io.col_type[GMT_IN][icol];
+				error += gmt_verify_expectations (GMT, expect_to_read, gmt_scanf (GMT, text, expect_to_read, &p[i]), text);
+			}
 		}
 		if (error) return (error);
 

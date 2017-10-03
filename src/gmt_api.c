@@ -6225,6 +6225,7 @@ GMT_LOCAL int api_end_io_vector (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 				API->current_put_V_val[col] (&(V->data[col]), S->delay, API->GMT->session.d_NaN);
 		}
 	}
+	gmt_M_free (API->GMT, API->current_put_V_val);
 	*item = (unsigned int) check;
 	return (GMT_NOERROR);
 }
@@ -6273,6 +6274,9 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 				S_obj->close_file = false;
 			}
 		}
+	}
+	else {
+		if (API->current_get_V_val) gmt_M_free (API->GMT, API->current_get_V_val);
 	}
 	API->io_enabled[direction] = false;	/* No longer OK to access resources or destinations */
 	API->current_rec[direction] = 0;	/* Reset count for next time */
@@ -7234,7 +7238,7 @@ struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int 
 		}
 		API->current_get_V = S->resource;
 		API->current_get_n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : S->n_columns;
-		API->current_get_V_val = gmt_M_memory (GMT, NULL, API->current_get_V->n_columns, GMT_getfunction);	/* Array of functions */
+		API->current_get_V_val = gmt_M_memory (GMT, API->current_get_V_val, API->current_get_V->n_columns, GMT_getfunction);	/* Array of functions */
 		for (col = 0; col < API->current_get_V->n_columns; col++)	/* We know the number of columns from registration */
 			API->current_get_V_val[col] = api_select_get_function (API, API->current_get_V->type[col]);
 		record = NULL;
@@ -7333,6 +7337,9 @@ void gmt_get_record_init (struct GMTAPI_CTRL *API) {
 	API->error = GMT_NOERROR;
 	S = API->current_get_obj;	/* Shorthand for the current data source we are working on */
 	GMT = API->GMT;			/* Shorthand for GMT access */
+	/* Reset to default association for current record's data and text pointers */
+	GMT->current.io.record.text = GMT->current.io.curr_text;
+	GMT->current.io.record.data = GMT->current.io.curr_rec;
 
 	method = api_set_method (S);	/* Get the actual method to use */
 	GMT->current.io.status = 0;	/* Initialize status to OK */
@@ -7564,7 +7571,6 @@ GMT_LOCAL int api_put_record_matrix (struct GMTAPI_CTRL *API, unsigned int mode,
 			}
 		}
 	}
-	
 	if (!error) {	/* Only increment if we placed a record on the output */
 		API->current_rec[GMT_OUT]++;
 		API->current_put_obj->rec++;
@@ -7575,7 +7581,7 @@ GMT_LOCAL int api_put_record_matrix (struct GMTAPI_CTRL *API, unsigned int mode,
 		if ((API->current_put_obj->method == GMT_IS_DUPLICATE || API->current_put_obj->method == GMT_IS_REFERENCE) && API->current_put_obj->actual_family == GMT_IS_MATRIX) {
 			size_t size = API->current_put_obj->n_alloc * M->n_columns;	/* Only one layer in this context */
 			if ((error = gmtlib_alloc_univector (API->GMT, &(M->data), M->type, size)) != GMT_NOERROR) return (error);
-			M->text = gmt_M_memory (API->GMT, M->text, API->current_put_obj->n_alloc, char *);
+			if (M->text) M->text = gmt_M_memory (API->GMT, M->text, API->current_put_obj->n_alloc, char *);
 		}
 	}
 	return error;
@@ -7622,7 +7628,7 @@ GMT_LOCAL int api_put_record_vector (struct GMTAPI_CTRL *API, unsigned int mode,
 	if (API->current_put_obj->n_alloc && API->current_put_obj->rec == API->current_put_obj->n_alloc) {	/* Must allocate more memory for vectors or matrices */
 		API->current_put_obj->n_alloc <<= 1;
 		if ((error = gmtlib_alloc_vectors (GMT, V, API->current_put_obj->n_alloc)) != GMT_NOERROR) return (error);
-		V->text = gmt_M_memory (API->GMT, V->text, API->current_put_obj->n_alloc, char *);
+		if (V->text) V->text = gmt_M_memory (API->GMT, V->text, API->current_put_obj->n_alloc, char *);
 	}
 	return error;
 }

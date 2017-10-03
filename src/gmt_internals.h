@@ -49,6 +49,7 @@ struct GMT_XINGS {
         unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
+EXTERN_MSC bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt);
 EXTERN_MSC void gmtlib_update_outcol_type (struct GMT_CTRL *GMT, uint64_t n);
 EXTERN_MSC void gmtlib_reset_input (struct GMT_CTRL *GMT);
 EXTERN_MSC bool gmtlib_file_is_srtmrequest (struct GMTAPI_CTRL *API, const char *file, unsigned int *res);
