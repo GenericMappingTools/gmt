@@ -732,6 +732,7 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 	gmt_M_free (GMT, good_one);
 	gmt_M_free (GMT, wt_sum);
 	gmt_M_free (GMT, data_sum);
+	gmt_M_free (GMT, Out);
 
 	return (0);
 }
