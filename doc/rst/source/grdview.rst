@@ -25,7 +25,7 @@ Synopsis
 [ |-S|\ *smooth* ]
 [ |-T|\ [**s**][\ **o**\ [*pen*]] ]
 [ |SYN_OPT-U| ]
-[ |-W|\ **type**\ *pen* ]
+[ |-W|\ **c|m|f**\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-n| ]
@@ -177,7 +177,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ **type**\ *pen*
+**-W**\ **c**\ |\ **m**\ |\ **f**\ *pen*
 
     **-Wc**
         Draw contour lines on top of surface or mesh (not image). Append pen
