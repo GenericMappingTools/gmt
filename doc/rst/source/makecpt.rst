@@ -25,6 +25,9 @@ Synopsis
 [ |-V|\ [*level*\ ] ]
 [ |-W|\ [**w**] ]
 [ |-Z| ]
+[ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
+[ |SYN_OPT-i| ]
 
 |No-spaces|
 
@@ -191,6 +194,14 @@ Optional Arguments
     is used, or when using **-T**\ *z_min*/*z_max*; in the first case the input
     CPT remains untouched, in the second case it is only scaled to match the
     range *z_min*/*z_max*.
+
+.. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings].
+.. include:: explain_-bi.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
+
+.. include:: explain_-icols.rst_
 
 .. include:: explain_help.rst_
 
