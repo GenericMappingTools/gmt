@@ -1004,7 +1004,6 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			else
 				sprintf (record, "%s", file);
 			L->table[0]->segment[0]->text[t_eval] = strdup (record);
-			L->table[0]->segment[0]->n_rows++;
 		}
 	}
 

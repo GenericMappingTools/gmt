@@ -246,8 +246,9 @@ GMT_LOCAL int process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_C
 		if (n_errors) return (0);
 	}
 	else {	/* Regular grid file */
-		if (gmt_check_filearg (GMT, '<', record, GMT_IN, GMT_IS_GRID))
-			Ctrl->G.file[ng] = strdup (record);
+		sscanf (record, "%s", line);	/* Since we may have more than one word in the line */
+		if (gmt_check_filearg (GMT, '<', line, GMT_IN, GMT_IS_GRID))
+			Ctrl->G.file[ng] = strdup (line);
 		else
 			return (0);
 	}

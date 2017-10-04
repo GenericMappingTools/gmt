@@ -14,7 +14,7 @@ gmt talwani3d "${src:-.}"/cylinder.mod -D1670 -Mh -Ntrk -o0,3 > faa.txt
 gmt talwani3d "${src:-.}"/cylinder.mod -D1670 -Mh -Ntrk -o0,3 -Fv > vgg.txt
 gmt math -T-100/250/350 -25 = > tmp
 gmt math -T-100/250/350 -I 25  = >> tmp
-gmt psxy -R-100/100/-100/250 -JX6i/6i -P -Glightgray tmp -: -K -Xc -Y4i > $ps
+gmt psxy -R-100/100/-100/250 -JX6i/6i -P -Glightgray tmp -i1,0 -K -Xc -Y4i > $ps
 awk '{print $1, $3*'"$corr"'}' "${src:-.}"/cylinder25.txt | gmt psxy -R-100000/100000/-100/250 -J -Wfaint,blue -O -K >> $ps
 awk '{print $1, $3*'"$corr"'}' "${src:-.}"/cylinder25.txt | gmt psxy -R -J -Sc0.1c -Gblue -O -K >> $ps
 awk '{print $1, $2*'"$corr"'}' "${src:-.}"/cylinder25.txt | gmt psxy -R -J -Sc0.1c -Gred -O -K >> $ps
