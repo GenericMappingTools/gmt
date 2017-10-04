@@ -397,7 +397,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 
 				switch (opt->arg[0]) {
 					case 'c':
-						Ctrl->S.readmode = READ_CMT;	Ctrl->S.n_cols = 12;
+						Ctrl->S.readmode = READ_CMT;	Ctrl->S.n_cols = 13;
 						break;
 					case 'a':
 						Ctrl->S.readmode = READ_AKI;	Ctrl->S.n_cols = 9;
@@ -491,7 +491,6 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psmeca task */
 	int i, n, ix = 0, iy = 1, last = 0, form = 0, new_fmt;
 	int n_rec = 0, n_plane_old = 0, error;
-	unsigned int n_cols;
 	bool transparence_old = false, not_defined = false;
 
 	double plot_x, plot_y, plot_xnew, plot_ynew, delaz, *in = NULL;

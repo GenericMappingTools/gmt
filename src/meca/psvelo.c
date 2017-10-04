@@ -81,6 +81,7 @@ struct PSVELO_CTRL {
 		bool active;
 		int symbol;
 		unsigned int readmode;
+		unsigned int n_cols;
 		double scale, wedge_amp, conrad;
 		double fontsize, confidence;
 		struct GMT_FILL fill;
@@ -254,23 +255,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 				}
 				switch (opt->arg[0]) {
 					case 'e':
-						Ctrl->S.symbol = CINE;
+						Ctrl->S.symbol = CINE;	Ctrl->S.n_cols = 7;
 						Ctrl->S.readmode = READ_ELLIPSE;
 						break;
 					case 'r':
-						Ctrl->S.symbol = CINE;
+						Ctrl->S.symbol = CINE;	Ctrl->S.n_cols = 7;
 						Ctrl->S.readmode = READ_ROTELLIPSE;
 						break;
 					case 'n':
-						Ctrl->S.symbol = ANISO;
+						Ctrl->S.symbol = ANISO;	Ctrl->S.n_cols = 4;
 						Ctrl->S.readmode = READ_ANISOTROPY;
 						break;
 					case 'w':
-						Ctrl->S.symbol = WEDGE;
+						Ctrl->S.symbol = WEDGE;	Ctrl->S.n_cols = 4;
 						Ctrl->S.readmode = READ_WEDGE;
 						break;
 					case 'x':
-						Ctrl->S.symbol = CROSS;
+						Ctrl->S.symbol = CROSS;	Ctrl->S.n_cols = 5;
 						Ctrl->S.readmode = READ_CROSS;
 						break;
 					default:
@@ -358,6 +359,8 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 	if (Ctrl->A.S.symbol == PSL_VECTOR) Ctrl->A.S.v.v_width = (float)(Ctrl->A.S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;
+
+	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
