@@ -28,6 +28,7 @@ Synopsis
 [ |-W|\ **c|m|f**\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
