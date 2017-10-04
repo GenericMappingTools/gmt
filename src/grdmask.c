@@ -322,11 +322,12 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 		grd_x0 = gmt_grd_coord (GMT, Grid->header, GMT_X);
 		grd_y0 = gmt_grd_coord (GMT, Grid->header, GMT_Y);
-		if (!Ctrl->S.variable_radius) {
+		if (!Ctrl->S.variable_radius) {	/* Read x,y, fixed radius from -S */
 			radius = Ctrl->S.radius;
-			n_cols = 3;	/* Get x, y, radius */
 			d_col = gmt_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
 		}
+		else	/* REad x, y, radius */
+			n_cols = 3;
 	}
 	else {
 		char *method[2] = {"Cartesian non-zero winding", "spherical ray-intersection"};

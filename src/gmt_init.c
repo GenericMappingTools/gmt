@@ -7020,7 +7020,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	unsigned int i, icol, pos, error = 0, n_slash = 0, first = 0;
 	int got, col_type[2], expect_to_read;
 	size_t length;
-	bool inv_project = false, scale_coord = false, got_r, got_country;
+	bool inv_project = false, scale_coord = false, got_r, got_country, no_T = false;
 	char text[GMT_BUFSIZ] = {""}, item[GMT_BUFSIZ] = {""}, string[GMT_BUFSIZ] = {""}, r_unit = 0, *c = NULL, *d = NULL;
 	double p[6];
 
@@ -7251,12 +7251,14 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		if (inv_project)	/* input is distance units */
 			p[i] = atof (text);
 		else {
-			bool maybe_time = gmtlib_maybe_abstime (GMT, text);
+			bool maybe_time = gmtlib_maybe_abstime (GMT, text, &no_T);
 			if (maybe_time || GMT->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
+				if (no_T) strcat (text, "T");	/* Add a missing T */
 				got = gmt_scanf_arg (GMT, text, GMT_IS_UNKNOWN, true, &p[i]);
 				if (got & GMT_IS_GEO)
 					gmt_set_column (GMT, GMT_IN, icol, got);
 				else if ((got & GMT_IS_RATIME) || got == GMT_IS_ARGTIME) {
+					if (got == GMT_IS_ARGTIME) got = GMT_IS_ABSTIME;
 					gmt_set_column (GMT, GMT_IN, icol, got);
 					GMT->current.proj.xyz_projection[icol] = GMT_TIME;
 				}

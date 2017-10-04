@@ -2983,10 +2983,11 @@ GMT_LOCAL unsigned int gmtio_get_coltype_name_index (struct GMT_CTRL *GMT, unsig
 	return (gmtio_get_type_name_index (GMT->current.io.col_type[dir][col]));
 }
 
-bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt) {
+bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt, bool *no_T) {
 	size_t k;
 	unsigned int n_dash, n_slash;
 	gmt_M_unused (GMT);
+	*no_T = false;	/* Until proven wrong */
 	if (strchr (txt, 'T')) return true;	/* Might be [<date>]T[<clock>], else if is likely text */
 	/* Here there are no T, but perhaps somebody forgot to add T to 2004-10-19 or 1999/04/05 ? */
 	n_dash = n_slash = 0;
@@ -2994,8 +2995,10 @@ bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt) {
 		if (txt[k] == '-') n_dash++;
 		else if (txt[k] == '/') n_slash++;
 	}
-	if (((n_dash + n_slash) == 2) && (n_dash == 2 || n_slash == 2))
+	if (((n_dash + n_slash) == 2) && (n_dash == 2 || n_slash == 2)) {	/* Time */
+		*no_T = true;
 		return true;	/* Might be yyyy/mm/dd or yyyy-mm-dd with mising trailing T */
+	}
 	return false;
 }
 
@@ -3040,7 +3043,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	 */
 	unsigned int ret_val = GMT_READ_DATA, pos = 0, col = 0, k, *type = NULL;
 	int got;
-	bool found_text = false;
+	bool found_text = false, no_T = false;
 	char token[GMT_BUFSIZ], message[GMT_BUFSIZ] = {""};
 	double value;
 	static char *flavor[4] = {"", "Numerical only", "Text only", "Numerical with trailing text"};
@@ -3053,8 +3056,9 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	type = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, unsigned int);
 	*tpos = pos;
 	while (!found_text && (gmt_strtok (record, GMT->current.io.scan_separators, &pos, token))) {
-		if (gmtlib_maybe_abstime (GMT, token))	/* Might be ISO Absolute time; if not we got junk (and got -> GMT_IS_NAN) */
+		if (gmtlib_maybe_abstime (GMT, token, &no_T)) {	/* Might be ISO Absolute time; if not we got junk (and got -> GMT_IS_NAN) */
 			got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
+		}
 		else	/* Let gmt_scanf_arg figure it out for us by passing UNKNOWN since ABSTIME has been dealt above */
 			got = gmt_scanf_arg (GMT, token, GMT_IS_UNKNOWN, false, &value);
 		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) && col < 50) {	/* Tell user how we interpreted their first record, but not for excessively long records */

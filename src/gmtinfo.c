@@ -478,12 +478,6 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (Ctrl->C.active) {	/* Must set output column types since each input col will produce two output cols. */
-		gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], GMT_MAX_COLUMNS, int);	/* Save previous output col types */
-		for (col = 0; col < GMT_MAX_COLUMNS/2; col++)
-			GMT->current.io.col_type[GMT_OUT][2*col] = GMT->current.io.col_type[GMT_OUT][2*col+1] = GMT->current.io.col_type[GMT_IN][col];
-	}
-		
 	save_range = GMT->current.io.geo.range;
 	Out = gmt_new_record (GMT, (Ctrl->C.active) ? GMT->current.io.curr_rec : out, NULL);	/* Since we only need to worry about numerics in this module */
 	
@@ -720,6 +714,12 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		in = In->data;	/* Only need to process numerical part here */
 		
 		if (first_data_record) {	/* First time we read data, we must allocate arrays based on the number of columns */
+
+			if (Ctrl->C.active) {	/* Must set output column types since each input col will produce two output cols. */
+				gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], GMT_MAX_COLUMNS, int);	/* Save previous output col types */
+				for (col = 0; col < GMT_MAX_COLUMNS/2; col++)
+					GMT->current.io.col_type[GMT_OUT][2*col] = GMT->current.io.col_type[GMT_OUT][2*col+1] = GMT->current.io.col_type[GMT_IN][col];
+			}
 
 			ncol = gmt_get_cols (GMT, GMT_IN);
 			if (Ctrl->E.active) {
