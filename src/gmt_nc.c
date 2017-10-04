@@ -328,6 +328,13 @@ GMT_LOCAL void gmtnc_check_step (struct GMT_CTRL *GMT, uint32_t n, double *x, ch
 	}
 }
 
+GMT_LOCAL void gmtnc_round_value (double *x, double dx) {
+	double norm_x, round_x;
+	norm_x = *x / dx;
+	round_x = rint(norm_x);
+	if (fabs(norm_x - round_x) < 1e-3) *x = round_x * dx;
+}
+
 GMT_LOCAL void gmtnc_set_optimal_chunksize (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* For optimal performance, set the number of elements in a given chunk
 	 * dimension (n) to be the ceiling of the number of elements in that
@@ -377,9 +384,9 @@ GMT_LOCAL void gmtnc_set_optimal_chunksize (struct GMT_CTRL *GMT, struct GMT_GRI
 }
 
 GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job) {
-	int j, err, has_vector;
+	int j, err, has_vector, registration;
 	int old_fill_mode;
-	double dummy[2], *xy = NULL;
+	double dummy[2], *xy = NULL, tmp;
 	char dimname[GMT_GRID_UNIT_LEN80], coord[GMT_LEN8];
 	nc_type z_type;
 
@@ -542,6 +549,8 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		if (gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "history", header->command, GMT_GRID_COMMAND_LEN320))
 			gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "source", header->command, GMT_GRID_COMMAND_LEN320);
 		gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "description", header->remark, GMT_GRID_REMARK_LEN160);
+		header->registration = GMT_GRID_NODE_REG;
+		if (!nc_get_att_int(ncid, NC_GLOBAL, "node_offset", &i)) header->registration = i;
 
 		if (gm_id > 0) {
 			size_t len;
@@ -559,50 +568,83 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		/* Get information about x variable */
 		gmtnc_get_units (GMT, ncid, ids[header->xy_dim[0]], header->x_units);
-		if ((has_vector = !nc_get_var_double (ncid, ids[header->xy_dim[0]], xy)))
+		registration = GMT_GRID_NODE_REG;
+		dummy[0] = 0.0, dummy[1] = (double) header->n_columns-1; /* Default */
+		if ((has_vector = !nc_get_var_double (ncid, ids[header->xy_dim[0]], xy))) {
 			gmtnc_check_step (GMT, header->n_columns, xy, header->x_units, header->name);
-		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy) ||
-			!nc_get_att_double (ncid, ids[header->xy_dim[0]], "valid_range", dummy)) {
-			/* If actual range differs from end-points of vector then we have a pixel grid */
-			header->wesn[XLO] = dummy[0], header->wesn[XHI] = dummy[1];
-			header->registration = (has_vector && fabs(dummy[1] - dummy[0]) / fabs(xy[header->n_columns-1] - xy[0]) - 1.0 > 0.5 / (header->n_columns - 1)) ?
-			                       GMT_GRID_PIXEL_REG : GMT_GRID_NODE_REG;
+			dummy[0] = xy[0], dummy[1] = xy[header->n_columns-1];
 		}
-		else if (has_vector) {	/* Got node vector, so default to gridline registration */
-			header->wesn[XLO] = xy[0], header->wesn[XHI] = xy[header->n_columns-1];
-			header->registration = GMT_GRID_NODE_REG;
-		}
-		else {	/* Lacks x-vector entirely so set to point numbers, and gridline registration */
-			header->wesn[XLO] = 0.0, header->wesn[XHI] = (double) header->n_columns-1;
-			header->registration = GMT_GRID_NODE_REG;
-		}
-		header->inc[GMT_X] = gmt_M_get_inc (GMT, header->wesn[XLO], header->wesn[XHI], header->n_columns, header->registration);
+		else if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy) ||
+			!nc_get_att_double (ncid, ids[header->xy_dim[0]], "valid_range", dummy) ||
+			!(nc_get_att_double (ncid, ids[header->xy_dim[0]], "valid_min", &dummy[0]) +
+			nc_get_att_double (ncid, ids[header->xy_dim[0]], "valid_max", &dummy[1])))
+			{} /* Nothing */
+
+		/* If we have vector, but dummy is different, then we have pixel registration */
+		if (has_vector && fabs(dummy[1] - dummy[0]) / fabs(xy[header->n_columns-1] - xy[0]) - 1.0 > 0.5 / (header->n_columns - 1)) registration = header->registration = GMT_GRID_PIXEL_REG;
+
+#ifdef NC4_DEBUG
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x registration: %u\n", registration);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x dummy: %g %g\n", dummy[0], dummy[1]);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x[0] x[nx-1]: %g %g\n", xy[0], xy[header->n_columns-1]);
+#endif
+
+		/* Determine grid step */
+		header->inc[GMT_X] = gmt_M_get_inc (GMT, dummy[0], dummy[1], header->n_columns, registration);
 		if (gmt_M_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
+
+		/* Convert boundaries to pixel registration if needed */
+		if (registration == GMT_GRID_NODE_REG && header->registration == GMT_GRID_PIXEL_REG)
+			header->wesn[XLO] = dummy[0] - header->inc[GMT_X] / 2.0,
+			header->wesn[XHI] = dummy[1] + header->inc[GMT_X] / 2.0;
+		else
+			header->wesn[XLO] = dummy[0], header->wesn[XHI] = dummy[1];
 
 		/* Get information about y variable */
 		gmtnc_get_units (GMT, ncid, ids[header->xy_dim[1]], header->y_units);
-		if ((has_vector = !nc_get_var_double (ncid, ids[header->xy_dim[1]], xy)))
+		registration = GMT_GRID_NODE_REG;
+		dummy[0] = 0.0, dummy[1] = (double) header->n_rows-1; /* Default */
+		if ((has_vector = !nc_get_var_double (ncid, ids[header->xy_dim[1]], xy))) {
 			gmtnc_check_step (GMT, header->n_rows, xy, header->y_units, header->name);
+			dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
+		}
 		if (!nc_get_att_double (ncid, ids[header->xy_dim[1]], "actual_range", dummy) ||
-			!nc_get_att_double (ncid, ids[header->xy_dim[1]], "valid_range", dummy))
-			header->wesn[YLO] = dummy[0], header->wesn[YHI] = dummy[1];
-		else if (has_vector)
-			header->wesn[YLO] = xy[0], header->wesn[YHI] = xy[header->n_rows-1];
-		else
-			header->wesn[YLO] = 0.0, header->wesn[YHI] = (double) header->n_rows-1;
+			!nc_get_att_double (ncid, ids[header->xy_dim[1]], "valid_range", dummy) ||
+			!(nc_get_att_double (ncid, ids[header->xy_dim[1]], "valid_min", &dummy[0]) +
+			nc_get_att_double (ncid, ids[header->xy_dim[1]], "valid_max", &dummy[1])))
+			{} /* Nothing */
 
 		/* Check for reverse order of y-coordinate */
-		if (header->wesn[YLO] > header->wesn[YHI]) {
+		if (dummy[0] > dummy[1]) {
 			header->row_order = k_nc_start_north;
-			dummy[0] = header->wesn[YHI], dummy[1] = header->wesn[YLO];
-			header->wesn[YLO] = dummy[0], header->wesn[YHI] = dummy[1];
+			tmp = dummy[1], dummy[1] = dummy[0], dummy[0] = tmp;
 		}
-		else if (has_vector && xy[0] > xy[header->n_rows-1])
-			header->row_order = k_nc_start_north;
 		else
 			header->row_order = k_nc_start_south;
-		header->inc[GMT_Y] = gmt_M_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->n_rows, header->registration);
+
+		/* If we have vector, but dummy is different, then we have pixel registration */
+		if (has_vector && fabs(dummy[1] - dummy[0]) / fabs(xy[header->n_rows-1] - xy[0]) - 1.0 > 0.5 / (header->n_rows - 1)) registration = header->registration = GMT_GRID_PIXEL_REG;
+
+#ifdef NC4_DEBUG
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "y registration: %u\n", registration);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "y dummy: %g %g\n", dummy[0], dummy[1]);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "y[0] y[ny-1]: %g %g\n", xy[0], xy[header->n_rows-1]);
+#endif
+
+		/* Determine grid step */
+		header->inc[GMT_Y] = gmt_M_get_inc (GMT, dummy[0], dummy[1], header->n_rows, registration);
 		if (gmt_M_is_dnan(header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
+
+		/* Convert boundaries to pixel registration if needed */
+		if (registration == GMT_GRID_NODE_REG && header->registration == GMT_GRID_PIXEL_REG)
+			header->wesn[YLO] = dummy[0] - header->inc[GMT_Y] / 2.0,
+			header->wesn[YHI] = dummy[1] + header->inc[GMT_Y] / 2.0;
+		else
+			header->wesn[YLO] = dummy[0], header->wesn[YHI] = dummy[1];
+
+		/* If boundaries are close to multiple of inc/2 fix them */
+		gmtnc_round_value (&header->wesn[YLO], header->inc[GMT_Y] / 2.0);
+		gmtnc_round_value (&header->wesn[YHI], header->inc[GMT_Y] / 2.0);
 
 		gmt_M_free (GMT, xy);
 
@@ -617,7 +659,9 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			header->z_min = (dummy[0] - header->z_add_offset) / header->z_scale_factor;
 			header->z_max = (dummy[1] - header->z_add_offset) / header->z_scale_factor;
 		}
-		else if (!nc_get_att_double (ncid, z_id, "valid_range", dummy)) {
+		else if (!nc_get_att_double (ncid, z_id, "valid_range", dummy) ||
+			!(nc_get_att_double (ncid, ids[header->xy_dim[1]], "valid_min", &dummy[0]) +
+			nc_get_att_double (ncid, ids[header->xy_dim[1]], "valid_max", &dummy[1]))) {
 			/* Valid range is already in packed units, so do not convert */
 			header->z_min = dummy[0], header->z_max = dummy[1];
 		}
@@ -660,6 +704,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->row_order: %s\n",
 	            header->row_order == k_nc_start_south ? "S->N" : "N->S");
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->n_columns: %3d   head->n_rows:%3d\n", header->n_columns, header->n_rows);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->inc: %g %g\n", header->inc[GMT_X], header->inc[GMT_Y]);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->mx: %3d   head->my:%3d\n", header->mx, header->my);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->nm: %3d head->size:%3d\n", header->nm, header->size);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->t-index %d,%d,%d\n",
