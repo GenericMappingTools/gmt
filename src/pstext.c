@@ -736,6 +736,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		rec_mode = (ncol) ? GMT_READ_MIXED : GMT_READ_TEXT;
 		geometry = (ncol) ? GMT_IS_NONE : GMT_IS_TEXT;
 		GMT_Set_Columns (API, GMT_IN, ncol, GMT_COL_FIX);
+		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;	/* In case there are 3-D going on */
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);

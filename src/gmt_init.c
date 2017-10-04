@@ -7247,23 +7247,32 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		else
 			icol = i/2;
 		if (icol < 2 && GMT->current.setting.io_lonlat_toggle[GMT_IN]) icol = 1 - icol;	/* col_types were swapped */
-		/* If column is either RELTIME or ABSTIME, use ARGTIME; if inv_project then just read floats via atof */
 		if (inv_project)	/* input is distance units */
 			p[i] = atof (text);
 		else {
-			bool maybe_time = gmtlib_maybe_abstime (GMT, text, &no_T);
-			if (maybe_time || GMT->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
-				if (no_T) strcat (text, "T");	/* Add a missing T */
+			bool maybe_time = gmtlib_maybe_abstime (GMT, text, &no_T);	/* Will flag things like 1999-12-03 or 2000/09/4 as abstime with missing T */
+			if (maybe_time || gmt_M_type (GMT, GMT_IN, icol) == GMT_IS_UNKNOWN) {	/* Because abstime specs must be parsed carefully we must do more checking */
+				/* Here, -J or -f may have ben set, proceed with caution */
+				if (no_T) strcat (text, "T");	/* Add the missing trailing 'T' in an ISO date */
 				got = gmt_scanf_arg (GMT, text, GMT_IS_UNKNOWN, true, &p[i]);
-				if (got & GMT_IS_GEO)
+				if (got == GMT_IS_LON || got == GMT_IS_LAT)	/* If clearly lon or lat we say so */
 					gmt_set_column (GMT, GMT_IN, icol, got);
-				else if ((got & GMT_IS_RATIME) || got == GMT_IS_ARGTIME) {
+				else if (got == GMT_IS_GEO)	/* If clearly geographical we say so */
+					gmt_set_column (GMT, GMT_IN, icol, got);
+				else if ((got & GMT_IS_RATIME) || got == GMT_IS_ARGTIME) {	/* If we got time then be specific */
 					if (got == GMT_IS_ARGTIME) got = GMT_IS_ABSTIME;
-					gmt_set_column (GMT, GMT_IN, icol, got);
+					/* While the -R arg may be abstime, -J or -f may have indicated that data are relative time, so we must check before imposing our got: */
+					if (!(GMT->current.io.col_type[GMT_IN][icol] & GMT_IS_RATIME)) gmt_set_column (GMT, GMT_IN, icol, got);	/* Only set if not already set to a time flavor */
 					GMT->current.proj.xyz_projection[icol] = GMT_TIME;
 				}
+				else if (got == GMT_IS_FLOAT)	/* If clearly Cartesian we say so */
+					gmt_set_column (GMT, GMT_IN, icol, got);
+				else {	/* Testing this, could we ever get here with sane data? */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not parse %s into Geographical, Cartesian, or Temporal coordinates!", text);
+					error++;
+				}
 			}
-			else {	/* Things are set, do or die */
+			else {	/* Things are already prescribed by -J or -f, do or die */
 				expect_to_read = (GMT->current.io.col_type[GMT_IN][icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT->current.io.col_type[GMT_IN][icol];
 				error += gmt_verify_expectations (GMT, expect_to_read, gmt_scanf (GMT, text, expect_to_read, &p[i]), text);
 			}

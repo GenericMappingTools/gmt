@@ -760,7 +760,13 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			n_total_read++;
 
 			if (read_symbol) {	/* Must do special processing */
-				gmt_parse_symbol_option (GMT, In->text, &S, 1, false);
+				if (S.read_symbol_cmd == 1) gmt_parse_symbol_option (GMT, In->text, &S, 1, false);
+				/* Since we only now know if some of the input columns should NOT be considered dimensions we
+				 * must visit such columns and if the current length unit is NOT inch then we must undo the scaling */
+				if (S.n_nondim && GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Since these are not dimensions but angles or other quantities */
+					for (j = 0; j < S.n_nondim; j++) in[S.nondim_col[j]+get_rgb] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+				}
+
 				if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC) {	/* One of the vector symbols */
 					if (S.v.status & PSL_VEC_OUTLINE2) {
 						current_pen = S.v.pen, Ctrl->W.active = true;	/* Override -W (if set) with specified pen */

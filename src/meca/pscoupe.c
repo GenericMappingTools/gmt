@@ -91,6 +91,7 @@ struct PSCOUPE_CTRL {
 		unsigned int readmode;
 		unsigned int plotmode;
 		unsigned int justify;
+		unsigned int n_cols;
 		int symbol;
 		char P_symbol, T_symbol;
 		double scale;
@@ -465,34 +466,32 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not print cross-section information to files\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select format type and symbol size (in measure_unit).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Choose format between:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c  Focal mechanisms in Harvard CMT convention\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      X, Y, depth, strike1, dip1, rake1, strike2, dip2, rake2, moment, event_title\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      with moment in 2 columns : mantissa and exponent corresponding to seismic moment in dynes-cm\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append the format code for your input file:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a  Focal mechanism in Aki & Richard's convention:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      X, Y, depth, strike, dip, rake, mag, event_title\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   p  Focal mechanism defined with\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      X, Y, depth, strike1, dip1, strike2, fault, mag, event_title\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth strike dip rake mag newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c  Focal mechanisms in Harvard CMT convention\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth strike1 dip1 rake1 strike2 dip2 rake2 moment newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      with moment in 2 columns : mantissa and exponent corresponding to seismic moment in dynes-cm\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   d  Best double couple defined from seismic moment tensor (Harvard CMT, with zero trace):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   p  Focal mechanism defined with:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth strike1 dip1 strike2 fault mag newX newY [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      fault = -1/+1 for a normal/inverse fault\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   m  Seismic moment tensor (Harvard CMT, with zero trace)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      X, Y, depth, mrr, mtt, mff, mrt, mrf, mtf, exp, event_title\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   z  Anisotropic part of seismic moment tensor (Harvard CMT, with zero trace)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      X, Y, depth, mrr, mtt, mff, mrt, mrf, mtf, exp, event_title\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   d  Best double couple defined from seismic moment tensor (Harvard CMT, with zero trace)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      X, Y, depth, mrr, mtt, mff, mrt, mrf, mtf, exp, event_title\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   x  Principal axis\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      X,Y,depth,T_value,T_azimuth,T_plunge,N_value,N_azimuth,N_plunge,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      P_value,P_azimuth,P_plunge,exp,event_title\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   t  Zero trace moment tensor defined from principal axis\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      X, Y, depth, T_value, T_azim, T_plunge, N_value, N_azim, N_plunge\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      P_value, P_azim, P_plunge, exp, newX, newY, event_title\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   y  Best double couple defined from principal axis\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      X,Y,depth,T_value,T_azimuth,T_plunge,N_value,N_azimuth,N_plunge,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      P_value,P_azimuth,P_plunge,exp,event_title\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add /fontsize[/offset][u]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default values are /%g/%f.\n", DEFAULT_FONTSIZE, DEFAULT_OFFSET);
-	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   offset is from the limit of the beach ball.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m  Seismic moment tensor (Harvard CMT, with zero trace):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   t  Zero trace moment tensor defined from principal axis:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth T_value T_azim T_plunge N_value N_azim N_plunge\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      P_value P_azim P_plunge exp newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   x  Principal axis:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth T_value T_azim T_plunge N_value N_azim N_plunge\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        P_value P_azim P_plunge exp newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   y  Best double couple defined from principal axis:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth T_value T_azim T_plunge N_value N_azim N_plunge\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        P_value P_azim P_plunge exp newX newY [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   z  Anisotropic part of seismic moment tensor (Harvard CMT, with zero trace):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp [event_title]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add /fontsize[/offset][u] [Default values are /%g/%f].\n", DEFAULT_FONTSIZE, DEFAULT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written; offset is from the limit of the beach ball.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default label is above the beach ball. Add u to plot it under.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Tn[/<pen>] draw nodal planes and circumference only to provide a transparent beach ball\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   using the current pen (see -W) or sets pen attribute.\n");
@@ -677,41 +676,41 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 
 				switch (opt->arg[0]) {
 					case 'c':
-						Ctrl->S.readmode = READ_CMT;
+						Ctrl->S.readmode = READ_CMT;	Ctrl->S.n_cols = 13;
 						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 'a':
-						Ctrl->S.readmode = READ_AKI;
+						Ctrl->S.readmode = READ_AKI;	Ctrl->S.n_cols = 9;
 						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 'p':
-						Ctrl->S.readmode = READ_PLANES;
+						Ctrl->S.readmode = READ_PLANES;	Ctrl->S.n_cols = 10;
 						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 'x':
-						Ctrl->S.readmode = READ_AXIS;
+						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 15;
 						Ctrl->S.plotmode = PLOT_TENSOR;
 						break;
 					case 'y':
-						Ctrl->S.readmode = READ_AXIS;
+						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 13;
 						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 't':
-						Ctrl->S.readmode = READ_AXIS;
+						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 15;
 						Ctrl->S.plotmode = PLOT_TRACE;
 						break;
 					case 'm':
-						Ctrl->S.readmode = READ_TENSOR;
+						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 12;
 						Ctrl->S.plotmode = PLOT_TENSOR;
 						Ctrl->S.zerotrace = true;
 						break;
 					case 'd':
-						Ctrl->S.readmode = READ_TENSOR;
+						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 12;
 						Ctrl->S.plotmode = PLOT_DC;
 						Ctrl->S.zerotrace = true;
 						break;
 					case 'z':
-						Ctrl->S.readmode = READ_TENSOR;
+						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 12;
 						Ctrl->S.plotmode = PLOT_TRACE;
 						Ctrl->S.zerotrace = true;
 						break;
@@ -772,7 +771,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_pscoupe (void *V_API, int mode, void *args) {
-	int ix, iy, n_rec = 0, n_plane_old = 0, form = 0, error, n_k;
+	int n_rec = 0, n_plane_old = 0, form = 0, error;
 	int i, transparence_old = 0, not_defined = 0;
 	FILE *pnew = NULL, *pext = NULL;
 
@@ -839,7 +838,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 	gmt_setpen (GMT, &Ctrl->W.pen);
 	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
-	ix = (GMT->current.setting.io_lonlat_toggle[0]);    iy = 1 - ix;
+	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
@@ -853,21 +852,6 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 		pext = fopen (Ctrl->A.extfile, "w");
 	}
 
-	if (Ctrl->S.readmode == READ_CMT)
-		n_k = 13;
-	else if (Ctrl->S.readmode == READ_AKI)
-		n_k = 9;
-	else if (Ctrl->S.readmode == READ_PLANES)
-		n_k = 10;
-	else if (Ctrl->S.readmode == READ_AXIS)
-		n_k = 15;
-	else if (Ctrl->S.readmode == READ_TENSOR)
-		n_k = 12;
-	else if (gmt_M_is_zero (Ctrl->S.scale))
-		n_k = 4;
-	else
-		n_k = 3;
-
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_MIXED, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
@@ -879,7 +863,6 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (In->text != NULL);						/* Should never get here */
 		}
 
 		/* Data record to process */

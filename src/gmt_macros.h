@@ -103,7 +103,7 @@
 /* Extract column type for given direction and column number */
 #define gmt_M_type(C,dir,col) (C->current.io.col_type[dir][col])
 /* Compare column type to given type -- true if the same */
-#define gmt_M_is_type(C,dir,col,type) (C->current.io.col_type[dir][col] == type)
+#define gmt_M_is_type(C,dir,col,type) (gmt_M_type(C,dir,col) == type)
 
 /*! Macros for swapping misc data types */
 

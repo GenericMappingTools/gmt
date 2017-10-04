@@ -503,7 +503,9 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 	gmt_setfill (GMT, &(Ctrl->F.fill), Ctrl->F.active);
 	PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->M.ech), PSL_CIRCLE);
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+	GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX);	/* Only text expected */
+
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
@@ -518,7 +520,6 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (In->text != NULL);						/* Should never get here */
 		}
 
 		/* Data record to process */
