@@ -175,7 +175,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**
+**-W**\ [**w**]
     Do not interpolate the input color table but pick the output colors
     starting at the beginning of the color table, until colors for all
     intervals are assigned. This is particularly useful in combination
