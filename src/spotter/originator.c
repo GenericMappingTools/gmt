@@ -658,6 +658,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 			else {	/* Conventional originator output */
 				out[GMT_X] = in[GMT_X];	out[GMT_Y] = in[GMT_Y];	out[GMT_Z] = z_smt;
 				out[3] = r_smt;	out[4] = (t_smt == 180.0) ? GMT->session.d_NaN : t_smt;
+				record[0] = '\0';
 				for (spot = 0; spot < n_max_spots; spot++) {
 					if (Ctrl->Z.active)
 						sprintf (buffer, fmt2, hot[spot].h->id, hot[spot].stage, hot[spot].np_time, hot[spot].np_dist);

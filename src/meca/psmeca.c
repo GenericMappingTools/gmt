@@ -84,6 +84,7 @@ struct PSMECA_CTRL {
 		unsigned int readmode;
 		unsigned int plotmode;
 		unsigned int justify;
+		unsigned int n_cols;
 		double scale;
 		double fontsize, offset;
 		struct GMT_FILL fill;
@@ -233,10 +234,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      X, Y, depth, T_value, T_azim, T_plunge, N_value, N_azim, N_plunge\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      P_value, P_azim, P_plunge, exp, newX, newY, event_title\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Fo option for old (psvelomeca) format (no depth in third column).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add /fontsize[/offset][u]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default values are /%g/%fp\n", DEFAULT_FONTSIZE, DEFAULT_OFFSET);
-	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   offset is from the limit of the beach ball.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add /fontsize[/offset][u] [Default values are /%g/%fp]\n", DEFAULT_FONTSIZE, DEFAULT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written; offset is from the limit of the beach ball.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default label is above the beach ball. Add u to plot it under.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Tn[/<pen>] Draw nodal planes and circumference only to provide a transparent\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   beach ball using the default pen (see -W) or sets pen attribute. \n");
@@ -398,34 +397,34 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 
 				switch (opt->arg[0]) {
 					case 'c':
-						Ctrl->S.readmode = READ_CMT;
+						Ctrl->S.readmode = READ_CMT;	Ctrl->S.n_cols = 12;
 						break;
 					case 'a':
-						Ctrl->S.readmode = READ_AKI;
+						Ctrl->S.readmode = READ_AKI;	Ctrl->S.n_cols = 9;
 						break;
 					case 'p':
-						Ctrl->S.readmode = READ_PLANES;
+						Ctrl->S.readmode = READ_PLANES;	Ctrl->S.n_cols = 10;
 						break;
 					case 'x':
-						Ctrl->S.readmode = READ_AXIS;
+						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 15;
 						break;
 					case 'y':
-						Ctrl->S.readmode = READ_AXIS;
+						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 15;
 						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 't':
-						Ctrl->S.readmode = READ_AXIS;
+						Ctrl->S.readmode = READ_AXIS;	Ctrl->S.n_cols = 15;
 						Ctrl->S.plotmode = PLOT_TRACE;
 						break;
 					case 'm':
-						Ctrl->S.readmode = READ_TENSOR;
+						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 12;
 						break;
 					case 'd':
-						Ctrl->S.readmode = READ_TENSOR;
+						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 12;
 						Ctrl->S.plotmode = PLOT_DC;
 						break;
 					case 'z':
-						Ctrl->S.readmode = READ_TENSOR;
+						Ctrl->S.readmode = READ_TENSOR;	Ctrl->S.n_cols = 10;
 						Ctrl->S.plotmode = PLOT_TRACE;
 						break;
 					default:
@@ -492,6 +491,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psmeca task */
 	int i, n, ix = 0, iy = 1, last = 0, form = 0, new_fmt;
 	int n_rec = 0, n_plane_old = 0, error;
+	unsigned int n_cols;
 	bool transparence_old = false, not_defined = false;
 
 	double plot_x, plot_y, plot_xnew, plot_ynew, delaz, *in = NULL;
@@ -562,7 +562,11 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		last = 13;
 	else if (Ctrl->S.readmode == READ_TENSOR)
 		last = 10;
+		
+	if (Ctrl->O2.active) Ctrl->S.n_cols--;	/* No depth */
 
+	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);
+	
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
 	}
@@ -601,9 +605,8 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			depth = in[GMT_Z];
 			if (depth < Ctrl->D.depmin || depth > Ctrl->D.depmax) continue;
 			if (Ctrl->Z.active) gmt_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
-			sscanf (string, "%s %[^\n]\n", In->text, event_title);
 		}
-		else if (In->text)
+		if (In->text)
 			strncpy (event_title, In->text, GMT_BUFSIZ-1);
 
 		/* Gather and transform the input records, depending on type */
