@@ -19,12 +19,12 @@ gmt set FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
 # curl -s $URL > usgs_quakes_22.txt
 
 # Count the number of events (to be used in title later. one less due to header)
-gmt which @usgs_quakes_22.txt -Gl
-n=`gmt info usgs_quakes_22.txt -h1 -Fi -o2`
+file=`gmt which @usgs_quakes_22.txt -G`
+n=`gmt info $file -h1 -Fi -o2`
 # Pull out the first and last timestamp to use in legend title
 
-first=`sed -n 2p usgs_quakes_22.txt | $AWK -F, '{printf "%s\n", substr($1,1,10)}'`
-last=`sed -n '$p' usgs_quakes_22.txt | $AWK -F, '{printf "%s\n", substr($1,1,10)}'`
+first=`gmt info -h1 -f0T -i0 $file -C --TIME_UNIT=d -I1 -o0 --FORMAT_CLOCK_OUT=-`
+last=`gmt info -h1 -f0T -i0 $file -C --TIME_UNIT=d -I1 -o1 --FORMAT_CLOCK_OUT=-`
 
 # Assign a string that contains the current user @ the current computer node.
 # Note that two @@ is needed to print a single @ in gmt pstext:
@@ -40,7 +40,7 @@ gmt makecpt -Cred,green,blue -T0,100,300,10000 -N > neis.cpt
 
 gmt pscoast -Rg -JK180/9i -B45g30 -B+t"World-wide earthquake activity" -Gburlywood -Slightblue \
 	-Dc -A1000 -K -Y2.75i > $ps
-gmt psxy -R -J -O -K -Cneis.cpt -Sci -Wfaint -hi1 -i2,1,3,4+s0.015 usgs_quakes_22.txt >> $ps
+gmt psxy -R -J -O -K -Cneis.cpt -Sci -Wfaint -hi1 -i2,1,3,4+s0.015 $file >> $ps
 # Create legend input file for NEIS quake plot
 
 cat > neis.legend << END
