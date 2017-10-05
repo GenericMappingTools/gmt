@@ -314,11 +314,11 @@ GMT_LOCAL unsigned int old_G_parse (struct GMT_CTRL *GMT, char *arg, struct MAPP
 		if (Ctrl->G.unit == 'c') gmt_set_cartesian (GMT, GMT_IN);	/* Cartesian */
 		n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error: Expected -G<lon0>/<lat0>[/[-|+]%s|c|C]\n",
 		                                   GMT_LEN_UNITS_DISPLAY);
-		n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X],
-		                                     gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], false,
+		n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X),
+		                                     gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false,
 		                                     &Ctrl->G.lon), txt_a);
-		n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y],
-		                                     gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], false,
+		n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y),
+		                                     gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false,
 		                                     &Ctrl->G.lat), txt_b);
 		Ctrl->G.mode |= ((arg[last] == '-') ? GMT_MP_INCR_DIST : GMT_MP_CUMUL_DIST);
 	}
@@ -396,11 +396,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 							break;
 					}
 					if (n == 3) {
-						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X],
-						                                     gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], false,
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X),
+						                                     gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false,
 						                                     &Ctrl->A.lon), txt_a);
-						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y],
-						                                     gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], false,
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y),
+						                                     gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false,
 						                                     &Ctrl->A.lat), txt_b);
 					}
 					else
@@ -458,11 +458,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 						if (Ctrl->G.unit == 'c') gmt_set_cartesian (GMT, GMT_IN);	/* Cartesian input */
 						n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error: Expected -G<lon0>/<lat0>[+u[-|+]%s|c|C]\n",
 						                                   GMT_LEN_UNITS_DISPLAY);
-						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X],
-						                                     gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], false,
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X),
+						                                     gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false,
 						                                     &Ctrl->G.lon), txt_a);
-						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y],
-						                                     gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], false,
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y),
+						                                     gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false,
 						                                     &Ctrl->G.lat), txt_b);
 						if ((Ctrl->G.mode & GMT_MP_CUMUL_DIST) == 0) Ctrl->G.mode |= GMT_MP_INCR_DIST;
 					}
@@ -776,8 +776,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
 
 	if (Ctrl->G.mode) {	/* save output format in case -J changes it */
-		save[GMT_X] = (Ctrl->G.unit == 'X') ? GMT_IS_FLOAT : GMT->current.io.col_type[GMT_OUT][GMT_X];
-		save[GMT_Y] = (Ctrl->G.unit == 'X') ? GMT_IS_FLOAT : GMT->current.io.col_type[GMT_OUT][GMT_Y];
+		save[GMT_X] = (Ctrl->G.unit == 'X') ? GMT_IS_FLOAT : gmt_M_type (GMT, GMT_OUT, GMT_X);
+		save[GMT_Y] = (Ctrl->G.unit == 'X') ? GMT_IS_FLOAT : gmt_M_type (GMT, GMT_OUT, GMT_Y);
 	}
 	u_scale = (Ctrl->I.active) ? inv_scale : fwd_scale;
 
@@ -1238,8 +1238,10 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					n_output = gmt_get_cols (GMT, GMT_OUT);
 					if (geodetic_calc) {	/* Update the output column types to the extra items we added */
 						for (col = 0, k = n_fields; col < MP_COL_N; col++) {
-							if (Ctrl->used[col])
-								GMT->current.io.col_type[GMT_OUT][k++] = ecol_type[col];
+							if (Ctrl->used[col]) {
+								gmt_set_column (GMT, GMT_OUT, k, ecol_type[col]);
+								k++;
+							}	
 						}
 					}
 				}

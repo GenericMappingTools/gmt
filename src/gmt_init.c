@@ -1763,13 +1763,13 @@ GMT_LOCAL int gmtinit_parse_colon_option (struct GMT_CTRL *GMT, char *item) {
 			break;
 	}
 	for (way = 0; !error && way < 2; way++) if (ok[way]) {
-		if (GMT->current.io.col_type[way][GMT_X] == GMT_IS_UNKNOWN && GMT->current.io.col_type[way][GMT_Y] == GMT_IS_UNKNOWN)	/* Don't know what x/y is yet */
+		if (gmt_M_type (GMT, way, GMT_X) == GMT_IS_UNKNOWN && gmt_M_type (GMT, way, GMT_Y) == GMT_IS_UNKNOWN)	/* Don't know what x/y is yet */
 			GMT->current.setting.io_lonlat_toggle[way] = true;
-		else if (GMT->current.io.col_type[way][GMT_X] == GMT_IS_FLOAT && GMT->current.io.col_type[way][GMT_Y] == GMT_IS_FLOAT)	/* Cartesian x/y vs y/x cannot be identified */
+		else if (gmt_M_type (GMT, way, GMT_X) == GMT_IS_FLOAT && gmt_M_type (GMT, way, GMT_Y) == GMT_IS_FLOAT)	/* Cartesian x/y vs y/x cannot be identified */
 			GMT->current.setting.io_lonlat_toggle[way] = true;
 		else if (gmt_M_is_geographic (GMT, way))	/* Lon/lat becomes lat/lon */
 			GMT->current.setting.io_lonlat_toggle[way] = true;
-		else if (GMT->current.io.col_type[way][GMT_X] == GMT_IS_LAT && GMT->current.io.col_type[way][GMT_Y] == GMT_IS_LON)	/* Already lat/lon! */
+		else if (gmt_M_type (GMT, way, GMT_X) == GMT_IS_LAT && gmt_M_type (GMT, way, GMT_Y) == GMT_IS_LON)	/* Already lat/lon! */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: -:%s given but %s order already set by -f; -:%s ignored.\n", mode[way+off], dir[way], mode[way+off]);
 	}
 	if (error) GMT->current.setting.io_lonlat_toggle[GMT_IN] = GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;	/* Leave in case we had errors */
@@ -1952,9 +1952,9 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in -p (%s): Syntax is %s\n", p, GMT_p_OPT);
 						return GMT_PARSE_ERROR;
 					}
-					error += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &GMT->current.proj.z_project.world_x), txt_a);
-					error += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &GMT->current.proj.z_project.world_y), txt_b);
-					if (k == 3) error += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf (GMT, txt_c, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.proj.z_project.world_z), txt_c);
+					error += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), &GMT->current.proj.z_project.world_x), txt_a);
+					error += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), &GMT->current.proj.z_project.world_y), txt_b);
+					if (k == 3) error += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf (GMT, txt_c, gmt_M_type (GMT, GMT_IN, GMT_Z), &GMT->current.proj.z_project.world_z), txt_c);
 					GMT->current.proj.z_project.world_given = true;
 					break;
 				default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
@@ -3192,7 +3192,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 	/* Check if we asked for linear projections of geographic coordinates and did not specify a unit - if so set degree symbol as unit */
 	if (GMT->current.proj.projection_GMT == GMT_LINEAR && GMT->current.setting.map_degree_symbol != gmt_none) {
 		for (i = 0; i < 2; i++) {
-			if (GMT->current.io.col_type[GMT_IN][i] & GMT_IS_GEO && GMT->current.map.frame.axis[i].unit[0] == 0) {
+			if (gmt_M_type (GMT, GMT_IN, i) & GMT_IS_GEO && GMT->current.map.frame.axis[i].unit[0] == 0) {
 				GMT->current.map.frame.axis[i].unit[0] = '-';
 				GMT->current.map.frame.axis[i].unit[1] = (char)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol];
 				GMT->current.map.frame.axis[i].unit[2] = '\0';
@@ -3580,7 +3580,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	/* Check if we asked for linear projections of geographic coordinates and did not specify a unit (suffix) - if so set degree symbol as unit */
 	if (GMT->current.proj.projection_GMT == GMT_LINEAR && GMT->current.setting.map_degree_symbol != gmt_none) {
 		for (no = 0; no < 2; no++) {
-			if (GMT->current.io.col_type[GMT_IN][no] & GMT_IS_GEO && GMT->current.map.frame.axis[no].unit[0] == 0) {
+			if (gmt_M_type (GMT, GMT_IN, no) & GMT_IS_GEO && GMT->current.map.frame.axis[no].unit[0] == 0) {
 				GMT->current.map.frame.axis[no].unit[0] = (char)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol];
 				GMT->current.map.frame.axis[no].unit[1] = '\0';
 			}
@@ -3934,7 +3934,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				GMT->current.proj.pars[1] = GMT->current.proj.pars[0];
 				GMT->current.proj.pars[3] = GMT->current.proj.pars[2];
 				/* Assume -JX<width>[unit]d means a linear geographic plot so x = lon and y = lat */
-				if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_LON) gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
+				if (gmt_M_type (GMT, GMT_IN, GMT_X) & GMT_IS_LON) gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
 			}
 			/* Not both sizes can be zero, but if one is, we will adjust to the scale of the other */
 			if (GMT->current.proj.pars[GMT_X] == 0.0 && GMT->current.proj.pars[GMT_Y] == 0.0) error++;
@@ -4132,7 +4132,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 				if (n == n_slashes + 1) {
 					GMT->current.proj.pars[3] = gmt_M_to_inch (GMT, txt_d);
-					if (gmtinit_get_uservalue (GMT, txt_e, GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
+					if (gmtinit_get_uservalue (GMT, txt_e, gmt_M_type (GMT, GMT_IN, GMT_Y), &c, "oblique latitude")) return 1;
 					if (c <= -90.0 || c >= 90.0) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
 						error++;
@@ -4158,7 +4158,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 					n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &GMT->current.proj.pars[3]);
 				else if (n_slashes == 3) {	/* with true scale at specified latitude */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_e, &GMT->current.proj.pars[3]);
-					if (gmtinit_get_uservalue (GMT, txt_e, GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
+					if (gmtinit_get_uservalue (GMT, txt_e, gmt_M_type (GMT, GMT_IN, GMT_Y), &c, "oblique latitude")) return 1;
 					if (c < -90.0 || c > 90.0) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
 						error++;
@@ -4169,7 +4169,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				}
 				else if (n_slashes == 4) {
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, txt_e, &GMT->current.proj.pars[3]);
-					if (gmtinit_get_uservalue (GMT, txt_e, GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
+					if (gmtinit_get_uservalue (GMT, txt_e, gmt_M_type (GMT, GMT_IN, GMT_Y), &c, "oblique latitude")) return 1;
 					if (c < -90.0 || c > 90.0) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
 						error++;
@@ -4194,7 +4194,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 				if (n == n_slashes + 1) {
 					GMT->current.proj.pars[3] = gmt_M_to_inch (GMT, txt_d);
-					if (gmtinit_get_uservalue (GMT, txt_e, GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
+					if (gmtinit_get_uservalue (GMT, txt_e, gmt_M_type (GMT, GMT_IN, GMT_Y), &c, "oblique latitude")) return 1;
 					if (c <= -90.0 || c >= 90.0) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
 						error++;
@@ -4273,7 +4273,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			else {
 				GMT->current.proj.pars[2] = gmt_M_to_inch (GMT, &(txt_arr[n-2][0]));
 				/*            GMT->current.proj.pars[3] = GMT_ddmmss_to_degree(txt_i); */
-				if (gmtinit_get_uservalue (GMT, &(txt_arr[n-1][0]), GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
+				if (gmtinit_get_uservalue (GMT, &(txt_arr[n-1][0]), gmt_M_type (GMT, GMT_IN, GMT_Y), &c, "oblique latitude")) return 1;
 				if (c <= -90.0 || c >= 90.0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
 					error++;
@@ -7071,8 +7071,8 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			return (GMT_PARSE_ERROR);
 		}
 		for (icol = GMT_X; icol <= GMT_Y; icol++) {
-			if (GMT->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
-				got = gmt_scanf_arg (GMT, X[icol], GMT->current.io.col_type[GMT_IN][icol], true, &orig[icol]);
+			if (gmt_M_type (GMT, GMT_IN, icol) == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
+				got = gmt_scanf_arg (GMT, X[icol], gmt_M_type (GMT, GMT_IN, icol), true, &orig[icol]);
 				if (got & GMT_IS_GEO)
 					gmt_set_column (GMT, GMT_IN, icol, got);
 				else if (got & GMT_IS_RATIME) {
@@ -7081,7 +7081,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 				}
 			}
 			else {	/* Things are set, do or die */
-				expect_to_read = (GMT->current.io.col_type[GMT_IN][icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT->current.io.col_type[GMT_IN][icol];
+				expect_to_read = (gmt_M_type (GMT, GMT_IN, icol) & GMT_IS_RATIME) ? GMT_IS_ARGTIME : gmt_M_type (GMT, GMT_IN, icol);
 				error += gmt_verify_expectations (GMT, expect_to_read, gmt_scanf (GMT, X[icol], expect_to_read, &orig[icol]), X[icol]);
 			}
 		}
@@ -7263,7 +7263,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 				else if ((got & GMT_IS_RATIME) || got == GMT_IS_ARGTIME) {	/* If we got time then be specific */
 					if (got == GMT_IS_ARGTIME) got = GMT_IS_ABSTIME;
 					/* While the -R arg may be abstime, -J or -f may have indicated that data are relative time, so we must check before imposing our got: */
-					if (!(GMT->current.io.col_type[GMT_IN][icol] & GMT_IS_RATIME)) gmt_set_column (GMT, GMT_IN, icol, got), done[icol] = true;	/* Only set if not already set to a time flavor */
+					if (!(gmt_M_type (GMT, GMT_IN, icol) & GMT_IS_RATIME)) gmt_set_column (GMT, GMT_IN, icol, got), done[icol] = true;	/* Only set if not already set to a time flavor */
 					GMT->current.proj.xyz_projection[icol] = GMT_TIME;
 				}
 				else if (got == GMT_IS_FLOAT) {	/* Dont want to set col type prematurely ince -R0/13:30E/... would first find Cartesian and then fail on 13:30E */
@@ -7276,7 +7276,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 				}
 			}
 			else {	/* Things are already prescribed by -J or -f, do or die */
-				expect_to_read = (GMT->current.io.col_type[GMT_IN][icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT->current.io.col_type[GMT_IN][icol];
+				expect_to_read = (gmt_M_type (GMT, GMT_IN, icol) & GMT_IS_RATIME) ? GMT_IS_ARGTIME : gmt_M_type (GMT, GMT_IN, icol);
 				error += gmt_verify_expectations (GMT, expect_to_read, gmt_scanf (GMT, text, expect_to_read, &p[i]), text);
 			}
 		}
@@ -12465,13 +12465,13 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				txt_b[len-1] = '\0';	/* Chop off the 'u' */
 			}
 			if (p->user_unit[GMT_X]) {
-				if (gmtinit_get_uservalue (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &p->given_size_x, "-Sb|B|o|O|u|u x-size value")) return GMT_PARSE_ERROR;
+				if (gmtinit_get_uservalue (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), &p->given_size_x, "-Sb|B|o|O|u|u x-size value")) return GMT_PARSE_ERROR;
 				p->size_x = p->given_size_x;
 			}
 			else
 				p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_a);
 			if (p->user_unit[GMT_Y]) {
-				if (gmtinit_get_uservalue (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &p->given_size_y, "-Sb|B|o|O|u|u y-size value")) return GMT_PARSE_ERROR;
+				if (gmtinit_get_uservalue (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), &p->given_size_y, "-Sb|B|o|O|u|u y-size value")) return GMT_PARSE_ERROR;
 				p->size_y = p->given_size_y;
 			}
 			else
@@ -12485,7 +12485,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			if (n == 2) {	/* Gave size */
 				if (p->user_unit[GMT_X]) {
-					if (gmtinit_get_uservalue (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &p->given_size_x, "-Sb|B|o|O|u|u x-size value")) return GMT_PARSE_ERROR;
+					if (gmtinit_get_uservalue (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), &p->given_size_x, "-Sb|B|o|O|u|u x-size value")) return GMT_PARSE_ERROR;
 					p->size_x = p->size_y = p->given_size_y = p->given_size_x;
 				}
 				else
@@ -12559,7 +12559,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
-					if (gmtinit_get_uservalue (GMT, &text[bset+1], GMT->current.io.col_type[GMT_IN][GMT_X], &p->base, "-SB base value")) return GMT_PARSE_ERROR;
+					if (gmtinit_get_uservalue (GMT, &text[bset+1], gmt_M_type (GMT, GMT_IN, GMT_X), &p->base, "-SB base value")) return GMT_PARSE_ERROR;
 					p->base_set = 1;
 				}
 			}
@@ -12574,7 +12574,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
-					if (gmtinit_get_uservalue (GMT, &text_cp[bset+1], GMT->current.io.col_type[GMT_IN][GMT_Y], &p->base, "-Sb base value")) return GMT_PARSE_ERROR;
+					if (gmtinit_get_uservalue (GMT, &text_cp[bset+1], gmt_M_type (GMT, GMT_IN, GMT_Y), &p->base, "-Sb base value")) return GMT_PARSE_ERROR;
 					p->base_set = 1;
 				}
 			}
@@ -12778,7 +12778,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {
-					if (gmtinit_get_uservalue (GMT, &text[bset+1], GMT->current.io.col_type[GMT_IN][GMT_Z], &p->base, "-So|O base value")) return GMT_PARSE_ERROR;
+					if (gmtinit_get_uservalue (GMT, &text[bset+1], gmt_M_type (GMT, GMT_IN, GMT_Z), &p->base, "-So|O base value")) return GMT_PARSE_ERROR;
 					p->base_set = 1;
 				}
 			}
@@ -13505,7 +13505,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -Z[<zlevel>] is deprecated. Use -p<azim>/<elev>[/<zlevel>] instead.\n"
 				            GMT_COMPAT_INFO);
 				if (item && item[0]) {
-					if (gmtinit_get_uservalue (GMT, item, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.proj.z_level, "-Z zlevel value"))
+					if (gmtinit_get_uservalue (GMT, item, gmt_M_type (GMT, GMT_IN, GMT_Z), &GMT->current.proj.z_level, "-Z zlevel value"))
 						return 1;
 				}
 			}

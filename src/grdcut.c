@@ -177,8 +177,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 					k = 1;
 				}
 				if (sscanf (&opt->arg[k], "%[^/]/%s", za, zb) == 2) {
-					if (!(za[0] == '-' && za[1] == '\0')) n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], false, &Ctrl->Z.min), za);
-					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], false, &Ctrl->Z.max), zb);
+					if (!(za[0] == '-' && za[1] == '\0')) n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, za, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.min), za);
+					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, zb, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.max), zb);
 				}
 				break;
 

@@ -1517,7 +1517,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 						gmt_cat_to_record (GMT, record, word, GMT_OUT, sep_flag);	/* Format our output x value */
 					}
 					else if (c == MGD77_M77_SET && id == time_column) {	/* Time */
-						if (GMT->current.io.col_type[GMT_OUT][pos] == GMT_IS_FLOAT) {	/* fractional year */
+						if (gmt_M_type (GMT, GMT_OUT, pos) == GMT_IS_FLOAT) {	/* fractional year */
 							if (need_date) {	/* Did not get computed already */
 								date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
 								need_date = false;
@@ -1547,7 +1547,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 					c  = M.order[kk].set;
 					id = M.order[kk].item;
 					if (c == MGD77_M77_SET && id == time_column) {	/* This is the time column */
-						if (GMT->current.io.col_type[GMT_OUT][pos] == GMT_IS_FLOAT) {	/* fractional year */
+						if (gmt_M_type (GMT, GMT_OUT, pos) == GMT_IS_FLOAT) {	/* fractional year */
 							if (need_date) {	/* Did not get computed already */
 								date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
 								need_date = false;

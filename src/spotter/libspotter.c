@@ -365,8 +365,8 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 		if (ns == 2 || ns == 3) {	/* Looks like we got lon/lat/omega[/age] */
 			R->single  = true;
 			sscanf (arg, "%[^/]/%[^/]/%[^/]/%lg", txt_a, txt_b, txt_c, &(R->age));
-			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], false, &(R->lon)), txt_a);
-			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], false, &(R->lat)), txt_b);
+			n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false, &(R->lon)), txt_a);
+			n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false, &(R->lat)), txt_b);
 			R->w = atof (txt_c);
 			if (ns == 2)	/* No age given */
 				R->age = GMT->session.d_NaN;

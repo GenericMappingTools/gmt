@@ -494,11 +494,11 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		header->xy_dim[0] = 1;
 		header->xy_dim[1] = 0;
 
-		strcpy (coord, (gmt_M_x_is_lon (GMT, GMT_OUT)) ? "lon" : (GMT->current.io.col_type[GMT_OUT][GMT_X] & GMT_IS_RATIME) ? "time" : "x");
+		strcpy (coord, (gmt_M_x_is_lon (GMT, GMT_OUT)) ? "lon" : (gmt_M_type (GMT, GMT_OUT, GMT_X) & GMT_IS_RATIME) ? "time" : "x");
 		gmt_M_err_trap (nc_def_dim (ncid, coord, (size_t) header->n_columns, &dims[1]));
 		gmt_M_err_trap (nc_def_var (ncid, coord, NC_DOUBLE, 1, &dims[1], &ids[1]));
 
-		strcpy (coord, (gmt_M_y_is_lat (GMT, GMT_OUT)) ? "lat" : (GMT->current.io.col_type[GMT_OUT][GMT_Y] & GMT_IS_RATIME) ? "time" : "y");
+		strcpy (coord, (gmt_M_y_is_lat (GMT, GMT_OUT)) ? "lat" : (gmt_M_type (GMT, GMT_OUT, GMT_Y) & GMT_IS_RATIME) ? "time" : "y");
 		gmt_M_err_trap (nc_def_dim (ncid, coord, (size_t) header->n_rows, &dims[0]));
 		gmt_M_err_trap (nc_def_var (ncid, coord, NC_DOUBLE, 1, &dims[0], &ids[0]));
 

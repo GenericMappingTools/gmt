@@ -9034,7 +9034,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	 * If project is true then we convert to plot units.
 	 * If get_distances is true then add a column with distances. We also do this if +d is added to args.
 	 */
-	unsigned int n_cols, np = 0, k, s, pos = 0, pos2 = 0, xtype = GMT->current.io.col_type[GMT_IN][GMT_X], ytype = GMT->current.io.col_type[GMT_IN][GMT_Y];
+	unsigned int n_cols, np = 0, k, s, pos = 0, pos2 = 0, xtype = gmt_M_type (GMT, GMT_IN, GMT_X), ytype = gmt_M_type (GMT, GMT_IN, GMT_Y);
 	enum GMT_profmode p_mode;
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 0};
 	int n, error = 0;
@@ -11380,8 +11380,8 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 			return (GMT_PARSE_ERROR);
 		}
 		if (c) c[0] = '+';	/* Restore original argument */
-		col_type[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Set correct input types */
-		col_type[GMT_Y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
+		col_type[GMT_X] = gmt_M_type (GMT, GMT_IN, GMT_X);	/* Set correct input types */
+		col_type[GMT_Y] = gmt_M_type (GMT, GMT_IN, GMT_Y);
 		if (k == 0) {	/* Got geographic w/e/s/n or <w/s/e/n>r */
 			n = (int)strlen(txt_d) - 1;
 			if (B->oblique || txt_d[n] == 'r') {	/* Got <w/s/e/n>r for rectangular box */
@@ -12872,7 +12872,7 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 		if (!found) continue;	/* Not the type we were requesting */
 		if (strchr (type, 'i')) n_int++;
 		if (strchr (type, 'a')) n_annot++;
-		error += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][A->id], gmt_scanf (GMT, str, GMT->current.io.col_type[GMT_IN][A->id], &x[k]), str);
+		error += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, A->id), gmt_scanf (GMT, str, gmt_M_type (GMT, GMT_IN, A->id), &x[k]), str);
 		if (text && nc == 3) L[k] = strdup (txt);
 		k++;
 		if (k == n_alloc) {
@@ -13283,7 +13283,7 @@ bool gmt_polygon_is_open (struct GMT_CTRL *GMT, double x[], double y[], uint64_t
 	if (!doubleAlmostEqualZero (y[0], y[n-1]))
 		return true;	/* y difference exceeds threshold: polygon is OPEN */
 	if (!doubleAlmostEqualZero (x[0], x[n-1])) {	/* The x values exceeds threshold, check further if by 360 under geo */
-		if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) {	/* Geographical coordinates: Worry about a 360 jump */
+		if (gmt_M_type (GMT, GMT_IN, GMT_X) & GMT_IS_GEO) {	/* Geographical coordinates: Worry about a 360 jump */
 			double dlon = fabs (x[0] - x[n-1]);	/* If exactly 360 then we are OK */
 			if (!doubleAlmostEqualZero (dlon, 360.0))
 				return true;	/* x difference exceeds threshold for an exact 360 offset: polygon is OPEN */
@@ -14396,8 +14396,8 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char op
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor point specified via justification code: %s\n", txt_x);
 			break;
 		case GMT_REFPOINT_MAP:
-			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf (GMT, txt_x, GMT->current.io.col_type[GMT_IN][GMT_X], &A->x), txt_x);
-			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf (GMT, txt_y, GMT->current.io.col_type[GMT_IN][GMT_Y], &A->y), txt_y);
+			n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf (GMT, txt_x, gmt_M_type (GMT, GMT_IN, GMT_X), &A->x), txt_x);
+			n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf (GMT, txt_y, gmt_M_type (GMT, GMT_IN, GMT_Y), &A->y), txt_y);
 			if (n_errors)
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Could not parse geographic coordinates %s and/or %s\n", option, txt_x, txt_y);
 			else

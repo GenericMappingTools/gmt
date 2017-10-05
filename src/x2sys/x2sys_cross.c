@@ -464,11 +464,16 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	if (!got_time) Ctrl->S.active[VLO] = false;	/* Cannot check speed if there is no time */
 
 	n_output = (unsigned int)(10 + 2 * n_data_col);
-	GMT->current.io.col_type[GMT_OUT][GMT_X] = (!strcmp (s->info[s->x_col].name, "lon")) ? GMT_IS_LON : GMT_IS_FLOAT;
-	GMT->current.io.col_type[GMT_OUT][GMT_Y] = (!strcmp (s->info[s->x_col].name, "lat")) ? GMT_IS_LAT : GMT_IS_FLOAT;
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT->current.io.col_type[GMT_OUT][3] = (got_time) ? GMT_IS_ABSTIME : GMT_IS_FLOAT;
-	for (i = 0; i < n_data_col+2; i++) GMT->current.io.col_type[GMT_OUT][4+2*i] = GMT->current.io.col_type[GMT_OUT][5+2*i] = GMT_IS_FLOAT;
-
+	gmt_set_column (GMT, GMT_OUT, GMT_X, (!strcmp (s->info[s->x_col].name, "lon")) ? GMT_IS_LON : GMT_IS_FLOAT);
+	gmt_set_column (GMT, GMT_OUT, GMT_Y, (!strcmp (s->info[s->y_col].name, "lat")) ? GMT_IS_LAT : GMT_IS_FLOAT);
+	gmt_set_column (GMT, GMT_OUT, GMT_Z, (got_time) ? GMT_IS_ABSTIME : GMT_IS_FLOAT);
+	gmt_set_column (GMT, GMT_OUT, 3, (got_time) ? GMT_IS_ABSTIME : GMT_IS_FLOAT);
+	
+	for (i = 0; i < n_data_col+2; i++) {
+		gmt_set_column (GMT, GMT_OUT, 4+2*i, GMT_IS_FLOAT);
+		gmt_set_column (GMT, GMT_OUT, 5+2*i, GMT_IS_FLOAT);
+	}
+	
 	if (n_data_col == 0) {
 		xover_locations_only = true;
 		n_output = 2;

@@ -368,17 +368,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -R option: Give 2, 4, or 6 coordinates\n");
 					n_errors++;
 				}
-				n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt[0], GMT->current.io.col_type[GMT_IN][GMT_X], true, &Ctrl->R3.range[0]), txt[0]);
-				n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt[1], GMT->current.io.col_type[GMT_IN][GMT_X], true, &Ctrl->R3.range[1]), txt[1]);
+				n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[0], gmt_M_type (GMT, GMT_IN, GMT_X), true, &Ctrl->R3.range[0]), txt[0]);
+				n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[1], gmt_M_type (GMT, GMT_IN, GMT_X), true, &Ctrl->R3.range[1]), txt[1]);
 				if (n_items > 2) {
 					Ctrl->R3.dimension = 2;
-					n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt[2], GMT->current.io.col_type[GMT_IN][GMT_Y], true, &Ctrl->R3.range[2]), txt[2]);
-					n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt[3], GMT->current.io.col_type[GMT_IN][GMT_Y], true, &Ctrl->R3.range[3]), txt[3]);
+					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt[2], gmt_M_type (GMT, GMT_IN, GMT_Y), true, &Ctrl->R3.range[2]), txt[2]);
+					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt[3], gmt_M_type (GMT, GMT_IN, GMT_Y), true, &Ctrl->R3.range[3]), txt[3]);
 				}
 				if (n_items == 6) {
 					Ctrl->R3.dimension = 3;
-					n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, txt[4], GMT->current.io.col_type[GMT_IN][GMT_Z], false, &Ctrl->R3.range[4]), txt[4]);
-					n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, txt[5], GMT->current.io.col_type[GMT_IN][GMT_Z], false, &Ctrl->R3.range[5]), txt[5]);
+					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, txt[4], gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->R3.range[4]), txt[4]);
+					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, txt[5], gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->R3.range[5]), txt[5]);
 				}
 				break;
 

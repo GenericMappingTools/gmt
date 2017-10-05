@@ -976,8 +976,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if (S.symbol == GMT_SYMBOL_BARY && !S.base_set) S.base = GMT->common.R.wesn[YLO];	/* Default to south level for vertical log10 bars */
 	if ((S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & PSL_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
 		/* Reading 2nd coordinate so must set column types */
-		gmt_set_column (GMT, GMT_IN, pos2x, GMT->current.io.col_type[GMT_IN][GMT_X]);
-		gmt_set_column (GMT, GMT_IN, pos2y, GMT->current.io.col_type[GMT_IN][GMT_Y]);
+		gmt_set_column (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
+		gmt_set_column (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	}
 	if (S.symbol == PSL_VECTOR && S.v.status & PSL_VEC_COMPONENTS)
 		gmt_set_column (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Just the users dy component, not length */
@@ -987,8 +987,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (S.v.status & PSL_VEC_FILL) S.v.fill = current_fill;		/* Override -G<fill> (if set) with specified head fill */
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
-	if (S.symbol == GMT_SYMBOL_BARX && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, GMT->current.io.col_type[GMT_IN][GMT_X]);
-	if (S.symbol == GMT_SYMBOL_BARY && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, GMT->current.io.col_type[GMT_IN][GMT_Y]);
+	if (S.symbol == GMT_SYMBOL_BARX && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_X));
+	if (S.symbol == GMT_SYMBOL_BARY && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0)
 		gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
 	else if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && S.convert_angles) {

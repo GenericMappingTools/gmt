@@ -78,7 +78,7 @@
 #include <tlhelp32.h>
 #endif
 
-#define gmt_M_axis_is_geo_strict(C,axis) (((axis) == GMT_X && C->current.io.col_type[GMT_IN][axis] & GMT_IS_LON) || ((axis) == GMT_Y && C->current.io.col_type[GMT_IN][axis] & GMT_IS_LAT))
+#define gmt_M_axis_is_geo_strict(C,axis) (((axis) == GMT_X && gmt_M_type (C, GMT_IN, axis) & GMT_IS_LON) || ((axis) == GMT_Y && gmt_M_type (C, GMT_IN, axis) & GMT_IS_LAT))
 
 /* Functions declared elsewhere but needed here once */
 EXTERN_MSC int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels);
@@ -1548,7 +1548,7 @@ GMT_LOCAL void plot_map_symbol_ew (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 GMT_LOCAL void plot_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, char *label, double south, double north, bool annot, unsigned int level, unsigned int form) {
 	unsigned int i, k, nc;
 	struct GMT_XINGS *xings = NULL;
-	bool flip = (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && GMT->current.io.col_type[GMT_IN][GMT_Y] != GMT_IS_LAT && GMT->current.proj.scale[GMT_Y] < 0.0);
+	bool flip = (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_LON && gmt_M_type (GMT, GMT_IN, GMT_Y) != GMT_IS_LAT && GMT->current.proj.scale[GMT_Y] < 0.0);
 	/* flip deals with the problem when x is lon and geographic annotation machinery is used but y is Cartesian and upside down */
 	nc = gmtlib_map_loncross (GMT, lon, south, north, &xings);
 	for (i = 0; i < nc; i++) {

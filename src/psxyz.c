@@ -647,8 +647,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	if (S.symbol == GMT_SYMBOL_TEXT) gmt_setfont (GMT, &S.font);		/* Set the required font */
 	if ((S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & PSL_VEC_JUST_S) {
 		/* Reading 2nd coordinate so must set column types */
-		gmt_set_column (GMT, GMT_IN, pos2x, GMT->current.io.col_type[GMT_IN][GMT_X]);
-		gmt_set_column (GMT, GMT_IN, pos2y, GMT->current.io.col_type[GMT_IN][GMT_Y]);
+		gmt_set_column (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
+		gmt_set_column (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	}
 	if (S.symbol == PSL_VECTOR && S.v.status & PSL_VEC_COMPONENTS)
 		gmt_set_column (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Just the users dy component, not length */
@@ -658,8 +658,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
-	if (S.symbol == GMT_SYMBOL_BARX && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, GMT->current.io.col_type[GMT_IN][GMT_X]);
-	if (S.symbol == GMT_SYMBOL_BARY && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, GMT->current.io.col_type[GMT_IN][GMT_Y]);
+	if (S.symbol == GMT_SYMBOL_BARX && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
+	if (S.symbol == GMT_SYMBOL_BARY && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;

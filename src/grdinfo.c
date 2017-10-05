@@ -519,7 +519,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			projStr = strdup(G->header->ProjRefWKT);
 
 		for (n = 0; n < GMT_Z; n++)
-			GMT->current.io.col_type[GMT_OUT][n] = GMT->current.io.col_type[GMT_IN][n];	/* Since grids may differ in types */
+			GMT->current.io.col_type[GMT_OUT][n] = gmt_M_type (GMT, GMT_IN, n);	/* Since grids may differ in types */
 
 		n_grds++;
 

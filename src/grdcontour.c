@@ -951,7 +951,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (GMT->current.io.col_type[GMT_IN][GMT_Z] == GMT_IS_ABSTIME) {	/* Grid data is time */
+	if (gmt_M_type (GMT, GMT_IN, GMT_Z) == GMT_IS_ABSTIME) {	/* Grid data is time */
 		/* To properly label contours using GMT time formatting we will rely on the machinery
 		 * for output data formatting.  Thus, we temporarily overwrite those settings with
 		 * the selected map settings, then undo the damage before GMT_basemap is called.
@@ -1205,7 +1205,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	for (i = 0; i < 3; i++) GMT->current.io.col_type[GMT_OUT][i] = GMT->current.io.col_type[GMT_IN][i];	/* Used if -D is set */
+	for (i = 0; i < 3; i++) GMT->current.io.col_type[GMT_OUT][i] = gmt_M_type (GMT, GMT_IN, i);	/* Used if -D is set */
 
 	/* Because we are doing single-precision, we cannot subtract incrementally but must start with the
 	 * original grid values and subtract the current contour value. */

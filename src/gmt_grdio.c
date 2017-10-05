@@ -524,7 +524,7 @@ GMT_LOCAL void handle_pole_averaging (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 		node = gmt_M_ijp (header, 0, 0);		/* First node at S pole */
 	else
 		node = gmt_M_ijp (header, header->n_rows-1, 0);	/* First node at N pole */
-	if (GMT->current.io.col_type[GMT_OUT][GMT_Z] == GMT_IS_AZIMUTH || GMT->current.io.col_type[GMT_OUT][GMT_Z] == GMT_IS_ANGLE) {	/* Must average azimuths */
+	if (gmt_M_type (GMT, GMT_OUT, GMT_Z) == GMT_IS_AZIMUTH || gmt_M_type (GMT, GMT_OUT, GMT_Z) == GMT_IS_ANGLE) {	/* Must average azimuths */
 		uint64_t orig = node;
 		double s, c, sum_s = 0.0, sum_c = 0.0;
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Average %d angles at the %s pole\n", header->n_columns, name[pole+1]);
@@ -1121,50 +1121,50 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 
 	/* Use input data type as backup fr output data type */
 	for (i = 0; i < 3; i++)
-		if (GMT->current.io.col_type[GMT_OUT][i] == GMT_IS_UNKNOWN) GMT->current.io.col_type[GMT_OUT][i] = GMT->current.io.col_type[GMT_IN][i];
+		if (gmt_M_type (GMT, GMT_OUT, i) == GMT_IS_UNKNOWN) GMT->current.io.col_type[GMT_OUT][i] = GMT->current.io.col_type[GMT_IN][i];
 
 	/* Catch some anomalies */
-	if (GMT->current.io.col_type[GMT_OUT][GMT_X] == GMT_IS_LAT) {
+	if (gmt_M_type (GMT, GMT_OUT, GMT_X) == GMT_IS_LAT) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Output type for X-coordinate of grid %s is LAT. Replaced by LON.\n", header->name);
 		gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_LON);
 		
 	}
-	if (GMT->current.io.col_type[GMT_OUT][GMT_Y] == GMT_IS_LON) {
+	if (gmt_M_type (GMT, GMT_OUT, GMT_Y) == GMT_IS_LON) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Output type for Y-coordinate of grid %s is LON. Replaced by LAT.\n", header->name);
 		gmt_set_column (GMT, GMT_OUT, GMT_Y, GMT_IS_LAT);
 	}
 
 	/* Set unit strings one by one based on output type */
 	for (i = 0; i < 3; i++) {
-		switch (GMT->current.io.col_type[GMT_OUT][i]) {
-		case GMT_IS_LON:
-			strcpy (string[i], "longitude [degrees_east]"); break;
-		case GMT_IS_LAT:
-			strcpy (string[i], "latitude [degrees_north]"); break;
-		case GMT_IS_ABSTIME:
-		case GMT_IS_RELTIME:
-		case GMT_IS_RATIME:
-			/* Determine time unit */
-			switch (GMT->current.setting.time_system.unit) {
-			case 'y':
-				strcpy (unit, "years"); break;
-			case 'o':
-				strcpy (unit, "months"); break;
-			case 'd':
-				strcpy (unit, "days"); break;
-			case 'h':
-				strcpy (unit, "hours"); break;
-			case 'm':
-				strcpy (unit, "minutes"); break;
-			default:
-				strcpy (unit, "seconds"); break;
-			}
-			gmt_format_calendar (GMT, date, clock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, 0.0);
-			sprintf (string[i], "time [%s since %s %s]", unit, date, clock);
-			/* Warning for non-double grids */
-			if (i == 2 && GMT->session.grdformat[header->type][1] != 'd')
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Use double precision output grid to avoid loss of significance of time coordinate.\n");
-			break;
+		switch (gmt_M_type (GMT, GMT_OUT, i)) {
+			case GMT_IS_LON:
+				strcpy (string[i], "longitude [degrees_east]"); break;
+			case GMT_IS_LAT:
+				strcpy (string[i], "latitude [degrees_north]"); break;
+			case GMT_IS_ABSTIME:
+			case GMT_IS_RELTIME:
+			case GMT_IS_RATIME:
+				/* Determine time unit */
+				switch (GMT->current.setting.time_system.unit) {
+					case 'y':
+						strcpy (unit, "years"); break;
+					case 'o':
+						strcpy (unit, "months"); break;
+					case 'd':
+						strcpy (unit, "days"); break;
+					case 'h':
+						strcpy (unit, "hours"); break;
+					case 'm':
+						strcpy (unit, "minutes"); break;
+					default:
+						strcpy (unit, "seconds"); break;
+				}
+				gmt_format_calendar (GMT, date, clock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, 0.0);
+				sprintf (string[i], "time [%s since %s %s]", unit, date, clock);
+				/* Warning for non-double grids */
+				if (i == 2 && GMT->session.grdformat[header->type][1] != 'd')
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Use double precision output grid to avoid loss of significance of time coordinate.\n");
+				break;
 		}
 	}
 }

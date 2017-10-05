@@ -604,7 +604,7 @@ GMT_LOCAL int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL 
 		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_z)) nscan++;	/* Returns zcol and update pos */
 		strcpy (buffer, &record[pos]);
 		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
-		if ((gmt_scanf (GMT, txt_z, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.io.curr_rec[GMT_Z]) == GMT_IS_NAN)) {
+		if ((gmt_scanf (GMT, txt_z, gmt_M_type (GMT, GMT_IN, GMT_Z), &GMT->current.io.curr_rec[GMT_Z]) == GMT_IS_NAN)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad z coordinate, skipped)\n", rec_no);
 			return (-1);
 		}
@@ -623,11 +623,11 @@ GMT_LOCAL int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL 
 	}
 
 	if (!Ctrl->F.R_justify) {
-		if (gmt_scanf (GMT, txt_x, GMT->current.io.col_type[GMT_IN][GMT_X], &GMT->current.io.curr_rec[ix]) == GMT_IS_NAN) {
+		if (gmt_scanf (GMT, txt_x, gmt_M_type (GMT, GMT_IN, GMT_X), &GMT->current.io.curr_rec[ix]) == GMT_IS_NAN) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad x coordinate, skipped)\n", rec_no);
 			return (-1);
 		}
-		if (gmt_scanf (GMT, txt_y, GMT->current.io.col_type[GMT_IN][GMT_Y], &GMT->current.io.curr_rec[iy]) == GMT_IS_NAN) {
+		if (gmt_scanf (GMT, txt_y, gmt_M_type (GMT, GMT_IN, GMT_Y), &GMT->current.io.curr_rec[iy]) == GMT_IS_NAN) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad y coordinate, skipped)\n", rec_no);
 			return (-1);
 		}

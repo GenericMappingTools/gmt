@@ -2579,7 +2579,7 @@ GMT_LOCAL bool map_init_linear (struct GMT_CTRL *GMT) {
 	GMT->current.proj.xyz_pos[GMT_Y] = (GMT->current.proj.scale[GMT_Y] >= 0.0);	/* False if user wants y to increase down */
 	switch ( (GMT->current.proj.xyz_projection[GMT_X]%3)) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
-			if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_X] != GMT_TIME)
+			if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_X] != GMT_TIME)
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -JX|x option: Your x-column contains absolute time but -JX|x...T was not specified!\n");
 			GMT->current.proj.fwd_x = ((gmt_M_x_is_lon (GMT, GMT_IN)) ? &gmt_translind  : &gmt_translin);
 			GMT->current.proj.inv_x = ((gmt_M_x_is_lon (GMT, GMT_IN)) ? &gmt_itranslind : &gmt_itranslin);
@@ -2614,7 +2614,7 @@ GMT_LOCAL bool map_init_linear (struct GMT_CTRL *GMT) {
 	}
 	switch (GMT->current.proj.xyz_projection[GMT_Y]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
 		case GMT_LINEAR:	/* Regular scaling */
-			if (GMT->current.io.col_type[GMT_IN][GMT_Y] == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_Y] != GMT_TIME)
+			if (gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_Y] != GMT_TIME)
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -JX|x option:  Your y-column contains absolute time but -JX|x...T was not specified!\n");
 			GMT->current.proj.fwd_y = ((gmt_M_y_is_lon (GMT, GMT_IN)) ? &gmt_translind  : &gmt_translin);
 			GMT->current.proj.inv_y = ((gmt_M_y_is_lon (GMT, GMT_IN)) ? &gmt_itranslind : &gmt_itranslin);
@@ -2712,7 +2712,7 @@ GMT_LOCAL bool map_init_linear (struct GMT_CTRL *GMT) {
 	GMT->current.proj.KM_PR_DEG = GMT->current.proj.M_PR_DEG / METERS_IN_A_KM;
 
 	map_setxy (GMT, xmin, xmax, ymin, ymax);
-	if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) {	/* Using linear projection with longitudes */
+	if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_LON) {	/* Using linear projection with longitudes */
 		GMT->current.map.outside = &map_wesn_outside;
 		GMT->current.map.crossing = &map_wesn_crossing;
 		GMT->current.map.overlap = &map_wesn_overlap;
