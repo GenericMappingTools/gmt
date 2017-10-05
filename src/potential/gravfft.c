@@ -545,6 +545,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		S = D->table[0]->segment[0];	/* Only one table with one segment here */
+		S->n_rows = Ctrl->C.n_pt;
 
 		for (k = 0; k < Ctrl->C.n_pt; k++) {
 			freq = (k + 1) * delta_pt;
@@ -1040,6 +1041,7 @@ GMT_LOCAL int do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struc
 		goto Lfree;		/* So that we can free what it need to be */
 	}
 	S = D->table[0]->segment[0];	/* Only one table with one segment here, with 17 cols and nk rows */
+	S->n_rows = nk;
 
 	if (Ctrl->misc.give_wavelength && Ctrl->misc.give_km) delta_k *= 1000.0;	/* Wanted wavelength in km */
 

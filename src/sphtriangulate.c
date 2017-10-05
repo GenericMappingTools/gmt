@@ -145,7 +145,8 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 				S[0]->data[GMT_X][i] = lon[D->tri[ij+i]];
 				S[0]->data[GMT_Y][i] = lat[D->tri[ij+i]];
 			}
-			Dout[0]->table[0]->n_records += 3;
+			S[0]->n_rows = 3;
+			Dout[0]->table[0]->n_records += S[0]->n_rows;
 		}
 		Dout[0]->n_records = Dout[0]->table[0]->n_records;
 		if (get_area) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Total surface area = %g\n", area_sphere * R2);
@@ -193,6 +194,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 			else	/* Plain header */
 				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " -Z%" PRIu64, arc[i].begin, arc[i].end, i);
 			S[0]->header = strdup (segment_header);
+			S[0]->n_rows = 2;
 		}
 		Dout[0]->table[0]->n_records = Dout[0]->n_records = 2 * n_arcs;
 		gmt_M_free (GMT, arc);
@@ -322,6 +324,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 			S[0] = Dout[0]->table[0]->segment[node] = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, vertex, 2U, segment_header, Dout[0]->table[0]->segment[node]);
 			gmt_M_memcpy (S[0]->data[GMT_X], plon, vertex, double);
 			gmt_M_memcpy (S[0]->data[GMT_Y], plat, vertex, double);
+			S[0]->n_rows =  vertex;
 			Dout[0]->table[0]->n_records += vertex;
 			Dout[0]->n_records += vertex;
 			if (get_area) area_sphere += area_polygon;
@@ -360,6 +363,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 			else
 				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " -Z%" PRIu64, arc[i].begin, arc[i].end, i);
 			S[0]->header = strdup (segment_header);
+			S[0]->n_rows = 2;
 		}
 		gmt_M_free (GMT, arc);
 		Dout[0]->table[0]->n_records = Dout[0]->n_records = 2 * n_arcs;

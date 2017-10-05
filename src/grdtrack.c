@@ -947,6 +947,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			for (tbl = 0; tbl < Dout->n_tables; tbl++) {
 				T = Dout->table[tbl];
 				M = Stack->table[0]->segment[tbl];	/* Current stack */
+				M->n_rows = n_rows;
 				for (k = 0; k < Ctrl->G.n_grids; k++) {	/* Reset arrays and extremes */
 					stack[k] = gmt_M_memory (GMT, NULL, T->n_segments, double);
 					stacked_hi[k] = -DBL_MAX;

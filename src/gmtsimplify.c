@@ -378,6 +378,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 			if (!skip) {	/* Must allocate one segment for output */
 				smode = (S[GMT_IN]->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				S[GMT_OUT] = GMT_Alloc_Segment (GMT->parent, smode, np_out, S[GMT_IN]->n_columns, NULL, NULL);
+				S[GMT_OUT]->n_rows = np_out;
 				D[GMT_OUT]->table[tbl]->segment[seg_out] = S[GMT_OUT];
 				for (row = 0; row < np_out; row++) {
 					for (col = 0; col < S[GMT_IN]->n_columns; col++)	/* Copy coordinates via index lookup */

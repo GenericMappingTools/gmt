@@ -530,7 +530,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 							n_out = end - begin;
 							if ((n_total + n_out) >= n_alloc) {
 								n_alloc = (first) ? D[GMT_IN]->n_records : n_alloc * 2;
-								gmt_alloc_datasegment (GMT, S_out, n_alloc, n_outputs, 0U, first);
+								gmt_alloc_segment (GMT, S_out, n_alloc, n_outputs, 0U, first);
 								first = false;
 							}
 

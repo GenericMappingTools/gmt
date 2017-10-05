@@ -872,6 +872,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 				S->data[GMT_Y][row] = yy;
 				row++;
 			}
+			S->n_rows = row;
 			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, D->io_mode, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				if (F.weights) gmt_M_free (GMT, weights);	

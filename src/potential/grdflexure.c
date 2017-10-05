@@ -905,6 +905,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			if (retain_original) gmt_M_free (GMT, orig_load);
 			Return (GMT_RUNTIME_ERROR);
 		}
+		L->table[0]->segment[0]->n_rows = Ctrl->T.n_eval_times;
 		for (k = j = 0; Ctrl->G.file[k] && Ctrl->G.file[k] != '%'; k++);	/* Find first % */
 		while (Ctrl->G.file[k] && !strchr ("efg", Ctrl->G.file[k])) time_fmt[j++] = Ctrl->G.file[k++];
 		time_fmt[j++] = Ctrl->G.file[k];

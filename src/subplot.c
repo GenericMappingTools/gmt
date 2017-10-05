@@ -772,6 +772,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			axes[0] = axes[1] = k = 0;
 			if (row) y -= Ctrl->M.margin[YHI];
 			if (Ctrl->F.debug) {	/* All rows share this upper y */
+				D->table[0]->segment[seg]->n_rows = 4;
 				for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) {	/* For each col of panels */
 					seg = (uint64_t)row * Ctrl->N.dim[GMT_X] + col;
 					D->table[0]->segment[seg]->data[GMT_Y][2] = D->table[0]->segment[seg]->data[GMT_Y][3] = y + off[GMT_Y] + Ctrl->M.margin[YLO];
@@ -955,6 +956,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			T->table[0]->segment[0]->data[GMT_X][0] = 0.5 * width;
 			T->table[0]->segment[0]->data[GMT_Y][0] = y_heading;
 			T->table[0]->segment[0]->text[0] = strdup (Ctrl->T.title);
+			T->table[0]->segment[0]->n_rows = 1;
 			T->n_records = T->table[0]->n_records = T->table[0]->segment[0]->n_rows = 1;
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, T, vfile) != GMT_NOERROR) {
 				Return (API->error);

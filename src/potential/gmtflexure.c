@@ -1341,6 +1341,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 				Return (API->error);	/* An empty table */
 			}
 			S = Q->table[0]->segment[0];	/* Only a single segment here */
+			S->n_rows = dim[GMT_ROW];
 			for (row = 0; row < dim[GMT_ROW]; row++) {	/* Fill in x values */
 				S->data[GMT_X][row] = (row == (S->n_rows-1)) ? Ctrl->Q.max: Ctrl->Q.min + row * Ctrl->Q.inc;
 			}

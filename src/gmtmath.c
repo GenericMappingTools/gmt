@@ -378,6 +378,7 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 			return (GMT->parent->error);
 		for (k = 0; k < n; k++) D->table[0]->segment[0]->data[GMT_X][k] = x[k];
+		D->table[0]->segment[0]->n_rows = n;
 		GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, D);
 		if (GMT->common.h.add_colnames) {
 			char header[GMT_LEN16] = {""};
@@ -5140,6 +5141,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	else {		/* Must use -N -T etc to create single segment */
 		dim[GMT_COL] = n_columns;	dim[GMT_ROW] = n_rows;
 		if ((Template = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
+		Template->table[0]->segment[0]->n_rows = n_rows;
 	}
 	Ctrl->N.ncol = n_columns;
 	if (!Ctrl->T.notime && n_columns > 1) Ctrl->C.cols[Ctrl->N.tcol] = (Ctrl->Q.active) ? false : true;
@@ -5166,6 +5168,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		dim[GMT_COL] = 3;	dim[GMT_ROW] = n_rows;
 		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
+        info.T->segment[0]->n_rows = n_rows;
 		for (row = 0; row < info.T->segment[0]->n_rows; row++) info.T->segment[0]->data[COL_T][row] = (row == (info.T->segment[0]->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
 	}
 
@@ -5467,6 +5470,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		dim[GMT_ROW] = info.n_roots;
 		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error)
 		for (kk = 0; kk < info.n_roots; kk++) R->table[0]->segment[0]->data[GMT_X][kk] = S->data[info.r_col][kk];
+		R->table[0]->segment[0]->n_rows = info.n_roots;
 		GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R);
 		if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, stack[0]->D->io_mode, NULL, Ctrl->Out.file, R) != GMT_NOERROR) {
 			Return (API->error);
@@ -5503,6 +5507,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < R->table[0]->n_segments; seg++) {
 				row = (Ctrl->S.mode == -1) ? 0 : R->table[0]->segment[seg]->n_rows - 1;
 				for (c = 0; c < n_columns; c++) N->table[0]->segment[seg]->data[c][0] = R->table[0]->segment[seg]->data[c][row];
+                N->table[0]->segment[seg]->n_rows = 1;
 			}
 			GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, N);
 			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, N->io_mode, NULL, Ctrl->Out.file, N) != GMT_NOERROR) {

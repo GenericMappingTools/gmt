@@ -1097,6 +1097,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							/* Set begin and end coordinates of the line segment */
 							S[FRONT]->data[GMT_X][0] = x_off + off_ss-x;	S[FRONT]->data[GMT_Y][0] = row_base_y;
 							S[FRONT]->data[GMT_X][1] = x_off + off_ss+x;	S[FRONT]->data[GMT_Y][1] = row_base_y;
+							S[FRONT]->n_rows = 2;
 							D[FRONT]->n_records += 2;
 							n_fronts++;
 							if (n_fronts == GMT_SMALL_CHUNK) {
@@ -1118,6 +1119,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							/* Set begin and end coordinates of the line segment */
 							S[QLINE]->data[GMT_X][0] = x_off + off_ss-x;	S[QLINE]->data[GMT_Y][0] = row_base_y;
 							S[QLINE]->data[GMT_X][1] = x_off + off_ss+x;	S[QLINE]->data[GMT_Y][1] = row_base_y;
+							S[QLINE]->n_rows = 2;
 							D[QLINE]->n_records += 2;
 							n_quoted_lines++;
 							if (n_quoted_lines == GMT_SMALL_CHUNK) {
@@ -1130,6 +1132,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							S[SYM] = get_segment (D, SYM, n_symbols);	/* Since there will only be one table with one segment for each single row */
 							S[SYM]->data[GMT_X][0] = x_off + off_ss;
 							S[SYM]->data[GMT_Y][0] = row_base_y;
+							S[SYM]->n_rows = 1;
 							sprintf (sub, "%s", symbol);
 							if (symbol[0] == 'E' || symbol[0] == 'e') {	/* Ellipse */
 								if (strchr (size, ',')) {	/* We got dir,major,minor instead of just size; parse and use */
@@ -1304,9 +1307,15 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						break;
 
 					case 'T':	/* paragraph text record: T paragraph-text */
-						if ((D[PAR] = get_dataset_pointer (API, D[PAR], GMT_IS_TEXT, 1U, n_par_total, 0U, true)) == NULL) return (API->error);
+						if ((D[PAR] = get_dataset_pointer (API, D[PAR], GMT_IS_TEXT, n_par_total, n_par_lines, 0U, true)) == NULL) return (API->error);
 						/* If no previous > record, then use defaults */
-						if (!flush_paragraph) n_para++;	/* No header record, but a new paragraph. */
+						if (!flush_paragraph) {	/* No header record, but a new paragraph. */
+							if (n_para >= 0) {	/* End of previous paragraph for sure */
+								S[PAR]->n_rows = krow[PAR];
+								S[PAR] = D[PAR]->table[0]->segment[n_para] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, krow[PAR], 0U, NULL, S[PAR]);
+							}
+							n_para++;
+						}
 						if ((S[PAR] = get_segment (D, PAR, n_para)) == NULL)	/* Get/Allocate this paragraph segment */
 							S[PAR] = D[PAR]->table[0]->segment[n_para] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, n_par_lines, 0U, NULL, NULL);
 						if (!flush_paragraph) {	/* No header record, create one and add as segment header */

@@ -1444,6 +1444,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				S1->data[GMT_X][1] = S1->data[GMT_X][2] = GMT->common.R.wesn[XHI];
 				S1->data[GMT_Y][0] = S1->data[GMT_Y][1] = S1->data[GMT_Y][4] = GMT->common.R.wesn[YLO];
 				S1->data[GMT_Y][2] = S1->data[GMT_Y][3] = GMT->common.R.wesn[YHI];
+				S1->n_rows = 5;
 			}
 		}
 		else

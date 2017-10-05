@@ -112,7 +112,7 @@
  * gmtlib_write_newheaders
  * gmt_set_xycolnames
  * gmt_adjust_dataset
- * gmt_alloc_datasegment
+ * gmt_alloc_segment
  * gmtlib_assign_segment
  * gmtlib_assign_vector
  * gmt_create_table
@@ -2236,6 +2236,7 @@ GMT_LOCAL int gmtio_scanf_geo (char *s, double *val) {
 			break;
 	}
 	*val = (negate) ? -dd : dd;
+	if (fabs (dd) > 90.0) retval = GMT_IS_LON;
 	return (retval);
 }
 
@@ -3756,7 +3757,7 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
 			GMT->current.io.add_offset[i] *= GMT->current.setting.time_system.i_scale;	/* Offset in internal time units */
 		}
 		else if (GMT->current.io.col_type[GMT_IN][i] == GMT_IS_UNKNOWN)
-			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);
+			gmt_set_column (GMT, GMT_IN, i, GMT_IS_FLOAT);
 	}
 
 	GMT->current.io.input = gmtio_nc_input;
@@ -6668,6 +6669,51 @@ void gmt_set_xycolnames (struct GMT_CTRL *GMT, char *string) {
 	sprintf (string, "%s[0]\t%s[1]", xy[mode][ix], xy[mode][iy]);
 }
 
+GMT_LOCAL void gmtio_finalize_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
+	/* Reallocate arrays to fit current segment size */
+	if (S->n_rows > S->n_alloc) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtio_finalize_segment: Internal error: S->n_rows > S->n_alloc!!!");
+		return;
+	}
+	if (S->n_rows < S->n_alloc) {
+		uint64_t col;
+		for (col = 0; col < S->n_columns; col++)
+			S->data[col] = gmt_M_memory (GMT, S->data[col], S->n_rows, sizeof (double));
+		if (S->text) S->text = gmt_M_memory (GMT, S->text, S->n_rows, sizeof (char *));
+		S->n_alloc = S->n_rows;
+	}
+}	
+
+GMT_LOCAL void gmtio_finalize_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T) {
+	/* Reallocate size of segments to fit current counts */
+	uint64_t seg;
+	if (T->n_segments > T->n_alloc) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtio_finalize_table: Internal error: T->n_segments > T->n_alloc!!!");
+		return;
+	}
+	if (T->n_segments < T->n_alloc) {
+		for (seg = T->n_segments; seg < T->n_alloc; seg++)
+			gmt_free_segment (GMT, &(T->segment[seg]));
+		T->segment = gmt_M_memory (GMT, T->segment, T->n_segments, sizeof (struct GMT_DATASEGMENT *));
+		T->n_alloc = T->n_segments;
+	}
+	for (seg = 0; seg < T->n_segments; seg++) gmtio_finalize_segment (GMT, T->segment[seg]);
+}	
+
+void gmtlib_finalize_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
+	/* Reallocate size of items to fit current counts */
+	uint64_t tbl;
+	if (D->n_tables > D->n_alloc) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_finalize_dataset: Internal error: D->n_tables > D->alloc!!!");
+		return;
+	}
+	if (D->n_tables < D->n_alloc) {
+		D->table = gmt_M_memory (GMT, D->table, D->n_tables, sizeof (struct GMT_DATATABLE *));
+		D->n_alloc = D->n_tables;
+	}
+	for (tbl = 0; tbl < D->n_tables; tbl++) gmtio_finalize_table (GMT, D->table[tbl]);
+}	
+
 /*! . */
 void gmt_adjust_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t n_columns) {
 	/* Adjust existing data set structure to have n_columns instead.  This may
@@ -6680,8 +6726,10 @@ void gmt_adjust_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t n
 }
 
 /*! . */
-int gmt_alloc_datasegment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t n_rows, uint64_t n_columns, unsigned int mode, bool first) {
-	/* (re)allocates memory for a segment of given dimensions. */
+int gmt_alloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t n_rows, uint64_t n_columns, unsigned int mode, bool first) {
+	/* (re)allocates memory for a segment of given dimensions.
+	 * If first is true then the segment arrays for data/text are allocated and min/max arrays set
+	 */
 	uint64_t col;
 	if (first && n_columns) {	/* First time we allocate the number of columns needed */
 		S->data = gmt_M_memory (GMT, NULL, n_columns, double *);
@@ -6697,20 +6745,20 @@ int gmt_alloc_datasegment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint
 		S->n_columns = n_columns;
 	}
 	if (!first && S->n_columns != n_columns) {	/* Error */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_alloc_datasegment: Cannot reallocate the number of columns in an existing segment");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_alloc_segment: Cannot reallocate the number of columns in an existing segment");
 		return 1;
 	}
 	S->n_rows  = n_rows;
 	if (n_rows) {	/* Allocate or reallocate column arrays */
 		for (col = 0; col < n_columns; col++) {
 			if ((S->data[col] = gmt_M_memory (GMT, S->data[col], n_rows, double)) == NULL) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_alloc_datasegment: Unable to reallocate data column %" PRIu64 " to new length %" PRIu64 "\n", col, n_rows);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_alloc_segment: Unable to reallocate data column %" PRIu64 " to new length %" PRIu64 "\n", col, n_rows);
 				return 1;
 			}
 		}
 		if (mode & GMT_WITH_STRINGS) {	/* Also allocate the string pointers */
 			if ((S->text = gmt_M_memory (GMT, S->text, n_rows, char *)) == NULL) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_alloc_datasegment: Unable to reallocate string array new length %" PRIu64 "\n", n_rows);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_alloc_segment: Unable to reallocate string array new length %" PRIu64 "\n", n_rows);
 				return 1;
 			}
 		}
@@ -6793,8 +6841,10 @@ double *gmtlib_assign_vector (struct GMT_CTRL *GMT, uint64_t n_rows, uint64_t co
 /*! . */
 struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segments, uint64_t n_rows, uint64_t n_columns, unsigned int mode, bool alloc_only) {
 	/* Allocate the new Table structure given the specified dimensions.
+	 * If n_rows == 0 it means we don't have any data yet.
 	 * If n_columns == 0 it means we don't know that dimension yet.
-	 * If alloc_only is true then we do NOT set the corresponding counters (i.e., n_segments).  */
+	 * If alloc_only is true then we do NOT set the corresponding counters (i.e., n_segments),
+	 * else these are set to reflect the new sizes. */
 	uint64_t seg;
 	bool alloc = (n_columns || mode & GMT_WITH_STRINGS);
 	struct GMT_DATATABLE *T = NULL;
@@ -6811,14 +6861,9 @@ struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segmen
 	if (n_segments) {
 		T->segment = gmt_M_memory (GMT, NULL, n_segments, struct GMT_DATASEGMENT *);
 		for (seg = 0; alloc && seg < n_segments; seg++) {
-			if ((T->segment[seg] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET|mode, n_rows, n_columns, NULL, NULL)) == NULL) {
-				while (seg > 0) {
-					gmt_free_segment (GMT, &(T->segment[seg-1])); seg--;
-				}
-				gmt_M_free (GMT, T->segment);
-				gmt_M_free (GMT, T);
-				return (NULL);
-			}
+			T->segment[seg] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+			gmt_alloc_segment (GMT, T->segment[seg], n_rows, n_columns, mode, true);
+			if (alloc_only) T->segment[seg]->n_rows = 0;
 		}
 	}
 
@@ -6827,7 +6872,10 @@ struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segmen
 
 /*! . */
 struct GMT_DATASET * gmtlib_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables, uint64_t n_segments, uint64_t n_rows, uint64_t n_columns, unsigned int geometry, unsigned int mode, bool alloc_only) {
-	/* Create an empty data set structure with the required number of empty tables, all set to hold n_segments with n_columns */
+	/* Create an empty data set structure with the required number of empty tables, all set to hold n_segments, each with n_rows holding n_columns.
+	 * if mode & GMT_WITH_STRINGS we also allocate arrays to hold trailing text.
+	 * If alloc_only is true then we leave the counters (n_records, n_rows) unchanged, else these
+	 * are updated to reflect the new allocated sizes. */
 	uint64_t tbl;
 	struct GMT_DATASET *D = NULL;
 

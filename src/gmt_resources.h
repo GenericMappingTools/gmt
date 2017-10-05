@@ -568,7 +568,7 @@ struct GMT_DATASEGMENT {    /* For holding segment lines in memory */
 	enum GMT_enum_write mode;	/* 0 = output segment, 1 = output header only, 2 = skip segment */
 	enum GMT_enum_pol pol_mode;	/* Either GMT_IS_PERIMETER  [-Pp] or GMT_IS_HOLE [-Ph] (for polygons only) */
 	uint64_t id;            /* The internal number of the segment */
-	size_t n_alloc;         /* The current allocation length of each data column */
+	size_t n_alloc;         /* The current allocation length of rows */
 	unsigned int range;     /* Longitude reporting scheme, e.g. GMT_IS_GIVEN_RANGE [0] */
 	int pole;               /* Spherical polygons only: If it encloses the S (-1) or N (+1) pole, or none (0) */
 	double dist;            /* Distance from a point to this feature */
@@ -689,6 +689,7 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	char **header;			/* Array with all CPT header records, if any) */		/* Content not counted by sizeof (struct) */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
+	size_t n_alloc;            	 /* Memory allocated so far */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 	unsigned int alloc_level;	/* The level it was allocated at */
 	unsigned int auto_scale;	/* If 1 then we must resample to fit actual data range */
@@ -757,7 +758,6 @@ enum GMT_enum_ps {
 
 struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript */
 	/* Variables we document for the API: */
-	size_t n_alloc;             /* Memory allocated so far */
 	size_t n_bytes;             /* Length of data array */
 	unsigned int mode;          /* GMT_PS_HEADER = Has header, GMT_PS_TRAILER = Has trailer, GMT_PS_COMPLETE = Has both */
 	unsigned int n_headers;     /* Number of PS header records (0 if no header) */
@@ -765,6 +765,7 @@ struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript */
 	char **header;		    /* Array with all PS header records, if any) */		/* Content not counted by sizeof (struct) */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;                /* The internal number of the data set */
+	size_t n_alloc;             /* Memory allocated so far */
 	unsigned int alloc_level;   /* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 };

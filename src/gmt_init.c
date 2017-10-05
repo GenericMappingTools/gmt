@@ -588,6 +588,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	In->table[0]->segment[0]->data[GMT_Y][0] = rect[YLO];
 	In->table[0]->segment[0]->data[GMT_X][1] = rect[XHI];
 	In->table[0]->segment[0]->data[GMT_Y][1] = rect[YHI];
+	In->table[0]->segment[0]->n_rows = 2;
 
 	/* Set up machinery to call mapproject */
 
@@ -7020,7 +7021,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	unsigned int i, icol, pos, error = 0, n_slash = 0, first = 0;
 	int got, col_type[2], expect_to_read;
 	size_t length;
-	bool inv_project = false, scale_coord = false, got_r, got_country, no_T = false;
+	bool inv_project = false, scale_coord = false, got_r, got_country, no_T = false, done[3] = {false, false, false};
 	char text[GMT_BUFSIZ] = {""}, item[GMT_BUFSIZ] = {""}, string[GMT_BUFSIZ] = {""}, r_unit = 0, *c = NULL, *d = NULL;
 	double p[6];
 
@@ -7256,17 +7257,19 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 				if (no_T) strcat (text, "T");	/* Add the missing trailing 'T' in an ISO date */
 				got = gmt_scanf_arg (GMT, text, GMT_IS_UNKNOWN, true, &p[i]);
 				if (got == GMT_IS_LON || got == GMT_IS_LAT)	/* If clearly lon or lat we say so */
-					gmt_set_column (GMT, GMT_IN, icol, got);
+					gmt_set_column (GMT, GMT_IN, icol, got), done[icol] = true;
 				else if (got == GMT_IS_GEO)	/* If clearly geographical we say so */
-					gmt_set_column (GMT, GMT_IN, icol, got);
+					gmt_set_column (GMT, GMT_IN, icol, got), done[icol] = true;
 				else if ((got & GMT_IS_RATIME) || got == GMT_IS_ARGTIME) {	/* If we got time then be specific */
 					if (got == GMT_IS_ARGTIME) got = GMT_IS_ABSTIME;
 					/* While the -R arg may be abstime, -J or -f may have indicated that data are relative time, so we must check before imposing our got: */
-					if (!(GMT->current.io.col_type[GMT_IN][icol] & GMT_IS_RATIME)) gmt_set_column (GMT, GMT_IN, icol, got);	/* Only set if not already set to a time flavor */
+					if (!(GMT->current.io.col_type[GMT_IN][icol] & GMT_IS_RATIME)) gmt_set_column (GMT, GMT_IN, icol, got), done[icol] = true;	/* Only set if not already set to a time flavor */
 					GMT->current.proj.xyz_projection[icol] = GMT_TIME;
 				}
-				else if (got == GMT_IS_FLOAT)	/* If clearly Cartesian we say so */
-					gmt_set_column (GMT, GMT_IN, icol, got);
+				else if (got == GMT_IS_FLOAT) {	/* Dont want to set col type prematurely ince -R0/13:30E/... would first find Cartesian and then fail on 13:30E */
+					if (done[icol] && gmt_M_type (GMT, GMT_IN, icol) == GMT_IS_UNKNOWN)	/* 2nd time for this column and still not set, then FLOAT is OK */
+						gmt_set_column (GMT, GMT_IN, icol, got);
+				}
 				else {	/* Testing this, could we ever get here with sane data? */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not parse %s into Geographical, Cartesian, or Temporal coordinates!", text);
 					error++;
@@ -7300,7 +7303,10 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		gmt_init_scales (GMT, k_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, NULL);
 		for (pos = 0; pos < 4; pos++) p[pos] *= inv_scale;
 	}
-
+	if (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_GEO && gmt_M_type (GMT, GMT_IN, GMT_Y) == GMT_IS_GEO) {	/* Two geographical coordinates means lon,lat */
+		gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_LON);
+		gmt_set_column (GMT, GMT_IN, GMT_Y, GMT_IS_LAT);
+	}
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Arrange so geographic region always has w < e */
 		double w = p[0], e = p[1];
 		if (p[0] <= -360.0 || p[1] > 360.0) {	/* Arrange so geographic region always has |w,e| <= 360 */

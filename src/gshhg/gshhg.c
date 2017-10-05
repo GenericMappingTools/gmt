@@ -373,6 +373,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 				if ((greenwich && p.x > max_east) || (h.west > 180000000)) T[seg_no]->data[GMT_X][row] -= 360.0;
 				T[seg_no]->data[GMT_Y][row] = p.y * GSHHG_SCL;
 			}
+			T[seg_no]->n_rows = h.n;
 			if (Ctrl->G.active) T[seg_no]->data[GMT_X][row] = T[seg_no]->data[GMT_Y][row] = GMT->session.d_NaN;
 			D->n_records += T[seg_no]->n_rows;
 		}

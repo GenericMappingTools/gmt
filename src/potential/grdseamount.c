@@ -588,6 +588,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
 			Return (GMT_RUNTIME_ERROR);
 		}
+		L->table[0]->segment[0]->n_rows = Ctrl->T.n_times;
 		for (k = j = 0; Ctrl->G.file[k] && Ctrl->G.file[k] != '%'; k++);	/* Find first % */
 		while (Ctrl->G.file[k] && !strchr ("efg", Ctrl->G.file[k])) time_fmt[j++] = Ctrl->G.file[k++];
 		time_fmt[j++] = Ctrl->G.file[k];

@@ -857,6 +857,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			S->coord[5][0] = total;
 			S->coord[6][0] = (double)n;
 			S->coord[7][0] = significant;
+			S->n_rows = 1;
 			if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, format, V)) {
 				Return (API->error);
 			}

@@ -772,6 +772,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 				unsigned smode = (Tout->segment[seg]->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				Sout = Tout->segment[seg] = GMT_Alloc_Segment (GMT->parent, smode, C.n_spec, Tout->n_columns, NULL, Tout->segment[seg]);
 				assign_output_spectrum1d (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->data);
+				Sout->n_rows = C.n_spec;
 			}
 			if (Ctrl->N.mode == 0) {	/* Write separate tables */
 				if (write_output_separate (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Ctrl->N.name))

@@ -2085,6 +2085,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				E->table[0]->segment[0]->data[GMT_X][i] = i + 1.0;	/* Let 1 be x-value of the first eigenvalue */
 				E->table[0]->segment[0]->data[GMT_Y][i] = (Ctrl->C.mode == 2) ? eig[j] / eig_max : eig[j];
 			}
+			E->table[0]->segment[0]->n_rows = nm;
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->C.file, E) != GMT_NOERROR) {
 				Return (API->error);
 			}
@@ -2153,6 +2154,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			S = E->table[0]->segment[0];
+			S->n_rows = nm;
 		}
 		for (j = 0; j < nm; j++) {	/* For each data constraint */
 			gmt_M_memset (here, 4, double);

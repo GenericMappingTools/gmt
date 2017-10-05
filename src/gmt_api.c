@@ -8347,6 +8347,7 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 			if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
 			if (this_dim[GMT_TBL] > UINT_MAX || this_dim[GMT_ROW] > UINT_MAX)
 				return_null (API, GMT_DIM_TOO_LARGE);
+			/* We basically create a blank slate(s), with n_tables, n_segments, and n_columns set [unless 0], but all n_rows == 0 (even if known; S->n_alloc has the lengths) */
 			if ((new_obj = gmtlib_create_dataset (API->GMT, this_dim[GMT_TBL], this_dim[GMT_SEG], this_dim[GMT_ROW], this_dim[GMT_COL], geometry, mode & GMT_WITH_STRINGS, false)) == NULL)
 				return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
@@ -11153,7 +11154,7 @@ void *GMT_Alloc_Segment (void *V_API, unsigned int mode, uint64_t n_rows, uint64
 		return_null (V_API, GMT_MEMORY_ERROR);
 		/* Only reallocate if desired n_rows differ from current n_rows */
 	alloc = (first || (n_rows && n_rows != Snew->n_rows));	/* Alloc first time or reallocate later if necessary */
-	if (alloc && gmt_alloc_datasegment (API->GMT, Snew, n_rows, n_columns, mode, first))  {	/* Something went wrong */
+	if (alloc && gmt_alloc_segment (API->GMT, Snew, n_rows, n_columns, mode, first))  {	/* Something went wrong */
 		if (first) gmt_M_free (API->GMT, Snew);
 		return_null (V_API, GMT_MEMORY_ERROR);
 	}

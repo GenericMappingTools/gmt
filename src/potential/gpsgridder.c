@@ -849,7 +849,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, eig);
 				Return (API->error);
 			}
-
+			E->table[0]->segment[0]->n_rows = n_params;
 			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 2, unsigned int);	/* Save previous x/y output col types */
 			gmt_set_cartesian (GMT, GMT_OUT);
 			/* Sort eigenvalues into ascending order */
@@ -945,6 +945,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			S = E->table[0]->segment[0];
+			S->n_rows = n_uv;
 		}
 		for (j = 0; j < n_uv; j++) {	/* For each data constraint pair (u,v) */
 			here[GMT_X] = X[j][GMT_X];

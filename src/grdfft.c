@@ -389,6 +389,7 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 		return (GMT->parent->error);
 	}
 	S = D->table[0]->segment[0];	/* Only one table with one segment here, with 17 cols and nk rows */
+	S->n_rows = nk;
 	if (give_wavelength && km) delta_k *= 1000.0;	/* Wanted distances measured in km */
 
 	k_pow_factor = powfactor;	/* Standard normalization */

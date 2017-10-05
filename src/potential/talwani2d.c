@@ -587,6 +587,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 		dim[GMT_ROW] = lrint ((Ctrl->T.max - Ctrl->T.min) / Ctrl->T.inc) + 1;
 		if ((Out = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		S = Out->table[0]->segment[0];	/* Only one segment when -T is used */
+		S->n_rows = dim[GMT_ROW];
 		for (row = 0; row < dim[GMT_ROW]; row++) S->data[GMT_X][row] = (row == (S->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
 	}
 	else {	/* Got a dataset with output locations */
