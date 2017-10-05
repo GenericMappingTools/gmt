@@ -6,7 +6,7 @@ ps=meca_03.ps
 gmt set PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i
 
 # Plotting 2 mechanisms on map
-gmt psmeca -R128/130/10/11.1 -JX2i -Fa0.1i/cc -Sc0.4i -B1 -Y8.5i -P -K << EOF > $ps
+gmt psmeca -R128/130/10/11.1 -JX2id -Fa0.1i/cc -Sc0.4i -B1 -Y8.5i -P -K << EOF > $ps
 # lon   lat  dep str dip rake str dip rake m ex nx ny 
 129.5  10.5 10  0   90   0  90   90 180  1 24  0  0 10km
 128.5  10.5 40  0   45  90 180   45  90  1 24  0  0 40km

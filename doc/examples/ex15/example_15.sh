@@ -26,7 +26,7 @@ gmt psmask -C -O -K >> $ps
 gmt grdclip ship.nc -Sa-1/NaN -Gship_clipped.nc
 gmt grdcontour ship_clipped.nc -J -B -C250 -A1000 -L-8000/0 -Gd2i -O -K -X3.6i >> $ps
 gmt pscoast $region -J -O -K -Ggray -Wthinnest >> $ps
-gmt grdinfo -C -M ship.nc | gmt psxy -R -J -O -K -Sa0.15i -Wthick -i11,12 >> $ps
+gmt grdinfo -Cn -M ship.nc | gmt psxy -R -J -O -K -Sa0.15i -Wthick -i10,11 >> $ps
 echo "-0.3 3.6 Gridding with missing data" | gmt pstext -R0/3/0/4 -Jx1i \
 	-F+f24p,Helvetica-Bold+jCB -O -N >> $ps
 rm -f ship.b ship_10m.b ship.nc ship_clipped.nc

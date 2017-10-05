@@ -24,11 +24,11 @@ cat << EOF > cross.txt
 148	3
 158	13
 EOF
-info=`gmt grdinfo -M -C geoid.nc`
-x0=`echo $info | cut -f12 -d ' '`
-y0=`echo $info | cut -f13 -d ' '`
-x1=`echo $info | cut -f14 -d ' '`
-y1=`echo $info | cut -f15 -d ' '`
+info=`gmt grdinfo -M -Cn geoid.nc`
+x0=`echo $info | cut -f11 -d ' '`
+y0=`echo $info | cut -f12 -d ' '`
+x1=`echo $info | cut -f13 -d ' '`
+y1=`echo $info | cut -f14 -d ' '`
 gmt project -C$x0/$y0 -E$x1/$y1 -G10 -Q > tt.d
 dist=`gmt convert tt.d --FORMAT_FLOAT_OUT=%.0lf -El -o2`
 R=`gmt info -I1 tt.d`

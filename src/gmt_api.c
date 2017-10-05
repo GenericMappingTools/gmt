@@ -11184,7 +11184,7 @@ int GMT_Set_Columns (void *V_API, unsigned int direction, unsigned int n_cols, u
 	API->error = GMT_NOERROR;
 
 	if (direction == GMT_OUT) {	/* Output */
-		if ((n_in = gmt_get_cols (API->GMT, GMT_IN)) == 0) {	/* Get number of input columns */
+		if ((mode == GMT_COL_ADD || mode == GMT_COL_SUB) && (n_in = gmt_get_cols (API->GMT, GMT_IN)) == 0) {	/* Get number of input columns */
 			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Set_Columns: Premature call - number of input columns not known yet\n");
 			return_error (API, GMT_N_COLS_NOT_SET);
 		}

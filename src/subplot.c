@@ -772,10 +772,10 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			axes[0] = axes[1] = k = 0;
 			if (row) y -= Ctrl->M.margin[YHI];
 			if (Ctrl->F.debug) {	/* All rows share this upper y */
-				D->table[0]->segment[seg]->n_rows = 4;
 				for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) {	/* For each col of panels */
 					seg = (uint64_t)row * Ctrl->N.dim[GMT_X] + col;
 					D->table[0]->segment[seg]->data[GMT_Y][2] = D->table[0]->segment[seg]->data[GMT_Y][3] = y + off[GMT_Y] + Ctrl->M.margin[YLO];
+                    D->table[0]->segment[seg]->n_rows = 4;
 				}
 			}
 			if ((row == 0 && Ctrl->S[GMT_Y].ptitle == SUBPLOT_PANEL_COL_TITLE) || (Ctrl->S[GMT_Y].ptitle == SUBPLOT_PANEL_TITLE)) {

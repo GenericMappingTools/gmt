@@ -195,9 +195,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	gmt_set_geographic (GMT, GMT_OUT);
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	
-	if ((error = gmt_set_cols (GMT, GMT_OUT, 2 + Ctrl->Z.active)) != GMT_NOERROR) {
-		Return (error);
-	}
+	GMT_Set_Columns (API, GMT_OUT, 2 + Ctrl->Z.active, GMT_COL_FIX_NO_TEXT);
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
@@ -220,12 +218,12 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing %s\n", Ctrl->In.file);
-		sprintf (buffer, "# kml2gmt: KML read from %s\n", Ctrl->In.file);
+		sprintf (buffer, "# kml2gmt: KML read from %s", Ctrl->In.file);
 	}
 	else {     /* Just read standard input */
 		fp = stdin;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Reading from standard input\n");
-		sprintf (buffer, "# kml2gmt: KML read from standard input\n");
+		sprintf (buffer, "# kml2gmt: KML read from standard input");
 	}
 	if (Ctrl->F.active)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Only output features with geometry: %s\n", gm[Ctrl->F.mode]);
@@ -258,7 +256,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			strncpy (name, &line[start], GMT_BUFSIZ-1);
 			gmt_chop (name);
 			if (first && !skip) {
-				sprintf (buffer, "# %s\n", &line[start]);
+				sprintf (buffer, "# %s", &line[start]);
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Out);	/* Write this to output */
 				first = false;
 			}
@@ -271,7 +269,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			strncpy (description, &line[start], GMT_BUFSIZ-1);
 			gmt_chop (description);
 			if (first && !skip) {
-				sprintf (buffer, "# %s\n", &line[start]);
+				sprintf (buffer, "# %s", &line[start]);
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Out);	/* Write this to output */
 				first = false;
 			}
