@@ -34,6 +34,8 @@ Synopsis
 [ |-Z|\ [**+s**\ *factor*][**+o**\ *shift*][**+p**] ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
+[ |SYN_OPT-e| ]
+[ |SYN_OPT-f| ]
 [ **-ho**\ [*n*] ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
