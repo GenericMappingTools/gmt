@@ -2236,7 +2236,7 @@ GMT_LOCAL int gmtio_scanf_geo (char *s, double *val) {
 			break;
 	}
 	*val = (negate) ? -dd : dd;
-	if (fabs (dd) > 90.0) retval = GMT_IS_LON;
+	if (fabs (dd) > 90.0 && retval == GMT_IS_GEO) retval = GMT_IS_LON;
 	return (retval);
 }
 

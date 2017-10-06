@@ -893,7 +893,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Make sure we use enough decimals */
 	n_coord = (Ctrl->F.mode < LINE) ? Ctrl->F.mode + 2 : 2;		/* This is a cryptic way to determine if there are 2,3 or 4 columns... */
 	if (Ctrl->F.mode == WIGGLE) n_coord = 3;	/* But here we need exactly 3 */
-	get_z = (Ctrl->C.active || Ctrl->A.get_alt);
+	get_z = (Ctrl->F.mode < LINE && (Ctrl->C.active || Ctrl->A.get_alt));
 	if (get_z) n_coord++;
 	t1_col = 2 + get_z;
 	t2_col = 3 + get_z;
@@ -1150,7 +1150,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						out[col] = D->table[tbl]->segment[seg]->data[col][row];
 					if (GMT->common.R.active[RSET] && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
 					pos = 0;
-					if (get_z) {
+					if (get_z) {	/* For point data we use z to determine color */
 						if (Ctrl->C.active) index = gmt_get_index (GMT, P, out[GMT_Z]);
 						out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
 					}
