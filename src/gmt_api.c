@@ -7359,6 +7359,7 @@ void gmt_get_record_init (struct GMTAPI_CTRL *API) {
 			API->current_get_n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : S->n_columns;
 			API->current_get_M_index = api_get_2d_to_index (API, API->current_get_M->shape, GMT_GRID_IS_REAL);
 			API->current_get_M_val = api_select_get_function (API, API->current_get_M->type);
+			if (API->current_get_M->text == NULL) GMT->current.io.record.text = NULL;
 			API->api_get_record = api_get_record_matrix;
 			break;
 
@@ -7370,6 +7371,7 @@ void gmt_get_record_init (struct GMTAPI_CTRL *API) {
 			for (col = 0; col < API->current_get_V->n_columns; col++)	/* We know the number of columns from registration */
 				API->current_get_V_val[col] = api_select_get_function (API, API->current_get_V->type[col]);
 			API->api_get_record = api_get_record_vector;
+			if (API->current_get_V->text == NULL) GMT->current.io.record.text = NULL;
 			break;
 
 		case GMT_IS_REFERENCE:	/* Only for datasets */
