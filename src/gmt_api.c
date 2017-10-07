@@ -7292,7 +7292,8 @@ struct GMT_RECORD *api_get_record_dataset (struct GMTAPI_CTRL *API, unsigned int
 			if (D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text)
 				strncpy (GMT->current.io.curr_text, D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text[count[GMT_ROW]], GMT_BUFSIZ-1);
 			record = &GMT->current.io.record;
-			*n_fields = (int)GMT->common.b.ncol[GMT_IN] = (int)API->current_get_n_columns;
+			GMT->common.b.ncol[GMT_IN] = API->current_get_n_columns;
+			*n_fields = (int)API->current_get_n_columns;
 			count[GMT_ROW]++;	/* Advance to next row for next time GMT_Get_Record is called */
 			break;
 		case GMT_IO_SEGMENT_HEADER:	/* Segment break */
