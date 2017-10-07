@@ -457,10 +457,10 @@ GMT_LOCAL unsigned int gmtio_ogr_decode_aspatial_types (struct GMT_CTRL *GMT, ch
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad OGR/GMT: @T record has more items than declared by @N\n");
 			continue;
 		}
-		if (col == n_alloc) S->type = gmt_M_memory (GMT, S->type, n_alloc += GMT_TINY_CHUNK, unsigned int);
+		if (col == n_alloc) S->type = gmt_M_memory (GMT, S->type, n_alloc += GMT_TINY_CHUNK, enum GMT_enum_type);
 		S->type[col++] = gmtlib_ogr_get_type (p);
 	}
-	if (col < n_alloc) S->type = gmt_M_memory (GMT, S->type, col, unsigned int);
+	if (col < n_alloc) S->type = gmt_M_memory (GMT, S->type, col, enum GMT_enum_type);
 	return (col);
 }
 
@@ -2664,7 +2664,7 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 	T->ogr->n_aspatial = GMT->common.a.n_aspatial;
 	if (T->ogr->n_aspatial) {	/* Copy over the command-line settings */
 		T->ogr->name = gmt_M_memory (GMT, NULL, T->ogr->n_aspatial, char *);
-		T->ogr->type = gmt_M_memory (GMT, NULL, T->ogr->n_aspatial, unsigned int);
+		T->ogr->type = gmt_M_memory (GMT, NULL, T->ogr->n_aspatial, enum GMT_enum_type);
 		T->ogr->dvalue = gmt_M_memory (GMT, NULL, T->ogr->n_aspatial, double);
 		for (k = 0; k < T->ogr->n_aspatial; k++) {
 			T->ogr->name[k] = strdup (GMT->common.a.name[k]);
@@ -3898,7 +3898,7 @@ bool gmt_input_is_nan_proxy (struct GMT_CTRL *GMT, double value) {
 }
 
 /*! Appends one more metadata item to this OGR structure */
-int gmtlib_append_ogr_item (struct GMT_CTRL *GMT, char *name, unsigned int type, struct GMT_OGR *S) {
+int gmtlib_append_ogr_item (struct GMT_CTRL *GMT, char *name, enum GMT_enum_type type, struct GMT_OGR *S) {
 	if (S == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtio_append_ogr_item: No GMT_OGR structure available\n");
 		return (GMT_PTR_IS_NULL);
@@ -3906,7 +3906,7 @@ int gmtlib_append_ogr_item (struct GMT_CTRL *GMT, char *name, unsigned int type,
 	S->n_aspatial++;
 	S->name = gmt_M_memory (GMT, S->name, S->n_aspatial, char *);
 	S->name[S->n_aspatial-1] = strdup (name);
-	S->type = gmt_M_memory (GMT, S->type, S->n_aspatial, unsigned int);
+	S->type = gmt_M_memory (GMT, S->type, S->n_aspatial, enum GMT_enum_type);
 	S->type[S->n_aspatial-1] = type;
 	return (GMT_NOERROR);
 }
@@ -7877,7 +7877,7 @@ struct GMT_OGR * gmtlib_duplicate_ogr (struct GMT_CTRL *GMT, struct GMT_OGR *G) 
 		G_dup->n_aspatial = G->n_aspatial;
 		G_dup->name = gmt_M_memory (GMT, NULL, G->n_aspatial, char *);
 		for (k = 0; k < G->n_aspatial; k++) if (G->name[k]) G_dup->name[k] = strdup (G->name[k]);
-		G_dup->type = gmt_M_memory (GMT, NULL, G->n_aspatial, unsigned int);
+		G_dup->type = gmt_M_memory (GMT, NULL, G->n_aspatial, enum GMT_enum_type);
 		gmt_M_memcpy (G_dup->type, G->type, G->n_aspatial, int);
 	}
 	return (G_dup);

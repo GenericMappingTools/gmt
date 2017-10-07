@@ -539,7 +539,7 @@ struct GMT_OGR {	/* Struct with all things GMT/OGR for a table */
 	unsigned int n_aspatial;	/* @T: The number of aspatial fields */
 	char *region;			/* @R: The region textstring [NULL if not set] */
 	char *proj[4];			/* @J: The 1-4 projection strings [NULL if not set] */
-	unsigned int *type;		/* @T: The data types of the aspatial fields [NULL if not set]  */
+	enum GMT_enum_type *type;	/* @T: The data types of the aspatial fields [NULL if not set]  */
 	char **name;			/* @N The names of the aspatial fields [NULL if not set]  */
 	/* The following are for OGR data only. It is filled during parsing (current segment) but is then copied to the segment header so it can be accessed later */
 	enum GMT_enum_pol pol_mode;	/* @P: Either GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
