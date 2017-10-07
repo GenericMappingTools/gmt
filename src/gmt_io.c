@@ -4496,7 +4496,7 @@ int gmt_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 	}
 	else {	/* ascii */
 		GMT->common.b.ncol[direction] = (direction == GMT_IN && expected == 0) ? GMT_MAX_COLUMNS : expected;
-		if (direction == GMT_IN) GMT->current.io.max_cols_to_read = expected;
+		if (direction == GMT_IN) GMT->current.io.max_cols_to_read = (unsigned int)expected;
 	}
 	if (direction == GMT_OUT && GMT->common.b.o_delay) {	/* Issue delayed message (see gmtlib_io_banner) */
 		gmtlib_io_banner (GMT, direction);

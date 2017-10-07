@@ -474,7 +474,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 			if (B.binflag[index] == 0) continue;
 			Out->data[GMT_X] = B.wesn[XLO] + (col + 0.5) * B.inc[GMT_X];
 			Out->data[GMT_Y] = B.wesn[YLO] + (row + 0.5) * B.inc[GMT_Y];
-			Out->data[GMT_Z] = index;
+			Out->data[GMT_Z] = (double)index;
 			Out->data[3] = B.binflag[index];
 			if (Ctrl->D.active)
 				Out->data[4] = dist_bin[index];

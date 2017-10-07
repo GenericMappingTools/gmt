@@ -1239,7 +1239,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					if (geodetic_calc) {	/* Update the output column types to the extra items we added */
 						for (col = 0, k = n_fields; col < MP_COL_N; col++) {
 							if (Ctrl->used[col]) {
-								gmt_set_column (GMT, GMT_OUT, k, ecol_type[col]);
+								gmt_set_column (GMT, GMT_OUT, (unsigned int)k, ecol_type[col]);
 								k++;
 							}	
 						}

@@ -1101,7 +1101,8 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 
 		/* Now set the code for these columns */
 
-		for (i = start; i <= stop; i += inc) gmt_set_column (GMT, dir, i, code);
+		for (i = start; i <= stop; i += inc)
+			gmt_set_column (GMT, dir, (unsigned int)i, code);
 	}
 	return (GMT_NOERROR);
 }

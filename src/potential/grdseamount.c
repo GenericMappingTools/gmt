@@ -563,7 +563,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->L.active) {	/* Just list area, volume, etc. for each seamount; no grid needed */
-		n_out = n_expected_fields + 3;
+		n_out = (unsigned int)n_expected_fields + 3;
 		if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != GMT_NOERROR) {
 			Return (error);
 		}
@@ -575,8 +575,8 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	/* 0. DETERMINE THE NUMBER OF TIME STEPS */
 	
 	if (Ctrl->T.active) {	/* Have requested a time series of bathymetry */
-		t0_col = n_expected_fields - 2;
-		t1_col = n_expected_fields - 1;
+		t0_col = (unsigned int)(n_expected_fields - 2);
+		t1_col = (unsigned int)(n_expected_fields - 1);
 	}
 	
 	if (Ctrl->M.active) {	/* Must create dataset to hold names of all output grids */
@@ -627,7 +627,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 					volume *= 1.0e-3;	/* Use km^3 as unit for volume */
 				}
 				if (Ctrl->L.active) {	/* Only want to add back out area, volume */
-					col = n_expected_fields;
+					col = (unsigned int)n_expected_fields;
 					out[col++] = area;
 					out[col++] = volume;
 					out[col++] = height;

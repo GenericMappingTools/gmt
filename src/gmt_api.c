@@ -7118,7 +7118,7 @@ void *api_get_record_fp_sub (struct GMTAPI_CTRL *API, unsigned int mode, int *n_
 	struct GMTAPI_DATA_OBJECT *S = API->current_get_obj;
 	struct GMT_CTRL *GMT = API->GMT;
 	void *record = S->import (GMT, S->fp, &(S->n_expected_fields), &status);	/* Get that next record */
-	*n_fields = S->n_columns = status;	/* Number of fields read */
+	*n_fields = status = (int)S->n_columns;	/* Number of fields read */
 	if (GMT->current.io.status & GMT_IO_EOF) {	/* Hit end-of-file in current file (but there may be many files in queue) */
 		S->status = GMT_IS_USED;	/* Mark this file object as read */
 		if (S->close_file) {	/* Close if it was a file that we opened earlier */
@@ -7212,7 +7212,7 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 			if (M->text)	/* Also have text as part of record */
 				strncpy (GMT->current.io.curr_text, M->text[S->rec-1], GMT_BUFSIZ-1);
 			record = &GMT->current.io.record;
-			*n_fields = API->current_get_n_columns;
+			*n_fields = (int)API->current_get_n_columns;
 		}
 	}
 	return (record);
@@ -7267,7 +7267,7 @@ struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int 
 			if (V->text)	/* Also have text as part of record */
 				strncpy (GMT->current.io.curr_text, V->text[S->rec-1], GMT_BUFSIZ-1);
 			record = &GMT->current.io.record;
-			*n_fields = API->current_get_n_columns;
+			*n_fields = (int)API->current_get_n_columns;
 		}
 	}
 	return record;
@@ -7292,7 +7292,7 @@ struct GMT_RECORD *api_get_record_dataset (struct GMTAPI_CTRL *API, unsigned int
 			if (D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text)
 				strncpy (GMT->current.io.curr_text, D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text[count[GMT_ROW]], GMT_BUFSIZ-1);
 			record = &GMT->current.io.record;
-			*n_fields = GMT->common.b.ncol[GMT_IN] = API->current_get_n_columns;
+			*n_fields = (int)GMT->common.b.ncol[GMT_IN] = (int)API->current_get_n_columns;
 			count[GMT_ROW]++;	/* Advance to next row for next time GMT_Get_Record is called */
 			break;
 		case GMT_IO_SEGMENT_HEADER:	/* Segment break */

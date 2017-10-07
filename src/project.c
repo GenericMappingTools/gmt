@@ -706,9 +706,9 @@ int GMT_project (void *V_API, int mode, void *args) {
 	else {	/* Decode and set the various output column types */
 		for (col = 0; col < P.n_outputs; col++) {
 			switch (P.output_choice[col]) {
-				case 0: case 4: gmt_set_column (GMT, GMT_OUT, col, GMT_IS_LON);		break;
-				case 1: case 5: gmt_set_column (GMT, GMT_OUT, col, GMT_IS_LAT);		break;
-				default: 	    gmt_set_column (GMT, GMT_OUT, col, GMT_IS_FLOAT);	break;
+				case 0: case 4: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LON);		break;
+				case 1: case 5: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LAT);		break;
+				default: 	    gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_FLOAT);	break;
 			}
 		}
 	}

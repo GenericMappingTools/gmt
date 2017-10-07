@@ -470,8 +470,8 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	gmt_set_column (GMT, GMT_OUT, 3, (got_time) ? GMT_IS_ABSTIME : GMT_IS_FLOAT);
 	
 	for (i = 0; i < n_data_col+2; i++) {
-		gmt_set_column (GMT, GMT_OUT, 4+2*i, GMT_IS_FLOAT);
-		gmt_set_column (GMT, GMT_OUT, 5+2*i, GMT_IS_FLOAT);
+		gmt_set_column (GMT, GMT_OUT, 4+2*(unsigned int)i, GMT_IS_FLOAT);
+		gmt_set_column (GMT, GMT_OUT, 5+2*(unsigned int)i, GMT_IS_FLOAT);
 	}
 	
 	if (n_data_col == 0) {

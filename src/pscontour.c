@@ -913,12 +913,12 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
   		/* Must switch to Cartesian input and save whatever original input type we have since we are reading integer triplets */
   		for (k = 0; k < 3; k++) {
   			save_col_type[k] = gmt_M_type (GMT, GMT_IN, k);	/* Remember what we have */
-			gmt_set_column (GMT, GMT_IN, k, GMT_IS_FLOAT);	/* And temporarily set to FLOAT */
+			gmt_set_column (GMT, GMT_IN, (unsigned int)k, GMT_IS_FLOAT);	/* And temporarily set to FLOAT */
   		}
 		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->E.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		for (k = 0; k < 3; k++) gmt_set_column (GMT, GMT_IN, k, save_col_type[k]);	/* Undo the damage above */
+		for (k = 0; k < 3; k++) gmt_set_column (GMT, GMT_IN, (unsigned int)k, save_col_type[k]);	/* Undo the damage above */
 
  		if (Tin->n_columns < 3) {	/* Trouble */
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E: %s does not have at least 3 columns with indices\n", Ctrl->E.file);
