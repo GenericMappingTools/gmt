@@ -716,19 +716,30 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 GMT_LOCAL unsigned int gmtio_assign_aspatial_cols (struct GMT_CTRL *GMT) {
 	/* This function will load input columns with aspatial data as requested by -a.
  	 * It will then handle any possible -i scalings/offsets as well for those columns.
- 	 * This is how the @D values end up in the input data record we read. */
+ 	 * This is how the @D values end up in the input data record we read
+     * Not: This applies to numerical aspatial columns.  Any numerical aspatial
+     * columns will be appended to the current trailing text string. */
 
-	unsigned int k, n;
-	double value;
+	unsigned int k, n, nt;
 	if (GMT->current.io.ogr != GMT_OGR_TRUE) return (0);	/* No point checking further since file is not GMT/OGR */
-	for (k = n = 0; k < GMT->common.a.n_aspatial; k++) {	/* For each item specified in -a */
-		if (GMT->common.a.col[k] < 0) continue;	/* Not meant for data columns */
-		value = GMT->current.io.OGR->dvalue[GMT->common.a.ogr[k]];
-		gmt_convert_col (GMT->current.io.col[GMT_IN][GMT->common.a.col[k]], value);
-		GMT->current.io.curr_rec[GMT->common.a.col[k]] = value;
-		n++;
+	
+	for (k = n = nt = 0; k < GMT->common.a.n_aspatial; k++) {	/* For each item specified in -a */
+		if (GMT->common.a.col[k] < 0) continue;	/* Not meant for data columns but for segment headers */
+		if (GMT->current.io.OGR->type[GMT->common.a.ogr[k]] == GMT_TEXT) {	/* Text goes into trailing text */
+			char *tvalue = GMT->current.io.OGR->tvalue[GMT->common.a.ogr[k]];
+			if (nt) strcat (GMT->current.io.curr_trailing_text, GMT->current.setting.io_col_separator);
+			strcat (GMT->current.io.curr_trailing_text, tvalue);
+			GMT->current.io.record.text = GMT->current.io.curr_trailing_text;
+			nt++;
+		}
+		else {	/* Numerical adds to data columns */
+			double value = GMT->current.io.OGR->dvalue[GMT->common.a.ogr[k]];
+			gmt_convert_col (GMT->current.io.col[GMT_IN][GMT->common.a.col[k]], value);
+			GMT->current.io.curr_rec[GMT->common.a.col[k]] = value;
+			n++;
+		}
 	}
-	return (n);
+	return (n);	/* Only numerical columns add to the count */
 }
 
 /*! Returns true if record is NaN NaN [NaN NaN] etc */
@@ -3279,6 +3290,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 					*n = GMT->current.io.max_cols_to_read;
 					if (GMT->current.io.max_cols_to_read == n_cols_this_record && start_of_text == 0) {
 						GMT->current.io.trailing_text[GMT_IN] = false;	/* Turn off reading text since none present */
+						GMT->current.io.curr_trailing_text[0] = '\0';
 						GMT->current.io.record.text = NULL;
 					}
 					GMT->current.io.record_type = (GMT->current.io.trailing_text[GMT_IN]) ? GMT_READ_MIXED : GMT_READ_DATA;	/* Since otherwise we fail to store the trailing text */
@@ -3287,6 +3299,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				else {	/* Set expected cols and the scanner based on what record type we detected */
 					if (start_of_text == 0) {	/* Turn off reading text since none present */
 						GMT->current.io.trailing_text[GMT_IN] = false;
+						GMT->current.io.curr_trailing_text[0] = '\0';
 						GMT->current.io.record.text = NULL;
 					}
 					*n = (GMT->common.i.select) ? GMT->common.i.n_cols : n_cols_this_record;
@@ -3346,7 +3359,8 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		}
 		if (start_of_text) {	/* Save pointer to start of trailing text portion of the record */
 			while (GMT->current.io.curr_text[start_of_text] && strchr (GMT->current.io.scan_separators, GMT->current.io.curr_text[start_of_text])) start_of_text++;	/* First wind to start of trailing text */
-			GMT->current.io.record.text = &GMT->current.io.curr_text[start_of_text];
+			strcpy (GMT->current.io.curr_trailing_text, &GMT->current.io.curr_text[start_of_text]);
+			GMT->current.io.record.text = GMT->current.io.curr_trailing_text;
 		}
 
 		if ((add = gmtio_assign_aspatial_cols (GMT))) {	/* We appended <add> columns given via aspatial OGR/GMT values */
@@ -4815,7 +4829,8 @@ void * gmtio_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *
 	gmt_strstrip (line, false); /* Eliminate DOS endings and trailing white space */
 
 	gmtio_set_current_record (GMT, line);
-	GMT->current.io.record.text = GMT->current.io.curr_text;
+	strcpy (GMT->current.io.curr_trailing_text, GMT->current.io.curr_text);
+	GMT->current.io.record.text = GMT->current.io.curr_trailing_text;
 
 	GMT->current.io.status = GMT_IO_DATA_RECORD;
 	GMT->current.io.pt_no++;	/* Got a valid text record */

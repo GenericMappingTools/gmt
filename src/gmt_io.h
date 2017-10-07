@@ -276,7 +276,8 @@ struct GMT_IO {				/* Used to process input data records */
 	char r_mode[4];			/* Current file opening mode for reading (r or rb) */
 	char w_mode[4];			/* Current file opening mode for writing (w or wb) */
 	char a_mode[4];			/* Current file append mode for writing (a+ or ab+) */
-	char curr_text[GMT_BUFSIZ];	/* Current ASCII record */
+	char curr_text[GMT_BUFSIZ];	/* Current ASCII record as it was read */
+	char curr_trailing_text[GMT_BUFSIZ];	/* Current text portion of current record (or NULL) */
 	char segment_header[GMT_BUFSIZ];	/* Current ASCII segment header */
 	char filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
 	char col_set[2][GMT_MAX_COLUMNS];	/* Keeps track of which columns have had their type set */

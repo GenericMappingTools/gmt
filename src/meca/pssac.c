@@ -604,7 +604,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 	read_from_ascii = (Ctrl->In.n == 0) || (Ctrl->In.n == 1 && !issac(Ctrl->In.file[0]));
 	if (read_from_ascii) {      /* Got a ASCII file or read from stdin */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading from saclist file or stdin\n");
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {    /* Register data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {    /* Register data input */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {  /* Enables data input and sets access mode */

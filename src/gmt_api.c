@@ -7212,7 +7212,7 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 		}
 		else {	/* Valid data record */
 			if (M->text)	/* Also have text as part of record */
-				strncpy (GMT->current.io.curr_text, M->text[S->rec-1], GMT_BUFSIZ-1);
+				strncpy (GMT->current.io.curr_trailing_text, M->text[S->rec-1], GMT_BUFSIZ-1);
 			record = &GMT->current.io.record;
 			*n_fields = (int)API->current_get_n_columns;
 		}
@@ -7267,7 +7267,7 @@ struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int 
 		}
 		else {	/* Valid data record */
 			if (V->text)	/* Also have text as part of record */
-				strncpy (GMT->current.io.curr_text, V->text[S->rec-1], GMT_BUFSIZ-1);
+				strncpy (GMT->current.io.curr_trailing_text, V->text[S->rec-1], GMT_BUFSIZ-1);
 			record = &GMT->current.io.record;
 			*n_fields = (int)API->current_get_n_columns;
 		}
@@ -7292,7 +7292,7 @@ struct GMT_RECORD *api_get_record_dataset (struct GMTAPI_CTRL *API, unsigned int
 				GMT->current.io.curr_rec[col] = D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->data[col_pos][count[GMT_ROW]];
 			}
 			if (D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text)
-				strncpy (GMT->current.io.curr_text, D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text[count[GMT_ROW]], GMT_BUFSIZ-1);
+				strncpy (GMT->current.io.curr_trailing_text, D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text[count[GMT_ROW]], GMT_BUFSIZ-1);
 			record = &GMT->current.io.record;
 			GMT->common.b.ncol[GMT_IN] = API->current_get_n_columns;
 			*n_fields = (int)API->current_get_n_columns;
@@ -7344,7 +7344,7 @@ GMT_LOCAL void api_get_record_init (struct GMTAPI_CTRL *API) {
 	S = API->current_get_obj;	/* Shorthand for the current data source we are working on */
 	GMT = API->GMT;			/* Shorthand for GMT access */
 	/* Reset to default association for current record's data and text pointers */
-	GMT->current.io.record.text = GMT->current.io.curr_text;
+	GMT->current.io.record.text = GMT->current.io.curr_trailing_text;
 	GMT->current.io.record.data = GMT->current.io.curr_rec;
 
 	method = api_set_method (S);	/* Get the actual method to use */
@@ -7384,6 +7384,7 @@ GMT_LOCAL void api_get_record_init (struct GMTAPI_CTRL *API) {
 			API->current_get_D_set = S->resource;	/* Get the right dataset */
 			API->current_get_n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : API->current_get_D_set->n_columns;
 			API->api_get_record = api_get_record_dataset;
+			if (!(API->current_get_D_set->type & GMT_READ_TEXT)) GMT->current.io.record.text = NULL;
 			break;
 		default:
 			GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: Internal error: api_get_record_init called with illegal method\n");
@@ -7534,6 +7535,8 @@ GMT_LOCAL int api_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode
 				GMT->hidden.mem_coord[col][count[GMT_ROW]] = record->data[col];
 				if (GMT->current.io.col_type[GMT_OUT][col] & GMT_IS_LON) gmt_lon_range_adjust (GMT->current.io.geo.range, &(GMT->hidden.mem_coord[col][count[GMT_ROW]]));
 			}
+			if (record->text)	/* Also write trailing text */
+				GMT->hidden.mem_txt[count[GMT_ROW]] = record->text;
 			count[GMT_ROW]++;	/* Increment rows in this segment */
 			break;
 		case GMT_WRITE_TABLE_START:	/* Write title and command to start of file; skip if binary */
