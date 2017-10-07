@@ -6278,7 +6278,7 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 			char c = s[len-1];	/* Trailing letter */
 			if ((s[0] == 'T' && isdigit (s[1])) || strchr (s, 'T'))	/* Found a T in the argument - must be Absolute time or junk */
 				expectation = GMT_IS_ARGTIME;
-			else if (!(isdigit (s[0]) || s[0] == '-' || s[0] == '+' || s[0] == '.')) {	/* All other numbers must be [-|+][<num>[.]<num>][<end>] */
+			else if (!((s[0] >= 0 && s[0] <= 255 &&isdigit (s[0])) || s[0] == '-' || s[0] == '+' || s[0] == '.')) {	/* All other numbers must be [-|+][<num>[.]<num>][<end>] */
 				*val = GMT->session.d_NaN;
 				return GMT_IS_NAN;	/* Cannot be a number so return as NaN */
 			}
