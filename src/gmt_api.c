@@ -7118,7 +7118,9 @@ void *api_get_record_fp_sub (struct GMTAPI_CTRL *API, unsigned int mode, int *n_
 	struct GMTAPI_DATA_OBJECT *S = API->current_get_obj;
 	struct GMT_CTRL *GMT = API->GMT;
 	void *record = S->import (GMT, S->fp, &(S->n_expected_fields), &status);	/* Get that next record */
-	*n_fields = status = (int)S->n_columns;	/* Number of fields read */
+	*n_fields = status;	/* Number of fields read */
+	S->n_columns = (uint64_t)status;	/* Number of fields read */
+	
 	if (GMT->current.io.status & GMT_IO_EOF) {	/* Hit end-of-file in current file (but there may be many files in queue) */
 		S->status = GMT_IS_USED;	/* Mark this file object as read */
 		if (S->close_file) {	/* Close if it was a file that we opened earlier */
