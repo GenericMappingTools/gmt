@@ -6949,6 +6949,7 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 	switch (option) {
 
 		case '-': break;	/* Skip indiscriminently */
+		case '=': break;	/* Skip indiscriminently */
 		case '>': break;	/* Skip indiscriminently since dealt with internally */
 		case 'B': error += (GMT->common.B.active[GMT_PRIMARY] == false && GMT->common.B.active[GMT_SECONDARY] == false); break;
 		case 'J': error += GMT->common.J.active == false; break;
@@ -9060,7 +9061,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			break;
 
-		case GMTCASE_GMT_DATA_URL:
+		case GMTCASE_GMT_DATA_URL:	/* The default is set by cmake, see ConfigDefault.cmake */
 			if (*value) {
 				if (GMT->session.DATAURL) {
 					if ((strcmp (GMT->session.DATAURL, value) == 0))
@@ -10214,7 +10215,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			strncpy (value, (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) ? "off" : "on", GMT_LEN256-1);
 			break;
 
-		case GMTCASE_GMT_DATA_URL:
+		case GMTCASE_GMT_DATA_URL:	/* The default is set by cmake, see ConfigDefault.cmake */
 			strncpy (value, (GMT->session.DATAURL) ? GMT->session.DATAURL : "", GMT_LEN256-1);
 			break;
 

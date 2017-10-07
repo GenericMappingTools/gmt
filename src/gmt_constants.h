@@ -404,7 +404,6 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 	GMT_DATA_DIR   = 1,	/* Use the data directory */
 	GMT_LOCAL_DIR  = 2};	/* Use the local (current) directory */
 
-//#define GMT_DATA_URL "ftp://ftp.soest.hawaii.edu/gmt/data"	/* URL to GMT data distribution site */
 #define GMT_DATA_PREFIX "earth_relief_"				/* Special prefix for global relief data sets */
 #define GMT_SRTM_EXTENSION_REMOTE  "jp2"			/* Tile extension of JPEG2000 files to be downloaded */
 #define GMT_SRTM_EXTENSION_LOCAL "nc"				/* Tile extension of nc short int files to be saved */

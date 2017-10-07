@@ -273,6 +273,7 @@ enum GMTAPI_enum_status {
  * gmtapi_* functions are exported and may be used in other gmt_*.c files
  */
 
+
 /* A few functions are declared here since it is used in so many places */
 int gmtapi_report_error (void *V_API, int error);
 int gmtapi_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int direction, int module_input);
@@ -280,6 +281,7 @@ int gmtapi_unregister_io (struct GMTAPI_CTRL *API, int object_ID, unsigned int d
 unsigned int gmtapi_count_objects (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int geometry, unsigned int direction, int *first_ID);
 void gmtapi_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 char *gmtapi_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg);
+GMT_LOCAL void api_get_record_init (struct GMTAPI_CTRL *API);
 
 /* Series of one-line functions to assign val to a particular union member of array u at position row, rounding if integer output */
 GMT_LOCAL void api_put_val_double (union GMT_UNIVECTOR *u, uint64_t row, double val) { u->f8[row]  =                  val; }
@@ -7133,6 +7135,7 @@ void *api_get_record_fp_sub (struct GMTAPI_CTRL *API, unsigned int mode, int *n_
 		else {	/* Get ready to read the next data file */
 			S = API->current_get_obj = API->object[API->current_item[GMT_IN]];	/* Shorthand for the next data source to work on */
 			API->get_next_record = true;				/* Since we haven't read the next record yet */
+			api_get_record_init (API);
 		}
 		GMT->current.io.tbl_no++;				/* Update number of tables we have processed */
 	}
@@ -7320,7 +7323,7 @@ struct GMT_RECORD *api_get_record_dataset (struct GMTAPI_CTRL *API, unsigned int
 }
 
 /*! . */
-void gmt_get_record_init (struct GMTAPI_CTRL *API) {
+GMT_LOCAL void api_get_record_init (struct GMTAPI_CTRL *API) {
 	/* Initializes reading from current source. We must redo this after
 	 * selecting a new source since there is no guarantee that the sources
 	 * are all of the same kind. */
@@ -7380,7 +7383,7 @@ void gmt_get_record_init (struct GMTAPI_CTRL *API) {
 			API->api_get_record = api_get_record_dataset;
 			break;
 		default:
-			GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: Internal error: gmt_get_record_init called with illegal method\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: Internal error: api_get_record_init called with illegal method\n");
 			break;
 	}
 }
@@ -7399,7 +7402,7 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 	 * If not a data record we return NULL, and pass status via API->GMT->current.io.status.
 	 */
 	
-	int n_fields, status;
+	int n_fields;
 	struct GMTAPI_DATA_OBJECT *S = NULL;
 	struct GMTAPI_CTRL *API;
 	struct GMT_CTRL *GMT;
@@ -7417,6 +7420,7 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 	do {	/* We do this until we can secure the next record or we run out of records (and return EOF) */
 		API->get_next_record = false;	/* We expect to read one data record and return */
 		GMT->current.io.status = 0;	/* Initialize status to OK */
+#if 0
 		if (S->status == GMT_IS_USED) {	/* Finished reading from current resource, go to next resource */
 			if (GMT->current.io.ogr == GMT_OGR_TRUE) return_null (API, GMT_OGR_ONE_TABLE_ONLY);	/* Only allow single tables if GMT/OGR */
 			if ((status = api_next_data_object (API, S->family, GMT_IN)) == EOF)	/* That was the last source, return */
@@ -7427,10 +7431,11 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 			else {	/* Got another object to process */
 				S = API->current_get_obj = API->object[API->current_item[GMT_IN]];	/* Shorthand for the next data source to work on */
 				API->get_next_record = true;				/* Since we haven't read the next record yet */
-				gmt_get_record_init (API);
+				api_get_record_init (API);
 			}
 		}
 		else	/* Get the next record */
+#endif
 			record = API->api_get_record (API, mode, &n_fields);
 	} while (API->get_next_record);
 	
@@ -7852,7 +7857,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	}
 	else {
 		API->current_get_obj = S_obj;
-		gmt_get_record_init (API);
+		api_get_record_init (API);
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: %s resource access is now enabled [record-by-record]\n", GMT_direction[direction]);
 	

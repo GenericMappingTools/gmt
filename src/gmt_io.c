@@ -2990,6 +2990,7 @@ bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt, bool *no_T) {
 	gmt_M_unused (GMT);
 	*no_T = false;	/* Until proven wrong */
 	if (strchr (txt, 'T')) return true;	/* Might be [<date>]T[<clock>], else if is likely text */
+	if (strchr (txt, 'e') || strchr (txt, 'E')) return false;	/* Check for exponentials since -0.5e-2 would trigger on two dashes */
 	/* Here there are no T, but perhaps somebody forgot to add T to 2004-10-19 or 1999/04/05 ? */
 	n_dash = n_slash = 0;
 	for (k = 0; k < strlen (txt); k++) {	/* Count slashes and dashes */
@@ -3001,6 +3002,24 @@ bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt, bool *no_T) {
 		return true;	/* Might be yyyy/mm/dd or yyyy-mm-dd with mising trailing T */
 	}
 	return false;
+}
+
+GMT_LOCAL unsigned int gmtio_physical_coltype (struct GMT_CTRL *GMT, unsigned int col) {
+	/* The users's -f settings apply to the logical columns and these are the same as
+	 * the physical columns except when -i is used.  This function takes the physical
+	 * column (we are scanning across the physical record) and returns the corresponding
+	 * logical column type. With no -i they are the same, otherwise not.
+	 */
+	if (GMT->common.i.select && GMT->common.i.n_cols) {	/* Logical record differs from physical */
+		unsigned int k;
+		for (k = 0; k < GMT->common.i.n_cols; k++) {
+			if (GMT->current.io.col[GMT_IN][k].col == col)	/* Found one of the physical columns that will be column = order */
+				return gmt_M_type (GMT, GMT_IN, GMT->current.io.col[GMT_IN][k].order);
+		}
+		/* Here we come when a physical column was not selected to be part of the logical column, so no -f is avialble.  We pass GMT_IS_UNKNOWN */
+		return GMT_IS_UNKNOWN;
+	}
+	return gmt_M_type (GMT, GMT_IN, col);	/* Physical == logical */
 }
 
 GMT_LOCAL void gmtio_assign_col_type_if_notset (struct GMT_CTRL *GMT, unsigned int col, unsigned int type) {
@@ -3042,7 +3061,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	 * (which is what we are handling here) a huge variety of datetime strings are possible via
 	 * the FORMAT_DATE_IN, FORMAT_CLOCK_IN settings.
 	 */
-	unsigned int ret_val = GMT_READ_DATA, pos = 0, col = 0, k, *type = NULL;
+	unsigned int ret_val = GMT_READ_DATA, pos = 0, col = 0, k, phys_col_type, *type = NULL;
 	int got;
 	bool found_text = false, no_T = false;
 	char token[GMT_BUFSIZ], message[GMT_BUFSIZ] = {""};
@@ -3052,7 +3071,8 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	type = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, unsigned int);
 	*tpos = pos;
 	while (!found_text && (gmt_strtok (record, GMT->current.io.scan_separators, &pos, token))) {
-		if ((!GMT->common.i.select && gmt_M_type (GMT, GMT_IN, col) == GMT_IS_ABSTIME) || gmtlib_maybe_abstime (GMT, token, &no_T)) {	/* Might be ISO Absolute time; if not we got junk (and got -> GMT_IS_NAN) */
+		phys_col_type = gmtio_physical_coltype (GMT, col);
+		if (phys_col_type == GMT_IS_ABSTIME || gmtlib_maybe_abstime (GMT, token, &no_T)) {	/* Might be ISO Absolute time; if not we got junk (and got -> GMT_IS_NAN) */
 			got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
 		}
 		else	/* Let gmt_scanf_arg figure it out for us by passing UNKNOWN since ABSTIME has been dealt above */
