@@ -37,7 +37,7 @@
 #define THIS_MODULE_OPTIONS "->RV"
 
 #define GMT_T	3	/* Just used to indicate abs time formatting */
-#define LETTERS "acdhiInNtTvwxyz"
+#define LETTERS "acdhiINtTvwxyzn"
 
 struct X2SYS_LIST_CTRL {
 	struct X2SYS_LIST_In {
@@ -57,6 +57,7 @@ struct X2SYS_LIST_CTRL {
 	} E;
 	struct X2SYS_LIST_F {	/* -F */
 		bool active;
+		bool mixed;
 		char *flags;
 	} F;
 	struct X2SYS_LIST_I {	/* -I */
@@ -131,6 +132,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   asymmetry = (n_right - n_left)/(n_right + n_left) [1, i.e., use all tracks].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Enhanced ASCII output: Add segment header with track names and number of crossovers [no segment headers].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify any combination of %s in the order of desired output:\n", LETTERS);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: n, if chosen, will always be trailing text at the end of the output record\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a Angle (<= 90) between the two tracks at the crossover.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c Crossover error in chosen observable (see -C).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   d Distance along tracks at the crossover.\n");
@@ -173,7 +175,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 	 */
 
 	unsigned int n_errors = 0, i, n_files[2] = {0, 0};
-	bool mixed = false;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -271,25 +272,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F: Unknown item %c.\n", Ctrl->F.flags[i]);
 			n_errors++;			
 		}
-		if (Ctrl->F.flags[i] == 'n') mixed = true;		/* Both numbers and text - cannot use binary output */
+		if (Ctrl->F.flags[i] == 'n') Ctrl->F.mixed = true;	/* Output will have trailing text */
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
-}
-
-GMT_LOCAL void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, int col, int n, bool first, char *record) {
-	/* Short-hand to dump n = 1 or 2 numerical values in chosen format.
-	 * col is used to set the format, and first is true for first item per record.
-	 */
-	int i;
-	char text[GMT_LEN64] = {""};
-	if (first) record[0] = 0;
-	for (i = 0; i < n; i++) {
-		if (!first) strcat (record, GMT->current.setting.io_col_separator);
-		gmt_ascii_format_col (GMT, text, val[i], GMT_OUT, col);
-		strcat (record, text);
-		first = false;
-	}
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -301,12 +287,12 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
 	struct X2SYS_COE_PAIR *P = NULL;
-	bool mixed = false, check_for_NaN = false, both, first;
+	bool check_for_NaN = false, both, first;
 	bool internal = true;	/* false if only external xovers are needed */
 	bool external = true;	/* false if only internal xovers are needed */
 	uint64_t i, j, k, one, two, n_items, n_tracks;
 	uint64_t p, np_use = 0, nx_use = 0, np, m, nx, *trk_nx = NULL;
-	unsigned int n_weights = 0, coe_kind, n_out, n_output;
+	unsigned int n_weights = 0, coe_kind, n_out, n_output, cmode;
 	int error = 0, id;
 	double *wesn = NULL, val[2], out[128], corr[2] = {0.0, 0.0}, sec_2_unit = 1.0, w_k, w;
 	double fixed_weight = 1.0, *weights = NULL, *trk_symm = NULL;
@@ -335,10 +321,12 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	
  	/*---------------------------- This is the x2sys_list main code ----------------------------*/
 
-	for (i = 0; i < strlen (Ctrl->F.flags); i++) {
+	for (i = j = 0; i < strlen (Ctrl->F.flags); i++) {
 		if (Ctrl->F.flags[i] == 'c' || Ctrl->F.flags[i] == 'z') check_for_NaN = true; /* Do not output records where the crossover or values are NaN */
-		if (Ctrl->F.flags[i] == 'n') mixed = true;		/* Both numbers and text */
+		if (j < i) Ctrl->F.flags[j] = Ctrl->F.flags[i];
+		if (Ctrl->F.flags[i] != 'n') j++;
 	}
+	Ctrl->F.flags[j] = '\0';	/* Eliminating 'n' from the flags list */
 	if (Ctrl->Q.active) {
 		if (Ctrl->Q.mode == 1) internal = false;
 		if (Ctrl->Q.mode == 2) external = false;
@@ -406,8 +394,8 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	gmt_set_column (GMT, GMT_OUT, GMT_T, GMT_IS_ABSTIME);
 
 	n_items = strlen (Ctrl->F.flags); 
-	for (i = j = 0; !mixed && i < n_items; i++, j++) {	/* Overwrite the above settings */
-		switch (Ctrl->F.flags[i]) {	/* acdhintTvxyz */
+	for (i = j = 0; i < n_items; i++, j++) {	/* Overwrite the above settings */
+		switch (Ctrl->F.flags[i]) {	/* acdhitTvxyz */
 			case 'a':	/* Angle between tracks */
 			case 'c':	/* Crossover value */
 			case 'I':	/* Time interval (unsigned) */
@@ -418,7 +406,6 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 				break;
 			case 'd':	/* Distance along track */
 			case 'h':	/* Heading along track */
-			case 'n':	/* Names of the track(s) [need this case to fall through] */
 			case 'N':	/* ID numbers of tracks */
 			case 'T':	/* Time along track since beginning of the first year of the track */
 			case 'z':	/* Observed value along track */
@@ -475,12 +462,12 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	}
 	/* Time to issue output */
 
+	cmode = (Ctrl->F.mixed) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT;
 	n_output = (unsigned int)n_items;	/* But some items represent a pair */
 	for (i = 0; i < n_items; i++) {
 		switch (Ctrl->F.flags[i]) {	/* acdhintTvwxyz */
 			case 'd':	/* Distance along track */
 			case 'h':	/* Heading along track */
-			case 'n':	/* Names of the track(s) */
 			case 'N':	/* ID numbers of tracks */
 			case 't':	/* Time along track */
 			case 'T':	/* Time along track since beginning of the track */
@@ -491,13 +478,13 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 		}
 	}
 
+	GMT_Set_Columns (API, GMT_OUT, n_output, cmode);
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		gmt_M_free (GMT, trk_name);
 		gmt_M_free (GMT, trk_nx);
 		gmt_M_free (GMT, weights);
 		Return (API->error);
 	}
-	gmt_set_cols (GMT, GMT_OUT, n_output);
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		gmt_M_free (GMT, trk_name);
 		gmt_M_free (GMT, trk_nx);
@@ -524,7 +511,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 		record[0] = 0;	/* Clean slate */
 		for (i = j = 0; i < n_items; i++, j++) {	/* Overwrite the above settings */
 			if (i > 0) strcat (record, GMT->current.setting.io_col_separator);
-			switch (Ctrl->F.flags[i]) {	/* acdhintTvxyz */
+			switch (Ctrl->F.flags[i]) {	/* acdhitTvxyz */
 				case 'a':	/* Angle between tracks */
 					strcat (record, "angle");
 					break;
@@ -550,13 +537,6 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 					break;
 				case 'i':	/* Time interval (signed) */
 					strcat (record, "s_tint");
-					break;
-				case 'n':	/* Names of the track(s) [need this case to fall through] */
-					if (both) {
-						strcat (record, "track_1");	strcat (record, GMT->current.setting.io_col_separator);	strcat (record, "track_2");
-					}
-					else
-						strcat (record, "track");
 					break;
 				case 'N':	/* ID numbers of tracks */
 					if (both) {
@@ -605,9 +585,18 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 					break;
 			}
 		}
+		if (Ctrl->F.mixed) {	/* Names of the track(s)*/
+			if (i > 0) strcat (record, GMT->current.setting.io_col_separator);
+			if (both) {
+				strcat (record, "track_1");	strcat (record, GMT->current.setting.io_col_separator);	strcat (record, "track_2");
+			}
+			else
+				strcat (record, "track");
+		}
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 	}
-	if (!mixed) Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
+	Out = gmt_new_record (GMT, out, (Ctrl->F.mixed) ? record : NULL);
+	record[0] = '\0';
 	
 	for (p = 0; p < np; p++) {	/* For each pair of tracks that generated crossovers */
 		if (Ctrl->N.active && (trk_nx[P[p].id[0]] < Ctrl->N.min || trk_nx[P[p].id[1]] < Ctrl->N.min)) continue;			/* Not enough COEs */
@@ -629,12 +618,11 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 			if (check_for_NaN && (gmt_M_is_dnan (P[p].COE[k].data[one][COE_Z]) || gmt_M_is_dnan (P[p].COE[k].data[two][COE_Z]))) continue;
 			record[0] = 0;	/* Clean slate */
 			for (i = j = 0, first = true; i < n_items; i++, j++) {
-				switch (Ctrl->F.flags[i]) {	/* acdhintTvwxyz */
+				switch (Ctrl->F.flags[i]) {	/* acdhitTvwxyz */
 					case 'a':	/* Angle between tracks */
 						val[0] = fabs (P[p].COE[k].data[0][COE_H] - P[p].COE[k].data[1][COE_H]);
 						while (val[0] >= 180.0) val[0] -= 180.0;
 						out[j] = (val[0] > 90.0) ? 180.0 - val[0] : val[0];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, 1, first, record);
 						break;
 					case 'c':	/* Crossover value */
 					 	if (Ctrl->L.active) {
@@ -642,57 +630,36 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 							corr[two] = MGD77_Correction_Rec (GMT, CORR[P[p].id[two]][COE_Z].term, P[p].COE[k].data[two], NULL);
 						}
 						out[j] = val[0] = (P[p].COE[k].data[one][COE_Z] - corr[one]) - (P[p].COE[k].data[two][COE_Z] - corr[two]);
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, 1, first, record);
 						break;
 					case 'd':	/* Distance along track */
 						out[j] = val[0] = P[p].COE[k].data[one][COE_D];
 						if (both) out[++j] = val[1] = P[p].COE[k].data[two][COE_D];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first, record);
 						break;
 					case 'h':	/* Heading along track */
 						out[j] = val[0] = P[p].COE[k].data[one][COE_H];
 						if (both) out[++j] = val[1] = P[p].COE[k].data[two][COE_H];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first, record);
 						break;
 					case 'i':	/* Time interval in current TIME_UNIT */
 						out[j] = val[0] = sec_2_unit * (P[p].COE[k].data[one][COE_T] - P[p].COE[k].data[two][COE_T]);
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, 1, first, record);
 						break;
 					case 'I':	/* Time interval in current TIME_UNIT */
 						out[j] = val[0] = sec_2_unit * fabs (P[p].COE[k].data[one][COE_T] - P[p].COE[k].data[two][COE_T]);
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, 1, first, record);
-						break;
-					case 'n':	/* Names of the track(s) */
-						if (both) {
-							if (!first) strcat (record, GMT->current.setting.io_col_separator);
-							strcat (record, P[p].trk[0]);
-							strcat (record, GMT->current.setting.io_col_separator);
-							strcat (record, P[p].trk[1]);
-						}
-						else {
-							if (!first) strcat (record, GMT->current.setting.io_col_separator);
-							strcat (record, P[p].trk[two]);
-						}
 						break;
 					case 'N':	/* ID numbers of tracks */
 						out[j] = val[0] = (double)P[p].id[one];
 						if (both) out[++j] = val[1] = (double)P[p].id[two];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first, record);
 						break;
 					case 't':	/* Time along track */
 						out[j] = val[0] = P[p].COE[k].data[one][COE_T];
 						if (both) out[++j] = val[1] = P[p].COE[k].data[two][COE_T];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_T, n_out, first, record);
 						break;
 					case 'T':	/* Time along track since beginning of the track */
 						out[j] = val[0] = sec_2_unit * (P[p].COE[k].data[one][COE_T] - P[p].start[one]);
 						if (both) out[++j] = val[1] = sec_2_unit * (P[p].COE[k].data[two][COE_T] - P[p].start[two]);
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first, record);
 						break;
 					case 'v':	/* Speed along track */
 						out[j] = val[0] = P[p].COE[k].data[one][COE_V];
 						if (both) out[++j] = val[1] = P[p].COE[k].data[two][COE_V];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first, record);
 						break;
 					case 'w':	/* Weight for this crossover */
 						if (weights) {	/* Weightfile was given; compute composite weight for this COE */
@@ -709,15 +676,12 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 						}
 						else
 							out[j] = fixed_weight;
-						if (mixed) {val[0] = out[j];	dump_ascii_cols (GMT, val, GMT_Z, 1, first, record);}
 						break;
 					case 'x':	/* x coordinate of crossover */
 						out[j] = val[0] = P[p].COE[k].data[0][COE_X];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_X, 1, first, record);
 						break;
 					case 'y':	/* y coordinate of crossover */
 						out[j] = val[0] = P[p].COE[k].data[0][COE_Y];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Y, 1, first, record);
 						break;
 					case 'z':	/* Observed value along track */
 						if (Ctrl->L.active) corr[one] = MGD77_Correction_Rec (GMT, CORR[P[p].id[one]][COE_Z].term, P[p].COE[k].data[one], NULL);
@@ -726,15 +690,20 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 							if (Ctrl->L.active) corr[two] = MGD77_Correction_Rec (GMT, CORR[P[p].id[two]][COE_Z].term, P[p].COE[k].data[two], NULL);
 							out[++j] = val[1] = P[p].COE[k].data[two][COE_Z] - corr[two];
 						}
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first, record);
 						break;
 				}
 				first = false;
 			}
-			if (mixed)
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-			else
-				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			if (Ctrl->F.mixed) {	/* Write names of the track(s) as trialing text */
+				if (both) {
+					strcpy (record, P[p].trk[0]);
+					strcat (record, GMT->current.setting.io_col_separator);
+					strcat (record, P[p].trk[1]);
+				}
+				else
+					strcpy (record, P[p].trk[two]);
+			}
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
@@ -746,7 +715,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	
 	x2sys_free_coe_dbase (GMT, P, np);
 	gmt_M_free (GMT, trk_nx);
-	if (!mixed) gmt_M_free (GMT, Out);
+	gmt_M_free (GMT, Out);
 	if (Ctrl->A.active) gmt_M_free (GMT,  trk_symm);
 
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
