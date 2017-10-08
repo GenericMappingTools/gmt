@@ -104,7 +104,7 @@ Optional Arguments
 
 **-I**\ *dx*\ [/*dy*]
     *x_inc* [and optionally *y_inc*] is the grid spacing. Append **m**
-    to indicate minutes or **c** to indicate seconds for geographic
+    to indicate minutes or **s** to indicate seconds for geographic
     data. These spacings refer to the binning used in the track
     bin-index data base.
 
@@ -271,7 +271,7 @@ to find it.
 
       ::
 
-       gmt x2sys_binlist -V -TLINE :tracks.lis > tracks.tbf
+       gmt x2sys_binlist -V -TLINE =tracks.lis > tracks.tbf
 
 **Update index data base:**
     Next, the track bin-index files are fed to :doc:`x2sys_put` which will

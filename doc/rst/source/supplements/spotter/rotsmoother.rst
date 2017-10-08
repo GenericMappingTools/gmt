@@ -79,11 +79,11 @@ Optional Arguments
 .. _-T:
 
 **-T**\ *ages*
-    Sets the desired groups of times.  For a single time append
-    the desired time.  For an equidistant range of reconstruction times
-    give **-T**\ *start*\ /\ *stop*\ /\ *inc* or **-T**\ *start*\ /\ *stop*\ /\ *npoints*\ **+**.
-    For an non-equidistant set of reconstruction times please pass them
-    via the first column in a file, e.g., **-T**\ *agefile*.  The times indicate
+    Sets the desired groups of ages.  For a single time append
+    the desired time.  For an equidistant range of reconstruction ages
+    give **-T**\ *start*\ /\ *stop*\ /\ *inc* or **-T**\ *start*\ /\ *stop*\ /\ *npoints*\ **+n**.
+    For an non-equidistant set of reconstruction ages please pass them
+    via the first column in a file, e.g., **-T**\ *agefile*.  The ages indicate
     read or generated becomes the bin-boundaries and we output the average time of
     all rotations inside each bin.
 
@@ -122,7 +122,6 @@ Optional Arguments
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_-n.rst_
 .. include:: ../../explain_help.rst_
-.. include:: ../../explain_grdresample2.rst_
 
 .. include:: explain_geodetic.rst_
 
@@ -133,7 +132,7 @@ To smooth rotation groups in increments of 3 Myr and ensure northern hemisphere 
 
    ::
 
-    gmt rotsmoother rotations.txt -N -V > rot_means.txt
+    gmt rotsmoother rotations.txt -N -T3/3/30 -V > rot_means.txt
 
 
 See Also

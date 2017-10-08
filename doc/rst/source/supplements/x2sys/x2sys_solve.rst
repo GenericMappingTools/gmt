@@ -14,7 +14,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **x2sys_solve** |-C|\ *column* |-T|\ *TAG* |-E|\ *mode*
-[ *COE_list.d* ]
+[ *COE_list.txt* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ **[u]** ]
 [ |SYN_OPT-bi| ]
@@ -35,7 +35,7 @@ the time.
 Required Arguments
 ------------------
 
-*COE_list.d*
+*COE_list.txt*
     Name of file with the required crossover columns as produced by
     :doc:`x2sys_list`. NOTE: If **-bi** is used
     then the first two columns are expected to hold the integer track

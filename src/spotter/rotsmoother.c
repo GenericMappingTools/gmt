@@ -116,8 +116,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Ensure all poles are in northern hemisphere [Default ensures positive opening angles].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Ensure all poles are in southern hemisphere [Default ensures positive opening angles].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set the output times when a mean rotation and covariance matrix is desired.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append a single time (-T<time>), an equidistant range of times (-T<min>/<max>/<inc> or -T<min>/<max>/<npoints>+),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or the name of a file with a list of times (-T<tfile>).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append a single time (-T<time>), an equidistant range of times (-T<min>/<max>/<inc>),\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to t_inc to indicate the number of points instead of an increment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give the name of a file with a list of times (-T<tfile>).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The times indicate bin-boundaries and we output the average rotation time per bin.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Expect weights in last column for a weighted mean rotation [no weights].\n");
@@ -190,10 +191,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *Ctrl, struct
 				}
 				/* Not a file */
 				k = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-				if (k == 3) {	/* Gave -Ttstart/tstop/tinc */
+				if (k == 3) {	/* Gave -Ttstart/tstop/tinc[+n] */
 					double min, max, inc;
+					char *c = NULL;
 					min = atof (txt_a);	max = atof (txt_b);	inc = atof (txt_c);
-					if (opt->arg[strlen(opt->arg)-1] == '+')	/* Gave number of points instead; calculate inc */
+					if ((c = strrchr (txt_c, '+')) && (c[1] == 'n' || c[1] == '\0'))	/* Gave number of points instead; calculate inc */
 						inc = (max - min) / (inc - 1.0);
 					if (inc <= 0.0) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Age increment must be positive\n");

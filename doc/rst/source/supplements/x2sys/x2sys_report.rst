@@ -118,8 +118,7 @@ certain region in the south Pacific, try
 
    ::
 
-    gmt x2sys_report COE_data.txt -V -TMGD77 -R180/240/-60/-30 -Cmag >
-                     mag_report.txt
+    gmt x2sys_report COE_data.txt -V -TMGD77 -R180/240/-60/-30 -Cmag > mag_report.txt
 
 To report on the faa crossovers globally that involves track 12345678, try
 
