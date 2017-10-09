@@ -4489,7 +4489,7 @@ GMT_LOCAL void grdmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Operator %s is deprecated; use %s instead.\n", old, t);
 }
 
-GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *value, struct GMT_HASH *H, struct GRDMATH_STORE *recall[], int n_stored) {
+GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *value, struct GMT_HASH *H) {
 	int i, expect, check = GMT_IS_NAN;
 	bool possible_number = false;
 	double tmp = 0.0;
@@ -4511,13 +4511,6 @@ GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt,
 	if (!strncmp (opt->arg, GRDMATH_STORE_CMD, strlen(GRDMATH_STORE_CMD))) return GRDMATH_ARG_IS_STORE;	/* store into mem location @<label> */
 	if (!strncmp (opt->arg, GRDMATH_CLEAR_CMD, strlen(GRDMATH_CLEAR_CMD))) return GRDMATH_ARG_IS_CLEAR;	/* clear mem location @<label> */
 	if (!strncmp (opt->arg, GRDMATH_RECALL_CMD, strlen(GRDMATH_RECALL_CMD))) return GRDMATH_ARG_IS_RECALL;	/* load from mem location @<label> */
-	if (opt->arg[0] == '@') {	/* Requires more checking to know what this means */
-		/* First check if it is a registered memory reference set via @STO: */
-		if ((i = grdmath_find_stored_item (GMT, recall, n_stored, &opt->arg[1])) != GMT_NOTSET) return GRDMATH_ARG_IS_RECALL;	/* load from mem location @<label> */
-		/* If not then we must assume it is a cache file that needs to be downloaded */
-		(void)gmt_download_file_if_not_found (GMT, opt->arg, 0);
-		return GRDMATH_ARG_IS_FILE;
-	}				
 	if (!(strcmp (opt->arg, "PI") && strcmp (opt->arg, "pi"))) return GRDMATH_ARG_IS_PI;
 	if (!(strcmp (opt->arg, "E") && strcmp (opt->arg, "e"))) return GRDMATH_ARG_IS_E;
 	if (!(strcmp (opt->arg, "F_EPS") && strcmp (opt->arg, "EPS"))) return GRDMATH_ARG_IS_F_EPS;
@@ -4622,6 +4615,26 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 	gmt_M_str_free (info->ASCII_file);
 }
 
+GMT_LOCAL void grdmath_expand_recall_cmd (struct GMT_OPTION *list) {
+	/* If users doing STO, RCL, CLR on memory items then the shorthand @item needs to
+	 * be expanded to the full syntax RCL@item, otherwise it interferes with remote
+	 * cache files. */
+	struct GMT_OPTION *opt = NULL, *opt2 = NULL;
+	char target[GMT_LEN64] = {""};
+	
+	for (opt = list; opt; opt = opt->next) {
+		if (opt->option == GMT_OPT_INFILE && !strncmp (opt->arg, "STO@", 4U)) {	/* Found a STO@item */
+			for (opt2 = opt->next; opt2; opt2 = opt2->next) {	/* Loop over all remaining options */
+				if (!strcmp (opt2->arg, &opt->arg[3])) {	/* Found an implicit recall item, expand to full syntax */
+					sprintf (target, "RCL%s", opt2->arg);
+					gmt_M_str_free (opt2->arg);	/* Remove the old shorthand */
+					opt2->arg = strdup (target);
+				}
+			}
+		}
+	}
+}
+
 int GMT_grdmath (void *V_API, int mode, void *args) {
 	int k, op = 0, new_stack = GMT_NOTSET, rowx, colx, status, start, error = 0;
 	unsigned int kk, nstack = 0, n_stored = 0, n_items = 0, this_stack, pos;
@@ -4658,6 +4671,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	grdmath_expand_recall_cmd (options);	/* Avoid any conflicts with [RCL]@item and remote cache files */
 
 	/* Parse the command-line arguments */
 
@@ -4708,7 +4722,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		/* Skip table files given as argument to the LDIST, PDIST, POINT, INSIDE operators */
 		if (opt->next && !(strncmp (opt->next->arg, "LDIST", 5U) && strncmp (opt->next->arg, "PDIST", 5U) && strncmp (opt->next->arg, "POINT", 5U) && strncmp (opt->next->arg, "INSIDE", 6U))) continue;
 		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
-		status = decode_grd_argument (GMT, opt, &value, localhashnode, recall, n_stored);		/* Determine what this is */
+		status = decode_grd_argument (GMT, opt, &value, localhashnode);		/* Determine what this is */
 		if (status == GRDMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible */
 		if (status != GRDMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
 		in_file = opt->arg;
@@ -4830,7 +4844,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 		if (strchr ("ADIMNRVbfnr-" GMT_OPT("F") GMT_ADD_x_OPT, opt->option)) continue;
 
-		op = decode_grd_argument (GMT, opt, &value, localhashnode, recall, n_stored);
+		op = decode_grd_argument (GMT, opt, &value, localhashnode);
 		if (op == GRDMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible way to go... */
 
 		if (op == GRDMATH_ARG_IS_SAVE) {	/* Time to save the current stack to output and pop the stack */

@@ -213,7 +213,7 @@ GMT_LOCAL int gmtmath_find_stored_item (struct GMTMATH_STORED *recall[], int n_s
 	/* Linear search to find the named storage item */
 	int k = 0;
 	while (k < n_stored && strcmp (recall[k]->label, label)) k++;
-	return (k == n_stored ? -1 : k);
+	return (k == n_stored ? GMT_NOTSET : k);
 }
 
 GMT_LOCAL void load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_DATATABLE *from, uint64_t from_col) {
@@ -4856,7 +4856,6 @@ GMT_LOCAL int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *valu
 	if (!strncmp (txt, GMTMATH_STORE_CMD, strlen(GMTMATH_STORE_CMD))) return GMTMATH_ARG_IS_STORE;		/* store into mem location @<label>*/
 	if (!strncmp (txt, GMTMATH_CLEAR_CMD, strlen(GMTMATH_CLEAR_CMD))) return GMTMATH_ARG_IS_CLEAR;		/* free mem location @<label>*/
 	if (!strncmp (txt, GMTMATH_RECALL_CMD, strlen(GMTMATH_RECALL_CMD))) return GMTMATH_ARG_IS_RECALL;	/* load from mem location @<label>*/
-	//if (txt[0] == '@') return GMTMATH_ARG_IS_RECALL;		/* load from mem location @<label> [PW: Interferes with cache files] */
 	if (!(strcmp (txt, "PI") && strcmp (txt, "pi"))) return GMTMATH_ARG_IS_PI;
 	if (!(strcmp (txt, "E") && strcmp (txt, "e"))) return GMTMATH_ARG_IS_E;
 	if (!strcmp (txt, "F_EPS")) return GMTMATH_ARG_IS_F_EPS;
@@ -4939,6 +4938,26 @@ GMT_LOCAL void gmtmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Operator %s is deprecated; use %s instead.\n", old, t);
 }
 
+GMT_LOCAL void gmtmath_expand_recall_cmd (struct GMT_OPTION *list) {
+	/* If users doing STO, RCL, CLR on memory items then the shorthand @item needs to
+	 * be expanded to the full syntax RCL@item, otherwise it interferes with remote
+	 * cache files. */
+	struct GMT_OPTION *opt = NULL, *opt2 = NULL;
+	char target[GMT_LEN64] = {""};
+	
+	for (opt = list; opt; opt = opt->next) {
+		if (opt->option == GMT_OPT_INFILE && !strncmp (opt->arg, "STO@", 4U)) {	/* Found a STO@item */
+			for (opt2 = opt->next; opt2; opt2 = opt2->next) {	/* Loop over all remaining options */
+				if (!strcmp (opt2->arg, &opt->arg[3])) {	/* Found an implicit recall item, expand to full syntax */
+					sprintf (target, "RCL%s", opt2->arg);
+					gmt_M_str_free (opt2->arg);	/* Remove the old shorthand */
+					opt2->arg = strdup (target);
+				}
+			}
+		}
+	}
+}
+
 int GMT_gmtmath (void *V_API, int mode, void *args) {
 	int i, k, op = 0, status = 0;
 	unsigned int consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS], new_stack = INT_MAX;
@@ -4977,6 +4996,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	gmtmath_expand_recall_cmd (options);	/* Avoid any conflicts with [RCL]@item and remote cache files */
 
 	/* Parse the command-line arguments */
 
@@ -5263,7 +5283,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					Return (GMT_RUNTIME_ERROR);
 				}
 				if ((label = gmtmath_setlabel (GMT, opt->arg)) == NULL) Return (GMT_RUNTIME_ERROR);
-				if ((k = gmtmath_find_stored_item (recall, n_stored, label)) != -1) {
+				if ((k = gmtmath_find_stored_item (recall, n_stored, label)) != GMT_NOTSET) {
 					if (!stack[last]->constant) for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (recall[k]->stored.D, j, stack[last]->D->table[0], j);
 					GMT_Report (API, GMT_MSG_DEBUG, "Stored memory cell %d named %s is overwritten with new information\n", k, label);
 				}
@@ -5284,7 +5304,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			else if (op == GMTMATH_ARG_IS_RECALL) {
 				/* Add to stack from stored memory location */
 				if ((label = gmtmath_setlabel (GMT, opt->arg)) == NULL) Return (GMT_RUNTIME_ERROR);
-				if ((k = gmtmath_find_stored_item (recall, n_stored, label)) == -1) {
+				if ((k = gmtmath_find_stored_item (recall, n_stored, label)) == GMT_NOTSET) {
 					GMT_Report (API, GMT_MSG_NORMAL, "No stored memory item with label %s exists!\n", label);
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -5306,7 +5326,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			else if (op == GMTMATH_ARG_IS_CLEAR) {
 				/* Free stored memory location */
 				if ((label = gmtmath_setlabel (GMT, opt->arg)) == NULL) Return (GMT_RUNTIME_ERROR);
-				if ((k = gmtmath_find_stored_item (recall, n_stored, label)) == -1) {
+				if ((k = gmtmath_find_stored_item (recall, n_stored, label)) == GMT_NOTSET) {
 					GMT_Report (API, GMT_MSG_NORMAL, "No stored memory item with label %s exists!\n", label);
 					Return (GMT_RUNTIME_ERROR);
 				}
