@@ -2729,6 +2729,7 @@ GMT_LOCAL void support_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATASEGM
 		for (col = 0; col < S->n_columns; col++)
 			S->data[col] = gmt_M_memory (GMT, S->data[col], S->n_alloc, double);
 		S->text = gmt_M_memory (GMT, S->text, S->n_alloc, char *);
+		S->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 	/* Deal with any justifications or nudging */
 	if (G->nudge_flag) {	/* Must adjust point a bit */

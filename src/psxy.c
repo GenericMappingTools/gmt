@@ -1547,7 +1547,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Get a dataset with one table, segment, 0 rows, but 4 columns */
 			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 4};	/* Put everything in one table */
 			dim[GMT_SEG] = D->n_segments;	/* Make one segment for each input segment so segment headers can be preserved */
-			if ((Decorate = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
+			if ((Decorate = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		}
 		if (GMT->current.io.OGR && (GMT->current.io.OGR->geometry == GMT_IS_POLYGON || GMT->current.io.OGR->geometry == GMT_IS_MULTIPOLYGON)) polygon = true;
 

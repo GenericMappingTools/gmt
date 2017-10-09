@@ -4501,6 +4501,7 @@ GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt,
 	if (opt->option == GMT_OPT_OUTFILE2) return GRDMATH_ARG_IS_SAVE;	/* Time to save stack; arg is filename */
 
 	if (gmt_M_file_is_memory (opt->arg)) return GRDMATH_ARG_IS_FILE;	/* Deal with memory references first */
+	if (gmt_M_file_is_cache (opt->arg)) return GRDMATH_ARG_IS_FILE;		/* Deal with cache references as well */
 
 	/* Check if argument is operator */
 
