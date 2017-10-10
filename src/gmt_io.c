@@ -7132,6 +7132,10 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 			n_read++;
 		}
 
+		if (n_expected_fields < 2) {
+			pol_check = check_geometry = poly = false;
+			*geometry = GMT_IS_NONE;
+		}
 		if (pol_check) this_is_poly = (!gmt_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row));	/* true if this segment is closed polygon */
 		if (this_is_poly) n_poly_seg++;
 		if (check_geometry) {	/* Determine if dealing with closed polygons or lines based on first segment only */

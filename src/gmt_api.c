@@ -11202,7 +11202,7 @@ int GMT_Set_Columns (void *V_API, unsigned int direction, unsigned int n_cols, u
 			return_error (API, GMT_N_COLS_NOT_SET);
 		}
 		/* If no columns specified we set output to the same as input columns */
-		if (n_cols == 0 && (error = gmt_set_cols (API->GMT, GMT_OUT, n_in)) != 0)
+		if (n_cols == 0 && mode != GMT_COL_FIX && (error = gmt_set_cols (API->GMT, GMT_OUT, n_in)) != 0)
 			return_error (API, GMT_N_COLS_NOT_SET);
 	}
 	
