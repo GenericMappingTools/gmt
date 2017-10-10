@@ -1018,9 +1018,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS];
 		struct GMT_RECORD *In = NULL;
 
-		if ((error = gmt_set_cols (GMT, GMT_IN, n_needed)) != GMT_NOERROR) {
-			Return (error);
-		}
+		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */
+			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
+		else
+			GMT_Set_Columns (API, GMT_IN, n_needed, GMT_COL_FIX);
 		/* Determine if we need to worry about repeating periodic symbols */
 		if ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_is_geographic (GMT, GMT_IN)) {
 			/* Only do this for projection where west and east are split into two separate repeating boundaries */
@@ -1040,8 +1041,6 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
 			delayed_unit_scaling = (S.u_set && S.u != GMT_INCH);
 		}
-		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */
-			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
 		
 		do {	/* Keep returning records until we reach EOF */
 			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
