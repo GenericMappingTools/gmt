@@ -2610,32 +2610,25 @@ GMT_LOCAL void plot_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 	*n = 0;
 }
 
-GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], unsigned int *type, unsigned int start, char *text) {
+GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], char *text) {
 	/* Returns the [possibly reformatted] string to use for the letter macro.
  	 * These are the things that can happen:
 	 * 1. Action is GMT_SYMBOL_TEXT means we have a static fixed text string; just copy
-	 * 2, Gave $<n> only, where <n> indicates which of the variables is a string.  Then we
-	 *    try to get the remaining text from the input and use that as the text.
+	 * 2. s->text is $t.  Then we use the trialing text from the input as the text.
 	 * 3. We have a format statement that contains free-form text with interspersed
 	 *    special formatting commands.  These have the syntax
 	 *    %X  Add longitude or x using chosen default format.
 	 *    %Y  Add latitude or y using chosen default format.
 	 *    $<n>[+X|Y|T]  Format the numerical variable $<n>; if
-	 *      followed by +X|Y|T we format as lon, lat, or time,
+	 *      followed by +X|Y|T we format as lon, lat, or absolute dateTtime,
 	 *      else we use FORMAT_FLOAT_OUT.
-	 * Limitation: Currently, $<n> expects <n> to be 0-9 only.
+	 *    Limitation: Currently, $<n> expects <n> to be 0-9 only.
 	 */
 	unsigned int n;
-	if (s->action == GMT_SYMBOL_TEXT)	/* Constant text */
+	if (s->action == GMT_SYMBOL_TEXT)	/* Constant text given, just duplicate */
 		strcpy (text, s->string);
-	else if (s->string[0] == '$' && strlen (s->string) == 2 && isdigit (s->string[1]) && type[n=(s->string[1]-'1')] == GMT_IS_STRING) {	/* Get entire string from input */
-		unsigned int want_col, col, pos;
-		/* Tricky, how do we know which column in the input goes with this variable $n, i.e. how is n related to record col?.  Then,
-		   we must scan the GMT->io.current.record for the col'th item and strcpy that into text.  The reason n -> col is
-		   tricky is while we may know this is the 3rd extra variable, we don't know if -C<cpt> was used or if this is psxyz, no? */
-		want_col = start + n;
-		for (col = pos = 0; col <= want_col; col++) (void)gmt_strtok (GMT->current.io.curr_trailing_text, GMT_TOKEN_SEPARATORS, &pos, text);
-	}
+	else if (!strcmp (s->string, "$t"))	/* Get entire string from trailing text in the input */
+		strcpy (text, GMT->current.io.curr_trailing_text);
 	else {	/* Must replace special items within a template string */
 		unsigned int n_skip, in, out;
 		char tmp[GMT_LEN64] = {""};
@@ -5080,11 +5073,11 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	gmt_M_memset (&p, 1, struct GMT_PEN);
 
 	if (symbol->text) {	/* This symbol places text, so we must set macros for fonts and fontsizes outside the gsave/grestore around each symbol */
-		symbol->text = false;	/* Only do this once */
+		symbol->text = 0;	/* Only do this formatting once */
 		s = symbol->first;	/* Start at first item */
 		while (s) {		/* Examine all items for possible text */
 			if (s->action == GMT_SYMBOL_TEXT || s->action == GMT_SYMBOL_VARTEXT) {	/* Text item found */
-				plot_format_symbol_string (GMT, s, size, type, start, user_text);
+				plot_format_symbol_string (GMT, s, size, user_text);
 				if (s->p[0] < 0.0)	/* Fixed point size for text */
 					s->font.size = -s->p[0];
 				else	/* Fractional size that depends on symbol size */
@@ -5291,7 +5284,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				get_the_pen (&p, s, current_pen, current_fill);
 				this_outline = (p.rgb[0] == -1) ? false : outline;
 				if (this_outline) gmt_setpen (GMT, &p);
-				plot_format_symbol_string (GMT, s, size, type, start, user_text);
+				plot_format_symbol_string (GMT, s, size, user_text);
 				if (s->p[0] < 0.0)	/* Fixed point size */
 					font.size = -s->p[0];
 				else	/* Fractional size */

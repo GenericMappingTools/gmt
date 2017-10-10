@@ -4704,12 +4704,13 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 					s->p[0] = -s->p[0];	/* Mark fixed size via a negative point size */
 				s->string = gmt_M_memory (GMT, NULL, strlen (col[3]) + 1, char);
 				strcpy (s->string, col[3]);
-				if ((c = strchr (s->string, '$')) && isdigit (c[1])) {	/* Got a text string containing one or more variables */
+				if ((c = strchr (s->string, '$')) && (c[1] == 't' || isdigit (c[1]))) {	/* Got a text string containing one or more variables */
 					s->action = GMT_SYMBOL_VARTEXT;
 				}
 				s->font = GMT->current.setting.font_annot[GMT_PRIMARY];	/* Default font for symbols */
 				s->justify = PSL_MC;				/* Default justification of text */
-				head->text = true;
+				head->text = 1;	/* We will be typsetting text so fonts are required */
+				if (s->action == GMT_SYMBOL_VARTEXT && c[1] == 't') head->text = 2;	/* Flag that trailing text will be used */
 				k = 1;
 				while (col[last][k] && col[last][k] != '+') k++;
 				if (col[last][k]) {	/* Gave modifiers */

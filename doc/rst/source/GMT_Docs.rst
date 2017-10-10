@@ -8062,9 +8062,8 @@ Text substitution
 
 Normally, the **l** macro code will place a hard-wired text string.  However,
 you can also obtain the entire string from your input file via a single symbol
-variable that must be declared with type **s** (string).  The string read
-from your input file must be a single word, so if you need to insert spaces you must
-use the octal \\040 code instead.  Similarly, to place the dollar sign $ itself you must
+variable **$t** that must be declared with type **s** (string).  The string will be taken
+as all trialing text in your data record.  To place the dollar sign $ itself you must
 use octal \\044 so as to not confuse the parser with a symbol variable.
 The string itself, if obtained from the symbol definition file,
 may contain special codes that will be expanded given information from the current record.  You
