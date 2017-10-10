@@ -242,6 +242,10 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	else
 		gmt_set_cartesian (GMT, GMT_OUT);
 	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
+	gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
+	if (Ctrl->D.active) gmt_set_column (GMT, GMT_OUT, 4, GMT_IS_FLOAT);
+	/* Ensure we write integers for the next two columns */
+	GMT->current.io.o_format[2] = GMT->current.io.o_format[3] = strdup ("%g"); 
 	
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_DIST_SELECTION], &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 
@@ -472,13 +476,13 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 			row = index / B.nx_bin;	/* To hold the row number */
 			col = index % B.nx_bin;	/* To hold the col number */
 			if (B.binflag[index] == 0) continue;
-			Out->data[GMT_X] = B.wesn[XLO] + (col + 0.5) * B.inc[GMT_X];
-			Out->data[GMT_Y] = B.wesn[YLO] + (row + 0.5) * B.inc[GMT_Y];
-			Out->data[GMT_Z] = (double)index;
-			Out->data[3] = B.binflag[index];
+			out[GMT_X] = B.wesn[XLO] + (col + 0.5) * B.inc[GMT_X];
+			out[GMT_Y] = B.wesn[YLO] + (row + 0.5) * B.inc[GMT_Y];
+			out[GMT_Z] = (double)index;
+			out[3] = B.binflag[index];
 			if (Ctrl->D.active)
-				Out->data[4] = dist_bin[index];
-			GMT_Put_Record (API, GMT_WRITE_DATA, record);
+				out[4] = dist_bin[index];
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 
 		if (Ctrl->D.active) gmt_M_free (GMT, dist_km);
@@ -487,6 +491,9 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	error = GMT_NOERROR;
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data output */
 		error = API->error;
+
+	gmt_M_str_free (GMT->current.io.o_format[2]);
+	GMT->current.io.o_format[3] = NULL; /* Since we only allocate one for sharing */
 
 	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, X);
