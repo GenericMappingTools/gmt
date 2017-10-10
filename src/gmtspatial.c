@@ -613,8 +613,8 @@ GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST 
 			}
 		}
 	}
-	qsort (P, np, sizeof (struct NN_DIST), compare_nn_points);
-	for (k = np; k > 0 && gmt_M_is_dnan (P[k-1].distance); k--);	/* Skip the NaN distances */
+	qsort (P, np, sizeof (struct NN_DIST), compare_nn_points);	/* Sort on small to large distances */
+	for (k = np; k > 0 && gmt_M_is_dnan (P[k-1].distance); k--);	/* Skip the NaN distances that were placed at end */
 	*n_points = k;	/* Update point count */
 	return (P);
 }
@@ -1119,6 +1119,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		Out.data = out;	Out.text = NULL;
 		if (Ctrl->A.mode) {	/* Need to combine close neighbors until minimum distance >= min_dist, then output revised dataset */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "NNA using min separation of %g%c\n", Ctrl->A.min_dist, Ctrl->A.unit);
 			n = 0;
 			while (n < n_points && NN_dist[n].distance < Ctrl->A.min_dist) n++;
 			while (n) {	/* Must do more combining since n pairs exceed threshold distance */
