@@ -9729,7 +9729,7 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 			char *tmp = strdup (string);
 			int n = 0, i, olen = (int)strlen (tmp), k = (x < 0) ? 1 : 0;
 			int nlen = olen + irint (floor (log10(fabs(x))/3.0));	/* Number of commas added */
-			for (i = 0; i < nlen; i++) string[i] = '_';
+			for (i = 0; i < nlen; i++) string[i] = '_';	string[i] = '\0';
 			fprintf (stderr, "x = %g, string=%s, olen=%d nlen=%d k = %d n = %d\n", x, string, olen, nlen, k, n);
 			while (olen) {
 				nlen--;	olen--;
