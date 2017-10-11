@@ -9726,10 +9726,10 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 	if (use_locale) {
 		setlocale (LC_NUMERIC, "C");	/* Undo the damage */
 		if (strchr (string, ',') == NULL && fabs (x) > 1000.0 && irint (x) == x) {	/* System not capable of printf groups for integers */
-			fprintf (stderr, "Try grouping\n");
 			char *tmp = strdup (string);
 			size_t n, olen = strlen (tmp), k = (x < 0) ? 1 : 0;
 			size_t nlen = olen + lrint (floor (log10(fabs(x))/3.0));	/* Number of commas added */
+			fprintf (stderr, "Try grouping\n");
 			while (olen) {
 				nlen--;	olen--;
 				string[nlen] = tmp[olen];
