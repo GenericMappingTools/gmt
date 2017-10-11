@@ -212,7 +212,7 @@ void gmt_strtok_m (char *in, char **token, char **remain, char *sep) {
 
 	token[0] = NULL;		remain[0] = NULL;
 
-	p = malloc(strlen(in)+1);
+	p = calloc(strlen(in)+1, sizeof (char));
 	if (gmt_strtok (in, s, &pos, p)) {
 		token[0] = strdup(p);
 		if (gmt_strtok (in, s, &pos, p))
@@ -832,7 +832,7 @@ char *basename(char *path) {
 	 if (s3_len && ((newstr_len <= s1_without_s2_len) || (newstr_len + 1 == 0))) /* Overflow. */
 		 return 0;
 	 
-	 newstr = (char *)malloc(newstr_len + 1); /* w/ terminator */
+	 newstr = (char *)calloc(newstr_len + 1, sizeof(char)); /* w/ terminator */
 	 if (!newstr)		/* ENOMEM, but no good way to signal it. */
 		 return 0;
 	 

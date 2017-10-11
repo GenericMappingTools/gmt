@@ -556,7 +556,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 				}
 				if (tlen) {
 					if (D[GMT_OUT]->table[tbl_ver]->segment[seg]->text == NULL) D[GMT_OUT]->table[tbl_ver]->segment[seg]->text = gmt_M_memory (GMT, NULL, S->n_rows, char *);
-					D[GMT_OUT]->table[tbl_ver]->segment[seg]->text[n_rows] = malloc (tlen+1);	/* Space for trailing \0 */
+					D[GMT_OUT]->table[tbl_ver]->segment[seg]->text[n_rows] = calloc (tlen+1, sizeof(char));	/* Space for trailing \0 */
 					for (tbl_hor = 0; tbl_hor < n_horizontal_tbls; tbl_hor++) {	/* Number of tables to place horizontally */
 						use_tbl = (Ctrl->A.active) ? tbl_hor : tbl_ver;
 						if (use_tbl) strcat (D[GMT_OUT]->table[tbl_ver]->segment[seg]->text[n_rows], GMT->current.setting.io_col_separator);

@@ -531,7 +531,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 				}
 				else {
 					out[GMT_X] = lonsum; out[GMT_Y] = latsum;
-					sprintf (format, "L1 Small Circle Pole. Distance from Pole to L1 Small Circle (degrees): %s\n", GMT->current.setting.format_float_out);
+					sprintf (format, "L1 Small Circle Pole. Distance from Pole to L1 Small Circle (degrees): %s", GMT->current.setting.format_float_out);
 					snprintf (record, GMT_LEN256, format, rad);
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}

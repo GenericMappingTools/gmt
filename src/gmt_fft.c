@@ -564,8 +564,8 @@ GMT_LOCAL int fft_1d_vDSP (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned in
 		 * single-precision FFT functions: */
 		fft_1d_vDSP_reset (&GMT->current.fft);
 		GMT->current.fft.setup_1d = vDSP_create_fftsetup (log2n, kFFTRadix2);
-		GMT->current.fft.dsp_split_complex_1d.realp = malloc (n * sizeof(gmt_grdfloat));
-		GMT->current.fft.dsp_split_complex_1d.imagp = malloc (n * sizeof(gmt_grdfloat));
+		GMT->current.fft.dsp_split_complex_1d.realp = calloc (n, sizeof(gmt_grdfloat));
+		GMT->current.fft.dsp_split_complex_1d.imagp = calloc (n, sizeof(gmt_grdfloat));
 		if (GMT->current.fft.dsp_split_complex_1d.realp == NULL || GMT->current.fft.dsp_split_complex_1d.imagp == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to allocate dsp_split_complex array of length %u\n", n);
 			return -1; /* out of memory */
@@ -612,8 +612,8 @@ GMT_LOCAL int fft_2d_vDSP (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned in
 	 	* single-precision FFT functions: */
 		fft_2d_vDSP_reset (&GMT->current.fft);
 		GMT->current.fft.setup_2d = vDSP_create_fftsetup (MAX (log2nx, log2ny), kFFTRadix2);
-		GMT->current.fft.dsp_split_complex_2d.realp = malloc (n_xy * sizeof(gmt_grdfloat));
-		GMT->current.fft.dsp_split_complex_2d.imagp = malloc (n_xy * sizeof(gmt_grdfloat));
+		GMT->current.fft.dsp_split_complex_2d.realp = calloc (n_xy, sizeof(gmt_grdfloat));
+		GMT->current.fft.dsp_split_complex_2d.imagp = calloc (n_xy, sizeof(gmt_grdfloat));
 		if (GMT->current.fft.dsp_split_complex_2d.realp == NULL || GMT->current.fft.dsp_split_complex_2d.imagp == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to allocate dsp_split_complex array of length %u\n", n_xy);
 			return -1; /* out of memory */

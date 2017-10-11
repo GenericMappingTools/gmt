@@ -867,7 +867,7 @@ GMT_LOCAL void gmtnc_right_shift_grid (void *gridp, const unsigned n_cols, const
 
 	assert (n_shift_abs != 0 && n_cols_t > n_shift_abs && n_cols_t > 0 && n_rows_t > 0);
 
-	tmp = malloc (n_shift_abs * cell_size);
+	tmp = calloc (n_shift_abs, cell_size);
 
 	if (n_shift > 0) { /* right shift */
 		for (row = 0; row < n_rows_t; ++row) {

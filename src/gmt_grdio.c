@@ -2849,7 +2849,7 @@ void gmtlib_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigne
 	unsigned row;
 	unsigned stride = n_cols; /* stride is the distance between rows. defaults to n_cols */
 	char *grid = (char*)gridp;
-	char *tmp = malloc (n_cols * cell_size);
+	char *tmp = calloc (n_cols, cell_size);
 	char *top, *bottom;
 
 	if (n_stride != 0)
