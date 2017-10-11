@@ -276,6 +276,7 @@ GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *
 
 	gmt_grd_pad_on (GMT, Grid, pad);	/* Reinstate the original pad */
 	gmt_M_free (GMT, cell);
+	gmt_M_free (GMT, Out);
 	return (0);
 }
 
@@ -356,6 +357,7 @@ GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *G
 
 	gmt_M_free (GMT, pair);
 	gmt_M_free (GMT, cell);
+	gmt_M_free (GMT, Out);
 	return (0);
 }
 
