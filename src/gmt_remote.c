@@ -90,7 +90,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	bool is_srtm = false;
 	size_t len;
 	CURL *Curl = NULL;
-	static char *ftp_dir[4] = {"/cache", "", "/srtm1", "/srtm3"}, *name[3] = {"CACHE", "USER", "LOCAL"};
+	static char *cache_dir[4] = {"/cache", "", "/srtm1", "/srtm3"}, *name[3] = {"CACHE", "USER", "LOCAL"};
 	char *user_dir[3] = {GMT->session.CACHEDIR, GMT->session.USERDIR, NULL};
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = NULL;
 	char srtmdir[PATH_MAX] = {""}, *srtm_local = NULL;
@@ -191,8 +191,8 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 	if (kind == GMT_URL_FILE || kind == GMT_URL_QUERY)	/* General URL given */
 		sprintf (url, "%s", file);
-	else {			/* Use GMT ftp dir, possible from subfolder cache */
-		sprintf (url, "%s%s/%s", GMT->session.DATAURL, ftp_dir[from], &file[pos]);
+	else {	/* Use GMT data dir, possible from subfolder cache */
+		sprintf (url, "%s%s/%s", GMT->session.DATAURL, cache_dir[from], &file[pos]);
 		if (kind == GMT_DATA_FILE && !strstr (url, ".grd")) strcat (url, ".grd");	/* Must supply the .grd */
 		len = strlen (url);
 		if (is_srtm && !strncmp (&url[len-3], ".nc", 3U)) strncpy (&url[len-2], GMT_SRTM_EXTENSION_REMOTE, 3U);	/* Switch extension for download */

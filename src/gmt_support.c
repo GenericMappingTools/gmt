@@ -9686,21 +9686,22 @@ char * gmt_make_filename (struct GMT_CTRL *GMT, char *template, unsigned int fmt
 
 /*! . */
 void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double x) {
-	/* Determines if %-apostrophe is used in the format for a float. If so, use LC_NUMERIC=en_US */
+	/* Determines if %-apostrophe is used in the format for a float. If so, must temporarily switch to LC_NUMERIC=en_US */
 #ifdef HAVE_SETLOCALE
 	char *use_locale = strstr (format, "%'");
 	if (use_locale) setlocale (LC_NUMERIC, "en_US");
 #endif
 	if (GMT->current.plot.substitute_pi) {	/* Want to use pi when close to known multiples of pi */
-		/* We only allow n pi, 1.5pi, and fractions 3/4, 2/3, 1/2, 1/3, and 1/4 */
-		double f = fabs (x / M_PI);
+		/* We only allow n pi, 1.5pi, and fractions 3/4, 2/3, 1/2, 1/3, and 1/4.
+		 * substitute_pi becomes true when items with "pi" are used in -R, -I etc. */
+		double f = fabs (x / M_PI);	/* Float multiple of pi */
 		int n = irint (f);
 		char s = (x < 0.0) ? '-' : '+';
-		if (n > 1 && fabs (f-(double)n) < GMT_CONV4_LIMIT)
+		if (n > 1 && fabs (f-(double)n) < GMT_CONV4_LIMIT)	/* Exact multiple of 2*pi, 3*pi, etc */
 			sprintf (string, "%c@~%dp@~", s, n);
-		else if (n == 1 && fabs (f-(double)n) < GMT_CONV4_LIMIT)
+		else if (n == 1 && fabs (f-(double)n) < GMT_CONV4_LIMIT)	/* Just pi instead of 1*pi */
 			sprintf (string, "%c@~p@~", s);
-		else if (fabs (f-1.5) < GMT_CONV4_LIMIT)
+		else if (fabs (f-1.5) < GMT_CONV4_LIMIT)	/* 3/2 pi */
 			sprintf (string, "%c@~3p/2@~", s);
 		else if (fabs (f-1.0) < GMT_CONV4_LIMIT)
 			sprintf (string, "%c@~p@~", s);
@@ -9722,7 +9723,26 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 	else
 		sprintf (string, format, x);
 #ifdef HAVE_SETLOCALE
-	if (use_locale) setlocale (LC_NUMERIC, "C");
+	if (use_locale) {
+		setlocale (LC_NUMERIC, "C");	/* Undo the damage */
+		if (strchr (string, ',') == NULL && fabs (x) > 1000.0 && irint (x) == x) {	/* System not capable of printf groups for integers */
+			fprintf (stderr, "Try grouping\n");
+			char *tmp = strdup (string);
+			size_t n, olen = strlen (tmp), k = (x < 0) ? 1 : 0;
+			size_t nlen = olen + lrint (floor (log10(fabs(x))/3.0));	/* Number of commas added */
+			while (olen) {
+				nlen--;	olen--;
+				string[nlen] = tmp[olen];
+				n++;
+				if (n == 3 && (olen-k)) {
+					nlen--;
+					string[nlen] = ',';
+					n = 0;
+				}
+			}
+			gmt_M_str_free (tmp);
+		}
+	}
 #endif
 }
 
