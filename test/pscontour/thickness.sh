@@ -12,5 +12,5 @@ cat << EOF > t.cpt
 2500 239 101 072   3000 239 101 072
 3000 215 048 031   3500 215 048 031
 EOF
-gmt pscontour ice.bm -JS321/90/71/5i -P -R302/57/355/82.25r -Ct.cpt -I -W+ -K -Xc > $ps
+gmt pscontour ice.bm -JS321/90/71/5i -P -R302/57/355/82.25r -Ct.cpt -I -W+ -K -Gl-45/81/-45/58 -Xc > $ps
 gmt pscoast -J -R -W -O -Bafg --MAP_ANNOT_OBLIQUE=2 >> $ps
