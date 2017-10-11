@@ -9730,15 +9730,17 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 			char *tmp = strdup (string);
 			int n = 0, olen = (int)strlen (tmp), k = (x < 0) ? 1 : 0;
 			int nlen = olen + irint (floor (log10(fabs(x))/3.0));	/* Number of commas added */
-			fprintf (stderr, "string=%s, olen=%d nlen=%d k = %d n = %d", string, olen, nlen, k, n);
+			fprintf (stderr, "string=%s, olen=%d nlen=%d k = %d n = %d\n", string, olen, nlen, k, n);
 			while (olen) {
 				nlen--;	olen--;
 				string[nlen] = tmp[olen];
 				n++;
+				fprintf (stderr, "string=%s, olen=%d nlen=%d k = %d n = %d\n", string, olen, nlen, k, n);
 				if (n == 3 && (olen-k) > 0) {
 					nlen--;
 					string[nlen] = ',';
 					n = 0;
+					fprintf (stderr, "string=%s, olen=%d nlen=%d k = %d n = %d\n", string, olen, nlen, k, n);
 				}
 			}
 			gmt_M_str_free (tmp);
