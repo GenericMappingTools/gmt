@@ -9739,6 +9739,7 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 					n = 0;
 				}
 			}
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Expanded %s to %s\n", tmp, string);
 			gmt_M_str_free (tmp);
 		}
 	}
