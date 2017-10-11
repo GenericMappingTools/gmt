@@ -9725,7 +9725,7 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 #ifdef HAVE_SETLOCALE
 	if (use_locale) {
 		setlocale (LC_NUMERIC, "C");	/* Undo the damage */
-		if (strchr (string, ',') == NULL && fabs (x) > 1000.0 && irint (x) == x) {	/* System not capable of printf groups for integers */
+		if (strchr (string, ',') == NULL && fabs (x) > 1000.0 && fabs (x - irint (x)) < GMT_CONV8_LIMIT) {	/* System not capable of printf groups for integers */
 			char *tmp = strdup (string);
 			size_t n, olen = strlen (tmp), k = (x < 0) ? 1 : 0;
 			size_t nlen = olen + lrint (floor (log10(fabs(x))/3.0));	/* Number of commas added */
