@@ -9725,22 +9725,18 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 #ifdef HAVE_SETLOCALE
 	if (use_locale) {
 		setlocale (LC_NUMERIC, "C");	/* Undo the damage */
-		if (strchr (string, ',') == NULL && fabs (x) > 1000.0 && fabs (x - irint (x)) < GMT_CONV8_LIMIT) {	/* System not capable of printf groups for integers */
+		if (strchr (string, ',') == NULL && fabs (x) > 1000.0 && fabs (x - irint (x)) < GMT_CONV8_LIMIT) {
+			/* System not capable of printf groups for integers so we insert those commas manually... */
 			char *tmp = strdup (string);
-			int n = 0, i, olen = (int)strlen (tmp), k = (x < 0) ? 1 : 0;
+			int n = 0, olen = (int)strlen (tmp), k = (x < 0) ? 1 : 0;
 			int nlen = olen + irint (floor (log10(fabs(x))/3.0));	/* Number of commas added */
-			for (i = 0; i < nlen; i++) string[i] = '_';	string[i] = '\0';
-			fprintf (stderr, "x = %g, string=%s, olen=%d nlen=%d k = %d n = %d\n", x, string, olen, nlen, k, n);
-			while (olen) {
-				nlen--;	olen--;
-				string[nlen] = tmp[olen];
-				n++;
-				fprintf (stderr, "string=%s, olen=%d nlen=%d k = %d n = %d\n", string, olen, nlen, k, n);
-				if (n == 3 && (olen-k) > 0) {
-					nlen--;
-					string[nlen] = ',';
+			string[nlen] = '\0';
+			/* We guild the string from back to front */
+			while (olen) {	/* While more letters in original string */
+				string[--nlen] = tmp[--olen];
+				if (++n == 3 && (olen-k) > 0) {
+					string[--nlen] = ',';
 					n = 0;
-					fprintf (stderr, "string=%s, olen=%d nlen=%d k = %d n = %d\n", string, olen, nlen, k, n);
 				}
 			}
 			gmt_M_str_free (tmp);
