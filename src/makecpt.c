@@ -401,7 +401,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S.active) {	/* Must read data and do statistics first, and then set -T values */
 		unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0;
-		uint64_t n, zcol, tbl, seg;
+		uint64_t n = 0, zcol, tbl, seg;
 		struct GMT_DATASET *D = NULL;
 		double *zz = NULL, mean_z, sig_z;
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */

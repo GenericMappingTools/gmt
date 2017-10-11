@@ -499,7 +499,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 	
 			case 'M':	/* Subplot margins */
 				Ctrl->M.active = true;
-				if (opt->arg[n] == 0) {	/* Accept default margins */
+				if (opt->arg[0] == 0) {	/* Accept default margins */
 					for (k = 0; k < 4; k++) Ctrl->M.margin[k] = 0.5 * SUBPLOT_CM_TO_INCH;
 				}
 				else {	/* Process 1, 2, or 4 margin values */

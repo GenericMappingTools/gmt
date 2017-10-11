@@ -5025,7 +5025,7 @@ GMT_LOCAL void get_the_fill (struct GMT_FILL *f, struct GMT_CUSTOM_SYMBOL_ITEM *
 
 int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline) {
 	int action;
-	unsigned int na, i, id = 0, level = 0, start = 0, *type = NULL;
+	unsigned int na, i, id = 0, level = 0;
 	bool flush = false, this_outline = false, found_elseif = false, skip[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
@@ -5064,8 +5064,6 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 	/* Regular macro symbol */
 
-	type = symbol->type;	/* Link to top level head info */
-	start = symbol->start;	/* Link to top level head info */
 	/* Remember current settings as we wish to restore at the end */
 	plot_savepen (GMT, &save_pen);
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);

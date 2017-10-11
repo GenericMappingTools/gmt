@@ -309,7 +309,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psvelo (void *V_API, int mode, void *args) {
-	int ix = 0, iy = 1, n_rec = 0, n_k, justify;
+	int ix = 0, iy = 1, n_rec = 0, justify;
 	int des_ellipse = true, des_arrow = true, error = false;
 
 	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[PSL_MAX_DIMS];
@@ -370,8 +370,6 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_Report (API, GMT_MSG_VERBOSE, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
-
-	n_k = (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) ? 7 : 9;
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_MIXED, NULL)) == NULL) {	/* Read next record, get NULL if special case */

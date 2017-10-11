@@ -287,12 +287,12 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
 	struct X2SYS_COE_PAIR *P = NULL;
-	bool check_for_NaN = false, both, first;
+	bool check_for_NaN = false, both;
 	bool internal = true;	/* false if only external xovers are needed */
 	bool external = true;	/* false if only internal xovers are needed */
 	uint64_t i, j, k, one, two, n_items, n_tracks;
 	uint64_t p, np_use = 0, nx_use = 0, np, m, nx, *trk_nx = NULL;
-	unsigned int n_weights = 0, coe_kind, n_out, n_output, cmode;
+	unsigned int n_weights = 0, coe_kind, n_output, cmode;
 	int error = 0, id;
 	double *wesn = NULL, val[2], out[128], corr[2] = {0.0, 0.0}, sec_2_unit = 1.0, w_k, w;
 	double fixed_weight = 1.0, *weights = NULL, *trk_symm = NULL;
@@ -387,7 +387,6 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	one = 0;	two = 1;	/* Normal track order */
 	both = Ctrl->S.both;		/* Usually false unless -S+<track> is set */
 	if (!both) both = !Ctrl->S.active;	/* Two columns for many output choices */
-	n_out = 1 + both;		/* Number of column output for some cols if single is not specified */
 
 	gmt_set_column (GMT, GMT_OUT, GMT_X, (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT);
 	gmt_set_column (GMT, GMT_OUT, GMT_Y, (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT);
@@ -617,7 +616,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 			/* First check if this record has a non-NaN COE */
 			if (check_for_NaN && (gmt_M_is_dnan (P[p].COE[k].data[one][COE_Z]) || gmt_M_is_dnan (P[p].COE[k].data[two][COE_Z]))) continue;
 			record[0] = 0;	/* Clean slate */
-			for (i = j = 0, first = true; i < n_items; i++, j++) {
+			for (i = j = 0; i < n_items; i++, j++) {
 				switch (Ctrl->F.flags[i]) {	/* acdhitTvwxyz */
 					case 'a':	/* Angle between tracks */
 						val[0] = fabs (P[p].COE[k].data[0][COE_H] - P[p].COE[k].data[1][COE_H]);
@@ -692,7 +691,6 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 						}
 						break;
 				}
-				first = false;
 			}
 			if (Ctrl->F.mixed) {	/* Write names of the track(s) as trialing text */
 				if (both) {

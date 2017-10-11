@@ -566,7 +566,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	unsigned int base = 3, np[2] = {0, 0};
 	unsigned int side, col, id;
 	int n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX, error = 0;
-	bool inside = false, need_header = false, shuffle = false, pt_cartesian = false;
+	bool inside = false, need_header = false, pt_cartesian = false;
 	bool output_header = false, do_project = false, no_resample = false, keep;
 
 	uint64_t k, row, seg, n_read = 0, n_pass = 0, n_output = 0;
@@ -609,7 +609,6 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.active && gmt_M_is_cartesian (GMT, GMT_IN)) pt_cartesian = true;
 
-	shuffle = (GMT->current.setting.io_lonlat_toggle[GMT_IN] != GMT->current.setting.io_lonlat_toggle[GMT_OUT]);	/* Must rewrite output record */
 	n_minimum = Ctrl->Z.max_col;	/* Minimum number of columns in ASCII input */
 	
 	if (!GMT->common.R.active[RSET] && Ctrl->N.active) {	/* If we use coastline data or used -fg but didn't give -R we implicitly set -Rg */

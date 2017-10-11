@@ -14536,13 +14536,12 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	/* Set workflow directory */
 	char dir[GMT_LEN256] = {""};
 	static char *type[2] = {"classic", "modern"}, *smode[3] = {"Use", "Begin", "End"}, *fstatus[4] = {"found", "not found", "created", "removed"};
-	int err = 0, error = GMT_NOERROR, k1;
+	int err = 0, error = GMT_NOERROR;
 	struct stat S;
 
 	sprintf (dir, "%s/gmt%d.%d", API->tmp_dir, GMT_MAJOR_VERSION, API->PPID);
 	API->gwf_dir = strdup (dir);
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
-	k1 = (err) ? 1 : 0;
 
 	switch (mode) {
 		case GMT_BEGIN_WORKFLOW:	/* Must create a new temporary directory */

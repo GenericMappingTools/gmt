@@ -7407,7 +7407,6 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 	 */
 	
 	int n_fields;
-	struct GMTAPI_DATA_OBJECT *S = NULL;
 	struct GMTAPI_CTRL *API;
 	struct GMT_CTRL *GMT;
 	void *record;
@@ -7420,27 +7419,10 @@ void *GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 	if (retval) *retval = 0;
 	GMT = API->GMT;	/* Shorthand for GMT access */
 	
-	S = API->current_get_obj;	/* Shorthand for the current data source we are working on */
 	do {	/* We do this until we can secure the next record or we run out of records (and return EOF) */
 		API->get_next_record = false;	/* We expect to read one data record and return */
 		GMT->current.io.status = 0;	/* Initialize status to OK */
-#if 0
-		if (S->status == GMT_IS_USED) {	/* Finished reading from current resource, go to next resource */
-			if (GMT->current.io.ogr == GMT_OGR_TRUE) return_null (API, GMT_OGR_ONE_TABLE_ONLY);	/* Only allow single tables if GMT/OGR */
-			if ((status = api_next_data_object (API, S->family, GMT_IN)) == EOF)	/* That was the last source, return */
-				n_fields = EOF;
-			else if (status) {	/* This is not good... */
-				return_null (API, GMT_NO_RESOURCES);
-			}
-			else {	/* Got another object to process */
-				S = API->current_get_obj = API->object[API->current_item[GMT_IN]];	/* Shorthand for the next data source to work on */
-				API->get_next_record = true;				/* Since we haven't read the next record yet */
-				api_get_record_init (API);
-			}
-		}
-		else	/* Get the next record */
-#endif
-			record = API->api_get_record (API, mode, &n_fields);
+		record = API->api_get_record (API, mode, &n_fields);
 	} while (API->get_next_record);
 	
 	if (!(n_fields == EOF || n_fields == GMT_IO_NEXT_FILE)) API->current_rec[GMT_IN]++;	/* Increase record count, unless EOF */
@@ -11188,7 +11170,7 @@ void *GMT_Alloc_Segment_ (unsigned int *family, uint64_t *n_rows, uint64_t *n_co
 int GMT_Set_Columns (void *V_API, unsigned int direction, unsigned int n_cols, unsigned int mode) {
 	/* Specify how many input or output columns to use for record-by-record output, if fixed */
 	int error = 0;
-	uint64_t n_in;
+	uint64_t n_in = 0;
 	struct GMTAPI_CTRL *API = NULL;
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (V_API, GMT_NOT_A_VALID_DIRECTION);
 	if (direction == GMT_IN && !(mode == GMT_COL_FIX || mode == GMT_COL_VAR || mode == GMT_COL_FIX_NO_TEXT)) return_error (V_API, GMT_NOT_A_VALID_MODE);
@@ -11457,9 +11439,10 @@ void * GMT_Get_Vector_ (struct GMT_VECTOR *V, unsigned int *col) {
 int GMT_Set_Vector (void *V_API, struct GMT_VECTOR *V, uint64_t n_rows, uint64_t n_columns) {
 	/* Allow the setting of the row length for vectors, typically for preallcoated user arrays.
 	 * We also ensure that the type and data arrays are allocated if dimensions are set */
+	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (V == NULL) return_error (V_API, GMT_PTR_IS_NULL);
-	struct GMTAPI_CTRL *API = api_get_api_ptr (V_API);
+	API = api_get_api_ptr (V_API);
 	if (n_rows) V->n_rows = n_rows;
 	if (n_columns) V->n_columns = n_columns;
 	if (n_columns && V->data == NULL) V->data = gmt_M_memory_aligned (API->GMT, NULL, n_columns, union GMT_UNIVECTOR);

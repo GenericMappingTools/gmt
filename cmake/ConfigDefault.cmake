@@ -70,6 +70,11 @@ if (NOT UNITS)
 	set (UNITS "SI")
 endif (NOT UNITS)
 
+# The max RMS error in graphicmagick comparisons of PS files
+if (NOT DEFINED GRAPHICSMAGICK_RMS)
+	set (GRAPHICSMAGICK_RMS "0.001")
+endif (NOT DEFINED GRAPHICSMAGICK_RMS)
+
 # File locking off
 if (NOT DEFINED FLOCK)
 	set (FLOCK off)

@@ -29,6 +29,8 @@ LANG=C
 
 # Additional variables needed in gmtest
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
+GRAPHICSMAGICK_RMS="@GRAPHICSMAGICK_RMS@"
+
 # choose awk
 if type gawk >/dev/null 2>&1 ; then
   export AWK=gawk
@@ -120,7 +122,7 @@ if ! [ -x "$GRAPHICSMAGICK" ]; then
 fi
 for ps in *.ps ; do
   # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-  rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/${psref:-$ps}") || pscmpfailed="yes"
+  rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/${psref:-$ps}") || pscmpfailed="yes"
   rms=$(perl -ne 'print $1 if /Total: ([0-9.]+)/' <<< "$rms")
   if [ -z "$rms" ]; then
     rms="NA"

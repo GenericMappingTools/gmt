@@ -309,13 +309,12 @@ GMT_LOCAL int file_is_known (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 i
 	unsigned char c[4], magic_ras[4] = {0x59, 0xa6, 0x6a, 0x95}, magic_ps[4] = {'%', '!', 'P', 'S'};
 	char *F = *file;
 	int j;
-	unsigned int first = 0;
 
 	if (F == NULL || F[0] == '\0') return GMT_NOTSET;	/* Nothing given */
 	if (gmt_M_file_is_memory (F)) return (0);	/* Special passing of image */
 	if (gmt_M_file_is_cache (F)) {	/* Must download, then modify the name */
 		char *tmp = strdup (&F[1]);
-		first = gmt_download_file_if_not_found (GMT, F, 0);
+		unsigned int first = gmt_download_file_if_not_found (GMT, F, 0);
 		gmt_M_str_free (*file);
 		*file = F = tmp;
 	}

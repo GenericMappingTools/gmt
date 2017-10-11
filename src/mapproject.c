@@ -641,8 +641,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mapproject (void *V_API, int mode, void *args) {
-	int x, y, ks, n_fields, two, way, error = 0, o_type[2] = {GMT_Z, GMT_Z};
-	int fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
+	int ks, n_fields, two, way, error = 0, fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
 	
 	bool line_start = true, do_geo_conv = false, double_whammy = false;
 	bool geodetic_calc = false, datum_conv_only = false, along_track = false;
@@ -944,7 +943,6 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to take on some input values */
 
-	x = (GMT->current.setting.io_lonlat_toggle[GMT_OUT]) ? 1 : 0;	y = 1 - x;		/* Set up which columns have x and y for output only*/
 	if ((gmt_M_is_geographic (GMT, GMT_IN) || Ctrl->E.active) && Ctrl->I.active) {
 		gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
 		gmt_set_cartesian (GMT, GMT_IN);
@@ -952,7 +950,6 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	else if (datum_conv_only || Ctrl->N.active) {	/* Both in and out are geographic */
 		gmt_set_geographic (GMT, GMT_IN);
 		gmt_set_geographic (GMT, GMT_OUT);
-		o_type[GMT_X] = GMT_X;	o_type[GMT_Y] = GMT_Y;
 		gmt_set_column (GMT, GMT_IO, GMT_Z, GMT_IS_FLOAT);
 	}
 	else if (gmt_M_is_geographic (GMT, GMT_OUT)) {
