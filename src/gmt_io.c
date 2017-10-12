@@ -3302,6 +3302,15 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 						GMT->current.io.curr_trailing_text[0] = '\0';
 						GMT->current.io.record.text = NULL;
 					}
+					else if (n_cols_this_record == 0 && start_of_text) {	/* All text */
+						GMT->current.io.input = &gmtio_ascii_textinput;	/* Override and use ASCII text mode */
+						strcpy (GMT->current.io.curr_trailing_text, line);
+						GMT->current.io.record.text = GMT->current.io.curr_trailing_text;
+						GMT->current.io.record.data = NULL;
+						*n = 1ULL;			/* We always return 1 item as there are no columns */
+						*status = 1;
+						return (&GMT->current.io.record);
+					}
 					*n = (GMT->common.i.select) ? GMT->common.i.n_cols : n_cols_this_record;
 					strscan = (GMT->current.io.record_type & GMT_READ_TEXT) ? &strsepzp : &strsepz;	/* Need zp scanner to detect trailing text */
 				}
