@@ -326,8 +326,8 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 /*! . */
 GMT_LOCAL int gmtsupport_parse_pattern (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill) {
 	int err;
-	/* New syntax may have a modifier or no slash AND no colon */
-	if ((strstr(line, "+r") || strstr(line, "+f") || strstr(line, "+b") || !strchr(line, '/')) && !strchr (line,':'))
+	/* New syntax may have a modifier */
+	if (strstr(line, "+r") || strstr(line, "+f") || strstr(line, "+b"))	/* Clearly new syntax */
 		err = gmtsupport_parse_pattern_new (GMT, line, fill);
 	else
 		err = gmtsupport_parse_pattern_old (GMT, line, fill);
