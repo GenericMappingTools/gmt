@@ -1613,6 +1613,7 @@ static void psl_place_encoding (struct PSL_CTRL *PSL, const char *encoding) {
 /* This function copies a file called $PSL_SHAREDIR/postscriptlight/<fname>.ps
  * to the postscript output verbatim.
  */
+#if 0
 static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname) {
 	FILE *in = NULL;
 	char buf[PSL_BUFSIZ], fullname[PSL_BUFSIZ];
@@ -1647,6 +1648,44 @@ static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname) {
 		}
 	}
 	fclose (in);
+}
+#endif
+
+#include "PSL_strings.h"	/* Static char copies of the three former include files */
+
+static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *text) {
+	char *buf = NULL, *string = NULL;
+	int i;
+
+	if (!strcmp (text, "PSL_label"))
+		string = strdup (PSL_label_str);
+	else if (!strcmp (text, "PSL_prologue"))
+		string = strdup (PSL_prologue_str);
+	else if (!strcmp (text, "PSL_text"))
+		string = strdup (PSL_text_str);
+		
+	while ((buf = strsep (&string, "\n")) != NULL) {
+		if (PSL->internal.comments) {
+			/* We copy every line, including the comments, except those starting '%-' */
+			if (buf[0] == '%' && buf[1] == '-') continue;
+			PSL_command (PSL, "%s\n", buf);
+		}
+		else {
+			/* Here we remove the comments */
+			i = 0;
+			while (buf[i] && (buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\n')) i++;	/* Find first non-blank character */
+			if (!buf[i]) continue;								/* Blank line, skip */
+			if (buf[i] == '%' && buf[i+1] != '%') continue;					/* Comment line, skip */
+			/* Output this line, but skip trailing comments (while watching for DSC %% comments) */
+			/* Find the end of important stuff on the line (i.e., look for start of trailing comments) */
+			for (i = 1; buf[i] && !(buf[i] == '%' && buf[i-1] != '%'); i++);
+			i--;										/* buf[i] is the last character to be output */
+			while (i && (buf[i] == ' ' || buf[i] == '\t' || buf[i] == '\n')) i--;		/* Remove white-space prior to the comment */
+			buf[++i] = '\0';			/* Add end-line character and print */
+			PSL_command (PSL, "%s\n", buf);
+		}
+	}
+	PSL_free (string);
 }
 
 static struct PSL_WORD *psl_add_word_part (struct PSL_CTRL *PSL, char *word, int length, int fontno, double fontsize, int sub, int super, int small, int under, int space, double rgb[]) {
