@@ -376,7 +376,7 @@ end
     PSL_cuts k dist halfwidth add put			% Distance at the end of label gap
     /k k 1 add def					% Was at end, move to next
   } for
-  PSL_cuts k 100000.0 put				% Last cut has "infinite" distance
+  PSL_cuts k 100000.0 put				% Last cut has ~infinite distance
 
   /PSL_nn PSL_n PSL_m 2 mul add def	% The total path will be 2*m points longer
   /PSL_xx PSL_nn array def		% Assign new space for x and y
@@ -537,7 +537,7 @@ end
 % Use <flags> PSL_straight_path_labels to paint|draw textboxes and place text
 % Use <flags> PSL_straight_path_clip to use textboxes to define and activate clipping
 % Subroutines of these functions are called PSL_ST_*
-% Local variables are called psl_*, "global" are called PSL_*
+% Local variables are called psl_*, global are called PSL_*
 
 /PSL_straight_path_labels
 {	% This function will lay down (a) text box paint, (b) text box outline, and (c) text labels
