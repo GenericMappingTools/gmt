@@ -838,7 +838,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 					edge[ij2].begin = link[ij2];	edge[ij2].end = link[ij3];
 					edge[ij3].begin = link[ij1];	edge[ij3].end = link[ij3];
 				}
-				for (i = 0; i < n_edge; i++) if (edge[i].begin > edge[i].end) gmt_M_int_swap (edge[i].begin, edge[i].end);
+				for (i = 0; i < n_edge; i++)
+					if (edge[i].begin > edge[i].end) gmt_M_int_swap (edge[i].begin, edge[i].end);
 
 				qsort (edge, n_edge, sizeof (struct TRIANGULATE_EDGE), compare_edge);
 				for (i = 1, j = 0; i < n_edge; i++) {
@@ -852,9 +853,11 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				for (i = 0; i < n_edge; i++) {
 					sprintf (record, "Edge %d-%d", edge[i].begin, edge[i].end);
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
-					out[GMT_X] = xx[edge[i].begin];	out[GMT_Y] = yy[edge[i].begin];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].begin];
+					out[GMT_X] = xx[edge[i].begin];	out[GMT_Y] = yy[edge[i].begin];
+					if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].begin];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-					out[GMT_X] = xx[edge[i].end];	out[GMT_Y] = yy[edge[i].end];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].end];
+					out[GMT_X] = xx[edge[i].end];	out[GMT_Y] = yy[edge[i].end];
+					if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].end];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 				gmt_M_free (GMT, edge);
@@ -874,11 +877,13 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				sprintf (record, "Polygon %d-%d-%d -Z%" PRIu64, link[ij], link[ij+1], link[ij+2], i);
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 				for (k = 0; k < 3; k++) {	/* Three vertices */
-					out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij+k]];
+					out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];
+					if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij+k]];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
 				/* Explicitly close the polygon */
-				out[GMT_X] = xx[link[ij]];	out[GMT_Y] = yy[link[ij]];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij]];
+				out[GMT_X] = xx[link[ij]];	out[GMT_Y] = yy[link[ij]];
+				if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij]];
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 		}
