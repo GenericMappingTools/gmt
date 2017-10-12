@@ -410,7 +410,11 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 			continue;	/* Go back and read the next record */
 		}
 		in = In->data;	/* Only need to process numerical part here */
-
+		if (in == NULL) {
+			GMT_Report (API, GMT_MSG_VERBOSE, "No data columns found; no output can be produced");
+			gmt_M_free (GMT, data);
+			Return (GMT_NOERROR);
+		}
 		/* Data record to process */
 
 		lonsum += in[GMT_X];	latsum += in[GMT_Y];
