@@ -48,6 +48,7 @@
 #define MGD77T_ALL "id,time,lat,lon,ptc,nqc,twt,depth,bcc,btc,bqc,mtf1,mtf2,mag,msens,diur,msd,mqc,gobs,eot,faa,gqc,sln,sspn"
 #define MGD77_GEO  "time,lat,lon,twt,depth,mtf1,mtf2,mag,gobs,faa"
 #define MGD77_AUX  "dist,azim,cc,vel,weight"
+#define MGD77_DAT  "drt,tz,year,month,day,hour,dmin,lat,lon,ptc,twt,depth,bcc,btc,mtf1,mtf2,mag,msens,diur,msd,gobs,eot,faa,nqc,id,sln,sspn"
 
 #define ADJ_CT	0
 #define ADJ_DP	1
@@ -251,7 +252,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     mgd77t:  The full set of all 26 columns in the MGD77T specification.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     geo:     time,lon,lat + the 7 geophysical observations.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     all:     As mgd77 but with time items written as a date-time string.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     allt:     As mgd77t but with time items written as a date-time string.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     allt:    As mgd77t but with time items written as a date-time string.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     dat:     As mgd77t but in plain table file order.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    Append + to include the 5 derived quantities dist, azim, cc, vel, and weight [see -W]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    [Default is all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  Abbreviations in UPPER CASE will suppress records where any such column is NaN.\n");
@@ -527,6 +529,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 				if (!strcmp (buffer, "geo")) strncpy (buffer, MGD77_GEO, GMT_BUFSIZ);
 				if (!strcmp (buffer, "geo+")) {
 					strncpy (buffer, MGD77_GEO, GMT_BUFSIZ);
+					strcat (buffer, ",");
+					strcat (buffer, MGD77_AUX);
+				}
+				if (!strcmp (buffer, "dat")) strncpy (buffer, MGD77_DAT, GMT_BUFSIZ);
+				if (!strcmp (buffer, "dat+")) {
+					strncpy (buffer, MGD77_DAT, GMT_BUFSIZ);
 					strcat (buffer, ",");
 					strcat (buffer, MGD77_AUX);
 				}
