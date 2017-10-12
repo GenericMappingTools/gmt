@@ -383,7 +383,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Warning: We will read (x,y,z), but only (x,y) will be output when -Q is used\n");
 	if (Ctrl->M.active && Ctrl->S.active)
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -M and -S cannot be used together, -S will be ignored.\n");
-	n_output = (Ctrl->N.active) ? 3 : 2;
+	n_output = (Ctrl->N.active || Ctrl->Z.active) ? 3 : 2;
 	if (Ctrl->M.active && Ctrl->Z.active) n_output = 3;
 	triplets[GMT_OUT] = (n_output == 3);
 	if (Ctrl->G.active && !Ctrl->T.active) do_output = false;	/* If gridding then we require -T to also output the spatial files */
@@ -873,18 +873,33 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			gmt_set_segmentheader (GMT, GMT_OUT, true);
-			for (i = ij = 0; i < np; i++, ij += 3) {
-				sprintf (record, "Polygon %d-%d-%d -Z%" PRIu64, link[ij], link[ij+1], link[ij+2], i);
-				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
-				for (k = 0; k < 3; k++) {	/* Three vertices */
-					out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];
-					if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij+k]];
+			if (triplets[GMT_OUT]) {
+				double z_mean;
+				for (i = ij = 0; i < np; i++, ij += 3) {
+					z_mean = (zz[link[ij]] + zz[link[ij+1]] + zz[link[ij+2]]) / 3;
+					sprintf (record, "Polygon %d-%d-%d -Z%.8g", link[ij], link[ij+1], link[ij+2], z_mean);
+					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
+					for (k = 0; k < 3; k++) {	/* Three vertices */
+						out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];	out[GMT_Z] = zz[link[ij+k]];
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
+					}
+					/* Explicitly close the polygon */
+					out[GMT_X] = xx[link[ij]];	out[GMT_Y] = yy[link[ij]];	out[GMT_Z] = zz[link[ij]];
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+				}
+			}
+			else {
+				for (i = ij = 0; i < np; i++, ij += 3) {
+					sprintf (record, "Polygon %d-%d-%d -Z%" PRIu64, link[ij], link[ij+1], link[ij+2], i);
+					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
+					for (k = 0; k < 3; k++) {	/* Three vertices */
+						out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
+					}
+					/* Explicitly close the polygon */
+					out[GMT_X] = xx[link[ij]];	out[GMT_Y] = yy[link[ij]];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
-				/* Explicitly close the polygon */
-				out[GMT_X] = xx[link[ij]];	out[GMT_Y] = yy[link[ij]];
-				if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij]];
-				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 		}
 		else if (Ctrl->N.active) {	/* Write table of indices */
