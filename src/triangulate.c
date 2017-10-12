@@ -287,19 +287,27 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 	n_errors += gmt_add_R_if_modern_and_true (GMT, THIS_MODULE_NEEDS, (Ctrl->G.active && !Ctrl->C.active) || Ctrl->Q.active);
 
 	n_errors += gmt_check_binary_io (GMT, 2);
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 ||
+	                                   GMT->common.R.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must append file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Syntax error -C option: Must append slope grid file name\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (GMT->common.R.active[ISET] + GMT->common.R.active[RSET]) != 2, "Syntax error: Must specify -R, -I, -G for gridding\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (GMT->common.R.active[ISET] + GMT->common.R.active[RSET]) != 2,
+	                                   "Syntax error: Must specify -R, -I, -G for gridding\n");
 	(void)gmt_M_check_condition (GMT, !Ctrl->G.active && GMT->common.R.active[ISET], "Warning: -I not needed when -G is not set\n");
-	(void)gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->Q.active) && GMT->common.R.active[RSET], "Warning: -R not needed when -G or -Q are not set\n");
+	(void)gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->Q.active) && GMT->common.R.active[RSET],
+	                             "Warning: -R not needed when -G or -Q are not set\n");
 	//n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->G.active, "Syntax error -F option: Cannot be used without -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->Q.active, "Syntax error -S option: Cannot be used with -Q\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Syntax error -N option: Only required with -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active[RSET], "Syntax error -Q option: Requires -R\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON, "Syntax error -Q option: Requires Shewchuk triangulation algorithm\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (GMT->common.R.active[RSET] || GMT->common.R.active[ISET] || GMT->common.R.active[GSET]), "Syntax error -C option: No -R -I [-r] allowed, domain given by slope grid\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->D.active || Ctrl->F.active || Ctrl->M.active || Ctrl->N.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->T.active), "Syntax error -C option: Cannot use -D, -F, -M, -N, -Q, -S, T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON,
+	                                   "Syntax error -Q option: Requires Shewchuk triangulation algorithm\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (GMT->common.R.active[RSET] || GMT->common.R.active[ISET] ||
+									   GMT->common.R.active[GSET]),
+									   "Syntax error -C option: No -R -I [-r] allowed, domain given by slope grid\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->D.active || Ctrl->F.active || Ctrl->M.active ||
+									   Ctrl->N.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->T.active),
+									   "Syntax error -C option: Cannot use -D, -F, -M, -N, -Q, -S, T\n");
 	if (!(Ctrl->M.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->N.active)) Ctrl->N.active = !Ctrl->G.active;	/* The default action */
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -371,7 +379,10 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		else if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	}
-	if (Ctrl->Q.active && Ctrl->Z.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Warning: We will read (x,y,z), but only (x,y) will be output when -Q is used\n");
+	if (Ctrl->Q.active && Ctrl->Z.active)
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Warning: We will read (x,y,z), but only (x,y) will be output when -Q is used\n");
+	if (Ctrl->M.active && Ctrl->S.active)
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -M and -S cannot be used together, -S will be ignored.\n");
 	n_output = (Ctrl->N.active) ? 3 : 2;
 	if (Ctrl->M.active && Ctrl->Z.active) n_output = 3;
 	triplets[GMT_OUT] = (n_output == 3);
