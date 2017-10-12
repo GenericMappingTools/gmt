@@ -171,7 +171,7 @@ LANG=C
 export PATH="@GMT_BINARY_DIR@/src:\$PATH"
 unset GMT5_SHAREDIR
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
-export GMT_DATADIR="$src:@GMT_TEST_DATA@/"
+export GMT_DATADIR="$src"
 export GMT_SRCDIR="$src"
 export GSHHG_DIR="@GSHHG_PATH@"
 export DCW_DIR="@DCW_PATH@"
