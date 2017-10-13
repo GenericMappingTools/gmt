@@ -2328,50 +2328,63 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 	return (PSL_NO_ERROR);
 }
 
+static int psl_search_userimages (struct PSL_CTRL *PSL, char *imagefile) {
+	int i = 0;
+	while (i < PSL->internal.n_userimages) {
+		if (!strcmp (PSL->internal.user_image[i], imagefile))	/* Yes, found it */
+			return (i);
+		i++;	/* No, go to next */
+	}
+	return -1;	/* Not found */
+}
+
 static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile) {
-	int must_free = 0;
+	int must_free = 0, k;
 	unsigned char *picture = NULL;
-
-	if ((image_no >= 0 && image_no < PSL_N_PATTERNS) && PSL->internal.pattern[image_no].status) return (image_no);	/* Already done this */
-
-	if ((image_no >= 0 && image_no < PSL_N_PATTERNS)) {	/* Premade pattern yet not used, assign settings */
-		PSL->internal.pattern[image_no].nx = 64;
-		PSL->internal.pattern[image_no].ny = 64;
-		PSL->internal.pattern[image_no].depth = 1;
-		picture = PSL_pattern[image_no];
+	/* image_no is 1-90 (PSL_N_PATTERNS) if a standard PSL pattern, else we examine imagefile.
+	 * User images are numbered PSL_N_PATTERNS+1,2,3 etc. */
+	k = image_no - 1;	/* Array index */
+	if ((image_no > 0 && image_no <= PSL_N_PATTERNS)) {	/* Premade pattern yet not used, assign settings */
+		if (PSL->internal.pattern[image_no].status) return (image_no);	/* Already initialized this pattern once, just return */
+		PSL->internal.pattern[k].nx = 64;
+		PSL->internal.pattern[k].ny = 64;
+		PSL->internal.pattern[k].depth = 1;
+		picture = PSL_pattern[k];
 	}
 	else {	/* User image, check to see if already used */
 		char file[PSL_BUFSIZ];
-		int i, status, found;
+		int i, status;
 		struct imageinfo h;
-		for (i = 0, found = false; !found && i < PSL->internal.n_userimages; i++) found = !strcmp (PSL->internal.user_image[i], imagefile);
-		if (found) return (PSL_N_PATTERNS + i - 1);
+		i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
+		if (i >= 0) return (PSL_N_PATTERNS + i + 1);	/* Already registered, just return number */
 		if (PSL->internal.n_userimages > (PSL_N_PATTERNS-1)) {
 			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Already maintaining %d user images and cannot accept any more\n", PSL->internal.n_userimages+1);
 			PSL_exit (EXIT_FAILURE);
 		}
+		/* Must initialize a previously unused image */
 		psl_getsharepath (PSL, NULL, imagefile, "", file);
 		PSL->internal.user_image[PSL->internal.n_userimages] = PSL_memory (PSL, NULL, strlen (imagefile)+1, char);
 		strcpy (PSL->internal.user_image[PSL->internal.n_userimages], imagefile);
-		image_no = PSL_N_PATTERNS + PSL->internal.n_userimages;
 		PSL->internal.n_userimages++;
+		image_no = PSL_N_PATTERNS + PSL->internal.n_userimages;
+		k = image_no - 1;	/* Array index */
 		/* Load image file. Store size, depth and bogus DPI setting */
 		memset (&h, 0, sizeof(struct imageinfo)); /* initialize struct */
 		if ((status = PSL_loadimage (PSL, file, &h, &picture)) != 0) return (0);
-		PSL->internal.pattern[image_no].nx = h.width;
-		PSL->internal.pattern[image_no].ny = h.height;
-		PSL->internal.pattern[image_no].depth = h.depth;
+		PSL->internal.pattern[k].nx = h.width;
+		PSL->internal.pattern[k].ny = h.height;
+		PSL->internal.pattern[k].depth = h.depth;
 		must_free = 1;
 	}
 
 	/* Store size, depth and bogus DPI setting */
-	PSL->internal.pattern[image_no].status = 1;
-	PSL->internal.pattern[image_no].dpi = -999;
+	PSL->internal.pattern[k].status = 1;
+	PSL->internal.pattern[k].dpi = -999;
 
 	PSL_comment (PSL, "Define pattern %d\n", image_no);
 
 	PSL_command (PSL, "/image%d {<~\n", image_no);
-	psl_stream_dump (PSL, picture, PSL->internal.pattern[image_no].nx, PSL->internal.pattern[image_no].ny, PSL->internal.pattern[image_no].depth, PSL->internal.compress, PSL_ASCII85, 2);
+	psl_stream_dump (PSL, picture, PSL->internal.pattern[k].nx, PSL->internal.pattern[k].ny, PSL->internal.pattern[k].depth, PSL->internal.compress, PSL_ASCII85, 2);
 	PSL_command (PSL, "} def\n");
 
 	if (must_free) PSL_free (picture);
@@ -4050,8 +4063,7 @@ int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int ima
 	 * Returns image number
 	 */
 
-	int found, mask;
-	int i, id, inv;
+	int mask, id, inv, k;
 	uint64_t nx, ny;
 	const char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
 	const char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
@@ -4059,26 +4071,27 @@ int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int ima
 
 	/* Determine if image was used before */
 
-	if ((image_no >= 0 && image_no < PSL_N_PATTERNS) && !PSL->internal.pattern[image_no].status)	/* Unused predefined */
+	if ((image_no > 0 && image_no <= PSL_N_PATTERNS) && !PSL->internal.pattern[image_no].status)	/* Unused predefined */
 		image_no = psl_pattern_init (PSL, image_no, imagefile);
 	else if (image_no < 0) {	/* User image, check if already used */
-		for (i = 0, found = false; !found && i < PSL->internal.n_userimages; i++) found = !strcmp (PSL->internal.user_image[i], imagefile);
-		if (!found)	/* Not found or no previous user images loaded */
+		int i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
+		if (i == -1)	/* Not found or no previous user images loaded */
 			image_no = psl_pattern_init (PSL, image_no, imagefile);
 		else
-			image_no = PSL_N_PATTERNS + i - 1;
+			image_no = PSL_N_PATTERNS + i + 1;
 	}
-	nx = PSL->internal.pattern[image_no].nx;
-	ny = PSL->internal.pattern[image_no].ny;
+	k = image_no - 1;	/* Image array index */
+	nx = PSL->internal.pattern[k].nx;
+	ny = PSL->internal.pattern[k].ny;
 
 	id = (PSL->internal.color_mode == PSL_CMYK) ? 2 : 1;
-	mask = (PSL->internal.pattern[image_no].depth == 1 && (f_rgb[0] < 0.0 || b_rgb[0] < 0.0));
+	mask = (PSL->internal.pattern[k].depth == 1 && (f_rgb[0] < 0.0 || b_rgb[0] < 0.0));
 
 	/* When DPI or colors have changed, the /pattern procedure needs to be rewritten */
 
-	if (PSL->internal.pattern[image_no].dpi != image_dpi ||
-		!PSL_same_rgb(PSL->internal.pattern[image_no].f_rgb,f_rgb) ||
-		!PSL_same_rgb(PSL->internal.pattern[image_no].b_rgb,b_rgb)) {
+	if (PSL->internal.pattern[k].dpi != image_dpi ||
+		!PSL_same_rgb(PSL->internal.pattern[k].f_rgb,f_rgb) ||
+		!PSL_same_rgb(PSL->internal.pattern[k].b_rgb,b_rgb)) {
 
 		PSL_comment (PSL, "Setup %s fill using pattern %d\n", kind_mask[mask], image_no);
 		if (image_dpi) {	/* Use given DPI */
@@ -4088,21 +4101,21 @@ int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int ima
 		PSL_command (PSL, "/pattern%d {V %" PRIu64 " %" PRIu64 " scale", image_no, nx, ny);
 		PSL_command (PSL, "\n<< /PaintType 1 /PatternType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /PaintProc\n   {begin");
 
-		if (PSL->internal.pattern[image_no].depth == 1) {	/* 1-bit bitmap basis */
+		if (PSL->internal.pattern[k].depth == 1) {	/* 1-bit bitmap basis */
 			inv = psl_bitimage_cmap (PSL, f_rgb, b_rgb) % 2;
 			PSL_command (PSL, "\n<< /ImageType 1 /Decode [%d %d]", inv, 1-inv);
 		}
 		else
 			PSL_command (PSL, " /Device%s setcolorspace\n<< /ImageType 1 /Decode [%s]", colorspace[id], decode[id]);
 		PSL_command (PSL, " /Width %d /Height %d /BitsPerComponent %d",
-		             PSL->internal.pattern[image_no].nx, PSL->internal.pattern[image_no].ny, MIN(PSL->internal.pattern[image_no].depth,8));
+		             PSL->internal.pattern[k].nx, PSL->internal.pattern[k].ny, MIN(PSL->internal.pattern[k].depth,8));
 		PSL_command (PSL, "\n   /ImageMatrix [%d 0 0 %d 0 %d] /DataSource image%d\n>> %s end}\n>> matrix makepattern U} def\n",
-		             PSL->internal.pattern[image_no].nx, -PSL->internal.pattern[image_no].ny, PSL->internal.pattern[image_no].ny,
+		             PSL->internal.pattern[k].nx, -PSL->internal.pattern[k].ny, PSL->internal.pattern[k].ny,
 		             image_no, kind_mask[mask]);
 
-		PSL->internal.pattern[image_no].dpi = image_dpi;
-		PSL_rgb_copy (PSL->internal.pattern[image_no].f_rgb, f_rgb);
-		PSL_rgb_copy (PSL->internal.pattern[image_no].b_rgb, b_rgb);
+		PSL->internal.pattern[k].dpi = image_dpi;
+		PSL_rgb_copy (PSL->internal.pattern[k].f_rgb, f_rgb);
+		PSL_rgb_copy (PSL->internal.pattern[k].b_rgb, b_rgb);
 	}
 
 	return (image_no);
