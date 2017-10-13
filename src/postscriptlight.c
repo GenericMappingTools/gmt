@@ -254,6 +254,9 @@ static char *PSL_ISO_encoding[] = {
 NULL
 };
 
+/* Include the 90 hardwired hachure patterns */
+#include "PSL_patterns.h"
+
 /* Listing of "Standard" 35 PostScript fonts found on most PS printers.
  * The fontheight is the height of A for unit fontsize. */
 
@@ -2326,22 +2329,21 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 }
 
 static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile) {
-	int i, status;
-	char name[PSL_BUFSIZ], file[PSL_BUFSIZ];
+	int must_free = 0;
 	unsigned char *picture = NULL;
-	struct imageinfo h;
-	int found;
-
-	memset (&h, 0, sizeof(struct imageinfo)); /* initialize struct */
 
 	if ((image_no >= 0 && image_no < PSL_N_PATTERNS) && PSL->internal.pattern[image_no].status) return (image_no);	/* Already done this */
 
-	if ((image_no >= 0 && image_no < PSL_N_PATTERNS)) {	/* Premade pattern yet not used */
-		sprintf (name, "PSL_pattern_%02d", image_no);
-		psl_getsharepath (PSL, "postscriptlight", name, ".ras", file);
+	if ((image_no >= 0 && image_no < PSL_N_PATTERNS)) {	/* Premade pattern yet not used, assign settings */
+		PSL->internal.pattern[image_no].nx = 64;
+		PSL->internal.pattern[image_no].ny = 64;
+		PSL->internal.pattern[image_no].depth = 1;
+		picture = PSL_pattern[image_no];
 	}
 	else {	/* User image, check to see if already used */
-
+		char file[PSL_BUFSIZ];
+		int i, status, found;
+		struct imageinfo h;
 		for (i = 0, found = false; !found && i < PSL->internal.n_userimages; i++) found = !strcmp (PSL->internal.user_image[i], imagefile);
 		if (found) return (PSL_N_PATTERNS + i - 1);
 		if (PSL->internal.n_userimages > (PSL_N_PATTERNS-1)) {
@@ -2353,26 +2355,26 @@ static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile
 		strcpy (PSL->internal.user_image[PSL->internal.n_userimages], imagefile);
 		image_no = PSL_N_PATTERNS + PSL->internal.n_userimages;
 		PSL->internal.n_userimages++;
+		/* Load image file. Store size, depth and bogus DPI setting */
+		memset (&h, 0, sizeof(struct imageinfo)); /* initialize struct */
+		if ((status = PSL_loadimage (PSL, file, &h, &picture)) != 0) return (0);
+		PSL->internal.pattern[image_no].nx = h.width;
+		PSL->internal.pattern[image_no].ny = h.height;
+		PSL->internal.pattern[image_no].depth = h.depth;
+		must_free = 1;
 	}
 
-	/* Load image file. Store size, depth and bogus DPI setting */
-
-	if ((status = PSL_loadimage (PSL, file, &h, &picture)) != 0) return (0);
-    
-
+	/* Store size, depth and bogus DPI setting */
 	PSL->internal.pattern[image_no].status = 1;
-	PSL->internal.pattern[image_no].nx = h.width;
-	PSL->internal.pattern[image_no].ny = h.height;
-	PSL->internal.pattern[image_no].depth = h.depth;
 	PSL->internal.pattern[image_no].dpi = -999;
 
 	PSL_comment (PSL, "Define pattern %d\n", image_no);
 
 	PSL_command (PSL, "/image%d {<~\n", image_no);
-	psl_stream_dump (PSL, picture, h.width, h.height, h.depth, PSL->internal.compress, PSL_ASCII85, 2);
+	psl_stream_dump (PSL, picture, PSL->internal.pattern[image_no].nx, PSL->internal.pattern[image_no].ny, PSL->internal.pattern[image_no].depth, PSL->internal.compress, PSL_ASCII85, 2);
 	PSL_command (PSL, "} def\n");
 
-	PSL_free (picture);
+	if (must_free) PSL_free (picture);
 
 	return (image_no);
 }
