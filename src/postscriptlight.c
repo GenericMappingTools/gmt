@@ -98,8 +98,8 @@
  *			   pwessel@hawaii.edu
  *		Remko Scharroo, EUMETSAT, Darmstadt, Germany
  *			   Remko.Scharroo@eumetsat.int
- * Date:	15-OCT-2009
- * Version:	5.4 [64-bit enabled API edition, decoupled from GMT]
+ * Date:	13-OCT-2017
+ * Version:	6.0 [64-bit enabled API edition, decoupled from GMT]
  *
  * Thanks to J. Goff and L. Parkes for their contributions to an earlier version.
  *
@@ -257,10 +257,11 @@ NULL
 /* Include the 90 hardwired hachure patterns */
 #include "PSL_patterns.h"
 
-/* Listing of "Standard" 35 PostScript fonts found on most PS printers.
+/* Listing of "Standard" 35 PostScript fonts found on most PS printers
+ * plus the 4 Japanese fonts we have supported since GMT 3.
  * The fontheight is the height of A for unit fontsize. */
 
-#define PSL_N_STANDARD_FONTS 35
+#define PSL_N_STANDARD_FONTS 39
 static struct PSL_FONT PSL_standard_fonts[PSL_N_STANDARD_FONTS] = {
 #include "standard_adobe_fonts.h"
 };
@@ -1631,8 +1632,8 @@ static char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const c
 	if (PSL->internal.USERDIR) {
 		sprintf (path, "%s/%s%s", PSL->internal.USERDIR, stem, suffix);
 		if (!access (path, R_OK)) return (path);
-        sprintf (path, "%s/cache/%s%s", PSL->internal.USERDIR, stem, suffix);
-        if (!access (path, R_OK)) return (path);
+        	sprintf (path, "%s/cache/%s%s", PSL->internal.USERDIR, stem, suffix);
+        	if (!access (path, R_OK)) return (path);
 	}
 
 	/* Try to get file from PSL->internal.SHAREDIR/subdir */
@@ -3265,7 +3266,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL) {
 
 	/* Loads the available fonts for this installation */
 
-	/* First the standard 35 PostScript fonts from Adobe */
+	/* First the standard 35 PostScript fonts from Adobe + 4 Japanese fonts */
 	memcpy (PSL->internal.font, PSL_standard_fonts, PSL_N_STANDARD_FONTS * sizeof (struct PSL_FONT));
 	PSL->internal.N_FONTS = n_PSL_fonts = i = PSL_N_STANDARD_FONTS;
 

@@ -20,8 +20,8 @@
  *			   pwessel@hawaii.edu
  *		Remko Scharroo, Altimetrics
  *			   remko@altimetrics.com
- * Version:	5.3 [64-bit enabled API edition, decoupled from GMT]
- * Date:	13-NOV-2015
+ * Version:	6.0 [64-bit enabled API edition, decoupled from GMT]
+ * Date:	13-OCT-2017
  */
 
 /*!
