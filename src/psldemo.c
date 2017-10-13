@@ -32,7 +32,6 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	int i, k;
 	unsigned int dim[3] = {0, 0, 0};
 	struct imageinfo h;
-	unsigned char *picture;
 
 	if (argc > 1) fprintf (stderr, "psldemo: No argument required\n");
 	
