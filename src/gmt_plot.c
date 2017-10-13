@@ -6705,11 +6705,9 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 		gmt_cart_to_geo (GMT, &qlat, &qlon, Q, true);	/* Coordinates of rotated point */
 		gmt_geo_to_xy (GMT, plon, plat, &px, &py);	/* P projected on map */
 		gmt_geo_to_xy (GMT, qlon, qlat, &qx, &qy);	/* Q projected on map */
-		L = hypot (px - qx, py - qy);	/* Distance in inches for 1 degree of azimuth change */
-		n_arc = MAX (2, irint (fabs (az_stop - az_start) * L / (radius * GMT->current.setting.map_line_step)));
-#ifdef DEBUG
-		n_arc = irint (fabs (az_stop - az_start));	/* Debugging */
-#endif
+		L = hypot (px - qx, py - qy);			/* Distance in inches along arc for 1 degree of azimuth change */
+		/* Estimate how many intermediate points by dividing the estinate arc length by line_step */
+		n_arc = MAX (2, irint (fabs (az_stop - az_start) * L /GMT->current.setting.map_line_step));
 		d_az = (az_stop - az_start) / (n_arc - 1);	/* Azimuthal sampling rate */
 	}
 	n_path = n_arc;				/* Total number of points */

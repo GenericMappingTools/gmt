@@ -2155,8 +2155,14 @@ standard input or input in one or several files. These programs will try
 to read *stdin* unless you type the filename(s) on the command line
 without the above hyphens. (If the program sees a hyphen, it reads the
 next character as an instruction; if an argument begins without a
-hyphen, it tries to open this argument as a filename). This feature
-allows you to connect programs with pipes if you like. If your input is
+hyphen, it tries to open this argument as a filename).  This feature
+allows you to connect programs with pipes if you like.
+To give numerous input files you can either list them all (file1.txt file2.txt ...),
+use UNIX wild cards (file*.txt), or make a simple *listfile* with the
+names of all your datafiles (one per line) and then use the special
+=*filelist* mechanism to specify the input files to a module.
+This allows GMT modules to obtain the input file names from *filelist*.
+If your input is
 ASCII and has one or more header records that do not begin with #, you
 must use the **-h** option (see Section `Header data records: The -h
 option`_). ASCII files may in many cases also contain segment-headers
@@ -2192,8 +2198,8 @@ Three classes of files are given special treatment in GMT.
 
 #. Some data sets are ubiquitous and used by nearly all GMT users.
    At the moment this set is limited to Earth relief grids.  If you reference
-   files called **@earth_relief_**\ *res*\ **.grd** on a command line then
-   that grid will automatically be downloaded from the GMT Data Site and placed
+   grid input called **@earth_relief_**\ *res* on a command line then
+   such a grid will automatically be downloaded from the GMT Data Site and placed
    in **$GMT_USERDIR** [~/.gmt].  The resolution *res* allows a choice among
    15 command grid spacings: 60m, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
    30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb, 7.5 Mb,
@@ -2203,10 +2209,12 @@ Three classes of files are given special treatment in GMT.
    file from **$GMT_USERDIR** or **DIR_CACHE** (except if explicitly removed by the user).
    Note: The four highest resolutions are the original data sets SRTM15+, SRTM30+,
    ETOPO1 and ETOPO2V2.  Lower resolutions are spherically Gaussian-filtered versions
-   of ETOPO1.  The SRTM (version 3) 1 and 3 arc-sec tiles are stored as highly
-   compressed JPEG2000 tiles on the server.  These are downloaded as requested, converted to netCDF
-   grids and stored in subdirectories srtm1 and srtm3 of **DIR_CACHE**, and assembled
-   into a seamless grid using :doc:`grdblend`.
+   of ETOPO1.  The SRTM (version 3) 1 and 3 arc-sec tiles are only available over land
+   between 60 degrees south and north latitude and are stored as highly compressed JPEG2000
+   tiles on the GMT server.  These are downloaded as requested, converted to netCDF
+   grids and stored in subdirectories srtm1 and srtm3 under **DIR_CACHE**, and assembled
+   into a seamless grid using :doc:`grdblend`. A tile is only downloaded and converted
+   once (unless the user cleans the cache directories).
 #. If a file is given as a full URL, starting with **http://**, **https://**,
    or **ftp://**, then the file will be downloaded to **DIR_CACHE** and subsequently
    read from there (until removed by the user).  If the URL is actually a CGI Get
