@@ -25,6 +25,7 @@
  */
 
 /* This is the byte array for circuit.png: 135 x 94 x 24-bit */
+unsigned int circuit_dim[3] = {135, 94, 24};
 unsigned char circuit[] = {
 	 31,  72,  45,  30,  64,  34,  31,  72,  45,  46,  80,  45,  47,  88,  47,  32,
 	 80,  46,  30,  64,  34,  55,  64,  59,  31,  72,  45,  48,  80,  62,  46,  80,
@@ -2414,6 +2415,7 @@ unsigned char circuit[] = {
 	 35, 112,  61,   0};
 
 /* This is the byte array for vader.png: 107 x 80 x 8 bit*/
+unsigned int vader_dim[3] = {107, 80, 8};
 
 unsigned char vader[] = {
 	  0,   1,   0,   2,   1,   3,   0,   2,   4,   3,   0,   2,   1,   0,   5,   4,

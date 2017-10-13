@@ -4060,10 +4060,10 @@ int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int ima
 int PSL_setimage (struct PSL_CTRL *PSL, int image_no, char *imagefile, unsigned char *image, int image_dpi, unsigned int dim[], double f_rgb[], double b_rgb[]) {
 	/* Set up image pattern fill
 	 * image_no:	Number of the standard PSL fill pattern (use negative when file name used instead)
-	 * imagefile:	Name of image file
-	 * image:	The bytestream making up the image
+	 * imagefile:	Name of image file (not used if image_no = [1,90])
+	 * image:	The bytestream making up the image (not used if image_no = [1,90])
 	 * image_dpi:	Resolution of image on the page
-	 * dim:		Image number of columns, rows, and bit depth
+	 * dim:		Image number of columns, rows, and bit depth (not used if image_no = [1,90])
 	 * f_rgb:	Foreground color used for set bits (1) (1-bit only)
 	 * b_rgb:	Background color used for unset bits (0) (1-bit only)
 	 * Returns image number

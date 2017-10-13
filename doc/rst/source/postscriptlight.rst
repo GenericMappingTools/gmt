@@ -684,16 +684,13 @@ Here are functions used to read and plot various images.
     size of image. *nx*, *ny*, *ox*, *oy* refers to the width, height
     and origin (lower left corner) of the BoundingBox in points.
 
-**long PSL_loadimage** (**struct PSL_CTRL** *\*P*, **FILE** *\*fp*,
+**long PSL_loadeps** (**struct PSL_CTRL** *\*P*, **char** *\*file*,
 **struct imageinfo** *\*header*, **unsigned char** *\*\*image*)
 
-    Reads the image contents of the EPS file or a raster image pointed
-    to by the open file pointer *fp*. The routine can handle
-    Encapsulated PostScript files or 1-, 8-, 24-, or 32-bit raster
-    images in old, standard, run-length encoded, or RGB-style Sun
-    format. Non-Sun rasters are automatically reformatted to Sun rasters
-    via a system call to GraphicsMagick's or ImageMagick's **convert**, if installed. The
-    image is returned via the *image* pointer.
+    Reads the image contents of the EPS file given by the *file name.
+    The *header* is filled with dimensional information.  If *image*
+    is NULL we return just with header, otherwise we read and return
+    the entire EPS content via *image.
 
 Plotting Text
 -------------
