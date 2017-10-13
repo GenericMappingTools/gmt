@@ -314,7 +314,7 @@ GMT_LOCAL int file_is_known (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 i
 	if (gmt_M_file_is_memory (F)) return (0);	/* Special passing of image */
 	if (gmt_M_file_is_cache (F)) {	/* Must download, then modify the name */
 		char *tmp = strdup (&F[1]);
-		unsigned int first = gmt_download_file_if_not_found (GMT, F, 0);
+		(void)gmt_download_file_if_not_found (GMT, F, 0);
 		gmt_M_str_free (*file);
 		*file = F = tmp;
 	}

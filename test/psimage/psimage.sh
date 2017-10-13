@@ -16,7 +16,7 @@ cat > tt.in <<%
 0 4 +fred+byellow
 1 4 +fyellow+bred
 %
-gmt psxy -R0/3/0/5 -Jx1.5i -Gp${GMT_SOURCE_DIR}/share/psldemo/circuit.ras+r128 -P -K > $ps <<%
+gmt psxy -R0/3/0/5 -Jx1.5i -Gp${GMT_SOURCE_DIR}/share/psldemo/circuit.png+r128 -P -K > $ps <<%
 0 0
 2 0
 3 1

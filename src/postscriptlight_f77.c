@@ -217,6 +217,11 @@ int PSL_setpattern_ (int *image_no, char *imagefile, int *image_dpi, double *f_r
 	 return (PSL_setpattern (PSL_FORTRAN, *image_no, imagefile, *image_dpi, f_rgb, b_rgb));
 }
 
+int PSL_setimage_ (int *image_no, char *imagefile, unsigned char *image, int *image_dpi, unsigned int *dim, double *f_rgb, double *b_rgb, int len1, int len2)
+{
+	return (PSL_setimage (PSL_FORTRAN, *image_no, imagefile, image, *image_dpi, dim, f_rgb, b_rgb);
+}
+
 int PSL_plotepsimage_ (double *x, double *y, double *xsize, double *ysize, int *justify, unsigned char *buffer, int size, int *nx, int *ny, int *ox, int *oy)
 {
 	return (PSL_plotepsimage (PSL_FORTRAN, *x, *y, *xsize, *ysize, *justify, buffer, size, *nx, *ny, *ox, *oy));

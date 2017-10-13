@@ -20,7 +20,7 @@ gmt begin ex19 ps
     echo "0 -10 GMT CONFERENCE" | gmt pstext -F+f32p,Helvetica-Bold,red=thinner
     echo "0 -30 Honolulu, Hawaii, April 1, 2018" | gmt pstext -F+f18p,Helvetica-Bold,green=thinnest
 #   Then show example of color patterns and placing a PostScript image
-    gmt pscoast -Dc -A5000 -Gp86+fred+byellow+r100 -Sp@circuit.ras+r100 -c2,1
+    gmt pscoast -Dc -A5000 -Gp86+fred+byellow+r100 -Sp@circuit.png+r100 -c2,1
     echo "0 30 SILLY USES OF" | gmt pstext -F+f32p,Helvetica-Bold,lightgreen=thinner
     echo "0 -30 COLOR PATTERNS" | gmt pstext -F+f32p,Helvetica-Bold,magenta=thinner
     gmt psimage -DjCM+w3i @GMT_covertext.eps

@@ -407,6 +407,7 @@ EXTERN_MSC int PSL_setfill (struct PSL_CTRL *PSL, double rgb[], int outline);
 EXTERN_MSC int PSL_setfont (struct PSL_CTRL *PSL, int font_no);
 EXTERN_MSC int PSL_setfontdims (struct PSL_CTRL *PSL, double supsub, double scaps, double sup_lc, double sup_uc, double sdown);
 EXTERN_MSC int PSL_setformat (struct PSL_CTRL *PSL, int n_decimals);
+EXTERN_MSC int PSL_setimage (struct PSL_CTRL *PSL, int image_no, char *imagefile, unsigned char *image, int image_dpi, unsigned int dim[], double f_rgb[], double b_rgb[]);
 EXTERN_MSC int PSL_setlinecap (struct PSL_CTRL *PSL, int cap);
 EXTERN_MSC int PSL_setlinejoin (struct PSL_CTRL *PSL, int join);
 EXTERN_MSC int PSL_setlinewidth (struct PSL_CTRL *PSL, double linewidth);

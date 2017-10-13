@@ -30,7 +30,7 @@ V 0 1p
 N 1
 M 5 5 600+u f
 G 0.05i
-I ${src:-.}/SOEST_block4.ras 3i CT
+I ${src:-.}/SOEST_block4.png 3i CT
 G 0.05i
 B tt.cpt 0.2i 0.2i -B0
 G 0.05i

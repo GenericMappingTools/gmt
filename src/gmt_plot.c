@@ -4612,7 +4612,7 @@ void gmt_setfill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, int outline) {
 	else if (fill->use_pattern) {
 		/* Fill with a pattern */
 		double rgb[4] = {-3.0, -3.0, -3.0, 0.0};
-		rgb[1] = (double)PSL_setpattern (PSL, fill->pattern_no, fill->pattern, fill->dpi, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (double)PSL_setimage (PSL, fill->pattern_no, fill->pattern, fill->image, fill->dpi, fill->dim, fill->f_rgb, fill->b_rgb);
 		PSL_setfill (PSL, rgb, outline);
 	}
 	else	/* Fill with a color */

@@ -79,7 +79,7 @@ T from the USGS.
 T This script could be called monthly to update the latest information.
 G 0.4i
 # Add USGS logo
-I @USGS.ras 1i RT
+I @USGS.png 1i RT
 G -0.3i
 L 12 6 LB $me
 END

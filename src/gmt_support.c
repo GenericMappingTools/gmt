@@ -232,7 +232,17 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 	fill->pattern_no = atoi (fill->pattern);
 	if (fill->pattern_no == 0) {
 		fill->pattern_no = -1;
+		gmt_set_pad (GMT, 0); /* No padding */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pattern image is in file %s\n", fill->pattern);
+		if ((fill->I = GMT_Read_Data (GMT->parent, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, fill->pattern, NULL)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to read image %s, no pattern set\n", fill->pattern);
+			return (GMT_RUNTIME_ERROR);
+		}
+		gmt_set_pad (GMT, GMT->parent->pad); /* Restore to GMT Defaults */
+		fill->image = fill->I->data;
+		fill->dim[0] = fill->I->header->n_columns;
+		fill->dim[1] = fill->I->header->n_rows;
+		fill->dim[2] = (fill->I->header->n_bands == 3) ? 24 : fill->I->header->bits;
 	}
 	else
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pattern number %d selected\n", fill->pattern_no);
