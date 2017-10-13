@@ -584,7 +584,6 @@ foreach (_gmt_prog ${_gmt_progs})
 	target_link_libraries (${_gmt_prog} gmtlib)
 endforeach (_gmt_prog)
 
-configure_file (psldemo.h.in psldemo.h @ONLY)
 add_executable (psldemo psldemo.h psldemo.c)
 target_link_libraries (psldemo pslib)
 
