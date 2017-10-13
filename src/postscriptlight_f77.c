@@ -58,7 +58,7 @@
  * PSL_plottext		: Plots textstring
  * PSL_plottextbox	: Draw a filled box around a textstring
  * PSL_plottextline	: Place labels along paths (straight or curved), set clip path, draw line
- * PSL_loadimage	: Read image file of supported type
+ * PSL_loadeps		: Read EPS file
  * PSL_command		: Writes a given PostScript statement to the plot file
  * PSL_comment		: Writes a comment statement to the plot file
  * PSL_setcolor		: Sets the pen color or pattern
@@ -70,10 +70,10 @@
  * PSL_setlinecap	: Changes the line cap setting
  * PSL_setlinejoin	: Changes the line join setting
  * PSL_setlinewidth	: Sets a new linewidth
+ * PSL_setimage		: Sets up a image pattern fill in PS
  * PSL_setmiterlimit	: Changes the miter limit setting for joins
  * PSL_setorigin	: Translates/rotates the coordinate system
  * PSL_setparagraph	: Sets parameters used to typeset text paragraphs
- * PSL_setpattern	: Sets up a pattern fill in PS
  * PSL_defpen		: Encodes a pen with attributes by name in the PS output
  * PSL_definteger	: Encodes an integer by name in the PS output
  * PSL_defpoints	: Encodes a pointsize by name in the PS output
@@ -366,7 +366,7 @@ int PSL_defcolor_ (char *param, double rgb[], int len)
 	return (PSL_defcolor (PSL_FORTRAN, param, rgb));
 }
 
-int PSL_loadimage_ (char *file, struct imageinfo *h, unsigned char **picture, int len1, int len2)
+int PSL_loadeps_ (char *file, struct imageinfo *h, unsigned char **picture, int len1, int len2)
 {
-	return (PSL_loadimage (PSL_FORTRAN, file, h, picture));
+	return (PSL_loadeps (PSL_FORTRAN, file, h, picture));
 }

@@ -67,7 +67,7 @@
  * PSL_plottext		: Plots textstring
  * PSL_plottextbox	: Draw a filled box around a textstring
  * PSL_plottextline	: Place labels along paths (straight or curved), set clip path, draw line
- * PSL_loadimage	: Read image file of supported type
+ * PSL_loadeps		: Read EPS file into string
  * PSL_command		: Writes a given PostScript statement to the plot file
  * PSL_comment		: Writes a comment statement to the plot file
  * PSL_makecolor	: Returns string with PostScript command to set a new color
@@ -82,9 +82,9 @@
  * PSL_setlinejoin	: Changes the line join setting
  * PSL_setlinewidth	: Sets a new linewidth
  * PSL_setmiterlimit	: Changes the miter limit setting for joins
+ * PSL_setimage		: Sets up a image pattern fill in PS
  * PSL_setorigin	: Translates/rotates the coordinate system
  * PSL_setparagraph	: Sets parameters used to typeset text paragraphs
- * PSL_setpattern	: Sets up a pattern fill in PS
  * PSL_defpen		: Encodes a pen with attributes by name in the PS output
  * PSL_definteger	: Encodes an integer by name in the PS output
  * PSL_defpoints	: Encodes a pointsize by name in the PS output
@@ -1071,74 +1071,6 @@ static size_t psl_a85_encode (struct PSL_CTRL *PSL, const unsigned char *src_buf
 }
 
 #define ESC 128
-
-static void psl_rle_decode (struct PSL_CTRL *PSL, struct imageinfo *h, unsigned char **in) {
-	/* Function to undo RLE encoding in Sun rasterfiles
-	 *
-	 * RLE consists of ESCaped pairs of bytes.  This are started
-	 * when the ESC value is encountered.  The Next byte is the <count>,
-	 * the following is the <value>.  We then replicate <value>
-	 * the required number of times.  If count is 0 then ESC is output.
-	 * If bytes are not ESCaped they are simply copied to output.
-	 * This is implemented with the constraint that all scanlines must
-	 * be an even number of bytes (i.e., we are using 16-bit words
-	 */
-
-	int i, j, col, width, len;
-	int odd = false, count;
-	unsigned char mask_table[] = {0xff, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe};
-	unsigned char mask, *out = NULL, value = 0;
-
-	i = j = col = count = 0;
-
-	width = (int)lrint (ceil (h->width * h->depth / 8.0));	/* Scanline width in bytes */
-	if (width%2) odd = true, width++;	/* To ensure 16-bit words */
-	mask = mask_table[h->width%8];	/* Padding for 1-bit images */
-
-	len = width * ((int)h->height);		/* Length of output image */
-	out = PSL_memory (PSL, NULL, len, unsigned char);
-	if (odd) width--;
-
-	while (j < h->length || count > 0) {
-
-		if (count) {
-			out[i++] = value;
-			count--;
-			col++;
-		}
-		else {
-			switch ((int)(*in)[j]) {
-				case ESC:
-					count = (int)(*in)[++j];
-					j++;
-					if (count == 0) {
-						out[i++] = ESC;
-						col++;
-					}
-					else {
-						count++;
-						value = (*in)[j];
-						j++;
-					}
-					break;
-				default:
-					out[i++] = (*in)[j++];
-					col++;
-			}
-		}
-
-		if (col == width) {
-			if (h->depth == 1) out[width-1] &= mask;
-			if (odd) {out[i++] = 0; count = 0;}
-			col = 0;
-		}
-	}
-
-	if (i != len) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: psl_rle_decode has wrong # of outbytes (%d versus expected %d)\n", i, len);
-
-	PSL_free (*in);
-	*in = out;
-}
 
 static unsigned char *psl_rle_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input) {
 	/* Run Length Encode a buffer of nbytes. */
@@ -2919,263 +2851,10 @@ static int psl_bitimage_cmap (struct PSL_CTRL *PSL, double f_rgb[], double b_rgb
 	return (polarity);
 }
 
-static int psl_read_rasheader (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, int i0, int i1) {
-	/* Reads the header of a Sun rasterfile (or any other).
-	   Since the byte order is defined as Big Endian, the bytes are
-		 swapped on Little Endian platforms.
-	 */
-
-	int i;
-	int32_t value;
-
-	for (i = i0; i <= i1; i++) {
-
-		if (fread (&value, sizeof (int32_t), 1, fp) != 1) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Failure reading rasterfile header\n");
-			return (-1);
-		}
-#ifndef WORDS_BIGENDIAN
-		value = bswap32 (value);
-#endif
-
-		switch (i) {
-			case 0:
-				h->magic = (int)value;
-				break;
-			case 1:
-				h->width = (int)value;
-				break;
-			case 2:
-				h->height = (int)value;
-				break;
-			case 3:
-				h->depth = (int)value;
-				break;
-			case 4:
-				h->length = (int)value;
-				break;
-			case 5:
-				h->type = (int)value;
-				break;
-			case 6:
-				h->maptype = (int)value;
-				break;
-			case 7:
-				h->maplength = (int)value;
-				break;
-		}
-	}
-
-	if (h->type == RT_OLD && h->length == 0)
-		h->length = 2 * ((int)lrint (ceil (h->width * h->depth / 16.0))) * h->height;
-
-	return (0);
-}
-
 /* Make sure that all memory is freed upon return.
    This way is simpler than freeing buffer, red, green, blue, entry individually at every return
  */
 #define Return(code) {PSL_free (buffer); PSL_free (entry); PSL_free (red); PSL_free (green); PSL_free (blue); return (code);}
-
-static int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, unsigned char **picture) {
-	/* psl_load_raster reads a Sun standard rasterfile of depth 1, 8, 24, or 32 into memory */
-
-	int mx_in, mx, j, k, i, ij, n = 0, ny, get, odd, oddlength, r_off, b_off;
-	unsigned char *buffer = NULL, *entry = NULL, *red = NULL, *green = NULL, *blue = NULL;
-
-	if (psl_read_rasheader (PSL, fp, header, 0, 7)) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading Sun rasterfile header!\n");
-		return (PSL_READ_FAILURE);
-	}
-
-	if (header->magic != RAS_MAGIC) {	/* Not a Sun rasterfile */
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Raster is not a Sun rasterfile (Magic # = 0x%x)!\n", header->magic);
-		return (PSL_READ_FAILURE);
-	}
-	if (header->type < RT_OLD || header->type > RT_FORMAT_RGB) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Can only read Sun rasterfiles types %d - %d (your type = %d)!\n", RT_OLD, RT_FORMAT_RGB, header->type);
-		return (PSL_READ_FAILURE);
-	}
-
-	if (header->depth == 1) {	/* 1 bit black and white image */
-		mx_in = (int) (2 * ceil (header->width / 16.0));	/* Because Sun images are written in multiples of 2 bytes */
-		mx = (int) (ceil (header->width / 8.0));		/* However, PS wants only the bytes that matters, so mx may be one less */
-		ny = header->height;
-		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading 1-bit Sun rasterfile!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
-
-		if (mx < mx_in) {	/* OK, here we must shuffle image to get rid of the superfluous last byte per line */
-			for (j = k = ij = 0; j < ny; j++) {
-				for (i = 0; i < mx; i++) buffer[k++] = buffer[ij++];
-				ij++;	/* Skip the extra byte */
-			}
-		}
-	}
-	else if (header->depth == 8 && header->maplength) {	/* 8-bit with color table */
-		get = header->maplength / 3;
-		/* Create 256-item array to make sure that red[i], green[i], blue[i] always have a value for 0 <= i <= 255 */
-		red   = PSL_memory (PSL, NULL, 256, unsigned char);
-		green = PSL_memory (PSL, NULL, 256, unsigned char);
-		blue  = PSL_memory (PSL, NULL, 256, unsigned char);
-		n  = (int)fread (red,   1U, (size_t)get, fp);
-		n += (int)fread (green, 1U, (size_t)get, fp);
-		n += (int)fread (blue,  1U, (size_t)get, fp);
-		if (n != header->maplength) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading colormap!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		odd = (int)header->width%2;
-		entry = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (entry, 1U, (size_t)header->length, fp) != (size_t)header->length) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading 8-bit Sun rasterfile!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &entry);
-		buffer = PSL_memory (PSL, NULL, 3 * header->width * header->height, unsigned char);
-		for (j = k = ij = 0; j < header->height; j++) {
-			for (i = 0; i < header->width; i++) {
-				buffer[k++] = red[entry[ij]];
-				buffer[k++] = green[entry[ij]];
-				buffer[k++] = blue[entry[ij]];
-				ij++;
-			}
-			if (odd) ij++;
-		}
-		header->depth = 24;
-	}
-	else if (header->depth == 8U) {	/* 8-bit without color table (implicit grayramp) */
-		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading 8-bit Sun rasterfile!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
-	}
-	else if (header->depth == 24 && header->maplength) {	/* 24-bit raster with colormap */
-		unsigned char r, b;
-		get = header->maplength / 3;
-		/* Create 256-item array to make sure that red[i], green[i], blue[i] always have a value for 0 <= i <= 255 */
-		red   = PSL_memory (PSL, NULL, 256, unsigned char);
-		green = PSL_memory (PSL, NULL, 256, unsigned char);
-		blue  = PSL_memory (PSL, NULL, 256, unsigned char);
-		n  = (int)fread (red,   1U, (size_t)get, fp);
-		n += (int)fread (green, 1U, (size_t)get, fp);
-		n += (int)fread (blue,  1U, (size_t)get, fp);
-		if ((size_t)n != (size_t)header->maplength) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading colormap!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading 24-bit Sun rasterfile!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
-		oddlength = 3 * header->width;
-		odd = (3 * header->width) % 2;
-		r_off = (header->type == RT_FORMAT_RGB) ? 0 : 2;
-		b_off = (header->type == RT_FORMAT_RGB) ? 2 : 0;
-		for (i = j = 0; i < header->length; i += 3, j += 3) {	/* BGR -> RGB */
-			r =  red[buffer[i+r_off]];
-			b = blue[buffer[i+b_off]];
-			buffer[j] = r;
-			buffer[j+1] = green[buffer[i+1]];
-			buffer[j+2] = b;
-			if (odd && (j+3)%oddlength == 0) i++;
-		}
-	}
-	else if (header->depth == 24U) {	/* 24-bit raster, no colormap */
-		unsigned char r, b;
-		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading 24-bit Sun rasterfile!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
-		oddlength = 3 * header->width;
-		odd = (3 * header->width) % 2;
-		r_off = (header->type == RT_FORMAT_RGB) ? 0 : 2;
-		b_off = (header->type == RT_FORMAT_RGB) ? 2 : 0;
-		for (i = j = 0; i < header->length; i += 3, j += 3) {	/* BGR -> RGB */
-			r = buffer[i+r_off];
-			b = buffer[i+b_off];
-			buffer[j] = r;
-			buffer[j+1] = buffer[i+1];
-			buffer[j+2] = b;
-			if (odd && (j+3)%oddlength == 0) i++;
-		}
-	}
-	else if (header->depth == 32 && header->maplength) {	/* 32-bit raster with colormap */
-		unsigned char b;
-		get = header->maplength / 3;
-		/* Create 256-item array to make sure that red[i], green[i], blue[i] always have a value for 0 <= i <= 255 */
-		red   = PSL_memory (PSL, NULL, 256, unsigned char);
-		green = PSL_memory (PSL, NULL, 256, unsigned char);
-		blue  = PSL_memory (PSL, NULL, 256, unsigned char);
-		n  = (int)fread (red,   1U, (size_t)get, fp);
-		n += (int)fread (green, 1U, (size_t)get, fp);
-		n += (int)fread (blue,  1U, (size_t)get, fp);
-		if ((size_t)n != (size_t)header->maplength) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading colormap!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading 32-bit Sun rasterfile!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
-		r_off = (header->type == RT_FORMAT_RGB) ? 1 : 3;
-		b_off = (header->type == RT_FORMAT_RGB) ? 3 : 1;
-		b = blue[buffer[b_off]];
-		buffer[0] = red[buffer[r_off]];
-		buffer[1] = green[buffer[2]];
-		buffer[2] = b;
-		for (i = 3, j = 4; j < header->length; i += 3, j += 4) {	/* _BGR -> RGB */
-			buffer[i] = red[buffer[j+r_off]];
-			buffer[i+1] = green[buffer[j+2]];
-			buffer[i+2] = blue[buffer[j+b_off]];
-		}
-		header->depth = 24;
-	}
-	else if (header->depth == 32U) {	/* 32-bit raster, no colormap */
-		unsigned char b;
-		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading 32-bit Sun rasterfile!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
-		r_off = (header->type == RT_FORMAT_RGB) ? 1 : 3;
-		b_off = (header->type == RT_FORMAT_RGB) ? 3 : 1;
-		b = buffer[b_off];
-		buffer[0] = buffer[r_off];
-		buffer[1] = buffer[2];
-		buffer[2] = b;
-		for (i = 3, j = 4; j < header->length; i += 3, j += 4) {	/* _BGR -> RGB */
-			buffer[i] = buffer[j+r_off];
-			buffer[i+1] = buffer[j+2];
-			buffer[i+2] = buffer[j+b_off];
-		}
-		header->depth = 24;
-	}
-	else {	/* Unrecognized format */
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Unrecognized file format!\n");
-		Return (PSL_READ_FAILURE);
-	}
-
-	PSL_free (entry);
-	PSL_free (red);
-	PSL_free (green);
-	PSL_free (blue);
-
-	*picture = buffer;
-	return (PSL_NO_ERROR);
-}
 
 static int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *lly, int *trx, int *try,
 	double *hires_llx, double *hires_lly, double *hires_trx, double *hires_try) {
@@ -4054,6 +3733,13 @@ int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int ima
 	 */
 	(void)(image_no); (void)(imagefile); (void)(image_dpi); (void)(f_rgb); (void)(b_rgb); 
 	PSL_message (PSL, PSL_MSG_NORMAL, "Warning: PSL_setpattern has been deprecated - see PSL_setimage instead\n");
+	return (PSL_NO_ERROR);
+}
+
+int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *header, unsigned char **image) {
+	/* DEPRECATED */
+	(void)(file); (void)(header); (void)(image);
+	PSL_message (PSL, PSL_MSG_NORMAL, "Warning: PSL_loadimage has been deprecated - see PSL_loadeps instead\n");
 	return (PSL_NO_ERROR);
 }
 
@@ -5789,80 +5475,6 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 
 	*picture = buffer;
 	return (0);
-}
-
-int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned char **picture) {
-	/* PSL_loadimage loads an image of any recognized type into memory
-	 *
-	 * Supported image types are:
-	 * - Sun Raster File
-	 * - (Encapsulated) PostScript File
-	 */
-
-	FILE *fp = NULL;
-	int code = PSL_NO_ERROR;
-
-	/* Open PostScript or Sun raster file */
-
-	if ((fp = fopen (file, "rb")) == NULL) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Cannot open image file %s!\n", file);
-		return (PSL_READ_FAILURE);
-	}
-
-	/* Read magic number to determine image type */
-
-	if (psl_read_rasheader (PSL, fp, h, 0, 0)) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading magic number of image file %s!\n", file);
-		Return1 (PSL_READ_FAILURE);
-	}
-	fseek (fp, (off_t)0, SEEK_SET);
-
-	/* Which file type */
-
-	if (h->magic == RAS_MAGIC) {
-		Return1 (psl_load_raster (PSL, fp, h, picture));
-	}
-	else if (h->magic == EPS_MAGIC) {
-		Return1 (psl_load_eps (PSL, fp, h, picture));
-	}
-	else if (!strstr (file, ".ras")) {	/* Not a .ras file; convert to ras */
-		char cmd[PSL_BUFSIZ], tmp_file[32];
-#ifdef WIN32
-		char *null_dev = "nul";
-#else
-		char *null_dev = "/dev/null";
-#endif
-		fclose (fp);
-		sprintf (tmp_file, "PSL_TMP_%d.ras", (int)getpid());
-		/* Try GraphicsMagick's "gm convert" */
-		sprintf (cmd, "gm convert %s %s 2> %s", file, tmp_file, null_dev);
-		if (system (cmd)) {	/* convert failed, try ImageMagic's "convert" */
-			sprintf (cmd, "convert %s %s 2> %s", file, tmp_file, null_dev);
-			if (system (cmd)) {	/* convert failed, give up */
-				PSL_message (PSL, PSL_MSG_NORMAL, "Error: Automatic conversion of file %s to Sun rasterfile failed\n", file);
-				if (remove (tmp_file)){};	/* Remove the temp file */
-				return (PSL_READ_FAILURE);
-			}
-		}
-		if ((fp = fopen (tmp_file, "rb")) == NULL) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Cannot open image file %s!\n", tmp_file);
-			if (remove (tmp_file)){};		/* ... and shut up Coverity */
-			return (PSL_READ_FAILURE);
-		}
-		if (psl_read_rasheader (PSL, fp, h, 0, 0)) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading magic number of image file %s!\n", tmp_file);
-			Return2 (PSL_READ_FAILURE);
-		}
-		fseek (fp, (off_t)0, SEEK_SET);
-		if (h->magic != RAS_MAGIC) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Unrecognised magic number 0x%x in file %s!\n", h->magic, tmp_file);
-			Return2 (PSL_READ_FAILURE);
-		}
-		Return2 (psl_load_raster (PSL, fp, h, picture));
-	}
-
-	PSL_message (PSL, PSL_MSG_NORMAL, "Error: Unrecognised magic number 0x%x in file %s!\n", h->magic, file);
-	Return1 (PSL_READ_FAILURE);
 }
 
 /* Due to the DLL boundary cross problem on Windows we are forced to have the following, otherwise
