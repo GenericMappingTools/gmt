@@ -1115,9 +1115,7 @@ fonts can be found in the :doc:`gmt` man page.
 **PS_MEDIA**
     Sets the physical format of the current plot paper [a4 (or letter)].
     The following formats (and their widths and heights in points) are
-    recognized (Additional site-specific formats may be specified in the
-    gmt_custom_media.conf file in **$GMT_SHAREDIR**/conf or ~/.gmt;
-    see that file for details):
+    recognized:
 
     Media width height
 
@@ -1156,6 +1154,10 @@ fonts can be found in the :doc:`gmt` man page.
     For a completely custom format (e.g., for large format plotters) you
     may also specify WxH, where W and H are in points unless you append
     a unit to each dimension (**c**, **i**, **m** or **p** [Default]).
+    Additional user-specific formats may be saved as separate line in a
+    gmt_custom_media.conf file stored in ~/.gmt.  Each record would have a
+    format name followed by width and height of your media in points.  For
+    infinitely long paper rolls (e.g., plotters you can set height = 0).
 
 .. _PS_MITER_LIMIT:
 
