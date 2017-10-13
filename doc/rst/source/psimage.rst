@@ -60,8 +60,7 @@ Required Arguments
     image. An EPS file must contain an appropriate BoundingBox. A raster
     file can have a depth of 1, 8, 24, or 32 bits and is read via GDAL.
     Note: If GDAL was not configured during GMT installation then only
-    Sun raster files are supported natively.  You must then convert other
-    formats to Sun raster files before use.
+    EPS files are supported.
 
 Optional Arguments
 ------------------
@@ -178,9 +177,7 @@ These options are for 8-, 24-, and 32-bit raster images only. They have
 no effect when plotting 1-bit images or PostScript files.
 
 **-Gt**
-    Assigns the color that is to be made transparent. Sun Raster files
-    do not support transparency, so indicate here which color to be made
-    transparent.
+    Assigns the color that is to be made transparent.
 
 .. |Add_perspective| replace:: (Requires **-R** and **-J** for proper functioning).
 .. include:: explain_perspective.rst_

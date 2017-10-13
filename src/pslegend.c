@@ -310,6 +310,27 @@ GMT_LOCAL void maybe_realloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGME
 	if (S->text) S->text = gmt_M_memory (GMT, S->text, S->n_alloc, char *);
 }
 
+GMT_LOCAL double get_image_aspect (struct GMTAPI_CTRL *API, char *file) {
+	double aspect;
+	struct GMT_IMAGE *I = NULL;
+	if (strstr (file, ".eps") || strstr (file, ".ps") || strstr (file, ".epsi") || strstr (file, ".epsf")) {	/* EPS file */
+		struct imageinfo h;
+		if (PSL_loadeps (API->GMT->PSL, file, &h, NULL)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read EPS file %s, no pattern set\n", file);
+			return (-1.0);
+		}
+		aspect = (double)h.height / (double)h.width;
+		return aspect;
+	}
+	if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, file, NULL)) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to read image %s, no pattern set\n", file);
+		return (-1.0);
+	}
+	aspect = (double)I->header->n_rows / (double)I->header->n_columns;
+	GMT_Destroy_Data (API, &I);
+	return aspect;
+}
+
 /* Define the fraction of the height of the font to the font size */
 #define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height)
 #define FONT_HEIGHT(font_id) (GMT->session.font[font_id].height)
@@ -346,10 +367,9 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 #ifdef DEBUG
 	char *dname[N_DAT] = {"symbol", "front", "qline", "textline", "partext"};
 #endif
-	unsigned char *dummy = NULL;
 
 	double x_orig, y_orig, x_off, x, y, r, col_left_x, row_base_y, dx, dy, d_line_half_width, d_line_hor_offset, off_ss, off_tt;
-	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl, xy_offset[2];
+	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl, aspect, xy_offset[2];
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, v_line_y_start = 0.0, d_off;
 	double sum_width, h, gap, d_line_after_gap = 0.0, d_line_last_y0 = 0.0, col_width[PSLEGEND_MAX_COLS], x_off_col[PSLEGEND_MAX_COLS];
 
@@ -472,12 +492,11 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", &image[first]);
 							continue;
 						}
-						if (PSL_loadimage (PSL, path, &header, &dummy)) {
+						if ((aspect = get_image_aspect (API, path)) < 0.0) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Trouble reading %s! - Skipping.\n", &image[first]);
 							continue;
 						}
-						height += gmt_M_to_inch (GMT, size) * (double)header.height / (double)header.width;
-						PSL_free (dummy);
+						height += gmt_M_to_inch (GMT, size) * aspect;
 						column_number = 0;
 						break;
 
@@ -818,13 +837,12 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", &image[first]);
 							Return (GMT_FILE_NOT_FOUND);
 						}
-						if (PSL_loadimage (PSL, path, &header, &dummy)) {
+						if ((aspect = get_image_aspect (API, path)) < 0.0) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Trouble reading %s! - Skipping.\n", &image[first]);
 							continue;
 						}
-						PSL_free (dummy);
 						justify = gmt_just_decode (GMT, key, PSL_NO_DEF);
-						row_height = gmt_M_to_inch (GMT, size) * (double)header.height / (double)header.width;
+						row_height = gmt_M_to_inch (GMT, size) * aspect;
 						fillcell (GMT, Ctrl->D.refpoint->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 						x_off = Ctrl->D.refpoint->x;
 						x_off += (justify%4 == 1) ? Ctrl->C.off[GMT_X] : ((justify%4 == 3) ? Ctrl->D.dim[GMT_X] - Ctrl->C.off[GMT_X] : 0.5 * Ctrl->D.dim[GMT_X]);

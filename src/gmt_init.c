@@ -347,10 +347,11 @@ static char *PSL_ISO_encoding[] = {
 NULL
 };
 
-/* Listing of "Standard" 35 PostScript fonts found on most PS printers.
+/* Listing of "Standard" 35 PostScript fonts found on most PS printers
+ * plus the 4 Japanese fonts we have supported since GMT 3.
  * The fontheight is the height of A for unit fontsize. */
 
-#define GMT_N_STANDARD_FONTS 35
+#define GMT_N_STANDARD_FONTS 39
 static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 #include "standard_adobe_fonts.h"
 };
@@ -5237,12 +5238,12 @@ GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
 
 	/* Loads all available fonts for this installation */
 
-	/* First the standard 35 PostScript fonts from Adobe */
+	/* First the standard 35 + 4 PostScript fonts from Adobe */
 
 	gmt_set_meminc (GMT, GMT_SMALL_CHUNK);	/* Only allocate a small amount [64] */
 	GMT->session.font = gmt_M_malloc (GMT, GMT->session.font, 0, &n_alloc, struct GMT_FONTSPEC);
 
-	/* First the standard 35 PostScript fonts from Adobe */
+	/* First the standard 35 + 4 PostScript fonts from Adobe */
 	gmt_M_memcpy (GMT->session.font, GMT_standard_fonts, GMT_N_STANDARD_FONTS, struct GMT_FONTSPEC);
 	GMT->session.n_fonts = n_GMT_fonts = i = GMT_N_STANDARD_FONTS;
 

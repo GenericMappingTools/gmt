@@ -5726,6 +5726,71 @@ int PSL_defcolor (struct PSL_CTRL *PSL, const char *param, double rgb[]) {
 #define Return1(x) {code = x; fclose (fp); return (code);}
 #define Return2(x) {code = x; fclose (fp); remove (tmp_file); return (code);}
 
+int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned char **picture) {
+	/* PSL_loadeps reads an Encapsulated PostScript file, If picture == NULL we just return h. */
+
+	int n, p, llx, lly, trx, try, BLOCKSIZE=4096;
+	int32_t value;
+	unsigned char *buffer = NULL;
+	FILE *fp = NULL;
+
+	/* Open PostScript file */
+
+	if ((fp = fopen (file, "rb")) == NULL) {
+		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Cannot open image file %s!\n", file);
+		return (PSL_READ_FAILURE);
+	}
+
+	/* Check magic key */
+	
+	if (fread (&value, sizeof (int32_t), 1, fp) != 1) {
+		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Failure reading EPS magic key from %s\n", file);
+		return (-1);
+	}
+	if (value != EPS_MAGIC) {
+		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Could not find EPS magic key in %s\n", file);
+		return (-1);
+	}
+	h->magic = (int)value;
+	
+	/* Scan for BoundingBox */
+
+	psl_get_boundingbox (PSL, fp, &llx, &lly, &trx, &try, &h->llx, &h->lly, &h->trx, &h->try);
+
+	/* Fill header struct with appropriate values */
+	h->magic = EPS_MAGIC;
+	h->width = trx - llx;
+	h->height = try - lly;
+	h->depth = 0;
+	h->length = 0;	/* Not read yet */
+	h->type = RT_EPS;
+	h->maptype = RMT_NONE;
+	h->maplength = 0;
+	h->xorigin = llx;
+	h->yorigin = lly;
+	
+	if (picture == NULL) return (0);	/* Just wanted dimensions */
+	
+	/* Rewind and load into buffer */
+
+	n=0;
+	fseek (fp, (off_t)0, SEEK_SET);
+	buffer = PSL_memory (PSL, NULL, BLOCKSIZE, unsigned char);
+	while ((p = (int)fread ((unsigned char *)buffer + n, 1U, (size_t)BLOCKSIZE, fp)) == BLOCKSIZE)
+	{
+		n+=BLOCKSIZE;
+		buffer = PSL_memory (PSL, buffer, n+BLOCKSIZE, unsigned char);
+	}
+	n+=p;
+	buffer = PSL_memory (PSL, buffer, n, unsigned char);
+
+	/* Now set length */
+	h->length = n;
+
+	*picture = buffer;
+	return (0);
+}
+
 int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned char **picture) {
 	/* PSL_loadimage loads an image of any recognized type into memory
 	 *

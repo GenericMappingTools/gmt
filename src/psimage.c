@@ -16,9 +16,8 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: psimage reads a 1, 8, 24, or 32 bit Sun rasterfile and plots it on the page
- * Other raster formats are supported if GraphicsMagick's/ImageMagick's convert is found in the
- * system path.
+ * Brief synopsis: psimage reads an EPS file or a a 1, 8, 24, or 32 bit image and plots it on the page
+ * Images are only supported if GMT was built with GDAL support.
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
@@ -99,7 +98,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<imagefile> is an EPS or image file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<imagefile> is an EPS or raster image file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B");
 	gmt_refpoint_syntax (API->GMT, "D", "Specify reference point for the image", GMT_ANCHOR_IMAGE, 3);
@@ -303,10 +302,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int file_is_known (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 if it is an EPS file, 2 if a Sun rasterfile; 0 for any other file.
+GMT_LOCAL int file_is_eps (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 if it is an EPS file; 0 for any other file.
        Returns -1 on read error */
 	FILE *fp = NULL;
-	unsigned char c[4], magic_ras[4] = {0x59, 0xa6, 0x6a, 0x95}, magic_ps[4] = {'%', '!', 'P', 'S'};
+	unsigned char c[4], magic_ps[4] = {'%', '!', 'P', 'S'};
 	char *F = *file;
 	int j;
 
@@ -335,8 +334,7 @@ GMT_LOCAL int file_is_known (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 i
 	if (j) F[j] = '+';			/* Reset the band request string */
 	/* Note: cannot use gmt_M_same_rgb here, because that requires doubles */
 	if (c[0] == magic_ps[0] && c[1] == magic_ps[1] && c[2] == magic_ps[2] && c[3] == magic_ps[3]) return(1);
-	if (c[0] == magic_ras[0] && c[1] == magic_ras[1] && c[2] == magic_ras[2] && c[3] == magic_ras[3]) return(2);
-	return (0);	/* Neither */
+	return (0);
 }
 
 #define Return(code) {gmt_M_free (GMT, table); return (code);}
@@ -388,7 +386,7 @@ GMT_LOCAL int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size
 EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input);
 
 int GMT_psimage (void *V_API, int mode, void *args) {
-	int i, j, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0;
+	int i, j, PS_interpolate = 1, PS_transparent = 1, is_eps = 0, error = 0;
 	unsigned int row, col;
 	size_t n;
 	bool free_GMT = false, did_gray = false;
@@ -397,7 +395,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	unsigned char *picture = NULL, *buffer = NULL;
 
-	char path[GMT_BUFSIZ] = {""}, *format[2] = {"EPS", "Sun raster"}, *file = NULL;
+	char path[GMT_BUFSIZ] = {""}, *file = NULL;
 
 	struct imageinfo header;
 
@@ -433,23 +431,23 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	PS_interpolate = (Ctrl->D.interpolate) ? -1 : +1;
 
 	file = strdup (Ctrl->In.file);
-	known = file_is_known (GMT, &file);	/* Determine if this is an EPS file, Sun rasterfile, or other */
-	if (known < 0) {
+	is_eps = file_is_eps (GMT, &file);	/* Determine if this is an EPS file or other */
+	if (is_eps < 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", file);
 		gmt_M_str_free (file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	memset (&header, 0, sizeof(struct imageinfo)); /* initialize struct */
-	if (known) {	/* Read an EPS or Sun raster file */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input EPS or Sun rasterfile\n");
+	if (is_eps) {	/* Read an EPS file */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input EPS file\n");
 		if (gmt_getdatapath (GMT, file, path, R_OK) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", file);
 			gmt_M_str_free (file);
 			Return (GMT_FILE_NOT_FOUND);
 		}
-		if (PSL_loadimage (PSL, path, &header, &picture)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Trouble loading %s file %s!\n", format[known-1], path);
+		if (PSL_loadeps (PSL, path, &header, &picture)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Trouble loading EPS file %s!\n", path);
 			gmt_M_str_free (file);
 			Return (GMT_IMAGE_READ_ERROR);
 		}
@@ -508,7 +506,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		header.depth = (int)I->header->n_bands * 8;
 	}
 #else
-	else {	/* Without GDAL we can only read EPS and Sun raster */
+	else {	/* Without GDAL we can only read EPS files */
 		GMT_Report (API, GMT_MSG_NORMAL, "Unsupported file format for file %s!\n", file);
 		gmt_M_str_free (file);
 		Return (GMT_RUNTIME_ERROR);
@@ -520,7 +518,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		n = 3 * header.width * header.height;
 		buffer = psl_gray_encode (PSL, &n, picture);
 		header.depth = 8;
-		if (known) PSL_free (picture); /* EPS or Sun raster file */
+		if (is_eps) PSL_free (picture); /* EPS ile */
 #ifdef HAVE_GDAL
 		else {	/* Got it via GMT_Read_Data */
 			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
@@ -572,7 +570,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
 			if (free_GMT)
 				gmt_M_free (GMT, picture);
-			else if (known || did_gray)
+			else if (is_eps || did_gray)
 				PSL_free (picture);
 			gmt_M_str_free (file);
 			Return (GMT_PROJECTION_ERROR);
@@ -580,7 +578,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
 			if (free_GMT)
 				gmt_M_free (GMT, picture);
-			else if (known || did_gray)
+			else if (is_eps || did_gray)
 				PSL_free (picture);
 			gmt_M_str_free (file);
 			Return (GMT_RUNTIME_ERROR);
@@ -591,7 +589,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
 			if (free_GMT)
 				gmt_M_free (GMT, picture);
-			else if (known || did_gray)
+			else if (is_eps || did_gray)
 				PSL_free (picture);
 			gmt_M_str_free (file);
 			Return (GMT_PROJECTION_ERROR);
@@ -601,7 +599,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
 			if (free_GMT)
 				gmt_M_free (GMT, picture);
-			else if (known || did_gray)
+			else if (is_eps || did_gray)
 				PSL_free (picture);
 			gmt_M_str_free (file);
 			Return (GMT_RUNTIME_ERROR);
@@ -617,7 +615,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
 			if (free_GMT)
 				gmt_M_free (GMT, picture);
-			else if (known || did_gray)
+			else if (is_eps || did_gray)
 				PSL_free (picture);
 			gmt_M_str_free (file);
 			Return (GMT_PROJECTION_ERROR);
@@ -665,7 +663,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	if (free_GMT) {
 		gmt_M_free (GMT, picture);
 	}
-	else if (known || did_gray)
+	else if (is_eps || did_gray)
 		PSL_free (picture);
 
 	Return (GMT_NOERROR);
