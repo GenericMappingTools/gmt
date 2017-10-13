@@ -6,7 +6,7 @@ postscriptlight
 
 .. only:: not man
 
-    PSL 5.1 - A PostScript based plotting library
+    PSL 6.0 - A PostScript based plotting library
 
 Description
 -----------
@@ -317,20 +317,22 @@ affect the current state of parameters such as line and fill attributes.
     to follow (lines, symbol outlines, text). *rgb* is a triplet of red,
     green and blue values in the range 0.0 through 1.0. Set the red
     color to -3.0 and the green color to the pattern number returned by
-    **PSL_setpattern** to select a pattern as current paint color. For
+    **PSL_setimage** to select an image pattern as current paint color. For
     PDF transparency, set *rgb*\ [3] to a value between 0 (opaque) and 1
     (fully transparent).
 
-**long PSL_setpattern** (**struct PSL_CTRL** *\*P*, **long**
-*image_no*, **char** *\*imagefile*, **long** *dpi*, **double**
-*f_rgb*\ [], **double** *b_rgb*\ [])
+**long PSL_setimage** (**struct PSL_CTRL** *\*P*, **long**
+*image_no*, **char** *\*imagefile*, **unsigned char** *\*image*,
+**long** *dpi*, **long dim[3], **double** *f_rgb*\ [], **double** *b_rgb*\ [])
 
     Sets up the specified image pattern as the fill to use for polygons
     and symbols. Here, *image_no* is the number of the standard PSL
     fill patterns (1-90; use a negative number when you specify an image
-    *filename* instead. The scaling (i.e., resolution in dots per inch)
+    *filename* instead and pass the *image* data vector and the dimensions
+    of the image via the *dim* array (width, height, and bit-depth).
+    The scaling (i.e., resolution in dots per inch)
     of the pattern is controlled by the image *dpi*; if set to 0 it will
-    be plotted at the device resolution. The two remaining settings
+    be plotted at the device resolution. The last two arguments
     apply to 1-bit images only and are otherwise ignored: You may
     replace the foreground color (the set bits) with the *f_rgb* color
     and the background color (the unset bits) with *b_rgb*.
@@ -339,7 +341,7 @@ affect the current state of parameters such as line and fill attributes.
     specified fore- or background component. To subsequently use the
     pattern as a pen or fill color, use **PSL_setcolor** or
     DB(PSL_setfill) with the a color *rgb* code made up of *r* = -3,
-    and *b* = the pattern number returned by **PSL_setpattern**.
+    and *b* = the pattern number returned by **PSL_setimage**.
 
 **long PSL_setdash** (**struct PSL_CTRL** *\*P*, **char** *\*pattern*,
 **double** *offset*)

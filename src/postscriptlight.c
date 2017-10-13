@@ -4049,68 +4049,11 @@ int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int ima
 	 * f_rgb:	Foreground color used for set bits (1) (1-bit only)
 	 * b_rgb:	Background color used for unset bits (0) (1-bit only)
 	 * Returns image number
+	 * DEPRECATED
 	 */
 	(void)(image_no); (void)(imagefile); (void)(image_dpi); (void)(f_rgb); (void)(b_rgb); 
 	PSL_message (PSL, PSL_MSG_NORMAL, "Warning: PSL_setpattern has been deprecated - see PSL_setimage instead\n");
 	return (PSL_NO_ERROR);
-#if 0
-	int mask, id, inv, k;
-	uint64_t nx, ny;
-	const char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
-	const char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
-	const char *kind_mask[2] = {"image", "imagemask"};
-
-	/* Determine if image was used before */
-
-	if ((image_no > 0 && image_no <= PSL_N_PATTERNS) && !PSL->internal.pattern[image_no].status)	/* Unused predefined */
-		image_no = psl_pattern_init (PSL, image_no, imagefile);
-	else if (image_no < 0) {	/* User image, check if already used */
-		int i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
-		if (i == -1)	/* Not found or no previous user images loaded */
-			image_no = psl_pattern_init (PSL, image_no, imagefile);
-		else
-			image_no = PSL_N_PATTERNS + i + 1;
-	}
-	k = image_no - 1;	/* Image array index */
-	nx = PSL->internal.pattern[k].nx;
-	ny = PSL->internal.pattern[k].ny;
-
-	id = (PSL->internal.color_mode == PSL_CMYK) ? 2 : 1;
-	mask = (PSL->internal.pattern[k].depth == 1 && (f_rgb[0] < 0.0 || b_rgb[0] < 0.0));
-
-	/* When DPI or colors have changed, the /pattern procedure needs to be rewritten */
-
-	if (PSL->internal.pattern[k].dpi != image_dpi ||
-		!PSL_same_rgb(PSL->internal.pattern[k].f_rgb,f_rgb) ||
-		!PSL_same_rgb(PSL->internal.pattern[k].b_rgb,b_rgb)) {
-
-		PSL_comment (PSL, "Setup %s fill using pattern %d\n", kind_mask[mask], image_no);
-		if (image_dpi) {	/* Use given DPI */
-			nx = lrint (nx * PSL->internal.dpu / image_dpi);
-			ny = lrint (ny * PSL->internal.dpu / image_dpi);
-		}
-		PSL_command (PSL, "/pattern%d {V %" PRIu64 " %" PRIu64 " scale", image_no, nx, ny);
-		PSL_command (PSL, "\n<< /PaintType 1 /PatternType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /PaintProc\n   {begin");
-
-		if (PSL->internal.pattern[k].depth == 1) {	/* 1-bit bitmap basis */
-			inv = psl_bitimage_cmap (PSL, f_rgb, b_rgb) % 2;
-			PSL_command (PSL, "\n<< /ImageType 1 /Decode [%d %d]", inv, 1-inv);
-		}
-		else
-			PSL_command (PSL, " /Device%s setcolorspace\n<< /ImageType 1 /Decode [%s]", colorspace[id], decode[id]);
-		PSL_command (PSL, " /Width %d /Height %d /BitsPerComponent %d",
-		             PSL->internal.pattern[k].nx, PSL->internal.pattern[k].ny, MIN(PSL->internal.pattern[k].depth,8));
-		PSL_command (PSL, "\n   /ImageMatrix [%d 0 0 %d 0 %d] /DataSource image%d\n>> %s end}\n>> matrix makepattern U} def\n",
-		             PSL->internal.pattern[k].nx, -PSL->internal.pattern[k].ny, PSL->internal.pattern[k].ny,
-		             image_no, kind_mask[mask]);
-
-		PSL->internal.pattern[k].dpi = image_dpi;
-		PSL_rgb_copy (PSL->internal.pattern[k].f_rgb, f_rgb);
-		PSL_rgb_copy (PSL->internal.pattern[k].b_rgb, b_rgb);
-	}
-
-	return (image_no);
-#endif
 }
 
 int PSL_setimage (struct PSL_CTRL *PSL, int image_no, char *imagefile, unsigned char *image, int image_dpi, unsigned int dim[], double f_rgb[], double b_rgb[]) {

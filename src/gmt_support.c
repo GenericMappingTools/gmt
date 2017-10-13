@@ -239,10 +239,33 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 			return (GMT_RUNTIME_ERROR);
 		}
 		gmt_set_pad (GMT, GMT->parent->pad); /* Restore to GMT Defaults */
-		fill->image = fill->I->data;
 		fill->dim[0] = fill->I->header->n_columns;
 		fill->dim[1] = fill->I->header->n_rows;
-		fill->dim[2] = (fill->I->header->n_bands == 3) ? 24 : fill->I->header->bits;
+		if (fill->I->colormap) {	/* Got indexed color image, must build rgb stream instead */
+			/* Convert colormap from integer to unsigned char and count colors */
+			unsigned char *colormap = gmt_M_memory (GMT, NULL, 4*256, unsigned char);
+			int64_t n, j, k;
+			for (n = 0; n < 4 * 256 && fill->I->colormap[n] >= 0; n++) colormap[n] = (unsigned char)fill->I->colormap[n];
+			n /= 4;
+			/* Expand 8-bit indexed image to 24-bit image */
+			fill->I->data = gmt_M_memory (GMT, fill->I->data, 3 * fill->I->header->nm, unsigned char);
+			n = 3 * fill->I->header->nm - 1;
+			for (j = (int64_t)fill->I->header->nm - 1; j >= 0; j--) {
+				k = 4 * fill->I->data[j] + 3;
+				fill->I->data[n--] = colormap[--k], fill->I->data[n--] = colormap[--k], fill->I->data[n--] = colormap[--k];
+			}
+			gmt_M_free (GMT, colormap);
+			fill->I->header->n_bands = 3;
+			fill->I->header->size *= 3;
+		}
+		else if (fill->I->header->n_bands == 4) { /* RGBA image, with a color map */
+			uint64_t n4, j4;
+			for (j4 = n4 = 0; j4 < 4 * fill->I->header->nm; j4++) /* Reduce image from 32- to 24-bit */
+				fill->I->data[n4++] = fill->I->data[j4++], fill->I->data[n4++] = fill->I->data[j4++], fill->I->data[n4++] = fill->I->data[j4++];
+			fill->I->header->n_bands = 3;
+		}
+		fill->image = fill->I->data;
+		fill->dim[2] = (fill->I->header->n_bands == 3) ? 24 : 8;
 	}
 	else
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pattern number %d selected\n", fill->pattern_no);
