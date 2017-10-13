@@ -43,8 +43,6 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grd2cpt`        | Make color palette table from a grid files                          |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`grd2rgb`        | Convert Sun raster or grid file to red, green, blue component grids |
-+-----------------------+---------------------------------------------------------------------+
 | :doc:`grd2xyz`        | Conversion from 2-D grid file to table data                         |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdblend`       | Blend several partially over-lapping grid files onto one grid       |

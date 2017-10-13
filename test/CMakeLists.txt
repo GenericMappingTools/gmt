@@ -27,7 +27,7 @@ if (DO_TESTS)
 	# list of test dirs {Note: You must add new test sub-directories here}
 	set (GMT_TEST_DIRS api byteswap blockmean blockmedian blockmode filter1d fitcircle gdal
 		genper gmt_core gmtconvert gmtlogo gmtmath gmtregress gmtselect gmtsimplify
-		gmtspatial gmtconnect gmtvector grd2rgb grd2xyz grdblend grdclip grdcontour
+		gmtspatial gmtconnect gmtvector grd2xyz grdblend grdclip grdcontour
 		grdcut grdedit grdfft grdfilter grdgradient grdhisteq grdimage grdinfo grdlandmask
 		grdmask grdmath grdpaste grdproject grdconvert grdsample grdtrack grdtrend
 		grdvector grdview grdvolume greenspline gshhg kml makecpt mapproject nearneighbor

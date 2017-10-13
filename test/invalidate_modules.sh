@@ -15,7 +15,7 @@ gmt_modules="backtracker blockmean blockmedian blockmode dimfilter filter1d \
 fitcircle gmt2kml gmtconvert gmtdefaults gmtflexure gmtget gmtgravmag3d gmtinfo gmtmath \
 gmtpmodeler gmtregress gmtselect gmtset gmtsimplify gmtspatial gmtstitch \
 gmtvector gmtwhich gpsgridder gravfft \
-grd2cpt grd2rgb grd2xyz grdblend grdclip grdcontour grdcut grdedit grdfft \
+grd2cpt grd2xyz grdblend grdclip grdcontour grdcut grdedit grdfft \
 grdflexure grdfilter grdgradient grdgravmag3d grdhisteq grdimage grdinfo grdlandmask \
 grdmask grdmath grdpaste grdpmodeler grdproject grdraster grdredpol grdconvert \
 grdrotater grdsample grdseamount grdspotter grdtrack grdtrend grdvector \

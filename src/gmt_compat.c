@@ -77,17 +77,6 @@ int GMT_gmtstitch (void *V_API, int mode, void *args) {
 	return (GMT_NOT_A_VALID_MODULE);
 }
 
-int GMT_gmt2rgb (void *V_API, int mode, void *args) {
-	/* This was the GMT4 name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	if (gmt_M_compat_check (API->GMT, 4)) {
-		GMT_Report (API, GMT_MSG_COMPAT, "Warning: module gmt2rgb is deprecated; use grd2rgb.\n");
-		return (GMT_Call_Module (API, "grd2rgb", mode, args));
-	}
-	GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: gmt2rgb\n");
-	return (GMT_NOT_A_VALID_MODULE);
-}
-
 int GMT_ps2raster (void *V_API, int mode, void *args) {
 	/* This was the GMT5.1 name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
