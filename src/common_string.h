@@ -77,6 +77,8 @@ EXTERN_MSC char *strtok_r (char *s, const char *delim, char **save_ptr);
 
 #ifndef DECLARED_STRSEP
 EXTERN_MSC char *strsep (char **stringp, const char *delim);
+#elif !defined(HAVE_STRSEP)
+EXTERN_MSC char *strsep (char **stringp, const char *delim);
 #endif
 EXTERN_MSC char *strsepz  (char **stringp, const char *delim, size_t *pos);
 EXTERN_MSC char *strsepzp (char **stringp, const char *delim, size_t *pos);
