@@ -440,7 +440,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 			else
 				gmt_M_memcpy (Sout->data[Ctrl->T.col], t_out, m, double);
 			if (S->header) Sout->header = strdup (S->header);	/* Duplicate header */
-			Sout->n_rows = m;
+			Sout->n_rows = Sout->n_alloc = m;
 				
 			for (col = 0; m && col < Din->n_columns; col++) {
 

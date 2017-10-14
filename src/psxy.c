@@ -1570,7 +1570,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						if (n_new == 0) {
 							Return (GMT_RUNTIME_ERROR);
 						}
-						L->n_rows = n_new;
+						L->n_rows = L->n_alloc = n_new;
 						gmt_set_seg_minmax (GMT, D->geometry, 2, L);	/* Update min/max of x/y only */
 						resampled = true;	/* To avoid doing it twice */
 					}
