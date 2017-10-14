@@ -403,6 +403,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 
 	unsigned int n_errors = 0, n_files = 0, q_set = 0, n_commas, j, k, n, id;
 	int sval;
+	bool no_cpt = false;
 	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -631,6 +632,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 		}
 	}
 
+	if (Ctrl->G.active && gmt_M_file_is_image (Ctrl->G.file[0])) no_cpt = true;
+	
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="),
 	                                   "Error: Piping of topofile not supported!\n");
@@ -654,7 +657,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
 	                                   "Syntax error -I option: Must specify intensity file, value, or modifiers\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) &&
-	                                   !Ctrl->C.file && Ctrl->G.n != 3, "Syntax error: Must specify color palette table\n");
+	                                   !Ctrl->C.file && Ctrl->G.n != 3 && !no_cpt, "Syntax error: Must specify color palette table\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0,
 	                                 "Syntax error -Qi option: Must specify positive dpi\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set,
@@ -668,7 +671,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 
 int GMT_grdview (void *V_API, int mode, void *args) {
 	bool get_contours, bad, good, pen_set, begin, saddle, drape_resample = false;
-	bool nothing_inside = false, use_intensity_grid;
+	bool nothing_inside = false, use_intensity_grid, do_G_reading = true;
 	unsigned int c, nk, n4, row, col, n_edges, d_reg[3], i_reg = 0;
 	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, i_start, i_stop, j_start, j_stop;
@@ -740,8 +743,61 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->G.active) {
-		for (k = 0; k < Ctrl->G.n; k++) if ((Drape[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->G.file[k], NULL)) == NULL) {	/* Get header only */
-			Return (API->error);
+		if (Ctrl->G.n == 1 && gmt_M_file_is_image (Ctrl->G.file[0])) {
+			double inc[2];
+			/* Want to drape an image on top of surface.  Do so by converting image to r, g, b grids */
+			struct GMT_IMAGE *I = NULL;
+			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file[0], NULL)) == NULL) {
+				Return (API->error);
+			}
+			inc[GMT_X] = gmt_M_get_inc (GMT, Topo->header->wesn[XLO], Topo->header->wesn[XHI], I->header->n_columns, I->header->xy_off);
+			inc[GMT_Y] = gmt_M_get_inc (GMT, Topo->header->wesn[YLO], Topo->header->wesn[YHI], I->header->n_rows, I->header->xy_off);
+			for (k = 0; k < 3; k++) {
+				if ((Drape[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Topo->header->wesn, inc, I->header->registration, 2, NULL)) == NULL) {
+					Return (API->error);
+				}
+			}
+			/* Handle transparent images */
+			if (I->colormap != NULL) {	/* Image has a color map */
+				/* Convert colormap from integer to unsigned char and count colors */
+				unsigned char *colormap = gmt_M_memory (GMT, NULL, 4*256, unsigned char);
+				int64_t n, j;
+				for (n = 0; n < 4 * 256 && I->colormap[n] >= 0; n++) colormap[n] = (unsigned char)I->colormap[n];
+				n /= 4;
+				/* Expand 8-bit indexed image to 24-bit image */
+				I->data = gmt_M_memory (GMT, I->data, 3 * I->header->nm, unsigned char);
+				n = 3 * I->header->nm - 1;
+				for (j = (int)I->header->nm - 1; j >= 0; j--) {
+					k = 4 * I->data[j] + 3;
+					I->data[n--] = colormap[--k], I->data[n--] = colormap[--k], I->data[n--] = colormap[--k];
+				}
+				I->header->n_bands = 3;
+				gmt_M_free (GMT, colormap);
+			}
+			else if (I->header->n_bands == 4) { /* RGBA image, with a color map */
+				uint64_t n4, j4;
+				for (j4 = n4 = 0; j4 < 4 * I->header->nm; j4++) { /* Reduce image from 32- to 24-bit */
+					I->data[n4++] = I->data[j4++], I->data[n4++] = I->data[j4++], I->data[n4++] = I->data[j4++];
+				}
+				I->header->n_bands = 3;
+			}
+			/* Now assign r,g,b to three grids */
+			gmt_M_grd_loop (GMT, I, row, col, ij) {
+				Drape[0]->data[ij] = I->data[3*ij];
+				Drape[1]->data[ij] = I->data[3*ij+1];
+				Drape[2]->data[ij] = I->data[3*ij+2];
+			}
+			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
+				Return (API->error);
+			}
+			Ctrl->G.n = 3;
+			Ctrl->G.image = true;
+			do_G_reading = false;
+		}
+		else {	/* Read the single or triple drape grids */
+			for (k = 0; k < Ctrl->G.n; k++) if ((Drape[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->G.file[k], NULL)) == NULL) {	/* Get header only */
+				Return (API->error);
+			}
 		}
 	}
 
@@ -812,7 +868,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		for (k = 0; k < Ctrl->G.n; k++) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Processing drape grid %s\n", Ctrl->G.file[k]);
 
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->G.file[k], Drape[k]) == NULL) {	/* Get drape data */
+			if (do_G_reading && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->G.file[k], Drape[k]) == NULL) {	/* Get drape data */
 				Return (API->error);
 			}
 			if (Drape[k]->header->n_columns != Topo->header->n_columns || Drape[k]->header->n_rows != Topo->header->n_rows) drape_resample = true;

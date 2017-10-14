@@ -190,5 +190,7 @@
 #define gmt_M_file_is_cache(file) (file && file[0] == '@' && strncmp (file, "@GMTAPI@-", 9U))
 #define gmt_M_file_is_url(file) (file && (!strncmp (file, "http:", 5U) || !strncmp (file, "https:", 6U) || !strncmp (file, "ftp:", 4U)))
 
+/*! Determine if file is an image GDAL can read */
+#define gmt_M_file_is_image(file) (file && (strstr (file, "=gd") || strstr (file, ".jpg") || strstr (file, ".png") || strstr (file, ".ppm") || strstr (file, ".tif") || strstr (file, ".bmp") || strstr (file, ".gif")))
 
 #endif  /* _GMT_MACROS_H */

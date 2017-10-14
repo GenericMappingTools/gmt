@@ -13979,17 +13979,17 @@ GMT_LOCAL bool check_if_we_must_download (struct GMT_CTRL *GMT, const char *file
 	else if (kind == GMT_REGULAR_FILE)
 		return false;	/* A query must exist locally */
 	else if (kind == GMT_DATA_FILE) {	/* Special remote data set @earth_relief_xxm|s grid request */
+        bool found;
 		if (strstr (file, ".grd")) {	/* User already gave the extension */
-			if (gmt_access (GMT, &file[1], F_OK)) return true;	/* Not found so need to download */
+            found = (!gmt_access (GMT, &file[1], F_OK));    /* Not found so need to download */
 		}
 		else {	/* Must append the extension .grd */
 			char *tmpfile = malloc (strlen(file)+5);
-			bool found;
 			sprintf (tmpfile, "%s.grd", &file[1]);
 			found = (!gmt_access (GMT, tmpfile, F_OK));	/* Not found so need to download */
 			gmt_M_str_free (tmpfile);
-			return !found;
 		}
+        return !found;
 	}
 	else if (!gmt_access (GMT, &file[pos], F_OK))
 		return false;	/* File exists already so no need to download */
