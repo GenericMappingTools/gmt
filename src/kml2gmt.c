@@ -213,7 +213,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	 * P. Wessel, April 2013. */
 	
 	if (Ctrl->In.active) {
-		if ((fp = fopen (Ctrl->In.file, "r")) == NULL) {
+		if ((fp = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}

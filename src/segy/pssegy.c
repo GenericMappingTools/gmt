@@ -493,7 +493,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 
 	if (Ctrl->In.active) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Will read segy file %s\n", Ctrl->In.file);
-		if ((fpi = fopen (Ctrl->In.file, "rb")) == NULL) {
+		if ((fpi = gmt_fopen (GMT, Ctrl->In.file, "rb")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find segy file %s\n", Ctrl->In.file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
@@ -503,7 +503,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 		if (fpi == NULL) fpi = stdin;
 	}
 
-	if (Ctrl->T.active && (fpt = fopen (Ctrl->T.file, "r")) == NULL) {
+	if (Ctrl->T.active && (fpt = gmt_fopen (GMT, Ctrl->T.file, "r")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find trace list file %s\n", Ctrl->T.file);
 		if (fpi != stdin) fclose (fpi);
 		Return (GMT_ERROR_ON_FOPEN);

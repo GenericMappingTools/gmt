@@ -10,7 +10,8 @@ ps=icelandbox.ps
 popt=-p130/30
 
 ### Colormap
-cat << EOF > resid.cpt
+cpt=resid.cpt
+cat << EOF > $cpt
 #	cpt file created by: makecpt -T-9/9/2 but then manually doctored
 #COLOR_MODEL = +HSV
 #

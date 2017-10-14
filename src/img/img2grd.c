@@ -516,7 +516,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	if ((fp = fopen (infile, "rb")) == NULL) {
+	if ((fp = gmt_fopen (GMT, infile, "rb")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot open %s for binary read.\n", infile);
 		Return (GMT_RUNTIME_ERROR);
 	}

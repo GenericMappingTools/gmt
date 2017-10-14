@@ -666,7 +666,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			double wq, eq, sq, nq;
 			char line[GMT_BUFSIZ] = {""};
 			
-			if ((fp = fopen (Ctrl->Q.file, "r")) == NULL) {	/* Oh, oh... */
+			if ((fp = gmt_fopen (GMT, Ctrl->Q.file, "r")) == NULL) {	/* Oh, oh... */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: -Q info file unreadable/nonexistent\n");
 				GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
 			}

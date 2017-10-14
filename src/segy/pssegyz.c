@@ -617,7 +617,7 @@ int GMT_pssegyz (void *V_API, int mode, void *args) {
 
 	if (Ctrl->In.active) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Will read segy file %s\n", Ctrl->In.file);
-		if ((fpi = fopen (Ctrl->In.file, "rb")) == NULL) {
+		if ((fpi = gmt_fopen (GMT, Ctrl->In.file, "rb")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find segy file %s\n", Ctrl->In.file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}

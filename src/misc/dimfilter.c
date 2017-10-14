@@ -972,7 +972,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 		/* Check the crucial condition to run the program*/
-		if ((ip = fopen (Ctrl->In.file, "r")) == NULL) {
+		if ((ip = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open file %s\n", Ctrl->In.file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}

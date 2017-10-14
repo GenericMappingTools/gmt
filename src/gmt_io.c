@@ -4347,31 +4347,35 @@ bool gmt_input_is_bin (struct GMT_CTRL *GMT, const char *filename) {
 FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) {
 	char path[GMT_BUFSIZ], *c = NULL;
 	FILE *fd = NULL;
+	unsigned int first = 0;
+	if (gmt_M_file_is_cache (filename)) {	/* Must be a cache file */
+		first = gmt_download_file_if_not_found (GMT, filename, 0);
+	}
 
 	if (mode[0] != 'r')	/* Open file for writing (so cannot be netCDF) */
-		return (fopen (filename, mode));
+		return (fopen (&filename[first], mode));
 	else if (GMT->common.b.active[GMT_IN]) {	/* Definitely not netCDF */
-		if ((c = gmt_getdatapath (GMT, filename, path, R_OK)) == NULL) return NULL;
+		if ((c = gmt_getdatapath (GMT, &filename[first], path, R_OK)) == NULL) return NULL;
 		return (fopen (c, mode));
 	}
 	else if (gmt_M_compat_check (GMT, 4) && GMT->common.b.varnames[0])	/* Definitely netCDF */
-		return (gmt_nc_fopen (GMT, filename, mode));
-	else if (strchr (filename, '?'))	/* Definitely netCDF */
-		return (gmt_nc_fopen (GMT, filename, mode));
+		return (gmt_nc_fopen (GMT, &filename[first], mode));
+	else if (strchr (&filename[first], '?'))	/* Definitely netCDF */
+		return (gmt_nc_fopen (GMT, &filename[first], mode));
 #ifdef WIN32
-	else if (!strcmp (filename, "NUL"))	/* Special case of /dev/null under Windows */
+	else if (!strcmp (&filename[first], "NUL"))	/* Special case of /dev/null under Windows */
 #else
-	else if (!strcmp (filename, "/dev/null"))	/* The Unix null device; catch here to avoid gmt_nc_fopen */
+	else if (!strcmp (&filename[first], "/dev/null"))	/* The Unix null device; catch here to avoid gmt_nc_fopen */
 #endif
 	{
-		if ((c = gmt_getdatapath(GMT, filename, path, R_OK)) == NULL) return fd;
+		if ((c = gmt_getdatapath(GMT, &filename[first], path, R_OK)) == NULL) return fd;
 		return (fopen (c, mode));
 	}
 	else {	/* Maybe netCDF */
-		fd = gmt_nc_fopen (GMT, filename, mode);
+		fd = gmt_nc_fopen (GMT, &filename[first], mode);
 		if (!fd) {
-			if ((c = gmt_getdatapath(GMT, filename, path, R_OK)) != NULL)
-                fd = fopen(c, mode);
+			if ((c = gmt_getdatapath(GMT, &filename[first], path, R_OK)) != NULL)
+                fd = fopen (c, mode);
 		}
 		return (fd);
 	}

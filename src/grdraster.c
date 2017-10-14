@@ -236,7 +236,7 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error: Unable to find file %s.\n", file);
 		return (0);
 	}
-	if ((fp = fopen (ptr, "r")) == NULL) {
+	if ((fp = gmt_fopen (GMT, ptr, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error: Unable to open file %s.\n", ptr);
 		return (0);
 	}

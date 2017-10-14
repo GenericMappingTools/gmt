@@ -358,6 +358,11 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 		if (k == 1) R->invert = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received rotation file: %s\n", R->file);
 	}
+	else if (gmt_M_file_is_cache (arg)) {	/* Was given a remote file */
+		R->file = strdup (&arg[k]);
+		if (k == 1) R->invert = true;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received rotation file: %s\n", R->file);
+	}
 	else {	/* Apply a fixed total reconstruction rotation to all input points  */
 		unsigned int ns = 0;
 		size_t kk;
@@ -467,7 +472,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Using GPlates rotation file %s\n", Rotations);
 		GPlates = total_in = true;
 	}
-	else if ((fp = gmt_fopen (GMT, &file[first], "r")) == NULL) {
+	else if ((fp = gmt_fopen (GMT, file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open stage pole file: %s\n", file);
 		GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
 	}
@@ -602,7 +607,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
  * but are converted to GEOCENTRIC by this function if geocentric == true */
 
 int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, struct HOTSPOT **p) {
-	unsigned int i = 0, n, first = 0;
+	unsigned int i = 0, n;
 	int ival;
 	size_t n_alloc = GMT_CHUNK;
 	FILE *fp = NULL;
@@ -610,10 +615,7 @@ int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, str
 	char buffer[GMT_BUFSIZ] = {""}, create, fit, plot;
 	double P[3];
 
-	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
-		first = gmt_download_file_if_not_found (GMT, file, 0);
-	}
-	if ((fp = gmt_fopen (GMT, &file[first], "r")) == NULL) {
+	if ((fp = gmt_fopen (GMT, file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s - aborts\n", file);
 		return -1;
 	}
