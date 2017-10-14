@@ -20,7 +20,7 @@
  *
  * Author:	Walter H.F. Smith
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: Read a grid file and sets all values < the user-supplied
  * lower limit to the value <below>, and all values > the user-supplied

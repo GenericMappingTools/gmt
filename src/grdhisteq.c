@@ -21,7 +21,7 @@
  *
  * Author:	W.H.F. Smith
  * Date: 	31 May 1990
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"

@@ -18,7 +18,7 @@
 /*
  * Authors:	Paul Wessel & David Sandwell
  * Date:	1-OCT-2016
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: gpsgridder grids GPS vector strain data u(x,y) & v(x,y) using
  * Green's functions derived from a thin elastic sheet [e.g., Haines et al., 2015].

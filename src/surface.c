@@ -33,7 +33,7 @@
  *
  * Authors:	Walter H. F. Smith and Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  * Tech Note:	1. surface uses old grid-structure (transpose of current GMT grid)
  *		   and must therefore waste time transposing grid before writing.
  *		   However, this is a tiny fraction of total run time.

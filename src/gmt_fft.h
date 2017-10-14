@@ -20,7 +20,7 @@
  *
  * Author:	P. Wessel, derived from W.H.F. Smith implementation
  * Date:	12-FEB-2013
- * Version:	5 API
+ * Version:	6 API
  *
  */
 

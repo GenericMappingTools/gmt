@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: grdcontour reads a 2-D grid file and contours it,
  * controlled by a variety of options.

@@ -20,7 +20,7 @@
  *
  * Author:	Walter H. F. Smith
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis:  filter1d_func will read N columns of data from file
  * or stdin and return filtered output at user-selected positions.

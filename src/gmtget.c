@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: gmtget will return the values of selected parameters.
  *

@@ -20,7 +20,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: psbasemap plots a basemap for the given area using
  * the specified map projection.

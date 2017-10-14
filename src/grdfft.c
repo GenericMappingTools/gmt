@@ -21,7 +21,7 @@
  *
  * Author:	W.H.F. Smith
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  * Note:	PW: As of 2/14/2013 the various setup and init functions for FFT use
  *		have been generalized and made available GMT-wide via new functions
  *		in gmt_fft.c, called GMT_fft_*.

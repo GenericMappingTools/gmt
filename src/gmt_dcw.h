@@ -21,7 +21,7 @@
  *
  * Author:	Paul Wessel
  * Date:	10-MAR-2013
- * Version:	5 API
+ * Version:	6 API
  */
 
 /*!

@@ -23,7 +23,7 @@
  *
  * Author:	Paul Wessel
  * Date:	01-AUG-2011
- * Version:	5 API
+ * Version:	6 API
  */
 
 /*!

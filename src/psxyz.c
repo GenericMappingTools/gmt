@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: psxyz will read <x,y,z> triplets and plot symbols, lines,
  * or polygons in a 3-D perspective view.

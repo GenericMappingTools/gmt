@@ -23,7 +23,7 @@
 
 /* Authors:	J. Luis
    Date:	1-OCT-2012
-   Version:	5 API
+   Version:	6 API
 
 */
 

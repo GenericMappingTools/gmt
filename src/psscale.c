@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: psscale draws a grayscale or colorscale either vertically
  * or horizontally, optionally with illumination.

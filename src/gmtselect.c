@@ -20,7 +20,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: gmtselect is a general-purpose spatial filter.  Data pass
  * or fail basedon one or more conditions.  Seven conditions may be set:

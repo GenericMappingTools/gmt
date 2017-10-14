@@ -21,7 +21,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  */
 
 #define THIS_MODULE_NAME	"grdvector"

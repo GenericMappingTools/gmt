@@ -20,7 +20,7 @@
  *
  * Author:	Joaquim Luis
  * Date:	1-JAN-2016
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"

@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: grdinfo reads one or more grid file and [optionally] prints
  * out various statistics like mean/standard deviation and median/scale.

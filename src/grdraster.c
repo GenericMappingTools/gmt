@@ -24,7 +24,7 @@
  *
  * Author:	Walter H. F. Smith
  * Date:	1 April, 2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: grdraster reads and extracts a subset of large (global)
  * grids using metadata from the grdraster.info table.

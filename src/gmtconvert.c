@@ -20,7 +20,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: Read one or more data tables and can concatenated them
  * vertically [Default] or horizontally (pasting), select certain columns,

@@ -19,7 +19,7 @@
  *
  * Authors:	Walter H.F. Smith & P. Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: Reads an existing CPT and desired output grid
  * and produces a GMT CPT.  Can be inverted [-I] or made to be

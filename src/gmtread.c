@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	2-May-2013
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: gmt read lets us read (and write to memory) any of the 5 GMT resources.
  *

@@ -20,7 +20,7 @@
  *
  * Author:	Walter H.F. Smith
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: reads records of x, y, data, [weight] and writes out mode
  * value per cell, where cellular region is bounded by West East South North

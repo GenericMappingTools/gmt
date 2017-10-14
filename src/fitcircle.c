@@ -20,7 +20,7 @@
  *
  * Author:	Walter H.F. Smith
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: reads lon,lat pairs and finds mean position and pole
  * of best-fit circle through these points.  By default, fit great

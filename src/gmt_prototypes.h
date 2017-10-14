@@ -20,7 +20,7 @@
 
    Authors:	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
    Date:	1-OCT-2009
-   Version:	5 API
+   Version:	6 API
 */
 
 /*!

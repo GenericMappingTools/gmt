@@ -20,7 +20,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: gmt2kml reads GMT tables and plots symbols, lines,
  * and polygons as KML files for Google Earth.

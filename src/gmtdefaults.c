@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: gmtdefaults will list the user's GMT default settings
  * or (by using the -D option), get the site GMT default settings.

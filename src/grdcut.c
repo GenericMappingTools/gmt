@@ -20,7 +20,7 @@
  *
  * Author:	Walter Smith
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: Reads a grid file and writes a portion within it
  * to a new file.

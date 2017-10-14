@@ -20,7 +20,7 @@
  *
  * Author:	Joaquim Luis
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: gmtsimplify applies the Douglas-Peucker algorithm to simplify a line
  * segment given a tolerance.

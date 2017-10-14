@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	7-JUN-2016
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: testapiconv tests GMT_Convert_Data function.
  *

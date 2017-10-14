@@ -27,7 +27,7 @@
  *
  * Author:	Remko Scharroo
  * Date:	1-JAN-2010
- * Ver:		5 API
+ * Ver:		6 API
  */
 
 /*!

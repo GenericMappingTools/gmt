@@ -29,7 +29,7 @@
  *
  * Author:	Paul Wessel w/ CURVE addition by Samantha Zambo (-C)
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  */
  
 #include "gmt_dev.h"

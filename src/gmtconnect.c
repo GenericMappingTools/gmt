@@ -20,7 +20,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: gmtconnect will combine pieces of coastlines or similar segments
  * into a continuous line, polygon, or group of lines/polygons so that the jump

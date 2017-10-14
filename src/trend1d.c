@@ -26,7 +26,7 @@
  *
  * Author:	W. H. F. Smith
  * Date:	1 JAN 2010
- * Version:	5 API
+ * Version:	6 API
  *
  * In trend1d I chose to construct the polynomial model using Chebyshev
  * Polynomials so that the user may easily compare the sizes of the

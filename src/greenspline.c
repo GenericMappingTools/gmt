@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: greenspline grids data using Green's functions for a selected spline.
  * The data may be Cartesian or geographical, and gridding can be done

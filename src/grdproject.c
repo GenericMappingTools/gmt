@@ -23,7 +23,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Ver:		5 API
+ * Ver:		6 API
  */
 
 #include "gmt_dev.h"

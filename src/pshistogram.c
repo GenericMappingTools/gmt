@@ -20,7 +20,7 @@
  *
  * Author:	Walter H. F. Smith
  * Date:	1 JAN 2010
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"

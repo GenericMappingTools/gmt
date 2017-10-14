@@ -28,7 +28,7 @@
  *
  * Author:	Joaquim Luis / Miguel Miranda
  * Date:	18-Feb-2003 (original GMT4 version)
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"

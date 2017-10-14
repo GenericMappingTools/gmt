@@ -32,7 +32,7 @@
  *
  * Authors:	Walter H. F. Smith and Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * This 5.3 version is a complete re-write that differs from the original code:
  * 1. It uses scan-line grid structures, so we no longer need to transpose grids

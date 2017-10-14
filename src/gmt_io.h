@@ -24,7 +24,7 @@
  *
  * Author:	Paul Wessel
  * Date:	15-NOV-2009
- * Version:	5 API
+ * Version:	6 API
  *
  */
 

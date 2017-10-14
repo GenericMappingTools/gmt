@@ -31,7 +31,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-AUG-2011
- * Version:	5 API
+ * Version:	6 API
  *
  */
 

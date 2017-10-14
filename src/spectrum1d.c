@@ -23,7 +23,7 @@
  *
  * Author:	W. H. F. Smith
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  * References:	Julius S. Bendat & Allan G. Piersol,
  *    	"Random Data", 2nd revised edition, 566pp.,
  *    	1986, John Wiley & Sons, New York. [ B&P below]

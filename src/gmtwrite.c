@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	2-May-2013
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: gmt write lets us (read from memory and) write any of the 5 GMT resources.
  *

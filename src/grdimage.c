@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: grdimage will read one (or 3) grid file and image the area
  * with optional shading. Alternatively, it will read an image and project it

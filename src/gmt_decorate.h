@@ -19,7 +19,7 @@
 
    Author:	Paul Wessel
    Date:	1 OCT 2015
-   Version:	5 API
+   Version:	6 API
 
    This include file defines structures and functions used.
 */

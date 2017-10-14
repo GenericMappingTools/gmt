@@ -20,7 +20,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: gmtmath.c is a reverse polish calculator that operates
  * on table files (and constants) and perform basic mathematical operations
