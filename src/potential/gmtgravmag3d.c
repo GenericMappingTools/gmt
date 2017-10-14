@@ -780,14 +780,17 @@ END:
 GMT_LOCAL int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0) {
 	/* read xyz[m] file with point data coordinates */
 
-	unsigned int ndata_xyz;
+	unsigned int ndata_xyz, first = 0;
 	size_t n_alloc;
 	gmt_grdfloat x_min = FLT_MAX, x_max = -FLT_MAX, y_min = FLT_MAX, y_max = -FLT_MAX;
 	double in[8];
 	char line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
 
-	if ((fp = fopen (fname, "r")) == NULL) return (-1);
+	if (gmt_M_file_is_cache (fname)) {
+		first = gmt_download_file_if_not_found (GMT, fname, 0);
+	}
+	if ((fp = fopen (&fname[first], "r")) == NULL) return (-1);
 
        	n_alloc = GMT_CHUNK;
 	ndata_xyz = 0;
@@ -877,13 +880,16 @@ GMT_LOCAL int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fn
 /* -----------------------------------------------------------------*/
 GMT_LOCAL int read_t (struct GMT_CTRL *GMT, char *fname) {
 	/* read file with vertex indexes of triangles */
-	unsigned int ndata_t;
+	unsigned int ndata_t, first = 0;
 	size_t n_alloc;
 	int in[3];
 	char line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
 
-	if ((fp = fopen (fname, "r")) == NULL) return (-1);
+	if (gmt_M_file_is_cache (fname)) {
+		first = gmt_download_file_if_not_found (GMT, fname, 0);
+	}
+	if ((fp = fopen (&fname[first], "r")) == NULL) return (-1);
 
 	n_alloc = GMT_CHUNK;
 	ndata_t = 0;
@@ -912,13 +918,16 @@ GMT_LOCAL int read_t (struct GMT_CTRL *GMT, char *fname) {
 /* -----------------------------------------------------------------*/
 GMT_LOCAL int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	/* read a file with triagles in the raw format and returns nb of triangles */
-	unsigned int ndata_r;
+	unsigned int ndata_r, first = 0;
 	size_t n_alloc;
 	double in[9];
 	char line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
-
-	if ((fp = fopen (fname, "r")) == NULL) return (-1);
+	
+	if (gmt_M_file_is_cache (fname)) {
+		first = gmt_download_file_if_not_found (GMT, fname, 0);
+	}
+	if ((fp = fopen (&fname[first], "r")) == NULL) return (-1);
 
 	n_alloc = GMT_CHUNK;
 	ndata_r = 0;
@@ -950,13 +959,16 @@ GMT_LOCAL int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 /* -----------------------------------------------------------------*/
 GMT_LOCAL int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	/* read a file with triagles in the stl format and returns nb of triangles */
-	unsigned int ndata_s;
+	unsigned int ndata_s, first = 0;
 	size_t n_alloc;
 	double in[3];
 	char line[GMT_LEN256] = {""}, text[128] = {""}, ver_txt[128] = {""};
 	FILE *fp = NULL;
 
-	if ((fp = fopen (fname, "r")) == NULL) return (-1);
+	if (gmt_M_file_is_cache (fname)) {
+		first = gmt_download_file_if_not_found (GMT, fname, 0);
+	}
+	if ((fp = fopen (&fname[first], "r")) == NULL) return (-1);
 
 	n_alloc = GMT_CHUNK;
 	ndata_s = 0;

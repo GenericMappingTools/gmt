@@ -81,9 +81,9 @@ $f
 EOF
 
 ### Start plotting gmt surface
-gmt grdimage D3-25TV24-resid.nc -E100 -nl -p -R -J -JZ -C$cpt -O -K >> $ps
+gmt grdimage @D3-25TV24-resid.nc -E100 -nl -p -R -J -JZ -C$cpt -O -K >> $ps
 
-gmt grdcontour --PS_COMMENTS=1 D3-25TV24-resid.nc -p -R -J -JZ -Wthinner -A- -C$cpt -W -K -O >> $ps
+gmt grdcontour --PS_COMMENTS=1 @D3-25TV24-resid.nc -p -R -J -JZ -Wthinner -A- -C$cpt -W -K -O >> $ps
 
 gmt pscoast -p -R -J -JZ -Dh -A100 -Wthinnest -S135/190/240 -O -K >> $ps
 gmt psclip -C -O >> $ps

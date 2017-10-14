@@ -8816,7 +8816,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_CONTOUR_XCURVE;
 			strncpy (L->file, &txt[1], GMT_BUFSIZ-1);
-			if (gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
+			if (!gmt_M_file_is_cache (L->file) && gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->file);
 				error++;
 			}
@@ -9013,7 +9013,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 			L->fixed = true;
 			k = sscanf (&txt[1], "%[^/]/%lf", L->file, &L->slop);
 			if (k == 1) L->slop = GMT_CONV8_LIMIT;
-			if (gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
+			if (!gmt_M_file_is_cache (L->file) && gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read fixed point file %s\n", L->file);
 				error++;
 			}
@@ -9023,7 +9023,7 @@ int gmtlib_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_DECORATE_XCURVE;
 			strncpy (L->file, &txt[1], GMT_BUFSIZ-1);
-			if (gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
+			if (!gmt_M_file_is_cache (L->file) && gmt_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->file);
 				error++;
 			}
@@ -9280,7 +9280,11 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		G->X = gmt_make_profiles (GMT, G->flag, G->option, G->do_interpolate, true, false, 0.0, GMT_TRACK_FILL, xyz);
 	}
 	else if (G->crossing == GMT_DECORATE_XCURVE) {
-		if ((G->X = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {	/* Failure to read the file */
+		unsigned int first = 0;
+		if (gmt_M_file_is_cache (G->file)) {	/* Must be a cache file */
+			first = gmt_download_file_if_not_found (GMT, G->file, 0);
+		}
+		if ((G->X = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {	/* Failure to read the file */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Crossing file %s does not exist or had no data records\n", G->flag, G->file);
 			error++;
 		}
@@ -9302,12 +9306,16 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		}
 	}
 	else if (G->fixed) {
+		unsigned int first = 0;
 		struct GMT_DATASET *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 		double xy[2];
 		/* File is expected to have x,y coordinates and we will ignore anything beyond that */
 		GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX_NO_TEXT);
-		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {
+		if (gmt_M_file_is_cache (G->file)) {	/* Must be a cache file */
+			first = gmt_download_file_if_not_found (GMT, G->file, 0);
+		}
+		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
 			return (error);
@@ -9388,7 +9396,11 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		G->X = gmt_make_profiles (GMT, G->flag, G->option, G->do_interpolate, true, false, 0.0, GMT_TRACK_FILL, xyz);
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
-		if ((G->X = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {	/* Failure to read the file */
+		unsigned int first = 0;
+		if (gmt_M_file_is_cache (G->file)) {	/* Must be a cache file */
+			first = gmt_download_file_if_not_found (GMT, G->file, 0);
+		}
+		if ((G->X = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {	/* Failure to read the file */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Crossing file %s does not exist or had no data records\n", G->flag, G->file);
 			error++;
 		}
@@ -9410,6 +9422,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		}
 	}
 	else if (G->fixed) {
+		unsigned int first = 0;
 		struct GMT_DATASET *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 		double xy[2];
@@ -9418,7 +9431,10 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		 * Since those could be numbers we force reading 2 columns and get anything
 		 * beyond that as text. */
 		GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX);
-		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, G->file, NULL)) == NULL) {
+		if (gmt_M_file_is_cache (G->file)) {	/* Must be a cache file */
+			first = gmt_download_file_if_not_found (GMT, G->file, 0);
+		}
+		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
 			return (error);

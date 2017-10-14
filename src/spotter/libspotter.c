@@ -402,7 +402,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 	/* t_max;	Extend earliest stage pole back to this age */
 	bool GPlates = false, total_in = false;
 	int nf;
-	unsigned int n, i = 0, k, id, A_id = 0, B_id = 0, p1, p2, V1 = 0, V2 = 0;
+	unsigned int n, i = 0, k, id, A_id = 0, B_id = 0, p1, p2, V1 = 0, V2 = 0, first = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double lon, lat, rot, t, last_t = -DBL_MAX;
 	FILE *fp = NULL;
@@ -411,6 +411,9 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 	char Plates[GMT_BUFSIZ] = {""}, Rotations[GMT_BUFSIZ] = {""}, *this_c = NULL;
 	double K[9];
 
+	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
+		first = gmt_download_file_if_not_found (GMT, file, 0);
+	}
 	if (spotter_GPlates_pair (file)) {	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */
 		sscanf (file, "%[^-]-%s", A, B);
 		if ((this_c = getenv ("GPLATES_PLATES")))
@@ -464,7 +467,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Using GPlates rotation file %s\n", Rotations);
 		GPlates = total_in = true;
 	}
-	else if ((fp = gmt_fopen (GMT, file, "r")) == NULL) {
+	else if ((fp = gmt_fopen (GMT, &file[first], "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open stage pole file: %s\n", file);
 		GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return GMT_ERROR_ON_FOPEN;
 	}
@@ -599,7 +602,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
  * but are converted to GEOCENTRIC by this function if geocentric == true */
 
 int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, struct HOTSPOT **p) {
-	unsigned int i = 0, n;
+	unsigned int i = 0, n, first = 0;
 	int ival;
 	size_t n_alloc = GMT_CHUNK;
 	FILE *fp = NULL;
@@ -607,7 +610,10 @@ int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, str
 	char buffer[GMT_BUFSIZ] = {""}, create, fit, plot;
 	double P[3];
 
-	if ((fp = gmt_fopen (GMT, file, "r")) == NULL) {
+	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
+		first = gmt_download_file_if_not_found (GMT, file, 0);
+	}
+	if ((fp = gmt_fopen (GMT, &file[first], "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s - aborts\n", file);
 		return -1;
 	}
