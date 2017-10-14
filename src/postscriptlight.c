@@ -5395,6 +5395,9 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Failure reading EPS magic key from %s\n", file);
 		return (-1);
 	}
+#ifndef WORDS_BIGENDIAN
+	value = bswap32 (value);
+#endif
 	if (value != EPS_MAGIC) {
 		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Could not find EPS magic key in %s\n", file);
 		return (-1);
