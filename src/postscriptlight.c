@@ -2895,44 +2895,6 @@ static int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *l
 	return 1;
 }
 
-static int psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, unsigned char **picture) {
-	/* psl_load_eps reads an Encapsulated PostScript file */
-
-	int n, p, llx, lly, trx, try, BLOCKSIZE=4096;
-	unsigned char *buffer = NULL;
-
-	/* Scan for BoundingBox */
-
-	psl_get_boundingbox (PSL, fp, &llx, &lly, &trx, &try, &h->llx, &h->lly, &h->trx, &h->try);
-
-	/* Rewind and load into buffer */
-
-	n=0;
-	fseek (fp, (off_t)0, SEEK_SET);
-	buffer = PSL_memory (PSL, NULL, BLOCKSIZE, unsigned char);
-	while ((p = (int)fread ((unsigned char *)buffer + n, 1U, (size_t)BLOCKSIZE, fp)) == BLOCKSIZE)
-	{
-		n+=BLOCKSIZE;
-		buffer = PSL_memory (PSL, buffer, n+BLOCKSIZE, unsigned char);
-	}
-	n+=p;
-
-	/* Fill header struct with appropriate values */
-	h->magic = EPS_MAGIC;
-	h->width = trx - llx;
-	h->height = try - lly;
-	h->depth = 0;
-	h->length = n;
-	h->type = RT_EPS;
-	h->maptype = RMT_NONE;
-	h->maplength = 0;
-	h->xorigin = llx;
-	h->yorigin = lly;
-
-	*picture = buffer;
-	return (0);
-}
-
 static void psl_init_fonts (struct PSL_CTRL *PSL) {
 	FILE *in = NULL;
 	int n_PSL_fonts;
