@@ -4,7 +4,7 @@ ps=gpsgridder1.ps
 #V=-Vl
 INC=5m
 DEC=2
-gmt select ${src:-.}/wus_gps_final.txt -R122.5W/115W/32.5N/40N -fg -o0-5 > data.lluv
+gmt select @wus_gps_final.txt -R122.5W/115W/32.5N/40N -fg -o0-5 > data.lluv
 # Use blockmean to avoid aliasing
 R=-R122.5W/115W/32.5N/38N
 gmt blockmean $R -I${INC} data.lluv -fg -i0,1,2,4 -W+s > blk.llu
@@ -40,7 +40,7 @@ gmt grdmath GPS_v.grd mask.grd MUL = GPS_v.nc
 #   make the map
 #
 gmt pscoast $R -JM7i -P -Glightgray -Ba1f30m -BWSne -K -Df -X1i -Wfaint > $ps
-gmt psxy fault_data.gmt -J -R -W0.5 -O -K >> $ps
+gmt psxy @CA_fault_data.gmt -J -R -W0.5 -O -K >> $ps
 gmt psvelo data.lluvenct -J -R -Se.008i/0.95/8 -A9p -W0.2,red -O -K >> $ps
 gmt grdvector GPS_u.nc GPS_v.nc -Ix${DEC}/${DEC} -J -R -O -K -Q0.06i+e+n0.06i -Gblue -W.2,blue -S1.i --MAP_VECTOR_SHAPE=0.2 >> $ps
 #

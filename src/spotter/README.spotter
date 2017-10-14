@@ -7,8 +7,8 @@ LICENSE.TXT in main GMT directory.
 ------------------------------------------------------
 Author:		Paul Wessel (pwessel@hawaii.edu)
 		SOEST, University of Hawaii
-Date:		November 30, 2015
-Version:	5.3 (for GMT 5.3 release).
+Date:		November 1, 2017
+Version:	6 (for GMT 6 release).
 ------------------------------------------------------
 
 This directory contains:
@@ -26,10 +26,12 @@ libspotter.c		: SPOTTER C library code
 spotter.h		: SPOTTER C include file
 spotter.sh		: UNIX example script
 spotter.bat		: DOS example batch job
-DC85.txt		: Duncan and Clague [1985] stage poles
-WK97.txt		: Wessel and Kroenke [1997] stage poles
-seamounts.txt		: Wessel and Lyons [1997] seamount set(*)
-pac_hs.txt		: Yamaji [1992] list of Pacific hotspots
+
+These files are now on the GMT cache server:
+@DC85.txt		: Duncan and Clague [1985] stage poles
+@WK97.txt		: Wessel and Kroenke [1997] stage poles
+@seamounts.txt		: Wessel and Lyons [1997] seamount set(*)
+@pac_hs.txt		: Yamaji [1992] list of Pacific hotspots
 
 (*) Only subset of large (> 100 Eotvos) seamounts.  The full data set
 can be downloaded from:

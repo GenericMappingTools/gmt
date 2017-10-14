@@ -11,10 +11,10 @@ diff --strip-trailing-cr coast.kml "${src:-.}"/coast.kml > fail
 # test -C option
 gmt makecpt -Ccategorical > categories.cpt
 
-gmt 2kml "${src:-.}"/pointsets.txt -Ccategories.cpt | \
+gmt 2kml @kml_pointsets.txt -Ccategories.cpt | \
 	sed -e 's/st-.*-/st-x-/' > pointsets.kml
 diff --strip-trailing-cr pointsets.kml "${src:-.}"/pointsets.kml >> fail
 
-gmt 2kml "${src:-.}"/lines.txt -Fl -Ccategories.cpt | \
+gmt 2kml @kml_lines.txt -Fl -Ccategories.cpt | \
 	sed -e 's/st-.*-/st-x-/' > lines.kml
 diff --strip-trailing-cr lines.kml "${src:-.}"/lines.kml >> fail

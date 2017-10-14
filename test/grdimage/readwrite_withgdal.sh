@@ -7,24 +7,22 @@ if [ $GDAL -eq 0 ]; then exit; fi
 	
 ps=readwrite_withgdal.ps
 
-ln -fs "${GMT_SRCDIR:-.}/gdal" .
-
 # RGB image
-gmt grdimage -D gdal/needle.jpg -JX7c/0 -P -Y20c -K > $ps
+gmt grdimage -D @needle.jpg -JX7c/0 -P -Y20c -K > $ps
 
 # Same image as above but as idexed
-gmt grdimage -D gdal/needle.png -JX7c/0 -X7.5c -O -K >> $ps
+gmt grdimage -D @needle.png -JX7c/0 -X7.5c -O -K >> $ps
 
 # Projected
-gmt grdimage -Dr gdal/needle.jpg -Rd -JW10c -Bxg30 -Byg15 -X-5.0c -Y-7c -O -K >> $ps
+gmt grdimage -Dr @needle.jpg -Rd -JW10c -Bxg30 -Byg15 -X-5.0c -Y-7c -O -K >> $ps
 
 # Illuminated
 gmt grdmath -R-15/15/-15/15 -I0.2 X Y HYPOT DUP 2 MUL PI MUL 8 DIV COS EXCH NEG 10 DIV EXP MUL = somb.nc
 gmt grdgradient somb.nc -A225 -Gillum.nc -Nt0.75
-gmt grdimage -D gdal/needle.jpg -Iillum.nc -JM8c -Y-10c -X-2c -O -K >> $ps
+gmt grdimage -D @needle.jpg -Iillum.nc -JM8c -Y-10c -X-2c -O -K >> $ps
 
 # A gray image (one band, no color map)
-gmt grdimage -D gdal/vader.jpg -JX4c/0 -X9c -Y5c -K -O >> $ps
+gmt grdimage -D @vader.jpg -JX4c/0 -X9c -Y5c -K -O >> $ps
 
 # Create a .png from a dummy grid and import it
 gmt grdmath -R-5/5/-5/5 -I1 X Y MUL = lixo.grd

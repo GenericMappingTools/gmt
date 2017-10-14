@@ -12,20 +12,18 @@ ps=spotter_01.ps
 # 3. Plot flowline from Suiko back until paleoridge (100 Ma)
 # 4. Backtrack the location of Suiko using an age of 64.7 Ma
 
-POLES=${src}/../../src/spotter/WK97.txt # Rotation poles to use
-
 echo "205 20 80.0" > loihi.txt
 echo "170 44 100" > suiko.txt
 gmt pscoast -R150/220/00/65 -JM6i -P -K -G30/120/30 -A500 -Dl -W0.25p -B20 -BWSne > $ps
 gmt psxy -R -J -O -K -Sc0.1i -Gred -W0.5p loihi.txt >> $ps
 # Task 1.1:
-gmt backtracker loihi.txt -Df -Lb25 -E${POLES} | gmt psxy -R -J -O -K -W1p >> $ps
+gmt backtracker loihi.txt -Df -Lb25 -E@WK97.txt | gmt psxy -R -J -O -K -W1p >> $ps
 # Task 1.2:
-gmt backtracker loihi.txt -Df -E${POLES} | gmt psxy -R -J -O -K -Sc0.1i -Ggreen -W0.5p >> $ps
+gmt backtracker loihi.txt -Df -E@WK97.txt | gmt psxy -R -J -O -K -Sc0.1i -Ggreen -W0.5p >> $ps
 # Task 1.3:
-gmt backtracker suiko.txt -Db -Lf25 -E${POLES} | gmt psxy -R -JM -O -K -W1p,. >> $ps
+gmt backtracker suiko.txt -Db -Lf25 -E@WK97.txt | gmt psxy -R -JM -O -K -W1p,. >> $ps
 echo "170 44 64.7" > suiko.txt
 # Task 1.4:
-gmt backtracker suiko.txt -Db -E${POLES} | gmt psxy -R -JM -O -K -St0.1i -Gyellow -W0.5p >> $ps
+gmt backtracker suiko.txt -Db -E@WK97.txt | gmt psxy -R -JM -O -K -St0.1i -Gyellow -W0.5p >> $ps
 gmt psxy -R -JM -O -ST0.1 -Gcyan -W0.5p suiko.txt >> $ps
 

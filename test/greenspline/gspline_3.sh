@@ -42,7 +42,7 @@ gmt grd2xyz z.nc | cut -f1,2 | ./ks | gmt xyz2grd -R0/2/0/1 -I$D -Gls.nc -r
 gmt grd2xyz zfine.nc | cut -f1,2 | ./ks | gmt xyz2grd -R0/2/0/1 -I0.01 -Glsfine.nc -r
 gmt grdview ls.nc -Jx2.5i -JZ1.75 -p155/30 -Ctt.cpt -Wc1p -Qm/lightgray -Bx0.5 -By0.2 -Bz0.2 -BwSEnZ -K --PS_SCALE_X=0.8 --PS_SCALE_Y=0.8 > $ps
 
-gmt blockmean random.xyz -R -I$D > use.xyz
+gmt blockmean @gspl_random.xyz -R -I$D > use.xyz
 gmt grdcontour lsfine.nc -Jx2.8i -O -Bx0.5 -By0.2 -BWSne -C0.2 -A0.2 -K -Y4.25i -GlLT/1/0,1.5/0.5/1.5/1 >> $ps
 gmt psxy use.xyz -R -J -O -K -Sc0.05i -Gblack >> $ps
 echo "0 1 a)" | gmt pstext -R -J -O -K -N -F+jBR+f24p -Dj0.1i/0.3i >> $ps

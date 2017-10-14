@@ -2,7 +2,8 @@
 # Test gmt psrose windrose with or without vector heads
 
 ps=vectors.ps
-awk '{if ((NR%50) == 0) print $0}' "${src:-.}"/az_length.txt > subset.txt
+data=`gmt which -G @azimuth_lengths.txt`
+awk '{if ((NR%50) == 0) print $0}' $data > subset.txt
 common0n="subset.txt -: -S3.5c -F -L -Ggray -R0/3/-90/90 -Bxg1 -Byg90 -BWESN -O -K"
 common1n="subset.txt -: -S3.5c -F -L -Ggray -R0/3/0/180 -Bxg1 -Byg90 -BWESN -O -K"
 commonn="subset.txt -: -S3.5c -F -L -Ggray -R0/750/0/360 -Bxg200 -Byg90 -BWESN -O -K"

@@ -5,7 +5,7 @@
 # GMT CLASSIC mode
 ps=case_largeR_noW.ps
 # Use real GPS data with uncertainties
-data=wus_gps_final_crowell.dat 
+data=`gmt which -G @wus_gps_final_crowell.dat`
 #  Large region
 R=122.5W/115W/33N/38N
 # blockmean interval
