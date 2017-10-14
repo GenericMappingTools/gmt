@@ -20,6 +20,7 @@ LinBiolinumOB
 LinLibertineOB
 EOF
 
+capitals=`gmt which -G @europe-capitals-ru.csv`
 # common settings
 gmt set FORMAT_GEO_MAP ddd:mm:ssF \
 MAP_DEGREE_SYMBOL colon \
@@ -37,19 +38,19 @@ gmt pscoast -Dl -R-7/31/64/66+r -JL15/50/40/60/16c -P \
 	-Slightblue -Glightgreen -W0.25p -N1/1p,white -K > $ps
 
 # mark capitals
-gmt psxy europe-capitals-ru.csv -R -J -i0,1 \
+gmt psxy @europe-capitals-ru.csv -R -J -i0,1 \
 -Sc0.15c -G196/80/80 -O -K >> $ps
 
 # small EU cities
-$AWK 'BEGIN {FS=","} $4 !="" && $4 <= 1000000 {print $1, $2}' europe-capitals-ru.csv | \
+$AWK 'BEGIN {FS=","} $4 !="" && $4 <= 1000000 {print $1, $2}' $capitals | \
 gmt psxy -R -J -Sc0.15c -W0.25p -O -K >> $ps
 
 # big EU cities
-$AWK 'BEGIN {FS=","} $4 > 1000000 {print $1, $2}' europe-capitals-ru.csv | \
+$AWK 'BEGIN {FS=","} $4 > 1000000 {print $1, $2}' $capitals | \
 gmt psxy -R -J -Sc0.15c -W1.25p -O -K >> $ps
 
 # label big EU cities
-$AWK 'BEGIN {FS=","} $4 > 1000000 {print $1, $2, $3}' europe-capitals-ru.csv | \
+$AWK 'BEGIN {FS=","} $4 > 1000000 {print $1, $2, $3}' $capitals | \
 gmt pstext -R -J -F+f7p,LinBiolinumOI+jBL -Dj0.1c -Gwhite -C5% -Qu -TO -O -K >> $ps
 
 # construct legend
@@ -69,7 +70,7 @@ EOF
 # append city names and population to legend
 $AWK 'BEGIN {FS=","; f="L 8 LinBiolinumO L"}
   $4 > 1000000 {printf "%s %s:\n%s %.2f\n", f, $3, f, $4/1e6}' \
-  europe-capitals-ru.csv >> legend.txt
+  $capitals >> legend.txt
 
 # reduce annotation font size for legend
 gmt set FONT_ANNOT_PRIMARY 8p
