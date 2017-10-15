@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 #
-gmt grdgradient -A45 ../tutorial/us.nc -N -fg -Gtt.t.nc
+gmt grdgradient -A45 @tut_relief.nc -N -fg -Gtt.t.nc
 gmt grd2xyz -Z tt.t.nc > tt.d
 gmt pshistogram tt.d -R-0.75/0.75/0/20 -JX1.5i/1i -Bx0.5 -By5f5 -BWSne -W0.01 -P -K -Gblack -Z1 > GMT_atan.ps
 
@@ -23,7 +23,7 @@ gmt psxy -R -J -O -K -Wthinnest << EOF >> GMT_atan.ps
 0	-1
 0	1
 EOF
-gmt grdgradient -A45 ../tutorial/us.nc -Nt -fg -Gtt.tt.nc
+gmt grdgradient -A45 @tut_relief.nc -Nt -fg -Gtt.tt.nc
 gmt grd2xyz -Z tt.tt.nc > tt.d
 gmt pshistogram tt.d -R-0.75/0.75/0/5 -J -Bx0.5 -By2f1 -BWSne -W0.01 -O  -K -Gblack -X1.85i -Z1 >> GMT_atan.ps
 gmt pstext -R -J -O -F+f9p+jLB << EOF >> GMT_atan.ps
