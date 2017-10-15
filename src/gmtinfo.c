@@ -711,8 +711,10 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		if (gmt_M_rec_is_file_break (GMT)) continue;
 
 		/* We get here once we have read a data record */
-		in = In->data;	/* Only need to process numerical part here */
-		
+		if ((in = In->data) == NULL) {	/* Only need to process numerical part here */
+			GMT_Report (API, GMT_MSG_NORMAL, "No data columns to work with - exiting\n");
+			Return (GMT_DIM_TOO_SMALL);
+		}
 		if (first_data_record) {	/* First time we read data, we must allocate arrays based on the number of columns */
 
 			if (Ctrl->C.active) {	/* Must set output column types since each input col will produce two output cols. */

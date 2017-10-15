@@ -109,7 +109,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Suppress output records where all data columns are NaN [Output all records].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (Note: data columns exclude navigation (lon|x|lat|y|time) columns.)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (Note: data columns exclude navigation (lon|x,lat|y,time) columns.)\n");
 	GMT_Option (API, "V,bo,do,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -488,7 +488,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		cumulative_dist = 0.0;
 		for (row = 0; row < p.n_rows; row++) {	/* Process all records in this file */
 			if (GMT->common.R.active[RSET] && gmt_map_outside (GMT, data[xpos][row], data[ypos][row])) continue;	/* Point is outside region */
-			if (Ctrl->S.active) {	/* Skip record if all data columns are NaN (not considering lon,lat,time) */
+			if (Ctrl->S.active) {	/* Skip record if all data columns are NaN (not considering the lon,lat,time columns) */
 				for (ocol = bad = 0; ocol < s->n_out_columns; ocol++) {
 					this_col = s->out_order[ocol];
 					if (this_col == s->t_col) continue;

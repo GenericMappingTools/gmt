@@ -59,13 +59,14 @@
 
 #define N_BASIS		7	/* Number of basis functions currently encoded */
 
-/* The 6 different kinds of corrections coded so far */
+/* The 7 different kinds of corrections coded so far */
 #define F_IS_CONSTANT	1	/* Subtract a constant from each track */
 #define F_IS_DRIFT_D	2	/* Subtract a trend with distance from each track */
 #define F_IS_HEADING	3	/* Subtract a magnetic heading correction from each track */
 #define F_IS_GRAV1930	4	/* Subtract a trend with latitude from each track */
 #define F_IS_SCALE	5	/* Apply a scale to the observations for each track */
 #define F_IS_DRIFT_T	6	/* Subtract a trend with time from each track */
+#define F_IS_SCALE_OFF	7	/* Apply a scale and offset to the observations for each track */
 
 struct X2SYS_SOLVE_CTRL {
 	struct X2S_SOLVE_In {
@@ -177,13 +178,14 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	/*
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_solve -C<column> -E<flag> -T<TAG> [<coedata>] [%s] [-W[u]]\n\t[%s] [%s]%s\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_x_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_solve -C<column> -Ec|d|g|h|s|t|z -T<TAG> [<coedata>] [%s] [-W[u]]\n\t[%s] [%s]%s\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify the column name to process (e.g., faa, mag).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Equation to fit: specify <flag> as c (constant), d (drift over distance),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     g (latitude), h (heading), s (scale with data), or t (drift over time) [c].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     g (latitude), h (heading), s (scale with data), t (drift over time),\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     or z (scale with data plus offset), [c].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the x2sys tag for the data set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<coedata> is the ASCII data output file from x2sys_list [or we read stdin].\n");
@@ -244,6 +246,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct
 					case 't':
 						Ctrl->E.mode = F_IS_DRIFT_T;
 						break;
+					case 'z':
+						Ctrl->E.mode = F_IS_SCALE_OFF;
+						break;
+					default:
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized model: %s\n", opt->arg);
+						n_errors++;
+						break;
 				}
 				break;
 			case 'T':
@@ -263,7 +272,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode < 0, "Syntax error -E: Choose among c, d, g, h, s and t\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode < 0, "Syntax error -E: Choose among c, d, g, h, s, t and z\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -375,6 +384,12 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			active_col[COL_Z1] = active_col[COL_Z2] = true;
 			n_par = 1;	n_in = 2;
 			basis[0] = &basis_z;
+			break;
+		case F_IS_SCALE_OFF:
+			active_col[COL_Z1] = active_col[COL_Z2] = true;
+			n_par = 2;	n_in = 2;
+			basis[0] = &basis_constant;
+			basis[1] = &basis_z;
 			break;
 	}
 	if (Ctrl->W.active) n_in++;
@@ -493,6 +508,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 				data[COL_COE][n_COE] = in[2];
 				break;
 			case F_IS_SCALE:
+			case F_IS_SCALE_OFF:
 				data[COL_Z1][n_COE]  = in[0];
 				data[COL_Z2][n_COE]  = in[1];
 				data[COL_COE][n_COE] = in[0] - in[1];
@@ -809,6 +825,9 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 				break;
 			case F_IS_SCALE:
 				sprintf (text, "\t%g*((%s))\n", 1.0 - var[0], Ctrl->C.col);
+				break;
+			case F_IS_SCALE_OFF:
+				sprintf (text, "\t%g\t%g*((%s))\n", var[0], 1.0 - var[1], Ctrl->C.col);
 				break;
 		}
 		strcat (line, text);
