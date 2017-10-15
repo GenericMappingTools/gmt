@@ -15,11 +15,16 @@ Synopsis
 
 **grdcut** *ingrid* |-G|\ *outgrid*
 |SYN_OPT-R|
+[ |-D|\ [*weight*] ]
+[ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
 [ |-S|\ [**n**]\ *lon/lat/radius*\ [*unit*] ]
 [ |SYN_OPT-V| ]
 [ |-Z|\ [\ **n**\ \|\ **r**]\ *min/max* ]
+[ |SYN_OPT-bo| ]
+[ |SYN_OPT-do| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-o| ]
 
 |No-spaces|
 
@@ -31,7 +36,10 @@ Description
 the specified range must not exceed the range of *ingrid* (but see **-N**).
 If in doubt, run :doc:`grdinfo` to check range. Alternatively, define the subregion
 indirectly via a range check on the node values or via distances from a
-given point. Complementary to **grdcut** there is :doc:`grdpaste`, which
+given point. Finally, you can use **-J** for oblique projections to determine
+the corresponding rectangular **-R** setting that will give a grid that fully
+covers the oblique domain.
+Complementary to **grdcut** there is :doc:`grdpaste`, which
 will join together two grid files along a common edge. 
 
 Required Arguments
@@ -47,6 +55,17 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-D:
+
+**-D**\ [*weight*]
+    Instead of writing a grid, write *x y z* triplets to standard output.
+    Optionally, append a *weight* to write *x y z weight* instead.
+
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-J.rst_
 
 .. _-N:
 
@@ -85,8 +104,18 @@ Optional Arguments
     shrinking the boundaries once a NaN is found [Default simply skips NaNs
     when making the range decision].
 
+.. |Add_-bo| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-bo.rst_
+
+.. |Add_-do| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-do.rst_
+    
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
+
+.. include:: explain_-ocols.rst_
+|
+|   This option applies only if **-D** option has been set. 
 
 .. include:: explain_help.rst_
 
@@ -120,6 +149,25 @@ distance of 500 km from the point 45,30 try
    ::
 
     gmt grdcut bathy.nc -Gsubset_bathy.nc -S45/30/500k -V
+
+To obtain data for an oblique Mercator projection map we need to extract
+more data that is actually used. This is necessary because the output of
+**grdcut** has edges defined by parallels and meridians, while the
+oblique map in general does not. Hence, to get all the data from the
+ETOPO2 data needed to make a contour map for the region defined by its
+lower left and upper right corners and the desired projection, use
+
+   ::
+
+    gmt grdcut @earth_relief_02m -R160/20/220/30r -Joc190/25.5/292/69/1 -Gdata.nc
+
+To bypass the output grid and simply write lon lat data records to standard output
+for the same oblique region, and add a fixed weight of 0.1, try
+
+
+   ::
+
+    gmt grdcut @earth_relief_02m -R160/20/220/30r -Joc190/25.5/292/69/1 -D0.1 > data.txt
 
 See Also
 --------

@@ -475,14 +475,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\tGRID FILE INFO:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  Img files must be of Sandwell/Smith signed two-byte integer (i2) type with no header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  Grid files can be any type of GMT grid file (native or netCDF) with header\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tA correctly formatted grid file can be generated as follows:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   e.g., gmtset GRIDFILE_SHORTHAND true\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\tCreate/edit gmt.io file to include the following rows:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t\t# GMT I/O shorthand file\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t\t# suffix   format_id scale offset       NaN\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t\tgrd             0       -       -       -\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\t\ti2              2       -       -       32767\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\tgrdraster 1 -R0/359:55/-90/90 -Getopo5_hdr.i2\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tE77 ERROR OUTPUT\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tError output is divided into (1) a header containing information globally\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tapplicable to the cruise and (2) individual error records summarizing all\n");

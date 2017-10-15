@@ -17,7 +17,7 @@ gmtpmodeler gmtregress gmtselect gmtset gmtsimplify gmtspatial gmtstitch \
 gmtvector gmtwhich gpsgridder gravfft \
 grd2cpt grd2xyz grdblend grdclip grdcontour grdcut grdedit grdfft \
 grdflexure grdfilter grdgradient grdgravmag3d grdhisteq grdimage grdinfo grdlandmask \
-grdmask grdmath grdpaste grdpmodeler grdproject grdraster grdredpol grdconvert \
+grdmask grdmath grdpaste grdpmodeler grdproject grdredpol grdconvert \
 grdrotater grdsample grdseamount grdspotter grdtrack grdtrend grdvector \
 grdview grdvolume greenspline gshhg hotspotter img2grd kml2gmt makecpt \
 mapproject mgd77convert mgd77info mgd77list mgd77magref mgd77manage mgd77path \

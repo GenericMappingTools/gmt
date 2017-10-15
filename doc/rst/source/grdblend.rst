@@ -107,7 +107,7 @@ Optional Arguments
 .. _-Q:
 
 **-Q**
-    Create a header-less grid file suitable for use with :doc:`grdraster`.
+    Create plain header-less grid file (for use with external tools).
     Requires that the output grid file is a native format (i.e., not netCDF). 
 
 .. _-V:
@@ -191,5 +191,4 @@ See Also
 :doc:`grd2xyz`,
 :doc:`grdconvert`,
 :doc:`grdedit`,
-:doc:`grdraster`,
 :doc:`grdsample`

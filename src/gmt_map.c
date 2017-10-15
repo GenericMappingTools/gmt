@@ -94,7 +94,7 @@
  *	map_wesn_crossing :		Find crossing between line and lon/lat rectangle\n
  *	map_wesn_outside :		Determine if a point is outside a lon/lat rectangle\n
  *	map_wesn_overlap :		Determine overlap between lon/lat rectangles\n
- *	map_wesn_search :		Search for extreme coordinates\n
+ *	gmt_wesn_search :		Search for extreme coordinates\n
  *	GMT_wrap_around_check_{x,tm} :	Check if line wraps around due to Greenwich\n
  *	gmt_x_to_xx :			Generic linear x projection\n
  *	map_xx_to_x :			Generic inverse linear x projection\n
@@ -4916,12 +4916,15 @@ GMT_LOCAL bool map_init_polyconic (struct GMT_CTRL *GMT) {
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 /*! . */
-GMT_LOCAL void map_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymin, double ymax, double *west, double *east, double *south, double *north) {
+void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymin, double ymax, double *west, double *east, double *south, double *north) {
 	double dx, dy, w, e, s, n, x, y, lat, *lon = NULL;
 	unsigned int i, j, k;
 	bool test_pole[2] = {true, true};
 
 	/* Search for extreme lon/lat coordinates by matching along the rectangular boundary */
+
+	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = urint (GMT->current.map.width / GMT->current.setting.map_line_step);
+	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
 
 	dx = (xmax - xmin) / GMT->current.map.n_lon_nodes;
 	dy = (ymax - ymin) / GMT->current.map.n_lat_nodes;
@@ -9045,7 +9048,7 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	}
 
 	if (search) {	/* Loop around rectangular perimeter and determine min/max lon/lat extent */
-		map_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
+		gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
 		GMT->current.map.dlon = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / GMT->current.map.n_lon_nodes;
 		GMT->current.map.dlat = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / GMT->current.map.n_lat_nodes;
 		if (gmt_M_is_azimuthal(GMT) && GMT->common.R.oblique) map_horizon_search (GMT, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI]);

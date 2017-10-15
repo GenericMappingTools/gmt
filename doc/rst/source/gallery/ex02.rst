@@ -5,8 +5,8 @@
 
 As our second example we will demonstrate how to make color images from
 gridded data sets (again, we will defer the actual making of grid files
-to later examples). We will use :doc:`grdraster </grdraster>` to extract 2-D grid files
-of bathymetry and Geosat geoid heights and put the two images on the
+to later examples). We will use :doc:`grdcut </grdcut>` to extract 2-D grid files
+of bathymetry and Geosat geoid heights from global grids and put the two images on the
 same page. The region of interest is the Hawaiian islands, and due to
 the oblique trend of the island chain we prefer to rotate our
 geographical data sets using an oblique Mercator projection defined by
@@ -20,15 +20,14 @@ the lower left and upper right corner of region. In our case we choose
 .. literalinclude:: /_verbatim/example_02.txt
    :language: bash
 
-The first step extracts the 2-D data sets from the local data base using
-:doc:`grdraster </grdraster>` that may be adapted to reflect
-the nature of your data base format. It automatically figures out the
+The first step extracts the 2-D data sets from the global data grids using
+:doc:`grdcut </grdcut>`. Given **-J**, it automatically figures out the
 required extent of the region given the two corners points and the
 projection. The extreme meridians and parallels enclosing the oblique
 region is **-R**\ 159:50/220:10/3:10/47:35. This is the area extracted
-by :doc:`grdraster </grdraster>`. For your convenience
+by :doc:`grdcut </grdcut>`. For your convenience
 we have commented out those lines and provided the two extracted files
-so you do not need :doc:`grdraster </grdraster>` to try
+so you do not need to run :doc:`grdcut </grdcut>` to try
 this example. By using the embedded grid file format mechanism we saved
 the topography using kilometers as the data unit. We now have two grid
 files with bathymetry and geoid heights, respectively. We use

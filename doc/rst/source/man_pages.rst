@@ -54,7 +54,6 @@ Core modules
    grdmath
    grdpaste
    grdproject
-   grdraster
    grdsample
    grdtrack
    grdtrend

@@ -25,7 +25,6 @@ GR
    grdmath
    grdpaste
    grdproject
-   grdraster
    grdsample
    grdtrack
    grdtrend

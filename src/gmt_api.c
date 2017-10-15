@@ -1786,8 +1786,8 @@ GMT_LOCAL size_t api_set_grdarray_size (struct GMT_CTRL *GMT, struct GMT_GRID_HE
 GMT_LOCAL int api_open_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G, char mode, unsigned int access_mode) {
 	/* Read or write the header structure and initialize row-by-row machinery for grids.
 	 * We fill the GMT_GRID_ROWBYROW structure with all the required information.
-	 * mode can be w or r.  Upper case W or R refers to headerless
-	 * grdraster-type files.  The access_mode dictates if we automatically advance
+	 * mode can be w or r.  Upper case W or R refers to headerless native
+	 * grid files.  The access_mode dictates if we automatically advance
 	 * row counter to next row after read/write or if we use the rec_no to seek
 	 * first.
 	 */

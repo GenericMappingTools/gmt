@@ -80,7 +80,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, +n designates an invalid grid value to act as NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT write the header (for native grids only - ignored otherwise).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Useful when creating files to be used by grdraster.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Useful when creating files to be used by external programs.\n");
 	GMT_Option (API, "R,V,f,.");
 
 	GMT_Message (API, GMT_TIME_NONE, "\nThe following grid file formats are supported:\n");

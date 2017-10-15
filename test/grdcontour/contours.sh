@@ -2,7 +2,7 @@
 #	$Id$
 #
 # Test that contours are oriented correctly
-# gmt grdraster 5 -R204/206/19/21 -GBigIsland.nc
+# gmt grdcut @earth_relief_02m -R204/206/19/21 -GBigIsland.nc
 
 ps=contours.ps
 
