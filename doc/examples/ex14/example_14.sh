@@ -12,9 +12,9 @@ ps=example_14.ps
 # First draw network and label the nodes
 
 gmt set MAP_GRID_PEN_PRIMARY thinnest,-
-gmt psxy @table_5.11 -R0/7/0/7 -JX3.06i/3.15i -B2f1 -BWSNe -Sc0.05i -Gblack -P -K -Y6.45i > $ps
-gmt pstext @table_5.11 -R -J -D0.1c/0 -F+f6p+jLM -O -K -N >> $ps
-gmt blockmean @table_5.11 -R0/7/0/7 -I1 > mean.xyz
+gmt psxy @Table_5_11.txt -R0/7/0/7 -JX3.06i/3.15i -B2f1 -BWSNe -Sc0.05i -Gblack -P -K -Y6.45i > $ps
+gmt pstext @Table_5_11.txt -R -J -D0.1c/0 -F+f6p+jLM -O -K -N >> $ps
+gmt blockmean @Table_5_11.txt -R0/7/0/7 -I1 > mean.xyz
 
 # Then draw gmt blockmean cells
 

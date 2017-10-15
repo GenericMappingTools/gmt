@@ -10,7 +10,7 @@
 gmt begin ex14 ps
   gmt set MAP_GRID_PEN_PRIMARY thinnest,-
   # calculate mean data and grids
-  gmt blockmean @table_5.11 -R0/7/0/7 -I1 > mean.xyz
+  gmt blockmean @Table_5_11.txt -R0/7/0/7 -I1 > mean.xyz
   gmt surface mean.xyz -Gdata.nc
   gmt grdtrend data.nc -N10 -Ttrend.nc
   gmt project -C0/0 -E7/7 -G0.1 -N > track
@@ -21,8 +21,8 @@ gmt begin ex14 ps
   gmt psxy trend.d -Wthinner,-
   gmt subplot begin 2x2 -M0.05i -Ff6i/6i+d -BWSne -Yh+0.4i
     # First draw network and label the nodes
-    gmt psxy @table_5.11 -R0/7/0/7 -Sc0.05i -Gblack -c1,1
-    gmt pstext @table_5.11 -D0.1c/0 -F+f6p+jLM -N
+    gmt psxy @Table_5_11.txt -R0/7/0/7 -Sc0.05i -Gblack -c1,1
+    gmt pstext @Table_5_11.txt -D0.1c/0 -F+f6p+jLM -N
     # Then draw gmt blockmean cells and label data values using one decimal
     gmt psxy mean.xyz -Ss0.05i -Gblack -c1,2
     gmt pstext -D0.15c/0 -F+f6p+jLM+z%.1f -Gwhite -W -C0.01i -N mean.xyz

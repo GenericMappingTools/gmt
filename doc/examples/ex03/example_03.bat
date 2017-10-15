@@ -33,7 +33,7 @@ gmt filter1d ship.pg -Fm1 -T-1167/1169/1 -E | gmt sample1d -Nsamp.x > samp_ship.
 REM Now to do the cross-spectra, assuming that the ship is the input and the sat is the output 
 REM data, we do this:
 REM 
-gmt spectrum1d -S256 -D1 -W -C @shipsat_03.dos -T
+gmt spectrum1d -S256 -D1 -W -C @shipsat_03.txt -T
 REM 
 REM Now we want to plot the spectra.  The following commands will plot the ship and sat 
 REM power in one diagram and the coherency on another diagram,  both on the same page.  
