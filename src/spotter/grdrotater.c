@@ -156,7 +156,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 
 			case 'C':	/* Now done automatically in spotter_init */
 				if (gmt_M_compat_check (GMT, 4))
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -165,7 +165,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 				Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'e':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -e is deprecated and will be removed in 5.2.x. Use -E instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and will be removed in 5.2.x. Use -E instead.\n");
 				/* Fall-through on purpose */
 			case 'E':	/* File with stage poles or a single rotation pole */
 				Ctrl->E.active = true;
@@ -216,7 +216,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 				k = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 				if (k == 3) {	/* Gave -Ttstart/tstop/tinc or possibly ancient -Tlon/lat/angle */
 					if (gmt_M_compat_check (GMT, 4) && !gave_e) {	/* No -E|e so likely ancient syntax */
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -T<lon>/<lat>/<angle> is deprecated; use -E<lon>/<lat>/<angle> instead.\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "-T<lon>/<lat>/<angle> is deprecated; use -E<lon>/<lat>/<angle> instead.\n");
 						Ctrl->E.rot.single = Ctrl->E.active = true;
 						Ctrl->T.active = false;
 						Ctrl->E.rot.w = atof (txt_c);
@@ -430,7 +430,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	not_global = !global;
 
 	if (!Ctrl->S.active) {	/* Read the input grid */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Allocates memory and read grid file\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Allocates memory and read grid file\n");
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, GMT->common.R.wesn, Ctrl->In.file, G) == NULL) {
 			Return (API->error);
 		}
@@ -494,7 +494,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	for (t = 0; t < Ctrl->T.n_times; t++) {	/* For each reconstruction time */
 		if (Ctrl->E.rot.single) {
 			plon = Ctrl->E.rot.lon;	plat = Ctrl->E.rot.lat;	pw = Ctrl->E.rot.w;
-			GMT_Report (API, GMT_MSG_VERBOSE, "Using rotation (%g, %g, %g)\n", plon, plat, pw);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Using rotation (%g, %g, %g)\n", plon, plat, pw);
 		}
 		else {	/* Extract rotation for given time */
 			if (Ctrl->T.value[t] < p[0].t_stop || Ctrl->T.value[t] > p[n_stages-1].t_start) {
@@ -502,14 +502,14 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 				continue;
 			}
 			spotter_get_rotation (GMT, p, n_stages, Ctrl->T.value[t], &plon, &plat, &pw);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Time %g Ma: Using rotation (%g, %g, %g)\n", Ctrl->T.value[t], plon, plat, pw);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Time %g Ma: Using rotation (%g, %g, %g)\n", Ctrl->T.value[t], plon, plat, pw);
 		}
 		gmt_make_rot_matrix (GMT, plon, plat, pw, R);	/* Make rotation matrix from rotation parameters */
 
 		if (Ctrl->E.rot.single)
-			GMT_Report (API, GMT_MSG_VERBOSE, "Reconstruct polygon outline\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reconstruct polygon outline\n");
 		else
-			GMT_Report (API, GMT_MSG_VERBOSE, "Reconstruct polygon outline for time %g\n", Ctrl->T.value[t]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reconstruct polygon outline for time %g\n", Ctrl->T.value[t]);
 
 		/* First reconstruct the polygon outline */
 
@@ -579,9 +579,9 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 
 		if (Ctrl->E.rot.single)
-			GMT_Report (API, GMT_MSG_VERBOSE, "Interpolate reconstructed grid\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Interpolate reconstructed grid\n");
 		else
-			GMT_Report (API, GMT_MSG_VERBOSE, "Interpolate reconstructed grid for time %g\n", Ctrl->T.value[t]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Interpolate reconstructed grid for time %g\n", Ctrl->T.value[t]);
 
 		gmt_make_rot_matrix (GMT, plon, plat, -pw, R);	/* Make inverse rotation using negative angle */
 
@@ -640,9 +640,9 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		/* Now write rotated grid */
 
 		if (Ctrl->E.rot.single)
-			GMT_Report (API, GMT_MSG_VERBOSE, "Write reconstructed grid\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write reconstructed grid\n");
 		else
-			GMT_Report (API, GMT_MSG_VERBOSE, "Write reconstructed grid for time %g\n", Ctrl->T.value[t]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write reconstructed grid for time %g\n", Ctrl->T.value[t]);
 
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
@@ -681,7 +681,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	if (Dr && GMT_Destroy_Data (API, &Dr) != GMT_NOERROR)
 		Return (API->error);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 
 	Return (GMT_NOERROR);
 }

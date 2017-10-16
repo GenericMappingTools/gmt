@@ -165,7 +165,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 				break;
 			case 'G':	/* Set canvas color */
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
 					GMT->current.map.frame.paint = true;
 					if (gmt_getfill (GMT, opt->arg, &GMT->current.map.frame.fill)) {
 						gmt_fill_syntax (GMT, 'G', " ");
@@ -240,7 +240,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 
 	/* Ready to make the plot */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Constructing the basemap\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Constructing the basemap\n");
 
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	
@@ -254,7 +254,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 		nx = urint (GMT->current.map.width  / GMT->current.setting.map_line_step);
 		ny = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
 		dim[GMT_ROW] = 2 * (nx + ny) + 1;
-		GMT_Report (API, GMT_MSG_VERBOSE, "Constructing coordinates of the plot domain outline polygon using %" PRIu64 " points\n", dim[GMT_ROW]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Constructing coordinates of the plot domain outline polygon using %" PRIu64 " points\n", dim[GMT_ROW]);
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLYGON, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		S = D->table[0]->segment[0];
 		/* March around perimeter in a counter-clockwise sense */

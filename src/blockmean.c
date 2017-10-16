@@ -111,7 +111,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 				switch (opt->arg[0]) {
 					case '\0': case 'z':	/* GMT4 LEVEL: Report data sums */
 						if (gmt_M_compat_check (GMT, 4)) {
-							GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -S and -Sz options are deprecated; use -Ss instead.\n");
+							GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-S and -Sz options are deprecated; use -Ss instead.\n");
 							Ctrl->S.mode = 1;
 						}
 						else /* Not allowing backwards compatibility */
@@ -206,7 +206,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the blockmean main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);	/* Note: 0 for pad since no BC work needed */
@@ -237,18 +237,18 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	}
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* wesn may include some padding if gridline-registered */
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
 		snprintf (format, GMT_LEN256, "W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->n_columns, Grid->header->n_rows);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->n_columns, Grid->header->n_rows);
 	}
 	
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Memory reporting */
+	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Memory reporting */
 		size_t n_bytes, n_bytes_per_record = sizeof (struct BLK_PAIR);
 		if (!Ctrl->C.active) n_bytes_per_record += sizeof (struct BLK_PAIR);
 		if (Ctrl->E.active)  n_bytes_per_record += sizeof (struct BLK_SLHG);
 		if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) n_bytes_per_record += sizeof (uint64_t);
 		n_bytes = n_bytes_per_record * Grid->header->nm;	/* Report kbytes unless it is too much */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Using a total of %s for all arrays.\n", gmt_memory_use (n_bytes, 1));
+		GMT_Report (API, GMT_MSG_DEBUG, "Using a total of %s for all arrays.\n", gmt_memory_use (n_bytes, 1));
 	}
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
@@ -337,7 +337,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	w_col = gmt_get_cols (GMT, GMT_OUT) - 1;	/* Index of weight column (the last output column) */
 	n_cells_filled = 0;				/* Number of blocks with values */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Calculating block means\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculating block means\n");
 
 	if (GMT->common.h.add_colnames) {	/* Create meaningful column header */
 		unsigned int k = 3;
@@ -405,7 +405,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	}
 
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
-	GMT_Report (API, GMT_MSG_VERBOSE, "N read: %" PRIu64 " N used: %" PRIu64 " N outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "N read: %" PRIu64 " N used: %" PRIu64 " N outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
 
 	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) gmt_M_free (GMT, np);
 	

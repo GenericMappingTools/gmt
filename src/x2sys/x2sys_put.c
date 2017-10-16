@@ -230,7 +230,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the x2sys_put main code ----------------------------*/
 
 	if (Ctrl->In.active && (fp = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not open file %s\n", Ctrl->In.file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not open file %s\n", Ctrl->In.file);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 	if (fp == NULL) fp = GMT->session.std[GMT_IN];	/* No file given; read stdin instead */
@@ -283,9 +283,9 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 		free_id = 0;	/* Default is to add a new track entry */
 		if (found_it) {	/* This track already exists in the database */
 			if (Ctrl->D.active) {	/* Here we wish to delete it (and possibly replace the contents) */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Removing existing information for track: %s\n", track);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removing existing information for track: %s\n", track);
 				free_id = x2sys_bix_remove_track (GMT, this_info->next_info->track_id, &B);
-				GMT_Report (API, GMT_MSG_VERBOSE, "track %s removed\n", track);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "track %s removed\n", track);
 				this_info->next_info = this_info->next_info->next_info;
 				skip = !Ctrl->F.active;	/* If we are not replacing the info then we skip the new info */
 			}
@@ -310,7 +310,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 		}
 		else {	/* Read the tbf information for this track */
 
-			GMT_Report (API, GMT_MSG_VERBOSE, "Adding track: %s\n", track);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Adding track: %s\n", track);
 
 			/* If a track is replaced, then use the same id_no recover above, else increment to get a new one */
 
@@ -397,7 +397,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 	fclose (ftrack);
 	if (chmod (track_file, (mode_t)S_RDONLY))
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Failed to change file %s to read-only!\n", track_file);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Failed to change file %s to read-only!\n", track_file);
 
 	for (index = 0; index < B.nm_bin; index++) {
 		if (B.base[index].n_tracks == 0) continue;
@@ -427,9 +427,9 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	}
 	fclose (fbin);
 	if (chmod (index_file, (mode_t)S_RDONLY))
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Failed to change file %s to read-only!\n", index_file);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Failed to change file %s to read-only!\n", index_file);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "completed successfully\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "completed successfully\n");
 
 	x2sys_end (GMT, s);
 

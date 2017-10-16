@@ -277,7 +277,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 			case 'T':	/* makecpt inc string */
 				Ctrl->T.active = true;
 				if ((c = strchr (opt->arg, '/')) && gmt_M_compat_check (GMT, 5)) {	/* Let it slide for now */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -T<inc>[/<col>] syntax is deprecated; use -T<inc>[+c<col>] instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -T<inc>[/<col>] syntax is deprecated; use -T<inc>[+c<col>] instead.\n");
 					j = sscanf (opt->arg, "%lf/%d", &Ctrl->T.inc, &Ctrl->T.col);
 					if (j == 1) Ctrl->T.col = 0;
 				}
@@ -373,7 +373,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gmtinfo main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	
 	if (Ctrl->F.active) {	/* Special case of reporting on record numbers */
 		/* This is best done by reading the whole thing in */
@@ -451,13 +451,13 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		if (!strcmp (GMT->current.setting.format_geo_out, "D")) {
 			strcpy (GMT->current.setting.format_geo_out, "+D");
 			gmt_M_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from D to %s to ensure east > west\n",
+			GMT_Report (API, GMT_MSG_VERBOSE, "FORMAT_GEO_OUT reset from D to %s to ensure east > west\n",
 			            GMT->current.setting.format_geo_out);
 		}
 		else if (!strcmp (GMT->current.setting.format_geo_out, "ddd:mm:ss")) {
 			strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
 			gmt_M_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure east > west\n",
+			GMT_Report (API, GMT_MSG_VERBOSE, "FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure east > west\n",
 			            GMT->current.setting.format_geo_out);
 		}
 	}
@@ -562,15 +562,15 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
 						if (south < -90.0) {
 							south = -90.0;
-							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused south to become < -90. Reset to -90.\n");
+							GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused south to become < -90. Reset to -90.\n");
 						}
 						if (north > 90.0) {
 							north = 90.0;
-							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused north to become > +90. Reset to +90.\n");
+							GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused north to become > +90. Reset to +90.\n");
 						}
 						if (fabs (east - west) > 360.0) {
 							GMT_Report (API, GMT_MSG_VERBOSE,
-							            "Warning: Using -I caused longitude range to exceed 360. Reset to a range of 360.\n");
+							            "Using -I caused longitude range to exceed 360. Reset to a range of 360.\n");
 							west = (west < 0.0) ? -180.0 : 0.0;
 							east = (west < 0.0) ? +180.0 : 360.0;
 							full_range = true;
@@ -594,7 +594,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					west  -= sub * Ctrl->I.inc[GMT_X];		east  += add * Ctrl->I.inc[GMT_X];
 					sub = (out_dim[GMT_Y] - in_dim[GMT_Y]) / 2;	add = out_dim[GMT_Y] - in_dim[GMT_Y] - sub;
 					south -= sub * Ctrl->I.inc[GMT_Y];		north += add * Ctrl->I.inc[GMT_Y];
-					GMT_Report (API, GMT_MSG_VERBOSE,
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE,
 					            "Initial -R: %g/%g/%g/%g [n_columns = %u n_rows = %u] --> Suggested -R:  %g/%g/%g/%g [n_columns = %u n_rows = %u].\n",
 						ww, ee, ss, nn, in_dim[GMT_X], in_dim[GMT_Y], west, east, south, north, out_dim[GMT_X], out_dim[GMT_Y]);
 				}

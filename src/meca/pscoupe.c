@@ -944,7 +944,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 				Ctrl->T.active = true;
 				Ctrl->T.n_plane = 1;
 				meca.NP1.rake = 1000.0;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: second plane is not defined for event %s only first plane is plotted.\n", In->text);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Second plane is not defined for event %s only first plane is plotted.\n", In->text);
 			}
 			else
 				meca.NP1.rake = meca_computed_rake2 (meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
@@ -1103,7 +1103,7 @@ Definition of scalar moment.
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Number of records read: %li\n", n_rec);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of records read: %li\n", n_rec);
 
 	if (!Ctrl->N.active) gmt_map_clip_off (GMT);
 

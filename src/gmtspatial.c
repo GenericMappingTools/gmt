@@ -803,7 +803,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 					}
 				}
 				else if (opt->arg[0]) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax Error: Bad modifier in %c in -A option\n", opt->arg[0]);
+					GMT_Report (API, GMT_MSG_NORMAL, "Bad modifier in %c in -A option\n", opt->arg[0]);
 					n_errors++;
 				}
 				break;
@@ -1207,10 +1207,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				gmt_free_segment (GMT, &S);
 				d_expect = 0.5 * sqrt (info[GMT_Z]/n_points);
 				R_index = d_bar / d_expect;
-				GMT_Report (API, GMT_MSG_NORMAL, "NNA Found %" PRIu64 " points, D_bar = %g, D_expect = %g, Spatial index = %g\n", n_points, d_bar, d_expect, R_index);
+				GMT_Report (API, GMT_MSG_VERBOSE, "NNA Found %" PRIu64 " points, D_bar = %g, D_expect = %g, Spatial index = %g\n", n_points, d_bar, d_expect, R_index);
 			}
 			else
-				GMT_Report (API, GMT_MSG_NORMAL, "NNA Found %" PRIu64 " points, D_bar = %g\n", n_points, d_bar);
+				GMT_Report (API, GMT_MSG_VERBOSE, "NNA Found %" PRIu64 " points, D_bar = %g\n", n_points, d_bar);
 			
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
@@ -1975,7 +1975,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						/* Here we determine if S1 is inside S2 or vice versa */
 						side = gmt_inonout (GMT, S1->data[GMT_X][0], S1->data[GMT_Y][0], S2);	/* Is S1 inside S2? */
 						if (side == GMT_ONEDGE) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Error: Polygon A (tbl=%" PRIu64 ", seg=%" PRIu64 ") is tangent to Polygon B (tbl=%" PRIu64 ", seg=%" PRIu64 ") at (%g/%g). Skipping\n", tbl1, seg1, tbl2, seg2, S1->data[GMT_X][0], S1->data[GMT_Y][0]);
+							GMT_Report (API, GMT_MSG_NORMAL, "Polygon A (tbl=%" PRIu64 ", seg=%" PRIu64 ") is tangent to Polygon B (tbl=%" PRIu64 ", seg=%" PRIu64 ") at (%g/%g). Skipping\n", tbl1, seg1, tbl2, seg2, S1->data[GMT_X][0], S1->data[GMT_Y][0]);
 							continue;
 						}
 						else if (side == GMT_INSIDE) {	/* S1 is inside S2 */
@@ -1985,7 +1985,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						}
 						side = gmt_inonout (GMT, S2->data[GMT_X][0], S2->data[GMT_Y][0], S1);	/* Is S2 inside S1? */
 						if (side == GMT_ONEDGE) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Error: Polygon B (tbl=%" PRIu64 ", seg=%" PRIu64 ") is tangent to Polygon A (tbl=%" PRIu64 ", seg=%" PRIu64 ") at (%g/%g). Skipping\n", tbl2, seg2, tbl1, seg1, S2->data[GMT_X][0], S2->data[GMT_Y][0]);
+							GMT_Report (API, GMT_MSG_NORMAL, "Polygon B (tbl=%" PRIu64 ", seg=%" PRIu64 ") is tangent to Polygon A (tbl=%" PRIu64 ", seg=%" PRIu64 ") at (%g/%g). Skipping\n", tbl2, seg2, tbl1, seg1, S2->data[GMT_X][0], S2->data[GMT_Y][0]);
 							continue;
 						}
 						else if (side == GMT_INSIDE) {	/* S2 is inside S1 */
@@ -1999,7 +1999,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		for (k1 = 0; k1 < D->n_segments; k1++) {	/* Make sure no polygon is inside more than one other polygon */
 			if (kase[k1] > 1) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Polygon # %d is inside more than one polygon or is both inside and contains other polygons\n", k1);
+				GMT_Report (API, GMT_MSG_NORMAL, "Polygon # %d is inside more than one polygon or is both inside and contains other polygons\n", k1);
 				gmt_M_free (GMT, kase);
 				Return (API->error);
 			}

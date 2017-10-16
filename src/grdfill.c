@@ -383,7 +383,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			wesn[XHI] = gmt_M_col_to_x (GMT, limit[XHI], Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], 0, Grid->header->n_columns);
 			wesn[YLO] = gmt_M_row_to_y (GMT, limit[YHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], 0, Grid->header->n_columns);
 			wesn[YHI] = gmt_M_row_to_y (GMT, limit[YLO], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], 0, Grid->header->n_columns);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Hole BB %u: -R: %g/%g/%g/%g [%u nodes]\n", hole_number, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], n_nodes);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Hole BB %u: -R: %g/%g/%g/%g [%u nodes]\n", hole_number, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], n_nodes);
 			if (Ctrl->L.active) {
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
@@ -399,7 +399,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	if (hole_number) GMT_Report (API, GMT_MSG_VERBOSE, "Found %u holes\n", hole_number);
+	if (hole_number) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %u holes\n", hole_number);
 	gmt_M_free_aligned (GMT, ID);
 	gmt_M_free (GMT, Out);
 
@@ -415,7 +415,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			Return (API->error);
 	}
 	else {
-		GMT_Report (API, GMT_MSG_NORMAL, "No holes detected in grid - grid was not updated\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "No holes detected in grid - grid was not updated\n");
 	}
 	
 	Return (GMT_NOERROR);

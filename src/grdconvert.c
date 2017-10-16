@@ -219,10 +219,10 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		if (Ctrl->In.file[0] == '=') strcpy (fname[GMT_IN], "<stdin>");
 		if (Ctrl->G.file[0] == '=') strcpy (fname[GMT_OUT], "<stdout>");
-		GMT_Report (API, GMT_MSG_VERBOSE, "Translating file %s (format %s) to file %s (format %s)\n",
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Translating file %s (format %s) to file %s (format %s)\n",
 		            fname[GMT_IN], GMT->session.grdformat[type[GMT_IN]], fname[GMT_OUT], GMT->session.grdformat[type[GMT_OUT]]);
 		if (hmode && GMT->session.grdformat[type[GMT_OUT]][0] != 'c' && GMT->session.grdformat[type[GMT_OUT]][0] != 'n')
-			GMT_Report (API, GMT_MSG_NORMAL, "No grd header will be written\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "No grd header will be written\n");
 	}
 
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
@@ -251,8 +251,8 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Check in case grid really is geographic */
 		if (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && gmt_M_180_range (Grid->header->wesn[YLO], Grid->header->wesn[YHI])) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Input grid says it is Cartesian but has exactly 360 by 180 degree range.\n");
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Use -fg to ensure the output grid will be identified as geographic.\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Input grid says it is Cartesian but has exactly 360 by 180 degree range.\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Use -fg to ensure the output grid will be identified as geographic.\n");
 		}
 	}
 	Grid->header->type = type[GMT_OUT];

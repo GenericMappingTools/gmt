@@ -306,7 +306,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	buffer = gmt_M_memory (GMT, NULL, b_alloc, char);	/* Initial buffer size for header */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
 	if (Ctrl->D.active) {	/* We want output to go to individual files for each segment [Default writes to stdout] */
 		io_mode = GMT_WRITE_SEGMENT;	/* This means "write segments to separate files" */
@@ -369,7 +369,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	/* Surely don't need any more segment space than the number of input segments */
 	segment = gmt_M_memory (GMT, NULL, D[GMT_IN]->n_segments, struct LINK);
 	id = ns = out_seg = 0;
-	GMT_Report (API, GMT_MSG_VERBOSE, "Check for already closed polygons\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Check for already closed polygons\n");
 
 	/* Closed polygons are already finished - just identify, write out, and move on */
 
@@ -465,11 +465,11 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		C->table[0]->segment = gmt_M_memory (GMT, T[CLOSED], n_closed, struct GMT_DATASEGMENT *);
 		C->n_segments = C->table[0]->n_segments = n_closed;
 		/* With -C we only separate closed from open and then we are done */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Separated %" PRIu64 " closed and %" PRIu64 " open segments\n", n_closed, n_open);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Separated %" PRIu64 " closed and %" PRIu64 " open segments\n", n_closed, n_open);
 		wrap_up = true;	/* Means to quit once we have written those results to file - no nesting takes place */
 	}
 	else if (id == 0) {	/* All segments were already closed polygons */
-		GMT_Report (API, GMT_MSG_VERBOSE, "All segments already form closed polygons - no new segment file created\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "All segments already form closed polygons - no new segment file created\n");
 		wrap_up = true;	/* Means to quit once we have written those results to file - no nesting possible */
 	}
 
@@ -508,11 +508,11 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	if (ns < D[GMT_IN]->n_segments) segment = gmt_M_memory (GMT, segment, ns, struct LINK);
 	skip = gmt_M_memory (GMT, NULL, ns, bool);	/* Used when looking for duplicate segments */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " closed polygons\n", n_islands);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " closed polygons\n", n_islands);
 
 	/* The connect algorithm will be confused if there are identical duplicates of segments - thus we check first */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Check for duplicate lines\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Check for duplicate lines\n");
 	for (iseg = 0; iseg < ns; iseg++) {	/* Loop over remaining open lines */
 		if (skip[iseg]) continue;	/* Skip lines that has been determined to be a duplicate line */
 		for (jseg = iseg + 1; jseg < ns; jseg++) {	/* Loop over all other open lines */
@@ -528,7 +528,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 						          doubleAlmostEqualZero (D[GMT_IN]->table[segment[iseg].group]->segment[segment[iseg].pos]->data[GMT_Y][k], D[GMT_IN]->table[segment[jseg].group]->segment[segment[jseg].pos]->data[GMT_Y][k]));
 					}
 					if (match == segment[iseg].n) {	/* An exact match */
-						GMT_Report (API, GMT_MSG_VERBOSE, "Line segments %" PRIu64 " and %" PRIu64 "are duplicates - Line segment %" PRIu64 " will be ignored\n", iseg, jseg, jseg);
+						GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Line segments %" PRIu64 " and %" PRIu64 "are duplicates - Line segment %" PRIu64 " will be ignored\n", iseg, jseg, jseg);
 						skip[jseg] = true;	/* Flag this line for skipping */
 					}
 				}
@@ -543,16 +543,16 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		if (iseg > jseg) segment[jseg] = segment[iseg];
 		jseg++;
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " duplicate segments\n", ns - jseg);
-	if (jseg < ns) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " duplicate segment removed\n", ns - jseg);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " duplicate segments\n", ns - jseg);
+	if (jseg < ns) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " duplicate segment removed\n", ns - jseg);
 	ns = jseg;	/* The new number of open segments after duplicates have been removed */
 	gmt_M_free (GMT, skip);	/* Done with this array */
-	GMT_Report (API, GMT_MSG_VERBOSE, "Try to connect %" PRIu64 " open segments\n", ns);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Try to connect %" PRIu64 " open segments\n", ns);
 
 	if (Ctrl->T.unit == 'X')
-		GMT_Report (API, GMT_MSG_VERBOSE, "Calculate and rank end point separations [cutoff = %g nn_dist = %g]\n", Ctrl->T.dist[0], Ctrl->T.dist[1]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculate and rank end point separations [cutoff = %g nn_dist = %g]\n", Ctrl->T.dist[0], Ctrl->T.dist[1]);
 	else
-		GMT_Report (API, GMT_MSG_VERBOSE, "Calculate and rank end point separations [cutoff = %g%c nn_dist = %g%c]\n", Ctrl->T.dist[0], Ctrl->T.unit, Ctrl->T.dist[1], Ctrl->T.unit);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculate and rank end point separations [cutoff = %g%c nn_dist = %g%c]\n", Ctrl->T.dist[0], Ctrl->T.unit, Ctrl->T.dist[1], Ctrl->T.unit);
 
 	/* We determine the distance from each segment's two endpoints to the two endpoints on every other
 	 * segment; this yields four distances per segment.  We then assign the nearest endpoint to each end
@@ -665,7 +665,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	start_id = n_closed = n_open = 0;	/* Initialize counters for the connection of line segments into closed polygons */
 	done = false;
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Assemble new line segments and polygons\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Assemble new line segments and polygons\n");
 
 	/* We start at the very first open line segment (start_id = 0) and trace through its nearest line segments
 	 * until closed or running out of new line segments */
@@ -700,7 +700,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			else {	/* Good. Trace the connection to the next segment */
 				/* Having hooked line segment to current end_order, we must flip to the other end for the next connection */
 #if 0
-				GMT_Report (API, GMT_MSG_VERBOSE, "Connecting segment %" PRIu64 " to segment %" PRIu64 "\n", id, id2);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Connecting segment %" PRIu64 " to segment %" PRIu64 "\n", id, id2);
 #endif
 				end_order = !segment[id].buddy[end_order].end_order;
 				id = id2;	/* Update what is the current segment */
@@ -733,7 +733,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				else {	/* Good. Trace the connection to the next segment */
 					/* Having hooked line segment to current end_order, we must flip to the other end for the next connection */
 #if 0
-					GMT_Report (API, GMT_MSG_VERBOSE, "Connecting segment %" PRIu64 " to segment %" PRIu64 "\n", id, id2);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Connecting segment %" PRIu64 " to segment %" PRIu64 "\n", id, id2);
 #endif
 					end_order = !segment[id].buddy[end_order].end_order;
 					id = id2;	/* Update what is the current segment */
@@ -749,11 +749,11 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		T[CLOSED][out_seg] = GMT_Alloc_Segment (GMT->parent, smode, n_alloc_pts, n_columns, NULL, NULL);
 
 		if (n_steps_pass_1 == 1) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Connect %s -> none [1 segment]\n", buffer);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Connect %s -> none [1 segment]\n", buffer);
 			sprintf (buffer, "Single open segment not enlarged by connection");
 		}
 		else {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Connect %s [%" PRIu64 " segments]\n", buffer, n_steps_pass_1);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Connect %s [%" PRIu64 " segments]\n", buffer, n_steps_pass_1);
 			sprintf (buffer, "Composite segment made from %" PRIu64 " line segments", n_steps_pass_1);
 		}
 		T[OPEN][out_seg]->header = strdup (buffer);
@@ -832,7 +832,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		if (n_seg_length < n_alloc_pts) T[OPEN][out_seg] = GMT_Alloc_Segment (GMT->parent, smode, n_seg_length, n_columns, NULL, T[OPEN][out_seg]);	/* Trim memory allocation */
 
 		if (doubleAlmostEqualZero (p_first_x, p_last_x) && doubleAlmostEqualZero (p_first_y, p_last_y)) {	/* Definitively closed polygon resulting from connections */
-			GMT_Report (API, GMT_MSG_VERBOSE, "New closed segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, n_steps_pass_2);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "New closed segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, n_steps_pass_2);
 			if (Ctrl->D.active && save_type) {	/* Ended up closed, rename output filename with the C type instead of O set above */
 				sprintf (buffer, Ctrl->D.format, 'C', out_seg);
 				gmt_M_str_free (T[OPEN][out_seg]->file[GMT_OUT]);
@@ -843,7 +843,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		}
 		else {
 			n_open++;	/* This one remained open */
-			GMT_Report (API, GMT_MSG_VERBOSE, "New open segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, n_steps_pass_2);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "New open segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, n_steps_pass_2);
 		}
 		if (Ctrl->Q.active) {	/* Add this polygon info to the info list */
 			QT[d_mode]->text[QT[d_mode]->n_rows++] = strdup (buffer);
@@ -881,11 +881,11 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	/* Tell us some statistics of what we found, if -V */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments read\n", ns + n_islands);
-	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " new open segments\n", n_open);
-	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " new closed segments\n", n_closed);
-	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments were already closed\n", n_islands);
-	if (n_trouble) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " trouble spots\n", n_trouble);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " segments read\n", ns + n_islands);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " new open segments\n", n_open);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " new closed segments\n", n_closed);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " segments were already closed\n", n_islands);
+	if (n_trouble) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " trouble spots\n", n_trouble);
 
 	gmt_M_free (GMT, buffer);
 

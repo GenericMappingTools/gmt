@@ -363,7 +363,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 	GMT->common.R.wesn[XLO] = 0.0;
 	range = GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO];
 	if (doubleAlmostEqual (range, 180.0) && Ctrl->T.active) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -T only needed for 0-360 range data (ignored)");
+		GMT_Report (API, GMT_MSG_VERBOSE, "-T only needed for 0-360 range data (ignored)");
 		Ctrl->T.active = false;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file && Ctrl->C.mode == GMT_IN && gmt_access (GMT, Ctrl->C.file, R_OK),
@@ -432,7 +432,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psrose main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	asize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 	lsize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
@@ -594,12 +594,12 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			for (i = 0; i < n; i++) length[i] /= max;
 	}
 
-	if (Ctrl->I.active || gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (Ctrl->I.active || gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
 		char *kind[2] = {"r", "bin sum"};
 		sprintf (format, "Info for data: n = %% " PRIu64 " mean az = %s mean r = %s mean resultant length = %s max %s = %s scaled mean r = %s linear length sum = %s sign@%%.2f = %%d\n",
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, kind[Ctrl->A.active],
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_NORMAL, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total, Ctrl->Q.value, significant);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total, Ctrl->Q.value, significant);
 		if (Ctrl->I.active) {	/* That was all we needed to do, wrap up */
 			double out[7];
 			unsigned int col_type[2];

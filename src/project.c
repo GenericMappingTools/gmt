@@ -412,7 +412,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'D':
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -D is deprecated; use --FORMAT_GEO_OUT instead\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -D is deprecated; use --FORMAT_GEO_OUT instead\n");
 					if (opt->arg[0] == 'g') GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
 					if (opt->arg[0] == 'd') GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 				}
@@ -812,7 +812,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 		P.output_choice[1] = 5;
 		P.output_choice[2] = 2;
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Generate table data\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Generate table data\n");
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Go from min dist = %g to max dist = %g\n", Ctrl->L.min, Ctrl->L.max);
 		d_along = Ctrl->L.min;
 		while ((Ctrl->L.max - d_along) > (GMT_CONV8_LIMIT*Ctrl->G.inc)) {
@@ -908,7 +908,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 	else {	/* Must read input file */
 		struct GMT_RECORD *In = NULL;
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 		/* Specify input and output expected columns */
 		if ((error = gmt_set_cols (GMT, GMT_IN, 0)) != GMT_NOERROR) {
 			Return (error);
@@ -1022,7 +1022,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
 
 	for (rec = 0; rec < P.n_used; rec++) {
 		gmt_M_str_free (p_data[rec].t);

@@ -151,7 +151,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Image placement (old syntax) */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -C option is deprecated, use -Dx instead.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-C option is deprecated, use -Dx instead.\n");
 				n = sscanf (opt->arg, "%[^/]/%[^/]/%2s", txt_a, txt_b, txt_c);
 				sprintf (string, "x%s/%s", txt_a, txt_b);
 				if (n == 3) {
@@ -194,7 +194,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'E':	/* Specify image dpi */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: The -E option is deprecated but is accepted.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "The -E option is deprecated but is accepted.\n");
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "For the current -D syntax you should use -D modifier +r instead.\n");
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Note you cannot mix new-style modifiers (+r) with the old-style -C option.\n");
 				Ctrl->D.dpi = atof (opt->arg);
@@ -256,13 +256,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Replicate image */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -D modifier +n instead.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-N option is deprecated; use -D modifier +n instead.\n");
 				n = sscanf (opt->arg, "%d/%d", &Ctrl->D.n_columns, &Ctrl->D.n_rows);
 				if (n == 1) Ctrl->D.n_rows = Ctrl->D.n_columns;
 				n_errors += gmt_M_check_condition (GMT, n < 1, "Syntax error -N option: Must give values for replication\n");
 				break;
 			case 'W':	/* Image width */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -W option is deprecated; use -D modifier +w instead.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-W option is deprecated; use -D modifier +w instead.\n");
 				if ((n = gmt_get_pair (GMT, opt->arg, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
 				if (Ctrl->D.dim[GMT_X] < 0.0) {
 					Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];
@@ -440,7 +440,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	memset (&header, 0, sizeof(struct imageinfo)); /* initialize struct */
 	if (is_eps) {	/* Read an EPS file */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input EPS file\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input EPS file\n");
 		if (gmt_getdatapath (GMT, file, path, R_OK) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", file);
 			gmt_M_str_free (file);
@@ -454,7 +454,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	}
 #ifdef HAVE_GDAL
 	else  {	/* Read a raster image */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input raster via GDAL\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input raster via GDAL\n");
 		gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, NULL)) == NULL) {
 			gmt_M_str_free (file);
@@ -629,7 +629,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	for (row = 0; row < Ctrl->D.n_rows; row++) {
 		y = Ctrl->D.refpoint->y + row * Ctrl->D.dim[GMT_Y];
-		if (Ctrl->D.n_rows > 1) GMT_Report (API, GMT_MSG_VERBOSE, "Replicating image %d times for row %d\n", Ctrl->D.n_columns, row);
+		if (Ctrl->D.n_rows > 1) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Replicating image %d times for row %d\n", Ctrl->D.n_columns, row);
 		for (col = 0; col < Ctrl->D.n_columns; col++) {
 			x = Ctrl->D.refpoint->x + col * Ctrl->D.dim[GMT_X];
 			if (header.depth == 0)

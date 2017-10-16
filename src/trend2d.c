@@ -377,7 +377,7 @@ GMT_LOCAL void solve_system_2d (struct GMT_CTRL *GMT, double *gtg, double *gtd, 
 	}
 	else {
 		if (gmt_jacobi (GMT, gtg, n_model, mp, lambda, v, b, z, &nrots)) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Matrix Solver Convergence Failure.\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Matrix Solver Convergence Failure.\n");
 		}
 		c_test = fabs (lambda[0]) / c_no;
 		while (rank < n_model && lambda[rank] > 0.0 && lambda[rank] > c_test) rank++;
@@ -556,7 +556,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the trend2d main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	sprintf (format, "%s%s", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
 
 	GMT->common.R.wesn[XLO] = 0;	GMT->common.R.wesn[XHI] = 360.0;	/* For -L not to cause trouble in GMT->current.io.input */
@@ -594,23 +594,23 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 	}
 
 	if (xmin == xmax || ymin == ymax) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Maximum and minimum input values are the same.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Maximum and minimum input values are the same.\n");
 		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (n_data == 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not read any data.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not read any data.\n");
 		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (n_data < (uint64_t)Ctrl->N.value) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Ill-posed problem; n_data < n_model_max.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Ill-posed problem; n_data < n_model_max.\n");
 	}
 
 	transform_x_2d (data, n_data, xmin, xmax, ymin, ymax);	/* Set domain to [-1, 1] or [-pi, pi]  */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " data with X values from %.8g to %.8g\n", n_data, xmin, xmax);
-	GMT_Report (API, GMT_MSG_VERBOSE, "N_model%sRank%sChi_Squared%sSignificance\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " data with X values from %.8g to %.8g\n", n_data, xmin, xmax);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "N_model%sRank%sChi_Squared%sSignificance\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
 
 	sprintf (format, "%%d%s%%d%s%s%s%s\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 
@@ -622,7 +622,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 		solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 		calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 		c_chisq = get_chisq_2d (data, n_data, n_model);
-		GMT_Report (API, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, 1.0);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n_model, rank, c_chisq, 1.0);
 		if (Ctrl->N.robust) {
 			do {
 				recompute_weights_2d (GMT, data, n_data, work, &scale);
@@ -632,7 +632,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 				calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 				c_chisq = get_chisq_2d (data, n_data, n_model);
 				significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
-				GMT_Report (API, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, prob);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n_model, rank, c_chisq, prob);
 			} while (significant);
 			/* Go back to previous model only if w_chisq < c_chisq  */
 			if (w_chisq < c_chisq) {
@@ -653,7 +653,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 			solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 			calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 			c_chisq = get_chisq_2d (data, n_data, n_model);
-			GMT_Report (API, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, 1.0);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n_model, rank, c_chisq, 1.0);
 			if (Ctrl->N.robust) {
 				do {
 					recompute_weights_2d (GMT, data, n_data, work, &scale);
@@ -663,7 +663,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 					calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 					c_chisq = get_chisq_2d (data, n_data, n_model);
 					significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
-					GMT_Report (API, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, prob);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n_model, rank, c_chisq, prob);
 				} while (significant);
 				/* Go back to previous model only if w_chisq < c_chisq  */
 				if (w_chisq < c_chisq) {
@@ -690,7 +690,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 		solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 		calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 		c_chisq = get_chisq_2d (data, n_data, n_model);
-		GMT_Report (API, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, 1.0);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n_model, rank, c_chisq, 1.0);
 		if (Ctrl->N.robust) {
 			do {
 				recompute_weights_2d (GMT, data, n_data, work, &scale);
@@ -700,7 +700,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 				calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 				c_chisq = get_chisq_2d (data, n_data, n_model);
 				significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
-				GMT_Report (API, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, prob);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n_model, rank, c_chisq, prob);
 			} while (significant);
 			/* Go back to previous model only if w_chisq < c_chisq  */
 			if (w_chisq < c_chisq) {
@@ -711,10 +711,10 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
 		sprintf (format, "Final model stats: N model parameters %%d.  Rank %%d.  Chi-Squared: %s\n", GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq);
-		GMT_Report (API, GMT_MSG_VERBOSE, "Model Coefficients: ");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n_model, rank, c_chisq);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Model Coefficients: ");
 		sprintf (format, "%s%s", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
 		for (i = 0; i < n_model; i++) {
 			GMT_Message (API, GMT_TIME_NONE, format, c_model[i]);

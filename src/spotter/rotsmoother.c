@@ -292,7 +292,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 
 	/* Read the rotation data from file or stdin */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
 	if (!Ctrl->A.active) n_in++;	/* Got time */
 	if (Ctrl->W.active) n_in++;		/* Got weights */
@@ -371,8 +371,8 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (!Ctrl->A.active) GMT_Report (API, GMT_MSG_VERBOSE, "Range of input ages   = %g/%g\n", min_rot_age, max_rot_age);
-	GMT_Report (API, GMT_MSG_VERBOSE, "Range of input angles = %g/%g\n", min_rot_angle, max_rot_angle);
+	if (!Ctrl->A.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Range of input ages   = %g/%g\n", min_rot_age, max_rot_age);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Range of input angles = %g/%g\n", min_rot_angle, max_rot_angle);
 
 	if ((error = gmt_set_cols (GMT, GMT_OUT, n_cols)) != GMT_NOERROR) {
 		gmt_M_free (GMT, D);
@@ -417,7 +417,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 			if (D[rot].wxyasn[K_AGE] > t_hi) stop = true;
 		last = rot - 1;	/* Index to first rotation outside this time interval */
 		n_use = last - first;	/* Number of rotations in the interval */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Found %d rots for the time interval %g <= t < %g\n", n_use, t_lo, t_hi);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %d rots for the time interval %g <= t < %g\n", n_use, t_lo, t_hi);
 		if (n_use < n_minimum) continue;	/* Need at least 1 or 2 poles to do anything useful */
 
 		/* Now extimate the average rotation */
@@ -476,7 +476,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		out[GMT_X] = lon_mean_pole;
 		out[GMT_Y] = gmt_lat_swap (GMT, lat_mean_pole, GMT_LATSWAP_O2G);	/* Convert back from geocentric to geodetic */
 		out[GMT_Z] = mean_rot_age;	out[3] = mean_rot_angle;
-		GMT_Report (API, GMT_MSG_VERBOSE, "Mean opening angle %8.4f vs median opening angle %8.4f\n", mean_rot_angle, med_angle);	/* Report mean and median angle for testing */
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean opening angle %8.4f vs median opening angle %8.4f\n", mean_rot_angle, med_angle);	/* Report mean and median angle for testing */
 		n_total_use += n_use;
 		n_out++;
 
@@ -527,7 +527,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 
 		gmt_M_memcpy (Ccopy, C, 9, double);	/* Duplicate since it will get trodden on */
 		if (gmt_jacobi (GMT, Ccopy, matrix_dim, matrix_dim, EigenValue, EigenVector, work1, work2, &nrots)) {	/* Solve eigen-system C = EigenVector * EigenValue * EigenVector^T */
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Eigenvalue routine gmt_jacobi failed to converge in 50 sweeps.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Eigenvalue routine gmt_jacobi failed to converge in 50 sweeps.\n");
 		}
 
 		/* In addition to reporting the covariance, we will report the azimuth of the major axis and the

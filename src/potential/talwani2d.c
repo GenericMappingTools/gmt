@@ -166,7 +166,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 						case 'z': Ctrl->M.active[TALWANI2D_VER] = true; break;
 						default:
 							n_errors++;
-							GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Syntax error -M: Unrecognized modifier %c\n", opt->arg[k]);
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -M: Unrecognized modifier %c\n", opt->arg[k]);
 							break;
 					}
 					k++;
@@ -622,8 +622,8 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	body = gmt_M_memory (GMT, NULL, n_alloc1, struct BODY2D);
 	n_bodies = 0;
 	/* Read polygon information from multiple segment file */
-	GMT_Report (API, GMT_MSG_VERBOSE, "All x-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI2D_HOR]]);
-	GMT_Report (API, GMT_MSG_VERBOSE, "All z-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI2D_VER]]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "All x-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI2D_HOR]]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "All z-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI2D_VER]]);
 	
 	/* Read the sliced model */
 	do {	/* Keep returning records until we reach EOF */
@@ -655,7 +655,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 				/* Process the next segment header */
 				ns = sscanf (GMT->current.io.segment_header, "%lf",  &rho);
 				if (ns == 0 && !Ctrl->D.active) {
-					GMT_Report (API, GMT_MSG_VERBOSE, "Neither segment header nor -D specified density - must quit\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Neither segment header nor -D specified density - must quit\n");
 					gmt_M_free (GMT, body);
 					Return (API->error);
 				}
@@ -683,7 +683,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 		else {
 			if (first) {	/* Had no header record at all */
 				if (!Ctrl->D.active) {
-					GMT_Report (API, GMT_MSG_VERBOSE, "Found no segment header and -D not set - must quit\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Found no segment header and -D not set - must quit\n");
 					gmt_M_free (GMT, body);
 					Return (API->error);
 				}
@@ -734,7 +734,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 		rho += body[k].rho;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%lg Rho: %lg N-vertx: %4d\n", body[k].rho, body[k].n);
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Start calculating %s\n", kind[Ctrl->F.mode]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Start calculating %s\n", kind[Ctrl->F.mode]);
 	
 	if (Out->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	
 	for (tbl = 0; tbl < Out->n_tables; tbl++) {

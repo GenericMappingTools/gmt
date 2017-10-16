@@ -297,7 +297,7 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdclip main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid\n");
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
@@ -345,7 +345,7 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 		if (Ctrl->S.mode & GRDCLIP_BELOW) {
 			sprintf (buffer, "< %s set to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			strcat (format, buffer);
-			GMT_Report (API, GMT_MSG_VERBOSE, format, n_below, Ctrl->S.low, Ctrl->S.below);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n_below, Ctrl->S.low, Ctrl->S.below);
 		}
 		if (Ctrl->S.mode & GRDCLIP_BETWEEN) {
 			strcpy (format, "%" PRIu64 " values ");
@@ -357,18 +357,18 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 			strcat (format2, buffer);
 			for (k = 0; k < Ctrl->S.n_class; k++) {
 				if (Ctrl->S.class[k].replace)
-					GMT_Report (API, GMT_MSG_VERBOSE, format2, Ctrl->S.class[k].n_between, Ctrl->S.class[k].low, Ctrl->S.class[k].between);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, format2, Ctrl->S.class[k].n_between, Ctrl->S.class[k].low, Ctrl->S.class[k].between);
 				else
-					GMT_Report (API, GMT_MSG_VERBOSE, format, Ctrl->S.class[k].n_between, Ctrl->S.class[k].low, Ctrl->S.class[k].high, Ctrl->S.class[k].between);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, Ctrl->S.class[k].n_between, Ctrl->S.class[k].low, Ctrl->S.class[k].high, Ctrl->S.class[k].between);
 			}
 		}
 		if (Ctrl->S.mode & GRDCLIP_ABOVE) {
 			strcpy (format, "%" PRIu64 " values ");
 			sprintf (buffer, "> %s set to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-			GMT_Report (API, GMT_MSG_VERBOSE, format, n_above, Ctrl->S.high, Ctrl->S.above);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n_above, Ctrl->S.high, Ctrl->S.above);
 		}
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 	Return (GMT_NOERROR);
 }

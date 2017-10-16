@@ -273,7 +273,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	n_tracks = (uint64_t)error;
 
 	if (Ctrl->I.active && (k = x2sys_read_list (GMT, Ctrl->I.file, &ignore, &n_ignore)) != X2SYS_NOERROR) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Ignore file %s cannot be read - aborting\n", Ctrl->I.file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Ignore file %s cannot be read - aborting\n", Ctrl->I.file);
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
@@ -317,9 +317,9 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			break;
 		case 'm':
 			if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Unit m for miles is deprecated; use unit M instead\n");
 			else {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unit m for miles is not recognized\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);
 				x2sys_free_list (GMT, trk_name, n_tracks);
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
@@ -353,9 +353,9 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			break;
 		case 'm':
 			if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Unit m for miles is deprecated; use unit M instead\n");
 			else {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unit m for miles is not recognized\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);
 				x2sys_free_list (GMT, trk_name, n_tracks);
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
@@ -469,7 +469,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			if (skip) continue;	/* Found it, so skip */
 		}
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Reading track %s\n", trk_name[trk_no]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading track %s\n", trk_name[trk_no]);
 
 		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk_no], &data, s, &p, &GMT->current.io, &row), trk_name[trk_no]);
 

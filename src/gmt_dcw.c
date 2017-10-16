@@ -283,7 +283,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 					n_items++;
 				}
 				if (n_items)
-					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Continent code expanded from %s to %s [%d countries]\n", F->item[j]->codes, list, n_items);
+					GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Continent code expanded from %s to %s [%d countries]\n", F->item[j]->codes, list, n_items);
 				else
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Continent code %s unrecognized\n", code);
 			}
@@ -314,7 +314,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	if (mode > GMT_DCW_REGION) {	/* Wish to get actual polygons */
 		P = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 0, 2, NULL, NULL);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Extract polygons from DCW - The Digital Chart of the World\n");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Extract polygons from DCW - The Digital Chart of the World\n");
 	}
 
 	if (mode & GMT_DCW_EXTRACT) {	/* Plan to return a dataset */
@@ -397,7 +397,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			sprintf (msg, "Extract data for %s\n", GMT_DCW_country[k].name);
 		}
 
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, msg);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, msg);
 		k = strlen (msg) - 1;
 		msg[k] = '\0';	/* Remove the newline for use as segment header */
 
@@ -548,7 +548,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				wesn[XHI] = 360.0;
 			}
 		}
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Region implied by DCW polygons is %g/%g/%g/%g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Region implied by DCW polygons is %g/%g/%g/%g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 	}
 	gmt_M_free (GMT, order);
 	if (mode > GMT_DCW_REGION) {

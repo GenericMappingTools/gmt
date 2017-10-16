@@ -285,7 +285,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 				break;
 			case 'D':
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -D option is deprecated; use -g instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-D option is deprecated; use -g instead.\n");
 					GMT->common.g.active = true;
 					if (opt->arg[0] == 'x')		/* Determine gaps using projected distances */
 						sprintf (txt_a, "d%s", &opt->arg[1]);
@@ -318,7 +318,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 				break;
 			case 'N':
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -G-<fill> instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-N option is deprecated; use -G-<fill> instead.\n");
 					N_active = true;
 				}
 				else
@@ -430,7 +430,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pswiggle main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
@@ -485,7 +485,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];
 		
-		GMT_Report (API, GMT_MSG_VERBOSE, "Working on file %s\n", T->file[GMT_IN]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on file %s\n", T->file[GMT_IN]);
 		PSL_comment (PSL, "File %s\n", T->file[GMT_IN]);
 
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */

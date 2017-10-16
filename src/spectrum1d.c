@@ -310,7 +310,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				gmt_M_free (GMT, f_or_w);
 				return (GMT_ERROR_ON_FOPEN);
 			}
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].xpow;
@@ -327,7 +327,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				gmt_M_free (GMT, f_or_w);
 				return (GMT_ERROR_ON_FOPEN);
 			}
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].ypow;
@@ -343,7 +343,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				gmt_M_free (GMT, f_or_w);
 				return (GMT_ERROR_ON_FOPEN);
 			}
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].ypow * C->spec[i].coh;
@@ -359,7 +359,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				gmt_M_free (GMT, f_or_w);
 				return (GMT_ERROR_ON_FOPEN);
 			}
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].ypow * (1.0 - C->spec[i].coh);
@@ -375,7 +375,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				gmt_M_free (GMT, f_or_w);
 				return (GMT_ERROR_ON_FOPEN);
 			}
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].gain;
@@ -398,7 +398,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (GMT_ERROR_ON_FOPEN);
 			}
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].radmit;
@@ -414,7 +414,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				gmt_M_free (GMT, f_or_w);
 				return (GMT_ERROR_ON_FOPEN);
 			}
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].phase;
@@ -430,7 +430,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				gmt_M_free (GMT, f_or_w);
 				return (GMT_ERROR_ON_FOPEN);
 			}
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].coh;
@@ -630,7 +630,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct 
 				if (opt->arg[0]) {
 					if (opt->arg[0] == '+') {	/* Obsolete syntax */
 						if (gmt_M_compat_check (GMT, 5)) {
-							GMT_Report (API, GMT_MSG_COMPAT, "Warning: Modifier -N+<file> is deprecated; use -N in the future to save to stdout.\n");
+							GMT_Report (API, GMT_MSG_COMPAT, "Modifier -N+<file> is deprecated; use -N in the future to save to stdout.\n");
 							if (n_files++ == 0) Ctrl->Out.file = strdup (&opt->arg[1]);
 						}
 						else {
@@ -714,7 +714,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the spectrum1d main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	gmt_M_memset (&C, 1, struct SPECTRUM1D_INFO);
 	
 	C.dt = Ctrl->D.inc;
@@ -761,7 +761,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 		}
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " data points.\n", S->n_rows);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " data points.\n", S->n_rows);
 
 			y = (C.y_given) ? S->data[GMT_Y] : NULL;
 			if (compute_spectra (GMT, &C, S->data[GMT_X], y, S->n_rows, Ctrl->L.active, Ctrl->L.mode)) {

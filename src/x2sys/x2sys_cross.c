@@ -368,12 +368,12 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	}
 
 	if (s->x_col == -1 || s->y_col == -1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: lon,lat or x,y are not among data columns!\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "lon,lat or x,y are not among data columns!\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
 	if ((error = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Must give at least one data set!\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Must give at least one data set!\n");
 		Return (GMT_RUNTIME_ERROR);		
 	}
 	n_tracks = (uint64_t)error;
@@ -384,11 +384,11 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.mode == 2) external = false;
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Files found: %" PRIu64 "\n", n_tracks);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Files found: %" PRIu64 "\n", n_tracks);
 
 	duplicate = gmt_M_memory (GMT, NULL, n_tracks, bool);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Checking for duplicates : ");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Checking for duplicates : ");
 	/* Make sure there are no duplicates */
 	for (A = n_duplicates = 0; A < n_tracks; A++) {	/* Loop over all files */
 		if (duplicate[A]) continue;
@@ -402,13 +402,13 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " found\n", n_duplicates);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " found\n", n_duplicates);
 	
 	if (Ctrl->A.active) {	/* Read list of acceptable trk_name combinations */
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Explicit combinations found: ");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Explicit combinations found: ");
 		if ((fp = fopen (Ctrl->A.file, "r")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not open combinations file %s!\n", Ctrl->A.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Could not open combinations file %s!\n", Ctrl->A.file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 
@@ -421,7 +421,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			gmt_chop (line);	/* Get rid of CR, LF stuff */
 
 			if (sscanf (line, "%s %s", name1, name2) != 2) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Error decoding combinations file for pair %" PRIu64 "!\n", n_pairs);
+				GMT_Report (API, GMT_MSG_NORMAL, "Error decoding combinations file for pair %" PRIu64 "!\n", n_pairs);
 				fclose (fp);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -439,18 +439,18 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		fclose (fp);
 
 		if (!n_pairs) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: No combinations found in file %s!\n", Ctrl->A.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "No combinations found in file %s!\n", Ctrl->A.file);
 			gmt_M_free (GMT, duplicate);
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (n_pairs < n_alloc) pair = gmt_M_memory (GMT, pair, n_pairs, struct PAIR);
-		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\n", n_pairs);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 "\n", n_pairs);
 	}
 
 	if (Ctrl->C.file) {	/* Open file to store the per pair run time */
 		if ((fpC = fopen (Ctrl->C.file, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not open save times file %s!\n", Ctrl->C.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Could not open save times file %s!\n", Ctrl->C.file);
 			gmt_M_str_free (Ctrl->C.file);
 		}
 	}
@@ -575,7 +575,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		if (duplicate[A]) continue;
 
 		if (s->x_col < 0 || s->y_col < 0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: x and/or y column not found for track %s!\n", trk_name[A]);
+			GMT_Report (API, GMT_MSG_NORMAL, "x and/or y column not found for track %s!\n", trk_name[A]);
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			if (fpC) fclose (fpC);
 			x2sys_end (GMT, s);
@@ -624,7 +624,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			
 			if (Ctrl->C.active) tic = clock();	/* To report execution time from this pair */
 
-			GMT_Report (API, GMT_MSG_VERBOSE, "Processing %s - %s : ", trk_name[A], trk_name[B]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing %s - %s : ", trk_name[A], trk_name[B]);
 
 			if (same) {	/* Just set pointers */
 				data[1] = data[0];
@@ -892,10 +892,10 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, ylist_B);
 			}
 			if (!Ctrl->C.active)
-				GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\n", nx);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 "\n", nx);
 			else {
 				toc = clock();
-				GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\t%.3f sec\n", nx, (double)(toc - tic)/1000);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 "\t%.3f sec\n", nx, (double)(toc - tic)/1000);
 				if (fpC)	/* Save also the run time in file */
 					fprintf (fpC, "%s\t%s\t%d\t%.3f\n", trk_name[A], trk_name[B], (int)nx, (double)(toc - tic)/1000);
 			}

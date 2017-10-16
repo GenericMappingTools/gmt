@@ -96,7 +96,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct G
 
 			case 'P':
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -P is deprecated; use -A instead mext time.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-P is deprecated; use -A instead mext time.\n");
 					Ctrl->A.active = true;
 				}
 				else {
@@ -203,7 +203,7 @@ int GMT_mgd77path (void *V_API, int mode, void *args) {
 		}
 	}
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " cruises\n", n_cruises);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " cruises\n", n_cruises);
 	
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);

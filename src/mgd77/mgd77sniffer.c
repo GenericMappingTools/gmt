@@ -881,31 +881,31 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 	/* ENSURE VALID USE OF OPTIONS */
 	if (n_cruises != 0 && !strcmp(display,"LIMITS")) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: omit cruise ids for -Dl option.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "omit cruise ids for -Dl option.\n");
 		Return (API->error);
 	}
 	else if (GMT->common.b.active[GMT_OUT] && !display) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: -b option requires -D.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "-b option requires -D.\n");
 		Return (API->error);
 	}
 	else if (custom_warn && strcmp(display,"")) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Incompatible options -D and -W.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Incompatible options -D and -W.\n");
 		Return (API->error);
 	}
 	else if (!strcmp(display,"DIFFS") && n_grids == 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: -Dd option requires -G.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "-Dd option requires -G.\n");
 		Return (API->error);
 	}
 	if (east < west || south > north) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Region set incorrectly\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Region set incorrectly\n");
 		Return (API->error);
 	}
 	if (adjustData && n_cruises > 1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: -A adjustments valid for only one cruise.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "-A adjustments valid for only one cruise.\n");
 		Return (API->error);
 	}
 	if (!strcmp(display,"DTC") && ! dist_to_coast) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: -Dn option requires -Gnav\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "-Dn option requires -Gnav\n");
 		Return (API->error);
 	}
 	if (simulate && n_grids > 0) {
@@ -1113,7 +1113,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Now processing cruise %s\n", M.NGDC_id);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Now processing cruise %s\n", M.NGDC_id);
 
 		if (!strcmp(display,"E77")) {
 			sprintf (outfile,"%s.e77",M.NGDC_id);
@@ -1169,7 +1169,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					D[i].number[BadSection[k].col] = MGD77_NaN;	/* and set them to NaN */
 				}
 				if (i == nvalues) M.bit_pattern[0] -= (1 << BadSection[k].col); /* Turn off this field if all values have been flagged as bad */
-				GMT_Report (API, GMT_MSG_NORMAL, "%s (%s) Warning: Resetting %d user-flagged records to NaN prior to analysis\n",M.NGDC_id,mgd77snifferdefs[BadSection[k].col].abbrev,i);
+				GMT_Report (API, GMT_MSG_VERBOSE, "%s (%s): Resetting %d user-flagged records to NaN prior to analysis\n",M.NGDC_id,mgd77snifferdefs[BadSection[k].col].abbrev,i);
 			}
 		}
 
@@ -1252,7 +1252,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		   theoretically possible that the majority of fixes are flagged when
 		   the initial navigation fix is bad. In this case, try flipping flags */
 		if (gotTime) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Checking for bad navigation\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Checking for bad navigation\n");
 
 			for (curr = 0; curr < nvalues; curr++) {
 				if (gmt_M_is_dnan(D[curr].time)) {
@@ -1513,7 +1513,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 					/* Do regression */
 					if (k > 2) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Comparing %s and %s using RLS regression\n",this_grid[i].abbrev,this_grid[i].fname);
+						GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Comparing %s and %s using RLS regression\n",this_grid[i].abbrev,this_grid[i].fname);
 						if (!decimateData && forced) {
 							regress_rls (GMT, grid_val, ship_val, nvalues-this_grid[i].n_nan, stats, this_grid[i].col);
 							decimated = false;
@@ -1525,7 +1525,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							max = mgd77snifferdefs[this_grid[i].col].maxValue;
 							npts = decimate (GMT, grid_val, ship_val, nvalues-this_grid[i].n_nan, min, max, mgd77snifferdefs[this_grid[i].col].delta, &decimated_new, &decimated_orig,&extreme,this_grid[i].abbrev);
 							if ((1.0*extreme)/k > .05) { /* Many outliers - decimate again */
-								GMT_Report (API, GMT_MSG_NORMAL, "%s (%s) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id,this_grid[i].abbrev);
+								GMT_Report (API, GMT_MSG_VERBOSE, "%s (%s) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id,this_grid[i].abbrev);
 								npts = decimate (GMT, grid_val, ship_val, nvalues-this_grid[i].n_nan, mgd77snifferdefs[this_grid[i].col].binmin, mgd77snifferdefs[this_grid[i].col].binmax,\
 								mgd77snifferdefs[this_grid[i].col].delta, &decimated_new, &decimated_orig, &extreme, this_grid[i].abbrev);
 							}
@@ -1617,7 +1617,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 										}
 										if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 											sprintf (text, GMT->current.setting.format_float_out, test_slope[j]);
-											GMT_Report (API, GMT_MSG_NORMAL, "%s (%s) Warning: Scaled by %s for internal along-track analysis\n",\
+											GMT_Report (API, GMT_MSG_VERBOSE, "%s (%s) Scaled by %s for internal along-track analysis\n",\
 											M.NGDC_id,this_grid[i].abbrev, text);
 										}
 		#endif
@@ -1682,7 +1682,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 									D[n].number[this_grid[i].col] -= stats[MGD77_RLS_ICEPT];
 									diff[i][n] = D[n].number[this_grid[i].col] - G[i][n]; /* Re-compute cruise - grid differences */
 								}
-								GMT_Report (API, GMT_MSG_VERBOSE, "%s (%s) Warning: Offset corrected by %s for internal along-track analysis\n",\
+								GMT_Report (API, GMT_MSG_VERBOSE, "%s (%s) Offset corrected by %s for internal along-track analysis\n",\
 									M.NGDC_id,this_grid[i].abbrev, fstats[MGD77_RLS_ICEPT]);
 		#endif
 							}
@@ -1798,7 +1798,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					else {
 						/* Turn off this empty field */
 						M.bit_pattern[0] -= (1 << this_grid[i].col);
-						GMT_Report (API, GMT_MSG_NORMAL, "%s (%s) Warning: Insufficient bins for regression (%d found)\n",\
+						GMT_Report (API, GMT_MSG_VERBOSE, "%s (%s) Insufficient bins for regression (%d found)\n",\
 						M.NGDC_id,this_grid[i].abbrev, k);
 					}
 					/* Free up regression array memory */
@@ -1834,8 +1834,8 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_VERBOSE, "Not enough points, skipping faa regression\n");
 					continue;
 				}
-				if (m == 0) GMT_Report (API, GMT_MSG_VERBOSE, "Comparing reported with recomputed (gobs - IGF80) faa using RLS regression\n");
-				else GMT_Report (API, GMT_MSG_VERBOSE, "Comparing reported with recomputed (gobs - IGF80 + eot) faa using RLS regression\n");
+				if (m == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Comparing reported with recomputed (gobs - IGF80) faa using RLS regression\n");
+				else GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Comparing reported with recomputed (gobs - IGF80 + eot) faa using RLS regression\n");
 				if (!decimateData && forced) {
 					regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_FAA);
 					decimated = false;
@@ -1846,7 +1846,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_FAA].minValue, mgd77snifferdefs[MGD77_FAA].maxValue,\
 					mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					if ((1.0*extreme)/n > .05) { /* Many outliers - decimate again */
-						GMT_Report (API, GMT_MSG_NORMAL, "%s (faa) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id);
+						GMT_Report (API, GMT_MSG_VERBOSE, "%s (faa) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id);
 						npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_FAA].binmin, mgd77snifferdefs[MGD77_FAA].binmax,\
 						mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					}
@@ -1963,7 +1963,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_FAA].minValue, mgd77snifferdefs[MGD77_FAA].maxValue,\
 					mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					if ((1.0*extreme)/n > .05) { /* Many outliers - decimate again */
-						GMT_Report (API, GMT_MSG_NORMAL, "%s (faa) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id);
+						GMT_Report (API, GMT_MSG_VERBOSE, "%s (faa) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id);
 						npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_FAA].binmin, mgd77snifferdefs[MGD77_FAA].binmax,\
 						mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					}
@@ -1976,7 +1976,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					for (k=0; k<MGD77_N_STATS; k++) stats2[k] = stats[k];
 					grav_formula = (int)m;
 				}
-				GMT_Report (API, GMT_MSG_VERBOSE, "Regression statistics for gravity formula (%d) test (m: %.3f b: %.3f rms: %.3f r: %.6f sig: %d dec: %d)\n",m,stats[MGD77_RLS_SLOPE],\
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Regression statistics for gravity formula (%d) test (m: %.3f b: %.3f rms: %.3f r: %.6f sig: %d dec: %d)\n",m,stats[MGD77_RLS_SLOPE],\
 					stats[MGD77_RLS_ICEPT],stats[MGD77_RLS_RMS],stats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 			}
 			for (k=0; k<MGD77_N_STATS; k++) sprintf (fstats[k],GMT->current.setting.format_float_out,stats2[k]);
@@ -2074,7 +2074,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				n++;
 			}
 			if (n > 0) { /* must have time records for mag recalculation */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Comparing reported and recomputed mag using RLS regression\n");
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Comparing reported and recomputed mag using RLS regression\n");
 				if (!decimateData && forced) {
 					regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_MAG);
 					decimated = false;
@@ -2085,7 +2085,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					npts = decimate (GMT, new_anom, old_anom, n, mgd77snifferdefs[MGD77_MAG].minValue, mgd77snifferdefs[MGD77_MAG].maxValue,\
 					mgd77snifferdefs[MGD77_MAG].delta, &decimated_new, &decimated_orig, &extreme, "nmag");
 					if ((1.0*extreme)/n > .05) { /* Many outliers - decimate again */
-						GMT_Report (API, GMT_MSG_NORMAL, "%s (mag) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id);
+						GMT_Report (API, GMT_MSG_VERBOSE, "%s (mag) warning: > 5%% of records outside normal data range - using max bounds for regression\n",M.NGDC_id);
 						npts = decimate (GMT,new_anom, old_anom, n, mgd77snifferdefs[MGD77_MAG].binmin, mgd77snifferdefs[MGD77_MAG].binmax,\
 						mgd77snifferdefs[MGD77_MAG].delta, &decimated_new, &decimated_orig, &extreme, "nmag");
 					}
@@ -2210,7 +2210,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		}
 
 		/* CHECK SANITY ALONG-TRACK */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Checking for along-track errors\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Checking for along-track errors\n");
 		lastLat = D[0].number[MGD77_LATITUDE];
 		lastLon = D[0].number[MGD77_LONGITUDE];
 		ds = distance[0] = 0.0;
@@ -2832,7 +2832,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 		/* OUTPUT E77 ERROR FORMAT */
 		if (!strcmp(display,"E77")) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Generating errata table %s.e77\n",M.NGDC_id);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Generating errata table %s.e77\n",M.NGDC_id);
 			/* Echo out the user-specified invalid data records */
 			for (i = 0; i < n_bad_sections; i++) {
 				fprintf (fpout, "%c-%c-%s-%s-%.02d: Invalid data records: [%d-%d]\n",E77_APPLY,E77_ERROR,M.NGDC_id,\

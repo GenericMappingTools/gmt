@@ -263,7 +263,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 			/* Supplemental parameters */
 			case 'C':	/* Now done automatically in spotter_init */
 				if (gmt_M_compat_check (GMT, 4))
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -529,7 +529,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 		z_smt = in[GMT_Z];
 		r_smt = in[3];
 
-		if (!(smt % 10)) GMT_Report (API, GMT_MSG_VERBOSE, "Working on seamount # %5d\r", smt);
+		if (!(smt % 10)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on seamount # %5d\r", smt);
 
 		if (spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, n_stages, Ctrl->D.value, 0.0, 1, NULL, &c) <= 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_forthtrack - aborting\n");
@@ -682,7 +682,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Working on seamount # %5d\n", smt);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on seamount # %5d\n", smt);
 
 	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, hotspot);

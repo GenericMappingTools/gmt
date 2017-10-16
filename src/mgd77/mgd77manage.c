@@ -385,7 +385,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 									Ctrl->A.e77_skip_mode[E77_SLOPES_MODE] = true;
 									break;
 								default:
-									GMT_Report (API, GMT_MSG_NORMAL, "Error: -Ae modifiers must be combination of hfnvs\n");
+									GMT_Report (API, GMT_MSG_NORMAL, "-Ae modifiers must be combination of hfnvs\n");
 									n_errors++;
 									break;
 							}
@@ -411,7 +411,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 						n_errors += decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: -A modifier must be a|c|d|D|e|g|i|n|t|T\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "-A modifier must be a|c|d|D|e|g|i|n|t|T\n");
 						n_errors++;
 						break;
 				}
@@ -564,13 +564,13 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	n_paths = MGD77_Path_Expand (GMT, &In, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths <= 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "No cruises given\n");
 		MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 		Return (GMT_NO_INPUT);
 	}
 
 	if (got_table && n_paths != 1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: With -Aa|d|D|n|t|T you can only select one cruise at the time.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "With -Aa|d|D|n|t|T you can only select one cruise at the time.\n");
 		MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 		Return (GMT_PARSE_ERROR);
 	}
@@ -600,7 +600,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			MTF_col = mfield;
 		}
 		else {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: -Ac expects m, c, or g[1-4]\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "-Ac expects m, c, or g[1-4]\n");
 			MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 			Return (GMT_PARSE_ERROR);
 		}
@@ -754,7 +754,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	
 		if (MGD77_Open_File (GMT, list[argno], &In, MGD77_READ_MODE)) continue;
 				
-		GMT_Report (API, GMT_MSG_VERBOSE, "Now processing cruise %s\n", list[argno]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Now processing cruise %s\n", list[argno]);
 		
 		D = MGD77_Create_Dataset (GMT);
 		In.n_out_columns = 0;
@@ -894,7 +894,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				colvalue[rec] = (MGD77_igrf10syn (GMT, 0, date, 1, 0.0, xvar[rec], yvar[rec], IGRF)) ? GMT->session.d_NaN : IGRF[MGD77_IGRF_F];
 				n_sampled++;
 			}
-			GMT_Report (API, GMT_MSG_VERBOSE, "Estimated IGRF at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Estimated IGRF at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 		}
 		else if (c_kind == ADD_GRAV) {	/* Append IGF column */
 			int ix, iy, use;
@@ -907,7 +907,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				use = (In.original) ? MGD77_ORIG : MGD77_REVISED;
 				GF_version = D->H.mgd77[use]->Gravity_Theoretical_Formula_Code - '0';
 				if (GF_version < MGD77_IGF_HEISKANEN || GF_version > MGD77_IGF_1980) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Invalid Gravity Theoretical Formula Code (%c) - default to %d\n",
+					GMT_Report (API, GMT_MSG_VERBOSE, "Invalid Gravity Theoretical Formula Code (%c) - default to %d\n",
 					            D->H.mgd77[use]->Gravity_Theoretical_Formula_Code, MGD77_IGF_1980);
 					GF_version = MGD77_IGF_1980;
 				}
@@ -917,7 +917,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			colvalue = gmt_M_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (rec = 0; rec < D->H.n_records; rec++) colvalue[rec] = MGD77_Theoretical_Gravity (GMT, xvar[rec], yvar[rec], GF_version);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Estimated IGRF at %d locations out of %d for cruise %s\n",
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Estimated IGRF at %d locations out of %d for cruise %s\n",
 			            D->H.n_records, D->H.n_records, list[argno]);
 		}
 		else if (c_kind == ADD_CARTER) {	/* Append Carter correction column */
@@ -934,7 +934,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			colvalue = gmt_M_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (rec = 0; rec < D->H.n_records; rec++) colvalue[rec] = MGD77_carter_correction (GMT, xvar[rec], yvar[rec], 1000.0 * tvar[rec], &Carter);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Estimated IGRF at %d locations out of %d for cruise %s\n", D->H.n_records, D->H.n_records, list[argno]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Estimated IGRF at %d locations out of %d for cruise %s\n", D->H.n_records, D->H.n_records, list[argno]);
 		}
 		else if (c_kind == ADD_RMAG) {	/* Append recomputed residual mag column */
 			int ix, iy, it, im;
@@ -959,7 +959,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				colvalue[rec] = (check) ? GMT->session.d_NaN : mvar[rec] - IGRF[MGD77_IGRF_F];
 				n_sampled++;
 			}
-			GMT_Report (API, GMT_MSG_VERBOSE, "Estimated recomputed magnetic anomaly at %d locations out of %d for cruise %s\n",
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Estimated recomputed magnetic anomaly at %d locations out of %d for cruise %s\n",
 			            n_sampled, D->H.n_records, list[argno]);
 		}
 		else if (got_grid) {	/* Sample grid along track (or Mercator-projected) track */
@@ -1002,7 +1002,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				}
 				n_sampled++;
 			}
-			GMT_Report (API, GMT_MSG_VERBOSE, "Sampled grid at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Sampled grid at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 		}
 		else if (Ctrl->A.mode == MODE_a) {	/* Just got a single column to paste in, assuming the row numbers match */
 			if (n != D->H.n_records) {
@@ -1010,7 +1010,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				            n, D->H.n_records, list[argno]);
 				GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 			}
-			GMT_Report (API, GMT_MSG_VERBOSE, "Appended column data for all %d records for cruise %s\n", D->H.n_records, list[argno]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Appended column data for all %d records for cruise %s\n", D->H.n_records, list[argno]);
 		}
 		else if (Ctrl->A.mode == MODE_d || Ctrl->A.mode == MODE_n || Ctrl->A.mode == MODE_t) {	/* Got either (time,data) or (dist,data) */
 			int ix, iy, it;
@@ -1052,14 +1052,14 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 					}
 				}
 				gmt_M_free (GMT, tmp_string);
-				GMT_Report (API, GMT_MSG_VERBOSE, "Appended column data for %d locations out of %d for cruise %s\n",
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Appended column data for %d locations out of %d for cruise %s\n",
 				            n_sampled, D->H.n_records, list[argno]);
 			}
 			else if (strings) {	/* One to one match */
 				text = gmt_M_memory (GMT, NULL, D->H.n_records * LEN_size, char);
 				for (rec = 0; rec < n; rec++) strncpy (&text[rec*LEN_size], tmp_string[rec], LEN_size);
 				gmt_M_free (GMT, tmp_string);
-				GMT_Report (API, GMT_MSG_VERBOSE, "Appended column data for %d locations out of %d for cruise %s\n",
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Appended column data for %d locations out of %d for cruise %s\n",
 				            n_sampled, D->H.n_records, list[argno]);
 			}
 			else {	/* Only update the exact matching records */
@@ -1074,7 +1074,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 					}
 				}
 				gmt_M_memcpy (colvalue, y, D->H.n_records, double);
-				GMT_Report (API, GMT_MSG_VERBOSE, "Appended column data for %d locations out of %d for cruise %s\n",
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Appended column data for %d locations out of %d for cruise %s\n",
 				            n_sampled, D->H.n_records, list[argno]);
 				gmt_M_free (GMT, y);
 			}
@@ -1108,7 +1108,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			if ((fp_e = gmt_fopen (GMT, efile, "r")) == NULL) {	/* Not in current directory, try MGD77_HOME/E77 */
 				sprintf (efile, "%s/E77/%s.e77", In.MGD77_HOME, list[argno]);
 				if ((fp_e = gmt_fopen (GMT, efile, "r")) == NULL) {	/* Not here either */
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: The file %s.e77 could not be found in current directory or in MGD77_HOME/E77 - skipped\n", list[argno]);
+					GMT_Report (API, GMT_MSG_NORMAL, "The file %s.e77 could not be found in current directory or in MGD77_HOME/E77 - skipped\n", list[argno]);
 					MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 					continue;
 				}
@@ -1120,12 +1120,12 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			 
 			P = D->H.mgd77[MGD77_ORIG];	/* Because E77 is absolute and not incremental we start from original settings */
 			if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not read record #1 from %s.e77 - aborting\n", list[argno]);
+				GMT_Report (API, GMT_MSG_NORMAL, "Could not read record #1 from %s.e77 - aborting\n", list[argno]);
 				e_error++;
 			}
 			sscanf (&line[1], "%*s %s %*s %*s %*s %*s %*s %s %*s %" SCNu64, ID, date, &n_recs);
 			if (strcmp (In.NGDC_id, ID)) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: E77 Conflict %s : ID = %s versus %s - aborting\n", efile, ID, In.NGDC_id);
+				GMT_Report (API, GMT_MSG_NORMAL, "E77 Conflict %s : ID = %s versus %s - aborting\n", efile, ID, In.NGDC_id);
 				e_error++;
 			}
 			/* Make sure the File creation dates from the data file and the E77 match */
@@ -1136,12 +1136,12 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			year = atoi (date);
 			
 			if (!(year == atoi (P->File_Creation_Year) && month == atoi (P->File_Creation_Month) && day == atoi (P->File_Creation_Day))) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: E77 Conflict %s: File Creation Date: %s versus %s%s%s - aborting\n", efile, date,
+				GMT_Report (API, GMT_MSG_NORMAL, "E77 Conflict %s: File Creation Date: %s versus %s%s%s - aborting\n", efile, date,
 					P->File_Creation_Year, P->File_Creation_Month, P->File_Creation_Day);
 				e_error++;
 			}
 			if (n_recs != D->H.n_records) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: E77 Conflict %s: n_recs = %d versus %d = aborting\n", efile, n_recs, D->H.n_records);
+				GMT_Report (API, GMT_MSG_NORMAL, "E77 Conflict %s: n_recs = %d versus %d = aborting\n", efile, n_recs, D->H.n_records);
 				e_error++;
 			}
 			verified = false;
@@ -1151,12 +1151,12 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				if (!strncmp (line, "Y Errata table verification status", 34U)) verified = true;
 			}
 			if (!verified && !Ctrl->A.ignore_verify) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: E77 file %s not yet verified.  E77 not applied\n", efile);
+				GMT_Report (API, GMT_MSG_NORMAL, "E77 file %s not yet verified.  E77 not applied\n", efile);
 				e_error++;
 			}
 			
 			if (e_error) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: The file %s has too many errors.  E77 not applied\n", efile);
+				GMT_Report (API, GMT_MSG_NORMAL, "The file %s has too many errors.  E77 not applied\n", efile);
 				MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 				continue;
 			}
@@ -1179,19 +1179,19 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				else				/* Data record */
 					sscanf (line, "%c %s %s %" SCNu64 " %s", &YorN, ID, timestamp, &rec, code);
 				if (strcmp (In.NGDC_id, ID)) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: E77 Conflict %s : ID = %s versus %s in header records!\n", efile, ID, In.NGDC_id);
+					GMT_Report (API, GMT_MSG_NORMAL, "E77 Conflict %s : ID = %s versus %s in header records!\n", efile, ID, In.NGDC_id);
 					e_error++;
 				}
 			}
 			
 			if (e_error) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: The file %s has too many errors.  E77 not applied\n", efile);
+				GMT_Report (API, GMT_MSG_NORMAL, "The file %s has too many errors.  E77 not applied\n", efile);
 				gmt_fclose (GMT, fp_e);
 				MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 				continue;
 			}
 			if (n_unprocessed) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: The file %s has unprocessed E77 recommendations.  E77 not applied\n", efile);
+				GMT_Report (API, GMT_MSG_NORMAL, "The file %s has unprocessed E77 recommendations.  E77 not applied\n", efile);
 				gmt_fclose (GMT, fp_e);
 				MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 				continue;
@@ -1216,7 +1216,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				*/
 				sscanf (line, "%c-%c-%[^-]-%[^-]-%d", &YorN, &kind, ID, field, &item);
 				if (strcmp (In.NGDC_id, ID)) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: E77 Conflict %s : ID = %s versus %s in header records - skipped\n", efile, ID, In.NGDC_id);
+					GMT_Report (API, GMT_MSG_NORMAL, "E77 Conflict %s : ID = %s versus %s in header records - skipped\n", efile, ID, In.NGDC_id);
 					e_error++;
 					continue;
 				}
@@ -1317,7 +1317,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 							case E77_HDR_FLAGRANGE:		/* Range of bad values - set flags to BAD  */
 								sscanf (answer, "%" SCNu64 "-%" SCNu64, &from, &to);
 								if (from < 1 || from > D->H.n_records || to < 1 || to > D->H.n_records || to < from) {
-									GMT_Report (API, GMT_MSG_NORMAL, "Error: Record range %s is invalid.  Correction skipped\n", answer);
+									GMT_Report (API, GMT_MSG_NORMAL, "Record range %s is invalid.  Correction skipped\n", answer);
 									break;
 								}
 								pattern = mgd77_set_bit (id);
@@ -1339,7 +1339,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {	/* Read until EOF */
 				sscanf (line, "%c %s %s %" SCNu64 " %s", &YorN, ID, timestamp, &rec, code);
 				if (strcmp (In.NGDC_id, ID)) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: E77 Conflict %s : ID = %s versus %s in data records - skipped\n", efile, ID, In.NGDC_id);
+					GMT_Report (API, GMT_MSG_NORMAL, "E77 Conflict %s : ID = %s versus %s in data records - skipped\n", efile, ID, In.NGDC_id);
 					e_error++;
 					continue;
 				}
@@ -1356,12 +1356,12 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 					}
 					else {	/* Must try to interpret the timestamp */
 						if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, timestamp, GMT_IS_ABSTIME, &rec_time), timestamp)) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Error: %s: E77 time stamp (%s) in wrong format? - skipped\n", ID, timestamp);
+							GMT_Report (API, GMT_MSG_NORMAL, "%s: E77 time stamp (%s) in wrong format? - skipped\n", ID, timestamp);
 							continue;
 						}
 						del_t = fabs (tvar[rec] - rec_time);
 						if (del_t > (0.06 + GMT_CONV8_LIMIT)) {	/* 0.06 is finest time step in MGD77 file so we allow that much slop */
-							GMT_Report (API, GMT_MSG_NORMAL, "Error: %s: E77 time stamp and record number do not match record time (del_t = %g s) - skipped\n", ID, del_t);
+							GMT_Report (API, GMT_MSG_NORMAL, "%s: E77 time stamp and record number do not match record time (del_t = %g s) - skipped\n", ID, del_t);
 							continue;
 						}
 					}
@@ -1612,18 +1612,18 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		MGD77_Close_File (GMT, &In);
 		MGD77_Free_Dataset (GMT, &D);
 		n_changed++;
-		GMT_Report (API, GMT_MSG_NORMAL, "Data column %s added to %s\n", Ctrl->I.c_abbrev, list[argno]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Data column %s added to %s\n", Ctrl->I.c_abbrev, list[argno]);
 	}
 
 	gmt_M_free (GMT, colvalue);
 	if (two_cols) gmt_M_free (GMT, coldnt);
 
 	if (Ctrl->D.active)
-		GMT_Report (API, GMT_MSG_VERBOSE, "Removed %d data columns from %d MGD77 files\n", n_delete, n_changed);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removed %d data columns from %d MGD77 files\n", n_delete, n_changed);
 	else if (Ctrl->A.mode == MODE_e)
-		GMT_Report (API, GMT_MSG_VERBOSE, "E77 corrections applied to %d MGD77 files\n", n_changed);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "E77 corrections applied to %d MGD77 files\n", n_changed);
 	else
-		GMT_Report (API, GMT_MSG_VERBOSE, "Sampled data for %d MGD77 files\n", n_changed);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Sampled data for %d MGD77 files\n", n_changed);
 	
 	MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 	MGD77_end (GMT, &In);

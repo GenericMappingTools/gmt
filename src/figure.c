@@ -82,7 +82,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 
 	if ((opt = options) == NULL) {	/* Gave no arguments */
 		if (GMT->parent->external) return GMT_NOERROR;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Required figure name not specified!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Required figure name not specified!\n");
 		return GMT_PARSE_ERROR;
 	}
 	

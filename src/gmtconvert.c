@@ -219,13 +219,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 							Ctrl->C.invert = true;	break;
 						case 'l':	/* Set fewest records required */
 						 	if ((value = atol (&p[1])) < 0)
-								GMT_Report (API, GMT_MSG_NORMAL, "Error: The -C+l modifier was given negative record count!\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "The -C+l modifier was given negative record count!\n");
 							else
 								Ctrl->C.min = (uint64_t)value;
 							break;
 						case 'u':	/* Set max records required */
 					 		if ((value = atol (&p[1])) < 0)
-								GMT_Report (API, GMT_MSG_NORMAL, "Error: The -C+u modifier was given negative record count!\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "The -C+u modifier was given negative record count!\n");
 							else
 								Ctrl->C.max = (uint64_t)value;
 							break;
@@ -266,7 +266,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				if (opt->arg[0] == '\0') {	/* No arguments, must be old GMT4 option -F */
 					if (gmt_M_compat_check (GMT, 4)) {
 						GMT_Report (API, GMT_MSG_COMPAT,
-						            "Warning: Option -F for output columns is deprecated; use -o instead\n");
+						            "Option -F for output columns is deprecated; use -o instead\n");
 						gmt_parse_o_option (GMT, opt->arg);
 					}
 					else
@@ -285,7 +285,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 						case 'r': Ctrl->I.mode |= INV_ROWS; break;	/* Reverse record order */
 						default:
 							GMT_Report (API, GMT_MSG_NORMAL,
-							            "Error: The -I option does not recognize modifier %c\n", (int)opt->arg[k]);
+							            "The -I option does not recognize modifier %c\n", (int)opt->arg[k]);
 							n_errors++;
 							break;
 					}
@@ -434,7 +434,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	}
 
 	if (D[GMT_IN]->n_records == 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No data records provided\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "No data records provided\n");
 		Return (GMT_NOERROR);
 	}
 	if (GMT->common.a.active && D[GMT_IN]->n_tables > 1) {

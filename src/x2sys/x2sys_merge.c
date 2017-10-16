@@ -159,12 +159,12 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the x2sys_merge main code ----------------------------*/
 
 	if ((fp_base = fopen (Ctrl->A.file, "r")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open crossover file %s\n", Ctrl->A.file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open crossover file %s\n", Ctrl->A.file);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 
 	if ((fp_merge = fopen (Ctrl->M.file, "r")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open crossover file %s\n", Ctrl->M.file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open crossover file %s\n", Ctrl->M.file);
 		fclose (fp_base);
 		Return (GMT_ERROR_ON_FOPEN);
 	}

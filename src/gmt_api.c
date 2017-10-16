@@ -853,7 +853,7 @@ int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	API->error = GMT_NOERROR;
-	GMT_Report (API, GMT_MSG_VERBOSE, "Read %s from %s and write to %s\n", GMT_family[family], ifile, ofile);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %s from %s and write to %s\n", GMT_family[family], ifile, ofile);
 	GMT = API->GMT;
 
 	switch (family) {
@@ -904,11 +904,11 @@ int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 				return (API->error);
 			break;
 		case GMT_IS_COORD:
-			GMT_Report (API, GMT_MSG_VERBOSE, "No external read or write support yet for object %s\n", GMT_family[family]);
+			GMT_Report (API, GMT_MSG_NORMAL, "No external read or write support yet for object %s\n", GMT_family[family]);
 			return_error(API, GMT_NOT_A_VALID_FAMILY);
 			break;
 		default:
-			GMT_Report (API, GMT_MSG_VERBOSE, "Internal error, family = %d\n", family);
+			GMT_Report (API, GMT_MSG_NORMAL, "Internal error, family = %d\n", family);
 			return_error(API, GMT_NOT_A_VALID_FAMILY);
 			break;
 	}
@@ -1121,7 +1121,7 @@ GMT_LOCAL int api_key_to_family (void *API, char *key, int *family, int *geometr
 			*geometry = GMT_IS_NONE;
 			break;
 		default:
-			GMT_Report (API, GMT_MSG_NORMAL, "api_key_to_family: INTERNAL ERROR: key family (%c) not recognized\n", key[K_FAMILY]);
+			GMT_Report (API, GMT_MSG_NORMAL, "api_key_to_family: Key family (%c) not recognized\n", key[K_FAMILY]);
 			return GMT_NOTSET;
 			break;
 	}
@@ -1180,7 +1180,7 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 	while ((next = strsep (&tmp, ",")) != NULL) {	/* Get each comma-separated key */
 		if (strlen (next) < 3) {
 			GMT_Report (API, GMT_MSG_NORMAL,
-			            "api_process_keys: INTERNAL ERROR: key %s contains less than 3 characters\n", next);
+			            "api_process_keys: Key %s contains less than 3 characters\n", next);
 			continue;
 		}
 		if (strchr (next, '!')) {	/* Type did not get determined in GMT_Encode_Options so key is skipped */
@@ -1197,7 +1197,7 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 		if (next[K_DIR] == API_PRIMARY_OUTPUT) {	/* Identified primary output key */
 			if (o_id >= 0)	/* Already had a primary output key */
 				GMT_Report (API, GMT_MSG_NORMAL,
-				            "api_process_keys: INTERNAL ERROR: keys %s contain more than one primary output key\n", tmp);
+				            "api_process_keys: Keys %s contain more than one primary output key\n", tmp);
 			else
 				o_id = (int)k;
 		}
@@ -1211,7 +1211,7 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 			if ((opt = GMT_Find_Option (API, s[k][K_FAMILY], head))) {	/* A -Y<type> option was passed to the module */
 				type = (char)toupper (opt->arg[0]);	/* Find type and replace any ? in keys with this type in uppercase (DGCITP) in api_process_keys below */
 				if (!strchr ("DGCITP", type)) {
-					GMT_Report (API, GMT_MSG_NORMAL, "api_process_keys: INTERNAL ERROR: No or bad data type given to read|write (%c)\n", type);
+					GMT_Report (API, GMT_MSG_NORMAL, "api_process_keys: No or bad data type given to read|write (%c)\n", type);
 					return_null (NULL, GMT_NOT_A_VALID_TYPE);	/* Unknown type */
 				}
 				if (type == 'P') type = 'X';	/* We use X for PostScript internally since P may stand for polygon... */
@@ -1222,7 +1222,7 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 			}
 			else
 				GMT_Report (API, GMT_MSG_NORMAL,
-				            "api_process_keys: INTERNAL ERROR: Required runtime type-getting option (-%c) was not given\n", s[k][K_FAMILY]);
+				            "api_process_keys: Required runtime type-getting option (-%c) was not given\n", s[k][K_FAMILY]);
 			gmt_M_str_free (s[k]);		/* Free the inactive key that has now served its purpose */
 		}
 		else if (s[k][K_FAMILY] == '-') {	/* Key letter Y missing: Means that -X, if given, changes primary input|output set by -Z to secondary (i.e., not required) */
@@ -1251,7 +1251,7 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 				char modifier[3] = {'+', '?', 0};	/* We will replace ? with an actual modifier */
 				size_t this_k;
 				if (o_id == GMT_NOTSET)
-					GMT_Report (API, GMT_MSG_NORMAL, "api_process_keys: INTERNAL ERROR: No primary output identified but magic Z key present\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "api_process_keys: No primary output identified but magic Z key present\n");
 				/* Check if modifier(s) were given also and that one of them were selected */
 				if (strlen (s[k]) > 3) {	/* Not enough to just find option, must examine the modifiers */
 					/* Full syntax: XYZ+abc...-def...: We do the substitution of output type to Y only if
@@ -1331,7 +1331,7 @@ GMT_LOCAL int api_get_key (void *API, char option, char *keys[], int n_keys) {
 	/* Returns the position in the keys array that matches this option, or GMT_NOTSET if not found */
 	int k;
 	if (n_keys && keys == NULL)
-		GMT_Report (API, GMT_MSG_NORMAL, "api_get_key: INTERNAL ERROR: keys array is NULL but n_keys = %d\n", n_keys);
+		GMT_Report (API, GMT_MSG_NORMAL, "api_get_key: Keys array is NULL but n_keys = %d\n", n_keys);
 	for (k = 0; keys && k < n_keys; k++) if (keys[k][K_OPT] == option) return (k);
 	return (GMT_NOTSET);
 }
@@ -1416,7 +1416,7 @@ GMT_LOCAL int api_begin_io (struct GMTAPI_CTRL *API, unsigned int direction) {
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
 	API->error = GMT_NOERROR;
 	if (!API->registered[direction])
-		GMT_Report (API, GMT_MSG_DEBUG, "api_begin_io: Warning: No %s resources registered\n", GMT_direction[direction]);
+		GMT_Report (API, GMT_MSG_DEBUG, "api_begin_io: No %s resources registered\n", GMT_direction[direction]);
 	/* Passed basic sanity checks */
 	GMT = API->GMT;
 	API->io_mode[direction] = GMTAPI_BY_SET;
@@ -7095,7 +7095,7 @@ int GMT_Set_Geometry (void *V_API, unsigned int direction, unsigned int geometry
 			if (S_obj->family == GMT_IS_DATASET) {
 				struct GMT_DATASET *D_obj = S_obj->resource;
 				if (!D_obj)	/* Not allocated yet?*/
-					GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: Warning: GMT_Set_Geometry called but no object available\n");
+					GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: GMT_Set_Geometry called but no object available\n");
 				else
 					D_obj->geometry = geometry;
 			}
@@ -7509,7 +7509,7 @@ GMT_LOCAL int api_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode
 			if (gmt_skip_output (GMT, record->data, T->n_columns))	/* Record was skipped via -s[a|r] */
 				break;
 			if (count[GMT_SEG] == -1) {	/* Most likely a file with one segment but no segment header */
-				GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: Internal Warning: GMT_Put_Record (double) called before any segments declared\n");
+				GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: GMT_Put_Record (double) called before any segments declared\n");
 				count[GMT_SEG] = 0;
 			}
 			gmt_prep_tmp_arrays (GMT, count[GMT_ROW], T->n_columns);	/* Init or reallocate tmp read vectors */
@@ -7817,7 +7817,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	if (!multiple_files_ok (family)) return_error (V_API, GMT_NOT_A_VALID_IO_ACCESS);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;	/* Reset in case it has some previous error */
-	if (!API->registered[direction]) GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: Warning: No %s resources registered\n", GMT_direction[direction]);
+	if (!API->registered[direction]) GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: No %s resources registered\n", GMT_direction[direction]);
 
 	GMT = API->GMT;
 	/* Must initialize record-by-record machinery for dataset */
@@ -8816,7 +8816,7 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER * api_fft_init_1d (struct GMTAPI_CTRL *API, 
 	/* Determine number of columns in [t] x [y] input */
 	if (mode & GMT_FFT_CROSS_SPEC) n_cols++;
 	if (Din->n_columns < n_cols) {
-		GMT_report (API, GMT_MSG_NORMAL, "Error: 2 columns needed but only 1 provided\n");
+		GMT_report (API, GMT_MSG_NORMAL, "2 columns needed but only 1 provided\n");
 		return NULL;
 	}
 	cross = (n_cols == 2);
@@ -9003,7 +9003,7 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, s
 	F = gmt_M_memory (GMT, NULL, 1, struct GMT_FFT_INFO);
 	if (F_in) {	/* User specified -N so default settings should take effect */
 		gmt_M_memcpy (F, F_in, 1, struct GMT_FFT_INFO);
-		if (F->K) GMT_Report (API, GMT_MSG_DEBUG, "Warning: F->K already set; investigate.\n");
+		if (F->K) GMT_Report (API, GMT_MSG_DEBUG, "F->K already set; investigate.\n");
 	}
 	if (!F->set || F->info_mode == GMT_FFT_UNSPECIFIED) {	/* User is accepting the default values of extend via edge-point symmetry over 100% of margin */
 		F->info_mode = GMT_FFT_EXTEND_POINT_SYMMETRY;
@@ -9015,7 +9015,7 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, s
 	/* Get dimensions as may be appropriate */
 	if (F->info_mode == GMT_FFT_SET) {	/* User specified the n_columns/n_rows dimensions */
 		if (F->n_columns < G->header->n_columns || F->n_rows < G->header->n_rows) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: You specified a FFT n_columns/n_rows smaller than input grid.  Ignored.\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "You specified a FFT n_columns/n_rows smaller than input grid.  Ignored.\n");
 			F->info_mode = GMT_FFT_EXTEND;
 		}
 	}
@@ -9049,7 +9049,7 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, s
 	/* Get here when F->n_columns and F->n_rows are set to the values we will use.  */
 
 	gmtfft_fourt_stats (GMT, F->n_columns, F->n_rows, factors, &edummy, &worksize, &tdummy);
-	GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions (n_rows by n_columns): %d x %d\tFFT dimensions: %d x %d\n", G->header->n_rows, G->header->n_columns, F->n_rows, F->n_columns);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Grid dimensions (n_rows by n_columns): %d x %d\tFFT dimensions: %d x %d\n", G->header->n_rows, G->header->n_columns, F->n_rows, F->n_columns);
 
 	/* Put the data in the middle of the padded array */
 
@@ -9081,8 +9081,8 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, s
 			/* Because of no realloc for aligned memory we must do it the hard way */
 			gmt_grdfloat *f = NULL;
 			size_t new_size = 2*G->header->size;
-			GMT_Report (API, GMT_MSG_VERBOSE, "Must double memory and multiplex external grid before we can do FFT!\n", G->header->name);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Extend grid via copy onto larger memory-aligned grid\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Must double memory and multiplex external grid before we can do FFT\n", G->header->name);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Extend grid via copy onto larger memory-aligned grid\n");
 			f = gmt_M_memory_aligned (GMT, NULL, new_size, gmt_grdfloat);	/* New, larger grid size */
 			gmt_M_memcpy (f, G->data, G->header->size, gmt_grdfloat);	/* Copy over previous grid values */
 			gmt_M_free_aligned (GMT, G->data);			/* Free previous aligned grid memory */
@@ -9231,7 +9231,7 @@ GMT_LOCAL void fft_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, 
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, file, Grid) != GMT_NOERROR)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Intermediate detrended, extended, and tapered grid could not be written to %s\n", file);
 	else
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Intermediate detrended, extended, and tapered grid written to %s\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Intermediate detrended, extended, and tapered grid written to %s\n", file);
 
 	gmt_M_memcpy (Grid->header, &save, 1U, struct GMT_GRID_HEADER);	/* Restore original, including the original pad */
 	gmt_M_memcpy (GMT->current.io.pad, pad, 4U, unsigned int);	/* Restore GMT default pad */
@@ -9255,10 +9255,10 @@ GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struc
 
 	mode = (F->polar) ? 1 : 0;
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Write components of complex raw spectrum with file suffix %s and %s\n", suffix[mode][0], suffix[mode][1]);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Write components of complex raw spectrum with file suffix %s and %s\n", suffix[mode][0], suffix[mode][1]);
 
 	if (G->header->arrangement == GMT_GRID_IS_SERIAL) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cannot save complex grid unless it is interleaved.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot save complex grid unless it is interleaved.\n");
 		return;
 	}
 	/* Prepare wavenumber domain limits and increments */
@@ -9548,7 +9548,7 @@ GMT_LOCAL const char * api_get_moduleinfo (void *V_API, char *module) {
 		}
 	}
 	/* Not in any of the shared libraries */
-	GMT_Report (API, GMT_MSG_VERBOSE, "Shared GMT module not found: %s \n", module);
+	GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: %s \n", module);
 	return_null (V_API, GMT_NOT_A_VALID_MODULE);
 }
 
@@ -9838,7 +9838,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 				direction = GMT_IN;
 			}
 			else if (k == GMT_NOTSET) {	/* Found questionmark but no corresponding key found? */
-				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Error: Got a -<option>? argument but not listed in keys\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Got a -<option>? argument but not listed in keys\n");
 				direction = GMT_IN;	/* Have to assume it is an input file if not specified */
 			}
 			info[n_items].mode = (k >= 0 && api_is_required_IO (key[k][K_DIR])) ? K_PRIMARY : K_SECONDARY;
@@ -10372,7 +10372,7 @@ int GMT_Handle_Messages (void *V_API, unsigned int mode, unsigned int method, vo
 			switch (method) {
 				case GMT_IS_FILE:
 					if ((fp = fopen (dest, "w")) == NULL) {
-						GMT_Report (API, GMT_MSG_DEBUG, "Unable to open error log file %s\n", dest);
+						GMT_Report (API, GMT_MSG_NORMAL, "Unable to open error log file %s\n", dest);
 						return_error (API, GMT_ERROR_ON_FOPEN);
 					}
 					break;
@@ -10897,7 +10897,7 @@ GMT_LOCAL void *api_matrix2dataset (struct GMTAPI_CTRL *API, struct GMT_MATRIX *
 	struct GMT_DATASEGMENT *SD = NULL;
 	GMT_getfunction api_get_val = NULL;
 	p_func_uint64_t GMT_2D_to_index = NULL;
-	if (header) GMT_Report (API, GMT_MSG_NORMAL, "api_matrix2dataset: Header stripping not implemented yet - ignored!\n");
+	if (header) GMT_Report (API, GMT_MSG_VERBOSE, "api_matrix2dataset: Header stripping not implemented yet - ignored!\n");
 	if (alloc && (Out = gmtlib_create_dataset (GMT, 1U, 1U, In->n_rows, In->n_columns, GMT_IS_POINT, mode, true)) == NULL)
 		return_null (API, GMT_MEMORY_ERROR);
 	SD = Out->table[0]->segment[0];	/* Shorthand to only segment in the dataset */
@@ -10926,7 +10926,7 @@ GMT_LOCAL void *api_matrix2vector (struct GMTAPI_CTRL *API, struct GMT_MATRIX *I
 	GMT_getfunction api_get_val_m = NULL;
 	GMT_putfunction api_put_val_v = NULL;
 	p_func_uint64_t GMT_2D_to_index = NULL;
-	if (header) GMT_Report (API, GMT_MSG_NORMAL, "api_matrix2vector: Header stripping not implemented yet - ignored!\n");
+	if (header) GMT_Report (API, GMT_MSG_VERBOSE, "api_matrix2vector: Header stripping not implemented yet - ignored!\n");
 	if (alloc) {
 		if ((Out = gmt_create_vector (GMT, In->n_columns, GMT_OUT)) == NULL)
 			return_null (API, GMT_MEMORY_ERROR);
@@ -10965,7 +10965,7 @@ GMT_LOCAL void *api_vector2dataset (struct GMTAPI_CTRL *API, struct GMT_VECTOR *
 	struct GMT_CTRL *GMT = API->GMT;
 	struct GMT_DATASEGMENT *SD = NULL;
 	GMT_getfunction api_get_val;
-	if (header) GMT_Report (API, GMT_MSG_NORMAL, "api_vector2dataset: Header stripping not implemented yet - ignored!\n");
+	if (header) GMT_Report (API, GMT_MSG_VERBOSE, "api_vector2dataset: Header stripping not implemented yet - ignored!\n");
 	if (alloc && (Out = gmtlib_create_dataset (GMT, 1U, 1U, In->n_rows, In->n_columns, GMT_IS_POINT, mode, true)) == NULL)
 		return_null (API, GMT_MEMORY_ERROR);
 	SD = Out->table[0]->segment[0];	/* Shorthand to only segment in the dataset */
@@ -10994,7 +10994,7 @@ GMT_LOCAL void *api_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTOR *I
 	GMT_getfunction api_get_val = NULL;
 	GMT_putfunction api_put_val = NULL;
 	p_func_uint64_t GMT_2D_to_index = NULL;
-	if (header) GMT_Report (API, GMT_MSG_NORMAL, "api_vector2matrix: Header stripping not implemented yet - ignored!\n");
+	if (header) GMT_Report (API, GMT_MSG_VERBOSE, "api_vector2matrix: Header stripping not implemented yet - ignored!\n");
 	if (alloc) {
 		Out = gmtlib_create_matrix (GMT, 1U, GMT_OUT, 0);
 		Out->n_columns = In->n_columns;

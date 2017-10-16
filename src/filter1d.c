@@ -307,7 +307,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 				if (gmt_M_compat_check (GMT, 4)) {	/* GMT4 LEVEL */
 					if (strchr (opt->arg, '/')) { /* Gave obsolete format */
 						int sval0;
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "-N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
 						if (sscanf (opt->arg, "%d/%d", &sval0, &sval) != 2) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Syntax is -N<tcol>\n");
 							++n_errors;
@@ -473,7 +473,7 @@ GMT_LOCAL int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 		}
 	}
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "F width: %g Resolution: %g Start: %g Stop: %g\n", F->filter_width, F->dt, F->t_start, F->t_stop);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "F width: %g Resolution: %g Start: %g Stop: %g\n", F->filter_width, F->dt, F->t_start, F->t_stop);
 
 	return (0);
 }
@@ -846,7 +846,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	F.n_work_alloc = GMT_CHUNK;
 	F.equidist = true;
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
 	/* Register all data sources */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
@@ -918,7 +918,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 			}
 			gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
 			gmt_set_column (GMT, GMT_IN, GMT_X, save_col);	/* Reset this col type to whatever it actually is */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;
 	}
 	if (F.filter_type > FILTER1D_CONVOLVE) F.robust = false;
@@ -938,7 +938,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 
 	allocate_space (GMT, &F);	/* Gets column-specific flags and uint64_t space */
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Filter the data columns\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Filter the data columns\n");
 	
 	for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
 		for (seg = 0; seg < D->table[tbl]->n_segments; ++seg) {	/* For each segment */
@@ -971,7 +971,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " records from table %" PRIu64 ", segment %" PRIu64 "\n", F.n_rows, tbl, seg);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " records from table %" PRIu64 ", segment %" PRIu64 "\n", F.n_rows, tbl, seg);
 			
 			/* FILTER: Initialize scale parameters and last_loc based on min and max of data  */
 
@@ -996,7 +996,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 		Return (API->error, "Error in End_IO\n");
 	}
 
-	if (F.n_multiples > 0) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d multiple modes found\n", F.n_multiples);
+	if (F.n_multiples > 0) GMT_Report (API, GMT_MSG_VERBOSE, "%d multiple modes found\n", F.n_multiples);
 
 	free_space_filter1d (GMT, &F);
 

@@ -1719,7 +1719,7 @@ GMT_LOCAL bool gmtio_get_ymdj_order (struct GMT_CTRL *GMT, char *text, struct GM
 		if (S->mw_text && S->item_order[last-1] == 1) watch = true;	/* Input ends with monthname */
 	}
 	if (error) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unacceptable date template %s\n", text);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unacceptable date template %s\n", text);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 	return (watch);
@@ -1847,7 +1847,7 @@ GMT_LOCAL int gmtio_get_hms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 	S->n_sec_decimals = n_x;
 	S->f_sec_to_int = rint (pow (10.0, (double)S->n_sec_decimals));			/* To scale fractional seconds to an integer form */
 	if (error) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Unacceptable clock template %s\n", text);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unacceptable clock template %s\n", text);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 	return (GMT_NOERROR);
@@ -1975,11 +1975,11 @@ GMT_LOCAL int gmtio_get_dms_order (struct GMT_CTRL *GMT, char *text, struct GMT_
 	S->n_sec_decimals = n_x;
 	S->f_sec_to_int = rint (pow (10.0, (double)S->n_sec_decimals));			/* To scale fractional seconds to an integer form */
 	if (error) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Unacceptable dmmss template %s\n", text);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unacceptable dmmss template %s\n", text);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 	else if (n_period > 1)
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "WARNING: Multiple periods in dmmss template %s is likely to lead to confusion\n", text);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Multiple periods in dmmss template %s is likely to lead to confusion\n", text);
 	return (GMT_NOERROR);
 }
 
@@ -2642,7 +2642,7 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 		return (GMT->parent->error);	/* Make filename with embedded object ID */
 	}
 	sprintf (buffer, "-C -fg -<%s ->%s --GMT_HISTORY=false", in_string, out_string);
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Calling gmtinfo with args %s\n", buffer);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Calling gmtinfo with args %s\n", buffer);
 	if (GMT_Call_Module (GMT->parent, "gmtinfo", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Get the extent via gmtinfo */
 		return (GMT->parent->error);
 	}
@@ -3778,7 +3778,7 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
 			gmt_set_column (GMT, GMT_IN, i, GMT_IS_RELTIME);
 			gmt_M_memcpy (&time_system, &GMT->current.setting.time_system, 1, struct GMT_TIME_SYSTEM);
 			if (gmt_get_time_system (GMT, units, &time_system) || gmt_init_time_system_structure (GMT, &time_system))
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Time units [%s] in NetCDF file not recognised, defaulting to gmt.conf.\n",
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Time units [%s] in NetCDF file not recognised, defaulting to gmt.conf.\n",
 				            units);
 			/* Determine scale between data and internal time system, as well as the offset (in internal units) */
 			GMT->current.io.scale_factor[i] = GMT->current.io.scale_factor[i] * time_system.scale * GMT->current.setting.time_system.i_scale;
@@ -3824,7 +3824,7 @@ GMT_LOCAL int gmtio_load_aspatial_values (struct GMT_CTRL *GMT, struct GMT_OGR *
 	int id;
 	for (k = n = 0; k < GMT->common.a.n_aspatial; k++) {	/* For each item specified in -a */
 		if ((id = gmt_get_ogr_id (G, GMT->common.a.name[k])) == GMT_NOTSET) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: No aspatial value found for column %s\n", GMT->common.a.name[k]);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No aspatial value found for column %s\n", GMT->common.a.name[k]);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
 		switch (G->type[id]) {
@@ -4447,7 +4447,7 @@ int gmtlib_io_banner (struct GMT_CTRL *GMT, unsigned int direction) {
 			m_len += len;
 		}
 	}
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s %d columns via binary records using format %s\n",
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s %d columns via binary records using format %s\n",
 	            gmt_direction[direction], GMT->common.b.ncol[direction], message);
 	gmt_M_free (GMT, message);
 	return GMT_OK;
@@ -4531,7 +4531,7 @@ int gmt_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 	}
 	//if (direction == GMT_IN && expected && GMT->common.i.select && GMT->common.i.n_cols > expected)
 	if (direction == GMT_IN && expected && GMT->common.i.select && GMT->common.i.n_actual_cols > expected)
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Number of %s columns required [%" PRIu64 "] is less that implied by -i [%" PRIu64 "]\n",
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Number of %s columns required [%" PRIu64 "] is less that implied by -i [%" PRIu64 "]\n",
 		            mode[GMT_IN], expected, GMT->common.i.n_actual_cols);
 	return (GMT_OK);
 }
@@ -5218,7 +5218,7 @@ int gmtlib_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint6
 
 	if (n == 0) return -99;	/* Nothing given */
 	if (gmt_polygon_is_open (GMT, lon, lat, n)) {	/* Should not happen */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot call gmtlib_determine_pole on an open polygon\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot call gmtlib_determine_pole on an open polygon\n");
 		return -99;
 	}
 	for (row = 0; row < n - 1; row++) {	/* Add up angular increments between vertices */
@@ -6285,8 +6285,8 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 			/* True if we don't know but must try both geographic or float formats  */
 			type = gmtio_scanf_geo (s, val);
 			if ((type == GMT_IS_LON) && GMT->current.io.warn_geo_as_cartesion) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Longitude input data detected and successfully converted but will be considered Cartesian coordinates.\n");
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: If you need longitudes to be processed as periodic in 360 degrees then you must use -fg.\n");
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT: Longitude input data detected and successfully converted but will be considered Cartesian coordinates.\n");
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT: If you need longitudes to be processed as periodic in 360 degrees then you must use -fg.\n");
 				GMT->current.io.warn_geo_as_cartesion = false;	/* OK, done with the warning */
 			}
 			return (type);
@@ -6562,7 +6562,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 		/* Failure is OK since -Zjunk may appear in text strings - we then do nothing (hence no else clause) */
 	}
 
-	if (processed == 2) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: segment header has both -G and -Z options\n");	/* Giving both -G and -Z is a problem */
+	if (processed == 2) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Segment header has both -G and -Z options\n");	/* Giving both -G and -Z is a problem */
 
 	if (gmt_parse_segment_item (GMT, header, "-W", line)) {	/* Found a potential -W option */
 		test_pen = *def_pen;	/* Set test pen to the default, may be overruled later */
@@ -6610,7 +6610,7 @@ void gmt_extract_label (struct GMT_CTRL *GMT, char *line, char *label, struct GM
 			}
 			else {			/* Missing the matching quote */
 				sscanf (&line[i], "%s", label);
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Label (%s) not terminated by matching quote\n", label);
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Label (%s) not terminated by matching quote\n", label);
 			}
 		}
 	}
@@ -7215,7 +7215,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 	else
 		seg++;
 	if (check_geometry && poly && n_poly_seg != seg) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Table contains mix of polygons (%" PRIu64 ") and lines (%" PRIu64 ")\n",
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Table contains mix of polygons (%" PRIu64 ") and lines (%" PRIu64 ")\n",
 		            n_poly_seg, n_poly_seg - seg);
 	}
 	T->segment = gmt_M_memory (GMT, T->segment, seg, struct GMT_DATASEGMENT *);
@@ -7929,7 +7929,7 @@ double gmt_get_aspatial_value (struct GMT_CTRL *GMT, int col, struct GMT_DATASEG
 		V = (S && S->ogr) ? S->ogr->tvalue[id] : GMT->current.io.OGR->tvalue[id];	/* Either from table or from segment (multi) */
 		return (gmtio_convert_aspatial_value (GMT, GMT->current.io.OGR->type[id], V));
 	}
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: No aspatial value found for column %d [Return NaN]\n", col);
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No aspatial value found for column %d [Return NaN]\n", col);
 	return (GMT->session.d_NaN);
 }
 

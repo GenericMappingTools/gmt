@@ -211,7 +211,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 			case 'G':	/* Inside legend box fill [OBSOLETE] */
 				if (gmt_M_compat_check (GMT, 4)) {
 					char tmparg[GMT_LEN32] = {""};
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -F...+g%s was set instead, use this in the future.\n", opt->arg);
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -G is deprecated; -F...+g%s was set instead, use this in the future.\n", opt->arg);
 					Ctrl->F.active = true;
 					sprintf (tmparg, "+g%s", opt->arg);
 					if (gmt_getpanel (GMT, opt->option, tmparg, &(Ctrl->F.panel))) {
@@ -224,7 +224,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'L':			/* Sets linespacing in units of fontsize [1.1] */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -D...+l%s was set instead, use this in the future.\n", opt->arg);
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -L is deprecated; -D...+l%s was set instead, use this in the future.\n", opt->arg);
 				Ctrl->D.spacing = atof (opt->arg);
 				break;
 
@@ -411,7 +411,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	gmt_M_memset (S, N_DAT, struct GMT_DATASEGMENT *);
 	gmt_M_memset (krow, N_DAT, uint64_t);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input text table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input text table data\n");
 	if (gmt_M_compat_check (GMT, 4)) {
 		/* Since pslegend v4 used '>' to indicate a paragraph record we avoid confusion with multiple segment-headers by *
 		 * temporarily setting # as segment header flag since all headers are skipped anyway */
@@ -537,7 +537,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						while ((gmt_strtok (&line[2], " \t", &pos, p))) {
 							n_columns++;
 							if (n_columns == PSLEGEND_MAX_COLS) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error: Exceeding maximum columns (%d) in N operator\n", PSLEGEND_MAX_COLS);
+								GMT_Report (API, GMT_MSG_NORMAL, "Exceeding maximum columns (%d) in N operator\n", PSLEGEND_MAX_COLS);
 								Return (GMT_RUNTIME_ERROR);
 							}
 						}
@@ -549,9 +549,9 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 					case '>':	/* Paragraph text header */
 						if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
-							GMT_Report (API, GMT_MSG_COMPAT, "Warning: paragraph text header flag > is deprecated; use P instead\n");
+							GMT_Report (API, GMT_MSG_COMPAT, "Paragraph text header flag > is deprecated; use P instead\n");
 						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Error: Unrecognized record (%s)\n", line);
+							GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized record (%s)\n", line);
 							Return (GMT_RUNTIME_ERROR);
 							break;
 						}
@@ -582,7 +582,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						break;
 
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: Unrecognized record (%s)\n", line);
+						GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized record (%s)\n", line);
 						Return (GMT_RUNTIME_ERROR);
 					break;
 				}
@@ -608,7 +608,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 			GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	}
 	else
-		GMT_Report (API, GMT_MSG_VERBOSE, "Legend height given as %g %s; estimated height is %g %s.\n",
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Legend height given as %g %s; estimated height is %g %s.\n",
 		            scl*Ctrl->D.dim[GMT_Y], GMT->session.unit_name[GMT->current.setting.proj_length_unit],
 		            scl*height, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
@@ -622,7 +622,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
 		if (GMT->common.B.active[GMT_PRIMARY] || GMT->common.B.active[GMT_SECONDARY]) {	/* Cannot use -B if no -R -J */
 			GMT->common.B.active[GMT_PRIMARY] = GMT->common.B.active[GMT_SECONDARY] = false;
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Disabling your -B option since -R -J was not set\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Disabling your -B option since -R -J was not set\n");
 		}
 	}
 	else if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
@@ -736,7 +736,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 					case 'D':	/* Delimiter record: D [offset] <pen>|- [-|=|+] */
 						n_scan = sscanf (&line[2], "%s %s %s", txt_a, txt_b, txt_c);
 						if (n_scan < 1) {	/* Clearly a bad record */
-							GMT_Report (API, GMT_MSG_NORMAL, "Error: Not enough arguments given to D operator\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Not enough arguments given to D operator\n");
 							Return (GMT_RUNTIME_ERROR);
 						}
 						if (n_scan == 2) {	/* Either got D <offset> <pen OR D <pen> <flag> */
@@ -785,7 +785,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							if ((API->error = gmt_get_rgbtxt_from_z (GMT, P, p)) != 0) Return (GMT_RUNTIME_ERROR);	/* If given z=value then we look up colors */
 							if (strcmp (p, "-")) fill[n_col++] = strdup (p);
 							if (n_col > n_columns) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error: Exceeding specified N columns (%d) in F operator (%d)\n", n_columns, n_col);
+								GMT_Report (API, GMT_MSG_NORMAL, "Exceeding specified N columns (%d) in F operator (%d)\n", n_columns, n_col);
 								Return (GMT_RUNTIME_ERROR);
 							}
 						}
@@ -949,7 +949,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						else {	/* Must use -R -J as supplied to pslegend */
 							gmt_set_missing_options (GMT, "RJ");	/* If mode is modern, -R -J exist in the history, and if an overlay we may add these from history automatically */
 							if (!GMT->common.R.active[RSET] || !GMT->common.J.active) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error: The M record must have map -R -J if -Dx and no -R -J is used\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "The M record must have map -R -J if -Dx and no -R -J is used\n");
 								Return (GMT_RUNTIME_ERROR);
 							}
 							sprintf (buffer, "-R%s -J%s -O -K -L%s", GMT->common.R.string, GMT->common.J.string, mapscale);
@@ -975,7 +975,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						while ((gmt_strtok (&line[2], " \t", &pos, p))) {
 							col_width[n_columns++] = atof (p);
 							if (n_columns == PSLEGEND_MAX_COLS) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error: Exceeding maximum columns (%d) in N operator\n", PSLEGEND_MAX_COLS);
+								GMT_Report (API, GMT_MSG_NORMAL, "Exceeding maximum columns (%d) in N operator\n", PSLEGEND_MAX_COLS);
 								Return (GMT_RUNTIME_ERROR);
 							}
 						}
@@ -1000,11 +1000,11 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 					case '>':	/* Paragraph text header */
 						if (gmt_M_compat_check (GMT, 4)) {	/* Warn and fall through */
-							GMT_Report (API, GMT_MSG_COMPAT, "Warning: paragraph text header flag > is deprecated; use P instead\n");
+							GMT_Report (API, GMT_MSG_COMPAT, "Paragraph text header flag > is deprecated; use P instead\n");
 							n = sscanf (&line[1], "%s %s %s %s %s %s %s %s %s", xx, yy, size, angle, font, key, lspace, tw, jj);
 							if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
 							if (!(n == 0 || n == 9)) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error: The > record must have 0 or 9 arguments (only %d found)\n", n);
+								GMT_Report (API, GMT_MSG_NORMAL, "The > record must have 0 or 9 arguments (only %d found)\n", n);
 								Return (GMT_RUNTIME_ERROR);
 							}
 							if (n == 0 || size[0] == '-') sprintf (size, "%g", GMT->current.setting.font_annot[GMT_PRIMARY].size);
@@ -1013,7 +1013,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							did_old = true;
 						}
 						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Error: Unrecognized record (%s)\n", line);
+							GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized record (%s)\n", line);
 							Return (GMT_RUNTIME_ERROR);
 							break;
 						}
@@ -1022,7 +1022,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							n = sscanf (&line[1], "%s %s %s %s %s %s %s %s", xx, yy, tmp, angle, key, lspace, tw, jj);
 							if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
 							if (!(n == 0 || n == 8)) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error: The P record must have 0 or 8 arguments (only %d found)\n", n);
+								GMT_Report (API, GMT_MSG_NORMAL, "The P record must have 0 or 8 arguments (only %d found)\n", n);
 								Return (GMT_RUNTIME_ERROR);
 							}
 						}
@@ -1204,7 +1204,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								else if ((c = strchr (symbol, '+')) != NULL) {	/* GMT5 syntax: Pass along all the given modifiers */
 									strcpy (sub, symbol);
 									if ((c = strstr (sub, "+j")) != NULL && c[2] != 'c') {	/* Got justification, check if it is +jc */
-										GMT_Report (API, GMT_MSG_NORMAL, "Warning: Vector justification changed from +j%c to +jc\n", c[2]);
+										GMT_Report (API, GMT_MSG_NORMAL, "Vector justification changed from +j%c to +jc\n", c[2]);
 										c[2] = 'c';	/* Replace with centered justification */
 									}
 									else	/* Add +jc */
@@ -1380,7 +1380,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						break;
 
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: Unrecognized record (%s)\n", line);
+						GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized record (%s)\n", line);
 						Return (GMT_RUNTIME_ERROR);
 					break;
 				}
@@ -1513,7 +1513,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		}
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done\n");
 
 	Return (GMT_NOERROR);
 }

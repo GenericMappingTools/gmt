@@ -256,7 +256,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 		if (Ctrl->T.radius[j] > 0.0) Ctrl->T.n_terminators++;	
 
 	if (Ctrl->N.active && GMT->current.map.frame.init) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Option -B cannot be used in combination with Option -N. -B is ignored.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -B cannot be used in combination with Option -N. -B is ignored.\n");
 		GMT->current.map.frame.draw = false;
 	}
 	if (!Ctrl->I.active && !Ctrl->M.active) {	/* Allow plotting without specifying -R and/or -J */

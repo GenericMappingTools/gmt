@@ -421,7 +421,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	}
 
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Initialize %s\n", tag_file);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Initialize %s\n", tag_file);
 	if ((fp = x2sys_fopen (GMT, tag_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not create file %s\n", tag_file);
 		fclose (fp_def);	/* Close local def file */
@@ -448,7 +448,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 
 	/* Initialize the system's definition file  */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Initialize %s\n", def_file);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Initialize %s\n", def_file);
 	if ((fp = x2sys_fopen (GMT, def_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not create %s\n", def_file);
 		fclose (fp_def);	/* Close local def file */
@@ -460,7 +460,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 
 	/* Initialize the system's tracks data base  */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Initialize %s\n", track_file);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Initialize %s\n", track_file);
 	if ((fp = x2sys_fopen (GMT, track_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not create %s\n", track_file);
 		Return (GMT_ERROR_ON_FOPEN);
@@ -471,7 +471,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 
 	/* Initialize the system's index data base  */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Initialize %s\n", bin_file);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Initialize %s\n", bin_file);
 	if ((fp = x2sys_fopen (GMT, bin_file, "wb")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not create %s\n", bin_file);
 		Return (GMT_ERROR_ON_FOPEN);
@@ -480,7 +480,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 
 	/* Initialize the system's track path file  */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Initialize %s\n", path_file);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Initialize %s\n", path_file);
 	if ((fp = x2sys_fopen (GMT, path_file, "wb")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not create %s\n", path_file);
 		Return (GMT_ERROR_ON_FOPEN);
@@ -490,7 +490,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	fprintf (fp, "# Add full paths to search additional directories\n");
 	x2sys_err_fail (GMT, x2sys_fclose (GMT, path_file, fp), path_file);
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "completed successfully\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "completed successfully\n");
 
 	gmt_M_free (GMT, X2SYS_HOME);
 

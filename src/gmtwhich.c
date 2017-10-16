@@ -120,7 +120,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GM
 					case 'u': Ctrl->G.mode = GMT_DATA_DIR;		break;
 					case '\0': case 'l': Ctrl->G.mode = GMT_LOCAL_DIR;	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Download mode %s not recognized\n", opt->arg);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Download mode %s not recognized\n", opt->arg);
 						n_errors++;
 						break;
 				}
@@ -216,7 +216,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 				strcpy (path, No);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			}
-			GMT_Report (API, GMT_MSG_VERBOSE, "File %s not found!\n", &file[first]);
+			GMT_Report (API, GMT_MSG_NORMAL, "File %s not found!\n", &file[first]);
 		}
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */

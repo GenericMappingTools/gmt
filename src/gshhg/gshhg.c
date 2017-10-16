@@ -287,7 +287,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 
 		level = h.flag & 255;				/* Level is 1-4 [5-6 for Antarctica] */
 		version = (h.flag >> 8) & 255;			/* Version is 1-255 */
-		if (first) GMT_Report (API, GMT_MSG_VERBOSE, "Found GSHHG/WDBII version %d in file %s\n", version, Ctrl->In.file);
+		if (first) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found GSHHG/WDBII version %d in file %s\n", version, Ctrl->In.file);
 		first = false;
 		greenwich = (h.flag >> 16) & 3;			/* Greenwich is 0-3 */
 		src = (h.flag >> 24) & 1;			/* Source is 0 (WDBII) or 1 (WVS) */
@@ -403,7 +403,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		}
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "%s in: %d %s out: %d\n", name[is_line], n_seg, name[is_line], seg_no);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s in: %d %s out: %d\n", name[is_line], n_seg, name[is_line], seg_no);
 
 	if (Ctrl->G.active) GMT->current.setting.io_seg_marker[GMT_OUT] = marker;
 

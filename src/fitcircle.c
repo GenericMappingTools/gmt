@@ -297,7 +297,7 @@ GMT_LOCAL double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *
 	} while (j < 90 && fit > bfit && fit > afit);
 
 	if (j == 90) {	/* Bad news.  There isn't a better fitting pole anywhere.  */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Sorry.  Cannot find small circle fitting better than great circle.\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cannot find small circle fitting better than great circle.\n");
 		gmt_M_cpy3v (scpole, gcpole);
 		return (-1.0);
 	}
@@ -385,7 +385,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the fitcircle main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
@@ -461,7 +461,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 	if (n_data < n_alloc) data = gmt_M_memory (GMT, data, n_data, struct FITCIRCLE_DATA);
 	if (Ctrl->S.active && Ctrl->L.norm%2) work = gmt_M_memory (GMT, NULL, n_data, double);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Fitting %s circle using %s norm.\n", type[Ctrl->S.active], way[Ctrl->L.norm]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Fitting %s circle using %s norm.\n", type[Ctrl->S.active], way[Ctrl->L.norm]);
 
 	lonsum /= n_data;	latsum /= n_data;
 

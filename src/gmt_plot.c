@@ -2585,7 +2585,7 @@ GMT_LOCAL bool plot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CU
 			result = gmt_M_is_dnan (left);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol macro operator (%d = '%c') passed to gmt_draw_custom_symbol\n", s->operator, (char)s->operator);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized symbol macro operator (%d = '%c') passed to gmt_draw_custom_symbol\n", s->operator, (char)s->operator);
 			GMT_exit (GMT, GMT_PARSE_ERROR); return false;
 			break;
 
@@ -4708,7 +4708,7 @@ void gmt_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
 	dim[GMT_X] = rect[XHI] - rect[XLO];	dim[GMT_Y] = rect[YHI] - rect[YLO];
 	/* Report position and dimensions */
 	s = GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Map insert lower left corner and dimensions (in %s): %g %g %g %g\n",
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Map insert lower left corner and dimensions (in %s): %g %g %g %g\n",
 		GMT->session.unit_name[GMT->current.setting.proj_length_unit], rect[XLO]*s, rect[YLO]*s, dim[GMT_X]*s, dim[GMT_Y]*s);
 	if (B->file) {	/* Save x0 y0 w h to file */
 		FILE *fp = fopen (B->file, "w");
@@ -4751,7 +4751,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 
 	measure = (ms->measure == 0) ? 'k' : ms->measure;	/* Km is default distance unit */
 	if ((unit = gmtlib_get_unit_number (GMT, measure)) == GMT_IS_NOUNIT) {
-		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: Bad distance unit %c\n", measure);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad distance unit %c\n", measure);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 
@@ -5101,7 +5101,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				found_elseif = !skip[level];
 			}
 			if (level == GMT_N_COND_LEVELS) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Symbol macro (%s) logical nesting too deep [> %d]\n", symbol->name, GMT_N_COND_LEVELS);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Symbol macro (%s) logical nesting too deep [> %d]\n", symbol->name, GMT_N_COND_LEVELS);
 				GMT_exit (GMT, GMT_DIM_TOO_LARGE); return GMT_DIM_TOO_LARGE;
 			}
 			if (s->conditional == 4) level--, found_elseif = false;	/* Simply reduce indent */
@@ -5204,12 +5204,12 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 			case (int)'C':
 				if (gmt_M_compat_check (GMT, 4)) {	/* Warn and fall through */
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Circle macro symbol C is deprecated; use c instead\n");
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Circle macro symbol C is deprecated; use c instead\n");
 					action = s->action = PSL_CIRCLE;	/* Backwards compatibility, circles are now 'c' */
 				}
 				else {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL,
-					            "Error: Unrecognized symbol code (%d = '%c') passed to gmt_draw_custom_symbol\n", action, (char)action);
+					            "Unrecognized symbol code (%d = '%c') passed to gmt_draw_custom_symbol\n", action, (char)action);
 					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 					break;
 				}
@@ -5300,7 +5300,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL,
-				            "Error: Unrecognized symbol code (%d = '%c') passed to gmt_draw_custom_symbol\n", action, (char)action);
+				            "Unrecognized symbol code (%d = '%c') passed to gmt_draw_custom_symbol\n", action, (char)action);
 				GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 				break;
 		}
@@ -5355,7 +5355,7 @@ int gmt_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 
 	kind = gmt_M_is_geographic (GMT, GMT_IN);
 	if ((G->Out = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create a dataset\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a dataset\n");
 		return (GMT_MEMORY_ERROR);	/* Establishes data output */
 	}
 	/* Write lon, lat, angle, label record */
@@ -5380,7 +5380,7 @@ int gmt_contlabel_save_end (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	/* Finalize this dataset and write it out */
 	gmt_set_dataset_minmax (GMT, G->Out);
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, G->label_file, G->Out) != GMT_NOERROR) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create/write to file %s\n", G->label_file);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create/write to file %s\n", G->label_file);
 		return (GMT_ERROR_ON_FOPEN);	/* Establishes data output */
 	}
 	GMT_Destroy_Data (GMT->parent, &(G->Out));
@@ -5473,7 +5473,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 
 		gmt_getsharepath (GMT, "", "epsg", ".txt", buffer, R_OK);
 		if ((fp = fopen (buffer, "r")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Cannot open %s file\n", buffer);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s file\n", buffer);
 			return (pStrOut);
 		}
 		while (fgets (buffer, GMT_LEN256, fp)) {
@@ -5489,7 +5489,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		}
 		fclose (fp);
 		if (!found) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Could not find the EPGS code %d in database\n", EPSGID);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not find the EPGS code %d in database\n", EPSGID);
 			return (pStrOut);
 		}
 	}
@@ -5566,7 +5566,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 			opt_J[1] = 'A';
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: in projection %s proj parameters\n", prjcode);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In projection %s proj parameters\n", prjcode);
 			return (pStrOut);
 		}
 	}
@@ -5591,11 +5591,11 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 			}
 		}
 		if (zone == 100) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: UTM proj selected but no info about utm zone.\n");	
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "UTM proj selected but no info about utm zone.\n");	
 			return (pStrOut);
 		}
 		else if (zone > 64) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: UTM proj The lon_0 argument was not correctly parsed.\n");	
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "UTM proj The lon_0 argument was not correctly parsed.\n");	
 		}
 		else {
 			char t[4];
@@ -5633,7 +5633,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		if (!lat_0[0]) strcat(lat_0, "0");
 		if (strcmp(prjcode, "poly")) {			/* i.e. if NOT Poly */
 			if (!lat_1[0] || !lat_2[0]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Projection %s needs the lat_1 & lat_2 proj parameters\n", prjcode);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Projection %s needs the lat_1 & lat_2 proj parameters\n", prjcode);
 				return (pStrOut);
 			}
 			strcat(opt_J, lon_0);	strcat (opt_J, "/");	strcat(opt_J, lat_0);	strcat (opt_J, "/");
@@ -5717,7 +5717,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 	if ((pch = strstr(szProj4, "+b=")) != NULL) {	/* Check for minor axis +b=xxxx */
 		double f;
 		if (!got_a) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: +b= in proj4 string without the companion +a\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "+b= in proj4 string without the companion +a\n");
 			return (pStrOut);
 		}
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
@@ -5744,7 +5744,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		if (ename[0] != '\0')
 			;//sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, "%s", ename);
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: could not translate the ellipsoid name %s\n", &token[6]);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "could not translate the ellipsoid name %s\n", &token[6]);
 			return (pStrOut);
 		}
 		wipe_substr(szProj4, token);
@@ -5767,14 +5767,14 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 			sprintf(t, " +towgs84=598.1,73.7,418.2,0.202,0.045,-2.455,6.7");
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error: this datum %s is not yet ported to GMT\n", &token[6]);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "this datum %s is not yet ported to GMT\n", &token[6]);
 			return (pStrOut);
 		}
 
 		if (ename[0] != '\0')
 			sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, "%s", ename);
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error: could not translate the ellipsoid name %s\n", &token[6]);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "could not translate the ellipsoid name %s\n", &token[6]);
 			return (pStrOut);
 		}
 		strcat(szProj4, t);			/* Append to the proj4 string so that the +towgs84 case below will handle this */
@@ -5790,7 +5790,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 
 		if (ename[0] == '\0' && (!got_a || !got_b)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, 
-			            "Error:  Cannot convert to WGS84 if you don't tell me the ellipsoid of origin\n"
+			            " Cannot convert to WGS84 if you don't tell me the ellipsoid of origin\n"
 					    "(miss +ellips=xxxx OR +a=xxxx +b=xxxx)\n");
 			return (pStrOut);
 		}
@@ -5830,7 +5830,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 	if ((pch = strstr(szProj4, "+units=")) != NULL) {
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
 		if (token[6] != 'm') {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: using units other than meters is not yet implemented\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "using units other than meters is not yet implemented\n");
 		}
 		wipe_substr(szProj4, token);
 	}
@@ -5879,7 +5879,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Original proj4 string was not all consumend. Remaining options:\n\t%s\n", szProj4);
 #endif
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Converted to -J syntax = -J%s\n", opt_J);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Converted to -J syntax = -J%s\n", opt_J);
 	GMT->current.proj.is_proj4 = true;		/* Used so far in map|grdproject to set local -C */ 
 
 	pStrOut = strdup(opt_J);
@@ -6074,7 +6074,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Write PS to hidden gmt_#.ps- file.  No -O -K allowed */
 		char *verb[2] = {"Create", "Append to"};
 		if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {	/* Get hidden file name for PS */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: No workflow directory\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No workflow directory\n");
 			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
 		}
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s hidden PS file %s\n", verb[k], GMT->current.ps.filename);
@@ -6091,7 +6091,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	else if ((Out = GMT_Find_Option (GMT->parent, '>', options))) {	/* Want to use a specific output file */
 		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
 		if (O_active && k == 0) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: -O given but append-mode not selected for file %s\n", &(Out->arg[k]));
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-O given but append-mode not selected for file %s\n", &(Out->arg[k]));
 		}
 		if (gmt_M_file_is_memory (&(Out->arg[k]))) {
 			write_to_mem = 2;
@@ -6313,21 +6313,21 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 	sprintf (file, "%s/gmt_%d.layers", API->gwf_dir, fig);
 	if (nlayers == -1) {	/* Reset to nothing, but still remain at current figure */
 		if (gmt_remove_file (API->GMT, file))	/* Remove the layers file */
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Failed to delete file: %s\n", file);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Failed to delete file: %s\n", file);
 		sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
 		if (gmt_remove_file (API->GMT, file))	/* Wipe the PS file */
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Failed to delete file: %s\n", file);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Failed to delete file: %s\n", file);
 		return GMT_NOERROR;
 	}
 	/* See if there is a layers file to read for this figure */
 	if (access (file, R_OK)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: No layers available [no file: %s]\n", file);
+		GMT_Report (API, GMT_MSG_NORMAL, "No layers available [no file: %s]\n", file);
 		return GMT_FILE_NOT_FOUND;
 	}
 	
 	/* OK, the file exist, can we read it? */
 	if ((fp = fopen (file, "r")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not open file %s\n", file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not open file %s\n", file);
 		return GMT_ERROR_ON_FOPEN;
 	}
 	/* Ingest the layer information */
@@ -6341,21 +6341,21 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 	}
 	fclose (fp);
 	if (nlayers >= k) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot revert %d layers as only %d layers found!\n", nlayers, k);
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot revert %d layers as only %d layers found!\n", nlayers, k);
 		gmt_M_free (API->GMT, layer);
 		return GMT_RUNTIME_ERROR;
 	}
 	
 	sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
 	if (gmt_truncate_file (API, file, layer[k-nlayers-1].size)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not truncate file %s!\n", file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not truncate file %s!\n", file);
 		gmt_M_free (API->GMT, layer);
 		return GMT_RUNTIME_ERROR;
 	}
 	/* Finally, rewrite the layers file to skip the reverted layers */
 	sprintf (file, "%s/gmt_%d.layers", API->gwf_dir, fig);
 	if ((fp = fopen (file, "w")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not create new file %s\n", file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not create new file %s\n", file);
 		gmt_M_free (API->GMT, layer);
 		return GMT_ERROR_ON_FOPEN;
 	}
@@ -6387,9 +6387,9 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 
 	if (!K_active) {
 		if (GMT->current.ps.clip_level > 0)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d external clip operations were not terminated!\n", GMT->current.ps.clip_level);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%d external clip operations were not terminated!\n", GMT->current.ps.clip_level);
 		if (GMT->current.ps.clip_level < 0)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d extra terminations of external clip operations!\n", -GMT->current.ps.clip_level);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%d extra terminations of external clip operations!\n", -GMT->current.ps.clip_level);
 		GMT->current.ps.clip_level = 0;	/* Reset to zero, so it will no longer show up in gmt.history */
 	}
 	for (i = 0; i < 3; i++) gmt_M_str_free (GMT->current.map.frame.axis[i].file_custom);
@@ -6400,7 +6400,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		char file[PATH_MAX] = {""};
 		FILE *fp = NULL;
 		if (stat (GMT->current.ps.filename, &buf))
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not determine size of file %s\n", GMT->current.ps.filename);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not determine size of file %s\n", GMT->current.ps.filename);
 		else
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Current size of half-baked PS file %s = %" PRIuS ".\n", GMT->current.ps.filename, buf.st_size);
 		GMT->current.ps.fp = NULL;
@@ -6408,7 +6408,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		/* Write layer size to gmt.layers in case of revert calls */
 		sprintf (file, "%s/gmt_%d.layers", GMT->parent->gwf_dir, GMT->current.ps.figure);
 		if ((fp = fopen (file, "a")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not open/create file %s\n", file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not open/create file %s\n", file);
 			return;
 		}
 		fprintf (fp, "%d\t%" PRIuS "\n", GMT->current.ps.layer, (size_t)buf.st_size);
@@ -6426,7 +6426,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		P->mode = PSL->internal.pmode;  /* Mode of plot (GMT_PS_{HEADER,TRAILER,COMPLETE}) */
 		P->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since created in PSL */
 		if (GMT_Write_Data (GMT->parent, GMT_IS_POSTSCRIPT, GMT_IS_REFERENCE, GMT_IS_TEXT, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
 		}
 		/* coverity[leaked_storage] */	/* We can't free P because it was written into a 'memory file' */
 	}
@@ -6862,7 +6862,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 	else {	/* Gave negative interval which means the # of ticks required */
 		ngap = irint (fabs (f->f_gap));
 		if (ngap == 0) {	/* Cannot happen but might as well leave the test in case of snafus */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Number of front ticks reset from 0 to 1 (check your arguments)\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Number of front ticks reset from 0 to 1 (check your arguments)\n");
 			ngap = 1;
 		}
 		if (ngap == 1)	/* Single centered tick */
@@ -7227,15 +7227,15 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 		char path[GMT_BUFSIZ] = {""};
 		strncpy (ps_file, source, GMT_LEN256-1);
 		if (!gmt_getdatapath (GMT, ps_file, path, R_OK)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot find PostScript file %s\n", ps_file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot find PostScript file %s\n", ps_file);
 			return (NULL);
 		}
 		if (stat (path, &buf)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot determine size of PostScript file %s\n", ps_file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot determine size of PostScript file %s\n", ps_file);
 			return (NULL);
 		}
 		if ((fp = fopen (ps_file, "r")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open PostScript file %s\n", ps_file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open PostScript file %s\n", ps_file);
 			return (NULL);
 		}
 		n_alloc = buf.st_size;	/* We know what to allocate here */
@@ -7253,7 +7253,7 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 		struct stat buf;
 		int *fd = source;
 		if (fstat (*fd, &buf)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot determine size of PostScript file give by file descriptor %d\n", *fd);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot determine size of PostScript file give by file descriptor %d\n", *fd);
 			return (NULL);
 		}
 		if ((fp = fdopen (*fd, "r")) == NULL) {

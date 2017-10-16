@@ -713,7 +713,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 					if (Ctrl->F.width < 0.0) {	/* Old-style specification for high-pass filtering */
 						if (gmt_M_compat_check (GMT, 5)) { 
 							GMT_Report (API, GMT_MSG_COMPAT,
-							            "Warning: Negative filterwidth for highpass-filtering is deprecated; +h was added instead, use this in the future.\n", opt->arg);
+							            "Negative filterwidth for highpass-filtering is deprecated; +h was added instead, use this in the future.\n", opt->arg);
 							Ctrl->F.highpass = true;
 						}
 						else {
@@ -849,7 +849,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdfilter main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid\n");
 	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get entire grid */
 		Return (API->error);
 	}
@@ -898,7 +898,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 
 	/* BECAUSE IT'S NOT TESTED LEAVE THIS (TEMP) WARNING ON TILL WE ARE SURE IT WORKS */
 	if (Ctrl->F.custom && GMT->common.x.n_threads > 1)
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Custom filter and multi-threading is not gurantied to work.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Custom filter and multi-threading is not gurantied to work.\n");
 
 	/* Allocate space and determine the header for the new grid; croak if there are issues. */
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc, \
@@ -914,14 +914,14 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: For -Ff or -Fo the input and output grids must be coregistered.\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your output grid spacing is such that filter-weights must\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Your output grid spacing is such that filter-weights must\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "be recomputed for every output node, so expect this run to be slow. Calculations\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "can be speeded up significantly if output grid spacing is chosen to be a multiple\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "of the input grid spacing.  If the odd output grid is necessary, consider using\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "a \'fast\' grid for filtering and then resample onto your desired grid with grdsample.\n");
 	}
 	if (Ctrl->N.mode == NAN_REPLACE && !same_grid) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -Nr requires co-registered input/output grids, option is ignored\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "-Nr requires co-registered input/output grids, option is ignored\n");
 		Ctrl->N.mode = NAN_IGNORE;
 	}
 
@@ -952,7 +952,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 		}
 		F.n_columns = Fin->header->n_columns;	F.n_rows = Fin->header->n_rows;
 		if ((F.n_columns % 2) == 0 || (F.n_rows % 2) == 0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: -Ff|o requires an odd number of rows and columns for filter|operator weight grid,\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "-Ff|o requires an odd number of rows and columns for filter|operator weight grid,\n");
 			Return (API->error);
 		}
 		F.x_half_width = (F.n_columns - 1) / 2;	F.y_half_width = (F.n_rows - 1) / 2;
@@ -1070,7 +1070,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (gmt_M_is_zero (wt_sum)) {	/* The custom filter is an operator; should have used -Fo */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your custom filter weights sum to zero; switching to -Fo operator mode.\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Your custom filter weights sum to zero; switching to -Fo operator mode.\n");
 			Ctrl->F.operator = true;
 		}
 		if (Ctrl->F.operator) get_weight_sum = false;	/* As weights sum to zero we don't want to add them up and divide */
@@ -1090,15 +1090,15 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	}
 
 	if (tid == 0) {	/* First or only thread */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Input n_columns,n_rows = (%d %d), output n_columns,n_rows = (%d %d), filter (max)n_columns,n_rows = (%d %d)\n", Gin->header->n_columns, Gin->header->n_rows, Gout->header->n_columns, Gout->header->n_rows);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input n_columns,n_rows = (%d %d), output n_columns,n_rows = (%d %d), filter (max)n_columns,n_rows = (%d %d)\n", Gin->header->n_columns, Gin->header->n_rows, Gout->header->n_columns, Gout->header->n_rows);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Filter n_columns,n_rows = (%d %d) [These are maximum dimensions of weight array]\n", F.n_columns, F.n_rows);
 		if (Ctrl->F.quantile != 0.5)
-			GMT_Report (API, GMT_MSG_VERBOSE, "Filter type is %s [using %g%% quantile].\n",
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Filter type is %s [using %g%% quantile].\n",
 					filter_name[filter_type], 100.0 * Ctrl->F.quantile);
 		else
-			GMT_Report (API, GMT_MSG_VERBOSE, "Filter type is %s.\n", filter_name[filter_type]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Filter type is %s.\n", filter_name[filter_type]);
 #ifdef HAVE_GLIB_GTHREAD
-		GMT_Report (API, GMT_MSG_VERBOSE, "Calculations will be distributed over %d threads.\n", GMT->common.x.n_threads);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculations will be distributed over %d threads.\n", GMT->common.x.n_threads);
 #endif
 	}
 
@@ -1212,7 +1212,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	}
 
 	if (n_nan) GMT_Report (API, GMT_MSG_VERBOSE, "Unable to estimate value at %" PRIu64 " nodes, set to NaN\n", n_nan);
-	if (GMT_n_multiples > 0) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d multiple modes found by the mode filter\n", GMT_n_multiples);
+	if (GMT_n_multiples > 0) GMT_Report (API, GMT_MSG_VERBOSE, "%d multiple modes found by the mode filter\n", GMT_n_multiples);
 
 	if (Ctrl->F.highpass) {
 		if (GMT->common.R.active[RSET] || GMT->common.R.active[ISET] || GMT->common.R.active[GSET]) {	/* Must resample result so grids are coregistered */
@@ -1231,9 +1231,9 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 			strcat (cmd, " --GMT_HISTORY=false");
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE,
 					"Highpass requires us to resample the lowpass result at original registration via grdsample %s\n", cmd);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Calling grdsample with args %s\n", cmd);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Calling grdsample with args %s\n", cmd);
 			if (GMT_Call_Module (API, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Resample the file */
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to resample the lowpass result - exiting\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to resample the lowpass result - exiting\n");
 				Return (API->error);
 			}
 			if (GMT_Close_VirtualFile (API, in_string) == GMT_NOTSET) {
@@ -1250,7 +1250,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 		}
 		else	/* Coregistered; no need to resample */
 			gmt_M_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_out] - Gout->data[ij_out];
-		GMT_Report (API, GMT_MSG_VERBOSE, "Subtracting lowpass-filtered data from input grid to obtain high-pass filtered data.\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Subtracting lowpass-filtered data from input grid to obtain high-pass filtered data.\n");
 	}
 
 	/* At last, that's it!  Output: */
@@ -1343,7 +1343,7 @@ GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 
 	for (row_out = r_start; row_out < r_stop; row_out++) {
 
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Processing output line %d\r", row_out);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Processing output line %d\r", row_out);
 #ifdef DEBUG
 		if (Ctrl->A.active && row_out != Ctrl->A.ROW) continue;		/* Not at our selected row for testing */
 #endif
@@ -1500,7 +1500,7 @@ GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 		}
 	}
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Processing output line %d\n", row_out);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Processing output line %d\n", row_out);
 
 	if (slow) {
 		if (slower) gmt_M_free (GMT, work_data);

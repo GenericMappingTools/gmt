@@ -473,14 +473,14 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdvolume main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid\n");
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 	shrink = gmt_M_is_geographic (GMT, GMT_IN);	/* Must deal with latitude-dependant area */
 	
 	if (Ctrl->S.active && !shrink) {	/* Not known to be geographic */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: -S requires a geographic grid.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-S requires a geographic grid.\n");
 		if ((Grid->header->wesn[YLO] >= -90.0 && Grid->header->wesn[YHI] <= 90.0) && 
 			(Grid->header->wesn[XLO] >= -360.0 && Grid->header->wesn[XHI] <= 720.0) && 
 			(Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) <= 360.0) {
@@ -536,7 +536,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	area   = gmt_M_memory (GMT, NULL, n_contours, double);
 
 	if (!(Ctrl->Z.scale == 1.0 && Ctrl->Z.offset == 0.0)) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Subtracting %g and multiplying by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Subtracting %g and multiplying by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
 		Work->header->z_min = (Work->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
 		Work->header->z_max = (Work->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
 		if (Ctrl->Z.scale < 0.0) gmt_M_double_swap (Work->header->z_min, Work->header->z_max);
@@ -557,7 +557,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		cval = Ctrl->C.low + c * Ctrl->C.inc;
 		take_out = (c == 0) ? cval + small : Ctrl->C.inc;	/* Take out start contour the first time and just the increment subsequent times */
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Compute volume, area, and average height for contour = %g\n", cval);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute volume, area, and average height for contour = %g\n", cval);
 		
 		for (ij = 0; ij < Work->header->size; ij++) {
 			Work->data[ij] -= (gmt_grdfloat)take_out;		/* Take out the zero value */

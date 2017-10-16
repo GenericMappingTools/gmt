@@ -549,7 +549,7 @@ GMT_LOCAL void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 			}
 	 		}
 	 		if (sum_w == 0.0) {
-	 			sprintf (C->format, "Warning: no data inside search radius at: %s %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+	 			sprintf (C->format, "No data inside search radius at: %s %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, C->format, x0, y0);
 	 			u[C->ij_sw_corner + (i * C->my + j) * C->grid] = (gmt_grdfloat)C->z_mean;
 	 		}
@@ -568,7 +568,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 	struct GMT_RECORD *In = NULL;
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	C->data = gmt_M_memory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
 
 	/* Read in xyz data and computes index no and store it in a structure */
@@ -664,13 +664,13 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	}
 
 	C->z_mean /= k;
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
 		sprintf (C->format, "%s %s %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Minimum value of your dataset x,y,z at: ");
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format, (double)C->data[kmin].x, (double)C->data[kmin].y, (double)C->data[kmin].z);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Maximum value of your dataset x,y,z at: ");
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format, (double)C->data[kmax].x, (double)C->data[kmax].y, (double)C->data[kmax].z);
-		if (C->periodic && n_dup) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Number of input values shared between repeating west and east column nodes: %" PRIu64 "\n", n_dup);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Minimum value of your dataset x,y,z at: ");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format, (double)C->data[kmin].x, (double)C->data[kmin].y, (double)C->data[kmin].z);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Maximum value of your dataset x,y,z at: ");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format, (double)C->data[kmax].x, (double)C->data[kmax].y, (double)C->data[kmax].z);
+		if (C->periodic && n_dup) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Number of input values shared between repeating west and east column nodes: %" PRIu64 "\n", n_dup);
 	}
 	C->data = gmt_M_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 
@@ -678,13 +678,13 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 		C->low_limit = C->data[kmin].z;
 	else if (C->set_low == 2 && C->low_limit > C->data[kmin].z) {
 	/*	C->low_limit = data[kmin].z;	*/
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Your lower value is > than min data value.\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your lower value is > than min data value.\n");
 	}
 	if (C->set_high == 1)
 		C->high_limit = C->data[kmax].z;
 	else if (C->set_high == 2 && C->high_limit < C->data[kmax].z) {
 	/*	C->high_limit = data[kmax].z;	*/
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Your upper value is < than max data value.\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your upper value is < than max data value.\n");
 	}
 	return (0);
 }
@@ -1023,7 +1023,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 
 	} while (max_change > current_limit && iteration_count < current_max_iterations);
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format,
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format,
 		C->grid, C->mode_type[mode], iteration_count, max_change, current_limit, C->total_iterations);
 
 	return (iteration_count);
@@ -1170,9 +1170,9 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 		}
 	}
 
-	 GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Fit info: N data points  N nodes\tmean error\trms error\tcurvature\n");
+	 GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Fit info: N data points  N nodes\tmean error\trms error\tcurvature\n");
 	 sprintf (C->format,"\t%%8ld\t%%8ld\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-	 GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format, C->npoints, C->nxny, mean_error, mean_squared_error, curvature);
+	 GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format, C->npoints, C->nxny, mean_error, mean_squared_error, curvature);
  }
 
 GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
@@ -1222,7 +1222,7 @@ GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 		C->data[i].z -= (gmt_grdfloat)(C->plane_c0 + C->plane_c1 * xx + C->plane_c2 * yy);
 	}
 	
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "LS plane determined: z = %g + (%g * col) + (%g * row)\n", C->plane_c0, C->plane_c1, C->plane_c2);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "LS plane determined: z = %g + (%g * col) + (%g * row)\n", C->plane_c0, C->plane_c1, C->plane_c2);
 }
 
 GMT_LOCAL void replace_planar_trend (struct SURFACE_INFO *C) {
@@ -1296,7 +1296,7 @@ GMT_LOCAL int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	C->z_scale = sqrt (ssz / C->npoints);
 
 	if (C->z_scale < GMT_CONV8_LIMIT) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Input data lie exactly on a plane.\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Input data lie exactly on a plane.\n");
 		C->r_z_scale = C->z_scale = 1.0;
 		return (1);	/* Flag to tell the main to just write out the plane */
 	}
@@ -1664,7 +1664,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 				Ctrl->S.radius = atof (opt->arg);
 				Ctrl->S.unit = opt->arg[strlen(opt->arg)-1];
 				if (Ctrl->S.unit == 'c' && gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit c is deprecated; use s instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Unit c is deprecated; use s instead.\n");
 					Ctrl->S.unit = 's';
 				}
 				if (!strchr ("sm ", Ctrl->S.unit)) {
@@ -1777,7 +1777,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 		GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	
 	if (C.Grid->header->n_columns < 4 || C.Grid->header->n_rows < 4) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->n_columns, C.Grid->header->n_rows);
+		GMT_Report (API, GMT_MSG_NORMAL, "Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->n_columns, C.Grid->header->n_rows);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -1798,13 +1798,13 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	/* New stuff here for v4.3: Check out the grid dimensions */
 	C.grid = gmt_gcd_euclid (C.n_columns-1, C.n_rows-1);
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) || Ctrl->Q.active) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) || Ctrl->Q.active) {
 		sprintf (C.format, "Grid domain: W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d [", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		(GMT->common.R.active[GSET]) ? strcat (C.format, "pixel registration]\n") : strcat (C.format, "gridline registration]\n");
-		GMT_Report (API, GMT_MSG_VERBOSE, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.n_columns-one, C.n_rows-one);
+		GMT_Report (API, GMT_MSG_NORMAL, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.n_columns-one, C.n_rows-one);
 	}
-	if (C.grid == 1) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
-	if ((C.grid == 1 && gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.n_columns-1, C.n_rows-1, GMT->common.R.active[GSET]);
+	if (C.grid == 1) GMT_Report (API, GMT_MSG_VERBOSE, "Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
+	if ((C.grid == 1 && gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.n_columns-1, C.n_rows-1, GMT->common.R.active[GSET]);
 	if (Ctrl->Q.active) Return (GMT_NOERROR);
 
 	/* New idea: set grid = 1, read data, setting index.  Then throw
@@ -1864,7 +1864,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 
 	if (C.radius > 0) initialize_grid (GMT, &C); /* Fill in nodes with a weighted avg in a search radius  */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Grid\tMode\tIteration\tMax Change\tConv Limit\tTotal Iterations\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Grid\tMode\tIteration\tMax Change\tConv Limit\tTotal Iterations\n");
 
 	set_coefficients (&C);
 

@@ -316,7 +316,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		pol = D->table[0];	/* Since it is a single file */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
 	}
 
 	if (Ctrl->E.rot.single) {	/* Got a single rotation, no time, create a rotation table with one entry */
@@ -377,7 +377,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		}
 		/* Just need on common set of x/y arrays; select G_mod[0] as our template */
 		G = G_mod[0];
-		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate %d model prediction grids based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate %d model prediction grids based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
 	}
 	else {	/* No output grids, must have input age grid to rely on */
 		G = G_age;
@@ -393,7 +393,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
 		out = gmt_M_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
 		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	}
@@ -516,7 +516,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		char file[GMT_BUFSIZ] = {""};
 		for (k = 0; k < Ctrl->S.n_items; k++) {
 			sprintf (file, Ctrl->G.file, tag[Ctrl->S.mode[k]]);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Write model prediction grid for %s (%s) to file %s\n", quantity[Ctrl->S.mode[k]], G_mod[k]->header->z_units, file);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write model prediction grid for %s (%s) to file %s\n", quantity[Ctrl->S.mode[k]], G_mod[k]->header->z_units, file);
 			strcpy (G_mod[k]->header->x_units, "degrees_east");
 			strcpy (G_mod[k]->header->y_units, "degrees_north");
 			snprintf (G_mod[k]->header->remark, GMT_GRID_REMARK_LEN160, "Plate Model predictions of %s for model %s", quantity[Ctrl->S.mode[k]], Ctrl->E.rot.file);
@@ -539,7 +539,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, grd_y);
 	gmt_M_free (GMT, grd_yc);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 
 	Return (GMT_NOERROR);
 }

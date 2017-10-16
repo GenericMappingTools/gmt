@@ -457,7 +457,7 @@ int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt) {
 				base = 3;	/* low */
 			}
 			*res = choice[base];
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-%c option: Selected resolution -%c%c\n", opt, opt, *res);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "-%c option: Selected resolution -%c%c\n", opt, opt, *res);
 			break;
 		case 'f':	/* Full */
 			base = 0;
@@ -492,7 +492,7 @@ char gmt_shore_adjust_res (struct GMT_CTRL *GMT, char res) {
 	(void)shore_check (GMT, ok);		/* See which resolutions we have */
 	k = orig = shore_res_to_int (res);	/* Get integer value of requested resolution */
 	while (k >= 0 && !ok[k]) --k;		/* Drop down one level to see if we have a lower resolution available */
-	if (k >= 0 && k != orig) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Resolution %c not available, substituting resolution %c\n", res, type[k]);
+	if (k >= 0 && k != orig) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Resolution %c not available, substituting resolution %c\n", res, type[k]);
 	return ((k == -1) ? res : type[k]);	/* Return the chosen resolution */
 }
 
@@ -1310,7 +1310,7 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
 		return (NULL);
 	}
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Extract data from GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Extract data from GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 	west_border = floor (wesn[XLO] / c.bsize) * c.bsize;
 	east_border =  ceil (wesn[XHI] / c.bsize) * c.bsize;
 
@@ -1504,7 +1504,7 @@ int gmt_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 		else {
 			n_use = (unsigned int)gmt_compact_line (GMT, xtmp, ytmp, n, false, 0);
 			if (anti_bin > 0 && step == 0.0) {	/* Must warn for donut effect */
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Antipodal bin # %d not filled!\n", anti_bin);
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Antipodal bin # %d not filled!\n", anti_bin);
 				gmt_M_free (GMT, xtmp);
 				gmt_M_free (GMT, ytmp);
 				continue;

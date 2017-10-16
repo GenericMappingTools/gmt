@@ -826,8 +826,8 @@ GMT_LOCAL void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 		}
 			node = row_col_to_node (row, col, C->current_mx);
 	 		if (sum_w == 0.0) {
-	 			sprintf (C->format, "Warning: no data inside search radius at: %s %s [node set to data mean]\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-	 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, C->format, x0, y0);
+	 			sprintf (C->format, "No data inside search radius at: %s %s [node set to data mean]\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+	 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format, x0, y0);
 	 			u[node] = (gmt_grdfloat)C->z_mean;
 	 		}
 	 		else
@@ -844,7 +844,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 	struct GMT_RECORD *In = NULL;
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	C->data = gmt_M_memory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
 
 	/* Read in xyz data and computes index no and store it in a structure */
@@ -931,25 +931,25 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	}
 
 	C->z_mean /= C->npoints;	/* Estimate mean data value */
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
 		char msg[GMT_LEN256] = {""};
 		sprintf (C->format, "%s %s %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		sprintf (msg, C->format, (double)C->data[kmin].x, (double)C->data[kmin].y, (double)C->data[kmin].z);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Minimum value of your dataset x,y,z at: %s", msg);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Minimum value of your dataset x,y,z at: %s", msg);
 		sprintf (msg, C->format, (double)C->data[kmax].x, (double)C->data[kmax].y, (double)C->data[kmax].z);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Maximum value of your dataset x,y,z at: %s", msg);
-		if (C->periodic && n_dup) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Number of input values shared between repeating west and east column nodes: %" PRIu64 "\n", n_dup);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Maximum value of your dataset x,y,z at: %s", msg);
+		if (C->periodic && n_dup) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Number of input values shared between repeating west and east column nodes: %" PRIu64 "\n", n_dup);
 	}
 	C->data = gmt_M_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 
 	if (C->set_limit[LO] == DATA)	/* Wanted to set lower limit based on minimum observed z value */
 		C->limit[LO] = C->data[kmin].z;
 	else if (C->set_limit[LO] == VALUE && C->limit[LO] > C->data[kmin].z)
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Your lower value is > than min data value.\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your lower value is > than min data value.\n");
 	if (C->set_limit[HI] == DATA)	/* Wanted to set upper limit based on maximum observed z value */
 		C->limit[HI] = C->data[kmax].z;
 	else if (C->set_limit[HI] == VALUE && C->limit[HI] < C->data[kmax].z)
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Your upper value is < than max data value.\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your upper value is < than max data value.\n");
 	return (0);
 }
 
@@ -1290,7 +1290,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 		
 	} while (!finished);
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format,
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format,
 		C->current_stride, C->mode_type[mode], iteration_count, max_z_change, current_limit, C->total_iterations);
 
 #ifdef DEBUG_SURF
@@ -1369,9 +1369,9 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 		curvature += (c * c);
 	}
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Fit info: N data points  N nodes\tmean error\trms error\tcurvature\n");
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Fit info: N data points  N nodes\tmean error\trms error\tcurvature\n");
 	sprintf (C->format,"\t%%8ld\t%%8ld\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format, C->npoints, C->nxny, mean_error, mean_squared_error, curvature);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format, C->npoints, C->nxny, mean_error, mean_squared_error, curvature);
 }
 
 GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
@@ -1415,7 +1415,7 @@ GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 		C->data[k].z -= (gmt_grdfloat)evaluate_plane(C, xx, y_up);
 	}
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Plane fit z = %g + (%g * col) + (%g * row)\n", C->plane_icept, C->plane_sx, C->plane_sy);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Plane fit z = %g + (%g * col) + (%g * row)\n", C->plane_icept, C->plane_sx, C->plane_sy);
 }
 
 GMT_LOCAL void restore_planar_trend (struct SURFACE_INFO *C) {
@@ -1509,10 +1509,10 @@ GMT_LOCAL int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 
 	for (k = 0; k < C->npoints; k++) ssz += (C->data[k].z * C->data[k].z);
 	C->z_rms = sqrt (ssz / C->npoints);
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Normalize detrended data constraints by z rms = %g\n", C->z_rms);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Normalize detrended data constraints by z rms = %g\n", C->z_rms);
 
 	if (C->z_rms < GMT_CONV8_LIMIT) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Input data lie exactly on a plane.\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Input data lie exactly on a plane.\n");
 		C->r_z_rms = C->z_rms = 1.0;
 		return (1);	/* Flag to tell the main to just write out the plane */
 	}
@@ -2059,7 +2059,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 				Ctrl->S.radius = atof (opt->arg);
 				Ctrl->S.unit = opt->arg[strlen(opt->arg)-1];
 				if (Ctrl->S.unit == 'c' && gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Unit c for seconds is deprecated; use s instead.\n");
 					Ctrl->S.unit = 's';
 				}
 				if (!strchr ("sm ", Ctrl->S.unit)) {
@@ -2175,7 +2175,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	
 	if (C.Grid->header->n_columns < 4 || C.Grid->header->n_rows < 4) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->n_columns, C.Grid->header->n_rows);
+		GMT_Report (API, GMT_MSG_NORMAL, "Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->n_columns, C.Grid->header->n_rows);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -2184,13 +2184,13 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	/* Determine the initial and intermediate grid dimensions */
 	C.current_stride = gmt_gcd_euclid (C.n_columns-1, C.n_rows-1);
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) || Ctrl->Q.active) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) || Ctrl->Q.active) {
 		sprintf (C.format, "Grid domain: W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d [", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		(GMT->common.R.active[GSET]) ? strcat (C.format, "pixel registration]\n") : strcat (C.format, "gridline registration]\n");
-		GMT_Report (API, GMT_MSG_VERBOSE, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.n_columns-one, C.n_rows-one);
+		GMT_Report (API, GMT_MSG_NORMAL, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.n_columns-one, C.n_rows-one);
 	}
-	if (C.current_stride == 1) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
-	if ((C.current_stride == 1 && gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.n_columns-1, C.n_rows-1, GMT->common.R.active[GSET]);
+	if (C.current_stride == 1) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
+	if ((C.current_stride == 1 && gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.n_columns-1, C.n_rows-1, GMT->common.R.active[GSET]);
 	if (Ctrl->Q.active) Return (GMT_NOERROR);
 
 	/* Set current_stride = 1, read data, setting indices.  Then throw
@@ -2247,7 +2247,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->W.active) {	/* Want to log convergence information to file */
 		if ((C.fp_log = gmt_fopen (GMT, Ctrl->W.file, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to create log file %s.\n", Ctrl->W.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create log file %s.\n", Ctrl->W.file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		C.logging = true;
@@ -2256,30 +2256,30 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	
 	/* Now the data are ready to go for the first iteration.  */
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {	/* Report on memory usage for this run */
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Report on memory usage for this run */
 		size_t mem_use, mem_total;
 		mem_use = mem_total = C.npoints * sizeof (struct SURFACE_DATA);
-		GMT_Report (API, GMT_MSG_VERBOSE, "------------------------------------------\n");
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for data array", gmt_memory_use (mem_use, 1));
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "------------------------------------------\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%-31s: %9s\n", "Memory for data array", gmt_memory_use (mem_use, 1));
 		mem_use = sizeof (struct GMT_GRID) + C.Grid->header->size * sizeof (gmt_grdfloat);	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for final grid", gmt_memory_use (mem_use, 1));
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%-31s: %9s\n", "Memory for final grid", gmt_memory_use (mem_use, 1));
 		for (end = LO; end <= HI; end++) if (C.set_limit[end]) {	/* Will need to keep a lower|upper surface constrain grid */
 			mem_total += mem_use;
-			GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for constraint grid", gmt_memory_use (mem_use, 1));
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%-31s: %9s\n", "Memory for constraint grid", gmt_memory_use (mem_use, 1));
 		}
 #ifdef PARALLEL_MODE
 		mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for alternate grid", gmt_memory_use (mem_use, 1));
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%-31s: %9s\n", "Memory for alternate grid", gmt_memory_use (mem_use, 1));
 		mem_use = C.Grid->header->size * sizeof (uint64_t);	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for Briggs indices", gmt_memory_use (mem_use, 1));
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%-31s: %9s\n", "Memory for Briggs indices", gmt_memory_use (mem_use, 1));
 #endif
 		mem_use = C.npoints * sizeof (struct SURFACE_BRIGGS) ;	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for Briggs coefficients", gmt_memory_use (mem_use, 1));
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%-31s: %9s\n", "Memory for Briggs coefficients", gmt_memory_use (mem_use, 1));
 		mem_use = C.Grid->header->size;	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Memory for node status", gmt_memory_use (mem_use, 1));
-		GMT_Report (API, GMT_MSG_VERBOSE, "------------------------------------------\n");
-		GMT_Report (API, GMT_MSG_VERBOSE, "%-31s: %9s\n", "Total memory use", gmt_memory_use (mem_total, 1));
-		GMT_Report (API, GMT_MSG_VERBOSE, "==========================================\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%-31s: %9s\n", "Memory for node status", gmt_memory_use (mem_use, 1));
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "------------------------------------------\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%-31s: %9s\n", "Total memory use", gmt_memory_use (mem_total, 1));
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "==========================================\n");
 	}
 
 	/* Allocate the memory needed to perform the gridding  */
@@ -2300,7 +2300,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	if (debug)
 		tmp_grid = gmt_M_memory_aligned (GMT, NULL, C.Grid->header->size, gmt_grdfloat);
 #endif
-	GMT_Report (API, GMT_MSG_VERBOSE, "Grid\tMode\tIteration\tMax Change\tConv Limit\tTotal Iterations\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Grid\tMode\tIteration\tMax Change\tConv Limit\tTotal Iterations\n");
 
 	set_coefficients (GMT, &C);	/* Initialize the coefficients needed in the finite-difference expressions */
 

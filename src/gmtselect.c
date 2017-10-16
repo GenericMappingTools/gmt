@@ -305,7 +305,7 @@ GMT_LOCAL int old_C_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_
 	}
 	if (arg[0] == 'f') {
 		if (gmt_M_compat_check (API->GMT, 4)) {	/* Allow old-style quick-mode specification */
-			GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C<file>+d-<distance> instead\n");
+			GMT_Report (API, GMT_MSG_COMPAT, "Option -Cf is deprecated; use -C<file>+d-<distance> instead\n");
 			arg[0] = '-';
 			fix = true;
 		}
@@ -469,7 +469,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				Ctrl->N.active = true;
 				strncpy (buffer, opt->arg, GMT_BUFSIZ);
 				if (buffer[strlen(buffer)-1] == 'o' && gmt_M_compat_check (GMT, 4)) { /* Edge is considered outside */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -N...o is deprecated; use -E instead\n");
 					Ctrl->E.active = true;
 					Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
 					buffer[strlen(buffer)-1] = 0;
@@ -605,7 +605,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gmtselect main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
 	if (Ctrl->C.active && gmt_M_is_cartesian (GMT, GMT_IN)) pt_cartesian = true;
 
@@ -636,7 +636,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		if (no_resample) GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	}
 
-	if (do_project) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -J means all data will be projected before tests are applied\n");
+	if (do_project) GMT_Report (API, GMT_MSG_VERBOSE, "-J means all data will be projected before tests are applied\n");
 	 
 	if (Ctrl->N.active) {	/* Set up GSHHS */
 		if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
@@ -982,7 +982,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " records, passed %" PRIu64" records\n", n_read, n_pass);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " records, passed %" PRIu64" records\n", n_read, n_pass);
 
 	if (Ctrl->N.active) {
 		gmt_free_shore (GMT, &c);

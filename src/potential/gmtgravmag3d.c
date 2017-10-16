@@ -256,7 +256,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_
 				break;
 			case 'M':
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -M is deprecated; -fg was set instead, use this in the future.\n");
 					if (gmt_M_is_cartesian (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
@@ -453,7 +453,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		point   = Cin->table[0];	/* Can only be one table since we read a single file */
 		ndata_p = (unsigned int)point->n_records;
 		if (point->n_segments > 1) /* case not dealt (or ignored) and should be tested here */
-			GMT_Report(API, GMT_MSG_NORMAL, "Warning: multi-segment files are not used in gmtgravmag3d. Using first segment only\n");
+			GMT_Report(API, GMT_MSG_VERBOSE, "Multi-segment files are not used in gmtgravmag3d. Using first segment only\n");
 	}
 
 	if (Ctrl->T.triangulate) { 	/* Read triangle file output from triangulate */
@@ -491,14 +491,14 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	if (n_swap > 0)
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d triangles had ccw order\n", n_swap);
+		GMT_Report (API, GMT_MSG_VERBOSE, "%d triangles had ccw order\n", n_swap);
 	/* --------------------------------------------------------------------------------------- */
 
 	if (Ctrl->G.active) {
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, Ctrl->I.inc, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	
-		GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions are n_columns = %d, n_rows = %d\n", Gout->header->n_columns, Gout->header->n_rows);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Grid dimensions are n_columns = %d, n_rows = %d\n", Gout->header->n_columns, Gout->header->n_rows);
 
 		/* Build observation point vectors */
 		x = gmt_M_memory (GMT, NULL, Gout->header->n_columns, double);

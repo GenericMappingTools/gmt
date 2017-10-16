@@ -15,16 +15,12 @@ Synopsis
 
 **grdcut** *ingrid* |-G|\ *outgrid*
 |SYN_OPT-R|
-[ |-D|\ [*weight*] ]
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
 [ |-S|\ [**n**]\ *lon/lat/radius*\ [*unit*] ]
 [ |SYN_OPT-V| ]
 [ |-Z|\ [\ **n**\ \|\ **r**]\ *min/max* ]
-[ |SYN_OPT-bo| ]
-[ |SYN_OPT-do| ]
 [ |SYN_OPT-f| ]
-[ |SYN_OPT-o| ]
 
 |No-spaces|
 
@@ -55,12 +51,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-.. _-D:
-
-**-D**\ [*weight*]
-    Instead of writing a grid, write *x y z* triplets to standard output.
-    Optionally, append a *weight* to write *x y z weight* instead.
 
 .. _-J:
 
@@ -104,18 +94,8 @@ Optional Arguments
     shrinking the boundaries once a NaN is found [Default simply skips NaNs
     when making the range decision].
 
-.. |Add_-bo| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-bo.rst_
-
-.. |Add_-do| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-do.rst_
-    
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
-
-.. include:: explain_-ocols.rst_
-|
-|   This option applies only if **-D** option has been set. 
 
 .. include:: explain_help.rst_
 
@@ -160,14 +140,6 @@ lower left and upper right corners and the desired projection, use
    ::
 
     gmt grdcut @earth_relief_02m -R160/20/220/30r -Joc190/25.5/292/69/1 -Gdata.nc
-
-To bypass the output grid and simply write lon lat data records to standard output
-for the same oblique region, and add a fixed weight of 0.1, try
-
-
-   ::
-
-    gmt grdcut @earth_relief_02m -R160/20/220/30r -Joc190/25.5/292/69/1 -D0.1 > data.txt
 
 See Also
 --------

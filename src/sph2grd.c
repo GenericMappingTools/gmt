@@ -247,7 +247,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the sph2grd main code ----------------------------*/
 
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
-	GMT_Report (API, GMT_MSG_VERBOSE, "Process input coefficients\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Process input coefficients\n");
 	for (col = 0; col < 4; col++) gmt_set_column (GMT, GMT_IN, col, GMT_IS_FLOAT);	/* Not reading lon,lat in this program */
 	
 	if ((error = gmt_set_cols (GMT, GMT_IN, 4)) != GMT_NOERROR) {
@@ -289,18 +289,18 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "M_max = %d exceeds L_max = %d, wrong column order?\n", M_max, L_max);
 		Return (GMT_RUNTIME_ERROR);
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Coefficient file has L_max = %d and M_max = %d\n", L_max, M_max);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Coefficient file has L_max = %d and M_max = %d\n", L_max, M_max);
 	
 	if (Ctrl->F.active && Ctrl->F.mode == SPH2GRD_BANDPASS) {	/* See if we can save work by ignoring low or high terms */
 		L = (Ctrl->F.hc < DBL_MAX) ? irint (Ctrl->F.hc) : INT_MAX;	/* Get the highest L needed given the high-cut filter */
 		if (L_max > L) {
 			L_max = L;
-			GMT_Report (API, GMT_MSG_VERBOSE, "Chosen high-cut bandpass filter sets effective L_max = %d and M_max = %d\n", L_max, MIN(L_max,M_max));
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Chosen high-cut bandpass filter sets effective L_max = %d and M_max = %d\n", L_max, MIN(L_max,M_max));
 		}
 		L = irint (Ctrl->F.lc);	/* Get the lowest L needed given the low-cut filter */
 		if (L > L_min) {
 			L_min = L;
-			GMT_Report (API, GMT_MSG_VERBOSE, "Chosen low-cut bandpass filter sets effective L_min = %d\n", L_min);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Chosen low-cut bandpass filter sets effective L_min = %d\n", L_min);
 		}
 	}
 	
@@ -373,7 +373,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	 * We compute a matrix with rows representing order M and columns representing longitude.
 	 * Then, we allocate a set of pointers assigned to each row to enable 2-D indexing.*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate exp (i*m*lon) for all M [%d] and all lon [%u]\n", M_max+1, Grid->header->n_columns);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate exp (i*m*lon) for all M [%d] and all lon [%u]\n", M_max+1, Grid->header->n_columns);
 	k = 0;
 	gmt_M_col_loop2 (GMT, Grid, col) {	/* Evaluate all sin, cos terms */
 		lon = gmt_M_grd_col_to_x (GMT, col, Grid->header);	/* Current longitude */
@@ -405,7 +405,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	duplicate_col = (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 	n_columns = (duplicate_col) ? Grid->header->n_columns - 1 : Grid->header->n_columns;
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Start evaluating the spherical harmonic series\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Start evaluating the spherical harmonic series\n");
 	
 	/* Below section will become parallellized via OpenMP soon.
 	 * Shared:  Grid, L_sign, L_max, L_min, ortho, Cosm, Sinm, Cosmx, Sinmx.
@@ -452,7 +452,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Finished 100 %% of evaluation\n");
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Write grid to file\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write grid to file\n");
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR)
 		error = API->error;
 	else
@@ -472,6 +472,6 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, C);
 	gmt_M_free (GMT, S);
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Completed\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Completed\n");
 	Return ((error) ? error : EXIT_SUCCESS);
 }

@@ -342,7 +342,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
 	if (s->n_out_columns != 1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "-C must specify a single column name\n");
 		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -358,9 +358,9 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	
 	from = (Ctrl->In.file) ? Ctrl->In.file : tofrom[GMT_IN];
 	if (GMT->common.R.active[RSET]) wesn = GMT->common.R.wesn;	/* Passed a sub region request */
-	GMT_Report (API, GMT_MSG_VERBOSE, "Read crossover database from %s...\n", from);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read crossover database from %s...\n", from);
 	np = x2sys_read_coe_dbase (GMT, s, Ctrl->In.file, Ctrl->I.file, wesn, Ctrl->C.col, coe_kind, Ctrl->S.file, &P, &nx, &n_tracks);
-	GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
 
 	if (np == 0 && nx == 0) {	/* End here since nothing was allocated */
 		x2sys_end (GMT, s);
@@ -425,7 +425,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->L.active && !check_for_NaN) {	/* Correction table would not be needed for output */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Correction table not needed for chosen output (corrections ignored).\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Correction table not needed for chosen output (corrections ignored).\n");
 		Ctrl->L.active = false;
 	}
 
@@ -606,7 +606,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 			sprintf (record, "%s - %s nx = %d", P[p].trk[0], P[p].trk[1], P[p].nx);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, "Crossovers from %s minus %s [%d].\n", P[p].trk[0], P[p].trk[1], P[p].nx);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Crossovers from %s minus %s [%d].\n", P[p].trk[0], P[p].trk[1], P[p].nx);
 		if (Ctrl->S.active) {	/* May have to flip which is track one and two */
 			two = !strcmp (Ctrl->S.file, P[p].trk[0]);
 			one = 1 - two;
@@ -707,7 +707,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Output %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np_use, nx_use);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Output %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np_use, nx_use);
 	
 	/* Done, free up data base array */
 	

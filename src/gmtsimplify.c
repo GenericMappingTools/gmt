@@ -308,9 +308,9 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	
 	/*---------------------------- This is the gmtsimplify main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	if (Ctrl->T.mode > 1) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: gmtsimplify only implemented using Flat-Earth calculations.\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "gmtsimplify only implemented using Flat-Earth calculations.\n");
 		Ctrl->T.mode = 1;	/* Limited to Flat Earth calculations for now */
 	}
 	
@@ -394,7 +394,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 			else
 				n_saved = 0;
 			gmt_M_free (GMT, index);	/* No longer needed */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Points in: %" PRIu64 " Points out: %" PRIu64 "\n", S[GMT_IN]->n_rows, n_saved);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Points in: %" PRIu64 " Points out: %" PRIu64 "\n", S[GMT_IN]->n_rows, n_saved);
 		}
 		if (seg_out < D[GMT_IN]->table[tbl]->n_segments) D[GMT_OUT]->table[tbl]->segment = gmt_M_memory (GMT, D[GMT_OUT]->table[tbl]->segment, seg_out, struct GMT_DATASEGMENT *);	/* Reduce allocation to # of segments */
 		D[GMT_OUT]->table[tbl]->n_segments = seg_out;	/* Update segment count */
@@ -406,7 +406,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
 		Return (API->error);
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Segments in: %" PRIu64 " Segments out: %" PRIu64 "\n", ns_in, ns_out);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Segments in: %" PRIu64 " Segments out: %" PRIu64 "\n", ns_in, ns_out);
 	
 	Return (GMT_NOERROR);
 }

@@ -275,7 +275,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
 	if (s->n_out_columns != 1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "-C must specify a single column name\n");
 		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -293,9 +293,9 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	
 	/* Read the entire data base; note the -I, R and -S options are applied during reading */
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Read crossover database %s...\n", Ctrl->In.file);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read crossover database %s...\n", Ctrl->In.file);
 	np = x2sys_read_coe_dbase (GMT, s, Ctrl->In.file, Ctrl->I.file, GMT->common.R.wesn, Ctrl->C.col, coe_kind, Ctrl->S.file, &P, &nx, &n_tracks);
-	GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
 
 	if (np == 0 && nx == 0) {	/* End here since nothing was allocated */
 		x2sys_end (GMT, s);

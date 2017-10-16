@@ -321,7 +321,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active && gmt_decode_grd_h_info (GMT, Ctrl->D.text, Grid->header))
 		Return (GMT_PARSE_ERROR);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
 
 	flag = gmt_M_memory (GMT, NULL, Grid->header->size, unsigned int);
 
@@ -331,7 +331,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 	/* read in reel headers from segy file */
 	if (Ctrl->In.active) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Will read segy file %s\n", Ctrl->In.file);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Will read segy file %s\n", Ctrl->In.file);
 		if ((fpi = gmt_fopen (GMT, Ctrl->In.file, "rb")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find segy file %s\n", Ctrl->In.file);
 			gmt_M_free (GMT, flag);
@@ -339,7 +339,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		}
 	}
 	else {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Will read segy file from standard input\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Will read segy file from standard input\n");
 		if (fpi == NULL) fpi = stdin;
 	}
 	if ((check = segy_get_reelhd (fpi, reelhead)) != true) {
@@ -356,7 +356,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	if (swap_bytes) {
 		/* this is a little-endian system, and we need to byte-swap ints in the reel header - we only
 		   use a few of these*/
-		GMT_Report (API, GMT_MSG_VERBOSE, "Swapping bytes for ints in the headers\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Swapping bytes for ints in the headers\n");
 		binhead.num_traces = bswap16 (binhead.num_traces);
 		binhead.nsamp = bswap16 (binhead.nsamp);
 		binhead.dsfc = bswap16 (binhead.dsfc);
@@ -367,11 +367,11 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	/* set parameters from the reel headers */
 	if (!Ctrl->M.value) Ctrl->M.value = binhead.num_traces;
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Number of traces in header is %d\n", Ctrl->M.value);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of traces in header is %d\n", Ctrl->M.value);
 
 	if (!Ctrl->L.value) {	/* number of samples not overridden*/
 		Ctrl->L.value = binhead.nsamp;
-		GMT_Report (API, GMT_MSG_VERBOSE, "Number of samples per trace is %d\n", Ctrl->L.value);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of samples per trace is %d\n", Ctrl->L.value);
 	}
 	else if ((Ctrl->L.value != binhead.nsamp) && (binhead.nsamp))
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning nsampr input %d, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
@@ -383,14 +383,14 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Number of samples for reel is %d\n", Ctrl->L.value);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of samples for reel is %d\n", Ctrl->L.value);
 
-	if (binhead.dsfc != 5) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: data not in IEEE format\n");
+	if (binhead.dsfc != 5) GMT_Report (API, GMT_MSG_VERBOSE, "Data not in IEEE format\n");
 
 	if (!Ctrl->Q.value[Y_ID]) {
 		Ctrl->Q.value[Y_ID] = (double) binhead.sr; /* sample interval of data (microseconds) */
 		Ctrl->Q.value[Y_ID] /= 1000000.0;
-		GMT_Report (API, GMT_MSG_VERBOSE,"Sample interval is %f s\n", Ctrl->Q.value[Y_ID]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE,"Sample interval is %f s\n", Ctrl->Q.value[Y_ID]);
 	}
 	else if ((Ctrl->Q.value[Y_ID] != binhead.sr) && (binhead.sr)) /* value in header overridden by input */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning s_int input %f, s_int in header %f\n", Ctrl->Q.value[Y_ID], (float)binhead.sr);

@@ -267,7 +267,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		}
 		gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		pol = D->table[0];	/* Since it is a single file */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
 	}
 
 	if (Ctrl->E.rot.single) {	/* Got a single rotation, no time, create a rotation table with one entry */
@@ -333,7 +333,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	/* Write a header record */
 	}
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
 
 	/* Read the location data from file or stdin */
 
@@ -472,7 +472,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, out);
 	gmt_M_free (GMT, Out);
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 
 	Return (GMT_NOERROR);
 }

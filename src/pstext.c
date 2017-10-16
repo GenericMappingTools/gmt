@@ -198,7 +198,7 @@ GMT_LOCAL void output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 GMT_LOCAL void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C) {
 	gmt_M_memset (T, 1, struct PSTEXT_INFO);
 	if (C->T.mode != 'o' && C->C.dx == 0.0 && C->C.dy == 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Cannot have non-rectangular text box if clearance (-C) is zero.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot have non-rectangular text box if clearance (-C) is zero.\n");
 		C->T.mode = 'o';
 	}
 	T->x_space = C->C.dx;
@@ -260,7 +260,7 @@ GMT_LOCAL int get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int 
 	}
 
 	/* Well, seems like the old format so far */
-	GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: use of old style pstext input is deprecated.\n");
+	GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Use of old style pstext input is deprecated.\n");
 	return (4);
 }
 
@@ -509,7 +509,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'm':
 				if (gmt_M_compat_check (GMT, 4)) /* Warn and pass through */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M to indicate paragraph mode.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-m option is deprecated and reverted back to -M to indicate paragraph mode.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 			case 'M':	/* Paragraph mode */
@@ -520,7 +520,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'S':
 				if (gmt_M_compat_check (GMT, 4)) { /* Warn and pass through */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -S option is deprecated; use font pen setting instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-S option is deprecated; use font pen setting instead.\n");
 					Ctrl->S.active = true;
 					if (gmt_getpen (GMT, opt->arg, &Ctrl->S.pen)) {
 						gmt_pen_syntax (GMT, 'S', "draws outline of characters.  Append pen attributes [Default pen is %s]", 0);
@@ -689,7 +689,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pstext main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input text table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input text table data\n");
 	load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
 
 #if 0
@@ -1129,7 +1129,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, Ctrl->M.active ? "pstext: Plotted %d text blocks\n" : "pstext: Plotted %d text strings\n", n_paragraphs);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, Ctrl->M.active ? "pstext: Plotted %d text blocks\n" : "pstext: Plotted %d text strings\n", n_paragraphs);
 
 	Return (GMT_NOERROR);
 }

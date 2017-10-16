@@ -262,7 +262,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		}
 		GMT->current.setting.proj_ellipsoid = gmt_get_ellipsoid (GMT, "Sphere");	/* Make sure we use a spherical projection */
 		mid = 0.5 * (B.wesn[XHI] + B.wesn[XLO]);	/* Central longitude to use */
-		GMT_Report (API, GMT_MSG_VERBOSE,
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE,
 		            "To undo equal-area projection, use -R%g/%g/%g/%g -JY%g/%s/360i\n",
 		            B.wesn[XLO], B.wesn[XHI], B.wesn[YLO], B.wesn[YHI], mid, EA_LAT);
 		sprintf (proj, "Y%g/%s/360", mid, EA_LAT);
@@ -321,10 +321,10 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 	for (trk = 0; trk < n_tracks; trk++) {
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Reading file %s ", trk_name[trk]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading file %s ", trk_name[trk]);
 
 		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk], &data, s, &p, &GMT->current.io, &row), trk_name[trk]);
-		GMT_Report (API, GMT_MSG_VERBOSE, "[%s]\n", s->path);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%s]\n", s->path);
 		
 		if (p.n_rows == 0) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "No data records found - skipping %s\n", trk_name[trk]);

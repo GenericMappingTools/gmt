@@ -232,7 +232,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 
 			case 'C':	/* Now done automatically in spotter_init */
 				if (gmt_M_compat_check (GMT, 4))
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -255,7 +255,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 				break;
 
 			case 'e':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -e is deprecated and will be removed in 5.2.x. Use -E instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and will be removed in 5.2.x. Use -E instead.\n");
 				/* Fall-through on purpose */
 			case 'E':	/* File with stage poles or a single rotation pole */
 				Ctrl->E.active = true;
@@ -657,9 +657,9 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, Out);
 
 	if (make_path)
-		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments written\n", n_points);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " segments written\n", n_points);
 	else
-		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points projected\n", n_points);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " points projected\n", n_points);
 
 	if (n_skipped) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points skipped because age < 0\n", n_skipped);
 

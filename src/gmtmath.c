@@ -309,9 +309,9 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		j++;
 	}
 	if (svd)
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Solve LS system via SVD decomposition and exclude eigenvalues < %g.\n", eigen_min);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Solve LS system via SVD decomposition and exclude eigenvalues < %g.\n", eigen_min);
 	else
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Solve LS system via Cholesky decomposition\n");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Solve LS system via Cholesky decomposition\n");
 
 #if 0
 	fprintf (stderr, "Printout of N and r matrix\n");
@@ -358,7 +358,7 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 			else
 				d[j] /= lambda[j];
 		}
-		if (k) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%d eigenvalues < %g set to zero to yield a stable solution\n", k, eigen_min);
+		if (k) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%d eigenvalues < %g set to zero to yield a stable solution\n", k, eigen_min);
 
 		/* Finally do x = v * d */
 		for (j = 0; j < n; j++) for (k = 0; k < n; k++) x[j] += v[k*n+j] * d[k];
@@ -571,7 +571,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 				Ctrl->A.active = true;	k = 0;
 				if (opt->arg[0] == '-') {	/* Old-style leading hyphen to the filename has been replaced by modifier +r */
 					if (gmt_M_compat_check (GMT, 5)) {
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: The leading hyphen in -A is deprecated.  Append modifier +r instead.\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "The leading hyphen in -A is deprecated.  Append modifier +r instead.\n");
 						Ctrl->A.null = true;
 						k = 1;
 					}
@@ -606,7 +606,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 				break;
 			case 'F':	/* Now obsolete, using -o instead */
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -F is deprecated; use -o instead\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -F is deprecated; use -o instead\n");
 					gmt_parse_o_option (GMT, opt->arg);
 				}
 				else
@@ -679,7 +679,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 GMT_LOCAL unsigned int gmt_assign_ptrs (struct GMT_CTRL *GMT, unsigned int last, struct GMTMATH_STACK *S[], struct GMT_DATATABLE **T, struct GMT_DATATABLE **T_prev) {	/* Centralize the assignment of previous stack ID and the current and previous stack tables */
 	unsigned int prev;
 	if (last == 0) {	/* User error in requesting more items that presently on the stack */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Fatal error: Not enough items on the stack\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Fatal error: Not enough items on the stack\n");
 		return UINT_MAX;	/* Error flag */
 	}
 	prev = last - 1;
@@ -1043,7 +1043,7 @@ GMT_LOCAL int table_BITAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 			T_prev->segment[s]->data[col][row] = (double)result_trunc;
 		}
 	}
-	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITAND resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "BITAND resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
 	return 0;
 }
 
@@ -1069,7 +1069,7 @@ GMT_LOCAL int table_BITLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		else {
 			a = (uint64_t)ad;	b_signed = (int64_t)bd;
 			if (b_signed < 0) {	/* Bad bitshift */
-				if (first) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "ERROR: Bit shift must be >= 0; other values yield NaN\n");
+				if (first) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Bit shift must be >= 0; other values yield NaN\n");
 				T_prev->segment[s]->data[col][row] = GMT->session.d_NaN;
 				first = false;
 			}
@@ -1082,7 +1082,7 @@ GMT_LOCAL int table_BITLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 			}
 		}
 	}
-	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITLEFT resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "BITLEFT resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
 	return 0;
 }
 
@@ -1106,7 +1106,7 @@ GMT_LOCAL int table_BITNOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 			T->segment[s]->data[col][row] = (double)result_trunc;
 		}
 	}
-	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITNOT resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "BITNOT resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
 	return 0;
 }
 
@@ -1135,7 +1135,7 @@ GMT_LOCAL int table_BITOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 			T_prev->segment[s]->data[col][row] = (double)result_trunc;
 		}
 	}
-	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITOR resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "BITOR resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
 	return 0;
 }
 
@@ -1161,7 +1161,7 @@ GMT_LOCAL int table_BITRIGHT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, s
 		else {
 			a = (uint64_t)ad;	b_signed = (int64_t)bd;
 			if (b_signed < 0) {	/* Bad bitshift */
-				if (first) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "ERROR: Bit shift must be >= 0; other values yield NaN\n");
+				if (first) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Bit shift must be >= 0; other values yield NaN\n");
 				T_prev->segment[s]->data[col][row] = GMT->session.d_NaN;
 				first = false;
 			}
@@ -1174,7 +1174,7 @@ GMT_LOCAL int table_BITRIGHT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, s
 			}
 		}
 	}
-	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITRIGHT resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "BITRIGHT resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
 	return 0;
 }
 
@@ -1200,7 +1200,7 @@ GMT_LOCAL int table_BITTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 		else {
 			a = (uint64_t)ad;	b_signed = (int64_t)bd;
 			if (b_signed < 0) {	/* Bad bit */
-				if (first) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "ERROR: Bit position range for BITTEST is 0-63 (since we are using do); other values yield NaN\n");
+				if (first) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Bit position range for BITTEST is 0-63 (since we are using do); other values yield NaN\n");
 				T_prev->segment[s]->data[col][row] = GMT->session.d_NaN;
 				first = false;
 			}
@@ -1214,7 +1214,7 @@ GMT_LOCAL int table_BITTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 			}
 		}
 	}
-	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITTEST resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "BITTEST resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
 	return 0;
 }
 
@@ -1243,7 +1243,7 @@ GMT_LOCAL int table_BITXOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 			T_prev->segment[s]->data[col][row] = (double)result_trunc;
 		}
 	}
-	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITXOR resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "BITXOR resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
 	return 0;
 }
 
@@ -1576,7 +1576,7 @@ GMT_LOCAL int table_DDT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	/* Central 1st difference in t, using zero-curvature boundary conditions at the ends */
 
-	if (info->irregular) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning, DDT called on irregularly spaced data (not supported)!\n");
+	if (info->irregular) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, DDT called on irregularly spaced data (not supported)!\n");
 	if (S[last]->constant) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand to DDT is constant!\n");
 
 	c = 0.5 / info->t_inc;
@@ -1606,7 +1606,7 @@ GMT_LOCAL int table_D2DT2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 
 	/* Central 2nd difference in t, using zero curvature boundary conditions */
 
-	if (info->irregular) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning, D2DT2 called on irregularly spaced data (not supported)!\n");
+	if (info->irregular) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, D2DT2 called on irregularly spaced data (not supported)!\n");
 	if (S[last]->constant) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand to D2DT2 is constant!\n");
 
 	c = 1.0 / (info->t_inc * info->t_inc);
@@ -1688,7 +1688,7 @@ GMT_LOCAL int table_DIV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
 	if (S[last]->constant && S[last]->factor == 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Divide by zero gives NaNs\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Divide by zero gives NaNs\n");
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->data[col][row];
@@ -2210,7 +2210,7 @@ GMT_LOCAL int table_INV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Inverse of zero gives NaNs\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Inverse of zero gives NaNs\n");
 	if (S[last]->constant) a = (S[last]->factor == 0) ? GMT->session.d_NaN : 1.0 / S[last]->factor;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = (S[last]->constant) ? a : 1.0 / T->segment[s]->data[col][row];
 	return 0;
@@ -2517,7 +2517,7 @@ GMT_LOCAL int table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 				lmsscl = GMT->session.d_NaN;
 
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = lmsscl;
-			if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found for segment %" PRIu64 "\n", GMT_n_multiples, s);
+			if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%d Multiple modes found for segment %" PRIu64 "\n", GMT_n_multiples, s);
 		}
 		else {	/* Just accumulate the total table */
 			gmt_M_memcpy (&z[k], T->segment[s]->data[col], info->T->segment[s]->n_rows, double);
@@ -2535,7 +2535,7 @@ GMT_LOCAL int table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 		lmsscl = GMT->session.d_NaN;
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->data[col][row] = lmsscl;
-	if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
+	if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%d Multiple modes found\n", GMT_n_multiples);
 	gmt_M_free (GMT, z);
 	return 0;
 }
@@ -3434,15 +3434,15 @@ GMT_LOCAL int table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	T_prev = S[prev]->D->table[0];
 	/* last holds the selected quantile (0-100), prev the data % */
 	if (!S[last]->constant) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: PQUANT must be given a constant quantile!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "PQUANT must be given a constant quantile!\n");
 		return -1;
 	}
 	if (S[last]->factor < 0.0 || S[last]->factor > 100.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: PQUANT must be given a constant quantile between 0-100%%!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "PQUANT must be given a constant quantile between 0-100%%!\n");
 		return -1;
 	}
 	if (S[prev]->constant) {	/* Trivial case */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: PQUANT of a constant is set to NaN\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "PQUANT of a constant is set to NaN\n");
 		p = GMT->session.d_NaN;
 		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = p;
 		return 0;
@@ -3480,15 +3480,15 @@ GMT_LOCAL int table_PQUANTW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 
 	/* last holds the selected quantile (0-100), prev the data % */
 	if (!S[last]->constant) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: PQUANTW must be given a constant quantile!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "PQUANTW must be given a constant quantile!\n");
 		return -1;
 	}
 	if (S[last]->factor < 0.0 || S[last]->factor > 100.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: PQUANTW must be given a constant quantile between 0-100%%!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "PQUANTW must be given a constant quantile between 0-100%%!\n");
 		return -1;
 	}
 	if (S[prev2]->constant) {	/* Trivial case */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: PQUANTW of a constant is set to NaN\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "PQUANTW of a constant is set to NaN\n");
 		p = GMT->session.d_NaN;
 		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->data[col][row] = p;
 		return 0;
@@ -3804,13 +3804,13 @@ GMT_LOCAL int table_ROLL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	assert (last > 2);	/* Must have at least 3 items on the stack: A single item plus the two roll arguments */
 	prev = last - 1;	/* This gives the number of stack items to include in the cycle */
 	if (!(S[last]->constant && S[prev]->constant)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: length and shift must be constants in ROLL!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "length and shift must be constants in ROLL!\n");
 		return -1;
 	}
 	n_items = urint (S[prev]->factor);
 	n_shift = irint (S[last]->factor);
 	if (n_items > prev) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Items on stack is fewer than required by ROLL!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Items on stack is fewer than required by ROLL!\n");
 		return -1;
 	}
 	top = prev - 1;
@@ -3845,7 +3845,7 @@ GMT_LOCAL int table_ROTT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	prev = last - 1;
 	T_prev = S[prev]->D->table[0];
 	if (!S[last]->constant) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: T-shift must be a constant in ROTT!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "T-shift must be a constant in ROTT!\n");
 		return -1;
 	}
 	shift = irint (S[last]->factor / info->t_inc);
@@ -4056,7 +4056,7 @@ GMT_LOCAL int table_SORT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		return -1;
 	}
 	if (!S[last]->constant || !((dir = lrint (S[last]->factor)) == -1 || dir == +1)) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error SORT: Direction must be -1 (decreasing) or +1 (increasing)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error SORT: Direction must be -1 (decreasing) or +1 (increasing)!\n");
 		return 0;
 	}
 
@@ -4885,7 +4885,7 @@ GMT_LOCAL int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *valu
 	mark = strchr (copy, '?');
 	if (mark) *mark = '\0';
 	if (!gmt_access (GMT, copy, R_OK)) {	/* Yes it is a file */
-		if (check != GMT_IS_NAN && possible_number) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Your argument %s is both a file and a number.  File is selected\n", txt);
+		if (check != GMT_IS_NAN && possible_number) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your argument %s is both a file and a number.  File is selected\n", txt);
 		return GMTMATH_ARG_IS_FILE;
 	}
 
@@ -4904,7 +4904,7 @@ GMT_LOCAL int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *valu
 	}
 
 	if (txt[0] == '-') {	/* Probably a bad commandline option */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Option %s not recognized\n", txt);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option %s not recognized\n", txt);
 		return (GMTMATH_ARG_IS_BAD);
 	}
 
@@ -4935,7 +4935,7 @@ GMT_LOCAL void gmtmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 	else if (!strcmp (*arg, "ZDIST"))   {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("ZCDF");     }
 
 	if (t)
-		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Operator %s is deprecated; use %s instead.\n", old, t);
+		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Operator %s is deprecated; use %s instead.\n", old, t);
 }
 
 GMT_LOCAL void gmtmath_expand_recall_cmd (struct GMT_OPTION *list) {
@@ -5008,7 +5008,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gmtmath main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Perform reverse Polish notation calculations on data tables\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Perform reverse Polish notation calculations on data tables\n");
 
 	if (Ctrl->Q.active || Ctrl->S.active) {	/* Turn off table and segment headers in calculator or one-record mode */
 		gmt_set_tableheader (GMT, GMT_OUT, false);
@@ -5251,7 +5251,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 		op = decode_gmt_argument (GMT, opt->arg, &value, &dimension, localhashnode);
 
-		if (op != GMTMATH_ARG_IS_FILE && !gmt_access (GMT, opt->arg, R_OK)) GMT_Message (API, GMT_TIME_NONE, "Warning: The number or operator %s may be confused with an existing file %s!  The file will be ignored.\n", opt->arg, opt->arg);
+		if (op != GMTMATH_ARG_IS_FILE && !gmt_access (GMT, opt->arg, R_OK)) GMT_Message (API, GMT_TIME_NONE, "The number or operator %s may be confused with an existing file %s!  The file will be ignored.\n", opt->arg, opt->arg);
 
 		if (op < GMTMATH_ARG_IS_OPERATOR) {	/* File name or factor */
 
@@ -5556,7 +5556,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, recall[kk]);
 	}
 
-	if (nstack > 1) GMT_Report (API, GMT_MSG_NORMAL, "Warning: %d more operands left on the stack!\n", nstack-1);
+	if (nstack > 1) GMT_Report (API, GMT_MSG_VERBOSE, "%d more operands left on the stack!\n", nstack-1);
 
 	Return (GMT_NOERROR);
 }

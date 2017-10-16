@@ -850,7 +850,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths <= 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "No cruises given\n");
 		Return (GMT_NO_INPUT);
 	}
 
@@ -1046,14 +1046,14 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Now processing cruise %s\n", list[argno]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Now processing cruise %s\n", list[argno]);
 		
 		D = MGD77_Create_Dataset (GMT);
 
 		error = MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H);
 		if (error) {
 			if (error == MGD77_ERROR_NOSUCHCOLUMN)
-				GMT_Report (API, GMT_MSG_NORMAL, "One or more requested columns not present in cruise %s - skipping\n", list[argno]);
+				GMT_Report (API, GMT_MSG_VERBOSE, "One or more requested columns not present in cruise %s - skipping\n", list[argno]);
 			else
 				GMT_Report (API, GMT_MSG_NORMAL, "Error reading header sequence for cruise %s - skipping\n", list[argno]);
 			MGD77_Free_Dataset (GMT, &D);
@@ -1069,7 +1069,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			}
 			if (auxlist[MGD77_AUX_ID].requested || auxlist[MGD77_AUX_DA].requested) string_output = true;
 			if (string_output && GMT->common.b.active[1]) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot specify binary output with text fields\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Cannot specify binary output with text fields\n");
 				MGD77_Free_Dataset (GMT, &D);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -1090,7 +1090,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		lat_column  = ((i = MGD77_Get_Column (GMT, "lat",  &M)) != MGD77_NOT_SET && M.order[i].set == MGD77_M77_SET) ? M.order[i].item : 3 * MGD77_NOT_SET;
 		
 		if (time_column != MGD77_NOT_SET && GMT->common.b.active[GMT_OUT] && gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) && first_warning) {	/* Warn that binary time output is in Unix secs */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: For binary output, time is stored as seconds since 1970 (Use TIME_SYSTEM=Unix to decode)\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "For binary output, time is stored as seconds since 1970 (Use TIME_SYSTEM=Unix to decode)\n");
 			first_warning = false;
 		}
 		for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {	/* Prepare GMT output formatting machinery */
@@ -1153,7 +1153,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		if ((auxlist[MGD77_AUX_GR].requested || (Ctrl->A.code[ADJ_GR] > GR_FAA_STORED)) && Ctrl->A.GF_version == MGD77_NOT_SET) {
 			Ctrl->A.GF_version = D->H.mgd77[use]->Gravity_Theoretical_Formula_Code - '0';
 			if (Ctrl->A.GF_version < MGD77_IGF_HEISKANEN || Ctrl->A.GF_version > MGD77_IGF_1980) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Invalid Gravity Theoretical Formula Code (%c) - default to %d\n", D->H.mgd77[use]->Gravity_Theoretical_Formula_Code, MGD77_IGF_1980);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Invalid Gravity Theoretical Formula Code (%c) - default to %d\n", D->H.mgd77[use]->Gravity_Theoretical_Formula_Code, MGD77_IGF_1980);
 				Ctrl->A.GF_version = MGD77_IGF_1980;
 			}
 		}
@@ -1167,11 +1167,11 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			bool faked = false;
 			if (Ctrl->A.fake_times) {	/* Try to make fake times based on duration and distances */
 				faked = MGD77_fake_times (GMT, &M, &(D->H), dvalue[x_col], dvalue[y_col], dvalue[t_col], D->H.n_records);
-				if (faked) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Time column for cruise %s created from distances and duration\n", list[argno]);
+				if (faked) GMT_Report (API, GMT_MSG_VERBOSE, "Time column for cruise %s created from distances and duration\n", list[argno]);
 			}
 			if (!faked) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Time column not present in cruise %s - set to NaN\n", list[argno]);
-				if (this_limit_on_time) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -D limits cannot be used for cruise %s\n", list[argno]);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Time column not present in cruise %s - set to NaN\n", list[argno]);
+				if (this_limit_on_time) GMT_Report (API, GMT_MSG_VERBOSE, "-D limits cannot be used for cruise %s\n", list[argno]);
 			}
 			if (!faked && !Ctrl->D.mode) this_limit_on_time = false;	/* To avoid pointless tests against NaN in loop */
 		}
@@ -1596,7 +1596,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, aux_tvalue[MGD77_AUX_DA]);
 	gmt_M_free (GMT, Out);
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Returned %d output records from %d cruises\n", n_out, n_cruises);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Returned %d output records from %d cruises\n", n_out, n_cruises);
 	
 	MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_paths);

@@ -383,7 +383,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	for (k = 0; k < n_components; k++) gmt_M_free (GMT, P[k]);
 
 	if (gmt_jacobi (GMT, C, n_components, n_components, lambda, V, work1, work2, &nrots)) {	/* Solve eigen-system */
-		GMT_Message (GMT->parent, GMT_TIME_NONE, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
+		GMT_Message (GMT->parent, GMT_TIME_NONE, "Eigenvalue routine failed to converge in 50 sweeps.\n");
 	}
 	if (n_components == 3) {	/* Recover lon,lat */
 		gmt_cart_to_geo (GMT, &lat, &lon, X, true);
@@ -416,7 +416,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	E[1] = 2.0 * sqrt (lambda[0]) * scl;	/* 2* since we need the major axis not semi-major */
 	E[2] = 2.0 * sqrt (lambda[1]) * scl;
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%g%% confidence ellipse on mean position: Major axis = %g Minor axis = %g Major axis azimuth = %g\n", 100.0 * conf, E[1], E[2], E[0]);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%g%% confidence ellipse on mean position: Major axis = %g Minor axis = %g Major axis azimuth = %g\n", 100.0 * conf, E[1], E[2], E[0]);
 }
 
 GMT_LOCAL void gmt_make_rot2d_matrix (double angle, double R[3][3]) {
@@ -488,7 +488,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->A.active) {	/* Want a single primary vector */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, 1, 3};
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing single input vector; no files are read\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing single input vector; no files are read\n");
 		if (Ctrl->A.mode) {	/* Compute the mean of all input vectors */
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 				Return (API->error);
@@ -525,7 +525,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 		single = true;
 	}
 	else {	/* Read input files or stdin */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 			Return (API->error);
 		}

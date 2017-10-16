@@ -430,7 +430,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->W.wrap) Pin->is_wrapping = true;	/* A cyclic CPT has been requested */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid(s)\n");
 
 	gmt_M_memset (wesn, 4, double);
 	if (GMT->common.R.active[RSET]) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Subset */
@@ -449,7 +449,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		}
 		grdfile[k] = strdup (opt->arg);
 		if (k && !(G[k]->header->n_columns == G[k-1]->header->n_columns && G[k]->header->n_rows == G[k-1]->header->n_rows)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Grids do not have the same domain!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Grids do not have the same domain!\n");
 			error = free_them_grids (API, G, grdfile, k);
 			gmt_M_free (GMT, G);
 			gmt_M_free (GMT, grdfile);
@@ -546,7 +546,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "Mean and S.D. of data are %s %s\n",
 		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_VERBOSE, format, mean, sd);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, mean, sd);
 	}
 
 	/* Decide how to make steps in z.  */
@@ -610,7 +610,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 			mean = 0.5 * (G[0]->header->z_min + G[0]->header->z_max);
 			sd = (G[0]->header->z_max - mean) / 1.5;	/* This factor of 1.5 probably needs to change since z_inc is no longer fixed at 0.1 */
 			if (sd <= 0.0) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Min and Max data values are equal.\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Min and Max data values are equal.\n");
 				gmt_M_free (GMT, cdf_cpt);
 				Return (GMT_RUNTIME_ERROR);
 			}

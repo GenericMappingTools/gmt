@@ -124,7 +124,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 							case 'l': Ctrl->D.mode = BLOCKMODE_LOW; break;	/* Pick low mode */
 							case 'h': Ctrl->D.mode = BLOCKMODE_HIGH; break;	/* Pick high mode */
 							default:	/* Bad modifier */
-								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized modifier +%c.\n", p[0]);
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized modifier +%c.\n", p[0]);
 								n_errors++;
 								break;
 						}
@@ -441,10 +441,10 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the blockmode main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
 	if (Ctrl->C.active && Ctrl->Q.active) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -C overrides -Q\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "-C overrides -Q\n");
 		Ctrl->Q.active = false;
 	}
 
@@ -455,9 +455,9 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	half_dx = 0.5 * Grid->header->inc[GMT_X];
 	mode_xy = !Ctrl->C.active;
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
 		snprintf (format, GMT_LEN256, "W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->n_columns, Grid->header->n_rows);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->n_columns, Grid->header->n_rows);
 	}
 
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
@@ -738,7 +738,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	}
 	else {
 		n_lost = n_read - n_pitched;	/* Number of points that did not get used */
-		GMT_Report (API, GMT_MSG_VERBOSE, "N read: %" PRIu64 " N used: %" PRIu64 " outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "N read: %" PRIu64 " N used: %" PRIu64 " outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
 		error = GMT_NOERROR;
 	}
 

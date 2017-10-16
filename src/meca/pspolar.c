@@ -196,7 +196,7 @@ GMT_LOCAL unsigned int old_Q_parser (struct GMT_CTRL *GMT, char *arg, struct PSP
 	/* Deal with the old syntax: -Qs<half-size>/[V[<v_width/h_length/h_width/shape>]][G<r/g/b>][L] */
 	char *c = NULL, *text = strdup (arg);	/* Work on a copy */
 	unsigned int n_errors = 0;
-	GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -QsV<v_width>/<h_length>/<h_width>/<shape> is deprecated; use -Qs+v<vecpar> instead.\n");
+	GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-QsV<v_width>/<h_length>/<h_width>/<shape> is deprecated; use -Qs+v<vecpar> instead.\n");
 	if ((c = strchr (text, 'L'))) {	/* Found trailing L for outline */
 		Ctrl->S2.outline = true;
 		c[0] = '\0';	/* Chop off L */

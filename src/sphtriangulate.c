@@ -118,7 +118,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 			}
 			S[1] = Dout[1]->table[0]->segment[0];
 		}
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output %d unique triangle polygons\n", D->n);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output %d unique triangle polygons\n", D->n);
 		for (k = ij = 0; k < D->n; k++, ij += TRI_NROW) {	/* For each triangle */
 			S[0] = Dout[0]->table[0]->segment[k];	/* Short hand for current triangle segment */
 			/* Write segment header with triangle # and the three node numbers */
@@ -173,7 +173,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 			arc[j] = arc[i];
 		}
 		n_arcs = j + 1;
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output %" PRIu64 " unique triangle arcs\n", n_arcs);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output %" PRIu64 " unique triangle arcs\n", n_arcs);
 
 		dim[GMT_SEG] = n_arcs;	/* Number of output arcs = segments */
 		dim[GMT_COL] = 2;		/* Only use 2 columns */
@@ -350,7 +350,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 			gmt_M_free (GMT, arc);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output %d unique Voronoi arcs\n", n_arcs);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output %d unique Voronoi arcs\n", n_arcs);
 
 		for (i = 0; i < n_arcs; i++) {
 			S[0] = Dout[0]->table[0]->segment[i];	/* Shorthand for this output segment */
@@ -369,7 +369,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 		Dout[0]->table[0]->n_records = Dout[0]->n_records = 2 * n_arcs;
 	}
 	else {
-		if (get_area) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Total surface area = %g\n", area_sphere * R2);
+		if (get_area) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Total surface area = %g\n", area_sphere * R2);
 	}
 	gmt_M_free (GMT, plon);
 	gmt_M_free (GMT, plat);

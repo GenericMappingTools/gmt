@@ -164,10 +164,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
 	if (Ctrl->T.active) Ctrl->N.active = true;	/* -T implies -N */
-	if (Ctrl->T.active && n_files) GMT_Report (API, GMT_MSG_NORMAL, "Warning: Option -T ignores all input files\n");
+	if (Ctrl->T.active && n_files) GMT_Report (API, GMT_MSG_VERBOSE, "Option -T ignores all input files\n");
 
 	if (Ctrl->N.active && GMT->current.map.frame.init) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
 		GMT->current.map.frame.draw = false;
 	}
 
@@ -180,11 +180,11 @@ GMT_LOCAL void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL,
 	switch (n) {
 		case PSL_ALL_CLIP:
 			PSL_endclipping (PSL, n);	/* Reduce clipping to none */
-			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore ALL clip levels\n");
+			GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "Restore ALL clip levels\n");
 			break;
 		default:
 			PSL_endclipping (PSL, n);	/* Reduce clipping by n levels [1] */
-			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore %d clip levels\n", n);
+			GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "Restore %d clip levels\n", n);
 			break;
 	}
 }
@@ -230,7 +230,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 		gmt_plotend (GMT);
-		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 		Return (GMT_NOERROR);
 	}
 
@@ -257,7 +257,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 		if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 #endif
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 		if (Ctrl->N.active) {	/* Must clip map */
 			eo_flag = PSL_EO_CLIP;	/* Do odd/even clipping when we first lay down the map perimeter */
 			gmt_map_clip_on (GMT, GMT->session.no_rgb, 1 + eo_flag);
@@ -312,7 +312,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 
 	Return (GMT_NOERROR);
 }

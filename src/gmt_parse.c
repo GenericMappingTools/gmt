@@ -154,13 +154,13 @@ GMT_LOCAL int parse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 		return (5);
 	}
 	else if (gmt4 && !gmt5) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Detected GMT 4 style elements in -B option\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: Detected GMT 4 style elements in -B option\n");
 		return (4);
 	}
 	else if (gmt4 && gmt5) {	/* Mixed case is never allowed */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Error: Detected both GMT 4 and >= style elements in -B option. Unable to parse.\n");
-		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
-		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "parse_B_arg_inspector: Detected both GMT 4 and >= style elements in -B option. Unable to parse.\n");
+		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "parse_B_arg_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
+		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "parse_B_arg_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
 		return (-1);
 	}
 	else {
@@ -230,7 +230,7 @@ GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_
 	}
 	if (GMT->common.R.active[ISET])
 		return 0;
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: -R[L|C|R][T|M|B]<x0>/<y0>/<n_columns>/<ny> requires grid spacings via -I\n");
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-R[L|C|R][T|M|B]<x0>/<y0>/<n_columns>/<ny> requires grid spacings via -I\n");
 	return 1;
 }
 

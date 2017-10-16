@@ -372,14 +372,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 				if (opt->arg[0] == 'c') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[0], &Ctrl->CM4->CM4_S.nhmf[0]);
 					if (j != 2) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: -Sc option usage is -Sc<low/high>\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "-Sc option usage is -Sc<low/high>\n");
 						n_errors++;
 					}
 				}
 				if (opt->arg[0] == 'l') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[1], &Ctrl->CM4->CM4_S.nhmf[1]);
 					if (j != 2) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: -Sl option usage is -Sl<low/high>\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "-Sl option usage is -Sl<low/high>\n");
 						n_errors++;
 					}
 				}
@@ -613,7 +613,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 			}
 
 			if (!(Ctrl->do_IGRF || Ctrl->joint_IGRF_CM4 ) && !s && time_array[0] > 2002.7) {	/* Only atmospheric terms may be reliable */
-				GMT_Message (API, GMT_TIME_NONE, "Warning: Time is outside the CM4 strict validity domain [1960.0-2002.7].\n");
+				GMT_Message (API, GMT_TIME_NONE, "Time is outside the CM4 strict validity domain [1960.0-2002.7].\n");
 				GMT_Message (API, GMT_TIME_NONE, "\tThe secular variation estimation will be unreliable. In this"
 				                                 "\n\tcase you really should use the IGRF to estimate the core contribution\n");
 			}
@@ -644,7 +644,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 				int err;
 				if ((err = MGD77_cm4field (GMT, Ctrl->CM4, T->segment[s]->data[GMT_X],
 							T->segment[s]->data[GMT_Y], alt_array, time_array)) != 0) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: this segment has a record generating an error.\n"
+					GMT_Report (API, GMT_MSG_NORMAL, "this segment has a record generating an error.\n"
 					                                 "Unfortunately, this means all other eventually good\n"
 					                                 "records are also ignored. Fix the bad record and rerun the command.\n");
 					continue;

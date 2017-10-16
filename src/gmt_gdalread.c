@@ -409,7 +409,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	}
 	else if (adfGeoTransform[1] != 1 && adfGeoTransform[5] != 1) {	/* Patch a possible GDAL bug. Raised after issue #1030 */
 		adfGeoTransform[1] = adfGeoTransform[5] = 1;
-		GMT_Report(GMT->parent, GMT_MSG_VERBOSE, "Warning: GDAL seamed to have returned garbage in adfGeoTransform. Arbitrarily setting inc = 1.\n");
+		GMT_Report(GMT->parent, GMT_MSG_VERBOSE, "GDAL seamed to have returned garbage in adfGeoTransform. Arbitrarily setting inc = 1.\n");
 	}
 
 	/* ------------------------------------------------------------------------- */
@@ -517,7 +517,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		   Note, however, that first band colormap is captured anyway (if exists, off course) */
 
 		if (bSuccess == 0 && strstr(Ctrl->DriverShortName, "HDF5") != NULL) {	/* several methods for HDF5 driver are not implemented */
-			GMT_Report(GMT->parent, GMT_MSG_VERBOSE, "An HDF5 file. Trying to get scale_offset from string metadata.\n");
+			GMT_Report(GMT->parent, GMT_MSG_LONG_VERBOSE, "An HDF5 file. Trying to get scale_offset from string metadata.\n");
 			dfNoDataValue = GMT->session.d_NaN;
 			get_attrib_from_string(Ctrl, hBand, nBand, &dfNoDataValue);			/* Go get them from the metadata in strings. */
 			if (!isnan(dfNoDataValue)) got_noDataValue = true;
@@ -810,7 +810,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	}
 
 	if (error) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: gmt_gdalread failed to extract a Sub-region\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalread failed to extract a Sub-region\n");
 		return (-1);
 	}
 
@@ -839,7 +839,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		}
 		else {
 			Ctrl->ProjRefWKT = NULL;
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: gmt_gdalread failed to convert the proj4 string\n%s\n to WKT\n",
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_gdalread failed to convert the proj4 string\n%s\n to WKT\n",
 					Ctrl->ProjRefPROJ4);
 		}
 

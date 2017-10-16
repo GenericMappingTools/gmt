@@ -320,10 +320,10 @@ GMT_LOCAL void gmtnc_check_step (struct GMT_CTRL *GMT, uint32_t n, double *x, ch
 		if (step > step_max) step_max = step;
 	}
 	if (fabs (step_min-step_max)/(fabs (step_min)*0.5 + fabs (step_max)*0.5) > 0.001) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL,
-			"Warning: The step size of coordinate (%s) in grid %s is not constant.\n", varname, file);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL,
-			"Warning: GMT will use a constant step size of %g; the original ranges from %g to %g.\n",
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+			"The step size of coordinate (%s) in grid %s is not constant.\n", varname, file);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+			"GMT will use a constant step size of %g; the original ranges from %g to %g.\n",
 			(x[n-1]-x[0])/(n-1), step_min, step_max);
 	}
 }
@@ -746,7 +746,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 					OSRDestroySpatialReference(hSRS);
 					goto L100;
 				}
-				GMT_Report(GMT->parent, GMT_MSG_VERBOSE, "Proj4 string to be converted to WKT:\n\t%s\n", header->ProjRefPROJ4);
+				GMT_Report(GMT->parent, GMT_MSG_LONG_VERBOSE, "Proj4 string to be converted to WKT:\n\t%s\n", header->ProjRefPROJ4);
 				if (OSRImportFromProj4(hSRS, header->ProjRefPROJ4) == CE_None) {
 					char *pszPrettyWkt = NULL;
 					OSRExportToPrettyWkt(hSRS, &pszPrettyWkt, false);
@@ -756,7 +756,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 				}
 				else {
 					header->ProjRefWKT = NULL;
-					GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Warning: gmtnc_grd_info failed to convert the proj4 string\n%s\n to WKT\n",
+					GMT_Report(GMT->parent, GMT_MSG_VERBOSE, "gmtnc_grd_info failed to convert the proj4 string\n%s\n to WKT\n",
 							header->ProjRefPROJ4);
 				}
 				OSRDestroySpatialReference(hSRS);
@@ -1111,7 +1111,7 @@ GMT_LOCAL void gmtnc_grid_fix_repeat_col (struct GMT_CTRL *GMT, void *gridp, con
 	}
 
 	if (n_conflicts)
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: detected %u inconsistent values along east boundary of grid. Values fixed by duplicating west boundary.\n", n_conflicts);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Detected %u inconsistent values along east boundary of grid. Values fixed by duplicating west boundary.\n", n_conflicts);
 }
 
 /* Change the default chunk cache settings in the HDF5 library for all variables
@@ -1425,7 +1425,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 	if (header->z_min > header->z_max) {
 		header->z_min = NAN;
 		header->z_max = NAN;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: No valid values in grid [%s]\n", header->name);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No valid values in grid [%s]\n", header->name);
 	}
 	else {
 		/* Report z-range of grid (with scale and offset applied): */
@@ -1509,7 +1509,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 			break;
 		case GMT_GRID_IS_ND:
 #ifndef DOUBLE_PRECISION_GRID
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Precision loss! GMT's internal grid representation is 32-bit float.\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Precision loss! GMT's internal grid representation is 32-bit float.\n");
 #endif
 			/* no break! */
 		default: /* don't round float */
@@ -1581,7 +1581,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 		static const uint32_t exp2_24 = 0x1000000; /* exp2 (24) */
 		unsigned int level;
 		if (fabs(header->z_min) >= exp2_24 || fabs(header->z_max) >= exp2_24)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: The z-range, [%g,%g], might exceed the significand's precision of 24 bits; round-off errors may occur.\n", header->z_min, header->z_max);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The z-range, [%g,%g], might exceed the significand's precision of 24 bits; round-off errors may occur.\n", header->z_min, header->z_max);
 
 		/* Report z-range of grid (with scale and offset applied): */
 #ifdef NC4_DEBUG
@@ -1597,7 +1597,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 		limit[1] = header->z_max * header->z_scale_factor + header->z_add_offset;
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: No valid values in grid [%s]\n", header->name);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No valid values in grid [%s]\n", header->name);
 		limit[0] = limit[1] = NAN; /* Set limit to NaN */
 	}
 	status = nc_put_att_double (header->ncid, header->z_id, "actual_range", NC_DOUBLE, 2, limit);
