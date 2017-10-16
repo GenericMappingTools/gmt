@@ -61,14 +61,12 @@ Optional Arguments
     The idea here is to use the knowledge of run-times to split the main
     process in a number of sub-processes that can each be launched in a
     different processor of your multi-core machine. See the MATLAB
-    function *split_file4coes.m* that lives in the x2sys supplement
-    source code.
+    function *split_file4coes.m* that lives in the x2sys supplement source code.
 
 .. _-I:
 
 **-Il**\ \|\ **a**\ \|\ **c**
-    Sets the interpolation mode for estimating values at the crossover.
-    Choose among:
+    Sets the interpolation mode for estimating values at the crossover. Choose among:
 
     **l** Linear interpolation [Default].
 
@@ -79,9 +77,8 @@ Optional Arguments
 .. _-J:
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
+    This option converts the coordinates to projected coordinates prior to crossover calculations.
 .. include:: ../../explain_-J.rst_
-    This option converts the coordinates to projected coordinates prior to
-    crossover calculations.
 
 .. _-Q:
 
@@ -90,15 +87,13 @@ Optional Arguments
     only [Default is all COEs].
 
 .. |Add_-Rgeo| replace:: For Cartesian
-    data just give *xmin/xmax/ymin/ymax*. This option limits the COEs to
-    those that fall inside the specified domain.
+    data just give *xmin/xmax/ymin/ymax*. This option limits the COEs to those that fall inside the specified domain.
 .. include:: ../../explain_-Rgeo.rst_
 
 .. _-S:
 
 **-Sl**\ \|\ **u**\ \|\ **h**\ *speed*
-    Defines window of track speeds. If speeds are outside this window we
-    do not calculate a COE. Specify
+    Defines window of track speeds. If speeds are outside this window we do not calculate a COE. Specify
 
     **-Sl** sets lower speed [Default is 0].
 

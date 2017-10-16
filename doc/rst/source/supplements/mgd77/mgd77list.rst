@@ -200,7 +200,7 @@ Required Arguments
         the seven geophysical observations **twt**, **depth**, **mtf1**,
         **mtf2**, **mag**, **gobs**, and **faa**).
     **dat**
-        As **mgd77t* but in plain table order.
+        As **mgd77t** but in plain table order.
     **all**
         This returns all data columns in the file.
     **allt**

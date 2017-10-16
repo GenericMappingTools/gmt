@@ -687,7 +687,7 @@ Here are functions used to read and plot various images.
 **long PSL_loadeps** (**struct PSL_CTRL** *\*P*, **char** *\*file*,
 **struct imageinfo** *\*header*, **unsigned char** *\*\*image*)
 
-    Reads the image contents of the EPS file given by the *file name.
+    Reads the image contents of the EPS file given by the *file name*.
     The *header* is filled with dimensional information.  If *image*
     is NULL we return just with header, otherwise we read and return
     the entire EPS content via *image.
