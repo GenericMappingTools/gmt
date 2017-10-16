@@ -4353,7 +4353,7 @@ int gmt_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expecte
 	if (GMT->common.b.active[direction]) {	/* Must set uninitialized input/output pointers */
 		uint64_t col;
 		char type = (GMT->common.b.type[direction]) ? GMT->common.b.type[direction] : 'd';
-		for (col = GMT->common.b.ncol[direction]; col < expected; col++) {
+		for (col = 0; col < expected; col++) {
 			if (!GMT->current.io.fmt[direction][col].io) {
 				GMT->current.io.fmt[direction][col].io = gmtlib_get_io_ptr (GMT, direction, GMT->common.b.swab[direction], type);
 				GMT->current.io.fmt[direction][col].type = gmt_get_io_type (GMT, type);
