@@ -259,7 +259,6 @@ man_pages = [
 ('gmtvector', 'gmtvector', 'Basic manipulation of Cartesian vectors', '', 1),
 ('gmtwhich', 'gmtwhich', 'Find full path to specified files', '', 1),
 ('grd2cpt', 'grd2cpt', 'Make linear or histogram-equalized color palette table from grid', '', 1),
-('grd2rgb', 'grd2rgb', 'Write r/g/b grid files from a grid file, a raw RGB file, or SUN rasterfile', '', 1),
 ('grd2xyz', 'grd2xyz', 'Convert grid file to data table', '', 1),
 ('grdblend', 'grdblend', 'Blend several partially over-lapping grids into one large grid', '', 1),
 ('grdclip', 'grdclip', 'Clip the range of grids', '', 1),
