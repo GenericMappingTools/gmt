@@ -5,8 +5,8 @@
 
 This example will illustrate how to make a fairly complicated composite
 figure. We need a subset of the ETOPO5 bathymetry [1]_ and Geosat geoid
-data sets which we will extract from the local data bases using
-:doc:`grdraster </grdraster>`. We would like to show a
+data sets which we will extract from the global data grids using
+:doc:`grdcut </grdcut>`. We would like to show a
 2-layer perspective plot where layer one shows a contour map of the
 marine geoid with the location of the Hawaiian islands superposed, and a
 second layer showing the 3-D mesh plot of the topography. We also add an

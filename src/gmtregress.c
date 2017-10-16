@@ -21,7 +21,7 @@
  *
  * Author:	Paul Wessel
  * Date:	5-JAN-2015
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"
@@ -697,7 +697,7 @@ GMT_LOCAL void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double
 		case GMTREGRESS_NORM_L2:  misfit = L2_misfit;  break;
 		case GMTREGRESS_NORM_LMS: misfit = LMS_misfit; break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Internal error: misfit norm not specified?\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Internal error: misfit norm not specified? - set to L2\n");
 			misfit = L2_misfit;
 			break;
 	}
@@ -747,7 +747,7 @@ GMT_LOCAL double regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *
 		case GMTREGRESS_NORM_L2:  scl_func = L2_scale;  break;
 		case GMTREGRESS_NORM_LMS: scl_func = LMS_scale; break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Internal error: misfit norm not specified?\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Internal error: misfit norm not specified? - set to L2\n");
 			scl_func = L2_scale;
 			break;
 	}
@@ -783,11 +783,11 @@ GMT_LOCAL double regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *
 			double a = par[GMTREGRESS_ICEPT] + (par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN]);
 			snprintf (buffer, GMT_LEN256, "Robust iteration %u: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: --N/A-- sig_icept: --N/A--",
 				n_iter, n, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN], par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], a);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s\n", buffer);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s\n", buffer);
 		}
 	}
 	par[GMTREGRESS_ICEPT] += (par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN]);
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Robust regression algorithm convergence required %d iterations\n", n_iter);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Robust regression algorithm convergence required %d iterations\n", n_iter);
 	scale = scl_func (GMT, e, W, n, par);	/* Get final regression-scale for residuals */
 	
 	gmt_M_free (GMT, U);
@@ -845,9 +845,9 @@ GMT_LOCAL double LSxy_regress1D_york (struct GMT_CTRL *GMT, double *X, double *Y
 		n_iter++;
 		snprintf (buffer, GMT_LEN256, "York iteration %u: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g",
 			n_iter, n, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN], atand (b), misfit, b, a, sigma_b, sigma_a);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s\n", buffer);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s\n", buffer);
 	} while (fabs (b - b_old) > GMT_CONV15_LIMIT && n_iter < GMTREGRESS_MAX_YORK_ITERATIONS);
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "York orthogonal algorithm convergence required %d iterations\n", n_iter);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "York orthogonal algorithm convergence required %d iterations\n", n_iter);
 	/* Pass out the final result via the par array */
 	par[GMTREGRESS_SLOPE] = b;
 	par[GMTREGRESS_ICEPT] = a;
@@ -1007,6 +1007,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	
 	struct GMT_DATASET *Din = NULL;
 	struct GMT_DATASEGMENT *S = NULL, *Sa = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GMTREGRESS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -1038,7 +1039,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 		n_try = lrint ((Ctrl->A.max - Ctrl->A.min) / Ctrl->A.inc) + 1;	/* Number of angles to explore */
 		n_columns = GMTREGRESS_NPAR_MAIN;	/* Hardwired to return angle, misfit, slope, intercept */
 		/* Allocate fixed temp space hold the result of the experiment */
-		Sa = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_try, n_columns, NULL, NULL);
+		Sa = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, n_try, n_columns, NULL, NULL);
 	}
 	else {	/* Work up best regression solution per input segment */
 		if (Ctrl->F.param)
@@ -1082,7 +1083,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (Din->n_columns < (2 + Ctrl->W.n_weights)) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Dataset only has %" PRIu64 " columns but %d are required by your settings!\n", Din->n_columns, 2 + Ctrl->W.n_weights);
+		GMT_Report (API, GMT_MSG_NORMAL, "Dataset only has %" PRIu64 " columns but %d are required by your settings!\n", Din->n_columns, 2 + Ctrl->W.n_weights);
 		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -1105,7 +1106,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	}
 
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* To write segment headers regardless of input */
-	
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	/* Process all tables and their segments */
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
@@ -1159,11 +1160,11 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 				/* Make segment header with the findings forthe overall best regression */
 				snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: --N/A-- sig_icept: --N/A--", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN], Sa->data[0][min_row],
 					Sa->data[1][min_row], Sa->data[2][min_row], Sa->data[3][min_row]);
-				GMT_Report (API, GMT_MSG_VERBOSE, "%s\n", buffer);	/* Report results if verbose */
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s\n", buffer);	/* Report results if verbose */
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, buffer);	/* Also include result in segment header */
 				for (row = 0; row < n_try; row++) {	/* Write the saved results of the experiment */
 					for (k = 0; k < GMTREGRESS_NPAR_MAIN; k++) out[k] = Sa->data[k][row];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this record to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this record to output */
 				}
 			}
 			else {	/* Here we are solving for the best regression */
@@ -1179,13 +1180,13 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 					out[6] = par[GMTREGRESS_ICEPT];
 					out[7] = par[GMTREGRESS_SIGSL];
 					out[8] = par[GMTREGRESS_SIGIC];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this record to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this record to output */
 				}
 				else {
 					/* Make segment header with the findings for best regression */
 					snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
 						par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC]);
-					GMT_Report (API, GMT_MSG_VERBOSE, "%s\n", buffer);	/* Report results if verbose */
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s\n", buffer);	/* Report results if verbose */
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, buffer);	/* Also include in segment header */
 
 					if (Ctrl->F.band)	/* For confidence band we need the student-T scale given the significance level and degrees of freedom */
@@ -1239,7 +1240,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 									break;
 							}
 						}
-						GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this record to output */
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this record to output */
 					}
 				}
 				gmt_M_free (GMT, z_score);	/* Done with this array */
@@ -1247,6 +1248,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 		}
 	}
 
+	gmt_M_free (GMT, Out);
 	error = GMT_NOERROR;
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data output */
 		error = API->error;

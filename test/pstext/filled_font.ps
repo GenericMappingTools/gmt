@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14979 [64-bit] Document from psbasemap
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v6.0.0_r19090 [64-bit] Document from psbasemap
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Oct 13 15:17:13 2015
+%%CreationDate: Fri Oct 13 16:23:20 2017
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -660,14 +657,15 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R0/18/0/15 -Jx1c -B5g1 -BWSne -P -K
-%%PROJ: xy 0.00000000 18.00000000 0.00000000 15.00000000 0.000 18.000 0.000 15.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: psbasemap -R0/18/0/15 -Jx1c -B5g1 -BWSne -P -K
+%@PROJ: xy 0.00000000 18.00000000 0.00000000 15.00000000 0.000 18.000 0.000 15.000 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -867,8 +865,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/18/0/15 -Jx1c --FONT=48p,Helvetica-Bold -F+f+jBL -O
-%%PROJ: xy 0.00000000 18.00000000 0.00000000 15.00000000 0.000 18.000 0.000 15.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: pstext -R0/18/0/15 -Jx1c --FONT=48p,Helvetica-Bold -F+f+jBL -O
+%@PROJ: xy 0.00000000 18.00000000 0.00000000 15.00000000 0.000 18.000 0.000 15.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -878,17 +876,18 @@ clipsave
 8504 0 D
 0 7087 D
 -8504 0 D
+P
 PSL_clip N
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 1 0 0 C
-472 6142 M PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-800 F1
-(red) Z
+472 6142 M 800 F1
+(red) bl Z
 50 W
 0 1 0 C
 {1 0 0 C} FS
 O1
-472 5197 M (red=3p,green) false charpath fs S
-472 4252 M (red=~3p,green) false charpath V S U fs N
+472 5197 M (red=3p,green) bl false charpath fs S
+472 4252 M (red=~3p,green) bl false charpath V S U fs N
 /image25 {<~
 G[C:Is$$V'Ih4mip^[Q7RRD\#QV7KNmAJ`g!7tXdT`~>
 /FlateDecode filter} def
@@ -901,12 +900,12 @@ G[C:Is$$V'Ih4mip^[Q7RRD\#QV7KNmAJ`g!7tXdT`~>
 >> matrix makepattern U} def
 {pattern25 I} FS
 O0
-472 3307 M (p150/25:BredFblue) false charpath fs N
+472 3307 M (p25+r150+bred+fblue) bl false charpath fs N
 0 0 1 C
 FQ
 O1
-472 2362 M (-,-,-=3p,blue) false charpath fs S
-/image91 {<~
+472 2362 M (-,-,-=3p,blue) bl false charpath fs S
+/image92 {<~
 G[>N`D2_`OH/H@N8E=?5e9elp\=C*RQJ:M),%kOkMB'fDC.PMK@6p$n
 K]S4')&rf:4A#`j#qI;:3$F+mQ":4Z;UDW_#`0]1IOU."1Amh#N$Kg/-4L"n2=_n#O:OVcIrZ*nBRtU=d/W_;STEqVEe/kZ
 SXKBOr1E`H3TnuRA)5O94[.Gh*8?p"23YbgSf3#D^C2HeoqQu`d+;kHUGM7R?T>0knI**mqYF(DeYpk*qKG'4FT1:=h)"5<
@@ -1122,16 +1121,16 @@ b%-s`c$_[kGg8E<6q/GFZ=ag!4Zr$Gn_'@C`TUCMnm$sn.RlU`fF<a+>a)H#r\r=LD;4Q'WR5@V2^M]!
 lDF(q>/,'K3CdCeDYVS9RRWqD\Pmg,>ADd1iCql:C$Ku7c]g'?j[?'kIpL!ro*eur5^r1aKnVVQ<>S/_P5lJ/P%&hT<19^i
 BI#W.C$!.%m<bHj`WIaBpL8csE8rQSe^QTj/Z'_g-:7Crl<aGeU+qZ-#J.7dJc~>
 /FlateDecode filter} def
-/pattern91 {V 1080 752 scale
+/pattern92 {V 1080 752 scale
 << /PaintType 1 /PatternType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /PaintProc
    {begin /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 135 /Height 94 /BitsPerComponent 8
-   /ImageMatrix [135 0 0 -94 0 94] /DataSource image91
+   /ImageMatrix [135 0 0 -94 0 94] /DataSource image92
 >> image end}
 >> matrix makepattern U} def
-{pattern91 I} FS
+{pattern92 I} FS
 O0
-472 1417 M (p150/circuit.ras) false charpath fs N
+472 1417 M (pcircuit.png+r150) bl false charpath fs N
 4 W
 0 A
 /image7 {<~
@@ -1147,13 +1146,13 @@ lN[Esom_M~>
 >> matrix makepattern U} def
 {pattern7 I} FS
 O1
-472 472 M (p150/7=0.25p) false charpath fs S
+472 472 M (p7+r150=0.25p) bl false charpath fs S
 PSL_cliprestore
 %%EndObject
-currentdict /image7 undef
-currentdict /pattern7 undef
-currentdict /image25 undef
-currentdict /pattern25 undef
+currentdict /image6 undef
+currentdict /pattern6 undef
+currentdict /image24 undef
+currentdict /pattern24 undef
 currentdict /image91 undef
 currentdict /pattern91 undef
 %%PageTrailer

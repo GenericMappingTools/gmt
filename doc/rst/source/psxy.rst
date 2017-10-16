@@ -324,14 +324,14 @@ sides 0.25 inch on the left side of the line, spaced every 0.8 inch, use
 
     gmt psxy trench.txt -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1i+l+t -Gwhite -W -B10 > map.ps
 
-To plot the data in the file misc.d as symbols determined by the code in
+To plot the data in the file misc.txt as symbols determined by the code in
 the last column, and with size given by the magnitude in the 4th column,
 and color based on the third column via the CPT chrome on a
 linear map, use
 
    ::
 
-    gmt psxy misc.d -R0/100/-50/100 -JX6i -S -Cchrome -B20 > map.ps
+    gmt psxy misc.txt -R0/100/-50/100 -JX6i -S -Cchrome -B20 > map.ps
 
 If you need to place vectors on a plot you can choose among
 straight Cartesian vectors, math circular vectors, or geo-vectors (these

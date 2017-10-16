@@ -32,7 +32,7 @@
 #define THIS_MODULE_NAME	"x2sys_report"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Report statistics from crossover data base"
-#define THIS_MODULE_KEYS	">T}"
+#define THIS_MODULE_KEYS	">D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->RV"
 
@@ -240,6 +240,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	unsigned int coe_kind;
 	double sum, sum2, sum_w, Tsum, Tsum2, COE, sign, scale, corr[2] = {0.0, 0.0};
 	double Tmean, Tstdev, Trms;
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct X2SYS_REPORT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -274,7 +275,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
 	if (s->n_out_columns != 1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "-C must specify a single column name\n");
 		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -292,9 +293,9 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	
 	/* Read the entire data base; note the -I, R and -S options are applied during reading */
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Read crossover database %s...\n", Ctrl->In.file);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read crossover database %s...\n", Ctrl->In.file);
 	np = x2sys_read_coe_dbase (GMT, s, Ctrl->In.file, Ctrl->I.file, GMT->common.R.wesn, Ctrl->C.col, coe_kind, Ctrl->S.file, &P, &nx, &n_tracks);
-	GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
 
 	if (np == 0 && nx == 0) {	/* End here since nothing was allocated */
 		x2sys_end (GMT, s);
@@ -347,12 +348,12 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 
 	/* Time to issue output */
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		gmt_M_free (GMT, R);
 		gmt_M_free (GMT, trk_name);
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
 		gmt_M_free (GMT, R);
 		gmt_M_free (GMT, trk_name);
 		Return (API->error);	/* Enables data output and sets access mode */
@@ -385,6 +386,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 			len -= strlen (word);
 		}
 	}
+	Out = gmt_new_record (GMT, NULL, record);	/* Since we only need to worry about text in this module */
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 	sprintf (record, "track%sN%smean%sstdev%srms%sweight[%" PRIu64 "]", c, c, c, c, c, n_use);
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
@@ -395,7 +397,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	         GMT->current.setting.format_float_out,GMT->current.setting.format_float_out,
 	         GMT->current.setting.format_float_out);
 	sprintf (record, fmt, c, Tnx, c, Tmean, c, Tstdev, c, Trms, c);
-	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+	GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 	sprintf (fmt, "%%s%%s%%" PRIu64 "%%s%s%%s%s%%s%s%%s%s\n",
 	         GMT->current.setting.format_float_out,GMT->current.setting.format_float_out,
 	         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
@@ -406,8 +408,9 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 		R[k].stdev = (R[k].nx > 1) ? sqrt ((R[k].nx * R[k].sum2 - R[k].sum * R[k].sum) / (R[k].nx * (R[k].nx - 1.0))) : GMT->session.d_NaN;
 		R[k].rms = (R[k].nx) ? sqrt (R[k].sum2 / R[k].nx) : GMT->session.d_NaN;
 		sprintf (record, fmt, trk_name[k], c, R[k].nx, c, R[k].mean, c, R[k].stdev, c, R[k].rms, c, R[k].W);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 	}
+	gmt_M_free (GMT, Out);
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
@@ -474,7 +477,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 				n_out++;
 				if (i == n1 || out[0] < adj[k].K[i+1].d) {	/* Time to output */
 					out[1] /= n_out;
-					GMT->current.io.output (GMT, fp, 2, out);
+					GMT->current.io.output (GMT, fp, 2, out, NULL);
 					out[1] = 0.0;
 					n_out = 0;
 				}

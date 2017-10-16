@@ -13,8 +13,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_solve** |-C|\ *column* |-T|\ *TAG* |-E|\ *mode*
-[ *COE_list.d* ]
+**x2sys_solve** |-C|\ *column* |-T|\ *TAG* |-E|\ **c**\ \|\ **d**\ \|\**g**\ \|\**h**\ \|\**s**\ \|\**y**\ \|\**z**
+[ *COE_list.txt* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ **[u]** ]
 [ |SYN_OPT-bi| ]
@@ -28,14 +28,14 @@ Description
 
 **x2sys_solve** will use the supplied crossover information to solve
 for systematic corrections that can then be applied per track to improve
-data quality. Several systematic corrections can be solved for using a
+data quality. Seven different systematic corrections can be solved for using a
 least-squares approach. Note: Only one data column can be processed at
 the time.
 
 Required Arguments
 ------------------
 
-*COE_list.d*
+*COE_list.txt*
     Name of file with the required crossover columns as produced by
     :doc:`x2sys_list`. NOTE: If **-bi** is used
     then the first two columns are expected to hold the integer track
@@ -53,7 +53,7 @@ Required Arguments
 
 .. _-E:
 
-**-E**\ *mode*
+**-E**\ **c**\ \|\ **d**\ \|\**g**\ \|\**h**\ \|\**s**\ \|\**y**\ \|\**z**
     The correction type you wish to model. Choose among the following
     functions f(*p*) , where *p* are the *m*
     parameters per track that we will fit simultaneously using a least
@@ -81,6 +81,10 @@ Required Arguments
     **t** will fit f(*p*) = *a* + *b* \* (*t - t0*)
     (linear drift; *t0* is the start time of the track); records must
     contain track ID1, ID2, t1-t0, t2-t0, COE.
+
+    **z** will fit f(*p*) = *a* + *b* \* z (an offset plus a unit scale
+    correction); records must contain track ID1, ID2, z1, z2.
+
 
 Optional Arguments
 ------------------

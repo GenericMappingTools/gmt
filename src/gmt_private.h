@@ -22,7 +22,7 @@
  *
  * Author: 	Paul Wessel
  * Date:	06-FEB-2013
- * Version:	5 API
+ * Version:	6 API
  */
 
 /*!
@@ -47,6 +47,11 @@ enum GMT_enum_apidim {
 	GMTAPI_N_ARRAY_ARGS	= 8	/* Minimum size of information array used to specify array parameters */
 };
 
+/*! p_func_uint64_t is used as a pointer to functions that returns a uint64_t index */
+typedef uint64_t (*p_func_uint64_t) (uint64_t row, uint64_t col, uint64_t dim);
+typedef void (*GMT_putfunction)(union GMT_UNIVECTOR *, uint64_t, double  );
+typedef void (*GMT_getfunction)(union GMT_UNIVECTOR *, uint64_t, double *);
+
 /* Index parameters used to access the information arrays [PW: Is this still relevant?] */
 
 #if 0
@@ -69,8 +74,8 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 struct GMTAPI_DATA_OBJECT {
 	/* Information for each input or output data entity, including information
 	 * needed while reading/writing from a table (file or array) */
-	uint64_t rec;				/* Current rec to read [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VECTOR only] */
-	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VECTOR only] */
+	uint64_t rec;				/* Current rec to read [GMT_DATASET to/from MATRIX/VECTOR only] */
+	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET to/from MATRIX/VECTOR only] */
 	uint64_t n_columns;			/* Number of columns to process in this dataset [GMT_DATASET only] */
 	uint64_t n_expected_fields;		/* Number of expected columns for this dataset [GMT_DATASET only] */
 	uint64_t delay;				/* Number of leading NaN-records we oculd not write initially before knowning the row dim */
@@ -103,7 +108,6 @@ struct GMTAPI_DATA_OBJECT {
 	/* Start of temporary variables for API debug - They are only set when building with /DEBUG */
 	struct GMT_GRID *G;
 	struct GMT_DATASET *D;
-	struct GMT_TEXTSET *T;
 	struct GMT_PALETTE *C;
 	struct GMT_POSTSCRIPT *P;
 	struct GMT_MATRIX *M;
@@ -153,6 +157,36 @@ struct GMTAPI_CTRL {
 	unsigned int do_not_exit;		/* 0 by default, mieaning it is OK to call exit  (may be reset by external APIs like MEX to call return instead) */
 	struct Gmt_libinfo *lib;		/* List of shared libs to consider */
 	unsigned int n_shared_libs;		/* How many in lib */
+	/* Items used by GMT_Put_Record and sub-functions */
+	int (*api_put_record) (struct GMTAPI_CTRL *API, unsigned int, struct GMT_RECORD *);
+	/*   Items used by api_put_record_fp */
+	FILE *current_fp;
+	struct GMTAPI_DATA_OBJECT *current_put_obj;
+	uint64_t current_put_n_columns;
+	/*   Items used by api_put_record_dataset */
+	struct GMT_DATATABLE *current_put_D_table;
+	/*   Items used by api_put_record_matrix */
+	struct GMT_MATRIX *current_put_M;
+	p_func_uint64_t current_put_M_index;
+	GMT_putfunction current_put_M_val;
+	/*   Items used by api_put_record_vector */
+	struct GMT_VECTOR *current_put_V;
+	GMT_putfunction *current_put_V_val;
+	/* Items used by GMT_Put_Record and sub-functions */
+	struct GMT_RECORD * (*api_get_record) (struct GMTAPI_CTRL *, unsigned int, int *);
+	struct GMTAPI_DATA_OBJECT *current_get_obj;
+	bool get_next_record;
+	/*   Items used by api_get_record_dataset */
+	struct GMT_DATASET *current_get_D_set;
+	/*   Items used by api_get_record_matrix */
+	struct GMT_MATRIX *current_get_M;
+	p_func_uint64_t current_get_M_index;
+	GMT_getfunction current_get_M_val;
+	uint64_t current_get_n_columns;
+	/*   Items used by api_get_record_vector */
+	struct GMT_VECTOR *current_get_V;
+	p_func_uint64_t current_get_V_index;
+	GMT_getfunction *current_get_V_val;
 };
 
 /* Macro to test if filename is a special name indicating memory location */

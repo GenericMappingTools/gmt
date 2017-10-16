@@ -451,7 +451,7 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 		case 'c':
 		case 'C':
 			if (gmt_M_compat_check (GMT, 4)) {
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Unit c for seconds is deprecated; use s.\n");
 				if (step > 60) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: time steps in seconds must be <= 60\n");
 					retval = -1;
@@ -602,7 +602,7 @@ void gmtlib_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p
 		case 'c':
 		case 'C':
 			if (gmt_M_compat_check (GMT, 4)) {
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Unit c for seconds is deprecated; use s.\n");
 				k = p->step;
 				calclock_small_moment_interval (GMT, p, k, init);
 			}
@@ -997,11 +997,11 @@ void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_
 			break;
 		case 'C':
 			if (gmt_M_compat_check (GMT, 4)) {
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit C for seconds is deprecated; use S.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Unit C for seconds is deprecated; use S.\n");
 				gmt_format_calendar (GMT, NULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: wrong unit passed to gmtlib_get_time_label\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Wrong unit passed to gmtlib_get_time_label\n");
 				sprintf (string, "NaN");
 			}
 			break;
@@ -1010,11 +1010,11 @@ void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_
 			break;
 		case 'c':
 			if (gmt_M_compat_check (GMT, 4)) {
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Unit c for seconds is deprecated; use s.\n");
 				(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%02d", irint(calendar.sec));
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: wrong unit passed to gmtlib_get_time_label\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Wrong unit passed to gmtlib_get_time_label\n");
 				sprintf (string, "NaN");
 			}
 			break;
@@ -1022,7 +1022,7 @@ void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_
 			(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%02d", irint(calendar.sec));
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: wrong unit passed to gmtlib_get_time_label\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Wrong unit passed to gmtlib_get_time_label\n");
 			sprintf (string, "NaN");
 			break;
 	}

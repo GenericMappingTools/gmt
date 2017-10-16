@@ -252,10 +252,10 @@ endif (NOT LICENSE_RESTRICTED)
 # Note: Developers can set EXTRA_MODULES in ConfigUser.cmake to test new modules
 set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c filter1d.c
 	fitcircle.c gmt2kml.c gmtconvert.c gmtlogo.c gmtmath.c gmtselect.c gmtsimplify.c
-	gmtspatial.c gmtconnect.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c grd2rgb.c
+	gmtspatial.c gmtconnect.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c
 	grd2xyz.c grdblend.c grdclip.c grdcut.c grdedit.c grdfft.c grdfilter.c
 	grdgradient.c grdhisteq.c grdinfo.c grdlandmask.c grdmask.c grdmath.c
-	grdpaste.c grdproject.c grdraster.c grdsample.c grdconvert.c grdtrack.c
+	grdpaste.c grdproject.c grdsample.c grdconvert.c grdtrack.c
 	grdtrend.c grdvolume.c greenspline.c kml2gmt.c makecpt.c mapproject.c
 	gmtinfo.c nearneighbor.c project.c psconvert.c sample1d.c spectrum1d.c
 	sph2grd.c sphdistance.c sphinterpolate.c sphtriangulate.c splitxyz.c
@@ -273,7 +273,8 @@ set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h
 	PSL_Standard.h PSL_ISOLatin1+.h PSL_ISOLatin1.h PSL_ISO-8859-1.h
 	PSL_ISO-8859-2.h PSL_ISO-8859-3.h PSL_ISO-8859-4.h PSL_ISO-8859-5.h
 	PSL_ISO-8859-6.h PSL_ISO-8859-7.h PSL_ISO-8859-8.h PSL_ISO-8859-9.h
-	PSL_ISO-8859-10.h PSL_ISO-8859-13.h PSL_ISO-8859-14.h PSL_ISO-8859-15.h)
+	PSL_ISO-8859-10.h PSL_ISO-8859-13.h PSL_ISO-8859-14.h PSL_ISO-8859-15.h
+	PSL_strings.h PSL_patterns.h)
 
 # libgmt
 set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
@@ -583,7 +584,6 @@ foreach (_gmt_prog ${_gmt_progs})
 	target_link_libraries (${_gmt_prog} gmtlib)
 endforeach (_gmt_prog)
 
-configure_file (psldemo.h.in psldemo.h @ONLY)
 add_executable (psldemo psldemo.h psldemo.c)
 target_link_libraries (psldemo pslib)
 

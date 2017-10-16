@@ -9,6 +9,6 @@ $1	R
 S
 # Draw the star
 0.5	0	0.1	a	-Gorange
-# Annotate the bar in blue
+# Annotate the bar in blue using trailing text
 T	-Gblue -W-
-0	0.02	0.1	$2	l+jBC
+0	0.02	0.1	$t	l+jBC

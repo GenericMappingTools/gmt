@@ -468,7 +468,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		fast_way = (fabs (fmod (Gout->header->inc[GMT_X] / Gin->header->inc[GMT_X], 1.0)) < GMT_CONV4_LIMIT && fabs (fmod (Gout->header->inc[GMT_Y] / Gin->header->inc[GMT_Y], 1.0)) < GMT_CONV4_LIMIT);
 
 		if (!fast_way) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your output grid spacing is such that filter-weights must\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Your output grid spacing is such that filter-weights must\n");
 			GMT_Report (API, GMT_MSG_VERBOSE, "be recomputed for every output node, so expect this run to be slow.  Calculations\n");
 			GMT_Report (API, GMT_MSG_VERBOSE, "can be speeded up significantly if output grid spacing is chosen to be a multiple\n");
 			GMT_Report (API, GMT_MSG_VERBOSE, "of the input grid spacing.  If the odd output grid is necessary, consider using\n");
@@ -539,9 +539,9 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			}
 		}
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Input n_columns,n_rows = (%d %d), output n_columns,n_rows = (%d %d), filter n_columns,n_rows = (%d %d)\n",
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input n_columns,n_rows = (%d %d), output n_columns,n_rows = (%d %d), filter n_columns,n_rows = (%d %d)\n",
 			Gin->header->n_columns, Gin->header->n_rows, Gout->header->n_columns, Gout->header->n_rows, F.n_columns, F.n_rows);
-		GMT_Report (API, GMT_MSG_VERBOSE, "Filter type is %s.\n", filter_name[Ctrl->F.filter]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Filter type is %s.\n", filter_name[Ctrl->F.filter]);
 
 		/* Compute nearest xoutput i-indices and shifts once */
 
@@ -599,7 +599,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 		for (row_out = 0; row_out < Gout->header->n_rows; row_out++) {
 
-			GMT_Report (API, GMT_MSG_VERBOSE, "Processing output line %d\r", row_out);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing output line %d\r", row_out);
 			y_out = gmt_M_grd_row_to_y (GMT, row_out, Gout->header);
 			j_origin = (int)gmt_M_grd_y_to_row (GMT, y_out, Gin->header);
 			if (effort_level == 2) set_weight_matrix_dim (&F, Gout->header, y_out, shift);
@@ -895,7 +895,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 #endif
 			}
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, "\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "\n");
 
 		/* At last, that's it!  Output: */
 
@@ -903,23 +903,23 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 #ifdef OBSOLETE
 		if (Ctrl->E.active && n_bad_planes) GMT_Report (API, GMT_MSG_VERBOSE, "Unable to detrend data at %" PRIu64 " nodes\n", n_bad_planes);
 #endif
-		if (GMT_n_multiples > 0) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d multiple modes found\n", GMT_n_multiples);
+		if (GMT_n_multiples > 0) GMT_Report (API, GMT_MSG_VERBOSE, "%d multiple modes found\n", GMT_n_multiples);
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Write filtered grid\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write filtered grid\n");
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Gout) != GMT_NOERROR) {
 			Return (API->error);
 		}
 #ifdef OBSOLETE
 		if (Ctrl->S.active) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Write scale grid\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write scale grid\n");
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Sout)) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->S.file, Sout) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
 #endif
-		GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done\n");
 
 		gmt_M_free (GMT, F. weight);
 		gmt_M_free (GMT, i_origin);
@@ -953,6 +953,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 	else {	/* Here -Q is active */
 		int err_l = 1;
 		double err_workarray[50], err_min, err_max, err_null_median = 0.0, err_median, err_mad, err_depth, err_sum, out[3];
+		struct GMT_RECORD *Out = NULL;
 
 		FILE *ip = NULL;
 
@@ -968,10 +969,11 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		gmt_set_cartesian (GMT, GMT_OUT);	/* No coordinates here */
+		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 		/* Check the crucial condition to run the program*/
-		if ((ip = fopen (Ctrl->In.file, "r")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open file %s\n", Ctrl->In.file);
+		if ((ip = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s\n", Ctrl->In.file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 
@@ -983,7 +985,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			err_sum += err_depth;
 			for (i = 1; i < Ctrl->Q.err_cols; i++) {
 				if (fscanf (ip, "%lf", &err_depth) != 1) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to read depths for column %d\n", i);
+					GMT_Report (API, GMT_MSG_NORMAL, "Unable to read depths for column %d\n", i);
 					fclose (ip);
 					Return (GMT_DATA_READ_ERROR);
 				}
@@ -1011,13 +1013,14 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			out[2] = (Ctrl->Q.err_cols) ? err_sum / Ctrl->Q.err_cols : 0.0;
 
 			/* print out the results */
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 
 			GMT_Report (API, GMT_MSG_DEBUG, "line %d passed\n", err_l);
 			err_l++;
 		}
 		/* close the input */
 		fclose (ip);
+		gmt_M_free (GMT, Out);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {
 			Return (API->error);	/* Disables further data output */
 		}

@@ -27,7 +27,7 @@
  *
  * Author:		W. H. F. Smith
  * Date:		1 JAN, 2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Explanations:
  *
@@ -517,7 +517,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdtrend main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid\n");
 	weighted = (Ctrl->N.robust || Ctrl->W.active);
 	trivial = (Ctrl->N.value < 5 && !weighted);
 
@@ -557,7 +557,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 				goto END;
 			}
 			if (W->header->n_columns != G->header->n_columns || W->header->n_rows != G->header->n_rows)
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Input weight file does not match input data file.  Ignoring.\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Input weight file does not match input data file.  Ignoring.\n");
 			else {
 				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->W.file, W) == NULL) {	/* Get data */
 					error = API->error;
@@ -622,7 +622,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 				compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
 				compute_resid (GMT, G, T, R);
 				chisq = compute_chisq (GMT, R, W, scale);
-				GMT_Report (API, GMT_MSG_VERBOSE, format, iterations, old_chisq, chisq);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, iterations, old_chisq, chisq);
 				iterations++;
 			} while (old_chisq / chisq > 1.0001);
 
@@ -685,7 +685,7 @@ END:
 	gmt_M_free (GMT, yval);
 	gmt_M_free (GMT, xval);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 
 	Return (error);
 }

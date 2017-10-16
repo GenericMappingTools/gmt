@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: gmtdefaults will list the user's GMT default settings
  * or (by using the -D option), get the site GMT default settings.
@@ -95,7 +95,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct
 				break;
 			case 'L':	/* List the user's current GMT defaults settings */
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; it is now the default behavior.\n");
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -L is deprecated; it is now the default behavior.\n");
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);

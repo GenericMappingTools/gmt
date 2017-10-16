@@ -212,7 +212,7 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 	tod = localtime (&tt);
 	if (Ctrl->H.active) {
 		if ((fp = gmt_fopen (GMT, Ctrl->H.file, "r")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot open header items input file (%s)\n", Ctrl->H.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open header items input file (%s)\n", Ctrl->H.file);
 			Return (GMT_NO_INPUT);
 		}
 	}
@@ -224,14 +224,14 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths <= 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "No cruises given\n");
 		if (fp) gmt_fclose (GMT, fp);
 		Return (GMT_NO_INPUT);
 	}
 
 	saved_range = GMT->current.io.geo.range;	/* We may have to reset thisso keep a copy */
 	gmt_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
-	GMT->current.io.col_type[GMT_OUT][2] = M.time_format;
+	gmt_set_column (GMT, GMT_OUT, GMT_Z, M.time_format);
 
 	use = (M.original || M.format != MGD77_FORMAT_CDF) ? MGD77_ORIG : MGD77_REVISED;
 
@@ -239,7 +239,7 @@ int GMT_mgd77header (void *V_API, int mode, void *args) {
 
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Now processing cruise %s\n", list[argno]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Now processing cruise %s\n", list[argno]);
 
 		D = MGD77_Create_Dataset (GMT);
 

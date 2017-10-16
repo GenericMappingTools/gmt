@@ -31,7 +31,7 @@ PostScript code is written to stdout.
 #define THIS_MODULE_NAME	"psvelo"
 #define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot velocity vectors, crosses, and wedges on maps"
-#define THIS_MODULE_KEYS	"<T{,>X}"
+#define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"dJ"
 #define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehit" GMT_OPT("c")
 
@@ -81,6 +81,7 @@ struct PSVELO_CTRL {
 		bool active;
 		int symbol;
 		unsigned int readmode;
+		unsigned int n_cols;
 		double scale, wedge_amp, conrad;
 		double fontsize, confidence;
 		struct GMT_FILL fill;
@@ -254,23 +255,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 				}
 				switch (opt->arg[0]) {
 					case 'e':
-						Ctrl->S.symbol = CINE;
+						Ctrl->S.symbol = CINE;	Ctrl->S.n_cols = 7;
 						Ctrl->S.readmode = READ_ELLIPSE;
 						break;
 					case 'r':
-						Ctrl->S.symbol = CINE;
+						Ctrl->S.symbol = CINE;	Ctrl->S.n_cols = 7;
 						Ctrl->S.readmode = READ_ROTELLIPSE;
 						break;
 					case 'n':
-						Ctrl->S.symbol = ANISO;
+						Ctrl->S.symbol = ANISO;	Ctrl->S.n_cols = 4;
 						Ctrl->S.readmode = READ_ANISOTROPY;
 						break;
 					case 'w':
-						Ctrl->S.symbol = WEDGE;
+						Ctrl->S.symbol = WEDGE;	Ctrl->S.n_cols = 4;
 						Ctrl->S.readmode = READ_WEDGE;
 						break;
 					case 'x':
-						Ctrl->S.symbol = CROSS;
+						Ctrl->S.symbol = CROSS;	Ctrl->S.n_cols = 5;
 						Ctrl->S.readmode = READ_CROSS;
 						break;
 					default:
@@ -308,17 +309,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psvelo (void *V_API, int mode, void *args) {
-	int ix = 0, iy = 1, n_rec = 0, k, n_k, justify;
+	int ix = 0, iy = 1, n_rec = 0, justify;
 	int des_ellipse = true, des_arrow = true, error = false;
 
-	double xy[2], plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[PSL_MAX_DIMS];
-	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0;
+	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[PSL_MAX_DIMS];
+	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0, *in = NULL;
 	double direction = 0, small_axis = 0, great_axis = 0, sigma_x, sigma_y, corr_xy;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize;
 
-	char *station_name = NULL, *p = NULL;
-	char *line = NULL, col[12][GMT_LEN64];
+	char *station_name = NULL;
 
+	struct GMT_RECORD *In = NULL;
 	struct PSVELO_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -348,7 +349,6 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
-	gmt_M_memset (col, GMT_LEN64*12, char);
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	gmt_setpen (GMT, &Ctrl->W.pen);
 	PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
@@ -360,54 +360,41 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);
+
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 
-	station_name = gmt_M_memory (GMT, NULL, 64, char);
-
-	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_Report (API, GMT_MSG_VERBOSE, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
-
-	n_k = (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) ? 7 : 9;
+	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_MIXED, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (line != NULL);						/* Should never get here */
+			assert (In->text != NULL);						/* Should never get here */
 		}
 
+		in = In->data;
+		station_name = In->text;
+		
 		/* Data record to process */
 
 		n_rec++;
-		if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) {
-			sscanf (line, "%s %s %s %s %s %s %s %[^\n]\n",
-				col[0], col[1], col[2], col[3], col[4], col[5], col[6], station_name);
-		}
-		else {
-			sscanf (line, "%s %s %s %s %s %s %s %s %s %[^\n]\n",
-				col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7], col[8], station_name);
-		}
-		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ',')) != NULL) *p = '\0';	/* Chop of trailing command from input field deliminator */
-
-		if ((gmt_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (gmt_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, must exit)\n", n_rec);
-			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
-		}
 
 		if (Ctrl->S.readmode == READ_ELLIPSE) {
-			vxy[ix] = atof (col[2]);
-			vxy[iy] = atof (col[3]);
-			sigma_x = atof (col[4]);
-			sigma_y = atof (col[5]);
-			corr_xy = atof (col[6]);
+			vxy[ix] = in[2];
+			vxy[iy] = in[3];
+			sigma_x = in[4];
+			sigma_y = in[5];
+			corr_xy = in[6];
 			/* rescale uncertainties if necessary */
 			if (Ctrl->D.active) {
 				sigma_x = Ctrl->D.scale * sigma_x;
@@ -424,43 +411,43 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 			}
 		}
 		else if (Ctrl->S.readmode == READ_ROTELLIPSE) {
-			vxy[ix] = atof (col[2]);
-			vxy[iy] = atof (col[3]);
-			great_axis = Ctrl->S.conrad*atof (col[4]);
-			small_axis = Ctrl->S.conrad*atof (col[5]);
-			direction = atof (col[6]);
+			vxy[ix] = in[2];
+			vxy[iy] = in[3];
+			great_axis = Ctrl->S.conrad*in[4];
+			small_axis = Ctrl->S.conrad*in[5];
+			direction = in[6];
 			if (fabs (great_axis) < EPSIL && fabs (small_axis) < EPSIL)
 				des_ellipse = false;
 			else
 				des_ellipse = true;
 		}
 		else if (Ctrl->S.readmode == READ_ANISOTROPY) {
-			vxy[ix] = atof (col[2]);
-			vxy[iy] = atof (col[3]);
+			vxy[ix] = in[2];
+			vxy[iy] = in[3];
 		}
 		else if (Ctrl->S.readmode == READ_CROSS) {
-			eps1 = atof (col[2]);
-			eps2 = atof (col[3]);
-			theta = atof (col[4]);
+			eps1  = in[2];
+			eps2  = in[3];
+			theta = in[4];
 		}
 		else if (Ctrl->S.readmode == READ_WEDGE) {
-			spin = atof (col[2]);
-			spinsig = atof (col[3]);
+			spin    = in[2];
+			spinsig = in[3];
 			if (Ctrl->D.active) spinsig = spinsig * Ctrl->D.scale;
 		}
 
 		if (!Ctrl->N.active) {
-			gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
+			gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
 			if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 		}
 
-		gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &plot_x, &plot_y);
+		gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 
 		switch (Ctrl->S.symbol) {
 			case CINE:
 				des_arrow = hypot (vxy[0], vxy[1]) < 1.e-8 ? false : true;
-				meca_trace_arrow (GMT, xy[GMT_X], xy[GMT_Y], vxy[0], vxy[1], Ctrl->S.scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
-				meca_get_trans (GMT, xy[GMT_X], xy[GMT_Y], &t11, &t12, &t21, &t22);
+				meca_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], Ctrl->S.scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
+				meca_get_trans (GMT, in[GMT_X], in[GMT_Y], &t11, &t12, &t21, &t22);
 				if (des_ellipse) {
 					if (Ctrl->E.active)
 						meca_paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, Ctrl->S.scale,
@@ -506,7 +493,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen);
 
 					justify = plot_vx - plot_x > 0. ? PSL_MR : PSL_ML;
-					if (Ctrl->S.fontsize > 0.0 && strlen(station_name) > 0)	/* 1 inch = 2.54 cm */
+					if (Ctrl->S.fontsize > 0.0 && station_name)	/* 1 inch = 2.54 cm */
 						PSL_plottext (PSL, plot_x + (6 - justify) / 25.4 , plot_y, Ctrl->S.fontsize, station_name, ANGLE, justify, FORM);
 				}
 				else {
@@ -514,25 +501,25 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 					ssize = GMT_DOT_SIZE;
 					PSL_plotsymbol (PSL, plot_x, plot_y, &ssize, PSL_CIRCLE);
 					justify = PSL_TC;
-					if (Ctrl->S.fontsize > 0.0 && strlen (station_name) > 0) {
+					if (Ctrl->S.fontsize > 0.0 && station_name) {
 						PSL_plottext (PSL, plot_x, plot_y - 1. / 25.4, Ctrl->S.fontsize, station_name, ANGLE, justify, FORM);
 					}
 					/*  1 inch = 2.54 cm */
 				}
 				break;
 			case ANISO:
-				meca_trace_arrow (GMT, xy[GMT_X], xy[GMT_Y], vxy[0], vxy[1], Ctrl->S.scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
+				meca_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], Ctrl->S.scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
 				PSL_plotsegment (PSL, plot_x, plot_y, plot_vx, plot_vy);
 				break;
 			case CROSS:
 				/* triangular arrowheads */
-				meca_trace_cross (GMT, xy[GMT_X],xy[GMT_Y],eps1,eps2,theta,Ctrl->S.scale,Ctrl->A.S.v.v_width,Ctrl->A.S.v.h_length,
+				meca_trace_cross (GMT, in[GMT_X],in[GMT_Y],eps1,eps2,theta,Ctrl->S.scale,Ctrl->A.S.v.v_width,Ctrl->A.S.v.h_length,
 					Ctrl->A.S.v.h_width,0.1,Ctrl->L.active,&(Ctrl->W.pen));
 				break;
 			case WEDGE:
 				PSL_comment (PSL, "begin wedge number %li", n_rec);
-				gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &plot_x, &plot_y);
-				meca_get_trans (GMT, xy[GMT_X], xy[GMT_Y], &t11, &t12, &t21, &t22);
+				gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
+				meca_get_trans (GMT, in[GMT_X], in[GMT_Y], &t11, &t12, &t21, &t22);
 				meca_paint_wedge (PSL, plot_x, plot_y, spin, spinsig, Ctrl->S.scale, Ctrl->S.wedge_amp, t11,t12,t21,t22,
 					Ctrl->G.active, Ctrl->G.fill.rgb, Ctrl->E.active, Ctrl->E.fill.rgb, Ctrl->L.active);
 				break;
@@ -543,11 +530,9 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	gmt_M_free (GMT, station_name);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of records read: %li\n", n_rec);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Number of records read: %li\n", n_rec);
-
-	if (Ctrl->D.active)  GMT_Report (API, GMT_MSG_VERBOSE, "Rescaling uncertainties by a factor of %f\n", Ctrl->D.scale);
+	if (Ctrl->D.active)  GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Rescaling uncertainties by a factor of %f\n", Ctrl->D.scale);
 
 	if (!Ctrl->N.active) gmt_map_clip_off (GMT);
 

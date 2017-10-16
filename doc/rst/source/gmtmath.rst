@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtmath** [ |-A|\ *t_f(t).d*\ [**+e**]\ [**+s**\ \|\ **w**] ]
+**gmtmath** [ |-A|\ *t_f(t)*\ [**+e**]\ [**+s**\ \|\ **w**] ]
 [ |-C|\ *cols* ]
 [ |-E|\ *eigen* ] [ |-I| ]
 [ |-N|\ *n\_col*\ [/*t_col*] ]
@@ -72,9 +72,9 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *t_f(t).d*\ [**+e**]\ [**+r**]\ [**+s**\ \|\ **w**]
+**-A**\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\ \|\ **w**]
     Requires **-N** and will partially initialize a table with values
-    from the given file containing *t* and *f(t)* only. The *t* is
+    from the given file *t_f(t)* containing *t* and *f(t)* only. The *t* is
     placed in column *t\_col* while *f(t)* goes into column *n\_col* - 1
     (see **-N**).  Append **+r** to only place *f(t)* and leave the left
     hand side of the matrix equation alone.  If used with operators LSQFIT and SVDFIT you can
@@ -82,8 +82,8 @@ Optional Arguments
     the solution and write a data set with four columns: t, f(t), the
     model solution at t, and the the residuals at t, respectively
     [Default writes one column with model coefficients].  Append **+w**
-    if *t_f(t).d* has a third column with weights, or append **+s** if
-    *t_f(t).d* has a third column with 1-sigma.  In those two cases we
+    if *t_f(t* has a third column with weights, or append **+s** if
+    *t_f(t)* has a third column with 1-sigma.  In those two cases we
     find the weighted solution.  The weights (or sigmas) will be output
     as the last column when **+e** is in effect.
 
@@ -677,35 +677,35 @@ To take log10 of the average of 2 data files, use
 
    ::
 
-    gmt math file1.d file2.d ADD 0.5 MUL LOG10 = file3.d
+    gmt math file1.txt file2.txt ADD 0.5 MUL LOG10 = file3.txt
 
-Given the file samples.d, which holds seafloor ages in m.y. and seafloor
+Given the file samples.txt, which holds seafloor ages in m.y. and seafloor
 depth in m, use the relation depth(in m) = 2500 + 350 \* sqrt (age) to
 print the depth anomalies:
 
    ::
 
-    gmt math samples.d T SQRT 350 MUL 2500 ADD SUB = | lpr
+    gmt math samples.txt T SQRT 350 MUL 2500 ADD SUB = | lpr
 
 To take the average of columns 1 and 4-6 in the three data sets sizes.1,
 sizes.2, and sizes.3, use
 
    ::
 
-    gmt math -C1,4-6 sizes.1 sizes.2 ADD sizes.3 ADD 3 DIV = ave.d
+    gmt math -C1,4-6 sizes.1 sizes.2 ADD sizes.3 ADD 3 DIV = ave.txt
 
-To take the 1-column data set ages.d and calculate the modal value and
+To take the 1-column data set ages.txt and calculate the modal value and
 assign it to a variable, try
 
    ::
 
-    gmt set mode_age = `gmt math -S -T ages.d MODE =`
+    gmt set mode_age = `gmt math -S -T ages.txt MODE =`
 
-To evaluate the dilog(x) function for coordinates given in the file t.d:
+To evaluate the dilog(x) function for coordinates given in the file t.txt:
 
    ::
 
-    gmt math -Tt.d T DILOG = dilog.d
+    gmt math -Tt.txt T DILOG = dilog.txt
 
 To demonstrate the use of stored variables, consider this sum of the
 first 3 cosine harmonics where we store and repeatedly recall the
@@ -714,7 +714,7 @@ trigonometric argument (2\*pi\*T/360):
    ::
 
     gmt math -T0/360/1 2 PI MUL 360 DIV T MUL STO@kT COS @kT 2 MUL COS ADD \
-                @kT 3 MUL COS ADD = harmonics.d
+                @kT 3 MUL COS ADD = harmonics.txt
 
 To use **gmtmath** as a RPN Hewlett-Packard calculator on scalars (i.e., no
 input files) and calculate arbitrary expressions, use the **-Q** option.
@@ -730,7 +730,7 @@ that the current table is the augmented matrix [ A \| b ] and you want
 the least squares solution x to the matrix equation A \* x = b. The
 operator **LSQFIT** does this; it is your job to populate the matrix
 correctly first. The **-A** option will facilitate this. Suppose you
-have a 2-column file ty.d with *t* and *b(t)* and you would like to fit
+have a 2-column file ty.txt with *t* and *b(t)* and you would like to fit
 a the model y(t) = a + b\*t + c\*H(t-t0), where H is the Heaviside step
 function for a given t0 = 1.55. Then, you need a 4-column augmented
 table loaded with t in column 1 and your observed y(t) in column 3. The
@@ -738,19 +738,19 @@ calculation becomes
 
    ::
 
-    gmt math -N4/1 -Aty.d -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.d
+    gmt math -N4/1 -Aty.txt -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.txt
 
 Note we use the **-C** option to select which columns we are working on,
 then make active all the columns we need (here all of them, with
 **-Ca**) before calling **LSQFIT**. The second and fourth columns (col
 numbers 1 and 3) are preloaded with t and y(t), respectively, the other
 columns are zero. If you already have a pre-calculated table with the
-augmented matrix [ A \| b ] in a file (say lsqsys.d), the least squares
+augmented matrix [ A \| b ] in a file (say lsqsys.txt), the least squares
 solution is simply
 
    ::
 
-    gmt math -T lsqsys.d LSQFIT = solution.d
+    gmt math -T lsqsys.txt LSQFIT = solution.txt
 
 Users must be aware that when **-C** controls which columns are to be
 active the control extends to placing columns from files as well.

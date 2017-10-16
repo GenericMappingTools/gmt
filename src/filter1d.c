@@ -20,7 +20,7 @@
  *
  * Author:	Walter H. F. Smith
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis:  filter1d_func will read N columns of data from file
  * or stdin and return filtered output at user-selected positions.
@@ -307,7 +307,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 				if (gmt_M_compat_check (GMT, 4)) {	/* GMT4 LEVEL */
 					if (strchr (opt->arg, '/')) { /* Gave obsolete format */
 						int sval0;
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "-N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
 						if (sscanf (opt->arg, "%d/%d", &sval0, &sval) != 2) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Syntax is -N<tcol>\n");
 							++n_errors;
@@ -336,8 +336,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 					++n_errors;
 				}
 				else {
-					gmt_scanf_arg (GMT, txt_a, GMT_IS_UNKNOWN, &Ctrl->T.min);
-					gmt_scanf_arg (GMT, txt_b, GMT_IS_UNKNOWN, &Ctrl->T.max);
+					gmt_scanf_arg (GMT, txt_a, GMT_IS_UNKNOWN, false, &Ctrl->T.min);
+					gmt_scanf_arg (GMT, txt_b, GMT_IS_UNKNOWN, false, &Ctrl->T.max);
 					if (strstr (opt->arg, "+n") || opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of points instead; calculate inc */
 						Ctrl->T.inc = (Ctrl->T.max - Ctrl->T.min) / (Ctrl->T.inc - 1.0);
 					}
@@ -473,7 +473,7 @@ GMT_LOCAL int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 		}
 	}
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "F width: %g Resolution: %g Start: %g Stop: %g\n", F->filter_width, F->dt, F->t_start, F->t_stop);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "F width: %g Resolution: %g Start: %g Stop: %g\n", F->filter_width, F->dt, F->t_start, F->t_stop);
 
 	return (0);
 }
@@ -542,12 +542,14 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 	double *wt_sum = NULL;		/* Pointer for array of weight sums [each column]  */
 	double *data_sum = NULL;	/* Pointer for array of data * weight sums [columns]  */
 	double *outval = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
 	outval = gmt_M_memory (GMT, NULL, F->n_cols, double);
 	good_one = gmt_M_memory (GMT, NULL, F->n_cols, bool);
 	wt_sum = gmt_M_memory (GMT, NULL, F->n_cols, double);
 	data_sum = gmt_M_memory (GMT, NULL, F->n_cols, double);
+	Out = gmt_new_record (GMT, NULL, NULL);
 
 	if(!F->out_at_time) {	/* Position i_t_output at first output time  */
 		for(i_t_output = 0; F->data[F->t_col][i_t_output] < F->t_start; ++i_t_output);
@@ -634,7 +636,8 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 		if (F->filter_type > FILTER1D_CONVOLVE) {
 
 			/* Need to count how many good ones; use data_sum area  */
-
+			
+			Out->data = data_sum;
 			n_good_ones = 0;
 			for (i_col = 0; i_col < F->n_cols; ++i_col) {
 				if (i_col == F->t_col)
@@ -646,7 +649,7 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 				else
 					data_sum[i_col] = GMT->session.d_NaN;
 			}
-			if (n_good_ones) GMT_Put_Record (C, GMT_WRITE_DATA, data_sum);
+			if (n_good_ones) GMT_Put_Record (C, GMT_WRITE_DATA, Out);
 		}
 		else {
 			if (F->robust) for (i_col = 0; i_col < F->n_cols; ++i_col) F->n_this_col[i_col] = 0;
@@ -700,6 +703,7 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 				++n_good_ones;
 			}
 			if (n_good_ones) {
+				Out->data = outval;
 				for (i_col = 0; i_col < F->n_cols; ++i_col) {
 					if (i_col == F->t_col)
 						outval[i_col] = t_time;
@@ -710,7 +714,7 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 					else
 						outval[i_col] = GMT->session.d_NaN;
 				}
-				GMT_Put_Record (C, GMT_WRITE_DATA, outval);
+				GMT_Put_Record (C, GMT_WRITE_DATA, Out);
 			}
 		}
 
@@ -728,6 +732,7 @@ GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 	gmt_M_free (GMT, good_one);
 	gmt_M_free (GMT, wt_sum);
 	gmt_M_free (GMT, data_sum);
+	gmt_M_free (GMT, Out);
 
 	return (0);
 }
@@ -841,10 +846,10 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	F.n_work_alloc = GMT_CHUNK;
 	F.equidist = true;
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
 	/* Register all data sources */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 		Return (API->error, "Error initializing input\n");
 	}
 	/* Read the input data into memory */
@@ -906,14 +911,14 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 			F.filter_type = FILTER1D_CUSTOM;
 			if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != 0) Return (error, "Error in gmt_set_cols");
 			save_col = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
-			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;	/* Always read the weights as floats */
+			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Always read the weights as floats */
 			gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -F files */
 			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 				Return (API->error, "Error Reading input\n");
 			}
 			gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
-			GMT->current.io.col_type[GMT_IN][GMT_X] = save_col;	/* Reset this col type to whatever it actually is */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
+			gmt_set_column (GMT, GMT_IN, GMT_X, save_col);	/* Reset this col type to whatever it actually is */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;
 	}
 	if (F.filter_type > FILTER1D_CONVOLVE) F.robust = false;
@@ -933,7 +938,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 
 	allocate_space (GMT, &F);	/* Gets column-specific flags and uint64_t space */
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Filter the data columns\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Filter the data columns\n");
 	
 	for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
 		for (seg = 0; seg < D->table[tbl]->n_segments; ++seg) {	/* For each segment */
@@ -966,7 +971,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " records from table %" PRIu64 ", segment %" PRIu64 "\n", F.n_rows, tbl, seg);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " records from table %" PRIu64 ", segment %" PRIu64 "\n", F.n_rows, tbl, seg);
 			
 			/* FILTER: Initialize scale parameters and last_loc based on min and max of data  */
 
@@ -991,7 +996,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 		Return (API->error, "Error in End_IO\n");
 	}
 
-	if (F.n_multiples > 0) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d multiple modes found\n", F.n_multiples);
+	if (F.n_multiples > 0) GMT_Report (API, GMT_MSG_VERBOSE, "%d multiple modes found\n", F.n_multiples);
 
 	free_space_filter1d (GMT, &F);
 

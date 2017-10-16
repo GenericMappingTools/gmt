@@ -67,7 +67,7 @@
  * PSL_plottext		: Plots textstring
  * PSL_plottextbox	: Draw a filled box around a textstring
  * PSL_plottextline	: Place labels along paths (straight or curved), set clip path, draw line
- * PSL_loadimage	: Read image file of supported type
+ * PSL_loadeps		: Read EPS file into string
  * PSL_command		: Writes a given PostScript statement to the plot file
  * PSL_comment		: Writes a comment statement to the plot file
  * PSL_makecolor	: Returns string with PostScript command to set a new color
@@ -82,9 +82,9 @@
  * PSL_setlinejoin	: Changes the line join setting
  * PSL_setlinewidth	: Sets a new linewidth
  * PSL_setmiterlimit	: Changes the miter limit setting for joins
+ * PSL_setimage		: Sets up a image pattern fill in PS
  * PSL_setorigin	: Translates/rotates the coordinate system
  * PSL_setparagraph	: Sets parameters used to typeset text paragraphs
- * PSL_setpattern	: Sets up a pattern fill in PS
  * PSL_defpen		: Encodes a pen with attributes by name in the PS output
  * PSL_definteger	: Encodes an integer by name in the PS output
  * PSL_defpoints	: Encodes a pointsize by name in the PS output
@@ -98,8 +98,8 @@
  *			   pwessel@hawaii.edu
  *		Remko Scharroo, EUMETSAT, Darmstadt, Germany
  *			   Remko.Scharroo@eumetsat.int
- * Date:	15-OCT-2009
- * Version:	5.4 [64-bit enabled API edition, decoupled from GMT]
+ * Date:	13-OCT-2017
+ * Version:	6.0 [64-bit enabled API edition, decoupled from GMT]
  *
  * Thanks to J. Goff and L. Parkes for their contributions to an earlier version.
  *
@@ -254,10 +254,14 @@ static char *PSL_ISO_encoding[] = {
 NULL
 };
 
-/* Listing of "Standard" 35 PostScript fonts found on most PS printers.
+/* Include the 90 hardwired hachure patterns */
+#include "PSL_patterns.h"
+
+/* Listing of "Standard" 35 PostScript fonts found on most PS printers
+ * plus the 4 Japanese fonts we have supported since GMT 3.
  * The fontheight is the height of A for unit fontsize. */
 
-#define PSL_N_STANDARD_FONTS 35
+#define PSL_N_STANDARD_FONTS 39
 static struct PSL_FONT PSL_standard_fonts[PSL_N_STANDARD_FONTS] = {
 #include "standard_adobe_fonts.h"
 };
@@ -429,6 +433,55 @@ static const char *PDF_transparency_modes[N_PDF_TRANSPARENCY_MODES] = {
 };
 
 #ifdef WIN32
+
+#ifndef HAVE_STRSEP
+/* Copyright (C) 2004, 2007, 2009-2012 Free Software Foundation, Inc.
+
+   Written by Yoann Vandoorselaere <yoann@prelude-ids.org>.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as published by
+   the Free Software Foundation; either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+
+char *strsep (char **stringp, const char *delim) {
+	char *start = *stringp;
+	char *ptr;
+
+	if (start == NULL)
+		return NULL;
+
+	/* Optimize the case of no delimiters.  */
+	if (delim[0] == '\0') {
+		*stringp = NULL;
+		return start;
+    }
+
+	/* Optimize the case of one delimiter.  */
+	if (delim[1] == '\0')
+		ptr = strchr (start, delim[0]);
+	else
+	/* The general case.  */
+	ptr = strpbrk (start, delim);
+	if (ptr == NULL) {
+		*stringp = NULL;
+		return start;
+	}
+
+	*ptr = '\0';
+	*stringp = ptr + 1;
+	return start;
+}
+#endif /* ifndef HAVE_STRSEP */
+
 /* SUpport for differences between UNIX and DOS paths */
 
 static void psl_strlshift (char *string, size_t n) {
@@ -1019,74 +1072,6 @@ static size_t psl_a85_encode (struct PSL_CTRL *PSL, const unsigned char *src_buf
 
 #define ESC 128
 
-static void psl_rle_decode (struct PSL_CTRL *PSL, struct imageinfo *h, unsigned char **in) {
-	/* Function to undo RLE encoding in Sun rasterfiles
-	 *
-	 * RLE consists of ESCaped pairs of bytes.  This are started
-	 * when the ESC value is encountered.  The Next byte is the <count>,
-	 * the following is the <value>.  We then replicate <value>
-	 * the required number of times.  If count is 0 then ESC is output.
-	 * If bytes are not ESCaped they are simply copied to output.
-	 * This is implemented with the constraint that all scanlines must
-	 * be an even number of bytes (i.e., we are using 16-bit words
-	 */
-
-	int i, j, col, width, len;
-	int odd = false, count;
-	unsigned char mask_table[] = {0xff, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe};
-	unsigned char mask, *out = NULL, value = 0;
-
-	i = j = col = count = 0;
-
-	width = (int)lrint (ceil (h->width * h->depth / 8.0));	/* Scanline width in bytes */
-	if (width%2) odd = true, width++;	/* To ensure 16-bit words */
-	mask = mask_table[h->width%8];	/* Padding for 1-bit images */
-
-	len = width * ((int)h->height);		/* Length of output image */
-	out = PSL_memory (PSL, NULL, len, unsigned char);
-	if (odd) width--;
-
-	while (j < h->length || count > 0) {
-
-		if (count) {
-			out[i++] = value;
-			count--;
-			col++;
-		}
-		else {
-			switch ((int)(*in)[j]) {
-				case ESC:
-					count = (int)(*in)[++j];
-					j++;
-					if (count == 0) {
-						out[i++] = ESC;
-						col++;
-					}
-					else {
-						count++;
-						value = (*in)[j];
-						j++;
-					}
-					break;
-				default:
-					out[i++] = (*in)[j++];
-					col++;
-			}
-		}
-
-		if (col == width) {
-			if (h->depth == 1) out[width-1] &= mask;
-			if (odd) {out[i++] = 0; count = 0;}
-			col = 0;
-		}
-	}
-
-	if (i != len) PSL_message (PSL, PSL_MSG_NORMAL, "Warning: psl_rle_decode has wrong # of outbytes (%d versus expected %d)\n", i, len);
-
-	PSL_free (*in);
-	*in = out;
-}
-
 static unsigned char *psl_rle_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input) {
 	/* Run Length Encode a buffer of nbytes. */
 
@@ -1579,8 +1564,8 @@ static char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const c
 	if (PSL->internal.USERDIR) {
 		sprintf (path, "%s/%s%s", PSL->internal.USERDIR, stem, suffix);
 		if (!access (path, R_OK)) return (path);
-        sprintf (path, "%s/cache/%s%s", PSL->internal.USERDIR, stem, suffix);
-        if (!access (path, R_OK)) return (path);
+        	sprintf (path, "%s/cache/%s%s", PSL->internal.USERDIR, stem, suffix);
+        	if (!access (path, R_OK)) return (path);
 	}
 
 	/* Try to get file from PSL->internal.SHAREDIR/subdir */
@@ -1610,26 +1595,28 @@ static void psl_place_encoding (struct PSL_CTRL *PSL, const char *encoding) {
 	}
 }
 
-/* This function copies a file called $PSL_SHAREDIR/postscriptlight/<fname>.ps
- * to the postscript output verbatim.
+/* psl_bulkcopy copies the given long static string (defined in PSL_strings.h)
+ * to the postscript output verbatim or after stripping comments.
  */
-static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname) {
-	FILE *in = NULL;
-	char buf[PSL_BUFSIZ], fullname[PSL_BUFSIZ];
+
+#include "PSL_strings.h"	/* Static char copies of the three former include files */
+
+static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *text) {
+	char *buf = NULL, *string = NULL;
 	int i;
 
-	psl_getsharepath (PSL, "postscriptlight", fname, ".ps", fullname);
-	if ((in = fopen (fullname, "r")) == NULL) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: ");
-		perror (fullname);
-		PSL_exit (EXIT_FAILURE);
-	}
-
-	while (fgets (buf, PSL_BUFSIZ, in)) {
+	if (!strcmp (text, "PSL_label"))
+		string = strdup (PSL_label_str);
+	else if (!strcmp (text, "PSL_prologue"))
+		string = strdup (PSL_prologue_str);
+	else if (!strcmp (text, "PSL_text"))
+		string = strdup (PSL_text_str);
+		
+	while ((buf = strsep (&string, "\n")) != NULL) {
 		if (PSL->internal.comments) {
 			/* We copy every line, including the comments, except those starting '%-' */
 			if (buf[0] == '%' && buf[1] == '-') continue;
-			PSL_command (PSL, "%s", buf);
+			PSL_command (PSL, "%s\n", buf);
 		}
 		else {
 			/* Here we remove the comments */
@@ -1646,7 +1633,7 @@ static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname) {
 			PSL_command (PSL, "%s\n", buf);
 		}
 	}
-	fclose (in);
+	PSL_free (string);
 }
 
 static struct PSL_WORD *psl_add_word_part (struct PSL_CTRL *PSL, char *word, int length, int fontno, double fontsize, int sub, int super, int small, int under, int space, double rgb[]) {
@@ -2274,54 +2261,54 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 	return (PSL_NO_ERROR);
 }
 
-static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile) {
-	int i, status;
-	char name[PSL_BUFSIZ], file[PSL_BUFSIZ];
+static int psl_search_userimages (struct PSL_CTRL *PSL, char *imagefile) {
+	int i = 0;
+	while (i < PSL->internal.n_userimages) {
+		if (!strcmp (PSL->internal.user_image[i], imagefile))	/* Yes, found it */
+			return (i);
+		i++;	/* No, go to next */
+	}
+	return -1;	/* Not found */
+}
+
+static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile, unsigned char *image, unsigned int width, unsigned int height, unsigned int depth) {
+	int k;
 	unsigned char *picture = NULL;
-	struct imageinfo h;
-	int found;
-
-	memset (&h, 0, sizeof(struct imageinfo)); /* initialize struct */
-
-	if ((image_no >= 0 && image_no < PSL_N_PATTERNS) && PSL->internal.pattern[image_no].status) return (image_no);	/* Already done this */
-
-	if ((image_no >= 0 && image_no < PSL_N_PATTERNS)) {	/* Premade pattern yet not used */
-		sprintf (name, "PSL_pattern_%02d", image_no);
-		psl_getsharepath (PSL, "postscriptlight", name, ".ras", file);
+	/* image_no is 1-90 (PSL_N_PATTERNS) if a standard PSL pattern, else we examine imagefile.
+	 * User images are numbered PSL_N_PATTERNS+1,2,3 etc. */
+	k = image_no - 1;	/* Array index */
+	if ((image_no > 0 && image_no <= PSL_N_PATTERNS)) {	/* Premade pattern yet not used, assign settings */
+		if (PSL->internal.pattern[image_no].status) return (image_no);	/* Already initialized this pattern once, just return */
+		picture = PSL_pattern[k];
 	}
 	else {	/* User image, check to see if already used */
-
-		for (i = 0, found = false; !found && i < PSL->internal.n_userimages; i++) found = !strcmp (PSL->internal.user_image[i], imagefile);
-		if (found) return (PSL_N_PATTERNS + i - 1);
+		int i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
+		if (i >= 0) return (PSL_N_PATTERNS + i + 1);	/* Already registered, just return number */
 		if (PSL->internal.n_userimages > (PSL_N_PATTERNS-1)) {
 			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Already maintaining %d user images and cannot accept any more\n", PSL->internal.n_userimages+1);
 			PSL_exit (EXIT_FAILURE);
 		}
-		psl_getsharepath (PSL, NULL, imagefile, "", file);
+		/* Must initialize a previously unused image */
 		PSL->internal.user_image[PSL->internal.n_userimages] = PSL_memory (PSL, NULL, strlen (imagefile)+1, char);
 		strcpy (PSL->internal.user_image[PSL->internal.n_userimages], imagefile);
-		image_no = PSL_N_PATTERNS + PSL->internal.n_userimages;
 		PSL->internal.n_userimages++;
+		image_no = PSL_N_PATTERNS + PSL->internal.n_userimages;
+		k = image_no - 1;	/* Array index */
+		picture = image;
 	}
 
-	/* Load image file. Store size, depth and bogus DPI setting */
-
-	if ((status = PSL_loadimage (PSL, file, &h, &picture)) != 0) return (0);
-    
-
-	PSL->internal.pattern[image_no].status = 1;
-	PSL->internal.pattern[image_no].nx = h.width;
-	PSL->internal.pattern[image_no].ny = h.height;
-	PSL->internal.pattern[image_no].depth = h.depth;
-	PSL->internal.pattern[image_no].dpi = -999;
+	/* Store size, depth and bogus DPI setting */
+	PSL->internal.pattern[k].nx = width;
+	PSL->internal.pattern[k].ny = height;
+	PSL->internal.pattern[k].depth = depth;
+	PSL->internal.pattern[k].status = 1;
+	PSL->internal.pattern[k].dpi = -999;
 
 	PSL_comment (PSL, "Define pattern %d\n", image_no);
 
 	PSL_command (PSL, "/image%d {<~\n", image_no);
-	psl_stream_dump (PSL, picture, h.width, h.height, h.depth, PSL->internal.compress, PSL_ASCII85, 2);
+	psl_stream_dump (PSL, picture, PSL->internal.pattern[k].nx, PSL->internal.pattern[k].ny, PSL->internal.pattern[k].depth, PSL->internal.compress, PSL_ASCII85, 2);
 	PSL_command (PSL, "} def\n");
-
-	PSL_free (picture);
 
 	return (image_no);
 }
@@ -2864,263 +2851,10 @@ static int psl_bitimage_cmap (struct PSL_CTRL *PSL, double f_rgb[], double b_rgb
 	return (polarity);
 }
 
-static int psl_read_rasheader (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, int i0, int i1) {
-	/* Reads the header of a Sun rasterfile (or any other).
-	   Since the byte order is defined as Big Endian, the bytes are
-		 swapped on Little Endian platforms.
-	 */
-
-	int i;
-	int32_t value;
-
-	for (i = i0; i <= i1; i++) {
-
-		if (fread (&value, sizeof (int32_t), 1, fp) != 1) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Failure reading rasterfile header\n");
-			return (-1);
-		}
-#ifndef WORDS_BIGENDIAN
-		value = bswap32 (value);
-#endif
-
-		switch (i) {
-			case 0:
-				h->magic = (int)value;
-				break;
-			case 1:
-				h->width = (int)value;
-				break;
-			case 2:
-				h->height = (int)value;
-				break;
-			case 3:
-				h->depth = (int)value;
-				break;
-			case 4:
-				h->length = (int)value;
-				break;
-			case 5:
-				h->type = (int)value;
-				break;
-			case 6:
-				h->maptype = (int)value;
-				break;
-			case 7:
-				h->maplength = (int)value;
-				break;
-		}
-	}
-
-	if (h->type == RT_OLD && h->length == 0)
-		h->length = 2 * ((int)lrint (ceil (h->width * h->depth / 16.0))) * h->height;
-
-	return (0);
-}
-
 /* Make sure that all memory is freed upon return.
    This way is simpler than freeing buffer, red, green, blue, entry individually at every return
  */
 #define Return(code) {PSL_free (buffer); PSL_free (entry); PSL_free (red); PSL_free (green); PSL_free (blue); return (code);}
-
-static int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, unsigned char **picture) {
-	/* psl_load_raster reads a Sun standard rasterfile of depth 1, 8, 24, or 32 into memory */
-
-	int mx_in, mx, j, k, i, ij, n = 0, ny, get, odd, oddlength, r_off, b_off;
-	unsigned char *buffer = NULL, *entry = NULL, *red = NULL, *green = NULL, *blue = NULL;
-
-	if (psl_read_rasheader (PSL, fp, header, 0, 7)) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading Sun rasterfile header!\n");
-		return (PSL_READ_FAILURE);
-	}
-
-	if (header->magic != RAS_MAGIC) {	/* Not a Sun rasterfile */
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Raster is not a Sun rasterfile (Magic # = 0x%x)!\n", header->magic);
-		return (PSL_READ_FAILURE);
-	}
-	if (header->type < RT_OLD || header->type > RT_FORMAT_RGB) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Can only read Sun rasterfiles types %d - %d (your type = %d)!\n", RT_OLD, RT_FORMAT_RGB, header->type);
-		return (PSL_READ_FAILURE);
-	}
-
-	if (header->depth == 1) {	/* 1 bit black and white image */
-		mx_in = (int) (2 * ceil (header->width / 16.0));	/* Because Sun images are written in multiples of 2 bytes */
-		mx = (int) (ceil (header->width / 8.0));		/* However, PS wants only the bytes that matters, so mx may be one less */
-		ny = header->height;
-		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading 1-bit Sun rasterfile!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
-
-		if (mx < mx_in) {	/* OK, here we must shuffle image to get rid of the superfluous last byte per line */
-			for (j = k = ij = 0; j < ny; j++) {
-				for (i = 0; i < mx; i++) buffer[k++] = buffer[ij++];
-				ij++;	/* Skip the extra byte */
-			}
-		}
-	}
-	else if (header->depth == 8 && header->maplength) {	/* 8-bit with color table */
-		get = header->maplength / 3;
-		/* Create 256-item array to make sure that red[i], green[i], blue[i] always have a value for 0 <= i <= 255 */
-		red   = PSL_memory (PSL, NULL, 256, unsigned char);
-		green = PSL_memory (PSL, NULL, 256, unsigned char);
-		blue  = PSL_memory (PSL, NULL, 256, unsigned char);
-		n  = (int)fread (red,   1U, (size_t)get, fp);
-		n += (int)fread (green, 1U, (size_t)get, fp);
-		n += (int)fread (blue,  1U, (size_t)get, fp);
-		if (n != header->maplength) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading colormap!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		odd = (int)header->width%2;
-		entry = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (entry, 1U, (size_t)header->length, fp) != (size_t)header->length) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading 8-bit Sun rasterfile!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &entry);
-		buffer = PSL_memory (PSL, NULL, 3 * header->width * header->height, unsigned char);
-		for (j = k = ij = 0; j < header->height; j++) {
-			for (i = 0; i < header->width; i++) {
-				buffer[k++] = red[entry[ij]];
-				buffer[k++] = green[entry[ij]];
-				buffer[k++] = blue[entry[ij]];
-				ij++;
-			}
-			if (odd) ij++;
-		}
-		header->depth = 24;
-	}
-	else if (header->depth == 8U) {	/* 8-bit without color table (implicit grayramp) */
-		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading 8-bit Sun rasterfile!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
-	}
-	else if (header->depth == 24 && header->maplength) {	/* 24-bit raster with colormap */
-		unsigned char r, b;
-		get = header->maplength / 3;
-		/* Create 256-item array to make sure that red[i], green[i], blue[i] always have a value for 0 <= i <= 255 */
-		red   = PSL_memory (PSL, NULL, 256, unsigned char);
-		green = PSL_memory (PSL, NULL, 256, unsigned char);
-		blue  = PSL_memory (PSL, NULL, 256, unsigned char);
-		n  = (int)fread (red,   1U, (size_t)get, fp);
-		n += (int)fread (green, 1U, (size_t)get, fp);
-		n += (int)fread (blue,  1U, (size_t)get, fp);
-		if ((size_t)n != (size_t)header->maplength) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading colormap!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading 24-bit Sun rasterfile!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
-		oddlength = 3 * header->width;
-		odd = (3 * header->width) % 2;
-		r_off = (header->type == RT_FORMAT_RGB) ? 0 : 2;
-		b_off = (header->type == RT_FORMAT_RGB) ? 2 : 0;
-		for (i = j = 0; i < header->length; i += 3, j += 3) {	/* BGR -> RGB */
-			r =  red[buffer[i+r_off]];
-			b = blue[buffer[i+b_off]];
-			buffer[j] = r;
-			buffer[j+1] = green[buffer[i+1]];
-			buffer[j+2] = b;
-			if (odd && (j+3)%oddlength == 0) i++;
-		}
-	}
-	else if (header->depth == 24U) {	/* 24-bit raster, no colormap */
-		unsigned char r, b;
-		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading 24-bit Sun rasterfile!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
-		oddlength = 3 * header->width;
-		odd = (3 * header->width) % 2;
-		r_off = (header->type == RT_FORMAT_RGB) ? 0 : 2;
-		b_off = (header->type == RT_FORMAT_RGB) ? 2 : 0;
-		for (i = j = 0; i < header->length; i += 3, j += 3) {	/* BGR -> RGB */
-			r = buffer[i+r_off];
-			b = buffer[i+b_off];
-			buffer[j] = r;
-			buffer[j+1] = buffer[i+1];
-			buffer[j+2] = b;
-			if (odd && (j+3)%oddlength == 0) i++;
-		}
-	}
-	else if (header->depth == 32 && header->maplength) {	/* 32-bit raster with colormap */
-		unsigned char b;
-		get = header->maplength / 3;
-		/* Create 256-item array to make sure that red[i], green[i], blue[i] always have a value for 0 <= i <= 255 */
-		red   = PSL_memory (PSL, NULL, 256, unsigned char);
-		green = PSL_memory (PSL, NULL, 256, unsigned char);
-		blue  = PSL_memory (PSL, NULL, 256, unsigned char);
-		n  = (int)fread (red,   1U, (size_t)get, fp);
-		n += (int)fread (green, 1U, (size_t)get, fp);
-		n += (int)fread (blue,  1U, (size_t)get, fp);
-		if ((size_t)n != (size_t)header->maplength) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading colormap!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading 32-bit Sun rasterfile!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
-		r_off = (header->type == RT_FORMAT_RGB) ? 1 : 3;
-		b_off = (header->type == RT_FORMAT_RGB) ? 3 : 1;
-		b = blue[buffer[b_off]];
-		buffer[0] = red[buffer[r_off]];
-		buffer[1] = green[buffer[2]];
-		buffer[2] = b;
-		for (i = 3, j = 4; j < header->length; i += 3, j += 4) {	/* _BGR -> RGB */
-			buffer[i] = red[buffer[j+r_off]];
-			buffer[i+1] = green[buffer[j+2]];
-			buffer[i+2] = blue[buffer[j+b_off]];
-		}
-		header->depth = 24;
-	}
-	else if (header->depth == 32U) {	/* 32-bit raster, no colormap */
-		unsigned char b;
-		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
-		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading 32-bit Sun rasterfile!\n");
-			Return (PSL_READ_FAILURE);
-		}
-		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
-		r_off = (header->type == RT_FORMAT_RGB) ? 1 : 3;
-		b_off = (header->type == RT_FORMAT_RGB) ? 3 : 1;
-		b = buffer[b_off];
-		buffer[0] = buffer[r_off];
-		buffer[1] = buffer[2];
-		buffer[2] = b;
-		for (i = 3, j = 4; j < header->length; i += 3, j += 4) {	/* _BGR -> RGB */
-			buffer[i] = buffer[j+r_off];
-			buffer[i+1] = buffer[j+2];
-			buffer[i+2] = buffer[j+b_off];
-		}
-		header->depth = 24;
-	}
-	else {	/* Unrecognized format */
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Unrecognized file format!\n");
-		Return (PSL_READ_FAILURE);
-	}
-
-	PSL_free (entry);
-	PSL_free (red);
-	PSL_free (green);
-	PSL_free (blue);
-
-	*picture = buffer;
-	return (PSL_NO_ERROR);
-}
 
 static int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *lly, int *trx, int *try,
 	double *hires_llx, double *hires_lly, double *hires_trx, double *hires_try) {
@@ -3161,44 +2895,6 @@ static int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *l
 	return 1;
 }
 
-static int psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, unsigned char **picture) {
-	/* psl_load_eps reads an Encapsulated PostScript file */
-
-	int n, p, llx, lly, trx, try, BLOCKSIZE=4096;
-	unsigned char *buffer = NULL;
-
-	/* Scan for BoundingBox */
-
-	psl_get_boundingbox (PSL, fp, &llx, &lly, &trx, &try, &h->llx, &h->lly, &h->trx, &h->try);
-
-	/* Rewind and load into buffer */
-
-	n=0;
-	fseek (fp, (off_t)0, SEEK_SET);
-	buffer = PSL_memory (PSL, NULL, BLOCKSIZE, unsigned char);
-	while ((p = (int)fread ((unsigned char *)buffer + n, 1U, (size_t)BLOCKSIZE, fp)) == BLOCKSIZE)
-	{
-		n+=BLOCKSIZE;
-		buffer = PSL_memory (PSL, buffer, n+BLOCKSIZE, unsigned char);
-	}
-	n+=p;
-
-	/* Fill header struct with appropriate values */
-	h->magic = EPS_MAGIC;
-	h->width = trx - llx;
-	h->height = try - lly;
-	h->depth = 0;
-	h->length = n;
-	h->type = RT_EPS;
-	h->maptype = RMT_NONE;
-	h->maplength = 0;
-	h->xorigin = llx;
-	h->yorigin = lly;
-
-	*picture = buffer;
-	return (0);
-}
-
 static void psl_init_fonts (struct PSL_CTRL *PSL) {
 	FILE *in = NULL;
 	int n_PSL_fonts;
@@ -3211,7 +2907,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL) {
 
 	/* Loads the available fonts for this installation */
 
-	/* First the standard 35 PostScript fonts from Adobe */
+	/* First the standard 35 PostScript fonts from Adobe + 4 Japanese fonts */
 	memcpy (PSL->internal.font, PSL_standard_fonts, PSL_N_STANDARD_FONTS * sizeof (struct PSL_FONT));
 	PSL->internal.N_FONTS = n_PSL_fonts = i = PSL_N_STANDARD_FONTS;
 
@@ -3995,10 +3691,33 @@ int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int ima
 	 * f_rgb:	Foreground color used for set bits (1) (1-bit only)
 	 * b_rgb:	Background color used for unset bits (0) (1-bit only)
 	 * Returns image number
+	 * DEPRECATED
+	 */
+	(void)(image_no); (void)(imagefile); (void)(image_dpi); (void)(f_rgb); (void)(b_rgb); 
+	PSL_message (PSL, PSL_MSG_NORMAL, "Warning: PSL_setpattern has been deprecated - see PSL_setimage instead\n");
+	return (PSL_NO_ERROR);
+}
+
+int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *header, unsigned char **image) {
+	/* DEPRECATED */
+	(void)(file); (void)(header); (void)(image);
+	PSL_message (PSL, PSL_MSG_NORMAL, "Warning: PSL_loadimage has been deprecated - see PSL_loadeps instead\n");
+	return (PSL_NO_ERROR);
+}
+
+int PSL_setimage (struct PSL_CTRL *PSL, int image_no, char *imagefile, unsigned char *image, int image_dpi, unsigned int dim[], double f_rgb[], double b_rgb[]) {
+	/* Set up image pattern fill
+	 * image_no:	Number of the standard PSL fill pattern (use negative when file name used instead)
+	 * imagefile:	Name of image file (not used if image_no = [1,90])
+	 * image:	The bytestream making up the image (not used if image_no = [1,90])
+	 * image_dpi:	Resolution of image on the page
+	 * dim:		Image number of columns, rows, and bit depth (not used if image_no = [1,90])
+	 * f_rgb:	Foreground color used for set bits (1) (1-bit only)
+	 * b_rgb:	Background color used for unset bits (0) (1-bit only)
+	 * Returns image number
 	 */
 
-	int found, mask;
-	int i, id, inv;
+	int mask, id, inv, k;
 	uint64_t nx, ny;
 	const char *colorspace[3] = {"Gray", "RGB", "CMYK"};			/* What kind of image we are writing */
 	const char *decode[3] = {"0 1", "0 1 0 1 0 1", "0 1 0 1 0 1 0 1"};	/* What kind of color decoding */
@@ -4006,26 +3725,27 @@ int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int ima
 
 	/* Determine if image was used before */
 
-	if ((image_no >= 0 && image_no < PSL_N_PATTERNS) && !PSL->internal.pattern[image_no].status)	/* Unused predefined */
-		image_no = psl_pattern_init (PSL, image_no, imagefile);
+	if ((image_no > 0 && image_no <= PSL_N_PATTERNS) && !PSL->internal.pattern[image_no].status)	/* Unused predefined */
+		image_no = psl_pattern_init (PSL, image_no, NULL, NULL, 64, 64, 1);
 	else if (image_no < 0) {	/* User image, check if already used */
-		for (i = 0, found = false; !found && i < PSL->internal.n_userimages; i++) found = !strcmp (PSL->internal.user_image[i], imagefile);
-		if (!found)	/* Not found or no previous user images loaded */
-			image_no = psl_pattern_init (PSL, image_no, imagefile);
+		int i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
+		if (i == -1)	/* Not found or no previous user images loaded */
+			image_no = psl_pattern_init (PSL, -1, imagefile, image, dim[0], dim[1], dim[2]);
 		else
-			image_no = PSL_N_PATTERNS + i - 1;
+			image_no = PSL_N_PATTERNS + i + 1;
 	}
-	nx = PSL->internal.pattern[image_no].nx;
-	ny = PSL->internal.pattern[image_no].ny;
+	k = image_no - 1;	/* Image array index */
+	nx = PSL->internal.pattern[k].nx;
+	ny = PSL->internal.pattern[k].ny;
 
 	id = (PSL->internal.color_mode == PSL_CMYK) ? 2 : 1;
-	mask = (PSL->internal.pattern[image_no].depth == 1 && (f_rgb[0] < 0.0 || b_rgb[0] < 0.0));
+	mask = (PSL->internal.pattern[k].depth == 1 && (f_rgb[0] < 0.0 || b_rgb[0] < 0.0));
 
 	/* When DPI or colors have changed, the /pattern procedure needs to be rewritten */
 
-	if (PSL->internal.pattern[image_no].dpi != image_dpi ||
-		!PSL_same_rgb(PSL->internal.pattern[image_no].f_rgb,f_rgb) ||
-		!PSL_same_rgb(PSL->internal.pattern[image_no].b_rgb,b_rgb)) {
+	if (PSL->internal.pattern[k].dpi != image_dpi ||
+		!PSL_same_rgb(PSL->internal.pattern[k].f_rgb,f_rgb) ||
+		!PSL_same_rgb(PSL->internal.pattern[k].b_rgb,b_rgb)) {
 
 		PSL_comment (PSL, "Setup %s fill using pattern %d\n", kind_mask[mask], image_no);
 		if (image_dpi) {	/* Use given DPI */
@@ -4035,21 +3755,21 @@ int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int ima
 		PSL_command (PSL, "/pattern%d {V %" PRIu64 " %" PRIu64 " scale", image_no, nx, ny);
 		PSL_command (PSL, "\n<< /PaintType 1 /PatternType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /PaintProc\n   {begin");
 
-		if (PSL->internal.pattern[image_no].depth == 1) {	/* 1-bit bitmap basis */
+		if (PSL->internal.pattern[k].depth == 1) {	/* 1-bit bitmap basis */
 			inv = psl_bitimage_cmap (PSL, f_rgb, b_rgb) % 2;
 			PSL_command (PSL, "\n<< /ImageType 1 /Decode [%d %d]", inv, 1-inv);
 		}
 		else
 			PSL_command (PSL, " /Device%s setcolorspace\n<< /ImageType 1 /Decode [%s]", colorspace[id], decode[id]);
 		PSL_command (PSL, " /Width %d /Height %d /BitsPerComponent %d",
-		             PSL->internal.pattern[image_no].nx, PSL->internal.pattern[image_no].ny, MIN(PSL->internal.pattern[image_no].depth,8));
+		             PSL->internal.pattern[k].nx, PSL->internal.pattern[k].ny, MIN(PSL->internal.pattern[k].depth,8));
 		PSL_command (PSL, "\n   /ImageMatrix [%d 0 0 %d 0 %d] /DataSource image%d\n>> %s end}\n>> matrix makepattern U} def\n",
-		             PSL->internal.pattern[image_no].nx, -PSL->internal.pattern[image_no].ny, PSL->internal.pattern[image_no].ny,
+		             PSL->internal.pattern[k].nx, -PSL->internal.pattern[k].ny, PSL->internal.pattern[k].ny,
 		             image_no, kind_mask[mask]);
 
-		PSL->internal.pattern[image_no].dpi = image_dpi;
-		PSL_rgb_copy (PSL->internal.pattern[image_no].f_rgb, f_rgb);
-		PSL_rgb_copy (PSL->internal.pattern[image_no].b_rgb, b_rgb);
+		PSL->internal.pattern[k].dpi = image_dpi;
+		PSL_rgb_copy (PSL->internal.pattern[k].f_rgb, f_rgb);
+		PSL_rgb_copy (PSL->internal.pattern[k].b_rgb, b_rgb);
 	}
 
 	return (image_no);
@@ -5654,78 +5374,72 @@ int PSL_defcolor (struct PSL_CTRL *PSL, const char *param, double rgb[]) {
 #define Return1(x) {code = x; fclose (fp); return (code);}
 #define Return2(x) {code = x; fclose (fp); remove (tmp_file); return (code);}
 
-int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned char **picture) {
-	/* PSL_loadimage loads an image of any recognized type into memory
-	 *
-	 * Supported image types are:
-	 * - Sun Raster File
-	 * - (Encapsulated) PostScript File
-	 */
+int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned char **picture) {
+	/* PSL_loadeps reads an Encapsulated PostScript file, If picture == NULL we just return h. */
 
+	int n, p, llx, lly, trx, try, BLOCKSIZE=4096;
+	int32_t value;
+	unsigned char *buffer = NULL;
 	FILE *fp = NULL;
-	int code = PSL_NO_ERROR;
 
-	/* Open PostScript or Sun raster file */
+	/* Open PostScript file */
 
 	if ((fp = fopen (file, "rb")) == NULL) {
 		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Cannot open image file %s!\n", file);
 		return (PSL_READ_FAILURE);
 	}
 
-	/* Read magic number to determine image type */
-
-	if (psl_read_rasheader (PSL, fp, h, 0, 0)) {
-		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading magic number of image file %s!\n", file);
-		Return1 (PSL_READ_FAILURE);
+	/* Check magic key */
+	
+	if (fread (&value, sizeof (int32_t), 1, fp) != 1) {
+		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Failure reading EPS magic key from %s\n", file);
+		return (-1);
 	}
-	fseek (fp, (off_t)0, SEEK_SET);
-
-	/* Which file type */
-
-	if (h->magic == RAS_MAGIC) {
-		Return1 (psl_load_raster (PSL, fp, h, picture));
-	}
-	else if (h->magic == EPS_MAGIC) {
-		Return1 (psl_load_eps (PSL, fp, h, picture));
-	}
-	else if (!strstr (file, ".ras")) {	/* Not a .ras file; convert to ras */
-		char cmd[PSL_BUFSIZ], tmp_file[32];
-#ifdef WIN32
-		char *null_dev = "nul";
-#else
-		char *null_dev = "/dev/null";
+#ifndef WORDS_BIGENDIAN
+	value = bswap32 (value);
 #endif
-		fclose (fp);
-		sprintf (tmp_file, "PSL_TMP_%d.ras", (int)getpid());
-		/* Try GraphicsMagick's "gm convert" */
-		sprintf (cmd, "gm convert %s %s 2> %s", file, tmp_file, null_dev);
-		if (system (cmd)) {	/* convert failed, try ImageMagic's "convert" */
-			sprintf (cmd, "convert %s %s 2> %s", file, tmp_file, null_dev);
-			if (system (cmd)) {	/* convert failed, give up */
-				PSL_message (PSL, PSL_MSG_NORMAL, "Error: Automatic conversion of file %s to Sun rasterfile failed\n", file);
-				if (remove (tmp_file)){};	/* Remove the temp file */
-				return (PSL_READ_FAILURE);
-			}
-		}
-		if ((fp = fopen (tmp_file, "rb")) == NULL) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Cannot open image file %s!\n", tmp_file);
-			if (remove (tmp_file)){};		/* ... and shut up Coverity */
-			return (PSL_READ_FAILURE);
-		}
-		if (psl_read_rasheader (PSL, fp, h, 0, 0)) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Trouble reading magic number of image file %s!\n", tmp_file);
-			Return2 (PSL_READ_FAILURE);
-		}
-		fseek (fp, (off_t)0, SEEK_SET);
-		if (h->magic != RAS_MAGIC) {
-			PSL_message (PSL, PSL_MSG_NORMAL, "Error: Unrecognised magic number 0x%x in file %s!\n", h->magic, tmp_file);
-			Return2 (PSL_READ_FAILURE);
-		}
-		Return2 (psl_load_raster (PSL, fp, h, picture));
+	if (value != EPS_MAGIC) {
+		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Could not find EPS magic key in %s\n", file);
+		return (-1);
 	}
+	h->magic = (int)value;
+	
+	/* Scan for BoundingBox */
 
-	PSL_message (PSL, PSL_MSG_NORMAL, "Error: Unrecognised magic number 0x%x in file %s!\n", h->magic, file);
-	Return1 (PSL_READ_FAILURE);
+	psl_get_boundingbox (PSL, fp, &llx, &lly, &trx, &try, &h->llx, &h->lly, &h->trx, &h->try);
+
+	/* Fill header struct with appropriate values */
+	h->magic = EPS_MAGIC;
+	h->width = trx - llx;
+	h->height = try - lly;
+	h->depth = 0;
+	h->length = 0;	/* Not read yet */
+	h->type = RT_EPS;
+	h->maptype = RMT_NONE;
+	h->maplength = 0;
+	h->xorigin = llx;
+	h->yorigin = lly;
+	
+	if (picture == NULL) return (0);	/* Just wanted dimensions */
+	
+	/* Rewind and load into buffer */
+
+	n=0;
+	fseek (fp, (off_t)0, SEEK_SET);
+	buffer = PSL_memory (PSL, NULL, BLOCKSIZE, unsigned char);
+	while ((p = (int)fread ((unsigned char *)buffer + n, 1U, (size_t)BLOCKSIZE, fp)) == BLOCKSIZE)
+	{
+		n+=BLOCKSIZE;
+		buffer = PSL_memory (PSL, buffer, n+BLOCKSIZE, unsigned char);
+	}
+	n+=p;
+	buffer = PSL_memory (PSL, buffer, n, unsigned char);
+
+	/* Now set length */
+	h->length = n;
+
+	*picture = buffer;
+	return (0);
 }
 
 /* Due to the DLL boundary cross problem on Windows we are forced to have the following, otherwise

@@ -163,8 +163,8 @@ GMT_LOCAL void mggpath_init (struct GMT_CTRL *GMT) {
 	n_mgg_paths = 0;
 
 	if ((fp = fopen (line, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: path file %s for *.gmt files not found\n", line);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(Will only look in current directory for such files)\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Path file %s for *.gmt files not found\n", line);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "(Will only look in current directory for such files)\n");
 		return;
 	}
 
@@ -211,7 +211,7 @@ void x2sys_set_home (struct GMT_CTRL *GMT) {
 		strcpy (X2SYS_HOME, this);
 	}
 	else {	/* Require user to set this parameters since subdirs will be created and it would be messy to just use . */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: %s has not been set but is a required parameter\n", par);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s has not been set but is a required parameter\n", par);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR);
 	}
 #ifdef WIN32
@@ -487,7 +487,7 @@ int x2sys_pick_fields (struct GMT_CTRL *GMT, char *string, struct X2SYS_INFO *s)
 			s->use_column[j] = true;
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "X2SYS: Error: Unknown column name %s\n", p);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown column name %s\n", p);
 			return (X2SYS_BAD_COL);
 		}
 		i++;
@@ -1104,7 +1104,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 				case 'M':	/* GMT4 Backwards compatibility */
 				case 'm':
 					if (gmt_M_compat_check (GMT, 4))
-						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Segment headers are automatically identified.\n", p[1]);
+						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -%c is deprecated. Segment headers are automatically identified.\n", p[1]);
 					else {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad arg in x2sys_set_system! (%s)\n", p);
 						x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
@@ -1462,7 +1462,7 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 
 	if ((fp = fopen (file, "r")) == NULL) {
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: path file %s for %s files not found\n", file, S->TAG);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Path file %s for %s files not found\n", file, S->TAG);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "(Will only look in current directory for such files)\n");
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "(mgd77[+] also looks in MGD77_HOME and mgg looks in GMT_SHAREDIR/mgg)\n");
 		}
@@ -1625,7 +1625,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 
 	fp = stdin;	/* Default to stdin if dbase is NULL */
 	if (dbase && (fp = fopen (dbase, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to open crossover file %s\n", dbase);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open crossover file %s\n", dbase);
 		*nx = 0;
 		return 0;
 	}
@@ -1643,7 +1643,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 		 */
 		if (!strncmp (line, "# Tag:", 6)) {	/* Found the # TAG record */
 			if (strcmp (S->TAG, &line[7])) {	/* -Ttag and this TAG do not match */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Crossover file %s has a tag (%s) that differs from specified tag (%s) - aborting\n", dbase, &line[7], S->TAG);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Crossover file %s has a tag (%s) that differs from specified tag (%s) - aborting\n", dbase, &line[7], S->TAG);
 				GMT_exit (GMT, GMT_RUNTIME_ERROR);
 			}
 			continue;	/* Goto next record */
@@ -1675,12 +1675,12 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 
 	our_item -= 10;		/* Account for the 10 common items */
 	if (our_item < 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Crossover file %s does not have the specified column %s - aborting\n", dbase, fflag);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Crossover file %s does not have the specified column %s - aborting\n", dbase, fflag);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR);
 	}
 
 	if (ignorefile && (k = x2sys_read_list (GMT, ignorefile, &ignore, &n_ignore)) != X2SYS_NOERROR) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Ignore file %s cannot be read - aborting\n", ignorefile);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Ignore file %s cannot be read - aborting\n", ignorefile);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR);
 	}
 
@@ -1703,7 +1703,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 			continue;	/* Return to top of while loop */
 		}
 		if (line[0] != '>') {	/* Trouble */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: No segment header found [line %" PRIu64 "]\n", rec_no);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No segment header found [line %" PRIu64 "]\n", rec_no);
 			GMT_exit (GMT, GMT_RUNTIME_ERROR);
 		}
 		n_items = sscanf (&line[2], "%s %d %s %d %s %s", trk[0], &year[0], trk[1], &year[1], info[0], info[1]);
@@ -1739,8 +1739,8 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 		/* Sanity check - make sure we don't already have this pair */
 		for (p = 0, skip = false; !skip && p < n_pairs; p++) {
 			if ((P[p].id[0] == id[0] && P[p].id[1] == id[1]) || (P[p].id[0] == id[1] && P[p].id[1] == id[0])) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, 
-				            "Warning: Pair %s and %s appear more than once - skipped [line %" PRIu64 "]\n", trk[0], trk[1], rec_no);
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, 
+				            "Pair %s and %s appear more than once - skipped [line %" PRIu64 "]\n", trk[0], trk[1], rec_no);
 				skip = true;
 			}
 		}
@@ -1764,11 +1764,11 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 				P[p].start[k] = P[p].stop[k] = GMT->session.d_NaN;
 			else {
 				if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, start[k], GMT_IS_ABSTIME, &P[p].start[k]), start[k])) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Header time specification tstart%d (%s) in wrong format [line %" PRIu64 "]\n", (k+1), start[k], rec_no);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Header time specification tstart%d (%s) in wrong format [line %" PRIu64 "]\n", (k+1), start[k], rec_no);
 					GMT_exit (GMT, GMT_RUNTIME_ERROR);
 				}
 				if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, stop[k], GMT_IS_ABSTIME, &P[p].stop[k]), stop[k])) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Header time specification tstop%d (%s) in wrong format [line %" PRIu64 "]\n", (k+1), stop[k], rec_no);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Header time specification tstop%d (%s) in wrong format [line %" PRIu64 "]\n", (k+1), stop[k], rec_no);
 					GMT_exit (GMT, GMT_RUNTIME_ERROR);
 				}
 			}
@@ -1809,7 +1809,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 				if (no_time || !strcmp (t_txt[i], "NaN"))
 					P[p].COE[k].data[i][COE_T] = GMT->session.d_NaN;
 				else if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t_txt[i], GMT_IS_ABSTIME, &P[p].COE[k].data[i][COE_T]), t_txt[i])) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Time specification t%d (%s) in wrong format [line %" PRIu64 "]\n", (i+1), t_txt[i], rec_no);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Time specification t%d (%s) in wrong format [line %" PRIu64 "]\n", (i+1), t_txt[i], rec_no);
 					GMT_exit (GMT, GMT_RUNTIME_ERROR);
 				}
 			}
@@ -1904,7 +1904,7 @@ int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char
 	if (list) {	/* Got a file with a list of filenames */
 		*cmdline = false;
 		if (x2sys_read_list (GMT, &list->arg[1], filelist, &A) != X2SYS_NOERROR) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not open list with filenames %s!\n", &list->arg[1]);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not open list with filenames %s!\n", &list->arg[1]);
 			return (-1);
 		}
 		file = *filelist;

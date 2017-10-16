@@ -7,13 +7,13 @@
 # GMT modules:	spectrum1d, trend1d, pshistogram, psxy, pstext
 # Unix progs:	echo, rm
 #
-# This example begins with data files "ship_03.xyg" and "sat_03.xyg" which
+# This example begins with data files "ship_03.txt" and "sat_03.txt" which
 # are measurements of a quantity "g" (a "gravity anomaly" which is an
 # anomalous increase or decrease in the magnitude of the acceleration
 # of gravity at sea level).  g is measured at a sequence of points "x,y"
-# which in this case are "longitude,latitude".  The "sat_03.xyg" data were
+# which in this case are "longitude,latitude".  The "sat_03.txt" data were
 # obtained by a satellite and the sequence of points lies almost along
-# a great circle.  The "ship_03.xyg" data were obtained by a ship which
+# a great circle.  The "ship_03.txt" data were obtained by a ship which
 # tried to follow the satellite's path but deviated from it in places.
 # Thus the two data sets are not measured at the same of points,
 # and we use various GMT tools to facilitate their comparison.
@@ -22,15 +22,15 @@ gmt set GMT_FFT kiss
 
 gmt begin ex03 ps
   # First, we use "gmt fitcircle" to find the parameters of a great circle
-  # most closely fitting the x,y points in "sat_03.xyg":
-  cpos=`gmt fitcircle @sat_03.xyg -L2 -Fm --IO_COL_SEPARATOR=/`
-  ppos=`gmt fitcircle @sat_03.xyg -L2 -Fn --IO_COL_SEPARATOR=/`
-  # Now we use "gmt project" to project the data in both sat_03.xyg and ship_03.xyg
+  # most closely fitting the x,y points in "sat_03.txt":
+  cpos=`gmt fitcircle @sat_03.txt -L2 -Fm --IO_COL_SEPARATOR=/`
+  ppos=`gmt fitcircle @sat_03.txt -L2 -Fn --IO_COL_SEPARATOR=/`
+  # Now we use "gmt project" to project the data in both sat_03.txt and ship_03.txt
   # into data.pg, where g is the same and p is the oblique longitude around
   # the great circle.  We use -Q to get the p distance in kilometers, and -S
   # to sort the output into increasing p values.
-  gmt project  @sat_03.xyg -C$cpos -T$ppos -S -Fpz -Q > sat.pg
-  gmt project @ship_03.xyg -C$cpos -T$ppos -S -Fpz -Q > ship.pg
+  gmt project  @sat_03.txt -C$cpos -T$ppos -S -Fpz -Q > sat.pg
+  gmt project @ship_03.txt -C$cpos -T$ppos -S -Fpz -Q > ship.pg
   bounds=`gmt info ship.pg sat.pg -I1 -Af -L -C -i0  --IO_COL_SEPARATOR=/`
   # Now we can use $bounds in gmt math to make a sampling points file for gmt sample1d:
   gmt math -T$bounds/1 -N1/0 T = samp.x

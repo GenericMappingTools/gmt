@@ -201,12 +201,12 @@ will need to do:
 
    ::
 
-    gmt grd2xyz f100.nc -Z > f100.d
-    gmt grd2xyz f110.nc -Z > f110.d
-    gmt grd2xyz f120.nc -Z > f120.d
-    gmt grd2xyz f130.nc -Z > f130.d
-    paste f100.d f110.d f120.d f130.d > depths.d
-    gmt dimfilter depths.d -Q4 > output.z
+    gmt grd2xyz f100.nc -Z > f100.txt
+    gmt grd2xyz f110.nc -Z > f110.txt
+    gmt grd2xyz f120.nc -Z > f120.txt
+    gmt grd2xyz f130.nc -Z > f130.txt
+    paste f100.txt f110.txt f120.txt f130.txt > depths.txt
+    gmt dimfilter depths.txt -Q4 > output.z
 
 Limitations
 -----------

@@ -36,7 +36,6 @@ Core modules
    gmtvector
    gmtwhich
    grd2cpt
-   grd2rgb
    grd2xyz
    grdblend
    grdclip
@@ -55,7 +54,6 @@ Core modules
    grdmath
    grdpaste
    grdproject
-   grdraster
    grdsample
    grdtrack
    grdtrend

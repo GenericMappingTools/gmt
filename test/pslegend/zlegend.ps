@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14099 [64-bit] Document from psbasemap
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v6.0.0_r18992M [64-bit] Document from psbasemap
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Feb 28 13:40:55 2015
+%%CreationDate: Tue Oct  3 14:21:15 2017
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -660,14 +657,15 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
 0 A
 FQ
 O0
 -3600 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R0/1/0/1 -JX6i/9i -B0 -B+gbisque -P -K -Xc
-%%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psbasemap -R0/1/0/1 -JX6i/9i -B0 -B+gbisque -P -K -Xc
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -704,8 +702,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pslegend -R0/1/0/1 -JX6i/9i -DjMC/4i/MC -C0.1i/0.1i -L1.25 -F+p+i+gwhite -O
-%%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pslegend -R0/1/0/1 -JX6i/9i -DjMC+w4i+jMC+l1.25 -C0.1i/0.1i -F+p+i+gwhite -O
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -733,8 +731,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/6/0/9 -Jx1i -O -K -N -S @GMTAPI@-000003
-%%PROJ: xy 0.00000000 6.00000000 0.00000000 9.00000000 0.000 6.000 0.000 9.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R0/6/0/9 -Jx1i -O -K -N -S @GMTAPI@-000003 --GMT_HISTORY=false
+%@PROJ: xy 0.00000000 6.00000000 0.00000000 9.00000000 0.000 6.000 0.000 9.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -764,25 +762,25 @@ O1
 90 240 4615 Sc
 90 240 4365 Sc
 {0.1 0.1 1 C} FS
-90 240 3118 Ss
+90 240 3117 Ss
 {0.3 0.3 1 C} FS
 90 240 2867 Ss
 {0.5 0.5 1 C} FS
-90 240 2618 Ss
+90 240 2617 Ss
 {0.7 0.7 1 C} FS
-90 240 2368 Ss
+90 240 2367 Ss
 {0.9 0.9 1 C} FS
 90 240 2117 Ss
 {1 0.9 0.9 C} FS
-90 240 1868 Ss
+90 240 1867 Ss
 {1 0.7 0.7 C} FS
-90 240 1618 Ss
+90 240 1617 Ss
 {1 0.502 0.502 C} FS
 90 240 1367 Ss
 {1 0.3 0.3 C} FS
-90 240 1118 Ss
+90 240 1117 Ss
 {1 0.1 0.1 C} FS
-90 240 868 Ss
+90 240 867 Ss
 90 240 617 Ss
 U
 %%EndObject
@@ -792,44 +790,44 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/6/0/9 -Jx1i -O -K -N -F+f+j @GMTAPI@-000001
-%%PROJ: xy 0.00000000 6.00000000 0.00000000 9.00000000 0.000 6.000 0.000 9.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0/6/0/9 -Jx1i -O -K -N -F+f+j @GMTAPI@-000001 --GMT_HISTORY=false
+%@PROJ: xy 0.00000000 6.00000000 0.00000000 9.00000000 0.000 6.000 0.000 9.000 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-2400 7202 M PSL_font_encode 4 get 0 eq {Standard+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
-300 F4
+PSL_font_encode 4 get 0 eq {Standard+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
+2400 7202 M 300 F4
 (Intensity of Coffee Stains) bc Z
-480 6795 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(Symbol color given via z=0 and CPT look-up) Z
-480 6545 M (Symbol color given via z=1 and CPT look-up) Z
-480 6295 M (Symbol color given via z=2 and CPT look-up) Z
-480 6045 M (Symbol color given via z=3 and CPT look-up) Z
-480 5795 M (Symbol color given via z=4 and CPT look-up) Z
-480 5545 M (Symbol color given via z=5 and CPT look-up) Z
-480 5295 M (Symbol color given via z=6 and CPT look-up) Z
-480 5045 M (Symbol color given via z=7 and CPT look-up) Z
-480 4795 M (Symbol color given via z=8 and CPT look-up) Z
-480 4545 M (Symbol color given via z=9 and CPT look-up) Z
-480 4295 M (Symbol color given via z=10 and CPT look-up) Z
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+480 6795 M 200 F0
+(Symbol color given via z=0 and CPT look-up) bl Z
+480 6545 M (Symbol color given via z=1 and CPT look-up) bl Z
+480 6295 M (Symbol color given via z=2 and CPT look-up) bl Z
+480 6045 M (Symbol color given via z=3 and CPT look-up) bl Z
+480 5795 M (Symbol color given via z=4 and CPT look-up) bl Z
+480 5545 M (Symbol color given via z=5 and CPT look-up) bl Z
+480 5295 M (Symbol color given via z=6 and CPT look-up) bl Z
+480 5045 M (Symbol color given via z=7 and CPT look-up) bl Z
+480 4795 M (Symbol color given via z=8 and CPT look-up) bl Z
+480 4545 M (Symbol color given via z=9 and CPT look-up) bl Z
+480 4295 M (Symbol color given via z=10 and CPT look-up) bl Z
 4680 3911 M 150 F4
 (The CPT file was made via gmt makecpt -Ccopper -T0/10/1) br Z
 2400 3454 M 300 F4
 (Intensity of Political Partisanship) bc Z
 480 3047 M 200 F0
-(Symbol color given via z=-5 and CPT look-up) Z
-480 2798 M (Symbol color given via z=-4 and CPT look-up) Z
-480 2548 M (Symbol color given via z=-3 and CPT look-up) Z
-480 2297 M (Symbol color given via z=-2 and CPT look-up) Z
-480 2048 M (Symbol color given via z=-1 and CPT look-up) Z
-480 1798 M (Symbol color given via z=0 and CPT look-up) Z
-480 1547 M (Symbol color given via z=1 and CPT look-up) Z
-480 1298 M (Symbol color given via z=2 and CPT look-up) Z
-480 1048 M (Symbol color given via z=3 and CPT look-up) Z
-480 797 M (Symbol color given via z=4 and CPT look-up) Z
-480 548 M (Symbol color given via z=5 and CPT look-up) Z
+(Symbol color given via z=-5 and CPT look-up) bl Z
+480 2797 M (Symbol color given via z=-4 and CPT look-up) bl Z
+480 2547 M (Symbol color given via z=-3 and CPT look-up) bl Z
+480 2297 M (Symbol color given via z=-2 and CPT look-up) bl Z
+480 2047 M (Symbol color given via z=-1 and CPT look-up) bl Z
+480 1797 M (Symbol color given via z=0 and CPT look-up) bl Z
+480 1547 M (Symbol color given via z=1 and CPT look-up) bl Z
+480 1297 M (Symbol color given via z=2 and CPT look-up) bl Z
+480 1047 M (Symbol color given via z=3 and CPT look-up) bl Z
+480 797 M (Symbol color given via z=4 and CPT look-up) bl Z
+480 547 M (Symbol color given via z=5 and CPT look-up) bl Z
 4680 163 M 150 F4
 (The CPT file was made via gmt makecpt -Cpolar  -T-5/5/1) br Z
 %%EndObject

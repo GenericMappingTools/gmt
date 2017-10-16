@@ -188,16 +188,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 			case 'F':
 				Ctrl->F.active = true;
 				if (strlen (opt->arg) != 1) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: Must specify -F<out>\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Must specify -F<out>\n");
 					n_errors++;
 					continue;
 				}
 				switch (opt->arg[0]) {	/* Output format */
 					case 'f':
 						if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
-							GMT_Report (API, GMT_MSG_COMPAT, "Warning: -Ff is deprecated; use -Ft instead.\n");
+							GMT_Report (API, GMT_MSG_COMPAT, "-Ff is deprecated; use -Ft instead.\n");
 						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Error: Must specify t|s\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Must specify t|s\n");
 							n_errors++;
 							break;
 						}
@@ -208,7 +208,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 						Ctrl->F.mode = false;
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: Must specify t|s\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Must specify t|s\n");
 						n_errors++;
 						break;
 				}
@@ -277,8 +277,8 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 	char *end_text[2] = {"tend(My)", "aend(deg)"};
 	char *time_text[2] = {"ttime(My)", "tangle(deg)"};
 	char record[GMT_BUFSIZ] = {""};
-	
 
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_OPTION *ptr = NULL, *opt = NULL;
 	struct ROTCONVERTER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -331,9 +331,10 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (out, 20, double);
 	if (Ctrl->G.active) {
-		GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT_IS_FLOAT;
-		GMT->current.io.col_type[GMT_OUT][2] = GMT_IS_LAT;
-		GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_LON;
+		gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_FLOAT);
+		gmt_set_column (GMT, GMT_OUT, 1, GMT_IS_FLOAT);
+		gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_LAT);
+		gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_LON);
 		strcpy (GMT->current.setting.format_float_out, "%g");
 	}
 	
@@ -358,7 +359,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 		else if (gmt_access (GMT, opt->arg, R_OK)) {	/* Not a readable file, is it a lon/lat/t0[/t1]/omega specification? */
 			for (k = n_slash = 0; opt->arg[k]; k++) if (opt->arg[k] == '/') n_slash++;
 			if (n_slash < 2 || n_slash > 4) {	/* No way it can be a online rotation, cry foul */
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot read file %s\n", opt->arg);
+				GMT_Report (API, GMT_MSG_NORMAL, "Cannot read file %s\n", opt->arg);
 				gmt_M_free (GMT, a);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -368,11 +369,11 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 				if (k == 4) angle = t1, t1 = 0.0;			/* Only 4 input values */
 				if (n_slash == 2) angle = t0, t0 = 1.0, t1 = 0.0, no_time = true;	/* Quick lon/lat/angle total reconstruction rotation, no time */
 				if (t0 < t1) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: Online rotation has t_start (%g) younger than t_stop (%g)\n", t0, t1);
+					GMT_Report (API, GMT_MSG_NORMAL, "Online rotation has t_start (%g) younger than t_stop (%g)\n", t0, t1);
 					Return (GMT_RUNTIME_ERROR);
 				}
 				if (angle == 0.0) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: Online rotation has zero opening angle\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Online rotation has zero opening angle\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
 				online_rot = true;
@@ -426,7 +427,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 	}
 
 	if (a == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: No rotation resulting from operation\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "No rotation resulting from operation\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	n_out = 3 + ((Ctrl->F.mode) ? 1 - no_time : 2);
@@ -451,6 +452,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	if (Ctrl->G.active)		/* GPlates header */
 		sprintf (record, "#plateid%stime%slatitude%slongitude%sangle%sfixedplateid\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, \
 			GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
@@ -499,10 +501,11 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 			spotter_covar_to_record (GMT, &a[stage], K);
 			for (k = 0; k < 9; k++) out[col++] = K[k];
 		}
-		GMT_Put_Record (API, GMT_WRITE_DATA, out);
+		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 	}
 	
 	gmt_M_free (GMT, a);
+	gmt_M_free (GMT, Out);
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {		/* Disables further data output */
 		Return (API->error);

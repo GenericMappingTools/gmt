@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: gmtget will return the values of selected parameters.
  *
@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"gmtget"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Get individual GMT default parameters"
-#define THIS_MODULE_KEYS	">T}"
+#define THIS_MODULE_KEYS	">D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V"
 
@@ -95,7 +95,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_
 			/* Processes program-specific parameters */
 
 			case 'G':	/* Optional defaults file on input and output */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
+				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;

@@ -25,8 +25,7 @@ set (SUPPL_PROGS_SRCS backtracker.c gmtpmodeler.c grdpmodeler.c grdrotater.c
 	grdspotter.c hotspotter.c originator.c rotconverter.c rotsmoother.c)
 
 # example files
-set (SUPPL_EXAMPLE_FILES README.spotter
-	DC85.txt WK97.txt pac_hs.txt seamounts.txt)
+set (SUPPL_EXAMPLE_FILES README.spotter)
 set (SUPPL_EXAMPLE_PROGS spotter.bat spotter.sh)
 
 # lib sources

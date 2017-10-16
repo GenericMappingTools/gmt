@@ -33,11 +33,11 @@ Synopsis
 Description
 -----------
 
-**talwani2d** will read the multi-segment *modeltable* from file or standard input.
+**talwani2d** will read the multi-segment *modeltable* from file (or standard input).
 This file contains cross-sections of one or more 2-D bodies, with one polygon
 per segment.  The segment header must contain the parameter *rho*, which
 states the the density of this body (individual body
-densities may be overridden by a fixed constant density contrast given via **-D**).
+densities may be overridden by a fixed constant density contrast given via an optional **-D**).
 We can compute anomalies on an equidistant lattice (by specifying a lattice with
 **-T**) or provide arbitrary output points specified in a file via **-N**.
 Choose between free-air anomalies, vertical gravity gradient anomalies, or geoid anomalies.
@@ -49,8 +49,9 @@ Required Arguments
 
 *modeltable*
     The file describing cross-sectional polygons of one or more bodies.  Polygons
-    will be automatically closed if not already
-    closed, and repeated vertices will be eliminated.
+    will be automatically closed if not already closed, and repeated vertices will
+    be eliminated.  The segment header for each body will be examined for a density
+    parameter in kg/m^3; see **-D** for overriding this value.
 
 Optional Arguments
 ------------------
@@ -63,19 +64,19 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *unit*
-    Sets fixed density contrast that overrides any setting in model file, in kg/m^3.
+    Sets a fixed density contrast that overrides any per-body settings in the model file, in kg/m^3.
 
 .. _-F:
 
 **-F**\ **f**\ \|\ **n**\ [*lat*]\ \|\ **v**
     Specify desired gravitational field component.  Choose between **f** (free-air anomaly) [Default],
-    **n** (geoid, and optionally append average latitude for normal gravity reference value [45])
+    **n** (geoid; optionally append average latitude for normal gravity reference value [45])
     or **v** (vertical gravity gradient).
 
 .. _-M:
 
 **-M**\ [**h**]\ [**v**]
-    Sets units used.  Append **h** to indicate horizontal distances are in km [m],
+    Sets distance units used.  Append **h** to indicate horizontal distances are in km [m],
     and append **z** to indicate vertical distances are in km [m].
 
 .. _-N:
@@ -88,12 +89,13 @@ Optional Arguments
 
 **-T**\ *min*\ *max*\ /*inc*
     Specify an equidistant output lattice starting at *x = min*, with increments *inc* and
-    ending at *x = max*.
+    ending at *x = max*.  To specify the desired number of points between the limits instead,
+    let *inc* be the number of points and append **+n**.
 
 .. _-Z:
 
 **-Z**\ *level*\ [*ymin*\ /*ymax*\ ]
-    Set observation level as a constant [0].  Optionally, and for gravity anomalies only,
+    Set a constant observation level [0].  Optionally, and for gravity anomalies only (**-Ff**),
     append the finite extent limits of a 2.5-D body.
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
@@ -129,26 +131,27 @@ Optional Arguments
 Examples
 --------
 
-To compute the free-air anomalies on a grid over a 2-D body that has been contoured
-and saved to body.txt, using 1.7 g/cm^3 as the density contrast, try
+To compute the free-air anomalies on a equidistant profile over a 2-D body that has been contoured
+and saved to body2d.txt, using 1700 kg/m^3 as a constant density contrast, with all distances in meters,
+try
 
 ::
 
-    gmt talwani2d -T-200/200/2 body.txt -D1700 -Fg > 2dgrav.txt
+    gmt talwani2d -T-200/200/2 body2d.txt -D1700 -Ff > 2dgrav.txt
 
-To obtain the vertical gravity gradient anomaly along the track in crossing.txt
+To obtain the vertical gravity gradient anomaly along the track given by the file crossing.txt
 for the same model, try
 
 ::
 
-    gmt talwani2d -Ncrossing.txt body.txt -D1700 -Fv > vgg_crossing.txt
+    gmt talwani2d -Ncrossing.txt body2d.txt -D1700 -Fv > vgg_crossing.txt
 
 
-The geoid anomaly for the same setup is given by
+The geoid anomaly for the same setup, evaluated at 60N, is given by
 
 ::
 
-    gmt talwani2d -Ncrossing.txt body.txt -D1700 -Fn > n_crossing.txt
+    gmt talwani2d -Ncrossing.txt body2d.txt -D1700 -Fn60 > n_crossing.txt
 
 
 Notes
@@ -162,6 +165,9 @@ Notes
 
 References
 ----------
+
+Rasmussen, R., and L. B. Pedersen (1979), End corrections in potential field modeling,
+*Geophys. Prospect., 27*, 749-760.
 
 Chapman, M. E., 1979, Techniques for interpretation of geoid anomalies,
 *J. Geophys. Res., 84(B8)*, 3793-3801.

@@ -269,7 +269,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 					Ctrl->In.file[n_files++] = strdup(opt->arg);
 				else {
 					n_errors++;
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: A maximum of two input grids may be processed\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "A maximum of two input grids may be processed\n");
 				}
 				break;
 
@@ -366,7 +366,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 				break;
 			case 'M':
 				if (gmt_M_compat_check(GMT, 4)) {
-					GMT_Report(API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+					GMT_Report(API, GMT_MSG_COMPAT, "Option -M is deprecated; -fg was set instead, use this in the future.\n");
 					if (gmt_M_is_cartesian(GMT, GMT_IN))
 						gmt_parse_common_options(GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
@@ -509,7 +509,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		point = Cin->table[0];	/* Can only be one table since we read a single file */
 		ndata = (unsigned int)point->n_records;
 		if (point->n_segments > 1) /* case not dealt (or ignored) and should be tested here */
-			GMT_Report(API, GMT_MSG_NORMAL, "Warning: multi-segment files are not used in grdgravmag3d. Using first segment only\n");
+			GMT_Report(API, GMT_MSG_VERBOSE, "Multi-segment files are not used in grdgravmag3d. Using first segment only\n");
 	}
 
 	/* ---------------------------------------------------------------------------- */
@@ -537,11 +537,11 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc,
 			GridA->header->registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
-		GMT_Report(API, GMT_MSG_VERBOSE, "Grid dimensions are n_columns = %d, n_rows = %d\n",
+		GMT_Report(API, GMT_MSG_LONG_VERBOSE, "Grid dimensions are n_columns = %d, n_rows = %d\n",
 		           Gout->header->n_columns, Gout->header->n_rows);
 	}
 
-	GMT_Report(API, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");
+	GMT_Report(API, GMT_MSG_LONG_VERBOSE, "Allocates memory and read data file\n");
 
 	if (!GMT->common.R.active[RSET])
 		gmt_M_memcpy(wesn_new, GridA->header->wesn, 4, double);
@@ -562,19 +562,19 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		GMT->common.R.active[RSET] = true;
 
 		if (wesn_padded[XLO] < GridA->header->wesn[XLO]) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Request padding at the West border exceed grid limit, trimming it\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Request padding at the West border exceed grid limit, trimming it\n");
 			wesn_padded[XLO] = GridA->header->wesn[XLO];
 		}
 		if (wesn_padded[XHI] > GridA->header->wesn[XHI]) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Request padding at the East border exceed grid limit, trimming it\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Request padding at the East border exceed grid limit, trimming it\n");
 			wesn_padded[XHI] = GridA->header->wesn[XHI];
 		}
 		if (wesn_padded[YLO] < GridA->header->wesn[YLO]) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Request padding at the South border exceed grid limit, trimming it\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Request padding at the South border exceed grid limit, trimming it\n");
 			wesn_padded[YLO] = GridA->header->wesn[YLO];
 		}
 		if (wesn_padded[YHI] > GridA->header->wesn[YHI]) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Request padding at the North border exceed grid limit, trimming it\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Request padding at the North border exceed grid limit, trimming it\n");
 			wesn_padded[YHI] = GridA->header->wesn[YHI];
 		}
 	}
@@ -671,11 +671,11 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->S.active && !two_grids && !Ctrl->H.pirtt && !Ctrl->E.active) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: unset -S option. It can only be used when two grids were provided OR -E.\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Unset -S option. It can only be used when two grids were provided OR -E.\n");
 		Ctrl->S.active = false;
 	}
 	if (two_grids && Ctrl->E.active) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: two grids override -E option. Unsetting it.\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Two grids override -E option. Unsetting it.\n");
 		Ctrl->E.active = false;		/* But in future we may have a second grid with variable magnetization and cte thickness */
 	}
 
@@ -959,6 +959,7 @@ L1:
 	}
 	else {
 		double out[3];
+		struct GMT_RECORD *Out = gmt_new_record (GMT, out, NULL);
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) 	/* Establishes data output */
 			Return (API->error);
 
@@ -974,8 +975,9 @@ L1:
 			out[GMT_X] = point->segment[0]->data[GMT_X][k];
 			out[GMT_Y] = point->segment[0]->data[GMT_Y][k];
 			out[GMT_Z] = g[k];
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 		}
+		gmt_M_free (GMT, Out);
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data input */
 			Return (API->error);

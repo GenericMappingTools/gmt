@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"gshhg"
 #define THIS_MODULE_LIB		"gshhg"
 #define THIS_MODULE_PURPOSE	"Extract data tables from binary GSHHS or WDBII data files"
-#define THIS_MODULE_KEYS	">D},>TL"
+#define THIS_MODULE_KEYS	">D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:Vbdo"
 
@@ -209,9 +209,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	struct GSHHG_POINT p;
 	struct GSHHG_HEADER h;
 	struct GMT_DATASET *D = NULL;
-	struct GMT_TEXTSET *X = NULL;
 	struct GMT_DATASEGMENT **T = NULL;
-	struct GMT_TEXTSEGMENT *TX = NULL;
 	struct GSHHG_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -253,37 +251,31 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	else
 		GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on -ho explicitly */
 	if (Ctrl->L.active) {	/* Want a text set of headers back */
-		dim[GMT_SEG] = 1;
+		dim[GMT_SEG] = 1;	dim[GMT_COL] = 0;
 		dim[GMT_ROW] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
-		if ((X = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for GSHHG header features.\n");
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET|GMT_WITH_STRINGS, GMT_IS_TEXT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for GSHHG header features.\n");
 			gmt_fclose (GMT, fp);
 			Return (API->error);
 		}
+		T = &D->table[0]->segment[0];	/* There is only one output table with one segment */
 	}
 	else {
-		dim[GMT_SEG] = n_alloc = 0;
+		dim[GMT_SEG] = 0;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for GSHHG features.\n");
 			gmt_fclose (GMT, fp);
 			Return (API->error);
 		}
-	}
-	sprintf (header, "# Data extracted from GSHHG file %s", Ctrl->In.file);
-	if (Ctrl->L.active) {	/* Want a text set of headers back */
-		X->table[0]->header = gmt_M_memory (GMT, NULL, 1, char *);
-		X->table[0]->header[0] = strdup (header);
-		X->table[0]->n_headers = 1;
-		TX = X->table[0]->segment[0];	/* There is only one output table with one segment */
-	}
-	else {
-		D->table[0]->header = gmt_M_memory (GMT, NULL, 1, char *);
-		D->table[0]->header[0] = strdup (header);
-		D->table[0]->n_headers = 1;
 		n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
 		D->table[0]->segment = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT *);
 		T = D->table[0]->segment;	/* There is only one output table with one or many segments */
 	}
+	sprintf (header, "# Data extracted from GSHHG file %s", Ctrl->In.file);
+	D->table[0]->header = gmt_M_memory (GMT, NULL, 1, char *);
+	D->table[0]->header[0] = strdup (header);
+	D->table[0]->n_headers = 1;
+
 	n_read = fread (&h, sizeof (struct GSHHG_HEADER), 1U, fp);
 
 	while (n_read == 1) {
@@ -295,7 +287,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 
 		level = h.flag & 255;				/* Level is 1-4 [5-6 for Antarctica] */
 		version = (h.flag >> 8) & 255;			/* Version is 1-255 */
-		if (first) GMT_Report (API, GMT_MSG_VERBOSE, "Found GSHHG/WDBII version %d in file %s\n", version, Ctrl->In.file);
+		if (first) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found GSHHG/WDBII version %d in file %s\n", version, Ctrl->In.file);
 		first = false;
 		greenwich = (h.flag >> 16) & 3;			/* Greenwich is 0-3 */
 		src = (h.flag >> 24) & 1;			/* Source is 0 (WDBII) or 1 (WVS) */
@@ -328,7 +320,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		if (Ctrl->L.active) {	/* Want a text set of headers back */
 			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
 				n_alloc <<= 2;
-				TX->data = gmt_M_memory (GMT, TX->data, n_alloc, char *);
+				T[0]->text = gmt_M_memory (GMT, T[0]->text, n_alloc, char *);
 			}
 		}
 		else {
@@ -357,13 +349,13 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 			sprintf (header, "%6d%8d%2d%2c %.12g %.12g %s %s %s %s %6d %6d", h.id, h.n, level, source, area, f_area, west, east, south, north, h.container, h.ancestor);
 
 		if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
-			TX->data[seg_no] = strdup (header);
-			TX->n_rows++;
+			T[0]->text[seg_no] = strdup (header);
+			T[0]->n_rows++;
 			fseek (fp, (off_t)(h.n * sizeof(struct GSHHG_POINT)), SEEK_CUR);
 		}
 		else {	/* Return the data points also */
 			/* Place the header in the output data structure */
-			T[seg_no] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, dim[GMT_ROW], dim[GMT_COL], header, NULL);
+			T[seg_no] = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, dim[GMT_ROW], dim[GMT_COL], header, NULL);
 			if (h.id == 0)	/* Special longitude range for Eurasia since it crosses Greenwich and Dateline */
 				T[seg_no]->range = GMT_IS_M180_TO_P270_RANGE;
 			else if (h.id == 4)	/* Special longitude range for Antarctica since it crosses Greenwich and Dateline */
@@ -381,6 +373,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 				if ((greenwich && p.x > max_east) || (h.west > 180000000)) T[seg_no]->data[GMT_X][row] -= 360.0;
 				T[seg_no]->data[GMT_Y][row] = p.y * GSHHG_SCL;
 			}
+			T[seg_no]->n_rows = h.n;
 			if (Ctrl->G.active) T[seg_no]->data[GMT_X][row] = T[seg_no]->data[GMT_Y][row] = GMT->session.d_NaN;
 			D->n_records += T[seg_no]->n_rows;
 		}
@@ -392,10 +385,10 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
 		if (seg_no < n_alloc) {	/* Allocate to final size table */
-			TX->data = gmt_M_memory (GMT, TX->data, seg_no, char *);
+			T[0]->text = gmt_M_memory (GMT, T[0]->text, seg_no, char *);
 		}
-		X->n_records = X->table[0]->n_records = TX->n_rows;
-		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->Out.file, X) != GMT_NOERROR) {
+		D->n_records = D->table[0]->n_records = T[0]->n_rows;
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}
@@ -410,7 +403,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		}
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "%s in: %d %s out: %d\n", name[is_line], n_seg, name[is_line], seg_no);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s in: %d %s out: %d\n", name[is_line], n_seg, name[is_line], seg_no);
 
 	if (Ctrl->G.active) GMT->current.setting.io_seg_marker[GMT_OUT] = marker;
 

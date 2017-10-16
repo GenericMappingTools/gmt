@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: psxy will read <x,y> points and plot symbols, lines,
  * or polygons on maps.
@@ -150,12 +150,12 @@ GMT_LOCAL void plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 	gmt_geo_to_xy (GMT, x - fabs (delta_x[first]),  y, &x_1, &y_1);
 	gmt_geo_to_xy (GMT, x + fabs (delta_x[second]), y, &x_2, &y_2);
 	if (gmt_M_is_dnan (x_1)) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: X error bar exceeded domain near line %d. Reset to x_min\n", line);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "X error bar exceeded domain near line %d. Reset to x_min\n", line);
 		x_1 = GMT->current.proj.rect[XLO];
 		tip1 = false;
 	}
 	if (gmt_M_is_dnan (x_2)) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: X error bar exceeded domain near line %d. Reset to x_max\n", line);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "X error bar exceeded domain near line %d. Reset to x_max\n", line);
 		x_2 = GMT->current.proj.rect[XHI];
 		tip2 = false;
 	}
@@ -173,12 +173,12 @@ GMT_LOCAL void plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 	gmt_geo_to_xy (GMT, x, y - fabs (delta_y[first]),  &x_1, &y_1);
 	gmt_geo_to_xy (GMT, x, y + fabs (delta_y[second]), &x_2, &y_2);
 	if (gmt_M_is_dnan (y_1)) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Y error bar exceeded domain near line %d. Reset to y_min\n", line);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Y error bar exceeded domain near line %d. Reset to y_min\n", line);
 		y_1 = GMT->current.proj.rect[YLO];
 		tip1 = false;
 	}
 	if (gmt_M_is_dnan (y_2)) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Y error bar exceeded domain near line %d. Reset to y_max\n", line);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Y error bar exceeded domain near line %d. Reset to y_max\n", line);
 		y_2 = GMT->current.proj.rect[YHI];
 		tip2 = false;
 	}
@@ -195,7 +195,7 @@ GMT_LOCAL void plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
 		gmt_geo_to_xy (GMT, hinge[i], y, &xx[i], &yy[i]);
 		if (gmt_M_is_dnan (xx[i])) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: X %d %% hinge exceeded domain near line %d\n", q[i], line);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "X %d %% hinge exceeded domain near line %d\n", q[i], line);
 			xx[i] = (i < 2) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[XHI];
 		}
 	}
@@ -238,7 +238,7 @@ GMT_LOCAL void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
 		gmt_geo_to_xy (GMT, x, hinge[i], &xx[i], &yy[i]);
 		if (gmt_M_is_dnan (yy[i])) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Y %d %% hinge exceeded domain near line %d\n", q[i], line);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Y %d %% hinge exceeded domain near line %d\n", q[i], line);
 			yy[i] = (i < 2) ? GMT->current.proj.rect[YLO] : GMT->current.proj.rect[YHI];
 		}
 	}
@@ -273,18 +273,18 @@ GMT_LOCAL void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	}
 }
 
-GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
-	/* Accept the textset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
+GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
+	/* Accept the dataset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
 	 * Note: The x,y are projected coordinates in inches, hence our -R -J choice below. */
 	size_t len;
 	char string[GMT_LEN16] = {""}, buffer[GMT_BUFSIZ] = {""}, tmp_file[GMT_LEN64] = {""};
 	FILE *fp = NULL;
-	gmt_set_textset_minmax (GMT, D);	/* Determine min/max for each column and add up total records */
+	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column and add up total records */
 	if (D->n_records == 0)	/* No symbols to plot */
 		return GMT_NOERROR;
 	
 	/* Here we have symbols.  Open up virtual file for the call to psxy */
-	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, D, string) != GMT_NOERROR)
+	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, D, string) != GMT_NOERROR)
 		return (GMT->parent->error);
 	if (GMT->parent->tmp_dir)	/* Make unique file in temp dir */
 		sprintf (tmp_file, "%s/GMT_symbol%d.def", GMT->parent->tmp_dir, (int)getpid());
@@ -304,7 +304,7 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 	/* Use -SK since our kustom symbol has a variable standard symbol ? that we must get from each data records */
 	sprintf (buffer, "-R%g/%g/%g/%g -Jx1i -O -K -SK%s %s --GMT_HISTORY=false", GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI],
 		GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], tmp_file, string);
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Calling psxy with args %s\n", buffer);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Calling psxy with args %s\n", buffer);
 	if (GMT_Call_Module (GMT->parent, "psxy", GMT_MODULE_CMD, buffer) != GMT_NOERROR)	/* Plot all the symbols */
 		return (GMT->parent->error);
 	if (GMT_Close_VirtualFile (GMT->parent, string) != GMT_NOERROR)
@@ -319,17 +319,17 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 		else	/* Make unique file in current dir */
 			sprintf (tmp_file2, "GMT_symbol%d.txt", (int)getpid());
 		sprintf (buffer, "-R -J -O -K -SK%s %s", tmp_file, tmp_file2);
-		GMT_Set_Comment (GMT->parent, GMT_IS_TEXTSET, GMT_COMMENT_IS_TEXT | GMT_COMMENT_IS_COMMAND, buffer, D);
+		GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_TEXT | GMT_COMMENT_IS_COMMAND, buffer, D);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary data file for decorated lines saved: %s\n", tmp_file2);
 		gmt_set_tableheader (GMT, GMT_OUT, true);	/* We need to ensure we write the header here */
-		if (GMT_Write_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_RESET, NULL, tmp_file2, D) != GMT_NOERROR) {
+		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_RESET, NULL, tmp_file2, D) != GMT_NOERROR) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to write file: %s\n", tmp_file2);
 		}
 		gmt_set_tableheader (GMT, GMT_OUT, was);	/* Restore what we had */
 	}
 	else {
 		if (gmt_remove_file (GMT, tmp_file))	/* Just remove the symbol def file */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Failed to delete file: %s\n", tmp_file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to delete file: %s\n", tmp_file);
 	}
 		
 	return GMT_NOERROR;
@@ -800,29 +800,27 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	bool error_x = false, error_y = false, def_err_xy = false;
 	bool default_outline, outline_active, geovector = false;
 	unsigned int n_needed, n_cols_start = 2, justify, tbl;
-	unsigned int i, n_total_read = 0, j, geometry;
+	unsigned int n_total_read = 0, j, geometry;
 	unsigned int bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR;
 
-	char *text_rec = NULL, s_args[GMT_BUFSIZ] = {""};
+	char s_args[GMT_BUFSIZ] = {""};
 
-	double direction, length, dx, dy, d, dim[PSL_MAX_DIMS], *in = NULL;
+	double direction, length, dx, dy, d, *in = NULL;
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;
 
 	struct GMT_PEN current_pen, default_pen;
 	struct GMT_FILL current_fill, default_fill, black, no_fill;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
-	struct GMT_TEXTSET *Decorate = NULL;
+	struct GMT_DATASET *Decorate = NULL;
 	struct GMT_DATASEGMENT *L = NULL;
 	struct PSXY_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-
-	void *record = NULL;	/* Opaque pointer to either a text (buffer) or double (in) record */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -855,7 +853,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psxy main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "Option -T ignores all input files\n");
+	else GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	if (Ctrl->E.active && S.symbol == GMT_SYMBOL_LINE)	/* Assume user only wants error bars */
 		S.symbol = GMT_SYMBOL_NONE;
 	/* Do we plot actual symbols, or lines */
@@ -871,8 +870,6 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			error_type[GMT_X] = error_type[GMT_Y] = EBAR_NORMAL;
 		}
 	}
-
-	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Warning: Option -T ignores all input files\n");
 
 	get_rgb = (not_line && Ctrl->C.active);	/* Need to read z-vales from input data file */
 	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
@@ -913,7 +910,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	pos2y = ex2 - GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd latitude (for VECTORS with two sets of coordinates) */
 
 	if (Ctrl->E.active) {
-		if (S.read_size) GMT->current.io.col_type[GMT_IN][ex1] = GMT_IS_DIMENSION;	/* Must read symbol size from data record */
+		if (S.read_size) gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_DIMENSION);	/* Must read symbol size from data record */
 		if (def_err_xy && GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* With -:, -E should become -Eyx */
 			gmt_M_uint_swap (xy_errors[GMT_X], xy_errors[GMT_Y]);
 			gmt_M_uint_swap (error_type[GMT_X], error_type[GMT_Y]);
@@ -923,9 +920,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		xy_errors[GMT_X] += (S.read_size + get_rgb);	/* Move 0-2 columns over */
 		xy_errors[GMT_Y] += (S.read_size + get_rgb);
 	}
-	else	/* Here we have the usual x y [z] [size] [other args] [symbol] record */
-		for (j = n_cols_start; j < 6; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
-	for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
+	else if (not_line)	/* Here we have the usual x y [z] [size] [other args] [symbol] record */
+		for (j = n_cols_start; j < 6; j++) gmt_set_column (GMT, GMT_IN, j, GMT_IS_DIMENSION);		/* Since these may have units appended */
+	for (j = 0; j < S.n_nondim; j++) gmt_set_column (GMT, GMT_IN, S.nondim_col[j]+get_rgb, GMT_IS_FLOAT);	/* Since these are angles, not dimensions */
 
 	n_needed = n_cols_start + S.n_required;
 	if (gmt_check_binary_io (GMT, n_needed))
@@ -979,26 +976,28 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if (S.symbol == GMT_SYMBOL_BARY && !S.base_set) S.base = GMT->common.R.wesn[YLO];	/* Default to south level for vertical log10 bars */
 	if ((S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & PSL_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
 		/* Reading 2nd coordinate so must set column types */
-		GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
-		GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
+		gmt_set_column (GMT, GMT_IN, pos2x, gmt_M_type (GMT, GMT_IN, GMT_X));
+		gmt_set_column (GMT, GMT_IN, pos2y, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	}
 	if (S.symbol == PSL_VECTOR && S.v.status & PSL_VEC_COMPONENTS)
-		GMT->current.io.col_type[GMT_IN][pos2y] = GMT_IS_FLOAT;	/* Just the users dy component, not length */
+		gmt_set_column (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Just the users dy component, not length */
 	if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC ) {	/* One of the vector symbols */
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
 		if ((S.v.status & PSL_VEC_FILL) == 0 && !S.v.parsed_v4) Ctrl->G.active = false;	/* Want no fill so override -G */
 		if (S.v.status & PSL_VEC_FILL) S.v.fill = current_fill;		/* Override -G<fill> (if set) with specified head fill */
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
-	if (S.symbol == GMT_SYMBOL_BARX && S.base_set == 2) GMT->current.io.col_type[GMT_IN][bcol] = GMT->current.io.col_type[GMT_IN][GMT_X];
-	if (S.symbol == GMT_SYMBOL_BARY && S.base_set == 2) GMT->current.io.col_type[GMT_IN][bcol] = GMT->current.io.col_type[GMT_IN][GMT_Y];
+	if (S.symbol == GMT_SYMBOL_BARX && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_X));
+	if (S.symbol == GMT_SYMBOL_BARY && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0)
-		GMT->current.io.col_type[GMT_IN][ex2] = GMT_IS_GEODIMENSION;
+		gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
 	else if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && S.convert_angles) {
 		if (S.n_required == 1) 
-			GMT->current.io.col_type[GMT_IN][ex1] = GMT_IS_GEODIMENSION;
-		else
-			GMT->current.io.col_type[GMT_IN][ex2] = GMT->current.io.col_type[GMT_IN][ex3] = GMT_IS_GEODIMENSION;
+			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
+		else {
+			gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
+			gmt_set_column (GMT, GMT_IN, ex3, GMT_IS_GEODIMENSION);
+		}
 	}
 
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
@@ -1012,15 +1011,17 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	old_is_world = GMT->current.map.is_world;
 	geometry = not_line ? GMT_IS_POINT : ((polygon) ? GMT_IS_POLY: GMT_IS_LINE);
 	in = GMT->current.io.curr_rec;
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_needed)) != GMT_NOERROR) {
-		Return (error);
-	}
+
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
 		bool periodic = false, delayed_unit_scaling = false;
-		unsigned int n_warn[3] = {0, 0, 0}, set_type, warn, item, n_times, read_mode;
-		double in2[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
-		double xpos[2], width = 0.0;
+		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
+		double xpos[2], width = 0.0, dim[PSL_MAX_DIMS];
+		struct GMT_RECORD *In = NULL;
 
+		if (S.read_symbol_cmd)	/* Must prepare for a rough ride */
+			GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_VAR);
+		else
+			GMT_Set_Columns (API, GMT_IN, n_needed, GMT_COL_FIX);
 		/* Determine if we need to worry about repeating periodic symbols */
 		if ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_is_geographic (GMT, GMT_IN)) {
 			/* Only do this for projection where west and east are split into two separate repeating boundaries */
@@ -1028,32 +1029,21 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 		n_times = (periodic) ? 2 : 1;	/* For periodic boundaries we plot each symbol twice to allow for periodic clipping */
 
-		set_type = GMT_Get_Family (API, GMT_IN, options);
-		if (set_type == GMT_IS_TEXTSET)	/* Input memory objects are textsets */
-			read_mode = GMT_READ_TEXT;
-		else if (S.read_symbol_cmd) {	/* If symbol info is given we must process text records */
-			set_type  = GMT_IS_TEXTSET;
-			read_mode = GMT_READ_TEXT;
-		}
-		else {	/* Here we can process data records (ASCII or binary) */
-			set_type  = GMT_IS_DATASET;
-			read_mode = GMT_READ_DATA;
-		}
-		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, set_type, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {		/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {		/* Enables data input and sets access mode */
 			Return (API->error);
 		}
 		PSL_command (GMT->PSL, "V\n");
-		if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && S.n_required <= 1) p_in = in2;
 		
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
-			GMT->current.io.col_type[GMT_IN][ex1] = GMT_IS_FLOAT;
+			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
 			delayed_unit_scaling = (S.u_set && S.u != GMT_INCH);
 		}
+		
 		do {	/* Keep returning records until we reach EOF */
-			if ((record = GMT_Get_Record (API, read_mode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -1079,36 +1069,19 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 
 			/* Data record to process */
-
+			
+			in = In->data;
 			n_total_read++;
 
-			if (S.read_symbol_cmd) {	/* Must do special processing */
-				int save[2];
-				bool col_reset = false;
-				text_rec = (char *)record;
-
+			if (S.read_symbol_cmd) {	/* Must do special processing depending on variable symbol */
 				/* First establish the symbol type given at the end of the record */
-				gmt_chop (text_rec);		/* Get rid of \n \r */
-				i = (unsigned int)strlen (text_rec);
-				if (i == 0) continue;	/* A blank line snuck through */
-				i--;
-				while (text_rec[i] && !strchr (" \t", (int)text_rec[i])) i--;
-				if (S.read_symbol_cmd == 1) gmt_parse_symbol_option (GMT, &text_rec[i+1], &S, 0, false);
-				for (j = n_cols_start; j < 6; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
-				for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
-				if ((S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR) && S.v.status & PSL_VEC_JUST_S) {	/* One of the vector symbols, and require 2nd point */
-					/* Reading 2nd point coordinates so must set column types to be the same as for x,y */
-					col_reset = true;
-					save[GMT_X] = GMT->current.io.col_type[GMT_IN][pos2x];
-					save[GMT_Y] = GMT->current.io.col_type[GMT_IN][pos2y];
-					GMT->current.io.col_type[GMT_IN][pos2x] = GMT->current.io.col_type[GMT_IN][GMT_X];
-					GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
+				if (S.read_symbol_cmd == 1) gmt_parse_symbol_option (GMT, In->text, &S, 0, false);
+				/* Since we only now know if some of the input columns should NOT be considered dimensions we
+				 * must visit such columns and if the current length unit is NOT inch then we must undo the scaling */
+				if (S.n_nondim && GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Since these are not dimensions but angles or other quantities */
+					for (j = 0; j < S.n_nondim; j++) in[S.nondim_col[j]+get_rgb] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 				}
-				/* Now convert the leading text items to doubles; col_type[GMT_IN] might have been updated above */
-				if (gmt_conv_intext2dbl (GMT, text_rec, 6U)) {	/* Max 6 columns needs to be parsed */
-					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skipped)\n", n_total_read);
-					continue;
-				}
+				
 				if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC) {	/* One of the vector symbols */
 					if (S.v.status & PSL_VEC_OUTLINE2) {
 						current_pen = S.v.pen, Ctrl->W.active = true;	/* Override -W (if set) with specified pen */
@@ -1124,19 +1097,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						current_fill = default_fill, Ctrl->G.active = true;	/* Return to default fill */
 					}
 				}
-				else if (S.symbol == PSL_DOT && !Ctrl->G.active) {	/* Must switch on default black fill */
+				else if (S.symbol == PSL_DOT && !Ctrl->G.active)	/* Must switch on default black fill */
 					current_fill = black;
-				}
-				if (col_reset) {	/* Reset type above since there may not be +s in the next record */
-					GMT->current.io.col_type[GMT_IN][pos2x] = save[GMT_X];
-					GMT->current.io.col_type[GMT_IN][pos2y] = save[GMT_Y];
-				}
-			}
-			else if (read_mode == GMT_READ_TEXT) {	/* Must unscramble the text record from the API */
-				if (gmt_conv_intext2dbl (GMT, record, n_needed)) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skipped)\n", n_total_read);
-					continue;
-				}
 			}
 
 			if (get_rgb) {
@@ -1160,11 +1122,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
 			if (gmt_M_is_dnan (plot_x)) {	/* Transformation of x yielded a NaN (e.g. log (-ve)) */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Data point with x = NaN near line %d\n", n_total_read);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Data point with x = NaN near line %d\n", n_total_read);
 				continue;
 			}
 			if (gmt_M_is_dnan (plot_y)) {	/* Transformation of y yielded a NaN (e.g. log (-ve)) */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Data point with y = NaN near line %d\n", n_total_read);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Data point with y = NaN near line %d\n", n_total_read);
 				continue;
 			}
 
@@ -1207,9 +1169,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 			if (S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) {	/* Ellipses and rectangles */
 				if (S.n_required == 0)	/* Degenerate ellipse or rectangle, got diameter via S.size_x */
-					in2[ex2] = in2[ex3] = S.size_x;	/* Duplicate diameter as major and minor axes */
+					in[ex2] = in[ex3] = S.size_x;	/* Duplicate diameter as major and minor axes */
 				else if (S.n_required == 1)	/* Degenerate ellipse or rectangle, expect single diameter via input */
-					in2[ex2] = in2[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
+					in[ex2] = in[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
 			}
 
 			if (S.base_set == 2) {
@@ -1282,71 +1244,71 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				case PSL_RNDRECT:
 					dim[2] = in[ex3];
 					if (gmt_M_is_dnan (dim[2])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Rounded rectangle corner radius = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle corner radius = NaN near line %d\n", n_total_read);
 						continue;
 					}
 				case PSL_RECT:
 					dim[0] = in[ex1];
 					if (gmt_M_is_dnan (dim[0])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Rounded rectangle width = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle width = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					dim[1] = in[ex2];
 					if (gmt_M_is_dnan (dim[1])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Rounded rectangle height = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle height = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
 					break;
 				case PSL_ROTRECT:
 				case PSL_ELLIPSE:
-					if (gmt_M_is_dnan (p_in[ex1])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Ellipse/Rectangle angle = NaN near line %d\n", n_total_read);
+					if (gmt_M_is_dnan (in[ex1])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Ellipse/Rectangle angle = NaN near line %d\n", n_total_read);
 						continue;
 					}
-					if (gmt_M_is_dnan (p_in[ex2])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Ellipse/Rectangle width or major axis = NaN near line %d\n", n_total_read);
+					if (gmt_M_is_dnan (in[ex2])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Ellipse/Rectangle width or major axis = NaN near line %d\n", n_total_read);
 						continue;
 					}
-					if (gmt_M_is_dnan (p_in[ex3])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Ellipse/Rectangle height or minor axis = NaN near line %d\n", n_total_read);
+					if (gmt_M_is_dnan (in[ex3])) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Ellipse/Rectangle height or minor axis = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (!S.convert_angles) {	/* Got axes in current plot units, change to inches */
-						dim[0] = p_in[ex1];
+						dim[0] = in[ex1];
 						gmt_flip_angle_d (GMT, &dim[0]);
-						dim[1] = p_in[ex2];
-						dim[2] = p_in[ex3];
+						dim[1] = in[ex2];
+						dim[2] = in[ex3];
 						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					}
 					else if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
-						dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
+						dim[0] = 90.0 - in[ex1];	/* Cartesian azimuth */
 						gmt_flip_angle_d (GMT, &dim[0]);
-						dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
-						dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_X];
+						dim[1] = in[ex2] * GMT->current.proj.scale[GMT_X];
+						dim[2] = in[ex3] * GMT->current.proj.scale[GMT_X];
 						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					}
 					else if (S.symbol == PSL_ELLIPSE) {	/* Got axis in km */
 						if (may_intrude_inside) {	/* Must plot fill and outline separately */
 							gmt_setfill (GMT, &current_fill, 0);
-							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 							gmt_setpen (GMT, &current_pen);
 							PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
-							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 						}
 						else
-							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+							gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 					}
 					else {
 						if (may_intrude_inside) {	/* Must plot fill and outline separately */
 							gmt_setfill (GMT, &current_fill, 0);
-							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 							gmt_setpen (GMT, &current_pen);
 							PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
-							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 						}
 						else
-							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+							gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 					}
 					break;
 				case GMT_SYMBOL_TEXT:
@@ -1364,7 +1326,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					else
 						length = in[ex2+S.read_size];
 					if (gmt_M_is_dnan (length)) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Vector length = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_VERBOSE, "Vector length = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (S.v.status & PSL_VEC_COMPONENTS)	/* Read dx, dy in user units */
@@ -1380,13 +1342,13 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						direction = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
 
 					if (gmt_M_is_dnan (direction)) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Vector direction = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_VERBOSE, "Vector direction = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (S.v.status & PSL_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
 						gmt_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
 						if (gmt_M_is_dnan (x_2) || gmt_M_is_dnan (y_2)) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Warning: Vector head coordinates contain NaNs near line %d. Skipped\n", n_total_read);
+							GMT_Report (API, GMT_MSG_VERBOSE, "Vector head coordinates contain NaNs near line %d. Skipped\n", n_total_read);
 							continue;
 						}
 						if (item == 1) {    /* Deal with periodicity */
@@ -1449,11 +1411,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					else
 						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					if (gmt_M_is_dnan (in[ex1+S.read_size])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Geovector azimuth = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_VERBOSE, "Geovector azimuth = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Geovector length = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_VERBOSE, "Geovector length = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					warn = gmt_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex1+S.read_size], in[ex2+S.read_size], &current_pen, &S);
@@ -1467,7 +1429,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					dim[2] = in[ex3+S.read_size];
 					length = fabs (dim[2]-dim[1]);	/* Arc length in degrees */
 					if (gmt_M_is_dnan (length)) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Math angle arc length = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_VERBOSE, "Math angle arc length = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
@@ -1480,11 +1442,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					break;
 				case PSL_WEDGE:
 					if (gmt_M_is_dnan (in[ex1+S.read_size])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Wedge start angle = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_VERBOSE, "Wedge start angle = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
-						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Wedge stop angle = NaN near line %d\n", n_total_read);
+						GMT_Report (API, GMT_MSG_VERBOSE, "Wedge stop angle = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (!S.convert_angles) {
@@ -1529,8 +1491,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 		} while (true);
 		PSL_command (GMT->PSL, "U\n");
-		if (n_warn[1]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
-		if (n_warn[2]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
+		if (n_warn[1]) GMT_Report (API, GMT_MSG_VERBOSE, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
+		if (n_warn[2]) GMT_Report (API, GMT_MSG_VERBOSE, "%d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
 
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
@@ -1581,10 +1543,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Get a dataset with one table, segment, 0 rows, but 2 columns */
-			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 0};	/* Put everything in one table */
+		if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Get a dataset with one table, segment, 0 rows, but 4 columns */
+			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 4};	/* Put everything in one table */
 			dim[GMT_SEG] = D->n_segments;	/* Make one segment for each input segment so segment headers can be preserved */
-			if ((Decorate = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
+			if ((Decorate = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		}
 		if (GMT->current.io.OGR && (GMT->current.io.OGR->geometry == GMT_IS_POLYGON || GMT->current.io.OGR->geometry == GMT_IS_MULTIPOLYGON)) polygon = true;
 
@@ -1608,7 +1570,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						if (n_new == 0) {
 							Return (GMT_RUNTIME_ERROR);
 						}
-						L->n_rows = n_new;
+						L->n_rows = L->n_alloc = n_new;
 						gmt_set_seg_minmax (GMT, D->geometry, 2, L);	/* Update min/max of x/y only */
 						resampled = true;	/* To avoid doing it twice */
 					}

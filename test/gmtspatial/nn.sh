@@ -8,7 +8,7 @@
 #gmt math -T0/9/1 -o1 0 100 RAND = z
 #paste x y z > points.txt
 ps=nn.ps
-DATA="${src:-.}"/points.txt
+DATA=`gmt which -G @nn_points.txt`
 # NN analysis
 gmt spatial -Aa0k -fg $DATA > results.txt
 gmt set MAP_FRAME_TYPE plain
@@ -26,7 +26,7 @@ done < results.txt
 gmt psxy -R -J -O -K -W1p,green tmp >> $ps
 # NN averaging
 gmt spatial -Aa75k -fg $DATA > results.txt
-gmt psxy -R -J -O -K -Bag1 -BWsne points.txt -Sc0.1i -Glightgray -Y4.75i $DATA >> $ps
+gmt psxy -R -J -O -K -Bag1 -BWsne $DATA -Sc0.1i -Glightgray -Y4.75i $DATA >> $ps
 awk '{print $1, $2, 0, 150, 150}' results.txt | gmt psxy -R -J -O -K -SE -W0.5p,blue >> $ps
 gmt psxy -R -J -O -K results.txt -Sc0.1i -Gred >> $ps
 gmt psxy -R -J -O -T >> $ps

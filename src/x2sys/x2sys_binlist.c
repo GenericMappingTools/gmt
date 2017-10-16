@@ -33,7 +33,7 @@
 #define THIS_MODULE_NAME	"x2sys_binlist"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Create bin index listing from track data files"
-#define THIS_MODULE_KEYS	">T}"
+#define THIS_MODULE_KEYS	">D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->V"
 
@@ -174,7 +174,7 @@ GMT_LOCAL int comp_bincross (const void *p1, const void *p2) {
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
-	char **trk_name = NULL, record[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""};
+	char **trk_name = NULL, record[GMT_BUFSIZ] = {""};
 
 	uint64_t this_bin_index, index, last_bin_index, row, col, trk, n_tracks;
 	unsigned int curr_x_pt, prev_x_pt;
@@ -190,7 +190,9 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	unsigned int nav_flag;
 
 	double **data = NULL, *dist_km = NULL, *dist_bin = NULL, dist_scale, x, y, dx, del_x, del_y, y_max = 90.0;
+	double out[5];
 
+	struct GMT_RECORD *Out = NULL;
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_FILE_INFO p;		/* File information */
 	struct X2SYS_BIX B;
@@ -239,7 +241,11 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	}
 	else
 		gmt_set_cartesian (GMT, GMT_OUT);
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
+	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
+	gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
+	if (Ctrl->D.active) gmt_set_column (GMT, GMT_OUT, 4, GMT_IS_FLOAT);
+	/* Ensure we write integers for the next two columns */
+	GMT->current.io.o_format[2] = GMT->current.io.o_format[3] = strdup ("%g"); 
 	
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_DIST_SELECTION], &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 
@@ -256,7 +262,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		}
 		GMT->current.setting.proj_ellipsoid = gmt_get_ellipsoid (GMT, "Sphere");	/* Make sure we use a spherical projection */
 		mid = 0.5 * (B.wesn[XHI] + B.wesn[XLO]);	/* Central longitude to use */
-		GMT_Report (API, GMT_MSG_VERBOSE,
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE,
 		            "To undo equal-area projection, use -R%g/%g/%g/%g -JY%g/%s/360i\n",
 		            B.wesn[XLO], B.wesn[XHI], B.wesn[YLO], B.wesn[YHI], mid, EA_LAT);
 		sprintf (proj, "Y%g/%s/360", mid, EA_LAT);
@@ -283,14 +289,17 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		dist_bin = gmt_M_memory (GMT, NULL, B.nm_bin, double);
 	}
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+	if ((error = gmt_set_cols (GMT, GMT_OUT, (Ctrl->D.active) ? 5 : 4)) != GMT_NOERROR) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		gmt_M_free (GMT, X);
 		if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		x2sys_end (GMT, s);
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		gmt_M_free (GMT, X);
 		if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
 		x2sys_free_list (GMT, trk_name, n_tracks);
@@ -308,13 +317,14 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	sprintf (record, " %s", Ctrl->T.TAG);	/* Preserve the leading space for backwards compatibility */
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 	for (trk = 0; trk < n_tracks; trk++) {
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Reading file %s ", trk_name[trk]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading file %s ", trk_name[trk]);
 
 		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk], &data, s, &p, &GMT->current.io, &row), trk_name[trk]);
-		GMT_Report (API, GMT_MSG_VERBOSE, "[%s]\n", s->path);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%s]\n", s->path);
 		
 		if (p.n_rows == 0) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "No data records found - skipping %s\n", trk_name[trk]);
@@ -466,20 +476,13 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 			row = index / B.nx_bin;	/* To hold the row number */
 			col = index % B.nx_bin;	/* To hold the col number */
 			if (B.binflag[index] == 0) continue;
-			x = B.wesn[XLO] + (col + 0.5) * B.inc[GMT_X];
-			y = B.wesn[YLO] + (row + 0.5) * B.inc[GMT_Y];
-			gmt_ascii_format_col (GMT, record, x, GMT_OUT, GMT_X);
-			strcat (record, GMT->current.setting.io_col_separator);
-			gmt_ascii_format_col (GMT, text, y, GMT_OUT, GMT_Y);
-			strcat (record, text);
-			sprintf (text, "%s%" PRIu64 "%s%u", GMT->current.setting.io_col_separator, index, GMT->current.setting.io_col_separator, B.binflag[index]);
-			strcat (record, text);
-			if (Ctrl->D.active) {
-				strcat (record, GMT->current.setting.io_col_separator);
-				gmt_ascii_format_col (GMT, text, dist_bin[index], GMT_OUT, GMT_Z);
-				strcat (record, text);
-			}
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			out[GMT_X] = B.wesn[XLO] + (col + 0.5) * B.inc[GMT_X];
+			out[GMT_Y] = B.wesn[YLO] + (row + 0.5) * B.inc[GMT_Y];
+			out[GMT_Z] = (double)index;
+			out[3] = B.binflag[index];
+			if (Ctrl->D.active)
+				out[4] = dist_bin[index];
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 
 		if (Ctrl->D.active) gmt_M_free (GMT, dist_km);
@@ -489,6 +492,10 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data output */
 		error = API->error;
 
+	gmt_M_str_free (GMT->current.io.o_format[2]);
+	GMT->current.io.o_format[3] = NULL; /* Since we only allocate one for sharing */
+
+	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, X);
 	x2sys_end (GMT, s);
 	gmt_M_free (GMT, B.binflag);

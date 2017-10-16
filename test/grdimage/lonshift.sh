@@ -14,8 +14,8 @@ gmt makecpt -Crainbow -T-1/1/0.1 > tmp.cpt
 # Plot orig grid and force actual region -R15/345/-75/75 despite a global grid
 gmt grdimage -Ctmp.cpt tmp.nc -JX6i/3i -Bx60f10 -By30f10 -BWeSn+t"Plotted as 15/345/-75/75" --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF -R15/345/-75/75 -K -Y6.5i -Xc -P > $ps
 # plot location of grid nodes
-gmt grd2xyz tmp.nc | gmt psxy -R -J -O -K -Sc0.1i -Gblack -N >> $ps
+gmt grd2xyz tmp.nc | gmt psxy -R15/345/-75/75 -JX6i/3i -O -K -Sc0.1i -Gblack -N >> $ps
 # Plot orig grid but shifted by giving -R0/360/-75/75
-gmt grdimage -Ctmp.cpt tmp.nc -JX6i/3i -Bx60f10 -By30f10 -BWeSn+t"Plotted as 0/360/-75/75" --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF -R0/360/-75/75 -Y-5i -O -K >> $ps
+gmt grdimage -Ctmp.cpt tmp.nc -J -Bx60f10 -By30f10 -BWeSn+t"Plotted as 0/360/-75/75" --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF -R0/360/-75/75 -Y-5i -O -K >> $ps
 # plot location of grid nodes
-gmt grd2xyz tmp.nc | gmt psxy -R -J -O -Sc0.1i -Gblack -N >> $ps
+gmt grd2xyz tmp.nc | gmt psxy -R0/360/-75/75 -JX6i/3i -O -Sc0.1i -Gblack -N >> $ps

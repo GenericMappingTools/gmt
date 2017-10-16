@@ -78,7 +78,7 @@
 #include <tlhelp32.h>
 #endif
 
-#define gmt_M_axis_is_geo_strict(C,axis) (((axis) == GMT_X && C->current.io.col_type[GMT_IN][axis] & GMT_IS_LON) || ((axis) == GMT_Y && C->current.io.col_type[GMT_IN][axis] & GMT_IS_LAT))
+#define gmt_M_axis_is_geo_strict(C,axis) (((axis) == GMT_X && gmt_M_type (C, GMT_IN, axis) & GMT_IS_LON) || ((axis) == GMT_Y && gmt_M_type (C, GMT_IN, axis) & GMT_IS_LAT))
 
 /* Functions declared elsewhere but needed here once */
 EXTERN_MSC int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels);
@@ -1548,7 +1548,7 @@ GMT_LOCAL void plot_map_symbol_ew (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 GMT_LOCAL void plot_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, char *label, double south, double north, bool annot, unsigned int level, unsigned int form) {
 	unsigned int i, k, nc;
 	struct GMT_XINGS *xings = NULL;
-	bool flip = (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON && GMT->current.io.col_type[GMT_IN][GMT_Y] != GMT_IS_LAT && GMT->current.proj.scale[GMT_Y] < 0.0);
+	bool flip = (gmt_M_type (GMT, GMT_IN, GMT_X) == GMT_IS_LON && gmt_M_type (GMT, GMT_IN, GMT_Y) != GMT_IS_LAT && GMT->current.proj.scale[GMT_Y] < 0.0);
 	/* flip deals with the problem when x is lon and geographic annotation machinery is used but y is Cartesian and upside down */
 	nc = gmtlib_map_loncross (GMT, lon, south, north, &xings);
 	for (i = 0; i < nc; i++) {
@@ -2585,7 +2585,7 @@ GMT_LOCAL bool plot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CU
 			result = gmt_M_is_dnan (left);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol macro operator (%d = '%c') passed to gmt_draw_custom_symbol\n", s->operator, (char)s->operator);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized symbol macro operator (%d = '%c') passed to gmt_draw_custom_symbol\n", s->operator, (char)s->operator);
 			GMT_exit (GMT, GMT_PARSE_ERROR); return false;
 			break;
 
@@ -2610,32 +2610,25 @@ GMT_LOCAL void plot_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 	*n = 0;
 }
 
-GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], unsigned int *type, unsigned int start, char *text) {
+GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], char *text) {
 	/* Returns the [possibly reformatted] string to use for the letter macro.
  	 * These are the things that can happen:
 	 * 1. Action is GMT_SYMBOL_TEXT means we have a static fixed text string; just copy
-	 * 2, Gave $<n> only, where <n> indicates which of the variables is a string.  Then we
-	 *    try to get the remaining text from the input and use that as the text.
+	 * 2. s->text is $t.  Then we use the trialing text from the input as the text.
 	 * 3. We have a format statement that contains free-form text with interspersed
 	 *    special formatting commands.  These have the syntax
 	 *    %X  Add longitude or x using chosen default format.
 	 *    %Y  Add latitude or y using chosen default format.
 	 *    $<n>[+X|Y|T]  Format the numerical variable $<n>; if
-	 *      followed by +X|Y|T we format as lon, lat, or time,
+	 *      followed by +X|Y|T we format as lon, lat, or absolute dateTtime,
 	 *      else we use FORMAT_FLOAT_OUT.
-	 * Limitation: Currently, $<n> expects <n> to be 0-9 only.
+	 *    Limitation: Currently, $<n> expects <n> to be 0-9 only.
 	 */
 	unsigned int n;
-	if (s->action == GMT_SYMBOL_TEXT)	/* Constant text */
+	if (s->action == GMT_SYMBOL_TEXT)	/* Constant text given, just duplicate */
 		strcpy (text, s->string);
-	else if (s->string[0] == '$' && strlen (s->string) == 2 && isdigit (s->string[1]) && type[n=(s->string[1]-'1')] == GMT_IS_STRING) {	/* Get entire string from input */
-		unsigned int want_col, col, pos;
-		/* Tricky, how do we know which column in the input goes with this variable $n, i.e. how is n related to record col?.  Then,
-		   we must scan the GMT->io.current.record for the col'th item and strcpy that into text.  The reason n -> col is
-		   tricky is while we may know this is the 3rd extra variable, we don't know if -C<cpt> was used or if this is psxyz, no? */
-		want_col = start + n;
-		for (col = pos = 0; col <= want_col; col++) (void)gmt_strtok (GMT->current.io.record, GMT_TOKEN_SEPARATORS, &pos, text);
-	}
+	else if (!strcmp (s->string, "$t"))	/* Get entire string from trailing text in the input */
+		strcpy (text, GMT->current.io.curr_trailing_text);
 	else {	/* Must replace special items within a template string */
 		unsigned int n_skip, in, out;
 		char tmp[GMT_LEN64] = {""};
@@ -3406,7 +3399,7 @@ GMT_LOCAL void plot_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B,
 	step = GMT->current.map.path_step;		/* Use default map-step if given as 0 */
 	n = lrint (ceil (fabs (rot) / step)) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
 	step = D2R * rot / (n - 1);			/* Adjust step for exact fit, convert to radians */
-	L = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, 2*n+1, 2, NULL, NULL);	/* Allocate polygon to draw filled path */
+	L = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 2*n+1, 2, NULL, NULL);	/* Allocate polygon to draw filled path */
 	n2 = 2*n-1;
 	gmtlib_init_rot_matrix (R0, C->P);			/* Get partial rotation matrix since no actual angle is applied yet */
 	for (k = 0; k < n; k++) {	/* March along the arc */
@@ -4619,7 +4612,7 @@ void gmt_setfill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, int outline) {
 	else if (fill->use_pattern) {
 		/* Fill with a pattern */
 		double rgb[4] = {-3.0, -3.0, -3.0, 0.0};
-		rgb[1] = (double)PSL_setpattern (PSL, fill->pattern_no, fill->pattern, fill->dpi, fill->f_rgb, fill->b_rgb);
+		rgb[1] = (double)PSL_setimage (PSL, fill->pattern_no, fill->pattern, fill->image, fill->dpi, fill->dim, fill->f_rgb, fill->b_rgb);
 		PSL_setfill (PSL, rgb, outline);
 	}
 	else	/* Fill with a color */
@@ -4696,7 +4689,7 @@ void gmt_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
 			uint64_t np;
 			int outline;
 			double *lon = NULL, *lat = NULL;
-			struct GMT_DATASEGMENT *S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, 0, 2, NULL, NULL);	/* Just get empty array pointers */
+			struct GMT_DATASEGMENT *S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 0, 2, NULL, NULL);	/* Just get empty array pointers */
 			np = gmt_graticule_path (GMT, &lon, &lat, 1, false, B->wesn[XLO], B->wesn[XHI], B->wesn[YLO], B->wesn[YHI]);
 			S->data[GMT_X] = lon;	S->data[GMT_Y] = lat;
 			S->n_rows = np;
@@ -4715,7 +4708,7 @@ void gmt_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
 	dim[GMT_X] = rect[XHI] - rect[XLO];	dim[GMT_Y] = rect[YHI] - rect[YLO];
 	/* Report position and dimensions */
 	s = GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Map insert lower left corner and dimensions (in %s): %g %g %g %g\n",
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Map insert lower left corner and dimensions (in %s): %g %g %g %g\n",
 		GMT->session.unit_name[GMT->current.setting.proj_length_unit], rect[XLO]*s, rect[YLO]*s, dim[GMT_X]*s, dim[GMT_Y]*s);
 	if (B->file) {	/* Save x0 y0 w h to file */
 		FILE *fp = fopen (B->file, "w");
@@ -4758,7 +4751,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 
 	measure = (ms->measure == 0) ? 'k' : ms->measure;	/* Km is default distance unit */
 	if ((unit = gmtlib_get_unit_number (GMT, measure)) == GMT_IS_NOUNIT) {
-		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: Bad distance unit %c\n", measure);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad distance unit %c\n", measure);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
 
@@ -5032,7 +5025,7 @@ GMT_LOCAL void get_the_fill (struct GMT_FILL *f, struct GMT_CUSTOM_SYMBOL_ITEM *
 
 int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline) {
 	int action;
-	unsigned int na, i, id = 0, level = 0, start = 0, *type = NULL;
+	unsigned int na, i, id = 0, level = 0;
 	bool flush = false, this_outline = false, found_elseif = false, skip[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
@@ -5071,8 +5064,6 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 	/* Regular macro symbol */
 
-	type = symbol->type;	/* Link to top level head info */
-	start = symbol->start;	/* Link to top level head info */
 	/* Remember current settings as we wish to restore at the end */
 	plot_savepen (GMT, &save_pen);
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
@@ -5080,11 +5071,11 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	gmt_M_memset (&p, 1, struct GMT_PEN);
 
 	if (symbol->text) {	/* This symbol places text, so we must set macros for fonts and fontsizes outside the gsave/grestore around each symbol */
-		symbol->text = false;	/* Only do this once */
+		symbol->text = 0;	/* Only do this formatting once */
 		s = symbol->first;	/* Start at first item */
 		while (s) {		/* Examine all items for possible text */
 			if (s->action == GMT_SYMBOL_TEXT || s->action == GMT_SYMBOL_VARTEXT) {	/* Text item found */
-				plot_format_symbol_string (GMT, s, size, type, start, user_text);
+				plot_format_symbol_string (GMT, s, size, user_text);
 				if (s->p[0] < 0.0)	/* Fixed point size for text */
 					s->font.size = -s->p[0];
 				else	/* Fractional size that depends on symbol size */
@@ -5110,7 +5101,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				found_elseif = !skip[level];
 			}
 			if (level == GMT_N_COND_LEVELS) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Symbol macro (%s) logical nesting too deep [> %d]\n", symbol->name, GMT_N_COND_LEVELS);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Symbol macro (%s) logical nesting too deep [> %d]\n", symbol->name, GMT_N_COND_LEVELS);
 				GMT_exit (GMT, GMT_DIM_TOO_LARGE); return GMT_DIM_TOO_LARGE;
 			}
 			if (s->conditional == 4) level--, found_elseif = false;	/* Simply reduce indent */
@@ -5149,7 +5140,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				s->pen->width = size[s->var_pen] * GMT->session.u2u[GMT_INCH][GMT_PT];
 		}
 		if (s->action == '?')	/* Reset to what is last in the input record */
-			action = GMT->current.io.record[strlen(GMT->current.io.record)-1];
+			action = GMT->current.io.curr_trailing_text[strlen(GMT->current.io.curr_trailing_text)-1];
 		else
 			action = s->action;
 
@@ -5213,12 +5204,12 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 			case (int)'C':
 				if (gmt_M_compat_check (GMT, 4)) {	/* Warn and fall through */
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Circle macro symbol C is deprecated; use c instead\n");
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Circle macro symbol C is deprecated; use c instead\n");
 					action = s->action = PSL_CIRCLE;	/* Backwards compatibility, circles are now 'c' */
 				}
 				else {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL,
-					            "Error: Unrecognized symbol code (%d = '%c') passed to gmt_draw_custom_symbol\n", action, (char)action);
+					            "Unrecognized symbol code (%d = '%c') passed to gmt_draw_custom_symbol\n", action, (char)action);
 					GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 					break;
 				}
@@ -5291,7 +5282,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				get_the_pen (&p, s, current_pen, current_fill);
 				this_outline = (p.rgb[0] == -1) ? false : outline;
 				if (this_outline) gmt_setpen (GMT, &p);
-				plot_format_symbol_string (GMT, s, size, type, start, user_text);
+				plot_format_symbol_string (GMT, s, size, user_text);
 				if (s->p[0] < 0.0)	/* Fixed point size */
 					font.size = -s->p[0];
 				else	/* Fractional size */
@@ -5309,7 +5300,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL,
-				            "Error: Unrecognized symbol code (%d = '%c') passed to gmt_draw_custom_symbol\n", action, (char)action);
+				            "Unrecognized symbol code (%d = '%c') passed to gmt_draw_custom_symbol\n", action, (char)action);
 				GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 				break;
 		}
@@ -5330,67 +5321,66 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 /* Plotting functions related to contours */
 
-void gmt_add_label_record (struct GMT_CTRL *GMT, struct GMT_TEXTSET *T, double x, double y, double angle, char *label) {
+void gmt_add_label_record (struct GMT_CTRL *GMT, struct GMT_DATASET *T, double x, double y, double angle, char *label) {
 	/* Add one record to the output file */
-	char word[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
 	double geo[2];
-	record[0] = 0;	/* Start with blank record */
+	uint64_t col, rec = T->table[0]->segment[0]->n_rows;	/* Current record */
+	/* Convert lon/lat and save x/y */
 	gmt_xy_to_geo (GMT, &geo[GMT_X], &geo[GMT_Y], x, y);
-	gmt_ascii_format_col (GMT, word, geo[GMT_X], GMT_OUT, GMT_X);
-	strcat (record, word);
-	strcat (record, GMT->current.setting.io_col_separator);
-	gmt_ascii_format_col (GMT, word, geo[GMT_Y], GMT_OUT, GMT_Y);
-	strcat (record, word);
-	strcat (record, GMT->current.setting.io_col_separator);
+	T->table[0]->segment[0]->data[GMT_X][rec] = geo[GMT_X];
+	T->table[0]->segment[0]->data[GMT_Y][rec] = geo[GMT_Y];
 	/* Also output the label angle */
-	gmt_ascii_format_col (GMT, word, angle, GMT_OUT, GMT_Z);
-	strcat (record, word);
-	strcat (record, GMT->current.setting.io_col_separator);
-	strncat (record, label, GMT_BUFSIZ-1);
-	T->table[0]->segment[0]->data[T->table[0]->segment[0]->n_rows] = strdup (record);
+	T->table[0]->segment[0]->data[GMT_Z][rec] = angle;
+	/* Then save the label */
+	T->table[0]->segment[0]->text[rec] = strdup (label);
+	/* Increment counter */
 	T->table[0]->segment[0]->n_rows++;
 	if (T->table[0]->segment[0]->n_rows == T->table[0]->segment[0]->n_alloc) {
 		T->table[0]->segment[0]->n_alloc <<= 1;
-		T->table[0]->segment[0]->data = gmt_M_memory (GMT, NULL, T->table[0]->segment[0]->n_alloc, char *);
+		T->table[0]->segment[0]->text = gmt_M_memory (GMT, T->table[0]->segment[0]->text, T->table[0]->segment[0]->n_alloc, char *);
+		for (col = 0; col < T->n_columns; col++)
+			T->table[0]->segment[0]->data[col] = gmt_M_memory (GMT, T->table[0]->segment[0]->data[col], T->table[0]->segment[0]->n_alloc, double);
 	}
 }
 
 int gmt_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	int kind;
-	uint64_t k, seg, dim[3] = {1, 1, GMT_SMALL_CHUNK};
+	uint64_t k, seg, dim[4] = {1, 1, GMT_SMALL_CHUNK, 3};	/* Single table with 1 segment and unknown rows, each with 3 columns and trailing text */
 	char record[GMT_BUFSIZ] = {""};
 	char *xname[2] = {"x", "lon"}, *yname[2] = {"y", "lat"};
 	double angle = 0.0;
 	struct GMT_CONTOUR_LINE *L = NULL;
 
-	/* Save the lon, lat, angle, text for each annotation to specified file*/
+	/* Save the lon, lat, angle, text for each annotation to specified file */
 
 	kind = gmt_M_is_geographic (GMT, GMT_IN);
-	if ((G->Out = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create a textset\n");
+	if ((G->Out = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_WITH_STRINGS, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a dataset\n");
 		return (GMT_MEMORY_ERROR);	/* Establishes data output */
 	}
 	/* Write lon, lat, angle, label record */
 	sprintf (record, "# %s%s%s%sangle%slabel", xname[kind], GMT->current.setting.io_col_separator, yname[kind],
 		GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
-	GMT_Set_Comment (GMT->parent, GMT_IS_TEXTSET, GMT_COMMENT_IS_TEXT | GMT_COMMENT_IS_COMMAND, record, G->Out);
+	GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_TEXT | GMT_COMMENT_IS_COMMAND, record, G->Out);
+	G->Out->table[0]->segment[0]->n_rows = 0;
 	for (seg = 0; seg < G->n_segments; seg++) {
 		L = G->segment[seg];	/* Pointer to current segment */
 		if (!L->annot || L->n_labels == 0) continue;
 		for (k = 0; k < L->n_labels; k++) {
 			angle = fmod (2.0 * (L->L[k].angle + 360.0), 360.0) / 2.0;		/* Get text line in 0-180 range */
-			gmt_add_label_record (GMT, G->Out, L->L[k].x, L->L[k].y, angle, L->L[k].label);	/* write text record */
+			gmt_add_label_record (GMT, G->Out, L->L[k].x, L->L[k].y, angle, L->L[k].label);	/* Store text record */
 		}
 	}
+	gmtlib_finalize_dataset (GMT, G->Out);
 	return (GMT_NOERROR);
 	/* To finish and close the file, call gmt_contlabel_save_end */
 }
 
 int gmt_contlabel_save_end (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
-	/* Finalize this textset and write it out */
-	gmt_set_textset_minmax (GMT, G->Out);
-	if (GMT_Write_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, G->label_file, G->Out) != GMT_NOERROR) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create/write to file %s\n", G->label_file);
+	/* Finalize this dataset and write it out */
+	gmt_set_dataset_minmax (GMT, G->Out);
+	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, G->label_file, G->Out) != GMT_NOERROR) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create/write to file %s\n", G->label_file);
 		return (GMT_ERROR_ON_FOPEN);	/* Establishes data output */
 	}
 	GMT_Destroy_Data (GMT->parent, &(G->Out));
@@ -5483,7 +5473,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 
 		gmt_getsharepath (GMT, "", "epsg", ".txt", buffer, R_OK);
 		if ((fp = fopen (buffer, "r")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Cannot open %s file\n", buffer);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s file\n", buffer);
 			return (pStrOut);
 		}
 		while (fgets (buffer, GMT_LEN256, fp)) {
@@ -5499,7 +5489,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		}
 		fclose (fp);
 		if (!found) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Could not find the EPGS code %d in database\n", EPSGID);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not find the EPGS code %d in database\n", EPSGID);
 			return (pStrOut);
 		}
 	}
@@ -5576,7 +5566,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 			opt_J[1] = 'A';
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: in projection %s proj parameters\n", prjcode);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In projection %s proj parameters\n", prjcode);
 			return (pStrOut);
 		}
 	}
@@ -5601,11 +5591,11 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 			}
 		}
 		if (zone == 100) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: UTM proj selected but no info about utm zone.\n");	
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "UTM proj selected but no info about utm zone.\n");	
 			return (pStrOut);
 		}
 		else if (zone > 64) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: UTM proj The lon_0 argument was not correctly parsed.\n");	
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "UTM proj The lon_0 argument was not correctly parsed.\n");	
 		}
 		else {
 			char t[4];
@@ -5643,7 +5633,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		if (!lat_0[0]) strcat(lat_0, "0");
 		if (strcmp(prjcode, "poly")) {			/* i.e. if NOT Poly */
 			if (!lat_1[0] || !lat_2[0]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Projection %s needs the lat_1 & lat_2 proj parameters\n", prjcode);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Projection %s needs the lat_1 & lat_2 proj parameters\n", prjcode);
 				return (pStrOut);
 			}
 			strcat(opt_J, lon_0);	strcat (opt_J, "/");	strcat(opt_J, lat_0);	strcat (opt_J, "/");
@@ -5727,7 +5717,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 	if ((pch = strstr(szProj4, "+b=")) != NULL) {	/* Check for minor axis +b=xxxx */
 		double f;
 		if (!got_a) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: +b= in proj4 string without the companion +a\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "+b= in proj4 string without the companion +a\n");
 			return (pStrOut);
 		}
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
@@ -5754,7 +5744,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		if (ename[0] != '\0')
 			;//sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, "%s", ename);
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: could not translate the ellipsoid name %s\n", &token[6]);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "could not translate the ellipsoid name %s\n", &token[6]);
 			return (pStrOut);
 		}
 		wipe_substr(szProj4, token);
@@ -5777,14 +5767,14 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 			sprintf(t, " +towgs84=598.1,73.7,418.2,0.202,0.045,-2.455,6.7");
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error: this datum %s is not yet ported to GMT\n", &token[6]);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "this datum %s is not yet ported to GMT\n", &token[6]);
 			return (pStrOut);
 		}
 
 		if (ename[0] != '\0')
 			sprintf(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, "%s", ename);
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error: could not translate the ellipsoid name %s\n", &token[6]);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "could not translate the ellipsoid name %s\n", &token[6]);
 			return (pStrOut);
 		}
 		strcat(szProj4, t);			/* Append to the proj4 string so that the +towgs84 case below will handle this */
@@ -5800,7 +5790,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 
 		if (ename[0] == '\0' && (!got_a || !got_b)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, 
-			            "Error:  Cannot convert to WGS84 if you don't tell me the ellipsoid of origin\n"
+			            " Cannot convert to WGS84 if you don't tell me the ellipsoid of origin\n"
 					    "(miss +ellips=xxxx OR +a=xxxx +b=xxxx)\n");
 			return (pStrOut);
 		}
@@ -5840,7 +5830,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 	if ((pch = strstr(szProj4, "+units=")) != NULL) {
 		pos = 0;	gmt_strtok (pch, " \t+", &pos, token);
 		if (token[6] != 'm') {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: using units other than meters is not yet implemented\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "using units other than meters is not yet implemented\n");
 		}
 		wipe_substr(szProj4, token);
 	}
@@ -5889,7 +5879,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Original proj4 string was not all consumend. Remaining options:\n\t%s\n", szProj4);
 #endif
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Converted to -J syntax = -J%s\n", opt_J);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Converted to -J syntax = -J%s\n", opt_J);
 	GMT->current.proj.is_proj4 = true;		/* Used so far in map|grdproject to set local -C */ 
 
 	pStrOut = strdup(opt_J);
@@ -6084,7 +6074,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Write PS to hidden gmt_#.ps- file.  No -O -K allowed */
 		char *verb[2] = {"Create", "Append to"};
 		if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {	/* Get hidden file name for PS */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: No workflow directory\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No workflow directory\n");
 			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
 		}
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s hidden PS file %s\n", verb[k], GMT->current.ps.filename);
@@ -6101,7 +6091,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	else if ((Out = GMT_Find_Option (GMT->parent, '>', options))) {	/* Want to use a specific output file */
 		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
 		if (O_active && k == 0) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: -O given but append-mode not selected for file %s\n", &(Out->arg[k]));
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-O given but append-mode not selected for file %s\n", &(Out->arg[k]));
 		}
 		if (gmt_M_file_is_memory (&(Out->arg[k]))) {
 			write_to_mem = 2;
@@ -6323,21 +6313,21 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 	sprintf (file, "%s/gmt_%d.layers", API->gwf_dir, fig);
 	if (nlayers == -1) {	/* Reset to nothing, but still remain at current figure */
 		if (gmt_remove_file (API->GMT, file))	/* Remove the layers file */
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Failed to delete file: %s\n", file);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Failed to delete file: %s\n", file);
 		sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
 		if (gmt_remove_file (API->GMT, file))	/* Wipe the PS file */
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Failed to delete file: %s\n", file);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Failed to delete file: %s\n", file);
 		return GMT_NOERROR;
 	}
 	/* See if there is a layers file to read for this figure */
 	if (access (file, R_OK)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: No layers available [no file: %s]\n", file);
+		GMT_Report (API, GMT_MSG_NORMAL, "No layers available [no file: %s]\n", file);
 		return GMT_FILE_NOT_FOUND;
 	}
 	
 	/* OK, the file exist, can we read it? */
 	if ((fp = fopen (file, "r")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not open file %s\n", file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not open file %s\n", file);
 		return GMT_ERROR_ON_FOPEN;
 	}
 	/* Ingest the layer information */
@@ -6351,21 +6341,21 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 	}
 	fclose (fp);
 	if (nlayers >= k) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot revert %d layers as only %d layers found!\n", nlayers, k);
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot revert %d layers as only %d layers found!\n", nlayers, k);
 		gmt_M_free (API->GMT, layer);
 		return GMT_RUNTIME_ERROR;
 	}
 	
 	sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
 	if (gmt_truncate_file (API, file, layer[k-nlayers-1].size)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not truncate file %s!\n", file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not truncate file %s!\n", file);
 		gmt_M_free (API->GMT, layer);
 		return GMT_RUNTIME_ERROR;
 	}
 	/* Finally, rewrite the layers file to skip the reverted layers */
 	sprintf (file, "%s/gmt_%d.layers", API->gwf_dir, fig);
 	if ((fp = fopen (file, "w")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not create new file %s\n", file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not create new file %s\n", file);
 		gmt_M_free (API->GMT, layer);
 		return GMT_ERROR_ON_FOPEN;
 	}
@@ -6397,9 +6387,9 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 
 	if (!K_active) {
 		if (GMT->current.ps.clip_level > 0)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d external clip operations were not terminated!\n", GMT->current.ps.clip_level);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%d external clip operations were not terminated!\n", GMT->current.ps.clip_level);
 		if (GMT->current.ps.clip_level < 0)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d extra terminations of external clip operations!\n", -GMT->current.ps.clip_level);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%d extra terminations of external clip operations!\n", -GMT->current.ps.clip_level);
 		GMT->current.ps.clip_level = 0;	/* Reset to zero, so it will no longer show up in gmt.history */
 	}
 	for (i = 0; i < 3; i++) gmt_M_str_free (GMT->current.map.frame.axis[i].file_custom);
@@ -6410,7 +6400,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		char file[PATH_MAX] = {""};
 		FILE *fp = NULL;
 		if (stat (GMT->current.ps.filename, &buf))
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not determine size of file %s\n", GMT->current.ps.filename);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not determine size of file %s\n", GMT->current.ps.filename);
 		else
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Current size of half-baked PS file %s = %" PRIuS ".\n", GMT->current.ps.filename, buf.st_size);
 		GMT->current.ps.fp = NULL;
@@ -6418,7 +6408,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		/* Write layer size to gmt.layers in case of revert calls */
 		sprintf (file, "%s/gmt_%d.layers", GMT->parent->gwf_dir, GMT->current.ps.figure);
 		if ((fp = fopen (file, "a")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not open/create file %s\n", file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not open/create file %s\n", file);
 			return;
 		}
 		fprintf (fp, "%d\t%" PRIuS "\n", GMT->current.ps.layer, (size_t)buf.st_size);
@@ -6435,8 +6425,8 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		P->n_bytes = PSL->internal.n;   /* Length of plot buffer; note P->n_alloc = 0 since we did not allocate this string here */
 		P->mode = PSL->internal.pmode;  /* Mode of plot (GMT_PS_{HEADER,TRAILER,COMPLETE}) */
 		P->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since created in PSL */
-		if (GMT_Write_Data (GMT->parent, GMT_IS_POSTSCRIPT, GMT_IS_REFERENCE, GMT_IS_NONE, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
+		if (GMT_Write_Data (GMT->parent, GMT_IS_POSTSCRIPT, GMT_IS_REFERENCE, GMT_IS_TEXT, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
 		}
 		/* coverity[leaked_storage] */	/* We can't free P because it was written into a 'memory file' */
 	}
@@ -6668,7 +6658,7 @@ void gmt_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major
 	/* Approximate ellipse by a N-sided polygon */
 
 	delta_azimuth = 2.0 * M_PI / N;
-	S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, N+1, 2, NULL, NULL);
+	S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, N+1, 2, NULL, NULL);
 	px = S->data[GMT_X];	py = S->data[GMT_Y];
 
 	for (i = 0; i < N; i++)
@@ -6715,18 +6705,16 @@ void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radiu
 		gmt_cart_to_geo (GMT, &qlat, &qlon, Q, true);	/* Coordinates of rotated point */
 		gmt_geo_to_xy (GMT, plon, plat, &px, &py);	/* P projected on map */
 		gmt_geo_to_xy (GMT, qlon, qlat, &qx, &qy);	/* Q projected on map */
-		L = hypot (px - qx, py - qy);	/* Distance in inches for 1 degree of azimuth change */
-		n_arc = MAX (2, irint (fabs (az_stop - az_start) * L / (radius * GMT->current.setting.map_line_step)));
-#ifdef DEBUG
-		n_arc = irint (fabs (az_stop - az_start));	/* Debugging */
-#endif
+		L = hypot (px - qx, py - qy);			/* Distance in inches along arc for 1 degree of azimuth change */
+		/* Estimate how many intermediate points by dividing the estinate arc length by line_step */
+		n_arc = MAX (2, irint (fabs (az_stop - az_start) * L /GMT->current.setting.map_line_step));
 		d_az = (az_stop - az_start) / (n_arc - 1);	/* Azimuthal sampling rate */
 	}
 	n_path = n_arc;				/* Total number of points */
 	if (mode > 1) n_path++;		/* Add apex */
 	if (mode == 3) n_path++;	/* Closed polygon */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Wedge will be approximated by %d-sided polygon\n", n_path);
-	S = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, n_path, 2, NULL, NULL);	/* Add space for apex and explicitly close it */
+	S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, n_path, 2, NULL, NULL);	/* Add space for apex and explicitly close it */
 	rot_start = -az_start;	/* Since we have a right-handed rotation but gave azimuths */
 	d_az = -d_az;		/* Same reason */
 	for (k = kk = 0; k < n_arc; k++, kk++) {
@@ -6874,7 +6862,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 	else {	/* Gave negative interval which means the # of ticks required */
 		ngap = irint (fabs (f->f_gap));
 		if (ngap == 0) {	/* Cannot happen but might as well leave the test in case of snafus */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Number of front ticks reset from 0 to 1 (check your arguments)\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Number of front ticks reset from 0 to 1 (check your arguments)\n");
 			ngap = 1;
 		}
 		if (ngap == 1)	/* Single centered tick */
@@ -7239,15 +7227,15 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 		char path[GMT_BUFSIZ] = {""};
 		strncpy (ps_file, source, GMT_LEN256-1);
 		if (!gmt_getdatapath (GMT, ps_file, path, R_OK)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot find PostScript file %s\n", ps_file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot find PostScript file %s\n", ps_file);
 			return (NULL);
 		}
 		if (stat (path, &buf)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot determine size of PostScript file %s\n", ps_file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot determine size of PostScript file %s\n", ps_file);
 			return (NULL);
 		}
 		if ((fp = fopen (ps_file, "r")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open PostScript file %s\n", ps_file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open PostScript file %s\n", ps_file);
 			return (NULL);
 		}
 		n_alloc = buf.st_size;	/* We know what to allocate here */
@@ -7265,7 +7253,7 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 		struct stat buf;
 		int *fd = source;
 		if (fstat (*fd, &buf)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot determine size of PostScript file give by file descriptor %d\n", *fd);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot determine size of PostScript file give by file descriptor %d\n", *fd);
 			return (NULL);
 		}
 		if ((fp = fdopen (*fd, "r")) == NULL) {

@@ -229,7 +229,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, struct 
 			/* Supplemental parameters */
 			case 'C':	/* Now done automatically in spotter_init */
 				if (gmt_M_compat_check (GMT, 4))
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -321,6 +321,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	struct GMT_GRID *G = NULL;	/* Grid structure for output CVA grid */
 	struct GMT_GRID *G_rad = NULL;	/* Same but has radians in header (no grid) */
+	struct GMT_RECORD *In = NULL;
 
 	struct EULER *p = NULL;		/* Array of structures with Euler stage rotations */
 	struct GMT_OPTION *ptr = NULL;
@@ -379,7 +380,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	/* Set flowline sampling interval to 1/2 of the shortest distance between x-nodes */
 
 	sampling_int_in_km = Ctrl->D.value * G_rad->header->inc[GMT_X] * EQ_RAD * ((fabs (G_rad->header->wesn[YHI]) > fabs (G_rad->header->wesn[YLO])) ? cos (G_rad->header->wesn[YHI]) : cos (G_rad->header->wesn[YLO]));
-	GMT_Report (API, GMT_MSG_VERBOSE, "Flowline sampling interval = %.3f km\n", sampling_int_in_km);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Flowline sampling interval = %.3f km\n", sampling_int_in_km);
 
 	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "Seamount ages truncated to %g\n", Ctrl->N.t_upper);
 
@@ -418,7 +419,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				gmt_M_free (GMT, processed_node);
 				Return (GMT_RUNTIME_ERROR);
@@ -427,10 +428,11 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (in != NULL);						/* Should never get here */
+			assert (In != NULL);						/* Should never get here */
 		}
 
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
 	
 		/* STEP 1: Read information about a single seamount from input record */
 
@@ -532,7 +534,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 		n_smts++;	/* Go to next seamount */
 
-		if (!(n_smts%100)) GMT_Report (API, GMT_MSG_VERBOSE, "Processed %5ld seamounts\r", n_smts);
+		if (!(n_smts%100)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed %5ld seamounts\r", n_smts);
 	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
@@ -543,13 +545,13 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	/* OK, Done processing, time to write out */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processed %5ld seamounts\n", n_smts);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed %5ld seamounts\n", n_smts);
 
 	if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */
 		uint64_t node;
 		double scale;
 		
-		GMT_Report (API, GMT_MSG_VERBOSE, "Normalize CVS grid to percentages of max CVA\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalize CVS grid to percentages of max CVA\n");
 		G->header->z_min = +DBL_MAX;
 		G->header->z_max = -DBL_MAX;
 		gmt_M_grd_loop (GMT, G, row, col, node) {	/* Loop over all output nodes */
@@ -557,13 +559,13 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 			if (G->data[node] < G->header->z_min) G->header->z_min = G->data[node];
 			if (G->data[node] > G->header->z_max) G->header->z_max = G->data[node];
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, "CVA min/max: %g %g -> ", G->header->z_min, G->header->z_max);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "CVA min/max: %g %g -> ", G->header->z_min, G->header->z_max);
 		scale = 100.0 / G->header->z_max;
 		for (node = 0; node < G->header->size; node++) G->data[node] *= (gmt_grdfloat)scale;
 		G->header->z_min *= scale;	G->header->z_max *= scale;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%g %g\n", G->header->z_min, G->header->z_max);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%g %g\n", G->header->z_min, G->header->z_max);
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Write CVA grid %s\n", Ctrl->G.file);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write CVA grid %s\n", Ctrl->G.file);
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
@@ -580,7 +582,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G_rad\n");
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done\n");
 
 	Return (GMT_NOERROR);
 }

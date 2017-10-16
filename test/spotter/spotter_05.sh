@@ -4,10 +4,8 @@
 
 ps=spotter_05.ps
 
-POLES=${src}/../../src/spotter/WK97.txt
-
 # Determine the plate motion rates in effect when the Pacific crust was formed
-gmt grdpmodeler pac_age.nc -E$POLES -FPacific.txt -Gpac_%s.nc -Svd
+gmt grdpmodeler @pac_age.nc -E@WK97.txt -FPacific.txt -Gpac_%s.nc -Svd
 gmt makecpt -Crainbow -T0/145 > t.cpt
 gmt grdimage pac_vel.nc -Ct.cpt -JM4.5i -K -Q -X0.75i -Y1.5i > $ps
 gmt pscoast -Rpac_vel.nc -J -O -K -Ggray -B30f10 -BWSne >> $ps

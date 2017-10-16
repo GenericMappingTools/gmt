@@ -21,7 +21,7 @@
  *
  * Author:	Paul Wessel
  * Date:	10-Aug-2010
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"
@@ -233,8 +233,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct G
 						}
 						else if (n == 3) {	/* 3-D spherical rotation */
 							Ctrl->T.mode = DO_ROT3D;
-							n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->T.par[0]), txt_a);
-							n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->T.par[1]), txt_b);
+							n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false, &Ctrl->T.par[0]), txt_a);
+							n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false, &Ctrl->T.par[1]), txt_b);
 							Ctrl->T.par[2] = atof (txt_c);
 						}
 						else {
@@ -280,8 +280,8 @@ GMT_LOCAL unsigned int decode_vector (struct GMT_CTRL *GMT, char *arg, double co
 	n_out = n;
 	if (n == 2) {	/* Got lon/lat, r/theta, or x/y */
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {
-			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][ix], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][ix], &coord[ix]), txt_a);
-			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][iy], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][iy], &coord[iy]), txt_b);
+			n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, ix), gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, ix), false, &coord[ix]), txt_a);
+			n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, iy), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, iy), false, &coord[iy]), txt_b);
 			if (geocentric) coord[GMT_Y] = gmt_lat_swap (GMT, coord[GMT_Y], GMT_LATSWAP_G2O);
 			gmt_geo_to_cart (GMT, coord[GMT_Y], coord[GMT_X], coord, true);	/* get x/y/z */
 			n_out = 3;
@@ -383,7 +383,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	for (k = 0; k < n_components; k++) gmt_M_free (GMT, P[k]);
 
 	if (gmt_jacobi (GMT, C, n_components, n_components, lambda, V, work1, work2, &nrots)) {	/* Solve eigen-system */
-		GMT_Message (GMT->parent, GMT_TIME_NONE, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
+		GMT_Message (GMT->parent, GMT_TIME_NONE, "Eigenvalue routine failed to converge in 50 sweeps.\n");
 	}
 	if (n_components == 3) {	/* Recover lon,lat */
 		gmt_cart_to_geo (GMT, &lat, &lon, X, true);
@@ -416,7 +416,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	E[1] = 2.0 * sqrt (lambda[0]) * scl;	/* 2* since we need the major axis not semi-major */
 	E[2] = 2.0 * sqrt (lambda[1]) * scl;
 
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%g%% confidence ellipse on mean position: Major axis = %g Minor axis = %g Major axis azimuth = %g\n", 100.0 * conf, E[1], E[2], E[0]);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%g%% confidence ellipse on mean position: Major axis = %g Minor axis = %g Major axis azimuth = %g\n", 100.0 * conf, E[1], E[2], E[0]);
 }
 
 GMT_LOCAL void gmt_make_rot2d_matrix (double angle, double R[3][3]) {
@@ -488,7 +488,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->A.active) {	/* Want a single primary vector */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 1, 1, 3};
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing single input vector; no files are read\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing single input vector; no files are read\n");
 		if (Ctrl->A.mode) {	/* Compute the mean of all input vectors */
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 				Return (API->error);
@@ -521,10 +521,11 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		n_components = (n == 3 || gmt_M_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
 		for (k = 0; k < n_components; k++) Din->table[0]->segment[0]->data[k][0] = vector_1[k];
+		Din->table[0]->segment[0]->n_rows = 1;
 		single = true;
 	}
 	else {	/* Read input files or stdin */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 			Return (API->error);
 		}
@@ -540,7 +541,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->T.mode == DO_DOT) {
 		n_out = 1;	/* Override prior setting since we just will report an angle in one column */
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_FLOAT;
+		gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_FLOAT);
 	}
 	else if (Ctrl->T.mode == DO_ROTVAR2D) {	/* 2D or 3D */
 		if (Din->n_columns == 1) n_out = 2;

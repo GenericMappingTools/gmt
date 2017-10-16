@@ -27,7 +27,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"
@@ -363,7 +363,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 	GMT->common.R.wesn[XLO] = 0.0;
 	range = GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO];
 	if (doubleAlmostEqual (range, 180.0) && Ctrl->T.active) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -T only needed for 0-360 range data (ignored)");
+		GMT_Report (API, GMT_MSG_VERBOSE, "-T only needed for 0-360 range data (ignored)");
 		Ctrl->T.active = false;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file && Ctrl->C.mode == GMT_IN && gmt_access (GMT, Ctrl->C.file, R_OK),
@@ -408,6 +408,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	struct PSROSE_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Cin = NULL;
 	struct GMT_DATATABLE *P = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
@@ -431,7 +432,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psrose main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	asize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 	lsize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
@@ -468,7 +469,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	/* Read data and do some stats */
 
 	n = 0;
-	n_in = (GMT->common.i.active && GMT->common.i.n_cols == 1) ? 1 : 2;
+	n_in = (GMT->common.i.select && GMT->common.i.n_cols == 1) ? 1 : 2;
 
 	if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_NOERROR) {
 		Return (error);
@@ -489,7 +490,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	length = gmt_M_memory (GMT, NULL, n_alloc, double);
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 	/* Bail if there are any read errors */
 				gmt_M_free (GMT, length);		gmt_M_free (GMT, xx);	gmt_M_free (GMT, sum);
 				gmt_M_free (GMT, azimuth);		gmt_M_free (GMT, yy);
@@ -501,6 +502,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		}
 
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
 
 		if (n_in == 2) {	/* Read azimuth and length */
 			length[n]  = in[GMT_X];
@@ -592,17 +594,19 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			for (i = 0; i < n; i++) length[i] /= max;
 	}
 
-	if (Ctrl->I.active || gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (Ctrl->I.active || gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
 		char *kind[2] = {"r", "bin sum"};
 		sprintf (format, "Info for data: n = %% " PRIu64 " mean az = %s mean r = %s mean resultant length = %s max %s = %s scaled mean r = %s linear length sum = %s sign@%%.2f = %%d\n",
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, kind[Ctrl->A.active],
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_NORMAL, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total, Ctrl->Q.value, significant);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total, Ctrl->Q.value, significant);
 		if (Ctrl->I.active) {	/* That was all we needed to do, wrap up */
 			double out[7];
 			unsigned int col_type[2];
+			struct GMT_RECORD *Rec = gmt_new_record (GMT, out, NULL);
 			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 2U, unsigned int);	/* Save first 2 current output col types */
-			GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT_IS_FLOAT;
+			gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_FLOAT);
+			gmt_set_column (GMT, GMT_OUT, GMT_Y, GMT_IS_FLOAT);
 			if ((error = gmt_set_cols (GMT, GMT_OUT, 7U)) != GMT_NOERROR) {
 				gmt_M_free (GMT, sum);
 				gmt_M_free (GMT, xx);
@@ -639,21 +643,17 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			out[0] = (double)n; out[1] = mean_theta;	out[2] = mean_vector;	out[3] = mean_resultant;
 			out[4] = max;	out[5] = mean_radius;	out[6] = total;
 			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, format);	/* Write this to output if -ho */
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);
-			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
-				gmt_M_free (GMT, sum);
-				gmt_M_free (GMT, xx);
-				gmt_M_free (GMT, yy);
-				gmt_M_free (GMT, azimuth);
-				gmt_M_free (GMT, length);
-				Return (API->error);
-			}
-			gmt_M_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 2U, unsigned int);	/* Restore 2 current output col types */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Rec);
+			gmt_M_free (GMT, Rec);
 			gmt_M_free (GMT, sum);
 			gmt_M_free (GMT, xx);
 			gmt_M_free (GMT, yy);
 			gmt_M_free (GMT, azimuth);
 			gmt_M_free (GMT, length);
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+				Return (API->error);
+			}
+			gmt_M_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 2U, unsigned int);	/* Restore 2 current output col types */
 			Return (GMT_NOERROR);
 		}
 	}
@@ -857,6 +857,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			S->coord[5][0] = total;
 			S->coord[6][0] = (double)n;
 			S->coord[7][0] = significant;
+			S->n_rows = 1;
 			if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, format, V)) {
 				Return (API->error);
 			}

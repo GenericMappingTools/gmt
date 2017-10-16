@@ -1264,7 +1264,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	}
 	else {	/* Load file given */
 		char *type = (Ctrl->Q.mode == T_LOAD) ? "topography" : "pressure";
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input %s table data\n", type);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input %s table data\n", type);
 		if ((Q = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->Q.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -1296,7 +1296,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	if (Ctrl->E.file) {	/* Gave file with elastic thicknesses or rigidities */
 		double scale = (Ctrl->M.active[1]) ? 1000.0 : 1.0;	/* Either got Te in km or m */
 		double d_min = DBL_MAX, d_max = 0.0;
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input Te or Rigidity table data\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input Te or Rigidity table data\n");
 		gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((E = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->E.file, NULL)) == NULL) {
 			Return (API->error);
@@ -1318,9 +1318,9 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			}
 		}
 		if (d_min == d_max)
-			GMT_Report (API, GMT_MSG_VERBOSE, "Constant rigidity: %g \n", d_min);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Constant rigidity: %g \n", d_min);
 		else
-			GMT_Report (API, GMT_MSG_VERBOSE, "Range of rigidities: %g to %g\n", d_min, d_max);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Range of rigidities: %g to %g\n", d_min, d_max);
 	}
 	if (Ctrl->Q.mode == NO_LOAD)	{	/* No load file given */
 		if (Ctrl->E.file) {	/* Use info from elastic thickness file instead */
@@ -1336,11 +1336,12 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		else {	/* No input files given, create single equidistant profile */
 			uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 2};
 			dim[2] = urint ((Ctrl->Q.max - Ctrl->Q.min)/Ctrl->Q.inc) + 1;
-			GMT_Report (API, GMT_MSG_VERBOSE, "Create empty load table data\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create empty load table data\n");
 			if ((Q = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				Return (API->error);	/* An empty table */
 			}
 			S = Q->table[0]->segment[0];	/* Only a single segment here */
+			S->n_rows = dim[GMT_ROW];
 			for (row = 0; row < dim[GMT_ROW]; row++) {	/* Fill in x values */
 				S->data[GMT_X][row] = (row == (S->n_rows-1)) ? Ctrl->Q.max: Ctrl->Q.min + row * Ctrl->Q.inc;
 			}
@@ -1348,7 +1349,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	}
 	if (!Ctrl->E.file) {	/* Got a constant Te in m instead */
 		double d = te_2_d (Ctrl, Ctrl->E.te);
-		GMT_Report (API, GMT_MSG_VERBOSE, "Constant rigidity: %g \n", d);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Constant rigidity: %g \n", d);
 		E = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_DATA, Q);
 		/* Overwrite 2nd column with constant d below */
 		for (tbl = 0; tbl < E->n_tables; tbl++) {
@@ -1418,12 +1419,12 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 				sprintf (txt, "plate free with Moment = %g and Force = %g at right edge.\n", Ctrl->A.moment[RIGHT], Ctrl->A.force[RIGHT]);
 				strcat (msg, txt);
 			}
-			GMT_Report (API, GMT_MSG_VERBOSE, msg);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, msg);
 			for (row = 0, airy = true; airy && row < S->n_rows; row++)
 				if (rigidity[row] > 0.0) airy = false;
 
 			if (airy) {	/* Airy compensation */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure using Airy compensation\n");
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculate flexure using Airy compensation\n");
 				for (row = 0; row < S->n_rows; row++) deflection[row] = load[row] / restore;
 			}
 			x_inc = S->data[GMT_X][1] - S->data[GMT_X][0];
@@ -1431,20 +1432,20 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 
 			if (Ctrl->T.active) {	/* Plate has pre-existing deflection */
 				double *w0 = T->table[tbl]->segment[seg]->data[GMT_Y];
-				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure of pre-deformed surface\n");
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculate flexure of pre-deformed surface\n");
 				error = flx1dw0 (GMT, deflection, w0, rigidity, load, (int)S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
 			else if (Ctrl->S.active) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure with variable restoring force\n");
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculate flexure with variable restoring force\n");
 				error = flx1dk (GMT, deflection, rigidity, load, (int)S->n_rows, x_inc, Ctrl->D.rhom, Ctrl->D.rhol, Ctrl->D.rhoi, Ctrl->D.rhow, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
 			else {	/* Constant restoring force */
-				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure for constant restoring force\n");
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculate flexure for constant restoring force\n");
 				error = flx1d (GMT, deflection, rigidity, load, (int)S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
 
 			if (error) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "Flexure sub-function returned error = %d!\n", error);
+				GMT_Report (API, GMT_MSG_NORMAL, "Flexure sub-function returned error = %d!\n", error);
 				Return (API->error);
 			}
 

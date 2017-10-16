@@ -21,7 +21,7 @@
  *
  * Author:	Paul Wessel
  * Date:	26-JUN-2012
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_constants.h"

@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: psscale draws a grayscale or colorscale either vertically
  * or horizontally, optionally with illumination.
@@ -238,7 +238,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 
 			case 'A':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -A option is deprecated; use -D modifier +m instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "-A option is deprecated; use -D modifier +m instead.\n");
 				Ctrl->D.move = true;
 				if (!opt->arg[0]) Ctrl->D.mmode = (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL);	/* Default is +mal */
 				for (j = 0; opt->arg[j]; j++) {
@@ -361,7 +361,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.off[GMT_X], Ctrl->D.off[GMT_Y]);
 				break;
 			case 'E':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: The -E option is deprecated but is accepted.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "The -E option is deprecated but is accepted.\n");
 				GMT_Report (API, GMT_MSG_COMPAT, "For the current -D syntax you should use -D modifier +e instead.\n");
 				GMT_Report (API, GMT_MSG_COMPAT, "Note you cannot mix new-style modifiers (+e) with the old-style -D option.\n");
 				Ctrl->D.extend = true;
@@ -451,7 +451,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 					unsigned int pos = 0, ns = 0;
 					double off[4] = {0.0, 0.0, 0.0, 0.0};
 					char extra[GMT_LEN256] = {""}, p[GMT_LEN256] = {""};
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -T option is deprecated; use -F instead\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-T option is deprecated; use -F instead\n");
 					/* We will build a -F compatible string and parse it */
 					while (gmt_strtok (opt->arg, "+", &pos, p)) {
 						switch (p[0]) {
@@ -1478,7 +1478,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the psscale main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input CPT\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input CPT\n");
 	if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
@@ -1497,10 +1497,10 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 
 	if (P->categorical) {
 		Ctrl->L.active = Ctrl->L.interval = true;
-		GMT_Report (API, GMT_MSG_VERBOSE, "CPT is for categorical data.\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "CPT is for categorical data.\n");
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "  CPT range from %g to %g\n", P->data[0].z_low, P->data[P->n_colors-1].z_high);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "  CPT range from %g to %g\n", P->data[0].z_low, P->data[P->n_colors-1].z_high);
 
 	if (Ctrl->Q.active) {	/* Take log of all z values */
 		for (i = 0; i < P->n_colors; i++) {

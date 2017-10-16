@@ -308,7 +308,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 				break;
 			case 'L':	/* Leave trend alone */
 				if (gmt_M_compat_check (GMT, 4))
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -L is deprecated; use -N modifiers in the future.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -545,6 +545,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		S = D->table[0]->segment[0];	/* Only one table with one segment here */
+		S->n_rows = Ctrl->C.n_pt;
 
 		for (k = 0; k < Ctrl->C.n_pt; k++) {
 			freq = (k + 1) * delta_pt;
@@ -563,14 +564,14 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->Q.active) {
 		if (((Ctrl->T.active && !Ctrl->T.moho) && Ctrl->E.n_terms > 1) || (Ctrl->S.active && Ctrl->E.n_terms > 1)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Due to a bug, or a method limitation (I didn't figure that yet)\n" \
+			GMT_Report (API, GMT_MSG_VERBOSE, "Due to a bug, or a method limitation (I didn't figure that yet)\n" \
 				"with the selected options, the number of terms in Parker expansion is reset to one\n" \
 				"See examples in the manual if you want to compute with higher order expansion\n\n");
 			Ctrl->E.n_terms = 1;
 		}
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Allocates memory and read data file\n");
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* First read the grid header(s) */
 		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL)
@@ -633,7 +634,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	if (Ctrl->W.active) {	/* Need to adjust for a different observation level relative to topo.grd */
 		unsigned int row, col;
-		GMT_Report (API, GMT_MSG_VERBOSE, "Remove %g m from topography grid %s\n", Ctrl->W.water_depth, Ctrl->In.file[0]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Remove %g m from topography grid %s\n", Ctrl->W.water_depth, Ctrl->In.file[0]);
 		gmt_M_grd_loop (GMT, Grid[0], row, col, m)
 			Grid[0]->data[m] -= (gmt_grdfloat)Ctrl->W.water_depth;
 		Grid[0]->header->z_min -= (gmt_grdfloat)Ctrl->W.water_depth;
@@ -654,14 +655,14 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
 
 	Ctrl->misc.z_level = fabs (FFT_info[0]->coeff[0]);	/* Need absolute value or level removed for uppward continuation */
-	GMT_Report (API, GMT_MSG_VERBOSE, "Level used for upward continuation: %g\n", Ctrl->misc.z_level);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Level used for upward continuation: %g\n", Ctrl->misc.z_level);
 
 	if (Ctrl->I.active) {		/* Compute admittance or coherence from data and exit */
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing gravity file %s\n", Ctrl->In.file[1]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing gravity file %s\n", Ctrl->In.file[1]);
 
 		for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid */
-			GMT_Report (API, GMT_MSG_VERBOSE, "forward FFT...\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "forward FFT...\n");
 			if (GMT_FFT (API, Grid[k], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[k]))
 				Return (GMT_RUNTIME_ERROR);
 		}
@@ -683,14 +684,14 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	if (Ctrl->Q.active || Ctrl->T.moho) {
 		double coeff[3];
-		GMT_Report (API, GMT_MSG_VERBOSE, "Forward FFT...\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Forward FFT...\n");
 		if (GMT_FFT (API, Grid[0], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[0])) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 
 		do_isostasy (GMT, Grid[0], Ctrl, K);
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Inverse FFT...\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Inverse FFT...\n");
 		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 			Return (GMT_RUNTIME_ERROR);
 
@@ -740,7 +741,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	for (n = 1; n <= Ctrl->E.n_terms; n++) {
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating Parker for term = %d\n", n);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluating Parker for term = %d\n", n);
 
 		if (n > 1)	/* n == 1 was initialized via the gmt_M_memcpy or loop above */
 			for (m = 0; m < Grid[0]->header->size; m++) {
@@ -781,7 +782,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			if (Ctrl->F.slab) {	/* Do the slab adjustment */
 				slab_gravity = (gmt_grdfloat) (1.0e5 * 2 * M_PI * Ctrl->misc.rho * GRAVITATIONAL_CONST *
 				                        fabs (Ctrl->W.water_depth - Ctrl->misc.z_level));
-				GMT_Report (API, GMT_MSG_VERBOSE, "Add %g mGal to predicted FAA grid to account for implied slab\n", slab_gravity);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Add %g mGal to predicted FAA grid to account for implied slab\n", slab_gravity);
 				if (Ctrl->F.bouger)		/* The complete bouger contribution */
 					for (m = 0; m < Grid[0]->header->size; m++) Grid[0]->data[m] = slab_gravity - Grid[0]->data[m];
 				else
@@ -808,7 +809,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	snprintf (Grid[0]->header->remark, GMT_GRID_REMARK_LEN160, "Parker expansion of order %d", Ctrl->E.n_terms);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Write Output...\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write Output...\n");
 
 	for (k = 0; k < Ctrl->In.n_grids; k++)
 		GMT_FFT_Destroy (API, &(FFT_info[k]));
@@ -828,7 +829,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	gmt_M_free (GMT, topo);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 
 	Return (GMT_NOERROR);
 }
@@ -856,7 +857,7 @@ GMT_LOCAL void do_isostasy (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 	rho_load = Ctrl->T.rhol;
 	if (Ctrl->T.approx) {	/* Do approximate calculation when both rhol and rhoi were set */
 		char way = (Ctrl->T.rhoi < Ctrl->T.rhol) ? '<' : '>';
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Approximate FFT-solution to flexure since rho_i (%g) %c rho_l (%g)\n", Ctrl->T.rhoi, way, Ctrl->T.rhol);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Approximate FFT-solution to flexure since rho_i (%g) %c rho_l (%g)\n", Ctrl->T.rhoi, way, Ctrl->T.rhol);
 		rho_load = Ctrl->T.rhoi;
 		A = sqrt ((Ctrl->T.rhom - Ctrl->T.rhoi)/(Ctrl->T.rhom - Ctrl->T.rhol));
 	}
@@ -1040,6 +1041,7 @@ GMT_LOCAL int do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struc
 		goto Lfree;		/* So that we can free what it need to be */
 	}
 	S = D->table[0]->segment[0];	/* Only one table with one segment here, with 17 cols and nk rows */
+	S->n_rows = nk;
 
 	if (Ctrl->misc.give_wavelength && Ctrl->misc.give_km) delta_k *= 1000.0;	/* Wanted wavelength in km */
 

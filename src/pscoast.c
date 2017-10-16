@@ -327,7 +327,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 			case 'F':
 				if (gmt_M_compat_check (GMT, 5)) {	/* See if we got old -F for DCW stuff (now -E) */
 					if (strstr (opt->arg, "+l") || opt->arg[0] == '=' || isupper (opt->arg[0])) {
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -F option for DCW is deprecated, use -E instead.\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "-F option for DCW is deprecated, use -E instead.\n");
 						Ctrl->E.active = true;
 						n_errors += gmt_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->E.info);
 						continue;
@@ -408,7 +408,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				break;
 			case 'm':
 				if (gmt_M_compat_check (GMT, 4))	/* Warn and fall through */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-m option is deprecated and reverted back to -M.\n");
 				else {
 					n_errors += gmt_default_error (GMT, opt->option);
 					break;
@@ -526,13 +526,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 			record[j++] = record[i];
 		}
 		record[j] = '\0';
-		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
 			return (API->error);
 		}
-		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_TEXT) != GMT_NOERROR) {	/* Sets output geometry */
 			return (API->error);
 		}
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
@@ -696,6 +696,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	struct GMT_SHORE c;
 	struct GMT_BR b, r;
 	struct GMT_GSHHS_POL *p = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct PSCOAST_CTRL *Ctrl = NULL;		/* Control structure specific to program */
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -767,7 +768,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 
 	if (gmt_M_is_cartesian (GMT, GMT_IN)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: You must use a map projection or -Jx|X...d[/...d] for geographic data\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "You must use a map projection or -Jx|X...d[/...d] for geographic data\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
@@ -782,7 +783,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution political boundaries]\n", GMT_strerror(err), shore_resolution[base]);
 		Ctrl->N.active = false;
 	}
-	if (need_coast_base) GMT_Report (API, GMT_MSG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
+	if (need_coast_base) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 
 	if (Ctrl->I.active && (err = gmt_init_br (GMT, 'r', Ctrl->D.set, &r, GMT->common.R.wesn)) != 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution rivers]\n", GMT_strerror(err), shore_resolution[base]);
@@ -831,6 +832,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			sprintf (header, "# %s\n# %s\n", title, source);
 			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);
 		}
+		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	}
 	else {
 		if (Ctrl->Q.active)
@@ -850,7 +852,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	
 			gmt_plotend (GMT);
 
-			GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 
 			Return (GMT_NOERROR);
 		}
@@ -862,7 +864,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	for (i = 0; i < 5; i++) if (fill[i].use_pattern) fill_in_use = true;
 
 	if (fill_in_use && !clobber_background) {	/* Force clobber when fill is used since our routine cannot deal with clipped fills */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Pattern fill requires oceans to be painted first\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Pattern fill requires oceans to be painted first\n");
 		clobber_background = true;
 		recursive = false;
 	}
@@ -872,7 +874,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (GMT->current.proj.projection_GMT == GMT_AZ_EQDIST && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YHI], GMT->common.R.wesn[YLO])) {
 		int status[2] = {0, 0};
 		if (check_antipode_status (GMT, &c, GMT_INSIDE, GMT->current.proj.central_meridian, GMT->current.proj.pole, status)) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: check_antipode_status crashed - not good\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "check_antipode_status crashed - not good\n");
 		}
 		possibly_donut_hell = true;
 		anti_lon = GMT->current.proj.central_meridian + 180.0;
@@ -881,14 +883,14 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		anti_bin = irint (floor ((90.0 - anti_lat) / c.bsize)) * c.bin_nx + irint (floor (anti_lon / c.bsize));
 		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &x_0, &y_0);
 		if (Ctrl->G.active)
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Fill/clip continent option (-G) may not work for this projection.\n"
+			GMT_Report (API, GMT_MSG_VERBOSE, "Fill/clip continent option (-G) may not work for this projection.\n"
 			                                  "If the antipole (%g/%g) is in the ocean then chances are good\n"
 			                                  "Else: avoid projection center coordinates that are exact multiples of %g degrees\n",
 			                                  anti_lon, anti_lat, c.bsize);
 	}
 
 	if (possibly_donut_hell && paint_polygons && !clobber_background) {	/* Force clobber when donuts may be called for now */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -JE requires oceans to be painted first\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "-JE requires oceans to be painted first\n");
 		clobber_background = true;
 		recursive = false;
 	}
@@ -962,7 +964,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Working on bin # %5d\r", bin);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on bin # %5d\r", bin);
 		if (!Ctrl->M.active) PSL_comment (PSL, "Bin # %d\n", bin);
 
 		if (GMT->current.map.is_world && greenwich) {
@@ -1058,7 +1060,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DATA, out);
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 					}
 				}
 				else if (Ctrl->W.use[p[i].level-1]) {
@@ -1083,7 +1085,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	}
 	if (need_coast_base) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Working on bin # %5ld\n", bin);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on bin # %5ld\n", bin);
 		gmt_shore_cleanup (GMT, &c);
 	}
 
@@ -1093,7 +1095,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	if (Ctrl->I.active) {	/* Read rivers file and plot as lines */
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Adding Rivers...");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Adding Rivers...");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of River segments\n");
 		last_k = -1;
 
@@ -1121,7 +1123,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DATA, out);
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 					}
 				}
 				else {
@@ -1149,7 +1151,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) {	/* Read borders file and plot as lines */
 		double step;
 		
-		GMT_Report (API, GMT_MSG_VERBOSE, "Adding Borders...");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Adding Borders...");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of Border segments\n");
 
 		/* Must resample borders because some points may be too far apart and look like 'jumps' */
@@ -1182,7 +1184,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
-						GMT_Put_Record (API, GMT_WRITE_DATA, out);
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 					}
 				}
 				else {
@@ -1223,10 +1225,11 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	else if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {
 		Return (API->error);	/* Disables further data output */
 	}
+	gmt_M_free (GMT, Out);
 	
 	GMT->current.map.coastline = false;
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done\n");
 
 	Return (GMT_NOERROR);
 }

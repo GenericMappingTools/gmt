@@ -51,7 +51,6 @@ EXTERN_MSC int GMT_gmtvector (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtwhich (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtwrite (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grd2cpt (void *API, int mode, void *args);
-EXTERN_MSC int GMT_grd2rgb (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grd2xyz (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdblend (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdclip (void *API, int mode, void *args);

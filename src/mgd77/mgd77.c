@@ -271,8 +271,8 @@ static inline void MGD77_Path_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *
 	F->n_MGD77_paths = 0;
 
 	if ((fp = gmt_fopen (GMT, file, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Path file %s for MGD77 files not found.\n", file);
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Will only look in current directory and %s for such files.\n", F->MGD77_HOME);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Path file %s for MGD77 files not found.\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Will only look in current directory and %s for such files.\n", F->MGD77_HOME);
 		F->MGD77_datadir = gmt_M_memory (GMT, NULL, 1, char *);
 		F->MGD77_datadir[0] = gmt_M_memory (GMT, NULL, strlen (F->MGD77_HOME) + 1, char);
 		strcpy (F->MGD77_datadir[0], F->MGD77_HOME);
@@ -351,7 +351,7 @@ int MGD77_Get_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, char *
 	for (i = 0, id = MGD77_NOT_SET; id < 0 && i < MGD77_N_HEADER_ITEMS; i++) if (!strcmp (MGD77_Header_Lookup[i].name, item)) id = i;
 
 	if (id == MGD77_NOT_SET) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: MGD77_Get_Header_Item returns %d for item %s\n", id, item);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_Get_Header_Item returns %d for item %s\n", id, item);
 		GMT_exit (GMT, GMT_RUNTIME_ERROR);
 	}
 
@@ -891,14 +891,14 @@ static int MGD77_Read_Header_Sequence (struct GMT_CTRL *GMT, FILE *fp, char *rec
 		}
 	}
 	if (fgets (record, MGD77_HEADER_LENGTH + 3, fp) == NULL) {		/* +3 to account for an eventual '\r' and '\n\0' */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "MGD77_Read_Header: Failure to read header sequence %02d\n", seq);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_Read_Header: Failure to read header sequence %02d\n", seq);
 		return (MGD77_ERROR_READ_HEADER_ASC);
 	}
 	gmt_chop (record);
 
 	got = atoi (&record[78]);
 	if (got != seq) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "MGD77_Read_Header: Expected header sequence %02d says it is %02d\n", seq, got);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_Read_Header: Expected header sequence %02d says it is %02d\n", seq, got);
 		return (MGD77_WRONG_HEADER_REC);
 	}
 	return (MGD77_NO_ERROR);
@@ -1189,7 +1189,7 @@ static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 	gmt_chop (line);	/* Get rid of CR or LF */
 
 	if ((len = strlen(line)) != MGD77_RECORD_LENGTH) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Incorrect record length (%" PRIuS "), skipped\n%s\n", len, line);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Incorrect record length (%" PRIuS "), skipped\n%s\n", len, line);
 		return (MGD77_WRONG_DATA_REC_LEN);
 	}
 
@@ -1704,7 +1704,7 @@ int MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct
 		}
 	}
 	if (crossed_dateline && crossed_greenwich)
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Longitude crossing both Dateline and Greenwich; not adjusted!\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Longitude crossing both Dateline and Greenwich; not adjusted!\n");
 	else if (crossed_dateline) {	/* Cruise is crossing Dateline; switch to 0-360 format for COARDS compliancy */
 		for (rec = 0; rec < S->H.n_records; rec++)
 			if (values[rec] < 0.0) values[rec] += 360.0;
@@ -2018,7 +2018,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 		switch (S->H.info[c].col[id].adjust) {
 			case MGD77_COL_ADJ_TWT:		/* Must undo PDR wrap-around only */
 				if (gmt_M_is_zero (S->H.PDR_wrap)) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: PDR unwrapping requested but period = 0. Wrapping deactivated\n");
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "PDR unwrapping requested but period = 0. Wrapping deactivated\n");
 				}
 				else {
 					E.needed[E77_AUX_FIELD_TWT] = 1;
@@ -2337,7 +2337,7 @@ static int MGD77_Read_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, struc
 
 	MGD77_nc_status (GMT, nc_inq_unlimdim (F->nc_id, &F->nc_recid));		/* Get id of unlimited dimension */
 	if (F->nc_recid == -1) {	/* We are in deep trouble */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: No record dimension in file %s - cannot read contents\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No record dimension in file %s - cannot read contents\n", file);
 		return (MGD77_ERROR_NOT_MGD77PLUS);
 	}
 	MGD77_nc_status (GMT, nc_inq_dimname (F->nc_id, F->nc_recid, name));	/* Get dimension name */
@@ -2705,12 +2705,12 @@ int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct 
 	}
 
 	if (has_suffix != MGD77_NOT_SET && !MGD77_format_allowed[has_suffix]) {	/* Filename clashes with allowed extensions */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: File has suffix (%s) that is set to be ignored!\n", MGD77_suffix[has_suffix]);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "File has suffix (%s) that is set to be ignored!\n", MGD77_suffix[has_suffix]);
 		return (MGD77_FILE_NOT_FOUND);
 	}
 	hard_path = (track[0] == '/' || track[1] == ':');	/* Hard path given */
 	if (has_suffix == MGD77_NOT_SET && hard_path) {	/* Hard path given without extension */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Hard path (%s) without extension given;\n\tonly look for matching file in the implied directory.\n", track);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Hard path (%s) without extension given;\n\tonly look for matching file in the implied directory.\n", track);
 	}
 
 	if (has_suffix != MGD77_NOT_SET) {	/* Hard path given (assumes X: is beginning of DOS path for arbitrary drive letter X) */
@@ -3245,7 +3245,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 	P = (F->original || F->format != MGD77_FORMAT_CDF) ? H->mgd77[MGD77_ORIG] : H->mgd77[MGD77_REVISED];
 
 	if (!H->meta.verified) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: MGD77_Verify_Header called before MGD77_Verify_Prep\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_Verify_Header called before MGD77_Verify_Prep\n");
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 	}
 
@@ -3880,7 +3880,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, cha
 	}
 
 	if (match == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: No header item matched your string %s\n", item);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No header item matched your string %s\n", item);
 		return -1;
 	}
 	if (match > 1) {	/* More than one.  See if any of the multiple matches is a full name */
@@ -3896,7 +3896,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, cha
 			return 0;
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: More than one item matched your string %s:\n", item);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "More than one item matched your string %s:\n", item);
 			for (i = 0; i < match; i++) gmt_message (GMT, "	-> %s\n", MGD77_Header_Lookup[pick[i]].name);
 			return -2;
 		}
@@ -4165,10 +4165,10 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 		else {	/* Desired output column */
 			for (j = 0, k = MGD77_NOT_SET; k == MGD77_NOT_SET && j < i; j++) if (!strcmp (word, F->desired_column[j])) k = j;
 			if (k != MGD77_NOT_SET) {	/* Mentioned before */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Column \"%s\" given more than once.\n", word);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Column \"%s\" given more than once.\n", word);
 			}
 			if (F->desired_column[i]) {	/* Allocated before */
-				if (option) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Column \"%s\" given more than once.\n", word);
+				if (option) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Column \"%s\" given more than once.\n", word);
 				gmt_M_str_free (F->desired_column[i]);
 			}
 			F->desired_column[i] = strdup (word);
@@ -4189,7 +4189,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 		else if (p[0] == '-')
 			F->Bit_test[i].match = 0;
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Bit-test flag (%s) is not in +<col> or -<col> format.\n", p);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bit-test flag (%s) is not in +<col> or -<col> format.\n", p);
 			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 		}
 		strncpy (F->Bit_test[i].name, &p[1], MGD77_COL_ABBREV_LEN-1);
@@ -4296,7 +4296,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 	if (flist) {	/* Just read and return the list of files in the given file list; skip leading = in filename */
 		FILE *fp = NULL;
 		if ((fp = gmt_fopen (GMT, flist, "r")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to open file list %s\n", flist);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open file list %s\n", flist);
 			return (-1);
 		}
 		while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
@@ -4344,7 +4344,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 #ifdef HAVE_DIRENT_H_
 			/* Here we have either <agency> or <agency><vessel> code or blank for all */
 			if ((dir = opendir (F->MGD77_datadir[j])) == NULL) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Unable to open directory %s\n", F->MGD77_datadir[j]);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open directory %s\n", F->MGD77_datadir[j]);
 				continue;
 			}
 			while ((entry = readdir (dir)) != NULL) {
@@ -4378,7 +4378,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 #else
 			fclose (fp);
 			if (gmt_remove_file (GMT, ".tmpdir"))
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Failed to remoce the .tmpdir file.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to remoce the .tmpdir file.\n");
 #endif /* HAVE_DIRENT_H_ */
 		}
 		all = false;	/* all is only true once (or never) inside this loop */
@@ -4744,7 +4744,7 @@ int MGD77_carter_get_zone (struct GMT_CTRL *GMT, int bin, struct MGD77_CARTER *C
 	}
 
 	if (bin < 0 || bin >= N_CARTER_BINS) {
-		fprintf (GMT->session.std[GMT_ERR], "Error: in MGD77_carter_get_zone: Input bin out of range [0-%d]: %d.\n", N_CARTER_BINS, bin);
+		fprintf (GMT->session.std[GMT_ERR], "In MGD77_carter_get_zone: Input bin out of range [0-%d]: %d.\n", N_CARTER_BINS, bin);
 		return (-1);
 	}
 	*zone = C->carter_zone[bin];
@@ -4781,15 +4781,15 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *GMT, int zone, double twt_in_m
 		return (0);
 	}
 	if (!C->initialized && MGD77_carter_init(GMT, C) ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: in MGD77_carter_depth_from_twt: Initialization failure.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_depth_from_twt: Initialization failure.\n");
 		return (-1);
 	}
 	if (zone < 1 || zone > N_CARTER_ZONES) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: in MGD77_carter_depth_from_twt: Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_depth_from_twt: Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
 		return (-1);
 	}
 	if (twt_in_msec < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: in MGD77_carter_depth_from_twt: Negative twt: %g msec\n", twt_in_msec);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_depth_from_twt: Negative twt: %g msec\n", twt_in_msec);
 		return (-1);
 	}
 
@@ -4804,7 +4804,7 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *GMT, int zone, double twt_in_m
 	i = C->carter_offset[zone-1] + low_hundred - 1;	/* -1 'cause .f indices */
 
 	if (i >= (C->carter_offset[zone] - 1) ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: in MGD77_carter_depth_from_twt: twt too big: %g msec\n", twt_in_msec);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_depth_from_twt: twt too big: %g msec\n", twt_in_msec);
 		return (-1);
 	}
 
@@ -4813,7 +4813,7 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *GMT, int zone, double twt_in_m
 	if (part_in_100 > 0.0) {	/* We have to interpolate the table  */
 
 		if ( i == (C->carter_offset[zone] - 2) ) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: in MGD77_carter_depth_from_twt: twt too big: %g msec\n", twt_in_msec);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_depth_from_twt: twt too big: %g msec\n", twt_in_msec);
 			return (-1);
 		}
 
@@ -4840,15 +4840,15 @@ int MGD77_carter_twt_from_depth (struct GMT_CTRL *GMT, int zone, double depth_in
 		return (0);
 	}
 	if (!C->initialized && MGD77_carter_init (GMT, C) ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: in MGD77_carter_twt_from_depth: Initialization failure.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_twt_from_depth: Initialization failure.\n");
 		return (-1);
 	}
 	if (zone < 1 || zone > N_CARTER_ZONES) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: in MGD77_carter_twt_from_depth: Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_twt_from_depth: Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
 		return (-1);
 	}
 	if (depth_in_corr_m < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: in MGD77_carter_twt_from_depth: Negative depth: %g m\n", depth_in_corr_m);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_twt_from_depth: Negative depth: %g m\n", depth_in_corr_m);
 		return(-1);
 	}
 
@@ -4861,7 +4861,7 @@ int MGD77_carter_twt_from_depth (struct GMT_CTRL *GMT, int zone, double depth_in
 	min = C->carter_offset[zone-1] - 1;
 
 	if (depth_in_corr_m > C->carter_correction[max]) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: in MGD77_carter_twt_from_depth: Depth too big: %g m.\n", depth_in_corr_m);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "In MGD77_carter_twt_from_depth: Depth too big: %g m.\n", depth_in_corr_m);
 		return (-1);
 	}
 
@@ -5918,7 +5918,7 @@ void MGD77_Init_Correction (struct GMT_CTRL *GMT, struct MGD77_CORRTABLE *CORR, 
 		for (current = CORR[col].term; current; current = current->next) {
 			if (gmt_M_is_dnan (current->origin) && value) current->origin = value[current->id][0];
 			if (gmt_M_is_dnan (current->origin)) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction origin = T has NaN in 1st record, reset to 0!\n");
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Correction origin = T has NaN in 1st record, reset to 0!\n");
 				current->origin = 0.0;
 			}
 		}

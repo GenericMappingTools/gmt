@@ -20,7 +20,7 @@
  *
  * Author:	Paul Wessel
  * Date:	01-OCT-2009
- * Version:	5 API
+ * Version:	6 API
  */
 
 /*!
@@ -66,7 +66,10 @@ struct GMT_FILL {
 	bool use_pattern;		/* true if pattern rather than rgb is set */
 	int pattern_no;			/* Number of a predefined pattern, or -1 if not set */
 	unsigned int dpi;		/* Desired dpi of image building-block if use_pattern is true */
+	unsigned int dim[3];		/* width, height, depth of image */
 	char pattern[GMT_BUFSIZ];	/* Full filename of user-defined raster pattern */
+	unsigned char *image;	/* Pointer to image array */
+	struct GMT_IMAGE *I;	/* The image container */
 };
 
 /*! Holds font attributes */

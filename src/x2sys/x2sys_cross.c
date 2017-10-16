@@ -167,7 +167,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct
 			/* Processes program-specific parameters */
 			
 			case 'A':	/* Get list of approved filepair combinations to check */
-				if ((Ctrl->A.active = gmt_check_filearg (GMT, 'A', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
+				if ((Ctrl->A.active = gmt_check_filearg (GMT, 'A', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->A.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -335,6 +335,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	struct X2SYS_BIX Bix;
 	struct PAIR *pair = NULL;		/* Used with -Akombinations.lis option */
 	FILE *fp = NULL, *fpC = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct X2SYS_CROSS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -361,15 +362,18 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the x2sys_cross main code ----------------------------*/
 
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &Bix, &GMT->current.io), Ctrl->T.TAG);
-	if (!s->geographic) GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_UNKNOWN;
+	if (!s->geographic) {
+		gmt_set_column (GMT, GMT_IO, GMT_X, GMT_IS_UNKNOWN);
+		gmt_set_column (GMT, GMT_IO, GMT_Y, GMT_IS_UNKNOWN);
+	}
 
 	if (s->x_col == -1 || s->y_col == -1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: lon,lat or x,y are not among data columns!\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "lon,lat or x,y are not among data columns!\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
 	if ((error = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Must give at least one data set!\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Must give at least one data set!\n");
 		Return (GMT_RUNTIME_ERROR);		
 	}
 	n_tracks = (uint64_t)error;
@@ -380,11 +384,11 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.mode == 2) external = false;
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Files found: %" PRIu64 "\n", n_tracks);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Files found: %" PRIu64 "\n", n_tracks);
 
 	duplicate = gmt_M_memory (GMT, NULL, n_tracks, bool);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Checking for duplicates : ");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Checking for duplicates : ");
 	/* Make sure there are no duplicates */
 	for (A = n_duplicates = 0; A < n_tracks; A++) {	/* Loop over all files */
 		if (duplicate[A]) continue;
@@ -398,13 +402,13 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " found\n", n_duplicates);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " found\n", n_duplicates);
 	
 	if (Ctrl->A.active) {	/* Read list of acceptable trk_name combinations */
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Explicit combinations found: ");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Explicit combinations found: ");
 		if ((fp = fopen (Ctrl->A.file, "r")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not open combinations file %s!\n", Ctrl->A.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Could not open combinations file %s!\n", Ctrl->A.file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 
@@ -417,7 +421,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			gmt_chop (line);	/* Get rid of CR, LF stuff */
 
 			if (sscanf (line, "%s %s", name1, name2) != 2) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Error decoding combinations file for pair %" PRIu64 "!\n", n_pairs);
+				GMT_Report (API, GMT_MSG_NORMAL, "Error decoding combinations file for pair %" PRIu64 "!\n", n_pairs);
 				fclose (fp);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -435,18 +439,18 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		fclose (fp);
 
 		if (!n_pairs) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: No combinations found in file %s!\n", Ctrl->A.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "No combinations found in file %s!\n", Ctrl->A.file);
 			gmt_M_free (GMT, duplicate);
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (n_pairs < n_alloc) pair = gmt_M_memory (GMT, pair, n_pairs, struct PAIR);
-		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\n", n_pairs);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 "\n", n_pairs);
 	}
 
 	if (Ctrl->C.file) {	/* Open file to store the per pair run time */
 		if ((fpC = fopen (Ctrl->C.file, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not open save times file %s!\n", Ctrl->C.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Could not open save times file %s!\n", Ctrl->C.file);
 			gmt_M_str_free (Ctrl->C.file);
 		}
 	}
@@ -460,11 +464,16 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	if (!got_time) Ctrl->S.active[VLO] = false;	/* Cannot check speed if there is no time */
 
 	n_output = (unsigned int)(10 + 2 * n_data_col);
-	GMT->current.io.col_type[GMT_OUT][GMT_X] = (!strcmp (s->info[s->x_col].name, "lon")) ? GMT_IS_LON : GMT_IS_FLOAT;
-	GMT->current.io.col_type[GMT_OUT][GMT_Y] = (!strcmp (s->info[s->x_col].name, "lat")) ? GMT_IS_LAT : GMT_IS_FLOAT;
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT->current.io.col_type[GMT_OUT][3] = (got_time) ? GMT_IS_ABSTIME : GMT_IS_FLOAT;
-	for (i = 0; i < n_data_col+2; i++) GMT->current.io.col_type[GMT_OUT][4+2*i] = GMT->current.io.col_type[GMT_OUT][5+2*i] = GMT_IS_FLOAT;
-
+	gmt_set_column (GMT, GMT_OUT, GMT_X, (!strcmp (s->info[s->x_col].name, "lon")) ? GMT_IS_LON : GMT_IS_FLOAT);
+	gmt_set_column (GMT, GMT_OUT, GMT_Y, (!strcmp (s->info[s->y_col].name, "lat")) ? GMT_IS_LAT : GMT_IS_FLOAT);
+	gmt_set_column (GMT, GMT_OUT, GMT_Z, (got_time) ? GMT_IS_ABSTIME : GMT_IS_FLOAT);
+	gmt_set_column (GMT, GMT_OUT, 3, (got_time) ? GMT_IS_ABSTIME : GMT_IS_FLOAT);
+	
+	for (i = 0; i < n_data_col+2; i++) {
+		gmt_set_column (GMT, GMT_OUT, 4+2*(unsigned int)i, GMT_IS_FLOAT);
+		gmt_set_column (GMT, GMT_OUT, 5+2*(unsigned int)i, GMT_IS_FLOAT);
+	}
+	
 	if (n_data_col == 0) {
 		xover_locations_only = true;
 		n_output = 2;
@@ -484,6 +493,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	out = gmt_M_memory (GMT, NULL, n_output, double);
 	xdata[0] = gmt_M_memory (GMT, NULL, s->n_out_columns, double);
 	xdata[1] = gmt_M_memory (GMT, NULL, s->n_out_columns, double);
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
@@ -565,7 +575,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		if (duplicate[A]) continue;
 
 		if (s->x_col < 0 || s->y_col < 0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: x and/or y column not found for track %s!\n", trk_name[A]);
+			GMT_Report (API, GMT_MSG_NORMAL, "x and/or y column not found for track %s!\n", trk_name[A]);
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			if (fpC) fclose (fpC);
 			x2sys_end (GMT, s);
@@ -614,7 +624,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			
 			if (Ctrl->C.active) tic = clock();	/* To report execution time from this pair */
 
-			GMT_Report (API, GMT_MSG_VERBOSE, "Processing %s - %s : ", trk_name[A], trk_name[B]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing %s - %s : ", trk_name[A], trk_name[B]);
 
 			if (same) {	/* Just set pointers */
 				data[1] = data[0];
@@ -665,7 +675,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					out[0] = XC.x[i];
 					out[1] = XC.y[i];
 					if (s->geographic) gmt_lon_range_adjust (s->geodetic, &out[0]);
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
 				gmt_x_free (GMT, &XC);
 			}
@@ -869,7 +879,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					}
 
 					if (s->geographic) gmt_lon_range_adjust (s->geodetic, &out[0]);
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
 
 				gmt_x_free (GMT, &XC);
@@ -882,10 +892,10 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, ylist_B);
 			}
 			if (!Ctrl->C.active)
-				GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\n", nx);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 "\n", nx);
 			else {
 				toc = clock();
-				GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\t%.3f sec\n", nx, (double)(toc - tic)/1000);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 "\t%.3f sec\n", nx, (double)(toc - tic)/1000);
 				if (fpC)	/* Save also the run time in file */
 					fprintf (fpC, "%s\t%s\t%d\t%.3f\n", trk_name[A], trk_name[B], (int)nx, (double)(toc - tic)/1000);
 			}
@@ -907,6 +917,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	/* Free up other arrays */
 
+	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, xdata[0]);
 	gmt_M_free (GMT, xdata[1]);
 	gmt_M_free (GMT, out);

@@ -20,7 +20,7 @@
  *
  * Author:	Paul Wessel
  * Date:	01-OCT-2009
- * Version:	5 API
+ * Version:	6 API
  */
 
 /*!
@@ -307,6 +307,7 @@ struct GMT_INTERNAL {
 	 * many GMT functions.  These may change during execution but are not
 	 * modified directly by user interaction. */
 	unsigned int func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  0 is top function */
+	bool mem_set;			/* true when we hvae initialized the tmp memory already */
 	size_t mem_cols;		/* Current number of allocated columns for temp memory */
 	size_t mem_rows;		/* Current number of allocated rows for temp memory */
 	size_t mem_txt_alloc;
@@ -331,7 +332,7 @@ struct GMT_SESSION {
 	 * are essentially read-only constants for the duration of the session */
 	FILE *std[3];			/* Pointers for standard input, output, and error */
 	void * (*input_ascii) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to function reading ASCII tables only */
-	int (*output_ascii) (struct GMT_CTRL *, FILE *, uint64_t, double *);	/* Pointer to function writing ASCII tables only */
+	int (*output_ascii) (struct GMT_CTRL *, FILE *, uint64_t, double *, char *);	/* Pointer to function writing ASCII tables only */
 	unsigned int n_fonts;		/* Total number of fonts returned by gmtinit_init_fonts */
 	unsigned int n_user_media;	/* Total number of user media returned by gmtinit_load_user_media */
 	size_t min_meminc;		/* with -DMEMDEBUG, sets min/max memory increments */

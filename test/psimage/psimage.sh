@@ -16,7 +16,7 @@ cat > tt.in <<%
 0 4 +fred+byellow
 1 4 +fyellow+bred
 %
-gmt psxy -R0/3/0/5 -Jx1.5i -Gp${GMT_SOURCE_DIR}/share/psldemo/circuit.ras+r128 -P -K > $ps <<%
+gmt psxy -R0/3/0/5 -Jx1.5i -Gp@circuit.png+r128 -P -K > $ps <<%
 0 0
 2 0
 3 1
@@ -42,5 +42,5 @@ $AWK '{ x0=$1+0.5;y0=$2+0.5;c=$3; \
 	printf "%g %g BR p%s\n",x0,y0,c ; \
 	printf "%g %g TL P%s\n",x0,y0,c}' < tt.in \
 	| gmt pstext -F+f7p,Helvetica-Bold,purple+j -R -J -O -K >> $ps
-gmt psimage -Dx3i/3i+jBL+r80 ${GMT_SOURCE_DIR}/share/postscriptlight/PSL_pattern_10.ras -Gfred -Gb- -O -K >> $ps
-gmt psimage -Dx3i/3i+jTL+r80 ${GMT_SOURCE_DIR}/share/postscriptlight/PSL_pattern_10.ras -O >> $ps
+echo 2.5 2.5 | gmt psxy -R -J -O -K -Ss1i -Gp10+fred+b-+r80 >> $ps
+echo 2.5 1.5 | gmt psxy -R -J -O -Ss1i -Gp10+r80 >> $ps

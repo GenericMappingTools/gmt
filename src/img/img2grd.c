@@ -258,7 +258,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 				break;
 			case 'm':
 				if (gmt_M_compat_check (GMT, 4))	/* Warn and fall through */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m<inc> is deprecated; use -I<inc> instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-m<inc> is deprecated; use -I<inc> instead.\n");
 				else {
 					n_errors += gmt_default_error (GMT, opt->option);
 					break;
@@ -483,22 +483,22 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		if (strstr (infile, "age")) {
 			Ctrl->S.value = 0.01;
 			strcpy (z_units, "Myr");
-			GMT_Report (API, GMT_MSG_VERBOSE, "img file %s determined to be crustal ages with scale 0.01.\n", infile);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "img file %s determined to be crustal ages with scale 0.01.\n", infile);
 		}
 		if (strstr (infile, "topo")) {
 			Ctrl->S.value = 1.0;
 			strcpy (z_units, "meter");
-			GMT_Report (API, GMT_MSG_VERBOSE, "img file %s determined to be bathymetry with scale 1.\n", infile);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "img file %s determined to be bathymetry with scale 1.\n", infile);
 		}
 		else if (strstr (infile, "grav")) {
 			Ctrl->S.value = 0.1;
 			strcpy (z_units, "mGal");
-			GMT_Report (API, GMT_MSG_VERBOSE, "img file %s determined to be free-air anomalies with scale 0.1.\n", infile);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "img file %s determined to be free-air anomalies with scale 0.1.\n", infile);
 		}
 		else if (strstr (infile, "curv") || strstr (infile, "vgg")) {
 			Ctrl->S.value = (Ctrl->I.value == 2.0) ? 0.05 : 0.02;
 			strcpy (z_units, "Eotvos");
-			GMT_Report (API, GMT_MSG_VERBOSE, "img file %s determined to be VGG anomalies with scale %g.\n", infile, Ctrl->S.value);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "img file %s determined to be VGG anomalies with scale %g.\n", infile, Ctrl->S.value);
 		}
 		else {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Unable to determine data type for img file %s; scale not used.\n", infile);
@@ -516,7 +516,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	if ((fp = fopen (infile, "rb")) == NULL) {
+	if ((fp = gmt_fopen (GMT, infile, "rb")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot open %s for binary read.\n", infile);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -540,14 +540,14 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	dx = 1.0 / ((double)imgcoord.nx360 / 360.0);
 	inc[GMT_X] = inc[GMT_Y] = dx * navg;
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Expects %s to be %d by %d pixels spanning 0/%5.1f/%.8g/%.8g.\n", infile, imgcoord.nxcol, imgcoord.nyrow, dx*imgcoord.nxcol, botlat, toplat);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Expects %s to be %d by %d pixels spanning 0/%5.1f/%.8g/%.8g.\n", infile, imgcoord.nxcol, imgcoord.nyrow, dx*imgcoord.nxcol, botlat, toplat);
 
 	if (toplat < wesn[YHI]) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your top latitude (%.12g) lies outside top latitude of input (%.12g) - now truncated.\n", wesn[YHI], toplat);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Your top latitude (%.12g) lies outside top latitude of input (%.12g) - now truncated.\n", wesn[YHI], toplat);
 		wesn[YHI] = toplat - GMT_CONV8_LIMIT;	/* To ensure proper round-off in calculating n_rows */
 	}
 	if (botlat > wesn[YLO]) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your bottom latitude (%.12g) lies outside bottom latitude of input (%.12g) - now truncated.\n", wesn[YLO], botlat);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Your bottom latitude (%.12g) lies outside bottom latitude of input (%.12g) - now truncated.\n", wesn[YLO], botlat);
 		wesn[YLO] = botlat + GMT_CONV8_LIMIT;	/* To ensure proper round-off in calculating n_rows */
 	}
 
@@ -568,8 +568,8 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	wesn[XHI] = iinstop  * dx;
 	n_columns = (int)(iinstop - iinstart) / navg;
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "To fit [averaged] input, your %s is adjusted to -R%.12g/%.12g/%.12g/%.12g.\n", Ctrl->In.file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
-	GMT_Report (API, GMT_MSG_VERBOSE, "The output grid size will be %d by %d pixels.\n", n_columns, n_rows);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "To fit [averaged] input, your %s is adjusted to -R%.12g/%.12g/%.12g/%.12g.\n", Ctrl->In.file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "The output grid size will be %d by %d pixels.\n", n_columns, n_rows);
 
 	/* Set iinstart so that it is non-negative, for use to index pixels.  */
 	while (iinstart < 0) iinstart += imgcoord.nx360;
@@ -663,7 +663,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 			continue;
 		}
 		if ((fread (row, sizeof (int16_t), n_expected, fp) ) != n_expected) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Read failure at jin = %d.\n", jin);
+			GMT_Report (API, GMT_MSG_NORMAL, "Read failure at jin = %d.\n", jin);
 			gmt_M_free (GMT, ix);	gmt_M_free (GMT, row);
 			fclose (fp);
 			GMT_exit (GMT, GMT_DATA_READ_ERROR); return GMT_DATA_READ_ERROR;
@@ -729,7 +729,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 
 	/* We now have the Mercator grid in Grid. */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Created %d by %d Mercatorized grid file.  Min, Max values are %.8g  %.8g\n", Merc->header->n_columns, Merc->header->n_rows, Merc->header->z_min, Merc->header->z_max);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Created %d by %d Mercatorized grid file.  Min, Max values are %.8g  %.8g\n", Merc->header->n_columns, Merc->header->n_rows, Merc->header->z_min, Merc->header->z_max);
 	if (Ctrl->M.active) {	/* Write out the Mercator grid and return, no projection needed */
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Merc)) Return (API->error);
@@ -741,7 +741,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 
 	/* Here we need to reproject the data, and Merc becomes a temporary grid */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Undo the implicit spherical Mercator -Jm1i projection.\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Undo the implicit spherical Mercator -Jm1i projection.\n");
 	/* Preparing source and destination for GMT_grdproject */
 	/* a. Register the Mercator grid to be the source read by GMT_grdproject by passing a pointer */
 	GMT_Report (API, GMT_MSG_DEBUG, "Open Mercator Grid as grdproject virtual input\n");
@@ -791,7 +791,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		sprintf (cmd, "-R%g/%g/%g/%g -I%gm %s -G%s -fg --GMT_HISTORY=false", west, east, south, north, Ctrl->I.value, input, Ctrl->G.file);
-		GMT_Report (API, GMT_MSG_VERBOSE, "Calling grdsample with args %s\n", cmd);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calling grdsample with args %s\n", cmd);
 		if (GMT_Call_Module (API, "grdsample", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Resample the grid or fail */
 			Return (API->error);
 		}

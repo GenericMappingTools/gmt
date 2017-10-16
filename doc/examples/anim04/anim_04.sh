@@ -28,7 +28,7 @@ ps=${name}.ps
 gmt project -C-73.8333/40.75 -E-80.133/25.75 -G5 -Q > $$.path.d
 frame=0
 mkdir -p $$
-gmt grdgradient USEast_Coast.nc -A90 -Nt1 -Gint_$$.nc
+gmt grdgradient @USEast_Coast.nc -A90 -Nt1 -Gint_$$.nc
 gmt makecpt -Cglobe > globe_$$.cpt
 function make_frame () {
 	local frame file ID lon lat dist
@@ -36,7 +36,7 @@ function make_frame () {
 	file=`gmt_set_framename ${name} ${frame}`
 	ID=`echo ${frame} | $AWK '{printf "%04d\n", $1}'`
 	gmt grdimage -JG${lon}/${lat}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+ \
-		${REGION} -P -Y0.1i -X0.1i USEast_Coast.nc -Iint_$$.nc -Cglobe_$$.cpt \
+		${REGION} -P -Y0.1i -X0.1i @USEast_Coast.nc -Iint_$$.nc -Cglobe_$$.cpt \
 		--PS_MEDIA=${px}ix${py}i -K > ${file}_$$.ps
 	gmt psxy -JG${lon}/${lat}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+ \
 		${REGION} -O -K -W1p $$.path.d >> ${file}_$$.ps

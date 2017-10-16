@@ -19,7 +19,7 @@
  *
  * Authors:	Walter H.F. Smith & P. Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: Reads an existing CPT and desired output grid
  * and produces a GMT CPT.  Can be inverted [-I] or made to be
@@ -351,7 +351,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK),
 	                                   "Syntax error -T option: Cannot access file %s\n", Ctrl->T.file);
 		if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active && (Ctrl->C.file == NULL || strchr (Ctrl->C.file, ',') == NULL)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -T option: Without z_inc, -Z has no effect (ignored)\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -T option: Without z_inc, -Z has no effect (ignored)\n");
 			Ctrl->Z.active = false;
 		}
 		}
@@ -401,7 +401,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S.active) {	/* Must read data and do statistics first, and then set -T values */
 		unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0;
-		uint64_t n, zcol, tbl, seg;
+		uint64_t n = 0, zcol, tbl, seg;
 		struct GMT_DATASET *D = NULL;
 		double *zz = NULL, mean_z, sig_z;
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
@@ -470,7 +470,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		Ctrl->C.file = strdup ("rainbow");
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Prepare CPT via the master file %s\n", Ctrl->C.file);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Prepare CPT via the master file %s\n", Ctrl->C.file);
 
 	/* OK, we can now do the resampling */
 
@@ -484,7 +484,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
 		gmt_scale_cpt (GMT, Pin, -1.0);
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);
 	if (Ctrl->G.active) {	/* Attempt truncation */
 		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 		if (Ptrunc == NULL)
@@ -503,11 +503,11 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (T->n_tables != 1 || T->table[0]->n_segments != 1) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: More than one table or segment in file %s\n", Ctrl->T.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "More than one table or segment in file %s\n", Ctrl->T.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (T->table[0]->segment[0]->n_rows == 0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: No intervals in file %s\n", Ctrl->T.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "No intervals in file %s\n", Ctrl->T.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		z = T->table[0]->segment[0]->data[GMT_X];
@@ -523,7 +523,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 			int k;
 			extern void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 			if (nz != (int)(Pin->n_colors + 1)) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Mistmatch between number of entries in color list and z list\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Mistmatch between number of entries in color list and z list\n");
 				gmt_M_free (GMT, z);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -542,11 +542,11 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->T.active && Ctrl->Q.mode == 2) {	/* Establish a log10 grid */
 		if (!(Ctrl->T.inc == 1.0 || Ctrl->T.inc == 2.0 || Ctrl->T.inc == 3.0)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: For -Qo logarithmic spacing, z_inc must be 1, 2, or 3\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "For -Qo logarithmic spacing, z_inc must be 1, 2, or 3\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (Ctrl->T.low <= 0.0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: For -Qo logarithmic spacing, z_start must be > 0\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "For -Qo logarithmic spacing, z_start must be > 0\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		nz = gmtlib_log_array (GMT, Ctrl->T.low, Ctrl->T.high, Ctrl->T.inc, &z);

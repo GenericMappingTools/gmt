@@ -80,6 +80,8 @@ Optional Arguments
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
+    This option converts the coordinates to projected coordinates prior to
+    crossover calculations.
 
 .. _-Q:
 
@@ -137,10 +139,11 @@ Remarks
 The COEs found are printed out to standard output in ASCII format
 (unless **-bo** is set). When ASCII is chosen,
 the output format depends on whether or not old-style XOVER output
-(**-L**) has been selected [See the :manpage:`x_over` man page for more
+(**-L**) has been selected [See the GMT4 x_over man page for more
 details]. If ASCII, then the first record contains the name of the tag
 used, the second records specifies the exact command line used for this
-run, and the third record contains the names of each column. For each
+run, and the third record contains the names of each column. These three
+records are encoded as table headers and start with #.  For each
 track pair, there will be a segment header record containing the two
 file names and their start/stop/dist information (start/stop is absolute
 time or NaN if unavailable while dist is the total track length),
@@ -167,7 +170,7 @@ The output format of individual columns are controlled by
 :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` except for geographic coordinates
 (:ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>`) and absolute calendar time
 (:ref:`FORMAT_DATE_OUT <FORMAT_DATE_OUT>`, :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>`).
-Make sure these are setto give you enough significant digits to achieve the desired precision.
+Make sure these are set to give you enough significant digits to achieve the desired precision.
 
 Examples
 --------

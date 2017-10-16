@@ -232,7 +232,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 
 			case 'C':	/* Now done automatically in spotter_init */
 				if (gmt_M_compat_check (GMT, 4))
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -255,7 +255,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 				break;
 
 			case 'e':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -e is deprecated and will be removed in 5.2.x. Use -E instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and will be removed in 5.2.x. Use -E instead.\n");
 				/* Fall-through on purpose */
 			case 'E':	/* File with stage poles or a single rotation pole */
 				Ctrl->E.active = true;
@@ -394,6 +394,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 	struct GMT_OPTION *ptr = NULL;
 	struct GMT_DATASET *F = NULL;
 	struct GMT_DATASEGMENT *H = NULL;
+	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct BACKTRACKER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -485,10 +486,10 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 	if (GMT_Set_Geometry (API, GMT_OUT, geometry) != GMT_NOERROR) {	/* Sets output geometry */
 		Return (API->error);
 	}
-
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (gmt_M_rec_is_table_header (GMT)) {	/* Skip all table headers */
@@ -501,10 +502,11 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 				continue;
 			}
-			assert (in != NULL);						/* Should never get here */
+			assert (In != NULL);						/* Should never get here */
 		}
 
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
 
 		if (Ctrl->E.rot.single) {	/* Simple reconstruction, then exit */
 			if (E_first) {
@@ -513,13 +515,14 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 				}
 				E_first = false;
 			}
+			Out->text = In->text;
 			in[GMT_Y] = gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			gmt_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], x, true);		/* Get x-vector */
 			gmt_matrix_vect_mult (GMT, 3U, R, x, y);			/* Rotate the x-vector */
 			gmt_cart_to_geo (GMT, &out[GMT_Y], &out[GMT_X], y, true);	/* Recover lon lat representation; true to get degrees */
 			out[GMT_Y] = gmt_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			if (n_fields > 2) gmt_M_memcpy (&out[GMT_Z], &in[GMT_Z], n_fields - 2, double);
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			continue;
 		}
 
@@ -582,7 +585,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 					out[GMT_X] = lon * R2D;
 					out[GMT_Y] = gmt_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					out[GMT_Z] = t;
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 					t += Ctrl->L.d_km;	/* dt, actually */
 				}
 				t -= Ctrl->L.d_km;	/* Last time used in the loop */
@@ -597,7 +600,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 					out[GMT_X] = lon * R2D;
 					out[GMT_Y] = gmt_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					out[GMT_Z] = t_end;
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 			}
 			else {
@@ -615,7 +618,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 					if (Ctrl->A.mode && (out[GMT_Z] < t_low || out[GMT_Z] > t_high)) continue;
 					out[GMT_X] = c[i] * R2D;
 					out[GMT_Y] = gmt_lat_swap (GMT, c[i+1] * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 			}
 			gmt_M_free (GMT, c);
@@ -637,8 +640,9 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 				out[GMT_Y] = lat * R2D;
 				for (col = 2; col < n_expected_fields; col++) out[col] = in[col];
 			}
+			Out->text = In->text;
 			out[GMT_Y] = gmt_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 
 		n_points++;
@@ -650,11 +654,12 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
+	gmt_M_free (GMT, Out);
 
 	if (make_path)
-		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments written\n", n_points);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " segments written\n", n_points);
 	else
-		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points projected\n", n_points);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " points projected\n", n_points);
 
 	if (n_skipped) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points skipped because age < 0\n", n_skipped);
 

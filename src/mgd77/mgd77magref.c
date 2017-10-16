@@ -191,14 +191,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 						case 't':
 							Ctrl->A.fixed_time = true;
 							strncpy (tfixed, &p[1], GMT_LEN64-1);
-							GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;
+							gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
 							break;
 						case 'y':
 							Ctrl->A.years = true;
-							GMT->current.io.col_type[GMT_IN][2] = GMT->current.io.col_type[GMT_OUT][2] = 
-												GMT->current.io.col_type[GMT_IN][3] = 
-												GMT->current.io.col_type[GMT_OUT][3] = 
-												GMT_IS_FLOAT;
+							gmt_set_column (GMT, GMT_IO, 2, GMT_IS_FLOAT);
+							gmt_set_column (GMT, GMT_IO, 3, GMT_IS_FLOAT);
 							break;
 						default:
 							break;
@@ -208,7 +206,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 					if (Ctrl->A.years)
 						Ctrl->A.time = atof (tfixed);
 					else
-						gmt_scanf_arg (GMT, tfixed, GMT_IS_ABSTIME, &Ctrl->A.time);
+						gmt_scanf_arg (GMT, tfixed, GMT_IS_ABSTIME, false, &Ctrl->A.time);
 				}
 				break;
 			case 'C':	/* Alternate CM4 coefficient file */
@@ -374,14 +372,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 				if (opt->arg[0] == 'c') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[0], &Ctrl->CM4->CM4_S.nhmf[0]);
 					if (j != 2) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: -Sc option usage is -Sc<low/high>\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "-Sc option usage is -Sc<low/high>\n");
 						n_errors++;
 					}
 				}
 				if (opt->arg[0] == 'l') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[1], &Ctrl->CM4->CM4_S.nhmf[1]);
 					if (j != 2) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: -Sl option usage is -Sl<low/high>\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "-Sl option usage is -Sl<low/high>\n");
 						n_errors++;
 					}
 				}
@@ -423,6 +421,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	struct MGD77MAGREF_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Din = NULL;
 	struct GMT_DATATABLE *T = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -456,7 +455,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 
 	Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));	/* We need at least a size of one in case a value is given in input */
 	if (!Ctrl->A.fixed_time)			/* Otherwise we don't print the time */
-		GMT->current.io.col_type[GMT_IN][t_col] = GMT->current.io.col_type[GMT_OUT][t_col] = GMT_IS_ABSTIME;
+		gmt_set_column (GMT, GMT_IO, t_col, GMT_IS_ABSTIME);
 
 	/* Shorthand for these */
 	nval = Ctrl->CM4->CM4_F.n_field_components;
@@ -534,10 +533,13 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 		Ctrl->CM4->CM4_DATA.n_times = 1;
 	}
 	else	/* Make sure input time columns are encoded/decoded properly since here we know t_col is set. */
-		GMT->current.io.col_type[GMT_IN][t_col] = GMT->current.io.col_type[GMT_OUT][t_col] = (Ctrl->A.years) ? GMT_IS_FLOAT : GMT_IS_ABSTIME;
+		gmt_set_column (GMT, GMT_IO, t_col, (Ctrl->A.years) ? GMT_IS_FLOAT : GMT_IS_ABSTIME);
 
-	GMT->current.io.col_type[GMT_IN][t_col+1] = GMT->current.io.col_type[GMT_OUT][t_col+1] = GMT_IS_FLOAT;		/* Override any previous t_col = 3 settings */
-	if (!Ctrl->copy_input) GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;	/* No time on output */
+	gmt_set_column (GMT, GMT_IO, t_col+1, GMT_IS_FLOAT);		/* Override any previous t_col = 3 settings */
+	if (!Ctrl->copy_input) {	/* No time on output */
+		gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_FLOAT);
+		gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
+	}
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */
 		Return (API->error);
@@ -570,6 +572,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 		Return (API->error);
 	}
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {	/* Loop over all input tables */
 		T = Din->table[tbl];	/* Current table */
@@ -610,7 +613,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 			}
 
 			if (!(Ctrl->do_IGRF || Ctrl->joint_IGRF_CM4 ) && !s && time_array[0] > 2002.7) {	/* Only atmospheric terms may be reliable */
-				GMT_Message (API, GMT_TIME_NONE, "Warning: Time is outside the CM4 strict validity domain [1960.0-2002.7].\n");
+				GMT_Message (API, GMT_TIME_NONE, "Time is outside the CM4 strict validity domain [1960.0-2002.7].\n");
 				GMT_Message (API, GMT_TIME_NONE, "\tThe secular variation estimation will be unreliable. In this"
 				                                 "\n\tcase you really should use the IGRF to estimate the core contribution\n");
 			}
@@ -641,7 +644,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 				int err;
 				if ((err = MGD77_cm4field (GMT, Ctrl->CM4, T->segment[s]->data[GMT_X],
 							T->segment[s]->data[GMT_Y], alt_array, time_array)) != 0) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: this segment has a record generating an error.\n"
+					GMT_Report (API, GMT_MSG_NORMAL, "this segment has a record generating an error.\n"
 					                                 "Unfortunately, this means all other eventually good\n"
 					                                 "records are also ignored. Fix the bad record and rerun the command.\n");
 					continue;
@@ -657,7 +660,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 					for (j = 0; j < n_field_components; j++)
 						out[n_out++] = Ctrl->CM4->CM4_DATA.out_field[i*n_field_components+j];
 
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 			}
 			else {					/* DID CM4 and IGRF */
@@ -676,7 +679,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 							out[n_out++] = Ctrl->CM4->CM4_DATA.out_field[i*3+j] + igrf_xyz[i*3+j];
 					}
 
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 			}
 
@@ -686,6 +689,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	gmt_M_free (GMT, Out);
 	gmt_M_str_free (Ctrl->CM4->CM4_D.dst);
 	gmt_M_free (GMT, Ctrl->CM4->CM4_DATA.out_field);
 	if (!(Ctrl->A.years || Ctrl->A.fixed_time)) gmt_M_free (GMT, time_years);

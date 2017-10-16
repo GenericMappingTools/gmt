@@ -90,7 +90,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	bool is_srtm = false;
 	size_t len;
 	CURL *Curl = NULL;
-	static char *ftp_dir[4] = {"/cache", "", "/srtm1", "/srtm3"}, *name[3] = {"CACHE", "USER", "LOCAL"};
+	static char *cache_dir[4] = {"/cache", "", "/srtm1", "/srtm3"}, *name[3] = {"CACHE", "USER", "LOCAL"};
 	char *user_dir[3] = {GMT->session.CACHEDIR, GMT->session.USERDIR, NULL};
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = NULL;
 	char srtmdir[PATH_MAX] = {""}, *srtm_local = NULL;
@@ -146,7 +146,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 	if (mode == GMT_LOCAL_DIR || user_dir[to] == NULL) {
 		if (mode != GMT_LOCAL_DIR)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
 			            "The GMT_%s directory is not defined - download file to current directory\n", name[to]);
 		sprintf (local_path, "%s", &file[pos]);
 	}
@@ -191,8 +191,8 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 	if (kind == GMT_URL_FILE || kind == GMT_URL_QUERY)	/* General URL given */
 		sprintf (url, "%s", file);
-	else {			/* Use GMT ftp dir, possible from subfolder cache */
-		sprintf (url, "%s%s/%s", GMT->session.DATAURL, ftp_dir[from], &file[pos]);
+	else {	/* Use GMT data dir, possible from subfolder cache */
+		sprintf (url, "%s%s/%s", GMT->session.DATAURL, cache_dir[from], &file[pos]);
 		if (kind == GMT_DATA_FILE && !strstr (url, ".grd")) strcat (url, ".grd");	/* Must supply the .grd */
 		len = strlen (url);
 		if (is_srtm && !strncmp (&url[len-3], ".nc", 3U)) strncpy (&url[len-2], GMT_SRTM_EXTENSION_REMOTE, 3U);	/* Switch extension for download */
@@ -221,7 +221,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 	if (kind == GMT_DATA_FILE) give_data_attribution (GMT, file);
 	
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Downloading file %s ...\n", url);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Downloading file %s ...\n", url);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
 		if (be_fussy || !(curl_err == CURLE_REMOTE_FILE_NOT_FOUND || curl_err == CURLE_HTTP_RETURNED_ERROR)) {	/* Unexpected failure - want to bitch about it */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
@@ -244,7 +244,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		static char *args = "=ns -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=false";
 		char *cmd = gmt_M_memory (GMT, NULL, strlen (local_path)+strlen (srtm_local)+strlen(args)+2, char);
 		sprintf (cmd, "%s %s%s", local_path, srtm_local, args);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Convert SRTM tile from JPEG2000 to netCDF grid [%s]\n", file);
 		if (GMT_Call_Module (GMT->parent, "grdconvert", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR - Unable to convert SRTM file %s to compressed netCDF format\n", local_path);
 			gmt_M_free (GMT, file);
@@ -259,12 +259,12 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		gmt_M_str_free (srtm_local);
 	}
 	
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {	/* Say a few things about the file we got */
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Say a few things about the file we got */
 		struct stat buf;
 		if (stat (local_path, &buf))
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not determine size of downloaded file %s\n", &file_name[pos]);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not determine size of downloaded file %s\n", &file_name[pos]);
 		else
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Download complete [Got %s].\n", gmt_memory_use (buf.st_size, 3));
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Download complete [Got %s].\n", gmt_memory_use (buf.st_size, 3));
 	}
 	gmt_M_free (GMT, file);
 
@@ -361,7 +361,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 		GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy list of available SRTM tiles.\n");
 	}
 	if (n_tiles == 0)	/* No tiles inside region */
-		GMT_Report (API, GMT_MSG_VERBOSE, "gmtlib_get_srtmlist: Warning: No SRTM tiles available for your region.\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "gmtlib_get_srtmlist: No SRTM tiles available for your region.\n");
 	return (strdup (file));
 }
 
@@ -376,7 +376,7 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	
 	tag[1] = res;
 	give_data_attribution (API->GMT, tag);
-	GMT_Report (API, GMT_MSG_VERBOSE, "Assembling SRTM grid from 1x1 degree tiles given by listfile %s\n", file);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Assembling SRTM grid from 1x1 degree tiles given by listfile %s\n", file);
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
 	
 	sprintf (cmd, "%s -R%g/%g/%g/%g -I%cs -G%s", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], res, grid);

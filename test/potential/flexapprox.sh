@@ -33,10 +33,10 @@ z0=`echo -511000 -511000 | gmt grdtrack -Gflex_c.nc -o2`
 gmt grdmath flex_c.nc $z0 SUB = flex_c.nc
 gmt grdtrack -Gflex_a.nc+Uk -Gflex_c.nc+Uk -ELM/RM > result.txt
 # Plot the exact single-domain case
-gmt psxy -R0/256/-1100/50 -JX6i/4i -Xc -P -Bafg10000 flex_analytical.txt -i0,1 -Sc0.04i -Ggreen -K > $ps
+gmt psxy -R0/256/-1100/50 -JX6i/4i -Xc -P -Bafg10000 @flex_analytical.txt -i0,1 -Sc0.04i -Ggreen -K > $ps
 gmt psxy -R -J -O -K result.txt -i0,2+s$scale -W0.25p,red >> $ps
 # Plot the exact double-domain data and the approximations
-gmt psxy -R -J -O -K -Bafg10000 flex_analytical.txt -i0,2 -Sc0.04i -Ggreen -Y4.75i >> $ps
-gmt psxy -R -J -O -K flex_analytical.txt -i0,3 -W0.25p >> $ps
+gmt psxy -R -J -O -K -Bafg10000 @flex_analytical.txt -i0,2 -Sc0.04i -Ggreen -Y4.75i >> $ps
+gmt psxy -R -J -O -K @flex_analytical.txt -i0,3 -W0.25p >> $ps
 gmt psxy -R -J -O -K result.txt -i0,3+s$scale -W0.25p,red,- >> $ps
 gmt psxy -R -J -O -T >> $ps

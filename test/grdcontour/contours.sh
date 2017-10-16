@@ -2,13 +2,12 @@
 #	$Id$
 #
 # Test that contours are oriented correctly
-# gmt grdraster 5 -R204/206/19/21 -GBigIsland.nc
 
 ps=contours.ps
 
 color_contour () {
 	rm -f contour_*.txt
-	gmt grdcontour BigIsland.nc -C1000 -Dcontour_%d.txt -F$1 -S8
+	gmt grdcontour @BigIsland.nc -C1000 -Dcontour_%d.txt -F$1 -S8
 
 	for name in contour_*.txt; do
 		# For each contour we compute distance a
@@ -18,6 +17,7 @@ color_contour () {
 	done
 }
 
+gmt grdcut @earth_relief_02m -R204/206/19/21 -GBigIsland.nc
 gmt makecpt -Cseis -T0/1 > contour.cpt
 
 # The bottom map will have contours oriented so that as you move along

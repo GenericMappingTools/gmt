@@ -117,7 +117,7 @@ Tutorial setup
    You will therefore find that all the data files have a "@" prepended to
    their names.  This will ensure the file is copied from the server
    before being used, hence you do not need to download any of the
-   data manually.  The downside is that you need an Internet
+   data manually.  The only downside is that you will need an Internet
    connection to run the examples by cut and paste.
 
 #. For all but the simplest GMT jobs it is recommended that
@@ -1084,7 +1084,7 @@ and extract a GMT-ready grid that we will next use for contouring:
 
    ::
 
-    gmt grdcut @earth_relief_05m.grd -R-66/-60/30/35 -Gtut_bathy.nc -V
+    gmt grdcut @earth_relief_05m -R-66/-60/30/35 -Gtut_bathy.nc -V
 
 Here we use the file extension .nc instead of the generic .grd
 to indicate that this is a netCDF file. It is good form, but not essential,
@@ -1241,9 +1241,9 @@ The most important switches are listed below.
   +---------------------------+----------------------------------------------------------------------------------+
 
 We will grid the data in the file tut_ship.xyz which contains
-ship observations of bathymetry off Baja California.  You can find the
-file in the sub-directory for example 15.
-We desire to make a 5' by 5' grid.  Running gmt info on the file yields
+ship observations of bathymetry off Baja California.  We obtain the
+file via the cache server as before.
+We desire to make a 5' by 5' grid.  Running gmt info on @tut_ship.xyz yields
 
    ::
 
@@ -1546,7 +1546,7 @@ global 30" DEM called SRTM30+:
 
    ::
 
-    gmt grdcut @earth_relief_30s.grd -R-108/-103/35/40 -Gtut_relief.nc
+    gmt grdcut @earth_relief_30s -R-108/-103/35/40 -Gtut_relief.nc
 
 Using :doc:`grdinfo` we find that the data ranges from about 1000m to
 about 4300m so we make a CPT accordingly:

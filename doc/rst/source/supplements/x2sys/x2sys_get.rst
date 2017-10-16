@@ -24,7 +24,7 @@ Synopsis
 Description
 -----------
 
-**x2sys_get** will return the names of the track data files in the
+**x2sys_get** will return text records with the names of the track data files in the
 x2sys data base for this TAG that match the given requirements. You may
 choose a specific region and optionally ask only for tracks that meet
 certain data criteria. Finally, you may select an option to list all

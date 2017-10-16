@@ -20,7 +20,7 @@
  *
  * Author:	Joaquim Luis
  * Date:	1-JAN-2016
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"
@@ -199,7 +199,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 						parse_date_tz(pch, &date, &TZ);
 						Ctrl->I.TZ = TZ;
 						if (date) {
-							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, &t);
+							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, false, &t);
 							gmtlib_gcal_from_dt (GMT, t, &Ctrl->I.calendar);	/* Convert t to a complete calendar structure */
 							gmt_M_str_free (date);
 						}
@@ -219,7 +219,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 						parse_date_tz(pch, &date, &TZ);
 						Ctrl->T.TZ = TZ;
 						if (date) {
-							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, &t);
+							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, false, &t);
 							gmtlib_gcal_from_dt (GMT, t, &Ctrl->T.calendar);	/* Convert t to a complete calendar structure */
 							gmt_M_str_free (date);
 						}
@@ -256,7 +256,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 		if (Ctrl->T.radius[j] > 0.0) Ctrl->T.n_terminators++;	
 
 	if (Ctrl->N.active && GMT->current.map.frame.init) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Option -B cannot be used in combination with Option -N. -B is ignored.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -B cannot be used in combination with Option -N. -B is ignored.\n");
 		GMT->current.map.frame.draw = false;
 	}
 	if (!Ctrl->I.active && !Ctrl->M.active) {	/* Allow plotting without specifying -R and/or -J */
@@ -431,6 +431,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 
 		if (Ctrl->C.active) {			/* Output all members of the Sun struct as a vector of doubles */
 			double out[10];
+			struct GMT_RECORD *Out = gmt_new_record (GMT, out, NULL);
 			if ((error = gmt_set_cols (GMT, GMT_OUT, 10)) != GMT_NOERROR) Return (API->error);
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 				gmt_M_free (GMT, Sun);
@@ -448,22 +449,23 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			out[3] = Sun->SolarElevation;		out[4] = Sun->Sunrise;		out[5] = Sun->Sunset;
 			out[6] = Sun->SolarNoon;		out[7] = Sun->Sunlight_duration;out[8] = Sun->SolarElevationCorrected;
 			out[9] = Sun->EQ_time;
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			gmt_M_free (GMT, Out);
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) { 
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
 		}
 		else {
-			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination*/
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination*/
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
-			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
-			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_TEXT) != GMT_NOERROR) {	/* Sets output geometry */
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
@@ -493,6 +495,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		int n_items;
 		char  *terms[4] = {"Day/night", "Civil", "Nautical", "Astronomical"};
 		double out[2];
+		struct GMT_RECORD *Out = gmt_new_record (GMT, out, NULL);
 
 		gmt_set_geographic (GMT, GMT_OUT);			/* Output lon/lat */
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output (this one is ignored here)*/
@@ -523,10 +526,11 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			}
 			for (j = 0; j < n_pts; j++) {
 				out[GMT_X] = S->data[GMT_X][j];	out[GMT_Y] = S->data[GMT_Y][j];
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 			gmt_free_segment (GMT, &S);
 		}
+		gmt_M_free (GMT, Out);
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) Return (API->error);
 	}

@@ -52,7 +52,7 @@ Optional Arguments
 **-D**
     Calculate the length of track-line segments per bin [Default skips
     this step]. The length fragments are given as the 5th output column
-    (after the *flags*). The length units are obtained via the TAB
+    (after the *flags*). The length units are obtained via the TAG
     setting (see :doc:`x2sys_init`).
 
 .. _-E:

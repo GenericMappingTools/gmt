@@ -198,14 +198,16 @@ Required Arguments
     **geo**
         This limits the output to 10 fields (**time**, **lon**, **lat** plus
         the seven geophysical observations **twt**, **depth**, **mtf1**,
-        **mtf2**, **mag**, **gobs**, and **faa**). By appending **+** to
-        either of these set we will also append **dist**, **azim**, **cc**,
-        **vel**, and **weight** as listed above.
+        **mtf2**, **mag**, **gobs**, and **faa**).
+    **dat**
+        As **mgd77t* but in plain table order.
     **all**
         This returns all data columns in the file.
     **allt**
         As mgd77t but with time items written as a date-time string.
 
+    By appending **+** to any of these set we will also append **dist**,
+    **azim**, **cc**, **vel**, and **weight** as listed above.
     As an option, logical tests may be added for any of the observations
     by appending ,\ *logic*, which is itself composed of one or more
     comma-separated instructions of the form *par*\ **OP**\ *value*,

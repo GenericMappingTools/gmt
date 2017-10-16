@@ -263,7 +263,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 			/* Supplemental parameters */
 			case 'C':	/* Now done automatically in spotter_init */
 				if (gmt_M_compat_check (GMT, 4))
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -371,6 +371,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 	struct HOTSPOT *orig_hotspot = NULL;
 	struct HOTSPOT_ORIGINATOR *hotspot = NULL, *hot = NULL;
 	struct GMT_DATASET *F = NULL;
+	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct GMT_OPTION *ptr = NULL;
 	struct ORIGINATOR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -484,19 +485,23 @@ int GMT_originator (void *V_API, int mode, void *args) {
 	}
 
 	n_read = smt = 0;
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
+
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all headers */
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (false);						/* Should never get here */
+			assert (In != NULL);			/* Should never get here */
 		}
 
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
+		Out->text = In->text;
 	
 		if (n_input == 3) {	/* Set constant r,t values based on -Q */
 			in[3] = Ctrl->Q.r_fix;
@@ -524,7 +529,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 		z_smt = in[GMT_Z];
 		r_smt = in[3];
 
-		if (!(smt % 10)) GMT_Report (API, GMT_MSG_VERBOSE, "Working on seamount # %5d\r", smt);
+		if (!(smt % 10)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on seamount # %5d\r", smt);
 
 		if (spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, n_stages, Ctrl->D.value, 0.0, 1, NULL, &c) <= 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_forthtrack - aborting\n");
@@ -634,13 +639,13 @@ int GMT_originator (void *V_API, int mode, void *args) {
 				out[0] = hot[0].np_time;
 				out[1] = hot[0].np_dist * hot[0].np_sign;
 				out[2] = z_smt;
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 			else if (Ctrl->L.mode == 2) {	/* Want omega, dist, z output */
 				out[0] = spotter_t2w (GMT, p, n_stages, hot[0].np_time);
 				out[1] = hot[0].np_dist * hot[0].np_sign;
 				out[2] = z_smt;
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 			else if (Ctrl->L.mode == 3) {	/* Want x, y, time, dist, z output */
 				out[GMT_X] = hot[0].np_lon;
@@ -648,14 +653,12 @@ int GMT_originator (void *V_API, int mode, void *args) {
 				out[2] = hot[0].np_time;
 				out[3] = hot[0].np_dist * hot[0].np_sign;
 				out[4] = z_smt;
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 			else {	/* Conventional originator output */
-				if (t_smt == 180.0)
-					strcpy (buffer, "NaN");
-				else
-					sprintf (buffer, "%g", t_smt);
-				sprintf (record, fmt1, in[GMT_X], in[GMT_Y], z_smt, r_smt, buffer);
+				out[GMT_X] = in[GMT_X];	out[GMT_Y] = in[GMT_Y];	out[GMT_Z] = z_smt;
+				out[3] = r_smt;	out[4] = (t_smt == 180.0) ? GMT->session.d_NaN : t_smt;
+				record[0] = '\0';
 				for (spot = 0; spot < n_max_spots; spot++) {
 					if (Ctrl->Z.active)
 						sprintf (buffer, fmt2, hot[spot].h->id, hot[spot].stage, hot[spot].np_time, hot[spot].np_dist);
@@ -663,8 +666,8 @@ int GMT_originator (void *V_API, int mode, void *args) {
 						sprintf (buffer, fmt2, hot[spot].h->abbrev, hot[spot].stage, hot[spot].np_time, hot[spot].np_dist);
 					strcat (record, buffer);
 				}
-				strcat (record, "\n");
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				Out->text = record;
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 		}
 
@@ -679,8 +682,9 @@ int GMT_originator (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Working on seamount # %5d\n", smt);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on seamount # %5d\n", smt);
 
+	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, hotspot);
 	gmt_M_free (GMT, orig_hotspot);
 	gmt_M_free (GMT, hot);

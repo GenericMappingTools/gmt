@@ -37,14 +37,14 @@ Synopsis
 Description
 -----------
 
-**talwani3d** will read the multi-segment *modeltable* from file or standard input.
-This file contains contours of a 3-D body at different *z*-levels, with one contour
-per segment.  The segment header must contain the parameters *zlevel rho*, which
-states the *z* contour level and the density of this slice (individual slice
+**talwani3d** will read the multi-segment *modeltable* from file (or standard input).
+This file contains horizontal contours of a 3-D body at different *z*-levels, with one contour
+per segment.  Each segment header must contain the parameters *zlevel rho*, which
+states the *z* level of the contour and the density of this slice (optionally, individual slice
 densities may be overridden by a fixed density contrast given via **-D**).
 We can compute anomalies on an equidistant grid (by specifying a new grid with
-**-R** and **-I** or provide an observation grid with elevations) or at arbitrary
-output points specified via **-N**.  Chose from free-air anomalies, vertical
+**-R** and **-I** or provide an observation grid with desired elevations) or at arbitrary
+output points specified via **-N**.  Choose between free-air anomalies, vertical
 gravity gradient anomalies, or geoid anomalies.  Options are available to control
 axes units and direction.
 
@@ -55,6 +55,8 @@ Required Arguments
 *modeltable*
     The file describing the horizontal contours of the bodies.  Contours will be
     automatically closed if not already closed, and repeated vertices will be eliminated.
+    The segment header for each slice will be examined for the pair *zlevel rho*, i.e.,
+    the depth level of the slice and a density contrast in kg/m^3; see **-D** for overriding this value.
 
 .. _-I:
 
@@ -76,32 +78,34 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *unit*
-    Sets fixed density contrast that overrides any setting in model file, in kg/m^3.
+    Sets a fixed density contrast that overrides any individual slice settings in the model file, in kg/m^3.
 
 .. _-F:
 
 **-F**\ **f**\ \|\ **n**\ \|\ **v**
     Specify desired gravitational field component.  Choose between **f** (free-air anomaly) [Default],
-    **n** (geoid) or **v** (vertical gravity gradient).
+    **n** (geoid; optionally append average latitude for normal gravity reference value [45])
+    or **v** (vertical gravity gradient).
 
 .. _-G:
 
 **-G**\ *outfile*
     Specify the name of the output data (for grids, see GRID FILE FORMATS below).
     Required when an equidistant grid is implied for output.  If **-N** is used
-    then output is written to stdout unless **G** specifies an output file.
+    then output is written to stdout unless **-G** specifies an output file.
 
 .. _-M:
 
 **-M**\ [**h**]\ [**v**]
-    Sets units used.  Append **h** to indicate horizontal distances are in km [m],
+    Sets distance units used.  Append **h** to indicate that both horizontal distances are in km [m],
     and append **z** to indicate vertical distances are in km [m].
 
 .. _-N:
 
 **-N**\ *trackfile*
-    Specifies locations where we wish to compute the predicted value.  When this option
-    is used there are no grids and the output data records are written to stdout.
+    Specifies individual (x, y[, z]) locations where we wish to compute the predicted value.  When this option
+    is used there are no grids and the output data records are written to stdout.  If *trackfile*
+    has 3 columns we take the *z* value as our observation level; this level may be overridden via **-Z**.
 
 .. _-V:
 
@@ -111,8 +115,8 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ *level*\ \|\ *obsgrid*
-    Set observation level either as a constant or give the name of a grid with observation
-    levels.  If the latter is used the the grid determines the output grid region [0].
+    Set observation level, either as a constant or variable by giveing the name of a grid with observation
+    levels.  If the latter is used then this grid determines the output grid region as well [0].
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: ../../explain_-bi.rst_
@@ -124,8 +128,8 @@ Optional Arguments
 .. include:: ../../explain_-e.rst_
 
 **-fg**
-    Geographic grids (dimensions of longitude, latitude) will be converted to
-    km via a "Flat Earth" approximation using the current ellipsoid parameters.
+    Geographic grids (i.e., dimensions of longitude, latitude) will be converted to
+    km via a "Flat Earth" approximation using the current ellipsoidal parameters.
 
 .. |Add_-h| replace:: Not used with binary data.
 .. include:: ../../explain_-h.rst_
@@ -150,26 +154,27 @@ Examples
 --------
 
 To compute the free-air anomalies on a grid over a 3-D body that has been contoured
-and saved to body.txt, using 1.7 g/cm^3 as the density contrast, try
+and saved to body3d.txt, using 1700 kg/m^3 as the fixed density contrast, with
+horizontal distances in km and vertical distances in meters, try
 
 ::
 
-    gmt talwani3d -R-200/200/-200/200 -I2 -G3dgrav.nc body.txt -D1700 -Fg
+    gmt talwani3d -R-200/200/-200/200 -I2 -Mh -G3dgrav.nc body3d.txt -D1700 -Ff
 
 To obtain the vertical gravity gradient anomaly along the track in crossing.txt
 for the same model, try
 
 ::
 
-    gmt talwani3d -Ncrossing.txt body.txt -D1700 -Fv > vgg_crossing.txt
+    gmt talwani3d -Ncrossing.txt -Mh body3d.txt -D1700 -Fv > vgg_crossing.txt
 
 
 Finally, the geoid anomaly along the same track in crossing.txt
-for the same model is written to n_crossing.txt by
+for the same model (at 30S) is written to n_crossing.txt by
 
 ::
 
-    gmt talwani3d -Ncrossing.txt body.txt -D1700 -Fn -Gn_crossing.txt
+    gmt talwani3d -Ncrossing.txt -Mh body3d.txt -D1700 -Fn-30 -Gn_crossing.txt
 
 
 References

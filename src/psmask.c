@@ -33,7 +33,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"
@@ -495,7 +495,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 				if (gmt_M_compat_check (GMT, 4)) {
 					for (n_plus = -1, k = 0; opt->arg[k]; k++) {
 						if (opt->arg[k] == '+' && opt->arg[k+1] == 'n') {
-							GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -D..+n<min> is deprecated; use -Q instead.\n");
+							GMT_Report (API, GMT_MSG_COMPAT, "Option -D..+n<min> is deprecated; use -Q instead.\n");
 							Ctrl->Q.min = atoi (&opt->arg[k + 2]);
 							Ctrl->Q.active = true;
 							n_plus = k;
@@ -606,6 +606,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct PSMASK_INFO info;
 	struct PSMASK_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
@@ -670,7 +671,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {	/* Just undo previous polygon clip-path */
 		PSL_endclipping (PSL, 1);
 		gmt_map_basemap (GMT);
-		GMT_Report (API, GMT_MSG_VERBOSE, "Clipping off!\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Clipping off!\n");
 	}
 	else {	/* Start new clip_path */
 		gmt_M_memset (inc2, 2, double);
@@ -688,7 +689,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 		}
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Allocate memory, read and process data file\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Allocate memory, read and process data file\n");
 
 		/* Enlarge region by 1 row/column */
 
@@ -710,7 +711,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		
 		node_only = (max_d_col == 0 && d_row == 0);
 		if (node_only && Ctrl->S.radius > 0.0) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Your search radius is too small to have any effect and is ignored.\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Your search radius is too small to have any effect and is ignored.\n");
 		}
 		
 		if ((error = gmt_set_cols (GMT, GMT_IN, 2)) != GMT_NOERROR) {
@@ -723,19 +724,20 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 		n_read = 0;
 		do {	/* Keep returning records until we reach EOF */
 			n_read++;
-			if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 					continue;
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
-				assert (in != NULL);						/* Should never get here */
+				assert (In != NULL);						/* Should never get here */
 			}
+			in = In->data;	/* Only need to process numerical part here */
 
 			if (gmt_M_y_is_outside (GMT, in[GMT_Y], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
 			if (gmt_x_is_outside (GMT, &in[GMT_X], Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
@@ -802,7 +804,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " data points\n", n_read);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " data points\n", n_read);
 
 		if (Ctrl->N.active) for (ij = 0; ij < Grid->header->size; ij++) grd[ij] = 1 - grd[ij];	/* Reverse sense of test */
 
@@ -813,7 +815,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 		if (Ctrl->L.active) {	/* Save a copy of the grid to file */
 			struct GMT_GRID *G = NULL;
-			GMT_Report (API, GMT_MSG_VERBOSE, "Saving internal inside|outside grid to file %s\n", Ctrl->L.file);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Saving internal inside|outside grid to file %s\n", Ctrl->L.file);
 			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Grid->header->wesn, Grid->header->inc, \
 				Grid->header->registration, 0, NULL)) == NULL) Return (API->error);
 			for (ij = 0; ij < Grid->header->size; ij++) {	/* Copy over the 0/1 grid */
@@ -847,7 +849,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 			if (make_plot) gmt_map_basemap (GMT);
 
-			GMT_Report (API, GMT_MSG_VERBOSE, "Tracing the clip path\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Tracing the clip path\n");
 
 			section = 0;
 			first = 1;
@@ -893,7 +895,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		else {	/* Just paint tiles */
 			uint64_t start, n_use, np, plot_n;
 			double y_bot, y_top, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL;
-			GMT_Report (API, GMT_MSG_VERBOSE, "Tiling...\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Tiling...\n");
 
 			for (row = 0; row < Grid->header->n_rows; row++) {
 				y_bot = grd_y0[row] - inc2[GMT_Y];
@@ -941,7 +943,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		if (Ctrl->S.active) gmt_M_free (GMT, d_col);
 		gmt_M_free (GMT, grd_x0);
 		gmt_M_free (GMT, grd_y0);
-		if (make_plot && !Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "Clipping on!\n");
+		if (make_plot && !Ctrl->T.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Clipping on!\n");
 	}
 
 	gmt_set_pad (GMT, API->pad);		/* Reset default pad */

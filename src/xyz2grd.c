@@ -22,7 +22,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"
@@ -182,7 +182,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 
 			case 'A':
 				if (!opt->arg[0] && gmt_M_compat_check (GMT, 4)) {	/* In GMT4, just -A implied -Az */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -A is deprecated; use -Az instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -A is deprecated; use -Az instead.\n");
 					Ctrl->A.active = true;
 					Ctrl->A.mode = 'z';
 				}
@@ -201,7 +201,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 				break;
 			case 'E':
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdconvert instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -E is deprecated; use grdconvert instead.\n");
 					Ctrl->E.active = true;
 					if (opt->arg[0]) {
 						Ctrl->E.nodata = atof (opt->arg);
@@ -222,7 +222,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 				break;
 			case 'N':
 				if (gmt_M_compat_check (GMT, 4)) {	/* Honor old -N<value> option */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N is deprecated; use GMT common option -di<nodata> instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -N is deprecated; use GMT common option -di<nodata> instead.\n");
 					if (opt->arg[0]) {
 						char arg[GMT_LEN64] = {""};
 						sprintf (arg, "i%s", opt->arg);
@@ -275,7 +275,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 		GMT->common.b.type[GMT_IN] = Ctrl->Z.type;
 		if (b_only) {
 			GMT->common.b.active[GMT_IN] = false;
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: -Z overrides -bi\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "-Z overrides -bi\n");
 		}
 	}
 
@@ -301,7 +301,7 @@ GMT_LOCAL void protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 		(void)GMT_Append_Option(API, opt, options);
 #else
 		GMT_Report(API, GMT_MSG_NORMAL,
-		           "Warning: -J option to set grid's referencing system is only available when GMT was build with GDAL\n");
+		           "-J option to set grid's referencing system is only available when GMT was build with GDAL\n");
 #endif
 	}
 }
@@ -320,10 +320,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	gmt_grdfloat no_data_f, *data = NULL;
 
 	void * (*save_i) (struct GMT_CTRL *, FILE *, uint64_t *, int *) = NULL;
-	int (*save_o) (struct GMT_CTRL *, FILE *, uint64_t, double *);
+	int (*save_o) (struct GMT_CTRL *, FILE *, uint64_t, double *, char *);
 
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_Z_IO io;
+	struct GMT_RECORD *In = NULL;
 	struct XYZ2GRD_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -364,7 +365,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
 		if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != 0) Return (error);
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Swapping data bytes only\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Swapping data bytes only\n");
 		if (Ctrl->S.active) io.swab = true;	/* Need to pass swabbing down to the gut level */
 
 		/* Register the data source */
@@ -397,7 +398,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		do {	/* Keep returning records until we reach EOF */
-			if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all headers */
@@ -409,7 +410,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 			/* Data record to process */
 
-			GMT_Put_Record (API, GMT_WRITE_DATA, in);
+			GMT_Put_Record (API, GMT_WRITE_DATA, In);
 		} while (true);
 
 		GMT->current.io.input = save_i;			/* Reset input pointer */
@@ -426,7 +427,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);	/* We are done here */
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
 	/* PW: This is now done in grdconvert since ESRI Arc Interchange is a recognized format */
 	if (Ctrl->E.active && gmt_M_compat_check (GMT, 4)) {	/* Read an ESRI Arc Interchange grid format in ASCII.  This must be a single physical file. */
@@ -477,7 +478,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		gmt_set_grddim (GMT, Grid->header);
 		gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "n_columns = %d  n_rows = %d\n", Grid->header->n_columns, Grid->header->n_rows);
 		n_left = Grid->header->nm;
 
 		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, gmt_grdfloat);
@@ -543,9 +544,9 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		n_min = 2;
 	}
 
-	if (GMT->common.b.active[GMT_IN] && GMT->current.io.col_type[GMT_IN][GMT_Z] & GMT_IS_RATIME && GMT->current.io.fmt[GMT_IN][GMT_Z].type == GMT_FLOAT) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Your single precision binary input data are unlikely to hold absolute time coordinates without serious truncation.\n");
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: You must use double precision when storing absolute time coordinates in binary data tables.\n");
+	if (GMT->common.b.active[GMT_IN] && gmt_M_type (GMT, GMT_IN, GMT_Z) & GMT_IS_RATIME && GMT->current.io.fmt[GMT_IN][GMT_Z].type == GMT_FLOAT) {
+		GMT_Report (API, GMT_MSG_VERBOSE, "Your single precision binary input data are unlikely to hold absolute time coordinates without serious truncation.\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "You must use double precision when storing absolute time coordinates in binary data tables.\n");
 	}
 
 	if (Ctrl->D.active && gmt_decode_grd_h_info (GMT, Ctrl->D.information, Grid->header)) {
@@ -553,7 +554,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		Return (GMT_PARSE_ERROR);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "n_columns = %d  n_rows = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->n_columns, Grid->header->n_rows, Grid->header->nm, Grid->header->size);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "n_columns = %d  n_rows = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->n_columns, Grid->header->n_rows, Grid->header->nm, Grid->header->size);
 
 	gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file);
 
@@ -600,7 +601,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	}
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -611,6 +612,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 		/* Data record to process */
 		n_read++;
+		in = In->data;	/* Only need to process numerical part here */
 
 		if (Ctrl->Z.active) {	/* Read separately because of all the possible formats */
 			if (ij == io.n_expected) {
@@ -784,7 +786,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			char line[GMT_BUFSIZ], e_value[GMT_LEN32];
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 			(GMT->common.d.active[GMT_IN]) ? sprintf (e_value, GMT->current.setting.format_float_out, GMT->common.d.nan_proxy[GMT_IN]) : sprintf (e_value, "NaN");
-			GMT_Report (API, GMT_MSG_VERBOSE, "Data records read: %" PRIu64 "  used: %" PRIu64 "  nodes filled: %" PRIu64 " nodes empty: %" PRIu64 " [set to %s]\n",
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Data records read: %" PRIu64 "  used: %" PRIu64 "  nodes filled: %" PRIu64 " nodes empty: %" PRIu64 " [set to %s]\n",
 				n_read, n_used, n_filled, n_empty, e_value);
 			if (n_confused) GMT_Report (API, GMT_MSG_VERBOSE, "Warning - %" PRIu64 " values gave bad indices: Pixel vs Gridline registration confusion?\n", n_confused);
 		}

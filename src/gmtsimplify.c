@@ -20,7 +20,7 @@
  *
  * Author:	Joaquim Luis
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: gmtsimplify applies the Douglas-Peucker algorithm to simplify a line
  * segment given a tolerance.
@@ -276,6 +276,7 @@ GMT_LOCAL uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[]
 
 int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	int error;
+	unsigned int smode = GMT_NO_STRINGS;
 	bool geo, poly, skip;
 	uint64_t tbl, col, row, seg_in, seg_out, np_out, ns_in = 0, ns_out = 0, n_in_tbl, *index = NULL;
 	uint64_t dim_out[4] = {1, 0, 0, 0}, n_saved;
@@ -307,9 +308,9 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	
 	/*---------------------------- This is the gmtsimplify main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	if (Ctrl->T.mode > 1) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: gmtsimplify only implemented using Flat-Earth calculations.\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "gmtsimplify only implemented using Flat-Earth calculations.\n");
 		Ctrl->T.mode = 1;	/* Limited to Flat Earth calculations for now */
 	}
 	
@@ -375,11 +376,14 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 			np_out = Douglas_Peucker_geog (GMT, S[GMT_IN]->data[GMT_X], S[GMT_IN]->data[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
 			skip = ((poly && np_out < 4) || (np_out == 2 && S[GMT_IN]->data[GMT_X][index[0]] == S[GMT_IN]->data[GMT_X][index[1]] && S[GMT_IN]->data[GMT_Y][index[0]] == S[GMT_IN]->data[GMT_Y][index[1]]));
 			if (!skip) {	/* Must allocate one segment for output */
-				S[GMT_OUT] = GMT_Alloc_Segment (GMT->parent, GMT_IS_DATASET, np_out, S[GMT_IN]->n_columns, NULL, NULL);
+				smode = (S[GMT_IN]->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
+				S[GMT_OUT] = GMT_Alloc_Segment (GMT->parent, smode, np_out, S[GMT_IN]->n_columns, NULL, NULL);
+				S[GMT_OUT]->n_rows = np_out;
 				D[GMT_OUT]->table[tbl]->segment[seg_out] = S[GMT_OUT];
 				for (row = 0; row < np_out; row++) {
 					for (col = 0; col < S[GMT_IN]->n_columns; col++)	/* Copy coordinates via index lookup */
 						S[GMT_OUT]->data[col][row] = S[GMT_IN]->data[col][index[row]];
+					if (smode) S[GMT_OUT]->text[row] = strdup (S[GMT_IN]->text[row]);
 				}
 				seg_out++;		/* Move on to next output segment */
 				ns_in++;		/* Input segment with points */
@@ -390,7 +394,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 			else
 				n_saved = 0;
 			gmt_M_free (GMT, index);	/* No longer needed */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Points in: %" PRIu64 " Points out: %" PRIu64 "\n", S[GMT_IN]->n_rows, n_saved);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Points in: %" PRIu64 " Points out: %" PRIu64 "\n", S[GMT_IN]->n_rows, n_saved);
 		}
 		if (seg_out < D[GMT_IN]->table[tbl]->n_segments) D[GMT_OUT]->table[tbl]->segment = gmt_M_memory (GMT, D[GMT_OUT]->table[tbl]->segment, seg_out, struct GMT_DATASEGMENT *);	/* Reduce allocation to # of segments */
 		D[GMT_OUT]->table[tbl]->n_segments = seg_out;	/* Update segment count */
@@ -402,7 +406,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
 		Return (API->error);
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Segments in: %" PRIu64 " Segments out: %" PRIu64 "\n", ns_in, ns_out);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Segments in: %" PRIu64 " Segments out: %" PRIu64 "\n", ns_in, ns_out);
 	
 	Return (GMT_NOERROR);
 }

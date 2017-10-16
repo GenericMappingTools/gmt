@@ -21,7 +21,7 @@
  *
  * Author:	W.H.F. Smith
  * Date: 	31 May 1990
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"
@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"grdhisteq"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Perform histogram equalization for a grid"
-#define THIS_MODULE_KEYS	"<G{,GG},DT)"
+#define THIS_MODULE_KEYS	"<G{,GG},DD)"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-RVh"
 
@@ -212,6 +212,7 @@ GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *
 	double delta_cell, target, out[3];
 	struct CELL *cell = NULL;
 	struct GMT_GRID *Orig = NULL;
+	struct GMT_RECORD *Out = NULL;
 
 	cell = gmt_M_memory (GMT, NULL, n_cells, struct CELL);
 
@@ -231,6 +232,7 @@ GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *
 	nxy = Grid->header->nm;
 	while (nxy > 0 && gmt_M_is_fnan (Grid->data[nxy-1])) nxy--;	/* Only deal with real numbers */
 
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	n_cells_m1 = n_cells - 1;
 	current_cell = 0;
 	i = 0;
@@ -252,7 +254,7 @@ GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *
 
 		if (dump_intervals) {	/* Write records to file or stdout */
 			out[GMT_X] = (double)Grid->data[i]; out[GMT_Y] = (double)Grid->data[j]; out[GMT_Z] = (double)current_cell;
-			GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);
+			GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, Out);
 		}
 
 		i = j;
@@ -260,6 +262,7 @@ GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *
 	}
 	if (dump_intervals && GMT_End_IO (GMT->parent, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data ioutput */
 		gmt_M_free (GMT, cell);
+		gmt_M_free (GMT, Out);
 		return (GMT->parent->error);
 	}
 
@@ -273,6 +276,7 @@ GMT_LOCAL int do_hist_equalization_cart (struct GMT_CTRL *GMT, struct GMT_GRID *
 
 	gmt_grd_pad_on (GMT, Grid, pad);	/* Reinstate the original pad */
 	gmt_M_free (GMT, cell);
+	gmt_M_free (GMT, Out);
 	return (0);
 }
 
@@ -284,6 +288,7 @@ GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *G
 	struct CELL *cell = gmt_M_memory (GMT, NULL, n_cells, struct CELL);
 	struct GMT_GRID *W = gmt_duplicate_grid (GMT, Grid, GMT_DUPLICATE_ALLOC);
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, Grid->header->nm, struct GMT_OBSERVATION);
+	struct GMT_RECORD *Out = NULL;
 
 	/* Determine the area weights */
 	gmt_get_cellarea (GMT, W);
@@ -308,6 +313,7 @@ GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *G
 	
 	/* Find the division points using the normalized 0-1 weights */
 
+	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	n_cells_m1 = n_cells - 1;
 	current_cell = 0;
 	i = j = 0;
@@ -328,7 +334,7 @@ GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *G
 
 		if (dump_intervals) {	/* Write records to file or stdout */
 			out[GMT_X] = (double)cell[current_cell].low; out[GMT_Y] = (double)cell[current_cell].high; out[GMT_Z] = (double)current_cell;
-			GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);
+			GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, Out);
 		}
 
 		i = j;
@@ -338,6 +344,7 @@ GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *G
 	if (dump_intervals && GMT_End_IO (GMT->parent, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data ioutput */
 		gmt_M_free (GMT, cell);
 		gmt_M_free (GMT, pair);
+		gmt_M_free (GMT, Out);
 		return (GMT->parent->error);
 	}
 
@@ -350,6 +357,7 @@ GMT_LOCAL int do_hist_equalization_geo (struct GMT_CTRL *GMT, struct GMT_GRID *G
 
 	gmt_M_free (GMT, pair);
 	gmt_M_free (GMT, cell);
+	gmt_M_free (GMT, Out);
 	return (0);
 }
 
@@ -453,7 +461,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdhisteq main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid\n");
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);

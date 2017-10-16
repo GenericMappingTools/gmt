@@ -1006,7 +1006,7 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	double wkopt, *work = NULL;
 	gmt_M_unused(n_in);	/* Since we are actually only doing square matrices... */
 	gmt_M_unused(v);
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_svdcmp: Using Lapack dsyev\n");
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gmt_svdcmp: Using Lapack dsyev\n");
 	/* Query and allocate the optimal workspace */
 	lwork = -1;
 	dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, &wkopt, &lwork, &info );
@@ -1025,7 +1025,7 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	v = a;
 	return (GMT_NOERROR);
 #else
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_svdcmp: Using GMT's NR-based SVD\n");
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gmt_svdcmp: Using GMT's NR-based SVD\n");
 	return vector_svdcmp_nr (GMT, a, m_in, n_in, w, v);
 #endif
 }
@@ -1049,7 +1049,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 #ifdef HAVE_LAPACK
 	gmt_M_unused(v);	/* Not used when we solve via Lapack */
 #endif
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_solve_svd: Evaluate solution\n");
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gmt_solve_svd: Evaluate solution\n");
 	/* find maximum singular value and total variance.  Assumes w[] may have negative eigenvalues */
 
 	sing_max = fabs (w[0]);
@@ -1059,7 +1059,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		w_abs = fabs (w[i]);
 		sing_max = MAX (sing_max, w_abs);
 	}
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_solve_svd: Total variance = %g\n", total_variance);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gmt_solve_svd: Total variance = %g\n", total_variance);
 
 	if (mode) {
 		/* mode = 1: Find the m largest singular values needed to explain the specified variance level.
@@ -1379,7 +1379,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	lon = *a_lon;	lat = *a_lat;	/* Input arrays */
 
 	if (gmt_M_is_dnan (lon[0]) || gmt_M_is_dnan (lat[0])) {	/* If user manages to pass NaN NaN records then we check on the first record and bail */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Your data contains NaNs - no resampling taken place!\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your data contains NaNs - no resampling taken place!\n");
 		return n;
 	}
 	
@@ -1462,11 +1462,11 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 		/* Follow great circle */
 		else if ((theta = d_acosd (gmt_dot3v (GMT, a, b))) == 180.0) {	/* trouble, no unique great circle */
 			if (gmt_M_is_spherical (GMT) || ((lat[i] + lat[i-1]) == 0.0)) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Two points in input list are antipodal - great circle resampling is not unique!\n");
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Fix input data or use project -A to generate the desired great circle by providing an azimuth.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Two points in input list are antipodal - great circle resampling is not unique!\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Fix input data or use project -A to generate the desired great circle by providing an azimuth.\n");
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Two points in input list are antipodal - great circle resampling is not unique!\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Two points in input list are antipodal - great circle resampling is not unique!\n");
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "There are two possible geodesics but GMT does not currently calculate geodesics.\n");
 			}
 			return 0;

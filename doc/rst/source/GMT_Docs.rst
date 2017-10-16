@@ -1906,9 +1906,10 @@ Input columns selection: The **-i** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-i**\ *columns* option allows you to specify which
-input file data columns to use and in what order. By default, GMT will
+input file physical data columns to use and in what order. By default, GMT will
 read all the data columns in the file, starting with the first column
-(0). Using **-i** modifies that process. For instance, to use the 4th,
+(0). Using **-i** modifies that process and reads in a logical record based
+on columns from the physical record. For instance, to use the 4th,
 7th, and 3rd data column as the required *x,y,z* to
 :doc:`blockmean` you would specify
 **-i**\ 3,6,2 (since 0 is the first column). The chosen data columns
@@ -1918,7 +1919,28 @@ Do so by appending [**l**][\ **s**\ *scale*][\ **o**\ *offset*] to
 each column (or range of columns). All items are optional: The **l**
 implies we should first take :math:`\log_{10}` of the data [leave as
 is]. Next, we may scale the result by the given *scale* [1]. Finally, we
-add in the specified *offset* [0].
+add in the specified *offset* [0].  If you want the trailing text to remain
+part of your subset logical record then also select the special column **t**.
+
+.. _gmt_record:
+
+.. figure:: /_images/GMT_record.png
+   :width: 600 px
+   :align: center
+
+   The physical, logical (input) and output record in GMT.  Here, we are
+   reading a file with 5 numerical columns plus some free-form text at the
+   end.  Our module (here :doc:`psxy`) will be used to plot circles at the
+   given locations but we want to assign color based on the ``depth`` column
+   (which we need to convert from meters to km) and symbol size based on the
+   ``mag`` column (but we want to scale this by 0.01 to get suitable symbol sizes).
+   We use **-i** to pull in the desired columns in the required order and apply
+   the scaling, resulting in the logical record with 4 columns.  The **-f** option
+   can be used to specify column types in the logical record if it is not clear
+   from the data themselves (or you are reading a binary file).  Finally, if
+   a module needs to write out only a portion of the current logical record then
+   you may use the corresponding **-o** option to select desired columns, including
+   the trailing text column **t**.
 
 Grid interpolation parameters: The **-n** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1950,7 +1972,10 @@ write all the data columns produced by the program. Using **-o**
 modifies that process. For instance, to write just the 4th and 2nd data
 column to the output you would use **-o**\ 3,1 (since 0 is the first column).
 You can also use a column more than once, e.g., **-o**\ 3,1,3, to
-duplicate a column on output.
+duplicate a column on output.  Finally, if your logical record in memory
+contains trailing text then you can include that by including the special
+column **t** to your selections.  The text is always written after any
+numerical columns.
 
 Perspective view: The **-p** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2130,8 +2155,14 @@ standard input or input in one or several files. These programs will try
 to read *stdin* unless you type the filename(s) on the command line
 without the above hyphens. (If the program sees a hyphen, it reads the
 next character as an instruction; if an argument begins without a
-hyphen, it tries to open this argument as a filename). This feature
-allows you to connect programs with pipes if you like. If your input is
+hyphen, it tries to open this argument as a filename).  This feature
+allows you to connect programs with pipes if you like.
+To give numerous input files you can either list them all (file1.txt file2.txt ...),
+use UNIX wild cards (file*.txt), or make a simple *listfile* with the
+names of all your datafiles (one per line) and then use the special
+=*filelist* mechanism to specify the input files to a module.
+This allows GMT modules to obtain the input file names from *filelist*.
+If your input is
 ASCII and has one or more header records that do not begin with #, you
 must use the **-h** option (see Section `Header data records: The -h
 option`_). ASCII files may in many cases also contain segment-headers
@@ -2167,8 +2198,8 @@ Three classes of files are given special treatment in GMT.
 
 #. Some data sets are ubiquitous and used by nearly all GMT users.
    At the moment this set is limited to Earth relief grids.  If you reference
-   files called **@earth_relief_**\ *res*\ **.grd** on a command line then
-   that grid will automatically be downloaded from the GMT Data Site and placed
+   grid input called **@earth_relief_**\ *res* on a command line then
+   such a grid will automatically be downloaded from the GMT Data Site and placed
    in **$GMT_USERDIR** [~/.gmt].  The resolution *res* allows a choice among
    15 command grid spacings: 60m, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
    30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb, 7.5 Mb,
@@ -2178,10 +2209,12 @@ Three classes of files are given special treatment in GMT.
    file from **$GMT_USERDIR** or **DIR_CACHE** (except if explicitly removed by the user).
    Note: The four highest resolutions are the original data sets SRTM15+, SRTM30+,
    ETOPO1 and ETOPO2V2.  Lower resolutions are spherically Gaussian-filtered versions
-   of ETOPO1.  The SRTM (version 3) 1 and 3 arc-sec tiles are stored as highly
-   compressed JPEG2000 tiles on the server.  These are downloaded as requested, converted to netCDF
-   grids and stored in subdirectories srtm1 and srtm3 of **DIR_CACHE**, and assembled
-   into a seamless grid using :doc:`grdblend`.
+   of ETOPO1.  The SRTM (version 3) 1 and 3 arc-sec tiles are only available over land
+   between 60 degrees south and north latitude and are stored as highly compressed JPEG2000
+   tiles on the GMT server.  These are downloaded as requested, converted to netCDF
+   grids and stored in subdirectories srtm1 and srtm3 under **DIR_CACHE**, and assembled
+   into a seamless grid using :doc:`grdblend`. A tile is only downloaded and converted
+   once (unless the user cleans the cache directories).
 #. If a file is given as a full URL, starting with **http://**, **https://**,
    or **ftp://**, then the file will be downloaded to **DIR_CACHE** and subsequently
    read from there (until removed by the user).  If the URL is actually a CGI Get
@@ -4268,8 +4301,8 @@ Polish Notation" (RPN) calculator that operates on or creates table data:
 
    ::
 
-      gmt math -T0/100/1  T SQRT = sqrt.d
-      gmt math -T0/100/10 T SQRT = sqrt.d10
+      gmt math -T0/100/1  T SQRT = sqrt.txt
+      gmt math -T0/100/10 T SQRT = sqrt10.txt
 
 Cartesian linear transformation (**-Jx** **-JX**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4314,8 +4347,8 @@ The complete commands given to produce this plot were
 
    ::
 
-    gmt psxy -R0/100/0/10 -JX3i/1.5i -Bag -BWSne+gsnow -Wthick,blue,- -P -K sqrt.d > GMT_linear.ps
-    gmt psxy -R -J -St0.1i -N -Gred -Wfaint -O sqrt.d10 >> GMT_linear.ps
+    gmt psxy -R0/100/0/10 -JX3i/1.5i -Bag -BWSne+gsnow -Wthick,blue,- -P -K sqrt.txt > GMT_linear.ps
+    gmt psxy -R -J -St0.1i -N -Gred -Wfaint -O sqrt10.txt >> GMT_linear.ps
 
 Normally, the user's *x*-values will increase to the right and the
 *y*-values will increase upwards. It should be noted that in many
@@ -4424,8 +4457,8 @@ transformation <GMT_log>`)
    ::
 
     gmt psxy -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque \
-             -Wthick,blue,- -P -K -h sqrt.d > GMT_log.ps
-    gmt psxy -R -J -Ss0.1i -N -Gred -W -O -h sqrt.d10 >> GMT_log.ps
+             -Wthick,blue,- -P -K -h sqrt.txt > GMT_log.ps
+    gmt psxy -R -J -Ss0.1i -N -Gred -W -O -h sqrt10.txt >> GMT_log.ps
 
 Note that if *x*- and *y*-scaling are different and a
 :math:`\log_{10}-\log_{10}` plot is desired, the **l** must be
@@ -4457,8 +4490,8 @@ transformation <GMT_pow>`)
    ::
 
     gmt psxy -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory \
-             -Wthick -P -K sqrt.d > GMT_pow.ps
-    gmt psxy -R -J -Sc0.075i -Ggreen -W -O sqrt.d10 >> GMT_pow.ps
+             -Wthick -P -K sqrt.txt > GMT_pow.ps
+    gmt psxy -R -J -Sc0.075i -Ggreen -W -O sqrt10.txt >> GMT_pow.ps
 
 Linear projection with polar coordinates (**-Jp** **-JP**) :ref:`... <-Jp_full>`
 --------------------------------------------------------------------------------
@@ -8037,9 +8070,8 @@ Text substitution
 
 Normally, the **l** macro code will place a hard-wired text string.  However,
 you can also obtain the entire string from your input file via a single symbol
-variable that must be declared with type **s** (string).  The string read
-from your input file must be a single word, so if you need to insert spaces you must
-use the octal \\040 code instead.  Similarly, to place the dollar sign $ itself you must
+variable **$t** that must be declared with type **s** (string).  The string will be taken
+as all trialing text in your data record.  To place the dollar sign $ itself you must
 use octal \\044 so as to not confuse the parser with a symbol variable.
 The string itself, if obtained from the symbol definition file,
 may contain special codes that will be expanded given information from the current record.  You

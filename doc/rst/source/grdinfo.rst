@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdinfo** *grdfiles* [ |-C| ]
+**grdinfo** *grdfiles* [ |-C|\ [**n**\ \|\ **t**\] ]
 [ |-D|\ [*xoff*\ [/*yoff*][**+n**] ]
 [ |-F| ]
 [ |-I|\ [*dx*\ [/*dy*]\|\ **b**\ \|\ **i**\ \|\ **r**\ ] ]
@@ -49,12 +49,14 @@ Optional Arguments
 
 .. _-C:
 
-**-C**
+**-C**\ [**n**\ \|\ **t**\]
     Formats the report using tab-separated fields on a single line. The
-    output is *w e s n z0 z1 dx dy nx ny*\ [ *x0 y0 x1 y1* ] [ *med
+    output is *name w e s n z0 z1 dx dy nx ny*\ [ *x0 y0 x1 y1* ] [ *med
     scale* ] [*mean std rms*\ ] [*n\_nan*\ ]. The data in brackets are
     output only if the corresponding options **-M**, **-L1**, **-L2**,
-    and **-M** are used, respectively. If the **-I** option is used, the
+    and **-M** are used, respectively. Use **-Ct** to place file *name*
+    at the end of the output record or **-Cn** to only output numerical
+    columns.  If the **-I** option is used, the
     output format is instead *NF w e s n z0 z1*, where *NF* is the total
     number of grids read and *w e s n* are rounded off (see **-I**).
 

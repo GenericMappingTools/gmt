@@ -32,8 +32,8 @@ Description
 -----------
 
 **x2sys_datalist** reads one or more files and produces a single ASCII
-[or binary] table. The files can be of any format, which must be
-described and passed with the |-T| option. You may limit the output to
+[or binary] table. The files can be of any format; this information is
+encoded in the TAG set with the |-T| option. You may limit the output to
 a geographic region, and insist that the output from several files be
 separated by a multiple segment header. Only the named data fields will
 be output [Default selects all columns].
@@ -124,13 +124,13 @@ recognized by the tag GMT:
     gmt x2sys_datalist c2104.gmt -TGMT > myfile
 
 To make lon,lat, and depth input for :doc:`blockmean </blockmean>` and :doc:`surface </surface>` using
-all the files listed in the file tracks.lis and define by the tag TRK,
+all the files listed in the file tracks.lis and defined by the tag TRK,
 but only the data that are inside the specified area, and make output
 binary, run
 
    ::
 
-    gmt x2sys_datalist =tracks.lis -TTRK -Fon,lat,depth -R40/-30/25/35 -bo > alltopo_bin.xyz
+    gmt x2sys_datalist =tracks.lis -TTRK -Flon,lat,depth -R40/-30/25/35 -bo > alltopo_bin.xyz
 
 Corrections
 -----------
@@ -160,7 +160,7 @@ The argument *abbrev* is one of the abbreviations for columns known to
 this TAG. However, it can also be one of the three auxiliary terms
 **dist** (for along-track distances), **azim** for along-track azimuths,
 and **vel** (for along-track speed); these are all sensitive to the
-**-C** and **-N** settings used when defining the TAB; furthermore,
+**-C** and **-N** settings used when defining the TAG; furthermore,
 **vel** requires **time** to be present in the data. If *origin* is
 given as **T** it means that we should replace it with the value of
 *abbrev* for the very first record in the file (this is usually only

@@ -2,26 +2,29 @@
 #		GMT EXAMPLE 22
 #		$Id$
 #
-# Purpose:	Automatic map of last 7 days of world-wide seismicity
+# Purpose:	Automatic map of last month of world-wide seismicity
 # GMT modules:	gmtset, pscoast, psxy, pslegend
 # Unix progs:	cat, sed, awk, wget|curl
 #
 ps=example_22.ps
 gmt set FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
 
-# Get the data (-q quietly) from USGS using the wget (comment out in case
-# your system does not have wget or curl)
-
-#wget http://neic.usgs.gov/neis/gis/bulletin.asc -q -O neic_quakes_22.txt
-#curl http://neic.usgs.gov/neis/gis/bulletin.asc -s > neic_quakes_22.txt
+# Get the data (-s silently) from USGS using the curl)
+# Hardwired here to the month of October, 2017
+# SITE="https://earthquake.usgs.gov/fdsnws/event/1/query.csv"
+# TIME="starttime=2017-09-01%2000:00:00&endtime=2017-10-01%2000:00:00"
+# MAG="minmagnitude=3"
+# ORDER="orderby=magnitude"
+# URL="${SITE}?${TIME}&${MAG}&${ORDER}"
+# curl -s $URL > usgs_quakes_22.txt
 
 # Count the number of events (to be used in title later. one less due to header)
-gmt which @neic_quakes_22.txt -Gl
-n=`gmt info neic_quakes_22.txt -h1 -Fi -o2`
+file=`gmt which @usgs_quakes_22.txt -G`
+n=`gmt info $file -h1 -Fi -o2`
 # Pull out the first and last timestamp to use in legend title
 
-first=`sed -n 2p neic_quakes_22.txt | $AWK -F, '{printf "%s %s\n", $1, $2}'`
-last=`sed -n '$p' neic_quakes_22.txt | $AWK -F, '{printf "%s %s\n", $1, $2}'`
+first=`gmt info -h1 -f0T -i0 $file -C --TIME_UNIT=d -I1 -o0 --FORMAT_CLOCK_OUT=-`
+last=`gmt info -h1 -f0T -i0 $file -C --TIME_UNIT=d -I1 -o1 --FORMAT_CLOCK_OUT=-`
 
 # Assign a string that contains the current user @ the current computer node.
 # Note that two @@ is needed to print a single @ in gmt pstext:
@@ -33,11 +36,11 @@ me="GMT guru @@ GMTbox"
 
 gmt makecpt -Cred,green,blue -T0,100,300,10000 -N > neis.cpt
 
-# Start plotting. First lay down map, then plot quakes with size = magintude/50":
+# Start plotting. First lay down map, then plot quakes with size = magnitude * 0.015":
 
-gmt pscoast -Rg -JK180/9i -B45g30 -B+t"World-wide earthquake activity" -Gbrown -Slightblue \
+gmt pscoast -Rg -JK180/9i -B45g30 -B+t"World-wide earthquake activity" -Gburlywood -Slightblue \
 	-Dc -A1000 -K -Y2.75i > $ps
-gmt psxy -R -J -O -K -Cneis.cpt -Sci -Wthin -h -i3,2,5,4+s0.02 neic_quakes_22.txt >> $ps
+gmt psxy -R -J -O -K -Cneis.cpt -Sci -Wfaint -hi1 -i2,1,3,4+s0.015 $file >> $ps
 # Create legend input file for NEIS quake plot
 
 cat > neis.legend << END
@@ -69,14 +72,14 @@ END
 cat << END >> neis.legend
 G 0.25l
 P
-T USGS/NEIS most recent earthquakes for the last seven days.  The data were
+T USGS/NEIS most recent earthquakes for the last month.  The data were
 T obtained automatically from the USGS Earthquake Hazards Program page at
 T @_http://neic/usgs.gov @_.  Interested users may also receive email alerts
 T from the USGS.
-T This script can be called daily to update the latest information.
+T This script could be called monthly to update the latest information.
 G 0.4i
 # Add USGS logo
-I @USGS.ras 1i RT
+I @USGS.png 1i RT
 G -0.3i
 L 12 6 LB $me
 END
@@ -88,4 +91,4 @@ gmt pslegend -DJBC+o0/0.4i+w7i/1.7i -R -J -O -F+p+glightyellow neis.legend  >> $
 
 # Clean up after ourselves:
 
-rm -f neis.* gmt.conf
+#rm -f neis.* gmt.conf

@@ -190,7 +190,7 @@ void gmtlib_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int n_columns, unsig
 	given_space += n_columns * n_rows;
 	given_space *= 8;
 	if (do_print)
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n", n_columns, n_rows, given_time, given_err, given_space);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n", n_columns, n_rows, given_time, given_err, given_space);
 
 	best_err = s_err = t_err = given_err;
 	best_time = s_time = e_time = given_time;
@@ -247,11 +247,11 @@ void gmtlib_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int n_columns, unsig
 	}
 
 	if (do_print) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
 			nx_best_t, ny_best_t, best_time, t_err, t_space);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
 			nx_best_e, ny_best_e, e_time, best_err, e_space);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, " Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
 			nx_best_s, ny_best_s, s_time, s_err, best_space);
 	}
 	/* Fastest solution */
@@ -476,7 +476,7 @@ GMT_LOCAL fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *GMT, unsigned n_rows, u
 			/* No Wisdom available
 			 * Need extra memory to prevent overwriting data while planning */
 			fftwf_complex *in_place_tmp = fftwf_malloc (2 * (n_rows == 0 ? 1 : n_rows) * n_columns * sizeof(gmt_grdfloat));
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Generating new FFTW Wisdom, be patient...\n");
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Generating new FFTW Wisdom, be patient...\n");
 			if (n_rows == 0) /* 1d DFT */
 				plan = fftwf_plan_dft_1d(n_columns, in_place_tmp, in_place_tmp, sign, GMT->current.setting.fftw_plan);
 			else /* 2d DFT */
@@ -501,7 +501,7 @@ GMT_LOCAL fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *GMT, unsigned n_rows, u
 	}
 
 	if (plan == NULL) { /* There was a problem creating a plan */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not create FFTW plan.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not create FFTW plan.\n");
 		GMT_exit (GMT, GMT_ARG_IS_NULL); return NULL;
 	}
 
@@ -564,8 +564,8 @@ GMT_LOCAL int fft_1d_vDSP (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned in
 		 * single-precision FFT functions: */
 		fft_1d_vDSP_reset (&GMT->current.fft);
 		GMT->current.fft.setup_1d = vDSP_create_fftsetup (log2n, kFFTRadix2);
-		GMT->current.fft.dsp_split_complex_1d.realp = malloc (n * sizeof(gmt_grdfloat));
-		GMT->current.fft.dsp_split_complex_1d.imagp = malloc (n * sizeof(gmt_grdfloat));
+		GMT->current.fft.dsp_split_complex_1d.realp = calloc (n, sizeof(gmt_grdfloat));
+		GMT->current.fft.dsp_split_complex_1d.imagp = calloc (n, sizeof(gmt_grdfloat));
 		if (GMT->current.fft.dsp_split_complex_1d.realp == NULL || GMT->current.fft.dsp_split_complex_1d.imagp == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to allocate dsp_split_complex array of length %u\n", n);
 			return -1; /* out of memory */
@@ -612,8 +612,8 @@ GMT_LOCAL int fft_2d_vDSP (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned in
 	 	* single-precision FFT functions: */
 		fft_2d_vDSP_reset (&GMT->current.fft);
 		GMT->current.fft.setup_2d = vDSP_create_fftsetup (MAX (log2nx, log2ny), kFFTRadix2);
-		GMT->current.fft.dsp_split_complex_2d.realp = malloc (n_xy * sizeof(gmt_grdfloat));
-		GMT->current.fft.dsp_split_complex_2d.imagp = malloc (n_xy * sizeof(gmt_grdfloat));
+		GMT->current.fft.dsp_split_complex_2d.realp = calloc (n_xy, sizeof(gmt_grdfloat));
+		GMT->current.fft.dsp_split_complex_2d.imagp = calloc (n_xy, sizeof(gmt_grdfloat));
 		if (GMT->current.fft.dsp_split_complex_2d.realp == NULL || GMT->current.fft.dsp_split_complex_2d.imagp == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to allocate dsp_split_complex array of length %u\n", n_xy);
 			return -1; /* out of memory */
@@ -1592,7 +1592,7 @@ GMT_LOCAL int fft_2d_brenner (struct GMT_CTRL *GMT, gmt_grdfloat *data, unsigned
 
         ksign = (direction == GMT_FFT_INV) ? +1 : -1;
         if ((work_size = fft_brenner_worksize (GMT, n_columns, n_rows))) work = gmt_M_memory (GMT, NULL, work_size, gmt_grdfloat);
-        GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Brenner_fourt_ work size = %" PRIuS "\n", work_size);
+        GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Brenner_fourt_ work size = %" PRIuS "\n", work_size);
         (void) fft_brenner_fourt_f (data, nn, &ndim, &ksign, &kmode, work);
         gmt_M_free (GMT, work);
         return (GMT_OK);
@@ -1604,7 +1604,7 @@ GMT_LOCAL int fft_1d_selection (struct GMT_CTRL *GMT, uint64_t n) {
 		/* Specific selection requested */
 		if (GMT->session.fft1d[GMT->current.setting.fft])
 			return GMT->current.setting.fft; /* User defined FFT */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Desired FFT Algorithm (%s) not configured - choosing suitable alternative.\n", GMT_fft_algo[GMT->current.setting.fft]);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Desired FFT Algorithm (%s) not configured - choosing suitable alternative.\n", GMT_fft_algo[GMT->current.setting.fft]);
 	}
 	/* Here we want automatic selection from available candidates */
 	if (GMT->session.fft1d[k_fft_accelerate] && radix2 (n))
@@ -1620,7 +1620,7 @@ GMT_LOCAL int fft_2d_selection (struct GMT_CTRL *GMT, unsigned int n_columns, un
 		/* Specific selection requested */
 		if (GMT->session.fft2d[GMT->current.setting.fft])
 			return GMT->current.setting.fft; /* User defined FFT */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Desired FFT Algorithm (%s) not configured - choosing suitable alternative.\n", GMT_fft_algo[GMT->current.setting.fft]);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Desired FFT Algorithm (%s) not configured - choosing suitable alternative.\n", GMT_fft_algo[GMT->current.setting.fft]);
 	}
 	/* Here we want automatic selection from available candidates */
 	if (GMT->session.fft2d[k_fft_accelerate] && radix2 (n_columns) && radix2 (n_rows))

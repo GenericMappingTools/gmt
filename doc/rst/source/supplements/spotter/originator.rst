@@ -190,13 +190,13 @@ Examples
 --------
 
 To find the likely (hotspot) origins of the seamounts represented by the
-(x,y,z,r,tc) points in the file seamounts.d, using the DC85.d Euler
-poles and the pac_hs.d list of possible hotspots, and report the 2 most
+(x,y,z,r,tc) points in the file seamounts.txt, using the DC85.txt Euler
+poles and the pac_hs.txt list of possible hotspots, and report the 2 most
 likely hotspot candidates for each seamount, run
 
    ::
 
-    gmt originator seamounts.d -S2 -EDC85.d -Fpac_hs.d > origins.d
+    gmt originator seamounts.txt -S2 -EDC85.txt -Fpac_hs.txt > origins.txt
 
 To determine the predicted age of a seamount, distances to the closest
 hotspot, and echo the observed age given its location, observed age, and

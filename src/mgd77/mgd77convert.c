@@ -176,7 +176,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 				break;
 			case '4':	/* Selected high-resolution 4-byte integer MGD77+ format for mag, diur, faa, eot [2-byte integer] */
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -4 is deprecated; use -D instead next time.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-4 is deprecated; use -D instead next time.\n");
 					Ctrl->D.active = true;
 				}
 				else
@@ -254,36 +254,36 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 			sprintf (a77_file, "%s.a77", prefix);
 			sprintf (h77_file, "%s.h77", prefix);
 			if (access (a77_file, R_OK)) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: A77 file %s not found - skipping conversion\n", a77_file);
+				GMT_Report (API, GMT_MSG_NORMAL, "A77 file %s not found - skipping conversion\n", a77_file);
 				continue;
 			}
 			if (access (h77_file, R_OK)) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: H77 file %s not found - skipping conversion\n", h77_file);
+				GMT_Report (API, GMT_MSG_NORMAL, "H77 file %s not found - skipping conversion\n", h77_file);
 				continue;
 			}
 			sprintf (mgd77_file, "%s.mgd77", prefix);
 			if ((fpout = fopen (mgd77_file, "w")) == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot create MGD77 file %s - skipping conversion\n", mgd77_file);
+				GMT_Report (API, GMT_MSG_NORMAL, "Cannot create MGD77 file %s - skipping conversion\n", mgd77_file);
 				continue;
 			}
 			if ((fph77 = fopen (h77_file, "r")) == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot read H77 file %s - skipping conversion\n", h77_file);
+				GMT_Report (API, GMT_MSG_NORMAL, "Cannot read H77 file %s - skipping conversion\n", h77_file);
 				fclose (fpout);
 				continue;
 			}
 			if ((fpa77 = fopen (a77_file, "r")) == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot read A77 file %s - skipping conversion\n", a77_file);
+				GMT_Report (API, GMT_MSG_NORMAL, "Cannot read A77 file %s - skipping conversion\n", a77_file);
 				fclose (fpout);
 				fclose (fph77);
 				continue;
 			}
-			GMT_Report (API, GMT_MSG_NORMAL, "Assemble %s + %s --> %s\n", h77_file, a77_file, mgd77_file);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Assemble %s + %s --> %s\n", h77_file, a77_file, mgd77_file);
 			while ((c = fgetc (fph77)) != EOF) fputc (c, fpout);	fclose (fph77);
 			while ((c = fgetc (fpa77)) != EOF) fputc (c, fpout);	fclose (fpa77);
 			fclose (fpout);
 			++n_files;
 		}
-		GMT_Report (API, GMT_MSG_NORMAL, "Assembled %d H77/A77 files to MGD77 format\n", n_files);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Assembled %d H77/A77 files to MGD77 format\n", n_files);
 		Return (GMT_NOERROR);
 	}
 	/* Initialize MGD77 output order and other parameters*/
@@ -298,12 +298,12 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths <= 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "No cruises given\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	
-	if (Ctrl->F.format == Ctrl->T.format) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: The two formats chosen are the same\n");
+	if (Ctrl->F.format == Ctrl->T.format) GMT_Report (API, GMT_MSG_VERBOSE, "The two formats chosen are the same\n");
 	
 	if (Ctrl->T.format == MGD77_FORMAT_TBL && !(strcmp (GMT->current.setting.format_float_out, "%lg") & strcmp (GMT->current.setting.format_float_out, "%g"))) {
 		strcpy (GMT->current.setting.format_float_out, "%.10g");	/* To avoid losing precision upon rereading this file */
@@ -328,7 +328,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		}
 		sprintf (file, "%s.%s", M.NGDC_id, MGD77_suffix[Ctrl->T.format]);
 		if (Ctrl->F.format == Ctrl->T.format && !(M.path[0] == '/' || M.path[1] == ':')) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Input and Output file have same name! Output file will have extension \".new\" appended\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Input and Output file have same name! Output file will have extension \".new\" appended\n");
 			strcat (file, ".new");	/* To avoid overwriting original file */
 		}
 		if (!access (file, R_OK)) {	/* File exists */
@@ -361,7 +361,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		MGD77_Verify_Header (GMT, &M, &(D->H), NULL);	/* Verify the header */
 	
 		if (Ctrl->F.format == MGD77_FORMAT_CDF && Ctrl->T.format != MGD77_FORMAT_CDF && (D->H.info[MGD77_CDF_SET].n_col || D->flags[0] || D->flags[1])) {
-			GMT_Report (API, GMT_MSG_NORMAL, "\nWarning: Input file contains enhanced material that the output file format cannot represent\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "\nInput file contains enhanced material that the output file format cannot represent\n");
 		}
 
 		/* OK, ready to write out converted file */
@@ -377,7 +377,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error writing new file for cruise %s\n", list[argno]);
 			Return (GMT_DATA_WRITE_ERROR);
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, "Converted cruise %s to %s format\n", list[argno], format_name[Ctrl->T.format]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Converted cruise %s to %s format\n", list[argno], format_name[Ctrl->T.format]);
 		if (D->H.errors[0]) GMT_Report (API, GMT_MSG_VERBOSE, " [%02d header problems (%d warnings + %d errors)]", D->H.errors[0], D->H.errors[1], D->H.errors[2]);
 		if (D->errors) GMT_Report (API, GMT_MSG_VERBOSE, " [%d data errors]", D->errors);
 		GMT_Report (API, GMT_MSG_VERBOSE, "\n");
@@ -386,7 +386,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		n_cruises++;
 	}
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Converted %d MGD77 files\n", n_cruises);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Converted %d MGD77 files\n", n_cruises);
 	
 	MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 	MGD77_end (GMT, &M);

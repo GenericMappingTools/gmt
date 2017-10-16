@@ -118,13 +118,13 @@ GMT_LOCAL void proj_check_R_J (struct GMT_CTRL *GMT, double *clon)	/* Make sure 
 	if (GMT->current.map.is_world && lon0 != *clon) {
 		GMT->common.R.wesn[XLO] = *clon - 180.0;
 		GMT->common.R.wesn[XHI] = *clon + 180.0;
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
 			*clon, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 	}
 	else if (!GMT->current.map.is_world) {
 		lon0 = *clon - 360.0;
 		while (lon0 < GMT->common.R.wesn[XLO]) lon0 += 360.0;
-		if (lon0 > GMT->common.R.wesn[XHI]) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Central meridian outside region\n");
+		if (lon0 > GMT->common.R.wesn[XHI]) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Central meridian outside region\n");
 	}
 }
 
@@ -2442,7 +2442,7 @@ void gmt_vrobinson (struct GMT_CTRL *GMT, double lon0) {
 	int err_flag = 0;
 
 	if (GMT->current.setting.interpolant == GMT_SPLINE_LINEAR) {	/* Must reset and warn */
-		gmt_message (GMT, "Warning: -JN requires Akima or Cubic spline interpolant, set to Akima\n");
+		gmt_message (GMT, "-JN requires Akima or Cubic spline interpolant, set to Akima\n");
 		GMT->current.setting.interpolant = GMT_SPLINE_AKIMA;
 	}
 
@@ -2483,7 +2483,7 @@ void gmt_vrobinson (struct GMT_CTRL *GMT, double lon0) {
 		err_flag += gmtlib_akima (GMT, GMT->current.proj.n_Y,   GMT->current.proj.n_X,   GMT_N_ROBINSON, GMT->current.proj.n_yx_coeff);
 		err_flag += gmtlib_akima (GMT, GMT->current.proj.n_Y,   GMT->current.proj.n_phi, GMT_N_ROBINSON, GMT->current.proj.n_iy_coeff);
 	}
-	if (err_flag) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error:  Interpolation failed in gmt_vrobinson?\n");
+	if (err_flag) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Interpolation failed in gmt_vrobinson?\n");
 }
 
 void gmt_robinson (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {

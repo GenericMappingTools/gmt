@@ -10,7 +10,26 @@ ps=icelandbox.ps
 popt=-p130/30
 
 ### Colormap
-cpt="${src:-.}"/resid.cpt   
+cpt=resid.cpt
+cat << EOF > $cpt
+#	cpt file created by: makecpt -T-9/9/2 but then manually doctored
+#COLOR_MODEL = +HSV
+#
+-11	0	0	0	-9	0	0	0	L
+-9	255	1	0.6	-7	255	1	0.6	L
+-7	240	1	1	-5	240	1	1	L
+-5	216.667	1	1	-3	216.667	1	1	L
+-3	183.333	1	1	-1	183.333	1	1	L
+-1	0	0	0.85	1	0	0	0.85	L
+1	116.667	1	1	3	116.667	1	1	L
+3	83.3333	1	1	5	83.3333	1	1	L
+5	50	1	1	7	50	1	1	L
+7	19.6667	1	1	9	19.6667	1	1	L
+9	1.0	1	1	11	1.0	1	1	B
+B	0	0	0
+F	0	0	1
+N	0	0	0.501961
+EOF
 
 ### Pivotal points
 a="-24.4130658 63.0225642"
@@ -63,9 +82,9 @@ $f
 EOF
 
 ### Start plotting gmt surface
-gmt grdimage D3-25TV24-resid.nc -E100 -nl -p -R -J -JZ -C$cpt -O -K >> $ps
+gmt grdimage @D3-25TV24-resid.nc -E100 -nl -p -R -J -JZ -C$cpt -O -K >> $ps
 
-gmt grdcontour --PS_COMMENTS=1 D3-25TV24-resid.nc -p -R -J -JZ -Wthinner -A- -C$cpt -W -K -O >> $ps
+gmt grdcontour --PS_COMMENTS=1 @D3-25TV24-resid.nc -p -R -J -JZ -Wthinner -A- -C$cpt -W -K -O >> $ps
 
 gmt pscoast -p -R -J -JZ -Dh -A100 -Wthinnest -S135/190/240 -O -K >> $ps
 gmt psclip -C -O >> $ps

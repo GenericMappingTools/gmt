@@ -21,7 +21,7 @@
  *
  * Author:	Paul Wessel
  * Date:	15-OCT-2009
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"
@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"gmtwhich"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Find full path to specified files"
-#define THIS_MODULE_KEYS	">T}"
+#define THIS_MODULE_KEYS	">D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V"
 
@@ -120,7 +120,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GM
 					case 'u': Ctrl->G.mode = GMT_DATA_DIR;		break;
 					case '\0': case 'l': Ctrl->G.mode = GMT_LOCAL_DIR;	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Download mode %s not recognized\n", opt->arg);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Download mode %s not recognized\n", opt->arg);
 						n_errors++;
 						break;
 				}
@@ -148,6 +148,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 	char path[GMT_BUFSIZ] = {""}, file[PATH_MAX] = {""}, *Yes = "Y", *No = "N", cwd[GMT_BUFSIZ] = {""}, *p = NULL;
 	
 	struct GMTWHICH_CTRL *Ctrl = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -171,13 +172,13 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 	
 	/*---------------------------- This is the gmtwhich main code ----------------------------*/
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
-	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_TEXT) != GMT_NOERROR) {	/* Sets output geometry */
 		Return (API->error);
 	}
 	
@@ -185,6 +186,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Unable to determine current working directory!\n");
 	}
 	fmode = (Ctrl->A.active) ? R_OK : F_OK;	/* Either readable or existing files */
+	Out = gmt_new_record (GMT, NULL, path);	//* Place coordinates in data and message in text */
 		
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option != '<') continue;	/* Skip anything but filenames */
@@ -194,30 +196,33 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 			first = gmt_download_file_if_not_found (GMT, opt->arg, Ctrl->G.mode);
 
 		if (gmt_M_file_is_remotedata (opt->arg) && !strstr (opt->arg, ".grd"))
-			sprintf (file, "%s.grd", opt->arg);
+			sprintf (file, "%s.grd", opt->arg);	/* Append the implicit .grd for remote earth_relief grids */
 		else
 			strcpy (file, opt->arg);
 		if (gmt_getdatapath (GMT, &file[first], path, fmode)) {	/* Found the file */
 			if (Ctrl->D.active) {
 				p = strstr (path, &file[first]);	/* Start of filename */
-				if (!strcmp (p, path)) /* Current directory */
-					GMT_Put_Record (API, GMT_WRITE_TEXT, cwd);
-				else {
+				if (!strcmp (p, path)) /* Found in current directory */
+					strcpy (path, cwd);
+				else
 					*(--p) = 0;	/* Chop off file, report directory */
-					GMT_Put_Record (API, GMT_WRITE_TEXT, path);
-				}
 			}
-			else
-				GMT_Put_Record (API, GMT_WRITE_TEXT, ((Ctrl->C.active) ? Yes : path));
+			else if (Ctrl->C.active)	/* Just want a Yes */
+				strcpy (path, Yes);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 		}
-		else {
-			if (Ctrl->C.active) GMT_Put_Record (API, GMT_WRITE_TEXT, No);
-			GMT_Report (API, GMT_MSG_VERBOSE, "File %s not found!\n", &file[first]);
+		else {	/* Did not find.  Report no or be quiet */
+			if (Ctrl->C.active) {
+				strcpy (path, No);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
+			}
+			GMT_Report (API, GMT_MSG_NORMAL, "File %s not found!\n", &file[first]);
 		}
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 
+	gmt_M_free (GMT, Out);
 	Return (GMT_NOERROR);
 }

@@ -20,7 +20,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: Read one or more data tables and can concatenated them
  * vertically [Default] or horizontally (pasting), select certain columns,
@@ -219,13 +219,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 							Ctrl->C.invert = true;	break;
 						case 'l':	/* Set fewest records required */
 						 	if ((value = atol (&p[1])) < 0)
-								GMT_Report (API, GMT_MSG_NORMAL, "Error: The -C+l modifier was given negative record count!\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "The -C+l modifier was given negative record count!\n");
 							else
 								Ctrl->C.min = (uint64_t)value;
 							break;
 						case 'u':	/* Set max records required */
 					 		if ((value = atol (&p[1])) < 0)
-								GMT_Report (API, GMT_MSG_NORMAL, "Error: The -C+u modifier was given negative record count!\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "The -C+u modifier was given negative record count!\n");
 							else
 								Ctrl->C.max = (uint64_t)value;
 							break;
@@ -266,7 +266,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				if (opt->arg[0] == '\0') {	/* No arguments, must be old GMT4 option -F */
 					if (gmt_M_compat_check (GMT, 4)) {
 						GMT_Report (API, GMT_MSG_COMPAT,
-						            "Warning: Option -F for output columns is deprecated; use -o instead\n");
+						            "Option -F for output columns is deprecated; use -o instead\n");
 						gmt_parse_o_option (GMT, opt->arg);
 					}
 					else
@@ -285,7 +285,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 						case 'r': Ctrl->I.mode |= INV_ROWS; break;	/* Reverse record order */
 						default:
 							GMT_Report (API, GMT_MSG_NORMAL,
-							            "Error: The -I option does not recognize modifier %c\n", (int)opt->arg[k]);
+							            "The -I option does not recognize modifier %c\n", (int)opt->arg[k]);
 							n_errors++;
 							break;
 					}
@@ -388,7 +388,7 @@ GMT_LOCAL bool is_duplicate_row (struct GMT_DATASEGMENT *S, uint64_t row) {
 int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	bool match = false, prevent_seg_headers = false;
 	int error = 0;
-	uint64_t out_col, col, n_cols_in, n_cols_out, tbl;
+	uint64_t out_col, col, n_cols_in, n_cols_out, tbl, tlen;
 	uint64_t n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
 	uint64_t last_row, n_rows, row, seg, n_out_seg = 0, out_seg = 0;
 
@@ -421,9 +421,9 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gmtconvert main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 		Return (API->error);	/* Establishes data files or stdin */
 	}
 
@@ -434,7 +434,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	}
 
 	if (D[GMT_IN]->n_records == 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No data records provided\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "No data records provided\n");
 		Return (GMT_NOERROR);
 	}
 	if (GMT->common.a.active && D[GMT_IN]->n_tables > 1) {
@@ -543,8 +543,9 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 					}
 				}
 				/* Pull out current virtual row (may consist of a single or many (-A) table rows) */
-				for (tbl_hor = out_col = 0; tbl_hor < n_horizontal_tbls; tbl_hor++) {	/* Number of tables to place horizontally */
+				for (tbl_hor = out_col = tlen = 0; tbl_hor < n_horizontal_tbls; tbl_hor++) {	/* Number of tables to place horizontally */
 					use_tbl = (Ctrl->A.active) ? tbl_hor : tbl_ver;
+					if (D[GMT_IN]->table[use_tbl]->segment[seg]->text) tlen += strlen (D[GMT_IN]->table[use_tbl]->segment[seg]->text[row]) + 1;	/* String + separator */
 					for (col = 0; col < D[GMT_IN]->table[use_tbl]->segment[seg]->n_columns; col++, out_col++) {	/* Now go across all columns in current table */
 						val[out_col] = D[GMT_IN]->table[use_tbl]->segment[seg]->data[col][row];
 					}
@@ -552,6 +553,15 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 				for (col = 0; col < n_cols_out; col++) {	/* Now go across the single virtual row */
 					if (col >= n_cols_in) continue;			/* This column is beyond end of this table */
 					D[GMT_OUT]->table[tbl_ver]->segment[seg]->data[col][n_rows] = val[col];
+				}
+				if (tlen) {
+					if (D[GMT_OUT]->table[tbl_ver]->segment[seg]->text == NULL) D[GMT_OUT]->table[tbl_ver]->segment[seg]->text = gmt_M_memory (GMT, NULL, S->n_rows, char *);
+					D[GMT_OUT]->table[tbl_ver]->segment[seg]->text[n_rows] = calloc (tlen+1, sizeof(char));	/* Space for trailing \0 */
+					for (tbl_hor = 0; tbl_hor < n_horizontal_tbls; tbl_hor++) {	/* Number of tables to place horizontally */
+						use_tbl = (Ctrl->A.active) ? tbl_hor : tbl_ver;
+						if (use_tbl) strcat (D[GMT_OUT]->table[tbl_ver]->segment[seg]->text[n_rows], GMT->current.setting.io_col_separator);
+						strcat (D[GMT_OUT]->table[tbl_ver]->segment[seg]->text[n_rows], D[GMT_IN]->table[use_tbl]->segment[seg]->text[row]);
+					}
 				}
 				n_rows++;
 			}
@@ -623,7 +633,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		unsigned int flag[3] = {0, 0, GMT_WRITE_SEGMENT};
 		struct GMT_DATASET *D2 = NULL;
 		if ((D2 = GMT_Convert_Data (API, D[GMT_OUT], GMT_IS_DATASET, NULL, GMT_IS_DATASET, flag)) == NULL) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Error collating each table's segments into a single segment per table.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Error collating each table's segments into a single segment per table.\n");
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, &D[GMT_OUT]) != GMT_NOERROR) {	/* Remove the previously registered output dataset */
@@ -636,7 +646,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		uint64_t max_len = 0;
 		bool do_it = true;
 		if (Ctrl->N.col >= D[GMT_OUT]->n_columns) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Column selected (%d) as sorting key is outside range of valid columns [0-%d].  No sorting performed\n", (int)Ctrl->N.col, (int)(D[GMT_OUT]->n_columns - 1));
+			GMT_Report (API, GMT_MSG_VERBOSE, "Column selected (%d) as sorting key is outside range of valid columns [0-%d].  No sorting performed\n", (int)Ctrl->N.col, (int)(D[GMT_OUT]->n_columns - 1));
 			do_it = false;
 		}
 		for (tbl = 0; do_it && tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
@@ -667,9 +677,9 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	}
 	if (prevent_seg_headers) GMT->current.io.skip_headers_on_outout = false;	/* Restore to default if it was changed for file output */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " tables %s, %" PRIu64 " records passed (input cols = %d; output cols = %d)\n",
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " tables %s, %" PRIu64 " records passed (input cols = %d; output cols = %d)\n",
 		D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
-	if (Ctrl->Q.active || Ctrl->S.active) GMT_Report (API, GMT_MSG_VERBOSE, "Extracted %" PRIu64 " from a total of %" PRIu64 " segments\n", n_out_seg, D[GMT_OUT]->n_segments);
+	if (Ctrl->Q.active || Ctrl->S.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Extracted %" PRIu64 " from a total of %" PRIu64 " segments\n", n_out_seg, D[GMT_OUT]->n_segments);
 
 	Return (GMT_NOERROR);
 }

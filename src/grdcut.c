@@ -18,9 +18,9 @@
 /*
  * API functions to support the grdcut application.
  *
- * Author:	Walter Smith
+ * Author:	Walter Smith, Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: Reads a grid file and writes a portion within it
  * to a new file.
@@ -33,7 +33,7 @@
 #define THIS_MODULE_PURPOSE	"Extract subregion from a grid"
 #define THIS_MODULE_KEYS	"<G{,GG}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-RVf"
+#define THIS_MODULE_OPTIONS "-JRV"
 
 /* Control structure for grdcontour */
 
@@ -91,7 +91,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Deal
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdcut <ingrid> -G<outgrid> %s [-N[<nodata>]]\n\t[%s] [-S[n]<lon>/<lat>/<radius>] [-Z[n|r][<min>/<max>]] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdcut <ingrid> -G<outgrid> %s [%s] [-N[<nodata>]]\n\t[%s] [-S[n]<lon>/<lat>/<radius>] [-Z[n|r][<min>/<max>]] [%s]\n\n",
+		GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -102,6 +103,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If in doubt, run grdinfo first and check range of old file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, see -N below.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-J Specify oblique projection and compute corresponding rectangular.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   region that needs to be extracted.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Allow grid to be extended if new -R exceeds existing boundaries.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append value to initialize nodes outside current region [Default is NaN].\n");
 	GMT_Option (API, "V");
@@ -141,7 +144,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 
 			/* Processes program-specific parameters */
 			
- 			case 'G':	/* Output file */
+			case 'G':	/* Output file */
 				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
 				else
@@ -160,8 +163,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 					k = 1;
 				}
 				if (sscanf (&opt->arg[k], "%[^/]/%[^/]/%s", za, zb, zc) == 3) {
-					n_errors += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf_arg (GMT, za, GMT_IS_LON, &Ctrl->S.lon), za);
-					n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf_arg (GMT, zb, GMT_IS_LAT, &Ctrl->S.lat), zb);
+					n_errors += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf_arg (GMT, za, GMT_IS_LON, false, &Ctrl->S.lon), za);
+					n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf_arg (GMT, zb, GMT_IS_LAT, false, &Ctrl->S.lat), zb);
 					Ctrl->S.mode = gmt_get_distance (GMT, zc, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				}
 				break;
@@ -177,8 +180,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 					k = 1;
 				}
 				if (sscanf (&opt->arg[k], "%[^/]/%s", za, zb) == 2) {
-					if (!(za[0] == '-' && za[1] == '\0')) n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.min), za);
-					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.max), zb);
+					if (!(za[0] == '-' && za[1] == '\0')) n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, za, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.min), za);
+					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, zb, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.max), zb);
 				}
 				break;
 
@@ -216,6 +219,46 @@ GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, uns
 	}
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Nans found: W = %d E = %d S = %d N = %d\n", count[3], count[1], count[0], count[2]);
 	return ((row0 == row1 && col0 == col1) ? 0 : sum);	/* Return 0 if we run out of grid, else the sum */
+}
+
+GMT_LOCAL int set_rectangular_subregion (struct GMT_CTRL *GMT, double wesn[], double inc[]) {
+	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Default is to take the -R as given */
+	if (GMT->common.R.oblique == false || GMT->current.proj.projection == GMT_NO_PROJ) return GMT_NOERROR;	/* Nothing else to do */
+	
+	/* Here we got an oblique area and a projection; find the corresponding rectangular -R that covers this oblique area */
+	
+	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, wesn), "")) return (GMT_PROJECTION_ERROR);
+
+	gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
+
+	wesn[XLO] = floor (GMT->common.R.wesn[XLO] / inc[GMT_X]) * inc[GMT_X];
+	wesn[XHI] = ceil  (GMT->common.R.wesn[XHI] / inc[GMT_X]) * inc[GMT_X];
+	wesn[YLO] = floor (GMT->common.R.wesn[YLO] / inc[GMT_Y]) * inc[GMT_Y];
+	wesn[YHI] = ceil  (GMT->common.R.wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y];
+
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) && rint (inc[GMT_X] * 60.0) == (inc[GMT_X] * 60.0)) {	/* Spacing in whole arc minutes */
+		int w, e, s, n, wm, em, sm, nm;
+
+		w = irint (floor (wesn[XLO]));	wm = irint ((wesn[XLO] - w) * 60.0);
+		e = irint (floor (wesn[XHI]));	em = irint ((wesn[XHI] - e) * 60.0);
+		s = irint (floor (wesn[YLO]));	sm = irint ((wesn[YLO] - s) * 60.0);
+		n = irint (floor (wesn[YHI]));	nm = irint ((wesn[YHI] - n) * 60.0);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s -> -R%d:%02d/%d:%02d/%d:%02d/%d:%02d\n", GMT->common.R.string, w, wm, e, em, s, sm, n, nm);
+	}
+	else if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) && rint (inc[GMT_X] * 3600.0) == (inc[GMT_X] * 3600.0)) {	/* Spacing in whole arc seconds */
+		int w, e, s, n, wm, em, sm, nm, ws, es, ss, ns;
+
+		w = irint (floor (wesn[XLO]));	wm = irint (floor ((wesn[XLO] - w) * 60.0));	ws = irint (floor ((wesn[XLO] - w - wm/60.0) * 3600.0));
+		e = irint (floor (wesn[XHI]));	em = irint (floor ((wesn[XHI] - e) * 60.0));	es = irint (floor ((wesn[XHI] - e - em/60.0) * 3600.0));
+		s = irint (floor (wesn[YLO]));	sm = irint (floor ((wesn[YLO] - s) * 60.0));	ss = irint (floor ((wesn[YLO] - s - sm/60.0) * 3600.0));
+		n = irint (floor (wesn[YHI]));	nm = irint (floor ((wesn[YHI] - n) * 60.0));	ns = irint (floor ((wesn[YHI] - n - nm/60.0) * 3600.0));
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s -> -R%d:%02d:%02d/%d:%02d:%02d/%d:%02d:%02d/%d:%02d:%02d\n",
+			GMT->common.R.string, w, wm, ws, e, em, es, s, sm, ss, n, nm, ns);
+	}
+	else
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s -> -R%g/%g/%g/%g\n",
+		            GMT->common.R.string, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+	return GMT_NOERROR;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -257,7 +300,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdcut main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid\n");
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
 		unsigned int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col, sum, side, count[4];
 		bool go;
@@ -442,7 +485,9 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
-		gmt_M_memcpy (wesn_new, GMT->common.R.wesn, 4, double);
+		if (set_rectangular_subregion (GMT, wesn_new, G->header->inc)) {
+			Return (API->error);	/* Get header only */
+		}
 	}
 	
 	gmt_M_memcpy (wesn_requested, wesn_new, 4, double);
@@ -475,7 +520,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		if (Ctrl->N.active)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Requested subset exceeds data domain on the %s side - nodes in the extra area will be initialized to %g\n", name[type][side], Ctrl->N.value);
 		else
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Requested subset exceeds data domain on the %s side - truncated to match grid bounds\n", name[type][side]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Requested subset exceeds data domain on the %s side - truncated to match grid bounds\n", name[type][side]);
 	}
 
 	/* Make sure output grid is kosher */
@@ -558,15 +603,15 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
 		char format[GMT_BUFSIZ];
 		sprintf (format, "\t%s\t%s\t%s\t%s\t%s\t%s\t%%d\t%%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_VERBOSE, "File spec:\tW E S N dx dy n_columns n_rows:\n");
-		GMT_Report (API, GMT_MSG_VERBOSE, "Old:");
-		GMT_Report (API, GMT_MSG_VERBOSE, format, wesn_old[XLO], wesn_old[XHI], wesn_old[YLO], wesn_old[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], nx_old, ny_old);
-		GMT_Report (API, GMT_MSG_VERBOSE, "New:");
-		GMT_Report (API, GMT_MSG_VERBOSE, format, wesn_new[XLO], wesn_new[XHI], wesn_new[YLO], wesn_new[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], G->header->n_columns, G->header->n_rows);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "File spec:\tW E S N dx dy n_columns n_rows:\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Old:");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, wesn_old[XLO], wesn_old[XHI], wesn_old[YLO], wesn_old[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], nx_old, ny_old);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "New:");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, wesn_new[XLO], wesn_new[XHI], wesn_new[YLO], wesn_new[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], G->header->n_columns, G->header->n_rows);
 	}
 
 	if (Ctrl->S.set_nan) {	/* Set all nodes outside the circle to NaN */
@@ -586,10 +631,10 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			}
 		}
 		gmt_M_free (GMT, grd_lon);	
-		GMT_Report (API, GMT_MSG_VERBOSE, "Set %" PRIu64 " nodes outside circle to NaN\n", n_nodes);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Set %" PRIu64 " nodes outside circle to NaN\n", n_nodes);
 	}
 	
-	/* Send the subset of the grid to the destination. */
+	/* Send the subset of the grid to the gridfile destination. */
 	
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR) {

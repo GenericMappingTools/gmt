@@ -35,6 +35,7 @@ LANG=C
 
 # Additional variables needed in gmtest
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
+GRAPHICSMAGICK_RMS="@GRAPHICSMAGICK_RMS@"
 
 # Reset error count
 ERROR=0
@@ -73,7 +74,7 @@ pscmp () {
     return
   fi
   # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-  rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "${src}/${ps}") || pscmpfailed="yes"
+  rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error $GRAPHICSMAGICK_RMS -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "${src}/${ps}") || pscmpfailed="yes"
   rms=$(perl -ne 'print $1 if /Total: ([0-9.]+)/' <<< "$rms")
   if [ -z "$rms" ]; then
     rms="NA"
@@ -170,7 +171,7 @@ LANG=C
 export PATH="@GMT_BINARY_DIR@/src:\$PATH"
 unset GMT5_SHAREDIR
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
-export GMT_DATADIR="$src:@GMT_TEST_DATA@/"
+export GMT_DATADIR="$src"
 export GMT_SRCDIR="$src"
 export GSHHG_DIR="@GSHHG_PATH@"
 export DCW_DIR="@DCW_PATH@"

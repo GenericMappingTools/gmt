@@ -613,17 +613,17 @@ int GMT_pssegyz (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pssegyz main code ----------------------------*/
 
-	if (!gmt_M_is_linear (GMT)) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: you asked for a non-rectangular projection. \n It will probably still work, but be prepared for problems\n");
+	if (!gmt_M_is_linear (GMT)) GMT_Report (API, GMT_MSG_VERBOSE, "You asked for a non-rectangular projection. \n It will probably still work, but be prepared for problems\n");
 
 	if (Ctrl->In.active) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Will read segy file %s\n", Ctrl->In.file);
-		if ((fpi = fopen (Ctrl->In.file, "rb")) == NULL) {
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Will read segy file %s\n", Ctrl->In.file);
+		if ((fpi = gmt_fopen (GMT, Ctrl->In.file, "rb")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find segy file %s\n", Ctrl->In.file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 	}
 	else {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Will read segy file from standard input\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Will read segy file from standard input\n");
 		if (fpi == NULL) fpi = stdin;
 	}
 
@@ -664,7 +664,7 @@ int GMT_pssegyz (void *V_API, int mode, void *args) {
 	if (Ctrl->A.active) {
 /* this is a little-endian system, and we need to byte-swap ints in the reel header - we only
 use a few of these*/
-		GMT_Report (API, GMT_MSG_VERBOSE, "Swapping bytes for ints in the headers\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Swapping bytes for ints in the headers\n");
 		binhead.num_traces = bswap16 (binhead.num_traces);
 		binhead.nsamp = bswap16 (binhead.nsamp);
 		binhead.dsfc = bswap16 (binhead.dsfc);
@@ -674,12 +674,12 @@ use a few of these*/
 /* set parameters from the reel headers */
 	if (!Ctrl->M.value) Ctrl->M.value = binhead.num_traces;
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Number of traces in header is %d\n", Ctrl->M.value);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of traces in header is %d\n", Ctrl->M.value);
 
 
 	if (!Ctrl->L.value) {/* number of samples not overridden*/
 		Ctrl->L.value = binhead.nsamp;
-		GMT_Report (API, GMT_MSG_VERBOSE, "Number of samples per trace is %d\n", Ctrl->L.value);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of samples per trace is %d\n", Ctrl->L.value);
 	}
 	else if ((Ctrl->L.value != binhead.nsamp) && (binhead.nsamp))
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning nsampr input %d, nsampr in header %d\n", Ctrl->L.value, binhead.nsamp);
@@ -689,14 +689,14 @@ use a few of these*/
 		GMT_exit (GMT, GMT_RUNTIME_ERROR); Return(GMT_RUNTIME_ERROR);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Number of samples is %d\n", n_samp);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of samples is %d\n", n_samp);
 
-	if (binhead.dsfc != 5) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: data not in IEEE format\n");
+	if (binhead.dsfc != 5) GMT_Report (API, GMT_MSG_VERBOSE, "Data not in IEEE format\n");
 
 	if (!Ctrl->Q.value[Y_ID]) {
 		Ctrl->Q.value[Y_ID] = binhead.sr; /* sample interval of data (microseconds) */
 		Ctrl->Q.value[Y_ID] /= 1000000.0;
-		GMT_Report (API, GMT_MSG_VERBOSE, "Sample interval is %f s\n", Ctrl->Q.value[Y_ID]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Sample interval is %f s\n", Ctrl->Q.value[Y_ID]);
 	}
 	else if ((Ctrl->Q.value[Y_ID] != binhead.sr) && (binhead.sr)) /* value in header overridden by input */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning dz input %f, dz in header %f\n", Ctrl->Q.value[Y_ID], (float)binhead.sr);
@@ -784,11 +784,11 @@ use a few of these*/
 			header->num_samps = bswap32 (header->num_samps);
 		}
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "trace %d at x=%f, y=%f \n", ix+1, x0, y0);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "trace %d at x=%f, y=%f \n", ix+1, x0, y0);
 
 		if (Ctrl->Q.value[U_ID]) {
 			toffset = (float) -(fabs ((double)(header->sourceToRecDist)) / Ctrl->Q.value[U_ID]);
-			GMT_Report (API, GMT_MSG_VERBOSE, "time shifted by %f\n", toffset);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "time shifted by %f\n", toffset);
 		}
 
 		data = segy_get_data (fpi, header);	/* read a trace */
@@ -808,7 +808,7 @@ use a few of these*/
 
 		if (Ctrl->N.active || Ctrl->Z.active) {
 			scale= (float) segyz_rms (data, n_samp);
-			GMT_Report (API, GMT_MSG_VERBOSE, "rms value is %f\n", scale);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "rms value is %f\n", scale);
 		}
 		for (iz = 0; iz < n_samp; iz++) { /* scale bias and clip each sample in the trace */
 			if (Ctrl->N.active) data[iz] /= scale;

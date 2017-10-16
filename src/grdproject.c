@@ -23,7 +23,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Ver:		5 API
+ * Ver:		6 API
  */
 
 #include "gmt_dev.h"
@@ -156,7 +156,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 				break;
 			case 'A':	/* Old Force specific unit option */
 				if (gmt_M_compat_check (GMT, 5))	/* Honor old -A[<unit>] option */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -A is deprecated; use -F instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -A is deprecated; use -F instead.\n");
 				else {
 					n_errors += gmt_default_error (GMT, opt->option);
 					break;
@@ -183,7 +183,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 				break;
 			case 'N':	/* GMT4 Backwards compatible.  n_columns/n_rows can now be set with -D */
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -D instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-N option is deprecated; use -D instead.\n");
 					sscanf (opt->arg, "%d/%d", &ii, &jj);
 					if (jj == 0) jj = ii;
 					sprintf (format, "%d+/%d+", ii, jj);
@@ -254,7 +254,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdproject main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid\n");
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	if ((GMT->common.R.active[ISET] + Ctrl->E.active) == 0) set_n = true;
 	if (Ctrl->M.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->M.unit), "-M");
@@ -433,8 +433,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		gmt_grd_init (GMT, Geo->header, options, true);
 		gmt_BC_init (GMT, Geo->header);
 
-		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Transform ");
+		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Transform ");
 			GMT_Message (API, GMT_TIME_NONE, format, Geo->header->wesn[XLO], Geo->header->wesn[XHI], Geo->header->wesn[YLO], Geo->header->wesn[YHI]);
 			GMT_Message (API, GMT_TIME_NONE, " <-- ");
 			GMT_Message (API, GMT_TIME_NONE, format, xmin, xmax, ymin, ymax);
@@ -506,8 +506,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			use_ny = Geo->header->n_rows;
 		}
 
-		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Transform ");
+		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Transform ");
 			GMT_Message (API, GMT_TIME_NONE, format, Geo->header->wesn[XLO], Geo->header->wesn[XHI], Geo->header->wesn[YLO], Geo->header->wesn[YHI]);
 			GMT_Message (API, GMT_TIME_NONE, " --> ");
 			GMT_Message (API, GMT_TIME_NONE, format, xmin, xmax, ymin, ymax);

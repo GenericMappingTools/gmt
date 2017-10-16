@@ -20,7 +20,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: gmtselect is a general-purpose spatial filter.  Data pass
  * or fail basedon one or more conditions.  Seven conditions may be set:
@@ -173,59 +173,6 @@ GMT_LOCAL int compare_x (const void *point_1, const void *point_2) {
 	return (0);
 }
 
-GMT_LOCAL void ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out) {
-	unsigned int col, k, n_aspatial = 0;
-	size_t len;
-	char text[GMT_LEN64] = {""};
-	static int ogr[MAX_ASPATIAL];
-	
-	out[0] = '\0';	/* Start with nothing */
-	
-	if (n_aspatial == 0) {	/* First time */
-		for (col = 0; col < GMT->common.a.n_aspatial; col++) {	/* Loop over requested aspatial items via -a */
-			for (k = 0; k < G->n_aspatial; k++) {	/* Given the actual data... */
-				if (strcmp (GMT->common.a.name[col], G->name[k])) continue;	/* Not one of the specified items */
-				ogr[n_aspatial++] = k;
-			}
-		}
-	}
-	for (col = 0; col < n_aspatial; col++) {	/* Loop over requested aspatial items via -a */
-		k = ogr[col];
-		switch (G->type[k]) {
-			case GMT_TEXT:
-				len = strlen (G->tvalue[k]);
-				if (G->tvalue[k][0] == '\"' && G->tvalue[k][len-1] == '\"') {	/* Skip opening and closing quotes */
-					strncpy (text, &G->tvalue[k][1], len-2);
-					text[len-2] = '\0';
-				}
-				else
-					strcpy (text, G->tvalue[k]);
-				break;
-			case GMT_DOUBLE:
-			case GMT_FLOAT:
-				gmt_ascii_format_col (GMT, text, G->dvalue[k], GMT_OUT, GMT_Z);
-				break;
-			case GMT_CHAR:
-			case GMT_UCHAR:
-			case GMT_INT:
-			case GMT_UINT:
-			case GMT_LONG:
-			case GMT_ULONG:
-				snprintf (text, GMT_LEN64, "%ld", lrint (G->dvalue[k]));
-				break;
-			case GMT_DATETIME:
-				gmt_format_abstime_output (GMT, G->dvalue[k], text);
-				break;
-			default:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad type passed to gmtio_write_formatted_ogr_value - assumed to be double\n");
-				gmt_ascii_format_col (GMT, text, G->dvalue[k], GMT_OUT, GMT_Z);
-				break;
-		}
-		strcat (out, GMT->current.setting.io_col_separator);
-		strcat (out, text);
-	}
-}
-
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
@@ -305,7 +252,7 @@ GMT_LOCAL int old_C_parse (struct GMTAPI_CTRL *API, char *arg, struct GMTSELECT_
 	}
 	if (arg[0] == 'f') {
 		if (gmt_M_compat_check (API->GMT, 4)) {	/* Allow old-style quick-mode specification */
-			GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C<file>+d-<distance> instead\n");
+			GMT_Report (API, GMT_MSG_COMPAT, "Option -Cf is deprecated; use -C<file>+d-<distance> instead\n");
 			arg[0] = '-';
 			fix = true;
 		}
@@ -469,7 +416,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				Ctrl->N.active = true;
 				strncpy (buffer, opt->arg, GMT_BUFSIZ);
 				if (buffer[strlen(buffer)-1] == 'o' && gmt_M_compat_check (GMT, 4)) { /* Edge is considered outside */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -N...o is deprecated; use -E instead\n");
 					Ctrl->E.active = true;
 					Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
 					buffer[strlen(buffer)-1] = 0;
@@ -508,13 +455,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				if (Ctrl->Z.n_tests == n_z_alloc) Ctrl->Z.limit = gmt_M_memory (GMT, Ctrl->Z.limit, n_z_alloc += 8, struct GMTSELECT_ZLIMIT);
 				Ctrl->Z.limit[Ctrl->Z.n_tests].min = -DBL_MAX;
 				Ctrl->Z.limit[Ctrl->Z.n_tests].max = +DBL_MAX;
-				if (!(za[0] == '-' && za[1] == '\0')) n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
-					gmt_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].min), za);
+				if (!(za[0] == '-' && za[1] == '\0')) n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z),
+					gmt_scanf_arg (GMT, za, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.limit[Ctrl->Z.n_tests].min), za);
 				if (j == 1)
 					Ctrl->Z.limit[Ctrl->Z.n_tests].equal = true;
 				else {
-					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
-						gmt_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
+					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z),
+						gmt_scanf_arg (GMT, zb, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
 				}
 				n_errors += gmt_M_check_condition (GMT, Ctrl->Z.limit[Ctrl->Z.n_tests].max <= Ctrl->Z.limit[Ctrl->Z.n_tests].min, "Syntax error: -Z must have zmax > zmin!\n");
 				Ctrl->Z.limit[Ctrl->Z.n_tests].col = col;
@@ -563,25 +510,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 
 int GMT_gmtselect (void *V_API, int mode, void *args) {
 	int err;	/* Required by gmt_M_err_fail */
-	unsigned int base = 3, np[2] = {0, 0}, r_mode;
+	unsigned int base = 3, np[2] = {0, 0};
 	unsigned int side, col, id;
 	int n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX, error = 0;
-	bool inside = false, need_header = false, shuffle = false, just_copy_record = false, pt_cartesian = false;
+	bool inside = false, need_header = false, pt_cartesian = false;
 	bool output_header = false, do_project = false, no_resample = false, keep;
 
 	uint64_t k, row, seg, n_read = 0, n_pass = 0, n_output = 0;
 
-	double xx, yy, *in = NULL;
+	double xx, yy;
 	double west_border = 0.0, east_border = 0.0, xmin, xmax, ymin, ymax, lon;
 
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
-	char extra[GMT_BUFSIZ] = {""};
 
 	struct GMT_DATATABLE *pol = NULL, *line = NULL, *point = NULL;
 	struct GMT_GSHHS_POL *p[2] = {NULL, NULL};
 	struct GMT_SHORE c;
 	struct GMT_DATASET *Cin = NULL, *Lin = NULL, *Fin = NULL;
 	struct GMT_GRID *G = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct GMTSELECT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -605,11 +552,10 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gmtselect main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
 	if (Ctrl->C.active && gmt_M_is_cartesian (GMT, GMT_IN)) pt_cartesian = true;
 
-	shuffle = (GMT->current.setting.io_lonlat_toggle[GMT_IN] != GMT->current.setting.io_lonlat_toggle[GMT_OUT]);	/* Must rewrite output record */
 	n_minimum = Ctrl->Z.max_col;	/* Minimum number of columns in ASCII input */
 	
 	if (!GMT->common.R.active[RSET] && Ctrl->N.active) {	/* If we use coastline data or used -fg but didn't give -R we implicitly set -Rg */
@@ -637,7 +583,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		if (no_resample) GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	}
 
-	if (do_project) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -J means all data will be projected before tests are applied\n");
+	if (do_project) GMT_Report (API, GMT_MSG_VERBOSE, "-J means all data will be projected before tests are applied\n");
 	 
 	if (Ctrl->N.active) {	/* Set up GSHHS */
 		if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
@@ -798,13 +744,11 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to take on some input values */
 
-	just_copy_record = (gmt_is_ascii_record (GMT, options) && !shuffle && !GMT->common.s.active);
 	GMT->common.b.ncol[GMT_OUT] = UINT_MAX;	/* Flag to have it reset to GMT->common.b.ncol[GMT_IN] when writing */
-	r_mode = (just_copy_record) ? GMT_READ_MIXED : GMT_READ_DATA;
 	gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -C|L|F files might have turned it on [should be determined below] */
 	
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, r_mode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -841,28 +785,28 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.active) {	/* Apply z-range test(s) */
 			for (k = 0, keep = true; keep && k < Ctrl->Z.n_tests; k++) {
 				col = Ctrl->Z.limit[k].col;			/* Shorthand notation */
-				if (gmt_M_is_dnan (in[col]))
+				if (gmt_M_is_dnan (In->data[col]))
 					keep = true;		/* Make no decision on NaNs here; see -s instead */
 				else if (Ctrl->Z.limit[k].equal)
-					inside = doubleAlmostEqualZero (in[col], Ctrl->Z.limit[k].min);
+					inside = doubleAlmostEqualZero (In->data[col], Ctrl->Z.limit[k].min);
 				else
-					inside = (in[col] >= Ctrl->Z.limit[k].min && in[col] <= Ctrl->Z.limit[k].max); 
+					inside = (In->data[col] >= Ctrl->Z.limit[k].min && In->data[col] <= Ctrl->Z.limit[k].max); 
 				if (inside != Ctrl->I.pass[GMT_SELECT_Z]) keep = false;
 			}
 			if (!keep) { output_header = need_header; continue;}
 		}
 
-		lon = in[GMT_X];	/* Use copy since we may have to wrap 360 */
+		lon = In->data[GMT_X];	/* Use copy since we may have to wrap 360 */
 		if (GMT->common.R.active[RSET]) {	/* Apply region test */
-			inside = !gmt_map_outside (GMT, lon, in[GMT_Y]);
+			inside = !gmt_map_outside (GMT, lon, In->data[GMT_Y]);
 			if (inside != Ctrl->I.pass[GMT_SELECT_R]) { output_header = need_header; continue;}
 		}
 
 		if (do_project)	/* First project the input point */
-			gmt_geo_to_xy (GMT, lon, in[GMT_Y], &xx, &yy);
+			gmt_geo_to_xy (GMT, lon, In->data[GMT_Y], &xx, &yy);
 		else {
 			xx = lon;
-			yy = in[GMT_Y];
+			yy = In->data[GMT_Y];
 		}
 		
 		if (Ctrl->C.active) {	/* Check for distance to points */
@@ -890,7 +834,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 		if (Ctrl->G.active) {	/* Check if we are in/out-side mask cell */
 			unsigned int row, col;
-			inside = !gmt_row_col_out_of_bounds (GMT, in, G->header, &row, &col);
+			inside = !gmt_row_col_out_of_bounds (GMT, In->data, G->header, &row, &col);
 			if (inside) {	/* Inside -R so check the node value */
 				uint64_t node = gmt_M_ijp (G->header, row, col);
 				inside = !(gmt_M_is_fnan (G->data[node]) || G->data[node] == 0);
@@ -902,7 +846,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			int brow, i, this_point_level;
 			xx = lon;
 			while (xx < 0.0) xx += 360.0;
-			brow = irint (floor ((90.0 - in[GMT_Y]) / c.bsize));
+			brow = irint (floor ((90.0 - In->data[GMT_Y]) / c.bsize));
 			if (brow >= c.bin_ny) brow = c.bin_ny - 1;	/* Presumably only kicks in for south pole */
 			col = urint (floor (xx / c.bsize));
 			bin = brow * c.bin_nx + col;
@@ -931,7 +875,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			}
 			else {
 				this_point_level = 0;
-				gmt_geo_to_xy (GMT, lon, in[GMT_Y], &xx, &yy);
+				gmt_geo_to_xy (GMT, lon, In->data[GMT_Y], &xx, &yy);
 				for (id = 0; id < 2; id++) {
 
 					for (k = 0; k < np[id]; k++) {
@@ -974,15 +918,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			output_header = false;
 		}
 
-		if (just_copy_record) {	/* Want to (or can) do text output */
-			if (GMT->common.a.active) {	/* Add selected aspatial fields to output record */
-				ogr_to_text (GMT, GMT->current.io.OGR, extra);
-				strcat (API->GMT->current.io.record, extra);
-			}
-			GMT_Put_Record (API, GMT_WRITE_TEXT, NULL);
-		}
-		else
-			GMT_Put_Record (API, GMT_WRITE_DATA, in);
+		GMT_Put_Record (API, GMT_WRITE_DATA, In);
 		n_pass++;
 	} while (true);
 	
@@ -993,7 +929,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " records, passed %" PRIu64" records\n", n_read, n_pass);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " records, passed %" PRIu64" records\n", n_read, n_pass);
 
 	if (Ctrl->N.active) {
 		gmt_free_shore (GMT, &c);

@@ -249,16 +249,6 @@ topo_intens.nc, and looking from the SE, run
     gmt grdview topography.nc -JM6i -Gmagnetics.nc -Cmag_intens.cpt \
                 -Qs -p140/30 -Itopo_intens.nc > draped3D.ps
 
-Given topo.nc and the Landsat image veggies.ras, first run :doc:`grd2rgb`
-to get the red, green, and blue grids, and then drape this image over
-the topography and shade the result for good measure. The commands are
-
-   ::
-
-    gmt grd2rgb veggies.ras -Glayer_%c.nc
-    gmt grdview topo.nc -JM6i -Qi -p140/30 -Itopo_intens.nc \
-               -Glayer_r.nc -Glayer_g.nc -Glayer_b.nc > image.ps
-
 Remarks
 -------
 
@@ -274,7 +264,7 @@ variations within polygons by using scanline conversion to image the polygons.
 See Also
 --------
 
-:doc:`gmt`, :doc:`grd2rgb`,
+:doc:`gmt`,
 :doc:`gmtcolors`,
 :doc:`grdcontour`,
 :doc:`grdimage`,

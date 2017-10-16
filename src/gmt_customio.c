@@ -84,12 +84,12 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
  *-----------------------------------------------------------*/
 
 int gmt_dummy_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	if (header) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unknown grid format.\n");
+	if (header) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown grid format.\n");
 	return (GMT_GRDIO_UNKNOWN_FORMAT);
 }
 
 int gmt_dummy_grd_read (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
-	if (header && grid && wesn && pad && complex_mode < 1024) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unknown grid format.\n");
+	if (header && grid && wesn && pad && complex_mode < 1024) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown grid format.\n");
 	return (GMT_GRDIO_UNKNOWN_FORMAT);
 }
 
@@ -599,23 +599,23 @@ int gmt_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		case 4:	/* 4-byte elements - could be int or float */
 			/* See if we can decide it is a float grid */
 			if (gmt_M_compat_check (GMT, 4)) {
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Will try to determine if a native 4-byte grid is float or int but may be wrong.\n");
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Please append =bf (float) or =bi (integer) to avoid this situation.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Will try to determine if a native 4-byte grid is float or int but may be wrong.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Please append =bf (float) or =bi (integer) to avoid this situation.\n");
 				/* Naive test to see if we can decide it is a float grid */
 				if ((t_head.z_scale_factor == 1.0 && t_head.z_add_offset == 0.0) || fabs((t_head.z_min/t_head.z_scale_factor) - rint(t_head.z_min/t_head.z_scale_factor)) > GMT_CONV8_LIMIT || fabs((t_head.z_max/t_head.z_scale_factor) - rint(t_head.z_max/t_head.z_scale_factor)) > GMT_CONV8_LIMIT) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Based on header values we guessed the grid is 4-byte float.  If wrong you must add =bi.\n");
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Based on header values we guessed the grid is 4-byte float.  If wrong you must add =bi.\n");
 					header->type = GMT_GRID_IS_BF;
 					header->orig_datatype = GMT_FLOAT;
 				}
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Based on header values we guessed the grid is 4-byte int.  If wrong you must add =bf.\n");
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Based on header values we guessed the grid is 4-byte int.  If wrong you must add =bf.\n");
 					header->type = GMT_GRID_IS_BI;
 					header->orig_datatype = GMT_INT;
 				}
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Cannot determine if a native 4-byte grid is float or int without more information.\n");
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: You must append =bf (float) or =bi (integer) to avoid this situation.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot determine if a native 4-byte grid is float or int without more information.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "You must append =bf (float) or =bi (integer) to avoid this situation.\n");
 				return (GMT_GRDIO_NONUNIQUE_FORMAT);
 			}
 			break;
@@ -2009,7 +2009,7 @@ int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	type[0] = '\0';
 
 	if (header->pocket == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot write with GDAL without knowing which driver to use.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot write with GDAL without knowing which driver to use.\n");
 		return (GMT_NOERROR);
 	}
 

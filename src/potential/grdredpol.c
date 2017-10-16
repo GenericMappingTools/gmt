@@ -28,7 +28,7 @@
  *
  * Author:	Joaquim Luis / Miguel Miranda
  * Date:	18-Feb-2003 (original GMT4 version)
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"
@@ -1118,7 +1118,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 				j = sscanf (opt->arg, "%d/%d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
 				if (j == 1) Ctrl->F.compute_n = true;	/* Case of only one filter dimension was given */
 				if (Ctrl->F.ncoef_row %2 != 1 || Ctrl->F.ncoef_col %2 != 1) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error: number of filter coefficients must be odd\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Number of filter coefficients must be odd\n");
 					n_errors++;
 				}
 				if (Ctrl->F.ncoef_row < 5 || Ctrl->F.ncoef_col < 5) {
@@ -1140,7 +1140,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 					else if (opt->arg[j] == 'r')
 						Ctrl->M.mirror = false;
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Warning: Error using option -M (option ignored)\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Error using option -M (option ignored)\n");
 						Ctrl->M.pad_zero = true;
 					}
 				}
@@ -1168,7 +1168,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 
 	if (Ctrl->C.const_f && Ctrl->C.use_igrf) {	
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -E option overrides -C\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "-E option overrides -C\n");
 		Ctrl->C.const_f = false;
 	}
 
@@ -1389,8 +1389,8 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 					nu  = -sin(dip_m);
 				}
 			}
-			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE))
-				GMT_Report (API, GMT_MSG_VERBOSE, "Dec %5.1f  Dip %5.1f  Bin_lon %6.1f  Bin_lat %5.1f\r", 
+			if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE))
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Dec %5.1f  Dip %5.1f  Bin_lon %6.1f  Bin_lat %5.1f\r", 
 					    Ctrl->C.dec/D2R, Ctrl->C.dip/D2R, slonm, slatm);
 
 			/* Compute the filter coefficients in the frequency domain */
@@ -1500,7 +1500,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Report (API, GMT_MSG_VERBOSE, "\n"); 
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "\n"); 
 
 	gmt_M_free (GMT, cosphi);      gmt_M_free (GMT, sinphi);
 	gmt_M_free (GMT, cospsi);      gmt_M_free (GMT, sinpsi);

@@ -21,7 +21,7 @@
  * 
  * Author:	W. H. F. Smith
  * Date:	1 JAN 2010
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"
@@ -233,7 +233,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 				break;
 			case 'G':
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -G option is deprecated; use -g instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-G option is deprecated; use -g instead.\n");
 					GMT->common.g.active = true;
 					if (gmt_M_is_geographic (GMT, GMT_IN))	
 						sprintf (txt_a, "D%sk", opt->arg);	/* Hardwired to be km */
@@ -246,7 +246,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 				break;
 			case 'M':
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -M is deprecated; -fg was set instead, use this in the future.\n");
 					if (gmt_M_is_cartesian (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
@@ -279,7 +279,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 				break;
 			case 'Z':
 				if (gmt_M_compat_check (GMT, 5)) /* Warn and pass through */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -Z option is deprecated and not longer required.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-Z option is deprecated and not longer required.\n");
 				break;
 
 			default:	/* Report bad options */
@@ -345,7 +345,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the splitxyz main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	n_in = (Ctrl->S.active) ? 5 : 3;
 	if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_NOERROR) {
 		Return (error);
@@ -449,7 +449,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 			T->min = gmt_M_memory (GMT, T->min, n_columns, double);
 			T->max = gmt_M_memory (GMT, T->max, n_columns, double);
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, "Working on file %s\n", T->file[GMT_IN]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on file %s\n", T->file[GMT_IN]);
 
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = T->segment[seg];
@@ -530,7 +530,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 							n_out = end - begin;
 							if ((n_total + n_out) >= n_alloc) {
 								n_alloc = (first) ? D[GMT_IN]->n_records : n_alloc * 2;
-								gmt_alloc_datasegment (GMT, S_out, n_alloc, n_outputs, first);
+								gmt_alloc_segment (GMT, S_out, n_alloc, n_outputs, 0U, first);
 								first = false;
 							}
 
@@ -587,7 +587,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	}
 	gmt_M_free (GMT, rec);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, " Split %" PRIu64 " data into %" PRIu64 " segments.\n", D[GMT_IN]->n_records, nprofiles);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Split %" PRIu64 " data into %" PRIu64 " segments.\n", D[GMT_IN]->n_records, nprofiles);
 	if (Ctrl->N.active) {
 		int n_formats = 0;
 		for (k = 0; Ctrl->N.name[k]; k++) if (Ctrl->N.name[k] == '%') n_formats++;

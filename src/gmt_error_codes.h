@@ -21,7 +21,7 @@
  *
  * Author:	Paul Wessel
  * Date:	22-JUN-2012
- * Version:	5 API
+ * Version:	6 API
  */
 
 /*!
@@ -118,6 +118,7 @@ enum Gmt_api_error_code {
 	GMT_STREAM_NOT_ALLOWED,
 	GMT_SUBSET_NOT_ALLOWED,
 	GMT_VALUE_NOT_SET,
+	GMT_NO_STRINGS_ALLOWED,
 	GMT_WRITTEN_ONCE
 };
 #endif /* GMT_ERROR_CODES_H */

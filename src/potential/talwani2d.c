@@ -166,7 +166,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 						case 'z': Ctrl->M.active[TALWANI2D_VER] = true; break;
 						default:
 							n_errors++;
-							GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Syntax error -M: Unrecognized modifier %c\n", opt->arg[k]);
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -M: Unrecognized modifier %c\n", opt->arg[k]);
 							break;
 					}
 					k++;
@@ -534,6 +534,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	struct TALWANI2D_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Out = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -586,6 +587,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 		dim[GMT_ROW] = lrint ((Ctrl->T.max - Ctrl->T.min) / Ctrl->T.inc) + 1;
 		if ((Out = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		S = Out->table[0]->segment[0];	/* Only one segment when -T is used */
+		S->n_rows = dim[GMT_ROW];
 		for (row = 0; row < dim[GMT_ROW]; row++) S->data[GMT_X][row] = (row == (S->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
 	}
 	else {	/* Got a dataset with output locations */
@@ -620,12 +622,12 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	body = gmt_M_memory (GMT, NULL, n_alloc1, struct BODY2D);
 	n_bodies = 0;
 	/* Read polygon information from multiple segment file */
-	GMT_Report (API, GMT_MSG_VERBOSE, "All x-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI2D_HOR]]);
-	GMT_Report (API, GMT_MSG_VERBOSE, "All z-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI2D_VER]]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "All x-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI2D_HOR]]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "All z-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI2D_VER]]);
 	
 	/* Read the sliced model */
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
 				gmt_M_free (GMT, body);
 				Return (GMT_RUNTIME_ERROR);
@@ -653,7 +655,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 				/* Process the next segment header */
 				ns = sscanf (GMT->current.io.segment_header, "%lf",  &rho);
 				if (ns == 0 && !Ctrl->D.active) {
-					GMT_Report (API, GMT_MSG_VERBOSE, "Neither segment header nor -D specified density - must quit\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Neither segment header nor -D specified density - must quit\n");
 					gmt_M_free (GMT, body);
 					Return (API->error);
 				}
@@ -669,9 +671,10 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 				}
 				continue;
 			}
-			assert (in != NULL);						/* Should never get here */
+			assert (In != NULL);						/* Should never get here */
 		}
 		/* Clean data record to process.  Add point unless duplicate */
+		in = In->data;	/* Only need to process numerical part here */
 		if (Ctrl->A.active) in[GMT_Y] = -in[GMT_Y];
 		if (n && (x[n-1] == x[n] && z[n-1] == z[n])) {	/* Maybe a duplicate point - or it could be the repeated last = first */
 			n_duplicate++;
@@ -680,7 +683,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 		else {
 			if (first) {	/* Had no header record at all */
 				if (!Ctrl->D.active) {
-					GMT_Report (API, GMT_MSG_VERBOSE, "Found no segment header and -D not set - must quit\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Found no segment header and -D not set - must quit\n");
 					gmt_M_free (GMT, body);
 					Return (API->error);
 				}
@@ -731,7 +734,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 		rho += body[k].rho;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%lg Rho: %lg N-vertx: %4d\n", body[k].rho, body[k].n);
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Start calculating %s\n", kind[Ctrl->F.mode]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Start calculating %s\n", kind[Ctrl->F.mode]);
 	
 	if (Out->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	
 	for (tbl = 0; tbl < Out->n_tables; tbl++) {

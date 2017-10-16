@@ -31,7 +31,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-AUG-2011
- * Version:	5 API
+ * Version:	6 API
  *
  */
 
@@ -193,7 +193,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 				break;
 			case 'D':
 				if (gmt_M_compat_check (GMT, 4))
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -D option is deprecated; duplicates are automatically removed.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-D option is deprecated; duplicates are automatically removed.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -268,6 +268,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	gmt_grdfloat f_val = 0.0, *z_val = NULL;
 
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct SPHDISTANCE_CTRL *Ctrl = NULL;
 	struct STRIPACK T;
 	struct GMT_DATASEGMENT *P = NULL;
@@ -308,7 +309,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	/* Now we are ready to take on some input values */
 
 	if (Ctrl->Q.active) {	/* Expect a single file with Voronoi polygons */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Read Volonoi polygons from %s ...", Ctrl->Q.file);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read Volonoi polygons from %s ...", Ctrl->Q.file);
 		gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -Q files */
 		if ((Qin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->Q.file, NULL)) == NULL) {
 			Return (API->error);
@@ -319,7 +320,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		}
 		gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		Table = Qin->table[0];	/* Only one table in a file */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " segments\n", Table->n_segments);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " segments\n", Table->n_segments);
 	 	lon = gmt_M_memory (GMT, NULL, Table->n_segments, double);
 	 	lat = gmt_M_memory (GMT, NULL, Table->n_segments, double);
 		if (Ctrl->N.active) {	/* Must get nodes from separate file */
@@ -328,7 +329,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			if ((error = gmt_set_cols (GMT, GMT_IN, 3)) != GMT_NOERROR) {
 				Return (error);
 			}
-			GMT_Report (API, GMT_MSG_VERBOSE, "Read Nodes from %s ...", Ctrl->N.file);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read Nodes from %s ...", Ctrl->N.file);
 			gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -N files */
 			if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 				Return (API->error);
@@ -352,7 +353,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			if (GMT_Destroy_Data (API, &Nin) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " records\n", NTable->n_records);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " records\n", NTable->n_records);
 		}
 		else {	/* Get extract them from the segment header */
 			for (node = 0; node < Table->n_segments; node++) {
@@ -389,7 +390,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
-			if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -401,6 +402,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			}
 
 			/* Data record to process - avoid duplicate points as gmt_stripack_lists cannot handle that */
+			in = In->data;	/* Only need to process numerical part here */
 
 			if (first) {	/* Beginning of new segment; keep track of the very first coordinate in case of duplicates */
 				first_x = prev_x = in[GMT_X];	first_y = prev_y = in[GMT_Y];
@@ -439,7 +441,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		gmt_M_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 
 		if (n_dup) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " duplicate points in segments\n", n_dup);
-		GMT_Report (API, GMT_MSG_VERBOSE, "Do Voronoi construction using %" PRIu64 " points\n", n);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Do Voronoi construction using %" PRIu64 " points\n", n);
 
 		T.mode = VORONOI;
 		gmt_stripack_lists (GMT, n, xx, yy, zz, &T);	/* Do the basic triangulation */
@@ -460,7 +462,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-	GMT_Report (API, GMT_MSG_VERBOSE, "Start processing distance grid\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Start processing distance grid\n");
 
 	grid_lon = gmt_grd_coord (GMT, Grid->header, GMT_X);
 	grid_lat = gmt_grd_coord (GMT, Grid->header, GMT_Y);
@@ -475,7 +477,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		V = &T.V;
 
 	for (node = 0; node < n; node++) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing polygon %7ld\r", node);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing polygon %7ld\r", node);
 		if (Ctrl->Q.active) {	/* Just point to next polygon */
 			P = Table->segment[node];
 		}
@@ -568,7 +570,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing polygon %7ld\n", node);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing polygon %7ld\n", node);
 
 	if (!Ctrl->Q.active) {
 		gmt_M_free (GMT, P->data[GMT_X]);
@@ -598,7 +600,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	}
 
 	if (n_set > Grid->header->nm) n_set = Grid->header->nm;	/* Not confuse the public */
-	GMT_Report (API, GMT_MSG_VERBOSE, "Spherical distance calculation completed, %" PRIu64 " nodes visited (at least once)\n", n_set);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Spherical distance calculation completed, %" PRIu64 " nodes visited (at least once)\n", n_set);
 
 	Return (GMT_NOERROR);
 }

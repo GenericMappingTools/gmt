@@ -15,6 +15,7 @@ Synopsis
 
 **grdcut** *ingrid* |-G|\ *outgrid*
 |SYN_OPT-R|
+[ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
 [ |-S|\ [**n**]\ *lon/lat/radius*\ [*unit*] ]
 [ |SYN_OPT-V| ]
@@ -31,7 +32,10 @@ Description
 the specified range must not exceed the range of *ingrid* (but see **-N**).
 If in doubt, run :doc:`grdinfo` to check range. Alternatively, define the subregion
 indirectly via a range check on the node values or via distances from a
-given point. Complementary to **grdcut** there is :doc:`grdpaste`, which
+given point. Finally, you can use **-J** for oblique projections to determine
+the corresponding rectangular **-R** setting that will give a grid that fully
+covers the oblique domain.
+Complementary to **grdcut** there is :doc:`grdpaste`, which
 will join together two grid files along a common edge. 
 
 Required Arguments
@@ -47,6 +51,11 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-J.rst_
 
 .. _-N:
 
@@ -120,6 +129,17 @@ distance of 500 km from the point 45,30 try
    ::
 
     gmt grdcut bathy.nc -Gsubset_bathy.nc -S45/30/500k -V
+
+To obtain data for an oblique Mercator projection map we need to extract
+more data that is actually used. This is necessary because the output of
+**grdcut** has edges defined by parallels and meridians, while the
+oblique map in general does not. Hence, to get all the data from the
+ETOPO2 data needed to make a contour map for the region defined by its
+lower left and upper right corners and the desired projection, use
+
+   ::
+
+    gmt grdcut @earth_relief_02m -R160/20/220/30r -Joc190/25.5/292/69/1 -Gdata.nc
 
 See Also
 --------

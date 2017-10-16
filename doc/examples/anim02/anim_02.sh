@@ -28,10 +28,10 @@ while [ ${frame} -lt ${n_frames} ]; do
 	file=`gmt_set_framename ${name} ${frame}`
 	angle=`gmt math -Q ${frame} ${del_angle} MUL =`
 	dir=`gmt math -Q ${angle} 180 ADD =`
-	gmt grdimage us.nc -I+a${angle}+nt2 -JM3i -P -K -C$$.cpt -BWSne -B1 -X0.35i -Y0.3i \
+	gmt grdimage @tut_relief.nc -I+a${angle}+nt2 -JM3i -P -K -C$$.cpt -BWSne -B1 -X0.35i -Y0.3i \
 	--PS_MEDIA=${width}x${height} --FONT_ANNOT_PRIMARY=9p > $$.ps
-	gmt psxy -Rus.nc -J -O -K -Sc0.8i -Gwhite -Wthin >> $$.ps <<< "256.25 35.6"
-	gmt psxy -Rus.nc -J -O -Sv0.1i+e -Gred -Wthick >> $$.ps <<< "256.25 35.6 ${dir} 0.37"
+	gmt psxy -R@tut_relief.nc -J -O -K -Sc0.8i -Gwhite -Wthin >> $$.ps <<< "256.25 35.6"
+	gmt psxy -R@tut_relief.nc -J -O -Sv0.1i+e -Gred -Wthick >> $$.ps <<< "256.25 35.6 ${dir} 0.37"
 	[[ ${frame} -eq 0 ]] && cp $$.ps ${ps}
 	if [ $# -eq 0 ]; then
 		gmt_cleanup .gmt

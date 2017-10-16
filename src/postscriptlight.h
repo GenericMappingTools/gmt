@@ -20,8 +20,8 @@
  *			   pwessel@hawaii.edu
  *		Remko Scharroo, Altimetrics
  *			   remko@altimetrics.com
- * Version:	5.3 [64-bit enabled API edition, decoupled from GMT]
- * Date:	13-NOV-2015
+ * Version:	6.0 [64-bit enabled API edition, decoupled from GMT]
+ * Date:	13-OCT-2017
  */
 
 /*!
@@ -399,6 +399,7 @@ EXTERN_MSC int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fo
 EXTERN_MSC int PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, char *text, double angle, int justify, double offset[], int mode);
 EXTERN_MSC int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], int n_segments, void *arg1, void *arg2, char *label[], double angle[], int nlabel_per_seg[], double fontsize, int justify, double offset[], int mode);
 EXTERN_MSC int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *header, unsigned char **image);
+EXTERN_MSC int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned char **picture);
 EXTERN_MSC int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode);
 EXTERN_MSC int PSL_setexec (struct PSL_CTRL *PSL, int action);
 EXTERN_MSC int PSL_setdefaults (struct PSL_CTRL *PSL, double xyscales[], double page_rgb[], char *encoding);
@@ -407,6 +408,7 @@ EXTERN_MSC int PSL_setfill (struct PSL_CTRL *PSL, double rgb[], int outline);
 EXTERN_MSC int PSL_setfont (struct PSL_CTRL *PSL, int font_no);
 EXTERN_MSC int PSL_setfontdims (struct PSL_CTRL *PSL, double supsub, double scaps, double sup_lc, double sup_uc, double sdown);
 EXTERN_MSC int PSL_setformat (struct PSL_CTRL *PSL, int n_decimals);
+EXTERN_MSC int PSL_setimage (struct PSL_CTRL *PSL, int image_no, char *imagefile, unsigned char *image, int image_dpi, unsigned int dim[], double f_rgb[], double b_rgb[]);
 EXTERN_MSC int PSL_setlinecap (struct PSL_CTRL *PSL, int cap);
 EXTERN_MSC int PSL_setlinejoin (struct PSL_CTRL *PSL, int join);
 EXTERN_MSC int PSL_setlinewidth (struct PSL_CTRL *PSL, double linewidth);

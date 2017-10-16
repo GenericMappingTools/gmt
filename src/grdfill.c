@@ -21,7 +21,7 @@
  *
  * Author:	Paul Wessel
  * Date:	7-FEB-2017
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"
@@ -290,6 +290,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 	double wesn[4];
 	//char command[GMT_GRID_COMMAND_LEN320] = {""};
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GRDFILL_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -353,13 +354,13 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 	off[0] = Grid->header->mx;	off[1] = 1; 	off[2] = -off[0]; off[3] = -off[1];
 	
 	if (Ctrl->L.active) {
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
 		}
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_NOERROR) {	/* We don't really care or know about columns so must use 1 */
@@ -367,6 +368,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 		}
 	}
 	
+	Out = gmt_new_record (GMT, wesn, NULL);	/* Since we only need to worry about numerics in this module */
 	gmt_M_grd_loop (GMT, Grid, row, col, node) {	/* Loop over all grid nodes */
 		if (ID[node]) continue;	/* Already identified as part of a hole */
 		if (gmt_M_is_fnan (Grid->data[node])) {	/* Node is part of a new hole */
@@ -381,9 +383,9 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			wesn[XHI] = gmt_M_col_to_x (GMT, limit[XHI], Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], 0, Grid->header->n_columns);
 			wesn[YLO] = gmt_M_row_to_y (GMT, limit[YHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], 0, Grid->header->n_columns);
 			wesn[YHI] = gmt_M_row_to_y (GMT, limit[YLO], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], 0, Grid->header->n_columns);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Hole BB %u: -R: %g/%g/%g/%g [%u nodes]\n", hole_number, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], n_nodes);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Hole BB %u: -R: %g/%g/%g/%g [%u nodes]\n", hole_number, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], n_nodes);
 			if (Ctrl->L.active) {
-				GMT_Put_Record (API, GMT_WRITE_DOUBLE, wesn);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 			else {
 				switch (Ctrl->A.mode) {
@@ -397,8 +399,9 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	if (hole_number) GMT_Report (API, GMT_MSG_VERBOSE, "Found %u holes\n", hole_number);
+	if (hole_number) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %u holes\n", hole_number);
 	gmt_M_free_aligned (GMT, ID);
+	gmt_M_free (GMT, Out);
 
 	if (Ctrl->L.active) {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
@@ -412,7 +415,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			Return (API->error);
 	}
 	else {
-		GMT_Report (API, GMT_MSG_NORMAL, "No holes detected in grid - grid was not updated\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "No holes detected in grid - grid was not updated\n");
 	}
 	
 	Return (GMT_NOERROR);

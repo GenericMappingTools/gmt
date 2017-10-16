@@ -151,7 +151,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		to_GDALW->alpha = I->alpha;
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: %s memory layout is not supported, for now only: T(op)C(ol)B(and) or TRP\n",
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s memory layout is not supported, for now only: T(op)C(ol)B(and) or TRP\n",
 		            I->header->mem_layout);
 		gmt_M_free (GMT, to_GDALW);
 		return GMT_NOTSET;
@@ -353,7 +353,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 			projWKT = pszPrettyWkt;
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: gmt_gdalwrite failed to convert the proj4 string\n%s\n to WKT\n",
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalwrite failed to convert the proj4 string\n%s\n to WKT\n",
 					prhs->P.ProjRefPROJ4);
 		}
 
@@ -369,14 +369,15 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 
 	if (hDriverOut == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalwrite: Output driver %s not recognized\n", pszFormat);
-		/* The following is s bit idiot. The loop should only be executed is verbose so requires */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The following format drivers are configured and support output:\n");
-		for (i = 0; i < GDALGetDriverCount(); i++) {
-			hDriver = GDALGetDriver(i);
-			if (GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATE, NULL) != NULL ||
-			    GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATECOPY, NULL) != NULL)
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "  %s: %s\n",
-				            GDALGetDriverShortName(hDriver), GDALGetDriverLongName(hDriver));
+		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The following format drivers are configured and support output:\n");
+			for (i = 0; i < GDALGetDriverCount(); i++) {
+				hDriver = GDALGetDriver(i);
+				if (GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATE, NULL) != NULL ||
+				    GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATECOPY, NULL) != NULL)
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "  %s: %s\n",
+					            GDALGetDriverShortName(hDriver), GDALGetDriverLongName(hDriver));
+			}
 		}
 		GDALDestroyDriverManager();
 		gmt_M_free(GMT, outByte);

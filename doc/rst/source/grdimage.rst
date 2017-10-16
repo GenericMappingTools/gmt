@@ -293,7 +293,6 @@ See Also
 
 :doc:`gmt`,
 :doc:`gmt.conf`,
-:doc:`grd2rgb`,
 :doc:`grdcontour`,
 :doc:`grdview`,
 :doc:`grdgradient`,

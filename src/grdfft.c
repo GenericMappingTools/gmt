@@ -21,7 +21,7 @@
  *
  * Author:	W.H.F. Smith
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  * Note:	PW: As of 2/14/2013 the various setup and init functions for FFT use
  *		have been generalized and made available GMT-wide via new functions
  *		in gmt_fft.c, called GMT_fft_*.
@@ -389,6 +389,7 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 		return (GMT->parent->error);
 	}
 	S = D->table[0]->segment[0];	/* Only one table with one segment here, with 17 cols and nk rows */
+	S->n_rows = nk;
 	if (give_wavelength && km) delta_k *= 1000.0;	/* Wanted distances measured in km */
 
 	k_pow_factor = powfactor;	/* Standard normalization */
@@ -743,13 +744,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 				break;
 			case 'L':	/* Leave trend alone */
 				if (gmt_M_compat_check (GMT, 4))
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -L is deprecated; use -N modifiers in the future.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'M':	/* Geographic data */
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -M is deprecated; -fg was set instead, use this in the future.\n");
 					if (gmt_M_is_cartesian (GMT, GMT_IN))
 						gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
@@ -773,7 +774,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 			case 'T':	/* Flexural isostasy */
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT,
-					            "Warning: Option -T is deprecated; see gravfft for isostasy and gravity calculations.\n");
+					            "Option -T is deprecated; see gravfft for isostasy and gravity calculations.\n");
 					Ctrl->T.active = true;
 					n_scan = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &par[0], &par[1], &par[2], &par[3], &par[4]);
 					for (j = 1, k = 0; j < 5; j++) if (par[j] < 0.0) k++;
@@ -845,7 +846,7 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid(s)\n");
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* First read the grid header(s) */
 		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL)
 			Return (API->error);
@@ -894,7 +895,7 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 #endif
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid, optionally save raw FFT output */
-		GMT_Report (API, GMT_MSG_VERBOSE, "forward FFT...\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "forward FFT...\n");
 		if (GMT_FFT (API, Grid[k], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[k]))
 			Return (GMT_RUNTIME_ERROR);
 	}

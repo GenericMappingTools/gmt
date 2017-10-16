@@ -44,7 +44,7 @@ echo %lon% %lat% | gmt psxy -R -J -O -K -Sa0.2i -Gyellow -Wthin >> %ps%
 
 REM Sample the distance grid at the cities and use the distance in km for labels
 
-gmt grdtrack -Gdist.nc cities.txt -o0,1,4 --FORMAT_FLOAT_OUT=0:%g,1:%g,2:%.0f | gmt pstext -R -J -O -D0/-0.2i -N -Gwhite -W -C0.02i -F+f12p,Helvetica-Bold+jCT >> %ps%
+gmt grdtrack -Gdist.nc cities.txt -o0-2 --FORMAT_FLOAT_OUT=0:%g,1:%g,2:%.0f | gmt pstext -R -J -O -D0/-0.2i -N -Gwhite -W -C0.02i -F+f12p,Helvetica-Bold+jCT >> %ps%
 
 REM Clean up after ourselves:
 

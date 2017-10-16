@@ -256,7 +256,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_
 				break;
 			case 'M':
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -M is deprecated; -fg was set instead, use this in the future.\n");
 					if (gmt_M_is_cartesian (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
@@ -453,7 +453,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		point   = Cin->table[0];	/* Can only be one table since we read a single file */
 		ndata_p = (unsigned int)point->n_records;
 		if (point->n_segments > 1) /* case not dealt (or ignored) and should be tested here */
-			GMT_Report(API, GMT_MSG_NORMAL, "Warning: multi-segment files are not used in gmtgravmag3d. Using first segment only\n");
+			GMT_Report(API, GMT_MSG_VERBOSE, "Multi-segment files are not used in gmtgravmag3d. Using first segment only\n");
 	}
 
 	if (Ctrl->T.triangulate) { 	/* Read triangle file output from triangulate */
@@ -491,14 +491,14 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	if (n_swap > 0)
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d triangles had ccw order\n", n_swap);
+		GMT_Report (API, GMT_MSG_VERBOSE, "%d triangles had ccw order\n", n_swap);
 	/* --------------------------------------------------------------------------------------- */
 
 	if (Ctrl->G.active) {
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, Ctrl->I.inc, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	
-		GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions are n_columns = %d, n_rows = %d\n", Gout->header->n_columns, Gout->header->n_rows);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Grid dimensions are n_columns = %d, n_rows = %d\n", Gout->header->n_columns, Gout->header->n_rows);
 
 		/* Build observation point vectors */
 		x = gmt_M_memory (GMT, NULL, Gout->header->n_columns, double);
@@ -717,6 +717,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	else {
 		double out[3];
 		char save[GMT_LEN64] = {""};
+		struct GMT_RECORD *Out = gmt_new_record (GMT, out, NULL);
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			error = API->error;
 			goto END;
@@ -739,8 +740,9 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 			out[GMT_X] = point->segment[0]->data[GMT_X][k];
 			out[GMT_Y] = point->segment[0]->data[GMT_Y][k];
 			out[GMT_Z] = g[k];
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 		}
+		gmt_M_free (GMT, Out);
 		strcpy (GMT->current.setting.format_float_out, save);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
 			error = API->error;
@@ -785,7 +787,7 @@ GMT_LOCAL int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fn
 	char line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
 
-	if ((fp = fopen (fname, "r")) == NULL) return (-1);
+	if ((fp = gmt_fopen (GMT, fname, "r")) == NULL) return (-1);
 
        	n_alloc = GMT_CHUNK;
 	ndata_xyz = 0;
@@ -881,7 +883,7 @@ GMT_LOCAL int read_t (struct GMT_CTRL *GMT, char *fname) {
 	char line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
 
-	if ((fp = fopen (fname, "r")) == NULL) return (-1);
+	if ((fp = gmt_fopen (GMT, fname, "r")) == NULL) return (-1);
 
 	n_alloc = GMT_CHUNK;
 	ndata_t = 0;
@@ -915,8 +917,8 @@ GMT_LOCAL int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	double in[9];
 	char line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
-
-	if ((fp = fopen (fname, "r")) == NULL) return (-1);
+	
+	if ((fp = gmt_fopen (GMT, fname, "r")) == NULL) return (-1);
 
 	n_alloc = GMT_CHUNK;
 	ndata_r = 0;
@@ -954,7 +956,7 @@ GMT_LOCAL int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	char line[GMT_LEN256] = {""}, text[128] = {""}, ver_txt[128] = {""};
 	FILE *fp = NULL;
 
-	if ((fp = fopen (fname, "r")) == NULL) return (-1);
+	if ((fp = gmt_fopen (GMT, fname, "r")) == NULL) return (-1);
 
 	n_alloc = GMT_CHUNK;
 	ndata_s = 0;

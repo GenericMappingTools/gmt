@@ -1,8 +1,7 @@
 #!/bin/bash
 #	$Id$
 #
-# Test the C API for conversions between datasets and
-# textsets, matrices, and vectors.
+# Test the C API for conversions between datasets, matrices, and vectors.
 # Also read groups of items just to free them,
 
 # Make to dataset tables with headers and segments
@@ -37,6 +36,8 @@ gmt makecpt -Cgray -T0/1000/100 > last.cpt
 gmt psbasemap -R0/20/0/20 -JM6i -P -Baf > first.ps
 gmt psbasemap -R0/20/20/40 -JM6i -P -Baf > second.ps
 gmt psbasemap -R0/20/40/60 -JM6i -P -Baf > third.ps
+# testapiconv will read the groups or grids, cpts and ps but not doing anything
+# unless it crashes of course,  It then writes out A and B via matrix and vector to a file
 testapiconv
 cat *AB*.txt > results.txt
 diff -q --strip-trailing-cr results.txt "${src:-.}"/testapiconv_answer.txt > fail

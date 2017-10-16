@@ -30,7 +30,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-AUG-2011
- * Version:	5 API
+ * Version:	6 API
  */
  
 #include "gmt_dev.h"
@@ -79,7 +79,7 @@ GMT_LOCAL int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg
 	char txt_a[32], txt_b[32], txt_c[32];
 	m = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 	if (m < 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT Error: %s\n", msg);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s\n", msg);
 		m = -1;
 	}
 	par[0] = atof (txt_a);
@@ -176,7 +176,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, str
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: -%c Mode must be in 0-3 range\n", (int)opt->option);
+						GMT_Report (API, GMT_MSG_NORMAL, "-%c Mode must be in 0-3 range\n", (int)opt->option);
 						break;
 				}
 				break;
@@ -215,6 +215,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	double *xx = NULL, *yy = NULL, *zz = NULL, *ww = NULL, *surfd = NULL, *in = NULL;
 
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct SPHINTERPOLATE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -262,7 +263,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	w_min = DBL_MAX;	w_max = -DBL_MAX;
 	
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
 				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 				gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);
@@ -274,6 +275,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		}
 
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
 
 		gmt_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);	/* Get unit vector */
 		xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];	ww[n] = in[GMT_Z];
@@ -294,7 +296,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	gmt_M_malloc4 (GMT, xx, yy, zz, ww, 0, &n_alloc, double);
 	GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Do spherical interpolation using %" PRIu64 " points\n", n);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Do spherical interpolation using %" PRIu64 " points\n", n);
 
 	if (Ctrl->Z.active && w_max > w_min) {	/* Scale the data */
 		sf = 1.0 / (w_max - w_min);
@@ -310,7 +312,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate output grid\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate output grid\n");
 	surfd = gmt_M_memory (GMT, NULL, Grid->header->nm, double);
 	
 	/* Do the interpolation */
@@ -341,7 +343,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Gridding completed\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Gridding completed\n");
 
 	Return (GMT_NOERROR);
 }

@@ -24,7 +24,7 @@
  *
  * Author: Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  */
 
 /*!
@@ -84,7 +84,7 @@ struct GMT_CUSTOM_SYMBOL {
 	unsigned int  n_required;   /* Number of additional columns necessary to decode chosen symbol */
 	unsigned int  start;    /* Column number of first additional column [2-4 depending on -C and psxy vs psxyz] */
 	unsigned int  PS;       /* nonzero if a PSL symbol */
-	bool          text;     /* true if symbol places text and hence need fonts to be set properly */
+	unsigned int  text;     /* >0 if symbol places text and hence need fonts to be set properly, 2 if using trailing text */
 	unsigned int *type;     /* Array with type of each parameter [0 = dimensionless, 1 = dimension, 2 = geographic angle (convert via projection)] */
 	double        PS_BB[4]; /* Will hold the BoundingBox as [x0 x1 y0 y1] if PS is true */
 	struct        GMT_CUSTOM_SYMBOL_ITEM *first;

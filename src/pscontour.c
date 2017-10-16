@@ -22,7 +22,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"
@@ -30,7 +30,7 @@
 #define THIS_MODULE_NAME	"pscontour"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Contour table data by direct triangulation"
-#define THIS_MODULE_KEYS	"<D{,AT)=t,CC(,ED(,DDD,G?(=1,>X}@<D{,AT)=t,CC(,ED(,DD),G?(=1"
+#define THIS_MODULE_KEYS	"<D{,AD)=t,CC(,ED(,DDD,G?(=1,>X}@<D{,AD)=t,CC(,ED(,DD),G?(=1"
 #define THIS_MODULE_NEEDS	"dJ"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipstxy" GMT_OPT("Mmc")
 
@@ -279,7 +279,7 @@ GMT_LOCAL void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 	PSL_plotpolygon (PSL, x, y, n);
 }
 
-GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *in_lbl[], unsigned int mode, struct GMT_TEXTSET *T) {
+GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *in_lbl[], unsigned int mode, struct GMT_DATASET *T) {
 	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	which are the innermost ones.
 	
@@ -582,7 +582,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				break;
 			case 'Q':	/* Skip small closed contours */
 				if (!gmt_access (GMT, opt->arg, F_OK) && gmt_M_compat_check (GMT, 4)) {	/* Must be the now old -Q<indexfile> option, set to -E */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Q<indexfile> is deprecated; use -E instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -Q<indexfile> is deprecated; use -E instead.\n");
 					Ctrl->E.file = strdup (opt->arg);
 					Ctrl->E.active = true;
 					break;
@@ -606,7 +606,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				break;
 			case 'T':	/* Embellish innermost closed contours */
 				if (!gmt_access (GMT, opt->arg, F_OK) && gmt_M_compat_check (GMT, 4)) {	/* Must be the old -T<indexfile> option, set to -E */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -T<indexfile> is deprecated; use -E instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -T<indexfile> is deprecated; use -E instead.\n");
 					Ctrl->E.file = strdup (opt->arg);
 					Ctrl->E.active = true;
 					break;
@@ -643,7 +643,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 					}
 					else {
 						if (gmt_M_compat_check (API->GMT, 4))  {
-							GMT_Report (API, GMT_MSG_COMPAT, "Warning: Your format for -T is deprecated (but accepted); use -T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
+							GMT_Report (API, GMT_MSG_COMPAT, "Your format for -T is deprecated (but accepted); use -T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH] instead\n",
 								GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 							n_errors += pscontour_old_T_parser (GMT, &opt->arg[j], Ctrl);
 						}
@@ -760,6 +760,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_PALETTE *P = NULL;
+	struct GMT_RECORD *In = NULL;
 	struct SAVE *save = NULL;
 	struct PSCONTOUR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
@@ -782,7 +783,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	/* Must intercept any old-style -Eaz/el here and change it to -p */
 	if ((opt = GMT_Find_Option (API, 'E', options)) && gmt_M_compat_check (GMT, 4)) {	/* Got -E, check if given a file */
 		if (gmt_access (GMT, opt->arg, F_OK)) {	/* Argument not a file we can open, so under compat mode we assume we got -Eaz/el */
-			GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E<az/el>> is deprecated; use -p instead.\n");
+			GMT_Report (API, GMT_MSG_COMPAT, "Option -E<az/el>> is deprecated; use -p instead.\n");
 			opt->option = 'p';
 		}
 	}
@@ -792,8 +793,11 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pscontour main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	if (Ctrl->D.active && !Ctrl->D.file) GMT_Report (API, GMT_MSG_VERBOSE, "Contours will be written to standard output\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
+	if (Ctrl->D.active) {
+		GMT_Report (API, GMT_MSG_VERBOSE, "With -D, no plotting will take place\n");
+		if (!Ctrl->D.file) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Contours will be written to standard output\n");
+	}
 	if ((error = gmt_set_cols (GMT, GMT_IN, 3)) != GMT_NOERROR) {
 		Return (error);
 	}
@@ -813,7 +817,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			Return (GMT_NOERROR);
 		}
 		if (P->categorical) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
 		}
 	}
 	make_plot = !Ctrl->D.active;	/* Turn off plotting if -D was used */
@@ -833,7 +837,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	skip_triangles = (Ctrl->S.active && Ctrl->S.mode == 1);
 
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 	/* Bail if there are any read errors */
 				gmt_M_free (GMT, x);	gmt_M_free (GMT, y);	gmt_M_free (GMT, z);
 				Return (GMT_RUNTIME_ERROR);
@@ -844,6 +848,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		}
 
 		/* Data record to process */
+		in = In->data;	/* Only need to process numerical part here */
 		
 		if (skip_points) {	/* Must check if points are inside plot region */
 			gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
@@ -874,7 +879,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				z = gmt_M_memory (GMT, z, n_alloc, double);
 			}
 			if (n == INT_MAX) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot triangulate more than %d points\n", INT_MAX);
+				GMT_Report (API, GMT_MSG_NORMAL, "Cannot triangulate more than %d points\n", INT_MAX);
 				gmt_M_free (GMT, x);
 				gmt_M_free (GMT, y);
 				gmt_M_free (GMT, z);
@@ -888,7 +893,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	z = gmt_M_memory (GMT, z, n, double);
 
 	if (n == 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: No data points given - so no triangulation can take effect\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "No data points given - so no triangulation can take effect\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -907,13 +912,13 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
   		/* Must switch to Cartesian input and save whatever original input type we have since we are reading integer triplets */
   		for (k = 0; k < 3; k++) {
-  			save_col_type[k] = GMT->current.io.col_type[GMT_IN][k];	/* Remember what we have */
-  			GMT->current.io.col_type[GMT_IN][k] = GMT_IS_FLOAT;	/* And temporarily set to FLOAT */
+  			save_col_type[k] = gmt_M_type (GMT, GMT_IN, k);	/* Remember what we have */
+			gmt_set_column (GMT, GMT_IN, (unsigned int)k, GMT_IS_FLOAT);	/* And temporarily set to FLOAT */
   		}
 		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->E.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		for (k = 0; k < 3; k++) GMT->current.io.col_type[GMT_IN][k] = save_col_type[k];	/* Undo the damage above */
+		for (k = 0; k < 3; k++) gmt_set_column (GMT, GMT_IN, (unsigned int)k, save_col_type[k]);	/* Undo the damage above */
 
  		if (Tin->n_columns < 3) {	/* Trouble */
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E: %s does not have at least 3 columns with indices\n", Ctrl->E.file);
@@ -938,12 +943,12 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, "Read %d indices triplets from %s.\n", np, Ctrl->E.file);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %d indices triplets from %s.\n", np, Ctrl->E.file);
 		if (n_skipped) GMT_Report (API, GMT_MSG_VERBOSE, "Found %d indices triplets exceeding range of known vertices - skipped.\n", n_skipped);
 	}
 	else {	/* Do our own Delaunay triangulation */
 		np = gmt_delaunay (GMT, x, y, n, &ind);
-		GMT_Report (API, GMT_MSG_VERBOSE, "Obtained %d indices triplets via Delauney triangulation [%s].\n",
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Obtained %d indices triplets via Delauney triangulation [%s].\n",
 		            np, tri_algorithm[GMT->current.setting.triangulate]);
 	}
 
@@ -1004,21 +1009,21 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		n_contours = c;
 	}
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
-		char *record = NULL;
+		struct GMT_RECORD *Rec = NULL;
 		int got, in_ID, NL;
 		double tmp;
 
 		/* Must register Ctrl->C.file first since we are going to read rec-by-rec from all available source */
-		if ((in_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IN, NULL, Ctrl->C.file)) == GMT_NOTSET) {
+		if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_IN, NULL, Ctrl->C.file)) == GMT_NOTSET) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error registering contour info file %s\n", Ctrl->C.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables text input and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables text input and sets access mode */
 			Return (API->error);
 		}
 		c = 0;
 		do {	/* Keep returning records until we reach EOF */
-			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, &NL)) == NULL) {	/* Read next record, get NULL if special case */
+			if ((Rec = GMT_Get_Record (API, GMT_READ_TEXT, &NL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
 				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
@@ -1026,13 +1031,13 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 			}
-			if (gmt_is_a_blank_line (record)) continue;	/* Nothing in this record */
+			if (gmt_is_a_blank_line (Rec->text)) continue;	/* Nothing in this record */
 
 			/* Data record to process */
 
 			if (c == c_alloc) cont = gmt_M_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			gmt_M_memset (&cont[c], 1, struct PSCONTOUR);
-			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
+			got = sscanf (Rec->text, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
 			if (Ctrl->Q.zero && gmt_M_is_zero (cont[c].val)) continue;	/* Skip zero-contour */
 			if (cont[c].type == '\0') cont[c].type = 'C';
 			cont[c].do_tick = (Ctrl->T.active && ((cont[c].type == 'C') || (cont[c].type == 'A'))) ? true : false;
@@ -1077,7 +1082,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			Ctrl->C.interval = x;
 			Ctrl->A.interval = 2.0 * x;
 			Ctrl->C.active  = Ctrl->A.active = Ctrl->contour.annot = true;
-			GMT_Report (API, GMT_MSG_VERBOSE, "Auto-determined contour inverval = %g and annotation interval = %g\n", Ctrl->C.interval, Ctrl->A.interval);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Auto-determined contour inverval = %g and annotation interval = %g\n", Ctrl->C.interval, Ctrl->A.interval);
 		}
 		
 		min = floor (xyz[0][GMT_Z] / Ctrl->C.interval) * Ctrl->C.interval; if (min < xyz[0][GMT_Z]) min += Ctrl->C.interval;
@@ -1106,7 +1111,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		n_contours = c;
 	}
 	if (n_contours == 0) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No contours found\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "No contours found\n");
 	}
 	c_alloc = n_contours;
 	cont = gmt_M_malloc (GMT, cont, 0, &c_alloc, struct PSCONTOUR);
@@ -1358,7 +1363,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				continue;
 			}
 
-			GMT_Report (API, GMT_MSG_VERBOSE, "Tracing the %g contour\n", cont[c].val);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Tracing the %g contour\n", cont[c].val);
 
 			id = (cont[c].type == 'A' || cont[c].type == 'a') ? 1 : 0;
 

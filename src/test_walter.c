@@ -32,7 +32,7 @@ int main (int argc, char **argv) {
 	dim[0] = 3;	/* Want three output columns [we will share the first two with input] */
 	if ((V_out = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) exit (EXIT_FAILURE);
 	/* Allocate three custum vectors using malloc; here of length 7 (i.e., >= 5) */
-	x = malloc (7*sizeof(double));	y = malloc (7*sizeof(double));	z = malloc (7*sizeof(int));
+	x = calloc (7, sizeof(double));	y = calloc (7, sizeof(double));	z = calloc (7, sizeof(int));
 	/* Hook these up to our containers, reusing x,y as both in and out x/y vectors */
 	GMT_Put_Vector (API, V_in,  GMT_X, GMT_DOUBLE, x);
 	GMT_Put_Vector (API, V_in,  GMT_Y, GMT_DOUBLE, y);

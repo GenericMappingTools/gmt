@@ -34,7 +34,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  */
 
 #include "gmt_dev.h"
@@ -66,16 +66,16 @@ enum GMT_mp_Zcodes {	/* Support for -Z parsing */
 	GMT_MP_Z_SPEED = 8	/* Must get speed from input column */
 };
 
-enum GMT_mp_cols {
-	MP_COL_AZ = 0,
-	MP_COL_DS,
-	MP_COL_CS,
-	MP_COL_XN,
-	MP_COL_YN,
-	MP_COL_DT,
-	MP_COL_CT,
-	MP_COL_AT,
-	MP_COL_N
+enum GMT_mp_cols {	/* Index into the extra and ecol_type arrays */
+	MP_COL_AZ = 0,	/* Azimuth between to points */
+	MP_COL_DS,		/* Distance between to points */
+	MP_COL_CS,		/* Cumulative distance since start of segment */
+	MP_COL_XN,		/* Longitude of nearest point in -L check */
+	MP_COL_YN,		/* Latitude of nearest point in -L check */
+	MP_COL_DT,		/* Incremental time bewteen two points */
+	MP_COL_CT,		/* Cumulative time since start of segment */
+	MP_COL_AT,		/* Absolute time at present record */
+	MP_COL_N		/* How many extra items there are to choose from */
 };
 
 struct MAPPROJECT_CTRL {	/* All control options for this program (except common args) */
@@ -314,11 +314,11 @@ GMT_LOCAL unsigned int old_G_parse (struct GMT_CTRL *GMT, char *arg, struct MAPP
 		if (Ctrl->G.unit == 'c') gmt_set_cartesian (GMT, GMT_IN);	/* Cartesian */
 		n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error: Expected -G<lon0>/<lat0>[/[-|+]%s|c|C]\n",
 		                                   GMT_LEN_UNITS_DISPLAY);
-		n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X],
-		                                     gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X],
+		n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X),
+		                                     gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false,
 		                                     &Ctrl->G.lon), txt_a);
-		n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y],
-		                                     gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y],
+		n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y),
+		                                     gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false,
 		                                     &Ctrl->G.lat), txt_b);
 		Ctrl->G.mode |= ((arg[last] == '-') ? GMT_MP_INCR_DIST : GMT_MP_CUMUL_DIST);
 	}
@@ -396,11 +396,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 							break;
 					}
 					if (n == 3) {
-						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X],
-						                                     gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X],
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X),
+						                                     gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false,
 						                                     &Ctrl->A.lon), txt_a);
-						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y],
-						                                     gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y],
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y),
+						                                     gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false,
 						                                     &Ctrl->A.lat), txt_b);
 					}
 					else
@@ -458,11 +458,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 						if (Ctrl->G.unit == 'c') gmt_set_cartesian (GMT, GMT_IN);	/* Cartesian input */
 						n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error: Expected -G<lon0>/<lat0>[+u[-|+]%s|c|C]\n",
 						                                   GMT_LEN_UNITS_DISPLAY);
-						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X],
-						                                     gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X],
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X),
+						                                     gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false,
 						                                     &Ctrl->G.lon), txt_a);
-						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y],
-						                                     gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y],
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y),
+						                                     gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false,
 						                                     &Ctrl->G.lat), txt_b);
 						if ((Ctrl->G.mode & GMT_MP_CUMUL_DIST) == 0) Ctrl->G.mode |= GMT_MP_INCR_DIST;
 					}
@@ -496,7 +496,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 					gmt_parse_common_options (GMT, "f", 'f', "g");	/* Implicitly set -fg since user wants spherical distances */
 				if (Ctrl->L.unit == 'c') Ctrl->L.unit = 'X';		/* Internally, this is Cartesian data and distances */
 				if (!gmt_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN, GMT_IS_DATASET)) n_errors++;
-				Ctrl->used[MP_COL_DS] = Ctrl->used[MP_COL_XN] = Ctrl->used[MP_COL_YN] = true;	/* Uutput dist, xnear, ynear */
+				Ctrl->used[MP_COL_DS] = Ctrl->used[MP_COL_XN] = Ctrl->used[MP_COL_YN] = true;	/* Output dist, xnear, ynear */
 				break;
 			case 'N':
 				Ctrl->N.active = true;
@@ -614,7 +614,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 			n_errors++;
 		}
 		else
-			GMT_Report (API, GMT_MSG_VERBOSE, "UTM zone used to generate region %g/%g/%g/%g\n",
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "UTM zone used to generate region %g/%g/%g/%g\n",
 				GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 
 		GMT->common.R.active[RSET] = true;
@@ -641,16 +641,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mapproject (void *V_API, int mode, void *args) {
-	int x, y, ks, rmode, n_fields, two, way, error = 0, o_type[2] = {GMT_Z, GMT_Z};
-	int fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
+	int ks, n_fields, two, way, error = 0, fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
 	
 	bool line_start = true, do_geo_conv = false, double_whammy = false;
 	bool geodetic_calc = false, datum_conv_only = false, along_track = false;
 
-	enum GMT_enum_family family;
-	enum GMT_enum_geometry geometry;
-
-	unsigned int i = 0, col, pos, speed_col = 2;
+	unsigned int i = 0, col, speed_col = 2;
 	unsigned int ecol_type[MP_COL_N] = {GMT_IS_FLOAT, GMT_IS_FLOAT, GMT_IS_FLOAT, GMT_IS_FLOAT,
                                         GMT_IS_FLOAT, GMT_IS_FLOAT, GMT_IS_FLOAT, GMT_IS_ABSTIME};
 
@@ -663,13 +659,13 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	double speed = 0, last_speed = -1.0, extra[MP_COL_N];	/* Max possible extra output columns from -A -G -L -Z */
 
 	char format[GMT_BUFSIZ] = {""}, unit_name[GMT_LEN64] = {""}, scale_unit_name[GMT_LEN64] = {""};
-	char line[GMT_BUFSIZ]   = {""}, p[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""};
 
 	bool (*map_fwd) (struct GMT_CTRL *, double, double, double *, double *);	/* Pointers to the selected forward mapping function */
 	void (*map_inv) (struct GMT_CTRL *, double *, double *, double, double);	/* Pointers to the selected inverse mapping function */
 
 	struct GMT_DATATABLE *xyline = NULL;
 	struct GMT_DATASET *Lin = NULL;
+	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct MAPPROJECT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -725,7 +721,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->Q.mode) Return (GMT_NOERROR);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
 	if (Ctrl->D.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->D.unit), "-D");
 	if (Ctrl->T.active) gmt_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
@@ -779,8 +775,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
 
 	if (Ctrl->G.mode) {	/* save output format in case -J changes it */
-		save[GMT_X] = (Ctrl->G.unit == 'X') ? GMT_IS_FLOAT : GMT->current.io.col_type[GMT_OUT][GMT_X];
-		save[GMT_Y] = (Ctrl->G.unit == 'X') ? GMT_IS_FLOAT : GMT->current.io.col_type[GMT_OUT][GMT_Y];
+		save[GMT_X] = (Ctrl->G.unit == 'X') ? GMT_IS_FLOAT : gmt_M_type (GMT, GMT_OUT, GMT_X);
+		save[GMT_Y] = (Ctrl->G.unit == 'X') ? GMT_IS_FLOAT : gmt_M_type (GMT, GMT_OUT, GMT_Y);
 	}
 	u_scale = (Ctrl->I.active) ? inv_scale : fwd_scale;
 
@@ -799,17 +795,19 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
+	Out = gmt_new_record (GMT, NULL, NULL);
+	
 	if (Ctrl->W.active) {	/* Print map dimensions and exit */
 		double w_out[2] = {0.0, 0.0};
 		switch (Ctrl->W.mode) {
 			case 1:
-				GMT_Report (API, GMT_MSG_VERBOSE, "Reporting map width in %s\n", unit_name);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reporting map width in %s\n", unit_name);
 				w_out[GMT_X] = GMT->current.proj.rect[XHI] * inch_to_unit;	n_output = 1;	break;
 			case 2:
-				GMT_Report (API, GMT_MSG_VERBOSE, "Reporting map height in %s\n", unit_name);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reporting map height in %s\n", unit_name);
 				w_out[GMT_X] = GMT->current.proj.rect[YHI] * inch_to_unit;	n_output = 1;	break;
 			default:
-				GMT_Report (API, GMT_MSG_VERBOSE, "Reporting map width and height in %s\n", unit_name);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reporting map width and height in %s\n", unit_name);
 				w_out[GMT_X] = GMT->current.proj.rect[XHI] * inch_to_unit;
 				w_out[GMT_Y] = GMT->current.proj.rect[YHI] * inch_to_unit;
 				n_output = 2;
@@ -825,7 +823,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
 		}
-		GMT_Put_Record (API, GMT_WRITE_DATA, w_out);	/* Write this to output */
+		Out->data = w_out;
+		GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
@@ -836,13 +835,11 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (Ctrl->L.unit == 'X') gmt_set_cartesian (GMT, GMT_IN);	/* Cartesian */
 
 	if (Ctrl->G.mode && proj_type != GMT_GEO2CART) {	/* Ensure we use the selected output coordinates */
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = save[GMT_X];
-		GMT->current.io.col_type[GMT_OUT][GMT_Y] = save[GMT_Y];
+		gmt_set_column (GMT, GMT_OUT, GMT_X, save[GMT_X]);
+		gmt_set_column (GMT, GMT_OUT, GMT_Y, save[GMT_Y]);
 	}
-	if (datum_conv_only) {	/* Both input and output is geographic */
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
-	}
+	if (datum_conv_only)	/* Both input and output is geographic */
+		gmt_set_geographic (GMT, GMT_OUT);
 
 	if (Ctrl->C.active) {
 		if (Ctrl->F.active) {
@@ -891,7 +888,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			ymax += Ctrl->C.northing;
 		}
 
-		GMT_Report (API, GMT_MSG_NORMAL, " Transform ");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Transform ");
 		if (Ctrl->N.active) {
 			char *auxlat[4] = {"authalic", "conformal", "meridional", "geocentric"};
 			GMT_Message (API, GMT_TIME_NONE, "geodetic");
@@ -946,7 +943,6 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to take on some input values */
 
-	x = (GMT->current.setting.io_lonlat_toggle[GMT_OUT]) ? 1 : 0;	y = 1 - x;		/* Set up which columns have x and y for output only*/
 	if ((gmt_M_is_geographic (GMT, GMT_IN) || Ctrl->E.active) && Ctrl->I.active) {
 		gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
 		gmt_set_cartesian (GMT, GMT_IN);
@@ -954,8 +950,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	else if (datum_conv_only || Ctrl->N.active) {	/* Both in and out are geographic */
 		gmt_set_geographic (GMT, GMT_IN);
 		gmt_set_geographic (GMT, GMT_OUT);
-		o_type[GMT_X] = GMT_X;	o_type[GMT_Y] = GMT_Y;
-		GMT->current.io.col_type[GMT_IN][GMT_Z] = GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
+		gmt_set_column (GMT, GMT_IO, GMT_Z, GMT_IS_FLOAT);
 	}
 	else if (gmt_M_is_geographic (GMT, GMT_OUT)) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Override -fog for normal operation\n");
@@ -980,49 +975,41 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		Ctrl->C.northing *= u_scale;
 	}
 
-	if (Ctrl->L.mode == GMT_MP_GIVE_FRAC)	/* Want fractional point locations */
-		fmt[0] = fmt[1] = GMT_Z;
-	else {			/* Want nearest point */
-		fmt[0] = GMT_X;
-		fmt[1] = GMT_Y;
-		ecol_type[MP_COL_XN] = GMT_IS_LON;
-		ecol_type[MP_COL_YN] = GMT_IS_LAT;
+	if (Ctrl->L.active)	{	/* Possibly adjust output types */
+		if (Ctrl->L.mode == GMT_MP_GIVE_FRAC)	/* Want fractional point locations */
+			fmt[0] = fmt[1] = GMT_Z;	/* These are just regular floating points */
+		else {			/* Want nearest point coordinates */
+			fmt[0] = GMT_X;
+			fmt[1] = GMT_Y;
+			ecol_type[MP_COL_XN] = GMT_IS_LON;	/* Must change these from floats to geo */
+			ecol_type[MP_COL_YN] = GMT_IS_LAT;
+		}
 	}
 	if (Ctrl->Z.formatted) ecol_type[MP_COL_CT] = GMT_IS_DURATION;
 	if (Ctrl->N.active) lat_mode = Ctrl->N.mode + Ctrl->I.active;
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
-	rmode = (gmt_is_ascii_record (GMT, options) && gmt_get_cols (GMT, GMT_IN) > 2) ? GMT_READ_MIXED : GMT_READ_DATA;
-	family = (rmode == GMT_READ_DATA) ? GMT_IS_DATASET : GMT_IS_TEXTSET;
-	geometry = (rmode == GMT_READ_DATA) ? GMT_IS_POINT : GMT_IS_NONE;
-	if (GMT_Init_IO (API, family, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, family, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
-	if (GMT_Set_Geometry (API, GMT_OUT, geometry) != GMT_NOERROR) {	/* Sets output geometry */
+	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 		Return (API->error);
 	}
 	if ((error = gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN))) != 0) Return (error);
-	if (geodetic_calc && rmode == GMT_READ_MIXED) {
-		for (col = 0, k = GMT_Z; col < MP_COL_N; col++) {
-			if (Ctrl->used[col]) {
-				GMT->current.io.col_type[GMT_OUT][k] = ecol_type[col];
-				ecol_type[col] = (unsigned int)k++;
-			}
-		}
-	}
 
 	along_track = (Ctrl->G.mode && ((Ctrl->G.mode & GMT_MP_CUMUL_DIST) || (Ctrl->G.mode & GMT_MP_INCR_DIST)));
 	
 	n = n_read_in_seg = 0;
 	out = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
+	Out->data = out;
 	data = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
 	do {	/* Keep returning records until we reach EOF */
-		if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((In = GMT_Get_Record (API, GMT_READ_DATA, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -1039,11 +1026,12 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				break;
 			continue;	/* Go back and read the next record */
 		}
-		if (in == NULL) {	/* Crazy safety valve but it should never get here (to please Coverity) */
+		if (In == NULL) {	/* Crazy safety valve but it should never get here (to please Coverity) */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: input pointer is NULL where it should not be, aborting\n");
 			Return (GMT_PTR_IS_NULL);
 		}
-
+		in = In->data;	/* Only need to process numerical part here */
+		Out->text = In->text;
 		if (gmt_M_rec_is_gap (GMT)) {	/* Gap detected.  Write a segment header but continue on since record is actually data */
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 			GMT->current.io.status = 0;	/* Done with gap */
@@ -1115,37 +1103,13 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				y_out_max = MAX (y_out_max, out[GMT_Y]);
 			}
 
-			if (rmode == GMT_READ_MIXED) {
-				/* Special case: ASCII i/o and at least 3 input columns:
-				   Columns beyond first two could be text strings */
-
-				/* We will use gmt_strtok to step past the first 2 [or 3] columns.  The remainder
-				 * will then be the user text that we want to preserve.  Since strtok places
-				 * 0 to indicate start of next token we count our way to the start of the text. */
-
-				strncpy (line, GMT->current.io.record, GMT_BUFSIZ-1);
-				gmt_chop (line);	/* Chop of line feed */
-				pos = record[0] = 0;	/* Start with blank record */
-				gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring (ignored) and update pos */
-				gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring (ignored) and update pos */
-				gmt_add_to_record (GMT, record, out[x], GMT_X, GMT_OUT, 2);	/* Format our output x value */
-				gmt_add_to_record (GMT, record, out[y], GMT_Y, GMT_OUT, 2);	/* Format our output y value */
-				if (Ctrl->E.active) {
-					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);		/* Returns zstring (ignore) and update pos */
-					gmt_add_to_record (GMT, record, out[GMT_Z], GMT_Z, GMT_OUT, 2);	/* Format our output z value */
-				}
-				if (line[pos]) strncat (record, &line[pos],GMT_BUFSIZ-1);	/* Append the remainder of the user text */
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
-
+			/* Simply copy other columns and output */
+			if (n_output == 0) {
+				gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN));
+				n_output = gmt_get_cols (GMT, GMT_OUT);
 			}
-			else {	/* Simply copy other columns and output */
-				if (n_output == 0) {
-					gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN));
-					n_output = gmt_get_cols (GMT, GMT_OUT);
-				}
-				for (k = two; k < n_output; k++) out[k] = in[k];
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
-			}
+			for (k = two; k < n_output; k++) out[k] = in[k];
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			n++;
 			if (n%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Projected %" PRIu64 " points\r", n);
 		}
@@ -1264,48 +1228,24 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 						extra[MP_COL_AT] += extra[MP_COL_DT];
 					last_speed = speed;
 				}
-				if (rmode == GMT_READ_MIXED) {
-					/* Special case: ASCII input and at least 3 columns:
-					   Columns beyond first two could be text strings */
-
-					/* We will use gmt_strtok to step past the first 2 [or 3] columns.  The remainder
-					 * will then be the user text that we want to preserve.  Since strtok places
-					 * 0 to indicate start of next token we count our way to the start of the text. */
-
-					strncpy (line, GMT->current.io.record, GMT_BUFSIZ);
-					gmt_chop (line);
-					pos = record[0] = 0;	/* Start with blank record */
-					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring (ignored) and update pos */
-					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring (ignored) and update pos */
-					gmt_add_to_record (GMT, record, in[x], GMT_X, GMT_OUT, 2);	/* Format our output x value */
-					gmt_add_to_record (GMT, record, in[y], GMT_Y, GMT_OUT, 0);	/* Format our output y value */
-					if (line[pos]) {	/* Append user text */
-						strcat (record, GMT->current.setting.io_col_separator);
-						strcat (record, &line[pos]);
-					}
-					for (col = 0; col < MP_COL_N; col++)
-						if (Ctrl->used[col]) gmt_add_to_record (GMT, record, extra[col], ecol_type[col], GMT_OUT, 1);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
-				}
-				else {	/* Simply copy other columns and output */
-					if (n_output == 0) {
-						for (col = 0, k = 0; col < MP_COL_N; col++) if (Ctrl->used[col]) k++;
-						gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN) + k);
-						n_output = gmt_get_cols (GMT, GMT_OUT);
-						if (geodetic_calc) {
-							for (col = 0, k = n_fields; col < MP_COL_N; col++) {
-								if (Ctrl->used[col]) {
-									GMT->current.io.col_type[GMT_OUT][k] = ecol_type[col];
-									ecol_type[col] = (unsigned int)k++;
-								}
-							}
+				/* Simply copy other columns and output */
+				if (n_output == 0) {
+					for (col = 0, k = 0; col < MP_COL_N; col++) if (Ctrl->used[col]) k++;
+					gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN) + k);
+					n_output = gmt_get_cols (GMT, GMT_OUT);
+					if (geodetic_calc) {	/* Update the output column types to the extra items we added */
+						for (col = 0, k = n_fields; col < MP_COL_N; col++) {
+							if (Ctrl->used[col]) {
+								gmt_set_column (GMT, GMT_OUT, (unsigned int)k, ecol_type[col]);
+								k++;
+							}	
 						}
 					}
-					for (ks = 0; ks < n_fields; ks++) out[ks] = in[ks];
-					for (col = 0; col < MP_COL_N; col++)
-						if (Ctrl->used[col]) out[ks++] = extra[col];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
 				}
+				for (ks = 0; ks < n_fields; ks++) out[ks] = in[ks];
+				for (col = 0; col < MP_COL_N; col++)
+					if (Ctrl->used[col]) out[ks++] = extra[col];
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 			else {
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
@@ -1314,39 +1254,16 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					y_out_min = MIN (y_out_min, out[GMT_Y]);
 					y_out_max = MAX (y_out_max, out[GMT_Y]);
 				}
-				if (rmode == GMT_READ_MIXED) {
-					/* Special case: ASCII input and at least 3 columns:
-					   Columns beyond first two could be text strings */
-
-					/* We will use gmt_strtok to step past the first 2 [or 3] columns.  The remainder
-					 * will then be the user text that we want to preserve.  Since strtok places
-					 * 0 to indicate start of next token we count our way to the start of the text. */
-
-					strncpy (line, GMT->current.io.record, GMT_BUFSIZ);
-					gmt_chop (line);
-					pos = record[0] = 0;	/* Start with blank record */
-					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring and update pos */
-					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring and update pos */
-					gmt_add_to_record (GMT, record, out[x], o_type[GMT_X], GMT_OUT, 2);	/* Format our output x value */
-					gmt_add_to_record (GMT, record, out[y], o_type[GMT_Y], GMT_OUT, 2);	/* Format our output y value */
-					if (Ctrl->E.active || (Ctrl->T.active && GMT->current.proj.datum.h_given)) {
-						gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);		/* Returns zstring (ignored) and update pos */
-						gmt_add_to_record (GMT, record, out[GMT_Z], GMT_Z, GMT_OUT, 2);	/* Format our output z value */
-					}
-					strcat (record, &line[pos]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
+				/* Simply copy other columns and output */
+				if (n_output == 0) {
+					gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN));
+					n_output = gmt_get_cols (GMT, GMT_OUT);
 				}
-				else {	/* Simply copy other columns and output */
-					if (n_output == 0) {
-						gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN));
-						n_output = gmt_get_cols (GMT, GMT_OUT);
-					}
-					for (k = two; k < n_output; k++) out[k] = in[k];
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
-				}
+				for (k = two; k < n_output; k++) out[k] = in[k];
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 			n++;
-			if (n%1000 == 0) GMT_Report (API, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\r", n);
+			if (n%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Projected %" PRIu64 " points\r", n);
 		}
 	} while (true);
 
@@ -1357,42 +1274,43 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) && n > 0) {
-		GMT_Report (API, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\n", n);
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) && n > 0) {
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Projected %" PRIu64 " points\n", n);
 		sprintf (format, "Input extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n",
 		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_VERBOSE, format, x_in_min, x_in_max, y_in_min, y_in_max);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, x_in_min, x_in_max, y_in_min, y_in_max);
 		if (!geodetic_calc) {
 			sprintf (format, "Output extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n",
 			         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 			         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-			GMT_Report (API, GMT_MSG_VERBOSE, format, x_out_min, x_out_max, y_out_min, y_out_max);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, x_out_min, x_out_max, y_out_min, y_out_max);
 			if (Ctrl->I.active) {
 				if (Ctrl->E.active)
-					GMT_Report (API, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " ECEF coordinates [m] to (lon,lat,h)\n", n);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mapped %" PRIu64 " ECEF coordinates [m] to (lon,lat,h)\n", n);
 				else if (Ctrl->N.active)
-					GMT_Report (API, GMT_MSG_VERBOSE, "Converted %" PRIu64 " auxiliary (lon,lat) to geodetic coordinates [degrees]\n", n);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Converted %" PRIu64 " auxiliary (lon,lat) to geodetic coordinates [degrees]\n", n);
 				else
-					GMT_Report (API, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " x-y pairs [%s] to lon-lat\n", n, unit_name);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mapped %" PRIu64 " x-y pairs [%s] to lon-lat\n", n, unit_name);
 			}
 			else if (Ctrl->T.active && GMT->current.proj.datum.h_given)
-				GMT_Report (API, GMT_MSG_VERBOSE, "Datum-converted %" PRIu64 " (lon,lat,h) triplets\n", n);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Datum-converted %" PRIu64 " (lon,lat,h) triplets\n", n);
 			else if (Ctrl->T.active)
-				GMT_Report (API, GMT_MSG_VERBOSE, "Datum-converted %" PRIu64 " (lon,lat) pairs\n", n);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Datum-converted %" PRIu64 " (lon,lat) pairs\n", n);
 			else if (Ctrl->E.active)
-				GMT_Report (API, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " (lon,lat,h) triplets to ECEF coordinates [m]\n", n);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mapped %" PRIu64 " (lon,lat,h) triplets to ECEF coordinates [m]\n", n);
 			else if (Ctrl->N.active)
-				GMT_Report (API, GMT_MSG_VERBOSE, "Converted %" PRIu64 " (lon,lat) geodetic to auxiliary coordinates [degrees]\n", n);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Converted %" PRIu64 " (lon,lat) geodetic to auxiliary coordinates [degrees]\n", n);
 			else if (gmt_M_is_geographic (GMT, GMT_IN))
-				GMT_Report (API, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " lon-lat pairs to x-y [%s]\n", n, unit_name);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mapped %" PRIu64 " lon-lat pairs to x-y [%s]\n", n, unit_name);
 			else
-				GMT_Report (API, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " data pairs to x-y [%s]\n", n, unit_name);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mapped %" PRIu64 " data pairs to x-y [%s]\n", n, unit_name);
 		}
-		if (Ctrl->S.active && n != n_read) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " fell outside region\n", n_read - n);
+		if (Ctrl->S.active && n != n_read) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " fell outside region\n", n_read - n);
 	}
 
 	gmt_M_free (GMT, out);
+	gmt_M_free (GMT, Out);
 
 	Return (GMT_NOERROR);
 }

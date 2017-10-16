@@ -320,7 +320,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 	
 	if (n_paths <= 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "No cruises given\n");
 		Return (GMT_NO_INPUT);
 	}
 	
@@ -328,7 +328,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 	
 	saved_range = GMT->current.io.geo.range;	/* We may have to reset thisso keep a copy */
 	gmt_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
-	GMT->current.io.col_type[GMT_OUT][GMT_Z] = M.time_format;	
+	gmt_set_column (GMT, GMT_OUT, GMT_Z, M.time_format);
 	if (Ctrl->E.active) fprintf (GMT->session.std[GMT_OUT], "#Cruise %sID      %sWest    %sEast    %sSouth   %sNorth   %sStartTime%s%sEndTime%s%s%sDist%snRec",
 		GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator,
 		GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
@@ -339,7 +339,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 	
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Now processing cruise %s\n", list[argno]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Now processing cruise %s\n", list[argno]);
 		
 		D = MGD77_Create_Dataset (GMT);
 		

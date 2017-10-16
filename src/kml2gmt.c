@@ -21,7 +21,7 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  */
  
 #include "gmt_dev.h"
@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"kml2gmt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract GMT table data from Google Earth KML files"
-#define THIS_MODULE_KEYS	"<T{,>D}"
+#define THIS_MODULE_KEYS	">D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:Vbdh" GMT_OPT("HMm")
 
@@ -105,7 +105,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)))
+				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -166,6 +166,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	
 	FILE *fp = NULL;
 
+	struct GMT_RECORD *Out = NULL;
 	struct KML2GMT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -189,14 +190,12 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the kml2gmt main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input KML data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input KML data\n");
 	gmt_set_geographic (GMT, GMT_IN);
 	gmt_set_geographic (GMT, GMT_OUT);
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	
-	if ((error = gmt_set_cols (GMT, GMT_OUT, 2 + Ctrl->Z.active)) != GMT_NOERROR) {
-		Return (error);
-	}
+	GMT_Set_Columns (API, GMT_OUT, 2 + Ctrl->Z.active, GMT_COL_FIX_NO_TEXT);
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
@@ -214,26 +213,28 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	 * P. Wessel, April 2013. */
 	
 	if (Ctrl->In.active) {
-		if ((fp = fopen (Ctrl->In.file, "r")) == NULL) {
+		if ((fp = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing %s\n", Ctrl->In.file);
-		sprintf (buffer, "# kml2gmt: KML read from %s\n", Ctrl->In.file);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing %s\n", Ctrl->In.file);
+		sprintf (buffer, "# kml2gmt: KML read from %s", Ctrl->In.file);
 	}
 	else {     /* Just read standard input */
 		fp = stdin;
-		GMT_Report (API, GMT_MSG_VERBOSE, "Reading from standard input\n");
-		sprintf (buffer, "# kml2gmt: KML read from standard input\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading from standard input\n");
+		sprintf (buffer, "# kml2gmt: KML read from standard input");
 	}
 	if (Ctrl->F.active)
-		GMT_Report (API, GMT_MSG_VERBOSE, "Only output features with geometry: %s\n", gm[Ctrl->F.mode]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Only output features with geometry: %s\n", gm[Ctrl->F.mode]);
+
+	Out = gmt_new_record (GMT, out, buffer);
 
 	/* Now we are ready to take on some input values */
 
 	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Get enough decimals */
 	
-	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
+	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Out);	/* Write this to output */
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (strstr (line, "<Placemark")) {	/* New Placemark, reset name and description */
@@ -255,8 +256,8 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			strncpy (name, &line[start], GMT_BUFSIZ-1);
 			gmt_chop (name);
 			if (first && !skip) {
-				sprintf (buffer, "# %s\n", &line[start]);
-				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
+				sprintf (buffer, "# %s", &line[start]);
+				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Out);	/* Write this to output */
 				first = false;
 			}
 		}
@@ -268,8 +269,8 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			strncpy (description, &line[start], GMT_BUFSIZ-1);
 			gmt_chop (description);
 			if (first && !skip) {
-				sprintf (buffer, "# %s\n", &line[start]);
-				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
+				sprintf (buffer, "# %s", &line[start]);
+				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Out);	/* Write this to output */
 				first = false;
 			}
 		}
@@ -297,7 +298,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 		if (fmode == POINT && single) {	/* Process the single point from current record */
 			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
 			sscanf (&line[i+1], "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 		}
 		else if (single) {	/* Process multiple points from current single record */
 			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
@@ -305,14 +306,14 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			while (gmt_strtok (line, " \t", &pos, word)) {	/* Look for clusters of x,y,z separated by whitespace */
 				n_scan = sscanf (word, "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);
 				if (n_scan == 2 || n_scan == 3)
-					GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				else
 					break;
 			}
 		}
 		else {	/* Processes points from separate lines */
 			while (fscanf (fp, "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z])) {
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 		}
 		n_features++;
@@ -321,8 +322,9 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
+	gmt_M_free (GMT, Out);
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Found %u features with selected geometry\n", n_features);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %u features with selected geometry\n", n_features);
 	
 	Return (GMT_NOERROR);
 }

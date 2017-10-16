@@ -154,13 +154,13 @@ GMT_LOCAL int parse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 		return (5);
 	}
 	else if (gmt4 && !gmt5) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Detected GMT 4 style elements in -B option\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: Detected GMT 4 style elements in -B option\n");
 		return (4);
 	}
 	else if (gmt4 && gmt5) {	/* Mixed case is never allowed */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Error: Detected both GMT 4 and >= style elements in -B option. Unable to parse.\n");
-		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
-		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "parse_B_arg_inspector: Detected both GMT 4 and >= style elements in -B option. Unable to parse.\n");
+		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "parse_B_arg_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
+		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "parse_B_arg_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
 		return (-1);
 	}
 	else {
@@ -230,7 +230,7 @@ GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_
 	}
 	if (GMT->common.R.active[ISET])
 		return 0;
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: -R[L|C|R][T|M|B]<x0>/<y0>/<n_columns>/<ny> requires grid spacings via -I\n");
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-R[L|C|R][T|M|B]<x0>/<y0>/<n_columns>/<ny> requires grid spacings via -I\n");
 	return 1;
 }
 
@@ -402,6 +402,27 @@ int GMT_List_Args (void *V_API, struct GMT_OPTION *head) {
 #endif
 
 /*! . */
+GMT_LOCAL struct GMT_OPTION *fix_gdal_files (struct GMT_OPTION *opt) {
+	char *pch = NULL;
+	if (((pch = strstr (opt->arg, "+b")) != NULL) && !strstr(opt->arg, "=gd")) {
+		/* Here we deal with the case that the filename has embedded a band request for gdalread, as in img.tif+b1
+		   However, the issue is that for these cases the machinery is set only to parse the request in the
+		   form of img.tif=gd+b1 so the trick is to insert the missing '=gd' in the filename and let t go.
+		   JL 29-November 2014
+		*/
+		char t[GMT_LEN256] = {""};
+		pch[0] = '\0';
+		strcpy (t, opt->arg);
+		strcat (t, "=gd"); 
+		pch[0] = '+';			/* Restore what we have erased 2 lines above */
+		strcat(t, pch);
+		gmt_M_str_free (opt->arg);	/* free it so that we can extend it */
+		opt->arg = strdup (t);
+	}
+	return opt;
+}
+
+/*! . */
 struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *in) {
 	/* This function will loop over the n_args_in supplied command line arguments (in) and
 	 * returns a linked list of GMT_OPTION structures for each program option.
@@ -418,7 +439,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 
 	int error = GMT_OK;
 	unsigned int arg, first_char, append = 0, n_args;
-	char option, **args = NULL, **new_args = NULL, *pch = NULL, *this_arg = NULL, buffer[GMT_LEN1024] = {""};
+	char option, **args = NULL, **new_args = NULL, *this_arg = NULL, buffer[GMT_LEN1024] = {""};
 	struct GMT_OPTION *head = NULL, *new_opt = NULL;
 	struct GMT_CTRL *G = NULL;
 	struct GMTAPI_CTRL *API = NULL;
@@ -474,7 +495,25 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		/* Note: The UNIX command line will never see redirections like >, >>, and < pass as arguments, so when we check for these
 		 * below it is because command-strings passed from external APIs may contain things like '-Fap -O -K >> plot.ps' */
 		
-		if (args[arg][0] == '<' && !args[arg][1] && (arg+1) < n_args && args[arg+1][0] != '-')	/* string command with "< file" for input */
+		if (args[arg][0] == '=' && args[arg][1] && !gmt_access (API->GMT, &args[arg][1], F_OK)) {	/* Gave a file list which we must expand into options */
+			char **flist = NULL;
+			uint64_t n_files, f;
+			n_files = gmtlib_read_list (API->GMT, &args[arg][1], &flist);
+			if ((new_opt = GMT_Make_Option (API, '=', &args[arg][1])) == NULL)	/* Make option with the listing name flagged as option -= */
+				return_null (API, error);	/* Create the new option structure given the args, or return the error */
+			head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Create_Options: Must expand list file %s\n", args[arg]);
+			for (f = 0; f < n_files; f++) {	/* Now expand all the listed files into options */
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Create_Options: Adding input file: %s\n", flist[f]);
+				if ((new_opt = GMT_Make_Option (API, GMT_OPT_INFILE, flist[f])) == NULL)
+					return_null (API, error);	/* Create the new option structure given the args, or return the error */
+				new_opt = fix_gdal_files (new_opt);
+				head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
+			}
+			gmtlib_free_list (API->GMT, flist, n_files);
+			continue;
+		}
+		else if (args[arg][0] == '<' && !args[arg][1] && (arg+1) < n_args && args[arg+1][0] != '-')	/* string command with "< file" for input */
 			first_char = 0, option = GMT_OPT_INFILE, arg++;
 		else if (args[arg][0] == '>' && !args[arg][1] && (arg+1) < n_args && args[arg+1][0] != '-')	/* string command with "> file" for output */
 			first_char = 0, option = GMT_OPT_OUTFILE, arg++;
@@ -526,23 +565,8 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 			if ((new_opt = GMT_Make_Option (API, option, this_arg)) == NULL)
 				return_null (API, error);	/* Create the new option structure given the args, or return the error */
 
-		if (option == GMT_OPT_INFILE) {	/* Some special checks on infiles */
-			if (((pch = strstr(new_opt->arg, "+b")) != NULL) && !strstr(new_opt->arg, "=gd")) {
-				/* Here we deal with the case that the filename has embedded a band request for gdalread, as in img.tif+b1
-				   However, the issue is that for these cases the machinery is set only to parse the request in the
-				   form of img.tif=gd+b1 so the trick is to insert the missing '=gd' in the filename and let t go.
-				   JL 29-November 2014
-				*/
-				char t[GMT_LEN256] = {""};
-				pch[0] = '\0';
-				strcpy (t, new_opt->arg);
-				strcat (t, "=gd"); 
-				pch[0] = '+';			/* Restore what we have erased 2 lines above */
-				strcat(t, pch);
-				gmt_M_str_free (new_opt->arg);	/* free it so that we can extend it */
-				new_opt->arg = strdup (t);
-			}
-		}
+		if (option == GMT_OPT_INFILE)	/* A special check on infiles to see if they refer to GDAL implicitly */
+			new_opt = fix_gdal_files (new_opt);
 
 		head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
 	}
@@ -639,7 +663,8 @@ char **GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head) {
 	 */
 
 	char **txt = NULL, buffer[GMT_BUFSIZ] = {""};
-	unsigned int arg = 0;
+	int arg = 0;
+	bool skip_infiles = false;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *G = NULL;
 	struct GMTAPI_CTRL *API = NULL;
@@ -660,8 +685,14 @@ char **GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head) {
 		if (!opt->option) continue;			/* Skip all empty options */
 		if (opt->option == GMT_OPT_SYNOPSIS)		/* Produce special - option for synopsis */
 			sprintf (buffer, "-");
-		else if (opt->option == GMT_OPT_INFILE)		/* Option for input filename [or numbers] */
+		else if (opt->option == '=' && opt->arg[0]) {		/* Start of long list of file args initially given via -=<list> */
+			sprintf (buffer, "=%s", opt->arg);
+			skip_infiles = true;
+		}
+		else if (opt->option == GMT_OPT_INFILE)	{	/* Option for input filename [or numbers] */
+			if (skip_infiles) continue;
 			sprintf (buffer, "%s", opt->arg);
+		}
 		else if (opt->arg && opt->arg[0])			/* Regular -?arg commandline option with argument for some ? */
 			sprintf (buffer, "-%c%s", opt->option, opt->arg);
 		else							/* Regular -? commandline argument without argument */
@@ -674,6 +705,10 @@ char **GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head) {
 		arg++;	/* One more option added */
 	}
 	/* OK, done processing all options */
+	if (arg < *argc) {	/* Shrink the list to fit */
+		*argc = arg;
+		txt = gmt_M_memory (G, txt, *argc, char *);
+	}
 	
 	return (txt);	/* Pass back the char** array to the calling module */
 }
@@ -702,7 +737,7 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 	 */
 
 	char *txt = NULL, *c = NULL, buffer[GMT_BUFSIZ] = {""};
-	bool first = true;
+	bool first = true, skip_infiles = false;
 	size_t length = 0, inc, n_alloc = GMT_BUFSIZ;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *G = NULL;
@@ -719,7 +754,12 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 		if (!opt->option) continue;			/* Skip all empty options */
 		if (opt->option == GMT_OPT_SYNOPSIS)		/* Produce special - option for synopsis */
 			sprintf (buffer, "-");
+		else if (opt->option == '=' && opt->arg[0]) {		/* Special list file, add it but not the files that follow */
+			sprintf (buffer, "=%s", opt->arg);
+			skip_infiles = true;
+		}
 		else if (opt->option == GMT_OPT_INFILE)	{	/* Option for input filename [or numbers] */
+			if (skip_infiles) continue;
 			if (gmtlib_file_is_srtmlist (API, opt->arg))	/* Want to replace the srtm list with the original @earth_relief_xxx name instead */
 				sprintf (buffer, "@earth_relief_0%cs", opt->arg[strlen(opt->arg)-8]);
 			else if (gmt_M_file_is_remotedata (opt->arg) && (c = strstr (opt->arg, ".grd"))) {

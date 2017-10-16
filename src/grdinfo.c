@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: grdinfo reads one or more grid file and [optionally] prints
  * out various statistics like mean/standard deviation and median/scale.
@@ -30,7 +30,7 @@
 #define THIS_MODULE_NAME	"grdinfo"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract information from grids"
-#define THIS_MODULE_KEYS	"<G{+,>T},>DC"
+#define THIS_MODULE_KEYS	"<G{+,>D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->RVfh"
 
@@ -43,9 +43,14 @@ enum Opt_I_modes {
 	GRDINFO_GIVE_REG_ROUNDED,
 	GRDINFO_GIVE_BOUNDBOX};
 
+enum Opt_C_modes {
+	GRDINFO_NUMERICAL	= 1,
+	GRDINFO_TRAILING	= 2};
+
 struct GRDINFO_CTRL {
-	struct GRDINFO_C {	/* -C */
+	struct GRDINFO_C {	/* -C[n|t] */
 		bool active;
+		unsigned int mode;
 	} C;
 	struct GRDINFO_D {	/* -D[dx[/dy]][+i] */
 		bool active;
@@ -97,7 +102,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdinfo <grid> [-C] [-D[<offx>[/<offy>][+i]] [-F] [-I[<dx>[/<dy>]|b|i|r]] [-L[a|0|1|2|p]] [-M]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdinfo <grid> [-C[n|t]] [-D[<offx>[/<offy>][+i]] [-F] [-I[<dx>[/<dy>]|b|i|r]] [-L[a|0|1|2|p]] [-M]\n");
 	GMT_Message (API, GMT_TIME_NONE, "	[%s] [-T[<dz>][+a[<alpha>]][+s]] [%s] [%s]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -105,9 +110,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> may be one or more grid files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Format report in fields on a single line using the format\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   file w e s n z0 z1 dx dy n_columns n_rows [x0 y0 x1 y1] [med L1scale] [mean std rms] [n_nan] [mode LMSscale].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (-M gives [x0 y0 x1 y1] and [n_nan], -L1 gives [median L1scale], -L2 gives [mean std rms],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   while -Lp gives [mode LMSscale]).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <file w e s n z0 z1 dx dy n_columns n_rows [x0 y0 x1 y1] [med L1scale] [mean std rms] [n_nan] [mode LMSscale]>,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   where -M adds [x0 y0 x1 y1] and [n_nan], -L1 adds [median L1scale], -L2 adds [mean std rms],\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and -Lp adds [mode LMSscale]).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ct to place <file> at the end of the output record, or -Cn to write only numerical columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Report tiles using tile size set in -I. Optionally, extend each tile region by <offx>/<offy>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i to only report tiles if the subregion has data (limited to one input grid).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no grid is given then -R must be given and we tile based on the given region.\n");
@@ -166,6 +172,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 
 			case 'C':	/* Column format */
 				Ctrl->C.active = true;
+				if (opt->arg[0] == 'n')
+					Ctrl->C.mode = GRDINFO_NUMERICAL;
+				else if (opt->arg[0] == 't')
+					Ctrl->C.mode = GRDINFO_TRAILING;
 				break;
 			case 'D':	/* Tiling output w/ optional overlap */
 				Ctrl->D.active = true;
@@ -224,7 +234,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 			case 'T':	/* CPT range */
 				Ctrl->T.active = true;
 				if (opt->arg[0] == 's' && gmt_M_compat_check (GMT, 5)) {	/* Old-style format, cast in new syntax */
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -Ts option is deprecated; please use -T[<dz>][+s][+a[<alpha>]] next time.\n");
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-Ts option is deprecated; please use -T[<dz>][+s][+a[<alpha>]] next time.\n");
 					sprintf (text, "%s+s", &opt->arg[1]);
 				}
 				else
@@ -272,12 +282,12 @@ struct GMT_TILES {
 
 GMT_LOCAL void report_tiles (struct GMT_CTRL *GMT, struct GMT_GRID *G, double w, double e, double s, double n, struct GRDINFO_CTRL *Ctrl) {
 	/* Find the tiles covering the present grid, if given */
-	bool use = true;
+	bool use = true, num_report;
 	unsigned int nx, ny, i, j, js = 0, jn = 0, ie, iw;
 	uint64_t row, col, node;
 	double wesn[4], out[4], box[4];
 	char text[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
-	char *sep = GMT->current.setting.io_col_separator;
+	num_report = (GMT->parent->external || Ctrl->C.active);
 	
 	nx = gmt_M_get_n (GMT, w, e, Ctrl->I.inc[GMT_X], 1);
 	ny = gmt_M_get_n (GMT, s, n, Ctrl->I.inc[GMT_Y], 1);
@@ -323,15 +333,8 @@ L_use_it:		row = 0;	/* Get here by goto and use is still true */
 						out[XHI] = (out[XHI] < 0.0) ? +180.0 : 360.0;
 					}
 				}
-				if (GMT->parent->external)	/* External interface */
-					GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
-				else if (Ctrl->C.active) {
-					gmt_ascii_format_col (GMT, record, out[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
-					gmt_ascii_format_col (GMT, text, out[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
-					gmt_ascii_format_col (GMT, text, out[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
-					gmt_ascii_format_col (GMT, text, out[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
-					GMT_Put_Record (GMT->parent, GMT_WRITE_TEXT, record);
-				}
+				if (num_report)	/* Report numerical only */
+					GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, out);
 				else {
 					sprintf (record, "-R");
 					gmt_ascii_format_col (GMT, text, out[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
@@ -419,8 +422,8 @@ GMT_LOCAL void smart_increments (struct GMT_CTRL *GMT, double inc[], unsigned in
 
 int GMT_grdinfo (void *V_API, int mode, void *args) {
 	int error = 0;
-	unsigned int n_grds = 0, o_type = GMT_IS_TEXTSET, n_cols = 0, col, i_status;
-	bool subset, delay;
+	unsigned int n_grds = 0, n_cols = 0, col, i_status, cmode = GMT_COL_FIX, rmode = GMT_WRITE_TEXT;
+	bool subset, delay, num_report;
 
 	uint64_t ij, n_nan = 0, n = 0;
 
@@ -433,6 +436,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 	struct GRDINFO_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL, *W = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -470,9 +474,9 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		global_xmax = global_ymax = global_zmax = -DBL_MAX;
 	}
 	delay = (Ctrl->D.mode == 1 || (Ctrl->T.mode & 2));	/* Delay the freeing of the (single) grid we read */
+	num_report = (API->external || (Ctrl->C.active && Ctrl->C.mode));
 	
 	if (Ctrl->C.active) {
-		if (API->external) o_type = GMT_IS_DATASET;	/* With external interface we are returning doubles */
 		n_cols = 6;	/* w e s n z0 z1 */
 		if (!Ctrl->I.active) {
 			n_cols += 4;				/* Add dx dy n_columns n_rows */
@@ -481,17 +485,22 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			if (Ctrl->L.norm & 2) n_cols += 3;	/* Add mean stdev rms */
 			if (Ctrl->L.norm & 4) n_cols += 2;	/* Add mode lmsscale */
 		}
+		if (API->external || Ctrl->C.mode == GRDINFO_NUMERICAL) cmode = GMT_COL_FIX_NO_TEXT;
+		rmode = (Ctrl->C.mode == GRDINFO_TRAILING) ? GMT_WRITE_MIXED : (Ctrl->C.mode == GRDINFO_NUMERICAL ? GMT_WRITE_DATA : GMT_WRITE_TEXT);
 	}
-	if (GMT_Init_IO (API, o_type, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+	if (n_cols) GMT_Set_Columns (GMT->parent, GMT_OUT, n_cols, cmode);
+
+	if (GMT_Init_IO (API, GMT_IS_DATASET, rmode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, o_type, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
-	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
-		Return (API->error);
-	}
-	if (n_cols && (error = gmt_set_cols (GMT, GMT_OUT, n_cols)) != 0) Return (error);	/* Set number of output columns */
+//	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
+//		Return (API->error);
+//	}
+	
+	Out = gmt_new_record (GMT, out, record);	/* the two items */
 	
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */ 
 
@@ -510,7 +519,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		subset = gmt_M_is_subset (GMT, G->header, wesn);	/* Subset requested */
 		if (subset) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Processing grid %s\n", G->header->name);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing grid %s\n", G->header->name);
 
 		if (G->header->ProjRefPROJ4 && !Ctrl->C.active && !Ctrl->T.active)
 			projStr = strdup(G->header->ProjRefPROJ4);		/* Copy proj string to print at the end */
@@ -518,7 +527,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			projStr = strdup(G->header->ProjRefWKT);
 
 		for (n = 0; n < GMT_Z; n++)
-			GMT->current.io.col_type[GMT_OUT][n] = GMT->current.io.col_type[GMT_IN][n];	/* Since grids may differ in types */
+			GMT->current.io.col_type[GMT_OUT][n] = gmt_M_type (GMT, GMT_IN, n);	/* Since grids may differ in types */
 
 		n_grds++;
 
@@ -607,17 +616,17 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
 			gmt_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
 			gmt_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_REG_IMG) {
 			char *c = strrchr (G->header->remark, 'R');
 			sprintf (record, "-%s", c);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_INCREMENTS) {
 			sprintf (record, "-I");
 			smart_increments (GMT, G->header->inc, 2, text);	strcat (record, text);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_BOUNDBOX) {
 			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POLY) != GMT_NOERROR) {	/* Sets output geometry */
@@ -627,30 +636,30 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			sprintf (record, "> Bounding box for %s", G->header->name);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			/* LL */
 			gmt_ascii_format_col (GMT, record, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
 			gmt_ascii_format_col (GMT, text,   G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			/* LR */
 			gmt_ascii_format_col (GMT, record, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, sep);
 			gmt_ascii_format_col (GMT, text,   G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			/* UR */
 			gmt_ascii_format_col (GMT, record, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, sep);
 			gmt_ascii_format_col (GMT, text,   G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			/* UL */
 			gmt_ascii_format_col (GMT, record, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
 			gmt_ascii_format_col (GMT, text,   G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			/* LL (repeat to close polygon) */
 			gmt_ascii_format_col (GMT, record, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
 			gmt_ascii_format_col (GMT, text,   G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 		}
 		else if (Ctrl->C.active && !Ctrl->I.active) {
-			if (API->external) {	/* External interface, return as data with no leading text */
+			if (num_report) {	/* External interface, return as data with no leading text */
 				/* w e s n z0 z1 dx dy n_columns n_rows [x0 y0 x1 y1] [med scale] [mean std rms] [n_nan] */
 				gmt_M_memcpy (out, G->header->wesn, 4, double);	/* Place the w/e/s/n limits */
 				out[ZLO]   = G->header->z_min;		out[ZHI]   = G->header->z_max;
@@ -673,10 +682,14 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				if (Ctrl->L.norm & 4) {
 					out[col++] = z_mode;	out[col++] = z_lmsscl;
 				}
-				GMT_Put_Record (API, GMT_WRITE_DATA, out);
+				if (Ctrl->C.mode == GRDINFO_TRAILING)
+					sprintf (record, "%s", G->header->name);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 			else {	/* Command-line usage */
-				sprintf (record, "%s%s", G->header->name, sep);
+				record[0] = '\0';
+				if (Ctrl->C.mode != GRDINFO_TRAILING)
+					sprintf (record, "%s%s", G->header->name, sep);
 				gmt_ascii_format_col (GMT, text, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
 				gmt_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
 				gmt_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
@@ -712,69 +725,70 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_mode,   GMT_OUT, GMT_Z);	strcat (record, text);
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_lmsscl, GMT_OUT, GMT_Z);	strcat (record, text);
 				}
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				if (Ctrl->C.mode -= GRDINFO_TRAILING) { sprintf (text, "%s%s", sep, G->header->name);	strcat (record, text); }
+				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			}
 		}
 		else if (!(Ctrl->T.active || (Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED))) {
 			char *gtype[2] = {"Cartesian grid", "Geographic grid"};
-			sprintf (record, "%s: Title: %s", G->header->name, G->header->title);		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-			sprintf (record, "%s: Command: %s", G->header->name, G->header->command);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-			sprintf (record, "%s: Remark: %s", G->header->name, G->header->remark);		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			sprintf (record, "%s: Title: %s", G->header->name, G->header->title);		GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
+			sprintf (record, "%s: Command: %s", G->header->name, G->header->command);	GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
+			sprintf (record, "%s: Remark: %s", G->header->name, G->header->remark);		GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			if (G->header->registration == GMT_GRID_NODE_REG || G->header->registration == GMT_GRID_PIXEL_REG)
 				sprintf (record, "%s: %s node registration used [%s]", G->header->name, type[G->header->registration], gtype[gmt_M_is_geographic (GMT, GMT_IN)]);
 			else
 				sprintf (record, "%s: Unknown registration! Probably not a GMT grid", G->header->name);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			if (G->header->type != k_grd_unknown_fmt)
 				sprintf (record, "%s: Grid file format: %s", G->header->name, GMT->session.grdformat[G->header->type]);
 			else
 				sprintf (record, "%s: Unrecognized grid file format! Probably not a GMT grid", G->header->name);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			if (Ctrl->F.active) {
 				if ((fabs (G->header->wesn[XLO]) < 500.0) && (fabs (G->header->wesn[XHI]) < 500.0) &&
 				    (fabs (G->header->wesn[YLO]) < 500.0) && (fabs (G->header->wesn[YHI]) < 500.0)) {
 					sprintf (record, "%s: x_min: %.7f", G->header->name, G->header->wesn[XLO]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: x_max: %.7f", G->header->name, G->header->wesn[XHI]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: x_inc: %.7f", G->header->name, G->header->inc[GMT_X]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: name: %s",    G->header->name, G->header->x_units);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: n_columns: %d", G->header->name, G->header->n_columns);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: y_min: %.7f", G->header->name, G->header->wesn[YLO]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: y_max: %.7f", G->header->name, G->header->wesn[YHI]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: y_inc: %.7f", G->header->name, G->header->inc[GMT_Y]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: name: %s",    G->header->name, G->header->y_units);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: n_rows: %d",  G->header->name, G->header->n_rows);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 				}
 				else {
 					sprintf (record, "%s: x_min: %.2f", G->header->name, G->header->wesn[XLO]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: x_max: %.2f", G->header->name, G->header->wesn[XHI]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: x_inc: %.2f", G->header->name, G->header->inc[GMT_X]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: name: %s",    G->header->name, G->header->x_units);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: n_columns: %d",  G->header->name, G->header->n_columns);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: y_min: %.2f", G->header->name, G->header->wesn[YLO]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: y_max: %.2f", G->header->name, G->header->wesn[YHI]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: y_inc: %.2f", G->header->name, G->header->inc[GMT_Y]);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: name: %s",    G->header->name, G->header->y_units);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 					sprintf (record, "%s: n_rows: %d",  G->header->name, G->header->n_rows);
-					GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 				}
 			}
 			else {
@@ -787,7 +801,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				strcat (record, " name: ");
 				if ((c = strstr (G->header->x_units, " [degrees"))) c[0] = '\0'; strcat (record, G->header->x_units); if (c) c[0] = ' ';
 				sprintf (text, " n_columns: %d", G->header->n_columns);	strcat (record, text);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 				sprintf (record, "%s: y_min: ", G->header->name);
 				gmt_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
 				strcat (record, " y_max: ");
@@ -796,7 +810,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				strcat (record, " name: ");
 				if ((c = strstr (G->header->y_units, " [degrees"))) c[0] = '\0'; strcat (record, G->header->y_units); if (c) c[0] = ' ';
 				sprintf (text, " n_rows: %d", G->header->n_rows);	strcat (record, text);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			}
 
 			if (Ctrl->M.active) {
@@ -809,12 +823,12 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, z_max, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, " at x = ");
 				gmt_ascii_format_col (GMT, text, x_max, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, " y = ");
 				gmt_ascii_format_col (GMT, text, y_max, GMT_OUT, GMT_Y);	strcat (record, text);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			}
 			else if (Ctrl->F.active) {
-				sprintf (record, "%s: zmin: %g", G->header->name, G->header->z_min);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-				sprintf (record, "%s: zmax: %g", G->header->name, G->header->z_max);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-				sprintf (record, "%s: name: %s", G->header->name, G->header->z_units);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				sprintf (record, "%s: zmin: %g", G->header->name, G->header->z_min);	GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
+				sprintf (record, "%s: zmax: %g", G->header->name, G->header->z_max);	GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
+				sprintf (record, "%s: name: %s", G->header->name, G->header->z_units);	GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			}
 			else {
 				sprintf (record, "%s: z_min: ", G->header->name);
@@ -822,7 +836,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				strcat (record, " z_max: ");
 				gmt_ascii_format_col (GMT, text, G->header->z_max, GMT_OUT, GMT_Z);	strcat (record, text);
 				strcat (record, " name: ");	strcat (record, G->header->z_units);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			}
 
 			/* print scale and offset */
@@ -837,18 +851,18 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				         (G->header->z_min - G->header->z_add_offset) / G->header->z_scale_factor,
 				         (G->header->z_max - G->header->z_add_offset) / G->header->z_scale_factor);
 			}
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			if (n_nan) {
 				double percent = 100.0 * n_nan / G->header->nm;
 				sprintf (record, "%s: %" PRIu64 " nodes (%.1f%%) set to NaN", G->header->name, n_nan, percent);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			}
 			if (Ctrl->L.norm & 1) {
 				sprintf (record, "%s: median: ", G->header->name);
 				gmt_ascii_format_col (GMT, text, z_median, GMT_OUT, GMT_Z);	strcat (record, text);
 				strcat (record, " scale: ");
 				gmt_ascii_format_col (GMT, text, z_scale, GMT_OUT, GMT_Z);	strcat (record, text);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			}
 			if (Ctrl->L.norm & 2) {
 				sprintf (record, "%s: mean: ", G->header->name);
@@ -857,14 +871,14 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, z_stdev, GMT_OUT, GMT_Z);	strcat (record, text);
 				strcat (record, " rms: ");
 				gmt_ascii_format_col (GMT, text,   z_rms, GMT_OUT, GMT_Z);	strcat (record, text);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			}
 			if (Ctrl->L.norm & 4) {
 				sprintf (record, "%s: mode: ", G->header->name);
 				gmt_ascii_format_col (GMT, text,   z_mode, GMT_OUT, GMT_Z);	strcat (record, text);
 				strcat (record, " lmsscale: ");
 				gmt_ascii_format_col (GMT, text, z_lmsscl, GMT_OUT, GMT_Z);	strcat (record, text);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			}
 			if (strspn(GMT->session.grdformat[G->header->type], "nc") != 0) {
 				/* type is netCDF: report chunk size and deflation level */
@@ -877,7 +891,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 					text[0] = '\0';
 				sprintf (record, "%s: format: %s%s",
 						G->header->name, G->header->is_netcdf4 ? "netCDF-4" : "classic", text);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 			}
 		} /* !(Ctrl->T.active || (Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED))) */
 		else {
@@ -904,26 +918,26 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (!Ctrl->D.active && gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
 			if (global_ymin < -90.0) {
 				global_ymin = -90.0;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused south to become < -90.  Reset to -90.\n");
+				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused south to become < -90.  Reset to -90.\n");
 			}
 			if (global_ymax > 90.0) {
 				global_ymax = 90.0;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused north to become > +90.  Reset to +90.\n");
+				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused north to become > +90.  Reset to +90.\n");
 			}
 			if (fabs (global_xmax - global_xmin) > 360.0) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
+				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
 				global_xmin = (global_xmin < 0.0) ? -180.0 : 0.0;
 				global_xmax = (global_xmin < 0.0) ? +180.0 : 360.0;
 			}
 		}
 		if (Ctrl->D.active)
 			report_tiles (GMT, G, global_xmin, global_xmax, global_ymin, global_ymax, Ctrl);
-		else if (API->external) {	/* External interface, return as data with no leading text */
+		else if (num_report) {	/* External interface, return as data with no leading text */
 			/* w e s n z0 z1 */
 			out[XLO] = global_xmin;		out[XHI] = global_xmax;
 			out[YLO] = global_ymin;		out[YHI] = global_ymax;
 			out[ZLO] = global_zmin;		out[ZHI] = global_zmax;
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else {	/* Command-line usage */
 			sprintf (record, "%d%s", n_grds, sep);
@@ -933,7 +947,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_ascii_format_col (GMT, text, global_ymax, GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
 			gmt_ascii_format_col (GMT, text, global_zmin, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
 			gmt_ascii_format_col (GMT, text, global_zmax, GMT_OUT, GMT_Z);	strcat (record, text);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 		}
 	}
 	else if (Ctrl->T.active) {
@@ -977,7 +991,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			strcat (record, "/");
 			gmt_ascii_format_col (GMT, text, Ctrl->T.inc, GMT_OUT, GMT_Z);	strcat (record, text);
 		}
-		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 	}
 	else if ((Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED)) {
 		global_xmin = floor (global_xmin / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
@@ -987,14 +1001,14 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (!Ctrl->D.active && gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
 			if (global_ymin < -90.0) {
 				global_ymin = -90.0;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused south to become < -90.  Reset to -90.\n");
+				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused south to become < -90.  Reset to -90.\n");
 			}
 			if (global_ymax > 90.0) {
 				global_ymax = 90.0;
-				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused north to become > +90.  Reset to +90.\n");
+				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused north to become > +90.  Reset to +90.\n");
 			}
 			if (fabs (global_xmax - global_xmin) > 360.0) {
-				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
+				GMT_Report (API, GMT_MSG_VERBOSE, "Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
 				global_xmin = (global_xmin < 0.0) ? -180.0 : 0.0;
 				global_xmax = (global_xmin < 0.0) ? +180.0 : 360.0;
 			}
@@ -1007,7 +1021,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			gmt_ascii_format_col (GMT, text, global_xmax, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
 			gmt_ascii_format_col (GMT, text, global_ymin, GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
 			gmt_ascii_format_col (GMT, text, global_ymax, GMT_OUT, GMT_Y);	strcat (record, text);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
 		}
 	}
 
@@ -1016,6 +1030,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->C.active && !Ctrl->T.active && projStr) {		/* Print the referencing info */
+		Out->text = projStr;
 		GMT_Put_Record (API, GMT_WRITE_TEXT, projStr);
 		gmt_M_str_free (projStr);
 	}
@@ -1024,6 +1039,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
+	gmt_M_free (GMT, Out);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 	Return (GMT_NOERROR);
 }

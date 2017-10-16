@@ -78,7 +78,8 @@ Required Arguments
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
-    if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
+    if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*. Consequently,
+    **-DJ** is used to place a scale outside the map frame while **-Dj** is used to place it inside the frame.
     Finally, add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
     Add sidebar triangles for back- and/or foreground

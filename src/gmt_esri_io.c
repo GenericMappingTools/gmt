@@ -64,7 +64,7 @@ GMT_LOCAL int esri_write_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_H
 	strcat  (record, item);	strcat  (record, "\n");
 	gmt_M_fputs (record, fp);		/* Write a text record */
 	if (isnan (header->nan_value)) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: ESRI Arc/Info ASCII Interchange file must use proxy for NaN; default to -9999\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "ESRI Arc/Info ASCII Interchange file must use proxy for NaN; default to -9999\n");
 		header->nan_value = -9999.0f;
 	}
 	sprintf (record, "nodata_value %ld\n", lrintf (header->nan_value));

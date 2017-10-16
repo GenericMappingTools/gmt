@@ -7,7 +7,6 @@ GR
 
    greenspline
    grd2cpt
-   grd2rgb
    grd2xyz
    grdblend
    grdclip
@@ -26,7 +25,6 @@ GR
    grdmath
    grdpaste
    grdproject
-   grdraster
    grdsample
    grdtrack
    grdtrend

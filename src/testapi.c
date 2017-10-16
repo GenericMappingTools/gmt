@@ -18,7 +18,7 @@
 /*
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  *
  * Brief synopsis: testapi allows us to test the API i/o functions.
  *
@@ -123,7 +123,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *Ctrl, struct GMT
 				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 'd': Ctrl->T.mode = GMT_IS_DATASET; break;
-					case 't': Ctrl->T.mode = GMT_IS_TEXTSET; break;
 					case 'g': Ctrl->T.mode = GMT_IS_GRID; break;
 					case 'c': Ctrl->T.mode = GMT_IS_PALETTE; break;
 					case 'i': Ctrl->T.mode = GMT_IS_IMAGE; break;
@@ -198,7 +197,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 	
 	/* Get input and register it */
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Read %s %s with method %s and write to %s with method %s\n", ikind[Ctrl->T.mode], ifile[Ctrl->T.mode], method[Ctrl->I.mode], ofile[Ctrl->T.mode], method[Ctrl->W.mode]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %s %s with method %s and write to %s with method %s\n", ikind[Ctrl->T.mode], ifile[Ctrl->T.mode], method[Ctrl->I.mode], ofile[Ctrl->T.mode], method[Ctrl->W.mode]);
 	
 	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_IN, GMT_ADD_FILES_IF_NONE, 0, options) != GMT_NOERROR) {	/* Registers default input destination, unless already set */
 		Return (API->error);
@@ -212,8 +211,8 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMT_IS_STREAM:
-			switch (Ctrl->T.mode) {	/* Can only do d, t, c, p, m, v */
-				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_PALETTE: case GMT_IS_POSTSCRIPT: case GMT_IS_MATRIX: case GMT_IS_VECTOR:
+			switch (Ctrl->T.mode) {	/* Can only do d, c, p, m, v */
+				case GMT_IS_DATASET: case GMT_IS_PALETTE: case GMT_IS_POSTSCRIPT: case GMT_IS_MATRIX: case GMT_IS_VECTOR:
 					fp = gmt_fopen (GMT, ifile[Ctrl->T.mode], "r");
 					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, NULL, fp)) == GMT_NOTSET) {
 						Return (API->error);
@@ -226,8 +225,8 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMT_IS_FDESC:
-			switch (Ctrl->T.mode) {	/* Can only do d, t, c, p, m, v */
-				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_PALETTE: case GMT_IS_POSTSCRIPT: case GMT_IS_MATRIX: case GMT_IS_VECTOR:
+			switch (Ctrl->T.mode) {	/* Can only do d, c, p, m, v */
+				case GMT_IS_DATASET: case GMT_IS_PALETTE: case GMT_IS_POSTSCRIPT: case GMT_IS_MATRIX: case GMT_IS_VECTOR:
 					fd = open (ifile[Ctrl->T.mode], O_RDONLY);
 					fdp = &fd;
 					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, NULL, fdp)) == GMT_NOTSET) {
@@ -277,7 +276,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &Intmp) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 		Return (GMT_NOERROR);
 	}
 	
@@ -290,8 +289,8 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMT_IS_STREAM:
-			switch (Ctrl->T.mode) {	/* Can only do d, t, c, p, m, v */
-				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_PALETTE: case GMT_IS_POSTSCRIPT: case GMT_IS_MATRIX: case GMT_IS_VECTOR:
+			switch (Ctrl->T.mode) {	/* Can only do d, c, p, m, v */
+				case GMT_IS_DATASET: case GMT_IS_PALETTE: case GMT_IS_POSTSCRIPT: case GMT_IS_MATRIX: case GMT_IS_VECTOR:
 					fp = gmt_fopen (GMT, ofile[Ctrl->T.mode], "w");
 					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, NULL, fp)) == GMT_NOTSET) {
 						Return (API->error);
@@ -304,8 +303,8 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMT_IS_FDESC:
-			switch (Ctrl->T.mode) {	/* Can only do d, t, c, p, m, v */
-				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_PALETTE: case GMT_IS_POSTSCRIPT: case GMT_IS_MATRIX: case GMT_IS_VECTOR:
+			switch (Ctrl->T.mode) {	/* Can only do d, c, p, m, v */
+				case GMT_IS_DATASET: case GMT_IS_PALETTE: case GMT_IS_POSTSCRIPT: case GMT_IS_MATRIX: case GMT_IS_VECTOR:
 #ifdef WIN32
 					/* I think they exist on Win too, but no much time to find out how. JL */
 					fd = open (ofile[Ctrl->T.mode], O_WRONLY | O_CREAT);
@@ -364,7 +363,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 	if (!(Ctrl->I.mode == GMT_IS_REFERENCE && Ctrl->W.mode == GMT_IS_REFERENCE) && GMT_Destroy_Data (API, &Out) != GMT_NOERROR) {
 		Return (API->error);
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 	Return (GMT_NOERROR);
 }
 

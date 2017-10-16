@@ -65,7 +65,7 @@ gmt_get_region() {
 
 #	Return the w/e/s/n from the header in grd file
 gmt_get_gridregion() {
-	printf "%s/%s/%s/%s\n" `gmt grdinfo -C $* | cut -d'	' -f2-5`
+	printf "%s/%s/%s/%s\n" `gmt grdinfo -Cn $* | cut -d'	' -f1-4`
 }
 
 # Make output PostScript file name based on script base name

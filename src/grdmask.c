@@ -23,7 +23,7 @@
  *
  * Author:	Walter. H. F. Smith
  * Date:	1-JAN-2010
- * Version:	5 API
+ * Version:	6 API
  */
  
 #include "gmt_dev.h"
@@ -278,7 +278,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdmask main code ----------------------------*/
 
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	/* Create the empty grid and allocate space */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
@@ -290,24 +290,24 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		char line[GMT_BUFSIZ] = {""}, *msg[2] = {"polygons", "search radius"};
 		k = (Ctrl->S.active) ? 1 : 0; 
 		if (Ctrl->N.mode == 1) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to the chosen z-value\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes completely inside the polygons will be set to the chosen z-value\n");
 		}
 		else if (Ctrl->N.mode == 2) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to the chosen z-value\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to the chosen z-value\n");
 		}
 		else if (Ctrl->N.mode == 3) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes completely inside the polygons will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
 		}
 		else if (Ctrl->N.mode == 4) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
 		}
 		else {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely outside the %s will be set to ", msg[k]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes completely outside the %s will be set to ", msg[k]);
 			(gmt_M_is_dnan (Ctrl->N.mask[GMT_OUTSIDE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_OUTSIDE]);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely inside the %s will be set to ", msg[k]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes completely inside the %s will be set to ", msg[k]);
 			(gmt_M_is_dnan (Ctrl->N.mask[GMT_INSIDE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_INSIDE]);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes on the %s boundary will be set to ", msg[k]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Nodes on the %s boundary will be set to ", msg[k]);
 			(gmt_M_is_dnan (Ctrl->N.mask[GMT_ONEDGE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_ONEDGE]);
 		}
 	}
@@ -322,16 +322,17 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 		grd_x0 = gmt_grd_coord (GMT, Grid->header, GMT_X);
 		grd_y0 = gmt_grd_coord (GMT, Grid->header, GMT_Y);
-		if (!Ctrl->S.variable_radius) {
+		if (!Ctrl->S.variable_radius) {	/* Read x,y, fixed radius from -S */
 			radius = Ctrl->S.radius;
-			n_cols = 3;	/* Get x, y, radius */
 			d_col = gmt_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
 		}
+		else	/* REad x, y, radius */
+			n_cols = 3;
 	}
 	else {
 		char *method[2] = {"Cartesian non-zero winding", "spherical ray-intersection"};
 		int use = gmt_M_is_geographic (GMT, GMT_IN);
-		GMT_Report (API, GMT_MSG_VERBOSE, "Node status w.r.t. the polygon(s) will be determined using a %s algorithm.\n", method[use]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Node status w.r.t. the polygon(s) will be determined using a %s algorithm.\n", method[use]);
 	}
 	
 	
@@ -534,7 +535,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 						if (Ctrl->N.mode%2 && side == GMT_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
 						Grid->data[ij] = (Ctrl->N.mode) ? (gmt_grdfloat)z_value : mask_val[side];
 					}
-					GMT_Report (API, GMT_MSG_VERBOSE, "Polygon %d scanning row %05d\r", n_pol, row);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Polygon %d scanning row %05d\r", n_pol, row);
 				}
 			}
 		}

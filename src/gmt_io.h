@@ -24,7 +24,7 @@
  *
  * Author:	Paul Wessel
  * Date:	15-NOV-2009
- * Version:	5 API
+ * Version:	6 API
  *
  */
 
@@ -40,16 +40,17 @@
 #	include <locale.h>
 #endif
 
-static inline const char* __gmt_token_separators (void) {
+static inline const char* __gmt_token_separators (unsigned int skip_comma) {
 	static const char separators[] = ",; \t";
 #ifdef HAVE_SETLOCALE
 	struct lconv *lc = localeconv();
-	if ( (strcmp (lc->decimal_point, ",") == 0) )
+	if (skip_comma || (strcmp (lc->decimal_point, ",") == 0) )
 		return separators + 1; /* Omit comma */
 #endif
 	return separators;
 }
-#define GMT_TOKEN_SEPARATORS __gmt_token_separators() /* Data columns may be separated by any of these characters */
+#define GMT_TOKEN_SEPARATORS __gmt_token_separators(0) /* Data columns may be separated by any of these characters */
+#define GMT_TOKEN_SEPARATORS_PSTEXT __gmt_token_separators(1) /* No comma if pstext and fonts are in input records */
 
 /* Must add M, m, E, Z, and/or S to the common option processing list */
 #define GMT_OPT(opt) opt
@@ -104,7 +105,7 @@ enum GMT_enum_segopt {
 /* Get current setting for in/out columns */
 
 /*! Types of possible column entries in a file: */
-enum gmt_M_col_enum {
+enum gmt_col_enum {
 	GMT_IS_NAN   		=   0,	/* Returned by gmt_scanf routines when read fails */
 	GMT_IS_FLOAT		=   1,	/* Generic (double) data type, no special format */
 	GMT_IS_LAT		=    2,
@@ -232,10 +233,11 @@ struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
 
 struct GMT_IO {				/* Used to process input data records */
 	void * (*input) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to function reading ASCII or binary tables */
-	int (*output) (struct GMT_CTRL *, FILE *, uint64_t, double *);	/* Pointer to function writing ASCII or binary tables */
+	int (*output) (struct GMT_CTRL *, FILE *, uint64_t, double *, char *);	/* Pointer to function writing ASCII or binary tables */
 	int (*read_item) (struct GMT_CTRL *, FILE *, uint64_t, double *);		/* Pointer to function reading 1-col z tables in grd2xyz */
 	int (*write_item) (struct GMT_CTRL *, FILE *, uint64_t, double *);		/* Pointer to function writing 1-col z tables in xyz2grd */
 	bool (*ogr_parser) (struct GMT_CTRL *, char *);				/* Set to handle either header or data OGR records */
+	const char *scan_separators;	/* List of characters that separates columns in ascii records */
 
 	unsigned int pad[4];		/* pad[0] = west, pad[1] = east, pad[2] = south, pad[3] = north */
 	unsigned int inc_code[2];
@@ -247,19 +249,20 @@ struct GMT_IO {				/* Used to process input data records */
 	bool skip_bad_records;	/* true if records where x and/or y are NaN or Inf */
 	bool give_report;		/* true if functions should report how many bad records were skipped */
 	bool skip_duplicates;	/* true if we should ignore duplicate x,y records */
-	bool read_mixed;		/* true if we are reading ASCII x y [z] [variable numbers of text] */
+	bool variable_in_columns;	/* true if we are reading ASCII records with variable numbers of columns */
 	bool need_previous;		/* true if when parsing a record we need access to previous record values (e.g., for gap or duplicate checking) */
 	bool warn_geo_as_cartesion;	/* true if we should warn if we read a record with geographic data while the expected format has not been set (i.e., no -J or -fg) */
 	bool first_rec;			/* true when reading very first data record in a dataset */
+	bool trailing_text[2];	/* Default is to process training text unless turned off via -i, -o */
 	uint64_t seg_no;		/* Number of current multi-segment in entire data set */
 	uint64_t seg_in_tbl_no;		/* Number of current multi-segment in current table */
 	uint64_t n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
 	uint64_t n_bad_records;		/* Number of bad records encountered during i/o */
-	size_t start_of_text;		/* Entry into record[] holding the start of non-numerical input */
 	unsigned int tbl_no;		/* Number of current table in entire data set */
 	unsigned int io_nan_ncols;	/* Number of columns to consider for -s option */
 	unsigned int record_type;	/* Either GMT_READ_DATA (0), GMT_READ_TEXT (1), or GMT_READ_MIXED (2) */
 	unsigned int n_numerical_cols;	/* As it says */
+	unsigned int max_cols_to_read;	/* For ascii input [all] */
 	enum GMT_ogr_status ogr;	/* Tells us if current input source has OGR/GMT metadata (GMT_OGR_TRUE) or not (GMT_OGR_FALSE) or not set (GMT_OGR_UNKNOWN) */
 	unsigned int status;		/* 0	All is ok
 					   1	Current record is segment header
@@ -273,9 +276,11 @@ struct GMT_IO {				/* Used to process input data records */
 	char r_mode[4];			/* Current file opening mode for reading (r or rb) */
 	char w_mode[4];			/* Current file opening mode for writing (w or wb) */
 	char a_mode[4];			/* Current file append mode for writing (a+ or ab+) */
-	char record[GMT_BUFSIZ];	/* Current ASCII record */
+	char curr_text[GMT_BUFSIZ];	/* Current ASCII record as it was read */
+	char curr_trailing_text[GMT_BUFSIZ];	/* Current text portion of current record (or NULL) */
 	char segment_header[GMT_BUFSIZ];	/* Current ASCII segment header */
 	char filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
+	char col_set[2][GMT_MAX_COLUMNS];	/* Keeps track of which columns have had their type set */
 	char *o_format[GMT_MAX_COLUMNS];	/* Custom output ASCII format to overrule format_float_out */
 	int ncid;			/* NetCDF file ID (when opening netCDF file) */
 	int nvars;			/* Number of requested variablesin netCDF file */
@@ -296,6 +301,7 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_COL_INFO col[2][GMT_MAX_COLUMNS];	/* Order of columns on input and output unless 0,1,2,3,... */
 	struct GMT_COL_TYPE fmt[2][GMT_MAX_COLUMNS];	/* Formatting information for binary data */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
+	struct GMT_RECORD record;	/* Current record with pointers to data columns and text */
 	/* The remainder are just pointers to memory allocated elsewhere */
 	int *varid;			/* Array of variable IDs (netCDF only) */
 	double *scale_factor;		/* Array of scale factors (netCDF only) */

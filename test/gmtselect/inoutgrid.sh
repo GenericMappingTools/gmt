@@ -20,8 +20,8 @@ EOF
 #gmt math -T0/25/1 -C0 0 5 RAND -C1 0 5 RAND ADD = locations.txt
 echo 0	pink	1 pink > t.cpt
 # Get what gmtselect lets through
-gmt select ${src:-.}/locations.txt -Gmask.nc > in.txt
-gmt select ${src:-.}/locations.txt -Gmask.nc -Ig > out.txt
+gmt select @locations.txt -Gmask.nc > in.txt
+gmt select @locations.txt -Gmask.nc -Ig > out.txt
 gmt grdimage mask.nc -JX6i -P -Bafg1 -Ct.cpt -Q -K > $ps
 # Lay down inside points
 gmt psxy -Rmask.nc -J -O -K in.txt  -Sc0.1i -Gwhite -W0.25p >> $ps

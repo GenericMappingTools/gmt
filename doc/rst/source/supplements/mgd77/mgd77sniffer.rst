@@ -340,30 +340,9 @@ Mgd77 Field Info
 Grid File Info
 --------------
 
-For |-G| the grids must eitehr be in the format used by Sandwell & Smith,
-which is a spherical Mercator 2-byte grid with no header, or any grid type
-supported by GMT and therefore must
-contain a GMT header. A correctly formatted \*.i2 grid file can be
-generated using :doc:`grdraster </grdraster>` as shown below.
-
-gmtset GRIDFILE_SHORTHAND TRUE
-
-Create/edit .gmt_io file to include the following rows:
-
-# GMT I/O shorthand file
-
-# suffix  format_id  scale  offset  NaN
-
-grd 0  -  -  -  -
-
-i2  2  -  -  32767
-
-   ::
-
-    gmt grdraster 1 -R0/359:55/-90/90 -Getopo5_hdr.i2
-
-The new grid, etopo5_hdr.i2 in this example, contains a GMT header and
-can be used in the **-G** option to compare cruise depth with grid values.
+For |-G| the grids must either be in the img format used by Sandwell & Smith,
+which is a spherical Mercator 2-byte grid with no header, or any regular grid type
+supported by GMT.
 
 E77 Error Format
 ----------------
@@ -534,7 +513,6 @@ Sandwell/Smith 2 min gravity version 11, try
 See Also
 --------
 
-:doc:`grdraster </grdraster>`,
 :doc:`mgd77list`,
 :doc:`mgd77track`
 :doc:`x2sys_init <../x2sys/x2sys_init>`
