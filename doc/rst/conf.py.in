@@ -278,7 +278,6 @@ man_pages = [
 ('grdmath', 'grdmath', 'Reverse Polish Notation (RPN) calculator for grids (element by element)', '', 1),
 ('grdpaste', 'grdpaste', 'Join two grids along their common edge', '', 1),
 ('grdproject', 'grdproject', 'Forward and inverse map transformation of grids', '', 1),
-('grdraster', 'grdraster', 'Extract subregion from a binary raster and save as a GMT grid', '', 1),
 ('grdsample', 'grdsample', 'Resample a grid onto a new lattice', '', 1),
 ('grdtrack', 'grdtrack', 'Sample grids at specified (x,y) locations', '', 1),
 ('grdtrend', 'grdtrend', 'Fit trend surface to grids and compute residuals', '', 1),
