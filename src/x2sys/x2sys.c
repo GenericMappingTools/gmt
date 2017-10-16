@@ -349,11 +349,12 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 		}
 		gmt_chop (line);	/* Remove trailing CR or LF */
 
-		sscanf (line, "%s %c %c %lf %lf %lf %s %s", X->info[i].name, &X->info[i].intype, &yes_no, &X->info[i].nan_proxy, &X->info[i].scale, &X->info[i].offset, X->info[i].format, cardcol);
+		is = sscanf (line, "%s %c %c %lf %lf %lf %s %s", X->info[i].name, &X->info[i].intype, &yes_no, &X->info[i].nan_proxy, &X->info[i].scale, &X->info[i].offset, X->info[i].format, cardcol);
 		if (X->info[i].intype == 'A') {	/* ASCII Card format */
 			sscanf (cardcol, "%d-%d", &X->info[i].start_col, &X->info[i].stop_col);
 			X->info[i].n_cols = X->info[i].stop_col - X->info[i].start_col + 1;
 		}
+		if (is == 6) X->info[i].format[0] = '-';	/* No custom formatting given */
 		c = X->info[i].intype;
 		if (tolower (c) == 'a') X->file_type = X2SYS_ASCII;
 		c = yes_no;
