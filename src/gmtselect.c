@@ -173,59 +173,6 @@ GMT_LOCAL int compare_x (const void *point_1, const void *point_2) {
 	return (0);
 }
 
-GMT_LOCAL void ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out) {
-	unsigned int col, k, n_aspatial = 0;
-	size_t len;
-	char text[GMT_LEN64] = {""};
-	static int ogr[MAX_ASPATIAL];
-	
-	out[0] = '\0';	/* Start with nothing */
-	
-	if (n_aspatial == 0) {	/* First time */
-		for (col = 0; col < GMT->common.a.n_aspatial; col++) {	/* Loop over requested aspatial items via -a */
-			for (k = 0; k < G->n_aspatial; k++) {	/* Given the actual data... */
-				if (strcmp (GMT->common.a.name[col], G->name[k])) continue;	/* Not one of the specified items */
-				ogr[n_aspatial++] = k;
-			}
-		}
-	}
-	for (col = 0; col < n_aspatial; col++) {	/* Loop over requested aspatial items via -a */
-		k = ogr[col];
-		switch (G->type[k]) {
-			case GMT_TEXT:
-				len = strlen (G->tvalue[k]);
-				if (G->tvalue[k][0] == '\"' && G->tvalue[k][len-1] == '\"') {	/* Skip opening and closing quotes */
-					strncpy (text, &G->tvalue[k][1], len-2);
-					text[len-2] = '\0';
-				}
-				else
-					strcpy (text, G->tvalue[k]);
-				break;
-			case GMT_DOUBLE:
-			case GMT_FLOAT:
-				gmt_ascii_format_col (GMT, text, G->dvalue[k], GMT_OUT, GMT_Z);
-				break;
-			case GMT_CHAR:
-			case GMT_UCHAR:
-			case GMT_INT:
-			case GMT_UINT:
-			case GMT_LONG:
-			case GMT_ULONG:
-				snprintf (text, GMT_LEN64, "%ld", lrint (G->dvalue[k]));
-				break;
-			case GMT_DATETIME:
-				gmt_format_abstime_output (GMT, G->dvalue[k], text);
-				break;
-			default:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad type passed to gmtio_write_formatted_ogr_value - assumed to be double\n");
-				gmt_ascii_format_col (GMT, text, G->dvalue[k], GMT_OUT, GMT_Z);
-				break;
-		}
-		strcat (out, GMT->current.setting.io_col_separator);
-		strcat (out, text);
-	}
-}
-
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
