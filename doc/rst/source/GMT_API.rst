@@ -249,7 +249,7 @@ API that are not backwards compatible with GMT 5:
    columns and treat anything beyond that as trailing text (even if numbers) must set the
    fixed input columns before reading.  We also added one more mode (GMT_COL_FIX_NO_TEXT) to
    enforce reading of a fixed number of numerical columns and skip any trailing text.
-#. The GMT_DATASET structure has gained a new (hidden) enum GMT_enum_read `type' which indicates what
+#. The GMT_DATASET structure has gained a new (hidden) enum GMT_enum_read ``type`` which indicates what
    record types were read to produce this dataset (GMT_READ_DATA, GMT_READ_TEXT, GMT_READ_MIXED).
    We also changed the geometry from unsigned int to enum GMT_enum_geometry.
 #. The long obsolete enums GMT_READ_DOUBLE and GMT_WRITE_DOUBLE have now fully been removed;
@@ -345,6 +345,7 @@ Finally, the table structure depends on a structure for individual data segments
        double  *min;              /* Minimum coordinate for each column */
        double  *max;              /* Maximum coordinate for each column */
        double **data;             /* Data x,y, and possibly other columns */
+       char  **text;              /* trailing text strings beyond the data */
        char    *label;            /* Label string (if applicable) */
        char    *header;           /* Segment header (if applicable) */
     ;
@@ -3519,6 +3520,7 @@ structure per segment.
                                                2: use segment->file[GMT_OUT] to write separate segments.
                                                3: as 2 but with no filenames we create filenames from
                                                  tbl and seg numbers */
+       enum GMT_enum_read type;             /* The datatype (numerical, text, or mixed) of this dataset */
        enum GMT_enum_alloc    alloc_mode;   /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
        char                  *file[2];      /* Name of file or source [0 = in, 1 = out] */
    };
@@ -3562,6 +3564,7 @@ Here is the full definition of the ``GMT_DATASEGMENT`` structure:
        double  *min;              /* Minimum coordinate for each column */
        double  *max;              /* Maximum coordinate for each column */
        double **data;             /* Data x,y, and possibly other columns */
+       char  **text;              /* trailing text strings beyond the data */
        char    *label;            /* Label string (if applicable) */
        char    *header;           /* Segment header (if applicable) */
        /* ---- Variables "hidden" from the API ---- */
@@ -3769,6 +3772,7 @@ the :ref:`GMT_FILL <struct-fill>` structure.
        char                **header;             /* Array with all CPT header records, if any) */
        /* ---- Variables "hidden" from the API ---- */
        uint64_t              id;                 /* The internal number of the data set */
+       size_t                n_alloc;            /* Memory allocated so far */
        enum GMT_enum_alloc   alloc_mode;         /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
        unsigned int          alloc_level;        /* The level it was allocated at */
        unsigned int          model;              /* RGB, HSV, CMYK */
@@ -3843,13 +3847,13 @@ Bulk PostScript is represented by a :ref:`GMT_POSTSCRIPT <struct-postscript>` st
    struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript code */
        /* Variables we document for the API: */
        unsigned int n_headers;          /* Number of PostScript header records (0 if no header) */
-       size_t n_alloc;                  /* Length of array allocated so far */
        size_t n_bytes;                  /* Length of data array so far */
        unsigned int mode;               /* Bit-flag for header (1) and trailer (2) */
        char *data;                      /* Pointer to PostScript code */
        char **header;                   /* Array with all PostScript header records, if any) */
        /* ---- Variables "hidden" from the API ---- */
        uint64_t id;                     /* The internal number of the data set */
+       size_t n_alloc;                  /* Length of array allocated so far */
        unsigned int alloc_level;        /* The level it was allocated at */
        enum GMT_enum_alloc alloc_mode;  /* Allocation mode [GMT_ALLOC_INTERNALLY] */
    };
