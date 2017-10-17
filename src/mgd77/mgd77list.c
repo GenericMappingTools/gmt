@@ -1040,8 +1040,6 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	}
 	if (!string_output) gmt_set_cols (GMT, GMT_OUT, n_out_columns);
 
-	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
-
 	for (argno = 0; argno < (unsigned int)n_paths; argno++) {		/* Process each ID */
 	
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
@@ -1073,8 +1071,12 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 				MGD77_Free_Dataset (GMT, &D);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if (!string_output) out = gmt_M_memory (GMT, NULL, n_out_columns, double);
-
+			if (string_output)
+				Out = gmt_new_record (GMT, NULL, record);
+			else {
+				out = gmt_M_memory (GMT, NULL, n_out_columns, double);
+				Out = gmt_new_record (GMT, out, NULL);
+			}
 		}
 		
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
@@ -1543,7 +1545,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 					}
 					sep_flag = 1;
 				}
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 			else {	/* Use GMT output machinery which can handle binary output, if requested */
 				for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {
