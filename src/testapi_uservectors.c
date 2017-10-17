@@ -205,10 +205,9 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	else {	/* Preallocate array space here in the app */
 		out_data[GMT_X] = get_array (outtype, 0);	/* Make user space for output */
 		out_data[GMT_Y] = get_array (outtype, 0);	/* Make user space for output */
- 		/* Create a blank vectors container that will hold our user out_data */
-		V[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IS_OUTPUT, NULL, NULL, NULL, 0, 0, NULL);
+ 		/* Create a blank vectors container that will hold our user out_data, and pass dim so we can set those correctly */
+		V[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IS_OUTPUT, dim, NULL, NULL, 0, 0, NULL);
 		/* Hook the user output array up to this containers */
- 		GMT_Set_Vector (API, V[GMT_OUT], NROWS, NCOLS);
 		GMT_Put_Vector (API, V[GMT_OUT], GMT_X, outtype, out_data[GMT_X]);
 		GMT_Put_Vector (API, V[GMT_OUT], GMT_Y, outtype, out_data[GMT_Y]);
    		/* Associate our data vectors with a virtual dataset file to "write" to */

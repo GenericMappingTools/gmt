@@ -40,7 +40,7 @@
  * GMT_Message		      : Report an message given a verbosity level
  * GMT_Report		      : Report an error given an error code
  *
- * There are 27 further public functions used for GMT i/o activities:
+ * There are 29 further public functions used for GMT i/o activities:
  *
  * GMT_Alloc_Segment      : Allocate a single DATASET segment
  * GMT_Begin_IO		      : Allow i/o to take place for rec-by-rec operations
@@ -54,6 +54,7 @@
  * GMT_Get_Row		      : Read one row from a grid
  * GMT_Get_Matrix	      : Get user matrix from GMT_MATRIX array
  * GMT_Get_Vector	      : Get user vector from GMT_VECTOR column
+ * GMT_Put_Strings	      : Get user strings from GMT_VECTOR or MATRIX container
  * GMT_Init_IO		      : Initialize rec-by-rec i/o machinery before program use
  * GMT_Init_VirtualFile   : Reset a virtual file for reuse
  * GMT_Open_VirtualFile   : Open a memory location for reading or writing by a module
@@ -61,18 +62,17 @@
  * GMT_Put_Row		      : Write one row to a grid
  * GMT_Put_Matrix	      : Hook user matrix to GMT_MATRIX array
  * GMT_Put_Vector	      : Hook user vector to GMT_VECTOR column
+ * GMT_Put_Strings	      : Hook user strings to GMT_VECTOR or MATRIX container
  * GMT_Read_Data	      : Load data into program memory from selected source
  * GMT_Read_Group	      : Read numerous files into an array of objects
  * GMT_Read_VirtualFile   : Obtain the memory resource that a module wrote to.
  * GMT_Register_IO	      : Register a source (or destination) for i/o use
  * GMT_Set_Comment	      : Update a comment for a data set
- * GMT_Set_Matrix	      : Sets the dimensions of the matrix in a GMT_MATRIX
- * GMT_Set_Vector	      : Sets the length of all vectors in a GMT_VECTOR set
  * GMT_Status_IO	      : Exmine current status of record-by-record i/o
  * GMT_Write_Data	      : Place data set from program memory to selected destination
  * GMT_Encode_Options	  : Used by external APIs to fill out options from implicit rules
 
- * The above 27 functions deal with registration of input sources (files,
+ * The above 29 functions deal with registration of input sources (files,
  * streams, file handles, or memory locations) and output destinations
  * (same flavors as input), the setup of the i/o, and generic functions
  * to access the data either in one go (GMT_Get|Put_Data) or on a
@@ -1610,7 +1610,14 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 	unsigned int dims = (M->n_layers > 1) ? 3 : 2;
 	size_t size = 0;
 	GMT_Report (API, GMT_MSG_DEBUG, "Initializing a matrix for handing external %s [mode = %u]\n", GMT_direction[direction], mode);
-	if (direction == GMT_OUT) return (GMT_NOERROR);	/* OK for creating blank container for output */
+	if (direction == GMT_OUT) {	/* OK for creating blank container for output */
+		if (dim) {	/* Dimensions are given when we are using external memory for the matrix and must specify the dimensions specifically */
+			M->n_rows = dim[GMTAPI_DIM_ROW];
+			M->n_columns = dim[GMTAPI_DIM_COL];
+			M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;	/* Matrix layout order */
+		}
+		return (GMT_NOERROR);
+	}
 	if (full_region (range) && (dims == 2 || (!range || range[ZLO] == range[ZHI]))) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
 		gmt_M_memcpy (M->range, dummy_range, 2 * dims, double);
@@ -1645,7 +1652,10 @@ GMT_LOCAL int api_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 	int error;
 	uint64_t col;
 	GMT_Report (API, GMT_MSG_DEBUG, "Initializing a vector for handing external %s\n", GMT_direction[direction]);
-	if (direction == GMT_OUT) return (GMT_NOERROR);	/* OK for creating blank container for output */
+	if (direction == GMT_OUT) {	/* OK for creating blank container for output */
+		if (dim && dim[GMTAPI_DIM_ROW] && V->n_columns) V->n_rows = dim[GMTAPI_DIM_ROW];	/* Set n_rows in case when vectors will be hook on from external memory */
+		return (GMT_NOERROR);
+	}
 	if (dim[GMTAPI_DIM_COL] == 0 && direction == GMT_IN) return (GMT_VALUE_NOT_SET);	/* Must know the number of columns to do this */
 	if (range == NULL || (range[XLO] == range[XHI])) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[2] = {0.0, 0.0};	/* Flag vector as such */
@@ -6039,51 +6049,6 @@ int GMT_Register_IO_ (unsigned int *family, unsigned int *method, unsigned int *
 
 
  /*! . */
-int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head) {
-	/* Scan the registered module input|output resources to learn what their family is.
-	 * direction:	Either GMT_IN or GMT_OUT
-	 * head:	Head of the list of module options
-	 *
-	 * Returns:	The family value (GMT_IS_DATASET|CPT|GRID|IMAGE|PS) or GMT_NOTSET if not known
-	 */
-	struct GMTAPI_CTRL *API = NULL;
-	struct GMT_OPTION *current = NULL;
-	int item, object_ID, family = GMT_NOTSET;
-	//int flag = (direction == GMT_IN) ? GMTAPI_MODULE_INPUT : GMT_NOTSET;
-	unsigned int n_kinds = 0, k, counter[GMT_N_FAMILIES];
-	char desired_option = (direction == GMT_IN) ? GMT_OPT_INFILE : GMT_OPT_OUTFILE;
-	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
-	API = api_get_api_ptr (V_API);
-	gmt_M_memset (counter, GMT_N_FAMILIES, unsigned int);	/* Initialize counter */
-	API->error = GMT_NOERROR;	/* Reset in case it has some previous error */
-
-	for (current = head; current; current = current->next) {		/* Loop over the list and look for input files */
-		if (current->option != desired_option) continue;				/* Not a module resource argument */
-		if ((object_ID = api_decode_id (current->arg)) == GMT_NOTSET) continue;	/* Not a registered resource */
-		//if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, direction, flag)) == GMT_NOTSET) continue;	/* Not the right attributes */
-		if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, direction, GMT_NOTSET)) == GMT_NOTSET) continue;	/* Not the right attributes */
-		counter[(API->object[item]->family)]++;	/* Update counts of this family */
-	}
-	for (k = 0; k < GMT_N_FAMILIES; k++) {	/* Determine which family we found, if any */
-		if (counter[k]) n_kinds++, family = k;
-	}
-	if (n_kinds != 1) {	/* Could not determine family */
-		family = GMT_NOTSET;
-		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Get_Family: Could not determine family\n");
-	}
-	else	/* Found a unique family */
-		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Get_Family: Determined family to be %s\n", GMT_family[family]);
-	return (family);
-}
-
-#ifdef FORTRAN_API
-int GMT_Get_Family_ (unsigned int *direction, struct GMT_OPTION *head) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_Family (GMT_FORTRAN, *direction, head));
-}
-#endif
-
- /*! . */
 int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, unsigned int n_args, void *args) {
 	/* Registers program option file arguments as sources/destinations for the current module.
 	 * All modules planning to use std* and/or command-line file args must call GMT_Init_IO to register these resources.
@@ -8275,15 +8240,18 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
-	if (mode & GMT_IS_OUTPUT) {	/* Flagged to be an output container */
-		def_direction = GMT_OUT;	/* Set output as default direction*/
-		this_dim = zero_dim;		/* Provide dimensions set to zero */
-		if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data pointer is not NULL */
-	}
 
 	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we creating a resource that is a module input? */
 	family -= module_input;
 	actual_family = separate_families (&family);
+
+	if (mode & GMT_IS_OUTPUT) {	/* Flagged to be an output container */
+		def_direction = GMT_OUT;	/* Set output as default direction*/
+		if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data pointer is not NULL */
+		if (dim && !(actual_family == GMT_IS_MATRIX || actual_family == GMT_IS_VECTOR))
+			return_null (API, GMT_PTR_NOT_NULL);	/* Error if dim pointer is not NULL except for matrix and vector */
+		if (this_dim == NULL) this_dim = zero_dim;	/* Provide dimensions set to zero */
+	}
 
 	/* Below, data can only be non-NULL for Grids or Images passing back G or I to allocate the data array */
 
@@ -11436,28 +11404,6 @@ void * GMT_Get_Vector_ (struct GMT_VECTOR *V, unsigned int *col) {
 }
 #endif
 
-int GMT_Set_Vector (void *V_API, struct GMT_VECTOR *V, uint64_t n_rows, uint64_t n_columns) {
-	/* Allow the setting of the row length for vectors, typically for preallcoated user arrays.
-	 * We also ensure that the type and data arrays are allocated if dimensions are set */
-	struct GMTAPI_CTRL *API = NULL;
-	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
-	if (V == NULL) return_error (V_API, GMT_PTR_IS_NULL);
-	API = api_get_api_ptr (V_API);
-	if (n_rows) V->n_rows = n_rows;
-	if (n_columns) V->n_columns = n_columns;
-	if (n_columns && V->data == NULL) V->data = gmt_M_memory_aligned (API->GMT, NULL, n_columns, union GMT_UNIVECTOR);
-	if (n_columns && V->type == NULL) V->type = gmt_M_memory (API->GMT, NULL, n_columns, enum GMT_enum_type);
-
-	return GMT_NOERROR;
-}
-
-#ifdef FORTRAN_API
-int GMT_Set_Vector_ (struct GMT_VECTOR *V, uint64_t *n_rows, uint64_t *n_columns) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Set_Vector (GMT_FORTRAN, V, *n_rows, *n_columns));
-}
-#endif
-
 int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, void *matrix) {
 	/* Hooks a user's custom matrix onto M's data array and sets the type.
 	 * It is the user's respondibility to pass correct type for the given matrix. */
@@ -11517,23 +11463,6 @@ void *GMT_Get_Matrix (void *API, struct GMT_MATRIX *M) {
 void * GMT_Get_Matrix_ (struct GMT_MATRIX *M) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Matrix (GMT_FORTRAN, M));
-}
-#endif
-
-int GMT_Set_Matrix (void *API, struct GMT_MATRIX *M, uint64_t n_rows, uint64_t n_columns) {
-	/* Allow the setting of the row length for vectors, typically for preallcoated user arrays */
-	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
-	if (M == NULL) return_error (API, GMT_PTR_IS_NULL);
-	if (n_rows) M->n_rows = n_rows;
-	if (n_columns) M->n_columns = n_columns;
-	M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;	/* Matrix layout order */
-	return GMT_NOERROR;
-}
-
-#ifdef FORTRAN_API
-int GMT_Set_Matrix_ (struct GMT_MATRIX *M, uint64_t *n_rows, uint64_t *n_columns) {
-	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Set_Matrix (GMT_FORTRAN, M, *n_rows, *n_columns));
 }
 #endif
 
@@ -11705,5 +11634,49 @@ int GMT_FFT_1D_ (gmt_grdfloat *data, uint64_t *n, int *direction, unsigned int *
 int GMT_FFT_2D_ (gmt_grdfloat *data, unsigned int *n_columns, unsigned int *n_rows, int *direction, unsigned int *mode) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_FFT_2D (GMT_FORTRAN, data, *n_columns, *n_rows, *direction, *mode));
+}
+#endif
+
+int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head) {
+	/* Scan the registered module input|output resources to learn what their family is.
+	 * direction:	Either GMT_IN or GMT_OUT
+	 * head:	Head of the list of module options
+	 *
+	 * Returns:	The family value (GMT_IS_DATASET|CPT|GRID|IMAGE|PS) or GMT_NOTSET if not known
+	 */
+	struct GMTAPI_CTRL *API = NULL;
+	struct GMT_OPTION *current = NULL;
+	int item, object_ID, family = GMT_NOTSET;
+	//int flag = (direction == GMT_IN) ? GMTAPI_MODULE_INPUT : GMT_NOTSET;
+	unsigned int n_kinds = 0, k, counter[GMT_N_FAMILIES];
+	char desired_option = (direction == GMT_IN) ? GMT_OPT_INFILE : GMT_OPT_OUTFILE;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	API = api_get_api_ptr (V_API);
+	gmt_M_memset (counter, GMT_N_FAMILIES, unsigned int);	/* Initialize counter */
+	API->error = GMT_NOERROR;	/* Reset in case it has some previous error */
+
+	for (current = head; current; current = current->next) {		/* Loop over the list and look for input files */
+		if (current->option != desired_option) continue;				/* Not a module resource argument */
+		if ((object_ID = api_decode_id (current->arg)) == GMT_NOTSET) continue;	/* Not a registered resource */
+		//if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, direction, flag)) == GMT_NOTSET) continue;	/* Not the right attributes */
+		if ((item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, direction, GMT_NOTSET)) == GMT_NOTSET) continue;	/* Not the right attributes */
+		counter[(API->object[item]->family)]++;	/* Update counts of this family */
+	}
+	for (k = 0; k < GMT_N_FAMILIES; k++) {	/* Determine which family we found, if any */
+		if (counter[k]) n_kinds++, family = k;
+	}
+	if (n_kinds != 1) {	/* Could not determine family */
+		family = GMT_NOTSET;
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Get_Family: Could not determine family\n");
+	}
+	else	/* Found a unique family */
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Get_Family: Determined family to be %s\n", GMT_family[family]);
+	return (family);
+}
+
+#ifdef FORTRAN_API
+int GMT_Get_Family_ (unsigned int *direction, struct GMT_OPTION *head) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Family (GMT_FORTRAN, *direction, head));
 }
 #endif

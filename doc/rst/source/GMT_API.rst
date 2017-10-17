@@ -790,6 +790,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Row_             | Import a single grid row                              |
     +--------------------------+-------------------------------------------------------+
+    | GMT_Get_Strings_         | Obtain pointer to user strings from matrix or vector  |
+    +--------------------------+-------------------------------------------------------+
     | GMT_Get_Values_          | Convert string into coordinates or dimensions         |
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Vector_          | Obtain pointer to user vector from container          |
@@ -813,6 +815,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     | GMT_Put_Record_          | Export a data record                                  |
     +--------------------------+-------------------------------------------------------+
     | GMT_Put_Row_             | Export a grid row                                     |
+    +--------------------------+-------------------------------------------------------+
+    | GMT_Put_Strings_         | Put user strings into vector or matrix container      |
     +--------------------------+-------------------------------------------------------+
     | GMT_Put_Vector_          | Put user vector into container                        |
     +--------------------------+-------------------------------------------------------+
@@ -1212,19 +1216,22 @@ and pass the ``par`` array with contents as indicated below:
     We allocate an empty :ref:`GMT_VECTOR <struct-vector>` structure with ``par[0]`` column entries.
     The number of rows can be specified in one of two ways: (1) Set the number of rows via ``par[1]``. Then,
     ``wesn``, ``inc``, and ``registration`` arguments are ignored.
-    (2) Specify ``wesn``, ``inc``, and ``registration`` and the number of rows will be computed form these
-    parameters instead.  The ``data`` argument should be NULL.  If you have custom vectors you wish to use then pass ``par[1]`` = 0
-    to avoid any allocation and use GMT_Put_Vector_ to hook up your vectors.
+    (2) Specify ``wesn``, ``inc``, and ``registration`` and the number of rows will be computed from these
+    parameters instead.  The ``data`` argument should be NULL.  If you have custom vectors you wish to use then
+    pass ``par`` but make sure to select mode GMT_CONTAINER_ONLY so that no memory is allocated.  Furthermore,
+    if you are manually setting up output containers then pass mode as GMT_IS_OUTPUT instead. 
+    Use GMT_Put_Vector_ to hook up your vectors.
 
   **GMT_IS_MATRIX**.
     We allocate an empty :ref:`GMT_MATRIX <struct-matrix>` structure. The domain can be prescribed on one of two ways:
     (1) Here, ``par[0]`` is the number of columns while ``par[1]`` has the number of rows.  Also,
     ``par[2]`` indicates the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.
     (2) Pass ``wesn``, ``inc``, ``registration`` and we compute the dimensions of the matrix.
-    The ``data`` argument should be NULL.  As for vectors, give dimensions as 0 and hook your custom matrix in
-    via a call to GMT_Put_Matrix_.  The matrix may either be row- or column-oriented and this is normally determined
-    when you created the session with GMT_Create_Session_ (see the bit 3 setting).
+    The ``data`` argument should be NULL.  As for vectors, to use custom data you must (for input) pass the
+    mode as GMT_CONTAINER_ONLY and hook your custom matrix in via a call to GMT_Put_Matrix_.  The matrix may either
+    be row- or column-oriented and this is normally determined when you created the session with GMT_Create_Session_ (see the bit 3 setting).
     However, you can pass ``pad`` = 1 (set row major) or ``pad`` = 2 (set col major) to override the default.
+    As for vectors, if this container is for output then pass mode as GMT_IS_OUTPUT instead.
 
 Users wishing to pass their own data matrices and vectors to GMT modules will need to do so via
 the **GMT_IS_MATRIX** and **GMT_IS_VECTOR** containers.  However, no module deals with such containers
@@ -1300,6 +1307,31 @@ To extract a custom vector from an output :ref:`GMT_VECTOR <struct-vector>` you 
     void *GMT_Get_Vector (void *API, struct GMT_VECTOR *V, unsigned int col);
 
 where ``col`` is the vector number you wish to obtain a pointer to.
+
+Finally, for either vectors or matrices you may optionally add a pointer to an
+array of text strings, one per row.  This is done via 
+
+.. _GMT_Put_Strings:
+
+  ::
+
+    int GMT_Put_Strings (void *API, unsigned int family, void *X, char **array);
+
+where ``family`` is either GMT_IS_VECTOR or GMT_IS_MATRIX, ``X`` is either a
+:ref:`GMT_VECTOR <struct-vector>` or :ref:`GMT_MATRIX <struct-matrix>`, and
+``array`` is the a pointer to your string array.
+
+To extract the string array from an output vector or matrix container you will use
+
+.. _GMT_Get_Strings:
+
+  ::
+
+    char **GMT_Get_Strings (void *API, unsigned int family, void *X);
+
+where again ``family`` is either GMT_IS_VECTOR or GMT_IS_MATRIX and  ``X`` is either a
+:ref:`GMT_VECTOR <struct-vector>` or :ref:`GMT_MATRIX <struct-matrix>`.
+
 
 Manually add segments
 ~~~~~~~~~~~~~~~~~~~~~
@@ -1552,11 +1584,18 @@ Using user arrays in GMT
 If your program uses a matrix or a set of column vectors to hold data
 and you wish to use such data in a GMT module, you must first create a
 GMT_MATRIX (for matrices) or GMT_VECTOR (for vectors) to hold your arrays.
-Use GMT_Create_Data_ to make the empty containers, then use GMT_Put_Matrix_
-and GMT_Put_Vector_ to hook up your own allocated arrays.  The functions
-GMT_Set_Matrix_ and GMT_Set_Vector_ may be helpful in specifying the
-dimensions of your data to GMT.  It is then these containers that you
-will pass to GMT via *virtual files*.
+In this situation you must pass ``dim`` with the final dimensions of
+your rows and columns when you call GMT_Create_Data_ to make the empty
+containers.  You can then use GMT_Put_Matrix_ and GMT_Put_Vector_ to hook
+up your own allocated arrays.  It is then these containers that you
+will pass to GMT via *virtual files*. For receiving output from GMT it is
+normal to simply use Open_VirtualFile and have GMT allocate the space needed.
+However, if you want the result to be written to your own arrays or matrix
+then you must call GMT_Create_Data yourself with mode = GMT_IS_OUTPUT and
+specify the dimensions of your array, then (as for input) assign your memory
+to the container using GMT_Put_Matrix_ or GMT_Put_Vector_.  Finally, if
+you also need to pass record of strings then see GMT_Put_Strings_ and
+GMT_Get_Strings_.
 
 Open a virtual file (memory location)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

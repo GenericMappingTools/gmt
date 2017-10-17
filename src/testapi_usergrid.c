@@ -201,14 +201,12 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	    GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, out_via, GMT_OUT, NULL, output);
 	else {	/* Preallocate array space here in the app */
 		out_data = get_array (outtype, 0);	/* Make user space for output */
- 		/* Create a blank matrix container that will hold our user out_data */
-		M[GMT_OUT] = GMT_Create_Data (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IS_OUTPUT, NULL, NULL, NULL, 0, 0, NULL);
+ 		/* Create a blank matrix container that will hold our user out_data, but pass dim so it can set the dimensions */
+		M[GMT_OUT] = GMT_Create_Data (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IS_OUTPUT, dim, NULL, NULL, 0, 0, NULL);
 		/* Hook the user output array up to this containers */
 		GMT_Put_Matrix (API, M[GMT_OUT], outtype, out_data);
-		/* Must provide dimensions of the user output array */
-		GMT_Set_Matrix (API, M[GMT_OUT], NROWS, NCOLS);	
-    	/* Associate our data matrix with a virtual grid file to "write" to */
-    	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_OUT, M[GMT_OUT], output);
+		/* Associate our data matrix with a virtual grid file to "write" to */
+		GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_OUT, M[GMT_OUT], output);
 	}
 	/* Prepare the module arguments to multiply the input grid by 10 then add 1 */
 	sprintf (args, "%s 10 MUL 1 ADD = %s", input, output);

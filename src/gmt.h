@@ -64,7 +64,7 @@ extern "C" {
  *=====================================================================================
  */
 
-/* 24 Primary API functions */
+/* 32 Primary API functions */
 EXTERN_MSC void * GMT_Create_Session  (const char *tag, unsigned int pad, unsigned int mode, int (*print_func) (FILE *, const char *));
 EXTERN_MSC void * GMT_Create_Data     (void *API, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[],
                                           double *wesn, double *inc, unsigned int registration, int pad, void *data);
@@ -88,7 +88,6 @@ EXTERN_MSC int GMT_Get_Row            (void *API, int rec_no, struct GMT_GRID *G
 EXTERN_MSC int GMT_Put_Row            (void *API, int rec_no, struct GMT_GRID *G, gmt_grdfloat *row);
 EXTERN_MSC int GMT_Set_Comment        (void *API, unsigned int family, unsigned int mode, void *arg, void *data);
 EXTERN_MSC int GMT_Set_Geometry	      (void *API, unsigned int direction, unsigned int geometry);
-EXTERN_MSC int GMT_Get_Family	      (void *API, unsigned int direction, struct GMT_OPTION *head);
 
 EXTERN_MSC int GMT_Open_VirtualFile   (void *API, unsigned int family, unsigned int geometry, unsigned int direction, void *data, char *string);
 EXTERN_MSC int GMT_Close_VirtualFile  (void *API, const char *string);
@@ -105,9 +104,7 @@ EXTERN_MSC void *GMT_Get_Vector       (void *API, struct GMT_VECTOR *V, unsigned
 EXTERN_MSC void *GMT_Get_Matrix       (void *API, struct GMT_MATRIX *M);
 EXTERN_MSC int GMT_Put_Vector         (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned int type, void *vector);
 EXTERN_MSC int GMT_Put_Matrix         (void *API, struct GMT_MATRIX *M, unsigned int type, void *matrix);
-/* These 4 functions are new in 6.0 and are being considered beta */
-EXTERN_MSC int GMT_Set_Matrix         (void *API, struct GMT_MATRIX *M, uint64_t n_rows, uint64_t n_columns);
-EXTERN_MSC int GMT_Set_Vector         (void *API, struct GMT_VECTOR *V, uint64_t n_rows, uint64_t n_columns);
+/* These 2 functions are new in 6.0 and are being considered beta */
 EXTERN_MSC int GMT_Put_Strings        (void *API, unsigned int family, void *object, char **array);
 EXTERN_MSC char **GMT_Get_Strings     (void *API, unsigned int family, void *object);
 
@@ -174,13 +171,14 @@ EXTERN_MSC struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *modul
 EXTERN_MSC int GMT_Expand_Option		   (void *API, struct GMT_OPTION *current, const char *txt);
 EXTERN_MSC int GMT_Get_Enum			   (char *key);
 
-/* These 6 functions are provided for backwards compatibility but are considered obsolete as of 5.3 */
+/* These 7 functions are provided for backwards compatibility but are considered obsolete as of 6 */
 EXTERN_MSC void *GMT_Get_Data       (void *API, int object_ID, unsigned int mode, void *data);
 EXTERN_MSC int GMT_Put_Data         (void *API, int object_ID, unsigned int mode, void *data);
 EXTERN_MSC void *GMT_Retrieve_Data  (void *API, int object_ID);
 EXTERN_MSC int GMT_Encode_ID        (void *API, char *string, int object_ID);
 EXTERN_MSC int GMT_Get_ID           (void *API, unsigned int family, unsigned int direction, void *resource);
 EXTERN_MSC int GMT_Get_Value        (void *API, const char *arg, double *par);
+EXTERN_MSC int GMT_Get_Family	      (void *API, unsigned int direction, struct GMT_OPTION *head);
 
 #ifdef __cplusplus
 }
