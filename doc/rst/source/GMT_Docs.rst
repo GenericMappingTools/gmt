@@ -1917,12 +1917,13 @@ on columns from the physical record. For instance, to use the 4th,
 **-i**\ 3,6,2 (since 0 is the first column). The chosen data columns
 will be used as is. Optionally, you can specify that input columns
 should be transformed according to a linear or logarithmic conversion.
-Do so by appending [**l**][\ **s**\ *scale*][\ **o**\ *offset*] to
-each column (or range of columns). All items are optional: The **l**
+Do so by appending [**+l**][\ **+s**\ *scale*][\ **+o**\ *offset*] to
+each column (or range of columns). All items are optional: The **+l**
 implies we should first take :math:`\log_{10}` of the data [leave as
 is]. Next, we may scale the result by the given *scale* [1]. Finally, we
 add in the specified *offset* [0].  If you want the trailing text to remain
-part of your subset logical record then also select the special column **t**.
+part of your subset logical record then also select the special column
+by requesting column **t**.
 
 .. _gmt_record:
 
@@ -1935,14 +1936,16 @@ part of your subset logical record then also select the special column **t**.
    end.  Our module (here :doc:`psxy`) will be used to plot circles at the
    given locations but we want to assign color based on the ``depth`` column
    (which we need to convert from meters to km) and symbol size based on the
-   ``mag`` column (but we want to scale this by 0.01 to get suitable symbol sizes).
+   ``mag`` column (but we want to scale the magnitude by 0.01 to get suitable symbol sizes).
    We use **-i** to pull in the desired columns in the required order and apply
-   the scaling, resulting in the logical record with 4 columns.  The **-f** option
+   the scaling, resulting in a logical input record with 4 columns.  The **-f** option
    can be used to specify column types in the logical record if it is not clear
-   from the data themselves (or you are reading a binary file).  Finally, if
+   from the data themselves (such as when reading a binary file).  Finally, if
    a module needs to write out only a portion of the current logical record then
    you may use the corresponding **-o** option to select desired columns, including
-   the trailing text column **t**.
+   the trailing text column **t**.  Note that these column numbers now refer to
+   the logical record, not the physical, since after reading the data there is no
+   physical record, only the logical record in memory.
 
 Grid interpolation parameters: The **-n** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1977,7 +1980,8 @@ You can also use a column more than once, e.g., **-o**\ 3,1,3, to
 duplicate a column on output.  Finally, if your logical record in memory
 contains trailing text then you can include that by including the special
 column **t** to your selections.  The text is always written after any
-numerical columns.
+numerical columns.  Note that if you wanted to scale or shift the output
+values you need to do so during reading, using the **-i** option.
 
 Perspective view: The **-p** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2199,21 +2203,21 @@ URLs and remote files
 Three classes of files are given special treatment in GMT.
 
 #. Some data sets are ubiquitous and used by nearly all GMT users.
-   At the moment this set is limited to Earth relief grids.  If you reference
-   grid input called **@earth_relief_**\ *res* on a command line then
+   At the moment this collection is limited to Earth relief grids.  If you specify
+   a grid input named **@earth_relief_**\ *res* on a command line then
    such a grid will automatically be downloaded from the GMT Data Site and placed
    in **$GMT_USERDIR** [~/.gmt].  The resolution *res* allows a choice among
    15 command grid spacings: 60m, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
    30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb, 7.5 Mb,
    11 Mb, 16 Mb, 27 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively) as well
    as the SRTM tile resolutions 03s and 01s (6.8 Gb and 41 Gb, respectively). Once
-   one of these have been downloaded any future reference will simply obtain the
+   one of these grids have been downloaded any future reference will simply obtain the
    file from **$GMT_USERDIR** or **DIR_CACHE** (except if explicitly removed by the user).
    Note: The four highest resolutions are the original data sets SRTM15+, SRTM30+,
    ETOPO1 and ETOPO2V2.  Lower resolutions are spherically Gaussian-filtered versions
    of ETOPO1.  The SRTM (version 3) 1 and 3 arc-sec tiles are only available over land
    between 60 degrees south and north latitude and are stored as highly compressed JPEG2000
-   tiles on the GMT server.  These are downloaded as requested, converted to netCDF
+   tiles on the GMT server.  These are individually downloaded as requested, converted to netCDF
    grids and stored in subdirectories srtm1 and srtm3 under **DIR_CACHE**, and assembled
    into a seamless grid using :doc:`grdblend`. A tile is only downloaded and converted
    once (unless the user cleans the cache directories).
@@ -2225,12 +2229,12 @@ Three classes of files are given special treatment in GMT.
 #. Demonstration files used in online documentation, example scripts, or even the
    large test suite may be given in the format @\ *filename*.  When such a file is
    encountered on the command line it is understood to be a short-hand representation
-   of the full URL to *filename* on the GMT Cache Data FTP site.
+   of the full URL to *filename* on the GMT Cache Data site.
    Since this address may change over time we use the leading
    @ to simplify access to these files.  Such files will also be downloaded
    to **DIR_CACHE** and subsequently read from there (until removed by the user).
 #. By default, remote files are downloaded from the SOEST data server.  However, you
-   can override that by setting the environmental parameter **$GMT_DATA_URL** or
+   can override that selection by setting the environmental parameter **$GMT_DATA_URL** or
    the default setting for **GMT_DATA_URL**.  Alternatively, configure the CMake
    parameter GMT_DATA_URL at compile time.
 
@@ -2238,10 +2242,17 @@ The user cache (**DIR_CACHE**) and all its contents can be cleared any time
 via the command **gmt clear cache**.
 
 .. figure:: /_images/GMT_SRTM.*
-   :width: 500 px
+   :width: 700 px
    :align: center
 
-   The 14297 1x1 tiles (red) for which SRTM 1 and 3 arc second data are available.
+   The 14297 1x1 degree tiles (red) for which SRTM 1 and 3 arc second data are available.
+
+As a short example, we can make a quick map of Easter Island using the SRTM 1x1 arc second
+grid via
+
+::
+
+ gmt grdimage -R109:30W/109:12W/27:14S/27:02S -JM6i -P -Baf @earth_relief_01s > easter.ps
 
 Verbose operation
 -----------------
@@ -2258,13 +2269,15 @@ more messages with an increasing level of details. The modes are
 
   **q** Complete silence, not even fatal error messages.
 
-  **n** Warnings and progress messages [Default].
+  **n** Fatal errors [Default].
 
   **c** Warnings about deprecated usage (if compiled for compatibility).
 
-  **l** Detailed progress messages.
+  **v** General Warnings.
 
-  **d** Debugging messages.
+  **l** Detailed progress and informational messages.
+
+  **d** Debugging messages (mostly of interest to developers).
 
 The verbosity is cumulative, i.e., mode **l** means all messages of mode
 **n** as well. will be reported.

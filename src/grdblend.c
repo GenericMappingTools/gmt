@@ -182,7 +182,7 @@ GMT_LOCAL bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, str
 		else {
 			B->G->header->wesn[XLO] = w;	B->G->header->wesn[XHI] = e;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "File %s %s region needed longitude adjustment to fit final grid region\n", B->file, type[mode]);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s %s region needed longitude adjustment to fit final grid region\n", B->file, type[mode]);
 	}
 	return false;
 }
@@ -687,7 +687,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: %s [%s]\n", GMT_strerror(err), Ctrl->G.file); Return (GMT_RUNTIME_ERROR);
 	}
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grids\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grids\n");
 
 	/* Formats other than netcdf (both v3 and new) and native binary must be reformatted at the end */
 	reformat = found_unsupported_format (GMT, Grid->header, Ctrl->G.file);
@@ -719,7 +719,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	if (status < 0) Return (GMT_RUNTIME_ERROR);	/* Something went wrong in init_blend_job */
 	n_blend = status;
 	if (!Ctrl->W.active && n_blend == 1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Only 1 grid found; no blending will take place\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Only 1 grid found; no blending will take place\n");
 	}
 
 	no_data_f = (gmt_grdfloat)Ctrl->N.nodata;
@@ -847,10 +847,10 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 		else
 			GMT_Put_Row (API, row, Grid, z);
 
-		if (row%10 == 0)  GMT_Report (API, GMT_MSG_VERBOSE, "Processed row %7ld of %d\r", row, Grid->header->n_rows);
+		if (row%10 == 0)  GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed row %7ld of %d\r", row, Grid->header->n_rows);
 
 	}
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processed row %7ld\n", row);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed row %7ld\n", row);
 	nx_final = Grid->header->n_columns;	ny_final = Grid->header->n_rows;
 
 	if (write_all_at_once) {	/* Must write entire grid */
@@ -879,17 +879,17 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 		if ((error = GMT_Destroy_Data (API, &blend[k].G)) != GMT_NOERROR) Return (error);
 	}
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
 		char empty[GMT_LEN64] = {""};
-		GMT_Report (API, GMT_MSG_VERBOSE, "Blended grid size of %s is %d x %d\n", Ctrl->G.file, nx_final, ny_final);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Blended grid size of %s is %d x %d\n", Ctrl->G.file, nx_final, ny_final);
 		if (n_fill == n_tot)
-			GMT_Report (API, GMT_MSG_VERBOSE, "All nodes assigned values\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "All nodes assigned values\n");
 		else {
 			if (gmt_M_is_fnan (no_data_f))
 				strcpy (empty, "NaN");
 			else
 				sprintf (empty, "%g", no_data_f);
-			GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " nodes assigned values, %" PRIu64 " set to %s\n", n_fill, n_tot - n_fill, empty);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " nodes assigned values, %" PRIu64 " set to %s\n", n_fill, n_tot - n_fill, empty);
 		}
 	}
 

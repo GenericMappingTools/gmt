@@ -69,8 +69,8 @@ GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, const char *file) {
 		if (!strncmp (tag, gmt_data_info[k].tag, 3U)) {
 			char name[GMT_LEN32] = {""};
 			(len == 3) ? sprintf (name, "earth_relief_%s", file) : sprintf (name, "%s", &file[1]);
-			if (len > 3) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s: Download file from the GMT ftp data server [data set size is %s].\n", name, gmt_data_info[k].size);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s: %s.\n\n", name, gmt_data_info[k].remark);
+			if (len > 3) GMT_Message (GMT->parent, GMT_TIME_NONE, "%s: Download file from the GMT ftp data server [data set size is %s].\n", name, gmt_data_info[k].size);
+			GMT_Message (GMT->parent, GMT_TIME_NONE, "%s: %s.\n\n", name, gmt_data_info[k].remark);
 			match = k;
 		}
 	}
