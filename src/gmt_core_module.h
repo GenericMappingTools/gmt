@@ -70,7 +70,6 @@ EXTERN_MSC int GMT_grdmask (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdmath (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdpaste (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdproject (void *API, int mode, void *args);
-EXTERN_MSC int GMT_grdraster (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdsample (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdtrack (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdtrend (void *API, int mode, void *args);
