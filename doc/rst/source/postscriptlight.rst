@@ -690,7 +690,7 @@ Here are functions used to read and plot various images.
     Reads the image contents of the EPS file given by the *file name*.
     The *header* is filled with dimensional information.  If *image*
     is NULL we return just with header, otherwise we read and return
-    the entire EPS content via *image.
+    the entire EPS content via *image*.
 
 Plotting Text
 -------------
