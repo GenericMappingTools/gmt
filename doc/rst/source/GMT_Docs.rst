@@ -291,7 +291,9 @@ printer or converted to a high-resolution PNG image for online usage.
 GMT software is written as a set of UNIX tools [3]_ and is
 totally self-contained and fully documented. The system is offered free
 of charge and is distributed over the Internet
-[*Wessel and Smith, 1991; 1995; 1998*; *Wessel et al., 2013*].
+[*Wessel and Smith, 1991; 1995; 1998*; *Wessel et al., 2013*].  The
+*PostScript* plots are easily converted to other formats, such as PDF
+or any raster image [4]_.
 
 The original version 1.0 of GMT was released in the summer of 1988
 when the authors were graduate students at Lamont-Doherty Earth

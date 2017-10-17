@@ -172,7 +172,7 @@ Optional Arguments
 
 .. include:: explain_-B.rst_
 
-.. _subplot_set-C:
+.. _subplot_set-C1:
 
 **-C**\ *side*\ /*clearance*\ [**u**\ ]
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
@@ -251,7 +251,7 @@ Optional Arguments
 **-A**\ *fixedlabel*
     Overrides the automatic labeling with the given string.  No modifiers are allowed.
 
-.. _subplot_set-C:
+.. _subplot_set-C2:
 
 **-C**\ *side*\ /*clearance*\ [**u**\ ]
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified

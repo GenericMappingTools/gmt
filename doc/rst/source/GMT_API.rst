@@ -252,7 +252,7 @@ API that are not backwards compatible with GMT 5:
 #. The GMT_DATASET structure has gained a new (hidden) enum GMT_enum_read `type' which indicates what
    record types were read to produce this dataset (GMT_READ_DATA, GMT_READ_TEXT, GMT_READ_MIXED).
    We also changed the geometry from unsigned int to enum GMT_enum_geometry.
-#. The long obsolete enums GMT_READ_DOUBLE and GMT_WRITE_DOUBLE hav now fully been removed;
+#. The long obsolete enums GMT_READ_DOUBLE and GMT_WRITE_DOUBLE have now fully been removed;
    use GMT_READ_DATA and GMT_WRITE_DATA instead.
 #. The GMT_Convert_Data function's flag array is now of length 2 instead of 3 (because there are no
    longer any TEXTSET settings), with what used to be flag3 now being given as flag2.
@@ -1606,8 +1606,9 @@ that object with a "Virtual File".  This step assigns a special filename to the
 memory location and you can then pass this filename to any module that
 needs to read that data.  It is similar for writing, except you may pass
 NULL as the object to have GMT automatically allocate the output resource.
-If you want GMT to write to your preallocated memory then you must create a
-suitable container and attach your array(s) using GMT_Set_Matrix_ or GMT_Set_Vector_.
+If you want GMT to write to your preallocated memory then you must instead create a
+suitable container first (and pass the dimensions of the arrays) and then
+attach your array(s) using GMT_Put_Matrix_ or GMT_Put_Vector_.
 The full syntax is
 
 .. _GMT_Open_VirtualFile:
