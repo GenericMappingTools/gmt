@@ -196,7 +196,7 @@ with a warning under compatibility mode:
    the ESRI ASCII exchange format is one of our recognized formats.
    Also, **-A** (no arguments) is deprecated; use **-Az** instead.
 
-*  :doc:`grdraster`: Now in the main GMT core.  The
+*  grdraster: Now in the main GMT core.  The
    **H**\ *skip* field in ``grdraster.info`` is no longer expected as we automatically
    determine if a raster has a GMT header. Also, to output
    *x,y,z* triplets instead of writing a grid now requires **-T**.

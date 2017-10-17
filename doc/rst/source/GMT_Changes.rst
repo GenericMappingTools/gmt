@@ -837,7 +837,7 @@ promoted (and possibly renamed) from earlier supplements:
 :doc:`gmtwhich`
     Return the full path to specified data files.
 
-:doc:`grdraster`
+grdraster
     Extracts subsets from large global grids.  Previously
     found in the dbase supplement.
 
