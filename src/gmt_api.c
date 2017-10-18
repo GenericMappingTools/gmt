@@ -11283,6 +11283,16 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 					tmp[in_node] = (uint8_t)I->data[out_node++];
 				}
 	}
+	if (old_layout == 9 && new_layout == 0) {	/* Change from BRP to TRB */
+		out_node = 0;
+		for (row = 0; row < I->header->my; row++)
+			for (col = 0; col < I->header->mx; col++)
+				for (band = 0; band < 3; band++) {
+					//in_node = col + (I->header->my - 1 - row)*I->header->my + band*I->header->size;
+					in_node = col + row*I->header->my + band*I->header->size;
+					tmp[in_node] = (uint8_t)I->data[out_node++];
+				}
+	}
 	//else if (old_layout == 2 && new_layout == 0) {}	/* Change from TCB to TRB */
 	else {		/* Other cases to be added later ...*/
 		GMT_Report (API, GMT_MSG_NORMAL, "api_change_imagelayout: reordering function for case %s -> %s not yet written. Doing nothing.\n",

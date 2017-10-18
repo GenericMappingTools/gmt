@@ -750,8 +750,6 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file[0], NULL)) == NULL) {
 				Return (API->error);
 			}
-			if (!strstr (I->header->mem_layout, "TRB"))
-				GMT_Change_Layout (API, GMT_IS_IMAGE, "TRB", 0, I, NULL, NULL);
 			inc[GMT_X] = gmt_M_get_inc (GMT, Topo->header->wesn[XLO], Topo->header->wesn[XHI], I->header->n_columns, I->header->xy_off);
 			inc[GMT_Y] = gmt_M_get_inc (GMT, Topo->header->wesn[YLO], Topo->header->wesn[YHI], I->header->n_rows, I->header->xy_off);
 			for (k = 0; k < 3; k++) {
@@ -785,9 +783,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			}
 			/* Now assign r,g,b to three grids */
 			gmt_M_grd_loop (GMT, I, row, col, ij) {
-				Drape[0]->data[ij] = I->data[3*ij];
-				Drape[1]->data[ij] = I->data[3*ij+1];
-				Drape[2]->data[ij] = I->data[3*ij+2];
+				for (k = 0; k < 3; k++)
+					Drape[k]->data[ij] = I->data[3*ij+k];
 			}
 			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
 				Return (API->error);
