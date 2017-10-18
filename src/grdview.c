@@ -776,7 +776,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			}
 			else if (I->header->n_bands == 4) { /* RGBA image, with a color map */
 				uint64_t n4, j4;
-				for (j4 = n4 = 0; j4 < 4 * I->header->nm; j4++) { /* Reduce image from 32- to 24-bit */
+				for (j4 = n4 = 0; j4 < 4 * I->header->size; j4++) { /* Reduce image from 32- to 24-bit */
 					I->data[n4++] = I->data[j4++], I->data[n4++] = I->data[j4++], I->data[n4++] = I->data[j4++];
 				}
 				I->header->n_bands = 3;
