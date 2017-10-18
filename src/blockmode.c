@@ -71,7 +71,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default computes the mode as the Least Median of Squares (LMS) estimate].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend output with LMS scale (s), low (l), and high (h) value per block, i.e.,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Er to report record number of the median value per block,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Er to report record number of the modal value per block,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or -Es to report an unsigned integer source id (sid) taken from the x,y,z[,w],sid input.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For ties, report record number (or sid) of largest value; append - for smallest.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Quicker; get mode z and mean x,y [Default gets mode x, mode y, mode z].\n");
@@ -277,88 +277,58 @@ GMT_LOCAL double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n,
 	return (value);
 }
 
-#if 0
-GMT_LOCAL double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, unsigned int k, uint64_t *index) {
-	/* Estimate mode by finding a maximum in the estimated
-	   pdf of weighted data.  Estimate the pdf as the finite
-	   difference of the cumulative frequency distribution
-	   over points from i to j.  This has the form top/bottom,
-	   where top is the sum of the weights from i to j, and
-	   bottom is (data[j] - data[i]).  Strategy is to start
-	   with i=0, j=n-1, and then move i or j toward middle
-	   while j-i > n/2 and bottom > 0.  At end while, midpoint
-	   of range from i to j is the mode estimate.  Choose
-	   to move either i or j depending on which one will
-	   cause greatest increase in pdf estimate.  If a tie,
-	   move both.
-
-	   Strictly, the pdf estimated this way would need to be
-	   scaled by (1/wsum), but this is constant so we don't
-	   use it here, as we are seeking a relative minimum.
-
-	   I assumed n > 2 when I wrote this. [WHFS] */
-
-	double top, topj, topi, bottomj, bottomi, pj, pi;
-	int64_t i = 0, j = n - 1, nh = n / 2;
-	int way;
-
-	top = wsum;
-
-	while ((j-i) > nh) {
-		topi = top - d[i].a[BLK_W];
-		topj = top - d[j].a[BLK_W];
-		bottomi = d[j].a[k] - d[i+1].a[k];
-		bottomj = d[j-1].a[k] - d[i].a[k];
-
-		if (bottomj == 0.0) {
-			if (index) *index = d[j-1].src_id;
-			return (d[j-1].a[k]);
-		}
-		if (bottomi == 0.0) {
-			if (index) *index = d[i+1].src_id;
-			return (d[i+1].a[k]);
-		}
-		pi = topi / bottomi;
-		pj = topj / bottomj;
-		if (pi > pj) {
-			i++;
-			top = topi;
-		}
-		else if (pi < pj) {
-			j--;
-			top = topj;
-		}
-		else {
-			top -= (d[i].a[BLK_W] + d[j].a[BLK_W]);
-			i++;
-			j--;
-		}
-	}
-	if (emode && index) {	/* Also return best src_id for this mode */
-		way = (d[j].a[k] >= d[i].a[k]) ? +1 : -1;
-		if (emode & BLK_DO_INDEX_HI) *index = (way == +1) ? d[j].src_id : d[i].src_id;
-		else *index = (way == +1) ? d[i].src_id : d[j].src_id;
-	}
-	return (0.5 * (d[j].a[k] + d[i].a[k]));
+GMT_LOCAL uint64_t get_source (struct BLK_DATA *d, uint64_t i, uint64_t j, unsigned int emode) {
+	/* Return the source at the center or the lo/hi of the two in the middle */
+	uint64_t s = j - i + 1, mid = i + s/2, src;
+	if (s%2)	/* A single central point */
+		src = d[mid].src_id;
+	else	/* Must go low or high */
+		src = (emode & BLK_DO_INDEX_HI) ? d[mid-1].src_id : d[mid].src_id;
+	return src;
 }
-#endif
 
 GMT_LOCAL double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, unsigned int k, uint64_t *index) {
 	/* Looks for the "shortest 50%". This means that when the cumulative weight
 	   (y) is plotted against the value (x) then the line between (xi,yi) and
 	   (xj,yj) should be the steepest for any combination where (yj-yi) is 50%
-	   of the total sum of weights */
+	   of the total sum of weights.
+	   Here, n > 2. */
 
-	double top, bottom, p, p_max, mode;
+	double top, bottom, p, p_max, mode, last_del = 0.0;
 	uint64_t i, j, src = 0, n_modes = 0;
+	bool equidistant = true;
 
 	/* Do some initializations */
 	wsum = 0.5 * wsum; /* Sets the 50% range */
-	/* First check if any single point has 50% or more of the total weights; if so we are done */
-	for (i = 0; i < n; i++) if (d[i].a[BLK_W] >= wsum) {
-		if (index) *index = d[i].src_id;
-		return d[i].a[k];
+	/* First check if any single point has 50% or more of the total weights; if so we are done.
+	 * While at it, check if points are equally spaced, inc which case we pick mode as the center */
+	for (i = 0; i < n; i++) {
+		if (d[i].a[BLK_W] >= wsum) {	/* Found a mighty and weighty single point */
+			if (index) *index = d[i].src_id;
+			return d[i].a[k];
+		}
+		else if (i && equidistant) {	/* May compute delta from 2nd point onwards */
+			double del = d[i].a[k] - d[i-1].a[k];
+			if (i > 1 && !doubleAlmostEqualZero (del, last_del))	/* Check for identical spacing */
+				equidistant = false;	/* Well, not any more */
+			else
+				last_del = del;
+		}
 	}
+	/* Deal with special cases */
+	if (equidistant) {	/* Equidistant data set, pick middle */
+		i = n / 2;
+		if (n % 2) {	/* Single middle point */
+			if (index) *index = d[i].src_id;
+			mode = d[i].a[k];
+		}
+		else {	/* Shared middle points */
+			if (index) *index = (emode & BLK_DO_INDEX_HI) ? d[i-1].src_id : d[i].src_id;
+			mode = 0.5 * (d[i-1].a[k] + d[i].a[k]);
+		}
+		return mode;
+	}
+	/* Must find maximum slope in the cdf */
 	top = p_max = 0.0;
 	mode = 0.5 * (d[0].a[k] + d[n-1].a[k]);
 	if (index) src = (emode & BLK_DO_INDEX_HI) ? d[n-1].src_id : d[0].src_id;
@@ -382,11 +352,19 @@ GMT_LOCAL double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int em
 			p_max = p;
 			mode = 0.5 * (d[i].a[k] + d[j].a[k]);
 			n_modes = 1;
-			if (index) src = (emode & BLK_DO_INDEX_HI) ? d[j].src_id : d[i].src_id;
+			if (index) src = get_source (d, i, j, emode);	/* Must find corresponding middle or low/high index */
 		}
 		else if (doubleAlmostEqual (p, p_max)) {	/* Same peak as previous best mode, get average of these modes */
-			mode += 0.5 * (d[i].a[k] + d[j].a[k]);
-			n_modes++;
+			if (index) {	/* Cannot have multiple modes when we are requesting teh source, go with high or low per emode setting */
+				if (emode & BLK_DO_INDEX_HI) {	/* OK, we are interested in the higher mode only */
+					src = get_source (d, i, j, emode);	/* Must find corresponding high index */
+					mode = 0.5 * (d[i].a[k] + d[j].a[k]);
+				}
+			}
+			else {	/* Can average modes if need be */
+				mode += 0.5 * (d[i].a[k] + d[j].a[k]);
+				n_modes++;
+			}
 		}
 	}
 	if (n_modes > 1) mode /= n_modes;
@@ -407,7 +385,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	uint64_t node, first_in_cell, first_in_new_cell, n_lost, n_read;
 	uint64_t n_cells_filled, n_in_cell, nz, n_pitched, src_id = 0;
-	uint64_t w_col, i_col = 0, sid_col;
+	uint64_t w_col, i_col = 0, sid_col, *src_id_ptr = NULL;
 
 	size_t n_alloc = 0, nz_alloc = 0;
 
@@ -603,6 +581,8 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
+	if (emode) src_id_ptr = &src_id;
+	
 	/* Find n_in_cell and write appropriate output  */
 
 	first_in_cell = n_cells_filled = nz = 0;
@@ -642,7 +622,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 			if (Ctrl->D.active)
 				out[GMT_Z] = bin_mode (GMT, &data[first_in_cell], n_in_cell, GMT_Z, B);
 			else
-				out[GMT_Z] = weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, GMT_Z, &src_id);
+				out[GMT_Z] = weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, GMT_Z, src_id_ptr);
 			if (Ctrl->Q.active) {
 				i_n_in_cell = 1.0 / n_in_cell;
 				out[GMT_X] *= i_n_in_cell;

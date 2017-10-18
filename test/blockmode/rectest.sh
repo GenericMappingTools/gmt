@@ -6,7 +6,7 @@
 # in a -R0/2/0/2 -I2 -r situation (2x2 blocks)
 # In all blocks mean = median = mode = 5.  However, we
 # are returning the record numbers that go with those
-# median/modes, and compare to given answers.
+# modes, and compare to given answers.
 # This test is only for blockmode
 log=rectest.log
 
@@ -23,6 +23,9 @@ cat << EOF > data.d
 0.5	0.5	6	G
 0.2	0.7	7	H
 # Block SE (6 values)
+# Note: Because there is no mode the search for steep gradients in the cdf
+# finds two modes, and when -Er is used we cannot average sources.  So the
+# truth below reflects that -Er- gives J (10) and -Er+ gives M (13).
 1.3	0.2	2	I
 1.4	0.4	3	J
 1.7	0.6	4	K
@@ -33,14 +36,14 @@ EOF
 cat << EOF > truth.d
 1
 2
-5
+6
 10
 1
 3
-7
+6
 13
 EOF
 # Record numbers should match truth.d"
-gmt blockmode   -R0/2/0/2 -I1 -Er- -r data.d -o3 >> $log
-gmt blockmode   -R0/2/0/2 -I1 -Er+ -r data.d -o3 >> $log
+gmt blockmode   -R0/2/0/2 -I1 -Q -Er- -r data.d -o3 >> $log
+gmt blockmode   -R0/2/0/2 -I1 -Q -Er+ -r data.d -o3 >> $log
 diff $log truth.d --strip-trailing-cr > fail
