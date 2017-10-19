@@ -305,8 +305,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 					gmt_scanf_float (GMT, txt_a, &Ctrl->T.low);
 					gmt_scanf_float (GMT, txt_b, &Ctrl->T.high);
-					if (n == 3) gmt_scanf_float (GMT, txt_c, &Ctrl->T.inc);
-					
+					if (n == 3) {
+						if ((c = strrchr (txt_c, '+')) && (c[1] == 'n' || c[1] == '\0'))	/* Gave number of points instead; calculate inc */
+							c[0] = '\0';
+						gmt_scanf_float (GMT, txt_c, &Ctrl->T.inc);
+					}
 					n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error -T option: Must specify z_min/z_max[/z_inc[+n]]\n");
 					if (n == 3 && (strstr(opt->arg, "+n") || opt->arg[strlen(opt->arg)-1] == '+')) {	/* Gave number of levels instead; calculate inc */
 						Ctrl->T.inc = (Ctrl->T.high - Ctrl->T.low) / (Ctrl->T.inc - 1.0);

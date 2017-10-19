@@ -129,7 +129,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Specify <norm> as -L1 or -L2; or use -L or -L3 to give both.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F We normally write a text report with the answer.  Use -F to return just data\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F We normally write a mixed numerical/text report.  Use -F to return just data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Indicate what output columns you want as one or more of fmnsc in any order:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f: Flat Earth mean location\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     m: Fisher (L1) or Eigenvalue (L2) mean location\n");
@@ -465,11 +465,12 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 
 	lonsum /= n_data;	latsum /= n_data;
 
-	Out = gmt_new_record (GMT, out, record);	//* Place coordinates in data and message in text */
 	if (Ctrl->F.active) {	/* Return data coordinates */
+		Out = gmt_new_record (GMT, out, NULL);
 		if (Ctrl->F.mode & 1) {out[col++] = lonsum; out[col++] = latsum; }
 	}
 	else {	/* ASCII report */
+		Out = gmt_new_record (GMT, out, record);	/* Place coordinates in data and message in text */
 		out[GMT_X] = lonsum; out[GMT_Y] = latsum;
 		snprintf (record, GMT_LEN256, "Points read: %" PRIu64 " Average Position (Flat Earth)", n_data);
 		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
