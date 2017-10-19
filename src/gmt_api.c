@@ -7482,7 +7482,7 @@ GMT_LOCAL int api_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode
 				GMT->hidden.mem_coord[col][count[GMT_ROW]] = record->data[col];
 				if (GMT->current.io.col_type[GMT_OUT][col] & GMT_IS_LON) gmt_lon_range_adjust (GMT->current.io.geo.range, &(GMT->hidden.mem_coord[col][count[GMT_ROW]]));
 			}
-			if (record->text)	/* Also write trailing text */
+			if (record->text && record->text[0])	/* Also write trailing text */
 				GMT->hidden.mem_txt[count[GMT_ROW]] = record->text;
 			count[GMT_ROW]++;	/* Increment rows in this segment */
 			break;
