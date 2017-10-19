@@ -136,9 +136,9 @@ Optional Arguments
 
 **-S**\ [**x**]\ *lon0*/*lat0*/*length*\ [/*units*]
     Draws a simple vertical scale centered on *lon0/lat0*. Use **-Sx**
-    to specify cartesian coordinates instead. *length* is in z units,
-    append unit name for labeling. **FONT\_ANNOT\_PRIMARY** is used as
-    font.
+    to specify Cartesian *x0*/*y0* coordinates instead. Note that *length* is in z units;
+    optionally append a unit name (or string) for labeling. The
+    **FONT\_ANNOT\_PRIMARY** is used for the font setting.
 
 .. _-T:
 
