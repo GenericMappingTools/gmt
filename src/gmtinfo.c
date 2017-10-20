@@ -341,11 +341,12 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	unsigned int fixed_phase[2] = {1, 1}, min_cols, save_range;
 	uint64_t col, ncol = 0, n = 0;
 
-	char file[GMT_BUFSIZ] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, delimiter[2] = {""};
+	char file[GMT_BUFSIZ] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""};
+	char buffer[GMT_BUFSIZ] = {""}, delimiter[2] = {""}, *t_ptr = NULL;
 
 	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, *dchosen = NULL, phase[2] = {0.0, 0.0}, this_phase, off;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0, low, high, value, e_min = DBL_MAX, e_max = -DBL_MAX;
-	double *xyzminL = NULL, *xyzmaxL = NULL;
+	double *xyzminL = NULL, *xyzmaxL = NULL, *d_ptr = NULL;
 	double out[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
 
 	struct GMT_QUAD *Q = NULL;
@@ -479,7 +480,9 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	}
 
 	save_range = GMT->current.io.geo.range;
-	Out = gmt_new_record (GMT, (Ctrl->C.active) ? GMT->current.io.curr_rec : out, NULL);	/* Since we only need to worry about numerics in this module */
+	d_ptr = (Ctrl->C.active || Ctrl->E.active) ? GMT->current.io.curr_rec : ((Ctrl->I.mode == BOUNDBOX) ? out : NULL);
+	t_ptr = (d_ptr && !Ctrl->E.active) ? NULL : record;
+	Out = gmt_new_record (GMT, d_ptr, t_ptr);
 	
 	first_data_record = true;
 	done = false;
@@ -619,15 +622,8 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				i = strip_blanks_and_output (GMT, buffer, Ctrl->T.inc, Ctrl->T.col);	strcat (record, &buffer[i]);
 			}
 			else if (Ctrl->E.active) {	/* Return extreme record */
-				int sep = 0;
-				if (GMT->common.b.active[GMT_IN]) {	/* Make ASCII record */
-					gmt_M_memset (chosen, GMT_BUFSIZ, char);
-					for (col = 0; col < ncol; col++) {	/* Report min/max for each column in the format controlled by -C */
-						gmt_add_to_record (GMT, chosen, dchosen[col], col, GMT_OUT, sep);
-						sep = 1;
-					}
-				}
-				strncpy (record, chosen, GMT_BUFSIZ);
+				gmt_M_memcpy (Out->data, dchosen, ncol, double);
+				if (Out->text) strncpy (record, chosen, GMT_BUFSIZ);
 			}
 			else {				/* Return min/max for each column */
 				if (!Ctrl->C.active) {	/* Want info about each item */
@@ -688,11 +684,8 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			if (do_report) {
-				if (!Ctrl->C.active)	/* Text data record */
-					Out->text = record;
+			if (do_report)
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write data record to output destination */
-			}
 			got_stuff = true;		/* We have at least reported something */
 			for (col = 0; col < ncol; col++) {	/* Reset counters for next block */
 				xyzmin[col] = DBL_MAX;
@@ -722,7 +715,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			ncol = gmt_get_cols (GMT, GMT_IN);
 			if (Ctrl->E.active) {
 				if (Ctrl->E.col == UINT_MAX) Ctrl->E.col = ncol - 1;	/* Default is last column */
-				if (GMT->common.b.active[GMT_IN]) dchosen = gmt_M_memory (GMT, NULL, ncol, double);
+				dchosen = gmt_M_memory (GMT, NULL, ncol, double);
 			}
 			min_cols = 2;	if (Ctrl->S.xbar) min_cols++;	if (Ctrl->S.ybar) min_cols++;
 			if (Ctrl->S.active && min_cols > ncol) {
@@ -776,17 +769,13 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				value = (work_on_abs_value) ? fabs (in[Ctrl->E.col]) : in[Ctrl->E.col];
 				if (Ctrl->E.mode == -1 && value < e_min) {	/* Lower than previous low */
 					e_min = value;
-					if (GMT->common.b.active[GMT_IN])
-						gmt_M_memcpy (dchosen, in, ncol, double);
-					else
-						strncpy (chosen, GMT->current.io.curr_text, GMT_BUFSIZ);
+					gmt_M_memcpy (dchosen, in, ncol, double);
+					if (In->text) strncpy (chosen, In->text, GMT_BUFSIZ);
 				}
 				else if (Ctrl->E.mode == +1 && value > e_max) {	/* Higher than previous high */
 					e_max = value;
-					if (GMT->common.b.active[GMT_IN])
-						gmt_M_memcpy (dchosen, in, ncol, double);
-					else
-						strncpy (chosen, GMT->current.io.curr_text, GMT_BUFSIZ);
+					gmt_M_memcpy (dchosen, in, ncol, double);
+					if (In->text) strncpy (chosen, In->text, GMT_BUFSIZ);
 				}
 			}
 		}
@@ -834,7 +823,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {	/* Restore previous output col types */
 		gmt_M_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, GMT_MAX_COLUMNS, int);
 	}
-	if (Ctrl->E.active && GMT->common.b.active[GMT_IN])
+	if (Ctrl->E.active)
 		gmt_M_free (GMT, dchosen);
 
 	Return (GMT_NOERROR);
