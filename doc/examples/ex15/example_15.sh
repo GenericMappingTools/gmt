@@ -8,7 +8,7 @@
 # Unix progs:	echo, rm
 #
 ps=example_15.ps
-gmt convert @ship_15.xyz -bo > ship.b
+gmt convert @ship_15.txt -bo > ship.b
 #
 region=`gmt info ship.b -I1 -bi3d`
 gmt nearneighbor $region -I10m -S40k -Gship.nc ship.b -bi
