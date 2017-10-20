@@ -326,7 +326,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		if (Ctrl->N.active) {	/* Must get nodes from separate file */
 			struct GMT_DATASET *Nin = NULL;
 			struct GMT_DATATABLE *NTable = NULL;
-			if ((error = gmt_set_cols (GMT, GMT_IN, 3)) != GMT_NOERROR) {
+			if ((error = GMT_Set_Columns (API, GMT_IN, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 				Return (error);
 			}
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read Nodes from %s ...", Ctrl->N.file);
@@ -370,7 +370,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	}
 	else {	/* Must process input point/line data */
 		n_in = (Ctrl->E.mode == SPHD_VALUES) ? 3 : 2;
-		if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_IN, n_in, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default input sources, unless already set */

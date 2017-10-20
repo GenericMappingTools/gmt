@@ -462,10 +462,10 @@ int GMT_originator (void *V_API, int mode, void *args) {
 		n_out = n_expected_fields;
 	if (n_out == 3)
 		gmt_set_cartesian (GMT, GMT_OUT);	/* Since output is no longer lon/lat */
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_out)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_expected_fields)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, n_expected_fields, GMT_COL_FIX)) != GMT_NOERROR) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */

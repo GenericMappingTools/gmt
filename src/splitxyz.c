@@ -347,7 +347,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	n_in = (Ctrl->S.active) ? 5 : 3;
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, n_in, GMT_COL_FIX)) != GMT_NOERROR) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
@@ -419,7 +419,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	if (!Ctrl->N.active)
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_outputs)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, n_outputs, (D[GMT_IN]->type == GMT_READ_DATA) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)) != GMT_NOERROR) {
 		Return (error);
 	}
 	/* Registers default output destination, unless already set */

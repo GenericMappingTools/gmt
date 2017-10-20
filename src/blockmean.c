@@ -221,10 +221,10 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 	/* Specify input and output expected columns */
 	n_input = (Ctrl->S.mode == 3) ? 2 : 3;
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_input + Ctrl->W.weighted[GMT_IN])) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, n_input + Ctrl->W.weighted[GMT_IN], GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
-	if ((error = gmt_set_cols (GMT, GMT_OUT, ((Ctrl->W.weighted[GMT_OUT]) ? 4 : 3) + 3 * Ctrl->E.active)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, ((Ctrl->W.weighted[GMT_OUT]) ? 4 : 3) + 3 * Ctrl->E.active, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 

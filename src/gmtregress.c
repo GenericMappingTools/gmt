@@ -1074,7 +1074,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (API->error);	/* Establishes data files or stdin */
 	}
-	if ((error = gmt_set_cols (GMT, GMT_IN, 2 + Ctrl->W.n_weights)) != 0) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, 2 + Ctrl->W.n_weights, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (error);
 	}
@@ -1100,7 +1100,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (API->error);
 	}
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_columns)) != 0) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, n_columns, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (error);
 	}

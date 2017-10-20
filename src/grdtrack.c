@@ -1088,7 +1088,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			gmt_set_cartesian (GMT, GMT_OUT);	/* Since we are outputting z-columns only */
 			GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;	/* Since no x,y involved here */
 			n_out = Ctrl->G.n_grids;
-			if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != 0) Return (error);
+			if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
 			out = gmt_M_memory (GMT, NULL, n_out, double);
 		}
 	
@@ -1122,7 +1122,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if (n_out == 0) {	/* First time we need to determine # of columns and allocate output vector */
 				n_out = gmt_get_cols (GMT, GMT_IN) + Ctrl->G.n_grids;	/* Get total # of output cols */
 				if (Ctrl->T.mode == 2) n_out += 3;
-				if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != 0) Return (error);
+				if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, (In->text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)) != GMT_NOERROR) Return (error);
 				if (!out) out = gmt_M_memory (GMT, NULL, n_out, double);
 				Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 				Out->text = (Ctrl->Z.active) ? NULL : In->text;	/* Write out trailing text on output unless -Z */

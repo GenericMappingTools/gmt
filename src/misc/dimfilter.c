@@ -961,7 +961,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) Return (error);
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}

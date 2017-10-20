@@ -322,7 +322,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 
 	/* First read input data to be sampled */
 	
-	if ((error = gmt_set_cols (GMT, GMT_IN, 0)) != 0) Return (error);
+	if ((error = GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX)) != GMT_NOERROR) Return (error);
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}

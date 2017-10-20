@@ -643,7 +643,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 int GMT_mapproject (void *V_API, int mode, void *args) {
 	int ks, n_fields, two, way, error = 0, fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
 	
-	bool line_start = true, do_geo_conv = false, double_whammy = false;
+	bool line_start = true, do_geo_conv = false, double_whammy = false, first = true;
 	bool geodetic_calc = false, datum_conv_only = false, along_track = false;
 
 	unsigned int i = 0, col, speed_col = 2;
@@ -816,7 +816,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			Return (API->error);
 		}
-		if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != 0) Return (error);
+		if ((error = GMT_Set_Columns (API, GMT_OUT, n_output, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
@@ -958,7 +958,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	}
 
 	/* Specify input and output expected columns */
-	if ((error = gmt_set_cols (GMT, GMT_IN,  0)) != 0) Return (error);
+	if ((error = GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX)) != GMT_NOERROR) Return (error);
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
@@ -1000,8 +1000,6 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 		Return (API->error);
 	}
-	if ((error = gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN))) != 0) Return (error);
-
 	along_track = (Ctrl->G.mode && ((Ctrl->G.mode & GMT_MP_CUMUL_DIST) || (Ctrl->G.mode & GMT_MP_INCR_DIST)));
 	
 	n = n_read_in_seg = 0;
@@ -1029,6 +1027,12 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (In == NULL) {	/* Crazy safety valve but it should never get here (to please Coverity) */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: input pointer is NULL where it should not be, aborting\n");
 			Return (GMT_PTR_IS_NULL);
+		}
+		if (first) {
+			unsigned int n_in_cols = gmt_get_cols (GMT, GMT_IN);
+			if ((error = GMT_Set_Columns (API, GMT_OUT, n_in_cols, (In->text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)) != GMT_NOERROR)
+				Return (error);
+			first = false;
 		}
 		in = In->data;	/* Only need to process numerical part here */
 		Out->text = In->text;
@@ -1105,7 +1109,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 			/* Simply copy other columns and output */
 			if (n_output == 0) {
-				gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN));
+				unsigned int n_in_cols = gmt_get_cols (GMT, GMT_IN);
+				GMT_Set_Columns (API, GMT_OUT, n_in_cols, (Out->text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX);
 				n_output = gmt_get_cols (GMT, GMT_OUT);
 			}
 			for (k = two; k < n_output; k++) out[k] = in[k];
@@ -1230,8 +1235,9 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				}
 				/* Simply copy other columns and output */
 				if (n_output == 0) {
+					unsigned int n_in_cols = gmt_get_cols (GMT, GMT_IN);
 					for (col = 0, k = 0; col < MP_COL_N; col++) if (Ctrl->used[col]) k++;
-					gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN) + k);
+					GMT_Set_Columns (API, GMT_OUT, n_in_cols + k, (Out->text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX);
 					n_output = gmt_get_cols (GMT, GMT_OUT);
 					if (geodetic_calc) {	/* Update the output column types to the extra items we added */
 						for (col = 0, k = n_fields; col < MP_COL_N; col++) {
@@ -1256,7 +1262,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				}
 				/* Simply copy other columns and output */
 				if (n_output == 0) {
-					gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN));
+					unsigned int n_in_cols = gmt_get_cols (GMT, GMT_IN);
+					GMT_Set_Columns (API, GMT_OUT, n_in_cols, (Out->text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX);
 					n_output = gmt_get_cols (GMT, GMT_OUT);
 				}
 				for (k = two; k < n_output; k++) out[k] = in[k];

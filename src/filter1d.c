@@ -909,7 +909,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 			break;
 		case 'f':
 			F.filter_type = FILTER1D_CUSTOM;
-			if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != 0) Return (error, "Error in gmt_set_cols");
+			if ((error = GMT_Set_Columns (API, GMT_IN, 1, GMT_COL_FIX_NO_TEXT)) != 0) Return (error, "Error in GMT_Set_Columns");
 			save_col = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
 			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Always read the weights as floats */
 			gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -F files */

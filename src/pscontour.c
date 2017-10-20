@@ -798,7 +798,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "With -D, no plotting will take place\n");
 		if (!Ctrl->D.file) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Contours will be written to standard output\n");
 	}
-	if ((error = gmt_set_cols (GMT, GMT_IN, 3)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
@@ -1159,7 +1159,8 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		}
 		n_seg_alloc = gmt_M_memory (GMT, NULL, n_tables, size_t);
 		n_seg = gmt_M_memory (GMT, NULL, n_tables, uint64_t);
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
+			Return (error);
 	}
 	
 	if (make_plot) {

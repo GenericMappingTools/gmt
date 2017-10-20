@@ -250,7 +250,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Process input coefficients\n");
 	for (col = 0; col < 4; col++) gmt_set_column (GMT, GMT_IN, col, GMT_IS_FLOAT);	/* Not reading lon,lat in this program */
 	
-	if ((error = gmt_set_cols (GMT, GMT_IN, 4)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, 4, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */

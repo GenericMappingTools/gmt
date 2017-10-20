@@ -580,7 +580,8 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 	out = gmt_M_memory (GMT, NULL, n_items, double);
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
-	if (P->first && (error = gmt_set_cols (GMT, GMT_OUT, n_items)) != 0) return (error);
+	if (P->first && (error = GMT_Set_Columns (GMT->parent, GMT_OUT, n_items, (GMT->current.io.trailing_text[GMT_IN]) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
+		return (error);
 
 	/* Now output  */
 
@@ -870,7 +871,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 		/* Now output generated track */
 
-		if ((error = gmt_set_cols (GMT, GMT_OUT, P.n_outputs)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, P.n_outputs, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers data output failed */
@@ -910,7 +911,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 		/* Specify input and output expected columns */
-		if ((error = gmt_set_cols (GMT, GMT_IN, 0)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX)) != GMT_NOERROR) {
 			Return (error);
 		}
 
@@ -922,9 +923,6 @@ int GMT_project (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		
-		if ((error = gmt_set_cols (GMT, GMT_OUT, P.n_outputs)) != GMT_NOERROR) {
-			Return (error);
-		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers data output */
 			Return (API->error);
 		}
@@ -967,6 +965,9 @@ int GMT_project (void *V_API, int mode, void *args) {
 				else
 					P.n_z = n_cols - 2;
 				z_first = false;
+				if ((error = GMT_Set_Columns (API, GMT_OUT, P.n_outputs, (GMT->current.io.trailing_text[GMT_IN]) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+					Return (error);
+				}
 			}
 
 			xx = in[GMT_X];

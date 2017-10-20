@@ -705,7 +705,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	if (GMT->common.R.active[RSET]) gmt_M_memcpy (F.wesn, GMT->common.R.wesn, 4, double);
 	n_cols = (F.weights) ? 2 : 1;
 
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_cols)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
@@ -846,7 +846,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 				if (F.weights) gmt_M_free (GMT, weights);	
 				Return (API->error);
 			}
-			if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_NOERROR) {
+			if ((error = GMT_Set_Columns (API, GMT_OUT, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				if (F.weights) gmt_M_free (GMT, weights);	
 				Return (error);
@@ -893,7 +893,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			gmt_set_column (GMT, GMT_OUT, 1, gmt_M_type (GMT, GMT_IN, GMT_Y));
 			gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_FLOAT);
 			gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
-			if ((error = gmt_set_cols (GMT, GMT_OUT, 4U)) != GMT_NOERROR) {
+			if ((error = GMT_Set_Columns (API, GMT_OUT, 4U, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				if (F.weights) gmt_M_free (GMT, weights);	
 				Return (error);

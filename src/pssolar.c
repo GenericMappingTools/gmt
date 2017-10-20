@@ -432,7 +432,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		if (Ctrl->C.active) {			/* Output all members of the Sun struct as a vector of doubles */
 			double out[10];
 			struct GMT_RECORD *Out = gmt_new_record (GMT, out, NULL);
-			if ((error = gmt_set_cols (GMT, GMT_OUT, 10)) != GMT_NOERROR) Return (API->error);
+			if ((error = GMT_Set_Columns (API, GMT_OUT, 10, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (API->error);
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
@@ -500,7 +500,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		gmt_set_geographic (GMT, GMT_OUT);			/* Output lon/lat */
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output (this one is ignored here)*/
 		gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on table headers on output */
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_NOERROR) Return (API->error);
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (API->error);
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			gmt_M_free (GMT, Sun);
 			Return (API->error);

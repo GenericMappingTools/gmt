@@ -679,7 +679,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 
 	/* Print out final estimates */
 
-	if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, 4, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		gmt_M_free (GMT, area);		gmt_M_free (GMT, vol);		gmt_M_free (GMT, height);
 		Return (error);
 	}

@@ -656,7 +656,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			if (fmt[1]) io_mode = GMT_WRITE_SEGMENT;	/* d: Want individual files with running numbers */
 		}
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table */
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != 0) Return (error);
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
 	}
 	
 	if (make_plot) {
@@ -714,7 +714,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Your search radius is too small to have any effect and is ignored.\n");
 		}
 		
-		if ((error = gmt_set_cols (GMT, GMT_IN, 2)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */

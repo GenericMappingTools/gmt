@@ -471,7 +471,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	n = 0;
 	n_in = (GMT->common.i.select && GMT->common.i.n_cols == 1) ? 1 : 2;
 
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, n_in, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
@@ -607,7 +607,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 2U, unsigned int);	/* Save first 2 current output col types */
 			gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_FLOAT);
 			gmt_set_column (GMT, GMT_OUT, GMT_Y, GMT_IS_FLOAT);
-			if ((error = gmt_set_cols (GMT, GMT_OUT, 7U)) != GMT_NOERROR) {
+			if ((error = GMT_Set_Columns (API, GMT_OUT, 7U, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 				gmt_M_free (GMT, sum);
 				gmt_M_free (GMT, xx);
 				gmt_M_free (GMT, yy);

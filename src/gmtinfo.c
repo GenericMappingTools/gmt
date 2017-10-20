@@ -462,7 +462,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if ((error = gmt_set_cols (GMT, GMT_IN, 0)) != 0) Return (error);
+	if ((error = GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX)) != GMT_NOERROR) Return (error);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);

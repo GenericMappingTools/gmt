@@ -730,7 +730,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	/* Specify input expected columns to be at least 2 */
-	if ((error = gmt_set_cols (GMT, GMT_IN, 2)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 	/* Register likely model files unless the caller has already done so */
@@ -928,7 +928,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 				Return (API->error);
 			wmode = GMT_ADD_EXISTING;
 		}
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 4, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			gmt_M_free (GMT, depths);
 			Return (error);
 		}

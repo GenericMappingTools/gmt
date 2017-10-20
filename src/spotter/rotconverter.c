@@ -435,7 +435,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 	if (a[0].has_cov) n_out += 9;
 	if (Ctrl->G.active) n_out = 6;
 	
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		gmt_M_free (GMT, a);
 		Return (error);
 	}

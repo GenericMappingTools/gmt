@@ -299,7 +299,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) n_cols = 19;	/* Want everything */
 
 	/* Specify input and output expected columns */
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, n_in, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 	/* Initialize the i/o for doing record-by-record reading/writing */
@@ -374,7 +374,7 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 	if (!Ctrl->A.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Range of input ages   = %g/%g\n", min_rot_age, max_rot_age);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Range of input angles = %g/%g\n", min_rot_angle, max_rot_angle);
 
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_cols)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		gmt_M_free (GMT, D);
 		Return (error);
 	}

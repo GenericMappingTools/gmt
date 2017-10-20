@@ -722,7 +722,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
 
 	/* Specify input and output expected columns */
-	if ((error = gmt_set_cols (GMT, GMT_IN,  0)) != 0) Return (error);
+	if ((error = GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX)) != GMT_NOERROR) Return (error);
 
 	/* Gather input/output  file names (or stdin/out) and enable i/o */
 	
@@ -767,7 +767,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		/* Data record to process */
 
 		if (n_output == 0) {
-			gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN));
+			GMT_Set_Columns (API, GMT_OUT, gmt_get_cols (GMT, GMT_IN), (In->text) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT);
 			n_output = gmt_get_cols (GMT, GMT_OUT);
 		}
 

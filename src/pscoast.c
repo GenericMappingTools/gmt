@@ -801,7 +801,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
 		if (Ctrl->N.active) id = 1;	if (Ctrl->I.active) id = 2;
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */

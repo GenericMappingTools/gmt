@@ -482,7 +482,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args) {
 			if (Ctrl->D.file && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_OUT, NULL, Ctrl->D.file)) == GMT_NOTSET) {
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) {
+			if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 				Return (error);
 			}
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */

@@ -1496,7 +1496,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 
 	n_cols = (Ctrl->W.active) ? dimension + 1 : dimension;	/* So X[k][dimension] holds the weight if -W is active */
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_cols+1)) != 0)
+	if ((error = GMT_Set_Columns (API, GMT_IN, n_cols+1, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
 		Return (error);
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	X = gmt_M_memory (GMT, NULL, n_alloc, double *);
@@ -2217,7 +2217,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
 		}
-		if ((error = gmt_set_cols (GMT, GMT_OUT, dimension + 1)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, dimension + 1, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
 		gmt_M_memset (out, 4, double);

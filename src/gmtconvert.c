@@ -488,7 +488,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 
 	}
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_cols_out)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, n_cols_out, (D[GMT_IN]->type == GMT_READ_DATA) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)) != GMT_NOERROR) {
 		Return (error);
 	}
 

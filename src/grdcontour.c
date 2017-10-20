@@ -1367,7 +1367,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
 		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = gmt_M_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_DATASEGMENT *);

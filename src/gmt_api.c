@@ -7814,6 +7814,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 		}
 		API->current_put_obj = S_obj;
 		API->api_put_record = api_put_record_init;
+		API->GMT->current.io.record_type[GMT_OUT] = API->GMT->current.io.record_type[GMT_IN];	/* Can be overruled by GMT_Set_Columns */
 		if (header == GMT_HEADER_ON && !GMT->common.b.active[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard ASCII header block */
 	}
 	else {

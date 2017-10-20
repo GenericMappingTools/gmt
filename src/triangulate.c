@@ -387,7 +387,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	if (Ctrl->M.active && Ctrl->Z.active) n_output = 3;
 	triplets[GMT_OUT] = (n_output == 3);
 	if (Ctrl->G.active && !Ctrl->T.active) do_output = false;	/* If gridding then we require -T to also output the spatial files */
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != 0) Return (error);
+	if ((error = GMT_Set_Columns (API, GMT_OUT, n_output, GMT_COL_FIX_NO_TEXT)) != 0) Return (error);
 	n_input = (Ctrl->G.active || Ctrl->Z.active) ? 3 : 2;
 	if (n_output > n_input) triplets[GMT_OUT] = false;	/* No can do. */
 	if (Ctrl->C.active) n_input += 2;	/* Curve requires the horizontal and vertical uncertainties */
@@ -411,7 +411,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	n = 0;
 
 	if (get_input) {	/* Read primary input */
-		if ((error = gmt_set_cols (GMT, GMT_IN, n_input)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_IN, n_input, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
 	}

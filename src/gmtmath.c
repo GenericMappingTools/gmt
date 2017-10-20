@@ -5515,7 +5515,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			load_column (R, Ctrl->N.tcol, info.T, COL_T);	/* Put T in the time column of the item on the stack if possible */
 			gmt_set_tbl_minmax (GMT, R->geometry, R->table[0]);
 		}
-		if ((error = gmt_set_cols (GMT, GMT_OUT, R->n_columns)) != 0) Return (error);	/* Since -bo might have been used */
+		if ((error = GMT_Set_Columns (API, GMT_OUT, R->n_columns, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);	/* Since -bo might have been used */
 		if (Ctrl->S.active) {	/* Only get one record per segment */
 			uint64_t row, c;
 			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 1, 0};	/* One table, 1 row per table, need to set segments and columsn below */

@@ -363,7 +363,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		GMT->current.io.output = gmt_z_output;		/* Override output writer with chosen binary writer for selected type */
 		GMT->common.b.active[GMT_IN] = io.binary;	/* May have to set input binary as well */
 		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
-		if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != 0) Return (error);
+		if ((error = GMT_Set_Columns (API, GMT_IN, 1, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Swapping data bytes only\n");
 		if (Ctrl->S.active) io.swab = true;	/* Need to pass swabbing down to the gut level */
@@ -381,10 +381,10 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, w_mode, 0, options) != GMT_NOERROR) {	/* Establishes data output to stdout */
 			Return (API->error);
 		}
-		if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != GMT_NOERROR) {	/* We don't really care or know about columns so must use 1 */
+		if ((error = GMT_Set_Columns (API, GMT_IN, 1, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {	/* We don't really care or know about columns so must use 1 */
 			Return (API->error);
 		}
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 1)) != GMT_NOERROR) {	/* We don't really care or know about columns so must use 1 */
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 1, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {	/* We don't really care or know about columns so must use 1 */
 			Return (API->error);
 		}
 		/* Initialize the i/o for doing record-by-record reading/writing */
@@ -576,7 +576,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		GMT->current.setting.io_nan_records = false;	/* Cannot have x,y as NaNs here */
 	}
 
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_req)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, n_req, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		gmt_M_free (GMT, data);
 		gmt_M_free (GMT, flag);
 		Return (error);

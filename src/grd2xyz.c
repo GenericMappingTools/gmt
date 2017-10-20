@@ -278,7 +278,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 		if (Ctrl->W.active) n_output++;
 		if (Ctrl->C.mode == 2) w_col = 2;
 	}
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_NOERROR) Return (error);
+	if ((error = GMT_Set_Columns (API, GMT_OUT, n_output, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers stdout, unless already set */
 		Return (API->error);

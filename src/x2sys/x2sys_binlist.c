@@ -289,7 +289,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		dist_bin = gmt_M_memory (GMT, NULL, B.nm_bin, double);
 	}
 
-	if ((error = gmt_set_cols (GMT, GMT_OUT, (Ctrl->D.active) ? 5 : 4)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, (Ctrl->D.active) ? 5 : 4, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */

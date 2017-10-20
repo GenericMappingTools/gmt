@@ -563,11 +563,11 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 	np = Ctrl->N.value;	/* Row dimension for matrices gtg and v  */
 	allocate_the_memory (GMT, np, &gtg, &v, &gtd, &lambda, &workb, &workz, &c_model, &o_model, &w_model);
 
-	if ((error = gmt_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, 3 + Ctrl->W.active, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
-	if ((error = gmt_set_cols (GMT, GMT_OUT, Ctrl->n_outputs)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, Ctrl->n_outputs, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}

@@ -722,7 +722,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 			error = API->error;
 			goto END;
 		}
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			error = API->error;
 			goto END;
 		}

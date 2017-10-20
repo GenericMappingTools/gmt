@@ -542,7 +542,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	t_scale = GMT->current.setting.time_system.scale;	/* Convert user's TIME_UNIT to seconds */
 	wrap = (gmt_M_is_geographic (GMT, GMT_IN) && GMT->common.R.active[RSET] && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
 	
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, n_output, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		gmt_M_free (GMT, duplicate);
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		if (fpC) fclose (fpC);

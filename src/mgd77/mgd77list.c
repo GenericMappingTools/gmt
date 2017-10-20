@@ -1038,7 +1038,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 		Return (API->error);
 	}
-	if (!string_output) gmt_set_cols (GMT, GMT_OUT, n_out_columns);
+	if (!string_output) GMT_Set_Columns (API, GMT_OUT, n_out_columns, GMT_COL_FIX_NO_TEXT);
 
 	for (argno = 0; argno < (unsigned int)n_paths; argno++) {		/* Process each ID */
 	

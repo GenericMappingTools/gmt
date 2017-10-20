@@ -685,7 +685,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		double xpos[2], width, d;
 		struct GMT_RECORD *In = NULL;
 		
-		if ((error = gmt_set_cols (GMT, GMT_IN, n_needed)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_IN, n_needed, GMT_COL_FIX)) != GMT_NOERROR) {
 			Return (error);
 		}
 		/* Determine if we need to worry about repeating periodic symbols */

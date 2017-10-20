@@ -573,7 +573,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 
 	/* Read in xyz data and computes index no and store it in a structure */
 	
-	if ((error = gmt_set_cols (GMT, GMT_IN, 3)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		return (error);
 	}
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */

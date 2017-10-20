@@ -442,7 +442,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	/* Specify input and output expected columns */
 	n_input = 3 + Ctrl->W.weighted[GMT_IN] + ((Ctrl->E.mode & BLK_DO_SRC_ID) ? 1 : 0);	/* 3 columns on output, plus 1 extra if -W and another if -Es  */
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_input)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, n_input, GMT_COL_FIX)) != GMT_NOERROR) {
 		Return (error);
 	}
 	n_output = (Ctrl->W.weighted[GMT_OUT]) ? 4 : 3;
@@ -454,7 +454,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		n_output++;
 		emode = Ctrl->E.mode & (BLK_DO_INDEX_LO + BLK_DO_INDEX_HI);
 	}
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, n_output, GMT_COL_FIX)) != GMT_NOERROR) {
 		Return (error);
 	}
 

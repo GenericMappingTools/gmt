@@ -299,7 +299,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if ((error = gmt_set_cols (GMT, GMT_IN, 2 + !Ctrl->T.active)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, 2 + !Ctrl->T.active, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
@@ -310,7 +310,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
-	if ((error = gmt_set_cols (GMT, GMT_OUT, Ctrl->S.n_items + 3)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, Ctrl->S.n_items + 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */

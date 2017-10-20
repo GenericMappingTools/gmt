@@ -1160,7 +1160,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			}
 		}
 		if (Ctrl->A.mode) {	/* Output the revised data set plus NN analysis results */
-			if ((error = gmt_set_cols (GMT, GMT_OUT, 7)) != 0) Return (error);
+			if ((error = GMT_Set_Columns (API, GMT_OUT, 7, GMT_COL_FIX_NO_TEXT)) != 0) Return (error);
 			if (GMT->common.h.add_colnames) {
 				char header[GMT_LEN256] = {""}, *name[2][2] = {{"x", "y"}, {"lon", "lat"}};
 				k = (gmt_M_is_geographic (GMT, GMT_IN)) ? 1 : 0;
@@ -1170,7 +1170,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		else {	/* Just output the NN analysis results */
 			gmt_set_cartesian (GMT, GMT_OUT);	/* Since we are not writing coordinates */
-			if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
+			if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != 0) Return (error);
 			if (GMT->common.h.add_colnames) {
 				char header[GMT_LEN64];
 				sprintf (header, "#NN_dist[0]\tID[1]\tNN_ID[2]");
@@ -1303,7 +1303,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		else {
 			qmode = GMT_IS_POINT;
-			if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
+			if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != 0) Return (error);
 		}
 		if (new_data) {	/* Must create an output dataset */
 			enum GMT_enum_geometry gmtry;
@@ -1452,7 +1452,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			C = D;	/* Compare with itself */
 		
 		geometry = (Ctrl->S.active) ? GMT_IS_PLP     : GMT_IS_NONE;
-		if ((error = gmt_set_cols (GMT, GMT_OUT, C->n_columns)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, C->n_columns, (D->type == GMT_READ_DATA) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)) != GMT_NOERROR) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */

@@ -2032,7 +2032,7 @@ GMT_LOCAL void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 
-	if (gmt_set_cols (GMT, GMT_IN, 2) != GMT_NOERROR) {
+	if (GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX_NO_TEXT) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in operator INSIDE setting number of input columns\n");
 		info->error = GMT->parent->error;
 		return;
@@ -2287,7 +2287,7 @@ GMT_LOCAL struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_I
 	else
 		gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
 
-	if (gmt_set_cols (GMT, GMT_IN, 2) != GMT_NOERROR) {
+	if (GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX_NO_TEXT) != GMT_NOERROR) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in operator %s setting number of input columns\n", op);
 		info->error = GMT->parent->error;
 		return NULL;

@@ -363,7 +363,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
 		}
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_NOERROR) {	/* We don't really care or know about columns so must use 1 */
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 4, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}

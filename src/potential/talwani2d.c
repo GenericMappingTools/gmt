@@ -604,7 +604,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	}
 
 	/* Specify input expected columns to be at least 2 */
-	if ((error = gmt_set_cols (GMT, GMT_IN, 2)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 	/* Register likely model files unless the caller has already done so */

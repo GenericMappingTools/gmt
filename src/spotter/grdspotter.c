@@ -981,7 +981,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			GMT_Message (API, GMT_TIME_NONE, "Estimate %d CVA max locations using bootstrapping\n", Ctrl->W.n_try);
 		}
 
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			goto END;
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */

@@ -728,7 +728,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 		Ctrl->C.active = true;
 	}
 
-	if ((error = gmt_set_cols (GMT, GMT_IN, 1 + C.y_given)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, 1 + C.y_given, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */

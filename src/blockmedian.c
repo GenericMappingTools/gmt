@@ -320,10 +320,10 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 
 	/* Specify input and output expected columns */
-	if ((error = gmt_set_cols (GMT, GMT_IN, n_input)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, n_input, GMT_COL_FIX)) != GMT_NOERROR) {
 		Return (error);
 	}
-	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, n_output, GMT_COL_FIX)) != GMT_NOERROR) {
 		Return (error);
 	}
 
