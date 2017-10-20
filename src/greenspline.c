@@ -2280,7 +2280,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, xp);
 				Return (API->error);
 			}
-			if (dimension == 1) gmt_prep_tmp_arrays (GMT, Grid->header->n_columns, 1);	/* Init or reallocate tmp vector since cannot write to stdout under OpenMP */
+			if (dimension == 1) gmt_prep_tmp_arrays (GMT, GMT_OUT, Grid->header->n_columns, 1);	/* Init or reallocate tmp vector since cannot write to stdout under OpenMP */
 
 		} /* Else we are writing a grid */
 		gmt_M_memset (V, 4, double);

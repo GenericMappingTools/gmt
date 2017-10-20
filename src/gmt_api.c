@@ -2802,14 +2802,14 @@ GMT_LOCAL struct GMT_MATRIX *api_read_matrix (struct GMT_CTRL *GMT, void *source
 				add_first_segheader = true;
 			}
 			else {	/* Already allocated so place NaNs as segment header */
-				gmt_prep_tmp_arrays (GMT, row, dim[0]);	/* Init or reallocate tmp vectors */
+				gmt_prep_tmp_arrays (GMT, GMT_IN, row, dim[0]);	/* Init or reallocate tmp vectors */
 				for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][row] = GMT->session.d_NaN;
 			}
 		}
 		else {	/* Regular data record */
 			gmt_chop (line);	/* Remove linefeeds */
 			dim[0] = gmtlib_conv_text2datarec (GMT, line, GMT_BUFSIZ, GMT->current.io.curr_rec);
-			gmt_prep_tmp_arrays (GMT, row, dim[0]);	/* Init or reallocate tmp vectors */
+			gmt_prep_tmp_arrays (GMT, GMT_IN, row, dim[0]);	/* Init or reallocate tmp vectors */
 			for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][row] = GMT->current.io.curr_rec[col];
 		}
 		row++;
@@ -3226,14 +3226,14 @@ GMT_LOCAL struct GMT_VECTOR *api_read_vector (struct GMT_CTRL *GMT, void *source
 				add_first_segheader = true;
 			}
 			else {	/* Already allocated so place NaNs */
-				gmt_prep_tmp_arrays (GMT, row, dim[0]);	/* Init or reallocate tmp vectors */
+				gmt_prep_tmp_arrays (GMT, GMT_IN, row, dim[0]);	/* Init or reallocate tmp vectors */
 				for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][row] = GMT->session.d_NaN;
 			}
 		}
 		else {	/* Regular data record */
 			gmt_chop (line);	/* Remove linefeeds */
 			dim[0] = gmtlib_conv_text2datarec (GMT, line, GMT_BUFSIZ, GMT->current.io.curr_rec);
-			gmt_prep_tmp_arrays (GMT, row, dim[0]);	/* Init or reallocate tmp vectors */
+			gmt_prep_tmp_arrays (GMT, GMT_IN, row, dim[0]);	/* Init or reallocate tmp vectors */
 			for (col = 0; col < dim[0]; col++) GMT->hidden.mem_coord[col][row] = GMT->current.io.curr_rec[col];
 		}
 		row++;
@@ -3481,7 +3481,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				}
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from user matrix location\n");
 				/* Allocate a table with a single segment given matrix dimensions, but if nan-record we may end up with more segments */
-				smode = (M_obj->text) ? GMT_WITH_STRINGS : 0;
+				smode = (M_obj->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				if (smode) type = GMT_READ_MIXED;	/* If a matrix has text we have a mixed record */
 				n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : M_obj->n_columns;
 				D_obj->table[D_obj->n_tables] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE);
@@ -3546,7 +3546,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from user %" PRIu64 " column arrays of length %" PRIu64 "\n",
 				            V_obj->n_columns, V_obj->n_rows);
 				/* Allocate a single table with one segment - there may be more if there are nan-records */
-				smode = (V_obj->text) ? GMT_WITH_STRINGS : 0;
+				smode = (V_obj->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				if (smode) type = GMT_READ_MIXED;	/* If a vector has text we have a mixed record */
 				n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : V_obj->n_columns;
 				D_obj->table[D_obj->n_tables] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE);
@@ -3608,7 +3608,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 					gmt_M_free (GMT, D_obj);	return_null (API, GMT_NOT_A_VALID_TYPE);
 				}
 				/* Each column double array source becomes preallocated column arrays in a separate table with a single segment */
-				smode = (V_obj->text) ? GMT_WITH_STRINGS : 0;
+				smode = (V_obj->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				if (smode) type = GMT_READ_MIXED;	/* If a matrix has text we have a mixed record */
 				n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : V_obj->n_columns;
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table from user %" PRIu64 " column arrays of length %" PRIu64 "\n",
@@ -6106,7 +6106,7 @@ GMT_LOCAL int api_end_io_dataset (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 	T = D->table[0];	/* Shorthand to the only table */
 	if (count[GMT_SEG] >= 0) {	/* Finalize segment allocations */
 		if (!T->segment[count[GMT_SEG]]) T->segment[count[GMT_SEG]] = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
-		gmtlib_assign_segment (API->GMT, T->segment[count[GMT_SEG]], count[GMT_ROW], T->n_columns);	/* Allocate and place arrays into segment */
+		gmtlib_assign_segment (API->GMT, GMT_OUT, T->segment[count[GMT_SEG]], count[GMT_ROW], T->n_columns);	/* Allocate and place arrays into segment */
 		if (T->segment[count[GMT_SEG]]->header == NULL && API->GMT->current.io.curr_text[0]) T->segment[count[GMT_SEG]]->header = strdup (API->GMT->current.io.curr_text);
 		count[GMT_SEG]++;	/* Set final number of segments */
 		T->n_segments++;
@@ -7454,7 +7454,7 @@ GMT_LOCAL int api_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode
 		case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
 			count[GMT_SEG]++;	/* Start of new segment */
 			if (count[GMT_SEG]) {	/* Must first copy over records for the previous segments; last (or only) segment will be done by GMT_End_IO */
-				gmtlib_assign_segment (GMT, T->segment[count[GMT_SEG]-1], count[GMT_ROW], T->n_columns);	/* Allocate and place arrays into previous segment */
+				gmtlib_assign_segment (GMT, GMT_OUT, T->segment[count[GMT_SEG]-1], count[GMT_ROW], T->n_columns);	/* Allocate and place arrays into previous segment */
 				count[GMT_ROW] = 0;	/* Reset for next segment */
 				T->n_segments++;
 			}
@@ -7477,7 +7477,7 @@ GMT_LOCAL int api_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode
 				GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: GMT_Put_Record (double) called before any segments declared\n");
 				count[GMT_SEG] = 0;
 			}
-			gmt_prep_tmp_arrays (GMT, count[GMT_ROW], T->n_columns);	/* Init or reallocate tmp read vectors */
+			gmt_prep_tmp_arrays (GMT, GMT_OUT, count[GMT_ROW], T->n_columns);	/* Init or reallocate tmp read vectors */
 			for (col = 0; col < T->n_columns; col++) {
 				GMT->hidden.mem_coord[col][count[GMT_ROW]] = record->data[col];
 				if (GMT->current.io.col_type[GMT_OUT][col] & GMT_IS_LON) gmt_lon_range_adjust (GMT->current.io.geo.range, &(GMT->hidden.mem_coord[col][count[GMT_ROW]]));
@@ -7593,6 +7593,12 @@ GMT_LOCAL int api_put_record_vector (struct GMTAPI_CTRL *API, unsigned int mode,
 	return error;
 }
 
+GMT_LOCAL unsigned int getapi_datatype (struct GMT_RECORD *record) {
+	if (record->text == NULL) return GMT_WRITE_DATA;
+	if (record->data == NULL) return GMT_WRITE_TEXT;
+	return GMT_WRITE_MIXED;
+}
+
 /*! . */
 GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_RECORD *record) {
 	/* Writes a single data record to destimation.
@@ -7623,6 +7629,8 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 	if (S_obj->status == GMT_IS_USED) return_error (API, GMT_WRITTEN_ONCE);	/* Only allow writing of a data set once [unless we reset status] */
 	method = api_set_method (S_obj);	/* Get the actual method to use */
 	API->current_put_obj = S_obj;
+	if (record) GMT->current.io.record_type[GMT_OUT] = getapi_datatype (record);
+	
 	switch (method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:
 	 	case GMT_IS_STREAM:
@@ -10738,7 +10746,7 @@ GMT_LOCAL void *api_dataset2dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET
 			if (mode == 0 || mode == GMT_WRITE_TABLE) row_out = 0;	/* Reset row output counter on a per segment basis */
 			Sin = Din->segment[seg];	/* Shorthand to current data segment */
 			if (s_alloc) {	/* Allocate another segment */
-				unsigned int smode = (Sin->text) ? GMT_WITH_STRINGS : 0;
+				unsigned int smode = (Sin->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				n_rows = (mode == GMT_WRITE_TABLE_SEGMENT) ? In->n_records : ((mode == GMT_WRITE_SEGMENT) ? Din->n_records : Sin->n_rows);
 				Dout->segment[seg_out] = GMT_Alloc_Segment (API, smode, n_rows, In->n_columns, NULL, NULL);
 				Sout = Dout->segment[seg_out];	/* Shorthand to current text segment */
@@ -11154,6 +11162,13 @@ int GMT_Set_Columns (void *V_API, unsigned int direction, unsigned int n_cols, u
 		/* If no columns specified we set output to the same as input columns */
 		if (n_cols == 0 && mode != GMT_COL_FIX && (error = gmt_set_cols (API->GMT, GMT_OUT, n_in)) != 0)
 			return_error (API, GMT_N_COLS_NOT_SET);
+		/* Set output record type */
+		if (n_cols == 0)
+			API->GMT->current.io.record_type[GMT_OUT] = GMT_WRITE_TEXT;
+		else if (mode == GMT_COL_FIX_NO_TEXT)
+			API->GMT->current.io.record_type[GMT_OUT] = GMT_WRITE_DATA;
+		else
+			API->GMT->current.io.record_type[GMT_OUT] = GMT_WRITE_MIXED;
 	}
 	
 	/* Get here when n_cols is not zero (of we have a special case), so must consult mode */

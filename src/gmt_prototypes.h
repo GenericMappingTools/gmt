@@ -284,7 +284,7 @@ EXTERN_MSC bool gmt_skip_output (struct GMT_CTRL *GMT, double *cols, uint64_t n_
 
 /* gmt_M_memory.c: */
 
-EXTERN_MSC void gmt_prep_tmp_arrays (struct GMT_CTRL *GMT, size_t row, size_t n_cols);
+EXTERN_MSC void gmt_prep_tmp_arrays (struct GMT_CTRL *GMT, int direction, size_t row, size_t n_cols);
 EXTERN_MSC void gmt_set_meminc (struct GMT_CTRL *GMT, size_t increment);
 EXTERN_MSC void gmt_reset_meminc (struct GMT_CTRL *GMT);
 EXTERN_MSC void *gmt_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size_t size, bool align, const char *where);

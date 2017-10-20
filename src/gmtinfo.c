@@ -393,7 +393,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if ((error = gmt_set_cols (GMT, GMT_OUT, 5)) != 0) Return (error);
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 5, GMT_COL_FIX_NO_TEXT)) != 0) Return (error);
 		
 		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
@@ -689,13 +689,9 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				}
 			}
 			if (do_report) {
-				if (Ctrl->C.active) {	/* Plain data record */
-					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write data record to output destination */
-				}
-				else {
+				if (!Ctrl->C.active)	/* Text data record */
 					Out->text = record;
-					GMT_Put_Record (API, GMT_WRITE_TEXT, Out);	/* Write text record to output destination */
-				}
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write data record to output destination */
 			}
 			got_stuff = true;		/* We have at least reported something */
 			for (col = 0; col < ncol; col++) {	/* Reset counters for next block */
@@ -759,8 +755,18 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			n = 0;
 			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = false;
 			first_data_record = false;
-			if (Ctrl->C.active && (error = gmt_set_cols (GMT, GMT_OUT, 2*ncol)) != 0) Return (error);
-			if (Ctrl->I.mode == BOUNDBOX && (error = gmt_set_cols (GMT, GMT_OUT, 2)) != 0) Return (error);
+			if (Ctrl->C.active) {
+				if ((error = GMT_Set_Columns (API, GMT_OUT, 2*ncol, GMT_COL_FIX_NO_TEXT)) != 0)
+					Return (error);
+			}
+			else if (Ctrl->I.mode == BOUNDBOX) {
+				if ((error = GMT_Set_Columns (API, GMT_OUT, 2, GMT_COL_FIX_NO_TEXT)) != 0)
+					Return (error);
+			}
+			else {
+				if ((error = GMT_Set_Columns (API, GMT_OUT, 0, GMT_COL_FIX)) != 0)
+					Return (error);
+			}
 		}
 
 		/* Process all columns and update the corresponding minmax arrays */

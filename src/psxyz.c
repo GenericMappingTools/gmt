@@ -1364,7 +1364,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_DEV) {	/* Build envelope around y(x) from delta y values in 1 or 2 extra columns */
 							uint64_t k, m, col = (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV) ? 4 : 3;
 							end = 2 * L->n_rows + 1;
-							gmt_prep_tmp_arrays (GMT, end, 3);	/* Init or reallocate 3 tmp vectors */
+							gmt_prep_tmp_arrays (GMT, GMT_IN, end, 3);	/* Init or reallocate 3 tmp vectors */
 							/* First go in positive x direction and build part of envelope */
 							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->data[GMT_X], L->n_rows, double);
 							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Z], L->data[GMT_Z], L->n_rows, double);
@@ -1384,7 +1384,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						else if (Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) {	/* Build envelope around y(x) from low and high 2 extra columns */
 							uint64_t k, m;
 							end = 2 * L->n_rows + 1;
-							gmt_prep_tmp_arrays (GMT, end, 3);	/* Init or reallocate 3 tmp vectors */
+							gmt_prep_tmp_arrays (GMT, GMT_IN, end, 3);	/* Init or reallocate 3 tmp vectors */
 							/* First go in positive x direction and build part of envelope */
 							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->data[GMT_X], L->n_rows, double);
 							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Z], L->data[GMT_X], L->n_rows, double);
@@ -1405,7 +1405,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							uint64_t off = 0U;
 							double value;
 							end = L->n_rows;
-							gmt_prep_tmp_arrays (GMT, end+3, 3);	/* Init or reallocate 3 tmp vectors */
+							gmt_prep_tmp_arrays (GMT, GMT_IN, end+3, 3);	/* Init or reallocate 3 tmp vectors */
 							/* First copy the given line segment */
 							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->data[GMT_X], end, double);
 							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Y], L->data[GMT_Y], end, double);

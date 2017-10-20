@@ -312,7 +312,7 @@ GMT_LOCAL uint64_t vector_fix_up_path_cartonly (struct GMT_CTRL *GMT, double **a
 	x = *a_x;	y = *a_y;	/* Default is to return the input unchanged */
 	if (n < 2 || mode == 0) return n;		/* Nothing to do */
 
-	gmt_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate two tmp vectors */
+	gmt_prep_tmp_arrays (GMT, GMT_NOTSET, 1, 2);	/* Init or reallocate two tmp vectors */
 	/* Start at first point */
 	GMT->hidden.mem_coord[GMT_X][0] = x[0];	GMT->hidden.mem_coord[GMT_Y][0] = y[0];
 
@@ -355,7 +355,7 @@ GMT_LOCAL uint64_t vector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **
 
 	x = *a_x;	y = *a_y;
 
-	gmt_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate tmp vectors */
+	gmt_prep_tmp_arrays (GMT, GMT_NOTSET, 1, 2);	/* Init or reallocate tmp vectors */
 	GMT->hidden.mem_coord[GMT_X][0] = x[0];	GMT->hidden.mem_coord[GMT_Y][0] = y[0];	n_new = 1;
 	if (step <= 0.0) step = 1.0;	/* Sanity valve; if step not given we set it to 1 */
 
@@ -364,7 +364,7 @@ GMT_LOCAL uint64_t vector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **
 			n_step = lrint (fabs (x[i] - x[i-1]) / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				gmt_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1] * (1 - c) + x[i] * c;
 				GMT->hidden.mem_coord[GMT_Y][n_new] = y[i-1];
 				n_new++;
@@ -372,7 +372,7 @@ GMT_LOCAL uint64_t vector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **
 			n_step = lrint (fabs (y[i]-y[i-1]) / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				gmt_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = x[i];
 				GMT->hidden.mem_coord[GMT_Y][n_new] = y[i-1] * (1 - c) + y[i] * c;
 				n_new++;
@@ -383,7 +383,7 @@ GMT_LOCAL uint64_t vector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **
 			n_step = lrint (fabs (y[i]-y[i-1]) / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				gmt_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1];
 				GMT->hidden.mem_coord[GMT_Y][n_new] = y[i-1] * (1 - c) + y[i] * c;
 				n_new++;
@@ -391,7 +391,7 @@ GMT_LOCAL uint64_t vector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **
 			n_step = lrint (fabs (x[i]-x[i-1]) / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				gmt_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1] * (1 - c) + x[i] * c;
 				GMT->hidden.mem_coord[GMT_Y][n_new] = y[i];
 				n_new++;
@@ -402,13 +402,13 @@ GMT_LOCAL uint64_t vector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **
 		else if ((n_step = lrint (hypot (x[i]-x[i-1], y[i]-y[i-1]) / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				gmt_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1] * (1 - c) + x[i] * c;
 				GMT->hidden.mem_coord[GMT_Y][n_new] = y[i-1] * (1 - c) + y[i] * c;
 				n_new++;
 			}
 		}
-		gmt_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+		gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 		GMT->hidden.mem_coord[GMT_X][n_new] = x[i];	GMT->hidden.mem_coord[GMT_Y][n_new] = y[i];	n_new++;
 	}
 
@@ -1384,7 +1384,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	}
 	
 	gmt_geo_to_cart (GMT, lat[0], lon[0], a, true);	/* Start point of current arc */
-	gmt_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate tmp vectors */
+	gmt_prep_tmp_arrays (GMT, GMT_NOTSET, 1, 2);	/* Init or reallocate tmp vectors */
 	GMT->hidden.mem_coord[GMT_X][0] = lon[0];
 	GMT->hidden.mem_coord[GMT_Y][0] = lat[0];
 	n_new = 1;
@@ -1418,7 +1418,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			n_step = lrint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				gmt_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp vectors */
+				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1] * (1 - c) + lon_i * c;
 				GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i-1];
 				n_new++;
@@ -1427,7 +1427,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			n_step = lrint (theta / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				gmt_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp vectors */
+				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i];
 				GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i-1] * (1 - c) + lat[i] * c;
 				n_new++;
@@ -1440,7 +1440,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			n_step = lrint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				gmt_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1];
 				GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i-1] * (1 - c) + lat[i] * c;
 				n_new++;
@@ -1451,7 +1451,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			n_step = lrint (theta / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				gmt_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1] * (1 - c) + lon_i * c;
 				GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i];
 				n_new++;
@@ -1482,7 +1482,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 				d = 1 - c;
 				for (k = 0; k < 3; k++) x[k] = a[k] * d + b[k] * c;
 				gmt_normalize3v (GMT, x);		/* Make unit vector */
-				gmt_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 				gmt_cart_to_geo (GMT, &GMT->hidden.mem_coord[GMT_Y][n_new], &GMT->hidden.mem_coord[GMT_X][n_new], x, true);
 				if (meridian)
 					GMT->hidden.mem_coord[GMT_X][n_new] = minlon;
@@ -1493,7 +1493,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 				n_new++;
 			}
 		}
-		gmt_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
+		gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 		GMT->hidden.mem_coord[GMT_X][n_new] = lon[i];	GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i];
 		n_new++;
 		gmt_M_cpy3v (a, b);

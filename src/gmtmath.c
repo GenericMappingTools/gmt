@@ -4083,7 +4083,7 @@ GMT_LOCAL int table_SORT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	}
 	
 	/* OK now we can deal with shuffling of rows based on how the selected column was sorted */
-	if (!info->local) gmt_prep_tmp_arrays (GMT, info->T->n_records, 1);	/* Init or reallocate tmp vectors */
+	if (!info->local) gmt_prep_tmp_arrays (GMT, GMT_IN, info->T->n_records, 1);	/* Init or reallocate tmp vectors */
 	for (s = k = 0; s < info->T->n_segments; s++) {
 		if (info->local) {	/* Do the shuffle on a segment-by-segment basis */
 			seg = s;
@@ -4091,8 +4091,8 @@ GMT_LOCAL int table_SORT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		}
 		else	/* Just do everything at once */
 			seg = 0;
-		Z = info->Q[seg];	/* POinter to this segment's (or all) order scheme */
-		if (info->local) gmt_prep_tmp_arrays (GMT, info->T->segment[s]->n_rows, 1);	/* Init or reallocate tmp vectors */
+		Z = info->Q[seg];	/* Pointer to this segment's (or all) order scheme */
+		if (info->local) gmt_prep_tmp_arrays (GMT, GMT_IN, info->T->segment[s]->n_rows, 1);	/* Init or reallocate tmp vectors */
 		for (row = 0; row < info->T->segment[s]->n_rows; row++, k++) /* Do the shuffle via a temp vector */
 			GMT->hidden.mem_coord[GMT_X][row] = T_prev2->segment[s]->data[col][Z[k].order];
 		gmt_M_memcpy (T_prev2->segment[s]->data[col], GMT->hidden.mem_coord[GMT_X], info->T->segment[s]->n_rows, double);

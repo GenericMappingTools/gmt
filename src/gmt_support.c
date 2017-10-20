@@ -14687,7 +14687,7 @@ unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 	if (new[END] <= new[BEG]) return 1;	/* Trimmed past each end */
 	if (new[BEG] == orig_start[BEG] && new[END] == orig_start[END]) return 0;	/* No change in segment length so no need to reallocate */
 	new_n = new[END] - new[BEG] + 1;	/* New length of line */
-	gmt_prep_tmp_arrays (GMT, new_n, 2);	/* Init or reallocate tmp vectors */
+	gmt_prep_tmp_arrays (GMT, GMT_NOTSET, new_n, 2);	/* Init or reallocate tmp vectors */
 	gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], &x[new[BEG]], new_n, double);
 	gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Y], &y[new[BEG]], new_n, double);
 	gmt_M_free (GMT, x);	gmt_M_free (GMT, y);

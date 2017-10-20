@@ -950,7 +950,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 				int64_t row;
 				S = D->table[tbl]->segment[seg];	/* Current segment */
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, S->header);
-				gmt_prep_tmp_arrays (GMT, S->n_rows, 1);	/* Init or reallocate tmp vector */
+				gmt_prep_tmp_arrays (GMT, GMT_OUT, S->n_rows, 1);	/* Init or reallocate tmp vector */
 #ifdef _OPENMP
 				/* Spread calculation over selected cores */
 #pragma omp parallel for private(row,z_level) shared(GMT,Ctrl,S,scl,cake,depths,ndepths,flat_earth, G0)

@@ -649,6 +649,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Column selected (%d) as sorting key is outside range of valid columns [0-%d].  No sorting performed\n", (int)Ctrl->N.col, (int)(D[GMT_OUT]->n_columns - 1));
 			do_it = false;
 		}
+		GMT->current.io.record_type[GMT_OUT] = GMT->current.io.record_type[GMT_IN];
 		for (tbl = 0; do_it && tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
 			for (seg = 0; seg < D[GMT_OUT]->table[tbl]->n_segments; seg++) {	/* For each segment in the tables */
 				S = D[GMT_OUT]->table[tbl]->segment[seg];	/* Current segment */
@@ -661,11 +662,14 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 					Z[row].order = row;
 				}
 				gmt_sort_order (GMT, Z, S->n_rows, Ctrl->N.dir);	/* Sort per segment */
-				gmt_prep_tmp_arrays (GMT, S->n_rows, 1);	/* Init or reallocate tmp vector */
+				gmt_prep_tmp_arrays (GMT, GMT_OUT, S->n_rows, 1);	/* Init or reallocate tmp vector */
 				for (col = 0; col < S->n_columns; col++) {
-					for (row = 0; row < S->n_rows; row++) /* Do the shuffle via a temp vector */
+					for (row = 0; row < S->n_rows; row++) {	/* Do the shuffle via a temp vector */
 						GMT->hidden.mem_coord[GMT_X][row] = S->data[col][Z[row].order];
+						if (S->text) GMT->hidden.mem_txt[row] = S->text[Z[row].order];
+					}
 					gmt_M_memcpy (S->data[col], GMT->hidden.mem_coord[GMT_X], S->n_rows, double);
+					if (S->text) gmt_M_memcpy (S->text, GMT->hidden.mem_txt, S->n_rows, char *);
 				}
 			}
 		}
