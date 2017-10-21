@@ -6114,7 +6114,6 @@ GMT_LOCAL int api_end_io_dataset (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 	if (count[GMT_SEG] < (int64_t)T->n_alloc) T->segment = gmt_M_memory (API->GMT, T->segment, T->n_segments, struct GMT_DATASEGMENT *);
 	D->n_segments = T->n_segments;
 	gmt_set_dataset_minmax (API->GMT, D);	/* Update the min/max values for this dataset */
-	gmtlib_change_dataset (API->GMT, D);		/* Deal with any -o settings */
 	D->n_records = T->n_records = count[GMT_ROW];
 	D->alloc_level = S->alloc_level;	/* Since we are passing it up to the caller */
 	/* Register this resource */
@@ -7437,6 +7436,7 @@ GMT_LOCAL int api_put_record_fp (struct GMTAPI_CTRL *API, unsigned int mode, str
 GMT_LOCAL int api_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_RECORD *record) {
 	/* Function to use for rec-by-rec output to a memory dataset */
 	char *s = NULL;
+	double value;
 	struct GMT_DATATABLE *T = API->current_put_D_table;	/* Short hand */
 	struct GMT_CTRL *GMT = API->GMT;		/* Short hand */
 	int64_t *count = GMT->current.io.curr_pos[GMT_OUT];	/* Short hand to counters for table (not used as == 0), segment, row */
@@ -7445,7 +7445,7 @@ GMT_LOCAL int api_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode
 		case GMT_WRITE_TABLE_HEADER:	/* Export a table header record; skip if binary */
 			s = (record) ? (char *)record : GMT->current.io.curr_text;	/* Default to last input record if NULL */
 			/* Hook into table header list */
-			if (count[GMT_SEG] == -1) {	/* Only allow headers for first segment in a table */
+			if (count[GMT_SEG] == -1 && strlen(s)) {	/* Only allow headers for first segment in a table */
 				T->header = gmt_M_memory (GMT, T->header, T->n_headers+1, char *);
 				T->header[T->n_headers++] = strdup (s);
 			}
@@ -7464,7 +7464,7 @@ GMT_LOCAL int api_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode
 			}
 			if (!T->segment[count[GMT_SEG]]) T->segment[count[GMT_SEG]] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 			s = (record) ? (char *)record : GMT->current.io.segment_header;	/* Default to last segment header record if NULL */
-			if (s) {	/* Found a segment header */
+			if (s && strlen(s)) {	/* Found a segment header */
 				if (T->segment[count[GMT_SEG]]->header) gmt_M_str_free (T->segment[count[GMT_SEG]]->header);	/* Hm, better free the old guy before strdup'ing a new one */
 				T->segment[count[GMT_SEG]]->header = strdup (s);
 			}
@@ -7478,8 +7478,9 @@ GMT_LOCAL int api_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode
 			}
 			gmt_prep_tmp_arrays (GMT, GMT_OUT, count[GMT_ROW], T->n_columns);	/* Init or reallocate tmp read vectors */
 			for (col = 0; col < T->n_columns; col++) {
-				GMT->hidden.mem_coord[col][count[GMT_ROW]] = record->data[col];
-				if (GMT->current.io.col_type[GMT_OUT][col] & GMT_IS_LON) gmt_lon_range_adjust (GMT->current.io.geo.range, &(GMT->hidden.mem_coord[col][count[GMT_ROW]]));
+				value = api_select_record_value (GMT, record->data, (unsigned int)col, (unsigned int)GMT->common.b.ncol[GMT_OUT]);
+				if (GMT->current.io.col_type[GMT_OUT][col] & GMT_IS_LON) gmt_lon_range_adjust (GMT->current.io.geo.range, &value);
+				GMT->hidden.mem_coord[col][count[GMT_ROW]] = value;
 			}
 			if (record->text && record->text[0])	/* Also write trailing text */
 				GMT->hidden.mem_txt[count[GMT_ROW]] = strdup (record->text);
@@ -7637,24 +7638,33 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 		case GMT_IS_REFERENCE:
 			D_obj = S_obj->resource;
 			if (!D_obj) {	/* First time allocation of the single output table */
-				unsigned int smode = (GMT->current.io.record_type[GMT_OUT] & GMT_WRITE_TEXT) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
+				unsigned int smode;
+				if (mode == GMT_WRITE_SEGMENT_HEADER) {	/* Cannot do this yet since we dont know sizes. Delay */
+					S_obj->delay = 1;
+					S_obj->status = GMT_IS_USING;	/* Have started writing to this destination */
+					return GMT_NOERROR;
+				}
+				smode = (GMT->current.io.record_type[GMT_OUT] & GMT_WRITE_TEXT) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				D_obj = gmtlib_create_dataset (GMT, 1, GMT_TINY_CHUNK, 0, 0, S_obj->geometry, smode, true);	/* 1 table, alloc segments array; no cols or rows yet */
 				S_obj->resource = D_obj;	/* Save this pointer for next time we call GMT_Put_Record */
 				GMT->current.io.curr_pos[GMT_OUT][GMT_SEG] = -1;	/* Start at seg = -1 and increment at first segment header */
-				if ((GMT->current.io.record_type[GMT_OUT] & GMT_WRITE_DATA) && GMT->common.b.ncol[GMT_OUT] == 0 && GMT->common.b.ncol[GMT_IN] < GMT_MAX_COLUMNS) {
-					GMT->common.b.ncol[GMT_OUT] = GMT->common.b.ncol[GMT_IN];	/* Set output cols to equal input cols since not set */
-					GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: GMT_Put_Record does not know the number of output columns - set to equal input at %d\n", (int)GMT->common.b.ncol[GMT_IN]);
+				col = (GMT->common.o.select) ? GMT->common.o.n_cols : GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
+				if ((GMT->current.io.record_type[GMT_OUT] & GMT_WRITE_DATA) && col == 0) {	/* Still don't know # of columns */
+					if (GMT->common.b.ncol[GMT_IN] < GMT_MAX_COLUMNS) {	/* Hail Mary pass to input columns */
+						col = GMT->common.b.ncol[GMT_IN];	/* Set output cols to equal input cols since not set */
+						GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: GMT_Put_Record does not know the number of output columns - set to equal input at %d\n", (int)GMT->common.b.ncol[GMT_IN]);
+					}
+					else {
+						GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: Error: GMT_Put_Record does not know the number of columns - must abort!\n");
+						return_error (API, GMT_N_COLS_NOT_SET);
+					}
 				}
-				D_obj->n_columns = D_obj->table[0]->n_columns = GMT->common.b.ncol[GMT_OUT];
-			}
-			if ((GMT->current.io.record_type[GMT_OUT] & GMT_WRITE_DATA) && (D_obj->n_columns == 0 || D_obj->n_columns == GMT_MAX_COLUMNS || D_obj->n_columns < GMT->common.b.ncol[GMT_OUT])) {	/* Number of columns not set or set incorrectly, see if -b has it */
-				if (GMT->common.b.ncol[GMT_OUT]) {
-					D_obj->n_columns = D_obj->table[0]->n_columns = GMT->common.b.ncol[GMT_OUT];
-					GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: GMT_Put_Record does not know the number of output columns - set to equal input at %d\n", (int)GMT->common.b.ncol[GMT_IN]);
-				}
-				else {
-					GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: Error: GMT_Put_Record does not know the number of columns\n");
-					return_error (API, GMT_N_COLS_NOT_SET);
+				D_obj->n_columns = D_obj->table[0]->n_columns = col;	/* The final actual output column number */
+				if (GMT->common.b.ncol[GMT_OUT] == 0) GMT->common.b.ncol[GMT_OUT] = col;
+				if (S_obj->delay) {	/* Must do the first segment header now since we finally have allocated the table */
+					S_obj->delay = 0;
+					API->current_put_D_table = D_obj->table[0];	/* GMT_Put_Record only writes one table with one or more segments */
+					error = api_put_record_dataset (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 				}
 			}
 			API->current_put_D_table = D_obj->table[0];	/* GMT_Put_Record only writes one table with one or more segments */
