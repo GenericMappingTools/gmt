@@ -11123,6 +11123,7 @@ void *GMT_Alloc_Segment (void *V_API, unsigned int mode, uint64_t n_rows, uint64
 	struct GMT_DATASEGMENT *Snew = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	bool first = true, alloc;
+	char *H = header;
 	
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = api_get_api_ptr (V_API);
@@ -11137,9 +11138,13 @@ void *GMT_Alloc_Segment (void *V_API, unsigned int mode, uint64_t n_rows, uint64
 		if (first) gmt_M_free (API->GMT, Snew);
 		return_null (V_API, GMT_MEMORY_ERROR);
 	}
-	if (header && strlen (header)) {	/* Gave a header string to (re)place in the segment */
+	if (H && H[0] == API->GMT->current.setting.io_seg_marker[GMT_IN]) {	/* User gave a record with segment marker in it */
+		H++;	/* Skip the segment marker */
+		while (*H && (*H == ' ' || *H == '\t')) H++;	/* Then skip any leading whitespace */
+	}
+	if (H && strlen (H)) {	/* Gave a header string to (re)place in the segment */
 		if (Snew->header) gmt_M_str_free (Snew->header);
-		Snew->header = strdup (header);
+		Snew->header = strdup (H);
 	}
 	return Snew;
 }
