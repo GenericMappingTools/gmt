@@ -809,25 +809,25 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		for (r = 0; r < R[p]; r++) var[r] = a[col_off[p]+r];	/* Just get the first R(p) items; the rest are set to 0 */
 		switch (Ctrl->E.mode) {	/* Set up pointers to basis functions and assign constants */
 			case F_IS_CONSTANT:
-				sprintf (text, "\t%g\n", var[0]);
+				sprintf (text, "\t%g", var[0]);
 				break;
 			case F_IS_DRIFT_T:
-				sprintf (text, "\t%g\t%g*((time-T))\n", var[0], var[1]);
+				sprintf (text, "\t%g\t%g*((time-T))", var[0], var[1]);
 				break;
 			case F_IS_DRIFT_D:
-				sprintf (text, "\t% 10.4f\t% g*((dist))\n", var[0], var[1]);
+				sprintf (text, "\t% 10.4f\t% g*((dist))", var[0], var[1]);
 				break;
 			case F_IS_GRAV1930:
-				sprintf (text, "\t%g\t%g*sin((lat))^2\n", var[0], var[1]);
+				sprintf (text, "\t%g\t%g*sin((lat))^2", var[0], var[1]);
 				break;
 			case F_IS_HEADING:
-				sprintf (text, "\t%g\t%g*cos((azim))\t%g*cos(2*(azim))\t%g*sin((azim))\t%g*sin(2*(azim))\n", var[0], var[1], var[2], var[3], var[4]);
+				sprintf (text, "\t%g\t%g*cos((azim))\t%g*cos(2*(azim))\t%g*sin((azim))\t%g*sin(2*(azim))", var[0], var[1], var[2], var[3], var[4]);
 				break;
 			case F_IS_SCALE:
-				sprintf (text, "\t%g*((%s))\n", 1.0 - var[0], Ctrl->C.col);
+				sprintf (text, "\t%g*((%s))", 1.0 - var[0], Ctrl->C.col);
 				break;
 			case F_IS_SCALE_OFF:
-				sprintf (text, "\t%g\t%g*((%s))\n", var[0], 1.0 - var[1], Ctrl->C.col);
+				sprintf (text, "\t%g\t%g*((%s))", var[0], 1.0 - var[1], Ctrl->C.col);
 				break;
 		}
 		strcat (line, text);

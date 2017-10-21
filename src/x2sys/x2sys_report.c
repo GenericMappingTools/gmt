@@ -398,7 +398,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	         GMT->current.setting.format_float_out);
 	sprintf (record, fmt, c, Tnx, c, Tmean, c, Tstdev, c, Trms, c);
 	GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-	sprintf (fmt, "%%s%%s%%" PRIu64 "%%s%s%%s%s%%s%s%%s%s\n",
+	sprintf (fmt, "%%s%%s%%" PRIu64 "%%s%s%%s%s%%s%s%%s%s",
 	         GMT->current.setting.format_float_out,GMT->current.setting.format_float_out,
 	         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	for (k = 0; k < n_tracks; k++) {	/* For each track that generated crossovers */
@@ -477,7 +477,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 				n_out++;
 				if (i == n1 || out[0] < adj[k].K[i+1].d) {	/* Time to output */
 					out[1] /= n_out;
-					GMT->current.io.output (GMT, fp, 2, out, NULL);
+					gmt_ascii_output_no_text (GMT, fp, 2, out, NULL);
 					out[1] = 0.0;
 					n_out = 0;
 				}

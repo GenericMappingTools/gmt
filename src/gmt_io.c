@@ -835,7 +835,7 @@ GMT_LOCAL int gmtio_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, doub
 }
 
 /*! . */
-GMT_LOCAL int gmtio_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
+int gmt_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
 	uint64_t i, col, last, n_out;
 	int e = 0, wn = 0;
 	double val;
@@ -921,8 +921,8 @@ GMT_LOCAL int gmtio_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, do
 		return GMT->current.io.output (GMT, fp, n, ptr, txt);
 	}
 	else {
-		GMT->current.io.output = gmtio_ascii_output_no_text;	/* Just numbers */
-		return gmtio_ascii_output_no_text (GMT, fp, n, ptr, txt);
+		GMT->current.io.output = gmt_ascii_output_no_text;	/* Just numbers */
+		return gmt_ascii_output_no_text (GMT, fp, n, ptr, txt);
 	}
 }
 
