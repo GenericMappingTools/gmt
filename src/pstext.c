@@ -16,8 +16,8 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: pstext will read (x, y[, font, angle, justify], text) from GMT->session.std[GMT_IN]
- * or file and plot the textstrings at (x,y) on a map using the font attributes
+ * Brief synopsis: pstext will read (x, y[, z][, font, angle, justify], text) from input
+ * and plot the textstrings at (x,y) on a map using the font attributes
  * and justification selected by the user.  Alternatively (with -M), read
  * one or more text paragraphs to be typeset.
  *
@@ -63,16 +63,17 @@ struct PSTEXT_CTRL {
 		double dx, dy;
 		struct GMT_PEN pen;
 	} D;
-	struct PSTEXT_F {	/* -F[+f<fontinfo>+a<angle>+j<justification>+l|h] */
+	struct PSTEXT_F {	/* -F[+c+f<fontinfo>+a<angle>+j<justification>+l|h|r|z|t] */
 		bool active;
-		bool read_font;	/* True if we must read fonts from input file */
+		bool read_font;		/* True if we must read fonts from input file */
 		bool orientation;	/* True if we should treat angles as orientations for text */
-		bool mixed;	/* True if input record contains a text item */
+		bool mixed;		/* True if input record contains a text item */
+		bool get_xy_from_justify;	/* True if +c was given and we just get it from input */
 		struct GMT_FONT font;
 		double angle;
 		int justify, R_justify, nread, first;
-		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), 2 = segment header (+h), 3 = specified text (+t), 4 = format z using text (+T) */
-		char read[4];		/* Contains a, c, f, and/or j in order required to be read from input */
+		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), 2 = segment header (+h), 3 = specified text (+t), 4 = format z using text (+z) */
+		char read[4];		/* Contains a|A, c, f, and/or j in order required to be read from input */
 		char *text;
 	} F;
 	struct PSTEXT_G {	/* -G<fill> | -Gc|C */
@@ -426,35 +427,41 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 						case 'A':	/* orientation. Deliberate fall-through to next case */
 							Ctrl->F.orientation = true;
 						case 'a':	/* Angle */
-							if (p[1] == '+' || p[1] == '\0') {	/* Must read from input */
+							if (p[1] == '+' || p[1] == '\0') {	/* Must read angle from input */
 								Ctrl->F.read[Ctrl->F.nread] = p[0];
 								Ctrl->F.nread++;
 							}
-							else Ctrl->F.angle = atof (&p[1]);
+							else	/* Gave a fixed angle here */
+								Ctrl->F.angle = atof (&p[1]);
 							break;
 						case 'f':	/* Font info */
-							if (p[1] == '+' || p[1] == '\0') {	/* Must read from input */
+							if (p[1] == '+' || p[1] == '\0') {	/* Must read font from input */
 								Ctrl->F.read[Ctrl->F.nread] = p[0];
 								Ctrl->F.nread++;
 								Ctrl->F.read_font = true;
 								Ctrl->F.mixed = true;
 							}
-							else n_errors += gmt_getfont (GMT, &p[1], &(Ctrl->F.font));
+							else	/* Gave a fixed font here */
+								n_errors += gmt_getfont (GMT, &p[1], &(Ctrl->F.font));
 							break;
 						case 'j':	/* Justification */
-							if (p[1] == '+' || p[1] == '\0') {	/* Must read from input */
+							if (p[1] == '+' || p[1] == '\0') {	/* Must read justification from input */
 								Ctrl->F.read[Ctrl->F.nread] = p[0];
 								Ctrl->F.nread++;
 								Ctrl->F.mixed = true;
 								}
-							else {
+							else {	/* Gave a fixed code here */
 								Ctrl->F.justify = gmt_just_decode (GMT, &p[1], PSL_NO_DEF);
 								explicit_justify = true;
 							}
 							break;
 						case 'c':	/* -R corner justification */
-							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
-							else {
+							if (p[1] == '+' || p[1] == '\0') {	/* Must read corner justification from input */
+								Ctrl->F.read[Ctrl->F.nread] = p[0];
+								Ctrl->F.nread++;
+								Ctrl->F.mixed = Ctrl->F.get_xy_from_justify = true;
+							}
+							else {	/* Gave a fixed code here */
 								Ctrl->F.R_justify = gmt_just_decode (GMT, &p[1], PSL_NO_DEF);
 								if (!explicit_justify)	/* If not set explicitly, default to same justification as corner */
 									Ctrl->F.justify = Ctrl->F.R_justify;
@@ -581,8 +588,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 	/* Check that the options selected are mutually consistent */
 
 	if (API->external && Ctrl->F.active && Ctrl->F.nread) {	/* Impose order on external interfaces */
-		n_errors += gmt_M_check_condition (GMT, Ctrl->F.nread == 2 && tolower (Ctrl->F.read[1]) == 'a', "Syntax error -F: Must list +a before +f or +j for external API\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->F.nread == 3 && (tolower (Ctrl->F.read[1]) == 'a' || tolower (Ctrl->F.read[2]) == 'a'), "Syntax error -F: Must list +a before +f or +j for external API\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.nread == 2 && tolower (Ctrl->F.read[1]) == 'a', "Syntax error -F: Must list +a before +c, +f, +j for external API\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.nread == 3 && (tolower (Ctrl->F.read[1]) == 'a' || tolower (Ctrl->F.read[2]) == 'a'), "Syntax error -F: Must list +a before +c, +f, +jfor external API\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.nread == 4 && (tolower (Ctrl->F.read[2]) == 'a' || tolower (Ctrl->F.read[2]) == 'a' || tolower (Ctrl->F.read[3]) == 'a'), "Syntax error -F: Must list +a before +c, +f, +j for external API\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
@@ -732,11 +740,9 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		clip_set = true;
 	}
 
-	/* Find start column of plottable text in the trailing text string */
-	for (k = text_col = 0; k < Ctrl->F.nread; k++) {
-		if (tolower (Ctrl->F.read[k]) != 'a') text_col++;
-	}
 	if (Ctrl->F.nread && tolower (Ctrl->F.read[0]) == 'a') a_col = 1;	/* Must include the a col among the numericals */
+	/* Find start column of plottable text in the trailing text string */
+	text_col = Ctrl->F.nread - a_col;
 
 	old_is_world = GMT->current.map.is_world;
 	GMT->current.map.is_world = true;
@@ -752,7 +758,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	else {
 		unsigned int ncol = Ctrl->Z.active;	/* Input will have z */
 		unsigned int cmode = GMT_COL_FIX;	/* Normally there will be trailing text */
-		if (Ctrl->F.R_justify == 0) ncol += 2;	/* Expect input to have x,y */
+		if (!Ctrl->F.get_xy_from_justify && Ctrl->F.R_justify == 0) ncol += 2;	/* Expect input to have x,y */
 		ncol += a_col;				/* Might also have the angle among the numerical columns */
 		if (Ctrl->F.get_text == GET_CMD_FORMAT) {	/* Format z column into text */
             		z_col = ncol - a_col;    /* Normally this would be GMT_Z */
@@ -931,8 +937,10 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			n_read++;
 		}
 		else {	/* Plain style pstext input */
+			double coord[2];
+			int justify;
 			if (gmt_M_rec_is_segment_header (GMT)) continue;	/* Skip segment headers (line == NULL) */
-			in   = (Ctrl->F.R_justify) ? GMT->current.io.curr_rec : In->data;
+			in   = In->data;
 			line = In->text;
 			if (!no_in_text) {
 				assert (line != NULL);
@@ -969,6 +977,12 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 								nscan += gmt_strtok (line, GMT->current.io.scan_separators, &pos, text);
 								T.paragraph_angle = atof (text);
 							}
+							break;
+						case 'c':	/* Get x,y via code */
+							nscan += gmt_strtok (line, GMT->current.io.scan_separators, &pos, text);
+							justify = gmt_just_decode (GMT, text, PSL_NO_DEF);
+							gmt_just_to_lonlat (GMT, justify, gmt_M_is_geographic (GMT, GMT_IN), &coord[GMT_X], &coord[GMT_Y]);
+							GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 							break;
 						case 'f':
 							nscan += gmt_strtok (line, GMT->current.io.scan_separators, &pos, text);
@@ -1028,7 +1042,10 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			gmtlib_enforce_rgb_triplets (GMT, in_txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 			if (Ctrl->Q.active) gmt_str_setcase (GMT, in_txt, Ctrl->Q.mode);
 			n_read++;
-			gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
+			if (Ctrl->F.get_xy_from_justify)
+				gmt_geo_to_xy (GMT, coord[GMT_X], coord[GMT_Y], &plot_x, &plot_y);
+			else
+				gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 			xx[0] = plot_x;	yy[0] = plot_y;
 			if (!Ctrl->N.active) {
 				gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);

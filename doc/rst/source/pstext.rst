@@ -325,6 +325,16 @@ requested with an outline pen it will not be used in paragraph mode.
 Note if any single word is wider than your chosen paragraph width then
 the paragraph width is automatically enlarged to fit the widest word.
 
+Use from external interface
+---------------------------
+
+When **pstext** is called from external interfaces then we impose the following
+condition on the **-F** setting: We require that **+a** (read angle from
+input), if specified, must appear before either of **+f** (read font from input) and **+j**
+(read justification from input), if these are present.  This is necessary because the
+angle is a numerical column while font and justification must be encoded as part of the
+trailing text.
+
 See Also
 --------
 

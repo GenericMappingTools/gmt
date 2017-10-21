@@ -3319,8 +3319,8 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 					}
 					*n = (GMT->common.i.select) ? GMT->common.i.n_cols : n_cols_this_record;
 					strscan = (GMT->current.io.record_type[GMT_IN] & GMT_READ_TEXT) ? &strsepzp : &strsepz;	/* Need zp scanner to detect trailing text */
+					add_aspatial_to_expected = true;	/* Since counts does not include any aspatial additions */
 				}
-				add_aspatial_to_expected = true;
 			}
 		}
 
