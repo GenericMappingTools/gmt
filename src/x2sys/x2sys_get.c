@@ -214,6 +214,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	unsigned int bit, missing = 0, id1, id2, item, n_flags = 0;
 
 	FILE *fp = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct X2SYS_GET_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -359,7 +360,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		gmt_M_free (GMT, y_match);
 		gmt_M_free (GMT, n_match);
 		gmt_M_free (GMT, in_bin_flag);
@@ -377,16 +378,10 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		x2sys_end (GMT, s);
 		Return (API->error);
 	}
-	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
-		gmt_M_free (GMT, y_match);
-		gmt_M_free (GMT, n_match);
-		gmt_M_free (GMT, in_bin_flag);
-		gmt_M_free (GMT, include);
-		gmt_M_free (GMT, matrix);
-		x2sys_end (GMT, s);
-		Return (API->error);
-	}
+	GMT_Set_Columns (API, GMT_OUT, 0, GMT_COL_FIX_NO_TEXT);
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
+	Out = gmt_new_record (GMT, NULL, line);	/* Only text output */
+	
 	if (Ctrl->L.active) {
 		for (id1 = 0, n_pairs = 0; id1 < n_tracks; id1++) {
 			for (id2 = id1 + Ctrl->L.mode; id2 < n_tracks; id2++) {
@@ -400,7 +395,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 					sprintf (line, "%s%s%s\n", B.head[id1].trackname, GMT->current.setting.io_col_separator, B.head[id2].trackname);
 				else
 					sprintf (line, "%s%s%s\n", B.head[id2].trackname, GMT->current.setting.io_col_separator, B.head[id1].trackname);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, line);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 		}
 		gmt_M_free (GMT, matrix);
@@ -442,7 +437,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 						(((Ctrl->G.active) ? B.head[kk].flag : in_bin_flag[kk]) & bit) ? strcat (line, "Y") : strcat (line, "N");
 					}
 				}
-				GMT_Put_Record (API, GMT_WRITE_TEXT, line);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 		}
 		else
@@ -453,6 +448,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	
+	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, y_match);
 	gmt_M_free (GMT, n_match);
 	gmt_M_free (GMT, in_bin_flag);

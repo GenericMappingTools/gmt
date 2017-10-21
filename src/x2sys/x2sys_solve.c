@@ -831,7 +831,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 				break;
 		}
 		strcat (line, text);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
+		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 	}
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */

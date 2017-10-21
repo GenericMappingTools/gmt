@@ -135,6 +135,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	size_t n_alloc;
 	char line[GMT_BUFSIZ] = {""}, **pairs_base = NULL, **pairs_merge = NULL;
 	FILE *fp_base = NULL, *fp_merge = NULL;
+	struct GMT_RECORD *Out = NULL;
 	struct X2SYS_MERGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -223,7 +224,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	map_merge_end[n_merge - 1] = k - 1;	/* This one was not yet assigned */
 	rewind (fp_merge);
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		fclose (fp_merge);
 		fclose (fp_base);
 		clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
@@ -235,12 +236,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 		clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
-	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
-		fclose (fp_merge);
-		fclose (fp_base);
-		clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
-		Return (API->error);
-	}
+	Out = gmt_new_record (GMT, NULL, line);	/* Only text output */
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 
 	/* Jump comment lines in both files and osition the file pointer into the first data line */
@@ -270,7 +266,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 						clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 						Return (GMT_RUNTIME_ERROR);
 					}
-					GMT_Put_Record (API, GMT_WRITE_TEXT, line);
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 				for (k = map_base_start[i]; k <= map_base_end[i]; k++) {	/* Advance also in the base file */
 					if (!fgets (line, GMT_BUFSIZ, fp_base)) {
@@ -294,13 +290,13 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 						clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 						Return (GMT_RUNTIME_ERROR);
 					}
-					GMT_Put_Record (API, GMT_WRITE_TEXT, line);
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 			}
 		}
 		if (merge_start == n_merge) {	/* Copy the rest of dbase1 file and stop */
 			while (fgets (line, GMT_BUFSIZ, fp_base))
-				GMT_Put_Record (API, GMT_WRITE_TEXT, line);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			break;			/* Not very elegant way of stopping, but we are done */
 		}
 	}
@@ -314,6 +310,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	fclose (fp_base);
 	fclose (fp_merge);
 
+	gmt_M_free (GMT, Out);
 	clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 
 	Return (GMT_NOERROR);

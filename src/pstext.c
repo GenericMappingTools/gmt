@@ -758,6 +758,8 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	else {
 		unsigned int ncol = Ctrl->Z.active;	/* Input will have z */
 		unsigned int cmode = GMT_COL_FIX;	/* Normally there will be trailing text */
+		unsigned int code = 0;
+		char *cmode_type[2] = {"with", "with no"}, *rtype[4] = {"", "data", "text", "mixed"};
 		if (!Ctrl->F.get_xy_from_justify && Ctrl->F.R_justify == 0) ncol += 2;	/* Expect input to have x,y */
 		ncol += a_col;				/* Might also have the angle among the numerical columns */
 		if (Ctrl->F.get_text == GET_CMD_FORMAT) {	/* Format z column into text */
@@ -766,16 +768,20 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			rec_mode = (Ctrl->F.mixed) ? GMT_READ_MIXED : GMT_READ_DATA;
 			geometry = (Ctrl->F.mixed) ? GMT_IS_NONE : GMT_IS_POINT;
 			if (!Ctrl->F.mixed) cmode =  GMT_COL_FIX_NO_TEXT;
+			code = 1;
 		}
 		else if (Ctrl->F.get_text == GET_REC_NUMBER) {	/* Format record number into text */
 			rec_mode = (ncol) ? GMT_READ_MIXED : GMT_READ_DATA;
 			geometry = (ncol) ? GMT_IS_NONE : GMT_IS_POINT;
 			if (ncol == 0) cmode = GMT_COL_FIX_NO_TEXT;
+			code = 1;
 		}
 		else {	/* Text is part of the record */
 			rec_mode = (ncol) ? GMT_READ_MIXED : GMT_READ_TEXT;
 			geometry = (ncol) ? GMT_IS_NONE : GMT_IS_TEXT;
 		}
+		GMT_Report (API, GMT_MSG_DEBUG, "Expects a %s record with %d leading numerical columns, followed by %d text parameters and %s trailing text\n",
+			rtype[rec_mode], ncol, Ctrl->F.nread - a_col, cmode_type[code]);
 		GMT_Set_Columns (API, GMT_IN, ncol, cmode);
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;	/* In case there are 3-D going on */
 		if (a_col) a_col = ncol - 1;	/* Now refers to numerical column with the angle */
