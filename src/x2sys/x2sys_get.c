@@ -202,7 +202,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	uint32_t *matrix = NULL;        /* Needs to be a 32-bit unsigned int, not int */
 	uint64_t row, col;
 	
-	double x, y;
+	double out[2];
 
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
@@ -210,8 +210,8 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 
 	bool y_ok, n_ok, first, *include = NULL;
 	int error = 0, i, j, k, start_j, start_i, stop_j, stop_i;
-	unsigned int combo = 0, n_tracks_found, n_tracks, ii;
-	unsigned int bit, missing = 0, id1, id2, item, n_flags = 0;
+	unsigned int combo = 0, n_tracks_found, n_tracks, ii, cmode, wmode;
+	unsigned int bit, missing = 0, id1, id2, item, n_flags = 0, ncols = 0;
 
 	FILE *fp = NULL;
 	struct GMT_RECORD *Out = NULL;
@@ -304,6 +304,34 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	}
 	in_bin_flag = gmt_M_memory (GMT, NULL, n_tracks, uint32_t);
 	
+	wmode = (Ctrl->C.active) ? GMT_IS_POINT : GMT_IS_TEXT;
+	ncols = (Ctrl->C.active) ? 2 : 0;
+	cmode = (Ctrl->C.active) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX;
+	if (GMT_Init_IO (API, GMT_IS_DATASET, wmode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+		gmt_M_free (GMT, y_match);
+		gmt_M_free (GMT, n_match);
+		gmt_M_free (GMT, in_bin_flag);
+		gmt_M_free (GMT, include);
+		gmt_M_free (GMT, matrix);
+		x2sys_end (GMT, s);
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+		gmt_M_free (GMT, y_match);
+		gmt_M_free (GMT, n_match);
+		gmt_M_free (GMT, in_bin_flag);
+		gmt_M_free (GMT, include);
+		gmt_M_free (GMT, matrix);
+		x2sys_end (GMT, s);
+		Return (API->error);
+	}
+	GMT_Set_Columns (API, GMT_OUT, ncols, cmode);
+	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
+	if (Ctrl->C.active)
+		Out = gmt_new_record (GMT, out, NULL);	/* Only data output */
+	else
+		Out = gmt_new_record (GMT, NULL, line);	/* Only text output */
+	
 	/* Ok, now we can start finding the tracks requested */
 
 	x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &start_i, &start_j, &B, &ID), "");
@@ -332,12 +360,9 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 					if (y_ok && !n_ok && Ctrl->C.active && first) {
 						row = ij / B.nx_bin;	/* To hold the row number */
 						col = ij % B.nx_bin;	/* To hold the col number */
-						x = B.wesn[XLO] + (col + 0.5) * B.inc[GMT_X];
-						y = B.wesn[YLO] + (row + 0.5) * B.inc[GMT_Y];
-						gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x, GMT_X);
-						fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-						gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y, GMT_Y);
-						fprintf (GMT->session.std[GMT_OUT], "\n");
+						out[GMT_X] = B.wesn[XLO] + (col + 0.5) * B.inc[GMT_X];
+						out[GMT_Y] = B.wesn[YLO] + (row + 0.5) * B.inc[GMT_Y];
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 						first = false;
 					}
 				}
@@ -360,28 +385,6 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
-		gmt_M_free (GMT, y_match);
-		gmt_M_free (GMT, n_match);
-		gmt_M_free (GMT, in_bin_flag);
-		gmt_M_free (GMT, include);
-		gmt_M_free (GMT, matrix);
-		x2sys_end (GMT, s);
-		Return (API->error);
-	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
-		gmt_M_free (GMT, y_match);
-		gmt_M_free (GMT, n_match);
-		gmt_M_free (GMT, in_bin_flag);
-		gmt_M_free (GMT, include);
-		gmt_M_free (GMT, matrix);
-		x2sys_end (GMT, s);
-		Return (API->error);
-	}
-	GMT_Set_Columns (API, GMT_OUT, 0, GMT_COL_FIX);
-	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
-	Out = gmt_new_record (GMT, NULL, line);	/* Only text output */
-	
 	if (Ctrl->L.active) {
 		for (id1 = 0, n_pairs = 0; id1 < n_tracks; id1++) {
 			for (id2 = id1 + Ctrl->L.mode; id2 < n_tracks; id2++) {

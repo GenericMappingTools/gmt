@@ -914,7 +914,7 @@ GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint
 GMT_LOCAL int gmtio_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt) {
 	/* First time we decide if we have floats only or a mix and finalize pointer settings */
 	if (txt && GMT->current.io.trailing_text[GMT_OUT]) {
-		if (GMT->common.o.select && GMT->common.o.n_cols == 0)
+		if (n == 0 || (GMT->common.o.select && GMT->common.o.n_cols == 0))
 			GMT->current.io.output = gmtio_ascii_output_trailing_text;	/* Just print trailing text */
 		else
 			GMT->current.io.output = gmtio_ascii_output_with_text;	/* Have trailing text after numerical output */
