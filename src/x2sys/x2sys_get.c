@@ -451,6 +451,8 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	
+	x2sys_bix_free (GMT, &B);
+
 	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, y_match);
 	gmt_M_free (GMT, n_match);

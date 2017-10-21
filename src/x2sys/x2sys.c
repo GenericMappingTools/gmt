@@ -1318,7 +1318,7 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 		B->head = gmt_M_memory (GMT, NULL, n_alloc, struct X2SYS_BIX_TRACK_INFO);
 	else
 		B->head = this_info = x2sys_bix_make_entry (GMT, "-", 0, 0);	/* The head track is not real and has name "-"; it is our list anchor */
-
+	B->mode = mode;	/* So we know how to free later */
 	if (!fgets (line, GMT_BUFSIZ, ftrack)) {	/* Skip header record */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Read error in header record\n");
 		fclose (ftrack);
@@ -1359,7 +1359,7 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 	last_id++;
 	if (mode == 1) B->head = gmt_M_memory (GMT, B->head, last_id, struct X2SYS_BIX_TRACK_INFO);
 
-	*ID = last_id;
+	*ID = B->n_tracks = last_id;
 
 	return (X2SYS_NOERROR);
 }
@@ -1416,6 +1416,45 @@ int x2sys_bix_read_index (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2S
 		}
 	}
 	fclose (fbin);
+	return (X2SYS_NOERROR);
+}
+
+int x2sys_bix_free (struct GMT_CTRL *GMT, struct X2SYS_BIX *B) {
+	/* Free all the memory allocated by x2sys_bix_read_tracks|index */
+	uint32_t index, id, n_free; /* These must remain uint32_t */
+	struct X2SYS_BIX_TRACK *bin = NULL, *bdel = NULL;
+	struct X2SYS_BIX_TRACK_INFO *track = NULL, *tdel = NULL;
+	/* First free all the index structures allocated by x2sys_bix_read_index */	
+	for (index = 0; index < B->nm_bin; index++) {
+		bin = B->base[index].first_track;
+		n_free = 1;	/* Since there is an extra head structure */
+		while (bin) {
+			bdel = bin;
+			bin = bin->next_track;
+			gmt_M_free (GMT, bdel);
+			n_free++;
+		}
+		if (n_free != B->base[index].n_tracks)
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Deleted %d bin structs but should have been %d\n", n_free, B->base[index].n_tracks);
+	}
+	gmt_M_free (GMT, B->base);
+	
+	/* Then free the track structures */
+	if (B->mode) {	/* Organized as fixed array */
+		for (id = 0; id < B->n_tracks; id++) {
+			if (B->head[id].trackname) gmt_M_str_free (B->head[id].trackname);	/* Was allocated by strdup */
+		}
+		gmt_M_free (GMT, B->head);
+	}
+	else {	/* Organized as linked list */
+		track = B->head;
+		while (track) {
+			tdel = track;
+			track = track->next_info;
+			if (tdel->trackname) gmt_M_str_free (tdel->trackname);	/* Was allocated by strdup */
+			gmt_M_free (GMT, tdel);
+		}
+	}
 	return (X2SYS_NOERROR);
 }
 

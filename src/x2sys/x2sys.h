@@ -167,8 +167,10 @@ struct X2SYS_BIX {
 	int nx_bin;	/* Number of x bins */
 	int ny_bin;	/* Number of y bins */
 	uint64_t nm_bin;	/* Total number of bins */
+	uint64_t n_tracks;	/* Total number of tracks */
 	bool periodic;	/* 1 if x is periodic */
 	unsigned int *binflag;	/* The bin array */
+	unsigned int mode;	/* 0: head is linked list, 1: head is fixed array */
 	struct X2SYS_BIX_DATABASE *base;
 	struct X2SYS_BIX_TRACK_INFO *head;
 };
@@ -258,6 +260,7 @@ EXTERN_MSC struct X2SYS_BIX_TRACK *x2sys_bix_make_track (struct GMT_CTRL *GMT, u
 EXTERN_MSC int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *s, struct X2SYS_BIX *B, int mode, uint32_t *ID);
 EXTERN_MSC int x2sys_bix_read_index (struct GMT_CTRL *GMT, struct X2SYS_INFO *s, struct X2SYS_BIX *B, bool swap);
 EXTERN_MSC int x2sys_bix_get_index (struct GMT_CTRL *GMT, double x, double y, int *i, int *j, struct X2SYS_BIX *B, uint64_t *ID);
+EXTERN_MSC int x2sys_bix_free (struct GMT_CTRL *GMT, struct X2SYS_BIX *B);
 
 EXTERN_MSC void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *s);
 EXTERN_MSC int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, char *suffix);

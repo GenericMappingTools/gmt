@@ -431,6 +431,8 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "completed successfully\n");
 
+	x2sys_bix_free (GMT, &B);
+
 	x2sys_end (GMT, s);
 
 	Return (GMT_NOERROR);
