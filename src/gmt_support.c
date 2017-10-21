@@ -11972,7 +11972,12 @@ char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep) {
 		}
 		k++;	/* Advance to character after the + */
 		if (k >= len) return NULL;
-		if (strchr (sep, string[k])) done = true;
+		if (strchr (sep, string[k]))
+			done = true;
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Modifier +%c found but not a valid modifier!\n", string[k]);
+			return NULL;
+		}
 	}
 	return (k > 0 && k < len) ? &string[k-1] : NULL;
 }

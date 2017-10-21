@@ -539,7 +539,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 }
 
 GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, struct PROJECT_INFO *P) {
-	int error;
 	uint64_t col, n_items, rec, k;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
 	struct GMT_RECORD *Out = NULL;
@@ -576,14 +575,11 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 		}
 	}
 
-	n_items = P->n_outputs + ((P->want_z_output && P->n_z) ? P->n_z - 1 : 0);
+	n_items = gmt_get_cols (GMT, GMT_OUT);
 	out = gmt_M_memory (GMT, NULL, n_items, double);
-	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
+	Out = gmt_new_record (GMT, out, NULL);	/* text will be set below */
 
-	if (P->first && (error = GMT_Set_Columns (GMT->parent, GMT_OUT, n_items, (GMT->current.io.trailing_text[GMT_IN]) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
-		return (error);
-
-	/* Now output  */
+	/* Now output this segment */
 
 	for (rec = 0; rec < P->n_used; rec++) {
 		for (col = k = 0; col < P->n_outputs; col++) {
@@ -594,7 +590,7 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 			else
 				out[k++] = p_data[rec].a[P->output_choice[col]];
 		}
-		Out->text = p_data[rec].t;	/* The trailing text */
+		Out->text = p_data[rec].t;	/* The trailing text (may be NULL) */
 		GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, Out);	/* Write this to output */
 	}
 	gmt_M_free (GMT, out);
@@ -661,7 +657,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 	/* Convert user's -F choices to internal parameters */
 	for (col = P.n_outputs = 0; col < PROJECT_N_FARGS && Ctrl->F.col[col]; col++) {
 		switch (Ctrl->F.col[col]) {
-			case 'z':	/* Special flag, can mean any number of z columns */
+			case 'z':	/* Special flag, can mean any number of z columns and trailing text */
 				P.output_choice[col] = -1;
 				P.want_z_output = true;
 				break;
@@ -806,7 +802,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 	P.n_used = n_total_read = 0;
 
-	if (Ctrl->G.active) {	/* Not input data expected, just generate x,y,d track from arguments given */
+	if (Ctrl->G.active) {	/* No input data expected, just generate x,y,d track from arguments given */
 		double out[3];
 		struct GMT_RECORD *Out = gmt_new_record (GMT, out, NULL);
 		P.output_choice[0] = 4;
@@ -957,15 +953,16 @@ int GMT_project (void *V_API, int mode, void *args) {
 			in = In->data;	/* Only need to process numerical part here */
 
 			if (z_first) {
-				uint64_t n_cols = gmt_get_cols (GMT, GMT_IN);
-				if (n_cols == 2 && P.want_z_output) {
-					GMT_Report (API, GMT_MSG_NORMAL, "No data columns after leading coordinates, cannot use z flag in -F\n");
+				uint64_t n_cols = gmt_get_cols (GMT, GMT_IN), n_tot_cols;
+				if (n_cols == 2 && P.want_z_output && In->text == NULL) {
+					GMT_Report (API, GMT_MSG_NORMAL, "No data columns or trailing text after leading coordinates, cannot use z flag in -F\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
 				else
 					P.n_z = n_cols - 2;
 				z_first = false;
-				if ((error = GMT_Set_Columns (API, GMT_OUT, P.n_outputs, (GMT->current.io.trailing_text[GMT_IN]) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+				n_tot_cols = (P.want_z_output) ? P.n_outputs - 1 + P.n_z : P.n_outputs;
+				if ((error = GMT_Set_Columns (API, GMT_OUT, n_tot_cols, gmt_M_colmode (In->text))) != GMT_NOERROR) {
 					Return (error);
 				}
 			}
@@ -994,7 +991,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 			p_data[P.n_used].t = NULL;	/* Initialize since that is not done by realloc */
 			p_data[P.n_used].z = NULL;	/* Initialize since that is not done by realloc */
 			if (P.n_z) {	/* Copy over z column(s) */
-				if (In->text)	/* Must store all text beyond x,y columns */
+				if (In->text)	/* Must store all trailing text */
 					p_data[P.n_used].t = strdup (In->text);
 				p_data[P.n_used].z = gmt_M_memory (GMT, NULL, P.n_z, double);
 				gmt_M_memcpy (p_data[P.n_used].z, &in[GMT_Z], P.n_z, double);

@@ -131,13 +131,15 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *flags*
-    Specify your desired output using any combination of *xyzpqrs*, in
-    any order. Do not space between the letters. Use lower case. The
-    output will be ASCII (or binary, see **-bo**)
-    columns of values corresponding to *xyzpqrs* [Default]. If both
-    input and output are using ASCII format then the *z* data are
-    treated as textstring(s). If the **-G** option is selected, the
-    output will be *rsp*.
+    Specify your desired output using any combination of **xyzpqrs**, in
+    any order [Default is **xyzpqrs**]. Do not space between the letters.
+    Use lower case. The output will be ASCII (or binary, see **-bo**)
+    columns of values corresponding to your *flags*. The **z** flag is
+    special and refers to all numerical columns beyond the leading **x** and **y** in
+    your input record.  If output format is ASCII then **z** also includes any
+    trailing text (which is placed at the end of the record regardless
+    of the order of **z** in *flags*). Note: If **-G** is selected, then the
+    output order is hardwired to be **rsp** and **-F** is not allowed.
 
 .. _-G:
 

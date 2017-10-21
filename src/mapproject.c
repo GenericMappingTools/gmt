@@ -371,7 +371,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				}
 				n = sscanf (opt->arg, "%c%[^/]/%s", &c, txt_a, txt_b);
 				if (n < 1) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expected -Ab|B|f|F[<lon0>/<lat0>]\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expected -Ab|B|f|F|o|O[<lon0>/<lat0>][+v]\n");
 					n_errors++;
 				}
 				else {
@@ -561,7 +561,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 									n_errors++;
 								}
 								break;
-							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+							default:
+								n_errors++;
+								break;
 						}
 					}
 					p[0] = '\0';	/* Chop off all modifiers so range can be determined */
@@ -583,6 +585,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 		}
 	}
 
+	if (n_errors) return GMT_PARSE_ERROR;	/* Might as well return here since otherwise we may get some false warnings from below as well */
+	
 	geodetic_calc = (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active);
 
 	/* The following lousy hack allows NOT having to specify -R */
@@ -597,6 +601,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 			Ctrl->C.active = Ctrl->F.active = true;
 	}
 
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->used[MP_COL_DS], "Syntax error: -Z requires -G+i\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->G.mode + Ctrl->E.active + Ctrl->L.active) > 0,
 	                                   "Syntax error: -T cannot work with -E, -G or -L\n");
 	n_errors += gmt_M_check_condition (GMT, geodetic_calc && Ctrl->I.active, "Syntax error: -A, -G, and -L cannot work with -I\n");
@@ -816,7 +821,9 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			Return (API->error);
 		}
-		if ((error = GMT_Set_Columns (API, GMT_OUT, n_output, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
+		if ((error = GMT_Set_Columns (API, GMT_OUT, n_output, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			Return (error);
+		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
@@ -958,7 +965,9 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	}
 
 	/* Specify input and output expected columns */
-	if ((error = GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX)) != GMT_NOERROR) Return (error);
+	if ((error = GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX)) != GMT_NOERROR) {
+		Return (error);
+	}
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
@@ -1030,8 +1039,9 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		}
 		if (first) {
 			unsigned int n_in_cols = gmt_get_cols (GMT, GMT_IN);
-			if ((error = GMT_Set_Columns (API, GMT_OUT, n_in_cols, (In->text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)) != GMT_NOERROR)
+			if ((error = GMT_Set_Columns (API, GMT_OUT, n_in_cols, gmt_M_colmode (In->text))) != GMT_NOERROR) {
 				Return (error);
+			}
 			first = false;
 		}
 		in = In->data;	/* Only need to process numerical part here */
@@ -1110,7 +1120,9 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			/* Simply copy other columns and output */
 			if (n_output == 0) {
 				unsigned int n_in_cols = gmt_get_cols (GMT, GMT_IN);
-				GMT_Set_Columns (API, GMT_OUT, n_in_cols, (Out->text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX);
+				if ((error = GMT_Set_Columns (API, GMT_OUT, n_in_cols, gmt_M_colmode (Out->text))) != GMT_NOERROR) {
+					Return (error);
+				}
 				n_output = gmt_get_cols (GMT, GMT_OUT);
 			}
 			for (k = two; k < n_output; k++) out[k] = in[k];
@@ -1237,7 +1249,9 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				if (n_output == 0) {
 					unsigned int n_in_cols = gmt_get_cols (GMT, GMT_IN);
 					for (col = 0, k = 0; col < MP_COL_N; col++) if (Ctrl->used[col]) k++;
-					GMT_Set_Columns (API, GMT_OUT, n_in_cols + k, (Out->text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX);
+					if ((error = GMT_Set_Columns (API, GMT_OUT, n_in_cols + k, gmt_M_colmode (Out->text))) != GMT_NOERROR) {
+						Return (error);
+					}
 					n_output = gmt_get_cols (GMT, GMT_OUT);
 					if (geodetic_calc) {	/* Update the output column types to the extra items we added */
 						for (col = 0, k = n_fields; col < MP_COL_N; col++) {
@@ -1263,7 +1277,9 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				/* Simply copy other columns and output */
 				if (n_output == 0) {
 					unsigned int n_in_cols = gmt_get_cols (GMT, GMT_IN);
-					GMT_Set_Columns (API, GMT_OUT, n_in_cols, (Out->text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX);
+					if ((error = GMT_Set_Columns (API, GMT_OUT, n_in_cols, gmt_M_colmode (Out->text))) != GMT_NOERROR) {
+						Return (error);
+					}
 					n_output = gmt_get_cols (GMT, GMT_OUT);
 				}
 				for (k = two; k < n_output; k++) out[k] = in[k];

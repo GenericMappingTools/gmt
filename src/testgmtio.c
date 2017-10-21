@@ -95,7 +95,7 @@ int main (int argc, char *argv[]) {
 			assert (false);						/* Should never get here */
 		}
 		if (gmt_M_rec_is_data (GMT)) {	/* Found a data record */
-			if ((error = GMT_Set_Columns (API, GMT_OUT, n_fields, (In->text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)) != GMT_NOERROR) exit (EXIT_FAILURE);
+			if ((error = GMT_Set_Columns (API, GMT_OUT, n_fields, gmt_M_colmode (In->text))) != GMT_NOERROR) exit (EXIT_FAILURE);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Data found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 			API->print_func (stdout, "D: ");
 		}

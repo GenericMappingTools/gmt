@@ -193,4 +193,7 @@
 /*! Determine if file is an image GDAL can read */
 #define gmt_M_file_is_image(file) (file && (strstr (file, "=gd") || strstr (file, ".jpg") || strstr (file, ".png") || strstr (file, ".ppm") || strstr (file, ".tif") || strstr (file, ".bmp") || strstr (file, ".gif")))
 
+/*! Set the correct column mode (trailing vs no trailing text) based on the given string is NULL or not */
+#define gmt_M_colmode(text) ((text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)
+
 #endif  /* _GMT_MACROS_H */

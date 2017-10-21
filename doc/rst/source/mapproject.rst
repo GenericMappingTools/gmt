@@ -234,8 +234,10 @@ Optional Arguments
     (elapsed) travel time according to the ISO 8601 convention. 
     As for the number of decimals used to represent seconds we
     consult the :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>`
-    setting. Finally, append **+t**\ *epoch* to
-    report absolute times (ETA) for successive points.
+    setting. Finally, append **+t**\ *epoch* to report absolute
+    times (ETA) for successive points.  Finally, because of the
+    need for incremental distances the **-G** option with the
+    **+i** modifier is required.
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_
