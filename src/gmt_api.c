@@ -7768,12 +7768,12 @@ int GMT_Put_Record_ (unsigned int *mode, void *record) {
 #endif
 
  /*! . */
-int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsigned int header) {
+int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsigned int mode) {
 	/* Initializes the rec-by-rec i/o mechanism for either input or output (given by direction).
 	 * GMT_Begin_IO must be called before any data i/o is allowed.
 	 * family:	The family of data must be GMT_IS_DATASET.
 	 * direction:	Either GMT_IN or GMT_OUT.
-	 * header:	Either GMT_HEADER_ON|OFF, controls the writing of the table start header info block
+	 * mode:	Currently unused
 	 * Returns:	false if successful, true if error.
 	 */
 	int error, item;
@@ -7787,6 +7787,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;	/* Reset in case it has some previous error */
 	if (!API->registered[direction]) GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: No %s resources registered\n", GMT_direction[direction]);
+	if (mode) GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: Mode value %u not considered (ignored)\n", mode);
 
 	GMT = API->GMT;
 	/* Must initialize record-by-record machinery for dataset */
@@ -7811,7 +7812,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 		API->current_put_obj = S_obj;
 		API->api_put_record = api_put_record_init;
 		API->GMT->current.io.record_type[GMT_OUT] = API->GMT->current.io.record_type[GMT_IN];	/* Can be overruled by GMT_Set_Columns */
-		if (header == GMT_HEADER_ON && !GMT->common.b.active[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard ASCII header block */
+		//if (header == GMT_HEADER_ON && !GMT->common.b.active[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard ASCII header block */
 	}
 	else {
 		API->current_get_obj = S_obj;
@@ -7823,9 +7824,9 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 }
 
 #ifdef FORTRAN_API
-int GMT_Begin_IO_ (unsigned int *family, unsigned int *direction, unsigned int *header) {
+int GMT_Begin_IO_ (unsigned int *family, unsigned int *direction, unsigned int *mode) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Begin_IO (GMT_FORTRAN, *family, *direction, *header));
+	return (GMT_Begin_IO (GMT_FORTRAN, *family, *direction, *mode));
 }
 #endif
 
