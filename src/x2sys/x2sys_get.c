@@ -378,7 +378,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		x2sys_end (GMT, s);
 		Return (API->error);
 	}
-	GMT_Set_Columns (API, GMT_OUT, 0, GMT_COL_FIX_NO_TEXT);
+	GMT_Set_Columns (API, GMT_OUT, 0, GMT_COL_FIX);
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 	Out = gmt_new_record (GMT, NULL, line);	/* Only text output */
 	
