@@ -40,12 +40,12 @@ EXTERN_MSC void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, u
 #define PSTEXT_CLIPPLOT		1
 #define PSTEXT_CLIPONLY		2
 
-#define GET_REC_TEXT	0
-#define GET_SEG_LABEL	1
-#define GET_SEG_HEADER	2
-#define GET_CMD_TEXT	3
-#define GET_CMD_FORMAT	4
-#define GET_REC_NUMBER	5
+#define GET_REC_TEXT	0	/* Free-form text as trailing text in the record */
+#define GET_SEG_LABEL	1	/* Use the curent segment label (-L<label>) as the text */
+#define GET_SEG_HEADER	2	/* Use the curent segment header as the text */
+#define GET_CMD_TEXT	3	/* Use the given +t<text> as the text */
+#define GET_CMD_FORMAT	4	/* Format z-column using given format (or FORMAT_FLOAT_OUT) */
+#define GET_REC_NUMBER	5	/* Use record number (relative to given offset) as text */
 
 struct PSTEXT_CTRL {
 	struct PSTEXT_A {	/* -A */
@@ -67,6 +67,7 @@ struct PSTEXT_CTRL {
 		bool active;
 		bool read_font;	/* True if we must read fonts from input file */
 		bool orientation;	/* True if we should treat angles as orientations for text */
+		bool mixed;	/* True if input record contains a text item */
 		struct GMT_FONT font;
 		double angle;
 		int justify, R_justify, nread, first;
@@ -328,7 +329,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     +l will use as text the label specified via -L<label> in the most recent segment header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +r[<first>] will use the current record number, starting at <first> [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +t<text> will use the specified text as is.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +z[<fmt>] will use formatted input z values via format <fmt> [FORMAT_FLOAT_MAP].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +z[<fmt>] will use formatted input z values (bu see -Z) via format <fmt> [FORMAT_FLOAT_MAP].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If an attribute +f|+a|+j is not followed by a value we read the information from the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   data file in the order given by the -F option.  Only one of +h or +l can be specified.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +h|l modifiers cannot be used in paragraph mode (-M).\n");
@@ -351,8 +352,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Draw a box around the text with the specified pen [Default pen is %s].", 0);
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z For 3-D plots: expect records to have a z value in the 3rd column (i.e., x y z size ...).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Z+ also sets -N.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z For 3-D plots: expect records to have a z value in the 3rd column (i.e., x y z ...).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Z+ also sets -N.  Note: if -F+z is used the text is based on the 4th data column.\n");
 	GMT_Option (API, "a,e,f,h,p,t,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -417,15 +418,39 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				pos = 0;
+				pos = 0;;
 
 				while (gmt_getmodopt (GMT, 'F', opt->arg, "Aafjclhrtz", &pos, p, &n_errors) && n_errors == 0 && Ctrl->F.nread < 4) {	/* Looking for +f, +a|A, +j, +c, +l|h */
 					switch (p[0]) {
+							/* A|a, f, j may be read from input */
 						case 'A':	/* orientation. Deliberate fall-through to next case */
 							Ctrl->F.orientation = true;
 						case 'a':	/* Angle */
-							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
+							if (p[1] == '+' || p[1] == '\0') {	/* Must read from input */
+								Ctrl->F.read[Ctrl->F.nread] = p[0];
+								Ctrl->F.nread++;
+							}
 							else Ctrl->F.angle = atof (&p[1]);
+							break;
+						case 'f':	/* Font info */
+							if (p[1] == '+' || p[1] == '\0') {	/* Must read from input */
+								Ctrl->F.read[Ctrl->F.nread] = p[0];
+								Ctrl->F.nread++;
+								Ctrl->F.read_font = true;
+								Ctrl->F.mixed = true;
+							}
+							else n_errors += gmt_getfont (GMT, &p[1], &(Ctrl->F.font));
+							break;
+						case 'j':	/* Justification */
+							if (p[1] == '+' || p[1] == '\0') {	/* Must read from input */
+								Ctrl->F.read[Ctrl->F.nread] = p[0];
+								Ctrl->F.nread++;
+								Ctrl->F.mixed = true;
+								}
+							else {
+								Ctrl->F.justify = gmt_just_decode (GMT, &p[1], PSL_NO_DEF);
+								explicit_justify = true;
+							}
 							break;
 						case 'c':	/* -R corner justification */
 							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
@@ -433,17 +458,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 								Ctrl->F.R_justify = gmt_just_decode (GMT, &p[1], PSL_NO_DEF);
 								if (!explicit_justify)	/* If not set explicitly, default to same justification as corner */
 									Ctrl->F.justify = Ctrl->F.R_justify;
-							}
-							break;
-						case 'f':	/* Font info */
-							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; Ctrl->F.read_font = true; }
-							else n_errors += gmt_getfont (GMT, &p[1], &(Ctrl->F.font));
-							break;
-						case 'j':	/* Justification */
-							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
-							else {
-								Ctrl->F.justify = gmt_just_decode (GMT, &p[1], PSL_NO_DEF);
-								explicit_justify = true;
 							}
 							break;
 						case 'l':	/* Segment label request */
@@ -471,7 +485,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 								Ctrl->F.first = atoi (&p[1]);
 							Ctrl->F.get_text = GET_REC_NUMBER;
 							break;
-						case 't':	/* Segment header request */
+						case 't':	/* Use specified text string */
 							if (Ctrl->F.get_text) {
 								GMT_Report (API, GMT_MSG_COMPAT, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
@@ -480,7 +494,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 								Ctrl->F.text = strdup (&p[1]);
 							Ctrl->F.get_text = GET_CMD_TEXT;
 							break;
-						case 'z':	/* text format */
+						case 'z':	/* z-column formatted */
 							if (Ctrl->F.get_text) {
 								GMT_Report (API, GMT_MSG_COMPAT, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
@@ -566,6 +580,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 
 	/* Check that the options selected are mutually consistent */
 
+	if (API->external && Ctrl->F.active && Ctrl->F.nread) {	/* Impose order on external interfaces */
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.nread == 2 && tolower (Ctrl->F.read[1]) == 'a', "Syntax error -F: Must list +a before +f or +j for external API\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->F.nread == 3 && (tolower (Ctrl->F.read[1]) == 'a' || tolower (Ctrl->F.read[2]) == 'a'), "Syntax error -F: Must list +a before +f or +j for external API\n");
+	}
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
@@ -646,8 +664,8 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	
 	bool master_record = false, skip_text_records = false, old_is_world, clip_set = false, no_in_text;
 
-	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col, rec_mode;
-	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;
+	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col, rec_mode, a_col = 0;
+	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols, z_col = GMT_Z;
 
 	size_t n_alloc = 0;
 
@@ -692,13 +710,9 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input text table data\n");
 	load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
 
-#if 0
-	if (!Ctrl->F.active) Ctrl->F.nread = 4;	/* Need to be backwards compatible */
-#endif
-	n_expected_cols = 3 + Ctrl->Z.active + Ctrl->F.nread;
+	n_expected_cols = 2 + Ctrl->Z.active + Ctrl->F.nread;	/* Normal number of columns to read, plus any text. This includes x,y */
 	if (Ctrl->M.active) n_expected_cols += 3;
-	no_in_text = (Ctrl->F.get_text && Ctrl->F.get_text != GET_CMD_FORMAT);	/* No text in the input record */
-	if (no_in_text) n_expected_cols--;	/* No text in the input record */
+	no_in_text = (Ctrl->F.get_text > 1);	/* No text in the input record */
 	add = !(T.x_offset == 0.0 && T.y_offset == 0.0);
 	if (add && Ctrl->D.justify) T.boxflag |= 64;
 
@@ -718,7 +732,11 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		clip_set = true;
 	}
 
-	text_col = n_expected_cols - 1;
+	/* Find start column of plottable text in the trailing text string */
+	for (k = text_col = 0; k < Ctrl->F.nread; k++) {
+		if (tolower (Ctrl->F.read[k]) != 'a') text_col++;
+	}
+	if (Ctrl->F.nread && tolower (Ctrl->F.read[0]) == 'a') a_col = 1;	/* Must include the a col among the numericals */
 
 	old_is_world = GMT->current.map.is_world;
 	GMT->current.map.is_world = true;
@@ -729,14 +747,32 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	if (Ctrl->M.active) {	/* There are no coordinates, just text lines */
 		rec_mode = GMT_READ_TEXT;
 		geometry = GMT_IS_TEXT;
+		GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX);
 	}
 	else {
-		unsigned int ncol = Ctrl->Z.active;
-		if (Ctrl->F.R_justify == 0) ncol += 2;
-		rec_mode = (ncol) ? GMT_READ_MIXED : GMT_READ_TEXT;
-		geometry = (ncol) ? GMT_IS_NONE : GMT_IS_TEXT;
-		GMT_Set_Columns (API, GMT_IN, ncol, GMT_COL_FIX);
+		unsigned int ncol = Ctrl->Z.active;	/* Input will have z */
+		unsigned int cmode = GMT_COL_FIX;	/* Normally there will be trailing text */
+		if (Ctrl->F.R_justify == 0) ncol += 2;	/* Expect input to have x,y */
+		ncol += a_col;				/* Might also have the angle among the numerical columns */
+		if (Ctrl->F.get_text == GET_CMD_FORMAT) {	/* Format z column into text */
+            		z_col = ncol - a_col;    /* Normally this would be GMT_Z */
+			ncol++;	/* One more numerical column to read */
+			rec_mode = (Ctrl->F.mixed) ? GMT_READ_MIXED : GMT_READ_DATA;
+			geometry = (Ctrl->F.mixed) ? GMT_IS_NONE : GMT_IS_POINT;
+			if (!Ctrl->F.mixed) cmode =  GMT_COL_FIX_NO_TEXT;
+		}
+		else if (Ctrl->F.get_text == GET_REC_NUMBER) {	/* Format record number into text */
+			rec_mode = (ncol) ? GMT_READ_MIXED : GMT_READ_DATA;
+			geometry = (ncol) ? GMT_IS_NONE : GMT_IS_POINT;
+			if (ncol == 0) cmode = GMT_COL_FIX_NO_TEXT;
+		}
+		else {	/* Text is part of the record */
+			rec_mode = (ncol) ? GMT_READ_MIXED : GMT_READ_TEXT;
+			geometry = (ncol) ? GMT_IS_NONE : GMT_IS_TEXT;
+		}
+		GMT_Set_Columns (API, GMT_IN, ncol, cmode);
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;	/* In case there are 3-D going on */
+		if (a_col) a_col = ncol - 1;	/* Now refers to numerical column with the angle */
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
@@ -925,12 +961,17 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				in_txt = line;
 			else {	/* Must pick up 1-3 attributes from data file */
 				for (k = 0; k < Ctrl->F.nread; k++) {
-					nscan += gmt_strtok (line, GMT->current.io.scan_separators, &pos, text);
 					switch (Ctrl->F.read[k]) {
 						case 'a': case 'A':
-							T.paragraph_angle = atof (text);
+							if (a_col)
+								T.paragraph_angle = in[a_col];
+							else {
+								nscan += gmt_strtok (line, GMT->current.io.scan_separators, &pos, text);
+								T.paragraph_angle = atof (text);
+							}
 							break;
 						case 'f':
+							nscan += gmt_strtok (line, GMT->current.io.scan_separators, &pos, text);
 							T.font = Ctrl->F.font;
 							if (gmt_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
 							if (gmt_M_compat_check (GMT, 4)) {
@@ -941,11 +982,12 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 							}
 							break;
 						case 'j':
+							nscan += gmt_strtok (line, GMT->current.io.scan_separators, &pos, text);
 							T.block_justify = gmt_just_decode (GMT, text, PSL_NO_DEF);
 							break;
 					}
 				}
-				if (Ctrl->F.get_text == GET_REC_TEXT || Ctrl->F.get_text == GET_CMD_FORMAT) in_txt = &line[pos];
+				if (Ctrl->F.get_text == GET_REC_TEXT) in_txt = &line[pos];
 			}
 			if (Ctrl->F.get_text == GET_SEG_HEADER) {
 				if (GMT->current.io.segment_header[0] == 0)
@@ -966,12 +1008,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				in_txt = label;
 			}
 			else if (Ctrl->F.get_text == GET_CMD_FORMAT) {
-				if (line[pos]) {
-					double val = atof (&line[pos]);
-					sprintf (text, Ctrl->F.text, val);
-				}
-				else
-					sprintf (text, Ctrl->F.text, n_read);
+				sprintf (text, Ctrl->F.text, in[z_col]);
 				in_txt = text;
 			}
 

@@ -156,7 +156,8 @@ Optional Arguments
     text as the most recent segment header or segment label, respectively in
     a multisegment input file, **+r** to use the record number (counting up from *first*),
     **+t**\ *text* to set a fixed text string, or **+z** to format incoming *z* values
-    to a string using the supplied *format* [use FORMAT_FLOAT_MAP].
+    to a string using the supplied *format* [use FORMAT_FLOAT_MAP].  Note: If **-Z** is
+    in effect then the *z* value used for formatting is in the 4th, not 3rd column.
 
 .. _-G:
 

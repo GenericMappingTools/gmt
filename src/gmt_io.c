@@ -727,9 +727,15 @@ GMT_LOCAL unsigned int gmtio_assign_aspatial_cols (struct GMT_CTRL *GMT) {
 		if (GMT->common.a.col[k] < 0) continue;	/* Not meant for data columns but for segment headers */
 		if (GMT->current.io.OGR->type[GMT->common.a.ogr[k]] == GMT_TEXT) {	/* Text goes into trailing text */
 			char *tvalue = GMT->current.io.OGR->tvalue[GMT->common.a.ogr[k]];
+			size_t len = strlen (tvalue);
+			unsigned int pos = 0;
+			if (len && tvalue[0] == '\"' && tvalue[len-1] == '\"') {	/* Eliminate quotes for quoted text */
+				tvalue[len-1] = '\0';
+				pos = 1;
+			}
 			if (nt) strcat (GMT->current.io.curr_trailing_text, GMT->current.setting.io_col_separator);
-			strcat (GMT->current.io.curr_trailing_text, tvalue);
-			GMT->current.io.record.text = GMT->current.io.curr_trailing_text;
+			strcat (GMT->current.io.curr_trailing_text, &tvalue[pos]);
+			GMT->current.io.record.text = GMT->current.io.curr_trailing_text;	/* Since it may not have been set */
 			nt++;
 		}
 		else {	/* Numerical adds to data columns */
@@ -3165,7 +3171,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 	uint64_t n_cols_this_record = GMT_MAX_COLUMNS;
 	int64_t in_col;
 	size_t start_of_text;
-	bool done = false, bad_record, set_nan_flag = false;
+	bool done = false, bad_record, set_nan_flag = false, add_aspatial_to_expected = false;
 	char line[GMT_BUFSIZ] = {""}, *p = NULL, *token = NULL, *stringp = NULL;
 	double val;
 	static char * (*strscan) (char **, const char *, size_t *);	/* Pointer to strsepz or strsepzp */
@@ -3314,6 +3320,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 					*n = (GMT->common.i.select) ? GMT->common.i.n_cols : n_cols_this_record;
 					strscan = (GMT->current.io.record_type[GMT_IN] & GMT_READ_TEXT) ? &strsepzp : &strsepz;	/* Need zp scanner to detect trailing text */
 				}
+				add_aspatial_to_expected = true;
 			}
 		}
 
@@ -3326,6 +3333,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		col_no = pos = n_ok = 0;		/* Initialize counters */
 		in_col = -1;				/* Since we will increment right away inside the loop */
 		start_of_text = 0;			/* Position in current string record */
+		GMT->current.io.curr_trailing_text[0] = '\0';	/* Start with nuthin. */
 
 		stringp = line;
 		while (!bad_record && col_no < n_use && (token = strscan (&stringp, GMT->current.io.scan_separators, &start_of_text)) != NULL) {	/* Get one field at the time until we run out or have issues */
@@ -3375,6 +3383,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		if ((add = gmtio_assign_aspatial_cols (GMT))) {	/* We appended <add> columns given via aspatial OGR/GMT values */
 			col_no += add;
 			n_ok += add;
+			if (add_aspatial_to_expected) *n += add, n_use += add;	/* Only do this once */
 		}
 		if (bad_record) {	/* This record failed our test and had NaNs */
 			GMT->current.io.n_bad_records++;
