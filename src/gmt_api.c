@@ -7646,6 +7646,17 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 					S_obj->status = GMT_IS_USING;	/* Have started writing to this destination */
 					return GMT_NOERROR;
 				}
+				if (record->data == NULL && record->text == NULL) {
+					GMT_Report (API, GMT_MSG_NORMAL, "GMT_Put_Record give NULL record? - Must skip\n");
+					return GMT_NOERROR;
+				}
+				/* Ensure record_type[GMT_OUT] is set correctly given we now have a data record to examine */
+				if (record->text == NULL)
+					GMT->current.io.record_type[GMT_OUT] = GMT_WRITE_DATA;
+				else if (record->data == NULL)
+					GMT->current.io.record_type[GMT_OUT] = GMT_WRITE_TEXT;
+				else
+					GMT->current.io.record_type[GMT_OUT] = GMT_WRITE_MIXED;
 				smode = (GMT->current.io.record_type[GMT_OUT] & GMT_WRITE_TEXT) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				D_obj = gmtlib_create_dataset (GMT, 1, GMT_TINY_CHUNK, 0, 0, S_obj->geometry, smode, true);	/* 1 table, alloc segments array; no cols or rows yet */
 				S_obj->resource = D_obj;	/* Save this pointer for next time we call GMT_Put_Record */
@@ -7661,6 +7672,7 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 						return_error (API, GMT_N_COLS_NOT_SET);
 					}
 				}
+				if (GMT->current.io.record_type[GMT_OUT] == GMT_WRITE_TEXT) col = 0;	/* Just to be safe rather than fucked */
 				D_obj->n_columns = D_obj->table[0]->n_columns = col;	/* The final actual output column number */
 				if (GMT->common.b.ncol[GMT_OUT] == 0) GMT->common.b.ncol[GMT_OUT] = col;
 				if (S_obj->delay) {	/* Must do the first segment header now since we finally have allocated the table */

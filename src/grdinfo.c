@@ -478,7 +478,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		global_xmax = global_ymax = global_zmax = -DBL_MAX;
 	}
 	delay = (Ctrl->D.mode == 1 || (Ctrl->T.mode & 2));	/* Delay the freeing of the (single) grid we read */
-	num_report = (API->external || (Ctrl->C.active && Ctrl->C.mode));
+	num_report = (Ctrl->C.active && Ctrl->C.mode);
 	
 	if (Ctrl->C.active) {
 		n_cols = 6;	/* w e s n z0 z1 */
@@ -489,7 +489,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			if (Ctrl->L.norm & 2) n_cols += 3;	/* Add mean stdev rms */
 			if (Ctrl->L.norm & 4) n_cols += 2;	/* Add mode lmsscale */
 		}
-		if (API->external || Ctrl->C.mode == GRDINFO_NUMERICAL) cmode = GMT_COL_FIX_NO_TEXT;
+		if (Ctrl->C.mode == GRDINFO_NUMERICAL) cmode = GMT_COL_FIX_NO_TEXT;
 		geometry = GMT_IS_NONE;
 		if (Ctrl->C.mode == 0) geometry = GMT_IS_TEXT;
 		if (geometry == GMT_IS_TEXT) n_cols = 0;	/* A single string, unfortunatelly */
