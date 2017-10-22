@@ -5092,6 +5092,8 @@ GMT_LOCAL int api_init_import (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 		API->object[item]->selected = true;	/* We will use this variable to find stdin to read from later */
 		GMT_Report (API, GMT_MSG_DEBUG, "api_init_import: Added stdin to registered sources\n");
 	}
+	if (geometry == GMT_IS_TEXT)
+		API->GMT->current.io.trailing_text[GMT_IN] = true;
 	return (first_ID);
 }
 

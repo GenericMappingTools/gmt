@@ -426,7 +426,7 @@ GMT_LOCAL void smart_increments (struct GMT_CTRL *GMT, double inc[], unsigned in
 
 int GMT_grdinfo (void *V_API, int mode, void *args) {
 	int error = 0;
-	unsigned int n_grds = 0, n_cols = 0, col, i_status, cmode = GMT_COL_FIX, rmode = GMT_WRITE_TEXT;
+	unsigned int n_grds = 0, n_cols = 0, col, i_status, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
 	bool subset, delay, num_report;
 
 	uint64_t ij, n_nan = 0, n = 0;
@@ -490,19 +490,20 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			if (Ctrl->L.norm & 4) n_cols += 2;	/* Add mode lmsscale */
 		}
 		if (API->external || Ctrl->C.mode == GRDINFO_NUMERICAL) cmode = GMT_COL_FIX_NO_TEXT;
-		rmode = (Ctrl->C.mode == GRDINFO_TRAILING) ? GMT_WRITE_MIXED : (Ctrl->C.mode == GRDINFO_NUMERICAL ? GMT_WRITE_DATA : GMT_WRITE_TEXT);
-		if (rmode == GMT_WRITE_TEXT) n_cols = 0;	/* A single string, unfortunatelly */
+		geometry = GMT_IS_NONE;
+		if (Ctrl->C.mode == 0) geometry = GMT_IS_TEXT;
+		if (geometry == GMT_IS_TEXT) n_cols = 0;	/* A single string, unfortunatelly */
 	}
 	else if (Ctrl->I.status == GRDINFO_GIVE_BOUNDBOX) {
 		n_cols = 2;
 		cmode = GMT_COL_FIX_NO_TEXT;
-		rmode = GMT_WRITE_DATA;
+		geometry = GMT_IS_POLY;
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "Will write output record(s) with %d leading numerical columns and with%s trailing text\n", n_cols, answer[cmode>0]);
 	
 	GMT_Set_Columns (GMT->parent, GMT_OUT, n_cols, cmode);
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, rmode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
@@ -638,12 +639,6 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_BOUNDBOX) {
-			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POLY) != GMT_NOERROR) {	/* Sets output geometry */
-				Return (API->error);
-			}
-			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POLY) != GMT_NOERROR) {	/* Sets output geometry */
-				Return (API->error);
-			}
 			sprintf (record, "> Bounding box for %s", G->header->name);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 			/* LL */
