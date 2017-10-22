@@ -436,7 +436,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	double z_mean = 0.0, z_median = 0.0, z_mode = 0.0, z_stdev = 0.0, z_scale = 0.0, z_lmsscl = 0.0, z_rms = 0.0, out[22];
 
 	char format[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""}, grdfile[GMT_LEN256] = {""};
-	char *type[2] = { "Gridline", "Pixel"}, *sep = NULL, *projStr = NULL;
+	char *type[2] = { "Gridline", "Pixel"}, *sep = NULL, *projStr = NULL, *answer[2] = {"", " no"};
 
 	struct GRDINFO_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL, *W = NULL;
@@ -492,7 +492,9 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (API->external || Ctrl->C.mode == GRDINFO_NUMERICAL) cmode = GMT_COL_FIX_NO_TEXT;
 		rmode = (Ctrl->C.mode == GRDINFO_TRAILING) ? GMT_WRITE_MIXED : (Ctrl->C.mode == GRDINFO_NUMERICAL ? GMT_WRITE_DATA : GMT_WRITE_TEXT);
 	}
-	if (n_cols) GMT_Set_Columns (GMT->parent, GMT_OUT, n_cols, cmode);
+	GMT_Report (API, GMT_MSG_DEBUG, "Will write outpu record(s) with %d leading numerical columns and with%s trailing text\n", n_cols, answer[cmode>0]);
+	
+	GMT_Set_Columns (GMT->parent, GMT_OUT, n_cols, cmode);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, rmode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 		Return (API->error);
@@ -500,9 +502,6 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
-//	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_NONE) != GMT_NOERROR) {	/* Sets output geometry */
-//		Return (API->error);
-//	}
 	
 	Out = gmt_new_record (GMT, out, record);	/* the two items */
 	
