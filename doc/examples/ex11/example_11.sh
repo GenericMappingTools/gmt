@@ -24,33 +24,33 @@ gmt set FONT_ANNOT_PRIMARY 12p,Helvetica-Bold
 
 gmt grdimage x.nc y.nc c.nc -JX2.5i/-2.5i -R -K -O -X0.5i >> $ps
 gmt psxy -Wthinner,white,- @rays_11.txt -J -R -K -O >> $ps
-gmt pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
-128 128 12p -45 60\217
-102  26 12p -90 0.4
-204  26 12p -90 0.8
-10  140 16p 180 G
+gmt pstext --FONT=white -J -R -K -O -F+a+f >> $ps << END
+128 128 -45 12p 60\217
+102  26 -90 12p 0.4
+204  26 -90 12p 0.8
+10  140 180 16p G
 END
 echo 0 0 0 128 | gmt psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
 
 gmt grdimage x.nc c.nc y.nc -JX2.5i/2.5i -R -K -O -Y2.5i >> $ps
 gmt psxy -Wthinner,white,- @rays_11.txt -J -R -K -O >> $ps
-gmt pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
-128 128 12p  45 300\217
-26  102 12p   0 0.4
-26  204 12p   0 0.8
-140  10 16p -90 R
-100 100 16p -45 V
+gmt pstext --FONT=white -J -R -K -O -F+a+f >> $ps << END
+128 128  45 12p 300\217
+26  102   0 12p 0.4
+26  204   0 12p 0.8
+140  10 -90 16p R
+100 100 -45 16p V
 END
 echo 0 0 128 0 | gmt psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
 echo 0 0 90 90 | gmt psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
 
 gmt grdimage c.nc x.nc y.nc -JX-2.5i/2.5i -R -K -O -X-2.5i >> $ps
 gmt psxy -Wthinner,white,- @rays_11.txt -J -R -K -O >> $ps
-gmt pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
-128 128 12p 135 180\217
-102  26 12p  90 0.4
-204  26 12p  90 0.8
-10  140 16p   0 B
+gmt pstext --FONT=white -J -R -K -O -F+a+f >> $ps << END
+128 128 135 12p 180\217
+102  26  90 12p 0.4
+204  26  90 12p 0.8
+10  140   0 16p B
 END
 echo 0 0 0 128 | gmt psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
 echo 0 0 128 0 | gmt psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
@@ -64,31 +64,31 @@ gmt grdmath -I1 -R 255       = c.nc
 
 gmt grdimage x.nc y.nc c.nc -JX-2.5i/-2.5i -R -K -O -X2.5i -Y2.5i >> $ps
 gmt psxy -Wthinner,black,- @rays_11.txt -J -R -K -O >> $ps
-gmt pstext -J -R -K -O -F+f+a >> $ps << END
-128 128 12p 225 240\217
-102  26 12p 270 0.4
-204  26 12p 270 0.8
+gmt pstext -J -R -K -O -F+a+f >> $ps << END
+128 128 225 12p 240\217
+102  26 270 12p 0.4
+204  26 270 12p 0.8
 END
 
 gmt grdimage c.nc y.nc x.nc -JX2.5i/-2.5i -R -K -O -X2.5i >> $ps
 gmt psxy -Wthinner,black,- @rays_11.txt -J -R -K -O >> $ps
-gmt pstext -J -R -K -O -F+f+a >> $ps << END
-128 128 12p -45 0\217
-26  102 12p   0 0.4
-26  204 12p   0 0.8
-100 100 16p  45 S
-204  66 16p  90 H
+gmt pstext -J -R -K -O -F+a+f >> $ps << END
+128 128 -45 12p 0\217
+26  102   0 12p 0.4
+26  204   0 12p 0.8
+100 100  45 16p S
+204  66  90 16p H
 END
 echo 0 0 90 90 | gmt psxy -N -Sv0.15i+s+e -Gblack -W2p -J -R -K -O >> $ps
 echo 204 204 204 76 | gmt psxy -N -Sv0.15i+s+e -Gblack -W2p -J -R -K -O >> $ps
 
 gmt grdimage x.nc c.nc y.nc -JX-2.5i/2.5i -R -K -O -X-2.5i -Y2.5i >> $ps
 gmt psxy -Wthinner,black,- @rays_11.txt -J -R -K -O >> $ps
-gmt pstext -J -R -O -F+f+a >> $ps << END
-128 128 12p 135 120\217
-26  102 12p 180 0.4
-26  204 12p 180 0.8
-200 200 16p 225 GMT
+gmt pstext -J -R -O -F+a+f >> $ps << END
+128 128 135 12p 120\217
+26  102 180 12p 0.4
+26  204 180 12p 0.8
+200 200 225 16p GMT
 END
 
 rm -f *.nc gmt.conf
