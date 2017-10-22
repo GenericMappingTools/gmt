@@ -491,8 +491,14 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 		if (API->external || Ctrl->C.mode == GRDINFO_NUMERICAL) cmode = GMT_COL_FIX_NO_TEXT;
 		rmode = (Ctrl->C.mode == GRDINFO_TRAILING) ? GMT_WRITE_MIXED : (Ctrl->C.mode == GRDINFO_NUMERICAL ? GMT_WRITE_DATA : GMT_WRITE_TEXT);
+		if (rmode == GMT_WRITE_TEXT) n_cols = 0;	/* A single string, unfortunatelly */
 	}
-	GMT_Report (API, GMT_MSG_DEBUG, "Will write outpu record(s) with %d leading numerical columns and with%s trailing text\n", n_cols, answer[cmode>0]);
+	else if (Ctrl->I.status == GRDINFO_GIVE_BOUNDBOX) {
+		n_cols = 2;
+		cmode = GMT_COL_FIX_NO_TEXT;
+		rmode = GMT_WRITE_DATA;
+	}
+	GMT_Report (API, GMT_MSG_DEBUG, "Will write output record(s) with %d leading numerical columns and with%s trailing text\n", n_cols, answer[cmode>0]);
 	
 	GMT_Set_Columns (GMT->parent, GMT_OUT, n_cols, cmode);
 
@@ -503,7 +509,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	
-	Out = gmt_new_record (GMT, out, record);	/* the two items */
+	Out = gmt_new_record (GMT, (n_cols) ? out : NULL, (cmode) == GMT_COL_FIX ? record : NULL);	/* the two items */
 	
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */ 
 
@@ -639,26 +645,21 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			sprintf (record, "> Bounding box for %s", G->header->name);
-			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 			/* LL */
-			gmt_ascii_format_col (GMT, record, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
-			gmt_ascii_format_col (GMT, text,   G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
+			out[GMT_X] = G->header->wesn[XLO];	out[GMT_Y] = G->header->wesn[YLO];
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			/* LR */
-			gmt_ascii_format_col (GMT, record, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, sep);
-			gmt_ascii_format_col (GMT, text,   G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
+			out[GMT_X] = G->header->wesn[XHI];
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			/* UR */
-			gmt_ascii_format_col (GMT, record, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, sep);
-			gmt_ascii_format_col (GMT, text,   G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
+			out[GMT_Y] = G->header->wesn[YHI];
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			/* UL */
-			gmt_ascii_format_col (GMT, record, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
-			gmt_ascii_format_col (GMT, text,   G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
+			out[GMT_X] = G->header->wesn[XLO];
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			/* LL (repeat to close polygon) */
-			gmt_ascii_format_col (GMT, record, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
-			gmt_ascii_format_col (GMT, text,   G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
+			out[GMT_X] = G->header->wesn[XLO];	out[GMT_Y] = G->header->wesn[YLO];
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else if (Ctrl->C.active && !Ctrl->I.active) {
@@ -728,7 +729,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_mode,   GMT_OUT, GMT_Z);	strcat (record, text);
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, z_lmsscl, GMT_OUT, GMT_Z);	strcat (record, text);
 				}
-				if (Ctrl->C.mode -= GRDINFO_TRAILING) { sprintf (text, "%s%s", sep, G->header->name);	strcat (record, text); }
+				if (Ctrl->C.mode == GRDINFO_TRAILING) { sprintf (text, "%s%s", sep, G->header->name);	strcat (record, text); }
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 		}
