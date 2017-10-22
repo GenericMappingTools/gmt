@@ -1041,7 +1041,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							S[PAR] = D[PAR]->table[0]->segment[n_para] = GMT_Alloc_Segment (GMT->parent, GMT_WITH_STRINGS, krow[PAR], 0U, NULL, S[PAR]);
 						}
 						if ((D[PAR] = get_dataset_pointer (API, D[PAR], GMT_IS_TEXT, 1U, n_par_total, 0U, true)) == NULL) return (API->error);
-						sprintf (buffer, "%s %s %s %s %s %s %s %s", xx, yy, tmp, angle, key, lspace, tw, jj);
+						sprintf (buffer, "%s %s %s %s %s %s %s %s", xx, yy, angle, tmp, key, lspace, tw, jj);
 						S[PAR] = get_segment (D, PAR, ++n_para);	/* We store the header as one of the text records for simplicity */
 						GMT_Report (API, GMT_MSG_DEBUG, "PAR: %s\n", buffer);
 						S[PAR]->header = strdup (buffer);
