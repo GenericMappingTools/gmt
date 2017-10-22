@@ -344,6 +344,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			double slop;
 			char *record = NULL, item[GMT_BUFSIZ];
 			size_t n_alloc, len, rec_len;
+			struct GMT_RECORD *Out = NULL;
 			slop = 1.0 - (G->header->inc[GMT_X] / G->header->inc[GMT_Y]);
 			if (!gmt_M_is_zero (slop)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "x_inc must equal y_inc when writing to ESRI format\n");
@@ -351,35 +352,36 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			}
 			n_alloc = G->header->n_columns * 8;	/* Assume we only need 8 bytes per item (but we will allocate more if needed) */
 			record = gmt_M_memory (GMT, NULL, G->header->n_columns, char);
+			Out = gmt_new_record (GMT, NULL, record);
 			
 			sprintf (record, "ncols %d\nnrows %d", G->header->n_columns, G->header->n_rows);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write a text record */
 			if (G->header->registration == GMT_GRID_PIXEL_REG) {	/* Pixel format */
 				sprintf (record, "xllcorner ");
 				sprintf (item, GMT->current.setting.format_float_out, G->header->wesn[XLO]);
 				strcat  (record, item);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write a text record */
 				sprintf (record, "yllcorner ");
 				sprintf (item, GMT->current.setting.format_float_out, G->header->wesn[YLO]);
 				strcat  (record, item);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write a text record */
 			}
 			else {	/* Gridline format */
 				sprintf (record, "xllcenter ");
 				sprintf (item, GMT->current.setting.format_float_out, G->header->wesn[XLO]);
 				strcat  (record, item);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write a text record */
 				sprintf (record, "yllcenter ");
 				sprintf (item, GMT->current.setting.format_float_out, G->header->wesn[YLO]);
 				strcat  (record, item);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write a text record */
 			}
 			sprintf (record, "cellsize ");
 			sprintf (item, GMT->current.setting.format_float_out, G->header->inc[GMT_X]);
 			strcat  (record, item);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write a text record */
 			sprintf (record, "nodata_value %ld", lrint (Ctrl->E.nodata));
-			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write a text record */
 			gmt_M_row_loop (GMT, G, row) {	/* Scanlines, starting in the north (ymax) */
 				rec_len = 0;
 				gmt_M_col_loop (GMT, G, row, col, ij) {
@@ -398,9 +400,10 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 					rec_len += len;
 					if (col < (G->header->n_columns-1)) { strcat (record, " "); rec_len++;}
 				}
-				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a whole y line */
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write a whole y line */
 			}
 			gmt_M_free (GMT, record);
+			gmt_M_free (GMT, Out);
 		}
 		else {	/* Regular x,y,z[,w], col,row,z[,w] or index,z[,w] output */
 			if (first && GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_STDIO_IF_NONE, 0, options) != GMT_NOERROR) {	/* Establishes data output */

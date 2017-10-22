@@ -511,6 +511,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 	if (Ctrl->E.info.region) {	/* Must report region from chosen polygons */
 		unsigned int range = GMT->current.io.geo.range;	/* Old setting */
 		char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
+		struct GMT_RECORD *Rec = gmt_new_record (GMT, NULL, record);
 		size_t i, j;
 		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
 			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
@@ -535,11 +536,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_TEXT) != GMT_NOERROR) {	/* Sets output geometry */
 			return (API->error);
 		}
-		GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
+		GMT_Put_Record (API, GMT_WRITE_DATA, Rec);	/* Write text record to output destination */
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			return (API->error);
 		}
 		GMT->current.io.geo.range = range;	/* Reset to what it was */
+		gmt_M_free (GMT, Rec);
 		return NOT_REALLY_AN_ERROR;	/* To return with "error" but then exit with 0 error */
 	}
 

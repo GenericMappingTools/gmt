@@ -209,12 +209,12 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 			}
 			else if (Ctrl->C.active)	/* Just want a Yes */
 				strcpy (path, Yes);
-			GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else {	/* Did not find.  Report no or be quiet */
 			if (Ctrl->C.active) {
 				strcpy (path, No);
-				GMT_Put_Record (API, GMT_WRITE_TEXT, Out);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 			GMT_Report (API, GMT_MSG_NORMAL, "File %s not found!\n", &file[first]);
 		}

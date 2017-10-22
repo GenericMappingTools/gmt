@@ -7420,10 +7420,6 @@ GMT_LOCAL int api_put_record_fp (struct GMTAPI_CTRL *API, unsigned int mode, str
 			if (GMT->common.b.ncol[GMT_OUT] == UINT_MAX) GMT->common.b.ncol[GMT_OUT] = GMT->common.b.ncol[GMT_IN];
 			error = GMT->current.io.output (GMT, API->current_fp, GMT->common.b.ncol[GMT_OUT], record->data, record->text);
 			break;
-		case GMT_WRITE_TEXT:		/* Export the current text record; skip if binary */
-			s = (record) ? record->text : GMT->current.io.curr_text;
-			gmtlib_write_textrecord (GMT, API->current_fp, s);	error = 1;	/* Write one item */
-			break;
 		case GMT_WRITE_TABLE_START:	/* Write title and command to start of file; skip if binary */
 			gmtlib_write_newheaders (GMT, API->current_fp, API->current_put_n_columns);	error = 1;	/* Write one item */
 			break;
@@ -7601,9 +7597,7 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 	 * We use mode to signal the kind of record:
 	 *   GMT_WRITE_TABLE_HEADER: Write an ASCII table header
 	 *   GMT_WRITE_SEGMENT_HEADER: Write an ASCII or binary segment header
-	 *   GMT_WRITE_DATA:    Write an ASCII or binary data record
-	 *   GMT_WRITE_TEXT:      Write an ASCII text record
-	 *   GMT_WRITE_MIXED:      Write an ASCII data record with trailing text
+	 *   GMT_WRITE_DATA:    Write an data record
 	 * For text: If record == NULL use internal current record or header.
 	 * Returns 0 if a record was written successfully (See what -s[r] can do).
 	 * If an error occurs we return GMT_NOTSET and set API->error.
@@ -7770,8 +7764,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
 	 * We use mode to signal the kind of record:
 	 *   GMT_WRITE_TABLE_HEADER:   Write an ASCII table header
 	 *   GMT_WRITE_SEGMENT_HEADER: Write an ASCII or binary segment header
-	 *   GMT_WRITE_DATA:           Write an ASCII or binary data record
-	 *   GMT_WRITE_TEXT:           Write an ASCII data record
+	 *   GMT_WRITE_DATA:           Write an data record
 	 * For text: If record == NULL we use internal current record or header.
 	 * Returns GMT_NOERROR if a record was written successfully (See what -s[r] can do).
 	 * If an error occurs we return GMT_NOTSET and set API->error.

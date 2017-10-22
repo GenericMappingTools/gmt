@@ -570,7 +570,7 @@ GMT_LOCAL int kml_print (struct GMTAPI_CTRL *API, struct GMT_RECORD *R, int ntab
 	vsnprintf (R->text + ntabs, GMT_BUFSIZ - ntabs, format, args);
 	va_end (args);
 	assert (strlen (R->text) < GMT_BUFSIZ);
-	GMT_Put_Record (API, GMT_WRITE_TEXT, R);
+	GMT_Put_Record (API, GMT_WRITE_DATA, R);
 	return (GMT_NOERROR);
 }
 

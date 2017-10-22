@@ -10451,7 +10451,7 @@ int gmt_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *optio
 		}
 		if (lines) {	/* Separate lines */
 			Out.text = param;
-			GMT_Put_Record (GMT->parent, GMT_WRITE_TEXT, &Out);
+			GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, &Out);
 		}
 		else
 			strncat (record, param, GMT_BUFSIZ-1);
@@ -10459,7 +10459,7 @@ int gmt_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *optio
 	}
 	if (!lines && n) {
 		Out.text = record;
-		GMT_Put_Record (GMT->parent, GMT_WRITE_TEXT, &Out);		/* Separate lines */
+		GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, &Out);		/* Separate lines */
 	}
 	if (GMT_End_IO (GMT->parent, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		return (GMT->parent->error);

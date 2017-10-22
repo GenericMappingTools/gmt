@@ -1561,18 +1561,16 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 								gmt_M_free (GMT, kk);
 							}
 							else {	/* Just report */
-								if (mseg) {
-									sprintf (T1, "%s-%" PRIu64, C->table[tbl1]->file[GMT_IN], seg1);
-									sprintf (T2, "%s-%" PRIu64, D->table[tbl2]->file[GMT_IN], seg2);
-								}
-								else {
-									strncpy (T1, C->table[tbl1]->file[GMT_IN], GMT_BUFSIZ-1);
-									strncpy (T2, D->table[tbl2]->file[GMT_IN], GMT_BUFSIZ-1);
-								}
+								if (mseg)
+									sprintf (record, "%s-%" PRIu64 "%s%s-%" PRIu64, C->table[tbl1]->file[GMT_IN], seg1, GMT->current.setting.io_col_separator, C->table[tbl2]->file[GMT_IN], seg2);
+								else
+                                    sprintf (record, "%s%s%s", C->table[tbl1]->file[GMT_IN], GMT->current.setting.io_col_separator, C->table[tbl2]->file[GMT_IN]);
 								Out.text = record;
 								for (px = 0; px < nx; px++) {	/* Write these to output */
+                                    out[GMT_X] = XC.x[px];  out[GMT_Y] = XC.y[px];
+                                    out[2] = XC.xnode[0][px];   out[3] = XC.xnode[1][px];
 									sprintf (record, fmt, XC.x[px], XC.y[px], (double)XC.xnode[0][px], (double)XC.xnode[1][px], T1, T2);
-									GMT_Put_Record (API, GMT_WRITE_TEXT, &Out);
+									GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 								}
 							}
 							gmt_x_free (GMT, &XC);
@@ -1696,7 +1694,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						(D->n_tables == 1) ? sprintf (src, "[ segment %" PRIu64 " ]", seg)  : sprintf (src, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl, seg);
 						poly_D = (gmt_polygon_is_open (GMT, D->table[tbl]->segment[seg]->data[GMT_X], D->table[tbl]->segment[seg]->data[GMT_Y], D->table[tbl]->segment[seg]->n_rows)) ? 1 : 0;
 						sprintf (record, "N : Input %s %s not present in %s", feature[poly_D], src, from);
-						GMT_Put_Record (API, GMT_WRITE_TEXT, &Out);
+						GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 					}
 					continue;
 				}
@@ -1714,7 +1712,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						else
 							sprintf (record, format, verdict[abs(I->mode)], feature[poly_D], src, kind[I->mode+4], feature[poly_S2],
 							         dup, from, I->distance, I->closeness, I->setratio);
-						GMT_Put_Record (API, GMT_WRITE_TEXT, &Out);
+						GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 					}
 				}
 			}
@@ -1847,7 +1845,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					/* Here we are inside */
 					if (Ctrl->N.mode == 1) {	/* Just report on which polygon contains each feature */
 						sprintf (record, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d", kind[Ctrl->N.all], tbl, seg, ID);
-						GMT_Put_Record (API, GMT_WRITE_TEXT, &Out);
+						GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 					}
 					else if (Ctrl->N.mode == 2) {	/* Add ID as last data column */
 						for (row = 0, n = S->n_columns-1; row < S->n_rows; row++) S->data[n][row] = (double)ID;
