@@ -2649,7 +2649,7 @@ double gmt_grd_mode (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *
 		gmt_sort_array (GMT, Z->data, Z->header->nm, GMT_FLOAT);
 		for (n = Z->header->nm; n > 1 && gmt_M_is_fnan (Z->data[n-1]); n--);
 		if (n)
-			gmt_mode_f (GMT, G->data, n, n/2, 0, gmt_mode_selection, &GMT_n_multiples, &wmode);
+			gmt_mode_f (GMT, Z->data, n, n/2, 0, gmt_mode_selection, &GMT_n_multiples, &wmode);
 		else
 			wmode = GMT->session.d_NaN;
 		if (!overwrite) gmt_free_grid (GMT, &Z, true);
@@ -2706,11 +2706,11 @@ double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 			gmt_sort_array (GMT, Z->data, Z->header->nm, GMT_FLOAT);
 			for (n = Z->header->nm; n > 1 && gmt_M_is_fnan (Z->data[n-1]); n--);
 			if (n)
-				gmt_mode_f (GMT, G->data, n, n/2, 0, gmt_mode_selection, &GMT_n_multiples, &wmode);
+				gmt_mode_f (GMT, Z->data, n, n/2, 0, gmt_mode_selection, &GMT_n_multiples, &wmode);
 			else
 				wmode = GMT->session.d_NaN;
 		}
-		gmt_getmad_f (GMT, G->data, n, wmode, &lmsscl);
+		gmt_getmad_f (GMT, Z->data, n, wmode, &lmsscl);
 		if (!overwrite) gmt_free_grid (GMT, &Z, true);
 		if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%d Multiple modes found in the grid\n", GMT_n_multiples);
 	}
