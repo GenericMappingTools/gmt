@@ -906,7 +906,10 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			}
 			else {	/* Text block record */
 				line = In->text;
-				assert (line != NULL);	/* Sanity check */
+				if (line == NULL) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Text record line %d is NULL! Skipped but this is trouble)\n", n_read);
+					continue;
+				}
 				if (skip_text_records) continue;	/* Skip all records for this paragraph */
 				if (!master_record) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Text record line %d not preceded by paragraph information, skipped)\n", n_read);
@@ -949,7 +952,10 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			in   = In->data;
 			line = In->text;
 			if (!no_in_text) {
-				assert (line != NULL);
+				if (line == NULL) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Text record line %d is NULL! Skipped but this is trouble)\n", n_read);
+					continue;
+				}
 				if (gmt_is_a_blank_line (line)) continue;	/* Skip blank lines or # comments */
 				strncpy (cp_line, line, GMT_BUFSIZ-1);	/* Make a copy because in_line may be pointer to a strdup-ed line that we cannot enlarge */
 				line = cp_line;
