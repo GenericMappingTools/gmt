@@ -434,12 +434,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Note: if -C is selected then 3rd means 4th column, etc.]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Symbols A, C, D, G, H, I, N, S, T are adjusted to have same area\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   as a circle of the specified diameter.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Bars: Append b[<base>] to give the y-value of the base [Default = 0 (1 for log-scales)].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Bars: Append +b[<base>] to give the y-value of the base [Default = 0 (1 for log-scales)].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Append u if width is in x-input units [Default is %s].\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t      Use upper case -SB for horizontal bars (<base> then refers to x\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      and width may be in y-units [Default is vertical]. To read the <base>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      value from file, specify b with no trailing value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      value from file, specify +b with no trailing value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Decorated line: Give [d|f|l|n|s|x]<info>[:<symbolinfo>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     <code><info> controls placement of a symbol along lines.  Select\n");
 	gmt_cont_syntax (API->GMT, 7, 2);

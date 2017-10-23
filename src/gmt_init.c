@@ -12446,16 +12446,21 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 	else if (strchr (bar_symbols[mode], (int) text[0])) {	/* Bar, column, cube with size */
 
-		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|u]][b[<base>]]				*/
-		/* Column:	-So|O[<size_x>[c|i|p|u][/<ysize>[c|i|p|u]]][b[<base>]]	*/
+		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|u]][+b[<base>]]				*/
+		/* Column:	-So|O[<size_x>[c|i|p|u][/<ysize>[c|i|p|u]]][+b[<base>]]	*/
 		/* Cube:	-Su|U[<size_x>[c|i|p|u]]	*/
 
 		for (j = 1; text[j]; j++) {	/* Look at chars following the symbol code */
 			if (text[j] == '/') slash = j;
-			if (text[j] == 'b') bset = j;
+			if (text[j] == 'b') bset = j;	/* Basically not worry about +b vs b by just checking for b */
 		}
 		strncpy (text_cp, text, GMT_LEN256-1);
-		if (bset) text_cp[bset] = 0;	/* Chop off the b<base> from copy to avoid confusion when parsing.  <base> is always in user units */
+		if (bset) {	/* Chop off the b<base> from copy to avoid confusion when parsing.  <base> is always in user units */
+			if (text_cp[bset-1] == '+')	/* Gave +b */
+				text_cp[bset-1] = 0;
+			else	/* Handle backwards compatible case of just b[<base>] */
+				text_cp[bset] = 0;
+		}
 		if (slash) {	/* Separate x/y sizes */
 			n = sscanf (text_cp, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 			decode_error = (n != 3);

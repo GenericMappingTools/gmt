@@ -35,14 +35,14 @@
     **-Sb**
         Vertical **b**\ ar extending from *base* to y. *size* is bar width.
         Append **u** if *size* is in x-units [Default is plot-distance units].
-        By default, *base* = ymin. Append **b**\ [*base*] to change this
+        By default, *base* = ymin. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
         data column.
 
     **-SB**
         Horizontal **b**\ ar extending from *base* to x. *size* is bar width.
         Append **u** if *size* is in y-units [Default is plot-distance units].
-        By default, *base* = xmin. Append **b**\ [*base*] to change this
+        By default, *base* = xmin. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
         data column.
 
@@ -146,11 +146,11 @@
         pe\ **n**\ tagon. *size* is diameter of circumscribing circle.
 
     **-So**
-        c\ **o**\ lumn (3-D) extending from *base* to z.  The *size* sets base width
-        (Use *xsize/ysize* if not the same).  Append **u** if *size* is in x-units
+        c\ **o**\ lumn (3-D) extending from *base* to *z*.  The *size* sets base width
+        (Use *xsize/ysize* if not the same).  Append **u** if *size* is in the users' x-units
         [Default is plot-distance units].  If no *size* is given we expect both *xsize*
         and *ysize* as two extra data columns.  By default, *base* = 0.  Append
-        **b**\ *base* to change this value.  The facet colors will be modified to
+        **+b**\ *base* to change this value.  The facet colors will be modified to
         simulate shading.  Use **-SO** to disable such 3-D illumination.
         If *base* is not appended then we read it from the last input data column.
 

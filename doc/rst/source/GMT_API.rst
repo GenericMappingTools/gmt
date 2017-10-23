@@ -2361,7 +2361,7 @@ enable record-by-record writing with GMT_Begin_IO_ and then use the
 
     int GMT_Put_Record (void *API, unsigned int mode, void *rec);
 
-where ``rec`` is a pointer to either (a) a GMT_RECORD structure
+where ``rec`` is a pointer to (a) a GMT_RECORD structure for
 the current row. Alternatively (b), ``rec``
 points to a text string. The ``mode`` parameter must be set to reflect
 what is passed. Using GMT_Put_Record_ requires you to first
@@ -2374,20 +2374,10 @@ actually written:
 **GMT_WRITE_DATA**.
     Normal operation that builds the current output record from the numerical values in ``rec``.
 
-**GMT_WRITE_TEXT**.
-    For ASCII output mode we write the text string ``rec``. If ``rec``
-    is NULL then we use the current (last imported) text record. If
-    binary output mode we quietly skip writing this record.
-
-**GMT_WRITE_MIXED**.
-    For ASCII output mode we write the mixed record from the numerical
-    and text information in ``rec``. If
-    binary output mode we quietly skip writing the text portion.
-
 **GMT_WRITE_TABLE_HEADER**.
     For ASCII output mode we write the text string ``rec``. If ``rec``
-    is NULL then we write the last read header record (and ensures it
-    starts with #). If binary output mode we quietly skip writing this record.
+    is NULL then we write the last read header record. If binary
+    output mode we quietly skip writing this record.
 
 **GMT_WRITE_SEGMENT_HEADER**.
     For ASCII output mode we use the text string ``rec`` as the

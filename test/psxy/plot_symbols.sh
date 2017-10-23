@@ -9,8 +9,8 @@ gmt psxy -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
 > Fat pen -W2p
 0.5	5.5	-
 > Plain red symbols -W- -Gred
-1.5	5.5	bb5
-2.5	5.5	Bb2
+1.5	5.5	b+b5
+2.5	5.5	B+b2
 3.5	5.5	c
 > Switch to green -Ggreen -W1p
 0.5	4.5	d
