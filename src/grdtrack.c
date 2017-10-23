@@ -1021,7 +1021,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		T = Dout->table[0];
 		T->n_headers = 2;
 		T->header = gmt_M_memory (GMT, NULL, T->n_headers, char *);
-		T->header[0] = strdup ("# Equidistant cross-profiles normal to each input segment");
+		T->header[0] = strdup ("Equidistant cross-profiles normal to each input segment");
 		T->header[1] = strdup (run_cmd);
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 			Return (API->error);
@@ -1055,7 +1055,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		T = Dout->table[0];
 		T->n_headers = 2;
 		T->header = gmt_M_memory (GMT, NULL, T->n_headers, char *);
-		T->header[0] = strdup ("# Sampled values along specified profiles");
+		T->header[0] = strdup ("Sampled values along specified profiles");
 		T->header[1] = strdup (run_cmd);
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 			Return (API->error);

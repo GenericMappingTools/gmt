@@ -673,7 +673,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	}
 
 	Dout[0]->table[0]->header = gmt_M_memory (GMT, NULL, 1, char *);	/* One header record only */
-	sprintf (header, "# sphtriangulate %s output via STRPACK", tmode[Ctrl->Q.mode]);
+	sprintf (header, "sphtriangulate %s output via STRPACK", tmode[Ctrl->Q.mode]);
 	if (Ctrl->A.active) {
 		strcat (header, (Ctrl->T.active) ? ".  Arc lengths in " : ".  Areas in ");
 		strncat (header, unit_name (Ctrl->L.unit, Ctrl->T.active), GMT_BUFSIZ-1);
@@ -691,8 +691,8 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->N.active) {
 		gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Since we only have one segment */
-		if (Ctrl->A.active) sprintf (header, "# sphtriangulate nodes (lon, lat, area)");
-		else sprintf (header, "# sphtriangulate nodes (lon, lat)");
+		if (Ctrl->A.active) sprintf (header, "sphtriangulate nodes (lon, lat, area)");
+		else sprintf (header, "sphtriangulate nodes (lon, lat)");
 		Dout[1]->table[0]->header = gmt_M_memory (GMT, NULL, 1, char *);
 		Dout[1]->table[0]->n_headers = 1;
 		Dout[1]->table[0]->header[0] = strdup (header);

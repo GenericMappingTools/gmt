@@ -199,7 +199,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 }
 
 GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int row0, unsigned int row1, unsigned int col0, unsigned int col1, unsigned int count[], unsigned int *side) {
-	/* Looo around current perimeter and count # of nans, return sum and pass back which side had most nans */
+	/* Loop around current perimeter and count # of nans, return sum and pass back which side had most nans */
 	unsigned int col, row, sum = 0, k;
 	uint64_t node;
 	
