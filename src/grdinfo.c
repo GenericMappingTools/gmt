@@ -176,6 +176,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 					Ctrl->C.mode = GRDINFO_NUMERICAL;
 				else if (opt->arg[0] == 't')
 					Ctrl->C.mode = GRDINFO_TRAILING;
+				if (GMT->parent->external && Ctrl->C.mode == 0) Ctrl->C.mode = GRDINFO_NUMERICAL;
 				break;
 			case 'D':	/* Tiling output w/ optional overlap */
 				Ctrl->D.active = true;
