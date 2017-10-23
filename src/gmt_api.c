@@ -7635,6 +7635,9 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 			D_obj = S_obj->resource;
 			if (!D_obj) {	/* First time allocation of the single output table */
 				unsigned int smode;
+				if (mode == GMT_WRITE_TABLE_HEADER) {	/* Cannot do this yet since we dont know sizes. Skip */
+					return GMT_NOERROR;
+				}
 				if (mode == GMT_WRITE_SEGMENT_HEADER) {	/* Cannot do this yet since we dont know sizes. Delay */
 					S_obj->delay = 1;
 					S_obj->status = GMT_IS_USING;	/* Have started writing to this destination */
@@ -7685,6 +7688,9 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 			/* At the first output record the output matrix has not been allocated.
 			 * So first we do that, then later we can increment its size when needed.
 			 * The realloc to final size takes place in GMT_End_IO. */
+			if (mode == GMT_WRITE_TABLE_HEADER) {	/* Cannot do this yet since we dont know sizes. Skip */
+				return GMT_NOERROR;
+			}
 			if (S_obj->n_rows && S_obj->rec >= S_obj->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
 			if (S_obj->resource == NULL) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
@@ -7718,6 +7724,9 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 
 		case GMT_IS_DUPLICATE|GMT_VIA_VECTOR:	/* List of column arrays */
 		case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
+			if (mode == GMT_WRITE_TABLE_HEADER) {	/* Cannot do this yet since we dont know sizes. Skip */
+				return GMT_NOERROR;
+			}
 			if (S_obj->n_rows && S_obj->rec >= S_obj->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
 			if (S_obj->resource == NULL) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
