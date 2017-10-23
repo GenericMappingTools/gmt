@@ -365,9 +365,9 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	}
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 	
-	sprintf (record, " Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);
+	sprintf (record, "Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
-	sprintf (record, " Command: %s", THIS_MODULE_NAME);
+	sprintf (record, "Command: %s", THIS_MODULE_NAME);
 	len = GMT_BUFSIZ - strlen (record) - 1;
 	if (!Ctrl->In.file) {
 		strncat (record, " [stdin]", len);

@@ -454,15 +454,15 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	if (Ctrl->G.active)		/* GPlates header */
-		sprintf (record, "#plateid%stime%slatitude%slongitude%sangle%sfixedplateid\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, \
+		sprintf (record, "plateid%stime%slatitude%slongitude%sangle%sfixedplateid\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, \
 			GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
 	else if (Ctrl->F.mode && no_time)
-		sprintf (record, "#longitude%slatitude%sangle(deg)\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
+		sprintf (record, "longitude%slatitude%sangle(deg)\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
 	else if (Ctrl->F.mode)	/* Easy, simply output what we've got following a header*/
-		sprintf (record, "#longitude%slatitude%s%s%sangle(deg)\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, time_text[Ctrl->A.active], GMT->current.setting.io_col_separator);
+		sprintf (record, "longitude%slatitude%s%s%sangle(deg)\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, time_text[Ctrl->A.active], GMT->current.setting.io_col_separator);
 	else {	/* Convert total reconstruction to stages before output */
 		spotter_total_to_stages (GMT, a, n_a, true, true);				/* To ensure we have the right kind of poles for output */
-		printf (record, "#longitude%slatitude%s%s%s%s%sangle(deg)\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, start_text[Ctrl->A.active], GMT->current.setting.io_col_separator, end_text[Ctrl->A.active], GMT->current.setting.io_col_separator);
+		printf (record, "longitude%slatitude%s%s%s%s%sangle(deg)\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, start_text[Ctrl->A.active], GMT->current.setting.io_col_separator, end_text[Ctrl->A.active], GMT->current.setting.io_col_separator);
 	}
 	if (GMT->current.setting.io_header[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 	

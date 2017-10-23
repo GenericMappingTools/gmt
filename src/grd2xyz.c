@@ -439,9 +439,9 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				}
 				if (!G->header->z_units[0]) strcpy (G->header->z_units, "z");
 				if (GMT->current.setting.io_lonlat_toggle[GMT_IN])
-					sprintf (header, "# %s%s%s%s%s", G->header->y_units, GMT->current.setting.io_col_separator, G->header->x_units, GMT->current.setting.io_col_separator, G->header->z_units);
+					sprintf (header, "%s%s%s%s%s", G->header->y_units, GMT->current.setting.io_col_separator, G->header->x_units, GMT->current.setting.io_col_separator, G->header->z_units);
 				else
-					sprintf (header, "# %s%s%s%s%s", G->header->x_units, GMT->current.setting.io_col_separator, G->header->y_units, GMT->current.setting.io_col_separator, G->header->z_units);
+					sprintf (header, "%s%s%s%s%s", G->header->x_units, GMT->current.setting.io_col_separator, G->header->y_units, GMT->current.setting.io_col_separator, G->header->z_units);
 				if (Ctrl->W.active) {
 					strcat (header, GMT->current.setting.io_col_separator);
 					strcat (header, "weight");

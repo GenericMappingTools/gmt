@@ -85,6 +85,8 @@ struct GMTAPI_DATA_OBJECT {
 	unsigned int status;			/* 0 when first registered, 1 after reading/writing has started, 2 when finished */
 	unsigned int orig_pad[4];		/* Original grid pad */
 	unsigned int reset_pad;			/* 1 for input memory grids from which a subregion was requested */
+	bool h_delay;				/* We must delay writing table headers until memory allocated */
+	bool s_delay;				/* We must delay writing segment header until memory allocated  */
 	bool selected;				/* true if requested by current module, false otherwise */
 	bool close_file;			/* true if we opened source as a file and thus need to close it when done */
 	bool region;				/* true if wesn was passed, false otherwise */
@@ -135,6 +137,7 @@ struct GMTAPI_CTRL {
 	unsigned int leave_grid_scaled;		/* 1 if we don't want to unpack a grid after we packed it for writing [0] */
 	unsigned int n_cores;			/* Number of available cores on this system */
 	unsigned int verbose;			/* Used until GMT is set up */
+	unsigned int n_tmp_headers;		/* Number of temporarily held table headers */
 	bool registered[2];			/* true if at least one source/destination has been registered (in and out) */
 	bool io_enabled[2];			/* true if access has been allowed (in and out) */
 	bool module_input;			/* true when we are about to read inputs to the module (command line) */
@@ -150,6 +153,8 @@ struct GMTAPI_CTRL {
 	char *session_tag;			/* Name tag for this session (or NULL) */
 	char *tmp_dir;				/* System tmp_dir (NULL if not found) */
 	char *gwf_dir;				/* GMT WorkFlow dir (NULL if not running in modern mode) */
+	char **tmp_header;			/* Temporary table headers held until we are able to write them to destination */
+	char *tmp_segmentheader;		/* Temporary segment header held until we are able to write it to destination */
 	char error_msg[4096];			/* The cached last error message */
 	bool internal;				/* true if session was initiated by gmt.c */
 	bool deep_debug;			/* temporary for debugging */

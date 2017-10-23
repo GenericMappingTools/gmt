@@ -797,6 +797,7 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	/* Variables we document for the API: */
 	uint64_t n_columns;		/* Number of vectors */
 	uint64_t n_rows;		/* Number of rows in each vector */
+	unsigned int n_headers;		/* Number of CPT header records (0 if no header) */
 	enum GMT_enum_reg registration;	/* 0 for gridline and 1 for pixel registration  */
 	enum GMT_enum_type *type;	/* Array of data types (type of each uni-vector, e.g. GMT_FLOAT */
 	double range[2];		/* Contains tmin/tmax (or 0/0 if not equidistant) */
@@ -804,6 +805,7 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	char **text;			/* Pointer to optional array of strings [NULL] */
 	char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
 	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
+	char **header;		        /* Array with all Vector header records, if any) */		/* Content not counted by sizeof (struct) */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
 	unsigned int alloc_level;	/* The level it was allocated at */
@@ -826,6 +828,7 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	uint64_t n_rows;		/* Number of rows in this matrix */
 	uint64_t n_columns;		/* Number of columns in this matrix */
 	uint64_t n_layers;		/* Number of layers in a 3-D matrix [1] */
+	unsigned int n_headers;		/* Number of CPT header records (0 if no header) */
 	enum GMT_enum_fmt shape;	/* 0 = C (rows) and 1 = Fortran (cols) */
 	enum GMT_enum_reg registration;	/* 0 for gridline and 1 for pixel registration  */
 	size_t dim;			/* Allocated length of longest C or Fortran dim */
@@ -836,6 +839,7 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	char **text;			/* Pointer to optional array of strings [NULL] */
 	char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
 	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
+	char **header;		        /* Array with all Matrix header records, if any) */		/* Content not counted by sizeof (struct) */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
 	unsigned int alloc_level;	/* The level it was allocated at */

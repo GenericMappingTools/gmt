@@ -825,14 +825,14 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			version = r.version;	title = r.title;	source = r.source;
 		}
 		if (Ctrl->E.active) {
-			sprintf (header, "# Country polygons extracted from the DCW database\n");
+			sprintf (header, "Country polygons extracted from the DCW database\n");
 			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);
 		}
 		else {
-			sprintf (header, "# %s extracted from the %s resolution GSHHG version %s database\n", kind[id], shore_resolution[base], version);
+			sprintf (header, "%s extracted from the %s resolution GSHHG version %s database\n", kind[id], shore_resolution[base], version);
 			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);
-			sprintf (header, "# %s\n# %s\n", title, source);
-			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);
+			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, title);
+			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, source);
 		}
 		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	}

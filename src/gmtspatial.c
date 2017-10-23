@@ -1164,7 +1164,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			if (GMT->common.h.add_colnames) {
 				char header[GMT_LEN256] = {""}, *name[2][2] = {{"x", "y"}, {"lon", "lat"}};
 				k = (gmt_M_is_geographic (GMT, GMT_IN)) ? 1 : 0;
-				sprintf (header, "#%s[0]\t%s[1]\tz[2]\tweight[3]\tNN_dist[4]\tID[5]\tNN_ID[6]", name[k][GMT_X], name[k][GMT_Y]);
+				sprintf (header, "%s[0]\t%s[1]\tz[2]\tweight[3]\tNN_dist[4]\tID[5]\tNN_ID[6]", name[k][GMT_X], name[k][GMT_Y]);
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	
 			}
 		}
@@ -1173,7 +1173,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != 0) Return (error);
 			if (GMT->common.h.add_colnames) {
 				char header[GMT_LEN64];
-				sprintf (header, "#NN_dist[0]\tID[1]\tNN_ID[2]");
+				sprintf (header, "NN_dist[0]\tID[1]\tNN_ID[2]");
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	
 			}
 		}

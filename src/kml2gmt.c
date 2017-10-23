@@ -218,12 +218,12 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing %s\n", Ctrl->In.file);
-		sprintf (buffer, "# kml2gmt: KML read from %s", Ctrl->In.file);
+		sprintf (buffer, "kml2gmt: KML read from %s", Ctrl->In.file);
 	}
 	else {     /* Just read standard input */
 		fp = stdin;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading from standard input\n");
-		sprintf (buffer, "# kml2gmt: KML read from standard input");
+		sprintf (buffer, "kml2gmt: KML read from standard input");
 	}
 	if (Ctrl->F.active)
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Only output features with geometry: %s\n", gm[Ctrl->F.mode]);
@@ -256,7 +256,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			strncpy (name, &line[start], GMT_BUFSIZ-1);
 			gmt_chop (name);
 			if (first && !skip) {
-				sprintf (buffer, "# %s", &line[start]);
+				sprintf (buffer, "%s", &line[start]);
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Out);	/* Write this to output */
 				first = false;
 			}
@@ -269,7 +269,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			strncpy (description, &line[start], GMT_BUFSIZ-1);
 			gmt_chop (description);
 			if (first && !skip) {
-				sprintf (buffer, "# %s", &line[start]);
+				sprintf (buffer, "%s", &line[start]);
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Out);	/* Write this to output */
 				first = false;
 			}

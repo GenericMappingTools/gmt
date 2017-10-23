@@ -3979,7 +3979,7 @@ void gmtlib_write_tableheader (struct GMT_CTRL *GMT, FILE *fp, char *txt) {
 	else if (!txt || !txt[0])				/* Blank header */
 		fprintf (fp, "#\n");
 	else {
-		if (txt[0] != '>') fputc ('#', fp);	/* Make sure we have # at start ... if not multi-segment */
+		if (txt[0] != '#') fputc ('#', fp);	/* Make sure we have # at start ... if not multi-segment */
 		while (strchr ("#\t ", *txt)) txt++;	/* Skip header record indicator and leading whitespace */
 		fprintf (fp, " %s", txt);
 		if (txt[strlen(txt)-1] != '\n') fputc ('\n', fp);	/* Make sure we have \n at end */

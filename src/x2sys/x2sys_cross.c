@@ -838,13 +838,13 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					if (first_header) {	/* Write the header record */
 						char *cmd = NULL, *c = GMT->current.setting.io_col_separator;
 						t_or_i = (got_time) ? 't' : 'i';
-						sprintf (line, "# Tag: %s", Ctrl->T.TAG);
+						sprintf (line, "Tag: %s", Ctrl->T.TAG);
 						GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, line);
 						cmd = GMT_Create_Cmd (API, options);
-						sprintf (line, "# Command: %s %s", THIS_MODULE_NAME, cmd);	/* Build command line argument string */
+						sprintf (line, "Command: %s %s", THIS_MODULE_NAME, cmd);	/* Build command line argument string */
 						gmt_M_free (GMT, cmd);
 						GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, line);
-						sprintf (line, "# %s%s%s%s%c_1%s%c_2%sdist_1%sdist_2%shead_1%shead_2%svel_1%svel_2",
+						sprintf (line, "%s%s%s%s%c_1%s%c_2%sdist_1%sdist_2%shead_1%shead_2%svel_1%svel_2",
 							s->info[s->out_order[s->x_col]].name, c, s->info[s->out_order[s->y_col]].name, c, t_or_i, c, t_or_i, c, c, c, c, c, c);
 						for (j = 0; j < n_data_col; j++) {
 							col = col_number[j];
