@@ -8,11 +8,11 @@ REM DOS calls:	echo, del, gawk
 REM
 echo GMT EXAMPLE 10
 set ps=example_10.ps
-gmt pscoast -Rd -JX8id/5id -Dc -Sazure2 -Gwheat -Wfaint -A5000 -p200/40 -K > %ps%
+gmt pscoast -Rd -JQ0/37.5/8i -Dc -Sazure2 -Gwheat -Wfaint -A5000 -p200/40 -K > %ps%
 gmt which @languages_10.txt -Gl
 gmt makecpt -Cpurple,blue,darkgreen,yellow,red -T0,1,2,3,4,5 > t.cpt
 echo {print $1, $2, $3+$4+$5+$6+$7} > awk.txt
 gawk -f awk.txt languages_10.txt | gmt pstext -R -J -O -K -p -Gwhite@30 -D-0.25i/0 -F+f30p,Helvetica-Bold,firebrick=thinner+jRM >> %ps%
-gmt psxyz @languages_10.txt -R-180/180/-90/90/0/2500 -J -JZ2.5i -So0.3i+Z5 -Ct.cpt -Wthinner --FONT_TITLE=30p,Times-Bold --MAP_TITLE_OFFSET=-0.7i -O -K -p --FORMAT_GEO_MAP=dddF -Bx60 -By30 -Bza500+lLanguages -BWSneZ+t"World Languages By Continent" >> %ps%
+gmt psxyz @languages_10.txt -R-180/180/-90/90/0/2500 -J -JZ2.5i -So0.3i+Z5 -Ct.cpt -Wthinner --FONT_TITLE=30p,Times-Bold --MAP_TITLE_OFFSET=-0.7i -O -K -p --FORMAT_GEO_MAP=dddF -Baf -Bza500+lLanguages -BWSneZ+t"World Languages By Continent" >> %ps%
 gmt pslegend -R -J -JZ -DjLB+o0.2i+w1.35i/0+jBL -O --FONT=Helvetica-Bold -F+glightgrey+pthinner+s-4p/-6p/grey20@40 -p @legend_10.txt >> %ps%
 del awk.txt .gmt*

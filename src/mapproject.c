@@ -835,6 +835,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */
 			Return (API->error);
 		}
+		gmt_M_free (GMT, Out);
 		Return (GMT_NOERROR);
 	}
 
