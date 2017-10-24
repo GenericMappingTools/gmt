@@ -3,7 +3,7 @@
 #		$Id$
 #
 # Purpose:	Make a 3-D bar plot
-# GMT modules:	grd2xyz, pstext, psxyz
+# GMT modules:	grd2xyz, makecpt, pstext, psxyz
 # Unix progs:	echo, rm
 #
 ps=example_08.ps
