@@ -150,9 +150,15 @@
         (Use *xsize/ysize* if not the same).  Append **u** if *size* is in the users' x-units
         [Default is plot-distance units].  If no *size* is given we expect both *xsize*
         and *ysize* as two extra data columns.  By default, *base* = 0.  Append
-        **+b**\ *base* to change this value.  The facet colors will be modified to
+        **+b**\ *base* to change this value.  If *base* is not appended then we read it
+        from the last input data column.  The facet colors will be modified to
         simulate shading.  Use **-SO** to disable such 3-D illumination.
-        If *base* is not appended then we read it from the last input data column.
+        Normally a single *z* value is considered.  For multi-band columns, append
+	**+z**\ *nbands* (and provide *nbands* *z*-values on input; these must be monotonically
+	increasing up the column) or **-Z**\ *nbands* (and expect *nbands* of *dz* increments
+	that must be summed to yield actual *z* values).  The multi-band column symbol
+	requires **-C** and will use the band number (0, 1, *nbands*\ -1) to assign
+	the band color.
 
     **-Sp**
         **p**\ oint. No size needs to be specified (1 pixel is used).

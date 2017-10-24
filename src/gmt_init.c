@@ -12277,7 +12277,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = true when called to process command line options */
 	int decode_error = 0, bset = 0, j, n, k, slash = 0, colon, col_off = mode, len;
 	bool check = true, degenerate = false;
-	unsigned int ju;
+	unsigned int ju, n_z = 0;
 	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, text_cp[GMT_LEN256] = {""}, diameter[GMT_LEN32] = {""}, *c = NULL;
 	static char *allowed_symbols[2] = {"~=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
@@ -12454,7 +12454,13 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			if (text[j] == '/') slash = j;
 			if (text[j] == 'b') bset = j;	/* Basically not worry about +b vs b by just checking for b */
 		}
+		if ((c = strstr (text, "+z")) || (c = strstr (text, "+Z"))) {	/* Got +z|Z<nz> */
+			n_z = atoi (&c[2]);
+			if (c[1] == 'Z') p->accumulate = true;	/* Getting dz1 dz2 ... etc and not z1 z1 ... */
+			c[0] = '\0';	/* Temporarily chop this off... */
+		}
 		strncpy (text_cp, text, GMT_LEN256-1);
+		if (c) c[0] = '+';	/* ...and restore it */
 		if (bset) {	/* Chop off the b<base> from copy to avoid confusion when parsing.  <base> is always in user units */
 			if (text_cp[bset-1] == '+')	/* Gave +b */
 				text_cp[bset-1] = 0;
@@ -12777,12 +12783,16 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'o':	/*3-D symbol */
 			p->shade3D = true;
-		case 'O':	/* Same but disable shading */
+		case 'O':	/* Same but noe enabling shading */
 			p->symbol = GMT_SYMBOL_COLUMN;
+			if (n_z) {
+				p->n_required = n_z;	/* Need more than one z value from file */
+				for (k = 0; k < n_z; k++) p->nondim_col[p->n_nondim++] = 2 + k;	/* all band z in user units */
+			}
 			if (bset) {
 				if (text[bset+1] == '\0') {	/* Read it from data file */
 					p->base_set = 2;
-					p->n_required = 1;
+					p->n_required ++;
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
 				}
 				else {

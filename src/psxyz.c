@@ -101,8 +101,9 @@ enum Psxyz_cliptype {
 
 struct PSXYZ_DATA {
 	int symbol, outline;
-	unsigned int flag;	/* 1 = convert azimuth, 2 = use geo-fucntions, 4 = x-base in units, 8 y-base in units */
+	unsigned int flag;	/* 1 = convert azimuth, 2 = use geo-functions, 4 = x-base in units, 8 y-base in units */
 	double x, y, z, dim[PSL_MAX_DIMS], dist[2];
+	double *zz;	/* For column symbol if +z<n> in effect */
 	struct GMT_FILL f;
 	struct GMT_PEN p;
 	struct GMT_VECT_ATTR v;
@@ -189,10 +190,16 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   use upper case O and U to disable this 3-D illumination.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Symbols A, C, D, F, H, I, N, S, T are adjusted to have same area\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of a circle of given diameter.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Bar (or 3-D Column): Append +b[<base>] to give the y- (or z-) value of the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Bar: Append +b[<base>] to give the y- (or z-) value of the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      base [Default = 0 (1 for log-scales)]. Use -SB for horizontal\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      bars; then <base> value refers to the x location.  To read the <base>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      value from file, specify +b with no trailing value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   3-D Column: Append +b[<base>] to give the z-value of the base of the column\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      [Default = 0 (1 for log-scales)]. To read the <base>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      value from file, specify +b with no trailing value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      For multi-band columns append +z<nbands>; then <nbands> z-values will\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      be read from file instead of just 1.  Use +Z if dz increments are given instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Multiband columns requires -C with one color per band (0, 1, ...).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Ellipses: Direction, major, and minor axis must be in columns 4-6.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SE rather than -Se is selected, psxy will expect azimuth, and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     axes [in km], and convert azimuths based on map projection.\n");
@@ -276,6 +283,14 @@ GMT_LOCAL unsigned int parse_old_W (struct GMTAPI_CTRL *API, struct PSXYZ_CTRL *
 	}
 	return n_errors;
 }
+
+GMT_LOCAL unsigned int get_nz (struct GMT_SYMBOL *S) {
+	/* Report how many bands in the 3-D column */
+	unsigned int n_z = S->n_required;	/* Add 1 since z normallly not counted */
+	if (S->base_set == 2) n_z--;
+	return (n_z);
+}
+
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTION *options, struct GMT_SYMBOL *S) {
 	/* This parses the options provided to psxyz and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -419,7 +434,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Syntax error: Binary input data cannot have symbol information\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Syntax error: -W modifier +c requires the -C option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.anchor && !Ctrl->G.active && !Ctrl->L.outline, "Syntax error: -L<modifiers> must include +p<pen> if -G not given\n");
-
+	if (Ctrl->S.active && S->symbol == GMT_SYMBOL_COLUMN) {
+		n = get_nz (S);
+		n_errors += gmt_M_check_condition (GMT, n > 1 && !Ctrl->C.active, "Syntax error: -So|O with multiple layers requires -C\n");
+	}
+	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -498,7 +517,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	bool default_outline, outline_active, save_u = false, geovector = false;
 	unsigned int k, j, geometry, tbl, pos2x, pos2y;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
-	unsigned int bcol, ex1, ex2, ex3, change, n_needed;
+	unsigned int col, bcol, ex1, ex2, ex3, change, n_needed, n_z;
 	int error = GMT_NOERROR;
 
 	uint64_t i, n, n_total_read = 0;
@@ -508,7 +527,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	double dim[PSL_MAX_DIMS], rgb[3][4] = {{-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}, {-1.0, -1.0, -1.0, 0.0}};
 	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL;
-	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, length;
+	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, zz, length, base;
 
 	struct GMT_PEN default_pen, current_pen;
 	struct GMT_FILL default_fill, current_fill, black, no_fill;
@@ -556,6 +575,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	not_line = (S.symbol != GMT_SYMBOL_FRONT && S.symbol != GMT_SYMBOL_QUOTED_LINE && S.symbol != GMT_SYMBOL_LINE);
 
 	get_rgb = (not_line && Ctrl->C.active);
+	if (get_rgb && S.symbol == GMT_SYMBOL_COLUMN && (n_z = get_nz (&S)) > 1) get_rgb = false;	/* Not used in the same way here */
 	read_symbol = (S.symbol == GMT_SYMBOL_NOT_SET);
 	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
 	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
@@ -580,9 +600,12 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	ex3 = (get_rgb) ? 6 : 5;
 	pos2x = ex1 + GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd longitude (for VECTORS with two sets of coordinates) */
 	pos2y = ex2 - GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd latitude (for VECTORS with two sets of coordinates) */
-	n_needed = n_cols_start + S.n_required;
-
-	if (gmt_check_binary_io (GMT, n_cols_start + S.n_required))
+	if (S.symbol == GMT_SYMBOL_COLUMN)
+		n_needed = n_cols_start + get_nz (&S) - 1;
+	else
+		n_needed = n_cols_start + S.n_required;
+	
+	if (gmt_check_binary_io (GMT, n_needed))
 		Return (GMT_RUNTIME_ERROR);
 
 	if (not_line) {
@@ -680,7 +703,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
 		bool periodic = false, delayed_unit_scaling[2] = {false, false};
-		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
+		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times, last_time;
 		double in2[7] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		double xpos[2], width, d;
 		struct GMT_RECORD *In = NULL;
@@ -695,6 +718,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (S.symbol == GMT_SYMBOL_GEOVECTOR) periodic = false;
 		}
 		n_times = (periodic) ? 2 : 1;	/* For periodic boundaries we plot each symbol twice to allow for periodic clipping */
+		last_time = n_times - 1;
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
 		}
@@ -760,7 +784,16 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			n_total_read++;
 
 			if (read_symbol) {	/* Must do special processing */
-				if (S.read_symbol_cmd == 1) gmt_parse_symbol_option (GMT, In->text, &S, 1, false);
+				if (S.read_symbol_cmd == 1) {
+					gmt_parse_symbol_option (GMT, In->text, &S, 1, false);
+					if (S.symbol == GMT_SYMBOL_COLUMN) {
+						n_z = get_nz (&S);
+						if (n_z > 1 && !Ctrl->C.active) {
+							GMT_Report (API, GMT_MSG_NORMAL, "The -So|O option with multiple layers requires -C - skipping this point\n");
+							continue;
+						}
+					}
+				}
 				/* Since we only now know if some of the input columns should NOT be considered dimensions we
 				 * must visit such columns and if the current length unit is NOT inch then we must undo the scaling */
 				if (S.n_nondim && GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Since these are not dimensions but angles or other quantities */
@@ -805,7 +838,24 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (n == n_alloc) data = gmt_M_malloc (GMT, data, n, &n_alloc, struct PSXYZ_DATA);
 
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &data[n].x, &data[n].y) || gmt_M_is_dnan(in[GMT_Z])) continue;	/* NaNs on input */
-			data[n].z = gmt_z_to_zz (GMT, in[GMT_Z]);
+			data[n].flag = S.convert_angles;
+			if (S.symbol == GMT_SYMBOL_COLUMN) {	/* Must allocate space for multiple z-values */
+				bool skip = false;
+				n_z = get_nz (&S);
+				data[n].zz = gmt_M_memory (GMT, NULL, n_z, double);
+				if (S.accumulate == false) {
+					for (col = GMT_Z + 1, k = 1; k < n_z; k++, col++) {
+						if (in[col] < in[col-1]) {
+							GMT_Report (API, GMT_MSG_NORMAL, "The -So|O option requires monotonically increasing z-values - not true near line %d\n", n_total_read);
+							skip = true;
+						}
+					}
+				}
+				if (skip) continue;
+				for (col = GMT_Z, k = 0; k < n_z; k++, col++ )
+					data[n].zz[k] = gmt_z_to_zz (GMT, in[col]);
+				data[n].flag = S.accumulate;
+			}
 
 			if (S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) {	/* Ellipses or rectangles */
 				if (S.n_required == 0)	/* Degenerate ellipse or rectangle, Got diameter via S.size_x */
@@ -816,6 +866,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 			if (S.base_set == 2) {	/* Got base from input column */
 				bcol = (S.read_size) ? ex2 : ex1;
+				if (S.symbol == GMT_SYMBOL_COLUMN)
+					bcol += S.n_required - 1;	/* Since we have z1 z2 ... z2 base */
 				S.base = in[bcol];
 			}
 			if (S.read_size) {	/* Update sizes from input */
@@ -827,7 +879,6 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			data[n].dim[0] = S.size_x;
 			data[n].dim[1] = S.size_y;
 
-			data[n].flag = S.convert_angles;
 			data[n].symbol = S.symbol;
 			data[n].f = current_fill;
 			data[n].p = current_pen;
@@ -1079,7 +1130,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		PSL_command (GMT->PSL, "V\n");
 		for (i = 0; i < n; i++) {
 
-			if (data[i].symbol == GMT_SYMBOL_COLUMN || data[i].symbol == GMT_SYMBOL_CUBE) {
+			if (n_z == 1 || data[i].symbol == GMT_SYMBOL_CUBE) {
 				for (j = 0; j < 3; j++) {
 					gmt_M_rgb_copy (rgb[j], data[i].f.rgb);
 					if (S.shade3D) gmt_illuminate (GMT, lux[j], rgb[j]);
@@ -1127,7 +1178,6 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						PSL_plotbox (PSL, xpos[item] - 0.5 * data[i].dim[0], data[i].y, xpos[item] + 0.5 * data[i].dim[0], data[i].dim[2]);
 						break;
 					case GMT_SYMBOL_COLUMN:
-						dim[2] = fabs (data[i].z - data[i].dim[2]);
 						if (data[i].flag & 4) {
 							gmt_geo_to_xy (GMT, xpos[item] - data[i].dim[0], data[i].y, &x_1, &y_1);
 							gmt_geo_to_xy (GMT, xpos[item] + data[i].dim[0], data[i].y, &x_2, &y_2);
@@ -1142,7 +1192,24 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						}
 						else
 							dim[1] = data[i].dim[1];
-						column3D (GMT, PSL, xpos[item], data[i].y, (data[i].z + data[i].dim[2]) / 2.0, dim, rgb, data[i].outline);
+						base = data[i].dim[2];	zz = 0.0;
+						for (k = 0; k < n_z; k++) {	/* For each band in the column */
+							if (n_z > 1) {	/* Must update band color based on band number k */
+								gmt_get_fill_from_z (GMT, P, k+0.5, &current_fill);
+								for (j = 0; j < 3; j++) {
+									gmt_M_rgb_copy (rgb[j], current_fill.rgb);
+									if (S.shade3D) gmt_illuminate (GMT, lux[j], rgb[j]);
+								}
+							}
+							if (data[i].flag & 1)
+								zz += data[i].zz[k];	/* Must get cumulate z value from dz increments */
+							else
+								zz = data[i].zz[k];	/* Got actual z values */
+							dim[2] = fabs (zz - base);	/* band height */
+							column3D (GMT, PSL, xpos[item], data[i].y, (zz + base) / 2.0, dim, rgb, data[i].outline);
+							base = zz;	/* Next base */
+						}
+						if (n_z > 1 && item == last_time) gmt_M_free (GMT, data[i].zz);	/* Free column band array */
 						break;
 					case GMT_SYMBOL_CUBE:
 						if (data[i].flag & 4) {

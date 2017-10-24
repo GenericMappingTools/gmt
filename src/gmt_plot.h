@@ -132,6 +132,7 @@ struct GMT_SYMBOL {
 	bool read_size;	/* true when we must read symbol size from file for the current record */
 	bool shade3D;	/* true when we should simulate shading of 3D symbols cube and column */
 	bool fq_parse;	/* true -Sf or -Sq were given with no args on command line and must be parsed via segment headers */
+	bool accumulate;	/* true if -So takes many band z and they are increments, not total z values */
 	struct GMT_FONT font;	/* Font to use for the -Sl symbol */
 	unsigned int convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
 	unsigned int n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */
