@@ -98,7 +98,9 @@ Optional Arguments
     If **-S** is set, let symbol fill color be
     determined by the t-value in the fourth column. Additional fields are
     shifted over by one column (optional size would be in 5th rather than
-    4th field, etc.). If **-S** is not set, then **psxyz** expects the user
+    4th field, etc.). An exception to this rule is for multi-band 3-D
+    columns where each band gets its color from each slice in the CPT.
+    If **-S** is not set, then **psxyz** expects the user
     to supply a multisegment file (where each segment header contains a
     **-Z**\ *val* string. The *val* will control the color of the line or
     polygon (if **-L** is set) via the CPT.

@@ -450,11 +450,11 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 	if (GMT->common.h.add_colnames) {
 		char header[GMT_BUFSIZ] = {""}, *name[2] = {"freq", "wlength"};
 		if (GridY) {	/* Long header record - number in [] is GMT column; useful for -i option */
-			sprintf (header, "#%s[0]\txpow[1]\tstd_xpow[2]\typow[3]\tstd_ypow[4]\tcpow[5]\tstd_cpow[6]\tnpow[7]\tstd_npow[8]\t" \
+			sprintf (header, "%s[0]\txpow[1]\tstd_xpow[2]\typow[3]\tstd_ypow[4]\tcpow[5]\tstd_cpow[6]\tnpow[7]\tstd_npow[8]\t" \
 			"phase[9]\tstd_phase[10]\tadm[11]\tstd_ad[12]\tgain[13]\tstd_gain[14]\tcoh[15]\tstd_coh[16]", name[give_wavelength]);
 		}
 		else
-			sprintf (header, "#%s[0]\tpow[1]\tstd_pow[2]", name[give_wavelength]);
+			sprintf (header, "%s[0]\tpow[1]\tstd_pow[2]", name[give_wavelength]);
 		if (GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, D)) return (GMT->parent->error);
 	}
 

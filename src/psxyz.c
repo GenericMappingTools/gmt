@@ -284,10 +284,11 @@ GMT_LOCAL unsigned int parse_old_W (struct GMTAPI_CTRL *API, struct PSXYZ_CTRL *
 	return n_errors;
 }
 
-GMT_LOCAL unsigned int get_nz (struct GMT_SYMBOL *S) {
+GMT_LOCAL unsigned int get_column_bands (struct GMT_SYMBOL *S) {
 	/* Report how many bands in the 3-D column */
-	unsigned int n_z = S->n_required;	/* Add 1 since z normallly not counted */
-	if (S->base_set == 2) n_z--;
+	unsigned int n_z = S->n_required;	/* z normallly not counted unless +z|Z was used, so this could be 0 */
+	if (S->base_set == 2 && n_z) n_z--;	/* Remove the base column item */
+	if (n_z == 0) n_z = 1;	/* 1 means singleband column */
 	return (n_z);
 }
 
@@ -435,7 +436,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Syntax error: -W modifier +c requires the -C option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.anchor && !Ctrl->G.active && !Ctrl->L.outline, "Syntax error: -L<modifiers> must include +p<pen> if -G not given\n");
 	if (Ctrl->S.active && S->symbol == GMT_SYMBOL_COLUMN) {
-		n = get_nz (S);
+		n = get_column_bands (S);
 		n_errors += gmt_M_check_condition (GMT, n > 1 && !Ctrl->C.active, "Syntax error: -So|O with multiple layers requires -C\n");
 	}
 	
@@ -575,7 +576,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	not_line = (S.symbol != GMT_SYMBOL_FRONT && S.symbol != GMT_SYMBOL_QUOTED_LINE && S.symbol != GMT_SYMBOL_LINE);
 
 	get_rgb = (not_line && Ctrl->C.active);
-	if (get_rgb && S.symbol == GMT_SYMBOL_COLUMN && (n_z = get_nz (&S)) > 1) get_rgb = false;	/* Not used in the same way here */
+	if (get_rgb && S.symbol == GMT_SYMBOL_COLUMN && (n_z = get_column_bands (&S)) > 1) get_rgb = false;	/* Not used in the same way here */
 	read_symbol = (S.symbol == GMT_SYMBOL_NOT_SET);
 	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
 	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
@@ -600,8 +601,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	ex3 = (get_rgb) ? 6 : 5;
 	pos2x = ex1 + GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd longitude (for VECTORS with two sets of coordinates) */
 	pos2y = ex2 - GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd latitude (for VECTORS with two sets of coordinates) */
-	if (S.symbol == GMT_SYMBOL_COLUMN)
-		n_needed = n_cols_start + get_nz (&S) - 1;
+	if (S.symbol == GMT_SYMBOL_COLUMN) {
+		n_z = get_column_bands (&S);	/* > 0 for multiband, else 0 */
+		n_needed = n_cols_start + ((n_z > 1) ? n_z - 1 : S.n_required);
+	}
 	else
 		n_needed = n_cols_start + S.n_required;
 	
@@ -635,7 +638,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	tmp = MAX (lux[0], MAX (lux[1], lux[2]));
 	for (k = 0; k < 3; k++) lux[k] = (lux[k] / tmp) - 0.5;
 
-	if ((Ctrl->C.active || current_fill.rgb[0] >= 0) && (S.symbol == GMT_SYMBOL_COLUMN || S.symbol == GMT_SYMBOL_CUBE)) {	/* Modify the color for each facet */
+	if ((S.symbol == GMT_SYMBOL_COLUMN || S.symbol == GMT_SYMBOL_CUBE) && (!Ctrl->C.active || current_fill.rgb[0] >= 0)) {	/* Modify the color for each facet */
 		for (k = 0; k < 3; k++) {
 			gmt_M_rgb_copy (rgb[k], current_fill.rgb);
 			if (S.shade3D) {
@@ -787,7 +790,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				if (S.read_symbol_cmd == 1) {
 					gmt_parse_symbol_option (GMT, In->text, &S, 1, false);
 					if (S.symbol == GMT_SYMBOL_COLUMN) {
-						n_z = get_nz (&S);
+						n_z = get_column_bands (&S);
 						if (n_z > 1 && !Ctrl->C.active) {
 							GMT_Report (API, GMT_MSG_NORMAL, "The -So|O option with multiple layers requires -C - skipping this point\n");
 							continue;
@@ -839,9 +842,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &data[n].x, &data[n].y) || gmt_M_is_dnan(in[GMT_Z])) continue;	/* NaNs on input */
 			data[n].flag = S.convert_angles;
+			data[n].z = gmt_z_to_zz (GMT, in[GMT_Z]);
 			if (S.symbol == GMT_SYMBOL_COLUMN) {	/* Must allocate space for multiple z-values */
 				bool skip = false;
-				n_z = get_nz (&S);
+				n_z = get_column_bands (&S);
 				data[n].zz = gmt_M_memory (GMT, NULL, n_z, double);
 				if (S.accumulate == false) {
 					for (col = GMT_Z + 1, k = 1; k < n_z; k++, col++) {
@@ -1130,7 +1134,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		PSL_command (GMT->PSL, "V\n");
 		for (i = 0; i < n; i++) {
 
-			if (n_z == 1 || data[i].symbol == GMT_SYMBOL_CUBE) {
+			if (n_z == 1 || (data[i].symbol == GMT_SYMBOL_CUBE || data[i].symbol == GMT_SYMBOL_CUBE)) {
 				for (j = 0; j < 3; j++) {
 					gmt_M_rgb_copy (rgb[j], data[i].f.rgb);
 					if (S.shade3D) gmt_illuminate (GMT, lux[j], rgb[j]);
@@ -1194,7 +1198,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							dim[1] = data[i].dim[1];
 						base = data[i].dim[2];	zz = 0.0;
 						for (k = 0; k < n_z; k++) {	/* For each band in the column */
-							if (n_z > 1) {	/* Must update band color based on band number k */
+							if (Ctrl->C.active && n_z > 1) {
+								/* Must update band color based on band number k */
 								gmt_get_fill_from_z (GMT, P, k+0.5, &current_fill);
 								for (j = 0; j < 3; j++) {
 									gmt_M_rgb_copy (rgb[j], current_fill.rgb);
@@ -1209,7 +1214,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							column3D (GMT, PSL, xpos[item], data[i].y, (zz + base) / 2.0, dim, rgb, data[i].outline);
 							base = zz;	/* Next base */
 						}
-						if (n_z > 1 && item == last_time) gmt_M_free (GMT, data[i].zz);	/* Free column band array */
+						if (item == last_time) gmt_M_free (GMT, data[i].zz);	/* Free column band array */
 						break;
 					case GMT_SYMBOL_CUBE:
 						if (data[i].flag & 4) {
