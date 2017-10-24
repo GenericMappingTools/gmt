@@ -10,7 +10,7 @@
 # using table from Muller et al., 1993, Geology.
 ps=example_20.ps
 
-gmt pscoast -Rg -JR9i -Bx60 -By30 -B+t"Hotspot Islands and Hot Cities" -Gdarkgreen -Slightblue \
+gmt pscoast -Rg -JR9i -Baf -B+t"Hotspot Islands and Hot Cities" -Gdarkgreen -Slightblue \
 	-Dc -A5000 -K > $ps
 
 gmt psxy -R -J @hotspots.txt -Skvolcano -O -K -Wthinnest -Gred >> $ps

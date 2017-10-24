@@ -7,7 +7,7 @@
 # Unix progs:	
 #
 ps=example_07.ps
-gmt pscoast -R-50/0/-10/20 -JM9i -K -Slightblue -GP300/26:FtanBdarkbrown -Dl -Wthinnest \
+gmt pscoast -R-50/0/-10/20 -JM9i -K -Slightblue -GP26+r300+ftan+bdarkbrown -Dl -Wthinnest \
 	-B10 --FORMAT_GEO_MAP=dddF > $ps
 gmt psxy -R -J -O -K @fz_07.txt -Wthinner,- >> $ps
 gmt psxy @quakes_07.txt -R -J -O -K -h1 -Sci -i0,1,2+s0.01 -Gred -Wthinnest >> $ps

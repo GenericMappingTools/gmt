@@ -12,7 +12,7 @@ set ps=example_20.ps
 REM Plot a world-map with volcano symbols of different sizes at hotspot locations
 REM using table from Muller et al., 1993, Geology.
 
-gmt pscoast -Rg -JR9i -Bx60 -By30 -B+t"Hotspot Islands and Hot Cities" -Gdarkgreen -Slightblue -Dc -A5000 -K > %ps%
+gmt pscoast -Rg -JR9i -Baf -B+t"Hotspot Islands and Hot Cities" -Gdarkgreen -Slightblue -Dc -A5000 -K > %ps%
 
 gmt psxy -R -J @hotspots.txt -Skvolcano -O -K -Wthinnest -Gred >> %ps%
 
