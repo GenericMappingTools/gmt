@@ -1218,7 +1218,8 @@ and pass the ``par`` array with contents as indicated below:
     The number of rows can be specified in one of two ways: (1) Set the number of rows via ``par[1]``. Then,
     ``wesn``, ``inc``, and ``registration`` arguments are ignored.
     (2) Specify ``wesn``, ``inc``, and ``registration`` and the number of rows will be computed from these
-    parameters instead.  The ``data`` argument should be NULL.  If you have custom vectors you wish to use then
+    parameters instead.  Finally, ``par[2]`` holds the data type of all vectors, if you are allocating them here.
+    The ``data`` argument should be NULL.  If you have custom vectors you wish to use then
     pass ``par`` but make sure to select mode GMT_CONTAINER_ONLY so that no memory is allocated.  Furthermore,
     if you are manually setting up output containers then pass mode as GMT_IS_OUTPUT instead. 
     Use GMT_Put_Vector_ to hook up your vectors.
