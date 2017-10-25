@@ -23,6 +23,7 @@ Synopsis
 [ |-S|\ [**~**]\ *"search string"* \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
 [ |-T|\ [**h**\ \|\ **d**\ ] ]
 [ |SYN_OPT-V| ]
+[ |-W|\ [**+n**\ ] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -199,6 +200,15 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
+
+**-W** [**+n**\ ]
+    Attempt to convert each word in the trialing text to a number and append
+    such values to the numerical output columns.  Text that cannot be converted
+    (because they are not numbers) will appear as NaNs.  Use modifier **+n** to
+    exclude the columns with NaNs.  Note: These columns are identified based on
+    the first input record only.
 
 .. include:: explain_-aspatial.rst_
 

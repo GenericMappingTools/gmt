@@ -97,8 +97,9 @@ struct GMTCONVERT_CTRL {
 	struct T {	/* -T[sd] */
 		bool active[2];
 	} T;
-	struct W {	/* -W */
+	struct W {	/* -W[+n] */
 		bool active;
+		unsigned int mode;
 	} W;
 };
 
@@ -126,7 +127,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] [-E[f|l|m|M<stride>]] [-F<arg>] [-I[tsr]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N[+|-]<col>] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N[+|-]<col>] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [-W[+n]] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -176,7 +177,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Skip certain types of records.  Append one or both of d and h [h].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   h: Prevent the writing of segment headers [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   d: Prevent the writing of duplicate data records.\n");
-	GMT_Option (API, "V,a,bi,bo,d,e,f,g,h,i,o,s,:,.");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Convert trailing text to numbers, if possible.  Append +n to suppress NaN columns.\n");
+	GMT_Option (API, "a,bi,bo,d,e,f,g,h,i,o,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -320,6 +323,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				break;
 			case 'W':
 				Ctrl->W.active = true;
+				if (!strncmp (opt->arg, "+n", 2U))
+					Ctrl->W.mode = 1;
 				break;
 
 			default:	/* Report bad options */
@@ -429,7 +434,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 		Return (API->error);	/* Establishes data files or stdin */
 	}
 
@@ -473,11 +478,24 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->W.active) {	/* Text to data happens here and then we are done */
-		double out[GMT_BUFSIZ];
+		double out[GMT_BUFSIZ], *tmp = NULL;
 		struct GMT_RECORD *Out = NULL;
+		char *nan = NULL;
+		uint64_t n_col, k;
 		S = D[GMT_IN]->table[0]->segment[0];	/* Short-hand */
-		if (S->text) n_cols_in = GMT_Get_Values (API, S->text[0], out, GMT_BUFSIZ);
-		
+		if (S->text) {	/* Has trailing text */
+			n_col = n_cols_in = GMT_Get_Values (API, S->text[0], out, GMT_BUFSIZ);
+			if (Ctrl->W.mode) {	/* Only wants non-NaN columns from trailing text */
+				nan = gmt_M_memory (GMT, NULL, n_col, char);
+				tmp = gmt_M_memory (GMT, NULL, n_col, double);
+				for (col = 0; col < n_col; col++) if (gmt_M_is_dnan (out[col])) nan[col] = 1, n_cols_in--;
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "First record trailing text converted to %" PRIu64 " columns, with %" PRIu64 " of them yielding NaNs [skipped]\n", n_col, n_col - n_cols_in);
+			}
+			else
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "First record trailing text converted to %" PRIu64 " columns\n", n_col);
+		}
+		else
+			GMT_Report (API, GMT_MSG_VERBOSE, "No trialing text found in first record; -W will not have any effect.\n");
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
@@ -491,15 +509,27 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {
 			for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {	/* For each segment in the tables */
 				S = D[GMT_IN]->table[tbl]->segment[seg];	/* Short-hand */
+				if (D[GMT_IN]->n_segments > 1 || S->header) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, S->header);
 				for (row = 0; row < S->n_rows; row++) {
 					for (col = 0; col < S->n_columns; col++)
 						out[col] = S->data[col][row];
-					if (S->text) n_cols_in = GMT_Get_Values (API, S->text[row], &out[S->n_columns], GMT_BUFSIZ);
+					if (S->text) {
+						if (Ctrl->W.mode) {	/* Exclude NaN columns */
+							n_cols_in = GMT_Get_Values (API, S->text[row], tmp, n_col);
+							for (col = k = 0; col < n_cols_in; col++) if (!nan[col]) out[S->n_columns+k] = tmp[col], k++;
+						}
+						else
+							n_cols_in = GMT_Get_Values (API, S->text[row], &out[S->n_columns], n_col);
+					}
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
-				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 			}
 		}
 		gmt_M_free (GMT, Out);
+		if (Ctrl->W.mode) {
+			gmt_M_free (GMT, nan);
+			gmt_M_free (GMT, tmp);
+		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
