@@ -6137,8 +6137,13 @@ GMT_LOCAL int api_end_io_dataset (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 		count[GMT_SEG]++;	/* Set final number of segments */
 		T->n_segments++;
 	}
-	/* Realloc final number of segments */
-	if (count[GMT_SEG] < (int64_t)T->n_alloc) T->segment = gmt_M_memory (API->GMT, T->segment, T->n_segments, struct GMT_DATASEGMENT *);
+	if (count[GMT_SEG] < (int64_t)T->n_alloc) {	/* Realloc final number of segments */
+		uint64_t s;
+		for (s = T->n_segments; s < T->n_alloc; s++)
+			gmt_M_free (API->GMT, T->segment[s]);	/* Free the extra structures */
+		T->segment = gmt_M_memory (API->GMT, T->segment, T->n_segments, struct GMT_DATASEGMENT *);	/* Finalize pointer array */
+		T->n_alloc = T->n_segments;	/* Update allocation count */
+	}
 	if (S->h_delay) {	/* Must do the first table headers now since we finally have allocated the table */
 		T->header = API->tmp_header;
 		T->n_headers = API->n_tmp_headers;

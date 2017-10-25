@@ -1227,6 +1227,7 @@ and pass the ``par`` array with contents as indicated below:
     We allocate an empty :ref:`GMT_MATRIX <struct-matrix>` structure. The domain can be prescribed on one of two ways:
     (1) Here, ``par[0]`` is the number of columns while ``par[1]`` has the number of rows.  Also,
     ``par[2]`` indicates the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.
+    Finally, ``par[3]`` holds the data type of the matrix, if you are allocating one.
     (2) Pass ``wesn``, ``inc``, ``registration`` and we compute the dimensions of the matrix.
     The ``data`` argument should be NULL.  As for vectors, to use custom data you must (for input) pass the
     mode as GMT_CONTAINER_ONLY and hook your custom matrix in via a call to GMT_Put_Matrix_.  The matrix may either
