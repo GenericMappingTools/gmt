@@ -97,6 +97,9 @@ struct GMTCONVERT_CTRL {
 	struct T {	/* -T[sd] */
 		bool active[2];
 	} T;
+	struct W {	/* -W */
+		bool active;
+	} W;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -315,6 +318,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				if (!opt->arg[0] || strchr (opt->arg, 'h')) /* Skip duplicates */
 					Ctrl->T.active[0] = true;	/* Skip segment headers */
 				break;
+			case 'W':
+				Ctrl->W.active = true;
+				break;
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -388,7 +394,7 @@ GMT_LOCAL bool is_duplicate_row (struct GMT_DATASEGMENT *S, uint64_t row) {
 int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	bool match = false, prevent_seg_headers = false;
 	int error = 0;
-	uint64_t out_col, col, n_cols_in, n_cols_out, tbl, tlen;
+	uint64_t out_col, col, n_cols_in = 0, n_cols_out, tbl, tlen;
 	uint64_t n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
 	uint64_t last_row, n_rows, row, seg, n_out_seg = 0, out_seg = 0;
 
@@ -463,6 +469,40 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (prevent_seg_headers) GMT->current.io.skip_headers_on_outout = false;	/* Restore to default if it was changed */
+		Return (GMT_NOERROR);	/* We are done! */
+	}
+
+	if (Ctrl->W.active) {	/* Text to data happens here and then we are done */
+		double out[GMT_BUFSIZ];
+		struct GMT_RECORD *Out = NULL;
+		S = D[GMT_IN]->table[0]->segment[0];	/* Short-hand */
+		if (S->text) n_cols_in = GMT_Get_Values (API, S->text[0], out, GMT_BUFSIZ);
+		
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
+		if ((error = GMT_Set_Columns (API, GMT_OUT, n_cols_in + S->n_columns, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			Return (error);
+		}
+		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
+		for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {
+			for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {	/* For each segment in the tables */
+				S = D[GMT_IN]->table[tbl]->segment[seg];	/* Short-hand */
+				for (row = 0; row < S->n_rows; row++) {
+					for (col = 0; col < S->n_columns; col++)
+						out[col] = S->data[col][row];
+					if (S->text) n_cols_in = GMT_Get_Values (API, S->text[row], &out[S->n_columns], GMT_BUFSIZ);
+				}
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
+			}
+		}
+		gmt_M_free (GMT, Out);
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+			Return (API->error);
+		}
 		Return (GMT_NOERROR);	/* We are done! */
 	}
 
