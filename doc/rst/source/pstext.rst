@@ -19,7 +19,7 @@ Synopsis
 |SYN_OPT-B|
 [ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*]] ]
 [ |-F|\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l**\|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **+z**\ [*format*]] ] 
-[ |-G|\ *color* ] [ |-J|\ *parameters* ]
+[ |-G|\ *color* ]
 [ |-K| ]
 [ |-L| ] [ |-M| ] [ |-N| ] [ |-O| ] [ |-P| ]
 [ |-Q|\ **l**\ \|\ **u** ]
