@@ -212,7 +212,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   c - crude resolution, for busy plots that need crude continent outlines only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
 	gmt_DCW_option (API, 'E', 1U);
-	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map scale or rose", 3);
+	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map scale or rose.", 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t   If using both -L and -T, you can repeat -F following each option.\n");
 	gmt_fill_syntax (API->GMT, 'G', "Paint or clip \"dry\" areas.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   6) c to issue clip paths for land areas.\n");

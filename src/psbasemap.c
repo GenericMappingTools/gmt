@@ -103,7 +103,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		API->GMT->session.u2u[GMT_INCH][GMT_PT] * API->GMT->current.setting.map_line_step);
 	GMT_Option (API, "B");
 	gmt_mapinsert_syntax (API->GMT, 'D', "Draw a simple map insert box as specified below:");
-	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map insert, scale or rose", 3);
+	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map insert, scale or rose.", 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For separate panel attributes, use -Fd, -Fl, -Ft.\n");
 	GMT_Option (API, "K");
 	gmt_mapscale_syntax (API->GMT, 'L', "Draw a map scale at specified reference point.");

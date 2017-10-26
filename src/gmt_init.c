@@ -6426,7 +6426,7 @@ void gmt_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 
 void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsigned int kind, unsigned int part) {
 	/* For -Dg|j|J|n|x */
-	char *type[GMT_ANCHOR_NTYPES] = {"logo", "image", "legend", "color-bar", "insert", "map scale", "map rose"}, *tab[2] = {"", "     "};
+	char *type[GMT_ANCHOR_NTYPES] = {"logo", "image", "legend", "color-bar", "insert", "map scale", "map rose", "vertical scale"}, *tab[2] = {"", "     "};
 	unsigned int shift = (kind == GMT_ANCHOR_INSERT) ? 1 : 0;	/* Add additional "tab" to front of message */
 	if (part & 1) {	/* Here string is message, or NULL */
 		if (string) gmt_message (GMT, "\t-%s %s\n", option, string);
@@ -6436,10 +6436,11 @@ void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsi
 		gmt_message (GMT, "\t   %s  Use -%sn to specify <refpoint> with normalized coordinates in 0-1 range.\n", tab[shift], option);
 		gmt_message (GMT, "\t   %s  Use -%sx to specify <refpoint> with plot coordinates.\n", tab[shift], option);
 		gmt_message (GMT, "\t   %sAll except -%sx require the -R and -J options to be set.\n", tab[shift], option);
+		gmt_message (GMT, "\t   %sUse J if item should be placed outside map and j if inside.\n", tab[shift]);
 	}
 	/* May need to place other things in the middle */
 	if (part & 2) {	/* Here string is irrelevant */
-		char *just[GMT_ANCHOR_NTYPES] = {"BL", "BL", "BL", "BL", "BL", "MC", "MC"};
+		char *just[GMT_ANCHOR_NTYPES] = {"BL", "BL", "BL", "BL", "BL", "MC", "MC", "ML"};
 		gmt_message (GMT, "\t   %sAppend 2-char +j<justify> code to associate that anchor point on the %s with <refpoint>.\n", tab[shift], type[kind]);
 		gmt_message (GMT, "\t   %sIf +j<justify> is not given then <justify> will default to the same as <refpoint> (with -%sj),\n", tab[shift], option);
 		gmt_message (GMT, "\t   %s  or the mirror opposite of <refpoint> (with -%sJ), or %s (else).\n", tab[shift], option, just[kind]);
@@ -6524,8 +6525,8 @@ void gmt_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 */
 void gmt_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind) {
 	/* Called by gmtlogo, psimage, pslegend, psscale */
-	char *type[4] = {"logo", "image", "legend", "scale"};
-	assert (kind < 4);
+	char *type[5] = {"logo", "image", "legend", "scale", "vertical scale"};
+	assert (kind < 5);
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	gmt_message (GMT, "\t-%c %s\n", option, string);
 	gmt_message (GMT, "\t   Without further options: draw border around the %s panel (using MAP_FRAME_PEN)\n", type[kind]);
@@ -12275,9 +12276,9 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 /*! . */
 int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *p, unsigned int mode, bool cmd) {
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = true when called to process command line options */
-	int decode_error = 0, bset = 0, j, n, k, slash = 0, colon, col_off = mode, len;
+	int decode_error = 0, bset = 0, j, n, k, slash = 0, colon, col_off = mode, len, n_z = 0;
 	bool check = true, degenerate = false;
-	unsigned int ju, n_z = 0;
+	unsigned int ju;
 	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, text_cp[GMT_LEN256] = {""}, diameter[GMT_LEN32] = {""}, *c = NULL;
 	static char *allowed_symbols[2] = {"~=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};

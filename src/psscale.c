@@ -156,7 +156,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	gmt_refpoint_syntax (API->GMT, "D", "Specify position and dimensions of the scale bar", GMT_ANCHOR_COLORBAR, 1);
+	gmt_refpoint_syntax (API->GMT, "D", "Specify position and dimensions of the scale bar.", GMT_ANCHOR_COLORBAR, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For -DJ|j w/TC|BC|ML|MR the values for +w (85%% of map width),+h|v,+j,+o,+m have defaults.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   You can override any of these settings with these explicit modifiers:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w<length>[/<width>] for the scale dimensions [Default width is 4%% of <length>].\n");
@@ -178,7 +178,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   add an extra column to the CPT with a L, U, or B\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to annotate Lower, Upper, or Both color segment boundaries.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If a categorical CPT is given the -Li is set automatically.\n");
-	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the scale", 3);
+	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the scale.", 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set that limit to NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Add illumination for +-<max_intens> or <low_i> to <high_i> [-1.0/1.0].\n");

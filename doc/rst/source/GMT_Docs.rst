@@ -3176,7 +3176,7 @@ Plot embellishments
 -------------------
 
 Apart from visualizing your data sets, GMT maps can also be embellished in several ways.
-The 8 embellishments currently available are
+The 9 embellishments currently available are
 
 *  **Map scale** showing the true scale at some location(s) on the map.
 
@@ -3193,6 +3193,8 @@ The 8 embellishments currently available are
 *  **GMT logo** overlay.
 
 *  **Map insert** showing perhaps the location of your detailed area in a regional or global context.
+
+*  **Vertical scale** showing the vertical scale of anomalies on a map.
 
 Each of these features share a common system for specifying the location on the plot where the
 feature will be placed.  They also share a common way for specifying the placement of a rectangular
@@ -3605,7 +3607,7 @@ In addition, we require one modifier to set the logo's size.
 Placing map inserts
 ~~~~~~~~~~~~~~~~~~~
 
-Our final map embellishment is the map insert.
+Our penultimate map embellishment is the map insert.
 A map insert may appear to be the easiest feature to add since it only consists of an empty map panel.
 What you put in this panel is up to you (and we will show some examples).  However, unlike
 the other map features there are two ways to specify the placement of the map insert.
@@ -3649,6 +3651,34 @@ instead (similar to how the **-R** option works), by adding **+r**\ .  Some opti
    Knowing the placement (we know the size of the circular global map) we can correctly position it
    in the insert with **-X$x0** and **-Y$y0**.
    See Example :ref:`example_44` for more details.
+
+Placing a vertical scale on maps
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Our final embellishment is reserved for wiggles plotted along track with :doc:`pswiggle` and
+is activated as an option within that module.
+Like other features it requires reference and anchor points and their optional adjustments via the **-D** option.
+In addition, we offer a few modifier to set the scale bar's remaining attributes:
+
+#. Specify vertical scale bar length.  This is a required modifier and is set via **+l**\ *length*.
+   The length is given in the data (*z*) units of your plot.  To indicate that your vertical scale bar
+   should reflect 100 nTesla, append **+l**\ 100.  The actual dimension of the scale bar on your map
+   depends on the data scale set in :doc:`pswiggle` via **-Z**.
+
+#. Place the label on the left side of the vertical scale bar.  This is an optional modifier and is set via **+m**.
+   By default, the scale bar has open ``teeth`` pointing right and a label on that side. The **m** moves the
+   label to the left and reverses the teeth direction as well.
+
+#. Add a unit to the vertical scale bar label.  This is an optional modifier and is set via **+u**\ *unit*.
+   To append nTesla to the label you would specify **+u**\ nTesla.
+
+.. figure:: /_images/GMT_vertscale.*
+   :width: 300 px
+   :align: center
+
+   Placement of a vertical scale bar. As for other embellishments the :doc:`pswiggle`
+   module allows additional attributes such as a background map panel.
+
 
 .. _grid-file-format:
 

@@ -52,6 +52,19 @@ struct PSWIGGLE_CTRL {
 		bool active;
 		double value;
 	} C;
+	struct D {	/* -D[g|j|J|n|x]<refpoint>+l<length>[+m][+j<justify>][+o<dx>[/<dy>]][+u<unit>] */
+		bool active;
+		bool move;
+		char *unit;
+		struct GMT_REFPOINT *refpoint;
+		int justify;
+		double length;
+		double off[2];
+	} D;
+	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
+		bool active;
+		struct GMT_MAP_PANEL *panel;
+	} F;
 	struct G {	/* -G[+|-|=]<fill> */
 		bool active[2];
 		struct GMT_FILL fill[2];
@@ -60,7 +73,7 @@ struct PSWIGGLE_CTRL {
 		bool active;
 		double value;
 	} I;
-	struct S {	/* -S[x]<lon0>/<lat0>/<length>/<units> */
+	struct S {	/* -S[x]<lon0>/<lat0>/<length>/<units> [Backwards compatibility with GMT 5] */
 		bool active;
 		bool cartesian;
 		double lon, lat, length;
@@ -97,6 +110,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	gmt_free_refpoint (GMT, &C->D.refpoint);
+	gmt_M_str_free (C->D.unit);	
+	gmt_M_free (GMT, C->F.panel);
 	gmt_M_str_free (C->S.label);	
 	gmt_M_free (GMT, C);	
 }
@@ -209,9 +225,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pswiggle [<table>] %s %s -Z<scale>[<unit>]\n", GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<azimuth>]] [%s] [-C<center>] [-G[-|+|=]<fill>] [-I<az>] [%s] [-K] [-O]\n", GMT_B_OPT, GMT_Jz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-S[x]<lon0>/<lat0>/<length>[/<units>]] [-T<trackpen>] [%s]\n", GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<outlinepen>] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] ",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<azimuth>]] [%s] [-C<center>] [-D[g|j|J|n|x]<refpoint>+l<length>[+m][+j<justify>][+o<dx>[/<dy>]][+u<unit>]]\n", GMT_B_OPT, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_PANEL);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G[-|+|=]<fill>] [-I<az>] [%s] [-K] [-O] [-P] [-T<trackpen>] [%s]\n", GMT_Jz_OPT, GMT_U_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<outlinepen>] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] ",
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "[%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
 
@@ -225,6 +242,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no azimuth is given then we use the azimuths as they are computed.\n");
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set center value to be removed from z before plotting [0].\n");
+	gmt_refpoint_syntax (API->GMT, "D", "Specify position and dimensions of the vertical scale bar.", GMT_ANCHOR_VSCALE, 3);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l<length> to set the scale length in data z- units.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +m to move label to the opposite side of vertical scale bar.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +u to set the unit name of the z-values for the scale bar label [no unit].\n");
+	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the vertical scale.", 4);
 	gmt_fill_syntax (API->GMT, 'G', "Specify color/pattern for positive and/or negative areas.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + to fill positive areas (default).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to fill negative areas.\n");
@@ -234,9 +256,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Fill negative wiggles instead [Default is positive].\n");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Draw a simple vertical scale centered on <lon0>/<lat0>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Sx to specify Cartesian coordinates instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <length> is in z-units; optionally append unit name for labeling.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify track pen attributes. [Default is no track].\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Specify outline pen attributes [Default is no outline].", 0);
@@ -258,6 +277,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 	 */
 
 	unsigned int j, k, n_slash, wantx, wanty, n_errors = 0;
+int n;
 	bool N_active = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *units = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -285,7 +305,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 				Ctrl->C.value = atof (opt->arg);
 				break;
 			case 'D':
-				if (gmt_M_compat_check (GMT, 4)) {
+				if ((!strchr (opt->arg, '+') || opt->arg[0] == 'x') && gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "-D option is deprecated; use -g instead.\n");
 					GMT->common.g.active = true;
 					if (opt->arg[0] == 'x')		/* Determine gaps using projected distances */
@@ -296,8 +316,59 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 						sprintf (txt_a, "d%s", opt->arg);	/* Cartesian */
 					n_errors += gmt_parse_g_option (GMT, txt_a);
 				}
-				else
-					n_errors += gmt_default_error (GMT, opt->option);
+				else {
+					Ctrl->D.active = true;
+					if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg, 'D')) == NULL)
+						n_errors++;	/* Failed basic parsing */
+					else if (Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT || strstr (Ctrl->D.refpoint->args, "+l")) {	/* New syntax: */
+						/* Args are +l<length>[+j<justify>][+ma|c|l|u][+o<dx>[/<dy>]] */
+						double out_offset = GMT->current.setting.map_label_offset + GMT->current.setting.map_frame_width;
+						double in_offset  = GMT->current.setting.map_label_offset;
+						if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', txt_a))
+							Ctrl->D.justify = gmt_just_decode (GMT, txt_a, PSL_NO_DEF);
+						else {	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
+							Ctrl->D.justify = gmt_M_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
+							switch (Ctrl->D.refpoint->justify) {	/* Autoset +m, +o when placed centered on a side: Note: +m. +o may overrule this later */
+								case PSL_TC:
+									Ctrl->D.off[GMT_Y] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
+									break;
+								case PSL_BC:
+									Ctrl->D.off[GMT_Y] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
+									break;
+								case PSL_ML:
+									Ctrl->D.move = true;	/* +mal if outside */
+									Ctrl->D.off[GMT_X] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
+									break;
+								case PSL_MR:
+									Ctrl->D.off[GMT_X] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
+									break;
+								default:
+									break;
+							}
+						}
+						if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jumol")) n_errors++;
+						/* Required modifier +l */
+						if (gmt_get_modifier (Ctrl->D.refpoint->args, 'l', txt_a))
+							Ctrl->D.length = atof (txt_a);
+						/* Optional modifiers +j, +m, +o */
+						if (gmt_get_modifier (Ctrl->D.refpoint->args, 'm', txt_a))
+							Ctrl->D.move = true;
+						if (gmt_get_modifier (Ctrl->D.refpoint->args, 'u', txt_a))
+							Ctrl->D.unit = strdup (txt_a);
+						if (gmt_get_modifier (Ctrl->D.refpoint->args, 'o', txt_a)) {
+							if ((n = gmt_get_pair (GMT, txt_a, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
+						}
+						if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', txt_a))
+							Ctrl->D.justify = gmt_just_decode (GMT, txt_a, PSL_NO_DEF);
+					}
+				}
+				break;
+			case 'F':
+				Ctrl->F.active = true;
+				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
+					gmt_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
+					n_errors++;
+				}
 				break;
 			case 'G':
 				switch (opt->arg[0]) {
@@ -326,20 +397,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'S':
-				Ctrl->S.active = true;
-				j = 0;
-				if (opt->arg[0] == 'x') Ctrl->S.cartesian = true, j = 1;
-				k = sscanf (&opt->arg[j], "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->S.length);
-				for (j = n_slash = 0; opt->arg[j]; j++) if (opt->arg[j] == '/') n_slash++;
-				wantx = (Ctrl->S.cartesian) ? GMT_IS_FLOAT : GMT_IS_LON;
-				wanty = (Ctrl->S.cartesian) ? GMT_IS_FLOAT : GMT_IS_LAT;
-				n_errors += gmt_verify_expectations (GMT, wantx, gmt_scanf_arg (GMT, txt_a, wantx, false, &Ctrl->S.lon), txt_a);
-				n_errors += gmt_verify_expectations (GMT, wanty, gmt_scanf_arg (GMT, txt_b, wanty, false, &Ctrl->S.lat), txt_b);
-				if (n_slash == 3 && (units = strrchr (opt->arg, '/')) != NULL) {
-					units++;
-					Ctrl->S.label = strdup (units);
+				if (gmt_M_compat_check (GMT, 5)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "-S option is deprecated; use -D instead.\n");
+					Ctrl->S.active = true;
+					j = 0;
+					if (opt->arg[0] == 'x') Ctrl->S.cartesian = true, j = 1;
+					k = sscanf (&opt->arg[j], "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->S.length);
+					for (j = n_slash = 0; opt->arg[j]; j++) if (opt->arg[j] == '/') n_slash++;
+					wantx = (Ctrl->S.cartesian) ? GMT_IS_FLOAT : GMT_IS_LON;
+					wanty = (Ctrl->S.cartesian) ? GMT_IS_FLOAT : GMT_IS_LAT;
+					n_errors += gmt_verify_expectations (GMT, wantx, gmt_scanf_arg (GMT, txt_a, wantx, false, &Ctrl->S.lon), txt_a);
+					n_errors += gmt_verify_expectations (GMT, wanty, gmt_scanf_arg (GMT, txt_b, wanty, false, &Ctrl->S.lat), txt_b);
+					if (n_slash == 3 && (units = strrchr (opt->arg, '/')) != NULL) {
+						units++;
+						Ctrl->S.label = strdup (units);
+					}
+					n_errors += gmt_M_check_condition (GMT, k != 3, "Syntax error -S option: Correct syntax:\n\t-S[x]<x0>/<y0>/<length>[/<units>]\n");
 				}
-				n_errors += gmt_M_check_condition (GMT, k != 3, "Syntax error -S option: Correct syntax:\n\t-S[x]<x0>/<y0>/<length>[/<units>]\n");
+				else
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'T':
 				Ctrl->T.active = true;
@@ -539,7 +615,46 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 	gmt_map_clip_off (GMT);
 	gmt_map_basemap (GMT);
 
-	if (Ctrl->S.active) GMT_draw_z_scale (GMT, PSL, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.length, Ctrl->Z.scale, Ctrl->S.cartesian, Ctrl->S.label);
+	if (Ctrl->D.active) {	/* New way of setting the vertical scale */
+		double half_scale_length, x0, y0, xx[4], yy[4], off, dim[2], sign = 1.0;
+		char txt[GMT_LEN64] = {""};
+		int form, just = PSL_ML;
+		
+		if (Ctrl->D.unit) /* Append data unit to the scale length */
+			sprintf (txt, "%g %s", Ctrl->D.length, Ctrl->D.unit);
+		else
+			sprintf (txt, "%g", Ctrl->D.length);
+		half_scale_length = 0.5 * Ctrl->D.length * Ctrl->Z.scale;
+		off = ((GMT->current.setting.map_scale_height > 0.0) ? GMT->current.setting.map_tick_length[0] : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
+		dim[GMT_X] = strlen (txt) * GMT_DEC_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + off;
+		dim[GMT_Y] = 2.0 * half_scale_length;
+		gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
+		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_ML);	/* Adjust refpoint to MR corner */
+		x0 = Ctrl->D.refpoint->x;
+		y0 = Ctrl->D.refpoint->y;
+		if (Ctrl->F.active) {	/* Place rectangle behind the vertical scale */
+			double x_center, y_center;
+			x_center = x0 + 0.5 * dim[GMT_X]; y_center = y0;
+			Ctrl->F.panel->width = dim[GMT_X];	Ctrl->F.panel->height = dim[GMT_Y];
+			gmt_draw_map_panel (GMT, x_center, y_center, 3U, Ctrl->F.panel);
+		}
+		/* Compute the 4 coordinates on the scale line */
+		if (Ctrl->D.move) {	/* Flip scale with label on left */
+			x0 += dim[GMT_X];
+			just = PSL_MR;
+			sign = -1;
+		}
+		gmt_xyz_to_xy (GMT, x0 + sign * GMT->current.setting.map_scale_height, y0 - half_scale_length, 0.0, &xx[0], &yy[0]);
+		gmt_xyz_to_xy (GMT, x0, y0 - half_scale_length, 0.0, &xx[1], &yy[1]);
+		gmt_xyz_to_xy (GMT, x0, y0 + half_scale_length, 0.0, &xx[2], &yy[2]);
+		gmt_xyz_to_xy (GMT, x0 + sign * GMT->current.setting.map_scale_height, y0 + half_scale_length, 0.0, &xx[3], &yy[3]);
+		gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
+		PSL_plotline (PSL, xx, yy, 4, PSL_MOVE + PSL_STROKE);
+		form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+		PSL_plottext (PSL, x0 + sign * off, y0, GMT->current.setting.font_annot[GMT_PRIMARY].size, txt, 0.0, just, form);
+	}
+	else if (Ctrl->S.active)
+		GMT_draw_z_scale (GMT, PSL, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.length, Ctrl->Z.scale, Ctrl->S.cartesian, Ctrl->S.label);
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);

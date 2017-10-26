@@ -207,7 +207,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_refpoint_syntax (API->GMT, "D", "Specify position of the GMT logo [0/0].", GMT_ANCHOR_LOGO, 1);
 	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_LOGO, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +w<width> to set the width of the GMT logo.\n");
-	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo", 0);
+	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo.", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
 	GMT_Option (API, "U,V");
 	GMT_Option (API, "X,f,t,.");
@@ -253,7 +253,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 			case 'F':
 				Ctrl->F.active = true;
 				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
-					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the logo", 0);
+					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the logo.", 0);
 					n_errors++;
 				}
 				break;

@@ -16,7 +16,7 @@ Synopsis
 **psscale** |-D|\ *refpoint*
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
-[ |-F|\ *box* ]
+[ |-F|\ *panel* ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-I|\ [*max\_intens*\ \|\ *low_i*/*high_i*] ]
 [ |-J|\ *parameters* ]
@@ -136,7 +136,7 @@ Optional Arguments
 **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*]]]
     Without further options, draws a rectangular border around the scale using
     **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
-    Add **+g**\ *fill* to fill the scale box [no fill].
+    Add **+g**\ *fill* to fill the scale panel [no fill].
     Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
     or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
     x- and y-direction, or individual side spacings between scale and border.

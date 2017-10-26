@@ -318,6 +318,7 @@ enum GMT_enum_anchors {	/* Various anchor strings */
 	GMT_ANCHOR_INSERT,	/* Anchor for insert */
 	GMT_ANCHOR_MAPSCALE,	/* Anchor for map scale */
 	GMT_ANCHOR_MAPROSE,	/* Anchor for map rose */
+	GMT_ANCHOR_VSCALE,	/* Anchor for vertical scale */
 	GMT_ANCHOR_NTYPES};	/* Number of such types */
 
 enum GMT_enum_radius {	/* Various "average" radii for an ellipsoid with axes a,a,b */

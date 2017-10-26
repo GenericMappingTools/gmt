@@ -17,11 +17,12 @@ Synopsis
 [ |-A|\ [\ *azimuth*\ ] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *center* ]
+[ |-D|\ *refpoint* ]
+[ |-F|\ *panel* ]
 [ |-G|\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill* ]
 [ |-I|\ *fix_az* ]
 [ |-K| ]
 [ |-O| ] [ **-P** ]
-[ |-S|\ [**x**]\ *lon0*/*lat0*/*length*\ [/*units*] ]
 [ |-T|\ *pen* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -102,6 +103,44 @@ Optional Arguments
 **-C**\ *center*
     Subtract *center* from the data set before plotting [0].
 
+.. _-D:
+
+**-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ \ **+l**\ *length*\ [**+j**\ *justify*]\ [**+m**]\ [**+o**\ *dx*\ [/*dy*]]\ [**+u**\ [*unit*]]
+    Defines the reference point on the map for the vertical scale bar using one of four coordinate systems:
+    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
+    a 2-char justification code that refers to the (invisible) map domain rectangle,
+    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
+    (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
+    Append **+l** followed by the *length* or the scale bar in data (*z) units.
+    By default, the anchor point on the scale is assumed to be the middle left corner (ML), but this
+    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
+    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*. Consequently,
+    **-DJ** is used to place a scale outside the map frame while **-Dj** is used to place it inside the frame.
+    Finally, add **+o** to offset the vertical scale bar by *dx*/*dy* away from the *refpoint* point in
+    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
+    Move scale label to opposite side with **+m**.
+    Append **+u** to set the *z* unit name that is used in the scale label [no unit].
+    The **FONT\_ANNOT\_PRIMARY** is used for the font setting.
+
+.. _-F:
+
+**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*]]]
+    Without further options, draws a rectangular border around the vertical scale bar using
+    **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
+    Add **+g**\ *fill* to fill the scale panel [no fill].
+    Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
+    or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
+    x- and y-direction, or individual side spacings between scale and border.
+    Append **+i** to draw a secondary, inner border as well. We use a uniform
+    *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
+    unless other values are specified. Append **+r** to draw rounded
+    rectangular borders instead, with a 6\ **p** corner radius. You can
+    override this radius by appending another value. Finally, append
+    **+s** to draw an offset background shaded region. Here, *dx*/*dy*
+    indicates the shift relative to the foreground frame
+    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
+
 .. _-G:
 
 **-G**\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill*
@@ -131,14 +170,6 @@ Optional Arguments
 .. _-P:
 
 .. include:: explain_-P.rst_
-
-.. _-S:
-
-**-S**\ [**x**]\ *lon0*/*lat0*/*length*\ [/*units*]
-    Draws a simple vertical scale centered on *lon0/lat0*. Use **-Sx**
-    to specify Cartesian *x0*/*y0* coordinates instead. Note that *length* is in z units;
-    optionally append a unit name (or string) for labeling. The
-    **FONT\_ANNOT\_PRIMARY** is used for the font setting.
 
 .. _-T:
 
@@ -192,24 +223,25 @@ Examples
 --------
 
 To plot the magnetic anomaly stored in the file track.xym along track @
-1000 nTesla/cm (after removing a mean value of 32000 nTesla), using a
+500 nTesla/cm (after removing a mean value of 32000 nTesla), using a
 15-cm-wide Polar Stereographic map ticked every 5 degrees in Portrait
 mode, with positive anomalies in red on a blue track of width 0.25
 points, use
 
    ::
 
-    gmt pswiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5 \
-                 -C32000 -P -Gred -T0.25p,blue -S1000 -V > track_xym.ps
+    gmt pswiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z500 -B5 \
+                 -C32000 -P -Gred -T0.25p,blue -DjRM+l1000+unT -V > track_xym.ps
 
 and the positive anomalies will in general point in the north direction.
+We used **-D** to place a vertical scale bar indicating a 1000 nT anomaly.
 To instead enforce a fixed azimuth of 45 for the positive wiggles, we add **-I**
 and obtain
 
    ::
 
     gmt pswiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5 \
-              -C32000 -P -Gred -I45 -T0.25p,blue -S1000 -V > track_xym.ps
+              -C32000 -P -Gred -I45 -T0.25p,blue -DjRM+l1000+unT -V > track_xym.ps
 
 Bugs
 ----
