@@ -3657,7 +3657,7 @@ Placing a vertical scale on maps
 
 Our final embellishment is reserved for wiggles plotted along track with :doc:`pswiggle` and
 is activated as an option within that module.
-Like other features it requires reference and anchor points and their optional adjustments via the **-D** option.
+Like other features, it requires reference and anchor points and their optional adjustments via the **-D** option.
 In addition, we offer a few modifier to set the scale bar's remaining attributes:
 
 #. Specify vertical scale bar length.  This is a required modifier and is set via **+l**\ *length*.
@@ -3670,10 +3670,10 @@ In addition, we offer a few modifier to set the scale bar's remaining attributes
    label to the left and reverses the teeth direction as well.
 
 #. Add a unit to the vertical scale bar label.  This is an optional modifier and is set via **+u**\ *unit*.
-   To append nTesla to the label you would specify **+u**\ nTesla.
+   To append nT (nTesla) to the label you would specify **+u**\ nT.
 
 .. figure:: /_images/GMT_vertscale.*
-   :width: 300 px
+   :width: 600 px
    :align: center
 
    Placement of a vertical scale bar. As for other embellishments the :doc:`pswiggle`
