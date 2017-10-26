@@ -214,7 +214,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**
+**-Q**\ **l**\ \|\ **u**
     Change all text to either **l**\ ower or **u**\ pper case [Default
     leaves all text as is].
 
