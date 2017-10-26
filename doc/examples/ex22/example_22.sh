@@ -74,7 +74,7 @@ G 0.25l
 P
 T USGS/NEIS most recent earthquakes for the last month.  The data were
 T obtained automatically from the USGS Earthquake Hazards Program page at
-T @_http://neic/usgs.gov @_.  Interested users may also receive email alerts
+T @_https://earthquake.usgs.gov@_.  Interested users may also receive email alerts
 T from the USGS.
 T This script could be called monthly to update the latest information.
 G 0.4i
