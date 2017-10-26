@@ -222,10 +222,11 @@ Optional Arguments
     *type*, if present, can be **a** for annotated contours or **c** for
     regular contours [Default]. The *pen* sets the attributes for the
     particular line. Default pen for annotated contours: 0.75p,black.
-    Regular contours use pen 0.25p,black. If the modifier **+cl** is appended
+    Regular contours use pen 0.25p,black. Normally, all contours are drawn
+    with a fixed color determined by the pen setting. If the modifier **+cl** is appended
     then the color of the contour lines are taken from the CPT (see
     **-C**). If instead modifier **+cf** is appended then the color from the cpt
-    file is applied to the contour annotations.  Use just **+c** for both effects.
+    file is applied to the contour annotations.  Select **+c** for both effects.
 
 .. _-X:
 
