@@ -355,7 +355,7 @@ GMT_LOCAL bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, d
 	uint64_t seg;
 	unsigned int inside = 0;
 	for (seg = 0; seg < P->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
-		if (gmt_M_polygon_is_hole (P->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
+		if (gmt_polygon_is_hole (GMT, P->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
 		inside = (gmt_inonout (GMT, lon, lat, P->segment[seg]) > 0);
 	}
 	return ((inside) ? false : true);	/* true if outside */
