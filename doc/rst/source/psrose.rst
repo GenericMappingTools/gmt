@@ -109,7 +109,7 @@ Optional Arguments
 .. _-G:
 
 **-G**\ *fill*
-    Selects shade, color or pattern for filling the sectors [Default is no fill]K.
+    Selects shade, color or pattern for filling the sectors [Default is no fill].
 
 .. _-I:
 
@@ -125,7 +125,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [\ *wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*\ ]
+**-L**\ [\ *wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*]
     Specify labels for the 0, 90, 180, and 270 degree marks. For
     full-circle plot the default is WEST,EAST,SOUTH,NORTH and for
     half-circle the default is 90W,90E,-,0. A - in any entry disables
