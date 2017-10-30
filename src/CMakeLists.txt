@@ -236,7 +236,7 @@ if (DO_API_TESTS)
 	# These lines are temporarily here for the beta release - comment to avoid in the build
 	set (GMT_DEMOS_SRCS testapi.c testpsl.c testgmt.c testgmtio.c testgrdio.c testio.c
 		testapiconv.c example1.c testapi_matrix.c testapi_vector.c test_JL.c testapi_mixmatrix.c
-		test_walter.c testapi_usergrid.c testapi_userdataset.c testapi_uservectors.c testspeed.c)
+		test_walter.c testapi_usergrid.c testapi_userdataset.c testapi_uservectors.c)
 endif (DO_API_TESTS)
 
 if (NOT LICENSE_RESTRICTED) # off
