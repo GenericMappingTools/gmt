@@ -153,10 +153,9 @@ enum GMT_enum_family {
 	GMT_IS_IMAGE      = 2,	/* Entity is a 1- or 3-layer unsigned char image */
 	GMT_IS_PALETTE    = 3,	/* Entity is a color palette table */
 	GMT_IS_POSTSCRIPT = 4,	/* Entity is a PostScript content struct */
-							/* 5 is the gonne GMT_IS_TEXTSET */
-	GMT_IS_MATRIX	  = 6,	/* Entity is user matrix */
-	GMT_IS_VECTOR	  = 7,	/* Entity is set of user vectors */
-	GMT_IS_COORD	  = 8,	/* Entity is a double coordinate array */
+	GMT_IS_MATRIX	  = 5,	/* Entity is user matrix */
+	GMT_IS_VECTOR	  = 6,	/* Entity is set of user vectors */
+	GMT_IS_COORD	  = 7,	/* Entity is a double coordinate array */
 	GMT_N_FAMILIES	  = 8	/* Total number of families [API Developers only]  */
 };
 
