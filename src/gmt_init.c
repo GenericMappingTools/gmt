@@ -7142,10 +7142,11 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			}
 		}
 		if (!inv_project) {	/* Got grid with degrees or regular Cartesian */
+			struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 			gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
 			if (GMT->common.R.active[ISET] == false) gmt_M_memcpy (GMT->common.R.inc, G->header->inc, 2, double);	/* Do not override settings given via -I */
 			GMT->common.R.registration = (GMT->common.R.active[GSET]) ? !G->header->registration : G->header->registration;	/* Set, or toggle registration if -r was set */
-			GMT->common.R.row_order = G->header->row_order;	/* Copy the row order */
+			GMT->common.R.row_order = HH->row_order;	/* Copy the row order */
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG,
 			            "-R<grdfile> converted to -R%.16g/%.16g/%.16g/%.16g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 #if 0
@@ -11201,6 +11202,7 @@ bool geo;
 	struct GMT_OPTION *opt = NULL, *head = NULL, *tmp = NULL;
 	struct GMT_DATASET *Out = NULL;
 	char virt_file[GMT_STR16] = {""}, tmpfile[GMT_LEN64] = {""}, *list = "bfi:";
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	switch (family) {
 		case GMT_IS_GRID:
@@ -11209,7 +11211,8 @@ bool geo;
 			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL)
 				return API->error;	/* Failure to read grid header */
 			gmt_M_memcpy (wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
-			if (!exact) gmtinit_round_wesn (wesn, G->header->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
+			HH = gmt_get_H_hidden (G->header);
+			if (!exact) gmtinit_round_wesn (wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
 			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
 			break;
 

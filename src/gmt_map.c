@@ -5581,6 +5581,7 @@ GMT_LOCAL bool map_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, doub
 	bool perpendicular_only = false, interior, within;
 	uint64_t row0, row1;
 	double edge, dx, dy, xc, yc, s, s_inv, d, dist_AB, fraction;
+	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 	/* map_near_a_line_cartesian works in one of two modes, depending on return_mindist.
 	   Since return_mindist is composed of two settings we must first set
 	   perpendicular_only = (return_mindist >= 10);
@@ -5610,7 +5611,7 @@ GMT_LOCAL bool map_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, doub
 
 	if (S->n_rows <= 0) return (false);	/* empty; skip */
 
-	if (return_mindist) S->dist = 0.0;	/* Explicitly set dist to zero so the shortest distance can be found */
+	if (return_mindist) SH->dist = 0.0;	/* Explicitly set dist to zero so the shortest distance can be found */
 
 	/* Find nearest point on this line */
 
@@ -5622,7 +5623,7 @@ GMT_LOCAL bool map_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, doub
 			else if (return_mindist == 3) { *x_near = (double)seg; *y_near = (double)row0;}		/* Instead update (seg, pt) of nearest point on the line */
 		}
 		interior = (row0 > 0 && row0 < (S->n_rows - 1));	/* Only false if we are processing one of the end points */
-		if (d <= S->dist && (interior || !perpendicular_only)) return (true);		/* Node inside the critical distance; we are done */
+		if (d <= SH->dist && (interior || !perpendicular_only)) return (true);		/* Node inside the critical distance; we are done */
 	}
 
 	if (S->n_rows < 2) return (false);	/* 1-point "line" is a point; skip segment check */
@@ -5634,13 +5635,13 @@ GMT_LOCAL bool map_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, doub
 
 	for (row0 = 0, row1 = 1, within = false; row1 < S->n_rows; row0++, row1++) {	/* loop over straight segments on current line */
 		if (!return_mindist) {
-			edge = lon - S->dist;
+			edge = lon - SH->dist;
 			if (S->data[GMT_X][row0] < edge && S->data[GMT_X][row1] < edge) continue;	/* Left of square */
-			edge = lon + S->dist;
+			edge = lon + SH->dist;
 			if (S->data[GMT_X][row0] > edge && S->data[GMT_X][row1] > edge) continue;	/* Right of square */
-			edge = lat - S->dist;
+			edge = lat - SH->dist;
 			if (S->data[GMT_Y][row0] < edge && S->data[GMT_Y][row1] < edge) continue;	/* Below square */
-			edge = lat + S->dist;
+			edge = lat + SH->dist;
 			if (S->data[GMT_Y][row0] > edge && S->data[GMT_Y][row1] > edge) continue;	/* Above square */
 		}
 
@@ -5687,7 +5688,7 @@ GMT_LOCAL bool map_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, doub
 			}
 			within = true;
 		}
-		if (d <= S->dist) return (true);		/* Node inside the critical distance; we are done */
+		if (d <= SH->dist) return (true);		/* Node inside the critical distance; we are done */
 	}
 
 	return (within);	/* All tests failed, we are not close to the line(s), or we just return distance and interior (see comments above) */
@@ -5716,6 +5717,7 @@ GMT_LOCAL bool map_near_a_line_spherical (struct GMT_CTRL *P, double lon, double
 	bool perpendicular_only = false, interior, within;
 	uint64_t row, prev_row;
 	double d, A[3], B[3], GMT[3], X[3], xlon, xlat, cx_dist, cos_dist, dist_AB, fraction;
+	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 
 	/* map_near_a_line_spherical works in one of two modes, depending on return_mindist.
 	   Since return_mindist is composed of two settings we must first set
@@ -5749,7 +5751,7 @@ GMT_LOCAL bool map_near_a_line_spherical (struct GMT_CTRL *P, double lon, double
 
 	/* Find nearest point on this line */
 
-	if (return_mindist) S->dist = 0.0;	/* Explicitly set dist to zero so the shortest distance can be found */
+	if (return_mindist) SH->dist = 0.0;	/* Explicitly set dist to zero so the shortest distance can be found */
 
 	for (row = 0; row < S->n_rows; row++) {	/* loop over nodes on current line */
 		d = gmt_distance (P, lon, lat, S->data[GMT_X][row], S->data[GMT_Y][row]);	/* Distance between our point and row'th node on seg'th line */
@@ -5759,7 +5761,7 @@ GMT_LOCAL bool map_near_a_line_spherical (struct GMT_CTRL *P, double lon, double
 			if (return_mindist == 3) *x_near = (double)seg, *y_near = (double)row;	/* Also update (seg, pt) of nearest point on the line */
 		}
 		interior = (row > 0 && row < (S->n_rows - 1));	/* Only false if we are processing one of the end points */
-		if (d <= S->dist && (interior || !perpendicular_only)) return (true);			/* Node inside the critical distance; we are done */
+		if (d <= SH->dist && (interior || !perpendicular_only)) return (true);			/* Node inside the critical distance; we are done */
 	}
 
 	if (S->n_rows < 2) return (false);	/* 1-point "line" is a point; skip segment check */
@@ -5769,9 +5771,9 @@ GMT_LOCAL bool map_near_a_line_spherical (struct GMT_CTRL *P, double lon, double
 	if (return_mindist)		/* Cosine of the great circle distance we are checking for. 2 ensures failure to be closer */
 		cos_dist = 2.0;
 	else if (P->current.map.dist[GMT_MAP_DIST].arc)	/* Used angular distance measure */
-		cos_dist = cosd (S->dist / P->current.map.dist[GMT_MAP_DIST].scale);
+		cos_dist = cosd (SH->dist / P->current.map.dist[GMT_MAP_DIST].scale);
 	else	/* Used distance units (e.g., meter, km). Conv to meters, then to degrees */
-		cos_dist = cosd ((S->dist / P->current.map.dist[GMT_MAP_DIST].scale) / P->current.proj.DIST_M_PR_DEG);
+		cos_dist = cosd ((SH->dist / P->current.map.dist[GMT_MAP_DIST].scale) / P->current.proj.DIST_M_PR_DEG);
 	gmt_geo_to_cart (P, S->data[GMT_Y][0], S->data[GMT_X][0], B, true);		/* 3-D vector of end of last segment */
 
 	for (row = 1, within = false; row < S->n_rows; row++) {				/* loop over great circle segments on current line */
@@ -6314,6 +6316,7 @@ unsigned int gmt_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 	char label[GMT_LEN256] = {""}, *part = "EW";
 	double xx[2], yy[2];
 	struct GMT_DATASEGMENT **L = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 	bool (*inside[2]) (double, double);
 	bool (*outside[2]) (double, double);
 
@@ -6350,9 +6353,12 @@ unsigned int gmt_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 			L[side]->label = strdup (label);
 		}
 		if (S->header) L[side]->header = strdup (S->header);
-		if (S->ogr) gmt_duplicate_ogr_seg (GMT, L[side], S);
+		if (SH->ogr) gmt_duplicate_ogr_seg (GMT, L[side], S);
 	}
-	L[0]->range = GMT_IS_0_TO_P360;	L[1]->range = GMT_IS_M360_TO_0_RANGE;
+	SH = gmt_get_DS_hidden (L[0]);
+	SH->range = GMT_IS_0_TO_P360;
+	SH = gmt_get_DS_hidden (L[1]);
+	SH->range = GMT_IS_M360_TO_0_RANGE;
 	*Lout = L;
 	return (2);
 }

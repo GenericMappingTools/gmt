@@ -1028,6 +1028,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	unsigned char *tmp;
 	unsigned int nopad[4] = {0, 0, 0, 0};
 	struct GMT_IMAGE *I = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_POSTSCRIPT *PS = NULL;
 #ifdef _WIN32
 	uint64_t  n_bytes;
@@ -1138,10 +1139,10 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not create Image structure\n");
 		return GMT_RUNTIME_ERROR;
 	}
-
+	HH = gmt_get_H_hidden (I->header);
 	nCols = dim[GMT_X];		nRows = dim[GMT_Y];		nBands = dim[2];	nXY = nRows * nCols;
 	tmp   = gmt_M_memory(API->GMT, NULL, nCols * nBands, char);
-	if (!strncmp(I->header->mem_layout, "TCP", 3)) {		/* Images.jl in Julia wants this */
+	if (!strncmp (I->header->mem_layout, "TCP", 3)) {		/* Images.jl in Julia wants this */
 		for (row = 0; row < nRows; row++) {
 			if ((k = read (fd[0], tmp, (unsigned int)(nCols * nBands))) == 0) {	/* Read a row of nCols by nBands bytes of data */
 				GMT_Report (API, GMT_MSG_NORMAL, "Could not read row from pipe into Image structure\n");
@@ -1153,7 +1154,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 					I->data[row*nBands + col*nBands*nRows + band] = tmp[n++];
 		}
 	}
-	else if (!strncmp(I->header->mem_layout, "TRP", 3)) {	/* Very cheap this one since is gs native order. */
+	else if (!strncmp (I->header->mem_layout, "TRP", 3)) {	/* Very cheap this one since is gs native order. */
 		ios = read (fd[0], I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
 	}
 	else {

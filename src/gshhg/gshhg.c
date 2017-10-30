@@ -210,6 +210,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	struct GSHHG_HEADER h;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT **T = NULL;
+	struct GMT_DATASET_HIDDEN *DH = NULL;
 	struct GSHHG_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -275,6 +276,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	D->table[0]->header = gmt_M_memory (GMT, NULL, 1, char *);
 	D->table[0]->header[0] = strdup (header);
 	D->table[0]->n_headers = 1;
+	DH = gmt_get_DD_hidden (D);
 
 	n_read = fread (&h, sizeof (struct GSHHG_HEADER), 1U, fp);
 
@@ -354,14 +356,16 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 			fseek (fp, (off_t)(h.n * sizeof(struct GSHHG_POINT)), SEEK_CUR);
 		}
 		else {	/* Return the data points also */
+			struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 			/* Place the header in the output data structure */
 			T[seg_no] = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, dim[GMT_ROW], dim[GMT_COL], header, NULL);
+			SH = gmt_get_DS_hidden (T[seg_no]);
 			if (h.id == 0)	/* Special longitude range for Eurasia since it crosses Greenwich and Dateline */
-				T[seg_no]->range = GMT_IS_M180_TO_P270_RANGE;
+				SH->range = GMT_IS_M180_TO_P270_RANGE;
 			else if (h.id == 4)	/* Special longitude range for Antarctica since it crosses Greenwich and Dateline */
-				T[seg_no]->range = GMT_IS_M180_TO_P180_RANGE;
+				SH->range = GMT_IS_M180_TO_P180_RANGE;
 			else
-				T[seg_no]->range = (greenwich & 2) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
+				SH->range = (greenwich & 2) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 			for (row = 0; row < h.n; row++) {
 				if (fread (&p, sizeof (struct GSHHG_POINT), 1U, fp) != 1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);

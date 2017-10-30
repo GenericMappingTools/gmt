@@ -671,14 +671,15 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 
 int gmt_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	GDALDatasetH hDataset;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	GDALAllRegister();
-	hDataset = gdal_open (GMT, header->name);
+	hDataset = gdal_open (GMT, HH->name);
 
 	if (hDataset == NULL)
 		return (GMT_GRDIO_BAD_VAL);
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "File %s reads with GDAL driver %s\n",
-	            header->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
+	            HH->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
 	GDALClose (hDataset);
 	GDALDestroyDriverManager();
 	header->type = GMT_GRID_IS_GD;

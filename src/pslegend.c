@@ -300,14 +300,15 @@ GMT_LOCAL struct GMT_DATASEGMENT * get_segment (struct GMT_DATASET **D, unsigned
 }
 
 GMT_LOCAL void maybe_realloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
-	if (S->n_rows < S->n_alloc) return;	/* Not yet */
-	S->n_alloc += GMT_SMALL_CHUNK;
+	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
+	if (S->n_rows < SH->n_alloc) return;	/* Not yet */
+	SH->n_alloc += GMT_SMALL_CHUNK;
 	if (S->n_columns) {	/* Numerical data */
 		uint64_t col;
 		for (col = 0; col < S->n_columns; col++)
-			S->data[col] = gmt_M_memory (GMT, S->data[col], S->n_alloc, double);
+			S->data[col] = gmt_M_memory (GMT, S->data[col], SH->n_alloc, double);
 	}
-	if (S->text) S->text = gmt_M_memory (GMT, S->text, S->n_alloc, char *);
+	if (S->text) S->text = gmt_M_memory (GMT, S->text, SH->n_alloc, char *);
 }
 
 GMT_LOCAL double get_image_aspect (struct GMTAPI_CTRL *API, char *file) {
@@ -383,6 +384,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *In = NULL;
 	struct GMT_DATASET *D[N_DAT];
 	struct GMT_DATASEGMENT *S[N_DAT];
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
@@ -1304,7 +1306,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_DEBUG, "SYM: %s\n", buffer);
 							GMT_Report (API, GMT_MSG_DEBUG, "SYM: %s\n", sub);
 							S[SYM]->text[0] = strdup (sub);
-							if (S[SYM]->n_rows == S[SYM]->n_alloc) S[SYM]->data = gmt_M_memory (GMT, S[SYM]->data, S[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
+							SH = gmt_get_DS_hidden (S[SYM]);
+							if (S[SYM]->n_rows == SH->n_alloc) S[SYM]->data = gmt_M_memory (GMT, S[SYM]->data, SH->n_alloc += GMT_SMALL_CHUNK, char *);
 							n_symbols++;
 						}
 						/* Finally, print text; skip when empty */

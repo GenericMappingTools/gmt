@@ -252,8 +252,11 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	double distance, xx, yy, z_value, xtmp, radius = 0.0, last_radius = -DBL_MAX, *grd_x0 = NULL, *grd_y0 = NULL;
 
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_DATASET *Din = NULL, *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_DATASET_HIDDEN *DH = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GRDMASK_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -285,6 +288,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	
 	for (k = 0; k < 3; k++) mask_val[k] = (gmt_grdfloat)Ctrl->N.mask[k];	/* Copy over the mask values for perimeter polygons */
 	z_value = Ctrl->N.mask[GMT_INSIDE];	/* Starting value if using running IDs */
+	HH = gmt_get_H_hidden (Grid->header);
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char line[GMT_BUFSIZ] = {""}, *msg[2] = {"polygons", "search radius"};
@@ -313,8 +317,8 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	}
 
 	n_columns = Grid->header->n_columns;	n_rows = Grid->header->n_rows;	/* Signed versions */
-	replicate_x = (Grid->header->nxp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate column */
-	replicate_y = (Grid->header->nyp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate row */
+	replicate_x = (HH->nxp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate column */
+	replicate_y = (HH->nyp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate row */
 	x_wrap = Grid->header->n_columns - 1;				/* Add to node index to go to right column */
 	y_wrap = (Grid->header->n_rows - 1) * Grid->header->n_columns;	/* Add to node index to go to bottom row */
 
@@ -359,15 +363,19 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	gmt_skip_xy_duplicates (GMT, false);	/* Reset */
 
 	D = Din;	/* The default is to work with the input data as is */
+	DH = gmt_get_DD_hidden (D);
+	
 	if (!Ctrl->S.active && GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample all polygons to desired resolution, once and for all */
 		uint64_t n_new;
-		if (D->alloc_mode == GMT_ALLOC_EXTERNALLY)
+		if (DH->alloc_mode == GMT_ALLOC_EXTERNALLY) {
 			D = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC + GMT_ALLOC_NORMAL, Din);
+			DH = gmt_get_DD_hidden (D);
+		}
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Current segment */
 				if ((n_new = gmt_fix_up_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode)) == 0) {
-					if (D->alloc_mode == GMT_ALLOC_EXTERNALLY) GMT_Destroy_Data (API, &D);
+					if (DH->alloc_mode == GMT_ALLOC_EXTERNALLY) GMT_Destroy_Data (API, &D);
 					Return (GMT_RUNTIME_ERROR);
 				}
 				S->n_rows = n_new;
@@ -440,7 +448,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					
 					row_end = row_0 + d_row;
 #ifdef _OPENMP
-#pragma omp parallel for private(row,col,rowu,colu,col_end,jj,ii,ij,wrap_180,distance) shared(Grid,row_0,d_row,col_0,d_col,row_end,xtmp,S,grd_x0,grd_y0,replicate_x,replicate_y,x_wrap,y_wrap,radius,mask_val)
+#pragma omp parallel for private(row,col,rowu,colu,col_end,jj,ii,ij,wrap_180,distance) shared(Grid,HH,row_0,d_row,col_0,d_col,row_end,xtmp,S,grd_x0,grd_y0,replicate_x,replicate_y,x_wrap,y_wrap,radius,mask_val)
 #endif
 					for (row = row_0 - d_row; row <= row_end; row++) {
 						jj = row;
@@ -463,13 +471,13 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 							if (replicate_x) {	/* Must check if we have to replicate a column */
 								if (colu == 0) 	/* Must replicate left to right column */
 									Grid->data[ij+x_wrap] = Grid->data[ij];
-								else if (colu == Grid->header->nxp)	/* Must replicate right to left column */
+								else if (colu == HH->nxp)	/* Must replicate right to left column */
 									Grid->data[ij-x_wrap] = Grid->data[ij];
 							}
 							if (replicate_y) {	/* Must check if we have to replicate a row */
 								if (rowu == 0)	/* Must replicate top to bottom row */
 									Grid->data[ij+y_wrap] = Grid->data[ij];
-								else if (rowu == Grid->header->nyp)	/* Must replicate bottom to top row */
+								else if (rowu == HH->nyp)	/* Must replicate bottom to top row */
 									Grid->data[ij-y_wrap] = Grid->data[ij];
 							}
 						}
@@ -477,9 +485,10 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 				}
 			}
 			else if (S->n_rows > 2) {	/* Assign 'inside' to nodes if they are inside any of the given polygons (Need at least 3 vertices) */
-				if (gmt_M_polygon_is_hole (S)) continue;	/* Holes are handled within gmt_inonout */
+				if (gmt_polygon_is_hole (GMT, S)) continue;	/* Holes are handled within gmt_inonout */
+				SH = gmt_get_DS_hidden (S);
 				if (Ctrl->N.mode == 1 || Ctrl->N.mode == 2) {	/* Look for z-values in the data headers */
-					if (S->ogr)	/* OGR data */
+					if (SH->ogr)	/* OGR data */
 						z_value = gmt_get_aspatial_value (GMT, GMT_IS_Z, S);
 					else if (gmt_parse_segment_item (GMT, S->header, "-Z", text_item))	/* Look for zvalue option */
 						z_value = atof (text_item);
@@ -499,17 +508,17 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					
 					if (periodic) {	/* Containing annulus test */
 						do_test = true;
-						switch (S->pole) {
+						switch (SH->pole) {
 							case 0:	/* Not a polar cap */
 								if (yy < S->min[GMT_Y] || yy > S->max[GMT_Y]) continue;	/* Outside, no need to check */
 								break;
 							case -1:	/* S polar cap */
 								if (yy > S->max[GMT_Y]) continue;	/* Outside, no need to check */
-								if (yy < S->lat_limit) known_side = GMT_INSIDE, do_test = false;	/* Guaranteed inside, set answer */
+								if (yy < SH->lat_limit) known_side = GMT_INSIDE, do_test = false;	/* Guaranteed inside, set answer */
 								break;
 							case +1:	/* N polar cap */
 								if (yy < S->min[GMT_Y]) continue;	/* Outside, no need to check */
-								if (yy > S->lat_limit) known_side = GMT_INSIDE, do_test = false;	/* Guaranteed inside, set answer */
+								if (yy > SH->lat_limit) known_side = GMT_INSIDE, do_test = false;	/* Guaranteed inside, set answer */
 								break;
 						}
 					}

@@ -305,6 +305,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 	double dist, f_seg, f_pt, d1, d2, closest, length[2], separation[2], close[2], *d_mean = NULL;
 	double med_separation[2], med_close[2], high = 0, low = 0, use_length, use_sep, use_close, *sep = NULL;
 	struct GMT_DATASEGMENT *Sp = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Determine the segments in D closest to our segment\n");
 	I->distance = I->mean_distance = DBL_MAX;
@@ -353,6 +354,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 	for (row = 0; row < S->n_rows; row++) {
 		for (sno = tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table to compare it to */
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++, sno++) {	/* For each segment in current table */
+				SH = gmt_get_DS_hidden (D->table[tbl]->segment[seg]);
 				dist = DBL_MAX;	/* Reset for each line to find distance to that line */
 				status = gmt_near_a_line (GMT, S->data[GMT_X][row], S->data[GMT_Y][row], seg, D->table[tbl]->segment[seg], mode3, &dist, &f_seg, &f_pt);
 				if (!status && I->inside) continue;	/* Only consider points that project perpendicularly within the line segment */
@@ -365,11 +367,11 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 					I->table = tbl;
 				}
 				if (dist > I->d_threshold) continue;	/* Not close enough for duplicate consideration */
-				if (D->table[tbl]->segment[seg]->mode == 0) {
+				if (SH->mode == 0) {
 					n_close++;
 					L[tbl][seg].distance = DBL_MAX;
 				}
-				D->table[tbl]->segment[seg]->mode = 1;	/* Use mode to flag segments that are close enough */
+				SH->mode = 1;	/* Use mode to flag segments that are close enough */
 				if (dist < L[tbl][seg].distance) {	/* Keep track of the closest feature */
 					L[tbl][seg].point = pt;
 					L[tbl][seg].distance = dist;
@@ -383,6 +385,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 	for (sno = tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table to compare it to */
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++, sno++) {	/* For each segment in current table */
 			Sp = D->table[tbl]->segment[seg];	/* This is S', one of the segments that is close to S */
+			SH = gmt_get_DS_hidden (Sp);
 			for (row = 0; row < Sp->n_rows; row++) {	/* Process each point along the trace in S and find nearest distance for each segment in table */
 				dist = DBL_MAX;		/* Reset for each line to find distance to that line */
 				status = gmt_near_a_line (GMT, Sp->data[GMT_X][row], Sp->data[GMT_Y][row], seg, S, mode3, &dist, &f_seg, &f_pt);
@@ -396,11 +399,11 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 					I->table = tbl;
 				}
 				if (dist > I->d_threshold) continue;	/* Not close enough for duplicate consideration */
-				if (D->table[tbl]->segment[seg]->mode == 0) {
+				if (SH->mode == 0) {
 					n_close++;
 					L[tbl][seg].distance = DBL_MAX;
 				}
-				D->table[tbl]->segment[seg]->mode = 1;	/* Use mode to flag segments that are close enough */
+				SH->mode = 1;	/* Use mode to flag segments that are close enough */
 				if (dist < L[tbl][seg].distance) {	/* Keep track of the closest feature */
 					L[tbl][seg].point = pt;
 					L[tbl][seg].distance = dist;
@@ -427,8 +430,9 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table to compare it to */
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in current table */
-			if (D->table[tbl]->segment[seg]->mode != 1) continue;	/* Not one of the close segments we flagged earlier */
-			D->table[tbl]->segment[seg]->mode = 0;			/* Remove this temporary flag */
+			SH = gmt_get_DS_hidden (D->table[tbl]->segment[seg]);
+			if (SH->mode != 1) continue;	/* Not one of the close segments we flagged earlier */
+			SH->mode = 0;			/* Remove this temporary flag */
 			
 			Sp = D->table[tbl]->segment[seg];	/* This is S', one of the segments that is close to S */
 			if (S->n_rows == Sp->n_rows) {	/* Exactly the same number of data points; check for identical duplicate (possibly reversed) */
@@ -1013,6 +1017,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_DATASET_HIDDEN *DH = NULL;
 	struct GMT_RECORD Out;
 	struct GMTSPATIAL_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -1085,6 +1090,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		Return (GMT_NOERROR);
 	}
+	DH = gmt_get_DD_hidden (D);
 	
 	if (Ctrl->S.active && !(Ctrl->S.mode == POL_SPLIT || Ctrl->S.mode == POL_HOLE)) external = 1;
 	
@@ -1312,7 +1318,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			switch (Ctrl->Q.mode) {	/* Set geometry */
 				case GMT_IS_LINE:	gmtry = GMT_IS_LINE;	break;
 				case GMT_IS_POLY:	gmtry = GMT_IS_POLY;	break;
-				default:			gmtry = D->geometry;	break;
+				default:		gmtry = D->geometry;	break;
 			}
 			if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, gmtry, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 				Return (API->error);
@@ -1561,14 +1567,15 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 								gmt_M_free (GMT, kk);
 							}
 							else {	/* Just report */
+								struct GMT_DATATABLE_HIDDEN *TH1 = gmt_get_DT_hidden (C->table[tbl1]), *TH2 = gmt_get_DT_hidden (C->table[tbl2]);
 								if (mseg)
-									sprintf (record, "%s-%" PRIu64 "%s%s-%" PRIu64, C->table[tbl1]->file[GMT_IN], seg1, GMT->current.setting.io_col_separator, C->table[tbl2]->file[GMT_IN], seg2);
+									sprintf (record, "%s-%" PRIu64 "%s%s-%" PRIu64, TH1->file[GMT_IN], seg1, GMT->current.setting.io_col_separator, TH2->file[GMT_IN], seg2);
 								else
-                                    sprintf (record, "%s%s%s", C->table[tbl1]->file[GMT_IN], GMT->current.setting.io_col_separator, C->table[tbl2]->file[GMT_IN]);
+									sprintf (record, "%s%s%s", TH1->file[GMT_IN], GMT->current.setting.io_col_separator, TH2->file[GMT_IN]);
 								Out.text = record;
 								for (px = 0; px < nx; px++) {	/* Write these to output */
-                                    out[GMT_X] = XC.x[px];  out[GMT_Y] = XC.y[px];
-                                    out[2] = XC.xnode[0][px];   out[3] = XC.xnode[1][px];
+									out[GMT_X] = XC.x[px];  out[GMT_Y] = XC.y[px];
+									out[2] = XC.xnode[0][px];   out[3] = XC.xnode[1][px];
 									sprintf (record, fmt, XC.x[px], XC.y[px], (double)XC.xnode[0][px], (double)XC.xnode[1][px], T1, T2);
 									GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 								}
@@ -1625,6 +1632,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		char record[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""}, src[GMT_BUFSIZ] = {""}, dup[GMT_BUFSIZ] = {""}, *feature[2] = {"polygon", "line"}, *from = NULL;
 		char *in = "the same data set", *verdict = "NY~-+/";	/* No, Yes, Approximate, Subsection, Supersection */
 		struct GMT_DATASET *C = NULL;
+		struct GMT_DATASET_HIDDEN *CH = NULL;
 		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
 		struct DUP_INFO **Info = NULL, *I = NULL;
 		
@@ -1647,7 +1655,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			smode = (C->table[0]->segment[0]->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 			S2 = GMT_Alloc_Segment (GMT->parent, smode, 0, C->n_columns, NULL, NULL);
 		}
-			
+		CH = gmt_get_DD_hidden (C);
 		if (GMT_Init_IO (API, C->geometry, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 			gmt_free_segment (GMT, &S2);
 			Return (API->error);	/* Registers default output destination, unless already set */
@@ -1738,6 +1746,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	if (Ctrl->C.active) {	/* Clip polygon to bounding box */
 		uint64_t np, p, nx, tbl, seg, col;
 		double *cp[2] = {NULL, NULL};
+		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 		if (!GMT->common.J.active) {	/* -J not specified, set one implicitly */
 			/* Supply dummy linear proj for Cartesian or geographic data */
 			if (gmt_M_is_geographic (GMT, GMT_IN))
@@ -1749,9 +1758,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S = D->table[tbl]->segment[seg];
+				SH = gmt_get_DS_hidden (S);
 				if ((np = (*GMT->current.map.clip) (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, &cp[GMT_X], &cp[GMT_Y], &nx)) == 0) {
 					/* Everything is outside, let go */
-					S->mode = GMT_WRITE_SKIP;
+					SH->mode = GMT_WRITE_SKIP;
 					continue;
 				}
 				smode = (S->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
@@ -1777,6 +1787,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct GMT_DATASET *C = NULL;
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL, *S2 = NULL;
+		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 		
 		gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -CN files */
 		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
@@ -1813,10 +1824,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		Out.text = record;
 		for (seg2 = 0; seg2 < T->n_segments; seg2++) {	/* For all polygons */
 			S2 = T->segment[seg2];
-			if (gmt_M_polygon_is_hole (S2)) continue;	/* Holes are handled in gmt_inonout */
+			SH = gmt_get_DS_hidden (S2);
+			if (gmt_polygon_is_hole (GMT, S2)) continue;	/* Holes are handled in gmt_inonout */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Look for points/features inside polygon segment %" PRIu64 " :\n", seg2);
 			if (Ctrl->N.ID == 0) {	/* Look for polygon IDs in the data headers */
-				if (S2->ogr)	/* OGR data */
+				if (SH->ogr)	/* OGR data */
 					ID = irint (gmt_get_aspatial_value (GMT, GMT_IS_Z, S2));
 				else if (gmt_parse_segment_item (GMT, S2->header, "-Z", seg_label))	/* Look for segment header ID */
 					ID = atoi (seg_label);
@@ -1948,6 +1960,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct GMT_DATASET *Dout = NULL;
 		struct GMT_DATATABLE *T1 = NULL, *T2 = NULL;
 		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
+		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 		struct GMT_TBLSEG *K = NULL;
 		
 		inside = gmt_M_memory (GMT, NULL, D->n_segments, unsigned int);
@@ -2039,7 +2052,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					}
 					else
 						S2->header = strdup ("-Ph");
-					S2->pol_mode = GMT_IS_HOLE;
+					SH = gmt_get_DS_hidden (S2);
+					SH->pol_mode = GMT_IS_HOLE;
 				}
 			}
 		}

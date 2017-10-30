@@ -176,6 +176,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 	char fname[2][GMT_BUFSIZ];
 	char command[GMT_GRID_COMMAND_LEN320] = {""};
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GRDCONVERT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -201,13 +202,14 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	if ((Grid = gmt_create_grid (API->GMT)) == NULL) Return (API->error);	/* Tmp grid only, no i/o is used */
 	gmt_grd_init (GMT, Grid->header, options, false);
+	HH = gmt_get_H_hidden (Grid->header);
 	hmode = (Ctrl->N.active) ? GMT_GRID_NO_HEADER : 0;
 	gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->In.file, Grid->header, true), Ctrl->In.file);
 	type[GMT_IN] = Grid->header->type;
-	strncpy (fname[GMT_IN], Grid->header->name, GMT_BUFSIZ);
+	strncpy (fname[GMT_IN], HH->name, GMT_BUFSIZ);
 	gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->G.file, Grid->header, false), Ctrl->G.file);
 	type[GMT_OUT] = Grid->header->type;
-	strncpy (fname[GMT_OUT], Grid->header->name, GMT_BUFSIZ);
+	strncpy (fname[GMT_OUT], HH->name, GMT_BUFSIZ);
 	gmt_free_grid (GMT, &Grid, true);	/* Free temp grid, Grid is now NULL */
 
 	if (type[GMT_OUT] == GMT_GRID_IS_SD) {
@@ -228,13 +230,14 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
+	HH = gmt_get_H_hidden (Grid->header);
 
 	if (GMT->common.R.active[RSET]) {	/* Specified a subset */
 		bool global = false;
 		double noise[2];
 		noise[GMT_X] = GMT_CONV4_LIMIT * Grid->header->inc[GMT_X];	/* Tolerate a bit of slop */
 		noise[GMT_Y] = GMT_CONV4_LIMIT * Grid->header->inc[GMT_Y];
-		global = gmt_M_grd_is_global (GMT, Grid->header);
+		global = gmt_grd_is_global (GMT, Grid->header);
 		if (!global && (GMT->common.R.wesn[XLO] < (Grid->header->wesn[XLO]-noise[GMT_X]) || GMT->common.R.wesn[XHI] > (Grid->header->wesn[XHI]+noise[GMT_X]))) error++;
 		if (GMT->common.R.wesn[YLO] < (Grid->header->wesn[YLO]-noise[GMT_Y]) || GMT->common.R.wesn[YHI] > (Grid->header->wesn[YHI]+noise[GMT_Y])) error++;
 		if (error) {
@@ -276,7 +279,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 		Return (API->error);
 
 	if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_is_cartesian (GMT, GMT_OUT)) {	/* Force a switch from geographic to Cartesian */
-		Grid->header->grdtype = GMT_GRID_CARTESIAN;
+		HH->grdtype = GMT_GRID_CARTESIAN;
 		strcpy (Grid->header->x_units, "x_units");
 		strcpy (Grid->header->y_units, "y_units");
 	}

@@ -853,13 +853,12 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get entire grid */
 		Return (API->error);
 	}
-
 	if (Ctrl->T.active)	/* Make output grid of the opposite registration */
 		one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 1 : 0;
 	else
 		one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
 
-	full_360 = (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN && gmt_M_grd_is_global (GMT, Gin->header));	/* Periodic geographic grid */
+	full_360 = (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN && gmt_grd_is_global (GMT, Gin->header));	/* Periodic geographic grid */
 
 	if (Ctrl->D.mode == GRDFILTER_XY_PIXEL) {	/* Special case where widths are given in pixels */
 		if (!doubleAlmostEqual (fmod (Ctrl->F.width, 2.0), 1.0)) {

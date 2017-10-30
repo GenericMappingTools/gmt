@@ -981,12 +981,12 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			if (Ctrl->E.mode == GPS_MISFIT) {	/* Save information in output dataset */
 				for (p = 0; p < 2; p++)
 					S->data[p][j] = X[j][p];
-				S->coord[p++][j] = orig_u[j];
-				S->coord[p++][j] = here[GMT_U];
-				S->coord[p++][j] = dev_u;
-				S->coord[p++][j] = orig_v[j];
-				S->coord[p++][j] = here[GMT_V];
-				S->coord[p][j]   = dev_v;
+				S->data[p++][j] = orig_u[j];
+				S->data[p++][j] = here[GMT_U];
+				S->data[p++][j] = dev_u;
+				S->data[p++][j] = orig_v[j];
+				S->data[p++][j] = here[GMT_V];
+				S->data[p][j]   = dev_v;
 			}
 		}
 		rms_u = sqrt (rms_u / n_uv);
@@ -1066,7 +1066,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		if (Ctrl->C.movie) {	/* Write out U,V grids after adding contribution for each eigenvalue */
 			gmt_grdfloat *tmp[2] = {NULL, NULL};
 			if (Ctrl->C.movie == 1) {	/* Need temp arrays to capture increments */
-				for (k = 0; k < 2; k++) tmp[k] = gmt_M_memory_aligned (GMT, NULL, Out[k]->header->size, gmt_grdfloat);
+				for (k = 0; k < 2; k++) tmp[k] = gmt_M_memory_aligned (GMT, NULL, Out[GMT_X]->header->size, gmt_grdfloat);
 			}
 			
 			for (e = 1; e <= (int64_t)n_params; e++) {	/* For each eigenvalue */

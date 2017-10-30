@@ -184,8 +184,6 @@ enum gmt_enum_wesnids {
 #define gmt_M_grd_same_shape(C,G1,G2) (G1->header->n_columns == G2->header->n_columns && G1->header->n_rows == G2->header->n_rows && G1->header->registration == G2->header->registration)
 /*! gmt_M_y_is_outside is true if y is outside the given range */
 #define gmt_M_y_is_outside(C,y,bottom,top) ((gmt_M_is_dnan(y) || (y) < bottom || (y) > top) ? true : false)
-/*! gmt_M_grd_is_global is true for a geographic grid with exactly 360-degree range (with or without repeating column) */
-#define gmt_M_grd_is_global(C,h) (h->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT || h->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT)
 
 /*! gmt_M_grd_duplicate_column is true for geographical global grid where first and last data columns are identical */
 #define gmt_M_grd_duplicate_column(C,h,way) (C->current.io.col_type[way][GMT_X] == GMT_IS_LON && gmt_M_360_range (h->wesn[XHI], h->wesn[XLO]) && h->registration == GMT_GRID_NODE_REG)

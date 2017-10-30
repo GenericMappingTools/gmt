@@ -300,8 +300,6 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on file %s\n", G->header->name);
-
 		if (gmt_M_is_subset (GMT, G->header, wesn))	/* Subset requested; make sure wesn matches header spacing */
 			gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");
 

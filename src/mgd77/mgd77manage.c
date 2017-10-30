@@ -965,6 +965,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		else if (got_grid) {	/* Sample grid along track (or Mercator-projected) track */
 			int ix, iy;
 			double *xvar = NULL, *yvar = NULL;
+			struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 			
 			if ((ix = skip_if_missing (GMT, "lon", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 			if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
@@ -986,10 +987,10 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				}
 				if (y < G->header->wesn[YLO] || y > G->header->wesn[YHI]) continue;
 
-				while ((x < G->header->wesn[XLO]) && (G->header->nxp > 0)) x += (G->header->inc[GMT_X] * G->header->nxp);
+				while ((x < G->header->wesn[XLO]) && (HH->nxp > 0)) x += (G->header->inc[GMT_X] * HH->nxp);
 				if (x < G->header->wesn[XLO]) continue;
 
-				while ((x > G->header->wesn[XHI]) && (G->header->nxp > 0)) x -= (G->header->inc[GMT_X] * G->header->nxp);
+				while ((x > G->header->wesn[XHI]) && (HH->nxp > 0)) x -= (G->header->inc[GMT_X] * HH->nxp);
 				if (x > G->header->wesn[XHI]) continue;
 
 				if (interpolate) {	/* IMG has been corrected, and GRD is good to go */

@@ -849,14 +849,14 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			}
 			S = V->table[0]->segment[0];	/* The only segment */
 			sprintf (format, "mean_az\tmean_r\tmean_resultant\tmax\tscaled_mean_r\tlength_sum\tn\tsign@%.2f", Ctrl->Q.value);
-			S->coord[GMT_X][0] = mean_theta;
-			S->coord[GMT_Y][0] = mean_radius;
-			S->coord[GMT_Z][0] = mean_resultant;
-			S->coord[3][0] = max;
-			S->coord[4][0] = mean_radius;
-			S->coord[5][0] = total;
-			S->coord[6][0] = (double)n;
-			S->coord[7][0] = significant;
+			S->data[GMT_X][0] = mean_theta;
+			S->data[GMT_Y][0] = mean_radius;
+			S->data[GMT_Z][0] = mean_resultant;
+			S->data[3][0] = max;
+			S->data[4][0] = mean_radius;
+			S->data[5][0] = total;
+			S->data[6][0] = (double)n;
+			S->data[7][0] = significant;
 			S->n_rows = 1;
 			if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, format, V)) {
 				Return (API->error);

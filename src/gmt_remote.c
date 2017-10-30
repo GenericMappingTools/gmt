@@ -373,6 +373,7 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	struct GMT_GRID *G = NULL;
 	double *wesn = (region) ? region : API->GMT->common.R.wesn;	/* Default to -R */
 	char grid[GMT_STR16] = {""}, cmd[GMT_LEN128] = {""}, tag[4] = {"01s"};
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	
 	tag[1] = res;
 	give_data_attribution (API->GMT, tag);
@@ -388,7 +389,8 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to receive blended grid from grdblend\n");
 		return NULL;
 	}
-	G->header->orig_datatype = GMT_SHORT;	/* Since we know this */
+	HH = gmt_get_H_hidden (G->header);
+	HH->orig_datatype = GMT_SHORT;	/* Since we know this */
 	return (G);
 }
 

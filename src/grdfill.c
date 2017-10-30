@@ -320,7 +320,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 
 	if (GMT->common.R.active[RSET]) {	/* Specified a subset */
 		bool global = false;
-		global = gmt_M_grd_is_global (GMT, Grid->header);
+		global = gmt_grd_is_global (GMT, Grid->header);
 		if (!global && (GMT->common.R.wesn[XLO] < Grid->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Grid->header->wesn[XHI])) error++;
 		if (GMT->common.R.wesn[YLO] < Grid->header->wesn[YLO] || GMT->common.R.wesn[YHI] > Grid->header->wesn[YHI]) error++;
 		if (error) {
@@ -334,7 +334,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 	else if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, Grid) == NULL) {
 		Return (API->error);	/* Get all */
 	}
-
+	
 	/* To avoid having to check every row,col for being inside the grid we set
 	 * the boundary row/cols in the ID grid to 1. */
 	

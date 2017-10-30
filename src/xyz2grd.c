@@ -323,6 +323,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	int (*save_o) (struct GMT_CTRL *, FILE *, uint64_t, double *, char *);
 
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_Z_IO io;
 	struct GMT_RECORD *In = NULL;
 	struct XYZ2GRD_CTRL *Ctrl = NULL;
@@ -532,6 +533,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);
 
+	HH = gmt_get_H_hidden (Grid->header);
 	/* See if we have a projection info to add */
 	if (GMT->common.J.active)		/* Convert the GMT -J<...> into a proj4 string and save it in the header */
 		Grid->header->ProjRefPROJ4 = gmt_export2proj4(GMT);

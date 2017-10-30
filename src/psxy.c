@@ -814,6 +814,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	struct GMT_FILL current_fill, default_fill, black, no_fill;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GMT_DATASET *Decorate = NULL;
 	struct GMT_DATASEGMENT *L = NULL;
 	struct PSXY_CTRL *Ctrl = NULL;
@@ -889,6 +890,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		PH = gmt_get_C_hidden (P);
 		if (get_rgb) n_cols_start++;
 	}
 	if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols_start += 1;
@@ -1103,7 +1105,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 			if (get_rgb) {
 				gmt_get_fill_from_z (GMT, P, in[GMT_Z], &current_fill);
-				if (P->skip) continue;	/* Chosen CPT indicates skip for this z */
+				if (PH->skip) continue;	/* Chosen CPT indicates skip for this z */
 				if (Ctrl->I.active) gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 			}
 
@@ -1502,6 +1504,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		uint64_t seg, seg_out = 0, n_new;
 		bool duplicate, resampled;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
+		struct GMT_DATASET_HIDDEN *DH = NULL;
+		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
@@ -1543,6 +1547,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
+		DH = gmt_get_DD_hidden (D);
 		if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Get a dataset with one table, segment, 0 rows, but 4 columns */
 			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 4};	/* Put everything in one table */
 			dim[GMT_SEG] = D->n_segments;	/* Make one segment for each input segment so segment headers can be preserved */
@@ -1557,8 +1562,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++, seg_out++) {	/* For each segment in the table */
 
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
+				SH = gmt_get_DS_hidden (L);
 				
-				if (polygon && gmt_M_polygon_is_hole (L)) continue;	/* Holes are handled together with perimeters */
+				if (polygon && gmt_polygon_is_hole (GMT, L)) continue;	/* Holes are handled together with perimeters */
 				resampled = false;
 				if (!polygon && gmt_trim_requested (GMT, &current_pen)) {	/* Needs a haircut */
 					if (L->n_rows == 2) {	/* Given endpoints we need to resample in order to trim */
@@ -1570,7 +1576,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						if (n_new == 0) {
 							Return (GMT_RUNTIME_ERROR);
 						}
-						L->n_rows = L->n_alloc = n_new;
+						L->n_rows = SH->n_alloc = n_new;
 						gmt_set_seg_minmax (GMT, D->geometry, 2, L);	/* Update min/max of x/y only */
 						resampled = true;	/* To avoid doing it twice */
 					}
@@ -1582,11 +1588,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				/* We had here things like:	x = D->table[tbl]->segment[seg]->data[GMT_X];
 				 * but reallocating x below lead to disasters.  */
 
-				change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, L->ogr);
+				change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, SH->ogr);
 
-				if (P && P->skip) continue;	/* Chosen CPT indicates skip for this z */
+				if (P && PH->skip) continue;	/* Chosen CPT indicates skip for this z */
 
-				duplicate = (D->alloc_mode == GMT_ALLOC_EXTERNALLY && ((polygon && gmt_polygon_is_open (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
+				duplicate = (DH->alloc_mode == GMT_ALLOC_EXTERNALLY && ((polygon && gmt_polygon_is_open (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
 				if (duplicate)	/* Must duplicate externally allocated segment since it needs to be resampled below */
 					L = gmt_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
 
@@ -1634,8 +1640,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					polygon = false;
 					PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
 				}
-				if (S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from segment header */
-					gmt_extract_label (GMT, L->header, S.G.label, L->ogr);
+				if (S.G.label_type == GMT_LABEL_IS_HEADER) {	/* Get potential label from segment header */
+					SH = gmt_get_DS_hidden (L);
+					gmt_extract_label (GMT, L->header, S.G.label, SH->ogr);
+				}
 
 				if (polygon && gmt_polygon_is_open (GMT, L->data[GMT_X], L->data[GMT_Y], L->n_rows)) {
 					/* Explicitly close polygon so that arc will work */

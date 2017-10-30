@@ -120,14 +120,15 @@ GMT_LOCAL uint64_t bcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy, do
 	int col, row;
 	uint64_t ij;
 	double x, y, wp, wq, w, xi, yj;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	/* Compute the normalized real indices (x,y) of the point (xx,yy) within the grid.
 	   Note that the y axis points down from the upper left corner of the grid. */
 
-	x = (xx - h->wesn[XLO]) * h->r_inc[GMT_X] - h->xy_off;
-	y = (h->wesn[YHI] - yy) * h->r_inc[GMT_Y] - h->xy_off;
+	x = (xx - h->wesn[XLO]) * HH->r_inc[GMT_X] - h->xy_off;
+	y = (h->wesn[YHI] - yy) * HH->r_inc[GMT_Y] - h->xy_off;
 
-	if (h->bcr_interpolant == BCR_NEARNEIGHBOR) {
+	if (HH->bcr_interpolant == BCR_NEARNEIGHBOR) {
 		/* Find the indices (i,j) of the closest node. */
 		col = irint (x);
 		row = irint (y);
@@ -145,7 +146,7 @@ GMT_LOCAL uint64_t bcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy, do
 		y -= yj;
 
 		/* For 4x4 interpolants, move over one more cell to the upper left corner */
-		if (h->bcr_n == 4) { col--; row--; }
+		if (HH->bcr_n == 4) { col--; row--; }
 	}
 
 	/* Normally, one would expect here a check on the value (i,j) to make sure that the
@@ -160,7 +161,7 @@ GMT_LOCAL uint64_t bcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy, do
 
 	/* Build weights */
 
-	switch (h->bcr_interpolant) {
+	switch (HH->bcr_interpolant) {
 	case BCR_NEARNEIGHBOR:
 		wx[0] = wy[0] = 1.0;
 		break;
@@ -242,14 +243,15 @@ double gmt_bcr_get_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, 
 	unsigned int i, j;
 	uint64_t ij, node;
 	double retval, wsum, wx[4] = {0.0, 0.0, 0.0, 0.0}, wy[4] = {0.0, 0.0, 0.0, 0.0}, w;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
 	/* Determine nearest node ij and set weights wx, wy */
 
 	ij = bcr_prep (G->header, xx, yy, wx, wy);
 
 	retval = wsum = 0.0;
-	for (j = 0; j < G->header->bcr_n; j++) {
-		for (i = 0; i < G->header->bcr_n; i++) {
+	for (j = 0; j < HH->bcr_n; j++) {
+		for (i = 0; i < HH->bcr_n; i++) {
 			/* assure that index is inside bounds of the array G->data: */
 			node = ij + i;
 			assert (node < G->header->size);
@@ -259,7 +261,7 @@ double gmt_bcr_get_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, 
 		}
 		ij += G->header->mx;
 	}
-	if ((wsum + GMT_CONV8_LIMIT - G->header->bcr_threshold) > 0.0) {
+	if ((wsum + GMT_CONV8_LIMIT - HH->bcr_threshold) > 0.0) {
 		retval /= wsum;
 		if (GMT->common.n.truncate) {
 			if (retval < G->header->z_min) retval = G->header->z_min;
@@ -278,6 +280,7 @@ double gmt_bcr_get_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 	unsigned int i, j;
 	uint64_t ij, node;
 	double retval, wsum, wx[4] = {0.0, 0.0, 0.0, 0.0}, wy[4] = {0.0, 0.0, 0.0, 0.0}, w;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
 
@@ -288,8 +291,8 @@ double gmt_bcr_get_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 	ij = bcr_prep (G->header, xx, yy, wx, wy);
 
 	retval = wsum = 0.0;
-	for (j = 0; j < G->header->bcr_n; j++) {
-		for (i = 0; i < G->header->bcr_n; i++) {
+	for (j = 0; j < HH->bcr_n; j++) {
+		for (i = 0; i < HH->bcr_n; i++) {
 			/* assure that index is inside bounds of the array G->data: */
 			node = ij + i;
 			assert (node < G->header->size);
@@ -301,7 +304,7 @@ double gmt_bcr_get_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 		}
 		ij += G->header->mx;
 	}
-	if ((wsum + GMT_CONV8_LIMIT - G->header->bcr_threshold) > 0.0) {
+	if ((wsum + GMT_CONV8_LIMIT - HH->bcr_threshold) > 0.0) {
 		retval /= wsum;
 		if (GMT->common.n.truncate) {
 			if (retval < G->header->z_min) retval = G->header->z_min;
@@ -320,6 +323,7 @@ int gmtlib_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, do
 	unsigned int i, j, b, nb = G->header->n_bands;
 	uint64_t ij;
 	double retval[4], wsum, wx[4] = {0.0, 0.0, 0.0, 0.0}, wy[4] = {0.0, 0.0, 0.0, 0.0}, w;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
 
@@ -331,15 +335,15 @@ int gmtlib_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, do
 
 	gmt_M_memset (retval, 4, double);
 	wsum = 0.0;
-	for (j = 0; j < G->header->bcr_n; j++) {
-		for (i = 0; i < G->header->bcr_n; i++) {
+	for (j = 0; j < HH->bcr_n; j++) {
+		for (i = 0; i < HH->bcr_n; i++) {
 			w = wx[i] * wy[j];
 			wsum += w;
 			for (b = 0; b < nb; b++) retval[b] += G->data[nb*(ij+i)+b] * w;
 		}
 		ij += G->header->mx;
 	}
-	if ((wsum + GMT_CONV8_LIMIT - G->header->bcr_threshold) > 0.0) {	/* OK to evaluate result */
+	if ((wsum + GMT_CONV8_LIMIT - HH->bcr_threshold) > 0.0) {	/* OK to evaluate result */
 		for (b = 0; b < nb; b++) {
 			retval[b] /= wsum;
 			z[b] = (unsigned char) lrint (gmt_M_0_255_truncate (retval[b]));

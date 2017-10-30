@@ -325,13 +325,14 @@ GMT_LOCAL void orient_contours (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h,
 	bool reverse;
 	uint64_t i, j, ij_ul, ij_ur, ij_ll, ij_lr;
 	double fx[2], fy[2], dx, dy;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	if (orient == 0) return;	/* Nothing to be done when no orientation specified */
 	if (n < 2) return;		/* Cannot work on a single point */
 
 	for (k = 0; k < 2; k++) {	/* Calculate fractional node numbers from left/top */
-		fx[k] = (x[k] - h->wesn[XLO]) * h->r_inc[GMT_X] - h->xy_off;
-		fy[k] = (h->wesn[YHI] - y[k]) * h->r_inc[GMT_Y] - h->xy_off;
+		fx[k] = (x[k] - h->wesn[XLO]) * HH->r_inc[GMT_X] - h->xy_off;
+		fy[k] = (h->wesn[YHI] - y[k]) * HH->r_inc[GMT_Y] - h->xy_off;
 	}
 
 	/* Get(i,j) of the lower left node in the rectangle containing this contour segment.
@@ -840,6 +841,8 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		}
 		if (!Ctrl->T.active) {	/* Must trace the outline of ON/OFF values in grd */
 			uint64_t max_alloc_points = GMT_CHUNK;
+			struct GMT_DATATABLE_HIDDEN *TH = NULL;
+			struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 			/* Arrays holding the contour xy values; preallocate space */
 			x = gmt_M_memory (GMT, NULL, max_alloc_points, double);
 			y = gmt_M_memory (GMT, NULL, max_alloc_points, double);
@@ -869,10 +872,13 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 					D->table[0]->n_segments++;	D->n_segments++;
 					D->table[0]->n_records += n;	D->n_records += n;
 					/* Generate a file name and increment cont_counts, if relevant */
-					if (io_mode == GMT_WRITE_SET && !D->table[0]->file[GMT_OUT])
-						D->table[0]->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
-					else if (io_mode == GMT_WRITE_SEGMENT)
-						S->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
+					TH = gmt_get_DT_hidden (D->table[0]);
+					if (io_mode == GMT_WRITE_SET && !TH->file[GMT_OUT])
+						TH->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
+					else if (io_mode == GMT_WRITE_SEGMENT) {
+						SH = gmt_get_DS_hidden (S);
+						SH->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
+					}
 				}
 				if (make_plot) draw_clip_contours (GMT, PSL, x, y, n, Ctrl->G.fill.rgb, section, first);
 				first = 0;

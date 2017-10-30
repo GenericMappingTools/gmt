@@ -277,6 +277,7 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 	uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 2};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 		return (NULL);	/* An empty table with one segment, two cols */
@@ -344,8 +345,9 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 	S->n_columns = 2;
 	S->min[GMT_X] = h->wesn[XLO];	S->max[GMT_X] = h->wesn[XHI];
 	S->min[GMT_Y] = h->wesn[YLO];	S->max[GMT_Y] = h->wesn[YHI];
-	S->pole = 0;
-	S->alloc_mode = GMT_ALLOC_INTERNALLY;
+	SH = gmt_get_DS_hidden (S);
+	SH->pole = 0;
+	SH->alloc_mode = GMT_ALLOC_INTERNALLY;
 
 	return (D);
 }
@@ -382,6 +384,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	struct GMT_DATASEGMENT *S = NULL, *Sr = NULL;
 	struct GMT_OPTION *ptr = NULL;
 	struct GMT_GRID *G = NULL, *G_rot = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GRDROTATER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -414,7 +417,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
-
+		HH = gmt_get_H_hidden (G->header);
 		if (!GMT->common.R.active[RSET]) gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
 
 		/* Determine the wesn to be used to read the Ctrl->In.file; or exit if file is outside -R */
@@ -425,7 +428,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		}
 		global = (doubleAlmostEqual (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO], 360.0)
 							&& doubleAlmostEqual (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO], 180.0));
-		if (!GMT->common.R.active[RSET]) global = gmt_M_grd_is_global (GMT, G->header);
+		if (!GMT->common.R.active[RSET]) global = gmt_grd_is_global (GMT, G->header);
 	}
 	not_global = !global;
 
@@ -556,10 +559,10 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		if (global)
 			gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
 		else {
-			GMT->common.R.wesn[XLO] = floor (polr->min[GMT_X] * G->header->r_inc[GMT_X]) * G->header->inc[GMT_X];
-			GMT->common.R.wesn[XHI] = ceil  (polr->max[GMT_X] * G->header->r_inc[GMT_X]) * G->header->inc[GMT_X];
-			GMT->common.R.wesn[YLO] = floor (polr->min[GMT_Y] * G->header->r_inc[GMT_Y]) * G->header->inc[GMT_Y];
-			GMT->common.R.wesn[YHI] = ceil  (polr->max[GMT_Y] * G->header->r_inc[GMT_Y]) * G->header->inc[GMT_Y];
+			GMT->common.R.wesn[XLO] = floor (polr->min[GMT_X] * HH->r_inc[GMT_X]) * G->header->inc[GMT_X];
+			GMT->common.R.wesn[XHI] = ceil  (polr->max[GMT_X] * HH->r_inc[GMT_X]) * G->header->inc[GMT_X];
+			GMT->common.R.wesn[YLO] = floor (polr->min[GMT_Y] * HH->r_inc[GMT_Y]) * G->header->inc[GMT_Y];
+			GMT->common.R.wesn[YHI] = ceil  (polr->max[GMT_Y] * HH->r_inc[GMT_Y]) * G->header->inc[GMT_Y];
 			/* Adjust longitude range, as indicated by FORMAT_GEO_OUT */
 			gmt_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XLO]);
 			gmt_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XHI]);

@@ -463,14 +463,15 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 		GMT->common.R.inc[GMT_Y] *= Grid[0]->header->inc[GMT_Y];
 	}
 	if (GMT->common.R.inc[GMT_X] != 0.0 && GMT->common.R.inc[GMT_Y] != 0.0) {	/* Coarsen the output interval. The new -Idx/dy must be integer multiples of the grid dx/dy */
-		double val = GMT->common.R.inc[GMT_Y] * Grid[0]->header->r_inc[GMT_Y];	/* Should be ~ an integer within 1 ppm */
+		struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (Grid[0]->header);
+		double val = GMT->common.R.inc[GMT_Y] * HH->r_inc[GMT_Y];	/* Should be ~ an integer within 1 ppm */
 		d_row = urint (val);
 		if (d_row == 0 || fabs ((d_row - val)/d_row) > GMT_CONV6_LIMIT) {
 			GMT_Report (API, GMT_MSG_NORMAL, "New y grid spacing (%.12lg) is not a multiple of actual grid spacing (%.12g) [within %g]\n", GMT->common.R.inc[GMT_Y], Grid[0]->header->inc[GMT_Y], GMT_CONV6_LIMIT);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT->common.R.inc[GMT_Y] = d_row * Grid[0]->header->inc[GMT_Y];	/* Get exact y-increment in case of slop */
-		val = GMT->common.R.inc[GMT_X] * Grid[0]->header->r_inc[GMT_X];
+		val = GMT->common.R.inc[GMT_X] * HH->r_inc[GMT_X];
 		d_col = urint (val);
 		if (d_col == 0 || fabs ((d_col - val)/d_col) > GMT_CONV6_LIMIT) {
 			GMT_Report (API, GMT_MSG_NORMAL, "New x grid spacing (%.12g) is not a multiple of actual grid spacing (%.12g) [within %g]\n", GMT->common.R.inc[GMT_X], Grid[0]->header->inc[GMT_X], GMT_CONV6_LIMIT);
@@ -481,10 +482,10 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 		/* Determine starting row/col for straddled access */
 		tmp = ceil (Grid[0]->header->wesn[YHI] / GMT->common.R.inc[GMT_Y]) * GMT->common.R.inc[GMT_Y];
 		if (tmp > Grid[0]->header->wesn[YHI]) tmp -= GMT->common.R.inc[GMT_Y];
-		row_0 = urint ((Grid[0]->header->wesn[YHI] - tmp) * Grid[0]->header->r_inc[GMT_Y]);
+		row_0 = urint ((Grid[0]->header->wesn[YHI] - tmp) * HH->r_inc[GMT_Y]);
 		tmp = floor (Grid[0]->header->wesn[XLO] / GMT->common.R.inc[GMT_X]) * GMT->common.R.inc[GMT_X];
 		if (tmp < Grid[0]->header->wesn[XLO]) tmp += GMT->common.R.inc[GMT_X];
-		col_0 = urint ((tmp - Grid[0]->header->wesn[XLO]) * Grid[0]->header->r_inc[GMT_X]);
+		col_0 = urint ((tmp - Grid[0]->header->wesn[XLO]) * HH->r_inc[GMT_X]);
 	}
 
 	dim[5] = Ctrl->Q.S.v.v_shape;	/* dim[5-8] do not change inside the loop */

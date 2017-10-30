@@ -257,17 +257,21 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 /* Various functions that will be accessed via pointers */
 double CartRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
 {	/* Plain Cartesian distance (par is not used) */
+	gmt_M_unused (GMT);
+	gmt_M_unused (par);
 	return (hypot (x0 - x1, y0 - y1));
 }
 
 double CartScaledRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
 {	/* Plain scaled Cartesian distance (xscale = yscale) */
+	gmt_M_unused (GMT);
 	return (par[GRDFILTER_X_SCALE] * hypot (x0 - x1, y0 - y1));
 }
 
 double CartScaledRect (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
 {	/* Pass dx,dy via par[GRDFILTER_X|Y_DIST] and return a r that is either in or out */
 	double r;
+	gmt_M_unused (GMT);
 	par[GRDFILTER_X_DIST] = par[GRDFILTER_X_SCALE] * (x0 - x1);
 	par[GRDFILTER_Y_DIST] = par[GRDFILTER_Y_SCALE] * (y0 - y1);
 	r = (fabs (par[GRDFILTER_X_DIST]) > par[GRDFILTER_HALF_WIDTH] || fabs (par[GRDFILTER_Y_DIST]) > par[GRDFILTER_HALF_WIDTH]) ? 2.0 : 0.0;
@@ -276,11 +280,13 @@ double CartScaledRect (struct GMT_CTRL *GMT, double x0, double y0, double x1, do
 
 double FlatEarthRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
 {	/* Cartesian radius with different scales */
+	gmt_M_unused (GMT);
 	return (hypot (par[GRDFILTER_X_SCALE] * (x0 - x1), par[GRDFILTER_Y_SCALE] * (y0 - y1)));
 }
 
 double SphericalRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
 {	/* Great circle distance in km with polar wrap-around test on 2nd point */
+	gmt_M_unused (par);
 	if (fabs (y1) > 90.0) {	/* Must find the point across the pole */
 		y1 = copysign (180.0 - fabs (y1), y1);
 		x1 += 180.0;
@@ -290,6 +296,8 @@ double SphericalRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, d
 
 double UnitWeight (double r, double par[])
 {	/* Return unit weight since we know r is inside radius (par is not used) */
+	gmt_M_unused (r);
+	gmt_M_unused (par);
 	return (1.0);
 }
 
@@ -453,7 +461,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN)))
+				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -497,7 +505,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 						}
 					}
 					if (Ctrl->F.filter == 'f' || Ctrl->F.filter == 'o') {
-						if (gmt_check_filearg (GMT, 'F', &opt->arg[1], GMT_IN))
+						if (gmt_check_filearg (GMT, 'F', &opt->arg[1], GMT_IN, GMT_IS_GRID))
 							Ctrl->F.file = strdup (&opt->arg[1]);
 						else {
 								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F%c: Cannot access filter weight grid %s\n", Ctrl->F.filter, &opt->arg[1]);
@@ -529,7 +537,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 				}
 				break;
 			case 'G':	/* Output file */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT)))
+				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -608,7 +616,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_grdfilter_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdfilter (void *V_API, int mode, void *args)
+int GMT_grdfilter_mt (void *V_API, int mode, void *args)
 {
 	bool fast_way, slow = false, slower = false, same_grid = false;
 	bool spherical = false, full_360, visit_check = false, get_weight_sum = true;
@@ -620,8 +628,8 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 #endif
 	uint64_t ij_in, ij_out, ij_wt;
 	double x_scale = 1.0, y_scale = 1.0, x_width, y_width, par[GRDFILTER_N_PARS];
-	double x_out, wt_sum, last_median = 0.0, this_estimate = 0.0;
-	double y_shift = 0.0, x_fix = 0.0, y_fix = 0.0, max_lat;
+	double x_out, wt_sum, last_median = 0.0;
+	double x_fix = 0.0, y_fix = 0.0, max_lat;
 	double merc_range, *weight = NULL, *x_shift = NULL;
 	double wesn[4], inc[2];
 
@@ -669,7 +677,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	else
 		one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
 
-	full_360 = (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN && gmt_M_grd_is_global (GMT, Gin->header));	/* Periodic geographic grid */
+	full_360 = (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN && gmt_grd_is_global (GMT, Gin->header));	/* Periodic geographic grid */
 
 	if (Ctrl->D.mode == GRDFILTER_XY_PIXEL) {	/* Special case where widths are given in pixels */
 		if (!doubleAlmostEqual (fmod (Ctrl->F.width, 2.0), 1.0)) {
@@ -1000,7 +1008,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	if (GMT_n_multiples > 0) GMT_Report (API, GMT_MSG_VERBOSE, "%d multiple modes found by the mode filter\n", GMT_n_multiples);
 
 	if (Ctrl->F.highpass) {
-		if (GMT->common.R.active[RSET] || GMT->common.R.active[ISET] || GMT->common.r.active) {	/* Must resample result so grids are coregistered */
+		if (GMT->common.R.active[RSET] || GMT->common.R.active[ISET] || GMT->common.R.active[GSET]) {	/* Must resample result so grids are coregistered */
 			char in_string[GMT_STR16], out_string[GMT_STR16], cmd[GMT_LEN256];
 			/* Here we low-passed filtered onto a coarse grid but to get high-pass we must sample the low-pass result at the original resolution */
 			/* Create a virtual file for the low-pass filtered grid */
@@ -1071,11 +1079,10 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 /* ----------------------------------------------------------------------------------------------------- */
 void threaded_function (struct THREAD_STRUCT *t) {
 
-	bool same_grid = false;
 	bool visit_check = false, go_on, get_weight_sum = true;
 	unsigned int n_in_median, n_nan = 0, col_out, row_out;
 	unsigned int one_or_zero = 1, GMT_n_multiples = 0;
-	int tid = 0, col_in, row_in, ii, jj, row_origin, error = 0;
+	int col_in, row_in, ii, jj, row_origin;
 #ifdef DEBUG
 	unsigned int n_conv = 0;
 #endif

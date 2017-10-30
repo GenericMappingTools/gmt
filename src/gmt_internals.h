@@ -244,10 +244,6 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *
 #define gmt_M_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
 #endif
 
-/*! gmt_M_grd_get_size computes grid size including the padding, and doubles it if complex values */
-
-#define gmt_M_grd_get_size(h) ((((h->complex_mode & GMT_GRID_IS_COMPLEX_MASK) > 0) + 1ULL) * h->mx * h->my)
-
 /* Determine if current binary table has header */
 #define gmt_M_binary_header(GMT,dir) (GMT->common.b.active[dir] && GMT->current.setting.io_header[dir] && GMT->current.setting.io_n_header_items)
 

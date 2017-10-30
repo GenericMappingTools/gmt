@@ -534,6 +534,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	struct GMT_FILL default_fill, current_fill, black, no_fill;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GMT_DATASEGMENT *L = NULL;
 	struct PSXYZ_DATA *data = NULL;
 	struct PSXYZ_CTRL *Ctrl = NULL;
@@ -700,7 +701,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		gmt_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
 	}
 	GMT->current.io.skip_if_NaN[GMT_Z] = true;	/* Extend GMT NaN-handling to the z-coordinate */
-
+	if (P) PH = gmt_get_C_hidden (P);
 	old_is_world = GMT->current.map.is_world;
 	geometry = not_line ? GMT_IS_POINT : ((polygon) ? GMT_IS_POLY: GMT_IS_LINE);
 
@@ -834,7 +835,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 			if (get_rgb) {	/* Lookup t to get rgb */
 				gmt_get_fill_from_z (GMT, P, in[3], &current_fill);
-				if (P->skip) continue;	/* Chosen CPT indicates skip for this t */
+				if (PH->skip) continue;	/* Chosen CPT indicates skip for this t */
 				if (Ctrl->I.active) gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 			}
 
@@ -1344,6 +1345,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	else {	/* Line/polygon part */
 		uint64_t seg;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT segment table(s) */
+		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 			Return (API->error);
@@ -1362,7 +1364,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
-				if (polygon && gmt_M_polygon_is_hole (L)) continue;	/* Holes are handled together with perimeters */
+				if (polygon && gmt_polygon_is_hole (GMT, L)) continue;	/* Holes are handled together with perimeters */
 
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Plotting table %" PRIu64 " segment %" PRIu64 "\n", tbl, seg);
 
@@ -1371,9 +1373,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				/* We had here things like:	x = D->table[tbl]->segment[seg]->data[GMT_X];
 				 * but reallocating x below lead to disasters.  */
 
-				change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, L->ogr);
+				SH = gmt_get_DS_hidden (L);
+				change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, SH->ogr);
 
-				if (P && P->skip) continue;	/* Chosen CPT indicates skip for this z */
+				if (P && PH->skip) continue;	/* Chosen CPT indicates skip for this z */
 
 				if (L->header && L->header[0]) {
 					PSL_comment (PSL, "Segment header: %s\n", L->header);
@@ -1407,7 +1410,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
 				}
 				if (S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from segment header */
-					gmt_extract_label (GMT, L->header, S.G.label, L->ogr);
+					gmt_extract_label (GMT, L->header, S.G.label, SH->ogr);
 
 				xp = gmt_M_memory (GMT, NULL, n, double);
 				yp = gmt_M_memory (GMT, NULL, n, double);

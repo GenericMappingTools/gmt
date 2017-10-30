@@ -1229,6 +1229,7 @@ GMT_LOCAL void grd_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	uint64_t node, ij;
 	unsigned int row, col;
 	double c, left, next_left;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (stack[last]->G->header);
 
 	/* Central 2nd difference in x */
 
@@ -1243,11 +1244,11 @@ GMT_LOCAL void grd_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 		c = 1.0 / (info->dx[row] * info->dx[row]);
 		/* Unless pad has real data we assign outside col values via natural BCs */
 		ij = gmt_M_ijp (info->G->header, row, 0);	/* First col */
-		if (stack[last]->G->header->BC[XLO] != GMT_BC_IS_DATA)
+		if (HH->BC[XLO] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij-1] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij+1]);	/* Set left node via BC curv = 0 */
 		next_left = stack[last]->G->data[ij-1];
 		ij = gmt_M_ijp (info->G->header, row, info->G->header->n_columns-1);	/* Last col */
-		if (stack[last]->G->header->BC[XHI] != GMT_BC_IS_DATA)
+		if (HH->BC[XHI] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij+1] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij-1]);	/* Set right node via BC curv = 0 */
 		gmt_M_col_loop (GMT, info->G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
 			left = next_left;
@@ -1264,6 +1265,7 @@ GMT_LOCAL void grd_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	uint64_t node, ij;
 	unsigned int row, col, mx;
 	double c, bottom, next_bottom;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (stack[last]->G->header);
 
 	/* Central 2nd difference in y */
 
@@ -1278,11 +1280,11 @@ GMT_LOCAL void grd_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	mx = info->G->header->mx;
 	gmt_M_col_loop (GMT, info->G, 0, col, node) {	/* Process d2/dy2 column by column */
 		/* Unless pad has real data we assign outside row values via natural BCs */
-		if (stack[last]->G->header->BC[YHI] != GMT_BC_IS_DATA)
+		if (HH->BC[YHI] != GMT_BC_IS_DATA)
 			stack[last]->G->data[node-mx] = (float)(2.0 * stack[last]->G->data[node] - stack[last]->G->data[node+mx]);	/* Set top node via BC curv = 0 */
 		next_bottom = stack[last]->G->data[node-mx];
 		ij = gmt_M_ijp (info->G->header, info->G->header->n_rows-1, col);	/* Last row for this column */
-		if (stack[last]->G->header->BC[YLO] != GMT_BC_IS_DATA)
+		if (HH->BC[YLO] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij+mx] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij-mx]);	/* Set bottom node via BC curv = 0 */
 		gmt_M_row_loop (GMT, info->G, row) { /* Cannot use node inside here and must get ij separately */
 			ij = gmt_M_ijp (info->G->header, row, col);	/* current node in this column */
@@ -1356,6 +1358,7 @@ GMT_LOCAL void grd_DDX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	uint64_t node, ij;
 	unsigned int row, col;
 	double c, left, next_left;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (stack[last]->G->header);
 
 	/* Central 1st difference in x */
 
@@ -1370,11 +1373,11 @@ GMT_LOCAL void grd_DDX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 		c = 0.5 / info->dx[row];
 		/* Unless pad has real data we assign outside col values via natural BCs */
 		ij = gmt_M_ijp (info->G->header, row, 0);	/* First col */
-		if (stack[last]->G->header->BC[XLO] != GMT_BC_IS_DATA)
+		if (HH->BC[XLO] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij-1] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij+1]);	/* Set left node via BC curv = 0 */
 		next_left = stack[last]->G->data[ij-1];
 		ij = gmt_M_ijp (info->G->header, row, info->G->header->n_columns-1);	/* Last col */
-		if (stack[last]->G->header->BC[XHI] != GMT_BC_IS_DATA)
+		if (HH->BC[XHI] != GMT_BC_IS_DATA)
 			stack[last]->G->data[ij+1] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij-1]);	/* Set right node via BC curv = 0 */
 		gmt_M_col_loop (GMT, info->G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
 			left = next_left;
@@ -1390,6 +1393,7 @@ GMT_LOCAL void grd_DDY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	uint64_t node, ij;
 	unsigned int row, col, mx;
 	double c, bottom, next_bottom;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (stack[last]->G->header);
 
 	/* Central 1st difference in y */
 
@@ -1404,11 +1408,11 @@ GMT_LOCAL void grd_DDY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	mx = info->G->header->mx;
 	gmt_M_col_loop (GMT, info->G, 0, col, node) {	/* Process d/dy column by column */
 		/* Unless pad has real data we assign outside row values via natural BCs */
-		if (stack[last]->G->header->BC[YHI] != GMT_BC_IS_DATA) 	/* Set top node via BC curv = 0 */
+		if (HH->BC[YHI] != GMT_BC_IS_DATA) 	/* Set top node via BC curv = 0 */
 			stack[last]->G->data[node-mx] = (float)(2.0 * stack[last]->G->data[node] - stack[last]->G->data[node+mx]);
 		next_bottom = stack[last]->G->data[node-mx];
 		ij = gmt_M_ijp (info->G->header, info->G->header->n_rows-1, col);	/* Last row for this column */
-		if (stack[last]->G->header->BC[YLO] != GMT_BC_IS_DATA) 	/* Set bottom node via BC curv = 0 */
+		if (HH->BC[YLO] != GMT_BC_IS_DATA) 	/* Set bottom node via BC curv = 0 */
 			stack[last]->G->data[ij+mx] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij-mx]);
 		gmt_M_row_loop (GMT, info->G, row) {
 			ij = gmt_M_ijp (info->G->header, row, col);	/* current node in this column */
@@ -1663,6 +1667,7 @@ GMT_LOCAL void grd_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	unsigned int row, col;
 	int dx, dy, diag, product, mx1;
 	float *z = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (stack[last]->G->header);
 
 	/* Find local extrema in grid */
 
@@ -1724,7 +1729,7 @@ GMT_LOCAL void grd_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	}
 
 	gmt_M_memcpy (stack[last]->G->data, z, info->size, float);
-	gmt_M_memset (stack[last]->G->header->BC, 4, unsigned int);	/* No BC padding in this array */
+	gmt_M_memset (HH->BC, 4, unsigned int);	/* No BC padding in this array */
 	gmt_M_free (GMT, z);
 }
 
@@ -2054,7 +2059,7 @@ GMT_LOCAL void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 		for (col = 0; col < info->G->header->mx; col++, node++) {
 			for (seg = inside = 0; !inside && seg < T->n_segments; seg++) {
 				S = T->segment[seg];
-				if (gmt_M_polygon_is_hole (S)) continue;	/* Holes are handled within gmt_inonout */
+				if (gmt_polygon_is_hole (GMT, S)) continue;	/* Holes are handled within gmt_inonout */
 				inside = gmt_inonout (GMT, info->d_grd_x[col], info->d_grd_y[row], S);
 			}
 			stack[last]->G->data[node] = (inside) ? 1.0f : 0.0f;
@@ -2377,6 +2382,7 @@ GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	double max_hor = 0.0, wesn[4] = {0.0, 360.0, -90.0, 90.0};
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 
 	if (gmt_M_is_cartesian (GMT, GMT_IN)) /* Set -fg implicitly since not set already via input grid or -fg */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
@@ -2401,7 +2407,8 @@ GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 			for (tbl = 0, hor = DBL_MAX; tbl < D->n_tables; tbl++) {
 				x = 0.5 * (D->table[tbl]->min[GMT_X] + D->table[tbl]->max[GMT_X]);
 				y = 0.5 * (D->table[tbl]->min[GMT_Y] + D->table[tbl]->max[GMT_Y]);
-				D->table[tbl]->dist = d = gmt_distance (GMT, lon1, lat, x, y);
+				TH = gmt_get_DT_hidden (D->table[tbl]);
+				TH->dist = d = gmt_distance (GMT, lon1, lat, x, y);
 				if (d < hor) hor = d;
 			}
 			/* Add 2 bin sizes to the closest distance to a bin as slop. This should always include the closest points in any bin */
@@ -2413,7 +2420,8 @@ GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 		/* Loop over each line segment in each bin that is closer than the horizon defined above */
 		for (tbl = 0, d = DBL_MAX; tbl < D->n_tables; tbl++) {
 			T = D->table[tbl];
-			if (T->dist >= hor) continue;	/* Skip entire bins that are too far away */
+			TH = gmt_get_DT_hidden (T);
+			if (TH->dist >= hor) continue;	/* Skip entire bins that are too far away */
 			for (seg = 0; seg < T->n_segments; seg++) {
 				(void) gmt_near_a_line (GMT, lon, lat, seg, T->segment[seg], true, &d, NULL, NULL);
 			}
@@ -3493,6 +3501,7 @@ GMT_LOCAL void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	unsigned int col, row, prev = last - 1, *new_col = NULL, n_columns;
 	int colx, shift;
 	float *z = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (info->G->header);
 
 	/* Shift grid A by the x-shift B.  B must be a constant */
 
@@ -3500,7 +3509,7 @@ GMT_LOCAL void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "DX shift (B) must be a constant in ROTX (no calculations performed)\n");
 		return;
 	}
-	shift = irint (stack[last]->factor * info->G->header->r_inc[GMT_X]);	/* Shift of nodes */
+	shift = irint (stack[last]->factor * HH->r_inc[GMT_X]);	/* Shift of nodes */
 
 	if (stack[prev]->constant || !shift) return;	/* Trivial since A is a constant or shift is zero */
 	if (shift < 0) shift += info->G->header->n_columns;	/* Same thing */
@@ -3902,7 +3911,6 @@ GMT_LOCAL void grd_SUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 {
 	uint64_t node, n_used = 0;
 	double sum = 0.0;
-
 	if (stack[last]->constant)
 		sum = stack[last]->factor * stack[last]->G->header->nm;
 	else {
@@ -4658,6 +4666,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 	struct GMT_HASH localhashnode[GRDMATH_N_OPERATORS];
 	struct GRDMATH_INFO info;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GRDMATH_CTRL *Ctrl = NULL;
 	struct GMT_OPTION *opt = NULL, *list = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -4770,6 +4779,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expression must contain at least one grid file or -R, -I\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
+	HH = gmt_get_H_hidden (info.G->header);
 	info.nm = info.G->header->nm;	info.size = info.G->header->size;
 
 	/* Get x and y vectors (these extend onto the pad) */
@@ -4917,7 +4927,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_DEBUG, "Stored memory cell %d named %s is overwritten with new information\n", k, label);
 					if (!stack[last]->constant) {	/* Must copy over the grid - and allocate if not yet done */
 						if (recall[k]->stored.G == NULL) recall[k]->stored.G = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, stack[last]->G);
-						gmt_M_memcpy (recall[k]->stored.G->data, stack[last]->G->data, info.G->header->size, float);
+						gmt_M_memcpy (recall[k]->stored.G->data, stack[last]->G->data, info.size, float);
 					}
 				}
 				else {	/* Need new named storage place */
@@ -4949,7 +4959,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 					stack[nstack]->constant = false;
 					if (!stack[nstack]->G)
 						stack[nstack]->G = alloc_stack_grid (GMT, info.G);
-					gmt_M_memcpy (stack[nstack]->G->data, recall[k]->stored.G->data, info.G->header->size, float);
+					gmt_M_memcpy (stack[nstack]->G->data, recall[k]->stored.G->data, info.size, float);
 				}
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "@%s ", recall[k]->label);
 				nstack++;

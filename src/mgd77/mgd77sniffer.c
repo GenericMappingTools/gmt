@@ -264,6 +264,7 @@ GMT_LOCAL unsigned int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO
 
 	unsigned int rec, pts = 0;
 	double MGD77_NaN = GMT->session.d_NaN, x, y;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (info->G->header);
 
 	/* Get grid values at cruise locations */
 	for (rec = 0; rec < n; rec++) {
@@ -288,10 +289,10 @@ GMT_LOCAL unsigned int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO
 		}
 
 		/* If point is outside grd area, shift it using periodicity or skip if not periodic. */
-		while ((x < info->G->header->wesn[XLO]) && (info->G->header->nxp > 0)) x += (info->G->header->inc[GMT_X] * info->G->header->nxp);
+		while ((x < info->G->header->wesn[XLO]) && (HH->nxp > 0)) x += (info->G->header->inc[GMT_X] * HH->nxp);
 		if (x < info->G->header->wesn[XLO]) continue;  /* West of our area */
 
-		while ((x > info->G->header->wesn[XHI]) && (info->G->header->nxp > 0)) x -= (info->G->header->inc[GMT_X] * info->G->header->nxp);
+		while ((x > info->G->header->wesn[XHI]) && (HH->nxp > 0)) x -= (info->G->header->inc[GMT_X] * HH->nxp);
 		if (x > info->G->header->wesn[XHI]) continue;  /* East of our area */
 
 		/* Get the value from the grid - it could be NaN */

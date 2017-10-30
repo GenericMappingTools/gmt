@@ -1451,6 +1451,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 
 	struct PSSCALE_CTRL *Ctrl = NULL;
 	struct GMT_PALETTE *P = NULL;
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GMT_DATASET *D = NULL;
 
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
@@ -1482,6 +1483,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	PH = gmt_get_C_hidden (P);
 	if (P->has_range)	/* Convert from normalized to default CPT z-range */
 		gmt_stretch_cpt (GMT, P, 0.0, 0.0);
 	
@@ -1490,6 +1492,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		if (Ptrunc == NULL)
 			Return (EXIT_FAILURE);
 		P = Ptrunc;
+		PH = gmt_get_C_hidden (P);
 		//GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, "chop.cpt", P);
 	}
 	if (Ctrl->W.active)	/* Scale all z values */

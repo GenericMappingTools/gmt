@@ -659,18 +659,18 @@ GMT_LOCAL void set_polystyle (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, d
 
 GMT_LOCAL void get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double *rgb) {
 	/* Special version of gmt_get_rgb_lookup since no interpolation can take place */
-
+	struct GMT_PALETTE_HIDDEN *PH = gmt_get_C_hidden (P);
 	if (index < 0) {	/* NaN, Foreground, Background */
 		gmt_M_rgb_copy (rgb, P->bfn[index+3].rgb);
-		P->skip = P->bfn[index+3].skip;
+		PH->skip = P->bfn[index+3].skip;
 	}
 	else if (P->data[index].skip) {		/* Set to page color for now */
 		gmt_M_rgb_copy (rgb, GMT->current.setting.ps_page_rgb);
-		P->skip = true;
+		PH->skip = true;
 	}
 	else {	/* Return low color */
 		gmt_M_memcpy (rgb, P->data[index].rgb_low, 4, double);
-		P->skip = false;
+		PH->skip = false;
 	}
 }
 
@@ -824,6 +824,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	struct GMT_OPTION *options = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_DATASET *D = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct GMT2KML_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
@@ -1022,7 +1023,8 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 
 	for (tbl = 0; tbl < n_tables; tbl++) {
 		n_segments = D->table[tbl]->n_segments;
-		file = D->table[tbl]->file;
+		TH = gmt_get_DT_hidden (D->table[tbl]);
+		file = TH->file;
 		if (file[GMT_IN]) {	/* Place all of this file's content in its own named folder */
 			kml_print (API, Out, N++, "<Folder>");
 			if (!strcmp (file[GMT_IN], "<stdin>"))
@@ -1097,9 +1099,9 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 				struct GMT_DATASEGMENT *S = D->table[tbl]->segment[seg];
 				double dz, *lon, *lat, *z;
 				/* Separate loop over rows since different than the other cases */
-				lon = S->coord[GMT_X];
-				lat = S->coord[GMT_Y];
-				z = S->coord[GMT_Z];
+				lon = S->data[GMT_X];
+				lat = S->data[GMT_Y];
+				z = S->data[GMT_Z];
 				if (!Ctrl->G.active[F_ID]) {	/* Wants to fill positive wiggles, must get those polygons */
 					kml_print (API, Out, N++, "<Folder>");
 					kml_print (API, Out, N, "<name>Positive Wiggles</name>");

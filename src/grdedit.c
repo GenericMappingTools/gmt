@@ -243,6 +243,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	struct GRDEDIT_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -269,6 +270,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	grid_was_read = Ctrl->G.active;
+	HH = gmt_get_H_hidden (G->header);
 	
 	if ((G->header->type == GMT_GRID_IS_SF || G->header->type == GMT_GRID_IS_SD) && Ctrl->T.active) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Toggling registrations not possible for Surfer grid formats\n");
@@ -276,7 +278,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	if (Ctrl->S.active && !gmt_M_grd_is_global (GMT, G->header)) {
+	if (Ctrl->S.active && !gmt_grd_is_global (GMT, G->header)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Shift only allowed for global grids\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -424,8 +426,8 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 				break;
 		}
 
-		h_tr = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
-		gmt_M_memcpy (h_tr, G->header, 1, struct GMT_GRID_HEADER);	/* First make a copy of header */
+		h_tr = gmt_get_header (GMT);
+		gmt_copy_gridheader (GMT, h_tr, G->header);	/* First make a copy of header */
 		if (strchr ("ltr", Ctrl->E.mode)) {	/* These operators interchange x and y */
 			h_tr->wesn[XLO] = G->header->wesn[YLO];
 			h_tr->wesn[XHI] = G->header->wesn[YHI];
@@ -466,7 +468,8 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		}
 		save_grid_pointer = G->data;	/* Save original grid pointer and hook on the modified grid instead */
 		G->data = a_tr;
-		gmt_M_memcpy (G->header, h_tr, 1, struct GMT_GRID_HEADER);	/* Update to the new header */
+		gmt_copy_gridheader (GMT, G->header, h_tr);	/* Update to the new header */
+		gmt_M_free (GMT, h_tr->hidden);
 		gmt_M_free (GMT, h_tr);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, out_file, G) != GMT_NOERROR) {
 			Return (API->error);
@@ -498,7 +501,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 				out_file, G->header->inc[GMT_X], G->header->inc[GMT_Y]);
 		}
 		if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_is_cartesian (GMT, GMT_OUT)) {	/* Force a switch from geographic to Cartesian */
-			G->header->grdtype = GMT_GRID_CARTESIAN;
+			HH->grdtype = GMT_GRID_CARTESIAN;
 			strcpy (G->header->x_units, "x_units");
 			strcpy (G->header->y_units, "y_units");
 		}

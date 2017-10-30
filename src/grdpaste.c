@@ -150,6 +150,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 	double x_noise, y_noise;
 
 	struct GMT_GRID *A = NULL, *B = NULL, *C = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *AH = NULL, *BH = NULL, *CH = NULL;
 	struct GRDPASTE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -203,6 +204,10 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 	x_noise = GMT_CONV4_LIMIT * C->header->inc[GMT_X] * 10;
 	y_noise = GMT_CONV4_LIMIT * C->header->inc[GMT_Y] * 10;
 
+	AH = gmt_get_H_hidden (A->header);
+	BH = gmt_get_H_hidden (B->header);
+	CH = gmt_get_H_hidden (C->header);
+	
 	common_y = (fabs (A->header->wesn[YLO] - B->header->wesn[YLO]) < y_noise && fabs (A->header->wesn[YHI] - B->header->wesn[YHI]) < y_noise);
 	
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must be careful in determining a match since grids may differ by +/-360 in x */
@@ -340,18 +345,18 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		NULL, 0, 0, C) == NULL) Return (API->error);	/* Note: 0 for pad since no BC work needed */
 	A->data = B->data = C->data;	/* A and B share the same final matrix declared for C */
 	A->header->size = B->header->size = C->header->size;	/* Set A & B's size to the same as C */
-	A->header->no_BC = B->header->no_BC = true;	/* We must disable the BC machinery */
+	AH->no_BC = BH->no_BC = true;	/* We must disable the BC machinery */
 
 	switch (way) {    /* How A and B are positioned relative to each other */
 		case 1:         /* B is on top of A */
 		case 10:		/* B is on top of A but their grid reg limits underlap by one cell */
 		case 11:        /* B is on top of A but their pixel reg limits overlap by one cell */
 			if (is_nc_grid(A)) {
-				A->header->data_offset = B->header->n_columns * (B->header->n_rows - one_or_zero);
+				AH->data_offset = B->header->n_columns * (B->header->n_rows - one_or_zero);
 				if (way == 11)
-					A->header->data_offset -= B->header->n_columns;
+					AH->data_offset -= B->header->n_columns;
 				else if (way == 10)
-					A->header->data_offset += B->header->n_columns;
+					AH->data_offset += B->header->n_columns;
 			}
 			else {
 				GMT->current.io.pad[YHI] = B->header->n_rows - one_or_zero;
@@ -399,11 +404,11 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			}
 			if (is_nc_grid(B)) {
 				gmt_set_pad (GMT, 0U); /* Reset padding */
-				B->header->data_offset = A->header->n_columns * (A->header->n_rows - one_or_zero);
+				BH->data_offset = A->header->n_columns * (A->header->n_rows - one_or_zero);
 				if (way == 22)
-					B->header->data_offset -= A->header->n_columns;
+					BH->data_offset -= A->header->n_columns;
 				else if (way == 21)
-					B->header->data_offset += A->header->n_columns;
+					BH->data_offset += A->header->n_columns;
 			}
 			else {
 				GMT->current.io.pad[YLO] = 0;
@@ -423,12 +428,12 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		case 32:        /* A is on right of B but their grid reg limits underlap by one cell */
 		case 33:        /* A is on right of B but their pixel reg limits overlap by one cell */
 			if (is_nc_grid(A)) {
-				A->header->stride = C->header->n_columns;
-				A->header->data_offset = B->header->n_columns - one_or_zero;
+				AH->stride = C->header->n_columns;
+				AH->data_offset = B->header->n_columns - one_or_zero;
 				if (way == 33)
-					A->header->data_offset--;
+					AH->data_offset--;
 				else if (way == 32)
-					A->header->data_offset++;
+					AH->data_offset++;
 			}
 			else {
 				GMT->current.io.pad[XLO] = B->header->n_columns - one_or_zero;
@@ -444,7 +449,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			}
 			if (is_nc_grid(B)) {
 				gmt_set_pad (GMT, 0U); /* Reset padding */
-				B->header->stride = C->header->n_columns;
+				BH->stride = C->header->n_columns;
 			}
 			else {
 				GMT->current.io.pad[XLO] = 0; GMT->current.io.pad[XHI] = A->header->n_columns - one_or_zero;
@@ -463,7 +468,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		case 43:        /* A is on left of B but their grid reg limits underlap by one cell */
 		case 44:        /* A is on left of B but their pixel reg limits overlap by one cell */
 			if (is_nc_grid(A)) {
-				A->header->stride = C->header->n_columns;
+				AH->stride = C->header->n_columns;
 			}
 			else {
 				GMT->current.io.pad[XHI] = B->header->n_columns - one_or_zero;
@@ -479,12 +484,12 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			}
 			if (is_nc_grid(B)) {
 				gmt_set_pad (GMT, 0U); /* Reset padding */
-				B->header->stride = C->header->n_columns;
-				B->header->data_offset = A->header->n_columns - one_or_zero;
+				BH->stride = C->header->n_columns;
+				BH->data_offset = A->header->n_columns - one_or_zero;
 				if (way == 44)
-					B->header->data_offset--;
+					BH->data_offset--;
 				else if (way == 43)
-					B->header->data_offset++;
+					BH->data_offset++;
 			}
 			else {
 				GMT->current.io.pad[XHI] = 0;

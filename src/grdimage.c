@@ -447,7 +447,7 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {
 		all_lats = gmt_M_180_range (g->wesn[YHI], g->wesn[YLO]);
-		all_lons = gmt_M_grd_is_global (GMT, g);
+		all_lons = gmt_grd_is_global (GMT, g);
 		if (all_lons && all_lats) return;	/* Whole globe */
 	}
 	
@@ -505,7 +505,9 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	struct GMT_GRID *Grid_orig[3] = {NULL, NULL, NULL}, *Grid_proj[3] = {NULL, NULL, NULL};
 	struct GMT_GRID *Intens_orig = NULL, *Intens_proj = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL, *IH = NULL;
 	struct GMT_PALETTE *P = NULL;
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GRDIMAGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -571,8 +573,9 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file[0], NULL)) == NULL) {
 			Return (API->error);
 		}
-		if (strncmp(I->header->mem_layout, "BRP", 3) != 0)
-			GMT_Report(API, GMT_MSG_VERBOSE, "The image memory layout (%s) is of a wrong type. It should be BRPa.\n");
+		HH = gmt_get_H_hidden (I->header);
+		if (strncmp (I->header->mem_layout, "BRP", 3) != 0)
+			GMT_Report(API, GMT_MSG_VERBOSE, "The image memory layout (%s) is of a wrong type. It should be BRPa.\n", I->header->mem_layout);
 
 		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active[RSET])	/* No -R or -I. Use image dimensions as -R */
 			gmt_M_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
@@ -583,8 +586,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			dx = gmt_M_get_inc (GMT, I->header->wesn[XLO], I->header->wesn[XHI], I->header->n_columns, I->header->registration);
 			dy = gmt_M_get_inc (GMT, I->header->wesn[YLO], I->header->wesn[YHI], I->header->n_rows, I->header->registration);
 			I->header->inc[GMT_X] = dx;	I->header->inc[GMT_Y] = dy;
-			I->header->r_inc[GMT_X] = 1.0 / dx;	/* Get inverse increments to avoid divisions later */
-			I->header->r_inc[GMT_Y] = 1.0 / dy;
+			HH->r_inc[GMT_X] = 1.0 / dx;	/* Get inverse increments to avoid divisions later */
+			HH->r_inc[GMT_Y] = 1.0 / dy;
 		}
 
 		Ctrl->In.do_rgb = (I->header->n_bands >= 3);
@@ -812,24 +815,27 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		resampled = true;	/* Yes, we did it */
 	}
 	else {	/* Simply set the unused Grid_proj[i]/Intens_proj pointers to point to original unprojected Grid_orig[i]/Intens_orig objects */
-		struct GMT_GRID_HEADER tmp_header;
+		struct GMT_GRID_HEADER *tmp_header = gmt_get_header (GMT);
 		for (k = 0; k < n_grids; k++) {	/* Must get a copy of the header so we can change one without affecting the other */
-			gmt_M_memcpy (&tmp_header, Grid_orig[k]->header, 1, struct GMT_GRID_HEADER);
+			gmt_copy_gridheader (GMT, tmp_header, Grid_orig[k]->header);
 			Grid_proj[k] = Grid_orig[k];
-			GMT_set_proj_limits (GMT, Grid_proj[k]->header, &tmp_header, need_to_project);
+			GMT_set_proj_limits (GMT, Grid_proj[k]->header, tmp_header, need_to_project);
 		}
 		if (use_intensity_grid) Intens_proj = Intens_orig;
 		if (n_grids) /* Dealing with 1 or 3 projected grids */
 			grid_registration = Grid_orig[0]->header->registration;
 		else {	/* Dealing with a projected image */
-			gmt_M_memcpy (&tmp_header, I->header, 1, struct GMT_GRID_HEADER);
+			gmt_copy_gridheader (GMT, tmp_header, I->header);
 			Img_proj = I;
-			GMT_set_proj_limits (GMT, Img_proj->header, &tmp_header, need_to_project);
+			GMT_set_proj_limits (GMT, Img_proj->header, tmp_header, need_to_project);
 		}
+		gmt_M_free (GMT, tmp_header->hidden);
+		gmt_M_free (GMT, tmp_header);
 	}
 
 	/* From here, use Grid_proj or Img_proj plus optional Intens_proj in making the Cartesian image */
 	
+	if (use_intensity_grid) IH = gmt_get_H_hidden (Intens_proj->header);
 	if (n_grids) { /* Dealing with 1 or 3 projected grids, only one band */
 		Grid_proj[0]->header->n_bands = 1;
 		header_work = Grid_proj[0]->header;     /* Later when need to refer to the header, use this copy */
@@ -847,12 +853,14 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max)) == NULL) {
 				Return (API->error);	/* Well, that did not go well... */
 			}
+			if (P) PH = gmt_get_C_hidden (P);
 			gray_only = (P && P->is_gray);	/* Flag that we are doing a grayscale image below */
 		}
 		else if (Ctrl->D.active) {	/* Already got an image with colors but need to set up a colormap of 256 entries */
 			uint64_t cpt_len[1] = {256};
 			/* We won't use much of the next 'P' but we still need to use some of its fields */
 			if ((P = GMT_Create_Data (API, GMT_IS_PALETTE, GMT_IS_NONE, 0, cpt_len, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
+			PH = gmt_get_C_hidden (P);
 			P->model = GMT_RGB;
 			if (Img_proj->colormap == NULL && Img_proj->color_interp && !strncmp (Img_proj->color_interp, "Gray", 4)) {	/* Grayscale image, only assign r as shade */
 				r_table = gmt_M_memory (GMT, NULL, 256, double);
@@ -923,12 +931,13 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 
 		GMT_Set_Default (API, "API_IMAGE_LAYOUT", mem_layout);		/* Reset previous mem layout */
-			
+
+		HH = gmt_get_H_hidden (Out->header);			
 		/* See if we have valid proj info the chosen projection has a valid PROJ4 setting */
-		if (header_work->ProjRefWKT != NULL)
-			Out->header->ProjRefWKT = strdup(header_work->ProjRefWKT);
+		if (Out->header->ProjRefWKT != NULL)
+			Out->header->ProjRefWKT = strdup (header_work->ProjRefWKT);
 		else if (header_work->ProjRefPROJ4 != NULL)
-			Out->header->ProjRefPROJ4 = strdup(header_work->ProjRefPROJ4);
+			Out->header->ProjRefPROJ4 = strdup (header_work->ProjRefPROJ4);
 		else {
 			for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++)
 				if (GMT->current.proj.proj4[k].id == this_proj) id = k;
@@ -1000,7 +1009,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 				if (Ctrl->I.active && index != (GMT_NAN - 3)) {	/* Need to deal with illumination */
 					if (use_intensity_grid) {	/* Intensity value comes from the grid */
-						if (!n_grids || Intens_proj->header->reset_pad)	/* Must recompute "node" with the gmt_M_ijp macro for the image */
+						if (!n_grids || IH->reset_pad)	/* Must recompute "node" with the gmt_M_ijp macro for the image */
 							node = gmt_M_ijp (Intens_proj->header, actual_row, 0) + (normal_x ? col : n_columns - col - 1);
 						gmt_illuminate (GMT, Intens_proj->data[node], rgb);
 					}

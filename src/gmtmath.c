@@ -390,10 +390,11 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 	}
 	else {	/* Return t, y, p(t), r(t), where p(t) is the predicted solution and r(t) is the residuals */
 		double value;
-		k = (unsigned int)S->D->dim[GMT_COL];
-		S->D->dim[GMT_COL] = (info->w_mode) ? 5 : 4;	/* State we want a different set of columns on output */
+		struct GMT_DATASET_HIDDEN *DH = gmt_get_DD_hidden (S->D);
+		k = (unsigned int)DH->dim[GMT_COL];
+		DH->dim[GMT_COL] = (info->w_mode) ? 5 : 4;	/* State we want a different set of columns on output */
 		D = GMT_Duplicate_Data (GMT->parent, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, S->D);	/* Same table length as S->D, but with up to n_cols columns (lon, lat, dist, g1, g2, ...) */
-		S->D->dim[GMT_COL] = k;	/* Reset the original columns */
+		DH->dim[GMT_COL] = k;	/* Reset the original columns */
 		if (D->table[0]->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* More than one segment triggers -mo */
 		load_column (D, 0, info->T, COL_T);	/* Place the time-column in first output column */
 		for (seg = k = 0; seg < info->T->n_segments; seg++) {
@@ -4795,6 +4796,7 @@ GMT_LOCAL int table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 GMT_LOCAL void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack) {
 	unsigned int k, error = 0;
 	bool is_object;
+	struct GMT_DATASET_HIDDEN *DH = NULL;
 	for (k = 0; k < GMTMATH_STACK_SIZE; k++) {
 		if (stack[k]->D) {	/* Must free unless being passed back out */
 			is_object = gmtlib_is_an_object (API->GMT, &stack[k]->D);
@@ -4802,7 +4804,8 @@ GMT_LOCAL void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Destroy_Data freed stack item %d\n", k);
 			else if (!is_object || error == GMT_OBJECT_NOT_FOUND) {
 				/* Failures should only be from local objects not passed up */
-				if (gmt_this_alloc_level (API->GMT, stack[k]->D->alloc_level)) {
+				DH = gmt_get_DD_hidden (stack[k]->D);
+				if (gmt_this_alloc_level (API->GMT, DH->alloc_level)) {
 					gmt_free_dataset (API->GMT, &stack[k]->D);
 					GMT_Report (API, GMT_MSG_DEBUG, "gmt_free_dataset freed stack item %d\n", k);
 				}
@@ -4980,6 +4983,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *A_in = NULL, *D_stdin = NULL, *D_in = NULL;
 	struct GMT_DATASET *T_in = NULL, *Template = NULL, *Time = NULL, *R = NULL;
 	struct GMT_DATATABLE *rhs = NULL, *D = NULL, *I = NULL;
+	struct GMT_DATASET_HIDDEN *DH = NULL;
 	struct GMT_HASH localhashnode[GMTMATH_N_OPERATORS];
 	struct GMT_OPTION *opt = NULL, *list = NULL;
 	struct GMTMATH_INFO info;
@@ -5208,8 +5212,10 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	gmt_set_tbl_minmax (GMT, GMT_IS_POINT, info.T);
 
 	if (Ctrl->A.active) {	/* Set up A * x = b, with the table holding the extended matrix [ A | [w | ] b ], with w the optional weights */
+		struct GMT_DATASET_HIDDEN *DH = NULL;
 		if (!stack[0]->D)
 			stack[0]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
+		DH = gmt_get_DD_hidden (stack[0]->D);
 		load_column (stack[0]->D, n_columns-1, rhs, 1);		/* Always put the r.h.s of the Ax = b equation in the last column of the item on the stack */
 		if (!Ctrl->A.null) load_column (stack[0]->D, Ctrl->N.tcol, rhs, 0);	/* Optionally, put the t vector in the time column of the item on the stack */
 		gmt_set_tbl_minmax (GMT, stack[0]->D->geometry, stack[0]->D->table[0]);
@@ -5317,6 +5323,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					if (!stack[nstack]->D)
 						stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 					for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, recall[k]->stored.D->table[0], j);
+					DH = gmt_get_DD_hidden (stack[nstack]->D);
 					gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
 				}
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "@%s ", recall[k]->label);
@@ -5350,6 +5357,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "T ");
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_T);
+				DH = gmt_get_DD_hidden (stack[nstack]->D);
 				gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
 			}
 			else if (op == GMTMATH_ARG_IS_t_MATRIX) {	/* Need to set up matrix of normalized t-values */
@@ -5361,6 +5369,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "TNORM ");
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_TN);
+				DH = gmt_get_DD_hidden (stack[nstack]->D);
 				gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
 			}
 			else if (op == GMTMATH_ARG_IS_J_MATRIX) {	/* Need to set up matrix of row numbers */
@@ -5368,6 +5377,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					stack[nstack]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "TROW ");
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, info.T, COL_TJ);
+				DH = gmt_get_DD_hidden (stack[nstack]->D);
 				gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
 			}
 			else if (op == GMTMATH_ARG_IS_FILE) {		/* Filename given */
@@ -5389,6 +5399,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					T_in = F->table[0];	/* Only one table since only a single file */
 				}
 				for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (stack[nstack]->D, j, T_in, j);
+				DH = gmt_get_DD_hidden (stack[nstack]->D);
 				gmt_set_tbl_minmax (GMT, stack[nstack]->D->geometry, stack[nstack]->D->table[0]);
 				if (!same_size (stack[nstack]->D, Template)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "tables not of same size!\n");
@@ -5478,6 +5489,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			else if (!Ctrl->C.cols[j])
 				load_const_column (stack[0]->D, j, stack[0]->factor);
 		}
+		DH = gmt_get_DD_hidden (stack[0]->D);
 		gmt_set_tbl_minmax (GMT, stack[0]->D->geometry, stack[0]->D->table[0]);
 	}
 
@@ -5491,8 +5503,9 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error)
 		for (kk = 0; kk < info.n_roots; kk++) R->table[0]->segment[0]->data[GMT_X][kk] = S->data[info.r_col][kk];
 		R->table[0]->segment[0]->n_rows = info.n_roots;
+		DH = gmt_get_DD_hidden (stack[0]->D);
 		GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R);
-		if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, stack[0]->D->io_mode, NULL, Ctrl->Out.file, R) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, DH->io_mode, NULL, Ctrl->Out.file, R) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, &R) != GMT_NOERROR) {
@@ -5508,6 +5521,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			R = Template;
 			template_used = true;
 		}
+		DH = gmt_get_DD_hidden (R);
 		if (dimension && Ctrl->Q.active) {	/* Encountered dimensioned items on the command line, must return in current units */
 			R->table[0]->segment[0]->data[0][0] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 		}
@@ -5529,14 +5543,15 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 				for (c = 0; c < n_columns; c++) N->table[0]->segment[seg]->data[c][0] = R->table[0]->segment[seg]->data[c][row];
                 N->table[0]->segment[seg]->n_rows = 1;
 			}
+			DH = gmt_get_DD_hidden (N);
 			GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, N);
-			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, N->io_mode, NULL, Ctrl->Out.file, N) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, DH->io_mode, NULL, Ctrl->Out.file, N) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
 		else {	/* Write the whole enchilada */
 			GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R);
-			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, R->io_mode, NULL, Ctrl->Out.file, R) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, DH->io_mode, NULL, Ctrl->Out.file, R) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}

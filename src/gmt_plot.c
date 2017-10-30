@@ -3267,6 +3267,7 @@ GMT_LOCAL uint64_t plot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DA
 	uint64_t n = S->n_rows, k;
 	double *plon = S->data[GMT_X], *plat = S->data[GMT_Y], t_lat;
 	bool ap = at_pole (plat, n);
+	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 	if (ap) plon[n-1] = plon[0];
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Polar cap: %d\n", (int)add_pole);
 	if (add_pole) {
@@ -3275,7 +3276,7 @@ GMT_LOCAL uint64_t plot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DA
 			n = S->n_rows + 2;	/* Add new first and last point to connect to the pole */
 			plon = gmt_M_memory (GMT, NULL, n, double);
 			plat = gmt_M_memory (GMT, NULL, n, double);
-			t_lat = S->pole * 90.0;	/* This is presumably the correct pole, but could fail if just touching the pole */
+			t_lat = SH->pole * 90.0;	/* This is presumably the correct pole, but could fail if just touching the pole */
 			if (S->data[GMT_Y][0] * t_lat < 0.0) t_lat = -t_lat;	/* Well, I'll be damned... */
 			plat[0] = plat[n-1] = t_lat;
 			plon[0] = S->data[GMT_X][0];
@@ -5325,6 +5326,7 @@ void gmt_add_label_record (struct GMT_CTRL *GMT, struct GMT_DATASET *T, double x
 	/* Add one record to the output file */
 	double geo[2];
 	uint64_t col, rec = T->table[0]->segment[0]->n_rows;	/* Current record */
+	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (T->table[0]->segment[0]);
 	/* Convert lon/lat and save x/y */
 	gmt_xy_to_geo (GMT, &geo[GMT_X], &geo[GMT_Y], x, y);
 	T->table[0]->segment[0]->data[GMT_X][rec] = geo[GMT_X];
@@ -5335,11 +5337,11 @@ void gmt_add_label_record (struct GMT_CTRL *GMT, struct GMT_DATASET *T, double x
 	T->table[0]->segment[0]->text[rec] = strdup (label);
 	/* Increment counter */
 	T->table[0]->segment[0]->n_rows++;
-	if (T->table[0]->segment[0]->n_rows == T->table[0]->segment[0]->n_alloc) {
-		T->table[0]->segment[0]->n_alloc <<= 1;
-		T->table[0]->segment[0]->text = gmt_M_memory (GMT, T->table[0]->segment[0]->text, T->table[0]->segment[0]->n_alloc, char *);
+	if (T->table[0]->segment[0]->n_rows == SH->n_alloc) {
+		SH->n_alloc <<= 1;
+		T->table[0]->segment[0]->text = gmt_M_memory (GMT, T->table[0]->segment[0]->text, SH->n_alloc, char *);
 		for (col = 0; col < T->n_columns; col++)
-			T->table[0]->segment[0]->data[col] = gmt_M_memory (GMT, T->table[0]->segment[0]->data[col], T->table[0]->segment[0]->n_alloc, double);
+			T->table[0]->segment[0]->data[col] = gmt_M_memory (GMT, T->table[0]->segment[0]->data[col], SH->n_alloc, double);
 	}
 }
 
@@ -6415,7 +6417,8 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		fclose (fp);
 	}
 	else if (PSL->internal.memory) {    /* Time to write out buffer regardless of mode */
-		struct GMT_POSTSCRIPT *P = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT);
+		struct GMT_POSTSCRIPT *P = gmt_get_postscript (GMT);
+		struct GMT_POSTSCRIPT_HIDDEN *PH = gmt_get_P_hidden (P);
 		if (GMT->current.ps.title[0]) {
 			P->header = gmt_M_memory (GMT, NULL, 1, char *);
 			P->header[0] = strdup (GMT->current.ps.title);
@@ -6424,7 +6427,7 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		P->data = PSL_getplot (PSL);	/* Get the plot buffer */
 		P->n_bytes = PSL->internal.n;   /* Length of plot buffer; note P->n_alloc = 0 since we did not allocate this string here */
 		P->mode = PSL->internal.pmode;  /* Mode of plot (GMT_PS_{HEADER,TRAILER,COMPLETE}) */
-		P->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since created in PSL */
+		PH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since created in PSL */
 		if (GMT_Write_Data (GMT->parent, GMT_IS_POSTSCRIPT, GMT_IS_REFERENCE, GMT_IS_TEXT, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
 		}
@@ -6446,8 +6449,9 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	/* Special treatment for polar caps since they must add in parts of possibly curved periodic boundaries
 	 * from the pole up or down to the intersection with the cap perimeter.  We handle this case separately here.
 	 * This is in response to issue # 852. P. Wessel */
+	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 	uint64_t k0, perim_n, n_new, m, n = S->n_rows, k;
-	double start_lon, stop_lon, yc = 0.0, dx, pole_lat = 90.0 * S->pole;
+	double start_lon, stop_lon, yc = 0.0, dx, pole_lat = 90.0 * SH->pole;
 	double *x_perim = NULL, *y_perim = NULL, *plon = NULL, *plat = NULL;
 	static char *pole = "S N";
 	int type;
@@ -6459,7 +6463,7 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	/* We want this code to be used for the misc. global projections but also global cylindrical or linear(if degrees) maps */
 	if (!(gmt_M_is_misc(GMT) || (GMT->current.map.is_world  && (gmt_M_is_cylindrical(GMT) || (gmt_M_is_linear(GMT) && gmt_M_is_geographic(GMT,GMT_IN)))))) return 0;	/* We are only concerned with the global misc projections here */
 	/* Global projection need to handle pole path properly */
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[SH->pole+1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "West longitude = %g.  East longitude = %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	type = gmtlib_determine_pole (GMT, S->data[GMT_X], S->data[GMT_Y], n);
 	if (abs(type) == 2)	/* The algorithm only works for clockwise polygon so anything CCW we simply reverse... */
@@ -6546,6 +6550,7 @@ void gmt_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 	 * two paths are not the same.  If no fill is requested then we just draw lines.
 	 */
 	struct GMT_DATASEGMENT *S2 = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
  	bool add_pole, separate;
 	int outline = 0;
 	uint64_t used = 0;
@@ -6560,7 +6565,7 @@ void gmt_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows)) == 0) return;	/* Nothing further to do */
 		PSL_comment (PSL, "Perimeter polygon for outline only\n");
 		gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);	/* Separately plot the outline */
-		for (S2 = S->next; S2; S2 = S2->next) {
+		for (S2 = gmt_get_next_S (S); S2; S2 = gmt_get_next_S (S2)) {
 			if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S2->data[GMT_X], S2->data[GMT_Y], S2->n_rows)) == 0) continue;	/* Nothing for this hole */
 			PSL_comment (PSL, "Hole polygon for outline only\n");
 			gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);	/* Separately plot the outline */
@@ -6570,8 +6575,8 @@ void gmt_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 
 	/* CASE 2: FILL REQUESTED -- WITH OR WITHOUT OUTLINE */
 
-	add_pole = (abs (S->pole) == 1);	/* true if a polar cap */
-	separate = ((add_pole || S->next) && PSL->current.outline);	/* Multi-polygon (or polar cap) fill with outline handled by doing fill and outline separately */
+	add_pole = (abs (SH->pole) == 1);	/* true if a polar cap */
+	separate = ((add_pole || gmt_get_next_S (S)) && PSL->current.outline);	/* Multi-polygon (or polar cap) fill with outline handled by doing fill and outline separately */
 	if (separate) {				/* Do fill and outline separately */
 		outline = PSL->current.outline;	/* Keep a copy of what we wanted */
 		PSL->current.outline = false;	/* Turns off outline for now (if set) */
@@ -6582,7 +6587,7 @@ void gmt_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 
 	if (PSL->internal.comments) snprintf (comment, GMT_LEN64, "%s polygon for %s\n", type[add_pole], use[PSL->current.outline]);
 	used = plot_geo_polygon_segment (GMT, S, add_pole, true, comment);	/* First lay down perimeter */
-	for (S2 = S->next; S2; S2 = S2->next) {	/* Process all holes [none processed if there aren't any holes] */
+	for (S2 = gmt_get_next_S (S); S2; S2 = gmt_get_next_S (S2)) {	/* Process all holes [none processed if there aren't any holes] */
 		if (PSL->internal.comments) snprintf (comment, GMT_LEN64, "Hole polygon for %s\n", use[PSL->current.outline]);
 		used += plot_geo_polygon_segment (GMT, S2, false, false, comment);	/* Add this hole to the path */
 	}
@@ -6596,7 +6601,7 @@ void gmt_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 		PSL_comment (PSL, "%s polygon for outline only\n", type[add_pole]);
 		PSL->current.outline = outline;	/* Reset outline to what it was originally */
 		gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);	/* Separately plot the outline */
-		for (S2 = S->next; S2; S2 = S2->next) {
+		for (S2 = gmt_get_next_S (S); S2; S2 = gmt_get_next_S (S2)) {
 			if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, S2->data[GMT_X], S2->data[GMT_Y], S2->n_rows)) == 0) continue;	/* Nothing for this hole */
 			PSL_comment (PSL, "Hole polygon for outline only\n");
 			gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);	/* Separately plot the outline */
@@ -7168,14 +7173,14 @@ int gmt_set_psfilename (struct GMT_CTRL *GMT) {
 /*! . */
 struct GMT_POSTSCRIPT * gmtlib_create_ps (struct GMT_CTRL *GMT, uint64_t length) {
 	/* Makes an empty GMT_POSTSCRIPT struct - If length > 0 then we also allocate the string */
-	struct GMT_POSTSCRIPT *P = NULL;
-	P = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT);
-	P->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
-	P->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
-	P->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
+	struct GMT_POSTSCRIPT *P = gmt_get_postscript (GMT);
+	struct GMT_POSTSCRIPT_HIDDEN *PH = gmt_get_P_hidden (P);
+	PH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	PH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	if (length) {	/* Allocate a blank string */
 		P->data = gmt_M_memory (GMT, NULL, length, char);
-		P->n_alloc = length;	/* But P->n_bytes = 0 since nothing was placed there */
+		PH->n_alloc = length;	/* But P->n_bytes = 0 since nothing was placed there */
+		PH->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
 	}
 	return (P);
 }
@@ -7184,16 +7189,18 @@ struct GMT_POSTSCRIPT * gmtlib_create_ps (struct GMT_CTRL *GMT, uint64_t length)
 void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P) {
 	/* Free the memory allocated to hold a PostScript plot (which is pointed to by P->data) */
 	unsigned k;
-	if (P->n_alloc && P->data) {
-		if (P->alloc_mode == GMT_ALLOC_INTERNALLY)	/* Was allocated by GMT */
+	struct GMT_POSTSCRIPT_HIDDEN *PH = gmt_get_P_hidden (P);
+	if (P->data) {
+		if (PH->alloc_mode == GMT_ALLOC_INTERNALLY)	/* Was allocated by GMT */
 			gmt_M_free (GMT, P->data);
 		/* Note: We never need to free the array allocated inside PSL since PSL always destroys it */
 	}
 	P->data = NULL;		/* Whatever we pointed to is now longer known to P */
-	P->n_alloc = P->n_bytes = 0;
+	PH->n_alloc = P->n_bytes = 0;
 	/* Use free() to free the headers since they were allocated with strdup */
 	for (k = 0; k < P->n_headers; k++) gmt_M_str_free (P->header[k]);
 	gmt_M_free (GMT, P->header);
+	gmt_M_free (GMT, P->hidden);
 	P->mode = GMT_PS_EMPTY;
 }
 
@@ -7217,6 +7224,7 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 	bool close_file = false;
 	size_t n_alloc = 0;
 	struct GMT_POSTSCRIPT *P = NULL;
+	struct GMT_POSTSCRIPT_HIDDEN *PH = NULL;
 	FILE *fp = NULL;
 	gmt_M_unused(mode);
 
@@ -7275,7 +7283,7 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reading PostScript from %s\n", ps_file);
 
-	P = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT);
+	P = gmt_get_postscript (GMT);
 	P->header = gmt_M_memory (GMT, NULL, 1, char *);
 	sprintf (buffer, "PostScript read from file: %s", ps_file);
 	P->header[0] = strdup (buffer);
@@ -7294,8 +7302,9 @@ struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *source, unsi
 	if (close_file) fclose (fp);
 	if (P->n_bytes > n_alloc)
 		P->data = gmt_M_memory (GMT, P->data, P->n_bytes, char);
-	P->n_alloc = P->n_bytes;
-	P->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
+	PH = gmt_get_P_hidden (P);
+	PH->n_alloc = P->n_bytes;
+	PH->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
 	/* Determine the mode by checking for typical starts and ends of PS */
 	if (P->n_bytes > 4 && !strncmp (P->data, "%!PS", 4U))
 		P->mode = GMT_PS_HEADER;	/* Found start of PS header */
@@ -7377,9 +7386,18 @@ struct GMT_POSTSCRIPT * gmtlib_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_PO
 
 void gmtlib_copy_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_copy, struct GMT_POSTSCRIPT *P_obj) {
 	/* Just duplicate from P_obj into P_copy */
-	if (P_obj->n_bytes > P_copy->n_alloc) P_copy->data = gmt_M_memory (GMT, P_copy->data, P_obj->n_bytes, char);
+	struct GMT_POSTSCRIPT_HIDDEN *PH = gmt_get_P_hidden (P_copy);
+	if (P_obj->n_bytes > PH->n_alloc) P_copy->data = gmt_M_memory (GMT, P_copy->data, P_obj->n_bytes, char);
 	gmt_M_memcpy (P_copy->data, P_obj->data, P_obj->n_bytes, char);
-	P_copy->n_alloc = P_copy->n_bytes = P_obj->n_bytes;
+	gmt_M_memcpy (P_copy->hidden, P_obj->hidden, 1, struct GMT_POSTSCRIPT_HIDDEN);
 	P_copy->mode = P_obj->mode;
-	P_copy->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
+	PH->n_alloc = P_copy->n_bytes = P_obj->n_bytes;
+	PH->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
+}
+
+struct GMT_POSTSCRIPT * gmt_get_postscript (struct GMT_CTRL *GMT) {
+	struct GMT_POSTSCRIPT *P = NULL;
+	P = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT);
+	P->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_POSTSCRIPT_HIDDEN);
+	return (P);
 }

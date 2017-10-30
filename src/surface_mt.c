@@ -55,6 +55,7 @@
 struct SURFACE_CTRL {
 	struct A {	/* -A<aspect_ratio> */
 		bool active;
+		unsigned int mode;	/* 1 if given as fraction */
 		double value;
 	} A;
 	struct C {	/* -C<converge_limit> */
@@ -669,6 +670,7 @@ GMT_LOCAL void find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INF
 	 }
 }
 
+#ifdef DEBUG_SURF
 GMT_LOCAL void find_mean_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Determines all data point per bin, obtains mean value if more than one and sets the
 	 * Briggs parameters or, if really close, fixes the node value */
@@ -753,6 +755,7 @@ GMT_LOCAL void find_mean_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *
  		}
 	 }
 }
+#endif
 
 GMT_LOCAL void set_grid_parameters (struct SURFACE_INFO *C) {
 	/* Set the previous settings to the current settings */
@@ -849,7 +852,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 
 	/* Read in xyz data and computes index no and store it in a structure */
 	
-	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 3, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
 		return (error);
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)	/* Establishes data input */
 		return (GMT->parent->error);
@@ -1314,6 +1317,7 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 
 	gmt_grdfloat *u = C->Grid->data;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 	
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Compute rms misfit and curvature.\n");
 
@@ -1330,8 +1334,8 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 		x0 = col_to_x (col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], h->n_columns);
 		y0 = row_to_y (row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], h->n_rows);
 		/* Get dx,dy of data point away from this node */
-		dx = x_to_fcol (C->data[k].x, x0, h->r_inc[GMT_X]);
-		dy = y_to_frow (C->data[k].y, y0, h->r_inc[GMT_Y]);
+		dx = x_to_fcol (C->data[k].x, x0, HH->r_inc[GMT_X]);
+		dy = y_to_frow (C->data[k].y, y0, HH->r_inc[GMT_Y]);
  
 	 	du_dx = 0.5 * (u[node+d_node[E1]] - u[node+d_node[W1]]);
 	 	du_dy = 0.5 * (u[node+d_node[N1]] - u[node+d_node[S1]]);
@@ -1382,12 +1386,13 @@ GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 	uint64_t k;
 	double a, b, c, d, xx, y_up, zz, sx, sy, sz, sxx, sxy, sxz, syy, syz;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	sx = sy = sz = sxx = sxy = sxz = syy = syz = 0.0;
 
 	for (k = 0; k < C->npoints; k++) {	/* Sum up normal equation terms */
-		xx = x_to_fcol (C->data[k].x, h->wesn[XLO], h->r_inc[GMT_X]);	/* Distance from west to this point */
-		y_up = y_to_frow (C->data[k].y, h->wesn[YLO], h->r_inc[GMT_Y]);	/* Distance from south to this point */
+		xx = x_to_fcol (C->data[k].x, h->wesn[XLO], HH->r_inc[GMT_X]);	/* Distance from west to this point */
+		y_up = y_to_frow (C->data[k].y, h->wesn[YLO], HH->r_inc[GMT_Y]);	/* Distance from south to this point */
 		zz = C->data[k].z;
 		sx += xx;		sy += y_up;		sz += zz;		sxx += (xx * xx);
 		sxy += (xx * y_up);	sxz += (xx * zz);	syy += (y_up * y_up);	syz += (y_up * zz);
@@ -1410,8 +1415,8 @@ GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 	if (C->periodic) C->plane_sx = 0.0;	/* Cannot have x-trend for periodic geographic data */
 
 	for (k = 0; k < C->npoints; k++) {	/* Now remove this plane from the data constraints */
-		xx = x_to_fcol (C->data[k].x, h->wesn[XLO], h->r_inc[GMT_X]);
-		y_up = y_to_frow (C->data[k].y, h->wesn[YLO], h->r_inc[GMT_Y]);
+		xx = x_to_fcol (C->data[k].x, h->wesn[XLO], HH->r_inc[GMT_X]);
+		y_up = y_to_frow (C->data[k].y, h->wesn[YLO], HH->r_inc[GMT_Y]);
 		C->data[k].z -= (gmt_grdfloat)evaluate_plane(C, xx, y_up);
 	}
 
@@ -1490,6 +1495,7 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Check that previous processing steps write results with enough decimals.\n");
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Possibly some data were half-way between nodes and subject to IEEE 754 rounding.\n");
 		}
+#ifdef DEBUG_SURF
 		if (C->save) {	/* Debug saving the final data constraints */
 			char kind[2] = {'D', 'B'};
 			FILE *fp = fopen ("surface.data", "w");
@@ -1499,6 +1505,7 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 				fprintf (fp, "%g\t%g\t%g\t%" PRId64 "\t%" PRIu64 "\t%c\n", C->data[k].x, C->data[k].y, C->data[k].z, C->data[k].number, C->data[k].index, kind[C->data[k].kind]);
 			fclose (fp);
 		}
+#endif
 	}
 }
 
@@ -2234,7 +2241,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 
 	C.current_stride = gmt_gcd_euclid (C.n_columns-1, C.n_rows-1);
 	C.n_factors = gmt_get_prime_factors (GMT, C.current_stride, C.factors);
-#ifdef DEBUG
+#ifdef DEBUG_SURF
 	if (Ctrl->E.once) C.current_stride = 1;	/* Force final iteration stage immediately */
 #endif
 	set_grid_parameters (&C);
@@ -2261,7 +2268,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		mem_use = mem_total = C.npoints * sizeof (struct SURFACE_DATA);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "------------------------------------------\n");
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%-31s: %9s\n", "Memory for data array", gmt_memory_use (mem_use, 1));
-		mem_use = sizeof (struct GMT_GRID) + C.Grid->header->size * sizeof (gmt_grdfloat);	mem_total += mem_use;
+		mem_use = sizeof (struct GMT_GRID) + C.mxmy * sizeof (gmt_grdfloat);	mem_total += mem_use;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%-31s: %9s\n", "Memory for final grid", gmt_memory_use (mem_use, 1));
 		for (end = LO; end <= HI; end++) if (C.set_limit[end]) {	/* Will need to keep a lower|upper surface constrain grid */
 			mem_total += mem_use;
@@ -2275,7 +2282,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 #endif
 		mem_use = C.npoints * sizeof (struct SURFACE_BRIGGS) ;	mem_total += mem_use;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%-31s: %9s\n", "Memory for Briggs coefficients", gmt_memory_use (mem_use, 1));
-		mem_use = C.Grid->header->size;	mem_total += mem_use;
+		mem_use = C.mxmy;	mem_total += mem_use;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%-31s: %9s\n", "Memory for node status", gmt_memory_use (mem_use, 1));
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "------------------------------------------\n");
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%-31s: %9s\n", "Total memory use", gmt_memory_use (mem_total, 1));

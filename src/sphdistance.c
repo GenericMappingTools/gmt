@@ -87,6 +87,7 @@ GMT_LOCAL void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 	 * is a polar cap; if so set the required metadata flags */
 	uint64_t row;
 	double lon_sum = 0.0, lat_sum = 0.0, dlon;
+	struct GMT_DATASEGMENT_HIDDEN *PH = gmt_get_DS_hidden (P);
 
 	gmt_set_seg_minmax (GMT, GMT_IS_POLY, 0, P);	/* Set the domain of the segment */
 
@@ -97,17 +98,17 @@ GMT_LOCAL void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 		lon_sum += dlon;
 		lat_sum += P->data[GMT_Y][row];
 	}
-	P->pole = 0;
+	PH->pole = 0;
 	if (gmt_M_360_range (lon_sum, 0.0)) {	/* Contains a pole */
 		if (lat_sum < 0.0) { /* S */
-			P->pole = -1;
-			P->lat_limit = P->min[GMT_Y];
+			PH->pole = -1;
+			PH->lat_limit = P->min[GMT_Y];
 			P->min[GMT_Y] = -90.0;
 			
 		}
 		else {	/* N */
-			P->pole = +1;
-			P->lat_limit = P->max[GMT_Y];
+			PH->pole = +1;
+			PH->lat_limit = P->max[GMT_Y];
 			P->max[GMT_Y] = 90.0;
 		}
 		P->min[GMT_X] = 0.0;	P->max[GMT_X] = 360.0;
@@ -483,7 +484,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		}
 		else {	/* Obtain current polygon from Voronoi listings */
 			if (P == NULL) {	/* Need a single polygon structure that we reuse for each polygon */
-				P = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Needed as pointer below */
+				P = gmt_get_segment (GMT);	/* Needed as pointer below */
 				P->data = gmt_M_memory (GMT, NULL, 2, double *);	/* Needed as pointers below */
 				P->min = gmt_M_memory (GMT, NULL, 2, double);	/* Needed to hold min lon/lat */
 				P->max = gmt_M_memory (GMT, NULL, 2, double);	/* Needed to hold max lon/lat */

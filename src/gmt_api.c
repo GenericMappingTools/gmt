@@ -221,6 +221,9 @@ static struct GMTAPI_CTRL *GMT_FORTRAN = NULL;
 
 static int GMTAPI_session_counter = 0;	/* Keeps track of the ID of new sessions for multi-session programs */
 
+/* Grid node lookup */
+static uint64_t (*GMTAPI_index_function) (struct GMT_GRID_HEADER *, uint64_t, uint64_t, uint64_t);	/* Pointer to index function (for images only) */
+
 /*! Macros that report error, then return a NULL pointer, the error, or a value, respectively */
 #define return_null(API,err) { gmtapi_report_error(API,err); return (NULL);}
 #define return_error(API,err) { gmtapi_report_error(API,err); return (err);}
@@ -404,51 +407,49 @@ GMT_LOCAL inline void api_update_prev_rec (struct GMT_CTRL *GMT, uint64_t n_use)
 }
 
 /*! . */
-GMT_LOCAL int api_alloc_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid) {
+GMT_LOCAL int api_alloc_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	/* Use information in Grid header to allocate the grid data.
 	 * We assume gmtgrdio_init_grdheader has been called. */
-
-	if (Grid->data) return (GMT_PTR_NOT_NULL);
-	if (Grid->header->size == 0U) return (GMT_SIZE_IS_ZERO);
-	if ((Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, gmt_grdfloat)) == NULL) return (GMT_MEMORY_ERROR);
-	Grid->header->orig_datatype = (sizeof (gmt_grdfloat) == sizeof (float)) ? GMT_FLOAT : GMT_DOUBLE;
+	struct GMT_GRID_HEADER_HIDDEN *GH = gmt_get_H_hidden (G->header);
+	if (G->data) return (GMT_PTR_NOT_NULL);
+	if (G->header->size == 0U) return (GMT_SIZE_IS_ZERO);
+	if ((G->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, gmt_grdfloat)) == NULL) return (GMT_MEMORY_ERROR);
+	GH->orig_datatype = (sizeof (gmt_grdfloat) == sizeof (float)) ? GMT_FLOAT : GMT_DOUBLE;
 	return (GMT_NOERROR);
 }
 
 /*! . */
-GMT_LOCAL int api_alloc_grid_xy (struct GMTAPI_CTRL *API, struct GMT_GRID *Grid) {
+GMT_LOCAL int api_alloc_grid_xy (struct GMTAPI_CTRL *API, struct GMT_GRID *G) {
 	/* Use information in Grid header to allocate the grid x/y vectors.
 	 * We assume gmtgrdio_init_grdheader has been called. */
-
-	if (Grid->x || Grid->y) return (GMT_PTR_NOT_NULL);
-	Grid->x = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, Grid);	/* Get array of x coordinates */
-	Grid->y = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, Grid);	/* Get array of y coordinates */
+	if (G->x || G->y) return (GMT_PTR_NOT_NULL);
+	G->x = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G);	/* Get array of x coordinates */
+	G->y = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G);	/* Get array of y coordinates */
 	return (GMT_NOERROR);
 }
 
 /*! . */
-GMT_LOCAL int api_alloc_image (struct GMT_CTRL *GMT, uint64_t *dim, struct GMT_IMAGE *Image) {
+GMT_LOCAL int api_alloc_image (struct GMT_CTRL *GMT, uint64_t *dim, struct GMT_IMAGE *I) {
 	/* Use information in Image header to allocate the image data.
 	 * We assume gmtgrdio_init_grdheader has been called.
 	 * If dim given and is 2 or 4 then we have 1 or 3 bands plus alpha channel */
 
-	if (Image->data) return (GMT_PTR_NOT_NULL);
-	if (Image->header->size == 0U) return (GMT_SIZE_IS_ZERO);
-	if ((Image->data = gmt_M_memory_aligned (GMT, NULL, Image->header->size * Image->header->n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
+	if (I->data) return (GMT_PTR_NOT_NULL);
+	if (I->header->size == 0U) return (GMT_SIZE_IS_ZERO);
+	if ((I->data = gmt_M_memory_aligned (GMT, NULL, I->header->size * I->header->n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
 	if (dim && (dim[GMT_Z] == 2 || dim[GMT_Z] == 4)) {
-		if ((Image->alpha = gmt_M_memory_aligned (GMT, NULL, Image->header->size, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
+		if ((I->alpha = gmt_M_memory_aligned (GMT, NULL, I->header->size, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
 	}
 	return (GMT_NOERROR);
 }
 
 /*! . */
-GMT_LOCAL int api_alloc_image_xy (struct GMTAPI_CTRL *API, struct GMT_IMAGE *Image) {
+GMT_LOCAL int api_alloc_image_xy (struct GMTAPI_CTRL *API, struct GMT_IMAGE *I) {
 	/* Use information in Grid header to allocate the image x,y vectors.
 	 * We assume gmtgrdio_init_grdheader has been called. */
-
-	if (Image->x || Image->y) return (GMT_PTR_NOT_NULL);
-	Image->x = GMT_Get_Coord (API, GMT_IS_IMAGE, GMT_X, Image);	/* Get array of x coordinates */
-	Image->y = GMT_Get_Coord (API, GMT_IS_IMAGE, GMT_Y, Image);	/* Get array of y coordinates */
+	if (I->x || I->y) return (GMT_PTR_NOT_NULL);
+	I->x = GMT_Get_Coord (API, GMT_IS_IMAGE, GMT_X, I);	/* Get array of x coordinates */
+	I->y = GMT_Get_Coord (API, GMT_IS_IMAGE, GMT_Y, I);	/* Get array of y coordinates */
 	return (GMT_NOERROR);
 }
 
@@ -499,6 +500,8 @@ GMT_LOCAL inline struct GMT_IMAGE   * api_get_image_data (struct GMT_IMAGE *ptr)
 GMT_LOCAL inline struct GMT_DATASET * api_get_dataset_data (struct GMT_DATASET *ptr) {return (ptr);}
 GMT_LOCAL inline struct GMT_VECTOR  * api_get_vector_data (struct GMT_VECTOR *ptr) {return (ptr);}
 GMT_LOCAL inline struct GMT_MATRIX  * api_get_matrix_data (struct GMT_MATRIX *ptr) {return (ptr);}
+GMT_LOCAL inline struct GMT_POSTSCRIPT  * api_get_postscript_data (struct GMT_POSTSCRIPT *ptr) {return (ptr);}
+GMT_LOCAL inline struct GMT_PALETTE  * api_get_palette_data (struct GMT_PALETTE *ptr) {return (ptr);}
 
 /*! If API is not set or do_not_exit is false then we call system exit, else we move along */
 GMT_LOCAL inline void api_exit (struct GMTAPI_CTRL *API, int code) {
@@ -531,7 +534,7 @@ struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr) {
 	return (ptr);
 }
 
-/*! api_alloc_object_array is a convenience function that, given type, allocates an array of the corresponding container */
+/*! api_alloc_object_array is a convenience function that, given type, allocates an array of pointers to the corresponding container */
 GMT_LOCAL void *api_alloc_object_array (struct GMTAPI_CTRL *API, unsigned int n_items, unsigned int type) {
 	void *p = NULL;
 	switch (type) {
@@ -850,6 +853,7 @@ int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 	struct GMT_MATRIX *M = NULL;
 	struct GMT_VECTOR *V = NULL;
 	struct GMT_CTRL *GMT = NULL;
+	struct GMT_DATASET_HIDDEN *DH = NULL;
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	API->error = GMT_NOERROR;
@@ -860,7 +864,8 @@ int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 		case GMT_IS_DATASET:
 			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
 				return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D->geometry, D->io_mode | GMT_IO_RESET, NULL, ofile, D) != GMT_NOERROR)
+			DH = gmt_get_DD_hidden (D);
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D->geometry, DH->io_mode | GMT_IO_RESET, NULL, ofile, D) != GMT_NOERROR)
 				return (API->error);
 			break;
 		case GMT_IS_GRID:
@@ -1518,34 +1523,34 @@ GMT_LOCAL void api_index_to_2d_f (int *row, int *col, size_t index, int dim, int
  * via pointers to these functions, hence they are not macros.
  */
 
-GMT_LOCAL uint64_t api_get_index_from_TRB (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
+GMT_LOCAL inline uint64_t api_get_index_from_TRB (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
 	/* Get linear index of an array with a band-interleaved layout RRR...RGGG...GBBB...B */
 	return (h->pad[XLO] + col) + ((row + h->pad[YHI]) * h->mx) + (layer * h->size);
 }
 
-GMT_LOCAL uint64_t api_get_index_from_TRP (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
+GMT_LOCAL inline uint64_t api_get_index_from_TRP (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
 	/* Get linear index of an array with a pixel-interleaved layout RGBRGBRGB...*/
 	return ((h->pad[XLO] + col) * h->n_bands) + layer + ((row + h->pad[YHI]) * h->mx * h->n_bands);
 }
 
-GMT_LOCAL uint64_t api_get_index_from_TRL (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
+GMT_LOCAL inline uint64_t api_get_index_from_TRL (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
 	/* Get linear index of an array with a line-interleaved layout R...RG..GB...BR...RG...GB...B...*/
 	return (h->pad[XLO] + col) + (layer * h->mx) + ((row + h->pad[YHI]) * h->mx * h->n_bands);
 }
 
-GMT_LOCAL uint64_t api_get_index_from_TRS (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
+GMT_LOCAL inline uint64_t api_get_index_from_TRS (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
 	/* Get linear index of an default GMT grid */
 	gmt_M_unused(layer);
 	return (gmt_M_ijp (h, row, col));
 }
 
-GMT_LOCAL uint64_t api_get_index_from_TRR (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
+GMT_LOCAL inline uint64_t api_get_index_from_TRR (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
 	/* Get linear index to the real component of an default complex GMT grid */
 	gmt_M_unused(layer);
 	return (2ULL*gmt_M_ijp (h, row, col));
 }
 
-GMT_LOCAL uint64_t api_get_index_from_TRI (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
+GMT_LOCAL inline uint64_t api_get_index_from_TRI (struct GMT_GRID_HEADER *h, uint64_t row, uint64_t col, uint64_t layer) {
 	/* Get linear index to the imag component of an default complex GMT grid */
 	gmt_M_unused(layer);
 	return (2ULL*gmt_M_ijp (h, row, col)+1ULL);
@@ -1634,6 +1639,7 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 	M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;
 	size = M->n_rows * M->n_columns * M->n_layers;	/* Size in bytes of the initial matrix allocation */
 	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Must allocate data memory */
+		struct GMT_MATRIX_HIDDEN *MH = gmt_get_M_hidden (M);
 		if (size) {	/* Must allocate data matrix */
 			if ((error = gmtlib_alloc_univector (API->GMT, &(M->data), M->type, size)) != GMT_NOERROR)
 				return (error);
@@ -1642,7 +1648,7 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 			if ((M->text = gmt_M_memory (API->GMT, NULL, M->n_rows, char *)) == NULL)
 				return (error);
 		}
-		M->alloc_mode = GMT_ALLOC_INTERNALLY;
+		MH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 	return (GMT_NOERROR);
 }
@@ -1671,6 +1677,7 @@ GMT_LOCAL int api_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 	for (col = 0; col < V->n_columns; col++)	/* Set the same export data type for all vectors */
 		V->type[col] = dim[2];
 	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Must allocate space */
+		struct GMT_VECTOR_HIDDEN *VH = gmt_get_V_hidden (V);
 		if (V->n_rows) {	/* Must allocate space */
 			if ((error = gmtlib_alloc_vectors (API->GMT, V, V->n_rows)) != GMT_NOERROR)
 				return (error);
@@ -1679,7 +1686,7 @@ GMT_LOCAL int api_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 			if ((V->text = gmt_M_memory (API->GMT, NULL, V->n_rows, char *)) == NULL)
 				return (error);
 		}
-		V->alloc_mode = GMT_ALLOC_INTERNALLY;
+		VH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 
 	return (GMT_NOERROR);
@@ -1767,17 +1774,26 @@ GMT_LOCAL bool api_adjust_grdpadding (struct GMT_GRID_HEADER *h, unsigned int *p
 }
 
 /*! . */
+struct GMT_GRID_HEADER * gmt_get_header (struct GMT_CTRL *GMT) {
+	struct GMT_GRID_HEADER *h = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
+	h->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_HEADER_HIDDEN);
+	return (h);
+}
+
+/*! . */
 GMT_LOCAL size_t api_set_grdarray_size (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int mode, double *wesn) {
 	/* Determines size of grid given grid spacing and grid domain in h.
  	 * However, if wesn is given and not empty we compute size using the sub-region instead.
  	 * Finally, the current pad is used when calculating the grid size.
 	 * NOTE: This function leaves h unchanged by testing on a temporary header. */
 	struct GMT_GRID_HEADER *h_tmp = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	size_t size;
 
 	/* Must duplicate header and possibly reset wesn, then set pad and recalculate all dims */
-	h_tmp = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
-	gmt_M_memcpy (h_tmp, h, 1, struct GMT_GRID_HEADER);
+	h_tmp = gmt_get_header (GMT);
+	gmt_copy_gridheader (GMT, h_tmp, h);
+	HH = gmt_get_H_hidden (h_tmp);
 	h_tmp->complex_mode = (mode & GMT_GRID_IS_COMPLEX_MASK);	/* Set the mode-to-be so that if complex the size is doubled */
 
 	if (!full_region (wesn)) {
@@ -1788,6 +1804,7 @@ GMT_LOCAL size_t api_set_grdarray_size (struct GMT_CTRL *GMT, struct GMT_GRID_HE
 	gmt_M_grd_setpad (GMT, h_tmp, GMT->current.io.pad);	/* Use the system pad setting by default */
 	gmt_set_grddim (GMT, h_tmp);				/* Computes all integer parameters */
 	size = h_tmp->size;					/* This is the size needed to hold grid + padding */
+	gmt_M_free (GMT, h_tmp->hidden);
 	gmt_M_free (GMT, h_tmp);
 	return (size);
 }
@@ -1807,7 +1824,9 @@ GMT_LOCAL int api_open_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G
 	int cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};	/* These MUST be ints */
 	char *bin_mode[3] = { "rb", "rb+", "wb"};
 	char *fmt = NULL;
-	struct GMT_GRID_ROWBYROW *R = api_get_rbr_ptr (G->extra);	/* Shorthand to row-by-row book-keeping structure */
+	struct GMT_GRID_HIDDEN *GH = gmt_get_G_hidden (G);
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
+	struct GMT_GRID_ROWBYROW *R = api_get_rbr_ptr (GH->extra);	/* Shorthand to row-by-row book-keeping structure */
 
 	if (mode == 'r' || mode == 'R') {	/* Open file for reading */
 		if (mode == 'R') {	/* File has no header; can only work if G->header has been set already, somehow */
@@ -1840,24 +1859,24 @@ GMT_LOCAL int api_open_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G
 	if (R->open) return (GMT_NOERROR);	/* Already set the first time */
 	fmt = GMT->session.grdformat[G->header->type];
 	if (fmt[0] == 'c') {		/* Open netCDF file, old format */
-		gmt_M_err_trap (nc_open (G->header->name, cdf_mode[r_w], &R->fid));
+		gmt_M_err_trap (nc_open (HH->name, cdf_mode[r_w], &R->fid));
 		R->edge[0] = G->header->n_columns;
 		R->start[0] = 0;
 		R->start[1] = 0;
 	}
 	else if (fmt[0] == 'n') {	/* Open netCDF file, COARDS-compliant format */
-		gmt_M_err_trap (nc_open (G->header->name, cdf_mode[r_w], &R->fid));
+		gmt_M_err_trap (nc_open (HH->name, cdf_mode[r_w], &R->fid));
 		R->edge[0] = 1;
 		R->edge[1] = G->header->n_columns;
-		R->start[0] = G->header->row_order == k_nc_start_north ? 0 : G->header->n_rows-1;
+		R->start[0] = HH->row_order == k_nc_start_north ? 0 : G->header->n_rows-1;
 		R->start[1] = 0;
 	}
 	else {		/* Regular binary file with/w.o standard GMT header, or Sun rasterfile */
 		if (r_w == 0) {	/* Open for plain reading */
-			if ((R->fp = gmt_fopen (GMT, G->header->name, bin_mode[0])) == NULL)
+			if ((R->fp = gmt_fopen (GMT, HH->name, bin_mode[0])) == NULL)
 				return (GMT_GRDIO_OPEN_FAILED);
 		}
-		else if ((R->fp = gmt_fopen (GMT, G->header->name, bin_mode[r_w])) == NULL)
+		else if ((R->fp = gmt_fopen (GMT, HH->name, bin_mode[r_w])) == NULL)
 			return (GMT_GRDIO_CREATE_FAILED);
 		/* Seek past the grid header, unless there is none */
 		if (header && fseek (R->fp, (off_t)GMT_GRID_HEADER_SIZE, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
@@ -2283,6 +2302,7 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 	struct GMT_GRID    *G = NULL;
 	struct GMT_IMAGE   *I = NULL;
 	struct GMT_DATASET *D = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
 	if (object->resource == NULL)
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR?: api_pass_object given a NULL resource!\n");
@@ -2293,10 +2313,11 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 			break;
 		case GMT_IS_GRID:	/* Grids need to update the grdtype setting, possibly rotate geographic grids, and maybe deal with subsets */
 			G = api_get_grid_data (data);	/* Get the right grid pointer */
+			HH = gmt_get_H_hidden (G->header);
 			gmtlib_grd_get_units (API->GMT, G->header);	/* Set the unit names */
-			G->header->grdtype = gmtlib_get_grdtype (API->GMT, G->header);
+			HH->grdtype = gmtlib_get_grdtype (API->GMT, G->header);
 			if (wesn && G->data) {	/* Subset or global rotation was requested */
-				if (gmt_M_grd_is_global (API->GMT, G->header)) {	/* May have to rotate a geographic grid since we are not reading from file this time */
+				if (gmt_grd_is_global (API->GMT, G->header)) {	/* May have to rotate a geographic grid since we are not reading from file this time */
 					double shift_amount = wesn[XLO] - G->header->wesn[XLO];
 					if (fabs (shift_amount) >= G->header->inc[GMT_X]) {	/* Must do it */
 						GMT_Report (API, GMT_MSG_DEBUG, "Shifting longitudes in grid by %g degrees to fit -R\n", shift_amount);
@@ -2308,11 +2329,11 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 					 * and offer different behavior.  As it is we assume read-only grids */
 					if (object->reset_pad) {	/* First undo any prior sub-region used with this memory grid */
 						gmtlib_contract_headerpad (API->GMT, G->header, object->orig_pad, object->orig_wesn);
-						object->reset_pad = G->header->reset_pad = 0;
+						object->reset_pad = HH->reset_pad = 0;
 					}
 					/* Then apply the new pad adjustment.  Basically we cannot mess with the data so we change what constitute the pad */
 					if (gmtlib_expand_headerpad (API->GMT, G->header, object->wesn, object->orig_pad, object->orig_wesn))
-						object->reset_pad = G->header->reset_pad = 1;
+						object->reset_pad = HH->reset_pad = 1;
 				}
 			}
 			if (mode & GMT_CONTAINER_ONLY) break;	/* No grid yet */
@@ -2322,10 +2343,11 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 			break;
 		case GMT_IS_IMAGE:	/* Images need to update the grdtype setting, possibly rotate geographic grids, and maybe deal with subsets */
 			I = api_get_image_data (data);	/* Get the right image pointer */
+			HH = gmt_get_H_hidden (I->header);
 			gmtlib_grd_get_units (API->GMT, I->header);	/* Set the unit names */
-			I->header->grdtype = gmtlib_get_grdtype (API->GMT, I->header);
+			HH->grdtype = gmtlib_get_grdtype (API->GMT, I->header);
 			if (wesn && I->data) {	/* Subset or global rotation was requested */
-				if (gmt_M_grd_is_global (API->GMT, I->header)) {	/* May have to rotate geographic grid since we are not reading from file here */
+				if (gmt_grd_is_global (API->GMT, I->header)) {	/* May have to rotate geographic grid since we are not reading from file here */
 					double shift_amount = wesn[XLO] - I->header->wesn[XLO];
 					if (fabs (shift_amount) >= I->header->inc[GMT_X]) {	/* Must do it */
 						GMT_Report (API, GMT_MSG_NORMAL, "Longitudinal roll for images not implemented yet\n");
@@ -2340,11 +2362,11 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 					 * and offer different behavior.  As it is we assume read-only images */
 					if (object->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 						gmtlib_contract_headerpad (API->GMT, I->header, object->orig_pad, object->orig_wesn);
-						object->reset_pad = I->header->reset_pad = 0;
+						object->reset_pad = HH->reset_pad = 0;
 					}
 					/* Then apply the new pad adjustment.  Basically we cannot mess with the data so we change what constitute the pad */
 					if (gmtlib_expand_headerpad (API->GMT, I->header, object->wesn, object->orig_pad, object->orig_wesn))
-						object->reset_pad = I->header->reset_pad = 1;
+						object->reset_pad = HH->reset_pad = 1;
 				}
 			}
 			if (mode & GMT_CONTAINER_ONLY) break;	/* No image yet */
@@ -2547,6 +2569,7 @@ GMT_LOCAL int api_export_palette (struct GMTAPI_CTRL *API, int object_ID, unsign
 	unsigned int kind;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_PALETTE *P_copy = NULL;
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
 	GMT_Report (API, GMT_MSG_DEBUG, "api_export_palette: Passed ID = %d and mode = %d\n", object_ID, mode);
@@ -2590,7 +2613,8 @@ GMT_LOCAL int api_export_palette (struct GMTAPI_CTRL *API, int object_ID, unsign
 		case GMT_IS_REFERENCE:	/* Just pass memory location */
 			if (S_obj->resource) return (gmtapi_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing CPT to GMT_PALETTE memory location\n");
-			P_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
+			PH = gmt_get_C_hidden (P_obj);
+			PH->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			S_obj->resource = P_obj;	/* Set resource pointer from object to this palette */
 			break;
 		default:
@@ -2613,6 +2637,7 @@ GMT_LOCAL struct GMT_POSTSCRIPT * api_import_postscript (struct GMTAPI_CTRL *API
 	int item;
 	unsigned int kind;
 	struct GMT_POSTSCRIPT *P_obj = NULL, *P_orig = NULL;
+	struct GMT_POSTSCRIPT_HIDDEN *PH = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
@@ -2669,7 +2694,8 @@ GMT_LOCAL struct GMT_POSTSCRIPT * api_import_postscript (struct GMTAPI_CTRL *API
 			return_null (API, GMT_NOT_A_VALID_METHOD);
 			break;
 	}
-	S_obj->alloc_mode = P_obj->alloc_mode;
+	PH = gmt_get_P_hidden (P_obj);
+	S_obj->alloc_mode = PH->alloc_mode;
 	S_obj->status = GMT_IS_USED;	/* Mark as read */
 
 	return (P_obj);	/* Pass back the PS */
@@ -2684,6 +2710,7 @@ GMT_LOCAL int api_export_postscript (struct GMTAPI_CTRL *API, int object_ID, uns
 	unsigned int kind;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_POSTSCRIPT *P_copy = NULL;
+	struct GMT_POSTSCRIPT_HIDDEN *PH = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
 	GMT_Report (API, GMT_MSG_DEBUG, "api_export_postscript: Passed ID = %d and mode = %d\n", object_ID, mode);
@@ -2727,7 +2754,8 @@ GMT_LOCAL int api_export_postscript (struct GMTAPI_CTRL *API, int object_ID, uns
 		case GMT_IS_REFERENCE:	/* Just pass memory location */
 			if (S_obj->resource) return (gmtapi_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing PS to GMT_POSTSCRIPT memory location\n");
-			P_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
+			PH = gmt_get_P_hidden (P_obj);
+			PH->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			S_obj->resource = P_obj;	/* Set resource pointer from object to this PS */
 			break;
 		default:
@@ -3376,6 +3404,9 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
+	struct GMT_DATASET_HIDDEN *DH = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
@@ -3395,10 +3426,11 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 	}
 
 	/* Allocate a single data set and an initial allocated list of n_alloc tables */
-	D_obj = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASET);
+	D_obj = gmt_get_dataset (GMT);
+	DH = gmt_get_DD_hidden (D_obj);
 	D_obj->table = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_DATATABLE *);
-	D_obj->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT_* modules can free this memory (may override below) */
-	D_obj->alloc_level = GMT->hidden.func_level;	/* So GMT_* modules can free this memory (may override below) */
+	DH->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT_* modules can free this memory (may override below) */
+	DH->alloc_level = GMT->hidden.func_level;	/* So GMT_* modules can free this memory (may override below) */
 	use_GMT_io = !(mode & GMT_IO_ASCII);		/* false if we insist on ASCII reading */
 	GMT->current.io.seg_no = GMT->current.io.rec_no = GMT->current.io.rec_in_tbl_no = 0;	/* Reset for each new dataset */
 	if (GMT->common.R.active[RSET] && GMT->common.R.wesn[XLO] < -180.0 && GMT->common.R.wesn[XHI] > -180.0) greenwich = false;
@@ -3442,7 +3474,8 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				            "Reading %s from %s %s\n", GMT_family[S_obj->family], GMT_method[S_obj->method], S_obj->filename);
 				if ((D_obj->table[D_obj->n_tables] = gmtlib_read_table (GMT, S_obj->filename, S_obj->method, greenwich, &geometry, &type, use_GMT_io)) == NULL)
 					continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
-				D_obj->table[D_obj->n_tables]->id = D_obj->n_tables;	/* Give sequential internal object_ID numbers to tables */
+				TH = gmt_get_DT_hidden (D_obj->table[D_obj->n_tables]);
+				TH->id = D_obj->n_tables;	/* Give sequential internal object_ID numbers to tables */
 				D_obj->n_tables++;	/* Since we just read one */
 				update = true;		/* Have reason to update min/max when done */
 				break;
@@ -3459,13 +3492,15 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				}
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading %s from %s %" PRIxS "\n", GMT_family[S_obj->family], GMT_method[S_obj->method], (size_t)S_obj->fp);
 				if ((D_obj->table[D_obj->n_tables] = gmtlib_read_table (GMT, S_obj->fp, S_obj->method, greenwich, &geometry, &type, use_GMT_io)) == NULL) continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
-				D_obj->table[D_obj->n_tables]->id = D_obj->n_tables;	/* Give sequential internal object_ID numbers to tables */
+				TH = gmt_get_DT_hidden (D_obj->table[D_obj->n_tables]);
+				TH->id = D_obj->n_tables;	/* Give sequential internal object_ID numbers to tables */
 				D_obj->n_tables++;	/* Since we just read one */
 				update = true;		/* Have reason to update min/max when done */
 				break;
 
 			case GMT_IS_DUPLICATE:	/* Duplicate the input dataset */
 				gmt_M_free (GMT, D_obj->table);	/* Free up what we allocated earlier since gmt_duplicate_dataset does it all */
+				gmt_M_free (GMT, D_obj->hidden);
 				gmt_M_free (GMT, D_obj);
 				if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
 				if ((Din_obj = S_obj->resource) == NULL)	/* Ooops, noting there? */
@@ -3476,10 +3511,12 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 
 			case GMT_IS_REFERENCE:	/* Just pass memory location, so free up what we allocated earlier */
 				gmt_M_free (GMT, D_obj->table);	/* Free up what we allocated up front since we just wish to pass the pointer */
+				gmt_M_free (GMT, D_obj->hidden);
 				gmt_M_free (GMT, D_obj);
 				if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table from GMT_DATASET memory location\n");
 				if ((D_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+				DH = gmt_get_DD_hidden (D_obj);
 				break;
 
 		 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:
@@ -3494,7 +3531,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				smode = (M_obj->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				if (smode) type = GMT_READ_MIXED;	/* If a matrix has text we have a mixed record */
 				n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : M_obj->n_columns;
-				D_obj->table[D_obj->n_tables] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE);
+				D_obj->table[D_obj->n_tables] = gmt_get_table (GMT);
 				D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *);
 				S = D_obj->table[D_obj->n_tables]->segment[0] = GMT_Alloc_Segment (API, smode, M_obj->n_rows, n_columns, NULL, NULL);
 				GMT_2D_to_index = api_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
@@ -3541,7 +3578,8 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 					return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 				API->object[new_item]->resource = D_obj;
 				API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
-				D_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
+				DH = gmt_get_DD_hidden (D_obj);
+				DH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 				D_obj->geometry = S_obj->geometry;	/* Since provided when registered */
 				update = via = true;
 				break;
@@ -3557,7 +3595,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				smode = (V_obj->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				if (smode) type = GMT_READ_MIXED;	/* If a vector has text we have a mixed record */
 				n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : V_obj->n_columns;
-				D_obj->table[D_obj->n_tables] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE);
+				D_obj->table[D_obj->n_tables] = gmt_get_table (GMT);
 				D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *);
 				S = D_obj->table[D_obj->n_tables]->segment[0] = GMT_Alloc_Segment (API, smode, V_obj->n_rows, n_columns, NULL, NULL);
 				for (col = 1, diff_types = false; !diff_types && col < V_obj->n_columns; col++) if (V_obj->type[col] != V_obj->type[col-1]) diff_types = true;
@@ -3603,7 +3641,8 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 					return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 				API->object[new_item]->resource = D_obj;
 				API->object[new_item]->status = GMT_IS_USED;			/* Mark as read */
-				D_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
+				DH = gmt_get_DD_hidden (D_obj);
+				DH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 				D_obj->geometry = S_obj->geometry;	/* Since provided when registered */
 				update = via = true;
 				break;
@@ -3621,7 +3660,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				n_columns = (GMT->common.i.select) ? GMT->common.i.n_cols : V_obj->n_columns;
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table from user %" PRIu64 " column arrays of length %" PRIu64 "\n",
 				            V_obj->n_columns, V_obj->n_rows);
-				D_obj->table[D_obj->n_tables] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE);
+				D_obj->table[D_obj->n_tables] = gmt_get_table (GMT);
 				D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT *);
 				D_obj->table[D_obj->n_tables]->segment[0] = GMT_Alloc_Segment (API, smode, 0, n_columns, NULL, NULL);
 				for (col = 0; col < V_obj->n_columns; col++) {
@@ -3633,15 +3672,16 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 						col_pos = col;	/* Just goto that column */
 					D_obj->table[D_obj->n_tables]->segment[0]->data[col] = V_obj->data[col_pos].f8;
 				}
+				DH = gmt_get_DD_hidden (D_obj);
 				if (smode) D_obj->table[D_obj->n_tables]->segment[0]->text = V_obj->text;
 				api_increment_d (D_obj, V_obj->n_rows, n_columns, 1U);	/* Update counters for D_obj with 1 segment */
-				D_obj->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since we just hooked on the arrays */
+				DH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since we just hooked on the arrays */
 				new_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE, geometry, GMT_IN, NULL, D_obj);	/* Register a new resource to hold D_obj */
 				if ((new_item = gmtapi_validate_id (API, GMT_IS_DATASET, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET)
 					return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 				API->object[new_item]->resource = D_obj;
 				API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
-				D_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
+				DH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 				D_obj->geometry = S_obj->geometry;	/* Since provided when registered */
 				S_obj->family = GMT_IS_VECTOR;	/* Done with the via business now */
 				update = via = true;
@@ -3659,8 +3699,10 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 			D_obj->n_records  += D_obj->table[D_obj->n_tables-1]->n_records;		/* Sum up total number of records in the entire data set */
 			/* Update segment IDs so they are sequential across many tables (gmtlib_read_table sets the ids relative to current table). */
 			if (D_obj->n_tables > 1) {
-				for (seg = 0; seg < D_obj->table[D_obj->n_tables-1]->n_segments; seg++)
-					D_obj->table[D_obj->n_tables-1]->segment[seg]->id += D_obj->table[D_obj->n_tables-2]->n_segments;
+				for (seg = 0; seg < D_obj->table[D_obj->n_tables-1]->n_segments; seg++) {
+					SH = gmt_get_DS_hidden (D_obj->table[D_obj->n_tables-1]->segment[seg]);
+					SH->id += D_obj->table[D_obj->n_tables-2]->n_segments;
+				}
 			}
 			if (allocate && D_obj->n_tables == n_alloc) {	/* Must allocate more space for additional tables */
 				size_t old_n_alloc = n_alloc;
@@ -3673,7 +3715,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				D_obj->table[D_obj->n_tables-1]->segment[seg]->coord = D_obj->table[D_obj->n_tables-1]->segment[seg]->data;
 #endif
 		}
-		S_obj->alloc_mode = D_obj->alloc_mode;	/* Clarify allocation mode for this object */
+		S_obj->alloc_mode = DH->alloc_mode;	/* Clarify allocation mode for this object */
 #if 0
 		if (api_col_check (D_obj->table[D_obj->n_tables-1], &n_cols)) {	/* Different tables have different number of columns, which is not good */
 			return_null (API, GMT_N_COLS_VARY);
@@ -3684,7 +3726,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 	}
 	if (D_obj->n_tables == 0) {	/* Only found empty files (e.g., /dev/null) and we have nothing to show for our efforts.  Return an single empty table with no segments. */
 		D_obj->table = gmt_M_memory (GMT, D_obj->table, 1, struct GMT_DATATABLE *);
-		D_obj->table[0] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE);
+		D_obj->table[0] = gmt_get_table (GMT);
 		D_obj->n_tables = 1;	/* But we must indicate we found one (empty) table */
 	}
 	else {	/* Found one or more tables, finalize table allocation, set number of columns, and possibly allocate min/max arrays if not there already */
@@ -3694,7 +3736,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 		if (!D_obj->max) D_obj->max = gmt_M_memory (GMT, NULL, D_obj->n_columns, double);
 	}
 	D_obj->geometry = geometry;		/* Since gmtlib_read_table may have changed it */
-	D_obj->type = type;				/* Since gmtlib_read_table may have changed it */
+	D_obj->type = type;			/* Since gmtlib_read_table may have changed it */
 	gmt_set_dataset_minmax (GMT, D_obj);	/* Set the min/max values for the entire dataset */
 	if (!via) API->object[this_item]->resource = D_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
 	return (D_obj);
@@ -3766,7 +3808,10 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 	struct GMT_DATASET *D_copy = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
+	struct GMT_MATRIX_HIDDEN *MH = NULL;
+	struct GMT_VECTOR_HIDDEN *VH = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_DATASET_HIDDEN *DH = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 	void *ptr = NULL;
 	GMT_putfunction api_put_val = NULL;
@@ -3793,7 +3838,8 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 #endif
 	}
 	gmt_set_dataset_minmax (GMT, D_obj);	/* Update all counters and min/max arrays */
-	D_obj->io_mode = mode;	/* Handles if tables or segments should be written to separate files, according to mode */
+	DH = gmt_get_DD_hidden (D_obj);
+	DH->io_mode = mode;	/* Handles if tables or segments should be written to separate files, according to mode */
 	method = api_set_method (S_obj);	/* Get the actual method to use */
 	switch (method) {	/* File, array, stream, etc. */
 	 	case GMT_IS_STREAM:
@@ -3817,8 +3863,8 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			if (S_obj->resource) return (gmtapi_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table to GMT_DATASET memory location\n");
 			gmtlib_change_dataset (GMT, D_obj);	/* Deal with any -o settings */
-			S_obj->resource = D_obj;			/* Set resource pointer from object to this dataset */
-			D_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
+			S_obj->resource = D_obj;		/* Set resource pointer from object to this dataset */
+			DH->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			break;
 
 		case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:
@@ -3830,6 +3876,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			if ((M_obj = S_obj->resource) == NULL) {	/* Must allocate suitable matrix */
 				M_obj = gmtlib_create_matrix (GMT, 1U, GMT_OUT, 0);	/* 1-layer matrix (i.e., 2-D) */
 				/* Allocate final output space since we now know all dimensions */
+				MH = gmt_get_M_hidden (M_obj);
 				M_obj->n_rows = n_rows;
 				M_obj->n_columns = n_columns;
 				M_obj->dim = (M_obj->shape == GMT_IS_ROW_FORMAT) ? M_obj->n_columns : M_obj->n_rows;						/* Matrix layout order */
@@ -3837,11 +3884,12 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 				M_obj->type = S_obj->type;	/* Use selected data type for the export */
 				/* Allocate output matrix space or die */
 				if ((error = gmtlib_alloc_univector (GMT, &(M_obj->data), M_obj->type, S_obj->n_alloc)) != GMT_NOERROR) return (gmtapi_report_error (API, error));
-				M_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
+				MH->alloc_mode = GMT_ALLOC_INTERNALLY;
 			}
 			else {	/* We passed in a matrix so must check it is big enough */
 				if (M_obj->n_rows < n_rows || M_obj->n_columns < n_columns)
 					return (gmtapi_report_error (API, GMT_DIM_TOO_SMALL));
+				MH = gmt_get_M_hidden (M_obj);
 			}
 			/* Consider header records from first table only */
 			if (D_obj->table[0]->n_headers) {
@@ -3874,7 +3922,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 				}
 			}
 			assert (M_obj->n_rows == row_out);	/* Sanity check */
-			M_obj->alloc_level = S_obj->alloc_level;
+			MH->alloc_level = S_obj->alloc_level;
 			S_obj->resource = M_obj;		/* Set resource pointer from object to this matrix */
 			GMT->current.io.multi_segments[GMT_OUT] = save;
 			break;
@@ -3924,7 +3972,8 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 				}
 			}
 			assert (V_obj->n_rows == row_out);	/* Sanity check */
-			V_obj->alloc_level = S_obj->alloc_level;
+			VH = gmt_get_V_hidden (V_obj);
+			VH->alloc_level = S_obj->alloc_level;
 			S_obj->resource = V_obj;
 			GMT->current.io.multi_segments[GMT_OUT] = save;
 			break;
@@ -3940,6 +3989,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			n_rows = D_obj->n_records;	/* Number of data records */
 			S = D_obj->table[0]->segment[0];	/* Shorthand for this single segment */
 			if ((V_obj = S_obj->resource) == NULL) {	/* Must create output container given data dimensions */
+				struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 				if ((V_obj = gmt_create_vector (GMT, n_columns, GMT_OUT)) == NULL)
 					return (gmtapi_report_error (API, GMT_PTR_IS_NULL));
 				for (col = 0; col < V_obj->n_columns; col++) {
@@ -3947,9 +3997,10 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 					V_obj->data[col].f8 = S->data[col];	/* Set pointer only */
 				}
 				V_obj->n_rows = n_rows;
-				V_obj->alloc_level = S_obj->alloc_level;	/* Otherwise D_obj will be freed before we get to use data */
-				V_obj->alloc_mode = S_obj->alloc_mode = D_obj->alloc_mode;	/* Otherwise D_obj will be freed before we get to use data */
-				S->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* To prevent freeing in D_obj */
+				VH = gmt_get_V_hidden (V_obj);
+				VH->alloc_level = S_obj->alloc_level;	/* Otherwise D_obj will be freed before we get to use data */
+				VH->alloc_mode = S_obj->alloc_mode = DH->alloc_mode;	/* Otherwise D_obj will be freed before we get to use data */
+				SH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* To prevent freeing in D_obj */
 			}
 			else {	/* Got a preallocated contrainer */
 				if (V_obj->n_rows < n_rows || V_obj->n_columns < n_columns)
@@ -3971,7 +4022,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 			return (gmtapi_report_error (API, GMT_NOT_A_VALID_METHOD));
 			break;
 	}
-	S_obj->alloc_mode = D_obj->alloc_mode;	/* Clarify allocation mode for this entity */
+	S_obj->alloc_mode = DH->alloc_mode;	/* Clarify allocation mode for this entity */
 	S_obj->status = GMT_IS_USED;	/* Mark as written */
 
 	return GMT_NOERROR;
@@ -3998,6 +4049,9 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 	GMT_getfunction api_get_val = NULL;
 	struct GMT_IMAGE *I_obj = NULL, *I_orig = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
+	struct GMT_MATRIX_HIDDEN  *MH = NULL;
+	struct GMT_IMAGE_HIDDEN *IH = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 #ifdef HAVE_GDAL
@@ -4024,6 +4078,7 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			}
 			else
 				I_obj = image;	/* We are passing in a image already allocated */
+			HH = gmt_get_H_hidden (I_obj->header);
 			I_obj->header->complex_mode = mode;		/* Pass on any bitflags */
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_DATA_ONLY)) {		/* Must init header and read the header information from file */
@@ -4049,7 +4104,8 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 				return_null (API, GMT_IMAGE_READ_ERROR);
 			if (gmt_M_err_pass (GMT, gmtlib_image_BC_set (GMT, I_obj), S_obj->filename))
 				return_null (API, GMT_IMAGE_BC_ERROR);	/* Set boundary conditions */
-			I_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
+			IH = gmt_get_I_hidden (I_obj);
+			IH->alloc_mode = GMT_ALLOC_INTERNALLY;
 #else
 			GMT_Report (API, GMT_MSG_NORMAL, "GDAL required to read image from file %s\n", S_obj->filename);
 #endif
@@ -4065,7 +4121,7 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 				I_obj = image;	/* We are passing in an image already */
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_DATA_ONLY)) {	/* Must init header and copy the header information from the existing grid */
-				gmt_M_memcpy (I_obj->header, I_orig->header, 1, struct GMT_GRID_HEADER);
+				gmt_copy_gridheader (GMT, I_obj->header, I_orig->header);
 				if (mode & GMT_CONTAINER_ONLY) break;	/* Just needed the header, get out of here */
 			}
 			/* Here we will read grid data. */
@@ -4076,7 +4132,8 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 				I_obj->data = gmt_M_memory (GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned char);
 				if (I_orig->alpha) I_obj->alpha = gmt_M_memory (GMT, NULL, I_obj->header->size , unsigned char);
 			}
-			I_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
+			IH = gmt_get_I_hidden (I_obj);
+			IH->alloc_mode = GMT_ALLOC_INTERNALLY;
 			if (!S_obj->region && gmt_grd_pad_status (GMT, I_obj->header, GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating image data from GMT_IMAGE memory location\n");
 				gmt_M_memcpy (I_obj->data, I_orig->data, I_orig->header->size * I_orig->header->n_bands, char);
@@ -4111,18 +4168,20 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_image: Check pad\n");
 			if (!api_adjust_grdpadding (I_obj->header, GMT->current.io.pad)) break;	/* Pad is correct so we are done */
 			/* Here we extend G_obj->data to allow for padding, then rearrange rows, but only if item was allocated by GMT */
-			if (I_obj->alloc_mode == GMT_ALLOC_EXTERNALLY) return_null (API, GMT_PADDING_NOT_ALLOWED);
+			IH = gmt_get_I_hidden (I_obj);
+			if (IH->alloc_mode == GMT_ALLOC_EXTERNALLY) return_null (API, GMT_PADDING_NOT_ALLOWED);
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_image: Add pad\n");
 #if 0
 			gmt_grd_pad_on (GMT, image, GMT->current.io.pad);
 #endif
 			if (done && S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
+				HH = gmt_get_H_hidden (I_obj->header);
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 					gmtlib_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
-					S_obj->reset_pad = I_obj->header->reset_pad = 0;
+					S_obj->reset_pad = HH->reset_pad = 0;
 				}
 				if (gmtlib_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
-					S_obj->reset_pad = I_obj->header->reset_pad = 1;
+					S_obj->reset_pad = HH->reset_pad = 1;
 			}
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_image: Return from GMT_IS_REFERENCE\n");
 			break;
@@ -4131,12 +4190,14 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			I_obj = (image == NULL) ? gmtlib_create_image (GMT) : image;	/* Only allocate when not already allocated */
+			HH = gmt_get_H_hidden (I_obj->header);
 			I_obj->header->complex_mode = mode;	/* Set the complex mode */
 			if (! (mode & GMT_DATA_ONLY)) {
 				api_matrixinfo_to_grdheader (GMT, I_obj->header, M_obj);	/* Populate a GRD header structure */
 				if (mode & GMT_CONTAINER_ONLY) break;	/* Just needed the header */
 			}
-			I_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
+			IH = gmt_get_I_hidden (I_obj);
+			IH->alloc_mode = GMT_ALLOC_INTERNALLY;
 			/* Must convert to new array */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Importing image data from user memory location\n");
 			gmt_set_grddim (GMT, I_obj->header);	/* Set all dimensions */
@@ -4153,15 +4214,15 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 				return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 			API->object[new_item]->resource = I_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
-			I_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
+			IH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 			via = true;
 			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 					gmtlib_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
-					S_obj->reset_pad = I_obj->header->reset_pad = 0;
+					S_obj->reset_pad = HH->reset_pad = 0;
 				}
 				if (gmtlib_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
-					S_obj->reset_pad = I_obj->header->reset_pad = 1;
+					S_obj->reset_pad = HH->reset_pad = 1;
 			}
 			break;
 
@@ -4169,19 +4230,22 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			I_obj = (image == NULL) ? gmtlib_create_image (GMT) : image;	/* Only allocate when not already allocated */
+			HH = gmt_get_H_hidden (I_obj->header);
 			I_obj->header->complex_mode = mode;	/* Set the complex mode */
 			if (! (mode & GMT_DATA_ONLY)) {
 				api_matrixinfo_to_grdheader (GMT, I_obj->header, M_obj);	/* Populate a GRD header structure */
 				if (mode & GMT_CONTAINER_ONLY) break;	/* Just needed the header */
 			}
-			if (!(M_obj->shape == GMT_IS_ROW_FORMAT && M_obj->type == GMT_FLOAT && M_obj->alloc_mode == GMT_ALLOC_EXTERNALLY && (mode & GMT_GRID_IS_COMPLEX_MASK)))
+			MH = gmt_get_M_hidden (M_obj);
+			if (!(M_obj->shape == GMT_IS_ROW_FORMAT && M_obj->type == GMT_FLOAT && MH->alloc_mode == GMT_ALLOC_EXTERNALLY && (mode & GMT_GRID_IS_COMPLEX_MASK)))
 				return_null (API, GMT_NOT_A_VALID_IO_ACCESS);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing image data from user memory location\n");
+			IH = gmt_get_I_hidden (I_obj);
 			I_obj->data = (unsigned char *)(M_obj->data.sc1);
-			S_obj->alloc_mode = M_obj->alloc_mode;	/* Pass on allocation mode of matrix */
-			I_obj->alloc_mode = M_obj->alloc_mode;
+			S_obj->alloc_mode = MH->alloc_mode;	/* Pass on allocation mode of matrix */
+			IH->alloc_mode = MH->alloc_mode;
 			if (!api_adjust_grdpadding (I_obj->header, GMT->current.io.pad)) break;	/* Pad is correct so we are done */
-			if (I_obj->alloc_mode == GMT_ALLOC_EXTERNALLY) return_null (API, GMT_PADDING_NOT_ALLOWED);
+			if (IH->alloc_mode == GMT_ALLOC_EXTERNALLY) return_null (API, GMT_PADDING_NOT_ALLOWED);
 			/* Here we extend I_obj->data to allow for padding, then rearrange rows */
 			/* gmt_grd_pad_on (GMT, I, GMT->current.io.pad);*/
 			new_ID = GMT_Register_IO (API, GMT_IS_IMAGE, GMT_IS_REFERENCE, S_obj->geometry, GMT_IN, NULL, I_obj);	/* Register a new resource to hold I_obj */
@@ -4189,15 +4253,15 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 				return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 			API->object[new_item]->resource = I_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
-			I_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
+			IH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 			via = true;
 			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 					gmtlib_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
-					S_obj->reset_pad = I_obj->header->reset_pad = 0;
+					S_obj->reset_pad = HH->reset_pad = 0;
 				}
 				if (gmtlib_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
-					S_obj->reset_pad = I_obj->header->reset_pad = 1;
+					S_obj->reset_pad = HH->reset_pad = 1;
 			}
 			break;
 
@@ -4209,6 +4273,7 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 	if (!via) S_obj->resource = I_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
+
 #ifdef GMT_BACKWARDS_API
 	I_obj->ColorMap = I_obj->colormap;
 	I_obj->nIndexedColors = I_obj->n_indexed_colors;
@@ -4254,6 +4319,7 @@ GMT_LOCAL int api_export_image (struct GMTAPI_CTRL *API, int object_ID, unsigned
 	bool done = true;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_IMAGE *I_copy = NULL;
+	struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I_obj);
 
 	GMT_Report (API, GMT_MSG_DEBUG, "api_export_image: Passed ID = %d and mode = %d\n", object_ID, mode);
 
@@ -4297,7 +4363,7 @@ GMT_LOCAL int api_export_image (struct GMTAPI_CTRL *API, int object_ID, unsigned
 			if (mode & GMT_CONTAINER_ONLY) return (gmtapi_report_error (API, GMT_NOT_A_VALID_MODE));
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing image data to GMT_IMAGE memory location\n");
 			S_obj->resource = I_obj;	/* Set resource pointer to the image */
-			I_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
+			IH->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			break;
 
 		default:
@@ -4333,6 +4399,9 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 	p_func_uint64_t GMT_2D_to_index = NULL;
 	struct GMT_GRID *G_obj = NULL, *G_orig = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
+	struct GMT_MATRIX_HIDDEN *MH = NULL;
+	struct GMT_GRID_HIDDEN *GH = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 	GMT_getfunction api_get_val = NULL;
@@ -4362,7 +4431,8 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 						return_null (API, GMT_GRID_READ_ERROR);
 					if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), S_obj->filename))
 						return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
-					G_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
+					GH = gmt_get_G_hidden (G_obj);
+					GH->alloc_mode = GMT_ALLOC_INTERNALLY;
 				}
 				else
 					G_obj = grid;	/* We are working on a srtm grid already allocated and here we also read the data so nothing to do */
@@ -4379,11 +4449,12 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 				G_obj = grid;	/* We are working on a grid already allocated */
 			S_obj->resource = G_obj;	/* Set resource pointer to the grid */
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
+			GH = gmt_get_G_hidden (G_obj);
 			if (! (mode & GMT_DATA_ONLY)) {		/* Must init header and read the header information from file */
 				if (row_by_row) {	/* Special row-by-row processing mode */
 					char r_mode = (mode & GMT_GRID_NO_HEADER) ? 'R' : 'r';
 					/* If we get here more than once we only allocate extra once */
-					if (G_obj->extra == NULL) G_obj->extra = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
+					if (GH->extra == NULL) GH->extra = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
 					if (api_open_grd (GMT, S_obj->filename, G_obj, r_mode, mode)) {	/* Open the grid for incremental row reading */
 						if (new) gmt_free_grid (GMT, &G_obj, false);
 						return_null (API, GMT_GRID_READ_ERROR);
@@ -4398,6 +4469,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			/* Here we will read the grid data themselves. */
 			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			 * Otherwise we extract the entire file domain */
+			HH = gmt_get_H_hidden (G_obj->header);
 			size = api_set_grdarray_size (GMT, G_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which includes padding */
 			if (!G_obj->data) {	/* Array is not allocated yet, do so now. We only expect header (and possibly w/e/s/n subset) to have been set correctly */
 				G_obj->header->size = size;
@@ -4412,7 +4484,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 				return_null (API, GMT_GRID_READ_ERROR);
 			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), S_obj->filename))
 				return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
-			G_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
+			GH->alloc_mode = GMT_ALLOC_INTERNALLY;
 			break;
 
 	 	case GMT_IS_DUPLICATE:	/* GMT grid and header in a GMT_GRID container object. */
@@ -4427,7 +4499,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 				G_obj = grid;	/* We are passing in a grid already */
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_DATA_ONLY)) {	/* Must init header and copy the header information from the existing grid */
-				gmt_M_memcpy (G_obj->header, G_orig->header, 1, struct GMT_GRID_HEADER);
+				gmt_copy_gridheader (GMT, G_obj->header, G_orig->header);
 				if (mode & GMT_CONTAINER_ONLY) break;	/* Just needed the header, get out of here */
 			}
 			/* Here we will read grid data. */
@@ -4438,7 +4510,8 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 				G_obj->header->size = api_set_grdarray_size (GMT, G_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which may include padding */
 				G_obj->data = gmt_M_memory_aligned (GMT, NULL, G_obj->header->size, gmt_grdfloat);
 			}
-			G_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
+			GH = gmt_get_G_hidden (G_obj);
+			GH->alloc_mode = GMT_ALLOC_INTERNALLY;
 			if (!S_obj->region && gmt_grd_pad_status (GMT, G_obj->header, GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
 				gmt_M_memcpy (G_obj->data, G_orig->data, G_orig->header->size, gmt_grdfloat);
 				break;		/* Done with this grid */
@@ -4452,16 +4525,17 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			i1 = (unsigned int)gmt_M_grd_x_to_col (GMT, G_obj->header->wesn[XHI]-dx, G_orig->header);
 			gmt_M_memcpy (G_obj->header->pad, GMT->current.io.pad, 4, int);	/* Set desired padding */
 			/* get stats */
+			HH = gmt_get_H_hidden (G_obj->header);
 			G_obj->header->z_min = DBL_MAX;
 			G_obj->header->z_max = -DBL_MAX;
-			G_obj->header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
+			HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 			for (row = j0; row <= j1; row++) {
 				for (col = i0; col <= i1; col++, ij++) {
 					ij_orig = gmt_M_ijp (G_orig->header, row, col);	/* Position of this (row,col) in original grid organization */
 					ij = gmt_M_ijp (G_obj->header, row, col);		/* Position of this (row,col) in output grid organization */
 					G_obj->data[ij] = G_orig->data[ij_orig];
 					if (gmt_M_is_fnan (G_obj->data[ij]))
-						G_obj->header->has_NaNs = GMT_GRID_HAS_NANS;
+						HH->has_NaNs = GMT_GRID_HAS_NANS;
 					else {
 						G_obj->header->z_min = MIN (G_obj->header->z_min, G_obj->data[ij]);
 						G_obj->header->z_max = MAX (G_obj->header->z_max, G_obj->data[ij]);
@@ -4479,23 +4553,25 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			if ((G_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_grid: Change alloc mode\n");
-			S_obj->alloc_mode = G_obj->alloc_mode;
+			GH = gmt_get_G_hidden (G_obj);
+			S_obj->alloc_mode = GH->alloc_mode;
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_grid: Check pad\n");
 			gmt_BC_init (GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), "Grid memory"))
 				return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
 			if (!api_adjust_grdpadding (G_obj->header, GMT->current.io.pad)) break;	/* Pad is correct so we are done */
 			/* Here we extend G_obj->data to allow for padding, then rearrange rows */
-			if (G_obj->alloc_mode == GMT_ALLOC_EXTERNALLY) return_null (API, GMT_PADDING_NOT_ALLOWED);
+			if (GH->alloc_mode == GMT_ALLOC_EXTERNALLY) return_null (API, GMT_PADDING_NOT_ALLOWED);
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_grid: Add pad\n");
 			gmt_grd_pad_on (GMT, G_obj, GMT->current.io.pad);
 			if (done && S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
+				HH = gmt_get_H_hidden (G_obj->header);
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
 					gmtlib_contract_headerpad (GMT, G_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
-					S_obj->reset_pad = G_obj->header->reset_pad = 0;
+					S_obj->reset_pad = HH->reset_pad = 0;
 				}
 				if (gmtlib_expand_headerpad (GMT, G_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
-					S_obj->reset_pad = G_obj->header->reset_pad = 1;
+					S_obj->reset_pad = HH->reset_pad = 1;
 			}
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_grid: Return from GMT_IS_REFERENCE\n");
 			break;
@@ -4516,8 +4592,10 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			if ((new_item = gmtapi_validate_id (API, GMT_IS_GRID, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET)
 				return_null (API, GMT_OBJECT_NOT_FOUND);
 			API->object[new_item]->method = GMT_IS_DUPLICATE;
+			GH = gmt_get_G_hidden (G_obj);
+			HH = gmt_get_H_hidden (G_obj->header);
 			G_obj->header->complex_mode = mode;	/* Set the complex mode */
-			G_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
+			GH->alloc_mode = GMT_ALLOC_INTERNALLY;
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_DATA_ONLY)) {
 				api_matrixinfo_to_grdheader (GMT, G_obj->header, M_obj);	/* Populate a GRD header structure */
@@ -4529,14 +4607,14 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			GMT_2D_to_index = api_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 			G_obj->header->z_min = +DBL_MAX;
 			G_obj->header->z_max = -DBL_MAX;
-			G_obj->header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
+			HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 			api_get_val = api_select_get_function (API, M_obj->type);
 			gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
 				ij_orig = GMT_2D_to_index (row, col, M_obj->dim);
 				api_get_val (&(M_obj->data), ij_orig, &d);
 				G_obj->data[ij] = (gmt_grdfloat)d;
 				if (gmt_M_is_fnan (G_obj->data[ij]))
-					G_obj->header->has_NaNs = GMT_GRID_HAS_NANS;
+					HH->has_NaNs = GMT_GRID_HAS_NANS;
 				else {
 					G_obj->header->z_min = MIN (G_obj->header->z_min, G_obj->data[ij]);
 					G_obj->header->z_max = MAX (G_obj->header->z_max, G_obj->data[ij]);
@@ -4546,7 +4624,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), "Grid memory"))
 				return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
-			G_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
+			GH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 			break;
 
 	 	case GMT_IS_REFERENCE|GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */
@@ -4554,7 +4632,8 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			/* This method requires the input data to be a GMT_GRD_FORMAT matrix - otherwise we should be DUPLICATING */
-			if (!(M_obj->shape == GMT_IS_ROW_FORMAT && M_obj->type == GMT_GRDFLOAT && M_obj->alloc_mode == GMT_ALLOC_EXTERNALLY && (mode & GMT_GRID_IS_COMPLEX_MASK) == 0))
+			MH = gmt_get_M_hidden (M_obj);
+			if (!(M_obj->shape == GMT_IS_ROW_FORMAT && M_obj->type == GMT_GRDFLOAT && MH->alloc_mode == GMT_ALLOC_EXTERNALLY && (mode & GMT_GRID_IS_COMPLEX_MASK) == 0))
 				 return_null (API, GMT_NOT_A_VALID_IO_ACCESS);
 			if (grid == NULL) {	/* Only allocate when not already allocated */
 				uint64_t dim[3] = {M_obj->n_rows, M_obj->n_columns, 1};
@@ -4563,6 +4642,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			}
 			else
 				G_obj = grid;
+			HH = gmt_get_H_hidden (G_obj->header);
 			G_obj->header->complex_mode = mode;	/* Set the complex mode */
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_DATA_ONLY)) {
@@ -4575,11 +4655,12 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 				return_null (API, GMT_OBJECT_NOT_FOUND);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing grid data from user memory location\n");
 			G_obj->data = M_obj->data.f4;
-			S_obj->alloc_mode = M_obj->alloc_mode;	/* Pass on alloc_mode of matrix */
-			G_obj->alloc_mode = M_obj->alloc_mode;
+			GH = gmt_get_G_hidden (G_obj);
+			S_obj->alloc_mode = MH->alloc_mode;	/* Pass on alloc_mode of matrix */
+			GH->alloc_mode = MH->alloc_mode;
 			API->object[new_item]->resource = G_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
-			G_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
+			GH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
 #if 0
 			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
@@ -4597,10 +4678,6 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			return_null (API, GMT_NOT_A_VALID_METHOD);
 			break;
 	}
-#ifdef GMT_BACKWARDS_API
-	G_obj->header->nx = G_obj->header->n_columns;
-	G_obj->header->ny = G_obj->header->n_rows;
-#endif
 	if (mode & GMT_GRID_XY) {	/* Also allocate and initialize the x and y vectors */
 		G_obj->x = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G_obj);	/* Get array of x coordinates */
 		G_obj->y = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G_obj);	/* Get array of y coordinates */
@@ -4608,6 +4685,10 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 
+#ifdef GMT_BACKWARDS_API
+	G_obj->header->nx = G_obj->header->n_columns;
+	G_obj->header->ny = G_obj->header->n_rows;
+#endif
 	return (G_obj);	/* Pass back out what we have so far */
 }
 
@@ -4624,6 +4705,9 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_GRID *G_copy = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
+	struct GMT_MATRIX_HIDDEN *MH = NULL;
+	struct GMT_GRID_HIDDEN *GH = gmt_get_G_hidden (G_obj), *GH2 = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
 	GMT_Report (API, GMT_MSG_DEBUG, "api_export_grid: Passed ID = %d and mode = %d\n", object_ID, mode);
@@ -4654,7 +4738,7 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 				if (row_by_row) {	/* Special row-by-row processing mode */
 					char w_mode = (mode & GMT_GRID_NO_HEADER) ? 'W' : 'w';
 					/* Since we may get here twice (initial write; later update) we only allocate extra if NULL */
-					if (G_obj->extra == NULL) G_obj->extra = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
+					if (GH->extra == NULL) GH->extra = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
 					if (api_open_grd (GMT, S_obj->filename, G_obj, w_mode, mode))	/* Open the grid for incremental row writing */
 						return (gmtapi_report_error (API, GMT_GRID_WRITE_ERROR));
 				}
@@ -4674,7 +4758,8 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating grid data to GMT_GRID memory location\n");
 			if (!S_obj->region) {	/* No subset, possibly same padding */
 				G_copy = gmt_duplicate_grid (API->GMT, G_obj, GMT_DUPLICATE_DATA);
-				G_copy->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
+				GH2 = gmt_get_G_hidden (G_copy);
+				GH2->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 				if (api_adjust_grdpadding (G_copy->header, GMT->current.io.pad))
 					gmt_grd_pad_on (GMT, G_copy, GMT->current.io.pad);
 				gmt_BC_init (GMT, G_copy->header);	/* Initialize grid interpolation and boundary condition parameters */
@@ -4685,8 +4770,9 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 			/* Here we need to extract subset, and possibly change padding. */
 			/* Get start/stop row/cols for subset (or the entire domain) */
 			G_copy = gmt_create_grid (GMT);
-			G_copy->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
-			gmt_M_memcpy (G_copy->header, G_obj->header, 1, struct GMT_GRID_HEADER);
+			GH2 = gmt_get_G_hidden (G_copy);
+			GH2->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
+			gmt_copy_gridheader (GMT, G_copy->header, G_obj->header);
 			gmt_M_memcpy (G_copy->header->wesn, S_obj->wesn, 4, double);
 			dx = G_obj->header->inc[GMT_X] * G_obj->header->xy_off;	dy = G_obj->header->inc[GMT_Y] * G_obj->header->xy_off;
 			j1 = (unsigned int) gmt_M_grd_y_to_row (GMT, G_obj->header->wesn[YLO]+dy, G_obj->header);
@@ -4694,6 +4780,7 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 			i0 = (unsigned int) gmt_M_grd_x_to_col (GMT, G_obj->header->wesn[XLO]+dx, G_obj->header);
 			i1 = (unsigned int) gmt_M_grd_x_to_col (GMT, G_obj->header->wesn[XHI]-dx, G_obj->header);
 			gmt_M_memcpy (G_obj->header->pad, GMT->current.io.pad, 4, int);		/* Set desired padding */
+			HH = gmt_get_H_hidden (G_copy->header);
 			G_copy->header->size = api_set_grdarray_size (GMT, G_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which may include padding */
 			G_copy->data = gmt_M_memory_aligned (GMT, NULL, G_copy->header->size, gmt_grdfloat);
 			G_copy->header->z_min = DBL_MAX;	G_copy->header->z_max = -DBL_MAX;	/* Must set zmin/zmax since we are not writing */
@@ -4717,7 +4804,7 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing grid data to GMT_GRID memory location\n");
 			gmt_grd_zminmax (GMT, G_obj->header, G_obj->data);	/* Must set zmin/zmax since we are not writing */
 			S_obj->resource = G_obj;	/* Set resource pointer to the grid */
-			G_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
+			GH->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			break;
 
 	 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT FULLY TESTED] */
@@ -4731,13 +4818,14 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 		 		M_obj = gmtlib_create_matrix (API->GMT, 1, GMT_IS_OUTPUT, 0);
 				M_obj->type = S_obj->type;
 			}
+			MH = gmt_get_M_hidden (M_obj);
 			api_grdheader_to_matrixinfo (G_obj->header, M_obj);	/* Populate an array with GRD header information */
 			M_obj->dim = (M_obj->shape == GMT_IS_ROW_FORMAT) ? M_obj->n_columns : M_obj->n_rows;	/* Matrix layout order */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Exporting grid data to user memory location\n");
 			if (S_obj->resource == NULL) {	/* Must allocate output */
 				size = gmt_M_get_nm (GMT, G_obj->header->n_columns, G_obj->header->n_rows);
 				if ((error = gmtlib_alloc_univector (GMT, &(M_obj->data), M_obj->type, size)) != GMT_NOERROR) return (error);
-				M_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
+				MH->alloc_mode = GMT_ALLOC_INTERNALLY;
 			}
 			GMT_2D_to_index = api_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 			api_put_val = api_select_put_function (API, M_obj->type);
@@ -4745,7 +4833,7 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 				ij = GMT_2D_to_index (row, col, M_obj->dim);
 				api_put_val (&(M_obj->data), ij, (double)G_obj->data[ijp]);
 			}
-			M_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
+			MH->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			S_obj->resource = M_obj;	/* Set resource pointer to the matrix */
 			break;
 
@@ -4763,6 +4851,7 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 		 		M_obj = gmtlib_create_matrix (API->GMT, 1, GMT_IS_OUTPUT, 1);
 				M_obj->type = GMT_GRDFLOAT;	/* A grid is always gmt_grdfloat */
 			}
+			MH = gmt_get_M_hidden (M_obj);
 			if (api_adjust_grdpadding (G_obj->header, GMT_no_pad))
 				gmt_grd_pad_on (GMT, G_obj, GMT_no_pad);	/* Adjust pad */
 			/* This method requires the output data to be a gmt_grdfloat matrix - otherwise we should be DUPLICATING.
@@ -4785,7 +4874,7 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 				M_obj->data.f4 = G_obj->data;
 #endif
 			}
-			M_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
+			MH->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			S_obj->resource = M_obj;	/* Set resource pointer to the matrix */
 			break;
 
@@ -5189,12 +5278,13 @@ GMT_LOCAL int api_init_export (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 /*! . */
 GMT_LOCAL int api_destroy_image (struct GMTAPI_CTRL *API, struct GMT_IMAGE **I_obj) {
 	/* Delete the given image resource */
-
+	struct GMT_IMAGE_HIDDEN  *IH = NULL;
 	if (!(*I_obj)) {	/* Probably not a good sign */
 		GMT_Report (API, GMT_MSG_DEBUG, "api_destroy_image: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
-	if ((*I_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+	IH = gmt_get_I_hidden (*I_obj);
+	if (IH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
 	gmtlib_free_image (API->GMT, I_obj, true);
 	return GMT_NOERROR;
@@ -5203,12 +5293,13 @@ GMT_LOCAL int api_destroy_image (struct GMTAPI_CTRL *API, struct GMT_IMAGE **I_o
 /*! . */
 GMT_LOCAL int api_destroy_grid (struct GMTAPI_CTRL *API, struct GMT_GRID **G_obj) {
 	/* Delete the given grid resource. */
-
+	struct GMT_GRID_HIDDEN *GH = NULL;
 	if (!(*G_obj)) {	/* Probably not a good sign */
 		GMT_Report (API, GMT_MSG_DEBUG, "api_destroy_grid: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
-	if ((*G_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+	GH = gmt_get_G_hidden (*G_obj);
+	if (GH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
 	gmt_free_grid (API->GMT, G_obj, true);
 	return GMT_NOERROR;
@@ -5217,12 +5308,15 @@ GMT_LOCAL int api_destroy_grid (struct GMTAPI_CTRL *API, struct GMT_GRID **G_obj
 /*! . */
 GMT_LOCAL int api_destroy_dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET **D_obj) {
 	/* Delete the given dataset resource. */
+	struct GMT_DATASET_HIDDEN *DH = NULL;
 
 	if (!(*D_obj)) {	/* Probably not a good sign */
 		GMT_Report (API, GMT_MSG_DEBUG, "api_destroy_dataset: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
-	if ((*D_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+	DH = gmt_get_DD_hidden (*D_obj);
+	
+	if (DH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
 	gmt_free_dataset (API->GMT, D_obj);
 	return GMT_NOERROR;
@@ -5231,12 +5325,14 @@ GMT_LOCAL int api_destroy_dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET *
 /*! . */
 GMT_LOCAL int api_destroy_palette (struct GMTAPI_CTRL *API, struct GMT_PALETTE **P_obj) {
 	/* Delete the given CPT resource. */
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 
 	if (!(*P_obj)) {	/* Probably not a good sign */
 		GMT_Report (API, GMT_MSG_DEBUG, "api_destroy_palette: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
-	if ((*P_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+	PH = gmt_get_C_hidden (*P_obj);
+	if (PH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
 	gmtlib_free_palette (API->GMT, P_obj);
 	return GMT_NOERROR;
@@ -5245,12 +5341,13 @@ GMT_LOCAL int api_destroy_palette (struct GMTAPI_CTRL *API, struct GMT_PALETTE *
 /*! . */
 GMT_LOCAL int api_destroy_postscript (struct GMTAPI_CTRL *API, struct GMT_POSTSCRIPT **P_obj) {
 	/* Delete the given GMT_POSTSCRIPT resource. */
-
+	struct GMT_POSTSCRIPT_HIDDEN *PH = NULL;
 	if (!(*P_obj)) {	/* Probably not a good sign */
 		GMT_Report (API, GMT_MSG_DEBUG, "api_destroy_postscript: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
-	if ((*P_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+	PH = gmt_get_P_hidden (*P_obj);
+	if (PH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
 	gmtlib_free_ps (API->GMT, P_obj);
 	return GMT_NOERROR;
@@ -5259,12 +5356,13 @@ GMT_LOCAL int api_destroy_postscript (struct GMTAPI_CTRL *API, struct GMT_POSTSC
 /*! . */
 GMT_LOCAL int api_destroy_matrix (struct GMTAPI_CTRL *API, struct GMT_MATRIX **M_obj) {
 	/* Delete the given Matrix resource. */
-
+	struct GMT_MATRIX_HIDDEN *MH = NULL;
 	if (!(*M_obj)) {	/* Probably not a good sign */
 		GMT_Report (API, GMT_MSG_DEBUG, "api_destroy_matrix: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
-	if ((*M_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+	MH = gmt_get_M_hidden (*M_obj);
+	if (MH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
 	gmtlib_free_matrix (API->GMT, M_obj, true);
 	return GMT_NOERROR;
@@ -5273,12 +5371,13 @@ GMT_LOCAL int api_destroy_matrix (struct GMTAPI_CTRL *API, struct GMT_MATRIX **M
 /*! . */
 GMT_LOCAL int api_destroy_vector (struct GMTAPI_CTRL *API, struct GMT_VECTOR **V_obj) {
 	/* Delete the given Matrix resource. */
-
+	struct GMT_VECTOR_HIDDEN *VH = NULL;
 	if (!(*V_obj)) {	/* Probably not a good sign */
 		GMT_Report (API, GMT_MSG_DEBUG, "api_destroy_vector: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
-	if ((*V_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
+	VH = gmt_get_V_hidden (*V_obj);
+	if (VH->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
 	gmt_free_vector (API->GMT, V_obj, true);
 	return GMT_NOERROR;
@@ -5660,13 +5759,14 @@ char *gmtapi_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, voi
 
 /*! . */
 void gmtapi_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
-	struct GMT_GRID_ROWBYROW *R = api_get_rbr_ptr (G->extra);	/* Shorthand to row-by-row book-keeping structure */
+	struct GMT_GRID_HIDDEN *GH = gmt_get_G_hidden (G);
+	struct GMT_GRID_ROWBYROW *R = api_get_rbr_ptr (GH->extra);	/* Shorthand to row-by-row book-keeping structure */
 	gmt_M_free (GMT, R->v_row);
 	if (GMT->session.grdformat[G->header->type][0] == 'c' || GMT->session.grdformat[G->header->type][0] == 'n')
 		nc_close (R->fid);
 	else
 		gmt_fclose (GMT, R->fp);
-	gmt_M_free (GMT, G->extra);
+	gmt_M_free (GMT, GH->extra);
 }
 
 /*========================================================================================================
@@ -5755,6 +5855,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 	}
 
 	API->n_cores = gmtlib_get_num_processors();	/* Get number of available CPU cores */
+	GMTAPI_index_function = api_get_index_from_TRS;	/* Default grid node lookup */
 
 	/* Allocate memory to keep track of registered data resources */
 
@@ -6128,21 +6229,28 @@ GMT_LOCAL int api_end_io_dataset (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 	int64_t *count = API->GMT->current.io.curr_pos[GMT_OUT];		/* Short-hand for counts of tbl, seg, rows */
 	struct GMT_DATASET *D = S->resource;
 	struct GMT_DATATABLE *T = NULL;
+	struct GMT_DATASET_HIDDEN *DH = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	if (D == NULL || D->table == NULL || D->table[0] == NULL) return GMT_NOERROR;	/* Nothing to work on */
 
 	T = D->table[0];	/* Shorthand to the only table */
+	DH = gmt_get_DD_hidden (D);
+	TH = gmt_get_DT_hidden (T);
 	if (count[GMT_SEG] >= 0) {	/* Finalize segment allocations */
-		if (!T->segment[count[GMT_SEG]]) T->segment[count[GMT_SEG]] = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
+		if (!T->segment[count[GMT_SEG]]) T->segment[count[GMT_SEG]] = gmt_get_segment (API->GMT);
 		gmtlib_assign_segment (API->GMT, GMT_OUT, T->segment[count[GMT_SEG]], count[GMT_ROW], T->n_columns);	/* Allocate and place arrays into segment */
 		count[GMT_SEG]++;	/* Set final number of segments */
 		T->n_segments++;
 	}
-	if (count[GMT_SEG] < (int64_t)T->n_alloc) {	/* Realloc final number of segments */
+	if (count[GMT_SEG] < (int64_t)TH->n_alloc) {	/* Realloc final number of segments */
 		uint64_t s;
-		for (s = T->n_segments; s < T->n_alloc; s++)
-			gmt_M_free (API->GMT, T->segment[s]);	/* Free the extra structures */
+		for (s = T->n_segments; s < TH->n_alloc; s++) {	/* Free the extra structures */
+			if (T->segment[s] == NULL) continue;
+			gmt_M_free (API->GMT, T->segment[s]->hidden);
+			gmt_M_free (API->GMT, T->segment[s]);
+		}
 		T->segment = gmt_M_memory (API->GMT, T->segment, T->n_segments, struct GMT_DATASEGMENT *);	/* Finalize pointer array */
-		T->n_alloc = T->n_segments;	/* Update allocation count */
+		TH->n_alloc = T->n_segments;	/* Update allocation count */
 	}
 	if (S->h_delay) {	/* Must do the first table headers now since we finally have allocated the table */
 		T->header = API->tmp_header;
@@ -6159,7 +6267,7 @@ GMT_LOCAL int api_end_io_dataset (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 	D->n_segments = T->n_segments;
 	gmt_set_dataset_minmax (API->GMT, D);	/* Update the min/max values for this dataset */
 	D->n_records = T->n_records = count[GMT_ROW];
-	D->alloc_level = S->alloc_level;	/* Since we are passing it up to the caller */
+	DH->alloc_level = S->alloc_level;	/* Since we are passing it up to the caller */
 	/* Register this resource */
 	if ((object_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE, D->geometry, GMT_OUT, NULL, D)) == GMT_NOTSET)
 		return_error (API, API->error);		/* Failure to register */
@@ -6175,13 +6283,14 @@ GMT_LOCAL int api_end_io_matrix (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 	 * add leading NaN-record(s) if there were segment headers at the beginning of file. */
 	int error = 0, check, object_ID;
 	struct GMT_MATRIX *M = S->resource;
+	struct GMT_MATRIX_HIDDEN *MH = gmt_get_M_hidden (M);
 	if (S->alloc_mode != GMT_ALLOC_EXTERNALLY && S->n_alloc != S->rec) {	/* Must finalize matrix memory */
 		size_t size = S->n_alloc = S->rec;
 		size *= M->n_columns;
 		if ((error = gmtlib_alloc_univector (API->GMT, &(M->data), M->type, size)) != GMT_NOERROR)
 			return_error (API, error);
 	}
-	M->alloc_level = S->alloc_level;	/* Since we are passing it up to the caller */
+	MH->alloc_level = S->alloc_level;	/* Since we are passing it up to the caller */
 	if (S->h_delay) {	/* Must do the first table headers now since we finally have allocated the table */
 		M->header = API->tmp_header;
 		M->n_headers = API->n_tmp_headers;
@@ -6221,6 +6330,7 @@ GMT_LOCAL int api_end_io_vector (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 	 * add leading NaN-record(s) if there were segment headers at the beginning of file. */
 	int error = 0, check, object_ID;
 	struct GMT_VECTOR *V = S->resource;
+	struct GMT_VECTOR_HIDDEN *VH = gmt_get_V_hidden (V);
 	if (S->alloc_mode != GMT_ALLOC_EXTERNALLY && S->n_alloc != S->rec) {	/* Must finalize memory */
 		S->n_alloc = S->rec;
 		if ((error = gmtlib_alloc_vectors (API->GMT, V, S->n_alloc)) != GMT_NOERROR)
@@ -6230,7 +6340,7 @@ GMT_LOCAL int api_end_io_vector (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 		return_error (API, API->error);	/* Failure to register */
 	if ((check = gmtapi_validate_id (API, GMT_IS_VECTOR, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET)
 		return_error (API, API->error);	/* Failure to validate */
-	V->alloc_level = S->alloc_level;	/* Since we are passing it up to the caller */
+	VH->alloc_level = S->alloc_level;	/* Since we are passing it up to the caller */
 	if (S->h_delay) {	/* Must do the first table headers now since we finally have allocated the table */
 		V->header = API->tmp_header;
 		V->n_headers = API->n_tmp_headers;
@@ -6927,13 +7037,14 @@ void *GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, v
 				new_obj = gmt_duplicate_dataset (GMT, data, pmode, &geometry);
 			else if (mode == GMT_DUPLICATE_ALLOC) {	/* Allocate data set of same size, possibly modulated by Din->dim (of > 0) and pmode */
 				struct GMT_DATASET *Din = data;	/* We know this is a GMT_DATASET pointer */
-				new_obj = gmt_alloc_dataset (GMT, data, Din->dim[GMT_ROW], Din->dim[GMT_COL], pmode);
+				struct GMT_DATASET_HIDDEN *DH = gmt_get_DD_hidden (Din);
+				new_obj = gmt_alloc_dataset (GMT, data, DH->dim[GMT_ROW], DH->dim[GMT_COL], pmode);
 				geometry = Din->geometry;
-				gmt_M_memset (Din->dim, 4, uint64_t);	/* Reset alloc dimensions */
+				gmt_M_memset (DH->dim, 4, uint64_t);	/* Reset alloc dimensions */
 			}
 			else {	/* Just want a dataset structure */
 				struct GMT_DATASET *Din = data;	/* We know this is a GMT_DATASET pointer */
-				new_obj = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASET);
+				new_obj = gmt_get_dataset (GMT);
 				geometry = Din->geometry;
 			}
 			break;
@@ -7491,6 +7602,7 @@ GMT_LOCAL int api_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode
 	char *s = NULL;
 	double value;
 	struct GMT_DATATABLE *T = API->current_put_D_table;	/* Short hand */
+	struct GMT_DATATABLE_HIDDEN *TH = gmt_get_DT_hidden (T);
 	struct GMT_CTRL *GMT = API->GMT;		/* Short hand */
 	int64_t *count = GMT->current.io.curr_pos[GMT_OUT];	/* Short hand to counters for table (not used as == 0), segment, row */
 	uint64_t col;
@@ -7506,17 +7618,17 @@ GMT_LOCAL int api_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int mode
 		case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
 			count[GMT_SEG]++;	/* Start of new segment */
 			if (count[GMT_SEG]) {	/* Must first copy over records for the previous segments; last (or only) segment will be done by GMT_End_IO */
-				if (!T->segment[count[GMT_SEG]-1]) T->segment[count[GMT_SEG]-1] = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
+				if (!T->segment[count[GMT_SEG]-1]) T->segment[count[GMT_SEG]-1] = gmt_get_segment (API->GMT);
 				gmtlib_assign_segment (GMT, GMT_OUT, T->segment[count[GMT_SEG]-1], count[GMT_ROW], T->n_columns);	/* Allocate and place arrays into previous segment */
 				count[GMT_ROW] = 0;	/* Reset for next segment */
 				T->n_segments++;
 			}
-			if (count[GMT_SEG] == (int64_t)T->n_alloc) {	/* Extend but set new members to NULL */
-				size_t was = T->n_alloc;
-				T->segment = gmt_M_malloc (GMT, T->segment, count[GMT_SEG], &T->n_alloc, struct GMT_DATASEGMENT *);
-				gmt_M_memset (&T->segment[was], T->n_alloc - was, struct GMT_DATASEGMENT *);
+			if (count[GMT_SEG] == (int64_t)TH->n_alloc) {	/* Extend but set new members to NULL */
+				size_t was = TH->n_alloc;
+				T->segment = gmt_M_malloc (GMT, T->segment, count[GMT_SEG], &TH->n_alloc, struct GMT_DATASEGMENT *);
+				gmt_M_memset (&T->segment[was], TH->n_alloc - was, struct GMT_DATASEGMENT *);
 			}
-			if (!T->segment[count[GMT_SEG]]) T->segment[count[GMT_SEG]] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+			if (!T->segment[count[GMT_SEG]]) T->segment[count[GMT_SEG]] = gmt_get_segment (GMT);
 			s = (record) ? (char *)record : GMT->current.io.segment_header;	/* Default to last segment header record if NULL */
 			if (s && strlen(s)) {	/* Found a segment header */
 				if (T->segment[count[GMT_SEG]]->header) gmt_M_str_free (T->segment[count[GMT_SEG]]->header);	/* Hm, better free the old guy before strdup'ing a new one */
@@ -7699,6 +7811,7 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 	struct GMT_MATRIX *M_obj  = NULL;
 	struct GMT_VECTOR *V_obj  = NULL;
 	struct GMT_DATASET *D_obj = NULL;
+	struct GMT_MATRIX_HIDDEN *MH = NULL;
 	struct GMT_CTRL *GMT = API->GMT;		/* Short hand */
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
@@ -7808,7 +7921,8 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 				size *= M_obj->n_columns;	/* Size in bytes of the initial matrix allocation */
 				if ((error = gmtlib_alloc_univector (GMT, &(M_obj->data), M_obj->type, size)) != GMT_NOERROR) return (gmtapi_report_error (API, error));
 				if (record->text) M_obj->text = gmt_M_memory (GMT, NULL, S_obj->n_alloc, char *);
-				S_obj->alloc_mode = M_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
+				MH = gmt_get_M_hidden (M_obj);
+				S_obj->alloc_mode = MH->alloc_mode = GMT_ALLOC_INTERNALLY;
 				S_obj->resource = M_obj;	/* Save so we can get it next time */
 				M_obj->n_rows = S_obj->rec;	/* So we start on the same output record due to the delayed NaNs */
 			}
@@ -7972,15 +8086,19 @@ int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, gmt_grdfloat *row)
  	unsigned int col;
 	struct GMTAPI_CTRL *API = NULL;
 	char *fmt = NULL;
+	struct GMT_GRID_HIDDEN *GH = NULL;
 	struct GMT_GRID_ROWBYROW *R = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_CTRL *GMT = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 	GMT = API->GMT;
+	GH = gmt_get_G_hidden (G);
+	R = api_get_rbr_ptr (GH->extra);
+	HH = gmt_get_H_hidden (G->header);
 	fmt = GMT->session.grdformat[G->header->type];
-	R = api_get_rbr_ptr (G->extra);
 	if (fmt[0] == 'c') {		/* Get one NetCDF row, old format */
 		if (row_no < 0) {	/* Special seek instruction, then return */
 			R->row = abs (row_no);
@@ -7991,21 +8109,21 @@ int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, gmt_grdfloat *row)
 			R->row = row_no;
 			R->start[0] = R->row * R->edge[0];
 		}
-		gmt_M_err_trap (gmt_nc_get_vara_grdfloat (R->fid, G->header->z_id, R->start, R->edge, row));
+		gmt_M_err_trap (gmt_nc_get_vara_grdfloat (R->fid, HH->z_id, R->start, R->edge, row));
 		if (R->auto_advance) R->start[0] += R->edge[0];	/* Advance to next row if auto */
 	}
 	else if (fmt[0] == 'n') {	/* Get one NetCDF row, COARDS-compliant format */
 		if (row_no < 0) {	/* Special seek instruction */
 			R->row = abs (row_no);
-			R->start[0] = G->header->row_order == k_nc_start_north ? R->row : G->header->n_rows - 1 - R->row;
+			R->start[0] = HH->row_order == k_nc_start_north ? R->row : G->header->n_rows - 1 - R->row;
 			return (GMT_NOERROR);
 		}
 		else if (!R->auto_advance) {
 			R->row = row_no;
-			R->start[0] = G->header->row_order == k_nc_start_north ? R->row : G->header->n_rows - 1 - R->row;
+			R->start[0] = HH->row_order == k_nc_start_north ? R->row : G->header->n_rows - 1 - R->row;
 		}
-		gmt_M_err_trap (gmt_nc_get_vara_grdfloat (R->fid, G->header->z_id, R->start, R->edge, row));
-		if (R->auto_advance) R->start[0] -= G->header->row_order;	/* Advance to next row if auto */
+		gmt_M_err_trap (gmt_nc_get_vara_grdfloat (R->fid, HH->z_id, R->start, R->edge, row));
+		if (R->auto_advance) R->start[0] -= HH->row_order;	/* Advance to next row if auto */
 	}
 	else {			/* Get a native binary row */
 		size_t n_items;
@@ -8063,14 +8181,17 @@ int GMT_Put_Row (void *V_API, int rec_no, struct GMT_GRID *G, gmt_grdfloat *row)
 	struct GMTAPI_CTRL *API = NULL;
 	char *fmt = NULL;
 	struct GMT_GRID_ROWBYROW *R = NULL;
+	struct GMT_GRID_HIDDEN *GH = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_CTRL *GMT = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = api_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 	GMT = API->GMT;
-	fmt = GMT->session.grdformat[G->header->type];
-	R = api_get_rbr_ptr (G->extra);
+	GH = gmt_get_G_hidden (G);
+	R = api_get_rbr_ptr (GH->extra);
+	HH = gmt_get_H_hidden (G->header);
 	gmt_scale_and_offset_f (GMT, row, G->header->n_columns, G->header->z_scale_factor, G->header->z_add_offset);
 	if (R->check) {	/* Replace NaNs with special value */
 		for (col = 0; col < G->header->n_columns; col++)
@@ -8078,16 +8199,17 @@ int GMT_Put_Row (void *V_API, int rec_no, struct GMT_GRID *G, gmt_grdfloat *row)
 				row[col] = G->header->nan_value;
 	}
 
+	fmt = GMT->session.grdformat[G->header->type];
 	switch (fmt[0]) {
 		case 'c':
 			if (!R->auto_advance) R->start[0] = rec_no * R->edge[0];
-			gmt_M_err_trap (gmt_nc_put_vara_grdfloat (R->fid, G->header->z_id, R->start, R->edge, row));
+			gmt_M_err_trap (gmt_nc_put_vara_grdfloat (R->fid, HH->z_id, R->start, R->edge, row));
 			if (R->auto_advance) R->start[0] += R->edge[0];
 			break;
 		case 'n':
-			if (!R->auto_advance) R->start[0] = G->header->row_order = k_nc_start_north ? rec_no : G->header->n_rows - 1 - rec_no;
-			gmt_M_err_trap (gmt_nc_put_vara_grdfloat (R->fid, G->header->z_id, R->start, R->edge, row));
-			if (R->auto_advance) R->start[0] -= G->header->row_order;
+			if (!R->auto_advance) R->start[0] = HH->row_order = k_nc_start_north ? rec_no : G->header->n_rows - 1 - rec_no;
+			gmt_M_err_trap (gmt_nc_put_vara_grdfloat (R->fid, HH->z_id, R->start, R->edge, row));
+			if (R->auto_advance) R->start[0] -= HH->row_order;
 			break;
 		default:
 			if (!R->auto_advance && fseek (R->fp, (off_t)(GMT_GRID_HEADER_SIZE + rec_no * R->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
@@ -8530,8 +8652,11 @@ void *GMT_Create_Data_ (unsigned int *family, unsigned int *geometry, unsigned i
 /*! Convenience function to get grid or image node */
 uint64_t GMT_Get_Index (void *V_API, struct GMT_GRID_HEADER *header, int row, int col) {
 	/* V_API not used but all API functions take V_API so no exceptions! */
+	//struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
+	//struct GMT_GRID_HEADER_HIDDEN *HH = (struct GMT_GRID_HEADER_HIDDEN *) (header->hidden);
 	gmt_M_unused(V_API);
-	return (header->index_function (header, row, col, 0));
+	//return (HH->index_function (header, row, col, 0));
+	return (GMTAPI_index_function (header, row, col, 0));
 }
 
 #ifdef FORTRAN_API
@@ -8544,8 +8669,9 @@ uint64_t GMT_Get_Index_ (void *h, int *row, int *col) {
 /*! Convenience function to get grid or image node */
 uint64_t GMT_Get_Pixel (void *V_API, struct GMT_GRID_HEADER *header, int row, int col, int layer) {
 	/* V_API not used but all API functions take V_API so no exceptions! */
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 	gmt_M_unused(V_API);
-	return (header->index_function (header, row, col, layer));
+	return (HH->index_function (header, row, col, layer));
 }
 
 #ifdef FORTRAN_API
@@ -8558,6 +8684,7 @@ uint64_t GMT_Get_Pixel_ (void *h, int *row, int *col, int *layer) {
 /*! Specify image memory layout */
 int GMT_Set_Index (void *V_API, struct GMT_GRID_HEADER *header, char *code) {
 	struct GMTAPI_CTRL *API = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 	enum GMT_enum_family family;
 	unsigned int mode;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -8568,13 +8695,13 @@ int GMT_Set_Index (void *V_API, struct GMT_GRID_HEADER *header, char *code) {
 		case GMT_IS_GRID:
 			switch (mode) {
 				case 0:	/* Default scanline C grid */
-					header->index_function = api_get_index_from_TRS;
+					HH->index_function = api_get_index_from_TRS;
 					break;
 				case 4:	/* Same for real component in complex grid */
-					header->index_function = api_get_index_from_TRR;
+					HH->index_function = api_get_index_from_TRR;
 					break;
 				case 8:	/* Same for imag component in complex grid */
-					header->index_function = api_get_index_from_TRI;
+					HH->index_function = api_get_index_from_TRI;
 					break;
 				default:
 					GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized mode for grid layout [%u]\n", mode);
@@ -8585,13 +8712,13 @@ int GMT_Set_Index (void *V_API, struct GMT_GRID_HEADER *header, char *code) {
 		case GMT_IS_IMAGE:
 			switch (mode) {
 				case 0:	/* band-interleaved layout */
-					header->index_function = api_get_index_from_TRB;
+					HH->index_function = api_get_index_from_TRB;
 					break;
 				case 4:	/* pixel-interleaved layout */
-					header->index_function = api_get_index_from_TRP;
+					HH->index_function = api_get_index_from_TRP;
 					break;
 				case 8:	/* line-interleaved layout */
-					header->index_function = api_get_index_from_TRL;
+					HH->index_function = api_get_index_from_TRL;
 					break;
 				default:
 					GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized mode for image layout [%u]\n", mode);
@@ -8604,6 +8731,7 @@ int GMT_Set_Index (void *V_API, struct GMT_GRID_HEADER *header, char *code) {
 			API->error = GMT_NOT_A_VALID_FAMILY;
 			break;
 	}
+	GMTAPI_index_function = HH->index_function;
 	return API->error;
 }
 
@@ -8946,6 +9074,7 @@ GMT_LOCAL void fft_taper2d (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 	gmt_grdfloat *datac = Grid->data, scale, cos_wt;
 	double width;
 	struct GMT_GRID_HEADER *h = Grid->header;	/* For shorthand */
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	width_percent = irint (F->taper_width);
 
@@ -8962,7 +9091,7 @@ GMT_LOCAL void fft_taper2d (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 		}
 	}
 
-	if (Grid->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
+	if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Demultiplexing complex grid before tapering can take place.\n");
 		gmt_grd_mux_demux (GMT, Grid->header, Grid->data, GMT_GRID_IS_SERIAL);
 	}
@@ -8999,11 +9128,11 @@ GMT_LOCAL void fft_taper2d (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 	if (i_width == 0 && j_width == 0) one = 1;	/* So we do nothing further down */
 
 	/* Determine how many complex components (1 or 2) to taper, and which one(s) */
-	start_component = (Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) ? 0 : 1;
-	stop_component  = (Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) ? 1 : 0;
+	start_component = (h->complex_mode & GMT_GRID_IS_COMPLEX_REAL) ? 0 : 1;
+	stop_component  = (h->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) ? 1 : 0;
 
 	for (component = start_component; component <= stop_component; component++) {	/* Loop over 1 or 2 components */
-		off = component * Grid->header->size / 2;	/* offset to start of this component in grid */
+		off = component * h->size / 2;	/* offset to start of this component in grid */
 
 		/* First reflect about xmin and xmax, either point symmetric about edge point OR mirror symmetric */
 
@@ -9096,6 +9225,7 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, s
 	struct GMT_FFT_SUGGESTION fft_sug[GMT_FFT_N_SUGGEST];
 	struct GMT_FFT_INFO *F = NULL, *F_in = api_get_fftinfo_ptr (v_info);
 	struct GMT_FFT_WAVENUMBER *K = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 	struct GMT_CTRL *GMT = NULL;
 
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
@@ -9147,7 +9277,7 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, s
 	}
 
 	/* Because we taper and reflect below we DO NOT want any BCs set since that code expects 2 BC rows/cols */
-	for (k = 0; k < 4; k++) G->header->BC[k] = GMT_BC_IS_DATA;
+	for (k = 0; k < 4; k++) HH->BC[k] = GMT_BC_IS_DATA;
 
 	/* Get here when F->n_columns and F->n_rows are set to the values we will use.  */
 
@@ -9183,15 +9313,15 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, s
 		if (G->header->complex_mode == 0) {	/* Grid was not read in interleaved, must do so now */
 			/* Because of no realloc for aligned memory we must do it the hard way */
 			gmt_grdfloat *f = NULL;
-			size_t new_size = 2*G->header->size;
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Must double memory and multiplex external grid before we can do FFT\n", G->header->name);
+			size_t new_size = 2 * G->header->size;
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Must double memory and multiplex external grid before we can do FFT\n", HH->name);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Extend grid via copy onto larger memory-aligned grid\n");
 			f = gmt_M_memory_aligned (GMT, NULL, new_size, gmt_grdfloat);	/* New, larger grid size */
 			gmt_M_memcpy (f, G->data, G->header->size, gmt_grdfloat);	/* Copy over previous grid values */
 			gmt_M_free_aligned (GMT, G->data);			/* Free previous aligned grid memory */
 			G->data = f;						/* Attach the new, larger aligned memory */
 			G->header->complex_mode = GMT_GRID_IS_COMPLEX_REAL;	/* Flag as complex grid with real components only */
-			G->header->size = new_size;				/* Update the size of complex grid */
+			G->header->size = new_size;					/* Update the size of complex grid */
 		}
 		if (!(G->header->mx == F->n_columns && G->header->my == F->n_rows)) {	/* Must re-pad, possibly re-allocate the grid */
 			gmt_grd_pad_on (GMT, G, GMT->current.io.pad);
@@ -9199,7 +9329,7 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, s
 	}
 	else {	/* Read the data into a grid of approved dimension */
 		G->header->mx = G->header->n_columns;	G->header->my = G->header->n_rows;	/* Undo misleading padding since we have not read the data yet and GMT pad has changed above */
-		if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY | mode, NULL, G->header->name, G) == NULL)	/* Get data only */
+		if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY | mode, NULL, HH->name, G) == NULL)	/* Get data only */
 			return (NULL);
 	}
 #ifdef DEBUG
@@ -9209,7 +9339,7 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, s
 
 	for (node = 0, stop = false; !stop && node < G->header->size; node++) stop = gmt_M_is_fnan (G->data[node]);
 	if (stop) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Input grid %s contain NaNs, cannot do FFT!\n", G->header->name);
+		GMT_Report (API, GMT_MSG_NORMAL, "Input grid %s contain NaNs, cannot do FFT!\n", HH->name);
 		return (NULL);
 	}
 
@@ -9309,14 +9439,15 @@ GMT_LOCAL void fft_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, 
 	 * and multiplex the grid (again) if needed.
 	 */
 	unsigned int pad[4];
-	struct GMT_GRID_HEADER save;
+	struct GMT_GRID_HEADER *save = gmt_get_header (GMT);
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (Grid->header);
 	char *file = NULL;
 
-	if (Grid->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
+	if (HH->arrangement == GMT_GRID_IS_INTERLEAVED) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Demultiplexing complex grid before saving can take place.\n");
 		gmt_grd_mux_demux (GMT, Grid->header, Grid->data, GMT_GRID_IS_SERIAL);
 	}
-	gmt_M_memcpy (&save, Grid->header, 1U, struct GMT_GRID_HEADER);	/* Save what we have before messing around */
+	gmt_copy_gridheader (GMT, save, Grid->header);
 	gmt_M_memcpy (pad, Grid->header->pad, 4U, unsigned int);		/* Save current pad, then set pad to zero */
 	/* Extend w/e/s/n to what it would be if the pad was not present */
 	Grid->header->wesn[XLO] -= Grid->header->pad[XLO] * Grid->header->inc[GMT_X];
@@ -9326,8 +9457,8 @@ GMT_LOCAL void fft_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, 
 	gmt_M_memset (Grid->header->pad,   4U, unsigned int);	/* Set header pad to {0,0,0,0} */
 	gmt_M_memset (GMT->current.io.pad, 4U, unsigned int);	/* set GMT default pad to {0,0,0,0} */
 	gmt_set_grddim (GMT, Grid->header);	/* Recompute all dimensions */
-	if ((file = fft_file_name_with_suffix (GMT, Grid->header->name, suffix)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", Grid->header->name);
+	if ((file = fft_file_name_with_suffix (GMT, HH->name, suffix)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", HH->name);
 		return;
 	}
 
@@ -9336,8 +9467,10 @@ GMT_LOCAL void fft_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, 
 	else
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Intermediate detrended, extended, and tapered grid written to %s\n", file);
 
-	gmt_M_memcpy (Grid->header, &save, 1U, struct GMT_GRID_HEADER);	/* Restore original, including the original pad */
+	gmt_copy_gridheader (GMT, Grid->header, save);	/* Restore original, including the original pad */
 	gmt_M_memcpy (GMT->current.io.pad, pad, 4U, unsigned int);	/* Restore GMT default pad */
+	gmt_M_free (GMT, save->hidden);
+	gmt_M_free (GMT, save);
 }
 
 GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_INFO *F) {
@@ -9352,6 +9485,7 @@ GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struc
 	gmt_grdfloat re, im, i_scale;
 	char *file = NULL, *suffix[2][2] = {{"real", "imag"}, {"mag", "phase"}};
 	struct GMT_GRID *Out = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *OH = NULL, *HH = gmt_get_H_hidden (G->header);
 	struct GMT_FFT_WAVENUMBER *K = F->K;
 
 	if (K == NULL) return;
@@ -9360,7 +9494,7 @@ GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struc
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Write components of complex raw spectrum with file suffix %s and %s\n", suffix[mode][0], suffix[mode][1]);
 
-	if (G->header->arrangement == GMT_GRID_IS_SERIAL) {
+	if (HH->arrangement == GMT_GRID_IS_SERIAL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot save complex grid unless it is interleaved.\n");
 		return;
 	}
@@ -9375,9 +9509,10 @@ GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struc
 	/* Set up and allocate the temporary grid which is always gridline registered. */
 	if ((Out = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_GRID_IS_COMPLEX_MASK, NULL, wesn, inc, \
 		GMT_GRID_NODE_REG, 0, NULL)) == NULL) {	/* Note: 0 for pad since no BC work needed for this temporary grid */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create complex output grid for %s\n", G->header->name);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create complex output grid for %s\n", HH->name);
 		return;
 	}
+	OH = gmt_get_H_hidden (Out->header);
 
 	strcpy (Out->header->x_units, "xunit^(-1)");	strcpy (Out->header->y_units, "yunit^(-1)");
 	strcpy (Out->header->z_units, G->header->z_units);
@@ -9402,13 +9537,13 @@ GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struc
 		}
 	}
 	for (k = 0; k < 2; k++) {	/* Write the two grids */
-		if ((file = fft_file_name_with_suffix (GMT, G->header->name, suffix[mode][k])) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", G->header->name);
+		if ((file = fft_file_name_with_suffix (GMT, HH->name, suffix[mode][k])) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", HH->name);
 			return;
 		}
 		Out->header->complex_mode = wmode[k];
-		for (len = strlen (G->header->name); len > 0 && !(G->header->name[len-1] == '/' || G->header->name[len-1] == '\\'); len--);	/* Find start of file name minus any leading directories */
-		snprintf (Out->header->title, GMT_GRID_TITLE_LEN80, "The %s part of FFT transformed grid %s", suffix[mode][k], &G->header->name[len]);
+		for (len = strlen (HH->name); len > 0 && !(HH->name[len-1] == '/' || HH->name[len-1] == '\\'); len--);	/* Find start of file name minus any leading directories */
+		snprintf (Out->header->title, GMT_GRID_TITLE_LEN80, "The %s part of FFT transformed grid %s", suffix[mode][k], &HH->name[len]);
 		if (k == 1 && mode) strcpy (Out->header->z_units, "radians");
 		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | wmode[k], NULL, file, Out) != GMT_NOERROR) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s could not be written\n", file);
@@ -10636,7 +10771,8 @@ int gmt_f77_readgrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], d
 	double no_wesn[4] = {0.0, 0.0, 0.0, 0.0};
 	const char *argv = "GMT_F77_readgrd";
 	char *file = NULL;
-	struct GMT_GRID_HEADER header;
+	struct GMT_GRID_HEADER *header = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMTAPI_CTRL *API = NULL;	/* The API pointer assigned below */
 
 	if (name == NULL) {
@@ -10646,37 +10782,45 @@ int gmt_f77_readgrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], d
 	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return GMT_MEMORY_ERROR;
 	file = strndup (name, lname);
 
+	header = gmt_get_header (API->GMT);
 	/* Read the grid header */
-	gmt_M_memset (&header, 1, struct GMT_GRID_HEADER);	/* To convince Coverity that header->index_function has been initialized */
-	gmt_grd_init (API->GMT, &header, NULL, false);
-	if (gmtlib_read_grd_info (API->GMT, file, &header)) {
+	gmt_grd_init (API->GMT, header, NULL, false);
+	if (gmtlib_read_grd_info (API->GMT, file, header)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error opening file %s\n", file);
 		gmt_M_str_free (file);
+		gmt_M_free (API->GMT, header->hidden);
+		gmt_M_free (API->GMT, header);
 		GMT_Destroy_Session (API);
 		return GMT_GRID_READ_ERROR;
 	}
 
 	/* Read the grid, possibly after first allocating array space */
-	if (dim[GMT_Z] == 1) array = gmt_M_memory (API->GMT, NULL, header.size, gmt_grdfloat);
-	if (gmtlib_read_grd (API->GMT, file, &header, array, no_wesn, GMT_no_pad, 0)) {
+	HH = gmt_get_H_hidden (header);
+	if (dim[GMT_Z] == 1) array = gmt_M_memory (API->GMT, NULL, header->size, gmt_grdfloat);
+	if (gmtlib_read_grd (API->GMT, file, header, array, no_wesn, GMT_no_pad, 0)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s\n", file);
 		gmt_M_str_free (file);
+		gmt_M_free (API->GMT, header->hidden);
+		gmt_M_free (API->GMT, header);
 		GMT_Destroy_Session (API);
 		return GMT_GRID_READ_ERROR;
 	}
 	gmt_M_str_free (file);
 
-	if (dim[3] == 1) gmtlib_inplace_transpose (array, header.n_rows, header.n_columns);
+	if (dim[3] == 1) gmtlib_inplace_transpose (array, header->n_rows, header->n_columns);
 
 	/* Assign variables from header structure items */
-	dim[GMT_X] = header.n_columns;	dim[GMT_Y] = header.n_rows;
-	gmt_M_memcpy (limit, header.wesn, 4U, double);
-	gmt_M_memcpy (inc, header.inc, 2U, double);
-	limit[ZLO] = header.z_min;
-	limit[ZHI] = header.z_max;
-	dim[GMT_Z] = header.registration;
-	if (title) F_STRNCPY (title, header.title, ltitle, GMT_GRID_TITLE_LEN80);
-	if (remark) F_STRNCPY (remark, header.remark, lremark, GMT_GRID_REMARK_LEN160);
+	dim[GMT_X] = header->n_columns;	dim[GMT_Y] = header->n_rows;
+	gmt_M_memcpy (limit, header->wesn, 4U, double);
+	gmt_M_memcpy (inc, header->inc, 2U, double);
+	limit[ZLO] = header->z_min;
+	limit[ZHI] = header->z_max;
+	dim[GMT_Z] = header->registration;
+	if (title) F_STRNCPY (title, header->title, ltitle, GMT_GRID_TITLE_LEN80);
+	if (remark) F_STRNCPY (remark, header->remark, lremark, GMT_GRID_REMARK_LEN160);
+
+	gmt_M_free (API->GMT, header->hidden);
+	gmt_M_free (API->GMT, header);
 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
@@ -10833,13 +10977,14 @@ GMT_LOCAL void *api_dataset2dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET
 	uint64_t tbl, seg, row, col, n_rows, tbl_out = 0, row_out = 0, seg_out = 0;
 	bool s_alloc, t_alloc, alloc, was;
 	struct GMT_CTRL *GMT = API->GMT;
-	struct GMT_DATATABLE *Din = NULL;
-	struct GMT_DATATABLE *Dout = NULL;
+	struct GMT_DATATABLE *Tin = NULL;
+	struct GMT_DATATABLE *Tout = NULL;
 	struct GMT_DATASEGMENT *Sin = NULL;
 	struct GMT_DATASEGMENT *Sout = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	s_alloc = t_alloc = alloc = (Out == NULL);
 	if (alloc) {	/* Must allocate output dataset */
-		Out = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASET);
+		Out = gmt_get_dataset (GMT);
 		Out->n_tables = (mode == GMT_WRITE_TABLE || mode == GMT_WRITE_TABLE_SEGMENT) ? 1 : In->n_tables;
 		Out->table = gmt_M_memory (GMT, NULL, Out->n_tables, struct GMT_DATATABLE *);
 	}
@@ -10852,35 +10997,36 @@ GMT_LOCAL void *api_dataset2dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET
 		if (mode == GMT_WRITE_SEGMENT) row_out = 0;	/* Reset row output counter on a per table basis */
 		else if (mode == 0) seg_out = 0;	/* Reset segment output counter on a per table basis */
 		if (alloc && (mode == 0 || mode == GMT_WRITE_SEGMENT)) s_alloc = true;	/* Need to allocate at least one segment per table */
-		Din = In->table[tbl];	/* Shorthand to current input data table */
+		Tin = In->table[tbl];	/* Shorthand to current input data table */
 		if (t_alloc) {
-			Out->table[tbl_out] = Dout = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE);
-			Dout->n_segments = Dout->n_alloc = (mode == GMT_WRITE_TABLE_SEGMENT || mode == GMT_WRITE_SEGMENT) ? 1 : ((mode == GMT_WRITE_TABLE) ? In->n_segments : Din->n_segments);	/* Number of segments in this table */
-			Dout->n_records  = (mode == GMT_WRITE_TABLE || mode == GMT_WRITE_TABLE_SEGMENT) ? In->n_records : Din->n_records;	/* Number of data records int this table */
-			Dout->n_columns = In->n_columns;
+			Out->table[tbl_out] = Tout = gmt_get_table (GMT);
+			TH = gmt_get_DT_hidden (Tout);
+			Tout->n_segments = TH->n_alloc = (mode == GMT_WRITE_TABLE_SEGMENT || mode == GMT_WRITE_SEGMENT) ? 1 : ((mode == GMT_WRITE_TABLE) ? In->n_segments : Tin->n_segments);	/* Number of segments in this table */
+			Tout->n_records  = (mode == GMT_WRITE_TABLE || mode == GMT_WRITE_TABLE_SEGMENT) ? In->n_records : Tin->n_records;	/* Number of data records int this table */
+			Tout->n_columns = In->n_columns;
 		}
 		else
-			Dout = Out->table[tbl_out];
+			Tout = Out->table[tbl_out];
 		if (t_alloc) {
-			if (Din->n_headers && do_tbl_header(header)) {	/* Allocate and duplicate headers */
-				Dout->n_headers = Din->n_headers;	/* Same number of header records as input table */
-				if (alloc) Dout->header = gmt_M_memory (GMT, NULL, Dout->n_headers, char *);
-				for (hdr = 0; hdr < Dout->n_headers; hdr++) Dout->header[hdr] = strdup (Din->header[hdr]);
+			if (Tin->n_headers && do_tbl_header(header)) {	/* Allocate and duplicate headers */
+				Tout->n_headers = Tin->n_headers;	/* Same number of header records as input table */
+				if (alloc) Tout->header = gmt_M_memory (GMT, NULL, Tout->n_headers, char *);
+				for (hdr = 0; hdr < Tout->n_headers; hdr++) Tout->header[hdr] = strdup (Tin->header[hdr]);
 			}
-			Dout->segment = gmt_M_memory (GMT, NULL, Dout->n_segments, struct GMT_DATASEGMENT *);
+			Tout->segment = gmt_M_memory (GMT, NULL, Tout->n_segments, struct GMT_DATASEGMENT *);
 		}
-		for (seg = 0; seg < Din->n_segments; seg++) {	/* For each input table segment */
+		for (seg = 0; seg < Tin->n_segments; seg++) {	/* For each input table segment */
 			if (mode == 0 || mode == GMT_WRITE_TABLE) row_out = 0;	/* Reset row output counter on a per segment basis */
-			Sin = Din->segment[seg];	/* Shorthand to current data segment */
+			Sin = Tin->segment[seg];	/* Shorthand to current data segment */
 			if (s_alloc) {	/* Allocate another segment */
 				unsigned int smode = (Sin->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
-				n_rows = (mode == GMT_WRITE_TABLE_SEGMENT) ? In->n_records : ((mode == GMT_WRITE_SEGMENT) ? Din->n_records : Sin->n_rows);
-				Dout->segment[seg_out] = GMT_Alloc_Segment (API, smode, n_rows, In->n_columns, NULL, NULL);
-				Sout = Dout->segment[seg_out];	/* Shorthand to current text segment */
+				n_rows = (mode == GMT_WRITE_TABLE_SEGMENT) ? In->n_records : ((mode == GMT_WRITE_SEGMENT) ? Tin->n_records : Sin->n_rows);
+				Tout->segment[seg_out] = GMT_Alloc_Segment (API, smode, n_rows, In->n_columns, NULL, NULL);
+				Sout = Tout->segment[seg_out];	/* Shorthand to current text segment */
 				if (Sin->header && do_seg_header(header)) Sout->header = strdup (Sin->header);
 			}
 			else
-				Sout = Dout->segment[seg_out];
+				Sout = Tout->segment[seg_out];
 			for (row = 0; row < Sin->n_rows; row++, row_out++) {	/* Copy each row to (new) segment */
 				for (col = 0; col < Sin->n_columns; col++)
 					Sout->data[col][row_out] = Sin->data[col][row];
@@ -10911,6 +11057,7 @@ GMT_LOCAL void *api_dataset2matrix (struct GMTAPI_CTRL *API, struct GMT_DATASET 
 	p_func_uint64_t GMT_2D_to_index = NULL;
 
 	if (alloc) {	/* Must allocate the output matrix */
+		struct GMT_MATRIX_HIDDEN *MH = NULL;
 		if ((Out = gmtlib_create_matrix (GMT, 1U, GMT_OUT, 0)) == NULL) return (NULL);
 		Out->n_rows = In->n_records + (add_NaN_record ? In->n_segments : 0);
 		Out->n_columns = Out->dim = In->n_columns;
@@ -10919,7 +11066,8 @@ GMT_LOCAL void *api_dataset2matrix (struct GMTAPI_CTRL *API, struct GMT_DATASET 
 			gmt_M_free (GMT, Out);
 			return (NULL);
 		}
-		Out->alloc_mode = GMT_ALLOC_INTERNALLY;
+		MH = gmt_get_M_hidden (Out);
+		MH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 	api_put_val = api_select_put_function (API, Out->type);
 	GMT_2D_to_index = api_get_2d_to_index (API, Out->shape, GMT_GRID_IS_REAL);
@@ -11099,6 +11247,7 @@ GMT_LOCAL void *api_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTOR *I
 	p_func_uint64_t GMT_2D_to_index = NULL;
 	if (header) GMT_Report (API, GMT_MSG_VERBOSE, "api_vector2matrix: Header stripping not implemented yet - ignored!\n");
 	if (alloc) {
+		struct GMT_MATRIX_HIDDEN *MH = NULL;
 		Out = gmtlib_create_matrix (GMT, 1U, GMT_OUT, 0);
 		Out->n_columns = In->n_columns;
 		Out->n_rows = In->n_rows;
@@ -11107,7 +11256,8 @@ GMT_LOCAL void *api_vector2matrix (struct GMTAPI_CTRL *API, struct GMT_VECTOR *I
 			gmt_M_free (GMT, Out);
 			return (NULL);
 		}
-		Out->alloc_mode = GMT_ALLOC_INTERNALLY;
+		MH = gmt_get_M_hidden (Out);
+		MH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 
 	GMT_2D_to_index = api_get_2d_to_index (API, Out->shape, GMT_GRID_IS_REAL);
@@ -11249,7 +11399,7 @@ void *GMT_Alloc_Segment (void *V_API, unsigned int mode, uint64_t n_rows, uint64
 	API->error = GMT_NOERROR;
 	if ((Snew = S) != NULL)	/* Existing segment given */
 		first = false;
-	else if ((Snew = gmt_M_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT)) == NULL) /* Something went wrong */
+	else if ((Snew = gmt_get_segment (API->GMT)) == NULL) /* Something went wrong */
 		return_null (V_API, GMT_MEMORY_ERROR);
 		/* Only reallocate if desired n_rows differ from current n_rows */
 	alloc = (first || (n_rows && n_rows != Snew->n_rows));	/* Alloc first time or reallocate later if necessary */
@@ -11346,7 +11496,7 @@ GMT_LOCAL int api_change_gridlayout (struct GMTAPI_CTRL *API, char *code, unsign
 
 	old_layout = api_decode_layout (API, G->header->mem_layout, &family);
 	if (family != GMT_IS_GRID) return GMT_NOT_A_VALID_FAMILY;
-	new_layout = api_decode_layout(API, code, &family);
+	new_layout = api_decode_layout (API, code, &family);
 	if (old_layout == new_layout) return GMT_NOERROR;	/* Nothing to do */
 
 	/* Remove the high bits for complex data */
@@ -11404,6 +11554,7 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 	enum GMT_enum_family family;
 	unsigned int old_layout, new_layout;
 	uint64_t band, row, col, in_node, out_node;
+	struct GMT_IMAGE_HIDDEN *IH = NULL;
 	gmt_M_unused(mode);
 
 	old_layout = api_decode_layout (API, I->header->mem_layout, &family);
@@ -11426,7 +11577,7 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 		for (row = 0; row < I->header->n_rows; row++)
 			for (col = 0; col < I->header->n_columns; col++)
 				for (band = 0; band < 3; band++) {
-					in_node = row + col*I->header->n_rows + band*I->header->nm;
+					in_node = row + col*I->header->n_rows + band * I->header->nm;
 					tmp[in_node] = (uint8_t)I->data[out_node++];
 				}
 	}
@@ -11436,7 +11587,7 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 			for (col = 0; col < I->header->mx; col++)
 				for (band = 0; band < 3; band++) {
 					//in_node = col + (I->header->my - 1 - row)*I->header->my + band*I->header->size;
-					in_node = col + row*I->header->my + band*I->header->size;
+					in_node = col + row*I->header->my + band * I->header->size;
 					tmp[in_node] = (uint8_t)I->data[out_node++];
 				}
 	}
@@ -11449,7 +11600,8 @@ GMT_LOCAL int api_change_imagelayout (struct GMTAPI_CTRL *API, char *code, unsig
 	}
 
 	if (out1 == 0) {	/* Means we must update the Image data */
-		if (I->alloc_mode != GMT_ALLOC_EXTERNALLY)
+		IH = gmt_get_I_hidden (I);
+		if (IH->alloc_mode != GMT_ALLOC_EXTERNALLY)
 			gmt_M_free_aligned (API->GMT, I->data);			/* Free previous aligned image memory */
 		I->data = tmp;
 	}
@@ -11500,6 +11652,7 @@ int GMT_Change_Layout_ (unsigned int *family, char *code, unsigned int *mode, vo
 int GMT_Put_Vector (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned int type, void *vector) {
 	/* Hooks a users custom vector onto V's column array and sets the type.
 	 * It is the user's respondibility to pass correct type for the given vector. */
+	struct GMT_VECTOR_HIDDEN *VH = NULL;
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (V == NULL) return_error (API, GMT_PTR_IS_NULL);
 	if (col >= V->n_columns) return_error (API, GMT_DIM_TOO_LARGE);
@@ -11518,7 +11671,8 @@ int GMT_Put_Vector (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned 
 			return_error (API, GMT_NOT_A_VALID_TYPE);
 			break;
 	}
-	V->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since it clearly is a user array */
+	VH = gmt_get_V_hidden (V);
+	VH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since it clearly is a user array */
 	return GMT_NOERROR;
 }
 
@@ -11564,6 +11718,7 @@ void * GMT_Get_Vector_ (struct GMT_VECTOR *V, unsigned int *col) {
 int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, void *matrix) {
 	/* Hooks a user's custom matrix onto M's data array and sets the type.
 	 * It is the user's respondibility to pass correct type for the given matrix. */
+	struct GMT_MATRIX_HIDDEN *MH = NULL;
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (M == NULL) return_error (API, GMT_PTR_IS_NULL);
 	switch (type) {
@@ -11581,7 +11736,8 @@ int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, void *ma
 			return_error (API, GMT_NOT_A_VALID_TYPE);
 			break;
 	}
-	M->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since it clearly is a user array */
+	MH = gmt_get_M_hidden (M);
+	MH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since it clearly is a user array */
 	return GMT_NOERROR;
 }
 
@@ -11837,3 +11993,52 @@ int GMT_Get_Family_ (unsigned int *direction, struct GMT_OPTION *head) {
 	return (GMT_Get_Family (GMT_FORTRAN, *direction, head));
 }
 #endif
+
+int GMT_Set_AllocMode (void *V_API, unsigned int family, void *object) {
+	int error = GMT_NOERROR;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (object == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+	struct GMT_DATASET_HIDDEN     *DH = NULL;
+	struct GMT_PALETTE_HIDDEN     *CH = NULL;
+	struct GMT_POSTSCRIPT_HIDDEN  *PH = NULL;
+	struct GMT_VECTOR_HIDDEN      *VH = NULL;
+	struct GMT_MATRIX_HIDDEN      *MH = NULL;
+	struct GMT_GRID_HIDDEN        *GH = NULL;
+	struct GMT_IMAGE_HIDDEN       *IH = NULL;
+	
+	switch (family) {	/* grid, image, or matrix */
+		case GMT_IS_GRID:	/* GMT grid */
+			GH = gmt_get_G_hidden (api_get_grid_data (object));
+			GH->alloc_mode = GMT_ALLOC_EXTERNALLY;
+			break;
+		case GMT_IS_IMAGE:	/* GMT image */
+			IH = gmt_get_I_hidden (api_get_image_data (object));
+			IH->alloc_mode = GMT_ALLOC_EXTERNALLY;
+			break;
+		case GMT_IS_DATASET:	/* GMT dataset */
+			DH = gmt_get_DD_hidden (api_get_dataset_data (object));
+			DH->alloc_mode = GMT_ALLOC_EXTERNALLY;
+			break;
+		case GMT_IS_PALETTE:	/* GMT CPT */
+			CH = gmt_get_C_hidden (api_get_palette_data (object));
+			CH->alloc_mode = GMT_ALLOC_EXTERNALLY;
+			break;
+		case GMT_IS_POSTSCRIPT:		/* GMT PS */
+			PH = gmt_get_P_hidden (api_get_postscript_data (object));
+			PH->alloc_mode = GMT_ALLOC_EXTERNALLY;
+			break;
+		case GMT_IS_VECTOR:	/* GMT Vector*/
+			VH = gmt_get_V_hidden (api_get_vector_data (object));
+			VH->alloc_mode = GMT_ALLOC_EXTERNALLY;
+			break;
+		case GMT_IS_MATRIX:	/* GMT Matrix */
+			MH = gmt_get_M_hidden (api_get_matrix_data (object));
+			MH->alloc_mode = GMT_ALLOC_EXTERNALLY;
+			break;
+		default:
+			error = GMT_NOT_A_VALID_FAMILY;
+			break;
+	}
+	return_error (V_API, error);
+}
+

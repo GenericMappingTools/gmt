@@ -52,6 +52,7 @@ enum grdtrack_enum_opt {STACK_ADD_VAL = 0,	/* +a: Append stacked value(s) at end
 
 struct GRD_CONTAINER {	/* Keep all the grid and sample parameters together */
 	struct GMT_GRID *G;
+	struct GMT_GRID_HEADER_HIDDEN *HH;
 	int type;	/* 0 = regular grid, 1 = img grid */
 };
 
@@ -561,10 +562,10 @@ GMT_LOCAL int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, 
 		value[g] = GMT->session.d_NaN;	/* In case the point is outside only some of the grids */
 		/* If point is outside grd area, shift it using periodicity or skip if not periodic. */
 
-		while ((y < GC[g].G->header->wesn[YLO]) && (GC[g].G->header->nyp > 0)) y += (GC[g].G->header->inc[GMT_Y] * GC[g].G->header->nyp);
+		while ((y < GC[g].G->header->wesn[YLO]) && (GC[g].HH->nyp > 0)) y += (GC[g].G->header->inc[GMT_Y] * GC[g].HH->nyp);
 		if (y < GC[g].G->header->wesn[YLO]) continue;
 
-		while ((y > GC[g].G->header->wesn[YHI]) && (GC[g].G->header->nyp > 0)) y -= (GC[g].G->header->inc[GMT_Y] * GC[g].G->header->nyp);
+		while ((y > GC[g].G->header->wesn[YHI]) && (GC[g].HH->nyp > 0)) y -= (GC[g].G->header->inc[GMT_Y] * GC[g].HH->nyp);
 		if (y > GC[g].G->header->wesn[YHI]) continue;
 
 		if (GC[g].type == 1) {	/* This grid is in Mercator x/y units - must use Mercator x0, y0 */
@@ -578,14 +579,14 @@ GMT_LOCAL int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, 
 				while (x < GC[g].G->header->wesn[XLO]) x += 360.0;
 			}
 		}
-		while ((x < GC[g].G->header->wesn[XLO]) && (GC[g].G->header->nxp > 0)) x += (GC[g].G->header->inc[GMT_X] * GC[g].G->header->nxp);
+		while ((x < GC[g].G->header->wesn[XLO]) && (GC[g].HH->nxp > 0)) x += (GC[g].G->header->inc[GMT_X] * GC[g].HH->nxp);
 		if (x < GC[g].G->header->wesn[XLO]) continue;
 
-		while ((x > GC[g].G->header->wesn[XHI]) && (GC[g].G->header->nxp > 0)) x -= (GC[g].G->header->inc[GMT_X] * GC[g].G->header->nxp);
+		while ((x > GC[g].G->header->wesn[XHI]) && (GC[g].HH->nxp > 0)) x -= (GC[g].G->header->inc[GMT_X] * GC[g].HH->nxp);
 		if (x > GC[g].G->header->wesn[XHI]) continue;
 
 		n_in++;	/* This point is inside the current grid's domain */
-		value[g] = (GC[g].G->header->has_NaNs == GMT_GRID_NO_NANS) ? gmt_bcr_get_z_fast (GMT, GC[g].G, x, y) : gmt_bcr_get_z (GMT, GC[g].G, x, y);
+		value[g] = (GC[g].HH->has_NaNs == GMT_GRID_NO_NANS) ? gmt_bcr_get_z_fast (GMT, GC[g].G, x, y) : gmt_bcr_get_z (GMT, GC[g].G, x, y);
 
 		if (!gmt_M_is_dnan (value[g])) n_set++;	/* Count value results */
 	}
@@ -728,6 +729,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	struct GRD_CONTAINER *GC = NULL;
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
 	struct GMT_DATATABLE *T = NULL;
+	struct GMT_DATASET_HIDDEN *DH = NULL;
 	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -784,7 +786,6 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, GC);
 				Return (API->error);
 			}
-
 			gmt_M_memcpy (GMT->common.R.wesn, wesn, 4, double);
 
 		}
@@ -793,6 +794,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			gmt_read_img (GMT, Ctrl->G.file[g], GC[g].G, wesn, Ctrl->G.scale[g], Ctrl->G.mode[g], Ctrl->G.lat[g], true);
 			img_conv_needed = true;
 		}
+		GC[g].HH = gmt_get_H_hidden (GC[g].G->header);
 	}
 
 	if (Ctrl->E.active) {	/* Create profiles rather than read them */
@@ -1013,17 +1015,19 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, stacked_hi);
 			gmt_M_free (GMT, stacked_n);
 			gmt_set_cartesian (GMT, GMT_OUT);	/* Since x now is distance and y is a data quantity */
-			if (Ctrl->S.selected[STACK_ADD_TBL] && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, Stack->io_mode, NULL, Ctrl->S.file, Stack) != GMT_NOERROR) {
+			DH = gmt_get_DD_hidden (Stack);
+			if (Ctrl->S.selected[STACK_ADD_TBL] && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, DH->io_mode, NULL, Ctrl->S.file, Stack) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
 
+		DH = gmt_get_DD_hidden (Dout);
 		T = Dout->table[0];
 		T->n_headers = 2;
 		T->header = gmt_M_memory (GMT, NULL, T->n_headers, char *);
 		T->header[0] = strdup ("Equidistant cross-profiles normal to each input segment");
 		T->header[1] = strdup (run_cmd);
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, DH->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
@@ -1036,7 +1040,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		uint64_t col, n_cols = Din->n_columns + Ctrl->G.n_grids, row, seg;
 		struct GMT_DATASEGMENT *Sin = NULL, *Sout = NULL;
 
-		Din->dim[GMT_COL] = n_cols;	/* State we want a different set of columns on output */
+		DH = gmt_get_DD_hidden (Din);
+		DH->dim[GMT_COL] = n_cols;	/* State we want a different set of columns on output */
 		Dout = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, Din);	/* Same table length as Din, but with up to n_cols columns (lon, lat, dist, g1, g2, ...) */
 		if (Din->table[0]->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* More than one segment triggers -mo */
 
@@ -1057,7 +1062,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		T->header = gmt_M_memory (GMT, NULL, T->n_headers, char *);
 		T->header[0] = strdup ("Sampled values along specified profiles");
 		T->header[1] = strdup (run_cmd);
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
+		DH = gmt_get_DD_hidden (Dout);
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, DH->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}

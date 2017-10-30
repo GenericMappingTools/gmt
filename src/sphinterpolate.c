@@ -311,7 +311,6 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);
 		Return (API->error);
 	}
-
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate output grid\n");
 	surfd = gmt_M_memory (GMT, NULL, Grid->header->nm, double);
 	

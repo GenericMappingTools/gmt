@@ -149,6 +149,7 @@ GMT_LOCAL int grd98_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *m
 
 GMT_LOCAL void grd98_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_HEADER *gmt) {
 	int one_or_zero;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (gmt);
 
 	/* Do not memset the gmt header since it has the file name set */
 
@@ -170,11 +171,11 @@ GMT_LOCAL void grd98_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_HEADER *
 	gmt->z_scale_factor = 1.0;
 	gmt->z_add_offset = 0.0;
 	switch (mgg->numType) {
-		case  1:	gmt->orig_datatype = GMT_CHAR;  break;
-		case  2:	gmt->orig_datatype = GMT_SHORT; break;
-		case  4:	gmt->orig_datatype = GMT_INT;   break;
-		case -4:	gmt->orig_datatype = GMT_FLOAT; break;
-		default:	gmt->orig_datatype = GMT_INT;   break;
+		case  1:	HH->orig_datatype = GMT_CHAR;  break;
+		case  2:	HH->orig_datatype = GMT_SHORT; break;
+		case  4:	HH->orig_datatype = GMT_INT;   break;
+		case -4:	HH->orig_datatype = GMT_FLOAT; break;
+		default:	HH->orig_datatype = GMT_INT;   break;
 	}
 }
 
@@ -188,10 +189,11 @@ int gmt_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
 	int ok;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
-	if (!strcmp (header->name, "="))
+	if (!strcmp (HH->name, "="))
 		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if ((fp = gmt_fopen (GMT, header->name, GMT->current.io.r_mode)) == NULL)
+	if ((fp = gmt_fopen (GMT, HH->name, GMT->current.io.r_mode)) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	gmt_M_memset (&mggHeader, 1, MGG_GRID_HEADER_2);
@@ -217,10 +219,11 @@ int gmt_mgg2_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
 	int ok;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
-	if (!strcmp (header->name, "="))
+	if (!strcmp (HH->name, "="))
 		fp = GMT->session.std[GMT_IN];
-	else if ((fp = gmt_fopen (GMT, header->name, GMT->current.io.r_mode)) == NULL)
+	else if ((fp = gmt_fopen (GMT, HH->name, GMT->current.io.r_mode)) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	gmt_M_memset (&mggHeader, 1, MGG_GRID_HEADER_2);
@@ -258,10 +261,11 @@ int gmt_mgg2_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
 	int err;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
-	if (!strcmp (header->name, "="))
+	if (!strcmp (HH->name, "="))
 		fp = GMT->session.std[GMT_OUT];
-	else if ((fp = gmt_fopen (GMT, header->name, GMT->current.io.w_mode)) == NULL)
+	else if ((fp = gmt_fopen (GMT, HH->name, GMT->current.io.w_mode)) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
 	if ((err = grd98_GMTtoMGG2 (header, &mggHeader)) != 0) {
@@ -294,13 +298,14 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	off_t long_offset;	/* For fseek only */
 	size_t n_expected;	/* Items in one row */
 	size_t size;		/* Item size */
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	gmt_M_memset (&mggHeader, 1, MGG_GRID_HEADER_2);
-	if (!strcmp (header->name, "=")) {
+	if (!strcmp (HH->name, "=")) {
 		fp = GMT->session.std[GMT_IN];
 		piping = true;
 	}
-	else if ((fp = gmt_fopen (GMT, header->name, GMT->current.io.r_mode)) != NULL) {
+	else if ((fp = gmt_fopen (GMT, HH->name, GMT->current.io.r_mode)) != NULL) {
 		if (gmt_M_fread (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) {
 			gmt_fclose (GMT, fp);
 			return (GMT_GRDIO_READ_FAILED);
@@ -317,7 +322,7 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 
 	is_float = (mggHeader.numType < 0 && abs (mggHeader.numType) == (int)sizeof (gmt_grdfloat));	/* Float file */
 
-	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
+	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), HH->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_out = width_in;		/* Width of output array */
@@ -346,7 +351,7 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
-	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
+	HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		if (gmt_M_fread (tLong, size, n_expected, fp) != n_expected) {
 			gmt_fclose (GMT, fp);
@@ -384,7 +389,7 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 				return (GMT_GRDIO_UNKNOWN_TYPE);
 			}
 			if (gmt_M_is_fnan (grid[kk])) {
-				header->has_NaNs = GMT_GRID_HAS_NANS;
+				HH->has_NaNs = GMT_GRID_HAS_NANS;
 				continue;
 			}
 			/* Update z_min, z_max */
@@ -430,15 +435,16 @@ int gmt_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 	char *tChar = NULL;
 	gmt_grdfloat *tFloat = NULL;
 	FILE *fp = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
-	if (!strcmp (header->name, "="))
+	if (!strcmp (HH->name, "="))
 		fp = GMT->session.std[GMT_OUT];
-	else if ((fp = gmt_fopen (GMT, header->name, GMT->current.io.w_mode)) == NULL)
+	else if ((fp = gmt_fopen (GMT, HH->name, GMT->current.io.w_mode)) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
 	check = !isnan (header->nan_value);
 
-	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
+	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), HH->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */

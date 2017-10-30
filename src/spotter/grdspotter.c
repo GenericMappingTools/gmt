@@ -641,6 +641,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->L.file) {
+		struct GMT_GRID_HIDDEN *GH = gmt_get_G_hidden (G);
 		if ((L = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->L.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
@@ -655,7 +656,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		/* Store IDs in a int array instead */
 		ID = gmt_M_memory (GMT, NULL, L->header->size, int);
 		for (ij = 0; ij < L->header->size; ij++) ID[ij] = irint ((double)L->data[ij]);
-		if (G->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free_aligned (GMT, L->data);	/* Just free the array since we use ID; Grid struct is destroyed at end */
+		if (GH->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free_aligned (GMT, L->data);	/* Just free the array since we use ID; Grid struct is destroyed at end */
 		ID_info = gmt_M_memory (GMT, NULL, lrint (L->header->z_max) + 1, struct ID);
 		if (Ctrl->Q.mode == 1) {	/* Only doing one CVA with no extra restrictions */
 			ID_info[Ctrl->Q.id].ok = true;	/* Every other info in struct array is NULL or 0 */

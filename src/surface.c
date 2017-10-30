@@ -1046,6 +1046,7 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	double	y_1_const = (C->boundary_tension - 2 * C->l_epsilon * (1.0 - C->boundary_tension) ) / y_denom;
 	gmt_grdfloat *u = C->Grid->data;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 	
 	move_over[0] = 2;
 	move_over[1] = 1 - C->my;
@@ -1127,8 +1128,8 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 	if (iu[ij] == SURFACE_IS_CONSTRAINED) continue;
 	 	x0 = h->wesn[XLO] + i*h->inc[GMT_X];
 	 	y0 = h->wesn[YLO] + j*h->inc[GMT_Y];
-	 	dx = (C->data[k].x - x0)*h->r_inc[GMT_X];
-	 	dy = (C->data[k].y - y0)*h->r_inc[GMT_Y];
+	 	dx = (C->data[k].x - x0)*HH->r_inc[GMT_X];
+	 	dy = (C->data[k].y - y0)*HH->r_inc[GMT_Y];
  
 	 	du_dx = 0.5 * (u[ij + move_over[6]] - u[ij + move_over[5]]);
 	 	du_dy = 0.5 * (u[ij + move_over[2]] - u[ij + move_over[9]]);
@@ -1181,13 +1182,14 @@ GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 	double a, b, c, d, xx, yy, zz;
 	double sx, sy, sz, sxx, sxy, sxz, syy, syz;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	sx = sy = sz = sxx = sxy = sxz = syy = syz = 0.0;
 
 	for (i = 0; i < C->npoints; i++) {
 
-		xx = (C->data[i].x - h->wesn[XLO]) * h->r_inc[GMT_X];
-		yy = (C->data[i].y - h->wesn[YLO]) * h->r_inc[GMT_Y];
+		xx = (C->data[i].x - h->wesn[XLO]) * HH->r_inc[GMT_X];
+		yy = (C->data[i].y - h->wesn[YLO]) * HH->r_inc[GMT_Y];
 		zz = C->data[i].z;
 
 		sx += xx;
@@ -1217,8 +1219,8 @@ GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 	if (C->periodic) C->plane_c1 = 0.0;	/* Cannot have x-trend for periodic geographic data */
 
 	for (i = 0; i < C->npoints; i++) {
-		xx = (C->data[i].x - h->wesn[XLO]) * h->r_inc[GMT_X];
-		yy = (C->data[i].y - h->wesn[YLO]) * h->r_inc[GMT_Y];
+		xx = (C->data[i].x - h->wesn[XLO]) * HH->r_inc[GMT_X];
+		yy = (C->data[i].y - h->wesn[YLO]) * HH->r_inc[GMT_Y];
 		C->data[i].z -= (gmt_grdfloat)(C->plane_c0 + C->plane_c1 * xx + C->plane_c2 * yy);
 	}
 	
@@ -1731,6 +1733,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	
 	struct GMT_DATATABLE *xyzline = NULL;
 	struct GMT_DATASET *Lin = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct SURFACE_INFO C;
 	struct SURFACE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -1780,6 +1783,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->n_columns, C.Grid->header->n_rows);
 		Return (GMT_RUNTIME_ERROR);
 	}
+	HH = gmt_get_H_hidden (C.Grid->header);
 
 	load_parameters_surface (&C, Ctrl);	/* Pass parameters from parsing control to surface INFO structure */
 

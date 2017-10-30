@@ -283,10 +283,11 @@ GMT_LOCAL void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, str
 	int index;
 	double rgb[4];
 	struct GMT_FILL *f = NULL;
+	struct GMT_PALETTE_HIDDEN *PH = gmt_get_C_hidden (P);
 
 	if (n < 3) return;	/* Need at least 3 points to make a polygon */
 	index = gmt_get_rgb_from_z (GMT, P, z, rgb);	/* This sets P->skip as well */
-	if (P->skip) return;	/* Skip this z-slice */
+	if (PH->skip) return;	/* Skip this z-slice */
 
 	/* Now we must paint, with colors or patterns */
 
@@ -694,6 +695,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	struct GMT_GRID *Drape[3] = {NULL, NULL, NULL}, *Topo = NULL, *Intens = NULL, *Z = NULL;
 	struct GRDVIEW_BIN *binij = NULL;
 	struct GMT_PALETTE *P = NULL;
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GRDVIEW_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -728,6 +730,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, Topo->header->z_min, Topo->header->z_max)) == NULL) {
 			Return (API->error);
 		}
+		PH = gmt_get_C_hidden (P);
 		if (P->is_bw) Ctrl->Q.monochrome = true;
 		if (P->categorical && Ctrl->W.active) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
@@ -1107,14 +1110,14 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	if (Ctrl->T.active) {	/* Plot image as polygonal pieces. Here, -JZ is not set */
 		double *xx = NULL, *yy = NULL;
 		struct GMT_FILL fill;
-		struct GMT_DATASEGMENT S;
+		struct GMT_DATASEGMENT *S = gmt_get_segment (GMT);
 		gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* Initialize fill structure */
 
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Tiling without interpolation\n");
 
 		if (Ctrl->T.outline) gmt_setpen (GMT, &Ctrl->T.pen);
-		gmt_M_memset (&S, 1, struct GMT_DATASEGMENT);
-		S.data = gmt_M_memory (GMT, NULL, 2, double *);
+		S->data = gmt_M_memory (GMT, NULL, 2, double *);
+		S->n_columns = 2;
 		gmt_M_grd_loop (GMT, Z, row, col, ij) {	/* Compute rgb for each pixel */
 			if (gmt_M_is_fnan (Topo->data[ij]) && Ctrl->T.skip) continue;
 			if (use_intensity_grid && Ctrl->T.skip && gmt_M_is_fnan (Intens->data[ij])) continue;
@@ -1125,12 +1128,12 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				gmt_illuminate (GMT, Ctrl->I.value, fill.rgb);
 			n = gmt_graticule_path (GMT, &xx, &yy, 1, true, xval[col] - inc2[GMT_X], xval[col] + inc2[GMT_X], yval[row] - inc2[GMT_Y], yval[row] + inc2[GMT_Y]);
 			gmt_setfill (GMT, &fill, Ctrl->T.outline);
-			S.data[GMT_X] = xx;	S.data[GMT_Y] = yy;	S.n_rows = n;
-			gmt_geo_polygons (GMT, &S);
+			S->data[GMT_X] = xx;	S->data[GMT_Y] = yy;	S->n_rows = n;
+			gmt_geo_polygons (GMT, S);
 			gmt_M_free (GMT, xx);
 			gmt_M_free (GMT, yy);
 		}
-		gmt_M_free (GMT, S.data);
+		gmt_free_segment (GMT, &S);
 		gmt_M_free (GMT, xval);
 		gmt_M_free (GMT, yval);
 	}

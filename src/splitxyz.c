@@ -322,6 +322,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *D[2] = {NULL, NULL};
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASEGMENT *S = NULL, *S_out = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct SPLITXYZ_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -440,7 +441,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		h_col = no_z_column + 3;
 	}
 	z_cols = 2;
-	S_out = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+	S_out = gmt_get_segment (GMT);
 	
 	nprofiles = 0;
 	for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {
@@ -449,7 +450,10 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 			T->min = gmt_M_memory (GMT, T->min, n_columns, double);
 			T->max = gmt_M_memory (GMT, T->max, n_columns, double);
 		}
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on file %s\n", T->file[GMT_IN]);
+		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
+			struct GMT_DATATABLE_HIDDEN *TH = gmt_get_DT_hidden (T);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on file %s\n", TH->file[GMT_IN]);
+		}
 
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = T->segment[seg];
@@ -577,13 +581,14 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	}
 	for (seg = 0; seg < seg2; seg++) {	/* We fake a table by setting the data pointers to point to various points in our single S_out arrays */
 		S = D[GMT_OUT]->table[0]->segment[seg];
+		SH = gmt_get_DS_hidden (S);
 		k = (seg == 0) ? 0 : rec[seg-1];
 		n = (seg == 0) ? rec[seg] : rec[seg] - rec[seg-1];
 		for (j = 0; j < n_outputs; j++) S->data[j] = &(S_out->data[j][k]);
 		S->n_rows = n;
 		sprintf (header, "Profile %" PRIu64" -I%" PRIu64, seg, seg);
 		S->header = strdup (header);
-		S->id = seg;
+		SH->id = seg;
 	}
 	gmt_M_free (GMT, rec);
 

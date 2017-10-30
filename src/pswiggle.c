@@ -483,6 +483,8 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *T = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL;
+
 	struct PSWIGGLE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -561,9 +563,10 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];
+		TH = gmt_get_DT_hidden (T);
 		
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on file %s\n", T->file[GMT_IN]);
-		PSL_comment (PSL, "File %s\n", T->file[GMT_IN]);
+                GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on file %s\n", TH->file[GMT_IN]);
+		PSL_comment (PSL, "File %s\n", TH->file[GMT_IN]);
 
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 

@@ -276,6 +276,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	double *x0 = NULL, *y0 = NULL, *in = NULL;
 
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_RECORD *In = NULL;
 	struct NEARNEIGHBOR_NODE **grid_node = NULL;
 	struct NEARNEIGHBOR_POINT *point = NULL;
@@ -343,6 +344,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+	HH = gmt_get_H_hidden (Grid->header);
 
 	/* Initialize the input since we are doing record-by-record reading/writing */
 	if ((error = GMT_Set_Columns (API, GMT_IN, 3 + Ctrl->W.active, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
@@ -368,7 +370,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	/* To allow data points falling outside -R but within the search radius we extend the data domain in all directions */
 	
 	x_left = Grid->header->wesn[XLO];	x_right = Grid->header->wesn[XHI];	/* This is what -R says */
-	if (gmt_M_is_cartesian (GMT, GMT_IN) || !gmt_M_grd_is_global (GMT, Grid->header)) {
+	if (gmt_M_is_cartesian (GMT, GMT_IN) || !gmt_grd_is_global (GMT, Grid->header)) {
 		x_left  -= max_d_col * Grid->header->inc[GMT_X];	/* OK to extend x-domain since not a periodic geographic grid */
 		x_right += max_d_col * Grid->header->inc[GMT_X];
 	}
@@ -380,8 +382,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	x_width = Grid->header->wesn[XHI] - Grid->header->wesn[XLO];		y_width = Grid->header->wesn[YHI] - Grid->header->wesn[YLO];
 	half_x_width = 0.5 * x_width;			half_y_width = 0.5 * y_width;
 	n = n_read = 0;
-	replicate_x = (Grid->header->nxp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate column */
-	replicate_y = (Grid->header->nyp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate row */
+	replicate_x = (HH->nxp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate column */
+	replicate_y = (HH->nyp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate row */
 	x_wrap = Grid->header->n_columns - 1;				/* Add to node index to go to right column */
 	y_wrap = (Grid->header->n_rows - 1) * Grid->header->n_columns;	/* Add to node index to go to bottom row */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
@@ -450,8 +452,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 				   For longitudes the dx obviously cannot exceed 180 (half_x_width)
 				   since we could then go the other direction instead.
 				*/
-				if (Grid->header->nxp && fabs (dx) > half_x_width) dx -= copysign (x_width, dx);
-				if (Grid->header->nyp && fabs (dy) > half_y_width) dy -= copysign (y_width, dy);
+				if (HH->nxp && fabs (dx) > half_x_width) dx -= copysign (x_width, dx);
+				if (HH->nyp && fabs (dy) > half_y_width) dy -= copysign (y_width, dy);
 
 				/* OK, this point should constrain this node.  Calculate which sector and assign the value */
 
@@ -466,13 +468,13 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 				if (replicate_x) {	/* Must check if we have to replicate a column */
 					if (colu == 0) 	/* Must replicate left to right column */
 						assign_node (GMT, &grid_node[kk+x_wrap], Ctrl->N.sectors, sector, distance, n);
-					else if (colu == Grid->header->nxp)	/* Must replicate right to left column */
+					else if (colu == HH->nxp)	/* Must replicate right to left column */
 						assign_node (GMT, &grid_node[kk-x_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 				if (replicate_y) {	/* Must check if we have to replicate a row */
 					if (rowu == 0)	/* Must replicate top to bottom row */
 						assign_node (GMT, &grid_node[kk+y_wrap], Ctrl->N.sectors, sector, distance, n);
-					else if (rowu == Grid->header->nyp)	/* Must replicate bottom to top row */
+					else if (rowu == HH->nyp)	/* Must replicate bottom to top row */
 						assign_node (GMT, &grid_node[kk-y_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 			}

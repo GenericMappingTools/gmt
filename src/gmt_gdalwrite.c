@@ -118,7 +118,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		}
 	}
 
-	if (!strncmp(I->header->mem_layout, "TCB", 3)) {
+	if (!strncmp (I->header->mem_layout, "TCB", 3)) {
 		to_GDALW->type = strdup("uint8");
 		data = gmt_M_memory (GMT, NULL, I->header->nm * I->header->n_bands, char);
 
@@ -139,7 +139,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		}
 		free_data = true;
 	}
-	else if (!strncmp(I->header->mem_layout, "TRP", 3)) {
+	else if (!strncmp (I->header->mem_layout, "TRP", 3)) {
 		to_GDALW->type = strdup("byte");
 		data = I->data;
 		if (to_GDALW->P.ProjRefPROJ4) {

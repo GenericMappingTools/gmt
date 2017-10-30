@@ -694,7 +694,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
 				Return (API->error);
 			}
-			for (p = 0; p < Slopes->header->size; p++) Slopes->data[p] = (gmt_grdfloat)tan (D2R * Slopes->data[p]);	/* Take tan or slopes here instead of later */
+			for (p = 0; p < Grid->header->size; p++) Slopes->data[p] = (gmt_grdfloat)tan (D2R * Slopes->data[p]);	/* Take tan or slopes here instead of later */
 		}
 
 		for (k = ij = 0; k < np; k++) {
@@ -818,7 +818,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		if (Ctrl->M.active || Ctrl->Q.active) {	/* Must find unique edges to output only once */
 			gmt_set_segmentheader (GMT, GMT_OUT, true);
 			if (Ctrl->Q.active) {	/* Voronoi edges */
-				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, V->geometry, V->io_mode, NULL, Ctrl->Out.file, V) != GMT_NOERROR) {
+				struct GMT_DATASET_HIDDEN *VH = gmt_get_DD_hidden (V);
+				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, V->geometry, VH->io_mode, NULL, Ctrl->Out.file, V) != GMT_NOERROR) {
 					gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 					if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 					Return (API->error);

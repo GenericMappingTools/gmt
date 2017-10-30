@@ -263,11 +263,12 @@ GMT_LOCAL void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 	int index;
 	double rgb[4];
 	struct GMT_FILL *f = NULL;
+	struct GMT_PALETTE_HIDDEN *PH = gmt_get_C_hidden (P);
 
 	if (n < 3) return;	/* Need at least 3 points to make a polygon */
 
 	index = gmt_get_rgb_from_z (GMT, P, z, rgb);
-	if (P->skip) return;	/* Skip this z-slice */
+	if (PH->skip) return;	/* Skip this z-slice */
 
 	/* Now we must paint, with colors or patterns */
 
@@ -759,7 +760,10 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	struct PSCONTOUR *cont = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMT_PALETTE *P = NULL;
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GMT_RECORD *In = NULL;
 	struct SAVE *save = NULL;
 	struct PSCONTOUR_CTRL *Ctrl = NULL;
@@ -812,6 +816,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		PH = gmt_get_C_hidden (P);
 		if (Ctrl->I.active && P->is_continuous) {
 			GMT_Report (API, GMT_MSG_NORMAL, "-I option requires constant color between contours!\n");
 			Return (GMT_NOERROR);
@@ -1512,10 +1517,13 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 					D->table[tbl]->n_segments++;	D->n_segments++;
 					D->table[tbl]->n_records += m;	D->n_records += m;
 					/* Generate a file name and increment cont_counts, if relevant */
-					if (io_mode == GMT_WRITE_TABLE && !D->table[tbl]->file[GMT_OUT])
-						D->table[tbl]->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, is_closed, cont_counts);
-					else if (io_mode == GMT_WRITE_SEGMENT)
-						S->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, is_closed, cont_counts);
+					TH = gmt_get_DT_hidden (D->table[tbl]);
+					if (io_mode == GMT_WRITE_TABLE && !TH->file[GMT_OUT])
+						TH->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, is_closed, cont_counts);
+					else if (io_mode == GMT_WRITE_SEGMENT) {
+						SH = gmt_get_DS_hidden (S);
+						SH->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, is_closed, cont_counts);
+					}
 				}
 
 				if (make_plot) {

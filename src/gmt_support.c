@@ -231,6 +231,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 	/* Attempt to convert to integer - will be 0 if not an integer and then we set it to -1 for a filename */
 	fill->pattern_no = atoi (fill->pattern);
 	if (fill->pattern_no == 0) {
+		struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 		fill->pattern_no = -1;
 		gmt_set_pad (GMT, 0); /* No padding */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pattern image is in file %s\n", fill->pattern);
@@ -238,6 +239,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to read image %s, no pattern set\n", fill->pattern);
 			return (GMT_RUNTIME_ERROR);
 		}
+		HH = gmt_get_H_hidden (fill->I->header);
 		gmt_set_pad (GMT, GMT->parent->pad); /* Restore to GMT Defaults */
 		fill->dim[0] = fill->I->header->n_columns;
 		fill->dim[1] = fill->I->header->n_rows;
@@ -1242,6 +1244,7 @@ GMT_LOCAL int support_find_cpt_hinge (struct GMT_CTRL *GMT, struct GMT_PALETTE *
 GMT_LOCAL void support_cpt_z_scale (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, struct CPT_Z_SCALE *Z, unsigned int direction) {
 	unsigned int k;
 	double scale = 1.0;
+	struct GMT_PALETTE_HIDDEN *PH = gmt_get_C_hidden (P);
 	/* Apply the scaling of z as given by the header's z_* settings.
 	 * After reading a cpt it will have z in meters.
 	 * Before writing a cpt, it may have units changed back to original units
@@ -1249,35 +1252,35 @@ GMT_LOCAL void support_cpt_z_scale (struct GMT_CTRL *GMT, struct GMT_PALETTE *P,
 
 	if (direction == GMT_IN) {
 		if (Z) {
-			P->z_adjust[GMT_IN] = Z->z_adjust; P->z_unit[GMT_IN] = Z->z_unit;
-			P->z_mode[GMT_IN] = Z->z_mode; P->z_unit_to_meter[GMT_IN] = Z->z_unit_to_meter;
+			PH->z_adjust[GMT_IN] = Z->z_adjust; PH->z_unit[GMT_IN] = Z->z_unit;
+			PH->z_mode[GMT_IN] = Z->z_mode; PH->z_unit_to_meter[GMT_IN] = Z->z_unit_to_meter;
 		}
-		if (P->z_adjust[GMT_IN] == 0) return;	/* Nothing to do */
-		if (P->z_adjust[GMT_IN] & 2)  return;	/* Already scaled them */
-		scale = P->z_unit_to_meter[GMT_IN];	/* To multiply all z-related entries in the CPT */
-		P->z_adjust[GMT_IN] = 2;	/* Now the cpt is ready for use and in meters */
-		if (P->z_mode[GMT_IN])
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Input CPT z unit was converted from meters to %s after reading.\n", GMT->current.proj.unit_name[P->z_unit[GMT_IN]]);
+		if (PH->z_adjust[GMT_IN] == 0) return;	/* Nothing to do */
+		if (PH->z_adjust[GMT_IN] & 2)  return;	/* Already scaled them */
+		scale = PH->z_unit_to_meter[GMT_IN];	/* To multiply all z-related entries in the CPT */
+		PH->z_adjust[GMT_IN] = 2;	/* Now the cpt is ready for use and in meters */
+		if (PH->z_mode[GMT_IN])
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Input CPT z unit was converted from meters to %s after reading.\n", GMT->current.proj.unit_name[PH->z_unit[GMT_IN]]);
 		else
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Input CPT z unit was converted from %s to meters after reading.\n", GMT->current.proj.unit_name[P->z_unit[GMT_IN]]);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Input CPT z unit was converted from %s to meters after reading.\n", GMT->current.proj.unit_name[PH->z_unit[GMT_IN]]);
 	}
 	else if (direction == GMT_OUT) {	/* grid x/y are assumed to be in meters */
-		if (Z) {P->z_adjust[GMT_OUT] = Z->z_adjust; P->z_unit[GMT_OUT] = Z->z_unit; P->z_mode[GMT_OUT] = Z->z_mode; P->z_unit_to_meter[GMT_OUT] = Z->z_unit_to_meter; }
-		if (P->z_adjust[GMT_OUT] & 1) {	/* Was given a new unit for output */
-			scale = 1.0 / P->z_unit_to_meter[GMT_OUT];
-			P->z_adjust[GMT_OUT] = 2;	/* Now we are ready for writing */
-			if (P->z_mode[GMT_OUT])
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT z unit was converted from %s to meters before writing.\n", GMT->current.proj.unit_name[P->z_unit[GMT_OUT]]);
+		if (Z) {PH->z_adjust[GMT_OUT] = Z->z_adjust; PH->z_unit[GMT_OUT] = Z->z_unit; PH->z_mode[GMT_OUT] = Z->z_mode; PH->z_unit_to_meter[GMT_OUT] = Z->z_unit_to_meter; }
+		if (PH->z_adjust[GMT_OUT] & 1) {	/* Was given a new unit for output */
+			scale = 1.0 / PH->z_unit_to_meter[GMT_OUT];
+			PH->z_adjust[GMT_OUT] = 2;	/* Now we are ready for writing */
+			if (PH->z_mode[GMT_OUT])
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT z unit was converted from %s to meters before writing.\n", GMT->current.proj.unit_name[PH->z_unit[GMT_OUT]]);
 			else
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT z unit was converted from meters to %s before writing.\n", GMT->current.proj.unit_name[P->z_unit[GMT_OUT]]);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT z unit was converted from meters to %s before writing.\n", GMT->current.proj.unit_name[PH->z_unit[GMT_OUT]]);
 		}
-		else if (P->z_adjust[GMT_IN] & 2) {	/* Just undo old scaling */
-			scale = 1.0 / P->z_unit_to_meter[GMT_IN];
-			P->z_adjust[GMT_IN] -= 2;	/* Now it is back to where we started */
-			if (P->z_mode[GMT_OUT])
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT z unit was reverted back to %s from meters before writing.\n", GMT->current.proj.unit_name[P->z_unit[GMT_IN]]);
+		else if (PH->z_adjust[GMT_IN] & 2) {	/* Just undo old scaling */
+			scale = 1.0 / PH->z_unit_to_meter[GMT_IN];
+			PH->z_adjust[GMT_IN] -= 2;	/* Now it is back to where we started */
+			if (PH->z_mode[GMT_OUT])
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT z unit was reverted back to %s from meters before writing.\n", GMT->current.proj.unit_name[PH->z_unit[GMT_IN]]);
 			else
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT z unit was reverted back from meters to %s before writing.\n", GMT->current.proj.unit_name[P->z_unit[GMT_IN]]);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output CPT z unit was reverted back from meters to %s before writing.\n", GMT->current.proj.unit_name[PH->z_unit[GMT_IN]]);
 		}
 	}
 	/* If we got here we must scale the CPT's z-values */
@@ -2286,13 +2289,14 @@ GMT_LOCAL void support_orient_contour (struct GMT_GRID *G, double *x, double *y,
 	bool reverse;
 	uint64_t i, j, ij_ul, ij_ur, ij_ll, ij_lr;
 	double fx[2], fy[2], dx, dy;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
 	if (orient == 0) return;	/* Nothing to be done when no orientation specified */
 	if (n < 2) return;		/* Cannot work on a single point */
 
 	for (k = 0; k < 2; k++) {	/* Calculate fractional node numbers from left/top */
-		fx[k] = (x[k] - G->header->wesn[XLO]) * G->header->r_inc[GMT_X] - G->header->xy_off;
-		fy[k] = (G->header->wesn[YHI] - y[k]) * G->header->r_inc[GMT_Y] - G->header->xy_off;
+		fx[k] = (x[k] - G->header->wesn[XLO]) * HH->r_inc[GMT_X] - G->header->xy_off;
+		fy[k] = (G->header->wesn[YHI] - y[k]) * HH->r_inc[GMT_Y] - G->header->xy_off;
 	}
 
 	/* Get(i,j) of the lower left node in the rectangle containing this contour segment.
@@ -2756,13 +2760,14 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 /*! . */
 GMT_LOCAL void support_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_LABEL *L, struct GMT_DECORATE *G) {
 	/* Add a symbol location to the growing segment */
-	if (S->n_rows == S->n_alloc) {	/* Need more memory for the segment */
+	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
+	if (S->n_rows == SH->n_alloc) {	/* Need more memory for the segment */
 		uint64_t col;
-		S->n_alloc += GMT_SMALL_CHUNK;
+		SH->n_alloc += GMT_SMALL_CHUNK;
 		for (col = 0; col < S->n_columns; col++)
-			S->data[col] = gmt_M_memory (GMT, S->data[col], S->n_alloc, double);
-		S->text = gmt_M_memory (GMT, S->text, S->n_alloc, char *);
-		S->alloc_mode = GMT_ALLOC_INTERNALLY;
+			S->data[col] = gmt_M_memory (GMT, S->data[col], SH->n_alloc, double);
+		S->text = gmt_M_memory (GMT, S->text, SH->n_alloc, char *);
+		SH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 	/* Deal with any justifications or nudging */
 	if (G->nudge_flag) {	/* Must adjust point a bit */
@@ -3051,8 +3056,8 @@ GMT_LOCAL int support_inonout_sphpol_count (double plon, double plat, const stru
 }
 
 /*! . */
-GMT_LOCAL unsigned int gmt_inonout_sphpol (struct GMT_CTRL *GMT, double plon, double plat, const struct GMT_DATASEGMENT *P) {
-/* This function is used to see if some point P is located inside, outside, or on the boundary of the
+GMT_LOCAL unsigned int gmt_inonout_sphpol (struct GMT_CTRL *GMT, double plon, double plat, struct GMT_DATASEGMENT *S) {
+/* This function is used to see if some point P = (plon, plat) is located inside, outside, or on the boundary of the
  * spherical polygon S read by GMT_import_table.  Note GMT->current.io.skip_duplicates must be true when the polygon
  * was read so there are NO duplicate (repeated) points.
  * Returns the following values:
@@ -3076,35 +3081,36 @@ GMT_LOCAL unsigned int gmt_inonout_sphpol (struct GMT_CTRL *GMT, double plon, do
 	 */
 
 	unsigned int count[2];
+	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 	gmt_M_unused(GMT);
 
-	if (P->pole) {	/* Case 1 of an enclosed polar cap */
-		if (P->pole == +1) {	/* N polar cap */
-			if (plat < P->min[GMT_Y]) return (GMT_OUTSIDE);	/* South of a N polar cap */
-			if (plat > P->lat_limit) return (GMT_INSIDE);	/* Clearly inside of a N polar cap */
+	if (SH->pole) {	/* Case 1 of an enclosed polar cap */
+		if (SH->pole == +1) {	/* N polar cap */
+			if (plat < S->min[GMT_Y]) return (GMT_OUTSIDE);	/* South of a N polar cap */
+			if (plat > SH->lat_limit) return (GMT_INSIDE);	/* Clearly inside of a N polar cap */
 		}
-		else if (P->pole == -1) {	/* S polar cap */
-			if (plat > P->max[GMT_Y]) return (GMT_OUTSIDE);	/* North of a S polar cap */
-			if (plat < P->lat_limit) return (GMT_INSIDE);	/* Clearly inside of a S polar cap */
+		else if (SH->pole == -1) {	/* S polar cap */
+			if (plat > S->max[GMT_Y]) return (GMT_OUTSIDE);	/* North of a S polar cap */
+			if (plat < SH->lat_limit) return (GMT_INSIDE);	/* Clearly inside of a S polar cap */
 		}
 
 		/* Tally up number of intersections between polygon and meridian through P */
 
-		if (support_inonout_sphpol_count (plon, plat, P, count)) return (GMT_ONEDGE);	/* Found P is on S */
+		if (support_inonout_sphpol_count (plon, plat, S, count)) return (GMT_ONEDGE);	/* Found P is on S */
 
-		if (P->pole == +1 && count[0] % 2 == 0) return (GMT_INSIDE);
-		if (P->pole == -1 && count[1] % 2 == 0) return (GMT_INSIDE);
+		if (SH->pole == +1 && count[0] % 2 == 0) return (GMT_INSIDE);
+		if (SH->pole == -1 && count[1] % 2 == 0) return (GMT_INSIDE);
 
 		return (GMT_OUTSIDE);
 	}
 
 	/* Here is Case 2.  First check latitude range */
 
-	if (plat < P->min[GMT_Y] || plat > P->max[GMT_Y]) return (GMT_OUTSIDE);
+	if (plat < S->min[GMT_Y] || plat > S->max[GMT_Y]) return (GMT_OUTSIDE);
 
 	/* Longitudes are tricker and are tested with the tallying of intersections */
 
-	if (support_inonout_sphpol_count (plon, plat, P, count)) return (GMT_ONEDGE);	/* Found P is on S */
+	if (support_inonout_sphpol_count (plon, plat, S, count)) return (GMT_ONEDGE);	/* Found P is on S */
 
 	if (count[0] % 2) return (GMT_INSIDE);
 
@@ -3112,12 +3118,13 @@ GMT_LOCAL unsigned int gmt_inonout_sphpol (struct GMT_CTRL *GMT, double plon, do
 }
 
 /*! . */
-GMT_LOCAL unsigned int support_inonout_sub (struct GMT_CTRL *GMT, double x, double y, const struct GMT_DATASEGMENT *S) {
+GMT_LOCAL unsigned int support_inonout_sub (struct GMT_CTRL *GMT, double x, double y, struct GMT_DATASEGMENT *S) {
 	/* Front end for both spherical and Cartesian in-on-out functions */
 	unsigned int side;
+	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Assumes these are input polygons */
-		if (S->pole)	/* 360-degree polar cap, must check fully */
+		if (SH->pole)	/* 360-degree polar cap, must check fully */
 			side = gmt_inonout_sphpol (GMT, x, y, S);
 		else {	/* See if we are outside range of longitudes for polygon */
 			while (x > S->min[GMT_X]) x -= 360.0;	/* Wind clear of west */
@@ -3632,11 +3639,11 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 		for (seg = k = 0; seg < n_int_edges; seg++) {
 			j2 = 2 * vorOut.edgelist[k++];
 			S = P->table[0]->segment[seg];	/* Current output edge segment */
-			S->coord[GMT_X][0] = vorOut.pointlist[j2++];
-			S->coord[GMT_Y][0] = vorOut.pointlist[j2];
+			S->data[GMT_X][0] = vorOut.pointlist[j2++];
+			S->data[GMT_Y][0] = vorOut.pointlist[j2];
 			j2 = 2 * vorOut.edgelist[k++];
-			S->coord[GMT_X][1] = vorOut.pointlist[j2++];
-			S->coord[GMT_Y][1] = vorOut.pointlist[j2];
+			S->data[GMT_X][1] = vorOut.pointlist[j2++];
+			S->data[GMT_Y][1] = vorOut.pointlist[j2];
 			sprintf (header, "Voronoi edge # %d -L%d", seg, seg);
 			S->header = strdup (header);
 		}
@@ -4994,6 +5001,7 @@ GMT_LOCAL struct GMT_DATASET * support_resample_data_spherical (struct GMT_CTRL 
 	double along_dist, azimuth, dist_inc;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
 	resample = (!gmt_M_is_zero(along_ds));
 	n_cols = 2 + mode + ex_cols;
@@ -5006,9 +5014,10 @@ GMT_LOCAL struct GMT_DATASET * support_resample_data_spherical (struct GMT_CTRL 
 		for (seg = Tout->n_records = 0; seg < Tin->n_segments; seg++, seg_no++) {	/* For each segment to resample */
 			gmt_M_memcpy (Tout->segment[seg]->data[GMT_X], Tin->segment[seg]->data[GMT_X], Tin->segment[seg]->n_rows, double);	/* Duplicate longitudes */
 			gmt_M_memcpy (Tout->segment[seg]->data[GMT_Y], Tin->segment[seg]->data[GMT_Y], Tin->segment[seg]->n_rows, double);	/* Duplicate latitudes */
+			SH = gmt_get_DS_hidden (Tout->segment[seg]);
 			/* Resample lines as per smode */
 			if (resample) {	/* Resample lon/lat path and also reallocate more space for all other columns */
-				Tout->segment[seg]->n_rows = Tout->segment[seg]->n_alloc = gmt_resample_path (GMT, &Tout->segment[seg]->data[GMT_X], &Tout->segment[seg]->data[GMT_Y], Tout->segment[seg]->n_rows, along_ds, smode);
+				Tout->segment[seg]->n_rows = SH->n_alloc = gmt_resample_path (GMT, &Tout->segment[seg]->data[GMT_X], &Tout->segment[seg]->data[GMT_Y], Tout->segment[seg]->n_rows, along_ds, smode);
 				for (col = 2; col < n_cols; col++)	/* Also realloc the other columns */
 					Tout->segment[seg]->data[col] = gmt_M_memory (GMT, Tout->segment[seg]->data[col], Tout->segment[seg]->n_rows, double);
 			}
@@ -5050,6 +5059,7 @@ GMT_LOCAL struct GMT_DATASET * support_resample_data_cartesian (struct GMT_CTRL 
 	double along_dist, azimuth, dist_inc;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
 	resample = (!gmt_M_is_zero(along_ds));
 	n_cols = 2 + mode + ex_cols;
@@ -5062,9 +5072,10 @@ GMT_LOCAL struct GMT_DATASET * support_resample_data_cartesian (struct GMT_CTRL 
 		for (seg = Tout->n_records = 0; seg < Tin->n_segments; seg++, seg_no++) {	/* For each segment to resample */
 			gmt_M_memcpy (Tout->segment[seg]->data[GMT_X], Tin->segment[seg]->data[GMT_X], Tin->segment[seg]->n_rows, double);	/* Duplicate x */
 			gmt_M_memcpy (Tout->segment[seg]->data[GMT_Y], Tin->segment[seg]->data[GMT_Y], Tin->segment[seg]->n_rows, double);	/* Duplicate y */
+			SH = gmt_get_DS_hidden (Tout->segment[seg]);
 			/* Resample lines as per smode */
 			if (resample) {	/* Resample x/y path and also reallocate more space for all other columns */
-				Tout->segment[seg]->n_rows = Tout->segment[seg]->n_alloc = gmt_resample_path (GMT, &Tout->segment[seg]->data[GMT_X], &Tout->segment[seg]->data[GMT_Y], Tout->segment[seg]->n_rows, along_ds, smode);
+				Tout->segment[seg]->n_rows = SH->n_alloc = gmt_resample_path (GMT, &Tout->segment[seg]->data[GMT_X], &Tout->segment[seg]->data[GMT_Y], Tout->segment[seg]->n_rows, along_ds, smode);
 				for (col = 2; col < n_cols; col++)	/* Also realloc the other columns */
 					Tout->segment[seg]->data[col] = gmt_M_memory (GMT, Tout->segment[seg]->data[col], Tout->segment[seg]->n_rows, double);
 			}
@@ -6723,6 +6734,7 @@ void gmt_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	*/
 	unsigned int one_or_zero;
 	double s;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	one_or_zero = !h->registration;
 	h->xy_off = 0.5 * h->registration;	/* Use to calculate mean location of block */
@@ -6851,20 +6863,21 @@ void gmt_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 		}
 	}
 
-	h->r_inc[GMT_X] = 1.0 / h->inc[GMT_X];
-	h->r_inc[GMT_Y] = 1.0 / h->inc[GMT_Y];
+	HH->r_inc[GMT_X] = 1.0 / h->inc[GMT_X];
+	HH->r_inc[GMT_Y] = 1.0 / h->inc[GMT_Y];
 }
 
 /*! . */
 struct GMT_PALETTE * gmtlib_create_palette (struct GMT_CTRL *GMT, uint64_t n_colors) {
 	/* Makes an empty palette table */
-	struct GMT_PALETTE *P = NULL;
-	P = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE);
+	struct GMT_PALETTE *P = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE);
+	struct GMT_PALETTE_HIDDEN *PH = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE_HIDDEN);
+	P->hidden = PH;
 	if (n_colors > 0) P->data = gmt_M_memory (GMT, NULL, n_colors, struct GMT_LUT);
 	P->n_colors = (unsigned int)n_colors;
-	P->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
-	P->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
-	P->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
+	PH->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
+	PH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	PH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 #ifdef GMT_BACKWARDS_API
 	P->range = P->data;
 #endif
@@ -6887,17 +6900,22 @@ void gmtlib_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 	/* Use free() to free the headers since they were allocated with strdup */
 	for (i = 0; i < P->n_headers; i++) gmt_M_str_free (P->header[i]);
 	P->n_headers = P->n_colors = 0;
+	gmt_M_free (GMT, P->hidden);
 	gmt_M_free (GMT, P->header);
 }
 
 /*! . */
 void gmtlib_copy_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_to, struct GMT_PALETTE *P_from) {
 	unsigned int i;
+	struct GMT_PALETTE_HIDDEN *PH_to = NULL;
 	/* Makes the specified palette the current palette */
 	gmtlib_free_cpt_ptr (GMT, P_to);	/* Frees everything inside P_to */
 	gmt_M_memcpy (P_to, P_from, 1, struct GMT_PALETTE);
+	P_to->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE_HIDDEN);
+	gmt_M_memcpy (P_to->hidden, P_from->hidden, 1, struct GMT_PALETTE_HIDDEN);
 	P_to->data = gmt_M_memory (GMT, NULL, P_to->n_colors, struct GMT_LUT);
 	gmt_M_memcpy (P_to->data, P_from->data, P_to->n_colors, struct GMT_LUT);
+	PH_to = gmt_get_C_hidden (P_to);
 	for (i = 0; i < 3; i++) if (P_from->bfn[i].fill) {
 		P_to->bfn[i].fill = gmt_M_memory (GMT, NULL, 1, struct GMT_FILL);
 		gmt_M_memcpy (P_to->bfn[i].fill, P_from->bfn[i].fill, 1, struct GMT_FILL);
@@ -6962,6 +6980,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	char *name = NULL, *h = NULL;
 	FILE *fp = NULL;
 	struct GMT_PALETTE *X = NULL;
+	struct GMT_PALETTE_HIDDEN *XH = NULL;
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
 
 	/* Determine input source */
@@ -7006,8 +7025,8 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reading CPT from %s\n", cpt_file);
 
-	X = gmt_M_memory (GMT, NULL, 1, struct GMT_PALETTE);
-
+	X = gmtlib_create_palette (GMT, 0);
+	XH = gmt_get_C_hidden (X);
 	X->data = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_LUT);
 	X->mode = cpt_flags;	/* Maybe limit what to do with BFN selections */
 	color_model = GMT->current.setting.color_model;		/* Save the original setting since it may be modified by settings in the CPT */
@@ -7044,8 +7063,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized COLOR_MODEL in color palette table %s\n", cpt_file);
 				if (close_file) fclose (fp);
 				if (Z) gmt_M_free (GMT, Z);
-				gmt_M_free (GMT, X->data);
-				gmt_M_free (GMT, X);
+				gmtlib_free_palette (GMT, &X);
 				return (NULL);
 			}
 			continue;	/* Don't want this instruction to be also kept as a comment */
@@ -7063,8 +7081,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not parse RANGE [%s] in %s\n", &h[7], cpt_file);
 				if (close_file) fclose (fp);
 				if (Z) gmt_M_free (GMT, Z);
-				gmt_M_free (GMT, X->data);
-				gmt_M_free (GMT, X);
+				gmtlib_free_palette (GMT, &X);
 				return (NULL);
 			}
 			gmt_scanf_arg (GMT, T1, GMT_IS_UNKNOWN, false, &X->minmax[0]);
@@ -7124,8 +7141,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "CPT Pattern fill (%s) not understood!\n", T1);
 					if (close_file) fclose (fp);
 					if (Z) gmt_M_free (GMT, Z);
-					gmt_M_free (GMT, X->data);
-					gmt_M_free (GMT, X);
+					gmtlib_free_palette (GMT, &X);
 					return (NULL);
 				}
 				X->has_pattern = true;
@@ -7203,8 +7219,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "z-slice to skip not in [z0 - z1 -] format!\n");
 				if (close_file) fclose (fp);
 				if (Z) gmt_M_free (GMT, Z);
-				gmt_M_free (GMT, X->data);
-				gmt_M_free (GMT, X);
+				gmtlib_free_palette (GMT, &X);
 				return (NULL);
 			}
 			gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, false, &X->data[n].z_high);
@@ -7218,8 +7233,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "CPT Pattern fill (%s) not understood!\n", T1);
 				if (close_file) fclose (fp);
 				if (Z) gmt_M_free (GMT, Z);
-				gmt_M_free (GMT, X->data);
-				gmt_M_free (GMT, X);
+				gmtlib_free_palette (GMT, &X);
 				return (NULL);
 			}
 			else if (nread == 2) {	/* Categorical cpt records with key fill [;label] */
@@ -7234,8 +7248,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "z-slice with pattern fill not in [z0 pattern z1 -] format!\n");
 				if (close_file) fclose (fp);
 				if (Z) gmt_M_free (GMT, Z);
-				gmt_M_free (GMT, X->data);
-				gmt_M_free (GMT, X);
+				gmtlib_free_palette (GMT, &X);
 				return (NULL);
 			}
 			X->has_pattern = true;
@@ -7293,8 +7306,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				if (dz == 0.0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Z-slice with dz = 0\n");
 					if (Z) gmt_M_free (GMT, Z);
-					gmt_M_free (GMT, X->data);
-					gmt_M_free (GMT, X);
+					gmtlib_free_palette (GMT, &X);
 					if (close_file) fclose (fp);
 					return (NULL);
 				}
@@ -7342,22 +7354,19 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	if (X->categorical && n_cat_records != n) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot decode %s as categorical CPT\n", cpt_file);
 		if (Z) gmt_M_free (GMT, Z);
-		gmt_M_free (GMT, X->data);
-		gmt_M_free (GMT, X);
+		gmtlib_free_palette (GMT, &X);
 		return (NULL);
 	}
 	if (error) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to decode %s\n", cpt_file);
 		if (Z) gmt_M_free (GMT, Z);
-		gmt_M_free (GMT, X->data);
-		gmt_M_free (GMT, X);
+		gmtlib_free_palette (GMT, &X);
 		return (NULL);
 	}
 	if (n == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "CPT %s has no z-slices!\n", cpt_file);
 		if (Z) gmt_M_free (GMT, Z);
-		gmt_M_free (GMT, X->data);
-		gmt_M_free (GMT, X);
+		gmtlib_free_palette (GMT, &X);
 		return (NULL);
 	}
 
@@ -7402,8 +7411,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			gmt_M_free (GMT, X->data[i].fill);
 			gmt_M_free (GMT, X->data[i].label);
 		}
-		gmt_M_free (GMT, X->data);
-		gmt_M_free (GMT, X);
+		gmtlib_free_palette (GMT, &X);
 		gmt_M_free (GMT, Z);
 		return (NULL);
 	}
@@ -7443,6 +7451,7 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 	   a CPT for quick/dirty work provided mode == GMT_CPT_OPTIONAL and hence zmin/zmax are set to the desired data range */
 
 	struct GMT_PALETTE *P = NULL;
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	unsigned int continuous = (file && strchr(file,',')), first;
 	bool is_cpt_master = false;
 
@@ -7477,6 +7486,7 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 		master = (file && file[0]) ? file : "rainbow";	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|GMT_CPT_CONTINUOUS, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
+		PH = gmt_get_C_hidden (P);
 		if (P->has_range)	/* Only stretch CPTs that have no default range*/
 			zmin = zmax = 0.0;
 		else {	/* Stretch to fit the data range */
@@ -7650,6 +7660,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	double rgb_low[4], rgb_high[4], rgb_fore[4], rgb_back[4];
 	double *x = NULL, *z_out = NULL, a, b, f, x_inc;
 	double hsv_low[4], hsv_high[4], hsv_fore[4], hsv_back[4];
+	struct GMT_PALETTE_HIDDEN *PH = NULL;
 
 	struct GMT_LUT *lut = NULL;
 	struct GMT_PALETTE *P = NULL;
@@ -7670,7 +7681,8 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 	i += gmt_M_check_condition (GMT, (no_inter || set_z_only) && P->n_colors > Pin->n_colors, "Number of picked colors exceeds colors in input cpt!\n");
 
-
+	PH = gmt_get_C_hidden (P);
+	
 	/* First normalize old CPT so z-range is 0-1 */
 
 	b = 1.0 / (Pin->data[Pin->n_colors-1].z_high - Pin->data[0].z_low);
@@ -7862,7 +7874,7 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	P->is_continuous = continuous;
 	P->is_bw = Pin->is_bw;
 	P->is_gray = Pin->is_gray;
-	P->has_range = P->has_hinge = 0;	/* No longer normalized or special hinge after resampling */
+	P->has_range = Pin->has_hinge = 0;	/* No longer normalized or special hinge after resampling */
 
 	/* Background, foreground, and nan colors */
 
@@ -8042,7 +8054,6 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 /*! . */
 struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high) {
 	/* Truncate this CPT to start and end at z_low, z_high.  If either is NaN we do nothing at that end. */
-
 	unsigned int k, j, first = 0, last = P->n_colors - 1;
 
 	if (gmt_M_is_dnan (z_low) && gmt_M_is_dnan (z_high)) return (P);	/* No change */
@@ -8175,14 +8186,15 @@ int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double value, double *rgb) {
 	unsigned int i;
 	double rel, hsv[4];
+	struct GMT_PALETTE_HIDDEN *PH = gmt_get_C_hidden (P);
 
 	if (index < 0) {	/* NaN, Foreground, Background */
 		gmt_M_rgb_copy (rgb, P->bfn[index+3].rgb);
-		P->skip = P->bfn[index+3].skip;
+		PH->skip = P->bfn[index+3].skip;
 	}
 	else if (P->data[index].skip) {		/* Set to page color for now */
 		gmt_M_rgb_copy (rgb, GMT->current.setting.ps_page_rgb);
-		P->skip = true;
+		PH->skip = true;
 	}
 	else {	/* Do linear interpolation between low and high colors */
 		rel = (value - P->data[index].z_low) * P->data[index].i_dz;
@@ -8193,7 +8205,7 @@ void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index,
 		else {	/* Interpolation in RGB space */
 			for (i = 0; i < 4; i++) rgb[i] = P->data[index].rgb_low[i] + rel * P->data[index].rgb_diff[i];
 		}
-		P->skip = false;
+		PH->skip = false;
 	}
 }
 
@@ -9079,7 +9091,9 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 	char modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *T = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
 	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
 
@@ -9093,10 +9107,12 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 		return (NULL);
 	
 	T = D->table[0];	/* The only table */
-    T->n_segments = 0;    /* Start working on first segment */
+	TH = gmt_get_DT_hidden (T);
+	T->n_segments = 0;    /* Start working on first segment */
 
 	while (gmt_strtok (args, ",", &pos, p)) {	/* Split on each line since separated by commas */
 		S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, 2, n_cols, NULL, T->segment[T->n_segments]);	/* n_cols with 2 rows each */
+		SH = gmt_get_DS_hidden (S);
 		k = p_mode = s = 0;	len = strlen (p);
 		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char>, if any */
 			if ((p[k] == '+') && (p[k+1] && strchr ("adilnor", p[k+1]))) s = k;
@@ -9167,7 +9183,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 				error += gmt_verify_expectations (GMT, ytype, gmt_scanf_arg (GMT, txt_c, ytype, false, &S->data[GMT_Y][1]), txt_c);
 			}
 		}
-        S->n_rows = 2;
+		S->n_rows = 2;
 		for (n = 0; n < 2; n++) {	/* Reset any zmin/max settings if used and applicable */
 			if (S->data[GMT_X][n] == DBL_MAX) {	/* Meant zmax location */
 				if (xyz) {
@@ -9224,7 +9240,7 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			S->n_rows = support_determine_circle (GMT, x0, y0, r, S->data[GMT_X], S->data[GMT_Y], np);
 			resample = false;	/* Since we already got our profile */
 		}
-		if (resample) S->n_rows = S->n_alloc = gmt_resample_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, step, mode);
+		if (resample) S->n_rows = SH->n_alloc = gmt_resample_path (GMT, &S->data[GMT_X], &S->data[GMT_Y], S->n_rows, step, mode);
 		if (get_distances) {	/* Compute cumulative distances along line */
 			gmt_M_free (GMT, S->data[GMT_Z]);	/* Free so we can alloc a new array */
 			S->data[GMT_Z] = gmt_dist_array (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, true);
@@ -9243,11 +9259,11 @@ struct GMT_DATASET *gmt_make_profiles (struct GMT_CTRL *GMT, char option, char *
 			}
 		}
 		T->segment[T->n_segments++] = S;	/* Hook into table */
-		if (T->n_segments == T->n_alloc) {	/* Allocate more space */
-			size_t old_n_alloc = T->n_alloc;
-			T->n_alloc <<= 1;
-			T->segment = gmt_M_memory (GMT, T->segment, T->n_alloc, struct GMT_DATASEGMENT *);
-			gmt_M_memset (&(T->segment[old_n_alloc]), T->n_alloc - old_n_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
+		if (T->n_segments == TH->n_alloc) {	/* Allocate more space */
+			size_t old_n_alloc = TH->n_alloc;
+			TH->n_alloc <<= 1;
+			T->segment = gmt_M_memory (GMT, T->segment, TH->n_alloc, struct GMT_DATASEGMENT *);
+			gmt_M_memset (&(T->segment[old_n_alloc]), TH->n_alloc - old_n_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 		}
 	}
 	gmtlib_finalize_dataset (GMT, D);	/* Reallicate to fit */
@@ -9424,6 +9440,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 	else if (G->fixed) {
 		unsigned int first = 0;
 		struct GMT_DATASET *T = NULL;
+		struct GMT_DATASET_HIDDEN *TH = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 		double xy[2];
 		/* Reading this way since file has coordinates and possibly a text label.
@@ -9443,6 +9460,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Data file %s has only %" PRIu64 " data columns!\n", G->file, T->n_columns);
 			return (error);
 		}
+		TH = gmt_get_DD_hidden (T);
 		/* Repackage this information into the G structure via f_xy and f_label arrays */
 		G->f_xy[GMT_X] = gmt_M_memory (GMT, NULL, T->n_records, double);
 		G->f_xy[GMT_Y] = gmt_M_memory (GMT, NULL, T->n_records, double);
@@ -10112,22 +10130,26 @@ unsigned int gmt_non_zero_winding (struct GMT_CTRL *GMT, double xp, double yp, d
 }
 
 /*! . */
-unsigned int gmt_inonout (struct GMT_CTRL *GMT, double x, double y, const struct GMT_DATASEGMENT *S) {
+unsigned int gmt_inonout (struct GMT_CTRL *GMT, double x, double y, struct GMT_DATASEGMENT *S) {
 	/* Front end for both spherical and Cartesian in-on-out functions.
  	 * Knows to check for polygons with holes as well. */
 	unsigned int side, side_h;
 	struct GMT_DATASEGMENT *H = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
+	struct GMT_DATASEGMENT_HIDDEN *SHnext = NULL;
 
 	if ((side = support_inonout_sub (GMT, x, y, S)) <= GMT_ONEDGE) return (side);	/* Outside polygon or on perimeter, we are done */
 
 	/* Here, point is inside the polygon perimeter. See if there are holes */
 
-	if (GMT->current.io.OGR && (H = S->next)) {	/* Must check for and skip if inside a hole */
+	if (GMT->current.io.OGR && (H = SH->next)) {	/* Must check for and skip if inside a hole */
 		side_h = GMT_OUTSIDE;	/* We are outside a hole until we are found to be inside it */
-		while (side_h == GMT_OUTSIDE && H && H->ogr && H->ogr->pol_mode == GMT_IS_HOLE) {	/* Found a hole */
+		SHnext = gmt_get_DS_hidden (H);
+		while (side_h == GMT_OUTSIDE && H && SHnext->ogr && SHnext->ogr->pol_mode == GMT_IS_HOLE) {	/* Found a hole */
 			/* Must check if point is inside this hole polygon */
 			side_h = support_inonout_sub (GMT, x, y, H);
-			H = H->next;	/* Move to next polygon hole */
+			H = SHnext->next;	/* Move to next polygon hole */
+			if (H) SHnext = gmt_get_DS_hidden (H);
 		}
 		if (side_h == GMT_INSIDE) side = GMT_OUTSIDE;	/* Inside one of the holes, hence outside polygon; go to next perimeter polygon */
 		if (side_h == GMT_ONEDGE) side = GMT_ONEDGE;	/* On path of one of the holes, hence on polygon path; update side */
@@ -10231,25 +10253,26 @@ int gmt_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	int i = 0, type;
 	bool same;
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
-	if (h->no_BC) return (GMT_NOERROR);	/* Told not to deal with BC stuff */
+	if (HH->no_BC) return (GMT_NOERROR);	/* Told not to deal with BC stuff */
 
 	if (GMT->common.n.bc_set) {	/* Override BCs via -n+<BC> */
 		while (GMT->common.n.BC[i]) {
 			switch (GMT->common.n.BC[i]) {
 				case 'g':	/* Geographic sets everything */
-					h->gn = h->gs = true;
-					h->BC[XLO] = h->BC[XHI] = h->BC[YLO] = h->BC[YHI] = GMT_BC_IS_GEO;
+					HH->gn = HH->gs = true;
+					HH->BC[XLO] = HH->BC[XHI] = HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_GEO;
 					break;
 				case 'n':	/* Natural BCs */
-					if (GMT->common.n.BC[i+1] == 'x') { h->BC[XLO] = h->BC[XHI] = GMT_BC_IS_NATURAL; i++; }
-					else if (GMT->common.n.BC[i+1] == 'y') { h->BC[YLO] = h->BC[YHI] = GMT_BC_IS_NATURAL; i++; }
-					else h->BC[XLO] = h->BC[XHI] = h->BC[YLO] = h->BC[YHI] = GMT_BC_IS_NATURAL;
+					if (GMT->common.n.BC[i+1] == 'x') { HH->BC[XLO] = HH->BC[XHI] = GMT_BC_IS_NATURAL; i++; }
+					else if (GMT->common.n.BC[i+1] == 'y') { HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_NATURAL; i++; }
+					else HH->BC[XLO] = HH->BC[XHI] = HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_NATURAL;
 					break;
 				case 'p':	/* Periodic BCs */
-					if (GMT->common.n.BC[i+1] == 'x') { h->BC[XLO] = h->BC[XHI] = GMT_BC_IS_PERIODIC; h->nxp = 1; i++; }
-					else if (GMT->common.n.BC[i+1] == 'y') { h->BC[YLO] = h->BC[YHI] = GMT_BC_IS_PERIODIC; h->nyp = 1; i++; }
-					else { h->BC[XLO] = h->BC[XHI] = h->BC[YLO] = h->BC[YHI] = GMT_BC_IS_PERIODIC; h->nxp = h->nyp = 1; }
+					if (GMT->common.n.BC[i+1] == 'x') { HH->BC[XLO] = HH->BC[XHI] = GMT_BC_IS_PERIODIC; HH->nxp = 1; i++; }
+					else if (GMT->common.n.BC[i+1] == 'y') { HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_PERIODIC; HH->nyp = 1; i++; }
+					else { HH->BC[XLO] = HH->BC[XHI] = HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_PERIODIC; HH->nxp = HH->nyp = 1; }
 					break;
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot parse boundary condition %s\n", GMT->common.n.BC);
@@ -10258,81 +10281,81 @@ int gmt_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 			}
 			i++;
 		}
-		if (h->gn && !(h->BC[XLO] == GMT_BC_IS_GEO && h->BC[XHI] == GMT_BC_IS_GEO && h->BC[YLO] == GMT_BC_IS_GEO && h->BC[YHI] == GMT_BC_IS_GEO)) {
+		if (HH->gn && !(HH->BC[XLO] == GMT_BC_IS_GEO && HH->BC[XHI] == GMT_BC_IS_GEO && HH->BC[YLO] == GMT_BC_IS_GEO && HH->BC[YHI] == GMT_BC_IS_GEO)) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT boundary condition g overrides n[x|y] or p[x|y]\n");
-			h->BC[XLO] = h->BC[XHI] = h->BC[YLO] = h->BC[YHI] = GMT_BC_IS_GEO;
+			HH->BC[XLO] = HH->BC[XHI] = HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_GEO;
 		}
 	}
 	else {	/* Determine BC based on whether grid is geographic or not */
 		type = (gmt_M_x_is_lon (GMT, GMT_IN)) ? GMT_BC_IS_GEO : GMT_BC_IS_NATURAL;
-		for (i = 0; i < 4; i++) if (h->BC[i] == GMT_BC_IS_NOTSET) h->BC[i] = type;
+		for (i = 0; i < 4; i++) if (HH->BC[i] == GMT_BC_IS_NOTSET) HH->BC[i] = type;
 	}
 
 	/* Check if geographic conditions can be used with this grid */
-	if (h->gn && !gmt_M_grd_is_global (GMT, h)) {
+	if (HH->gn && !gmt_grd_is_global (GMT, h)) {
 		/* User has requested geographical conditions, but grid is not global */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Longitude range too small; geographic boundary condition changed to natural.\n");
-		h->nxp = h->nyp = 0;
-		h->gn  = h->gs = false;
-		for (i = 0; i < 4; i++) if (h->BC[i] == GMT_BC_IS_NOTSET) h->BC[i] = GMT_BC_IS_NATURAL;
+		HH->nxp = HH->nyp = 0;
+		HH->gn  = HH->gs = false;
+		for (i = 0; i < 4; i++) if (HH->BC[i] == GMT_BC_IS_NOTSET) HH->BC[i] = GMT_BC_IS_NATURAL;
 	}
-	else if (gmt_M_grd_is_global (GMT, h)) {	/* Grid is truly global */
-		double xtest = fmod (180.0, h->inc[GMT_X]) * h->r_inc[GMT_X];
+	else if (gmt_grd_is_global (GMT, h)) {	/* Grid is truly global */
+		double xtest = fmod (180.0, h->inc[GMT_X]) * HH->r_inc[GMT_X];
 		/* xtest should be within GMT_CONV4_LIMIT of zero or of one.  */
 		if (xtest > GMT_CONV4_LIMIT && xtest < (1.0 - GMT_CONV4_LIMIT) ) {
 			/* Error.  We need it to divide into 180 so we can phase-shift at poles.  */
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "x_inc does not divide 180; geographic boundary condition changed to natural.\n");
-			h->nxp = h->nyp = 0;
-			h->gn  = h->gs = false;
-			for (i = 0; i < 4; i++) if (h->BC[i] == GMT_BC_IS_NOTSET) h->BC[i] = GMT_BC_IS_NATURAL;
+			HH->nxp = HH->nyp = 0;
+			HH->gn  = HH->gs = false;
+			for (i = 0; i < 4; i++) if (HH->BC[i] == GMT_BC_IS_NOTSET) HH->BC[i] = GMT_BC_IS_NATURAL;
 		}
 		else {
-			h->nxp = urint (360.0 * h->r_inc[GMT_X]);
-			h->nyp = 0;
-			h->gn = ((fabs(h->wesn[YHI] - 90.0)) < (GMT_CONV4_LIMIT * h->inc[GMT_Y]));
-			h->gs = ((fabs(h->wesn[YLO] + 90.0)) < (GMT_CONV4_LIMIT * h->inc[GMT_Y]));
-			if (!h->gs) h->BC[YLO] = GMT_BC_IS_NATURAL;
-			if (!h->gn) h->BC[YHI] = GMT_BC_IS_NATURAL;
+			HH->nxp = urint (360.0 * HH->r_inc[GMT_X]);
+			HH->nyp = 0;
+			HH->gn = ((fabs(h->wesn[YHI] - 90.0)) < (GMT_CONV4_LIMIT * h->inc[GMT_Y]));
+			HH->gs = ((fabs(h->wesn[YLO] + 90.0)) < (GMT_CONV4_LIMIT * h->inc[GMT_Y]));
+			if (!HH->gs) HH->BC[YLO] = GMT_BC_IS_NATURAL;
+			if (!HH->gn) HH->BC[YHI] = GMT_BC_IS_NATURAL;
 		}
 	}
 	else {	/* Either periodic or natural */
-		if (h->nxp != 0) h->nxp = (h->registration == GMT_GRID_PIXEL_REG) ? h->n_columns : h->n_columns - 1;
-		if (h->nyp != 0) h->nyp = (h->registration == GMT_GRID_PIXEL_REG) ? h->n_rows : h->n_rows - 1;
+		if (HH->nxp != 0) HH->nxp = (h->registration == GMT_GRID_PIXEL_REG) ? h->n_columns : h->n_columns - 1;
+		if (HH->nyp != 0) HH->nyp = (h->registration == GMT_GRID_PIXEL_REG) ? h->n_rows : h->n_rows - 1;
 	}
 
-	if (h->BC[XLO] == GMT_BC_IS_PERIODIC && h->BC[XHI] == GMT_BC_IS_PERIODIC) {	/* Parameters needed for x-periodic, non-geographic grids */
+	if (HH->BC[XLO] == GMT_BC_IS_PERIODIC && HH->BC[XHI] == GMT_BC_IS_PERIODIC) {	/* Parameters needed for x-periodic, non-geographic grids */
 		GMT->common.n.periodic[GMT_X] = true;
 		GMT->common.n.range[GMT_X] = h->wesn[XHI] - h->wesn[XLO];
 		GMT->common.n.half_range[GMT_X] = 0.5 * GMT->common.n.range[GMT_X];
 	}
-	if (h->BC[YLO] == GMT_BC_IS_PERIODIC && h->BC[YHI] == GMT_BC_IS_PERIODIC) {	/* Parameters needed for y-periodic, non-geographic grids */
+	if (HH->BC[YLO] == GMT_BC_IS_PERIODIC && HH->BC[YHI] == GMT_BC_IS_PERIODIC) {	/* Parameters needed for y-periodic, non-geographic grids */
 		GMT->common.n.periodic[GMT_Y] = true;
 		GMT->common.n.range[GMT_Y] = h->wesn[YHI] - h->wesn[YLO];
 		GMT->common.n.half_range[GMT_Y] = 0.5 * GMT->common.n.range[GMT_Y];
 	}
-	for (i = 1, same = true; same && i < 4; i++) if (h->BC[i] != h->BC[i-1]) same = false;
+	for (i = 1, same = true; same && i < 4; i++) if (HH->BC[i] != HH->BC[i-1]) same = false;
 
 	if (same)
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for all edges: %s\n", kind[h->BC[XLO]]);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for all edges: %s\n", kind[HH->BC[XLO]]);
 	else {
-		if (h->BC[XLO] == h->BC[XHI])
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for left and right edges: %s\n", kind[h->BC[XLO]]);
+		if (HH->BC[XLO] == HH->BC[XHI])
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for left and right edges: %s\n", kind[HH->BC[XLO]]);
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for left   edge: %s\n", kind[h->BC[XLO]]);
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for right  edge: %s\n", kind[h->BC[XHI]]);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for left   edge: %s\n", kind[HH->BC[XLO]]);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for right  edge: %s\n", kind[HH->BC[XHI]]);
 		}
-		if (h->BC[YLO] == h->BC[YHI])
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for bottom and top edges: %s\n", kind[h->BC[YLO]]);
+		if (HH->BC[YLO] == HH->BC[YHI])
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for bottom and top edges: %s\n", kind[HH->BC[YLO]]);
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for bottom edge: %s\n", kind[h->BC[YLO]]);
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for top    edge: %s\n", kind[h->BC[YHI]]);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for bottom edge: %s\n", kind[HH->BC[YLO]]);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for top    edge: %s\n", kind[HH->BC[YHI]]);
 		}
 	}
 	/* Set this grid's interpolation parameters */
 
-	h->bcr_interpolant = GMT->common.n.interpolant;
-	h->bcr_threshold = GMT->common.n.threshold;
-	h->bcr_n = (h->bcr_interpolant == BCR_NEARNEIGHBOR) ? 1 : ((h->bcr_interpolant == BCR_BILINEAR) ? 2 : 4);
+	HH->bcr_interpolant = GMT->common.n.interpolant;
+	HH->bcr_threshold = GMT->common.n.threshold;
+	HH->bcr_n = (HH->bcr_interpolant == BCR_NEARNEIGHBOR) ? 1 : ((HH->bcr_interpolant == BCR_BILINEAR) ? 2 : 4);
 
 	return (GMT_NOERROR);
 }
@@ -10366,16 +10389,17 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 	unsigned int n_skip, n_set;
 	unsigned int bok;		/* bok used to test that things are OK  */
 	bool set[4] = {true, true, true, true};
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
 	char *edge[4] = {"left  ", "right ", "bottom", "top   "};
 
 	if (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) return (GMT_NOERROR);	/* Only set up for real arrays */
-	if (G->header->no_BC) return (GMT_NOERROR);	/* Told not to deal with BC stuff */
+	if (HH->no_BC) return (GMT_NOERROR);	/* Told not to deal with BC stuff */
 	if (G->data == NULL) return (GMT_NOERROR);	/* Premature call; no grid data yet */
 
 	for (i = n_skip = 0; i < 4; i++) {
-		if (G->header->BC[i] == GMT_BC_IS_DATA) {set[i] = false; n_skip++;}	/* No need to set since there is data in the pad area */
+		if (HH->BC[i] == GMT_BC_IS_DATA) {set[i] = false; n_skip++;}	/* No need to set since there is data in the pad area */
 	}
 	if (n_skip == 4) {	/* No need to set anything since there is data in the pad area on all sides */
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "All boundaries set via extended data.\n");
@@ -10398,7 +10422,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 	/* Initialize stuff:  */
 
 	mx = G->header->mx;
-	nxp2 = G->header->nxp / 2;	/* Used for 180 phase shift at poles  */
+	nxp2 = HH->nxp / 2;	/* Used for 180 phase shift at poles  */
 
 	iw = G->header->pad[XLO];	/* i for west-most data column */
 	iwo1 = iw - 1;		/* 1st column outside west  */
@@ -10420,17 +10444,17 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 	jso2 = jso1 + mx;	/* 2nd row outside south  */
 	jsi1 = js - mx;		/* 1st row  inside south  */
 
-	mxnyp = mx * G->header->nyp;
+	mxnyp = mx * HH->nyp;
 
 	jno1k = jno1 + mxnyp;	/* data rows periodic to boundary rows  */
 	jno2k = jno2 + mxnyp;
 	jso1k = jso1 - mxnyp;
 	jso2k = jso2 - mxnyp;
 
-	iwo1k = iwo1 + G->header->nxp;	/* data cols periodic to bndry cols  */
-	iwo2k = iwo2 + G->header->nxp;
-	ieo1k = ieo1 - G->header->nxp;
-	ieo2k = ieo2 - G->header->nxp;
+	iwo1k = iwo1 + HH->nxp;	/* data cols periodic to bndry cols  */
+	iwo2k = iwo2 + HH->nxp;
+	ieo1k = ieo1 - HH->nxp;
+	ieo2k = ieo2 - HH->nxp;
 
 	/* Duplicate rows and columns if n_columns or n_rows equals 1 */
 
@@ -10445,7 +10469,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 		to change the condition to Natural in that case, with warning.  */
 
 	if (G->header->registration == GMT_GRID_NODE_REG) {	/* A pole can only be a grid node with gridline registration */
-		if (G->header->gn) {	/* North pole case */
+		if (HH->gn) {	/* North pole case */
 			bok = 0;
 			if (gmt_M_is_fnan (G->data[jn + iw])) {	/* First is NaN so all should be NaN */
 				for (i = iw+1; i <= ie; i++) if (!gmt_M_is_fnan (G->data[jn + i])) bok++;
@@ -10456,7 +10480,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%d (of %d) inconsistent grid values at North pole.\n", bok, G->header->n_columns);
 		}
 
-		if (G->header->gs) {	/* South pole case */
+		if (HH->gs) {	/* South pole case */
 			bok = 0;
 			if (gmt_M_is_fnan (G->data[js + iw])) {	/* First is NaN so all should be NaN */
 				for (i = iw+1; i <= ie; i++) if (!gmt_M_is_fnan (G->data[js + i])) bok++;
@@ -10470,9 +10494,9 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 
 	/* Start with the case that x is not periodic, because in that case we also know that y cannot be polar.  */
 
-	if (G->header->nxp <= 0) {	/* x is not periodic  */
+	if (HH->nxp <= 0) {	/* x is not periodic  */
 
-		if (G->header->nyp > 0) {	/* y is periodic  */
+		if (HH->nyp > 0) {	/* y is periodic  */
 
 			for (i = iw, bok = 0; i <= ie; ++i) {
 				if (G->header->registration == GMT_GRID_NODE_REG && !doubleAlmostEqualZero (G->data[jn+i], G->data[js+i]))
@@ -10520,26 +10544,26 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			if (set[XLO]) {
 				G->data[jno2 + iwo2] = G->data[jno2k + iwo2];
 				G->data[jso2 + iwo2] = G->data[jso2k + iwo2];
-				G->header->BC[XLO] = GMT_BC_IS_NATURAL;
+				HH->BC[XLO] = GMT_BC_IS_NATURAL;
 			}
 			if (set[XHI]) {
 				G->data[jno2 + ieo2] = G->data[jno2k + ieo2];
 				G->data[jso2 + ieo2] = G->data[jso2k + ieo2];
-				G->header->BC[XHI] = GMT_BC_IS_NATURAL;
+				HH->BC[XHI] = GMT_BC_IS_NATURAL;
 			}
 
 			/* DONE with X not periodic, Y periodic case.  Fully loaded.  */
 			if (set[YLO] && set[YHI]) {
-				G->header->BC[YLO] = G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for bottom and top edges: %s\n", kind[G->header->BC[YLO]]);
+				HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_PERIODIC;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for bottom and top edges: %s\n", kind[HH->BC[YLO]]);
 			}
 			else if (set[YLO]) {
-				G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+				HH->BC[YLO] = GMT_BC_IS_PERIODIC;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 			else if (set[YHI]) {
-				G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+				HH->BC[YHI] = GMT_BC_IS_PERIODIC;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 
 			return (GMT_NOERROR);
@@ -10594,21 +10618,21 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 
 			for (i = n_set = 0; i < 4; i++) if (set[i]) {
 				n_set++;
-				G->header->BC[i] = GMT_BC_IS_NATURAL;
+				HH->BC[i] = GMT_BC_IS_NATURAL;
 			}
 			if (n_set == 4) {
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for all edges: %s\n", kind[G->header->BC[XLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for all edges: %s\n", kind[HH->BC[XLO]]);
 			}
 			for (i = 0; i < 4; i++) if (set[i]) {
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[i], kind[G->header->BC[i]]);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[i], kind[HH->BC[i]]);
 			}
 			return (GMT_NOERROR);
 		}
 		/* DONE with all X not periodic cases  */
 	}
 	else {	/* X is periodic.  Load x cols first, then do Y cases.  */
-		if (set[XLO]) G->header->BC[XLO] = GMT_BC_IS_PERIODIC;
-		if (set[XHI]) G->header->BC[XHI] = GMT_BC_IS_PERIODIC;
+		if (set[XLO]) HH->BC[XLO] = GMT_BC_IS_PERIODIC;
+		if (set[XHI]) HH->BC[XHI] = GMT_BC_IS_PERIODIC;
 		for (jmx = jn, bok = 0; jmx <= js; jmx += mx) {
 			if (G->header->registration == GMT_GRID_NODE_REG && !doubleAlmostEqualZero (G->data[jmx+iw], G->data[jmx+ie]))
 				++bok;
@@ -10623,7 +10647,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 		}
 		if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%d (of %d) inconsistent grid values at West and East boundaries for repeated nodes.\n", bok, G->header->n_rows);
 
-		if (G->header->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
+		if (HH->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
 			for (i = iwo2, bok = 0; i <= ieo2; ++i) {
 				if (G->header->registration == GMT_GRID_NODE_REG && !doubleAlmostEqualZero (G->data[jn+i], G->data[js+i]))
 					++bok;
@@ -10640,23 +10664,23 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			/* DONE with X and Y both periodic.  Fully loaded.  */
 
 			if (set[YLO] && set[YHI]) {
-				G->header->BC[YLO] = G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for bottom and top edges: %s\n", kind[G->header->BC[YLO]]);
+				HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_PERIODIC;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for bottom and top edges: %s\n", kind[HH->BC[YLO]]);
 			}
 			else if (set[YLO]) {
-				G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+				HH->BC[YLO] = GMT_BC_IS_PERIODIC;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 			else if (set[YHI]) {
-				G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+				HH->BC[YHI] = GMT_BC_IS_PERIODIC;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 			return (GMT_NOERROR);
 		}
 
 		/* Do north (top) boundary:  */
 
-		if (G->header->gn) {	/* Y is at north pole.  Phase-shift all, incl. bndry cols. */
+		if (HH->gn) {	/* Y is at north pole.  Phase-shift all, incl. bndry cols. */
 			if (G->header->registration == GMT_GRID_PIXEL_REG) {
 				j1p = jn;	/* constraint for jno1  */
 				j2p = jni1;	/* constraint for jno2  */
@@ -10666,13 +10690,13 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				j2p = jni1 + mx;	/* constraint for jno2  */
 			}
 			for (i = iwo2; set[YHI] && i <= ieo2; i++) {
-				i180 = G->header->pad[XLO] + ((i + nxp2)%G->header->nxp);
+				i180 = G->header->pad[XLO] + ((i + nxp2)%HH->nxp);
 				G->data[jno1 + i] = G->data[j1p + i180];
 				G->data[jno2 + i] = G->data[j2p + i180];
 			}
 			if (set[YHI]) {
-				G->header->BC[YHI] = GMT_BC_IS_GEO;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+				HH->BC[YHI] = GMT_BC_IS_GEO;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 		}
 		else {
@@ -10683,8 +10707,8 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			for (i = iwo1; set[YHI] && i <= ieo1; i++) {
 				G->data[jno1 + i] = (gmt_grdfloat)(4.0 * G->data[jn + i]) - (G->data[jn + i - 1] + G->data[jn + i + 1] + G->data[jni1 + i]);
 			}
-			if (set[XLO] && set[YHI]) G->data[jno1 + iwo2] = G->data[jno1 + iwo2 + G->header->nxp];
-			if (set[XHI] && set[YHI]) G->data[jno1 + ieo2] = G->data[jno1 + ieo2 - G->header->nxp];
+			if (set[XLO] && set[YHI]) G->data[jno1 + iwo2] = G->data[jno1 + iwo2 + HH->nxp];
+			if (set[XHI] && set[YHI]) G->data[jno1 + ieo2] = G->data[jno1 + ieo2 - HH->nxp];
 
 
 			/* Now set d[Laplacian]/dn = 0, start/end loop 1 col out,
@@ -10694,19 +10718,19 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				G->data[jno2 + i] = G->data[jni1 + i] + (gmt_grdfloat)(5.0 * (G->data[jno1 + i] - G->data[jn + i]))
 					+ (G->data[jn + i - 1] - G->data[jno1 + i - 1]) + (G->data[jn + i + 1] - G->data[jno1 + i + 1]);
 			}
-			if (set[XLO] && set[YHI]) G->data[jno2 + iwo2] = G->data[jno2 + iwo2 + G->header->nxp];
-			if (set[XHI] && set[YHI]) G->data[jno2 + ieo2] = G->data[jno2 + ieo2 - G->header->nxp];
+			if (set[XLO] && set[YHI]) G->data[jno2 + iwo2] = G->data[jno2 + iwo2 + HH->nxp];
+			if (set[XHI] && set[YHI]) G->data[jno2 + ieo2] = G->data[jno2 + ieo2 - HH->nxp];
 
 			/* End of X is periodic, north (top) is Natural.  */
 			if (set[YHI]) {
-				G->header->BC[YHI] = GMT_BC_IS_NATURAL;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+				HH->BC[YHI] = GMT_BC_IS_NATURAL;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 		}
 
 		/* Done with north (top) BC in X is periodic case.  Do south (bottom)  */
 
-		if (G->header->gs) {	/* Y is at south pole.  Phase-shift all, incl. bndry cols. */
+		if (HH->gs) {	/* Y is at south pole.  Phase-shift all, incl. bndry cols. */
 			if (G->header->registration == GMT_GRID_PIXEL_REG) {
 				j1p = js;	/* constraint for jso1  */
 				j2p = jsi1;	/* constraint for jso2  */
@@ -10716,13 +10740,13 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				j2p = jsi1 - mx;	/* constraint for jso2  */
 			}
 			for (i = iwo2; set[YLO] && i <= ieo2; i++) {
-				i180 = G->header->pad[XLO] + ((i + nxp2)%G->header->nxp);
+				i180 = G->header->pad[XLO] + ((i + nxp2)%HH->nxp);
 				G->data[jso1 + i] = G->data[j1p + i180];
 				G->data[jso2 + i] = G->data[j2p + i180];
 			}
 			if (set[YLO]) {
-				G->header->BC[YLO] = GMT_BC_IS_GEO;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+				HH->BC[YLO] = GMT_BC_IS_GEO;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 		}
 		else {
@@ -10733,8 +10757,8 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			for (i = iwo1; set[YLO] && i <= ieo1; i++) {
 				G->data[jso1 + i] = (gmt_grdfloat)(4.0 * G->data[js + i]) - (G->data[js + i - 1] + G->data[js + i + 1] + G->data[jsi1 + i]);
 			}
-			if (set[XLO] && set[YLO]) G->data[jso1 + iwo2] = G->data[jso1 + iwo2 + G->header->nxp];
-			if (set[XHI] && set[YHI]) G->data[jso1 + ieo2] = G->data[jso1 + ieo2 - G->header->nxp];
+			if (set[XLO] && set[YLO]) G->data[jso1 + iwo2] = G->data[jso1 + iwo2 + HH->nxp];
+			if (set[XHI] && set[YHI]) G->data[jso1 + ieo2] = G->data[jso1 + ieo2 - HH->nxp];
 
 
 			/* Now set d[Laplacian]/dn = 0, start/end loop 1 col out,
@@ -10744,13 +10768,13 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				G->data[jso2 + i] = G->data[jsi1 + i] + (gmt_grdfloat)(5.0 * (G->data[jso1 + i] - G->data[js + i]))
 					+ (G->data[js + i - 1] - G->data[jso1 + i - 1]) + (G->data[js + i + 1] - G->data[jso1 + i + 1]);
 			}
-			if (set[XLO] && set[YLO]) G->data[jso2 + iwo2] = G->data[jso2 + iwo2 + G->header->nxp];
-			if (set[XHI] && set[YHI]) G->data[jso2 + ieo2] = G->data[jso2 + ieo2 - G->header->nxp];
+			if (set[XLO] && set[YLO]) G->data[jso2 + iwo2] = G->data[jso2 + iwo2 + HH->nxp];
+			if (set[XHI] && set[YHI]) G->data[jso2 + ieo2] = G->data[jso2 + ieo2 - HH->nxp];
 
 			/* End of X is periodic, south (bottom) is Natural.  */
 			if (set[YLO]) {
-				G->header->BC[YLO] = GMT_BC_IS_NATURAL;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+				HH->BC[YLO] = GMT_BC_IS_NATURAL;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 		}
 
@@ -10793,11 +10817,12 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 	bool set[4] = {true, true, true, true};
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
 	char *edge[4] = {"left  ", "right ", "bottom", "top   "};
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
 	if (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) return (GMT_NOERROR);	/* Only set up for real arrays */
 
 	for (i = n_skip = 0; i < 4; i++) {
-		if (G->header->BC[i] == GMT_BC_IS_DATA) {set[i] = false; n_skip++;}	/* No need to set since there is data in the pad area */
+		if (HH->BC[i] == GMT_BC_IS_DATA) {set[i] = false; n_skip++;}	/* No need to set since there is data in the pad area */
 	}
 	if (n_skip == 4) return (GMT_NOERROR);	/* No need to set anything since there is data in the pad area on all sides */
 	if (G->data == NULL) return (GMT_NOERROR);	/* Premature call; no image data yet */
@@ -10817,7 +10842,7 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 	/* Initialize stuff:  */
 
 	mx = G->header->mx;
-	nxp2 = G->header->nxp / 2;	/* Used for 180 phase shift at poles  */
+	nxp2 = HH->nxp / 2;	/* Used for 180 phase shift at poles  */
 
 	iw = G->header->pad[XLO];	/* i for west-most data column */
 	iwo1 = iw - 1;		/* 1st column outside west  */
@@ -10839,17 +10864,17 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 	jso2 = jso1 + mx;	/* 2nd row outside south  */
 	jsi1 = js - mx;		/* 1st row  inside south  */
 
-	mxnyp = mx * G->header->nyp;
+	mxnyp = mx * HH->nyp;
 
 	jno1k = jno1 + mxnyp;	/* data rows periodic to boundary rows  */
 	jno2k = jno2 + mxnyp;
 	jso1k = jso1 - mxnyp;
 	jso2k = jso2 - mxnyp;
 
-	iwo1k = iwo1 + G->header->nxp;	/* data cols periodic to bndry cols  */
-	iwo2k = iwo2 + G->header->nxp;
-	ieo1k = ieo1 - G->header->nxp;
-	ieo2k = ieo2 - G->header->nxp;
+	iwo1k = iwo1 + HH->nxp;	/* data cols periodic to bndry cols  */
+	iwo2k = iwo2 + HH->nxp;
+	ieo1k = ieo1 - HH->nxp;
+	ieo2k = ieo2 - HH->nxp;
 
 	/* Duplicate rows and columns if n_columns or n_rows equals 1 */
 
@@ -10864,12 +10889,12 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 		to change the condition to Natural in that case, with warning.  */
 
 	if (G->header->registration == GMT_GRID_NODE_REG) {	/* A pole can only be a grid node with gridline registration */
-		if (G->header->gn) {	/* North pole case */
+		if (HH->gn) {	/* North pole case */
 			bok = 0;
 			for (i = iw+1; i <= ie; i++) for (b = 0; b < nb; b++) if (G->data[nb*(jn + i)+b] != G->data[nb*(jn + iw)+b]) bok++;
 			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Inconsistent image values at North pole.\n");
 		}
-		if (G->header->gs) {	/* South pole case */
+		if (HH->gs) {	/* South pole case */
 			bok = 0;
 			for (i = iw+1; i <= ie; i++) for (b = 0; b < nb; b++) if (G->data[nb*(js + i)+b] != G->data[nb*(js + iw)+b]) bok++;
 			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Inconsistent grid values at South pole.\n");
@@ -10878,9 +10903,9 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 
 	/* Start with the case that x is not periodic, because in that case we also know that y cannot be polar.  */
 
-	if (G->header->nxp <= 0) {	/* x is not periodic  */
+	if (HH->nxp <= 0) {	/* x is not periodic  */
 
-		if (G->header->nyp > 0) {	/* y is periodic  */
+		if (HH->nyp > 0) {	/* y is periodic  */
 
 			for (i = iw; i <= ie; i++) {
 				for (b = 0; b < nb; b++) {
@@ -10934,27 +10959,27 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 				if (set[XLO]) {
 					G->data[nb*(jno2 + iwo2)+b] = G->data[nb*(jno2k + iwo2)+b];
 					G->data[nb*(jso2 + iwo2)+b] = G->data[nb*(jso2k + iwo2)+b];
-					G->header->BC[XLO] = GMT_BC_IS_NATURAL;
+					HH->BC[XLO] = GMT_BC_IS_NATURAL;
 				}
 				if (set[XHI]) {
 					G->data[nb*(jno2 + ieo2)+b] = G->data[nb*(jno2k + ieo2)+b];
 					G->data[nb*(jso2 + ieo2)+b] = G->data[nb*(jso2k + ieo2)+b];
-					G->header->BC[XHI] = GMT_BC_IS_NATURAL;
+					HH->BC[XHI] = GMT_BC_IS_NATURAL;
 				}
 			}
 
 			/* DONE with X not periodic, Y periodic case.  Fully loaded.  */
 			if (set[YLO] && set[YHI]) {
-				G->header->BC[YLO] = G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for bottom and top edge: %s\n", kind[G->header->BC[YLO]]);
+				HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_PERIODIC;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for bottom and top edge: %s\n", kind[HH->BC[YLO]]);
 			}
 			else if (set[YLO]) {
-				G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+				HH->BC[YLO] = GMT_BC_IS_PERIODIC;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 			else if (set[YHI]) {
-				G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+				HH->BC[YHI] = GMT_BC_IS_PERIODIC;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 
 			return (GMT_NOERROR);
@@ -11018,14 +11043,14 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 			/* DONE with X not periodic, Y not periodic case.  Loaded all but three cornermost points at each corner.  */
 
 			for (i = n_set = 0; i < 4; i++) if (set[i]) {
-				G->header->BC[i] = GMT_BC_IS_NATURAL;
+				HH->BC[i] = GMT_BC_IS_NATURAL;
 				n_set++;
 			}
 			if (n_set == 4)
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for all edges: %s\n", kind[G->header->BC[XLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for all edges: %s\n", kind[HH->BC[XLO]]);
 			else {
 				for (i = 0; i < 4; i++) if (set[i]) {
-					GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[i], kind[G->header->BC[i]]);
+					GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[i], kind[HH->BC[i]]);
 				}
 			}
 			return (GMT_NOERROR);
@@ -11033,8 +11058,8 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 		/* DONE with all X not periodic cases  */
 	}
 	else {	/* X is periodic.  Load x cols first, then do Y cases.  */
-		if (set[XLO]) G->header->BC[XLO] = GMT_BC_IS_PERIODIC;
-		if (set[XHI]) G->header->BC[XHI] = GMT_BC_IS_PERIODIC;
+		if (set[XLO]) HH->BC[XLO] = GMT_BC_IS_PERIODIC;
+		if (set[XHI]) HH->BC[XHI] = GMT_BC_IS_PERIODIC;
 
 		for (jmx = jn; jmx <= js; jmx += mx) {
 			for (b = 0; b < nb; b++) {
@@ -11049,7 +11074,7 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 			}
 		}
 
-		if (G->header->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
+		if (HH->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
 			for (i = iwo2; i <= ieo2; i++) {
 				for (b = 0; b < nb; b++) {
 					if (set[YHI]) {
@@ -11065,23 +11090,23 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 			/* DONE with X and Y both periodic.  Fully loaded.  */
 
 			if (set[YLO] && set[YHI]) {
-				G->header->BC[YLO] = G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for bottom and top edge: %s\n", kind[G->header->BC[YLO]]);
+				HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_PERIODIC;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for bottom and top edge: %s\n", kind[HH->BC[YLO]]);
 			}
 			else if (set[YLO]) {
-				G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+				HH->BC[YLO] = GMT_BC_IS_PERIODIC;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 			else if (set[YHI]) {
-				G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+				HH->BC[YHI] = GMT_BC_IS_PERIODIC;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 			return (GMT_NOERROR);
 		}
 
 		/* Do north (top) boundary:  */
 
-		if (G->header->gn) {	/* Y is at north pole.  Phase-shift all, incl. bndry cols. */
+		if (HH->gn) {	/* Y is at north pole.  Phase-shift all, incl. bndry cols. */
 			if (G->header->registration == GMT_GRID_PIXEL_REG) {
 				j1p = jn;	/* constraint for jno1  */
 				j2p = jni1;	/* constraint for jno2  */
@@ -11091,15 +11116,15 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 				j2p = jni1 + mx;	/* constraint for jno2  */
 			}
 			for (i = iwo2; set[YHI] && i <= ieo2; i++) {
-				i180 = G->header->pad[XLO] + ((i + nxp2)%G->header->nxp);
+				i180 = G->header->pad[XLO] + ((i + nxp2)%HH->nxp);
 				for (b = 0; b < nb; b++) {
 					G->data[nb*(jno1 + i)+b] = G->data[nb*(j1p + i180)+b];
 					G->data[nb*(jno2 + i)+b] = G->data[nb*(j2p + i180)+b];
 				}
 			}
 			if (set[YHI]) {
-				G->header->BC[YHI] = GMT_BC_IS_GEO;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+				HH->BC[YHI] = GMT_BC_IS_GEO;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 		}
 		else {
@@ -11113,8 +11138,8 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 				}
 			}
 			for (b = 0; b < nb; b++) {
-				if (set[XLO] && set[YHI]) G->data[nb*(jno1 + iwo2)+b] = G->data[nb*(jno1 + iwo2 + G->header->nxp)+b];
-				if (set[XHI] && set[YHI]) G->data[nb*(jno1 + ieo2)+b] = G->data[nb*(jno1 + ieo2 - G->header->nxp)+b];
+				if (set[XLO] && set[YHI]) G->data[nb*(jno1 + iwo2)+b] = G->data[nb*(jno1 + iwo2 + HH->nxp)+b];
+				if (set[XHI] && set[YHI]) G->data[nb*(jno1 + ieo2)+b] = G->data[nb*(jno1 + ieo2 - HH->nxp)+b];
 			}
 
 			/* Now set d[Laplacian]/dn = 0, start/end loop 1 col out,
@@ -11127,20 +11152,20 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 				}
 			}
 			for (b = 0; b < nb; b++) {
-				if (set[XLO] && set[YHI]) G->data[nb*(jno2 + iwo2)+b] = G->data[nb*(jno2 + iwo2 + G->header->nxp)+b];
-				if (set[XHI] && set[YHI]) G->data[nb*(jno2 + ieo2)+b] = G->data[nb*(jno2 + ieo2 - G->header->nxp)+b];
+				if (set[XLO] && set[YHI]) G->data[nb*(jno2 + iwo2)+b] = G->data[nb*(jno2 + iwo2 + HH->nxp)+b];
+				if (set[XHI] && set[YHI]) G->data[nb*(jno2 + ieo2)+b] = G->data[nb*(jno2 + ieo2 - HH->nxp)+b];
 			}
 
 			/* End of X is periodic, north (top) is Natural.  */
 			if (set[YHI]) {
-				G->header->BC[YHI] = GMT_BC_IS_NATURAL;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
+				HH->BC[YHI] = GMT_BC_IS_NATURAL;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 		}
 
 		/* Done with north (top) BC in X is periodic case.  Do south (bottom)  */
 
-		if (G->header->gs) {	/* Y is at south pole.  Phase-shift all, incl. bndry cols. */
+		if (HH->gs) {	/* Y is at south pole.  Phase-shift all, incl. bndry cols. */
 			if (G->header->registration == GMT_GRID_PIXEL_REG) {
 				j1p = js;	/* constraint for jso1  */
 				j2p = jsi1;	/* constraint for jso2  */
@@ -11150,15 +11175,15 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 				j2p = jsi1 - mx;	/* constraint for jso2  */
 			}
 			for (i = iwo2; set[YLO] && i <= ieo2; i++) {
-				i180 = G->header->pad[XLO] + ((i + nxp2)%G->header->nxp);
+				i180 = G->header->pad[XLO] + ((i + nxp2)%HH->nxp);
 				for (b = 0; b < nb; b++) {
 					G->data[nb*(jso1 + i)+b] = G->data[nb*(j1p + i180)+b];
 					G->data[nb*(jso2 + i)+b] = G->data[nb*(j2p + i180)+b];
 				}
 			}
 			if (set[YLO]) {
-				G->header->BC[YLO] = GMT_BC_IS_GEO;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+				HH->BC[YLO] = GMT_BC_IS_GEO;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 		}
 		else {
@@ -11172,8 +11197,8 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 				}
 			}
 			for (b = 0; b < nb; b++) {
-				if (set[XLO] && set[YLO]) G->data[nb*(jso1 + iwo2)+b] = G->data[nb*(jso1 + iwo2 + G->header->nxp)+b];
-				if (set[XHI] && set[YHI]) G->data[nb*(jso1 + ieo2)+b] = G->data[nb*(jso1 + ieo2 - G->header->nxp)+b];
+				if (set[XLO] && set[YLO]) G->data[nb*(jso1 + iwo2)+b] = G->data[nb*(jso1 + iwo2 + HH->nxp)+b];
+				if (set[XHI] && set[YHI]) G->data[nb*(jso1 + ieo2)+b] = G->data[nb*(jso1 + ieo2 - HH->nxp)+b];
 			}
 
 
@@ -11187,14 +11212,14 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 				}
 			}
 			for (b = 0; b < nb; b++) {
-				if (set[XLO] && set[YLO]) G->data[nb*(jso2 + iwo2)+b] = G->data[nb*(jso2 + iwo2 + G->header->nxp)+b];
-				if (set[XHI] && set[YHI]) G->data[nb*(jso2 + ieo2)+b] = G->data[nb*(jso2 + ieo2 - G->header->nxp)+b];
+				if (set[XLO] && set[YLO]) G->data[nb*(jso2 + iwo2)+b] = G->data[nb*(jso2 + iwo2 + HH->nxp)+b];
+				if (set[XHI] && set[YHI]) G->data[nb*(jso2 + ieo2)+b] = G->data[nb*(jso2 + ieo2 - HH->nxp)+b];
 			}
 
 			/* End of X is periodic, south (bottom) is Natural.  */
 			if (set[YLO]) {
-				G->header->BC[YLO] = GMT_BC_IS_NATURAL;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
+				HH->BC[YLO] = GMT_BC_IS_NATURAL;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 		}
 
@@ -11215,27 +11240,28 @@ bool gmt_y_out_of_bounds (struct GMT_CTRL *GMT, int *j, struct GMT_GRID_HEADER *
 	* otherwise we return false.
 	* Note: *j may be negative on input.
 	*/
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	gmt_M_unused(GMT);
 	if ((*j) < 0) {	/* Depending on BC's we wrap around or we are above the top of the domain */
-		if (h->gn) {	/* N Polar condition - adjust j and set wrap flag */
+		if (HH->gn) {	/* N Polar condition - adjust j and set wrap flag */
 			(*j) = abs (*j) - h->registration;
 			(*wrap_180) = true;	/* Go "over the pole" */
 		}
-		else if (h->nyp) {	/* Periodic in y */
-			(*j) += h->nyp;
+		else if (HH->nyp) {	/* Periodic in y */
+			(*j) += HH->nyp;
 			(*wrap_180) = false;
 		}
 		else
 			return (true);	/* We are outside the range */
 	}
 	else if ((*j) >= (int)h->n_rows) {	/* Depending on BC's we wrap around or we are below the bottom of the domain */
-		if (h->gs) {	/* S Polar condition - adjust j and set wrap flag */
+		if (HH->gs) {	/* S Polar condition - adjust j and set wrap flag */
 			(*j) += h->registration - 2;
 			(*wrap_180) = true;	/* Go "over the pole" */
 		}
-		else if (h->nyp) {	/* Periodic in y */
-			(*j) -= h->nyp;
+		else if (HH->nyp) {	/* Periodic in y */
+			(*j) -= HH->nyp;
 			(*wrap_180) = false;
 		}
 		else
@@ -11256,24 +11282,25 @@ bool gmt_x_out_of_bounds (struct GMT_CTRL *GMT, int *i, struct GMT_GRID_HEADER *
 	* main program can take action like continue); otherwise we return false.
 	* Note: *i may be negative on input.
 	*/
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	/* Depending on BC's we wrap around or leave as is. */
 
 	gmt_M_unused(GMT);
 	if ((*i) < 0) {	/* Potentially outside to the left of the domain */
-		if (h->nxp)	/* Periodic in x - always inside grid */
-			(*i) += h->nxp;
+		if (HH->nxp)	/* Periodic in x - always inside grid */
+			(*i) += HH->nxp;
 		else	/* Sorry, you're outside */
 			return (true);
 	}
 	else if ((*i) >= (int)h->n_columns) {	/* Potentially outside to the right of the domain */
-		if (h->nxp)	/* Periodic in x -always inside grid */
-			(*i) -= h->nxp;
+		if (HH->nxp)	/* Periodic in x -always inside grid */
+			(*i) -= HH->nxp;
 		else	/* Sorry, you're outside */
 			return (true);
 	}
 
-	if (wrap_180) (*i) = ((*i) + (h->nxp / 2)) % h->nxp;	/* Must move 180 degrees */
+	if (wrap_180) (*i) = ((*i) + (HH->nxp / 2)) % HH->nxp;	/* Must move 180 degrees */
 
 	return (false);	/* OK, we are inside grid now for sure */
 }
@@ -11304,7 +11331,7 @@ void gmt_set_xy_domain (struct GMT_CTRL *GMT, double wesn_extended[], struct GMT
 	 */
 
 	off = 0.5 * (1 - h->registration);
-	if (gmt_M_x_is_lon (GMT, GMT_IN) && gmt_M_grd_is_global (GMT, h))	/* Global longitude range */
+	if (gmt_M_x_is_lon (GMT, GMT_IN) && gmt_grd_is_global (GMT, h))	/* Global longitude range */
 		wesn_extended[XLO] = h->wesn[XLO], wesn_extended[XHI] = h->wesn[XHI];
 	else
 		wesn_extended[XLO] = h->wesn[XLO] - off * h->inc[GMT_X], wesn_extended[XHI] = h->wesn[XHI] + off * h->inc[GMT_X];
@@ -13917,7 +13944,8 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 	uint64_t k, col, seg, row, start, length, *pos = gmt_M_memory (GMT, NULL, S->n_rows, uint64_t);
 	char label[GMT_BUFSIZ] = {""}, *txt = NULL, *feature = "Line";
 	double r;
-	struct GMT_DATASEGMENT **L = NULL, *Sx = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+	struct GMT_DATASEGMENT **L = NULL, *Sx = gmt_get_segment (GMT);
+	struct GMT_DATASEGMENT_HIDDEN *LH = NULL, *SH = gmt_get_DS_hidden (S);
 
 	for (k = 0; k < S->n_rows; k++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->data[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we don't have to check again */
 	gmt_alloc_segment (GMT, Sx, 2*S->n_rows, S->n_columns, smode, true);	/* Temp segment with twice the number of points as we will add crossings*/
@@ -13947,12 +13975,13 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 	for (seg = 0; seg < n_split; seg++) {	/* Populate the output segment coordinate arrays */
 		length = pos[seg] - start + 1;	/* Length of new segment */
 		L[seg] = GMT_Alloc_Segment (GMT->parent, smode, length, S->n_columns, S->header, NULL);	/* Allocate array space for coordinates */
+		LH = gmt_get_DS_hidden (L[seg]);
 		for (col = 0; col < S->n_columns; col++) gmt_M_memcpy (L[seg]->data[col], &(Sx->data[col][start]), length, double);	/* Copy coordinates */
-		L[seg]->range = (L[seg]->data[GMT_X][length/2] > 180.0) ? GMT_IS_M180_TO_P180 : GMT_IS_M180_TO_P180_RANGE;	/* Formatting ID to enable special -180 and +180 formatting on outout */
+		LH->range = (L[seg]->data[GMT_X][length/2] > 180.0) ? GMT_IS_M180_TO_P180 : GMT_IS_M180_TO_P180_RANGE;	/* Formatting ID to enable special -180 and +180 formatting on outout */
 		/* Modify label to part number */
 		sprintf (label, "%s part %" PRIu64, txt, seg);
 		L[seg]->label = strdup (label);
-		if (S->ogr) gmt_duplicate_ogr_seg (GMT, L[seg], S);
+		if (SH->ogr) gmt_duplicate_ogr_seg (GMT, L[seg], S);
 		start = pos[seg];
 	}
 	gmt_free_segment (GMT, &Sx);
@@ -14211,11 +14240,12 @@ void gmt_free_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION **
 bool gmt_get_segtext_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION *S, struct GMT_DATASEGMENT *T, bool last_match) {
 	/* Return true if the pattern was found; see at end for what to check for in calling program */
 	bool match;
+	struct GMT_DATASEGMENT_HIDDEN *TH = gmt_get_DS_hidden (T);
 	if (S == NULL || S->n == 0) return (true);	/* No selection criteria given, so can only return true */
-	if (last_match && gmt_M_polygon_is_hole (T))	/* Check if current polygon is a hole */
+	if (last_match && gmt_polygon_is_hole (GMT, T))	/* Check if current polygon is a hole */
 		match = true;	/* Extend a true match on a perimeter to its trailing holes */
 	else if (S->ogr_match)	/* Compare to single aspatial value */
-		match = (T->ogr && strstr (T->ogr->tvalue[S->ogr_item], S->pattern[0]) != NULL);		/* true if we matched */
+		match = (TH->ogr && strstr (TH->ogr->tvalue[S->ogr_item], S->pattern[0]) != NULL);		/* true if we matched */
 	else if (T->header) {	/* Could be one or n patterns to check */
 		uint64_t k = 0;
 		match = false;

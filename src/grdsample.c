@@ -238,6 +238,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	struct GRDSAMPLE_CTRL *Ctrl = NULL;
 	struct GMT_GRID *Gin = NULL, *Gout = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -337,15 +338,16 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	/* Precalculate longitudes */
 
+	HH = gmt_get_H_hidden (Gin->header);
 	lon = gmt_M_memory (GMT, NULL, Gout->header->n_columns, double);
 	for (col = 0; col < (int)Gout->header->n_columns; col++) {
 		lon[col] = gmt_M_grd_col_to_x (GMT, col, Gout->header);
-		if (!Gin->header->nxp)
+		if (!HH->nxp)
 			/* Nothing */;
 		else if (lon[col] > Gin->header->wesn[XHI])
-			lon[col] -= Gin->header->inc[GMT_X] * Gin->header->nxp;
+			lon[col] -= Gin->header->inc[GMT_X] * HH->nxp;
 		else if (lon[col] < Gin->header->wesn[XLO])
-			lon[col] += Gin->header->inc[GMT_X] * Gin->header->nxp;
+			lon[col] += Gin->header->inc[GMT_X] * HH->nxp;
 	}
 
 	/* Loop over input point and estimate output values */
@@ -357,12 +359,12 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 #endif
 	for (row = 0; row < (int)Gout->header->n_rows; row++) {
 		lat = gmt_M_grd_row_to_y (GMT, row, Gout->header);
-		if (!Gin->header->nyp)
+		if (!HH->nyp)
 			/* Nothing */;
 		else if (lat > Gin->header->wesn[YHI])
-			lat -= Gin->header->inc[GMT_Y] * Gin->header->nyp;
+			lat -= Gin->header->inc[GMT_Y] * HH->nyp;
 		else if (lat < Gin->header->wesn[YLO])
-			lat += Gin->header->inc[GMT_Y] * Gin->header->nyp;
+			lat += Gin->header->inc[GMT_Y] * HH->nyp;
 		for (col = 0; col < (int)Gout->header->n_columns; col++) {
 			ij = gmt_M_ijp (Gout->header, row, col);
 			Gout->data[ij] = (gmt_grdfloat)gmt_bcr_get_z (GMT, Gin, lon[col], lat);

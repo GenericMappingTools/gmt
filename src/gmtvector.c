@@ -440,6 +440,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
 	struct GMT_DATASEGMENT *Sin = NULL,  *Sout = NULL;
+	struct GMT_DATASET_HIDDEN *DH = NULL;
 	struct GMTVECTOR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -549,8 +550,8 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->C.active[GMT_OUT] || !gmt_M_is_geographic (GMT, GMT_OUT))	/* Override types since output is Cartesian or polar coordinates, not lon/lat */
 		gmt_set_cartesian (GMT, GMT_OUT);
-
-	Din->dim[GMT_COL] = n_out + add_cols;	/* State we want a different set of columns on output */
+	DH = gmt_get_DD_hidden (Din);
+	DH->dim[GMT_COL] = n_out + add_cols;	/* State we want a different set of columns on output */
 	Dout = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, Din);
 	gmt_M_memset (out, 3, double);
 

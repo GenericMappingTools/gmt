@@ -279,6 +279,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	struct GMT_SHORE c;
 	struct GMT_GRID *Grid = NULL, *Cart = NULL;
 	struct GMT_GRID_HEADER *C = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_GSHHS_POL *p = NULL;
 	struct BINCROSS *X = NULL;
 	struct GRDLANDMASK_CTRL *Ctrl = NULL;
@@ -317,7 +318,8 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 		Grid->header->wesn[XLO] += 360.0;
 		Grid->header->wesn[XHI] += 360.0;
 	}
-
+	HH = gmt_get_H_hidden (Grid->header);
+	
 	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 	gmt_M_memset (count, GRDLANDMASK_N_CLASSES, uint64_t);		/* Counts of each level */
@@ -369,7 +371,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	gmt_parse_common_options (GMT, "J", 'J', "x100id");	/* Fake linear projection so the shore machinery will work */
 	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
-	wrap = GMT->current.map.is_world = gmt_M_grd_is_global (GMT, Grid->header);
+	wrap = GMT->current.map.is_world = gmt_grd_is_global (GMT, Grid->header);
 	double_dip = (wrap && Grid->header->registration == GMT_GRID_NODE_REG);	/* Must duplicate the west nodes to east */
 	/* Using -Jx1d means output is Cartesian but we want to force geographic */
 	gmt_set_geographic (GMT, GMT_OUT);
@@ -594,11 +596,11 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 			/* Determine nodes to initialize */
 
-			row_min = MAX (0, irint (ceil ((Grid->header->wesn[YHI] - c.lat_sw - c.bsize) * Grid->header->r_inc[GMT_Y] - Grid->header->xy_off)));
-			row_max = MIN (ny1, irint (floor ((Grid->header->wesn[YHI] - c.lat_sw) * Grid->header->r_inc[GMT_Y] - Grid->header->xy_off)));
+			row_min = MAX (0, irint (ceil ((Grid->header->wesn[YHI] - c.lat_sw - c.bsize) * HH->r_inc[GMT_Y] - Grid->header->xy_off)));
+			row_max = MIN (ny1, irint (floor ((Grid->header->wesn[YHI] - c.lat_sw) * HH->r_inc[GMT_Y] - Grid->header->xy_off)));
 			if (wrap) {	/* Handle jumps */
-				col_min = irint (ceil (fmod (c.lon_sw - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
-				col_max = irint (floor (fmod (c.lon_sw + c.bsize - Grid->header->wesn[XLO], 360.0) * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
+				col_min = irint (ceil (fmod (c.lon_sw - Grid->header->wesn[XLO], 360.0) * HH->r_inc[GMT_X] - Grid->header->xy_off));
+				col_max = irint (floor (fmod (c.lon_sw + c.bsize - Grid->header->wesn[XLO], 360.0) * HH->r_inc[GMT_X] - Grid->header->xy_off));
 				if (col_max < col_min) col_max += Grid->header->n_columns;
 			}
 			else {	/* Make sure we are inside our grid */
@@ -610,8 +612,8 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 				else if (lon_e > Grid->header->wesn[XHI] && (lon_e-360.0) > Grid->header->wesn[XLO]) {
 					lon_w -= 360.0;	lon_e -= 360.0;
 				}
-				col_min = irint (ceil (lon_w * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
-				col_max = irint (floor (lon_e * Grid->header->r_inc[GMT_X] - Grid->header->xy_off));
+				col_min = irint (ceil (lon_w * HH->r_inc[GMT_X] - Grid->header->xy_off));
+				col_max = irint (floor (lon_e * HH->r_inc[GMT_X] - Grid->header->xy_off));
 				if (col_min < 0) col_min = 0;
 				if (col_max > nx1) col_max = nx1;
 			}

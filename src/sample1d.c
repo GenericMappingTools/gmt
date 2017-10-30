@@ -268,6 +268,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
 	struct GMT_DATATABLE *T = NULL, *Tout = NULL;
 	struct GMT_DATASEGMENT *S = NULL, *Sout = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct SAMPLE1D_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -440,7 +441,8 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 			else
 				gmt_M_memcpy (Sout->data[Ctrl->T.col], t_out, m, double);
 			if (S->header) Sout->header = strdup (S->header);	/* Duplicate header */
-			Sout->n_rows = Sout->n_alloc = m;
+			SH = gmt_get_DS_hidden (Sout);
+			Sout->n_rows = SH->n_alloc = m;
 				
 			for (col = 0; m && col < Din->n_columns; col++) {
 
@@ -479,12 +481,9 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 			Dout->table[tbl]->segment[seg] = Sout;
 		}
 	}
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, 0, NULL, Ctrl->Out.file, Dout) != GMT_NOERROR) {
 		Return (API->error);
 	}
-#if 0
-	gmt_free_dataset (API->GMT, &Dout);	/* Since not registered */
-#endif
 
 	if (Ctrl->N.active) gmt_M_free (GMT, t_out);
 	gmt_M_free (GMT, nan_flag);

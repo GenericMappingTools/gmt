@@ -263,6 +263,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 			gmt_map_clip_on (GMT, GMT->session.no_rgb, 1 + eo_flag);
 		}
 		if (!Ctrl->T.active) {
+			struct GMT_DATASET_HIDDEN *DH = NULL;
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 				Return (API->error);	/* Register data input */
 			}
@@ -273,7 +274,8 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
-			duplicate = (D->alloc_mode == GMT_ALLOC_EXTERNALLY && GMT->current.map.path_mode == GMT_RESAMPLE_PATH);
+			DH = gmt_get_DD_hidden (D);
+			duplicate = (DH->alloc_mode == GMT_ALLOC_EXTERNALLY && GMT->current.map.path_mode == GMT_RESAMPLE_PATH);
 			for (tbl = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 					S = D->table[tbl]->segment[seg];	/* Shortcut to current segment */

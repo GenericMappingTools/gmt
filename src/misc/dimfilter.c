@@ -437,7 +437,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 		/* Use the -R region for output if set; otherwise match grid domain */
 		gmt_M_memcpy (wesn, (GMT->common.R.active[RSET] ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
-		full_360 = (Ctrl->D.mode && gmt_M_grd_is_global (GMT, Gin->header));	/* Periodic geographic grid */
+		full_360 = (Ctrl->D.mode && gmt_grd_is_global (GMT, Gin->header));	/* Periodic geographic grid */
 
 		if (GMT->common.R.active[ISET])
 			gmt_M_memcpy (inc, GMT->common.R.inc, 2, double);

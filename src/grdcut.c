@@ -276,6 +276,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	double lon, lat, distance, radius;
 
 	struct GMT_GRID_HEADER test_header;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GRDCUT_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -304,6 +305,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
 		unsigned int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col, sum, side, count[4];
 		bool go;
+		struct GMT_GRID_HIDDEN *GH = NULL;
 		
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get entire grid */
@@ -390,7 +392,8 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			wesn_new[YLO] = G->header->wesn[YLO] + (G->header->n_rows - 1 - row1) * G->header->inc[GMT_Y];
 			wesn_new[YHI] = G->header->wesn[YHI] - row0 * G->header->inc[GMT_Y];
 		}
-		if (G->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free_aligned (GMT, G->data);	/* Free the grid array only as we need the header below */
+		GH = gmt_get_G_hidden (G);
+		if (GH->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free_aligned (GMT, G->data);	/* Free the grid array only as we need the header below */
 		add_mode = GMT_IO_RESET;	/* Pass this to allow reading the data again. */
 	}
 	else if (Ctrl->S.active) {	/* Must determine new region via -S, so only need header */
@@ -493,6 +496,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	gmt_M_memcpy (wesn_requested, wesn_new, 4, double);
 	if (wesn_new[YLO] < G->header->wesn[YLO]) wesn_new[YLO] = G->header->wesn[YLO], outside[YLO] = true;
 	if (wesn_new[YHI] > G->header->wesn[YHI]) wesn_new[YHI] = G->header->wesn[YHI], outside[YHI] = true;
+	HH = gmt_get_H_hidden (G->header);
 
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Geographic data */
 		if (wesn_new[XLO] < G->header->wesn[XLO] && wesn_new[XHI] < G->header->wesn[XLO]) {
@@ -503,7 +507,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			G->header->wesn[XLO] += 360.0;
 			G->header->wesn[XHI] += 360.0;
 		}
-		if (!gmt_M_grd_is_global (GMT, G->header)) {
+		if (!gmt_grd_is_global (GMT, G->header)) {
 			if (wesn_new[XLO] < G->header->wesn[XLO]) wesn_new[XLO] = G->header->wesn[XLO], outside[XLO] = true;
 			if (wesn_new[XHI] > G->header->wesn[XHI]) wesn_new[XHI] = G->header->wesn[XHI], outside[XHI] = true;
 		}
@@ -558,10 +562,10 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active && extend) {	/* Determine the pad needed for the extended area */
 		gmt_M_memcpy (def_pad, GMT->current.io.pad, 4, unsigned int);	/* Default pad */
 		gmt_M_memcpy (pad, def_pad, 4, unsigned int);			/* Starting pad */
-		if (outside[XLO]) pad[XLO] += urint ((G->header->wesn[XLO] - wesn_requested[XLO]) * G->header->r_inc[GMT_X]);
-		if (outside[XHI]) pad[XHI] += urint ((wesn_requested[XHI] - G->header->wesn[XHI]) * G->header->r_inc[GMT_X]);
-		if (outside[YLO]) pad[YLO] += urint ((G->header->wesn[YLO] - wesn_requested[YLO]) * G->header->r_inc[GMT_Y]);
-		if (outside[YHI]) pad[YHI] += urint ((wesn_requested[YHI] - G->header->wesn[YHI]) * G->header->r_inc[GMT_Y]);
+		if (outside[XLO]) pad[XLO] += urint ((G->header->wesn[XLO] - wesn_requested[XLO]) * HH->r_inc[GMT_X]);
+		if (outside[XHI]) pad[XHI] += urint ((wesn_requested[XHI] - G->header->wesn[XHI]) * HH->r_inc[GMT_X]);
+		if (outside[YLO]) pad[YLO] += urint ((G->header->wesn[YLO] - wesn_requested[YLO]) * HH->r_inc[GMT_Y]);
+		if (outside[YHI]) pad[YHI] += urint ((wesn_requested[YHI] - G->header->wesn[YHI]) * HH->r_inc[GMT_Y]);
 		gmt_M_memcpy (GMT->current.io.pad, pad, 4, unsigned int);	/* Change default pad */
 		if (!gmt_M_file_is_memory (Ctrl->In.file)) {	/* If a memory grid we end up duplicating below so only do this in the other cases */
 			gmt_M_grd_setpad (GMT, G->header, pad);	/* Set the active pad before reading */

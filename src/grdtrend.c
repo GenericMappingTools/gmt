@@ -497,6 +497,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	struct GRDTREND_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL, *R = NULL, *T = NULL, *W = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -529,7 +530,8 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
-
+	HH = gmt_get_H_hidden (G->header);
+	
 	/* Check for NaNs (we include the pad for simplicity)  */
 	ij = 0;
 	while (trivial && ij < G->header->size) if (gmt_M_is_fnan (G->data[ij++])) trivial = false;

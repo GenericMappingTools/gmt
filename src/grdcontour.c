@@ -822,7 +822,7 @@ GMT_LOCAL enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, stru
 		closed = cont_is_closed;
 		x[n-1] = x[0];	y[n-1] = y[0];	/* Force exact closure */
 	}
-	else if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_grd_is_global (GMT, G->header)) {	/* Global geographic grids are special */
+	else if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_grd_is_global (GMT, G->header)) {	/* Global geographic grids are special */
 		if (fabs (x[0] - G->header->wesn[XLO]) < small_x && fabs (x[n-1] - G->header->wesn[XLO]) < small_x) {	/* Split periodic boundary contour */
 			closed = cont_is_closed_straddles_west;	/* Left periodic */
 			x[0] = x[n-1] = G->header->wesn[XLO];	/* Force exact closure */
@@ -875,6 +875,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	struct GRDCONTOUR_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMT_CLOCK_IO Clock;
 	struct GMT_DATE_IO Date;
 	struct SAVE *save = NULL;
@@ -1024,9 +1026,11 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		aval = G->header->z_max + 1.0;
 
 	if (Ctrl->C.cpt) {	/* Presumably got a CPT */
+		struct GMT_PALETTE_HIDDEN *PH = NULL;
 		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		PH = gmt_get_C_hidden (P);
 		if (P->categorical) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
 		}
@@ -1315,10 +1319,13 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					D->table[tbl]->n_segments++;	D->n_segments++;
 					D->table[tbl]->n_records += n;	D->n_records += n;
 					/* Generate a file name and increment cont_counts, if relevant */
-					if (io_mode == GMT_WRITE_TABLE && !D->table[tbl]->file[GMT_OUT])
-						D->table[tbl]->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, cval, is_closed, cont_counts);
-					else if (io_mode == GMT_WRITE_SEGMENT)
-						S->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, cval, is_closed, cont_counts);
+					TH = gmt_get_DT_hidden (D->table[tbl]);
+					if (io_mode == GMT_WRITE_TABLE && !TH->file[GMT_OUT])
+						TH->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, cval, is_closed, cont_counts);
+					else if (io_mode == GMT_WRITE_SEGMENT) {
+						SH = gmt_get_DS_hidden (S);
+						SH->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, cval, is_closed, cont_counts);
+					}
 				}
 				if (make_plot && cont_do_tick[c] && is_closed) {	/* Must store the entire contour for later processing */
 					/* These are original coordinates that have not yet been projected */

@@ -527,6 +527,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	struct GMT_GSHHS_POL *p[2] = {NULL, NULL};
 	struct GMT_SHORE c;
 	struct GMT_DATASET *Cin = NULL, *Lin = NULL, *Fin = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMT_GRID *G = NULL;
 	struct GMT_RECORD *In = NULL;
 	struct GMTSELECT_CTRL *Ctrl = NULL;
@@ -631,7 +632,8 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 		point = Cin->table[0];	/* Can only be one table since we read a single file */
 		for (seg = 0; seg < point->n_segments; seg++) {
-			if (Cin->n_columns == 2) point->segment[seg]->dist = Ctrl->C.dist;
+			SH = gmt_get_DS_hidden (point->segment[seg]);
+			if (Cin->n_columns == 2) SH->dist = Ctrl->C.dist;
 			if (do_project) {	/* Convert all the points using the map projection */
 				for (row = 0; row < point->segment[seg]->n_rows; row++) {
 					gmt_geo_to_xy (GMT, point->segment[seg]->data[GMT_X][row], point->segment[seg]->data[GMT_Y][row], &xx, &yy);
@@ -680,7 +682,8 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 		line = Lin->table[0];	/* Can only be one table since we read a single file */
 		for (seg = 0; seg < line->n_segments; seg++) {
-			if (Ctrl->L.dist > 0.0) line->segment[seg]->dist = Ctrl->L.dist;	/* Only override when nonzero */
+			SH = gmt_get_DS_hidden (line->segment[seg]);
+			if (Ctrl->L.dist > 0.0) SH->dist = Ctrl->L.dist;	/* Only override when nonzero */
 			if (do_project) {	/* Convert all the line points using the map projection */
 				for (row = 0; row < line->segment[seg]->n_rows; row++) {
 					gmt_geo_to_xy (GMT, line->segment[seg]->data[GMT_X][row], line->segment[seg]->data[GMT_Y][row], &xx, &yy);
@@ -824,7 +827,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 				gmt_set_cartesian (GMT, GMT_IN);
 			inside = 0;
 			for (seg = 0; seg < pol->n_segments && !inside; seg++) {	/* Check each polygon until we find that our point is inside */
-				if (gmt_M_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
+				if (gmt_polygon_is_hole (GMT, pol->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
 				inside = (gmt_inonout (GMT, xx, yy, pol->segment[seg]) >= Ctrl->E.inside[F_ITEM]);
 			}
 			if (do_project)	/* Reset input type for gmt_inonout to do Cartesian mode */
