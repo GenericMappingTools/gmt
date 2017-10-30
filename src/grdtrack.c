@@ -1162,7 +1162,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				out[ks++] = Ctrl->T.S->y[Ctrl->T.S->row];	/* Add our output y value */
 				out[ks++] = Ctrl->T.S->radius;				/* Add our radius */
 			}
-			GMT_Put_Record (API, GMT_WRITE_DATA, out);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 
 			n_points++;
 		} while (true);
