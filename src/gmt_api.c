@@ -8056,9 +8056,11 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 		API->api_put_record = api_put_record_init;
 		API->GMT->current.io.record_type[GMT_OUT] = API->GMT->current.io.record_type[GMT_IN];	/* Can be overruled by GMT_Set_Columns */
 		//if (header == GMT_HEADER_ON && !GMT->common.b.active[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard ASCII header block */
+		if (!GMT->common.o.active) GMT->current.io.trailing_text[GMT_OUT] = true;	/* Default reads and writes any trailing text */
 	}
 	else {
 		API->current_get_obj = S_obj;
+		if (!GMT->common.i.active) GMT->current.io.trailing_text[GMT_IN] = true;	/* Default reads and writes any trailing text */
 		api_get_record_init (API);
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: %s resource access is now enabled [record-by-record]\n", GMT_direction[direction]);
