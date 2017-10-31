@@ -1068,7 +1068,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Standard resampling point case */
-		int ix, iy, n_fields;
+		int ix, iy, n_fields, n_lead;
 		uint64_t n_out = 0;
 		double *in = NULL, *out = NULL;
 
@@ -1094,8 +1094,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			gmt_set_cartesian (GMT, GMT_OUT);	/* Since we are outputting z-columns only */
 			GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;	/* Since no x,y involved here */
 			n_out = Ctrl->G.n_grids;
+			n_lead = 0;	/* None of the input columns will be used */
 			if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
 			out = gmt_M_memory (GMT, NULL, n_out, double);
+			Out = gmt_new_record (GMT, out, NULL);
 		}
 	
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
@@ -1126,14 +1128,15 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			/* Data record to process */
 			in = In->data;	/* Only need to process numerical part here */
 			if (n_out == 0) {	/* First time we need to determine # of columns and allocate output vector */
-				n_out = gmt_get_cols (GMT, GMT_IN) + Ctrl->G.n_grids;	/* Get total # of output cols */
+				n_lead = gmt_get_cols (GMT, GMT_IN);	/* Get total # of input cols */
+				n_out = n_lead + Ctrl->G.n_grids;	/* Get total # of output cols */
 				if (Ctrl->T.mode == 2) n_out += 3;
 				if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, gmt_M_colmode (In->text))) != GMT_NOERROR) {
 					Return (error);
 				}
 				if (!out) out = gmt_M_memory (GMT, NULL, n_out, double);
-				Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
-				Out->text = (Ctrl->Z.active) ? NULL : In->text;	/* Write out trailing text on output unless -Z */
+				Out = gmt_new_record (GMT, out, NULL);
+				Out->text = (GMT->current.io.trailing_text[GMT_OUT]) ? In->text : NULL;
 			}
 			
 			n_read++;
@@ -1155,7 +1158,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			}
 
 			/* Simply copy other columns, append value, and output */
-			for (ks = 0; ks < n_fields; ks++) out[ks] = in[ks];
+			for (ks = 0; ks < n_lead; ks++) out[ks] = in[ks];
 			for (g = 0; g < Ctrl->G.n_grids; g++, ks++) out[ks] = value[g];
 			if (Ctrl->T.mode == 2) {	/* Add extra columns */
 				out[ks++] = Ctrl->T.S->x[Ctrl->T.S->col];	/* Add our output x value */
