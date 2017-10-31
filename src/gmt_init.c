@@ -6107,6 +6107,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'i':	/* -i option for input column order */
 
 			gmt_message (GMT, "\t-i Sets alternate input column order and optional transformations [Default reads all columns in order].\n");
+			gmt_message (GMT, "\t   Append list of columns; t = trailing text. Use -in for just numerical input.\n");
 			break;
 
 		case 'n':	/* -n option for grid resampling parameters in BCR */
@@ -6129,6 +6130,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'o':	/* -o option for output column order */
 
 			gmt_message (GMT, "\t-o Set alternate output column order [Default writes all columns in order].\n");
+			gmt_message (GMT, "\t   Append list of columns; t = trailing text. Use -on for just numerical output.\n");
 			break;
 
 		case 'p':	/* Enhanced pseudo-perspective 3-D plot settings */
@@ -7418,7 +7420,7 @@ void gmt_reenable_ih_opts (struct GMT_CTRL *GMT) {
 	GMT->current.setting.io_header[GMT_IN] = GMT->current.setting.io_header_orig;
 }
 
-/*! Routine will decode the -i<col>|<colrange>|t[+l][+s<scale>][+o<offset>],... arguments */
+/*! Routine will decode the -i<col>|<colrange>|t[+l][+s<scale>][+o<offset>],... arguments or just -in */
 int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, word[GMT_LEN256] = {""}, *c = NULL;
@@ -7433,6 +7435,8 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 	strncpy (copy, arg, GMT_BUFSIZ-1);
 	
 	GMT->current.io.trailing_text[GMT_IN] = GMT->current.io.trailing_text[GMT_OUT] = false;	/* When using -i you have to specifically add column t to parse trailing text */
+	if (!strcmp (arg, "n")) return GMT_NOERROR;	/* We just wanted to process the numerical columns */
+	
 	new_style = (strstr (arg, "+s") || strstr (arg, "+o") || strstr (arg, "+l"));
 
 	strncpy (GMT->common.i.string, arg, GMT_LEN64-1);	/* Verbatim copy */
@@ -7520,7 +7524,7 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 	return (GMT_NOERROR);
 }
 
-/*! Routine will decode the -[<col>|<colrange>|t,... arguments */
+/*! Routine will decode the -[<col>|<colrange>|t,... arguments or just -on */
 int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
@@ -7532,7 +7536,8 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 
 	strncpy (copy, arg, GMT_BUFSIZ-1);
 	
-	GMT->current.io.trailing_text[GMT_OUT] = false;	/* When using -i you have to specifically add column t to parse trailing text */
+	GMT->current.io.trailing_text[GMT_OUT] = false;	/* When using -o you have to specifically add column t to parse trailing text */
+	if (! strcmp (arg, "n")) return GMT_NOERROR;	/* We just wanted to select numerical output only */
 	
 	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		if (!strcmp (p, "t"))

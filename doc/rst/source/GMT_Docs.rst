@@ -1923,7 +1923,8 @@ implies we should first take :math:`\log_{10}` of the data [leave as
 is]. Next, we may scale the result by the given *scale* [1]. Finally, we
 add in the specified *offset* [0].  If you want the trailing text to remain
 part of your subset logical record then also select the special column
-by requesting column **t**.
+by requesting column **t**, otherwise we ignore trailing text.  Finally,
+to use the entire numerical record and ignoring trailing text, use **-in**.
 
 .. _gmt_record:
 
@@ -1982,7 +1983,7 @@ contains trailing text then you can include that by including the special
 column **t** to your selections.  The text is always written after any
 numerical columns.  Note that if you wanted to scale or shift the output
 values you need to do so during reading, using the **-i** option.
-
+To output all numerical columns and ignoring trailing text, use **-on**.
 Perspective view: The **-p** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -9,3 +9,6 @@
     column, optionally add any of  the following: **+l** takes **log10** of
     the input values first; **+s**\ *scale*, subsequently multiplies by a
     given  scale factor [1]; **+o**\ *offset*, finally adds a given offset [0].
+    Normally, any trailing text is read but when **i** is used you must add
+    the column **t** to retain the text. Finally, **-in** will simply read
+    the numerical input and skip any trailing text.
