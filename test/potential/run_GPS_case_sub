@@ -31,7 +31,7 @@ awk '{if($1 > -116.6 && $1 < -116.5 && $2 > 33.5 && $2 < 33.7) print($1,$2,-$3,$
 # Only use ~1/4 of the eigenvalues
 npairs=`cat blk.lluv | wc -l`
 ne=`gmt math -Q $npairs 2 MUL 40 DIV CEIL 10 MUL =`
-gmt gpsgridder $R -I$ginc -GGPS_%s.nc blk.lluv -fg -Vl -Fd4 -r -Cn${ne}+eigen.txt -S0.50 $W
+gmt gpsgridder $R -I$ginc -GGPS_%s.nc blk.lluv -fg -Fd4 -r -Cn${ne}+eigen.txt -S0.50 $W
 #
 
 gmt set FORMAT_GEO_MAP = dddF
@@ -46,7 +46,7 @@ gmt grdmath GPS_v.nc mask.nc MUL = GPS_v.nc
 #   make the map
 #
 gmt pscoast -R -JM7i -P -Glightgray -Ba1f30m -BWSne -K -Df -X0.7i -Wfaint
-gmt psxy fault_data.gmt -J -R -W.5 -O -V -K
+gmt psxy @CA_fault_data.txt -J -R -W.5 -O -K
 gmt psvelo data.lluvenct -J -R -Se.008i/0.95/8 -A9p -W.4,red -O -K
 gmt psxy -R -J -O -K -W0.25p,green -L << EOF
 -116.6	33.5

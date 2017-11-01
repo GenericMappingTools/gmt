@@ -930,7 +930,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	/* Free up other arrays */
 
-	free_pairs (GMT, &pair, n_pairs);
+	if (Ctrl->A.active) free_pairs (GMT, &pair, n_pairs);
 	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, xdata[0]);
 	gmt_M_free (GMT, xdata[1]);

@@ -7,7 +7,7 @@ gmt grdmath -R-2/0/-2/0 -I1 -r X Y ADD = LL.grd=bf
 gmt grdmath -R0/2/-2/0  -I1 -r X Y ADD = LR.grd=bf
 gmt grdmath -R-2/0/0/2  -I1 -r X Y ADD = UL.grd=bf
 gmt grdmath -R0/2/0/2   -I1 -r X Y ADD = UR.grd=bf
-gmt grdblend -R-1/1/-1/1 -I1 -r LL.grd=bf LR.grd=bf UL.grd=bf UR.grd=bf -GCM.nc -Vl
+gmt grdblend -R-1/1/-1/1 -I1 -r LL.grd=bf LR.grd=bf UL.grd=bf UR.grd=bf -GCM.nc
 gmt grdblend -R-2/2/-2/2 -I1 -r LL.grd=bf LR.grd=bf UL.grd=bf UR.grd=bf -Gall.nc
 gmt makecpt -Cjet -T-4/4 > t.cpt
 gmt grdimage CM.nc -Ct.cpt -JX4i -P -Bafg2 -K -Xc > $ps
