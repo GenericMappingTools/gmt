@@ -7508,9 +7508,10 @@ void gmt_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **S) {
 
 	unsigned int k;
 	uint64_t col;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMT_DATASEGMENT *segment = *S;
-	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (segment);
 	if (!segment) return;	/* Do not try to free NULL pointer */
+	SH = gmt_get_DS_hidden (segment);
 	if (SH->alloc_mode == GMT_ALLOC_INTERNALLY) {	/* Free data GMT allocated */
 		for (col = 0; col < segment->n_columns; col++) gmt_M_free (GMT, segment->data[col]);
 	}
@@ -7530,8 +7531,9 @@ void gmt_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **S) {
 /*! . */
 void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table) {
 	unsigned int k;
-	struct GMT_DATATABLE_HIDDEN *TH = gmt_get_DT_hidden (table);
+	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	if (!table) return;		/* Do not try to free NULL pointer */
+	TH = gmt_get_DT_hidden (table);
 	for (k = 0; k < table->n_headers; k++) gmt_M_str_free (table->header[k]);
 	gmt_M_free (GMT, table->header);
 	gmt_M_free (GMT, table->min);
