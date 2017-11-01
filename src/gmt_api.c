@@ -962,7 +962,7 @@ GMT_LOCAL unsigned int api_pick_in_col_number (struct GMT_CTRL *GMT, unsigned in
 	/* Return the next column to be selected on input */
 	unsigned int col_pos;
 	if (GMT->common.i.select)	/* -i has selected some columns */
-		col_pos = GMT->current.io.col[GMT_IN][col].col;	/* Which data column to pick */
+		col_pos = GMT->current.io.col[GMT_IN][col].order;	/* Which data column to pick */
 #if 0
 	else if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && col < GMT_Z)	/* Worry about -: for lon,lat */
 		col_pos = 1 - col;	/* Read lat/lon instead of lon/lat */
