@@ -221,7 +221,7 @@ GMT_LOCAL int write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, 
 	else if (prhs->orig_type == GMT_INT) {
 		int *dataT = gmt_M_memory(GMT, NULL, nm, int);
 		for (i = 0, k = 0; i < n_rows; i++) {
-			n = i*prhs->nXSizeFull + prhs->pad[0];
+			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[0];
 			for (j = 0; j < n_cols; j++)
 				dataT[k++] = (int)t[n + j];
 		}
