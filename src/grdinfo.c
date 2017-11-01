@@ -44,6 +44,7 @@ enum Opt_I_modes {
 	GRDINFO_GIVE_BOUNDBOX};
 
 enum Opt_C_modes {
+	GRDINFO_TRADITIONAL	= 0,
 	GRDINFO_NUMERICAL	= 1,
 	GRDINFO_TRAILING	= 2};
 
@@ -176,7 +177,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 					Ctrl->C.mode = GRDINFO_NUMERICAL;
 				else if (opt->arg[0] == 't')
 					Ctrl->C.mode = GRDINFO_TRAILING;
-				if (GMT->parent->external && Ctrl->C.mode == 0) Ctrl->C.mode = GRDINFO_NUMERICAL;
+				if (GMT->parent->external && Ctrl->C.mode == GRDINFO_TRADITIONAL) Ctrl->C.mode = GRDINFO_NUMERICAL;
 				break;
 			case 'D':	/* Tiling output w/ optional overlap */
 				Ctrl->D.active = true;
@@ -480,7 +481,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		global_xmax = global_ymax = global_zmax = -DBL_MAX;
 	}
 	delay = (Ctrl->D.mode == 1 || (Ctrl->T.mode & 2));	/* Delay the freeing of the (single) grid we read */
-	num_report = (Ctrl->C.active && Ctrl->C.mode);
+	num_report = (Ctrl->C.active && Ctrl->C.mode != GRDINFO_TRADITIONAL);
 	
 	if (Ctrl->C.active) {
 		n_cols = 6;	/* w e s n z0 z1 */
@@ -493,7 +494,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->C.mode == GRDINFO_NUMERICAL) cmode = GMT_COL_FIX_NO_TEXT;
 		geometry = GMT_IS_NONE;
-		if (Ctrl->C.mode == 0) geometry = GMT_IS_TEXT;
+		if (Ctrl->C.mode == GRDINFO_TRADITIONAL) geometry = GMT_IS_TEXT;
 		if (geometry == GMT_IS_TEXT) n_cols = 0;	/* A single string, unfortunatelly */
 	}
 	else if (Ctrl->I.status == GRDINFO_GIVE_BOUNDBOX) {
@@ -541,6 +542,14 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		for (n = 0; n < GMT_Z; n++)
 			GMT->current.io.col_type[GMT_OUT][n] = gmt_M_type (GMT, GMT_IN, n);	/* Since grids may differ in types */
 
+		if (num_report && n_grds == 0) {	/* Need to prepare col_type for output */
+			if (Ctrl->M.active) {
+				GMT->current.io.col_type[GMT_OUT][10] = GMT->current.io.col_type[GMT_OUT][12] = GMT->current.io.col_type[GMT_OUT][GMT_X];
+				GMT->current.io.col_type[GMT_OUT][11] = GMT->current.io.col_type[GMT_OUT][13] = GMT->current.io.col_type[GMT_OUT][GMT_Y];
+			}
+			GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT->current.io.col_type[GMT_OUT][GMT_Y];
+			GMT->current.io.col_type[GMT_OUT][1] = GMT->current.io.col_type[GMT_OUT][GMT_X];
+		}
 		n_grds++;
 
 		if (Ctrl->M.active || Ctrl->L.active || subset || Ctrl->D.mode || (Ctrl->T.mode & 2)) {	/* Need to read the data (all or subset) */

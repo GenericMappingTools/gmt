@@ -11981,6 +11981,9 @@ char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep) {
 	 * 1. <char> must be one of the letters in sep,
 	 * 2. We must not be inside quoted text, i.e., "my +shit title",
 	 * 3. The + must not be escaped, i.e., +t"My \+shit text"
+	 *
+	 * If the modifier is not found we returns NULL.  This is not an error
+	 * but means we did not find anything.
 	 */
 	size_t len, k = 0;
 	bool inside_quote = false, done = false;
@@ -12002,7 +12005,7 @@ char *gmt_first_modifier (struct GMT_CTRL *GMT, char *string, const char *sep) {
 		if (strchr (sep, string[k]))
 			done = true;
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Modifier +%c found but not a valid modifier!\n", string[k]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Modifier +%c found but not a valid modifier!\n", string[k]);
 			return NULL;
 		}
 	}
