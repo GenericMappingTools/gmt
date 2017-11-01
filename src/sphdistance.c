@@ -582,6 +582,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, P->min);
 		gmt_M_free (GMT, P->max);
 		gmt_M_free (GMT, P->data);
+		gmt_M_free (GMT, P->hidden);
 		gmt_M_free (GMT, P);
 		gmt_M_free (GMT, T.V.lon);
 		gmt_M_free (GMT, T.V.lat);
