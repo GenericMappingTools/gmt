@@ -412,10 +412,10 @@ GMT_LOCAL struct GMT_OPTION *fix_gdal_files (struct GMT_OPTION *opt) {
 		*/
 		char t[GMT_LEN256] = {""};
 		pch[0] = '\0';
-		strcpy (t, opt->arg);
+		strncpy (t, opt->arg, GMT_LEN256-1);
 		strcat (t, "=gd"); 
 		pch[0] = '+';			/* Restore what we have erased 2 lines above */
-		strcat(t, pch);
+		strncat(t, pch, GMT_LEN256-1);
 		gmt_M_str_free (opt->arg);	/* free it so that we can extend it */
 		opt->arg = strdup (t);
 	}
