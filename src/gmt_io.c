@@ -7281,6 +7281,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 		return (NULL);
 	}
 	if (T->segment[seg]->n_rows == 0) {	/* Last segment was empty; we delete to avoid problems downstream in applications */
+		gmt_M_free (GMT, T->segment[seg]->hidden);
 		gmt_M_free (GMT, T->segment[seg]);
 		if (seg == 0) {	/* Happens when we just read 1 segment header with no data */
 			gmt_free_table (GMT, T);
