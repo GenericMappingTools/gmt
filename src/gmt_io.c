@@ -7553,8 +7553,9 @@ void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table) {
 void gmtlib_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data) {
 	/* This takes pointer to data array and thus can return it as NULL */
 	unsigned int tbl, k;
-	struct GMT_DATASET_HIDDEN *DH = gmt_get_DD_hidden (data);
+	struct GMT_DATASET_HIDDEN *DH = NULL;
 	if (!data) return;	/* Do not try to free NULL pointer */
+	DH = gmt_get_DD_hidden (data);
 	for (tbl = 0; tbl < data->n_tables; tbl++) {
 		gmt_free_table (GMT, data->table[tbl]);
 	}
