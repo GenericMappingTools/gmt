@@ -9327,7 +9327,9 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		struct GMT_DATASEGMENT *S = NULL;
 		double xy[2];
 		/* File is expected to have x,y coordinates and we will ignore anything beyond that */
-		GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX_NO_TEXT);
+		if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX_NO_TEXT))) {
+			return (error);
+		}
 		if (gmt_M_file_is_cache (G->file)) {	/* Must be a cache file */
 			first = gmt_download_file_if_not_found (GMT, G->file, 0);
 		}
@@ -9447,7 +9449,9 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		 * If G->label_type == GMT_LABEL_IS_FFILE then we also have text labels.
 		 * Since those could be numbers we force reading 2 columns and get anything
 		 * beyond that as text. */
-		GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX);
+		if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 2, GMT_COL_FIX))) {
+			return (error);
+		}
 		if (gmt_M_file_is_cache (G->file)) {	/* Must be a cache file */
 			first = gmt_download_file_if_not_found (GMT, G->file, 0);
 		}
@@ -14615,13 +14619,12 @@ void gmt_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, dou
 	/* Estimate mean position.  geo is 1 if geographic data (requiring vector mean)  Input data remains unchanged. */
 	uint64_t i, k;
 
-	assert (n > 0);
+	assert (n > 0);	/* So n is >= 1 below */
 	if (n == 1) {
 		pos[GMT_X] = x[0];	pos[GMT_Y] = y[0];
 		return;
 	}
-	n--; /* Skip 1st point since it is repeated as last */
-	if (n <= 0) return;
+	n--; /* Skip 1st point since it is repeated as last.  n is now at least 1 */
 
 	if (geo) {	/* Geographic data, must use vector mean */
 		double P[3], M[3], yc;
