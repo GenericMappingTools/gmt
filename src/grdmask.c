@@ -352,6 +352,10 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	gmt_skip_xy_duplicates (GMT, true);	/* Skip repeating x/y points in polygons */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, gmode, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)	/* Registers default input sources, unless already set */
 		error = API->error;
+	if (!Ctrl->S.active && (error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+		/* We dont want trailing text because we may need to resample lines below */
+		Return (API->error);
+	}
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL)
 		error = API->error;
 	if (Ctrl->S.active && error) {

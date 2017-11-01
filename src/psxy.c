@@ -1510,6 +1510,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
 		}
+		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			/* We dont want trailing text because we may need to resample lines below */
+			Return (API->error);
+		}
 		if ((S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_DECORATED_LINE) && S.G.segmentize) {	/* Special quoted/decorated line where each point-pair should be considered a line segment */
 			struct GMT_SEGMENTIZE S;
 			struct GMT_DATASET *Dtmp = NULL;	/* Pointer to GMT multisegment table(s) */
