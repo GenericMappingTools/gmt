@@ -266,6 +266,17 @@ GMT_LOCAL int combo_ok (char *name_1, char *name_2, struct PAIR *pair, uint64_t 
 	return (false);
 }
 
+GMT_LOCAL void free_pairs (struct GMT_CTRL *GMT, struct PAIR **pair, uint64_t n_pairs) {
+	/* Free the array of pairs */
+	uint64_t k;
+	struct PAIR *P = *pair;
+	for (k = 0; k < n_pairs; k++) {
+		gmt_M_str_free (P[k].id1);
+		gmt_M_str_free (P[k].id2);
+	}
+	gmt_M_free (GMT, pair);
+
+}
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -423,6 +434,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			if (sscanf (line, "%s %s", name1, name2) != 2) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error decoding combinations file for pair %" PRIu64 "!\n", n_pairs);
 				fclose (fp);
+				free_pairs (GMT, &pair, n_pairs);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			pair[n_pairs].id1 = strdup (name1);
@@ -442,6 +454,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "No combinations found in file %s!\n", Ctrl->A.file);
 			gmt_M_free (GMT, duplicate);
 			x2sys_free_list (GMT, trk_name, n_tracks);
+			free_pairs (GMT, &pair, n_pairs);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (n_pairs < n_alloc) pair = gmt_M_memory (GMT, pair, n_pairs, struct PAIR);
@@ -917,6 +930,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	/* Free up other arrays */
 
+	free_pairs (GMT, &pair, n_pairs);
 	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, xdata[0]);
 	gmt_M_free (GMT, xdata[1]);
