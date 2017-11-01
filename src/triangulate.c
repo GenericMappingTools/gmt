@@ -412,6 +412,9 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 
 	if (get_input) {	/* Read primary input */
 		if ((error = GMT_Set_Columns (API, GMT_IN, n_input, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
+			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
+			gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
 			Return (error);
 		}
 	}
