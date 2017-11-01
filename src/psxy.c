@@ -1501,16 +1501,19 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Line/polygon part */
-		uint64_t seg, seg_out = 0, n_new;
+		uint64_t seg, seg_out = 0, n_new, n_cols = 2;
 		bool duplicate, resampled;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 		struct GMT_DATASET_HIDDEN *DH = NULL;
 		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
+		if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols = 3;
+		else if (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) n_cols = 4;
+
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
 		}
-		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_IN, n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			/* We dont want trailing text because we may need to resample lines below */
 			Return (API->error);
 		}
