@@ -7812,9 +7812,10 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 	struct GMT_VECTOR *V_obj  = NULL;
 	struct GMT_DATASET *D_obj = NULL;
 	struct GMT_MATRIX_HIDDEN *MH = NULL;
-	struct GMT_CTRL *GMT = API->GMT;		/* Short hand */
+	struct GMT_CTRL *GMT;
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	GMT = API->GMT;		/* Short hand */
 	if (!API->io_enabled[GMT_OUT]) return_error (API, GMT_ACCESS_NOT_ENABLED);
 	API->error = GMT_NOERROR;
 
@@ -9227,11 +9228,12 @@ GMT_LOCAL struct GMT_FFT_WAVENUMBER *api_fft_init_2d (struct GMTAPI_CTRL *API, s
 	struct GMT_FFT_SUGGESTION fft_sug[GMT_FFT_N_SUGGEST];
 	struct GMT_FFT_INFO *F = NULL, *F_in = api_get_fftinfo_ptr (v_info);
 	struct GMT_FFT_WAVENUMBER *K = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
+	struct GMT_GRID_HEADER_HIDDEN *HH;
 	struct GMT_CTRL *GMT = NULL;
 
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
 	if (G == NULL) return_null (API, GMT_ARG_IS_NULL);
+	HH = gmt_get_H_hidden (G->header);
 	GMT = API->GMT;
 	K = gmt_M_memory (GMT, NULL, 1, struct GMT_FFT_WAVENUMBER);
 
