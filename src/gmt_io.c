@@ -3111,7 +3111,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) && col < 50) {	/* Tell user how we interpreted their first record, but not for excessively long records */
 			k = gmtio_get_type_name_index (got);
 			if (col) strcat (message, ",");
-			strcat (message, GMT_coltype_name[k]);
+			strncat (message, GMT_coltype_name[k], GMT_BUFSIZ-1);
 			if (col == 49) strcat (message, ",...");
 		}
 		if (got == GMT_IS_NAN)	/* Parsing failed, which means we found our first non-number */
@@ -3146,7 +3146,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 				k = gmtio_get_coltype_name_index (GMT, GMT_IN, pos);
 				if (pos < 50) {
 					if (pos) strcat (message, ",");
-					strcat (message, GMT_coltype_name[k]);
+					strncat (message, GMT_coltype_name[k], GMT_BUFSIZ-1);
 					if (pos == 49) strcat (message, ",...");
 				}
 			}
@@ -3163,7 +3163,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 				k = gmtio_get_coltype_name_index (GMT, GMT_OUT, col);
 				if (pos < 50) {
 					if (pos) strcat (message, ",");
-					strcat (message, GMT_coltype_name[k]);
+					strncat (message, GMT_coltype_name[k], GMT_BUFSIZ-1);
 					if (pos == 49) strcat (message, ",...");
 				}
 			}
