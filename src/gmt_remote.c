@@ -341,6 +341,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 	if ((SRTM = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, "@srtm_tiles.nc", NULL)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to obtain list of available SRTM tiles.\n");
 		API->error = GMT_RUNTIME_ERROR;
+		fclose (fp);
 		return NULL;
 	}
 	for (lat = is; lat < in; lat++) {	/* Rows of tiles */
