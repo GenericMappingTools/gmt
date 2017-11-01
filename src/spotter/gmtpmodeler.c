@@ -306,7 +306,6 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	/* Set up output */
-	out = gmt_M_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 		Return (API->error);
 	}
@@ -323,6 +322,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
 	if (Ctrl->S.center) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
 
+	out = gmt_M_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	if (GMT->current.setting.io_header[GMT_OUT]) {
 		char header[GMT_BUFSIZ] = {""};
