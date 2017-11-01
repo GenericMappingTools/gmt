@@ -5393,6 +5393,7 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 	
 	if (fread (&value, sizeof (int32_t), 1, fp) != 1) {
 		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Failure reading EPS magic key from %s\n", file);
+		fclose (fp);
 		return (-1);
 	}
 #ifndef WORDS_BIGENDIAN
@@ -5400,6 +5401,7 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 #endif
 	if (value != EPS_MAGIC) {
 		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Could not find EPS magic key in %s\n", file);
+		fclose (fp);
 		return (-1);
 	}
 	h->magic = (int)value;
@@ -5432,6 +5434,8 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 		n+=BLOCKSIZE;
 		buffer = PSL_memory (PSL, buffer, n+BLOCKSIZE, unsigned char);
 	}
+	fclose (fp);
+
 	n+=p;
 	buffer = PSL_memory (PSL, buffer, n, unsigned char);
 

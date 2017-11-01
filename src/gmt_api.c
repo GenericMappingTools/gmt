@@ -7413,7 +7413,7 @@ struct GMT_RECORD *api_get_record_dataset (struct GMTAPI_CTRL *API, unsigned int
 	int64_t *count = GMT->current.io.curr_pos[GMT_IN];	/* Shorthand used below */
 	struct GMT_DATASET *D = API->current_get_D_set;	/* Get the current dataset */
 	uint64_t col, col_pos;
-	struct GMT_RECORD *record;
+	struct GMT_RECORD *record = NULL;
 	int status = api_wind_to_next_datarecord (count, D, mode);	/* Get current record status and wind counters if needed */
 	switch (status) {
 		case GMT_IO_DATA_RECORD:	/* Got a data record */
