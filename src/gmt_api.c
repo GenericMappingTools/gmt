@@ -1646,7 +1646,7 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 		}
 		if (mode & GMT_WITH_STRINGS) {	/* Must allocate text pointer array */
 			if ((M->text = gmt_M_memory (API->GMT, NULL, M->n_rows, char *)) == NULL)
-				return (error);
+				return (GMT_MEMORY_ERROR);
 		}
 		MH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}

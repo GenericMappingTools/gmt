@@ -8044,11 +8044,12 @@ double gmt_get_aspatial_value (struct GMT_CTRL *GMT, int col, struct GMT_DATASEG
 	int64_t scol = col;
 	int id;
 	char *V = NULL;
-	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
+	if (S) SH = gmt_get_DS_hidden (S);
 	for (k = 0; k < GMT->common.a.n_aspatial; k++) {	/* For each item specified in -a */
 		if (scol != GMT->common.a.col[k]) continue;	/* Not the column we want */
 		id = gmt_get_ogr_id (GMT->current.io.OGR, GMT->common.a.name[k]);	/* Get the ID */
-		V = (S && SH->ogr) ? SH->ogr->tvalue[id] : GMT->current.io.OGR->tvalue[id];	/* Either from table or from segment (multi) */
+		V = (SH && SH->ogr) ? SH->ogr->tvalue[id] : GMT->current.io.OGR->tvalue[id];	/* Either from table or from segment (multi) */
 		return (gmtio_convert_aspatial_value (GMT, GMT->current.io.OGR->type[id], V));
 	}
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No aspatial value found for column %d [Return NaN]\n", col);
