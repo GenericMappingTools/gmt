@@ -369,6 +369,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 			for (row = 0; row < h.n; row++) {
 				if (fread (&p, sizeof (struct GSHHG_POINT), 1U, fp) != 1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
+					gmt_fclose (GMT, fp);
 					Return (GMT_DATA_READ_ERROR);
 				}
 				if (must_swab) /* Must deal with different endianness */
