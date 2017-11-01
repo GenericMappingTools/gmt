@@ -420,6 +420,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+		gmt_M_free (GMT, data);
 		Return (API->error);
 	}
 
