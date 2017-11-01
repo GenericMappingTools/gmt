@@ -1684,7 +1684,7 @@ GMT_LOCAL int api_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 		}
 		if (mode & GMT_WITH_STRINGS) {	/* Must allocate text pointer array */
 			if ((V->text = gmt_M_memory (API->GMT, NULL, V->n_rows, char *)) == NULL)
-				return (error);
+				return (GMT_MEMORY_ERROR);
 		}
 		VH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
@@ -11309,7 +11309,6 @@ void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out
 	 * VECTOR  -> DATASET, MATRIX
 	 */
 	int object_ID, item;
-	bool may_fail = false;
 	void *X = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
@@ -11364,8 +11363,8 @@ void *GMT_Convert_Data (void *V_API, void *In, unsigned int family_in, void *Out
 			API->error = GMT_NOT_A_VALID_FAMILY;
 			break;
 	}
-	if (may_fail && X == NULL)
-		return_null (API, GMT_NOERROR);
+	if (X == NULL)
+		return_null (API, GMT_PTR_IS_NULL);
 	if (API->error)
 		return_null (API, API->error);
 	if ((object_ID = GMT_Register_IO (API, family_out, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, X)) == GMT_NOTSET)
