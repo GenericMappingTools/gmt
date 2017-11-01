@@ -4,6 +4,29 @@
 # Test the C API for conversions between datasets, matrices, and vectors.
 # Also read groups of items just to free them,
 
+# This files holds what is expected to be produced
+cat << EOF > testapiconv_answer.txt
+1	2
+2	3
+3	4
+6	7
+7	8
+11	2
+21	3
+31	4
+61	7
+71	8
+1	2
+2	3
+3	4
+6	7
+7	8
+11	2
+21	3
+31	4
+61	7
+71	8
+EOF
 # Make to dataset tables with headers and segments
 cat << EOF > A.txt
 # Some dumb header
@@ -40,4 +63,4 @@ gmt psbasemap -R0/20/40/60 -JM6i -P -Baf > third.ps
 # unless it crashes of course,  It then writes out A and B via matrix and vector to a file
 testapiconv
 cat *AB*.txt > results.txt
-diff -q --strip-trailing-cr results.txt "${src:-.}"/testapiconv_answer.txt > fail
+diff -q --strip-trailing-cr results.txt testapiconv_answer.txt > fail
