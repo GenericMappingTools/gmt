@@ -7607,11 +7607,14 @@ struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	/* Duplicates an entire image, including data if requested. */
 	struct GMT_IMAGE *Inew = NULL;
 	struct GMT_GRID_HEADER *save = NULL;
+	struct GMT_IMAGE_HIDDEN *IH = NULL;
 
 	Inew = gmtlib_create_image (GMT);
 	save = Inew->header;
+	IH = Inew->hidden;
 	gmt_M_memcpy (Inew, I, 1, struct GMT_IMAGE);	/* Copy everything, but this also messes with header/data pointers */
 	Inew->header = save;	/* Reset to correct header pointer */
+	Inew->hidden = IH;	/* Reset to correct hidden pointer */
 	Inew->data = NULL;	/* Reset to NULL data pointer */
 	gmt_copy_gridheader (GMT, Inew->header, I->header);
 
