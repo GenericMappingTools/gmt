@@ -734,7 +734,7 @@ GMT_LOCAL unsigned int gmtio_assign_aspatial_cols (struct GMT_CTRL *GMT) {
 				pos = 1;
 			}
 			if (nt) strcat (GMT->current.io.curr_trailing_text, GMT->current.setting.io_col_separator);
-			strcat (GMT->current.io.curr_trailing_text, &tvalue[pos]);
+			strncat (GMT->current.io.curr_trailing_text, &tvalue[pos], GMT_BUFSIZ-1);
 			GMT->current.io.record.text = GMT->current.io.curr_trailing_text;	/* Since it may not have been set */
 			nt++;
 		}
