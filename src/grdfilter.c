@@ -1216,6 +1216,8 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	if (Ctrl->F.highpass) {
 		if (GMT->common.R.active[RSET] || GMT->common.R.active[ISET] || GMT->common.R.active[GSET]) {	/* Must resample result so grids are coregistered */
 			char in_string[GMT_STR16], out_string[GMT_STR16], cmd[GMT_LEN256];
+			static char *V_level = "qntcvld";
+			
 			/* Here we low-passed filtered onto a coarse grid but to get high-pass we must sample the low-pass result at the original resolution */
 			/* Create a virtual file for the low-pass filtered grid */
 			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, Gout, in_string) == GMT_NOTSET) {
@@ -1225,7 +1227,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, out_string) == GMT_NOTSET) {
 				Return (API->error);
 			}
-			sprintf (cmd, "%s -G%s -R%s -V%d", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
+			sprintf (cmd, "%s -G%s -R%s -V%c", in_string, out_string, Ctrl->In.file, V_level[GMT->current.setting.verbose]);
 			if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 			strcat (cmd, " --GMT_HISTORY=false");
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE,

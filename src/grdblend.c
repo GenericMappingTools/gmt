@@ -196,7 +196,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	struct GRDBLEND_INFO *B = NULL;
 	struct GMT_GRID_HIDDEN *GH = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
-	char *sense[2] = {"normal", "inverse"}, *V_level = "qntcvld", buffer[GMT_BUFSIZ] = {""};
+	char *sense[2] = {"normal", "inverse"}, buffer[GMT_BUFSIZ] = {""};
+	static char *V_level = "qntcvld";
 	char Iargs[GMT_LEN256] = {""}, Rargs[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""};
 	struct BLEND_LIST {
 		char *file;
