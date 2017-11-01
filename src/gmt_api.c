@@ -7947,7 +7947,7 @@ GMT_LOCAL int api_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode, s
 			}
 			if (S_obj->n_rows && S_obj->rec >= S_obj->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?) - possible bug\n");
-			if (S_obj->resource == NULL) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
+			if ((V_obj = S_obj->resource) == NULL) {	/* First time allocating space; S_obj->n_rows == S_obj->n_alloc == 0 */
 				col = (GMT->common.o.select) ? GMT->common.o.n_cols : GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
 				if (col == 0 && mode == GMT_WRITE_SEGMENT_HEADER && GMT->current.io.multi_segments[GMT_OUT]) {
 					/* Cannot place the NaN records since we don't know the number of columns yet */

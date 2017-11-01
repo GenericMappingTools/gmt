@@ -7745,10 +7745,10 @@ int gmtlib_alloc_univector (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *u, unsign
 	return (error);
 }
 
-void gmtlib_free_text_array (struct GMT_CTRL *GMT, uint64_t n, char ***text) {
+/* Free the individual strings in text[] that were allocated by strdup */
+GMT_LOCAL void free_text_array (uint64_t n, char **text) {
 	uint64_t row;
-	for (row = 0; row < n; row++) gmt_M_str_free (*text[row]);
-	gmt_M_free (GMT, *text);
+	for (row = 0; row < n; row++) gmt_M_str_free (text[row]);
 }
 
 /*! . */
@@ -7767,8 +7767,10 @@ unsigned int gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V,
 			gmtio_null_univector (GMT, &(V->data[col]), V->type[col]);
 		}
 	}
-	if (V->text && free_vector && VH->alloc_mode == GMT_ALLOC_INTERNALLY)
-		gmtlib_free_text_array (GMT, V->n_rows, &(V->text));
+	if (V->text && free_vector && VH->alloc_mode == GMT_ALLOC_INTERNALLY) {
+		free_text_array (V->n_rows, V->text);
+		gmt_M_free (GMT, V->text);
+	}
 	gmt_M_free (GMT, V->data);	/* Sometimes we free a V that has nothing allocated so must check */
 	gmt_M_free (GMT, V->type);
 	alloc_mode = VH->alloc_mode;
@@ -7835,8 +7837,10 @@ unsigned int gmtlib_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M,
 		if (MH->alloc_mode == GMT_ALLOC_INTERNALLY) gmtio_free_univector (GMT, &(M->data), M->type);
 		gmtio_null_univector (GMT, &(M->data), M->type);
 	}
-	if (M->text && free_matrix && MH->alloc_mode == GMT_ALLOC_INTERNALLY)
-		gmtlib_free_text_array (GMT, M->n_rows, &(M->text));
+	if (M->text && free_matrix && MH->alloc_mode == GMT_ALLOC_INTERNALLY) {
+		free_text_array (M->n_rows, M->text);
+		gmt_M_free (GMT, M->text);
+	}
 	alloc_mode = MH->alloc_mode;
 	gmt_M_free (GMT, M->hidden);
 	return (alloc_mode);

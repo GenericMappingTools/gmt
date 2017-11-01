@@ -435,6 +435,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error decoding combinations file for pair %" PRIu64 "!\n", n_pairs);
 				fclose (fp);
 				free_pairs (GMT, &pair, n_pairs);
+				x2sys_free_list (GMT, trk_name, n_tracks);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			pair[n_pairs].id1 = strdup (name1);

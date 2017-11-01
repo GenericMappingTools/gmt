@@ -629,6 +629,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 						if (txt_b[0]) Ctrl->S.fontsize = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 						if (txt_c[0]) Ctrl->S.offset = gmt_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
 						if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = true;
+						if (gmt_M_is_zero (Ctrl->S.scale))
+								Ctrl->S.n_cols = 4;
+							else
+								Ctrl->S.n_cols = 3;
 						break;
 					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
 						Ctrl->T2.active = true;
@@ -637,10 +641,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 							n_errors++;
 						}
 						break;
-					if (gmt_M_is_zero (Ctrl->S.scale))
-							Ctrl->S.n_cols = 4;
-						else
-							Ctrl->S.n_cols = 3;
 				}
 				break;
 			case 'G':	/* Set color for compressive parts */

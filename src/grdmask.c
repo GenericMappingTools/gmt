@@ -347,7 +347,14 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 	for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = mask_val[GMT_OUTSIDE];
 
-	if ((error = GMT_Set_Columns (API, GMT_IN, n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
+	if ((error = GMT_Set_Columns (API, GMT_IN, n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+		if (Ctrl->S.active) {
+			gmt_M_free (GMT, d_col);
+			gmt_M_free (GMT, grd_x0);
+			gmt_M_free (GMT, grd_y0);
+		}
+		Return (error);
+	}
 	gmode = (Ctrl->S.active) ? GMT_IS_POINT : GMT_IS_POLY;
 	gmt_skip_xy_duplicates (GMT, true);	/* Skip repeating x/y points in polygons */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, gmode, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)	/* Registers default input sources, unless already set */
