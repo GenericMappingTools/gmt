@@ -443,10 +443,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 					pos = 0;	txt_a[0] = 0;
 					while (gmt_getmodopt (GMT, 'G', p, "aiuv", &pos, txt_a, &n_errors) && n_errors == 0) {
 						switch (txt_a[0]) {
-							case 'a': Ctrl->G.mode |= GMT_MP_CUMUL_DIST; break;	/* Cumulative distance */
-							case 'i': Ctrl->G.mode |= GMT_MP_INCR_DIST;	 break;	/* Incremental distance */
-							case 'v': Ctrl->G.mode |= GMT_MP_PAIR_DIST;  break;	/* Variable coordinates */
-							case 'u': Ctrl->G.unit = set_unit_and_mode (&txt_a[1], &Ctrl->G.sph);	/* Unit specification */
+							case 'a': Ctrl->G.mode |= GMT_MP_CUMUL_DIST;	break;	/* Cumulative distance */
+							case 'i': Ctrl->G.mode |= GMT_MP_INCR_DIST;	break;	/* Incremental distance */
+							case 'v': Ctrl->G.mode |= GMT_MP_PAIR_DIST;	break;	/* Variable coordinates */
+							case 'u':	/* Must check if followed by a leading + to indicate ellipsoidal distance since
+									   that will interfere with the modifier parsing.  E.g., +u+k will just return
+									   +u with no unit and then fail on the unrecognized +k "modifier".  We cheat by
+									   advancing past this problem when it occurs. */
+								if (p[pos] == '+') {	/* Gave a leading + before the unit.  Must correct txt_a and pos */
+									txt_a[1] = p[pos++];	txt_a[2] = p[pos++]; txt_a[3] = '\0';
+								}
+								Ctrl->G.unit = set_unit_and_mode (&txt_a[1], &Ctrl->G.sph);	/* Unit specification */
+								break;
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
