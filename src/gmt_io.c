@@ -3108,16 +3108,21 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		}
 		else	/* Let gmt_scanf_arg figure it out for us by passing UNKNOWN since ABSTIME has been dealt above */
 			got = gmt_scanf_arg (GMT, token, GMT_IS_UNKNOWN, false, &value);
-		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) && col < 50) {	/* Tell user how we interpreted their first record, but not for excessively long records */
-			k = gmtio_get_type_name_index (got);
-			if (col) strcat (message, ",");
-			strncat (message, GMT_coltype_name[k], GMT_BUFSIZ-1);
-			if (col == 49) strcat (message, ",...");
-		}
-		if (got == GMT_IS_NAN)	/* Parsing failed, which means we found our first non-number */
+		if (got == GMT_IS_NAN) {	/* Parsing failed, which means we found our first non-number; but it could also be a valid NaN */
+			gmtlib_str_tolower (token);
+			if (strncmp (token, "nan", 3U))
 				found_text = true;
+			else
+				type[col++] = got = GMT_IS_FLOAT;
+		}
 		else	/* A succesful numerical parsing */
 				type[col++] = got;
+		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) && col <= 50) {	/* Tell user how we interpreted their first record, but not for excessively long records */
+			k = gmtio_get_type_name_index (got);
+			if (col>1) strcat (message, ",");
+			strncat (message, GMT_coltype_name[k], GMT_BUFSIZ-1);
+			if (col == 50) strcat (message, ",...");
+		}
 		*tpos = pos;
 	}
 	*n_columns = col;	/* Pass back the numerical column count */
