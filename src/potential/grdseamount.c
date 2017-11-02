@@ -565,9 +565,13 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active) {	/* Just list area, volume, etc. for each seamount; no grid needed */
 		n_out = (unsigned int)n_expected_fields + 3;
 		if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
+			gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+			gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
+			gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
 			Return (API->error);
 		}
 	}
