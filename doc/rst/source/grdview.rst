@@ -85,13 +85,15 @@ Optional Arguments
 
 |-G|\ *drapefile* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b*
     Drape the image in *drapefile* on top of the relief provided by
-    *relief_file*. [Default is *relief_file*]. Note that **-Jz** and
+    *relief_file*. [Default determines colors from *relief_file*]. Note that **-Jz** and
     **-N** always refers to the *relief_file*. The *drapefile* only
-    provides the information pertaining to colors, which is looked-up
-    via the CPT (see **-C**). Alternatively, give three grid files
+    provides the information pertaining to colors, which (if *drapefile* is a grid) will be looked-up
+    via the CPT (see **-C**). Instead, you may give three grid files
     via separate **-G** options in the specified order. These files must contain the red, green, and
     blue colors directly (in 0-255 range) and no CPT is needed. The
-    *drapefile* may be of higher resolution than the *relief_file*.
+    *drapefile* may be of a different resolution than the *relief_file*.
+    Finally, *drapefile* may be an image to be draped over the surface, in which
+    case the **-C** option is not required.
 
 .. _-I:
 
