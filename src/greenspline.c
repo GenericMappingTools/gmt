@@ -1774,22 +1774,27 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	if (Ctrl->T.file) {	/* Existing grid that will have zeros and NaNs, only */
 		struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 		if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->T.file, NULL)) == NULL) {	/* Get header only */
+			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			Return (API->error);
 		}
 		if (!(Grid->header->wesn[XLO] == Ctrl->R3.range[0] && Grid->header->wesn[XHI] == Ctrl->R3.range[1] &&
-		     Grid->header->wesn[YLO] == Ctrl->R3.range[2] && Grid->header->wesn[YHI] == Ctrl->R3.range[3])) {
+		      Grid->header->wesn[YLO] == Ctrl->R3.range[2] && Grid->header->wesn[YHI] == Ctrl->R3.range[3])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The mask grid does not match your specified region\n");
+			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (! (Grid->header->inc[GMT_X] == Ctrl->I.inc[GMT_X] && Grid->header->inc[GMT_Y] == Ctrl->I.inc[GMT_Y])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The mask grid resolution does not match your specified grid spacing\n");
+			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (! (Grid->header->registration == GMT->common.R.registration)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The mask grid registration does not match your specified grid registration\n");
+			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->T.file, Grid) == NULL) {	/* Get data */
+			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			Return (API->error);
 		}
 		(void)gmt_set_outgrid (GMT, Ctrl->T.file, false, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
@@ -1801,11 +1806,13 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	else if (Ctrl->N.active) {	/* Read output locations from file */
 		gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
+			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			Return (API->error);
 		}
 		if (Nin->n_columns < dimension) {
-			GMT_Report (API, GMT_MSG_NORMAL,
-			            "Input file %s has %d column(s) but at least %u are needed\n", Ctrl->N.file, (int)Nin->n_columns, dimension);
+			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least %u are needed\n",
+			            Ctrl->N.file, (int)Nin->n_columns, dimension);
+			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
