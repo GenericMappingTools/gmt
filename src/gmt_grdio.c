@@ -307,6 +307,7 @@ GMT_LOCAL void grdio_pack_grid (struct GMT_CTRL *Ctrl, struct GMT_GRID_HEADER *h
 			/* Adjust z-range in header: */
 			header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 			header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
+			if (header->z_scale_factor < 0.0) gmt_M_double_swap (header->z_min, header->z_max);
 			break;
 		case k_grd_pack:
 			gmt_scale_and_offset_f (Ctrl, grid, header->size, 1.0/header->z_scale_factor, -header->z_add_offset/header->z_scale_factor);

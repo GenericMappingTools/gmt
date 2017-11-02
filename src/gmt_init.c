@@ -11657,7 +11657,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 		opt_R = GMT_Find_Option (API, 'R', *options);
 		opt_J = gmt_find_J_option (API, *options);
-
 		if (GMT->hidden.func_level == 0) {	/* The -R -J -O -K prohibition only applies to top-level module call */
 			/* 1. No -O allowed */
 			if ((opt = GMT_Find_Option (API, 'O', *options))) {
@@ -11843,7 +11842,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Added -R to options since history is available.\n");
 			}
 			else if (strchr (required, 'g') || strchr (required, 'd')) {	/* No history but can examine input data sets */
-				if (gmtinit_determine_R_option_from_data (API, required, false, options)) {
+				if (gmtinit_determine_R_option_from_data (API, required, true, options)) {
 					GMT_Report (API, GMT_MSG_DEBUG, "Modern mode: Error determining the region from input data.\n");
 				}
 			}

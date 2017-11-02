@@ -89,6 +89,7 @@ struct GMT_COMMON {
 		bool oblique;	/* true when -R...r was given (oblique map, probably), else false (map borders are meridians/parallels) */
 		uint32_t registration;	/* Registration mode of a grid given via -r or -Rgrid */
 		int row_order;	/* Order of rows in NetCDF output: 0 (not set) or k_nc_start_north or k_nc_start_south */
+		unsigned int mode;	/* For modern mode only: 0 = get exact region from data, 1 = rounded region from data */
 		double wesn[6];		/* Boundaries of west, east, south, north, low-z and hi-z */
 		double wesn_orig[4];	/* Original Boundaries of west, east, south, north (oblique projection may reset wesn above) */
 		double inc[2];	/* For grid increments set via -Idx/dy or implicitly via -Ggrid */
