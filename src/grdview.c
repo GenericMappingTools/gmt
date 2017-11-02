@@ -811,14 +811,15 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	if (Ctrl->G.active) {	/* Draping wanted */
 		if (Ctrl->G.n == 1 && gmt_M_file_is_image (Ctrl->G.file[0])) {
 			double inc[2];
-			/* Want to drape an image on top of surface.  Do so by converting image to r, g, b grids */
+			/* Want to drape an image on top of surface.  Do so by converting the image to r, g, b grids */
 			struct GMT_IMAGE *I = NULL;
 			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file[0], NULL)) == NULL) {
 				Return (API->error);
 			}
-			inc[GMT_X] = gmt_M_get_inc (GMT, Topo->header->wesn[XLO], Topo->header->wesn[XHI], I->header->n_columns, I->header->xy_off);
-			inc[GMT_Y] = gmt_M_get_inc (GMT, Topo->header->wesn[YLO], Topo->header->wesn[YHI], I->header->n_rows, I->header->xy_off);
-			for (k = 0; k < 3; k++) {
+			/* Compute the x,y increment in the Topo x/y units that the image will have give its dimensions and pixel registration */
+			inc[GMT_X] = gmt_M_get_inc (GMT, Topo->header->wesn[XLO], Topo->header->wesn[XHI], I->header->n_columns, I->header->registration);
+			inc[GMT_Y] = gmt_M_get_inc (GMT, Topo->header->wesn[YLO], Topo->header->wesn[YHI], I->header->n_rows, I->header->registration);
+			for (k = 0; k < 3; k++) {	/* Create 3 grids with the same w/e/s/n as topo but with its own nx/ny and registration */
 				if ((Drape[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Topo->header->wesn, inc, I->header->registration, 2, NULL)) == NULL) {
 					Return (API->error);
 				}
@@ -826,51 +827,54 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			/* Handle transparent images */
 			if (I->colormap != NULL) {	/* Image has a color map */
 				/* Convert colormap from integer to unsigned char and count colors */
-				unsigned char *colormap = gmt_M_memory (GMT, NULL, 4*256, unsigned char);
+				unsigned char *colormap = gmt_M_memory (GMT, NULL, 4 * 256, unsigned char);
 				int64_t n, j;
 				for (n = 0; n < 4 * 256 && I->colormap[n] >= 0; n++) colormap[n] = (unsigned char)I->colormap[n];
 				n /= 4;
-				/* Expand 8-bit indexed image to 24-bit image */
-				I->data = gmt_M_memory (GMT, I->data, 3 * I->header->nm, unsigned char);
-				n = 3 * I->header->nm - 1;
-				for (j = (int)I->header->nm - 1; j >= 0; j--) {
+				/* Expand 8-bit indexed image to a 24-bit image */
+				I->data = gmt_M_memory (GMT, I->data, 3 * I->header->size, unsigned char);
+				n = 3 * I->header->size - 1;	/* Index or last pixel's blue value */
+				for (j = (int64_t)I->header->size - 1; j >= 0; j--) {	/* Loop from back to front and turn index into r/g/b */
 					k = 4 * I->data[j] + 3;
 					I->data[n--] = colormap[--k], I->data[n--] = colormap[--k], I->data[n--] = colormap[--k];
 				}
-				I->header->n_bands = 3;
+				I->header->n_bands = 3;	/* Update the number of bands from 1 to 3 */
 				gmt_M_free (GMT, colormap);
 			}
-			else if (I->header->n_bands == 4) { /* RGBA image, with a color map */
+			else if (I->header->n_bands == 4) { /* RGBA image, with a color map, scrap the A part */
 				uint64_t n4, j4;
 				for (j4 = n4 = 0; j4 < 4 * I->header->size; j4++) { /* Reduce image from 32- to 24-bit */
 					I->data[n4++] = I->data[j4++], I->data[n4++] = I->data[j4++], I->data[n4++] = I->data[j4++];
 				}
 				I->header->n_bands = 3;
 			}
-			/* Now assign r,g,b to three grids */
+			/* Now assign r,g,b pixel values to the three separate drape grids */
 			gmt_M_grd_loop (GMT, I, row, col, ij) {
 				for (k = 0; k < 3; k++)
 					Drape[k]->data[ij] = I->data[3*ij+k];
 			}
-			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {
+
+			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {	/* Image no longer needed */
 				Return (API->error);
 			}
-			Ctrl->G.n = 3;
-			Ctrl->G.image = true;
-			do_G_reading = false;
+			Ctrl->G.n = 3;	/* Basically pretend we read three drape grids from now on */
+			Ctrl->G.image = true;	/* But not forget were we came from */
+			do_G_reading = false;	/* For instance, we are not going to read in drape data since all done with that */
 		}
-		else {	/* Read the single or triple drape grids */
+		else {	/* Read the single (or triple) drape grids */
 			for (k = 0; k < Ctrl->G.n; k++) if ((Drape[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->G.file[k], NULL)) == NULL) {	/* Get header only */
 				Return (API->error);
 			}
 		}
 		
-		for (k = 0; k < Ctrl->G.n; k++) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing drape grid %s\n", Ctrl->G.file[k]);
-
-			if (do_G_reading && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->G.file[k], Drape[k]) == NULL) {	/* Get drape data */
-				Return (API->error);
+		for (k = 0; k < Ctrl->G.n; k++) {	/* Process drape grid, if read */
+			if (do_G_reading) {
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing drape grid %s\n", Ctrl->G.file[k]);
+				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->G.file[k], Drape[k]) == NULL) {	/* Get drape data */
+					Return (API->error);
+				}
 			}
+			/* If Drape and Topo rids are not identical in dimension then we need to resample the draping */
 			if (Drape[k]->header->n_columns != Topo->header->n_columns || Drape[k]->header->n_rows != Topo->header->n_rows) drape_resample = true;
 			d_reg[k] = gmt_change_grdreg (GMT, Drape[k]->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
 		}
