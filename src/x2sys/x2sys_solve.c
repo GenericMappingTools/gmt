@@ -437,6 +437,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	do {	/* Keep returning records until we have no more files */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Keep returning records until we have no more files */
 			if (gmt_M_rec_is_error (GMT)) {
+				gmt_M_free (GMT, trk_list);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (gmt_M_rec_is_table_header (GMT)) {
