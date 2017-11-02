@@ -1166,7 +1166,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			}
 		}
 		if (Ctrl->A.mode) {	/* Output the revised data set plus NN analysis results */
-			if ((error = GMT_Set_Columns (API, GMT_OUT, 7, GMT_COL_FIX_NO_TEXT)) != 0) Return (error);
+			if ((error = GMT_Set_Columns (API, GMT_OUT, 7, GMT_COL_FIX_NO_TEXT)) != 0) {
+				gmt_M_free (GMT, NN_dist);	
+				gmt_M_free (GMT, NN_info);	
+				Return (error);
+			}
 			if (GMT->common.h.add_colnames) {
 				char header[GMT_LEN256] = {""}, *name[2][2] = {{"x", "y"}, {"lon", "lat"}};
 				k = (gmt_M_is_geographic (GMT, GMT_IN)) ? 1 : 0;
@@ -1220,6 +1224,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+			gmt_M_free (GMT, NN_dist);	
+			gmt_M_free (GMT, NN_info);	
 			Return (API->error);
 		}
 		gmt_M_free (GMT, NN_dist);	
