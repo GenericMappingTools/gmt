@@ -558,6 +558,8 @@ int gmt_native_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 	return status;
 }
 
+#define free_and_return(code) { gmt_free_header(GMT, &t_head); return (code); }
+
 int gmt_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	uint64_t mx, status, size;
 	off_t nm;
@@ -566,24 +568,31 @@ int gmt_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	struct GMT_GRID_HEADER *t_head = gmt_get_header (GMT);
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 	struct GMT_GRID_HEADER_HIDDEN *HHt = gmt_get_H_hidden (t_head);
-	if (!strcmp (HH->name, "="))
-		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if (stat (HH->name, &buf))
-		return (GMT_GRDIO_STAT_FAILED);		/* Inquiry about file failed somehow */
+	if (!strcmp (HH->name, "=")) {
+		free_and_return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
+	}
+	if (stat (HH->name, &buf)) {
+		free_and_return (GMT_GRDIO_STAT_FAILED);		/* Inquiry about file failed somehow */
+	}
 	strncpy (HHt->name, HH->name, GMT_LEN256);
-	if ((status = gmt_native_read_grd_info (GMT, t_head)) != 0)
-		return (GMT_GRDIO_READ_FAILED);	/* Failed to read header */
-	if (t_head->n_columns <= 0 || t_head->n_rows <= 0 || !(t_head->registration == GMT_GRID_NODE_REG || t_head->registration == GMT_GRID_PIXEL_REG))
-		return (GMT_GRDIO_BAD_VAL);		/* Garbage for n_columns or n_rows */
-	if (t_head->wesn[XLO] >= t_head->wesn[XHI] || t_head->wesn[YLO] >= t_head->wesn[YHI])
-		return (GMT_GRDIO_BAD_VAL);		/* Garbage for wesn */
+	if ((status = gmt_native_read_grd_info (GMT, t_head)) != 0) {
+		free_and_return (GMT_GRDIO_READ_FAILED);	/* Failed to read header */
+	}
+	if (t_head->n_columns <= 0 || t_head->n_rows <= 0 || !(t_head->registration == GMT_GRID_NODE_REG || t_head->registration == GMT_GRID_PIXEL_REG)) {
+		free_and_return (GMT_GRDIO_BAD_VAL);		/* Garbage for n_columns or n_rows */
+	}
+	if (t_head->wesn[XLO] >= t_head->wesn[XHI] || t_head->wesn[YLO] >= t_head->wesn[YHI]) {
+		free_and_return (GMT_GRDIO_BAD_VAL);		/* Garbage for wesn */
+	}
 	nm = gmt_M_get_nm (GMT, t_head->n_columns, t_head->n_rows);
-	if (nm <= 0)
-		return (GMT_GRDIO_BAD_VAL);			/* Overflow for n_columns * n_rows? */
+	if (nm <= 0) {
+		free_and_return (GMT_GRDIO_BAD_VAL);			/* Overflow for n_columns * n_rows? */
+	}
 	item_size = (double)((buf.st_size - GMT_GRID_HEADER_SIZE) / nm);	/* Estimate size of elements */
 	size = lrint (item_size);
-	if (!doubleAlmostEqualZero (item_size, (double)size))
-		return (GMT_GRDIO_BAD_VAL);	/* Size not an integer */
+	if (!doubleAlmostEqualZero (item_size, (double)size)) {
+		free_and_return (GMT_GRDIO_BAD_VAL);	/* Size not an integer */
+	}
 
 	switch (size) {
 		case 0:	/* Possibly bit map; check some more */
@@ -591,8 +600,9 @@ int gmt_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			nm = 4 * mx * ((uint64_t)t_head->n_rows);	/* Number of bytes to store all the rows */
 			if ((buf.st_size - GMT_GRID_HEADER_SIZE) == nm)	/* Yes, it was a bit mask file */
 				header->type = GMT_GRID_IS_BM;
-			else	/* No, junk data */
-				return (GMT_GRDIO_BAD_VAL);
+			else {	/* No, junk data */
+				free_and_return (GMT_GRDIO_BAD_VAL);
+			}
 			HH->orig_datatype = GMT_INT;
 			break;
 		case 1:	/* 1-byte elements */
@@ -623,7 +633,7 @@ int gmt_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot determine if a native 4-byte grid is float or int without more information.\n");
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "You must append =bf (float) or =bi (integer) to avoid this situation.\n");
-				return (GMT_GRDIO_NONUNIQUE_FORMAT);
+				free_and_return (GMT_GRDIO_NONUNIQUE_FORMAT);
 			}
 			break;
 		case 8:	/* 8-byte elements */
@@ -631,12 +641,10 @@ int gmt_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			HH->orig_datatype = GMT_DOUBLE;
 			break;
 		default:	/* Garbage */
-			return (GMT_GRDIO_BAD_VAL);
+			free_and_return (GMT_GRDIO_BAD_VAL);
 			break;
 	}
-	gmt_M_free (GMT, t_head->hidden);
-	gmt_M_free (GMT, t_head);
-	return GMT_NOERROR;
+	free_and_return (GMT_NOERROR);
 }
 
 GMT_LOCAL int customio_native_write_grd_header (FILE *fp, struct GMT_GRID_HEADER *header) {

@@ -2553,6 +2553,19 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 	return (Gnew);
 }
 
+void gmt_free_header (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER **header) {
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
+	struct GMT_GRID_HEADER *h = *header;
+	if (h == NULL) return;	/* Nothing to deallocate */
+	/* Free the header structure and anything allocated by it */
+	HH = gmt_get_H_hidden (h);
+	gmt_M_str_free (h->ProjRefWKT);
+	gmt_M_str_free (h->ProjRefPROJ4);
+	gmt_M_str_free (HH->pocket);
+	gmt_M_free (GMT, h->hidden);
+	gmt_M_free (GMT, *header);
+}
+
 unsigned int gmtgrdio_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool free_grid) {
 	/* By taking a reference to the grid pointer we can set it to NULL when done */
 	struct GMT_GRID_HIDDEN *GH = NULL;
@@ -2574,14 +2587,7 @@ unsigned int gmtgrdio_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, b
 	if (GH->extra) gmtapi_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
 	alloc_mode = GH->alloc_mode;
 	gmt_M_free (GMT, G->hidden);
-	if (G->header) {	/* Free the header structure and anything allocated by it */
-		struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
-		gmt_M_str_free (G->header->ProjRefWKT);
-		gmt_M_str_free (G->header->ProjRefPROJ4);
-		gmt_M_str_free (HH->pocket);
-		gmt_M_free (GMT, G->header->hidden);
-		gmt_M_free (GMT, G->header);
-	}
+	gmt_free_header (GMT, &(G->header));	/* Free the header structure and anything allocated by it */
 	return (alloc_mode);
 }
 

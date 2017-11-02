@@ -348,7 +348,7 @@ Finally, the table structure depends on a structure for individual data segments
        char  **text;              /* trailing text strings beyond the data */
        char    *label;            /* Label string (if applicable) */
        char    *header;           /* Segment header (if applicable) */
-    ;
+    };
 
 Data sets may have different geometries, such as representing a set of points,
 one or more lines, or closed polygons.
@@ -470,7 +470,6 @@ The full structure definition can be found in :ref:`GMT_POSTSCRIPT <struct-posts
 
    struct GMT_POSTSCRIPT {	/* Single container for a chunk of PostScript text */
        unsigned int n_headers;          /* Number of PostScript header records (0 if no header) */
-       size_t n_alloc;                  /* Size of array allocated so far */
        size_t n_bytes;                  /* Length of data array so far */
        unsigned int mode;               /* Bit-flag for header (1) and trailer (2) */
        char *data;                      /* Pointer to actual PostScript text */
@@ -505,6 +504,7 @@ The full structure definition can be found in :ref:`GMT_MATRIX <struct-matrix>`.
       enum GMT_enum_type   type;          /* Data type, e.g. GMT_FLOAT */
       double               range[6];      /* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
       union GMT_UNIVECTOR  data;          /* Pointer to actual matrix of the chosen type */
+      char               **text;          /* Pointer to optional array of strings [NULL] */
    };
 
 The ``enum`` types referenced in :ref:`GMT_VECTOR <struct-vector>` and
@@ -536,6 +536,7 @@ The full structure definition can be found in :ref:`GMT_VECTOR <struct-vector>`.
       enum GMT_enum_type  *type;          /* Array with data type for each vector */
       union GMT_UNIVECTOR *data;          /* Array with unions for each column */
       double               range[2];      /* The min and max limits on t-range (or 0,0) */
+      char               **text;          /* Pointer to optional array of strings [NULL] */
   };
 
 Data record
@@ -3492,29 +3493,19 @@ structure per segment.
 
    struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
        /* Variables we document for the API: */
-       uint64_t               n_tables;     /* Total number of tables (files) contained */
-       uint64_t               n_columns;    /* Number of data columns */
-       uint64_t               n_segments;   /* Total number of segments across all tables */
-       uint64_t               n_records;    /* Total number of data records across all tables */
-       double                *min;          /* Minimum coordinate for each column */
-       double                *max;          /* Maximum coordinate for each column */
-       struct GMT_DATATABLE **table;        /* Pointer to array of tables */
-       /* ---- Variables "hidden" from the API ---- */
-       uint64_t               id;           /* The internal number of the data set */
-       size_t                 n_alloc;      /* The current allocation length of tables */
-       uint64_t               dim[4];       /* Used by GMT_Duplicate_Data to override dimensions */
-       unsigned int           type;         /* The data record type of this dataset */
-       unsigned int           geometry;     /* The geometry of this dataset */
-       unsigned int           alloc_level;  /* The level it was allocated at */
-       enum GMT_enum_dest     io_mode;      /* -1: write OGR format (requires proper -a),
-                                               0: write everything to one destination [Default],
-                                               1: use table->file[GMT_OUT] to write separate table,
-                                               2: use segment->file[GMT_OUT] to write separate segments.
-                                               3: as 2 but with no filenames we create filenames from
-                                                 tbl and seg numbers */
-       enum GMT_enum_read type;             /* The datatype (numerical, text, or mixed) of this dataset */
-       enum GMT_enum_alloc    alloc_mode;   /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
-       char                  *file[2];      /* Name of file or source [0 = in, 1 = out] */
+       uint64_t               n_tables;       /* Total number of tables (files) contained */
+       uint64_t               n_columns;      /* Number of data columns */
+       uint64_t               n_segments;     /* Total number of segments across all tables */
+       uint64_t               n_records;      /* Total number of data records across all tables */
+       double                 *min;           /* Minimum coordinate for each column */
+       double                 *max;           /* Maximum coordinate for each column */
+       struct GMT_DATATABLE   **table;        /* Pointer to array of tables */
+       unsigned int           type;           /* The data record type of this dataset */
+       unsigned int           geometry;       /* The geometry of this dataset */
+       const char             *ProjRefPROJ4;  /* To store a referencing system string in PROJ.4 format */
+       const char             *ProjRefWKT;    /* To store a referencing system string in WKT format */
+       int                    ProjRefEPSG;    /* To store a referencing system EPSG code */
+       void                   *hidden;        /* ---- Variables "hidden" from the API ---- */
    };
 
 Here is the full definition of the ``GMT_DATATABLE`` structure:
@@ -3525,22 +3516,15 @@ Here is the full definition of the ``GMT_DATATABLE`` structure:
 
    struct GMT_DATATABLE {  /* To hold an array of line segment structures and header information in one container */
        /* Variables we document for the API: */
-       unsigned int n_headers;    /* Number of file header records (0 if no header) */
-       uint64_t     n_columns;    /* Number of columns (fields) in each record */
-       uint64_t     n_segments;   /* Number of segments in the array */
-       uint64_t     n_records;    /* Total number of data records across all segments */
-       double      *min;          /* Minimum coordinate for each column */
-       double      *max;          /* Maximum coordinate for each column */
-       char       **header;       /* Array with all file header records, if any) */
+       unsigned int n_headers;           /* Number of file header records (0 if no header) */
+       uint64_t n_columns;               /* Number of columns (fields) in each record */
+       uint64_t n_segments;              /* Number of segments in the array */
+       uint64_t n_records;               /* Total number of data records across all segments */
+       double *min;                      /* Minimum coordinate for each column */
+       double *max;                      /* Maximum coordinate for each column */
+       char **header;                    /* Array with all file header records, if any) */
        struct GMT_DATASEGMENT **segment; /* Pointer to array of segments */
-       /* ---- Variables "hidden" from the API ---- */
-       uint64_t     id;           /* The internal number of the table */
-       size_t       n_alloc;      /* The current allocation length of segments */
-       double       dist;         /* Distance from a point to this feature */
-       enum GMT_enum_write mode;  /* 0 = output table, 1 = output header only, 2 = skip table */
-       struct GMT_OGR *ogr;       /* Pointer to struct with all things GMT/OGR
-								     (if MULTI-geometry and not MULTIPOINT)  */
-       char        *file[2];      /* Name of file or source [0 = in, 1 = out] */
+       void *hidden;                     /* ---- Variables "hidden" from the API ---- */
    };
 
 Here is the full definition of the ``GMT_DATASEGMENT`` structure:
@@ -3549,63 +3533,17 @@ Here is the full definition of the ``GMT_DATASEGMENT`` structure:
 
 .. code-block:: c
 
-   struct GMT_DATASEGMENT {       /* For holding segment lines in memory */
+   struct GMT_DATASEGMENT {     /* For holding segment lines in memory */
        /* Variables we document for the API: */
-       uint64_t n_rows;           /* Number of points in this segment */
-       uint64_t n_columns;        /* Number of fields in each record (>= 2) */
-       double  *min;              /* Minimum coordinate for each column */
-       double  *max;              /* Maximum coordinate for each column */
-       double **data;             /* Data x,y, and possibly other columns */
-       char  **text;              /* trailing text strings beyond the data */
-       char    *label;            /* Label string (if applicable) */
-       char    *header;           /* Segment header (if applicable) */
-       /* ---- Variables "hidden" from the API ---- */
-       enum GMT_enum_write mode;  /* 0 = output segment, 1 = output header only, 2 = skip segment */
-       enum GMT_enum_pol pol_mode;/* GMT_IS_PERIMETER [-Pp] or GMT_IS_HOLE [-Ph] (for polygons only) */
-       uint64_t id;               /* The internal number of the segment */
-       size_t   n_alloc;          /* The current allocation length of each data column */
-       unsigned int range;        /* Longitude reporting scheme, e.g. GMT_IS_GIVEN_RANGE [0] */
-       int      pole;             /* Spherical polygons only: If it encloses the S (-1)
-									 or N (+1) pole, or none (0) */
-       double   dist;             /* Distance from a point to this feature */
-       double   lat_limit;        /* For polar caps: the latitude of the point closest to the pole */
-       struct GMT_OGR_SEG *ogr;   /* NULL unless OGR/GMT metadata exist for this segment */
-       struct GMT_DATASEGMENT *next; /* NULL unless polygon has holes and pointing to next hole */
-       char    *file[2];          /* Name of file or source [0 = in, 1 = out] */
-    };
-
-The definition of the ``GMT_OGR`` structure (not part of the API):
-
-.. _struct-ogr:
-
-.. code-block:: c
-
-    struct GMT_OGR {  /* Struct with all things GMT/OGR for a table */
-        /* The first parameters are usually set once per data set and do not change */
-        unsigned int  geometry;    /* @G: Geometry of this data set, if known [0 otherwise] */
-        unsigned int  n_aspatial;  /* @T: Number of aspatial fields */
-        char         *region;      /* @R: Region textstring [NULL if not set] */
-        char         *proj[4];     /* @J: The 1-4 projection strings [NULL if not set] */
-        unsigned int *type;        /* @T: Data types of the aspatial fields [NULL if not set]  */
-        char        **name;        /* @N: Names of the aspatial fields [NULL if not set]  */
-        /* The following are for OGR data only. It is filled during parsing (current segment)
-		   but is then copied to the segment header so it can be accessed later */
-        enum GMT_enum_pol pol_mode;/* @P: GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
-        char        **tvalue;      /* @D: The text values of the current aspatial fields */
-        double       *dvalue;      /* @D: Same but converted to double (assumed possible) */
-    };
-
-The definition of the ``GMT_OGR_SEG`` structure (not part of the API):
-
-.. _struct-ogr_seg:
-
-.. code-block:: c
-
-    struct GMT_OGR_SEG {           /* Struct with GMT/OGR aspatial data for a segment */
-        enum GMT_enum_pol pol_mode;/* @P: GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
-        unsigned int   n_aspatial; /* @T: Number of aspatial fields */
-        char         **tvalue;     /* @D: Values of current aspatial fields */
-        double *dvalue;            /* @D: Same but converted to double (assumed possible) */
+       uint64_t n_rows;         /* Number of points in this segment */
+       uint64_t n_columns;      /* Number of fields in each record (>= 2) */
+       double *min;             /* Minimum coordinate for each column */
+       double *max;             /* Maximum coordinate for each column */
+       double **data;           /* Data x,y, and possibly other columns */
+       char **text;             /* trailing text strings beyond the data */
+       char *label;             /* Label string (if applicable) */
+       char *header;            /* Segment header (if applicable) */
+       void *hidden;            /* ---- Variables "hidden" from the API ---- */
     };
 
 GMT grid
@@ -3622,12 +3560,8 @@ contains the grid values.
    struct GMT_GRID {                        /* To hold a GMT float grid and its header in one container */
        struct GMT_GRID_HEADER *header;      /* Pointer to full GMT header for the grid */
        float                  *data;        /* Pointer to the float grid */
-       /* ---- Variables "hidden" from the API ---- */
-       unsigned int            id;          /* Internal number of the grid */
-       unsigned int            alloc_level; /* Level it was allocated at */
-       enum GMT_enum_alloc     alloc_mode;  /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
        double                 *x, *y;       /* Vector of coordinates */
-       void                   *extra;       /* Row-by-row machinery information [NULL] */
+       void *hidden;                        /* ---- Variables "hidden" from the API ---- */
    };
 
 The full definition of the ``GMT_GRID_HEADER`` structure.  Most of these members are only used internally:
@@ -3659,7 +3593,6 @@ The full definition of the ``GMT_GRID_HEADER`` structure.  Most of these members
        char   remark[GMT_GRID_REMARK_LEN160];  /* comments re this data set */
        /* == End of "untouchable" header.       */
 
-       /* ---- Variables "hidden" from the API ----
         * This section is flexible.  It is not copied to any grid header
         * or stored in any file. It is considered private */
        unsigned int type;               /* Grid format */
@@ -3670,48 +3603,13 @@ The full definition of the ``GMT_GRID_HEADER`` structure.  Most of these members
        size_t       nm;                 /* Number of data items in this grid (n_columns * n_rows) [padding is excluded] */
        size_t       size;               /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
        size_t       n_alloc;            /* Bytes allocated for this grid */
-       unsigned int trendmode;          /* Holds status for detrending of grids. 0 if not detrended, 1 if mean, 2 if mid-value, and 3 if LS plane removed */
-       unsigned int arrangement;        /* Holds status for complex grid as how the read/imag is placed in the grid (interleaved, R only, etc.) */
        unsigned int n_bands;            /* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
        unsigned int pad[4];             /* Padding on west, east, south, north sides [2,2,2,2] */
-       unsigned int BC[4];              /* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
-       unsigned int grdtype;            /* 0 for Cartesian, > 0 for geographic and depends on 360 periodicity [see GMT_enum_grdtype above] */
-       char name[GMT_GRID_NAME_LEN256]; /* Actual name of the file after any ?<varname> and =<stuff> has been removed */
-       char varname[GMT_GRID_VARNAME_LEN80];/* NetCDF: variable name */
        const char  *ProjRefPROJ4;       /* To store a referencing system string in PROJ.4 format */
        const char  *ProjRefWKT;         /* To store a referencing system string in WKT format */
-       int          row_order;          /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
-       int          z_id;               /* NetCDF: id of z field */
-       int          ncid;               /* NetCDF: file ID */
-       int          xy_dim[2];          /* NetCDF: dimension order of x and y; normally {1, 0} */
-       size_t       t_index[3];         /* NetCDF: index of higher coordinates */
-       size_t       data_offset;        /* NetCDF: distance from the beginning of the in-memory grid */
-       unsigned int stride;             /* NetCDF: distance between two rows in the in-memory grid */
        float        nan_value;          /* Missing value as stored in grid file */
        double       xy_off;             /* 0.0 (registration == GMT_GRID_NODE_REG) or 0.5 ( == GMT_GRID_PIXEL_REG) */
-       double       r_inc[2];           /* Reciprocal incs, i.e. 1/inc */
-       char         flags[4];           /* Flags used for ESRI grids */
-       char        *pocket;             /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
-       char         mem_layout[4];      /* 3 or 4 char code T|B R|C S|R|S (grd) or B|L|P + A|a (img) describing mem layout and interleaving */
-       double       bcr_threshold;      /* sum of cardinals must >= threshold in bilinear; else NaN */
-       unsigned int bcr_interpolant;    /* Interpolation function used (0, 1, 2, 3) */
-       unsigned int bcr_n;              /* Width of the interpolation function */
-       unsigned int nxp;                /* if X periodic, nxp > 0 is the period in pixels  */
-       unsigned int nyp;                /* if Y periodic, nxp > 0 is the period in pixels  */
-       unsigned int no_BC;              /* If true we skip BC stuff entirely */
-       unsigned int gn;                 /* true if top    edge will be set as N pole  */
-       unsigned int gs;                 /* true if bottom edge will be set as S pole  */
-       unsigned int is_netcdf4;         /* true if netCDF-4/HDF5 format */
-       size_t       z_chunksize[2];     /* chunk size (lat,lon) */
-       unsigned int z_shuffle;          /* if shuffle filter is turned on */
-       unsigned int z_deflate_level;    /* if deflate filter is in use */
-       unsigned int z_scale_autoadjust; /* if z_scale_factor should be auto-detected */
-       unsigned int z_offset_autoadjust;/* if z_add_offset should be auto-detected */
-                                        /* xy_*[] is separate settings for GMT_IN and GMT_OUT */
-       unsigned int xy_adjust[2];       /* 1 if +u<unit> was parsed and scale set, 3 if xy has been adjusted, 0 otherwise */
-       unsigned int xy_mode[2];         /* 1 if +U<unit> was parsed, 0 otherwise */
-       unsigned int xy_unit[2];         /* Unit enum specified via +u<unit> */
-       double       xy_unit_to_meter[2];/* Scale, given xy_unit, to convert xy from <unit> to meters */
+       void        *hidden;             /* ---- Variables "hidden" from the API ---- */
    };
 
 GMT image
@@ -3732,12 +3630,10 @@ contains the image values.  The type of the array is determined by the value of 
       int                     n_indexed_colors; /* Number of colors in a color-mapped image */
       struct GMT_GRID_HEADER *header;           /* Pointer to full GMT header for the image */
       unsigned char          *data;             /* Pointer to actual image */
-      /* ---- Variables "hidden" from the API ---- */
-      uint64_t                id;               /* The internal number of the data set */
-      unsigned int            alloc_level;      /* Level of initial allocation */
-      enum GMT_enum_alloc     alloc_mode;       /* Allocation info [0] */
+      unsigned char          *alpha;            /* Pointer to an optional transparency layer */
       const char             *color_interp;	/* Color interpretation name */
       double                 *x, *y;            /* Vector of coordinates */
+      void                   *hidden;           /* ---- Variables "hidden" from the API ---- */
   };
 
 CPT palette table
@@ -3756,28 +3652,25 @@ the :ref:`GMT_FILL <struct-fill>` structure.
 
    struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
        /* Variables we document for the API: */
+       struct GMT_LUT       *data;               /* CPT lookup data read by GMT_read_cpt */
+       struct GMT_BFN        bfn[3];             /* Structures with back/fore/nan fills */
        unsigned int          n_headers;          /* Number of CPT header records (0 if no header) */
        unsigned int          n_colors;           /* Number of colors in CPT lookup table */
        unsigned int          mode;               /* Flags controlling use of BFN colors */
-       struct GMT_LUT       *data;               /* CPT lookup data read by GMT_read_cpt */
-       struct GMT_BFN        bfn[3];             /* Structures with back/fore/nan fills */
-       char                **header;             /* Array with all CPT header records, if any) */
-       /* ---- Variables "hidden" from the API ---- */
-       uint64_t              id;                 /* The internal number of the data set */
-       size_t                n_alloc;            /* Memory allocated so far */
-       enum GMT_enum_alloc   alloc_mode;         /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
-       unsigned int          alloc_level;        /* The level it was allocated at */
        unsigned int          model;              /* RGB, HSV, CMYK */
+       unsigned int          is_wrapping;        /* true if a cyclic colortable */
        unsigned int          is_gray;            /* true if only grayshades are needed */
        unsigned int          is_bw;              /* true if only black and white are needed */
        unsigned int          is_continuous;      /* true if continuous color tables have been given */
        unsigned int          has_pattern;        /* true if CPT contains any patterns */
-       unsigned int          skip;               /* true if current z-slice is to be skipped */
+       unsigned int          has_hinge;          /* true if CPT has a hinge */
+       unsigned int          has_range;          /* true if CPT has a natural range */
        unsigned int          categorical;        /* true if CPT applies to categorical data */
-       unsigned int          z_adjust[2];        /* 1 if +u<unit> was parsed and scale set, 3 if z has been adjusted, 0 otherwise */
-       unsigned int          z_mode[2];          /* 1 if +U<unit> was parsed, 0 otherwise */
-       unsigned int          z_unit[2];          /* Unit enum specified via +u<unit> */
-       double                z_unit_to_meter[2]; /* Scale, given z_unit, to convert z from <unit> to meters */
+       double                minmax[2];          /* The default range, if has_range is true */
+       double                hinge;              /* The default hinge, if is_wrapping is true */
+       double                wrap_length;        /* The default period, if has_hinge is true */
+       char                **header;             /* Array with all CPT header records, if any) */
+       void                 *hidden;             /* ---- Variables "hidden" from the API ---- */
    };
 
 The full definition of the ``GMT_LUT`` structure.
@@ -3843,11 +3736,7 @@ Bulk PostScript is represented by a :ref:`GMT_POSTSCRIPT <struct-postscript>` st
        unsigned int mode;               /* Bit-flag for header (1) and trailer (2) */
        char *data;                      /* Pointer to PostScript code */
        char **header;                   /* Array with all PostScript header records, if any) */
-       /* ---- Variables "hidden" from the API ---- */
-       uint64_t id;                     /* The internal number of the data set */
-       size_t n_alloc;                  /* Length of array allocated so far */
-       unsigned int alloc_level;        /* The level it was allocated at */
-       enum GMT_enum_alloc alloc_mode;  /* Allocation mode [GMT_ALLOC_INTERNALLY] */
+       void *hidden;                    /* ---- Variables "hidden" from the API ---- */
    };
 
 Matrix
@@ -3873,12 +3762,14 @@ by the :ref:`GMT_UNIVECTOR <struct-univector>` union.
       enum GMT_enum_type   type;          /* Data type, e.g. GMT_FLOAT */
       double               range[6];      /* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
       union GMT_UNIVECTOR  data;          /* Union with pointer to actual matrix of the chosen type */
+      char               **text;          /* Pointer to optional array of strings [NULL] */
+      char               **header;        /* Array with all Vector header records, if any) */
       char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
       char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
-      /* ---- Variables "hidden" from the API ---- */
-      uint64_t             id;            /* The internal number of the data set */
-      unsigned int         alloc_level;   /* The level it was allocated at */
-      enum GMT_enum_alloc  alloc_mode;    /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
+      const char          *ProjRefPROJ4;  /* To store a referencing system string in PROJ.4 format */
+      const char          *ProjRefWKT;    /* To store a referencing system string in WKT format */
+      int                  ProjRefEPSG;   /* To store a referencing system EPSG code */
+      void                *hidden;        /* ---- Variables "hidden" from the API ---- */
   };
 
 Vectors
@@ -3900,12 +3791,14 @@ by the :ref:`GMT_UNIVECTOR <struct-univector>` union which can accommodate any d
       enum GMT_enum_type  *type;          /* Array with data type for each vector */
       union GMT_UNIVECTOR *data;          /* Array with unions for each column */
       double               range[2];      /* The min and max limits on t-range (or 0,0) */
+      char               **text;          /* Pointer to optional array of strings [NULL] */
+      char               **header;        /* Array with all Vector header records, if any) */
       char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
       char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
-      /* ---- Variables "hidden" from the API ---- */
-      uint64_t             id;            /* An identification number */
-      unsigned int         alloc_level;   /* Level of initial allocation */
-      enum GMT_enum_alloc  alloc_mode;    /* Determines if we may free the vectors or not */
+      const char          *ProjRefPROJ4;  /* To store a referencing system string in PROJ.4 format */
+      const char          *ProjRefWKT;    /* To store a referencing system string in WKT format */
+      int                  ProjRefEPSG;   /* To store a referencing system EPSG code */
+      void                *hidden;        /* ---- Variables "hidden" from the API ---- */
   };
 
 The full definition of the ``GMT_UNIVECTOR`` union that holds a pointer to any array or matrix type:

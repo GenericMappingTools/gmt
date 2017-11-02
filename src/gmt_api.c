@@ -10792,8 +10792,7 @@ int gmt_f77_readgrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], d
 	if (gmtlib_read_grd_info (API->GMT, file, header)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error opening file %s\n", file);
 		gmt_M_str_free (file);
-		gmt_M_free (API->GMT, header->hidden);
-		gmt_M_free (API->GMT, header);
+		gmt_free_header (API->GMT, &header);
 		GMT_Destroy_Session (API);
 		return GMT_GRID_READ_ERROR;
 	}
@@ -10804,8 +10803,7 @@ int gmt_f77_readgrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], d
 	if (gmtlib_read_grd (API->GMT, file, header, array, no_wesn, GMT_no_pad, 0)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s\n", file);
 		gmt_M_str_free (file);
-		gmt_M_free (API->GMT, header->hidden);
-		gmt_M_free (API->GMT, header);
+		gmt_free_header (API->GMT, &header);
 		GMT_Destroy_Session (API);
 		return GMT_GRID_READ_ERROR;
 	}

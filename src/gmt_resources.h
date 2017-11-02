@@ -400,10 +400,11 @@ struct GMT_GRID_HEADER {
 	unsigned int mx, my;             /* Actual dimensions of the grid in memory, allowing for the padding */
 	unsigned int pad[4];             /* Padding on west, east, south, north sides [2,2,2,2] */
 	char   mem_layout[4];            /* Three or Four char codes T|B R|C S|R|S (grd) or B|L|P + A|a (img) describing array layout in mem and interleaving */
-	char  *ProjRefPROJ4;             /* To store a referencing system string in PROJ.4 format */
-	char  *ProjRefWKT;               /* To store a referencing system string in WKT format */
 	gmt_grdfloat  nan_value;         /* Missing value as stored in grid file */
 	double xy_off;                   /* 0.0 (registration == GMT_GRID_NODE_REG) or 0.5 ( == GMT_GRID_PIXEL_REG) */
+	char *ProjRefPROJ4;             /* To store a referencing system string in PROJ.4 format */
+	char *ProjRefWKT;               /* To store a referencing system string in WKT format */
+	int ProjRefEPSG;                /* To store a referencing system EPSG code */
 	void *hidden;                    /* Lower-level information for GMT use only */
 #ifdef GMT_BACKWARDS_API
 	uint32_t nx;
@@ -435,8 +436,8 @@ struct GMT_GRID_HEADER {
 struct GMT_GRID {	/* To hold a GMT gmt_grdfloat grid and its header in one container */
 	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the grid */
 	gmt_grdfloat *data;             /* Pointer to the gmt_grdfloat grid */
-	double  *x, *y;                 /* Vector of coordinates */
-	void    *hidden;                /* Row-by-row machinery information [NULL] */
+	double *x, *y;                  /* Vector of coordinates */
+	void *hidden;                   /* Row-by-row machinery information [NULL] */
 };
 
 /*============================================================ */
@@ -529,6 +530,9 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 	struct GMT_DATATABLE **table;	/* Pointer to array of tables */
 	enum GMT_enum_read type;	/* The datatype (numerical, text, or mixed) of this dataset */
 	enum GMT_enum_geometry geometry;/* The geometry of this dataset */
+	char *ProjRefPROJ4;             /* To store a referencing system string in PROJ.4 format */
+	char *ProjRefWKT;               /* To store a referencing system string in WKT format */
+	int ProjRefEPSG;                /* To store a referencing system EPSG code */
 	void *hidden;			/* Book-keeping variables "hidden" from the API */
 };
 
@@ -619,14 +623,14 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 
 struct GMT_IMAGE {	/* Single container for a user image of data */
 	/* Variables we document for the API: */
-	enum    GMT_enum_type type;     /* Data type, e.g. GMT_FLOAT */
-	int    *colormap;               /* Array with color lookup values */
-	int     n_indexed_colors;       /* Number of colors in a paletted image */
-	struct  GMT_GRID_HEADER *header;/* Pointer to full GMT header for the image */
+	enum GMT_enum_type type;        /* Data type, e.g. GMT_FLOAT */
+	int *colormap;                  /* Array with color lookup values */
+	int n_indexed_colors;           /* Number of colors in a paletted image */
+	struct GMT_GRID_HEADER *header; /* Pointer to full GMT header for the image */
 	unsigned char *data;            /* Pointer to actual image */
 	unsigned char *alpha;           /* Pointer to an optional transparency layer stored in a separate variable */
 	const char *color_interp;
-	double  *x, *y;                 /* Vector of coordinates */
+	double *x, *y;                  /* Vector of coordinates */
 	void *hidden;			/* Book-keeping variables "hidden" from the API */
 #ifdef GMT_BACKWARDS_API
 	int *ColorMap; 
@@ -693,6 +697,9 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
 	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
 	char **header;		        /* Array with all Vector header records, if any) */		/* Content not counted by sizeof (struct) */
+	char *ProjRefPROJ4;             /* To store a referencing system string in PROJ.4 format */
+	char *ProjRefWKT;               /* To store a referencing system string in WKT format */
+	int ProjRefEPSG;                /* To store a referencing system EPSG code */
 	void *hidden;			/* Book-keeping variables "hidden" from the API */
 };
 
@@ -724,6 +731,9 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
 	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
 	char **header;		        /* Array with all Matrix header records, if any) */		/* Content not counted by sizeof (struct) */
+	char *ProjRefPROJ4;             /* To store a referencing system string in PROJ.4 format */
+	char *ProjRefWKT;               /* To store a referencing system string in WKT format */
+	int ProjRefEPSG;                /* To store a referencing system EPSG code */
 	void *hidden;			/* Book-keeping variables "hidden" from the API */
 };
 

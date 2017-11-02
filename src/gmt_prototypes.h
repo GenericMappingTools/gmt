@@ -218,6 +218,7 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 /* gmt_io.c: */
 
 EXTERN_MSC bool gmt_polygon_is_hole (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S);
+EXTERN_MSC void gmt_free_header (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER **header);
 EXTERN_MSC struct GMT_IMAGE *gmt_get_image (struct GMT_CTRL *GMT);
 EXTERN_MSC struct GMT_GRID_HEADER * gmt_get_header (struct GMT_CTRL *GMT);
 EXTERN_MSC struct GMT_POSTSCRIPT * gmt_get_postscript (struct GMT_CTRL *GMT);

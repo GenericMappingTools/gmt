@@ -829,8 +829,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			Img_proj = I;
 			GMT_set_proj_limits (GMT, Img_proj->header, tmp_header, need_to_project);
 		}
-		gmt_M_free (GMT, tmp_header->hidden);
-		gmt_M_free (GMT, tmp_header);
+		gmt_free_header (API->GMT, &tmp_header);
 	}
 
 	/* From here, use Grid_proj or Img_proj plus optional Intens_proj in making the Cartesian image */
