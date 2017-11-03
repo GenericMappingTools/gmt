@@ -450,7 +450,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 									   that will interfere with the modifier parsing.  E.g., +u+k will just return
 									   +u with no unit and then fail on the unrecognized +k "modifier".  We cheat by
 									   advancing past this problem when it occurs. */
-								if (p[pos] == '+') {	/* Gave a leading + before the unit.  Must correct txt_a and pos */
+								if (txt_a[1] == '\0' && p[pos] == '+') {	/* Gave a leading + before the unit.  Must correct txt_a and pos */
 									txt_a[1] = p[pos++];	txt_a[2] = p[pos++]; txt_a[3] = '\0';
 								}
 								Ctrl->G.unit = set_unit_and_mode (&txt_a[1], &Ctrl->G.sph);	/* Unit specification */
@@ -474,8 +474,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 						                                     &Ctrl->G.lat), txt_b);
 						if ((Ctrl->G.mode & GMT_MP_CUMUL_DIST) == 0) Ctrl->G.mode |= GMT_MP_INCR_DIST;
 					}
-					else {	/* Got -G[+u[+|-]units] so variable point from input */
+					else if ((Ctrl->G.mode & GMT_MP_PAIR_DIST) == 0) {	/* Got -G[+u[+|-]units] so variable point from input */
 						Ctrl->G.mode |= GMT_MP_VAR_POINT;
+						if ((Ctrl->G.mode & GMT_MP_INCR_DIST) == 0) Ctrl->G.mode |= GMT_MP_CUMUL_DIST;
+					}
+					else {
 						if ((Ctrl->G.mode & GMT_MP_INCR_DIST) == 0) Ctrl->G.mode |= GMT_MP_CUMUL_DIST;
 					}
 				}
@@ -1019,7 +1022,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	along_track = (Ctrl->G.mode && ((Ctrl->G.mode & GMT_MP_CUMUL_DIST) || (Ctrl->G.mode & GMT_MP_INCR_DIST)));
-	
+	if ((Ctrl->G.mode & GMT_MP_PAIR_DIST) && (Ctrl->G.mode & GMT_MP_INCR_DIST)) along_track = false;	/* Not along track (i.e., per record) when doing it per record */
 	n = n_read_in_seg = 0;
 	out = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
 	Out->data = out;
