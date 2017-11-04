@@ -807,5 +807,6 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	gmt_M_free (GMT, flag);		gmt_M_free (GMT, data);
 	Return (GMT_NOERROR);
 }
