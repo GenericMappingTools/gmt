@@ -240,6 +240,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			nr = sscanf (In->text, "%s %s %lf", file, r_in, &weight);
 			if (nr < 1) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Read error for blending parameters near row %d\n", n);
+				gmt_M_free (GMT, L);
 				return (GMT_DATA_READ_ERROR);
 			}
 			if (n == n_alloc) L = gmt_M_malloc (GMT, L, n, &n_alloc, struct BLEND_LIST);
