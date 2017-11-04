@@ -74,9 +74,10 @@ struct PSCONTOUR_CTRL {
 		bool active;
 		unsigned int mode;	/* 0 skip points; 1 skip triangles */
 	} S;
-	struct PSCONT_T {	/* -T[+|-][+d<gap>[c|i|p][/<length>[c|i|p]]][+lLH|"low,high"] */
+	struct PSCONT_T {	/* -T[+|-][+a][+d<gap>[c|i|p][/<length>[c|i|p]]][+lLH|"low,high"] */
 		bool active;
 		bool label;
+		bool all;
 		bool low, high;	/* true to tick low and high locals */
 		double dim[2];	/* spacing, length */
 		char *txt[2];	/* Low and high label */
@@ -284,7 +285,7 @@ GMT_LOCAL void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 	PSL_plotpolygon (PSL, x, y, n);
 }
 
-GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *in_lbl[], unsigned int mode, struct GMT_DATASET *T) {
+GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, bool all, char *in_lbl[], unsigned int mode, struct GMT_DATASET *T) {
 	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	which are the innermost ones.
 	
@@ -305,7 +306,7 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		np = save[pol].n;
 		for (pol2 = 0; save[pol].do_it && pol2 < n; pol2++) {
 			inside = gmt_non_zero_winding (GMT, save[pol2].x[0], save[pol2].y[0], save[pol].x, save[pol].y, np);
-			if (inside == 2) save[pol].do_it = false;
+			if (inside == 2 && !all) save[pol].do_it = false;
 		}
 	}
 
@@ -443,7 +444,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -St to instead skip triangles whose 3 vertices are outside.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Will embellish innermost, closed contours with ticks pointing in\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the downward direction.  User may specify to tick only highs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (-T+) or lows (-T-) [-T implies both extrema].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (-T+) or lows (-T-) [-T implies both extrema]. Use +a to tick all closed contours.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d<spacing>[/<ticklength>] (with units) to change defaults [%gp/%gp].\n", TICKED_SPACING, TICKED_LENGTH);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +lXY (or +l\"low,high\") to place X and Y (or low and high) at the center\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of local lows and highs.  If no labels are given we default to - and +.\n");
@@ -628,13 +629,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				}
 				Ctrl->T.active = Ctrl->T.high = Ctrl->T.low = true;	/* Default if just -T is given */
 				if (opt->arg[0]) {	/* But here we gave more options */
-					if (opt->arg[0] == '+' && !strchr ("dl", opt->arg[1]))	/* Only tick local highs */
+					if (opt->arg[0] == '+' && !strchr ("adl", opt->arg[1]))	/* Only tick local highs */
 						Ctrl->T.low = false, j = 1;
 					else if (opt->arg[0] == '-')		/* Only tick local lows */
 						Ctrl->T.high = false, j = 1;
 					else
 						j = 0;
-					if (strstr (opt->arg, "+d") || strstr (opt->arg, "+l")) {	/* New parser */
+					if (strstr (opt->arg, "+a") || strstr (opt->arg, "+d") || strstr (opt->arg, "+l")) {	/* New parser */
+						if (gmt_get_modifier (opt->arg, 'a', string))
+							Ctrl->T.all = true;
 						if (gmt_get_modifier (opt->arg, 'd', string))
 							if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->T.dim)) < 1) n_errors++;
 						if (gmt_get_modifier (opt->arg, 'l', string)) {	/* Want to label innermost contours */
@@ -1589,7 +1592,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			size_t kk;
 			save = gmt_M_malloc (GMT, save, 0, &n_save, struct SAVE);
 
-			sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.dim[GMT_X], Ctrl->T.dim[GMT_Y], Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt, label_mode, Ctrl->contour.Out);
+			sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.dim[GMT_X], Ctrl->T.dim[GMT_Y], Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.all, Ctrl->T.txt, label_mode, Ctrl->contour.Out);
 			for (kk = 0; kk < n_save; kk++) {
 				gmt_M_free (GMT, save[kk].x);
 				gmt_M_free (GMT, save[kk].y);

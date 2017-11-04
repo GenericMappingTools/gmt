@@ -82,7 +82,7 @@
 /* Argument to *contour programs */
 
 #define GMT_CONTG	"-G[d|f|n|l|L|x|X]<args>"
-#define GMT_CONTT	"-T[+|-][+d<gap>[c|i|p][/<length>[c|i|p]]][+l[<labels>]]"
+#define GMT_CONTT	"-T[+|-][+a][+d<gap>[c|i|p][/<length>[c|i|p]]][+l[<labels>]]"
 
 /* Options for coastline extraction  */
 #define GMT_A_OPT       "-A<min_area>[/<min_level>/<max_level>][+ag|i|s|S][+r|l][+p<percent>]"

@@ -25,7 +25,7 @@ Synopsis
 [ |-O| ] [ |-P| ]
 [ |-Q|\ [*cut*\ [*unit*]][\ **+z**] ]
 [ |-S|\ [\ *p*\ \|\ *t*] ]
-[ |-T|\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
+[ |-T|\ [**+\|-**][**+a**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*type*]\ *pen* ][**+c**\ [**l**\ \|\ **f**]]
@@ -195,9 +195,10 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]]
+**-T**\ [**+\|-**][**+a**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]]
     Will draw tick marks pointing in the downward direction every *gap*
-    along the innermost closed contours. Append **+d**\ *gap* and optionally tick
+    along the innermost closed contours only; append **+a** to tick all closed
+    contours. Append **+d**\ *gap* and optionally tick
     mark *length* (append units as **c**, **i**, or **p**) or use defaults
     [15\ **p**/3\ **p**]. User may choose to tick only local highs or local
     lows by specifying **-T+** or **-T-**, respectively. Append
