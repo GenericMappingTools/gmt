@@ -54,10 +54,9 @@ OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GM
 	hCT = OCTNewCoordinateTransformation(hSrcSRS, hDstSRS);
 	if (hCT == NULL) {
 		char *pszSrcWKT = NULL, *pszDstWKT = NULL;
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create coordinate transformation between the\n"
-					"following coordinate systems. This may be because they\n"
-					"are not transformable, or because projection services\n"
-					"(PROJ.4 DLL/.so) could not be loaded.\n" );
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create coordinate transformation between the following\n"
+					"coordinate systems. This may be because they are not transformable,\n"
+					"or because projection services (PROJ.4 DLL/.so) could not be loaded.\n");
 		OSRExportToPrettyWkt(hSrcSRS, &pszSrcWKT, FALSE);
 		OSRExportToPrettyWkt(hDstSRS, &pszDstWKT, FALSE);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Source:\n\n%s\n\n%s\n\n", pszSrcWKT, pszDstWKT);
