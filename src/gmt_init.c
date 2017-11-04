@@ -11930,6 +11930,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to call module end for a one-liner plot.\n");
 			return;
 		}
+		GMT->current.setting.run_mode = GMT_CLASSIC;	/* all pau with modern session */
 	}
 
 	if (GMT->hidden.func_level == 1 && GMT->parent->log_level == GMT_LOG_ONCE) {	/* Reset logging to default at the end of a top-level module */

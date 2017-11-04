@@ -17,7 +17,7 @@
     is always used. If any of the font attributes is omitted their default or
     previous setting will be retained.
 
-    The 35 available fonts are:
+    The 35 available fonts (plus 4 optional Japanese fonts) are:
 
     0. Helvetica
     1. Helvetica-Bold
@@ -54,3 +54,7 @@
     32. Palatino-BoldItalic
     33. ZapfChancery-MediumItalic
     34. ZapfDingbats
+    35. Ryumin-Light-EUC-H
+    36. Ryumin-Light-EUC-V
+    37. GothicBBB-Medium-EUC-H
+    38. GothicBBB-Medium-EUC-V
