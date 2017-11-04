@@ -1600,6 +1600,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					case 0:	n_A_cols = 2; break;/* x, slope */
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Bad gradient mode selected for 1-D data (%d) - aborting!\n", Ctrl->A.mode);
+						gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 						Return (GMT_DATA_READ_ERROR);
 						break;
 				}
@@ -1613,6 +1614,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					case 5:	n_A_cols = 5; break; /* (x, y, nx, ny, gradient) */
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Bad gradient mode selected for 2-D data (%d) - aborting!\n", Ctrl->A.mode);
+						gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 						Return (GMT_DATA_READ_ERROR);
 						break;
 				}
@@ -1623,6 +1625,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					case 5: n_A_cols = 7; break; /* (x, y, z, nx, ny, nz, gradient) */
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Bad gradient mode selected for 3-D data (%d) - aborting!\n", Ctrl->A.mode);
+						gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 						Return (GMT_DATA_READ_ERROR);
 						break;
 				}
