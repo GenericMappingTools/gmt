@@ -1167,8 +1167,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->A.mode) {	/* Output the revised data set plus NN analysis results */
 			if ((error = GMT_Set_Columns (API, GMT_OUT, 7, GMT_COL_FIX_NO_TEXT)) != 0) {
-				gmt_M_free (GMT, NN_dist);	
-				gmt_M_free (GMT, NN_info);	
+				gmt_M_free (GMT, NN_dist);	gmt_M_free (GMT, NN_info);	
 				Return (error);
 			}
 			if (GMT->common.h.add_colnames) {
@@ -1180,7 +1179,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		else {	/* Just output the NN analysis results */
 			gmt_set_cartesian (GMT, GMT_OUT);	/* Since we are not writing coordinates */
-			if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != 0) Return (error);
+			if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX_NO_TEXT)) != 0) {
+				gmt_M_free (GMT, NN_dist);	gmt_M_free (GMT, NN_info);	
+				Return (error);
+			}
 			if (GMT->common.h.add_colnames) {
 				char header[GMT_LEN64];
 				sprintf (header, "NN_dist[0]\tID[1]\tNN_ID[2]");
