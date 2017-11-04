@@ -504,6 +504,7 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 		struct GMT_RECORD *In = NULL;
 		double x, y;
 		gmt_set_meminc (GMT, GMT_SMALL_CHUNK);
+		n_files = 0;
 		do {
 			if ((In = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, NULL)) == NULL) {
 				if (gmt_M_rec_is_error (GMT))   /* Bail if there are any read error */
@@ -515,12 +516,16 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 			}
 			if (In && In->text == NULL) {	/* Crazy safety valve but it should never get here*/
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: input pointer is NULL where it should not be, aborting\n");
+				for (n = 0; n < n_files; n++) free (L[n].file);
+				gmt_M_free (GMT, L);
 				return (GMT_PTR_IS_NULL);
 			}
 
 			nr = sscanf (In->text, "%s %lf %lf %s", file, &x, &y, pen);
 			if (nr < 1) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Read error for sac list file near row %d\n", n);
+				for (n = 0; n < n_files; n++) free (L[n].file);
+				gmt_M_free (GMT, L);
 				return (EXIT_FAILURE);
 			}
 
@@ -543,7 +548,7 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 				}
 			}
 			n++;
-		} while(true);
+		} while (true);
 		gmt_reset_meminc (GMT);
 		n_files = n;
 	}

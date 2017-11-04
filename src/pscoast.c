@@ -1089,8 +1089,9 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (need_coast_base) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on bin # %5ld\n", bin);
 		gmt_shore_cleanup (GMT, &c);
+		GMT->current.map.coastline = false;
 	}
-
+	
 	if (Ctrl->E.info.mode > GMT_DCW_REGION) (void)gmt_DCW_operation (GMT, &Ctrl->E.info, NULL, Ctrl->M.active ? GMT_DCW_DUMP : GMT_DCW_PLOT);
 
 	if (clipping) PSL_beginclipping (PSL, xtmp, ytmp, 0, GMT->session.no_rgb, 2);	/* End clippath */
