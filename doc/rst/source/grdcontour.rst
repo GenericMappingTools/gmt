@@ -22,7 +22,8 @@ Synopsis
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ]
 [ |-L|\ *low/high*\ \|\ **n**\ \|\ **N**\ \|\ **P**\ \|\ **p** ]
-[ |-O| ] [ |-P| ] [ |-Q|\ [*cut*\ ][\ **+z**] ]
+[ |-O| ] [ |-P| ]
+[ |-Q|\ [*cut*\ [*unit*]][\ **+z**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smoothfactor* ]
 [ |-T|\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
@@ -46,9 +47,8 @@ Description
 -----------
 
 **grdcontour** reads a 2-D grid file and produces a contour map by
-tracing each contour through the grid. PostScript code is generated
-and sent to standard output. Various options that affect the plotting
-are available. Alternatively, the x/y/z positions of the contour lines
+tracing each contour through the grid. Various options that affect the plotting
+are available. Alternatively, the *x, y, z* positions of the contour lines
 may be saved to one or more output files (or stdout) and no plot is produced.
 
 Required Arguments
@@ -168,8 +168,10 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*cut*\ ][\ **+z**]
-    Do not draw contours with less than *cut* number of points [Draw all contours].  Append **z** to exclude the zero contour.
+**-Q**\ [*cut*\ [*unit*]][\ **+z**]
+    Do not draw contours with less than *cut* number of points [Draw all contours].
+    Alternatively, give instead a minimum contour length in distance units or plot
+    length units.  Optionally, append **z** to exclude the zero contour.
 
 .. _-R:
 

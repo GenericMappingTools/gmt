@@ -8594,6 +8594,31 @@ void gmt_ECEF_inverse_dest_datum (struct GMT_CTRL *GMT, double in[], double out[
 }
 
 /*! . */
+double gmt_line_length (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, bool project) {
+	/* Returns distance of line in units set by GMT_distaz. It bypassed points where x and/or y are NaN. */
+	uint64_t this_p, prev;
+	bool xy_not_NaN;
+	double cum_dist = 0.0, xp0, xp1, yp0, yp1;
+
+	if (n == 0) return 0.0;
+	if (project) gmt_geo_to_xy (GMT, x[0], y[0], &xp0, &yp0);
+	for (this_p = 1, prev = 0; this_p < n; this_p++) {
+		xy_not_NaN = !(gmt_M_is_dnan (x[this_p]) || gmt_M_is_dnan (y[this_p]));
+		if (xy_not_NaN)	{	/* safe to calculate inc */
+			if (project) {
+				gmt_geo_to_xy (GMT, x[this_p], y[this_p], &xp1, &yp1);
+				cum_dist += hypot (xp0 - xp1, yp0 - yp1);
+				xp0 = xp1;	yp0 = yp1;
+			}
+			else
+				cum_dist += gmt_distance (GMT, x[this_p], y[this_p], x[prev], y[prev]);
+			prev = this_p;	/* This was a record with OK x,y; make it the previous point for distance calculations */
+		}
+	}
+	return (cum_dist);
+}
+
+/*! . */
 double *gmt_dist_array (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, bool cumulative) {
 	/* Returns distances in units set by GMT_distaz. It bypassed points where x and/or y are NaN.
 	 * If cumulative is false we just return the increments; otherwise we add up distances */

@@ -81,10 +81,14 @@ struct PSCONTOUR_CTRL {
 		double dim[2];	/* spacing, length */
 		char *txt[2];	/* Low and high label */
 	} T;
-	struct PSCONT_Q {	/* -Q[<cut>][+z] */
+	struct PSCONT_Q {	/* -Q[<cut>[<unit>]][+z] */
 		bool active;
 		bool zero;	/* True if we should skip zero-contour */
+		bool project;	/* True if we need distances in plot units */
+		double length;
+		int mode;	/* Could be negative */
 		unsigned int min;
+		char unit;
 	} Q;
 	struct PSCONT_W {	/* -W[a|c]<pen>[+c[l|f]] */
 		bool active;
@@ -386,7 +390,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: pscontour <table> %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[-|[+]<annot_int>][<labelinfo>]\n\t[%s] [-C[+]<cont_int>|<cpt>] [-D<template>] ", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "[-E<indextable>] [%s] [-I] [%s] [-K] [-L<pen>] [-N]\n", GMT_CONTG, GMT_Jz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q[<cut>][+z]] [-S[p|t]] [%s]\n", GMT_CONTT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q[<cut>[<unit>]][+z]] [-S[p|t]] [%s]\n", GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[a|c]<pen>[+c[l|f]]] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 	             GMT_Y_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_s_OPT, GMT_colon_OPT);
@@ -433,7 +437,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT clip contours/image at the border [Default clips].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z to skip tracing the zero-contour.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a minimum contour length and append a unit (%s or %s).\n", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +z to skip tracing the zero-contour.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S (or -Sp) Skip xyz points outside region [Default keeps all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -St to instead skip triangles whose 3 vertices are outside.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Will embellish innermost, closed contours with ticks pointing in\n");
@@ -593,8 +598,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 					c[0] = '\0';	/* Temporarily chop off modifier */
 				}
 				if (opt->arg[0]) {
+					size_t last = strlen (opt->arg) - 1;
 					Ctrl->Q.active = true;
-					n = atoi (opt->arg);
+					if (strchr (GMT_LEN_UNITS, opt->arg[last]))	/* Gave a mininum length in data units */
+						Ctrl->Q.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->Q.length), &(Ctrl->Q.unit));
+					else if (strchr (GMT_DIM_UNITS, opt->arg[last])) {	/* Gave a mininum length in plot units*/
+						Ctrl->Q.length = gmt_M_to_inch (GMT, opt->arg);
+						Ctrl->Q.unit = opt->arg[0];
+						Ctrl->Q.project = true;
+					}
+					else	/* Just a point count cutoff */
+						n = atoi (opt->arg);
 					n_errors += gmt_M_check_condition (GMT, n < 0, "Syntax error -Q option: Value must be >= 0\n");
 					Ctrl->Q.min = n;
 				}
@@ -738,7 +752,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 
 int GMT_pscontour (void *V_API, int mode, void *args) {
 	int add, error = 0;
-	bool two_only = false, make_plot, skip = false, convert, get_contours, is_closed, skip_points, skip_triangles;
+	bool two_only = false, make_plot, skip = false, convert, get_contours, is_closed;
+	bool use_contour = true, skip_points, skip_triangles;
 	
 	unsigned int pscontour_sum, m, n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0};
 	unsigned int label_mode = 0, last_entry, last_exit, fmt[3] = {0, 0, 0}, n_skipped, n_out;
@@ -752,7 +767,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	
 	double xx[3], yy[3], zz[3], xout[5], yout[5], xyz[2][3], rgb[4], z_range, small;
 	double *xc = NULL, *yc = NULL, *zc = NULL, *x = NULL, *y = NULL, *z = NULL;
-	double current_contour = -DBL_MAX, *in = NULL, *xp = NULL, *yp = NULL;
+	double current_contour = -DBL_MAX, c_length, *in = NULL, *xp = NULL, *yp = NULL;
 
 	char cont_label[GMT_LEN256] = {""}, format[GMT_LEN256] = {""};
 	char *tri_algorithm[2] = {"Watson", "Shewchuk"};
@@ -1355,6 +1370,9 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	
 	/* Draw or dump contours */
 
+	if (Ctrl->Q.active && strchr (GMT_LEN_UNITS, Ctrl->Q.unit))	/* Need to compute distances in map units */
+		gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.mode, GMT_MAP_DIST);
+
 	if (get_contours) {
 		bool use_it;
 		struct PSCONTOUR_CHAIN *head_c = NULL, *last_c = NULL, *this_c = NULL;
@@ -1472,6 +1490,16 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				if (!use_it) continue;	/* No, go to next */
 				
 				is_closed = !gmt_polygon_is_open (GMT, xp, yp, m);
+
+				if (Ctrl->Q.active) {	/* Avoid plotting short contours based on map length or point count */
+					if (Ctrl->Q.unit) {	/* Need length of contour */
+						c_length = gmt_line_length (GMT, xp, yp, m, Ctrl->Q.project);
+						use_contour = (c_length >= Ctrl->Q.length);
+					}
+					else
+						use_contour = (n >= Ctrl->Q.min);
+				}
+				if (!use_contour) continue;	/* No, go to next */
 
 				if (current_contour != cont[c].val) {
 					if (make_plot) {

@@ -22,7 +22,8 @@ Synopsis
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
 [ |-I| ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ]
 [ |-L|\ *pen* ] [ |-N| ]
-[ |-O| ] [ |-P| ] [ |-Q|\ [*cut*\ ][\ **+z**] ]
+[ |-O| ] [ |-P| ]
+[ |-Q|\ [*cut*\ [*unit*]][\ **+z**] ]
 [ |-S|\ [\ *p*\ \|\ *t*] ]
 [ |-T|\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ]
@@ -52,7 +53,7 @@ triangulation is performed (using either Shewchuk's [1996] or Watson's
 provide a second file with network information, such as a triangular
 mesh used for finite element modeling. In addition to contours, the area
 between contours may be painted according to the CPT.
-Alternatively, the x/y/z positions of the contour lines may be saved to
+Alternatively, the *x, y, z* positions of the contour lines may be saved to
 one or more output files (or stdout) and no plot is produced.
 
 Required Arguments
@@ -179,8 +180,10 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*cut*\ ][\ **+z**]
-    Do not draw contours with less than *cut* number of points [Draw all contours].  Append **z** to exclude the zero contour.
+**-Q**\ [*cut*\ [*unit*]][\ **+z**]
+    Do not draw contours with less than *cut* number of points [Draw all contours].
+    Alternatively, give instead a minimum contour length in distance units or plot
+    length units.  Optionally, append **z** to exclude the zero contour.
 
 .. _-S:
 

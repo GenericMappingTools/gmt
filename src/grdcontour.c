@@ -71,10 +71,14 @@ struct GRDCONTOUR_CTRL {
 		int mode;	/* -2: Negative contours, -1 also do 0, +1 : Positive contours with 0, +2: only positive, 0: given range */
 		double low, high;
 	} L;
-	struct GRDCONTOUR_Q {	/* -Q[<cut>][+z] */
+	struct GRDCONTOUR_Q {	/* -Q[<cut>[<unit>]][+z] */
 		bool active;
 		bool zero;	/* True if we should skip zero-contour */
+		bool project;	/* True if we need distances in plot units */
+		double length;
+		int mode;	/* Could be negative */
 		unsigned int min;
+		char unit;
 	} Q;
 	struct GRDCONTOUR_S {	/* -S<smooth> */
 		bool active;
@@ -167,7 +171,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdcontour <grid> [-A[-|[+]<annot_int>][<labelinfo>] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t [-C[+]<cont_int>|<cpt>][%s] [-D<template>] [-F[l|r]] [%s] [%s] [-K]\n", GMT_J_OPT, GMT_Jz_OPT, GMT_CONTG);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<low>/<high>|n|N|P|p] [-O] [-P] [-Q[<cut>][+z]] [%s]\n", GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L<low>/<high>|n|N|P|p] [-O] [-P] [-Q[<cut>[<unit>]][+z]] [%s]\n", GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[a|c]<pen>[+c[l|f]]]\n\t[%s] [%s] [-Z[+s<fact>][+o<shift>][+p]\n",
 	                                 GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
@@ -216,7 +220,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   negative or positive contours, respectively. Upper case N or P includes zero contour.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z to skip tracing the zero-contour.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a minimum contour length and append a unit (%s or %s).\n", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +z to skip tracing the zero-contour.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is extent of grid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Will Smooth contours by splining and resampling at\n");
@@ -421,8 +426,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 					c[0] = '\0';	/* Temporarily chop off modifier */
 				}
 				if (opt->arg[0]) {
+					size_t last = strlen (opt->arg) - 1;
 					Ctrl->Q.active = true;
-					n = atoi (opt->arg);
+					if (strchr (GMT_LEN_UNITS, opt->arg[last]))	/* Gave a mininum length in data units */
+						Ctrl->Q.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->Q.length), &(Ctrl->Q.unit));
+					else if (strchr (GMT_DIM_UNITS, opt->arg[last])) {	/* Gave a mininum length in plot units*/
+						Ctrl->Q.length = gmt_M_to_inch (GMT, opt->arg);
+						Ctrl->Q.unit = opt->arg[0];
+						Ctrl->Q.project = true;
+					}
+					else	/* Just a point count cutoff */
+						n = atoi (opt->arg);
 					n_errors += gmt_M_check_condition (GMT, n < 0, "Syntax error -Q option: Value must be >= 0\n");
 					Ctrl->Q.min = n;
 				}
@@ -855,7 +869,8 @@ GMT_LOCAL enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, stru
 int GMT_grdcontour (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdcontour task */
 	int error, c;
-	bool need_proj, make_plot, two_only = false, begin, is_closed, data_is_time = false, use_t_offset = false;
+	bool need_proj, make_plot, two_only = false, begin, is_closed, data_is_time = false;
+	bool use_contour = true, use_t_offset = false;
 
 	enum grdcontour_contour_type closed;
 
@@ -869,7 +884,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	char *cont_type = NULL, *cont_do_tick = NULL;
 	char cont_label[GMT_LEN256] = {""}, format[GMT_LEN256] = {""};
 
-	double aval, cval, small, xyz[2][3], z_range, t_offset = 0.0, wesn[4], rgb[4];
+	double aval, cval, small, xyz[2][3], z_range, t_offset = 0.0, wesn[4], rgb[4], c_length;
 	double *xp = NULL, *yp = NULL, *contour = NULL, *x = NULL, *y = NULL, *cont_angle = NULL;
 
 	struct GRDCONTOUR_CTRL *Ctrl = NULL;
@@ -1268,6 +1283,9 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	}
 
+	if (Ctrl->Q.active && strchr (GMT_LEN_UNITS, Ctrl->Q.unit))	/* Need to compute distances in map units */
+		gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.mode, GMT_MAP_DIST);
+		
 	for (c = uc = 0; uc < n_contours; c++, uc++) {	/* For each contour value cval */
 
 		if (Ctrl->L.active && (contour[c] < Ctrl->L.low || contour[c] > Ctrl->L.high)) continue;	/* Outside desired range */
@@ -1304,8 +1322,17 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 			closed = gmt_is_closed (GMT, G, x, y, n);	/* Closed interior/periodic boundary contour? */
 			is_closed = (closed != cont_is_not_closed);
+			
+			if (Ctrl->Q.active) {	/* Avoid plotting short contours based on map length or point count */
+				if (Ctrl->Q.unit) {	/* Need length of contour */
+					c_length = gmt_line_length (GMT, x, y, n, Ctrl->Q.project);
+					use_contour = (c_length >= Ctrl->Q.length);
+				}
+				else
+					use_contour = (n >= Ctrl->Q.min);
+			}
 
-			if (closed == cont_is_not_closed || n >= Ctrl->Q.min) {	/* Passed our minimum point criteria for closed contours */
+			if (closed == cont_is_not_closed || use_contour) {	/* Passed our minimum point criteria for closed contours */
 				if (Ctrl->D.active && n > 2) {	/* Save the contour as output data */
 					S = gmt_prepare_contour (GMT, x, y, n, cval);
 					/* Select which table this segment should be added to */
