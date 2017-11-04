@@ -590,8 +590,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		Return (API->error);	/* Establishes data input */
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {
-		gmt_M_free (GMT, data);
-		gmt_M_free (GMT, flag);
+		gmt_M_free (GMT, data);		gmt_M_free (GMT, flag);
 		Return (API->error);	/* Enables data input and sets access mode */
 	}
 
@@ -605,6 +604,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
+				gmt_M_free (GMT, data);		gmt_M_free (GMT, flag);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
@@ -620,6 +620,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			if (ij == io.n_expected) {
 				GMT_Report (API, GMT_MSG_NORMAL, "More than %" PRIu64 " records, only %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
 				GMT_Report (API, GMT_MSG_NORMAL, "(You are probably misterpreting xyz2grd with an interpolator; see 'surface' man page)\n");
+				gmt_M_free (GMT, data);		gmt_M_free (GMT, flag);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			ij_gmt = io.get_gmt_ij (&io, Grid, ij);	/* Convert input order to output node (with padding) as per -Z */
@@ -696,6 +697,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	} while (true);
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
+		gmt_M_free (GMT, flag);		gmt_M_free (GMT, data);
 		Return (API->error);
 	}
 
@@ -705,6 +707,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		if (ij != io.n_expected) {	/* Input amount does not match expectations */
 			GMT_Report (API, GMT_MSG_NORMAL, "Found %" PRIu64 " records, but %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
 				GMT_Report (API, GMT_MSG_NORMAL, "(You are probably misterpreting xyz2grd with an interpolator; see 'surface' man page)\n");
+			gmt_M_free (GMT, flag);		gmt_M_free (GMT, data);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		gmt_check_z_io (GMT, &io, Grid);	/* This fills in missing periodic row or column */
@@ -795,8 +798,12 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	}
 
 	gmt_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
-	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
+		gmt_M_free (GMT, flag);		gmt_M_free (GMT, data);
+		Return (API->error);
+	}
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+		gmt_M_free (GMT, flag);		gmt_M_free (GMT, data);
 		Return (API->error);
 	}
 
