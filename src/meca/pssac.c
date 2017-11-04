@@ -515,16 +515,12 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 			}
 			if (In && In->text == NULL) {	/* Crazy safety valve but it should never get here*/
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: input pointer is NULL where it should not be, aborting\n");
-				for (n = 0; n < n_files; n++) free(L[n].file);
-				gmt_M_free(GMT, L);
 				return (GMT_PTR_IS_NULL);
 			}
 
 			nr = sscanf (In->text, "%s %lf %lf %s", file, &x, &y, pen);
 			if (nr < 1) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Read error for sac list file near row %d\n", n);
-				for (n = 0; n < n_files; n++) free(L[n].file);
-				gmt_M_free(GMT, L);
 				return (EXIT_FAILURE);
 			}
 
