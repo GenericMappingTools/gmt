@@ -397,6 +397,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		n_read++;
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
+				gmt_M_free (GMT, x0);		gmt_M_free (GMT, y0);		gmt_M_free (GMT, grid_node);
+				gmt_M_free (GMT, point);	gmt_M_free (GMT, d_col);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
