@@ -16,13 +16,13 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Launcher for any GMT module via the corresponding function.
+ * Command-line launcher for any GMT module via the corresponding function.
  * Modules are loaded dynamically from the GMT core library, the
  * optional supplemental library, and any number of custom libraries
  * listed via GMT_CUSTOM_LIBS in gmt.conf.  Note: GMT_Call_Module checks
  * both <module> and gmt<module> in case the user left that part off.
  *
- * Version:	5
+ * Version:	6
  * Created:	17-June-2013
  *
  */
@@ -56,7 +56,7 @@ int main (int argc, char *argv[]) {
 	bool gmt_main = false;			/* Set to true if no module was specified */
 	unsigned int modulename_arg_n = 0;	/* Argument index in argv[] that contains module name */
 	unsigned int mode = GMT_SESSION_NORMAL;	/* Default API mode */
-	unsigned int v_mode = GMT_MSG_COMPAT;		/* Default verbosity */
+	unsigned int v_mode = GMT_MSG_COMPAT;	/* Default verbosity */
 	struct GMTAPI_CTRL *api_ctrl = NULL;	/* GMT API control structure */
 	char *progname = NULL;			/* Last component from the pathname */
 	char *module = NULL;			/* Module name */
@@ -93,6 +93,7 @@ int main (int argc, char *argv[]) {
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, mode, NULL)) == NULL)
 		return GMT_RUNTIME_ERROR;
+	/* Under modern mode we MUST initiate a module call via the gmt driver */
 	if (api_ctrl->GMT->current.setting.run_mode == GMT_MODERN && !gmt_main) {
 		fprintf (stderr, "%s [ERROR]: GMT modern mode requires all modules to be accessed via %s\n", PROGRAM_NAME, PROGRAM_NAME);
 		return GMT_RUNTIME_ERROR;
@@ -199,7 +200,7 @@ int main (int argc, char *argv[]) {
 	} /* status == GMT_NOERROR */
 
 	if (status == GMT_NOT_A_VALID_MODULE) {
-		/* If we get here, we were called without a recognized modulename or option
+		/* If we get here, we were called without a recognized modulename or option.
 		 *
 		 * gmt.c is itself not a module and hence can use fprintf (stderr, ...). Any API needing a
 		 * gmt-like application will write one separately [see mex API and documentation] */
@@ -235,16 +236,17 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "  --version         Print GMT version number.\n\n");
 		fprintf (stderr, "if <module-options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n\n");
 		if (modulename_arg_n == 1 && module[0] != '-') {
-			fprintf (stderr, "ERROR: No module named %s was found.  This could mean one of three cases:\n", module);
+			fprintf (stderr, "ERROR: No module named %s was found.  This could mean one of four cases:\n", module);
 			fprintf (stderr, "  1. There actually is no such module; please check your spelling.\n");
+			fprintf (stderr, "  2. You used a modern mode module name while running in GMT classic mode.\n");
 			if (strlen (GMT_SUPPL_LIB_NAME))
-				fprintf (stderr, "  2. Module exists in the GMT supplemental library, but the library could not be found.\n");
+				fprintf (stderr, "  3. Module exists in the GMT supplemental library, but the library could not be found.\n");
 			else
-				fprintf (stderr, "  2. Module exists in the GMT supplemental library, but the library was not installed.\n");
+				fprintf (stderr, "  3. Module exists in the GMT supplemental library, but the library was not installed.\n");
 			if (api_ctrl->n_shared_libs > 2)
-				fprintf (stderr, "  3. Module exists in a GMT custom library, but the library could not be found.\n");
+				fprintf (stderr, "  4. Module exists in a GMT custom library, but the library could not be found.\n");
 			else
-				fprintf (stderr, "  3. Module exists in a GMT custom library, but none was specified via GMT_CUSTOM_LIBS.\n");
+				fprintf (stderr, "  4. Module exists in a GMT custom library, but none was specified via GMT_CUSTOM_LIBS.\n");
 			fprintf (stderr, "Shared libraries must be in standard system paths or set via environmental parameter %s.\n\n", LIB_PATH);
 		}
 		status = GMT_RUNTIME_ERROR;
