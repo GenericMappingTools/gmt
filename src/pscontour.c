@@ -1370,7 +1370,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	
 	/* Draw or dump contours */
 
-	if (Ctrl->Q.active && strchr (GMT_LEN_UNITS, Ctrl->Q.unit))	/* Need to compute distances in map units */
+	if (Ctrl->Q.active && Ctrl->Q.unit && strchr (GMT_LEN_UNITS, Ctrl->Q.unit))	/* Need to compute distances in map units */
 		gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.mode, GMT_MAP_DIST);
 
 	if (get_contours) {

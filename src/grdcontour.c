@@ -1283,7 +1283,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	}
 
-	if (Ctrl->Q.active && strchr (GMT_LEN_UNITS, Ctrl->Q.unit))	/* Need to compute distances in map units */
+	if (Ctrl->Q.active && Ctrl->Q.unit && strchr (GMT_LEN_UNITS, Ctrl->Q.unit))	/* Need to compute distances in map units */
 		gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.mode, GMT_MAP_DIST);
 		
 	for (c = uc = 0; uc < n_contours; c++, uc++) {	/* For each contour value cval */
