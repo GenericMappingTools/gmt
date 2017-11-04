@@ -120,7 +120,9 @@ Optional Arguments
     to give grid dimensions for fastest results in programs using FFTs.
     Use **-Is**\ *dx*\ [/*dy*] to report an extended region optimized to
     give grid dimensions for fastest results in programs like surface.
-    Use **-Ib** to report the bounding box of the data table or segments (see **-A**).
+    Use **-Ib** to write the bounding box of the data table or segments (see **-A**)
+    as a closed polygon segment. Note: for oblique projections you should
+    use the **-Ap** option in :doc:`psxy` to draw the box properly.
     If *dx* is given as - then the actual min/max of the input is given in the **-R** string.
 
 .. _-L:

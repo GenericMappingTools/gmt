@@ -526,10 +526,8 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			Ctrl->T.which = n;
 			solar_params (Ctrl, Sun);
 			S = gmt_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
-			if (n_items > 1) {
-				sprintf (record, "%s terminator", terms[n]);
-				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
-			}
+			sprintf (record, "%s terminator", terms[n]);
+			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 			for (j = 0; j < n_pts; j++) {
 				out[GMT_X] = S->data[GMT_X][j];	out[GMT_Y] = S->data[GMT_Y][j];
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
