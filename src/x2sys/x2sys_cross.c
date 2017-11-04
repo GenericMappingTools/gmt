@@ -422,6 +422,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Explicit combinations found: ");
 		if ((fp = fopen (Ctrl->A.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Could not open combinations file %s!\n", Ctrl->A.file);
+			x2sys_free_list (GMT, trk_name, n_tracks);
 			gmt_M_free (GMT, duplicate);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
