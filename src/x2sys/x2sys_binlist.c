@@ -290,6 +290,10 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	}
 
 	if ((error = GMT_Set_Columns (API, GMT_OUT, (Ctrl->D.active) ? 5 : 4, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+		gmt_M_free (GMT, X);
+		if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
+		x2sys_free_list (GMT, trk_name, n_tracks);
+		x2sys_end (GMT, s);
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
