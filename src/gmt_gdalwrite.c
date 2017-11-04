@@ -313,6 +313,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		else if (prhs->orig_type == GMT_INT)    typeCLASS_f = GDT_UInt32;
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalwrite: The Jpeg2000 driver does not support floats.\n");
+			gmt_M_free(GMT, outByte);
 			return -1;
 		}
 	}
