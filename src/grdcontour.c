@@ -1316,7 +1316,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			if (Ctrl->W.cptmode & 2)	/* Override label color according to CPT */
 				gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
 		}
-		else
+		else if ((Ctrl->contour.font_label.set & 1) == 0) /* Did not specify a font color; fault to pen color */
 			gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, Ctrl->contour.line_pen.rgb);
 		n_alloc = 0;
 		begin = true;

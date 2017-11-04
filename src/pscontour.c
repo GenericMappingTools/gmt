@@ -1404,8 +1404,9 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				if (Ctrl->W.cptmode & 2)	/* Override label color according to CPT */
 					gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
 			}
-			else
+			else if ((Ctrl->contour.font_label.set & 1) == 0) /* Did not specify a font color; fault to pen color */
 				gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, Ctrl->contour.line_pen.rgb);
+				
 			head_c = last_c = gmt_M_memory (GMT, NULL, 1, struct PSCONTOUR_CHAIN);
 
 			while (cont[c].nl) {	/* Still more line segments at this contour level */

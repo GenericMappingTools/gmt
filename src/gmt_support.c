@@ -6180,6 +6180,7 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Representation of font outline pen not recognized - ignored.\n");
 		else
 			F->form |= 2;	/* Turn on outline font flag */
+		F->set = 2;	/* Means we specified font pen */
 	}
 	for (i = 0; line[i]; i++) if (line[i] == ',') line[i] = ' ';	/* Replace , with space */
 	n = sscanf (line, "%s %s %s", size, name, fill);
@@ -6237,10 +6238,12 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 	else if (fill[0] == '-') {	/* Want no fill */
 		F->form &= 2;	/* Turn off fill font flag set initially */
 		gmt_M_rgb_copy (F->fill.rgb, GMT->session.no_rgb);
+		F->set |= 1;	/* Means we did specify something related to the fill */
 	}
 	else {	/* Decode fill and set flags */
 		if (gmt_getfill (GMT, fill, &F->fill)) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Representation of font fill not recognized. Using default.\n");
 		if (F->fill.use_pattern) F->form &= 2, F->form |= 4;	/* Flag that font fill is a pattern and not solid color */
+		F->set |= 1;	/* Means we did specify something related to the fill */
 	}
 	if ((F->form & 7) == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cannot turn off both font fill and font outline.  Reset to font fill.\n");

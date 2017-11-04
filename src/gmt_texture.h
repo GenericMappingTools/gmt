@@ -77,6 +77,7 @@ struct GMT_FONT {
 	double size;			/* Font size in points */
 	unsigned int id;		/* Font ID number from predefined list */
 	unsigned int form;		/* Combination of binary 1 = fill, 2 = outline, 4 = pattern fill [1] */
+	unsigned int set;		/* 1 if font fill set, 2 if font output pen set, 3 if both, 0 for default */
 	struct GMT_FILL fill;		/* Font fill [black] */
 	struct GMT_PEN pen;		/* Font outline pen [none] */
 };
