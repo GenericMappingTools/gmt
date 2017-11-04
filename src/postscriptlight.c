@@ -5422,21 +5422,23 @@ int PSL_loadeps (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned
 	h->xorigin = llx;
 	h->yorigin = lly;
 	
-	if (picture == NULL) return (0);	/* Just wanted dimensions */
+	if (picture == NULL) {
+		fclose (fp);
+		return (0);	/* Just wanted dimensions */
+	}
 	
 	/* Rewind and load into buffer */
 
 	n=0;
 	fseek (fp, (off_t)0, SEEK_SET);
 	buffer = PSL_memory (PSL, NULL, BLOCKSIZE, unsigned char);
-	while ((p = (int)fread ((unsigned char *)buffer + n, 1U, (size_t)BLOCKSIZE, fp)) == BLOCKSIZE)
-	{
+	while ((p = (int)fread ((unsigned char *)buffer + n, 1U, (size_t)BLOCKSIZE, fp)) == BLOCKSIZE) {
 		n+=BLOCKSIZE;
 		buffer = PSL_memory (PSL, buffer, n+BLOCKSIZE, unsigned char);
 	}
 	fclose (fp);
 
-	n+=p;
+	n += p;
 	buffer = PSL_memory (PSL, buffer, n, unsigned char);
 
 	/* Now set length */
