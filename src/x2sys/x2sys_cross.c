@@ -380,11 +380,13 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	if (s->x_col == -1 || s->y_col == -1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "lon,lat or x,y are not among data columns!\n");
+		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
 	if ((error = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Must give at least one data set!\n");
+		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);		
 	}
 	n_tracks = (uint64_t)error;
