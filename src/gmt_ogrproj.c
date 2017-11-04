@@ -52,7 +52,6 @@ OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GM
 	/* -------------------------------------------------------------------------- */
 
 	hCT = OCTNewCoordinateTransformation(hSrcSRS, hDstSRS);
-	OSRDestroySpatialReference(hSrcSRS);	OSRDestroySpatialReference(hDstSRS);
 	if (hCT == NULL) {
 		char *pszSrcWKT = NULL, *pszDstWKT = NULL;
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create coordinate transformation between the\n"
@@ -61,10 +60,11 @@ OGRCoordinateTransformationH gmt_OGRCoordinateTransformation(struct GMT_CTRL *GM
 					"(PROJ.4 DLL/.so) could not be loaded.\n" );
 		OSRExportToPrettyWkt(hSrcSRS, &pszSrcWKT, FALSE);
 		OSRExportToPrettyWkt(hDstSRS, &pszDstWKT, FALSE);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Source:\n%s\n%s\n", pszSrcWKT, pszDstWKT);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Source:\n\n%s\n\n%s\n\n", pszSrcWKT, pszDstWKT);
 		CPLFree(pszSrcWKT);		CPLFree(pszDstWKT);
 		CPLFree(pSrcSRS);		CPLFree(pDstSRS);
 	}
+	OSRDestroySpatialReference(hSrcSRS);	OSRDestroySpatialReference(hDstSRS);
 	return hCT;
 }
 
