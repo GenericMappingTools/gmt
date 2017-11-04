@@ -774,12 +774,12 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				if (Ctrl->E.mode == -1 && value < e_min) {	/* Lower than previous low */
 					e_min = value;
 					gmt_M_memcpy (dchosen, in, ncol, double);
-					if (In->text) strncpy (chosen, In->text, GMT_BUFSIZ);
+					if (In->text) strncpy (chosen, In->text, GMT_BUFSIZ-1);
 				}
 				else if (Ctrl->E.mode == +1 && value > e_max) {	/* Higher than previous high */
 					e_max = value;
 					gmt_M_memcpy (dchosen, in, ncol, double);
-					if (In->text) strncpy (chosen, In->text, GMT_BUFSIZ);
+					if (In->text) strncpy (chosen, In->text, GMT_BUFSIZ-1);
 				}
 			}
 		}
