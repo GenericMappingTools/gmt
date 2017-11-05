@@ -13358,11 +13358,12 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		    strcmp(prjcode, "wag7") &&
 		    strcmp(prjcode, "qsc") &&
 		    strcmp(prjcode, "sch") &&
-		    strcmp(prjcode, "tpeqd"))
+		    strcmp(prjcode, "tpeqd")) {
 
 			sprintf(wktext, " +wktext");	/* Projection NOT internally supported by GDAL */
 			if (!strstr(item, "+ellps") && !strstr(item, "+a=") && !strstr(item, "+R="))
 				strcat(dest, " +ellps=WGS84");
+		}
 	}
 
 	if (do_free) free (item_t1);			/* When we got a glued +proj=... and had to insert spaces */
