@@ -371,7 +371,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				if (Ctrl->F.mode == SUBPLOT_FIGURE) {
 					char *q = NULL;
 					double f = 0.0;
-					if ((q = strchr (opt->arg, ':'))) {	/* Gave optional instructions on how to partition width and height on a per row/col basis */
+					if ((q = strchr (opt->arg, ':')) != NULL) {	/* Gave optional instructions on how to partition width and height on a per row/col basis */
 						char *ytxt = strchr (&q[1], '/');	/* Find the slash */
 						k = GMT_Get_Values (GMT->parent, &ytxt[1], Ctrl->F.h, Ctrl->N.dim[GMT_Y]);
 						if (k == 1) {	/* Constant, must duplicate */
