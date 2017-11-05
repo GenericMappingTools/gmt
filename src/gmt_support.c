@@ -6173,6 +6173,7 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 	/* Processes font settings given as [size][,name][,fill][=pen] */
 
 	F->form = 1;	/* Default is to fill the text with a solid color */
+    F->set = 0;     /* Start from no settings */
 	if ((s = strchr (line, '='))) {	/* Specified an outline pen */
 		s[0] = 0, i = 1;	/* Chop of this modifier */
 		if (s[1] == '~') F->form |= 8, i = 2;	/* Want to have an outline that does not obscure the text */
@@ -6238,7 +6239,6 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 	else if (fill[0] == '-') {	/* Want no fill */
 		F->form &= 2;	/* Turn off fill font flag set initially */
 		gmt_M_rgb_copy (F->fill.rgb, GMT->session.no_rgb);
-		F->set |= 1;	/* Means we did specify something related to the fill */
 	}
 	else {	/* Decode fill and set flags */
 		if (gmt_getfill (GMT, fill, &F->fill)) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Representation of font fill not recognized. Using default.\n");
@@ -8544,6 +8544,7 @@ void gmt_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 	G->just = PSL_MC;
 	G->font_label = GMT->current.setting.font_annot[GMT_PRIMARY];	/* FONT_ANNOT_PRIMARY */
 	G->font_label.size = 9.0;
+	G->font_label.set = 0;
 	G->dist_unit = GMT->current.setting.proj_length_unit;
 	G->pen = GMT->current.setting.map_default_pen;
 	G->line_pen = GMT->current.setting.map_default_pen;
@@ -11526,6 +11527,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	 * An optional background panel is handled by a separate option (typically -F). */
 
 	int error = 0, n;
+	bool vertical = false;
 	char string[GMT_BUFSIZ] = {""};
 	struct GMT_MAP_PANEL *save_panel = ms->panel;	/* In case it was set and we wipe it below with gmt_M_memset */
 
@@ -11533,13 +11535,13 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %c: No argument given\n", option);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
-
+	vertical = ms->vertical;
 	if (!strstr (text, "+w")) return support_getscale_old (GMT, option, text, ms);	/* Old-style args */
 
 	gmt_M_memset (ms, 1, struct GMT_MAP_SCALE);
 	ms->panel = save_panel;	/* In case it is not NULL */
 	ms->measure = 'k';	/* Default distance unit is km */
-	ms->alignment = 't';	/* Default label placement is on top */
+	ms->alignment = (vertical) ? 'r' : 't';	/* Default label placement is on top for map scale and right for vertical scale */
 
 	if ((ms->refpoint = gmt_get_refpoint (GMT, text, option)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error:  Scale reference point was not accepted\n");
@@ -11547,9 +11549,9 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		return (1);	/* Failed basic parsing */
 	}
 
-	/* refpoint->args are now +c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+j<just>][+l<label>][+o<dx>[/<dy>]][+u]. */
+	/* refpoint->args are now +c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+j<just>][+l<label>][+o<dx>[/<dy>]][+u][+v]. */
 
-	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "acfjlouw")) return (1);
+	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "acfjlouwv")) return (1);
 
 	/* Required modifiers +c, +w */
 	if (gmt_get_modifier (ms->refpoint->args, 'c', string)) {
@@ -11579,16 +11581,17 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 			error++;
 		}
 	}
-	else {
+	else if (gmt_M_is_geographic (GMT, GMT_IN) && !vertical) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale origin modifier +c[<lon>/]/<lat> is required\n", option);
 		error++;
 	}
+	
 	if (gmt_get_modifier (ms->refpoint->args, 'w', string)) {	/* Get bar length */
 		if (string[0] == '\0') {	/* Got nutin' */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No length argument given to +w modifier\n", option);
 			error++;
 		}
-		else if (isalpha ((int)string[n = (int)strlen (string) - 1])) {	/* Letter at end of distance value */
+		else if (gmt_M_is_geographic (GMT, GMT_IN) && isalpha ((int)string[n = (int)strlen (string) - 1])) {	/* Letter at end of distance value */
 			ms->measure = string[n];
 			if (gmt_M_compat_check (GMT, 4) && ms->measure == 'm') {
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Distance unit m is deprecated; use M for statute miles\n");
@@ -11611,16 +11614,15 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale length modifier +w<length>[unit] is required\n", option);
 		error++;
 	}
-	/* Optional modifiers +a, +f, +j, +l, +o, +u */
-	if (gmt_get_modifier (ms->refpoint->args, 'a', string)) {	/* Set alignment */
-		ms->alignment = string[0];
-		if (!strchr ("lrtb", ms->alignment)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Valid label alignments (+a) are l|r|t|b\n", option);
+	/* Optional modifiers +a, +f, +j, +l, +o, +u, +v */
+	if (gmt_get_modifier (ms->refpoint->args, 'f', NULL)) {	/* Do fancy label */
+		if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Not allowed' */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No fancy map scale modifier allowed for Cartesian plots\n", option);
 			error++;
 		}
+		else
+			ms->fancy = true;
 	}
-	if (gmt_get_modifier (ms->refpoint->args, 'f', NULL))	/* Do fancy label */
-		ms->fancy = true;
 	if (gmt_get_modifier (ms->refpoint->args, 'j', string))	{	/* Got justification of item w.r.t. reference point */
 		if (string[0] == '\0') {	/* Got nutin' */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No justification argument given to +j modifier\n", option);
@@ -11629,8 +11631,38 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		else
 			ms->justify = gmt_just_decode (GMT, string, PSL_MC);
 	}
-	else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else MC */
+	else {	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else MC */
 		ms->justify = gmt_M_just_default (GMT, ms->refpoint, PSL_MC);
+		if (vertical) {
+			double out_offset = GMT->current.setting.map_label_offset + GMT->current.setting.map_frame_width;
+			double in_offset  = GMT->current.setting.map_label_offset;
+			ms->justify = gmt_M_just_default (GMT, ms->refpoint, PSL_BL);
+			switch (ms->refpoint->justify) {        /* Autoset +a, +o when placed centered on a side: Note: +a. +o may overrule this later */
+				case PSL_TC:
+					ms->off[GMT_Y] = (ms->refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
+					break;
+				case PSL_BC:
+					ms->off[GMT_Y] = (ms->refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
+					break;
+				case PSL_ML:
+					ms->alignment = 'l';        /* left side */
+					ms->off[GMT_X] = (ms->refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
+					break;
+				case PSL_MR:
+					ms->off[GMT_X] = (ms->refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
+					break;
+				default:
+					break;
+			}
+		}
+	}
+	if (gmt_get_modifier (ms->refpoint->args, 'a', string)) {	/* Set alignment */
+		ms->alignment = string[0];
+		if (!strchr ("lrtb", ms->alignment)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Valid label alignments (+a) are l|r|t|b\n", option);
+			error++;
+		}
+	}
 	if (gmt_get_modifier (ms->refpoint->args, 'l', string)) {	/* Add label */
 		if (string[0]) strncpy (ms->label, string, GMT_LEN64-1);
 		ms->do_label = true;
@@ -11641,11 +11673,21 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 			error++;
 		}
 	}
+	if (gmt_get_modifier (ms->refpoint->args, 'v', NULL)) {	/* Ask for vertical Cartesian scale */
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Not allowed' */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No vertical scale modifier allowed for geographic plots\n", option);
+			error++;
+		}
+		else
+			ms->vertical = true;
+	}
 	if (gmt_get_modifier (ms->refpoint->args, 'u', NULL))	/* Add units to annotations */
 		ms->unit = true;
 	if (error)
 		gmt_mapscale_syntax (GMT, 'L', "Draw a map scale centered on specified reference point.");
-
+	if (vertical || gmt_M_is_cartesian (GMT, GMT_IN))
+		ms->measure = '\0';	/* No units for Cartesian data */
+	
 	ms->plot = true;
 	return (error);
 }

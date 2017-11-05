@@ -105,22 +105,22 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ \ **+l**\ *length*\ [**+j**\ *justify*]\ [**+m**]\ [**+o**\ *dx*\ [/*dy*]]\ [**+u**\ [*unit*]]
+**-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ \ **+w**\ *length*\ [**+j**\ *justify*]\ [**+a**\ **l**\ \|\ **r**\ ]\ [**+o**\ *dx*\ [/*dy*]]\ [**+l**\ [*label*]]
     Defines the reference point on the map for the vertical scale bar using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
-    Append **+l** followed by the *length* or the scale bar in data (*z) units.
+    Append **+w** followed by the *length* or the scale bar in data (*z) units.
     By default, the anchor point on the scale is assumed to be the middle left corner (ML), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*. Consequently,
     **-DJ** is used to place a scale outside the map frame while **-Dj** is used to place it inside the frame.
-    Finally, add **+o** to offset the vertical scale bar by *dx*/*dy* away from the *refpoint* point in
+    Add **+o** to offset the vertical scale bar by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
-    Move scale label to opposite side with **+m**.
-    Append **+u** to set the *z* unit name that is used in the scale label [no unit].
+    Move scale label to the left side with **+al** [Default is to the right of the scale].
+    Append **+l** to set the *z* unit label that is used in the scale label [no unit].
     The **FONT\_ANNOT\_PRIMARY** is used for the font setting.
 
 .. _-F:
@@ -231,7 +231,7 @@ points, use
    ::
 
     gmt pswiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z500 -B5 \
-                 -C32000 -P -Gred -T0.25p,blue -DjRM+l1000+unT -V > track_xym.ps
+                 -C32000 -P -Gred -T0.25p,blue -DjRM+w1000+lnT -V > track_xym.ps
 
 and the positive anomalies will in general point in the north direction.
 We used **-D** to place a vertical scale bar indicating a 1000 nT anomaly.
@@ -241,7 +241,7 @@ and obtain
    ::
 
     gmt pswiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5 \
-              -C32000 -P -Gred -I45 -T0.25p,blue -DjRM+l1000+unT -V > track_xym.ps
+              -C32000 -P -Gred -I45 -T0.25p,blue -DjRM+w1000+lnT -V > track_xym.ps
 
 Bugs
 ----

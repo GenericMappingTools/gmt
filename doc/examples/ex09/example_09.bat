@@ -8,7 +8,7 @@ REM DOS calls:	del
 REM
 echo GMT EXAMPLE 09
 set ps=example_09.ps
-gmt pswiggle @tracks_09.txt -R185/250/-68/-42 -K -Jm0.13i -Ba10f5 -BWSne+g240/255/240 -G+red -G-blue -Z2000 -Wthinnest -DjBR+l500+u@~m@~rad+o0.2i > %ps%
+gmt pswiggle @tracks_09.txt -R185/250/-68/-42 -K -Jm0.13i -Ba10f5 -BWSne+g240/255/240 -G+red -G-blue -Z2000 -Wthinnest -DjBR+w500+l@~m@~rad+o0.2i > %ps%
 gmt psxy -R -J -O -K @ridge_09.txt -Wthicker >> %ps%
 gmt psxy -R -J -O -K @fz_09.txt -Wthinner,- >> %ps%
 REM Take label from segment header and plot near coordinates of last record of each track

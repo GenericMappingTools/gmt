@@ -4748,15 +4748,16 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 
 	if (!ms->plot) return GMT_OK;
 
-	if (gmt_M_is_cartesian (GMT, GMT_IN)) return GMT_OK;	/* Only for geographic projections */
-
-	measure = (ms->measure == 0) ? 'k' : ms->measure;	/* Km is default distance unit */
-	if ((unit = gmtlib_get_unit_number (GMT, measure)) == GMT_IS_NOUNIT) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad distance unit %c\n", measure);
-		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+	if (gmt_M_is_cartesian (GMT, GMT_IN))
+		bar_length_km = ms->length;	/* Just as is */
+	else {
+		measure = (ms->measure == 0) ? 'k' : ms->measure;	/* Km is default distance unit */
+		if ((unit = gmtlib_get_unit_number (GMT, measure)) == GMT_IS_NOUNIT) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad distance unit %c\n", measure);
+			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
+		}
+		bar_length_km = 0.001 * GMT->current.proj.m_per_unit[unit] * ms->length;	/* Now in km */
 	}
-
-	bar_length_km = 0.001 * GMT->current.proj.m_per_unit[unit] * ms->length;	/* Now in km */
 
 	gmt_set_refpoint (GMT, ms->refpoint);	/* Finalize reference point plot coordinates, if needed */
 
@@ -4770,8 +4771,11 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	/* 3. Convert (x1,y0), (x2,y0) to lon,lat coordinates */
 	gmt_xy_to_geo (GMT, &XL, &YL, x1, y0_scl);
 	gmt_xy_to_geo (GMT, &XR, &YR, x2, y0_scl);
-	/* 4. Get distances in km between (XL,YL) and (XR,YR) */
-	dist = 0.001 * gmt_great_circle_dist_meter (GMT, XL, YL, XR, YR);
+	/* 4. Get distances between (XL,YL) and (XR,YR) */
+	if (gmt_M_is_cartesian (GMT, GMT_IN))
+		dist = hypot (XL - XR, YL - YR);
+	else	/* in km */
+		dist = 0.001 * gmt_great_circle_dist_meter (GMT, XL, YL, XR, YR);
 	/* Get local scale of desired length to this reference length */
 	scl = bar_length_km / dist;
 	/* Revise the selection of dx, x1, x2 using this scale.  Use center y as coordinates for a horizontal bar */
@@ -4909,11 +4913,94 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 		PSL_plotline (PSL, xp, yp, 4, PSL_MOVE + PSL_STROKE);
 		/* Make a basic label using the length and chosen unit and place below the scale */
 		gmt_sprintf_float (GMT, format, GMT->current.setting.format_float_map, ms->length);
-		snprintf (txt, GMT_LEN256, "%s %s", format, (ms->unit) ? units[unit] : label[unit]);
+		if (gmt_M_is_geographic (GMT, GMT_IN))
+			snprintf (txt, GMT_LEN256, "%s %s", format, (ms->unit) ? units[unit] : label[unit]);
+		else {	/* No unit for Cartesian scales, only label */
+			if (ms->do_label) 
+				snprintf (txt, GMT_LEN256, "%s %s", format, ms->label);
+			else
+				strcpy (txt, format);
+		}
 		form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 		PSL_plottext (PSL, ms->refpoint->x, ms->refpoint->y - dist_to_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, txt, 0.0, PSL_TC, form);
 	}
 	return GMT_OK;
+}
+
+void gmt_draw_vertical_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
+	/* Draws a basic vertical scale bar at given refpoint and labels it as specified , */
+	double half_scale_length, scale, x0, y0, xx[4], yy[4], off, dim[2], sign = 1.0;
+	char txt[GMT_LEN64] = {""};
+	int form, just = PSL_ML;
+
+	if (ms->label[0]) /* Append data unit to the scale length */
+		sprintf (txt, "%g %s", ms->length, ms->label);
+	else
+		sprintf (txt, "%g", ms->length);
+
+	if (ms->zdata) /* Append data unit to the scale length */
+		scale = ms->z_scale;
+	else
+		scale = GMT->current.proj.scale[GMT_Y];
+	half_scale_length = 0.5 * ms->length * scale;
+
+	off = ((GMT->current.setting.map_scale_height > 0.0) ? GMT->current.setting.map_tick_length[0] : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
+	dim[GMT_X] = strlen (txt) * GMT_DEC_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + off;
+	dim[GMT_Y] = 2.0 * half_scale_length;
+
+	gmt_set_refpoint (GMT, ms->refpoint);	/* Finalize reference point plot coordinates, if needed */
+	gmt_adjust_refpoint (GMT, ms->refpoint, dim, ms->off, ms->justify, PSL_ML);	/* Adjust refpoint to ML */
+		
+	x0 = ms->refpoint->x;	y0 = ms->refpoint->y;
+	if (ms->panel && ms->panel->mode) {	/* Place rectangle behind the map scale */
+		double x_center, y_center;
+		x_center = x0 + 0.5 * dim[GMT_X]; y_center = y0;
+		ms->panel->width = dim[GMT_X];	ms->panel->height = dim[GMT_Y];
+		gmt_draw_map_panel (GMT, x_center, y_center, 3U, ms->panel);
+	}
+	/* Compute the 4 coordinates on the scale line */
+	if (ms->alignment == 'l') {	/* Flip scale with label on left */
+		x0 += dim[GMT_X];
+		just = PSL_MR;
+		sign = -1;
+	}
+	gmt_xyz_to_xy (GMT, x0 + sign * GMT->current.setting.map_scale_height, y0 - half_scale_length, 0.0, &xx[0], &yy[0]);
+	gmt_xyz_to_xy (GMT, x0, y0 - half_scale_length, 0.0, &xx[1], &yy[1]);
+	gmt_xyz_to_xy (GMT, x0, y0 + half_scale_length, 0.0, &xx[2], &yy[2]);
+	gmt_xyz_to_xy (GMT, x0 + sign * GMT->current.setting.map_scale_height, y0 + half_scale_length, 0.0, &xx[3], &yy[3]);
+	gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
+	PSL_plotline (GMT->PSL, xx, yy, 4, PSL_MOVE + PSL_STROKE);
+	form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+	PSL_plottext (GMT->PSL, x0 + sign * off, y0, GMT->current.setting.font_annot[GMT_PRIMARY].size, txt, 0.0, just, form);
+}
+
+void gmt_draw_vertical_scale_old (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double length, double zscale, int gave_xy, char *units) {
+	/* Draws a basic vertical scale bar at (x0,y0) and labels it as specified , struct GMT_MAP_SCALE *ms*/
+	int form;
+	double dy, off, xx[4], yy[4];
+	char txt[GMT_LEN256] = {""};
+
+	gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
+
+	if (!gave_xy) {	/* Project lon,lat to get position of scale */
+		gmt_geo_to_xy (GMT, x0, y0, &xx[0], &yy[0]);
+		x0 = xx[0];	y0 = yy[0];
+	}
+
+	if (units) /* Append data unit to the scale length */
+		sprintf (txt, "%g %s", length, units);
+	else
+		sprintf (txt, "%g", length);
+	dy = 0.5 * length * zscale;
+	/* Compute the 4 coordinates on the scale line */
+	gmt_xyz_to_xy (GMT, x0 + GMT->current.setting.map_scale_height, y0 - dy, 0.0, &xx[0], &yy[0]);
+	gmt_xyz_to_xy (GMT, x0, y0 - dy, 0.0, &xx[1], &yy[1]);
+	gmt_xyz_to_xy (GMT, x0, y0 + dy, 0.0, &xx[2], &yy[2]);
+	gmt_xyz_to_xy (GMT, x0 + GMT->current.setting.map_scale_height, y0 + dy, 0.0, &xx[3], &yy[3]);
+	PSL_plotline (PSL, xx, yy, 4, PSL_MOVE + PSL_STROKE);
+	off = ((GMT->current.setting.map_scale_height > 0.0) ? GMT->current.setting.map_tick_length[0] : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
+	form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+	PSL_plottext (PSL, x0 + off, y0, GMT->current.setting.font_annot[GMT_PRIMARY].size, txt, 0.0, PSL_ML, form);
 }
 
 void gmt_draw_map_rose (struct GMT_CTRL *GMT, struct GMT_MAP_ROSE *mr) {

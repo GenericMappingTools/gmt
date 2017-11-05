@@ -215,17 +215,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 			case 'T':		/* -Tdcna[+d<date>][+z<TZ>] */
 				Ctrl->T.active = true;
 				gmt_M_memset (Ctrl->T.radius, 4, double);	/* Reset to nothing before parsing */
-				if (opt->arg[0]) {
-					if ((pch = strchr(opt->arg, '+')) != NULL) {			/* Have one or two extra options */
-						parse_date_tz (pch, &date, &TZ);
-						Ctrl->T.TZ = TZ;
-						if (date) {
-							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, false, &t);
-							gmtlib_gcal_from_dt (GMT, t, &Ctrl->T.calendar);	/* Convert t to a complete calendar structure */
-							gmt_M_str_free (date);
-						}
-						pch[0] = '\0';	/* Chop off date settting */
+				if ((pch = strchr (opt->arg, '+')) != NULL) {	/* Have one or two extra options */
+					parse_date_tz (pch, &date, &TZ);
+					Ctrl->T.TZ = TZ;
+					if (date) {
+						gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, false, &t);
+						gmtlib_gcal_from_dt (GMT, t, &Ctrl->T.calendar);	/* Convert t to a complete calendar structure */
+						gmt_M_str_free (date);
 					}
+					pch[0] = '\0';	/* Chop off date settting */
+				}
+				if (opt->arg[0]) {
 					for (j = 0; j < (int)strlen(opt->arg); j++) {
 						if (opt->arg[j] == 'd')				/* Day-night terminator */
 							{Ctrl->T.night = true;          Ctrl->T.radius[0] = 90.833;}

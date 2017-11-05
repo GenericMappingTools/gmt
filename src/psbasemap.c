@@ -201,7 +201,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !(GMT->current.map.frame.init || Ctrl->A.active || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: Must specify at least one of -A, -B, -D, -L, -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (GMT->current.map.frame.init || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: Cannot use -B, -D, -L, -T with -A\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_M_is_cartesian (GMT, GMT_IN), "Syntax error: -L applies to geographical data only\n");
+	//n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_M_is_cartesian (GMT, GMT_IN), "Syntax error: -L applies to geographical data only\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !(Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: -F is only allowed with -L and -T\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -285,7 +285,12 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 
 	gmt_map_basemap (GMT);	/* Plot base map */
 
-	if (Ctrl->L.active) gmt_draw_map_scale (GMT, &Ctrl->L.scale);
+	if (Ctrl->L.active) {
+		if (Ctrl->L.scale.vertical)
+			gmt_draw_vertical_scale (GMT, &Ctrl->L.scale);
+		else
+			gmt_draw_map_scale (GMT, &Ctrl->L.scale);
+	}
 	if (Ctrl->T.active) gmt_draw_map_rose (GMT, &Ctrl->T.rose);
 	if (Ctrl->D.active) gmt_draw_map_insert (GMT, &Ctrl->D.insert);
 

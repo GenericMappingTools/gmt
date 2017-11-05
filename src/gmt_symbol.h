@@ -127,11 +127,14 @@ struct GMT_MAP_SCALE {
 	double origin[2];	/* Longitude/latitude where scale should apply */
 	double off[2];		/* Offset from reference point */
 	double length;		/* How long the scale is in measure units */
+	double z_scale;		/* How long the scale is in measure units */
 	bool plot;		/* true if we want to draw the scale */
 	bool fancy;		/* true for a fancy map scale */
 	bool unit;		/* true if we should append distance unit to all annotations along the scale */
 	bool do_label;		/* true if we should plot a label for the scale */
 	bool old_style;		/* true if we are using old syntax, pre-panel settings */
+	bool vertical;		/* Want a Cartesian vertical scale (i.e., for y-data) */
+	bool zdata;		/* z-data vertical scale (i.e., for z-data in pswiggle) */
 	int justify;		/* Justification of anchor point */
 	char measure;		/* The unit, i.e., e|f|k|M|n|u */
 	char alignment;		/* Placement of label: t(op), b(ottom), l(eft), r(ight) */

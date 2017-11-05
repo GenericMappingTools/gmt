@@ -139,6 +139,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->C.percent = true;
 	C->F.justify = PSL_MC;		/* MC is the default */
 	C->F.font = GMT->current.setting.font_annot[GMT_PRIMARY];		/* Default font */
+	C->F.font.set = 0;
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* No fill */
 	C->S.pen = GMT->current.setting.map_default_pen;
 	C->T.mode = 'o';	/* Rectangular box shape */
