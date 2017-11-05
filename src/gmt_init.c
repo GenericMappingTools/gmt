@@ -13230,7 +13230,7 @@ unsigned int gmt_parse_inc_option (struct GMT_CTRL *GMT, char option, char *item
 
 GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 	/* Deal with proj.4 or EPSGs passed in -J option */
-	char  *item_t1 = NULL, *item_t2 = NULL, wktext[10] = {""}, *pch;
+	char  *item_t1 = NULL, *item_t2 = NULL, wktext[32] = {""}, *pch;
 	bool   do_free = false;
 	int    error = 0, scale_pos;
 	size_t k, len;
@@ -13361,6 +13361,8 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		    strcmp(prjcode, "tpeqd"))
 
 			sprintf(wktext, " +wktext");	/* Projection NOT internally supported by GDAL */
+			if (!strstr(item, "+ellps") && !strstr(item, "+a=") && !strstr(item, "+R="))
+				strcat(dest, " +ellps=WGS84");
 	}
 
 	if (do_free) free (item_t1);			/* When we got a glued +proj=... and had to insert spaces */
