@@ -11555,7 +11555,10 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 
 	/* Required modifiers +c, +w */
 	if (gmt_get_modifier (ms->refpoint->args, 'c', string)) {
-		if (string[0] == '\0') {	/* Got nutin' */
+		if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* No use */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Not allowed for Cartesian projections\n", option);
+		}
+		else if (string[0] == '\0') {	/* Got nutin' */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No scale [<longitude>/]<latitude> argument given to +c modifier\n", option);
 			error++;
 		}
@@ -11617,11 +11620,19 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	/* Optional modifiers +a, +f, +j, +l, +o, +u, +v */
 	if (gmt_get_modifier (ms->refpoint->args, 'f', NULL)) {	/* Do fancy label */
 		if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Not allowed' */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No fancy map scale modifier allowed for Cartesian plots\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No fancy map scale modifier allowed for Cartesian projections\n", option);
 			error++;
 		}
 		else
 			ms->fancy = true;
+	}
+	if (gmt_get_modifier (ms->refpoint->args, 'v', NULL)) {	/* Ask for vertical Cartesian scale */
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Not allowed' */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No vertical scale modifier allowed for geographic projections\n", option);
+			error++;
+		}
+		else
+			ms->vertical = true;
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'j', string))	{	/* Got justification of item w.r.t. reference point */
 		if (string[0] == '\0') {	/* Got nutin' */
@@ -11633,11 +11644,10 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	}
 	else {	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else MC */
 		ms->justify = gmt_M_just_default (GMT, ms->refpoint, PSL_MC);
-		if (vertical) {
+		if (vertical || ms->vertical || gmt_M_is_cartesian (GMT, GMT_IN)) {
 			double out_offset = GMT->current.setting.map_label_offset + GMT->current.setting.map_frame_width;
 			double in_offset  = GMT->current.setting.map_label_offset;
-			ms->justify = gmt_M_just_default (GMT, ms->refpoint, PSL_BL);
-			switch (ms->refpoint->justify) {        /* Autoset +a, +o when placed centered on a side: Note: +a. +o may overrule this later */
+			switch (ms->refpoint->justify) {        /* Autoset +a, +o when placed centered on a side: Note: +a, +o may overrule this later */
 				case PSL_TC:
 					ms->off[GMT_Y] = (ms->refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
 					break;
@@ -11672,14 +11682,6 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Failed to parse offset arguments for +o modifier\n", option);
 			error++;
 		}
-	}
-	if (gmt_get_modifier (ms->refpoint->args, 'v', NULL)) {	/* Ask for vertical Cartesian scale */
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Not allowed' */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  No vertical scale modifier allowed for geographic plots\n", option);
-			error++;
-		}
-		else
-			ms->vertical = true;
 	}
 	if (gmt_get_modifier (ms->refpoint->args, 'u', NULL))	/* Add units to annotations */
 		ms->unit = true;

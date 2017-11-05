@@ -1,4 +1,4 @@
-**-L**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**]\ [\ **+a**\ *align*]\ [**+f**]\ [**+j**\ *justify*]\ [\ **+l**\ [*label*]\ ]\ [**+o**\ *dx*\ [/*dy*]]\ [**+u**]
+**-L**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**]\ [\ **+a**\ *align*]\ [**+f**]\ [**+j**\ *justify*]\ [\ **+l**\ [*label*]\ ]\ [**+o**\ *dx*\ [/*dy*]]\ [**+u**][**+v**]
     Draws a simple map scale centered on the reference point specified
     using one of four coordinate systems:
     (1) Use **-Lg** for map (user) coordinates, (2) use **-Lj** or **-LJ** for setting *refpoint* via
@@ -22,8 +22,11 @@
     the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
     Select **+u** to append the unit to all distance annotations along the
     scale (for the plain scale, **+u** will instead select the unit to be
-    appended to the distance length). Note:
-    Use :ref:`FONT_LABEL <FONT_LABEL>` to change the label font and
+    appended to the distance length). Cartesian projections: Origin **+c** is
+    not required, **+f** is not allowed, and no units should be specified in **+w**.
+    You must set any Cartesian data units via **+l**.
+    For a vertical rather than horizontal Cartesian scale, append **+v**.
+    Note: Use :ref:`FONT_LABEL <FONT_LABEL>` to change the label font and
     :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`
     to change the annotation font.  The height of the map scale is controlled
     by :ref:`MAP_SCALE_HEIGHT <MAP_SCALE_HEIGHT>`, and the pen thickness is
