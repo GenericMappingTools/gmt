@@ -525,7 +525,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 							for (col = k = 0; col < n_cols_in; col++) if (!nan[col]) out[S->n_columns+k] = tmp[col], k++;
 						}
 						else
-							n_cols_in = GMT_Get_Values (API, S->text[row], &out[S->n_columns], n_col);
+							GMT_Get_Values (API, S->text[row], &out[S->n_columns], n_col);
 					}
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
