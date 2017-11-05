@@ -529,28 +529,27 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 				return (EXIT_FAILURE);
 			}
 
-			if (n == n_alloc) L = gmt_M_malloc (GMT, L, n, &n_alloc, struct SAC_LIST);
+			if (n_files == n_alloc) L = gmt_M_malloc (GMT, L, n_files, &n_alloc, struct SAC_LIST);
 
 			if (gmt_getdatapath (GMT, file, path, R_OK) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", file);
 				continue;
 			}
-			L[n].file = strdup (path);
+			L[n_files].file = strdup (path);
 			if (nr >= 3) {
-				L[n].position = true;
-				L[n].x = x;
-				L[n].y = y;
+				L[n_files].position = true;
+				L[n_files].x = x;
+				L[n_files].y = y;
 			}
 			if (nr == 4) {
-				L[n].custom_pen = true;
-				if (gmt_getpen (GMT, pen, &L[n].pen)) {
+				L[n_files].custom_pen = true;
+				if (gmt_getpen (GMT, pen, &L[n_files].pen)) {
 					gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 3);
 				}
 			}
-			n++;
+			n_files++;
 		} while (true);
 		gmt_reset_meminc (GMT);
-		n_files = n;
 	}
 	*list = L;
 

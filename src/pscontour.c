@@ -608,10 +608,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 						Ctrl->Q.unit = opt->arg[0];
 						Ctrl->Q.project = true;
 					}
-					else	/* Just a point count cutoff */
+					else {	/* Just a point count cutoff */
 						n = atoi (opt->arg);
-					n_errors += gmt_M_check_condition (GMT, n < 0, "Syntax error -Q option: Value must be >= 0\n");
-					Ctrl->Q.min = n;
+						n_errors += gmt_M_check_condition (GMT, n < 0, "Syntax error -Q option: Point count must be >= 0\n");
+						Ctrl->Q.min = n;
+					}
 				}
 				if (c) c[0] = '+';	/* Restore */
 				break;
