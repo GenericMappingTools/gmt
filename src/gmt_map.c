@@ -4870,6 +4870,7 @@ GMT_LOCAL bool map_init_polyconic (struct GMT_CTRL *GMT) {
 	*  and at the end just replace the pointers to the FWD & INV transform functions to those of GDAL.
 	*/
 	bool search = false;
+	double xmin, xmax, ymin, ymax;
 
 	switch (GMT->current.proj.projection_GMT) {
 		case GMT_LINEAR:        search = map_init_linear (GMT); break;      /* Linear transformations */
@@ -4901,6 +4902,33 @@ GMT_LOCAL bool map_init_polyconic (struct GMT_CTRL *GMT) {
 		case GMT_ALBERS:        search = map_init_albers (GMT); break;      /* Albers Equal-Area Conic */
 		case GMT_ECONIC:        search = map_init_econic (GMT); break;      /* Equidistant Conic */
 		case GMT_POLYCONIC:     search = map_init_polyconic (GMT); break;   /* Polyconic */
+		default:	/* Non-GMT proj4 projection.  Try to assign functions */
+			GMT->current.proj.fwd = &gmt_proj4_fwd;
+			GMT->current.proj.inv = &gmt_proj4_inv;
+			if (GMT->common.R.oblique) {
+				gmt_proj4_fwd (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+				gmt_proj4_fwd (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+				GMT->current.map.outside = &map_rect_outside;
+				GMT->current.map.crossing = &map_rect_crossing;
+				GMT->current.map.overlap = &map_rect_overlap;
+				GMT->current.map.clip = &map_rect_clip;
+				GMT->current.map.left_edge = &map_left_rect;
+				GMT->current.map.right_edge = &map_right_rect;
+				GMT->current.map.frame.check_side = true;
+			}
+			else {
+				map_xy_search (GMT, &xmin, &xmax, &ymin, &ymax, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+				GMT->current.map.outside = &map_wesn_outside;
+				GMT->current.map.crossing = &map_wesn_crossing;
+				GMT->current.map.overlap = &map_wesn_overlap;
+				GMT->current.map.clip = &map_wesn_clip;
+				GMT->current.map.left_edge = &map_left_rect;
+				GMT->current.map.right_edge = &map_right_rect;
+				GMT->current.map.frame.horizontal = 2;
+			}
+			map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
+			if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
+			break;
 	}
 	/* Now we only have to replace the pointers to the FWD and INV transform functions */
 	GMT->current.proj.fwd = &gmt_proj4_fwd;
