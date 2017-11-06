@@ -23,18 +23,18 @@ cat << EOF > data.txt
 360 25 14.2 7.5 1.3
 EOF
 # Sector diagram
-gmt psrose data.txt -i1,0 -A20 -S1.5i -P -R0/25/0/360 -Bxa10g10 -K -Bya10g10 -B+t"Sector Diagram" -W1p -Gorange -F > $ps
-gmt psrose data.txt -i2,0 -A20 -S1.5i -R -Bxa10g10 -O -K -Bya10g10  -W1p -Ggreen -F >> $ps
-gmt psrose data.txt -i3,0 -A20 -S1.5i -R -Bxa10g10 -O -K -Bya10g10 -W1p -Gblue -F >> $ps
-gmt psrose data.txt -i4,0 -A20 -S1.5i -R -Bxa10g10 -O -K -Bya10g10 -W1p -Gwhite -F >> $ps
+gmt psrose data.txt -i1,0 -A20 -JX3i -P -R0/25/0/360 -Bxa10g10 -K -Bya10g10 -B+t"Sector Diagram" -W1p -Gorange -F > $ps
+gmt psrose data.txt -i2,0 -A20 -JX3i -R -Bxa10g10 -O -K -Bya10g10  -W1p -Ggreen -F >> $ps
+gmt psrose data.txt -i3,0 -A20 -JX3i -R -Bxa10g10 -O -K -Bya10g10 -W1p -Gblue -F >> $ps
+gmt psrose data.txt -i4,0 -A20 -JX3i -R -Bxa10g10 -O -K -Bya10g10 -W1p -Gwhite -F >> $ps
 # Windrose diagram
-gmt psrose data.txt -i1,0 -S1.5i -R -Bxa10g10 -O -K -Bya10g10 -B+t"Windrose Diagram" -W4p,orange -F -X3.5i -Y2.75i >> $ps
-gmt psrose data.txt -i2,0 -S1.5i -R -Bxa10g10 -O -K -Bya10g10  -W4p,green -F >> $ps
-gmt psrose data.txt -i3,0 -S1.5i -R -Bxa10g10 -O -K -Bya10g10 -W4p,blue -F >> $ps
-gmt psrose data.txt -i4,0 -S1.5i -R -Bxa10g10 -O -K -Bya10g10 -W4p,white -F >> $ps
+gmt psrose data.txt -i1,0 -JX3i -R -Bxa10g10 -O -K -Bya10g10 -B+t"Windrose Diagram" -W4p,orange -F -X3.5i -Y2.75i >> $ps
+gmt psrose data.txt -i2,0 -JX3i -R -Bxa10g10 -O -K -Bya10g10  -W4p,green -F >> $ps
+gmt psrose data.txt -i3,0 -JX3i -R -Bxa10g10 -O -K -Bya10g10 -W4p,blue -F >> $ps
+gmt psrose data.txt -i4,0 -JX3i -R -Bxa10g10 -O -K -Bya10g10 -W4p,white -F >> $ps
 # Rose diagram
-gmt psrose data.txt -i1,0 -A20r -S1.5i -R -Bxa10g10 -O -K -Bya10g10 -B+t"Rose Diagram" -W1p -Gorange -F -X-3.5i -Y2.75i >> $ps
-gmt psrose data.txt -i2,0 -A20r -S1.5i -R -Bxa10g10 -O -K -Bya10g10  -W1p -Ggreen -F >> $ps
-gmt psrose data.txt -i3,0 -A20r -S1.5i -R -Bxa10g10 -O -K -Bya10g10 -W1p -Gblue -F >> $ps
-gmt psrose data.txt -i4,0 -A20r -S1.5i -R -Bxa10g10 -O -K -Bya10g10 -W1p -Gwhite -F >> $ps
+gmt psrose data.txt -i1,0 -A20r -JX3i -R -Bxa10g10 -O -K -Bya10g10 -B+t"Rose Diagram" -W1p -Gorange -F -X-3.5i -Y2.75i >> $ps
+gmt psrose data.txt -i2,0 -A20r -JX3i -R -Bxa10g10 -O -K -Bya10g10  -W1p -Ggreen -F >> $ps
+gmt psrose data.txt -i3,0 -A20r -JX3i -R -Bxa10g10 -O -K -Bya10g10 -W1p -Gblue -F >> $ps
+gmt psrose data.txt -i4,0 -A20r -JX3i -R -Bxa10g10 -O -K -Bya10g10 -W1p -Gwhite -F >> $ps
 echo "4 2 Bins are not centered" | gmt pstext -R0/6/0/3 -Jx1i -O -F+f18p+jLM -N >> $ps

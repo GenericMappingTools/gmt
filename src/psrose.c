@@ -25,6 +25,18 @@
  * and azimuth to be "y".  Hence, west = 0.0 and east = max_radius
  * south/north is -90,90 for halfcircle and 0,360 for full circle
  *
+ * Update Nov 2017 PW: psrose map machinery is ancient and did not support -J.  For modern
+ * mode we do need -J support.  To remain backwards compatible we now take these steps:
+ *  a) Before parsing of arguments we check if -J was given.  If not we find the radius
+ *     from -S (if given, else default to 3i) and create a -JX option that we add. If
+ *     normalization was set via -S then we retain a plain -S option that now only means
+ *     do normalization.
+ *  b) psrose then processes -JX and optionally -S. Because -JX is then parsed we must be
+ *     on the look-out for any -: as these are inert.  We reactivate that swap if needed.
+ *  c) We then extract the radius from the -JX string, decode it, and reestablish the old
+ *     -Jx1 scaling using the +/- radius as w/e/s/n.
+ *  d) The old syntax is undocumented but support by backwards compatibility through GMT 6.
+ *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
  * Version:	6 API
@@ -37,7 +49,7 @@
 #define THIS_MODULE_PURPOSE	"Plot a polar histogram (rose, sector, windrose diagrams)"
 #define THIS_MODULE_KEYS	"<D{,CD(,>X}"
 #define THIS_MODULE_NEEDS	"RJ"
-#define THIS_MODULE_OPTIONS "-:>BKOPRUVXYbdehipstxy" GMT_OPT("Ec")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipstxy" GMT_OPT("Ec")
 
 struct PSROSE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -80,10 +92,10 @@ struct PSROSE_CTRL {	/* All control options for this program (except common args
 		bool active;
 		double value;
 	} Q;
-	struct S {	/* -Sscale[n] */
+	struct S {	/* -S */
 		bool active;
 		bool normalize;
-		double scale;
+		double scale;	/* Get this via -JX */
 	} S;
 	struct T {	/* -T */
 		bool active;
@@ -109,11 +121,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->M.S.symbol = PSL_VECTOR;
 	C->W.pen[0] = C->W.pen[1] = GMT->current.setting.map_default_pen;
 	C->Q.value = 0.05;
-	C->S.scale = 3.0;
 	C->Z.scale = 1.0;
-	if (GMT->current.setting.proj_length_unit == GMT_CM) {
-		C->S.scale = 7.5 / 2.54;
-	}
 	return (C);
 }
 
@@ -145,9 +153,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psrose [<table>] [-A[r]<sector_angle>] [%s] [-C[m|[+w]<modefile>]] [-D] [-G<fill>] [-I] [-K]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N] [-O] [-P] [-Q<alpha>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S[n]<scale>] [-T] [%s]\n", GMT_U_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psrose [<table>] [-A[r]<sector_angle>] [%s] [-C[m|[+w]<modefile>]] [-D] [-G<fill>] [-I] [-JX<width[u]>]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-K] [-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N] [-O] [-P] [-Q<alpha>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S] [-T] [%s]\n", GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
 
@@ -168,6 +176,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Do not draw the scale length bar [Default plots scale in lower right corner].\n");
 	gmt_fill_syntax (API->GMT, 'G', "Specify color for diagram [Default is no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Inquire mode; only compute and report statistics - no plot is created.\n");
+	r = (API->GMT->current.setting.proj_length_unit == GMT_CM) ? 7.5 : 3.0;
+	GMT_Message (API, GMT_TIME_NONE, "\t-J Use -JX<width>[unit] to set the plot diameter [%g %s].\n", r, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Override default labels [West,East,South,North (depending on GMT_LANGUAGE)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   for full circle and 90W,90E,-,0 for half-circle].  If no argument \n");
@@ -183,9 +193,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-R Specifies the region (<r0> = 0, <r1> = max_radius).  For azimuth:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify <theta0>/<theta1> = -90/90 or 0/180 (half-circles) or 0/360 only).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <r0> = <r1> = 0, psrose will compute a reasonable <r1> value.\n");
-	r = (API->GMT->current.setting.proj_length_unit == GMT_CM) ? 7.5 : 3.0;
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify the plot radius of the unit circle in %s [%g].\n", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit], r);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Sn to normalize data, i.e., divide all radii (or bin counts) by the maximum radius (or count).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Normalize data, i.e., divide all radii (or bin counts) by the maximum radius (or count).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Indicate that the vectors are oriented (two-headed), not directed [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This implies both <azimuth> and <azimuth> + 180 will be counted as inputs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Ignored if -R sets a half-circle domain.\n");
@@ -324,14 +332,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				Ctrl->Q.active = true;
 				Ctrl->Q.value = atof (opt->arg);
 				break;
-			case 'S':	/* Get radius of unit circle in inches */
+			case 'S':	/* Normalization */
 				Ctrl->S.active = true;
-				if (strchr (opt->arg, 'n')) Ctrl->S.normalize = true;
-				n = (int)strlen (opt->arg) - 1;
-				if (opt->arg[n] == 'n') opt->arg[n] = 0;	/* Temporarily remove the n */
-				k = (opt->arg[0] == 'n') ? 1 : 0;		/* If we got -Sn<radius> */
-				Ctrl->S.scale = gmt_M_to_inch (GMT, &opt->arg[k]);
-				if (Ctrl->S.normalize && k == 0) opt->arg[n] = 'n';	/* Put back the n */
+				Ctrl->S.normalize = true;
 				break;
 			case 'T':	/* Oriented instead of directed data */
 				Ctrl->T.active = true;
@@ -368,11 +371,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file && Ctrl->C.mode == GMT_IN && gmt_access (GMT, Ctrl->C.file, R_OK),
 	                                 "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale <= 0.0, "Syntax error -S option: radius must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, gmt_M_is_zero (Ctrl->Z.scale), "Syntax error -Z option: factor must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.inc < 0.0, "Syntax error -A option: sector width must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.value <= 0.0 || Ctrl->Q.value >= 1.0, "Syntax error -Q option: confidence level must be in 0-1 range\n");
 	if (!Ctrl->I.active) {
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify -JX option\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->current.proj.projection != GMT_LINEAR, "Syntax error: Must specify -JX option\n");
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 		n_errors += gmt_M_check_condition (GMT, !((GMT->common.R.wesn[YLO] == -90.0 && GMT->common.R.wesn[YHI] == 90.0) \
 			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 180.0)
@@ -488,7 +492,12 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	yy = gmt_M_memory (GMT, NULL, n_bins+2, double);
 	azimuth = gmt_M_memory (GMT, NULL, n_alloc, double);
 	length = gmt_M_memory (GMT, NULL, n_alloc, double);
-
+	
+	/* Because of -JX being parsed already, any -: will have no effect.  For backwards compatibility we
+	 * check if -: was given and turn that on again here before reading */
+	if (GMT->common.colon.active)
+		GMT->current.setting.io_lonlat_toggle[GMT_IN] = true;
+	
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 	/* Bail if there are any read errors */
@@ -676,6 +685,8 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	/* Ready to plot.  So set up GMT projections (not used by psrose), we set region to actual plot width and scale to 1 */
 
+	Ctrl->S.scale = 0.5 * gmt_M_to_inch (GMT, &GMT->common.J.string[1]);	/* Get radius from full width */
+	GMT->common.J.active = false;	/* Reset projection machinery */
 	gmt_parse_common_options (GMT, "J", 'J', "x1i");
 	GMT->common.R.active[RSET] = GMT->common.J.active = true;
 	wesn[XLO] = wesn[YLO] = -Ctrl->S.scale;	wesn[XHI] = wesn[YHI] = Ctrl->S.scale;

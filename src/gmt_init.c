@@ -11635,7 +11635,35 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append -R option */
 		}
 	}
-
+	else if (gmt_M_compat_check (GMT, 6) && !strncmp (mod_name, "psrose", 6U) && (opt = GMT_Find_Option (API, 'J', *options)) == NULL) {
+		/* Running psrose with old -S[n]<radius syntax.  Need to replace with new -J [-S] syntax */
+		struct GMT_OPTION *S = GMT_Find_Option (API, 'S', *options);
+		if (S) {	/* Gave -S option */
+			char j_code[GMT_LEN256] = {""};
+			unsigned int k, norm = (S->arg[0] == 'n') ? 1 : 0;
+			double radius;
+			k = norm;
+			if (norm == 0 && S->arg[strlen(S->arg)-1] == 'n') {	/* Old-style -S<radius>[unit]n syntax */
+				norm = 2;
+				S->arg[strlen(S->arg)-1] = '\0';
+			}
+			radius = gmt_M_to_inch (GMT, &S->arg[k]);	/* Get the radius, now in inches */
+			sprintf (j_code, "X%gi", 2 * radius);
+			if ((opt = GMT_Make_Option (API, 'J', j_code)) == NULL) return NULL;		/* Failed to make -J option */
+			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failed to append -J option */
+			if (norm) {	/* Need a plain -S for normalization */
+				if (GMT_Update_Option (API, S, "")) return NULL;		/* Failed to update -S */
+			}
+			else {	/* Remove the S option */
+				if (GMT_Delete_Option (API, S, options)) return NULL;		/* Failed to remove -S */
+			}
+		}
+		else {	/* No -S option given either, so user expects default radius and no normalization */
+			if ((opt = GMT_Make_Option (API, 'J', "X6i")) == NULL) return NULL;		/* Failure to make -J option */
+			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append -J option */
+		}
+	}
+	
 	is_PS = is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
 	if (is_PS) {
 		if (set_modern_mode_if_oneliner (API, options))	/* Look out for modern -png mymap and similar specs */

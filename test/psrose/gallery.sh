@@ -2,14 +2,14 @@
 # Test all gmt psrose region and types
 
 ps=gallery.ps
-common0="@azimuth_lengths.txt -: -S2.5c -F -L -Ggray -R0/150/-90/90 -Bxg25 -Byg90 -BWESN -O -K"
-common1="@azimuth_lengths.txt -: -S2.5c -F -L -Ggray -R0/150/0/180 -Bxg25 -Byg90 -BWESN -O -K"
-common0n="@azimuth_lengths.txt -: -S2.5c -F -L -Ggray -R0/5/-90/90 -Bxg1 -Byg90 -BWESN -O -K"
-common1n="@azimuth_lengths.txt -: -S2.5c -F -L -Ggray -R0/5/0/180 -Bxg1 -Byg90 -BWESN -O -K"
-common="@azimuth_lengths.txt -: -S2.5c -F -L -Ggray -R0/150/0/360 -Bxg25 -Byg90 -BWESN -O -K"
-commonn="@azimuth_lengths.txt -: -S2.5c -F -L -Ggray -R0/1200/0/360 -Bxg200 -Byg90 -BWESN -O -K"
-commonu="@azimuth_lengths.txt -: -S2.5c -F -L -R0/5/0/360 -Bxg1 -Byg190 -BWESN -O -K"
-commonun="@azimuth_lengths.txt -: -S2.5c -F -L -R0/1/0/360 -Bxg0.2 -Byg190 -BWESN -O -K"
+common0="@azimuth_lengths.txt  -: -JX5c -F -L -Ggray -R0/150/-90/90 -Bxg25 -Byg90 -BWESN -O -K"
+common1="@azimuth_lengths.txt  -: -JX5c -F -L -Ggray -R0/150/0/180 -Bxg25 -Byg90 -BWESN -O -K"
+common0n="@azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/5/-90/90 -Bxg1 -Byg90 -BWESN -O -K"
+common1n="@azimuth_lengths.txt -: -JX5c -F -L -Ggray -R0/5/0/180 -Bxg1 -Byg90 -BWESN -O -K"
+common="@azimuth_lengths.txt   -: -JX5c -F -L -Ggray -R0/150/0/360 -Bxg25 -Byg90 -BWESN -O -K"
+commonn="@azimuth_lengths.txt  -: -JX5c -F -L -Ggray -R0/1200/0/360 -Bxg200 -Byg90 -BWESN -O -K"
+commonu="@azimuth_lengths.txt  -: -JX5c -F -L -R0/5/0/360 -Bxg1 -Byg190 -BWESN -O -K"
+commonun="@azimuth_lengths.txt -: -JX5c -F -L -R0/1/0/360 -Bxg0.2 -Byg190 -BWESN -O -K"
 # Set up blank plot
 gmt psxy -R0/5/0/5 -Jx1c -P -K -T > $ps
 echo "2.5 -0.5 Sector Diagrams" | gmt pstext -R -J -O -K -N -F+jCT+f12p >> $ps

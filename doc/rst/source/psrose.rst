@@ -18,13 +18,15 @@ Synopsis
 [ |-C|\ **m**\ \|\ [**+w**\ ]\ *mode_file* ]
 [ |-D| ]
 [ |-F| ]
-[ |-G|\ *fill* ] [ |-I| ] [ |-K| ]
+[ |-G|\ *fill* ] [ |-I| ]
+[ |-J|\ **X**\ *diameter* ]
+[ |-K| ]
 [ |-L|\ [\ *wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*\ ] ]
 [ |-M|\ *parameters* ]
 [ |-O| ] [ |-P| ]
 [ |-Q|\ *alpha* ]
 [ |-R|\ *r0*/*r1*/*az_0*/*az_1* ]
-[ |-S|\ [**n**]\ *radial\_scale* ]
+[ |-S| ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -119,6 +121,12 @@ Optional Arguments
     *n*, *mean az*, *mean r*, *mean resultant length*, *max bin sum*,
     *scaled mean*, and *linear length sum*.
 
+.. _-J:
+
+**-JX**\ *diameter*\ [*unit*]
+    Sets the diameter of the rose diagram.  Only this form of the projection machinery
+    is supported.  If not given we default to 6 inches (or 7.5 cm).
+
 .. _-K:
 
 .. include:: explain_-K.rst_
@@ -169,9 +177,8 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**n**]\ *plot_radius*
-    Specifies radius of plotted circle (append a unit from **c**\ \|\ **i**\ \|\ **p**).
-    Use **-Sn** to normalize input radii (or bin counts if **-A** is used) by the largest
+**-S**
+    Normalize input radii (or bin counts if **-A** is used) by the largest
     value so all radii (or bin counts) range from 0 to 1.
 
 .. _-T:
@@ -242,7 +249,7 @@ Examples
 
 To plot a half circle rose diagram of the data in the file
 fault_segments.az_r (containing pairs of (azimuth, length in meters),
-using a 10 degree bin sector width, on a circle of radius = 3 inch, grid
+using a 10 degree bin sector width, on a circle of diameter = 6 inch, grid
 going out to radius = 150 km in steps of 25 km with a 30 degree sector
 interval, radial direction annotated every 50 km, using a light blue
 shading outlined by a solid red pen (width = 0.75 points), draw the mean
@@ -251,25 +258,25 @@ azimuth, and shown in Portrait orientation, use:
    ::
 
     gmt psrose fault_segments.az_r -R0/150/-90/90 -Bx50g25+l"Fault length"
-               -Byg30 -B+t"Rose diagram"-S3i -Ar10 -Glightblue
+               -Byg30 -B+t"Rose diagram" -JX6i -Ar10 -Glightblue
                -W0.75p,red -Z0.001 -Cm -P -T -: > half_rose.ps
 
 To plot a full circle wind rose diagram of the data in the file
-lines.r_az, on a circle of radius = 5 cm, grid going out to radius =
+lines.r_az, on a circle of diameter = 10 cm, grid going out to radius =
 500 units in steps of 100 with a 45 degree sector interval, using a
 solid pen (width = 0.5 point, and shown in landscape [Default]
 orientation with UNIX timestamp and command line plotted, use:
 
    ::
 
-    gmt psrose lines.az_r -R0/500/0/360 -S5c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -Uc | lpr
+    gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -Uc | lpr
 
 Redo the same plot but this time add orange vector heads to each direction (with nominal head size
 0.5 cm but this will be reduced linearly for lengths less than 1 cm) and save the plot, use:
 
    ::
 
-    gmt psrose lines.az_r -R0/500/0/360 -S5c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -Uc > rose.ps
+    gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -Uc > rose.ps
 
 Bugs
 ----

@@ -4,10 +4,10 @@
 ps=vectors.ps
 data=`gmt which -G @azimuth_lengths.txt`
 awk '{if ((NR%50) == 0) print $0}' $data > subset.txt
-common0n="subset.txt -: -S3.5c -F -L -Ggray -R0/3/-90/90 -Bxg1 -Byg90 -BWESN -O -K"
-common1n="subset.txt -: -S3.5c -F -L -Ggray -R0/3/0/180 -Bxg1 -Byg90 -BWESN -O -K"
-commonn="subset.txt -: -S3.5c -F -L -Ggray -R0/750/0/360 -Bxg200 -Byg90 -BWESN -O -K"
-commonu="subset.txt -: -S3.5c -F -L -R0/3/0/360 -Bxg1 -Byg190 -BWESN -O -K"
+common0n="subset.txt -: -JX7c -F -L -Ggray -R0/3/-90/90 -Bxg1 -Byg90 -BWESN -O -K"
+common1n="subset.txt -: -JX7c -F -L -Ggray -R0/3/0/180 -Bxg1 -Byg90 -BWESN -O -K"
+commonn="subset.txt  -: -JX7c -F -L -Ggray -R0/750/0/360 -Bxg200 -Byg90 -BWESN -O -K"
+commonu="subset.txt  -: -JX7c -F -L -R0/3/0/360 -Bxg1 -Byg190 -BWESN -O -K"
 # Set up blank plot
 gmt psxy -R0/5/0/5 -Jx1c -P -K -T > $ps
 gmt set MAP_VECTOR_SHAPE 0.5

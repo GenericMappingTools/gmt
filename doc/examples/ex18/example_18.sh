@@ -57,8 +57,8 @@ gmt psxy -R -J -O -K -ST0.1i -Gyellow -Wthinnest pratt.txt >> $ps
 gmt grdmath -R pratt.txt POINT SDIST = mask.nc
 gmt grdclip mask.nc -Sa200/NaN -Sb200/1 -Gmask.nc
 gmt grdmath @AK_gulf_grav.nc mask.nc MUL = tmp.nc
-area=`gmt grdvolume tmp.nc -C50 -Sk | cut -f2`
-volume=`gmt grdvolume tmp.nc -C50 -Sk | cut -f3`
+area=`gmt grdvolume tmp.nc -C50 -Sk -o1`
+volume=`gmt grdvolume tmp.nc -C50 -Sk -o2`
 gmt pstext -R -J -O -M -Gwhite -Wthin -Dj0.3i -F+f14p,Helvetica-Bold+jLB -C0.1i >> $ps << END
 > -149 52.5 14p 2.6i j
 Volumes: $volume mGal\264km@+2@+
