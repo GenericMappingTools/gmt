@@ -85,6 +85,10 @@ struct SURFACE_CTRL {
 		double limit[2];
 		unsigned int mode[2];
 	} L;
+	struct M {	/* -M<radius> */
+		bool active;
+		char *arg;
+	} M;
 	struct N {	/* -N<max_iterations> */
 		bool active;
 		unsigned int value;
@@ -1870,6 +1874,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Dea
 	if (C->D.file) gmt_M_str_free (C->D.file);	
 	if (C->L.file[LO]) gmt_M_str_free (C->L.file[LO]);	
 	if (C->L.file[HI]) gmt_M_str_free (C->L.file[HI]);	
+	if (C->M.arg) gmt_M_str_free (C->M.arg);	
 	if (C->W.file) gmt_M_str_free (C->W.file);	
 	gmt_M_free (GMT, C);	
 }
@@ -1880,7 +1885,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: surface [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<aspect_ratio>|m] [-C<convergence_limit>]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>] [-Ll<limit>] [-Lu<limit>] [-N<n_iterations>] [-Q] [-S<search_radius>[m|s]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>] [-Ll<limit>] [-Lu<limit>] [-M[-|+]<radius>[<unit>]] [-N<n_iterations>] [-Q] [-S<search_radius>[m|s]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[i|b]<tension>] [%s] [-W[<logfile>]] [-Z<over_relaxation_parameter>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]%s[%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
@@ -1915,6 +1920,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   <limit> can be any number, or the letter d for min (or max) input data value,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or the filename of a grid with bounding values.  [Default solution is unconstrained].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Example: -Ll0 enforces a non-negative solution.\n");
+	gmt_dist_syntax (API->GMT, 'M', "Set maximum radius for masking the grid away from data points [no masking].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set max <n_iterations> in the final cycle; default = %d.\n", SURFACE_MAX_ITERATIONS);
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Set <search_radius> to initialize grid; default = 0 will skip this step.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This step is slow and not needed unless grid dimensions are pathological;\n");
@@ -2053,6 +2059,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 						n_errors++;
 						break;
 				}
+				break;
+			case 'M':
+				Ctrl->M.active = true;
+				Ctrl->M.arg = strdup (opt->arg);
 				break;
 			case 'N':
 				Ctrl->N.active = true;
@@ -2347,12 +2357,8 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	if (Ctrl->W.active)	/* Close the log file */
 		gmt_fclose (GMT, C.fp_log);
 
-	/* Write the output grid */
-	if ((error = write_surface (GMT, &C, Ctrl->G.file)) != 0)
-		Return (error);
-
 	/* Clean up after ourselves */
-	
+
 #ifdef PARALLEL_MODE
 	gmt_M_free_aligned (GMT, C.alternate_grid);
 	gmt_M_free (GMT, C.briggs_index);
@@ -2360,7 +2366,6 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 #ifdef DEBUG_SURF
 	if (debug) gmt_M_free (GMT, tmp_grid);
 #endif
-	gmt_M_free (GMT, C.data);
 	gmt_M_free (GMT, C.Briggs);
 	gmt_M_free (GMT, C.status);
 	gmt_M_free (GMT, C.fraction);
@@ -2368,6 +2373,63 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &C.Bound[end]) != GMT_NOERROR)
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free grid with %s bounds\n", limit[end]);
 	}
+
+	if (Ctrl->M.active) {	/* Want to mask the grid first */
+		char input[GMT_STR16] = {""}, mask[GMT_STR16] = {""}, cmd[GMT_LEN256] = {""};
+		static char *V_level = "qntcvld";
+		struct GMT_GRID *Gmask = NULL;
+		struct GMT_VECTOR *V = NULL;
+		double *data[2] = {NULL, NULL};
+		uint64_t row, col, ij, dim[3] = {2, C.npoints, GMT_DOUBLE};		/* ncols, nrows, type */
+		
+		if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, GMT_CONTAINER_ONLY, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+			Return (API->error);
+		}
+		for (col = 0; col < 2; col++)
+			data[col] = gmt_M_memory (GMT, NULL, C.npoints, double);
+		for (ij = 0; ij < C.npoints; ij++) {
+			data[GMT_X][ij] = C.data[ij].x;
+			data[GMT_Y][ij] = C.data[ij].y;
+		}
+		gmt_M_free (GMT, C.data);
+		GMT_Put_Vector (API, V, GMT_X, GMT_DOUBLE, data[GMT_X]);
+		GMT_Put_Vector (API, V, GMT_Y, GMT_DOUBLE, data[GMT_Y]);
+		/* Create a virtual file for reading the input data grid */
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, V, input) == GMT_NOTSET) {
+			Return (API->error);
+		}
+		/* Create a virtual file to hold the mask grid */
+		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, mask) == GMT_NOTSET) {
+			Return (API->error);
+		}
+		sprintf (cmd, "%s -G%s -R%g/%g/%g/%g -I%g/%g -NNaN/1/1 -S%s -V%c --GMT_HISTORY=false", input, mask, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI],
+			GMT->common.R.inc[GMT_X], GMT->common.R.inc[GMT_Y], Ctrl->M.arg, V_level[GMT->current.setting.verbose]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Masking grid nodes away from data points via grdmask\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Calling grdsample with args %s\n", cmd);
+		if (GMT_Call_Module (API, "grdmask", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Resample the file */
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to mask the intermediate grid - exiting\n");
+			Return (API->error);
+		}
+		if (GMT_Close_VirtualFile (API, input) == GMT_NOTSET) {
+			Return (API->error);
+		}
+		if (GMT_Destroy_Data (API, &V) != GMT_NOERROR) {	/* Done with the data set */
+			Return (API->error);
+		}
+		if ((Gmask = GMT_Read_VirtualFile (API, mask)) == NULL) {	/* Load in the mask grid */
+			Return (API->error);
+		}
+		/* Apply the mask */
+		gmt_M_grd_loop (GMT, Gmask, row, col, ij) C.Grid->data[ij] *= Gmask->data[ij];
+		if (GMT_Destroy_Data (API, &Gmask) != GMT_NOERROR) {	/* Done with the mask */
+			Return (API->error);
+		}
+	}
+	else
+		gmt_M_free (GMT, C.data);
+	
+	if ((error = write_surface (GMT, &C, Ctrl->G.file)) != 0)	/* Write the output grid */
+		Return (error);
 
 	Return (GMT_NOERROR);
 }
