@@ -121,19 +121,20 @@ EOF
 	EOF
 	ls kml/*.kml > /tmp/$$.lis
 	while read file; do
-		cat <<- EOF >> doc.kml
+	        name=`basename $file .kml`
+		cat << EOF >> doc.kml
 			<NetworkLink>
-	        	<name>$file</name>
+	        	<name>$name</name>
 	        	<Link>
 				<href> $file </href>
 			</Link>
 			</NetworkLink>
-		EOF
+EOF
 	done < /tmp/$$.lis
-	cat <<- EOF >> doc.kml
+	cat << EOF >> doc.kml
 		</Document>
 	</kml>
-	EOF
+EOF
 	zip -rq9 $name.kmz doc.kml kml
 	if [ $remove -eq 0 ]; then
 		mv -f kml/* ..
