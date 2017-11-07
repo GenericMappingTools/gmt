@@ -3572,13 +3572,13 @@ The full definition of the ``GMT_GRID_HEADER`` structure.  Most of these members
 
    struct GMT_GRID_HEADER {
        /* Variables we document for the API:
-        * They are copied verbatim to the native grid header and must be 4-byte unsigned ints. */
+          They are copied verbatim to the native grid header and must be 4-byte unsigned ints. */
        uint32_t n_columns;                   /* Number of columns */
        uint32_t n_rows;                      /* Number of rows */
        uint32_t registration;                /* GMT_GRID_NODE_REG (0) or GMT_GRID_PIXEL_REG (1) */
 
        /* == The types of the following 12 elements must not be changed.
-        * == They are also copied verbatim to the native grid header. */
+          == They are also copied verbatim to the native grid header. */
        double wesn[4];                         /* Min/max x and y coordinates */
        double z_min;                           /* Minimum z value */
        double z_max;                           /* Maximum z value */
@@ -3593,12 +3593,12 @@ The full definition of the ``GMT_GRID_HEADER`` structure.  Most of these members
        char   remark[GMT_GRID_REMARK_LEN160];  /* comments re this data set */
        /* == End of "untouchable" header.       */
 
-        * This section is flexible.  It is not copied to any grid header
-        * or stored in any file. It is considered private */
+       /* This section is flexible.  It is not copied to any grid header
+          or stored in any file. It is considered private */
        unsigned int type;               /* Grid format */
        unsigned int bits;               /* Bits per value (e.g., 32 for ints/floats; 8 for bytes) */
        unsigned int complex_mode;       /* 0 = normal, GMT_GRID_IS_COMPLEX_REAL = real part of complex
-										   grid, GMT_GRID_IS_COMPLEX_IMAG = imag part of complex grid */
+										                       grid, GMT_GRID_IS_COMPLEX_IMAG = imag part of complex grid */
        unsigned int mx, my;             /* Actual dimensions of the grid in memory, allowing for the padding */
        size_t       nm;                 /* Number of data items in this grid (n_columns * n_rows) [padding is excluded] */
        size_t       size;               /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
