@@ -22,6 +22,8 @@ Synopsis
 [ |-T|\ [*dz*]\ [**+a**\ [*alpha*]]\ [**+s**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-o| ]
 
 |No-spaces|
 
@@ -142,6 +144,11 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
+
+.. include:: explain_-ocols.rst_
+
 .. include:: explain_help.rst_
 
 .. include:: explain_grd_inout_short.rst_
@@ -154,6 +161,12 @@ To obtain all the information about the data set in file hawaii\_topo.nc:
    ::
 
     gmt grdinfo -L1 -L2 -M hawaii_topo.nc
+
+Get the grid spacing in hawaii\_topo.nc:
+
+   ::
+
+    dx=`gmt grdinfo -Cn -o7 hawaii_topo.nc`
 
 See Also
 --------

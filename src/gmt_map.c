@@ -4905,6 +4905,7 @@ GMT_LOCAL bool map_init_polyconic (struct GMT_CTRL *GMT) {
 		default:	/* Non-GMT proj4 projection.  Try to assign functions */
 			GMT->current.proj.fwd = &gmt_proj4_fwd;
 			GMT->current.proj.inv = &gmt_proj4_inv;
+			GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.proj4_scl;
 			if (GMT->common.R.oblique) {
 				gmt_proj4_fwd (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 				gmt_proj4_fwd (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
@@ -4926,7 +4927,7 @@ GMT_LOCAL bool map_init_polyconic (struct GMT_CTRL *GMT) {
 				GMT->current.map.right_edge = &map_right_rect;
 				GMT->current.map.frame.horizontal = 2;
 			}
-			map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
+			map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.proj4_scl);
 			if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 			break;
 	}

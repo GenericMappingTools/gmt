@@ -32,7 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Extract information from grids"
 #define THIS_MODULE_KEYS	"<G{+,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "->RVfh"
+#define THIS_MODULE_OPTIONS "->RVfho"
 
 /* Control structure for grdinfo */
 
@@ -104,7 +104,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdinfo <grid> [-C[n|t]] [-D[<offx>[/<offy>][+i]] [-F] [-I[<dx>[/<dy>]|b|i|r]] [-L[a|0|1|2|p]] [-M]\n");
-	GMT_Message (API, GMT_TIME_NONE, "	[%s] [-T[<dz>][+a[<alpha>]][+s]] [%s] [%s]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "	[%s] [-T[<dz>][+a[<alpha>]][+s]] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -139,7 +139,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a[<alpha>] to trim grid range by excluding the two <alpha>/2 tails [2 %%].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Note: +a is limited to a single grid.  Give <alpha> in percent.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to force a symmetrical range about zero.\n");
-	GMT_Option (API, "V,f,h,.");
+	GMT_Option (API, "V,f,h,o,.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -152,7 +152,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	bool no_file_OK;
+	bool no_file_OK, num_report;
 	unsigned int n_errors = 0, n_files = 0;
 	char text[GMT_LEN32] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -264,6 +264,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 		}
 	}
 
+	num_report = (Ctrl->C.active && Ctrl->C.mode != GRDINFO_TRADITIONAL);
 	no_file_OK = (Ctrl->D.active && Ctrl->D.mode == 0 && GMT->common.R.active[RSET]);
 	n_errors += gmt_M_check_condition (GMT, n_files == 0 && !no_file_OK, "Syntax error: Must specify one or more input files\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.mode && n_files != 1, "Syntax error -D: The +n modifier requires a single grid file\n");
@@ -274,6 +275,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->M.active, "Syntax error -M: Not compatible with -I or -T\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->L.active, "Syntax error -L: Not compatible with -I or -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->I.active, "Syntax error: Only one of -I -T can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.o.active && !num_report, "Syntax error: The -o option requires -Cn\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -291,7 +293,7 @@ GMT_LOCAL void report_tiles (struct GMT_CTRL *GMT, struct GMT_GRID *G, double w,
 	char text[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
 	struct GMT_RECORD *Out = NULL;
 	
-	num_report = (GMT->parent->external || Ctrl->C.active);
+	num_report = (Ctrl->C.active && Ctrl->C.mode != GRDINFO_TRADITIONAL);
 	Out = gmt_new_record (GMT, num_report ? NULL : out, num_report ? record : NULL);
 	
 	nx = gmt_M_get_n (GMT, w, e, Ctrl->I.inc[GMT_X], 1);

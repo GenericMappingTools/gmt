@@ -5940,12 +5940,16 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		pos = 0;
 		if (gmt_strtok (pch, " \t+", &pos, token)) sprintf(scale_c, "%s", &token[6]);
 		//wipe_substr(szProj4, token);
+		GMT->current.proj.gave_map_width = 0;
+		GMT->current.proj.proj4_scl = gmt_M_to_inch (GMT, scale_c);
 	}
 	/* If a +width=xx is given, append it a 'W' so that we identify this in gmt_parse_common_options() and act */
 	if ((pch = strstr(szProj4, "+width=")) != NULL) {
 		pos = 0;	
 		if (gmt_strtok (pch, " \t+", &pos, token)) sprintf(scale_c, "%sW", &token[6]);
 		//wipe_substr(szProj4, token);
+		GMT->current.proj.gave_map_width = 1;
+		GMT->current.proj.proj4_scl = gmt_M_to_inch (GMT, scale_c);
 	}
 
 	*scale_pos = (int)strlen(opt_J);		/* The position at which the scale string will be appended */

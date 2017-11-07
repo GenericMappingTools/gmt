@@ -415,7 +415,7 @@ struct GMT_PROJ {
 	bool got_azimuths, got_elevations, z_down;
 
 	/* PROJ4 variables */
-	double proj4_x0, proj4_y0;
+	double proj4_x0, proj4_y0, proj4_scl;
 	bool is_proj4;
 };
 
