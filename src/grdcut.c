@@ -67,6 +67,7 @@ struct GRDCUT_CTRL {
 #define NAN_IS_IGNORED	0
 #define NAN_IS_INRANGE	1
 #define NAN_IS_SKIPPED	2
+#define NAN_IS_FRAME	3
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDCUT_CTRL *C;
@@ -91,7 +92,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Deal
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdcut <ingrid> -G<outgrid> %s [%s] [-N[<nodata>]]\n\t[%s] [-S[n]<lon>/<lat>/<radius>] [-Z[n|r][<min>/<max>]] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdcut <ingrid> -G<outgrid> %s [%s] [-N[<nodata>]]\n\t[%s] [-S[n]<lon>/<lat>/<radius>] [-Z[n|N|r][<min>/<max>]] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -99,7 +100,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is file to extract a subset from.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify output grid file.\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The WESN you specify must be within the WESN of the input grid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The w/e/s/n you specify must be within the region of the input grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If in doubt, run grdinfo first and check range of old file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, see -N below.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -114,7 +115,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify a range and determine the corresponding rectangular region so that\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   all values outside this region are outside the range [-inf/+inf].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zn to consider NaNs to be outside the range.  The resulting grid will be NaN-free.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zr to consider NaNs in range instead [Default just ignores NaNs in decision].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -ZN to strip off outside rows and cols that are all NaN.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zr to consider NaNs within the range [Default just ignores NaNs in decision].\n");
 	GMT_Option (API, "f,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -175,6 +177,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 					Ctrl->Z.mode = NAN_IS_SKIPPED;
 					k = 1;
 				}
+				if (opt->arg[k] == 'N') {
+					Ctrl->Z.mode = NAN_IS_FRAME;
+					k = 1;
+				}
 				else if (opt->arg[k] == 'r') {
 					Ctrl->Z.mode = NAN_IS_INRANGE;
 					k = 1;
@@ -198,12 +204,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int row0, unsigned int row1, unsigned int col0, unsigned int col1, unsigned int count[], unsigned int *side) {
+GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int row0, unsigned int row1, unsigned int col0, unsigned int col1, unsigned int count[], unsigned int *side, bool *all) {
 	/* Loop around current perimeter and count # of nans, return sum and pass back which side had most nans */
-	unsigned int col, row, sum = 0, k;
+	unsigned int col, row, sum = 0, k, dim[2] = {0, 0};
 	uint64_t node;
 	
 	gmt_M_memset (count, 4, unsigned int);	/* Reset count */
+	dim[GMT_X] = col1 - col0 + 1;	/* Number of remaining nodes in x */
+	dim[GMT_Y] = row1 - row0 + 1;	/* Number of remaining nodes in y */
 	*side = 0;
 	/* South count: */
 	for (col = col0, node = gmt_M_ijp (G->header, row1, col); col <= col1; col++, node++) if (gmt_M_is_fnan (G->data[node])) count[0]++;
@@ -215,8 +223,9 @@ GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, uns
 	for (row = row0, node = gmt_M_ijp (G->header, row, col0); row <= row1; row++, node += G->header->mx) if (gmt_M_is_fnan (G->data[node])) count[3]++;
 	for (k = 0; k < 4; k++) {	/* TIme to sum up and determine side with most NaNs */
 		sum += count[k];
-		if (k && count[k] > count[*side]) *side = k;
+		if (k && count[k] > dim[*side]) *side = k;
 	}
+	*all = (count[*side] == dim[*side%2]);	/* True of every node along size is NaN */
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Nans found: W = %d E = %d S = %d N = %d\n", count[3], count[1], count[0], count[2]);
 	return ((row0 == row1 && col0 == col1) ? 0 : sum);	/* Return 0 if we run out of grid, else the sum */
 }
@@ -268,7 +277,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int nx_old, ny_old, add_mode = 0U, side, extend, type = 0U, def_pad[4], pad[4];
 	uint64_t node;
-	bool outside[4] = {false, false, false, false};
+	bool outside[4] = {false, false, false, false}, all;
 	
 	char *name[2][4] = {{"left", "right", "bottom", "top"}, {"west", "east", "south", "north"}};
 
@@ -312,7 +321,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 		row1 = G->header->n_rows - 1;	col1 = G->header->n_columns - 1;
 		if (Ctrl->Z.mode == NAN_IS_SKIPPED) {	/* Must scan in from outside to the inside, one side at the time, remove side with most Nans */
-			sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, &side);	/* Initial border count */
+			sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, &side, &all);	/* Initial border count */
 			while (sum) {	/* Must eliminate the row or col with most NaNs, and move grid boundary inwards */
 				if (side == 3 && col0 < col1) {	/* Need to move in from the left */
 					col0++;
@@ -330,7 +339,33 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 					row0++;
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off top row\n");
 				}
-				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, &side);
+				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, &side, &all);
+			}
+			if (col0 == col1 || row0 == row1) {
+				GMT_Report (API, GMT_MSG_NORMAL, "The sub-region implied by -Zn is empty!\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+		}
+		else if (Ctrl->Z.mode == NAN_IS_FRAME) {	/* Must scan in from outside to the inside, one side at the time, remove sides with all Nans */
+			sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, &side, &all);	/* Initial border count */
+			while (all) {	/* Must eliminate the row or col with most NaNs, and move grid boundary inwards */
+				if (side == 3 && col0 < col1) {	/* Need to move in from the left */
+					col0++;
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off a leftmost column\n");
+				} 
+				else if (side == 1 && col1 > col0) {	/* Need to move in from the right */
+					col1--;
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off rightmost column\n");
+				}
+				else if (side == 0 && row1 > row0) {	/* Need to move up from the bottom */
+					row1--;
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off bottom row\n");
+				}
+				else if (side == 2 && row0 < row1) {	/* Need to move down from the top */
+					row0++;
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off top row\n");
+				}
+				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, &side, &all);
 			}
 			if (col0 == col1 || row0 == row1) {
 				GMT_Report (API, GMT_MSG_NORMAL, "The sub-region implied by -Zn is empty!\n");
