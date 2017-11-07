@@ -87,14 +87,15 @@ Optional Arguments
     Determine a new rectangular region so that all nodes *outside* this
     region are also outside the given *z*-range [-inf/+inf]. To indicate
     no limit on min or max, specify a hyphen (-). Normally, any NaNs
-    encountered are simply skipped and not considered in the decision.
+    encountered are simply skipped and not considered in the range-decision.
     Use **-Zn** to consider a NaN to be outside the *z*-range. This means
     the new subset will be NaN-free. Alternatively, use **-Zr** to
     consider NaNs to be within the data range. In this case we stop
     shrinking the boundaries once a NaN is found [Default simply skips NaNs
     when making the range decision].  Finally, if your core subset grid is
     surrounded by rows and/or columns that are all NaNs, use **-ZN** to
-    strip off such columns.
+    strip off such columns before (optionally) considering the range of the
+    core subset.
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -124,6 +125,13 @@ all values are entirely above 0 are excluded, try
    ::
 
     gmt grdcut bathy.nc -Gtrimmed_bathy.nc -Z-/0 -V
+
+To return the subregion of a grid such that any boundary rows or columns
+that are all NaNs, try
+
+   ::
+
+    gmt grdcut bathy.nc -Gtrimmed_bathy.nc -ZN -V
 
 To return the subregion of a grid that contains all nodes within a
 distance of 500 km from the point 45,30 try
