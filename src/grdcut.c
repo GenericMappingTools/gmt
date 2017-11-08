@@ -112,11 +112,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_dist_syntax (API->GMT, 'S', "Specify an origin and radius to find the corresponding rectangular area.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   All nodes on or inside the radius are contained in the subset grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Sn to set all nodes in the subset outside the circle to NaN.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify a range and determine the corresponding rectangular region so that\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   all values outside this region are outside the range [-inf/+inf].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zn to consider NaNs to be outside the range.  The resulting grid will be NaN-free.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -ZN to strip off outside rows and cols that are all NaN.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zr to consider NaNs within the range [Default just ignores NaNs in decision].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify an optional range and determine the corresponding rectangular region\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   so that all nodes outside this region are outside the range [-inf/+inf].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zn to consider NaNs to be outside the range. The resulting grid will be NaN-free.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -ZN to strip off outside rows and cols that are all populated with NaNs.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zr to consider NaNs to be within the range [Default just ignores NaNs in decision].\n");
 	GMT_Option (API, "f,.");
 	
 	return (GMT_MODULE_USAGE);
