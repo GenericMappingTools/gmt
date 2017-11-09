@@ -90,8 +90,9 @@ struct GRDIMAGE_CTRL {
 	struct GRDIMG_N {	/* -N */
 		bool active;
 	} N;
-	struct GRDIMG_Q {	/* -Q */
+	struct GRDIMG_Q {	/* -Q[n] */
 		bool active;
+		bool warn;
 	} Q;
 };
 
@@ -370,6 +371,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 				break;
 			case 'Q':	/* PS3 colormasking */
 				Ctrl->Q.active = true;
+				if (opt->arg[0] == 'n') Ctrl->Q.warn = true;
 				break;
 
 			default:	/* Report bad options */
@@ -489,12 +491,12 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
 	bool nothing_inside = false, use_intensity_grid;
-	bool do_indexed = false;
+	bool do_indexed = false, has_content = false;
 	unsigned int n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, n_grids;
 	unsigned int colormask_offset = 0, try, row, actual_row, col;
 	uint64_t node_RGBA = 0;             /* uint64_t for the RGB(A) image array. */
 	uint64_t node, k, kk, byte, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
-	int index = 0, ks, error = 0;
+	int index = 0, ks, error = 0, ret_val = GMT_NOERROR;
 	
 	char   *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"}, cmd[GMT_LEN256] = {""};
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
@@ -663,6 +665,9 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
+	if (Ctrl->Q.warn && n_grids == 1 && gmt_M_is_dnan (header_work->z_min))
+		ret_val = GMT_IMAGE_NO_DATA;	/* Flag that our output image has no information*/
+	
 	/* Here the grid/image is inside the plot domain.  The same must be true of any
 	 * auto-derived intensities we may create below */
 
@@ -1003,8 +1008,10 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 						}
 					}
 				}
-				else	/* Got a single grid and need to look up color via the CPT */
+				else {	/* Got a single grid and need to look up color via the CPT */
 					index = gmt_get_rgb_from_z (GMT, P, Grid_proj[0]->data[node], rgb);
+					if (index != (GMT_NAN - 3)) has_content = true;
+				}
 
 				if (Ctrl->I.active && index != (GMT_NAN - 3)) {	/* Need to deal with illumination */
 					if (use_intensity_grid) {	/* Intensity value comes from the grid */
@@ -1192,5 +1199,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	if (!Ctrl->C.active && GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
 		Return (API->error);
 	}
-	Return (GMT_NOERROR);
+	/* May return a flag that the image/PS has no data (see -Qn), or just NO_ERROR */
+	ret_val = (Ctrl->Q.warn && !has_content) ? GMT_IMAGE_NO_DATA : GMT_NOERROR;
+	Return (ret_val);
 }

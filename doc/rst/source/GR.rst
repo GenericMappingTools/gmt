@@ -7,6 +7,7 @@ GR
 
    greenspline
    grd2cpt
+   grd2kml
    grd2xyz
    grdblend
    grdclip

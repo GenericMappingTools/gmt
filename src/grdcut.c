@@ -204,7 +204,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int row0, unsigned int row1, unsigned int col0, unsigned int col1, unsigned int count[], unsigned int *side, bool *all) {
+GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int row0, unsigned int row1, unsigned int col0, unsigned int col1, unsigned int count[], unsigned int mode, unsigned int *side, bool *all) {
 	/* Loop around current perimeter and count # of nans, return sum and pass back which side had most nans */
 	unsigned int col, row, sum = 0, k, dim[2] = {0, 0};
 	uint64_t node;
@@ -223,7 +223,12 @@ GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, uns
 	for (row = row0, node = gmt_M_ijp (G->header, row, col0); row <= row1; row++, node += G->header->mx) if (gmt_M_is_fnan (G->data[node])) count[3]++;
 	for (k = 0; k < 4; k++) {	/* TIme to sum up and determine side with most NaNs */
 		sum += count[k];
-		if (k && count[k] > dim[*side]) *side = k;
+		if (mode == NAN_IS_FRAME) {
+			if (k && count[k] > dim[*side]) *side = k;
+		}
+		else {
+			if (k && count[k] > count[*side]) *side = k;
+		}
 	}
 	*all = (count[*side] == dim[*side%2]);	/* True of every node along size is NaN */
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Nans found: W = %d E = %d S = %d N = %d\n", count[3], count[1], count[0], count[2]);
@@ -321,7 +326,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 		row1 = G->header->n_rows - 1;	col1 = G->header->n_columns - 1;
 		if (Ctrl->Z.mode == NAN_IS_SKIPPED) {	/* Must scan in from outside to the inside, one side at the time, remove side with most Nans */
-			sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, &side, &all);	/* Initial border count */
+			sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_SKIPPED, &side, &all);	/* Initial border count */
 			while (sum) {	/* Must eliminate the row or col with most NaNs, and move grid boundary inwards */
 				if (side == 3 && col0 < col1) {	/* Need to move in from the left */
 					col0++;
@@ -339,7 +344,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 					row0++;
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off top row\n");
 				}
-				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, &side, &all);
+				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_SKIPPED, &side, &all);
 			}
 			if (col0 == col1 || row0 == row1) {
 				GMT_Report (API, GMT_MSG_NORMAL, "The sub-region implied by -Zn is empty!\n");
@@ -347,7 +352,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			}
 		}
 		else if (Ctrl->Z.mode == NAN_IS_FRAME) {	/* Must scan in from outside to the inside, one side at the time, remove sides with all Nans */
-			sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, &side, &all);	/* Initial border count */
+			sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_FRAME, &side, &all);	/* Initial border count */
 			while (all) {	/* Must eliminate the row or col with most NaNs, and move grid boundary inwards */
 				if (side == 3 && col0 < col1) {	/* Need to move in from the left */
 					col0++;
@@ -365,10 +370,10 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 					row0++;
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Stip off top row\n");
 				}
-				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, &side, &all);
+				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_FRAME, &side, &all);
 			}
 			if (col0 == col1 || row0 == row1) {
-				GMT_Report (API, GMT_MSG_NORMAL, "The sub-region implied by -Zn is empty!\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "The sub-region implied by -ZN is empty!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}

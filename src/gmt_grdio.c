@@ -1395,6 +1395,8 @@ int gmtlib_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *h
 
 	gmt_M_err_trap ((*GMT->session.readgrd[header->type]) (GMT, header, grid, P.wesn, P.pad, complex_mode));
 
+	if (header->z_min == DBL_MAX && header->z_max == -DBL_MAX) /* No valid data values in the grid */
+		header->z_min = header->z_max = NAN;
 	if (expand) /* Must undo the region extension and reset n_columns, n_rows using original pad  */
 		gmt_M_memcpy (header->wesn, wesn, 4, double);
 	gmt_M_grd_setpad (GMT, header, pad);	/* Copy the pad to the header */

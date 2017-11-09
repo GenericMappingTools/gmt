@@ -833,6 +833,8 @@ int gmt_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 			}
 		}
 	}
+	if (header->z_min == DBL_MAX && header->z_max == -DBL_MAX) /* No valid data values in the grid */
+		header->z_min = header->z_max = NAN;
 
 	/* Store header information and array */
 
@@ -1121,7 +1123,9 @@ int gmt_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 
 	/* Round off to chosen type */
 
-	if (type != 'f' && type != 'd') {
+	if (header->z_min == DBL_MAX && header->z_max == -DBL_MAX) /* No valid data values in the grid */
+		header->z_min = header->z_max = NAN;
+	else if (type != 'f' && type != 'd') {
 		header->z_min = rint (header->z_min);
 		header->z_max = rint (header->z_max);
 	}
@@ -1668,6 +1672,8 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 			}
 		}
 	}
+	if (header->z_min == DBL_MAX && header->z_max == -DBL_MAX) /* No valid data values in the grid */
+		header->z_min = header->z_max = NAN;
 
 	/* store header information and array */
 

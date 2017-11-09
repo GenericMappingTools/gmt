@@ -121,6 +121,8 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtvector`      | Operations on Cartesian vectors in 2-D and 3-D                      |
 +-----------------------+---------------------------------------------------------------------+
+| :doc:`grd2kml`        | Create KML image quadtree from single grid                          |
++-----------------------+---------------------------------------------------------------------+
 | :doc:`grd2xyz`        | Conversion from 2-D grid file to table data                         |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdblend`       | Blend several partially over-lapping grid files onto one grid       |

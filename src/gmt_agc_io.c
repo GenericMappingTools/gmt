@@ -329,6 +329,8 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 		}
 	}
 	gmt_M_free (GMT, k);
+	if (header->z_min == DBL_MAX && header->z_max == -DBL_MAX) /* No valid data values in the grid */
+		header->z_min = header->z_max = NAN;
 
 	header->n_columns = width_in;	header->n_rows = height_in;
 	gmt_M_memcpy (header->wesn, wesn, 4, double);
@@ -396,6 +398,8 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 			}
 		}
 	}
+	if (header->z_min == DBL_MAX && header->z_max == -DBL_MAX) /* No valid data values in the grid */
+		header->z_min = header->z_max = NAN;
 
 	/* Since AGC files are always gridline-registered we must change -R when a pixel grid is to be written */
 	if (header->registration == GMT_GRID_PIXEL_REG) {

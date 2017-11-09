@@ -43,6 +43,8 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grd2cpt`        | Make color palette table from a grid files                          |
 +-----------------------+---------------------------------------------------------------------+
+| :doc:`grd2kml`        | Create KML image quadtree from single grid                          |
++-----------------------+---------------------------------------------------------------------+
 | :doc:`grd2xyz`        | Conversion from 2-D grid file to table data                         |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdblend`       | Blend several partially over-lapping grid files onto one grid       |

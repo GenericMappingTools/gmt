@@ -36,6 +36,7 @@ Core modules
    gmtvector
    gmtwhich
    grd2cpt
+   grd2kml
    grd2xyz
    grdblend
    grdclip

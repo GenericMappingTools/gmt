@@ -397,6 +397,8 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 			header->z_max = MAX (header->z_max, (double)grid[kk]);
 		}
 	}
+	if (header->z_min == DBL_MAX && header->z_max == -DBL_MAX) /* No valid data values in the grid */
+		header->z_min = header->z_max = NAN;
 	if (piping)	{ /* Skip data by reading it */
 		int n_rows = header->n_rows;
 		for (j = last_row + 1; j < n_rows; j++) {
@@ -469,6 +471,8 @@ int gmt_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gm
 			}
 		}
 	}
+	if (header->z_min == DBL_MAX && header->z_max == -DBL_MAX) /* No valid data values in the grid */
+		header->z_min = header->z_max = NAN;
 
 	/* store header information and array */
 	if ((err = grd98_GMTtoMGG2(header, &mggHeader)) != 0) {

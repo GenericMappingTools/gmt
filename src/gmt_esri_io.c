@@ -630,6 +630,8 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 			n_left--;
 		}
 	}
+	if (header->z_min == DBL_MAX && header->z_max == -DBL_MAX) /* No valid data values in the grid */
+		header->z_min = header->z_max = NAN;
 
 	gmt_fclose (GMT, fp);
 	gmt_M_free (GMT, actual_col);
