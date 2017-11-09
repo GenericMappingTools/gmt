@@ -300,7 +300,15 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		/* Create the level directory */
 		if (flat && level == 0) {
 			sprintf (level_dir, "%s/files", Ctrl->F.prefix);
-			mkdir (level_dir, (mode_t)0777);
+#ifndef _WIN32
+			if (mkdir (level_dir, (mode_t)0777))
+#else
+			if (mkdir (level_dir))
+#endif
+			{
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create level directory : %s\n", level_dir);
+				Return (GMT_RUNTIME_ERROR);
+			}
 		}
 		else if (!flat) {
 			sprintf (level_dir, "%s/%d", Ctrl->F.prefix, level);
