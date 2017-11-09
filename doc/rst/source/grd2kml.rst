@@ -102,8 +102,8 @@ the default tile size, and supply shading based on the topography, try
 
    ::
 
-   gmt grdgradient ellice_basin.nc -A-10,80 -Nt1 -Gellice_basin_int.nc
-   gmt grd2kml ellice_basin.nc -Iellice_basin_int.nc -Fellice
+    gmt grdgradient ellice_basin.nc -A-10,80 -Nt1 -Gellice_basin_int.nc
+    gmt grd2kml ellice_basin.nc -Iellice_basin_int.nc -Fellice
 
 See Also
 --------
