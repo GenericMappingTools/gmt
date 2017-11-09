@@ -427,7 +427,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			if (Ctrl->I.active) gmt_remove_file (GMT, Igrid);
 		}
 	}
-	gmt_remove_file (GMT, "grd2kml_tile_tmp.ps");
+	if (!access ("grd2kml_tile_tmp.ps", F_OK))
+		gmt_remove_file (GMT, "grd2kml_tile_tmp.ps");
 
 	/* Process quadtree links */
 	
