@@ -74,7 +74,7 @@ struct GMT_QUADTREE {
 	unsigned int row, col;
 	char tag[16];
 	double wesn[4];
-	struct GMT_QUADTREE *next[3];
+	struct GMT_QUADTREE *next[4];
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
