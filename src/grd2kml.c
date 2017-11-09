@@ -32,7 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Create KML image quadtree from single grid"
 #define THIS_MODULE_KEYS	"<G{,CC(,IG("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"-V"
+#define THIS_MODULE_OPTIONS	"-Vf"
 
 struct GRD2KML_CTRL {
 	struct GRD2KM_In {
@@ -50,10 +50,14 @@ struct GRD2KML_CTRL {
 		bool active;
 		char *url;
 	} E;
-	struct GRD2KML_F {	/* -F<prefix> */
+	struct GRD2KML_F {	/* -F */
+		bool active;
+		char filter;
+	} F;
+	struct GRD2KML_N {	/* -N<prefix> */
 		bool active;
 		char *prefix;
-	} F;
+	} N;
 	struct GRD2KML_I {	/* -I<intensgrd> */
 		bool active;
 		char *file;
@@ -79,7 +83,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct GRD2KML_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->F.prefix = strdup ("GMT_Quadtree");
+	C->F.filter = 'g';
+	C->N.prefix = strdup ("GMT_Quadtree");
 	C->L.size = 256;
 	return (C);
 }
@@ -88,7 +93,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *C) {	/* Dea
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->C.file);
-	gmt_M_str_free (C->F.prefix);
+	gmt_M_str_free (C->N.prefix);
 	gmt_M_str_free (C->I.file);
 	gmt_M_free (GMT, C);
 }
@@ -96,8 +101,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grd2kml <grid> [-C<cpt>] [-D] [-E<url>] [-F<prefix>] [-I<intensgrid>] [-L<size>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "	[%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grd2kml <grid> [-C<cpt>] [-D] [-E<url>] [-F<filter>] [-I<intensgrid>] [-L<size>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "	[-N<name>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -110,10 +115,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Write a list of quadtree associations to stdout [no listing].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E To store all files remotely, give leading URL [local files only].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets file prefix for image directory and KML file [GMT_Quadtree].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify filter type used for downsampling.  Choose among.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     b: Boxcar      : a simple averaging of all points inside filter domain.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c: Cosine arch : a weighted averaging with cosine arc weights.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     g: Gaussian    : weighted averaging with Gaussian weights [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     m: Median      : return the median (50%% quantile) value of all points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply directional illumination. Append the name of intensity grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set tile size as a power of 2 [256].\n");
-	GMT_Option (API, "V,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Sets file name prefix for image directory and KML file [GMT_Quadtree].\n");
+	GMT_Option (API, "V,f.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -158,10 +168,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 				gmt_M_str_free (Ctrl->E.url);
 				Ctrl->E.url = strdup (opt->arg);
 				break;
-			case 'F':	/* File prefix */
+			case 'F':	/* Select filter type */
 				Ctrl->F.active = true;
-				gmt_M_str_free (Ctrl->F.prefix);
-				Ctrl->F.prefix = strdup (opt->arg);
+				if (strchr ("bcgm", opt->arg[0]))
+					Ctrl->F.filter = opt->arg[0];
+				else {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -F: Choose among b, c, g, m!\n");
+					n_errors++;
+				}
+				break;
+			case 'N':	/* File name prefix */
+				Ctrl->N.active = true;
+				gmt_M_str_free (Ctrl->N.prefix);
+				Ctrl->N.prefix = strdup (opt->arg);
 				break;
 			case 'I':	/* Here, intensity must be a grid file since we need to filter it */
 				Ctrl->I.active = true;
@@ -185,7 +204,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file == NULL, "Syntax error: Must specify a single grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.prefix == NULL, "Syntax error -F: Must specify a prefix for naming usage.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.prefix == NULL, "Syntax error -F: Must specify a prefix for naming usage.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.url == NULL, "Syntax error -E: Must specify an URL.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.file == NULL, "Syntax error -I: Must specify an intensity grid file.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (strstr (Ctrl->I.file, "+a") || strstr (Ctrl->I.file, "+n")), "Syntax error -I: Must specify an intensity grid file.\n");
@@ -273,17 +292,17 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		strcpy (GMT->current.setting.format_geo_out, "D");
 	}
 	gmtlib_geo_C_format (GMT);
-	dim = 0.01 * Ctrl->L.size;	/* Constant tile map size in inches for fixed dip = 100 */
+	dim = 0.01 * Ctrl->L.size;	/* Constant tile map size in inches for a fixed dpi of 100 yields PNGS of the requested dimension */
 	
 	GMT->current.io.geo.range = (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] > 0.0) ? GMT_IS_M180_TO_P180_RANGE : GMT_IS_0_TO_P360_RANGE;
 	/* Create the tile directory first */
 #ifndef _WIN32
-	if (mkdir (Ctrl->F.prefix, (mode_t)0777))
+	if (mkdir (Ctrl->N.prefix, (mode_t)0777))
 #else
-	if (mkdir (Ctrl->F.prefix))
+	if (mkdir (Ctrl->N.prefix))
 #endif
 	{
-		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create directory (perhaps it already exists?): %s\n", Ctrl->F.prefix);
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create directory (perhaps it already exists?): %s\n", Ctrl->N.prefix);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
@@ -299,7 +318,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			level, factor, irint (factor * Ctrl->L.size), irint (factor * Ctrl->L.size), Ctrl->L.size, Ctrl->L.size);
 		/* Create the level directory */
 		if (flat && level == 0) {
-			sprintf (level_dir, "%s/files", Ctrl->F.prefix);
+			sprintf (level_dir, "%s/files", Ctrl->N.prefix);
 #ifndef _WIN32
 			if (mkdir (level_dir, (mode_t)0777))
 #else
@@ -311,7 +330,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			}
 		}
 		else if (!flat) {
-			sprintf (level_dir, "%s/%d", Ctrl->F.prefix, level);
+			sprintf (level_dir, "%s/%d", Ctrl->N.prefix, level);
 #ifndef _WIN32
 			if (mkdir (level_dir, (mode_t)0777))
 #else
@@ -325,13 +344,13 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		if (level < max_level) {	/* Filter the data to match level resolution */
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Level %d: Filtering down the grid(s)\n", level);
 			sprintf (Zgrid, "grd2kml_Z_L%d_tmp.grd", level);
-			sprintf (cmd, "%s -D0 -Fg%g -I%g -G%s", Ctrl->In.file, factor * G->header->inc[GMT_Y], factor * G->header->inc[GMT_Y], Zgrid);
+			sprintf (cmd, "%s -D0 -F%c%g -I%g -G%s", Ctrl->In.file, Ctrl->F.filter, factor * G->header->inc[GMT_Y], factor * G->header->inc[GMT_Y], Zgrid);
 			if ((error = GMT_Call_Module (API, "grdfilter", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (Ctrl->I.active) {	/* Also filter the intensity grid */
 				sprintf (Igrid, "grd2kml_I_L%d_tmp.grd", level);
-				sprintf (cmd, "%s -D0 -Fg%g -I%g -G%s", Ctrl->I.file, factor * G->header->inc[GMT_Y], factor * G->header->inc[GMT_Y], Igrid);
+				sprintf (cmd, "%s -D0 -F%c%g -I%g -G%s", Ctrl->I.file, Ctrl->F.filter, factor * G->header->inc[GMT_Y], factor * G->header->inc[GMT_Y], Igrid);
 				if ((error = GMT_Call_Module (API, "grdfilter", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -374,10 +393,10 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 					Return (API->error);
 				}
 				else {	/* Made a meaningful plot, time to rip. */
-					/* Create the psconvert command to convert the PS to PNG */
+					/* Create the psconvert command to convert the PS to transparent PNG */
 					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Level %d: Tile %s/%s/%s/%s\n", level, W, E, S, N);
 					if (flat)
-						sprintf (cmd, "-TG -E100 -P -Vn -Z -D%s/files -FL%dR%dC%d.png grd2kml_tile_tmp.ps", Ctrl->F.prefix, level, row, col);
+						sprintf (cmd, "-TG -E100 -P -Vn -Z -D%s/files -FL%dR%dC%d.png grd2kml_tile_tmp.ps", Ctrl->N.prefix, level, row, col);
 					else
 						sprintf (cmd, "-TG -E100 -P -Vn -Z -D%s -FR%dC%d.png grd2kml_tile_tmp.ps", level_dir, row, col);
 					if (GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))
@@ -430,13 +449,13 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 	
 	/* Create the top-level KML file */ 
-	sprintf (file, "%s/%s.kml", Ctrl->F.prefix, Ctrl->F.prefix);
+	sprintf (file, "%s/%s.kml", Ctrl->N.prefix, Ctrl->N.prefix);
 	if ((fp = fopen (file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create file : %s\n", file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	fprintf (fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n  <kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
-	fprintf (fp, "    <Document>\n      <name>%s</name>\n", Ctrl->F.prefix);
+	fprintf (fp, "    <Document>\n      <name>%s</name>\n", Ctrl->N.prefix);
 	fprintf (fp, "      <description>GMT image quadtree</description>\n      <Style>\n        <ListStyle id=\"hideChildren\">\n");
         fprintf (fp, "          <listItemType>checkHideChildren</listItemType>\n        </ListStyle>\n      </Style>\n");
 	if (flat)
@@ -464,7 +483,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	fprintf (fp, "    </Document>\n  </kml>\n");
 	fclose (fp);
 
-	/* Then create all the other KML files with their links down the tree */
+	/* Then create all the other KML files in the quadtree with their links down the tree */
 	
 	for (k = 0; k < n; k++) {
 		if (Q[k]->q) {	/* Only examine tiles with children */
@@ -475,11 +494,11 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				printf ("\n");
 			}
 			if (flat)
-				sprintf (file, "%s/files/L%dR%dC%d.kml", Ctrl->F.prefix, Q[k]->level, Q[k]->row, Q[k]->col);
+				sprintf (file, "%s/files/L%dR%dC%d.kml", Ctrl->N.prefix, Q[k]->level, Q[k]->row, Q[k]->col);
 			else if (Ctrl->E.active)
-				sprintf (file, "%s/%s/%d/R%dC%d.kml", Ctrl->E.url, Ctrl->F.prefix, Q[k]->level, Q[k]->row, Q[k]->col);
+				sprintf (file, "%s/%s/%d/R%dC%d.kml", Ctrl->E.url, Ctrl->N.prefix, Q[k]->level, Q[k]->row, Q[k]->col);
 			else
-				sprintf (file, "%s/%d/R%dC%d.kml", Ctrl->F.prefix, Q[k]->level, Q[k]->row, Q[k]->col);
+				sprintf (file, "%s/%d/R%dC%d.kml", Ctrl->N.prefix, Q[k]->level, Q[k]->row, Q[k]->col);
 			if ((fp = fopen (file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create file : %s\n", file);
 				Return (GMT_RUNTIME_ERROR);
@@ -502,7 +521,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			fprintf (fp, "        </LatLonAltBox>\n");
 			fprintf (fp, "        <Lod>\n          <minLodPixels>128</minLodPixels>\n          <maxLodPixels>2048</maxLodPixels>\n        </Lod>\n");
 		        fprintf (fp, "      </Region>\n");
-			fprintf (fp, "      <GroundOverlay>\n        <drawOrder>%d</drawOrder>\n", 10+2*Q[k]->level);	/* Figure this out */
+			fprintf (fp, "      <GroundOverlay>\n        <drawOrder>%d</drawOrder>\n", 10+2*Q[k]->level);
 			if (flat)
 				fprintf (fp, "        <Icon>\n          <href>L%dR%dC%d.png</href>\n        </Icon>\n", Q[k]->level, Q[k]->row, Q[k]->col);
 			else if (Ctrl->E.active)

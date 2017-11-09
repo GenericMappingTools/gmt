@@ -17,10 +17,12 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D| ]
 [ |-E|\ *URL* ]
-[ |-F|\ *prefix* ]
+[ |-F|\ *filtercode* ]
 [ |-I|\ *intensfile* ]
 [ |-L|\ *tilesize* ]
+[ |-N|\ *prefix* ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-f| ]
 
 |No-spaces|
 
@@ -72,9 +74,12 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *prefix*
-    Sets a unique prefixed used for the top-level KML filename and the
-    directory where all products will be written [GMT_Quadtree].
+**-F**\ *filtercode*
+
+    Specifies the filter to use for the downsampling of the grid for more
+    distant viewing.  Choose among **b**\ oxcar, **c**\ osine arch,
+    **g**\ ausian, or **m**\ edian [Gaussian].  The filter width is set
+    automatically depending on the level.
 
 .. _-I:
 
@@ -88,10 +93,20 @@ Optional Arguments
     Sets the size of the image building blocks.  Must be an integer that
     is radix 2.  Typical values are 256 or 512 [256].
 
+.. _-N:
+
+**-N**\ *prefix*
+    Sets a unique name prefixed used for the top-level KML filename and the
+    directory where all products will be written [GMT_Quadtree].
+
+
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
 
 
 Examples
@@ -103,7 +118,7 @@ the default tile size, and supply shading based on the topography, try
    ::
 
     gmt grdgradient ellice_basin.nc -A-10,80 -Nt1 -Gellice_basin_int.nc
-    gmt grd2kml ellice_basin.nc -Iellice_basin_int.nc -Fellice
+    gmt grd2kml ellice_basin.nc -Iellice_basin_int.nc -Nellice
 
 See Also
 --------
