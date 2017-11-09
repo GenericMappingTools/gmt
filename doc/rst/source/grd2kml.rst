@@ -16,6 +16,7 @@ Synopsis
 **grd2kml** *grid* 
 [ |-C|\ *cpt* ]
 [ |-D| ]
+[ |-E|\ *URL* ]
 [ |-F|\ *prefix* ]
 [ |-I|\ *intensfile* ]
 [ |-L|\ *tilesize* ]
@@ -62,6 +63,12 @@ Optional Arguments
 **-D**
     Write a listing of the quadtree dependencies to stdout [Default is
     no listing.]
+
+.. _-E:
+
+**-E**\ *URL*
+    Instead of hosting the files locally, prepend a URL to all KML and PNG files except
+    for the top-level named KML file [local setup only].
 
 .. _-F:
 

@@ -2245,7 +2245,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 		}
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Done.\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done.\n");
 
 		if (!Ctrl->S.active) {
 			if (!Ctrl->T.eps && gmt_remove_file (GMT, tmp_file))
