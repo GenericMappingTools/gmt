@@ -2155,7 +2155,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 	if (header->wesn[YLO] - wesn[YLO] > GMT_CONV4_LIMIT) wesn[YLO] = header->wesn[YLO], error = true;
 	if (wesn[YHI] - header->wesn[YHI] > GMT_CONV4_LIMIT) wesn[YHI] = header->wesn[YHI], error = true;
 	if (error)
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Region exceeds grid domain. Region reduced to grid domain.\n");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Region exceeds grid domain. Region reduced to grid domain.\n");
 
 	if (!(gmt_M_x_is_lon (GMT, GMT_IN) && gmt_M_360_range (wesn[XLO], wesn[XHI]) && global)) {    /* Do this unless a 360 longitude wrap */
 		small = GMT_CONV4_LIMIT * header->inc[GMT_X];

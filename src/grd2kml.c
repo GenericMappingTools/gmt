@@ -232,10 +232,13 @@ EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
 int GMT_grd2kml (void *V_API, int mode, void *args) {
 	int error = 0, kk;
 	bool flat = false;	/* Experimental */
+	bool use_tile = false;
 	
 	unsigned int level, max_level, n = 0, k, nx, ny, mx, my, row, col, n_skip, quad, n_alloc = GMT_CHUNK;
 
-	double lonW, lonE, latS, latN, factor, dim, wesn[4];
+	uint64_t node;
+	
+	double factor, dim, wesn[4];
 
 	char cmd[GMT_BUFSIZ] = {""}, level_dir[GMT_LEN256] = {""}, Zgrid[GMT_LEN256] = {""}, Igrid[GMT_LEN256] = {""};
 	char W[GMT_LEN16] = {""}, E[GMT_LEN16] = {""}, S[GMT_LEN16] = {""}, N[GMT_LEN16] = {""}, file[GMT_LEN256] = {""};
@@ -243,7 +246,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	FILE *fp = NULL;
 	struct GMT_QUADTREE **Q = NULL;
 	struct GRD2KML_CTRL *Ctrl = NULL;
-	struct GMT_GRID *G = NULL;
+	struct GMT_GRID *G = NULL, *T = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -306,9 +309,6 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
-	wesn[XLO] = G->header->wesn[XLO];	wesn[YLO] = G->header->wesn[YLO];
-	wesn[XHI] = G->header->wesn[XHI];	wesn[YHI] = G->header->wesn[YHI];
-
 	Q = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_QUADTREE *);
 
 	/* Loop over all the levels, starting at the top level (0) */
@@ -342,15 +342,27 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			}
 		}
 		if (level < max_level) {	/* Filter the data to match level resolution */
+			double fwesn[4], inc[2];
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Level %d: Filtering down the grid(s)\n", level);
+			/* We want to make sure that the cruder grid shares nodes with the original grid by ensuring proper strides */
+			inc[GMT_X] = factor * G->header->inc[GMT_X];
+			inc[GMT_Y] = factor * G->header->inc[GMT_Y];
+			fwesn[XLO] = floor (G->header->wesn[XLO] / inc[GMT_X]) * inc[GMT_X];
+			fwesn[XHI] = ceil  (G->header->wesn[XHI] / inc[GMT_X]) * inc[GMT_X];
+			fwesn[YLO] = floor (G->header->wesn[YLO] / inc[GMT_Y]) * inc[GMT_Y];
+			fwesn[YHI] = ceil  (G->header->wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y];
 			sprintf (Zgrid, "grd2kml_Z_L%d_tmp.grd", level);
-			sprintf (cmd, "%s -D0 -F%c%g -I%g -G%s", Ctrl->In.file, Ctrl->F.filter, factor * G->header->inc[GMT_Y], factor * G->header->inc[GMT_Y], Zgrid);
+			//sprintf (cmd, "%s -D0 -F%c%.16g -I%.16g -G%s -R%.16g/%.16g/%.16g/%.16g", Ctrl->In.file, Ctrl->F.filter, inc[GMT_X], inc[GMT_X], Zgrid, fwesn[XLO], fwesn[XHI], fwesn[YLO], fwesn[YHI]);
+			sprintf (cmd, "%s -D0 -F%c%.16g -I%.16g -G%s", Ctrl->In.file, Ctrl->F.filter, inc[GMT_X], inc[GMT_X], Zgrid);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Running grdfilter : %s\n", cmd);
 			if ((error = GMT_Call_Module (API, "grdfilter", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (Ctrl->I.active) {	/* Also filter the intensity grid */
 				sprintf (Igrid, "grd2kml_I_L%d_tmp.grd", level);
-				sprintf (cmd, "%s -D0 -F%c%g -I%g -G%s", Ctrl->I.file, Ctrl->F.filter, factor * G->header->inc[GMT_Y], factor * G->header->inc[GMT_Y], Igrid);
+				//sprintf (cmd, "%s -D0 -F%c%.16g -I%.16g -G%s -R%.16g/%.16g/%.16g/%.16g", Ctrl->I.file, Ctrl->F.filter, inc[GMT_X], inc[GMT_X], Igrid, fwesn[XLO], fwesn[XHI], fwesn[YLO], fwesn[YHI]);
+				sprintf (cmd, "%s -D0 -F%c%.16g -I%.16g -G%s", Ctrl->I.file, Ctrl->F.filter, inc[GMT_X], inc[GMT_X], Igrid);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Running grdfilter : %s\n", cmd);
 				if ((error = GMT_Call_Module (API, "grdfilter", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
 					Return (GMT_RUNTIME_ERROR);
 				}
@@ -363,62 +375,82 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		
 		/* Loop over all rows at this level */
 		row = n_skip = 0;
-		latS = wesn[YLO];
-		gmt_ascii_format_one (GMT, S, latS, GMT_IS_LAT);
+		wesn[YLO] = G->header->wesn[YLO];
+		gmt_ascii_format_one (GMT, S, wesn[YLO], GMT_IS_LAT);
 		 
-		while (latS < (wesn[YHI]-G->header->inc[GMT_Y])) {	/* Small correction to avoid issues due to round-off */
-			latN = latS + factor * Ctrl->L.size * G->header->inc[GMT_Y];	/* Top row may extend beyond grid and be transparent */
-			gmt_ascii_format_one (GMT, N, latN, GMT_IS_LAT);
+		while (wesn[YLO] < (G->header->wesn[YHI]-G->header->inc[GMT_Y])) {	/* Small correction to avoid issues due to round-off */
+			wesn[YHI] = wesn[YLO] + factor * Ctrl->L.size * G->header->inc[GMT_Y];	/* Top row may extend beyond grid and be transparent */
+			gmt_ascii_format_one (GMT, N, wesn[YHI], GMT_IS_LAT);
 			/* Loop over all columns at this level */
 			col = 0;
-			lonW = wesn[XLO];
-			gmt_ascii_format_one (GMT, W, lonW, GMT_IS_LON);
-			while (lonW < (wesn[XHI]-G->header->inc[GMT_X])) {
-				lonE = lonW + factor * Ctrl->L.size * G->header->inc[GMT_X];	/* So right column may extend beyond grid and be transparent */
-				gmt_ascii_format_one (GMT, E, lonE, GMT_IS_LON);
+			wesn[XLO] = G->header->wesn[XLO];
+			gmt_ascii_format_one (GMT, W, wesn[XLO], GMT_IS_LON);
+			while (wesn[XLO] < (G->header->wesn[XHI]-G->header->inc[GMT_X])) {
+				wesn[XHI] = wesn[XLO] + factor * Ctrl->L.size * G->header->inc[GMT_X];	/* So right column may extend beyond grid and be transparent */
+				gmt_ascii_format_one (GMT, E, wesn[XHI], GMT_IS_LON);
 				/* Now we have the current tile region */
-				/* Build the grdimage command to make the PostScript plot */
-				if (Ctrl->I.active)
-					sprintf (cmd, "%s -I%s -JX%3.2lfid -X0 -Y0 -Qn -R%s/%s/%s/%s -Vn --PS_MEDIA=%3.2lfix%3.2lfi ->grd2kml_tile_tmp.ps", Zgrid, Igrid, dim, W, E, S, N, dim, dim);
-				else
-					sprintf (cmd, "%s -JX%3.2lfid -X0 -Y0 -Qn -R%s/%s/%s/%s -Vn --PS_MEDIA=%3.2lfix%3.2lfi ->grd2kml_tile_tmp.ps", Zgrid, dim, W, E, S, N, dim, dim);
-				if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file); }
-				error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd);	/* Create the PS */
-				/* The -Qn will return the status GMT_IMAGE_NO_DATA if all pixels were NaN.  We dont need to include such tiles */
-				if (error == GMT_IMAGE_NO_DATA) {
-					GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Level %d: Tile %s/%s/%s/%s had no data - skipped\n", level, W, E, S, N);
-					n_skip++;
-				}
-				else if (error) {	/* Failed badly */
+				if ((T = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Zgrid, NULL)) == NULL) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Unable to read in grid tile!\n");
 					Return (API->error);
 				}
-				else {	/* Made a meaningful plot, time to rip. */
+				/* Determine if we have any non-NaN data points inside this grid */
+				for (node = 0, use_tile = false; !use_tile && node < T->header->size; node++)
+					use_tile = !gmt_M_is_fnan (T->data[node]);
+					
+				if (use_tile) {	/* Found data inside this tile, make plot and rasterize */
+					/* Build the grdimage command to make the PostScript plot */
+					char z_data[GMT_STR16] = {""};
+					/* Open the grid subset as a virtual file we can pass to grdimage */
+					if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, T, z_data) == GMT_NOTSET) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Unable to open grid tile as virtual file!\n");
+						Return (API->error);
+					}
+					if (Ctrl->I.active)
+						sprintf (cmd, "%s -I%s -JX%3.2lfid -X0 -Y0 -Q -R%s/%s/%s/%s -Vn --PS_MEDIA=%3.2lfix%3.2lfi ->grd2kml_tile_tmp.ps", z_data, Igrid, dim, W, E, S, N, dim, dim);
+					else
+						sprintf (cmd, "%s -JX%3.2lfid -X0 -Y0 -Q -R%s/%s/%s/%s -Vn --PS_MEDIA=%3.2lfix%3.2lfi ->grd2kml_tile_tmp.ps", z_data, dim, W, E, S, N, dim, dim);
+					if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file); }
+					if ((error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd))) {	/* Failed badly */
+						GMT_Report (API, GMT_MSG_NORMAL, "Unable to make a plot of current tile!\n");
+						Return (API->error);
+					}
+					GMT_Close_VirtualFile (API, z_data);
+					if (GMT_Destroy_Data (API, &T) != GMT_NOERROR) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Unable to free memory of grid tile!\n");
+						Return (API->error);
+					}
+					/* Made a meaningful plot, time to rip. */
 					/* Create the psconvert command to convert the PS to transparent PNG */
 					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Level %d: Tile %s/%s/%s/%s\n", level, W, E, S, N);
 					if (flat)
 						sprintf (cmd, "-TG -E100 -P -Vn -Z -D%s/files -FL%dR%dC%d.png grd2kml_tile_tmp.ps", Ctrl->N.prefix, level, row, col);
 					else
 						sprintf (cmd, "-TG -E100 -P -Vn -Z -D%s -FR%dC%d.png grd2kml_tile_tmp.ps", level_dir, row, col);
-					if (GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))
+					if (GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd)) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Unable to rasterize current PNG tile!\n");
 						Return (API->error);
+					}
 					/* Update our list of tiles */
 					Q[n] = gmt_M_memory (GMT, NULL, 1, struct GMT_QUADTREE);
 					Q[n]->row = row; Q[n]->col = col;	Q[n]->level = level;
-					Q[n]->wesn[XLO] = lonW;	Q[n]->wesn[XHI] = lonE;
-					Q[n]->wesn[YLO] = latS;	Q[n]->wesn[YHI] = latN;
+					Q[n]->wesn[XLO] = wesn[XLO];	Q[n]->wesn[XHI] = wesn[XHI];
+					Q[n]->wesn[YLO] = wesn[YLO];	Q[n]->wesn[YHI] = wesn[YHI];
 					sprintf (Q[n]->tag, "L%2.2dR%2.2dC%2.2d", level, row, col);
-					n++;
-					if (n == n_alloc) {
+					if (++n == n_alloc) {	/* Extend the array */
 						n_alloc <<= 1;
 						Q = gmt_M_memory (GMT, Q, n_alloc, struct GMT_QUADTREE *);
 					}
 				}
+				else {	/* Just NaNs inside this tile */
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Level %d: Tile %s/%s/%s/%s had no data - skipped\n", level, W, E, S, N);
+					n_skip++;
+				}
 				col++;	/* Onwards to next column */
-				lonW = lonE;
+				wesn[XLO] = wesn[XHI];
 				strcpy (W, E);
 			}
 			row++;	/* Onwards to next row */
-			latS = latN;
+			wesn[YLO] = wesn[YHI];
 			strcpy (S, N);
 		}
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Level %d: %d by %d = %d tiles, %d mapped, %d skipped\n", level, row, col, row*col, row*col - n_skip, n_skip);
@@ -464,10 +496,10 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	else
 		fprintf (fp, "      <NetworkLink>\n        <name>0/R0C0.png</name>\n");
         fprintf (fp, "        <Region>\n          <LatLonAltBox>\n");
-	fprintf (fp, "            <north>%.14g</north>\n", wesn[YHI]);
-	fprintf (fp, "            <south>%.14g</south>\n", wesn[YLO]);
-	fprintf (fp, "            <east>%.14g</east>\n",   wesn[XHI]);
-	fprintf (fp, "            <west>%.14g</west>\n",   wesn[XLO]);
+	fprintf (fp, "            <north>%.14g</north>\n", G->header->wesn[YHI]);
+	fprintf (fp, "            <south>%.14g</south>\n", G->header->wesn[YLO]);
+	fprintf (fp, "            <east>%.14g</east>\n",   G->header->wesn[XHI]);
+	fprintf (fp, "            <west>%.14g</west>\n",   G->header->wesn[XLO]);
 	fprintf (fp, "          </LatLonAltBox>\n");
 	fprintf (fp, "          <Lod>\n            <minLodPixels>128</minLodPixels>\n            <maxLodPixels>-1</maxLodPixels>\n          </Lod>\n");
         fprintf (fp, "        </Region>\n");
