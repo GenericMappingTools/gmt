@@ -159,8 +159,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *Ctrl, struct
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->A.active && !Ctrl->F.active, "Syntax error: At least one of -A or -F are required.\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->G.file == NULL, "Syntax error option -G: Must specify output file\n");
+	if (Ctrl->G.active) {
+		n_errors += gmt_M_check_condition (GMT, Ctrl->G.file == NULL, "Syntax error option -G: Must specify output file\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.length <= 0.0, "Syntax error -D: Must specify a positive length step.\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !Ctrl->G.active, "Syntax error: Must specify at least one of -G, -L.\n");
 
@@ -182,7 +184,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 	uint64_t node, tbl, seg, row;
 	char header[GMT_LEN128] = {""};
 	gmt_grdfloat *layer = NULL;
-	double weight, angle_radians, d_angle_radians, mlon, mlat, glon, gloat, in[2];
+	double weight, angle_radians, d_angle_radians, mlon, mlat, glon, glat, in[2];
 	double P1[3], P2[3], M[3], G[3], B[3], X[3], Rot0[3][3], Rot[3][3];
 	
 	struct GMT_OPTION *ptr = NULL;
@@ -236,14 +238,11 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 	d_angle_radians = TWO_PI / (n_steps - 1);
 
 	if (Ctrl->L.active) {
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			Return (API->error);
 		}
 		if ((error = GMT_Set_Columns (API, GMT_OUT, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
-		}
-		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_LINE) != GMT_NOERROR) {	/* Sets output geometry */
-			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
@@ -277,7 +276,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 					}
 					gmt_cart_to_geo (GMT, &glat, &glon, G, true);	/* Get lon/lat of the mid point */
 					gmtlib_init_rot_matrix (Rot0, G);	/* Get partial rotation matrix since no actual angle is applied yet */
-					sprintf (header, "Great circle: Center = %g/%g and pole is %g/%g\n", mlon, mlat, plon, plat);
+					sprintf (header, "Great circle: Center = %g/%g and pole is %g/%g\n", mlon, mlat, glon, glat);
 					if (Ctrl->L.active) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, header);
 					for (k = 0; k < n_steps; k++) {
 						angle_radians = k * d_angle_radians;
@@ -294,7 +293,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 						node = gmt_M_ijp (Grid->header, grow, gcol);			/* Bin node */
 						layer[node] = cosd (in[GMT_Y]) * weight;			/* Any bin intersected will have this single value */
 					}
-					if (Ctrl->G.active) {	/* Add to total */
+					if (Ctrl->G.active) {	/* Add density of this great circle to the total */
 						for (node = 0; node < Grid->header->size; node++) Grid->data[node] += layer[node];
 					}
 					gmt_M_memcpy (P1, P2, 3, double);	/* Let old P2 be next P1 */
@@ -303,14 +302,18 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->L.active && GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further line output */
-		Return (API->error);
+	if (Ctrl->L.active) {	/* Disables further line output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further line output */
+			Return (API->error);
+		}
+		gmt_M_free (GMT, Out);
 	}
 
-	gmt_M_free_aligned (GMT, layer);
-	
-	if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
-		Return (API->error);
+	if (Ctrl->G.active) {	/* Write the spotting grid */
+		gmt_M_free_aligned (GMT, layer);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
+			Return (API->error);
+		}
 	}
 	
 	Return (GMT_NOERROR);
