@@ -434,7 +434,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		gmt_M_free (GMT, tmp_i);
 	}
 
-	if (nr_oor > 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%" PRIu64 " out-of-range grid values converted to _FillValue [%s]\n", nr_oor, HH->name);
+	if (nr_oor > 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " out-of-range grid values converted to _FillValue [%s]\n", nr_oor, HH->name);
 
 	gmt_M_free (GMT, actual_col);
 
@@ -442,7 +442,7 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		limit[0] = header->z_min; limit[1] = header->z_max;
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No valid values in grid [%s]\n", HH->name);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No valid values in grid [%s]\n", HH->name);
 		limit[0] = 0.0; limit[1] = 0.0;
 	}
 	gmt_M_err_trap (nc_put_var_double (ncid, HH->z_id - 3, limit));

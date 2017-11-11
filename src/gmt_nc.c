@@ -1114,7 +1114,7 @@ GMT_LOCAL void gmtnc_grid_fix_repeat_col (struct GMT_CTRL *GMT, void *gridp, con
 	}
 
 	if (n_conflicts)
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Detected %u inconsistent values along east boundary of grid. Values fixed by duplicating west boundary.\n", n_conflicts);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Detected %u inconsistent values along east boundary of grid. Values fixed by duplicating west boundary.\n", n_conflicts);
 }
 
 /* Change the default chunk cache settings in the HDF5 library for all variables
@@ -1431,7 +1431,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 	if (header->z_min > header->z_max) {
 		header->z_min = NAN;
 		header->z_max = NAN;
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No valid values in grid [%s]\n", HH->name);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No valid values in grid [%s]\n", HH->name);
 	}
 	else {
 		/* Report z-range of grid (with scale and offset applied): */
@@ -1604,7 +1604,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 		limit[1] = header->z_max * header->z_scale_factor + header->z_add_offset;
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No valid values in grid [%s]\n", HH->name);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No valid values in grid [%s]\n", HH->name);
 		limit[0] = limit[1] = NAN; /* Set limit to NaN */
 	}
 	status = nc_put_att_double (HH->ncid, HH->z_id, "actual_range", NC_DOUBLE, 2, limit);

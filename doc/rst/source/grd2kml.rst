@@ -18,9 +18,10 @@ Synopsis
 [ |-D| ]
 [ |-E|\ *URL* ]
 [ |-F|\ *filtercode* ]
-[ |-I|\ *intensfile* ]
+[ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
 [ |-L|\ *tilesize* ]
 [ |-N|\ *prefix* ]
+[ |-S| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 
@@ -69,8 +70,10 @@ Optional Arguments
 .. _-E:
 
 **-E**\ *URL*
-    Instead of hosting the files locally, prepend a URL to all KML and PNG files except
-    for the top-level named KML file [local setup only].
+    Instead of hosting the files locally, prepend a URL. The top-level
+    *prefix*\ .kml file will then use this URL to find the other files.
+    After building the files you must place the *prefix* directory at
+    the location pointed to by the *URL [local setup only].
 
 .. _-F:
 
@@ -83,8 +86,14 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ *intensfile*
-    Gives the name of a grid file with intensities in the (-1,+1) range.
+**-I**\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*]
+    Gives the name of a grid file with intensities in the (-1,+1) range,
+    or a constant intensity to apply everywhere; this simply affects the
+    ambient light.  If just **+** is given then we derive an intensity
+    grid from the input data grid *grd_z* via a call to :doc:`grdgradient`
+    using the arguments **-A**\ -45 and **-Nt**\ 1 for that module. You can
+    append **+a**\ *azimuth and **+n**\ *args* to override those values.  If you want
+    more specific intensities then run :doc:`grdgradient` separately first.
     [Default is no illumination].
 
 .. _-L:
@@ -99,6 +108,11 @@ Optional Arguments
     Sets a unique name prefixed used for the top-level KML filename and the
     directory where all products will be written [GMT_Quadtree].
 
+.. _-S:
+
+**-S**
+    Place all the level files in a single directory (named *prefix*) instead of
+    writing them to sub-directories named after the levels 0, 1, ...
 
 .. _-V:
 
@@ -117,8 +131,7 @@ the default tile size, and supply shading based on the topography, try
 
    ::
 
-    gmt grdgradient ellice_basin.nc -A-10,80 -Nt1 -Gellice_basin_int.nc
-    gmt grd2kml ellice_basin.nc -Iellice_basin_int.nc -Nellice
+    gmt grd2kml ellice_basin.nc -I+ -Nellice
 
 See Also
 --------

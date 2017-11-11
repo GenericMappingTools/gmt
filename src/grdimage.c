@@ -1050,7 +1050,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 					bitimage_24[0] = (unsigned char)(ks >> 16);
 					bitimage_24[1] = (unsigned char)((ks >> 8) & 255);
 					bitimage_24[2] = (unsigned char)(ks & 255);
-					GMT_Report (API, GMT_MSG_VERBOSE, "Transparency color reset from %s to color %d/%d/%d\n", 
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Transparency color reset from %s to color %d/%d/%d\n", 
 						gmt_putrgb (GMT, P->bfn[GMT_NAN].rgb), (int)bitimage_24[0], (int)bitimage_24[1], (int)bitimage_24[2]);
 					for (k = 0; k < 3; k++) P->bfn[GMT_NAN].rgb[k] = gmt_M_is255 (bitimage_24[k]);	/* Set new NaN color */
 				}	
