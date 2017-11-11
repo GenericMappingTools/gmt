@@ -704,6 +704,6 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Q[k]);	/* Free this tile information */
 	}
 	gmt_M_free (GMT, Q);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Done: %d files written to directory %s\n", Ctrl->N.prefix, 2*n+1);
 	Return (GMT_NOERROR);
 }
