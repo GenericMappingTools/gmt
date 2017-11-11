@@ -1821,10 +1821,10 @@ Data record pattern matching: The **-e** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Modules that read ASCII tables will normally process all the data records
-that are read.  The **-e** option offers a built in pattern scanner that
+that are read.  The **-e** option offers a built-in pattern scanner that
 will only pass records that match the given patterns or regular expressions.
 The test can also be inverted to only pass data records that *do not* match
-the pattern.  The test does not apply to header or segment headers.
+the pattern.  The test is *not* applied to header or segment headers.
 
 Data type selection: The **-f** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
