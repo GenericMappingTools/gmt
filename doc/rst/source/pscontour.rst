@@ -273,7 +273,7 @@ map at 0.5 inch/degree along the standard parallels 18 and 24, use
 
     gmt pscontour topo.xyz -R320/330/20/30 -Jl18/24/0.5i -Ctopo.cpt -W0.5p > topo.ps
 
-To create a color PostScript plot of the numerical temperature
+To create a color plot of the numerical temperature
 solution obtained on a triangular mesh whose node coordinates and
 temperatures are stored in temp.xyz and mesh arrangement is given by the
 file mesh.ijk, using the colors in temp.cpt, run
