@@ -176,9 +176,11 @@ enum GMT_swap_direction {
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
-	GMT_LEFT_RIGHT = 0,
-	GMT_EW_SN,
-	GMT_ALTERNATE};
+	GMT_LEFT_RIGHT = 1,
+	GMT_EW_SN = 2,
+	GMT_LEFT_ONLY = 4,
+	GMT_RIGHT_ONLY = 8,
+	GMT_ALTERNATE = 16};
 
 /*! Return codes from gmt_inonout */
 enum GMT_enum_inside {

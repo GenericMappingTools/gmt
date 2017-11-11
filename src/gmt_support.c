@@ -5117,7 +5117,7 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_spherical (struct GMT_CTRL *G
 	 * have 4 + n_cols columns, where the first 4 are x,y,d,az.
 	 */
 
-	int k, ndig, sdig, n_half_cross;
+	int k, ndig, sdig, n_half_cross, k_start, k_stop;
 
 	unsigned int ii, np_cross;
 
@@ -5143,7 +5143,7 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_spherical (struct GMT_CTRL *G
 		return (NULL);
 	}
 
-	if (mode == GMT_ALTERNATE) sign = -1.0;	/* Survey layout */
+	if (mode & GMT_ALTERNATE) sign = -1.0;	/* Survey layout */
 
 	/* Get resampling step size and zone width in degrees */
 
@@ -5151,7 +5151,14 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_spherical (struct GMT_CTRL *G
 	cross_half_width = cross_length / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in meters */
 	n_half_cross = irint (cross_length / across_ds);	/* Half-width of points in a cross profile */
 	across_ds_radians = D2R * (cross_half_width / GMT->current.proj.DIST_M_PR_DEG) / n_half_cross;	/* Angular change from point to point */
-	np_cross = 2 * n_half_cross + 1;			/* Total cross-profile length */
+	k_start = -n_half_cross;
+	k_stop = n_half_cross;
+	if (mode & GMT_LEFT_ONLY)	/* Only want left side of profiles */
+		k_stop = 0;
+	else if (mode & GMT_RIGHT_ONLY)	/* Only want right side of profiles */
+		k_start = 0;
+	np_cross = k_stop - k_start + 1;/* Total cross-profile length */
+		
 	n_tot_cols = 4 + n_cols;	/* Total number of columns in the resulting data set */
 	dim[GMT_TBL] = Din->n_tables;	dim[GMT_COL] = n_tot_cols;	dim[GMT_ROW] = np_cross;
 	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
@@ -5188,13 +5195,13 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_spherical (struct GMT_CTRL *G
 				gmt_normalize3v (GMT, E);			/* Make sure E has unit length */
 				gmtlib_init_rot_matrix (Rot0, E);			/* Get partial rotation matrix since no actual angle is applied yet */
 				az_cross = fmod (Tin->segment[seg]->data[SEG_AZIM][row] + 270.0, 360.0);	/* Azimuth of cross-profile in 0-360 range */
-				if (mode == GMT_ALTERNATE)
+				if (mode & GMT_ALTERNATE)
 					sign = -sign;
-				else if (mode == GMT_EW_SN)
+				else if (mode & GMT_EW_SN)
 					sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
 				dist_across_seg = 0.0;
 				S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, np_cross, n_tot_cols, NULL, NULL);
-				for (k = -n_half_cross, ii = 0; k <= n_half_cross; k++, ii++) {	/* For each point along normal to FZ */
+				for (k = k_start, ii = 0; k <= k_stop; k++, ii++) {	/* For each point along normal to FZ */
 					angle_radians = sign * k * across_ds_radians;		/* The required rotation for this point relative to FZ origin */
 					gmt_M_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
 					gmtlib_load_rot_matrix (angle_radians, Rot, E);		/* Build the actual rotation matrix for this angle */
@@ -5263,7 +5270,7 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_cartesian (struct GMT_CTRL *G
 	 * Dout is the new data set with all the crossing profiles;
 	*/
 
-	int k, ndig, sdig, n_half_cross;
+	int k, ndig, sdig, n_half_cross, k_start, k_stop;
 
 	unsigned int ii, np_cross;
 
@@ -5285,15 +5292,21 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_cartesian (struct GMT_CTRL *G
 		return (NULL);
 	}
 
-	if (mode == GMT_ALTERNATE) sign = -1.0;	/* Survey mode */
+	if (mode & GMT_ALTERNATE) sign = -1.0;	/* Survey mode */
 
 	/* Get resampling step size and zone width in degrees */
 
 	cross_length *= 0.5;					/* Now half-length in user's units */
 	n_half_cross = irint (cross_length / across_ds);	/* Half-width of points in a cross profile */
-	np_cross = 2 * n_half_cross + 1;			/* Total cross-profile length */
 	across_ds = cross_length / n_half_cross;		/* Exact increment (recalculated in case of roundoff) */
 	n_tot_cols = 4 + n_cols;				/* Total number of columns in the resulting data set */
+	k_start = -n_half_cross;
+	k_stop = n_half_cross;
+	if (mode & GMT_LEFT_ONLY)	/* Only want left side of profiles */
+		k_stop = 0;
+	else if (mode & GMT_RIGHT_ONLY)	/* Only want right side of profiles */
+		k_start = 0;
+	np_cross = k_stop - k_start + 1;			/* Total cross-profile length */
 	dim[GMT_TBL] = Din->n_tables;	dim[GMT_COL] = n_tot_cols;	dim[GMT_ROW] = np_cross;
 	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
 	sdig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
@@ -5315,13 +5328,13 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_cartesian (struct GMT_CTRL *G
 
 				x = Tin->segment[seg]->data[GMT_X][row];	y = Tin->segment[seg]->data[GMT_Y][row];	/* Reset since now we want lon/lat regardless of grid format */
 				az_cross = fmod (Tin->segment[seg]->data[SEG_AZIM][row] + 270.0, 360.0);	/* Azimuth of cross-profile in 0-360 range */
-				if (mode == GMT_ALTERNATE)
+				if (mode & GMT_ALTERNATE)
 					sign = -sign;
-				else if (mode == GMT_EW_SN)
+				else if (mode & GMT_EW_SN)
 					sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
 				S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, np_cross, n_tot_cols, NULL, NULL);
 				sincosd (90.0 - az_cross, &sa, &ca);	/* Trig on the direction */
-				for (k = -n_half_cross, ii = 0; k <= n_half_cross; k++, ii++) {	/* For each point along normal to FZ */
+				for (k = k_start, ii = 0; k <= k_stop; k++, ii++) {	/* For each point along normal to FZ */
 					dist_across_seg = sign * k * across_ds;		/* The current distance along this profile */
 					S->data[GMT_X][ii] = x + dist_across_seg * ca;
 					S->data[GMT_Y][ii] = y + dist_across_seg * sa;
