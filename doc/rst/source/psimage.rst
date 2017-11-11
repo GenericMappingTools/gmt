@@ -14,6 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **psimage** *imagefile*
+[ |SYN_OPT-B| ]
 [ |-D|\ *refpoint* ]
 [ |-F|\ *box* ]
 [ |-G|\ [**b**\ \|\ **f**\ \|\ **t**]\ *color* ]
