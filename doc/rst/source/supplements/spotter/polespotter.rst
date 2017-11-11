@@ -142,7 +142,7 @@ See Also
 :doc:`mapproject </mapproject>`,
 :doc:`backtracker`,
 :doc:`gmtpmodeler`,
-:doc:`gmtvector`,
+:doc:`gmtvector </gmtvector>`,
 :doc:`grdpmodeler`,
 :doc:`grdrotater`,
 :doc:`originator`
