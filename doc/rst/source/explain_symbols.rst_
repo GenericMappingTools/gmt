@@ -79,11 +79,11 @@
         **s**\ lip, or **t**\ riangle. [Default is **f**\ ault]. Slip means
         left-lateral or right-lateral strike-slip arrows (centered is not an
         option). The **+s** modifier optionally accepts the angle used to draw
-        the vector [20].  Alternatively, use **+S** which draws arcuate arrow
-        heads.  Append **+o**\ *offset* to offset the first symbol from the
+        the vector [20]. Alternatively, use **+S** which draws arcuate arrow
+        heads. Append **+o**\ *offset* to offset the first symbol from the
         beginning of the front by that amount [0]. The chosen symbol is drawn
-        with the same pen as set for the line (i.e., via **-W**).  The use an
-        alternate pen, append **+p**\ *pen*.  To skip the outline, just use
+        with the same pen as set for the line (i.e., via **-W**). To use an
+        alternate pen, append **+p**\ *pen*. To skip the outline, just use
         **+p**.  Note: By placing **-Sf**
         options in the segment header you can change the front types on a
         segment-by-segment basis.
@@ -99,8 +99,7 @@
 
     **-Sj**
         Rotated rectangle. Direction (in degrees counter-clockwise from
-        horizontal), x-dimension, and y-dimension must be found in columns 3, 4,
-        and 5.
+        horizontal), x-dimension, and y-dimension must be found in columns 3, 4, and 5.
 
     **-SJ**
         Same as **-Sj**, except azimuth (in degrees east of north) should be
@@ -129,7 +128,7 @@
         no individual scaling is done for different characters. Remember to
         escape special characters like \*. Optionally, you may append **+f**\ *font*
         to select a particular font [Default is :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`] and
-	**+j**\ *justify* to change justification [CM].
+	    **+j**\ *justify* to change justification [CM].
 
     **-Sm**
         **m**\ ath angle arc, optionally with one or two arrow heads [Default is
@@ -191,7 +190,7 @@
 
             **s**\ \|\ **S**\ *n_label*
                 Same as **n**\ \|\ **N**\ *n_label* but implies that the input data are
-		first to be converted into a series of 2-point line segments before plotting.
+		        `first to be converted into a series of 2-point line segments before plotting.
 
             **x**\ \|\ **X**\ *xfile.d*
                 Reads the multisegment file *xfile.d* and places labels at the
@@ -271,36 +270,44 @@
                 are considered in the coordinate system defined by the
                 orientation of the line; use **+N** to force increments in the
                 plot x/y coordinates system [no nudging]. Not allowed with **+v**.
+
             **+o**
                 Selects rounded rectangular text box [Default is rectangular].
                 Not applicable for curved text (**+v**) and only makes sense for
                 opaque text boxes.
+
             **+p**\ [*pen*\ ]
                 Draws the outline of text boxes [Default is no outline];
                 optionally specify pen for outline [Default is width = 0.25p,
                 color = black, style = solid].
+
             **+r**\ *min_rad*
                 Will not place labels where the line's radius of curvature is
                 less than *min_rad* [Default is 0].
+
             **+t**\ [*file*\ ]
                 Saves line label x, y, and text to *file* [Line_labels.txt].
                 Use **+T** to save x, y, angle, text instead.
+
             **+u**\ *unit*
                 Appends *unit* to all line labels. If *unit* starts with a
                 leading hyphen (-) then there will be no space between label
                 value and the unit. [Default is no unit].
+
             **+v**
-                Specifies curved labels following the path [Default is straight
-                labels].
+                Specifies curved labels following the path [Default is straight labels].
+
             **+w**
                 Specifies how many (*x*,\ *y*) points will be used to estimate
                 label angles [Default is 10].
+
             **+x**\ [*first*,\ *last*\ ]
                 Append the suffices *first* and *last* to the corresponding labels.
-		This modifier is only available when **-SqN2** is in effect.  Used
-		to annotate the start and end of a line (e.g., a cross-section),
-		append two text strings separated by comma
-		[Default just adds a prime to the second label].
+		        This modifier is only available when **-SqN2** is in effect.  Used
+		        to annotate the start and end of a line (e.g., a cross-section),
+		        append two text strings separated by comma
+		        [Default just adds a prime to the second label].
+
             **+=**\ *prefix*
                 Prepends *prefix* to all line labels. If *prefix* starts with a
                 leading hyphen (-) then there will be no space between label
@@ -312,49 +319,57 @@
     **-Sr**
         **r**\ ectangle. No size needs to be specified, but the x- and
         y-dimensions must be found in columns 3 and 4.
+
     **-SR**
         **R**\ ounded rectangle. No size needs to be specified, but the x-
-        and y-dimensions and corner radius must be found in columns 3, 4,
-        and 5.
+        and y-dimensions and corner radius must be found in columns 3, 4, and 5.
+
     **-Ss**
         **s**\ quare. *size* is diameter of circumscribing circle.
+
     **-St**
         **t**\ riangle. *size* is diameter of circumscribing circle.
+
     **-Sv**
         **v**\ ector. Direction (in degrees counter-clockwise from
         horizontal) and length must be found in columns 3 and 4, and *size*,
         if not specified on the command-line, should be  present in column 5.
         The *size* is the length of the vector head. Vector width is set by **-W**.
         See VECTOR ATTRIBUTES for specifying other attributes.
+
     **-SV**
         Same as **-Sv**, except azimuth (in degrees east of north) should be
         given instead of direction. The azimuth will be mapped into an angle
         based on the chosen map projection (**-Sv** leaves the directions
         unchanged.) See VECTOR ATTRIBUTES for specifying other attributes.
+
     **-Sw**
         pie **w**\ edge. Start and stop directions (in degrees
         counter-clockwise from horizontal) for pie slice must be found in
         columns 3 and 4.  Append **+a** to just draw the arc line or **+r**
         to just draw the radial lines.
+
     **-SW**
         Same as **-Sw**, except azimuths (in degrees east of north) should
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
-        directions unchanged.)  For geo-wedges, specify *size* as a radial
-        geographical distance.  For allowable geographical units, see UNITS.
+        directions unchanged.) For geo-wedges, specify *size* as a radial
+        geographical distance. For allowable geographical units, see UNITS.
         Append **+a** to just draw the arc or **+r** to just draw the radial lines.
+
     **-Sx**
         cross (x). *size* is diameter of circumscribing circle.
+
     **-Sy**
-        y-dash (\|). *size* is the length of a short vertical (y-dir) line
-        segment.
+        y-dash (\|). *size* is the length of a short vertical (y-dir) line segment.
+
     **-S=**
         geovector. Azimuth (in degrees east from north) and geographical length
         must be found in columns 3 and 4. The *size* is the length of the
         vector head. Vector width is set by **-W**. See VECTOR ATTRIBUTES
-        for specifying attributes.  Note: Geovector stems are drawn as thin
-	filled polygons and hence pen attributes like dashed and dotted are
-	not available.  For allowable geographical units, see UNITS.
+        for specifying attributes. Note: Geovector stems are drawn as thin
+	    filled polygons and hence pen attributes like dashed and dotted are
+	    not available. For allowable geographical units, see UNITS.
 
     **-S~**
         decorated line, i.e., lines with symbols along them. Append
@@ -399,7 +414,7 @@
 
             **s**\ \|\ **S**\ *n_symbol*
                 Same as **n**\ \|\ **N**\ *n_symbol* but implies that the input data are
-		first to be converted into a series of 2-point line segments before plotting.
+		        first to be converted into a series of 2-point line segments before plotting.
 
             **x**\ \|\ **X**\ *xfile.d*
                 Reads the multisegment file *xfile.d* and places symbols at the
