@@ -3791,7 +3791,7 @@ the data may need translation and scaling prior to use. Therefore, all
 GMT programs that read or write grid files will decode the given
 filename as follows:
 
-name[=\ *ID*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]]
+name[=\ *ID*\ ][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]
 
 where anything in brackets is optional. If you are reading a grid then
 no options are needed: just continue to pass the name of the grid file.
@@ -3810,7 +3810,7 @@ from standard input which means you can connect GMT programs that
 operate on grid files with pipes, thereby speeding up execution and
 eliminating the need for large, intermediate grid files. You specify
 standard input/output by leaving out the filename entirely. That means
-the "filename" will begin with "=\ *ID*". Note, that the netCDF format
+the "filename" will begin with "=\ *ID*". Note that the netCDF format
 does not allow piping.
 
 Everything looks clearer after a few examples:
@@ -3825,7 +3825,7 @@ Everything looks clearer after a few examples:
    file name, e.g., ``my_surferfile.grd``.
 
 *  To read a 8-bit standard Sun raster file (with values in the 0--255
-   range) and convert it to a 1 range, give the name as ``rasterfile=rb+s7.84313725e-3+o-1``
+   range) and convert it to a 1 range, give the name as ``rasterfile+s7.84313725e-3+o-1``
    (i.e., 1/127.5).
 
 *  To write a native binary short integer grid file to standard output
