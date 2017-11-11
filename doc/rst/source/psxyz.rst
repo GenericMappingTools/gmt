@@ -17,6 +17,7 @@ Synopsis
 |-J|\ **z**\ \|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
+[ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy*\ [/*dz*] ]
 [ |-G|\ *fill* ]
 [ |-I|\ *intens* ] 
