@@ -350,11 +350,19 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	mx = urint (ceil ((double)nx / (double)Ctrl->L.size)) * Ctrl->L.size;	/* Nearest image size in multiples of tile size */
 	my = urint (ceil ((double)ny / (double)Ctrl->L.size)) * Ctrl->L.size;
 	max_level = urint (ceil (log2 (MAX (mx, my) / (double)Ctrl->L.size)));	/* Number of levels in the quadtree */
-	if ((36000.0 * G->header->inc[GMT_X] - irint (36000.0 * G->header->inc[GMT_X])) < GMT_CONV4_LIMIT) {
+	if ((60.0 * G->header->inc[GMT_X] - irint (60.0 * G->header->inc[GMT_X])) < GMT_CONV4_LIMIT) {
+		/* Grid spacing is an integer multiple of 1 arc minute or higher, use ddd:mm format */
+		strcpy (GMT->current.setting.format_geo_out, "ddd:mm");
+	}
+	else if ((3600.0 * G->header->inc[GMT_X] - irint (3600.0 * G->header->inc[GMT_X])) < GMT_CONV4_LIMIT) {
+		/* Grid spacing is an integer multiple of 1 arc sec or higher, use ddd:mm:ss format */
+		strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ss");
+	}
+	else if ((36000.0 * G->header->inc[GMT_X] - irint (36000.0 * G->header->inc[GMT_X])) < GMT_CONV4_LIMIT) {
 		/* Grid spacing is an integer multiple of 0.1 arc sec or higher, use ddd:mm:ss.x format */
 		strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ss.x");
 	}
-	else {	/* Cannot use 0.1 arcsecs, do full resolution */
+	else {	/* Cannot use 0.1 arcsecs, do full decimal resolution */
 		strcpy (GMT->current.setting.format_float_out, "%.16g");
 		strcpy (GMT->current.setting.format_geo_out, "D");
 	}
