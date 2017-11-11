@@ -4499,6 +4499,7 @@ GMT_LOCAL void grdmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 
 GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *value, struct GMT_HASH *H) {
 	int i, expect, check = GMT_IS_NAN;
+	char *c = NULL;
 	bool possible_number = false;
 	double tmp = 0.0;
 
@@ -4553,10 +4554,14 @@ GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt,
 
 	/* Determine if argument is file. But first strip off suffix */
 
+	if ((c = strchr (opt->arg, '+')) && strchr ("ons", c[1]))
+		c[0] = '\0';	/* Temporarily chop off any scaling/offset/invalid suffix */
 	if (!gmt_access (GMT, opt->arg, F_OK)) {	/* Yes it is */
+		if (c) c[0] = '+';	/* Restore*/
 		if (check != GMT_IS_NAN && possible_number) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your argument %s is both a file and a number.  File is selected\n", opt->arg);
 		return GRDMATH_ARG_IS_FILE;
 	}
+	if (c) c[0] = '+';	/* Restore*/
 
 	if (check != GMT_IS_NAN) {	/* OK it is a number */
 		*value = tmp;
