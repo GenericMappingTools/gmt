@@ -64,8 +64,7 @@ Optional Arguments
 .. _-D:
 
 **-D**
-    Write a listing of the quadtree dependencies to stdout [Default is
-    no listing.]
+    Write a listing of the quadtree dependencies to stdout [Default is no listing.]
 
 .. _-E:
 
@@ -73,7 +72,7 @@ Optional Arguments
     Instead of hosting the files locally, prepend a URL. The top-level
     *prefix*\ .kml file will then use this URL to find the other files.
     After building the files you must place the *prefix* directory at
-    the location pointed to by the *URL [local setup only].
+    the location pointed to by the *URL* [local setup only].
 
 .. _-F:
 
