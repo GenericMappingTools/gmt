@@ -194,7 +194,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	spotter_rot_usage (API, 'E');
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output CVA grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify grid interval(s); Append m [or c] to <dx> and/or <dy> for minutes [or seconds].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].\n");
 	GMT_Option (API, "Rg");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   standard input is read.  Expects (x,y,z,r,t) records, with t in Ma.\n");

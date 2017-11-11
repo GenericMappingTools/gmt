@@ -79,6 +79,7 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"grdspotter", "spotter", "Create CVA image from a gravity or topography grid", "<G{,AG(,DG),LG),GG}"},
 	{"hotspotter", "spotter", "Create CVA image from seamount locations", "<D{,GG}"},
 	{"originator", "spotter", "Associate seamounts with nearest hotspot point sources", "<D{,FD(,>D}"},
+	{"polespotter", "spotter", "Explore rotation pole locations given FZs and abysall hills", "AD(,FD(,GG}"},
 	{"rotconverter", "spotter", "Manipulate total reconstruction and stage rotations", ">D}"},
 	{"rotsmoother", "spotter", "Get mean rotations and covarience matrices from set of finate rotations", "<D{,>D}"},
 	{"x2sys_binlist", "x2sys", "Create bin index listing from track data files", ">D}"},

@@ -6046,7 +6046,9 @@ grids based on seamount locations and a set of absolute plate motion
 stage poles (:doc:`grdspotter <supplements/spotter/grdspotter>` does the
 same using a bathymetry grid instead of seamount locations),
 :doc:`originator <supplements/spotter/originator>`, which associates
-seamounts with the most likely hotspot origins, and
+seamounts with the most likely hotspot origins, 
+:doc:`polespotter <supplements/spotter/polespotter>`, which determines
+likely stage pole locations from seafloor fabric, and
 :doc:`rotconverter <supplements/spotter/rotconverter>` which does various
 operations involving finite rotations on a sphere. The package is
 maintained by Paul Wessel.

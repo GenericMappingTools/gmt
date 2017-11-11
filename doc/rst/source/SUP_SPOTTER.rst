@@ -12,5 +12,6 @@ SPOTTER
    supplements/spotter/grdspotter
    supplements/spotter/hotspotter
    supplements/spotter/originator
+   supplements/spotter/polespotter
    supplements/spotter/rotconverter
    supplements/spotter/rotsmoother

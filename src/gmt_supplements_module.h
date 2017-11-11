@@ -61,6 +61,7 @@ EXTERN_MSC int GMT_grdrotater (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdspotter (void *API, int mode, void *args);
 EXTERN_MSC int GMT_hotspotter (void *API, int mode, void *args);
 EXTERN_MSC int GMT_originator (void *API, int mode, void *args);
+EXTERN_MSC int GMT_polespotter (void *API, int mode, void *args);
 EXTERN_MSC int GMT_rotconverter (void *API, int mode, void *args);
 EXTERN_MSC int GMT_rotsmoother (void *API, int mode, void *args);
 EXTERN_MSC int GMT_x2sys_binlist (void *API, int mode, void *args);

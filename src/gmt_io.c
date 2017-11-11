@@ -4776,6 +4776,7 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 		return (-1);		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
 
 	if ((c = gmtlib_file_unitscale (file))) c[0] = '\0';	/* Chop off any x/u unit specification */
+	else if ((c = strchr (file, '+')) && strchr ("ons", c[1])) c[0] = '\0';	/* Chop off any z-scaling specification */
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existence */

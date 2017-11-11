@@ -1040,8 +1040,15 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	header->z_add_offset   = 0.0;
 	header->nan_value      = (gmt_grdfloat)NAN;
 
-	i = strcspn (HH->name, "="); /* get number of chars until first '=' or '\0' */
+	i = strcspn (HH->name, "=");	/* get number of chars until first '=' or '\0' */
+	j = strcspn (HH->name, "+");	/* get number of chars until first '+' or '\0' */
 
+	if (HH->name[i] == '\0' && HH->name[j]) {	/* No grid type but gave modifiers */
+		/* parse grid format string: */
+		if ((val = grdio_parse_grd_format_scale (GMT, header, &HH->name[j])) != GMT_NOERROR)
+			return val;
+		HH->name[j] = '\0';	/* Chop off since we did got the scalings */
+	}
 	if (HH->name[i]) {	/* Reading or writing when =suffix is present: get format type, scale, offset and missing value */
 		i++;
 		/* parse grid format string: */

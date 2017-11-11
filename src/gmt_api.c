@@ -6070,7 +6070,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			/* No, so presumably it is a regular file name */
 			file = strdup (resource);
 			if (direction == GMT_IN) {	/* For input we can check if the file exists and can be read. */
-				char *p = NULL, *m = NULL;
+				char *p = NULL;
 				bool not_url = true;
 				if (a_grid_or_image (family) && (p = strchr (file, '='))) *p = '\0';	/* Chop off any =<stuff> for grids and images so access can work */
 				else if (family == GMT_IS_IMAGE && (p = strchr (file, '+'))) {
@@ -6083,8 +6083,6 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 					else	/* Make sure p is NULL so we don't restore a character below */
 						p = NULL;
 				}
-				else if (family == GMT_IS_GRID && ((m = strchr (file, '+')) && strchr ("ons", m[1])))
-					m[0] = '\0';	/* Chop off for now */
 				if (a_grid_or_image (family))	/* Only grid and images can be URLs so far */
 					not_url = !gmtlib_check_url_name (file);
 				first = gmt_download_file_if_not_found (API->GMT, file, 0);	/* Deal with downloadable GMT data sets first */
@@ -6099,7 +6097,6 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 					return_value (API, GMT_BAD_PERMISSION, GMT_NOTSET);
 				}
 				if (p) p[0] = '=';	/* Restore the extensions */
-				if (m) m[0] = '+';	/* Restore the modifiers */
 			}
 			else if (resource == NULL) {	/* No file given [should this mean stdin/stdout?] */
 				gmt_M_str_free (file);

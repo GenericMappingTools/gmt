@@ -21,6 +21,7 @@ grdrotater.c		: grdrotater C program code
 grdspotter.c		: grdspotter C program code
 hotspotter.c		: hotspotter C program code
 originator.c		: originator C program code
+polespotter.c		: polespotter C program code
 rotconverter.c		: rotconverter C program code
 libspotter.c		: SPOTTER C library code
 spotter.h		: SPOTTER C include file
@@ -40,7 +41,7 @@ http://www.soest.hawaii.edu/wessel/papers/1997/WL_seamounts_1997.d
 
 This package contains seven programs that may be useful
 to people who work with Plate Tectonic Reconstructions.
-The seven programs are
+The eight programs are
 
 	backtracker  - Move points back/forth in time
 	grdpmodeler  - Create gridded predictions from plate models
@@ -48,6 +49,7 @@ The seven programs are
 	grdspotter   - Create CVA grids using grids of bathy/faa
 	hotspotter   - Create CVA grids using seamount locations
 	originator   - Associate seamounts with hotspot point sources
+	polespotter  - Find stage poles from fracture zones and abyssal hills
 	rotconverter - Manipulate finite and stage rotations
 
 Documentation via RST files produce HTML, MAN, and PDF pages that
