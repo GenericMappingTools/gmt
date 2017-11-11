@@ -83,7 +83,7 @@
         beginning of the front by that amount [0]. The chosen symbol is drawn
         with the same pen as set for the line (i.e., via **-W**). To use an
         alternate pen, append **+p**\ *pen*. To skip the outline, just use
-	    **+p**. Note: By placing **-Sf**
+        **+p**. Note: By placing **-Sf**
         options in the segment header you can change the front types on a
         segment-by-segment basis.
 
@@ -128,7 +128,7 @@
         no individual scaling is done for different characters. Remember to
         escape special characters like \*. Optionally, you may append %\ *font*
         to select a particular font [Default is :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`] and
-	    **+j**\ *justify* to change justification [CM].
+        **+j**\ *justify* to change justification [CM].
 
     **-Sm**
         **m**\ ath angle arc, optionally with one or two arrow heads [Default is
@@ -153,11 +153,11 @@
         from the last input data column.  The facet colors will be modified to
         simulate shading.  Use **-SO** to disable such 3-D illumination.
         Normally a single *z* value is considered.  For multi-band columns, append
-	    **+z**\ *nbands* (and provide *nbands* *z*-values on input; these must be monotonically
-	    increasing up the column) or **-Z**\ *nbands* (and expect *nbands* of *dz* increments
-	    that must be summed to yield actual *z* values).  The multi-band column symbol
-	    requires **-C** and will use the band number (0, 1, *nbands*\ -1) to assign
-	    the band color.
+        **+z**\ *nbands* (and provide *nbands* *z*-values on input; these must be monotonically
+        increasing up the column) or **-Z**\ *nbands* (and expect *nbands* of *dz* increments
+        that must be summed to yield actual *z* values).  The multi-band column symbol
+        requires **-C** and will use the band number (0, 1, *nbands*\ -1) to assign
+        the band color.
 
     **-Sp**
         **p**\ oint. No size needs to be specified (1 pixel is used).
@@ -170,8 +170,7 @@
         The required argument controls the placement of labels along the quoted
         lines. Choose among five controlling algorithms:
 
-            **d**\ *dist*\ [**c**\ \|\ **i**\ \|\ **p**] or
-            **D**\ *dist*\ [**d**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **m**\ \|\ **M**\ \|\ **n**\ \|\ **s**]
+            **d**\ *dist*\ [**c**\ \|\ **i**\ \|\ **p**] or **D**\ *dist*\ [**d**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **m**\ \|\ **M**\ \|\ **n**\ \|\ **s**]
                 For lower case **d**, give distances between labels on the plot in
                 your preferred measurement unit **c** (cm), **i** (inch), or **p**
                 (points), while for upper case **D**, specify distances in map units
@@ -382,8 +381,8 @@
         must be found in columns 4 and 5. The *size* is the length of the
         vector head. Vector width is set by **-W**. See VECTOR ATTRIBUTES
         for specifying attributes. Note: Geovector stems are drawn as thin
-	    filled polygons and hence pen attributes like dashed and dotted are
-	    not available. For allowable geographical units, see UNITS.
+        filled polygons and hence pen attributes like dashed and dotted are
+        not available. For allowable geographical units, see UNITS.
 
     **-S~**
         decorated line, i.e., lines with symbols along them. Append

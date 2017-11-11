@@ -128,7 +128,7 @@
         no individual scaling is done for different characters. Remember to
         escape special characters like \*. Optionally, you may append **+f**\ *font*
         to select a particular font [Default is :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`] and
-	    **+j**\ *justify* to change justification [CM].
+        **+j**\ *justify* to change justification [CM].
 
     **-Sm**
         **m**\ ath angle arc, optionally with one or two arrow heads [Default is
@@ -190,7 +190,7 @@
 
             **s**\ \|\ **S**\ *n_label*
                 Same as **n**\ \|\ **N**\ *n_label* but implies that the input data are
-		        `first to be converted into a series of 2-point line segments before plotting.
+                first to be converted into a series of 2-point line segments before plotting.
 
             **x**\ \|\ **X**\ *xfile.d*
                 Reads the multisegment file *xfile.d* and places labels at the
@@ -368,8 +368,8 @@
         must be found in columns 3 and 4. The *size* is the length of the
         vector head. Vector width is set by **-W**. See VECTOR ATTRIBUTES
         for specifying attributes. Note: Geovector stems are drawn as thin
-	    filled polygons and hence pen attributes like dashed and dotted are
-	    not available. For allowable geographical units, see UNITS.
+        filled polygons and hence pen attributes like dashed and dotted are
+        not available. For allowable geographical units, see UNITS.
 
     **-S~**
         decorated line, i.e., lines with symbols along them. Append
