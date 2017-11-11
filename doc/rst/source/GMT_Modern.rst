@@ -3,18 +3,18 @@ GMT Modern Mode
 
 .. include:: common_SYN_OPTs.rst_
 
-Modern Mode is Experimental!
+Modern Mode is Experimental until GMT 6 is released!
 
 In GMT modern mode there are five new commands that are used to manage
-a GMT workflow.  In modern mode many common GMT options have been made
+a GMT workflow.  In modern mode, many common GMT options have been made
 obsolete and explicitly specifying the previous region or projection
 is now implicit.  Finally, the default output format for illustrations
-is now PDF, but you can change this and request more than one format
+is now PDF, but you can change this and even request more than one format
 for your plots.
 
-A GMT modern session is enabled by **gmt begin** and is terminated by
-**gmt end**.  Within a session you may also use the **gmt figure** command
-to control names and formats for multi-figure scripts, the **gmt subplot**
+A GMT modern session is initiated by **gmt begin** and is terminated by
+**gmt end**.  Within a modern session you may also use the **gmt figure** command
+to control names and formats for multi-figure scripts, the **gmt subplot** command
 for building multi-panel figures, and **gmt revert** to remove
 layers from the current plot.
 
@@ -24,15 +24,15 @@ begin
 
 **gmt begin** [*prefix*] [*formats*] [ |SYN_OPT-V| ]
 
-This command tells GMT to run in modern mode.  If your script only makes
-a single plot then this is most straightforward way to specify the name
-and formats of your plots.  
+This command tells GMT to begin a new modern session.  If your script only makes
+a single plot then this is the most straightforward way to specify the name
+and format(s) of your plots.  
 
 Optional Arguments
 ------------------
 
 *prefix*
-    Name-stem used to construct final figure names,  Extensions are appended
+    Name-stem used to construct final figure names.  Extensions are appended
     automatically from your *formats* selection [gmtsession].
 
 *formats*
@@ -73,9 +73,10 @@ figure
 
 **gmt figure** *prefix* [*formats*] [*options*] [ |SYN_OPT-V| ]
 
-The figure command tells GMT the name and format(s) to use for the current plot.
+A GMT modern session can make any number of illustrations.  In this situation,
+the figure command tells GMT the name and format(s) to use for the current plot.
 It must be issued before you start plotting to the current figure, and each
-new call terminates the previous figure and changes focus to the next one.
+new call terminates the previous figure and changes focus to the next figure.
 In addition to *prefix* and *formats*, you can supply a comma-separated series of
 :doc:`psconvert` options that should override the default settings provided via
 :ref:`PS_CONVERT <PS_CONVERT>`. The only other available option controls verbosity.
@@ -139,10 +140,10 @@ Required Arguments
     for each row (or column) you must append a comma-separated list of relative widths (or heights)
     following the colon.  A single number means constant widths (or heights) [Default].
     Alternatively, use **-Fs** to specify
-    the dimensions of each subplot directly.  Then, the figure dimensions are computed instead.
+    the dimensions of each subplot directly.  Then, the figure dimensions are computed from the subplot dimensions instead.
     To specify different subplot dimensions for each row (or column), give a comma-separated
     list of dimensions instead.  The number of values must either be one (constant across the rows or columns)
-    or exactly match the number of rows (or columns). For geographic maps the height of each panel depends on
+    or exactly match the number of rows (or columns). For geographic maps, the height of each panel depends on
     your map region and projection.  There are two options: (1) Specify both **-R** and **-J** and we use these
     to compute the height of each subplot.  All subplot must share the same region and projection, or (2) you
     can select *height* based on trial and error to suit your plot layout.
@@ -159,13 +160,13 @@ Optional Arguments
     as part of the tag (Note: In UNIX shells you may need to escape these parentheses.)
     Use **+j**\ \|\ **J**\ *refpoint* to specify where the tag should be placed in the subplot [TL].
     Note: **+j** sets the justification of the tag to *refpoint* while **+J** instead selects
-    the mirror opposite.
+    the mirror opposite (suitable for outside tags).
     Append **+c**\ *dx*\ [/*dy*] to set the clearance between the tag and a surrounding text box
     requested via **+g** or **p**.
-    Append **+g** to paint the tag's textbox with *fill* [no painting].
+    Append **+g** to paint the tag's text box with *fill* [no painting].
     Append **+o**\ *dx*\ [/*dy*] to offset the tag's reference point in the direction implied
     by the justification [4pt/4pt, i.e., 20% of the FONT_TAG size].
-    Append **+p** to draw the outline of the tag's textbox using selected *pen* [no outline].
+    Append **+p** to draw the outline of the tag's text box using selected *pen* [no outline].
     Append **+r** to typeset your tag numbers using lowercase Roman numerals;
     use **+R** for uppercase Roman numerals [Arabic numerals].
     Append **+v** to increase tag numbers vertically down columns [horizontally across rows].  
@@ -176,9 +177,9 @@ Optional Arguments
 
 **-C**\ *side*\ /*clearance*\ [**u**\ ]
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
-    side, using *side* values from w, e, s, or n.  The option is repeatable to set aside space
+    side, using *side* values from **w**, **e**, **s**, or **n**.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can
-    be accessed by modules plotting scales, bars, text, etc.  Settings apply to all panels.
+    be accessed by modules that plot scales, bars, text, etc.  Settings apply to all panels.
 
 .. _-J:
 
@@ -228,7 +229,7 @@ Optional Arguments
 
 **gmt subplot set** *row,col* [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
 
-Before you start plotting you must first select the active subplot.
+Before you start plotting you must first select the active subplot panel.
 Note: Any **-J** option passed when plotting subplots must not give the width or scale
 since the dimensions of the map is completely determined by the subplot size and your region.
 Specifying map width will result in an error.  For Cartesian plots: If you want the scale
@@ -255,9 +256,9 @@ Optional Arguments
 
 **-C**\ *side*\ /*clearance*\ [**u**\ ]
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
-    side, using *side* values from w, e, s, or n.  The option is repeatable to set aside space
+    side, using *side* values from **w**, **e**, **s**, or **n**.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can
-    be accessed by modules plotting scales, bars, text, etc.
+    be accessed by modules that plot scales, bars, text, etc.
 
 .. _subplot_set-V:
 
@@ -266,12 +267,12 @@ Optional Arguments
 
 Any number of plotting command can now take place and output will all be directed to the
 selected subplot panel.  There are a few other rules that need to be followed:
-(1) The subplot machinery expect that the first plotting command in a new subplot window
+(1) The subplot machinery expects that the first plotting command in a new subplot window
 will take care of plotting the base frame.  The particulars of this frame may have been 
 specified by **subplot begin**.  In either case, should you need to set or override
 frame and axis parameters then you must specify these **-B** options with this first plot
 command.  (2) The subplot machinery automatically uses the **-X** and **-Y** options under
-the hood so these are not available for you while subplot is active.
+the hood so these are not available to you while subplot is active.
 
 **gmt subplot end** [ |SYN_OPT-V| ]
 
@@ -291,7 +292,7 @@ revert
 
 **gmt revert** [ *n*\ \|\ **all** ] [ |SYN_OPT-V| ]
 
-This command strips off the last *n* layers of the current figure.
+This command strips off the last *n* layers from the current figure.
 Giving *all* wipes the figure completely; however, it still remains
 the current figure.
 
@@ -312,7 +313,7 @@ end
 **gmt end** [ |SYN_OPT-V| ]
 
 This command terminates the modern mode and completes the processing of all registered
-figures.  The graphics will be placed in the current directory.
+figures.  The final graphics will be placed in the current directory.
 
 *************
 Misc. Changes
