@@ -43,8 +43,8 @@ Description
 -----------
 
 **pspolar** reads data values from *files* [or standard input] and
-generates PostScript code that will plot stations on focal mechanisms
-on a map. The PostScript code is written to standard output.
+will plot stations on focal mechanisms
+on a map.
 
 Parameters are expected to be in the following columns:
 

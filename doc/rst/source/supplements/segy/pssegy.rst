@@ -36,7 +36,7 @@ Description
 -----------
 
 **pssegy** reads a native (IEEE) format SEGY file and produces a
-PostScript image of the seismic data. The *imagemask* operator is used
+plot of the seismic data. The *imagemask* operator is used
 so that the seismic data are plotted as a 1-bit deep bitmap in a single
 (user-specified) color or gray shade, with a transparent background. The
 bitmap resolution is taken from the current GMT defaults. The

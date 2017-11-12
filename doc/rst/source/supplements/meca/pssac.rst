@@ -42,8 +42,7 @@ Description
 -----------
 
 **pssac** reads *SACfiles* in SAC format or reads filenames and controlling parameters
-from *saclist* [or standard input] and generates PostScript that will plot seismograms on a map.
-The PostScript code is written to standard output.
+from *saclist* [or standard input] and will plot seismograms on a map.
 
 Required Arguments
 ------------------

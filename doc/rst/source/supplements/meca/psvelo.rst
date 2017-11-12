@@ -42,9 +42,8 @@ Description
 -----------
 
 **psvelo** reads data values from *files* [or standard input] and
-generates PostScript code that will plot velocity arrows on a map.
-Most options are the same as for :doc:`psxy </psxy>`, except **-S**. The
-PostScript code is written to standard output. The previous version
+will plot velocity arrows on a map.
+Most options are the same as for :doc:`psxy </psxy>`, except **-S**. The previous version
 (**psvelomeca**) is now obsolete. It has been replaced by **psvelo** and
 :doc:`psmeca`.
 

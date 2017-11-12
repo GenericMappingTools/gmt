@@ -45,10 +45,9 @@ Description
 -----------
 
 **pscoupe** reads data values from *files* [or standard input] and
-generates PostScript code that will plot symbols, lines or polygons on
+will plot symbols, lines or polygons on
 a cross-section. Focal mechanisms may be specified and require
-additional columns of data. The PostScript code is written to standard
-output.
+additional columns of data.
 
 Unless |-Q| is used, new file is created with the new coordinates
 (**x**, **y**) and the mechanism (from lower focal half-sphere for
