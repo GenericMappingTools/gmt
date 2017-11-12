@@ -1,19 +1,21 @@
 .. index:: ! pscontour
 
-*********
-pscontour
-*********
+.. |pscontour| replace:: **pscontour**
+
+***********
+|pscontour|
+***********
 
 .. only:: not man
 
-    pscontour - Contour table data by direct triangulation [method]
+    |pscontour| - Contour table data by direct triangulation [method]
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**pscontour** [ *table* ] |-J|\ *parameters*
+|pscontour| [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A|\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
@@ -45,11 +47,11 @@ Synopsis
 Description
 -----------
 
-**pscontour** reads an ASCII [or binary] *table* and produces a raw
+|pscontour| reads an ASCII [or binary] *table* and produces a raw
 contour plot by triangulation. By default, the optimal Delaunay
 triangulation is performed (using either Shewchuk's [1996] or Watson's
-[1982] method as selected during GMT installation; type **pscontour
--** to see which method is selected), but the user may optionally
+[1982] method as selected during GMT installation; type |pscontour|
+**-** to see which method is selected), but the user may optionally
 provide a second file with network information, such as a triangular
 mesh used for finite element modeling. In addition to contours, the area
 between contours may be painted according to the CPT.
