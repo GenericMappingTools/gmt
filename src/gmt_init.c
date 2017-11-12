@@ -11626,7 +11626,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		unsigned int E_flags;
 		E_flags = strip_R_from_E_in_pscoast (GMT, *options, r_code);
 		if (GMT->current.setting.run_mode == GMT_MODERN && !(E_flags & 1)) {	/* Just country codes and plot settings, no region specs */
-			int id = gmtlib_get_option_id (0, "R");		/* The -R history item */
+			int id = gmtlib_get_option_id (0, "R");		/* The -RP history item */
+			if (!GMT->init.history[id]) id++;		/* No history for -RP, increment to -RG as fallback */
 			if (GMT->init.history[id]) add_R = false;	/* There is history for -R so -R will be added below */
 		}
 		if (E_flags & 2) add_R = false;	/* No -R should be set since we want a country code listing only */
