@@ -5,7 +5,7 @@
 # Purpose:	Illustrates volumes of grids inside contours and spatial
 #		selection of data
 # GMT modules:	gmtset, gmtselect, gmtspatial, grdclip, grdcontour, grdimage
-# GMT modules:	grdmath, grdvolume, makecpt, pscoast, psscale, pstext, psxy
+# GMT modules:	grdmath, grdvolume, makecpt, coast, colorbar, text, plot
 # Unix progs:	rm
 #
 gmt begin ex18 ps
@@ -17,18 +17,18 @@ gmt begin ex18 ps
   gmt subplot begin 2x1 -A+JTL+o0.1i/0 -Fs6i/3.5i -M0.2i -R@AK_gulf_grav.nc -JM5.5i -B -BWSne
     gmt subplot 2,1
     gmt grdimage @AK_gulf_grav.nc -I+a45+nt1 -Cgrav.cpt
-    gmt pscoast -Di -Ggray -Wthinnest
-    gmt psscale -DjRB+w3i+h+o025i -Cgrav.cpt -Bxaf -By+l"mGal"
-    gmt pstext pratt.txt -D0.1i/0.1i -F+f12p,Helvetica-Bold+jLB+tPratt
-    gmt psxy pratt.txt -SE- -Wthinnest
+    gmt coast -Di -Ggray -Wthinnest
+    gmt colorbar -DjRB+w3i+h+o025i -Cgrav.cpt -Bxaf -By+l"mGal"
+    gmt text pratt.txt -D0.1i/0.1i -F+f12p,Helvetica-Bold+jLB+tPratt
+    gmt plot pratt.txt -SE- -Wthinnest
     # Then draw 10 mGal contours and overlay 50 mGal contour in green
     gmt subplot 1,1
     gmt grdcontour @AK_gulf_grav.nc -C20
     # Save 50 mGal contours to individual files, then plot them
     gmt grdcontour @AK_gulf_grav.nc -C10 -L49/51 -Dsm_%d_%c.txt
-    gmt psxy -Wthin,green sm_*.txt
-    gmt pscoast -Di -Ggray -Wthinnest
-    gmt psxy pratt.txt -SE- -Wthinnest
+    gmt plot -Wthin,green sm_*.txt
+    gmt coast -Di -Ggray -Wthinnest
+    gmt plot pratt.txt -SE- -Wthinnest
     rm -f sm_*_O.txt	# Only consider the closed contours
     # Now determine centers of each enclosed seamount > 50 mGal but only plot
     # the ones within 200 km of Pratt seamount.
@@ -36,8 +36,8 @@ gmt begin ex18 ps
     # add it to the file centers.txt
     gmt spatial -Q -fg sm_*_C.txt > centers.txt
     # Only plot the ones within 200 km
-    gmt select -Cpratt.txt+d200k centers.txt -fg | gmt psxy -SC0.04i -Gred -Wthinnest
-    gmt psxy -ST0.1i -Gyellow -Wthinnest pratt.txt
+    gmt select -Cpratt.txt+d200k centers.txt -fg | gmt plot -SC0.04i -Gred -Wthinnest
+    gmt plot -ST0.1i -Gyellow -Wthinnest pratt.txt
     # Then report the volume and area of these seamounts only
     # by masking out data outside the 200 km-radius circle
     # and then evaluate area/volume for the 50 mGal contour
@@ -46,7 +46,7 @@ gmt begin ex18 ps
     gmt grdmath @AK_gulf_grav.nc mask.nc MUL = tmp.nc
     area=`gmt grdvolume tmp.nc -C50 -Sk -o1`
     volume=`gmt grdvolume tmp.nc -C50 -Sk -o2`
-    gmt pstext -M -Gwhite -Wthin -Dj0.3i -F+f14p,Helvetica-Bold+jLB -C0.1i << END
+    gmt text -M -Gwhite -Wthin -Dj0.3i -F+f14p,Helvetica-Bold+jLB -C0.1i << END
 > -149 52.5 14p 2.6i j
 Volumes: $volume mGal\264km@+2@+
 

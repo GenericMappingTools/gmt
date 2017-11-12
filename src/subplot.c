@@ -785,7 +785,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				add_annot = (row == 0 && (Ctrl->S[GMT_X].annotate & SUBPLOT_PLACE_AT_MAX));
 			else	/* Not shared, if so all or none of N axes are annotated */
 				add_annot = (Ctrl->S[GMT_X].annotate & SUBPLOT_PLACE_AT_MAX);
-			if (add_annot) {	/* Need annotation at N */
+			if (add_annot || strchr (Ctrl->S[GMT_X].axes, 'N')) {	/* Need annotation at N */
 				axes[k++] = 'N';
 				if (row) y -= (annot_height + tick_height);
 				if (Ctrl->S[GMT_X].has_label) {
@@ -805,7 +805,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				add_annot = (row == last_row && (Ctrl->S[GMT_X].annotate & SUBPLOT_PLACE_AT_MIN));
 			else	/* Not shared, if so all or none of N axes are annotated */
 				add_annot = (Ctrl->S[GMT_X].annotate & SUBPLOT_PLACE_AT_MIN);
-			if (add_annot) {
+			if (add_annot || strchr (Ctrl->S[GMT_X].axes, 'S')) {
 				axes[k++] = 'S';
 				if (row < last_row) y -= (annot_height + tick_height);
 				if (Ctrl->S[GMT_X].has_label)
@@ -843,7 +843,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			else	/* Not shared, if so all or none of W axes are annotated */
 				add_annot = (Ctrl->S[GMT_Y].annotate & SUBPLOT_PLACE_AT_MIN);
 
-			if (add_annot) {
+			if (add_annot || strchr (Ctrl->S[GMT_Y].axes, 'W')) {
 				axes[k++] = 'W';
 				if (col) x += (annot_height + tick_height);
 				if (Ctrl->S[GMT_Y].has_label) {
@@ -863,7 +863,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				add_annot = (col == last_col && (Ctrl->S[GMT_Y].annotate & SUBPLOT_PLACE_AT_MAX));
 			else	/* Not shared, if so all or none of W axes are annotated */
 				add_annot = (Ctrl->S[GMT_Y].annotate & SUBPLOT_PLACE_AT_MAX);
-			if (add_annot) {
+			if (add_annot || strchr (Ctrl->S[GMT_Y].axes, 'E')) {
 				axes[k++] = 'E';
 				if (col < last_col) x += (annot_height + tick_height);
 				if (Ctrl->S[GMT_Y].has_label) {

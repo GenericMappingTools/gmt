@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Illustrate use of gmtregress with different norms and types
-# GMT modules:  gmtregress, psxy, pstext, subplot
+# GMT modules:  gmtregress, plot, text, subplot
 # Unix progs:	rm
 #
 
@@ -11,10 +11,10 @@
 # one panel.  It takes a few options that differ between panels.
 
 function plot_one { # First 3-4 args are: -E -N -c [-Barg]
-  gmt psxy -B+ghoneydew${4} data.txt -Sc0.05i -Gblue $3
-  gmt psxy giants.txt -Sc0.05i -Gred   -N
-  gmt psxy giants.txt -Sc0.1i  -W0.25p -N
-  gmt regress data.txt -Fxm $1 $2 -T2.85/5.25/0.1 | gmt psxy -W2p	
+  gmt plot -B+ghoneydew${4} data.txt -Sc0.05i -Gblue $3
+  gmt plot giants.txt -Sc0.05i -Gred   -N
+  gmt plot giants.txt -Sc0.1i  -W0.25p -N
+  gmt regress data.txt -Fxm $1 $2 -T2.85/5.25/0.1 | gmt plot -W2p	
 }
 
 gmt begin ex47 ps
@@ -36,13 +36,13 @@ gmt begin ex47 ps
   plot_one -Ey -N2 -c4,2
   #LMS regressions - also add labels on right side
   plot_one -Er -Nr -c1,3 +tLMS
-  echo "Y ON X" | gmt pstext -F+cRM+jTC+a90 -N -Dj0.2i
+  echo "Y ON X" | gmt text -F+cRM+jTC+a90 -N -Dj0.2i
   plot_one -Eo -Nr -c2,3
-  echo "X ON Y" | gmt pstext -F+cRM+jTC+a90 -N -Dj0.2i
+  echo "X ON Y" | gmt text -F+cRM+jTC+a90 -N -Dj0.2i
   plot_one -Ex -Nr -c3,3
-  echo "ORTHOGONAL" | gmt pstext -F+cRM+jTC+a90 -N -Dj0.2i
+  echo "ORTHOGONAL" | gmt text -F+cRM+jTC+a90 -N -Dj0.2i
   plot_one -Ey -Nr -c4,3
-  echo "REDUCED MAJOR AXIS" | gmt pstext -F+cRM+jTC+a90 -N -Dj0.2i
+  echo "REDUCED MAJOR AXIS" | gmt text -F+cRM+jTC+a90 -N -Dj0.2i
   gmt subplot end
 gmt end
 rm -f data.txt giants.txt

@@ -4,7 +4,7 @@
 #
 # Purpose:	Gridding and clipping when data are missing
 # GMT modules:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo
-# GMT modules:	gmtinfo, nearneighbor, pscoast, psmask, surface
+# GMT modules:	info, nearneighbor, coast, mask, surface
 # Unix progs:	rm
 #
 gmt begin ex15 ps
@@ -17,16 +17,16 @@ gmt begin ex15 ps
 #   Grid via surface but mask out area with no data using coastlines
     gmt blockmedian ship.b -b3d > ship_10m.b
     gmt surface ship_10m.b -Gship.nc -bi
-    gmt psmask -I10m ship.b -T -Glightgray -bi3d -c2,2
+    gmt mask -I10m ship.b -T -Glightgray -bi3d -c2,2
     gmt grdcontour ship.nc -C250 -L-8000/0 -A1000 -Gd2i
 #   Grid via surface but mask out area with no data
-    gmt psmask -I10m ship_10m.b -bi3d -c1,1
+    gmt mask -I10m ship_10m.b -bi3d -c1,1
     gmt grdcontour ship.nc -C250 -A1000 -L-8000/0 -Gd2i
-    gmt psmask -C
+    gmt mask -C
 #   Clip data above sealevel then overlay land
     gmt grdclip ship.nc -Sa-1/NaN -Gship_clipped.nc
     gmt grdcontour ship_clipped.nc -C250 -A1000 -L-8000/0 -Gd2i -c1,2
-    gmt pscoast -Ggray -Wthinnest
+    gmt coast -Ggray -Wthinnest
     gmt grdinfo -Cn -M ship.nc | gmt psxy -Sa0.15i -Wthick -i10,11
   gmt subplot end
 gmt end

@@ -4,7 +4,7 @@
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
 # GMT modules:	filter1d, fitcircle, gmtconvert, gmtinfo, project, sample1d
-# GMT modules:	spectrum1d, trend1d, pshistogram, psxy, pstext
+# GMT modules:	spectrum1d, trend1d, histogram, plot, text
 # Unix progs:	echo, rm
 #
 # This example begins with data files "ship_03.txt" and "sat_03.txt" which
@@ -47,15 +47,15 @@ gmt begin ex03 ps
   gmt set FONT_TAG 18p,Helvetica-Bold
   gmt subplot begin 2x1 -M0.25i -SCb+l"Wavelength (km)" -T"Ship and Satellite Gravity" -Fs4i/3.75i -A+jTR+o0.1i
     gmt subplot 1,1 -A"Input Power"
-    gmt psxy spectrum.xpower -JX-4il/3.75il -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" \
+    gmt plot spectrum.xpower -JX-4il/3.75il -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" \
 	-BWeSn+g240/255/240 -Gred -ST0.07i -R1/1000/0.1/10000 -Ey+p0.5p
-    gmt psxy spectrum.ypower -Gblue -Sc0.07i -Ey+p0.5p
-    gmt pslegend -DjBL+w1.2i+o0.25i -F+gwhite+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold <<- EOF
+    gmt plot spectrum.ypower -Gblue -Sc0.07i -Ey+p0.5p
+    gmt legend -DjBL+w1.2i+o0.25i -F+gwhite+pthicker --FONT_ANNOT_PRIMARY=14p,Helvetica-Bold <<- EOF
 	S 0.1i T 0.07i red  - 0.3i Ship
 	S 0.1i c 0.07i blue - 0.3i Satellite
 	EOF
     gmt subplot 2,1 -A"Coherency@+2@+"
-    gmt psxy spectrum.coh -JX-4il/3.75i -Bxa1f3p -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn+g240/255/240 -R1/1000/0/1 -P -Sc0.07i -Gpurple -Ey+p0.5p
+    gmt plot spectrum.coh -JX-4il/3.75i -Bxa1f3p -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn+g240/255/240 -R1/1000/0/1 -P -Sc0.07i -Gpurple -Ey+p0.5p
   gmt subplot end
 gmt end
 rm -f report tmp samp* *.pg *.extr spectrum.*

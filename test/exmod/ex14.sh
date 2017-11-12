@@ -4,7 +4,7 @@
 #
 # Purpose:	Showing simple gridding, contouring, and resampling along tracks
 # GMT modules:	blockmean, grdcontour, grdtrack, grdtrend, project, pstext,
-# GMT modules:	set, psxy, surface, subplot
+# GMT modules:	set, plot, surface, subplot
 # Unix progs:	rm
 #
 gmt begin ex14 ps
@@ -17,22 +17,22 @@ gmt begin ex14 ps
   # Sample along diagonal
   gmt grdtrack track -Gdata.nc -o2,3 > data.d
   gmt grdtrack track -Gtrend.nc -o2,3 > trend.d
-  gmt psxy -Ra -JX6i/1.4i data.d -Wthick -Bx1 -By50 -BWSne -P
-  gmt psxy trend.d -Wthinner,-
+  gmt plot -Ra -JX6i/1.4i data.d -Wthick -Bx1 -By50 -BWSne -P
+  gmt plot trend.d -Wthinner,-
   gmt subplot begin 2x2 -M0.05i -Ff6i/6i+d -BWSne -Yh+0.4i
     # First draw network and label the nodes
-    gmt psxy @Table_5_11.txt -R0/7/0/7 -Sc0.05i -Gblack -c1,1
-    gmt pstext @Table_5_11.txt -D0.1c/0 -F+f6p+jLM -N
+    gmt plot @Table_5_11.txt -R0/7/0/7 -Sc0.05i -Gblack -c1,1
+    gmt text @Table_5_11.txt -D0.1c/0 -F+f6p+jLM -N
     # Then draw gmt blockmean cells and label data values using one decimal
-    gmt psxy mean.xyz -Ss0.05i -Gblack -c1,2
-    gmt pstext -D0.15c/0 -F+f6p+jLM+z%.1f -Gwhite -W -C0.01i -N mean.xyz
+    gmt plot mean.xyz -Ss0.05i -Gblack -c1,2
+    gmt text -D0.15c/0 -F+f6p+jLM+z%.1f -Gwhite -W -C0.01i -N mean.xyz
     # Then gmt surface and contour the data
     gmt grdcontour data.nc -C25 -A50 -Gd3i -S4 -c2,1
-    gmt psxy mean.xyz -Ss0.05i -Gblack
+    gmt plot mean.xyz -Ss0.05i -Gblack
     # Fit bicubic trend to data and compare to gridded gmt surface
     gmt grdcontour trend.nc -C25 -A50 -Glct/cb -S4 -c2,2
-    gmt psxy track -Wthick,.
+    gmt plot track -Wthick,.
   gmt subplot end
-  gmt psxy trend.d -Wthinner,-
+  gmt plot trend.d -Wthinner,-
 gmt end
 rm -f mean.xyz track trend.nc data.nc data.d trend.d

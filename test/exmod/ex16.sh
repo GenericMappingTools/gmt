@@ -2,7 +2,7 @@
 #		GMT EXAMPLE 16
 #
 # Purpose:	Illustrates interpolation methods using same data as Example 12.
-# GMT modules:	gmtset, grdview, grdfilter, pscontour, psscale, surface, triangulate
+# GMT modules:	gmtset, grdview, grdfilter, contour, colorbar, surface, triangulate
 # Unix progs:	rm
 #
 # Illustrate various means of contouring, using triangulate and surface.
@@ -10,9 +10,9 @@
 #
 gmt begin ex16 ps
   gmt set FONT_ANNOT_PRIMARY 9p FONT_TITLE 18p,Times-Roman
-  gmt psscale -Dx3.25i/0i+jTC+w5i/0.25i+h -C@ex_16.cpt -P
+  gmt colorbar -Dx3.25i/0i+jTC+w5i/0.25i+h -C@ex_16.cpt -P
   gmt subplot begin 2x2 -M0.05i -Fs3.25i/0+d -R0/6.5/-0.2/6.5 -Jx1i -SCb+t -SRl -Yh+0.4i -T"Gridding of Data"
-    gmt pscontour @Table_5_11.txt -C@ex_16.cpt -I -B+t"pscontour (triangulate)" -c1,1
+    gmt contour @Table_5_11.txt -C@ex_16.cpt -I -B+t"contour (triangulate)" -c1,1
     # 
     gmt surface @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.2 -Graws0.nc
     gmt grdview raws0.nc -C@ex_16.cpt -Qs -B+t"surface (tension = 0)" -c1,2
