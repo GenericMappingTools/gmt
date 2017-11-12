@@ -48,13 +48,11 @@ Synopsis
 Description
 -----------
 
-**psrose** reads (length,azimuth) pairs from *file* [or standard input]
-and generates PostScript code that will plot a windrose diagram.  Add **-i**\ 0
-if your file only has azimuth values.
+**psrose** reads (length, azimuth) pairs from *file* [or standard input]
+and plot a windrose diagram.  Add **-i**\ 0 if your file only has azimuth values.
 Optionally (with **-A**), polar histograms may be drawn (sector diagram
 or rose diagram). Options include full circle and half circle plots. The
-PostScript code is written to standard output. The outline of the
-windrose is drawn with the same color as **MAP\_DEFAULT\_PEN**. 
+outline of the windrose is drawn with the same color as **MAP\_DEFAULT\_PEN**. 
 
 Required Arguments
 ------------------

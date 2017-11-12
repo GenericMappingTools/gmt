@@ -48,13 +48,12 @@ Description
 -----------
 
 **psternary** reads (*a*,\ *b*,\ *c*\ [,*z*]) records from *files* [or standard input] and
-generates PostScript code that will plot symbols
+plots symbols
 at those locations on a ternary diagram. If a symbol is selected and no symbol size
 given, then **psternary** will interpret the fourth column of the input data
 as symbol size. Symbols whose *size* is <= 0 are skipped. If no symbols
 are specified then the symbol code (see **-S** below) must be present as
 last column in the input.
-The PostScript code is written to standard output.
 
 Optional Arguments
 ------------------

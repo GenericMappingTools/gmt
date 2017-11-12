@@ -6,7 +6,7 @@ psbasemap
 
 .. only:: not man
 
-    psbasemap - Plot PostScript base maps
+    psbasemap - Plot base maps and frames
 
 Synopsis
 --------
@@ -39,7 +39,7 @@ Synopsis
 Description
 -----------
 
-**psbasemap** creates PostScript code that will produce a basemap.
+**psbasemap** creates a basic or fancy basemap with axes, fill, and titles.
 Several map projections are available, and the user may specify separate
 tick-mark intervals for boundary annotation, ticking, and [optionally]
 gridlines. A simple map scale or directional rose may also be plotted.

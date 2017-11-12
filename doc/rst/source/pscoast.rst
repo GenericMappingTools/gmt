@@ -61,7 +61,6 @@ specify fill of water-areas then the latter will be transparent (i.e.,
 earlier graphics drawn in those areas will not be overwritten).
 Likewise, if the water-areas are painted and no land fill is set then
 the land-areas will be transparent. A map projection must be supplied.
-The PostScript code is written to standard output.
 
 Required Arguments
 ------------------

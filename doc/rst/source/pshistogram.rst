@@ -47,10 +47,9 @@ Description
 -----------
 
 **pshistogram** reads *file* [or standard input] and examines the first
-data column (or use **-i**) to calculate histogram parameters based on
+data column (or one set by **-i**) to calculate histogram parameters based on
 the bin-width provided. Using these parameters, scaling, and optional
-range parameters it will generate PostScript code that plots a
-histogram. A cumulative histogram may also be specified. 
+range parameters it will plot the histogram. A cumulative histogram may also be specified. 
 
 Required Arguments
 ------------------

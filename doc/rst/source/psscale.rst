@@ -196,7 +196,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [**p**\ \|\ *dpi*]
-    Controls how the color scale is represented by the PostScript language.
+    Controls how the color scale should be encoded graphically.
     To preferentially draw color rectangles (e.g., for discrete colors), append **p**.
     Otherwise we will preferentially draw images (e.g., for continuous colors).
     Optionally append effective dots-per-inch for rasterization of color scales [600].

@@ -51,7 +51,7 @@ Description
 -----------
 
 **psxy** reads (*x*,\ *y*) pairs from *files* [or standard input] and
-generates PostScript code that will plot lines, polygons, or symbols
+will plot lines, polygons, or symbols
 at those locations on a map. If a symbol is selected and no symbol size
 given, then **psxy** will interpret the third column of the input data
 as symbol size. Symbols whose *size* is <= 0 are skipped. If no symbols
@@ -61,7 +61,7 @@ data points will be drawn instead. To explicitly close polygons, use
 **-L**. Select a fill with **-G**. If **-G** is set, **-W** will control
 whether the polygon outline is drawn or not. If a symbol is selected,
 **-G** and **-W** determines the fill and outline/no outline,
-respectively. The PostScript code is written to standard output.
+respectively.
 
 Required Arguments
 ------------------
@@ -250,7 +250,7 @@ Optional Arguments
     from the end point.  Append unit **u** from **c**\ \|\ **i**\ \|\ **p** to
     indicate plot distance on the map or append map distance units instead (see below)
     [Cartesian distances];
-    **+s** will draw the line using a *PostScript* Bezier spline [linear spline];
+    **+s** will draw the line using a Bezier spline [linear spline];
     **+v**\ *vspecs* will place a vector head at the ends of the lines.  You can
     use **+vb** and **+ve** to specify separate vector specs at each end [shared specs].
     Because **+v** may take additional modifiers it must necessarily be given

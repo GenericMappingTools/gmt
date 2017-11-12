@@ -43,8 +43,7 @@ Description
 
 **pstext** plots text strings of variable size, font type, and
 orientation. Various map projections are provided, with the option to
-draw and annotate the map boundaries. PostScript code is written to
-standard output. Greek characters, subscript, superscript, and small
+draw and annotate the map boundaries. Greek characters, subscript, superscript, and small
 caps are supported as follows: The sequence @~ toggles between the
 selected font and Greek (Symbol). @%\ *no*\ % sets the font to *no*; @%%
 resets the font to the starting font, @- toggles subscripts on/off, @+

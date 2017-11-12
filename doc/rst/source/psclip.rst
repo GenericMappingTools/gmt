@@ -177,8 +177,8 @@ Optional Arguments
 Examples
 --------
 
-To make an clipping PostScript file that will set up a complex clip
-area to which subsequent plotting will be confined, run:
+To set up a complex clip
+area to which all subsequent plotting will be confined, run:
 
    ::
 
