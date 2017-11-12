@@ -86,6 +86,7 @@ struct SUBPLOT_CTRL {
 	struct F {	/* -F[f|s][<width>[u]/<height>[u]][:<wfracs/hfracs>][+d][+g<fill>][+p<pen>] */
 		bool active;
 		bool debug;
+		bool reset_h;	/* True when height was given as 0 and we need to update based on what was learned */
 		unsigned int mode;
 		double dim[2];	/* Figure dimension (0/0 if subplot dimensions are given) */
 		double *w, *h;	/* Arrays with variable (or constant) subplot widths and heights */
@@ -98,6 +99,7 @@ struct SUBPLOT_CTRL {
 		char axes[4];		/* W|e|w|e|l|r for -SR,  S|s|N|n|b|t for -SC [MAP_FRAME_AXES] */
 		char *b;		/* Any hardwired choice for afg settings for this axis [af] */
 		char *label[2];		/* The constant primary [and alternate] y labels */
+		char *extra;		/* Special -B frame args such as fill */
 		unsigned int ptitle;	/* 0 = no panel titles, 1 = column titles, 2 = all panel titles */
 		unsigned annotate;	/* 1 if only l|r or t|b, 0 for both */
 		unsigned tick;		/* 1 if only l|r or t|b, 0 for both */
@@ -143,6 +145,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *C) {	/* Dea
 	gmt_M_str_free (C->S[GMT_X].label[GMT_SECONDARY]);
 	gmt_M_str_free (C->S[GMT_Y].label[GMT_PRIMARY]);
 	gmt_M_str_free (C->S[GMT_Y].label[GMT_SECONDARY]);
+	gmt_M_str_free (C->S[GMT_X].extra);
 	gmt_M_free (GMT, C->F.w);
 	gmt_M_free (GMT, C->F.h);
 	gmt_M_free (GMT, C);
@@ -439,6 +442,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -F requires width and height of plot area.\n");
 							n_errors++;
 						}
+						if (Ctrl->F.dim[GMT_Y] == 0.0) Ctrl->F.reset_h = true;	/* Update h later based on map aspect ratio and width of 1st col */
+						
 						/* Since GMT_Get_Values returns in default project length unit, convert to inch */
 						for (k = 0; k < 2; k++) Ctrl->F.dim[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 						for (j = 0; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] = Ctrl->F.dim[GMT_X];	/* Duplicate equally to all rows and cols */
@@ -532,7 +537,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 	}
 	
 	if (Ctrl->In.mode == SUBPLOT_BEGIN) {
-		unsigned int p = 0;
+		unsigned int px = 0, py = 0;
 		/* Was -R -J given */
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Syntax error -J: Requires -R as well!\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && Ctrl->F.mode == SUBPLOT_FIGURE, "Syntax error -J: Requires -Fs to determine subplot height!\n");
@@ -551,21 +556,29 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				Ctrl->S[GMT_Y].b = (By) ? strdup (By->arg) : strdup (Bxy->arg);
 			if (Bframe) {
 				static char *Bx_items = "SsNnbt", *By_items = "WwEelr";
-				for (k = p = 0; k < 6; k++)
-					if (strchr (Bframe->arg, Bx_items[k])) Ctrl->S[GMT_X].axes[p++] = Bx_items[k];
+				for (k = px = 0; k < 6; k++)
+					if (strchr (Bframe->arg, Bx_items[k])) Ctrl->S[GMT_X].axes[px++] = Bx_items[k];
 				if (Ctrl->S[GMT_X].axes[0] && Ctrl->S[GMT_X].active) gmtlib_str_tolower (Ctrl->S[GMT_X].axes);	/* Used to control the non-annotated axes */
-				for (k = p = 0; k < 6; k++)
-					if (strchr (Bframe->arg, By_items[k])) Ctrl->S[GMT_Y].axes[p++] = By_items[k];
+				for (k = py = 0; k < 6; k++)
+					if (strchr (Bframe->arg, By_items[k])) Ctrl->S[GMT_Y].axes[py++] = By_items[k];
 				if (Ctrl->S[GMT_Y].axes[0] && Ctrl->S[GMT_Y].active) gmtlib_str_tolower (Ctrl->S[GMT_Y].axes);	/* Used to control the non-annotated axes */
+				if ((c = gmt_first_modifier (GMT, Bframe->arg, "bgnot")))	/* Gave frame modifiers */
+					Ctrl->S[GMT_X].extra = strdup (c);
 			}
 		}
 		if (!Bframe) {	/* Examine the default setting instead */
-			if (strchr (GMT->current.setting.map_frame_axes, 'S')) Ctrl->S[GMT_X].axes[p++] = 'S';
-			else if (strchr (GMT->current.setting.map_frame_axes, 's')) Ctrl->S[GMT_X].axes[p++] = 's';
-			else if (strchr (GMT->current.setting.map_frame_axes, 'b')) Ctrl->S[GMT_X].axes[p++] = 'b';
-			if (strchr (GMT->current.setting.map_frame_axes, 'N')) Ctrl->S[GMT_X].axes[p++] = 'N';
-			else if (strchr (GMT->current.setting.map_frame_axes, 'n')) Ctrl->S[GMT_X].axes[p++] = 'n';
-			else if (strchr (GMT->current.setting.map_frame_axes, 't')) Ctrl->S[GMT_X].axes[p++] = 't';
+			if (strchr (GMT->current.setting.map_frame_axes, 'S')) Ctrl->S[GMT_X].axes[px++] = 'S';
+			else if (strchr (GMT->current.setting.map_frame_axes, 's')) Ctrl->S[GMT_X].axes[px++] = 's';
+			else if (strchr (GMT->current.setting.map_frame_axes, 'b')) Ctrl->S[GMT_X].axes[px++] = 'b';
+			if (strchr (GMT->current.setting.map_frame_axes, 'N')) Ctrl->S[GMT_X].axes[px++] = 'N';
+			else if (strchr (GMT->current.setting.map_frame_axes, 'n')) Ctrl->S[GMT_X].axes[px++] = 'n';
+			else if (strchr (GMT->current.setting.map_frame_axes, 't')) Ctrl->S[GMT_X].axes[px++] = 't';
+			if (strchr (GMT->current.setting.map_frame_axes, 'W')) Ctrl->S[GMT_Y].axes[py++] = 'W';
+			else if (strchr (GMT->current.setting.map_frame_axes, 'w')) Ctrl->S[GMT_Y].axes[py++] = 'w';
+			else if (strchr (GMT->current.setting.map_frame_axes, 'l')) Ctrl->S[GMT_Y].axes[py++] = 'l';
+			if (strchr (GMT->current.setting.map_frame_axes, 'E')) Ctrl->S[GMT_Y].axes[py++] = 'E';
+			else if (strchr (GMT->current.setting.map_frame_axes, 'e')) Ctrl->S[GMT_Y].axes[py++] = 'e';
+			else if (strchr (GMT->current.setting.map_frame_axes, 'r')) Ctrl->S[GMT_Y].axes[py++] = 'r';
 		}
 		if (Ctrl->S[GMT_X].b == NULL) Ctrl->S[GMT_X].b = strdup ("af");
 		if (Ctrl->S[GMT_Y].b == NULL) Ctrl->S[GMT_Y].b = strdup ("af");
@@ -709,22 +722,27 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			if (ny == 2 || Ctrl->S[GMT_X].annotate & SUBPLOT_PLACE_AT_MAX) y_header_off += label_height;
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d col labels: fluff = {%g, %g}\n", ny, fluff[GMT_X], fluff[GMT_Y]);
-		if (Ctrl->S[GMT_Y].ptitle == SUBPLOT_PANEL_TITLE)
+		if (Ctrl->S[GMT_Y].ptitle == SUBPLOT_PANEL_TITLE) {
 			fluff[GMT_Y] += (factor-1) * title_height;
+			y_header_off += title_height;
+		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d panel titles: fluff = {%g, %g}\n", factor, fluff[GMT_X], fluff[GMT_Y]);
 		if (Ctrl->F.mode == SUBPLOT_FIGURE) {	/* Got figure dimension, compute subplot dimensions */
 			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) Ctrl->F.w[col] *= (Ctrl->F.dim[GMT_X] - fluff[GMT_X]);
 			for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.h[row] *= (Ctrl->F.dim[GMT_Y] - fluff[GMT_Y]);
 		}
 		else {	/* Already got subplot dimension, compute figure dimension */
+			if (Ctrl->F.reset_h) {	/* Update h based on map aspect ratio and width of a constant column */
+				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.h[row] = Ctrl->F.w[0] * (GMT->current.map.height / GMT->current.map.width);
+			}
 			for (col = 0, Ctrl->F.dim[GMT_X] = fluff[GMT_X]; col < Ctrl->N.dim[GMT_X]; col++) Ctrl->F.dim[GMT_X] += Ctrl->F.w[col];
 			for (row = 0, Ctrl->F.dim[GMT_Y] = fluff[GMT_Y]; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.dim[GMT_Y] += Ctrl->F.h[row];
 		}
 		/* Plottable area: */
 		width  = Ctrl->F.dim[GMT_X];
 		height = Ctrl->F.dim[GMT_Y];
-		//y_heading = height + y_header_off + Ctrl->M.margin[YHI];
-		y_heading = height + y_header_off;
+		y_heading = height + y_header_off + Ctrl->M.margin[YHI];
+		//y_heading = height + y_header_off;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Figure dimensions: {%g, %g}\n", Ctrl->F.dim[GMT_X], Ctrl->F.dim[GMT_Y]);
 		sprintf (report, "%g", Ctrl->F.w[0]);
 		for (col = 1; col < Ctrl->N.dim[GMT_X]; col++) {
@@ -785,7 +803,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				add_annot = (row == 0 && (Ctrl->S[GMT_X].annotate & SUBPLOT_PLACE_AT_MAX));
 			else	/* Not shared, if so all or none of N axes are annotated */
 				add_annot = (Ctrl->S[GMT_X].annotate & SUBPLOT_PLACE_AT_MAX);
-			if (add_annot || strchr (Ctrl->S[GMT_X].axes, 'N')) {	/* Need annotation at N */
+			if (add_annot || (!Ctrl->S[GMT_X].active && strchr (Ctrl->S[GMT_X].axes, 'N'))) {	/* Need annotation at N */
 				axes[k++] = 'N';
 				if (row) y -= (annot_height + tick_height);
 				if (Ctrl->S[GMT_X].has_label) {
@@ -805,7 +823,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				add_annot = (row == last_row && (Ctrl->S[GMT_X].annotate & SUBPLOT_PLACE_AT_MIN));
 			else	/* Not shared, if so all or none of N axes are annotated */
 				add_annot = (Ctrl->S[GMT_X].annotate & SUBPLOT_PLACE_AT_MIN);
-			if (add_annot || strchr (Ctrl->S[GMT_X].axes, 'S')) {
+			if (add_annot || (!Ctrl->S[GMT_X].active && strchr (Ctrl->S[GMT_X].axes, 'S'))) {
 				axes[k++] = 'S';
 				if (row < last_row) y -= (annot_height + tick_height);
 				if (Ctrl->S[GMT_X].has_label)
@@ -843,7 +861,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			else	/* Not shared, if so all or none of W axes are annotated */
 				add_annot = (Ctrl->S[GMT_Y].annotate & SUBPLOT_PLACE_AT_MIN);
 
-			if (add_annot || strchr (Ctrl->S[GMT_Y].axes, 'W')) {
+			if (add_annot || (!Ctrl->S[GMT_Y].active && strchr (Ctrl->S[GMT_Y].axes, 'W'))) {
 				axes[k++] = 'W';
 				if (col) x += (annot_height + tick_height);
 				if (Ctrl->S[GMT_Y].has_label) {
@@ -863,7 +881,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				add_annot = (col == last_col && (Ctrl->S[GMT_Y].annotate & SUBPLOT_PLACE_AT_MAX));
 			else	/* Not shared, if so all or none of W axes are annotated */
 				add_annot = (Ctrl->S[GMT_Y].annotate & SUBPLOT_PLACE_AT_MAX);
-			if (add_annot || strchr (Ctrl->S[GMT_Y].axes, 'E')) {
+			if (add_annot || (!Ctrl->S[GMT_Y].active && strchr (Ctrl->S[GMT_Y].axes, 'E'))) {
 				axes[k++] = 'E';
 				if (col < last_col) x += (annot_height + tick_height);
 				if (Ctrl->S[GMT_Y].has_label) {
@@ -923,6 +941,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 					fprintf (fp, "-\t0\t0\t0\t0\tBL\tBL\t-\t-");
 				/* Now the four -B settings items placed between GMT_ASCII_GS characters */
 				fprintf (fp, "\t%c%s%s", GMT_ASCII_GS, Bx[col], By[row]);	/* These are the axes to draw/annotate for this panel */
+				if (Ctrl->S[GMT_X].extra) fprintf (fp, "%s", Ctrl->S[GMT_X].extra);	/* Add frame modifiers */
 				fprintf (fp,"%c", GMT_ASCII_GS); 	/* Next is x labels,  Either given of just XLABEL */
 				if (Ly[row] && Ctrl->S[GMT_X].label[GMT_PRIMARY]) fprintf (fp,"%s", Ctrl->S[GMT_X].label[GMT_PRIMARY]); 
 				fprintf (fp, "%c", GMT_ASCII_GS); 	/* Next is y labels,  Either given of just YLABEL */

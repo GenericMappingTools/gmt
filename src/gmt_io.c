@@ -7017,7 +7017,7 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 	bool pol_check, check_geometry;
 	int status;
 	uint64_t n_expected_fields, n_returned = 0;
-	uint64_t n_read = 0, row = 0, seg = 0, col, n_poly_seg = 0;
+	uint64_t n_read = 0, row = 0, seg = 0, col, n_poly_seg = 0, k;
 	size_t n_head_alloc = GMT_TINY_CHUNK;
 	char open_mode[4] = {""}, file[GMT_BUFSIZ] = {""}, line[GMT_LEN64] = {""};
 	double d;
@@ -7130,7 +7130,8 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 		if (header) {	/* Only true at start of an ASCII file */
 			while ((GMT->current.setting.io_header[GMT_IN] && n_read <= GMT->current.setting.io_n_header_items) ||
 			        gmt_M_rec_is_table_header (GMT)) { /* Process headers */
-				T->header[T->n_headers] = strdup (GMT->current.io.curr_text);
+				for (k = 0; GMT->current.io.curr_text[k] == ' '; k++);
+				T->header[T->n_headers] = strdup (&GMT->current.io.curr_text[k]);
 				T->n_headers++;
 				if (T->n_headers == n_head_alloc) {
 					n_head_alloc <<= 1;
