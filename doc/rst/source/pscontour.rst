@@ -1,6 +1,7 @@
+.. include:: swing_names.rst_
+
 .. index:: ! pscontour
 
-.. |pscontour| replace:: **pscontour**
 
 ***********
 |pscontour|
@@ -8,7 +9,7 @@
 
 .. only:: not man
 
-    |pscontour| - Contour table data by direct triangulation [method]
+    Contour table data by direct triangulation [method]
 
 Synopsis
 --------
