@@ -23,9 +23,11 @@ Synopsis
 [ |-C|\ [+]\ *cont_int* ]
 [ |-D|\ [*template*] ] [ |-E|\ *indexfile* ]
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
-[ |-I| ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ]
+[ |-I| ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+|-Kswing|
 [ |-L|\ *pen* ] [ |-N| ]
-[ |-O| ] [ |-P| ]
+|-Oswing|
+|-Pswing|
 [ |-Q|\ [*cut*\ [*unit*]][\ **+z**] ]
 [ |-S|\ [\ *p*\ \|\ *t*] ]
 [ |-T|\ [**+\|-**][**+a**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]

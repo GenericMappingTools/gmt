@@ -23,10 +23,10 @@ Synopsis
 [ |-I| ]
 [ |-J|\ *parameters* ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
-[ |-K| ]
+|-Kswing|
 [ |-M| ]
-[ |-O| ]
-[ |-P| ]
+|-Oswing|
+|-Pswing|
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
