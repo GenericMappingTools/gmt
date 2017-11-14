@@ -694,7 +694,6 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	struct GMT_GRID *Drape[3] = {NULL, NULL, NULL}, *Topo = NULL, *Intens = NULL, *Z = NULL;
 	struct GRDVIEW_BIN *binij = NULL;
 	struct GMT_PALETTE *P = NULL;
-	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GRDVIEW_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -729,7 +728,6 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, Topo->header->z_min, Topo->header->z_max)) == NULL) {
 			Return (API->error);
 		}
-		PH = gmt_get_C_hidden (P);
 		if (P->is_bw) Ctrl->Q.monochrome = true;
 		if (P->categorical && Ctrl->W.active) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");

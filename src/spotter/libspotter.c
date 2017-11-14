@@ -407,7 +407,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 	/* t_max;	Extend earliest stage pole back to this age */
 	bool GPlates = false, total_in = false;
 	int nf;
-	unsigned int n, i = 0, k, id, A_id = 0, B_id = 0, p1, p2, V1 = 0, V2 = 0, first = 0;
+	unsigned int n, i = 0, k, id, A_id = 0, B_id = 0, p1, p2, V1 = 0, V2 = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double lon, lat, rot, t, last_t = -DBL_MAX;
 	FILE *fp = NULL;
@@ -417,7 +417,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 	double K[9];
 
 	if (gmt_M_file_is_cache (file)) {	/* Must be a cache file */
-		first = gmt_download_file_if_not_found (GMT, file, 0);
+		gmt_download_file_if_not_found (GMT, file, 0);
 	}
 	if (spotter_GPlates_pair (file)) {	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */
 		sscanf (file, "%[^-]-%s", A, B);

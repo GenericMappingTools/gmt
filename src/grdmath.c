@@ -4666,7 +4666,6 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 	struct GMT_HASH localhashnode[GRDMATH_N_OPERATORS];
 	struct GRDMATH_INFO info;
-	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GRDMATH_CTRL *Ctrl = NULL;
 	struct GMT_OPTION *opt = NULL, *list = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -4779,7 +4778,6 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expression must contain at least one grid file or -R, -I\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-	HH = gmt_get_H_hidden (info.G->header);
 	info.nm = info.G->header->nm;	info.size = info.G->header->size;
 
 	/* Get x and y vectors (these extend onto the pad) */

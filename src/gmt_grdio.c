@@ -2539,9 +2539,8 @@ struct GMT_GRID *gmt_create_grid (struct GMT_CTRL *GMT) {
 struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mode) {
 	/* Duplicates an entire grid, including data if requested. */
 	struct GMT_GRID *Gnew = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *HHnew = NULL;
 
-	Gnew = gmt_create_grid (GMT);	HHnew = gmt_get_H_hidden (Gnew->header);
+	Gnew = gmt_create_grid (GMT);
 	gmt_copy_gridheader (GMT, Gnew->header, G->header);
 
 	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */

@@ -1775,7 +1775,6 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		            PRIu64 " set of linear equations\n", n, m, nm, nm);
 
 	if (Ctrl->T.file) {	/* Existing grid that will have zeros and NaNs, only */
-		struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 		if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->T.file, NULL)) == NULL) {	/* Get header only */
 			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			Return (API->error);
@@ -1801,7 +1800,6 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		(void)gmt_set_outgrid (GMT, Ctrl->T.file, false, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
-		HH = gmt_get_H_hidden (Grid->header);
 		n_ok = Grid->header->nm;
 		gmt_M_grd_loop (GMT, Grid, row, col, ij) if (gmt_M_is_fnan (Grid->data[ij])) n_ok--;
 		Z.nz = 1;
@@ -1823,10 +1821,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 	else {	/* Fill in an equidistant output table or grid */
 		if (dimension == 2) {	/* Need a full-fledged Grid creation since we are writing it to who knows where */
-			struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 			if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->R3.range, Ctrl->I.inc, \
 				GMT->common.R.registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-			HH = gmt_get_H_hidden (Grid->header);
 			n_ok = Grid->header->nm;
 			Z.nz = 1;	/* So that output logic will work for 1-D */
 		}
@@ -1838,13 +1834,11 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			Grid->header->inc[GMT_X] = Ctrl->I.inc[GMT_X];
 			Z.nz = Grid->header->n_rows = 1;	/* So that output logic will work for 1-D */
 			if (dimension == 3) {
-				struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 				Grid->header->wesn[YLO] = Ctrl->R3.range[2];	Grid->header->wesn[YHI] = Ctrl->R3.range[3];
 				Grid->header->inc[GMT_Y] = Ctrl->I.inc[GMT_Y];
 				gmt_RI_prepare (GMT, Grid->header);	/* Ensure -R -I consistency and set n_columns, n_rows */
 				gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 				gmt_set_grddim (GMT, Grid->header);
-				HH = gmt_get_H_hidden (Grid->header);
 				/* Also set nz */
 				Z.z_min = Ctrl->R3.range[4];	Z.z_max = Ctrl->R3.range[5];
 				Z.z_inc = Ctrl->I.inc[GMT_Z];

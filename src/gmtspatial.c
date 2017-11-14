@@ -1017,7 +1017,6 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
-	struct GMT_DATASET_HIDDEN *DH = NULL;
 	struct GMT_RECORD Out;
 	struct GMTSPATIAL_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -1090,7 +1089,6 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		Return (GMT_NOERROR);
 	}
-	DH = gmt_get_DD_hidden (D);
 	
 	if (Ctrl->S.active && !(Ctrl->S.mode == POL_SPLIT || Ctrl->S.mode == POL_HOLE)) external = 1;
 	
@@ -1640,7 +1638,6 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		char record[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""}, src[GMT_BUFSIZ] = {""}, dup[GMT_BUFSIZ] = {""}, *feature[2] = {"polygon", "line"}, *from = NULL;
 		char *in = "the same data set", *verdict = "NY~-+/";	/* No, Yes, Approximate, Subsection, Supersection */
 		struct GMT_DATASET *C = NULL;
-		struct GMT_DATASET_HIDDEN *CH = NULL;
 		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
 		struct DUP_INFO **Info = NULL, *I = NULL;
 		
@@ -1663,7 +1660,6 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			smode = (C->table[0]->segment[0]->text) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 			S2 = GMT_Alloc_Segment (GMT->parent, smode, 0, C->n_columns, NULL, NULL);
 		}
-		CH = gmt_get_DD_hidden (C);
 		if (GMT_Init_IO (API, C->geometry, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 			gmt_free_segment (GMT, &S2);
 			Return (API->error);	/* Registers default output destination, unless already set */

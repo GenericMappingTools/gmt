@@ -782,7 +782,6 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMT_PALETTE *P = NULL;
-	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GMT_RECORD *In = NULL;
 	struct SAVE *save = NULL;
 	struct PSCONTOUR_CTRL *Ctrl = NULL;
@@ -835,7 +834,6 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		PH = gmt_get_C_hidden (P);
 		if (Ctrl->I.active && P->is_continuous) {
 			GMT_Report (API, GMT_MSG_NORMAL, "-I option requires constant color between contours!\n");
 			Return (GMT_NOERROR);

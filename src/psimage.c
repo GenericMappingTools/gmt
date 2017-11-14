@@ -454,7 +454,6 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	}
 #ifdef HAVE_GDAL
 	else  {	/* Read a raster image */
-		struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input raster via GDAL\n");
 		gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, NULL)) == NULL) {
@@ -462,7 +461,6 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		gmt_set_pad (GMT, API->pad);	/* Reset to GMT default */
-		HH = gmt_get_H_hidden (I->header);
 
 		/* Handle transparent images */
 		if (I->colormap != NULL) {	/* Image has a color map */

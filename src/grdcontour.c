@@ -1045,11 +1045,9 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		aval = G->header->z_max + 1.0;
 
 	if (Ctrl->C.cpt) {	/* Presumably got a CPT */
-		struct GMT_PALETTE_HIDDEN *PH = NULL;
 		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		PH = gmt_get_C_hidden (P);
 		if (P->categorical) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
 		}

@@ -1733,7 +1733,6 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	
 	struct GMT_DATATABLE *xyzline = NULL;
 	struct GMT_DATASET *Lin = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct SURFACE_INFO C;
 	struct SURFACE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -1783,7 +1782,6 @@ int GMT_surface (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->n_columns, C.Grid->header->n_rows);
 		Return (GMT_RUNTIME_ERROR);
 	}
-	HH = gmt_get_H_hidden (C.Grid->header);
 
 	load_parameters_surface (&C, Ctrl);	/* Pass parameters from parsing control to surface INFO structure */
 

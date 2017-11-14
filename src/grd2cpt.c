@@ -379,7 +379,6 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_PALETTE *Pin = NULL, *Pout = NULL;
-	struct GMT_PALETTE_HIDDEN *PHin = NULL, *PHout = NULL;
 	struct GMT_GRID **G;
 	struct GRD2CPT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -429,7 +428,6 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 			Return (EXIT_FAILURE);
 		Pin = Ptrunc;
 	}
-	PHin = gmt_get_C_hidden (Pin);
 	if (Ctrl->W.wrap) Pin->is_wrapping = true;	/* A cyclic CPT has been requested */
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid(s)\n");
@@ -527,7 +525,6 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		if (Ctrl->I.mode & GMT_CPT_C_REVERSE)
 			gmt_invert_cpt (GMT, Pout);	/* Also flip the colors */
 		cpt_flags = 0;
-		PHout = gmt_get_C_hidden (Pout);
 		if (Ctrl->N.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN will be written out */
 		if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 		if (Ctrl->F.active) Pout->model = Ctrl->F.model;
@@ -653,7 +650,6 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	signed_levels = Ctrl->E.levels;
 	Pout = gmt_sample_cpt (GMT, Pin, z, -signed_levels, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);	/* -ve to keep original colors */
-	PHout = gmt_get_C_hidden (Pout);
 
 	/* Determine mode flags for output */
 	cpt_flags = 0;

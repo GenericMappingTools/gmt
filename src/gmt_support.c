@@ -231,7 +231,6 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 	/* Attempt to convert to integer - will be 0 if not an integer and then we set it to -1 for a filename */
 	fill->pattern_no = atoi (fill->pattern);
 	if (fill->pattern_no == 0) {
-		struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 		fill->pattern_no = -1;
 		gmt_set_pad (GMT, 0); /* No padding */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pattern image is in file %s\n", fill->pattern);
@@ -239,7 +238,6 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to read image %s, no pattern set\n", fill->pattern);
 			return (GMT_RUNTIME_ERROR);
 		}
-		HH = gmt_get_H_hidden (fill->I->header);
 		gmt_set_pad (GMT, GMT->parent->pad); /* Restore to GMT Defaults */
 		fill->dim[0] = fill->I->header->n_columns;
 		fill->dim[1] = fill->I->header->n_rows;
@@ -6923,7 +6921,6 @@ void gmtlib_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 /*! . */
 void gmtlib_copy_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_to, struct GMT_PALETTE *P_from) {
 	unsigned int i;
-	struct GMT_PALETTE_HIDDEN *PH_to = NULL;
 	/* Makes the specified palette the current palette */
 	gmtlib_free_cpt_ptr (GMT, P_to);	/* Frees everything inside P_to */
 	gmt_M_memcpy (P_to, P_from, 1, struct GMT_PALETTE);
@@ -6931,7 +6928,6 @@ void gmtlib_copy_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_to, struct
 	gmt_M_memcpy (P_to->hidden, P_from->hidden, 1, struct GMT_PALETTE_HIDDEN);
 	P_to->data = gmt_M_memory (GMT, NULL, P_to->n_colors, struct GMT_LUT);
 	gmt_M_memcpy (P_to->data, P_from->data, P_to->n_colors, struct GMT_LUT);
-	PH_to = gmt_get_C_hidden (P_to);
 	for (i = 0; i < 3; i++) if (P_from->bfn[i].fill) {
 		P_to->bfn[i].fill = gmt_M_memory (GMT, NULL, 1, struct GMT_FILL);
 		gmt_M_memcpy (P_to->bfn[i].fill, P_from->bfn[i].fill, 1, struct GMT_FILL);
@@ -6996,7 +6992,6 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	char *name = NULL, *h = NULL;
 	FILE *fp = NULL;
 	struct GMT_PALETTE *X = NULL;
-	struct GMT_PALETTE_HIDDEN *XH = NULL;
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
 
 	/* Determine input source */
@@ -7042,7 +7037,6 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reading CPT from %s\n", cpt_file);
 
 	X = gmtlib_create_palette (GMT, 0);
-	XH = gmt_get_C_hidden (X);
 	X->data = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_LUT);
 	X->mode = cpt_flags;	/* Maybe limit what to do with BFN selections */
 	color_model = GMT->current.setting.color_model;		/* Save the original setting since it may be modified by settings in the CPT */
@@ -7467,7 +7461,6 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 	   a CPT for quick/dirty work provided mode == GMT_CPT_OPTIONAL and hence zmin/zmax are set to the desired data range */
 
 	struct GMT_PALETTE *P = NULL;
-	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	unsigned int continuous = (file && strchr(file,',')), first;
 	bool is_cpt_master = false;
 
@@ -7502,7 +7495,6 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 		master = (file && file[0]) ? file : "rainbow";	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|GMT_CPT_CONTINUOUS, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
-		PH = gmt_get_C_hidden (P);
 		if (P->has_range)	/* Only stretch CPTs that have no default range*/
 			zmin = zmax = 0.0;
 		else {	/* Stretch to fit the data range */
@@ -7676,7 +7668,6 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	double rgb_low[4], rgb_high[4], rgb_fore[4], rgb_back[4];
 	double *x = NULL, *z_out = NULL, a, b, f, x_inc;
 	double hsv_low[4], hsv_high[4], hsv_fore[4], hsv_back[4];
-	struct GMT_PALETTE_HIDDEN *PH = NULL;
 
 	struct GMT_LUT *lut = NULL;
 	struct GMT_PALETTE *P = NULL;
@@ -7696,8 +7687,6 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	lut = gmt_M_memory (GMT, NULL, Pin->n_colors, struct GMT_LUT);
 
 	i += gmt_M_check_condition (GMT, (no_inter || set_z_only) && P->n_colors > Pin->n_colors, "Number of picked colors exceeds colors in input cpt!\n");
-
-	PH = gmt_get_C_hidden (P);
 	
 	/* First normalize old CPT so z-range is 0-1 */
 
@@ -9459,7 +9448,6 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 	else if (G->fixed) {
 		unsigned int first = 0;
 		struct GMT_DATASET *T = NULL;
-		struct GMT_DATASET_HIDDEN *TH = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 		double xy[2];
 		/* Reading this way since file has coordinates and possibly a text label.
@@ -9481,7 +9469,6 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Data file %s has only %" PRIu64 " data columns!\n", G->file, T->n_columns);
 			return (error);
 		}
-		TH = gmt_get_DD_hidden (T);
 		/* Repackage this information into the G structure via f_xy and f_label arrays */
 		G->f_xy[GMT_X] = gmt_M_memory (GMT, NULL, T->n_records, double);
 		G->f_xy[GMT_Y] = gmt_M_memory (GMT, NULL, T->n_records, double);

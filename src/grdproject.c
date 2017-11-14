@@ -231,7 +231,6 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, fwd_scale, inv_scale;
 
 	struct GMT_GRID *Geo = NULL, *Rect = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GRDPROJECT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -472,7 +471,6 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
 
-		HH = gmt_get_H_hidden (Geo->header);
 		Geo->header->ProjRefPROJ4 = strdup("+proj=longlat +no_defs");	/* HOWEVER, this may be quite incorrect for we are ignoring the DATUM */
 
 		gmt_grd_project (GMT, Rect, Geo, true);
@@ -555,7 +553,6 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		strncpy (Rect->header->x_units, unit_name, GMT_GRID_UNIT_LEN80-1);
 		strncpy (Rect->header->y_units, unit_name, GMT_GRID_UNIT_LEN80-1);
 
-		HH = gmt_get_H_hidden (Rect->header);
 		if (GMT->common.J.proj4string[0])
 			Rect->header->ProjRefPROJ4 = strdup (GMT->common.J.proj4string);
 		else if (GMT->common.J.WKTstring[0])

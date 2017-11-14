@@ -7591,11 +7591,9 @@ struct GMT_IMAGE *gmt_get_image (struct GMT_CTRL *GMT) {
 struct GMT_IMAGE *gmtlib_create_image (struct GMT_CTRL *GMT) {
 	/* Allocates space for a new image container. */
 	struct GMT_IMAGE_HIDDEN *IH = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_IMAGE *I = gmt_get_image (GMT);
 	IH = gmt_get_I_hidden (I);
 	I->header = gmt_get_header (GMT);
-	HH = gmt_get_H_hidden (I->header);
 	IH->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
 	IH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	IH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
@@ -7764,7 +7762,6 @@ unsigned int gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V,
 	/* By taking a reference to the vector pointer we can set it to NULL when done */
 	/* free_vector = false means the vectors are not to be freed but the data array itself will be */
 	struct GMT_VECTOR_HIDDEN *VH = NULL;
-	enum GMT_enum_alloc alloc_mode;
 	if (!V) return 0;	/* Nothing to deallocate */
 	/* Only free V->data if allocated by GMT AND free_vector is true */
 	VH = gmt_get_V_hidden (V);
@@ -7781,7 +7778,6 @@ unsigned int gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V,
 	}
 	gmt_M_free (GMT, V->data);	/* Sometimes we free a V that has nothing allocated so must check */
 	gmt_M_free (GMT, V->type);
-	alloc_mode = VH->alloc_mode;
 	gmt_M_free (GMT, V->hidden);
 	return (VH->alloc_mode);
 }

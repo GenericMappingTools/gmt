@@ -509,7 +509,6 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	struct GMT_GRID *Intens_orig = NULL, *Intens_proj = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL, *IH = NULL;
 	struct GMT_PALETTE *P = NULL;
-	struct GMT_PALETTE_HIDDEN *PH = NULL;
 	struct GRDIMAGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -858,14 +857,12 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to read CPT %s.\n", Ctrl->C.file);
 				Return (API->error);	/* Well, that did not go well... */
 			}
-			if (P) PH = gmt_get_C_hidden (P);
 			gray_only = (P && P->is_gray);	/* Flag that we are doing a grayscale image below */
 		}
 		else if (Ctrl->D.active) {	/* Already got an image with colors but need to set up a colormap of 256 entries */
 			uint64_t cpt_len[1] = {256};
 			/* We won't use much of the next 'P' but we still need to use some of its fields */
 			if ((P = GMT_Create_Data (API, GMT_IS_PALETTE, GMT_IS_NONE, 0, cpt_len, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
-			PH = gmt_get_C_hidden (P);
 			P->model = GMT_RGB;
 			if (Img_proj->colormap == NULL && Img_proj->color_interp && !strncmp (Img_proj->color_interp, "Gray", 4)) {	/* Grayscale image, only assign r as shade */
 				r_table = gmt_M_memory (GMT, NULL, 256, double);

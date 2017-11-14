@@ -279,7 +279,6 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *Q = NULL;
 	struct GMT_DATASEGMENT **T[2] = {NULL, NULL}, *S = NULL;
 	struct GMT_DATASEGMENT *QT[2] = {NULL, NULL};
-	struct GMT_DATASET_HIDDEN *DH[2] = {NULL, NULL};
 	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMTCONNECT_CTRL *Ctrl = NULL;
@@ -373,7 +372,6 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, buffer);
 		Return (GMT_RUNTIME_ERROR);
 	}
-	DH[GMT_IN] = gmt_get_DD_hidden (D[GMT_IN]);
 	/* Surely don't need any more segment space than the number of input segments */
 	segment = gmt_M_memory (GMT, NULL, D[GMT_IN]->n_segments, struct LINK);
 	id = ns = out_seg = 0;

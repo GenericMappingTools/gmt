@@ -1787,13 +1787,11 @@ GMT_LOCAL size_t api_set_grdarray_size (struct GMT_CTRL *GMT, struct GMT_GRID_HE
  	 * Finally, the current pad is used when calculating the grid size.
 	 * NOTE: This function leaves h unchanged by testing on a temporary header. */
 	struct GMT_GRID_HEADER *h_tmp = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	size_t size;
 
 	/* Must duplicate header and possibly reset wesn, then set pad and recalculate all dims */
 	h_tmp = gmt_get_header (GMT);
 	gmt_copy_gridheader (GMT, h_tmp, h);
-	HH = gmt_get_H_hidden (h_tmp);
 	h_tmp->complex_mode = (mode & GMT_GRID_IS_COMPLEX_MASK);	/* Set the mode-to-be so that if complex the size is doubled */
 
 	if (!full_region (wesn)) {
@@ -4707,7 +4705,6 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_MATRIX_HIDDEN *MH = NULL;
 	struct GMT_GRID_HIDDEN *GH = gmt_get_G_hidden (G_obj), *GH2 = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 
 	GMT_Report (API, GMT_MSG_DEBUG, "api_export_grid: Passed ID = %d and mode = %d\n", object_ID, mode);
@@ -4780,7 +4777,6 @@ GMT_LOCAL int api_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned 
 			i0 = (unsigned int) gmt_M_grd_x_to_col (GMT, G_obj->header->wesn[XLO]+dx, G_obj->header);
 			i1 = (unsigned int) gmt_M_grd_x_to_col (GMT, G_obj->header->wesn[XHI]-dx, G_obj->header);
 			gmt_M_memcpy (G_obj->header->pad, GMT->current.io.pad, 4, int);		/* Set desired padding */
-			HH = gmt_get_H_hidden (G_copy->header);
 			G_copy->header->size = api_set_grdarray_size (GMT, G_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which may include padding */
 			G_copy->data = gmt_M_memory_aligned (GMT, NULL, G_copy->header->size, gmt_grdfloat);
 			G_copy->header->z_min = DBL_MAX;	G_copy->header->z_max = -DBL_MAX;	/* Must set zmin/zmax since we are not writing */
@@ -9489,7 +9485,7 @@ GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struc
 	gmt_grdfloat re, im, i_scale;
 	char *file = NULL, *suffix[2][2] = {{"real", "imag"}, {"mag", "phase"}};
 	struct GMT_GRID *Out = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *OH = NULL, *HH = gmt_get_H_hidden (G->header);
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 	struct GMT_FFT_WAVENUMBER *K = F->K;
 
 	if (K == NULL) return;
@@ -9516,7 +9512,6 @@ GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struc
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create complex output grid for %s\n", HH->name);
 		return;
 	}
-	OH = gmt_get_H_hidden (Out->header);
 
 	strcpy (Out->header->x_units, "xunit^(-1)");	strcpy (Out->header->y_units, "yunit^(-1)");
 	strcpy (Out->header->z_units, G->header->z_units);
@@ -10776,7 +10771,6 @@ int gmt_f77_readgrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], d
 	const char *argv = "GMT_F77_readgrd";
 	char *file = NULL;
 	struct GMT_GRID_HEADER *header = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMTAPI_CTRL *API = NULL;	/* The API pointer assigned below */
 
 	if (name == NULL) {
@@ -10798,7 +10792,6 @@ int gmt_f77_readgrd_ (gmt_grdfloat *array, unsigned int dim[], double limit[], d
 	}
 
 	/* Read the grid, possibly after first allocating array space */
-	HH = gmt_get_H_hidden (header);
 	if (dim[GMT_Z] == 1) array = gmt_M_memory (API->GMT, NULL, header->size, gmt_grdfloat);
 	if (gmtlib_read_grd (API->GMT, file, header, array, no_wesn, GMT_no_pad, 0)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s\n", file);
@@ -11997,8 +11990,6 @@ int GMT_Get_Family_ (unsigned int *direction, struct GMT_OPTION *head) {
 
 int GMT_Set_AllocMode (void *V_API, unsigned int family, void *object) {
 	int error = GMT_NOERROR;
-	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
-	if (object == NULL) return_error (V_API, GMT_PTR_IS_NULL);
 	struct GMT_DATASET_HIDDEN     *DH = NULL;
 	struct GMT_PALETTE_HIDDEN     *CH = NULL;
 	struct GMT_POSTSCRIPT_HIDDEN  *PH = NULL;
@@ -12006,6 +11997,9 @@ int GMT_Set_AllocMode (void *V_API, unsigned int family, void *object) {
 	struct GMT_MATRIX_HIDDEN      *MH = NULL;
 	struct GMT_GRID_HIDDEN        *GH = NULL;
 	struct GMT_IMAGE_HIDDEN       *IH = NULL;
+	
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (object == NULL) return_error (V_API, GMT_PTR_IS_NULL);
 	
 	switch (family) {	/* grid, image, or matrix */
 		case GMT_IS_GRID:	/* GMT grid */

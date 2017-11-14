@@ -379,7 +379,6 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	struct MAKECPT_CTRL *Ctrl = NULL;
 	struct GMT_PALETTE *Pin = NULL, *Pout = NULL;
-	struct GMT_PALETTE_HIDDEN *PHin = NULL, *PHout = NULL;
 	struct GMT_DATASET *T = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -487,14 +486,12 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
 		gmt_scale_cpt (GMT, Pin, -1.0);
-	PHin = gmt_get_C_hidden (Pin);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);
 	if (Ctrl->G.active) {	/* Attempt truncation */
 		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 		if (Ptrunc == NULL)
 			Return (API->error);
 		Pin = Ptrunc;
-		PHin = gmt_get_C_hidden (Pin);
 	}
 
 	if (Pin->categorical) Ctrl->W.active = true;	/* Do not want to sample a categorical table */
@@ -596,7 +593,6 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 		Pout = gmt_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.mode & GMT_CPT_C_REVERSE, Ctrl->Q.mode, Ctrl->W.active);
 	}
-	PHout = gmt_get_C_hidden (Pout);
 
 	if (!Ctrl->T.file) gmt_M_free (GMT, z);	/* It may also have been allocated inside gmtlib_log_array() */
 

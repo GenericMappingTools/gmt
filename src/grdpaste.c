@@ -150,7 +150,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 	double x_noise, y_noise;
 
 	struct GMT_GRID *A = NULL, *B = NULL, *C = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *AH = NULL, *BH = NULL, *CH = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *AH = NULL, *BH = NULL;
 	struct GRDPASTE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -206,7 +206,6 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 
 	AH = gmt_get_H_hidden (A->header);
 	BH = gmt_get_H_hidden (B->header);
-	CH = gmt_get_H_hidden (C->header);
 	
 	common_y = (fabs (A->header->wesn[YLO] - B->header->wesn[YLO]) < y_noise && fabs (A->header->wesn[YHI] - B->header->wesn[YHI]) < y_noise);
 	

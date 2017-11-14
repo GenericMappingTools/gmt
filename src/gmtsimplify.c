@@ -285,7 +285,6 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	
 	struct GMT_DATASET *D[2] = {NULL, NULL};
 	struct GMT_DATASEGMENT *S[2] = {NULL, NULL};
-	struct GMT_DATASET_HIDDEN *DH = NULL;
 	struct GMTSIMPLIFY_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -329,7 +328,6 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)D[GMT_IN]->n_columns);
 		Return (GMT_DIM_TOO_SMALL);
 	}
-	DH = gmt_get_DD_hidden (D[GMT_IN]);
 	geo = gmt_M_is_geographic (GMT, GMT_IN);					/* true for lon/lat coordinates */
 	if (!geo && strchr (GMT_LEN_UNITS, (int)Ctrl->T.unit)) geo = true;	/* Used units but did not set -fg; implicitly set -fg via geo */
 

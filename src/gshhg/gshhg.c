@@ -210,7 +210,6 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	struct GSHHG_HEADER h;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT **T = NULL;
-	struct GMT_DATASET_HIDDEN *DH = NULL;
 	struct GSHHG_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -276,7 +275,6 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	D->table[0]->header = gmt_M_memory (GMT, NULL, 1, char *);
 	D->table[0]->header[0] = strdup (header);
 	D->table[0]->n_headers = 1;
-	DH = gmt_get_DD_hidden (D);
 
 	n_read = fread (&h, sizeof (struct GSHHG_HEADER), 1U, fp);
 

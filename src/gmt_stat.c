@@ -2536,7 +2536,6 @@ double gmt_grd_median (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 	/* Non-destructive: Original grid left as is unless overwrite = true */
 	uint64_t node, n = 0;
 	double wmed;
-	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
 	if (W) {	/* Weights provided */
 		unsigned int row, col;
@@ -2555,7 +2554,6 @@ double gmt_grd_median (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 	else {	/* Plain median */
 		struct GMT_GRID *Z = (overwrite) ? G : gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA);
 		gmt_grd_pad_off (GMT, Z);	/* Undo pad if one existed so we can sort */
-		HH = gmt_get_H_hidden (Z->header);
 		gmt_sort_array (GMT, Z->data, Z->header->nm, GMT_FLOAT);
 		for (n = Z->header->nm; n > 1 && gmt_M_is_fnan (Z->data[n-1]); n--);
 		if (n)
@@ -2573,7 +2571,6 @@ double gmt_grd_mad (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W
 	 * If median == NULL then we must first compute the median, else we already have it */
 	uint64_t node, n = 0;
 	double wmed, wmad;
-	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 	if (W) {	/* Weights provided */
 		unsigned int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
@@ -2607,7 +2604,6 @@ double gmt_grd_mad (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W
 	else {	/* Plain MAD */
 		struct GMT_GRID *Z = (overwrite) ? G : gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA);
 		gmt_grd_pad_off (GMT, Z);	/* Undo pad if one existed so we can sort */
-		HH = gmt_get_H_hidden (Z->header);
 		if (median) {	/* Already have the median */
 			wmed = *median;
 			n = Z->header->nm;
@@ -2631,7 +2627,6 @@ double gmt_grd_mode (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *
 	/* Non-destructive: Original grid left as is unless overwrite = true */
 	uint64_t node, n = 0;
 	double wmode;
-	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
 	if (W) {	/* Weights provided */
 		unsigned int row, col;
@@ -2650,7 +2645,6 @@ double gmt_grd_mode (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *
 	else {	/* Plain median */
 		unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0;
 		struct GMT_GRID *Z = (overwrite) ? G : gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA);
-		HH = gmt_get_H_hidden (Z->header);
 		gmt_grd_pad_off (GMT, Z);	/* Undo pad if one existed so we can sort */
 		gmt_sort_array (GMT, Z->data, Z->header->nm, GMT_FLOAT);
 		for (n = Z->header->nm; n > 1 && gmt_M_is_fnan (Z->data[n-1]); n--);
@@ -2670,7 +2664,6 @@ double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 	 * If mode == NULL then we must first compute the mode, else use this mode */
 	uint64_t node, n = 0;
 	double wmode, lmsscl;
-	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 	if (W) {	/* Weights provided */
 		unsigned int row, col;
 		struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, G->header->nm, struct GMT_OBSERVATION);
@@ -2704,7 +2697,6 @@ double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 	else {	/* Plain LMSSCL */
 		unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0;
 		struct GMT_GRID *Z = (overwrite) ? G : gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA);
-		HH = gmt_get_H_hidden (Z->header);
 		gmt_grd_pad_off (GMT, Z);	/* Undo pad if one existed so we can sort */
 		if (mode) {	/* Already got the mode */
 			wmode = *mode;

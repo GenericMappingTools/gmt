@@ -5212,10 +5212,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	gmt_set_tbl_minmax (GMT, GMT_IS_POINT, info.T);
 
 	if (Ctrl->A.active) {	/* Set up A * x = b, with the table holding the extended matrix [ A | [w | ] b ], with w the optional weights */
-		struct GMT_DATASET_HIDDEN *DH = NULL;
 		if (!stack[0]->D)
 			stack[0]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-		DH = gmt_get_DD_hidden (stack[0]->D);
 		load_column (stack[0]->D, n_columns-1, rhs, 1);		/* Always put the r.h.s of the Ax = b equation in the last column of the item on the stack */
 		if (!Ctrl->A.null) load_column (stack[0]->D, Ctrl->N.tcol, rhs, 0);	/* Optionally, put the t vector in the time column of the item on the stack */
 		gmt_set_tbl_minmax (GMT, stack[0]->D->geometry, stack[0]->D->table[0]);
