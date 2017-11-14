@@ -6,15 +6,15 @@ pswiggle
 
 .. only:: not man
 
-    pswiggle - Plot z = f(x,y) anomalies along tracks
+    Plot z = f(x,y) anomalies along tracks
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**pswiggle** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-Z|\ *scale*\ [*units]
-[ |-A|\ [\ *azimuth*\ ] ]
+**pswiggle** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-Z|\ *scale*\ [*units*]
+[ |-A|\ [\ *azimuth*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *center* ]
 [ |-D|\ *refpoint* ]
