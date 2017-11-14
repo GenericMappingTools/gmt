@@ -18,6 +18,7 @@ Synopsis
 |-J|\ *parameters*
 |SYN_OPT-R|
 [ |SYN_OPT-B| ]
+[ |-C| ]
 [ |-D|\ *dumpfile* ]
 [ |-F|\ [**l**\ \|\ **r**] ]
 [ |-G|\ *fill* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
