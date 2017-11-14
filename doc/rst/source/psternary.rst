@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **psternary** [ *table* ]
-[ **-JX** \*width*\ [unit] ]
+[ **-JX** \ *width*\ [unit] ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
@@ -47,7 +47,7 @@ Synopsis
 Description
 -----------
 
-**psternary** reads (*a*,\ *b*,\ *c*\ [,*z*]) records from *files* [or standard input] and
+**psternary** reads (*a*,\ *b*,\ *c*\ [,\ *z*]) records from *files* [or standard input] and
 plots symbols
 at those locations on a ternary diagram. If a symbol is selected and no symbol size
 given, then **psternary** will interpret the fourth column of the input data
@@ -63,7 +63,7 @@ Optional Arguments
 
 .. _-B:
 
-**-B**\ [**a**\ \|\ **b**\ \|\ **c**\ ]*args*
+**-B**\ [**a**\ \|\ **b**\ \|\ **c**\ ]\ *args*
     For ternary diagrams the three sides are referred to as a, b, and c.  Thus,
     to give specific settings for one of these axis you must include the
     axis letter before the arguments.  If all axes have the same arguments
