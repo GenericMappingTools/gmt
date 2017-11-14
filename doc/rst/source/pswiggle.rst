@@ -188,6 +188,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *pen*
+    Specify outline pen attributes [Default is no outline].
 
 .. |Add_-bi| replace:: [Default is 3 input columns]. 
 .. include:: explain_-bi.rst_
