@@ -6,7 +6,7 @@ psconvert
 
 .. only:: not man
 
-    psconvert - Convert [E]PS file(s) to other formats using GhostScript
+    Convert [E]PS file(s) to other formats using GhostScript
 
 Synopsis
 --------
@@ -143,12 +143,6 @@ Optional Arguments
 **-L**\ *listfile*
     The *listfile* is an ASCII file with the names of the PostScript
     files to be converted.
-
-.. _-N:
-
-**-N**
-    This option is obsolete. Use **-S** to print the GhostScript
-    command, if applicable. Use **-Te** to save the intermediate EPS file.
 
 .. _-P:
 
