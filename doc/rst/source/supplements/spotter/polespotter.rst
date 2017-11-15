@@ -57,6 +57,8 @@ Optional Arguments
 
 **-D**\ *step*
     Sets the line increment for all great circles produced, in km [5].
+    Actual spacing will be adjusted to give an integer number of steps
+    along the full circle.
 
 .. _-F:
 
@@ -68,7 +70,11 @@ Optional Arguments
 .. _-G:
 
 **-G**\ *CVAgrid*
-    Specify name for output polesearch grid file.
+    Specify name for output polesearch grid file.  We will accumulate
+    great circle line density for the grid.  Each bin that is crossed
+    by a great circle is incremented by 1, multiplied by cos(latitude),
+    the length of the fracture zone or abyssal line segment used to
+    define the great circle, and any overall weight set via **-W**.
 
 .. _-I:
 

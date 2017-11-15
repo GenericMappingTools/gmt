@@ -27,6 +27,8 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>RVbdefghios" GMT_OPT("HMm")
 
+#define KM_PR_RAD (R2D * GMT->current.proj.DIST_KM_PR_DEG)
+
 struct POLESPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct A {	/* -A<abyssalhilefile> */
@@ -89,6 +91,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Give step-length along great circles in km [5].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Give multisegment file with fracture zone lineaments [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for polesearch grid [no gridding].  Requires -R -I [-r]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Accumulates weighted great-circle length density grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Dump all great circle lines to stdout [no lines are written].\n");
 	GMT_Option (API, "Rg");
@@ -184,7 +187,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 	uint64_t node, tbl, seg, row;
 	char header[GMT_LEN128] = {""};
 	gmt_grdfloat *layer = NULL;
-	double weight, angle_radians, d_angle_radians, mlon, mlat, glon, glat, in[2];
+	double weight, angle_radians, d_angle_radians, mlon, mlat, glon, glat, L, in[2];
 	double P1[3], P2[3], M[3], G[3], B[3], X[3], Rot0[3][3], Rot[3][3];
 	
 	struct GMT_OPTION *ptr = NULL;
@@ -233,7 +236,8 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 		layer = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, gmt_grdfloat);
 	}
 
-	/* Determine how often to sample the great circle given -D */
+	/* Determine how often to sample the great circle given -D.  Since all great cirlces are sampled this way
+	 * we only do a cos(lat) weighting for the line density if -G is used. */
 	n_steps = urint (360.0 * GMT->current.proj.DIST_KM_PR_DEG / Ctrl->D.length);
 	d_angle_radians = TWO_PI / (n_steps - 1);
 
@@ -265,6 +269,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 					if (Ctrl->G.active) gmt_M_memset (layer, Grid->header->size, gmt_grdfloat);
 					gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
 					for (k = 0; k < 3; k++) M[k] = 0.5 * (P1[k] + P2[k]);	/* Mid-point M */
+					L = d_acos (gmt_dot3v (GMT, P1, P2) * KM_PR_RAD) * weight;	/* Weighted length of this segment */
 					gmt_normalize3v (GMT, M);
 					gmt_cart_to_geo (GMT, &mlat, &mlon, M, true);	/* Get lon/lat of the mid point */
 					gmt_cross3v (GMT, P1, P2, G);	/* This is pole of great circle through P1 & P2 */
@@ -291,7 +296,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 						if (gmt_x_is_outside (GMT, &in[GMT_X], Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;		/* Outside x-range (or periodic longitude) */
 						if (gmt_row_col_out_of_bounds (GMT, in, Grid->header, &grow, &gcol)) continue;	/* Sorry, outside after all */
 						node = gmt_M_ijp (Grid->header, grow, gcol);			/* Bin node */
-						layer[node] = cosd (in[GMT_Y]) * weight;			/* Any bin intersected will have this single value */
+						layer[node] = cosd (in[GMT_Y]) * L;			/* Any bin intersected will have this single value */
 					}
 					if (Ctrl->G.active) {	/* Add density of this great circle to the total */
 						for (node = 0; node < Grid->header->size; node++) Grid->data[node] += layer[node];
