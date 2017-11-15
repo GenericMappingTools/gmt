@@ -15,7 +15,7 @@ Synopsis
 
 **filter1d** [ *table* ] |-F|\ *type<width>*\ [*modifiers*]
 [ |-D|\ *increment* ] [ |-E| ]
-[ |-L|\ *lack\_width* ] [ |-N|\ *t\_col* ] [ |-Q|\ *q\_factor* ]
+[ |-L|\ *lack\_width* ] [ |-N|\ *t\_col*\ \|\ *params* ] [ |-Q|\ *q\_factor* ]
 [ |-S|\ *symmetry\_factor* ] [ |-T|\ *t\_min/t\_max/t\_inc*\ [**+n**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
@@ -39,6 +39,8 @@ independent variable). (See **-N** option below). The fastest operation
 occurs when the input time series are equally spaced and have no gaps or
 outliers and the special options are not needed. **filter1d** has
 options **-L**, **-Q**, and **-S** for unevenly sampled data with gaps.
+For spatial series there is an option to compute along-track distances
+and use that as the independent variable for filtering.
 
 Required Arguments
 ------------------
@@ -113,9 +115,15 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *t_col*
+**-N**\ *t_col*\ \|\ **-Nc**\ \|\ **g**\ [[±]*unit*][**+a**]
     Indicates which column contains the independent variable (time). The
     left-most column is # 0, the right-most is # (*n_cols* - 1).  [Default is 0].
+    Alternatively, indicate spatial filtering in which the first two columns provide
+    longitude, latitude (**-Ng**) or Cartesian x, y (**-Nc**) and we create a
+    along-track distance column and choose it as the *t_col* setting.  For geospatial
+    filtering you can append the desired distance unit (see UNITS for available
+    units and how distances are computed) [meter].  Optionally, you may append **+a** to have
+    the along-track distance being output as a new final column in the filtered data.
 
 .. _-Q:
 
@@ -173,6 +181,8 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
+.. include:: explain_distunits.rst_
+
 .. include:: explain_precision.rst_
 
 Examples
@@ -196,7 +206,16 @@ v3312.dt, checking for gaps of 10km and asymmetry of 0.3:
 
     gmt filter1d v3312.dt -FM50 -T0/100000/25 -L10 -S0.3 > v3312_filt.dt
 
+To smooth a noisy geospatial track using a Gaussian filter of full-width 100 km
+and not shorten the track, use
+
+   ::
+
+    gmt filter1d track.txt -Ngk+a -E -Fg200 |> smooth_track.txt
+
 See Also
 --------
 
-:doc:`gmt` , :doc:`sample1d` , :doc:`splitxyz`
+:doc:`gmt` ,
+:doc:`sample1d` ,
+:doc:`splitxyz`
