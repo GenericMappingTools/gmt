@@ -151,7 +151,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**
+**-Q**\ *cut*
     Do not dump polygons with less than *cut* number of points [Dumps
     all polygons]. Only applicable if **-D** has been specified.
 
