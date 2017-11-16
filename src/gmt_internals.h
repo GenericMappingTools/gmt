@@ -186,7 +186,6 @@ EXTERN_MSC struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struc
 EXTERN_MSC int gmtlib_scanf_geodim (struct GMT_CTRL *GMT, char *s, double *val);
 EXTERN_MSC unsigned int gmtlib_conv_text2datarec (struct GMT_CTRL *GMT, char *record, unsigned int ncols, double *out);
 EXTERN_MSC void gmtlib_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
-EXTERN_MSC void gmtlib_eliminate_lon_jumps (struct GMT_CTRL *GMT, double *lon, uint64_t n_rows);
 EXTERN_MSC p_to_io_func gmtlib_get_io_ptr (struct GMT_CTRL *GMT, int direction, enum GMT_swap_direction swap, char type);
 EXTERN_MSC void gmtlib_io_binary_header (struct GMT_CTRL *GMT, FILE *fp, unsigned int dir);
 EXTERN_MSC void gmtlib_write_tableheader (struct GMT_CTRL *GMT, FILE *fp, char *txt);

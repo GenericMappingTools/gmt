@@ -1000,8 +1000,9 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
 		for (seg = 0; seg < D->table[tbl]->n_segments; ++seg) {	/* For each segment */
 			/* Duplicate data and set up arrays and parameters needed to filter this segment */
-			if (D->table[tbl]->segment[seg]->n_rows > F.n_row_alloc) {
-				F.n_row_alloc = MAX (GMT_CHUNK, D->table[tbl]->segment[seg]->n_rows);
+			S = D->table[tbl]->segment[seg];
+			if (S->n_rows > F.n_row_alloc) {
+				F.n_row_alloc = MAX (GMT_CHUNK, S->n_rows);
 				allocate_data_space (GMT, &F);
 			}
 
@@ -1012,15 +1013,17 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 				}
 			}
 			last_time = -DBL_MAX;
+			if (Ctrl->N.spatial == 2)	/* Ensure longitudes are in the same quadrants */
+				gmt_eliminate_lon_jumps (GMT, S->data[GMT_X], S->n_rows);
 
-			for (row = F.n_rows = 0; row < D->table[tbl]->segment[seg]->n_rows; ++row, ++F.n_rows) {
-				in = D->table[tbl]->segment[seg]->data[F.t_col][row];
+			for (row = F.n_rows = 0; row < S->n_rows; ++row, ++F.n_rows) {
+				in = S->data[F.t_col][row];
 				if (gmt_M_is_dnan (in)) continue;	/* Skip records with time == NaN */
 				new_time = in;
 				if (new_time < last_time) Return (GMT_DATA_READ_ERROR, "Error! Time decreases at line # %" PRIu64 "\n\tUse UNIX utility sort and then try again.\n", row);
 				last_time = new_time;
 				for (col = 0; col < F.n_cols; ++col) {
-					in = D->table[tbl]->segment[seg]->data[col][row];
+					in = S->data[col][row];
 					F.data[col][F.n_rows] = in;
 					if (F.robust || (F.filter_type == FILTER1D_MEDIAN) ) {
 						if (in > F.max_loc[col]) F.max_loc[col] = in;
@@ -1043,7 +1046,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 
 			if (set_up_filter (GMT, &F)) Return (GMT_RUNTIME_ERROR, "Fatal error during coefficient setup.\n");
 
-			if (GMT->current.io.multi_segments[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, D->table[tbl]->segment[seg]->header);
+			if (GMT->current.io.multi_segments[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, S->header);
 			
 			if (do_the_filter (API, &F)) Return (GMT_RUNTIME_ERROR, "Fatal error in filtering routine.\n");
 		}

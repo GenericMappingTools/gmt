@@ -1503,7 +1503,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	/* Destroy old allocated memory and put the new one in place */
 	gmt_M_free (GMT, lon);
 	gmt_M_free (GMT, lat);
-	gmtlib_eliminate_lon_jumps (GMT, GMT->hidden.mem_coord[GMT_X], n_new);	/* Ensure longitudes are in the same quadrants */
+	gmt_eliminate_lon_jumps (GMT, GMT->hidden.mem_coord[GMT_X], n_new);	/* Ensure longitudes are in the same quadrants */
 	*a_lon = gmtlib_assign_vector (GMT, n_new, GMT_X);
 	*a_lat = gmtlib_assign_vector (GMT, n_new, GMT_Y);
 

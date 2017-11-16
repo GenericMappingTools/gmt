@@ -85,7 +85,7 @@
  * gmt_quad_add
  * gmt_quad_finalize
  * gmtlib_get_lon_minmax
- * gmtlib_eliminate_lon_jumps
+ * gmt_eliminate_lon_jumps
  * gmtlib_determine_pole
  * gmt_set_seg_polar
  * gmtlib_geo_to_dms
@@ -5225,7 +5225,7 @@ void gmtlib_get_lon_minmax (struct GMT_CTRL *GMT, double *lon, uint64_t n_rows, 
 }
 
 /*! . */
-void gmtlib_eliminate_lon_jumps (struct GMT_CTRL *GMT, double *lon, uint64_t n_rows) {
+void gmt_eliminate_lon_jumps (struct GMT_CTRL *GMT, double *lon, uint64_t n_rows) {
 	/* Eliminate longitude jumps in array lon using clever quadrant checking. */
 	unsigned int way;
 	uint64_t row;
