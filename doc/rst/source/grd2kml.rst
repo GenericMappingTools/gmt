@@ -80,7 +80,7 @@ Optional Arguments
 
     Specifies the filter to use for the downsampling of the grid for more
     distant viewing.  Choose among **b**\ oxcar, **c**\ osine arch,
-    **g**\ ausian, or **m**\ edian [Gaussian].  The filter width is set
+    **g**\ aussian, or **m**\ edian [Gaussian].  The filter width is set
     automatically depending on the level.
 
 .. _-I:

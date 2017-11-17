@@ -201,7 +201,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmt2kml [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fe|s|t|l|p|w] [-Gf|n[-|<fill>] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N-|+|<template>|<name>] [-O] [-Q[a|i]<az>] [-Qs<scale>[unit]] [-Ra|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N-|+|<template>|<name>] [-O] [-Q[a|i]<az>] [-Qs<scale>[unit]] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<title>[/<foldername>] [%s] [-W[<pen>][<attr>]] [-Z<opts>] [%s]\n", GMT_V_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
@@ -236,17 +236,17 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Supply extended named data columns via <name1>,<name2>,... [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Control the feature labels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default, -L\"label\" statements in the segment header are used. Alternatively,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1. Specify -N- if first non-coordinate column of data record is a single-word label (-Fe|s|t only).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   2. Specify -N+ if the rest of the data record should be used as label (-Fe|s|t only).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   3. Append a string that may contain the format %%d for a running feature count.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   4. Give no argument to indicate no labels.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     1. Specify -N- if first non-coordinate column of data record is a single-word label (-Fe|s|t only).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     2. Specify -N+ if the rest of the data record should be used as label (-Fe|s|t only).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     3. Append a string that may contain the format %%d for a running feature count.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     4. Give no argument to indicate no labels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-O Append the KML code to an existing document [OFF].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Set properties in support of wiggle plots (-Fw):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qa Set preferred azimuth +|-90 for wiggle direction [0], or\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qi Instead, set fixed azimuth for wiggle direction [variable].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qs Set wiggle scale in z-data units per map unit.  Append %s [e].\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t-R Issue Region tag.  Append w/e/s/n to set a particular region or append a to use the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   actual domain of the data (single file only) [no region specified].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Qa Set preferred azimuth +|-90 for wiggle direction [0], or\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Qi Instead, set fixed azimuth for wiggle direction [variable].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Qs Set wiggle scale in z-data units per map unit.  Append %s [e].\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t-R Issue Region tag.  Append w/e/s/n to set a particular region or give -Re to use the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   exact domain of the data (single file only) [no region specified].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Scale for (c)ircle icon size or (n)ame label [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Append KML document title name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append /<foldername> to name folder when used with\n");
@@ -452,7 +452,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				break;
 			case 'R':	/* Region setting */
 				Ctrl->R2.active = GMT->common.R.active[RSET] = true;
-				if (opt->arg[0] == 'a')	/* Get args from data domain */
+				if (opt->arg[0] == 'e' || opt->arg[0] == 'a')	/* Get args from data domain (used to be -Ra but in modern mdoe -Re is what is meant) */
 					Ctrl->R2.automatic = true;
 				else if (opt->arg[0])
 					n_errors += gmt_parse_R_option (GMT, opt->arg);
@@ -721,10 +721,10 @@ void KML_plot_object (struct GMTAPI_CTRL *API, struct GMT_RECORD *Out, double *x
 		kml_print (API, Out, N++, "<LinearRing>");
 	}
 	kml_print (API, Out, N++, "<coordinates>");
+	out[GMT_Z] = z_level;
 	for (k = 0; k < np; k++) {
 		out[GMT_X] = x[k];
 		out[GMT_Y] = y[k];
-		out[GMT_Z] = z_level;
 		ascii_output_three (API, Out, out, N);
 	}
 	kml_print (API, Out, --N, "</coordinates>");
@@ -740,12 +740,10 @@ GMT_LOCAL void kml_plot_wiggle (struct GMT_CTRL *GMT, struct GMT_RECORD *Out, st
 	int64_t i, np = 0;
 	double lon_len, lat_len, az = 0.0, s = 0.0, c = 0.0, lon_inc, lat_inc;
 	double start_az = 0, stop_az = 0, daz;
-	//char *RGB[2] = {"green", "red"};
 	/* Here, kml->{lon, lat, z} are the kml->n_in coordinates of one section of a to-be-designed wiggle.
 	 * We need to erect z, properly scaled, normal to the line and build the kml->n_out fake kml->{flon, flat}
 	 * points that we can use to plot lines and polygons on Google Earth */
 	/* zscale is in degrees per data units. */
-	// fprintf (stderr, "# zscale = %g degrees/unit or %g nm/units or %g units/nm\n", zscale, 60.0*zscale, 1.0/(60.0*zscale));
 	if (mode == 1) {	/* Want all wiggles to point in this azimuth */
 		az = D2R * azim[1];
 		sincos (az, &s, &c);
@@ -779,11 +777,6 @@ GMT_LOCAL void kml_plot_wiggle (struct GMT_CTRL *GMT, struct GMT_RECORD *Out, st
 			kml->flat[kml->n_out] = kml->lat[i] + lat_inc;
 			kml->n_out++;
 		}
-#if 0
-		fprintf (stderr, "> segment fill -G%s\n", RGB[fill]);
-		for (i = 0; i < (int64_t)kml->n_out; i++)
-			fprintf (stderr, "%g\t%g\n", kml->flon[i], kml->flat[i]);
-#endif
 		np = kml->n_out;	/* Number of points for the outline only */
 		if (fill) {
 			for (i = kml->n_in - 2; i >= 0; i--, kml->n_out++) {	/* Go back to 1st point along track */

@@ -23,7 +23,7 @@ Synopsis
 [ |-N|\ [+\|\ *name\_template*\ \|\ *name*] ] [ **-O**]
 [ |-Q|\ **a**\ \|\ **i**\ *az* ]
 [ |-Q|\ **s**\ *scale*\ [*unit*\ ] ]
-[ |-R|\ **a**\ \|\ *w/e/s/n* ]
+[ |-R|\ **e**\ \|\ *w/e/s/n* ]
 [ |-S|\ **c**\ \|\ **n**\ *scale*] ]
 [ |-T|\ *title*\ [/*foldername*] ]
 [ |SYN_OPT-V| ]
@@ -210,10 +210,10 @@ Optional Arguments
 
 .. _-R:
 
-**-Ra**\ \|\ *w/e/s/n*
+**-Re**\ \|\ *w/e/s/n*
     Issue a single Region tag. Append *w/e/s/n* to set a particular
-    region (will ignore points outside the region), or append **a** to
-    determine and use the actual domain of the data (single file only)
+    region (will ignore points outside the region), or append **e** to
+    determine and use the exact domain of the data (single file only)
     [no region tags issued].
 
 .. _-S:
@@ -454,6 +454,10 @@ use it.
 See Also
 --------
 
-:doc:`gmt` , :doc:`gmt.conf`, :doc:`gmt_shell_functions.sh`,
+:doc:`gmt` ,
+:doc:`gmt.conf`,
+:doc:`gmt_shell_functions.sh`,
+:doc:`grd2kml.sh`,
 :doc:`img2google <supplements/img/img2google>`,
-:doc:`kml2gmt` , :doc:`psconvert`
+:doc:`kml2gmt` ,
+:doc:`psconvert`
