@@ -269,7 +269,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 					if (Ctrl->G.active) gmt_M_memset (layer, Grid->header->size, gmt_grdfloat);
 					gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
 					for (k = 0; k < 3; k++) M[k] = 0.5 * (P1[k] + P2[k]);	/* Mid-point M */
-					L = d_acos (gmt_dot3v (GMT, P1, P2) * KM_PR_RAD) * weight;	/* Weighted length of this segment */
+					L = d_acos (gmt_dot3v (GMT, P1, P2)) * KM_PR_RAD * weight;	/* Weighted length of this segment */
 					gmt_normalize3v (GMT, M);
 					gmt_cart_to_geo (GMT, &mlat, &mlon, M, true);	/* Get lon/lat of the mid point */
 					gmt_cross3v (GMT, P1, P2, G);	/* This is pole of great circle through P1 & P2 */
