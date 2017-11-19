@@ -156,7 +156,7 @@ Optional Arguments
     ambient light.  If just **+** is given then we derive an intensity
     grid from the input data grid *grd_z* via a call to :doc:`grdgradient`
     using the arguments **-A**\ -45 and **-Nt**\ 1 for that module. You can
-    append **+a**\ *azimuth and **+n**\ *args* to override those values.  If you want
+    append **+a**\ *azimuth* and **+n**\ *args* to override those values.  If you want
     more specific intensities then run :doc:`grdgradient` separately first.
     [Default is no illumination].
 
