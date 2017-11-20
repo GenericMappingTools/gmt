@@ -3483,9 +3483,7 @@ Data set
 Each data set is represented by a :ref:`GMT_DATASET <struct-dataset>` that consists of one or more data
 tables represented by a :ref:`GMT_DATATABLE <struct-datatable>`, and each table consists of one or more
 segments represented by a :ref:`GMT_DATASEGMENT <struct-datasegment>`, and each segment contains one or
-more rows of a fixed number of columns.  If the dataset originated from an OGR/GMT file then there
-will be items such as an :ref:`GMT_OGR <struct-ogr>` structure per table and a :ref:`GMT_OGR_SEG <struct-ogr_seg>`
-structure per segment.
+more rows of a fixed number of columns.
 
 .. _struct-dataset:
 
