@@ -760,6 +760,9 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			fluff[GMT_Y] += (factor-1) * title_height;
 			y_header_off += title_height;
 		}
+		else if (Ctrl->S[GMT_Y].ptitle == SUBPLOT_PANEL_COL_TITLE) {
+			y_header_off += title_height;
+		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d panel titles: fluff = {%g, %g}\n", factor, fluff[GMT_X], fluff[GMT_Y]);
 		if (Ctrl->F.mode == SUBPLOT_FIGURE) {	/* Got figure dimension, compute subplot dimensions */
 			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) Ctrl->F.w[col] *= (Ctrl->F.dim[GMT_X] - fluff[GMT_X]);
