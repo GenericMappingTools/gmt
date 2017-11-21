@@ -143,10 +143,9 @@ Required Arguments
     subplot dimensions after adding the space that tick marks, annotations, labels, and margins occupy in between panels.
     Note in both cases the annotations and ticks on the outside perimeter as not counted as part of the dimensions.
     Normally, all panels have the same dimensions. To specify different subplot dimensions for each row (or column), the syntax
-    differs between the two ways of setting overal dimensions.  For **-Ff* you must append a colon followed by a comma-separated
+    differs between the two ways of setting overal dimensions.  For **-Ff** you must append a colon followed by a comma-separated
     list of relative widths, a slash, and then the list of relative heights. A single number means constant widths (or heights)
-give a comma-separated
-    list of dimensions instead.  The number of values must either be one (constant across the rows or columns)
+    give a comma-separated list of dimensions instead.  The number of values must either be one (constant across the rows or columns)
     or exactly match the number of rows (or columns). For geographic maps, the height of each panel depends on
     your map region and projection.  There are two options: (1) Specify both **-R** and **-J** and we use these
     to compute the height of each subplot.  All subplot must share the same region and projection, or (2) you
