@@ -115,12 +115,12 @@ that each may contain a single figure.  A subplot setup is started with the **be
 mode that defines the layout of the subplots:
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
-**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ [:*wfracs*\ /*hfracs*\ ][**+f**\ *fill*\ ][**+p**\ *pen*\ ][**+d**\ ]
+**-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *fill*\ ][**+p**\ *pen*\ ][**+d**\ ]
 [ **-A**\ *autolabel* ]
 [ |SYN_OPT-B| ]
-|-J|\ *parameters*
+[ |-J|\ *parameters* ]
 [ **-M**\ *margins* ]
-|SYN_OPT-R|
+[ |SYN_OPT-R| ]
 [ **-S**\ *layout* ]
 [ **-T**\ *title* ] [ |SYN_OPT-V| ]
 
@@ -134,19 +134,27 @@ Required Arguments
 
 .. _subplot_begin-F:
 
-**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ [:*wfracs*\ /*hfracs*\ ][**+f**\ *fill*\ ][**+p**\ *pen*\ ][**+d**\ ]
-    Specify the dimensions of the figure.  The subplot dimensions are then calculated from the figure
-    dimensions after accounting for tick marks, annotations, labels, and margins.  If the subplot dimensions should be different
-    for each row (or column) you must append a comma-separated list of relative widths (or heights)
-    following the colon.  A single number means constant widths (or heights) [Default].
-    Alternatively, use **-Fs** to specify
-    the dimensions of each subplot directly.  Then, the figure dimensions are computed from the subplot dimensions instead.
-    To specify different subplot dimensions for each row (or column), give a comma-separated
+**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ [:*wfracs*\ /*hfracs*\ ][**+f**\ *fill*\ ]
+    Specify the dimensions of the figure.  There are two different ways to do this: Specify overall figure dimension
+    or specify the dimension of a single panel.  Optional modifiers **+f** will fill each plot canvas
+    Using **-Ff**: Here we specify the final figure dimensions.  The subplot dimensions are then calculated from the figure
+    dimensions after accounting for the space that tick marks, annotations, labels, and margins occupy in between panels.
+    Using **-Fs**: Here we specify the dimensions of each subplot directly.  Then, the figure dimensions are computed from the
+    subplot dimensions after adding the space that tick marks, annotations, labels, and margins occupy in between panels.
+    Note in both cases the annotations and ticks on the outside perimeter as not counted as part of the dimensions.
+    Normally, all panels have the same dimensions. To specify different subplot dimensions for each row (or column), the syntax
+    differs between the two ways of setting overal dimensions.  For **-Ff* you must append a colon followed by a comma-separated
+    list of relative widths, a slash, and then the list of relative heights. A single number means constant widths (or heights)
+give a comma-separated
     list of dimensions instead.  The number of values must either be one (constant across the rows or columns)
     or exactly match the number of rows (or columns). For geographic maps, the height of each panel depends on
     your map region and projection.  There are two options: (1) Specify both **-R** and **-J** and we use these
     to compute the height of each subplot.  All subplot must share the same region and projection, or (2) you
     can select *height* based on trial and error to suit your plot layout.
+
+  If the subplot dimensions should be different
+    for each row (or column) you must append a comma-separated list of relative widths (or heights)
+    following the colon.  A single number means constant widths (or heights) [Default].
 
 Optional Arguments
 ------------------

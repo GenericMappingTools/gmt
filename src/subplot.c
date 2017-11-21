@@ -687,15 +687,27 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			fluff[GMT_Y] += (Ctrl->N.dim[GMT_Y] - 1) * (Ctrl->M.margin[YLO] + Ctrl->M.margin[YHI]);
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After inside panel margins: fluff = {%g, %g}\n", fluff[GMT_X], fluff[GMT_Y]);
-		/* Limit tickmarks to 1 or 2 axes per row or per panel */
-		if (Ctrl->S[GMT_Y].tick) nx = (Ctrl->S[GMT_Y].tick == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1; else nx = 0;
+		/* ROW SETTINGS:  Limit tickmarks to 1 or 2 axes per row or per panel */
+		if (Ctrl->S[GMT_Y].tick)	/* Used -SR so check settings */
+			nx = (Ctrl->S[GMT_Y].tick == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1;
+		else {	/* Must see what -B specified instead since that will apply to all panels */
+			nx = 0;
+			if (strchr (Ctrl->S[GMT_Y].axes, 'W') || strchr (Ctrl->S[GMT_Y].axes, 'w')) nx++;	/* All panels need west ticks */
+			if (strchr (Ctrl->S[GMT_Y].axes, 'E') || strchr (Ctrl->S[GMT_Y].axes, 'e')) nx++;	/* All panels need east ticks */
+		}
 		if (!Ctrl->S[GMT_Y].active) {
 			nx *= (Ctrl->N.dim[GMT_X] - 1);	/* Each column needs separate y-axis [and labels] */
 			fluff[GMT_X] += nx * tick_height;
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d row ticks: fluff = {%g, %g}\n", nx, fluff[GMT_X], fluff[GMT_Y]);
 		/* Limit annotations/labels to 1 or 2 axes per row or per panel */
-		if (Ctrl->S[GMT_Y].annotate) nx = (Ctrl->S[GMT_Y].annotate == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1; else nx = 0;
+		if (Ctrl->S[GMT_Y].annotate)	/* Used -SR so check settings */
+			nx = (Ctrl->S[GMT_Y].annotate == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1;
+		else {	/* Must see what -B specified instead since that will apply to all panels */
+			nx = 0;
+			if (strchr (Ctrl->S[GMT_Y].axes, 'W')) nx++;	/* All panels need west annotations */
+			if (strchr (Ctrl->S[GMT_Y].axes, 'E')) nx++;	/* All panels need east annotations */
+		}
 		if (!Ctrl->S[GMT_Y].active) {
 			nx *= (Ctrl->N.dim[GMT_X] - 1);	/* Each column needs separate y-axis [and labels] */
 			fluff[GMT_X] += nx * annot_height;
@@ -704,14 +716,26 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		if (Ctrl->S[GMT_Y].has_label)
 			fluff[GMT_X] += nx * label_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d row labels: fluff = {%g, %g}\n", nx, fluff[GMT_X], fluff[GMT_Y]);
-		/* Limit annotations/labels to 1 or 2 axes per column or per panel */
-		if (Ctrl->S[GMT_X].tick) ny = (Ctrl->S[GMT_X].tick == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1; else ny = 0;
+		/* COLUMN SETTINGS: Limit annotations/labels to 1 or 2 axes per column or per panel */
+		if (Ctrl->S[GMT_X].tick)	/* Gave -SC so check settings */
+			ny = (Ctrl->S[GMT_X].tick == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1;
+		else {	/* Must see what -B specified instead since that will apply to all panels */
+			ny = 0;
+			if (strchr (Ctrl->S[GMT_X].axes, 'S') || strchr (Ctrl->S[GMT_X].axes, 's')) ny++;	/* All panels need south ticks */
+			if (strchr (Ctrl->S[GMT_X].axes, 'N') || strchr (Ctrl->S[GMT_X].axes, 'n')) ny++;	/* All panels need north ticks */
+		}
 		if (ny == 2) y_header_off += tick_height;
 		factor = (Ctrl->S[GMT_X].active) ? 1 : Ctrl->N.dim[GMT_Y];		/* Each row may need separate x-axis ticks */
 		ny *= (factor - 1);
 		fluff[GMT_Y] += ny * tick_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d col ticks: fluff = {%g, %g}\n", ny, fluff[GMT_X], fluff[GMT_Y]);
-		if (Ctrl->S[GMT_X].annotate) ny = (Ctrl->S[GMT_X].annotate == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1; else ny = 0;
+		if (Ctrl->S[GMT_X].annotate)	/* Gave -SC so check settings */
+			ny = (Ctrl->S[GMT_X].annotate == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1;
+		else {	/* Must see what -B specified instead since that will apply to all panels */
+			ny = 0;
+			if (strchr (Ctrl->S[GMT_X].axes, 'S')) ny++;	/* All panels need south annotations */
+			if (strchr (Ctrl->S[GMT_X].axes, 'N')) ny++;	/* All panels need north annotations */
+		}
 		if (ny == 2) y_header_off += annot_height;
 		factor = (Ctrl->S[GMT_X].active) ? 1 : Ctrl->N.dim[GMT_Y];		/* Each row may need separate x-axis [and labels] */
 		ny *= (factor - 1);
@@ -792,8 +816,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			if (Ctrl->F.debug) {	/* All rows share this upper y */
 				for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) {	/* For each col of panels */
 					seg = (uint64_t)row * Ctrl->N.dim[GMT_X] + col;
-					D->table[0]->segment[seg]->data[GMT_Y][2] = D->table[0]->segment[seg]->data[GMT_Y][3] = y + off[GMT_Y] + Ctrl->M.margin[YLO];
-                    D->table[0]->segment[seg]->n_rows = 4;
+					D->table[0]->segment[seg]->data[GMT_Y][2] = D->table[0]->segment[seg]->data[GMT_Y][3] = y + off[GMT_Y];
+					D->table[0]->segment[seg]->n_rows = 4;
 				}
 			}
 			if ((row == 0 && Ctrl->S[GMT_Y].ptitle == SUBPLOT_PANEL_COL_TITLE) || (Ctrl->S[GMT_Y].ptitle == SUBPLOT_PANEL_TITLE)) {
@@ -840,7 +864,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			if (Ctrl->F.debug) {	/* ALl rows share this lower y */
 				for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) {	/* For each col of panels */
 					seg = (uint64_t)row * Ctrl->N.dim[GMT_X] + col;
-					D->table[0]->segment[seg]->data[GMT_Y][0] = D->table[0]->segment[seg]->data[GMT_Y][1] = y + off[GMT_Y] + Ctrl->M.margin[YLO];
+					D->table[0]->segment[seg]->data[GMT_Y][0] = D->table[0]->segment[seg]->data[GMT_Y][1] = y + off[GMT_Y];
 				}
 			}
 			if (row < last_row) y -= Ctrl->M.margin[YLO];
@@ -853,7 +877,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			if (Ctrl->F.debug) {	/* All cols share this left x */
 				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each col of panels */
 					seg = (uint64_t)row * Ctrl->N.dim[GMT_X] + col;
-					D->table[0]->segment[seg]->data[GMT_X][0] = D->table[0]->segment[seg]->data[GMT_X][3] = x + off[GMT_X] + Ctrl->M.margin[XLO];
+					D->table[0]->segment[seg]->data[GMT_X][0] = D->table[0]->segment[seg]->data[GMT_X][3] = x + off[GMT_X];
 				}
 			}
 			if (Ctrl->S[GMT_Y].active)	/* May need shared annotation at left W */
@@ -898,7 +922,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			if (Ctrl->F.debug) {	/* ALl cols share this right x */
 				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each col of panels */
 					seg = (uint64_t)row * Ctrl->N.dim[GMT_X] + col;
-					D->table[0]->segment[seg]->data[GMT_X][1] = D->table[0]->segment[seg]->data[GMT_X][2] = x + off[GMT_X] + Ctrl->M.margin[XLO];
+					D->table[0]->segment[seg]->data[GMT_X][1] = D->table[0]->segment[seg]->data[GMT_X][2] = x + off[GMT_X];
 				}
 			}
 			if (col < last_col) x += Ctrl->M.margin[XHI];
@@ -921,7 +945,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		for (row = panel = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each row of panels */
 			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++, panel++) {	/* For each col of panels */
 				k = (Ctrl->A.way == GMT_IS_COL_FORMAT) ? col * Ctrl->N.dim[GMT_Y] + row : row * Ctrl->N.dim[GMT_X] + col;
-				fprintf (fp, "%d\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t", panel, row, col, Ctrl->N.dim[GMT_Y], Ctrl->N.dim[GMT_X], px[col] + Ctrl->M.margin[XLO], py[row] + Ctrl->M.margin[YLO], Ctrl->F.w[col], Ctrl->F.h[row]);
+				fprintf (fp, "%d\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t", panel, row, col, Ctrl->N.dim[GMT_Y], Ctrl->N.dim[GMT_X], px[col], py[row], Ctrl->F.w[col], Ctrl->F.h[row]);
 				if (Ctrl->A.active) {
 					if (Ctrl->A.mode == SUBPLOT_LABEL_IS_NUMBER) {
 						if (Ctrl->A.roman) {
@@ -980,8 +1004,8 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, T, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			sprintf (command, "-R%g/%g/%g/%g -Jx1i -P -N -F+jBC+f%s %s -X%c%gi -Y%c%gi --GMT_HISTORY=false",
-				-Ctrl->M.margin[XLO], width + Ctrl->M.margin[XHI], -Ctrl->M.margin[YLO], height + Ctrl->M.margin[YHI], gmt_putfont (GMT, &GMT->current.setting.font_heading), vfile, xymode, GMT->current.setting.map_origin[GMT_X]-Ctrl->M.margin[XLO], xymode, GMT->current.setting.map_origin[GMT_Y]-Ctrl->M.margin[YLO]);
+			sprintf (command, "-R0/%g/0/%g -Jx1i -P -N -F+jBC+f%s %s -X%c%gi -Y%c%gi --GMT_HISTORY=false",
+				width, height, gmt_putfont (GMT, &GMT->current.setting.font_heading), vfile, xymode, GMT->current.setting.map_origin[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]);
 			if (Bopt[0] == ' ') strcat (command, Bopt);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot to pstext: %s\n", command);
 			if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the cancas with heading */
@@ -990,7 +1014,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				Return (API->error);
 		}
 		else {	/* psxy will do, since nothing is plotted (except for possibly the canvas fill/outline) */
-			sprintf (command, "-R%g/%g/%g/%g -Jx1i -P -T -X%c%gi -Y%c%gi --GMT_HISTORY=false", -Ctrl->M.margin[XLO], width + Ctrl->M.margin[XHI], -Ctrl->M.margin[YLO], height + Ctrl->M.margin[YHI], xymode, GMT->current.setting.map_origin[GMT_X]-Ctrl->M.margin[XLO], xymode, GMT->current.setting.map_origin[GMT_Y]-Ctrl->M.margin[YLO]);
+			sprintf (command, "-R0/%g/0/%g -Jx1i -P -T -X%c%gi -Y%c%gi --GMT_HISTORY=false", width, height, xymode, GMT->current.setting.map_origin[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]);
 			if (Bopt[0]) strcat (command, Bopt);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot to psxy: %s\n", command);
 			if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the cancas with heading */
