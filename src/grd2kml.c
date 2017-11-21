@@ -382,9 +382,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Directory %s already exist - will overwrite files\n", Ctrl->N.prefix);
 	}
 	
-	Q = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_QUADTREE *);
 	uniq = (int)(time (NULL) % 1000000);	/* remainder of seconds - lazy way to get some unique number for the files  */
-	fprintf (stderr, "Uniq = %d\n", uniq);
 	if (Ctrl->I.derive) {	/* Auto-create single intensity grid from data grid to ensure constant scaling */
 		sprintf (file, "grd2kml_intensity_tmp_%6.6d.grd", uniq);
 		Ctrl->I.file = strdup (file);
@@ -396,7 +394,24 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, cmd))
 			Return (API->error);
 	}
+	else {	/* Can read the intensity file and compare region etc to data grid */
+		struct GMT_GRID *I = NULL;
+		double x_noise = GMT_CONV4_LIMIT * G->header->inc[GMT_X], y_noise = GMT_CONV4_LIMIT * G->header->inc[GMT_Y];
+		if ((I = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {
+			Return (API->error);
+		}
+		if (!gmt_M_grd_same_shape (GMT, G, I)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Data grid and intensity grid are not of the same dimensions!\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (fabs (G->header->wesn[XLO] - I->header->wesn[XLO]) > x_noise || fabs (G->header->wesn[XHI] - I->header->wesn[XHI]) > x_noise ||
+			fabs (G->header->wesn[YLO] - I->header->wesn[YLO]) > y_noise || fabs (G->header->wesn[YHI] - I->header->wesn[YHI]) > y_noise) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Data grid and intensity grid do not cover the same area!\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
 
+	Q = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_QUADTREE *);
 	factor = pow (2.0, max_level);	/* Max width of imaged pixels in multiples of original grid spacing for this level */
 	/* Determine extended region required if using the largest multiple of original grid spacing */
 	inc[GMT_X] = factor * G->header->inc[GMT_X];
