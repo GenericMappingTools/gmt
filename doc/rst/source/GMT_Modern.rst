@@ -135,25 +135,30 @@ Required Arguments
 .. _subplot_begin-F:
 
 **-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ [:*wfracs*\ /*hfracs*\ ][**+f**\ *fill*\ ]
-    Specify the dimensions of the figure.  There are two different ways to do this: Specify overall figure dimension
-    or specify the dimension of a single panel.  Optional modifiers **+f** will fill each plot canvas
-    Using **-Ff**: Here we specify the final figure dimensions.  The subplot dimensions are then calculated from the figure
-    dimensions after accounting for the space that tick marks, annotations, labels, and margins occupy in between panels.
-    Using **-Fs**: Here we specify the dimensions of each subplot directly.  Then, the figure dimensions are computed from the
-    subplot dimensions after adding the space that tick marks, annotations, labels, and margins occupy in between panels.
-    Note in both cases the annotations and ticks on the outside perimeter as not counted as part of the dimensions.
-    Normally, all panels have the same dimensions. To specify different subplot dimensions for each row (or column), the syntax
-    differs between the two ways of setting overal dimensions.  For **-Ff** you must append a colon followed by a comma-separated
-    list of relative widths, a slash, and then the list of relative heights. A single number means constant widths (or heights)
-    give a comma-separated list of dimensions instead.  The number of values must either be one (constant across the rows or columns)
+    Specify the dimensions of the figure.  There are two different ways to do this: (**f**) Specify overall figure dimension
+    or (**s**) specify the dimension of a single panel.  An optional modifier **+f** will fill each plot canvas before drawing commences.
+
+**-Ff**
+    Specify the final figure dimensions.  The subplot dimensions are then calculated from the figure
+    dimensions after accounting for the space that optional tick marks, annotations, labels, and margins occupy between panels.
+    The annotations, ticks, and labels along the outside perimeter are not counted as part of the figure dimensions.
+    To specify different subplot dimensions for each row (or column), append a colon followed by a comma-separated list of width
+    fractions, a slash, and then the list of height fractions.  For example **–Ff**\ 4i/4i:3,1/1,2 will make the first column
+    three times as wide as the second, while the second row will be twice as tall as the first row.
+    A single number means constant widths (or heights) [Default].
+
+**-Fs**
+    Specify the dimensions of each subplot directly.  Then, the figure dimensions are computed from the
+    subplot dimensions after adding the space that optional tick marks, annotations, labels, and margins occupy between panels.
+    The annotations, ticks, and labels along the outside perimeter are not counted as part of the figure dimensions.
+    To specify different subplot dimensions for each row (or column),  append a colon followed by a comma-separated list of widths,
+    a slash, and then the list of heights.  A single number means constant widths (or heights) [Default].
+    For example **–Fs*2i,3i/3i will make the first column 2 inches wide and the second column 3 inches wide, with
+    all having a constant height of 3 inches. The number of values must either be one (constant across the rows or columns)
     or exactly match the number of rows (or columns). For geographic maps, the height of each panel depends on
     your map region and projection.  There are two options: (1) Specify both **-R** and **-J** and we use these
-    to compute the height of each subplot.  All subplot must share the same region and projection, or (2) you
+    to compute the height of each subplot.  All subplot must share the same region and projection and you specify a zero *height*, or (2) you
     can select *height* based on trial and error to suit your plot layout.
-
-  If the subplot dimensions should be different
-    for each row (or column) you must append a comma-separated list of relative widths (or heights)
-    following the colon.  A single number means constant widths (or heights) [Default].
 
 Optional Arguments
 ------------------
@@ -166,10 +171,10 @@ Optional Arguments
     Surround the number or letter by parentheses on any side if these should be typeset
     as part of the tag (Note: In UNIX shells you may need to escape these parentheses.)
     Use **+j**\ \|\ **J**\ *refpoint* to specify where the tag should be placed in the subplot [TL].
-    Note: **+j** sets the justification of the tag to *refpoint* while **+J** instead selects
-    the mirror opposite (suitable for outside tags).
+    Note: **+j** sets the justification of the tag to *refpoint* (suitable for interior tags)
+    while **+J** instead selects the mirror opposite (suitable for exterior tags).
     Append **+c**\ *dx*\ [/*dy*] to set the clearance between the tag and a surrounding text box
-    requested via **+g** or **p**.
+    requested via **+g** or **p** [3pt/3pt, i.e., 15% of the FONT_TAG size].
     Append **+g** to paint the tag's text box with *fill* [no painting].
     Append **+o**\ *dx*\ [/*dy*] to offset the tag's reference point in the direction implied
     by the justification [4pt/4pt, i.e., 20% of the FONT_TAG size].
@@ -186,7 +191,7 @@ Optional Arguments
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
     side, using *side* values from **w**, **e**, **s**, or **n**.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can
-    be accessed by modules that plot scales, bars, text, etc.  Settings apply to all panels.
+    be accessed by modules that plot scales, bars, text, etc.  Settings specified here apply to all panels.
 
 .. _-J:
 
@@ -198,8 +203,8 @@ Optional Arguments
 **-M**\ *margins*
     This is clearance that is added around each subplot beyond the automatic space allocated for tick marks,
     annotations, and labels [0.5c].
-    The margins can be a single value, a pair of values separated by slashes (setting the horizontal and vertical margins),
-    or the full set of four margins for the left, right, bottom, and top margin.
+    The margins can be a single value, a pair of values separated by slashes (for setting separate horizontal and vertical margins),
+    or the full set of four margins (for setting separate left, right, bottom, and top margins).
 
 .. _-R:
 
@@ -210,18 +215,17 @@ Optional Arguments
 
 **-S**\ *layout*
     Set subplot layout for shared axes. May be set separately for rows (**-SR**) and columns (**-SC**).
-    **-SC**: Each subplot **C**\ olumn shares a common *x*-range. The first (i.e., **t**\ op) and the last
+    **-SC**: Use when all subplots in a **C**\ olumn share a common *x*-range. The first (i.e., **t**\ op) and the last
     (i.e., **b**\ ottom) rows will have *x* annotations; append **t** or **b** to select only one of those two rows [both].
     Append **+l** if annotated *x*-axes should have a label [none]; optionally append the label if it is the same
     for the entire subplot.
-    **-SR**: Each subplot **R**\ ow shares common *y*-range. The first (i.e., **l**\ eft) and the last
+    **-SR**: Use when all subplots in a **R**\ ow share common *y*-range. The first (i.e., **l**\ eft) and the last
     (i.e., **r**\ ight) columns will have *y*-annotations; append **l** or **r** to select only one of those two columns [both].
     Append **+l** if annotated *y*-axes will have a label [none]; optionally, append the label if it is the same
     for the entire subplot.
-    Append **+g** to add grid-lines to each subplot [off].
-    Append **+p** to make all annotation axis-parallel [horizontal]; if used you may have to set **-C** to set aside
+    Append **+p** to make all annotation axis-parallel [horizontal]; if used you may have to set **-C** to secure
     extra space for long horizontal annotations.
-    Append **+t** to make space for subplot titles; use **+tc** for top row titles only [no subplot titles].
+    Append **+t** to make space for subplot titles for each row; use **+tc** for top row titles only [no subplot titles].
 
 .. _subplot_begin-T:
 
@@ -238,9 +242,9 @@ Optional Arguments
 
 Before you start plotting you must first select the active subplot panel.
 Note: Any **-J** option passed when plotting subplots must not give the width or scale
-since the dimensions of the map is completely determined by the subplot size and your region.
+since the dimensions of the map are completely determined by the subplot size and your region.
 Specifying map width will result in an error.  For Cartesian plots: If you want the scale
-to apply equally to both dimensions then you must specify **-Jx** [The default **-JX** will
+to apply *equally* to both dimensions then you must specify **-Jx** [The default **-JX** will
 fill the subplot using unequal scales].
 
 Required Arguments
@@ -258,6 +262,7 @@ Optional Arguments
 
 **-A**\ *fixedlabel*
     Overrides the automatic labeling with the given string.  No modifiers are allowed.
+    Placement, justification, etc are all inherited from the initial **subplot begin** command.
 
 .. _subplot_set-C2:
 
@@ -265,21 +270,22 @@ Optional Arguments
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
     side, using *side* values from **w**, **e**, **s**, or **n**.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can
-    be accessed by modules that plot scales, bars, text, etc.
+    be accessed by modules that plot scales, bars, text, etc.  This setting overrides the common
+    clearances set during **subplot begin**.
 
 .. _subplot_set-V:
 
 .. include:: explain_-V.rst_
 
 
-Any number of plotting command can now take place and output will all be directed to the
+Any number of plotting command can now take place and all output will be directed to the
 selected subplot panel.  There are a few other rules that need to be followed:
-(1) The subplot machinery expects that the first plotting command in a new subplot window
-will take care of plotting the base frame.  The particulars of this frame may have been 
+(1) The subplot machinery expects the first plotting command in a new subplot window
+to take care of plotting the base frame.  The particulars of this frame may have been 
 specified by **subplot begin**.  In either case, should you need to set or override
 frame and axis parameters then you must specify these **-B** options with this first plot
 command.  (2) The subplot machinery automatically uses the **-X** and **-Y** options under
-the hood so these are not available to you while subplot is active.
+the hood so these are not available while a subplot is active.
 
 **gmt subplot end** [ |SYN_OPT-V| ]
 
@@ -319,7 +325,7 @@ end
 
 **gmt end** [ |SYN_OPT-V| ]
 
-This command terminates the modern mode and completes the processing of all registered
+This command terminates the modern mode and finalizes the processing of all registered
 figures.  The final graphics will be placed in the current directory.
 
 *************
