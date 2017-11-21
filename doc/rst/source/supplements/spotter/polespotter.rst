@@ -15,10 +15,11 @@ Synopsis
 
 **polespotter**
 [ |SYN_OPT-I| ]
-[ |-G|\ *polegrid* ]
 [ |-A|\ *abyssalhills* ]
+[ |-C|\ *xfile* ]
 [ |-D|\ *spacing* ]
 [ |-F|\ *fracturezones* ]
+[ |-G|\ *polegrid* ]
 [ |-L| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -52,6 +53,17 @@ Optional Arguments
     File with multiple segments of abyssal hill lineaments. These
     are assumed to reflect the great circle direction towards the
     rotation pole in effect when the seafloor was formed.
+
+.. _-C:
+
+**-C**\ *xfile*
+    Compute the intersections of all great circles and write the locations
+    to *xfile*.  Output has 5 columns: *lon*, *lat*, *weight*, *cos*, *type*,
+    where *weight* is the combined length weight from the two generating
+    line segments, *cos* is the cosine of the angle between the intersecting
+    lines, and *type* is either 0 (AH intersect AH), 1 (AH intersect FZ), or
+    2 (FZ intersect FZ), where AH means an abyssal hill great circle and FZ
+    means a bisector great circle to a fracture zone.
 
 .. _-D:
 

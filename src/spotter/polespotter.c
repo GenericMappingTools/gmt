@@ -36,6 +36,10 @@ struct POLESPOTTER_CTRL {	/* All control options for this program (except common
 		char *file;
 		double weight;
 	} A;
+	struct C {	/* -D<crossfile> */
+		bool active;
+		char *file;
+	} C;
 	struct D {	/* -D<spacing> */
 		bool active;
 		double length;
@@ -71,6 +75,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->A.file);	
+	gmt_M_str_free (C->C.file);	
 	gmt_M_str_free (C->F.file);	
 	gmt_M_str_free (C->G.file);	
 	gmt_M_free (GMT, C);	
@@ -80,7 +85,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: polespotter [%s] [-G<polegrid>] [%s]\n", GMT_Id_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A<abyssalhills>] [-D<step>] [-F<FZfile] [-L] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A<abyssalhills>] [-C<xfile>] [-D<step>] [-F<FZfile] [-L] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Wa|f<weight> ][%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -88,6 +93,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Give multisegment file with abyssal hill lineaments [none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Find great-circle intersections and save to <xfile> [no crossings].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Give step-length along great circles in km [5].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Give multisegment file with fracture zone lineaments [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for polesearch grid [no gridding].  Requires -R -I [-r]\n");
@@ -122,6 +128,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *Ctrl, struct
 					Ctrl->A.file = strdup (opt->arg);
 				else
 					n_errors++;
+				break;
+			case 'C':	/* Output file with creat circle crossings */
+				Ctrl->C.active = true;
+				Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Step length */
 				Ctrl->D.active = true;
@@ -168,6 +178,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *Ctrl, struct
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.length <= 0.0, "Syntax error -D: Must specify a positive length step.\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !Ctrl->G.active, "Syntax error: Must specify at least one of -G, -L.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Syntax error -C: Must specify a file name.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -182,13 +193,16 @@ EXTERN_MSC void gmtlib_init_rot_matrix (double R[3][3], double E[]);
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_polespotter (void *V_API, int mode, void *args) {
+	bool do_lines;
 	int error;
 	unsigned int d, n_steps, grow, gcol, k;
-	uint64_t node, tbl, seg, row;
-	char header[GMT_LEN128] = {""};
+	uint64_t node, tbl, seg, row, ng = 0;
+	size_t n_alloc = 0;
+	char header[GMT_LEN128] = {""}, *code = NULL;
+	const char *label[2] = {"AH", "FZ"};
 	gmt_grdfloat *layer = NULL;
 	double weight, angle_radians, d_angle_radians, mlon, mlat, glon, glat, L, in[2];
-	double P1[3], P2[3], M[3], G[3], B[3], X[3], Rot0[3][3], Rot[3][3];
+	double P1[3], P2[3], M[3], G[3], B[3], X[3], Rot0[3][3], Rot[3][3], *GG = NULL;
 	
 	struct GMT_OPTION *ptr = NULL;
 	struct GMT_GRID *Grid = NULL;
@@ -256,6 +270,12 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 	
 	/* Loop over all abyssal hill and fracture zone lines and consider each subsecutive pair of points to define a great circle that intersects the pole */
 	
+	do_lines = !(Ctrl->G.active || Ctrl->L.active);
+	if (Ctrl->C.active) {	/* Need temporary storage for all great circle poles and their weights and type */
+		n_alloc = GMT_BIG_CHUNK;
+		GG = gmt_M_memory (GMT, NULL, n_alloc*4, double);
+		code = gmt_M_memory (GMT, NULL, n_alloc, char);
+	}
 	for (d = POLESPOTTER_AH; d <= POLESPOTTER_FZ; d++) {
 		if (In[d] == NULL) continue;	/* Don't have this data set */
 		weight = (d == POLESPOTTER_AH) ? Ctrl->A.weight : Ctrl->F.weight;
@@ -279,27 +299,40 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 						gmt_normalize3v (GMT, B);
 						gmt_M_memcpy (G, B, 3, double);	/* Put bisector pole into G so code below is the same for AH and FZ */
 					}
-					gmt_cart_to_geo (GMT, &glat, &glon, G, true);	/* Get lon/lat of the mid point */
-					gmtlib_init_rot_matrix (Rot0, G);	/* Get partial rotation matrix since no actual angle is applied yet */
-					sprintf (header, "Great circle: Center = %g/%g and pole is %g/%g\n", mlon, mlat, glon, glat);
-					if (Ctrl->L.active) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, header);
-					for (k = 0; k < n_steps; k++) {
-						angle_radians = k * d_angle_radians;
-						gmt_M_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
-						gmtlib_load_rot_matrix (angle_radians, Rot, G);		/* Build the actual rotation matrix for this angle */
-						gmt_matrix_vect_mult (GMT, 3U, Rot, M, X);		/* Rotate the mid point along the great circle */
-						gmt_cart_to_geo (GMT, &in[GMT_Y], &in[GMT_X], X, true);		/* Get lon/lat of this point along crossing profile */
-						in[GMT_Y] = gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O + 1);	/* Convert to geodetic */
-						if (Ctrl->L.active) GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-						if (!Ctrl->G.active) continue;
-						if (gmt_M_y_is_outside (GMT, in[GMT_Y], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;		/* Outside y-range */
-						if (gmt_x_is_outside (GMT, &in[GMT_X], Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;		/* Outside x-range (or periodic longitude) */
-						if (gmt_row_col_out_of_bounds (GMT, in, Grid->header, &grow, &gcol)) continue;	/* Sorry, outside after all */
-						node = gmt_M_ijp (Grid->header, grow, gcol);			/* Bin node */
-						layer[node] = cosd (in[GMT_Y]) * L;			/* Any bin intersected will have this single value */
+					if (Ctrl->C.active) {
+						gmt_M_memcpy (&GG[4*ng], G, 3, double);
+						GG[4*ng+3] = L;
+						code[ng] = d;
+						ng++;
+						if (ng == n_alloc) {
+							n_alloc <<= 1;
+							GG = gmt_M_memory (GMT, GG, n_alloc*4, double);
+							code = gmt_M_memory (GMT, code, n_alloc, char);
+						}
 					}
-					if (Ctrl->G.active) {	/* Add density of this great circle to the total */
-						for (node = 0; node < Grid->header->size; node++) Grid->data[node] += layer[node];
+					if (do_lines) {
+						gmt_cart_to_geo (GMT, &glat, &glon, G, true);	/* Get lon/lat of the mid point */
+						gmtlib_init_rot_matrix (Rot0, G);	/* Get partial rotation matrix since no actual angle is applied yet */
+						sprintf (header, "Great circle: Center = %g/%g and pole is %g/%g -I%s\n", mlon, mlat, glon, glat, label[d]);
+						if (Ctrl->L.active) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, header);
+						for (k = 0; k < n_steps; k++) {
+							angle_radians = k * d_angle_radians;
+							gmt_M_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
+							gmtlib_load_rot_matrix (angle_radians, Rot, G);		/* Build the actual rotation matrix for this angle */
+							gmt_matrix_vect_mult (GMT, 3U, Rot, M, X);		/* Rotate the mid point along the great circle */
+							gmt_cart_to_geo (GMT, &in[GMT_Y], &in[GMT_X], X, true);		/* Get lon/lat of this point along crossing profile */
+							in[GMT_Y] = gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O + 1);	/* Convert to geodetic */
+							if (Ctrl->L.active) GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+							if (!Ctrl->G.active) continue;
+							if (gmt_M_y_is_outside (GMT, in[GMT_Y], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;		/* Outside y-range */
+							if (gmt_x_is_outside (GMT, &in[GMT_X], Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;		/* Outside x-range (or periodic longitude) */
+							if (gmt_row_col_out_of_bounds (GMT, in, Grid->header, &grow, &gcol)) continue;	/* Sorry, outside after all */
+							node = gmt_M_ijp (Grid->header, grow, gcol);			/* Bin node */
+							layer[node] = cosd (in[GMT_Y]) * L;			/* Any bin intersected will have this single value */
+						}
+						if (Ctrl->G.active) {	/* Add density of this great circle to the total */
+							for (node = 0; node < Grid->header->size; node++) Grid->data[node] += layer[node];
+						}
 					}
 					gmt_M_memcpy (P1, P2, 3, double);	/* Let old P2 be next P1 */
 				}
@@ -314,6 +347,33 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Out);
 	}
 
+	if (Ctrl->C.active) {	/* Write the crossings file */
+		uint64_t dim[4] = {1, 1, 0, 5}, n_cross, g1, g2;
+		struct GMT_DATASET *C = NULL;
+		struct GMT_DATASEGMENT *S = NULL;
+		n_cross = ng * (ng - 1) / 2;
+		dim[GMT_ROW] = n_cross;
+		if ((C = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
+			Return (API->error);
+		S = C->table[0]->segment[0];	/* Only have a single segment here*/
+		for (g1 = 0; g1 < ng; g1++) {
+			for (g2 = g1+1; g2 < ng; g2++) {
+				gmt_cross3v (GMT, &GG[4*g1], &GG[4*g2], X);
+				gmt_normalize3v (GMT, X);
+				gmt_cart_to_geo (GMT, &S->data[GMT_Y][k], &S->data[GMT_X][k], X, true);		/* Get lon/lat of this point along crossing profile */
+				S->data[GMT_Y][k] = gmt_lat_swap (GMT, S->data[GMT_Y][k], GMT_LATSWAP_G2O + 1);	/* Convert to geodetic */
+				S->data[GMT_Z][k] = hypot (GG[4*g1+3], GG[4*g2+3]);	/* Combine length in quadrature */
+				S->data[3][k] = gmt_dot3v (GMT, &GG[4*g1], &GG[4*g2]);	/* Cos of angle between great circles is our other weight */
+				S->data[4][k] = code[g1] + code[g2];			/* 0 = AH&AH, 1 = AH&FZ, 2 = FZ&FZ */
+			}
+		}
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->C.file, C) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		gmt_M_free (GMT, GG);
+		gmt_M_free (GMT, code);
+	}
+	
 	if (Ctrl->G.active) {	/* Write the spotting grid */
 		gmt_M_free_aligned (GMT, layer);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
