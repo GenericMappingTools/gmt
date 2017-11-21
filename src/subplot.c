@@ -687,21 +687,22 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After inside panel margins: fluff = {%g, %g}\n", fluff[GMT_X], fluff[GMT_Y]);
 		/* ROW SETTINGS:  Limit tickmarks to 1 or 2 axes per row or per panel */
-		if (Ctrl->S[GMT_Y].tick)	/* Used -SR so check settings */
-			nx = (Ctrl->S[GMT_Y].tick == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1;
+		nx = 0;
+		if (Ctrl->S[GMT_Y].tick) {	/* Used -SR so must check settings */
+			if ((Ctrl->S[GMT_Y].tick & SUBPLOT_PLACE_AT_MIN) && !strchr (Ctrl->S[GMT_Y].axes, 'l')) nx++;
+			if ((Ctrl->S[GMT_Y].tick & SUBPLOT_PLACE_AT_MAX) && !strchr (Ctrl->S[GMT_Y].axes, 'r')) nx++;
+		}
 		else {	/* Must see what -B specified instead since that will apply to all panels */
-			nx = 0;
 			if (strchr (Ctrl->S[GMT_Y].axes, 'W') || strchr (Ctrl->S[GMT_Y].axes, 'w')) nx++;	/* All panels need west ticks */
 			if (strchr (Ctrl->S[GMT_Y].axes, 'E') || strchr (Ctrl->S[GMT_Y].axes, 'e')) nx++;	/* All panels need east ticks */
 		}
-		if (!Ctrl->S[GMT_Y].active) {
-			nx *= (Ctrl->N.dim[GMT_X] - 1);	/* Each column needs separate y-axis [and labels] */
-			fluff[GMT_X] += nx * tick_height;
-		}
+		factor = (Ctrl->S[GMT_Y].active) ? 2 : Ctrl->N.dim[GMT_X];		/* Each row may need separate x-axis ticks */
+		nx *= (factor - 1);
+		fluff[GMT_X] += nx * tick_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d row ticks: fluff = {%g, %g}\n", nx, fluff[GMT_X], fluff[GMT_Y]);
 		/* Limit annotations/labels to 1 or 2 axes per row or per panel */
 		if (Ctrl->S[GMT_Y].annotate)	/* Used -SR so check settings */
-			nx = (Ctrl->S[GMT_Y].annotate == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1;
+			nx = 0;	/* For -SR there are no internal annotations, only ticks */
 		else {	/* Must see what -B specified instead since that will apply to all panels */
 			nx = 0;
 			if (strchr (Ctrl->S[GMT_Y].axes, 'W')) nx++;	/* All panels need west annotations */
@@ -716,26 +717,36 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			fluff[GMT_X] += nx * label_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d row labels: fluff = {%g, %g}\n", nx, fluff[GMT_X], fluff[GMT_Y]);
 		/* COLUMN SETTINGS: Limit annotations/labels to 1 or 2 axes per column or per panel */
-		if (Ctrl->S[GMT_X].tick)	/* Gave -SC so check settings */
-			ny = (Ctrl->S[GMT_X].tick == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1;
-		else {	/* Must see what -B specified instead since that will apply to all panels */
-			ny = 0;
-			if (strchr (Ctrl->S[GMT_X].axes, 'S') || strchr (Ctrl->S[GMT_X].axes, 's')) ny++;	/* All panels need south ticks */
-			if (strchr (Ctrl->S[GMT_X].axes, 'N') || strchr (Ctrl->S[GMT_X].axes, 'n')) ny++;	/* All panels need north ticks */
+		ny = 0;
+		if (Ctrl->S[GMT_X].tick) {	/* Gave -SC so check settings */
+			if ((Ctrl->S[GMT_X].tick & SUBPLOT_PLACE_AT_MIN) && !strchr (Ctrl->S[GMT_X].axes, 'b')) ny++;
+			if ((Ctrl->S[GMT_X].tick & SUBPLOT_PLACE_AT_MAX)) {
+				if (!strchr (Ctrl->S[GMT_X].axes, 't')) ny++;
+				y_header_off += tick_height + annot_height;
+			}
 		}
-		if (ny == 2) y_header_off += tick_height;
-		factor = (Ctrl->S[GMT_X].active) ? 1 : Ctrl->N.dim[GMT_Y];		/* Each row may need separate x-axis ticks */
+		else {	/* Must see what -B specified instead since that will apply to all panels */
+			if (strchr (Ctrl->S[GMT_X].axes, 'S') || strchr (Ctrl->S[GMT_X].axes, 's')) ny++;	/* All panels need south ticks */
+			if (strchr (Ctrl->S[GMT_X].axes, 'N') || strchr (Ctrl->S[GMT_X].axes, 'n')) {
+				ny++;	/* All panels need north ticks */
+				y_header_off += tick_height;
+			}
+		}
+		factor = (Ctrl->S[GMT_X].active) ? 2 : Ctrl->N.dim[GMT_Y];		/* Each row may need separate x-axis ticks */
 		ny *= (factor - 1);
 		fluff[GMT_Y] += ny * tick_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d col ticks: fluff = {%g, %g}\n", ny, fluff[GMT_X], fluff[GMT_Y]);
-		if (Ctrl->S[GMT_X].annotate)	/* Gave -SC so check settings */
-			ny = (Ctrl->S[GMT_X].annotate == SUBPLOT_PLACE_AT_BOTH) ? 2 : 1;
+		if (Ctrl->S[GMT_X].annotate) {	/* Gave -SC so check settings */
+			ny = 0;	/* For -Sc there are no internal annotations, only ticks */
+		}
 		else {	/* Must see what -B specified instead since that will apply to all panels */
 			ny = 0;
 			if (strchr (Ctrl->S[GMT_X].axes, 'S')) ny++;	/* All panels need south annotations */
-			if (strchr (Ctrl->S[GMT_X].axes, 'N')) ny++;	/* All panels need north annotations */
+			if (strchr (Ctrl->S[GMT_X].axes, 'N')) {
+				ny++;	/* All panels need north annotations */
+				y_header_off += annot_height;
+			}
 		}
-		if (ny == 2) y_header_off += annot_height;
 		factor = (Ctrl->S[GMT_X].active) ? 1 : Ctrl->N.dim[GMT_Y];		/* Each row may need separate x-axis [and labels] */
 		ny *= (factor - 1);
 		fluff[GMT_Y] += ny * annot_height;
