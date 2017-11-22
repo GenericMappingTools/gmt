@@ -23,11 +23,11 @@
 #define THIS_MODULE_NAME	"polespotter"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Find stage poles given fracture zones and abyssal hills"
-#define THIS_MODULE_KEYS	"AD(,FD(,GG},LD)"
+#define THIS_MODULE_KEYS	"AD(,CD),FD(,GG},LD)"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>RVbdefghios" GMT_OPT("HMm")
 
-#define KM_PR_RAD (R2D * GMT->current.proj.DIST_KM_PR_DEG)
+#define RADIAN2KM (R2D * GMT->current.proj.DIST_KM_PR_DEG)
 
 struct POLESPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -93,7 +93,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Give multisegment file with abyssal hill lineaments [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Find great-circle intersections and save to <xfile> [no crossings].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Find great-circle intersections and save them to <xfile> [no crossings].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Give step-length along great circles in km [5].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Give multisegment file with fracture zone lineaments [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for polesearch grid [no gridding].  Requires -R -I [-r]\n");
@@ -289,7 +289,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 					if (Ctrl->G.active) gmt_M_memset (layer, Grid->header->size, gmt_grdfloat);
 					gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
 					for (k = 0; k < 3; k++) M[k] = 0.5 * (P1[k] + P2[k]);	/* Mid-point M */
-					L = d_acos (gmt_dot3v (GMT, P1, P2)) * KM_PR_RAD * weight;	/* Weighted length of this segment */
+					L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM * weight;	/* Weighted length of this segment */
 					gmt_normalize3v (GMT, M);
 					gmt_cart_to_geo (GMT, &mlat, &mlon, M, true);	/* Get lon/lat of the mid point */
 					gmt_cross3v (GMT, P1, P2, G);	/* This is pole of great circle through P1 & P2 */
