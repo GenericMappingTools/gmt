@@ -109,7 +109,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*
+**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Select filling of bars [Default is no fill].
 
 .. _-I:

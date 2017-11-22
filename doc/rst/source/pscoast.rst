@@ -92,7 +92,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**l**\ \|\ **r**/]\ *fill*
+**-C**\ [**l**\ \|\ **r**/]\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Set the shade, color, or pattern for lakes and river-lakes [Default
     is the fill chosen for "wet" areas (**-S**)]. Optionally, specify
     separate fills by prepending **l/** for lakes and **r/** for

@@ -2578,6 +2578,8 @@ specification. The line attribute modifiers are:
    red circle at the beginning of the line with **-W**\ 2p\ **+o**\ 1c/500k\ **+vb**\ 0.2i\ **+g**\ red\ **+p**\ faint\ **+b**\ c\ **+ve**\ 0.3i\ **+g**\ blue.
    Note that we also prescribed the line offsets in addition to the symbol endings.
 
+.. _-Gfill_attrib:
+
 Specifying area fill attributes
 -------------------------------
 

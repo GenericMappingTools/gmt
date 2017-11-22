@@ -142,7 +142,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill*
+**-G**\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Set fill shade, color or pattern for positive and/or negative
     wiggles [Default is no fill]. Optionally, prepend **+** to fill
     positive areas (this is the default behavior). Prepend **-** to fill

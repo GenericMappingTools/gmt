@@ -108,7 +108,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*
+**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Selects shade, color or pattern for filling the sectors [Default is no fill].
 
 .. _-I:

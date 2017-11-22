@@ -169,7 +169,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*
+**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Select color or pattern for filling of symbols or polygons [Default is no fill].
     Note that **psxy** will search for **-G** and **-W** strings in all the
     segment headers and let any values thus found over-ride the command line settings.
