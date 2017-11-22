@@ -193,7 +193,7 @@ EXTERN_MSC void gmtlib_init_rot_matrix (double R[3][3], double E[]);
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_polespotter (void *V_API, int mode, void *args) {
-	bool do_lines;
+	bool create_great_circles;
 	int error;
 	unsigned int d, n_steps, grow, gcol, k;
 	uint64_t node, tbl, seg, row, ng = 0;
@@ -270,7 +270,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 	
 	/* Loop over all abyssal hill and fracture zone lines and consider each subsecutive pair of points to define a great circle that intersects the pole */
 	
-	do_lines = !(Ctrl->G.active || Ctrl->L.active);
+	create_great_circles = (Ctrl->G.active || Ctrl->L.active);
 	if (Ctrl->C.active) {	/* Need temporary storage for all great circle poles and their weights and type */
 		n_alloc = GMT_BIG_CHUNK;
 		GG = gmt_M_memory (GMT, NULL, n_alloc*4, double);
@@ -310,10 +310,10 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 							code = gmt_M_memory (GMT, code, n_alloc, char);
 						}
 					}
-					if (do_lines) {
+					if (create_great_circles) {
 						gmt_cart_to_geo (GMT, &glat, &glon, G, true);	/* Get lon/lat of the mid point */
 						gmtlib_init_rot_matrix (Rot0, G);	/* Get partial rotation matrix since no actual angle is applied yet */
-						sprintf (header, "Great circle: Center = %g/%g and pole is %g/%g -I%s\n", mlon, mlat, glon, glat, label[d]);
+						sprintf (header, "Great circle: Center = %g/%g and pole is %g/%g -I%s", mlon, mlat, glon, glat, label[d]);
 						if (Ctrl->L.active) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, header);
 						for (k = 0; k < n_steps; k++) {
 							angle_radians = k * d_angle_radians;
@@ -351,20 +351,23 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 		uint64_t dim[4] = {1, 1, 0, 5}, n_cross, g1, g2;
 		struct GMT_DATASET *C = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
-		n_cross = ng * (ng - 1) / 2;
+		n_cross = ng * (ng - 1);
 		dim[GMT_ROW] = n_cross;
 		if ((C = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 			Return (API->error);
 		S = C->table[0]->segment[0];	/* Only have a single segment here*/
-		for (g1 = 0; g1 < ng; g1++) {
-			for (g2 = g1+1; g2 < ng; g2++) {
+		for (g1 = k = 0; g1 < ng; g1++) {
+			for (g2 = g1+1; g2 < ng; g2++) {	/* Get circle intersections (2) */
 				gmt_cross3v (GMT, &GG[4*g1], &GG[4*g2], X);
 				gmt_normalize3v (GMT, X);
 				gmt_cart_to_geo (GMT, &S->data[GMT_Y][k], &S->data[GMT_X][k], X, true);		/* Get lon/lat of this point along crossing profile */
 				S->data[GMT_Y][k] = gmt_lat_swap (GMT, S->data[GMT_Y][k], GMT_LATSWAP_G2O + 1);	/* Convert to geodetic */
-				S->data[GMT_Z][k] = hypot (GG[4*g1+3], GG[4*g2+3]);	/* Combine length in quadrature */
-				S->data[3][k] = gmt_dot3v (GMT, &GG[4*g1], &GG[4*g2]);	/* Cos of angle between great circles is our other weight */
-				S->data[4][k] = code[g1] + code[g2];			/* 0 = AH&AH, 1 = AH&FZ, 2 = FZ&FZ */
+				S->data[GMT_Z][k] = S->data[GMT_Z][k+1] = hypot (GG[4*g1+3], GG[4*g2+3]);	/* Combine length in quadrature */
+				S->data[3][k] = S->data[3][k+1] = gmt_dot3v (GMT, &GG[4*g1], &GG[4*g2]);	/* Cos of angle between great circles is our other weight */
+				S->data[4][k] = S->data[4][k+1] = code[g1] + code[g2];			/* 0 = AH&AH, 1 = AH&FZ, 2 = FZ&FZ */
+				S->data[GMT_X][k+1] = S->data[GMT_X][k] + 180.0;
+				S->data[GMT_Y][k+1] = -S->data[GMT_Y][k];
+				k += 2;
 			}
 		}
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->C.file, C) != GMT_NOERROR) {
