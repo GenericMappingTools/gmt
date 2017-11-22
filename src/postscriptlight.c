@@ -2278,7 +2278,7 @@ static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile
 	 * User images are numbered PSL_N_PATTERNS+1,2,3 etc. */
 	k = image_no - 1;	/* Array index */
 	if ((image_no > 0 && image_no <= PSL_N_PATTERNS)) {	/* Premade pattern yet not used, assign settings */
-		if (PSL->internal.pattern[image_no].status) return (image_no);	/* Already initialized this pattern once, just return */
+		if (PSL->internal.pattern[k].status) return (image_no);	/* Already initialized this pattern once, just return */
 		picture = PSL_pattern[k];
 	}
 	else {	/* User image, check to see if already used */
