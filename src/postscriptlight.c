@@ -3725,7 +3725,7 @@ int PSL_setimage (struct PSL_CTRL *PSL, int image_no, char *imagefile, unsigned 
 
 	/* Determine if image was used before */
 
-	if ((image_no > 0 && image_no <= PSL_N_PATTERNS) && !PSL->internal.pattern[image_no].status)	/* Unused predefined */
+	if ((image_no > 0 && image_no <= PSL_N_PATTERNS) && !PSL->internal.pattern[image_no-1].status)	/* Unused predefined */
 		image_no = psl_pattern_init (PSL, image_no, NULL, NULL, 64, 64, 1);
 	else if (image_no < 0) {	/* User image, check if already used */
 		int i = psl_search_userimages (PSL, imagefile);	/* i = 0 is the first user image */
