@@ -23,7 +23,7 @@
  * Brief synopsis: gmt subplot determines dimensions and offsets for a multi-subplot figure.
  * It has three modes of operation:
  *	1) Initialize a new figure with subplots, which determines dimensions and sets parameters:
- *	   gmt subplot begin <nrows>x<ncols> -F[f|s][<W/H>[:<wfracs/hfracs>]][+g<fill>][+p<pen>][+d] [-A<labels>]
+ *	   gmt subplot begin <nrows>x<ncols> -F[f|s][<W/H>[:<wfracs/hfracs>]] [-A<labels>]
  *		[-SC<layout>] [-SR<layout>] [-M<margins>] [-T<title>] [-R<region>] [-J<proj>] [-V]
  *	2) Select the curent subplot window for plotting, usually so we can use -A or -C (since -crow,col is faster):
  *	   gmt subplot [set] <row>,<col> [-A<fixlabel>] [-C<side><clearance>[u]] [-V]
@@ -83,7 +83,7 @@ struct SUBPLOT_CTRL {
 		bool active;
 		double gap[4];
 	} C;
-	struct F {	/* -F[f|s][<width>[u]/<height>[u]][:<wfracs/hfracs>][+d][+g<fill>][+p<pen>] */
+	struct F {	/* -F[f|s][<width>[u]/<height>[u]][:<wfracs/hfracs>] */
 		bool active;
 		bool debug;
 		bool reset_h;	/* True when height was given as 0 and we need to update based on what was learned */
@@ -166,10 +166,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append :<wfracs/hfracs> to variable widths and heights by giving comma-separated lists\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of relative values, one per row or column, which we scale to match figure dimension.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If only columns or rows should have variable dimension you can set the other arg as 1.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -Fs to set dimensions of area that each multi-subplot figure may occupy.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If these should differ from column to column or row to row you can give a comma-separated\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Fs: Set dimensions of area that each multi-subplot figure may occupy.  If these\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   should differ from column to column or row to row you can give a comma-separated\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   list of widths and/or heights.  A single value means constant width or height.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +g<fill> to paint each canvas.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify automatic tagging of each subplot.  Append either a number or letter [a].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This sets the tag of the top-left subplot and others follow sequentially.\n");
@@ -555,14 +554,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				Ctrl->S[GMT_Y].b = (By) ? strdup (By->arg) : strdup (Bxy->arg);
 			if (Bframe) {
 				static char *Bx_items = "SsNnbt", *By_items = "WwEelr";
+				if ((c = gmt_first_modifier (GMT, Bframe->arg, "bgnot"))) {	/* Gave frame modifiers */
+					Ctrl->S[GMT_X].extra = strdup (c);
+					c[0] = '\0';	/* Chop off for now */
+				}
 				for (k = px = 0; k < 6; k++)
 					if (strchr (Bframe->arg, Bx_items[k])) Ctrl->S[GMT_X].axes[px++] = Bx_items[k];
 				if (Ctrl->S[GMT_X].axes[0] && Ctrl->S[GMT_X].active) gmtlib_str_tolower (Ctrl->S[GMT_X].axes);	/* Used to control the non-annotated axes */
 				for (k = py = 0; k < 6; k++)
 					if (strchr (Bframe->arg, By_items[k])) Ctrl->S[GMT_Y].axes[py++] = By_items[k];
 				if (Ctrl->S[GMT_Y].axes[0] && Ctrl->S[GMT_Y].active) gmtlib_str_tolower (Ctrl->S[GMT_Y].axes);	/* Used to control the non-annotated axes */
-				if ((c = gmt_first_modifier (GMT, Bframe->arg, "bgnot")))	/* Gave frame modifiers */
-					Ctrl->S[GMT_X].extra = strdup (c);
+				if (c) c[0] = '+';	/* Restore */
 			}
 		}
 		if (!Bframe) {	/* Examine the default setting instead */
@@ -757,7 +759,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d col labels: fluff = {%g, %g}\n", ny, fluff[GMT_X], fluff[GMT_Y]);
 		if (Ctrl->S[GMT_Y].ptitle == SUBPLOT_PANEL_TITLE) {
-			fluff[GMT_Y] += (factor-1) * title_height;
+			fluff[GMT_Y] += (Ctrl->N.dim[GMT_Y]-1) * title_height;
 			y_header_off += title_height;
 		}
 		else if (Ctrl->S[GMT_Y].ptitle == SUBPLOT_PANEL_COL_TITLE) {

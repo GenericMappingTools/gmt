@@ -115,7 +115,7 @@ that each may contain a single figure.  A subplot setup is started with the **be
 mode that defines the layout of the subplots:
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
-**-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*\ [**+f**\ *fill*\ ][**+p**\ *pen*\ ][**+d**\ ]
+**-F**\ [**f**\ \|\ **s**\ ]\ *width*\ /*height*
 [ **-A**\ *autolabel* ]
 [ |SYN_OPT-B| ]
 [ |-J|\ *parameters* ]
@@ -134,9 +134,9 @@ Required Arguments
 
 .. _subplot_begin-F:
 
-**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ [:*wfracs*\ /*hfracs*\ ][**+f**\ *fill*\ ]
+**-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ [:*wfracs*\ /*hfracs*\ ]
     Specify the dimensions of the figure.  There are two different ways to do this: (**f**) Specify overall figure dimension
-    or (**s**) specify the dimension of a single panel.  An optional modifier **+f** will fill each plot canvas before drawing commences.
+    or (**s**) specify the dimension of a single panel.
 
 **-Ff**
     Specify the final figure dimensions.  The subplot dimensions are then calculated from the figure
