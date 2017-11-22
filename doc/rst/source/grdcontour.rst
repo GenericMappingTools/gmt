@@ -170,7 +170,9 @@ Optional Arguments
 
 **-Q**\ [*cut*\ [*unit*]][\ **+z**]
     Do not draw contours with less than *cut* number of points [Draw all contours].
-    Alternatively, give instead a minimum contour length in distance units or plot
+    Alternatively, give instead a minimum contour length in distance units
+    (see UNITS for available units and how distances are computed),
+    including **C** (Cartesian distance using user coordinates) or plot
     length units.  Optionally, append **z** to exclude the zero contour.
 
 .. _-R:
@@ -259,6 +261,8 @@ Optional Arguments
 .. include:: explain_-t.rst_
 
 .. include:: explain_help.rst_
+
+.. include:: explain_distunits.rst_
 
 .. include:: explain_precision.rst_
 

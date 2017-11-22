@@ -438,7 +438,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT clip contours/image at the border [Default clips].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a minimum contour length and append a unit (%s or %s).\n", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a minimum contour length and append a unit (%s, %s, or C for Cartesian).\n", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +z to skip tracing the zero-contour.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S (or -Sp) Skip xyz points outside region [Default keeps all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -St to instead skip triangles whose 3 vertices are outside.\n");
@@ -607,6 +607,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 						Ctrl->Q.length = gmt_M_to_inch (GMT, opt->arg);
 						Ctrl->Q.unit = opt->arg[0];
 						Ctrl->Q.project = true;
+					}
+					else if (opt->arg[last] == 'C') {	/* Cartesian units */
+						Ctrl->Q.length = atof (opt->arg);
+						Ctrl->Q.unit = 'X';
 					}
 					else {	/* Just a point count cutoff */
 						n = atoi (opt->arg);
@@ -1372,7 +1376,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	
 	/* Draw or dump contours */
 
-	if (Ctrl->Q.active && Ctrl->Q.unit && strchr (GMT_LEN_UNITS, Ctrl->Q.unit))	/* Need to compute distances in map units */
+	if (Ctrl->Q.active && Ctrl->Q.unit && (strchr (GMT_LEN_UNITS, Ctrl->Q.unit) || Ctrl->Q.unit == 'X'))	/* Need to compute distances in map units */
 		gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.mode, GMT_MAP_DIST);
 
 	if (get_contours) {

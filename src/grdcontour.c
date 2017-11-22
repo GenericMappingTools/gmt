@@ -221,7 +221,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   negative or positive contours, respectively. Upper case N or P includes zero contour.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a minimum contour length and append a unit (%s or %s).\n", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a minimum contour length and append a unit (%s, %s, or C for Cartesian).\n", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +z to skip tracing the zero-contour.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is extent of grid].\n");
@@ -431,10 +431,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 					Ctrl->Q.active = true;
 					if (strchr (GMT_LEN_UNITS, opt->arg[last]))	/* Gave a mininum length in data units */
 						Ctrl->Q.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->Q.length), &(Ctrl->Q.unit));
-					else if (strchr (GMT_DIM_UNITS, opt->arg[last])) {	/* Gave a mininum length in plot units*/
+					else if (strchr (GMT_DIM_UNITS, opt->arg[last])) {	/* Gave a mininum length in plot units */
 						Ctrl->Q.length = gmt_M_to_inch (GMT, opt->arg);
 						Ctrl->Q.unit = opt->arg[0];
 						Ctrl->Q.project = true;
+					}
+					else if (opt->arg[last] == 'C') {	/* Cartesian units */
+						Ctrl->Q.length = atof (opt->arg);
+						Ctrl->Q.unit = 'X';
 					}
 					else {	/* Just a point count cutoff */
 						n = atoi (opt->arg);
@@ -1285,7 +1289,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	}
 
-	if (Ctrl->Q.active && Ctrl->Q.unit && strchr (GMT_LEN_UNITS, Ctrl->Q.unit))	/* Need to compute distances in map units */
+	if (Ctrl->Q.active && Ctrl->Q.unit && (strchr (GMT_LEN_UNITS, Ctrl->Q.unit) || Ctrl->Q.unit == 'X'))	/* Need to compute distances in map units */
 		gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.mode, GMT_MAP_DIST);
 		
 	for (c = uc = 0; uc < n_contours; c++, uc++) {	/* For each contour value cval */
