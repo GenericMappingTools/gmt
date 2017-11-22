@@ -438,7 +438,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT clip contours/image at the border [Default clips].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a minimum contour length and append a unit (%s, %s, or C for Cartesian).\n", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a minimum contour length and append a unit (%s, or c for Cartesian).\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Unit C means Cartesian distances after first projecting the input coordinates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +z to skip tracing the zero-contour.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S (or -Sp) Skip xyz points outside region [Default keeps all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -St to instead skip triangles whose 3 vertices are outside.\n");
@@ -603,12 +604,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 					Ctrl->Q.active = true;
 					if (strchr (GMT_LEN_UNITS, opt->arg[last]))	/* Gave a mininum length in data units */
 						Ctrl->Q.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->Q.length), &(Ctrl->Q.unit));
-					else if (strchr (GMT_DIM_UNITS, opt->arg[last])) {	/* Gave a mininum length in plot units*/
-						Ctrl->Q.length = gmt_M_to_inch (GMT, opt->arg);
-						Ctrl->Q.unit = opt->arg[0];
+					else if (opt->arg[last] == 'C') {	/* Projected units */
+						Ctrl->Q.length = atof (opt->arg);
 						Ctrl->Q.project = true;
+						Ctrl->Q.unit = 'C';
 					}
-					else if (opt->arg[last] == 'C') {	/* Cartesian units */
+					else if (opt->arg[last] == 'c') {	/* Cartesian units */
 						Ctrl->Q.length = atof (opt->arg);
 						Ctrl->Q.unit = 'X';
 					}

@@ -8644,6 +8644,8 @@ double gmt_line_length (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n
 			prev = this_p;	/* This was a record with OK x,y; make it the previous point for distance calculations */
 		}
 	}
+	cum_dist *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+	
 	return (cum_dist);
 }
 

@@ -187,8 +187,9 @@ Optional Arguments
     Do not draw contours with less than *cut* number of points [Draw all contours].
     Alternatively, give instead a minimum contour length in distance units
     (see UNITS for available units and how distances are computed),
-    including **C** (Cartesian distance using user coordinates) or plot
-    length units.  Optionally, append **z** to exclude the zero contour.
+    including **c** (Cartesian distances using user coordinates) or **C** for plot
+    length units in current plot units after projecting the coordinates.
+    Optionally, append **z** to exclude the zero contour.
 
 .. _-S:
 
