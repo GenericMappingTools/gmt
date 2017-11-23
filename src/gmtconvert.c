@@ -487,7 +487,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		double out[GMT_BUFSIZ], *tmp = NULL;
 		struct GMT_RECORD *Out = NULL;
 		char *nan = NULL;
-		uint64_t n_col, k;
+		uint64_t n_col = 0, k;
 		S = D[GMT_IN]->table[0]->segment[0];	/* Short-hand */
 		if (S->text) {	/* Has trailing text */
 			n_col = n_cols_in = GMT_Get_Values (API, S->text[0], out, GMT_BUFSIZ);

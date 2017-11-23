@@ -498,7 +498,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		}
 		
 		/* Loop over all rows at this level */
-		row = n_skip = 0;
+		row = col = n_skip = 0;
 		wesn[YLO] = ext_wesn[YLO];
 		gmt_ascii_format_one (GMT, S, wesn[YLO], GMT_IS_LAT);
 		 

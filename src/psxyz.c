@@ -518,7 +518,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	bool default_outline, outline_active, save_u = false, geovector = false;
 	unsigned int k, j, geometry, tbl, pos2x, pos2y;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
-	unsigned int col, bcol, ex1, ex2, ex3, change, n_needed, n_z;
+	unsigned int col, bcol, ex1, ex2, ex3, change, n_needed, n_z = 0;
 	int error = GMT_NOERROR;
 
 	uint64_t i, n, n_total_read = 0;

@@ -4736,7 +4736,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	unsigned int form, j;
 	double unit_width[GMT_N_UNITS] = {1.1, 1.5, 1.5, 1.5, 2.0, 2.0, 2.0, 1.1, 2.25};
 	double name_width[GMT_N_UNITS] = {1.0, 2.3, 4.02, 10.7, 3.2, 2.0, 2.0, 3.05, 8.6};
-	enum gmt_enum_units unit;
+	enum gmt_enum_units unit = GMT_IS_METER;
 	double x1, x2, y1, y2, tx, ty, dist_to_annot, scale_height, x_left, x_right, bar_length_km, dim[4];
 	double XL, YL, XR, YR, dist, scl, bar_width, dx, x0_scl, y0_scl;
 	char txt[GMT_LEN256] = {""}, format[GMT_LEN64] = {""}, *this_label = NULL;
@@ -5535,7 +5535,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 	   scale_pos is position on the return string where starts the scale sub-string.
 	*/
 	unsigned int pos = 0;
-	bool got_lonlat = false;
+	//bool got_lonlat = false;
 	char opt_J[GMT_LEN256] = {""}, szProj4[GMT_LEN256] = {""}, prjcode[16] = {""};
 	char token[GMT_LEN256] = {""}, scale_c[GMT_LEN32] = {""}, *pch = NULL, *pStrOut = NULL;
 	char lon_0[32] = {""}, lat_0[32] = {""}, lat_1[32] = {""}, lat_2[32] = {""}, lat_ts[32] = {""};
@@ -5591,7 +5591,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 	if (!strcmp(prjcode, "longlat") || !strcmp(prjcode, "latlong")) {
 		strcat (opt_J, "X");
 		GMT->current.proj.projection_GMT = GMT_LINEAR;
-		got_lonlat = true;			/* At the end we need to append a 'd' to the scale */
+		//got_lonlat = true;			/* At the end we need to append a 'd' to the scale */
 	}
 	/* Cylindrical projections */
 	else if (!strcmp(prjcode, "cea") || !strcmp(prjcode, "eqc") || !strcmp(prjcode, "tmerc") ||

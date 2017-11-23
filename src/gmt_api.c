@@ -8217,7 +8217,10 @@ int GMT_Put_Row (void *V_API, int rec_no, struct GMT_GRID *G, gmt_grdfloat *row)
 			if (R->auto_advance) R->start[0] += R->edge[0];
 			break;
 		case 'n':
-			if (!R->auto_advance) R->start[0] = HH->row_order = k_nc_start_north ? rec_no : G->header->n_rows - 1 - rec_no;
+			if (!R->auto_advance) {
+				HH->row_order = k_nc_start_north ? rec_no : (int)G->header->n_rows - 1 - rec_no;
+				R->start[0] = (size_t)HH->row_order;
+			}
 			gmt_M_err_trap (gmt_nc_put_vara_grdfloat (R->fid, HH->z_id, R->start, R->edge, row));
 			if (R->auto_advance) R->start[0] -= HH->row_order;
 			break;
