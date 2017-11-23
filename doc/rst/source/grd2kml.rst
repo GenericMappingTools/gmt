@@ -33,7 +33,8 @@ Description
 **grd2kml** reads a large 2-D grid file and makes a quadtree set of
 PNG images and KML wrappers for Google Earth.
 Optionally, illumination may be added by providing a grid file with
-intensities in the (-1,+1) range. Values outside this range will be
+intensities in the (-1,+1) range or by instructions to derive intensities
+from the input data grid (see **-I**). Values outside this intensity range will be
 clipped. Such intensity files can be created from the grid using
 :doc:`grdgradient` and, optionally, modified by :doc:`grdmath` or
 :doc:`grdhisteq`.  Colors are specified via a color palette lookup table.
@@ -91,7 +92,7 @@ Optional Arguments
     ambient light.  If just **+** is given then we derive an intensity
     grid from the input data grid *grd_z* via a call to :doc:`grdgradient`
     using the arguments **-A**\ -45 and **-Nt**\ 1 for that module. You can
-    append **+a**\ *azimuth and **+n**\ *args* to override those values.  If you want
+    append **+a**\ *azimuth* and **+n**\ *args* to override those values.  If you want
     more specific intensities then run :doc:`grdgradient` separately first.
     [Default is no illumination].
 
@@ -140,6 +141,7 @@ See Also
 :doc:`gmt2kml`,
 :doc:`grdgradient`,
 :doc:`grdhisteq`,
+:doc:`grdimage`,
 :doc:`grdmath`,
 :doc:`kml2gmt`,
 :doc:`psconvert`

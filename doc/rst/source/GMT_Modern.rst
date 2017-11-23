@@ -153,12 +153,12 @@ Required Arguments
     The annotations, ticks, and labels along the outside perimeter are not counted as part of the figure dimensions.
     To specify different subplot dimensions for each row (or column),  append a colon followed by a comma-separated list of widths,
     a slash, and then the list of heights.  A single number means constant widths (or heights) [Default].
-    For example **–Fs*2i,3i/3i will make the first column 2 inches wide and the second column 3 inches wide, with
+    For example **–Fs**\ 2i,3i/3i will make the first column 2 inches wide and the second column 3 inches wide, with
     all having a constant height of 3 inches. The number of values must either be one (constant across the rows or columns)
     or exactly match the number of rows (or columns). For geographic maps, the height of each panel depends on
     your map region and projection.  There are two options: (1) Specify both **-R** and **-J** and we use these
-    to compute the height of each subplot.  All subplot must share the same region and projection and you specify a zero *height*, or (2) you
-    can select *height* based on trial and error to suit your plot layout.
+    to compute the height of each subplot.  All subplot must share the same region and projection and you specify
+    a zero *height*, or (2) you can select *height* based on trial and error to suit your plot layout.
 
 Optional Arguments
 ------------------

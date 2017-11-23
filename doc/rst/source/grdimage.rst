@@ -44,14 +44,15 @@ assigning them a gray-shade (or color) based on the z-value.
 Alternatively, **grdimage** reads three 2-D grid files with the red,
 green, and blue components directly (all must be in the 0-255 range).
 Optionally, illumination may be added by providing a file with
-intensities in the (-1,+1) range. Values outside this range will be
+intensities in the (-1,+1) range or instructions to derive intensities
+from the input data grid. Values outside this range will be
 clipped. Such intensity files can be created from the grid using
 :doc:`grdgradient` and, optionally, modified by :doc:`grdmath` or
 :doc:`grdhisteq`. Yet as a third alternative available when GMT is build
 with GDAL support the grd_z file can be an image referenced or not
 (than see **-Dr**). In this case the images can be illuminated with the
-file provided via the **-I** option. Here if image has no coordinates
-those of the intensity file will be used.
+file provided via the **-I** option. Here, if image has no coordinates
+then those of the intensity file will be used.
 
 When using map projections, the grid is first resampled on a new
 rectangular grid with the same dimensions. Higher resolution images can
@@ -293,6 +294,7 @@ See Also
 
 :doc:`gmt`,
 :doc:`gmt.conf`,
+:doc:`grd2kml`,
 :doc:`grdcontour`,
 :doc:`grdview`,
 :doc:`grdgradient`,
