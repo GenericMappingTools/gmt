@@ -5626,6 +5626,7 @@ int gmtapi_report_error (void *V_API, int error) {
 			snprintf (message, GMT_LEN256, "[Session %s (%d)]: Error returned from GMT API: %s (%d)\n",
 				API->session_tag, API->session_ID, gmt_api_error_string[error], error);
 			GMT_Message (API, GMT_TIME_NONE, message);
+			if (API->log_level) fflush (fp);	/* Flush the latest message to file in case of crash */
 		}
 		else
 			fprintf (fp, "Error returned from GMT API: %s (%d)\n", gmt_api_error_string[error], error);
