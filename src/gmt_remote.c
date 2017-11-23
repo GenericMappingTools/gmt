@@ -321,22 +321,44 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Isolation mode is baked in */
 		sprintf (srtmlist, "%s/=srtm%d.000000", API->GMT->parent->gwf_dir, res);
 		file = srtmlist;
+		if ((fp = fopen (file, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to create job file %s\n", file);
+			return NULL;
+		}
 	}
 	else {	/* Must select a unique filename for the list */
 		char name[GMT_LEN16] = {""};
+#ifndef _WIN32
+		int fd = 0;
+#endif
 		if (API->tmp_dir)			/* Have a recognized temp directory */
 			sprintf (srtmlist, "%s/", API->tmp_dir);
 		sprintf (name, "=srtm%d.XXXXXX", res);
 		strcat (srtmlist, name);
+#ifdef _WIN32
 		if ((file = mktemp (srtmlist)) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Could not create temporary file name.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Could not create temporary file name %s.\n", srtmlist);
 			API->error = GMT_RUNTIME_ERROR;
 			return NULL;
 		}
-	}
-	if ((fp = fopen (file, "w")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to create job file %s\n", file);
-		return NULL;
+		if ((fp = fopen (file, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to create job file %s\n", file);
+			API->error = GMT_RUNTIME_ERROR;
+			return NULL;
+		}
+#else
+		if ((fd = mkstemp (srtmlist)) == -1) {
+			GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Could not create temporary file name %s.\n", srtmlist);
+			API->error = GMT_RUNTIME_ERROR;
+			return NULL;
+		}
+		file = srtmlist;
+		if ((fp = fdopen (fd, "w")) == NULL) {
+			API->error = GMT_RUNTIME_ERROR;
+			GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Could not fdopen temporary file %s.\n", file);
+			return NULL;
+		}
+#endif
 	}
 	if ((SRTM = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, "@srtm_tiles.nc", NULL)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to obtain list of available SRTM tiles.\n");
