@@ -195,17 +195,24 @@ static unsigned int p[5][4] = {	/* Indices into C->offset for each of the 4 quad
 	{ 1, 2, 6, 10},	/* Indices for 3rd quadrant */
 	{ 3, 2, 5,  8}	/* Indices for 4th quadrant */
 };
+{ 0, 0, 0,  0}, /* This row is not used */
+{ 1, 5, 9, 10}, /* Indices for 1st quadrant */
+{ 3, 6, 9,  8}, /* Indices for 2nd quadrant */
+{ 1, 2, 6, 10}, /* Indices for 3rd quadrant */
+{ 3, 2, 5,  8}  /* Indices for 4th quadrant */
+
 #endif
-static unsigned int p[5][4] = {	/* Indices into C->offset for each of the 4 quadrants, i.e., C->offset[p[quadrant][k]]], k = 0-3 */
-	{ 0, 0, 0,  0},	/* This row is not used */
-	{ 1, 5, 9, 10},	/* Indices for 1st quadrant */
-	{ 3, 6, 9,  8},	/* Indices for 2nd quadrant */
-	{ 1, 2, 6, 10},	/* Indices for 3rd quadrant */
-	{ 3, 2, 5,  8}	/* Indices for 4th quadrant */
-};
 
 enum surface_nodes {	/* Node location relative to current node, using compass directions */
 	N2 = 0, NW, N1, NE, W2, W1, E1, E2, SW, S1, SE, S2 };
+
+static unsigned int p[5][4] = {	/* Indices into C->offset for each of the 4 quadrants, i.e., C->offset[p[quadrant][k]]], k = 0-3 */
+	{ 0, 0, 0,  0},	/* This row is not used */
+	{ NW, W1, S1, SE},	/* Indices for 1st quadrant */
+	{ SW, S1, E1, NE},	/* Indices for 2nd quadrant */
+	{ SE, E1, N1, NW},	/* Indices for 3rd quadrant */
+	{ NE, N1, W1, SW}	/* Indices for 4th quadrant */
+};
 
 enum surface_bound { LO = 0, HI = 1 };
 
@@ -649,19 +656,27 @@ GMT_LOCAL void find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INF
 	 			u[node] = z_at_node;
 	 		}
 	 		else {	/* We have a nearby data point in one of the quadrants */
+				/* Note: We must swap dx,dy for 2nd and 4th quadrants and always use absolute values since we are
+				   rotating each case (quadrants 2-4) to look like quadrant 1 */
 	 			if (dy >= 0.0) {	/* Upper two quadrants */
-		 			if (dx >= 0.0)
+		 			if (dx >= 0.0) {
 	 					status[node] = SURFACE_DATA_IS_IN_QUAD1;
-	 				else
+						xx = dx;	yy = dy;
+					}
+	 				else {
 	 					status[node] = SURFACE_DATA_IS_IN_QUAD2;
-					xx = fabs (dx);	yy = fabs (dy);
+						yy = -dx;	xx = dy;
+					}
 	 			}
 	 			else {
-		 			if (dx >= 0.0)
+		 			if (dx >= 0.0) {
 	 					status[node] = SURFACE_DATA_IS_IN_QUAD4;
-	 				else
+						yy = dx;	xx = -dy;
+					}
+	 				else {
 	 					status[node] = SURFACE_DATA_IS_IN_QUAD3;
-	 				yy = fabs (dx);	xx = fabs (dy);	/* Must swap dx,dy for these quadrants */
+						xx = -dx;	yy = -dy;
+					}
 				}
 				/* Evaluate the Briggs coefficients */
 				solve_Briggs_coefficients (C, C->Briggs[briggs_index].b, xx, yy, C->data[k].z);
@@ -737,18 +752,24 @@ GMT_LOCAL void find_mean_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *
  		}
  		else {	/* We have a nearby data point in one of the quadrants */
  			if (dy >= 0.0) {	/* Upper two quadrants */
-	 			if (dx >= 0.0)
+	 			if (dx >= 0.0) {
  					status[node] = SURFACE_DATA_IS_IN_QUAD1;
- 				else
+					xx = dx;	yy = dy;
+				}
+ 				else {
  					status[node] = SURFACE_DATA_IS_IN_QUAD2;
-				xx = fabs (dx);	yy = fabs (dy);
+					yy = -dx;	xx = dy;
+				}
  			}
  			else {
-	 			if (dx >= 0.0)
+	 			if (dx >= 0.0) {
  					status[node] = SURFACE_DATA_IS_IN_QUAD4;
- 				else
+					yy = dx;	xx = -dy;
+				}
+ 				else {
  					status[node] = SURFACE_DATA_IS_IN_QUAD3;
- 				yy = fabs (dx);	xx = fabs (dy);	/* Must swap dx,dy for these quadrants */
+					xx = -dx;	yy = -dy;
+				}
 			}
 			/* Evaluate the Briggs coefficients */
 			solve_Briggs_coefficients (C, C->Briggs[briggs_index].b, xx, yy, C->data[k].z);
@@ -1069,8 +1090,8 @@ GMT_LOCAL void set_BCs (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, gmt_grdflo
 	/* First set (1-T)d2[]/dn2 + Td[]/dn = 0 along edges */
 
 	for (col = 0, n_s = C->node_sw_corner, n_n = C->node_nw_corner; col < C->current_nx; col++, n_s++, n_n++) {	/* set BC1 along south and north side */
-		u[n_s+d_n[S1]] = (gmt_grdfloat)(y_0_const * u[n_s] + y_1_const * u[n_s+d_n[N1]]);	/* South: u_{0-1} = 2 * u_{00} - u_{01} */
-		u[n_n+d_n[N1]] = (gmt_grdfloat)(y_0_const * u[n_n] + y_1_const * u[n_n+d_n[S1]]);	/* North: u_{01}  = 2 * u_{00} - u_{0-1} */
+		u[n_s+d_n[S1]] = (gmt_grdfloat)(y_0_const * u[n_s] + y_1_const * u[n_s+d_n[N1]]);	/* South: u_{0,-1} = 2 * u_{0,0} - u_{0,+1} */
+		u[n_n+d_n[N1]] = (gmt_grdfloat)(y_0_const * u[n_n] + y_1_const * u[n_n+d_n[S1]]);	/* North: u_{0,+1} = 2 * u_{0,0} - u_{0,-1} */
 	}
 	if (C->periodic) {	/* Set periodic boundary conditions in longitude at west and east boundaries */
 		for (row = 0, n_w = C->node_nw_corner, n_e = C->node_ne_corner; row < C->current_ny; row++, n_w += C->current_mx, n_e += C->current_mx) {
@@ -1103,7 +1124,7 @@ GMT_LOCAL void set_BCs (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, gmt_grdflo
 
 	for (col = 0, n_s = C->node_sw_corner, n_n = C->node_nw_corner; col < C->current_nx; col++, n_s++, n_n++) {	/* set BC2 along south and north side */
 		/* South side */
-		u[n_s+d_n[S2]] = (gmt_grdfloat)(u[n_s+d_n[N2]] + C->eps_m2*(u[n_s+d_n[NW]] + u[n_s+d_n[NE]]
+		u[n_s+d_n[S2]] = (gmt_grdfloat)(u[n_s+d_n[N2]] + C->eps_m2 * (u[n_s+d_n[NW]] + u[n_s+d_n[NE]]
 			- u[n_s+d_n[SW]] - u[n_s+d_n[SE]]) + C->two_plus_em2 * (u[n_s+d_n[S1]] - u[n_s+d_n[N1]]));
 		/* North side */
 		u[n_n+d_n[N2]] = (gmt_grdfloat)(u[n_n+d_n[S2]] + C->eps_m2 * (u[n_n+d_n[SW]] + u[n_n+d_n[SE]]

@@ -9842,6 +9842,19 @@ GMT_LOCAL int api_extract_argument (char *optarg, char *argument, char **key, in
 	return pos;
 }
 
+GMT_LOCAL int api_B_custom_annotations (struct GMT_OPTION *opt) {
+	/* Replace -B[p|s][x|y|z]c with -B[p|s][x|y|z]c? */
+	unsigned int k = 0;
+	if (opt->option != 'B') return 0;	/* Not the right option */
+	if (strchr ("ps", opt->arg[k])) k++;	/* Skip a leading p|s for primary|secondary axis */
+	if (strchr ("xyz", opt->arg[k])) k++;	/* Skip optional x|y|z for specific axis */
+	if (opt->arg[k] != 'c') return 0;	/* Not a custom annotation request */
+	if (opt->arg[k+1]) return 0;		/* Should be empty if we are to add ? */
+	opt->arg = realloc (opt->arg, strlen (opt->arg)+1);	/* Make space for ? */
+	strcat (opt->arg, "?");
+	return 1;
+}
+
 #define api_is_required_IO(key) (key == API_PRIMARY_INPUT || key == API_PRIMARY_OUTPUT)			/* Returns true if this is a primary input or output item */
 #define api_not_required_io(key) ((key == API_PRIMARY_INPUT || key == API_SECONDARY_INPUT) ? API_SECONDARY_INPUT : API_SECONDARY_OUTPUT)	/* Returns the optional input or output flag */
 
@@ -10063,7 +10076,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	n_alloc = n_keys;	/* Initial number of allocations */
 	info = calloc (n_alloc, sizeof (struct GMT_RESOURCE));
 
-	/* 4. Determine position of file args given as $ or via missing arg (proxy for input matrix) */
+	/* 4. Determine position of file args given as ? or via missing arg (proxy for input matrix) */
 	/* Note: All explicit objects must be given after all implicit matrices have been listed */
 	for (opt = *head; opt; opt = opt->next) {	/* Process options */
 		strip = (strip_colon_opt == opt->option) ? strip_colon : false;	/* Just turn strip possibly true for the relevant option */
@@ -10078,7 +10091,19 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 			direction = (unsigned int) sdir;
 		}
 		mod_pos = api_extract_argument (opt->arg, argument, key, k, strip, &n_pre_arg);	/* Pull out the option argument, possibly modified by the key */
-		if (api_found_marker (argument)) {	/* Found an explicit questionmark within the option, e.g., -G?, -R? or -<? */
+		if (api_B_custom_annotations (opt)) {	/* Special processing for -B[p|s][x|y|z]c<nofilegiven>] */
+			/* Add this item to our list */
+			direction = GMT_IN;
+			info[n_items].option    = opt;
+			info[n_items].family    = GMT_IS_DATASET;
+			info[n_items].geometry  = GMT_IS_POINT;
+			info[n_items].direction = GMT_IN;
+			info[n_items].pos = pos = input_pos++;	/* Explicitly given arguments are the first given on the r.h.s. */
+			kind = GMT_FILE_EXPLICIT;
+			n_items++;
+			n_in_added++;
+		}
+		else if (api_found_marker (argument)) {	/* Found an explicit questionmark within the option, e.g., -G?, -R? or -<? */
 			if (opt->option == 'R' && !strcmp (opt->arg, "?")) {	/* -R? means append a grid so set those parameters here */
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -R? found: explicit grid will be substituted\n");
 				family = GMT_IS_GRID;
@@ -10120,16 +10145,16 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 				key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Change to ( or ) since option was provided, albeit implicitly */
 				info[n_items].pos = pos = (direction == GMT_IN) ? input_pos++ : output_pos++;
 				/* Explicitly add the missing marker (e.g., ?) to the option argument */
-				if (mod_pos) {	/* Must expand something like 300k+s+d+u into 300k+s$+d+u (assuming +s triggered this test) */
+				if (mod_pos) {	/* Must expand something like 300k+s+d+u into 300k+s?+d+u (assuming +s triggered this test) */
 					strncpy (txt, opt->arg, mod_pos);
 					strcat (txt, "?");
 					if (opt->arg[mod_pos]) strcat (txt, &opt->arg[mod_pos]);
 				}
 				else if (strip)	/* Special case for quoted and decorated lines with colon separating label info */
 					snprintf (txt, GMT_LEN256, "%s?%s", argument, &opt->arg[2]);
-				else if (n_pre_arg)	/* Something like -Lu becomes -Lu$ */
+				else if (n_pre_arg)	/* Something like -Lu becomes -Lu? */
 					snprintf (txt, GMT_LEN256, "%s?", opt->arg);
-				else	/* Something like -C or -C+d200k becomes -C$ or -C$+d200k */
+				else	/* Something like -C or -C+d200k becomes -C? or -C?+d200k */
 					snprintf (txt, GMT_LEN256, "?%s", opt->arg);
 				gmt_M_str_free (opt->arg);
 				opt->arg = strdup (txt);
@@ -10189,7 +10214,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 			else	/* More information to act on for inputs */
 				n_to_add = (n_per_family[family] == GMTAPI_UNLIMITED) ? n_in - n_in_added : n_per_family[family];
 			for (e = 0; e < n_to_add; e++) {
-				new_ptr = GMT_Make_Option (API, key[ku][K_OPT], str);	/* Create new option(s) with filename "$" */
+				new_ptr = GMT_Make_Option (API, key[ku][K_OPT], str);	/* Create new option(s) with filename "?" */
 				/* Append the new option to the list */
 				*head = GMT_Append_Option (API, new_ptr, *head);
 				info[n_items].option    = new_ptr;
