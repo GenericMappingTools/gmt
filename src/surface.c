@@ -463,14 +463,21 @@ GMT_LOCAL void find_nearest_point (struct SURFACE_INFO *C) {
 	 			if (dx >= 0.0) {
 	 				if (dy >= 0.0)
 	 					iu[iu_index] = SURFACE_DATA_IS_IN_QUAD1;
-	 				else
+	 				else {
 						iu[iu_index] = SURFACE_DATA_IS_IN_QUAD4;
+						//dy = -dy;	gmt_M_double_swap (dx, dy);
+					}
 	 			}
 	 			else {
-	 				if (dy >= 0.0)
+					//dx = -dx;
+	 				if (dy >= 0.0) {
 	 					iu[iu_index] = SURFACE_DATA_IS_IN_QUAD2;
-	 				else
+						//gmt_M_double_swap (dx, dy);
+					}
+	 				else {
 						iu[iu_index] = SURFACE_DATA_IS_IN_QUAD3;
+						//dy = -dy;
+					}
 	 			}
 				/* Evaluate the Briggs coefficients */
 	 			dx = fabs (dx);
