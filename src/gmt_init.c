@@ -12623,7 +12623,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'B':
 			p->symbol = GMT_SYMBOL_BARX;
 			if (bset) {
-				if (text[bset+1] == '\0') {	/* Read it from data file */
+				if (text[bset+1] == '\0') {	/* Read it from data file (+ means probably +z<col>) */
 					p->base_set = 2;
 					p->n_required = 1;
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
@@ -12846,7 +12846,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				for (k = 0; k < n_z; k++) p->nondim_col[p->n_nondim++] = 2 + k;	/* all band z in user units */
 			}
 			if (bset) {
-				if (text[bset+1] == '\0') {	/* Read it from data file */
+				if (text[bset+1] == '\0' || text[bset+1] == '+') {	/* Read it from data file */
 					p->base_set = 2;
 					p->n_required ++;
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
