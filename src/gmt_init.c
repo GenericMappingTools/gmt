@@ -5160,7 +5160,11 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	/* GMT_LANGUAGE */
 	strcpy (GMT->current.setting.language, "us");
 	/* GMT_TRIANGULATE */
+#ifdef TRIANGLE_D
 	GMT->current.setting.triangulate = GMT_TRIANGLE_SHEWCHUK;
+#else
+	GMT->current.setting.triangulate = GMT_TRIANGLE_WATSON;
+#endif
 	/* GMT_VERBOSE (compat) */
 	error += gmtinit_parse_V_option (GMT, 'c');
 
