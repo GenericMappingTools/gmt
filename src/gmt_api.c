@@ -9850,7 +9850,7 @@ GMT_LOCAL int api_B_custom_annotations (struct GMT_OPTION *opt) {
 	if (strchr ("xyz", opt->arg[k])) k++;	/* Skip optional x|y|z for specific axis */
 	if (opt->arg[k] != 'c') return 0;	/* Not a custom annotation request */
 	if (opt->arg[k+1]) return 0;		/* Should be empty if we are to add ? */
-	opt->arg = realloc (opt->arg, strlen (opt->arg)+1);	/* Make space for ? */
+	opt->arg = realloc (opt->arg, strlen (opt->arg)+2);	/* Make space for ? */
 	strcat (opt->arg, "?");
 	return 1;
 }
