@@ -13002,54 +13002,55 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	 * The item argument specifies which type to consider [a|i,f,g].  We return
 	 * an array with coordinates and labels, and set interval to true if applicable.
 	 */
-	int error = 0, nc;
+	int nc;
+	unsigned int save_coltype;
+	uint64_t row;
 	bool text, found;
  	unsigned int k = 0, n_annot = 0, n_int = 0;
-	size_t n_alloc = GMT_SMALL_CHUNK;
 	double *x = NULL;
-	char **L = NULL, line[GMT_BUFSIZ] = {""}, str[GMT_LEN64] = {""}, type[GMT_LEN8] = {""}, txt[GMT_BUFSIZ] = {""};
-	FILE *fp = NULL;
+	char **L = NULL, type[GMT_LEN8] = {""}, txt[GMT_BUFSIZ] = {""};
+	struct GMT_DATASET *D = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 
-	if ((fp = gmt_fopen (GMT, A->file_custom, "r")) == NULL) {
+	/* Temporarily change what data type col one is */
+	save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
+	GMT->current.io.col_type[GMT_IN][GMT_X] = gmt_M_type (GMT, GMT_IN, A->id);
+	text = ((item == 'a' || item == 'i') && labels);
+
+	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open custom annotation file %s!\n", A->file_custom);
+		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
 		return (0);
 	}
-
-	text = ((item == 'a' || item == 'i') && labels);
-	x = gmt_M_memory (GMT, NULL, n_alloc, double);
-	if (text) L = gmt_M_memory (GMT, NULL, n_alloc, char *);
-	while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
-		if (line[0] == '#' || line[0] == '\n') continue;
-		nc = sscanf (line, "%s %s %[^\n]", str, type, txt);
-		if (nc < 2) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Bad format record [%s] in custom file %s - skipped.\n", line, A->file_custom);
-			continue;
-		}
+	GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
+	S = D->table[0]->segment[0];	/* All we got */
+	
+	x = gmt_M_memory (GMT, NULL, S->n_rows, double);
+	if (text) L = gmt_M_memory (GMT, NULL, S->n_rows, char *);
+	for (row = 0; row < S->n_rows; row++) {
+		nc = sscanf (S->text[row], "%s %[^\0]", type, txt);
 		found = ((item == 'a' && (strchr (type, 'a') || strchr (type, 'i'))) || (strchr (type, item) != NULL));
 		if (!found) continue;	/* Not the type we were requesting */
 		if (strchr (type, 'i')) n_int++;
 		if (strchr (type, 'a')) n_annot++;
-		error += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, A->id), gmt_scanf (GMT, str, gmt_M_type (GMT, GMT_IN, A->id), &x[k]), str);
-		if (text && nc == 3) L[k] = strdup (txt);
+		x[k] = S->coord[GMT_X][row];
+		if (text && nc == 2) L[k] = strdup (txt);
 		k++;
-		if (k == n_alloc) {
-			n_alloc <<= 2;
-			x = gmt_M_memory (GMT, x, n_alloc, double);
-			if (text) L = gmt_M_memory (GMT, L, n_alloc, char *);
-		}
 	}
-	gmt_fclose (GMT, fp);
+	
 	if (k == 0) {	/* No such items */
 		gmt_M_free (GMT, x);
 		if (text) gmt_M_free (GMT, L);
 		return (0);
 	}
-	if (k < n_alloc) {
+	if (k < S->n_rows) {
 		x = gmt_M_memory (GMT, x, k, double);
 		if (text) L = gmt_M_memory (GMT, L, k, char *);
 	}
 	*xx = x;
 	if (text) *labels = L;
+	GMT_Destroy_Data (GMT->parent, &D);
+	
 	return (k);
 }
 

@@ -2792,17 +2792,28 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	 * an array with coordinates and labels, and set interval to true if applicable.
 	 */
 	int k, n_errors = 0;
-	char line[GMT_BUFSIZ] = {""}, type[GMT_LEN8] = {""};
-	FILE *fp = gmt_fopen (GMT, A->file_custom, "r");
-
-	if (fp == NULL) return 1;
+	unsigned int save_coltype;
+	uint64_t row;
+	char type[GMT_LEN8] = {""};
+	struct GMT_DATASET *D = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
+	
+	/* Temporarily change what data type col one is */
+	save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
+	GMT->current.io.col_type[GMT_IN][GMT_X] = gmt_M_type (GMT, GMT_IN, A->id);
+	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
+		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
+		return (1);
+	}
+	GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
 
 	gmt_M_memset (n_int, 4, int);
-	while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
-		if (line[0] == '#' || line[0] == '\n') continue;
-		k = sscanf (line, "%*s %s", type);
+	S = D->table[0]->segment[0];	/* All we got */
+	
+	for (row = 0; row < S->n_rows; row++) {
+		k = sscanf (S->text[row], "%s", type);
 		if (k != 1) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad format record [%s] in custom file %s.\n", line, A->file_custom);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad format record [%s] at row %d in custom file %s.\n", S->text[row], (int)row, A->file_custom);
 			n_errors++;
 			continue;
 		}
@@ -2821,13 +2832,14 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 					n_int[3]++;
 					break;
 				default:
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognixed type (%c) in custom file %s.\n", type[k], A->file_custom);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognixed type (%c) at row %d in custom file %s.\n", type[k], (int)row, A->file_custom);
 					n_errors++;
 					break;
 			}
 		}
 	}
-	gmt_fclose (GMT, fp);
+	GMT_Destroy_Data (GMT->parent, &D);
+
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Processed custom annotations via %s for axis %d.\n", A->file_custom, A->id);
 	if (n_int[0] && n_int[1]) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot mix interval and regular annotations in custom file %s.\n", A->file_custom);
