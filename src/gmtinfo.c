@@ -749,11 +749,11 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = false;
 			first_data_record = false;
 			if (Ctrl->C.active) {
-				if ((error = GMT_Set_Columns (API, GMT_OUT, 2*ncol, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
+				if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)(2*ncol), GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
 					Return (error);
 			}
 			else if (Ctrl->E.active) {
-				if ((error = GMT_Set_Columns (API, GMT_OUT, ncol, (In->text) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
+				if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)ncol, (In->text) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
 					Return (error);
 			}
 			else if (Ctrl->I.mode == BOUNDBOX) {

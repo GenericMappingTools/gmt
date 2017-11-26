@@ -576,7 +576,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		GMT->current.setting.io_nan_records = false;	/* Cannot have x,y as NaNs here */
 	}
 
-	if ((error = GMT_Set_Columns (API, GMT_IN, n_req, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, (unsigned int)n_req, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		gmt_M_free (GMT, data);
 		gmt_M_free (GMT, flag);
 		Return (error);

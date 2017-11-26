@@ -511,7 +511,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	/* Specify inputexpected columns */
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */
-	if ((error = GMT_Set_Columns (API, GMT_IN, n_expected_fields, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, (unsigned int)n_expected_fields, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 

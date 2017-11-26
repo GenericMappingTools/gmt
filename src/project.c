@@ -867,7 +867,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 		/* Now output generated track */
 
-		if ((error = GMT_Set_Columns (API, GMT_OUT, P.n_outputs, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)P.n_outputs, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers data output failed */
@@ -962,7 +962,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 					P.n_z = n_cols - 2;
 				z_first = false;
 				n_tot_cols = (P.want_z_output) ? P.n_outputs - 1 + P.n_z : P.n_outputs;
-				if ((error = GMT_Set_Columns (API, GMT_OUT, n_tot_cols, gmt_M_colmode (In->text))) != GMT_NOERROR) {
+				if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_tot_cols, gmt_M_colmode (In->text))) != GMT_NOERROR) {
 					Return (error);
 				}
 			}

@@ -1513,7 +1513,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
 		}
-		if ((error = GMT_Set_Columns (API, GMT_IN, n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_IN, (unsigned int)n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			/* We dont want trailing text because we may need to resample lines below */
 			Return (API->error);
 		}

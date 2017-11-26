@@ -705,7 +705,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	if (GMT->common.R.active[RSET]) gmt_M_memcpy (F.wesn, GMT->common.R.wesn, 4, double);
 	n_cols = (F.weights) ? 2 : 1;
 
-	if ((error = GMT_Set_Columns (API, GMT_IN, n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, (unsigned int)n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */

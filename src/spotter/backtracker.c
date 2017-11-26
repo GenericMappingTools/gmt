@@ -460,10 +460,10 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 	gmt_M_memset (out, 10, double);
 
 	/* Specify input and output expected columns */
-	if ((error = GMT_Set_Columns (API, GMT_IN, n_expected_fields, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_IN, (unsigned int)n_expected_fields, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
-	if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
 
