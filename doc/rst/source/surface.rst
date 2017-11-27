@@ -19,6 +19,7 @@ Synopsis
 [ |-A|\ *aspect_ratio*\ \|\ **m** ]
 [ |-C|\ *convergence_limit*\ [%] ]
 [ |-L|\ **l**\ *lower* ] [ **-Lu**\ *upper* ]
+[ |-M|\ *max_radius* ]
 [ |-N|\ *max_iterations* ]
 [ |-Q| ]
 [ |-S|\ *search_radius*\ [**m**\ \|\ **s**] ]
@@ -121,6 +122,12 @@ Optional Arguments
     unconstrained [Default]. Grid files used to set the limits may
     contain NaNs. In the presence of NaNs, the limit of a node masked
     with NaN is unconstrained.
+
+.. _-M:
+
+**-M**\ *max_radius*
+    After solving for the surface, apply a mask so that nodes farther
+    than *max_radius* away from a data constraint is set to NaN [no masking].
 
 .. _-N:
 
