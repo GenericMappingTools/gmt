@@ -618,7 +618,11 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			/* The quad is given by comparing the high and low values of row, col */
 			quad = 2 * (Q[k]->row - 2 * row) + (Q[k]->col - 2 * col);
 			kk = find_quad_above (Q, n, row, col, level-1);	/* kk is the parent of k */
-			assert (kk >= 0 && quad < 4);	/* Sanity check */
+			if (kk < 0) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to link tile for row = %d, col = %d at level %d to a parent (!?) - skipped.\n", row, col, level);
+				continue;
+			}
+			assert (quad < 4);	/* Sanity check */
 			Q[kk]->next[quad] = Q[k];	/* Do the linking */
 			Q[kk]->q++;			/* Count the links for this parent */
 		}
@@ -665,7 +669,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	
 	for (k = 0; k < n; k++) {
 		if (Q[k]->q) {	/* Only examine tiles with children */
-			if (Ctrl->L.active) {
+			if (Ctrl->D.active) {
 				printf ("%s:", Q[k]->tag);
 				for (quad = 0; quad < 4; quad++)
 					if (Q[k]->next[quad]) printf (" %c=%s", 'A'+quad, Q[k]->next[quad]->tag);
