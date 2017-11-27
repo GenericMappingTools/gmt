@@ -12332,7 +12332,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *p, unsigned int mode, bool cmd) {
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = true when called to process command line options */
 	int decode_error = 0, bset = 0, j, n, k, slash = 0, colon, col_off = mode, len, n_z = 0;
-	bool check = true, degenerate = false;
+	bool check = true, degenerate = false, add_to_base = false;
 	unsigned int ju;
 	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, text_cp[GMT_LEN256] = {""}, diameter[GMT_LEN32] = {""}, *c = NULL;
 	static char *allowed_symbols[2] = {"~=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
@@ -12502,13 +12502,13 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 	else if (strchr (bar_symbols[mode], (int) text[0])) {	/* Bar, column, cube with size */
 
-		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|u]][+b[<base>]]				*/
-		/* Column:	-So|O[<size_x>[c|i|p|u][/<ysize>[c|i|p|u]]][+b[<base>]]	*/
+		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|u]][+b|B[<base>]]				*/
+		/* Column:	-So|O[<size_x>[c|i|p|u][/<ysize>[c|i|p|u]]][+b|B[<base>]]	*/
 		/* Cube:	-Su|U[<size_x>[c|i|p|u]]	*/
 
 		for (j = 1; text[j]; j++) {	/* Look at chars following the symbol code */
 			if (text[j] == '/') slash = j;
-			if (text[j] == 'b') bset = j;	/* Basically not worry about +b vs b by just checking for b */
+			if (text[j] == 'b' || text[j] == 'B') bset = j;	/* Basically not worry about +b|B vs b|B by just checking for b|B */
 		}
 		if ((c = strstr (text, "+z")) || (c = strstr (text, "+Z"))) {	/* Got +z|Z<nz> */
 			n_z = atoi (&c[2]);
@@ -12517,8 +12517,9 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		}
 		strncpy (text_cp, text, GMT_LEN256-1);
 		if (c) c[0] = '+';	/* ...and restore it */
-		if (bset) {	/* Chop off the b<base> from copy to avoid confusion when parsing.  <base> is always in user units */
-			if (text_cp[bset-1] == '+')	/* Gave +b */
+		if (bset) {	/* Chop off the b|B<base> from copy to avoid confusion when parsing.  <base> is always in user units */
+			if (text_cp[bset] == 'B') add_to_base = true;
+			if (text_cp[bset-1] == '+')	/* Gave +b|B */
 				text_cp[bset-1] = 0;
 			else	/* Handle backwards compatible case of just b[<base>] */
 				text_cp[bset] = 0;
@@ -13102,7 +13103,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		p->base = (GMT->current.proj.xyz_projection[GMT_Y] == GMT_LOG10) ? 1.0 : 0.0;
 	else if (p->symbol == GMT_SYMBOL_COLUMN)
 		p->base = (GMT->current.proj.xyz_projection[GMT_Z] == GMT_LOG10) ? 1.0 : 0.0;
-
+	if (add_to_base) p->base_set |= 4;	/* Means to add base value to height offset to get actual z at top */
 	return (decode_error);
 }
 

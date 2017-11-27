@@ -190,13 +190,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   use upper case O and U to disable this 3-D illumination.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Symbols A, C, D, F, H, I, N, S, T are adjusted to have same area\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of a circle of given diameter.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Bar: Append +b[<base>] to give the y- (or z-) value of the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      base [Default = 0 (1 for log-scales)]. Use -SB for horizontal\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      bars; then <base> value refers to the x location.  To read the <base>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      value from file, specify +b with no trailing value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Bar: Append +b[<base>] to give the y- (or z-) value of the base [Default = 0 (1 for log-scales)]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Use +B instead if heights are measured relative to base [relative to origin].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Use -SB for horizontal bars; then <base> value refers to the x location.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      To read the <base> value from file, specify +b with no trailing argument.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   3-D Column: Append +b[<base>] to give the z-value of the base of the column\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      [Default = 0 (1 for log-scales)]. To read the <base>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      value from file, specify +b with no trailing value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      [Default = 0 (1 for log-scales)]. Use +B if heights are measured relative to base [relative to origin].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      To read the <base> value from file, specify +b with no trailing argument.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      For multi-band columns append +z<nbands>; then <nbands> z-values will\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      be read from file instead of just 1.  Use +Z if dz increments are given instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Multiband columns requires -C with one color per band (0, 1, ...).\n");
@@ -287,7 +287,7 @@ GMT_LOCAL unsigned int parse_old_W (struct GMTAPI_CTRL *API, struct PSXYZ_CTRL *
 GMT_LOCAL unsigned int get_column_bands (struct GMT_SYMBOL *S) {
 	/* Report how many bands in the 3-D column */
 	unsigned int n_z = S->n_required;	/* z normallly not counted unless +z|Z was used, so this could be 0 */
-	if (S->base_set == 2 && n_z) n_z--;	/* Remove the base column item */
+	if (S->base_set & 2 && n_z) n_z--;	/* Remove the base column item */
 	if (n_z == 0) n_z = 1;	/* 1 means singleband column */
 	return (n_z);
 }
@@ -685,8 +685,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
-	if (S.symbol == GMT_SYMBOL_BARX && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
-	if (S.symbol == GMT_SYMBOL_BARY && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
+	if (S.symbol == GMT_SYMBOL_BARX && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
+	if (S.symbol == GMT_SYMBOL_BARY && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;
@@ -841,6 +841,11 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 			if (n == n_alloc) data = gmt_M_malloc (GMT, data, n, &n_alloc, struct PSXYZ_DATA);
 
+			if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & 4))
+				in[GMT_X] += S.base;
+			else if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & 4))
+				in[GMT_Y] += S.base;
+
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &data[n].x, &data[n].y) || gmt_M_is_dnan(in[GMT_Z])) continue;	/* NaNs on input */
 			data[n].flag = S.convert_angles;
 			data[n].z = gmt_z_to_zz (GMT, in[GMT_Z]);
@@ -869,7 +874,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					in2[ex2] = in2[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
 			}
 
-			if (S.base_set == 2) {	/* Got base from input column */
+			if (S.base_set & 2) {	/* Got base from input column */
 				bcol = (S.read_size) ? ex2 : ex1;
 				if (S.symbol == GMT_SYMBOL_COLUMN)
 					bcol += S.n_required - 1;	/* Since we have z1 z2 ... z2 base */
@@ -881,6 +886,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				S.size_y = in[ex2];
 				if (delayed_unit_scaling[GMT_Y]) S.size_y *= GMT->session.u2u[S.u][GMT_INCH];
 			}
+			if (S.base_set & 4) data[n].flag |= 32;	/* Flag that base needs to be added to height(s) */
+			
 			data[n].dim[0] = S.size_x;
 			data[n].dim[1] = S.size_y;
 
@@ -1209,8 +1216,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							}
 							if (data[i].flag & 1)
 								zz += data[i].zz[k];	/* Must get cumulate z value from dz increments */
-							else
+							else {
 								zz = data[i].zz[k];	/* Got actual z values */
+								if (data[i].flag & 32) zz += base;		/* Must add base to z height */
+							}
 							dim[2] = fabs (zz - base);	/* band height */
 							column3D (GMT, PSL, xpos[item], data[i].y, (zz + base) / 2.0, dim, rgb, data[i].outline);
 							base = zz;	/* Next base */

@@ -437,6 +437,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Bars: Append +b[<base>] to give the y-value of the base [Default = 0 (1 for log-scales)].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Append u if width is in x-input units [Default is %s].\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t      Use +B instead if heights are measured relative to base [relative to origin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Use upper case -SB for horizontal bars (<base> then refers to x\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      and width may be in y-units [Default is vertical]. To read the <base>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      value from file, specify +b with no trailing value.\n");
@@ -989,8 +990,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (S.v.status & PSL_VEC_FILL) S.v.fill = current_fill;		/* Override -G<fill> (if set) with specified head fill */
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
-	if (S.symbol == GMT_SYMBOL_BARX && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_X));
-	if (S.symbol == GMT_SYMBOL_BARY && S.base_set == 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
+	if (S.symbol == GMT_SYMBOL_BARX && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_X));
+	if (S.symbol == GMT_SYMBOL_BARY && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0)
 		gmt_set_column (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
 	else if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && S.convert_angles) {
@@ -1120,6 +1121,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						continue;
 				}
 			}
+			if (S.symbol == GMT_SYMBOL_BARX && (S.base_set & 4))
+				in[GMT_X] += S.base;
+			else if (S.symbol == GMT_SYMBOL_BARY && (S.base_set & 4))
+				in[GMT_Y] += S.base;
 
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
@@ -1176,7 +1181,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					in[ex2] = in[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
 			}
 
-			if (S.base_set == 2) {
+			if (S.base_set & 2) {
 				bcol = (S.read_size) ? ex2 : ex1;
 				S.base = in[bcol];	/* Got base from input column */
 			}

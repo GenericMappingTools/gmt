@@ -33,18 +33,20 @@
         st\ **a**\ r. *size* is diameter of circumscribing circle.
 
     **-Sb**
-        Vertical **b**\ ar extending from *base* to y. *size* is bar width.
+        Vertical **b**\ ar extending from *base* to y. The *size* is bar width.
         Append **u** if *size* is in x-units [Default is plot-distance units].
         By default, *base* = ymin. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
-        data column.
+        data column.  Use **+B**\ [*base*\ ] if the bar height is measured relative
+        to *base* [Relative to origin].
 
     **-SB**
-        Horizontal **b**\ ar extending from *base* to x. *size* is bar width.
+        Horizontal **b**\ ar extending from *base* to x. The *size* is bar width.
         Append **u** if *size* is in y-units [Default is plot-distance units].
         By default, *base* = xmin. Append **+b**\ [*base*] to change this
         value. If *base* is not appended then we read it from the last input
-        data column.
+        data column.  Use **+B**\ [*base*\ ] if the bar length is measured relative
+        to *base* [Relative to origin].
 
     **-Sc**
         **c**\ ircle. *size* is diameter of circle.
@@ -150,7 +152,9 @@
         [Default is plot-distance units].  If no *size* is given we expect both *xsize*
         and *ysize* as two extra data columns.  By default, *base* = 0.  Append
         **+b**\ *base* to change this value.  If *base* is not appended then we read it
-        from the last input data column.  The facet colors will be modified to
+        from the last input data column.  Use **+B**\ [*base*\ ] if the column height
+        is measured relative to *base* [Relative to origin].
+        The facet colors will be modified to
         simulate shading.  Use **-SO** to disable such 3-D illumination.
         Normally a single *z* value is considered.  For multi-band columns, append
         **+z**\ *nbands* (and provide *nbands* *z*-values on input; these must be monotonically
