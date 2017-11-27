@@ -643,8 +643,8 @@ this program:
       /* Obtain the grid from the virtual file */
       G = GMT_Read_VirtualFile (API, output);
       /* Close the virtual files */
-      GMT_Close_VirtualFile (API, 0, input);
-      GMT_Close_VirtualFile (API, 0, output);
+      GMT_Close_VirtualFile (API, input);
+      GMT_Close_VirtualFile (API, output);
       /* Write the grid to file */
       GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, NULL,
           "junk.nc", G);
