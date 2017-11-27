@@ -225,6 +225,22 @@ hawaii_grd.nc, and monitoring each iteration, try:
 
     gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vl
 
+Notes
+-----
+
+The surface finite difference algorithm is Cartesian at heart, hence the *ad hoc*
+option to change the aspect ratio for a suitable mean latitude (**-A**). When
+geographic data are supplied and the output grid has a 360 degree longitude range we will
+impose periodic boundary conditions in longitude.  However, no equivalent geographic
+boundary condition can be applied at the poles since the finite difference solution
+will not be valid there (actual spacing between the nodes at the poles is zero).
+If you attempt this type of gridding you will be severely warned but the calculations
+will continue.  Because the result is a geographic grid, the GMT i/o machinery will
+interfere and detect inconsistencies at the pole points and replace all values along
+a pole with their mean value.  This will introduce further distortion into the
+grid near the poles.  We recommend you instead consider spherical gridding for global
+data sets; see :doc:`greenspline` (for modest data sets) or :doc:`sphinterpolate`.
+
 Bugs
 ----
 
@@ -254,7 +270,7 @@ See Also
 :doc:`greenspline`,
 :doc:`nearneighbor`,
 :doc:`triangulate`,
-:doc:`sphtriangulate`
+:doc:`sphinterpolate`
 
 References
 ----------

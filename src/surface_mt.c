@@ -1145,6 +1145,16 @@ GMT_LOCAL void set_BCs (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, gmt_grdflo
 			//fprintf (stderr, "BC W2 = %d BC E2 = %d\n", (int)(n_w+d_n[W2]), (int)(n_e+d_n[E2]));
 		}
 	}
+	/* Debug checking: */
+#if 0
+	if (C->current_stride == 1) {
+		col = 248;
+		for (row = -2; row <= 2; row++) {
+			n = row_col_to_node (row, col, C->current_mx);
+			fprintf (stderr, "row = %d  z = %g\n", row, u[n]);
+		}
+	}
+#endif
 }
 
 #if _OPENMP
@@ -1186,7 +1196,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 	}
 #endif
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Starting iterations, mode = %s Max iterations = %d [stride = %d]\n", mode_name[mode], current_max_iterations, C->current_stride);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Starting iterations, mode = %s Max iterations = %d [stride = %d]\n", mode_name[mode], current_max_iterations, C->current_stride);
 
 	sprintf (C->format, "%%4ld\t%%c\t%%8" PRIu64 "\t%s\t%s\t%%10" PRIu64 "\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	if (C->logging) fprintf (C->fp_log, "%c Grid size = %d Mode = %c Convergence limit = %g -Z%d\n",
@@ -1230,7 +1240,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 #endif
 
 		/* Now loop over all interior data nodes */
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Iteration %d\n", iteration_count);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Iteration %d\n", iteration_count);
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,node,col,u_00,set,k,b,quadrant,sum_bk_uk,briggs_index,u_change,dump) shared(C,status,u_new,u_old,d_node) //reduction(max:max_u_change)
@@ -1289,7 +1299,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 	
 		iteration_count++;	C->total_iterations++;	/* Update iteration counts for this stride and for total */
 		max_z_change = max_u_change * C->z_rms;		/* Scale max_u_change back into original z units -> max_z_change */
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format,
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, C->format,
 			C->current_stride, C->mode_type[mode], iteration_count, max_z_change, current_limit, C->total_iterations);
 		if (C->logging) fprintf (C->fp_log, "%d\t%c\t%" PRIu64 "\t%.8g\t%.8g\t%" PRIu64 "\n", C->current_stride, C->mode_type[mode], iteration_count, max_z_change, current_limit, C->total_iterations);
 #ifdef PARALLEL_MODE	/* Must impose the condition that # of iteration is even so that old_u (i.e. C->Grid->data) holds the final solution */
@@ -2203,6 +2213,14 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	gmt_M_memcpy (C.wesn_orig, GMT->common.R.wesn, 4, double);	/* Save original region in case user specified -r */
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);		/* Save specified region */
 	C.periodic = (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_360_range (wesn[XLO], wesn[XHI]));
+	if (C.periodic && gmt_M_180_range (wesn[YLO], wesn[YHI])) {
+		/* Trying to grid global geographic data - this is not something surface can do */
+		GMT_Report (API, GMT_MSG_NORMAL, "You are attempting to grid a global geographic data set, but surface cannot handle poles.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "It will do its best but it remains a Cartesian calculation which affects nodes near the poles.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Because the grid is flaggged as geographic, the (repeated) pole values will be averaged upon writing to file.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "This may introduce a jump at either pole which will distort the grid near the poles.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Consider spherical gridding instead with greenspline or sphinterpolate.\n");
+	}
 	if (GMT->common.R.active[GSET]) {		/* Pixel registration request. Use the trick of offsetting area by x_inc(y_inc) / 2 */
 		/* Note that the grid remains node-registered and only gets tagged as pixel-registered upon writing the final grid to file */
 		wesn[XLO] += GMT->common.R.inc[GMT_X] / 2.0;	wesn[XHI] += GMT->common.R.inc[GMT_X] / 2.0;
