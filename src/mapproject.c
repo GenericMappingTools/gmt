@@ -832,7 +832,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			Return (API->error);
 		}
-		if ((error = GMT_Set_Columns (API, GMT_OUT, n_output, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_output, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
@@ -1050,7 +1050,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			Return (GMT_PTR_IS_NULL);
 		}
 		if (first) {
-			unsigned int n_in_cols = gmt_get_cols (GMT, GMT_IN);
+			unsigned int n_in_cols = (unsigned int)gmt_get_cols (GMT, GMT_IN);
 			if ((error = GMT_Set_Columns (API, GMT_OUT, n_in_cols, gmt_M_colmode (In->text))) != GMT_NOERROR) {
 				Return (error);
 			}
@@ -1131,7 +1131,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 			/* Simply copy other columns and output */
 			if (n_output == 0) {
-				unsigned int n_in_cols = gmt_get_cols (GMT, GMT_IN);
+				unsigned int n_in_cols = (unsigned int)gmt_get_cols (GMT, GMT_IN);
 				if ((error = GMT_Set_Columns (API, GMT_OUT, n_in_cols, gmt_M_colmode (Out->text))) != GMT_NOERROR) {
 					Return (error);
 				}
@@ -1259,9 +1259,9 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				}
 				/* Simply copy other columns and output */
 				if (n_output == 0) {
-					unsigned int n_in_cols = gmt_get_cols (GMT, GMT_IN);
+					unsigned int n_in_cols = (unsigned int)gmt_get_cols (GMT, GMT_IN);
 					for (col = 0, k = 0; col < MP_COL_N; col++) if (Ctrl->used[col]) k++;
-					if ((error = GMT_Set_Columns (API, GMT_OUT, n_in_cols + k, gmt_M_colmode (Out->text))) != GMT_NOERROR) {
+					if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)(n_in_cols + k), gmt_M_colmode (Out->text))) != GMT_NOERROR) {
 						Return (error);
 					}
 					n_output = gmt_get_cols (GMT, GMT_OUT);
@@ -1288,7 +1288,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				}
 				/* Simply copy other columns and output */
 				if (n_output == 0) {
-					unsigned int n_in_cols = gmt_get_cols (GMT, GMT_IN);
+					unsigned int n_in_cols = (unsigned int)gmt_get_cols (GMT, GMT_IN);
 					if ((error = GMT_Set_Columns (API, GMT_OUT, n_in_cols, gmt_M_colmode (Out->text))) != GMT_NOERROR) {
 						Return (error);
 					}

@@ -1102,7 +1102,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;	/* Since no x,y involved here */
 			n_out = Ctrl->G.n_grids;
 			n_lead = 0;	/* None of the input columns will be used */
-			if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
+			if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
+				Return (error);
 			out = gmt_M_memory (GMT, NULL, n_out, double);
 			Out = gmt_new_record (GMT, out, NULL);
 		}
@@ -1135,10 +1136,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			/* Data record to process */
 			in = In->data;	/* Only need to process numerical part here */
 			if (n_out == 0) {	/* First time we need to determine # of columns and allocate output vector */
-				n_lead = gmt_get_cols (GMT, GMT_IN);	/* Get total # of input cols */
+				n_lead = (unsigned int)gmt_get_cols (GMT, GMT_IN);	/* Get total # of input cols */
 				n_out = n_lead + Ctrl->G.n_grids;	/* Get total # of output cols */
 				if (Ctrl->T.mode == 2) n_out += 3;
-				if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, gmt_M_colmode (In->text))) != GMT_NOERROR) {
+				if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_out, gmt_M_colmode (In->text))) != GMT_NOERROR) {
 					Return (error);
 				}
 				if (!out) out = gmt_M_memory (GMT, NULL, n_out, double);

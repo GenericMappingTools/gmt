@@ -770,7 +770,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		/* Data record to process */
 
 		if (n_output == 0) {
-			GMT_Set_Columns (API, GMT_OUT, gmt_get_cols (GMT, GMT_IN), (In->text) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT);
+			GMT_Set_Columns (API, GMT_OUT, (unsigned int)gmt_get_cols (GMT, GMT_IN), (In->text) ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT);
 			n_output = gmt_get_cols (GMT, GMT_OUT);
 		}
 

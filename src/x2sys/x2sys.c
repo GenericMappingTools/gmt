@@ -1359,7 +1359,7 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 	last_id++;
 	if (mode == 1) B->head = gmt_M_memory (GMT, B->head, last_id, struct X2SYS_BIX_TRACK_INFO);
 
-	*ID = B->n_tracks = (uint32_t)last_id;
+	*ID = (uint32_t)B->n_tracks = last_id;
 
 	return (X2SYS_NOERROR);
 }

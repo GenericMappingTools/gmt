@@ -1464,7 +1464,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			C = D;	/* Compare with itself */
 		
 		geometry = (Ctrl->S.active) ? GMT_IS_PLP     : GMT_IS_NONE;
-		if ((error = GMT_Set_Columns (API, GMT_OUT, C->n_columns, (D->type == GMT_READ_DATA) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)C->n_columns, (D->type == GMT_READ_DATA) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)) != GMT_NOERROR) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */

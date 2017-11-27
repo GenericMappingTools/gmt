@@ -508,7 +508,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-		if ((error = GMT_Set_Columns (API, GMT_OUT, n_cols_in + S->n_columns, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)(n_cols_in + S->n_columns), GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
 		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
@@ -521,11 +521,11 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 						out[col] = S->data[col][row];
 					if (S->text) {
 						if (Ctrl->W.mode) {	/* Exclude NaN columns */
-							n_cols_in = GMT_Get_Values (API, S->text[row], tmp, n_col);
+							n_cols_in = GMT_Get_Values (API, S->text[row], tmp, (int)n_col);
 							for (col = k = 0; col < n_cols_in; col++) if (!nan[col]) out[S->n_columns+k] = tmp[col], k++;
 						}
 						else
-							GMT_Get_Values (API, S->text[row], &out[S->n_columns], n_col);
+							GMT_Get_Values (API, S->text[row], &out[S->n_columns], (int)n_col);
 					}
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 				}
@@ -564,7 +564,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 
 	}
-	if ((error = GMT_Set_Columns (API, GMT_OUT, n_cols_out, (D[GMT_IN]->type == GMT_READ_DATA) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_cols_out, (D[GMT_IN]->type == GMT_READ_DATA) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)) != GMT_NOERROR) {
 		Return (error);
 	}
 

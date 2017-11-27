@@ -900,9 +900,9 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)D->n_columns);
 		Return (GMT_DIM_TOO_SMALL, "Not enough input columns\n");
 	}
-	n_out_cols = D->n_columns;
+	n_out_cols = (unsigned int)D->n_columns;
 	if (Ctrl->N.spatial) {	/* Must add extra column for distances and then compute them */
-		Ctrl->N.col = D->n_columns;
+		Ctrl->N.col = (int)D->n_columns;
 		gmt_adjust_dataset (GMT, D, D->n_columns + 1);
 		gmt_init_distaz (GMT, Ctrl->N.unit, Ctrl->N.mode, GMT_MAP_DIST);
 		for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */

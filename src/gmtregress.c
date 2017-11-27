@@ -1100,7 +1100,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (API->error);
 	}
-	if ((error = GMT_Set_Columns (API, GMT_OUT, n_columns, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+	if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_columns, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (error);
 	}
