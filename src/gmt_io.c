@@ -458,7 +458,12 @@ GMT_LOCAL unsigned int gmtio_ogr_decode_aspatial_types (struct GMT_CTRL *GMT, ch
 			continue;
 		}
 		if (col == n_alloc) S->type = gmt_M_memory (GMT, S->type, n_alloc += GMT_TINY_CHUNK, enum GMT_enum_type);
-		S->type[col++] = gmtlib_ogr_get_type (p);
+		S->type[col] = gmtlib_ogr_get_type (p);
+		if (S->type[col] == GMT_TEXT)
+			S->rec_type |= GMT_READ_TEXT;
+		else
+			S->rec_type |= GMT_READ_DATA;
+		col++;
 	}
 	if (col < n_alloc) S->type = gmt_M_memory (GMT, S->type, col, enum GMT_enum_type);
 	return (col);
@@ -3132,6 +3137,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	}
 	else	/* No trailing text found, reset tpos */
 		*tpos = 0;
+	if (GMT->current.io.OGR && GMT->current.io.OGR->rec_type) ret_val |= GMT->current.io.OGR->rec_type;	/* For OGR files we also need to consider the nature of aspatial information */
 		
 	/* Tell user how we interpreted their first record */
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Source col types: (%s)\n", message);
