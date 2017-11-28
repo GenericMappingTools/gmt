@@ -150,7 +150,7 @@ GMT_LOCAL int gmtnc_n_chunked_rows_in_cache (struct GMT_CTRL *GMT, struct GMT_GR
 #ifdef NC4_DEBUG
 		level = GMT_MSG_NORMAL;
 #else
-		level = GMT_MSG_LONG_VERBOSE;
+		level = GMT_MSG_DEBUG;
 #endif
 		GMT_Report (GMT->parent, level,
 				"processing at most %" PRIuS " (%" PRIuS "x%" PRIuS ") chunks at a time (%.1lf MiB)...\n",
@@ -1444,7 +1444,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 #ifdef NC4_DEBUG
 		level = GMT_MSG_NORMAL;
 #else
-		level = GMT_MSG_LONG_VERBOSE;
+		level = GMT_MSG_DEBUG;
 #endif
 		GMT_Report (GMT->parent, level,
 				"packed z-range: [%g,%g]\n", header->z_min, header->z_max);
@@ -1599,7 +1599,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 #ifdef NC4_DEBUG
 		level = GMT_MSG_NORMAL;
 #else
-		level = GMT_MSG_LONG_VERBOSE;
+		level = GMT_MSG_DEBUG;
 #endif
 		GMT_Report (GMT->parent, level,
 				"packed z-range: [%g,%g]\n", header->z_min, header->z_max);
