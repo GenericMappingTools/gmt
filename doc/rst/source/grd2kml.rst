@@ -30,14 +30,15 @@ Synopsis
 Description
 -----------
 
-**grd2kml** reads a large 2-D grid file and makes a quadtree set of
-PNG images and KML wrappers for Google Earth.
+**grd2kml** reads a 2-D grid file and makes a *quadtree* of
+PNG images and KML wrappers for Google Earth using the selected
+tile size [256x256 pixels].  We downsample the grid depending on the
+viewing level in the quadtree using a Gaussian filter, but other
+filters can be selected as well.
 Optionally, illumination may be added by providing a grid file with
-intensities in the (-1,+1) range or by instructions to derive intensities
-from the input data grid (see **-I**). Values outside this intensity range will be
-clipped. Such intensity files can be created from the grid using
-:doc:`grdgradient` and, optionally, modified by :doc:`grdmath` or
-:doc:`grdhisteq`.  Colors are specified via a color palette lookup table.
+intensities in the (-1,+1) range or by giving instructions to derive intensities
+from the input data grid automatically (see **-I**). Values outside the (-1,+1) intensity range will be
+clipped. Map colors are specified via a color palette lookup table.
 
 
 Required Arguments
@@ -52,13 +53,13 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *cpt*
-    Name of the CPT. Alternatively,
+    Name of the color palette table (CPT). Alternatively,
     supply the name of a GMT color master dynamic CPT [rainbow] to
     automatically determine a continuous CPT from
     the grid's z-range.  If the dynamic CPT has a default range then
     that range will be imposed instead.
-    Yet another option is to specify **-C**\ *color1*\ ,\ *color2*\ [,\ *color3*\ ,...]
-    to build a linear continuous CPT from those colors automatically.
+    Another option is to specify **-C**\ *color1*\ ,\ *color2*\ [,\ *color3*\ ,...]
+    to build a linear continuous CPT from those colors automatically, scaled to fit the data range.
     In this case *color1* etc can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
 
@@ -70,10 +71,10 @@ Optional Arguments
 .. _-E:
 
 **-E**\ *URL*
-    Instead of hosting the files locally, prepend a URL. The top-level
-    *prefix*\ .kml file will then use this URL to find the other files.
+    Instead of hosting the files locally, prepend a site URL. The top-level
+    *prefix*\ .kml file will then use this URL to find the other files it references.
     After building the files you must place the *prefix* directory at
-    the location pointed to by the *URL* [local setup only].
+    the location pointed to by the *URL* [local files only].
 
 .. _-F:
 
@@ -99,14 +100,14 @@ Optional Arguments
 .. _-L:
 
 **-L**\ *tilesize*
-    Sets the size of the image building blocks.  Must be an integer that
+    Sets the fixed size of the image building blocks.  Must be an integer that
     is radix 2.  Typical values are 256 or 512 [256].
 
 .. _-N:
 
 **-N**\ *prefix*
-    Sets a unique name prefixed used for the top-level KML filename and the
-    directory where all products will be written [GMT_Quadtree].
+    Sets a unique name prefixed used for the top-level KML filename *and* the
+    directory where all referenced KML files and PNG images will be written [GMT_Quadtree].
 
 .. _-S:
 
@@ -122,16 +123,25 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
+Notes
+-----
+
+The intensity grid can be created from the data grid using
+:doc:`grdgradient` and, optionally, modified by :doc:`grdmath` or
+:doc:`grdhisteq`.  Custom intensity grids built with several different
+illumination angles can be combined with :doc:`grdmath`.  For a single
+illumination angle the automatic illumination can be used instead.
 
 Examples
 --------
 
 To make a quadtree image representation of the large topography grid file ellice_basin.nc, using
-the default tile size, and supply shading based on the topography, try
+the default tile size, supply automatic shading based on the topography, and use the larger 512x512 tiles,
+try
 
    ::
 
-    gmt grd2kml ellice_basin.nc -I+ -Nellice
+    gmt grd2kml ellice_basin.nc -I+ -Nellice -L512
 
 See Also
 --------
