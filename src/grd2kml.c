@@ -618,8 +618,9 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			/* The quad is given by comparing the high and low values of row, col */
 			quad = 2 * (Q[k]->row - 2 * row) + (Q[k]->col - 2 * col);
 			kk = find_quad_above (Q, n, row, col, level-1);	/* kk is the parent of k */
-			if (kk < 0) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to link tile for row = %d, col = %d at level %d to a parent (!?) - skipped.\n", row, col, level);
+			if (kk < 0) {	/* THis can happen when the lower-level tile grazes one above it but there really are no data involved */
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Tile %s: Unable to link tile for row = %d, col = %d at level %d to a parent (!?).  Probably empty - skipped.\n", Q[k]->tag, row, col, level);
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Tile %s: Region was %g/%g/%g/%g.\n", Q[k]->tag, Q[k]->wesn[XLO], Q[k]->wesn[XHI], Q[k]->wesn[YLO], Q[k]->wesn[YHI]);
 				continue;
 			}
 			assert (quad < 4);	/* Sanity check */
