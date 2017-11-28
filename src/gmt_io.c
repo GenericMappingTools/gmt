@@ -475,18 +475,19 @@ GMT_LOCAL unsigned int gmtio_ogr_decode_aspatial_types (struct GMT_CTRL *GMT, ch
 
 GMT_LOCAL void gmtio_select_all_ogr_if_requested (struct GMT_CTRL *GMT) {
 	/* If -a with no args was provided we select all available aspatial information to be added to input record */
-	unsigned int k;
+	unsigned int k, kn;
 	if (GMT->current.io.OGR == NULL) return;		/* No can do */
 	if (GMT->current.io.OGR->n_aspatial == 0) return;	/* No can do */
 	if (GMT->common.a.active == false) return;		/* -a not given */
 	if (GMT->common.a.n_aspatial) return;			/* -a parsed and stuff was found */
 	GMT->common.a.n_aspatial = GMT->current.io.OGR->n_aspatial;
-	for (k = 0; k < GMT->common.a.n_aspatial; k++) {
-		GMT->common.a.col[k] = 2 + k;
+	for (k = kn = 0; k < GMT->common.a.n_aspatial; k++) {
+		GMT->common.a.col[k] = 2 + kn;
 		GMT->common.a.ogr[k] = k;
 		GMT->common.a.type[k] = GMT->current.io.OGR->type[k];
 		gmt_M_str_free (GMT->common.a.name[k]);	/* Just in case */
 		GMT->common.a.name[k] = strdup (GMT->current.io.OGR->name[k]);
+		if (GMT->common.a.type[k] != GMT_TEXT) kn++;	/* Since that is the order in the numerical part of the record */
 	}
 }
 

@@ -25,7 +25,7 @@ Synopsis
 [ |-L|\ *linefile*\ **+d**\ *dist*\ [*unit*]\ [**+p**] ]
 [ |-N|\ *maskvalues* ]
 [ |SYN_OPT-R| ]
-[ |-Z|\ *min*\ [/*max*]\ [**+c**\ *col*] ]
+[ |-Z|\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -184,16 +184,21 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *min*\ [/*max*]\ [**+c**\ *col*]
+**-Z**\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**]
     Pass all records whose 3rd column (*z*; *col* = 2) lies within the given range
     or is NaN (use **-s** to skip NaN records).
-    If *max* is omitted then we test if *z* equals *min* instead.  
+    If *max* is omitted then we test if *z* equals *min* instead.  This means
+    equality within 5 ULPs (unit of least precision; http://en.wikipedia.org/wiki/Unit_in_the_last_place).
     Input file must have at least three columns. To indicate no limit on
     min or max, specify a hyphen (-). If your 3rd column is absolute
     time then remember to supply **-f**\ 2T. To specify another column, append
     **+c**\ *col*, and to specify several tests just repeat the **Z** option as
     many times has you have columns to test. Note: when more than one **Z** option
-    is given then the **Iz** option cannot be used.
+    is given then the **Iz** option cannot be used.  In the case of multiple tests
+    you may use these modifiers as well: **a** passes any record that passes at least
+    one of your *z* tests [all tests must pass], and **i** reverses the tests to pass
+    record with *z* value NOT in the given range.  Finally, if **+c** is not used
+    then it is automatically incremented for each new **-Z** option, starting with 2.
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_
@@ -310,6 +315,14 @@ where the values are nonzero, try
    ::
 
     gmt select quakes.txt -Gtopo.nc > subset2
+
+The pass all records whose 3rd column values fall in the range 10-50
+and 5th column values are all negative, try
+
+   ::
+
+    gmt select dataset.txt -Z10/50 -Z-/0+c4 > subset3
+
 
 .. include:: explain_gshhs.rst_
 
