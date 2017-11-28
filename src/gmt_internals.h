@@ -94,7 +94,6 @@ EXTERN_MSC unsigned int gmtlib_time_array (struct GMT_CTRL *GMT, double min, dou
 EXTERN_MSC void gmtlib_get_lon_minmax (struct GMT_CTRL *GMT, double *lon, uint64_t n, double *min, double *max);
 EXTERN_MSC struct GMT_OGR * gmtlib_duplicate_ogr (struct GMT_CTRL *GMT, struct GMT_OGR *G);
 EXTERN_MSC void gmtlib_free_ogr (struct GMT_CTRL *GMT, struct GMT_OGR **G, unsigned int mode);
-EXTERN_MSC int gmtlib_ogr_get_geometry (char *item);
 EXTERN_MSC int gmtlib_ogr_get_type (char *item);
 EXTERN_MSC void gmtlib_plot_C_format (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_IO *S, unsigned int mode);

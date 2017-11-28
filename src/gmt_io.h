@@ -69,16 +69,6 @@ enum GMT_ogr_status {
 
 #define gmt_M_polygon_is_hole(S) (S->pol_mode == GMT_IS_HOLE || (S->ogr && S->ogr->pol_mode == GMT_IS_HOLE))
 
-/* Specific feature geometries as obtained from OGR */
-/* Note: As far as registering or reading data, GMT only needs to know if data type is POINT, LINE, or POLY */
-
-enum GMT_enum_ogr {
-	GMT_IS_LINESTRING = 2,
-	GMT_IS_POLYGON,
-	GMT_IS_MULTIPOINT,
-	GMT_IS_MULTILINESTRING,
-	GMT_IS_MULTIPOLYGON};
-
 /*! Codes for aspatial association with segment header options: */
 enum GMT_enum_segopt {
 	/*! -D */	GMT_IS_D = -1,

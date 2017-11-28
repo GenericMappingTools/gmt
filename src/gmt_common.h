@@ -116,13 +116,13 @@ struct GMT_COMMON {
 	} Y;
 	struct a {	/* -a<col>=<name>[:<type>][,col>=<name>[:<type>], etc][+g<geometry>] */
 		bool active;
-		unsigned int geometry;
+		enum GMT_enum_ogr geometry;
 		unsigned int n_aspatial;
 		bool clip;		/* true if we wish to clip lines/polygons at Dateline [false] */
 		bool output;		/* true when we wish to build OGR output */
 		int col[MAX_ASPATIAL];	/* Col id, include negative items such as GMT_IS_T (-5) */
 		int ogr[MAX_ASPATIAL];	/* Column order, or -1 if not set */
-		unsigned int type[MAX_ASPATIAL];
+		enum GMT_enum_type type[MAX_ASPATIAL];
 		char *name[MAX_ASPATIAL];
 		char string[GMT_LEN256];
 	} a;

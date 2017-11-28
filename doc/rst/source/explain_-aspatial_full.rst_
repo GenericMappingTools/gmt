@@ -12,7 +12,8 @@
     **T** for *text*, **W** for *pen*, and **Z** for *value* [e.g., used
     to look up color via a CPT].  If you skip the leading "*col*\ =" in
     the argument then we supply (and automatically increment) a column
-    value starting at 2.
+    value starting at 2.  Give just **-a** to select all aspatial items
+    to be added to the input record.
     *Writing OGR/GMT-formatted files*: To write OGR/GMT-formatted
     files, give one or more comma-separated associations
     *col*\ =\ *name*\ [:*type*], with an optional data type from DOUBLE,

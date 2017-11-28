@@ -79,6 +79,16 @@
 #define GMT_RENAME_FILE	0
 #define GMT_COPY_FILE	1
 
+/* Specific feature geometries as obtained from OGR */
+/* Note: As far as registering or reading data, GMT only needs to know if data type is POINT, LINE, or POLY */
+
+enum GMT_enum_ogr {
+	GMT_IS_LINESTRING = 2,
+	GMT_IS_POLYGON,
+	GMT_IS_MULTIPOINT,
+	GMT_IS_MULTILINESTRING,
+	GMT_IS_MULTIPOLYGON};
+
 /*! Various allocation-length parameters */
 enum GMT_enum_length {
 	GMT_DIM_SIZE	= 4U,          /* Length of dim array used in Read|Creat Data */

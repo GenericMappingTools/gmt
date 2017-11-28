@@ -744,16 +744,33 @@ GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
 }
 
 /*! . */
+GMT_LOCAL int gmtinit_ogr_get_geometry (char *item) {
+	if (!strcmp (item, "point")  || !strcmp (item, "POINT")) return (GMT_IS_POINT);
+	if (!strcmp (item, "mpoint") || !strcmp (item, "MPOINT")) return (GMT_IS_MULTIPOINT);
+	if (!strcmp (item, "line")   || !strcmp (item, "LINE")) return (GMT_IS_LINESTRING);
+	if (!strcmp (item, "mline")  || !strcmp (item, "MLINE")) return (GMT_IS_MULTILINESTRING);
+	if (!strcmp (item, "poly")   || !strcmp (item, "POLY")) return (GMT_IS_POLYGON);
+	if (!strcmp (item, "mpoly")  || !strcmp (item, "MPOLY")) return (GMT_IS_MULTIPOLYGON);
+	return (GMT_NOTSET);
+}
+
+
+/*! . */
 GMT_LOCAL int gmtinit_parse_a_option (struct GMT_CTRL *GMT, char *arg) {
 	/* -a<col>=<name>[:<type>][,<col>...][+g|G<geometry>] */
 	unsigned int pos = 0;
-	int col, a_col = GMT_Z;
+	int col, a_col = GMT_Z, t;
 	char p[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""}, A[GMT_LEN64] = {""}, *s = NULL, *c = NULL;
-	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -a requires an argument */
+	if (!arg) return (GMT_PARSE_ERROR);	/* -a requires a non-NULL argment */
+	//if (!arg[0]) return (GMT_PARSE_ERROR);	/* -a requires an argument */
 	strncpy (GMT->common.a.string, arg, GMT_LEN256-1);	/* Verbatim copy */
 
 	if ((s = strstr (arg, "+g")) || (s = strstr (arg, "+G"))) {	/* Also got +g|G<geometry> */
-		GMT->common.a.geometry = gmtlib_ogr_get_geometry (s+2);
+		if ((t = gmtinit_ogr_get_geometry (s+2)) < 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -a: No such geometry: %s.\n", s+2);
+			return (GMT_PARSE_ERROR);
+		}
+		GMT->common.a.geometry = t;
 		if (s[1] == 'G') GMT->common.a.clip = true;	/* Clip features at Dateline */
 		s[0] = '\0';	/* Temporarily truncate off the geometry */
 		GMT->common.a.output = true;	/* We are producing, not reading an OGR/GMT file */
@@ -772,7 +789,11 @@ GMT_LOCAL int gmtinit_parse_a_option (struct GMT_CTRL *GMT, char *arg) {
 	}
 	while ((gmt_strtok (arg, ",", &pos, p))) {	/* Another col=name argument */
 		if ((c = strchr (p, ':'))) {	/* Also got :<type> */
-			GMT->common.a.type[GMT->common.a.n_aspatial] = gmtlib_ogr_get_type (c+1);
+			if ((t = gmtlib_ogr_get_type (c+1)) < 0) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -a: No such type: %s.\n", c+1);
+				return (GMT_PARSE_ERROR);
+			}
+			GMT->common.a.type[GMT->common.a.n_aspatial] = t;
 			c[0] = '\0';	/* Truncate off the type */
 		}
 		else

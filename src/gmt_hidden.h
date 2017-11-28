@@ -50,7 +50,7 @@ struct GMT_OGR {	/* Struct with all things GMT/OGR for a table */
 	/* The first parameters are usually set once per data set and do not change */
 	unsigned int geometry;		/* @G: The geometry of this data set, if known [0 otherwise] */
 	unsigned int n_aspatial;	/* @T: The number of aspatial fields */
-	unsigned int rec_type;		/* 1, 2, 3 depeding on what the aspatial data is (numbers, text, or both) */
+	unsigned int rec_type;		/* Overall record type of aspatial data (GMT_IS_DATA, GMT_IS_TEXT, or GMT_IS_MIXED) */
 	char *region;			/* @R: The region textstring [NULL if not set] */
 	char *proj[4];			/* @J: The 1-4 projection strings [NULL if not set] */
 	enum GMT_enum_type *type;	/* @T: The data types of the aspatial fields [NULL if not set]  */

@@ -139,7 +139,6 @@
  * gmt_not_numeric
  * gmt_conv_intext2dbl
  * gmtlib_ogr_get_type
- * gmtlib_ogr_get_geometry
  * gmtlib_free_ogr
  * gmtlib_duplicate_ogr
  * gmt_get_aspatial_value
@@ -448,17 +447,22 @@ GMT_LOCAL void gmtio_copy_and_truncate (char *out, char *in) {
 /*! Parse @T aspatial types; this is done once per dataset and follows @N */
 GMT_LOCAL unsigned int gmtio_ogr_decode_aspatial_types (struct GMT_CTRL *GMT, char *record, struct GMT_OGR *S) {
 	unsigned int pos = 0, col = 0;
+	int t;
 	size_t n_alloc = 0;
 	char buffer[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ];
 
 	gmtio_copy_and_truncate (buffer, record);
 	while ((gmt_strtok (buffer, "|", &pos, p))) {
 		if (col >= S->n_aspatial) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad OGR/GMT: @T record has more items than declared by @N\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad OGR/GMT: @T record has more items than declared by @N - skipping\n");
 			continue;
 		}
 		if (col == n_alloc) S->type = gmt_M_memory (GMT, S->type, n_alloc += GMT_TINY_CHUNK, enum GMT_enum_type);
-		S->type[col] = gmtlib_ogr_get_type (p);
+		if ((t = gmtlib_ogr_get_type (p)) < 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad OGR/GMT: @T: No such type: %s - skipping\n", p);
+			continue;
+		}
+		S->type[col] = t;
 		if (S->type[col] == GMT_TEXT)
 			S->rec_type |= GMT_READ_TEXT;
 		else
@@ -467,6 +471,23 @@ GMT_LOCAL unsigned int gmtio_ogr_decode_aspatial_types (struct GMT_CTRL *GMT, ch
 	}
 	if (col < n_alloc) S->type = gmt_M_memory (GMT, S->type, col, enum GMT_enum_type);
 	return (col);
+}
+
+GMT_LOCAL void gmtio_select_all_ogr_if_requested (struct GMT_CTRL *GMT) {
+	/* If -a with no args was provided we select all available aspatial information to be added to input record */
+	unsigned int k;
+	if (GMT->current.io.OGR == NULL) return;		/* No can do */
+	if (GMT->current.io.OGR->n_aspatial == 0) return;	/* No can do */
+	if (GMT->common.a.active == false) return;		/* -a not given */
+	if (GMT->common.a.n_aspatial) return;			/* -a parsed and stuff was found */
+	GMT->common.a.n_aspatial = GMT->current.io.OGR->n_aspatial;
+	for (k = 0; k < GMT->common.a.n_aspatial; k++) {
+		GMT->common.a.col[k] = 2 + k;
+		GMT->common.a.ogr[k] = k;
+		GMT->common.a.type[k] = GMT->current.io.OGR->type[k];
+		gmt_M_str_free (GMT->common.a.name[k]);	/* Just in case */
+		GMT->common.a.name[k] = strdup (GMT->current.io.OGR->name[k]);
+	}
 }
 
 /*! Decode @N aspatial names; this is done once per dataset */
@@ -3137,8 +3158,11 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	}
 	else	/* No trailing text found, reset tpos */
 		*tpos = 0;
-	if (GMT->current.io.OGR && GMT->current.io.OGR->rec_type) ret_val |= GMT->current.io.OGR->rec_type;	/* For OGR files we also need to consider the nature of aspatial information */
-		
+	if (GMT->current.io.OGR) {	/* A few decision specific to OGR files */
+		if (GMT->current.io.OGR->rec_type) ret_val |= GMT->current.io.OGR->rec_type;	/* FConsider the nature of aspatial information */
+		gmtio_select_all_ogr_if_requested (GMT);
+	}
+
 	/* Tell user how we interpreted their first record */
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Source col types: (%s)\n", message);
 
@@ -7998,17 +8022,6 @@ int gmtlib_ogr_get_type (char *item) {
 	if (!strcmp (item, "string")   || !strcmp (item, "STRING")) return (GMT_TEXT);
 	if (!strcmp (item, "datetime") || !strcmp (item, "DATETIME")) return (GMT_DATETIME);
 	if (!strcmp (item, "logical")  || !strcmp (item, "LOGICAL")) return (GMT_UCHAR);
-	return (GMT_NOTSET);
-}
-
-/*! . */
-int gmtlib_ogr_get_geometry (char *item) {
-	if (!strcmp (item, "point")  || !strcmp (item, "POINT")) return (GMT_IS_POINT);
-	if (!strcmp (item, "mpoint") || !strcmp (item, "MPOINT")) return (GMT_IS_MULTIPOINT);
-	if (!strcmp (item, "line")   || !strcmp (item, "LINE")) return (GMT_IS_LINESTRING);
-	if (!strcmp (item, "mline")  || !strcmp (item, "MLINE")) return (GMT_IS_MULTILINESTRING);
-	if (!strcmp (item, "poly")   || !strcmp (item, "POLY")) return (GMT_IS_POLYGON);
-	if (!strcmp (item, "mpoly")  || !strcmp (item, "MPOLY")) return (GMT_IS_MULTIPOLYGON);
 	return (GMT_NOTSET);
 }
 
