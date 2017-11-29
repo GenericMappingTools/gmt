@@ -724,16 +724,6 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	if ((Topo = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
-	if (Ctrl->C.active) {
-		if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, Topo->header->z_min, Topo->header->z_max, true)) == NULL) {
-			Return (API->error);
-		}
-		if (P->is_bw) Ctrl->Q.monochrome = true;
-		if (P->categorical && Ctrl->W.active) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
-		}
-	}
-	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && P->n_colors > 1);
 
 	if (use_intensity_grid && !Ctrl->I.derive) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read intensity grid header from file %s\n", Ctrl->I.file);
@@ -804,6 +794,17 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	t_reg = gmt_change_grdreg (GMT, Topo->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
+
+	if (Ctrl->C.active) {
+		if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, Topo->header->z_min, Topo->header->z_max, true)) == NULL) {
+			Return (API->error);
+		}
+		if (P->is_bw) Ctrl->Q.monochrome = true;
+		if (P->categorical && Ctrl->W.active) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
+		}
+	}
+	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && P->n_colors > 1);
 
 	if (Ctrl->G.active) {	/* Draping wanted */
 		if (Ctrl->G.n == 1 && gmt_M_file_is_image (Ctrl->G.file[0])) {
