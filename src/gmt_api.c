@@ -6875,12 +6875,14 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 			}
 			else if (c_err == 0) {	/* Regular cpt (master or local), append .cpt and set path */
 				size_t len = strlen (file), elen;
-				char *ext = (len > 4 && strstr (file, ".cpt")) ? "" : ".cpt";
+				char *ext = (len > 4 && strstr (file, ".cpt")) ? "" : ".cpt", *q = NULL;
 				elen = strlen (ext);
+				if ((q = gmtlib_file_unitscale (file))) q[0] = '\0';	/* Truncate modifier */
 				if (elen)	/* Master: Append extension and supply path */
 					gmt_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
 				else if (!gmtlib_getuserpath (API->GMT, file, CPT_file)) /* Use name.cpt as is but look for it */
 					return_null (API, GMT_FILE_NOT_FOUND);	/* Failed to find the file anywyere */
+				if (q) {q[0] = '+'; strcat (CPT_file, q); }	/* Add back the z-scale modifier */
 			}
 			else	/* Got color list, now a temp CPT instead */
 				strncpy (CPT_file, file, GMT_LEN256-1);

@@ -7097,8 +7097,8 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[L|C|R][B|M|T]<x0>/<y0>/<n_columns>/<n_rows> or -R[g|d]w/e/s/n[/z0/z1][r] */
 	length = strlen (item) - 1;
 	n_slash = gmtlib_count_slashes (GMT, item);
-	got_r = (!strstr (item, "+r"));
-	got_country = (got_r || !strstr (item, "+R"));
+	got_r = (strstr (item, "+r") != NULL);
+	got_country = (got_r || (strstr (item, "+R") != NULL));	/* May have given DCW (true of +R, maybe if +r since the latter also means oblique) */
 
 	strncpy (GMT->common.R.string, item, GMT_LEN256-1);	/* Verbatim copy */
 
@@ -7214,16 +7214,6 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		strncpy (string, &item[1], GMT_BUFSIZ-1);
 		GMT->current.io.geo.range = (item[0] == 'g') ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 	}
-	else if ((c = gmt_first_modifier (GMT, item, "u"))) {	/* Got +u<unit> */
-		c[0] = '\0';	/* Chop off all modifiers so range can be determined */
-		strncpy (string, item, GMT_BUFSIZ-1);
-		r_unit = c[2];	/* The data unit */
-		c[0] = '+';	/* Restore */
-		if (gmt_M_is_linear (GMT))	/* Just scale up the values */
-			scale_coord = true;
-		else
-			inv_project = true;
-	}
 	else if ((isupper ((int)item[0]) && isupper ((int)item[1])) || item[0] == '=' || strchr (item, ',')) {
 		/* Region specified via country codes with optional round off/extension, e.g., -RNO+r1 or -R=EU */
 		struct GMT_DCW_SELECT info;
@@ -7243,6 +7233,16 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
 		gmt_set_geographic (GMT, GMT_IN);
 		return (GMT_NOERROR);
+	}
+	else if ((c = gmt_first_modifier (GMT, item, "u"))) {	/* Got +u<unit> */
+		c[0] = '\0';	/* Chop off all modifiers so range can be determined */
+		strncpy (string, item, GMT_BUFSIZ-1);
+		r_unit = c[2];	/* The data unit */
+		c[0] = '+';	/* Restore */
+		if (gmt_M_is_linear (GMT))	/* Just scale up the values */
+			scale_coord = true;
+		else
+			inv_project = true;
 	}
 	else if (strchr (GMT_LEN_UNITS2, item[0])) {	/* Obsolete: Specified min/max in projected distance units */
 		strncpy (string, &item[1], GMT_BUFSIZ-1);
