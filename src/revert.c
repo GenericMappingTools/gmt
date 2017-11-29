@@ -115,6 +115,10 @@ int GMT_revert (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
+	/* Still deciding on whether or not revert.c is needed in GMT 6 modern mode */
+	GMT_Report (API, GMT_MSG_NORMAL, "Experimental and not yet available\n");
+	return (GMT_NOERROR);
+
 	if (options) {
 		if (options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));		/* Return the usage message */
 		if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */

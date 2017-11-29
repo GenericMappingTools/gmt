@@ -15,9 +15,8 @@ for your plots.
 A GMT modern session is initiated by **gmt begin** and is terminated by
 **gmt end**.  Within a modern session you may also use the **gmt figure** command
 to control names and formats for multi-figure scripts, the **gmt subplot** command
-for building multi-panel figures, **gmt clear** to wipe cache directory and
-control files, and **gmt revert** to remove
-layers from the current plot.
+for building multi-panel figures, and **gmt clear** to wipe cache directory and
+control files.
 
 *****
 begin
@@ -307,26 +306,6 @@ Optional Arguments
 ------------------
 
 .. _subplot_end-V:
-
-.. include:: explain_-V.rst_
-
-******
-revert
-******
-
-**gmt revert** [ *n*\ \|\ **all** ] [ |SYN_OPT-V| ]
-
-This command strips off the last *n* layers from the current figure.
-Giving *all* wipes the figure completely; however, it still remains
-the current figure.
-
-Optional Arguments
-------------------
-
-*n*
-    Specifies the number of plot layers to revert [1].
-
-.. _revert_-V:
 
 .. include:: explain_-V.rst_
 
