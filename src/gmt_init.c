@@ -11508,6 +11508,9 @@ GMT_LOCAL bool is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *op
 	size_t len;
 	if (!strncmp (module, "pscoast", 7U)) return true;	/* pscoast only does geographic */
 	if ((opt = GMT_Find_Option (GMT->parent, 'R', options)) == NULL) return false;	/* Should not happen but lets just say Cartesian for now */
+	n_slashes = gmtlib_count_slashes (GMT, opt->arg);	/* Distinguies -Rw/e/s/n from other things */
+	/* Check if -R[=]<code>[,<code>,...][+r|R] which means use country name etc to set region; clearly geographical */
+	if (n_slashes == 0 && ((isupper ((int)opt->arg[0]) && isupper ((int)opt->arg[1])) || opt->arg[0] == '=' || strchr (opt->arg, ',') || strstr (opt->arg, "+r") || strstr (opt->arg, "+R"))) return true;
 	if (!gmt_access (GMT, opt->arg, F_OK)) {	/* Gave a grid file */
 		struct GMT_GRID *G = NULL;
 		if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL)	/* Read header */
@@ -11516,7 +11519,6 @@ GMT_LOCAL bool is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *op
 			return (false);
 		return (gmt_M_is_geographic (GMT, GMT_IN));
 	}
-	n_slashes = gmtlib_count_slashes (GMT, opt->arg);	/* Distinguies -Rw/e/s/n from other things */
 	len = strlen (opt->arg);
 	if (n_slashes == 0) {	/* Giving continent or country code(s) or -Rg|d */
 		if (len == 1 && strchr ("dg", opt->arg[0])) return true;	/* Gave -Rg or -Rd */
@@ -11873,7 +11875,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				}
 			}
-			if (GMT->hidden.func_level == 0) {	/* Top-level function called by subplot needs to handle positining and possibly set -J */
+			if (GMT->hidden.func_level == 0) {	/* Top-level function called by subplot needs to handle positioning and possibly set -J */
 				/* Set -X -Y for absolute positioning */
 				sprintf (arg, "a%gi", P->origin[GMT_X] + P->x);
 				if ((opt = GMT_Make_Option (API, 'X', arg)) == NULL) return NULL;	/* Failure to make option */
@@ -11929,7 +11931,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				}
 			}
 			if (got_J == false) {	/* No history, apply default projection, but watch out for subplots */
-				static char *arg[2] = {"X15c", "Q15c"};
+				static char *arg[2] = {"X15c", "Q15c+"};
 				unsigned int geo = is_region_geographic (GMT, *options, mod_name);
 				if (P && (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1))	/* Nonstandard Cartesian axes directions */
 					sprintf (scl, "X%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);

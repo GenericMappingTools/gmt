@@ -307,6 +307,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC char * gmt_get_current_cpt (struct GMT_CTRL *GMT);
 EXTERN_MSC struct GMT_RECORD *gmt_new_record (struct GMT_CTRL *GMT, double *d, char *t);
 EXTERN_MSC void gmt_just_to_code (struct GMT_CTRL *GMT, int justify, char *key);
 EXTERN_MSC int gmt_just_validate (struct GMT_CTRL *GMT, char *key, char *def);
@@ -373,7 +374,7 @@ EXTERN_MSC char *gmt_make_filename (struct GMT_CTRL *GMT, char *template, unsign
 EXTERN_MSC void gmt_str_setcase (struct GMT_CTRL *GMT, char *value, int mode);
 EXTERN_MSC char *gmt_putusername (struct GMT_CTRL *GMT);
 EXTERN_MSC unsigned int *gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, double radius, unsigned int mode, unsigned int *d_row, unsigned int *actual_max_d_col);
-EXTERN_MSC struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax);
+EXTERN_MSC struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, bool force);
 EXTERN_MSC unsigned int gmt_gcd_euclid (unsigned int a, unsigned int b);
 EXTERN_MSC unsigned int gmt_optimal_dim_for_surface (struct GMT_CTRL *GMT, unsigned int factors[], unsigned int n_columns, unsigned int n_rows, struct GMT_SURFACE_SUGGESTION **S);
 EXTERN_MSC int gmt_best_dim_choice (struct GMT_CTRL *GMT, unsigned int mode, unsigned int in_dim[], unsigned int out_dim[]);

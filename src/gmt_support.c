@@ -7455,8 +7455,31 @@ bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	return true;	/* Acting as if it is a master table */
 }
 
+GMT_LOCAL void support_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+	char file[GMT_LEN256] = {""};
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) return;
+	/* Save cpt for use by session */
+	sprintf (file, "%s/gmt.cpt", GMT->parent->gwf_dir);	/* Save this specially stretched CPT for other uses in the modern session, such as colorbor */
+	if (GMT_Write_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, file, P) != GMT_NOERROR)
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to save current CPT file to %s !\n", file);
+	else
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Save current CPT file to %s !\n", file);
+}
+
+char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
+	/* If modern and a current CPT exists, allocate a string with its name and return, else NULL */
+	char path[GMT_LEN256] = {""}, *file = NULL;
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) return NULL;	/* Not available in classic mode */
+	sprintf (path, "%s/gmt.cpt", GMT->parent->gwf_dir);	/* Save this specially stretched CPT for other uses in the modern session, such as colorbor */
+	if (!access (path, R_OK)) {
+		file = strdup (path);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Recycle existing CPT file %s\n", file);
+	}
+	return (file);
+}
+
 /*! . */
-struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax) {
+struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, bool force) {
 	/* Will read in a CPT.  However, if file does not exist in the current directory we may provide
 	   a CPT for quick/dirty work provided mode == GMT_CPT_OPTIONAL and hence zmin/zmax are set to the desired data range */
 
@@ -7469,10 +7492,11 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 		return (P);
 	}
 
-	/* Here, the cpt is optional (mode == GMT_CPT_OPTIONAL).  There are three possibilities:
+	/* Here, the cpt is optional (mode == GMT_CPT_OPTIONAL).  There are four possibilities:
 	   1. A cpt in current directory is given - simply read it and return.
-	   2. file is NULL and hence we default to master CPT name "rainbow".
-	   3. A specific master CPT name is given. If this does not exist then things will fail in GMT_makecpt.
+	   2. file is NULL and runmode is classic and hence we default to master CPT name "rainbow".
+	   3. file is NULL and runmode is modern and a current cpt exists - use it.
+	   4. A specific master CPT name is given. If this does not exist then things will fail in GMT_makecpt.
 
 	   For 2 & 3 we take the master table and linearly stretch the z values to fit the range, or honor default range for dynamic CPTs.
 	*/
@@ -7481,9 +7505,15 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 	if (first == 0)	/* Check if given a master or a real file */
 		is_cpt_master = gmt_is_cpt_master (GMT, file);
 	if (is_cpt_master) {	/* Take master cpt and stretch to fit data range using continuous colors */
-		char *master = NULL;
+		char *master = NULL, *current_cpt = NULL;
 		double noise;
 
+		if (file == NULL && (current_cpt = gmt_get_current_cpt (GMT))) {	/* There is a current CPT in modern mode */
+			P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, current_cpt, NULL);
+			gmt_M_str_free (current_cpt);
+			return (P);
+		}
+		
 		if (gmt_M_is_dnan (zmin) || gmt_M_is_dnan (zmax)) {	/* Safety valve 1 */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Passing zmax or zmin == NaN prevents automatic CPT generation!\n");
 			return (NULL);
@@ -7495,7 +7525,7 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 		master = (file && file[0]) ? file : "rainbow";	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|GMT_CPT_CONTINUOUS, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
-		if (P->has_range)	/* Only stretch CPTs that have no default range*/
+		if (P->has_range && !force)	/* Only stretch CPTs that have no default range unless force is true */
 			zmin = zmax = 0.0;
 		else {	/* Stretch to fit the data range */
 			/* Prevent slight round-off from causing the min/max float data values to fall outside the cpt range */
@@ -7503,8 +7533,9 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 			zmin -= noise;	zmax += noise;
 		}
 		gmt_stretch_cpt (GMT, P, zmin, zmax);
+		support_save_current_cpt (GMT, P);	/* Save for use by session, if modern */
 	}
-	else {	/* Gave a file */
+	else {	/* Gave a CPT file */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, &file[first], NULL);
 	}
 	return (P);

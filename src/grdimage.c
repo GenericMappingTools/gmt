@@ -349,7 +349,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 					c[0] = '\0';	/* Chop off all modifiers so range can be determined */
 				}
 				else if (!opt->arg[0] || strstr (opt->arg, "+"))	/* No argument or just +, so derive intensities from input grid using default settings */
-					Ctrl->I.derive = true;
+					Ctrl->I.derive = true;	/* Need to have -I+ since otherwise, -I in mex would try to attach a grid */
 				else if (!gmt_access (GMT, opt->arg, R_OK))	/* Got a file */
 					Ctrl->I.file = strdup (opt->arg);
 				else if (gmt_M_file_is_cache (opt->arg))	/* Got a remote file */
@@ -608,7 +608,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
-		if (!Ctrl->C.active) Ctrl->C.active = true;	/* Use default CPT stuff */
+		if (!Ctrl->C.active)
+			Ctrl->C.active = true;	/* Use default CPT (rainbow) and autostretch or under modern reuse current CPT */
 	}
 
 	if (n_grids) header_work = Grid_orig[0]->header;	/* OK, we are in GRID mode and this was not set previuosly. Do it now */
@@ -712,7 +713,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	
+
 	/* If given, get intensity grid or compute intensities (for a constant intensity) */
 
 	if (use_intensity_grid) {	/* Illumination wanted */
@@ -853,7 +854,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->In.do_rgb) {	/* Got a single grid so need to convert z to color via a CPT */
 		if (Ctrl->C.active) {		/* Read a palette file */
-			if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max)) == NULL) {
+			if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max, true)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to read CPT %s.\n", Ctrl->C.file);
 				Return (API->error);	/* Well, that did not go well... */
 			}

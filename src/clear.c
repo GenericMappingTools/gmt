@@ -21,14 +21,14 @@
  * Version:	6 API
  *
  * Brief synopsis: gmt clear cleans up by removing files or dirs.
- *	gmt clear [all | cache | history | conf ]
+ *	gmt clear [all | cache | conf | cpt | history ]
  */
 
 #include "gmt_dev.h"
 
 #define THIS_MODULE_NAME	"clear"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Delete gmt.history, gmt.conf, the user cache dir, or all of them"
+#define THIS_MODULE_PURPOSE	"Delete history, conf, cpt, the cache dir, or all of them"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"V"
@@ -43,6 +43,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\tDeletes the specified item.  Choose on of these targets:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   cache    Deletes the user\'s cache directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   conf     Deletes the user\'s gmt.conf file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   cpt      Deletes the current CPT file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   history  Deletes the user\'s gmt.history file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   all      All of the above.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -66,7 +67,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Required target not specified\n");
 		return GMT_PARSE_ERROR;
 	}
-	if (strcmp (opt->arg, "all") && strcmp (opt->arg, "cache") && strcmp (opt->arg, "conf") && strcmp (opt->arg, "history")) {
+	if (strcmp (opt->arg, "all") && strcmp (opt->arg, "cache") && strcmp (opt->arg, "conf") && strcmp (opt->arg, "cpt") && strcmp (opt->arg, "history")) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized target %s\n", opt->arg);
 		n_errors++;
 	}
@@ -125,6 +126,12 @@ int GMT_clear (void *V_API, int mode, void *args) {
 	else if (!strcmp (opt->arg, "cache")) {	/* Clear the cache */
 		if (clear_cache (API))
 			error = GMT_RUNTIME_ERROR;
+	}
+	else if (!strcmp (opt->arg, "cpt")) {	/* Clear the current CPT */
+		char *cpt = gmt_get_current_cpt (API->GMT);
+		if (cpt && gmt_remove_file (API->GMT, cpt))
+			error = GMT_RUNTIME_ERROR;
+		if (cpt) gmt_M_str_free (cpt);
 	}
 	else if (!strcmp (opt->arg, "history")) {	/* Clear the history */
 		if (gmt_remove_file (API->GMT, "gmt.history"))

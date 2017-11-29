@@ -15,7 +15,8 @@ for your plots.
 A GMT modern session is initiated by **gmt begin** and is terminated by
 **gmt end**.  Within a modern session you may also use the **gmt figure** command
 to control names and formats for multi-figure scripts, the **gmt subplot** command
-for building multi-panel figures, and **gmt revert** to remove
+for building multi-panel figures, **gmt clear** to wipe cache directory and
+control files, and **gmt revert** to remove
 layers from the current plot.
 
 *****
@@ -65,6 +66,16 @@ Optional Arguments
     +--------+-----------------------------------------+
     |   tif  | Tagged Image Format File                |
     +--------+-----------------------------------------+
+
+
+*****
+clear
+*****
+
+**gmt clear** [*all* \|\ *cache* \|\ *conf* \|\ *cpt* \|\ *history*  ]
+
+The clear command allows users to delete their current history, conf,
+or cpt file, remove the entire user cache directory, or all of the above.
 
 
 ******
