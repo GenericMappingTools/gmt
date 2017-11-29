@@ -67,8 +67,9 @@ struct GRDVIEW_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct GRDVIEW_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
+	struct GRDVIEW_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...][+i<dz>] */
 		bool active;
+		double dz;
 		char *file;
 	} C;
 	struct GRDVIEW_G {	/* -G<drapefile> 1 or 3 times*/
@@ -347,9 +348,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "J-Z");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file. Optionally, instead give name of a master cpt\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign 16 continuous colors over the data range [rainbow].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Yet another option is to specify -Ccolor1,color2[,color3,...] to build a\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert grid values to colors. Optionally, name a master cpt\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [rainbow]; if so,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -Ccolor1,color2[,color3,...] to build a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify how to color the 3-D surface defined by <topogrid>:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   1. Provide a grid (<drapegrid>) and colors will be determined from it and the cpt.\n");
@@ -426,8 +428,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 
 			case 'C':	/* Cpt file */
 				Ctrl->C.active = true;
+				if ((c = strstr (opt->arg, "+i"))) {	/* Gave auto-interval */
+					Ctrl->C.dz = atof (&c[2]);
+					c[0] = '\0';	/* Temporarily chop off the modifier */
+				}
 				gmt_M_str_free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
+				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'G':	/* One grid or image or three separate r,g,b grids */
 				Ctrl->G.active = true;
@@ -796,7 +803,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	t_reg = gmt_change_grdreg (GMT, Topo->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
 
 	if (Ctrl->C.active) {
-		if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, Topo->header->z_min, Topo->header->z_max, true)) == NULL) {
+		if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, Topo->header->z_min, Topo->header->z_max, Ctrl->C.dz)) == NULL) {
 			Return (API->error);
 		}
 		if (P->is_bw) Ctrl->Q.monochrome = true;

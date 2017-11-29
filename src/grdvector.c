@@ -42,8 +42,9 @@ struct GRDVECTOR_CTRL {
 	struct A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct C {	/* -C<cpt>[+i<dz>] */
 		bool active;
+		double dz;
 		char *file;
 	} C;
 	struct G {	/* -G<fill> */
@@ -116,9 +117,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Grids have polar (r, theta) components [Default is Cartesian (x, y) components].\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign colors based on vector length. Optionally, instead give name\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of a master cpt to automatically assign 16 continuous colors over the data range [rainbow].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Yet another option is to specify -Ccolor1,color2[,color3,...] to build a linear\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert vector length to colors. Optionally, name a master cpt\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [rainbow]; if so,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -Ccolor1,color2[,color3,...] to build a linear\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   continuous cpt from those colors automatically.\n");
 	gmt_fill_syntax (API->GMT, 'G', "Select vector fill [Default is outlines only].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Plot only those nodes that are <dx>/<dy> apart [Default is all nodes].\n");
@@ -158,7 +160,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 	unsigned int n_errors = 0, n_files = 0;
 	int j;
 	size_t len;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -183,8 +185,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 				break;
 			case 'C':	/* Vary symbol color with z */
 				Ctrl->C.active = true;
+				if ((c = strstr (opt->arg, "+i"))) {	/* Gave auto-interval */
+					Ctrl->C.dz = atof (&c[2]);
+					c[0] = '\0';	/* Temporarily chop off the modifier */
+				}
 				gmt_M_str_free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
+				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'E':	/* Center vectors [OBSOLETE; use modifier +jc in -Q ] */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -413,7 +420,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 				if (vec_length > v_max) v_max = vec_length;
 			}
 		}
-		if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, v_min, v_max, true)) == NULL) {
+		if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, v_min, v_max, Ctrl->C.dz)) == NULL) {
 			Return (API->error);
 		}
 	}

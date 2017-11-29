@@ -68,18 +68,16 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*cpt*]
-    name of the CPT. Must be present if you want
+**-C**\ [*cpt* \|\ *master*\ [**+i**\ *zinc*] \|\ *color1,color2*\ [,*color3*,...]]
+    The name of the CPT. Must be present if you want
     (1) mesh plot with contours (**-Qm**), or
     (2) shaded/colored perspective image (**-Qs** or
     **-Qi**). For **-Qs**: You can specify that you want to skip a
     z-slice by setting the red r/g/b component to -; to use a pattern give red =
     **P\|p**\ *pattern*\ [**+b**\ *color*\ ][**+f**\ *color*\ ][**+r**\ *dpi*\ ].
-    Alternatively,
-    supply the name of a GMT color master dynamic CPT [rainbow] to
+    Alternatively, supply the name of a GMT color master dynamic CPT [rainbow] to
     automatically determine a continuous CPT from
-    the grid's z-range.  If the dynamic CPT has a default range then
-    that range will be imposed instead.
+    the grid's z-range; you may round up/down the z-range by adding **+i**\ *zinc*..
 
 .. _-G:
 

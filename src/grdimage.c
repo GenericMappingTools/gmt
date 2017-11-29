@@ -52,8 +52,9 @@ struct GRDIMAGE_CTRL {
 		bool active;
 		char *file;
 	} Out;
-	struct GRDIMG_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
+	struct GRDIMG_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...][+i<dz>] */
 		bool active;
+		double dz;
 		char *file;
 	} C;
 	struct GRDIMG_D {	/* -D to read image instead of grid */
@@ -168,8 +169,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #endif
 	}
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert z to rgb. Optionally, instead give name of a master cpt\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign 16 continuous colors over the data range [rainbow].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert grid values to colors. Optionally, name a master cpt\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [rainbow]; if so,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a\n");
     GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
 	if (API->external)	/* External interface */
@@ -284,8 +286,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 
 			case 'C':	/* CPT */
 				Ctrl->C.active = true;
+				if ((c = strstr (opt->arg, "+i"))) {	/* Gave auto-interval */
+					Ctrl->C.dz = atof (&c[2]);
+					c[0] = '\0';	/* Temporarily chop off the modifier */
+				}
 				gmt_M_str_free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
+				if (c) c[0] = '+';	/* Restore */
 				break;
 
 			case 'D':	/* Get an image via GDAL */
@@ -854,7 +861,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->In.do_rgb) {	/* Got a single grid so need to convert z to color via a CPT */
 		if (Ctrl->C.active) {		/* Read a palette file */
-			if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max, true)) == NULL) {
+			if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max, Ctrl->C.dz)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to read CPT %s.\n", Ctrl->C.file);
 				Return (API->error);	/* Well, that did not go well... */
 			}

@@ -7479,7 +7479,7 @@ char * gmt_get_current_cpt (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, bool force) {
+struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax, double dz) {
 	/* Will read in a CPT.  However, if file does not exist in the current directory we may provide
 	   a CPT for quick/dirty work provided mode == GMT_CPT_OPTIONAL and hence zmin/zmax are set to the desired data range */
 
@@ -7525,12 +7525,15 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 		master = (file && file[0]) ? file : "rainbow";	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|GMT_CPT_CONTINUOUS, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
-		if (P->has_range && !force)	/* Only stretch CPTs that have no default range unless force is true */
-			zmin = zmax = 0.0;
-		else {	/* Stretch to fit the data range */
-			/* Prevent slight round-off from causing the min/max float data values to fall outside the cpt range */
+		/* Stretch to fit the data range */
+		/* Prevent slight round-off from causing the min/max float data values to fall outside the cpt range */
+		if (gmt_M_is_zero (dz)) {
 			noise = (zmax - zmin) * GMT_CONV8_LIMIT;
 			zmin -= noise;	zmax += noise;
+		}
+		else {	/* Round to multiple of dz */
+			zmin = (floor (zmin / dz) * dz);
+			zmax = (ceil (zmax / dz) * dz);
 		}
 		gmt_stretch_cpt (GMT, P, zmin, zmax);
 		support_save_current_cpt (GMT, P);	/* Save for use by session, if modern */
