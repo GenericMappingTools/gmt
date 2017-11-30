@@ -232,11 +232,11 @@ latex_elements = {
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-('begin', 'begin', 'Initiate a new GMT session using modern mode, '', 1),
+('begin', 'begin', 'Initiate a new GMT session using modern mode', '', 1),
 ('blockmean', 'blockmean', 'Block average (x, y, z) data tables by L2 norm', '', 1),
 ('blockmedian', 'blockmedian', 'Block average (x, y, z) data tables by L1 norm', '', 1),
 ('blockmode', 'blockmode', 'Block average (x, y, z) data tables by mode estimation', '', 1),
-('clear', 'clear', 'Delete current history, conf, cpt, or the cache directory ', '', 1),
+('clear', 'clear', 'Delete current history, conf, cpt, or the cache directory', '', 1),
 ('end', 'end', 'Terminate GMT modern mode session and produce optional graphics', '', 1),
 ('figure', 'figure', 'Set attributes for the current figure', '', 1),
 ('filter1d', 'filter1d', 'Do time domain filtering of 1-D data tables', '', 1),

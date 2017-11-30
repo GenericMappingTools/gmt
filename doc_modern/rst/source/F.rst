@@ -5,7 +5,7 @@ EF
 .. toctree::
    :maxdepth: 1
 
-   ed
+   end
    figure
    filter1d
    fitcircle
