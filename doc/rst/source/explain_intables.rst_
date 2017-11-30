@@ -1,0 +1,4 @@
+*table*
+    One or more ASCII (or binary, see **-bi**\ [*ncols*][*type*]) data
+    table file(s) holding a number of data columns. If no tables are given
+    then we read from standard input. |Add_intables|

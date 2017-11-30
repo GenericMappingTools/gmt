@@ -1,0 +1,13 @@
+`Notes on Transparency <#toc12>`_
+---------------------------------
+
+The *PostScript* language originally had no accommodation for transparency.  However, Adobe
+added an extension that allows developers to encode some forms of transparency
+using the *PostScript* language model but it is only realized when converting the
+*PostScript* to PDF (and via PDF to any raster image format).
+GMT uses this model but there are some limitations: Transparency can only be controlled
+on a per-object or per-layer basis.  This means that a color specifications (such as
+those in CPTs of given via command-line options) only apply to vector graphic items
+(i.e., text, lines, polygon fills) or to an entire layer (which could include items
+such as *PostScript* images).  This limitation rules out any
+mechanism of controlling transparency in such images on a pixel level.

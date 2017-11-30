@@ -1,0 +1,21 @@
+.. _example_35:
+
+(35) Spherical triangulation and distance calculations
+------------------------------------------------------
+
+The script produces the plot in Figure. Here
+we demonstrate how :doc:`sphtriangulate </sphtriangulate>` and
+:doc:`sphdistance </sphdistance>` are used to compute the Delauney and
+Voronoi information on a sphere, using a decimated GSHHG crude coastline.
+We show a color image of the distances, highlighted with 500-km contours,
+and overlay the Voronoi polygons in green. Finally, the continents are
+placed on top.
+
+.. literalinclude:: /_verbatim/example_35.txt
+   :language: bash
+
+.. figure:: /_images/example_35.*
+   :width: 500 px
+   :align: center
+
+   Spherical triangulation and distance calculations

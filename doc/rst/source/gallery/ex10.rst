@@ -1,0 +1,26 @@
+.. _example_10:
+
+(10) A geographical bar graph plot
+----------------------------------
+
+Our next and perhaps most business-like example presents a
+three-dimensional bar graph plot showing the geographic distribution of
+all the languages of the world. The input data
+was taken from `Ethnologue <http://www.ethnologue.com/>`_. We decide to plot a 3-D multi-band column
+centered on each continent with a height that is proportional to the
+languages used. We choose a plain
+linear projection for the basemap and add the multi-band columns and text on top.
+The different bands in the columns indicate how commonly the languages are used, from institutional languages to
+languages threatened by extinction.  We use :doc:`gmtmath </gmtmath>` to sum up the total languages per continent.
+The script also shows how to effectively use transparency of the boxes around the numbers
+and in the shade surrounding the legend.
+Our script that produces Figure ex_10 reads:
+
+.. literalinclude:: /_verbatim/example_10.txt
+   :language: bash
+
+.. figure:: /_images/example_10.*
+   :width: 500 px
+   :align: center
+
+   Geographical bar graph.

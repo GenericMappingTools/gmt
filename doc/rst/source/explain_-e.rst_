@@ -1,0 +1,2 @@
+**-e**\ [**~**]\ *"pattern"* **\|** **-e**\ [**~**]/\ *regexp*/[**i**] :ref:`(more ...) <-e_full>` 
+    Only accept data records that match the given pattern. |Add_-e|

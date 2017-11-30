@@ -1,0 +1,23 @@
+.. _example_06:
+
+(6) Plotting of histograms
+--------------------------
+
+GMT provides two tools to render histograms:
+:doc:`pshistogram </pshistogram>` and :doc:`psrose </psrose>`. The former takes care of
+regular histograms whereas the latter deals with polar histograms (rose
+diagrams, sector diagrams, and wind rose diagrams). We will show an
+example that involves both programs. The file ``fractures.yx`` contains a compilation of
+fracture lengths and directions as digitized from geological maps. The
+file ``v3206.t`` contains all the bathymetry measurements from *Vema* cruise 3206.
+Our complete figure was made running
+this script:
+
+.. literalinclude:: /_verbatim/example_06.txt
+   :language: bash
+
+.. figure:: /_images/example_06.*
+   :width: 500 px
+   :align: center
+
+   Two kinds of histograms.

@@ -1,0 +1,149 @@
+#Eubalaena glacialis (Northern Right whale)
+#E. glacialis is externally identical to E. australis, but you can wish to show both species in a map and in this case you'll need a symbol different for each one, so this inverted version is provided. Both are interchangeable.
+#low
+#Pablo Valdés - May 2008
+#comment the lines 78-83 and 97 AND uncomment the lines 85-90 and 99 if you want w/b symbols 
+0      0      M -G80
+0      4      D
+-1      4      D
+-4      4.6    D
+-6      5.2    D
+-7      5.6    D
+-9      6.8    D
+-10     7.6    D
+-11     8      D
+-13     9.2    D
+-14     9.8    D
+-14.4   10     D
+-16     9.4    D
+-16     12.8   D
+-13.6   11.8   D
+-7    11.5     D
+-6      11.8   D
+-2      12     D
+2     12     D
+5.6   11.6   D
+6     11.2   D
+7     11.6   D
+9.2   11.8   D
+10.5  11.4   D
+11    11.8   D
+12    11.4   D
+12.8  11     D
+12.8  10.4   D
+12.6  10.2   D
+#mouth
+12   10.6	D
+10.6  11	D
+8.4    10.2	D
+8      9.6	D
+7.6    7.6	D
+7      6.4	D
+6.5    6	D
+5.3	6.2	D
+6.5    6	D
+7      6.4	D
+7.6    7.6	D
+8      9.6	D
+8.4    10.2	D
+10.6  11	D
+12    10.6	D
+#
+13    10     D
+12    8.2    D
+11    7      D
+9.6   6      D
+8     5      D
+6     4.2    D
+#flipper
+4.4	4	D
+3	3	D
+2	2.4	D
+1     2      D
+0.6    2.2   D
+1.1   3      D
+1     4      D
+1.3   5      D
+2     5.4    D
+3.6   5.4    D
+4     5      D
+3.6   5.4    D
+2     5.4    D
+1.3   5      D
+1     4      D
+0      4      D
+0      0      0.6	c	-Gblack
+6.5	7      0.5 c	-W0.1pt/white -Gblack
+
+8.2    6.7    0.3 c -G244/199/199 -W0.1pt/black
+9.4    7.4    0.4 c -G244/199/199 -W0.1pt/black
+10.3   8.2    0.5 c -G244/199/199 -W0.1pt/black
+11.2	9.2    0.6 c -G244/199/199 -W0.1pt/black
+12.1	9.7    1.0 c -G244/199/199 -W0.1pt/black
+6.0    7.8    M     -G244/199/199 -W0.1pt/black
+#comment the former lines and uncomment the next six lines if you want white instead rose
+#8.2    6.7    0.3 c -Gwhite -W0.1pt/black
+#9.4    7.4    0.4 c -Gwhite -W0.1pt/black
+#10.3   8.2    0.5 c -Gwhite -W0.1pt/black
+#11.2	9.2    0.6 c -Gwhite -W0.1pt/black
+#12.1	9.7    1.0 c -Gwhite -W0.1pt/black
+#6.0    7.8    M     -Gwhite -W0.1pt/black
+5.6    7.6    D
+5.6    7.2    D
+5.8    7      D
+6      7.4    D
+6.6    7.6    D
+6      7.8    D
+10.5  11.4   M -G244/199/199 -W0.1pt/black
+#comment the line above and uncomment also the next line if you want white instead rose
+#10.5  11.4   M -Gwhite -W0.1pt/black
+11    11.8   D
+12    11.4   D
+12.8  11     D
+12.8  10.4   D
+11.8	11.2   D
+10.5  11.4   D
+#belly
+-5.2	5      M -Gwhite -W0.2pt/200
+-8	6.2    D
+-8.6	7      D
+-7.3	7      D
+-7.8	7.6    D
+-6	6.7    D
+-6.8	7.4    D
+-5	6.6    D
+-5.8	7.6    D
+-3.8	6      D
+-5.2	6.1    D
+-4.6	5.4    D
+-6	5.8    D
+-5.2	5      D
+#tail
+-14.4   10     M -G50
+-16     9.4    D
+-16.7   9      D
+-18.6   8.1    D
+-20     7.8    D
+-20.4   7.8    D
+-20     8      D
+-19.2   8.6    D
+-18     10     D
+-17.2   11.4   D
+-16     11.4   D
+-14.3   11.1   D
+-13.6   10.6   D
+-13.6   10.4   D
+-14.4   10     D
+-15     11.8   M -G50
+-13.6   11.8   D
+-14.8   12.6   D
+-16     12.8   D
+-17.2   13     D
+-18     13.1   D
+-18.7   13.1   D
+-18.7   12.8   D
+-18     12.7   D
+-17.3   12.2   D
+-17.3   11.6   D
+-16     11.5   D
+-15     11.8   D

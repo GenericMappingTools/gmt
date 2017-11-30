@@ -1,0 +1,42 @@
+.. _example_21:
+
+(21) Time-series of RedHat stock price
+--------------------------------------
+
+As discussed in the Cookbook Section :ref:`cartesian_time_axes`, the annotation of time-series is
+generally more complicated due to the extra degrees of freedom afforded
+by the dual annotation system. In this example we will display the trend
+of the stock price of RedHat (RHAT) from their initial public offering
+until late 2006. The data file is a comma-separated table and the
+records look like this:
+
+::
+
+    Date,Open,High,Low,Close,Volume,Adj.Close*
+    12-Mar-04,17.74,18.49,17.67,18.02,4827500,18.02
+    11-Mar-04,17.60,18.90,17.37,18.09,7700400,18.09
+
+Hence, we have a single header record and various prices in USD for each
+day of business. We will plot the trend of the opening price as a red
+line superimposed on a yellow envelope representing the low-to-high
+fluctuation during each day. We also indicate when and at what cost Paul
+Wessel bought a few shares, and zoom in on the developments since 2004;
+in the inset we label the time-axis in Finnish in honor of Linus
+Thorvalds. Because the time coordinates are Y2K-challenged and the order
+is backwards (big units of years come *after* smaller units like days)
+we must change the default input/output formats used by GMT. Finally,
+we want to prefix prices with the $ symbol to indicate the currency.
+Here is how it all comes out:
+
+.. literalinclude:: /_verbatim/example_21.txt
+   :language: bash
+
+which produces the plot in Figure, suggesting
+Wessel has missed a few trains if he had hoped to cash in on the
+Internet bubble...
+
+.. figure:: /_images/example_21.*
+   :width: 500 px
+   :align: center
+
+   Time-series of RedHat stock price since IPO.

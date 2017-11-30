@@ -1,0 +1,47 @@
+.. _example_04:
+
+(4) A 3-D perspective mesh plot
+-------------------------------
+
+This example will illustrate how to make a fairly complicated composite
+figure. We need a subset of the ETOPO5 bathymetry [1]_ and Geosat geoid
+data sets which we will extract from the global data grids using
+:doc:`grdcut </grdcut>`. We would like to show a
+2-layer perspective plot where layer one shows a contour map of the
+marine geoid with the location of the Hawaiian islands superposed, and a
+second layer showing the 3-D mesh plot of the topography. We also add an
+arrow pointing north and some text. The first part of this script shows
+how to do it:
+
+.. literalinclude:: /_verbatim/example_04.txt
+   :language: bash
+
+The purpose of the CPT ``zero.cpt`` is to have the positive topography
+mesh painted light gray (the remainder is white). The left side of
+Figure shows the complete illustration.
+
+.. figure:: /_images/example_04.*
+   :width: 500 px
+   :align: center
+
+   3-D perspective mesh plot (left) and colored version (right).
+
+The second part of the script shows how to make the color version of
+this figure that was printed in our first article in *EOS Trans. AGU* (8
+October 1991). Using :doc:`grdview </grdview>` one can
+choose to either plot a mesh surface (left) or a color-coded surface
+(right). We have also added artificial illumination from a light-source
+due north, which is simulated by computing the gradient of the surface
+grid in that direction though the
+:doc:`grdgradient </grdgradient>` program. We choose to
+use the **-Qc** option in :doc:`grdview </grdview>` to
+achieve a high degree of smoothness. Here, we select 100 dpi since that
+will be the resolution of our final raster (The EOS raster was 300 dpi).
+Note that the size of the resulting output file is directly dependent on
+the square of the dpi chosen for the scanline conversion and how well
+the resulting image compresses. A higher value for dpi in **-Qc** would
+have resulted in a much larger output file. The CPTs were taken
+from Example :ref:`example_02`.
+
+.. [1]
+   These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).

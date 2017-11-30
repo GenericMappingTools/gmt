@@ -1,0 +1,2 @@
+**-o**\ *cols*\ [,...] :ref:`(more ...) <-ocols_full>`
+    Select output columns (0 is first column).

@@ -1,0 +1,11 @@
+.. _-ocols_full:
+
+**-o**\ *cols*\ [,...]
+    Select specific data columns for primary output, in arbitrary order. Columns
+    not listed will be skipped. Give columns (or column ranges
+    in the format *start*\ [:*inc* \]:*stop*, where *inc* defaults to 1 if
+    not specified) separated by commas.  Columns may be repeated.
+    [Default writes all columns in order].
+    Normally, any trailing text in the internal records will be written but
+    when **-o** is used you must add the column **t**. Finally, **-on** will
+    simply write the numerical output only and skip any trailing text.

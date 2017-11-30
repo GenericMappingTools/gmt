@@ -1,0 +1,14 @@
+# Symbols made for GMT by Jose A. Alvarez-Gomez
+#
+# Geological symbol: Horizontal lineation
+#
+# The symbol reads the trend in the 3rd column in psxy
+#
+N: 1 a
+-90 R
+$1 R
+0 -0.4 M
+0 0.4 D
+0 0.4 0.25 t
+180 R
+0 0.4 0.25 t

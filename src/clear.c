@@ -28,7 +28,7 @@
 
 #define THIS_MODULE_NAME	"clear"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Delete history, conf, cpt, the cache dir, or all of them"
+#define THIS_MODULE_PURPOSE	"Delete current history, conf, cpt, or the cache directory"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"V"

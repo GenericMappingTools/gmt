@@ -1,0 +1,23 @@
+.. _example_44:
+
+(44) Map inserts
+----------------
+
+In this example show how the two modules :doc:`psbasemap </psbasemap>`
+and :doc:`mapproject </mapproject>` can be used
+to place map inserts on top of your map.  The map insert is usually
+intended for placing a smaller-scale version of the larger geographical
+context of your main plot, so that reader unfamiliar with the detailed
+map can see what region we are looking at.  While the Australia example
+is simplest since we know the insert will be a square map, the Spain
+example requires us to compute the dimensions of the insert first, via
+:doc:`mapproject </mapproject>`, so that we can determine exact insert dimensions.
+
+.. literalinclude:: /_verbatim/example_44.txt
+   :language: bash
+
+.. figure:: /_images/example_44.*
+   :width: 500 px
+   :align: center
+
+   Map Inserts.

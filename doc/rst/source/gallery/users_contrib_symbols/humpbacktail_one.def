@@ -1,0 +1,88 @@
+#Megaptera novaeangliae - Humpback Whale (tail 1, white marks reduced)
+#see also the file humpbacktail_two.def
+#normal
+#Pablo Valdes - apr 2008
+#comment the lines 5 and 82 AND uncomment the lines 6 and 83 if you want gray instead color
+0	0	M -G10/15/29
+#0	0	M -G20
+0	12	D
+4	12	D
+3	12	D
+2	15	D
+1.2	19	D
+1	20	D
+1	21.4	D
+1.6	22	D
+2.4	23	D
+4	24	D
+6	25	D
+7	26	D
+8	27.6	D
+8.2	29	D
+7	28	D
+6.4	27.8	D
+6	28.2	D
+5.5	27.6	D
+4.6	27.8	D
+4.2	27.6	D
+3.6	27.8	D
+3	27.3	D
+2.5	27.6	D
+2	27.1	D
+1.5	27.3	D
+0.8	26.6	D
+0.4	26.8	D
+0	25.6	D
+-0.4	26.8	D
+-0.8	26.6	D
+-1.5	27.3	D
+-2	27.1	D
+-2.5	27.6	D
+-3	27.3	D
+-3.6	27.8	D
+-4.2	27.6	D
+-4.6	27.8	D
+-5.5	27.6	D
+-6	28.2	D
+-6.4	27.8	D
+-7	28	D
+-8.2	29	D
+-8	27.6	D
+-7	26	D
+-6	25	D
+-4	24	D
+-2.4	23	D
+-1.6	22	D
+-1	21.4	D
+-1	20	D
+-1.2	19	D
+-2	15	D
+-3	12	D
+-4	12	D
+0	12	D
+0	0	0.6	c	-Gblack
+#white marks (reduced)
+6.4    27	M -Wblack -Gwhite
+7.2    26.8	D
+7.6    27	D
+8      27.6	D
+8.2    29	D
+7      28	D
+6.4    27.8	D
+6.4    27	D
+-6.4    27	M -Wblack -Gwhite
+-7.2    26.8	D
+-7.6    27	D
+-8	27.6	D
+-8.2	29	D
+-7	28	D
+-6.4	27.8	D
+-6.4    27	D
+#
+0.6	22	M -G78/95/142
+#0.6	22	M -G100
+0	23	D
+0	23	D
+-0.6	22	D
+0	24.6	D
+0.6	22	D

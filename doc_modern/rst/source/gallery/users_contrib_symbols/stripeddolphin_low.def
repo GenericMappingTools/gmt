@@ -1,0 +1,108 @@
+#Stenella coeruleoalba - Striped dolphin
+#low
+#Pablo Valdes - may 2007
+#comment the lines 5 and 53 AND uncomment the lines 4 and 54 if you want gray instead color
+0	0	M -G35/47/53
+#0	0	M -G20/20/20
+0	4.6	D
+1.6	5	D
+2.5	5.7	D
+4	5.5	D
+7	5.2	D
+8.5	5.2	D
+10	5	D
+11	4.8	D
+11.3	5	D
+11.3	5.4	D
+10	6	D
+10	6.4	D
+9.6	7	D
+9	8	D
+7	9.3	D
+5	10	D
+3	10.5	D
+0	11	D
+-1	11.2	D
+-2	11.9	D
+-3	12.5	D
+-4	13	D
+-4.4	13	D
+-4	12.3	D
+-3.6	12	D
+-3.6	11	D
+-4	10.6	D
+-5.5	10	D
+-7.5	9	D
+-9	8	D
+-11	5.5	D
+-12	5	D
+-13.3	4	D
+-13.8	3	D
+-11.2	4.2	D
+-11	4.5	D
+-10.8	4.2	D
+-10.3	4.4	D
+-9.6	4.2	D
+-9.9	5.4	D
+-7	6	D
+0	5.8	D
+-2.2	4.8	D
+-2	4.6	D
+0	4.6	D
+0	0	0.6	c	-Gblack
+#blue stripe, comment this line and uncomment the next if you want gray instead true yellow
+-1	9	M -G143/177/195 -W13/101/147
+#-1	9	M -G220/200/220 -W200/200/200
+3	8.3	D
+-1	8.4	D
+-4	9	D
+-6	8	D
+-7	7.7	D
+-8	7	D
+-9	6.7	D
+-10	6	D
+-10.5	5	D
+-9.8	5.3	D
+-8	5.7	D
+-6	7	D
+-3.5	7.3	D
+-1	7.1	D
+3	6.9	D
+4	6.8	D
+6	6.5	D
+6.4	6.5	D
+6.7	6.2	D
+8.3	6	D
+9.5	6	D
+9	6.4	D
+7.5	6.4	D
+4.5	8.5	D
+3	9	D
+-1	9.3	D
+-3	10	D
+-1	9	D
+
+-6	6	M -Gwhite
+-5	6.6	D
+-3	7	D
+3	7	D
+4	6.8	D
+6	6.5	D
+6.4	6	D
+6.7	6.2	D
+8.3	6	D
+11	5.1	D
+8.3	6	D
+10	5	D
+8.5	5.2	D
+7	5.2	D
+4	5.5	D
+2.5	5.7	D
+4	6	D
+5.5	6	D
+6.6	6.2	D
+5.5	6	D
+4	6	D
+0.5	6	D
+0	5.8	D
+-6	6	D

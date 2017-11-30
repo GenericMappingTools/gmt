@@ -1,0 +1,19 @@
+.. _example_46:
+
+(46) Day-light terminators and other sunlight parameters
+--------------------------------------------------------
+
+In this example show how the module :doc:`pssolar </pssolar>`
+is used to plot several terminator lines that depend on
+the location of the sun with respect to Earth.  We also
+show how an EPS illustration can serve as a custom symbol
+to be plotted with :doc:`psxy </psxy>`.
+
+.. literalinclude:: /_verbatim/example_46.txt
+   :language: bash
+
+.. figure:: /_images/example_46.*
+   :width: 500 px
+   :align: center
+
+   Day-light terminators.

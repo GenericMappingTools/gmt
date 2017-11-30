@@ -1,0 +1,5 @@
+.. _-do_full:
+
+**-do**\ *nodata*
+    Examine all output columns and if any item equals NAN we substitute
+    it with the chosen missing data value *nodata*.

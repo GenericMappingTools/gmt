@@ -1,0 +1,222 @@
+.. |SYN_OPT-B| replace:: |-B|\ [**p**\ \|\ **s**]\ *parameters*
+
+.. |SYN_OPT-I| replace:: |-I|\ *increment*
+
+.. |SYN_OPT-R| replace:: |-R|\ *region*
+
+.. |SYN_OPT-Rz| replace:: |-R|\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**+r**]
+
+.. |SYN_OPT-X| replace:: |-X|\ *x_offset*
+
+.. |SYN_OPT-Y| replace:: |-Y|\ *y_offset*
+
+.. |SYN_OPT-U| replace:: |-U|\ [*stamp*]
+
+.. |SYN_OPT-V| replace:: |-V|\ [*level*]
+
+.. |SYN_OPT-a| replace:: **-a**\ :ref:`flags <-aspatial_full>`
+
+.. |SYN_OPT-b| replace:: **-b**\ :ref:`binary <-bi_full>`
+
+.. |SYN_OPT-bi| replace:: **-bi**\ :ref:`binary <-bi_full>`
+
+.. |SYN_OPT-bo| replace:: **-bo**\ :ref:`binary <-bo_full>`
+
+.. |SYN_OPT-d| replace:: **-d**\ :ref:`nodata <-d_full>`
+
+.. |SYN_OPT-di| replace:: **-di**\ :ref:`nodata <-di_full>`
+
+.. |SYN_OPT-do| replace:: **-do**\ :ref:`nodata <-do_full>`
+
+.. |SYN_OPT-e| replace:: **-e**\ :ref:`regexp <-e_full>` 
+
+.. |SYN_OPT-f| replace:: **-f**\ :ref:`flags <-f_full>`
+
+.. |SYN_OPT-g| replace:: **-g**\ :ref:`gaps <-g_full>`
+
+.. |SYN_OPT-h| replace:: **-h**\ :ref:`headers <-h_full>`
+
+.. |SYN_OPT-i| replace:: **-i**\ :ref:`flags <-icols_full>`
+
+.. |SYN_OPT-n| replace:: **-n**\ :ref:`flags <-n_full>`
+
+.. |SYN_OPT-o| replace:: **-o**\ :ref:`flags <-ocols_full>`
+
+.. |SYN_OPT-p| replace:: **-p**\ :ref:`flags <perspective_full>`  
+
+.. |SYN_OPT-s| replace:: **-s**\ :ref:`flags <-s_full>`
+
+.. |SYN_OPT-t| replace:: **-t**\ :ref:`transp <-t_full>`
+
+.. |SYN_OPT-r| replace:: **-r**\ :ref:`reg <nodereg_full>`
+
+.. |SYN_OPT-x| replace:: **-x**\ [[-]\ *n*]
+
+.. |SYN_OPT-:| replace:: **-:**\ [**i**\ \|\ **o**]
+
+.. |No-spaces| replace:: **Note:** No space is allowed between the option flag and the associated arguments. 
+
+.. |br| raw:: html
+
+   <br />
+
+
+.. |h-x| raw:: html
+
+   </span></a></strong>
+
+.. |-A| replace:: |h-A| **-A**\ |h-x|
+
+.. |h-A| raw:: html
+
+   <a class="reference internal" href="#a"><span>
+
+.. |-B| replace:: |h-B| **-B**\ |h-x|
+
+.. |h-B| raw:: html
+
+   <a class="reference internal" href="#b"><span>
+
+.. |-C| replace:: |h-C| **-C**\ |h-x|
+
+.. |h-C| raw:: html
+
+   <a class="reference internal" href="#c"><span>
+
+.. |-D| replace:: |h-D| **-D**\ |h-x|
+
+.. |h-D| raw:: html
+
+   <a class="reference internal" href="#d"><span>
+
+.. |-E| replace:: |h-E| **-E**\ |h-x|
+
+.. |h-E| raw:: html
+
+   <a class="reference internal" href="#e"><span>
+
+.. |-F| replace:: |h-F| **-F**\ |h-x|
+
+.. |h-F| raw:: html
+
+   <a class="reference internal" href="#f"><span>
+
+.. |-G| replace:: |h-G| **-G**\ |h-x|
+
+.. |h-G| raw:: html
+
+   <a class="reference internal" href="#g"><span>
+
+.. |-H| replace:: |h-H| **-H**\ |h-x|
+
+.. |h-H| raw:: html
+
+   <a class="reference internal" href="#h"><span>
+
+.. |-I| replace:: |h-I| **-I**\ |h-x|
+
+.. |h-I| raw:: html
+
+   <a class="reference internal" href="#i"><span>
+
+.. |-J| replace:: |h-J| **-J**\ |h-x|
+
+.. |h-J| raw:: html
+
+   <a class="reference internal" href="#j"><span>
+
+.. |-K| replace:: |h-K| **-K**\ |h-x|
+
+.. |h-K| raw:: html
+
+   <a class="reference internal" href="#k"><span>
+
+.. |-L| replace:: |h-L| **-L**\ |h-x|
+
+.. |h-L| raw:: html
+
+   <a class="reference internal" href="#l"><span>
+
+.. |-M| replace:: |h-M| **-M**\ |h-x|
+
+.. |h-M| raw:: html
+
+   <a class="reference internal" href="#m"><span>
+
+.. |-N| replace:: |h-N| **-N**\ |h-x|
+
+.. |h-N| raw:: html
+
+   <a class="reference internal" href="#n"><span>
+
+.. |-O| replace:: |h-O| **-O**\ |h-x|
+
+.. |h-O| raw:: html
+
+   <a class="reference internal" href="#o"><span>
+
+.. |-P| replace:: |h-P| **-P**\ |h-x|
+
+.. |h-P| raw:: html
+
+   <a class="reference internal" href="#p"><span>
+
+.. |-Q| replace:: |h-Q| **-Q**\ |h-x|
+
+.. |h-Q| raw:: html
+
+   <a class="reference internal" href="#q"><span>
+
+.. |-R| replace:: |h-R| **-R**\ |h-x|
+
+.. |h-R| raw:: html
+
+   <a class="reference internal" href="#r"><span>
+
+.. |-S| replace:: |h-S| **-S**\ |h-x|
+
+.. |h-S| raw:: html
+
+   <a class="reference internal" href="#s"><span>
+
+.. |-T| replace:: |h-T| **-T**\ |h-x|
+
+.. |h-T| raw:: html
+
+   <a class="reference internal" href="#t"><span>
+
+.. |-U| replace:: |h-U| **-U**\ |h-x|
+
+.. |h-U| raw:: html
+
+   <a class="reference internal" href="#u"><span>
+
+.. |-V| replace:: |h-V| **-V**\ |h-x|
+
+.. |h-V| raw:: html
+
+   <a class="reference internal" href="#v"><span>
+
+.. |-W| replace:: |h-W| **-W**\ |h-x|
+
+.. |h-W| raw:: html
+
+   <a class="reference internal" href="#w"><span>
+
+.. |-X| replace:: |h-X| **-X**\ |h-x|
+
+.. |h-X| raw:: html
+
+   <a class="reference internal" href="#x"><span>
+
+.. |-Y| replace:: |h-Y| **-Y**\ |h-x|
+
+.. |h-Y| raw:: html
+
+   <a class="reference internal" href="#y"><span>
+
+.. |-Z| replace:: |h-Z| **-Z**\ |h-x|
+
+.. |h-Z| raw:: html
+
+   <a class="reference internal" href="#z"><span>

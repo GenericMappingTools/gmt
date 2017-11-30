@@ -1,0 +1,18 @@
+.. _example_42:
+
+(42) Antarctica and stereographic data
+--------------------------------------
+
+In this example we demonstrate how one can use combine Cartesian data for
+Antarctica (here the BEDMAP data already projected via a stereographic projection)
+with geographic data, all using the same map scale. It also shows how one would set up
+minor legends and map scales.
+
+.. literalinclude:: /_verbatim/example_42.txt
+   :language: bash
+
+.. figure:: /_images/example_42.*
+   :width: 500 px
+   :align: center
+
+   Illustrate plotting of Antarctica with Stereographic Data.

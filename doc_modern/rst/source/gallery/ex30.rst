@@ -1,0 +1,22 @@
+.. _example_30:
+
+(30) Trigonometric functions plotted in graph mode
+--------------------------------------------------
+
+Finally, we end with a simple mathematical illustration of sine and
+cosine, highlighting the *graph* mode for linear projections and the new
+curved vectors for angles.
+
+The script simply draws a graph basemap, computes sine and cosine and
+plots them as lines, then indicates on a circle that these quantities
+are simply the projections of an unit vector on the x- and y-axis, at
+the given angle.
+
+.. literalinclude:: /_verbatim/example_30.txt
+   :language: bash
+
+.. figure:: /_images/example_30.*
+   :width: 500 px
+   :align: center
+
+   Trigonometric functions plotted in graph mode.

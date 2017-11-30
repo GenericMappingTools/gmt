@@ -1,0 +1,14 @@
+.. |pscontour| replace:: **pscontour**
+
+.. |psimage| replace:: **psimage**
+
+
+
+
+.. The h-K and h-x macros are defined in common_SYN_OPTs.rst_
+
+.. |-Kswing| replace:: |h-K| [ **-K** ]\ |h-x|
+
+.. |-Oswing| replace:: |h-K| [ **-O** ]\ |h-x|
+
+.. |-Pswing| replace:: |h-K| [ **-P** ]\ |h-x|

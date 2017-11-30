@@ -1,0 +1,35 @@
+.. _example_29:
+
+(29) Gridding spherical surface data using splines
+--------------------------------------------------
+
+Finally, we demonstrate how gridding on a spherical surface can be
+accomplished using Green's functions of surface splines, with or without
+tension. Global gridding does not work particularly well in Cartesian
+coordinates hence the chosen approach. We use
+:doc:`greenspline </greenspline>` to produce a crude
+topography grid for Mars based on radii estimates from the Mariner 9 and
+Viking Orbiter spacecrafts. This data comes from *Smith and Zuber*
+[Science, 1996] and is used here as a small (*N* = 370) data set we can
+use to demonstrate spherical surface gridding. Since
+:doc:`greenspline </greenspline>` must solve a *N* by
+*N* matrix system your system memory may impose limits on how large data
+sets you can handle; also note that the spherical surface spline in
+tension is particularly slow to compute.
+
+Our script must first estimate the ellipsoidal shape of Mars from the
+parameters given by *Smith and Zuber* so that we can remove this
+reference surface from the gridded radii. We run the gridding twice:
+First with no tension using *Parker*\ 's [1990] method and then with
+tension using the *Wessel and Becker* [2008] method. The grids are then
+imaged with :doc:`grdimage </grdimage>` and
+:doc:`grdcontour </grdcontour>` and a color scale is placed between them.
+
+.. literalinclude:: /_verbatim/example_29.txt
+   :language: bash
+
+.. figure:: /_images/example_29.*
+   :width: 500 px
+   :align: center
+
+   Gridding of spherical surface data using Green's function splines.

@@ -1,0 +1,5068 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 0 0 612 792
+%%HiResBoundingBox: 0 0 612 792
+%%Title: GMT v5.1.3_r14524 [64-bit] Document from grdview
+%%Creator: GMT5
+%%For: pwessel
+%%DocumentNeededResources: font Helvetica
+%%CreationDate: Tue Jul 14 17:34:15 2015
+%%LanguageLevel: 2
+%%DocumentData: Clean7Bit
+%%Orientation: Portrait
+%%Pages: 1
+%%EndComments
+
+%%BeginProlog
+250 dict begin
+/! {bind def} bind def
+/# {load def}!
+/A /setgray #
+/B /setdash #
+/C /setrgbcolor #
+/D /rlineto #
+/E {dup stringwidth pop}!
+/F /fill #
+/G /rmoveto #
+/H /sethsbcolor #
+/I /setpattern #
+/K /setcmykcolor #
+/L /lineto #
+/M /moveto #
+/N /newpath #
+/P /closepath #
+/R /rotate #
+/S /stroke #
+/T /translate #
+/U /grestore #
+/V /gsave #
+/W /setlinewidth #
+/Y {findfont exch scalefont setfont}!
+/Z /show #
+/FP {true charpath flattenpath}!
+/MU {matrix setmatrix}!
+/MS {/SMat matrix currentmatrix def}!
+/MR {SMat setmatrix}!
+/edef {exch def}!
+/FS {/fc edef /fs {V fc F U} def}!
+/FQ {/fs {} def}!
+/O0 {/os {N} def}!
+/O1 {/os {P S} def}!
+/FO {fs os}!
+/Sa {M MS dup 0 exch G 0.726542528 mul -72 R dup 0 D 4 {72 R dup 0 D -144 R dup 0 D} repeat pop MR FO}!
+/Sb {M dup 0 D exch 0 exch D neg 0 D FO}!
+/SB {MS T /BoxR edef /BoxW edef /BoxH edef BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
+/Sc {N 3 -1 roll 0 360 arc FO}!
+/Sd {M 4 {dup} repeat 0 G neg dup dup D exch D D FO}!
+/Se {N MS T R scale 0 0 1 0 360 arc MR FO}!
+/Sg {M MS 22.5 R dup 0 exch G -22.5 R 0.765366865 mul dup 0 D 6 {-45 R dup 0 D} repeat pop MR FO}!
+/Sh {M MS dup 0 G -120 R dup 0 D 4 {-60 R dup 0 D} repeat pop MR FO}!
+/Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
+/Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
+/Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
+/SP {M {D} repeat FO}!
+/Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
+/Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
+/St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
+/SV {0 exch M 0 D D D D D 0 D FO}!
+/Sv {0 0 M D D 0 D D D D D 0 D D FO}!
+/Sw {2 copy M 5 2 roll arc FO}!
+/Sx {M 1.414213562 mul 5 {dup} repeat -2 div dup G D neg 0 G neg D S}!
+/Sy {M dup 0 exch G dup -2 mul dup 0 exch D S}!
+/S+ {M dup 0 G dup -2 mul dup 0 D exch dup G 0 exch D S}!
+/S- {M dup 0 G dup -2 mul dup 0 D S}!
+/sw {stringwidth pop}!
+/sh {V MU 0 0 M FP pathbbox N 4 1 roll pop pop pop U}!
+/sd {V MU 0 0 M FP pathbbox N pop pop exch pop U}!
+/sH {V MU 0 0 M FP pathbbox N exch pop exch sub exch pop U}!
+/sb {E exch sh}!
+/bl {}!
+/bc {E -2 div 0 G}!
+/br {E neg 0 G}!
+/ml {dup 0 exch sh -2 div G}!
+/mc {dup E -2 div exch sh -2 div G}!
+/mr {dup E neg exch sh -2 div G}!
+/tl {dup 0 exch sh neg G}!
+/tc {dup E -2 div exch sh neg G}!
+/tr {dup E neg exch sh neg G}!
+/mx {2 copy lt {exch} if pop}!
+/PSL_xorig 0 def /PSL_yorig 0 def
+/TM {2 copy T PSL_yorig add /PSL_yorig edef PSL_xorig add /PSL_xorig edef}!
+/PSL_reencode {findfont dup length dict begin
+  {1 index /FID ne {def}{pop pop} ifelse} forall
+  exch /Encoding edef currentdict end definefont pop
+}!
+/PSL_eps_begin {
+  /PSL_eps_state save def
+  /PSL_dict_count countdictstack def
+  /PSL_op_count count 1 sub def
+  userdict begin
+  /showpage {} def
+  0 setgray 0 setlinecap 1 setlinewidth
+  0 setlinejoin 10 setmiterlimit [] 0 setdash newpath
+  /languagelevel where
+  {pop languagelevel 1 ne {false setstrokeadjust false setoverprint} if} if
+}!
+/PSL_eps_end {
+  count PSL_op_count sub {pop} repeat
+  countdictstack PSL_dict_count sub {end} repeat
+  PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
+}!
+/ISOLatin1+_Encoding [
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
+/.notdef	/bullet		/ellipsis	/trademark	/emdash		/endash		/fi		/zcaron
+/space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quoteright
+/parenleft	/parenright	/asterisk	/plus		/comma		/minus		/period		/slash
+/zero		/one		/two		/three		/four		/five		/six		/seven
+/eight		/nine		/colon		/semicolon	/less		/equal		/greater	/question
+/at		/A		/B		/C		/D		/E		/F		/G
+/H		/I		/J		/K		/L		/M		/N		/O
+/P		/Q		/R		/S		/T		/U		/V		/W
+/X		/Y		/Z		/bracketleft	/backslash	/bracketright	/asciicircum	/underscore
+/quoteleft	/a		/b		/c 		/d		/e		/f		/g
+/h		/i		/j		/k		/l		/m		/n		/o
+/p		/q		/r		/s		/t		/u		/v		/w
+/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/scaron
+/OE		/dagger		/daggerdbl	/Lslash		/fraction	/guilsinglleft	/Scaron		/guilsinglright
+/oe		/Ydieresis	/Zcaron		/lslash		/perthousand	/quotedblbase	/quotedblleft	/quotedblright
+/dotlessi	/grave		/acute		/circumflex	/tilde		/macron		/breve		/dotaccent
+/dieresis	/quotesinglbase	/ring		/cedilla	/quotesingle	/hungarumlaut	/ogonek		/caron
+/space		/exclamdown	/cent		/sterling	/currency	/yen		/brokenbar	/section
+/dieresis	/copyright	/ordfeminine	/guillemotleft	/logicalnot	/hyphen		/registered	/macron
+/degree		/plusminus	/twosuperior	/threesuperior	/acute		/mu		/paragraph	/periodcentered
+/cedilla	/onesuperior	/ordmasculine	/guillemotright	/onequarter	/onehalf	/threequarters	/questiondown
+/Agrave		/Aacute		/Acircumflex	/Atilde		/Adieresis	/Aring		/AE		/Ccedilla
+/Egrave		/Eacute		/Ecircumflex	/Edieresis	/Igrave		/Iacute		/Icircumflex	/Idieresis
+/Eth		/Ntilde		/Ograve		/Oacute		/Ocircumflex	/Otilde		/Odieresis	/multiply
+/Oslash		/Ugrave		/Uacute		/Ucircumflex	/Udieresis	/Yacute		/Thorn		/germandbls
+/agrave		/aacute		/acircumflex	/atilde		/adieresis	/aring		/ae		/ccedilla
+/egrave		/eacute		/ecircumflex	/edieresis	/igrave		/iacute		/icircumflex	/idieresis
+/eth		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide
+/oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/ydieresis
+] def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
+/F0 {/Helvetica Y}!
+/F1 {/Helvetica-Bold Y}!
+/F2 {/Helvetica-Oblique Y}!
+/F3 {/Helvetica-BoldOblique Y}!
+/F4 {/Times-Roman Y}!
+/F5 {/Times-Bold Y}!
+/F6 {/Times-Italic Y}!
+/F7 {/Times-BoldItalic Y}!
+/F8 {/Courier Y}!
+/F9 {/Courier-Bold Y}!
+/F10 {/Courier-Oblique Y}!
+/F11 {/Courier-BoldOblique Y}!
+/F12 {/Symbol Y}!
+/F13 {/AvantGarde-Book Y}!
+/F14 {/AvantGarde-BookOblique Y}!
+/F15 {/AvantGarde-Demi Y}!
+/F16 {/AvantGarde-DemiOblique Y}!
+/F17 {/Bookman-Demi Y}!
+/F18 {/Bookman-DemiItalic Y}!
+/F19 {/Bookman-Light Y}!
+/F20 {/Bookman-LightItalic Y}!
+/F21 {/Helvetica-Narrow Y}!
+/F22 {/Helvetica-Narrow-Bold Y}!
+/F23 {/Helvetica-Narrow-Oblique Y}!
+/F24 {/Helvetica-Narrow-BoldOblique Y}!
+/F25 {/NewCenturySchlbk-Roman Y}!
+/F26 {/NewCenturySchlbk-Italic Y}!
+/F27 {/NewCenturySchlbk-Bold Y}!
+/F28 {/NewCenturySchlbk-BoldItalic Y}!
+/F29 {/Palatino-Roman Y}!
+/F30 {/Palatino-Italic Y}!
+/F31 {/Palatino-Bold Y}!
+/F32 {/Palatino-BoldItalic Y}!
+/F33 {/ZapfChancery-MediumItalic Y}!
+/F34 {/ZapfDingbats Y}!
+/F35 {/Ryumin-Light-EUC-H Y}!
+/F36 {/Ryumin-Light-EUC-V Y}!
+/F37 {/GothicBBB-Medium-EUC-H Y}!
+/F38 {/GothicBBB-Medium-EUC-V Y}!
+/PSL_pathtextdict 26 dict def
+/PSL_pathtext
+  {PSL_pathtextdict begin
+    /ydepth exch def
+    /textheight exch def
+    /just exch def
+    /offset exch def
+    /str exch def
+    /pathdist 0 def
+    /setdist offset def
+    /charcount 0 def
+    /justy just 4 idiv textheight mul 2 div neg ydepth sub def
+    V flattenpath
+	{movetoproc} {linetoproc}
+	{curvetoproc} {closepathproc}
+	pathforall
+    U N
+    end
+  } def
+PSL_pathtextdict begin
+/movetoproc
+  { /newy exch def /newx exch def
+    /firstx newx def /firsty newy def
+    /ovr 0 def
+    newx newy transform
+    /cpy exch def /cpx exch def
+  } def
+/linetoproc
+  { /oldx newx def /oldy newy def
+    /newy exch def /newx exch def
+    /dx newx oldx sub def
+    /dy newy oldy sub def
+    /dist dx dup mul dy dup mul add sqrt def
+    dist 0 ne
+    { /dsx dx dist div ovr mul def
+      /dsy dy dist div ovr mul def
+      oldx dsx add oldy dsy add transform
+      /cpy exch def /cpx exch def
+      /pathdist pathdist dist add def
+      {setdist pathdist le
+	  {charcount str length lt
+	      {setchar} {exit} ifelse}
+	  { /ovr setdist pathdist sub def
+	    exit}
+	  ifelse
+      } loop
+    } if
+  } def
+/curvetoproc
+  { (ERROR: No curveto's after flattenpath!)
+    print
+  } def
+/closepathproc
+  {firstx firsty linetoproc
+    firstx firsty movetoproc
+  } def
+/setchar
+  { /char str charcount 1 getinterval def
+    /charcount charcount 1 add def
+    /charwidth char stringwidth pop def
+    V cpx cpy itransform T
+      dy dx atan R
+      0 justy M
+      char show
+      0 justy neg G
+      currentpoint transform
+      /cpy exch def /cpx exch def
+    U /setdist setdist charwidth add def
+  } def
+end
+/PSL_set_label_heights
+{
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
+  /PSL_heights PSL_n_labels array def
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    /psl_label PSL_label_str psl_k get def
+    PSL_label_font psl_k get cvx exec
+    psl_label sH /PSL_height edef
+    PSL_heights psl_k PSL_height put
+  } for
+} def
+%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
+/PSL_curved_path_labels
+{ /psl_bits exch def
+  /PSL_placetext psl_bits 2 and 2 eq def
+  /PSL_clippath psl_bits 4 and 4 eq def
+  /PSL_strokeline false def
+  /PSL_fillbox psl_bits 128 and 128 eq def
+  /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_n_paths1 PSL_n_paths 1 sub def
+  /PSL_usebox PSL_fillbox PSL_drawbox or def
+  PSL_clippath {clipsave N clippath} if
+  /psl_k 0 def
+  /psl_p 0 def
+  0 1 PSL_n_paths1
+  { /psl_kk exch def
+    /PSL_n PSL_path_n  psl_kk get def
+    /PSL_m PSL_label_n psl_kk get def
+    /PSL_x PSL_path_x psl_k PSL_n getinterval def
+    /PSL_y PSL_path_y psl_k PSL_n getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
+    PSL_curved_path_label
+    /psl_k psl_k PSL_n add def
+    /psl_p psl_p PSL_m add def
+  } for
+  PSL_clippath {PSL_eoclip} if N
+} def
+/PSL_curved_path_label
+{
+  /PSL_n1 PSL_n 1 sub def
+  /PSL_m1 PSL_m 1 sub def
+  PSL_CT_calcstringwidth
+  PSL_CT_calclinedist
+  PSL_CT_excludelabels
+  PSL_CT_addcutpoints
+  /PSL_nn1 PSL_nn 1 sub def
+  /n 0 def
+  /k 0 def
+  /j 0 def
+  /PSL_seg 0 def
+  /PSL_xp PSL_nn array def
+  /PSL_yp PSL_nn array def
+  PSL_xp 0 PSL_xx 0 get put
+  PSL_yp 0 PSL_yy 0 get put
+  1 1 PSL_nn1
+  { /i exch def
+    /node_type PSL_kind i get def
+    /j j 1 add def
+    PSL_xp j PSL_xx i get put
+    PSL_yp j PSL_yy i get put
+    node_type 1 eq
+    {n 0 eq
+      {PSL_CT_drawline}
+      {	PSL_CT_reversepath
+	PSL_CT_textline} ifelse
+      /j 0 def
+      PSL_xp j PSL_xx i get put
+      PSL_yp j PSL_yy i get put
+    } if
+  } for
+  n 0 eq {PSL_CT_drawline} if
+} def
+/PSL_CT_textline
+{ PSL_fnt k get cvx exec
+  /PSL_height PSL_heights k get def
+  PSL_placetext	{PSL_CT_placelabel} if
+  PSL_clippath {PSL_CT_clippath} if
+  /n 0 def /k k 1 add def
+} def
+/PSL_CT_calcstringwidth
+{ /PSL_width_tmp PSL_m array def
+  0 1 PSL_m1
+  { /i exch def
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
+  } for
+} def
+/PSL_CT_calclinedist
+{ /PSL_newx PSL_x 0 get def
+  /PSL_newy PSL_y 0 get def
+  /dist 0.0 def
+  /PSL_dist PSL_n array def
+  PSL_dist 0 0.0 put
+  1 1 PSL_n1
+  { /i exch def
+    /PSL_oldx PSL_newx def
+    /PSL_oldy PSL_newy def
+    /PSL_newx PSL_x i get def
+    /PSL_newy PSL_y i get def
+    /dx PSL_newx PSL_oldx sub def
+    /dy PSL_newy PSL_oldy sub def
+    /dist dist dx dx mul dy dy mul add sqrt add def
+    PSL_dist i dist put
+  } for
+} def
+/PSL_CT_excludelabels
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def
+  /PSL_m1 PSL_m 1 sub def
+} def
+/PSL_CT_addcutpoints
+{ /k 0 def
+  /PSL_nc PSL_m 2 mul 1 add def
+  /PSL_cuts PSL_nc array def
+  /PSL_nc1 PSL_nc 1 sub def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node i get get def
+    /halfwidth PSL_width i get 2 div PSL_gap_x add def
+    PSL_cuts k dist halfwidth sub put
+    /k k 1 add def
+    PSL_cuts k dist halfwidth add put
+    /k k 1 add def
+  } for
+  PSL_cuts k 100000.0 put
+  /PSL_nn PSL_n PSL_m 2 mul add def
+  /PSL_xx PSL_nn array def
+  /PSL_yy PSL_nn array def
+  /PSL_kind PSL_nn array def
+  /j 0 def
+  /k 0 def
+  /dist 0.0 def
+  0 1 PSL_n1
+  { /i exch def
+    /last_dist dist def
+    /dist PSL_dist i get def
+    k 1 PSL_nc1
+    { /kk exch def
+      /this_cut PSL_cuts kk get def
+      dist this_cut gt
+      { /ds dist last_dist sub def
+	/f ds 0.0 eq {0.0} {dist this_cut sub ds div} ifelse def
+	/i1 i 0 eq {0} {i 1 sub} ifelse def
+	PSL_xx j PSL_x i get dup PSL_x i1 get sub f mul sub put
+	PSL_yy j PSL_y i get dup PSL_y i1 get sub f mul sub put
+	PSL_kind j 1 put
+	/j j 1 add def
+	/k k 1 add def
+      } if
+    } for
+    dist PSL_cuts k get le
+    {PSL_xx j PSL_x i get put PSL_yy j PSL_y i get put
+      PSL_kind j 0 put
+      /j j 1 add def
+    } if
+  } for
+} def
+/PSL_CT_reversepath
+{PSL_xp j get PSL_xp 0 get lt
+  {0 1 j 2 idiv
+    { /left exch def
+      /right j left sub def
+      /tmp PSL_xp left get def
+      PSL_xp left PSL_xp right get put
+      PSL_xp right tmp put
+      /tmp PSL_yp left get def
+      PSL_yp left PSL_yp right get put
+      PSL_yp right tmp put
+    } for
+  } if
+} def
+/PSL_CT_placelabel
+{
+  /PSL_just PSL_label_justify k get def
+  /PSL_height PSL_heights k get def
+  /psl_label PSL_str k get def
+  /psl_depth psl_label sd def
+  PSL_usebox
+  {PSL_CT_clippath
+    PSL_fillbox
+    {V PSL_setboxrgb fill U} if
+    PSL_drawbox
+    {V PSL_setboxpen S U} if N
+  } if
+  PSL_CT_placeline psl_label PSL_gap_x PSL_just PSL_height psl_depth PSL_pathtext
+} def
+/PSL_CT_clippath
+{
+  /H PSL_height 2 div PSL_gap_y add def
+  /xoff j 1 add array def
+  /yoff j 1 add array def
+  /angle 0 def
+  0 1 j {
+    /ii exch def
+    /x PSL_xp ii get def
+    /y PSL_yp ii get def
+    ii 0 eq {
+      /x1 PSL_xp 1 get def
+      /y1 PSL_yp 1 get def
+      /dx x1 x sub def
+      /dy y1 y sub def
+    }
+    { /i1 ii 1 sub def
+      /x1 PSL_xp i1 get def
+      /y1 PSL_yp i1 get def
+      /dx x x1 sub def
+      /dy y y1 sub def
+    } ifelse
+    dx 0.0 eq dy 0.0 eq and not
+    { /angle dy dx atan 90 add def} if
+    /sina angle sin def
+    /cosa angle cos def
+    xoff ii H cosa mul put
+    yoff ii H sina mul put
+  } for
+  PSL_xp 0 get xoff 0 get add PSL_yp 0 get yoff 0 get add M
+  1 1 j {
+    /ii exch def
+    PSL_xp ii get xoff ii get add PSL_yp ii get yoff ii get add L
+  } for
+  j -1 0 {
+    /ii exch def
+    PSL_xp ii get xoff ii get sub PSL_yp ii get yoff ii get sub L
+  } for P
+} def
+/PSL_CT_drawline
+{
+  /str 20 string def
+  PSL_strokeline
+  {PSL_CT_placeline S} if
+  /PSL_seg PSL_seg 1 add def
+  /n 1 def
+} def
+/PSL_CT_placeline
+{PSL_xp 0 get PSL_yp 0 get M
+  1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
+} def
+%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
+/PSL_draw_path_lines
+{
+  /PSL_n_paths1 PSL_n_paths 1 sub def
+  V
+  /psl_start 0 def
+  0 1 PSL_n_paths1
+  { /psl_k exch def
+    /PSL_n PSL_path_n psl_k get def
+    /PSL_n1 PSL_n 1 sub def
+    PSL_path_pen psl_k get cvx exec
+    N
+    PSL_path_x psl_start get PSL_path_y psl_start get M
+    1 1 PSL_n1
+    { /psl_i exch def
+      /psl_kk psl_i psl_start add def
+      PSL_path_x psl_kk get PSL_path_y psl_kk get L
+    } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if
+    S
+    /psl_start psl_start PSL_n add def
+  } for
+  U
+} def
+%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
+/PSL_straight_path_labels
+{
+  /psl_bits exch def
+  /PSL_placetext psl_bits 2 and 2 eq def
+  /PSL_rounded psl_bits 32 and 32 eq def
+  /PSL_fillbox psl_bits 128 and 128 eq def
+  /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
+  /PSL_usebox PSL_fillbox PSL_drawbox or def
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    PSL_ST_prepare_text
+    PSL_usebox
+    {  PSL_rounded
+        {PSL_ST_textbox_round}
+        {PSL_ST_textbox_rect}
+      ifelse
+      PSL_fillbox {V PSL_setboxrgb fill U} if
+      PSL_drawbox {V PSL_setboxpen S U} if
+      N
+    } if
+    PSL_placetext {PSL_ST_place_label} if
+  } for
+} def
+/PSL_straight_path_clip
+{
+  /psl_bits exch def
+  /PSL_rounded psl_bits 32 and 32 eq def
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
+  N clipsave clippath
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    PSL_ST_prepare_text
+    PSL_rounded
+      {PSL_ST_textbox_round}
+      {PSL_ST_textbox_rect}
+    ifelse
+  } for
+  PSL_eoclip N
+} def
+/PSL_ST_prepare_text
+{
+  /psl_xp PSL_txt_x psl_k get def
+  /psl_yp PSL_txt_y psl_k get def
+  /psl_label PSL_label_str psl_k get def
+  PSL_label_font psl_k get cvx exec
+  /PSL_height PSL_heights psl_k get def
+  /psl_boxH PSL_height PSL_gap_y 2 mul add def
+  /PSL_just PSL_label_justify psl_k get def
+  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
+  /PSL_justy PSL_just 4 idiv 2 div neg def
+  /psl_SW psl_label stringwidth pop def
+  /psl_boxW psl_SW PSL_gap_x 2 mul add def
+  /psl_x0 psl_SW PSL_justx mul def
+  /psl_y0 PSL_justy PSL_height mul def
+  /psl_angle PSL_label_angle psl_k get def
+} def
+/PSL_ST_textbox_rect
+{
+  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T
+  PSL_gap_x neg PSL_gap_y neg M
+  0 psl_boxH D psl_boxW 0 D 0 psl_boxH neg D P
+  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T
+} def
+/PSL_ST_textbox_round
+{
+  /psl_BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
+  /psl_xd PSL_gap_x psl_BoxR sub def
+  /psl_yd PSL_gap_y psl_BoxR sub def
+  /psl_xL PSL_gap_x neg def
+  /psl_yB PSL_gap_y neg def
+  /psl_yT psl_boxH psl_yB add def
+  /psl_H2 PSL_height psl_yd 2 mul add def
+  /psl_W2 psl_SW psl_xd 2 mul add def
+  /psl_xR psl_xL psl_boxW add def
+  /psl_x0 psl_SW PSL_justx mul def
+  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T
+  psl_xL psl_yd M
+  psl_xL psl_yT psl_xR psl_yT psl_BoxR arct psl_W2 0 D
+  psl_xR psl_yT psl_xR psl_yB psl_BoxR arct 0 psl_H2 neg D
+  psl_xR psl_yB psl_xL psl_yB psl_BoxR arct psl_W2 neg 0 D
+  psl_xL psl_yB psl_xL psl_yd psl_BoxR arct P
+  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T
+} def
+/PSL_ST_place_label
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G show
+    U
+} def
+/PSL_nclip 0 def
+/PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
+/PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
+%%EndProlog
+
+%%BeginSetup
+/PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
+%%EndSetup
+
+%%Page: 1 1
+
+%%BeginPageSetup
+V 0.06 0.06 scale
+%%EndPageSetup
+
+/PSL_page_xsize 10200 def
+/PSL_page_ysize 13200 def
+0 A
+FQ
+O0
+1200 1200 TM
+
+% PostScript produced by:
+%%GMT: grdview ../tutorial/bermuda.nc -JM5i -P -JZ2i -p135/30 -Ba -Cbermuda.cpt
+%%PROJ: merc -66.00000000 -60.00000000 30.00000000 35.00000000 -333958.472 333958.472 3482189.085 4139372.762 +proj=merc +lon_0=-63 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_1
+0 setlinecap
+0 setlinejoin
+3.32551 setmiterlimit
+/PSL_GPP matrix currentmatrix def [0.707107 -0.353553 0.707107 0.353553 -0 2121.32] concat
+25 W
+8 W
+N 0 0 M 0 -83 D S
+N 0 5904 M 0 83 D S
+N 2000 0 M 0 -83 D S
+N 2000 5904 M 0 83 D S
+N 4000 0 M 0 -83 D S
+N 4000 5904 M 0 83 D S
+N 6000 0 M 0 -83 D S
+N 6000 5904 M 0 83 D S
+N 0 0 M -83 0 D S
+N 6000 0 M 83 0 D S
+N 0 2322 M -83 0 D S
+N 6000 2322 M 83 0 D S
+N 0 4696 M -83 0 D S
+N 6000 4696 M 83 0 D S
+0 -167 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(-66š) tc Z
+0 6070 M (-66š) bc Z
+2000 -167 M (-64š) tc Z
+2000 6070 M (-64š) bc Z
+4000 -167 M (-62š) tc Z
+4000 6070 M (-62š) bc Z
+6000 -167 M (-60š) tc Z
+6000 6070 M (-60š) bc Z
+-167 0 M (30š) mr Z
+6167 0 M (30š) ml Z
+-167 2322 M (32š) mr Z
+6167 2322 M (32š) ml Z
+-167 4696 M (34š) mr Z
+6167 4696 M (34š) ml Z
+83 W
+1.000 A
+N -42 0 M 0 2322 D S
+N 6042 0 M 0 2322 D S
+0.000 A
+N -42 2322 M 0 2374 D S
+N 6042 2322 M 0 2374 D S
+1.000 A
+N -42 4696 M 0 1208 D S
+N 6042 4696 M 0 1208 D S
+N 0 -42 M 2000 0 D S
+N 0 5945 M 2000 0 D S
+0.000 A
+N 2000 -42 M 2000 0 D S
+N 2000 5945 M 2000 0 D S
+1.000 A
+N 4000 -42 M 2000 0 D S
+N 4000 5945 M 2000 0 D S
+0.000 A
+8 W
+N -83 0 M 6166 0 D S
+N -83 -83 M 6166 0 D S
+N 6000 -83 M 0 6070 D S
+N 6083 -83 M 0 6070 D S
+N 6083 5904 M -6166 0 D S
+N 6083 5987 M -6166 0 D S
+N 0 5987 M 0 -6070 D S
+N -83 5987 M 0 -6070 D S
+PSL_GPP setmatrix
+4 W
+{1.000 A} FS
+O1
+-59 20 71 51 59 -29 3 4103 4356 SP
+-59 8 71 72 59 -29 3 4162 4327 SP
+-59 28 71 57 59 -13 3 4221 4298 SP
+-59 30 71 54 59 -27 3 4280 4285 SP
+-59 27 71 54 59 -27 3 4339 4258 SP
+-59 23 72 45 58 -14 3 4398 4231 SP
+-59 26 72 47 59 -28 3 4456 4217 SP
+-59 25 72 48 59 -26 3 4515 4189 SP
+-59 26 72 52 59 -30 3 4574 4163 SP
+-59 31 72 52 59 -31 3 4633 4133 SP
+-59 35 72 49 59 -32 3 4692 4102 SP
+-59 36 72 42 59 -29 3 4751 4070 SP
+-58 34 71 51 59 -43 3 4810 4041 SP
+-59 29 71 45 59 -23 3 4869 3998 SP
+-59 28 71 39 59 -22 3 4928 3975 SP
+-59 29 71 41 59 -31 3 4987 3953 SP
+-59 31 71 41 59 -31 3 5046 3922 SP
+-59 29 71 39 59 -27 3 5105 3891 SP
+-59 33 72 38 58 -32 3 5164 3864 SP
+-59 35 72 39 59 -36 3 5222 3832 SP
+-59 40 72 37 59 -38 3 5281 3796 SP
+-59 38 72 36 59 -37 3 5340 3758 SP
+-59 37 72 36 59 -37 3 5399 3721 SP
+-59 36 72 36 59 -36 3 5458 3684 SP
+-59 32 72 36 59 -32 3 5517 3648 SP
+-59 28 72 36 59 -28 3 5576 3616 SP
+-58 28 71 36 59 -28 3 5635 3588 SP
+-59 30 71 36 59 -30 3 5694 3560 SP
+-59 30 71 36 59 -30 3 5753 3530 SP
+-59 30 71 -34 59 40 3 5812 3500 SP
+-59 38 71 27 59 -99 3 5871 3540 SP
+-59 40 71 16 59 -29 3 5930 3441 SP
+-59 44 72 1 58 -29 3 5989 3412 SP
+-59 28 72 2 59 -29 3 6047 3383 SP
+-59 29 72 36 59 -63 3 6106 3354 SP
+-59 29 72 36 59 -29 3 6165 3291 SP
+-59 -6 72 37 59 5 3 6224 3262 SP
+-59 -40 72 59 59 18 3 6283 3267 SP
+-59 -303 72 438 59 -76 3 6342 3285 SP
+-58 432 71 35 59 -29 3 6401 3209 SP
+-59 29 71 -11 59 17 3 6460 3180 SP
+-59 29 71 -35 59 -5 3 6519 3197 SP
+-59 29 71 -35 59 -29 3 6578 3192 SP
+-59 27 71 -34 59 -28 3 6637 3163 SP
+-59 -43 71 36 59 -27 3 6696 3135 SP
+-59 29 72 16 58 -9 3 6755 3108 SP
+-59 12 72 16 59 -12 3 6813 3099 SP
+-59 5 72 27 59 -16 3 6872 3087 SP
+-59 20 72 25 59 -18 3 6931 3071 SP
+-59 5 72 35 59 -15 3 6990 3053 SP
+-59 27 72 37 59 -29 3 7049 3038 SP
+-59 31 72 8 59 -2 3 7108 3009 SP
+-59 29 72 -35 59 14 3 7167 3007 SP
+-58 29 71 -35 59 -29 3 7226 3021 SP
+-59 30 71 -10 59 -55 3 7285 2992 SP
+-59 21 71 10 59 -41 3 7344 2937 SP
+-59 30 71 24 59 -44 3 7403 2896 SP
+-59 32 71 30 59 -38 3 7462 2852 SP
+-59 35 72 5 58 -10 3 7521 2814 SP
+-59 -17 72 32 59 -10 3 7579 2804 SP
+-59 47 72 33 59 -48 3 7638 2794 SP
+-59 48 72 36 59 -51 3 7697 2746 SP
+-59 28 72 38 59 -30 3 7756 2695 SP
+-59 25 72 40 59 -27 3 7815 2665 SP
+-59 24 72 41 59 -25 3 7874 2638 SP
+-59 24 72 42 59 -25 3 7933 2613 SP
+-58 25 71 40 59 -23 3 7992 2588 SP
+-59 26 71 39 59 -25 3 8051 2565 SP
+-59 22 71 42 59 -25 3 8110 2540 SP
+-59 36 71 32 59 -26 3 8169 2515 SP
+-59 31 71 35 59 -34 3 8228 2489 SP
+-59 45 71 25 59 -35 3 8287 2455 SP
+-59 29 72 37 59 -24 3 4031 4314 SP
+-59 29 72 37 59 -29 3 4090 4290 SP
+-59 13 72 53 59 -29 3 4149 4261 SP
+-59 27 72 55 59 -29 3 4208 4232 SP
+-59 27 72 56 59 -28 3 4267 4203 SP
+-58 14 71 71 59 -29 3 4326 4175 SP
+-59 28 71 37 59 6 3 4385 4146 SP
+-59 26 71 39 59 -28 3 4444 4152 SP
+-59 30 71 35 59 -26 3 4503 4124 SP
+-59 31 71 38 59 -34 3 4562 4098 SP
+-59 32 71 54 59 -48 3 4621 4064 SP
+-59 29 72 72 58 -47 3 4680 4016 SP
+-59 43 72 58 59 -29 3 4738 3969 SP
+-59 23 72 36 59 -1 3 4797 3940 SP
+-59 22 72 37 59 -23 3 4856 3939 SP
+-59 31 72 46 59 -40 3 4915 3916 SP
+-59 31 72 45 59 -30 3 4974 3876 SP
+-59 27 72 51 59 -33 3 5033 3846 SP
+-58 32 71 46 59 -27 3 5092 3813 SP
+-59 36 71 39 59 -29 3 5151 3786 SP
+-59 38 71 35 59 -34 3 5210 3757 SP
+-59 37 71 36 59 -38 3 5269 3723 SP
+-59 37 71 37 59 -38 3 5328 3685 SP
+-59 36 71 37 59 -36 3 5387 3647 SP
+-59 32 71 36 59 -31 3 5446 3611 SP
+-59 28 72 34 58 -26 3 5505 3580 SP
+-59 28 72 35 59 -29 3 5563 3554 SP
+-59 30 72 37 59 -32 3 5622 3525 SP
+-59 30 72 23 59 -16 3 5681 3493 SP
+-59 -40 72 77 59 -14 3 5740 3477 SP
+-59 99 72 -34 59 12 3 5799 3463 SP
+-59 29 72 -34 59 -29 3 5858 3475 SP
+-58 29 71 36 59 -99 3 5917 3446 SP
+-59 29 71 36 59 -29 3 5976 3347 SP
+-59 63 71 2 59 -29 3 6035 3318 SP
+-59 29 71 2 59 -29 3 6094 3289 SP
+-59 -5 71 36 59 -29 3 6153 3260 SP
+-59 -18 71 83 59 -29 3 6212 3231 SP
+-59 76 72 32 58 -25 3 6271 3202 SP
+-59 29 72 35 59 -32 3 6329 3177 SP
+-59 -17 72 11 59 41 3 6388 3145 SP
+-59 5 72 35 59 -29 3 6447 3186 SP
+-59 29 72 30 59 -24 3 6506 3157 SP
+-59 28 72 30 59 -28 3 6565 3133 SP
+-59 27 72 26 59 -23 3 6624 3105 SP
+-58 9 71 36 59 -19 3 6683 3082 SP
+-59 12 71 38 59 -14 3 6742 3063 SP
+-59 16 71 36 59 -14 3 6801 3049 SP
+-59 18 71 35 59 -17 3 6860 3035 SP
+-59 15 71 36 59 -16 3 6919 3018 SP
+-59 29 71 35 59 -28 3 6978 3002 SP
+-59 2 71 -9 59 42 3 7037 2974 SP
+-59 -14 72 28 58 -23 3 7096 3016 SP
+-59 29 72 33 59 -34 3 7154 2993 SP
+-59 55 72 12 59 -34 3 7213 2959 SP
+-59 41 72 11 59 -40 3 7272 2925 SP
+-59 44 72 18 59 -51 3 7331 2885 SP
+-59 38 72 32 59 -52 3 7390 2834 SP
+-58 10 71 48 59 -26 3 7449 2782 SP
+-59 10 71 63 59 -25 3 7508 2756 SP
+-59 48 71 47 59 -32 3 7567 2731 SP
+-59 51 71 40 59 -44 3 7626 2699 SP
+-59 30 71 45 59 -35 3 7685 2655 SP
+-59 27 71 41 59 -23 3 7744 2620 SP
+-59 25 71 43 59 -27 3 7803 2597 SP
+-59 25 72 44 58 -26 3 7862 2570 SP
+-59 23 72 45 59 -24 3 7920 2544 SP
+-59 25 72 43 59 -23 3 7979 2520 SP
+-59 25 72 41 59 -23 3 8038 2497 SP
+-59 26 72 42 59 -27 3 8097 2474 SP
+-59 34 72 36 59 -28 3 8156 2447 SP
+-59 35 72 33 59 -32 3 8215 2419 SP
+-59 24 71 57 59 -29 3 3960 4262 SP
+-59 29 71 45 59 -17 3 4019 4233 SP
+-59 29 71 54 59 -38 3 4078 4216 SP
+-59 29 71 71 59 -46 3 4137 4178 SP
+-59 28 71 37 59 6 3 4196 4132 SP
+-59 29 71 36 59 -28 3 4255 4138 SP
+-59 -6 72 36 58 6 3 4314 4110 SP
+-59 28 72 38 59 -30 3 4372 4116 SP
+-59 26 72 42 59 -30 3 4431 4086 SP
+-59 34 72 37 59 -29 3 4490 4056 SP
+-59 48 72 54 59 -65 3 4549 4027 SP
+-58 47 71 38 59 -31 3 4608 3962 SP
+-59 29 71 37 59 -28 3 4667 3931 SP
+-59 1 71 47 59 -11 3 4726 3903 SP
+-59 23 71 2 59 22 3 4785 3892 SP
+-59 40 71 43 59 -81 3 4844 3914 SP
+-59 30 71 60 59 -47 3 4903 3833 SP
+-59 33 71 57 59 -30 3 4962 3786 SP
+-59 27 71 48 59 -18 3 5021 3756 SP
+-59 29 72 40 58 -21 3 5080 3738 SP
+-59 34 72 34 59 -28 3 5138 3717 SP
+-59 38 72 36 59 -40 3 5197 3689 SP
+-59 38 72 38 59 -40 3 5256 3649 SP
+-59 36 72 33 59 -31 3 5315 3609 SP
+-59 31 72 34 59 -32 3 5374 3578 SP
+-58 26 71 34 59 -26 3 5433 3546 SP
+-59 29 71 34 59 -29 3 5492 3520 SP
+-59 32 71 32 59 -30 3 5551 3491 SP
+-59 16 71 45 59 -29 3 5610 3461 SP
+-59 14 71 47 59 -16 3 5669 3432 SP
+-59 -12 71 74 59 -15 3 5728 3416 SP
+-59 29 71 72 59 -27 3 5787 3401 SP
+-59 99 71 21 59 -48 3 5846 3374 SP
+-59 29 72 40 58 -48 3 5905 3326 SP
+-59 29 72 41 59 -30 3 5963 3278 SP
+-59 29 72 42 59 -30 3 6022 3248 SP
+-59 29 72 36 59 -23 3 6081 3218 SP
+-59 29 72 35 59 -28 3 6140 3195 SP
+-58 25 71 39 59 -29 3 6199 3167 SP
+-59 32 71 35 59 -28 3 6258 3138 SP
+-59 -41 71 69 59 7 3 6317 3110 SP
+-59 29 71 33 59 7 3 6376 3117 SP
+-59 24 71 38 59 -29 3 6435 3124 SP
+-59 28 71 13 59 -3 3 6494 3095 SP
+-59 23 71 26 59 -36 3 6553 3092 SP
+-59 19 71 38 59 -31 3 6612 3056 SP
+-59 14 72 51 58 -27 3 6671 3025 SP
+-59 14 72 44 59 -7 3 6729 2998 SP
+-59 17 72 47 59 -20 3 6788 2991 SP
+-59 16 72 35 59 -4 3 6847 2971 SP
+-59 28 72 4 59 3 3 6906 2967 SP
+-59 -42 72 38 59 8 3 6965 2970 SP
+-58 23 71 36 59 -21 3 7024 2978 SP
+-59 34 71 38 59 -36 3 7083 2957 SP
+-59 34 71 21 59 -17 3 7142 2921 SP
+-59 40 71 22 59 -41 3 7201 2904 SP
+-59 51 71 28 59 -57 3 7260 2863 SP
+-59 52 71 40 59 -64 3 7319 2806 SP
+-59 26 71 48 59 -34 3 7378 2742 SP
+-59 25 72 54 58 -31 3 7437 2708 SP
+-59 32 72 56 59 -34 3 7495 2677 SP
+-59 44 72 43 59 -31 3 7554 2643 SP
+-59 35 72 38 59 -30 3 7613 2612 SP
+-59 23 72 44 59 -29 3 7672 2582 SP
+-59 27 72 47 59 -30 3 7731 2553 SP
+-58 26 71 50 59 -29 3 7790 2523 SP
+-59 24 71 44 59 -18 3 7849 2494 SP
+-59 23 71 45 59 -24 3 7908 2476 SP
+-59 23 71 44 59 -22 3 7967 2452 SP
+-59 27 71 40 59 -23 3 8026 2430 SP
+-59 28 71 38 59 -26 3 8085 2407 SP
+-59 32 71 32 59 -26 3 8144 2381 SP
+-59 29 71 51 59 -29 3 3889 4211 SP
+-59 17 72 63 58 -29 3 3948 4182 SP
+-59 38 72 30 59 -5 3 4006 4153 SP
+-59 46 72 -28 59 12 3 4065 4148 SP
+-59 -6 72 35 59 -57 3 4124 4160 SP
+-59 28 72 -34 59 41 3 4183 4103 SP
+-58 -6 71 2 59 -30 3 4242 4144 SP
+-59 30 71 30 59 -58 3 4301 4114 SP
+-59 30 71 36 59 -36 3 4360 4056 SP
+-59 29 71 59 59 -52 3 4419 4020 SP
+-59 65 71 36 59 -42 3 4478 3968 SP
+-59 31 71 37 59 -32 3 4537 3926 SP
+-59 28 71 33 59 -24 3 4596 3894 SP
+-59 11 71 54 59 -32 3 4655 3870 SP
+-59 -22 72 -6 58 82 3 4714 3838 SP
+-59 81 72 13 59 -100 3 4772 3920 SP
+-59 47 72 107 59 -141 3 4831 3820 SP
+-59 30 72 37 59 40 3 4890 3679 SP
+-59 18 72 47 59 -28 3 4949 3719 SP
+-58 21 71 38 59 -12 3 5008 3691 SP
+-59 28 71 32 59 -22 3 5067 3679 SP
+-59 40 71 24 59 -32 3 5126 3657 SP
+-59 40 71 36 59 -52 3 5185 3625 SP
+-59 31 71 35 59 -30 3 5244 3573 SP
+-59 32 71 32 59 -29 3 5303 3543 SP
+-59 26 71 24 59 -18 3 5362 3514 SP
+-59 29 71 18 59 -23 3 5421 3496 SP
+-59 30 71 30 59 -42 3 5480 3473 SP
+-59 29 72 26 58 -25 3 5539 3431 SP
+-59 16 72 41 59 -31 3 5597 3406 SP
+-59 15 72 62 59 -36 3 5656 3375 SP
+-59 27 72 67 59 -32 3 5715 3339 SP
+-59 48 72 53 59 -34 3 5774 3307 SP
+-58 48 71 37 59 -32 3 5833 3273 SP
+-59 30 71 37 59 -30 3 5892 3241 SP
+-59 30 71 37 59 -30 3 5951 3211 SP
+-59 23 71 36 59 -22 3 6010 3181 SP
+-59 28 71 29 59 -21 3 6069 3159 SP
+-59 29 71 11 59 -11 3 6128 3138 SP
+-59 28 71 -36 59 19 3 6187 3127 SP
+-59 -7 71 -2 59 -27 3 6246 3146 SP
+-59 -7 72 34 58 -29 3 6305 3119 SP
+-59 29 72 -18 59 23 3 6363 3090 SP
+-59 3 72 -9 59 -12 3 6422 3113 SP
+-59 36 72 24 59 -69 3 6481 3101 SP
+-59 31 72 48 59 -55 3 6540 3032 SP
+-58 27 71 52 59 -31 3 6599 2977 SP
+-59 7 71 71 59 -26 3 6658 2946 SP
+-59 20 71 50 59 1 3 6717 2920 SP
+-59 4 71 36 59 10 3 6776 2921 SP
+-59 -3 71 30 59 9 3 6835 2931 SP
+-59 -8 71 35 59 3 3 6894 2940 SP
+-59 21 71 31 59 -17 3 6953 2943 SP
+-59 36 71 28 59 -33 3 7012 2926 SP
+-59 17 71 46 59 -35 3 7071 2893 SP
+-59 41 72 36 58 -31 3 7130 2858 SP
+-59 57 72 57 59 -78 3 7188 2827 SP
+-59 64 72 43 59 -50 3 7247 2749 SP
+-59 34 72 41 59 -32 3 7306 2699 SP
+-58 31 71 43 59 -33 3 7365 2667 SP
+-59 34 71 45 59 -36 3 7424 2634 SP
+-59 31 71 49 59 -35 3 7483 2598 SP
+-59 30 71 50 59 -31 3 7542 2563 SP
+-59 29 71 52 59 -31 3 7601 2532 SP
+-59 30 71 49 59 -27 3 7660 2501 SP
+-59 29 71 38 59 -18 3 7719 2474 SP
+-59 18 71 48 59 -28 3 7778 2456 SP
+-59 24 71 51 59 -27 3 7837 2428 SP
+-59 22 72 47 58 -18 3 7896 2401 SP
+-59 23 72 44 59 -20 3 7954 2383 SP
+-59 26 72 39 59 -21 3 8013 2363 SP
+-59 26 72 53 59 -40 3 8072 2342 SP
+-59 29 72 38 59 -32 3 3817 4176 SP
+-58 29 71 35 59 -26 3 3876 4144 SP
+-59 5 71 -4 59 34 3 3935 4118 SP
+-59 -12 71 -6 59 14 3 3994 4152 SP
+-59 57 71 35 59 -98 3 4053 4166 SP
+-59 -41 71 70 59 6 3 4112 4068 SP
+-59 30 71 35 59 5 3 4171 4074 SP
+-59 58 71 50 59 -73 3 4230 4079 SP
+-59 36 71 70 59 -56 3 4289 4006 SP
+-59 52 71 48 59 -30 3 4348 3950 SP
+-59 42 71 34 59 -28 3 4407 3920 SP
+-59 32 72 32 58 -30 3 4466 3892 SP
+-59 24 72 34 59 -26 3 4524 3862 SP
+-59 32 72 5 59 -3 3 4583 3836 SP
+-58 -82 71 124 59 -37 3 4642 3833 SP
+-59 100 71 20 59 4 3 4701 3796 SP
+-59 141 71 37 59 -158 3 4760 3800 SP
+-59 -40 71 106 59 -29 3 4819 3642 SP
+-59 28 71 37 59 41 3 4878 3613 SP
+-59 12 71 48 59 -23 3 4937 3654 SP
+-59 22 71 19 59 7 3 4996 3631 SP
+-59 32 71 4 59 -17 3 5055 3638 SP
+-59 52 71 -11 59 -37 3 5114 3621 SP
+-59 30 71 35 59 -76 3 5173 3584 SP
+-59 29 72 35 58 -29 3 5232 3508 SP
+-59 18 72 -11 59 28 3 5290 3479 SP
+-59 23 72 -12 59 -22 3 5349 3507 SP
+-59 42 72 -24 59 -30 3 5408 3485 SP
+-58 25 71 28 59 -77 3 5467 3455 SP
+-59 31 71 10 59 -13 3 5526 3378 SP
+-59 36 71 16 59 -42 3 5585 3365 SP
+-59 32 71 35 59 -51 3 5644 3323 SP
+-59 34 71 32 59 -31 3 5703 3272 SP
+-59 32 71 31 59 -31 3 5762 3241 SP
+-59 30 71 34 59 -33 3 5821 3210 SP
+-59 30 71 29 59 -25 3 5880 3177 SP
+-59 22 71 35 59 -28 3 5939 3152 SP
+-59 21 72 40 58 -26 3 5998 3124 SP
+-59 11 72 26 59 3 3 6056 3098 SP
+-59 -19 72 34 59 11 3 6115 3101 SP
+-59 27 72 1 59 6 3 6174 3112 SP
+-58 29 71 -35 59 7 3 6233 3118 SP
+-59 -23 71 17 59 -29 3 6292 3125 SP
+-59 12 71 36 59 -31 3 6351 3096 SP
+-59 69 71 66 59 -99 3 6410 3065 SP
+-59 55 71 40 59 -29 3 6469 2966 SP
+-59 31 71 37 59 -28 3 6528 2937 SP
+-59 26 71 40 59 -29 3 6587 2909 SP
+-59 -1 71 68 59 -27 3 6646 2880 SP
+-59 -10 71 36 59 42 3 6705 2853 SP
+-59 -9 71 43 59 2 3 6764 2895 SP
+-59 -3 72 33 58 13 3 6823 2897 SP
+-59 17 72 44 59 -28 3 6881 2910 SP
+-59 33 72 41 59 -30 3 6940 2882 SP
+-59 35 72 36 59 -30 3 6999 2852 SP
+-58 31 71 105 59 -100 3 7058 2822 SP
+-59 78 71 58 59 -31 3 7117 2722 SP
+-59 50 71 40 59 -32 3 7176 2691 SP
+-59 32 71 45 59 -37 3 7235 2659 SP
+-59 33 71 49 59 -37 3 7294 2622 SP
+-59 36 71 50 59 -37 3 7353 2585 SP
+-59 35 71 51 59 -36 3 7412 2548 SP
+-59 31 71 54 59 -34 3 7471 2512 SP
+-59 31 71 55 59 -32 3 7530 2478 SP
+-59 27 72 56 58 -28 3 7589 2446 SP
+-59 18 72 68 59 -30 3 7647 2418 SP
+-59 28 72 70 59 -30 3 7706 2388 SP
+-59 27 72 64 59 -21 3 7765 2358 SP
+-58 18 71 48 59 -2 3 7824 2337 SP
+-59 20 71 48 59 -20 3 7883 2335 SP
+-59 21 71 49 59 -22 3 7942 2315 SP
+-59 40 71 31 59 -22 3 8001 2293 SP
+-59 32 71 28 59 -32 3 3746 4148 SP
+-59 26 71 33 59 -31 3 3805 4116 SP
+-59 -34 71 98 59 -31 3 3864 4085 SP
+-59 -14 71 105 59 7 3 3923 4054 SP
+-59 98 71 36 59 -29 3 3982 4061 SP
+-59 -6 71 70 59 -28 3 4041 4032 SP
+-59 -5 71 105 59 -30 3 4100 4004 SP
+-59 73 71 62 59 -30 3 4159 3974 SP
+-59 56 72 36 58 -30 3 4218 3944 SP
+-59 30 72 39 59 -33 3 4276 3914 SP
+-59 28 72 38 59 -27 3 4335 3881 SP
+-58 30 71 36 59 -28 3 4394 3854 SP
+-59 26 71 37 59 -27 3 4453 3826 SP
+-59 3 71 59 59 -25 3 4512 3799 SP
+-59 37 71 42 59 -20 3 4571 3774 SP
+-59 -4 71 98 59 -52 3 4630 3754 SP
+-59 158 71 -10 59 -50 3 4689 3702 SP
+-59 29 71 36 59 -75 3 4748 3652 SP
+-59 -41 71 105 59 -28 3 4807 3577 SP
+-59 23 71 40 59 42 3 4866 3549 SP
+-59 -7 71 5 59 42 3 4925 3591 SP
+-59 17 72 18 58 -30 3 4984 3633 SP
+-59 37 72 11 59 -30 3 5042 3603 SP
+-59 76 72 7 59 -72 3 5101 3573 SP
+-58 29 71 35 59 -57 3 5160 3501 SP
+-59 -28 71 34 59 29 3 5219 3444 SP
+-59 22 71 -112 59 124 3 5278 3473 SP
+-59 30 71 91 59 -233 3 5337 3597 SP
+-59 77 71 35 59 -21 3 5396 3364 SP
+-59 13 71 36 59 -14 3 5455 3343 SP
+-59 42 71 -7 59 1 3 5514 3329 SP
+-59 51 71 22 59 -80 3 5573 3330 SP
+-59 31 71 36 59 -45 3 5632 3250 SP
+-59 31 71 35 59 -30 3 5691 3205 SP
+-59 33 71 35 59 -33 3 5750 3175 SP
+-59 25 72 35 58 -25 3 5809 3142 SP
+-59 28 72 35 59 -28 3 5867 3117 SP
+-58 26 71 36 59 -27 3 5926 3089 SP
+-59 -3 71 66 59 -27 3 5985 3062 SP
+-59 -11 71 35 59 42 3 6044 3035 SP
+-59 -6 71 -1 59 42 3 6103 3077 SP
+-59 -7 71 35 59 -29 3 6162 3119 SP
+-59 29 71 35 59 -29 3 6221 3090 SP
+-59 31 71 104 59 -100 3 6280 3061 SP
+-59 99 71 37 59 -32 3 6339 2961 SP
+-59 29 71 41 59 -33 3 6398 2929 SP
+-59 28 71 44 59 -31 3 6457 2896 SP
+-59 29 71 42 59 -27 3 6516 2865 SP
+-59 27 72 37 58 -22 3 6575 2838 SP
+-59 -42 72 36 59 43 3 6633 2816 SP
+-59 -2 72 65 59 -27 3 6692 2859 SP
+-58 -13 71 43 59 35 3 6751 2832 SP
+-59 28 71 37 59 -22 3 6810 2867 SP
+-59 30 71 36 59 -29 3 6869 2845 SP
+-59 30 71 105 59 -99 3 6928 2816 SP
+-59 100 71 36 59 -31 3 6987 2717 SP
+-59 31 71 40 59 -35 3 7046 2686 SP
+-59 32 71 37 59 -29 3 7105 2651 SP
+-59 37 71 43 59 -43 3 7164 2622 SP
+-59 37 71 48 59 -42 3 7223 2579 SP
+-59 37 71 51 59 -40 3 7282 2537 SP
+-59 36 72 51 58 -36 3 7341 2497 SP
+-59 34 72 52 59 -35 3 7399 2461 SP
+-59 32 72 52 59 -32 3 7458 2426 SP
+-58 28 71 54 59 -30 3 7517 2394 SP
+-59 30 71 61 59 -37 3 7576 2364 SP
+-59 30 71 69 59 -38 3 7635 2327 SP
+-59 21 71 80 59 -32 3 7694 2289 SP
+-59 2 71 74 59 4 3 7753 2257 SP
+-59 20 71 45 59 9 3 7812 2261 SP
+-59 22 71 52 59 -29 3 7871 2270 SP
+-59 22 71 60 59 -30 3 7930 2241 SP
+-59 32 71 21 59 -29 3 3675 4124 SP
+-59 31 71 24 59 -34 3 3734 4095 SP
+-59 31 71 17 59 -24 3 3793 4061 SP
+-59 -7 71 42 59 -18 3 3852 4037 SP
+-59 29 71 35 59 -22 3 3911 4019 SP
+-59 28 71 36 59 -29 3 3970 3997 SP
+-59 30 72 36 58 -30 3 4029 3968 SP
+-59 30 72 36 59 -30 3 4087 3938 SP
+-58 30 71 36 59 -30 3 4146 3908 SP
+-59 33 71 36 59 -33 3 4205 3878 SP
+-59 27 71 37 59 -28 3 4264 3845 SP
+-59 28 71 37 59 -28 3 4323 3817 SP
+-59 27 71 40 59 -30 3 4382 3789 SP
+-59 25 71 43 59 -28 3 4441 3759 SP
+-59 20 71 53 59 -30 3 4500 3731 SP
+-59 52 71 37 59 -36 3 4559 3701 SP
+-59 50 71 12 59 -25 3 4618 3665 SP
+-59 75 71 -11 59 -52 3 4677 3640 SP
+-59 28 71 -34 59 -5 3 4736 3588 SP
+-59 -42 72 35 58 -27 3 4795 3583 SP
+-59 -42 72 35 59 42 3 4853 3556 SP
+-58 30 71 35 59 -30 3 4912 3598 SP
+-59 30 71 36 59 -31 3 4971 3568 SP
+-59 72 71 24 59 -60 3 5030 3537 SP
+-59 57 71 17 59 -50 3 5089 3477 SP
+-59 -29 71 78 59 -32 3 5148 3427 SP
+-59 -124 71 210 59 -8 3 5207 3395 SP
+-59 233 71 41 59 -64 3 5266 3387 SP
+-59 21 71 49 59 -29 3 5325 3323 SP
+-59 14 71 65 59 -30 3 5384 3294 SP
+-59 -1 71 100 59 -34 3 5443 3264 SP
+-59 80 71 40 59 -20 3 5502 3230 SP
+-59 45 71 36 59 -41 3 5561 3210 SP
+-59 30 72 39 58 -33 3 5620 3169 SP
+-59 33 72 39 59 -33 3 5678 3136 SP
+-58 25 71 35 59 -21 3 5737 3103 SP
+-59 28 71 35 59 -28 3 5796 3082 SP
+-59 27 71 32 59 -24 3 5855 3054 SP
+-59 27 71 35 59 -30 3 5914 3030 SP
+-59 -42 71 105 59 -28 3 5973 3000 SP
+-59 -42 71 129 59 18 3 6032 2972 SP
+-59 29 71 105 59 -5 3 6091 2990 SP
+-59 29 71 129 59 -53 3 6150 2985 SP
+-59 100 71 88 59 -59 3 6209 2932 SP
+-59 32 71 34 59 22 3 6268 2873 SP
+-59 33 71 13 59 -12 3 6327 2895 SP
+-59 31 72 29 58 -47 3 6386 2883 SP
+-59 27 72 30 59 -28 3 6444 2836 SP
+-58 22 71 7 59 1 3 6503 2808 SP
+-59 -43 71 36 59 14 3 6562 2809 SP
+-59 27 71 6 59 3 3 6621 2823 SP
+-59 -35 71 29 59 12 3 6680 2826 SP
+-59 22 71 1 59 6 3 6739 2838 SP
+-59 29 71 1 59 -29 3 6798 2844 SP
+-59 99 71 36 59 -134 3 6857 2815 SP
+-59 31 71 43 59 -38 3 6916 2681 SP
+-59 35 71 25 59 -17 3 6975 2643 SP
+-59 29 71 41 59 -45 3 7034 2626 SP
+-59 43 71 46 59 -48 3 7093 2581 SP
+-59 42 71 49 59 -45 3 7152 2533 SP
+-59 40 72 50 58 -41 3 7211 2488 SP
+-58 36 71 51 59 -37 3 7269 2447 SP
+-59 35 71 50 59 -34 3 7328 2410 SP
+-59 32 71 51 59 -33 3 7387 2376 SP
+-59 30 71 50 59 -29 3 7446 2343 SP
+-59 37 71 54 59 -41 3 7505 2314 SP
+-59 38 71 41 59 -25 3 7564 2273 SP
+-59 32 71 37 59 -28 3 7623 2248 SP
+-59 -4 71 68 59 -27 3 7682 2220 SP
+-59 -9 71 55 59 22 3 7741 2193 SP
+-59 29 71 36 59 -10 3 7800 2215 SP
+-59 30 71 36 59 -30 3 7859 2205 SP
+-59 29 71 25 59 -32 3 3604 4102 SP
+-59 34 71 20 59 -29 3 3663 4070 SP
+-59 24 71 23 59 -27 3 3722 4041 SP
+-59 18 71 30 59 -25 3 3781 4014 SP
+-59 22 71 32 59 -24 3 3840 3989 SP
+-59 29 72 30 58 -27 3 3899 3965 SP
+-58 30 71 31 59 -31 3 3957 3938 SP
+-59 30 71 35 59 -34 3 4016 3907 SP
+-59 30 71 36 59 -31 3 4075 3873 SP
+-59 33 71 32 59 -29 3 4134 3842 SP
+-59 28 71 34 59 -30 3 4193 3813 SP
+-59 28 71 35 59 -29 3 4252 3783 SP
+-59 30 71 34 59 -29 3 4311 3754 SP
+-59 28 71 35 59 -29 3 4370 3725 SP
+-59 30 71 33 59 -28 3 4429 3696 SP
+-59 36 71 29 59 -32 3 4488 3668 SP
+-59 25 71 34 59 -30 3 4547 3636 SP
+-59 52 71 16 59 -34 3 4606 3606 SP
+-59 5 72 34 58 -23 3 4665 3572 SP
+-58 27 71 34 59 -27 3 4723 3549 SP
+-59 -42 71 58 59 18 3 4782 3522 SP
+-59 30 71 31 59 -3 3 4841 3540 SP
+-59 31 71 34 59 -34 3 4900 3537 SP
+-59 60 71 5 59 -31 3 4959 3503 SP
+-59 50 71 54 59 -99 3 5018 3472 SP
+-59 32 71 51 59 -29 3 5077 3373 SP
+-59 8 71 72 59 -29 3 5136 3344 SP
+-59 64 71 34 59 -26 3 5195 3315 SP
+-59 29 71 34 59 -29 3 5254 3289 SP
+-59 30 71 31 59 -27 3 5313 3260 SP
+-59 34 71 36 59 -39 3 5372 3233 SP
+-59 20 71 46 59 -30 3 5431 3194 SP
+-59 41 72 36 58 -31 3 5490 3164 SP
+-58 33 71 41 59 -38 3 5548 3133 SP
+-59 33 71 27 59 -19 3 5607 3095 SP
+-59 21 71 34 59 -28 3 5666 3076 SP
+-59 28 71 30 59 -24 3 5725 3048 SP
+-59 24 71 33 59 -27 3 5784 3024 SP
+-59 30 71 46 59 -43 3 5843 2997 SP
+-59 28 71 35 59 -17 3 5902 2954 SP
+-59 -18 71 81 59 -28 3 5961 2937 SP
+-59 5 71 105 59 -29 3 6020 2909 SP
+-59 53 71 82 59 -30 3 6079 2880 SP
+-59 59 71 -31 59 54 3 6138 2850 SP
+-59 -22 71 -81 59 72 3 6197 2904 SP
+-59 12 72 53 58 -146 3 6256 2976 SP
+-58 47 71 35 59 -29 3 6314 2830 SP
+-59 28 71 36 59 -29 3 6373 2801 SP
+-59 -1 71 27 59 10 3 6432 2772 SP
+-59 -14 71 37 59 4 3 6491 2782 SP
+-59 -3 71 33 59 7 3 6550 2786 SP
+-59 -12 71 36 59 9 3 6609 2793 SP
+-59 -6 71 1 59 41 3 6668 2802 SP
+-59 29 71 36 59 -64 3 6727 2843 SP
+-59 134 71 36 59 -134 3 6786 2779 SP
+-59 38 71 22 59 -24 3 6845 2645 SP
+-59 17 71 37 59 -32 3 6904 2621 SP
+-59 45 71 43 59 -51 3 6963 2589 SP
+-59 48 71 47 59 -52 3 7022 2538 SP
+-59 45 72 52 58 -50 3 7081 2486 SP
+-58 41 71 52 59 -41 3 7139 2436 SP
+-59 37 71 48 59 -33 3 7198 2395 SP
+-59 34 71 47 59 -33 3 7257 2362 SP
+-59 33 71 46 59 -32 3 7316 2329 SP
+-59 29 71 45 59 -28 3 7375 2297 SP
+-59 41 71 37 59 -33 3 7434 2269 SP
+-59 25 71 34 59 -22 3 7493 2236 SP
+-59 28 71 41 59 -35 3 7552 2214 SP
+-59 27 71 37 59 -23 3 7611 2179 SP
+-59 -22 71 17 59 42 3 7670 2156 SP
+-59 10 71 36 59 -29 3 7729 2198 SP
+-59 30 71 24 59 -18 3 7788 2169 SP
+-59 32 71 30 59 -31 3 3533 4071 SP
+-59 29 71 34 59 -33 3 3592 4040 SP
+-59 27 71 36 59 -29 3 3651 4007 SP
+-59 25 71 34 59 -23 3 3710 3978 SP
+-59 24 71 36 59 -26 3 3769 3955 SP
+-58 27 71 37 58 -28 3 3828 3929 SP
+-59 31 71 33 59 -27 3 3886 3901 SP
+-59 34 71 36 59 -37 3 3945 3874 SP
+-59 31 71 35 59 -30 3 4004 3837 SP
+-59 29 71 35 59 -29 3 4063 3807 SP
+-59 30 71 34 59 -29 3 4122 3778 SP
+-59 29 71 19 59 -14 3 4181 3749 SP
+-59 29 71 8 59 -18 3 4240 3735 SP
+-59 29 71 -1 59 -20 3 4299 3717 SP
+-59 28 71 1 59 -30 3 4358 3697 SP
+-59 32 71 8 59 -39 3 4417 3667 SP
+-59 30 71 32 59 -54 3 4476 3628 SP
+-59 34 71 17 59 -19 3 4535 3574 SP
+-58 23 71 25 58 -31 3 4594 3555 SP
+-59 27 71 35 59 -37 3 4652 3524 SP
+-59 -18 71 81 59 -28 3 4711 3487 SP
+-59 3 71 39 59 39 3 4770 3459 SP
+-59 34 71 -58 59 63 3 4829 3498 SP
+-59 31 71 34 59 -123 3 4888 3561 SP
+-59 99 71 35 59 -100 3 4947 3438 SP
+-59 29 71 35 59 -29 3 5006 3338 SP
+-59 29 71 11 59 -5 3 5065 3309 SP
+-59 26 71 5 59 -20 3 5124 3304 SP
+-59 29 71 -1 59 -23 3 5183 3284 SP
+-59 27 71 -2 59 -26 3 5242 3261 SP
+-59 39 71 2 59 -43 3 5301 3235 SP
+-59 30 71 36 59 -64 3 5360 3192 SP
+-58 31 71 28 58 -23 3 5419 3128 SP
+-59 38 71 25 59 -35 3 5477 3105 SP
+-59 19 71 33 59 -27 3 5536 3070 SP
+-59 28 71 36 59 -31 3 5595 3043 SP
+-59 24 71 37 59 -25 3 5654 3012 SP
+-59 27 71 16 59 -6 3 5713 2987 SP
+-59 43 71 21 59 -48 3 5772 2981 SP
+-59 17 71 -3 59 7 3 5831 2933 SP
+-59 28 71 -83 59 52 3 5890 2940 SP
+-59 29 71 -60 59 -52 3 5949 2992 SP
+-59 30 71 -19 59 -71 3 6008 2940 SP
+-59 -54 71 47 59 -12 3 6067 2869 SP
+-59 -72 71 81 59 38 3 6126 2857 SP
+-58 146 71 -12 58 -53 3 6185 2895 SP
+-59 29 71 35 59 -76 3 6243 2842 SP
+-59 29 71 35 59 -29 3 6302 2766 SP
+-59 -10 71 3 59 42 3 6361 2737 SP
+-59 -4 71 35 59 -28 3 6420 2779 SP
+-59 -7 71 45 59 -3 3 6479 2751 SP
+-59 -9 71 43 59 11 3 6538 2748 SP
+-59 -41 71 105 59 -21 3 6597 2759 SP
+-59 64 71 70 59 -29 3 6656 2738 SP
+-59 134 71 -24 59 -40 3 6715 2709 SP
+-59 24 71 20 59 -68 3 6774 2669 SP
+-59 32 71 29 59 -41 3 6833 2601 SP
+-59 51 71 41 59 -63 3 6892 2560 SP
+-59 52 71 47 59 -58 3 6951 2497 SP
+-58 50 71 49 58 -52 3 7010 2439 SP
+-59 41 71 43 59 -35 3 7068 2387 SP
+-59 33 71 41 59 -31 3 7127 2352 SP
+-59 33 71 40 59 -32 3 7186 2321 SP
+-59 32 71 40 59 -32 3 7245 2289 SP
+-59 28 71 39 59 -27 3 7304 2257 SP
+-59 33 71 30 59 -24 3 7363 2230 SP
+-59 22 71 41 59 -33 3 7422 2206 SP
+-59 35 71 31 59 -25 3 7481 2173 SP
+-59 23 71 35 59 -27 3 7540 2148 SP
+-59 -42 71 35 59 42 3 7599 2121 SP
+-59 29 71 -34 59 40 3 7658 2163 SP
+-59 18 71 -22 59 -30 3 7717 2203 SP
+-59 31 71 33 59 -31 3 3462 4038 SP
+-59 33 71 30 59 -30 3 3521 4007 SP
+-59 29 71 30 59 -29 3 3580 3977 SP
+-59 23 71 33 59 -26 3 3639 3948 SP
+-59 26 71 29 59 -22 3 3698 3922 SP
+-58 28 70 37 59 -36 3 3757 3900 SP
+-59 27 71 39 58 -29 3 3816 3864 SP
+-59 37 71 39 59 -37 3 3874 3835 SP
+-59 30 71 34 59 -25 3 3933 3798 SP
+-59 29 71 30 59 -25 3 3992 3773 SP
+-59 29 71 8 59 -7 3 4051 3748 SP
+-59 14 71 4 59 -10 3 4110 3741 SP
+-59 18 71 -9 59 -5 3 4169 3731 SP
+-59 20 71 1 59 -30 3 4228 3726 SP
+-59 30 71 0 59 -29 3 4287 3696 SP
+-59 39 71 -10 59 -29 3 4346 3667 SP
+-59 54 71 -13 59 -51 3 4405 3638 SP
+-59 19 71 1 59 -33 3 4464 3587 SP
+-58 31 70 3 59 -33 3 4523 3554 SP
+-59 37 71 15 58 -49 3 4582 3521 SP
+-59 28 71 36 59 -49 3 4640 3472 SP
+-59 -39 71 104 59 -29 3 4699 3423 SP
+-59 -63 71 197 59 -30 3 4758 3394 SP
+-59 123 71 35 59 39 3 4817 3364 SP
+-59 100 71 -16 59 -49 3 4876 3403 SP
+-59 29 71 -35 59 -10 3 4935 3354 SP
+-59 5 71 -10 59 -30 3 4994 3344 SP
+-59 20 71 0 59 -30 3 5053 3314 SP
+-59 23 71 6 59 -29 3 5112 3284 SP
+-59 26 71 11 59 -31 3 5171 3255 SP
+-59 43 71 -1 59 -31 3 5230 3224 SP
+-59 64 71 -35 59 -30 3 5289 3193 SP
+-58 23 70 41 59 -99 3 5348 3163 SP
+-59 35 71 42 58 -36 3 5407 3064 SP
+-59 27 71 73 59 -58 3 5465 3028 SP
+-59 31 71 97 59 -55 3 5524 2970 SP
+-59 25 71 -82 59 154 3 5583 2915 SP
+-59 6 71 -3 59 -85 3 5642 3069 SP
+-59 48 71 -76 59 25 3 5701 2984 SP
+-59 -7 71 -53 59 -16 3 5760 3009 SP
+-59 -52 71 -1 59 0 3 5819 2993 SP
+-59 52 71 -8 59 -45 3 5878 2993 SP
+-59 71 71 -22 59 -57 3 5937 2948 SP
+-59 12 71 33 59 -67 3 5996 2891 SP
+-59 -38 71 103 59 -32 3 6055 2824 SP
+-58 53 70 81 59 -31 3 6114 2792 SP
+-59 76 71 35 58 -30 3 6173 2761 SP
+-59 29 71 14 59 -8 3 6231 2731 SP
+-59 -42 71 36 59 20 3 6290 2723 SP
+-59 28 71 36 59 -28 3 6349 2743 SP
+-59 3 71 48 59 -15 3 6408 2715 SP
+-59 -11 71 78 59 -19 3 6467 2700 SP
+-59 21 71 54 59 3 3 6526 2681 SP
+-59 29 71 36 59 -11 3 6585 2684 SP
+-59 40 71 25 59 -29 3 6644 2673 SP
+-59 68 71 -11 59 -32 3 6703 2644 SP
+-59 41 71 49 59 -101 3 6762 2612 SP
+-59 63 71 41 59 -55 3 6821 2511 SP
+-59 58 71 44 59 -61 3 6880 2456 SP
+-58 52 70 38 59 -46 3 6939 2395 SP
+-59 35 71 39 58 -36 3 6998 2349 SP
+-59 31 71 35 59 -27 3 7056 2313 SP
+-59 32 71 33 59 -30 3 7115 2286 SP
+-59 32 71 33 59 -32 3 7174 2256 SP
+-59 27 71 31 59 -25 3 7233 2224 SP
+-59 24 71 28 59 -21 3 7292 2199 SP
+-59 33 71 26 59 -31 3 7351 2178 SP
+-59 25 71 31 59 -30 3 7410 2147 SP
+-59 27 71 35 59 -31 3 7469 2117 SP
+-59 -42 71 35 59 42 3 7528 2086 SP
+-59 -40 71 34 59 41 3 7587 2128 SP
+-59 30 71 34 59 -30 3 7646 2169 SP
+-59 31 71 36 59 -29 3 3391 4000 SP
+-59 30 71 34 59 -28 3 3450 3971 SP
+-59 29 71 34 59 -29 3 3509 3943 SP
+-59 26 71 6 59 2 3 3568 3914 SP
+-59 22 71 0 59 -16 3 3627 3916 SP
+-59 36 71 9 59 -45 3 3686 3900 SP
+-58 29 70 37 59 -57 3 3745 3855 SP
+-59 37 70 30 59 -30 3 3804 3798 SP
+-59 25 71 34 58 -29 3 3863 3768 SP
+-59 25 71 1 59 8 3 3921 3739 SP
+-59 7 71 5 59 -11 3 3980 3747 SP
+-59 10 71 13 59 -18 3 4039 3736 SP
+-59 5 71 34 59 -26 3 4098 3718 SP
+-59 30 71 33 59 -29 3 4157 3692 SP
+-59 29 71 34 59 -30 3 4216 3663 SP
+-59 29 71 34 59 -29 3 4275 3633 SP
+-59 51 71 12 59 -29 3 4334 3604 SP
+-59 33 71 8 59 -29 3 4393 3575 SP
+-59 33 71 5 59 -30 3 4452 3546 SP
+-58 49 70 1 59 -45 3 4511 3516 SP
+-59 49 70 -6 59 -42 3 4570 3471 SP
+-59 29 71 -4 58 -31 3 4629 3429 SP
+-59 30 71 -35 59 1 3 4687 3398 SP
+-59 -39 71 34 59 -30 3 4746 3399 SP
+-59 49 71 14 59 -29 3 4805 3369 SP
+-59 10 71 34 59 -30 3 4864 3340 SP
+-59 30 71 34 59 -30 3 4923 3310 SP
+-59 30 71 33 59 -29 3 4982 3280 SP
+-59 29 71 34 59 -30 3 5041 3251 SP
+-59 31 71 34 59 -31 3 5100 3221 SP
+-59 31 71 35 59 -32 3 5159 3190 SP
+-59 30 71 35 59 -30 3 5218 3158 SP
+-59 99 71 -1 59 -63 3 5277 3128 SP
+-58 36 70 25 59 -62 3 5336 3065 SP
+-59 58 70 38 59 -71 3 5395 3003 SP
+-59 55 71 30 58 -47 3 5454 2932 SP
+-59 -154 71 0 59 184 3 5512 2885 SP
+-59 85 71 -583 59 498 3 5571 3069 SP
+-59 -25 71 -333 59 -225 3 5630 3567 SP
+-59 16 71 -167 59 -182 3 5689 3342 SP
+-59 0 71 -111 59 -56 3 5748 3160 SP
+-59 45 71 -71 59 -85 3 5807 3104 SP
+-59 57 71 -6 59 -122 3 5866 3019 SP
+-59 67 71 -4 59 -69 3 5925 2897 SP
+-59 32 71 32 59 -68 3 5984 2828 SP
+-59 31 71 34 59 -33 3 6043 2760 SP
+-58 30 70 31 59 -27 3 6102 2727 SP
+-59 8 70 31 59 -8 3 6161 2700 SP
+-59 -20 71 49 58 2 3 6220 2692 SP
+-59 28 71 35 59 -14 3 6278 2694 SP
+-59 15 71 43 59 -23 3 6337 2680 SP
+-59 19 71 50 59 -26 3 6396 2657 SP
+-59 -3 71 87 59 -34 3 6455 2631 SP
+-59 11 71 35 59 41 3 6514 2597 SP
+-59 29 71 44 59 -38 3 6573 2638 SP
+-59 32 71 35 59 -23 3 6632 2600 SP
+-59 101 71 12 59 -78 3 6691 2577 SP
+-59 55 71 26 59 -69 3 6750 2499 SP
+-59 61 71 32 59 -67 3 6809 2430 SP
+-59 46 71 33 59 -47 3 6868 2363 SP
+-58 36 70 32 59 -35 3 6927 2316 SP
+-59 27 70 37 59 -32 3 6986 2281 SP
+-59 30 71 35 58 -28 3 7045 2249 SP
+-59 32 71 31 59 -28 3 7103 2221 SP
+-59 25 71 27 59 -21 3 7162 2193 SP
+-59 21 71 22 59 -16 3 7221 2172 SP
+-59 31 71 14 59 -23 3 7280 2156 SP
+-59 30 71 11 59 -27 3 7339 2133 SP
+-59 31 71 -11 59 -9 3 7398 2106 SP
+-59 -42 71 35 59 -4 3 7457 2097 SP
+-59 -41 71 35 59 41 3 7516 2093 SP
+-59 30 71 44 59 -39 3 7575 2134 SP
+-59 29 71 33 59 -27 3 3320 3965 SP
+-59 28 71 29 59 -24 3 3379 3938 SP
+-59 29 71 12 59 -12 3 3438 3914 SP
+-59 -2 71 -4 59 18 3 3497 3902 SP
+-59 16 71 9 59 -29 3 3556 3920 SP
+-59 45 71 -7 59 -29 3 3615 3891 SP
+-59 57 71 -24 59 -40 3 3674 3862 SP
+-59 30 71 -105 59 51 3 3733 3822 SP
+-58 29 70 -36 59 -98 3 3792 3873 SP
+-59 -8 70 2 59 -30 3 3851 3775 SP
+-59 11 70 22 59 -31 3 3910 3745 SP
+-59 18 71 32 58 -28 3 3969 3714 SP
+-59 26 71 30 59 -24 3 4027 3686 SP
+-59 29 71 35 59 -34 3 4086 3662 SP
+-59 30 71 34 59 -29 3 4145 3628 SP
+-59 29 71 34 59 -29 3 4204 3599 SP
+-59 29 71 34 59 -29 3 4263 3570 SP
+-59 29 71 0 59 5 3 4322 3541 SP
+-59 30 71 34 59 -64 3 4381 3546 SP
+-59 45 71 19 59 -30 3 4440 3482 SP
+-59 42 71 7 59 -30 3 4499 3452 SP
+-58 31 70 5 59 -29 3 4558 3422 SP
+-59 -1 70 35 59 -29 3 4617 3393 SP
+-59 30 70 31 59 -26 3 4676 3364 SP
+-59 29 71 35 58 -33 3 4735 3338 SP
+-59 30 71 34 59 -29 3 4793 3305 SP
+-59 30 71 34 59 -30 3 4852 3276 SP
+-59 29 71 34 59 -29 3 4911 3246 SP
+-59 30 71 34 59 -30 3 4970 3217 SP
+-59 31 71 34 59 -31 3 5029 3187 SP
+-59 32 71 33 59 -31 3 5088 3156 SP
+-59 30 71 43 59 -40 3 5147 3125 SP
+-59 63 71 0 59 -20 3 5206 3085 SP
+-59 62 71 -35 59 -27 3 5265 3065 SP
+-59 71 71 -12 59 -94 3 5324 3038 SP
+-58 47 70 -36 59 -23 3 5383 2944 SP
+-59 -184 70 -201 59 349 3 5442 2921 SP
+-59 -498 70 -74 59 371 3 5501 3270 SP
+-59 225 71 141 58 -440 3 5560 3641 SP
+-59 182 71 -131 59 90 3 5618 3201 SP
+-59 56 71 -263 59 76 3 5677 3291 SP
+-59 85 71 -112 59 -236 3 5736 3367 SP
+-59 122 71 -78 59 -156 3 5795 3131 SP
+-59 69 71 -5 59 -142 3 5854 2975 SP
+-59 68 71 5 59 -78 3 5913 2833 SP
+-59 33 71 24 59 -52 3 5972 2755 SP
+-59 27 71 20 59 -23 3 6031 2703 SP
+-59 8 71 30 59 -18 3 6090 2680 SP
+-58 -2 70 42 59 -10 3 6149 2662 SP
+-59 14 70 39 59 -11 3 6208 2652 SP
+-59 23 70 39 59 -23 3 6267 2641 SP
+-59 26 71 33 58 -20 3 6326 2618 SP
+-59 34 71 22 59 -23 3 6384 2598 SP
+-59 -41 71 104 59 -41 3 6443 2575 SP
+-59 38 71 27 59 39 3 6502 2534 SP
+-59 23 71 49 59 -45 3 6561 2573 SP
+-59 78 71 25 59 -54 3 6620 2528 SP
+-59 69 71 24 59 -68 3 6679 2474 SP
+-59 67 71 15 59 -58 3 6738 2406 SP
+-59 47 71 24 59 -56 3 6797 2348 SP
+-59 35 71 28 59 -39 3 6856 2292 SP
+-59 32 71 33 59 -37 3 6915 2253 SP
+-58 28 70 36 59 -31 3 6974 2216 SP
+-59 28 70 34 59 -26 3 7033 2185 SP
+-59 21 70 23 59 -10 3 7092 2159 SP
+-59 16 71 18 58 -11 3 7151 2149 SP
+-59 23 71 11 59 -16 3 7209 2138 SP
+-59 27 71 -7 59 -9 3 7268 2122 SP
+-59 9 71 10 59 -26 3 7327 2113 SP
+-59 4 71 8 59 -2 3 7386 2087 SP
+-59 -41 71 58 59 -9 3 7445 2085 SP
+-59 39 71 78 59 -59 3 7504 2076 SP
+-59 27 70 34 59 -25 3 3250 3929 SP
+-59 24 71 40 58 -30 3 3309 3904 SP
+-59 12 71 35 59 -7 3 3367 3874 SP
+-59 -18 71 35 59 18 3 3426 3867 SP
+-59 29 71 34 59 -28 3 3485 3885 SP
+-59 29 71 34 59 -29 3 3544 3857 SP
+-59 40 71 23 59 -29 3 3603 3828 SP
+-59 -51 71 103 59 -29 3 3662 3799 SP
+-59 98 71 34 59 -29 3 3721 3770 SP
+-59 30 71 34 59 -30 3 3780 3741 SP
+-59 31 71 35 59 -32 3 3839 3711 SP
+-58 28 70 48 59 -41 3 3898 3679 SP
+-59 24 70 64 59 -40 3 3957 3638 SP
+-59 34 70 70 59 -40 3 4016 3598 SP
+-59 29 70 71 59 -30 3 4075 3558 SP
+-59 29 71 82 58 -40 3 4134 3528 SP
+-59 29 71 105 59 -52 3 4192 3488 SP
+-59 -5 71 70 59 40 3 4251 3436 SP
+-59 64 71 35 59 -29 3 4310 3476 SP
+-59 30 71 35 59 -30 3 4369 3447 SP
+-59 30 71 35 59 -30 3 4428 3417 SP
+-59 29 71 36 59 -30 3 4487 3387 SP
+-59 29 71 36 59 -29 3 4546 3357 SP
+-59 26 71 38 59 -28 3 4605 3328 SP
+-58 33 70 34 59 -29 3 4664 3300 SP
+-59 29 70 32 59 -27 3 4723 3271 SP
+-59 30 70 31 59 -29 3 4782 3244 SP
+-59 29 70 35 59 -33 3 4841 3215 SP
+-59 30 71 35 58 -30 3 4900 3182 SP
+-59 31 71 31 59 -27 3 4958 3152 SP
+-59 31 71 43 59 -43 3 5017 3125 SP
+-59 40 71 39 59 -36 3 5076 3082 SP
+-59 20 71 46 59 -27 3 5135 3046 SP
+-59 27 71 35 59 -16 3 5194 3019 SP
+-59 94 71 -33 59 -26 3 5253 3003 SP
+-59 23 71 36 59 -92 3 5312 2977 SP
+-59 -349 71 300 59 85 3 5371 2885 SP
+-59 -371 71 679 59 -8 3 5430 2970 SP
+-58 440 70 -146 59 385 3 5489 2962 SP
+-59 -90 70 -612 59 556 3 5548 3347 SP
+-59 -76 70 -16 59 -520 3 5607 3903 SP
+-59 236 70 -97 59 -155 3 5666 3383 SP
+-59 156 71 -46 58 -207 3 5725 3228 SP
+-59 142 71 -39 59 -149 3 5783 3021 SP
+-59 78 71 -24 59 -93 3 5842 2872 SP
+-59 52 71 10 59 -86 3 5901 2779 SP
+-59 23 71 16 59 -29 3 5960 2693 SP
+-59 18 71 28 59 -30 3 6019 2664 SP
+-59 10 71 32 59 -14 3 6078 2634 SP
+-59 11 71 28 59 -7 3 6137 2620 SP
+-59 23 71 18 59 -13 3 6196 2613 SP
+-58 20 70 13 59 -15 3 6255 2600 SP
+-59 23 70 41 59 -51 3 6314 2585 SP
+-59 41 70 36 59 -36 3 6373 2534 SP
+-59 -39 70 35 59 40 3 6432 2498 SP
+-59 45 71 30 58 -40 3 6491 2538 SP
+-59 54 71 33 59 -57 3 6549 2498 SP
+-59 68 71 11 59 -46 3 6608 2441 SP
+-59 58 71 18 59 -65 3 6667 2395 SP
+-59 56 71 16 59 -54 3 6726 2330 SP
+-59 39 71 29 59 -52 3 6785 2276 SP
+-59 37 71 36 59 -44 3 6844 2224 SP
+-59 31 71 33 59 -28 3 6903 2180 SP
+-59 26 71 35 59 -28 3 6962 2152 SP
+-59 10 71 43 59 -18 3 7021 2124 SP
+-58 11 70 43 59 -11 3 7080 2106 SP
+-59 16 70 13 59 14 3 7139 2095 SP
+-59 9 70 32 59 -28 3 7198 2109 SP
+-59 26 71 1 58 5 3 7257 2081 SP
+-59 2 71 20 59 -21 3 7315 2086 SP
+-59 9 71 45 59 -34 3 7374 2065 SP
+-59 59 71 31 59 -45 3 7433 2031 SP
+-59 25 71 35 59 -27 3 3179 3896 SP
+-58 30 70 37 59 -32 3 3238 3869 SP
+-59 7 70 58 59 -28 3 3297 3837 SP
+-59 -18 70 104 59 -28 3 3356 3809 SP
+-59 28 70 53 59 23 3 3415 3781 SP
+-59 29 70 34 59 -10 3 3474 3804 SP
+-59 29 71 34 58 -29 3 3533 3794 SP
+-59 29 71 34 59 -29 3 3591 3765 SP
+-59 29 71 34 59 -29 3 3650 3736 SP
+-59 30 71 35 59 -31 3 3709 3707 SP
+-59 32 71 30 59 -27 3 3768 3676 SP
+-59 41 71 32 59 -43 3 3827 3649 SP
+-59 40 71 47 59 -55 3 3886 3606 SP
+-59 40 71 72 59 -65 3 3945 3551 SP
+-59 30 71 71 59 -29 3 4004 3486 SP
+-58 40 70 60 59 -29 3 4063 3457 SP
+-59 52 70 0 59 8 3 4122 3428 SP
+-59 -40 70 35 59 5 3 4181 3436 SP
+-59 29 70 35 59 -29 3 4240 3441 SP
+-59 30 71 35 58 -30 3 4299 3412 SP
+-59 30 71 35 59 -30 3 4357 3382 SP
+-59 30 71 35 59 -30 3 4416 3352 SP
+-59 29 71 35 59 -29 3 4475 3322 SP
+-59 28 71 39 59 -32 3 4534 3293 SP
+-59 29 71 37 59 -27 3 4593 3261 SP
+-59 27 71 38 59 -28 3 4652 3234 SP
+-59 29 71 39 59 -30 3 4711 3206 SP
+-59 33 71 37 59 -31 3 4770 3176 SP
+-58 30 70 42 59 -35 3 4829 3145 SP
+-59 27 70 46 59 -31 3 4888 3110 SP
+-59 43 70 46 59 -43 3 4947 3079 SP
+-59 36 70 48 59 -38 3 5006 3036 SP
+-59 27 70 47 59 -26 3 5065 2998 SP
+-59 16 71 40 58 -9 3 5124 2972 SP
+-59 26 71 63 59 -49 3 5182 2963 SP
+-59 92 71 -4 59 -25 3 5241 2914 SP
+-59 -85 71 100 59 -19 3 5300 2889 SP
+-59 8 71 57 59 35 3 5359 2870 SP
+-59 -385 71 204 59 238 3 5418 2905 SP
+-59 -556 71 259 59 501 3 5477 3143 SP
+-59 520 71 -131 59 -130 3 5536 3644 SP
+-59 155 71 48 59 -334 3 5595 3514 SP
+-58 207 70 -3 59 -156 3 5654 3180 SP
+-59 149 70 -76 59 -76 3 5713 3024 SP
+-59 93 70 48 59 -217 3 5772 2948 SP
+-59 86 70 42 59 -80 3 5831 2731 SP
+-59 29 71 30 58 -17 3 5890 2651 SP
+-59 30 71 23 59 -23 3 5948 2634 SP
+-59 14 71 17 59 -8 3 6007 2611 SP
+-59 7 71 9 59 1 3 6066 2603 SP
+-59 13 71 0 59 -4 3 6125 2604 SP
+-59 15 71 5 59 -20 3 6184 2600 SP
+-59 51 71 20 59 -66 3 6243 2580 SP
+-59 36 71 34 59 -50 3 6302 2514 SP
+-59 -40 71 35 59 39 3 6361 2464 SP
+-58 40 70 28 59 -33 3 6420 2503 SP
+-59 57 70 -2 59 -27 3 6479 2470 SP
+-59 46 70 30 59 -78 3 6538 2443 SP
+-59 65 70 19 59 -54 3 6597 2365 SP
+-59 54 70 11 59 -46 3 6656 2311 SP
+-59 52 71 21 58 -62 3 6715 2265 SP
+-59 44 71 33 59 -56 3 6773 2203 SP
+-59 28 71 35 59 -30 3 6832 2147 SP
+-59 28 71 38 59 -31 3 6891 2117 SP
+-59 18 71 44 59 -24 3 6950 2086 SP
+-59 11 71 43 59 -10 3 7009 2062 SP
+-59 -14 71 33 59 24 3 7068 2052 SP
+-59 28 71 -10 59 15 3 7127 2076 SP
+-58 -5 70 -3 59 -2 3 7186 2091 SP
+-59 21 70 6 59 -30 3 7245 2089 SP
+-59 34 70 54 59 -82 3 7304 2059 SP
+-59 45 70 45 59 -36 3 7363 1977 SP
+-59 27 71 18 59 -24 3 3108 3875 SP
+-59 32 71 27 59 -41 3 3167 3851 SP
+-59 28 71 36 59 -37 3 3226 3810 SP
+-59 28 71 36 59 -28 3 3285 3773 SP
+-59 -23 71 57 59 2 3 3344 3745 SP
+-59 10 71 50 59 -3 3 3403 3747 SP
+-58 29 70 34 59 -13 3 3462 3744 SP
+-59 29 70 -1 59 6 3 3521 3731 SP
+-59 29 70 -12 59 -18 3 3580 3737 SP
+-59 31 70 18 59 -61 3 3639 3719 SP
+-59 27 70 38 59 -47 3 3698 3658 SP
+-59 43 70 3 59 -8 3 3757 3611 SP
+-59 55 71 36 58 -88 3 3816 3603 SP
+-59 65 71 35 59 -64 3 3874 3515 SP
+-59 29 71 36 59 -30 3 3933 3451 SP
+-59 29 71 0 59 7 3 3992 3421 SP
+-59 -8 71 2 59 6 3 4051 3428 SP
+-59 -5 71 37 59 -30 3 4110 3434 SP
+-59 29 71 37 59 -29 3 4169 3404 SP
+-58 30 70 34 59 -27 3 4228 3375 SP
+-59 30 70 32 59 -28 3 4287 3348 SP
+-59 30 70 35 59 -33 3 4346 3320 SP
+-59 29 70 38 59 -32 3 4405 3287 SP
+-59 32 70 39 59 -33 3 4464 3255 SP
+-59 27 70 40 59 -28 3 4523 3222 SP
+-59 28 71 36 58 -24 3 4582 3194 SP
+-59 30 71 39 59 -33 3 4640 3170 SP
+-59 31 71 40 59 -32 3 4699 3137 SP
+-59 35 71 37 59 -32 3 4758 3105 SP
+-59 31 71 42 59 -36 3 4817 3073 SP
+-59 43 71 33 59 -34 3 4876 3037 SP
+-59 38 71 31 59 -36 3 4935 3003 SP
+-59 26 71 39 59 -34 3 4994 2967 SP
+-58 9 70 58 59 -28 3 5053 2933 SP
+-59 49 70 22 59 -13 3 5112 2905 SP
+-59 25 70 22 59 -25 3 5171 2892 SP
+-59 19 70 11 59 -8 3 5230 2867 SP
+-59 -35 70 26 59 20 3 5289 2859 SP
+-59 -238 70 140 59 124 3 5348 2879 SP
+-59 -501 71 555 58 86 3 5407 3003 SP
+-59 130 71 -108 59 533 3 5465 3089 SP
+-59 334 71 -548 59 106 3 5524 3622 SP
+-59 156 71 -405 59 -299 3 5583 3728 SP
+-59 76 71 -2 59 -479 3 5642 3429 SP
+-59 217 71 32 59 -251 3 5701 2950 SP
+-59 80 71 -9 59 -39 3 5760 2699 SP
+-58 17 70 6 59 -32 3 5819 2660 SP
+-59 23 70 12 59 -29 3 5878 2628 SP
+-59 8 70 35 59 -31 3 5937 2599 SP
+-59 -1 70 46 59 -10 3 5996 2568 SP
+-59 4 70 58 59 -16 3 6055 2558 SP
+-59 20 70 63 59 -25 3 6114 2542 SP
+-59 66 71 48 58 -51 3 6173 2517 SP
+-59 50 71 35 59 -37 3 6231 2466 SP
+-59 -39 71 79 59 -5 3 6290 2429 SP
+-59 33 71 31 59 15 3 6349 2424 SP
+-59 27 71 38 59 -34 3 6408 2439 SP
+-59 78 71 -13 59 -27 3 6467 2405 SP
+-59 54 71 -2 59 -65 3 6526 2378 SP
+-59 46 71 20 59 -68 3 6585 2313 SP
+-58 62 70 -10 59 -32 3 6644 2245 SP
+-59 56 70 34 59 -100 3 6703 2213 SP
+-59 30 70 34 59 -30 3 6762 2113 SP
+-59 31 70 31 59 -28 3 6821 2083 SP
+-59 24 70 11 59 -4 3 6880 2055 SP
+-59 10 71 -65 58 66 3 6939 2051 SP
+-59 -24 71 -37 59 -4 3 6997 2117 SP
+-59 -15 71 7 59 -29 3 7056 2113 SP
+-59 2 71 35 59 -30 3 7115 2084 SP
+-59 30 71 34 59 -29 3 7174 2054 SP
+-59 82 71 36 59 -84 3 7233 2025 SP
+-59 36 71 84 59 -84 3 7292 1941 SP
+-59 24 70 21 59 -41 3 3038 3871 SP
+-59 41 70 40 59 -60 3 3097 3830 SP
+-59 37 70 12 59 -9 3 3156 3770 SP
+-59 28 70 11 59 -27 3 3215 3761 SP
+-59 -2 70 64 59 -51 3 3274 3734 SP
+-59 3 71 19 58 42 3 3333 3683 SP
+-59 13 71 34 59 -28 3 3391 3725 SP
+-59 -6 71 34 59 6 3 3450 3697 SP
+-59 18 71 53 59 -37 3 3509 3703 SP
+-59 61 71 50 59 -58 3 3568 3666 SP
+-59 47 71 -21 59 24 3 3627 3608 SP
+-59 8 71 43 59 -72 3 3686 3632 SP
+-58 88 70 69 59 -114 3 3745 3560 SP
+-59 64 70 -35 59 40 3 3804 3446 SP
+-59 30 70 -35 59 -30 3 3863 3486 SP
+-59 -7 70 1 59 -29 3 3922 3456 SP
+-59 -6 70 35 59 -28 3 3981 3427 SP
+-59 30 70 31 59 -26 3 4040 3399 SP
+-59 29 71 30 58 -28 3 4099 3373 SP
+-59 27 71 29 59 -26 3 4157 3345 SP
+-59 28 71 29 59 -28 3 4216 3319 SP
+-59 33 71 25 59 -29 3 4275 3291 SP
+-59 32 71 25 59 -32 3 4334 3262 SP
+-59 33 71 24 59 -32 3 4393 3230 SP
+-59 28 71 27 59 -31 3 4452 3198 SP
+-58 24 70 34 59 -31 3 4511 3167 SP
+-59 33 70 31 59 -30 3 4570 3136 SP
+-59 32 70 29 59 -30 3 4629 3106 SP
+-59 32 70 34 59 -37 3 4688 3076 SP
+-59 36 70 22 59 -24 3 4747 3039 SP
+-59 34 70 26 59 -38 3 4806 3015 SP
+-59 36 70 26 59 -36 3 4865 2977 SP
+-59 34 71 30 58 -38 3 4924 2941 SP
+-59 28 71 40 59 -38 3 4982 2903 SP
+-59 13 71 52 59 -25 3 5041 2865 SP
+-59 25 71 27 59 0 3 5100 2840 SP
+-59 8 71 5 59 14 3 5159 2840 SP
+-59 -20 71 42 59 -17 3 5218 2854 SP
+-59 -124 71 147 59 19 3 5277 2837 SP
+-58 -86 70 19 59 214 3 5336 2856 SP
+-59 -533 70 476 59 76 3 5395 3070 SP
+-59 -106 70 205 59 377 3 5454 3146 SP
+-59 299 70 -56 59 -38 3 5513 3523 SP
+-59 479 70 -85 59 -450 3 5572 3485 SP
+-59 251 70 33 59 -369 3 5631 3035 SP
+-59 39 71 32 58 -38 3 5690 2666 SP
+-59 32 71 33 59 -33 3 5748 2628 SP
+-59 29 71 31 59 -27 3 5807 2595 SP
+-59 31 71 -10 59 10 3 5866 2568 SP
+-59 10 71 -8 59 -12 3 5925 2578 SP
+-59 16 71 26 59 -50 3 5984 2566 SP
+-59 25 71 20 59 -19 3 6043 2516 SP
+-58 51 70 -9 59 -22 3 6102 2497 SP
+-59 37 70 33 59 -79 3 6161 2475 SP
+-59 5 70 59 59 -31 3 6220 2396 SP
+-59 -15 70 35 59 39 3 6279 2365 SP
+-59 34 70 30 59 -29 3 6338 2404 SP
+-59 27 70 38 59 -35 3 6397 2375 SP
+-59 65 70 4 59 -31 3 6456 2340 SP
+-59 68 71 -37 58 -27 3 6515 2309 SP
+-59 32 71 33 59 -102 3 6573 2282 SP
+-59 100 71 -36 59 -31 3 6632 2180 SP
+-59 30 71 33 59 -99 3 6691 2149 SP
+-59 28 71 10 59 -5 3 6750 2050 SP
+-59 4 71 -14 59 20 3 6809 2045 SP
+-58 -66 70 10 59 42 3 6868 2065 SP
+-59 4 70 -105 59 111 3 6927 2107 SP
+-59 29 70 -132 59 -2 3 6986 2218 SP
+-59 30 70 35 59 -197 3 7045 2216 SP
+-59 29 70 71 59 -65 3 7104 2019 SP
+-59 84 70 53 59 -66 3 7163 1954 SP
+-59 84 70 27 59 -58 3 7222 1888 SP
+-59 41 71 69 59 -59 3 2967 3820 SP
+-59 60 71 38 59 -29 3 3026 3761 SP
+-59 9 71 58 59 -29 3 3085 3732 SP
+-59 27 71 47 59 -16 3 3144 3703 SP
+-59 51 71 0 59 -4 3 3203 3687 SP
+-58 -42 70 35 59 7 3 3262 3683 SP
+-59 28 70 35 59 -28 3 3321 3690 SP
+-59 -6 70 -89 59 130 3 3380 3662 SP
+-59 37 70 -97 59 -29 3 3439 3792 SP
+-59 58 70 34 59 -189 3 3498 3763 SP
+-59 -24 70 72 59 -14 3 3557 3574 SP
+-59 72 70 34 59 -34 3 3616 3560 SP
+-59 114 71 -36 58 -44 3 3675 3526 SP
+-59 -40 71 28 59 -24 3 3733 3482 SP
+-59 30 71 33 59 -35 3 3792 3458 SP
+-59 29 71 33 59 -29 3 3851 3423 SP
+-59 28 71 34 59 -29 3 3910 3394 SP
+-59 26 71 26 59 -18 3 3969 3365 SP
+-58 28 70 23 59 -25 3 4028 3347 SP
+-59 26 70 22 59 -25 3 4087 3322 SP
+-59 28 70 20 59 -26 3 4146 3297 SP
+-59 29 70 19 59 -28 3 4205 3271 SP
+-59 32 70 12 59 -25 3 4264 3243 SP
+-59 32 70 12 59 -32 3 4323 3218 SP
+-59 31 70 5 59 -24 3 4382 3186 SP
+-59 31 70 8 59 -34 3 4441 3162 SP
+-59 30 71 34 58 -56 3 4500 3128 SP
+-59 30 71 34 59 -30 3 4558 3072 SP
+-59 37 71 27 59 -30 3 4617 3042 SP
+-59 24 71 33 59 -30 3 4676 3012 SP
+-59 38 71 25 59 -30 3 4735 2982 SP
+-59 36 71 27 59 -38 3 4794 2952 SP
+-58 38 70 24 59 -35 3 4853 2914 SP
+-59 38 70 24 59 -38 3 4912 2879 SP
+-59 25 70 32 59 -33 3 4971 2841 SP
+-59 0 70 62 59 -30 3 5030 2808 SP
+-59 -14 70 75 59 1 3 5089 2778 SP
+-59 17 70 79 59 -21 3 5148 2779 SP
+-59 -19 70 45 59 53 3 5207 2758 SP
+-59 -214 71 273 58 -14 3 5266 2811 SP
+-59 -76 71 157 59 192 3 5324 2797 SP
+-59 -377 71 384 59 150 3 5383 2989 SP
+-59 38 71 -164 59 510 3 5442 3139 SP
+-59 450 71 -198 59 -416 3 5501 3649 SP
+-59 369 71 -175 59 -392 3 5560 3233 SP
+-58 38 70 44 59 -257 3 5619 2841 SP
+-59 33 70 32 59 -21 3 5678 2584 SP
+-59 27 70 -3 59 8 3 5737 2563 SP
+-59 -10 70 -144 59 151 3 5796 2571 SP
+-59 12 70 -133 59 -23 3 5855 2722 SP
+-59 50 70 -330 59 147 3 5914 2699 SP
+-59 19 70 -259 59 -90 3 5973 2846 SP
+-59 22 70 -147 59 -134 3 6032 2756 SP
+-59 79 71 -36 58 -190 3 6091 2622 SP
+-59 31 71 10 59 -77 3 6149 2432 SP
+-59 -39 71 59 59 -10 3 6208 2355 SP
+-59 29 71 24 59 6 3 6267 2345 SP
+-59 35 71 23 59 -34 3 6326 2351 SP
+-59 31 71 15 59 -23 3 6385 2317 SP
+-58 27 70 33 59 -45 3 6444 2294 SP
+-59 102 70 32 59 -101 3 6503 2249 SP
+-59 31 70 32 59 -31 3 6562 2148 SP
+-59 99 70 -16 59 -51 3 6621 2117 SP
+-59 5 70 -14 59 -7 3 6680 2066 SP
+-59 -20 70 34 59 -28 3 6739 2059 SP
+-59 -42 70 68 59 8 3 6798 2031 SP
+-59 -111 71 174 58 5 3 6857 2039 SP
+-59 2 71 110 59 62 3 6915 2044 SP
+-59 197 71 79 59 -166 3 6974 2106 SP
+-59 65 71 94 59 -80 3 7033 1940 SP
+-59 66 71 36 59 -8 3 7092 1860 SP
+-59 58 71 -12 59 -10 3 7151 1852 SP
+-59 59 70 12 59 -7 3 2897 3756 SP
+-59 29 70 10 59 -27 3 2956 3749 SP
+-59 29 70 34 59 -53 3 3015 3722 SP
+-59 16 70 46 59 -28 3 3074 3669 SP
+-59 4 70 18 59 24 3 3133 3641 SP
+-59 -7 70 38 59 -13 3 3192 3665 SP
+-59 28 70 21 59 -11 3 3251 3652 SP
+-59 -130 70 124 59 27 3 3310 3641 SP
+-59 29 71 159 58 -64 3 3369 3668 SP
+-59 189 71 -10 59 -20 3 3427 3604 SP
+-59 14 71 41 59 -65 3 3486 3584 SP
+-59 34 71 47 59 -40 3 3545 3519 SP
+-58 44 70 -36 59 39 3 3604 3479 SP
+-59 24 70 4 59 -64 3 3663 3518 SP
+-59 35 70 3 59 -34 3 3722 3454 SP
+-59 29 70 6 59 -32 3 3781 3420 SP
+-59 29 70 13 59 -36 3 3840 3388 SP
+-59 18 70 21 59 -26 3 3899 3352 SP
+-59 25 70 20 59 -24 3 3958 3326 SP
+-59 25 70 19 59 -24 3 4017 3302 SP
+-59 26 70 17 59 -24 3 4076 3278 SP
+-59 28 71 11 58 -22 3 4135 3254 SP
+-59 25 71 5 59 -19 3 4193 3232 SP
+-59 32 71 -9 59 -18 3 4252 3213 SP
+-59 24 71 5 59 -38 3 4311 3195 SP
+-59 34 71 -10 59 -19 3 4370 3157 SP
+-58 56 70 -36 59 -30 3 4429 3138 SP
+-59 30 70 1 59 -67 3 4488 3108 SP
+-59 30 70 34 59 -63 3 4547 3041 SP
+-59 30 70 34 59 -30 3 4606 2978 SP
+-59 30 70 34 59 -30 3 4665 2948 SP
+-59 38 70 26 59 -30 3 4724 2918 SP
+-59 35 70 21 59 -30 3 4783 2888 SP
+-59 38 70 23 59 -40 3 4842 2858 SP
+-59 33 71 23 58 -33 3 4901 2818 SP
+-59 30 71 26 59 -33 3 4959 2785 SP
+-59 -1 71 69 59 -42 3 5018 2752 SP
+-59 21 71 78 59 -30 3 5077 2710 SP
+-59 -53 71 46 59 85 3 5136 2680 SP
+-58 14 70 46 59 -14 3 5195 2765 SP
+-59 -192 70 97 59 141 3 5254 2751 SP
+-59 -150 70 216 59 31 3 5313 2892 SP
+-59 -510 70 239 59 487 3 5372 2923 SP
+-59 416 70 -310 59 133 3 5431 3410 SP
+-59 392 70 -196 59 -506 3 5490 3543 SP
+-59 257 70 53 59 -506 3 5549 3037 SP
+-59 21 70 103 59 -71 3 5608 2531 SP
+-59 -8 70 54 59 57 3 5667 2460 SP
+-59 -151 71 172 58 33 3 5726 2517 SP
+-59 23 71 32 59 117 3 5784 2550 SP
+-59 -147 71 -316 59 495 3 5843 2667 SP
+-59 90 71 -503 59 97 3 5902 3162 SP
+-59 134 71 -123 59 -514 3 5961 3259 SP
+-58 190 70 58 59 -371 3 6020 2745 SP
+-59 77 70 60 59 -79 3 6079 2374 SP
+-59 10 70 16 59 34 3 6138 2295 SP
+-59 -6 70 43 59 -21 3 6197 2329 SP
+-59 34 70 7 59 2 3 6256 2308 SP
+-59 23 70 23 59 -39 3 6315 2310 SP
+-59 45 70 -81 59 59 3 6374 2271 SP
+-59 101 70 -38 59 -144 3 6433 2330 SP
+-59 31 71 32 58 -101 3 6492 2186 SP
+-59 51 71 12 59 -31 3 6550 2085 SP
+-59 7 71 48 59 -43 3 6609 2054 SP
+-59 28 71 43 59 -23 3 6668 2011 SP
+-59 -8 71 69 59 -18 3 6727 1988 SP
+-58 -5 70 105 59 -31 3 6786 1970 SP
+-59 -62 70 175 59 -8 3 6845 1939 SP
+-59 166 70 113 59 -104 3 6904 1931 SP
+-59 80 70 72 59 -39 3 6963 1827 SP
+-59 8 70 -83 59 147 3 7022 1788 SP
+-59 10 70 -13 59 -80 3 7081 1935 SP
+-59 7 70 -14 59 40 3 2827 3723 SP
+-59 27 70 -12 59 -29 3 2886 3763 SP
+-59 53 70 -36 59 -29 3 2945 3734 SP
+-59 28 71 -36 58 -28 3 3004 3705 SP
+-59 -24 71 31 59 -43 3 3062 3677 SP
+-59 13 71 31 59 -13 3 3121 3634 SP
+-59 11 71 48 59 -28 3 3180 3621 SP
+-59 -27 71 63 59 12 3 3239 3593 SP
+-58 64 70 70 59 -71 3 3298 3605 SP
+-59 20 70 47 59 3 3 3357 3534 SP
+-59 65 70 37 59 -55 3 3416 3537 SP
+-59 40 70 35 59 -38 3 3475 3482 SP
+-59 -39 70 103 59 -29 3 3534 3444 SP
+-59 64 70 24 59 15 3 3593 3415 SP
+-59 34 70 -7 59 -3 3 3652 3430 SP
+-59 32 70 5 59 -44 3 3711 3427 SP
+-59 36 70 7 59 -38 3 3770 3383 SP
+-59 26 71 12 58 -31 3 3829 3345 SP
+-59 24 71 18 59 -30 3 3887 3314 SP
+-59 24 71 19 59 -25 3 3946 3284 SP
+-59 24 71 18 59 -23 3 4005 3259 SP
+-58 22 70 9 59 -13 3 4064 3236 SP
+-59 19 70 19 59 -29 3 4123 3223 SP
+-59 18 70 30 59 -29 3 4182 3194 SP
+-59 38 70 22 59 -30 3 4241 3165 SP
+-59 19 70 32 59 -29 3 4300 3135 SP
+-59 30 70 21 59 -19 3 4359 3106 SP
+-59 67 70 -4 59 -42 3 4418 3087 SP
+-59 63 70 -37 59 -30 3 4477 3045 SP
+-59 30 70 33 59 -100 3 4536 3015 SP
+-59 30 71 33 58 -30 3 4595 2915 SP
+-59 30 71 33 59 -30 3 4653 2885 SP
+-59 30 71 34 59 -31 3 4712 2855 SP
+-59 40 71 24 59 -30 3 4771 2824 SP
+-58 33 70 38 59 -47 3 4830 2794 SP
+-59 33 70 31 59 -26 3 4889 2747 SP
+-59 42 70 21 59 -32 3 4948 2721 SP
+-59 30 70 5 59 -14 3 5007 2689 SP
+-59 -85 70 135 59 -45 3 5066 2675 SP
+-59 14 70 44 59 77 3 5125 2630 SP
+-59 -141 70 201 59 -16 3 5184 2707 SP
+-59 -31 70 46 59 186 3 5243 2691 SP
+-59 -487 70 449 59 84 3 5302 2877 SP
+-59 -133 70 389 59 193 3 5361 2961 SP
+-59 506 71 154 58 -271 3 5420 3154 SP
+-59 506 71 47 59 -399 3 5478 2883 SP
+-59 71 71 37 59 -61 3 5537 2484 SP
+-59 -57 71 77 59 17 3 5596 2423 SP
+-58 -33 70 92 59 18 3 5655 2440 SP
+-59 -117 70 176 59 33 3 5714 2458 SP
+-59 -495 70 558 59 113 3 5773 2491 SP
+-59 -97 70 456 59 199 3 5832 2604 SP
+-59 514 70 -138 59 80 3 5891 2803 SP
+-59 371 70 36 59 -545 3 5950 2883 SP
+-59 79 70 36 59 -79 3 6009 2338 SP
+-59 -34 70 30 59 40 3 6068 2259 SP
+-59 21 70 -71 59 80 3 6127 2299 SP
+-59 -2 71 66 58 -135 3 6186 2379 SP
+-59 39 71 18 59 9 3 6244 2244 SP
+-59 -59 71 74 59 3 3 6303 2253 SP
+-59 144 71 -473 59 403 3 6362 2256 SP
+-58 101 70 -350 59 -224 3 6421 2659 SP
+-59 31 70 33 59 -414 3 6480 2435 SP
+-59 43 70 14 59 -24 3 6539 2021 SP
+-59 23 70 95 59 -104 3 6598 1997 SP
+-59 18 70 92 59 -15 3 6657 1893 SP
+-59 31 70 92 59 -31 3 6716 1878 SP
+-59 8 70 130 59 -46 3 6775 1847 SP
+-59 104 70 58 59 -32 3 6834 1801 SP
+-59 39 70 31 59 -12 3 6893 1769 SP
+-59 -147 70 94 59 84 3 6952 1757 SP
+-59 80 71 105 58 -91 3 7011 1841 SP
+-59 -40 71 33 58 -3 3 2757 3733 SP
+-59 29 71 -3 59 7 3 2815 3730 SP
+-59 29 71 32 59 -64 3 2874 3737 SP
+-58 28 70 23 59 -19 3 2933 3673 SP
+-59 43 70 19 59 -39 3 2992 3654 SP
+-59 13 70 34 59 -28 3 3051 3615 SP
+-59 28 70 35 59 -29 3 3110 3587 SP
+-59 -12 70 76 59 -29 3 3169 3558 SP
+-59 71 70 -69 59 74 3 3228 3529 SP
+-59 -3 70 40 59 -106 3 3287 3603 SP
+-59 55 70 43 59 -58 3 3346 3497 SP
+-59 38 70 35 59 -30 3 3405 3439 SP
+-59 29 70 34 59 -28 3 3464 3409 SP
+-59 -15 70 8 59 41 3 3523 3381 SP
+-59 3 71 34 58 -29 3 3582 3422 SP
+-59 44 71 19 59 -29 3 3640 3393 SP
+-59 38 71 10 59 -29 3 3699 3364 SP
+-58 31 70 8 59 -29 3 3758 3335 SP
+-59 30 70 24 59 -46 3 3817 3306 SP
+-59 25 70 23 59 -24 3 3876 3260 SP
+-59 23 70 17 59 -17 3 3935 3236 SP
+-59 13 70 33 59 -29 3 3994 3219 SP
+-59 29 70 33 59 -29 3 4053 3190 SP
+-59 29 70 33 59 -29 3 4112 3161 SP
+-59 30 70 17 59 -14 3 4171 3132 SP
+-59 29 70 4 59 -16 3 4230 3118 SP
+-59 19 70 -25 59 10 3 4289 3102 SP
+-59 42 71 32 58 -99 3 4348 3112 SP
+-59 30 71 33 59 -31 3 4406 3013 SP
+-59 100 71 -18 59 -49 3 4465 2982 SP
+-58 30 70 -36 59 -12 3 4524 2933 SP
+-59 30 70 -35 59 -31 3 4583 2921 SP
+-59 31 70 57 59 -123 3 4642 2890 SP
+-59 30 70 69 59 -42 3 4701 2767 SP
+-59 47 70 17 59 5 3 4760 2725 SP
+-59 26 70 30 59 -39 3 4819 2730 SP
+-59 32 70 36 59 -38 3 4878 2691 SP
+-59 14 70 41 59 -19 3 4937 2653 SP
+-59 45 70 15 59 -19 3 4996 2634 SP
+-59 -77 70 42 59 50 3 5055 2615 SP
+-59 16 70 -1 59 27 3 5114 2665 SP
+-59 -186 71 150 58 35 3 5173 2692 SP
+-59 -84 71 172 59 62 3 5231 2727 SP
+-59 -193 71 391 59 -26 3 5290 2789 SP
+-58 271 70 261 59 -141 3 5349 2763 SP
+-59 399 70 46 59 -184 3 5408 2622 SP
+-59 61 70 39 59 -54 3 5467 2438 SP
+-59 -17 70 63 59 -7 3 5526 2384 SP
+-59 -18 70 55 59 26 3 5585 2377 SP
+-59 -33 70 111 59 -23 3 5644 2403 SP
+-59 -113 70 215 59 9 3 5703 2380 SP
+-59 -199 70 272 59 142 3 5762 2389 SP
+-59 -80 70 386 59 -34 3 5821 2531 SP
+-59 545 70 -21 59 -138 3 5880 2497 SP
+-59 79 71 23 58 -123 3 5939 2359 SP
+-59 -40 71 -10 59 73 3 5997 2236 SP
+-59 -80 71 158 59 -88 3 6056 2309 SP
+-58 135 70 35 59 -12 3 6115 2221 SP
+-59 -9 70 61 59 -17 3 6174 2209 SP
+-59 -3 70 32 59 32 3 6233 2192 SP
+-59 -403 70 223 59 212 3 6292 2224 SP
+-59 224 70 33 59 -34 3 6351 2436 SP
+-59 414 70 -128 59 -253 3 6410 2402 SP
+-59 24 70 27 59 -179 3 6469 2149 SP
+-59 104 70 36 59 -113 3 6528 1970 SP
+-59 15 70 48 59 -27 3 6587 1857 SP
+-59 31 70 32 59 -15 3 6646 1830 SP
+-59 46 70 53 59 -67 3 6705 1815 SP
+-59 32 71 63 58 -42 3 6764 1748 SP
+-59 12 71 56 59 -5 3 6822 1706 SP
+-59 -84 71 169 59 -29 3 6881 1701 SP
+-58 91 70 107 59 -29 3 6940 1672 SP
+-58 3 70 32 59 -27 3 2686 3725 SP
+-59 -7 70 -4 59 43 3 2745 3698 SP
+-59 64 70 -16 59 -52 3 2804 3741 SP
+-59 19 70 17 59 -52 3 2863 3689 SP
+-59 39 70 -15 59 -7 3 2922 3637 SP
+-59 28 70 -36 59 -7 3 2981 3630 SP
+-59 29 70 0 59 -65 3 3040 3623 SP
+-59 29 70 36 59 -65 3 3099 3558 SP
+-59 -74 70 70 59 40 3 3158 3493 SP
+-59 106 70 40 59 -76 3 3217 3533 SP
+-59 58 70 35 59 -53 3 3276 3457 SP
+-59 30 70 35 59 -30 3 3335 3404 SP
+-59 28 71 35 58 -28 3 3394 3374 SP
+-59 -41 71 34 59 42 3 3452 3346 SP
+-58 29 70 33 59 -28 3 3511 3388 SP
+-59 29 70 32 59 -28 3 3570 3360 SP
+-59 29 70 33 59 -30 3 3629 3332 SP
+-59 29 70 33 59 -29 3 3688 3302 SP
+-59 46 70 16 59 -29 3 3747 3273 SP
+-59 24 70 20 59 -28 3 3806 3244 SP
+-59 17 70 5 59 -2 3 3865 3216 SP
+-59 29 70 4 59 -28 3 3924 3214 SP
+-59 29 70 8 59 -33 3 3983 3186 SP
+-59 29 70 6 59 -27 3 4042 3153 SP
+-59 14 70 16 59 -24 3 4101 3126 SP
+-59 16 71 22 58 -22 3 4160 3102 SP
+-59 -10 71 63 59 -31 3 4218 3080 SP
+-58 99 70 33 59 -69 3 4277 3049 SP
+-59 31 70 33 59 -31 3 4336 2980 SP
+-59 49 70 15 59 -31 3 4395 2949 SP
+-59 12 70 28 59 -25 3 4454 2918 SP
+-59 31 70 33 59 -36 3 4513 2893 SP
+-59 123 70 -59 59 -31 3 4572 2857 SP
+-59 42 70 -70 59 -31 3 4631 2826 SP
+-59 -5 70 15 59 -80 3 4690 2795 SP
+-59 39 70 23 59 -47 3 4749 2715 SP
+-59 38 70 23 59 -38 3 4808 2668 SP
+-59 19 70 30 59 -26 3 4867 2630 SP
+-59 19 71 26 58 -15 3 4926 2604 SP
+-59 -50 71 41 59 35 3 4984 2589 SP
+-59 -27 71 91 59 -23 3 5043 2624 SP
+-58 -35 70 152 59 -26 3 5102 2601 SP
+-59 -62 70 244 59 -30 3 5161 2575 SP
+-59 26 70 287 59 -69 3 5220 2545 SP
+-59 141 70 191 59 -45 3 5279 2476 SP
+-59 184 70 63 59 -56 3 5338 2431 SP
+-59 54 70 39 59 -30 3 5397 2375 SP
+-59 7 70 60 59 -28 3 5456 2345 SP
+-59 -26 70 95 59 -9 3 5515 2317 SP
+-59 23 70 67 59 5 3 5574 2308 SP
+-59 -9 70 56 59 20 3 5633 2313 SP
+-59 -142 70 250 59 -52 3 5692 2333 SP
+-59 34 71 248 58 -32 3 5751 2281 SP
+-59 138 71 160 59 -50 3 5809 2249 SP
+-58 123 70 75 59 -38 3 5868 2199 SP
+-59 -73 70 154 59 -6 3 5927 2161 SP
+-59 88 70 93 59 -27 3 5986 2155 SP
+-59 12 70 106 59 -25 3 6045 2128 SP
+-59 17 70 114 59 -25 3 6104 2103 SP
+-59 -32 70 151 59 -5 3 6163 2078 SP
+-59 -212 70 347 59 16 3 6222 2073 SP
+-59 34 70 382 59 -69 3 6281 2089 SP
+-59 253 70 58 59 71 3 6340 2020 SP
+-59 179 70 8 59 -129 3 6399 2091 SP
+-59 113 70 14 59 -119 3 6458 1962 SP
+-59 27 71 11 58 -24 3 6517 1843 SP
+-59 15 71 16 59 -20 3 6575 1819 SP
+-59 67 71 33 59 -84 3 6634 1799 SP
+-58 42 70 82 59 -91 3 6693 1715 SP
+-59 5 70 107 59 -30 3 6752 1624 SP
+-59 29 70 107 59 -29 3 6811 1594 SP
+-59 29 70 37 59 41 3 6870 1565 SP
+-59 27 70 32 59 -5 3 2616 3671 SP
+-59 -43 70 53 59 22 3 2675 3666 SP
+-59 52 70 -204 59 205 3 2734 3688 SP
+-59 52 70 -457 59 201 3 2793 3893 SP
+-59 7 70 -508 59 44 3 2852 4094 SP
+-59 7 70 -106 59 -409 3 2911 4138 SP
+-59 65 70 -1 59 -170 3 2970 3729 SP
+-59 65 70 0 59 -66 3 3029 3559 SP
+-59 -40 70 105 59 -65 3 3088 3493 SP
+-59 76 70 59 59 -30 3 3147 3428 SP
+-59 53 71 35 58 -29 3 3206 3398 SP
+-59 30 71 35 59 -30 3 3264 3369 SP
+-58 28 70 34 59 -27 3 3323 3339 SP
+-59 -42 70 59 59 17 3 3382 3312 SP
+-59 28 70 37 59 -6 3 3441 3329 SP
+-59 28 70 33 59 -24 3 3500 3323 SP
+-59 30 70 20 59 -17 3 3559 3299 SP
+-59 29 70 0 59 -9 3 3618 3282 SP
+-59 29 70 -5 59 -24 3 3677 3273 SP
+-59 28 70 -38 59 5 3 3736 3249 SP
+-59 2 70 -10 59 -30 3 3795 3254 SP
+-59 28 70 5 59 -43 3 3854 3224 SP
+-59 33 70 3 59 -31 3 3913 3181 SP
+-59 27 70 8 59 -32 3 3972 3150 SP
+-59 24 71 14 58 -30 3 4031 3118 SP
+-58 22 70 21 59 -29 3 4089 3088 SP
+-59 31 70 24 59 -34 3 4148 3059 SP
+-59 69 70 -3 59 -42 3 4207 3025 SP
+-59 31 70 9 59 -43 3 4266 2983 SP
+-59 31 70 25 59 -47 3 4325 2940 SP
+-59 25 70 39 59 -39 3 4384 2893 SP
+-59 36 70 35 59 -32 3 4443 2854 SP
+-59 31 70 33 59 -29 3 4502 2822 SP
+-59 31 70 32 59 -30 3 4561 2793 SP
+-59 80 70 3 59 -51 3 4620 2763 SP
+-59 47 70 12 59 -56 3 4679 2712 SP
+-59 38 70 14 59 -40 3 4738 2656 SP
+-59 26 71 22 58 -34 3 4797 2616 SP
+-58 15 70 27 59 -20 3 4855 2582 SP
+-59 -35 70 78 59 -16 3 4914 2562 SP
+-59 23 70 41 59 14 3 4973 2546 SP
+-59 26 70 43 59 -28 3 5032 2560 SP
+-59 30 70 79 59 -66 3 5091 2532 SP
+-59 69 70 76 59 -66 3 5150 2466 SP
+-59 45 70 75 59 -44 3 5209 2400 SP
+-59 56 70 36 59 -17 3 5268 2356 SP
+-59 30 70 62 59 -56 3 5327 2339 SP
+-59 28 70 49 59 -15 3 5386 2283 SP
+-59 9 70 40 59 0 3 5445 2268 SP
+-59 -5 70 61 59 -16 3 5504 2268 SP
+-59 -20 70 81 59 0 3 5563 2252 SP
+-59 52 71 74 58 -45 3 5622 2252 SP
+-58 32 70 99 59 -57 3 5680 2207 SP
+-59 50 70 52 59 -3 3 5739 2150 SP
+-59 38 70 14 59 0 3 5798 2147 SP
+-59 6 70 38 59 -30 3 5857 2147 SP
+-59 27 70 39 59 -28 3 5916 2117 SP
+-59 25 70 39 59 -25 3 5975 2089 SP
+-59 25 70 48 59 -34 3 6034 2064 SP
+-59 5 70 57 59 -14 3 6093 2030 SP
+-59 -16 70 108 59 -35 3 6152 2016 SP
+-59 69 70 72 59 -33 3 6211 1981 SP
+-59 -71 70 175 59 -32 3 6270 1948 SP
+-59 129 70 78 59 -32 3 6329 1916 SP
+-59 119 71 -11 58 -30 3 6388 1884 SP
+-58 24 70 32 59 -67 3 6446 1854 SP
+-59 20 70 78 59 -66 3 6505 1787 SP
+-59 84 70 39 59 -45 3 6564 1721 SP
+-59 91 70 37 59 -89 3 6623 1676 SP
+-59 30 70 37 59 -30 3 6682 1587 SP
+-59 29 70 38 59 -30 3 6741 1557 SP
+-59 -41 70 66 59 13 3 6800 1527 SP
+-59 5 70 32 59 -23 3 2546 3657 SP
+-59 -22 70 77 59 -23 3 2605 3634 SP
+-59 -205 70 238 59 44 3 2664 3611 SP
+-59 -201 70 157 59 282 3 2723 3655 SP
+-59 -44 70 304 59 -103 3 2782 3937 SP
+-59 409 70 33 59 -138 3 2841 3834 SP
+-59 170 70 69 59 -206 3 2900 3696 SP
+-59 66 70 55 59 -52 3 2959 3490 SP
+-59 65 70 35 59 -45 3 3018 3438 SP
+-59 30 70 35 59 -30 3 3077 3393 SP
+-58 29 70 35 58 -29 3 3136 3363 SP
+-59 30 70 10 59 -5 3 3194 3334 SP
+-59 27 70 2 59 -19 3 3253 3329 SP
+-59 -17 70 27 59 -8 3 3312 3310 SP
+-59 6 70 28 59 -7 3 3371 3302 SP
+-59 24 70 32 59 -28 3 3430 3295 SP
+-59 17 70 20 59 -5 3 3489 3267 SP
+-59 9 70 21 59 -10 3 3548 3262 SP
+-59 24 70 16 59 -19 3 3607 3252 SP
+-59 -5 70 32 59 -11 3 3666 3233 SP
+-59 30 70 31 59 -29 3 3725 3222 SP
+-59 43 70 8 59 -20 3 3784 3193 SP
+-59 31 70 13 59 -36 3 3843 3173 SP
+-59 32 71 17 58 -36 3 3902 3137 SP
+-58 30 70 18 59 -31 3 3960 3101 SP
+-59 29 70 18 59 -29 3 4019 3070 SP
+-59 34 70 15 59 -31 3 4078 3041 SP
+-59 42 70 11 59 -38 3 4137 3010 SP
+-59 43 70 13 59 -45 3 4196 2972 SP
+-59 47 70 17 59 -51 3 4255 2927 SP
+-59 39 70 28 59 -50 3 4314 2876 SP
+-59 32 70 32 59 -36 3 4373 2826 SP
+-59 29 70 33 59 -30 3 4432 2790 SP
+-59 30 70 38 59 -35 3 4491 2760 SP
+-59 51 70 24 59 -37 3 4550 2725 SP
+-59 56 70 10 59 -42 3 4609 2688 SP
+-59 40 70 10 59 -40 3 4668 2646 SP
+-58 34 70 17 58 -41 3 4727 2606 SP
+-59 20 70 29 59 -32 3 4785 2565 SP
+-59 16 70 37 59 -24 3 4844 2533 SP
+-59 -14 70 68 59 -17 3 4903 2509 SP
+-59 28 70 43 59 -3 3 4962 2492 SP
+-59 66 70 53 59 -76 3 5021 2489 SP
+-59 66 70 39 59 -52 3 5080 2413 SP
+-59 44 70 33 59 -38 3 5139 2361 SP
+-59 17 70 42 59 -26 3 5198 2323 SP
+-59 56 70 20 59 -34 3 5257 2297 SP
+-59 15 70 32 59 -27 3 5316 2263 SP
+-59 0 70 71 59 -39 3 5375 2236 SP
+-59 16 70 78 59 -23 3 5434 2197 SP
+-59 0 71 80 58 -2 3 5493 2174 SP
+-58 45 70 57 59 -22 3 5551 2172 SP
+-59 57 70 3 59 -3 3 5610 2150 SP
+-59 3 70 38 59 -38 3 5669 2147 SP
+-59 0 70 40 59 -2 3 5728 2109 SP
+-59 30 70 37 59 -27 3 5787 2107 SP
+-59 28 70 107 59 -98 3 5846 2080 SP
+-59 25 70 109 59 -27 3 5905 1982 SP
+-59 34 70 102 59 -27 3 5964 1955 SP
+-59 14 70 63 59 25 3 6023 1928 SP
+-59 35 70 41 59 -13 3 6082 1953 SP
+-59 33 70 38 59 -30 3 6141 1940 SP
+-59 32 70 37 59 -31 3 6200 1910 SP
+-59 32 70 36 59 -31 3 6259 1879 SP
+-58 30 70 42 58 -36 3 6318 1848 SP
+-59 67 70 1 59 -26 3 6376 1812 SP
+-59 66 70 -10 59 -55 3 6435 1786 SP
+-59 45 70 24 59 -79 3 6494 1731 SP
+-59 89 70 -33 59 -32 3 6553 1652 SP
+-59 30 70 37 59 -100 3 6612 1620 SP
+-59 30 70 72 59 -65 3 6671 1520 SP
+-59 -13 70 90 59 -5 3 6730 1455 SP
+-59 23 70 34 59 -23 3 2476 3623 SP
+-59 23 70 33 59 -22 3 2535 3600 SP
+-59 -44 70 -26 59 103 3 2594 3578 SP
+-59 -282 70 184 59 72 3 2653 3681 SP
+-59 103 70 134 59 -53 3 2712 3753 SP
+-59 138 70 242 59 -246 3 2771 3700 SP
+-59 206 70 69 59 -33 3 2830 3454 SP
+-59 52 70 49 59 -32 3 2889 3421 SP
+-59 45 70 34 59 -30 3 2948 3389 SP
+-59 30 70 11 59 -7 3 3007 3359 SP
+-58 29 70 -36 58 18 3 3066 3352 SP
+-59 5 70 -14 59 -27 3 3124 3370 SP
+-59 19 70 -7 59 -26 3 3183 3343 SP
+-59 8 70 11 59 -26 3 3242 3317 SP
+-59 7 70 -40 59 44 3 3301 3291 SP
+-59 28 70 -40 59 -28 3 3360 3335 SP
+-59 5 70 -17 59 -28 3 3419 3307 SP
+-59 10 70 2 59 -29 3 3478 3279 SP
+-59 19 70 13 59 -30 3 3537 3250 SP
+-59 11 70 32 59 -30 3 3596 3220 SP
+-59 29 70 34 59 -31 3 3655 3190 SP
+-59 20 70 31 59 -17 3 3714 3159 SP
+-59 36 70 22 59 -27 3 3773 3142 SP
+-58 36 69 23 59 -37 3 3832 3115 SP
+-59 31 70 25 58 -33 3 3891 3078 SP
+-59 29 70 25 59 -29 3 3949 3045 SP
+-59 31 70 25 59 -31 3 4008 3016 SP
+-59 38 70 24 59 -37 3 4067 2985 SP
+-59 45 70 20 59 -41 3 4126 2948 SP
+-59 51 70 18 59 -49 3 4185 2907 SP
+-59 50 70 12 59 -44 3 4244 2858 SP
+-59 36 70 24 59 -48 3 4303 2814 SP
+-59 30 70 33 59 -39 3 4362 2766 SP
+-59 35 70 28 59 -30 3 4421 2727 SP
+-59 37 70 21 59 -30 3 4480 2697 SP
+-59 42 70 10 59 -31 3 4539 2667 SP
+-59 40 70 15 59 -45 3 4598 2636 SP
+-58 41 70 12 58 -38 3 4657 2591 SP
+-59 32 70 13 59 -33 3 4715 2553 SP
+-59 24 70 16 59 -27 3 4774 2520 SP
+-59 17 70 19 59 -20 3 4833 2493 SP
+-59 3 70 59 59 -43 3 4892 2473 SP
+-59 76 70 58 59 -75 3 4951 2430 SP
+-59 52 70 36 59 -30 3 5010 2355 SP
+-59 38 70 29 59 -31 3 5069 2325 SP
+-59 26 70 33 59 -30 3 5128 2294 SP
+-59 34 70 35 59 -36 3 5187 2264 SP
+-59 27 70 38 59 -30 3 5246 2228 SP
+-59 39 70 26 59 -27 3 5305 2198 SP
+-59 23 70 38 59 -35 3 5364 2171 SP
+-58 2 69 49 59 -13 3 5423 2136 SP
+-59 22 70 40 58 -13 3 5482 2123 SP
+-59 3 70 36 59 1 3 5540 2110 SP
+-59 38 70 16 59 -18 3 5599 2111 SP
+-59 2 70 48 59 -34 3 5658 2093 SP
+-59 27 70 59 59 -38 3 5717 2059 SP
+-59 98 70 -32 59 -7 3 5776 2021 SP
+-59 27 70 4 59 -63 3 5835 2014 SP
+-59 27 70 26 59 -49 3 5894 1951 SP
+-59 -25 70 93 59 -42 3 5953 1902 SP
+-59 13 70 39 59 41 3 6012 1860 SP
+-59 30 70 38 59 -29 3 6071 1901 SP
+-59 31 70 37 59 -30 3 6130 1872 SP
+-59 31 70 36 59 -30 3 6189 1842 SP
+-58 36 70 30 58 -30 3 6248 1812 SP
+-59 26 70 35 59 -31 3 6306 1782 SP
+-59 55 70 24 59 -44 3 6365 1751 SP
+-59 79 70 -35 59 -20 3 6424 1707 SP
+-59 32 70 -35 59 -32 3 6483 1687 SP
+-59 100 70 -34 59 -101 3 6542 1655 SP
+-59 65 70 1 59 -100 3 6601 1554 SP
+-59 5 70 72 59 -76 3 6660 1454 SP
+-59 23 70 37 59 -24 3 2406 3587 SP
+-59 22 70 38 59 -23 3 2465 3563 SP
+-59 -103 70 112 59 29 3 2524 3540 SP
+-59 -72 70 173 59 11 3 2583 3569 SP
+-59 53 70 190 59 -70 3 2642 3580 SP
+-59 246 70 -9 59 -47 3 2701 3510 SP
+-59 33 70 24 59 -66 3 2760 3463 SP
+-59 32 70 19 59 -27 3 2819 3397 SP
+-59 30 70 3 59 -14 3 2878 3370 SP
+-59 7 70 -14 59 10 3 2937 3356 SP
+-58 -18 69 31 59 -27 3 2996 3366 SP
+-59 27 69 0 59 4 3 3055 3339 SP
+-59 26 70 -41 58 15 3 3114 3343 SP
+-59 26 70 -42 59 -25 3 3172 3358 SP
+-59 -44 70 -8 59 10 3 3231 3333 SP
+-59 28 70 -44 59 8 3 3290 3343 SP
+-59 28 70 -42 59 -30 3 3349 3351 SP
+-59 29 70 -41 59 -30 3 3408 3321 SP
+-59 30 70 -39 59 -32 3 3467 3291 SP
+-59 30 70 32 59 -101 3 3526 3259 SP
+-59 31 70 33 59 -32 3 3585 3158 SP
+-59 17 70 48 59 -32 3 3644 3126 SP
+-59 27 70 42 59 -21 3 3703 3094 SP
+-59 37 70 38 59 -33 3 3762 3073 SP
+-58 33 69 35 59 -30 3 3821 3040 SP
+-59 29 70 37 58 -31 3 3880 3010 SP
+-59 31 70 39 59 -33 3 3938 2979 SP
+-59 37 70 33 59 -31 3 3997 2946 SP
+-59 41 70 24 59 -32 3 4056 2915 SP
+-59 49 70 18 59 -43 3 4115 2883 SP
+-59 44 70 14 59 -40 3 4174 2840 SP
+-59 48 70 15 59 -49 3 4233 2800 SP
+-59 39 70 23 59 -47 3 4292 2751 SP
+-59 30 70 27 59 -34 3 4351 2704 SP
+-59 30 70 33 59 -36 3 4410 2670 SP
+-59 31 70 33 59 -31 3 4469 2634 SP
+-59 45 70 26 59 -38 3 4528 2603 SP
+-58 38 69 20 59 -32 3 4587 2565 SP
+-59 33 69 10 59 -23 3 4646 2533 SP
+-59 27 70 12 58 -29 3 4705 2510 SP
+-59 20 70 23 59 -31 3 4763 2481 SP
+-59 43 70 10 59 -30 3 4822 2450 SP
+-59 75 70 10 59 -75 3 4881 2420 SP
+-59 30 70 34 59 -54 3 4940 2345 SP
+-59 31 70 35 59 -32 3 4999 2291 SP
+-59 30 70 34 59 -29 3 5058 2259 SP
+-59 36 70 28 59 -30 3 5117 2230 SP
+-59 30 70 27 59 -29 3 5176 2200 SP
+-59 27 70 29 59 -29 3 5235 2171 SP
+-59 35 70 22 59 -28 3 5294 2142 SP
+-59 13 70 32 59 -23 3 5353 2114 SP
+-58 13 69 23 59 -4 3 5412 2091 SP
+-59 -1 70 18 58 6 3 5471 2087 SP
+-59 18 70 27 59 -27 3 5529 2093 SP
+-59 34 70 37 59 -44 3 5588 2066 SP
+-59 38 70 26 59 -27 3 5647 2022 SP
+-59 7 70 38 59 -19 3 5706 1995 SP
+-59 63 70 22 59 -47 3 5765 1976 SP
+-59 49 70 -20 59 -7 3 5824 1929 SP
+-59 42 70 -10 59 -52 3 5883 1922 SP
+-59 -41 70 36 59 -5 3 5942 1870 SP
+-59 29 70 35 59 -28 3 6001 1865 SP
+-59 30 70 0 59 5 3 6060 1837 SP
+-59 30 70 0 59 -30 3 6119 1842 SP
+-58 30 69 15 59 -45 3 6178 1812 SP
+-59 31 69 36 59 -52 3 6237 1767 SP
+-59 44 70 22 58 -30 3 6296 1715 SP
+-59 20 70 34 59 -32 3 6354 1685 SP
+-59 32 70 62 59 -60 3 6413 1653 SP
+-59 101 70 34 59 -73 3 6472 1593 SP
+-59 100 70 -35 59 -31 3 6531 1520 SP
+-59 76 70 -28 59 -83 3 6590 1489 SP
+-59 24 69 41 59 -52 3 2337 3574 SP
+-59 23 70 41 58 -23 3 2396 3522 SP
+-59 -29 70 97 59 -27 3 2454 3499 SP
+-59 -11 70 138 59 -30 3 2513 3472 SP
+-59 70 70 63 59 5 3 2572 3442 SP
+-59 47 70 29 59 -13 3 2631 3447 SP
+-59 66 70 5 59 -42 3 2690 3434 SP
+-59 27 70 4 59 -26 3 2749 3392 SP
+-59 14 70 -3 59 -7 3 2808 3366 SP
+-59 -10 70 32 59 -25 3 2867 3359 SP
+-59 27 70 13 59 -8 3 2926 3334 SP
+-59 -4 70 -12 59 29 3 2985 3326 SP
+-58 -15 69 15 59 -12 3 3044 3355 SP
+-59 25 69 -46 59 36 3 3103 3343 SP
+-59 -10 70 -47 58 11 3 3162 3379 SP
+-59 -8 70 -46 59 7 3 3220 3390 SP
+-59 30 70 -45 59 -31 3 3279 3397 SP
+-59 30 70 -66 59 -9 3 3338 3366 SP
+-59 32 70 -5 59 -93 3 3397 3357 SP
+-59 101 70 -37 59 -69 3 3456 3264 SP
+-59 32 70 34 59 -103 3 3515 3195 SP
+-59 32 70 35 59 -33 3 3574 3092 SP
+-59 21 70 45 59 -31 3 3633 3059 SP
+-59 33 70 41 59 -29 3 3692 3028 SP
+-59 30 70 39 59 -28 3 3751 2999 SP
+-58 31 69 39 59 -31 3 3810 2971 SP
+-59 33 69 35 59 -29 3 3869 2940 SP
+-59 31 69 35 59 -31 3 3928 2911 SP
+-59 32 70 33 58 -30 3 3987 2880 SP
+-59 43 70 22 59 -32 3 4045 2850 SP
+-59 40 70 18 59 -36 3 4104 2818 SP
+-59 49 70 15 59 -46 3 4163 2782 SP
+-59 47 70 7 59 -39 3 4222 2736 SP
+-59 34 70 24 59 -51 3 4281 2697 SP
+-59 36 70 34 59 -46 3 4340 2646 SP
+-59 31 70 34 59 -31 3 4399 2600 SP
+-59 38 70 26 59 -30 3 4458 2569 SP
+-59 32 70 24 59 -30 3 4517 2539 SP
+-59 23 70 31 59 -30 3 4576 2509 SP
+-58 29 69 14 59 -12 3 4635 2479 SP
+-59 31 69 33 59 -50 3 4694 2467 SP
+-59 30 70 34 58 -31 3 4753 2417 SP
+-59 75 70 25 59 -66 3 4811 2386 SP
+-59 54 70 26 59 -55 3 4870 2320 SP
+-59 32 70 20 59 -26 3 4929 2265 SP
+-59 29 70 34 59 -43 3 4988 2239 SP
+-59 30 70 4 59 0 3 5047 2196 SP
+-59 29 70 -1 59 -24 3 5106 2196 SP
+-59 29 70 0 59 -30 3 5165 2172 SP
+-59 28 70 -2 59 -26 3 5224 2142 SP
+-59 23 70 1 59 -26 3 5283 2116 SP
+-59 4 70 7 59 -10 3 5342 2090 SP
+-58 -6 69 29 59 -16 3 5401 2080 SP
+-59 27 69 31 59 -29 3 5460 2064 SP
+-59 44 70 18 58 -31 3 5519 2035 SP
+-59 27 70 23 59 -32 3 5577 2004 SP
+-59 19 70 38 59 -34 3 5636 1972 SP
+-59 47 70 12 59 -21 3 5695 1938 SP
+-59 7 70 23 59 -18 3 5754 1917 SP
+-59 52 70 -59 59 30 3 5813 1899 SP
+-59 5 70 34 59 -98 3 5872 1929 SP
+-59 28 70 34 59 -28 3 5931 1831 SP
+-59 -5 70 22 59 17 3 5990 1803 SP
+-59 30 70 -1 59 -7 3 6049 1820 SP
+-59 45 70 33 59 -79 3 6108 1813 SP
+-59 52 70 33 59 -52 3 6167 1734 SP
+-58 30 69 21 59 -18 3 6226 1682 SP
+-59 32 69 33 59 -44 3 6285 1664 SP
+-59 60 70 5 58 -32 3 6344 1620 SP
+-59 73 70 33 59 -101 3 6402 1588 SP
+-59 31 70 34 59 -32 3 6461 1487 SP
+-59 83 70 -17 59 -32 3 6520 1455 SP
+-59 52 70 35 59 -63 3 2267 3550 SP
+-58 23 69 40 59 -28 3 2326 3487 SP
+-59 27 69 -28 59 41 3 2385 3459 SP
+-59 30 69 6 59 -64 3 2444 3500 SP
+-59 -5 70 54 58 -43 3 2503 3436 SP
+-59 13 70 65 59 -24 3 2561 3393 SP
+-59 42 70 48 59 -25 3 2620 3369 SP
+-59 26 70 34 59 -12 3 2679 3344 SP
+-59 7 70 31 59 -4 3 2738 3332 SP
+-59 25 70 26 59 -20 3 2797 3328 SP
+-59 8 70 -25 59 43 3 2856 3308 SP
+-59 -29 70 25 59 -21 3 2915 3351 SP
+-59 12 70 -54 59 67 3 2974 3330 SP
+-59 -36 70 -51 59 33 3 3033 3397 SP
+-58 -11 69 -16 59 -24 3 3092 3430 SP
+-59 -7 69 -328 59 319 3 3151 3406 SP
+-59 31 69 -499 59 140 3 3210 3725 SP
+-59 9 70 -472 58 -36 3 3269 3865 SP
+-59 93 70 -41 59 -524 3 3327 3829 SP
+-59 69 70 32 59 -142 3 3386 3305 SP
+-59 103 70 -12 59 -59 3 3445 3163 SP
+-59 33 70 35 59 -80 3 3504 3104 SP
+-59 31 70 35 59 -31 3 3563 3024 SP
+-59 29 70 35 59 -29 3 3622 2993 SP
+-59 28 70 39 59 -32 3 3681 2964 SP
+-59 31 70 37 59 -29 3 3740 2932 SP
+-59 29 70 36 59 -28 3 3799 2903 SP
+-59 31 70 35 59 -30 3 3858 2875 SP
+-58 30 69 34 59 -29 3 3917 2845 SP
+-59 32 69 31 59 -29 3 3976 2816 SP
+-59 36 69 26 59 -31 3 4035 2787 SP
+-59 46 70 12 58 -32 3 4094 2756 SP
+-59 39 70 18 59 -45 3 4152 2724 SP
+-59 51 70 25 59 -58 3 4211 2679 SP
+-59 46 70 32 59 -53 3 4270 2621 SP
+-59 31 70 34 59 -33 3 4329 2568 SP
+-59 30 70 -1 59 5 3 4388 2535 SP
+-59 30 70 -36 59 5 3 4447 2540 SP
+-59 30 70 -36 59 -30 3 4506 2545 SP
+-59 12 70 -18 59 -30 3 4565 2515 SP
+-59 50 70 33 59 -101 3 4624 2485 SP
+-58 31 69 50 59 -48 3 4683 2384 SP
+-59 66 69 32 59 -48 3 4742 2336 SP
+-59 55 69 40 59 -63 3 4801 2288 SP
+-59 26 70 5 58 9 3 4860 2225 SP
+-59 43 70 -36 59 -2 3 4918 2234 SP
+-59 0 70 -7 59 -29 3 4977 2232 SP
+-59 24 70 -2 59 -29 3 5036 2203 SP
+-59 30 70 -4 59 -28 3 5095 2174 SP
+-59 26 70 -1 59 -29 3 5154 2146 SP
+-59 26 70 2 59 -29 3 5213 2117 SP
+-59 10 70 20 59 -28 3 5272 2088 SP
+-59 16 70 23 59 -19 3 5331 2060 SP
+-59 29 70 32 59 -38 3 5390 2041 SP
+-58 31 69 8 59 -7 3 5449 2003 SP
+-59 32 69 29 59 -53 3 5508 1996 SP
+-59 34 69 25 59 -30 3 5567 1943 SP
+-59 21 69 33 59 -29 3 5626 1913 SP
+-59 18 70 45 58 -30 3 5685 1884 SP
+-59 -30 70 34 59 41 3 5743 1854 SP
+-59 98 70 -36 59 -28 3 5802 1895 SP
+-59 28 70 10 59 -74 3 5861 1867 SP
+-59 -17 70 33 59 -6 3 5920 1793 SP
+-59 7 70 102 59 -76 3 5979 1787 SP
+-59 79 70 34 59 -11 3 6038 1711 SP
+-59 52 70 28 59 -46 3 6097 1700 SP
+-59 18 70 35 59 -25 3 6156 1654 SP
+-59 44 70 34 59 -43 3 6215 1629 SP
+-58 32 69 57 59 -55 3 6274 1586 SP
+-59 101 69 34 59 -78 3 6333 1531 SP
+-59 32 69 31 59 -29 3 6392 1453 SP
+-59 32 70 16 58 -17 3 6451 1424 SP
+-59 63 70 37 59 -30 3 2197 3480 SP
+-59 28 70 38 59 -29 3 2256 3450 SP
+-59 -41 70 108 59 -29 3 2315 3421 SP
+-59 64 70 21 59 23 3 2374 3392 SP
+-58 43 69 40 59 -62 3 2433 3415 SP
+-59 24 69 52 59 -36 3 2492 3353 SP
+-59 25 69 42 59 -15 3 2551 3317 SP
+-59 12 69 48 59 -18 3 2610 3302 SP
+-59 4 70 73 58 -29 3 2669 3284 SP
+-59 20 70 34 59 19 3 2727 3255 SP
+-59 -43 70 26 59 51 3 2786 3274 SP
+-59 21 70 -48 59 53 3 2845 3325 SP
+-59 -67 70 -35 59 54 3 2904 3378 SP
+-59 -33 70 -218 59 216 3 2963 3432 SP
+-59 24 70 -333 59 91 3 3022 3648 SP
+-59 -319 70 17 59 -31 3 3081 3739 SP
+-59 -140 70 -154 59 311 3 3140 3708 SP
+-58 36 69 232 59 -422 3 3199 4019 SP
+-59 524 69 -7 59 -285 3 3258 3597 SP
+-59 142 69 -62 59 -87 3 3317 3312 SP
+-59 59 69 10 59 -131 3 3376 3225 SP
+-59 80 70 16 58 -86 3 3435 3094 SP
+-59 31 70 35 59 -50 3 3493 3008 SP
+-59 29 70 36 59 -30 3 3552 2958 SP
+-59 32 70 33 59 -29 3 3611 2928 SP
+-59 29 70 19 59 -15 3 3670 2899 SP
+-59 28 70 21 59 -30 3 3729 2884 SP
+-59 30 70 34 59 -43 3 3788 2854 SP
+-59 29 70 35 59 -30 3 3847 2811 SP
+-59 29 70 35 59 -29 3 3906 2781 SP
+-59 31 70 35 59 -31 3 3965 2752 SP
+-58 32 69 33 59 -30 3 4024 2721 SP
+-59 45 69 41 59 -53 3 4083 2691 SP
+-59 58 69 44 59 -61 3 4142 2638 SP
+-59 53 69 37 59 -46 3 4201 2577 SP
+-59 33 70 34 58 -30 3 4260 2531 SP
+-59 -5 70 22 59 17 3 4318 2501 SP
+-59 -5 70 34 59 -7 3 4377 2518 SP
+-59 30 70 34 59 -30 3 4436 2511 SP
+-59 30 70 104 59 -100 3 4495 2481 SP
+-59 101 70 34 59 -31 3 4554 2381 SP
+-59 48 70 17 59 -31 3 4613 2350 SP
+-59 48 70 70 59 -101 3 4672 2319 SP
+-59 63 70 -18 59 25 3 4731 2218 SP
+-58 -9 69 6 59 -15 3 4790 2243 SP
+-59 2 69 34 59 -30 3 4849 2228 SP
+-59 29 69 68 59 -63 3 4908 2198 SP
+-59 29 69 33 59 6 3 4967 2135 SP
+-59 28 70 30 58 -25 3 5026 2141 SP
+-59 29 70 33 59 -32 3 5084 2116 SP
+-59 29 70 33 59 -29 3 5143 2084 SP
+-59 28 70 33 59 -28 3 5202 2055 SP
+-59 19 70 43 59 -29 3 5261 2027 SP
+-59 38 70 -36 59 41 3 5320 1998 SP
+-59 7 70 -13 59 -30 3 5379 2039 SP
+-59 53 70 9 59 -75 3 5438 2009 SP
+-59 30 70 32 59 -53 3 5497 1934 SP
+-59 29 70 33 59 -30 3 5556 1881 SP
+-58 30 69 34 59 -31 3 5615 1851 SP
+-59 -41 69 79 59 -4 3 5674 1820 SP
+-59 28 69 90 59 -39 3 5733 1816 SP
+-59 74 69 -12 59 28 3 5792 1777 SP
+-59 6 70 34 58 -52 3 5851 1805 SP
+-59 76 70 11 59 -53 3 5909 1753 SP
+-59 11 70 22 59 -22 3 5968 1700 SP
+-59 46 70 26 59 -50 3 6027 1678 SP
+-59 25 70 46 59 -45 3 6086 1628 SP
+-59 43 70 35 59 -32 3 6145 1583 SP
+-59 55 70 80 59 -100 3 6204 1551 SP
+-59 78 70 21 59 -19 3 6263 1451 SP
+-59 29 70 27 59 -35 3 6322 1432 SP
+-58 17 69 94 59 -84 3 6381 1397 SP
+-59 30 70 42 59 -39 3 2127 3447 SP
+-59 29 70 36 59 -23 3 2186 3408 SP
+-59 29 70 36 59 -29 3 2245 3385 SP
+-59 -23 70 88 59 -29 3 2304 3356 SP
+-59 62 70 42 59 -16 3 2363 3327 SP
+-59 36 70 35 59 -29 3 2422 3311 SP
+-59 15 70 32 59 -12 3 2481 3282 SP
+-59 18 70 46 59 -32 3 2540 3270 SP
+-58 29 69 -11 59 28 3 2599 3238 SP
+-59 -19 69 -20 59 28 3 2658 3266 SP
+-59 -51 69 -47 59 78 3 2717 3294 SP
+-59 -53 69 -23 59 29 3 2776 3372 SP
+-59 -54 69 -332 59 363 3 2835 3401 SP
+-59 -216 70 -217 58 101 3 2894 3764 SP
+-59 -91 70 -335 59 209 3 2952 3865 SP
+-59 31 70 -333 59 -33 3 3011 4074 SP
+-59 -311 70 19 59 -41 3 3070 4041 SP
+-59 422 70 -11 59 -392 3 3129 4000 SP
+-59 285 70 -204 59 -92 3 3188 3608 SP
+-59 87 70 8 59 -299 3 3247 3516 SP
+-59 131 70 9 59 -132 3 3306 3217 SP
+-58 86 69 26 59 -103 3 3365 3085 SP
+-59 50 69 25 59 -49 3 3424 2982 SP
+-59 30 69 32 59 -37 3 3483 2933 SP
+-59 29 69 35 59 -32 3 3542 2896 SP
+-59 15 69 42 59 -22 3 3601 2864 SP
+-59 30 70 17 58 -5 3 3660 2842 SP
+-59 43 70 21 59 -47 3 3718 2837 SP
+-59 30 70 35 59 -44 3 3777 2790 SP
+-59 29 70 35 59 -29 3 3836 2746 SP
+-59 31 70 34 59 -30 3 3895 2717 SP
+-59 30 70 40 59 -36 3 3954 2687 SP
+-59 53 70 37 59 -50 3 4013 2651 SP
+-59 61 70 45 59 -69 3 4072 2601 SP
+-59 46 70 34 59 -35 3 4131 2532 SP
+-58 30 69 34 59 -30 3 4190 2497 SP
+-59 -17 69 12 59 39 3 4249 2467 SP
+-59 7 69 35 59 -30 3 4308 2506 SP
+-59 30 69 34 59 -29 3 4367 2476 SP
+-59 100 69 35 59 -101 3 4426 2447 SP
+-59 31 70 35 58 -31 3 4485 2346 SP
+-59 31 70 58 59 -54 3 4543 2315 SP
+-59 101 70 34 59 -77 3 4602 2261 SP
+-59 -25 70 20 59 39 3 4661 2184 SP
+-59 15 70 70 59 -65 3 4720 2223 SP
+-59 30 70 80 59 -40 3 4779 2158 SP
+-59 63 70 69 59 -52 3 4838 2118 SP
+-59 -6 70 34 59 41 3 4897 2066 SP
+-58 25 69 37 59 -28 3 4956 2107 SP
+-59 32 69 34 59 -29 3 5015 2079 SP
+-59 29 69 33 59 -28 3 5074 2050 SP
+-59 28 69 34 59 -29 3 5133 2022 SP
+-59 29 69 10 59 -5 3 5192 1993 SP
+-59 -41 70 34 58 17 3 5251 1988 SP
+-59 30 70 34 59 -30 3 5309 2005 SP
+-59 75 70 59 59 -100 3 5368 1975 SP
+-59 53 70 36 59 -30 3 5427 1875 SP
+-59 30 70 37 59 -31 3 5486 1845 SP
+-59 31 70 35 59 -29 3 5545 1814 SP
+-59 4 70 57 59 -26 3 5604 1785 SP
+-59 39 70 49 59 -31 3 5663 1759 SP
+-59 -28 70 35 59 42 3 5722 1728 SP
+-58 52 69 -95 59 78 3 5781 1770 SP
+-59 53 69 -58 59 -90 3 5840 1848 SP
+-59 22 69 34 59 -114 3 5899 1758 SP
+-59 50 69 36 59 -52 3 5958 1644 SP
+-59 45 69 35 59 -44 3 6017 1592 SP
+-59 32 70 35 58 -32 3 6076 1548 SP
+-59 100 70 36 59 -101 3 6134 1516 SP
+-59 19 70 48 59 -31 3 6193 1415 SP
+-59 35 70 4 59 9 3 6252 1384 SP
+-59 84 70 -14 59 -66 3 6311 1393 SP
+-59 39 69 30 59 -28 3 2058 3406 SP
+-59 23 69 36 59 -29 3 2117 3378 SP
+-59 29 69 35 59 -28 3 2176 3349 SP
+-59 29 69 34 59 -28 3 2235 3321 SP
+-59 16 69 45 59 -27 3 2294 3293 SP
+-59 29 70 34 58 -18 3 2353 3266 SP
+-59 12 70 43 59 -21 3 2411 3248 SP
+-59 32 70 -21 59 32 3 2470 3227 SP
+-59 -28 70 -20 59 27 3 2529 3259 SP
+-59 -28 70 -94 59 102 3 2588 3286 SP
+-59 -78 70 -52 59 36 3 2647 3388 SP
+-59 -29 70 -536 59 513 3 2706 3424 SP
+-59 -363 70 -336 59 163 3 2765 3937 SP
+-58 -101 69 -452 59 217 3 2824 4100 SP
+-59 -209 69 -501 59 258 3 2883 4317 SP
+-59 33 69 -469 59 -65 3 2942 4575 SP
+-59 41 69 -211 59 -299 3 3001 4510 SP
+-59 392 69 -322 59 -281 3 3060 4211 SP
+-59 92 69 17 59 -431 3 3119 3930 SP
+-59 299 70 43 58 -325 3 3178 3499 SP
+-59 132 70 57 59 -146 3 3236 3174 SP
+-59 103 70 38 59 -84 3 3295 3028 SP
+-59 49 70 34 59 -45 3 3354 2944 SP
+-59 37 70 35 59 -38 3 3413 2899 SP
+-59 32 70 34 59 -31 3 3472 2861 SP
+-59 22 70 35 59 -23 3 3531 2830 SP
+-58 5 69 51 59 -21 3 3590 2807 SP
+-59 47 69 35 59 -31 3 3649 2786 SP
+-59 44 69 35 59 -44 3 3708 2755 SP
+-59 29 69 34 59 -28 3 3767 2711 SP
+-59 30 69 36 59 -32 3 3826 2683 SP
+-59 36 69 31 59 -31 3 3885 2651 SP
+-59 50 70 39 58 -58 3 3944 2620 SP
+-59 69 70 25 59 -55 3 4002 2562 SP
+-59 35 70 36 59 -46 3 4061 2507 SP
+-59 30 70 35 59 -29 3 4120 2461 SP
+-59 -39 70 34 59 40 3 4179 2432 SP
+-59 30 70 35 59 -31 3 4238 2472 SP
+-59 29 70 70 59 -64 3 4297 2441 SP
+-59 101 70 35 59 -66 3 4356 2377 SP
+-58 31 69 35 59 -31 3 4415 2311 SP
+-59 54 69 46 59 -65 3 4474 2280 SP
+-59 77 69 -35 59 4 3 4533 2215 SP
+-59 -39 69 87 59 -83 3 4592 2219 SP
+-59 65 69 69 59 -47 3 4651 2136 SP
+-59 40 69 58 59 -29 3 4710 2089 SP
+-59 52 70 0 58 6 3 4769 2060 SP
+-59 -41 70 35 59 6 3 4827 2066 SP
+-59 28 70 35 59 -28 3 4886 2072 SP
+-59 29 70 34 59 -28 3 4945 2044 SP
+-59 28 70 35 59 -29 3 5004 2016 SP
+-59 29 70 34 59 -28 3 5063 1987 SP
+-59 5 70 -13 59 42 3 5122 1959 SP
+-58 -17 69 38 59 -34 3 5181 2001 SP
+-59 30 69 34 59 -26 3 5240 1967 SP
+-59 100 69 35 59 -101 3 5299 1941 SP
+-59 30 69 36 59 -31 3 5358 1840 SP
+-59 31 69 36 59 -31 3 5417 1809 SP
+-59 29 69 37 59 -30 3 5476 1778 SP
+-59 26 70 62 58 -51 3 5535 1748 SP
+-59 31 70 36 59 -5 3 5593 1697 SP
+-59 -42 70 141 59 -63 3 5652 1692 SP
+-59 -78 70 189 59 30 3 5711 1629 SP
+-59 90 70 129 59 -30 3 5770 1659 SP
+-59 114 70 69 59 -54 3 5829 1629 SP
+-59 52 70 50 59 -33 3 5888 1575 SP
+-59 44 70 36 59 -30 3 5947 1542 SP
+-58 32 69 106 59 -102 3 6006 1512 SP
+-59 101 69 105 59 -100 3 6065 1410 SP
+-59 31 69 58 59 16 3 6124 1310 SP
+-59 -9 69 74 59 -7 3 6183 1326 SP
+-59 66 69 16 59 -8 3 6242 1319 SP
+-59 28 70 33 59 -30 3 1988 3375 SP
+-59 29 70 34 59 -30 3 2047 3345 SP
+-59 28 70 34 59 -28 3 2106 3315 SP
+-59 28 70 42 59 -36 3 2165 3287 SP
+-59 27 70 31 59 -16 3 2224 3251 SP
+-58 18 69 26 59 -13 3 2283 3235 SP
+-59 21 69 -27 59 32 3 2342 3222 SP
+-59 -32 69 -10 59 15 3 2401 3254 SP
+-59 -27 69 -84 59 101 3 2460 3269 SP
+-59 -102 69 -204 59 222 3 2519 3370 SP
+-59 -36 69 -335 59 167 3 2578 3592 SP
+-59 -513 69 -163 59 341 3 2637 3759 SP
+-59 -163 70 -545 58 545 3 2696 4100 SP
+-59 -217 70 -380 59 52 3 2754 4645 SP
+-59 -258 70 -91 59 -31 3 2813 4697 SP
+-59 65 70 -64 59 -92 3 2872 4666 SP
+-59 299 70 -276 59 -87 3 2931 4574 SP
+-59 281 70 -88 59 -469 3 2990 4487 SP
+-59 431 70 31 59 -550 3 3049 4018 SP
+-58 325 69 33 59 -327 3 3108 3468 SP
+-59 146 69 36 59 -149 3 3167 3141 SP
+-59 84 69 45 59 -93 3 3226 2992 SP
+-59 45 69 39 59 -39 3 3285 2899 SP
+-59 38 69 35 59 -34 3 3344 2860 SP
+-59 31 69 35 59 -31 3 3403 2826 SP
+-59 23 70 43 58 -31 3 3462 2795 SP
+-59 21 70 50 59 -28 3 3520 2764 SP
+-59 31 70 49 59 -30 3 3579 2736 SP
+-59 44 70 35 59 -30 3 3638 2706 SP
+-59 28 70 37 59 -30 3 3697 2676 SP
+-59 32 70 35 59 -30 3 3756 2646 SP
+-59 31 70 34 59 -30 3 3815 2616 SP
+-58 58 69 7 59 -31 3 3874 2586 SP
+-59 55 69 51 59 -99 3 3933 2555 SP
+-59 46 69 35 59 -30 3 3992 2456 SP
+-59 29 69 36 59 -30 3 4051 2426 SP
+-59 -40 69 36 59 40 3 4110 2396 SP
+-59 31 69 35 59 -30 3 4169 2436 SP
+-59 64 69 47 59 -76 3 4228 2406 SP
+-59 66 70 27 58 -46 3 4287 2330 SP
+-59 31 70 37 59 -41 3 4345 2284 SP
+-59 65 70 0 59 -28 3 4404 2243 SP
+-59 -4 70 35 59 -31 3 4463 2215 SP
+-59 83 70 17 59 -65 3 4522 2184 SP
+-59 47 70 36 59 -66 3 4581 2119 SP
+-59 29 70 36 59 -29 3 4640 2053 SP
+-58 -6 69 -34 59 76 3 4699 2024 SP
+-59 -6 69 -11 59 -17 3 4758 2100 SP
+-59 28 69 47 59 -86 3 4817 2083 SP
+-59 28 69 35 59 -16 3 4876 1997 SP
+-59 29 69 34 59 -28 3 4935 1981 SP
+-59 28 69 -35 59 41 3 4994 1953 SP
+-59 -42 70 35 58 -28 3 5053 1994 SP
+-59 34 70 35 59 -34 3 5111 1966 SP
+-59 26 70 70 59 -61 3 5170 1932 SP
+-59 101 70 27 59 -58 3 5229 1871 SP
+-59 31 70 57 59 -61 3 5288 1813 SP
+-59 31 70 36 59 -10 3 5347 1752 SP
+-59 30 70 37 59 -31 3 5406 1742 SP
+-58 51 69 84 59 -98 3 5465 1711 SP
+-59 5 69 142 59 -63 3 5524 1613 SP
+-59 63 69 72 59 7 3 5583 1550 SP
+-59 -30 69 130 59 -28 3 5642 1557 SP
+-59 30 69 60 59 40 3 5701 1529 SP
+-59 54 69 32 59 -26 3 5760 1569 SP
+-59 33 69 35 59 -36 3 5819 1543 SP
+-59 30 70 107 58 -102 3 5878 1507 SP
+-59 102 70 71 59 -66 3 5936 1405 SP
+-59 100 70 36 59 -65 3 5995 1339 SP
+-59 -16 70 36 59 16 3 6054 1274 SP
+-59 7 70 36 59 -7 3 6113 1290 SP
+-59 8 70 52 59 -24 3 6172 1283 SP
+-59 30 69 35 59 -30 3 1919 3340 SP
+-59 30 69 35 59 -30 3 1978 3310 SP
+-59 28 69 36 59 -29 3 2037 3280 SP
+-59 36 69 40 59 -40 3 2096 3251 SP
+-59 16 69 21 59 3 3 2155 3211 SP
+-59 13 69 -2 59 10 3 2214 3214 SP
+-59 -32 70 26 58 4 3 2273 3224 SP
+-59 -15 70 -82 59 123 3 2331 3228 SP
+-59 -101 70 -111 59 130 3 2390 3351 SP
+-59 -222 70 -159 59 270 3 2449 3481 SP
+-59 -167 70 -577 59 585 3 2508 3751 SP
+-59 -341 70 -518 59 282 3 2567 4336 SP
+-58 -545 69 -41 59 68 3 2626 4618 SP
+-59 -52 69 -49 59 60 3 2685 4686 SP
+-59 31 69 -48 59 -32 3 2744 4746 SP
+-59 92 69 -73 59 -67 3 2803 4714 SP
+-59 87 69 230 59 -390 3 2862 4647 SP
+-59 469 69 149 59 -388 3 2921 4257 SP
+-59 550 69 35 59 -436 3 2980 3869 SP
+-59 327 69 36 59 -328 3 3039 3433 SP
+-59 149 70 36 58 -149 3 3098 3105 SP
+-59 93 70 40 59 -97 3 3156 2956 SP
+-59 39 70 42 59 -41 3 3215 2859 SP
+-59 34 70 36 59 -28 3 3274 2818 SP
+-59 31 70 33 59 -28 3 3333 2790 SP
+-58 31 69 34 59 -32 3 3392 2762 SP
+-59 28 69 37 59 -31 3 3451 2730 SP
+-59 30 69 36 59 -29 3 3510 2699 SP
+-59 30 69 35 59 -29 3 3569 2670 SP
+-59 30 69 34 59 -29 3 3628 2641 SP
+-59 30 69 35 59 -31 3 3687 2612 SP
+-59 30 69 44 59 -39 3 3746 2581 SP
+-59 31 69 35 59 -22 3 3805 2542 SP
+-59 99 70 13 58 -77 3 3864 2520 SP
+-59 30 70 36 59 -53 3 3922 2443 SP
+-59 30 70 36 59 -30 3 3981 2390 SP
+-59 -40 70 10 59 66 3 4040 2360 SP
+-59 30 70 36 59 -56 3 4099 2426 SP
+-59 76 70 59 59 -99 3 4158 2370 SP
+-58 46 69 43 59 -30 3 4217 2271 SP
+-59 41 69 32 59 -30 3 4276 2241 SP
+-59 28 69 34 59 -30 3 4335 2211 SP
+-59 31 69 34 59 -31 3 4394 2181 SP
+-59 65 69 0 59 -31 3 4453 2150 SP
+-59 66 69 34 59 -100 3 4512 2119 SP
+-59 29 69 63 59 -58 3 4571 2019 SP
+-59 -76 70 163 58 -24 3 4630 1961 SP
+-59 17 70 128 59 18 3 4688 1937 SP
+-59 86 70 93 59 -51 3 4747 1955 SP
+-59 16 70 58 59 19 3 4806 1904 SP
+-59 28 70 34 59 -4 3 4865 1923 SP
+-59 -41 70 34 59 41 3 4924 1919 SP
+-58 28 69 35 59 -29 3 4983 1960 SP
+-59 34 69 46 59 -45 3 5042 1931 SP
+-59 61 69 36 59 -51 3 5101 1886 SP
+-59 58 69 59 59 -81 3 5160 1835 SP
+-59 61 69 85 59 -87 3 5219 1754 SP
+-59 10 69 106 59 -31 3 5278 1667 SP
+-59 31 69 83 59 -8 3 5337 1636 SP
+-59 98 69 107 59 -122 3 5396 1628 SP
+-59 63 70 49 58 -5 3 5455 1506 SP
+-59 -7 70 37 59 19 3 5513 1501 SP
+-59 28 70 8 59 1 3 5572 1520 SP
+-59 -40 70 37 59 11 3 5631 1521 SP
+-59 26 70 42 59 -31 3 5690 1532 SP
+-59 36 70 37 59 -31 3 5749 1501 SP
+-58 102 69 36 59 -101 3 5808 1470 SP
+-59 66 69 71 59 -101 3 5867 1369 SP
+-59 65 69 14 59 -8 3 5926 1268 SP
+-59 -16 69 41 59 -11 3 5985 1260 SP
+-59 7 69 36 59 -2 3 6044 1249 SP
+-59 24 69 68 59 -56 3 6103 1247 SP
+-59 30 69 35 59 -33 3 1850 3308 SP
+-59 30 70 35 58 -30 3 1909 3275 SP
+-59 29 70 35 59 -29 3 1967 3245 SP
+-59 40 70 35 59 -40 3 2026 3216 SP
+-59 -3 70 49 59 -11 3 2085 3176 SP
+-59 -10 70 22 59 37 3 2144 3165 SP
+-58 -4 69 49 59 -23 3 2203 3202 SP
+-59 -123 69 93 59 79 3 2262 3179 SP
+-59 -130 69 91 59 132 3 2321 3258 SP
+-59 -270 69 -154 59 515 3 2380 3390 SP
+-59 -585 69 -222 59 653 3 2439 3905 SP
+-59 -282 69 19 59 41 3 2498 4558 SP
+-59 -68 69 -52 59 139 3 2557 4599 SP
+-59 -60 69 34 59 -26 3 2616 4738 SP
+-59 32 70 135 58 -133 3 2675 4712 SP
+-59 67 70 377 59 -309 3 2733 4579 SP
+-59 390 70 373 59 -386 3 2792 4270 SP
+-59 388 70 422 59 -437 3 2851 3884 SP
+-59 436 70 88 59 -102 3 2910 3447 SP
+-59 328 70 73 59 -313 3 2969 3345 SP
+-58 149 69 37 59 -113 3 3028 3032 SP
+-59 97 69 38 59 -98 3 3087 2919 SP
+-59 41 69 37 59 -40 3 3146 2821 SP
+-59 28 69 37 59 -28 3 3205 2781 SP
+-59 28 69 38 59 -29 3 3264 2753 SP
+-59 32 69 36 59 -30 3 3323 2724 SP
+-59 31 69 39 59 -34 3 3382 2694 SP
+-59 29 69 41 59 -31 3 3441 2660 SP
+-59 29 70 38 58 -26 3 3500 2629 SP
+-59 29 70 31 59 -22 3 3558 2603 SP
+-59 31 70 35 59 -35 3 3617 2581 SP
+-59 39 70 27 59 -31 3 3676 2546 SP
+-59 22 70 105 59 -100 3 3735 2515 SP
+-58 77 69 59 59 -31 3 3794 2415 SP
+-59 53 69 36 59 -30 3 3853 2384 SP
+-59 30 69 36 59 -30 3 3912 2354 SP
+-59 -66 69 62 59 40 3 3971 2324 SP
+-59 56 69 58 59 -52 3 4030 2364 SP
+-59 99 69 23 59 -64 3 4089 2312 SP
+-59 30 69 34 59 -41 3 4148 2248 SP
+-59 30 69 31 59 -27 3 4207 2207 SP
+-59 30 70 35 58 -34 3 4266 2180 SP
+-59 31 70 35 59 -31 3 4324 2146 SP
+-59 31 70 35 59 -31 3 4383 2115 SP
+-59 100 70 47 59 -112 3 4442 2084 SP
+-59 58 70 7 59 -18 3 4501 1972 SP
+-58 24 69 12 59 -29 3 4560 1954 SP
+-59 -18 69 127 59 -97 3 4619 1925 SP
+-59 51 69 21 59 55 3 4678 1828 SP
+-59 -19 69 11 59 29 3 4737 1883 SP
+-59 4 69 35 59 -28 3 4796 1912 SP
+-59 -41 69 35 59 41 3 4855 1884 SP
+-59 29 69 30 59 -24 3 4914 1925 SP
+-59 45 69 20 59 -35 3 4973 1901 SP
+-59 51 69 70 59 -101 3 5032 1866 SP
+-59 81 70 55 58 -66 3 5091 1765 SP
+-59 87 70 36 59 -68 3 5149 1699 SP
+-59 31 70 36 59 -31 3 5208 1631 SP
+-59 8 70 59 59 -31 3 5267 1600 SP
+-59 122 70 -21 59 -42 3 5326 1569 SP
+-58 5 69 -10 59 -16 3 5385 1527 SP
+-59 -19 69 16 59 -7 3 5444 1511 SP
+-59 -1 69 25 59 -8 3 5503 1504 SP
+-59 -11 69 42 59 -6 3 5562 1496 SP
+-59 31 69 37 59 -26 3 5621 1490 SP
+-59 31 69 52 59 -46 3 5680 1464 SP
+-59 101 69 1 59 -50 3 5739 1418 SP
+-59 101 69 12 59 -112 3 5798 1368 SP
+-59 8 70 58 58 -54 3 5857 1256 SP
+-59 11 70 25 59 22 3 5915 1202 SP
+-59 2 70 105 59 -82 3 5974 1224 SP
+-59 56 70 79 59 -30 3 6033 1142 SP
+-59 33 70 38 59 -33 3 1780 3270 SP
+-58 30 69 42 59 -34 3 1839 3237 SP
+-59 29 69 9 59 4 3 1898 3203 SP
+-59 40 69 23 59 -54 3 1957 3207 SP
+-59 11 69 37 59 -25 3 2016 3153 SP
+-59 -37 69 93 59 -19 3 2075 3128 SP
+-59 23 69 54 59 16 3 2134 3109 SP
+-59 -79 69 69 59 64 3 2193 3125 SP
+-59 -132 69 54 59 147 3 2252 3189 SP
+-59 -515 69 29 59 540 3 2311 3336 SP
+-59 -653 70 172 58 510 3 2370 3876 SP
+-59 -41 70 91 59 122 3 2428 4386 SP
+-59 -139 70 416 59 -186 3 2487 4508 SP
+-59 26 70 420 59 -30 3 2546 4322 SP
+-58 133 69 533 59 -246 3 2605 4292 SP
+-59 309 69 386 59 -162 3 2664 4046 SP
+-59 386 69 414 59 -414 3 2723 3884 SP
+-59 437 69 185 59 -208 3 2782 3470 SP
+-59 102 69 271 59 -188 3 2841 3262 SP
+-59 313 69 85 59 -127 3 2900 3074 SP
+-59 113 69 87 59 -115 3 2959 2947 SP
+-59 98 69 34 59 -45 3 3018 2832 SP
+-59 40 69 33 59 -39 3 3077 2787 SP
+-59 28 69 35 59 -30 3 3136 2748 SP
+-59 29 70 35 58 -29 3 3195 2718 SP
+-59 30 70 35 59 -30 3 3253 2689 SP
+-59 34 70 44 59 -43 3 3312 2659 SP
+-59 31 70 43 59 -30 3 3371 2616 SP
+-58 26 69 41 59 -24 3 3430 2586 SP
+-59 22 69 36 59 -17 3 3489 2562 SP
+-59 35 69 35 59 -34 3 3548 2545 SP
+-59 31 69 70 59 -66 3 3607 2511 SP
+-59 100 69 36 59 -66 3 3666 2445 SP
+-59 31 69 35 59 -30 3 3725 2379 SP
+-59 30 69 35 59 -30 3 3784 2349 SP
+-59 30 69 35 59 -30 3 3843 2319 SP
+-59 -40 69 92 59 -17 3 3902 2289 SP
+-59 52 70 74 58 -34 3 3961 2272 SP
+-59 64 70 47 59 -37 3 4019 2238 SP
+-59 41 70 34 59 -28 3 4078 2201 SP
+-59 27 70 35 59 -28 3 4137 2173 SP
+-58 34 69 34 59 -33 3 4196 2145 SP
+-59 31 69 34 59 -31 3 4255 2112 SP
+-59 31 69 54 59 -51 3 4314 2081 SP
+-59 112 69 22 59 -80 3 4373 2030 SP
+-59 18 69 -12 59 16 3 4432 1950 SP
+-59 29 69 11 59 -52 3 4491 1966 SP
+-59 97 69 -12 59 -74 3 4550 1914 SP
+-59 -55 69 -22 59 65 3 4609 1840 SP
+-59 -29 69 35 59 -28 3 4668 1905 SP
+-59 28 69 17 59 -10 3 4727 1877 SP
+-59 -41 70 61 58 -3 3 4786 1867 SP
+-59 24 70 40 59 -3 3 4844 1864 SP
+-59 35 70 35 59 -30 3 4903 1861 SP
+-59 101 70 35 59 -101 3 4962 1831 SP
+-58 66 69 71 59 -102 3 5021 1730 SP
+-59 68 69 35 59 -32 3 5080 1628 SP
+-59 31 69 43 59 -39 3 5139 1596 SP
+-59 31 69 35 59 -23 3 5198 1557 SP
+-59 42 69 23 59 -30 3 5257 1534 SP
+-59 16 69 -34 59 41 3 5316 1504 SP
+-59 7 69 -12 59 -29 3 5375 1545 SP
+-59 8 69 42 59 -62 3 5434 1516 SP
+-59 6 69 101 59 -65 3 5493 1454 SP
+-59 26 70 68 58 7 3 5552 1389 SP
+-59 46 70 20 59 2 3 5610 1396 SP
+-59 50 70 1 59 -31 3 5669 1398 SP
+-59 112 70 24 59 -135 3 5728 1367 SP
+-58 54 69 5 59 -35 3 5787 1232 SP
+-59 -22 69 41 59 -14 3 5846 1197 SP
+-59 82 69 36 59 -77 3 5905 1183 SP
+-59 30 69 36 59 -30 3 5964 1106 SP
+-59 33 69 35 59 -35 3 1711 3237 SP
+-59 34 69 33 59 -32 3 1770 3202 SP
+-59 -4 69 35 59 2 3 1829 3170 SP
+-59 54 69 -98 59 79 3 1888 3172 SP
+-59 25 69 38 59 -161 3 1947 3251 SP
+-59 19 69 37 59 -18 3 2006 3090 SP
+-59 -16 69 -16 59 69 3 2065 3072 SP
+-59 -64 70 14 58 34 3 2124 3141 SP
+-59 -147 70 -342 59 503 3 2182 3175 SP
+-59 -540 70 -207 59 405 3 2241 3678 SP
+-58 -510 69 -164 59 467 3 2300 4083 SP
+-59 -122 69 295 59 -337 3 2359 4550 SP
+-59 186 69 763 59 -654 3 2418 4213 SP
+-59 30 69 755 59 -22 3 2477 3559 SP
+-59 246 69 559 59 -50 3 2536 3537 SP
+-59 162 69 452 59 -55 3 2595 3487 SP
+-59 414 69 107 59 -69 3 2654 3432 SP
+-59 208 69 154 59 -255 3 2713 3363 SP
+-59 188 69 80 59 -114 3 2772 3108 SP
+-59 127 69 63 59 -110 3 2831 2994 SP
+-59 115 69 39 59 -91 3 2890 2884 SP
+-59 45 70 35 58 -41 3 2949 2793 SP
+-59 39 70 35 59 -39 3 3007 2752 SP
+-59 30 70 35 59 -30 3 3066 2713 SP
+-58 29 69 36 59 -30 3 3125 2683 SP
+-59 30 69 53 59 -47 3 3184 2653 SP
+-59 43 69 45 59 -35 3 3243 2606 SP
+-59 30 69 44 59 -29 3 3302 2571 SP
+-59 24 69 46 59 -26 3 3361 2542 SP
+-59 17 69 34 59 -5 3 3420 2516 SP
+-59 34 69 35 59 -35 3 3479 2511 SP
+-59 66 69 23 59 -54 3 3538 2476 SP
+-59 66 69 35 59 -78 3 3597 2422 SP
+-59 30 69 35 59 -30 3 3656 2344 SP
+-59 30 70 35 58 -30 3 3715 2314 SP
+-59 30 70 38 59 -33 3 3773 2284 SP
+-59 17 70 50 59 -29 3 3832 2251 SP
+-58 34 69 44 59 -28 3 3891 2222 SP
+-59 37 69 35 59 -28 3 3950 2194 SP
+-59 28 69 34 59 -27 3 4009 2166 SP
+-59 28 69 37 59 -31 3 4068 2139 SP
+-59 33 69 34 59 -30 3 4127 2108 SP
+-59 31 69 33 59 -30 3 4186 2078 SP
+-59 51 69 13 59 -31 3 4245 2048 SP
+-59 80 69 -36 59 -31 3 4304 2017 SP
+-59 -16 69 27 59 -47 3 4363 1986 SP
+-59 52 69 22 59 -47 3 4422 1939 SP
+-59 74 70 11 58 -63 3 4481 1892 SP
+-59 -65 70 35 59 41 3 4539 1829 SP
+-59 28 70 34 59 -27 3 4598 1870 SP
+-59 10 70 52 59 -28 3 4657 1843 SP
+-58 3 69 55 59 -6 3 4716 1815 SP
+-59 3 69 35 59 17 3 4775 1809 SP
+-59 30 69 35 59 -30 3 4834 1826 SP
+-59 101 69 59 59 -125 3 4893 1796 SP
+-59 102 69 -104 59 61 3 4952 1671 SP
+-59 32 69 35 59 -171 3 5011 1732 SP
+-59 39 69 33 59 -37 3 5070 1561 SP
+-59 23 69 35 59 -25 3 5129 1524 SP
+-59 30 69 33 59 -28 3 5188 1499 SP
+-59 -41 69 34 59 40 3 5247 1471 SP
+-59 29 70 35 58 -30 3 5306 1511 SP
+-59 62 70 72 59 -99 3 5364 1481 SP
+-59 65 70 36 59 -29 3 5423 1382 SP
+-58 -7 69 58 59 -15 3 5482 1353 SP
+-59 -2 69 57 59 3 3 5541 1338 SP
+-59 31 69 35 59 -9 3 5600 1341 SP
+-59 135 69 35 59 -135 3 5659 1332 SP
+-59 35 69 65 59 -65 3 5718 1197 SP
+-59 14 69 12 59 39 3 5777 1132 SP
+-59 77 69 35 59 -100 3 5836 1171 SP
+-59 30 69 36 59 -31 3 5895 1071 SP
+-59 35 69 29 59 -29 3 1642 3202 SP
+-59 32 69 27 59 -30 3 1701 3173 SP
+-59 -2 69 60 59 -31 3 1760 3143 SP
+-59 -79 69 170 59 -31 3 1819 3112 SP
+-59 161 69 62 59 -53 3 1878 3081 SP
+-59 18 70 38 58 6 3 1937 3028 SP
+-59 -69 70 46 59 61 3 1995 3034 SP
+-58 -34 69 -176 59 256 3 2054 3095 SP
+-59 -503 69 -433 59 760 3 2113 3351 SP
+-59 -405 69 -400 59 372 3 2172 4111 SP
+-59 -467 69 432 59 -365 3 2231 4483 SP
+-59 337 69 244 59 -149 3 2290 4118 SP
+-59 654 69 95 59 -505 3 2349 3969 SP
+-59 22 69 316 59 -243 3 2408 3464 SP
+-59 50 69 240 59 26 3 2467 3221 SP
+-59 55 69 290 59 -105 3 2526 3247 SP
+-59 69 69 262 59 -41 3 2585 3142 SP
+-59 255 69 72 59 -65 3 2644 3101 SP
+-59 114 70 77 58 -119 3 2703 3036 SP
+-59 110 70 73 59 -106 3 2761 2917 SP
+-59 91 70 38 59 -56 3 2820 2811 SP
+-58 41 69 43 59 -46 3 2879 2755 SP
+-59 39 69 35 59 -31 3 2938 2709 SP
+-59 30 69 21 59 -16 3 2997 2678 SP
+-59 30 69 105 59 -114 3 3056 2662 SP
+-59 47 69 42 59 16 3 3115 2548 SP
+-59 35 69 13 59 -6 3 3174 2564 SP
+-59 29 69 82 59 -98 3 3233 2558 SP
+-59 26 69 54 59 2 3 3292 2460 SP
+-59 5 69 39 59 10 3 3351 2462 SP
+-59 35 69 34 59 -30 3 3410 2472 SP
+-59 54 69 33 59 -53 3 3469 2442 SP
+-59 78 70 34 58 -79 3 3528 2389 SP
+-59 30 70 39 59 -35 3 3586 2310 SP
+-58 30 69 38 59 -29 3 3645 2275 SP
+-59 33 69 34 59 -29 3 3704 2246 SP
+-59 29 69 35 59 -30 3 3763 2217 SP
+-59 28 69 36 59 -29 3 3822 2187 SP
+-59 28 69 34 59 -26 3 3881 2158 SP
+-59 27 69 34 59 -27 3 3940 2132 SP
+-59 31 69 24 59 -21 3 3999 2105 SP
+-59 30 69 34 59 -40 3 4058 2084 SP
+-59 30 69 -12 59 16 3 4117 2044 SP
+-59 31 69 -35 59 -8 3 4176 2060 SP
+-59 31 69 -19 59 -47 3 4235 2052 SP
+-59 47 70 16 58 -82 3 4294 2005 SP
+-59 47 70 0 59 -31 3 4352 1923 SP
+-58 63 69 -59 59 -4 3 4411 1892 SP
+-59 -41 69 -36 59 18 3 4470 1888 SP
+-59 27 69 35 59 -98 3 4529 1906 SP
+-59 28 69 23 59 -16 3 4588 1808 SP
+-59 6 69 58 59 -41 3 4647 1792 SP
+-59 -17 69 68 59 7 3 4706 1751 SP
+-59 30 69 35 59 3 3 4765 1758 SP
+-59 125 69 46 59 -136 3 4824 1761 SP
+-59 -61 69 139 59 -32 3 4883 1625 SP
+-59 171 69 35 59 -67 3 4942 1593 SP
+-59 37 69 28 59 -30 3 5001 1526 SP
+-59 25 70 33 58 -30 3 5060 1496 SP
+-59 28 70 34 59 -29 3 5118 1466 SP
+-59 -40 70 78 59 -4 3 5177 1437 SP
+-58 30 69 83 59 -35 3 5236 1433 SP
+-59 99 69 35 59 -51 3 5295 1398 SP
+-59 29 69 35 59 -29 3 5354 1347 SP
+-59 15 69 50 59 -30 3 5413 1318 SP
+-59 -3 69 70 59 -17 3 5472 1288 SP
+-59 9 69 104 59 -43 3 5531 1271 SP
+-59 135 69 46 59 -77 3 5590 1228 SP
+-59 65 69 0 59 -19 3 5649 1151 SP
+-59 -39 69 47 59 -8 3 5708 1132 SP
+-59 100 69 35 59 -88 3 5767 1124 SP
+-59 31 69 35 59 -31 3 5826 1036 SP
+-59 29 69 34 59 -29 3 1573 3168 SP
+-59 30 69 35 59 -31 3 1632 3139 SP
+-59 31 69 34 59 -30 3 1691 3108 SP
+-59 31 70 48 58 -45 3 1750 3078 SP
+-59 53 70 50 59 -55 3 1808 3033 SP
+-58 -6 69 37 59 19 3 1867 2978 SP
+-59 -61 69 16 59 82 3 1926 2997 SP
+-59 -256 69 -23 59 295 3 1985 3079 SP
+-59 -760 69 7 59 730 3 2044 3374 SP
+-59 -372 69 174 59 205 3 2103 4104 SP
+-59 365 69 557 59 -748 3 2162 4309 SP
+-59 149 69 736 59 -328 3 2221 3561 SP
+-59 505 69 265 59 -34 3 2280 3233 SP
+-59 243 69 91 59 -69 3 2339 3199 SP
+-59 -26 69 164 59 -47 3 2398 3130 SP
+-59 105 69 85 59 -26 3 2457 3083 SP
+-59 41 69 152 59 -108 3 2516 3057 SP
+-59 65 70 135 58 -48 3 2575 2949 SP
+-58 119 69 76 59 -60 3 2633 2901 SP
+-59 106 69 43 59 -73 3 2692 2841 SP
+-59 56 69 49 59 -62 3 2751 2768 SP
+-59 46 69 35 59 -32 3 2810 2706 SP
+-59 31 69 49 59 -45 3 2869 2674 SP
+-59 16 69 118 59 -85 3 2928 2629 SP
+-59 114 69 35 59 -31 3 2987 2544 SP
+-59 -16 69 -16 59 67 3 3046 2513 SP
+-59 6 69 87 59 -109 3 3105 2580 SP
+-59 98 69 35 59 -46 3 3164 2471 SP
+-59 -2 69 65 59 -28 3 3223 2425 SP
+-59 -10 69 34 59 41 3 3282 2397 SP
+-59 30 70 -35 58 39 3 3341 2438 SP
+-59 53 70 13 59 -101 3 3399 2477 SP
+-58 79 69 35 59 -101 3 3458 2376 SP
+-59 35 69 31 59 -31 3 3517 2275 SP
+-59 29 69 32 59 -30 3 3576 2244 SP
+-59 29 69 42 59 -39 3 3635 2214 SP
+-59 30 69 32 59 -20 3 3694 2175 SP
+-59 29 69 31 59 -28 3 3753 2155 SP
+-59 26 69 35 59 -30 3 3812 2127 SP
+-59 27 69 25 59 -17 3 3871 2097 SP
+-59 21 69 32 59 -28 3 3930 2080 SP
+-59 40 69 1 59 -9 3 3989 2052 SP
+-59 -16 69 12 59 5 3 4048 2043 SP
+-59 8 70 69 58 -65 3 4107 2048 SP
+-59 47 70 105 59 -83 3 4165 1983 SP
+-58 82 69 104 59 -81 3 4224 1900 SP
+-59 31 69 31 59 42 3 4283 1819 SP
+-59 4 69 -97 59 124 3 4342 1861 SP
+-59 -18 69 -106 59 27 3 4401 1985 SP
+-59 98 69 -36 59 -168 3 4460 2012 SP
+-59 16 69 47 59 -99 3 4519 1844 SP
+-59 41 69 35 59 -29 3 4578 1745 SP
+-59 -7 69 71 59 -29 3 4637 1716 SP
+-59 -3 69 77 59 -3 3 4696 1687 SP
+-59 136 69 -30 59 -29 3 4755 1684 SP
+-59 32 69 -1 59 -61 3 4814 1655 SP
+-59 67 69 -1 59 -67 3 4873 1594 SP
+-59 30 70 34 58 -65 3 4932 1527 SP
+-58 30 69 32 59 -28 3 4990 1462 SP
+-59 29 69 31 59 -28 3 5049 1434 SP
+-59 4 69 60 59 -33 3 5108 1406 SP
+-59 35 69 56 59 -31 3 5167 1373 SP
+-59 51 69 35 59 -30 3 5226 1342 SP
+-59 29 69 35 59 -29 3 5285 1312 SP
+-59 30 69 35 59 -30 3 5344 1283 SP
+-59 17 69 47 59 -29 3 5403 1253 SP
+-59 43 69 70 59 -66 3 5462 1224 SP
+-59 77 69 6 59 -13 3 5521 1158 SP
+-59 19 69 1 59 -14 3 5580 1145 SP
+-59 8 69 70 59 -77 3 5639 1131 SP
+-59 88 70 35 58 -53 3 5698 1054 SP
+-59 31 70 35 59 -31 3 5756 1001 SP
+-59 29 69 35 59 -30 3 1504 3134 SP
+-59 31 69 34 59 -30 3 1563 3104 SP
+-59 30 70 34 58 -30 3 1622 3074 SP
+-58 45 69 23 59 -34 3 1680 3044 SP
+-59 55 69 -4 59 -28 3 1739 3010 SP
+-59 -19 69 35 59 -20 3 1798 2982 SP
+-59 -82 69 62 59 55 3 1857 2962 SP
+-59 -295 69 246 59 111 3 1916 3017 SP
+-59 -730 69 731 59 245 3 1975 3128 SP
+-59 -205 69 902 59 34 3 2034 3373 SP
+-59 748 69 430 59 -276 3 2093 3407 SP
+-59 328 69 145 59 -43 3 2152 3131 SP
+-59 34 69 167 59 -56 3 2211 3088 SP
+-59 69 69 131 59 -33 3 2270 3032 SP
+-59 47 69 140 59 -56 3 2329 2999 SP
+-59 26 69 150 59 -36 3 2388 2943 SP
+-59 108 70 90 58 -48 3 2447 2907 SP
+-58 48 69 63 59 -21 3 2505 2859 SP
+-59 60 69 38 59 -35 3 2564 2838 SP
+-59 73 69 66 59 -101 3 2623 2803 SP
+-59 62 69 36 59 -32 3 2682 2702 SP
+-59 32 69 43 59 -39 3 2741 2670 SP
+-59 45 69 21 59 -23 3 2800 2631 SP
+-59 85 69 -9 59 -55 3 2859 2608 SP
+-59 31 69 35 59 -75 3 2918 2553 SP
+-59 -67 69 132 59 -30 3 2977 2478 SP
+-59 109 69 52 59 -29 3 3036 2448 SP
+-59 46 69 34 59 -28 3 3095 2419 SP
+-59 28 69 34 59 -28 3 3154 2391 SP
+-59 -41 70 34 58 41 3 3213 2363 SP
+-58 -39 69 68 59 5 3 3271 2404 SP
+-59 101 69 34 59 -67 3 3330 2409 SP
+-59 101 69 -1 59 -66 3 3389 2342 SP
+-59 31 69 34 59 -66 3 3448 2276 SP
+-59 30 69 37 59 -33 3 3507 2210 SP
+-59 39 69 25 59 -27 3 3566 2177 SP
+-59 20 69 69 59 -64 3 3625 2150 SP
+-59 28 69 35 59 6 3 3684 2086 SP
+-59 30 69 22 59 -17 3 3743 2092 SP
+-59 17 69 46 59 -41 3 3802 2075 SP
+-59 28 69 13 59 5 3 3861 2034 SP
+-59 9 69 92 59 -88 3 3920 2039 SP
+-59 -5 69 105 59 -8 3 3979 1951 SP
+-58 65 69 106 58 -66 3 4038 1943 SP
+-59 83 69 143 59 -120 3 4096 1877 SP
+-59 81 69 34 59 28 3 4155 1757 SP
+-59 -42 69 17 59 59 3 4214 1785 SP
+-59 -124 69 164 59 -23 3 4273 1844 SP
+-59 -27 69 173 59 18 3 4332 1821 SP
+-59 168 69 70 59 -65 3 4391 1839 SP
+-59 99 69 35 59 -64 3 4450 1774 SP
+-59 29 69 37 59 -31 3 4509 1710 SP
+-59 29 69 34 59 -26 3 4568 1679 SP
+-59 3 69 38 59 -7 3 4627 1653 SP
+-59 29 69 -7 59 16 3 4686 1646 SP
+-59 61 69 -36 59 -32 3 4745 1662 SP
+-59 67 70 -1 58 -102 3 4804 1630 SP
+-58 65 69 4 59 -70 3 4862 1528 SP
+-59 28 69 38 59 -62 3 4921 1458 SP
+-59 28 69 38 59 -28 3 4980 1396 SP
+-59 33 69 46 59 -41 3 5039 1368 SP
+-59 31 69 38 59 -23 3 5098 1327 SP
+-59 30 69 35 59 -27 3 5157 1304 SP
+-59 29 69 35 59 -29 3 5216 1277 SP
+-59 30 69 35 59 -30 3 5275 1248 SP
+-59 29 69 61 59 -55 3 5334 1218 SP
+-59 66 69 70 59 -75 3 5393 1163 SP
+-59 13 69 18 59 39 3 5452 1088 SP
+-59 14 69 25 59 -21 3 5511 1127 SP
+-59 77 69 58 59 -110 3 5570 1106 SP
+-58 53 69 36 58 -31 3 5629 996 SP
+-59 31 69 36 59 -31 3 5687 965 SP
+-59 30 69 34 59 -29 3 1435 3099 SP
+-59 30 69 34 59 -30 3 1494 3070 SP
+-58 30 69 29 58 -25 3 1553 3040 SP
+-59 34 69 17 59 -22 3 1611 3015 SP
+-59 28 69 18 59 -29 3 1670 2993 SP
+-59 20 69 26 59 -28 3 1729 2964 SP
+-59 -55 69 108 59 -27 3 1788 2936 SP
+-59 -111 69 165 59 54 3 1847 2909 SP
+-59 -245 69 360 59 50 3 1906 2963 SP
+-59 -34 69 385 59 9 3 1965 3013 SP
+-59 276 69 175 59 -66 3 2024 3022 SP
+-59 43 69 144 59 -12 3 2083 2956 SP
+-59 56 69 106 59 -18 3 2142 2944 SP
+-59 33 69 117 59 -44 3 2201 2926 SP
+-59 56 69 86 59 -25 3 2260 2882 SP
+-59 36 69 52 59 -2 3 2319 2857 SP
+-58 48 69 40 58 -36 3 2378 2855 SP
+-59 21 69 52 59 -33 3 2436 2819 SP
+-59 35 69 85 59 -68 3 2495 2786 SP
+-59 101 69 35 59 -51 3 2554 2718 SP
+-59 32 69 41 59 -38 3 2613 2667 SP
+-59 39 69 28 59 -26 3 2672 2629 SP
+-59 23 69 5 59 0 3 2731 2603 SP
+-59 55 69 -76 59 26 3 2790 2603 SP
+-59 75 69 -12 59 -139 3 2849 2629 SP
+-59 30 69 34 59 -76 3 2908 2490 SP
+-59 29 69 34 59 -29 3 2967 2414 SP
+-59 28 69 33 59 -27 3 3026 2385 SP
+-59 28 69 -36 59 41 3 3085 2358 SP
+-58 -41 69 33 58 -28 3 3144 2399 SP
+-59 -5 69 47 59 -9 3 3202 2371 SP
+-59 67 69 -1 59 -19 3 3261 2362 SP
+-59 66 69 34 59 -101 3 3320 2343 SP
+-59 66 69 29 59 -61 3 3379 2242 SP
+-59 33 69 34 59 -38 3 3438 2181 SP
+-59 27 69 68 59 -61 3 3497 2143 SP
+-59 64 69 69 59 -65 3 3556 2082 SP
+-59 -6 69 34 59 41 3 3615 2017 SP
+-59 17 69 29 59 -12 3 3674 2058 SP
+-59 41 69 0 59 -12 3 3733 2046 SP
+-59 -5 69 -13 59 18 3 3792 2034 SP
+-59 88 69 48 59 -149 3 3851 2052 SP
+-59 8 69 105 59 -65 3 3910 1903 SP
+-58 66 69 70 58 -31 3 3969 1838 SP
+-59 120 69 21 59 -71 3 4027 1807 SP
+-59 -28 69 -33 59 82 3 4086 1736 SP
+-59 -59 69 53 59 -27 3 4145 1818 SP
+-59 23 69 61 59 -31 3 4204 1791 SP
+-59 -18 69 119 59 -40 3 4263 1760 SP
+-59 65 69 140 59 -86 3 4322 1720 SP
+-59 64 69 61 59 15 3 4381 1634 SP
+-59 31 69 45 59 -15 3 4440 1649 SP
+-59 26 69 35 59 -16 3 4499 1634 SP
+-59 7 69 -12 59 40 3 4558 1618 SP
+-59 -16 69 35 59 -31 3 4617 1658 SP
+-59 32 69 80 59 -77 3 4676 1627 SP
+-58 102 69 35 58 -57 3 4735 1550 SP
+-59 70 69 19 59 -54 3 4793 1493 SP
+-59 62 69 34 59 -77 3 4852 1439 SP
+-59 28 69 72 59 -66 3 4911 1362 SP
+-59 41 69 58 59 -27 3 4970 1296 SP
+-59 23 69 42 59 -7 3 5029 1269 SP
+-59 27 69 35 59 -20 3 5088 1262 SP
+-59 29 69 36 59 -30 3 5147 1242 SP
+-59 30 69 54 59 -48 3 5206 1212 SP
+-59 55 69 46 59 -47 3 5265 1164 SP
+-59 75 69 13 59 -42 3 5324 1117 SP
+-59 -39 69 13 59 39 3 5383 1075 SP
+-59 21 69 91 59 -99 3 5442 1114 SP
+-59 110 69 20 59 -39 3 5501 1015 SP
+-58 31 69 35 58 -46 3 5560 976 SP
+-59 31 69 38 59 -34 3 5618 930 SP
+-59 29 69 34 59 -29 3 1366 3065 SP
+-59 30 69 18 59 -14 3 1425 3036 SP
+-58 25 68 8 59 -15 3 1484 3022 SP
+-59 22 69 -3 58 -11 3 1543 3007 SP
+-59 29 69 -24 59 -8 3 1601 2996 SP
+-59 28 69 -26 59 -26 3 1660 2988 SP
+-59 27 69 -32 59 -21 3 1719 2962 SP
+-59 -54 69 42 59 -20 3 1778 2941 SP
+-59 -50 69 86 59 6 3 1837 2921 SP
+-59 -9 69 80 59 15 3 1896 2927 SP
+-59 66 69 45 59 -31 3 1955 2942 SP
+-59 12 69 65 59 -32 3 2014 2911 SP
+-59 18 69 78 59 -31 3 2073 2879 SP
+-59 44 69 53 59 -19 3 2132 2848 SP
+-59 25 69 17 59 11 3 2191 2829 SP
+-59 2 69 43 59 -28 3 2250 2840 SP
+-58 36 68 49 59 -42 3 2309 2812 SP
+-59 33 69 55 58 -39 3 2368 2770 SP
+-59 68 69 21 59 -34 3 2426 2731 SP
+-59 51 69 34 59 -64 3 2485 2697 SP
+-59 38 69 11 59 -15 3 2544 2633 SP
+-59 26 69 26 59 -41 3 2603 2618 SP
+-59 0 69 47 59 -21 3 2662 2577 SP
+-59 -26 69 61 59 12 3 2721 2556 SP
+-59 139 69 33 59 -111 3 2780 2568 SP
+-59 76 69 -2 59 -41 3 2839 2457 SP
+-59 29 69 -10 59 -21 3 2898 2416 SP
+-59 27 69 33 59 -70 3 2957 2395 SP
+-59 -41 69 33 59 41 3 3016 2325 SP
+-58 28 68 31 59 -26 3 3075 2366 SP
+-59 9 69 57 58 -35 3 3134 2340 SP
+-59 19 69 85 59 -47 3 3192 2305 SP
+-59 101 69 69 59 -85 3 3251 2258 SP
+-59 61 69 40 59 -32 3 3310 2173 SP
+-59 38 69 37 59 -35 3 3369 2141 SP
+-59 61 69 2 59 -26 3 3428 2106 SP
+-59 65 69 24 59 -87 3 3487 2080 SP
+-59 -41 69 36 59 29 3 3546 1993 SP
+-59 12 69 18 59 6 3 3605 2022 SP
+-59 12 69 71 59 -65 3 3664 2028 SP
+-59 -18 69 153 59 -64 3 3723 1963 SP
+-59 149 69 34 59 -30 3 3782 1899 SP
+-59 65 69 36 59 -67 3 3841 1869 SP
+-58 31 68 36 59 -31 3 3900 1802 SP
+-59 71 69 -6 58 -29 3 3959 1771 SP
+-59 -82 69 105 59 -29 3 4017 1742 SP
+-59 27 69 106 59 -28 3 4076 1713 SP
+-59 31 69 103 59 -28 3 4135 1685 SP
+-59 40 69 92 59 -29 3 4194 1657 SP
+-59 86 69 36 59 -30 3 4253 1628 SP
+-59 -15 69 81 59 -30 3 4312 1598 SP
+-59 15 69 25 59 41 3 4371 1568 SP
+-59 16 69 20 59 -11 3 4430 1609 SP
+-59 -40 69 60 59 0 3 4489 1598 SP
+-59 31 69 106 59 -77 3 4548 1598 SP
+-59 77 69 116 59 -87 3 4607 1521 SP
+-58 57 68 35 59 24 3 4666 1434 SP
+-59 54 69 13 58 -32 3 4725 1458 SP
+-59 77 69 36 59 -100 3 4783 1426 SP
+-59 66 69 70 59 -100 3 4842 1326 SP
+-59 27 69 73 59 -30 3 4901 1226 SP
+-59 7 69 26 59 40 3 4960 1196 SP
+-59 20 69 36 59 -30 3 5019 1236 SP
+-59 30 69 70 59 -64 3 5078 1206 SP
+-59 48 69 46 59 -24 3 5137 1142 SP
+-59 47 69 47 59 -48 3 5196 1118 SP
+-59 42 69 36 59 -31 3 5255 1070 SP
+-59 -39 69 105 59 -30 3 5314 1039 SP
+-59 99 69 38 59 -32 3 5373 1009 SP
+-59 39 69 57 59 -58 3 5432 977 SP
+-58 46 68 51 59 -40 3 5491 919 SP
+-59 34 69 49 58 -32 3 5550 879 SP
+-59 29 69 34 59 -29 3 1297 3031 SP
+-59 14 69 23 59 -3 3 1356 3002 SP
+-59 15 69 19 59 -11 3 1415 2999 SP
+-58 11 68 17 59 -9 3 1474 2988 SP
+-59 8 68 33 59 -24 3 1533 2979 SP
+-59 26 69 34 58 -27 3 1592 2955 SP
+-59 21 69 37 59 -24 3 1650 2928 SP
+-59 20 69 40 59 -23 3 1709 2904 SP
+-59 -6 69 -14 59 60 3 1768 2881 SP
+-59 -15 69 -37 59 38 3 1827 2941 SP
+-59 31 69 7 59 -75 3 1886 2979 SP
+-59 32 69 34 59 -59 3 1945 2904 SP
+-59 31 69 41 59 -38 3 2004 2845 SP
+-59 19 69 77 59 -55 3 2063 2807 SP
+-59 -11 69 90 59 -2 3 2122 2752 SP
+-59 28 69 89 59 -27 3 2181 2750 SP
+-59 42 69 71 59 -24 3 2240 2723 SP
+-58 39 68 38 59 -6 3 2299 2699 SP
+-59 34 68 0 59 4 3 2358 2693 SP
+-59 64 69 -36 58 -28 3 2417 2697 SP
+-59 15 69 13 59 -64 3 2475 2669 SP
+-59 41 69 38 59 -66 3 2534 2605 SP
+-59 21 69 49 59 -32 3 2593 2539 SP
+-59 -12 69 161 59 -100 3 2652 2507 SP
+-59 111 69 80 59 -30 3 2711 2407 SP
+-59 41 69 44 59 -5 3 2770 2377 SP
+-59 21 69 4 59 19 3 2829 2372 SP
+-59 70 69 -176 59 110 3 2888 2391 SP
+-59 -41 69 34 59 -169 3 2947 2501 SP
+-59 26 69 38 59 -30 3 3006 2332 SP
+-58 35 68 34 59 -31 3 3065 2302 SP
+-59 47 68 19 59 -32 3 3124 2271 SP
+-59 85 69 35 58 -101 3 3183 2239 SP
+-59 32 69 34 59 -31 3 3241 2138 SP
+-59 35 69 30 59 -31 3 3300 2107 SP
+-59 26 69 63 59 -59 3 3359 2076 SP
+-59 87 69 47 59 -71 3 3418 2017 SP
+-59 -29 69 91 59 -15 3 3477 1946 SP
+-59 -6 69 102 59 -5 3 3536 1931 SP
+-59 65 69 105 59 -68 3 3595 1926 SP
+-59 64 69 71 59 -30 3 3654 1858 SP
+-59 30 69 70 59 -29 3 3713 1828 SP
+-59 67 69 -18 59 21 3 3772 1799 SP
+-59 31 69 -35 59 -14 3 3831 1820 SP
+-58 29 68 36 59 -100 3 3890 1806 SP
+-59 29 68 36 59 -29 3 3949 1706 SP
+-59 28 69 37 58 -29 3 4008 1677 SP
+-59 28 69 46 59 -37 3 4066 1648 SP
+-59 29 69 38 59 -21 3 4125 1611 SP
+-59 30 69 37 59 -29 3 4184 1590 SP
+-59 30 69 36 59 -29 3 4243 1561 SP
+-59 -41 69 37 59 40 3 4302 1532 SP
+-59 11 69 54 59 -28 3 4361 1572 SP
+-59 0 69 119 59 -65 3 4420 1544 SP
+-59 77 69 106 59 -64 3 4479 1479 SP
+-59 87 69 15 59 4 3 4538 1415 SP
+-59 -24 69 36 59 3 3 4597 1419 SP
+-58 32 68 157 59 -153 3 4656 1422 SP
+-59 100 68 88 59 -31 3 4715 1269 SP
+-59 100 69 28 58 -40 3 4774 1238 SP
+-59 30 69 36 59 -38 3 4832 1198 SP
+-59 -40 69 36 59 40 3 4891 1160 SP
+-59 30 69 70 59 -64 3 4950 1200 SP
+-59 64 69 71 59 -65 3 5009 1136 SP
+-59 24 69 77 59 -30 3 5068 1071 SP
+-59 48 69 59 59 -30 3 5127 1041 SP
+-59 31 69 59 59 -31 3 5186 1011 SP
+-59 30 69 59 59 -30 3 5245 980 SP
+-59 32 69 70 59 -43 3 5304 950 SP
+-59 58 69 60 59 -48 3 5363 907 SP
+-59 40 69 55 59 -35 3 5422 859 SP
+-58 32 68 43 59 -20 3 5481 824 SP
+-59 29 69 25 59 -20 3 1228 2997 SP
+-59 3 69 26 59 -4 3 1287 2977 SP
+-59 11 69 23 59 -8 3 1346 2973 SP
+-59 9 69 27 59 -13 3 1405 2965 SP
+-59 24 69 35 59 -32 3 1464 2952 SP
+-58 27 68 43 59 -35 3 1523 2920 SP
+-59 24 68 36 59 -17 3 1582 2885 SP
+-59 23 68 20 59 -7 3 1641 2868 SP
+-59 -60 69 64 58 16 3 1700 2861 SP
+-59 -38 69 91 59 11 3 1758 2877 SP
+-59 75 69 50 59 -34 3 1817 2888 SP
+-59 59 69 48 59 -57 3 1876 2854 SP
+-59 38 69 52 59 -42 3 1935 2797 SP
+-59 55 69 32 59 -35 3 1994 2755 SP
+-59 2 69 53 59 -23 3 2053 2720 SP
+-59 27 69 45 59 -19 3 2112 2697 SP
+-59 24 69 48 59 -27 3 2171 2678 SP
+-59 6 69 47 59 -5 3 2230 2651 SP
+-59 -4 69 34 59 17 3 2289 2646 SP
+-58 28 68 -27 59 33 3 2348 2663 SP
+-59 64 68 -119 59 28 3 2407 2696 SP
+-59 66 69 -82 58 -103 3 2466 2724 SP
+-59 32 69 -35 59 -79 3 2524 2621 SP
+-59 100 69 -35 59 -100 3 2583 2542 SP
+-59 30 69 34 59 -99 3 2642 2442 SP
+-59 5 69 56 59 -27 3 2701 2343 SP
+-59 -19 69 -133 59 208 3 2760 2316 SP
+-59 -110 69 34 59 -57 3 2819 2524 SP
+-59 169 69 -105 59 -30 3 2878 2467 SP
+-59 30 69 35 59 -170 3 2937 2437 SP
+-59 31 69 20 59 -16 3 2996 2267 SP
+-59 32 69 35 59 -47 3 3055 2251 SP
+-58 101 68 34 59 -100 3 3114 2204 SP
+-59 31 68 -1 59 4 3 3173 2104 SP
+-59 31 68 34 59 -66 3 3232 2108 SP
+-59 59 69 17 58 -42 3 3291 2042 SP
+-59 71 69 -18 59 -36 3 3349 2000 SP
+-59 15 69 -20 59 -13 3 3408 1964 SP
+-59 5 69 74 59 -99 3 3467 1951 SP
+-59 68 69 35 59 -29 3 3526 1852 SP
+-59 30 69 34 59 -29 3 3585 1823 SP
+-59 29 69 -12 59 17 3 3644 1794 SP
+-59 -21 69 17 59 -8 3 3703 1811 SP
+-59 14 69 35 59 -32 3 3762 1803 SP
+-59 100 69 35 59 -100 3 3821 1771 SP
+-59 29 69 36 59 -30 3 3880 1671 SP
+-58 29 68 56 59 -49 3 3939 1641 SP
+-59 37 68 38 59 -19 3 3998 1592 SP
+-59 21 69 36 58 -19 3 4057 1573 SP
+-59 29 69 36 59 -29 3 4115 1554 SP
+-59 29 69 30 59 -23 3 4174 1525 SP
+-59 -40 69 82 59 -12 3 4233 1502 SP
+-59 28 69 83 59 -29 3 4292 1490 SP
+-59 65 69 71 59 -53 3 4351 1461 SP
+-59 64 69 37 59 -30 3 4410 1408 SP
+-59 -4 69 75 59 -34 3 4469 1378 SP
+-59 -3 69 140 59 -62 3 4528 1344 SP
+-59 153 69 53 59 -66 3 4587 1282 SP
+-59 31 69 53 59 -31 3 4646 1216 SP
+-58 40 68 44 59 -31 3 4705 1185 SP
+-59 38 68 35 59 -29 3 4764 1154 SP
+-59 -40 68 53 59 22 3 4823 1125 SP
+-59 64 69 48 58 -59 3 4882 1147 SP
+-59 65 69 31 59 -48 3 4940 1088 SP
+-59 30 69 35 59 -34 3 4999 1040 SP
+-59 30 69 36 59 -31 3 5058 1006 SP
+-59 31 69 36 59 -31 3 5117 975 SP
+-59 30 69 42 59 -36 3 5176 944 SP
+-59 43 69 31 59 -32 3 5235 908 SP
+-59 48 69 43 59 -60 3 5294 876 SP
+-59 35 69 58 59 -50 3 5353 816 SP
+-59 20 69 15 59 23 3 5412 766 SP
+-59 20 69 38 59 -23 3 1159 2962 SP
+-59 4 69 50 59 -16 3 1218 2939 SP
+-59 8 69 58 59 -16 3 1277 2923 SP
+-59 13 69 55 59 -10 3 1336 2907 SP
+-59 32 69 36 59 -13 3 1395 2897 SP
+-59 35 69 26 59 -25 3 1454 2884 SP
+-59 17 69 35 59 -26 3 1513 2859 SP
+-59 7 69 56 59 -28 3 1572 2833 SP
+-58 -16 68 62 59 10 3 1631 2805 SP
+-59 -11 68 79 59 -6 3 1690 2815 SP
+-59 34 68 64 59 -19 3 1749 2809 SP
+-59 57 69 35 58 -28 3 1808 2790 SP
+-59 42 69 32 59 -39 3 1866 2762 SP
+-59 35 69 39 59 -42 3 1925 2723 SP
+-59 23 69 47 59 -31 3 1984 2681 SP
+-59 19 69 47 59 -19 3 2043 2650 SP
+-59 27 69 41 59 -21 3 2102 2631 SP
+-59 5 69 62 59 -26 3 2161 2610 SP
+-59 -17 69 105 59 -26 3 2220 2584 SP
+-59 -33 69 62 59 76 3 2279 2558 SP
+-59 -28 69 130 59 -40 3 2338 2634 SP
+-58 103 68 82 59 -55 3 2397 2594 SP
+-59 79 68 104 59 -101 3 2456 2539 SP
+-59 100 68 82 59 -78 3 2515 2438 SP
+-59 99 68 28 59 -45 3 2574 2360 SP
+-59 27 69 36 58 -35 3 2633 2315 SP
+-59 -208 69 147 59 97 3 2691 2280 SP
+-59 57 69 105 59 -15 3 2750 2377 SP
+-59 30 69 105 59 -30 3 2809 2362 SP
+-59 170 69 -11 59 -54 3 2868 2332 SP
+-59 16 69 -19 59 -8 3 2927 2278 SP
+-59 47 69 34 59 -100 3 2986 2270 SP
+-59 100 69 -1 59 -65 3 3045 2170 SP
+-59 -4 69 -15 59 18 3 3104 2105 SP
+-59 66 69 33 59 -114 3 3163 2123 SP
+-58 42 68 21 59 -30 3 3222 2009 SP
+-59 36 68 -19 59 4 3 3281 1979 SP
+-59 13 68 34 59 -66 3 3340 1983 SP
+-59 99 69 34 58 -99 3 3399 1917 SP
+-59 29 69 34 59 -29 3 3457 1818 SP
+-59 29 69 -36 59 41 3 3516 1789 SP
+-59 -17 69 11 59 -30 3 3575 1830 SP
+-59 8 69 34 59 -31 3 3634 1800 SP
+-59 32 69 34 59 -32 3 3693 1769 SP
+-59 100 69 -23 59 -43 3 3752 1737 SP
+-59 30 69 104 59 -157 3 3811 1694 SP
+-59 49 69 50 59 5 3 3870 1537 SP
+-59 19 69 25 59 6 3 3929 1542 SP
+-58 19 68 35 59 -29 3 3988 1548 SP
+-59 29 68 24 59 -18 3 4047 1519 SP
+-59 23 68 23 59 -22 3 4106 1501 SP
+-59 12 68 51 59 -40 3 4165 1479 SP
+-59 29 69 60 58 -38 3 4224 1439 SP
+-59 53 69 37 59 -30 3 4282 1401 SP
+-59 30 69 37 59 -30 3 4341 1371 SP
+-59 34 69 74 59 -71 3 4400 1341 SP
+-59 62 69 47 59 -35 3 4459 1270 SP
+-59 66 69 -12 59 -7 3 4518 1235 SP
+-59 31 69 35 59 -78 3 4577 1228 SP
+-59 31 69 32 59 -28 3 4636 1150 SP
+-59 29 69 36 59 -33 3 4695 1122 SP
+-59 -22 69 87 59 -29 3 4754 1089 SP
+-58 59 68 47 59 -19 3 4813 1060 SP
+-59 48 68 39 59 -40 3 4872 1041 SP
+-59 34 68 36 59 -31 3 4931 1001 SP
+-59 31 69 35 58 -30 3 4990 970 SP
+-59 31 69 35 59 -31 3 5048 940 SP
+-59 36 69 16 59 -17 3 5107 909 SP
+-59 32 69 30 59 -46 3 5166 892 SP
+-59 60 69 2 59 -32 3 5225 846 SP
+-59 50 69 122 59 -170 3 5284 814 SP
+-59 -23 69 175 59 -30 3 5343 644 SP
+-59 23 68 40 59 -29 3 1091 2928 SP
+-59 16 68 47 59 -23 3 1150 2899 SP
+-59 16 69 45 58 -14 3 1209 2876 SP
+-59 10 69 38 59 -3 3 1267 2862 SP
+-59 13 69 34 59 -9 3 1326 2859 SP
+-59 25 69 34 59 -25 3 1385 2850 SP
+-59 26 69 36 59 -28 3 1444 2825 SP
+-59 28 69 36 59 -28 3 1503 2797 SP
+-59 -10 69 72 59 -26 3 1562 2769 SP
+-59 6 69 66 59 0 3 1621 2743 SP
+-59 19 69 58 59 -11 3 1680 2743 SP
+-58 28 68 51 59 -21 3 1739 2732 SP
+-59 39 68 43 59 -31 3 1798 2711 SP
+-59 42 68 43 59 -42 3 1857 2680 SP
+-59 31 68 49 59 -37 3 1916 2638 SP
+-59 19 68 52 59 -22 3 1975 2601 SP
+-59 21 69 52 58 -21 3 2034 2579 SP
+-59 26 69 62 59 -36 3 2092 2558 SP
+-59 26 69 48 59 -12 3 2151 2522 SP
+-59 -76 69 141 59 -17 3 2210 2510 SP
+-59 40 69 164 59 -63 3 2269 2493 SP
+-59 55 69 129 59 -20 3 2328 2430 SP
+-59 101 69 83 59 -55 3 2387 2410 SP
+-59 78 69 41 59 -36 3 2446 2355 SP
+-59 45 69 41 59 -45 3 2505 2319 SP
+-58 35 68 47 59 -41 3 2564 2274 SP
+-59 -97 68 232 59 -88 3 2623 2233 SP
+-59 15 68 159 59 58 3 2682 2145 SP
+-59 30 68 176 59 -47 3 2741 2203 SP
+-59 54 69 117 58 5 3 2800 2156 SP
+-59 8 69 69 59 40 3 2858 2161 SP
+-59 100 69 34 59 -65 3 2917 2201 SP
+-59 65 69 -56 59 25 3 2976 2136 SP
+-59 -18 69 47 59 -85 3 3035 2161 SP
+-59 114 69 -5 59 -62 3 3094 2076 SP
+-59 30 69 -8 59 -27 3 3153 2014 SP
+-59 -4 69 -1 59 -3 3 3212 1987 SP
+-59 66 69 33 59 -100 3 3271 1984 SP
+-58 99 68 10 59 -76 3 3330 1884 SP
+-59 29 68 16 59 -35 3 3389 1808 SP
+-59 -41 68 33 59 24 3 3448 1773 SP
+-59 30 68 33 59 -30 3 3507 1797 SP
+-59 31 68 33 59 -31 3 3566 1767 SP
+-59 32 69 -19 58 20 3 3625 1736 SP
+-59 43 69 2 59 -64 3 3683 1756 SP
+-59 157 69 17 59 -172 3 3742 1692 SP
+-59 -5 69 34 59 -12 3 3801 1520 SP
+-59 -6 69 34 59 6 3 3860 1508 SP
+-59 29 69 34 59 -29 3 3919 1514 SP
+-59 18 69 -24 59 40 3 3978 1485 SP
+-59 22 69 21 59 -67 3 4037 1525 SP
+-59 40 69 44 59 -63 3 4096 1458 SP
+-58 38 68 36 59 -30 3 4155 1395 SP
+-59 30 68 36 59 -30 3 4214 1365 SP
+-59 30 68 35 59 -29 3 4273 1335 SP
+-59 71 68 63 59 -99 3 4332 1306 SP
+-59 35 69 23 58 5 3 4391 1207 SP
+-59 7 69 -266 59 282 3 4449 1212 SP
+-59 78 69 0 59 -344 3 4508 1494 SP
+-59 28 69 37 59 -65 3 4567 1150 SP
+-59 33 69 35 59 -31 3 4626 1085 SP
+-59 29 69 36 59 -30 3 4685 1054 SP
+-59 19 69 47 59 -30 3 4744 1024 SP
+-59 40 69 36 59 -29 3 4803 994 SP
+-59 31 69 35 59 -30 3 4862 965 SP
+-58 30 68 35 59 -30 3 4921 935 SP
+-59 31 68 38 59 -34 3 4980 905 SP
+-59 17 68 27 59 -6 3 5039 871 SP
+-59 46 68 10 59 -29 3 5098 865 SP
+-59 32 69 105 58 -127 3 5157 836 SP
+-59 170 69 36 59 -101 3 5215 709 SP
+-59 30 69 37 59 -31 3 5274 608 SP
+-59 29 69 39 59 -31 3 1022 2891 SP
+-59 23 69 40 59 -24 3 1081 2860 SP
+-58 14 68 45 59 -19 3 1140 2836 SP
+-59 3 68 52 59 -10 3 1199 2817 SP
+-59 9 68 47 59 -4 3 1258 2807 SP
+-59 25 68 37 59 -15 3 1317 2803 SP
+-59 28 68 37 59 -28 3 1376 2788 SP
+-59 28 69 44 58 -35 3 1435 2760 SP
+-59 26 69 39 59 -21 3 1493 2725 SP
+-59 0 69 50 59 -11 3 1552 2704 SP
+-59 11 69 47 59 -8 3 1611 2693 SP
+-59 21 69 40 59 -14 3 1670 2685 SP
+-59 31 69 39 59 -30 3 1729 2671 SP
+-59 42 69 36 59 -39 3 1788 2641 SP
+-59 37 69 41 59 -42 3 1847 2602 SP
+-59 22 69 52 59 -33 3 1906 2560 SP
+-58 21 68 60 59 -29 3 1965 2527 SP
+-59 36 68 65 59 -41 3 2024 2498 SP
+-59 12 68 94 59 -41 3 2083 2457 SP
+-59 17 68 106 59 -29 3 2142 2416 SP
+-59 63 68 41 59 2 3 2201 2387 SP
+-59 20 69 59 58 -38 3 2260 2389 SP
+-59 55 69 46 59 -42 3 2318 2351 SP
+-59 36 69 51 59 -41 3 2377 2309 SP
+-59 45 69 -1 59 7 3 2436 2268 SP
+-59 41 69 27 59 -69 3 2495 2275 SP
+-59 88 69 37 59 -98 3 2554 2206 SP
+-59 -58 69 124 59 -29 3 2613 2108 SP
+-59 47 69 106 59 -29 3 2672 2079 SP
+-58 -5 68 140 59 -29 3 2731 2050 SP
+-59 -40 68 117 59 63 3 2790 2021 SP
+-59 65 68 36 59 16 3 2849 2084 SP
+-59 -25 68 125 59 -64 3 2908 2100 SP
+-59 85 68 102 59 -62 3 2967 2036 SP
+-59 62 69 39 58 1 3 3026 1974 SP
+-59 27 69 40 59 -28 3 3084 1975 SP
+-59 3 69 33 59 4 3 3143 1947 SP
+-59 100 69 -36 59 -31 3 3202 1951 SP
+-59 76 69 -13 59 -99 3 3261 1920 SP
+-59 35 69 -27 59 -21 3 3320 1821 SP
+-59 -24 69 33 59 -36 3 3379 1800 SP
+-59 30 69 -37 59 40 3 3438 1764 SP
+-59 31 69 -18 59 -50 3 3497 1804 SP
+-58 -20 68 17 59 -15 3 3556 1754 SP
+-59 64 68 68 59 -115 3 3615 1739 SP
+-59 172 68 52 59 -156 3 3674 1624 SP
+-59 12 68 34 59 6 3 3733 1468 SP
+-59 -6 68 34 59 6 3 3792 1474 SP
+-59 29 69 -36 58 41 3 3851 1480 SP
+-59 -40 69 34 59 -30 3 3909 1521 SP
+-59 67 69 34 59 -67 3 3968 1491 SP
+-59 63 69 36 59 -65 3 4027 1424 SP
+-59 30 69 39 59 -33 3 4086 1359 SP
+-59 30 69 52 59 -43 3 4145 1326 SP
+-59 29 69 69 59 -46 3 4204 1283 SP
+-59 99 69 34 59 -64 3 4263 1237 SP
+-58 -5 68 -1 59 40 3 4322 1173 SP
+-59 -282 68 312 59 -31 3 4381 1213 SP
+-59 344 68 -1 59 -31 3 4440 1182 SP
+-59 65 68 35 59 -101 3 4499 1151 SP
+-59 31 68 41 59 -37 3 4558 1050 SP
+-59 30 69 35 58 -24 3 4617 1013 SP
+-59 30 69 34 59 -29 3 4675 989 SP
+-59 29 69 34 59 -29 3 4734 960 SP
+-59 30 69 35 59 -31 3 4793 931 SP
+-59 30 69 35 59 -30 3 4852 900 SP
+-59 34 69 51 59 -50 3 4911 870 SP
+-59 6 69 111 59 -66 3 4970 820 SP
+-59 29 69 200 59 -118 3 5029 754 SP
+-58 127 68 105 59 -32 3 5088 636 SP
+-59 101 68 35 59 -31 3 5147 604 SP
+-59 31 68 34 59 -30 3 5206 573 SP
+-59 31 69 32 58 -30 3 954 2858 SP
+-59 24 69 36 59 -28 3 1012 2828 SP
+-59 19 69 40 59 -23 3 1071 2800 SP
+-59 10 69 52 59 -22 3 1130 2777 SP
+-59 4 69 65 59 -17 3 1189 2755 SP
+-59 15 69 36 59 14 3 1248 2738 SP
+-59 28 69 42 59 -34 3 1307 2752 SP
+-58 35 68 37 59 -30 3 1366 2718 SP
+-59 21 68 37 59 -21 3 1425 2688 SP
+-59 11 68 33 59 -7 3 1484 2667 SP
+-59 8 68 34 59 -9 3 1543 2660 SP
+-59 14 68 34 59 -14 3 1602 2651 SP
+-59 30 68 35 59 -31 3 1661 2637 SP
+-59 39 69 37 58 -41 3 1720 2606 SP
+-59 42 69 37 59 -42 3 1778 2565 SP
+-59 33 69 41 59 -37 3 1837 2523 SP
+-59 29 69 50 59 -38 3 1896 2486 SP
+-59 41 69 49 59 -40 3 1955 2448 SP
+-59 41 69 36 59 -28 3 2014 2408 SP
+-59 29 69 6 59 1 3 2073 2380 SP
+-59 -2 69 44 59 -36 3 2132 2381 SP
+-58 38 68 36 59 -30 3 2191 2345 SP
+-59 42 68 47 59 -53 3 2250 2315 SP
+-59 41 68 24 59 -18 3 2309 2262 SP
+-59 -7 68 18 59 13 3 2368 2244 SP
+-59 69 68 -76 59 25 3 2427 2257 SP
+-59 98 68 -57 59 -117 3 2486 2282 SP
+-59 29 69 36 58 -122 3 2545 2165 SP
+-59 29 69 37 59 -30 3 2603 2043 SP
+-59 29 69 10 59 -2 3 2662 2013 SP
+-59 -63 69 15 59 58 3 2721 2011 SP
+-59 -16 69 130 59 -99 3 2780 2069 SP
+-59 64 69 90 59 -24 3 2839 1970 SP
+-59 62 69 67 59 -39 3 2898 1946 SP
+-58 -1 68 80 59 -12 3 2957 1907 SP
+-59 28 68 70 59 -18 3 3016 1895 SP
+-59 -4 68 104 59 -30 3 3075 1877 SP
+-59 31 68 103 59 -30 3 3134 1847 SP
+-59 99 68 -1 59 5 3 3193 1817 SP
+-59 21 68 -29 59 7 3 3252 1822 SP
+-59 36 69 -36 58 -29 3 3311 1829 SP
+-59 -40 69 35 59 -31 3 3369 1800 SP
+-59 50 69 17 59 -32 3 3428 1769 SP
+-59 15 69 35 59 -33 3 3487 1737 SP
+-59 115 69 90 59 -170 3 3546 1704 SP
+-59 156 69 34 59 -100 3 3605 1534 SP
+-59 -6 69 69 59 -29 3 3664 1434 SP
+-59 -6 69 34 59 41 3 3723 1405 SP
+-58 -41 68 35 59 40 3 3782 1446 SP
+-59 30 68 55 59 -50 3 3841 1486 SP
+-59 67 68 40 59 -52 3 3900 1436 SP
+-59 65 68 29 59 -54 3 3959 1384 SP
+-59 33 68 34 59 -38 3 4018 1330 SP
+-59 43 68 17 59 -26 3 4077 1292 SP
+-59 46 69 47 58 -76 3 4136 1266 SP
+-59 64 69 35 59 -52 3 4194 1190 SP
+-59 -40 69 35 59 40 3 4253 1138 SP
+-59 31 69 35 59 -31 3 4312 1178 SP
+-59 31 69 58 59 -54 3 4371 1147 SP
+-59 101 69 35 59 -78 3 4430 1093 SP
+-59 37 69 32 59 -34 3 4489 1015 SP
+-58 24 68 32 59 -24 3 4548 981 SP
+-59 29 68 34 59 -31 3 4607 957 SP
+-59 29 68 36 59 -31 3 4666 926 SP
+-59 31 68 29 59 -24 3 4725 895 SP
+-59 30 68 36 59 -37 3 4784 871 SP
+-59 50 68 17 59 -31 3 4843 834 SP
+-59 66 69 121 58 -170 3 4902 803 SP
+-59 118 69 34 59 -31 3 4960 633 SP
+-59 32 69 33 59 -31 3 5019 602 SP
+-59 31 69 15 59 -13 3 5078 571 SP
+-59 30 69 33 59 -48 3 5137 558 SP
+-58 30 68 33 59 -29 3 885 2824 SP
+-59 28 68 35 59 -30 3 944 2795 SP
+-59 23 68 41 59 -29 3 1003 2765 SP
+-59 22 68 45 59 -26 3 1062 2736 SP
+-59 17 68 58 59 -30 3 1121 2710 SP
+-59 -14 68 101 59 -29 3 1180 2680 SP
+-59 34 68 51 59 16 3 1239 2651 SP
+-59 30 69 31 58 -10 3 1298 2667 SP
+-59 21 69 31 59 -21 3 1356 2657 SP
+-59 7 69 34 59 -10 3 1415 2636 SP
+-59 9 69 33 59 -8 3 1474 2626 SP
+-59 14 69 28 59 -9 3 1533 2618 SP
+-59 31 69 19 59 -22 3 1592 2609 SP
+-58 41 68 15 59 -37 3 1651 2587 SP
+-59 42 68 26 59 -53 3 1710 2550 SP
+-59 37 68 37 59 -48 3 1769 2497 SP
+-59 38 68 46 59 -47 3 1828 2449 SP
+-59 40 68 35 59 -29 3 1887 2402 SP
+-59 28 68 36 59 -29 3 1946 2373 SP
+-59 -1 68 66 59 -29 3 2005 2344 SP
+-59 36 69 -104 58 134 3 2064 2315 SP
+-59 30 69 -39 59 -95 3 2122 2449 SP
+-59 53 69 35 59 -127 3 2181 2354 SP
+-59 18 69 47 59 -30 3 2240 2227 SP
+-59 -13 69 55 59 5 3 2299 2197 SP
+-59 -25 69 75 59 5 3 2358 2202 SP
+-59 117 69 40 59 -82 3 2417 2207 SP
+-58 122 68 -69 59 -13 3 2476 2125 SP
+-59 30 68 13 59 -112 3 2535 2112 SP
+-59 2 68 64 59 -53 3 2594 2000 SP
+-59 -58 68 153 59 -31 3 2653 1947 SP
+-59 99 68 84 59 -30 3 2712 1916 SP
+-59 24 68 90 59 -30 3 2771 1886 SP
+-59 39 69 79 58 -28 3 2830 1856 SP
+-59 12 69 96 59 -29 3 2888 1828 SP
+-59 18 69 37 59 41 3 2947 1799 SP
+-59 30 69 35 59 -28 3 3006 1840 SP
+-59 30 69 34 59 -29 3 3065 1812 SP
+-59 -5 69 68 59 -29 3 3124 1783 SP
+-59 -7 69 11 59 64 3 3183 1754 SP
+-58 29 68 35 59 -53 3 3242 1818 SP
+-59 31 68 105 59 -101 3 3301 1765 SP
+-59 32 68 105 59 -32 3 3360 1664 SP
+-59 33 68 105 59 -33 3 3419 1632 SP
+-59 170 68 71 59 -136 3 3478 1599 SP
+-59 100 68 36 59 -65 3 3537 1463 SP
+-59 29 68 -34 59 41 3 3596 1398 SP
+-59 -41 69 35 58 -28 3 3655 1439 SP
+-59 -40 69 85 59 -10 3 3713 1411 SP
+-59 50 69 55 59 -20 3 3772 1401 SP
+-59 52 69 60 59 -57 3 3831 1381 SP
+-59 54 69 7 59 -1 3 3890 1324 SP
+-59 38 69 43 59 -74 3 3949 1323 SP
+-59 26 69 69 59 -52 3 4008 1249 SP
+-58 76 68 40 59 -47 3 4067 1197 SP
+-59 52 68 -34 59 22 3 4126 1150 SP
+-59 -40 68 35 59 -29 3 4185 1172 SP
+-59 31 68 35 59 -31 3 4244 1143 SP
+-59 54 68 64 59 -83 3 4303 1112 SP
+-59 78 68 34 59 -48 3 4362 1029 SP
+-59 34 69 30 58 -30 3 4421 981 SP
+-59 24 69 36 59 -30 3 4479 951 SP
+-59 31 69 35 59 -30 3 4538 921 SP
+-59 31 69 33 59 -29 3 4597 891 SP
+-59 24 69 42 59 -33 3 4656 862 SP
+-59 37 69 36 59 -31 3 4715 829 SP
+-59 31 69 36 59 -31 3 4774 798 SP
+-58 170 68 35 59 -169 3 4833 767 SP
+-59 31 68 34 59 -30 3 4892 598 SP
+-59 31 68 -106 59 109 3 4951 568 SP
+-59 13 68 -12 59 -107 3 5010 677 SP
+-59 48 68 32 59 -92 3 5069 570 SP
+-59 29 68 34 59 -29 3 817 2790 SP
+-59 30 69 34 58 -30 3 876 2761 SP
+-59 29 69 34 59 -29 3 934 2731 SP
+-59 26 69 39 59 -31 3 993 2702 SP
+-59 30 69 35 59 -26 3 1052 2671 SP
+-59 29 69 35 59 -29 3 1111 2645 SP
+-59 -16 69 36 59 15 3 1170 2616 SP
+-58 10 68 28 59 -2 3 1229 2631 SP
+-59 21 68 35 59 -28 3 1288 2629 SP
+-59 10 68 50 59 -25 3 1347 2601 SP
+-59 8 68 43 59 -1 3 1406 2576 SP
+-59 9 68 40 59 -6 3 1465 2575 SP
+-59 22 68 35 59 -17 3 1524 2569 SP
+-59 37 68 22 59 -24 3 1583 2552 SP
+-59 53 69 23 58 -54 3 1642 2528 SP
+-59 48 69 52 59 -77 3 1700 2474 SP
+-59 47 69 35 59 -30 3 1759 2397 SP
+-59 29 69 36 59 -30 3 1818 2367 SP
+-59 29 69 35 59 -28 3 1877 2337 SP
+-59 29 69 -2 59 8 3 1936 2309 SP
+-58 -134 68 151 59 -19 3 1995 2317 SP
+-59 95 68 132 59 -76 3 2054 2298 SP
+-59 127 68 34 59 -29 3 2113 2222 SP
+-59 30 68 34 59 -30 3 2172 2193 SP
+-59 -5 68 68 59 -29 3 2231 2163 SP
+-59 -5 68 68 59 5 3 2290 2134 SP
+-59 82 68 -18 59 4 3 2349 2139 SP
+-59 13 68 -70 59 39 3 2408 2143 SP
+-59 112 69 -26 58 -156 3 2467 2182 SP
+-59 53 69 36 59 -115 3 2525 2026 SP
+-59 31 69 38 59 -33 3 2584 1911 SP
+-59 30 69 38 59 -30 3 2643 1878 SP
+-59 30 69 36 59 -28 3 2702 1848 SP
+-58 28 68 37 59 -29 3 2761 1820 SP
+-59 29 68 27 59 -19 3 2820 1791 SP
+-59 -41 68 105 59 -37 3 2879 1772 SP
+-59 28 68 36 59 41 3 2938 1735 SP
+-59 29 68 35 59 -28 3 2997 1776 SP
+-59 29 68 29 59 -23 3 3056 1748 SP
+-59 -64 68 94 59 -1 3 3115 1725 SP
+-59 53 68 83 59 -42 3 3174 1724 SP
+-59 101 69 36 58 -54 3 3233 1682 SP
+-59 32 69 106 59 -102 3 3291 1628 SP
+-59 33 69 140 59 -67 3 3350 1526 SP
+-59 136 69 70 59 -66 3 3409 1459 SP
+-59 65 69 35 59 -30 3 3468 1393 SP
+-59 -41 69 35 59 41 3 3527 1363 SP
+-58 28 68 18 59 -11 3 3586 1404 SP
+-59 10 68 32 59 -24 3 3645 1393 SP
+-59 20 68 63 59 -51 3 3704 1369 SP
+-59 57 68 1 59 5 3 3763 1318 SP
+-59 1 68 71 59 -71 3 3822 1323 SP
+-59 74 68 22 59 -25 3 3881 1252 SP
+-59 52 68 69 59 -99 3 3940 1227 SP
+-59 47 68 -17 59 39 3 3999 1128 SP
+-59 -22 69 41 58 -36 3 4058 1167 SP
+-59 29 69 35 59 -23 3 4116 1131 SP
+-59 31 69 86 59 -82 3 4175 1108 SP
+-59 83 69 52 59 -49 3 4234 1026 SP
+-59 48 69 34 59 -30 3 4293 977 SP
+-58 30 68 35 59 -31 3 4352 947 SP
+-59 30 68 34 59 -29 3 4411 916 SP
+-59 30 68 42 59 -38 3 4470 887 SP
+-59 29 68 44 59 -31 3 4529 849 SP
+-59 33 68 36 59 -25 3 4588 818 SP
+-59 31 68 36 59 -31 3 4647 793 SP
+-59 31 68 175 59 -170 3 4706 762 SP
+-59 169 68 36 59 -30 3 4765 592 SP
+-59 30 69 0 58 6 3 4824 562 SP
+-59 -109 69 34 59 75 3 4882 568 SP
+-59 107 69 -44 59 -29 3 4941 643 SP
+-59 92 69 15 59 -151 3 5000 614 SP
+-59 29 69 34 59 -30 3 748 2757 SP
+-58 30 68 34 59 -30 3 807 2727 SP
+-59 29 68 34 59 -29 3 866 2697 SP
+-59 31 68 32 59 -29 3 925 2668 SP
+-59 26 68 35 59 -29 3 984 2639 SP
+-59 29 68 19 59 -13 3 1043 2610 SP
+-59 -15 68 8 59 26 3 1102 2597 SP
+-59 2 68 38 59 -32 3 1161 2623 SP
+-59 28 68 39 59 -29 3 1220 2591 SP
+-59 25 69 40 58 -26 3 1279 2562 SP
+-59 1 69 55 59 -16 3 1337 2536 SP
+-59 6 69 50 59 -1 3 1396 2520 SP
+-59 17 69 39 59 -6 3 1455 2519 SP
+-59 24 69 35 59 -20 3 1514 2513 SP
+-58 54 68 11 59 -30 3 1573 2493 SP
+-59 77 68 18 59 -84 3 1632 2463 SP
+-59 30 68 35 59 -47 3 1691 2379 SP
+-59 30 68 40 59 -35 3 1750 2332 SP
+-59 28 68 36 59 -24 3 1809 2297 SP
+-59 -8 68 60 59 -16 3 1868 2273 SP
+-59 19 68 67 59 -26 3 1927 2257 SP
+-59 76 68 24 59 -33 3 1986 2231 SP
+-59 29 68 38 59 -43 3 2045 2198 SP
+-59 30 69 35 58 -27 3 2104 2155 SP
+-59 29 69 35 59 -29 3 2162 2128 SP
+-59 -5 69 69 59 -29 3 2221 2099 SP
+-59 -4 69 34 59 39 3 2280 2070 SP
+-59 -39 69 57 59 16 3 2339 2109 SP
+-58 156 68 -21 59 -78 3 2398 2125 SP
+-59 115 68 -12 59 -124 3 2457 2047 SP
+-59 33 68 10 59 -55 3 2516 1923 SP
+-59 30 68 15 59 -35 3 2575 1868 SP
+-59 28 68 0 59 -13 3 2634 1833 SP
+-59 29 68 0 59 -29 3 2693 1820 SP
+-59 19 68 19 59 -38 3 2752 1791 SP
+-59 37 68 15 59 -33 3 2811 1753 SP
+-59 -41 69 106 58 -50 3 2870 1720 SP
+-59 28 69 107 59 -29 3 2928 1670 SP
+-59 23 69 43 59 41 3 2987 1641 SP
+-59 1 69 142 59 -100 3 3046 1682 SP
+-59 42 69 130 59 -30 3 3105 1582 SP
+-58 54 68 107 59 -31 3 3164 1552 SP
+-59 102 68 37 59 -32 3 3223 1521 SP
+-59 67 68 42 59 -72 3 3282 1489 SP
+-59 66 68 1 59 -25 3 3341 1417 SP
+-59 30 68 -35 59 6 3 3400 1392 SP
+-59 -41 68 42 59 -36 3 3459 1398 SP
+-59 11 68 -17 59 48 3 3518 1362 SP
+-59 24 68 57 59 -98 3 3577 1410 SP
+-59 51 69 30 58 -24 3 3636 1312 SP
+-59 -5 69 70 59 -35 3 3694 1288 SP
+-59 71 69 98 59 -99 3 3753 1253 SP
+-59 25 69 80 59 -7 3 3812 1154 SP
+-59 99 69 -1 59 -18 3 3871 1147 SP
+-59 -39 69 33 59 5 3 3930 1129 SP
+-58 36 68 25 59 -28 3 3989 1134 SP
+-59 23 68 35 59 -33 3 4048 1106 SP
+-59 82 68 52 59 -99 3 4107 1073 SP
+-59 49 68 34 59 -31 3 4166 974 SP
+-59 30 68 36 59 -32 3 4225 943 SP
+-59 31 68 34 59 -29 3 4284 911 SP
+-59 29 68 39 59 -34 3 4343 882 SP
+-59 38 68 40 59 -39 3 4402 848 SP
+-59 31 69 52 58 -43 3 4461 809 SP
+-59 25 69 65 59 -38 3 4519 766 SP
+-59 31 69 36 59 -2 3 4578 728 SP
+-59 170 69 36 59 -170 3 4637 726 SP
+-59 30 69 36 59 -30 3 4696 556 SP
+-58 -6 68 71 59 -29 3 4755 526 SP
+-59 -75 68 174 59 -28 3 4814 497 SP
+-59 29 68 58 59 87 3 4873 469 SP
+-59 151 68 17 59 -110 3 4932 556 SP
+-59 30 68 34 59 -32 3 680 2725 SP
+-59 30 68 34 59 -30 3 739 2693 SP
+-59 29 68 35 59 -30 3 798 2663 SP
+-59 29 68 34 59 -28 3 857 2633 SP
+-59 29 68 34 59 -29 3 916 2605 SP
+-59 13 69 50 58 -29 3 975 2576 SP
+-59 -26 69 82 59 -6 3 1033 2547 SP
+-59 32 69 64 59 -14 3 1092 2541 SP
+-59 29 69 56 59 -21 3 1151 2527 SP
+-58 26 68 47 59 -17 3 1210 2506 SP
+-59 16 68 42 59 -11 3 1269 2489 SP
+-59 1 68 57 59 -16 3 1328 2478 SP
+-59 6 68 68 59 -17 3 1387 2462 SP
+-59 20 68 64 59 -16 3 1446 2445 SP
+-59 30 68 72 59 -38 3 1505 2429 SP
+-59 84 68 50 59 -62 3 1564 2391 SP
+-59 47 68 35 59 -32 3 1623 2329 SP
+-59 35 68 31 59 -31 3 1682 2297 SP
+-59 24 69 35 58 -28 3 1741 2266 SP
+-59 16 69 44 59 -25 3 1799 2238 SP
+-59 26 69 43 59 -25 3 1858 2213 SP
+-59 33 69 38 59 -28 3 1917 2188 SP
+-59 43 69 31 59 -36 3 1976 2160 SP
+-58 27 68 35 59 -31 3 2035 2124 SP
+-59 29 68 34 59 -28 3 2094 2093 SP
+-59 29 68 34 59 -29 3 2153 2065 SP
+-59 -39 68 103 59 -30 3 2212 2036 SP
+-59 -16 68 80 59 39 3 2271 2006 SP
+-59 78 68 69 59 -67 3 2330 2045 SP
+-59 124 68 11 59 -66 3 2389 1978 SP
+-59 55 68 33 59 -77 3 2448 1912 SP
+-59 35 68 16 59 -18 3 2507 1835 SP
+-59 13 69 22 58 -19 3 2566 1817 SP
+-59 29 69 -2 59 -5 3 2624 1798 SP
+-59 38 69 36 59 -76 3 2683 1793 SP
+-59 33 69 15 59 -12 3 2742 1717 SP
+-58 50 68 21 59 -56 3 2801 1705 SP
+-59 29 68 37 59 -45 3 2860 1649 SP
+-59 -41 68 107 59 -29 3 2919 1604 SP
+-59 100 68 107 59 -100 3 2978 1575 SP
+-59 30 68 108 59 -31 3 3037 1475 SP
+-59 31 68 107 59 -30 3 3096 1444 SP
+-59 32 68 83 59 -8 3 3155 1414 SP
+-59 72 68 65 59 -54 3 3214 1406 SP
+-59 25 68 46 59 -6 3 3273 1352 SP
+-59 -6 69 70 58 -18 3 3332 1346 SP
+-59 36 69 28 59 6 3 3390 1328 SP
+-59 -48 69 128 59 -52 3 3449 1334 SP
+-59 98 69 59 59 -29 3 3508 1282 SP
+-58 24 68 59 59 -24 3 3567 1253 SP
+-59 35 68 35 59 -11 3 3626 1229 SP
+-59 99 68 -11 59 -53 3 3685 1218 SP
+-59 7 68 -12 59 -6 3 3744 1165 SP
+-59 18 68 0 59 -30 3 3803 1159 SP
+-59 -5 68 37 59 -32 3 3862 1129 SP
+-59 28 68 31 59 -22 3 3921 1097 SP
+-59 33 68 34 59 -36 3 3980 1075 SP
+-59 99 68 2 59 -67 3 4039 1039 SP
+-59 31 68 35 59 -64 3 4098 972 SP
+-59 32 69 33 58 -30 3 4157 908 SP
+-59 29 69 34 59 -30 3 4215 878 SP
+-59 34 69 31 59 -31 3 4274 848 SP
+-59 39 69 23 59 -31 3 4333 817 SP
+-58 43 68 34 59 -54 3 4392 786 SP
+-59 38 68 76 59 -80 3 4451 732 SP
+-59 2 68 175 59 -101 3 4510 652 SP
+-59 170 68 36 59 -31 3 4569 551 SP
+-59 30 68 36 59 -30 3 4628 520 SP
+-59 29 68 36 59 -29 3 4687 490 SP
+-59 28 68 16 59 -8 3 4746 461 SP
+-59 -87 68 151 59 -48 3 4805 453 SP
+-59 110 68 23 59 18 3 4864 405 SP
+-59 32 68 27 59 -31 3 612 2697 SP
+-59 30 69 32 58 -35 3 671 2666 SP
+-59 30 69 33 59 -31 3 729 2631 SP
+-59 28 69 34 59 -29 3 788 2600 SP
+-59 29 69 35 59 -30 3 847 2571 SP
+-58 29 68 34 59 -28 3 906 2541 SP
+-59 6 68 57 59 -29 3 965 2513 SP
+-59 14 68 72 59 -29 3 1024 2484 SP
+-59 21 68 62 59 -11 3 1083 2455 SP
+-59 17 68 45 59 0 3 1142 2444 SP
+-59 11 68 40 59 -6 3 1201 2444 SP
+-59 16 68 41 59 -17 3 1260 2438 SP
+-59 17 68 51 59 -27 3 1319 2421 SP
+-59 16 68 66 59 -31 3 1378 2394 SP
+-59 38 68 61 59 -33 3 1437 2363 SP
+-59 62 69 33 58 -34 3 1496 2330 SP
+-59 32 69 33 59 -32 3 1554 2296 SP
+-59 31 69 32 59 -30 3 1613 2264 SP
+-58 28 68 33 59 -29 3 1672 2234 SP
+-59 25 68 37 59 -29 3 1731 2205 SP
+-59 25 68 42 59 -30 3 1790 2176 SP
+-59 28 68 43 59 -29 3 1849 2146 SP
+-59 36 68 37 59 -30 3 1908 2117 SP
+-59 31 68 59 59 -53 3 1967 2087 SP
+-59 28 68 69 59 -38 3 2026 2034 SP
+-59 29 68 51 59 -11 3 2085 1996 SP
+-59 30 68 34 59 -13 3 2144 1985 SP
+-59 -39 68 104 59 -31 3 2203 1972 SP
+-59 67 69 53 58 -16 3 2262 1941 SP
+-59 66 69 33 59 -46 3 2320 1925 SP
+-59 77 69 56 59 -100 3 2379 1879 SP
+-59 18 69 32 59 6 3 2438 1779 SP
+-58 19 68 9 59 4 3 2497 1785 SP
+-59 5 68 33 59 -29 3 2556 1789 SP
+-59 76 68 -12 59 -31 3 2615 1760 SP
+-59 12 68 7 59 -31 3 2674 1729 SP
+-59 56 68 50 59 -99 3 2733 1698 SP
+-59 45 68 36 59 -31 3 2792 1599 SP
+-59 29 68 72 59 -65 3 2851 1568 SP
+-59 100 68 37 59 -65 3 2910 1503 SP
+-59 31 68 37 59 -31 3 2969 1438 SP
+-59 30 68 37 59 -30 3 3028 1407 SP
+-59 8 69 57 58 -28 3 3087 1377 SP
+-59 54 69 30 59 -27 3 3145 1349 SP
+-59 6 69 58 59 -34 3 3204 1322 SP
+-58 18 68 69 59 -29 3 3263 1288 SP
+-59 -6 68 105 59 -30 3 3322 1259 SP
+-59 52 68 82 59 -29 3 3381 1229 SP
+-59 29 68 83 59 -30 3 3440 1200 SP
+-59 24 68 88 59 -29 3 3499 1170 SP
+-59 11 68 37 59 40 3 3558 1141 SP
+-59 53 68 13 59 -29 3 3617 1181 SP
+-59 6 68 59 59 -52 3 3676 1152 SP
+-59 30 68 35 59 -6 3 3735 1100 SP
+-59 32 68 33 59 -30 3 3794 1094 SP
+-59 22 69 41 58 -30 3 3853 1064 SP
+-59 36 69 35 59 -30 3 3911 1034 SP
+-59 67 69 68 59 -100 3 3970 1004 SP
+-59 64 69 31 59 -27 3 4029 904 SP
+-58 30 68 34 59 -33 3 4088 877 SP
+-59 30 68 38 59 -34 3 4147 844 SP
+-59 31 68 20 59 -13 3 4206 810 SP
+-59 31 68 37 59 -48 3 4265 797 SP
+-59 54 68 13 59 -30 3 4324 749 SP
+-59 80 68 35 59 -102 3 4383 719 SP
+-59 101 68 36 59 -102 3 4442 617 SP
+-59 31 68 36 59 -31 3 4501 515 SP
+-59 30 68 35 59 -29 3 4560 484 SP
+-59 29 68 36 59 -30 3 4619 455 SP
+-59 8 69 55 58 -27 3 4678 425 SP
+-59 48 69 -11 59 18 3 4736 398 SP
+-59 -18 69 30 59 -23 3 4795 416 SP
+-59 31 69 27 59 -29 3 543 2668 SP
+-58 35 68 28 59 -36 3 602 2639 SP
+-59 31 68 33 59 -36 3 661 2603 SP
+-59 29 68 34 59 -30 3 720 2567 SP
+-59 30 68 -1 59 5 3 779 2537 SP
+-59 28 68 -60 59 31 3 838 2542 SP
+-59 29 68 0 59 -89 3 897 2573 SP
+-59 29 68 34 59 -63 3 956 2484 SP
+-59 11 68 49 59 -26 3 1015 2421 SP
+-59 0 68 48 59 1 3 1074 2395 SP
+-59 6 68 42 59 0 3 1133 2396 SP
+-59 17 68 45 59 -20 3 1192 2396 SP
+-59 27 69 47 58 -29 3 1251 2376 SP
+-59 31 69 45 59 -29 3 1309 2347 SP
+-59 33 69 41 59 -29 3 1368 2318 SP
+-58 34 68 36 59 -29 3 1427 2289 SP
+-59 32 68 33 59 -29 3 1486 2260 SP
+-59 30 68 33 59 -30 3 1545 2231 SP
+-59 29 68 34 59 -30 3 1604 2201 SP
+-59 29 68 -105 59 110 3 1663 2171 SP
+-59 30 68 34 59 -169 3 1722 2281 SP
+-59 29 68 -15 59 20 3 1781 2112 SP
+-59 30 68 35 59 -80 3 1840 2132 SP
+-59 53 68 81 59 -99 3 1899 2052 SP
+-59 38 68 72 59 -29 3 1958 1953 SP
+-59 11 68 89 59 -28 3 2017 1924 SP
+-59 13 69 36 58 40 3 2076 1896 SP
+-59 31 69 45 59 -40 3 2134 1936 SP
+-58 16 68 50 59 -21 3 2193 1896 SP
+-59 46 68 34 59 -30 3 2252 1875 SP
+-59 100 68 34 59 -100 3 2311 1845 SP
+-59 -6 68 69 59 -29 3 2370 1745 SP
+-59 -4 68 103 59 -30 3 2429 1716 SP
+-59 29 68 69 59 5 3 2488 1686 SP
+-59 31 68 57 59 -19 3 2547 1691 SP
+-59 31 68 34 59 -8 3 2606 1672 SP
+-59 99 68 35 59 -100 3 2665 1664 SP
+-59 31 68 34 59 -30 3 2724 1564 SP
+-59 65 68 -23 59 -8 3 2783 1534 SP
+-59 65 69 -35 58 -53 3 2842 1526 SP
+-59 31 69 34 59 -100 3 2900 1473 SP
+-59 30 69 6 59 -2 3 2959 1373 SP
+-58 28 68 18 59 -40 3 3018 1371 SP
+-59 27 68 38 59 -47 3 3077 1331 SP
+-59 34 68 34 59 -30 3 3136 1284 SP
+-59 29 68 34 59 -29 3 3195 1254 SP
+-59 30 68 27 59 -23 3 3254 1225 SP
+-59 29 68 105 59 -107 3 3313 1202 SP
+-59 30 68 106 59 -31 3 3372 1095 SP
+-59 29 68 37 59 40 3 3431 1064 SP
+-59 -40 68 106 59 -29 3 3490 1104 SP
+-59 29 68 106 59 -29 3 3549 1075 SP
+-59 52 68 83 59 -29 3 3608 1046 SP
+-59 6 69 106 58 -29 3 3667 1017 SP
+-59 30 69 36 59 40 3 3725 988 SP
+-58 30 68 60 59 -54 3 3784 1028 SP
+-59 30 68 106 59 -76 3 3843 974 SP
+-59 100 68 36 59 -30 3 3902 898 SP
+-59 27 68 38 59 -29 3 3961 868 SP
+-59 33 68 49 59 -44 3 4020 839 SP
+-59 34 68 34 59 -19 3 4079 795 SP
+-59 13 68 30 59 -9 3 4138 776 SP
+-59 48 68 -14 59 -4 3 4197 767 SP
+-59 30 68 35 59 -79 3 4256 763 SP
+-59 102 68 82 59 -149 3 4315 684 SP
+-59 102 68 35 59 -55 3 4374 535 SP
+-59 31 69 41 58 -37 3 4433 480 SP
+-59 29 69 35 59 -23 3 4491 443 SP
+-59 30 69 34 59 -29 3 4550 420 SP
+-58 27 68 -48 59 55 3 4609 391 SP
+-59 -18 68 -2 59 -28 3 4668 446 SP
+-59 23 68 7 59 -32 3 4727 418 SP
+-59 29 68 25 59 -28 3 475 2642 SP
+-59 36 68 25 59 -36 3 534 2614 SP
+-59 36 68 29 59 -40 3 593 2578 SP
+-59 30 68 21 59 -22 3 652 2538 SP
+-59 -5 68 42 59 -16 3 711 2516 SP
+-59 -31 68 128 59 -55 3 770 2500 SP
+-59 89 68 47 59 -8 3 829 2445 SP
+-59 63 68 30 59 -46 3 888 2437 SP
+-59 26 68 35 59 -31 3 947 2391 SP
+-59 -1 68 44 59 -8 3 1006 2360 SP
+-59 0 69 50 58 -6 3 1065 2352 SP
+-59 20 69 46 59 -16 3 1123 2346 SP
+-58 29 68 35 59 -18 3 1182 2330 SP
+-59 29 68 35 59 -29 3 1241 2312 SP
+-59 29 68 39 59 -33 3 1300 2283 SP
+-59 29 68 37 59 -27 3 1359 2250 SP
+-59 29 68 34 59 -26 3 1418 2223 SP
+-59 30 68 34 59 -30 3 1477 2197 SP
+-59 30 68 34 59 -30 3 1536 2167 SP
+-59 -110 68 173 59 -29 3 1595 2137 SP
+-59 169 68 34 59 -30 3 1654 2108 SP
+-59 -20 68 84 59 -30 3 1713 2078 SP
+-59 80 68 35 59 -31 3 1772 2048 SP
+-59 99 68 -6 59 -58 3 1831 2017 SP
+-59 29 69 36 58 -71 3 1890 1959 SP
+-59 28 69 36 59 -28 3 1948 1888 SP
+-58 -40 68 105 59 -29 3 2007 1860 SP
+-59 40 68 53 59 12 3 2066 1831 SP
+-59 21 68 35 59 -3 3 2125 1843 SP
+-59 30 68 35 59 -30 3 2184 1840 SP
+-59 100 68 34 59 -99 3 2243 1810 SP
+-59 29 68 19 59 -14 3 2302 1711 SP
+-59 30 68 -7 59 -4 3 2361 1697 SP
+-59 -5 68 17 59 -19 3 2420 1693 SP
+-59 19 68 81 59 -83 3 2479 1674 SP
+-59 8 68 103 59 -30 3 2538 1591 SP
+-59 100 68 34 59 -31 3 2597 1561 SP
+-59 30 69 33 58 -29 3 2656 1530 SP
+-59 8 69 56 59 -31 3 2714 1501 SP
+-58 53 68 33 59 -30 3 2773 1470 SP
+-59 100 68 -129 59 62 3 2832 1440 SP
+-59 2 68 -148 59 17 3 2891 1502 SP
+-59 40 68 -36 59 -152 3 2950 1519 SP
+-59 47 68 33 59 -116 3 3009 1367 SP
+-59 30 68 33 59 -30 3 3068 1251 SP
+-59 29 68 -35 59 39 3 3127 1221 SP
+-59 23 68 -27 59 -31 3 3186 1260 SP
+-59 107 68 -34 59 -100 3 3245 1229 SP
+-59 31 68 35 59 -100 3 3304 1129 SP
+-59 -40 68 105 59 -30 3 3363 1029 SP
+-59 29 68 106 59 -30 3 3422 999 SP
+-59 29 69 80 58 -3 3 3481 969 SP
+-59 29 69 69 59 -18 3 3539 966 SP
+-58 29 68 37 59 3 3 3598 948 SP
+-59 -40 68 107 59 -30 3 3657 951 SP
+-59 54 68 83 59 -30 3 3716 921 SP
+-59 76 68 106 59 -99 3 3775 891 SP
+-59 30 68 105 59 -29 3 3834 792 SP
+-59 29 68 104 59 -28 3 3893 763 SP
+-59 44 68 43 59 17 3 3952 735 SP
+-59 19 68 27 59 -3 3 4011 752 SP
+-59 9 68 39 59 -21 3 4070 749 SP
+-59 4 68 82 59 -47 3 4129 728 SP
+-59 79 68 105 59 -102 3 4188 681 SP
+-59 149 69 58 58 -102 3 4247 579 SP
+-59 55 69 39 59 -36 3 4305 477 SP
+-58 37 68 31 59 -29 3 4364 441 SP
+-59 23 68 35 59 -27 3 4423 412 SP
+-59 29 68 34 59 -28 3 4482 385 SP
+-59 -55 68 117 59 -28 3 4541 357 SP
+-59 28 68 118 59 -29 3 4600 329 SP
+-59 32 68 94 59 -8 3 4659 300 SP
+-59 28 68 21 59 -36 3 407 2629 SP
+-59 36 68 49 59 -64 3 466 2593 SP
+-59 40 68 11 59 -2 3 525 2529 SP
+-59 22 68 46 59 -57 3 584 2527 SP
+-59 16 68 34 59 -4 3 643 2470 SP
+-59 55 68 17 59 -38 3 702 2466 SP
+-59 8 68 56 59 -47 3 761 2428 SP
+-59 46 68 37 59 -27 3 820 2381 SP
+-59 31 68 28 59 -22 3 879 2354 SP
+-59 8 69 38 58 -18 3 938 2332 SP
+-58 6 68 51 59 -19 3 996 2314 SP
+-59 16 68 55 59 -20 3 1055 2295 SP
+-59 18 68 56 59 -19 3 1114 2275 SP
+-59 29 68 51 59 -24 3 1173 2256 SP
+-59 33 68 40 59 -22 3 1232 2232 SP
+-59 27 68 33 59 -20 3 1291 2210 SP
+-59 26 68 36 59 -29 3 1350 2190 SP
+-59 30 68 35 59 -29 3 1409 2161 SP
+-59 30 68 34 59 -29 3 1468 2132 SP
+-59 29 68 35 59 -30 3 1527 2103 SP
+-59 30 68 35 59 -30 3 1586 2073 SP
+-59 30 68 35 59 -30 3 1645 2043 SP
+-59 31 68 34 59 -30 3 1704 2013 SP
+-59 58 69 6 58 -30 3 1763 1983 SP
+-58 71 68 -58 59 -7 3 1821 1953 SP
+-59 28 68 1 59 -87 3 1880 1946 SP
+-59 29 68 36 59 -64 3 1939 1859 SP
+-59 -12 68 78 59 -30 3 1998 1795 SP
+-59 3 68 36 59 39 3 2057 1765 SP
+-59 30 68 -34 59 40 3 2116 1804 SP
+-59 99 68 35 59 -168 3 2175 1844 SP
+-59 14 68 51 59 -30 3 2234 1676 SP
+-59 4 68 7 59 40 3 2293 1646 SP
+-59 19 68 18 59 -30 3 2352 1686 SP
+-59 83 68 11 59 -76 3 2411 1656 SP
+-59 30 68 26 59 -45 3 2470 1580 SP
+-59 31 69 31 58 -36 3 2529 1535 SP
+-58 29 68 34 59 -32 3 2587 1499 SP
+-59 31 68 32 59 -29 3 2646 1467 SP
+-59 30 68 33 59 -31 3 2705 1438 SP
+-59 -62 68 55 59 40 3 2764 1407 SP
+-59 -17 68 126 59 -54 3 2823 1447 SP
+-59 152 68 47 59 -73 3 2882 1393 SP
+-59 116 68 34 59 -103 3 2941 1320 SP
+-59 30 68 34 59 -30 3 3000 1217 SP
+-59 -39 68 -35 59 108 3 3059 1187 SP
+-59 31 68 -35 59 -31 3 3118 1295 SP
+-59 100 68 -58 59 -77 3 3177 1264 SP
+-59 100 68 -34 59 -124 3 3236 1187 SP
+-59 30 68 -34 59 -30 3 3295 1063 SP
+-59 30 69 35 58 -99 3 3354 1033 SP
+-58 3 68 62 59 -30 3 3412 934 SP
+-59 18 68 73 59 -29 3 3471 904 SP
+-59 -3 68 106 59 -30 3 3530 875 SP
+-59 30 68 105 59 -29 3 3589 845 SP
+-59 30 68 105 59 -30 3 3648 816 SP
+-59 99 68 36 59 -30 3 3707 786 SP
+-59 29 68 27 59 -20 3 3766 756 SP
+-59 28 68 35 59 -36 3 3825 736 SP
+-59 -17 68 12 59 40 3 3884 700 SP
+-59 3 68 39 59 -30 3 3943 740 SP
+-59 21 68 50 59 -32 3 4002 710 SP
+-59 47 68 77 59 -74 3 4061 678 SP
+-59 102 69 105 58 -130 3 4120 604 SP
+-58 102 68 34 59 -31 3 4178 474 SP
+-59 36 68 30 59 -32 3 4237 443 SP
+-59 29 68 31 59 -30 3 4296 411 SP
+-59 27 68 34 59 -30 3 4355 381 SP
+-59 28 68 36 59 -30 3 4414 351 SP
+-59 28 68 35 59 -27 3 4473 321 SP
+-59 29 68 34 59 -28 3 4532 294 SP
+-59 8 68 1 59 25 3 4591 266 SP
+-59 36 68 -1 59 6 3 339 2588 SP
+-59 64 68 -35 59 -30 3 398 2594 SP
+-59 2 68 62 59 -99 3 457 2564 SP
+-59 57 68 -12 59 17 3 516 2465 SP
+-59 4 68 60 59 -76 3 575 2482 SP
+-59 38 68 -32 59 54 3 634 2406 SP
+-59 47 68 34 59 -113 3 693 2460 SP
+-59 27 68 36 59 -29 3 752 2347 SP
+-59 22 68 38 59 -24 3 811 2318 SP
+-58 18 68 40 58 -20 3 870 2294 SP
+-59 19 68 44 59 -23 3 928 2274 SP
+-59 20 68 47 59 -23 3 987 2251 SP
+-59 19 68 52 59 -24 3 1046 2228 SP
+-59 24 68 53 59 -25 3 1105 2204 SP
+-59 22 68 53 59 -22 3 1164 2179 SP
+-59 20 68 44 59 -11 3 1223 2157 SP
+-59 29 68 36 59 -21 3 1282 2146 SP
+-59 29 68 35 59 -28 3 1341 2125 SP
+-59 29 68 44 59 -38 3 1400 2097 SP
+-59 30 68 44 59 -30 3 1459 2059 SP
+-59 30 68 41 59 -27 3 1518 2029 SP
+-59 30 68 33 59 -22 3 1577 2002 SP
+-59 30 68 34 59 -31 3 1636 1980 SP
+-58 30 68 34 58 -30 3 1695 1949 SP
+-59 7 68 -13 59 40 3 1753 1919 SP
+-59 87 68 -14 59 -86 3 1812 1959 SP
+-59 64 68 12 59 -90 3 1871 1873 SP
+-59 30 68 35 59 -53 3 1930 1783 SP
+-59 -39 68 104 59 -30 3 1989 1730 SP
+-59 -40 68 139 59 5 3 2048 1700 SP
+-59 168 68 35 59 -64 3 2107 1705 SP
+-59 30 68 34 59 -29 3 2166 1641 SP
+-59 -40 68 77 59 -3 3 2225 1612 SP
+-59 30 68 35 59 12 3 2284 1609 SP
+-59 76 68 23 59 -64 3 2343 1621 SP
+-59 45 68 43 59 -65 3 2402 1557 SP
+-58 36 68 34 58 -27 3 2461 1492 SP
+-59 32 68 30 59 -28 3 2519 1465 SP
+-59 29 68 34 59 -33 3 2578 1437 SP
+-59 31 68 33 59 -30 3 2637 1404 SP
+-59 -40 68 87 59 -14 3 2696 1374 SP
+-59 54 68 80 59 -47 3 2755 1360 SP
+-59 73 68 58 59 -51 3 2814 1313 SP
+-59 103 68 34 59 -79 3 2873 1262 SP
+-59 30 68 34 59 -30 3 2932 1183 SP
+-59 -108 68 137 59 5 3 2991 1153 SP
+-59 31 68 173 59 -67 3 3050 1158 SP
+-59 77 68 126 59 -30 3 3109 1091 SP
+-59 124 68 1 59 1 3 3168 1061 SP
+-59 30 69 33 58 -62 3 3227 1062 SP
+-58 99 68 -36 59 -30 3 3285 1000 SP
+-59 30 68 34 59 -100 3 3344 970 SP
+-59 29 68 34 59 -29 3 3403 870 SP
+-59 30 68 35 59 -31 3 3462 841 SP
+-59 29 68 1 59 5 3 3521 810 SP
+-59 30 68 32 59 -61 3 3580 815 SP
+-59 30 68 29 59 -27 3 3639 754 SP
+-59 20 68 19 59 -10 3 3698 727 SP
+-59 36 68 -35 59 18 3 3757 717 SP
+-59 -40 68 -36 59 41 3 3816 735 SP
+-59 30 68 -35 59 -31 3 3875 776 SP
+-59 32 68 70 59 -137 3 3934 745 SP
+-59 74 68 77 59 -81 3 3993 608 SP
+-58 130 68 0 58 -53 3 4052 527 SP
+-59 31 68 35 59 -66 3 4110 474 SP
+-59 32 68 34 59 -31 3 4169 408 SP
+-59 30 68 23 59 -19 3 4228 377 SP
+-59 30 68 34 59 -41 3 4287 358 SP
+-59 30 68 33 59 -29 3 4346 317 SP
+-59 27 68 35 59 -29 3 4405 288 SP
+-59 28 68 35 59 -28 3 4464 259 SP
+-59 -25 68 36 59 24 3 4523 231 SP
+-59 -6 68 104 59 -29 3 271 2519 SP
+-59 30 68 69 59 5 3 330 2490 SP
+-59 99 68 34 59 -64 3 389 2495 SP
+-59 -17 68 81 59 -30 3 448 2431 SP
+-59 76 68 34 59 -29 3 507 2401 SP
+-59 -54 68 95 59 -7 3 566 2372 SP
+-59 113 68 34 59 -52 3 625 2365 SP
+-59 29 68 35 59 -30 3 684 2313 SP
+-59 24 68 40 59 -29 3 743 2283 SP
+-58 20 67 44 59 -24 3 802 2254 SP
+-59 23 68 44 58 -23 3 861 2230 SP
+-59 23 68 44 59 -23 3 919 2207 SP
+-59 24 68 45 59 -25 3 978 2184 SP
+-59 25 68 46 59 -26 3 1037 2159 SP
+-59 22 68 48 59 -24 3 1096 2133 SP
+-59 11 68 57 59 -20 3 1155 2109 SP
+-59 21 68 63 59 -27 3 1214 2089 SP
+-59 28 68 71 59 -36 3 1273 2062 SP
+-59 38 68 62 59 -29 3 1332 2026 SP
+-59 30 68 54 59 -22 3 1391 1997 SP
+-59 27 68 48 59 -21 3 1450 1975 SP
+-59 22 68 41 59 -15 3 1509 1954 SP
+-59 31 68 34 59 -24 3 1568 1939 SP
+-58 30 68 33 58 -29 3 1627 1915 SP
+-59 -40 68 103 59 -30 3 1685 1886 SP
+-59 86 68 1 59 16 3 1744 1856 SP
+-59 90 68 1 59 -90 3 1803 1872 SP
+-59 53 68 -1 59 -51 3 1862 1782 SP
+-59 30 68 0 59 -31 3 1921 1731 SP
+-59 -5 68 49 59 -44 3 1980 1700 SP
+-59 64 68 35 59 -50 3 2039 1656 SP
+-59 29 68 35 59 -29 3 2098 1606 SP
+-59 3 68 62 59 -30 3 2157 1577 SP
+-59 -12 68 104 59 -30 3 2216 1547 SP
+-59 64 68 70 59 -30 3 2275 1517 SP
+-59 65 68 34 59 -29 3 2334 1487 SP
+-58 27 67 37 59 -30 3 2393 1458 SP
+-59 28 68 38 58 -29 3 2452 1428 SP
+-59 33 68 35 59 -30 3 2510 1399 SP
+-59 30 68 35 59 -30 3 2569 1369 SP
+-59 14 68 51 59 -30 3 2628 1339 SP
+-59 47 68 35 59 -31 3 2687 1309 SP
+-59 51 68 15 59 -31 3 2746 1278 SP
+-59 79 68 35 59 -99 3 2805 1247 SP
+-59 30 68 35 59 -30 3 2864 1148 SP
+-59 -5 68 70 59 -30 3 2923 1118 SP
+-59 67 68 34 59 -31 3 2982 1088 SP
+-59 30 68 33 59 -29 3 3041 1057 SP
+-59 -1 68 33 59 1 3 3100 1028 SP
+-58 62 67 -107 59 78 3 3159 1029 SP
+-59 30 68 -107 58 -30 3 3218 1107 SP
+-59 100 68 -37 59 -170 3 3276 1077 SP
+-59 29 68 -49 59 -17 3 3335 907 SP
+-59 31 68 -88 59 8 3 3394 890 SP
+-59 -5 68 13 59 -96 3 3453 898 SP
+-59 61 68 37 59 -85 3 3512 802 SP
+-59 27 68 73 59 -63 3 3571 717 SP
+-59 10 68 -12 59 75 3 3630 654 SP
+-59 -18 68 -36 59 42 3 3689 729 SP
+-59 -41 68 35 59 -30 3 3748 771 SP
+-59 31 68 105 59 -101 3 3807 741 SP
+-59 137 68 84 59 -116 3 3866 640 SP
+-59 81 68 91 59 -88 3 3925 524 SP
+-58 53 68 70 58 -32 3 3984 436 SP
+-59 66 68 -35 59 39 3 4042 404 SP
+-59 31 68 -70 59 4 3 4101 443 SP
+-59 19 68 45 59 -134 3 4160 447 SP
+-59 41 68 34 59 -30 3 4219 313 SP
+-59 29 68 34 59 -29 3 4278 283 SP
+-59 29 68 34 59 -29 3 4337 254 SP
+-59 28 68 35 59 -29 3 4396 225 SP
+-59 -24 68 88 59 -29 3 4455 196 SP
+-59 29 68 27 59 -20 3 203 2483 SP
+-59 -5 68 62 59 -30 3 262 2463 SP
+-59 64 68 30 59 -32 3 321 2433 SP
+-59 30 68 34 59 -34 3 380 2401 SP
+-59 29 68 34 59 -29 3 439 2367 SP
+-59 7 68 57 59 -30 3 498 2338 SP
+-59 52 68 35 59 -30 3 557 2308 SP
+-59 30 68 38 59 -33 3 616 2278 SP
+-59 29 68 35 59 -26 3 675 2245 SP
+-59 24 68 40 59 -29 3 734 2219 SP
+-58 23 67 42 59 -25 3 793 2190 SP
+-59 23 68 43 58 -24 3 852 2165 SP
+-59 25 68 45 59 -27 3 910 2141 SP
+-59 26 68 48 59 -29 3 969 2114 SP
+-59 24 68 54 59 -30 3 1028 2085 SP
+-59 20 68 63 59 -29 3 1087 2055 SP
+-59 27 68 68 59 -32 3 1146 2026 SP
+-59 36 68 69 59 -37 3 1205 1994 SP
+-59 29 68 68 59 -28 3 1264 1957 SP
+-59 22 68 59 59 -13 3 1323 1929 SP
+-59 21 68 59 59 -21 3 1382 1916 SP
+-59 15 68 62 59 -18 3 1441 1895 SP
+-59 24 68 34 59 4 3 1500 1877 SP
+-58 29 67 104 59 -99 3 1559 1881 SP
+-59 30 68 34 58 40 3 1618 1782 SP
+-59 -16 68 80 59 -30 3 1676 1822 SP
+-59 90 68 21 59 -31 3 1735 1792 SP
+-59 51 68 0 59 -30 3 1794 1761 SP
+-59 31 68 -1 59 -30 3 1853 1731 SP
+-59 44 68 13 59 -58 3 1912 1701 SP
+-59 50 68 34 59 -71 3 1971 1643 SP
+-59 29 68 104 59 -99 3 2030 1572 SP
+-59 30 68 67 59 7 3 2089 1473 SP
+-59 30 68 63 59 -26 3 2148 1480 SP
+-59 30 68 34 59 -1 3 2207 1454 SP
+-59 29 68 46 59 -41 3 2266 1453 SP
+-59 30 68 36 59 -20 3 2325 1412 SP
+-58 29 67 35 59 -28 3 2384 1392 SP
+-59 30 68 35 58 -30 3 2443 1364 SP
+-59 30 68 35 59 -30 3 2501 1334 SP
+-59 30 68 35 59 -30 3 2560 1304 SP
+-59 31 68 35 59 -31 3 2619 1274 SP
+-59 31 68 67 59 -63 3 2678 1243 SP
+-59 99 68 35 59 -67 3 2737 1180 SP
+-59 30 68 43 59 -38 3 2796 1113 SP
+-59 30 68 37 59 -24 3 2855 1075 SP
+-59 31 68 34 59 -28 3 2914 1051 SP
+-59 29 68 34 59 -29 3 2973 1023 SP
+-59 -1 68 25 59 10 3 3032 994 SP
+-59 -78 68 64 59 39 3 3091 1004 SP
+-58 30 67 47 59 -13 3 3150 1043 SP
+-59 170 68 -23 58 -100 3 3209 1030 SP
+-59 17 68 48 59 -88 3 3267 930 SP
+-59 -8 68 121 59 -65 3 3326 842 SP
+-59 96 68 55 59 -30 3 3385 777 SP
+-59 85 68 91 59 -121 3 3444 747 SP
+-59 63 68 -35 59 63 3 3503 626 SP
+-59 -75 68 57 59 -17 3 3562 689 SP
+-59 -42 68 105 59 -6 3 3621 672 SP
+-59 30 68 105 59 -30 3 3680 666 SP
+-59 101 68 36 59 -32 3 3739 636 SP
+-59 116 68 45 59 -125 3 3798 604 SP
+-59 88 68 35 59 -78 3 3857 479 SP
+-58 32 67 35 59 -32 3 3916 401 SP
+-59 -39 67 104 59 -30 3 3975 369 SP
+-59 -4 68 138 58 -30 3 4034 339 SP
+-59 134 68 19 59 -15 3 4092 309 SP
+-59 30 68 34 59 -45 3 4151 294 SP
+-59 29 68 35 59 -30 3 4210 249 SP
+-59 29 68 35 59 -29 3 4269 219 SP
+-59 29 68 35 59 -29 3 4328 190 SP
+-59 29 68 33 59 -27 3 4387 161 SP
+-59 20 68 41 58 -24 3 136 2446 SP
+-59 30 68 42 59 -31 3 194 2422 SP
+-59 32 68 39 59 -29 3 253 2391 SP
+-59 34 68 35 59 -30 3 312 2362 SP
+-59 29 68 35 59 -29 3 371 2332 SP
+-59 30 68 34 59 -29 3 430 2303 SP
+-59 30 68 36 59 -32 3 489 2274 SP
+-59 33 68 32 59 -29 3 548 2242 SP
+-59 26 68 36 59 -30 3 607 2213 SP
+-59 29 68 35 59 -28 3 666 2183 SP
+-59 25 68 38 59 -28 3 725 2155 SP
+-58 24 67 41 59 -27 3 784 2127 SP
+-59 27 67 43 59 -29 3 843 2100 SP
+-59 29 68 46 58 -32 3 902 2071 SP
+-59 30 68 46 59 -30 3 960 2039 SP
+-59 29 68 46 59 -29 3 1019 2009 SP
+-59 32 68 45 59 -31 3 1078 1980 SP
+-59 37 68 38 59 -30 3 1137 1949 SP
+-59 28 68 38 59 -28 3 1196 1919 SP
+-59 13 68 52 59 -27 3 1255 1891 SP
+-59 21 68 53 59 -22 3 1314 1864 SP
+-59 18 68 72 59 -37 3 1373 1842 SP
+-59 -4 68 105 59 -29 3 1432 1805 SP
+-59 99 68 35 59 -29 3 1491 1776 SP
+-58 -40 67 35 59 40 3 1550 1747 SP
+-59 30 67 53 59 -48 3 1609 1787 SP
+-59 31 67 63 59 -41 3 1668 1739 SP
+-59 30 68 64 58 -31 3 1727 1698 SP
+-59 30 68 104 59 -70 3 1785 1667 SP
+-59 58 68 -17 59 63 3 1844 1597 SP
+-59 71 68 20 59 -108 3 1903 1660 SP
+-59 99 68 -12 59 -67 3 1962 1552 SP
+-59 -7 68 71 59 -76 3 2021 1485 SP
+-59 26 68 76 59 -31 3 2080 1409 SP
+-59 1 68 105 59 -30 3 2139 1378 SP
+-59 41 68 24 59 40 3 2198 1348 SP
+-59 20 68 33 59 -29 3 2257 1388 SP
+-59 28 68 41 59 -36 3 2316 1359 SP
+-58 30 67 34 59 -23 3 2375 1323 SP
+-59 30 67 34 59 -30 3 2434 1300 SP
+-59 30 68 -35 58 39 3 2493 1270 SP
+-59 31 68 35 59 -101 3 2551 1309 SP
+-59 63 68 43 59 -71 3 2610 1208 SP
+-59 67 68 35 59 -59 3 2669 1137 SP
+-59 38 68 30 59 -33 3 2728 1078 SP
+-59 24 68 29 59 -23 3 2787 1045 SP
+-59 28 68 34 59 -33 3 2846 1022 SP
+-59 29 68 34 59 -29 3 2905 989 SP
+-59 -10 68 68 59 -24 3 2964 960 SP
+-59 -39 68 101 59 6 3 3023 936 SP
+-59 13 68 122 59 -34 3 3082 942 SP
+-58 100 67 55 59 -33 3 3141 908 SP
+-59 88 67 33 59 -66 3 3200 875 SP
+-59 65 68 69 58 -101 3 3259 809 SP
+-59 30 68 138 59 -99 3 3317 708 SP
+-59 121 68 23 59 -6 3 3376 609 SP
+-59 -63 68 34 59 52 3 3435 603 SP
+-59 17 68 12 59 5 3 3494 655 SP
+-59 6 68 82 59 -76 3 3553 660 SP
+-59 30 68 83 59 -31 3 3612 584 SP
+-59 32 68 152 59 -101 3 3671 553 SP
+-59 125 68 82 59 -55 3 3730 452 SP
+-59 78 68 35 59 -31 3 3789 397 SP
+-59 32 68 34 59 -31 3 3848 366 SP
+-59 30 68 34 59 -30 3 3907 335 SP
+-58 30 67 34 59 -30 3 3966 305 SP
+-59 15 67 38 59 -19 3 4025 275 SP
+-59 45 68 34 58 -41 3 4084 256 SP
+-59 30 68 34 59 -30 3 4142 215 SP
+-59 29 68 34 59 -29 3 4201 185 SP
+-59 29 68 34 59 -29 3 4260 156 SP
+-59 27 68 33 59 -26 3 4319 127 SP
+-58 24 67 30 59 -22 3 68 2414 SP
+-59 31 67 34 59 -35 3 127 2392 SP
+-59 29 67 34 59 -29 3 186 2357 SP
+-59 30 68 34 58 -30 3 245 2328 SP
+-59 29 68 33 59 -28 3 303 2298 SP
+-59 29 68 34 59 -30 3 362 2270 SP
+-59 32 68 33 59 -31 3 421 2240 SP
+-59 29 68 33 59 -29 3 480 2209 SP
+-59 30 68 34 59 -31 3 539 2180 SP
+-59 28 68 34 59 -28 3 598 2149 SP
+-59 28 68 35 59 -29 3 657 2121 SP
+-59 27 68 37 59 -29 3 716 2092 SP
+-59 29 68 38 59 -30 3 775 2063 SP
+-58 32 67 35 59 -29 3 834 2033 SP
+-59 30 67 38 59 -33 3 893 2004 SP
+-59 29 67 38 59 -29 3 952 1971 SP
+-59 31 68 34 58 -27 3 1011 1942 SP
+-59 30 68 34 59 -30 3 1069 1915 SP
+-59 28 68 35 59 -29 3 1128 1885 SP
+-59 27 68 36 59 -28 3 1187 1856 SP
+-59 22 68 45 59 -31 3 1246 1828 SP
+-59 37 68 36 59 -28 3 1305 1797 SP
+-59 29 68 36 59 -29 3 1364 1769 SP
+-59 29 68 27 59 -20 3 1423 1740 SP
+-59 -40 68 105 59 -38 3 1482 1720 SP
+-59 48 68 87 59 -30 3 1541 1682 SP
+-59 41 68 67 59 -21 3 1600 1652 SP
+-58 31 67 73 59 -37 3 1659 1631 SP
+-59 70 67 8 59 -5 3 1718 1594 SP
+-59 -63 68 103 58 -32 3 1777 1589 SP
+-59 108 68 30 59 -35 3 1835 1557 SP
+-59 67 68 -105 59 68 3 1894 1522 SP
+-59 76 68 -118 59 -63 3 1953 1590 SP
+-59 31 68 -12 59 -137 3 2012 1527 SP
+-59 30 68 35 59 -77 3 2071 1390 SP
+-59 -40 68 104 59 -29 3 2130 1313 SP
+-59 29 68 70 59 5 3 2189 1284 SP
+-59 36 68 45 59 -11 3 2248 1289 SP
+-59 23 68 34 59 -12 3 2307 1278 SP
+-59 30 68 -35 59 39 3 2366 1266 SP
+-58 -39 67 58 59 -54 3 2425 1305 SP
+-59 101 67 34 59 -77 3 2484 1251 SP
+-59 71 67 63 59 -100 3 2543 1174 SP
+-59 59 68 34 58 -30 3 2602 1074 SP
+-59 33 68 31 59 -30 3 2660 1044 SP
+-59 23 68 34 59 -26 3 2719 1014 SP
+-59 33 68 34 59 -33 3 2778 988 SP
+-59 29 68 35 59 -30 3 2837 955 SP
+-59 24 68 40 59 -29 3 2896 925 SP
+-59 -6 68 75 59 -29 3 2955 896 SP
+-59 34 68 71 59 -30 3 3014 867 SP
+-59 33 68 62 59 -24 3 3073 837 SP
+-59 66 68 35 59 -39 3 3132 813 SP
+-58 101 67 -7 59 -59 3 3191 774 SP
+-59 99 67 -58 59 -48 3 3250 715 SP
+-59 6 67 23 59 -87 3 3309 667 SP
+-59 -52 68 0 58 75 3 3368 580 SP
+-59 -5 68 81 59 -76 3 3426 655 SP
+-59 76 68 59 59 -54 3 3485 579 SP
+-59 31 68 105 59 -77 3 3544 525 SP
+-59 101 68 59 59 -55 3 3603 448 SP
+-59 55 68 -34 59 38 3 3662 393 SP
+-59 31 68 -35 59 -30 3 3721 431 SP
+-59 31 68 34 59 -100 3 3780 401 SP
+-59 30 68 -36 59 40 3 3839 301 SP
+-59 30 68 -36 59 -30 3 3898 341 SP
+-59 19 68 44 59 -99 3 3957 311 SP
+-58 41 67 33 59 -30 3 4016 212 SP
+-59 30 67 33 59 -30 3 4075 182 SP
+-59 29 67 34 59 -30 3 4134 152 SP
+-59 29 68 35 58 -30 3 4193 122 SP
+-59 26 68 38 59 -29 3 4251 92 SP
+-59 22 68 18 59 -2 3 0 2376 SP
+-59 35 68 35 59 -52 3 59 2374 SP
+-59 29 68 -7 59 13 3 118 2322 SP
+-58 30 67 34 59 -71 3 177 2335 SP
+-59 28 67 35 59 -29 3 236 2264 SP
+-59 30 67 35 59 -30 3 295 2235 SP
+-59 31 68 33 58 -29 3 354 2205 SP
+-59 29 68 34 59 -30 3 412 2176 SP
+-59 31 68 32 59 -29 3 471 2146 SP
+-59 28 68 33 59 -29 3 530 2117 SP
+-59 29 68 34 59 -30 3 589 2088 SP
+-59 29 68 35 59 -30 3 648 2058 SP
+-59 30 68 33 59 -28 3 707 2028 SP
+-59 29 68 35 59 -31 3 766 2000 SP
+-59 33 68 34 59 -32 3 825 1969 SP
+-59 29 68 35 59 -30 3 884 1937 SP
+-58 27 67 37 59 -29 3 943 1907 SP
+-59 30 67 37 59 -30 3 1002 1878 SP
+-59 29 67 37 59 -29 3 1061 1848 SP
+-59 28 67 39 59 -30 3 1120 1819 SP
+-59 31 68 34 58 -26 3 1179 1789 SP
+-59 28 68 35 59 -29 3 1237 1763 SP
+-59 29 68 35 59 -29 3 1296 1734 SP
+-59 20 68 45 59 -30 3 1355 1705 SP
+-59 38 68 36 59 -29 3 1414 1675 SP
+-59 30 68 40 59 -34 3 1473 1646 SP
+-59 21 68 44 59 -25 3 1532 1612 SP
+-59 37 68 35 59 -28 3 1591 1587 SP
+-59 5 68 48 59 -18 3 1650 1559 SP
+-58 32 67 40 59 -24 3 1709 1541 SP
+-59 35 67 51 59 -46 3 1768 1517 SP
+-59 -68 67 80 59 39 3 1827 1471 SP
+-59 63 67 47 59 -30 3 1886 1510 SP
+-59 137 68 -60 58 -30 3 1945 1480 SP
+-59 77 68 -13 59 -124 3 2003 1450 SP
+-59 29 68 34 59 -76 3 2062 1326 SP
+-59 -5 68 49 59 -10 3 2121 1250 SP
+-59 11 68 87 59 -49 3 2180 1240 SP
+-59 12 68 81 59 -6 3 2239 1191 SP
+-59 -39 68 151 59 -31 3 2298 1185 SP
+-59 54 68 117 59 -20 3 2357 1154 SP
+-59 77 68 105 59 -65 3 2416 1134 SP
+-59 100 68 35 59 -30 3 2475 1069 SP
+-58 30 67 35 59 -30 3 2534 1039 SP
+-59 30 67 34 59 -29 3 2593 1009 SP
+-59 26 67 38 59 -30 3 2652 980 SP
+-59 33 67 0 59 5 3 2711 950 SP
+-59 30 68 11 58 -41 3 2770 955 SP
+-59 29 68 41 59 -59 3 2828 914 SP
+-59 29 68 103 59 -91 3 2887 855 SP
+-59 30 68 34 59 39 3 2946 764 SP
+-59 24 68 42 59 -32 3 3005 803 SP
+-59 39 68 35 59 -32 3 3064 771 SP
+-59 59 68 6 59 -30 3 3123 739 SP
+-59 48 68 -12 59 -30 3 3182 709 SP
+-59 87 68 -1 59 -98 3 3241 679 SP
+-58 -75 67 140 59 -66 3 3300 581 SP
+-59 76 67 58 59 6 3 3359 515 SP
+-59 54 67 -33 59 37 3 3418 521 SP
+-59 77 67 -10 59 -100 3 3477 558 SP
+-59 55 68 36 58 -101 3 3536 458 SP
+-59 -38 68 36 59 38 3 3594 357 SP
+-59 30 68 36 59 -30 3 3653 395 SP
+-59 100 68 35 59 -99 3 3712 365 SP
+-59 -40 68 48 59 27 3 3771 266 SP
+-59 30 68 57 59 -39 3 3830 293 SP
+-59 99 68 17 59 -59 3 3889 254 SP
+-59 30 68 33 59 -46 3 3948 195 SP
+-59 30 68 35 59 -32 3 4007 149 SP
+-59 30 68 -7 59 12 3 4066 117 SP
+-58 30 67 63 59 -100 3 4125 129 SP
+-59 29 67 35 59 -1 3 4184 29 SP
+%%EndObject
+%%PageTrailer
+U
+showpage
+
+%%Trailer
+
+end
+%%EOF

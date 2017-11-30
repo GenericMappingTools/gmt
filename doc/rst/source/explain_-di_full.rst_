@@ -1,0 +1,5 @@
+.. _-di_full:
+
+**-di**\ *nodata*
+    Examine all input columns and if any item equals *nodata* we interpret
+    this value as a missing data item and substitute the value NaN.

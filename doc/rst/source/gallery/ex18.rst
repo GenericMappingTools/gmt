@@ -1,0 +1,32 @@
+.. _example_18:
+
+(18) Volumes and Spatial Selections
+-----------------------------------
+
+To demonstrate potential usage of the programs
+:doc:`gmtspatial </gmtspatial>`, :doc:`grdvolume </grdvolume>` and
+:doc:`gmtselect </gmtselect>` we extract a subset of the
+Sandwell & Smith altimetric gravity field [1]_ for the northern Pacific
+and decide to isolate all seamounts that (1) exceed 50 mGal in amplitude
+and (2) are within 200 km of the Pratt seamount. We do this by dumping
+the 50 mGal contours to disk, then use gmtspatial that
+returns the mean location of the points making up each closed polygon,
+and then pass these locations to
+:doc:`gmtselect </gmtselect>`, which retains only the
+points within 200 km of Pratt. We then mask out all the data outside
+this radius and use :doc:`grdvolume </grdvolume>` to
+determine the combined area and (gravimetric) volumes of the chosen seamounts. Our
+illustration is presented in Figure.
+
+.. literalinclude:: /_verbatim/example_18.txt
+   :language: bash
+
+.. figure:: /_images/example_18.*
+   :width: 500 px
+   :align: center
+
+   Volumes and geo-spatial selections.
+
+
+.. [1]
+   See http://topex.ucsd.edu/marine_grav/mar_grav.html.

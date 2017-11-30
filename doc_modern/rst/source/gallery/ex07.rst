@@ -1,0 +1,30 @@
+.. _example_07:
+
+(7) A simple location map
+-------------------------
+
+Many scientific papers start out by showing a location map of the region
+of interest. This map will typically also contain certain features and
+labels. This example will present a location map for the equatorial
+Atlantic ocean, where fracture zones and mid-ocean ridge segments have
+been plotted. We also would like to plot earthquake locations and
+available isochrons. We have obtained one file, ``quakes.xym``, which contains the
+position and magnitude of available earthquakes in the region. We choose
+to use magnitude/100 for the symbol-size in inches. The digital fracture
+zone traces (``fz.xy``) and isochrons (0 isochron as ``ridge.xy``, the rest as ``isochrons.xy``) were
+digitized from available maps [1]_. We create the final location map
+with the following script:
+
+.. literalinclude:: /_verbatim/example_07.txt
+   :language: bash
+
+Here a simple one-liner creates a simple legend in the upper-right corner.
+
+.. figure:: /_images/example_07.*
+   :width: 500 px
+   :align: center
+
+   A typical location map.
+
+.. [1]
+   These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).

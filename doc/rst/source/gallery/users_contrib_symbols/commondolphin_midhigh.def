@@ -1,0 +1,119 @@
+#Delphinus delphis - Common Dolphin
+#middle high (between normal and high)
+#Pablo Valdes - sep 2007
+#comment the lines 5, 55 and 78 AND uncomment the lines 6, 56 and 79 if you want gray instead color 
+0	0	M -G23/10/29
+#0	0	M -G30
+0	19.6	D
+-1.6	20	D
+-2.5	20.7	D
+-4	20.5	D
+-7	20.2	D
+-8.5	20.2	D
+-10	20	D
+-11	19.8	D
+-11.3	20	D
+-11.3	20.4	D
+-10	21	D
+-10	21.4	D
+-9.6	22	D
+-9	23	D
+-7	24.3	D
+-5	25	D
+-3	25.5	D
+0	26	D
+1	26.2	D
+2	26.9	D
+3	27.5	D
+4	28	D
+4.4	28	D
+4	27.3	D
+3.6	27	D
+3.6	26	D
+4	25.6	D
+5.5	25	D
+7.5	24	D
+9	23	D
+11	20.5	D
+12	20	D
+13.3	19	D
+13.8	18	D
+11.2	19.2	D
+11	19.5	D
+10.8	19.2	D
+10.3	19.4	D
+9.6	19.2	D
+9.9	20.4	D
+7	21	D
+0	20.8	D
+2.2	19.8	D
+2	19.6	D
+0	19.6	D
+0	0	0.6	c	-Gblack
+
+#yellowish tan patch, comment this line AND uncomment the next if you want gray instead color
+1	24	M -G249/230/70 -W0/0/0
+#1	24	M -G200 -W0/0/0
+2	23.8	D
+3	23.4	D
+4	23	D
+3.5	22.6	D
+2	22.4	D
+1	22.1	D
+-3	21.9	D
+-4	21.8	D
+-6	21.5	D
+-6.4	21.5	D
+-6.7	21.2	D
+-8.3	21	D
+-9.5	21	D
+-9	21.4	D
+-7.5	21.4	D
+-4.5	23.5	D
+-3	24	D
+-1	24.1	D
+1	24	D
+
+#gray-blue patch, comment this line AND uncomment the next if you want gray instead color
+10	20.9	M -G207/200/212 -W0/0/0
+#10	20.9	M -G130 -W0/0/0
+10.5	20.3	D 
+9.8	20.3	D
+9	20.6	D
+8	20.8	D
+7	20.9	D
+6	21	D
+5	21.7	D
+4	23	D
+5	23.1	D
+6	23	D
+7	22.6	D
+8	22	D
+10	20.9	D
+
+6	21	M -Gwhite -Wblack
+5	21.6	D
+4	23	D
+3.5	22.6	D
+2	22.4	D
+-3	22	D
+-4	21.8	D
+-6	21.5	D
+-6.4	21	D
+-6.7	21.2	D
+-8.3	21	D
+-11	20.1	D
+-8.3	21	D
+-10	20	D
+-8.5	20.2	D
+-7	20.2	D
+-4	20.5	D
+-2.5	20.7	D
+-4	21	D
+-5.5	21	D
+-6.6	21.2	D
+-5.5	21	D
+-4	21	D
+-0.5	21	D
+0	20.8	D
+6	21	D

@@ -1,0 +1,30 @@
+.. _example_26:
+
+(26) General vertical perspective projection
+--------------------------------------------
+
+Next, we present a recent extension to the **-JG** projection option
+which allows the user to specify a particular altitude (this was always
+at infinity before), as well as several further parameters to limit the
+view from the chosen vantage point. In this example we show a view of
+the eastern continental US from a height of 160 km. Below we add a view
+with a specific tilt of 55 and azimuth 210; here we have chosen a
+boresight twist of 45. We view the land from New York towards
+Washington, D.C.
+
+At this point the full projection has not been properly optimized and
+the map annotations will need additional work. Also, note that the
+projection is only implemented in
+:doc:`pscoast </pscoast>` and
+:doc:`grdimage </grdimage>`. We hope to refine this
+further and extend the availability of the full projection to all of the
+GMT mapping programs.
+
+.. literalinclude:: /_verbatim/example_26.txt
+   :language: bash
+
+.. figure:: /_images/example_26.*
+   :width: 500 px
+   :align: center
+
+   General vertical perspective projection.

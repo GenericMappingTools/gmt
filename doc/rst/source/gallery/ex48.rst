@@ -1,0 +1,25 @@
+.. _example_48:
+
+(48) Line networks, map embellishments, and curved titles
+---------------------------------------------------------
+
+In this example we show how the module :doc:`psxy </psxy>`
+can be used to create a network of lines based on a file with
+just the nodes (the siz airports).  We also demonstrate how the
+lines can be shortened by (a) a given measure (here 250 km)
+and then (b) the length of the added vector heads.  The airspace
+closest to each airport is identified as spherical Voronoi
+cells by :doc:`sphtriangulate </sphtriangulate>` and filled
+with transparent coloring, allowing us to see the seafloor
+texture beneath.  Finally,
+we add six local spiderweb azimuth/distance gridlines and
+set a curved plot title.
+
+.. literalinclude:: /_verbatim/example_48.txt
+   :language: bash
+
+.. figure:: /_images/example_48.*
+   :width: 500 px
+   :align: center
+
+   Line networks, map embellishments, and curved titles.

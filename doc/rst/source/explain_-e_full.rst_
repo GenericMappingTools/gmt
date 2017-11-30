@@ -1,0 +1,12 @@
+.. _-e_full:
+
+**-e**\ [**~**]\ *"pattern"* **\|** **-e**\ [**~**]/\ *regexp*/[**i**]
+    Only accept ASCII data records that contains the specified pattern.
+    To reverse the search, i.e., to only accept data record that do *not*
+    contain the specified pattern, use **-e~**. Should your pattern happen
+    to start with ~ you need to escape this character with a backslash
+    [Default accepts all data records]. For matching data records
+    against extended regular expressions enclose the expression in slashes.
+    Append **i** for case-insensitive matching.
+    For a list of such patterns, give **+f**\ *file* with one pattern per line.
+    To give a single pattern starting with **+f**, escape it with a backslash.

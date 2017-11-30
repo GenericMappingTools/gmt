@@ -1,0 +1,36 @@
+**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**+r**][**+u**\ *unit*]
+    *west*, *east*, *south*, and *north* specify the region of interest,
+    and you may specify them in decimal degrees or in
+    [±]dd:mm[:ss.xxx][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**] format
+    Append **+r** if lower left
+    and upper right map coordinates are given instead of w/e/s/n. The
+    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
+    and -180/+180 in longitude respectively, with -90/+90 in latitude).
+    Set geographic regions by specifying ISO country codes from the Digital Chart of the World using
+    **-R**\ *code1,code2,...*\ [**+r**\|\ **R**\ [*incs*]] instead:
+    Append one or more comma-separated countries using the 2-character
+    ISO 3166-1 alpha-2 convention.  To select a state of a country
+    (if available), append .state, e.g, US.TX for Texas.  To specify a
+    whole continent, prepend = to any of the continent codes AF (Africa),
+    AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
+    NA (North America), or SA (South America).  Use **+r** to modify the bounding box coordinates from the polygon(s):
+    Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
+    region to be a multiple of these steps [no adjustment]. Alternatively, use **+R** to extend the region
+    outward by adding these increments instead [no extension].
+    Alternatively for grid creation, give **R**\ *code*\ *lon*/*lat*/*nx*/*ny*, where
+    *code* is a 2-character combination of L, C, R (for left, center, or right)
+    and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+    indicates which point on a rectangular region the *lon*/*lat* coordinate
+    refers to, and the grid dimensions *nx* and *ny* with grid spacings via
+    **-I** is used to create the corresponding region.
+    Alternatively, specify the name of an existing grid file and the
+    **-R** settings (and grid spacing, if applicable) are copied from
+    the grid. Appending **+u**\ *unit* expects projected (Cartesian)
+    coordinates compatible with chosen **-J** and we inversely project
+    to determine actual rectangular geographic region.
+    For perspective view (**-p**), optionally append /*zmin*/*zmax*.
+    In case of perspective view (**-p**), a z-range (*zmin*, *zmax*)
+    can be appended to indicate the third dimension. This needs to be
+    done only when using the **-Jz** option, not when using only the
+    **-p** option. In the latter case a perspective view of the plane is
+    plotted, with no third dimension. |Add_-Rgeo|

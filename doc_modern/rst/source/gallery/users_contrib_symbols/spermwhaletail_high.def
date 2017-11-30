@@ -1,0 +1,67 @@
+#Physeter macrocephalus - Sperm Whale (tail)
+#high
+#Pablo Valdes - apr 2008
+#comment the lines 5 and 42  AND uncomment the lines 6 and 43 if you want gray instead color
+0	0	M -G106/75/30
+#0	0	M -G150
+0	12	D
+4	12	D
+3	12	D
+2	15	D
+1.2	19	D
+1	20	D
+1	21.4	D
+1.6	22	D
+4	24	D
+5	25	D
+6	26	D
+6.2	26.6	D
+6.2	27	D
+2	27	D
+1	26.8	D
+0.5	26.6	D
+0	25.6	D
+-0.5	26.6	D
+-1	26.8	D
+-2	27	D
+-6.2	27	D
+-6.2	26.6	D
+-6	26	D
+-5	25	D
+-4	24	D
+-1.6	22	D
+-1	21.4	D
+-1	20	D
+-1.2	19	D
+-2	15	D
+-3	12	D
+-4	12	D
+0	12	D
+0	0	0.6	c	-Gblack
+#
+0	12	M -G59/45/24
+#0	7	M -G60
+4	12	D
+3	12	D
+2	15	D
+1.2	19	D
+1	20	D
+0	25	D
+0	17	D
+0.4	16.4	D
+0	15.5	D
+0	15	D
+0.6	14	D
+0	13	D
+-0.6	14	D
+0	15	D
+0	15.5	D
+-0.4	16.4	D
+0	17	D
+0	25	D
+-1	20	D
+-1.2	19	D
+-2	15	D
+-3	12	D
+-4	12	D
+0	12	D

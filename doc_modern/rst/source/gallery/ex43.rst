@@ -1,0 +1,20 @@
+.. _example_43:
+
+(43) Robust regression and outlier detection
+--------------------------------------------
+
+In this example show how :doc:`gmtregress </gmtregress>` can be used to determine a
+robust regression line using *reweighted least squares* and from
+this fit we are able to identify outliers with respect to the
+main trend.  The result shows dinosaurs were large and dumb,
+humans and some monkeys pretty smart, and the rest of the
+mammals doing alright.
+
+.. literalinclude:: /_verbatim/example_43.txt
+   :language: bash
+
+.. figure:: /_images/example_43.*
+   :width: 500 px
+   :align: center
+
+   Robust Regression and Outlier Detection.

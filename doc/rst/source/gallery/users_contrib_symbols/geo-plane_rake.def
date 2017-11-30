@@ -1,0 +1,22 @@
+# Symbols made for GMT by Jose A. Alvarez-Gomez
+#
+# Geological symbol: Plane with arrow for Rake
+#
+# The symbol reads the strike, dip and rake in the 3rd, 4th and 5th columns in psxy
+#
+N: 3 aso
+if $1 [> 0:90 then 0.5 -0.5 0.3 $2 l+fHelvetica-Oblique+jBR -W-
+if $1 [> 90:180 then -0.5 -0.5 0.3 $2 l+fHelvetica-Oblique+jBL -W-
+if $1 [> 180:270 then -0.5 0.5 0.3 $2 l+fHelvetica-Oblique+jTL -W-
+if $1 [> 270:360 then 0.5 0.5 0.3 $2 l+fHelvetica-Oblique+jTR -W-
+$1 R
+-90 R
+0 0 1 y
+0.125 0 0.25 -
+90 R
+0 0 0.4 0 $3 m
+-90 R
+$3 R
+0 0 M
+0 0.4 D
+0 0.4 0.1 t

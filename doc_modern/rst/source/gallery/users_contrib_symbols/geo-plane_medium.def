@@ -1,0 +1,12 @@
+# Symbols made for GMT by Jose A. Alvarez-Gomez
+#
+# Geological symbol: Plane Approximately Medium
+#
+# The symbol reads the strike in the 3rd column in psxy
+#
+N: 1 a
+$1 R
+-90 R
+0 0 1 y
+0.125 -0.0625 0.25 -
+0.125 0.0625 0.25 -
