@@ -17,9 +17,9 @@ psmeca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
 [ |SYN_OPT-B| ]
 [ |-C|\ [*pen*\ ][\ **P**\ *pointsize*] ] [ |-D|\ *depmin*/*depmax* ]
 [ |-E|\ *fill*]
-[ |-F|\ *mode*\ [*args*] ] [ |-G|\ *fill*] [ |-K| ] [ |-L|\ [*pen*\ ] ]
+[ |-F|\ *mode*\ [*args*] ] [ |-G|\ *fill*] [ |-L|\ [*pen*\ ] ]
 [ |-M| ]
-[ |-N| ] [ |-O| ] [ |-P| ]
+[ |-N| ] [ |-P| ]
 [ |-S|\ *<format><scale>*\ [/**d**]]
 [ |-T|\ *num\_of\_plane*\ [*pen*\ ] ]
 [ |SYN_OPT-U| ]
@@ -295,10 +295,6 @@ Optional Arguments
     compressional quadrants of the focal mechanism beach balls are
     shaded. Set the color [Default is black].
 
-.. _-K:
-
-.. include:: ../../explain_-K.rst_
-
 .. _-L:
 
 **-L**\ *pen*
@@ -315,10 +311,6 @@ Optional Arguments
 **-N**
     Does **not** skip symbols that fall outside frame boundary specified
     by **-R** [Default plots symbols inside frame only].
-
-.. _-O:
-
-.. include:: ../../explain_-O.rst_
 
 .. _-P:
 

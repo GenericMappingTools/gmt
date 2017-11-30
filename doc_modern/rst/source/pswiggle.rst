@@ -21,8 +21,7 @@ Synopsis
 [ |-F|\ *panel* ]
 [ |-G|\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill* ]
 [ |-I|\ *fix_az* ]
-[ |-K| ]
-[ |-O| ] [ **-P** ]
+[ **-P** ]
 [ |-T|\ *pen* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -157,14 +156,6 @@ Optional Arguments
     track-normal azimuths are overridden by *fixed_az*.
 
 .. include:: explain_-Jz.rst_
-
-.. _-K:
-
-.. include:: explain_-K.rst_
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

@@ -856,10 +856,6 @@ importance (some are used a lot more than others).
 +----------+--------------------------------------------------------------------+
 | **-J**   | Select a map projection or coordinate transformation               |
 +----------+--------------------------------------------------------------------+
-| **-K**   | Allow more plot code to be appended to this plot later             |
-+----------+--------------------------------------------------------------------+
-| **-O**   | Allow this plot code to be appended to an existing plot            |
-+----------+--------------------------------------------------------------------+
 | **-P**   | Select Portrait plot orientation [Default is landscape]            |
 +----------+--------------------------------------------------------------------+
 | **-R**   | Define the extent of the map/plot region                           |
@@ -1623,34 +1619,6 @@ plotters (Figure :ref:`Plot orientation <P_option>`).
    :align: center
 
    Users can specify Landscape [Default] or Portrait -P) orientation.
-
-
-Plot overlays: The **-K** **-O** options
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The **-K** and **-O** options control the generation of
-*PostScript* code for multiple overlay plots. All *PostScript* files
-must have a header (for initializations), a body (drawing the figure),
-and a trailer (printing it out) (see Figure :ref:`Multiple overlay plots
-<OK_options>`). Thus, when overlaying
-several GMT plots we must make sure that the first plot call omits the
-trailer, that all intermediate calls omit both header and trailer, and
-that the final overlay omits the header. The **-K** omits the trailer
-which implies that more *PostScript* code will be appended later
-[Default terminates the plot system]. The **-O** selects Overlay plot
-mode and omits the header information [Default initializes a new plot
-system]. Most unexpected results for multiple overlay plots can be
-traced to the incorrect use of these options. If you run only one plot
-program, ignore both the **-O** and **-K** options; they are only used
-when stacking plots.
-
-.. _OK_options:
-
-.. figure:: /_images/GMT_-OK.*
-   :width: 500 px
-   :align: center
-
-   A final *PostScript* file consists of any number of individual pieces.
 
 
 Timestamps on plots: The **-U** option

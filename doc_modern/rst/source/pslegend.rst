@@ -19,7 +19,6 @@ Synopsis
 [ |-C|\ *dx*/*dy* ]
 [ |-F|\ *box* ]
 [ |-J|\ *parameters* ]
-[ |-K| ] [ |-O| ]
 [ |-P| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-U| ]
@@ -97,14 +96,6 @@ Optional Arguments
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
-
-.. _-K:
-
-.. include:: explain_-K.rst_
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

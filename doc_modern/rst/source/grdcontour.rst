@@ -20,9 +20,9 @@ Synopsis
 [ |-D|\ *template* ]
 [ |-F|\ [**l**\ \|\ **r**] ]
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
-[ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ]
+[ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-L|\ *low/high*\ \|\ **n**\ \|\ **N**\ \|\ **P**\ \|\ **p** ]
-[ |-O| ] [ |-P| ]
+[ |-P| ]
 [ |-Q|\ [*cut*\ [*unit*]][\ **+z**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smoothfactor* ]
@@ -146,10 +146,6 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-L:
 
 **-L**\ *low/high*\ \|\ **n**\ \|\ **N**\ \|\ **P**\ \|\ **p**
@@ -157,10 +153,6 @@ Optional Arguments
     above *high*.  Alternatively, limit contours to negative (**n**)
     or positive (**p**) contours.  Use upper case **N** or **P** to
     include the zero contour.
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

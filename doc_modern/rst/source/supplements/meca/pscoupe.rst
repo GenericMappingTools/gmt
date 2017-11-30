@@ -19,10 +19,8 @@ Synopsis
 [ |-E|\ *color* ]
 [ |-F|\ *mode*\ [*args*] ]
 [ |-G|\ *color* ]
-[ |-K| ]
 [ |-L|\ *[pen]* ]
 [ |-M| ] [ |-N| ]
-[ |-O| ]
 [ |-Q| ]
 [ |-S|\ *<symbol><scale>*\ [/**d**] ]
 [ |-T|\ *n* ]
@@ -317,10 +315,6 @@ Optional Arguments
 **-G**\ *color*
     Sets color or fill pattern for compressional quadrants [Default is black].
 
-.. _-K:
-
-.. include:: ../../explain_-K.rst_
-
 .. _-L:
 
 **-L**\ [*pen*]
@@ -336,10 +330,6 @@ Optional Arguments
 
 **-N**
     Does **not** skip symbols that fall outside map border [Default plots points inside border only].
-
-.. _-O:
-
-.. include:: ../../explain_-O.rst_
 
 .. _-P:
 

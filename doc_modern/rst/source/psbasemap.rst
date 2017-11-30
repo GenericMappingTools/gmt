@@ -19,10 +19,8 @@ Synopsis
 [ |-A|\ [*file*] ]
 [ |-D|\ *insert box* ]
 [ |-F|\ *box* ]
-[ |-K| ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-L|\ *scalebar* ]
-[ |-O| ]
 [ |-P| ]
 [ |SYN_OPT-U| ]
 [ |-T|\ *rose* ]
@@ -128,17 +126,9 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-L:
 
 .. include:: explain_-L_scale.rst_
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

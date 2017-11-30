@@ -20,8 +20,7 @@ Synopsis
 [ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*]] ]
 [ |-F|\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l**\|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **+z**\ [*format*]] ] 
 [ |-G|\ *color* ]
-[ |-K| ]
-[ |-L| ] [ |-M| ] [ |-N| ] [ |-O| ] [ |-P| ]
+[ |-L| ] [ |-M| ] [ |-N| ] [ |-P| ]
 [ |-Q|\ **l**\ \|\ **u** ]
 [ |-T|\ **o**\ \|\ **O**\ \|\ **c**\ \|\ **C** ] [
 [ |-W|\ *pen* ]
@@ -169,10 +168,6 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-L:
 
 **-L**
@@ -202,10 +197,6 @@ Optional Arguments
 
 **-N**
     Do NOT clip text at map boundaries [Default will clip]. 
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

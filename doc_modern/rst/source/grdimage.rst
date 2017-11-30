@@ -21,8 +21,8 @@ Synopsis
 [ |-G|\ [**f**\ \|\ **b**]\ *color* ]
 [ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
 [ |-J|\ **z**\ \|\ **-Z**\ *parameters* ]
-[ |-K| ] [ |-M| ] [ |-N| ]
-[ |-O| ] [ |-P| ] [ |-Q| ]
+[ |-M| ] [ |-N| ]
+[ |-P| ] [ |-Q| ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -162,10 +162,6 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-M:
 
 **-M**
@@ -177,10 +173,6 @@ Optional Arguments
 **-N**
     Do not clip the image at the map boundary (only relevant for
     non-rectangular maps).
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

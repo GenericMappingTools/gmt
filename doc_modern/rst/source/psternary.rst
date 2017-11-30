@@ -19,11 +19,10 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-G|\ *fill* ]
-[ |-K| ]
 [ |-L|\ *a*\ /*b*\ /*c* ]
 [ |-M| ]
 [ |-N| ]
-[ |-O| ] [ |-P| ]
+[ |-P| ]
 [ |-S|\ [*symbol*][\ *size*\ [**u**] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -94,10 +93,6 @@ Optional Arguments
 **-JX**\ *width* \[*unit*]
     The only valid projection is linear plot with specified ternary width.
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-L:
 
 **-L**\ *a*\ /*b*\ /*c*
@@ -117,10 +112,6 @@ Optional Arguments
 **-N**
     Do NOT clip symbols that fall outside map border [Default plots points
     whose coordinates are strictly inside the map border only].
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

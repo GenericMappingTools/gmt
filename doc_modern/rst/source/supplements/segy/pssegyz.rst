@@ -18,10 +18,9 @@ Synopsis
 |SYN_OPT-Rz|
 |-D|\ *deviation* |-F|\ [*color*] **-W**
 [ |-C|\ *clip* ]
-[ |-I| ] [ |-K| ] [ |-L|\ *nsamp* ]
+[ |-I| ] [ |-L|\ *nsamp* ]
 [ |-M|\ *ntrace* ]
 [ |-N| ]
-[ |-O| ]
 [ |-P| ]
 [ |-Q|\ *<mode><value>* ]
 [ |-S|\ *header_x*/*header_y* ]
@@ -117,10 +116,6 @@ Optional Arguments
 **-I**
     Fill negative rather than positive excursions.
 
-.. _-K:
-
-.. include:: ../../explain_-K.rst_
-
 .. _-L:
 
 **-L**\ *nsamp*
@@ -139,10 +134,6 @@ Optional Arguments
 
 **-N**
     Normalize trace by dividing by rms amplitude over full trace length.
-
-.. _-O:
-
-.. include:: ../../explain_-O.rst_
 
 .. _-P:
 

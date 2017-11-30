@@ -23,11 +23,10 @@ Synopsis
 [ |-F|\ *box* ]
 [ |-G|\ *fill*\ \|\ **c** ]
 [ |-I|\ *river*\ [/\ *pen*] ]
-[ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ]
+[ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-L|\ *scalebar* ]
 [ |-M| ]
 [ |-N|\ *border*\ [/*pen*] ]
-[ |-O| ]
 [ |-P| ]
 [ |-Q| ]
 [ |-S|\ *fill*\ \|\ **c** ]
@@ -202,10 +201,6 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-L:
 
 .. include:: explain_-L_scale.rst_
@@ -237,10 +232,6 @@ Optional Arguments
     3 = Marine boundaries
 
     a = All boundaries (1-3)
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

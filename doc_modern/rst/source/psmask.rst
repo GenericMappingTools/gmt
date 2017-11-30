@@ -22,9 +22,8 @@ Synopsis
 [ |-D|\ *dumpfile* ]
 [ |-F|\ [**l**\ \|\ **r**] ]
 [ |-G|\ *fill* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
-[ |-K| ]
 [ |-L|\ [**+**\ \|\ **-**]\ *nodegrid* ]
-[ |-N| ] [ |-O| ]
+[ |-N| ]
 [ |-P| ] [ |-Q|\ *cut* ]
 [ |-S|\ *search\_radius*\ [*unit*] ]
 [ |-T| ]
@@ -41,8 +40,6 @@ Synopsis
 [ **-r** ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
-
-**psmask** **-C** [ **-K** ] [ **-O** ]
 
 |No-spaces|
 
@@ -124,10 +121,6 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-L:
 
 **-L**\ [**+**\ \|\ **-**]\ *nodegrid*
@@ -140,10 +133,6 @@ Optional Arguments
 
 **-N**
     Invert the sense of the test, i.e., clip regions where there is data coverage. 
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

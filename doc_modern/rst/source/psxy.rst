@@ -22,10 +22,9 @@ Synopsis
 [ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ ][*refpoint*] ]
 [ |-G|\ *fill* ]
 [ |-I|\ *intens* ]
-[ |-K| ]
 [ |-L|\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ]
 [ |-N|\ [**c**\ \|\ **r**] ]
-[ |-O| ] [ |-P| ]
+[ |-P| ]
 [ |-S|\ [*symbol*][\ *size*\ [**u**] ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
@@ -180,10 +179,6 @@ Optional Arguments
     Use the supplied *intens* value (nominally in the -1 to + 1 range) to
     modulate the fill color by simulating illumination [none].
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-L:
 
 **-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] |ex_OPT-L|
@@ -205,10 +200,6 @@ Optional Arguments
     boundary. The **-N** will turn off clipping and not plot repeating symbols.
     Use **-Nr** to turn off clipping but retain the plotting of such repeating symbols, or
     use **-Nc** to retain clipping but turn off plotting of repeating symbols.
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

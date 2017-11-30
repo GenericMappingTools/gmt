@@ -21,11 +21,9 @@ Synopsis
 [ |-I|\ [*max\_intens*\ \|\ *low_i*/*high_i*] ]
 [ |-J|\ *parameters* ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
-[ |-K| ]
 [ |-L|\ [**i**][*gap*] ]
 [ |-M| ]
 [ |-N|\ [**p**\ \|\ *dpi* ]]
-[ |-O| ]
 [ |-P| ] [ |-Q| ]
 [ |SYN_OPT-R| ]
 [ |-S| ]
@@ -172,10 +170,6 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-L:
 
 **-L**\ [**i**][*gap*]
@@ -200,10 +194,6 @@ Optional Arguments
     To preferentially draw color rectangles (e.g., for discrete colors), append **p**.
     Otherwise we will preferentially draw images (e.g., for continuous colors).
     Optionally append effective dots-per-inch for rasterization of color scales [600].
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

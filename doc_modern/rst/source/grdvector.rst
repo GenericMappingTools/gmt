@@ -18,7 +18,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-G|\ *fill* ]
 [ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
-[ |-K| ] [ |-N| ] [ |-O| ] [ |-P| ] [ |-Q|\ *parameters* ]
+[ |-N| ] [ |-P| ] [ |-Q|\ *parameters* ]
 [ |SYN_OPT-R| ]
 [ |-S|\ [**i**\ \|\ **l**\ ]\ *scale* ]
 [ |-T| ]
@@ -93,18 +93,10 @@ Optional Arguments
     **s** for arc seconds.  Alternatively, use **-Ix** to specify the
     multiples *multx*\ [/*multy*] directly [Default plots every node]. 
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-N:
 
 **-N**
     Do NOT clip vectors at map boundaries [Default will clip]. 
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

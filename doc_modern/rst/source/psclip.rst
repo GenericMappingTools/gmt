@@ -18,7 +18,7 @@ Synopsis
 [ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
 [ |SYN_OPT-B| ]
 |-J|\ **z**\ \|\ **Z**\ *parameters* ]
-[ |-K| ] [ |-N| ] [ |-O| ]
+[ |-N| ]
 [ |-P| ] [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -105,20 +105,12 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-N:
 
 **-N**
     Invert the sense of what is inside and outside. For example, when
     using a single path, this means that only points outside that path
     will be shown. Cannot be used together with **-B**. 
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

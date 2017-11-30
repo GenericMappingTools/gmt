@@ -18,8 +18,8 @@ Synopsis
 [ |-C|\ [*cpt*]]
 [ |-G|\ *drapefile* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]
 [ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
-[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
-[ |-N|\ *level*\ [**+g**\ *fill*] ] [ **-O** ] [ **-P** ]
+[ **-Jz**\ \|\ **Z**\ *parameters* ]
+[ |-N|\ *level*\ [**+g**\ *fill*] ] [ **-P** ]
 [ |-Q|\ *args*\ [**+m**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smooth* ]
@@ -105,10 +105,6 @@ Optional Arguments
     more specific intensities then run :doc:`grdgradient` separately first.
     [Default is no illumination].
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-N:
 
 **-N**\ *level*\ [**+g**\ *fill*]
@@ -117,11 +113,7 @@ Optional Arguments
     the frontal facade between the plane and the data perimeter is
     colored. See **-Wf** for setting the pen used for the outline. 
 
-.. _-O:
-
-.. include:: explain_-O.rst_
-
-.. _-p:
+.. _-P:
 
 .. include:: explain_-P.rst_
 

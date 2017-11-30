@@ -23,9 +23,7 @@ Synopsis
 [ |-F| ]
 [ |-G|\ **d**\ \|\ **t**\ \|\ **n**\ *gap* ]
 [ |-I|\ *ignore* ]
-[ |-K| ]
 [ |-L|\ *trackticks* ]
-[ |SYN_OPT-O| ]
 [ |SYN_OPT-P| ]
 [ |-S|\ **a**\ *startdist*\ [**u**] ]
 [ |-S|\ **b**\ *stopdist*\ [**u**] ]
@@ -121,10 +119,6 @@ Optional Arguments
     files, respectively. The option may be repeated to ignore more than
     one format. [Default ignores none].
 
-.. _-K:
-
-.. include:: ../../explain_-K.rst_
-
 .. _-L:
 
 **-L**\ *trackticks*
@@ -133,10 +127,6 @@ Optional Arguments
     500 km (**k**) and 24 **h**\ (ours), with
     (**t**)ickmarks every 500 km and 6 hours. Alternatively you may use
     the modifiers **d** (days) and **n** (nautical miles).
-
-.. _-O:
-
-.. include:: ../../explain_-O.rst_
 
 .. _-P:
 

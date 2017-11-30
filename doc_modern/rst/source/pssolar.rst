@@ -19,10 +19,9 @@ Synopsis
 [ |-G|\ *fill*\ \|\ **c** ]
 [ |-I|\ [*lon/lat*][**+d**\ *date*][**+z**\ *TZ*] ]
 [ |-J|\ *parameters* ]
-[ |-K| ]
 [ |-M| ]
 [ |-N| ]
-[ |-O| ] [|-P| ] [ |-Q| ]
+[ |-P| ] [ |-Q| ]
 [ |SYN_OPT-R| ]
 [ |-T|\ **dcna**\ [**+d**\ *date*][**+z**\ *TZ*]]
 [ |SYN_OPT-U| ]
@@ -84,10 +83,6 @@ Optional Arguments
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-M:
 
 **-M**
@@ -98,10 +93,6 @@ Optional Arguments
 **-N**
     Invert the sense of what is inside and outside the terminator.  Only
     used with clipping (**-Gc**) and cannot be used together with **-B**.
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

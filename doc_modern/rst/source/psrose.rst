@@ -20,10 +20,9 @@ Synopsis
 [ |-F| ]
 [ |-G|\ *fill* ] [ |-I| ]
 [ |-J|\ **X**\ *diameter* ]
-[ |-K| ]
 [ |-L|\ [\ *wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*\ ] ]
 [ |-M|\ *parameters* ]
-[ |-O| ] [ |-P| ]
+[ |-P| ]
 [ |-Q|\ *alpha* ]
 [ |-R|\ *r0*/*r1*/*az_0*/*az_1* ]
 [ |-S| ]
@@ -125,10 +124,6 @@ Optional Arguments
     Sets the diameter of the rose diagram.  Only this form of the projection machinery
     is supported.  If not given we default to 6 inches (or 7.5 cm).
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-L:
 
 **-L**\ [\ *wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*]
@@ -147,10 +142,6 @@ Optional Arguments
     given and the current plot mode is to draw a windrose diagram then
     using **-M** will add vector heads to all individual directions
     using the supplied attributes.
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

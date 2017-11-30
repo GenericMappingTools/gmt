@@ -20,9 +20,8 @@ Synopsis
 [ |-E|\ *color* ]
 [ |-F|\ *color* ]
 [ |-G|\ *color* ]
-[ |-K| ]
 [ |-L| ]
-[ |-N| ] [ |-O| ] [ |-P| ]
+[ |-N| ] [ |-P| ]
 [ |-S|\ *symbol*/*scale*/*conf*/*font_size* ] [
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -201,10 +200,6 @@ Optional Arguments
     pixels, use **-GP** instead of **-Gp**. See the CookBook for
     information on individual patterns.
 
-.. _-K:
-
-.. include:: ../../explain_-K.rst_
-
 .. _-L:
 
 **-L**
@@ -216,10 +211,6 @@ Optional Arguments
 **-N**
     Do **NOT** skip symbols that fall outside the frame boundary
     specified by **-R**. [Default plots symbols inside frame only].
-
-.. _-O:
-
-.. include:: ../../explain_-O.rst_
 
 .. _-P:
 

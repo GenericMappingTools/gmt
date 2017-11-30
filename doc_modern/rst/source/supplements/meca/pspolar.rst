@@ -21,8 +21,7 @@ pspolar [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
 [ |-E|\ *color* ]
 [ |-F|\ *color* ]
 [ |-G|\ *color* ]
-[ |-K| ] [ |-L| ] [ |-N| ]
-[ |-O| ]
+[ |-L| ] [ |-N| ]
 [ |-Q|\ *mode*\ [*args*] ]
 [ |-T|\ *angle*/*form*/*justify*/*fontsize* ]
 [ |SYN_OPT-U| ]
@@ -125,18 +124,10 @@ Optional Arguments
     Selects filling of symbols for stations in compressional quadrants.
     Set the color [Default is black].
 
-.. _-K:
-
-.. include:: ../../explain_-K.rst_
-
 .. _-N:
 
 **-N**
     Does **not** skip symbols that fall outside map border [Default plots points inside border only].
-
-.. _-O:
-
-.. include:: ../../explain_-O.rst_
 
 .. _-P:
 

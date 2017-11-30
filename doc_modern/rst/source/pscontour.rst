@@ -22,9 +22,7 @@ Synopsis
 [ |-D|\ [*template*] ] [ |-E|\ *indexfile* ]
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
 [ |-I| ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
-[ |-K| ]
 [ |-L|\ *pen* ] [ |-N| ]
-[ |-O| ]
 [ |-P| ]
 [ |-Q|\ [*cut*\ [*unit*]][\ **+z**] ]
 [ |-S|\ [\ *p*\ \|\ *t*] ]
@@ -157,10 +155,6 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-L:
 
 **-L**\ *pen* :ref:`(more ...) <set-pens>`
@@ -172,10 +166,6 @@ Optional Arguments
 **-N**
     Do NOT clip contours or image at the boundaries [Default will clip
     to fit inside region **-R**].
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

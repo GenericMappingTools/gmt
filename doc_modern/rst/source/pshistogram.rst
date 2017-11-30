@@ -22,9 +22,9 @@ Synopsis
 [ |-F| ]
 [ |-G|\ *fill* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-I|\ [**o**\ \|\ **O**] ]
-[ |-K| ] [ |-L|\ *pen* ] 
+[ |-L|\ *pen* ] 
 [ |-N|\ [*mode*][**+p**\ *pen*] ]
-[ |-O| ] [|-P| ] [ |-Q|\ **r** ]
+[ |-P| ] [ |-Q|\ **r** ]
 [ |SYN_OPT-R| ]
 [ |-S| ]
 [ |SYN_OPT-U| ]
@@ -122,10 +122,6 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
-.. _-K:
-
-.. include:: explain_-K.rst_
-
 .. _-L:
 
 **-L**\ *pen*
@@ -142,10 +138,6 @@ Optional Arguments
     * 2 = LMS mode and scale.
 
     The **-N** option may be repeated to draw several of these curves.
-
-.. _-O:
-
-.. include:: explain_-O.rst_
 
 .. _-P:
 

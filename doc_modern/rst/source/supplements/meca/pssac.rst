@@ -21,9 +21,7 @@ Synopsis
 [ |-E|\ **a**\|\ **b**\|\ **k**\|\ **d**\|\ **n**\ [*n*]\|\ **u**\ [*n*] ]
 [ |-F|\ [**i**][**q**][**r**] ]
 [ |-G|\ [**p**\|\ **n**][**+g**\ *fill*][**+z**\ *zero*][**+t**\ *t0/t1*] ]
-[ |-K| ]
 [ |-M|\ *size*\ [*u*][/*alpha*] ]
-[ |-O| ]
 [ |-P| ]
 [ |-Q| ]
 [ |-S|\ *sec_per_inch*\ [*unit*] ]
@@ -141,10 +139,6 @@ Optional Arguments
 
         **+z**\ *zero*: define zero line. From *zero* to top is positive portion, from *zero* to bottom is negative portion.
 
-.. _-K:
-
-.. include:: ../../explain_-K.rst_
-
 .. _-M:
 
 **-M**\ *size*\ [*u*][*/alpha*]
@@ -160,10 +154,6 @@ Optional Arguments
             *alpha* = 0, multiply all traces by *size*. No unit is allowed.
 
             *alpha* > 0, multiply all traces by ``size*r^alpha``, r is the distance range in km.
-
-.. _-O:
-
-.. include:: ../../explain_-O.rst_
 
 .. _-P:
 

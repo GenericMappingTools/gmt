@@ -18,8 +18,8 @@ Synopsis
 |-D|\ *deviation*
 |-F|\ [*color*] |-W|
 [ |-C|\ *clip* ]
-[ |-E|\ *error* ] [ |-I| ] [ |-K| ] [ |-L|\ *nsamp* ]
-[ |-M|\ *ntrace* ] [ |-N| ] [ |-O| ] [ |-P| ]
+[ |-E|\ *error* ] [ |-I| ] [ |-L|\ *nsamp* ]
+[ |-M|\ *ntrace* ] [ |-N| ] [ |-P| ]
 [ |-Q|\ *<mode><value>* ]
 [ |-S|\ *header* ]
 [ |-T|\ *filename* ]
@@ -119,10 +119,6 @@ Optional Arguments
 **-I**
     Fill negative rather than positive excursions.
 
-.. _-K:
-
-.. include:: ../../explain_-K.rst_
-
 .. _-L:
 
 **-L**
@@ -141,10 +137,6 @@ Optional Arguments
 
 **-N**
     Normalize trace by dividing by rms amplitude over full trace length.
-
-.. _-O:
-
-.. include:: ../../explain_-O.rst_
 
 .. _-P:
 
