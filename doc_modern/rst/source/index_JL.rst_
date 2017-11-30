@@ -23,8 +23,8 @@ Man pages
 | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    |
 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
 |                 |                 |                 |                 |
-|    B            |    GM           |    GR           |    PS           |
-|    F            |                 |                 |                 |
+|    BC           |    GM           |    GR           |    PS           |
+|    EF           |                 |                 |                 |
 |    I            |                 |                 |                 |
 |    K            |                 |                 |                 |
 |    M            |                 |                 |                 |
