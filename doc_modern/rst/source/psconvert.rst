@@ -156,8 +156,10 @@ Optional Arguments
 
 **-Q**\ [**g**\ \|\ **t**][1\|2\|4]
     Set the anti-aliasing options for **g**\ raphics or **t**\ ext.
-    Append the size of the subsample box (1, 2, or 4) [4]. Default is no
-    anti-aliasing (same as *bits* = 1).
+    Append the size of the subsample box (1, 2, or 4) [4]. For vector
+    formats the default is no anti-aliasing (same as *bits* = 1).
+    For any raster format the default setting is **-Qt2**, while transparent
+    PNG also adds **-Qg2**.  These defaults may be overruled manually.
 
 .. _-S:
 

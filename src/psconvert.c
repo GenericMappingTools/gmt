@@ -100,6 +100,11 @@ enum GMT_KML_Elevation {
 	KML_SEAFLOOR_ABS,
 	N_KML_ELEVATIONS};
 
+enum psconv_alias {
+	PSC_LINES = 0,
+	PSC_TEXT = 1
+};
+
 #define add_to_list(list,item) { if (list[0]) strcat (list, " "); strcat (list, item); }
 #define add_to_qlist(list,item) { if (list[0]) strcat (list, " "); strcat (list, squote);  strcat (list, item); strcat (list, squote); }
 
@@ -519,7 +524,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   EPS or PDF plots for inclusion in documents.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Anti-aliasing setting for (g)raphics or (t)ext; append size (1,2,4)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of sub-sampling box.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default is no anti-aliasing, which is the same as specifying size 1.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For PDF and EPS output, default is no anti-aliasing, which is the same as specifying size 1.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For raster formats the defaults are -Qg2 -Qt2 unless overridden explicitly.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Apart from executing it, also writes the ghostscript command to\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   standard error and keeps all intermediate files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set output format [default is jpeg]:\n");
@@ -663,9 +669,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 			case 'Q':	/* Anti-aliasing settings */
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'g')
-					mode = 0;
+					mode = PSC_LINES;
 				else if (opt->arg[0] == 't')
-					mode = 1;
+					mode = PSC_TEXT;
 				else {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The -Q option requires setting -Qg or -Qt!\n");
 					n_errors++;
@@ -749,6 +755,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 
 	if (!Ctrl->T.active) Ctrl->T.device = GS_DEV_JPG;	/* Default output device if none is specified */
 
+	if (Ctrl->T.device > GS_DEV_SVG) {	/* Raster output, apply default -Q for rasters unless already specified */
+		/* For rasters, we should always add -Qt2 unless -Q was set manually.  This will improve the rasterization of text */
+		if (Ctrl->Q.on[PSC_TEXT] == false) {	/* Only override if not set */
+			Ctrl->Q.on[PSC_TEXT] = true;
+			Ctrl->Q.bits[PSC_TEXT] = 2;
+		}
+		/* "ghostlines" seen in pscoast plots are usually a feature of a PDF or PS viewer and may be changed via their view settings.
+		 * We have found that the -TG device creates ghostlines in the rasters and that these are suppressed by -Qg2 so we enfore that here */
+		if (!Ctrl->Q.on[PSC_LINES] && Ctrl->T.device == GS_DEV_TPNG) {	/* Transparent PNG needs this antialiasing option as well, at least in gs 9.22 */
+			Ctrl->Q.on[PSC_LINES] = true;
+			Ctrl->Q.bits[PSC_LINES] = 2;
+		}
+	}
+	
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[0] && (Ctrl->Q.bits[0] < 1 || Ctrl->Q.bits[0] > 4),
 	                                   "Syntax error: Anti-aliasing for graphics requires sub-sampling box of 1,2, or 4\n");
 
@@ -1374,6 +1394,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode -dSCANCONVERTERTYPE=2";
 	else
 		gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
+
 
 	gs_BB = "-q -dSAFER -dNOPAUSE -dBATCH -sDEVICE=bbox"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
 
