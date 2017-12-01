@@ -810,7 +810,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	/* Must intercept any old-style -Eaz/el here and change it to -p */
 	if ((opt = GMT_Find_Option (API, 'E', options)) && gmt_M_compat_check (GMT, 4)) {	/* Got -E, check if given a file */
 		if (gmt_access (GMT, opt->arg, F_OK)) {	/* Argument not a file we can open, so under compat mode we assume we got -Eaz/el */
-			GMT_Report (API, GMT_MSG_COMPAT, "Option -E<az/el>> is deprecated; use -p instead.\n");
+			GMT_Report (API, GMT_MSG_COMPAT, "Option -E<az/el> is deprecated; use -p instead.\n");
 			opt->option = 'p';
 		}
 	}

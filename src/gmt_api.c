@@ -2918,7 +2918,7 @@ GMT_LOCAL struct GMT_MATRIX *api_import_matrix (struct GMTAPI_CTRL *API, int obj
 			S_obj->resource = M_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
 			break;
 		case GMT_IS_DUPLICATE:	/* Duplicate the input MATRIX */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating MATRIX from MATRIX memory location [NOT IMPLEMENTED YET]\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating MATRIX from MATRIX memory location\n");
 			if ((M_orig = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			if ((M_obj = GMT_Duplicate_Data (API, GMT_IS_MATRIX, mode, M_orig)))
 				return_null (API, GMT_MEMORY_ERROR);
@@ -3348,7 +3348,7 @@ GMT_LOCAL struct GMT_VECTOR * api_import_vector (struct GMTAPI_CTRL *API, int ob
 			S_obj->resource = V_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
 			break;
 		case GMT_IS_DUPLICATE:	/* Duplicate the input VECTOR */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating VECTOR from VECTOR memory location [NOT IMPLEMENTED YET]\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating VECTOR from VECTOR memory location\n");
 			if ((V_orig = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			if ((V_obj = GMT_Duplicate_Data (API, GMT_IS_VECTOR, mode, V_orig)))
 				return_null (API, GMT_MEMORY_ERROR);
