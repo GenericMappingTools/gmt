@@ -188,9 +188,9 @@ specified labeling, tru
 
    ::
 
-    gmt psternary ternary.txt -R0/100/0/100/0/100 -JX6i -P -Xc -Baafg+l"Water component"+u" %" \
-    -Bbafg+l"Air component"+u" %" -Bcagf+l"Limestone component"+u" %" \
-    -B+givory+t"Example data from MATLAB Central" -Sc0.1c -Ct.cpt -Y2i -LWater/Air/Limestone > map.ps
+    gmt psternary ternary.txt -R0/100/0/100/0/100 -JX6i -P -Xc -Baafg+l"Water component"+u" %"
+        -Bbafg+l"Air component"+u" %" -Bcagf+l"Limestone component"+u" %"
+        -B+givory+t"Example data from MATLAB Central" -Sc0.1c -Ct.cpt -Y2i -LWater/Air/Limestone > map.ps
 
 
 See Also
