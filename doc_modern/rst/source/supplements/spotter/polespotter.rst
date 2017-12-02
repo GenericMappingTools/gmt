@@ -39,10 +39,13 @@ Description
 
 **polespotter** reads line segments (abyssal hill fabric lineaments
 and/or fracture zone lineaments) and computes great circles for each
-that are expected to intersect at potential rotation poles.  The assumption
+individual segment along these lines.  The bisector great circles to
+fracture zones and the great circle extensions of abyssal hills
+are expected to intersect at potential rotation poles.  The assumption
 is that abyssal hill lines are meridians and fracture zones are parallels
 with respect to the rotation pole.  Line density may be computed and returned
-via a grid, and the great circle lines may be returned via stdout.
+via a grid, the great circle lines may be returned via stdout, and the
+intersections of the great circles may be saved to file.
 
 Optional Arguments
 ------------------
@@ -135,6 +138,14 @@ Optional Arguments
 .. include:: ../../explain_help.rst_
 
 .. include:: explain_geodetic.rst_
+
+Notes
+-----
+
+Each input line is expected to contain two or more points, and each consecutive
+pairs of points define a short line segment of a fracture zone or abyssal hill.
+These points should be digitized often enough so that a great circle between
+then can approximate the small circle (for fracture zones only).
 
 Examples
 --------
