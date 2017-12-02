@@ -708,8 +708,8 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 /*============================================================ */
 
 enum GMT_enum_fmt {
-	GMT_IS_ROW_FORMAT	= 0,	/* 2-D grid is C-style with rows: as index increase we move across rows */
-	GMT_IS_COL_FORMAT	= 1	/* 2-D grid is Fortran-style with columns: as index increase we move down columns  */
+	GMT_IS_ROW_FORMAT	= 1,	/* 2-D grid is C-style with rows: as index increase we move across rows */
+	GMT_IS_COL_FORMAT	= 2	/* 2-D grid is Fortran-style with columns: as index increase we move down columns  */
 };
 
 /* These containers are used to pass user vectors and matrices in/out of GMT */

@@ -21,7 +21,7 @@
  * Rerun gmt_make_enum_dicts.sh after adding or changing enums.
  *
  * Author:      Paul Wessel
- * Date:        28-September-2017
+ * Date:        01-December-2017
  * Version:     6 API
  */
 
@@ -30,7 +30,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 218
+#define GMT_N_API_ENUMS 220
 
 GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -51,6 +51,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_COLORINT", 4},
 	{"GMT_COL_ADD", 1},
 	{"GMT_COL_FIX", 0},
+	{"GMT_COL_FIX_NO_TEXT", 4},
 	{"GMT_COL_SUB", 2},
 	{"GMT_COL_VAR", 3},
 	{"GMT_COMMENT_IS_COLNAMES", 128},
@@ -106,6 +107,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_HSV", 2},
 	{"GMT_IN", 0},
 	{"GMT_INT", 4},
+	{"GMT_IO", 2},
 	{"GMT_IO_ANY_HEADER", 3},
 	{"GMT_IO_ASCII", 512},
 	{"GMT_IO_DATA_RECORD", 0},
@@ -121,7 +123,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_IO_SEGMENT_HEADER", 2},
 	{"GMT_IO_TABLE_HEADER", 1},
 	{"GMT_IO_UNREG", 16384},
-	{"GMT_IS_COL_FORMAT", 1},
+	{"GMT_IS_COL_FORMAT", 2},
 	{"GMT_IS_COORD", 7},
 	{"GMT_IS_DATASET", 0},
 	{"GMT_IS_DUPLICATE", 3},
@@ -139,7 +141,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_IS_POINT", 1},
 	{"GMT_IS_POLY", 4},
 	{"GMT_IS_REFERENCE", 4},
-	{"GMT_IS_ROW_FORMAT", 0},
+	{"GMT_IS_ROW_FORMAT", 1},
 	{"GMT_IS_STREAM", 1},
 	{"GMT_IS_SURFACE", 8},
 	{"GMT_IS_TEXT", 32},

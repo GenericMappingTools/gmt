@@ -8601,9 +8601,8 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with the requested number of layers, rows & columns */
 			if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
-			n_layers = (this_dim[GMTAPI_DIM_COL] == 0 && this_dim[GMTAPI_DIM_ROW] == 0) ? 1U : this_dim[GMT_Z];
+			n_layers = (this_dim[GMTAPI_DIM_COL] == 0 && this_dim[GMTAPI_DIM_ROW] == 0) ? 1U : this_dim[GMT_Z];	/* Only by specifying nx,ny dimension might there be > 1 layer */
 		 	new_obj = gmtlib_create_matrix (API->GMT, n_layers, def_direction, pad);
-			if (pad) GMT_Report (API, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
 			if ((API->error = api_init_matrix (API, this_dim, range, inc, registration, mode, def_direction, new_obj))) {	/* Failure, must free the object */
 				struct GMT_MATRIX *M = api_return_address (new_obj, GMT_IS_MATRIX);	/* Get pointer to resource */
 				gmtlib_free_matrix (API->GMT, &M, true);

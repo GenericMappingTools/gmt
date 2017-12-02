@@ -1234,7 +1234,7 @@ and pass the ``par`` array with contents as indicated below:
     The ``data`` argument should be NULL.  As for vectors, to use custom data you must (for input) pass the
     mode as GMT_CONTAINER_ONLY and hook your custom matrix in via a call to GMT_Put_Matrix_.  The matrix may either
     be row- or column-oriented and this is normally determined when you created the session with GMT_Create_Session_ (see the bit 3 setting).
-    However, you can pass ``pad`` = 1 (set row major) or ``pad`` = 2 (set col major) to override the default.
+    However, you can pass ``pad`` = 1 (GMT_IS_ROW_FORMAT; set row major) or ``pad`` = 2 (GMT_IS_COL_FORMAT; set col major) to override the default.
     As for vectors, if this container is for output then pass mode as GMT_IS_OUTPUT instead.
 
 Users wishing to pass their own data matrices and vectors to GMT modules will need to do so via
