@@ -525,7 +525,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Anti-aliasing setting for (g)raphics or (t)ext; append size (1,2,4)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of sub-sampling box.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For PDF and EPS output, default is no anti-aliasing, which is the same as specifying size 1.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For raster formats the defaults are -Qg2 -Qt2 unless overridden explicitly.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For raster formats the defaults are -Qg2 -Qt4 unless overridden explicitly.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Apart from executing it, also writes the ghostscript command to\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   standard error and keeps all intermediate files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set output format [default is jpeg]:\n");
@@ -759,7 +759,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 		/* For rasters, we should always add -Qt2 unless -Q was set manually.  This will improve the rasterization of text */
 		if (Ctrl->Q.on[PSC_TEXT] == false) {	/* Only override if not set */
 			Ctrl->Q.on[PSC_TEXT] = true;
-			Ctrl->Q.bits[PSC_TEXT] = 2;
+			Ctrl->Q.bits[PSC_TEXT] = 4;
 		}
 		/* "ghostlines" seen in pscoast plots are usually a feature of a PDF or PS viewer and may be changed via their view settings.
 		 * We have found that the -TG device creates ghostlines in the rasters and that these are suppressed by -Qg2 so we enfore that here */

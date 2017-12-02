@@ -36,7 +36,7 @@ struct POLESPOTTER_CTRL {	/* All control options for this program (except common
 		char *file;
 		double weight;
 	} A;
-	struct C {	/* -D<crossfile> */
+	struct C {	/* -C<crossfile> */
 		bool active;
 		char *file;
 	} C;
@@ -299,11 +299,10 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 						gmt_normalize3v (GMT, B);
 						gmt_M_memcpy (G, B, 3, double);	/* Put bisector pole into G so code below is the same for AH and FZ */
 					}
-					if (Ctrl->C.active) {
+					if (Ctrl->C.active) {	/* Keep track of great circles to each line */
 						gmt_M_memcpy (&GG[4*ng], G, 3, double);
 						GG[4*ng+3] = L;
-						code[ng] = d;
-						ng++;
+						code[ng++] = d;
 						if (ng == n_alloc) {
 							n_alloc <<= 1;
 							GG = gmt_M_memory (GMT, GG, n_alloc*4, double);
@@ -347,7 +346,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Out);
 	}
 
-	if (Ctrl->C.active) {	/* Write the crossings file */
+	if (Ctrl->C.active) {	/* Generate crossings and write them to the crossings file */
 		uint64_t dim[4] = {1, 1, 0, 5}, n_cross, g1, g2;
 		struct GMT_DATASET *C = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
@@ -362,9 +361,9 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 				gmt_normalize3v (GMT, X);
 				gmt_cart_to_geo (GMT, &S->data[GMT_Y][k], &S->data[GMT_X][k], X, true);		/* Get lon/lat of this point along crossing profile */
 				S->data[GMT_Y][k] = gmt_lat_swap (GMT, S->data[GMT_Y][k], GMT_LATSWAP_G2O + 1);	/* Convert to geodetic */
-				S->data[GMT_Z][k] = S->data[GMT_Z][k+1] = hypot (GG[4*g1+3], GG[4*g2+3]);	/* Combine length in quadrature */
+				S->data[GMT_Z][k] = S->data[GMT_Z][k+1] = hypot (GG[4*g1+3], GG[4*g2+3]);	/* Combined length in quadrature */
 				S->data[3][k] = S->data[3][k+1] = gmt_dot3v (GMT, &GG[4*g1], &GG[4*g2]);	/* Cos of angle between great circles is our other weight */
-				S->data[4][k] = S->data[4][k+1] = code[g1] + code[g2];			/* 0 = AH&AH, 1 = AH&FZ, 2 = FZ&FZ */
+				S->data[4][k] = S->data[4][k+1] = code[g1] + code[g2];				/* 0 = AH&AH, 1 = AH&FZ, 2 = FZ&FZ */
 				S->data[GMT_X][k+1] = S->data[GMT_X][k] + 180.0;
 				S->data[GMT_Y][k+1] = -S->data[GMT_Y][k];
 				k += 2;
