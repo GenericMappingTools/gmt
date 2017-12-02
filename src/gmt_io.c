@@ -7845,9 +7845,9 @@ struct GMT_MATRIX * gmtlib_create_matrix (struct GMT_CTRL *GMT, uint64_t layers,
 	MH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	M->n_layers = (layers) ? layers : 1;		/* Default to 1 if not set */
 	switch (flag) {
-		case 1:  M->shape = GMT_IS_ROW_FORMAT; break;	/* row-major */
-		case 2:  M->shape = GMT_IS_COL_FORMAT; break;	/* col-major */
-		default: M->shape = GMT->parent->shape; break;	/* Default layout (row vs column) selected by GMT_Create_Session [row-major] */
+		case GMT_IS_ROW_FORMAT:	M->shape = GMT_IS_ROW_FORMAT;  break;	/* row-major */
+		case GMT_IS_COL_FORMAT:	M->shape = GMT_IS_COL_FORMAT;  break;	/* col-major */
+		default: 		M->shape = GMT->parent->shape; break;	/* Default layout (row vs column) selected by GMT_Create_Session [row-major] */
 	}
 	return (M);
 }
