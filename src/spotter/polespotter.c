@@ -201,7 +201,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 	char header[GMT_LEN128] = {""}, *code = NULL;
 	const char *label[2] = {"AH", "FZ"};
 	gmt_grdfloat *layer = NULL;
-	double weight, angle_radians, d_angle_radians, mlon, mlat, glon, glat, L, in[2];
+	double weight, seg_weight, angle_radians, d_angle_radians, mlon, mlat, glon, glat, L, in[2];
 	double P1[3], P2[3], M[3], G[3], B[3], X[3], Rot0[3][3], Rot[3][3], *GG = NULL;
 	
 	struct GMT_OPTION *ptr = NULL;
@@ -282,6 +282,10 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 		for (tbl = 0; tbl < In[d]->n_tables; tbl++) {
 			for (seg = 0; seg < In[d]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = In[d]->table[tbl]->segment[seg];	/* Set shortcut to current segment */
+				if (gmt_parse_segment_item (GMT, S->header, "-Z", header))	/* Found -Z<val> */
+					seg_weight = atof (header);
+				else
+					seg_weight = weight;
 				/* Convert the entire segment to geocentric latitude */
 				for (row = 0; row < S->n_rows; row++) S->data[GMT_Y][row] = gmt_lat_swap (GMT, S->data[GMT_Y][row], GMT_LATSWAP_G2O);
 				gmt_geo_to_cart (GMT, S->data[GMT_Y][0], S->data[GMT_X][0], P1, true);	/* get x/y/z of first point P1 */
@@ -289,7 +293,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 					if (Ctrl->G.active) gmt_M_memset (layer, Grid->header->size, gmt_grdfloat);
 					gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
 					for (k = 0; k < 3; k++) M[k] = 0.5 * (P1[k] + P2[k]);	/* Mid-point M */
-					L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM * weight;	/* Weighted length of this segment */
+					L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM * seg_weight;	/* Weighted length of this segment */
 					gmt_normalize3v (GMT, M);
 					gmt_cart_to_geo (GMT, &mlat, &mlon, M, true);	/* Get lon/lat of the mid point */
 					gmt_cross3v (GMT, P1, P2, G);	/* This is pole of great circle through P1 & P2 */

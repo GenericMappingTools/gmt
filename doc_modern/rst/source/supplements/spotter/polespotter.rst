@@ -105,17 +105,17 @@ Optional Arguments
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
+.. _-V:
+
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 .. _-W:
 
 **-W**
     Provide different weighting for the circles defined by **a**\ byssal
     hills versus **f**\ racture zones.  Give **-Wa**\ *weight* to set the
     former [1] and **-Wf**\ *weight* for the latter [1].
-
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
 
 .. |Add_-bi| replace:: [Default is 5 input columns].
 .. include:: ../../explain_-bi.rst_
@@ -142,10 +142,13 @@ Optional Arguments
 Notes
 -----
 
-Each input line is expected to contain two or more points, and each consecutive
-pairs of points define a short line segment of a fracture zone or abyssal hill.
-These points should be digitized often enough so that a great circle between
-then can approximate the small circle (for fracture zones only).
+#. Each input line is expected to contain two or more points, and each consecutive
+   pairs of points define a great circle line segment.  For fracture zones,
+   these points should be digitized often enough so that the great circle between
+   then can approximate the small circle.
+#. All line segments are given equal weight [1, unless changed by **-W**\ ].  However,
+   individual line segments can override this weight by adding a **-Z**\ *weight*
+   argument in the segment headers.
 
 Examples
 --------
