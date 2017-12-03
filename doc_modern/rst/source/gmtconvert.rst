@@ -6,7 +6,7 @@ gmtconvert
 
 .. only:: not man
 
-    gmtconvert - Convert, Paste, and/or Extract columns from data tables
+    Convert, Paste, and/or Extract columns from data tables
 
 Synopsis
 --------

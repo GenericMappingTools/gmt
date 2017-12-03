@@ -6,7 +6,7 @@ grdcontour
 
 .. only:: not man
 
-    grdcontour - Make contour map using a grid
+    Make contour map using a grid
 
 Synopsis
 --------
@@ -279,7 +279,7 @@ degree tickmarks, and draw 30 minute gridlines:
 
    ::
 
-    gmt grdcontour hawaii_grav.nc -Jm0.5i -C25 -A50+f10p -B1g30m > hawaii_grav.ps
+    gmt grdcontour hawaii_grav.nc -Jm0.5i -C25 -A50+f10p -B1g30m -pdf hawaii_grav
 
 To contour the file image.nc using the levels in the file cont.txt on a
 linear projection at 0.1 cm/x-unit and 50 cm/y-unit, using 20 (x) and
@@ -289,7 +289,7 @@ dashed, blue pen for the rest, and send the output to the default printer:
 
    ::
 
-    gmt grdcontour image.nc -Jx0.1c/50.0c -Ccont.txt -S4 -Bx20 -By0.1 \
+    gmt grdcontour image.nc -Jx0.1c/50.0c -Ccont.txt -S4 -Bx20 -By0.1
                -B+t"RMS Misfit" -Wathick,red -Wcthinnest,blue,- | lp
 
 The labeling of local highs and lows may plot outside the innermost

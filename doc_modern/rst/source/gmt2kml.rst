@@ -6,7 +6,7 @@ gmt2kml
 
 .. only:: not man
 
-    gmt2kml - Convert GMT data tables to KML files for Google Earth
+    Convert GMT data tables to KML files for Google Earth
 
 Synopsis
 --------

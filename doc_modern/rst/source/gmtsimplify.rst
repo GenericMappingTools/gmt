@@ -6,7 +6,7 @@ gmtsimplify
 
 .. only:: not man
 
-    gmtsimplify - Line reduction using the Douglas-Peucker algorithm
+    Line reduction using the Douglas-Peucker algorithm
 
 Synopsis
 --------

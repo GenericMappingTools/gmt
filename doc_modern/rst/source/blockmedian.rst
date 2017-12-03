@@ -6,7 +6,7 @@ blockmedian
 
 .. only:: not man
 
-    blockmedian - Block average (*x*,\ *y*,\ *z*) data tables by L1 norm
+    Block average (*x*,\ *y*,\ *z*) data tables by L1 norm
 
 Synopsis
 --------

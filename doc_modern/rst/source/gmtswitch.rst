@@ -6,7 +6,7 @@ gmtswitch
 
 .. only:: not man
 
-    gmtswitch - Switching between different GMT versions
+    Switching between different GMT versions
 
 Synopsis
 --------

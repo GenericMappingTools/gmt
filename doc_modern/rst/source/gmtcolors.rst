@@ -6,7 +6,7 @@ gmtcolors
 
 .. only:: not man
 
-    gmtcolors - Explanation of color codes in GMT
+    Explanation of color codes in GMT
 
 Description
 -----------

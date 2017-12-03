@@ -6,7 +6,7 @@ gmtregress
 
 .. only:: not man
 
-    gmtregress - Linear regression of 1-D data sets
+    Linear regression of 1-D data sets
 
 Synopsis
 --------

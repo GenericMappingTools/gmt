@@ -6,7 +6,7 @@ filter1d
 
 .. only:: not man
 
-    filter1d - Time domain filtering of 1-D data tables
+    Time domain filtering of 1-D data tables
 
 Synopsis
 --------

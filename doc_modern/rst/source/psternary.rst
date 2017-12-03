@@ -1,7 +1,7 @@
-.. index:: ! psternary
+.. index:: ! ternary
 
 *********
-psternary
+ternary
 *********
 
 .. only:: not man
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psternary** [ *table* ]
+**ternary** [ *table* ]
 [ **-JX** \ *width*\ [unit] ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-B| ]
@@ -46,10 +46,10 @@ Synopsis
 Description
 -----------
 
-**psternary** reads (*a*,\ *b*,\ *c*\ [,\ *z*]) records from *files* [or standard input] and
+**ternary** reads (*a*,\ *b*,\ *c*\ [,\ *z*]) records from *files* [or standard input] and
 plots symbols
 at those locations on a ternary diagram. If a symbol is selected and no symbol size
-given, then **psternary** will interpret the fourth column of the input data
+given, then **ternary** will interpret the fourth column of the input data
 as symbol size. Symbols whose *size* is <= 0 are skipped. If no symbols
 are specified then the symbol code (see **-S** below) must be present as
 last column in the input.
@@ -85,7 +85,7 @@ Optional Arguments
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Select color or pattern for filling of symbols [Default is no fill].
-    Note that **psternary** will search for **-G** and **-W** strings in all the
+    Note that **ternary** will search for **-G** and **-W** strings in all the
     segment headers and let any values thus found over-ride the command line settings.
 
 .. _-J:
@@ -188,7 +188,7 @@ specified labeling, tru
 
    ::
 
-    gmt psternary ternary.txt -R0/100/0/100/0/100 -JX6i -P -Xc -Baafg+l"Water component"+u" %"
+    gmt ternary ternary.txt -R0/100/0/100/0/100 -JX6i -P -Xc -Baafg+l"Water component"+u" %"
         -Bbafg+l"Air component"+u" %" -Bcagf+l"Limestone component"+u" %"
         -B+givory+t"Example data from MATLAB Central" -Sc0.1c -Ct.cpt -Y2i -LWater/Air/Limestone -pdf map
 

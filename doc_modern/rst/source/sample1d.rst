@@ -6,7 +6,7 @@ sample1d
 
 .. only:: not man
 
-    sample1d - Resample 1-D table data using splines
+    Resample 1-D table data using splines
 
 Synopsis
 --------

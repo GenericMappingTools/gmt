@@ -6,7 +6,7 @@ grdfilter
 
 .. only:: not man
 
-    grdfilter - Filter a grid in the space (or time) domain
+    Filter a grid in the space (or time) domain
 
 Synopsis
 --------

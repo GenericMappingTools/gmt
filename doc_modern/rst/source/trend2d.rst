@@ -6,7 +6,7 @@ trend2d
 
 .. only:: not man
 
-    trend2d - Fit a [weighted] [robust] polynomial model for z = f(x,y) to xyz[w] data
+    Fit a [weighted] [robust] polynomial model for z = f(x,y) to xyz[w] data
 
 Synopsis
 --------

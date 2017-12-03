@@ -6,7 +6,7 @@ sphtriangulate
 
 .. only:: not man
 
-    sphtriangulate - Delaunay or Voronoi construction of spherical lon,lat data
+    Delaunay or Voronoi construction of spherical lon,lat data
 
 Synopsis
 --------

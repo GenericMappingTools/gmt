@@ -1,7 +1,7 @@
-.. index:: ! pssolar
+.. index:: ! solar
 
 *******
-pssolar
+solar
 *******
 
 .. only:: not man
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**pssolar** 
+**solar** 
 [ |SYN_OPT-B| ]
 [ |-C| ]
 [ |-G|\ *fill*\ \|\ **c** ]
@@ -40,7 +40,7 @@ Synopsis
 Description
 -----------
 
-**pssolar** Calculate and plot the day-night terminator and the civil, nautical and astronomical twilights.
+**solar** Calculate and plot the day-night terminator and the civil, nautical and astronomical twilights.
 
 
 Required Arguments
@@ -151,7 +151,7 @@ Print current Sun position and Sunrise, Sunset times at:
 
    ::
 
-    gmt pssolar -I-7.93/37.079+d2016-02-04T10:01:00
+    gmt solar -I-7.93/37.079+d2016-02-04T10:01:00
 
 Plot the day-night and civil twilight 
 
@@ -159,14 +159,14 @@ Plot the day-night and civil twilight
 
     gmt begin
     gmt pscoast -Rd -W0.1p -JQ0/14c -Ba -BWSen -Dl -A1000
-    gmt pssolar -W1p -Tdc
+    gmt solar -W1p -Tdc
     gmt end
 
 Set up a clip path overlay based on the day/night terminator: 
 
    ::
 
-    gmt pssolar -R -J -Gc -Tc -O -K >> someplot.ps
+    gmt solar -R -J -Gc -Tc -O -K >> someplot.ps
 
 
 See Also

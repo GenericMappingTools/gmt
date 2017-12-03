@@ -6,7 +6,7 @@ grd2kml
 
 .. only:: not man
 
-    grd2kml - Create KML image quadtree from single grid
+    Create KML image quadtree from single grid
 
 Synopsis
 --------

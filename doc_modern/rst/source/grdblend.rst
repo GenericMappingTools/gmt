@@ -6,7 +6,7 @@ grdblend
 
 .. only:: not man
 
-    grdblend - Blend several partially over-lapping grids into one large grid
+    Blend several partially over-lapping grids into one large grid
 
 Synopsis
 --------

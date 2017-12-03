@@ -1,19 +1,19 @@
-.. index:: ! pslegend
+.. index:: ! legend
 
 ********
-pslegend
+legend
 ********
 
 .. only:: not man
 
-    pslegend - Plot legends on maps
+    Plot legends on maps
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**pslegend** [ *specfile* ]
+**legend** [ *specfile* ]
 |-D|\ *refpoint* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *dx*/*dy* ]
@@ -33,7 +33,7 @@ Synopsis
 Description
 -----------
 
-**pslegend** will make legends that can be overlaid on maps. It reads
+**legend** will make legends that can be overlaid on maps. It reads
 specific legend-related information from an input file [or stdin].
 Unless otherwise noted, annotations will be made using the primary
 annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
@@ -126,7 +126,7 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
-Pslegend Codes
+legend Codes
 --------------
 
 *specfile*
@@ -210,7 +210,7 @@ Pslegend Codes
     add a suitable **-F** panel option (see :doc:`psbasemap` for details
     on panels as well as map scale modifiers).
     All **+**\ *modifiers* must be appended to *length* to make a single
-    string argument.  If the **-R** **-J** supplied to **pslegend** is
+    string argument.  If the **-R** **-J** supplied to **legend** is
     different than the projection needed for the scale (or not given at
     all, e.g., with **-Dx**), supply the two optional **-R** **-J** settings
     as well.
@@ -224,7 +224,7 @@ Pslegend Codes
     *n_columns* to 1.
 **P** *paragraph-mode-header-for-pstext*
     Start a new text paragraph by specifying all the parameters needed
-    (see :doc:`pstext` **-M** record description). Note that **pslegend** knows
+    (see :doc:`pstext` **-M** record description). Note that **legend** knows
     what all those values should be, so normally you can leave the
     entire record (after P) blank or leave it out all together. If you
     need to set at least one of the parameters directly, you must
@@ -246,11 +246,11 @@ Pslegend Codes
     symbols may take special modifiers: front (**f**), quoted line (**q**)  and vector (**v**).
     You can append modifiers to the symbol and affect how the fronts, quoted lines and
     vectors are presented (see :doc:`psxy` man page for modifiers).
-    **pslegend** will determine default settings for all modifiers and
+    **legend** will determine default settings for all modifiers and
     secondary arguments if not provided.  A few other symbols (the rectangles,
     ellipse, wedge, mathangle) may take more than a single argument size.
     Note that for a line segment you should use the horizontal dash symbol (**-**).
-    If just a single size if given then **pslegend** will provide reasonable
+    If just a single size if given then **legend** will provide reasonable
     arguments to plot the symbol  (See `Defaults`_).
     Alternatively, combine the required
     arguments into a single, comma-separated string and use that as the
@@ -274,7 +274,7 @@ Defaults
 --------
 
 When attributes are not provided, or extended symbol information (for symbols taking more than just an overall size) are
-not given as comma-separated quantities, **pslegend** will provide the following defaults:
+not given as comma-separated quantities, **legend** will provide the following defaults:
 
 Front: Front symbol is left-side (here, that means upper side) box, with dimensions 30% of the given symbol size.
 
@@ -300,9 +300,9 @@ specifications, use
 
    ::
 
-     gmt pslegend -R-10/10/-10/10 -JM6i -F+gazure1 -Dx0.5i/0.5i+w5i/3.3i+jBL+l1.2 \
-     -C0.1i/0.1i -B5f1 << EOF >> map.ps
-     # Legend test for pslegend
+     gmt legend -R-10/10/-10/10 -JM6i -F+gazure1 -Dx0.5i/0.5i+w5i/3.3i+jBL+l1.2
+                -C0.1i/0.1i -B5f1 -pdf map << EOF
+     # Legend test for legend
      # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line.
      # H is header, L is label, S is symbol, T is paragraph text, M is map scale.
      #
@@ -353,7 +353,7 @@ Note that under Windows, the percent sign (%) is a variable indicator
 script you need to repeat it (%%); hence the font switching mechanism
 (@%\ *font*\ % and @%%) may require twice the number of percent signs.
 This only applies to text inside a script or that otherwise is processed
-by DOS. Data files that are opened and read by **pslegend** do not need
+by DOS. Data files that are opened and read by **legend** do not need
 such duplication.
 
 See Also

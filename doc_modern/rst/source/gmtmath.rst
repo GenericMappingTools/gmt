@@ -6,7 +6,7 @@ gmtmath
 
 .. only:: not man
 
-    gmtmath - Reverse Polish Notation (RPN) calculator for data tables
+    Reverse Polish Notation (RPN) calculator for data tables
 
 Synopsis
 --------

@@ -6,7 +6,7 @@ grdvector
 
 .. only:: not man
 
-    grdvector - Plot vector field from two component grids
+    Plot vector field from two component grids
 
 Synopsis
 --------
@@ -181,14 +181,14 @@ center vectors on the node locations, run
 
    ::
 
-    gmt grdvector r.nc theta.nc -Jx5c -A -Q0.1i+e+jc -S10i > gradient.ps
+    gmt grdvector r.nc theta.nc -Jx5c -A -Q0.1i+e+jc -S10i -pdf gradient
 
 To plot a geographic data sets given the files com_x.nc and comp_y.nc,
 using a scale of 200 km per data unit and only plot every 3rd node in either direction, try
 
    ::
 
-    gmt grdvector comp_x.nc comp_y.nc -Ix3 -JH0/20c -Q0.1i+e+jc -S200 > globe.ps
+    gmt grdvector comp_x.nc comp_y.nc -Ix3 -JH0/20c -Q0.1i+e+jc -S200 -pdf globe
 
 See Also
 --------

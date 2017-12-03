@@ -6,7 +6,7 @@ fitcircle
 
 .. only:: not man
 
-    fitcircle - find mean position and great [or small] circle fit to points on a sphere.
+    find mean position and great [or small] circle fit to points on a sphere.
 
 Synopsis
 --------

@@ -6,7 +6,7 @@ gmt
 
 .. only:: not man
 
-    gmt - The Generic Mapping Tools data processing and display software package
+    The Generic Mapping Tools data processing and display software package
 
 Introduction
 ------------

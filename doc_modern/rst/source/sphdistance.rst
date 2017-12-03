@@ -6,7 +6,7 @@ sphdistance
 
 .. only:: not man
 
-    sphdistance - Create Voronoi distance, node, or natural nearest-neighbor grid on a sphere
+    Create Voronoi distance, node, or natural nearest-neighbor grid on a sphere
 
 Synopsis
 --------

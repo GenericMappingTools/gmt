@@ -6,7 +6,7 @@ gmt5syntax
 
 .. only:: not man
 
-    gmt5syntax - Convert old GMT script to use new 'gmt <module>' syntax
+    Convert old GMT script to use new 'gmt <module>' syntax
 
 Synopsis
 --------

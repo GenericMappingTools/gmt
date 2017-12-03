@@ -6,7 +6,7 @@ grdfft
 
 .. only:: not man
 
-    grdfft - Mathematical operations on grids in the wavenumber (or frequency) domain
+    Mathematical operations on grids in the wavenumber (or frequency) domain
 
 Synopsis
 --------

@@ -6,7 +6,7 @@ gmtset
 
 .. only:: not man
 
-    gmtset - Change individual GMT default parameters
+    Change individual GMT default parameters
 
 Synopsis
 --------

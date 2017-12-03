@@ -6,7 +6,7 @@ subplot
 
 .. only:: not man
 
-    subplot - Manage figure subplot configuration and selection
+    Manage figure subplot configuration and selection
 
 The subplot command is used to split the current figure into a matrix of subplots
 that each may contain a single figure.  A subplot setup is started with the **begin**

@@ -6,7 +6,7 @@ gmtinfo
 
 .. only:: not man
 
-    gmtinfo - Get information about data tables
+    Get information about data tables
 
 Synopsis
 --------

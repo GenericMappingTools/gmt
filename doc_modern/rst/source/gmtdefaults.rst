@@ -6,7 +6,7 @@ gmtdefaults
 
 .. only:: not man
 
-    gmtdefaults - List current GMT default parameters
+    List current GMT default parameters
 
 Synopsis
 --------

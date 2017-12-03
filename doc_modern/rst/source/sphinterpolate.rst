@@ -6,7 +6,7 @@ sphinterpolate
 
 .. only:: not man
 
-    sphinterpolate - Spherical gridding in tension of data on a sphere
+    Spherical gridding in tension of data on a sphere
 
 `Synopsis <#toc1>`_
 -------------------

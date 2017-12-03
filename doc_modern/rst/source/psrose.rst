@@ -1,19 +1,19 @@
-.. index:: ! psrose
+.. index:: ! rose
 
 ******
-psrose
+rose
 ******
 
 .. only:: not man
 
-    psrose - Plot a polar histogram (rose, sector, windrose diagrams)
+    Plot a polar histogram (rose, sector, windrose diagrams)
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psrose** [ *table* ] [ |-A|\ [**r**]\ *sector_width* ]
+**rose** [ *table* ] [ |-A|\ [**r**]\ *sector_width* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ **m**\ \|\ [**+w**\ ]\ *mode_file* ]
 [ |-D| ]
@@ -47,7 +47,7 @@ Synopsis
 Description
 -----------
 
-**psrose** reads (length, azimuth) pairs from *file* [or standard input]
+**rose** reads (length, azimuth) pairs from *file* [or standard input]
 and plot a windrose diagram.  Add **-i**\ 0 if your file only has azimuth values.
 Optionally (with **-A**), polar histograms may be drawn (sector diagram
 or rose diagram). Options include full circle and half circle plots. The
@@ -246,7 +246,7 @@ azimuth, and shown in Portrait orientation, use:
 
    ::
 
-    gmt psrose fault_segments.az_r -R0/150/-90/90 -Bx50g25+l"Fault length"
+    gmt rose fault_segments.az_r -R0/150/-90/90 -Bx50g25+l"Fault length"
                -Byg30 -B+t"Rose diagram" -JX6i -Ar10 -Glightblue
                -W0.75p,red -Z0.001 -Cm -P -T -: > half_rose.ps
 
@@ -258,20 +258,20 @@ orientation with a timestamp and command line plotted, use:
 
    ::
 
-    gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -Uc > rose.ps
+    gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -Uc -pdf rose
 
 Redo the same plot but this time add orange vector heads to each direction (with nominal head size
 0.5 cm but this will be reduced linearly for lengths less than 1 cm) and save the plot, use:
 
    ::
 
-    gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -Uc > rose.ps
+    gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -Uc -pdf rose
 
 Bugs
 ----
 
 No default radial scale and grid settings for polar histograms. User
-must run **psrose** **-I** to find max length in binned data set.
+must run **rose** **-I** to find max length in binned data set.
 
 References
 ----------

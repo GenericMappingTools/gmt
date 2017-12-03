@@ -1,8 +1,8 @@
-.. index:: ! psxyz
+.. index:: ! plot3d
 
-*****
-psxyz
-*****
+******
+plot3d
+******
 
 .. only:: not man
 
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psxyz** [ *table* ] |-J|\ *parameters*
+**plot3d** [ *table* ] |-J|\ *parameters*
 |-J|\ **z**\ \|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
@@ -47,10 +47,10 @@ Synopsis
 Description
 -----------
 
-**psxyz** reads (x,y,z) triplets from *files* [or standard input] and
+**plot3d** reads (x,y,z) triplets from *files* [or standard input] and
 will plot lines, polygons, or symbols
 at those locations in 3-D. If a symbol is selected and no symbol size
-given, then **psxyz** will interpret the fourth column of the input data
+given, then **plot3d** will interpret the fourth column of the input data
 as symbol size. Symbols whose *size* is <= 0 are skipped. If no symbols
 are specified then the symbol code (see **-S** below) must be present as
 last column in the input. If **-S** is not used, a line connecting the
@@ -100,7 +100,7 @@ Optional Arguments
     shifted over by one column (optional size would be in 5th rather than
     4th field, etc.). An exception to this rule is for multi-band 3-D
     columns where each band gets its color from each slice in the CPT.
-    If **-S** is not set, then **psxyz** expects the user
+    If **-S** is not set, then **plot3d** expects the user
     to supply a multisegment file (where each segment header contains a
     **-Z**\ *val* string. The *val* will control the color of the line or
     polygon (if **-L** is set) via the CPT.
@@ -115,7 +115,7 @@ Optional Arguments
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Select color or pattern for filling of symbols or polygons [Default is no fill].
-    Note that **psxyz** will search for **-G** and **-W** strings in all the
+    Note that **plot3d** will search for **-G** and **-W** strings in all the
     segment headers and let any values thus found over-ride the command line settings.
 
 .. _-I:
@@ -168,7 +168,7 @@ Optional Arguments
     Ignore all input files, including standard input. This is the same
     as specifying /dev/null (or NUL for Windows users) as input file.
     Use this to activate only the options that are not related to
-    plotting of lines or symbols, such as **psxyz** **-R** **-J** **-O**
+    plotting of lines or symbols, such as **plot3d** **-R** **-J** **-O**
     **-T** to terminate a sequence of GMT plotting commands without
     producing any plotting output. 
 
@@ -239,7 +239,7 @@ southeast at 30 degree elevation, use:
 
    ::
 
-    gmt psxyz heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c
+    gmt plot3d heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c
               -Gblue -Bx2+lXLABEL -By2+lYLABEL -Bz10+lZLABEL -B+t"3-D PLOT" -p135/30
               -Uc -W -P -pdf heights
 
@@ -269,14 +269,14 @@ Segment header records may contain one of more of the following options:
 Custom Symbols
 --------------
 
-**psxyz** allows users to define and plot their own custom symbols. This
+**plot3d** allows users to define and plot their own custom symbols. This
 is done by encoding the symbol using our custom symbol macro code
 described in Appendix N. Put all the macro codes for your new symbol in
 a file whose extension must be .def; you may then address the symbol
 without giving the extension (e.g., the symbol file tsunami.def is used
 by specifying **-Sk**\ *tsunami/size*. The definition file can contain
 any number of plot code records, as well as blank lines and comment
-lines (starting with #). **psxyz** will look for the definition files
+lines (starting with #). **plot3d** will look for the definition files
 in (1) the current directory, (2) the ~/.gmt directory,
 and (3) the **$GMT\_SHAREDIR**/custom directory, in that
 order. Freeform polygons (made up of straight line segments and arcs of
@@ -292,7 +292,7 @@ however, are first sorted according to their distance from the viewpoint
 so that nearby symbols will overprint more distant ones should they
 project to the same x,y position.
 
-**psxyz** cannot handle filling of polygons that contain the south or
+**plot3d** cannot handle filling of polygons that contain the south or
 north pole. For such a polygon, make a copy and split it into two and
 make each explicitly contain the polar point. The two polygons will
 combine to give the desired effect when filled; to draw outline use the

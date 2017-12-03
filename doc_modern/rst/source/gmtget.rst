@@ -6,7 +6,7 @@ gmtget
 
 .. only:: not man
 
-    gmtget - Get individual GMT default parameters
+    Get individual GMT default parameters
 
 Synopsis
 --------

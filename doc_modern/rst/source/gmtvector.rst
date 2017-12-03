@@ -6,7 +6,7 @@ gmtvector
 
 .. only:: not man
 
-    gmtvector - Operations on Cartesian vectors in 2-D and 3-D
+    Operations on Cartesian vectors in 2-D and 3-D
 
 Synopsis
 --------

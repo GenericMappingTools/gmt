@@ -1,7 +1,7 @@
-.. index:: ! pstext
+.. index:: ! text
 
 ******
-pstext
+text
 ******
 
 .. only:: not man
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**pstext** [ *textfiles* ] |-J|\ *parameters*
+**text** [ *textfiles* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A| ]
 |SYN_OPT-B|
@@ -40,7 +40,7 @@ Synopsis
 Description
 -----------
 
-**pstext** plots text strings of variable size, font type, and
+**text** plots text strings of variable size, font type, and
 orientation. Various map projections are provided, with the option to
 draw and annotate the map boundaries. Greek characters, subscript, superscript, and small
 caps are supported as follows: The sequence @~ toggles between the
@@ -84,7 +84,7 @@ Optional Arguments
     This is one or more files containing 1 or more records with (*x*,
     *y*\ [, *font*, *angle*, *justify*], *text*). The attributes in
     brackets can alternatively be set directly via **-F**. If no files
-    are given, **pstext** will read standard input. *font* is a font
+    are given, **text** will read standard input. *font* is a font
     specification with format [*size*,][\ *font*,][*color*\ ] where
     *size* is text size in points, *font* is the font to use, and
     *color* sets the font color. To draw outline fonts you append
@@ -271,19 +271,19 @@ file text.txt on a Mercator plot with the given specifications, use
 
    ::
 
-    gmt pstext text.txt -R-30/30/-10/20 -Jm0.1i -P -F+f18p,Helvetica,-=0.5p,red -B5 -pdf plot
+    gmt text text.txt -R-30/30/-10/20 -Jm0.1i -P -F+f18p,Helvetica,-=0.5p,red -B5 -pdf plot
 
 To plot a text at the upper left corner of a 10 cm map
 
    ::
 
-    echo TopLeft | gmt pstext -R1/10/1/10 -JX10 -F+cTL -P -pdf plot
+    echo TopLeft | gmt text -R1/10/1/10 -JX10 -F+cTL -P -pdf plot
 
 To add a typeset figure caption for a 3-inch wide illustration, use
 
    ::
 
-    gmt pstext -R0/3/0/5 -JX3i -O -h1 -M -N -F+f12,Times-Roman+jLT << EOF >> figure.ps
+    gmt text -R0/3/0/5 -JX3i -O -h1 -M -N -F+f12,Times-Roman+jLT << EOF >> figure.ps
 
 
    ::
@@ -303,7 +303,7 @@ Note that under Windows, the percent sign (%) is a variable indicator
 script you need to repeat it (%%); hence the font switching mechanism
 (@%\ *font*\ % and @%%) may require twice the number of percent signs.
 This only applies to text inside a script or that otherwise is processed
-by DOS. Data files that are opened and read by **pstext** do not need
+by DOS. Data files that are opened and read by **text** do not need
 such duplication.
 
 Limitations
@@ -318,7 +318,7 @@ the paragraph width is automatically enlarged to fit the widest word.
 Use from external interface
 ---------------------------
 
-When **pstext** is called from external interfaces then we impose the following
+When **text** is called from external interfaces then we impose the following
 condition on the **-F** setting: We require that **+a** (read angle from
 input), if specified, must appear before either of **+f** (read font from input) and **+j**
 (read justification from input), if these are present.  This is necessary because the

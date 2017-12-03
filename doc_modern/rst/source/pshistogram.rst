@@ -1,19 +1,19 @@
-.. index:: ! pshistogram
+.. index:: ! histogram
 
 ***********
-pshistogram
+histogram
 ***********
 
 .. only:: not man
 
-    pshistogram - Calculate and plot histograms
+    Calculate and plot histograms
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**pshistogram** [ *table* ] |-J|\ **x**\ \|\ **X**\ *parameters*
+**histogram** [ *table* ] |-J|\ **x**\ \|\ **X**\ *parameters*
 |-W|\ *bin_width*\ [**+l**\ \|\ **h**\ \|\ **b**]
 [ |-A| ]
 [ |SYN_OPT-B| ]
@@ -46,7 +46,7 @@ Synopsis
 Description
 -----------
 
-**pshistogram** reads *file* [or standard input] and examines the first
+**histogram** reads *file* [or standard input] and examines the first
 data column (or one set by **-i**) to calculate histogram parameters based on
 the bin-width provided. Using these parameters, scaling, and optional
 range parameters it will plot the histogram. A cumulative histogram may also be specified. 
@@ -154,7 +154,7 @@ Optional Arguments
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-.. |Add_-Rz| replace:: If not given, **pshistogram** will automatically find reasonable values for the region.
+.. |Add_-Rz| replace:: If not given, **histogram** will automatically find reasonable values for the region.
 .. include:: explain_-Rz.rst_
 
 .. _-S:
@@ -223,7 +223,7 @@ using a 250 meter bin width, center bars, and draw bar outline, use:
 
    ::
 
-    gmt pshistogram v3206.t -JXh -W250 -F -LP0.5p -V -pdf plot
+    gmt histogram v3206.t -JXh -W250 -F -LP0.5p -V -pdf plot
 
 If you know the distribution of your data, you may explicitly specify
 range and scales. E.g., to plot a histogram of the y-values (2nd column)
@@ -233,10 +233,10 @@ bars, run:
 
    ::
 
-    gmt pshistogram errors.xy -W1 -R-10/10/0/0 -Jxc/0.01c
-                    -Bx2+lError -By100+lCounts -Gblack -i1 -V -pdf plot
+    gmt histogram errors.xy -W1 -R-10/10/0/0 -Jxc/0.01c
+                  -Bx2+lError -By100+lCounts -Gblack -i1 -V -pdf plot
 
-Since no y-range was specified, **pshistogram** will calculate *ymax* in even
+Since no y-range was specified, **histogram** will calculate *ymax* in even
 increments of 100.
 
 Bugs

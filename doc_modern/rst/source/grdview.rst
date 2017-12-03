@@ -6,7 +6,7 @@ grdview
 
 .. only:: not man
 
-    grdview - Create 3-D perspective image or surface mesh from a grid
+    Create 3-D perspective image or surface mesh from a grid
 
 Synopsis
 --------
@@ -213,8 +213,8 @@ elevation, run
 
    ::
 
-    gmt grdview hawaii_grav.nc -Jl18/24/1.5c -Chawaii.cpt \
-                -Jz0.05c -Qm -N-100 -p225/30 -Wc > hawaii_grav_image.ps
+    gmt grdview hawaii_grav.nc -Jl18/24/1.5c -Chawaii.cpt
+                -Jz0.05c -Qm -N-100 -p225/30 -Wc -pdf hawaii_grav_image
 
 To create a illuminated color perspective plot of the gridded data set
 image.nc, using the CPT color.rgb, with linear scaling at
@@ -223,13 +223,13 @@ the file intens.nc, and looking from the SE, use
 
    ::
 
-    gmt grdview image.nc -Jx10.0c -Ccolor.rgb -Qs -p135/30 -Iintens.nc > image3D.ps
+    gmt grdview image.nc -Jx10.0c -Ccolor.rgb -Qs -p135/30 -Iintens.nc -pdf image3D
 
 To make the same plot using the rastering option with dpi = 50, use
 
    ::
 
-    gmt grdview image.nc -Jx10.0c -Ccolor.rgb -Qi50 -p135/30 -Iintens.nc > image3D.ps
+    gmt grdview image.nc -Jx10.0c -Ccolor.rgb -Qi50 -p135/30 -Iintens.nc -pdf image3D
 
 To create a color PostScript perspective plot of the gridded data set
 magnetics.nc, using the CPT mag_intens.cpt, draped over
@@ -239,8 +239,8 @@ topo_intens.nc, and looking from the SE, run
 
    ::
 
-    gmt grdview topography.nc -JM6i -Gmagnetics.nc -Cmag_intens.cpt \
-                -Qs -p140/30 -Itopo_intens.nc > draped3D.ps
+    gmt grdview topography.nc -JM6i -Gmagnetics.nc -Cmag_intens.cpt
+                -Qs -p140/30 -Itopo_intens.nc -pdf draped3D
 
 Remarks
 -------

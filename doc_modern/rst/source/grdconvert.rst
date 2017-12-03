@@ -6,7 +6,7 @@ grdconvert
 
 .. only:: not man
 
-    grdconvert - Convert between different grid formats
+    Convert between different grid formats
 
 Synopsis
 --------

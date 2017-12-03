@@ -6,7 +6,7 @@ grd2xyz
 
 .. only:: not man
 
-    grd2xyz - Convert grid file to data table
+    Convert grid file to data table
 
 Synopsis
 --------

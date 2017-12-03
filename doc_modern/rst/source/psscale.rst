@@ -1,8 +1,8 @@
-.. index:: ! psscale
+.. index:: ! colorbar
 
-*******
-psscale
-*******
+********
+colorbar
+********
 
 .. only:: not man
 
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psscale** |-D|\ *refpoint*
+**colorbar** |-D|\ *refpoint*
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-F|\ *panel* ]
@@ -41,10 +41,10 @@ Synopsis
 Description
 -----------
 
-**psscale** plots gray scales or color scales on maps. Both horizontal
+**colorbar** plots gray scales or color scales on maps. Both horizontal
 and vertical scales are supported. For CPTs with gradational
 colors (i.e., the lower and upper boundary of an interval have different
-colors) **psscale** will interpolate to give a continuous scale.
+colors) **colorbar** will interpolate to give a continuous scale.
 Variations in intensity due to shading/illumination may be displayed by
 setting the option **-I**. Colors may be spaced according to a linear
 scale, all be equal size, or by providing a file with individual tile
@@ -119,8 +119,8 @@ Optional Arguments
     *cpt* is the CPT to be used. By default all
     color changes are annotated. To use a subset, add an extra column to
     the CPT with a L, U, or B to annotate Lower, Upper, or Both
-    color segment boundaries (but see **-B**). If not given, **psscale**
-    will read stdin. Like :doc:`grdview`, **psscale** can understand
+    color segment boundaries (but see **-B**). If not given, **colorbar**
+    will read stdin. Like :doc:`grdview`, **colorbar** can understand
     pattern specifications in the CPT. For CPTs where the
     *z* range is in meters, it may be useful to change to another unit
     when plotting.  To do so, append **+U**\ *unit* to the file name.
@@ -261,7 +261,7 @@ To plot a a horizontal color scale (12 cm long; 0.5 cm wide) at the reference po
    ::
 
     gmt makecpt -T-200/1000/100 -Crainbow > t.cpt
-    gmt psscale -Ct.cpt -Dx8c/1c+w12c/0.5c+jTC+h -Bxaf+l"topography" -By+lkm > map.ps
+    gmt colorbar -Ct.cpt -Dx8c/1c+w12c/0.5c+jTC+h -Bxaf+l"topography" -By+lkm > map.ps
 
 
 To append a vertical color scale (7.5 cm long; 1.25 cm wide) to the
@@ -271,14 +271,14 @@ provide the reference point and select the left-mid anchor point via
 
    ::
 
-    gmt psscale -Dx6.5i+jLM/2i+w7.5c/1.25c+e -O -Ccolors.cpt -I -Bx5+lBATHYMETRY -By+lm >> map.ps
+    gmt colorbar -Dx6.5i+jLM/2i+w7.5c/1.25c+e -O -Ccolors.cpt -I -Bx5+lBATHYMETRY -By+lm >> map.ps
 
 To overlay a horizontal color scale (4 inches long and default width) above a
 Mercator map produced by a previous call, ensuring a 2 cm offset from the map frame, use
 
    ::
 
-    gmt psscale -DjCT+w4i+o0/2c+h -O -Ccolors.cpt -Baf -R -J >> map.ps
+    gmt colorbar -DjCT+w4i+o0/2c+h -O -Ccolors.cpt -Baf -R -J >> map.ps
 
 Notes
 -----

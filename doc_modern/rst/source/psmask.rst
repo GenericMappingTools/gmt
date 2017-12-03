@@ -1,19 +1,19 @@
-.. index:: ! psmask
+.. index:: ! mask
 
 ******
-psmask
+mask
 ******
 
 .. only:: not man
 
-    psmask - Clip or mask map areas with no data table coverage
+    Clip or mask map areas with no data table coverage
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psmask** [ *table* ]
+**mask** [ *table* ]
 |SYN_OPT-I|
 |-J|\ *parameters*
 |SYN_OPT-R|
@@ -46,17 +46,17 @@ Synopsis
 Description
 -----------
 
-**psmask** reads a (*x*,\ *y*,\ *z*) file [or standard input] and uses
+**mask** reads a (*x*,\ *y*,\ *z*) file [or standard input] and uses
 this information to find out which grid cells are reliable. Only grid
 cells which have one or more data points are considered reliable. As an
 option, you may specify a radius of influence. Then, all grid cells that
 are within *radius* of a data point are considered reliable.
 Furthermore, an option is provided to reverse the sense of the test.
-Having found the reliable/not reliable points, **psmask** will either
+Having found the reliable/not reliable points, **mask** will either
 paint tiles to mask these nodes (with the **-T** switch), or use
 contouring to create polygons that will clip out regions of no interest.
 When clipping is initiated, it will stay in effect until turned off by a
-second call to **psmask** using the **-C** option. 
+second call to **mask** using the **-C** option. 
 
 Required
 --------
@@ -206,20 +206,20 @@ contour map where there is no control data using clip polygons, use:
 
    ::
 
-    gmt psmask africa_grav.xyg -R20/40/20/40 -I5m -JM10i -O -K > mask.ps
+    gmt mask africa_grav.xyg -R20/40/20/40 -I5m -JM10i > mask.ps
 
 We do it again, but this time we wish to save the clipping polygons to
 file all_pols.txt:
 
    ::
 
-    gmt psmask africa_grav.xyg -R20/40/20/40 -I5m -Dall_pols.txt
+    gmt mask africa_grav.xyg -R20/40/20/40 -I5m -Dall_pols.txt
 
 A repeat of the first example but this time we use white tiling:
 
    ::
 
-    gmt psmask africa_grav.xyg -R20/40/20/40 -I5m -JM10i -T -O -K -Gwhite > mask.ps
+    gmt mask africa_grav.xyg -R20/40/20/40 -I5m -JM10i -T -Gwhite > mask.ps
 
 See Also
 --------

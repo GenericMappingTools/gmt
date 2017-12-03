@@ -6,7 +6,7 @@ spectrum1d
 
 .. only:: not man
 
-    spectrum1d - Compute auto- [and cross- ] spectra from one [or two] time-series
+    Compute auto- [and cross- ] spectra from one [or two] time-series
 
 Synopsis
 --------

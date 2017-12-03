@@ -6,7 +6,7 @@ blockmean
 
 .. only:: not man
 
-    blockmean - Block average (*x*,\ *y*,\ *z*) data tables by L2 norm
+    Block average (*x*,\ *y*,\ *z*) data tables by L2 norm
 
 Synopsis
 --------

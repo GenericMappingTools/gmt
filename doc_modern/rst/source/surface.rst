@@ -6,7 +6,7 @@ surface
 
 .. only:: not man
 
-    surface - Grid table data using adjustable tension continuous curvature splines
+    Grid table data using adjustable tension continuous curvature splines
 
 Synopsis
 --------

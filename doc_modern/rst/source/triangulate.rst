@@ -6,7 +6,7 @@ triangulate
 
 .. only:: not man
 
-    triangulate - Optimal (Delaunay) triangulation and gridding of Cartesian table data
+    Optimal (Delaunay) triangulation and gridding of Cartesian table data
 
 Synopsis
 --------

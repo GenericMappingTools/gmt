@@ -1,7 +1,7 @@
-.. index:: ! psxy
+.. index:: ! plot
 
 ****
-psxy
+plot
 ****
 
 .. only:: not man
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psxy** [ *table* ] |-J|\ *parameters*
+**plot** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
 [ |SYN_OPT-B| ]
@@ -49,10 +49,10 @@ Synopsis
 Description
 -----------
 
-**psxy** reads (*x*,\ *y*) pairs from *files* [or standard input] and
+**plot** reads (*x*,\ *y*) pairs from *files* [or standard input] and
 will plot lines, polygons, or symbols
 at those locations on a map. If a symbol is selected and no symbol size
-given, then **psxy** will interpret the third column of the input data
+given, then **plot** will interpret the third column of the input data
 as symbol size. Symbols whose *size* is <= 0 are skipped. If no symbols
 are specified then the symbol code (see **-S** below) must be present as
 last column in the input. If **-S** is not used, a line connecting the
@@ -110,7 +110,7 @@ Optional Arguments
     If **-S** is set, let symbol fill color be
     determined by the z-value in the third column. Additional fields are
     shifted over by one column (optional size would be 4th rather than 3rd
-    field, etc.). If **-S** is not set, then **psxy** expects the user to
+    field, etc.). If **-S** is not set, then **plot** expects the user to
     supply a multisegment file where each segment header contains a
     **-Z**\ *val* string. The *val* will control the color of the line or
     polygon (if **-L** is set) via the CPT.
@@ -171,7 +171,7 @@ Optional Arguments
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Select color or pattern for filling of symbols or polygons [Default is no fill].
-    Note that **psxy** will search for **-G** and **-W** strings in all the
+    Note that **plot** will search for **-G** and **-W** strings in all the
     segment headers and let any values thus found over-ride the command line settings.
 
 .. _-I:
@@ -216,7 +216,7 @@ Optional Arguments
     Ignore all input files, including standard input. This is the same
     as specifying /dev/null (or NUL for Windows users) as input file.
     Use this to activate only the options that are not related to
-    plotting of lines or symbols, such as **psxy** **-R** **-J** **-O**
+    plotting of lines or symbols, such as **plot** **-R** **-J** **-O**
     **-T** to terminate a sequence of GMT plotting commands without
     producing any plotting output.
 
@@ -299,7 +299,7 @@ in the file DSDP.txt on a Mercator map at 0.3 cm/degree of the area 100E to
 
    ::
 
-    gmt psxy DSDP.txt -R100/160/-20/30 -Jm0.3c -Sc0.2c -Gred -Bafg -pdf map
+    gmt plot DSDP.txt -R100/160/-20/30 -Jm0.3c -Sc0.2c -Gred -Bafg -pdf map
 
 To plot the xyz values in the file quakes.xyzm as circles with size
 given by the magnitude in the 4th column and color based on the depth in
@@ -307,14 +307,14 @@ the third using the CPT rgb.cpt on a linear map, use
 
    ::
 
-    gmt psxy quakes.xyzm -R0/1000/0/1000 -JX6i -Sc -Crgb -B200 -pdf map
+    gmt plot quakes.xyzm -R0/1000/0/1000 -JX6i -Sc -Crgb -B200 -pdf map
 
 To plot the file trench.txt on a Mercator map, with white triangles with
 sides 0.25 inch on the left side of the line, spaced every 0.8 inch, use
 
    ::
 
-    gmt psxy trench.txt -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1i+l+t -Gwhite -W -B10 -pdf map
+    gmt plot trench.txt -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1i+l+t -Gwhite -W -B10 -pdf map
 
 To plot the data in the file misc.txt as symbols determined by the code in
 the last column, and with size given by the magnitude in the 4th column,
@@ -323,7 +323,7 @@ linear map, use
 
    ::
 
-    gmt psxy misc.txt -R0/100/-50/100 -JX6i -S -Cchrome -B20 -pdf map.ps
+    gmt plot misc.txt -R0/100/-50/100 -JX6i -S -Cchrome -B20 -pdf map.ps
 
 If you need to place vectors on a plot you can choose among
 straight Cartesian vectors, math circular vectors, or geo-vectors (these
@@ -334,7 +334,7 @@ a circle at the start location and an arrow head at the end, try
 
    ::
 
-    gmt psxy -R0/50/-50/50 -JX6i -Sv0.15i+bc+ea -Gyellow -W0.5p -Baf -pdf map << EOF
+    gmt plot -R0/50/-50/50 -JX6i -Sv0.15i+bc+ea -Gyellow -W0.5p -Baf -pdf map << EOF
     10 10 45 2i
     30 -20 0 1.5i
     EOF
@@ -346,7 +346,7 @@ to cm given the scale 3.60, try
 
    ::
 
-    gmt psxy -R20/40/-20/0 -JM6i -Sv0.15i+e+z3.6c -Gred -W0.25p -Baf data.txt -pdf map
+    gmt plot -R20/40/-20/0 -JM6i -Sv0.15i+e+z3.6c -Gred -W0.25p -Baf data.txt -pdf map
 
 Segment Header Parsing
 ----------------------
@@ -374,14 +374,14 @@ Segment header records may contain one of more of the following options:
 Custom Symbols
 --------------
 
-**psxy** allows users to define and plot their own custom symbols. This
+**plot** allows users to define and plot their own custom symbols. This
 is done by encoding the symbol using our custom symbol macro code
 described in Appendix N. Put all the macro codes for your new symbol in
 a file whose extension must be .def; you may then address the symbol
 without giving the extension (e.g., the symbol file tsunami.def is used
 by specifying **-Sk**\ *tsunami/size*. The definition file can contain
 any number of plot code records, as well as blank lines and comment
-lines (starting with #). **psxy** will look for the definition files in
+lines (starting with #). **plot** will look for the definition files in
 (1) the current directory, (2) the ~/.gmt directory, and
 (3) the **$GMT_SHAREDIR**/custom directory, in that order.
 Freeform polygons (made up of straight line segments and arcs of
@@ -392,7 +392,7 @@ a pattern. Other standard geometric symbols can also be used. See Appendix
 Polar Caps
 ----------
 
-**psxy** will automatically determine if a closed polygon is containing
+**plot** will automatically determine if a closed polygon is containing
 a geographic pole, i.e., being a polar cap.  Such polygons requires special
 treatment under the hood to ensure proper filling.  Many tools such
 as GIS packages are unable to handle polygons covering a pole and some
@@ -406,7 +406,7 @@ See Also
 
 :doc:`gmt`, :doc:`gmt.conf`,
 :doc:`gmtcolors`,
-:doc:`psbasemap`, :doc:`psxyz`
+:doc:`psbasemap`, :doc:`plotz`
 
 .. ------------------------------------- Examples per option -------------------
 
@@ -425,13 +425,13 @@ See Also
         3 2</br>
         4 4</br>
         EOF</br>
-        gmt psxy -R0/5/0/5 -JX3i -P -K -B0 t.txt -Gred -W2p -L+yb > $ps</br>
-        gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+yt -X3.25i >> $ps</br>
-        gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+xl -X-3.25i -Y3.25i >> $ps</br>
-        gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+xr -X3.25i >> $ps</br>
-        gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+y4 -X-3.25i -Y3.25i >> $ps</br>
-        gmt psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+x4.5 -X3.25i >> $ps</br>
-        gmt psxy -R -J -O -T >> $ps</br>
+        gmt plot -R0/5/0/5 -JX3i -P -K -B0 t.txt -Gred -W2p -L+yb > $ps</br>
+        gmt plot -R -J -O -K -B0 t.txt -Gred -W2p -L+yt -X3.25i >> $ps</br>
+        gmt plot -R -J -O -K -B0 t.txt -Gred -W2p -L+xl -X-3.25i -Y3.25i >> $ps</br>
+        gmt plot -R -J -O -K -B0 t.txt -Gred -W2p -L+xr -X3.25i >> $ps</br>
+        gmt plot -R -J -O -K -B0 t.txt -Gred -W2p -L+y4 -X-3.25i -Y3.25i >> $ps</br>
+        gmt plot -R -J -O -K -B0 t.txt -Gred -W2p -L+x4.5 -X3.25i >> $ps</br>
+        gmt plot -R -J -O -T >> $ps</br>
         </p>
     </div>
    </div>

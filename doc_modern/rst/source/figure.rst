@@ -6,7 +6,7 @@ figure
 
 .. only:: not man
 
-    figure - Set attributes for the current figure
+    Set attributes for the current figure
 
 Synopsis
 --------

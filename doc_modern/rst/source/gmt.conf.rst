@@ -6,7 +6,7 @@ gmt.conf
 
 .. only:: not man
 
-    gmt.conf - Configuration for GMT
+    Configuration for GMT
 
 Description
 -----------

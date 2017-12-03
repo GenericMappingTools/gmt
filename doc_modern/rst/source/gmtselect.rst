@@ -6,7 +6,7 @@ gmtselect
 
 .. only:: not man
 
-    gmtselect - Select data table subsets based on multiple spatial criteria
+    Select data table subsets based on multiple spatial criteria
 
 Synopsis
 --------
