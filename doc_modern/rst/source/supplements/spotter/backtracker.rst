@@ -233,7 +233,7 @@ See Also
 :doc:`grdspotter`,
 :doc:`hotspotter`,
 :doc:`mapproject </mapproject>`,
-:doc:`originator`,
+:doc:`originater`,
 :doc:`project </project>`,
 :doc:`psxy </psxy>`
 

@@ -32,6 +32,7 @@ EXTERN_MSC int GMT_minmax (void *V_API, int mode, void *args);
 EXTERN_MSC int GMT_gmtstitch (void *V_API, int mode, void *args);
 EXTERN_MSC int GMT_gmt2rgb (void *V_API, int mode, void *args);
 EXTERN_MSC int GMT_ps2raster (void *V_API, int mode, void *args);
+EXTERN_MSC int GMT_originator (void *V_API, int mode, void *args);
 
 int GMT_gmtdp (void *V_API, int mode, void *args) {
 	/* This was the GMT4 name */
@@ -87,3 +88,15 @@ int GMT_ps2raster (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: ps2raster\n");
 	return (GMT_NOT_A_VALID_MODULE);
 }
+
+int GMT_originator (void *V_API, int mode, void *args) {
+	/* This was the GMT5 name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (gmt_M_compat_check (API->GMT, 4)) {
+		GMT_Report (API, GMT_MSG_COMPAT, "Module originator is deprecated; use originater.\n");
+		return (GMT_Call_Module (API, "originater", mode, args));
+	}
+	GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: originator\n");
+	return (GMT_NOT_A_VALID_MODULE);
+}
+

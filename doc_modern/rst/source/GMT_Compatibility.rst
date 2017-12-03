@@ -238,7 +238,7 @@ with a warning under compatibility mode:
    is deprecated as stage vs. finite rotations are detected
    automatically.
 
-*  :doc:`originator <supplements/spotter/originator>`:
+*  :doc:`originater <supplements/spotter/originater>`:
    **-C** is deprecated as stage vs. finite rotations are detected
    automatically.
 

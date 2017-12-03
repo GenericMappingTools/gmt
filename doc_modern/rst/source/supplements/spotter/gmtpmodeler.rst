@@ -183,5 +183,5 @@ See Also
 :doc:`grdrotater`,
 :doc:`grdspotter`,
 :doc:`hotspotter`,
-:doc:`originator`,
+:doc:`originater`,
 :doc:`rotconverter`

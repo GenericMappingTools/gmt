@@ -20,7 +20,7 @@ grdpmodeler.c		: grdpmodeler C program code
 grdrotater.c		: grdrotater C program code
 grdspotter.c		: grdspotter C program code
 hotspotter.c		: hotspotter C program code
-originator.c		: originator C program code
+originater.c		: originater C program code
 polespotter.c		: polespotter C program code
 rotconverter.c		: rotconverter C program code
 libspotter.c		: SPOTTER C library code
@@ -48,7 +48,7 @@ The eight programs are
 	grdrotater   - Reconstruct data grids using finite rotations
 	grdspotter   - Create CVA grids using grids of bathy/faa
 	hotspotter   - Create CVA grids using seamount locations
-	originator   - Associate seamounts with hotspot point sources
+	originater   - Associate seamounts with hotspot point sources
 	polespotter  - Find stage poles from fracture zones and abyssal hills
 	rotconverter - Manipulate finite and stage rotations
 

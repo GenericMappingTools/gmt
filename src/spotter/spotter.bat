@@ -71,9 +71,9 @@ del suiko.txt
 echo Done.  View example_2.ps
 REM gsview32 example_2.ps
 
-REM Example 3 - Using gmt originator
+REM Example 3 - Using gmt originater
 REM
-REM We will use gmt originator to determine the most likely hotspot origins
+REM We will use gmt originater to determine the most likely hotspot origins
 REM for the seamounts in the seamounts.txt file, given a plate motion model
 REM and a list of possible hotspots.
 
@@ -88,7 +88,7 @@ set dx=10m
 REM Number of likely hotspots per seamount to return:
 set N=2
 
-gmt originator %DATA% -S%N% -h -D%dx% -E%POLES% -F%HS% -V > example_3.txt
+gmt originater %DATA% -S%N% -h -D%dx% -E%POLES% -F%HS% -V > example_3.txt
 
 echo Done.  Inspect example_3.txt data file
 

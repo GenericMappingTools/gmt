@@ -172,7 +172,7 @@ See Also
 :doc:`gmtpmodeler`,
 :doc:`grdpmodeler`,
 :doc:`grdrotater`,
-:doc:`originator`
+:doc:`originater`
 
 References
 ----------

@@ -1,19 +1,19 @@
-.. index:: ! originator
+.. index:: ! originater
 
 **********
-originator
+originater
 **********
 
 .. only:: not man
 
-    originator - Associate seamounts with nearest hotspot point sources
+    originater - Associate seamounts with nearest hotspot point sources
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**originator** [ *tables* ] |-E|\ [**+**]\ *rotfile*
+**originater** [ *tables* ] |-E|\ [**+**]\ *rotfile*
 |-F|\ [**+**]\ *hs_file* 
 [ |-D|\ *d_km* ]
 [ |-L|\ [*flag*] ]
@@ -36,7 +36,7 @@ Synopsis
 Description
 -----------
 
-**originator** reads (longitude, latitude, height, radius, crustal_age)
+**originater** reads (longitude, latitude, height, radius, crustal_age)
 records from *tables* [or standard input] and uses the given Absolute
 Plate Motion (APM) stage or total reconstruction rotation file and the
 list of hotspot locations to determine the most likely origin (hotspot)
@@ -196,7 +196,7 @@ likely hotspot candidates for each seamount, run
 
    ::
 
-    gmt originator seamounts.txt -S2 -EDC85.txt -Fpac_hs.txt > origins.txt
+    gmt originater seamounts.txt -S2 -EDC85.txt -Fpac_hs.txt > origins.txt
 
 To determine the predicted age of a seamount, distances to the closest
 hotspot, and echo the observed age given its location, observed age, and
@@ -204,7 +204,7 @@ a rotation model, try
 
    ::
 
-    echo "1.55 -8.43 52.3" | gmt originator -FONeill_2005_hotspots.txt \
+    echo "1.55 -8.43 52.3" | gmt originater -FONeill_2005_hotspots.txt \
     -EOMS2005_APM_fixed.txt -Q1/120 -Lt
 
 where 52.3 Ma is observed age. The output is 70 -95.486 52.3. To repeat
@@ -212,7 +212,7 @@ the same exercise with a moving hotspot model, try
 
    ::
 
-    echo "1.55 -8.43 52.3" | gmt originator -F+ONeill_2005_hotspots.txt \
+    echo "1.55 -8.43 52.3" | gmt originater -F+ONeill_2005_hotspots.txt \
     -EOMS2005_APM_smooth.txt -Q1/120 -Lt
 
 Now the output is 80 -213.135 52.3. Negative distances means the closest

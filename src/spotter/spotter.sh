@@ -63,9 +63,9 @@ rm -f t.cpt loihi.txt suiko.txt
 echo "Done.  View example_2.ps"
 #gv example_2.ps
 
-# Example 3 - Using gmt originator
+# Example 3 - Using gmt originater
 #
-# We will use gmt originator to determine the most likely hotspot origins
+# We will use gmt originater to determine the most likely hotspot origins
 # for the seamounts in the seamounts.txt file, given a plate motion model
 # and a list of possible hotspots.
 
@@ -77,7 +77,7 @@ dx=10m				# The flowline sampling interval to use
 region=130/260/-66/60		# Our Pacific region
 N=2				# return the two most likely hotspots per seamount
 
-gmt originator $DATA -S${N} -h -D$dx -E${POLES} -F${HS} -V > example_3.txt
+gmt originater $DATA -S${N} -h -D$dx -E${POLES} -F${HS} -V > example_3.txt
 
 echo "Done.  Inspect example_3.txt data file"
 #$EDITOR example_3.txt

@@ -215,4 +215,4 @@ See Also
 :doc:`gmtvector </gmtvector>`,
 :doc:`grdpmodeler`,
 :doc:`grdrotater`,
-:doc:`originator`
+:doc:`originater`

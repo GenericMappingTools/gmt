@@ -15,7 +15,7 @@
  *   Contact info: www.soest.hawaii.edu/pwessel
  *--------------------------------------------------------------------*/
 /*
- * originator reads file of seamount locations and tries to match each
+ * originater reads file of seamount locations and tries to match each
  * seamount with a probable hotspot by drawing flowines back in time and
  * keeping track of which hotspot is closest to each flowline.  It then
  * reports the closest hotspot, the stage of the flowline involved, the
@@ -72,7 +72,7 @@
  * 3. For special header records, see -H
  * 4. Any number of data records which each have the format:
  *    lon lat height radius crustal_age    (or lat lon ..., see -: option).
- *    crustal_age in Ma, height and radius are not used by originator but
+ *    crustal_age in Ma, height and radius are not used by originater but
  *    are used by hotspotter.
  *
  * Binary files cannot have header records, and data fields must all be
@@ -107,7 +107,7 @@
 #include "gmt_dev.h"
 #include "spotter.h"
 
-#define THIS_MODULE_NAME	"originator"
+#define THIS_MODULE_NAME	"originater"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Associate seamounts with nearest hotspot point sources"
 #define THIS_MODULE_KEYS	"<D{,FD(,>D}"
@@ -209,7 +209,7 @@ GMT_LOCAL int comp_hs (const void *p1, const void *p2) {
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: originator [<table>] -E[+]<rottable> -F[+]<hotspottable> [-D<d_km>] [-H] [-L[<flag>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: originater [<table>] -E[+]<rottable> -F[+]<hotspottable> [-D<d_km>] [-H] [-L[<flag>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -242,7 +242,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct GMT_OPTION *options) {
-	/* This parses the options provided to originator and sets parameters in CTRL.
+	/* This parses the options provided to originater and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
@@ -354,7 +354,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_originator (void *V_API, int mode, void *args) {
+int GMT_originater (void *V_API, int mode, void *args) {
 	unsigned int n_max_spots, n_input;
 	unsigned int spot, smt, n_stages, n_hotspots, n_read, n_skipped = 0;
 	uint64_t k, kk, np, n_expected_fields, n_out;
@@ -395,7 +395,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
-	/*---------------------------- This is the originator main code ----------------------------*/
+	/*---------------------------- This is the originater main code ----------------------------*/
 
 	ns = spotter_hotspot_init (GMT, Ctrl->F.file, true, &orig_hotspot);	/* Get geocentric hotspot locations */
 	if (ns < 0) {
@@ -655,7 +655,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 				out[4] = z_smt;
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
-			else {	/* Conventional originator output */
+			else {	/* Conventional originater output */
 				out[GMT_X] = in[GMT_X];	out[GMT_Y] = in[GMT_Y];	out[GMT_Z] = z_smt;
 				out[3] = r_smt;	out[4] = (t_smt == 180.0) ? GMT->session.d_NaN : t_smt;
 				record[0] = '\0';

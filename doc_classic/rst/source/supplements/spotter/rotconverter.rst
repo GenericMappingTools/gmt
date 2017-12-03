@@ -177,4 +177,4 @@ See Also
 :doc:`grdpmodeler`,
 :doc:`grdrotater`,
 :doc:`hotspotter`,
-:doc:`originator`
+:doc:`originater`
