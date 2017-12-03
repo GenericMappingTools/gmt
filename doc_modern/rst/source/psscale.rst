@@ -6,7 +6,7 @@ psscale
 
 .. only:: not man
 
-    psscale - Plot a gray or color scale-bar on maps
+    Plot a gray or color scale-bar on maps
 
 Synopsis
 --------

@@ -222,7 +222,7 @@ points, use
    ::
 
     gmt pswiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z500 -B5
-                 -C32000 -P -Gred -T0.25p,blue -DjRM+w1000+lnT -V > track_xym.ps
+                 -C32000 -P -Gred -T0.25p,blue -DjRM+w1000+lnT -V > track_xym
 
 and the positive anomalies will in general point in the north direction.
 We used **-D** to place a vertical scale bar indicating a 1000 nT anomaly.
@@ -232,7 +232,7 @@ and obtain
    ::
 
     gmt pswiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5
-              -C32000 -P -Gred -I45 -T0.25p,blue -DjRM+w1000+lnT -V > track_xym.ps
+              -C32000 -P -Gred -I45 -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym.ps
 
 Bugs
 ----
@@ -250,7 +250,7 @@ this). Then if these numbers jump around a lot, you may do this:
 
    ::
 
-    awk '{ print NR, $0 }' yourdata.xyz | filter1d -Fb5 -N4/0 \
+    awk '{ print NR, $0 }' yourdata.xyz | filter1d -Fb5 -N4/0
     --FORMAT_FLOAT_OUT=%.12g > smoothed.xyz
 
 which performs a 5-point boxcar filter, and plot this data set instead.

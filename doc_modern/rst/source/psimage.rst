@@ -183,7 +183,7 @@ accordingly), and outline with a thin, blue pen, use
 
    ::
 
-    gmt psimage logo.jpg -Dx0/0+w1i -F+pthin,blue > image.ps
+    gmt psimage logo.jpg -Dx0/0+w1i -F+pthin,blue -pdf image
 
 To include an Encapsulated PostScript file tiger.eps with its upper
 right corner 2 inch to the right and 1 inch up from the current
@@ -192,7 +192,7 @@ aspect ratio, use
 
    ::
 
-    gmt psimage tiger.eps -Dx2i/1i+jTR+w3i > image.ps
+    gmt psimage tiger.eps -Dx2i/1i+jTR+w3i -pdf image
 
 To replicate the 1-bit raster image template 1_bit.ras, colorize it
 (brown background and red foreground), and setting each of 5 by 5 tiles
@@ -200,7 +200,7 @@ to be 1 cm wide, use
 
    ::
 
-    gmt psimage 1_bit.ras -Gbbrown -Gfred -Dx0/0+w1c+n5 > image.ps
+    gmt psimage 1_bit.ras -Gbbrown -Gfred -Dx0/0+w1c+n5 -pdf image
 
 See Also
 --------

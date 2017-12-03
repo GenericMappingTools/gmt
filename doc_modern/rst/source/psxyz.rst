@@ -6,7 +6,7 @@ psxyz
 
 .. only:: not man
 
-    psxyz - Plot lines, polygons, and symbols in 3-D
+    Plot lines, polygons, and symbols in 3-D
 
 Synopsis
 --------
@@ -239,9 +239,9 @@ southeast at 30 degree elevation, use:
 
    ::
 
-    gmt psxyz heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c \
-              -Gblue -Bx2+lXLABEL -By2+lYLABEL -Bz10+lZLABEL -B+t"3-D PLOT" -p135/30 \
-              -Uc -W -P > heights.ps
+    gmt psxyz heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c
+              -Gblue -Bx2+lXLABEL -By2+lYLABEL -Bz10+lZLABEL -B+t"3-D PLOT" -p135/30
+              -Uc -W -P -pdf heights
 
 Segment Header Parsing
 ----------------------

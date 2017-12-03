@@ -6,7 +6,7 @@ pssolar
 
 .. only:: not man
 
-    pssolar - Calculate and plot the day-night terminator
+    Calculate and plot the day-night terminator
 
 Synopsis
 --------
@@ -157,9 +157,10 @@ Plot the day-night and civil twilight
 
    ::
 
-    gmt pscoast -Rd -W0.1p -JQ0/14c -Ba -BWSen -Dl -A1000 -P -K > terminator.ps
-
-    gmt pssolar -R -J -W1p -Tdc -O >> terminator.ps
+    gmt begin
+    gmt pscoast -Rd -W0.1p -JQ0/14c -Ba -BWSen -Dl -A1000
+    gmt pssolar -W1p -Tdc
+    gmt end
 
 Set up a clip path overlay based on the day/night terminator: 
 
