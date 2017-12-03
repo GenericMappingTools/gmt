@@ -4227,9 +4227,23 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 		if (!gmt_M_is_dnan (GMT->current.io.curr_rec[col_no])) {	/* Clean data */
 			if (col_no > 1 && gmt_input_is_nan_proxy (GMT, GMT->current.io.curr_rec[col_no]))	/* Input matched no-data setting, so change to NaN */
 				GMT->current.io.curr_rec[col_no] = GMT->session.d_NaN;
-			else {	/* Still clean, so skip to next column */
-				if (gmt_M_type (GMT, GMT_IN, col_no) & GMT_IS_LON)	/* Must account for periodicity in 360 as per current rule */
-					gmtio_adjust_periodic_lon (GMT, &GMT->current.io.curr_rec[col_no]);
+			else {	/* Still clean, so possibly adjust value and skip to next column */
+				switch (gmt_M_type (GMT, GMT_IN, col_no)) {
+					case GMT_IS_LON:	/* Must account for periodicity in 360 as per current rule */
+						gmtio_adjust_periodic_lon (GMT, &GMT->current.io.curr_rec[col_no]);
+						break;
+					case GMT_IS_LAT:
+						if (GMT->current.io.curr_rec[col_no] < -90.0 || GMT->current.io.curr_rec[col_no] > +90.0) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Latitude (%g) at line # %" PRIu64 " exceeds -|+ 90! - set to NaN\n", GMT->current.io.curr_rec[col_no], GMT->current.io.rec_no);
+							GMT->current.io.curr_rec[col_no] = GMT->session.d_NaN;
+						}
+						break;
+					case GMT_IS_DIMENSION:	/* Convert to internal inches */
+						GMT->current.io.curr_rec[col_no] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+						break;
+					default:	/* Nothing to do */
+						break;
+				}
 				continue;
 			}
 		}
