@@ -476,10 +476,11 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 						seg_weight = atof (header);
 					else
 						seg_weight = weight;
-					/* Convert the entire segment to geocentric latitude */
-					for (row = 0; row < S->n_rows; row++) S->data[GMT_Y][row] = gmt_lat_swap (GMT, S->data[GMT_Y][row], GMT_LATSWAP_G2O);
+					/* Convert the entire segment to geocentric latitude as we go through */
+					S->data[GMT_Y][0] = gmt_lat_swap (GMT, S->data[GMT_Y][0], GMT_LATSWAP_G2O);
 					gmt_geo_to_cart (GMT, S->data[GMT_Y][0], S->data[GMT_X][0], P1, true);	/* get x/y/z of first point P1 */
 					for (row = 1; row < S->n_rows; row++) {
+						S->data[GMT_Y][row] = gmt_lat_swap (GMT, S->data[GMT_Y][row], GMT_LATSWAP_G2O);
 						gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
 						L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM * seg_weight;	/* Weighted length of this segment */
 						sum_L += L;	/* Add up total weight sum */
@@ -501,7 +502,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 				for (d = POLESPOTTER_AH; d <= POLESPOTTER_FZ; d++) {
 					if (In[d] == NULL) continue;	/* Don't have this data set */
 					weight = (d == POLESPOTTER_AH) ? Ctrl->A.weight : Ctrl->F.weight;
-					sigma  = (d == POLESPOTTER_AH) ? Ctrl->A.sigma : Ctrl->F.sigma;	/* Is 1/sigma, actually */
+					sigma  = (d == POLESPOTTER_AH) ? Ctrl->A.sigma  : Ctrl->F.sigma;	/* Is 1/sigma, actually */
 					for (tbl = 0; tbl < In[d]->n_tables; tbl++) {
 						for (seg = 0; seg < In[d]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 							S = In[d]->table[tbl]->segment[seg];	/* Set shortcut to current segment */
@@ -535,7 +536,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, plon);
 		gmt_M_free (GMT, plat);
 			
-		for (node = 0; node < Grid->header->size; node++) Grid->data[node] /= sum_L;	/* Correct from weight sum */
+		for (node = 0; node < Grid->header->size; node++) Grid->data[node] /= sum_L;	/* Correct for weight sum */
 	}
 	if (Ctrl->G.active) {	/* Write the spotting grid */
 		double max = -DBL_MAX;
