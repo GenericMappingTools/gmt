@@ -164,10 +164,6 @@ programs. No space between the option flag and the associated arguments.
 
 .. include:: explain_-Jproj4_full.rst_
 
-.. include:: explain_-K_full.rst_
-
-.. include:: explain_-O_full.rst_
-
 .. include:: explain_-P_full.rst_
 
 .. include:: explain_-R_full.rst_
