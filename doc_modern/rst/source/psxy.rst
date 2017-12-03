@@ -406,7 +406,7 @@ See Also
 
 :doc:`gmt`, :doc:`gmt.conf`,
 :doc:`gmtcolors`,
-:doc:`psbasemap`, :doc:`plotz`
+:doc:`psbasemap`, :doc:`plot`
 
 .. ------------------------------------- Examples per option -------------------
 
