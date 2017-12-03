@@ -7,7 +7,7 @@ gmt grdmath -R-30/30/-35/35 -I1 -fg 0 = t.nc
 gmt grdtrack -Gt.nc FZ.txt -C1000k/100k/100k+r -Ar > AH.txt
 # Determine the pole chi-squared just from FZs
 gmt polespotter -FFZ.txt -Sp -R-80/-40/-20/20 -I20m -Gmisfit.nc -N
-makecpt -Chot -T0/0.01 > t.cpt
+gmt makecpt -Chot -T0/0.01 > t.cpt
 gmt grdimage misfit.nc -BWSne -JM2.85i -Ct.cpt -P -K -Baf -X1.25i -Y0.75i > $ps
 gmt grdcontour misfit.nc -J -O -K -C0.01 -L0.009/0.011 >> $ps
 echo "FZ" | gmt pstext -R -J -O -K -F+f18p+cTL+jTL -Dj0.2i -Gwhite -W1p >> $ps
