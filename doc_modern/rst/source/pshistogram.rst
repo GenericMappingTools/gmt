@@ -223,7 +223,7 @@ using a 250 meter bin width, center bars, and draw bar outline, use:
 
    ::
 
-    gmt pshistogram v3206.t -JXh -W250 -F -LP0.5p -V > plot.ps
+    gmt pshistogram v3206.t -JXh -W250 -F -LP0.5p -V -pdf plot
 
 If you know the distribution of your data, you may explicitly specify
 range and scales. E.g., to plot a histogram of the y-values (2nd column)
@@ -233,8 +233,8 @@ bars, run:
 
    ::
 
-    gmt pshistogram errors.xy -W1 -R-10/10/0/0 -Jxc/0.01c \
-                    -Bx2+lError -By100+lCounts -Gblack -i1 -V > plot.ps
+    gmt pshistogram errors.xy -W1 -R-10/10/0/0 -Jxc/0.01c
+                    -Bx2+lError -By100+lCounts -Gblack -i1 -V -pdf plot
 
 Since no y-range was specified, **pshistogram** will calculate *ymax* in even
 increments of 100.

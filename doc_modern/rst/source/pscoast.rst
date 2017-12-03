@@ -1,19 +1,19 @@
-.. index:: ! pscoast
+.. index:: ! coast
 
 *******
-pscoast
+coast
 *******
 
 .. only:: not man
 
-    pscoast - Plot continents, shorelines, rivers, and borders on maps
+    Plot continents, shorelines, rivers, and borders on maps
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**pscoast** |-J|\ *parameters*
+**coast** |-J|\ *parameters*
 |SYN_OPT-R|
 [ |-A|\ *area* ]
 [ |SYN_OPT-B| ]
@@ -46,7 +46,7 @@ Synopsis
 Description
 -----------
 
-**pscoast** plots grayshaded, colored, or textured land-masses [or
+**coast** plots grayshaded, colored, or textured land-masses [or
 water-masses] on maps and [optionally] draws coastlines, rivers, and
 political boundaries. Alternatively, it can (1) issue clip
 paths that will contain all land or all water areas, or
@@ -297,15 +297,15 @@ scale 0.1 inch/degree, use
 
    ::
 
-    gmt pscoast -R-30/30/-40/40 -Jm0.1i -B5 -I1/1p,blue -N1/0.25p,- \
-                -I2/0.25p,blue -W0.25p,white -Ggreen -Sblue -P > africa.ps
+    gmt coast -R-30/30/-40/40 -Jm0.1i -B5 -I1/1p,blue -N1/0.25p,-
+                -I2/0.25p,blue -W0.25p,white -Ggreen -Sblue -P -pdf africa
 
 To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a
 Mercator map at scale 1 cm/degree, run
 
    ::
 
-    gmt pscoast -R-30/-10/60/65 -Jm1c -B5 -Gp28+r100 > iceland.ps
+    gmt coast -R-30/-10/60/65 -Jm1c -B5 -Gp28+r100 -pdf iceland
 
 To initiate a clip path for Africa so that the subsequent colorimage of
 gridded topography is only seen over land, using a Mercator map at scale
@@ -313,9 +313,11 @@ gridded topography is only seen over land, using a Mercator map at scale
 
    ::
 
-    gmt pscoast -R-30/30/-40/40 -Jm0.1i -B5 -Gc -P -K > africa.ps
-    gmt grdimage -Jm0.1i etopo5.nc -Ccolors.cpt -O -K >> africa.ps
-    gmt pscoast -Q -O >> africa.ps
+    gmt begin
+    gmt coast -R-30/30/-40/40 -Jm0.1i -B5 -Gc
+    gmt grdimage etopo5.nc -Ccolors.cpt
+    gmt coast -Q
+    gmt end
 
 To plot Great Britain, Italy, and France in blue with a red outline and
 Spain, Portugal and Greece in yellow (no outline), and pick up the plot
@@ -323,16 +325,16 @@ domain form the extents of these countries, use
 
    ::
 
-    gmt pscoast -JM6i -P -Baf -EGB,IT,FR+gblue+p0.25p,red -EES,PT,GR+gyellow > map.ps
+    gmt coast -JM6i -P -Baf -EGB,IT,FR+gblue+p0.25p,red -EES,PT,GR+gyellow -pdf map
 
 To extract a high-resolution coastline data table for Iceland to be used
 in your analysis, try
 
    ::
 
-    gmt pscoast -R-26/-12/62/68 -Dh -W -M > iceland.txt
+    gmt coast -R-26/-12/62/68 -Dh -W -M > iceland.txt
 
-**pscoast** will first look for coastline files in directory
+**coast** will first look for coastline files in directory
 **$GMT_SHAREDIR**/coast If the desired file is not found, it will look
 for the file **$GMT_SHAREDIR**/coastline.conf. This file may contain
 any number of records that each holds the full pathname of an
@@ -363,14 +365,14 @@ data, e.g., satellite images, more recent coastline data, etc. We are
 aware of such mismatches but cannot undertake band-aid solutions each
 time this occurs.
 
-Some users of **pscoast** will not be satisfied with what they find for
+Some users of **coast** will not be satisfied with what they find for
 the Antarctic shoreline. In Antarctica, the boundary between ice and
 ocean varies seasonally and inter-annually. There are some areas of
 permanent shelf ice. In addition to these time-varying ice-ocean
 boundaries, there are also shelf ice grounding lines where ice goes from
 floating on the sea to sitting on land, and lines delimiting areas of
 rock outcrop. For consistency's sake, we have used the World Vector
-Shoreline throughout the world in **pscoast**, as described in the GMT
+Shoreline throughout the world in **coast**, as described in the GMT
 Cookbook Appendix K. Users who need specific boundaries in Antarctica
 should get the Antarctic Digital Database, prepared by the British
 Antarctic Survey, Scott Polar Research Institute, World Conservation

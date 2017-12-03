@@ -1,8 +1,8 @@
-.. index:: ! pscontour
+.. index:: ! contour
 
 
 *********
-pscontour
+contour
 *********
 
 .. only:: not man
@@ -14,7 +14,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**pscontour** [ *table* ] |-J|\ *parameters*
+**contour** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A|\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
@@ -46,10 +46,10 @@ Synopsis
 Description
 -----------
 
-**pscontour** reads an ASCII [or binary] *table* and produces a raw
+**contour** reads an ASCII [or binary] *table* and produces a raw
 contour plot by triangulation. By default, the optimal Delaunay
 triangulation is performed (using either Shewchuk's [1996] or Watson's
-[1982] method as selected during GMT installation; type **pscontour**
+[1982] method as selected during GMT installation; type **contour**
 **-** to see which method is selected), but the user may optionally
 provide a second file with network information, such as a triangular
 mesh used for finite element modeling. In addition to contours, the area
@@ -269,7 +269,7 @@ map at 0.5 inch/degree along the standard parallels 18 and 24, use
 
    ::
 
-    gmt pscontour topo.xyz -R320/330/20/30 -Jl18/24/0.5i -Ctopo.cpt -W0.5p > topo.ps
+    gmt contour topo.xyz -R320/330/20/30 -Jl18/24/0.5i -Ctopo.cpt -W0.5p -pdf topo
 
 To create a color plot of the numerical temperature
 solution obtained on a triangular mesh whose node coordinates and
@@ -278,14 +278,14 @@ file mesh.ijk, using the colors in temp.cpt, run
 
    ::
 
-    gmt pscontour temp.xyz -R0/150/0/100 -Jx0.1i -Ctemp.cpt -G -W0.25p > temp.ps
+    gmt contour temp.xyz -R0/150/0/100 -Jx0.1i -Ctemp.cpt -G -W0.25p -pdf temp
 
 To save the triangulated 100-m contour lines in topo.txt and separate
 them into multisegment files (one for each contour level), try
 
    ::
 
-    gmt pscontour topo.txt -C100 -Dcontours_%.0f.txt
+    gmt contour topo.txt -C100 -Dcontours_%.0f.txt
 
 See Also
 --------

@@ -6,7 +6,7 @@ psclip
 
 .. only:: not man
 
-    psclip - Initialize or terminate polygonal clip paths
+    Initialize or terminate polygonal clip paths
 
 Synopsis
 --------
@@ -174,13 +174,13 @@ area to which all subsequent plotting will be confined, run:
 
    ::
 
-    gmt psclip my_region.xy -R0/40/0/40 -Jm0.3i -K > clip_mask_on.ps
+    gmt clip my_region.xy -R0/40/0/40 -Jm0.3i -K > clip_mask_on.ps
 
 To deactivate the clipping in an existing plotfile, run:
 
    ::
 
-    gmt psclip -C -O >> complex_plot.ps
+    gmt clip -C -O >> complex_plot.ps
 
 See Also
 --------

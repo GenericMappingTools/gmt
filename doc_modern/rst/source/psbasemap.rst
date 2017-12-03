@@ -1,19 +1,19 @@
-.. index:: ! psbasemap
+.. index:: ! basemap
 
 *********
-psbasemap
+basemap
 *********
 
 .. only:: not man
 
-    psbasemap - Plot base maps and frames
+    Plot base maps and frames
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psbasemap** |-J|\ *parameters*
+**basemap** |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
 [ |-A|\ [*file*] ]
@@ -37,7 +37,7 @@ Synopsis
 Description
 -----------
 
-**psbasemap** creates a basic or fancy basemap with axes, fill, and titles.
+**basemap** creates a basic or fancy basemap with axes, fill, and titles.
 Several map projections are available, and the user may specify separate
 tick-mark intervals for boundary annotation, ticking, and [optionally]
 gridlines. A simple map scale or directional rose may also be plotted.
@@ -181,7 +181,7 @@ annotating every 2, and using xlabel = "Distance" and ylabel = "No of samples", 
 
    ::
 
-    gmt psbasemap -R0/9/0/5 -Jx1 -Bf1a2 -Bx+lDistance -By+l"No of samples" -BWeSn > linear.ps
+    gmt basemap -R0/9/0/5 -Jx1 -Bf1a2 -Bx+lDistance -By+l"No of samples" -BWeSn -pdf linear
 
 Log-log plot
 ~~~~~~~~~~~~
@@ -192,7 +192,7 @@ annotated every power of 10 but has tick-marks every 0.1, run
 
    ::
 
-    gmt psbasemap -R1/10000/1e20/1e25 -JX25cl/15cl -Bx2+lWavelength -Bya1pf3+lPower -BWS > loglog.ps
+    gmt basemap -R1/10000/1e20/1e25 -JX25cl/15cl -Bx2+lWavelength -Bya1pf3+lPower -BWS -pdf loglog
 
 Power axes
 ~~~~~~~~~~
@@ -203,7 +203,7 @@ at 1 my, 4 my, 9 my etc, use
 
    ::
 
-    gmt psbasemap -R0/100/0/5000 -Jx1p0.5/-0.001 -Bx1p+l"Crustal age" -By500+lDepth > power.ps
+    gmt basemap -R0/100/0/5000 -Jx1p0.5/-0.001 -Bx1p+l"Crustal age" -By500+lDepth -pdf power
 
 Polar (theta,r) plot
 ~~~~~~~~~~~~~~~~~~~~
@@ -214,7 +214,7 @@ automatically determined, use
 
    ::
 
-    gmt psbasemap -R0/360/0/1000 -JP6i -Bafg > polar.ps
+    gmt basemap -R0/360/0/1000 -JP6i -Bafg -pdf polar
 
 Cylindrical Map Projections
 ---------------------------
@@ -226,7 +226,7 @@ A 10-cm-wide basemap using the Cassini projection may be obtained by
 
    ::
 
-    gmt psbasemap -R20/50/20/35 -JC35/28/10c -P -Bafg -B+tCassini > cassini.ps
+    gmt basemap -R20/50/20/35 -JC35/28/10c -P -Bafg -B+tCassini -pdf cassini
 
 Mercator [conformal]
 ~~~~~~~~~~~~~~~~~~~~
@@ -237,7 +237,7 @@ plotted as
 
    ::
 
-    gmt psbasemap -R90/180/-50/50 -Jm0.025i -Bafg -B+tMercator -Lx1i/1i+c0+w5000k > mercator.ps
+    gmt basemap -R90/180/-50/50 -Jm0.025i -Bafg -B+tMercator -Lx1i/1i+c0+w5000k -pdf mercator
 
 Miller
 ~~~~~~
@@ -246,7 +246,7 @@ A global Miller cylindrical map with scale 1:200,000,000 may be plotted as
 
    ::
 
-    gmt psbasemap -Rg -Jj180/1:200000000 -Bafg -B+tMiller > miller.ps
+    gmt basemap -Rg -Jj180/1:200000000 -Bafg -B+tMiller -pdf miller
 
 Oblique Mercator [conformal]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -256,7 +256,7 @@ To create a page-size global oblique Mercator basemap for a pole at
 
    ::
 
-    gmt psbasemap -R0/360/-70/70 -Joc0/0/90/30/0.064cd -B30g30 -B+t"Oblique Mercator" > oblmerc.ps
+    gmt basemap -R0/360/-70/70 -Joc0/0/90/30/0.064cd -B30g30 -B+t"Oblique Mercator" -pdf oblmerc
 
 Transverse Mercator [conformal]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -265,7 +265,7 @@ A regular Transverse Mercator basemap for some region may look like
 
    ::
 
-    gmt psbasemap -R69:30/71:45/-17/-15:15 -Jt70/1:1000000 -Bafg -B+t"Survey area" -P > transmerc.ps
+    gmt basemap -R69:30/71:45/-17/-15:15 -Jt70/1:1000000 -Bafg -B+t"Survey area" -P -pdf transmerc
 
 Equidistant Cylindrical Projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -275,7 +275,7 @@ global basemap centered on the 130E meridian is made by
 
    ::
 
-    gmt psbasemap -R-50/310/-90/90 -JQ130/25c -Bafg -B+t"Equidistant Cylindrical" > cyl_eqdist.ps
+    gmt basemap -R-50/310/-90/90 -JQ130/25c -Bafg -B+t"Equidistant Cylindrical" -pdf cyl_eqdist
 
 Universal Transverse Mercator [conformal]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -285,7 +285,7 @@ the central meridian. A UTM basemap for Indo-China can be plotted as
 
    ::
 
-    gmt psbasemap -R95/5/108/20r -Ju46/1:10000000 -Bafg -B+tUTM > utm.ps
+    gmt basemap -R95/5/108/20r -Ju46/1:10000000 -Bafg -B+tUTM -pdf utm
 
 Cylindrical Equal-Area
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -297,7 +297,7 @@ on the Pacific is made by
 
    ::
 
-    gmt psbasemap -Rg -JY180/45/9i -Bafg -B+tGall-Peters > gall-peters.ps
+    gmt basemap -Rg -JY180/45/9i -Bafg -B+tGall-Peters -pdf gall-peters
 
 Conic Map Projections
 ---------------------
@@ -309,7 +309,7 @@ A basemap for middle Europe may be created by
 
    ::
 
-    gmt psbasemap -R0/90/25/55 -Jb45/20/32/45/0.25c -Bafg -B+t"Albers Equal-area" > albers.ps
+    gmt basemap -R0/90/25/55 -Jb45/20/32/45/0.25c -Bafg -B+t"Albers Equal-area" -pdf albers
 
 Lambert [conformal]
 ~~~~~~~~~~~~~~~~~~~
@@ -318,7 +318,7 @@ Another basemap for middle Europe may be created by
 
    ::
 
-    gmt psbasemap -R0/90/25/55 -Jl45/20/32/45/0.1i -Bafg -B+t"Lambert Conformal Conic" > lambertc.ps
+    gmt basemap -R0/90/25/55 -Jl45/20/32/45/0.1i -Bafg -B+t"Lambert Conformal Conic" -pdf lambertc
 
 Equidistant
 ~~~~~~~~~~~
@@ -327,7 +327,7 @@ Yet another basemap of width 6 inch for middle Europe may be created by
 
    ::
 
-    gmt psbasemap -R0/90/25/55 -JD45/20/32/45/6i -Bafg -B+t"Equidistant conic" > econic.ps
+    gmt basemap -R0/90/25/55 -JD45/20/32/45/6i -Bafg -B+t"Equidistant conic" -pdf econic
 
 Polyconic
 ~~~~~~~~~
@@ -336,7 +336,7 @@ A basemap for north America may be created by
 
    ::
 
-    gmt psbasemap -R-180/-20/0/90 -JPoly/4i -Bafg -B+tPolyconic > polyconic.ps
+    gmt basemap -R-180/-20/0/90 -JPoly/4i -Bafg -B+tPolyconic -pdf polyconic
 
 Azimuthal Map Projections
 -------------------------
@@ -349,7 +349,7 @@ will give the following basemap:
 
    ::
 
-    gmt psbasemap -Rg -JA-80/-30/15c -Bafg -B+t"Lambert Azimuthal" > lamberta.ps
+    gmt basemap -Rg -JA-80/-30/15c -Bafg -B+t"Lambert Azimuthal" -pdf lamberta
 
 Follow the instructions for stereographic projection if you want to
 impose rectangular boundaries on the azimuthal equal-area map but
@@ -363,7 +363,7 @@ to any point is true can be obtained by:
 
    ::
 
-    gmt psbasemap -Rg -JE125/10/15c -Bafg -B+tEquidistant > equi.ps
+    gmt basemap -Rg -JE125/10/15c -Bafg -B+tEquidistant -pdf equi
 
 Gnomonic
 ~~~~~~~~
@@ -373,7 +373,7 @@ A view of the world from the vantage point -100/40 out to a horizon of
 
    ::
 
-    gmt psbasemap -Rg -JF-100/40/60/6i -Bafg -B+tGnomonic > gnomonic.ps
+    gmt basemap -Rg -JF-100/40/60/6i -Bafg -B+tGnomonic -pdf gnomonic
 
 Orthographic
 ~~~~~~~~~~~~
@@ -383,7 +383,7 @@ vantage point 125/10 will give the following 6-inch-wide basemap:
 
    ::
 
-    gmt psbasemap -Rg -JG125/10/6i -Bafg -B+tOrthographic > ortho.ps
+    gmt basemap -Rg -JG125/10/6i -Bafg -B+tOrthographic -pdf ortho
 
 General Perspective
 ~~~~~~~~~~~~~~~~~~~
@@ -396,7 +396,7 @@ and height will product a 6-inch-wide basemap:
 
    ::
 
-    gmt psbasemap -Rg -JG-74/41.5/160/210/55/30/30/6i -Bafg -B+t"General Perspective" > genper.ps
+    gmt basemap -Rg -JG-74/41.5/160/210/55/30/30/6i -Bafg -B+t"General Perspective" -pdf genper
 
 Stereographic [conformal]
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -407,7 +407,7 @@ degrees annotation/tick interval and 1 degree gridlines, run
 
    ::
 
-    gmt psbasemap -R-45/45/-90/-60 -Js0/-90/12c/-60 -B5g1 -B+t"Salinity measurements" > stereo1.ps
+    gmt basemap -R-45/45/-90/-60 -Js0/-90/12c/-60 -B5g1 -B+t"Salinity measurements" -pdf stereo1
 
 To make a 12-cm-wide stereographic basemap for Australia from an
 arbitrary view point (not the poles), and use a rectangular boundary, we
@@ -418,7 +418,7 @@ define our rectangle. We choose a pole at 130/-30 and use 100/-45 and
 
    ::
 
-    gmt psbasemap -R100/-45/160/-5r -JS130/-30/12c -Bafg -B+t"General Stereographic View" > stereo2.ps
+    gmt basemap -R100/-45/160/-5r -JS130/-30/12c -Bafg -B+t"General Stereographic View" -pdf stereo2
 
 `Miscellaneous Map Projections <#toc33>`_
 -----------------------------------------
@@ -432,7 +432,7 @@ scale of 1:200000000, use
 
    ::
 
-    gmt psbasemap -Rd -Jh0/1:200000000 -Bafg -B+tHammer > hammer.ps
+    gmt basemap -Rd -Jh0/1:200000000 -Bafg -B+tHammer -pdf hammer
 
 Sinusoidal [equal-area]
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -442,7 +442,7 @@ the equator of 0.02 inch/degree, use
 
    ::
 
-    gmt psbasemap -Rd -Ji0/0.02i -Bafg -B+tSinusoidal > sinus1.ps
+    gmt basemap -Rd -Ji0/0.02i -Bafg -B+tSinusoidal -pdf sinus1
 
 To make an interrupted sinusoidal world map with breaks at 160W, 20W,
 and 60E, with a scale along the equator of 0.02 inch/degree, run the
@@ -450,9 +450,11 @@ following sequence of commands:
 
    ::
 
-    gmt psbasemap -R-160/-20/-90/90 -Ji-90/0.02i -Bx30g30 -By15g15 -BWesn -K > sinus_i.ps
-    gmt psbasemap -R-20/60/-90/90 -Ji20/0.02i -Bx30g30 -By15g15 -Bwesn -O -K -X2.8i >> sinus_i.ps
-    gmt psbasemap -R60/200/-90/90 -Ji130/0.02i -Bx30g30 -By15g15 -BwEsn -O -X1.6i >> sinus_i.ps
+    gmt begin
+    gmt basemap -R-160/-20/-90/90 -Ji-90/0.02i -Bx30g30 -By15g15 -BWesn 
+    gmt basemap -Bx30g30 -By15g15 -Bwesn --X2.8i
+    gmt basemap -Bx30g30 -By15g15 -BwEsn -X1.6i
+    gmt end
 
 Eckert IV [equal-area]
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -462,7 +464,7 @@ the central longitude and scale, e.g.,
 
    ::
 
-    gmt psbasemap -Rg -Jkf180/0.064c -Bafg -B+t"Eckert IV" > eckert4.ps
+    gmt basemap -Rg -Jkf180/0.064c -Bafg -B+t"Eckert IV" -pdf eckert4
 
 Eckert VI [equal-area]
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -472,7 +474,7 @@ only. Set the central longitude and scale, e.g.,
 
    ::
 
-    gmt psbasemap -Rg -Jks180/0.064c -Bafg -B+t"Eckert VI" > eckert6.ps
+    gmt basemap -Rg -Jks180/0.064c -Bafg -B+t"Eckert VI" -pdf eckert6
 
 Robinson
 ~~~~~~~~
@@ -482,7 +484,7 @@ longitude and width, e.g.,
 
    ::
 
-    gmt psbasemap -Rd -JN0/8i -Bafg -B+tRobinson > robinson.ps
+    gmt basemap -Rd -JN0/8i -Bafg -B+tRobinson -pdf robinson
 
 Winkel Tripel
 ~~~~~~~~~~~~~
@@ -492,7 +494,7 @@ the central longitude, e.g.,
 
    ::
 
-    gmt psbasemap -R90/450/-90/90 -JR270/25c -Bafg -B+t"Winkel Tripel" > winkel.ps
+    gmt basemap -R90/450/-90/90 -JR270/25c -Bafg -B+t"Winkel Tripel" -pdf winkel
 
 Mollweide [equal-area]
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -503,7 +505,7 @@ the Dateline:
 
    ::
 
-    psbasemap -Rg -JW180/25c -Bafg -B+tMollweide > mollweide.ps
+    basemap -Rg -JW180/25c -Bafg -B+tMollweide -pdf mollweide
 
 Van der Grinten
 ~~~~~~~~~~~~~~~
@@ -513,7 +515,7 @@ thus the spherical form is used. To get a 18-cm-wide world map centered on the D
 
    ::
 
-    gmt psbasemap -Rg -JV180/18c -Bafg -B+t"Van der Grinten" > grinten.ps
+    gmt basemap -Rg -JV180/18c -Bafg -B+t"Van der Grinten" -pdf grinten
 
 Arbitrary rotation
 ~~~~~~~~~~~~~~~~~~
@@ -524,7 +526,7 @@ degrees about an axis centered on the map, try
 
    ::
 
-    gmt psbasemap -R10/40/10/40 -JM10c -P -Bafg -B+t"I am rotated" -p90+w25/25 -Xc > rotated.ps
+    gmt basemap -R10/40/10/40 -JM10c -P -Bafg -B+t"I am rotated" -p90+w25/25 -Xc -pdf rotated
 
 Custom Labels or Intervals
 --------------------------
