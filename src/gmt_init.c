@@ -623,12 +623,13 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 		case 2: /* Conical: Use default patch */
 			break;
 		case 3: /* Azimuthal: Use default patch, or hemisphere for polar projections */
-			wesn[XLO] = GMT->current.proj.lon0 - 180.0;	wesn[XHI] = GMT->current.proj.lon0 + 180.0;
 			if (doubleAlmostEqualZero (GMT->current.proj.lat0, 90.0)) {
 				wesn[YLO] = 0.0;	wesn[YHI] = 90.0;
+				wesn[XLO] = GMT->current.proj.lon0 - 180.0;	wesn[XHI] = GMT->current.proj.lon0 + 180.0;
 			}
 			else if (doubleAlmostEqualZero (GMT->current.proj.lat0, -90.0)) {
 				wesn[YLO] = -90.0;	wesn[YHI] = 0.0;
+				wesn[XLO] = GMT->current.proj.lon0 - 180.0;	wesn[XHI] = GMT->current.proj.lon0 + 180.0;
 			}
 			break;
 		case 4: /* Global: Give global region */
