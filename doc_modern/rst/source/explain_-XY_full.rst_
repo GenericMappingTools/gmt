@@ -14,6 +14,6 @@
     (*x-shift*,\ *y-shift*) is (r0), otherwise it is (r1i). When **-X**
     or **-Y** are used without any further arguments, the values from
     the last use of that option in a previous GMT command will be used.
-    Note that **-X** and **-Y** can now access the previous plot dimensions
+    Note that **-X** and **-Y** can also access the previous plot dimensions
     *w* and *h* and construct offsets that involves them.  For instance, to move the origin
     up 2 cm beyond the height of the previous plot, use **-Yh**\ +2c.

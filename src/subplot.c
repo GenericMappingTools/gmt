@@ -954,6 +954,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, cmd);
 		if (Ctrl->T.active) fprintf (fp, "# HEADING: %g %g %s\n", 0.5 * width, y_heading, Ctrl->T.title);
 		fprintf (fp, "# ORIGIN: %g %g\n", off[GMT_X], off[GMT_Y]);
+		fprintf (fp, "# DIMENSION: %g %g\n", width, height);
 		fprintf (fp, "# PARALLEL: %d\n", Ctrl->S[GMT_Y].parallel);
 		if (GMT->common.J.active && GMT->current.proj.projection == GMT_LINEAR)	/* Write axes directions as +1 or -1 */
 			fprintf (fp, "# DIRECTION: %d %d\n", 2*GMT->current.proj.xyz_pos[GMT_X]-1, 2*GMT->current.proj.xyz_pos[GMT_Y]-1);
@@ -1067,6 +1068,15 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		int k;
 		char *wmode[2] = {"w","a"}, vfile[GMT_STR16] = {""};
 		FILE *fp = NULL;
+		struct GMT_SUBPLOT *P = NULL;
+		
+		/* Update the previous plot width and height to that of the entire subplot instead of just last panel */
+		if ((P = gmt_subplot_info (API, fig)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No subplot information file!\n");
+			Return (GMT_ERROR_ON_FOPEN);
+		}
+		API->GMT->current.map.width  = P->dim[GMT_X];
+		API->GMT->current.map.height = P->dim[GMT_Y];
 		
 		/* Must force PSL_completion to run, if set */
 		if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {	/* Get hidden file name for PS */

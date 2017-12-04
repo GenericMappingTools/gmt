@@ -42,6 +42,7 @@ EXTERN_MSC char *gmt_strdup (struct GMT_CTRL *GMT, const char *s);
 
 /* gmt_init.c: */
 
+EXTERN_MSC struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig);
 EXTERN_MSC int get_V (char arg);
 EXTERN_MSC int gmt_get_V (char arg);
 EXTERN_MSC char gmt_set_V (int mode);

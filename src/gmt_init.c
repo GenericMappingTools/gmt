@@ -11062,7 +11062,7 @@ int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int row, u
 }
 
 /*! Return information about current panel */
-GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int fig) {
+struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 	/* Only called under modern mode */
 	char file[PATH_MAX] = {""}, line[BUFSIZ] = {""}, tmp[GMT_LEN16] = {""}, *c = NULL;
 	bool found = false;
@@ -11098,6 +11098,8 @@ GMT_LOCAL struct GMT_SUBPLOT *gmtinit_subplot_info (struct GMTAPI_CTRL *API, int
 		if (line[0] == '#') {	/* Comment line */
 			if (!strncmp (line, "# ORIGIN:", 9U))
 				sscanf (&line[10], "%lg %lg", &P->origin[GMT_X], &P->origin[GMT_Y]);
+			else if (!strncmp (line, "# DIMENSION:", 12U))
+				sscanf (&line[13], "%lg %lg", &P->dim[GMT_X], &P->dim[GMT_Y]);
 			else if (!strncmp (line, "# PARALLEL:", 11U))
 				P->parallel = atoi (&line[12]);
 			else if (!strncmp (line, "# DIRECTION:", 12U))
@@ -11801,7 +11803,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		/* Need to check for an active subplot, but NOT if the current call is "gmt subplot end" or psscale */
 		exceptionb = (!strncmp (mod_name, "psscale", 7U));
 		exceptionp = ((!strncmp (mod_name, "subplot", 7U) && *options && !strncmp ((*options)->arg, "end", 3U)));
-		if (GMT->current.ps.active && !exceptionp && (P = gmtinit_subplot_info (API, fig))) {	/* Yes, so set up current panel settings */
+		if (GMT->current.ps.active && !exceptionp && (P = gmt_subplot_info (API, fig))) {	/* Yes, so set up current panel settings */
 			bool frame_set = false, x_set = false, y_set = false;
 			char *c = NULL;
 			if (exceptionb == 0 && P->first == 1) {

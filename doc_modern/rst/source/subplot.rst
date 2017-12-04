@@ -209,23 +209,21 @@ Optional Arguments
 
 .. include:: explain_-V.rst_
 
-***
-end
-***
 
-**gmt end** [ |SYN_OPT-V| ]
+**gmt subplot end** [ |SYN_OPT-V| ]
 
-This command terminates the modern mode and finalizes the processing of all registered
-figures.  The final graphics will be placed in the current directory.
+This command finalizes the current subplot, including any placement of tags, and updates the dimensions of the
+last plot to that of the entire subplot. This allows **-X** and **-Y** to
+use *w* and *h* in setting the current point relative to the entire subplot.
 
 Examples
 --------
 
-To set up a 2x2 set of panels that all should be 2 by 2 inches in size, use
+To conclude the current subplot, simply use
 
    ::
 
-    gmt subplot to be added
+    gmt subplot end
 
 
 See Also
