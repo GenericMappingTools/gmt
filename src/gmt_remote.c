@@ -402,8 +402,8 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	give_data_attribution (API->GMT, tag);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Assembling SRTM grid from 1x1 degree tiles given by listfile %s\n", file);
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
-	
-	sprintf (cmd, "%s -R%g/%g/%g/%g -I%cs -G%s", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], res, grid);
+	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN */
+	sprintf (cmd, "%s -R%g/%g/%g/%g -I%cs -G%s -N0", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], res, grid);
 	if (GMT_Call_Module (API, "grdblend", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to produce blended grid from %s\n", file);
 		return NULL;

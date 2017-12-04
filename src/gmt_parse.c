@@ -243,7 +243,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 	 * If found, see if we have a matching command line history and then
 	 * update that entry in the option list.
 	 * Finally, keep the option arguments in the history list.
-	 * However, when func_level > 1, do update the entry, but do not
+	 * However, when func_level > GMT_TOP_MODULE, do update the entry, but do not
 	 * remember it in history. Note, there are two special cases here:
 	 * -J is special since we also need to deal with the sub-species
 	 *    like -JM, -JX, etc.  So these all have separate entries.
@@ -259,7 +259,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 	struct GMT_OPTION *opt = NULL, *opt2 = NULL, *B_next = NULL;
 	char str[3] = {""}, B_string[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, B_delim[2] = {30, 0};	/* Use ASCII 30 RS Record Separator between -B strings */
 
-	remember = (GMT->hidden.func_level == 1);   /* Only update the history for top level function */
+	remember = (GMT->hidden.func_level == GMT_TOP_MODULE);   /* Only update the history for top level function */
 
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option == 'B') {	/* Do some initial counting of how many -B options and determine if there is just one with no args */

@@ -79,6 +79,10 @@
 #define GMT_RENAME_FILE	0
 #define GMT_COPY_FILE	1
 
+#define GMT_CONTROLLER	0	/* func_level of controlling process (gmt.c or external API) */
+#define GMT_TOP_MODULE	1	/* func_level of top-level module being called */
+
+
 /* Specific feature geometries as obtained from OGR */
 /* Note: As far as registering or reading data, GMT only needs to know if data type is POINT, LINE, or POLY */
 

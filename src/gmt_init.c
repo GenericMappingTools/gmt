@@ -11565,12 +11565,15 @@ GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_O
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove -ext <prefix> options in set_modern_mode_if_oneliner.\n");
 				return GMT_NOTSET;
 			}
+			API->GMT->hidden.func_level++;	/* Must do this here since it has not yet been increased by gmt_begin_module_sub ! */
+			
 			if ((error = GMT_Call_Module (API, "begin", GMT_MODULE_CMD, session))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to call module begin from set_modern_mode_if_oneliner.\n");
 				return GMT_NOTSET;
 			}
 			API->GMT->current.setting.run_mode = GMT_MODERN;
 			API->GMT->current.ps.oneliner = true;	/* Special flag */
+			API->GMT->hidden.func_level--;	/* Restore to what we had */
 			return GMT_NOERROR;	/* All set */
 		}
 	}
@@ -11728,7 +11731,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 		opt_R = GMT_Find_Option (API, 'R', *options);
 		opt_J = gmt_find_J_option (API, *options);
-		if (GMT->hidden.func_level == 0) {	/* The -R -J -O -K prohibition only applies to top-level module call */
+		if (GMT->hidden.func_level == GMT_CONTROLLER) {	/* The -R -J -O -K prohibition only applies to top-level module call */
 			/* 1. No -O allowed */
 			if ((opt = GMT_Find_Option (API, 'O', *options))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Option -O not allowed for modern GMT mode.\n");
@@ -11876,7 +11879,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				}
 			}
-			if (GMT->hidden.func_level == 0) {	/* Top-level function called by subplot needs to handle positioning and possibly set -J */
+			if (GMT->hidden.func_level == GMT_CONTROLLER) {	/* Top-level function called by subplot needs to handle positioning and possibly set -J */
 				/* Set -X -Y for absolute positioning */
 				sprintf (arg, "a%gi", P->origin[GMT_X] + P->x);
 				if ((opt = GMT_Make_Option (API, 'X', arg)) == NULL) return NULL;	/* Failure to make option */
@@ -11947,15 +11950,29 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {
 		if (gmtlib_file_is_srtmrequest (API, opt->arg, &srtm_res)) {
+			unsigned int level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmt_begin_module_sub has not been reached yet */
 			char *list = NULL;
+			double res[4] = {0.0, 1.0/3600.0, 0.0, 3.0/3600.0};	/* Only access 1 or 3 here */
+			struct GMT_OPTION *opt_J = GMT_Find_Option (API, 'J', *options);
 			opt_R = GMT_Find_Option (API, 'R', *options);
 			if (opt_R == NULL) {
 				GMT_Report (API, GMT_MSG_DEBUG, "Cannot select %s as input without specifying a region with -R!\n", opt->arg);
 				return NULL;
 			}
-			/* Replace the magic reference to SRTM with a file list of SRTM tiles */
+			/* Replace the magic reference to SRTM with a file list of SRTM tiles.
+			 * Because GMT_Parse_Common has not been called yet, no -J has been processed yet.
+			 * Since -J may be needed if -R does oblique or give a region in projected units
+			 * we must also parse -J here first before parsing -R */
+			if (opt_J) gmtinit_parse_J_option (GMT, opt_J->arg);
 			opt_R = GMT_Find_Option (API, 'R', *options);
+			API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
 			gmt_parse_R_option (GMT, opt_R->arg);
+			API->GMT->hidden.func_level = level;	/* Reset to what it should be */
+			/* Enforce multiple of 1s or 3s in wesn so region is in phase with tiles */
+			GMT->common.R.wesn[XLO] = floor (GMT->common.R.wesn[XLO] / res[srtm_res]) * res[srtm_res];
+			GMT->common.R.wesn[XHI] = ceil  (GMT->common.R.wesn[XHI] / res[srtm_res]) * res[srtm_res];
+			GMT->common.R.wesn[YLO] = floor (GMT->common.R.wesn[YLO] / res[srtm_res]) * res[srtm_res];
+			GMT->common.R.wesn[YHI] = ceil  (GMT->common.R.wesn[YHI] / res[srtm_res]) * res[srtm_res];
 			list = gmtlib_get_srtmlist (API, GMT->common.R.wesn, srtm_res);
 			gmt_M_str_free (opt->arg);
 			opt->arg = list;
@@ -11995,7 +12012,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	GMT->current.gdal_read_in.hCT_fwd = GMT->current.gdal_read_in.hCT_inv = NULL;
 #endif
 
-	if (GMT->current.ps.oneliner) {
+	if (GMT->hidden.func_level == GMT_TOP_MODULE && GMT->current.ps.oneliner) {
 		GMT->current.ps.oneliner = false;
 		if ((i = GMT_Call_Module (GMT->parent, "end", GMT_MODULE_CMD, ""))) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to call module end for a one-liner plot.\n");
@@ -12004,7 +12021,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		GMT->current.setting.run_mode = GMT_CLASSIC;	/* all pau with modern session */
 	}
 
-	if (GMT->hidden.func_level == 1 && GMT->parent->log_level == GMT_LOG_ONCE) {	/* Reset logging to default at the end of a top-level module */
+	if (GMT->hidden.func_level == GMT_TOP_MODULE && GMT->parent->log_level == GMT_LOG_ONCE) {	/* Reset logging to default at the end of a top-level module */
 		fclose (GMT->session.std[GMT_ERR]);
 		GMT->session.std[GMT_ERR] = stderr;
 		GMT->parent->log_level = GMT_LOG_OFF;
@@ -12112,7 +12129,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	/* These are because they are kept between module calls in a same session. So we need to reset them
 	 * except for Symbol and ZapfDingbats, etc. */
-	if (GMT->hidden.func_level == 0) {	/* Only when top-level module ends */
+	if (GMT->hidden.func_level == GMT_CONTROLLER) {	/* Only when top-level module ends */
 		GMT->current.setting.verbose = GMT_MSG_COMPAT;
 		for (i = 0; i < (unsigned int)GMT->PSL->internal.N_FONTS; i++)
 			GMT->PSL->internal.font[i].encoded = GMT->PSL->internal.font[i].encoded_orig;
@@ -13491,7 +13508,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'I':
-			if (GMT->hidden.func_level > 0) return (0);	/* Just skip if we are inside a GMT module. -I is an API common option only */
+			if (GMT->hidden.func_level > GMT_CONTROLLER) return (0);	/* Just skip if we are inside a GMT module. -I is an API common option only */
 			error = gmt_parse_inc_option (GMT, 'I', item);
 			GMT->common.R.active[ISET] = true;
 			break;
@@ -14634,9 +14651,9 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	 */
 
 	/* Set workflow directory */
-	char dir[GMT_LEN256] = {""};
+	char file[PATH_MAX] = {""}, dir[GMT_LEN256] = {""};
 	static char *type[2] = {"classic", "modern"}, *smode[3] = {"Use", "Begin", "End"}, *fstatus[4] = {"found", "not found", "created", "removed"};
-	int err = 0, error = GMT_NOERROR;
+	int err = 0, fig, error = GMT_NOERROR;
 	struct stat S;
 
 	sprintf (dir, "%s/gmt%d.%d", API->tmp_dir, GMT_MAJOR_VERSION, API->PPID);
@@ -14694,6 +14711,11 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			break;
 		case GMT_END_WORKFLOW:
 			/* We only get here when gmt end is called */
+			/* Check if a subplot was left hanging */
+			fig = gmt_get_current_figure (API);	/* Get current figure number */
+			sprintf (file, "%s/gmt_%d.subplot", API->gwf_dir, fig);
+			if (!access (file, R_OK))	/* subplot end was never called */
+				GMT_Report (API, GMT_MSG_NORMAL, "subplot was never completed - plot items in last panel may be missing\n");
 			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  PPID = %d. Directory %s %s.\n", smode[mode], API->PPID, API->gwf_dir, fstatus[3]);
 			if ((error = process_figures (API)))
 				return error;

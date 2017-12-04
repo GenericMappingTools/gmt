@@ -5702,8 +5702,6 @@ int gmtapi_unregister_io (struct GMTAPI_CTRL *API, int object_ID, unsigned int d
 	if ((s_item = gmtapi_validate_id (API, GMT_NOTSET, object_ID, direction, GMT_NOTSET)) == GMT_NOTSET) return (gmtapi_report_error (API, API->error));
 
 	/* OK, now it is safe to remove the object; item >= 0 */
-if (API->GMT->hidden.func_level == 1 && API->n_objects == 2)
-	item = 0;
 
 	item = s_item;
 	S_obj = API->object[item];	/* Short-hand */

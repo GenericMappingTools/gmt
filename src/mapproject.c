@@ -907,7 +907,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			ymax += Ctrl->C.northing;
 		}
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Transform ");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Transform ");
 		if (Ctrl->N.active) {
 			char *auxlat[4] = {"authalic", "conformal", "meridional", "geocentric"};
 			GMT_Message (API, GMT_TIME_NONE, "geodetic");
