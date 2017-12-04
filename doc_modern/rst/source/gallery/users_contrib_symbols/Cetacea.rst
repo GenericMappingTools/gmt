@@ -30,7 +30,7 @@ How to use the symbols?
 
 Before to start, think in the type of map you want to obtain and prepare your data. 
 If you want to create a 2D map (most common situation) you need :doc:`psxy </psxy>`, if you want a 3D
-map you should use :doc:`psxyz </psxyz>` instead. Think also in how many different symbols you want to 
+map you should use :doc:`plot3d </plot3d>` instead. Think also in how many different symbols you want to 
 show in each individual map. You should have at least a different .xy file for each
 species that you want to show. You could want also to show separately males and females 
 or adults/youngs/calfs. In this case, you will either need to give a different size to each 
@@ -155,15 +155,15 @@ Cetacea
        	- unidentifiedwhale_low.def, unidentifiedwhale.def, unidentifiedwhale_high.def
 
 
-3: Call them including the corresponding :doc:`psxy </psxy>` or :doc:`psxyz </psxyz>` lines in a GMT script like this: 
+3: Call them including the corresponding :doc:`psxy </psxy>` or :doc:`plot3d </plot3d>` lines in a GMT script like this: 
 
 .. code-block:: none
 
     #!/bin/bash
-    gmt pscoast -JM20c -R-10/6/33/36 -K -W0.5pt/0 -P -Gblack > myfile.ps
-    gmt psxy cdolphin.xy -Skcommondolphin/ -JM20c -R-10/6/33/36 -P -K -O >> myfile.ps
-    gmt psxy bottlenose_dolphin.xy -Skbottlenose_high/0.5 -K -O ...etc >> myfile.ps
-    gmt psxy killerwhale_data.xy   -Skkillerwhale_low/0.5 -O ...etc >> myfile.ps
+    gmt coast -JM20c -R-10/6/33/36 -K -W0.5pt/0 -P -Gblack > myfile.ps
+    gmt plot cdolphin.xy -Skcommondolphin/ -JM20c -R-10/6/33/36 -P -K -O >> myfile.ps
+    gmt plot bottlenose_dolphin.xy -Skbottlenose_high/0.5 -K -O ...etc >> myfile.ps
+    gmt plot killerwhale_data.xy   -Skkillerwhale_low/0.5 -O ...etc >> myfile.ps
 
 In our examples we will place all the .xy and .def files in our working directory, 
 but you can find more convenient to move them to several subdirectories named, for

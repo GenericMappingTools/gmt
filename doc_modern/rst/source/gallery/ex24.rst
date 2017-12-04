@@ -20,7 +20,7 @@ All remaining earthquakes should be plotted in red. Rather that doing
 the selection process twice we simply plot all quakes as red circles and
 then replot those that pass our criteria. Most of the work here is done
 by :doc:`gmtselect </gmtselect>`; the rest is carried
-out by the usual :doc:`pscoast </pscoast>` and
+out by the usual :doc:`coast </coast>` and
 :doc:`psxy </psxy>` workhorses. Note for our purposes
 the Dateline is just a line along the 180 meridian.
 

@@ -245,7 +245,7 @@ file is projected with **-Jm**\ 1i it is 80 inches wide. We can make a
 map 8 inches wide by using **-Jx**\ 0.1i on any map programs applied to
 this grid (e.g., :doc:`grdcontour </grdcontour>`,
 :doc:`grdimage </grdimage>`, :doc:`grdview </grdview>`), and then
-for overlays which work in lon,lat (e.g., :doc:`psxy </psxy>`, :doc:`pscoast </pscoast>`) we can
+for overlays which work in lon,lat (e.g., :doc:`psxy </psxy>`, :doc:`coast </coast>`) we can
 use the above adjusted **-R** and **-Jm**\ 0.1 to get the two systems to
 match up.
 

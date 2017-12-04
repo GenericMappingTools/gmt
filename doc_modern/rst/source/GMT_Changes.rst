@@ -168,7 +168,7 @@ Several modules have obtained new options to extend their capabilities:
 *  :doc:`pshistogram` has a new **-Z** modifier **+w** that will
    accumulate weights provided in the 2nd input column instead of pure counts.
 
-*  :doc:`psrose` adds option **-Q** for setting the  confidence level used
+*  :doc:`rose` adds option **-Q** for setting the  confidence level used
    for a Rayleigh test for uniformity of direction.  The **-C** option also
    takes a new modifier **+w**\ *modfile* for storing mode direction to file.
 
@@ -233,7 +233,7 @@ Here is a list of modules with revised options:
 
 *  :doc:`project` expects **-G**\ *inc*\ [/*lat*\ ][**+h**\ ].
 
-*  :doc:`psrose` now wants **-L**\ [\ *wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*\ ] to
+*  :doc:`rose` now wants **-L**\ [\ *wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*\ ] to
    match the other labeling options.
 
 *  :doc:`pstext` now expects **-D**\ [**j**\ \|\ **J**\ ]\ *dx*\ [/*dy*\ ][**+v**\ [*pen*\ ]].
@@ -256,7 +256,7 @@ New modules
 -----------
 
 We have added a new module to the GMT core called
-:doc:`pssolar`.
+:doc:`solar`.
 This module plots various day-light terminators and other sunlight parameters.
 
 Two new modules have been added to the *spotter* supplement:
@@ -376,7 +376,7 @@ as well. For specific enhancements, we have:
    baseline angles to be interpreted as *orientations*, i.e., they will be
    modified to fall in the -90/+90 range when **-F**\ ...\ **+A** is set.
 
-*  :doc:`psrose` can now control the attributes of vectors in a windrose
+*  :doc:`rose` can now control the attributes of vectors in a windrose
    diagram via **-M**.
 
 *  :doc:`psxy` have seen numerous enhancements.  New features include
@@ -392,7 +392,7 @@ as well. For specific enhancements, we have:
    type of fault-slip symbol, using curved arrow heads.  Also the arrow
    head selections now include inward-pointing arrows.  Custom symbols
    may now simply be a preexisting EPS figure.  Many of these enhancements
-   are also available in :doc:`psxyz`.
+   are also available in :doc:`plot3d`.
 
 *  The spotter supplement now comes with the latest rotation files from
    EarthByte, U. of Sydney.
@@ -685,7 +685,7 @@ changes to existing syntax will be backwards compatible:
    added SVG as a new output vector graphics format and now handle transparency even if
    non-PDF output formats are requested.
 
-*  :doc:`pscontour` adds a **-Q**\ *cut* option like :doc:`grdcontour` and consolidates the
+*  :doc:`contour` adds a **-Q**\ *cut* option like :doc:`grdcontour` and consolidates the
    old **-T**, **-Q** options for an index file to a new **-E** option.
 
 *  :doc:`pshistogram` added modifiers **-W**\ *width*\ [**+l**\ \|\ **h**\ \|\ **b**]
@@ -723,7 +723,7 @@ changes to existing syntax will be backwards compatible:
    Bezier spline (**+s**), trimming the segments from the ends before plotting (**+o**\ *offset*),
    or adding vector heads at the ends of the lines (**+v**).
 
-*  :doc:`psxyz` also has the new **-SE-**\ *diameter* shorthand as well as the **-N**
+*  :doc:`plot3d` also has the new **-SE-**\ *diameter* shorthand as well as the **-N**
    modifiers for handling periodic plot symbols.  Like, psxy it gets the same improvements
    to quoted lines and adds decorated lines as a new symbol.  Likewise,
    the **-L** option has been enhanced to create envelope polygons around y(x),
@@ -800,7 +800,7 @@ promoted (and possibly renamed) from earlier supplements:
     This is the **only** program executable that is distributed with GMT 5. To avoid
     problems with namespace conflicts (e.g., there are other, non-GMT programs
     with generic names like triangulate, surface, etc.) all GMT 5 modules are
-    launched from the gmt executable via "gmt module" calls (e.g, gmt pscoast).
+    launched from the gmt executable via "gmt module" calls (e.g, gmt coast).
     For backwards compatibility (see below) we also offer symbolic links with
     the old executable names that simply point to the gmt program, which then
     can start the correct module.  Any module whose name starts with "gmt" can
@@ -914,7 +914,7 @@ implemented by a series of new lower-case GMT common options:
 
 *  All plot programs can take a new **-p** option for perspective view
    from infinity. In GMT 4, only some programs could do this (e.g.,
-   :doc:`pscoast`) and it took a
+   :doc:`coast`) and it took a
    program-specific option, typically **-E** and sometimes an option
    **-Z** would be needed as well. This information is now all passed
    via **-p** and applies across all GMT plotting programs.
@@ -1231,7 +1231,7 @@ Finally, here is a list of numerous enhancements to individual programs:
 *  :doc:`legend` no longer uses system calls to do the plotting.  The modified **-D**
    allows for minor offsets, while **-F** offers more control over the frame and fill.
 
-*  :doc:`psrose` has added **-Wv**\ *pen* to
+*  :doc:`rose` has added **-Wv**\ *pen* to
    specify pen for vector (specified in **-C**). Added **-Zu** to set all radii to
    unity (i.e., for analysis of angles only).
 
@@ -1248,7 +1248,7 @@ Finally, here is a list of numerous enhancements to individual programs:
    radial distance from point to annotation. Change all text to upper or
    lower case with **-Q**.
 
-*  :doc:`psxy` and :doc:`psxyz` both support the revised custom symbol macro
+*  :doc:`psxy` and :doc:`plot3d` both support the revised custom symbol macro
    language which has been expanded considerably to allow for complicated,
    multi-parameter symbols; see Chapter :ref:`App-custom_symbols`
    for details. Finally, we allow the base for bars and columns optionally to be

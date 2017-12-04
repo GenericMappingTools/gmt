@@ -3,17 +3,17 @@
 (17) Images clipped by coastlines
 ---------------------------------
 
-This example demonstrates how :doc:`pscoast </pscoast>`
+This example demonstrates how :doc:`coast </coast>`
 can be used to set up clip paths based on coastlines. This approach is
 well suited when different gridded data sets are to be merged on a plot
 using different CPTs. Merging the files themselves may
 not be doable since they may represent different data sets, as we show
 in this example. Here, we lay down a color map of the geoid field near
 India with :doc:`grdimage </grdimage>`, use
-:doc:`pscoast </pscoast>` to set up land clip paths, and
+:doc:`coast </coast>` to set up land clip paths, and
 then overlay topography from the ETOPO5 data set with another call to
 :doc:`grdimage </grdimage>`. We finally undo the
-clippath with a second call to :doc:`pscoast </pscoast>`
+clippath with a second call to :doc:`coast </coast>`
 with the option **-Q** (See the Figure :ref:`fig_ex17`):
 
 We also plot a color legend on top of the land. So here we basically

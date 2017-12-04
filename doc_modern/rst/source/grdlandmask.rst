@@ -152,5 +152,5 @@ See Also
 --------
 
 :doc:`gmt`, :doc:`grdmath`,
-:doc:`grdclip`, :doc:`psmask`,
-:doc:`psclip`, :doc:`pscoast`
+:doc:`grdclip`, :doc:`mask`,
+:doc:`clip`, :doc:`coast`

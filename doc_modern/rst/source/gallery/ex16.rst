@@ -3,7 +3,7 @@
 (16) Gridding of data, continued
 --------------------------------
 
-:doc:`pscontour </pscontour>` (for contouring) and
+:doc:`contour </contour>` (for contouring) and
 :doc:`triangulate </triangulate>` (for gridding) use the
 simplest method of interpolating data: a Delaunay triangulation (see
 Example :ref:`example_12`) which forms *z(x, y)* as a

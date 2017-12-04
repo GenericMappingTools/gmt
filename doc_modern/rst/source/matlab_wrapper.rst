@@ -82,7 +82,7 @@ Azimuthal projection
 
 .. code-block:: none
 
-   gmt('pscoast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -P > GMT_lambert_az_hemi.ps')
+   gmt('coast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -P > GMT_lambert_az_hemi.ps')
 
 but that is not particularly interesting as after all we could do the exact same thing on the a shell
 command line. Things start to get interesting when we can send data *in* and *out* from MATLAB to

@@ -109,7 +109,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
  #
  # add missing Z-box lines overwritten by slice plot
  #
- gmt psxyz -R-75/-60/-50/-40/0/999 -JM-67.5/-45/16 -JZ8 -W1p,black -pz135/30+v10/5 -O >> mag.ps << EOF
+ gmt plot3d -R-75/-60/-50/-40/0/999 -JM-67.5/-45/16 -JZ8 -W1p,black -pz135/30+v10/5 -O >> mag.ps << EOF
   -75 -50 999
   -75 -40 999
   -60 -40 999

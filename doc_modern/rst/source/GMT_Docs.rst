@@ -835,7 +835,7 @@ letter, and number or string. *Do* space between options. Example:
 
    ::
 
-    gmt pscoast -R0/20/0/20 -Ggray -JM6i -Wthin -Baf -V -P > map.ps
+    gmt coast -R0/20/0/20 -Ggray -JM6i -Wthin -Baf -V -P > map.ps
 
 Standardized command line options
 ---------------------------------
@@ -2860,7 +2860,7 @@ gray-shade in the 0--255 range. For CMYK, give *c/m/y/k* values in the
 A few programs (i.e., those that plot polygons such as
 :doc:`grdview`, :doc:`psscale`,
 :doc:`psxy` and
-:doc:`psxyz`) can accept pattern fills instead
+:doc:`plot3d`) can accept pattern fills instead
 of gray-shades. You must specify the pattern as in Section `Specifying area fill attributes`_
 (no leading **-G** of course), and only the first pattern (for low
 *z*) is used (we cannot interpolate between patterns). Finally,
@@ -3006,7 +3006,7 @@ The Drawing of Vectors
 
 GMT supports plotting vectors in various forms. A vector is one of
 many symbols that may be plotted by :doc:`psxy`
-and :doc:`psxyz`, is the main feature in
+and :doc:`plot3d`, is the main feature in
 :doc:`grdvector`, and is indirectly used by
 other programs. All vectors plotted by GMT consist of two separate
 parts: The vector line (controlled by the chosen pen attributes) and the
@@ -3315,7 +3315,7 @@ the map projection the map scale will vary continuously but may be constant alon
 latitude (e.g., Mercator projection).  Thus, in placing the map scale on the map there are
 two locations involved: (1) The *reference* point where the map scale's *anchor* should be
 pinned, and (2) the *projection* point where the scale is computed and thus where the map
-scale is true.  Map scales can be plotted by :doc:`basemap` or :doc:`pscoast`, and in
+scale is true.  Map scales can be plotted by :doc:`basemap` or :doc:`coast`, and in
 addition to the the required *refpoint* and anchor arguments specifying where the scale should be placed there
 are both required and optional modifiers.  These are given via these modules' **-L** option.
 Here is a list of the attributes that is under your control:
@@ -3364,7 +3364,7 @@ Placing directional map roses
 Map roses showing the cardinal directions of a map help the reader orient themselves, especially
 for oblique projections where north-south is not vertically aligned.  However, these roses also
 have ornamental value and can be used on any map projection.  As for map scales, a directional
-map rose is added with :doc:`basemap` or :doc:`pscoast` and selected by the **-Td** option.
+map rose is added with :doc:`basemap` or :doc:`coast` and selected by the **-Td** option.
 This option accepts the *reference* point where the map rose's *anchor* should be
 pinned.  In addition to the required *refpoint* and *anchor* arguments (and their standard
 modifiers discussed earlier) there is one required and two optional modifiers. The required
@@ -3408,7 +3408,7 @@ also has ornamental value.  The magnetic rose consists of two concentric angular
 (outer) ring shows directional angles while the second (inner) ring is optional and portrays the
 magnetic directions, which differ for nonzero declination. As for style, the two-ring rose looks a
 bit like a standard compass.  As for directional roses, a magnetic
-map rose is added with :doc:`basemap` or :doc:`pscoast` and selected by the **-Tm** option.
+map rose is added with :doc:`basemap` or :doc:`coast` and selected by the **-Tm** option.
 As for other features, append the required *reference* point where the magnetic map rose's *anchor*
 should be pinned.  There is one required and several optional modifiers.  First up is the size:
 
@@ -4403,7 +4403,7 @@ option. As an example, we want to plot a crude world map centered on
   ::
 
     gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0.1i MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF
-    gmt pscoast -Rg-55/305/-90/90 -Jx0.014i -Bagf -BWSen -Dc -A1000 -Glightbrown -Wthinnest \
+    gmt coast -Rg-55/305/-90/90 -Jx0.014i -Bagf -BWSen -Dc -A1000 -Glightbrown -Wthinnest
             -P -Slightblue > GMT_linear_d.ps
 
 with the result reproduced in
@@ -4583,7 +4583,7 @@ general, *x' = f(x,y,z)* and *y' = g(x,y,z)*, where
 *g* can be quite nasty and we will refrain from presenting details
 in this document. The interested read is referred to *Snyder*
 [1987] [20]_. We will mostly be using the
-:doc:`pscoast` command to demonstrate each of
+:doc:`coast` command to demonstrate each of
 the projections. GMT map projections are grouped into four categories
 depending on the nature of the projection. The groups are
 
@@ -4653,7 +4653,7 @@ therefore given by:
    ::
 
     gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0
-    gmt pscoast -R110/140/20/35 -JB125/20/25/45/5i -Bag -Dl -Ggreen -Wthinnest \
+    gmt coast -R110/140/20/35 -JB125/20/25/45/5i -Bag -Dl -Ggreen -Wthinnest \
                 -A250 -P > GMT_albers.ps
 
 .. figure:: /_images/GMT_albers.*
@@ -4685,7 +4685,7 @@ small countries. As an example, we generate a map of Cuba:
    ::
 
     gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
-    gmt pscoast -R-88/-70/18/24 -JD-79/21/19/23/4.5i -Bag -Di -N1/thick,red \
+    gmt coast -R-88/-70/18/24 -JD-79/21/19/23/4.5i -Bag -Di -N1/thick,red \
                 -Glightgreen -Wthinnest -P > GMT_equidistant_conic.ps
 
 .. figure:: /_images/GMT_equidistant_conic.*
@@ -4725,7 +4725,7 @@ use degrees west for longitudes. The generating commands used were
    ::
 
     gmt set MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
-    gmt pscoast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red \
+    gmt coast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red \
                 -N2/thinner -A500 -Gtan -Wthinnest,white -Sblue -P > GMT_lambert_conic.ps
 
 .. figure:: /_images/GMT_lambert_conic.*
@@ -4766,7 +4766,7 @@ every 10 and annotations only every 30º in longitude:
 
    ::
 
-    gmt pscoast -R-180/-20/0/90 -JPoly/4i -Bx30g10 -By10g10 -Dc -A1000 -Glightgray \
+    gmt coast -R-180/-20/0/90 -JPoly/4i -Bx30g10 -By10g10 -Dc -A1000 -Glightgray \
                 -Wthinnest -P > GMT_polyconic.ps
 
 .. figure:: /_images/GMT_polyconic.*
@@ -4817,7 +4817,7 @@ rectangular by defining the corners of a rectangular map boundary. Using
    ::
 
     gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0
-    gmt pscoast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10 \
+    gmt coast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10 \
                 -Wthinnest -P > GMT_lambert_az_rect.ps
 
 .. figure:: /_images/GMT_lambert_az_rect.*
@@ -4840,7 +4840,7 @@ Here, you must specify the world as your region (**-Rg** or
 
    ::
 
-    gmt pscoast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -P > GMT_lambert_az_hemi.ps
+    gmt coast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -P > GMT_lambert_az_hemi.ps
 
 .. figure:: /_images/GMT_lambert_az_hemi.*
    :width: 400 px
@@ -4899,7 +4899,7 @@ An example is given by
 
    ::
 
-    gmt pscoast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue \
+    gmt coast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue \
                 -Sseashell -P > GMT_stereographic_polar.ps
 
 .. figure:: /_images/GMT_stereographic_polar.*
@@ -4922,7 +4922,7 @@ Figure :ref:`Polar stereographic <GMT_stereographic_rect>`:
    ::
 
     gmt set MAP_ANNOT_OBLIQUE 30
-    gmt pscoast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest \
+    gmt coast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest \
                 -Slightgray -P > GMT_stereographic_rect.ps
 
 .. _GMT_stereographic_rect:
@@ -4945,7 +4945,7 @@ hemispheric maps. Our example shows Australia using a projection pole at
    ::
 
     gmt set MAP_ANNOT_OBLIQUE 0
-    gmt pscoast -R100/-42/160/-8r -JS130/-30/4i -Bag -Dl -A500 -Ggreen -Slightblue \
+    gmt coast -R100/-42/160/-8r -JS130/-30/4i -Bag -Dl -A500 -Ggreen -Slightblue \
                 -Wthinnest -P > GMT_stereographic_general.ps
 
 .. figure:: /_images/GMT_stereographic_general.*
@@ -4996,11 +4996,11 @@ Figure :ref:`Perspective projection <GMT_perspective>` between brackets.
 
 The imagined view of northwest Europe from a Space Shuttle at 230 km
 looking due east is thus accomplished by the following
-:doc:`pscoast` command:
+:doc:`coast` command:
 
    ::
 
-    gmt pscoast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown \
+    gmt coast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown \
                 -Wthinnest -P -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i > GMT_perspective.ps
 
 .. _GMT_perspective:
@@ -5038,11 +5038,11 @@ To specify the orthographic projection the same options **-Jg** or
    oblique latitude (**-Jg**), or map width (**-JG**).
 
 Our example of a perspective view centered on 75ºW/40ºN can therefore be
-generated by the following :doc:`pscoast` command:
+generated by the following :doc:`coast` command:
 
    ::
 
-    gmt pscoast -Rg -JG-75/41/4.5i -Bg -Dc -A5000 -Gpink -Sthistle -P > GMT_orthographic.ps
+    gmt coast -Rg -JG-75/41/4.5i -Bg -Dc -A5000 -Gpink -Sthistle -P > GMT_orthographic.ps
 
 .. figure:: /_images/GMT_orthographic.*
    :width: 400 px
@@ -5074,13 +5074,13 @@ To specify the azimuthal equidistant projection you must supply:
    oblique latitude (**-Je**), or map width (**-JE**).
 
 Our example of a global view centered on 100ºW/40ºN can therefore be
-generated by the following :doc:`pscoast`
+generated by the following :doc:`coast`
 command. Note that the antipodal point is 180º away from the center, but
 in this projection this point plots as the entire map perimeter:
 
    ::
 
-    gmt pscoast -Rg -JE-100/40/4.5i -Bg -Dc -A10000 -Glightgray -Wthinnest -P \
+    gmt coast -Rg -JE-100/40/4.5i -Bg -Dc -A10000 -Glightgray -Wthinnest -P \
                 > GMT_az_equidistant.ps
 
 .. figure:: /_images/GMT_az_equidistant.*
@@ -5115,11 +5115,11 @@ To specify the Gnomonic projection you must supply:
    oblique latitude (**-Jf**), or map width (**-JF**).
 
 Using a horizon of 60, our example of this projection centered on
-120ºW/35ºN can therefore be generated by the following :doc:`pscoast` command:
+120ºW/35ºN can therefore be generated by the following :doc:`coast` command:
 
    ::
 
-    gmt pscoast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest \
+    gmt coast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest \
                 -P > GMT_gnomonic.ps
 
 .. figure:: /_images/GMT_gnomonic.*
@@ -5184,7 +5184,7 @@ which will give a map 4.32 inch wide. It was created with the command:
    ::
 
     gmt set MAP_FRAME_TYPE fancy
-    gmt pscoast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred \
+    gmt coast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred \
                 -P > GMT_mercator.ps
 
 .. figure:: /_images/GMT_mercator.*
@@ -5224,7 +5224,7 @@ central meridian:
 
    ::
 
-    gmt pscoast -R20/30/50/45r -Jt35/0.18i -Bag -Dl -A250 -Glightbrown -Wthinnest \
+    gmt coast -R20/30/50/45r -Jt35/0.18i -Bag -Dl -A250 -Glightbrown -Wthinnest \
                 -P -Sseashell > GMT_transverse_merc.ps
 
 .. figure:: /_images/GMT_transverse_merc.*
@@ -5239,7 +5239,7 @@ equivalent of the 360º Mercator map. Using the command
 
    ::
 
-    gmt pscoast -R0/360/-80/80 -JT330/-45/3.5i -Ba30g -BWSne -Dc -A2000 \
+    gmt coast -R0/360/-80/80 -JT330/-45/3.5i -Ba30g -BWSne -Dc -A2000 \
                 -Slightblue -G0 -P > GMT_TM.ps
 
 we made the map illustrated in Figure :ref:`Global transverse Mercator
@@ -5345,7 +5345,7 @@ poles to their antipodes in the north hemisphere].  Our example was produced by 
 
    ::
 
-    gmt pscoast -R270/20/305/25r -JOc280/25.5/22/69/4.8i -Bag -Di -A250 -Gburlywood \
+    gmt coast -R270/20/305/25r -JOc280/25.5/22/69/4.8i -Bag -Di -A250 -Gburlywood \
                 -Wthinnest -P -TdjTR+w0.4i+f2+l+o0.15i -Sazure --FONT_TITLE=8p \
                 --MAP_TITLE_OFFSET=0.05i > GMT_obl_merc.ps
 
@@ -5411,7 +5411,7 @@ using the Cassini projection can be obtained by running the command:
 
    ::
 
-    gmt pscoast -R7:30/38:30/10:30/41:30r -JC8.75/40/2.5i -Bafg -LjBR+c40+w100+f+o0.15i/0.2i -Gspringgreen \
+    gmt coast -R7:30/38:30/10:30/41:30r -JC8.75/40/2.5i -Bafg -LjBR+c40+w100+f+o0.15i/0.2i -Gspringgreen \
                 -Dh -Sazure -Wthinnest -Ia/thinner -P --FONT_LABEL=12p > GMT_cassini.ps
 
 .. figure:: /_images/GMT_cassini.*
@@ -5447,7 +5447,7 @@ obtained by running the command:
 
    ::
 
-    gmt pscoast -Rg -JQ4.5i -B60f30g30 -Dc -A5000 -Gtan4 -Slightcyan -P > GMT_equi_cyl.ps
+    gmt coast -Rg -JQ4.5i -B60f30g30 -Dc -A5000 -Gtan4 -Slightcyan -P > GMT_equi_cyl.ps
 
 .. figure:: /_images/GMT_equi_cyl.*
    :width: 500 px
@@ -5521,7 +5521,7 @@ can be obtained by running the command:
 
    ::
 
-    gmt pscoast -R-145/215/-90/90 -JY35/30/4.5i -B45g45 -Dc -A10000 -Sdodgerblue \
+    gmt coast -R-145/215/-90/90 -JY35/30/4.5i -B45g45 -Dc -A10000 -Sdodgerblue \
                 -Wthinnest -P > GMT_general_cyl.ps
 
 .. _GMT_general_cyl:
@@ -5558,7 +5558,7 @@ follows:
 
    ::
 
-    gmt pscoast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 \
+    gmt coast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 \
                 -Gkhaki -Wthinnest -P -Sazure > GMT_miller.ps
 
 .. _GMT_miller:
@@ -5617,7 +5617,7 @@ is obtained as follows:
    ::
 
     gmt set FORMAT_GEO_MAP dddA
-    gmt pscoast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Bxa60f30g30 -Bya30g30 -Dc -A5000 \
+    gmt coast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Bxa60f30g30 -Bya30g30 -Dc -A5000 \
                 -Wblack -Gseashell4 -Santiquewhite1 -P > GMT_gall_stereo.ps
 
 .. _GMT_gall_stereo:
@@ -5660,7 +5660,7 @@ A view of the Pacific ocean using the Dateline as central meridian is accomplish
 
    ::
 
-    gmt pscoast -Rg -JH4.5i -Bg -Dc -A10000 -Gblack -Scornsilk -P > GMT_hammer.ps
+    gmt coast -Rg -JH4.5i -Bg -Dc -A10000 -Gblack -Scornsilk -P > GMT_hammer.ps
 
 .. figure:: /_images/GMT_hammer.*
    :width: 500 px
@@ -5690,7 +5690,7 @@ An example centered on Greenwich can be generated thus:
 
    ::
 
-    gmt pscoast -Rd -JW4.5i -Bg -Dc -A10000 -Gtomato1 -Sskyblue -P > GMT_mollweide.ps
+    gmt coast -Rd -JW4.5i -Bg -Dc -A10000 -Gtomato1 -Sskyblue -P > GMT_mollweide.ps
 
 .. figure:: /_images/GMT_mollweide.*
    :width: 500 px
@@ -5727,7 +5727,7 @@ Centered on Greenwich, the example in Figure :ref:`Winkel Tripel projection
 
    ::
 
-    gmt pscoast -Rd -JR4.5i -Bg -Dc -A10000 -Gburlywood4 -Swheat1 -P > GMT_winkel.ps
+    gmt coast -Rd -JR4.5i -Bg -Dc -A10000 -Gburlywood4 -Swheat1 -P > GMT_winkel.ps
 
 .. _GMT_winkel:
 
@@ -5760,7 +5760,7 @@ Again centered on Greenwich, the example below was created by this command:
 
    ::
 
-    gmt pscoast -Rd -JN4.5i -Bg -Dc -A10000 -Ggoldenrod -Ssnow2 -P > GMT_robinson.ps
+    gmt coast -Rd -JN4.5i -Bg -Dc -A10000 -Ggoldenrod -Ssnow2 -P > GMT_robinson.ps
 
 .. figure:: /_images/GMT_robinson.*
    :width: 500 px
@@ -5792,7 +5792,7 @@ this command:
 
    ::
 
-    gmt pscoast -Rg -JKf4.5i -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 -P > GMT_eckert4.ps
+    gmt coast -Rg -JKf4.5i -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 -P > GMT_eckert4.ps
 
 .. figure:: /_images/GMT_eckert4.*
    :width: 500 px
@@ -5829,7 +5829,7 @@ A simple world map using the sinusoidal projection is therefore obtained by
 
    ::
 
-     gmt pscoast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Ggray -P > GMT_sinusoidal.ps
+     gmt coast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Ggray -P > GMT_sinusoidal.ps
 
 .. figure:: /_images/GMT_sinusoidal.*
    :width: 500 px
@@ -5842,7 +5842,7 @@ To reduce distortion of shape the interrupted sinusoidal projection was
 introduced in 1927. Here, three symmetrical segments are used to cover
 the entire world. Traditionally, the interruptions are at 160ºW, 20ºW, and
 60ºE. To make the interrupted map we must call
-:doc:`pscoast` for each segment and superpose
+:doc:`coast` for each segment and superpose
 the results. To produce an interrupted world map (with the traditional
 boundaries just mentioned) that is 5.04 inches wide we use the scale
 5.04/360 = 0.014 and offset the subsequent plots horizontally by their
@@ -5850,11 +5850,11 @@ widths (140\ :math:`\cdot`\ 0.014 and 80\ :math:`\cdot`\ 0.014):
 
    ::
 
-     gmt pscoast -R200/340/-90/90 -Ji0.014i -Bxg30 -Byg15 -A10000 -Dc \
+     gmt coast -R200/340/-90/90 -Ji0.014i -Bxg30 -Byg15 -A10000 -Dc \
                  -Gblack -K -P > GMT_sinus_int.ps
-     gmt pscoast -R-20/60/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 \
+     gmt coast -R-20/60/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 \
                  -Gblack -X1.96i -O -K >> GMT_sinus_int.ps
-     gmt pscoast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 \
+     gmt coast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 \
                  -Gblack -X1.12i -O >> GMT_sinus_int.ps
 
 .. figure:: /_images/GMT_sinus_int.*
@@ -5885,7 +5885,7 @@ Centered on the Dateline, the example below was created by this command:
 
     ::
 
-      gmt pscoast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -A10000 \
+      gmt coast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -A10000 \
                   -Wthinnest -P > GMT_grinten.ps
 
 .. figure:: /_images/GMT_grinten.*
@@ -6686,7 +6686,7 @@ Anti-aliasing.
     sleep-inducing blue in PowerPoint presentations). A more
     surprising effect of anti-aliasing is that the seams between tiles
     that make up the land mask when using
-    :doc:`pscoast` will become visible. The
+    :doc:`coast` will become visible. The
     anti-aliasing somehow decides to blur the edges of all polygons,
     even when they are seamlessly connected to other polygons.
 
@@ -7429,7 +7429,7 @@ The GMT High-Resolution Coastline Data
 ======================================
 
 Starting with version 3.0, GMT use a completely new coastline database
-and the :doc:`pscoast` utility was been
+and the :doc:`coast` utility was been
 completely rewritten to handle the new file format. Many users have
 asked us why it has taken so long for GMT to use a high-resolution
 coastline database; after all, such data have been available in the
@@ -7462,13 +7462,13 @@ segments: there is no information included that tells you which segments
 belong to the same polygon (e.g., Australia should be one large
 polygon). In addition, polygons enclosing land must be differentiated
 from polygons enclosing lakes since they will need different paint.
-Finally, we want :doc:`pscoast` to be
+Finally, we want :doc:`coast` to be
 flexible enough that it can paint the land *or* the oceans *or* both. If
 just land (or oceans) is selected we do not want to paint those areas
 that are not land (or oceans) since previous plot programs may have
 drawn in those areas. Thus, we will need to combine polygons into new
 polygons that lend themselves to fill land (or oceans) only (Note that
-older versions of :doc:`pscoast` always
+older versions of :doc:`coast` always
 painted lakes and wiped out whatever was plotted beneath).
 
 The long and winding road
@@ -7552,7 +7552,7 @@ becomes a complicated processing step.
    subset was approximately 20% the size of the next higher resolution.
    The five resolutions are called **f**\ ull, **h**\ igh,
    **i**\ ntermediate, **l**\ ow, and **c**\ rude; they are accessed in
-   :doc:`pscoast`, :doc:`gmtselect`, and
+   :doc:`coast`, :doc:`gmtselect`, and
    :doc:`grdlandmask` with the **-D**
    option [38]_. For each of these 5 data sets (**f**, **h**, **i**,
    **l**, **c**) we specified an equidistant grid (1, 2, 5, 10, 20) and
@@ -7615,7 +7615,7 @@ total file size of the coastlines, rivers, and borders database is only
   ::
 
     gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0 MAP_ANNOT_OBLIQUE 22 MAP_ANNOT_MIN_SPACING 0.3i
-    gmt pscoast -Rk-9000/9000/-9000/9000 -JE130.35/-0.2/3.5i -P -Dc -A500 \
+    gmt coast -Rk-9000/9000/-9000/9000 -JE130.35/-0.2/3.5i -P -Dc -A500 \
                 -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20 -BWSne -K > GMT_App_K_1.ps
     gmt basemap -R -J -O -Dk2000+c130.35/-0.2+pthicker >> GMT_App_K_1.ps
 
@@ -7646,7 +7646,7 @@ resolution in GMT. The plot is generated by the script:
 
   ::
 
-    gmt pscoast -Rk-2000/2000/-2000/2000 -JE130.35/-0.2/3.5i -P -Dl -A100 -Gburlywood \
+    gmt coast -Rk-2000/2000/-2000/2000 -JE130.35/-0.2/3.5i -P -Dl -A100 -Gburlywood \
                 -Sazure -Wthinnest -N1/thinnest,- -B10g5 -BWSne -K > GMT_App_K_2.ps
     gmt basemap -R -J -O -Dk500+c130.35/-0.2+pthicker >> GMT_App_K_2.ps
 
@@ -7673,7 +7673,7 @@ borders now exceeds 3.35 Mbytes. The plot is generated by the script:
 
   ::
 
-    gmt pscoast -Rk-500/500/-500/500 -JE130.35/-0.2/3.5i -P -Di -A20 -Gburlywood \
+    gmt coast -Rk-500/500/-500/500 -JE130.35/-0.2/3.5i -P -Di -A20 -Gburlywood \
                 -Sazure -Wthinnest -N1/thinnest,- -B2g1 -BWSne -K > GMT_App_K_3.ps
     echo 133 2 | gmt psxy -R -J -O -K -Sc1.4i -Gwhite >> GMT_App_K_3.ps
     gmt basemap -R -J -O -K --FONT_TITLE=12p --MAP_TICK_LENGTH_PRIMARY=0.05i \
@@ -7703,7 +7703,7 @@ generated by these commands:
 
   ::
 
-    gmt pscoast -Rk-100/100/-100/100 -JE130.35/-0.2/3.5i -P -Dh -A1 -Gburlywood \
+    gmt coast -Rk-100/100/-100/100 -JE130.35/-0.2/3.5i -P -Dh -A1 -Gburlywood \
                 -Sazure -Wthinnest -N1/thinnest,- -B30mg10m -BWSne -K > GMT_App_K_4.ps
     gmt basemap -R -J -O -Dk20+c130.35/-0.2+pthicker >> GMT_App_K_4.ps
 
@@ -7728,7 +7728,7 @@ reproduced by the single command:
 
   ::
 
-    gmt pscoast -Rk-20/20/-20/20 -JE130.35/-0.2/3.5i -P -Df -Gburlywood \
+    gmt coast -Rk-20/20/-20/20 -JE130.35/-0.2/3.5i -P -Df -Gburlywood \
                 -Sazure -Wthinnest -N1/thinnest,- -B10mg2m -BWSne > GMT_App_K_5.ps
 
 .. figure:: /_images/GMT_App_K_5.*
@@ -7889,7 +7889,7 @@ Custom Plot Symbols
 Background
 ----------
 
-The GMT tools :doc:`psxy` and :doc:`psxyz` are capable of using custom
+The GMT tools :doc:`psxy` and :doc:`plot3d` are capable of using custom
 symbols as alternatives to the built-in, standard geometrical shapes
 such as circles, triangles, and many others. One the command line, custom
 symbols are selected via the **-Sk**\ *symbolname*\ [*size*] symbol
@@ -8230,9 +8230,9 @@ Annotation of Contours and "Quoted Lines"
 
 The GMT programs :doc:`grdcontour` (for
 data given as 2-dimensional grids) and
-:doc:`pscontour` (for *x,y,z* tables) allow
+:doc:`contour` (for *x,y,z* tables) allow
 for contouring of data sets, while :doc:`psxy`
-and :doc:`psxyz` can plot lines based on *x,y*-
+and :doc:`plot3d` can plot lines based on *x,y*-
 and *x,y,z*-tables, respectively. In both cases it may be necessary to
 attach labels to these lines. Clever or optimal placements of labels is
 a very difficult topic, and GMT provides several algorithms for this
@@ -8248,7 +8248,7 @@ While the previous GMT versions 1--3 allowed for a single algorithm
 that determined where labels would be placed, GMT 4 allows for five
 different algorithms. Furthermore, a new "symbol" option (**-Sq** for
 "quoted line") has been added to :doc:`psxy` and
-:doc:`psxyz` and hence the new label placement
+:doc:`plot3d` and hence the new label placement
 mechanisms apply to those programs as well. The contouring programs
 expect the algorithm to be specified as arguments to **-G** while the
 line plotting programs expect the same arguments to follow **-Sq**. The
@@ -8536,7 +8536,7 @@ lines:
 
     ::
 
-     gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_1.ps
+     gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_1.ps
      gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+f8p -Gd1.5i -S10 -T+lLH >> GMT_App_O_1.ps
 
 As seen in Figure :ref:`Contour label 1 <Contour_label_1>`, the contours are
@@ -8562,7 +8562,7 @@ contour line should have:
 
     ::
 
-     gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_2.ps
+     gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_2.ps
      gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+f8p -Gn1/1i -S10 -T+lLH >> GMT_App_O_2.ps
 
 By selecting only one label per contour and requiring that labels only
@@ -8595,7 +8595,7 @@ distance will host the label.
      102     0
      130     10.5
      EOF
-     gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_3.ps
+     gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_3.ps
      gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -Gffix.txt/0.1i -S10 -T+lLH >> GMT_App_O_3.ps
 
 The angle of the label is evaluated from the contour line geometry, and
@@ -8622,7 +8622,7 @@ between the contour lines and a well-placed straight line segment. The
 
     ::
 
-      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_4.ps
+      gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_4.ps
       gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -GLZ-/Z+ -S10 -T+lLH >> GMT_App_O_4.ps
 
 The obvious choice in this example is to specify a great circle between
@@ -8653,7 +8653,7 @@ sense:
 
     ::
 
-     gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_5.ps
+     gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_5.ps
      gmt grdcontour geoid.nc -J -O -B20f10 -BWSne -C10 -A20+d+f8p -GXcross.txt -S10 -T+lLH >> GMT_App_O_5.ps
 
 .. _Contour_label_5:
@@ -8690,7 +8690,7 @@ are placed normal to the line:
 
     ::
 
-     gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_6.ps
+     gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_6.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+f8p -Gl50/10S/160/10S -S10 \
      -T+l"-+" >> GMT_App_O_6.ps
      gmt psxy -R -J -O -SqD1000k:+g+LD+an+p -Wthick transect.txt >> GMT_App_O_6.ps
@@ -8720,7 +8720,7 @@ inverse-video the label:
 
     ::
 
-     gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_7.ps
+     gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_7.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S -S10 \
      -T+l"-+" >> GMT_App_O_7.ps
      gmt psxy -R -J -O -SqD15d:+gblack+fwhite+Ld+o+u\\260 -Wthick transect.txt >> GMT_App_O_7.ps
@@ -8749,7 +8749,7 @@ labels. This is done with **awk**.
     ::
 
      gmt convert -i0,1,4 -Em150 transect.txt | $AWK '{print $1,$2,int($3)}' > fix2.txt
-     gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_8.ps
+     gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_8.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S \
                     -S10 -T+l"-+" >> GMT_App_O_8.ps
      gmt psxy -R -J -O -Sqffix2.txt:+g+an+p+Lf+u" m"+f8p -Wthick transect.txt >> GMT_App_O_8.ps
@@ -8793,7 +8793,7 @@ well as a few quoted lines. The final script is
      gmt grdcontour ttt_atl.nc -R -J -O -K -C0.5 -A1+u" hour"+v+f8p,Bookman-Demi \
                     -GL80W/31N/17W/26N,17W/28N/17W/50N -S2 >> GMT_App_O_9.ps
      gmt psxy -R -J -Wfatter,white great_NY_Canaries.txt -O -K  >> GMT_App_O_9.ps
-     gmt pscoast -R -J -B20f5 -BWSne+t"Tsunami travel times from the Canaries" -N1/thick -O -K \
+     gmt coast -R -J -B20f5 -BWSne+t"Tsunami travel times from the Canaries" -N1/thick -O -K \
                  -Glightgray -Wfaint -A500 >> GMT_App_O_9.ps
      gmt convert great_NY_*.txt -E | gmt psxy -R -J -O -K -Sa0.15i -Gred -Wthin >> GMT_App_O_9.ps
      gmt psxy -R -J -Wthick great_NY_Canaries.txt -O -K \
@@ -8884,7 +8884,7 @@ The example below shows how *isolation mode* works.
 
      # The gmt grdimage command creates the history file $GMT_TMPDIR/gmt.history
      gmt grdimage $GMT_TMPDIR/lat.nc -JK6.5i -C$GMT_TMPDIR/lat.cpt -P -K -nl > $ps
-     gmt pscoast -R -J -O -Dc -A5000 -Gwhite -Bx60g30 -By30g30 >> $ps
+     gmt coast -R -J -O -Dc -A5000 -Gwhite -Bx60g30 -By30g30 >> $ps
 
      # Clean up all temporary files and the temporary directory
      rm -rf $GMT_TMPDIR

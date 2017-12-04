@@ -15,7 +15,7 @@ Washington, D.C.
 At this point the full projection has not been properly optimized and
 the map annotations will need additional work. Also, note that the
 projection is only implemented in
-:doc:`pscoast </pscoast>` and
+:doc:`coast </coast>` and
 :doc:`grdimage </grdimage>`. We hope to refine this
 further and extend the availability of the full projection to all of the
 GMT mapping programs.

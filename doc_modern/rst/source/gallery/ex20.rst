@@ -7,7 +7,7 @@ One is often required to make special maps that shows the distribution
 of certain features but one would prefer to use a custom symbol instead
 of the built-in circles, squares, triangles, etc. in the GMT plotting
 programs :doc:`psxy </psxy>` and
-:doc:`psxyz </psxyz>`. Here we demonstrate one approach
+:doc:`plot3d </plot3d>`. Here we demonstrate one approach
 that allows for a fair bit of flexibility in designing ones own symbols.
 The following recipe is used when designing a new symbol.
 
@@ -66,7 +66,7 @@ The following recipe is used when designing a new symbol.
    Figure above.
 
 #. Given proper definition files we may now use them with
-   :doc:`psxy </psxy>` or :doc:`psxyz </psxyz>`.
+   :doc:`psxy </psxy>` or :doc:`plot3d </plot3d>`.
 
 We are now ready to give it a try. Based on the hotspot locations in the
 file ``hotspots.txt`` (with a 3rd column giving the desired symbol sizes in inches) we

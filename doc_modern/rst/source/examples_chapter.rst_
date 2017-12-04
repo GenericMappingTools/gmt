@@ -61,7 +61,7 @@ Creating GMT Graphics
        :language: bash
 
     The first command draws a box surrounding the maps. This is followed by
-    two sequences of :doc:`pscoast`, :doc:`grdcontour`,
+    two sequences of :doc:`coast`, :doc:`grdcontour`,
     :doc:`grdcontour`. They differ in that the
     first is centered on Greenwich; the second on the dateline. We use the
     limit option (**-L**) in :doc:`grdcontour`
@@ -244,7 +244,7 @@ Creating GMT Graphics
     ----------------------
 
     GMT provides two tools to render histograms:
-    :doc:`pshistogram` and :doc:`psrose`. The former takes care of
+    :doc:`pshistogram` and :doc:`rose`. The former takes care of
     regular histograms whereas the latter deals with polar histograms (rose
     diagrams, sector diagrams, and wind rose diagrams). We will show an
     example that involves both programs. The file ``fractures.yx`` contains a compilation of
@@ -291,7 +291,7 @@ Creating GMT Graphics
     A 3-D histogram
     ---------------
 
-    The program :doc:`psxyz` allows us to plot
+    The program :doc:`plot3d` allows us to plot
     three-dimensional symbols, including columnar plots. As a simple
     demonstration, we will convert a gridded netCDF of bathymetry into an
     ASCII *xyz* table and use the height information to draw a 2-D
@@ -412,7 +412,7 @@ Creating GMT Graphics
     Wiley). We use :doc:`triangulate` to
     perform the optimal Delaunay triangulation, then use the output to draw
     the resulting network. We label the node numbers as well as the node
-    values, and call :doc:`pscontour` to make a
+    values, and call :doc:`contour` to make a
     contour map and image directly from the raw data. Thus, in this example
     we do not actually make grid files but still are able to contour and
     image the data. We use the CPT ``topo.cpt`` (created via
@@ -501,7 +501,7 @@ Creating GMT Graphics
     illustrates how we can create a clip path (using
     :doc:`psmask`) based on the data coverage to
     eliminate contours outside the constrained area. Finally (top right) we
-    simply employ :doc:`pscoast` to overlay gray
+    simply employ :doc:`coast` to overlay gray
     land masses to cover up the unwanted contours, and end by plotting a
     star at the deepest point on the map with
     :doc:`psxy`. This point was extracted from the
@@ -517,7 +517,7 @@ Creating GMT Graphics
     Gridding of data, continued
     ---------------------------
 
-    :doc:`pscontour` (for contouring) and
+    :doc:`contour` (for contouring) and
     :doc:`triangulate` (for gridding) use the
     simplest method of interpolating data: a Delaunay triangulation (see
     Section [sec:example\ :sub:`1`\ 2]) which forms *z(x, y)* as a
@@ -577,17 +577,17 @@ Creating GMT Graphics
     Images clipped by coastlines
     ----------------------------
 
-    This example demonstrates how :doc:`pscoast`
+    This example demonstrates how :doc:`coast`
     can be used to set up clip paths based on coastlines. This approach is
     well suited when different gridded data sets are to be merged on a plot
     using different CPTs. Merging the files themselves may
     not be doable since they may represent different data sets, as we show
     in this example. Here, we lay down a color map of the geoid field near
     India with :doc:`grdimage`, use
-    :doc:`pscoast` to set up land clip paths, and
+    :doc:`coast` to set up land clip paths, and
     then overlay topography from the ETOPO5 data set with another call to
     :doc:`grdimage`. We finally undo the
-    clippath with a second call to :doc:`pscoast`
+    clippath with a second call to :doc:`coast`
     with the option **-Q** (Figure :ref:`Example 17 <Fig_example_17>`):
 
     We also plot a color legend on top of the land. So here we basically
@@ -644,9 +644,9 @@ Creating GMT Graphics
     :doc:`makecpt`, and
     :doc:`grdimage` to draw pleasing color
     backgrounds on maps, and overlay
-    :doc:`pscoast` clip paths to have the
+    :doc:`coast` clip paths to have the
     patterns change at the coastlines. The middle panel demonstrates a
-    simple :doc:`pscoast` call where the built-in
+    simple :doc:`coast` call where the built-in
     pattern # 86 is drawn at 100 dpi but with the black and white pixels
     replaced with color combinations. At the same time the ocean is filled
     with a repeating image of a circuit board (provides in Sun raster
@@ -669,7 +669,7 @@ Creating GMT Graphics
     of certain features but one would prefer to use a custom symbol instead
     of the built-in circles, squares, triangles, etc. in the GMT plotting
     programs :doc:`psxy` and
-    :doc:`psxyz`. Here we demonstrate one approach
+    :doc:`plot3d`. Here we demonstrate one approach
     that allows for a fair bit of flexibility in designing ones own symbols.
     The following recipe is used when designing a new symbol.
 
@@ -728,7 +728,7 @@ Creating GMT Graphics
        Figure above.
 
     #. Given proper definition files we may now use them with
-       :doc:`psxy` or :doc:`psxyz`.
+       :doc:`psxy` or :doc:`plot3d`.
 
     We are now ready to give it a try. Based on the hotspot locations in the
     file ``hotspots.d`` (with a 3rd column giving the desired symbol sizes in inches) we
@@ -874,7 +874,7 @@ Creating GMT Graphics
     the selection process twice we simply plot all quakes as red circles and
     then replot those that pass our criteria. Most of the work here is done
     by :doc:`gmtselect`; the rest is carried
-    out by the usual :doc:`pscoast` and
+    out by the usual :doc:`coast` and
     :doc:`psxy` workhorses. Note for our purposes
     the Dateline is just a line along the 180 meridian.
 
@@ -951,7 +951,7 @@ Creating GMT Graphics
     At this point the full projection has not been properly optimized and
     the map annotations will need additional work. Also, note that the
     projection is only implemented in
-    :doc:`pscoast` and
+    :doc:`coast` and
     :doc:`grdimage`. We hope to refine this
     further and extend the availability of the full projection to all of the
     GMT mapping programs.
@@ -1138,8 +1138,8 @@ Creating GMT Graphics
     The call the :doc:`grdview` plots a
     topography map of northwest continental Europe, with the flagged draped
     over it and with shading to show the little topography there is.
-    :doc:`pscoast` is used in conjunction with
-    :doc:`grdtrack` and GMT\ psxyz to plot
+    :doc:`coast` is used in conjunction with
+    :doc:`grdtrack` and GMT\ plot3d to plot
     borders "at altitude". Something similar is done at the end to plot some
     symbols and names for cities.
 
@@ -1180,7 +1180,7 @@ Creating GMT Graphics
     -----------------------------------------------
 
     The script produces the plot in Figure :ref:`Example 34 <Fig_example_34>`. Here
-    we demonstrate how :doc:`pscoast` can be used to extract
+    we demonstrate how :doc:`coast` can be used to extract
     and plot country polygons.  We show two panels; one in which we do
     a basic basemap and another where we lay down a color topography
     image and then place a transparent layer identifying the future

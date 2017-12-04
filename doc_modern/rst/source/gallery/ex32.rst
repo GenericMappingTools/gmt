@@ -29,8 +29,8 @@ Lower values will become blue and the upper values yellow.
 The call the :doc:`grdview </grdview>` plots a
 topography map of northwest continental Europe, with the flagged draped
 over it and with shading to show the little topography there is.
-:doc:`pscoast </pscoast>` is used in conjunction with
-:doc:`grdtrack </grdtrack>` and :doc:`psxyz </psxyz>` to plot
+:doc:`coast </coast>` is used in conjunction with
+:doc:`grdtrack </grdtrack>` and :doc:`plot3d </plot3d>` to plot
 borders "at altitude". Something similar is done at the end to plot some
 symbols and names for cities.
 

@@ -246,7 +246,7 @@ See Also
 :doc:`gmt`,
 :doc:`greenspline`,
 :doc:`nearneighbor`,
-:doc:`pscontour`,
+:doc:`contour`,
 :doc:`sphdistance`,
 :doc:`sphinterpolate`,
 :doc:`sphtriangulate`,

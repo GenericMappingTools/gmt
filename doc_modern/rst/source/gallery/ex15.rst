@@ -19,7 +19,7 @@ using :doc:`psmask </psmask>`). The top left scenario
 illustrates how we can create a clip path (using
 :doc:`psmask </psmask>`) based on the data coverage to
 eliminate contours outside the constrained area. Finally (top right) we
-simply employ :doc:`pscoast </pscoast>` to overlay gray
+simply employ :doc:`coast </coast>` to overlay gray
 land masses to cover up the unwanted contours, and end by plotting a
 star at the deepest point on the map with
 :doc:`psxy </psxy>`. This point was extracted from the

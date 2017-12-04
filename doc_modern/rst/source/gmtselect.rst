@@ -336,4 +336,4 @@ See Also
 :doc:`gmtsimplify`,
 :doc:`gmtspatial`,
 :doc:`grdlandmask`,
-:doc:`pscoast`
+:doc:`coast`

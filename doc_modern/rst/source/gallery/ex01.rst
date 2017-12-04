@@ -17,7 +17,7 @@ rectangular frame surrounding the two maps. This is how it is done:
    :language: bash
 
 The first command draws a box surrounding the maps. This is followed by
-two sequences of :doc:`pscoast </pscoast>`, :doc:`grdcontour </grdcontour>`,
+two sequences of :doc:`coast </coast>`, :doc:`grdcontour </grdcontour>`,
 :doc:`grdcontour </grdcontour>`. They differ in that the
 first is centered on Greenwich; the second on the dateline. We use the
 limit option (**-L**) in :doc:`grdcontour </grdcontour>`

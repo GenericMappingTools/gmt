@@ -159,7 +159,7 @@ with a warning under compatibility mode:
 *  :doc:`coast`: **-m** is deprecated and
    have reverted to **-M** for selecting data output instead of plotting.
 
-*  :doc:`pscontour`: **-T**\ *indexfile* is deprecated; use **-Q**\ *indexfile*.
+*  :doc:`contour`: **-T**\ *indexfile* is deprecated; use **-Q**\ *indexfile*.
 
 *  :doc:`histogram`: **-T**\ *col* is
    deprecated; use common option **-i** instead.

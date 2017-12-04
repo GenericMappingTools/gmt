@@ -3,7 +3,7 @@
 (46) Day-light terminators and other sunlight parameters
 --------------------------------------------------------
 
-In this example show how the module :doc:`pssolar </pssolar>`
+In this example show how the module :doc:`solar </solar>`
 is used to plot several terminator lines that depend on
 the location of the sun with respect to Earth.  We also
 show how an EPS illustration can serve as a custom symbol

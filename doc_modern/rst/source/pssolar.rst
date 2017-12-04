@@ -158,7 +158,7 @@ Plot the day-night and civil twilight
    ::
 
     gmt begin
-    gmt pscoast -Rd -W0.1p -JQ0/14c -Ba -BWSen -Dl -A1000
+    gmt coast -Rd -W0.1p -JQ0/14c -Ba -BWSen -Dl -A1000
     gmt solar -W1p -Tdc
     gmt end
 
@@ -172,4 +172,4 @@ Set up a clip path overlay based on the day/night terminator:
 See Also
 --------
 
-:doc:`gmt`, :doc:`psclip`, :doc:`pscoast`, :doc:`psxy`
+:doc:`gmt`, :doc:`clip`, :doc:`coast`, :doc:`plot`

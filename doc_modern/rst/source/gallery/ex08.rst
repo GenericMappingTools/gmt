@@ -3,7 +3,7 @@
 (8) A 3-D histogram
 -------------------
 
-The program :doc:`psxyz </psxyz>` allows us to plot
+The program :doc:`plot3d </plot3d>` allows us to plot
 three-dimensional symbols, including columnar plots. As a simple
 demonstration, we will convert a gridded netCDF of bathymetry into an
 ASCII *xyz* table and use the height information to draw a 2-D

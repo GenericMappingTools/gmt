@@ -259,7 +259,7 @@ Optional Arguments
 
    ::
 
-        gmt pscoast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m --MAP_FRAME_TYPE=inside > cara.ps
+        gmt coast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m --MAP_FRAME_TYPE=inside > cara.ps
 
     adds this comment line
 
@@ -358,12 +358,12 @@ To create a 3 pages PDF file from 3 individual PS files
 
     gmt psconvert -TF -Fabc a.ps b.ps c.ps
 
-To create a simple linear map with :doc:`pscoast` and convert it to tif with a
+To create a simple linear map with :doc:`coast` and convert it to tif with a
 .tfw the tight BoundingBox computation.
 
    ::
 
-    gmt pscoast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
+    gmt coast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
     gmt psconvert cara.ps -Tt -W
 
 To create a Mercator version of the above example and use GDAL to
@@ -371,14 +371,14 @@ produce a true geotiff file.
 
    ::
 
-    gmt pscoast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
+    gmt coast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
     gdalwarp -s_srs +proj=merc cara.tif carageo.tiff
 
 To create a Polar Stereographic geotiff file of Patagonia
 
    ::
 
-    gmt pscoast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2 --MAP_FRAME_TYPE=inside > patagonia.ps
+    gmt coast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2 --MAP_FRAME_TYPE=inside > patagonia.ps
     gmt psconvert patagonia.ps -Tt -W+g -V
 
 To create a simple KML file for use in Google Earth, try
@@ -420,5 +420,5 @@ See Also
 --------
 
 :doc:`gmt`,
-:doc:`pscoast`
+:doc:`coast`
 
