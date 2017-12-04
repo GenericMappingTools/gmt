@@ -179,7 +179,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			srtm_local = strdup (local_path);	/* What we want the local file to be called */
 			len = strlen (local_path);
 			if (!strncmp (&local_path[len-3], ".nc", 3U))
-				strncpy (&local_path[len-2], GMT_SRTM_EXTENSION_REMOTE, PATH_MAX-1);	/* Switch extension for download */
+				strncpy (&local_path[len-2], GMT_SRTM_EXTENSION_REMOTE, strlen(GMT_SRTM_EXTENSION_REMOTE));	/* Switch extension for download */
 		}
 		else
 			sprintf (local_path, "%s/%s", user_dir[to], &file[pos]);
