@@ -195,7 +195,8 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		sprintf (url, "%s%s/%s", GMT->session.DATAURL, cache_dir[from], &file[pos]);
 		if (kind == GMT_DATA_FILE && !strstr (url, ".grd")) strcat (url, ".grd");	/* Must supply the .grd */
 		len = strlen (url);
-		if (is_srtm && !strncmp (&url[len-3], ".nc", 3U)) strncpy (&url[len-2], GMT_SRTM_EXTENSION_REMOTE, PATH_MAX-1);	/* Switch extension for download */
+		if (is_srtm && !strncmp (&url[len-3], ".nc", 3U))
+			strncpy (&url[len-2], GMT_SRTM_EXTENSION_REMOTE, strlen(GMT_SRTM_EXTENSION_REMOTE));	/* Switch extension for download */
 	}
 
  	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
