@@ -672,7 +672,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
-	/* Syntax: -Xa|r|f|c<off>[unit], -X[-|+]w[-|+]<off>[unit], where
+	/* Syntax: -Xa|r|f|c<off>[unit], -X[-|+]w[/<n>][-|+]<off>[unit], where
 	 * w is the width of the previous plot command. */
 	int i = 0;
 	if (!text || !text[0]) {	/* Default is -Xr0 */
@@ -696,6 +696,11 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 			else if (text[i] == '+')	/* In case the user explicitly gave a + */
 				i++;	/* Skip the plus sign */
 			i++;	/* Skip past the w */
+			if (text[i] == '/') {	/* Wanted a fraction of the width */
+				i++;	/* Skip the slash */
+				GMT->current.setting.map_origin[GMT_X] /= atof (&text[i]);
+				while (isdigit (text[i]) || text[i] == '.') i++;	/* Wind past the denominator */
+			}
 			/* Now add the offset the user added, if given */
 			if (text[i]) GMT->current.setting.map_origin[GMT_X] += gmt_M_to_inch (GMT, &text[i]);
 		}
@@ -709,7 +714,7 @@ GMT_LOCAL int gmtinit_parse_X_option (struct GMT_CTRL *GMT, char *text) {
 
 /*! . */
 GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
-	/* Syntax: -Ya|r|f|c<off>[unit], -Y[-|+]h[-|+]<off>[unit], where
+	/* Syntax: -Ya|r|f|c<off>[unit], -Y[-|+]h[/<n>][-|+]<off>[unit], where
 	 * h is the height of the previous plot command. */
 	int i = 0;
 	if (!text || !text[0]) {	/* Default is -Yr0 */
@@ -733,6 +738,11 @@ GMT_LOCAL int gmtinit_parse_Y_option (struct GMT_CTRL *GMT, char *text) {
 			else if (text[i] == '+')	/* In case the user explicitly gave a + */
 				i++;	/* Skip the plus sign */
 			i++;	/* Skip past the h */
+			if (text[i] == '/') {	/* Wanted a fraction of the height */
+				i++;	/* Skip the slash */
+				GMT->current.setting.map_origin[GMT_Y] /= atof (&text[i]);
+				while (isdigit (text[i]) || text[i] == '.') i++;	/* Wind past the denominator */
+			}
 			/* Now add the offset the user added, if given */
 			if (text[i]) GMT->current.setting.map_origin[GMT_Y] += gmt_M_to_inch (GMT, &text[i]);
 		}
