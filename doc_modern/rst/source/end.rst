@@ -6,7 +6,7 @@ end
 
 .. only:: not man
 
-    end - Terminate GMT modern mode session and produce optional graphics
+    Terminate GMT modern mode session and produce optional graphics
 
 Synopsis
 --------

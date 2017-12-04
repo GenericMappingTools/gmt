@@ -1074,11 +1074,11 @@ See Also
 :doc:`gmt.conf` , :doc:`gmtlogo` ,
 :doc:`grdcontour` ,
 :doc:`grdvector` , :doc:`grdview`
-:doc:`psbasemap` ,
-:doc:`pscoast` , :doc:`pscontour`,
-:doc:`pshistogram` ,
-:doc:`psimage` , :doc:`pslegend` ,
-:doc:`psmask` , :doc:`psrose` ,
-:doc:`pstext` , :doc:`pswiggle` ,
-:doc:`psxy` , :doc:`psxyz`
+:doc:`basemap` ,
+:doc:`coast` , :doc:`contour`,
+:doc:`histogram` ,
+:doc:`psimage` , :doc:`legend` ,
+:doc:`mask` , :doc:`rose` ,
+:doc:`text` , :doc:`wiggle` ,
+:doc:`plot` , :doc:`plot3d`
 

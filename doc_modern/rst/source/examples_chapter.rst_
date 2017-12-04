@@ -673,7 +673,7 @@ Creating GMT Graphics
     that allows for a fair bit of flexibility in designing ones own symbols.
     The following recipe is used when designing a new symbol.
 
-    #. Use :doc:`psbasemap` (or engineering
+    #. Use :doc:`basemap` (or engineering
        paper!) to set up an empty grid that goes from -0.5 to +0.5 in both
        *x* and *y*. Use ruler and compass to draw your new symbol using
        straight lines, arcs of circles, and stand-alone geometrical objects

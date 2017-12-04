@@ -332,5 +332,5 @@ See Also
 :doc:`psclip`,
 :doc:`gmtcolors`,
 :doc:`psconvert`,
-:doc:`psbasemap`,
-:doc:`pslegend`, :doc:`psxy`
+:doc:`basemap`,
+:doc:`legend`, :doc:`plot`

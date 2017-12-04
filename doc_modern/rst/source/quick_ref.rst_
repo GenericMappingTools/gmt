@@ -35,33 +35,33 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdview`        | 3-D perspective imaging of 2-D gridded data sets                    |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`psbasemap`      | Create a basemap plot                                               |
+| :doc:`basemap`        | Create a basemap plot                                               |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`psclip`         | Use polygon files to define clipping paths                          |
+| :doc:`clip`           | Use polygon files to define clipping paths                          |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`pscoast`        | Plot (and fill) coastlines, borders, and rivers on maps             |
+| :doc:`coast`          | Plot (and fill) coastlines, borders, and rivers on maps             |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`pscontour`      | Contour or image raw table data by triangulation                    |
+| :doc:`contour`        | Contour or image raw table data by triangulation                    |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`pshistogram`    | Plot a histogram                                                    |
+| :doc:`histogram`      | Plot a histogram                                                    |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`psimage`        | Plot Sun raster files on a map                                      |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`pslegend`       | Plot a legend on a map                                              |
+| :doc:`legend`         | Plot a legend on a map                                              |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`psmask`         | Create overlay to mask out regions on maps                          |
+| :doc:`mask`           | Create overlay to mask out regions on maps                          |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`psrose`         | Plot sector or rose diagrams                                        |
+| :doc:`rose`           | Plot sector or rose diagrams                                        |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`psscale`        | Plot gray scale or color scale on maps                              |
+| :doc:`colorbar`       | Plot gray scale or color scale on maps                              |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`psternary`      | Plot data on ternary diagrams                                       |
+| :doc:`ternary`        | Plot data on ternary diagrams                                       |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`pstext`         | Plot text strings on maps                                           |
+| :doc:`text`           | Plot text strings on maps                                           |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`pswiggle`       | Draw table data time-series along track on maps                     |
+| :doc:`wiggle`         | Draw table data time-series along track on maps                     |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`psxy`           | Plot symbols, polygons, and lines on maps                           |
+| :doc:`plot`           | Plot symbols, polygons, and lines on maps                           |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`psxyz`          | Plot symbols, polygons, and lines in 3-D                            |
 +-----------------------+---------------------------------------------------------------------+

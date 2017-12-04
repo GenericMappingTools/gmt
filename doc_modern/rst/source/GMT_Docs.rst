@@ -1085,7 +1085,7 @@ projections: use the same abbreviation as in the mapping package
 
 The projections available in GMT are presented in Figure
 :ref:`gmt_projections`. For details on all GMT projections and the required
-parameters, see the :doc:`psbasemap` man page. We will also show examples of
+parameters, see the :doc:`basemap` man page. We will also show examples of
 every projection in the next Chapters, and a quick summary of projection
 syntax was given in Chapter `GMT Overview and Quick Reference`_.
 
@@ -1400,7 +1400,7 @@ Our first example shows a time period of almost two months in Spring
    ::
 
      gmt set FORMAT_DATE_MAP=-o FONT_ANNOT_PRIMARY +9p
-     gmt psbasemap -R2000-4-1T/2000-5-25T/0/1 -JX5i/0.2i -Bpa7Rf1d -Bsa1O -BS -P > GMT_-B_time1.ps
+     gmt basemap -R2000-4-1T/2000-5-25T/0/1 -JX5i/0.2i -Bpa7Rf1d -Bsa1O -BS -P > GMT_-B_time1.ps
 
 These commands result in Figure :ref:`Cartesian time axis <cartesian_axis1>`.
 Note the leading hyphen in the :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`
@@ -1419,8 +1419,8 @@ The next example shows two different ways to annotate an axis portraying 2 days 
    ::
 
      gmt set FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
-     gmt psbasemap -R1969-7-21T/1969-7-23T/0/1 -JX5i/0.2i -Bpa6Hf1h -Bsa1K -BS -P -K > GMT_-B_time2.ps
-     gmt psbasemap -R -J -Bpa6Hf1h -Bsa1D -BS -O -Y0.65i >> GMT_-B_time2.ps
+     gmt basemap -R1969-7-21T/1969-7-23T/0/1 -JX5i/0.2i -Bpa6Hf1h -Bsa1K -BS -P -K > GMT_-B_time2.ps
+     gmt basemap -R -J -Bpa6Hf1h -Bsa1D -BS -O -Y0.65i >> GMT_-B_time2.ps
 
 The lower example (Figure :ref:`cartesian_axis2`) chooses to annotate the weekdays (by
 specifying **a**\ 1\ **K**) while the upper example choses dates (by
@@ -1442,7 +1442,7 @@ both the years and every 3rd month.
    ::
 
      gmt set FORMAT_DATE_MAP o FORMAT_TIME_PRIMARY_MAP Character FONT_ANNOT_PRIMARY +9p
-     gmt psbasemap -R1997T/1999T/0/1 -JX5i/0.2i -Bpa3Of1o -Bsa1Y -BS -P > GMT_-B_time3.ps
+     gmt basemap -R1997T/1999T/0/1 -JX5i/0.2i -Bpa3Of1o -Bsa1Y -BS -P > GMT_-B_time3.ps
 
 Note that while the year annotation is centered on the 1-year interval,
 the month annotations must be centered on the corresponding month and
@@ -1467,7 +1467,7 @@ annotations, ask for a 12-hour clock, and let time go from right to left:
    ::
 
      gmt set FORMAT_CLOCK_MAP=-hham FONT_ANNOT_PRIMARY +9p TIME_UNIT d
-     gmt psbasemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1H -BS -P > GMT_-B_time4.ps
+     gmt basemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1H -BS -P > GMT_-B_time4.ps
 
 .. _cartesian_axis4:
 
@@ -1486,9 +1486,9 @@ The upper uses Gregorian weeks (which start at the day chosen by
 
     gmt set FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character \
            FORMAT_TIME_SECONDARY_MAP full FONT_ANNOT_PRIMARY +9p
-    gmt psbasemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1U -BS -P -K > GMT_-B_time5.ps
+    gmt basemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1U -BS -P -K > GMT_-B_time5.ps
     gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Chararacter
-    gmt psbasemap -R -J -Bpa3Kf1k -Bsa1r -BS -O -Y0.65i >> GMT_-B_time5.ps
+    gmt basemap -R -J -Bpa3Kf1k -Bsa1r -BS -O -Y0.65i >> GMT_-B_time5.ps
 
 .. _cartesian_axis5:
 
@@ -1505,7 +1505,7 @@ Our sixth example (Figure :ref:`cartesian_axis6`) shows the first five months of
    ::
 
     gmt set FORMAT_DATE_MAP "o yy" FORMAT_TIME_PRIMARY_MAP Abbreviated
-    gmt psbasemap -R1996T/1996-6T/0/1 -JX5i/0.2i -Ba1Of1d -BS -P > GMT_-B_time6.ps
+    gmt basemap -R1996T/1996-6T/0/1 -JX5i/0.2i -Ba1Of1d -BS -P > GMT_-B_time6.ps
 
 .. _cartesian_axis6:
 
@@ -1525,7 +1525,7 @@ least half of a full interval.
    ::
 
     gmt set FORMAT_DATE_MAP jjj TIME_INTERVAL_FRACTION 0.05 FONT_ANNOT_PRIMARY +9p
-    gmt psbasemap -R2000-12-15T/2001-1-15T/0/1 -JX5i/0.2i -Bpa5Df1d -Bsa1Y -BS -P > GMT_-B_time7.ps
+    gmt basemap -R2000-12-15T/2001-1-15T/0/1 -JX5i/0.2i -Bpa5Df1d -Bsa1Y -BS -P > GMT_-B_time7.ps
 
 .. _cartesian_axis7:
 
@@ -1580,9 +1580,9 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
     6 f
     6.2831852 ag 2@~p@~
     EOF
-    gmt psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bpx25f5g25+u" Ma" -Bpycyannots.txt \
+    gmt basemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bpx25f5g25+u" Ma" -Bpycyannots.txt \
                   -BWS+glightblue -P -K > GMT_-B_custom.ps
-    gmt psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bsxcxannots.txt -BWS -O \
+    gmt basemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bsxcxannots.txt -BWS -O \
                   --MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p >> GMT_-B_custom.ps
     rm -f [xy]annots.txt
 
@@ -3315,7 +3315,7 @@ the map projection the map scale will vary continuously but may be constant alon
 latitude (e.g., Mercator projection).  Thus, in placing the map scale on the map there are
 two locations involved: (1) The *reference* point where the map scale's *anchor* should be
 pinned, and (2) the *projection* point where the scale is computed and thus where the map
-scale is true.  Map scales can be plotted by :doc:`psbasemap` or :doc:`pscoast`, and in
+scale is true.  Map scales can be plotted by :doc:`basemap` or :doc:`pscoast`, and in
 addition to the the required *refpoint* and anchor arguments specifying where the scale should be placed there
 are both required and optional modifiers.  These are given via these modules' **-L** option.
 Here is a list of the attributes that is under your control:
@@ -3364,7 +3364,7 @@ Placing directional map roses
 Map roses showing the cardinal directions of a map help the reader orient themselves, especially
 for oblique projections where north-south is not vertically aligned.  However, these roses also
 have ornamental value and can be used on any map projection.  As for map scales, a directional
-map rose is added with :doc:`psbasemap` or :doc:`pscoast` and selected by the **-Td** option.
+map rose is added with :doc:`basemap` or :doc:`pscoast` and selected by the **-Td** option.
 This option accepts the *reference* point where the map rose's *anchor* should be
 pinned.  In addition to the required *refpoint* and *anchor* arguments (and their standard
 modifiers discussed earlier) there is one required and two optional modifiers. The required
@@ -3408,7 +3408,7 @@ also has ornamental value.  The magnetic rose consists of two concentric angular
 (outer) ring shows directional angles while the second (inner) ring is optional and portrays the
 magnetic directions, which differ for nonzero declination. As for style, the two-ring rose looks a
 bit like a standard compass.  As for directional roses, a magnetic
-map rose is added with :doc:`psbasemap` or :doc:`pscoast` and selected by the **-Tm** option.
+map rose is added with :doc:`basemap` or :doc:`pscoast` and selected by the **-Tm** option.
 As for other features, append the required *reference* point where the magnetic map rose's *anchor*
 should be pinned.  There is one required and several optional modifiers.  First up is the size:
 
@@ -3585,7 +3585,7 @@ the other map features there are two ways to specify the placement of the map in
 The first is the standard way of specifying the reference and anchor points and the insert dimensions,
 while the second specifies a *subregion* in the current plot that should be designated the
 map insert area.  Depending on the map projection this may or may not be a rectangular area.
-Map inserts are produced by the module :doc:`psbasemap` via the **-D** option. Unless you
+Map inserts are produced by the module :doc:`basemap` via the **-D** option. Unless you
 use the reference point approach you must first append *xmin*/*xmax*/*ymin*/*ymax*\ [**+r**][**+u**\ *unit*\ ],
 where the optional *unit* modifier **+u** indicates that the four coordinates to follow are projected
 distances (e.g., km, miles).  If the unit modifier is missing then we assume the coordinates are
@@ -3604,7 +3604,7 @@ instead (similar to how the **-R** option works), by adding **+r**\ .  Some opti
    know the exact location of the resulting insert and its dimensions.  For instance, if you
    specified the insert using the TR anchor point and a width and height of 100 km you will need to
    know what this means in terms of positions on the map in plot units.  In terms of the modifiers
-   this would be **j**\ TR\ **+w**\ 100k.  Running :doc:`psbasemap`
+   this would be **j**\ TR\ **+w**\ 100k.  Running :doc:`basemap`
    in verbose mode will provide this information and you can use it accordingly.  However, for
    users who wish to script this automatically you can use **+s**\ *file* to save this information
    in a file that your script can ingest and act upon.  The file contains a single record with the
@@ -4278,7 +4278,7 @@ entirety. Meanwhile, the present Chapter will summarize the properties
 of the Cartesian and Polar coordinate transformations available in
 GMT, list which parameters define them, and demonstrate how they are
 used to create simple plot axes. We will mostly be using
-:doc:`psbasemap` (and occasionally
+:doc:`basemap` (and occasionally
 :doc:`psxy`) to demonstrate the various
 transformations. Our illustrations may differ from those you reproduce
 with the same commands because of different settings in our ``gmt.conf`` file.)
@@ -4448,7 +4448,7 @@ general, the options provided with **-JX** will prevail.
 
     gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_CLOCK_MAP=-hham \
             FORMAT_TIME_PRIMARY_MAP full
-    gmt psbasemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX4i/-2i -Bxa1Kf1kg1d \
+    gmt basemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX4i/-2i -Bxa1Kf1kg1d \
                   -Bya1Hg1h -BWsNe+glightyellow -P > GMT_linear_cal.ps
 
 Cartesian logarithmic projection
@@ -7594,7 +7594,7 @@ the projection center, e.g., we may want the map to go from km to km in
 the longitudinal and the latitudinal direction.
 Also, as we zoom in on the projection center we want to draw the outline
 of the next map region on the plot. To do that we use the **-D** option
-in :doc:`psbasemap`.
+in :doc:`basemap`.
 
 The crude resolution (**-Dc**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -7617,7 +7617,7 @@ total file size of the coastlines, rivers, and borders database is only
     gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0 MAP_ANNOT_OBLIQUE 22 MAP_ANNOT_MIN_SPACING 0.3i
     gmt pscoast -Rk-9000/9000/-9000/9000 -JE130.35/-0.2/3.5i -P -Dc -A500 \
                 -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20 -BWSne -K > GMT_App_K_1.ps
-    gmt psbasemap -R -J -O -Dk2000+c130.35/-0.2+pthicker >> GMT_App_K_1.ps
+    gmt basemap -R -J -O -Dk2000+c130.35/-0.2+pthicker >> GMT_App_K_1.ps
 
 .. figure:: /_images/GMT_App_K_1.*
    :width: 500 px
@@ -7648,7 +7648,7 @@ resolution in GMT. The plot is generated by the script:
 
     gmt pscoast -Rk-2000/2000/-2000/2000 -JE130.35/-0.2/3.5i -P -Dl -A100 -Gburlywood \
                 -Sazure -Wthinnest -N1/thinnest,- -B10g5 -BWSne -K > GMT_App_K_2.ps
-    gmt psbasemap -R -J -O -Dk500+c130.35/-0.2+pthicker >> GMT_App_K_2.ps
+    gmt basemap -R -J -O -Dk500+c130.35/-0.2+pthicker >> GMT_App_K_2.ps
 
 .. figure:: /_images/GMT_App_K_2.*
    :width: 500 px
@@ -7676,9 +7676,9 @@ borders now exceeds 3.35 Mbytes. The plot is generated by the script:
     gmt pscoast -Rk-500/500/-500/500 -JE130.35/-0.2/3.5i -P -Di -A20 -Gburlywood \
                 -Sazure -Wthinnest -N1/thinnest,- -B2g1 -BWSne -K > GMT_App_K_3.ps
     echo 133 2 | gmt psxy -R -J -O -K -Sc1.4i -Gwhite >> GMT_App_K_3.ps
-    gmt psbasemap -R -J -O -K --FONT_TITLE=12p --MAP_TICK_LENGTH_PRIMARY=0.05i \
+    gmt basemap -R -J -O -K --FONT_TITLE=12p --MAP_TICK_LENGTH_PRIMARY=0.05i \
                   -Tm133/2+w1i+t45/10/5+jCM --FONT_ANNOT_SECONDARY=8p >> GMT_App_K_3.ps
-    gmt psbasemap -R -J -O -Dk100+c130.35/-0.2+pthicker >> GMT_App_K_3.ps
+    gmt basemap -R -J -O -Dk100+c130.35/-0.2+pthicker >> GMT_App_K_3.ps
 
 .. figure:: /_images/GMT_App_K_3.*
    :width: 500 px
@@ -7705,7 +7705,7 @@ generated by these commands:
 
     gmt pscoast -Rk-100/100/-100/100 -JE130.35/-0.2/3.5i -P -Dh -A1 -Gburlywood \
                 -Sazure -Wthinnest -N1/thinnest,- -B30mg10m -BWSne -K > GMT_App_K_4.ps
-    gmt psbasemap -R -J -O -Dk20+c130.35/-0.2+pthicker >> GMT_App_K_4.ps
+    gmt basemap -R -J -O -Dk20+c130.35/-0.2+pthicker >> GMT_App_K_4.ps
 
 .. figure:: /_images/GMT_App_K_4.*
    :width: 500 px

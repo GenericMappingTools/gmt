@@ -295,7 +295,7 @@ See Also
 :doc:`grdcontour`,
 :doc:`grdimage`,
 :doc:`nearneighbor`,
-:doc:`psbasemap`, :doc:`psscale`,
+:doc:`basemap`, :doc:`colorbar`,
 :doc:`surface`,
 :doc:`triangulate`
 

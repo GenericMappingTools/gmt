@@ -186,4 +186,4 @@ See Also
 --------
 
 :doc:`gmt`, :doc:`grdmask`,
-:doc:`psbasemap`, :doc:`psmask`
+:doc:`basemap`, :doc:`mask`

@@ -263,6 +263,6 @@ See Also
 :doc:`grdimage`,
 :doc:`grdsample`,
 :doc:`nearneighbor`,
-:doc:`psbasemap`,
-:doc:`pscontour`, :doc:`pstext`,
+:doc:`basemap`,
+:doc:`contour`, :doc:`text`,
 :doc:`surface`

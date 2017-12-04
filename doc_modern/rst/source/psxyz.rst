@@ -241,7 +241,7 @@ southeast at 30 degree elevation, use:
 
     gmt plot3d heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c
               -Gblue -Bx2+lXLABEL -By2+lYLABEL -Bz10+lZLABEL -B+t"3-D PLOT" -p135/30
-              -Uc -W -P -pdf heights
+              -Uc -W -pdf heights
 
 Segment Header Parsing
 ----------------------
@@ -278,7 +278,7 @@ by specifying **-Sk**\ *tsunami/size*. The definition file can contain
 any number of plot code records, as well as blank lines and comment
 lines (starting with #). **plot3d** will look for the definition files
 in (1) the current directory, (2) the ~/.gmt directory,
-and (3) the **$GMT\_SHAREDIR**/custom directory, in that
+and (3) the **$GMT_SHAREDIR**/custom directory, in that
 order. Freeform polygons (made up of straight line segments and arcs of
 circles) can be designed - these polygons can be painted and filled with
 a pattern. Other standard geometric symbols can also be used. See Appendix
@@ -303,4 +303,4 @@ See Also
 
 :doc:`gmt`, :doc:`gmt.conf`,
 :doc:`gmtcolors`,
-:doc:`psbasemap`, :doc:`psxy`
+:doc:`basemap`, :doc:`plot`

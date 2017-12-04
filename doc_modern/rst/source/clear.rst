@@ -6,7 +6,7 @@ clear
 
 .. only:: not man
 
-    clear - Delete current history, conf, cpt, or the cache directory
+    Delete current history, conf, cpt, or the cache directory
 
 Synopsis
 --------

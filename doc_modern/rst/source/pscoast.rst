@@ -388,4 +388,4 @@ See Also
 :doc:`gmt`, :doc:`gmt.conf`,
 :doc:`gmtcolors`,
 :doc:`grdlandmask`,
-:doc:`psbasemap`
+:doc:`basemap`

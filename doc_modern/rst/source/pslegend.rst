@@ -207,7 +207,7 @@ legend Codes
     **r**\ (ight), **t**\ (op) , and **b**\ (ottom)).
     Apply **+u** to append the unit to all distance annotations along
     the scale. If you want to place a map panel behind the scale,
-    add a suitable **-F** panel option (see :doc:`psbasemap` for details
+    add a suitable **-F** panel option (see :doc:`basemap` for details
     on panels as well as map scale modifiers).
     All **+**\ *modifiers* must be appended to *length* to make a single
     string argument.  If the **-R** **-J** supplied to **legend** is
@@ -361,5 +361,5 @@ See Also
 
 :doc:`gmt`, :doc:`gmt.conf`,
 :doc:`gmtcolors`, :doc:`gmtlogo`
-:doc:`psbasemap`, :doc:`pstext`,
-:doc:`psxy`
+:doc:`basemap`, :doc:`text`,
+:doc:`plot`

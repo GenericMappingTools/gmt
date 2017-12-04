@@ -6,7 +6,7 @@ img2grd
 
 .. only:: not man
 
-    img2grd - Extract subset of img file in Mercator or Geographic format
+    Extract subset of img file in Mercator or Geographic format
 
 Synopsis
 --------
@@ -213,8 +213,8 @@ ship.lonlatgrav and use it to sample the merc_grav.nc, we can do this:
 
     gmt set PROJ_ELLIPSOID Sphere
 
-    gmt mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i ship.lonlatgrav | \
-              gmt grdtrack -Gmerc_grav.nc | gmt mapproject \
+    gmt mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i ship.lonlatgrav |
+              gmt grdtrack -Gmerc_grav.nc | gmt mapproject
               -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I > ship.lonlatgravsat
 
 It is recommended to use the above method of projecting and unprojecting
@@ -235,8 +235,8 @@ it may be always better to use)
 
    ::
 
-    gmt grd2xyz merc_grav.nc | gmt mapproject \
-        -R-40/40/-70.0004681551/-29.994581075 -Jm1i -I | \
+    gmt grd2xyz merc_grav.nc | gmt mapproject
+        -R-40/40/-70.0004681551/-29.994581075 -Jm1i -I |
         gmt surface -R-40/40/-70/70 -I2m -Ggrav.nc
 
 To make a Mercator map of the above region, suppose our gmt.conf value
@@ -277,8 +277,10 @@ shaded relief map like this:
 
    ::
 
-    gmt grdimage merc_grav_2.nc -Iillum.nc -Cgrav.cpt -Jx0.1i -K > map.ps
-    gmt psbasemap -R-40/40/-70.023256525/-29.9368261101 -Jm0.1i -Ba10 -O >> map.ps
+    gmt begin
+    gmt grdimage merc_grav_2.nc -Iillum.nc -Cgrav.cpt -Jx0.1i
+    gmt basemap -R-40/40/-70.023256525/-29.9368261101 -Jm0.1i -Ba10
+    gmtend
 
 Suppose you want to obtain only the constrained data values from an img
 file, in lat/lon coordinates. Then run **img2grd** with the **-T**\ 2

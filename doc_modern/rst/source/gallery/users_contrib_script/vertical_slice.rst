@@ -75,7 +75,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
  #
  # make basemap (this is not necessary but...)
  #
- gmt psbasemap -R-75/-60/-50/-40/0/999 -JM-67.5/-45/16 -JZ8 -Bxa2f1 -Bya1f1 -Bza250f50g250+l"Km" \
+ gmt basemap -R-75/-60/-50/-40/0/999 -JM-67.5/-45/16 -JZ8 -Bxa2f1 -Bya1f1 -Bza250f50g250+l"Km" \
      -B+b -BwESn -pz135/30+v10/5 -K > mag.ps
  #
  # plot base grid (z = 0)
@@ -85,7 +85,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
  #
  # plot map (coast, country borders). Grid plotted to check slice location
  #
- gmt pscoast -R -JM -JZ -Bxa2f1g0.5 -Bya1f1g0.5 -Bza250f50g250+l"Km" -B+b -BwESn -Df -A0/0/1 \
+ gmt coast -R -JM -JZ -Bxa2f1g0.5 -Bya1f1g0.5 -Bza250f50g250+l"Km" -B+b -BwESn -Df -A0/0/1 \
      -N1/0.5p,black,-..- -W0.5p,black -p -O -K >> mag.ps
  #
  # calculate max X projected 
@@ -99,7 +99,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
  #
  # plot slice box
  #
- gmt psxy -R -JX -W1p,black -px135/30+v12.59/0.96 -O -K >> mag.ps << EOF
+ gmt plot -R -JX -W1p,black -px135/30+v12.59/0.96 -O -K >> mag.ps << EOF
  $lMin 0
  $lMin 999
  $lMax 999

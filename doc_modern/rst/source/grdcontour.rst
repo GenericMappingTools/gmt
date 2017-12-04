@@ -309,6 +309,6 @@ See Also
 
 :doc:`gmt`, :doc:`gmt.conf`,
 :doc:`gmtcolors`,
-:doc:`psbasemap`,
+:doc:`basemap`,
 :doc:`grdimage`, :doc:`grdview`,
-:doc:`pscontour`
+:doc:`contour`

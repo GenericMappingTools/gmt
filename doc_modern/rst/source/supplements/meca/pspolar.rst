@@ -229,7 +229,7 @@ See Also
 :doc:`psmeca`,
 :doc:`psvelo`,
 :doc:`pscoupe`,
-:doc:`gmt </gmt>`, :doc:`psbasemap </psbasemap>`, :doc:`psxy </psxy>`
+:doc:`gmt </gmt>`, :doc:`basemap </basemap>`, :doc:`psxy </psxy>`
 
 References
 ----------

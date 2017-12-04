@@ -52,7 +52,7 @@ summary of these changes:
    removed by the user).
 
 *  We are laying the groundwork for more dynamic documentation.  At present,
-   the examples on the man pages (with the exception of psbasemap and pscoast)
+   the examples on the man pages (with the exception of *basemap* and *coast*)
    cannot be run by cut and paste since they reference imaginary data sets.
    These will soon appear with filenames starting in @ (e.g., @hotspots.txt),
    and when such files are found on the command line it is interpreted to be
@@ -63,7 +63,7 @@ summary of these changes:
 
 *  We have updated the online documentation of user-contributed custom symbols and
    restored the beautiful biological symbols for whales and dolphins created by
-   Pablo Valdés during the GMT4 era.  These are now complemented by new custom
+   Pablo Valdés during the GMT4 era. These are now complemented by new custom
    symbols for structural geology designed by José A. Álvarez-Gómez.  
 
 *  The :doc:`PSL <postscriptlight>` library no longer needs run-time files to configure the
@@ -161,7 +161,7 @@ Several modules have obtained new options to extend their capabilities:
    on distances and speeds, and has been redesigned to allow several outputs
    by combining the options **-A**, **-G**, **-L**, and **-Z**.
 
-*  :doc:`psbasemap` has a new map-insert (**-D**) modifier **+t** that will
+*  :doc:`basemap` has a new map-insert (**-D**) modifier **+t** that will
    translate the plot origin after determining the lower-left corner of the
    map insert.
 
@@ -666,11 +666,11 @@ changes to existing syntax will be backwards compatible:
    compute 3-D projected coordinates.  We also added **-W** to simply output the
    projected dimensions of the plot without reading input data.
 
-*  :doc:`psbasemap` now takes **-A** to save the plot domain polygon in geographical coordinates.
+*  :doc:`basemap` now takes **-A** to save the plot domain polygon in geographical coordinates.
    The **-L** option for map scale and **-T** for map roses have been revised (backwards compatible) and a
    new uniform **-F** option to specify background panel and its many settings was added.
 
-*  :doc:`pscoast` can accept multiple **-E** settings to color several features independently.
+*  :doc:`coast` can accept multiple **-E** settings to color several features independently.
    We also have the modifiers **+AS** to *only* plot Antarctica, **+ag** to use
    shelf ice grounding line for Antarctica coastline, and **+ai** to use ice/water
    front for Antarctica coastline [Default].  As above, the **-L** option for map scale
@@ -1214,33 +1214,33 @@ Finally, here is a list of numerous enhancements to individual programs:
    also modification to **-A** to add user-specified margins, and it automatically detects
    if transparent elements have been included (and a detour via PDF might be needed).
 
-*  :doc:`psbasemap` has added a **-D** option to place a map-insert box.
+*  :doc:`basemap` has added a **-D** option to place a map-insert box.
 
-*  :doc:`psclip` has added an extended **-C** option to close different types of clip paths.
+*  :doc:`clip` has added an extended **-C** option to close different types of clip paths.
 
-*  :doc:`pscoast` has added a new option **-E** which lets users specify one or more countries
+*  :doc:`coast` has added a new option **-E** which lets users specify one or more countries
    to paint, fill, extract, or use as plot domain (requires DCW to be installed).
 
-*  :doc:`pscontour` is now similar to :doc:`grdcontour` in the options it
+*  :doc:`contour` is now similar to :doc:`grdcontour` in the options it
    takes, e.g., **-C** in particular. In GMT 4, the program could only
    read a CPT and not take a specific contour interval.
 
-*  :doc:`pshistogram` now takes **-D** to place histogram count labels on top of each bar
+*  :doc:`histogram` now takes **-D** to place histogram count labels on top of each bar
    and **-N** to draw the equivalent normal distributions.
 
-*  :doc:`pslegend` no longer uses system calls to do the plotting.  The modified **-D**
+*  :doc:`legend` no longer uses system calls to do the plotting.  The modified **-D**
    allows for minor offsets, while **-F** offers more control over the frame and fill.
 
 *  :doc:`psrose` has added **-Wv**\ *pen* to
    specify pen for vector (specified in **-C**). Added **-Zu** to set all radii to
    unity (i.e., for analysis of angles only).
 
-*  :doc:`psscale` has a new option **-T** that paints a rectangle behind the color bar.
+*  :doc:`colorbar` has a new option **-T** that paints a rectangle behind the color bar.
    The **+n** modifier to **-E** draws a rectangle with NaN color and adds a label.
    The **-G** option will truncate incoming CPT to be limited to the specified z-range.
    Modification **-Np** indicates a preference to use polygons to draw the color bar.
 
-*  :doc:`pstext` can take simplified input
+*  :doc:`text` can take simplified input
    via new option **-F** to set fixed font (including size), angle, and
    justification. If these parameters are fixed for all the text strings
    then the input can simply be *x y text*.  It also has enhanced **-DJ** option

@@ -231,7 +231,7 @@ See Also
 :doc:`pspolar`,
 :doc:`pscoupe`,
 :doc:`psvelo`,
-:doc:`gmt </gmt>`, :doc:`psbasemap </psbasemap>`, :doc:`psxy </psxy>`
+:doc:`gmt </gmt>`, :doc:`basemap </basemap>`, :doc:`psxy </psxy>`
 
 References
 ----------

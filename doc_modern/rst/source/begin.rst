@@ -6,7 +6,7 @@ begin
 
 .. only:: not man
 
-    begin - Initiate a new GMT session using modern mode
+    Initiate a new GMT session using modern mode
 
 Synopsis
 --------

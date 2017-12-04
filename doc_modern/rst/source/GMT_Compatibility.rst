@@ -43,7 +43,7 @@ with a warning under compatibility mode:
 
 *  **Custom symbol macros:** Circle macro symbol **C** is deprecated; use **c** instead.
 
-*  **Map scale**: Used by :doc:`psbasemap`
+*  **Map scale**: Used by :doc:`basemap`
    and others. Here, the unit **m** is deprecated; use **M** for statute miles.
 
 *  **3-D perspective**: Some programs used a combination of **-E**,
@@ -153,36 +153,36 @@ with a warning under compatibility mode:
 
 *  :doc:`project`: **-D** is deprecated; use **-**\ **-**\ :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>` instead.
 
-*  :doc:`psbasemap`: **-G** is deprecated;
+*  :doc:`basemap`: **-G** is deprecated;
    specify canvas color via **-B** modifier **+g**\ *color*.
 
-*  :doc:`pscoast`: **-m** is deprecated and
+*  :doc:`coast`: **-m** is deprecated and
    have reverted to **-M** for selecting data output instead of plotting.
 
 *  :doc:`pscontour`: **-T**\ *indexfile* is deprecated; use **-Q**\ *indexfile*.
 
-*  :doc:`pshistogram`: **-T**\ *col* is
+*  :doc:`histogram`: **-T**\ *col* is
    deprecated; use common option **-i** instead.
 
-*  :doc:`pslegend`: Paragraph text header flag > is deprecated; use P instead.
+*  :doc:`legend`: Paragraph text header flag > is deprecated; use P instead.
 
-*  :doc:`psmask`: **-D**...\ **+n**\ *min* is deprecated; use **-Q** instead.
+*  :doc:`mask`: **-D**...\ **+n**\ *min* is deprecated; use **-Q** instead.
 
-*  :doc:`psrose`: Old vector specifications in
+*  :doc:`rose`: Old vector specifications in
    Option **-M** are deprecated; see new explanations.
 
-*  :doc:`pstext`: **-m** is deprecated; use
+*  :doc:`text`: **-m** is deprecated; use
    **-M** to indicate paragraph mode. Also, **-S** is deprecated as
    fonts attributes are now specified via the font itself.
 
-*  :doc:`pswiggle`: **-D** is deprecated;
+*  :doc:`wiggle`: **-D** is deprecated;
    use common option **-g** to indicate data gaps. Also, **-N** is
    deprecated as all fills are set via the **-G** option.
 
-*  :doc:`psxy`: Old vector specifications in
+*  :doc:`plot`: Old vector specifications in
    Option **-S** are deprecated; see new explanations.
 
-*  :doc:`psxyz`: Old vector specifications in
+*  :doc:`plot3d`: Old vector specifications in
    Option **-S** are deprecated; see new explanations.
 
 *  :doc:`splitxyz`: **-G** is deprecated;

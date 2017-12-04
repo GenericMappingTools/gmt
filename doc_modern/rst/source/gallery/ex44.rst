@@ -3,7 +3,7 @@
 (44) Map inserts
 ----------------
 
-In this example show how the two modules :doc:`psbasemap </psbasemap>`
+In this example show how the two modules :doc:`basemap </basemap>`
 and :doc:`mapproject </mapproject>` can be used
 to place map inserts on top of your map.  The map insert is usually
 intended for placing a smaller-scale version of the larger geographical

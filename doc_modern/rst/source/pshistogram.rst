@@ -251,5 +251,5 @@ See Also
 --------
 
 :doc:`gmt`, :doc:`gmtcolors`,
-:doc:`psbasemap`, :doc:`psrose`,
-:doc:`psxy`
+:doc:`basemap`, :doc:`rose`,
+:doc:`plot`

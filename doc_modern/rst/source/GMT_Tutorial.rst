@@ -333,7 +333,7 @@ We will begin our adventure by making some simple plot axes and
 coastline basemaps.  We will do this in order to introduce the
 all-important common options **-B**, **-J**, and **-R** and to familiarize
 ourselves with a few selected GMT projections.  The GMT modules
-we will utilize are :doc:`psbasemap` and :doc:`pscoast`.  Please
+we will utilize are :doc:`basemap` and :doc:`coast`.  Please
 consult their manual pages for reference.
 
 Linear projection
@@ -347,10 +347,10 @@ we let the canvas be painted light red and have dimensions of
 
    ::
 
-    gmt psbasemap -R10/70/-3/8 -JX4i/3i -Ba -B+glightred+t"My first plot" -P > GMT_tut_1.ps
+    gmt basemap -R10/70/-3/8 -JX4i/3i -Ba -B+glightred+t"My first plot" -pdf GMT_tut_1
 
 You can view the result with gv GMT_tut_1.ps and it should look like :ref:`our example 1 below <gmt_tut_1>`.
-Examine the :doc:`psbasemap` documentation so you understand what each option means.
+Examine the :doc:`basemap` documentation so you understand what each option means.
 
 .. _gmt_tut_1:
 
@@ -381,7 +381,7 @@ ranges from 3.2 10^20 to 6.8 10^24.  One possibility is
 
    ::
 
-    gmt psbasemap -R1/10000/1e20/1e25 -JX9il/6il -Bxa2+l"Wavelength (m)" -Bya1pf3+l"Power (W)" -BWS > GMT_tut_2.ps
+    gmt basemap -R1/10000/1e20/1e25 -JX9il/6il -Bxa2+l"Wavelength (m)" -Bya1pf3+l"Power (W)" -BWS -pdf GMT_tut_2
 
 Make sure your plot looks like :ref:`our example 2 below <gmt_tut_2>`
 
@@ -594,31 +594,31 @@ and boundary annotations.
   +=============+======================================================================+
   |             |   **BASEMAPS**                                                       |
   +-------------+----------------------------------------------------------------------+
-  | psbasemap   | Create an empty basemap frame with optional scale                    |
+  | basemap     | Create an empty basemap frame with optional scale                    |
   +-------------+----------------------------------------------------------------------+
-  | pscoast     | Plot coastlines, filled continents, rivers, and political borders    |
+  | coast       | Plot coastlines, filled continents, rivers, and political borders    |
   +-------------+----------------------------------------------------------------------+
-  | pslegend    | Create legend overlay                                                |
+  | legend      | Create legend overlay                                                |
   +-------------+----------------------------------------------------------------------+
   |             |   **POINTS AND LINES**                                               |
   +-------------+----------------------------------------------------------------------+
-  | pswiggle    | Draw spatial time-series along their (*x,y*)-tracks                  |
+  | wiggle      | Draw spatial time-series along their (*x,y*)-tracks                  |
   +-------------+----------------------------------------------------------------------+
-  | psxy        | Plot symbols, polygons, and lines in 2-D                             |
+  | plot        | Plot symbols, polygons, and lines in 2-D                             |
   +-------------+----------------------------------------------------------------------+
-  | psxyz       | Plot symbols, polygons, and lines in 3-D                             |
+  | plot3d      | Plot symbols, polygons, and lines in 3-D                             |
   +-------------+----------------------------------------------------------------------+
   |             |   **HISTOGRAMS**                                                     |
   +-------------+----------------------------------------------------------------------+
-  | pshistogram | Plot a rectangular histogram                                         |
+  | histogram   | Plot a rectangular histogram                                         |
   +-------------+----------------------------------------------------------------------+
-  | psrose      | Plot a polar histogram(sector/rose diagram)                          |
+  | rose        | Plot a polar histogram(sector/rose diagram)                          |
   +-------------+----------------------------------------------------------------------+
   |             |   **CONTOURS**                                                       |
   +-------------+----------------------------------------------------------------------+
   | grdcontour  | Contouring of 2-D gridded data sets                                  |
   +-------------+----------------------------------------------------------------------+
-  | pscontour   | Direct contouring/imaging of (*x,y,z*) data by optimal triangulation |
+  | contour     | Direct contouring/imaging of (*x,y,z*) data by optimal triangulation |
   +-------------+----------------------------------------------------------------------+
   |             |   **SURFACES**                                                       |
   +-------------+----------------------------------------------------------------------+
@@ -630,15 +630,15 @@ and boundary annotations.
   +-------------+----------------------------------------------------------------------+
   |             |   **UTILITIES**                                                      |
   +-------------+----------------------------------------------------------------------+
-  | psclip      | Use polygon files to initiate custom clipping paths                  |
+  | clip        | Use polygon files to initiate custom clipping paths                  |
   +-------------+----------------------------------------------------------------------+
   | psimage     | Plot Sun raster files                                                |
   +-------------+----------------------------------------------------------------------+
-  | psmask      | Create clipping paths or generate overlay to mask                    |
+  | mask        | Create clipping paths or generate overlay to mask                    |
   +-------------+----------------------------------------------------------------------+
-  | psscale     | Plot gray scale or color scale bar                                   |
+  | colorbar    | Plot gray scale or color scale bar                                   |
   +-------------+----------------------------------------------------------------------+
-  | pstext      | Plot text strings on maps                                            |
+  | text        | Plot text strings on maps                                            |
   +-------------+----------------------------------------------------------------------+
 
 Plotting lines and symbols, :doc:`psxy` is one of the most frequently
@@ -1468,11 +1468,11 @@ Here is an example of four different ways of presenting the color bar:
 
    ::
 
-    gmt psbasemap -R0/6/0/9 -Jx1i -P -B0 -K -Xc > GMT_tut_14.ps
-    gmt psscale -Dx1i/1i+w4i/0.5i+h -Cdisc.cpt -B+tdiscrete -O -K >> GMT_tut_14.ps
-    gmt psscale -Dx1i/3i+w4i/0.5i+h -Ccont.cpt -B+tcontinuous -O -K >> GMT_tut_14.ps
-    gmt psscale -Dx1i/5i+w4i/0.5i+h -Cdisc.cpt -B+tdiscrete -I0.5 -O -K >> GMT_tut_14.ps
-    gmt psscale -Dx1i/7i+w4i/0.5i+h -Ccont.cpt -B+tcontinuous -I0.5 -O >> GMT_tut_14.ps
+    gmt basemap -R0/6/0/9 -Jx1i -P -B0 -K -Xc > GMT_tut_14.ps
+    gmt colorbar -Dx1i/1i+w4i/0.5i+h -Cdisc.cpt -B+tdiscrete -O -K >> GMT_tut_14.ps
+    gmt colorbar -Dx1i/3i+w4i/0.5i+h -Ccont.cpt -B+tcontinuous -O -K >> GMT_tut_14.ps
+    gmt colorbar -Dx1i/5i+w4i/0.5i+h -Cdisc.cpt -B+tdiscrete -I0.5 -O -K >> GMT_tut_14.ps
+    gmt colorbar -Dx1i/7i+w4i/0.5i+h -Ccont.cpt -B+tcontinuous -I0.5 -O >> GMT_tut_14.ps
 
 Your plot should look like :ref:`our example 14 below <gmt_tut_14>`
 

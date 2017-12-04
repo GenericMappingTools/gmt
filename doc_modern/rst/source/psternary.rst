@@ -67,7 +67,7 @@ Optional Arguments
     to give specific settings for one of these axis you must include the
     axis letter before the arguments.  If all axes have the same arguments
     then only give one option without the axis letter.  For more details,
-    see the -B discussion in psbasemap.
+    see the -B discussion in basemap.
 
 .. _-C:
 
@@ -198,6 +198,6 @@ See Also
 
 :doc:`gmt`, :doc:`gmt.conf`,
 :doc:`gmtcolors`,
-:doc:`psbasemap`,
-:doc:`psxy`,
-:doc:`psxyz`
+:doc:`basemap`,
+:doc:`plot`,
+:doc:`plot3d`

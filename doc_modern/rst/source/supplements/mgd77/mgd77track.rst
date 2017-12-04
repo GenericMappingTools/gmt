@@ -201,7 +201,7 @@ See Also
 --------
 
 :doc:`mgd77info`,
-:doc:`psbasemap </psbasemap>`,
+:doc:`basemap </basemap>`,
 :doc:`mgd77list`
 
 References

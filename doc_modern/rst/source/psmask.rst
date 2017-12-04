@@ -226,4 +226,4 @@ See Also
 
 :doc:`gmt`, :doc:`gmtcolors`,
 :doc:`grdmask`, :doc:`surface`,
-:doc:`psbasemap`, :doc:`psclip`
+:doc:`basemap`, :doc:`clip`
