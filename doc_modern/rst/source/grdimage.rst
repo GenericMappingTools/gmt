@@ -68,8 +68,6 @@ value. Interpolation and aliasing is controlled with the **-n** option.
 The **-R** option can be used to select a map region larger or smaller
 than that implied by the extent of the grid.
 
-A (color) PostScript file is output.
-
 Required Arguments
 ------------------
 
@@ -88,16 +86,16 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *out_img*\ [**=**\ *driver*]
-    Save an image in a raster format instead of PostScript. Use extension
-    .ppm for a Portable Pixel Map format.  For GDAL-aware versions there are more choices:
-    Append *out_img* to select the image file name and extension.
-    If the extension is one of .bmp, .gif, .jpg, .png, or .tif then no driver
-    information is required.  For other output formats you must append the
-    required GDAL driver.  The *driver* is the driver code name used by
-    GDAL; see your GDAL installation's documentation for available drivers.
-    Notes: (1) If a tiff file (.tif) is selected then we will write a GeoTiff image
-    if the GMT projection syntax translates into a PROJ4 syntax, otherwise
-    a plain tiff file is produced. (2) Any vector elements will be lost.
+    Save an image in a raster format instead of PostScript. Use extension .ppm for a Portable
+    Pixel Map format. For GDAL-aware versions there are more choices: Append *out_img* to select
+    the image file name and extension. If the extension is one of .bmp, .gif, .jpg, .png, or .tif
+    then no driver information is required. For other output formats you must append the required
+    GDAL driver. The *driver* is the driver code name used by GDAL; see your GDAL installation's
+    documentation for available drivers. Append a +c<options> string where *options* is a list of
+    one or more concatenated number of GDAL -co options. For example, to write a GeoPDF with the
+    TerraGo format use *=PDF+cGEO_ENCODING=OGC_BP*. Notes: (1) If a tiff file (.tif) is selected
+    then we will write a GeoTiff image if the GMT projection syntax translates into a PROJ4 syntax,
+    otherwise a plain tiff file is produced. (2) Any vector elements will be lost.
 
 .. include:: explain_-B.rst_
 
