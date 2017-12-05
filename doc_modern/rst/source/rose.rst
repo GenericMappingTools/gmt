@@ -282,4 +282,4 @@ See Also
 --------
 
 :doc:`gmt`, :doc:`gmt.conf`,
-:doc:`gmtcolors`, :doc:`pshistogram`
+:doc:`gmtcolors`, :doc:`histogram`

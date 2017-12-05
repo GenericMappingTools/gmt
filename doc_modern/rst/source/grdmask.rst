@@ -212,4 +212,4 @@ See Also
 
 :doc:`gmt`, :doc:`grdlandmask`,
 :doc:`grdmath`, :doc:`grdclip`,
-:doc:`psmask`, :doc:`psclip`
+:doc:`mask`, :doc:`clip`

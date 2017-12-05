@@ -1,19 +1,19 @@
-.. index:: ! pssegyz
+.. index:: ! segyz
 
 *******
-pssegyz
+segyz
 *******
 
 .. only:: not man
 
-    pssegyz - Create imagemasked postscript from SEGY file
+    segyz - Create imagemasked postscript from SEGY file
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**pssegyz** *SEGYfile* |-J|\ *parameters*
+**segyz** *SEGYfile* |-J|\ *parameters*
 |-J|\ **z**\ \|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 |-D|\ *deviation* |-F|\ [*color*] **-W**
@@ -37,7 +37,7 @@ Synopsis
 Description
 -----------
 
-**pssegyz** reads a native (IEEE) format SEGY file and produces a
+**segyz** reads a native (IEEE) format SEGY file and produces a
 plot of the seismic data. The *imagemask* operator is used
 so that the seismic data are plotted as a 1-bit deep bitmap in a single
 (user-specified) color or gray shade, with a transparent background. The
@@ -47,7 +47,7 @@ in the trace headers (in which case order of the traces in the file is
 not significant). Standard GMT geometry routines are used so that in
 principle any map projection may be used, however it is likely that the
 geographic projections will lead to unexpected results. Beware that a
-couple of the options for **pssegy** are not available in **pssegyz**.
+couple of the options for **segy** are not available in **segyz**.
 
 Note that the order of operations before the seismic data are plotted is
 deviation\*[clip]([bias]+[normalize](sample value)). Deviation
@@ -195,7 +195,7 @@ variable area shading in black, use
 
    ::
 
-    gmt pssegyz wa1.segy -JX5i/-5i -D1 -Jz0.05i -E180/5 -R0/100/0/10/0/10 \
+    gmt segyz wa1.segy -JX5i/-5i -D1 -Jz0.05i -E180/5 -R0/100/0/10/0/10 \
             -C3 -N -So -W -Fblack > segy.ps
 
 Bugs
@@ -210,4 +210,4 @@ viewing elevation increases. Wiggle-trace plotting is not affected.
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`pssegy`, :doc:`segy2grd`
+:doc:`gmt </gmt>`, :doc:`segy`, :doc:`segy2grd`

@@ -5,8 +5,8 @@ MECA
 .. toctree::
    :maxdepth: 1
 
-   supplements/meca/pscoupe
-   supplements/meca/psmeca
-   supplements/meca/pspolar
-   supplements/meca/psvelo
-   supplements/meca/pssac
+   supplements/meca/coupe
+   supplements/meca/meca
+   supplements/meca/polar
+   supplements/meca/velo
+   supplements/meca/sac

@@ -16,7 +16,7 @@ pattern # 86 is drawn at 100 dpi but with the black and white pixels
 replaced with color combinations. At the same time the ocean is filled
 with a repeating image of a circuit board (provides in Sun raster
 format). The text GMT in the center is an off-line PostScript file
-that was overlaid using :doc:`psimage </psimage>`. The
+that was overlaid using :doc:`image </image>`. The
 final panel repeats the top panel except that the land and sea images
 have changed places.
 

@@ -2589,7 +2589,7 @@ pattern:
 
 Due to *PostScript* implementation limitations the raster images used
 with **-G** must be less than 146 x 146 pixels in size; for larger
-images see :doc:`psimage`. The format of Sun raster files [18]_ is
+images see :doc:`image`. The format of Sun raster files [18]_ is
 outlined in Chapter `GMT file formats`_. However, if you built GMT
 with GDAL then other image formats can be used as well. Note that under
 *PostScript* Level 1 the patterns are filled by using the polygon as a
@@ -2825,15 +2825,15 @@ constant (by letting Color\ :math:`_{max}` = Color\ :math:`_{min}` or -)
 or a continuous, linear function of *z*. If patterns are used then the
 second (max) pattern must be set to -. The optional flag **A** is used
 to indicate annotation of the color scale when plotted using
-:doc:`psscale`. The optional flag **A** may
+:doc:`colorbar`. The optional flag **A** may
 be **L**, **U**, or **B** to select annotation of the lower, upper, or
 both limits of the particular *z*-slice, respectively. However,
 the standard **-B** option can be used by
-:doc:`psscale` to affect annotation and
+:doc:`colorbar` to affect annotation and
 ticking of color scales. Just as other GMT programs, the *stride* can
 be omitted to determine the annotation and tick interval automatically
 (e.g., **-Baf**). The optional semicolon followed by a text label will
-make :doc:`psscale`, when used with the
+make :doc:`colorbar`, when used with the
 **-L** option, place the supplied label instead of formatted *z*-values.
 
 As for categorical tables, the background color (for *z*-values
@@ -2858,7 +2858,7 @@ gray-shade in the 0--255 range. For CMYK, give *c/m/y/k* values in the
 0--100 range.
 
 A few programs (i.e., those that plot polygons such as
-:doc:`grdview`, :doc:`psscale`,
+:doc:`grdview`, :doc:`colorbar`,
 :doc:`plot` and
 :doc:`plot3d`) can accept pattern fills instead
 of gray-shades. You must specify the pattern as in Section `Specifying area fill attributes`_
@@ -3461,7 +3461,7 @@ Color scale bars are used in conjunction with color-coded surfaces, symbols, lin
 relate the chosen color to a data value or category.  For instance, color images of topography
 or other gridded data will need a mechanism for users to decode what the colors represent.  Typically, we do this
 by adding a color scale bar on the outside (or inside) of the map boundaries.  The module
-:doc:`psscale` places the color scale bar, with location and size determined by the **-D** attributes.
+:doc:`colorbar` places the color scale bar, with location and size determined by the **-D** attributes.
 As for other map features we must specify the reference and anchor points and any adjustments to them, then
 supply suitable required and optional modifiers:
 
@@ -3499,7 +3499,7 @@ Adding map legends is the standard way to communicate what various symbols place
 represent.  For instance, you may use this mechanism to convey the information that circles are
 earthquake locations, triangles are places where you ate Thai food, and dashed lines indicate
 some sort of gang-land demarkation line that you should not cross without paying the locals due respect.
-Map legends are placed by the module :doc:`pslegend`, with location and size determined by the
+Map legends are placed by the module :doc:`legend`, with location and size determined by the
 various **-D** attributes. We must again specify the reference and anchor points and any adjustments to them
 first, then supply suitable required and optional modifiers:
 
@@ -3518,8 +3518,8 @@ first, then supply suitable required and optional modifiers:
    :width: 500 px
    :align: center
 
-   Example of a map legend placed with :doc:`pslegend`.  Apart from the placement and dimensions discussed
-   here, :doc:`pslegend` reads macro commands that specifies each item of the legend, including colors,
+   Example of a map legend placed with :doc:`legend`.  Apart from the placement and dimensions discussed
+   here, :doc:`legend` reads macro commands that specifies each item of the legend, including colors,
    widths of columns, the number of columns, and presents a broad selection of items.  Here, we
    simply used **-Dx**\ 0/0\ **+w**\ 5.6i\ **+j**\ *BL*.
 
@@ -3529,7 +3529,7 @@ Placing raster and EPS images on maps
 When preparing posters for meetings one will often need to include the organization's logo,
 which may be available to you as an Encapsulated *PostScript* File (EPS) or as a raster image,
 such as PNG or JPG.  At other times, you may wish to place photos or other raster images on
-your map.  The module :doc:`psimage` can help with this, and like the other map feature
+your map.  The module :doc:`image` can help with this, and like the other map feature
 placements it requires a reference point and its optional adjustments via the **-D** option.
 In addition, we require one (of two) modifiers to determine the image size.
 
@@ -3545,7 +3545,7 @@ In addition, we require one (of two) modifiers to determine the image size.
 #. Enable image replication.  For raster images (not EPS) you may optionally append **+n**\ *nx*\ [/*ny*]
    to indicate that you want the source image to be replicated that many times in the two
    directions, resulting in a tiling of the map using the selected image.  This may be useful
-   in conjunction with an active clip path set by :doc:`psclip`.
+   in conjunction with an active clip path set by :doc:`clip`.
 
 .. figure:: /_images/GMT_images.*
    :width: 500 px
@@ -4029,7 +4029,7 @@ sources.
 Reading multi-band images
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:doc:`grdimage` and :doc:`psimage` both lets the user select
+:doc:`grdimage` and :doc:`image` both lets the user select
 individual bands in a multi-band image file and treats the result as an
 image (that is the values, in the 0--255 range, are treated as colors,
 not data). To select individual bands you use the **+b**\ *band-number*
@@ -4039,14 +4039,14 @@ starts at zero), or it could be a comma-separated list of bands. For example
 
    ::
 
-    gmt psimage jpeg_image_with_three_bands.jpg+b0
+    gmt image jpeg_image_with_three_bands.jpg+b0
 
 will plot only the first band (i.e., the red band) of the jpeg image as
 a gray-scale image, and
 
    ::
 
-    gmt psimage jpeg_image_with_three_bands.jpg+b2,1,0
+    gmt image jpeg_image_with_three_bands.jpg+b2,1,0
 
 will plot the same image in color but where the RGB band order has been reversed.
 
@@ -5933,11 +5933,11 @@ meca: seismology and geodesy symbols
 ------------------------------------
 
 This package contains the programs
-:doc:`coupe <supplements/meca/pscoupe>`,
-:doc:`meca <supplements/meca/psmeca>`,
-:doc:`polar <supplements/meca/pspolar>`,
-:doc:`velo <supplements/meca/psvelo>`, and
-:doc:`sac <supplements/meca/pssac>` which are used by seismologists
+:doc:`coupe <supplements/meca/coupe>`,
+:doc:`meca <supplements/meca/meca>`,
+:doc:`polar <supplements/meca/polar>`,
+:doc:`velo <supplements/meca/velo>`, and
+:doc:`sac <supplements/meca/sac>` which are used by seismologists
 and geodesists for plotting focal mechanisms (including cross-sections
 and polarities), error ellipses, velocity arrows, rotational wedges, and
 more. The package was developed by Kurt Feigl and Genevieve
@@ -5993,8 +5993,8 @@ segyprogs: plotting SEGY seismic data
 
 This package contains programs to plot SEGY seismic data files using the
 GMT mapping transformations and postscript library.
-:doc:`pssegy <supplements/segy/pssegy>` generates a 2-D plot (x:location
-and y:time/depth) while :doc:`pssegyz <supplements/segy/pssegyz>`
+:doc:`segy <supplements/segy/segy>` generates a 2-D plot (x:location
+and y:time/depth) while :doc:`segyz <supplements/segy/segyz>`
 generates a 3-D plot (x and y: location coordinates, z: time/depth).
 Locations may be read from predefined or arbitrary portions of each
 trace header. Finally, :doc:`segy2grd <supplements/segy/segy2grd>` can
@@ -6648,8 +6648,8 @@ Image compression.
 
 Embedded image compression.
     When your GMT plot includes objects produced by
-    :doc:`grdimage`, :doc:`psimage` or
-    :doc:`pslegend`, they are seen as
+    :doc:`grdimage`, :doc:`image` or
+    :doc:`legend`, they are seen as
     "images". The default options of ghostscript will use a
     *lossy* compression (similar to JPEG) on those images when
     converting them to PDF objects. This can be avoided, however, by
@@ -7863,7 +7863,7 @@ complicated when you want to label the legend with names for certain
 intervals (like geological time periods in the example below). To
 accomplish that, one should add a semi-colon and the label name at the
 end of a line in the CPT and add the **-L** option to the
-:doc:`psscale` command that draws the color
+:doc:`colorbar` command that draws the color
 legend. This option also makes all intervals in the legend of equal
 length, even it the numerical values are not equally spaced.
 

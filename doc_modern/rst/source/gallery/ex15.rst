@@ -15,9 +15,9 @@ we use a minimum curvature technique
 (:doc:`surface </surface>`) which is a global method.
 Hence, the contours cover the entire map although the data are only
 available for portions of the area (indicated by the gray areas plotted
-using :doc:`psmask </psmask>`). The top left scenario
+using :doc:`mask </mask>`). The top left scenario
 illustrates how we can create a clip path (using
-:doc:`psmask </psmask>`) based on the data coverage to
+:doc:`mask </mask>`) based on the data coverage to
 eliminate contours outside the constrained area. Finally (top right) we
 simply employ :doc:`coast </coast>` to overlay gray
 land masses to cover up the unwanted contours, and end by plotting a

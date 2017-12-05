@@ -293,4 +293,4 @@ See Also
 
 :doc:`gmt`, :doc:`makecpt`
 :doc:`gmtlogo`, :doc:`grd2cpt`
-:doc:`psimage`, :doc:`pslegend`
+:doc:`image`, :doc:`legend`

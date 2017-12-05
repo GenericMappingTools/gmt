@@ -1077,7 +1077,7 @@ See Also
 :doc:`basemap` ,
 :doc:`coast` , :doc:`contour`,
 :doc:`histogram` ,
-:doc:`psimage` , :doc:`legend` ,
+:doc:`image` , :doc:`legend` ,
 :doc:`mask` , :doc:`rose` ,
 :doc:`text` , :doc:`wiggle` ,
 :doc:`plot` , :doc:`plot3d`

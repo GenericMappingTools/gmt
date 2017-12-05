@@ -147,5 +147,5 @@ See Also
 --------
 
 :doc:`gmt </gmt>`, :doc:`grd2xyz </grd2xyz>`,
-:doc:`grdedit </grdedit>`, :doc:`pssegy`,
+:doc:`grdedit </grdedit>`, :doc:`segy`,
 :doc:`xyz2grd </xyz2grd>`

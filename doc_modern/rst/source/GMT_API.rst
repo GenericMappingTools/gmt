@@ -46,7 +46,7 @@ Preamble
 
 
 Prior to version 5, the bulk of GMT functionality was coded directly
-in the standard GMT C program modules (e.g., ``surface.c``, ``psxy.c``, ``grdimage.c``, etc.). The
+in the standard GMT C program modules (e.g., ``surface.c``, ``grdimage.c``, etc.). The
 GMT library only offered access to low-level functions from which
 those high-level GMT programs were built. The standard GMT programs
 have been very successful, with tens of thousands of users world-wide.
@@ -56,7 +56,7 @@ environments since access to GMT tools could only be achieved via
 system calls [1]_. Consequently, all data i/o had to be done via
 temporary files. The design also prevented the GMT developers
 themselves from taking advantage of these modules directly. For
-instance, the tool :doc:`pslegend` needed to
+instance, the tool :doc:`legend` needed to
 make extensive use of system calls to :doc:`plot` and
 :doc:`text` in order to plot the lines,
 symbols and text that make up a map legend, making it a very awkward
@@ -86,7 +86,7 @@ previous behavior of ``blockmean.c`` is achieved by calling ``gmt blockmean``,
 i.e., the module is now just the first argument to the :doc:`gmt` executable.
 For backwards compatibility with older GMT (4) scripts we optionally
 install numerous symbolic links to the gmt executable with names such
-as blockmean, psxy, surface, etc.  The gmt executable is smart enough to
+as blockmean, plot, surface, etc.  The gmt executable is smart enough to
 understand when it is being invoked via one of these links and then knows
 which module to call upon.
 Consequently, ``blockmean.c`` and other files do in
@@ -216,7 +216,7 @@ For the purpose of this documentation a few definitions are needed:
 In version 5, the standard GMT programs are themselves simple invocations
 of the :doc:`gmt` application with the function name as argument.
 However, some of these modules, such as
-:doc:`pslegend`, :doc:`gmtconvert`,
+:doc:`legend`, :doc:`gmtconvert`,
 :doc:`grdblend`,
 :doc:`grdfilter` and others may call several additional modules.
 

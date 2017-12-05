@@ -5,20 +5,20 @@ PS
 .. toctree::
    :maxdepth: 1
 
-   psbasemap
-   psclip
-   pscoast
-   pscontour
+   basemap
+   clip
+   coast
+   contour
    psconvert
-   pshistogram
-   psimage
-   pslegend
-   psmask
-   psrose
-   psscale
-   pssolar
-   psternary
-   pstext
-   pswiggle
-   psxy
-   psxyz
+   histogram
+   image
+   legend
+   mask
+   rose
+   colorbar
+   solar
+   ternary
+   text
+   wiggle
+   plot
+   plot3d

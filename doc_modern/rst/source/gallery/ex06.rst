@@ -4,7 +4,7 @@
 --------------------------
 
 GMT provides two tools to render histograms:
-:doc:`pshistogram </pshistogram>` and :doc:`rose </rose>`. The former takes care of
+:doc:`histogram </histogram>` and :doc:`rose </rose>`. The former takes care of
 regular histograms whereas the latter deals with polar histograms (rose
 diagrams, sector diagrams, and wind rose diagrams). We will show an
 example that involves both programs. The file ``fractures.yx`` contains a compilation of

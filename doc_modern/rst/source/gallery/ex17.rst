@@ -25,7 +25,7 @@ are associated with equal amounts of area in the plot. Since the high
 amounts (in red) are not very prevalent, that color spans a long range.
 
 For this image it is appropriate to use the **-I** option in
-:doc:`psscale </psscale>` so the legend gets shaded,
+:doc:`colorbar </colorbar>` so the legend gets shaded,
 similar to the geoid grid. See Appendix [app:M] to learn more about
 CPTs and ways to draw color legends.
 

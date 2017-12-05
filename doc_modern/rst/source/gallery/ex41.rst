@@ -3,7 +3,7 @@
 (41) Legend with tables
 -----------------------
 
-In this example we demonstrate how one can use the tool :doc:`pslegend </pslegend>`
+In this example we demonstrate how one can use the tool :doc:`legend </legend>`
 to typeset a table within a legend.  It also shows how one would set up
 variable-width columns and fill the cells with a background color.
 

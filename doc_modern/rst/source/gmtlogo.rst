@@ -125,5 +125,5 @@ scaled up to be 3 inches wide and offset by 0.1 inches from the border, try
 See Also
 --------
 
-:doc:`gmt`, :doc:`pslegend`,
-:doc:`psimage`, :doc:`psscale`
+:doc:`gmt`, :doc:`legend`,
+:doc:`image`, :doc:`colorbar`

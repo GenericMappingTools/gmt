@@ -143,17 +143,17 @@ legend Codes
     which can be used for the color look-up via the given CPT *cptname*.
     You may switch to other *cptname* by repeating this command.
 **B** *cptname offset height* [ *optional arguments* ]
-    The **B** record will plot a horizontal color bar, :doc:`psscale`-style
+    The **B** record will plot a horizontal color bar, :doc:`colorbar`-style
     in the middle, starting at *offset* from the left edge, and of the
-    given *height*. You may add any additional :doc:`psscale` options as well.
+    given *height*. You may add any additional :doc:`colorbar` options as well.
     Any of the modifiers [+e[b|f][<length>]][+h][+ma|c|l|u][+n[<txt>]] may be
-    given *height*. You may add any additional :doc:`psscale` options as well.
+    given *height*. You may add any additional :doc:`colorbar` options as well.
     Any of the modifiers
     [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**][**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]] may be
     appended to the *height* argument, while other module options
     **-B** **-I** **-L** **-M** **-N** **-S** **-Z** and **-p** may be appended as
     *optional arguments* at the end of the record.
-    See :doc:`psscale` for details on all modifiers and options.
+    See :doc:`colorbar` for details on all modifiers and options.
 **C** *textcolor*
     The **C** record specifies the color with which the remaining text
     is to be printed. *textcolor* can be in the form *r/g/b*, *c/m/y/k*,

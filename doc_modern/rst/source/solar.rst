@@ -68,7 +68,7 @@ Optional Arguments
 
 **-G**\ *fill*\ \|\ **c** :ref:`(more ...) <-Gfill_attrib>`
     Select color or pattern for filling of terminators; or use **-Gc** for clipping [Default is no fill].
-    Deactivate clipping by appending the output of gmt :doc:`psclip` **-C**.
+    Deactivate clipping by appending the output of gmt :doc:`clip` **-C**.
 
 .. _-I:
 

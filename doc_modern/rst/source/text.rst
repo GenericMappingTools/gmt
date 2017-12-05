@@ -163,7 +163,7 @@ Optional Arguments
     Sets the shade or color used for filling the text box [Default is no
     fill]. Alternatively, use **-Gc** to plot the text and then use the
     text dimensions (and **-C**) to build clip paths and turn clipping on.
-    This clipping can then be turned off later with :doc:`psclip` **-C**.
+    This clipping can then be turned off later with :doc:`clip` **-C**.
     To **not** plot the text but activate clipping, use **-GC** instead.
 
 .. include:: explain_-Jz.rst_
@@ -329,7 +329,7 @@ See Also
 --------
 
 :doc:`gmt`, :doc:`gmt.conf`,
-:doc:`psclip`,
+:doc:`clip`,
 :doc:`gmtcolors`,
 :doc:`psconvert`,
 :doc:`basemap`,

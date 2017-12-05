@@ -113,7 +113,7 @@ Creating GMT Graphics
     modulate the color image. Next we run
     :doc:`grdimage` to create a color-code image
     of the Geosat geoid heights, and draw a color legend to the right of the
-    image with :doc:`psscale`. Similarly, we run
+    image with :doc:`colorbar`. Similarly, we run
     :doc:`grdimage` but specify **-Y**\ 4.5i to
     plot above the previous image. Adding scale and label the two plots a)
     and b) completes the illustration.
@@ -244,7 +244,7 @@ Creating GMT Graphics
     ----------------------
 
     GMT provides two tools to render histograms:
-    :doc:`pshistogram` and :doc:`rose`. The former takes care of
+    :doc:`histogram` and :doc:`rose`. The former takes care of
     regular histograms whereas the latter deals with polar histograms (rose
     diagrams, sector diagrams, and wind rose diagrams). We will show an
     example that involves both programs. The file ``fractures.yx`` contains a compilation of
@@ -497,9 +497,9 @@ Creating GMT Graphics
     (:doc:`surface`) which is a global method.
     Hence, the contours cover the entire map although the data are only
     available for portions of the area (indicated by the gray areas plotted
-    using :doc:`psmask`). The top left scenario
+    using :doc:`mask`). The top left scenario
     illustrates how we can create a clip path (using
-    :doc:`psmask`) based on the data coverage to
+    :doc:`mask`) based on the data coverage to
     eliminate contours outside the constrained area. Finally (top right) we
     simply employ :doc:`coast` to overlay gray
     land masses to cover up the unwanted contours, and end by plotting a
@@ -599,7 +599,7 @@ Creating GMT Graphics
     amounts (in red) are not very prevalent, that color spans a long range.
 
     For this image it is appropriate to use the **-I** option in
-    :doc:`psscale` so the legend gets shaded,
+    :doc:`colorbar` so the legend gets shaded,
     similar to the geoid grid. See Appendix [app:M] to learn more about
     CPTs and ways to draw color legends.
 
@@ -651,7 +651,7 @@ Creating GMT Graphics
     replaced with color combinations. At the same time the ocean is filled
     with a repeating image of a circuit board (provides in Sun raster
     format). The text GMT in the center is an off-line PostScript file
-    that was overlaid using :doc:`psimage`. The
+    that was overlaid using :doc:`image`. The
     final panel repeats the top panel except that the land and sea images
     have changed places (Figure :ref:`Example 19 <Fig_example_19>`).
 
@@ -808,7 +808,7 @@ Creating GMT Graphics
     live data. The main purpose of this script is not to show how to plot a
     map background and a few circles, but rather demonstrate how a map
     legend may be composed using the new tool
-    :doc:`pslegend`. Some scripting is used to
+    :doc:`legend`. Some scripting is used to
     pull out information from the data file that is later used in the
     legend. The legend will normally have the email address of the script
     owner; here that command is commented out and the user is hardwired to
@@ -1114,7 +1114,7 @@ Creating GMT Graphics
 
     In some cases, it is nice to "drape" an arbitrary image over a
     topographic map. We have already seen how to use
-    :doc:`psimage` to plot an image anywhere in
+    :doc:`image` to plot an image anywhere in
     out plot. But here are aim is different, we want to manipulate an image
     to shade it and plot it in 3-D over topography. This example was
     originally created by Stephan Eickschen for a flyer emphasizing the

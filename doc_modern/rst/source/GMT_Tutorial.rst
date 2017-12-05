@@ -632,7 +632,7 @@ and boundary annotations.
   +-------------+----------------------------------------------------------------------+
   | clip        | Use polygon files to initiate custom clipping paths                  |
   +-------------+----------------------------------------------------------------------+
-  | psimage     | Plot Sun raster files                                                |
+  | image       | Plot Sun raster files                                                |
   +-------------+----------------------------------------------------------------------+
   | mask        | Create clipping paths or generate overlay to mask                    |
   +-------------+----------------------------------------------------------------------+
@@ -1359,17 +1359,17 @@ this point:
 
 #. We can set up a clip path so that only the contours in the constrained region will show.
 
-Here we have only time to explore the latter approach.  The :doc:`psmask`
+Here we have only time to explore the latter approach.  The :doc:`mask`
 module can read the same preprocessed data and set up a contour mask
 based on the data distribution.  Once the clip path is activated we can
 contour the final grid; we finally deactivate the clipping with a second
-call to :doc:`psmask`.  Here's the recipe:
+call to :doc:`mask`.  Here's the recipe:
 
    ::
 
-    gmt psmask -R245/255/20/30 -I5m ship_5m.xyz -JM6i -Ba -P -K -V > GMT_tut_13.ps
+    gmt mask -R245/255/20/30 -I5m ship_5m.xyz -JM6i -Ba -P -K -V > GMT_tut_13.ps
     gmt grdcontour ship.nc -J -O -K -C250 -A1000 >> GMT_tut_13.ps
-    gmt psmask -C -O >> GMT_tut_13.ps
+    gmt mask -C -O >> GMT_tut_13.ps
 
 Your plot should look like :ref:`our example 13 below <gmt_tut_13>`
 
@@ -1385,7 +1385,7 @@ Exercises:
 
 #. Add the continents using any color you want.
 
-#. Color the clip path light gray (use **-G** in the first :doc:`psmask` call).
+#. Color the clip path light gray (use **-G** in the first :doc:`mask` call).
 
 Session Four
 ============
@@ -1443,7 +1443,7 @@ from -20 to 60, with color changes at every 10, try these two variants:
     gmt makecpt -Crainbow -T-20/60/10 > disc.cpt
     gmt makecpt -Crainbow -T-20/60/10 -Z > cont.cpt
 
-We can plot these color tables with :doc:`psscale`; the options
+We can plot these color tables with :doc:`colorbar`; the options
 worth mentioning here are listed below.  The placement of the
 color bar is particularly important and we refer you to the
 :ref:`Plot embellishments <GMT_Embellishments>` section for all
@@ -1575,7 +1575,7 @@ the plot.  We try
    ::
 
     gmt grdimage @tut_relief.nc -JM6i -P -Ba -Ctopo.cpt -V -K > GMT_tut_15.ps
-    gmt psscale -DjTC+w5i/0.25i+h+o0/-1i -Rtut_relief.nc -J -Ctopo.cpt -I0.4 -By+lm -O >> GMT_tut_15.ps
+    gmt colorbar -DjTC+w5i/0.25i+h+o0/-1i -Rtut_relief.nc -J -Ctopo.cpt -I0.4 -By+lm -O >> GMT_tut_15.ps
 
 Your plot should look like :ref:`our example 15 below <gmt_tut_15>`
 
@@ -1641,7 +1641,7 @@ create the shaded relief image:
    ::
 
     gmt grdimage @tut_relief.nc -Ius_i.nc -JM6i -P -Ba -Ctopo.cpt -K > GMT_tut_16.ps
-    gmt psscale -DjTC+w5i/0.25i+h+o0/-1i -Rtut_relief.nc -J -Ctopo.cpt -I0.4 -By+lm -O >> GMT_tut_16.ps
+    gmt colorbar -DjTC+w5i/0.25i+h+o0/-1i -Rtut_relief.nc -J -Ctopo.cpt -I0.4 -By+lm -O >> GMT_tut_16.ps
 
 Your plot should look like :ref:`our example 16 below <gmt_tut_16>`
 

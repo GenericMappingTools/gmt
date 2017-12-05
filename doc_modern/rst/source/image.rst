@@ -1,7 +1,7 @@
-.. index:: ! psimage
+.. index:: ! image
 
 *******
-psimage
+image
 *******
 
 .. only:: not man
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psimage** *imagefile*
+**image** *imagefile*
 [ |SYN_OPT-B| ]
 [ |-D|\ *refpoint* ]
 [ |-F|\ *box* ]
@@ -36,7 +36,7 @@ Synopsis
 Description
 -----------
 
-**psimage** reads an Encapsulated PostScript file or a raster image
+**image** reads an Encapsulated PostScript file or a raster image
 file and plots it on a map. The image can be scaled arbitrarily, and
 1-bit raster images can be (1) inverted, i.e., black
 pixels (on) becomes white (off) and vice versa, or
@@ -177,13 +177,13 @@ no effect when plotting 1-bit images or PostScript files.
 
 .. include:: explain_help.rst_
 
-:doc:`gmt`, :doc:`pslegend`,
+:doc:`gmt`, :doc:`legend`,
 To plot the image logo.jpg, scaling it be 1 inch wide (height is scaled
 accordingly), and outline with a thin, blue pen, use
 
    ::
 
-    gmt psimage logo.jpg -Dx0/0+w1i -F+pthin,blue -pdf image
+    gmt image logo.jpg -Dx0/0+w1i -F+pthin,blue -pdf image
 
 To include an Encapsulated PostScript file tiger.eps with its upper
 right corner 2 inch to the right and 1 inch up from the current
@@ -192,7 +192,7 @@ aspect ratio, use
 
    ::
 
-    gmt psimage tiger.eps -Dx2i/1i+jTR+w3i -pdf image
+    gmt image tiger.eps -Dx2i/1i+jTR+w3i -pdf image
 
 To replicate the 1-bit raster image template 1_bit.ras, colorize it
 (brown background and red foreground), and setting each of 5 by 5 tiles
@@ -200,13 +200,13 @@ to be 1 cm wide, use
 
    ::
 
-    gmt psimage 1_bit.ras -Gbbrown -Gfred -Dx0/0+w1c+n5 -pdf image
+    gmt image 1_bit.ras -Gbbrown -Gfred -Dx0/0+w1c+n5 -pdf image
 
 See Also
 --------
 
 :doc:`gmt`,
 :doc:`gmtcolors`, :doc:`gmtlogo`
-:doc:`legend`, :doc:`scale`
+:doc:`legend`, :doc:`colorbar`
 :doc:`plot`,
 :manpage:`convert(1)`

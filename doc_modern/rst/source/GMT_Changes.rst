@@ -14,7 +14,7 @@ New modules
 -----------
 
 We have added a new module to the GMT core called
-:doc:`psternary`.
+:doc:`ternary`.
 This module allows for the construction of ternary diagram, currently
 restricted to symbols (i.e., a plot-like experience but for ternary data).
 The *mgd77* supplement has gained a new tool :doc:`mgd77header <supplements/mgd77/mgd77header>`
@@ -165,7 +165,7 @@ Several modules have obtained new options to extend their capabilities:
    translate the plot origin after determining the lower-left corner of the
    map insert.
 
-*  :doc:`pshistogram` has a new **-Z** modifier **+w** that will
+*  :doc:`histogram` has a new **-Z** modifier **+w** that will
    accumulate weights provided in the 2nd input column instead of pure counts.
 
 *  :doc:`rose` adds option **-Q** for setting the  confidence level used
@@ -266,7 +266,7 @@ tectonic model predictions but at given point locations locations instead of
 on a grid.  The second is :doc:`rotsmoother<supplements/spotter/rotsmoother>`
 which smooths estimated rotations using quaternions.
 
-Also, the *meca* supplement has gained a new tool :doc:`sac <supplements/meca/pssac>`
+Also, the *meca* supplement has gained a new tool :doc:`sac <supplements/meca/sac>`
 for the plotting of seismograms in SAC format.
 
 Finally, we have added :doc:`gpsgridder<supplements/potential/gpsgridder>`
@@ -688,17 +688,17 @@ changes to existing syntax will be backwards compatible:
 *  :doc:`contour` adds a **-Q**\ *cut* option like :doc:`grdcontour` and consolidates the
    old **-T**, **-Q** options for an index file to a new **-E** option.
 
-*  :doc:`pshistogram` added modifiers **-W**\ *width*\ [**+l**\ \|\ **h**\ \|\ **b**]
+*  :doc:`histogram` added modifiers **-W**\ *width*\ [**+l**\ \|\ **h**\ \|\ **b**]
    to allow for more control on what happens to points falling in the tails.
 
-*  :doc:`psimage` added a new uniform **-D** option to specify location of the image and new uniform
+*  :doc:`image` added a new uniform **-D** option to specify location of the image and new uniform
    **-F** option to specify background panel and its many settings.
 
-*  :doc:`pslegend` has many enhancements for specifying varying cell widths and color, as
+*  :doc:`legend` has many enhancements for specifying varying cell widths and color, as
    well as a new uniform **-D** option to specify location of legend and new uniform
    **-F** option to specify background panel and its many settings.
 
-*  :doc:`psscale` new uniform **-D** option to specify location of the scale. We have
+*  :doc:`colorbar` new uniform **-D** option to specify location of the scale. We have
    retired the **-T** option in favor of the new uniform
    **-F** option to specify background panel and its many settings.
 

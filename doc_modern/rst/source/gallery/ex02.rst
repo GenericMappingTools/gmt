@@ -40,7 +40,7 @@ data we calculate the slopes in the north-south direction using
 modulate the color image. Next we run
 :doc:`grdimage </grdimage>` to create a color-code image
 of the Geosat geoid heights, and draw a color legend to the right of the
-image with :doc:`psscale </psscale>`. Similarly, we run
+image with :doc:`colorbar </colorbar>`. Similarly, we run
 :doc:`grdimage </grdimage>` but specify **-Y**\ 4.5i to
 plot above the previous image. Adding scale and label the two plots a)
 and b) completes the illustration.

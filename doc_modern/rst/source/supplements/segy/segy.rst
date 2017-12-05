@@ -1,19 +1,19 @@
-.. index:: ! pssegy
+.. index:: ! segy
 
 ******
-pssegy
+segy
 ******
 
 .. only:: not man
 
-    pssegy - Plot a SEGY file on a map
+    segy - Plot a SEGY file on a map
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**pssegy** *SEGYfile* |-J|\ *parameters*
+**segy** *SEGYfile* |-J|\ *parameters*
 |SYN_OPT-R|
 |-D|\ *deviation*
 |-F|\ [*color*] |-W|
@@ -35,7 +35,7 @@ Synopsis
 Description
 -----------
 
-**pssegy** reads a native (IEEE) format SEGY file and produces a
+**segy** reads a native (IEEE) format SEGY file and produces a
 plot of the seismic data. The *imagemask* operator is used
 so that the seismic data are plotted as a 1-bit deep bitmap in a single
 (user-specified) color or gray shade, with a transparent background. The
@@ -204,16 +204,16 @@ variable area shading in black, use
 
    ::
 
-    gmt pssegy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -N -So -W -Fblack > segy.ps
+    gmt segy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -N -So -W -Fblack > segy.ps
 
 To plot the SEGY file wa1.segy with traces plotted at true cdp\*0.1,
 clipped at +/-3, with bias -1 and negative variable area shaded red, use
 
    ::
 
-    gmt pssegy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -Sc -Qx0.1 -Fred -Qb-1 -I > segy.ps
+    gmt segy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -Sc -Qx0.1 -Fred -Qb-1 -I > segy.ps
 
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`pssegyz`, :doc:`segy2grd`
+:doc:`gmt </gmt>`, :doc:`segyz`, :doc:`segy2grd`

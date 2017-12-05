@@ -72,23 +72,23 @@ Core modules
    mapproject
    nearneighbor
    project
-   psbasemap
-   psclip
-   pscoast
-   pscontour
-   psconvert
-   pshistogram
-   psimage
-   pslegend
+   basemap
+   clip
+   coast
+   contour
+   convert
+   histogram
+   image
+   legend
    postscriptlight
-   psmask
-   psrose
+   mask
+   rose
    colorbar
-   psternary
-   pstext
-   pswiggle
-   psxy
-   psxyz
+   ternary
+   text
+   wiggle
+   plot
+   plot3d
    sample1d
    spectrum1d
    sph2grd
@@ -112,11 +112,11 @@ Supplementary modules
 
    supplements/gshhg/gshhg
    supplements/img/img2grd
-   supplements/meca/pscoupe
-   supplements/meca/psmeca
-   supplements/meca/pspolar
-   supplements/meca/psvelo
-   supplements/meca/pssac
+   supplements/meca/coupe
+   supplements/meca/meca
+   supplements/meca/polar
+   supplements/meca/velo
+   supplements/meca/sac
    supplements/mgd77/mgd77convert
    supplements/mgd77/mgd77header
    supplements/mgd77/mgd77info
@@ -137,8 +137,8 @@ Supplementary modules
    supplements/potential/grdseamount
    supplements/potential/talwani2d
    supplements/potential/talwani3d
-   supplements/segy/pssegy
-   supplements/segy/pssegyz
+   supplements/segy/segy
+   supplements/segy/segyz
    supplements/segy/segy2grd
    supplements/spotter/backtracker
    supplements/spotter/grdpmodeler

@@ -1,7 +1,7 @@
-.. index:: ! psclip
+.. index:: ! clip
 
 ******
-psclip
+clip
 ******
 
 .. only:: not man
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psclip** [ *table* ] |-J|\ *parameters* |-C|\ [\ *n*]
+**clip** [ *table* ] |-J|\ *parameters* |-C|\ [\ *n*]
 |SYN_OPT-Rz|
 [ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
 [ |SYN_OPT-B| ]
@@ -40,19 +40,19 @@ Synopsis
 Description
 -----------
 
-**psclip** reads (x,y) file(s) [or standard input] and draws polygons
+**clip** reads (x,y) file(s) [or standard input] and draws polygons
 that are activated as clipping paths. Several files may be read to
 create complex paths consisting of several non-connecting segments. Only
 marks that are subsequently drawn inside the clipping path will be
 shown. To determine what is inside or outside the clipping path,
-**psclip** uses the even-odd rule. When a ray drawn from any point,
+**clip** uses the even-odd rule. When a ray drawn from any point,
 regardless of direction, crosses the clipping path segments an odd
 number of times, the point is inside the clipping path. If the number is
 even, the point is outside. The **-N** option, reverses the sense of
 what is the inside and outside of the paths by plotting a clipping path
 along the map boundary. After subsequent plotting, which will be clipped
 against these paths, the clipping may be deactivated by running
-**psclip** a second time with the **-C** option only. 
+**clip** a second time with the **-C** option only. 
 
 Required Arguments
 ------------------
@@ -121,7 +121,7 @@ Optional Arguments
 **-T**
     Rather than read any input files, simply turn on clipping for the
     current map region. Basically, **-T** is a convenient way to run
-    **psclip** with the arguments **-N** /dev/null (or, under Windows,
+    **clip** with the arguments **-N** /dev/null (or, under Windows,
     **-N** NUL). Cannot be used together with **-B**. 
 
 .. _-U:
