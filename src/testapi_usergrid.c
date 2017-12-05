@@ -194,7 +194,7 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
  	/* Create a blank matrix container that will hold our user in_data */
 	if ((M[GMT_IN] = GMT_Create_Data (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (EXIT_FAILURE);
 	/* Hook the user input array up to this container */
-	GMT_Put_Matrix (API, M[GMT_IN], intype, in_data);
+	GMT_Put_Matrix (API, M[GMT_IN], intype, 0, in_data);
 	/* Associate our matrix container with a virtual grid file to "read" from */
 	GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, M[GMT_IN], input);
 	if (alloc_in_GMT)	/* Request matrix container for output data to be allocated by GMT */
@@ -204,7 +204,7 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
  		/* Create a blank matrix container that will hold our user out_data, but pass dim so it can set the dimensions */
 		M[GMT_OUT] = GMT_Create_Data (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_IS_OUTPUT, dim, NULL, NULL, 0, 0, NULL);
 		/* Hook the user output array up to this containers */
-		GMT_Put_Matrix (API, M[GMT_OUT], outtype, out_data);
+		GMT_Put_Matrix (API, M[GMT_OUT], outtype, 0, out_data);
 		/* Associate our data matrix with a virtual grid file to "write" to */
 		GMT_Open_VirtualFile (API, GMT_IS_GRID|GMT_VIA_MATRIX, GMT_IS_SURFACE, GMT_OUT, M[GMT_OUT], output);
 	}

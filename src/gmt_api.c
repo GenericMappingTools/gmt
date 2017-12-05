@@ -11744,7 +11744,7 @@ void * GMT_Get_Vector_ (struct GMT_VECTOR *V, unsigned int *col) {
 }
 #endif
 
-int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, void *matrix) {
+int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, int pad, void *matrix) {
 	/* Hooks a user's custom matrix onto M's data array and sets the type.
 	 * It is the user's respondibility to pass correct type for the given matrix. */
 	struct GMT_MATRIX_HIDDEN *MH = NULL;
@@ -11767,13 +11767,14 @@ int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, void *ma
 	}
 	MH = gmt_get_M_hidden (M);
 	MH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since it clearly is a user array */
+	MH->pad = pad;	/* Placing the pad argument here */
 	return GMT_NOERROR;
 }
 
 #ifdef FORTRAN_API
-int GMT_Put_Matrix_ (struct GMT_MATRIX *M, unsigned int *type, void *matrix) {
+int GMT_Put_Matrix_ (struct GMT_MATRIX *M, unsigned int *type, int *pad, void *matrix) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Put_Matrix (GMT_FORTRAN, M, *type, matrix));
+	return (GMT_Put_Matrix (GMT_FORTRAN, M, *type, *pad, matrix));
 }
 #endif
 

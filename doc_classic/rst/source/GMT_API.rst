@@ -1276,10 +1276,13 @@ The following utility functions are used for these tasks:
 
   ::
 
-    int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, void *matrix);
+    int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, int pad, void *matrix);
 
 where ``M`` is a :ref:`GMT_MATRIX <struct-matrix>` created by GMT_Create_Data_, the ``type`` is one of the
-recognized data :ref:`types <tbl-types>`, and ``matrix`` is your custom matrix.
+recognized data :ref:`types <tbl-types>`, ``pad`` indicates if the matrix has or should have padding,
+and ``matrix`` is your custom matrix.  The ``pad`` entry is typically 0 (no pad present), but if you
+intend the matrix to serve as grid input to a module then GMT will expect 2.  If your matrix already has
+been extended by 2 extra rows and columns then pass ``pad`` = 2.
 To extract a custom matrix from an output :ref:`GMT_MATRIX <struct-matrix>` you can use
 
 .. _GMT_Get_Matrix:

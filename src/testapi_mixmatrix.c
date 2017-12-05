@@ -25,7 +25,7 @@ int main () {
  	/* Create a blank matrix container that will hold our user in_data */
 	if ((M = GMT_Create_Data (API, GMT_IS_DATASET|GMT_VIA_MATRIX, GMT_IS_POINT, GMT_CONTAINER_ONLY, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (EXIT_FAILURE);
 	/* Hook the user input array up to this container */
-	GMT_Put_Matrix (API, M, GMT_INT, coord);
+	GMT_Put_Matrix (API, M, GMT_INT, 0, coord);
 	/* Hook the user text array up to this container */
 	GMT_Put_Strings (API, GMT_IS_MATRIX, M, strings);
 	/* Associate our matrix container with a virtual dataset file to "read" from */

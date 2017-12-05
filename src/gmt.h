@@ -103,7 +103,7 @@ EXTERN_MSC int GMT_Change_Layout      (void *API, unsigned int family, char *cod
 EXTERN_MSC void *GMT_Get_Vector       (void *API, struct GMT_VECTOR *V, unsigned int col);
 EXTERN_MSC void *GMT_Get_Matrix       (void *API, struct GMT_MATRIX *M);
 EXTERN_MSC int GMT_Put_Vector         (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned int type, void *vector);
-EXTERN_MSC int GMT_Put_Matrix         (void *API, struct GMT_MATRIX *M, unsigned int type, void *matrix);
+EXTERN_MSC int GMT_Put_Matrix         (void *API, struct GMT_MATRIX *M, unsigned int type, int pad, void *matrix);
 /* These 2 functions are new in 6.0 and are being considered beta */
 EXTERN_MSC int GMT_Put_Strings        (void *API, unsigned int family, void *object, char **array);
 EXTERN_MSC char **GMT_Get_Strings     (void *API, unsigned int family, void *object);
