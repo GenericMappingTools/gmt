@@ -5997,33 +5997,33 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 	switch (GMT->current.proj.projection_GMT) {
 	/* Cylindrical projections */
 	case GMT_UTM:
-		snprintf (szProj4, GMT_LEN512, "+proj=utm +zone=%d", (int)GMT->current.proj.pars[0]);
+		snprintf (szProj4, GMT_LEN512, "+proj=utm +zone=%d +units=m", (int)GMT->current.proj.pars[0]);
 		if (GMT->current.proj.utm_hemisphere < 0) strcat (szProj4, " +south");
 		break;
 	case GMT_MERCATOR:
-		snprintf (szProj4, GMT_LEN512, "+proj=merc +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=merc +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[0] >= -360 ? GMT->current.proj.pars[0] : 0, scale_factor, false_easting, false_northing);
 		break;
 	case GMT_CYL_EQ:
-		snprintf (szProj4, GMT_LEN512, "+proj=cea +lon_0=%.16g +lat_ts=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=cea +lon_0=%.16g +lat_ts=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_CYL_EQDIST:
-		snprintf (szProj4, GMT_LEN512, "+proj=eqc +lat_ts=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=eqc +lat_ts=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[1], 0.0, GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_CYL_STEREO:
 		break;
 	case GMT_MILLER:
-		snprintf (szProj4, GMT_LEN512, "+proj=mill +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A",
+		snprintf (szProj4, GMT_LEN512, "+proj=mill +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A +units=m",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_TM:
-		snprintf (szProj4, GMT_LEN512, "+proj=tmerc +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=tmerc +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], scale_factor, false_easting, false_northing);
 		break;
 	case GMT_CASSINI:
-		snprintf (szProj4, GMT_LEN512, "+proj=cass +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=cass +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_OBLIQUE_MERC:
@@ -6037,40 +6037,40 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 
 	/* Conic projections */
 	case GMT_ALBERS:
-		snprintf (szProj4, GMT_LEN512, "+proj=aea +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=aea +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[2], GMT->current.proj.pars[3], GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ECONIC:
-		snprintf (szProj4, GMT_LEN512, "+proj=eqdc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=eqdc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[2], GMT->current.proj.pars[3], GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_LAMBERT:
-		snprintf (szProj4, GMT_LEN512, "+proj=lcc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=lcc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[2], GMT->current.proj.pars[3], GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_POLYCONIC:
-		snprintf (szProj4, GMT_LEN512, "+proj=poly +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=poly +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 
 	/* Azimuthal projections */
 	case GMT_STEREO:
-		snprintf (szProj4, GMT_LEN512, "+proj=stere +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=stere +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], scale_factor, false_easting, false_northing);
 		break;
 	case GMT_LAMB_AZ_EQ:
-		snprintf (szProj4, GMT_LEN512, "+proj=laea +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=laea +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ORTHO:
 		sprintf (szProj4, "+unavailable");
 		break;
 	case GMT_AZ_EQDIST:
-		snprintf (szProj4, GMT_LEN512, "+proj=aeqd +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=aeqd +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_GNOMONIC:
-		snprintf (szProj4, GMT_LEN512, "+proj=gnom +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=gnom +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_GENPER:
@@ -6082,30 +6082,30 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 
 	/* Misc projections */
 	case GMT_MOLLWEIDE:
-		snprintf (szProj4, GMT_LEN512, "+proj=moll +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=moll +lon_0=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_HAMMER:
 		sprintf (szProj4, "+unavailable");
 		break;
 	case GMT_SINUSOIDAL:
-		snprintf (szProj4, GMT_LEN512, "+proj=sinu +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=sinu +lon_0=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_VANGRINTEN:
-		snprintf (szProj4, GMT_LEN512, "+proj=vandg +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A",
+		snprintf (szProj4, GMT_LEN512, "+proj=vandg +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A +units=m",
 			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ROBINSON:
-		snprintf (szProj4, GMT_LEN512, "+proj=robin +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=robin +lon_0=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ECKERT4:
-		snprintf (szProj4, GMT_LEN512, "+proj=eck4 +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=eck4 +lon_0=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ECKERT6:
-		snprintf (szProj4, GMT_LEN512, "+proj=eck6 +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=eck6 +lon_0=%.16g +x_0=%.16g +y_0=%.16g +units=m",
 			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_WINKEL:
