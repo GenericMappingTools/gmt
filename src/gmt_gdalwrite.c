@@ -56,8 +56,9 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	uint32_t row, col, band;
 	uint64_t k, ijk, b;
 	bool     free_data = false;
-	char    *ext = NULL, *c = NULL;
+	char    *ext = NULL, *c = NULL, *pch;
 	unsigned char *data = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
 
 	/* NOTE: in grdimage we have done this so may have to deal with this here.
@@ -156,6 +157,10 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		gmt_M_free (GMT, to_GDALW);
 		return GMT_NOTSET;
 	}
+
+	HH = gmt_get_H_hidden (I->header);
+	if ((pch = strstr(HH->pocket, "+c")) != NULL) 		/* If we have a list of +c<options> */
+		to_GDALW->co_options = strdup(pch);				/* This memory is freed in gmt_gdalwrite */
 
 	strncpy(to_GDALW->layout, I->header->mem_layout, 4);
 	to_GDALW->data = data;
@@ -403,8 +408,8 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		unsigned int  pos = 0;
 		char token[64];
 		while (gmt_strtok (prhs->co_options, "+", &pos, token)) {
-			if (token[1] == 'c')
-				papszOptions = CSLAddString(papszOptions, token);
+			if (token[0] == 'c')
+				papszOptions = CSLAddString(papszOptions, &token[1]);	/* Jump the 'c' */
 		}
 	}
 
@@ -422,7 +427,8 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		else
 			GDALSetMetadataItem(hDstDS, "AREA_OR_POINT", "Area", NULL);
 	}
-	if (prhs->co_options) free (prhs->co_options);		/* Was allocated with an strdup() in gmt_gdal_write_grd() */
+	if (prhs->co_options)
+		free (prhs->co_options);		/* Was allocated with an strdup() in gmt_gdal_write_grd() */
 
 	/* This was the only trick I found to set a "projection". */
 	if (is_geog || projWKT || !strcasecmp(pszFormat,"GTiff")) {
