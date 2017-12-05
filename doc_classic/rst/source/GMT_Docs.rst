@@ -4164,6 +4164,8 @@ via :doc:`grdmath` first, i.e.,
 
 then plot the ``sst.nc`` directly.
 
+.. _Write-grids-images:
+
 Writing grids and images
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
