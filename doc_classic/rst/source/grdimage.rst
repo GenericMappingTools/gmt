@@ -230,6 +230,7 @@ Optional Arguments
 
 .. include:: explain_grd_inout_short.rst_
 
+.. include:: earth_relief.rst_
 
 Imaging Grids With Nans
 -----------------------
