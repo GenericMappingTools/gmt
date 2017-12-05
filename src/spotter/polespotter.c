@@ -30,7 +30,7 @@
 #define RADIAN2KM (R2D * GMT->current.proj.DIST_KM_PR_DEG)
 
 struct POLESPOTTER_CTRL {	/* All control options for this program (except common args) */
-	/* active is true if the option has been activated */
+	/* active is true if the option has been activaed */
 	struct A {	/* -A<abyssalhilefile> */
 		bool active;
 		char *file;
@@ -123,7 +123,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t    Append +c<xfile> to save all great circle intersections to <xfile> [no crossings].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Sp scan for poles.  Writes a misfit grid to <grid>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Sl scan for compatible lines given <plon>/<plat> trial pole.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Append +f to only dump lines whose misfit is less than <fit> [1].\n");
+	//GMT_Message (API, GMT_TIME_NONE, "\t    Append +f to only dump lines whose misfit is less than <fit> [1].\n");
 	GMT_Option (API, "Rg");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify relative weights for (a)byssal hills or (f)racture zones [1].\n");
@@ -270,6 +270,20 @@ GMT_LOCAL void get_great_circle_pole (struct GMT_CTRL *GMT, double P1[], double 
 	}
 }
 
+GMT_LOCAL double get_angle_between_trends (struct GMT_CTRL *GMT, double P1[], double P2[], unsigned int type, double X[]) {
+	/* P1 and P2 are two points on a FZ or AH.  Midpoint of P1 and P2 is M.  X is a trial pole.
+	 * If type = FZ: Find difference in orientations between bisector to P1-P2 and great circle from X through M.
+	 * If type = AH: Find difference in orientations between great circle through P1-P2 and great circle from X through M.
+	 */
+	double M[3], G[3], B[3], cos_del_angle, del_angle;
+	get_great_circle_pole (GMT, P1, P2, type, M, G);	/* Obtain great circle pole to segment (or bisector if FZ) as well as mid-point M */
+	get_cross_normalized (GMT, M, X, B);			/* B is pole for great circle through selected pole and M */
+	cos_del_angle = gmt_dot3v (GMT, G, B);			/* Cos of angle between great circles is our other weight */
+	del_angle = fabs (d_acos (cos_del_angle));		/* Get |angle| between the two great circles */
+	if (del_angle > M_PI_2) del_angle = M_PI - del_angle;	/* Since angles are actually orientation differences */
+	return (del_angle);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -283,7 +297,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 	const char *label[2] = {"AH", "FZ"};
 	gmt_grdfloat *layer = NULL;
 	double weight, seg_weight, angle_radians, d_angle_radians, mlon, mlat, glon, glat, L, in[2];
-	double P1[3], P2[3], M[3], G[3], B[3], X[3];
+	double P1[3], P2[3], M[3], G[3], X[3];
 	
 	struct GMT_OPTION *ptr = NULL;
 	struct GMT_GRID *Grid = NULL;
@@ -457,11 +471,66 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, code);
 		}
 	}
-	else if (Ctrl->S.mode == SPOTTER_SCAN_LINES) {	/* Determine which lines are compatible with the test pole */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Entering scan mode: lines [NOT IMPLEMENTED YET]\n");
+	else if (Ctrl->S.mode == SPOTTER_SCAN_LINES) {	/* Determine which lines are compatible with the selected test pole */
+		double out[3] = {0.0, 0.0, 0.0}, plat, sum_L = 0.0, del_angle, sigma, seg_sigma, chi2;
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Entering scan mode: lines [EXPERIMENTAL]\n");
+		gmt_set_cartesian (GMT, GMT_OUT);	/* Since x here will be table number and y is segment number */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+			Return (API->error);
+		}
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX)) != GMT_NOERROR) {
+			Return (error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
+		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
+
+		plat = gmt_lat_swap (GMT, Ctrl->S.plat, GMT_LATSWAP_G2O);	/* Convert latitude to geodetic */
+		gmt_geo_to_cart (GMT, plat, Ctrl->S.plon, X, true);	/* Get x/y/z of selected pole X */
+
+		/* Now visit all our segments */
+		for (d = POLESPOTTER_AH; d <= POLESPOTTER_FZ; d++) {
+			if (In[d] == NULL) continue;	/* Don't have this data set */
+			weight = (d == POLESPOTTER_AH) ? Ctrl->A.weight : Ctrl->F.weight;
+			sigma  = (d == POLESPOTTER_AH) ? Ctrl->A.sigma  : Ctrl->F.sigma;	/* Is 1/sigma, actually */
+			for (tbl = 0; tbl < In[d]->n_tables; tbl++) {
+				for (seg = 0; seg < In[d]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
+					S = In[d]->table[tbl]->segment[seg];	/* Set shortcut to current segment */
+					if (gmt_parse_segment_item (GMT, S->header, "-D", header))	/* Found -D<val> */
+						seg_sigma = 1.0 / atof (header);
+					else
+						seg_sigma = sigma;	/* Already 1/sigma, actually */
+					if (gmt_parse_segment_item (GMT, S->header, "-Z", header))	/* Found -Z<val> */
+						seg_weight = atof (header);
+					else
+						seg_weight = weight;
+					/* Reminder, latitudes in segments are now geocentric latitudes */
+					chi2 = sum_L = 0.0;
+					gmt_geo_to_cart (GMT, S->data[GMT_Y][0], S->data[GMT_X][0], P1, true);	/* Get x/y/z of first point P1 */
+					for (row = 1; row < S->n_rows; row++) {
+						gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
+						L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM * seg_weight;	/* Weighted length of this segment */
+						del_angle =  get_angle_between_trends (GMT, P1, P2, d, X);
+						chi2 += L * pow (del_angle * seg_sigma, 2.0);	/* The weighted chi2 increment from this line */
+						sum_L += L;	/* Add up total weight sum */
+						gmt_M_memcpy (P1, P2, 3, double);		/* Let old P2 be next P1 */
+					}
+					/* Write <tbl seg chi2 type> */
+					Out->data[GMT_X] = tbl;	Out->data[GMT_Y] = seg;	Out->data[GMT_Z] = chi2 / sum_L;
+					Out->text = (char *)label[d];
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* We are writing these circles to output */
+				}
+			}
+		}
+		/* Disables further line output */
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further line output */
+			Return (API->error);
+		}
+		gmt_M_free (GMT, Out);
 	}
 	else {	/* SPOTTER_SCAN_POLES */
-		double *plon = NULL, *plat = NULL, sum_L = 0.0, cos_del_angle, del_angle, sigma, seg_sigma, chi2;
+		double *plon = NULL, *plat = NULL, sum_L = 0.0, del_angle, sigma, seg_sigma, chi2;
 
 		/* Now visit all our segments to convert to geocentric and to get sum of weights once */
 		
@@ -519,11 +588,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 							for (row = 1; row < S->n_rows; row++) {
 								gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
 								L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM * seg_weight;	/* Weighted length of this segment */
-								get_great_circle_pole (GMT, P1, P2, d, M, G);	/* Obtain great circle pole to segment (or bisector if FZ) */
-								get_cross_normalized (GMT, M, X, B);		/* B is pole for great circle through current pole and M */
-								cos_del_angle = gmt_dot3v (GMT, G, B);		/* Cos of angle between great circles is our other weight */
-								del_angle = fabs (d_acos (cos_del_angle));	/* Get |angle| between the two great circles */
-								if (del_angle > M_PI_2) del_angle = M_PI - del_angle;	/* Since angles are actually orientation differences */
+								del_angle =  get_angle_between_trends (GMT, P1, P2, d, X);
 								chi2 = L * pow (del_angle * seg_sigma, 2.0);	/* The weighted chi2 increment from this line */
 								Grid->data[node] += chi2;			/* Add to total chi2 misfit for this pole */
 								gmt_M_memcpy (P1, P2, 3, double);		/* Let old P2 be next P1 */
