@@ -768,7 +768,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 			Ctrl->Q.bits[PSC_LINES] = 2;
 		}
 	}
-	
+
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[0] && (Ctrl->Q.bits[0] < 1 || Ctrl->Q.bits[0] > 4),
 	                                   "Syntax error: Anti-aliasing for graphics requires sub-sampling box of 1,2, or 4\n");
 
@@ -2047,8 +2047,9 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					fprintf (fpo, "\t\t\t/Bounds[0 0 0 1 1 1 1 0]\n");
 					fprintf (fpo, "\t\t\t/GPTS[%f %f %f %f %f %f %f %f]\n",
 					         south, west, north, west, north, east, south, east);
-					fprintf (fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n",
-					         lptsX[0],lptsY[0], lptsX[1],lptsY[1], lptsX[2],lptsY[2], lptsX[3],lptsY[3]);
+					//fprintf (fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n",
+					         //lptsX[0],lptsY[0], lptsX[1],lptsY[1], lptsX[2],lptsY[2], lptsX[3],lptsY[3]);
+					fprintf (fpo, "\t\t\t/LPTS[0 0 0 1 1 1 1 0]\n");
 					fprintf (fpo, "\t\t\t/GCS <<\n");
 					fprintf (fpo, "\t\t\t\t/Type /PROJCS\n");
 					fprintf (fpo, "\t\t\t\t/WKT\n");
