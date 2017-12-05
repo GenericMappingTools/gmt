@@ -2,10 +2,11 @@
 #	$Id$
 #
 #	Makes the inserts for Appendix M(cpt)
+#	[skip srtm which is just a special verison of dem2]
 #
 # Use the knowledge that we need 2 pages.
 
-sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | awk '{print $1}' | sort -r > tt.lis
+sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | grep -v srtm | awk '{print $1}' | sort -r > tt.lis
 
 ps=GMT_App_M_1b.ps
 n=`cat tt.lis | wc -l`
