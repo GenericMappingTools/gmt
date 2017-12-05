@@ -57,8 +57,8 @@ system calls [1]_. Consequently, all data i/o had to be done via
 temporary files. The design also prevented the GMT developers
 themselves from taking advantage of these modules directly. For
 instance, the tool :doc:`pslegend` needed to
-make extensive use of system calls to :doc:`psxy` and
-:doc:`pstext` in order to plot the lines,
+make extensive use of system calls to :doc:`plot` and
+:doc:`text` in order to plot the lines,
 symbols and text that make up a map legend, making it a very awkward
 program to maintain.
 
@@ -177,7 +177,7 @@ For the purpose of this documentation a few definitions are needed:
 
 #. "Standard GMT program" refers to one of the traditional stand-alone
    command-line executables known to all GMT users, e.g.,
-   :doc:`blockmean`, :doc:`psxy`,
+   :doc:`blockmean`, :doc:`plot`,
    :doc:`grdimage`, etc. Prior to version 5,
    these were the only GMT executables available.  In GMT 5 and up, these are
    accessed via the :doc:`gmt` executable.
@@ -1813,7 +1813,7 @@ by the specified ``mode``. There are 11 different modes available to
 programmers; for a list see Table :ref:`IO-status <tbl-iostatus>` For an example of how
 these may be used, see the test program ``testgmtio.c``. Developers who plan to import
 data on a record-by-record basis may also consult the source code of,
-say, :doc:`blockmean` or :doc:`pstext`, to see examples of working code.
+say, :doc:`blockmean` or :doc:`text`, to see examples of working code.
 
 .. _tbl-iostatus:
 
@@ -2692,7 +2692,7 @@ interfaces are identical and are called via
     int GMT_Call_Module (void *API, const char *module, int mode, void *args);
 
 Here, ``module`` is the name of any of the GMT modules, such as
-:doc:`psxy` or :doc:`grdvolume`.  All GMT modules may be called with one of
+:doc:`plot` or :doc:`grdvolume`.  All GMT modules may be called with one of
 three sets of ``args`` depending on ``mode``. The three modes differ in
 how the options are passed to the module:
 

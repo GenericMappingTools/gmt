@@ -22,7 +22,7 @@ eliminate contours outside the constrained area. Finally (top right) we
 simply employ :doc:`coast </coast>` to overlay gray
 land masses to cover up the unwanted contours, and end by plotting a
 star at the deepest point on the map with
-:doc:`psxy </psxy>`. This point was extracted from the
+:doc:`plot </plot>`. This point was extracted from the
 grid files using :doc:`grdinfo </grdinfo>`.
 
 .. literalinclude:: /_verbatim/example_15.txt

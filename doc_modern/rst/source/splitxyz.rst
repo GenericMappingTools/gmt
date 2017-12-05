@@ -43,7 +43,7 @@ series has a nearly constant azimuth through the x,y plane. There are
 options to choose only those series which have a certain orientation, to
 set a minimum length for series, and to high- or low-pass filter the z
 values and/or the x,y values. **splitxyz** is a useful filter between
-data extraction and :doc:`pswiggle` plotting, and can also be used to
+data extraction and :doc:`wiggle` plotting, and can also be used to
 divide a large x,y[,z] dataset into segments. 
 
 Required Arguments
@@ -189,8 +189,8 @@ anomalies. Try this:
    ::
 
     gmt mgd77list JA020015 -R300/315/12/20 -Flon,lat,mag,dist,azim | gmt splitxyz -A90/15 -F100/-500 \
-        -D100 -S -V -fg | gmt pswiggle -R300/315/12/20 -Jm0.6i -Baf -B+tJA020015 -T1 \
-        -W0.75p -Ggray -Z200 > JA020015_wiggles.ps
+        -D100 -S -V -fg | gmt wiggle -R300/315/12/20 -Jm0.6i -Baf -B+tJA020015 -T1 \
+        -W0.75p -Ggray -Z200 -pdf JA020015_wiggles
 
 MGD-77 users: For this application we recommend that you extract dist,azim
 from :doc:`mgd77list <supplements/mgd77/mgd77list>` rather than have
@@ -210,4 +210,4 @@ See Also
 :doc:`gmt`,
 :doc:`filter1d`,
 :doc:`mgd77list <supplements/mgd77/mgd77list>`,
-:doc:`pswiggle`
+:doc:`wiggle`

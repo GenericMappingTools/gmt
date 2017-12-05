@@ -29,7 +29,7 @@ How to use the symbols?
 -----------------------
 
 Before to start, think in the type of map you want to obtain and prepare your data. 
-If you want to create a 2D map (most common situation) you need :doc:`psxy </psxy>`, if you want a 3D
+If you want to create a 2D map (most common situation) you need :doc:`plot </plot>`, if you want a 3D
 map you should use :doc:`plot3d </plot3d>` instead. Think also in how many different symbols you want to 
 show in each individual map. You should have at least a different .xy file for each
 species that you want to show. You could want also to show separately males and females 
@@ -47,16 +47,16 @@ A valid input datafile.xy is simply a text file containing several lines like th
     355.707   42.7543   0.17	 k
     ...
 
-Psxy can deal with several lon/lat formats. All of this are accepted.
+plot can deal with several lon/lat formats. All of this are accepted.
 The symbolsize field is optional, but if not provided you must specify a common size 
 (used for all observations in this file) in the script with -Sksymbolname/simbolsize  
 
 The symboltype field is also optional, k means custom symbol. Currently I can't pass 
-different symbols to :doc:`psxy </psxy>` in the same file (I need split first the file) 
+different symbols to :doc:`plot </plot>` in the same file (I need split first the file) 
 and must provide a unique symbolname in the script for all lines, so the interest 
 of having this field is reduced. Probably I'm missing something. You can also add other fields
 like font, angle, position or a last field with a short remembering note in a text line, they
-are ignored by :doc:`psxy </psxy>` but you could pass it to :doc:`pstext </pstext>`.
+are ignored by :doc:`plot </plot>` but you could pass it to :doc:`text </text>`.
 
 Take a look at the pics (.png) and choose the symbols that you want. No installation needed, 
 simply browse the directory symbols and copy the files with extension .def having the same 
@@ -155,7 +155,7 @@ Cetacea
        	- unidentifiedwhale_low.def, unidentifiedwhale.def, unidentifiedwhale_high.def
 
 
-3: Call them including the corresponding :doc:`psxy </psxy>` or :doc:`plot3d </plot3d>` lines in a GMT script like this: 
+3: Call them including the corresponding :doc:`plot </plot>` or :doc:`plot3d </plot3d>` lines in a GMT script like this: 
 
 .. code-block:: none
 
@@ -171,7 +171,7 @@ instance, data and symbols:
 
    ::
 
-    gmt psxy data/killer_whale.xy -Sksymbols/Cetacea/killerwhale/0.5 -O ...etc >> myfile.ps
+    gmt plot data/killer_whale.xy -Sksymbols/Cetacea/killerwhale/0.5 -O ...etc >> myfile.ps
 
 In this case, please read also the points 1.2-1.3 of the file FAQ.txt
   
@@ -184,7 +184,7 @@ FAQ and Troubleshoting
 The symbols are not drawn
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#. When In run the script I obtain GMT ERROR: psxy:
+#. When In run the script I obtain GMT ERROR: plot:
 
 Could not find custom symbol symbolname.def!
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -256,13 +256,13 @@ Why they are so may similar symbols low, high, etc... for the same species?
     and heterogeneous stranding, for instance a mother/calf stranding or two different species 
     sighted in exactly the same point. You can deal with those cases if you stack several 
     low/high symbols until you obtain the complex symbol desired. You will need duplicate 
-    or triplicate the :doc:`psxy </psxy>` lines in the script and perhaps play also with the size and color 
+    or triplicate the :doc:`plot </plot>` lines in the script and perhaps play also with the size and color 
     of the symbols. For instance if you see a killer whale harassing two dolphins and you want
     to show all in the same map:
 
-       psxy a_killer_whale_data.xy             -Skkillerwhale_high/0.8 ...  etc 
-       psxy a_common_dolphin_mother_data.xy    -Skcommondolphin_midlow/0.7 ... etc
-       psxy and_its_calf_data.xy               -Skcommondolphin_low/0.3 ... etc
+       plot a_killer_whale_data.xy             -Skkillerwhale_high/0.8 ...  etc 
+       plot a_common_dolphin_mother_data.xy    -Skcommondolphin_midlow/0.7 ... etc
+       plot and_its_calf_data.xy               -Skcommondolphin_low/0.3 ... etc
 
     For a better result place the lines calling the taller symbols first and the shorter 
     symbols at the end. 

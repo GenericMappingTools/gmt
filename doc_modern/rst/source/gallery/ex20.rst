@@ -6,7 +6,7 @@
 One is often required to make special maps that shows the distribution
 of certain features but one would prefer to use a custom symbol instead
 of the built-in circles, squares, triangles, etc. in the GMT plotting
-programs :doc:`psxy </psxy>` and
+programs :doc:`plot </plot>` and
 :doc:`plot3d </plot3d>`. Here we demonstrate one approach
 that allows for a fair bit of flexibility in designing ones own symbols.
 The following recipe is used when designing a new symbol.
@@ -15,7 +15,7 @@ The following recipe is used when designing a new symbol.
    paper!) to set up an empty grid that goes from -0.5 to +0.5 in both
    *x* and *y*. Use ruler and compass to draw your new symbol using
    straight lines, arcs of circles, and stand-alone geometrical objects
-   (see :doc:`psxy </psxy>` man page for a full
+   (see :doc:`plot </plot>` man page for a full
    description of symbol design). In this Section we will create two new
    symbols: a volcano and a bulls eye.
 
@@ -40,7 +40,7 @@ The following recipe is used when designing a new symbol.
    :math:`\alpha_1` to :math:`\alpha_2`
 
    We also add a few stand-alone circles (for other symbols, see
-   :doc:`psxy </psxy>` man page):
+   :doc:`plot </plot>` man page):
 
    :math:`x_0` :math:`y_0` *r* **C** [ **-G**\ *fill* ] [
    **-W**\ *pen* ] Draw :math:`x_0` :math:`y_0` *r* **c** [
@@ -60,18 +60,18 @@ The following recipe is used when designing a new symbol.
    beyond the -0.5 to +0.5 range, as shown by the red lines. There is no
    limit in GMT to the size of the symbols. The center, however, will
    always be at (0,0). This is the point to which the coordinates in
-   :doc:`psxy </psxy>` refers.
+   :doc:`plot </plot>` refers.
 
    The values refer to positions and dimensions illustrated in the
    Figure above.
 
 #. Given proper definition files we may now use them with
-   :doc:`psxy </psxy>` or :doc:`plot3d </plot3d>`.
+   :doc:`plot </plot>` or :doc:`plot3d </plot3d>`.
 
 We are now ready to give it a try. Based on the hotspot locations in the
 file ``hotspots.txt`` (with a 3rd column giving the desired symbol sizes in inches) we
 lay down a world map and overlay red volcano symbols using our
-custom-built volcano symbol and :doc:`psxy </psxy>`. We
+custom-built volcano symbol and :doc:`plot </plot>`. We
 do something similar with the bulls eye symbols. Without the **-G**
 option, however, they get the colors defined in ``bullseye.def``.
 

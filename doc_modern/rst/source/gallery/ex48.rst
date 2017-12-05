@@ -3,7 +3,7 @@
 (48) Line networks, map embellishments, and curved titles
 ---------------------------------------------------------
 
-In this example we show how the module :doc:`psxy </psxy>`
+In this example we show how the module :doc:`plot </plot>`
 can be used to create a network of lines based on a file with
 just the nodes (the siz airports).  We also demonstrate how the
 lines can be shortened by (a) a given measure (here 250 km)

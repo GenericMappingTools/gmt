@@ -6,8 +6,8 @@
 In this example we will show how to use the GMT programs
 :doc:`fitcircle </fitcircle>`, :doc:`project </project>`,
 :doc:`sample1d </sample1d>`, :doc:`spectrum1d </spectrum1d>`,
-:doc:`psxy </psxy>`, and
-:doc:`pstext </pstext>`. Suppose you have (lon, lat,
+:doc:`plot </plot>`, and
+:doc:`text </text>`. Suppose you have (lon, lat,
 gravity) along a satellite track in a file called ``sat.xyg``, and (lon, lat,
 gravity) along a ship track in a file called ``ship.xyg``. You want to make a
 cross-spectral analysis of these data. First, you will have to get the
@@ -30,8 +30,8 @@ and the satellite is the output data. There are several intermediate
 steps that produce helpful plots showing the effect of the various
 processing steps (``example_03[a-f].ps``), while the final plot ``example_03.ps`` shows the ship and sat power
 in one diagram and the coherency on another diagram, both on the same
-page. Note the extended use of :doc:`pstext </pstext>`
-and :doc:`psxy </psxy>` to put labels and legends
+page. Note the extended use of :doc:`text </text>`
+and :doc:`plot </plot>` to put labels and legends
 directly on the plots. For that purpose we often use **-Jx**\ 1i and
 specify positions in inches directly. Thus, the complete automated script reads:
 

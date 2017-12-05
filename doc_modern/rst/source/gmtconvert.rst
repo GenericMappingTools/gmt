@@ -119,7 +119,7 @@ Optional Arguments
     **c**\ : Form continuous line segments for each group [Default].
     **r**\ : Form line segments from a reference point reset for each group.
     **n**\ : Form networks of line segments between all points in each group.
-    **v**\ : Form vector line segments suitable for :doc:`psxy` **-Sv+s**.
+    **v**\ : Form vector line segments suitable for :doc:`plot` **-Sv+s**.
     Optionally, append the one of four segmentation methods to define the group:
     **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
     and set group reference point to the very first point of the first file.
@@ -265,7 +265,7 @@ You have an ASCII table with 6 columns and you want to plot column 5 versus colu
 
    ::
 
-    gmt convert table.txt -o5,0 | psxy ...
+    gmt convert table.txt -o5,0 | plot ...
 
 If the file instead is the binary file results.b which has 9
 single-precision values per record, we extract the last column and
@@ -273,14 +273,14 @@ columns 4-6 and write ASCII with the command
 
    ::
 
-    gmt convert results.b -o8,4-6 -bi9s | psxy ...
+    gmt convert results.b -o8,4-6 -bi9s | plot ...
 
 You want to plot the 2nd column of a 2-column file left.txt versus the
 first column of a file right.d:
 
    ::
 
-    gmt convert left.txt right.txt -A -o1,2 | psxy ...
+    gmt convert left.txt right.txt -A -o1,2 | plot ...
 
 To extract all segments in the file big_file.txt whose headers contain
 the string "RIDGE AXIS", try

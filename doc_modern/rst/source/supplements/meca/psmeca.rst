@@ -42,7 +42,7 @@ Description
 
 **psmeca** reads data values from *files* [or standard input] and
 will plot focal mechanisms on a map.
-Many options are similar to those of :doc:`psxy </psxy>`.
+Many options are similar to those of :doc:`plot </plot>`.
 
 Required Arguments
 ------------------

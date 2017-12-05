@@ -76,7 +76,7 @@ with a warning under compatibility mode:
    vector refers to the length of its head; all other quantities are
    given via modifiers (which have sensible default values). In
    particular, giving size as *vectorwidth/headlength/headwidth* is
-   deprecated. See the :doc:`psxy` man page for
+   deprecated. See the :doc:`plot` man page for
    a clear description of all modifiers.
 
 *  :doc:`blockmean`: The **-S** and **-Sz**

@@ -42,7 +42,7 @@ Description
 
 **psvelo** reads data values from *files* [or standard input] and
 will plot velocity arrows on a map.
-Most options are the same as for :doc:`psxy </psxy>`, except **-S**. The previous version
+Most options are the same as for :doc:`plot </plot>`, except **-S**. The previous version
 (**psvelomeca**) is now obsolete. It has been replaced by **psvelo** and
 :doc:`psmeca`.
 
@@ -297,7 +297,7 @@ See Also
 :doc:`psmeca`,
 :doc:`pspolar`,
 :doc:`pscoupe`,
-:doc:`gmt </gmt>`, :doc:`basemap </basemap>`, :doc:`psxy </psxy>`
+:doc:`gmt </gmt>`, :doc:`basemap </basemap>`, :doc:`plot </plot>`
 
 References
 ----------

@@ -19,7 +19,7 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`fitcircle`      | Finds the best-fitting great or small circle for a set of points    |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`gmt2kml`        | Like :doc:`psxy` but plots KML for use in Google Earth              |
+| :doc:`gmt2kml`        | Like :doc:`plot` but plots KML for use in Google Earth              |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtconnect`     | Connect segments into more complete lines or polygons               |
 +-----------------------+---------------------------------------------------------------------+

@@ -641,11 +641,11 @@ and boundary annotations.
   | text        | Plot text strings on maps                                            |
   +-------------+----------------------------------------------------------------------+
 
-Plotting lines and symbols, :doc:`psxy` is one of the most frequently
+Plotting lines and symbols, :doc:`plot` is one of the most frequently
 used modules in GMT.  In addition to the common command line switches
 it has numerous specific options, and expects different file formats
 depending on what action has been selected.  These circumstances make
-:doc:`psxy` harder to master than most GMT tools.  The table below
+:doc:`plot` harder to master than most GMT tools.  The table below
 shows a abbreviated list of the options:
 
   +----------------------------------------------------------------------------+-------------------------------------------------------------------+
@@ -659,7 +659,7 @@ shows a abbreviated list of the options:
   +----------------------------------------------------------------------------+-------------------------------------------------------------------+
   | **-G**\ *fill*                                                             | Set color for symbol or fill for polygons                         |
   +----------------------------------------------------------------------------+-------------------------------------------------------------------+
-  | **-L**\ [*options*]                                                        | Explicitly close polygons or create polygon (see :doc:`psxy`)     |
+  | **-L**\ [*options*]                                                        | Explicitly close polygons or create polygon (see :doc:`plot`)     |
   +----------------------------------------------------------------------------+-------------------------------------------------------------------+
   | **-N**\ [**c**\ \|\ **r**]                                                 | Do Not clip symbols at map borders                                |
   +----------------------------------------------------------------------------+-------------------------------------------------------------------+
@@ -723,7 +723,7 @@ us are shown in the table below:
 +-----------------------------------+-------------------------------------------------------------------------------------------+
 | **-Sv**\ *params*                 | **v**\ ector; *direction* (CCW from horizontal) and *length* are read from input data     |
 +-----------------------------------+-------------------------------------------------------------------------------------------+
-|                                   | Append parameters of the vector; see :doc:`psxy` for syntax.                              |
+|                                   | Append parameters of the vector; see :doc:`plot` for syntax.                              |
 +-----------------------------------+-------------------------------------------------------------------------------------------+
 | **-SV**\ *params*                 | **v**\ ector, except *azimuth* (degrees east of north) is expected instead of *direction* |
 +-----------------------------------+-------------------------------------------------------------------------------------------+
@@ -738,7 +738,7 @@ us are shown in the table below:
 | **-Sy**\ *size*                   | vertical dash; *size* is length of dash                                                   |
 +-----------------------------------+-------------------------------------------------------------------------------------------+
 
-The symbol option in :doc:`psxy`.  Lower case symbols (**a, c, d, g, h, i, n, s, t, x**)
+The symbol option in :doc:`plot`.  Lower case symbols (**a, c, d, g, h, i, n, s, t, x**)
 will fit inside a circle of given diameter.  Upper case symbols (**A, C, D, G, H, I, N, S, T, X**)
 will have area equal to that of a circle of given diameter.
 
@@ -818,7 +818,7 @@ To simply plot the data as a line we choose no symbol and specify a pen thicknes
 
    ::
 
-    gmt psxy @tut_data.txt -R0/6/0/6 -Jx1i -P -Baf -Wthinner > GMT_tut_7.ps
+    gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -P -Baf -Wthinner > GMT_tut_7.ps
 
 Your plot should look like :ref:`our example 7 below <gmt_tut_7>`
 
@@ -837,7 +837,7 @@ Exercises:
 #. Try using a predefined pattern.
 
 A common question is : "How can I plot symbols connected by a line
-with psxy?".  The surprising answer is that we must call :doc:`psxy` twice.
+with plot?".  The surprising answer is that we must call :doc:`plot` twice.
 While this sounds cumbersome there is a reason for this:  Basically,
 polygons need to be kept in memory since they may need to be clipped,
 hence computer memory places a limit on how large polygons we may plot.
@@ -847,8 +847,8 @@ symbols with a line we must use the overlay approach:
 
    ::
 
-    gmt psxy @tut_data.txt -R0/6/0/6 -Jx1i -Baf -P -K -Wthinner > GMT_tut_8.ps
-    gmt psxy tut_data.txt -R -J -O -W -Si0.2i >> GMT_tut_8.ps
+    gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -Baf -P -K -Wthinner > GMT_tut_8.ps
+    gmt plot tut_data.txt -R -J -O -W -Si0.2i >> GMT_tut_8.ps
 
 Your plot should look like :ref:`our example 8 below <gmt_tut_8>`. The
 two-step procedure also makes it easy to plot the line over the symbols
@@ -862,7 +862,7 @@ instead of symbols over the line, as here.
 
    Result of GMT Tutorial example 8
 
-Our final :doc:`psxy` example involves a more complicated scenario
+Our final :doc:`plot` example involves a more complicated scenario
 in which we want to plot the epicenters of several earthquakes over
 the background of a coastline basemap.  We want the symbols to have a
 size that reflects the magnitude of the earthquakes, and that their
@@ -881,7 +881,7 @@ but we are only interested in columns 5, 4, 6, and 7.  In addition to
 extract those columns we must also scale the magnitudes into symbols
 sizes in inches.  Given their range it looks like multiplying the
 magnitude by 0.1 will work well for symbol sizes in cm.  Reformatting this file to comply
-with the :doc:`psxy` input format can be done in a number of ways,
+with the :doc:`plot` input format can be done in a number of ways,
 including manual editing, using MATLAB, a spreadsheet program, or UNIX
 tools.  Here, we simply use the common column selection option **-i**
 and its :ref:`scaling/offset capabilities <-icols_full>`.
@@ -921,7 +921,7 @@ We may now complete our example using the Mercator projection:
 
     gmt makecpt -Cred,green,blue -T0,70,300,10000 > quakes.cpt
     gmt coast -R130/150/35/50 -JM6i -B5 -P -Ggray -K > GMT_tut_9.ps
-    gmt psxy -R -J -O @tut_quakes.ngdc -Wfaint -i4,3,5,6s0.1 -h3 -Scc -Cquakes.cpt >> GMT_tut_9.ps
+    gmt plot -R -J -O @tut_quakes.ngdc -Wfaint -i4,3,5,6s0.1 -h3 -Scc -Cquakes.cpt >> GMT_tut_9.ps
 
 where the **c** appended to the **-Sc** option ensures that symbols
 sizes are interpreted to be in cm.  Your plot should look like :ref:`our example 9 below <gmt_tut_9>`
@@ -946,7 +946,7 @@ Plotting text strings
 ---------------------
 
 In many situations we need to annotate plots or maps with text strings;
-in GMT this is done using :doc:`pstext`.  Apart from the common
+in GMT this is done using :doc:`text`.  Apart from the common
 switches, there are 9 options that are particularly useful.
 
   +-------------------+----------------------------------------------------+
@@ -971,7 +971,7 @@ switches, there are 9 options that are particularly useful.
   | **-W**\ *pen*     | Draw the outline of text box                       |
   +-------------------+----------------------------------------------------+
 
-The input data to :doc:`pstext` is expected to contain the following
+The input data to :doc:`text` is expected to contain the following
 information:
 
    ::
@@ -1019,11 +1019,11 @@ A chart of octal codes can be found in Appendix F in the GMT
 Technical Reference.  For accented European characters you must
 set :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` to ISOLatin1 in your :doc:`gmt.conf` file.
 
-We will demonstrate :doc:`pstext` with the following script:
+We will demonstrate :doc:`text` with the following script:
 
    ::
 
-    gmt pstext -R0/7/0/5 -Jx1i -P -Ba -F+f30p,Times-Roman,DarkOrange+jBL << EOF > GMT_tut_10.ps
+    gmt text -R0/7/0/5 -Jx1i -P -Ba -F+f30p,Times-Roman,DarkOrange+jBL << EOF > GMT_tut_10.ps
     1  1  It's P@al, not Pal!
     1  2  Try @%33%ZapfChancery@%% today
     1  3  @~D@~g@-b@- = 2@~pr@~G@~D@~h.

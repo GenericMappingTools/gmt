@@ -138,11 +138,11 @@ Examples
 --------
 
 To triangulate the points in the file testdata.txt, and make a Voronoi
-diagram via :doc:`psxy`, use
+diagram via :doc:`plot`, use
 
    ::
 
-    gmt sphtriangulate testdata.txt -Qv | psxy -Rg -JG30/30/6i -L -P -W1p -Bag | gv -
+    gmt sphtriangulate testdata.txt -Qv | plot -Rg -JG30/30/6i -L -W1p -Bag -pdf testdata
 
 To compute the optimal Delaunay triangulation network based on the
 multiple segment file globalnodes.txt and save the area of each triangle

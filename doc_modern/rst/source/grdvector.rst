@@ -194,4 +194,4 @@ See Also
 --------
 
 :doc:`gmt`, :doc:`gmtcolors`,
-:doc:`grdcontour`, :doc:`psxy`
+:doc:`grdcontour`, :doc:`plot`

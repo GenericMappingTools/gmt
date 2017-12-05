@@ -197,7 +197,7 @@
                 intersect the quoted lines. The format of each *line* specification
                 is *start/stop*, where *start* and *stop* are either a specified
                 point *lon/lat* or a 2-character **XY** key that uses the
-                justification format employed in **pstext** to indicate a point on
+                justification format employed in **text** to indicate a point on
                 the map, given as [LCR][BMT]. **L** will interpret the point pairs
                 as defining great circles [Default is straight line].
 
@@ -416,7 +416,7 @@
                 Symbols will be placed where these lines intersect the decorated lines.
                 The format of each *line* specification is *start_lon*/*start_lat*/*stop_lon*/*stop_lat*.
                 Both *start_lon*/*start_lat* and *stop_lon*/*stop_lat* can be replaced by a 2-character key
-                that uses the justification format employed in **pstext** to indicate a point on the frame or
+                that uses the justification format employed in **text** to indicate a point on the frame or
                 center of the map, given as [LCR][BMT].
                 **L** will interpret the point pairs as defining great circles [Default is straight line].
 

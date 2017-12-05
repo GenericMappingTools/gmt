@@ -6,7 +6,7 @@ greenspline
 
 .. only:: not man
 
-    greenspline - Interpolate using Green's functions for splines in 1-3 dimensions
+    Interpolate using Green's functions for splines in 1-3 dimensions
 
 Synopsis
 --------
@@ -298,15 +298,15 @@ using a minimum cubic spline, try
    ::
 
     gmt math -T0/10/1 0 1 NRAND = 1D.txt
-    gmt psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1D.ps
-    gmt greenspline 1D.txt -R0/10 -I0.1 -Sc -V | psxy -R -J -O -Wthin >> 1D.ps
+    gmt plot -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1D.ps
+    gmt greenspline 1D.txt -R0/10 -I0.1 -Sc -V | plot -R -J -O -Wthin >> 1D.ps
 
 To apply a spline in tension instead, using a tension of 0.7, try
 
    ::
 
-    gmt psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1Dt.ps
-    gmt greenspline 1D.txt -R0/10 -I0.1 -St0.7 -V | psxy -R -J -O -Wthin >> 1Dt.ps
+    gmt plot -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1Dt.ps
+    gmt greenspline 1D.txt -R0/10 -I0.1 -St0.7 -V | plot -R -J -O -Wthin >> 1Dt.ps
 
 2-d Examples
 ------------
@@ -318,7 +318,7 @@ Reference and Cookbook example 16, try
    ::
 
     gmt greenspline table_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sc -V -D1 -GS1987.nc
-    gmt psxy -R0/6.5/-0.2/6.5 -JX6i -B2f1 -Sc0.1 -Gblack table_5.11 -K > 2D.ps
+    gmt plot -R0/6.5/-0.2/6.5 -JX6i -B2f1 -Sc0.1 -Gblack table_5.11 -K > 2D.ps
     gmt grdcontour -JX6i -B2f1 -O -C25 -A50 S1987.nc >> 2D.ps
 
 To use Cartesian splines in tension but only evaluate the solution where
@@ -456,7 +456,7 @@ See Also
 --------
 
 :doc:`gmt`, :doc:`gmtmath`,
-:doc:`nearneighbor`, :doc:`psxy`,
+:doc:`nearneighbor`, :doc:`plot`,
 :doc:`sample1d`,
 :doc:`sphtriangulate`,
 :doc:`surface`,

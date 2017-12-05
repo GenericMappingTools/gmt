@@ -2,7 +2,7 @@
 #
 # Geological symbol: Horizontal lineation
 #
-# The symbol reads the trend in the 3rd column in psxy
+# The symbol reads the trend in the 3rd column in plot
 #
 N: 1 a
 -90 R

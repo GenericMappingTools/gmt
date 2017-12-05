@@ -6,7 +6,7 @@ grdtrend
 
 .. only:: not man
 
-    grdtrend - Fit trend surface to grids and compute residuals
+    Fit trend surface to grids and compute residuals
 
 `Synopsis`
 ----------

@@ -2,7 +2,7 @@
 #
 # Geological symbol: Plane with arrow for Rake
 #
-# The symbol reads the strike, dip and rake in the 3rd, 4th and 5th columns in psxy
+# The symbol reads the strike, dip and rake in the 3rd, 4th and 5th columns in plot
 #
 N: 3 aso
 if $1 [> 0:90 then 0.5 -0.5 0.3 $2 l+fHelvetica-Oblique+jBR -W-

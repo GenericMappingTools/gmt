@@ -54,7 +54,7 @@ Required Arguments
     If *height* is zero or not given then we estimate *height* based the expected
     vertical extent of the items to be placed.
     By default, the anchor point on the legend is assumed to be the bottom left corner (BL), but this
-    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
+    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Use **+l**\ *spacing* to change the line-spacing factor in units of the current
@@ -224,7 +224,7 @@ legend Codes
     *n_columns* to 1.
 **P** *paragraph-mode-header-for-pstext*
     Start a new text paragraph by specifying all the parameters needed
-    (see :doc:`pstext` **-M** record description). Note that **legend** knows
+    (see :doc:`text` **-M** record description). Note that **legend** knows
     what all those values should be, so normally you can leave the
     entire record (after P) blank or leave it out all together. If you
     need to set at least one of the parameters directly, you must
@@ -232,7 +232,7 @@ legend Codes
     value to **-**.
 **S** [*dx1 symbol size fill pen* [ *dx2 text* ]]
     Plots the selected symbol with specified diameter, fill, and outline
-    (see :doc:`psxy`). The symbol is centered at *dx1* from the left margin
+    (see :doc:`plot`). The symbol is centered at *dx1* from the left margin
     of the column, with the optional explanatory *text* starting *dx2*
     from the margin, printed with **FONT\_ANNOT\_PRIMARY**. Use **-** if
     no *fill* or outline (*pen*) is required. Alternatively, the *fill*
@@ -242,10 +242,10 @@ legend Codes
     symbol, without text, *dx2* and *text* can be omitted.  The *dx1* value
     can also be given as a justification code L, C, R which justifies the
     symbol with respect to the current column.  If no arguments are given
-    to **S** then we simply skip to the next column.  Three :doc:`psxy`
+    to **S** then we simply skip to the next column.  Three :doc:`plot`
     symbols may take special modifiers: front (**f**), quoted line (**q**)  and vector (**v**).
     You can append modifiers to the symbol and affect how the fronts, quoted lines and
-    vectors are presented (see :doc:`psxy` man page for modifiers).
+    vectors are presented (see :doc:`plot` man page for modifiers).
     **legend** will determine default settings for all modifiers and
     secondary arguments if not provided.  A few other symbols (the rectangles,
     ellipse, wedge, mathangle) may take more than a single argument size.
@@ -254,7 +254,7 @@ legend Codes
     arguments to plot the symbol  (See `Defaults`_).
     Alternatively, combine the required
     arguments into a single, comma-separated string and use that as the
-    symbol size (again, see :doc:`psxy` for details on the arguments needed).
+    symbol size (again, see :doc:`plot` for details on the arguments needed).
 **T** *paragraph-text*
     One or more of these **T** records with *paragraph-text* printed
     with **FONT\_ANNOT\_PRIMARY**. To specify special positioning and

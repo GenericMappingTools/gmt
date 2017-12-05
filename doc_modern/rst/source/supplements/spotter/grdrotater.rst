@@ -178,7 +178,7 @@ same rotation, try
 
    ::
 
-    gmt grdrotater large.nc -Erotations.txt -T32 -V -S \| psxy -Rg -JH180/6i -B30 -W0.5p \| gv -
+    gmt grdrotater large.nc -Erotations.txt -T32 -V -S \| plot -Rg -JH180/6i -B30 -W0.5p \| gv -
 
 To rotate the grid topo.nc back to 100 Ma using the rotation file
 *rotations.txt* and request a reconstruction every 10 Myr, saving

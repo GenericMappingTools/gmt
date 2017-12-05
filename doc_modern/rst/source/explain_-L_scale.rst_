@@ -13,7 +13,7 @@
     Append **+f** to get a "fancy" scale [Default is plain].
     By default, the anchor point on the map scale is assumed to be the center of the scale (MC), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify*
-    (see :doc:`pstext` for list and explanation of codes).
+    (see :doc:`text` for list and explanation of codes).
     Append **+l** to select the default label, which equals the distance
     unit (meter, foot, km, mile, nautical mile, US survey foot) and is
     justified on top of the scale [t]. Change this by giving your own

@@ -6,7 +6,7 @@ grdvolume
 
 .. only:: not man
 
-    grdvolume - Calculate grid volume and area constrained by a contour
+    Calculate grid volume and area constrained by a contour
 
 Synopsis
 --------

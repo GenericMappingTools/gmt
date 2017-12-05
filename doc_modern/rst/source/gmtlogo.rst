@@ -52,7 +52,7 @@ Optional Arguments
     Use **+w**\ *width* to set the width of the GMT logo in plot coordinates
     (inches, cm, etc.).
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
-    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
+    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in

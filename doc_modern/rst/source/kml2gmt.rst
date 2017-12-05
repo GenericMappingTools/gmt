@@ -82,7 +82,7 @@ and holes we suggest you run the output through **gmt spatial -Sh** which will
 determine which polygons are perimeters and holes and organize them so that
 any holes immediately will follow their perimeters and that their segment headers will
 contain the **-Ph** flag and have the reverse handedness.  This output may be
-plotted by :doc:`psxy` and the holes will be honored.
+plotted by :doc:`plot` and the holes will be honored.
 
 Examples
 --------

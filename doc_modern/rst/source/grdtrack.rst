@@ -132,7 +132,7 @@ Optional Arguments
     Instead of reading input track coordinates, specify profiles via
     coordinates and modifiers. The format of each *line* is
     *start*/*stop*, where *start* or *stop* are either *lon*/*lat* (*x*/*y* for
-    Cartesian data) or a 2-character XY key that uses the :doc:`pstext`-style
+    Cartesian data) or a 2-character XY key that uses the :doc:`text`-style
     justification format to specify a point on the map as
     [LCR][BMT]. In addition, you can use Z-, Z+ to mean the global
     minimum and maximum locations in the grid (only available if only
@@ -313,6 +313,6 @@ See Also
 
 :doc:`gmt`,
 :doc:`gmtconvert`,
-:doc:`pstext`,
+:doc:`text`,
 :doc:`sample1d`,
 :doc:`surface`

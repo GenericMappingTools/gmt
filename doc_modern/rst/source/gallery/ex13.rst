@@ -14,7 +14,7 @@ separate grid files. In this example we use
 :math:`\nabla z` by returning the *x*- and *y*-derivatives separately.
 We superpose the gradient vector field and the surface *z* and also plot
 the components of the gradient in separate windows. A
-:doc:`pstext </pstext>` call to place a header finishes the plot
+:doc:`text </text>` call to place a header finishes the plot
 
 .. literalinclude:: /_verbatim/example_13.txt
    :language: bash

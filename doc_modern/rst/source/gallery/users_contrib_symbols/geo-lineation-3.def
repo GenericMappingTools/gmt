@@ -2,7 +2,7 @@
 #
 # Geological symbol: lineation-3
 #
-# The symbol reads the trend and plunge in the 3rd and 4th columns in psxy
+# The symbol reads the trend and plunge in the 3rd and 4th columns in plot
 #
 N: 2 as
 if $1 [> 0:90 then 0.2 -0.2 0.3 $2 l+fHelvetica-Oblique+jCM -W-

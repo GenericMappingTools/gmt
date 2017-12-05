@@ -7,7 +7,7 @@ In this example show how the module :doc:`solar </solar>`
 is used to plot several terminator lines that depend on
 the location of the sun with respect to Earth.  We also
 show how an EPS illustration can serve as a custom symbol
-to be plotted with :doc:`psxy </psxy>`.
+to be plotted with :doc:`plot </plot>`.
 
 .. literalinclude:: /_verbatim/example_46.txt
    :language: bash

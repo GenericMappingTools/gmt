@@ -122,7 +122,7 @@ Optional Arguments
     give grid dimensions for fastest results in programs like surface.
     Use **-Ib** to write the bounding box of the data table or segments (see **-A**)
     as a closed polygon segment. Note: for oblique projections you should
-    use the **-Ap** option in :doc:`psxy` to draw the box properly.
+    use the **-Ap** option in :doc:`plot` to draw the box properly.
     If *dx* is given as - then the actual min/max of the input is given in the **-R** string.
 
 .. _-L:
@@ -136,7 +136,7 @@ Optional Arguments
 
 **-S**\ [**x**][**y**]
     Add extra space for error bars. Useful together with **-I** option
-    and when later plotting with :doc:`psxy` **-E**. **-Sx** leaves space
+    and when later plotting with :doc:`plot` **-E**. **-Sx** leaves space
     for horizontal error bars using the values in third
     (2) column. **-Sy** leaves space for vertical error
     bars using the values in fourth (3) column. **-S**
@@ -202,11 +202,11 @@ Output should look like
 
 To find the extreme values in the file track.xy to the nearest 5 units
 but shifted to within 1 unit of the data center, and use this region to
-draw a line using :doc:`psxy`, run
+draw a line using :doc:`plot`, run
 
   ::
 
-    gmt psxy `gmt info -I5 -D1 track.xy` track.xy -Jx1 -B5 -P > track.ps
+    gmt plot `gmt info -I5 -D1 track.xy` track.xy -Jx1 -B5 -P > track.ps
 
 To find the min and max values for each of the first 4 columns, but
 rounded to integers, and return the result individually for each data
@@ -245,5 +245,5 @@ See Also
 
 :doc:`gmt`,
 :doc:`gmtconvert`,
-:doc:`psxy`
+:doc:`plot`
 

@@ -2,7 +2,7 @@
 #
 # Geological symbol: Plane Approximately Gentle
 #
-# The symbol reads the strike in the 3rd column in psxy
+# The symbol reads the strike in the 3rd column in plot
 #
 N: 1 a
 $1 R

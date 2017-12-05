@@ -1763,7 +1763,7 @@ For native binary output, use the **-bo** option; see **-bi** for further detail
 Because of its meta data, reading netCDF tables (i.e., netCDF files
 containing 1-dimensional arrays) is quite a bit less complex than
 reading native binary files. When feeding netCDF tables to programs like
-:doc:`psxy`, the program will automatically
+:doc:`plot`, the program will automatically
 recognize the format and read whatever amount of columns are needed for
 that program. To steer which columns are to be read, the user can append
 the suffix **?**\ *var1*\ **/**\ *var2*\ **/**\ *...* to the netCDF file
@@ -1902,7 +1902,7 @@ to use the entire numerical record and ignoring trailing text, use **-in**.
 
    The physical, logical (input) and output record in GMT.  Here, we are
    reading a file with 5 numerical columns plus some free-form text at the
-   end.  Our module (here :doc:`psxy`) will be used to plot circles at the
+   end.  Our module (here :doc:`plot`) will be used to plot circles at the
    given locations but we want to assign color based on the ``depth`` column
    (which we need to convert from meters to km) and symbol size based on the
    ``mag`` column (but we want to scale the magnitude by 0.01 to get suitable symbol sizes).
@@ -2084,7 +2084,7 @@ basemap was created with an oblique Mercator projection, specified as
 
      -Joc170W/25:30S/33W/56:20N/1:500000
 
-then a subsequent :doc:`psxy` command to plot
+then a subsequent :doc:`plot` command to plot
 symbols only needs to state **-J**\ o in order to activate the same
 projection. In contrast, note that **-J** by itself will pick the most
 recently used projection. Previous commands are maintained in the file ``gmt.history``,
@@ -2439,7 +2439,7 @@ option argument, with commas separating the given attributes, e.g.,
     in cm, inch, or points (see *width* discussion above).
 
 Table :ref:`penex <tbl-penex>` contains additional examples of pen specifications
-suitable for, say, :doc:`psxy`.
+suitable for, say, :doc:`plot`.
 
 .. _tbl-penex:
 
@@ -2534,7 +2534,7 @@ specification. The line attribute modifiers are:
     only at the beginning or end of the line, respectively.  Finally, these two modifiers may both be given
     to specify different attributes for the two vectors.  The vector specification is very rich
     and you may place other symbols, such as circle, square, or a terminal cross-line, in lieu of the
-    vector head (see :doc:`psxy` for more details).
+    vector head (see :doc:`plot` for more details).
 
 .. _Line_vector:
 
@@ -2631,7 +2631,7 @@ Specifying Fonts
 
 The fonts used by GMT are typically set indirectly via the
 GMT defaults parameters. However, some programs, like
-:doc:`pstext` may wish to have this
+:doc:`text` may wish to have this
 information passed directly. A font is specified by a comma-delimited
 attribute list of *size*, *fonttype* and *fill*, each of which is
 optional. The *size* is the font size (usually in points) but **c**,
@@ -2700,7 +2700,7 @@ Notice how the anchor points refers to the text baseline and do not change
 for text whose letters extend below the baseline.
 
 The concept of anchor points extends to entire text paragraphs that you
-may want to typeset with :doc:`pstext`.
+may want to typeset with :doc:`text`.
 
 A related point involves the
 footprint of the text and any background panel on the map.  We determine
@@ -2859,7 +2859,7 @@ gray-shade in the 0--255 range. For CMYK, give *c/m/y/k* values in the
 
 A few programs (i.e., those that plot polygons such as
 :doc:`grdview`, :doc:`psscale`,
-:doc:`psxy` and
+:doc:`plot` and
 :doc:`plot3d`) can accept pattern fills instead
 of gray-shades. You must specify the pattern as in Section `Specifying area fill attributes`_
 (no leading **-G** of course), and only the first pattern (for low
@@ -3005,7 +3005,7 @@ The Drawing of Vectors
 ----------------------
 
 GMT supports plotting vectors in various forms. A vector is one of
-many symbols that may be plotted by :doc:`psxy`
+many symbols that may be plotted by :doc:`plot`
 and :doc:`plot3d`, is the main feature in
 :doc:`grdvector`, and is indirectly used by
 other programs. All vectors plotted by GMT consist of two separate
@@ -3059,7 +3059,7 @@ Character escape sequences
 --------------------------
 
 For annotation labels or text strings plotted with
-:doc:`pstext`, GMT provides several escape
+:doc:`text`, GMT provides several escape
 sequences that allow the user to temporarily switch to the symbol font,
 turn on sub- or superscript, etc., within words. These conditions are
 toggled on/off by the escape sequence @\ **x**, where **x** can be one
@@ -3136,7 +3136,7 @@ GMT strings using the Standard+ encoding:
 | ``M@!\305anoa stra@se`` = Manoa straße
 | ``A@\#cceleration@\# (ms@+-2@+)`` = ACCELERATION
 
-The option in :doc:`pstext` to draw a
+The option in :doc:`text` to draw a
 rectangle surrounding the text will not work for strings with escape
 sequences. A chart of characters and their octal codes is given in
 Chapter `Chart of Octal Codes for Characters`_.
@@ -3205,7 +3205,7 @@ the five codes **g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x** refer to the fi
    be **g**\ 135W/20N.
 
 #. [**j**] Specify *refpoint* using one of the nine *justification codes*, equivalent to the justification
-   codes for placing text strings in :doc:`pstext`.  This mechanism is illustrated in the figure above and
+   codes for placing text strings in :doc:`text`.  This mechanism is illustrated in the figure above and
    is the preferred mechanism when you just want to place the feature **inside** the basemap at
    one of the corners or centered at one of the sides (or even smack in the middle).  Justification codes
    are a combination of a horizontal (**L**, **C**, **R**) and a vertical (**T**, **M**, **B**) code.
@@ -3626,7 +3626,7 @@ instead (similar to how the **-R** option works), by adding **+r**\ .  Some opti
 Placing a vertical scale on maps
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Our final embellishment is reserved for wiggles plotted along track with :doc:`pswiggle` and
+Our final embellishment is reserved for wiggles plotted along track with :doc:`wiggle` and
 is activated as an option within that module.
 Like other features, it requires reference and anchor points and their optional adjustments via the **-D** option.
 In addition, we offer a few modifier to set the scale bar's remaining attributes:
@@ -3634,7 +3634,7 @@ In addition, we offer a few modifier to set the scale bar's remaining attributes
 #. Specify vertical scale bar length.  This is a required modifier and is set via **+l**\ *length*.
    The length is given in the data (*z*) units of your plot.  To indicate that your vertical scale bar
    should reflect 100 nTesla, append **+l**\ 100.  The actual dimension of the scale bar on your map
-   depends on the data scale set in :doc:`pswiggle` via **-Z**.
+   depends on the data scale set in :doc:`wiggle` via **-Z**.
 
 #. Place the label on the left side of the vertical scale bar.  This is an optional modifier and is set via **+m**.
    By default, the scale bar has open ``teeth`` pointing right and a label on that side. The **m** moves the
@@ -3647,7 +3647,7 @@ In addition, we offer a few modifier to set the scale bar's remaining attributes
    :width: 600 px
    :align: center
 
-   Placement of a vertical scale bar. As for other embellishments the :doc:`pswiggle`
+   Placement of a vertical scale bar. As for other embellishments the :doc:`wiggle`
    module allows additional attributes such as a background map panel.
 
 
@@ -3954,7 +3954,7 @@ needed than name the variables on the command line. For example:
 
    ::
 
-    gmt psxy "file.nc?lon/lat" ...
+    gmt plot "file.nc?lon/lat" ...
     gmt convert "file.nc?time/lat/lon"
 
 If one or more of the selected variables are two-dimensional, and have
@@ -4278,8 +4278,7 @@ entirety. Meanwhile, the present Chapter will summarize the properties
 of the Cartesian and Polar coordinate transformations available in
 GMT, list which parameters define them, and demonstrate how they are
 used to create simple plot axes. We will mostly be using
-:doc:`basemap` (and occasionally
-:doc:`psxy`) to demonstrate the various
+:doc:`basemap` (and occasionally :doc:`plot`) to demonstrate the various
 transformations. Our illustrations may differ from those you reproduce
 with the same commands because of different settings in our ``gmt.conf`` file.)
 Finally, note that while we will specify dimensions in inches (by
@@ -4363,8 +4362,8 @@ The complete commands given to produce this plot were
 
    ::
 
-    gmt psxy -R0/100/0/10 -JX3i/1.5i -Bag -BWSne+gsnow -Wthick,blue,- -P -K sqrt.txt > GMT_linear.ps
-    gmt psxy -R -J -St0.1i -N -Gred -Wfaint -O sqrt10.txt >> GMT_linear.ps
+    gmt plot -R0/100/0/10 -JX3i/1.5i -Bag -BWSne+gsnow -Wthick,blue,- -P -K sqrt.txt > GMT_linear.ps
+    gmt plot -R -J -St0.1i -N -Gred -Wfaint -O sqrt10.txt >> GMT_linear.ps
 
 Normally, the user's *x*-values will increase to the right and the
 *y*-values will increase upwards. It should be noted that in many
@@ -4472,9 +4471,9 @@ transformation <GMT_log>`)
 
    ::
 
-    gmt psxy -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque \
+    gmt plot -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque \
              -Wthick,blue,- -P -K -h sqrt.txt > GMT_log.ps
-    gmt psxy -R -J -Ss0.1i -N -Gred -W -O -h sqrt10.txt >> GMT_log.ps
+    gmt plot -R -J -Ss0.1i -N -Gred -W -O -h sqrt10.txt >> GMT_log.ps
 
 Note that if *x*- and *y*-scaling are different and a
 :math:`\log_{10}-\log_{10}` plot is desired, the **l** must be
@@ -4505,9 +4504,9 @@ transformation <GMT_pow>`)
 
    ::
 
-    gmt psxy -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory \
+    gmt plot -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory \
              -Wthick -P -K sqrt.txt > GMT_pow.ps
-    gmt psxy -R -J -Sc0.075i -Ggreen -W -O sqrt10.txt >> GMT_pow.ps
+    gmt plot -R -J -Sc0.075i -Ggreen -W -O sqrt10.txt >> GMT_pow.ps
 
 Linear projection with polar coordinates (**-Jp** **-JP**) :ref:`... <-Jp_full>`
 --------------------------------------------------------------------------------
@@ -6921,7 +6920,7 @@ charts in Chapter `Chart of Octal Codes for Characters`_. When specifying fonts 
 either give the entire font name *or* just the font number listed in
 this table. To change the fonts used in plotting basemap frames, see the
 man page for :doc:`gmt.conf`. For direct
-plotting of text-strings, see the man page for :doc:`pstext`.
+plotting of text-strings, see the man page for :doc:`text`.
 
 .. _non-default-fonts:
 
@@ -7675,7 +7674,7 @@ borders now exceeds 3.35 Mbytes. The plot is generated by the script:
 
     gmt coast -Rk-500/500/-500/500 -JE130.35/-0.2/3.5i -P -Di -A20 -Gburlywood \
                 -Sazure -Wthinnest -N1/thinnest,- -B2g1 -BWSne -K > GMT_App_K_3.ps
-    echo 133 2 | gmt psxy -R -J -O -K -Sc1.4i -Gwhite >> GMT_App_K_3.ps
+    echo 133 2 | gmt plot -R -J -O -K -Sc1.4i -Gwhite >> GMT_App_K_3.ps
     gmt basemap -R -J -O -K --FONT_TITLE=12p --MAP_TICK_LENGTH_PRIMARY=0.05i \
                   -Tm133/2+w1i+t45/10/5+jCM --FONT_ANNOT_SECONDARY=8p >> GMT_App_K_3.ps
     gmt basemap -R -J -O -Dk100+c130.35/-0.2+pthicker >> GMT_App_K_3.ps
@@ -7889,7 +7888,7 @@ Custom Plot Symbols
 Background
 ----------
 
-The GMT tools :doc:`psxy` and :doc:`plot3d` are capable of using custom
+The GMT tools :doc:`plot` and :doc:`plot3d` are capable of using custom
 symbols as alternatives to the built-in, standard geometrical shapes
 such as circles, triangles, and many others. One the command line, custom
 symbols are selected via the **-Sk**\ *symbolname*\ [*size*] symbol
@@ -8103,7 +8102,7 @@ unless you append the modifiers **+X** (format as longitude via :ref:`FORMAT_GEO
 Text alignment and font attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Like the **Sl** symbol in :doc:`psxy`, you can change the current
+Like the **Sl** symbol in :doc:`plot`, you can change the current
 font by appending to **l** the modifier **+f**\ *font* [FONT_ANNOT_PRIMARY] and change the text justification
 by appending the modifier **+j**\ *justify* [CM]. Note: Here, the *font* specification
 will only be considered for the font type and not its size (which is set separately by your *size*
@@ -8231,7 +8230,7 @@ Annotation of Contours and "Quoted Lines"
 The GMT programs :doc:`grdcontour` (for
 data given as 2-dimensional grids) and
 :doc:`contour` (for *x,y,z* tables) allow
-for contouring of data sets, while :doc:`psxy`
+for contouring of data sets, while :doc:`plot`
 and :doc:`plot3d` can plot lines based on *x,y*-
 and *x,y,z*-tables, respectively. In both cases it may be necessary to
 attach labels to these lines. Clever or optimal placements of labels is
@@ -8247,7 +8246,7 @@ Label Placement
 While the previous GMT versions 1--3 allowed for a single algorithm
 that determined where labels would be placed, GMT 4 allows for five
 different algorithms. Furthermore, a new "symbol" option (**-Sq** for
-"quoted line") has been added to :doc:`psxy` and
+"quoted line") has been added to :doc:`plot` and
 :doc:`plot3d` and hence the new label placement
 mechanisms apply to those programs as well. The contouring programs
 expect the algorithm to be specified as arguments to **-G** while the
@@ -8304,7 +8303,7 @@ a line to be labeled. The codes are:
     regular coordinate pairs (i.e., longitude/latitude separated by a
     slash), or they can be two-character codes that refer to
     predetermined points relative to the map region. These codes are
-    taken from the :doc:`pstext` justification keys
+    taken from the :doc:`text` justification keys
     [**L\ \|\ C\ \|\ R**][**B\ \|\ M\ \|\ T**]
     so that the first character determines the *x*-coordinate and
     the second determines the *y*-coordinate. In
@@ -8407,7 +8406,7 @@ universally. These codes are:
 
 **+f**:
     Specifies the desired label font, including size or color. See
-    :doc:`pstext` for font names or numbers.
+    :doc:`text` for font names or numbers.
     The default font is given by :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`.
 
 **+g**:
@@ -8418,7 +8417,7 @@ universally. These codes are:
 **+j**:
     Selects the justification of the label relative to the placement
     points determined above. Normally this is center/mid justified
-    (**CM** in :doc:`pstext` justification
+    (**CM** in :doc:`text` justification
     parlance) and this is indeed the default setting. Override by using
     this option and append another justification key code from
     [**L\ \|\ C\ \|\ R**\ ][**B\ \|\ M\ \|\ T**\ ].
@@ -8674,7 +8673,7 @@ Examples of Label Attributes
 ----------------------------
 
 We will now demonstrate some of the ways to play with the label
-attributes. To do so we will use :doc:`psxy` on
+attributes. To do so we will use :doc:`plot` on
 a great-circle line connecting the geoid extrema, along which we have
 sampled the ETOPO5 relief data set. The file thus contains *lon, lat,
 dist, geoid, relief*, with distances in km.
@@ -8693,7 +8692,7 @@ are placed normal to the line:
      gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_6.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+f8p -Gl50/10S/160/10S -S10 \
      -T+l"-+" >> GMT_App_O_6.ps
-     gmt psxy -R -J -O -SqD1000k:+g+LD+an+p -Wthick transect.txt >> GMT_App_O_6.ps
+     gmt plot -R -J -O -SqD1000k:+g+LD+an+p -Wthick transect.txt >> GMT_App_O_6.ps
 
 .. _Contour_label_6:
 
@@ -8723,7 +8722,7 @@ inverse-video the label:
      gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_7.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S -S10 \
      -T+l"-+" >> GMT_App_O_7.ps
-     gmt psxy -R -J -O -SqD15d:+gblack+fwhite+Ld+o+u\\260 -Wthick transect.txt >> GMT_App_O_7.ps
+     gmt plot -R -J -O -SqD15d:+gblack+fwhite+Ld+o+u\\260 -Wthick transect.txt >> GMT_App_O_7.ps
 
 The output is presented as Figure :ref:`Contour label 7 <Contour_label_7>`.
 
@@ -8752,7 +8751,7 @@ labels. This is done with **awk**.
      gmt coast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_8.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S \
                     -S10 -T+l"-+" >> GMT_App_O_8.ps
-     gmt psxy -R -J -O -Sqffix2.txt:+g+an+p+Lf+u" m"+f8p -Wthick transect.txt >> GMT_App_O_8.ps
+     gmt plot -R -J -O -Sqffix2.txt:+g+an+p+Lf+u" m"+f8p -Wthick transect.txt >> GMT_App_O_8.ps
 
 The output is presented as Figure :ref:`Contour label 8 <Contour_label_8>`.
 
@@ -8792,22 +8791,22 @@ well as a few quoted lines. The final script is
      gmt grdimage ttt_atl.nc -Itopo5_int.nc -Cttt.cpt $R -JM5.3i -P -K -nc+t1 > GMT_App_O_9.ps
      gmt grdcontour ttt_atl.nc -R -J -O -K -C0.5 -A1+u" hour"+v+f8p,Bookman-Demi \
                     -GL80W/31N/17W/26N,17W/28N/17W/50N -S2 >> GMT_App_O_9.ps
-     gmt psxy -R -J -Wfatter,white great_NY_Canaries.txt -O -K  >> GMT_App_O_9.ps
+     gmt plot -R -J -Wfatter,white great_NY_Canaries.txt -O -K  >> GMT_App_O_9.ps
      gmt coast -R -J -B20f5 -BWSne+t"Tsunami travel times from the Canaries" -N1/thick -O -K \
                  -Glightgray -Wfaint -A500 >> GMT_App_O_9.ps
-     gmt convert great_NY_*.txt -E | gmt psxy -R -J -O -K -Sa0.15i -Gred -Wthin >> GMT_App_O_9.ps
-     gmt psxy -R -J -Wthick great_NY_Canaries.txt -O -K \
+     gmt convert great_NY_*.txt -E | gmt plot -R -J -O -K -Sa0.15i -Gred -Wthin >> GMT_App_O_9.ps
+     gmt plot -R -J -Wthick great_NY_Canaries.txt -O -K \
               -Sqn1:+f8p,Times-Italic+l"Distance Canaries to New York = $km km"+ap+v >> GMT_App_O_9.ps
-     gmt psxy -R -J great_NY_Paris.txt -O -K -Sc0.08c -Gblack >> GMT_App_O_9.ps
-     gmt psxy -R -J -Wthinner great_NY_Paris.txt -SqD1000k:+an+o+gblue+LDk+f7p,Helvetica-Bold,white \
+     gmt plot -R -J great_NY_Paris.txt -O -K -Sc0.08c -Gblack >> GMT_App_O_9.ps
+     gmt plot -R -J -Wthinner great_NY_Paris.txt -SqD1000k:+an+o+gblue+LDk+f7p,Helvetica-Bold,white \
               -O -K >> GMT_App_O_9.ps
-     cat << EOF | gmt pstext -R -J -O -K -Gwhite -Wthin -Dj0.1i/0.1i -F+f8p,Bookman-Demi+j \
+     cat << EOF | gmt text -R -J -O -K -Gwhite -Wthin -Dj0.1i/0.1i -F+f8p,Bookman-Demi+j \
                              >> GMT_App_O_9.ps
      74W	41N	RT	New York
      2.33E	48.87N	CT	Paris
      17W	28N	CT	Canaries
      EOF
-     gmt psxy -R -J -O -T >> GMT_App_O_9.ps
+     gmt plot -R -J -O -T >> GMT_App_O_9.ps
 
 with the complete illustration presented as Figure
 :ref:`Contour label 9 <Contour_label_9>`.

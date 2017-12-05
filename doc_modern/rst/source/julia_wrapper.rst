@@ -117,7 +117,7 @@ made of colored filled circles.
    seno = sin(x);                     # *yy*
    xyz  = [x seno seno];              # Duplicate *yy* so that it can be colored
    cpt  = gmt("makecpt -T-1/1/0.1");  # Create a CPT
-   gmt("psxy -R-3.2/3.2/-1.1/1.1 -JX12c -Sc0.1c -C -P -Ba > seno.ps", xyz, cpt)
+   gmt("plot -R-3.2/3.2/-1.1/1.1 -JX12c -Sc0.1c -C -P -Ba > seno.ps", xyz, cpt)
 
 The poin here is that we had to give *cpt, xyz* and not *xyz, cpt* (which would error) because input data
 associated with an option letter **always comes first** and has to respect the corresponding options order
@@ -128,7 +128,7 @@ To plot text strings we send in the input data wrapped in a cell array. Example:
   ::
 
    lines = Any["5 6 Some label", "6 7 Another label"];
-   gmt("pstext -R0/10/0/10 -JM6i -Bafg -F+f18p -P > text.ps", lines)
+   gmt("text -R0/10/0/10 -JM6i -Bafg -F+f18p -P > text.ps", lines)
 
 and we get back text info in cell arrays as well. Using the *G* grid computed above we can run *gmtinfo* on it
 

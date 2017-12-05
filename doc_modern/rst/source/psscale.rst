@@ -74,7 +74,7 @@ Required Arguments
     Give a negative *length* to reverse the scale bar. Append **+h** to get a
     horizontal scale [Default is vertical (**+v**)].
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
-    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
+    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*. Consequently,
     **-DJ** is used to place a scale outside the map frame while **-Dj** is used to place it inside the frame.

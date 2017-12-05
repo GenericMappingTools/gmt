@@ -22,7 +22,7 @@ surface to the gridded data, contour it as well, and sample both grid
 files along a diagonal transect using
 :doc:`grdtrack </grdtrack>`. The bottom panel compares
 the gridded (solid line) and bicubic trend (dashed line) along the
-transect using :doc:`psxy </psxy>`
+transect using :doc:`plot </plot>`
 
 .. literalinclude:: /_verbatim/example_14.txt
    :language: bash

@@ -71,7 +71,7 @@ The fastest way to get up and running is this:
 
 5. If in csh you may have to say rehash afterwards.
 
-6. Type "psxy -" and the synopsis should tell you that you got the
+6. Type "plot -" and the synopsis should tell you that you got the
     correct version. You can now run gmtswitch from anywhere; try it out and
     make sure that you can switch between the versions.
 

@@ -399,7 +399,7 @@ See Also
 :doc:`psvelo`,
 :doc:`pspolar`,
 :doc:`gmt </gmt>`, :doc:`basemap </basemap>`,
-:doc:`psxy </psxy>`
+:doc:`plot </plot>`
 
 References
 ----------

@@ -126,8 +126,8 @@ Creating GMT Graphics
     In this example we will show how to use the GMT programs
     :doc:`fitcircle`, :doc:`project`,
     :doc:`sample1d`, :doc:`spectrum1d`,
-    :doc:`psxy`, and
-    :doc:`pstext`. Suppose you have (lon, lat,
+    :doc:`plot`, and
+    :doc:`text`. Suppose you have (lon, lat,
     gravity) along a satellite track in a file called ``sat.xyg``, and (lon, lat,
     gravity) along a ship track in a file called ``ship.xyg``. You want to make a
     cross-spectral analysis of these data. First, you will have to get the
@@ -150,8 +150,8 @@ Creating GMT Graphics
     steps that produce helpful plots showing the effect of the various
     processing steps (``example_03[a-f].ps``), while the final plot ``example_03.ps`` shows the ship and sat power
     in one diagram and the coherency on another diagram, both on the same
-    page. Note the extended use of :doc:`pstext`
-    and :doc:`psxy` to put labels and legends
+    page. Note the extended use of :doc:`text`
+    and :doc:`plot` to put labels and legends
     directly on the plots. For that purpose we often use **-Jx**\ 1i and
     specify positions in inches directly. Thus, the complete automated script reads:
 
@@ -316,19 +316,19 @@ Creating GMT Graphics
     seismologists use the technique when plotting individual seismic traces.
     In our example we will show how a set of Geosat sea surface slope
     profiles from the south Pacific can be plotted as "wiggles" using the
-    :doc:`pswiggle` program. We will embellish
+    :doc:`wiggle` program. We will embellish
     the plot with track numbers, the location of the Pacific-Antarctic
     Ridge, recognized fracture zones in the area, and a "wiggle" scale. The
     Geosat tracks are stored in the file ``tracks.txt``, the ridge in ``ridge.xy``, and all the
     fracture zones are stored in the multiple segment file ``fz.xy``. The
     profile id is contained in the segment headers and we wish to use the
     last data point in each of the track segments to construct an input file
-    for :doc:`pstext` that will label each profile
+    for :doc:`text` that will label each profile
     with the track number. We know the profiles trend approximately N40E so
     we want the labels to have that same orientation (i.e., the angle with
     the baseline must be 50). We do this by extracting the last record from
     each track and select segment header as textstring when running
-    the output through :doc:`pstext`. Note we
+    the output through :doc:`text`. Note we
     offset the positions by -0.05 inch with **-D** in order to have a small
     gap between the profile and the label:
 
@@ -440,7 +440,7 @@ Creating GMT Graphics
     :math:`\nabla z` by returning the *x*- and *y*-derivatives separately.
     We superpose the gradient vector field and the surface *z* and also plot
     the components of the gradient in separate windows. A
-    :doc:`pstext` call to place a header finishes
+    :doc:`text` call to place a header finishes
     the plot Figure :ref:`Example 13 <Fig_example_13>`:
 
     .. literalinclude:: /_verbatim/example_13.txt
@@ -472,7 +472,7 @@ Creating GMT Graphics
     files along a diagonal transect using
     :doc:`grdtrack`. The bottom panel compares
     the gridded (solid line) and bicubic trend (dashed line) along the
-    transect using :doc:`psxy`
+    transect using :doc:`plot`
     (Figure :ref:`Example 14 <Fig_example_14>`):
 
     .. literalinclude:: /_verbatim/example_14.txt
@@ -504,7 +504,7 @@ Creating GMT Graphics
     simply employ :doc:`coast` to overlay gray
     land masses to cover up the unwanted contours, and end by plotting a
     star at the deepest point on the map with
-    :doc:`psxy`. This point was extracted from the
+    :doc:`plot`. This point was extracted from the
     grid files using :doc:`grdinfo`.
 
     .. literalinclude:: /_verbatim/example_15.txt
@@ -668,7 +668,7 @@ Creating GMT Graphics
     One is often required to make special maps that shows the distribution
     of certain features but one would prefer to use a custom symbol instead
     of the built-in circles, squares, triangles, etc. in the GMT plotting
-    programs :doc:`psxy` and
+    programs :doc:`plot` and
     :doc:`plot3d`. Here we demonstrate one approach
     that allows for a fair bit of flexibility in designing ones own symbols.
     The following recipe is used when designing a new symbol.
@@ -677,7 +677,7 @@ Creating GMT Graphics
        paper!) to set up an empty grid that goes from -0.5 to +0.5 in both
        *x* and *y*. Use ruler and compass to draw your new symbol using
        straight lines, arcs of circles, and stand-alone geometrical objects
-       (see :doc:`psxy` man page for a full
+       (see :doc:`plot` man page for a full
        description of symbol design). In this Section we will create two new
        symbols: a volcano and a bulls eye.
 
@@ -702,7 +702,7 @@ Creating GMT Graphics
        :math:`\alpha_1` to :math:`\alpha_2`
 
        We also add a few stand-alone circles (for other symbols, see
-       :doc:`psxy` man page):
+       :doc:`plot` man page):
 
        :math:`x_0` :math:`y_0` *r* **C** [ **-G**\ *fill* ] [
        **-W**\ *pen* ] Draw :math:`x_0` :math:`y_0` *r* **c** [
@@ -722,18 +722,18 @@ Creating GMT Graphics
        beyond the -0.5 to +0.5 range, as shown by the red lines. There is no
        limit in GMT to the size of the symbols. The center, however, will
        always be at (0,0). This is the point to which the coordinates in
-       :doc:`psxy` refers.
+       :doc:`plot` refers.
 
        The values refer to positions and dimensions illustrated in the
        Figure above.
 
     #. Given proper definition files we may now use them with
-       :doc:`psxy` or :doc:`plot3d`.
+       :doc:`plot` or :doc:`plot3d`.
 
     We are now ready to give it a try. Based on the hotspot locations in the
     file ``hotspots.d`` (with a 3rd column giving the desired symbol sizes in inches) we
     lay down a world map and overlay red volcano symbols using our
-    custom-built volcano symbol and :doc:`psxy`. We
+    custom-built volcano symbol and :doc:`plot`. We
     do something similar with the bulls eye symbols. Without the **-G**
     option, however, they get the colors defined in ``bullseye.def``.
 
@@ -875,7 +875,7 @@ Creating GMT Graphics
     then replot those that pass our criteria. Most of the work here is done
     by :doc:`gmtselect`; the rest is carried
     out by the usual :doc:`coast` and
-    :doc:`psxy` workhorses. Note for our purposes
+    :doc:`plot` workhorses. Note for our purposes
     the Dateline is just a line along the 180 meridian.
 
     The script produces the plot in Figure :ref:`Example 24 <Fig_example_24>`. Note

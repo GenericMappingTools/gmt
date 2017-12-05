@@ -16,7 +16,7 @@ New modules
 We have added a new module to the GMT core called
 :doc:`psternary`.
 This module allows for the construction of ternary diagram, currently
-restricted to symbols (i.e., a psxy-like experience but for ternary data).
+restricted to symbols (i.e., a plot-like experience but for ternary data).
 The *mgd77* supplement has gained a new tool :doc:`mgd77header <supplements/mgd77/mgd77header>`
 for creating a valid MGD77-format header from basic metadata and information
 determined from the header-less data file.
@@ -236,9 +236,9 @@ Here is a list of modules with revised options:
 *  :doc:`rose` now wants **-L**\ [\ *wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*\ ] to
    match the other labeling options.
 
-*  :doc:`pstext` now expects **-D**\ [**j**\ \|\ **J**\ ]\ *dx*\ [/*dy*\ ][**+v**\ [*pen*\ ]].
+*  :doc:`text` now expects **-D**\ [**j**\ \|\ **J**\ ]\ *dx*\ [/*dy*\ ][**+v**\ [*pen*\ ]].
 
-*  :doc:`psxy` expects **-E**\ [**x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**][**+a**][**+cl**\ \|\ **f**\ ][**+n**][**+w**\ *cap*][**+p**\ *pen*].
+*  :doc:`plot` expects **-E**\ [**x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**][**+a**][**+cl**\ \|\ **f**\ ][**+n**][**+w**\ *cap*][**+p**\ *pen*].
 
 *  :doc:`trend2d` follows :doc:`trend1d` and now wants **-N**\ *model*\ [**+r**\ ].
 
@@ -370,7 +370,7 @@ as well. For specific enhancements, we have:
    The **-F** option now takes a new modifier **+c** for writing a discrete
    palette using the categorical format.
 
-*  :doc:`pstext` has new modifiers to its **-F** option that allows users
+*  :doc:`text` has new modifiers to its **-F** option that allows users
    to generate automatic labels such as record numbers of formatting of a
    third data column into a textual representation.  We also allow any
    baseline angles to be interpreted as *orientations*, i.e., they will be
@@ -379,7 +379,7 @@ as well. For specific enhancements, we have:
 *  :doc:`rose` can now control the attributes of vectors in a windrose
    diagram via **-M**.
 
-*  :doc:`psxy` have seen numerous enhancements.  New features include
+*  :doc:`plot` have seen numerous enhancements.  New features include
    *decorated* lines, which are similar to quoted lines except we place
    symbols rather than text along the line.  Users also gain new controls
    over the plotting of lines, including the ability to add vector heads
@@ -702,7 +702,7 @@ changes to existing syntax will be backwards compatible:
    retired the **-T** option in favor of the new uniform
    **-F** option to specify background panel and its many settings.
 
-*  :doc:`psxy` has seen considerable enhancements. We added two new quoted
+*  :doc:`plot` has seen considerable enhancements. We added two new quoted
    line (**-Sq**) modifiers: **S**\ \|\ **s** for treating input as consecutive
    two-point line segments that should be individually quoted,
    and **+x**\ [*first*\ ,\ *last*] for automating cross-section labeling.
@@ -724,13 +724,13 @@ changes to existing syntax will be backwards compatible:
    or adding vector heads at the ends of the lines (**+v**).
 
 *  :doc:`plot3d` also has the new **-SE-**\ *diameter* shorthand as well as the **-N**
-   modifiers for handling periodic plot symbols.  Like, psxy it gets the same improvements
+   modifiers for handling periodic plot symbols.  Like, plot it gets the same improvements
    to quoted lines and adds decorated lines as a new symbol.  Likewise,
    the **-L** option has been enhanced to create envelope polygons around y(x),
    say for confidence envelopes (modifiers **+b**\ \|\ **d**\ \|\ **D**), and to complete a closed
    polygon by adding selected corners (modifiers **+xl**\ \|\ **r**\ \|\ *x0* or **+yb**\ \|\ **t**\ \|\ *y0*).
    The slip-vector symbol can now optionally accept a vector-head angle [30].
-   Finally, to match :doc:`psxy` we have added the option **-T** for specifying no data input.
+   Finally, to match :doc:`plot` we have added the option **-T** for specifying no data input.
 
 *  :doc:`sample1d` spline selection option **-F** can now accept the optional
    modifiers **+1** or **+2** which will compute
@@ -807,7 +807,7 @@ promoted (and possibly renamed) from earlier supplements:
     be abbreviated, e.g., "gmt gmtconvert" may be called as "gmt convert".
 
 :doc:`gmt2kml`
-    A :doc:`psxy` -like tool to produce KML overlays for Google Earth. Previously
+    A :doc:`plot` -like tool to produce KML overlays for Google Earth. Previously
     found in the misc supplement.
 
 :doc:`gmtconnect`
@@ -1049,7 +1049,7 @@ ways, such as
    the surrounding grid values.
 
 *  All text can now optionally be filled with patterns and/or drawn with
-   outline pens. In the past, only :doc:`pstext` could plot outline fonts via
+   outline pens. In the past, only :doc:`text` could plot outline fonts via
    **-S**\ *pen*. Now, any text can be an outline text by manipulating
    the corresponding FONT defaults (e.g., :ref:`FONT_TITLE <FONT_TITLE>`).
 
@@ -1248,7 +1248,7 @@ Finally, here is a list of numerous enhancements to individual programs:
    radial distance from point to annotation. Change all text to upper or
    lower case with **-Q**.
 
-*  :doc:`psxy` and :doc:`plot3d` both support the revised custom symbol macro
+*  :doc:`plot` and :doc:`plot3d` both support the revised custom symbol macro
    language which has been expanded considerably to allow for complicated,
    multi-parameter symbols; see Chapter :ref:`App-custom_symbols`
    for details. Finally, we allow the base for bars and columns optionally to be

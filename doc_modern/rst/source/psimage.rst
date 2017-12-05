@@ -73,7 +73,7 @@ Optional Arguments
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
-    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
+    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
@@ -207,6 +207,6 @@ See Also
 
 :doc:`gmt`,
 :doc:`gmtcolors`, :doc:`gmtlogo`
-:doc:`pslegend`, :doc:`psscale`
-:doc:`psxy`,
+:doc:`legend`, :doc:`scale`
+:doc:`plot`,
 :manpage:`convert(1)`
