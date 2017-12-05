@@ -1,19 +1,19 @@
-.. index:: ! psmeca
+.. index:: ! meca
 
 ******
-psmeca
+meca
 ******
 
 .. only:: not man
 
-    psmeca - Plot focal mechanisms on maps
+    Plot focal mechanisms on maps
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-psmeca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
+meca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
 [ |SYN_OPT-B| ]
 [ |-C|\ [*pen*\ ][\ **P**\ *pointsize*] ] [ |-D|\ *depmin*/*depmax* ]
 [ |-E|\ *fill*]
@@ -40,7 +40,7 @@ psmeca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
 Description
 -----------
 
-**psmeca** reads data values from *files* [or standard input] and
+**meca** reads data values from *files* [or standard input] and
 will plot focal mechanisms on a map.
 Many options are similar to those of :doc:`plot </plot>`.
 
@@ -379,7 +379,7 @@ The following file should give a normal-faulting CMT mechanism:
 
    ::
 
-    gmt psmeca -R239/240/34/35.2 -Jm4c -Sc0.4 -h1 << END > test.ps
+    gmt meca -R239/240/34/35.2 -Jm4c -Sc0.4 -h1 -pdf test << END
     lon lat depth str dip slip st dip slip mant exp plon plat
     239.384 34.556 12. 180 18 -88 0 72 -90 5.5 0 0 0
     END
@@ -387,9 +387,9 @@ The following file should give a normal-faulting CMT mechanism:
 See Also
 --------
 
-:doc:`pspolar`,
-:doc:`psvelo`,
-:doc:`pscoupe`,
+:doc:`polar`,
+:doc:`velo`,
+:doc:`coupe`,
 :doc:`gmt </gmt>`, :doc:`basemap </basemap>`, :doc:`plot </plot>`
 
 References

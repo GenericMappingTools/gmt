@@ -72,23 +72,23 @@ Core modules
    mapproject
    nearneighbor
    project
-   basemap
-   clip
-   coast
-   contour
+   psbasemap
+   psclip
+   pscoast
+   pscontour
    psconvert
-   histogram
+   pshistogram
    psimage
-   legend
+   pslegend
    postscriptlight
-   mask
-   rose
+   psmask
+   psrose
    colorbar
-   ternary
-   text
-   wiggle
-   plot
-   plot3d
+   psternary
+   pstext
+   pswiggle
+   psxy
+   psxyz
    sample1d
    spectrum1d
    sph2grd

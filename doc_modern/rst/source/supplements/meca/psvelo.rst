@@ -1,19 +1,19 @@
-.. index:: ! psvelo
+.. index:: ! velo
 
 ******
-psvelo
+velo
 ******
 
 .. only:: not man
 
-    psvelo - Plot velocity vectors, crosses, and wedges on maps
+    Plot velocity vectors, crosses, and wedges on maps
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**psvelo** [ *table* ] |-J|\ *parameters*
+**velo** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-R|
 [ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]
@@ -40,11 +40,11 @@ Synopsis
 Description
 -----------
 
-**psvelo** reads data values from *files* [or standard input] and
+**velo** reads data values from *files* [or standard input] and
 will plot velocity arrows on a map.
 Most options are the same as for :doc:`plot </plot>`, except **-S**. The previous version
-(**psvelomeca**) is now obsolete. It has been replaced by **psvelo** and
-:doc:`psmeca`.
+(**velomeca**) is now obsolete. It has been replaced by **velo** and
+:doc:`meca`.
 
 Required Arguments
 ------------------
@@ -260,8 +260,8 @@ fits inside a rectangle of dimension Esig by Nsig.
 
    ::
 
-    gmt psvelo << END -h2 -R-10/10/-10/10 -W0.25p,red -Ggreen -L -Se0.2/0.39/18 \
-        -B1g1 -Jx0.4/0.4 -A1c+p3p+e -P -V > test.ps
+    gmt velo << END -h2 -R-10/10/-10/10 -W0.25p,red -Ggreen -L -Se0.2/0.39/18
+        -B1g1 -Jx0.4/0.4 -A1c+p3p+e -V -pdf test
     #Long. Lat. Evel Nvel Esig Nsig CorEN SITE
     #(deg) (deg) (mm/yr) (mm/yr)
     0. -8. 0.0 0.0 4.0 6.0 0.500 4x6
@@ -278,8 +278,8 @@ gray wedges to represent the 2-sigma uncertainties.
 
    ::
 
-    gmt psvelo << END -Sw0.4/1.e7 -W0.75p -Gdarkgray -Elightgray -h1 -D2 -Jm2.2i \
-        -R240./243./32.5/34.75 -Baf -BWeSn -P > test.ps
+    gmt velo << END -Sw0.4/1.e7 -W0.75p -Gdarkgray -Elightgray -h1 -D2 -Jm2.2i
+        -R240./243./32.5/34.75 -Baf -BWeSn -pdf test.ps
     #lon lat spin(rad/yr) spin_sigma (rad/yr)
     241.4806 34.2073 5.65E-08 1.17E-08
     241.6024 34.4468 -4.85E-08 1.85E-08
@@ -294,9 +294,9 @@ gray wedges to represent the 2-sigma uncertainties.
 See Also
 --------
 
-:doc:`psmeca`,
-:doc:`pspolar`,
-:doc:`pscoupe`,
+:doc:`meca`,
+:doc:`polar`,
+:doc:`coupe`,
 :doc:`gmt </gmt>`, :doc:`basemap </basemap>`, :doc:`plot </plot>`
 
 References

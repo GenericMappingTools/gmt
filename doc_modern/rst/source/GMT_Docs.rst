@@ -5933,11 +5933,11 @@ meca: seismology and geodesy symbols
 ------------------------------------
 
 This package contains the programs
-:doc:`pscoupe <supplements/meca/pscoupe>`,
-:doc:`psmeca <supplements/meca/psmeca>`,
-:doc:`pspolar <supplements/meca/pspolar>`,
-:doc:`psvelo <supplements/meca/psvelo>`, and
-:doc:`pssac <supplements/meca/pssac>` which are used by seismologists
+:doc:`coupe <supplements/meca/pscoupe>`,
+:doc:`meca <supplements/meca/psmeca>`,
+:doc:`polar <supplements/meca/pspolar>`,
+:doc:`velo <supplements/meca/psvelo>`, and
+:doc:`sac <supplements/meca/pssac>` which are used by seismologists
 and geodesists for plotting focal mechanisms (including cross-sections
 and polarities), error ellipses, velocity arrows, rotational wedges, and
 more. The package was developed by Kurt Feigl and Genevieve

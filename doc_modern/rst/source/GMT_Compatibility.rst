@@ -204,7 +204,7 @@ with a warning under compatibility mode:
 *  :doc:`img2grd <supplements/img/img2grd>`: **-m**\ *inc* is
    deprecated; use **-I**\ *inc* instead.
 
-*  :doc:`psvelo <supplements/meca/psvelo>`: Old vector
+*  :doc:`velo <supplements/meca/psvelo>`: Old vector
    specifications are deprecated; see new explanations.
 
 *  :doc:`mgd77convert <supplements/mgd77/mgd77convert>`:

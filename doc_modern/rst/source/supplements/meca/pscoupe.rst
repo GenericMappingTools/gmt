@@ -1,19 +1,19 @@
-.. index:: ! pscoupe
+.. index:: ! coupe
 
 *******
-pscoupe
+coupe
 *******
 
 .. only:: not man
 
-    pscoupe - Plot cross-sections of focal mechanisms
+    Plot cross-sections of focal mechanisms
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**pscoupe** [ *files* ] |-J|\ *parameters*
+**coupe** [ *files* ] |-J|\ *parameters*
 |SYN_OPT-R| |-A|\ *parameters*
 [ |SYN_OPT-B| ]
 [ |-E|\ *color* ]
@@ -42,7 +42,7 @@ Synopsis
 Description
 -----------
 
-**pscoupe** reads data values from *files* [or standard input] and
+**coupe** reads data values from *files* [or standard input] and
 will plot symbols, lines or polygons on
 a cross-section. Focal mechanisms may be specified and require
 additional columns of data.
@@ -128,7 +128,7 @@ Required Arguments
       **7**:
         magnitude
       **8**,\ **9**:
-        not used; can be 0 0; allows use of the :doc:`psmeca` file format
+        not used; can be 0 0; allows use of the :doc:`meca` file format
       **10**:
         text string to appear above the beach ball (default) or under (add **u**).
 
@@ -157,7 +157,7 @@ Required Arguments
         mantissa and exponent of moment in dyne-cm (if magnitude is uses
         instead of scalar moment, magnitude is in column 10 and 0 must be in column 11)
       **12**,\ **13**:
-        not used; can be 0 0; allows use of the :doc:`psmeca` file format
+        not used; can be 0 0; allows use of the :doc:`meca` file format
       **14**:
         text string to appear above the beach ball (default) or under (add **u**).
 
@@ -185,7 +185,7 @@ Required Arguments
       **8**:
         magnitude
       **9**,\ **10**:
-        not used; can be 0 0; allows use of the :doc:`psmeca` file format
+        not used; can be 0 0; allows use of the :doc:`meca` file format
       **11**:
         text string to appear above the beach ball (default) or under (add **u**).
 
@@ -216,7 +216,7 @@ Required Arguments
       **10**:
          exponent
       **11**,\ **12**:
-         Not used; can be 0 0; allows use of the :doc:`psmeca` file format 
+         Not used; can be 0 0; allows use of the :doc:`meca` file format 
       **13**:
          Text string to appear above the beach ball (default) or under (add **u**).
 
@@ -395,9 +395,9 @@ Optional Arguments
 See Also
 --------
 
-:doc:`psmeca`,
-:doc:`psvelo`,
-:doc:`pspolar`,
+:doc:`meca`,
+:doc:`velo`,
+:doc:`polar`,
 :doc:`gmt </gmt>`, :doc:`basemap </basemap>`,
 :doc:`plot </plot>`
 
