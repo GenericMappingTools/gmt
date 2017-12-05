@@ -37,6 +37,7 @@
 "sealand     : Smith bathymetry/topography scale [R=-6000/+3000, H=0, C=HSV]",
 "seis        : R-O-Y-G-B seismic tomography colors [C=RGB]",
 "split       : Like polar, but via black instead of white [H=0, C=RGB]",
+"srtm        : Like dem2, but with blue for oceans [H=1, C=RGB]",
 "terra       : Colors for global bathymetry/topography relief [R=-7000/7000, H=0, C=RGB]",
 "topo        : Sandwell/Anderson colors for topography [R=-7000/+7000, H=0, C=HSV]",
 "viridis     : New colormap Option D from matplotlib [C=RGB]",
