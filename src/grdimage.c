@@ -908,7 +908,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	if (Ctrl->A.active) {	/* We desire a raster image, not a PostScript plot */
 		int	id, k;
 		unsigned int this_proj = GMT->current.proj.projection;
-		char mem_layout[5] = {""};
+		char mem_layout[5] = {""}, *pch;
 		if (Ctrl->M.active || gray_only) dim[GMT_Z] = 1;	/* Only one band */
 		if (!need_to_project) {	/* Stick with original -R */
 			img_wesn[XLO] = GMT->common.R.wesn[XLO];		img_wesn[XHI] = GMT->common.R.wesn[XHI];
@@ -942,7 +942,12 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 		GMT_Set_Default (API, "API_IMAGE_LAYOUT", mem_layout);		/* Reset previous mem layout */
 
-		HH = gmt_get_H_hidden (Out->header);			
+		HH = gmt_get_H_hidden (Out->header);
+		if ((pch = strstr(Ctrl->Out.file, "+c")) != NULL) {			/* Check if we have +c<options> */
+			HH->pocket = strdup(pch);
+			pch[0] = '\0';
+		}
+
 		/* See if we have valid proj info the chosen projection has a valid PROJ4 setting */
 		if (Out->header->ProjRefWKT != NULL)
 			Out->header->ProjRefWKT = strdup (header_work->ProjRefWKT);
