@@ -209,4 +209,4 @@ See Also
 :doc:`gmtcolors`, :doc:`gmtlogo`
 :doc:`legend`, :doc:`colorbar`
 :doc:`plot`,
-:manpage:`convert(1)`
+:manpage:`psconvert(1)`
