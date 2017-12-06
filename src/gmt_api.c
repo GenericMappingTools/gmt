@@ -6786,7 +6786,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 	 */
 	int in_ID = GMT_NOTSET, item = GMT_NOTSET;
 	unsigned int module_input = 0;
-	bool just_get_data, reset;
+	bool just_get_data, reset, reg_here = false;
 	void *new_obj = NULL;
 	char *input = NULL;
 	struct GMTAPI_CTRL *API = NULL;
@@ -6892,10 +6892,12 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		}
 		else if ((in_ID = GMT_Register_IO (API, family|module_input, method, geometry, GMT_IN, wesn, &input[first])) == GMT_NOTSET)
 			return_null (API, API->error);
+		reg_here = true;
 	}
 	else if (input == NULL && geometry) {	/* Case 2: Load from stdin.  Register stdin first */
 		if ((in_ID = GMT_Register_IO (API, family|module_input, GMT_IS_STREAM, geometry, GMT_IN, wesn, API->GMT->session.std[GMT_IN])) == GMT_NOTSET)
 			return_null (API, API->error);	/* Failure to register std??? */
+		reg_here = true;
 	}
 	else {	/* Case 3: input == NULL && geometry == 0, so use all previously registered sources (unless already used). */
 		if (!multiple_files_ok (family))
@@ -6928,8 +6930,10 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		}
 		API->object[item]->selected = true;	/* Make sure the item we want is now selected */
 	}
-	if ((new_obj = api_get_data (API, in_ID, mode, data)) == NULL)
+	if ((new_obj = api_get_data (API, in_ID, mode, data)) == NULL) {
+		if (reg_here) gmtapi_unregister_io (API, in_ID, GMT_IN);	/* Since reading failed */
 		return_null (API, API->error);
+	}
 	if (reset) API->object[item]->status = 0;	/* Reset  to unread */
 	gmt_M_str_free (input);	/* Done with this variable) */
 	API->module_input = false;	/* Reset to normal */

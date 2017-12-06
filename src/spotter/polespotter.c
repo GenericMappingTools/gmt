@@ -35,7 +35,6 @@ struct POLESPOTTER_CTRL {	/* All control options for this program (except common
 		bool active;
 		char *file;
 		double weight;
-		double sigma;
 	} A;
 	struct D {	/* -D<spacing> */
 		bool active;
@@ -48,7 +47,6 @@ struct POLESPOTTER_CTRL {	/* All control options for this program (except common
 		bool active;
 		char *file;
 		double weight;
-		double sigma;
 	} F;
 	struct G {	/* -Goutfile */
 		bool active;
@@ -61,14 +59,11 @@ struct POLESPOTTER_CTRL {	/* All control options for this program (except common
 		bool active;
 		bool dump_lines;
 		bool dump_crossings;
+		bool midpoint;
 		unsigned int mode;
 		char *file;
 		double plon, plat;
-		double misfit;
 	} S;
-	struct W {	/* -Wa|f<weight> */
-		bool active;
-	} W;
 };
 
 enum spotter_modes {
@@ -83,8 +78,6 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.weight = C->F.weight = 1.0;
-	C->A.sigma = C->F.sigma = 1.0;
-	C->S.misfit = 1.0;
 	C->D.length = 5.0;	/* 5 km spacing */
 	return (C);
 }
@@ -103,7 +96,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: polespotter [%s] [-G<polegrid>] [%s]\n", GMT_Id_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A<abyssalhills>] [-D<step>] [-Ea|f<sigma>] [-F<FZfile] [-N] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Ss|p|l[<modifiers>]] [-Wa|f<weight>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Ss|p|l[<modifiers>]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -111,7 +104,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Give multisegment file with abyssal hill lineaments [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Give step-length along great circles in km [5].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify angular uncertainty (in degrees) for (a)byssal hills or (f)racture zones [1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify typical angular error (in degrees) for (a)byssal hills or (f)racture zones [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Give multisegment file with fracture zone lineaments [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output grid [no grid].  Requires -R -I [-r]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Accumulates weighted great-circle length density grid.\n");
@@ -123,10 +116,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t    Append +c<xfile> to save all great circle intersections to <xfile> [no crossings].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Sp scan for poles.  Writes a misfit grid to <grid>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Sl scan for compatible lines given <plon>/<plat> trial pole.\n");
-	//GMT_Message (API, GMT_TIME_NONE, "\t    Append +f to only dump lines whose misfit is less than <fit> [1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    Append +m to report misfit for each midpoint.\n");
 	GMT_Option (API, "Rg");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify relative weights for (a)byssal hills or (f)racture zones [1].\n");
 	GMT_Option (API, "bi2,d,e,h,i,r,s,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -161,10 +153,10 @@ int n;
 				break;
 			case 'E':	/* Sigma of lines (store 1/sigma here) */
 				switch (opt->arg[0]) {
-					case 'a': Ctrl->A.sigma = 1.0 / atof (&opt->arg[1]);	break;
-					case 'f': Ctrl->F.sigma = 1.0 / atof (&opt->arg[1]);	break;
+					case 'a': Ctrl->A.weight = 1.0 / atof (&opt->arg[1]);	break;
+					case 'f': Ctrl->F.weight = 1.0 / atof (&opt->arg[1]);	break;
 				}
-				Ctrl->W.active = true;
+				Ctrl->E.active = true;
 				break;
 			case 'F':	/* File with fracture zone traces */
 				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
@@ -189,8 +181,8 @@ int n;
 					case 'p': Ctrl->S.mode = SPOTTER_SCAN_POLES;
 						break;
 					case 'l': Ctrl->S.mode = SPOTTER_SCAN_LINES;
-						if ((c = strstr (opt->arg, "+f"))) {	/* Misfit threadhold */
-							Ctrl->S.misfit = atof (&c[2]);
+						if ((c = strstr (opt->arg, "+m"))) {	/* Do midpoint analysis instead */
+							Ctrl->S.midpoint = true;
 							c[0] = '\0';	/* Chop off modifier */
 						}
 						if ((n = sscanf (&opt->arg[1], "%[^/]/%s", txt_a, txt_b)) != 2) {
@@ -216,13 +208,6 @@ int n;
 						n_errors++;
 				}
 				Ctrl->S.active = true;
-				break;
-			case 'W':	/* Weights */
-				switch (opt->arg[0]) {
-					case 'a': Ctrl->A.weight = atof (&opt->arg[1]);	break;
-					case 'f': Ctrl->F.weight = atof (&opt->arg[1]);	break;
-				}
-				Ctrl->W.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -381,10 +366,10 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 			for (tbl = 0; tbl < In[d]->n_tables; tbl++) {
 				for (seg = 0; seg < In[d]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 					S = In[d]->table[tbl]->segment[seg];	/* Set shortcut to current segment */
-					if (gmt_parse_segment_item (GMT, S->header, "-Z", header))	/* Found -Z<val> */
-						seg_weight = atof (header);
+					if (gmt_parse_segment_item (GMT, S->header, "-D", header))	/* Found -D<sigma> */
+						seg_weight = 1.0 / atof (header);
 					else
-						seg_weight = weight;
+						seg_weight = weight;	/* Already got 1/sigma via -E, actually */
 					/* Convert the entire segment to geocentric latitude */
 					for (row = 0; row < S->n_rows; row++) S->data[GMT_Y][row] = gmt_lat_swap (GMT, S->data[GMT_Y][row], GMT_LATSWAP_G2O);
 					gmt_geo_to_cart (GMT, S->data[GMT_Y][0], S->data[GMT_X][0], P1, true);	/* get x/y/z of first point P1 */
@@ -472,13 +457,14 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 		}
 	}
 	else if (Ctrl->S.mode == SPOTTER_SCAN_LINES) {	/* Determine which lines are compatible with the selected test pole */
-		double out[3] = {0.0, 0.0, 0.0}, plat, sum_L = 0.0, del_angle, sigma, seg_sigma, chi2;
+		double out[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, plat, sum_L = 0.0, del_angle, chi2, this_chi2;
+		unsigned int n_out = (Ctrl->S.midpoint) ? 6 : 3;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Entering scan mode: lines [EXPERIMENTAL]\n");
 		gmt_set_cartesian (GMT, GMT_OUT);	/* Since x here will be table number and y is segment number */
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
 			Return (API->error);
 		}
-		if ((error = GMT_Set_Columns (API, GMT_OUT, 3, GMT_COL_FIX)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX)) != GMT_NOERROR) {
 			Return (error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
@@ -493,33 +479,43 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 		for (d = POLESPOTTER_AH; d <= POLESPOTTER_FZ; d++) {
 			if (In[d] == NULL) continue;	/* Don't have this data set */
 			weight = (d == POLESPOTTER_AH) ? Ctrl->A.weight : Ctrl->F.weight;
-			sigma  = (d == POLESPOTTER_AH) ? Ctrl->A.sigma  : Ctrl->F.sigma;	/* Is 1/sigma, actually */
+			Out->text = (char *)label[d];
 			for (tbl = 0; tbl < In[d]->n_tables; tbl++) {
 				for (seg = 0; seg < In[d]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 					S = In[d]->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 					if (gmt_parse_segment_item (GMT, S->header, "-D", header))	/* Found -D<val> */
-						seg_sigma = 1.0 / atof (header);
+						seg_weight = 1.0 / atof (header);
 					else
-						seg_sigma = sigma;	/* Already 1/sigma, actually */
-					if (gmt_parse_segment_item (GMT, S->header, "-Z", header))	/* Found -Z<val> */
-						seg_weight = atof (header);
-					else
-						seg_weight = weight;
+						seg_weight = weight;	/* Already 1/sigma, actually */
 					/* Reminder, latitudes in segments are now geocentric latitudes */
 					chi2 = sum_L = 0.0;
+					if (Ctrl->S.midpoint) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Output the segment header first */
 					gmt_geo_to_cart (GMT, S->data[GMT_Y][0], S->data[GMT_X][0], P1, true);	/* Get x/y/z of first point P1 */
 					for (row = 1; row < S->n_rows; row++) {
 						gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
-						L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM * seg_weight;	/* Weighted length of this segment */
+						L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM;	/* Length of this segment */
 						del_angle =  get_angle_between_trends (GMT, P1, P2, d, X);
-						chi2 += L * pow (del_angle * seg_sigma, 2.0);	/* The weighted chi2 increment from this line */
-						sum_L += L;	/* Add up total weight sum */
+						this_chi2 = pow (del_angle * seg_weight, 2.0);	/* The chi2 increment from the P1-P2 line */
 						gmt_M_memcpy (P1, P2, 3, double);		/* Let old P2 be next P1 */
+						if (Ctrl->S.midpoint) {	/* Report for this mid-point */
+							gmt_cart_to_geo (GMT, &mlat, &mlon, M, true);	/* Get lon/lat of the mid point */
+							mlat = gmt_lat_swap (GMT, mlat, GMT_LATSWAP_G2O + 1);	/* Convert back to geodetic */
+							out[GMT_X] = mlon;	out[GMT_Y] = mlat;
+							out[GMT_Z] = del_angle;
+							out[3] = this_chi2;
+							out[4] = (double)tbl;
+							out[5] = (double)seg;
+							GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Report <mlon mlat del_angle chi2 tbl seg type> for this M */
+						}
+						else {	/* Summarize for this line instead */
+							chi2  += L * this_chi2;	/* The weighted chi2 sum from this line */
+							sum_L += L;		/* Add up total weight sum */
+						}
 					}
-					/* Write <tbl seg chi2 type> */
-					Out->data[GMT_X] = tbl;	Out->data[GMT_Y] = seg;	Out->data[GMT_Z] = chi2 / sum_L;
-					Out->text = (char *)label[d];
-					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* We are writing these circles to output */
+					if (!Ctrl->S.midpoint) {	/* Write <tbl seg chi2 type> for this segment */
+						Out->data[GMT_X] = (double)tbl;	Out->data[GMT_Y] = (double)seg;	Out->data[GMT_Z] = chi2 / sum_L;
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* We are writing these circles to output */
+					}
 				}
 			}
 		}
@@ -530,7 +526,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, Out);
 	}
 	else {	/* SPOTTER_SCAN_POLES */
-		double *plon = NULL, *plat = NULL, sum_L = 0.0, del_angle, sigma, seg_sigma, chi2;
+		double *plon = NULL, *plat = NULL, sum_L = 0.0, del_angle, chi2;
 
 		/* Now visit all our segments to convert to geocentric and to get sum of weights once */
 		
@@ -541,17 +537,13 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 			for (tbl = 0; tbl < In[d]->n_tables; tbl++) {
 				for (seg = 0; seg < In[d]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 					S = In[d]->table[tbl]->segment[seg];	/* Set shortcut to current segment */
-					if (gmt_parse_segment_item (GMT, S->header, "-Z", header))	/* Found -Z<val> */
-						seg_weight = atof (header);
-					else
-						seg_weight = weight;
 					/* Convert the entire segment to geocentric latitude as we go through */
 					S->data[GMT_Y][0] = gmt_lat_swap (GMT, S->data[GMT_Y][0], GMT_LATSWAP_G2O);
 					gmt_geo_to_cart (GMT, S->data[GMT_Y][0], S->data[GMT_X][0], P1, true);	/* get x/y/z of first point P1 */
 					for (row = 1; row < S->n_rows; row++) {
 						S->data[GMT_Y][row] = gmt_lat_swap (GMT, S->data[GMT_Y][row], GMT_LATSWAP_G2O);
 						gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
-						L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM * seg_weight;	/* Weighted length of this segment */
+						L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM;	/* Length of this segment */
 						sum_L += L;	/* Add up total weight sum */
 						gmt_M_memcpy (P1, P2, 3, double);		/* Let old P2 be next P1 */
 					}
@@ -571,25 +563,20 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 				for (d = POLESPOTTER_AH; d <= POLESPOTTER_FZ; d++) {
 					if (In[d] == NULL) continue;	/* Don't have this data set */
 					weight = (d == POLESPOTTER_AH) ? Ctrl->A.weight : Ctrl->F.weight;
-					sigma  = (d == POLESPOTTER_AH) ? Ctrl->A.sigma  : Ctrl->F.sigma;	/* Is 1/sigma, actually */
 					for (tbl = 0; tbl < In[d]->n_tables; tbl++) {
 						for (seg = 0; seg < In[d]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 							S = In[d]->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 							if (gmt_parse_segment_item (GMT, S->header, "-D", header))	/* Found -D<val> */
-								seg_sigma = 1.0 / atof (header);
+								seg_weight = 1.0 / atof (header);
 							else
-								seg_sigma = sigma;	/* Already 1/sigma, actually */
-							if (gmt_parse_segment_item (GMT, S->header, "-Z", header))	/* Found -Z<val> */
-								seg_weight = atof (header);
-							else
-								seg_weight = weight;
+								seg_weight = weight;	/* Already 1/sigma, actually */
 							/* Reminder, latitudes in segments are now geocentric latitudes */
 							gmt_geo_to_cart (GMT, S->data[GMT_Y][0], S->data[GMT_X][0], P1, true);	/* Get x/y/z of first point P1 */
 							for (row = 1; row < S->n_rows; row++) {
 								gmt_geo_to_cart (GMT, S->data[GMT_Y][row], S->data[GMT_X][row], P2, true);	/* get x/y/z of 2nd point P2 */
-								L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM * seg_weight;	/* Weighted length of this segment */
+								L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM;	/* Length of this segment */
 								del_angle =  get_angle_between_trends (GMT, P1, P2, d, X);
-								chi2 = L * pow (del_angle * seg_sigma, 2.0);	/* The weighted chi2 increment from this line */
+								chi2 = L * pow (del_angle * seg_weight, 2.0);	/* The weighted chi2 increment from this line */
 								Grid->data[node] += chi2;			/* Add to total chi2 misfit for this pole */
 								gmt_M_memcpy (P1, P2, 3, double);		/* Let old P2 be next P1 */
 							}
