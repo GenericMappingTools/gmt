@@ -4,7 +4,7 @@ Global Relief Datasets
 By using grids named @earth_relief_\ *res* we download global relief grids from the URL server. These
 grids are saved in your ~/.gmt/ directory while any individual SRTM tile is stored in your ~/.gmt/cache
 directory.  Files are only downloaded once and are later accessed from ~/.gmt.  You can clear your cache
-via gmt doc:`clear` cache.
+via gmt :doc:`clear` cache.
 
 +------------------+------------+--------+--------------------------------------------------------------+
 |     Dataset      | Resolution |  Size  |                           Description                        |

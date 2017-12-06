@@ -121,7 +121,7 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`contour`        | Contour or image raw table data by triangulation                    |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`convert`        | Crop and convert PostScript files to raster images, EPS, and PDF    |
+| :doc:`psconvert`      | Crop and convert PostScript files to raster images, EPS, and PDF    |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`histogram`      | Plot a histogram                                                    |
 +-----------------------+---------------------------------------------------------------------+

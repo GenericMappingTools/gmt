@@ -76,11 +76,11 @@ Core modules
    clip
    coast
    contour
-   convert
    histogram
    image
    legend
    postscriptlight
+   psconvert
    mask
    rose
    colorbar
