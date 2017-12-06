@@ -299,7 +299,7 @@ man_pages = [
 ('clip', 'clip', 'Initialize or terminate polygonal clip paths', '', 1),
 ('coast', 'coast', 'Plot continents, shorelines, rivers, and borders on maps', '', 1),
 ('contour', 'contour', 'Contour table data by direct triangulation [method]', '', 1),
-('convert', 'convert', 'Convert [E]PS file(s) to other formats using GhostScript', '', 1),
+('psconvert', 'psconvert', 'Convert [E]PS file(s) to other formats using GhostScript', '', 1),
 ('histogram', 'histogram', 'Calculate and plot histograms', '', 1),
 ('image', 'image', 'Place images or EPS files on maps', '', 1),
 ('legend', 'legend', 'Plot legends on maps', '', 1),
