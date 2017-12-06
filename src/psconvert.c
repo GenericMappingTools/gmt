@@ -1815,44 +1815,42 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				fprintf (fpo, "%s\n", line);
 				continue;
 			}
-			else if (Ctrl->W.active && !found_proj) {	/* Here, line[0] == '%' */
-				if (!strncmp (&line[2], "PROJ", 4)) { /* Search for the PROJ tag in the ps file */
-					char *ptmp = NULL, xx1[20], xx2[20], yy1[20], yy2[20];
-					sscanf (&line[8], "%s %s %s %s %s %s %s %s %s",proj4_name,xx1,xx2,yy1,yy2,c1,c2,c3,c4);
-					west = atof (c1);		east = atof (c2);
-					south = atof (c3);		north = atof (c4);
-					GMT->common.R.wesn[XLO] = atof (xx1);		GMT->common.R.wesn[XHI] = atof (xx2);
-					if (GMT->common.R.wesn[XLO] > 180.0 && GMT->common.R.wesn[XHI] > 180.0) {
-						GMT->common.R.wesn[XLO] -= 360.0;
-						GMT->common.R.wesn[XHI] -= 360.0;
+			else if (!found_proj && !strncmp (&line[2], "PROJ", 4)) {	/* Search for the PROJ tag in the ps file */
+				char *ptmp = NULL, xx1[20], xx2[20], yy1[20], yy2[20];
+				sscanf (&line[8], "%s %s %s %s %s %s %s %s %s",proj4_name,xx1,xx2,yy1,yy2,c1,c2,c3,c4);
+				west = atof (c1);		east = atof (c2);
+				south = atof (c3);		north = atof (c4);
+				GMT->common.R.wesn[XLO] = atof (xx1);		GMT->common.R.wesn[XHI] = atof (xx2);
+				if (GMT->common.R.wesn[XLO] > 180.0 && GMT->common.R.wesn[XHI] > 180.0) {
+					GMT->common.R.wesn[XLO] -= 360.0;
+					GMT->common.R.wesn[XHI] -= 360.0;
+				}
+				GMT->common.R.wesn[YLO] = atof (yy1);	GMT->common.R.wesn[YHI] = atof (yy2);
+				found_proj = true;
+				if ((ptmp = strstr (&line[2], "+proj")) != NULL) {  /* Search for the +proj in the comment line */
+					proj4_cmd = strdup (&line[(int)(ptmp - &line[0])]);
+					gmt_chop (proj4_cmd);		/* Remove the new line char */
+				}
+				if (!strcmp (proj4_name,"latlong") || !strcmp (proj4_name,"xy")) {	/* Linear case, use original coords */
+					west  = atof(xx1);		east  = atof(xx2);
+					south = atof(yy1);		north = atof(yy2);
+					/* One further test. +xy was found, but have we geog coords? Check that */
+					if (!strcmp (proj4_name,"xy") &&
+							(west >= -180) && ((east <= 360) && ((east - west) <= 360)) &&
+							(south >= -90) && (north <= 90) ) {
+						proj4_cmd = strdup ("latlon");
+						GMT_Report (API, GMT_MSG_VERBOSE, "An unknown psconvert setting was found but since "
+								"image coordinates seem to be geographical, a linear transformation "
+								"will be used.\n");
 					}
-					GMT->common.R.wesn[YLO] = atof (yy1);	GMT->common.R.wesn[YHI] = atof (yy2);
-					found_proj = true;
-					if ((ptmp = strstr (&line[2], "+proj")) != NULL) {  /* Search for the +proj in the comment line */
-						proj4_cmd = strdup (&line[(int)(ptmp - &line[0])]);
-						gmt_chop (proj4_cmd);		/* Remove the new line char */
+					else if (!strcmp (proj4_name,"xy") && Ctrl->W.warp) {	/* Do not operate on a twice unknown setting */
+						GMT_Report (API, GMT_MSG_NORMAL, "Requested an automatic geotiff generation, but "
+								"no recognized psconvert option was used for the PS creation.\n");
 					}
-					if (!strcmp (proj4_name,"latlong") || !strcmp (proj4_name,"xy")) {		/* Linear case, use original coords */
-						west  = atof(xx1);		east  = atof(xx2);
-						south = atof(yy1);		north = atof(yy2);
-						/* One further test. +xy was found, but have we geog coords? Check that */
-						if (!strcmp (proj4_name,"xy") &&
-								(west >= -180) && ((east <= 360) && ((east - west) <= 360)) &&
-								(south >= -90) && (north <= 90) ) {
-							proj4_cmd = strdup ("latlon");
-							GMT_Report (API, GMT_MSG_VERBOSE, "An unknown psconvert setting was found but since "
-									"image coordinates seem to be geographical, a linear transformation "
-									"will be used.\n");
-						}
-						else if (!strcmp (proj4_name,"xy") && Ctrl->W.warp) {	/* Do not operate on a twice unknown setting */
-							GMT_Report (API, GMT_MSG_NORMAL, "Requested an automatic geotiff generation, but "
-									"no recognized psconvert option was used for the PS creation.\n");
-						}
-					}
-					else if (Ctrl->W.kml) {
-						GMT_Report (API, GMT_MSG_NORMAL, "To GE images must be in geographical coordinates. Very likely "
-									"this won't work as you wish inside GE.\n");
-					}
+				}
+				else if (Ctrl->W.kml) {
+					GMT_Report (API, GMT_MSG_NORMAL, "To GE images must be in geographical coordinates. Very likely "
+								"this won't work as you wish inside GE.\n");
 				}
 			}
 
