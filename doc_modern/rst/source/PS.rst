@@ -1,6 +1,6 @@
-##
-PS
-##
+#######
+Mapping
+#######
 
 .. toctree::
    :maxdepth: 1
@@ -8,17 +8,21 @@ PS
    basemap
    clip
    coast
+   colorbar
    contour
-   psconvert
+   grdimage
+   grdcontour
+   grdvector
+   grdview
    histogram
    image
    legend
    mask
+   plot
+   plot3d
+   psconvert
    rose
-   colorbar
    solar
    ternary
    text
    wiggle
-   plot
-   plot3d
