@@ -24,12 +24,12 @@ Synopsis
 [ |SYN_OPT-R| ]
 [ |-S|\ **l**\ \|\ **p**\ \|\ **s**\ [*modifiers*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ **a**\ \|\ **f**\ *weight* ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
 
@@ -74,7 +74,8 @@ Optional Arguments
 **-E**
     Provide different 1-sigma angular uncertainty (in degrees) in the orientation
     of **a**\ byssal hills or **f**\ racture zones.  Give **-Ea**\ *sigma* to set the
-    former [1] and **-Ef**\ *sigma* for the latter [1].
+    former [1] and **-Ef**\ *sigma* for the latter [1].  These *sigma* values are
+    then used to form weights = 1/*sigma*.
 
 .. _-F:
 
@@ -90,7 +91,7 @@ Optional Arguments
     great circle line density for the grid.  Each bin that is crossed
     by a great circle is incremented by 1, multiplied by cos(latitude),
     the length of the fracture zone or abyssal line segment used to
-    define the great circle, and any overall weight set via **-W**.
+    define the great circle, and any overall weight set via **-E**.
     In pole mode we return the chi-squared misfit surface.  Not used
     in line mode.
 
@@ -114,13 +115,16 @@ Optional Arguments
     Set the scan mode for this run.  Choose from **l**\ ines, **p**\ oles, or
     **s**\ pots.  Depending on the mode there may be required and optional arguments.
 
-**-Sl**\ *plon*\ /*plat*\ [**+f**\ *fit*]
+**-Sl**\ *plon*\ /*plat*\ [**+m**\ ]
 
     Line mode means we accept a *plon*\ /*plat* trial pole location
     and determine how compatible each data segment is with the predictions of
-    small circles (for fracture zones) and meridians (for abyssal hills).  If
-    a line segment misfit is less than *misfit* [1, or specify via **+f**\ *fit*]
-    then we will output the line to standard output.
+    small circles (for fracture zones) and meridians (for abyssal hills).  By
+    default we report summary statistics (*chi2*, *table*, *segment*, *type*)
+    for each line segment. Append **+m** to instead report the misfit information
+    (*mlon*, *mlat*, *del_angle*, *chi2*, *table*, *segment*, *type*) for each
+    mid-point along all multi-point line segments.  The information is written 
+    to standard output.
 
 **-Sp**
     Pole mode means we search for all poles on the given grid and determine the
@@ -145,13 +149,6 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
-.. _-W:
-
-**-W**
-    Provide different weighting for the circles defined by **a**\ byssal
-    hills versus **f**\ racture zones.  Give **-Wa**\ *weight* to set the
-    former [1] and **-Wf**\ *weight* for the latter [1].
-
 .. |Add_-bi| replace:: [Default is 5 input columns].
 .. include:: ../../explain_-bi.rst_
 
@@ -165,6 +162,7 @@ Optional Arguments
 .. include:: ../../explain_-h.rst_../../explain_-V.rst_
 
 .. include:: ../../explain_-icols.rst_
+.. include:: ../../explain_-ocols.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_
@@ -181,9 +179,6 @@ Notes
    pairs of points define a great circle line segment.  For fracture zones,
    these points should be digitized often enough so that the great circle between
    then can approximate the small circle.
-#. All line segments are given equal weight [1, unless changed by **-W**\ ].  However,
-   individual line segments can override this weight by adding a **-Z**\ *weight*
-   argument in the segment headers.
 #. All line segments are given equal angular uncertainty [1, unless changed by **-E**\ ].  However,
    individual line segments can override this weight by adding a **-D**\ *sigma*
    argument in the segment headers (in degrees).
