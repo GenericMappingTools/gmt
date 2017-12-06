@@ -498,7 +498,7 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
 	bool nothing_inside = false, use_intensity_grid;
-	bool do_indexed = false, has_content = false;
+	bool do_indexed = false, has_content = false, mem_G[3] = {false, false, false}, mem_I = false, mem_D = false;
 	unsigned int n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, n_grids;
 	unsigned int colormask_offset = 0, try, row, actual_row, col;
 	uint64_t node_RGBA = 0;             /* uint64_t for the RGB(A) image array. */
@@ -521,6 +521,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;        /* General PSL internal parameters */
 	struct GMT_GRID_HEADER *header_work = NULL;	/* Pointer to a GMT header for the image or grid */
+	struct GMT_GRID_HEADER *header_D = NULL, *header_I = NULL, *header_G[3] = {NULL, NULL, NULL};
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	double *r_table = NULL, *g_table = NULL, *b_table = NULL;
@@ -552,6 +553,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* Read the illumination grid header right away so we can use its region to set that of an image (if requested) */
 	if (use_intensity_grid && !Ctrl->I.derive) {	/* Illumination grid present and can be read */
+		mem_I = gmt_M_file_is_memory (Ctrl->I.file);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read intensity grid header from file %s\n", Ctrl->I.file);
 		if ((Intens_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
@@ -610,6 +612,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->D.active) {	/* Read the headers of 1 or 3 grids */
 		for (k = 0; k < n_grids; k++) {
+			mem_G[k] = gmt_M_file_is_memory (Ctrl->In.file[k]);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Allocates memory and read data file %s\n", Ctrl->In.file[k]);
 			if ((Grid_orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
 				Return (API->error);
@@ -830,14 +833,28 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		struct GMT_GRID_HEADER *tmp_header = gmt_get_header (GMT);
 		for (k = 0; k < n_grids; k++) {	/* Must get a copy of the header so we can change one without affecting the other */
 			gmt_copy_gridheader (GMT, tmp_header, Grid_orig[k]->header);
+			if (mem_G[k]) {
+				header_G[k] = gmt_get_header (GMT);
+				gmt_copy_gridheader (GMT, header_G[k], Grid_orig[k]->header);
+			}
 			Grid_proj[k] = Grid_orig[k];
 			GMT_set_proj_limits (GMT, Grid_proj[k]->header, tmp_header, need_to_project);
 		}
-		if (use_intensity_grid) Intens_proj = Intens_orig;
+		if (use_intensity_grid) {
+			if (mem_I) {
+				header_I = gmt_get_header (GMT);
+				gmt_copy_gridheader (GMT, header_I, Intens_orig->header);
+			}
+			Intens_proj = Intens_orig;
+		}
 		if (n_grids) /* Dealing with 1 or 3 projected grids */
 			grid_registration = Grid_orig[0]->header->registration;
 		else {	/* Dealing with a projected image */
 			gmt_copy_gridheader (GMT, tmp_header, I->header);
+			if (mem_D) {
+				header_D = gmt_get_header (GMT);
+				gmt_copy_gridheader (GMT, header_D, I->header);
+			}
 			Img_proj = I;
 			GMT_set_proj_limits (GMT, Img_proj->header, tmp_header, need_to_project);
 		}
@@ -1195,6 +1212,21 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (need_to_project && n_grids && GMT_Destroy_Data (API, &Grid_proj[0]) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid_proj[0]\n");
+	}
+
+	for (k = 0; k < n_grids; k++) {	/* If memory grids are passed in we must restore the headers */
+		if (mem_G[k]) {
+			gmt_copy_gridheader (GMT, Grid_orig[k]->header, header_G[k]);
+			gmt_free_header (API->GMT, &header_G[k]);
+		}
+	}
+	if (mem_I) {
+		gmt_copy_gridheader (GMT, Intens_orig->header, header_I);
+		gmt_free_header (API->GMT, &header_I);
+	}
+	if (mem_D) {
+		gmt_copy_gridheader (GMT, I->header, header_D);
+		gmt_free_header (API->GMT, &header_D);
 	}
 
 	if (Ctrl->D.active) {	/* Free the color tables for indexed or gray images */

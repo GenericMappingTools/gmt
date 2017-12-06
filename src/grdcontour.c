@@ -879,7 +879,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdcontour task */
 	int error, c;
 	bool need_proj, make_plot, two_only = false, begin, is_closed, data_is_time = false;
-	bool use_contour = true, use_t_offset = false;
+	bool use_contour = true, use_t_offset = false, mem_G = false;
 
 	enum grdcontour_contour_type closed;
 
@@ -938,6 +938,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	GMT->current.map.z_periodic = Ctrl->Z.periodic;	/* Phase data */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Allocate memory and read data file\n");
 
+	mem_G = gmt_M_file_is_memory (Ctrl->In.file);
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
@@ -1469,6 +1470,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	if (make_plot || Ctrl->contour.save_labels) gmt_contlabel_free (GMT, &Ctrl->contour);
 
+	if (mem_G) gmt_M_memcpy (G->data, G_orig->data, G->header->size, gmt_grdfloat);		/* To avoid messing up an input memory grid */
+	
 	if (GMT_Destroy_Data (GMT->parent, &G_orig) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G_orig\n");
 	}
