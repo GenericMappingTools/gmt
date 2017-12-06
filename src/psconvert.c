@@ -2013,6 +2013,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				from_gdalread->ProjRefPROJ4 = proj4_cmd;
 				gmt_gdalread (GMT, NULL, to_gdalread, from_gdalread);
 				if (from_gdalread->ProjRefWKT != NULL) {
+					char  *new_wkt = NULL;
 					double x0, y0, x1;	/* Projected coordinates */
 					double h0, v0, h1;	/* Correspnding point coordinates */
 					double a, H, V;		/* a -> coeff of affine matrix; H,V -> origin shift in projected coords */
@@ -2051,11 +2052,13 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					fprintf (fpo, "\t\t\t/GCS <<\n");
 					fprintf (fpo, "\t\t\t\t/Type /PROJCS\n");
 					fprintf (fpo, "\t\t\t\t/WKT\n");
-					fprintf (fpo, "\t\t\t\t(%s)\n", from_gdalread->ProjRefWKT);
+					new_wkt = gmt_strrep(from_gdalread->ProjRefWKT, "Mercator_1SP", "Mercator");	/* Because AR is dumb */
+					fprintf (fpo, "\t\t\t\t(%s)\n", new_wkt);
 					fprintf (fpo, "\t\t\t>>\n");
 					fprintf (fpo, "\t\t>>\n");
 					fprintf (fpo, "\t>>]\n");
 					fprintf (fpo, ">> /PUT pdfmark\n\n");
+					if (strlen(new_wkt) != strlen(from_gdalread->ProjRefWKT)) free(new_wkt);	/* allocated in strrep */
 				}
 				gmt_M_free (GMT, to_gdalread);
 				gmt_M_free (GMT, from_gdalread);
