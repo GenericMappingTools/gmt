@@ -1999,7 +1999,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				r = 0;
 			}
 #ifdef HAVE_GDAL
-			else if (found_proj && !strncmp (line, "%%PageTrailer", 13)) {
+			else if (Ctrl->A.active && found_proj && !strncmp (line, "%%PageTrailer", 13)) {
 				file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos);
 				fprintf (fpo, "%%%%PageTrailer\n");
 				fprintf (fpo, "%s\n", line);
