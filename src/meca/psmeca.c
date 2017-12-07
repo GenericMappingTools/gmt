@@ -773,6 +773,11 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		moment.exponent = meca.moment.exponent;
 		size = (meca_computed_mw(moment, meca.magms) / 5.0) * Ctrl->S.scale;
 
+		if (size < 0.0) {	/* Addressing Bug #1171 */
+			GMT_Report (API, GMT_MSG_VERBOSE, "Skipping negative symbol size %g for record # %d.\n", size, n_rec);
+			continue;
+		}
+
 		meca_get_trans (GMT, xy[GMT_X], xy[GMT_Y], &t11, &t12, &t21, &t22);
 		delaz = atan2d(t12,t11);
 
