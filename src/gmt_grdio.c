@@ -3107,6 +3107,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *
 		I->header->wesn[YHI] = I->header->wesn[YLO];
 		I->header->wesn[YLO] = dumb;
 	}
+	HH->grdtype = gmtlib_get_grdtype (GMT, I->header);
 
 	gmt_set_grddim (GMT, I->header);		/* This recomputes n_columns|n_rows. Dangerous if -R is not compatible with inc */
 	GMT_Set_Index (GMT->parent, I->header, GMT_IMAGE_LAYOUT);
