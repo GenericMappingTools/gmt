@@ -281,7 +281,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 						}
 						break;
 				}
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Settings are %g/%g+a%g+d%g+p%g+s%g\n",
+				GMT_Report (API, GMT_MSG_DEBUG, "Settings are %g/%g+a%g+d%g+p%g+s%g\n",
 					Ctrl->E.azimuth, Ctrl->E.elevation, Ctrl->E.ambient, Ctrl->E.diffuse, Ctrl->E.specular, Ctrl->E.shine);
 				break;
 			case 'G':	/* Output grid */
@@ -415,7 +415,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 		char *answer = "NT";
 		if (Ctrl->N.sigma  != 0.0) sigma_set  = true;
 		if (Ctrl->N.offset != 0.0) offset_set = true;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, " sigma_set = %c  offset_set = %c\n", answer[sigma_set], answer[offset_set]);
+		GMT_Report (API, GMT_MSG_DEBUG, "sigma_set = %c  offset_set = %c\n", answer[sigma_set], answer[offset_set]);
 	}
 
 	if (Ctrl->A.active) {	/* Get azimuth in 0-360 range */

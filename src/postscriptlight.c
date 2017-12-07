@@ -3503,11 +3503,11 @@ int PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xsize, 
 		PSL_command (PSL, "V N %d %d T %d %d scale /Device%s setcolorspace", psl_ix(PSL, x), psl_iy(PSL, y), psl_iz (PSL, xsize), psl_iz (PSL, ysize),  colorspace[id]);
 
 		if (it == 1 && nbits == 24) {	/* Do PS Level 3 image type 4 with colormask */
-			PSL_command (PSL, "\n<< /ImageType 4 /MaskColor[%d %d %d]", (int)buffer[0], (int)buffer[1], (int)buffer[2]);
+			PSL_command (PSL, "\n<< /ImageType 4 /MaskColor [%d %d %d]", (int)buffer[0], (int)buffer[1], (int)buffer[2]);
 			buffer += 3;
 		}
 		else if (it == 1 && nbits == 8) {	/* Do PS Level 3 image type 4 with colormask */
-			PSL_command (PSL, "\n<< /ImageType 4 /MaskColor[%d]", (int)buffer[0]);
+			PSL_command (PSL, "\n<< /ImageType 4 /MaskColor [%d]", (int)buffer[0]);
 			buffer++;
 		}
 		else		/* Do PS Level 2 image, optionally with interpolation */

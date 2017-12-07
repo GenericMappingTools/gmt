@@ -39,6 +39,10 @@ struct GRD2KML_CTRL {
 		bool active;
 		char *file;
 	} In;
+	struct GRD2KML_A {	/* -A<size> */
+		bool active;
+		unsigned int size;
+	} A;
 	struct GRD2KML_C {	/* -C<cpt> */
 		bool active;
 		char *file;
@@ -54,6 +58,11 @@ struct GRD2KML_CTRL {
 		bool active;
 		char filter;
 	} F;
+	struct GRD2KML_M {	/* -M[<magnify>]+i */
+		bool active;
+		bool interpolate;
+		unsigned int magnify;
+	} M;
 	struct GRD2KML_N {	/* -N<prefix> */
 		bool active;
 		char *prefix;
@@ -71,6 +80,9 @@ struct GRD2KML_CTRL {
 		bool active;
 		unsigned int size;
 	} L;
+	struct GRD2KML_Q {	/* -Q */
+		bool active;
+	} Q;
 	struct GRD2KML_S {	/* -S */
 		bool active;
 	} S;
@@ -91,9 +103,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct GRD2KML_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	C->A.size = 128;
 	C->F.filter = 'g';
 	C->I.method  = strdup ("t1");	/* Default normalization for shading when -I is used */
-	C->L.size = 256;
+	C->M.magnify = 1;
+	C->L.size = 512;
 	return (C);
 }
 
@@ -112,7 +126,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grd2kml <grid> -N<name> [-C<cpt>] [-D] [-E<url>] [-F<filter>] [-I[<intensgrid>|<value>|<modifiers>]] [-L<size>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "	[%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "	[-Q] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -137,6 +151,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grid> instead, append +a<azim> [-45] and +n<method> [t1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -I+ to accept the default values (see grdgradient for details).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set tile size as a power of 2 [256].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use PS Level 3 colormasking to make nodes with z = NaN transparent.\n");
 	GMT_Option (API, "V,f.");
 	
 	return (GMT_MODULE_USAGE);
@@ -170,6 +185,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 
 			/* Processes program-specific parameters */
 
+			case 'A':	/* min fade sizes */
+				Ctrl->A.active = true;
+				Ctrl->A.size = atoi (opt->arg);
+				if (Ctrl->A.size <= 0) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A: Must be positive!\n");
+					n_errors++;
+				}
+				break;
 			case 'C':	/* CPT */
 				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
@@ -192,11 +215,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 					n_errors++;
 				}
 				break;
-			case 'N':	/* File name prefix */
-				Ctrl->N.active = true;
-				gmt_M_str_free (Ctrl->N.prefix);
-				Ctrl->N.prefix = strdup (opt->arg);
-				break;
 			case 'I':	/* Here, intensity must be a grid file since we need to filter it */
 				Ctrl->I.active = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "an"))) {	/* Want to control how grdgradient is run */
@@ -210,7 +228,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
-					c[0] = '\0';	/* Chop off all modifiers so range can be determined */
 				}
 				else if (!opt->arg[0] || strstr (opt->arg, "+"))	/* No argument or just +, so derive intensities from input grid using default settings */
 					Ctrl->I.derive = true;
@@ -234,6 +251,29 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -L: Must be radix 2!\n");
 					n_errors++;
 				}
+				break;
+			case 'M':	/* Magnify and/or interpolate */
+				Ctrl->M.active = true;
+				if ((c = strstr (opt->arg, "+i"))) {
+					Ctrl->M.interpolate = true;
+					c[0] = '\0';	/* Chop off modifier for now */
+				}
+				if (opt->arg[0]) {
+					Ctrl->M.magnify = atoi (opt->arg);
+					if (Ctrl->M.magnify <= 0) {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -M: Must be positive!\n");
+						n_errors++;
+					}
+				}
+				if (c) c[0] = '+';	/* Restore modifier */
+				break;
+			case 'N':	/* File name prefix */
+				Ctrl->N.active = true;
+				gmt_M_str_free (Ctrl->N.prefix);
+				Ctrl->N.prefix = strdup (opt->arg);
+				break;
+			case 'Q':	/* Colormasking */
+				Ctrl->Q.active = true;
 				break;
 			case 'S':	/* Single level directory */
 				Ctrl->S.active = true;
@@ -294,7 +334,7 @@ void set_dirpath (bool single, char *url, char *prefix, unsigned int level, int 
 EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
 
 int GMT_grd2kml (void *V_API, int mode, void *args) {
-	int error = 0, kk, uniq;
+	int error = 0, kk, uniq, dpi;
 	bool use_tile = false, z_extend = false, i_extend = false;
 	
 	unsigned int level, max_level, n = 0, k, nx, ny, mx, my, row, col, n_skip, quad, n_alloc = GMT_CHUNK, n_bummer = 0;
@@ -306,7 +346,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	char cmd[GMT_BUFSIZ] = {""}, level_dir[PATH_MAX] = {""}, Zgrid[PATH_MAX] = {""}, Igrid[PATH_MAX] = {""};
 	char W[GMT_LEN16] = {""}, E[GMT_LEN16] = {""}, S[GMT_LEN16] = {""}, N[GMT_LEN16] = {""}, file[PATH_MAX] = {""};
-	char DataGrid[PATH_MAX] = {""}, IntensGrid[PATH_MAX] = {""}, path[PATH_MAX] = {""};
+	char DataGrid[PATH_MAX] = {""}, IntensGrid[PATH_MAX] = {""}, path[PATH_MAX] = {""}, im_arg[16] = {""};
 
 	FILE *fp = NULL;
 	struct GMT_QUADTREE **Q = NULL;
@@ -347,6 +387,17 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	
+	Ctrl->L.size /= Ctrl->M.magnify;
+	dpi = 100 * Ctrl->M.magnify;
+	/* Set specific grdimage option -Q or -Ei or neither */
+	if (Ctrl->Q.active) {	/* Want NaN colormasking */
+		if (Ctrl->M.magnify > 1) 	/* and magnification as well */
+			sprintf (im_arg, " -Q -E100");	/* For magnifying we must turn on 100 dpi interpolation since -Q is in effect */
+		else	/* Just colormasking */
+			sprintf (im_arg, " -Q");
+	}
+	else if (Ctrl->M.interpolate)	/* Want interpolation and no colormasking in effect means we can let psconvert do it */
+		sprintf (im_arg, " -Ei");
 	nx = G->header->n_columns;	ny = G->header->n_rows;			/* Dimensions of original grid */
 	mx = urint (ceil ((double)nx / (double)Ctrl->L.size)) * Ctrl->L.size;	/* Nearest image size in multiples of tile size */
 	my = urint (ceil ((double)ny / (double)Ctrl->L.size)) * Ctrl->L.size;
@@ -368,7 +419,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		strcpy (GMT->current.setting.format_geo_out, "D");
 	}
 	gmtlib_geo_C_format (GMT);	/* Update the format settings */
-	dim = 0.01 * Ctrl->L.size;	/* Constant tile map size in inches for a fixed dpi of 100 yields PNGS of the requested dimension */
+	dim = dpi * 0.0001 * Ctrl->L.size;	/* Constant tile map size in inches for a fixed dpi of 100 yields PNGS of the requested dimension in -L */
 	
 	GMT->current.io.geo.range = (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] > 0.0) ? GMT_IS_M180_TO_P180_RANGE : GMT_IS_0_TO_P360_RANGE;
 
@@ -394,7 +445,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, cmd))
 			Return (API->error);
 	}
-	else {	/* Can read the intensity file and compare region etc to data grid */
+	else if (Ctrl->I.file) {	/* Can read the intensity file and compare region etc to data grid */
 		struct GMT_GRID *I = NULL;
 		double x_noise = GMT_CONV4_LIMIT * G->header->inc[GMT_X], y_noise = GMT_CONV4_LIMIT * G->header->inc[GMT_Y];
 		if ((I = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {
@@ -418,8 +469,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	inc[GMT_Y] = factor * G->header->inc[GMT_Y];
 	ext_wesn[XLO] = floor (G->header->wesn[XLO] / inc[GMT_X]) * inc[GMT_X];
 	ext_wesn[XHI] = ceil  (G->header->wesn[XHI] / inc[GMT_X]) * inc[GMT_X];
-	ext_wesn[YLO] = floor (G->header->wesn[YLO] / inc[GMT_Y]) * inc[GMT_Y];
-	ext_wesn[YHI] = ceil  (G->header->wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y];
+	ext_wesn[YLO] = MAX (-90.0, floor (G->header->wesn[YLO] / inc[GMT_Y]) * inc[GMT_Y]);
+	ext_wesn[YHI] = MIN (+90.0, ceil  (G->header->wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y]);
 	if (ext_wesn[XLO] < G->header->wesn[XLO] || ext_wesn[XHI] > G->header->wesn[XHI] || ext_wesn[YLO] < G->header->wesn[YLO] || ext_wesn[YHI] > G->header->wesn[YHI]) {
 		/* Extend the original grid with NaNs so it is an exact multiple of largest grid stride at max level */
 		sprintf (DataGrid, "grd2kml_extended_data_%6.6d.grd", uniq);
@@ -534,12 +585,12 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Unable to open grid tile as virtual file!\n");
 						Return (API->error);
 					}
-					/* Will pass -Qn to notify us if there was no valid image data imated */
+					/* Will pass -W to notify us if there was no valid image data imaged */
 					sprintf (psfile, "grd2kml_tile_tmp_%6.6d.ps", uniq);
 					if (Ctrl->I.active)
-						sprintf (cmd, "%s -I%s -JX%3.2lfid -X0 -Y0 -Qn -R%s/%s/%s/%s -Vn --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, Igrid, dim, W, E, S, N, dim, dim, psfile);
+						sprintf (cmd, "%s -I%s -JX%3.2lfid -X0 -Y0 -W -R%s/%s/%s/%s%s -Vn --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, Igrid, dim, W, E, S, N, im_arg, dim, dim, psfile);
 					else
-						sprintf (cmd, "%s -JX%3.2lfid -X0 -Y0 -Qn -R%s/%s/%s/%s -Vn --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, dim, W, E, S, N, dim, dim, psfile);
+						sprintf (cmd, "%s -JX%3.2lfid -X0 -Y0 -W -R%s/%s/%s/%s%s -Vn --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, dim, W, E, S, N, im_arg, dim, dim, psfile);
 					if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file); }
 					error = GMT_Call_Module (API, "grdimage", GMT_MODULE_CMD, cmd);
 					GMT_Close_VirtualFile (API, z_data);
@@ -558,7 +609,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						if (Ctrl->S.active)
 							sprintf (cmd, "-TG -E100 -P -Vn -Z -D%s/%s -FL%dR%dC%d.png %s", Ctrl->N.prefix, Ctrl->N.prefix, level, row, col, psfile);
 						else
-							sprintf (cmd, "-TG -E100 -P -Vn -Z -D%s -FR%dC%d.png %s", level_dir, row, col, psfile);
+							sprintf (cmd, "-TG -E100 -P -Vn  -D%s -FR%dC%d.png %s", level_dir, row, col, psfile);
 						if (GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Unable to rasterize current PNG tile!\n");
 							Return (API->error);
@@ -657,7 +708,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	fprintf (fp, "            <east>%.14g</east>\n",   G->header->wesn[XHI]);
 	fprintf (fp, "            <west>%.14g</west>\n",   G->header->wesn[XLO]);
 	fprintf (fp, "          </LatLonAltBox>\n");
-	fprintf (fp, "          <Lod>\n            <minLodPixels>128</minLodPixels>\n            <maxLodPixels>-1</maxLodPixels>\n          </Lod>\n");
+	fprintf (fp, "          <Lod>\n            <minLodPixels>%d</minLodPixels>\n            <maxLodPixels>-1</maxLodPixels>\n          </Lod>\n", Ctrl->A.size);
         fprintf (fp, "        </Region>\n");
 	set_dirpath (Ctrl->S.active, Ctrl->E.url, Ctrl->N.prefix, 0, 1, path);
 	fprintf (fp, "        <Link>\n          <href>%sR0C0.kml</href>\n", path);
@@ -698,7 +749,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			fprintf (fp, "          <east>%.14g</east>\n",   Q[k]->wesn[XHI]);
 			fprintf (fp, "          <west>%.14g</west>\n",   Q[k]->wesn[XLO]);
 			fprintf (fp, "        </LatLonAltBox>\n");
-			fprintf (fp, "        <Lod>\n          <minLodPixels>128</minLodPixels>\n          <maxLodPixels>2048</maxLodPixels>\n        </Lod>\n");
+			fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>2048</maxLodPixels>\n        </Lod>\n", Ctrl->A.size);
 		        fprintf (fp, "      </Region>\n");
 			fprintf (fp, "      <GroundOverlay>\n        <drawOrder>%d</drawOrder>\n", 10+2*Q[k]->level);
 			set_dirpath (Ctrl->S.active, NULL, Ctrl->N.prefix, Q[k]->level, 0, path);
@@ -721,7 +772,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				fprintf (fp, "            <east>%.14g</east>\n",   Q[k]->next[quad]->wesn[XHI]);
 				fprintf (fp, "            <west>%.14g</west>\n",   Q[k]->next[quad]->wesn[XLO]);
 				fprintf (fp, "        </LatLonAltBox>\n");
-				fprintf (fp, "        <Lod>\n          <minLodPixels>128</minLodPixels>\n          <maxLodPixels>-1</maxLodPixels>\n        </Lod>\n");
+				fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>-1</maxLodPixels>\n        </Lod>\n", Ctrl->A.size);
 			        fprintf (fp, "        </Region>\n");
 				set_dirpath (Ctrl->S.active, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, -1, path);
 				fprintf (fp, "        <Link>\n          <href>%sR%dC%d.kml</href>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);

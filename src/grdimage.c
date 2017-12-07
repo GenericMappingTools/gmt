@@ -91,10 +91,12 @@ struct GRDIMAGE_CTRL {
 	struct GRDIMG_N {	/* -N */
 		bool active;
 	} N;
-	struct GRDIMG_Q {	/* -Q[n] */
+	struct GRDIMG_Q {	/* -Q */
 		bool active;
-		bool warn;
 	} Q;
+	struct GRDIMG_W {	/* -W */
+		bool active;
+	} W;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -182,7 +184,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #endif
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set dpi for the projected grid which must be constructed [100]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   if -Jx or -Jm is not selected [Default gives same size as input grid].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give i to do the interpolation in PostScript at device resolution.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give i to do the interpolation in PostScript at device resolution (invalid with -Q).\n");
 	gmt_rgb_syntax (API->GMT, 'G', "Set transparency color for images that otherwise would result in 1-bit images.\n\t  ");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply directional illumination. Append name of intensity grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity (i.e., change the ambient light), append a value.\n");
@@ -378,7 +380,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 				break;
 			case 'Q':	/* PS3 colormasking */
 				Ctrl->Q.active = true;
-				if (opt->arg[0] == 'n') Ctrl->Q.warn = true;
+				break;
+			case 'W':	/* Warn if no image */
+				Ctrl->W.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -423,6 +427,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 	                                   "Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->Q.active,
 	                                   "Syntax error -Q option: Cannot use -M when doing colormasking\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.device_dpi && Ctrl->Q.active,
+	                                   "Syntax error -Q option: Cannot use -Ei when doing colormasking\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->Q.active,
 	                                   "Syntax error -Q option: Cannot use -D when doing colormasking\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.return_image && Ctrl->Out.file == NULL,
@@ -675,7 +681,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 
-	if (Ctrl->Q.warn && n_grids == 1 && gmt_M_is_dnan (header_work->z_min))
+	if (Ctrl->W.active && n_grids == 1 && gmt_M_is_dnan (header_work->z_min))
 		ret_val = GMT_IMAGE_NO_DATA;	/* Flag that our output image has no information*/
 	
 	/* Here the grid/image is inside the plot domain.  The same must be true of any
@@ -1214,19 +1220,21 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid_proj[0]\n");
 	}
 
-	for (k = 0; k < n_grids; k++) {	/* If memory grids are passed in we must restore the headers */
-		if (mem_G[k]) {
-			gmt_copy_gridheader (GMT, Grid_orig[k]->header, header_G[k]);
-			gmt_free_header (API->GMT, &header_G[k]);
+	if (!need_to_project) {
+		for (k = 0; k < n_grids; k++) {	/* If memory grids are passed in we must restore the headers */
+			if (mem_G[k]) {
+				gmt_copy_gridheader (GMT, Grid_orig[k]->header, header_G[k]);
+				gmt_free_header (API->GMT, &header_G[k]);
+			}
 		}
-	}
-	if (mem_I) {
-		gmt_copy_gridheader (GMT, Intens_orig->header, header_I);
-		gmt_free_header (API->GMT, &header_I);
-	}
-	if (mem_D) {
-		gmt_copy_gridheader (GMT, I->header, header_D);
-		gmt_free_header (API->GMT, &header_D);
+		if (mem_I) {
+			gmt_copy_gridheader (GMT, Intens_orig->header, header_I);
+			gmt_free_header (API->GMT, &header_I);
+		}
+		if (mem_D) {
+			gmt_copy_gridheader (GMT, I->header, header_D);
+			gmt_free_header (API->GMT, &header_D);
+		}
 	}
 
 	if (Ctrl->D.active) {	/* Free the color tables for indexed or gray images */
@@ -1243,6 +1251,6 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	/* May return a flag that the image/PS has no data (see -Qn), or just NO_ERROR */
-	ret_val = (Ctrl->Q.warn && !has_content) ? GMT_IMAGE_NO_DATA : GMT_NOERROR;
+	ret_val = (Ctrl->W.active && !has_content) ? GMT_IMAGE_NO_DATA : GMT_NOERROR;
 	Return (ret_val);
 }
