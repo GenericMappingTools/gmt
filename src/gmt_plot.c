@@ -6294,8 +6294,14 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2], pstr);
 		gmt_M_str_free (pstr);
 	}
-
-	if (!O_active) GMT->current.ps.layer = 0;	/* New plot, reset layer counter */
+	if (!O_active) {	/* New plot, set GMT bounding box and reset layer counter */
+		/* Add GMT bounding box comment which gies dimensions of inner frame */
+		PSL_command (PSL, "%%GMTBoundingBox: %g %g %g %g\n",
+			GMT->current.setting.map_origin[GMT_X] * 72.0, GMT->current.setting.map_origin[GMT_Y] * 72.0,
+			(GMT->current.setting.map_origin[GMT_X] + GMT->current.map.width) * 72.0, (GMT->current.setting.map_origin[GMT_Y] + GMT->current.map.height) * 72.0);
+		GMT->current.ps.layer = 0;
+	}
+	
 	PSL_beginlayer (GMT->PSL, ++GMT->current.ps.layer);
 	/* Set layer transparency, if requested. Note that PSL_transp actually sets the opacity alpha, which is (1 - transparency) */
 	if (GMT->common.t.active) PSL_command (PSL, "%g /%s PSL_transp\n", 1.0 - 0.01 * GMT->common.t.value, GMT->current.setting.ps_transpmode);
