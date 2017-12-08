@@ -461,7 +461,12 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	if (GMT->current.proj.projection_GMT == GMT_GENPER && GMT->current.proj.g_width != 0.0) return;
 
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {
-		all_lats = gmt_M_180_range (g->wesn[YHI], g->wesn[YLO]);
+		if ((all_lats = gmt_M_180_range (g->wesn[YHI], g->wesn[YLO])) == false) {
+			if (fabs (g->wesn[YHI] - g->wesn[YLO] - 180.0) < GMT_CONV4_LIMIT)
+				all_lats = true;	/* A bit sloppy */
+			else if (fabs (g->n_rows * g->inc[GMT_Y] - 180.0) < GMT_CONV4_LIMIT) 
+				all_lats = true;	/* A bit sloppy */
+		}
 		all_lons = gmt_grd_is_global (GMT, g);
 		if (all_lons && all_lats) return;	/* Whole globe */
 	}
