@@ -2276,15 +2276,30 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			double x_inc, y_inc;
 			char world_file[PATH_MAX] = "", *wext = NULL, *s = NULL;
 
-			x_inc = (east  - west)  / pix_w;
-			y_inc = (north - south) / pix_h;
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "width = %d\theight = %d\tX res = %f\tY res = %f\n", pix_w, pix_h, x_inc, y_inc);
+			if (gmtBB_width != 0) {
+				double dpi_x, dpi_y;
+				if (Ctrl->A.new_dpi_x) {
+					dpi_x = Ctrl->A.new_dpi_x;		dpi_y = Ctrl->A.new_dpi_y;
+				}
+				else {
+					dpi_x = Ctrl->E.dpi;		dpi_y = Ctrl->E.dpi;
+				}
+				x_inc = (east  - west)  / urint(ceil((gmtBB_width * dpi_x / 72.0)));
+				y_inc = (north - south) / urint(ceil((gmtBB_height * dpi_y / 72.0)));
+				west -= urint(ceil((gmtBB_x0 + xt_bak) * dpi_x / 72.0)) * x_inc;
+				north += urint(ceil((h - (gmtBB_y0 + yt_bak + gmtBB_height)) * dpi_y / 72.0)) * y_inc;
+			}
+			else {
+				x_inc = (east  - west)  / pix_w;
+				y_inc = (north - south) / pix_h;
+			}
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "width = %d\theight = %d\tX res = %f\tY res = %f\n",
+			                                        pix_w, pix_h, x_inc, y_inc);
 
-			/* West and North of the world file contain the coordinates of the
-			 * center of the pixel
-				 but our current values are of the NW corner of the pixel (pixel
-				 registration). So we'll move halph pixel inward. */ west  += x_inc /
-			2.0; north -= y_inc / 2.0;
+			/* West and North of the world file contain the coordinates of the center of the pixel
+				but our current values are of the NW corner of the pixel (pixel registration).
+				So we'll move halph pixel inward. */ 
+			west  += x_inc / 2.0;	north -= y_inc / 2.0;
 
 			if (Ctrl->D.active) sprintf (world_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 			if (Ctrl->F.active) {		/* Must rip the raster file extension before adding the world one */
