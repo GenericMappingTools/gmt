@@ -72,7 +72,7 @@ endif (NOT UNITS)
 
 # The max RMS error in graphicmagick comparisons of PS files
 if (NOT DEFINED GRAPHICSMAGICK_RMS)
-	set (GRAPHICSMAGICK_RMS "0.001")
+	set (GRAPHICSMAGICK_RMS "0.003")
 endif (NOT DEFINED GRAPHICSMAGICK_RMS)
 
 # File locking off
