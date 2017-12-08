@@ -1764,7 +1764,7 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	to_gdalread->M.active = true;		/* Metadata only */
 
 	if (gmt_gdalread (GMT, HH->name, to_gdalread, from_gdalread)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading file with gdalread.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading file (metadata) with gdalread.\n");
 		gmt_M_free (GMT, to_gdalread);
 		free_from_gdalread (GMT, from_gdalread);
 		gmt_M_free (GMT, from_gdalread);
