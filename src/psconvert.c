@@ -1265,6 +1265,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	double xt, yt, xt_bak, yt_bak, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0;
+	double gmtBB_x0, gmtBB_y0, gmtBB_height = 0, gmtBB_width = 0;
 	double old_scale_x = 1, old_scale_y = 1;
 
 	size_t n_alloc = GMT_SMALL_CHUNK;
@@ -1853,6 +1854,12 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 								"this won't work as you wish inside GE.\n");
 				}
 			}
+			else if (!strncmp (line, "%GMTBoundingBox:", 16)) {
+				sscanf (&line[16], "%s %s %s %s",c1,c2,c3,c4);
+				gmtBB_x0 = atof (c1);		gmtBB_y0 = atof (c2);
+				gmtBB_width = atof (c3);	gmtBB_height = atof (c4);
+				continue;
+			}
 
 			if (!strncmp (line, "%%BoundingBox:", 14)) {
 				double w_t, h_t;
@@ -2014,41 +2021,29 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				gmt_gdalread (GMT, NULL, to_gdalread, from_gdalread);
 				if (from_gdalread->ProjRefWKT != NULL) {
 					char  *new_wkt = NULL;
-					double x0, y0, x1;	/* Projected coordinates */
-					double h0, v0, h1;	/* Correspnding point coordinates */
-					double a, H, V;		/* a -> coeff of affine matrix; H,V -> origin shift in projected coords */
-					double pX[4], pY[4], lptsX[4], lptsY[4];
-
-					x0 = west;		y0 = south;		x1 = east;	y1 = north;
-					h0 = v0 = 0;	/* because we used -A option so origin in points is at (0,0) */
-					h1 = h0 + w;
-					/* takes the projected coordinate system into the page coordinate system */
-					a = (h1 - h0)/(x1 - x0);
-					H = h0 - a*x0;
-					V = v0 - a*y0;
-
-					/* Use the above matrix to discover where the corners of the map will fall */
-					pX[0] = a*x0 + H;	pX[1] = a*x0 + H;	pX[2] = a*x1 + H;	pX[3] = a*x1 + H;
-					pY[0] = a*y0 + V;	pY[1] = a*y1 + V;	pY[2] = a*y1 + V;	pY[3] = a*y0 + V;
-
-					/* Now compute the LPTS array */
-					lptsX[0] = pX[0] / w;	lptsX[1] = pX[1] / w;	lptsX[2] = pX[2] / w;	lptsX[3] = pX[3] / w;
-					lptsY[0] = pY[0] / h;	lptsY[1] = pY[1] / h;	lptsY[2] = pY[2] / h;	lptsY[3] = pY[3] / h;
 
 					fprintf (fpo, "\n%% embed georegistation info\n");
 					fprintf (fpo, "[ {ThisPage} <<\n");
 					fprintf (fpo, "\t/VP [ <<\n");
 					fprintf (fpo, "\t\t/Type /Viewport\n");
-					fprintf (fpo, "\t\t/BBox[0 0 %.1f %.1f]\n", w, h);
+					fprintf (fpo, "\t\t/BBox[0 0 %g %g]\n", w, h);
 					fprintf (fpo, "\t\t/Measure <<\n");
 					fprintf (fpo, "\t\t\t/Type /Measure\n");
 					fprintf (fpo, "\t\t\t/Subtype /GEO\n");
 					fprintf (fpo, "\t\t\t/Bounds[0 0 0 1 1 1 1 0]\n");
 					fprintf (fpo, "\t\t\t/GPTS[%f %f %f %f %f %f %f %f]\n",
 					         south, west, north, west, north, east, south, east);
-					//fprintf (fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n",
-					         //lptsX[0],lptsY[0], lptsX[1],lptsY[1], lptsX[2],lptsY[2], lptsX[3],lptsY[3]);
-					fprintf (fpo, "\t\t\t/LPTS[0 0 0 1 1 1 1 0]\n");
+					if (gmtBB_width == 0)
+						fprintf (fpo, "\t\t\t/LPTS[0 0 0 1 1 1 1 0]\n");
+					else {
+						/* Compute the LPTS. Takes the projected coordinate system into the page coordinate system */
+						double h0, v0, x1,x2,y1,y2;
+						h0 = gmtBB_x0 + xt_bak;		/* x|yt_bak are negative */
+						v0 = gmtBB_y0 + yt_bak;
+						x1 = h0 / w;	x2 = (h0 + gmtBB_width) / w;
+						y1 = v0 / h;	y2 = (v0 + gmtBB_height) / h;
+						fprintf (fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n", x1,y1, x1,y2, x2,y2, x2,y1);
+					}
 					fprintf (fpo, "\t\t\t/GCS <<\n");
 					fprintf (fpo, "\t\t\t\t/Type /PROJCS\n");
 					fprintf (fpo, "\t\t\t\t/WKT\n");
