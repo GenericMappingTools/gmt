@@ -6298,7 +6298,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		/* Add GMT bounding box comment which gies dimensions of inner frame */
 		PSL_command (PSL, "%%GMTBoundingBox: %g %g %g %g\n",
 			GMT->current.setting.map_origin[GMT_X] * 72.0, GMT->current.setting.map_origin[GMT_Y] * 72.0,
-			(GMT->current.setting.map_origin[GMT_X] + GMT->current.map.width) * 72.0, (GMT->current.setting.map_origin[GMT_Y] + GMT->current.map.height) * 72.0);
+			GMT->current.map.width * 72.0, GMT->current.map.height * 72.0);
 		GMT->current.ps.layer = 0;
 	}
 	
