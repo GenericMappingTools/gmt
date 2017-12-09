@@ -159,7 +159,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	}
 
 	HH = gmt_get_H_hidden (I->header);
-	if ((pch = strstr(HH->pocket, "+c")) != NULL) 		/* If we have a list of +c<options> */
+	if (HH->pocket && (pch = strstr(HH->pocket, "+c")) != NULL) 		/* If we have a list of +c<options> */
 		to_GDALW->co_options = strdup(pch);				/* This memory is freed in gmt_gdalwrite */
 
 	strncpy(to_GDALW->layout, I->header->mem_layout, 4);

@@ -446,7 +446,9 @@ GMT_LOCAL unsigned int clean_global_headers (struct GMT_CTRL *GMT, struct GMT_GR
 	unsigned int flag = 0;
 	double wasR[4], wasI[2];
 	if (gmt_M_x_is_lon (GMT, GMT_IN)) {
-		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_CONV4_LIMIT)
+		if (gmt_M_360_range (h->wesn[XLO], h->wesn[XHI]))
+			flag = 0;
+		else if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_CONV4_LIMIT)
 			flag |= 1;	/* Sloppy, we can improve this a bit */
 		else if (fabs (h->n_columns * h->inc[GMT_X] - 360.0) < GMT_CONV4_LIMIT) {
 			/* If n*xinc = 360 and previous test failed then we do not have a repeat node.  These are pixel grids */
@@ -454,7 +456,9 @@ GMT_LOCAL unsigned int clean_global_headers (struct GMT_CTRL *GMT, struct GMT_GR
 		}
 	}
 	if (gmt_M_y_is_lat (GMT, GMT_IN)) {
-		if (fabs (h->wesn[YHI] - h->wesn[YLO] - 180.0) < GMT_CONV4_LIMIT)
+		if (gmt_M_180_range (h->wesn[YLO], h->wesn[YHI]))
+			flag |= 0;
+		else if (fabs (h->wesn[YHI] - h->wesn[YLO] - 180.0) < GMT_CONV4_LIMIT)
 			flag |= 4;	/* Sloppy, we can improve this a bit */
 		else if (fabs (h->n_rows * h->inc[GMT_Y] - 180.0) < GMT_CONV4_LIMIT) 
 			flag |= 8;	/* Global but flawed -R and registration */
