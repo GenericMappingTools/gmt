@@ -3729,6 +3729,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 		}
 #endif
 		S_obj->status = GMT_IS_USED;	/* Mark input object as read */
+		S_obj->n_expected_fields = GMT_MAX_COLUMNS;	/* Since need to start over if this object is used again */
 		n_used++;	/* Number of items actually processed */
 	}
 	if (D_obj->n_tables == 0) {	/* Only found empty files (e.g., /dev/null) and we have nothing to show for our efforts.  Return an single empty table with no segments. */

@@ -2823,7 +2823,8 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	 * The item argument specifies which type to consider [a|i,f,g].  We return
 	 * an array with coordinates and labels, and set interval to true if applicable.
 	 */
-	int k, n_errors = 0;
+	int error, k, n_errors = 0;
+	bool save_trailing;
 	unsigned int save_coltype;
 	uint64_t row;
 	char type[GMT_LEN8] = {""};
@@ -2832,12 +2833,19 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	
 	/* Temporarily change what data type col one is */
 	save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
+	save_trailing = GMT->current.io.trailing_text[GMT_IN];
 	GMT->current.io.col_type[GMT_IN][GMT_X] = gmt_M_type (GMT, GMT_IN, A->id);
-	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
+	gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading this file */
+	GMT->current.io.record_type[GMT_IN] = GMT_READ_MIXED;
+	GMT->current.io.trailing_text[GMT_IN] = true;
+	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
+	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
 		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
 		return (1);
 	}
 	GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
+	GMT->current.io.trailing_text[GMT_IN] = save_trailing;
+	gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
 
 	gmt_M_memset (n_int, 4, int);
 	S = D->table[0]->segment[0];	/* All we got */
