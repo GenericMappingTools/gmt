@@ -50,8 +50,9 @@ struct TREND2D_CTRL {
 		bool active;
 		double value;
 	} C;
-	struct F {	/* -F<xymrw> */
+	struct F {	/* -F<xymrw>|p */
 		bool active;
+		bool report;
 		char col[TREND2D_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} F;
 	struct I {	/* -I[<confidence>] */
@@ -414,13 +415,14 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TREND2D_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: trend2d [<table>] -F<xyzmrw> -N<n_model>[+r] [-C<condition_#>] [-I[<confidence>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: trend2d [<table>] -F<xyzmrw>|p -N<n_model>[+r] [-C<condition_#>] [-I[<confidence>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Choose at least 1, up to 6, any order, of xyzmrw for ASCII output to stdout.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   x=x, y=y, z=z, m=model, r=residual=z-m, w=weight (determined iteratively if robust fit used).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Fp by itself to report the model coefficients only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Fit a [robust] model with <n_model> terms.  <n_model> in [1,10].  E.g., robust planar = -N3+r.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Model parameters order is given as follows; append +r for robust solution:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   z = m1 + m2*x + m3*y + m4*x*y + m5*x^2 + m6*y^2 + m7*x^3 + m8*x^2*y + m9*x*y^2 + m10*y^3.\n");
@@ -501,17 +503,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND2D_CTRL *Ctrl, struct GMT
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.active) ? 4 : 3);
 
 	for (j = Ctrl->n_outputs = 0; j < TREND2D_N_OUTPUT_CHOICES && Ctrl->F.col[j]; j++) {
-		if (!strchr ("xyzmrw", Ctrl->F.col[j])) {
+		if (!strchr ("xyzmrwp", Ctrl->F.col[j])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: Unrecognized output choice %c\n", Ctrl->F.col[j]);
 			n_errors++;
 		}
 		else if (Ctrl->F.col[j] == 'w')
 			Ctrl->weighted_output = true;
+		else if (Ctrl->F.col[j] == 'p')
+			Ctrl->F.report = true;
 
 		Ctrl->n_outputs++;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->n_outputs == 0, "Syntax error -F option: Must specify at least one output column\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->n_outputs > TREND2D_N_OUTPUT_CHOICES, "Syntax error -F option: Too many output columns specified (%d)\n", Ctrl->n_outputs);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->n_outputs > 1 && Ctrl->F.report,
+					"Syntax error -Fp option: When selecting model parameters, it must be the only output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -567,7 +573,8 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
-	if ((error = GMT_Set_Columns (API, GMT_OUT, Ctrl->n_outputs, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+	i = (Ctrl->F.report) ? np : Ctrl->n_outputs;
+	if ((error = GMT_Set_Columns (API, GMT_OUT, i, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
@@ -730,7 +737,14 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 	if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 		Return (API->error);
 	}
-	write_output_trend (GMT,data, n_data, Ctrl->F.col, Ctrl->n_outputs);
+	if (Ctrl->F.report) {
+		struct GMT_RECORD Rec;
+		Rec.data = c_model;	Rec.text = NULL;
+		GMT_Put_Record (API, GMT_WRITE_DATA, &Rec);
+		
+	}
+	else
+		write_output_trend (GMT,data, n_data, Ctrl->F.col, Ctrl->n_outputs);
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
