@@ -440,7 +440,58 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *r, struct GMT_GRID_HEADER *g, bool projected) {
+GMT_LOCAL unsigned int clean_global_headers (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
+	/* Problem is that many global grids are reported with misleading -R or imprecise
+	 * -R or non-global -R yet nx * xinc = 360, etc.  We fix these here for GMT use. */
+	unsigned int flag = 0;
+	double wasR[4], wasI[2];
+	if (gmt_M_x_is_lon (GMT, GMT_IN)) {
+		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_CONV4_LIMIT)
+			flag |= 1;	/* Sloppy, we can improve this a bit */
+		else if (fabs (h->n_columns * h->inc[GMT_X] - 360.0) < GMT_CONV4_LIMIT) {
+			/* If n*xinc = 360 and previous test failed then we do not have a repeat node.  These are pixel grids */
+			flag |= 2;	/* Global but flawed -R and registration */
+		}
+	}
+	if (gmt_M_y_is_lat (GMT, GMT_IN)) {
+		if (fabs (h->wesn[YHI] - h->wesn[YLO] - 180.0) < GMT_CONV4_LIMIT)
+			flag |= 4;	/* Sloppy, we can improve this a bit */
+		else if (fabs (h->n_rows * h->inc[GMT_Y] - 180.0) < GMT_CONV4_LIMIT) 
+			flag |= 8;	/* Global but flawed -R and registration */
+	}
+	if (!(flag == 9 || flag == 6)) return 0;	/* Only deal with mixed cases of gridline and pixel reg in lon vs lat */
+	gmt_M_memcpy (wasR, h->wesn, 4, double);
+	gmt_M_memcpy (wasI, h->inc, 2, double);
+	if ((flag & 1)  && h->registration == GMT_GRID_NODE_REG) {	/* This grid needs to be treated as a pixel grid */
+		h->inc[GMT_X] = 360.0 / (h->n_columns - 1);	/* Get exact increment */
+		h->wesn[XHI] = h->wesn[XLO] + 360.0;
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Detected geographic global gridline-registered grid with sloppy longitude bounds.\n");
+	}
+	if ((flag & 2)  && h->registration == GMT_GRID_NODE_REG) {	/* This grid needs to be treated as a pixel grid */
+		h->inc[GMT_X] = 360.0 / h->n_columns;	/* Get exact increment */
+		h->wesn[XHI] = h->wesn[XLO] + h->inc[GMT_X] * (h->n_columns - 1);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Detected geographic global pixel-registered grid posing as gridline-registered with sloppy longitude bounds.\n");
+	}
+	if ((flag & 4) && h->registration == GMT_GRID_NODE_REG) {	/* This grid needs to be treated as a pixel grid */
+		h->inc[GMT_Y] = 180.0 / (h->n_rows - 1);	/* Get exact increment */
+		h->wesn[YLO] = -90.0;
+		h->wesn[YHI] = 90.0;
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Detected geographic global gridline-registered grid with gridline latitude bounds.\n");
+	}
+	if ((flag & 8) && h->registration == GMT_GRID_NODE_REG) {	/* This grid needs to be treated as a pixel grid */
+		h->inc[GMT_Y] = 180.0 / h->n_rows;	/* Get exact increment */
+		h->wesn[YLO] = -90.0 + 0.5 * h->inc[GMT_Y];
+		h->wesn[YHI] = h->wesn[YLO] +  h->inc[GMT_Y] * (h->n_rows - 1);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Detected geographic global pixel-registered grid posing as gridline-registered with sloppy latitude bounds.\n");
+	}
+	if (flag) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Old region: %g/%g/%g/%g with incs %g/%g\n", wasR[XLO], wasR[XHI], wasR[YLO], wasR[YHI], wasI[GMT_X], wasI[GMT_Y]);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "New region: %g/%g/%g/%g with incs %g/%g\n", h->wesn[XLO], h->wesn[XHI], h->wesn[YLO], h->wesn[YHI], h->inc[GMT_X], h->inc[GMT_Y]);
+	}
+	return 1;
+}
+
+GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *r, struct GMT_GRID_HEADER *g, bool projected, unsigned int mixed) {
 	/* Sets the projected extent of the grid given the map projection
 	 * The extreme x/y coordinates are returned in r, and dx/dy, and
 	 * n_columns/n_rows are set accordingly.  Not that some of these may change
@@ -460,17 +511,12 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	
 	if (GMT->current.proj.projection_GMT == GMT_GENPER && GMT->current.proj.g_width != 0.0) return;
 
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {
-		if ((all_lats = gmt_M_180_range (g->wesn[YHI], g->wesn[YLO])) == false) {
-			if (fabs (g->wesn[YHI] - g->wesn[YLO] - 180.0) < GMT_CONV4_LIMIT)
-				all_lats = true;	/* A bit sloppy */
-			else if (fabs (g->n_rows * g->inc[GMT_Y] - 180.0) < GMT_CONV4_LIMIT) 
-				all_lats = true;	/* A bit sloppy */
-		}
+	/* This fails when -R is not the entire grid region and projected is false. */
+	if (projected && gmt_M_is_geographic (GMT, GMT_IN)) {
+		all_lats = gmt_grd_is_polar (GMT, g);
 		all_lons = gmt_grd_is_global (GMT, g);
 		if (all_lons && all_lats) return;	/* Whole globe */
 	}
-	
 	/* Must search for extent along perimeter */
 
 	r->wesn[XLO] = r->wesn[YLO] = +DBL_MAX;
@@ -511,7 +557,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool nothing_inside = false, use_intensity_grid;
 	bool do_indexed = false, has_content = false, mem_G[3] = {false, false, false}, mem_I = false, mem_D = false;
 	unsigned int n_columns = 0, n_rows = 0, grid_registration = GMT_GRID_NODE_REG, n_grids;
-	unsigned int colormask_offset = 0, try, row, actual_row, col;
+	unsigned int colormask_offset = 0, try, row, actual_row, col, mixed = 0;
 	uint64_t node_RGBA = 0;             /* uint64_t for the RGB(A) image array. */
 	uint64_t node, k, kk, byte, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
 	int index = 0, ks, error = 0, ret_val = GMT_NOERROR;
@@ -594,6 +640,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file[0], NULL)) == NULL) {
 			Return (API->error);
 		}
+		mixed = clean_global_headers (GMT, I->header);
 		HH = gmt_get_H_hidden (I->header);
 		if (strncmp (I->header->mem_layout, "BRP", 3) != 0)
 			GMT_Report(API, GMT_MSG_VERBOSE, "The image memory layout (%s) is of a wrong type. It should be BRPa.\n", I->header->mem_layout);
@@ -733,7 +780,9 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file[k], Grid_orig[k]) == NULL) {	/* Get grid data */
 			Return (API->error);
 		}
+		mixed = clean_global_headers (GMT, Grid_orig[k]->header);
 	}
+
 
 	/* If given, get intensity grid or compute intensities (for a constant intensity) */
 
@@ -745,6 +794,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (!Ctrl->I.derive && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->I.file, Intens_orig) == NULL) {
 			Return (API->error);	/* Failed to read the intensity grid data */
 		}
+		mixed = clean_global_headers (GMT, Intens_orig->header);
 		if (n_grids && (Intens_orig->header->n_columns != Grid_orig[0]->header->n_columns ||
 		                Intens_orig->header->n_rows != Grid_orig[0]->header->n_rows)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Dimensions of intensity grid do not match that of the data grid!\n");
@@ -786,7 +836,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (Ctrl->D.active) { /* Must project the input image instead */
 			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
 			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
-			GMT_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project);
+			GMT_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project, mixed);
 			gmt_M_err_fail (GMT, gmt_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
 			                Ctrl->In.file[0]);
 			if (Ctrl->A.active) /* Need to set background color to white for raster images */
@@ -803,7 +853,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			if ((Grid_proj[k] = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Grid_orig[k])) == NULL)
 				Return (API->error);	/* Just to get a header we can change */
 			/* Determine the dimensions of the projected grid */
-			GMT_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header, need_to_project);
+			GMT_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header, need_to_project, mixed);
 			if (grid_registration == GMT_GRID_NODE_REG)		/* Force pixel if a dpi was specified, else keep as is */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_GRID_PIXEL_REG : Grid_orig[k]->header->registration;
 			gmt_M_err_fail (GMT, gmt_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration),
@@ -849,7 +899,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				gmt_copy_gridheader (GMT, header_G[k], Grid_orig[k]->header);
 			}
 			Grid_proj[k] = Grid_orig[k];
-			GMT_set_proj_limits (GMT, Grid_proj[k]->header, tmp_header, need_to_project);
+			GMT_set_proj_limits (GMT, Grid_proj[k]->header, tmp_header, need_to_project, mixed);
 		}
 		if (use_intensity_grid) {
 			if (mem_I) {
@@ -867,7 +917,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				gmt_copy_gridheader (GMT, header_D, I->header);
 			}
 			Img_proj = I;
-			GMT_set_proj_limits (GMT, Img_proj->header, tmp_header, need_to_project);
+			GMT_set_proj_limits (GMT, Img_proj->header, tmp_header, need_to_project, mixed);
 		}
 		gmt_free_header (API->GMT, &tmp_header);
 	}

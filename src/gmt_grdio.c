@@ -765,6 +765,17 @@ bool gmt_grd_is_global (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	return (global);
 }
 
+/*! gmt_grd_is_polar returns true for a geographic grid with exactly 180-degree range in latitude (with or without repeating column) */
+bool gmt_grd_is_polar (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
+	if (!gmt_M_y_is_lat (GMT, GMT_IN))
+		return false;
+	if (gmt_M_180_range (h->wesn[YHI], h->wesn[YLO]))
+		return true;
+	if (fabs (h->n_rows * h->inc[GMT_Y] - 180.0) < GMT_CONV4_LIMIT)
+		return true;
+	return false;
+}
+
 void gmt_set_R_from_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* When no -R was given we will inherit the region from the grid.  However,
 	 * many grids are hobbled by not clearly specifying they are truly global grids.
@@ -1315,6 +1326,8 @@ int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEAD
 		header->nan_value = invalid;
 
 	gmtlib_grd_get_units (GMT, header);
+	//gmtlib_clean_global_headers (GMT, header);
+	
 	HH->grdtype = gmtlib_get_grdtype (GMT, header);
 
 	gmt_M_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 0), file);
@@ -2077,8 +2090,8 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 		wesn[XHI] = h->wesn[XLO] + ceil  ((wesn[XHI] - h->wesn[XLO]) * HH->r_inc[GMT_X] - GMT_CONV4_LIMIT) * h->inc[GMT_X];
 		/* For the odd chance that xmin or xmax are outside the region: bring them in */
 		if (wesn[XHI] - wesn[XLO] >= 360.0) {
-			while (wesn[XLO] < GMT->common.R.wesn[XLO]) wesn[XLO] += h->inc[GMT_X];
-			while (wesn[XHI] > GMT->common.R.wesn[XHI]) wesn[XHI] -= h->inc[GMT_X];
+			while ((wesn[XLO]) < GMT->common.R.wesn[XLO]) wesn[XLO] += h->inc[GMT_X];
+			while ((wesn[XHI]) > GMT->common.R.wesn[XHI]) wesn[XHI] -= h->inc[GMT_X];
 		}
 		return (1);
 	}
@@ -2108,7 +2121,7 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 	wesn[XLO] = MAX (h->wesn[XLO], h->wesn[XLO] + floor ((wesn[XLO] - h->wesn[XLO]) * HH->r_inc[GMT_X] + GMT_CONV4_LIMIT) * h->inc[GMT_X]);
 	wesn[XHI] = MIN (h->wesn[XHI], h->wesn[XLO] + ceil  ((wesn[XHI] - h->wesn[XLO]) * HH->r_inc[GMT_X] - GMT_CONV4_LIMIT) * h->inc[GMT_X]);
 
-	if (wesn[XHI] <= wesn[XLO]) {	/* Grid is outside chosen -R in longitude */
+	if (wesn[XHI] <= wesn[XLO]) {	/* Grid may is outside chosen -R in longitude */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your grid x's or longitudes appear to be outside the map region and will be skipped.\n");
 		return (0);
 	}
