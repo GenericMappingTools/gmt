@@ -2033,7 +2033,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					fprintf (fpo, "\t\t\t/Bounds[0 0 0 1 1 1 1 0]\n");
 					fprintf (fpo, "\t\t\t/GPTS[%f %f %f %f %f %f %f %f]\n",
 					         south, west, north, west, north, east, south, east);
-					if (gmtBB_width == 0)
+					if (gmtBB_width == 0)	/* Older PS files that do not have yet the GMTBoundingBox */
 						fprintf (fpo, "\t\t\t/LPTS[0 0 0 1 1 1 1 0]\n");
 					else {
 						/* Compute the LPTS. Takes the projected coordinate system into the page coordinate system */
@@ -2276,7 +2276,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			double x_inc, y_inc;
 			char world_file[PATH_MAX] = "", *wext = NULL, *s = NULL;
 
-			if (gmtBB_width != 0) {
+			if (gmtBB_width != 0) {			/* Got the BB via GMT internal message system. */
 				double dpi_x, dpi_y;
 				if (Ctrl->A.new_dpi_x) {
 					dpi_x = Ctrl->A.new_dpi_x;		dpi_y = Ctrl->A.new_dpi_y;
@@ -2286,8 +2286,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				}
 				x_inc = (east  - west)  / urint(ceil((gmtBB_width * dpi_x / 72.0)));
 				y_inc = (north - south) / urint(ceil((gmtBB_height * dpi_y / 72.0)));
-				west -= urint(ceil((gmtBB_x0 + xt_bak) * dpi_x / 72.0)) * x_inc;
-				north += urint(ceil((h - (gmtBB_y0 + yt_bak + gmtBB_height)) * dpi_y / 72.0)) * y_inc;
+				west -= urint(ceil((gmtBB_x0 + xt_bak) * dpi_x / 72.0)) * x_inc;	/* Trick, extend West */
+				north += urint(ceil((h - (gmtBB_y0 + yt_bak + gmtBB_height)) * dpi_y / 72.0)) * y_inc;	/* and North */
 			}
 			else {
 				x_inc = (east  - west)  / pix_w;
