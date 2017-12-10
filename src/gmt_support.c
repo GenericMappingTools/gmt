@@ -9340,6 +9340,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		if (gmt_M_file_is_cache (G->file)) {	/* Must be a cache file */
 			first = gmt_download_file_if_not_found (GMT, G->file, 0);
 		}
+		gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading this file */
 		if ((G->X = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {	/* Failure to read the file */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Crossing file %s does not exist or had no data records\n", G->flag, G->file);
 			error++;
@@ -9360,6 +9361,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 				}
 			}
 		}
+		gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
 	}
 	else if (G->fixed) {
 		unsigned int first = 0;
@@ -9373,11 +9375,13 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		if (gmt_M_file_is_cache (G->file)) {	/* Must be a cache file */
 			first = gmt_download_file_if_not_found (GMT, G->file, 0);
 		}
+		gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -F files */
 		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
 			return (error);
 		}
+		gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		if (T->n_columns < 2) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Data file %s has only %" PRIu64 " data columns!\n", G->file, T->n_columns);
 			return (error);
@@ -13051,11 +13055,13 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	GMT->current.io.col_type[GMT_IN][GMT_X] = gmt_M_type (GMT, GMT_IN, A->id);
 	text = ((item == 'a' || item == 'i') && labels);
 
+	gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -F files */
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open custom annotation file %s!\n", A->file_custom);
 		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
 		return (0);
 	}
+	gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
 	GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
 	S = D->table[0]->segment[0];	/* All we got */
 	

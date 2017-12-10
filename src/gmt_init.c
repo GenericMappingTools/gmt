@@ -11527,7 +11527,24 @@ GMT_LOCAL bool is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *op
 	struct GMT_OPTION *opt = NULL;
 	unsigned int n_slashes;
 	size_t len;
-	if (!strncmp (module, "pscoast", 7U)) return true;	/* pscoast only does geographic */
+	/* First deal with all the modules that only involve geographic data */
+	if (!strncmp (module, "grdlandmask", 11U)) return true;
+	if (!strncmp (module, "pscoast", 7U)) return true;
+	if (!strncmp (module, "pssolar", 7U)) return true;
+	if (!strncmp (module, "sph2grd", 7U)) return true;
+	if (!strncmp (module, "sphdistance", 11U)) return true;
+	if (!strncmp (module, "sphinterpolate", 14U)) return true;
+	if (!strncmp (module, "img2grd", 7U)) return true;
+	if (!strncmp (module, "pscoupe", 7U)) return true;
+	if (!strncmp (module, "psmeca", 6U)) return true;
+	if (!strncmp (module, "pspolar", 7U)) return true;
+	if (!strncmp (module, "pssac", 5U)) return true;
+	if (!strncmp (module, "psvelo", 6U)) return true;
+	if (!strncmp (module, "mgd77track", 10U)) return true;
+	if (!strncmp (module, "grdpmodeler", 11U)) return true;
+	if (!strncmp (module, "grdrotater", 10U)) return true;
+	if (!strncmp (module, "grdspotter", 10U)) return true;
+	if (!strncmp (module, "polespotter", 11U)) return true;
 	if ((opt = GMT_Find_Option (GMT->parent, 'R', options)) == NULL) return false;	/* Should not happen but lets just say Cartesian for now */
 	n_slashes = gmtlib_count_slashes (GMT, opt->arg);	/* Distinguies -Rw/e/s/n from other things */
 	/* Check if -R[=]<code>[,<code>,...][+r|R] which means use country name etc to set region; clearly geographical */
