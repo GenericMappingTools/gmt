@@ -42,7 +42,7 @@ EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT
 
 #define PSSCALE_L_SCALE	0.80	/* Set scale length to 80% of map side length under auto-setting */
 #define PSSCALE_W_SCALE	0.04	/* Set scale width to 4% of scale length under auto-setting */
-
+#define PSSCALE_CYCLE_DIM 0.45	/* Cyclic symbol radius is 0.45 of width */
 #define N_FAVOR_IMAGE	1
 #define N_FAVOR_POLY	2
 
@@ -1151,11 +1151,17 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				PSL_plottext (PSL, xright + elength[XHI] + GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, 0.0, PSL_ML, form);
 		}
 		if (P->is_wrapping) {	/* Add cyclic glyph */
+#if 0
 			if (flip & PSSCALE_FLIP_UNIT)	/* The y-label is on the left so place cyclic glyph on right */
 				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
 			else
 				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
-			plot_cycle (GMT, x0, 0.5 * width, 0.5 * width);
+#endif
+			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
+				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
+			else
+				x0 = 0.5 * (xleft + xright);
+			plot_cycle (GMT, x0, 0.5 * width, PSSCALE_CYCLE_DIM * width);
 		}
 	}
 	else {	/* Vertical scale */
@@ -1430,11 +1436,17 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				PSL_plottext (PSL, xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + elength[XHI], 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, -90.0, PSL_BC, form);
 		}
 		if (P->is_wrapping) {	/* Add cyclic glyph */
+#if 0
 			if (flip & PSSCALE_FLIP_UNIT)	/* The y-label is on the left so place cyclic glyph on right */
 				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
 			else
 				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
-			plot_cycle (GMT, x0, 0.5 * width, 0.5 * width);
+#endif
+			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
+				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
+			else
+				x0 = 0.5 * (xleft + xright);
+			plot_cycle (GMT, x0, 0.5 * width, PSSCALE_CYCLE_DIM * width);
 		}
 		PSL_setorigin (PSL, -width, 0.0, -90.0, PSL_INV);
 	}
@@ -1492,6 +1504,12 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if (Ctrl->D.extend && P->is_wrapping) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot use +e for cycling color bar; +e deactivated\n");
+		Ctrl->D.extend = false;
+		Ctrl->D.emode &= 4;	/* This removes any 1,2,3 of selected but leaves 4 for nan */
+	}
+
 	if (P->has_range)	/* Convert from normalized to default CPT z-range */
 		gmt_stretch_cpt (GMT, P, 0.0, 0.0);
 	

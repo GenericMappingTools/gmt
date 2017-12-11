@@ -293,10 +293,13 @@ Mercator map produced by a previous call, ensuring a 2 cm offset from the map fr
 Notes
 -----
 
-When the CPT is discrete and no illumination is specified, the
-color bar will be painted using polygons. For all other cases we must
-paint with an image. Some color printers may give slightly different
-colors for the two methods given identical RGB values.
+#. When the CPT is discrete and no illumination is specified, the
+   color bar will be painted using polygons. For all other cases we must
+   paint with an image. Some color printers may give slightly different
+   colors for the two methods given identical RGB values.
+#. For cyclic (wrapping) color tables the cyclic symbol is plotted to the right
+   of the color bar.  If annotations are specified there then we place the cyclic
+   symbol at the center of the color bar instead.
 
 See Also
 --------
