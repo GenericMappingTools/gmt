@@ -37,6 +37,8 @@ GMT_LOCAL GDALDatasetH gdal_open (struct GMT_CTRL *GMT, char *gdal_filename) {
 	if (gmtlib_check_url_name (gdal_filename))	/* A vis*** URL, pass to GDAL as is */
 		//file = gdal_filename;
 		strcpy (path, gdal_filename);
+	else if (strchr(gdal_filename, ':'))		/* Assume it is a SUBDATASET */
+		strncpy (path, gdal_filename, PATH_MAX-1);
 	else if ((file = gmt_getdatapath (GMT, gdal_filename, path, R_OK)) == NULL) {	/* Local file not found */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find %s.\n", gdal_filename);
 		return (NULL);
