@@ -1151,15 +1151,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				PSL_plottext (PSL, xright + elength[XHI] + GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, 0.0, PSL_ML, form);
 		}
 		if (P->is_wrapping) {	/* Add cyclic glyph */
-#if 0
-			if (flip & PSSCALE_FLIP_UNIT)	/* The y-label is on the left so place cyclic glyph on right */
-				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
-			else
-				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
-#endif
 			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
 				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
-			else
+			else if ((Ctrl->D.emode & 4) == 0)	/* TNo nan so place on left */
+				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
+			else	/* Give up and place in center */
 				x0 = 0.5 * (xleft + xright);
 			plot_cycle (GMT, x0, 0.5 * width, PSSCALE_CYCLE_DIM * width);
 		}
@@ -1436,15 +1432,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				PSL_plottext (PSL, xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + elength[XHI], 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, -90.0, PSL_BC, form);
 		}
 		if (P->is_wrapping) {	/* Add cyclic glyph */
-#if 0
-			if (flip & PSSCALE_FLIP_UNIT)	/* The y-label is on the left so place cyclic glyph on right */
-				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
-			else
-				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
-#endif
 			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
 				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
-			else
+			else if ((Ctrl->D.emode & 4) == 0)	/* TNo nan so place on left */
+				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
+			else	/* Give up and place at center */
 				x0 = 0.5 * (xleft + xright);
 			plot_cycle (GMT, x0, 0.5 * width, PSSCALE_CYCLE_DIM * width);
 		}

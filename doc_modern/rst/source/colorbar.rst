@@ -289,7 +289,7 @@ Notes
    colors for the two methods given identical RGB values.
 #. For cyclic (wrapping) color tables the cyclic symbol is plotted to the right
    of the color bar.  If annotations are specified there then we place the cyclic
-   symbol at the center of the color bar instead.
+   symbol at the left, unless **+n** was used in which case we center of the color bar instead.
 
 See Also
 --------
