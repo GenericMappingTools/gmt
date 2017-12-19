@@ -1336,8 +1336,14 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					c_length = gmt_line_length (GMT, x, y, n, Ctrl->Q.project);
 					use_contour = (c_length >= Ctrl->Q.length);
 				}
-				else
+				else	/* Just based on the point count */
 					use_contour = (n >= Ctrl->Q.min);
+				if (!use_contour) {	/* Dont want this guy */
+					gmt_M_free (GMT, x);
+					gmt_M_free (GMT, y);
+					GMT_Report (API, GMT_MSG_DEBUG, "Skipping a %g contour due to count/length limit (%g, %d)\n", cval, c_length, n);
+					continue;
+				}
 			}
 
 			if (closed == cont_is_not_closed || use_contour) {	/* Passed our minimum point criteria for closed contours */
