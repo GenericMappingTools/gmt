@@ -3298,20 +3298,24 @@ GMT_LOCAL uint64_t plot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DA
 	return (k);	/* Number of points plotted */
 }
 
-GMT_LOCAL float plot_inch_to_degree_scale (struct GMT_CTRL *GMT) {
-	/* Determine the map scale at the center of the map and use that to scale items in inches to spherical degrees
-	 * anywhere on the map. We pick the center as the map distortion will be the least here.
+GMT_LOCAL float plot_inch_to_degree_scale (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth) {
+	/* Used to determine delta radius in degrees for thickness of vector lines to be drawn as small or
+	 * great circles.  We must convert pen thickness to some sense of spherical degrees.
+	 * Determine the map scale at (lon, lat) in a direction normal to the vector and use that
+	 * to scale items in inches to spherical degrees.  We repeat this for all locations except
+	 * if the projection is perspective, when we pick the center as the map distortion will be the least here.
 	 * This scaling is approximate only but needed to convert geovector head lengths to degrees. */
 
-	double clon, clat, tlon, tlat, x0, y0, x1, y1, length;
+	double tlon, tlat, x0, y0, dx, x1, y1, length;
 	float scale;
 
 	length = 0.001 * (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]);		/* 0.1 percent of latitude extent is fairly small */
-	x0 = GMT->current.map.half_width;	y0 = GMT->current.map.half_height;	/* Middle map point in inches */
-	gmt_xy_to_geo (GMT, &clon, &clat, x0, y0);					/* Geographic coordinates of middle map point */
-	gmtlib_get_point_from_r_az (GMT, clon, clat, length, 0.0, &tlon, &tlat);		/* Arbitrary 2nd point north of (lon0,lat0) but near by */
+	gmt_geo_to_xy (GMT, lon0, lat0, &x0, &y0);					/* Get map position in inches for close point */
+	gmtlib_get_point_from_r_az (GMT, lon0, lat0, length, azimuth-90.0, &tlon, &tlat);	/* ANearby arbitrary 2nd point in direction normal to vector at (lon0,lat0) */
 	gmt_geo_to_xy (GMT, tlon, tlat, &x1, &y1);					/* Get map position in inches for close point */
-	scale = (float) (length / hypot (x1 - x0, y1 - y0));				/* This scales a length in inches to degrees, approximately */
+	dx = fabs (x1 - x0);
+	if (dx > (0.25 * GMT->current.map.half_width)) dx = GMT->current.map.width - dx;
+	scale = (float) (length / hypot (dx, y1 - y0));				/* This scales a length in inches to degrees, approximately */
 	return (scale);
 }
 
@@ -6855,8 +6859,17 @@ unsigned int gmt_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, dou
 	   1 and 2 if PSL_VEC_ANGLES is set as well. */
 	unsigned int warn;
 	if ((S->v.status & PSL_VEC_SCALE) == 0) {	/* Must determine the best inch to degree scale for this map */
-		S->v.scale = plot_inch_to_degree_scale (GMT);
-		S->v.status |= PSL_VEC_SCALE;
+		if (gmt_M_is_perspective (GMT)) {
+			double clon, clat;
+			gmt_xy_to_geo (GMT, &clon, &clat, GMT->current.map.half_width, GMT->current.map.half_height);	/* Geographic coordinates of middle map point */
+			S->v.scale = plot_inch_to_degree_scale (GMT, clon, clat, azimuth);
+			S->v.status |= PSL_VEC_SCALE;
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector stem scale is %g degrees/inch at (%g, %g) for az = %g\n", S->v.scale, clon, clat, azimuth);
+		}
+		else {	/* Set scale each time locally */
+			S->v.scale = plot_inch_to_degree_scale (GMT, lon0, lat0, azimuth);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector stem scale is %g degrees/inch at (%g, %g) for az = %g\n", S->v.scale, lon0, lat0, azimuth);
+		}
 	}
 
 	if (S->v.status & PSL_VEC_POLE)
