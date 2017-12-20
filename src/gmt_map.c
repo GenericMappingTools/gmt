@@ -9065,6 +9065,8 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 		if (GMT->current.proj.central_meridian > GMT->common.R.wesn[XHI] && (GMT->current.proj.central_meridian - 360.0) >= GMT->common.R.wesn[XLO]) GMT->current.proj.central_meridian -= 360.0;
 	}
 	
+	map_init_three_D (GMT);
+
 	return (GMT_NOERROR);
 }
 
@@ -9118,8 +9120,6 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 
 	/* Maximum step size (in degrees) used for interpolation of line segments along great circles (or meridians/parallels)  before they are plotted */
 	GMT->current.map.path_step = GMT->current.setting.map_line_step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
-
-	map_init_three_D (GMT);
 
 	i_scale = 1.0 / (0.0254 * GMT->current.proj.scale[GMT_X]);
 	scale = 0.001 / (GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit] * GMT->current.proj.scale[GMT_X]);
