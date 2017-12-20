@@ -15,8 +15,9 @@ Synopsis
 
 **psrose** [ *table* ] [ |-A|\ [**r**]\ *sector_width* ]
 [ |SYN_OPT-B| ]
-[ |-C|\ **m**\ \|\ [**+w**\ ]\ *mode_file* ]
+[ |-C|\ *cpt* ]
 [ |-D| ]
+[ |-E|\ **m**\ \|\ [**+w**\ ]\ *mode_file* ]
 [ |-F| ]
 [ |-G|\ *fill* ] [ |-I| ]
 [ |-J|\ **X**\ *diameter* ]
@@ -85,21 +86,27 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ **m**\ \|\ [**+w**\ ]\ *mode_file*
-    Plot vectors showing the principal directions given in the *mode_file*
-    file. Alternatively, specify **-Cm** to compute and plot mean direction. See
-    **-M** to control the vector attributes.  Finally, to instead save the
-    computed mean direction and other statistics, use [**m**\ ]\ **+w**\ *mode_file*.
-    The eight items saved to a single record are: 
-    *mean_az, mean_r, mean_resultant, max_r, scaled_mean_r, length_sum, n, sign@alpha*,
-    where the last term is 0 or 1 depending on whether the mean resultant is significant
-    at the level of confidence set via **-Q**.
+**-C**\ *cpt*
+    Give a CPT. The r-value for each sector is used to
+    look-up the sector color.  Cannot be used with a rose diagram.
 
 .. _-D:
 
 **-D**
     Shift sectors so that they are centered on the bin interval (e.g.,
     first sector is centered on 0 degrees).
+
+.. _-E:
+
+**-E**\ **m**\ \|\ [**+w**\ ]\ *mode_file*
+    Plot vectors showing the principal directions given in the *mode_file*
+    file. Alternatively, specify **-Em** to compute and plot mean direction. See
+    **-M** to control the vector attributes.  Finally, to instead save the
+    computed mean direction and other statistics, use [**m**\ ]\ **+w**\ *mode_file*.
+    The eight items saved to a single record are: 
+    *mean_az, mean_r, mean_resultant, max_r, scaled_mean_r, length_sum, n, sign@alpha*,
+    where the last term is 0 or 1 depending on whether the mean resultant is significant
+    at the level of confidence set via **-Q**.
 
 .. _-F:
 
@@ -141,9 +148,9 @@ Optional Arguments
 .. _-M:
 
 **-M**\ *parameters*
-    Used with **-C** to modify vector parameters. For vector heads,
+    Used with **-E** to modify vector parameters. For vector heads,
     append vector head *size* [Default is 0, i.e., a line]. See VECTOR
-    ATTRIBUTES for specifying additional attributes.  If **-C** is not
+    ATTRIBUTES for specifying additional attributes.  If **-E** is not
     given and the current plot mode is to draw a windrose diagram then
     using **-M** will add vector heads to all individual directions
     using the supplied attributes.
@@ -201,7 +208,7 @@ Optional Arguments
 **-W**\ *pen*
     Set pen attributes for sector outline or rose plot. [Default is no
     outline]. Use **-Wv**\ *pen* to change pen used to draw vector
-    (requires **-C**) [Default is same as sector outline]. 
+    (requires **-E**) [Default is same as sector outline]. 
 
 .. _-X:
 
@@ -257,7 +264,7 @@ azimuth, and shown in Portrait orientation, use:
 
     gmt psrose fault_segments.az_r -R0/150/-90/90 -Bx50g25+l"Fault length"
                -Byg30 -B+t"Rose diagram" -JX6i -Ar10 -Glightblue
-               -W0.75p,red -Z0.001 -Cm -P -T -: > half_rose.ps
+               -W0.75p,red -Z0.001 -Em -P -T -: > half_rose.ps
 
 To plot a full circle wind rose diagram of the data in the file
 lines.r_az, on a circle of diameter = 10 cm, grid going out to radius =

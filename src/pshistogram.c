@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"pshistogram"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Calculate and plot histograms"
-#define THIS_MODULE_KEYS	"<D{,>X},>D),>DI@<D{,ID)"
+#define THIS_MODULE_KEYS	"<D{,CC(,>X},>D),>DI@<D{,ID)"
 #define THIS_MODULE_NEEDS	"J"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhipstxy" GMT_OPT("Ec")
 
