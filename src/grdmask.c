@@ -290,7 +290,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	z_value = Ctrl->N.mask[GMT_INSIDE];	/* Starting value if using running IDs */
 	HH = gmt_get_H_hidden (Grid->header);
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
 		char line[GMT_BUFSIZ] = {""}, *msg[2] = {"polygons", "search radius"};
 		k = (Ctrl->S.active) ? 1 : 0; 
 		if (Ctrl->N.mode == 1) {
