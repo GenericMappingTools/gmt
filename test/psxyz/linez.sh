@@ -15,5 +15,5 @@ cat << EOF > t.txt
 172.037268937 -43.590911863 8
 172.037268937 -43.590911863 10
 EOF
-gmt psxyz -JOA172.037268937/-43.590911863/77.7384168395/12c t.txt -W2p,blue -R171.553/-44.1059/172.514/-43.0739r -p160/45 -Jz1 -Bafg -BWSneZ -P -K > $ps
+gmt psxyz -JOA172.037268937/-43.590911863/77.7384168395/12c t.txt -W2p,blue -R171.553/-44.1059/172.514/-43.0739r -p160/45 -Jz1c -Bafg -BWSneZ -P -K > $ps
 gmt psxyz -JO t.txt -Gred@50 -Sc0.2i -N -R -p -Jz -O >> $ps
