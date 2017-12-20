@@ -5890,7 +5890,7 @@ GMT_LOCAL int map_init_three_D (struct GMT_CTRL *GMT) {
 			GMT->current.proj.inv_z = &gmt_itranspowz;
 	}
 	z_range = zmax - zmin;
-	if (z_range == 0.0)
+	if (z_range == 0.0 && GMT->current.proj.compute_scale[GMT_Z])
 		GMT->current.proj.scale[GMT_Z] = 0.0;	/* No range given, just flat projected map */
 	else if (GMT->current.proj.compute_scale[GMT_Z])
 		GMT->current.proj.scale[GMT_Z] /= fabs (z_range);
