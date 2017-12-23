@@ -164,6 +164,15 @@ largest polygons:
 | 12  | Indonesia                      |
 +-----+--------------------------------+
 
+Data Files
+----------
+
+The data files read by gshhg are the native binary polygon files,
+available from NEIC [https://www.ngdc.noaa.gov/mgg/shorelines/] or
+SOEST [http://www.soest.hawaii.edu/pwessel/gshhg]. Note that these
+are different from the netCDF-formatted files used by GMT in the
+modules :doc:`gmtselect </gmtselect>`, :doc:`grdlandmask </grdlandmask>`,
+or :doc:`pscoast </pscoast>`.
 
 Technical Information
 ---------------------
