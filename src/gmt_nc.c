@@ -467,7 +467,9 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		/* Get the ids of the x and y (and depth and time) coordinate variables */
 		for (i = 0; i < ndims; i++) {
 			gmt_M_err_trap (nc_inq_dim (ncid, dims[i], dimname, &lens[i]));
-			if (nc_inq_varid (ncid, dimname, &ids[i])) return (GMT_GRDIO_NC_NOT_COARDS);
+			if ((status = nc_inq_varid (ncid, dimname, &ids[i])) != NC_NOERR)
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\"%s\", %s\n\tIf something bad happens later, try importing via GDAL.\n",
+				                                         dimname, nc_strerror(status));
 		}
 		header->xy_dim[0] = ndims-1;
 		header->xy_dim[1] = ndims-2;
