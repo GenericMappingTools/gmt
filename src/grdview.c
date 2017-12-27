@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -888,8 +888,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	else
 		Z = Topo;
 
-	xval = gmt_grd_coord (GMT, Topo->header, GMT_X);
-	yval = gmt_grd_coord (GMT, Topo->header, GMT_Y);
+	xval = Topo->x;
+	yval = Topo->y;
 
 	if (!GMT->current.proj.xyz_pos[2]) gmt_M_double_swap (GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI]);	/* Negative z-scale, must flip */
 
@@ -923,7 +923,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		small = GMT_CONV4_LIMIT * (Z->header->z_max - Z->header->z_min);
 		if (small < 1.0e-7) small = 1.0e-7;	/* Make sure it is not smaller than single-precision EPS */
 		if ((Z_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, Z)) == NULL) {
-			gmt_M_free (GMT, edge);		gmt_M_free (GMT, binij);	gmt_M_free (GMT, xval);		gmt_M_free (GMT, yval);
+			gmt_M_free (GMT, edge);		gmt_M_free (GMT, binij);
 			Return (API->error);	/* Original copy of Z grid used for contouring */
 		}
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Trace and bin contours...\n");
@@ -996,12 +996,10 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing illumination grid\n");
 
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->I.file, Intens) == NULL) {	/* Get intensity grid */
-			gmt_M_free (GMT, xval);		gmt_M_free (GMT, yval);
 			Return (API->error);
 		}
 		if (Intens->header->n_columns != Topo->header->n_columns || Intens->header->n_rows != Topo->header->n_rows) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Intensity grid has improper dimensions!\n");
-			gmt_M_free (GMT, xval);		gmt_M_free (GMT, yval);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		i_reg = gmt_change_grdreg (GMT, Intens->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
@@ -1025,7 +1023,6 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Start creating PostScript plot\n");
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
-		gmt_M_free (GMT, xval);		gmt_M_free (GMT, yval);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -1143,8 +1140,6 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, yy);
 		}
 		gmt_free_segment (GMT, &S);
-		gmt_M_free (GMT, xval);
-		gmt_M_free (GMT, yval);
 	}
 
 	else if (Ctrl->Q.mode == GRDVIEW_IMAGE) {	/* Plot image */
@@ -1173,8 +1168,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Resampling illumination grid to drape grid resolution\n");
 			ix = gmt_M_memory (GMT, NULL, Z->header->nm, int);
 			iy = gmt_M_memory (GMT, NULL, Z->header->nm, int);
-			x_drape = gmt_grd_coord (GMT, Z->header, GMT_X);
-			y_drape = gmt_grd_coord (GMT, Z->header, GMT_Y);
+			x_drape = Z->x;
+			y_drape = Z->y;
 			if (use_intensity_grid) int_drape = gmt_M_memory (GMT, NULL, Z->header->mx*Z->header->my, gmt_grdfloat);
 			bin = 0;
 			gmt_M_grd_loop (GMT, Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
@@ -1190,8 +1185,6 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				if (use_intensity_grid) int_drape[ij] = (gmt_grdfloat)gmt_bcr_get_z (GMT, Intens, x_drape[col], y_drape[row]);
 				bin++;
 			}
-			gmt_M_free (GMT, x_drape);
-			gmt_M_free (GMT, y_drape);
 			if (use_intensity_grid) {	/* Reset intensity grid so that we have no boundary row/cols */
 				saved_data_pointer = Intens->data;
 				Intens->data = int_drape;
@@ -1213,8 +1206,6 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				bin++;
 			}
 		}
-		gmt_M_free (GMT, xval);
-		gmt_M_free (GMT, yval);
 
 		/* Allocate image array and set background to PAGE_COLOR */
 
@@ -1403,8 +1394,6 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			gmt_geoz_to_xy (GMT, xval[i], yval[j_start-1], z_base, &xx[k+1], &yy[k+1]);
 			PSL_plotpolygon (PSL, xx, yy, k+2);
 		}
-		gmt_M_free (GMT, xval);
-		gmt_M_free (GMT, yval);
 	}
 
 	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL_X) {	/* Plot X waterfall */
@@ -1425,8 +1414,6 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			gmt_geoz_to_xy (GMT, xval[i_start+1], yval[j], z_base, &xx[k+1], &yy[k+1]);
 			PSL_plotpolygon (PSL, xx, yy, k+2);
 		}
-		gmt_M_free (GMT, xval);
-		gmt_M_free (GMT, yval);
 	}
 
 	else if (Ctrl->Q.mode == GRDVIEW_MESH) {	/* Plot mesh */
@@ -1471,8 +1458,6 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		gmt_M_free (GMT, xval);
-		gmt_M_free (GMT, yval);
 	}
 
 	else if (Ctrl->Q.mode == GRDVIEW_SURF) {	/* Plot surface using closed polygons */
@@ -1819,8 +1804,6 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		gmt_M_free (GMT, xval);
-		gmt_M_free (GMT, yval);
 		gmt_M_free (GMT, xcont);
 		gmt_M_free (GMT, ycont);
 		gmt_M_free (GMT, zcont);

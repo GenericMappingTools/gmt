@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -661,12 +661,10 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (Ctrl->S.set_nan) {	/* Set all nodes outside the circle to NaN */
 		unsigned int row, col;
 		uint64_t n_nodes = 0;
-		double *grd_lon = gmt_grd_coord (GMT, G->header, GMT_X);
 		
 		for (row = 0; row < G->header->n_rows; row++) {
-			lat = gmt_M_grd_row_to_y (GMT, row, G->header);
 			for (col = 0; col < G->header->n_columns; col++) {
-				distance = gmt_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, grd_lon[col], lat);
+				distance = gmt_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, G->x[col], G->y[row]);
 				if (distance > Ctrl->S.radius) {	/* Outside circle */
 					node = gmt_M_ijp (G->header, row, col);
 					G->data[node] = GMT->session.f_NaN;
@@ -674,7 +672,6 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		gmt_M_free (GMT, grd_lon);	
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Set %" PRIu64 " nodes outside circle to NaN\n", n_nodes);
 	}
 	

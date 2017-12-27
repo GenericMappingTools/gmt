@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -485,8 +485,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);//CURVE
 			Return (API->error);	/* Get subset if exceeding desired grid */
 		}
-		xf = gmt_grd_coord (GMT, F->header, GMT_X);
-		yf = gmt_grd_coord (GMT, F->header, GMT_Y);
+		xf = F->x;
+		yf = F->y;
 		xnoise = fraction * F->header->inc[GMT_X];
 		ynoise = fraction * F->header->inc[GMT_Y];
 		gmt_M_grd_loop (GMT, F, row, col, ij) {
@@ -604,10 +604,6 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	if (Ctrl->F.active) {	/* No longer need these */
-		gmt_M_free (GMT, xf);
-		gmt_M_free (GMT, yf);
-	}
 	
 	if (Ctrl->G.active && Ctrl->Q.active) {	/* Grid via natural nearest neighbor using Voronoi polygons */
 		bool periodic, duplicate_col;
@@ -620,8 +616,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		nx1 = (Grid->header->registration == GMT_GRID_PIXEL_REG) ? Grid->header->n_columns : Grid->header->n_columns - 1;
 		periodic = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 		duplicate_col = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
-		grid_lon = gmt_grd_coord (GMT, Grid->header, GMT_X);
-		grid_lat = gmt_grd_coord (GMT, Grid->header, GMT_Y);
+		grid_lon = Grid->x;
+		grid_lat = Grid->y;
 
 		for (seg = 0; seg < V->n_segments; seg++) {
 			P = V->table[0]->segment[seg];
@@ -663,7 +659,6 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		gmt_M_free (GMT, grid_lon);	gmt_M_free (GMT, grid_lat);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
 			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
@@ -690,13 +685,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->C.active) {	/* CURVE needs grid coordinates */
-			if ((CoordsX = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, Grid)) == NULL || (CoordsY = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, Grid)) == NULL) {
-				if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
-				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
-				if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
-				gmt_M_free (GMT, hh);	gmt_M_free (GMT, vv);
-				Return (API->error);
-			}
+			CoordsX = Grid->x;
+			CoordsY = Grid->y;
 			for (p = 0; p < Grid->header->size; p++) Slopes->data[p] = (gmt_grdfloat)tan (D2R * Slopes->data[p]);	/* Take tan or slopes here instead of later */
 		}
 
@@ -778,10 +768,6 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 						Grid->data[p] = (gmt_grdfloat)(a * xp + b * yp + c);
 				}
 			}
-		}
-		if (Ctrl->C.active) {
-			gmt_M_free (GMT, CoordsX);
-			gmt_M_free (GMT, CoordsY);
 		}
 		
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {

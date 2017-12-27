@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -4686,7 +4686,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			return_null (API, GMT_NOT_A_VALID_METHOD);
 			break;
 	}
-	if (mode & GMT_GRID_XY) {	/* Also allocate and initialize the x and y vectors */
+	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Also allocate and initialize the x and y vectors */
 		G_obj->x = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G_obj);	/* Get array of x coordinates */
 		G_obj->y = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G_obj);	/* Get array of y coordinates */
 	}
@@ -8550,8 +8550,7 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 			if (def_direction == GMT_IN && (mode & GMT_CONTAINER_ONLY) == 0) {	/* Allocate the grid array unless we asked for header only */
 				if ((error = api_alloc_grid (API->GMT, new_obj)) != GMT_NOERROR)
 					return_null (API, error);	/* Allocation error */
-			}
-			if (mode & GMT_GRID_XY) {	/* Also allocate and populate the x,y vectors */
+				/* Also allocate and populate the x,y vectors */
 				if ((error = api_alloc_grid_xy (API, new_obj)) != GMT_NOERROR)
 					return_null (API, error);	/* Allocation error */
 			}
@@ -8575,8 +8574,7 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 			if (def_direction == GMT_IN && (mode & GMT_CONTAINER_ONLY) == 0) {	/* Allocate the image array unless we asked for header only */
 				if ((error = api_alloc_image (API->GMT, dim, new_obj)) != GMT_NOERROR)
 					return_null (API, error);	/* Allocation error */
-			}
-			if (mode & GMT_GRID_XY) {	/* Also allocate and populate the image x,y vectors */
+					/* Also allocate and populate the image x,y vectors */
 				if ((error = api_alloc_image_xy (API, new_obj)) != GMT_NOERROR)
 					return_null (API, error);	/* Allocation error */
 			}

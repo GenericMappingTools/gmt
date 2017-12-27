@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -324,8 +324,8 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 		gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
-		grd_x0 = gmt_grd_coord (GMT, Grid->header, GMT_X);
-		grd_y0 = gmt_grd_coord (GMT, Grid->header, GMT_Y);
+		grd_x0 = Grid->x;
+		grd_y0 = Grid->y;
 		if (!Ctrl->S.variable_radius) {	/* Read x,y, fixed radius from -S */
 			radius = Ctrl->S.radius;
 			d_col = gmt_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
@@ -348,11 +348,8 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = mask_val[GMT_OUTSIDE];
 
 	if ((error = GMT_Set_Columns (API, GMT_IN, n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-		if (Ctrl->S.active) {
+		if (Ctrl->S.active)
 			gmt_M_free (GMT, d_col);
-			gmt_M_free (GMT, grd_x0);
-			gmt_M_free (GMT, grd_y0);
-		}
 		Return (error);
 	}
 	gmode = (Ctrl->S.active) ? GMT_IS_POINT : GMT_IS_POLY;
@@ -367,8 +364,6 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		error = API->error;
 	if (Ctrl->S.active && error) {
 		gmt_M_free (GMT, d_col);
-		gmt_M_free (GMT, grd_x0);
-		gmt_M_free (GMT, grd_y0);
 		Return (error);
 	}
 	gmt_skip_xy_duplicates (GMT, false);	/* Reset */
@@ -567,11 +562,8 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (Ctrl->S.active) {
+	if (Ctrl->S.active)
 		gmt_M_free (GMT, d_col);
-		gmt_M_free (GMT, grd_x0);
-		gmt_M_free (GMT, grd_y0);
-	}
 
 	Return (GMT_NOERROR);
 }

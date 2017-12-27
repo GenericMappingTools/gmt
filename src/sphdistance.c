@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 2008-2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 2008-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -468,8 +468,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Start processing distance grid\n");
 
-	grid_lon = gmt_grd_coord (GMT, Grid->header, GMT_X);
-	grid_lat = gmt_grd_coord (GMT, Grid->header, GMT_Y);
+	grid_lon = Grid->x;
+	grid_lat = Grid->y;
 
 	nx1 = (Grid->header->registration == GMT_GRID_PIXEL_REG) ? Grid->header->n_columns : Grid->header->n_columns - 1;
 	periodic = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
@@ -532,7 +532,6 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 		if ((n_new = gmt_fix_up_path (GMT, &P->data[GMT_X], &P->data[GMT_Y], P->n_rows, Ctrl->E.dist, GMT_STAIRS_OFF)) == 0) {
 			gmt_M_free (GMT, P);
-			gmt_M_free (GMT, grid_lon);	gmt_M_free (GMT, grid_lat);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		P->n_rows = n_new;
@@ -586,7 +585,6 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, xx);
 		gmt_M_free (GMT, yy);
 	}
-	gmt_M_free (GMT, grid_lon);	gmt_M_free (GMT, grid_lat);
 	if (!Ctrl->C.active) {
 		gmt_M_free (GMT, lon);
 		gmt_M_free (GMT, lat);

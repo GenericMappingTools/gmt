@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *   Copyright (c) 1999-2017 by P. Wessel
+ *   Copyright (c) 1999-2018 by P. Wessel
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -625,8 +625,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 
 	for (row = 0; row < Z->header->n_rows; row++) lat_area[row] = area * cos (y_smt[row]);
 	
-	x_cva = gmt_grd_coord (GMT, G->header, GMT_X);
-	y_cva = gmt_grd_coord (GMT, G->header, GMT_Y);
+	x_cva = G->x;
+	y_cva = G->y;
 
 	if (Ctrl->A.file) {
 		if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
@@ -808,12 +808,10 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write CVA grid %s\n", Ctrl->G.file);
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) {
-		gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
 		gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 		Return (API->error);
 	}
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, G) != GMT_NOERROR) {
-		gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
 		gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 		Return (API->error);
 	}
@@ -1059,7 +1057,6 @@ END:
 	}
 	gmt_M_free (GMT, p);
 	gmt_M_free (GMT, x_smt);	gmt_M_free (GMT, y_smt);
-	gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
 	gmt_M_free (GMT, lat_area);
 	if (keep_flowlines) gmt_M_free (GMT, flowline);
 	if (Ctrl->Q.mode) gmt_M_free (GMT, ID_info);

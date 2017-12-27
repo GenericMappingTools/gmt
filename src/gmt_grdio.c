@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  * $Id$
  *
- * Copyright (c) 1991-2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ * Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -2576,6 +2576,8 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 			Gnew->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, gmt_grdfloat);
 			if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Gnew->data, G->data, G->header->size, gmt_grdfloat);
 		}
+		Gnew->x = GMT_Get_Coord (GMT->parent, GMT_IS_GRID, GMT_X, Gnew);	/* Get array of x coordinates */
+		Gnew->y = GMT_Get_Coord (GMT->parent, GMT_IS_GRID, GMT_Y, Gnew);	/* Get array of y coordinates */
 	}
 	return (Gnew);
 }

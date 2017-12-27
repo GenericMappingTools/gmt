@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *   Copyright (c) 1999-2017 by P. Wessel
+ *   Copyright (c) 1999-2018 by P. Wessel
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -574,8 +574,8 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 		/* Precalculate node coordinates in both degrees and radians */
-		grd_x = gmt_grd_coord (GMT, G_rot->header, GMT_X);
-		grd_y = gmt_grd_coord (GMT, G_rot->header, GMT_Y);
+		grd_x = G_rot->x;
+		grd_y = G_rot->y;
 		grd_yc = gmt_M_memory (GMT, NULL, G_rot->header->n_rows, double);
 		for (row = 0; row < G_rot->header->n_rows; row++) grd_yc[row] = gmt_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
 
@@ -664,8 +664,6 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		if (G_rot && GMT_Destroy_Data (API, &G_rot) != GMT_NOERROR)
 			Return (API->error);
 
-		gmt_M_free (GMT, grd_x);
-		gmt_M_free (GMT, grd_y);
 		gmt_M_free (GMT, grd_yc);
 	} /* End of loop over reconstruction times */
 

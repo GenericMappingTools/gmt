@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *    Copyright (c) 2004-2017 by P. Wessel and Michael Chandler
+ *    Copyright (c) 2004-2018 by P. Wessel and Michael Chandler
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /*

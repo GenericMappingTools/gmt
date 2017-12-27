@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -7634,6 +7634,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	 * made "interpolant" an integer (was int bilinear).
 	 */
 
+	bool in = false, out = false;
 	int col_in, row_in, col_out, row_out;
  	uint64_t ij_in, ij_out;
 	short int *nz = NULL;
@@ -7653,10 +7654,20 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 	/* Precalculate grid coordinates */
 
-	x_in  = gmt_grd_coord (GMT, I->header, GMT_X);
-	y_in  = gmt_grd_coord (GMT, I->header, GMT_Y);
-	x_out = gmt_grd_coord (GMT, O->header, GMT_X);
-	y_out = gmt_grd_coord (GMT, O->header, GMT_Y);
+	if (I->x) {	/* Reuse existing arrays */
+		x_in = I->x;	y_in = I->y;	in = true;
+	}
+	else {	/* Must allocate here */
+		x_in  = gmt_grd_coord (GMT, I->header, GMT_X);
+		y_in  = gmt_grd_coord (GMT, I->header, GMT_Y);
+	}
+	if (O->x) {	/* Reuse existing arrays */
+		x_out = O->x;	y_out = O->y;	out = true;
+	}
+	else {	/* Must allocate here */
+		x_out = gmt_grd_coord (GMT, O->header, GMT_X);
+		y_out = gmt_grd_coord (GMT, O->header, GMT_Y);
+	}
 
 	if (gmt_M_is_rect_graticule (GMT)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
 		x_in_proj  = gmt_M_memory (GMT, NULL, I->header->n_columns, double);
@@ -7780,10 +7791,14 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 	/* Time to clean up our mess */
 
-	gmt_M_free (GMT, x_in);
-	gmt_M_free (GMT, y_in);
-	gmt_M_free (GMT, x_out);
-	gmt_M_free (GMT, y_out);
+	if (!in) {
+		gmt_M_free (GMT, x_in);
+		gmt_M_free (GMT, y_in);
+	}
+	if (!out) {
+		gmt_M_free (GMT, x_out);
+		gmt_M_free (GMT, y_out);
+	}
 	if (gmt_M_is_rect_graticule(GMT)) {
 		gmt_M_free (GMT, x_in_proj);
 		gmt_M_free (GMT, y_in_proj);
@@ -7818,6 +7833,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 	 * made "interpolant" an integer (was int bilinear).
 	 */
 
+	bool in = false, out = false;
 	int col_in, row_in, col_out, row_out, b, nb = I->header->n_bands;
  	uint64_t ij_in, ij_out;
 	short int *nz = NULL;
@@ -7834,10 +7850,20 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 	/* Precalculate grid coordinates */
 
-	x_in  = gmt_grd_coord (GMT, I->header, GMT_X);
-	y_in  = gmt_grd_coord (GMT, I->header, GMT_Y);
-	x_out = gmt_grd_coord (GMT, O->header, GMT_X);
-	y_out = gmt_grd_coord (GMT, O->header, GMT_Y);
+	if (I->x) {	/* Reuse existing arrays */
+		x_in = I->x;	y_in = I->y;	in = true;
+	}
+	else {	/* Must allocate here */
+		x_in  = gmt_grd_coord (GMT, I->header, GMT_X);
+		y_in  = gmt_grd_coord (GMT, I->header, GMT_Y);
+	}
+	if (O->x) {	/* Reuse existing arrays */
+		x_out = O->x;	y_out = O->y;	out = true;
+	}
+	else {	/* Must allocate here */
+		x_out = gmt_grd_coord (GMT, O->header, GMT_X);
+		y_out = gmt_grd_coord (GMT, O->header, GMT_Y);
+	}
 
 	if (gmt_M_is_rect_graticule (GMT)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
 		x_in_proj  = gmt_M_memory (GMT, NULL, I->header->n_columns, double);
@@ -7949,10 +7975,14 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 	/* Time to clean up our mess */
 
-	gmt_M_free (GMT, x_in);
-	gmt_M_free (GMT, y_in);
-	gmt_M_free (GMT, x_out);
-	gmt_M_free (GMT, y_out);
+	if (!in) {
+		gmt_M_free (GMT, x_in);
+		gmt_M_free (GMT, y_in);
+	}
+	if (!out) {
+		gmt_M_free (GMT, x_out);
+		gmt_M_free (GMT, y_out);
+	}
 	if (gmt_M_is_rect_graticule(GMT)) {
 		gmt_M_free (GMT, x_in_proj);
 		gmt_M_free (GMT, y_in_proj);

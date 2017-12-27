@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1061,8 +1061,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		double *xp = NULL, *yp = NULL, V[4] = {0.0, 0.0, 0.0, 0.0};
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Evaluate spline at %" PRIu64 " equidistant output locations\n", n_ok);
 		/* Precalculate all coordinates */
-		xp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_X);
-		yp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_Y);
+		xp = Out[GMT_X]->x;
+		yp = Out[GMT_X]->y;
 		if (Ctrl->C.movie) {	/* Write out U,V grids after adding contribution for each eigenvalue */
 			gmt_grdfloat *tmp[2] = {NULL, NULL};
 			if (Ctrl->C.movie == 1) {	/* Need temp arrays to capture increments */
@@ -1149,8 +1149,6 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		gmt_M_free (GMT, xp);
-		gmt_M_free (GMT, yp);
 	}
 
 	/* Clean up */
