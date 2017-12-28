@@ -370,7 +370,7 @@ GMT_LOCAL void gmtnc_set_optimal_chunksize (struct GMT_CTRL *GMT, struct GMT_GRI
 
 GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job) {
 	int j, err, has_vector;
-	int old_fill_mode;
+	int old_fill_mode, status;
 	double dummy[2], *xy = NULL;
 	char dimname[GMT_GRID_UNIT_LEN80], coord[8];
 	nc_type z_type;
