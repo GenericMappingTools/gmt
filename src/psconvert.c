@@ -40,6 +40,13 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V"
 
+#ifdef	__APPLE__
+	/* Apple Xcode expects _Nullable to be defined but it is not if gcc */
+#ifndef _Nullable
+#	define _Nullable
+#	endif
+#	endif
+
 #ifdef _WIN32
 #	define dup2 _dup2
 	/* Various shared-library functions declared in gmt_sharedlibs.c */

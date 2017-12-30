@@ -695,18 +695,16 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 #pragma omp parallel
 	{
-		char frame_cmd[GMT_LEN32];
+		char loop_cmd[GMT_LEN32];
 #pragma omp for nowait
 		for (frame = 0; frame < n_frames; frame++) {
-	        	sprintf (frame_cmd, "%s %6.6d", main_file, frame);
+	        	sprintf (loop_cmd, "%s %6.6d", main_file, frame);
 			GMT_Report (API, GMT_MSG_NORMAL, "Create frame %6.6d\n", frame);
-			if ((error = system (frame_cmd))) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Running script %s returned error %d - exiting.\n", frame_cmd, error);
-				Return (GMT_RUNTIME_ERROR);
+			if ((error = system (loop_cmd))) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Running script %s returned error %d - continuing.\n", loop_cmd, error);
 			}
 		}
 	}
-
 	/* Cd back up to parent directory */
 	if (chdir ("..")) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to change directory to parent directory - exiting.\n");
