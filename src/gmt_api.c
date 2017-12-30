@@ -423,13 +423,18 @@ GMT_LOCAL int api_alloc_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 }
 
 /*! . */
+GMT_LOCAL double * api_grid_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_GRID *G) {
+	return (gmt_grd_coord (API->GMT, G->header, dim));
+}
+
+/*! . */
 GMT_LOCAL int api_alloc_grid_xy (struct GMTAPI_CTRL *API, struct GMT_GRID *G) {
 	/* Use information in Grid header to allocate the grid x/y vectors.
 	 * We assume gmtgrdio_init_grdheader has been called. */
 	if (G == NULL) return (GMT_PTR_IS_NULL);
 	if (G->x || G->y) return (GMT_PTR_NOT_NULL);
-	G->x = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G);	/* Get array of x coordinates */
-	G->y = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G);	/* Get array of y coordinates */
+	G->x = api_grid_coord (API, GMT_X, G);	/* Get array of x coordinates */
+	G->y = api_grid_coord (API, GMT_Y, G);	/* Get array of y coordinates */
 	return (GMT_NOERROR);
 }
 
@@ -450,13 +455,18 @@ GMT_LOCAL int api_alloc_image (struct GMT_CTRL *GMT, uint64_t *dim, struct GMT_I
 }
 
 /*! . */
+GMT_LOCAL double * api_image_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_IMAGE *I) {
+	return (gmt_grd_coord (API->GMT, I->header, dim));
+}
+
+/*! . */
 GMT_LOCAL int api_alloc_image_xy (struct GMTAPI_CTRL *API, struct GMT_IMAGE *I) {
 	/* Use information in Grid header to allocate the image x,y vectors.
 	 * We assume gmtgrdio_init_grdheader has been called. */
 	if (I == NULL) return (GMT_PTR_IS_NULL);
 	if (I->x || I->y) return (GMT_PTR_NOT_NULL);
-	I->x = GMT_Get_Coord (API, GMT_IS_IMAGE, GMT_X, I);	/* Get array of x coordinates */
-	I->y = GMT_Get_Coord (API, GMT_IS_IMAGE, GMT_Y, I);	/* Get array of y coordinates */
+	I->x = api_image_coord (API, GMT_X, I);	/* Get array of x coordinates */
+	I->y = api_image_coord (API, GMT_Y, I);	/* Get array of y coordinates */
 	return (GMT_NOERROR);
 }
 
@@ -1699,16 +1709,6 @@ GMT_LOCAL int api_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 	}
 
 	return (GMT_NOERROR);
-}
-
-/*! . */
-GMT_LOCAL double * api_grid_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_GRID *G) {
-	return (gmt_grd_coord (API->GMT, G->header, dim));
-}
-
-/*! . */
-GMT_LOCAL double * api_image_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_IMAGE *I) {
-	return (gmt_grd_coord (API->GMT, I->header, dim));
 }
 
 /*! . */
@@ -4278,6 +4278,10 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			return_null (API, GMT_NOT_A_VALID_METHOD);
 			break;
 	}
+	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Also allocate and initialize the x and y vectors */
+		I_obj->x = api_image_coord (API, GMT_X, I_obj);	/* Get array of x coordinates */
+		I_obj->y = api_image_coord (API, GMT_Y, I_obj);	/* Get array of y coordinates */
+	}
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 	if (!via) S_obj->resource = I_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
@@ -4687,8 +4691,8 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			break;
 	}
 	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Also allocate and initialize the x and y vectors */
-		G_obj->x = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G_obj);	/* Get array of x coordinates */
-		G_obj->y = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G_obj);	/* Get array of y coordinates */
+		G_obj->x = api_grid_coord (API, GMT_X, G_obj);	/* Get array of x coordinates */
+		G_obj->y = api_grid_coord (API, GMT_Y, G_obj);	/* Get array of y coordinates */
 	}
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */

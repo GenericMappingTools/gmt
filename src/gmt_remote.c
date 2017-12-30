@@ -136,12 +136,8 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		sprintf (srtmdir, "%s/srtm%d", user_dir[GMT_CACHE_DIR], res);
 		/* Check if srtm1|3 subdir exist - if not create it */
 		if (access (srtmdir, R_OK)) {
-#ifndef _WIN32
-			if (mkdir (srtmdir, (mode_t)0777))
-#else
-			if (mkdir (srtmdir))
-#endif
-	            GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT Cache directory : %s\n", srtmdir);
+			if (gmt_mkdir (srtmdir))
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT Cache directory : %s\n", srtmdir);
 		}
 	}
 	if (mode == GMT_LOCAL_DIR || user_dir[to] == NULL) {

@@ -330,11 +330,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	x2sys_set_home (GMT);
 	x2sys_path (GMT, Ctrl->In.TAG, path);
 	if (x2sys_access (GMT, Ctrl->In.TAG, R_OK)) {	/* No such dir */
-#ifndef _WIN32
-		if (mkdir (path, (mode_t)0777)) {
-#else
-		if (mkdir (path)) {
-#endif
+		if (gmt_mkdir (path)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create TAG directory : %s\n", path);
 			fclose (fp_def);	/* Close local def file */
 			Return (GMT_RUNTIME_ERROR);

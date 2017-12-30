@@ -8304,3 +8304,12 @@ void gmt_set_column (struct GMT_CTRL *GMT, unsigned int direction, unsigned int 
 		GMT->current.io.col_set[dir][col] = 1;	/* Flag as having been set and thus should not be automatically changed */
 	}
 }
+
+int gmt_mkdir (char *file) {
+	/* Simplify coding due to differences between Unix and Windows */
+#ifndef _WIN32
+	return (mkdir (file, (mode_t)0777));
+#else
+	return (mkdir (file));
+#endif
+}

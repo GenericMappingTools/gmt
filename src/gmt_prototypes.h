@@ -253,6 +253,7 @@ EXTERN_MSC void gmt_quad_reset (struct GMT_CTRL *GMT, struct GMT_QUAD *Q, uint64
 EXTERN_MSC void gmt_quad_add (struct GMT_CTRL *GMT, struct GMT_QUAD *Q, double x);
 EXTERN_MSC unsigned int gmt_quad_finalize (struct GMT_CTRL *GMT, struct GMT_QUAD *Q);
 EXTERN_MSC char *gmt_fgets (struct GMT_CTRL *GMT, char *str, int size, FILE *stream);
+EXTERN_MSC int gmt_mkdir (char *file);
 EXTERN_MSC int gmt_fclose (struct GMT_CTRL *GMT, FILE *stream);
 EXTERN_MSC int gmt_access (struct GMT_CTRL *GMT, const char *filename, int mode);		/* access wrapper */
 EXTERN_MSC FILE *gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode);

@@ -4862,7 +4862,10 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 
-			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "= %s", opt->arg);
+			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+				if (opt->next) GMT_Message (API, GMT_TIME_NONE, "= %s", opt->arg);
+				else GMT_Message (API, GMT_TIME_NONE, "= %s\n", opt->arg);
+			}
 
 			if (n_items && (new_stack < 0 || stack[nstack-1]->constant)) {	/* Only a constant provided, set grid accordingly */
 				if (!stack[nstack-1]->G)

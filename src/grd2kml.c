@@ -424,14 +424,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	GMT->current.io.geo.range = (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] > 0.0) ? GMT_IS_M180_TO_P180_RANGE : GMT_IS_0_TO_P360_RANGE;
 
 	/* Create the container quadtree directory first */
-#ifndef _WIN32
-	if (mkdir (Ctrl->N.prefix, (mode_t)0777))
-#else
-	if (mkdir (Ctrl->N.prefix))
-#endif
-	{
+	if (gmt_mkdir (Ctrl->N.prefix))
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Directory %s already exist - will overwrite files\n", Ctrl->N.prefix);
-	}
 	
 	uniq = (int)(time (NULL) % 1000000);	/* remainder of seconds - lazy way to get some unique number for the files  */
 	if (Ctrl->I.derive) {	/* Auto-create single intensity grid from data grid to ensure constant scaling */
@@ -506,25 +500,13 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		/* Create the level directory */
 		if (Ctrl->S.active && level == 0) {
 			sprintf (level_dir, "%s/%s", Ctrl->N.prefix, Ctrl->N.prefix);
-#ifndef _WIN32
-			if (mkdir (level_dir, (mode_t)0777))
-#else
-			if (mkdir (level_dir))
-#endif
-			{
+			if (gmt_mkdir (level_dir))
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Level directory %s already exist - overwriting files\n", level_dir);
-			}
 		}
 		else if (!Ctrl->S.active) {
 			sprintf (level_dir, "%s/%d", Ctrl->N.prefix, level);
-#ifndef _WIN32
-			if (mkdir (level_dir, (mode_t)0777))
-#else
-			if (mkdir (level_dir))
-#endif
-			{
+			if (gmt_mkdir (level_dir))
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Level directory %s already exist - overwriting files\n", level_dir);
-			}
 		}
 		if (level < max_level) {	/* Filter the data to match level resolution */
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Level %d: Filtering down the grid(s)\n", level);
