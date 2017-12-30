@@ -14432,6 +14432,7 @@ bool gmtlib_fig_is_ps (struct GMT_CTRL *GMT) {
 	while (gmt_strtok (fig[n_figs].formats, ",", &pos, p)) {	/* Check each format to make sure each is OK */
 		if (!strcmp (p, "ps")) PS = true;
 	}
+	if (!PS && strchr (fig[n_figs].options, 'P')) PS = true;	/* Down want square paper size when P is given explicitly */
 	gmt_M_free (GMT, fig);
 	return (PS);
 }
