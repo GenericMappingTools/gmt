@@ -308,7 +308,7 @@ man_pages = [
 ('solar', 'solar', 'Plot day-light terminators and other sunlight parameters', '', 1),
 ('postscriptlight', 'postscriptlight', 'A PostScript based plotting library', '', 3),
 ('rose', 'rose', 'Plot a polar histogram (rose, sector, windrose diagrams)', '', 1),
-('scale', 'scale', 'Plot a gray or color scale-bar on maps', '', 1),
+('colorbar', 'colorbar', 'Plot a gray or color scale-bar on maps', '', 1),
 ('ternary', 'ternary', 'Plot data on ternary diagrams', '', 1),
 ('text', 'text', 'Plot or typeset text on maps', '', 1),
 ('wiggle', 'wiggle', 'Plot z = f(x,y) anomalies along tracks', '', 1),
