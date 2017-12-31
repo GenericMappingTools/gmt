@@ -2576,8 +2576,9 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 			Gnew->data = gmt_M_memory_aligned (GMT, NULL, G->header->size, gmt_grdfloat);
 			if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Gnew->data, G->data, G->header->size, gmt_grdfloat);
 		}
-		Gnew->x = GMT_Get_Coord (GMT->parent, GMT_IS_GRID, GMT_X, Gnew);	/* Get array of x coordinates */
-		Gnew->y = GMT_Get_Coord (GMT->parent, GMT_IS_GRID, GMT_Y, Gnew);	/* Get array of y coordinates */
+		
+		Gnew->x = gmt_grd_coord (GMT, Gnew->header, GMT_X);	/* Get array of x coordinates */
+		Gnew->y = gmt_grd_coord (GMT, Gnew->header, GMT_Y);	/* Get array of y coordinates */
 	}
 	return (Gnew);
 }

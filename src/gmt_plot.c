@@ -7278,6 +7278,41 @@ int gmt_set_psfilename (struct GMT_CTRL *GMT) {
 	return k;
 }
 
+/*! . */
+int gmt_ps_append (struct GMT_CTRL *GMT, char *source, unsigned int mode, FILE *dest) {
+	/* Append parts of the PS from source file to destination stream.  The part is decided by mode:
+	 * mode & 1: Include the header. [-K] 
+	 * mode & 2: Include the trailer. [-O]
+	 * The middle part is always included.
+	 */
+	FILE *fp = NULL;
+	char buffer[GMT_BUFSIZ] = {""};
+	bool header = true, trailer = false;	/* The situation once file is opened */
+	
+	if ((fp = fopen (source, "r")) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not open PostScript file %s\n", source);
+		return GMT_NOTSET;
+	}
+	while (fgets (buffer, GMT_BUFSIZ, fp)) {
+		if (!strncmp (buffer, "%PSL_End_Trailer", 16U))
+			trailer = true;	/* Beginning of the trailer */
+		if (header) {	/* We are still reading the header section */
+			if ((mode & 1))	/* Need header */
+				fprintf (dest, "%s", buffer);
+		}
+		else if (trailer) {	/* We are now reading the trailer section */
+			if ((mode & 2))	/* Need trailer */
+				fprintf (dest, "%s", buffer);
+		}
+		else	/* The juicy middle is always delicious */
+			fprintf (dest, "%s", buffer);
+		if (!strncmp (buffer, "%PSL_End_Header", 15U))
+			header = false;	/* Now passed the header section */
+	}
+	fclose (fp);
+	return GMT_NOERROR;
+}
+
 /* All functions involved in reading, writing, duplicating GMT_POSTSCRIPT structs and their PostScript content */
 
 /*! . */

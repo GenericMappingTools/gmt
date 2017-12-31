@@ -7,3 +7,4 @@ M
 
    makecpt
    mapproject
+   movie

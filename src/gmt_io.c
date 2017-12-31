@@ -7679,11 +7679,15 @@ struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	Inew->header = save;	/* Reset to correct header pointer */
 	Inew->hidden = IH;	/* Reset to correct hidden pointer */
 	Inew->data = NULL;	/* Reset to NULL data pointer */
+	Inew->x = NULL;		/* Reset to NULL x pointer */
+	Inew->y = NULL;		/* Reset to NULL y pointer */
 	gmt_copy_gridheader (GMT, Inew->header, I->header);
 
 	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */
 		Inew->data = gmt_M_memory_aligned (GMT, NULL, I->header->size, char);
 		if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Inew->data, I->data, I->header->size, char);
+		Inew->x = gmt_grd_coord (GMT, Inew->header, GMT_X);	/* Get array of x coordinates */
+		Inew->y = gmt_grd_coord (GMT, Inew->header, GMT_Y);	/* Get array of y coordinates */
 	}
 	return (Inew);
 }

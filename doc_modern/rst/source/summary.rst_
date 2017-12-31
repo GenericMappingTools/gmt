@@ -109,6 +109,8 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`mapproject`     | Transformation of coordinate systems for table data                 |
 +-----------------------+---------------------------------------------------------------------+
+| :doc:`movie `         | Create animation sequences and movies                               |
++-----------------------+---------------------------------------------------------------------+
 | :doc:`nearneighbor`   | Nearest-neighbor gridding scheme                                    |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`project`        | Project table data onto lines or great circles                      |

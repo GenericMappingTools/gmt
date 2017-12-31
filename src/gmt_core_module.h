@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2012-2018
+ * Copyright (c) 2012-2017
  * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
@@ -81,6 +81,7 @@ EXTERN_MSC int GMT_greenspline (void *API, int mode, void *args);
 EXTERN_MSC int GMT_kml2gmt (void *API, int mode, void *args);
 EXTERN_MSC int GMT_makecpt (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mapproject (void *API, int mode, void *args);
+EXTERN_MSC int GMT_movie (void *API, int mode, void *args);
 EXTERN_MSC int GMT_nearneighbor (void *API, int mode, void *args);
 EXTERN_MSC int GMT_project (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psbasemap (void *API, int mode, void *args);
@@ -100,6 +101,7 @@ EXTERN_MSC int GMT_pstext (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pswiggle (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psxyz (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psxy (void *API, int mode, void *args);
+EXTERN_MSC int GMT_revert (void *API, int mode, void *args);
 EXTERN_MSC int GMT_sample1d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_spectrum1d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_sph2grd (void *API, int mode, void *args);
@@ -108,6 +110,8 @@ EXTERN_MSC int GMT_sphinterpolate (void *API, int mode, void *args);
 EXTERN_MSC int GMT_sphtriangulate (void *API, int mode, void *args);
 EXTERN_MSC int GMT_splitxyz (void *API, int mode, void *args);
 EXTERN_MSC int GMT_subplot (void *API, int mode, void *args);
+EXTERN_MSC int GMT_surface_mt (void *API, int mode, void *args);
+EXTERN_MSC int GMT_surface_old (void *API, int mode, void *args);
 EXTERN_MSC int GMT_surface (void *API, int mode, void *args);
 EXTERN_MSC int GMT_trend1d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_trend2d (void *API, int mode, void *args);

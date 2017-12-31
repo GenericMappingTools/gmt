@@ -27,7 +27,7 @@
 
 #define THIS_MODULE_NAME	"movie"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Create animation sequences"
+#define THIS_MODULE_PURPOSE	"Create animation sequences and movies"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"V"
@@ -429,7 +429,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	char init_file[GMT_LEN64] = {""}, state_prefix[GMT_LEN64] = {""}, state_file[GMT_LEN64] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[GMT_LEN64] = {""}, post_file[GMT_LEN64] = {""}, main_file[GMT_LEN64] = {""}, line[GMT_BUFSIZ] = {""};
 	char string[GMT_LEN64] = {""}, extra[GMT_LEN64] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[GMT_LEN64] = {""};
-	char loop_cmd[GMT_LEN32] = {""}, png_file[GMT_LEN64] = {""};
+	char loop_cmd[GMT_LEN32] = {""}, png_file[GMT_LEN64] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""};
 	
 	FILE *fp = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -456,6 +456,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the subplot main code ----------------------------*/
+
+	GMT_Report (API, GMT_MSG_NORMAL, "MOVIE IS EXPERIMENTAL AND NOT FINISHED YET!!!.\n");
 
 	/* Determine pixel dimensions of images */
 	p_width =  urint (ceil (Ctrl->W.dim[GMT_X] * Ctrl->W.dim[GMT_Z]));
@@ -493,8 +495,13 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Paper dimensions: Width = %g%c Height = %g%c\n", Ctrl->W.dim[GMT_X], Ctrl->W.unit, Ctrl->W.dim[GMT_Y], Ctrl->W.unit);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Pixel dimensions: %u x %u\n", p_width, p_height);
 	
-	/* Create a working directory which will house every local file and subdirectories created */
+	/* Get full path to the current working directory */
+	if (getcwd (topdir, GMT_BUFSIZ) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to determine current working directory.\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
 	
+	/* Create a working directory which will house every local file and subdirectories created */
 	if (gmt_mkdir (Ctrl->N.prefix)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create working directory %s - exiting.\n", Ctrl->N.prefix);
 		Return (GMT_RUNTIME_ERROR);
@@ -511,6 +518,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
+	if (GMT->session.DATADIR)
+		sprintf (datadir, "%s:%s:%s", topdir, cwd, GMT->session.DATADIR);
+	else
+		sprintf (datadir, "%s:%s", topdir, cwd);
+		
 	/* Create the initialization file for all scripts */
 	
 	sprintf (init_file, "movie_init.%s", extension[Ctrl->In.mode]);
@@ -523,13 +535,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	set_comment (fp, Ctrl->In.mode, string);
 	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_WIDTH", Ctrl->W.dim[GMT_X], Ctrl->W.unit);
 	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_HEIGHT", Ctrl->W.dim[GMT_Y], Ctrl->W.unit);
-	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_DPI", Ctrl->W.dim[GMT_Z], 0);
-	set_tvalue (fp, Ctrl->In.mode, "GMT_MOVIE_DIR", cwd);
-	fprintf (fp, "gmt set PS_MEDIA %g%cx%g%c\n", Ctrl->W.dim[GMT_X], Ctrl->W.unit, Ctrl->W.dim[GMT_Y], Ctrl->W.unit);
-	if (Ctrl->G.active)	/* Want to set background color - we do this in psconvert */
-		sprintf (extra, "A+g%s,P", Ctrl->G.fill);
-	else	/* In either case we set Portrait mode */
-		sprintf (extra, "P");
+	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_DPU", Ctrl->W.dim[GMT_Z], 0);
 	fclose (fp);
 	
 	if (Ctrl->S[MOVIE_PREFLIGHT].active) {	/* Create the preflight script from the users background script */
@@ -549,6 +555,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				set_comment (fp, Ctrl->In.mode, "\tSet fixed background output ps name");
 				fprintf (fp, "\tgmt figure gmt_movie_background ps\n");
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->W.dim[GMT_X], Ctrl->W.unit, Ctrl->W.dim[GMT_Y], Ctrl->W.unit);
+				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 			}
 			else if (!strstr (line, "#!/bin"))	/* Skip any leading shell incantation since already placed */
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
@@ -610,6 +617,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				set_comment (fp, Ctrl->In.mode, "\tSet fixed foreground output ps name");
 				fprintf (fp, "\tgmt figure gmt_movie_foreground ps\n");
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->W.dim[GMT_X], Ctrl->W.unit, Ctrl->W.dim[GMT_Y], Ctrl->W.unit);
+				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 			}
 			else if (!strstr (line, "#!/bin"))	/* Skip any leading shell incantation since already placed */
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
@@ -644,6 +652,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		set_comment (fp, Ctrl->In.mode, state_prefix);
 		sprintf (state_prefix, "%s_%6.6d", Ctrl->N.prefix, frame);
 		set_ivalue (fp, Ctrl->In.mode, "GMT_MOVIE_FRAME", frame);	/* Current frame number */
+		set_ivalue (fp, Ctrl->In.mode, "GMT_MOVIE_NFRAMES", n_frames);	/* Total frames */
 		set_tvalue (fp, Ctrl->In.mode, "GMT_MOVIE_NAME", state_prefix);	/* Current frame name prefix */
 		for (col = 0; col < n_values; col++) {	/* Place frame variables from file into parameter file */
 			sprintf (string, "GMT_MOVIE_VAL%u", col+1);
@@ -661,6 +670,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create loop frame script file %s - exiting\n", main_file);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
+	if (Ctrl->G.active)	/* Want to set background color - we do this in psconvert */
+		sprintf (extra, "A+g%s,P", Ctrl->G.fill);
+	else	/* In either case we set Portrait mode */
+		sprintf (extra, "P");
 	set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 	set_comment (fp, Ctrl->In.mode, "Main frame loop script");
 	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a PPID since subshells may mess things up */
@@ -678,8 +691,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 			set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and conversion parameters");
 			fprintf (fp, "\tgmt figure %s png", place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));
-			fprintf (fp, " E%s,%s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_DPI"), extra);
+			fprintf (fp, " E%s,%s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_DPU"), extra);
 			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->W.dim[GMT_X], Ctrl->W.unit, Ctrl->W.dim[GMT_Y], Ctrl->W.unit);
+			fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 			n_begin++;	/* Processed the gmt begin line */
 		}
 		else if (!strstr (line, "#!/bin"))	/* Skip any leading shell incantation since already placed */

@@ -70,6 +70,7 @@ Core modules
    kml2gmt
    makecpt
    mapproject
+   movie
    nearneighbor
    project
    basemap

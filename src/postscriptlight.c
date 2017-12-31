@@ -3990,6 +3990,7 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 	if (!PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) PSL_command (PSL, "1 /Normal PSL_transp\n");
 
 	if (lastpage) {
+		PSL_command (PSL, "%%PSL_Begin_Trailer\n");
 		PSL_command (PSL, "%%%%PageTrailer\n");
 		if (PSL->init.runmode) {
 			psl_pattern_cleanup (PSL);
@@ -4201,6 +4202,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		i = PSL->internal.line_cap;	PSL->internal.line_cap = PSL_BUTT_CAP;		PSL_setlinecap (PSL, i);
 		i = PSL->internal.line_join;	PSL->internal.line_join = PSL_MITER_JOIN;	PSL_setlinejoin (PSL, i);
 		i = PSL->internal.miter_limit;	PSL->internal.miter_limit = PSL_MITER_DEFAULT;	PSL_setmiterlimit (PSL, i);
+		PSL_command (PSL, "%%PSL_End_Header\n");
 	}
 
 	/* Set default line color and no-rgb */

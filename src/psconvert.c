@@ -163,6 +163,11 @@ struct PS2RASTER_CTRL {
 		bool active;
 		char *file;
 	} L;
+	struct PS2R_M {	/* -M[<backgroundfile>][,<foregroundfile>] */
+		bool active;
+		char *bfile;
+		char *ffile;
+	} M;
 	struct PS2R_P {	/* -P */
 		bool active;
 	} P;
@@ -459,6 +464,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* D
 	gmt_M_str_free (C->F.file);
 	gmt_M_str_free (C->G.file);
 	gmt_M_str_free (C->L.file);
+	gmt_M_str_free (C->M.bfile);
+	gmt_M_str_free (C->M.ffile);
 	gmt_M_str_free (C->W.doctitle);
 	gmt_M_str_free (C->W.overlayname);
 	gmt_M_str_free (C->W.foldername);
@@ -470,7 +477,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psconvert <psfile1> <psfile2> <...> -A[u][<margins>][-][+p[<pen>]][+g<fill>][+r][+s[m]|S<width[u]>[/<height>[u]]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-I] [-L<listfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
@@ -609,6 +616,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, mode;
 	int j;
+	char *c = NULL;
 	bool grayscale, halfbaked = false;
 	struct GMT_OPTION *opt = NULL;
 
@@ -669,6 +677,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 					Ctrl->L.file = strdup (opt->arg);
 				else
 					n_errors++;
+				break;
+			case 'M':	/* Manage background and foreground layers */
+				Ctrl->M.active = true;
+				if ((c = strchr (opt->arg, ','))) {	/* There is a foreground layer */
+					if (opt->arg[0] == ',') /* Only a foreground layer */
+						Ctrl->M.ffile = strdup (&opt->arg[1]);
+					else {	/* Both back and fore-ground files */
+						Ctrl->M.ffile = strdup (&c[1]);
+						c[0] = '\0';	/* Temporarily chop off foregroundfile */
+						Ctrl->M.bfile = strdup (opt->arg);
+						c[0] = ',';	/* Restore foregroundfile */
+					}
+				}
+				else /* Only a background file */
+					Ctrl->M.bfile = strdup (opt->arg);
 				break;
 			case 'P':	/* Force Portrait mode */
 				Ctrl->P.active = true;
@@ -773,6 +796,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 		if (!Ctrl->Q.on[PSC_LINES] && Ctrl->T.device == GS_DEV_TPNG) {	/* Transparent PNG needs this antialiasing option as well, at least in gs 9.22 */
 			Ctrl->Q.on[PSC_LINES] = true;
 			Ctrl->Q.bits[PSC_LINES] = 2;
+		}
+	}
+
+	if (Ctrl->M.active) {
+		if (Ctrl->M.bfile && access (Ctrl->M.bfile, F_OK)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-M: Background file %s cannot be found!\n", Ctrl->M.bfile);
+			n_errors++;
+		}
+		if (Ctrl->M.ffile && access (Ctrl->M.ffile, F_OK)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-M: Foreground file %s cannot be found!\n", Ctrl->M.ffile);
+			n_errors++;
 		}
 	}
 
@@ -1259,6 +1293,44 @@ GMT_LOCAL int in_mem_PS_convert(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *
 	return error;
 }
 
+GMT_LOCAL int wrap_the_sandwich (struct GMT_CTRL *GMT, char *main, char *bfile, char *ffile) {
+	/* Replace main file with the sandwich of [bfile] + main + [ffile].  We know at least
+	   one of bfile or ffile exists, as do main. */
+	char newfile[PATH_MAX] = {""};
+	FILE *fp = NULL;
+	
+	/* Create a temporary file name for the sandwich file and open it for writing */
+	sprintf (newfile, "%s/psconvert_sandwich_%d.ps", GMT->parent->tmp_dir, (int)getpid());
+	if ((fp = fopen (newfile, "w")) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create temporary file %s.\n", newfile);
+		return (GMT_RUNTIME_ERROR);
+	}
+	if (bfile) {	/* We have a background PS layer that should go first */
+		gmt_ps_append (GMT, bfile, 1, fp);	/* Start with this file but skip trailer */
+		if (ffile) {	/* There is also a foreground PS layer that should go last */
+			gmt_ps_append (GMT, main,  0, fp);	/* Append main file first but exclude both header and trailer */
+			gmt_ps_append (GMT, ffile, 2, fp);	/* Append foreground file but exclude header */
+		}
+		else	/* No foreground, append main and its trailer */
+			gmt_ps_append (GMT, main, 2, fp);	/* Append main file; skip header but include trailer */
+	}
+	else {	/* Just a foreground layer to append */
+		gmt_ps_append (GMT, main,  1, fp);	/* Begin with main file but exclude trailer */
+		gmt_ps_append (GMT, ffile, 2, fp);	/* Append foreground file but exclude header */
+	}
+	fclose (fp);	/* Completed */
+	
+	/* Now remove original ps_file and rename the new file to main */
+	if (gmt_remove_file (GMT, main)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to remove original file %s.\n", main);
+		return (GMT_RUNTIME_ERROR);
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s -> %s\n", newfile, main);
+	if (gmt_rename_file (GMT, newfile, main, GMT_RENAME_FILE))
+		return (GMT_RUNTIME_ERROR);
+	return (GMT_NOERROR);
+}
+
 EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
 int GMT_psconvert (void *V_API, int mode, void *args) {
@@ -1476,6 +1548,12 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Fattened up PS file %s\n", ps_names[0]);
+		}
+		if (Ctrl->M.active) {	/* Must sandwich file in-between one or two layers */
+			if (wrap_the_sandwich (GMT, ps_names[0], Ctrl->M.bfile, Ctrl->M.ffile)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to wrap %s inside optional back- and fore-ground layers!\n", ps_names[0]);
+				Return (GMT_RUNTIME_ERROR);
+			}
 		}
 	}
 

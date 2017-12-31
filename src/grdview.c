@@ -986,6 +986,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			Topo = Z_orig;
+			xval = Topo->x;
+			yval = Topo->y;
 		}
 		Z = Z_orig;
 		gmt_change_grdreg (GMT, Z->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration, again */

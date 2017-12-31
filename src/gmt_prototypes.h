@@ -179,6 +179,7 @@ EXTERN_MSC struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT
 #ifdef _POSTSCRIPTLIGHT_H
 /* gmt_plot.c prototypes only included if postscriptlight has been included */
 
+EXTERN_MSC int gmt_ps_append (struct GMT_CTRL *GMT, char *source, unsigned int mode, FILE *dest);
 EXTERN_MSC char *gmt_export2proj4 (struct GMT_CTRL *GMT);
 EXTERN_MSC char *gmt_importproj4 (struct GMT_CTRL *GMT, char *szProj4, int *scale_pos);
 EXTERN_MSC int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers);
