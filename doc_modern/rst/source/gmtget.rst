@@ -1,8 +1,8 @@
 .. index:: ! gmtget
 
-******
-gmtget
-******
+***
+get
+***
 
 .. only:: not man
 
@@ -13,14 +13,14 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtget** [ |-G|\ *defaultsfile* ] [ |-L| ] *PARAMETER1* [ *PARAMETER2* *PARAMETER3* ... ]
+**gmt get** [ |-G|\ *defaultsfile* ] [ |-L| ] *PARAMETER1* [ *PARAMETER2* *PARAMETER3* ... ]
 
 |No-spaces|
 
 Description
 -----------
 
-**gmtget** will list the value of one or more GMT default parameters.
+**gmt get** will list the value of one or more GMT default parameters.
 
 Required Arguments
 ------------------

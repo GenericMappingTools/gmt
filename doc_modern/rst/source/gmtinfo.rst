@@ -1,8 +1,8 @@
 .. index:: ! gmtinfo
 
-*******
-gmtinfo
-*******
+****
+info
+****
 
 .. only:: not man
 
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtinfo** [ *table* ] [ |-A|\ **a**\ \|\ **f**\ \|\ **s** ]
+**gmt info** [ *table* ] [ |-A|\ **a**\ \|\ **f**\ \|\ **s** ]
 [ |-C| ]
 [ |-D|\ [*dx*\ [/*dy*\ ]] ]
 [ |-E|\ **L**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col* ]
@@ -39,10 +39,10 @@ Synopsis
 Description
 -----------
 
-**gmtinfo** reads its standard input [or from files] and finds the
+**info** reads its standard input [or from files] and finds the
 extreme values in each of the columns. It recognizes NaNs and will print
 warnings if the number of columns vary from record to record. As an
-option, **gmtinfo** will find the extent of the first *n* columns rounded
+option, **info** will find the extent of the first *n* columns rounded
 up and down to the nearest multiple of the supplied increments. By
 default, this output will be in the form **-R**\ *w/e/s/n* which can be
 used directly in the command line for other programs (hence only *dx*

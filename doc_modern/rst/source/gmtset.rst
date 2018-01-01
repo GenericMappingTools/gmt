@@ -1,8 +1,8 @@
 .. index:: ! gmtset
 
-******
-gmtset
-******
+***
+set
+***
 
 .. only:: not man
 
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtset** [ |-C| \| |-D|\ [**s**\ \|\ **u**] \|
+**gmt set** [ |-C| \| |-D|\ [**s**\ \|\ **u**] \|
 |-G|\ *defaultsfile* ] [ **-**\ [**BJRXxYycp**\ ]\ *value* ]
 PARAMETER1 [=] *value1* PARAMETER2 [=] *value2* PARAMETER3 [=] *value3*
 ...
@@ -23,9 +23,9 @@ PARAMETER1 [=] *value1* PARAMETER2 [=] *value2* PARAMETER3 [=] *value3*
 Description
 -----------
 
-**gmtset** will adjust individual GMT defaults settings in the
+**set** will adjust individual GMT defaults settings in the
 current directory's :doc:`gmt.conf` file. If no such file exists one will
-be created. The main purpose of **gmtset** is temporarily to change
+be created. The main purpose of **set** is temporarily to change
 certain parameters inside a shell script, e.g., set the dots-per-inch to
 72, run the script, and reset to 1200 dpi.  Only parameters that differ
 from the GMT SI system defaults will be written.  Optionally, you can specify

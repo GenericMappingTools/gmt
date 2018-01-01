@@ -1,8 +1,8 @@
 .. index:: ! gmtspatial
 
-**********
-gmtspatial
-**********
+*******
+spatial
+*******
 
 .. only:: not man
 
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtspatial** [ *table* ] [ |-A|\ [**a**\ *min_dist*][*unit*]]
+**gmt spatial** [ *table* ] [ |-A|\ [**a**\ *min_dist*][*unit*]]
 [ |-C| ]
 [ |-D|\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*] ]
 [ |-E|\ **+**\ \|\ **-** ]
@@ -40,7 +40,7 @@ Synopsis
 Description
 -----------
 
-**gmtspatial** reads one or more data files (which may be multisegment
+**spatial** reads one or more data files (which may be multisegment
 files) that contains closed polygons and operates of these polygons in
 the specified way. Operations include area calculation, handedness
 reversals, and polygon intersections. 

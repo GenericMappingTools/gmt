@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**filter1d** [ *table* ] |-F|\ *type<width>*\ [*modifiers*]
+**gmt filter1d** [ *table* ] |-F|\ *type<width>*\ [*modifiers*]
 [ |-D|\ *increment* ] [ |-E| ]
 [ |-L|\ *lack\_width* ] [ |-N|\ *t\_col*\ \|\ *params* ] [ |-Q|\ *q\_factor* ]
 [ |-S|\ *symmetry\_factor* ] [ |-T|\ *t\_min/t\_max/t\_inc*\ [**+n**] ]

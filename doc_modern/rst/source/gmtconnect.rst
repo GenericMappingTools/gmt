@@ -1,8 +1,8 @@
 .. index:: ! gmtconnect
 
-**********
-gmtconnect
-**********
+*******
+connect
+*******
 
 .. only:: not man
 
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtconnect** [ *table* ] [ |-C|\ [*closed*] ]
+**gmt connect** [ *table* ] [ |-C|\ [*closed*] ]
 [ |-D|\ [*template*] ] [ |-L|\ [*linkfile*] ]
 [ |-Q|\ [*template*] ] [ |-T|\ [*cutoff*\ [*unit*][/\ *nn\_dist*]] ]
 [ |SYN_OPT-V| ]
@@ -32,7 +32,7 @@ Synopsis
 Description
 -----------
 
-**gmtconnect** reads standard input or one or more data files, which may
+**connect** reads standard input or one or more data files, which may
 be multisegment files, and examines the coordinates of the end points of
 all line segments. If a pair of end points are identical or closer to
 each other than the specified separation tolerance then the two line

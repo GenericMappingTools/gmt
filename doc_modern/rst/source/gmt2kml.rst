@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt2kml** [ *table* ]
+**gmt gmt2kml** [ *table* ]
 [ |-A|\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ]
 [ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ] [ |-E|\ [*altitude*] ]
 [ |-F|\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p**\ \|\ **w** ]
@@ -292,7 +292,7 @@ red circle symbols, try
 
    ::
 
-    gmt2kml mypoints.txt -Gfred -Fs > mypoints.kml
+    gmt gmt2kml mypoints.txt -Gfred -Fs > mypoints.kml
 
 To convert a multisegment file with lines (lon, lat) separated by
 segment headers that contain a **-L**\ labelstring with the feature
@@ -300,7 +300,7 @@ name, selecting a thick white pen, and title the document, try
 
    ::
 
-    gmt2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" > mylines.kml
+    gmt gmt2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" > mylines.kml
 
 To convert a multisegment file with polygons (lon, lat) separated by
 segment headers that contain a **-L**\ labelstring with the feature

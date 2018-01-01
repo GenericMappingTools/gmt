@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**basemap** |-J|\ *parameters*
+**gmt basemap** |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
 [ |-A|\ [*file*] ]

@@ -14,7 +14,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**contour** [ *table* ] |-J|\ *parameters*
+**gmt contour** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A|\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
 [ |SYN_OPT-B| ]

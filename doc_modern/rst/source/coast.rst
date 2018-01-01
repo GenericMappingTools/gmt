@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**coast** |-J|\ *parameters*
+**gmt coast** |-J|\ *parameters*
 |SYN_OPT-R|
 [ |-A|\ *area* ]
 [ |SYN_OPT-B| ]

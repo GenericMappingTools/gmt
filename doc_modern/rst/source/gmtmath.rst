@@ -1,8 +1,8 @@
 .. index:: ! gmtmath
 
-*******
-gmtmath
-*******
+****
+math
+****
 
 .. only:: not man
 
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtmath** [ |-A|\ *t_f(t)*\ [**+e**]\ [**+s**\ \|\ **w**] ]
+**gmt math** [ |-A|\ *t_f(t)*\ [**+e**]\ [**+s**\ \|\ **w**] ]
 [ |-C|\ *cols* ]
 [ |-E|\ *eigen* ] [ |-I| ]
 [ |-N|\ *n\_col*\ [/*t_col*] ]
@@ -37,7 +37,7 @@ Synopsis
 Description
 -----------
 
-**gmtmath** will perform operations like add, subtract, multiply, and
+**math** will perform operations like add, subtract, multiply, and
 divide on one or more table data files or constants using Reverse Polish
 Notation (RPN) syntax (e.g., Hewlett-Packard calculator-style).
 Arbitrarily complicated expressions may therefore be evaluated; the

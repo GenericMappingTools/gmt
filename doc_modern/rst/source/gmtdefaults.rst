@@ -1,8 +1,8 @@
 .. index:: ! gmtdefaults
 
-***********
-gmtdefaults
-***********
+********
+defaults
+********
 
 .. only:: not man
 
@@ -13,14 +13,14 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtdefaults** [ |-D|\ [**u**\ \|\ **s**] ]
+**gmt defaults** [ |-D|\ [**u**\ \|\ **s**] ]
 
 |No-spaces|
 
 Description
 -----------
 
-**gmtdefaults** lists all the GMT parameter defaults if the option
+**defaults** lists all the GMT parameter defaults if the option
 **-D** is used. There are three ways to change some of the settings: (1)
 Use the command :doc:`gmtset`, (2) use any text editor to edit the file
 :doc:`gmt.conf` in your home, ~/.gmt or current directory (if you do not

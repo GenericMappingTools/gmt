@@ -1,8 +1,8 @@
 .. index:: ! gmtconvert
 
-**********
-gmtconvert
-**********
+*******
+convert
+*******
 
 .. only:: not man
 
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtconvert** [ *table* ] [ |-A| ] [ |-C|\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]]
+**gmt convert** [ *table* ] [ |-A| ] [ |-C|\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]]
 [ |-D|\ [*template*\ [**+o**\ *orig*]] ]
 [ |-E|\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **M**\ *stride*] ] [ |-L| ]
 [ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][*refpoint*] ]
@@ -41,7 +41,7 @@ Synopsis
 Description
 -----------
 
-**gmtconvert** reads its standard input [or input files] and writes out
+**convert** reads its standard input [or input files] and writes out
 the desired information to standard output. It can do a combination of
 nine tasks: (1) convert between binary and ASCII data tables, (2) paste
 corresponding records from multiple files horizontally into a single

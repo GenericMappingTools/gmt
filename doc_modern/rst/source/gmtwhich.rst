@@ -1,8 +1,8 @@
 .. index:: ! gmtwhich
 
-********
-gmtwhich
-********
+*****
+which
+*****
 
 .. only:: not man
 
@@ -13,14 +13,14 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtwhich** *files* [ |-A| ] [ |-C| ] [ |-D| ] [ |-G|\ [**c**\ \|\ **l**\ \|\ **u**] ] [ |SYN_OPT-V| ]
+**gmt which** *files* [ |-A| ] [ |-C| ] [ |-D| ] [ |-G|\ [**c**\ \|\ **l**\ \|\ **u**] ] [ |SYN_OPT-V| ]
 
 |No-spaces|
 
 Description
 -----------
 
-**gmtwhich** reports the full paths to the files given on the command
+**which** reports the full paths to the files given on the command
 line. We look for the file in (1) the current directory,
 (2) in $GMT_USERDIR (if defined), (3) in $GMT_DATADIR (if defined), or
 (4) in $GMT_CACHEDIR (if defined). If

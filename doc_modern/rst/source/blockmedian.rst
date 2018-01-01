@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**blockmedian** [ *table* ]
+**gmt blockmedian** [ *table* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-C| ]

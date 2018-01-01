@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 
-**fitcircle** [ *table* ] |-L|\ *norm* [ |-F|\ *flags* ] [ |-S|\ [*lat*] ]
+**gmt fitcircle** [ *table* ] |-L|\ *norm* [ |-F|\ *flags* ] [ |-S|\ [*lat*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]

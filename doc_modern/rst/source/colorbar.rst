@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**colorbar** |-D|\ *refpoint*
+**gmt colorbar** |-D|\ *refpoint*
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-F|\ *panel* ]

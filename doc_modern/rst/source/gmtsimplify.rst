@@ -1,8 +1,8 @@
 .. index:: ! gmtsimplify
 
-***********
-gmtsimplify
-***********
+********
+simplify
+********
 
 .. only:: not man
 
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtsimplify** [ *table* ] |-T|\ *tolerance*\ [*unit*]
+**gmt simplify** [ *table* ] |-T|\ *tolerance*\ [*unit*]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -30,7 +30,7 @@ Synopsis
 Description
 -----------
 
-**gmtsimplify** reads one or more data files and apply the Douglas-Peucker
+**simplify** reads one or more data files and apply the Douglas-Peucker
 line simplification algorithm. The method recursively subdivides a
 polygon until a run of points can be replaced by a straight line
 segment, with no point in that run deviating from the straight line by

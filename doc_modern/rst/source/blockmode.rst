@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**blockmode** [ *table* ]
+**gmt blockmode** [ *table* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-C| ]

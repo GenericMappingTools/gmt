@@ -1,8 +1,8 @@
 .. index:: ! gmtregress
 
-**********
-gmtregress
-**********
+*******
+regress
+*******
 
 .. only:: not man
 
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtregress** [ *table* ] [ |-A|\ *min*\ /*max*\ /*inc* ]
+**gmt regress** [ *table* ] [ |-A|\ *min*\ /*max*\ /*inc* ]
 [ |-C|\ *level* ]
 [ |-E|\ **x**\ \|\ **y**\ \|\ **o**\ \|\ **r** ]
 [ |-F|\ *flags* ]
@@ -36,7 +36,7 @@ Synopsis
 Description
 -----------
 
-**gmtregress** reads one or more data tables [or *stdin*]
+**regress** reads one or more data tables [or *stdin*]
 and determines the best linear regression model *y* = *a* + *b*\ \* *x* for each segment using the chosen parameters.
 The user may specify which data and model components should be reported.  By default, the model will be evaluated at the
 input points, but alternatively you can specify an equidistant range over which to evaluate

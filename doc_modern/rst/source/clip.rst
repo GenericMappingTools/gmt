@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**clip** [ *table* ] |-J|\ *parameters* |-C|\ [\ *n*]
+**gmt clip** [ *table* ] |-J|\ *parameters* |-C|\ [\ *n*]
 |SYN_OPT-Rz|
 [ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
 [ |SYN_OPT-B| ]

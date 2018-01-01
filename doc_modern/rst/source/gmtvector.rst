@@ -1,8 +1,8 @@
 .. index:: ! gmtvector
 
-*********
-gmtvector
-*********
+******
+vector
+******
 
 .. only:: not man
 
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtvector** [ *tables* ] [ |-A|\ **m**\ [*conf*]\|\ *vector* ] 
+**gmt vector** [ *tables* ] [ |-A|\ **m**\ [*conf*]\|\ *vector* ] 
 [ |-C|\ [**i**\ \|\ **o**] ] 
 [ |-E| ] [ |-N| ] [ |-S|\ *vector* ]
 [ |-T|\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **r**\ [*arg*\ \|\ **R**\ \|\ **s**\ \|\ **x**] ] 
@@ -33,7 +33,7 @@ Synopsis
 Description
 -----------
 
-**gmtvector** reads either (x, y), (x, y, z), (r, theta) or (lon, lat)
+**vector** reads either (x, y), (x, y, z), (r, theta) or (lon, lat)
 [or (lat,lon); see **-:**] coordinates from the first 2-3 columns on
 standard input [or one or more *tables*]. If **-fg** is selected and only two items
 are read (i.e., lon, lat) then these coordinates are converted to
