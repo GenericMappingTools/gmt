@@ -109,7 +109,7 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`mapproject`     | Transformation of coordinate systems for table data                 |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`movie `         | Create animation sequences and movies                               |
+| :doc:`movie`          | Create animation sequences and movies                               |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`nearneighbor`   | Nearest-neighbor gridding scheme                                    |
 +-----------------------+---------------------------------------------------------------------+
