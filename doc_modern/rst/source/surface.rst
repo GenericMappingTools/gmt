@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**surface** [ *table* ] |-G|\ *outputfile.nc*
+**gmt surface** [ *table* ] |-G|\ *outputfile.nc*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ *aspect_ratio*\ \|\ **m** ]

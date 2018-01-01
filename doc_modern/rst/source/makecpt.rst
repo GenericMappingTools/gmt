@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**makecpt** [ |-A|\ [**+**\ ]\ *transparency* ]
+**gmt makecpt** [ |-A|\ [**+**\ ]\ *transparency* ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\ \|\ **o**] ]
 [ |-E|\ [*nlevels*] ]

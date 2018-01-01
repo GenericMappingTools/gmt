@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**nearneighbor** [ *table* ] |-G|\ *out_grdfile*
+**gmt nearneighbor** [ *table* ] |-G|\ *out_grdfile*
 |SYN_OPT-I|
 |-N|\ *sectors*\ [/*min_sectors*]
 |SYN_OPT-R|

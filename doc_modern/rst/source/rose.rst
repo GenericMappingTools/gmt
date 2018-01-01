@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**rose** [ *table* ] [ |-A|\ [**r**]\ *sector_width* ]
+**gmt rose** [ *table* ] [ |-A|\ [**r**]\ *sector_width* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D| ]

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**sample1d** [ *table* ]
+**gmt sample1d** [ *table* ]
 [ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
 [ |-F|\ **l**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **+2**] ]
 [ |-I|\ *inc*\ [*unit*] ]

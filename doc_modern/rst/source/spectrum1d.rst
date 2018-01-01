@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**spectrum1d** [ *table* ] |-S|\ *segment_size*]
+**gmt spectrum1d** [ *table* ] |-S|\ *segment_size*]
 [ |-C|\ [**xycnpago**] ] [ |-D|\ *dt* ] [ |-L|\ [**h**\ \|\ **m**] ]
 [ |-N|\ [\ *name_stem* ] ] [ |-T| ] [ |-W| ]
 [ |SYN_OPT-b| ]

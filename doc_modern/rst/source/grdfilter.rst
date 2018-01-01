@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdfilter** *ingrid* |-D|\ *distance_flag*
+**gmt grdfilter** *ingrid* |-D|\ *distance_flag*
 |-F|\ **x**\ *width*\ [/*width2*][*modifiers*]
 |-G|\ *outgrid*
 [ |SYN_OPT-I| ]

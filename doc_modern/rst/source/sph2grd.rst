@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**sph2grd** [ *table* ] |-G|\ *grdfile*
+**gmt sph2grd** [ *table* ] |-G|\ *grdfile*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-D|\ [**g**\ \|\ **n**] ]

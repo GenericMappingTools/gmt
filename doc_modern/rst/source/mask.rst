@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**mask** [ *table* ]
+**gmt mask** [ *table* ]
 |SYN_OPT-I|
 |-J|\ *parameters*
 |SYN_OPT-R|

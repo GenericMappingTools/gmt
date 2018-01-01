@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdvolume** *grdfile* [ |-C|\ *cval* or |-C|\ *low/high/delta* or |-C|\ **r**\ *low/high* or |-C|\ **r**\ *cval*]
+**gmt grdvolume** *grdfile* [ |-C|\ *cval* or |-C|\ *low/high/delta* or |-C|\ **r**\ *low/high* or |-C|\ **r**\ *cval*]
 [ |-L|\ *base* ]
 [ |SYN_OPT-R| ]
 [ |-S|\ [*unit*] ] [ |-T|\ [**c**\ \|\ **h**] ]

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grd2cpt** *grid* [ |-A|\ [**+**\ ]\ *transparency* ]
+**gmt grd2cpt** *grid* [ |-A|\ [**+**\ ]\ *transparency* ]
 [ |-C|\ *cpt* ] [ |-D|\ [**i**] ]
 [ |-E|\ [*nlevels*] ]
 [ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ][**+c**\ ]]

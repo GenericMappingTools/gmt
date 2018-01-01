@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**text** [ *textfiles* ] |-J|\ *parameters*
+**gmt text** [ *textfiles* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A| ]
 |SYN_OPT-B|

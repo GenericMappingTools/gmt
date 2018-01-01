@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**splitxyz** [ *table* ] 
+**gmt splitxyz** [ *table* ] 
 [ |-A|\ *azimuth*/*tolerance* ]
 [ |-C|\ *course_change*]
 [ |-D|\ *minimum_distance* ]

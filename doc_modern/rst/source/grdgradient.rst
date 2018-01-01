@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdgradient** *in_grdfile* |-G|\ *out_grdfile*
+**gmt grdgradient** *in_grdfile* |-G|\ *out_grdfile*
 [ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
 [ |-E|\ [**m**\ \|\ **s**\ \|\ **p**\ ]\ *azim/elev*\ [**+a**\ *ambient*\ ][**+d**\ *diffuse*\ ][**+p**\ *specular*\ ][**+s**\ *shine*\ ] ] 
 [ |-L|\ *flag* ] 

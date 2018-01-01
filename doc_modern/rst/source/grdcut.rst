@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdcut** *ingrid* |-G|\ *outgrid*
+**gmt grdcut** *ingrid* |-G|\ *outgrid*
 |SYN_OPT-R|
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]

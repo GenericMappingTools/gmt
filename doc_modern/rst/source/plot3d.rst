@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**plot3d** [ *table* ] |-J|\ *parameters*
+**gmt plot3d** [ *table* ] |-J|\ *parameters*
 |-J|\ **z**\ \|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]

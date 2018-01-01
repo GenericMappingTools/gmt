@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdsample** *in_grdfile* |-G|\ *out_grdfile*
+**gmt grdsample** *in_grdfile* |-G|\ *out_grdfile*
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
 [ |-T| ]

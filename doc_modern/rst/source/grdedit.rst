@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdedit** *grid* [ |-A| ] [ |-C| ]
+**gmt grdedit** *grid* [ |-A| ] [ |-C| ]
 [ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
 [ |-E|\ [**a**\ \|\ **h**\ \|\ **l**\ \|\ **r**\ \|\ **t**\ \|\ **v**] ]
 [ |-G|\ *outgrid* ]

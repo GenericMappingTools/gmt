@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdview** *relief_file* |-J|\ *parameters*
+**gmt grdview** *relief_file* |-J|\ *parameters*
 [ |SYN_OPT-B| ]
 [ |-C|\ [*cpt*]]
 [ |-G|\ *drapefile* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]

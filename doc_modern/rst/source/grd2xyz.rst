@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grd2xyz** *grid* [ |-C|\ [**f**\ \|\ **i**] ]
+**gmt grd2xyz** *grid* [ |-C|\ [**f**\ \|\ **i**] ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**a**\ \|\ *weight*] ] [ |-Z|\ [*flags*] ]

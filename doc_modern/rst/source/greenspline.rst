@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**greenspline** [ *table* ]
+**gmt greenspline** [ *table* ]
 [ |-A|\ *gradfile*\ **+f**\ **1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5** ]
 [ |-C|\ [**n**\ \|\ **r**\ \|\ **v**]\ *value*\ [**+f**\ *file*] ]
 [ |-D|\ *mode* ]

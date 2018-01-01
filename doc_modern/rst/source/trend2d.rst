@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**trend2d** [ *table* ] |-F|\ **xyzmrw**\ \|\ **p** |-N|\ *n_model*\ [**+r**]
+**gmt trend2d** [ *table* ] |-F|\ **xyzmrw**\ \|\ **p** |-N|\ *n_model*\ [**+r**]
 [ *xyz[w]file* ]
 [ |-C|\ *condition\_number* ]
 [ |-I|\ [*confidence\_level*] ]

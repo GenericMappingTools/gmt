@@ -1,8 +1,8 @@
 .. index:: ! grd2kml
 
-********
+*******
 grd2kml
-********
+*******
 
 .. only:: not man
 
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grd2kml** *grid* 
+**gmt grd2kml** *grid* 
 [ |-C|\ *cpt* ]
 [ |-D| ]
 [ |-E|\ *URL* ]

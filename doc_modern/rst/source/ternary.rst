@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**ternary** [ *table* ]
+**gmt ternary** [ *table* ]
 [ **-JX** \ *width*\ [unit] ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-B| ]

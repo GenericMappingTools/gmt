@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdtrack** [ *xyfile* ] |-G|\ *grd1* |-G|\ *grd2* ...
+**gmt grdtrack** [ *xyfile* ] |-G|\ *grd1* |-G|\ *grd2* ...
 [ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
 [ |-C|\ *length*\ [**u**]/\ *ds*\ [*/spacing*][**+a**][**l**\ \|\ **r**][**+v**] ] [|-D|\ *dfile* ]
 [ |-E|\ *line* ]

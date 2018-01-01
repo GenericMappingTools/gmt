@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**sphdistance** [ *table* ] |-G|\ *grdfile*
+**gmt sphdistance** [ *table* ] |-G|\ *grdfile*
 [ |-C| ]
 [ |-E|\ **d**\ \|\ **n**\ \|\ **z**\ [*dist*] ]
 [ |SYN_OPT-I| ]

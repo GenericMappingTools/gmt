@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**solar** 
+**gmt solar** 
 [ |SYN_OPT-B| ]
 [ |-C| ]
 [ |-G|\ *fill*\ \|\ **c** ]

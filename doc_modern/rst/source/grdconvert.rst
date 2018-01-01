@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdconvert** *ingrdfile*\ [=\ *id*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]]
+**gmt grdconvert** *ingrdfile*\ [=\ *id*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]]
 |-G|\ *outgrdfile*\ [=\ *id*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]][\ *:driver*\ [*/datatype*]]]
 [ |-N| ]
 [ |SYN_OPT-R| ]

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdproject** *in_grdfile* |-G|\ *out_grdfile* |-J|\ *parameters*
+**gmt grdproject** *in_grdfile* |-G|\ *out_grdfile* |-J|\ *parameters*
 [ |-C|\ [*dx/dy*] ]
 [ |-D|\ *xinc*\ [*unit*][\ **+e**\ \|\ **n**][/\ *yinc*\ [*unit*][\ ***+e**\ \|\ **n**]] ]
 [ |-E|\ *dpi* ] [ |-F|\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**] ] [ |-I| ] [ |-M|\ **c**\ \|\ **i**\ \|\ **p** ]

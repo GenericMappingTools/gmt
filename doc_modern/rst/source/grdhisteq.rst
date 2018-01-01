@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdhisteq** *in_grdfile* [ |-G|\ *out_grdfile* ]
+**gmt grdhisteq** *in_grdfile* [ |-G|\ *out_grdfile* ]
 [ |-C|\ *n_cells* ] [ |-D|\ [*file*] ] [ |-N|\ [*norm*] ]
 [ |-Q| ]
 |SYN_OPT-R|

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdlandmask** |-G|\ *mask_grd_file*
+**gmt grdlandmask** |-G|\ *mask_grd_file*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+ag**\ \|\ **i**\ \|\ **s** \|\ **S**][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]

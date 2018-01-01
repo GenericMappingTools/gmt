@@ -13,7 +13,7 @@ grdtrend
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdtrend** *grdfile* |-N|\ *n\_model*\ [**+r**]
+**gmt grdtrend** *grdfile* |-N|\ *n\_model*\ [**+r**]
 [ |-D|\ *diff.nc* ]
 [ |SYN_OPT-R| ]
 [ |-T|\ *trend.nc* ] [ |-W|\ *weight.nc* ]

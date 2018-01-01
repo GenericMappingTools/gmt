@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdpaste** *file_a.nc file_b.nc* |-G|\ *outfile.nc*
+**gmt grdpaste** *file_a.nc file_b.nc* |-G|\ *outfile.nc*
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**legend** [ *specfile* ]
+**gmt legend** [ *specfile* ]
 |-D|\ *refpoint* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *dx*/*dy* ]

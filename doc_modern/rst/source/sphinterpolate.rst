@@ -13,7 +13,7 @@ sphinterpolate
 
 .. include:: common_SYN_OPTs.rst_
 
-**sphinterpolate** [ *table* ] |-G|\ *grdfile*
+**gmt sphinterpolate** [ *table* ] |-G|\ *grdfile*
 [ |SYN_OPT-I| ]
 [ |-Q|\ *mode*\ [/*options*] ]
 [ |SYN_OPT-R| ]

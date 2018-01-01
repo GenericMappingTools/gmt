@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**histogram** [ *table* ] |-J|\ **x**\ \|\ **X**\ *parameters*
+**gmt histogram** [ *table* ] |-J|\ **x**\ \|\ **X**\ *parameters*
 |-W|\ *bin_width*\ [**+l**\ \|\ **h**\ \|\ **b**]
 [ |-A| ]
 [ |SYN_OPT-B| ]

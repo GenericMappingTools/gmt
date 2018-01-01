@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdclip** *ingrid* |-G|\ *outgrid*
+**gmt grdclip** *ingrid* |-G|\ *outgrid*
 [ |SYN_OPT-R| ]
 [ |-S|\ **a**\ *high/above* ]
 [ |-S|\ **b**\ *low/below* ] [ |-S|\ **i**\ *low/high/between* ] [ |-S|\ **r**\ *old/new* ]

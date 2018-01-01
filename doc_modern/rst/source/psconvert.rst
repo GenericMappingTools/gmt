@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psconvert** *psfile(s)*
+**gmt psconvert** *psfile(s)*
 [ |-A|\ *params* ]
 [ |-C|\ *gs_option* ]
 [ |-D|\ *outdir* ]

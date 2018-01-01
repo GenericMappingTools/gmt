@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdimage** *grd_z* \| *grd_r grd_g grd_b*
+**gmt grdimage** *grd_z* \| *grd_r grd_g grd_b*
 [ |-A|\ *out_img*\ [**=**\ *driver*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]

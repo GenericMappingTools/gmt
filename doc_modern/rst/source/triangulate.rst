@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**triangulate** [ *table* ]
+**gmt triangulate** [ *table* ]
 [ |-C|\ *slpfile* ]
 [ |-D|\ **x**\ \|\ **y** ]
 [ |-E|\ *empty* ]

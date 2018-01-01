@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**kml2gmt** [ *kmlfiles* ]
+**gmt kml2gmt** [ *kmlfiles* ]
 [ |-F|\ **s**\ \|\ **l**\ \|\ **p** ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]

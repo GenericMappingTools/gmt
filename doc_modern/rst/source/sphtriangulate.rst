@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**sphtriangulate** [ *table* ] [ |-A| ] [ |-C| ] [ |-D| ]
+**gmt sphtriangulate** [ *table* ] [ |-A| ] [ |-C| ] [ |-D| ]
 [ |-L|\ *unit* ] [ |-N|\ *nfile* ] [ |-Q|\ **d**\ \|\ **v** ]
 [ |-T| ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
