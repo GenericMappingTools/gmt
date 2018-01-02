@@ -495,8 +495,8 @@ GMT_LOCAL void set_index (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Recompute data index for next iteration [stride = %d]\n", C->current_stride);
 
 	for (k = 0; k < C->npoints; k++) {
-		col = x_to_col (C->data[k].x, h->wesn[XLO], C->r_inc[GMT_X]);
-		row = y_to_row (C->data[k].y, h->wesn[YLO], C->r_inc[GMT_Y], C->current_ny);
+		col = (int)x_to_col (C->data[k].x, h->wesn[XLO], C->r_inc[GMT_X]);
+		row = (int)y_to_row (C->data[k].y, h->wesn[YLO], C->r_inc[GMT_Y], C->current_ny);
 		if (col < 0 || col >= C->current_nx || row < 0 || row >= C->current_ny) {
 			C->data[k].index = SURFACE_OUTSIDE;
 			k_skipped++;
@@ -531,7 +531,7 @@ GMT_LOCAL void solve_Briggs_coefficients (struct SURFACE_INFO *C, gmt_grdfloat *
 	b[3] = (gmt_grdfloat)((-xx2 + 2.0 * xx * yy - xx + yy2 + yy) * inv_delta);
 	b_4 = 4.0 * inv_delta;
 	/* We also need to normalize by the sum of the b[k] values, so sum them here */
-	b[5] = b[0] + b[1] + b[2] + b[3] + b_4;
+	b[5] = b[0] + b[1] + b[2] + b[3] + (gmt_grdfloat)b_4;
 	/* We need to sum k = 0<5 of u[k]*b[k], where u[k] are the nodes of the points A-D,
 	 * but the k = 4 point (E) is our data constraint.  We multiply that in here, once,
 	 * add add b[4] to the rest of the sum inside the iteration loop. */
@@ -749,14 +749,14 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 		if (gmt_M_is_dnan (in[GMT_Z])) continue;	/* Cannot use NaN values */
 		if (gmt_M_y_is_outside (GMT, in[GMT_Y], wesn_lim[YLO], wesn_lim[YHI])) continue; /* Outside y-range (or latitude) */
 		if (gmt_x_is_outside (GMT, &in[GMT_X], wesn_lim[XLO], wesn_lim[XHI]))  continue; /* Outside x-range (or longitude) */
-		row = y_to_row (in[GMT_Y], h->wesn[YLO], C->r_inc[GMT_Y], C->current_ny);
+		row = (int)y_to_row (in[GMT_Y], h->wesn[YLO], C->r_inc[GMT_Y], C->current_ny);
 		if (row < 0 || row >= C->current_ny) continue;
 		if (C->periodic && ((h->wesn[XHI]-in[GMT_X]) < half_dx)) {	/* Push all values to the western nodes */
 			in[GMT_X] -= 360.0;	/* Make this point constrain the western node value and then duplicate to east later */
 			col = 0;
 		}
 		else	/* Regular point not at the periodic boundary */
-			col = x_to_col (in[GMT_X], h->wesn[XLO], C->r_inc[GMT_X]);
+			col = (int)x_to_col (in[GMT_X], h->wesn[XLO], C->r_inc[GMT_X]);
 		if (col < 0 || col >= C->current_nx) continue;
 
 		C->data[k].index = row_col_to_index (row, col, C->current_nx);
@@ -1468,8 +1468,8 @@ GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_I
 	
 		/* 2. Go along the (x,y,z), k = 1:new_n line and find the closest point to each bin node */
 		if (file) fprintf (fp2, "> Segment %d\n", (int)seg);
-		scol = x_to_col (x[0], C->Grid->header->wesn[XLO], C->r_inc[GMT_X]);
-		srow = y_to_row (y[0], C->Grid->header->wesn[YLO], C->r_inc[GMT_Y], C->current_ny);
+		scol = (int)x_to_col (x[0], C->Grid->header->wesn[XLO], C->r_inc[GMT_X]);
+		srow = (int)y_to_row (y[0], C->Grid->header->wesn[YLO], C->r_inc[GMT_Y], C->current_ny);
 		node_this = row_col_to_node (srow, scol, C->current_mx);				/* The bin we are in */
 		x0_this = col_to_x (scol, C->Grid->header->wesn[XLO], C->Grid->header->wesn[XHI], C->inc[GMT_X], C->current_nx);	/* Node center point */
 		y0_this = row_to_y (srow, C->Grid->header->wesn[YLO], C->Grid->header->wesn[YHI], C->inc[GMT_Y], C->current_ny);
@@ -1479,8 +1479,8 @@ GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_I
 			/* Reset what is the previous point */
 			node_prev = node_this;
 			x0_prev = x0_this;	y0_prev = y0_this;
-			scol = x_to_col (x[k], C->Grid->header->wesn[XLO], C->r_inc[GMT_X]);
-			srow = y_to_row (y[k], C->Grid->header->wesn[YLO], C->r_inc[GMT_Y], C->current_ny);
+			scol = (int)x_to_col (x[k], C->Grid->header->wesn[XLO], C->r_inc[GMT_X]);
+			srow = (int)y_to_row (y[k], C->Grid->header->wesn[YLO], C->r_inc[GMT_Y], C->current_ny);
 			x0_this = col_to_x (scol, C->Grid->header->wesn[XLO], C->Grid->header->wesn[XHI], C->inc[GMT_X], C->current_nx);	/* Node center point */
 			y0_this = row_to_y (srow, C->Grid->header->wesn[YLO], C->Grid->header->wesn[YHI], C->inc[GMT_Y], C->current_ny);
 			node_this = row_col_to_node (srow, scol, C->current_mx);
@@ -1541,9 +1541,9 @@ GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_I
 
 		if (gmt_M_is_dnan (zb[n])) continue;
 
-		scol = x_to_col (xb[n], C->Grid->header->wesn[XLO], C->r_inc[GMT_X]);
+		scol = (int)x_to_col (xb[n], C->Grid->header->wesn[XLO], C->r_inc[GMT_X]);
 		if (scol < 0 || scol >= C->current_nx) continue;
-		srow = y_to_row (yb[n], C->Grid->header->wesn[YLO], C->r_inc[GMT_Y], C->current_ny);
+		srow = (int)y_to_row (yb[n], C->Grid->header->wesn[YLO], C->r_inc[GMT_Y], C->current_ny);
 		if (srow < 0 || srow >= C->current_ny) continue;
 
 		C->data[k].index = row_col_to_index (srow, scol, C->current_nx);
