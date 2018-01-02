@@ -6883,7 +6883,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 				if ((q = gmtlib_file_unitscale (file))) q[0] = '\0';	/* Truncate modifier */
 				if (elen)	/* Master: Append extension and supply path */
 					gmt_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
-				else if (!gmtlib_getuserpath (API->GMT, file, CPT_file)) /* Use name.cpt as is but look for it */
+				else if (!gmt_getdatapath (API->GMT, file, CPT_file, R_OK)) /* Use name.cpt as is but look for it */
 					return_null (API, GMT_FILE_NOT_FOUND);	/* Failed to find the file anywyere */
 				if (q) {q[0] = '+'; strcat (CPT_file, q); }	/* Add back the z-scale modifier */
 			}

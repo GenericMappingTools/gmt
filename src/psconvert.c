@@ -678,7 +678,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				else
 					n_errors++;
 				break;
-			case 'M':	/* Manage background and foreground layers */
+			case 'M':	/* Manage background and foreground layers [PW: Movie experiment, undocumented] */
 				Ctrl->M.active = true;
 				if ((c = strchr (opt->arg, ','))) {	/* There is a foreground layer */
 					if (opt->arg[0] == ',') /* Only a foreground layer */

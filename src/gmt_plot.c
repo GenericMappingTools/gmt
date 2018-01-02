@@ -7287,27 +7287,21 @@ int gmt_ps_append (struct GMT_CTRL *GMT, char *source, unsigned int mode, FILE *
 	 */
 	FILE *fp = NULL;
 	char buffer[GMT_BUFSIZ] = {""};
-	bool header = true, trailer = false;	/* The situation once file is opened */
+	bool go = true;
 	
 	if ((fp = fopen (source, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not open PostScript file %s\n", source);
 		return GMT_NOTSET;
 	}
+	go = (mode & 1);	/* Start output immediately if header was requested, else we wait until header has passed */
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
-		if (!strncmp (buffer, "%PSL_End_Trailer", 16U))
-			trailer = true;	/* Beginning of the trailer */
-		if (header) {	/* We are still reading the header section */
-			if ((mode & 1))	/* Need header */
-				fprintf (dest, "%s", buffer);
+		if (!strncmp (buffer, "%PSL_Begin_Trailer", 18U)) {	/* Beginning of the trailer */
+			go = (mode & 2);	/* true if we want the trailer */
 		}
-		else if (trailer) {	/* We are now reading the trailer section */
-			if ((mode & 2))	/* Need trailer */
-				fprintf (dest, "%s", buffer);
+		if (go) fprintf (dest, "%s", buffer);	/* Write this line to output stream */
+		if (!strncmp (buffer, "%PSL_End_Header", 15U)) {	/* Now passed the header section */
+			go = true;	/* The juicy middle is always delicious */
 		}
-		else	/* The juicy middle is always delicious */
-			fprintf (dest, "%s", buffer);
-		if (!strncmp (buffer, "%PSL_End_Header", 15U))
-			header = false;	/* Now passed the header section */
 	}
 	fclose (fp);
 	return GMT_NOERROR;
