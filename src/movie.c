@@ -24,6 +24,9 @@
  */
 
 #include "gmt_dev.h"
+#ifdef WIN32
+#include <windows.h> 
+#endif
 
 #define THIS_MODULE_NAME	"movie"
 #define THIS_MODULE_LIB		"core"
@@ -128,15 +131,15 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MOVIE_CTRL *C) {	/* Deall
 static int gmt_sleep (unsigned int msec) {
 	//fprintf (stderr, "Waiting %u msec\n", msec);
 #ifdef WIN32
-	Sleep ((DWORD)msec);
+	Sleep ((uint32_t)msec);
 	return 0;
 #else
 	return (usleep ((useconds_t)msec));
 #endif
 }
 
-static void set_dvalue (FILE *fp, int mode, char *name, double value, char unit)
-{	/* Assigns a named double variable given the script mode */
+static void set_dvalue (FILE *fp, int mode, char *name, double value, char unit) {
+	/* Assigns a named double variable given the script mode */
 	switch (mode) {
 		case BASH_MODE: fprintf (fp, "%s=%g", name, value); break;
 		case CSH_MODE:  fprintf (fp, "set %s = %g", name, value); break;
@@ -146,8 +149,8 @@ static void set_dvalue (FILE *fp, int mode, char *name, double value, char unit)
 	fprintf (fp, "\n");
 }
 
-static void set_ivalue (FILE *fp, int mode, char *name, int value)
-{	/* Assigns the a named int variable given the script mode */
+static void set_ivalue (FILE *fp, int mode, char *name, int value) {
+	/* Assigns the a named int variable given the script mode */
 	switch (mode) {
 		case BASH_MODE: fprintf (fp, "%s=%d\n", name, value); break;
 		case CSH_MODE:  fprintf (fp, "set %s = %d\n", name, value); break;
@@ -155,8 +158,8 @@ static void set_ivalue (FILE *fp, int mode, char *name, int value)
 	}
 }
 
-static void set_tvalue (FILE *fp, int mode, char *name, char *value)
-{	/* Assigns a named text variable given the script mode */
+static void set_tvalue (FILE *fp, int mode, char *name, char *value) {
+	/* Assigns a named text variable given the script mode */
 	switch (mode) {
 		case BASH_MODE: fprintf (fp, "%s=%s\n", name, value); break;
 		case CSH_MODE:  fprintf (fp, "set %s = %s\n", name, value); break;
@@ -164,8 +167,8 @@ static void set_tvalue (FILE *fp, int mode, char *name, char *value)
 	}
 }
 
-static void set_script (FILE *fp, int mode)
-{	/* Writes the script's incantation line (or comment for DOS) */
+static void set_script (FILE *fp, int mode) {
+	/* Writes the script's incantation line (or comment for DOS) */
 	switch (mode) {
 		case BASH_MODE: fprintf (fp, "#!/bin/bash\n"); break;
 		case CSH_MODE:  fprintf (fp, "#!/bin/csh\n"); break;
@@ -173,16 +176,16 @@ static void set_script (FILE *fp, int mode)
 	}
 }
 
-static void set_comment (FILE *fp, int mode, char *comment)
-{	/* Write a comment given the script mode */
+static void set_comment (FILE *fp, int mode, char *comment) {
+	/* Write a comment given the script mode */
 	switch (mode) {
 		case BASH_MODE: case CSH_MODE:  fprintf (fp, "# %s\n", comment); break;
 		case DOS_MODE:  fprintf (fp, "REM %s\n", comment); break;
 	}
 }
 
-static char *place_var (int mode, char *name)
-{	/* Prints this variable to stdout where needed in the script via the string static variable.
+static char *place_var (int mode, char *name) {
+	/* Prints this variable to stdout where needed in the script via the string static variable.
 	 * PS!  Only one call per printf statement since string cannot hold more than one item at the time */
 	static char string[128] = {""};
 	if (mode == DOS_MODE)
@@ -587,8 +590,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Your time file %s has more than one segment - reformat first\n", Ctrl->T.file);
 			Return (API->error);
 		}
-		n_frames = D->n_records;	/* Number of records means number of frames */
-		n_values = D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
+		n_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
+		n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
 	}
 	else	/* Just gave the number of frames */
 		n_frames = atoi (Ctrl->T.file);
