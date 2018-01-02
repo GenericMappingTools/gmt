@@ -11164,16 +11164,16 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 	return (P);
 }
 
-/*! Determine if the current module is a PostScript-producing module that writes PostScript */
+/*! Determine if the current module is a PostScript-producing module that will be writing PostScript */
 GMT_LOCAL bool is_PS_module (struct GMTAPI_CTRL *API, const char *name, const char *keys, struct GMT_OPTION **in_options) {
 	struct GMT_OPTION *opt = NULL, *options = NULL;
 
 	if (strstr (keys, ">X}") == NULL && strstr (keys, ">?}") == NULL) return false;	/* Can never produce PostScript */
 
-	if (in_options == NULL) return false;	/* Modules not yet passing proper kes and options */
+	if (in_options == NULL) return false;	/* Modules not yet passing proper keys and options */
 	options = *in_options;
 
-	if (!strncmp (name, "gmtinfo", 7U)) return false;	/* Does not evern return PS */
+	if (!strncmp (name, "gmtinfo", 7U)) return false;	/* Does not ever return PS */
 
 	/* Must do more specific checking since some of the PS producers take options that turns them into other things... */
 	if (!strncmp (name, "psbasemap", 9U)) {	/* Check for -A option */
@@ -11202,7 +11202,7 @@ GMT_LOCAL bool is_PS_module (struct GMTAPI_CTRL *API, const char *name, const ch
 		if ((opt = GMT_Find_Option (API, 'M', options))) return false;	/* -M writes dataset */
 		if ((opt = GMT_Find_Option (API, 'I', options))) return false;	/* -I writes dataset */
 	}
-	return true;
+	return true;	/* Remaining PostScript producing modules always write PostScript */
 }
 
 GMT_LOCAL void gmtinit_round_wesn (double wesn[], bool geo) {	/* Use data range to round to nearest reasonable multiples */
