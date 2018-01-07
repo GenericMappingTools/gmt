@@ -646,6 +646,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			}
 		}
 
+		GMT->current.io.first_rec = true;
 		if (GMT->current.setting.io_header[GMT_IN]) {	/* Skip any header records */
 			for (i = 0; i < (int)GMT->current.setting.io_n_header_items; i++) {
 				if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
