@@ -93,7 +93,8 @@ Optional Arguments
 .. _-E:
 
 **-E**
-    Erase the *prefix* directory after assembling the final movie [leave directory with all images].
+    Erase the *prefix* directory after assembling the final movie [leave directory with all images;
+    script files, parameter files, and layer PostScript files are removed].
 
 .. _-F:
 

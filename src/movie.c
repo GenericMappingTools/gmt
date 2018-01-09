@@ -844,12 +844,16 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	else {	/* Just delete the remaining pieces */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%u frame PNG files placed in directory: %s\n", n_frames, Ctrl->N.prefix);
+		if (Ctrl->S[MOVIE_PREFLIGHT].active)	/* Remove the preflight script */
+			fprintf (fp, "%s %s/%s\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, pre_file);
+		if (Ctrl->S[MOVIE_POSTFLIGHT].active)	/* Remove the postflight script */
+			fprintf (fp, "%s %s/%s\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, post_file);
 		fprintf (fp, "%s %s/%s\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, init_file);	/* Delete the main script */
 		fprintf (fp, "%s %s/%s\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, main_file);	/* Delete the main script */
 		if (layers) 
-			fprintf (fp, "%s %s/*.ps\n", Ctrl->N.prefix, rmfile[Ctrl->In.mode]);	/* Delete the PostScript layers */
+			fprintf (fp, "%s %s/*.ps\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix);	/* Delete the PostScript layers */
 	}
-	fprintf (fp, "%s %s\n", rmfile[Ctrl->In.mode], cleanup_file);	/* Delete the cleanup script when it finishes */
+	fprintf (fp, "%s %s\n", rmfile[Ctrl->In.mode], cleanup_file);	/* Delete the cleanup script itself when it finishes */
 	fclose (fp);
 #ifndef WIN32
 	/* Set executable bit if not Windows */
