@@ -425,7 +425,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 	unsigned int n_values = 0, n_frames = 0, n_begin = 0, frame, col, p_width, p_height, k;
 	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_frame = 0, n_cores_unused;
-	bool done = false;
+	bool done = false, layers = false;
 	
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	char var[3] = "$$%", *rmdir[3] = {"rm -rf", "rm -rf", "deltree"}, *mvfile[3] = {"mv -f", "mv -rf", "move"}, *export[3] = {"export ", "export ", ""};
@@ -677,10 +677,14 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (extra, "A+g%s,P", Ctrl->G.fill);
 	else	/* In either case we set Portrait mode */
 		sprintf (extra, "P");
-	if (!access ("gmt_movie_background.ps", R_OK))	/* Need to place background layer first (which is in parent dir when script is run) */
+	if (!access ("gmt_movie_background.ps", R_OK)) {	/* Need to place background layer first (which is in parent dir when script is run) */
 		strcat (extra, ",Mb../gmt_movie_background.ps");
-	if (!access ("gmt_movie_foreground.ps", R_OK))	/* Need to append foreground layer at end (which is in parent dir when script is run) */
+		layers = true;
+	}
+	if (!access ("gmt_movie_foreground.ps", R_OK)) {	/* Need to append foreground layer at end (which is in parent dir when script is run) */
 		strcat (extra, ",Mf../gmt_movie_foreground.ps");
+		layers = true;
+	}
 	set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 	set_comment (fp, Ctrl->In.mode, "Main frame loop script");
 	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a PPID since subshells may mess things up */
@@ -827,32 +831,38 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "MP4 movie built: %s.mv4\n", Ctrl->N.prefix);
 	}
 
-	if (Ctrl->E.active) {	/* Prepare the cleanup script */
-		sprintf (cleanup_file, "movie_cleanup.%s", extension[Ctrl->In.mode]);
-		if ((fp = fopen (cleanup_file, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create cleanup file %s - exiting\n", cleanup_file);
-			Return (GMT_ERROR_ON_FOPEN);
-		}
-		set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
+	/* Prepare the cleanup script */
+	sprintf (cleanup_file, "movie_cleanup.%s", extension[Ctrl->In.mode]);
+	if ((fp = fopen (cleanup_file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create cleanup file %s - exiting\n", cleanup_file);
+		Return (GMT_ERROR_ON_FOPEN);
+	}
+	set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
+	if (Ctrl->E.active) {	/* Want to delete the directory */
 		set_comment (fp, Ctrl->In.mode, "Cleanup script removes directory with frame files");
 		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], Ctrl->N.prefix);	/* Delete the entire directory with PNG frames and tmp files */
-		fprintf (fp, "%s %s\n", rmfile[Ctrl->In.mode], cleanup_file);	/* Delete the cleanup script when it finishes */
-		fclose (fp);
-#ifndef WIN32
-		/* Set executable bit if not Windows */
-		if (chmod (cleanup_file, S_IRWXU)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to make cleanup script executable: %s - exiting\n", cleanup_file);
-			Return (GMT_RUNTIME_ERROR);
-		}
-#endif
-		/* Run cleanup at the end */
-		if ((error = system (cleanup_file))) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Running cleanup script %s returned error %d - exiting.\n", cleanup_file, error);
-			Return (GMT_RUNTIME_ERROR);
-		}
 	}
-	else
+	else {	/* Just delete the remaining pieces */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%u frame PNG files placed in directory: %s\n", n_frames, Ctrl->N.prefix);
+		fprintf (fp, "%s %s/%s\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, init_file);	/* Delete the main script */
+		fprintf (fp, "%s %s/%s\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, main_file);	/* Delete the main script */
+		if (layers) 
+			fprintf (fp, "%s %s/*.ps\n", Ctrl->N.prefix, rmfile[Ctrl->In.mode]);	/* Delete the PostScript layers */
+	}
+	fprintf (fp, "%s %s\n", rmfile[Ctrl->In.mode], cleanup_file);	/* Delete the cleanup script when it finishes */
+	fclose (fp);
+#ifndef WIN32
+	/* Set executable bit if not Windows */
+	if (chmod (cleanup_file, S_IRWXU)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to make cleanup script executable: %s - exiting\n", cleanup_file);
+		Return (GMT_RUNTIME_ERROR);
+	}
+#endif
+	/* Run cleanup at the end */
+	if ((error = system (cleanup_file))) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Running cleanup script %s returned error %d - exiting.\n", cleanup_file, error);
+		Return (GMT_RUNTIME_ERROR);
+	}
 
 	Return (GMT_NOERROR);
 }
