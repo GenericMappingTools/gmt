@@ -480,14 +480,20 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			sprintf (record, "\t                      Azimuth = %.4f\tElevation = %.4f", Sun->SolarAzim, Sun->SolarElevation);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			if (Ctrl->I.position) {
-				hour = (int)(Sun->Sunrise * 24);	min = irint((Sun->Sunrise * 24 - hour) * 60);
-				sprintf (record, "\tSunrise  = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-				hour = (int)(Sun->Sunset * 24);		min = irint((Sun->Sunset * 24 - hour) * 60);
-				sprintf (record, "\tSunset   = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-				hour = (int)(Sun->SolarNoon * 24);	min = irint((Sun->SolarNoon * 24 - hour) * 60);
-				sprintf (record, "\tNoon     = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-				hour = (int)(Sun->Sunlight_duration / 60);	min = irint(Sun->Sunlight_duration - hour * 60);
-				sprintf (record, "\tDuration = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+				if (isnan(Sun->Sunrise)) {
+					sprintf(record, "\tSunrise? No, not yet, sun is under the horizon.");
+					GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+				}
+				else {
+					hour = (int)(Sun->Sunrise * 24);	min = irint((Sun->Sunrise * 24 - hour) * 60);
+					sprintf(record, "\tSunrise  = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					hour = (int)(Sun->Sunset * 24);		min = irint((Sun->Sunset * 24 - hour) * 60);
+					sprintf(record, "\tSunset   = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					hour = (int)(Sun->SolarNoon * 24);	min = irint((Sun->SolarNoon * 24 - hour) * 60);
+					sprintf(record, "\tNoon     = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+					hour = (int)(Sun->Sunlight_duration / 60);	min = irint(Sun->Sunlight_duration - hour * 60);
+					sprintf(record, "\tDuration = %02d:%02d", hour, min);	GMT_Put_Record(API, GMT_WRITE_DATA, Out);
+				}
 			}
 			gmt_M_free (GMT, Out);
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {
@@ -496,7 +502,6 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-
 	else if (Ctrl->M.active) {						/* Dump terminator(s) to stdout, no plotting takes place */
 		int n_items;
 		char  *terms[4] = {"Day/night", "Civil", "Nautical", "Astronomical"};
@@ -538,7 +543,6 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) Return (API->error);
 	}
-
 	else {	/* Plotting the terminator as line, polygon, or cliup path */
 		double *lon = NULL, *lat = NULL, x0, y0;
 		unsigned int first = (Ctrl->N.active) ? 0 : 1;
