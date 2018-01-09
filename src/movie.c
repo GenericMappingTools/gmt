@@ -635,7 +635,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 #endif
 		/* Run post-flight now before dealing with the loop so the overlay exists */
-		if ((error = run_script (post_file))) {
+		if ((error = system (post_file))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -677,6 +677,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (extra, "A+g%s,P", Ctrl->G.fill);
 	else	/* In either case we set Portrait mode */
 		sprintf (extra, "P");
+	if (!access ("gmt_movie_background.ps", R_OK))	/* Need to place background layer first (which is in parent dir when script is run) */
+		strcat (extra, ",Mb../gmt_movie_background.ps");
+	if (!access ("gmt_movie_foreground.ps", R_OK))	/* Need to append foreground layer at end (which is in parent dir when script is run) */
+		strcat (extra, ",Mf../gmt_movie_foreground.ps");
 	set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 	set_comment (fp, Ctrl->In.mode, "Main frame loop script");
 	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a PPID since subshells may mess things up */

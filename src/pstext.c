@@ -331,7 +331,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     +l will use as text the label specified via -L<label> in the most recent segment header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +r[<first>] will use the current record number, starting at <first> [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +t<text> will use the specified text as is.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +z[<fmt>] will use formatted input z values (bu see -Z) via format <fmt> [FORMAT_FLOAT_MAP].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +z[<fmt>] will use formatted input z values (but see -Z) via format <fmt> [FORMAT_FLOAT_MAP].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If an attribute +f|+a|+j is not followed by a value we read the information from the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   data file in the order given by the -F option.  Only one of +h or +l can be specified.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +h|l modifiers cannot be used in paragraph mode (-M).\n");

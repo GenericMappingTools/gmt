@@ -163,11 +163,10 @@ struct PS2RASTER_CTRL {
 		bool active;
 		char *file;
 	} L;
-	struct PS2R_M {	/* -M[<backgroundfile>][,<foregroundfile>] */
+	struct PS2R_M {	/* -Mb|f<PSfile> */
 		bool active;
-		char *bfile;
-		char *ffile;
-	} M;
+		char *file;
+	} M[2];
 	struct PS2R_P {	/* -P */
 		bool active;
 	} P;
@@ -464,8 +463,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* D
 	gmt_M_str_free (C->F.file);
 	gmt_M_str_free (C->G.file);
 	gmt_M_str_free (C->L.file);
-	gmt_M_str_free (C->M.bfile);
-	gmt_M_str_free (C->M.ffile);
+	gmt_M_str_free (C->M[0].file);
+	gmt_M_str_free (C->M[1].file);
 	gmt_M_str_free (C->W.doctitle);
 	gmt_M_str_free (C->W.overlayname);
 	gmt_M_str_free (C->W.foldername);
@@ -616,7 +615,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, mode;
 	int j;
-	char *c = NULL;
 	bool grayscale, halfbaked = false;
 	struct GMT_OPTION *opt = NULL;
 
@@ -679,19 +677,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 					n_errors++;
 				break;
 			case 'M':	/* Manage background and foreground layers [PW: Movie experiment, undocumented] */
-				Ctrl->M.active = true;
-				if ((c = strchr (opt->arg, ','))) {	/* There is a foreground layer */
-					if (opt->arg[0] == ',') /* Only a foreground layer */
-						Ctrl->M.ffile = strdup (&opt->arg[1]);
-					else {	/* Both back and fore-ground files */
-						Ctrl->M.ffile = strdup (&c[1]);
-						c[0] = '\0';	/* Temporarily chop off foregroundfile */
-						Ctrl->M.bfile = strdup (opt->arg);
-						c[0] = ',';	/* Restore foregroundfile */
-					}
+				switch (opt->arg[0]) {
+					case 'b':	j = 0;	break;	/* background */
+					case 'f':	j = 1;	break;	/* foreground */
+					default:	/* Bad option */
+						n_errors++;
+						j = 9;
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -M: Select -Mb or -Sf\n");
+						break;
 				}
-				else /* Only a background file */
-					Ctrl->M.bfile = strdup (opt->arg);
+				if (j != 9 && !Ctrl->M[j].active) {	/* Got a valid f or b */
+					Ctrl->M[j].active = true;
+					Ctrl->M[j].file = strdup (&opt->arg[1]);
+				}
 				break;
 			case 'P':	/* Force Portrait mode */
 				Ctrl->P.active = true;
@@ -799,14 +797,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 		}
 	}
 
-	if (Ctrl->M.active) {
-		if (Ctrl->M.bfile && access (Ctrl->M.bfile, F_OK)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-M: Background file %s cannot be found!\n", Ctrl->M.bfile);
-			n_errors++;
-		}
-		if (Ctrl->M.ffile && access (Ctrl->M.ffile, F_OK)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-M: Foreground file %s cannot be found!\n", Ctrl->M.ffile);
-			n_errors++;
+	for (j = 0; j < 2; j++) {
+		if (Ctrl->M[j].active) {
+			static char *layer[2] = {"Back", "Fore"};
+			if (Ctrl->M[j].file && access (Ctrl->M[j].file, F_OK)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-Mb: %sground file %s cannot be found!\n", layer[j], Ctrl->M[j].file);
+				n_errors++;
+			}
 		}
 	}
 
@@ -1549,8 +1546,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Fattened up PS file %s\n", ps_names[0]);
 		}
-		if (Ctrl->M.active) {	/* Must sandwich file in-between one or two layers */
-			if (wrap_the_sandwich (GMT, ps_names[0], Ctrl->M.bfile, Ctrl->M.ffile)) {
+		if (Ctrl->M[0].active || Ctrl->M[1].active) {	/* Must sandwich file in-between one or two layers */
+			if (wrap_the_sandwich (GMT, ps_names[0], Ctrl->M[0].file, Ctrl->M[1].file)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to wrap %s inside optional back- and fore-ground layers!\n", ps_names[0]);
 				Return (GMT_RUNTIME_ERROR);
 			}

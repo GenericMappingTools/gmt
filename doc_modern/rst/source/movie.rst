@@ -117,12 +117,15 @@ Optional Arguments
     The optional GMT modern mode *backgroundscript* (in the same scripting language as *mainscript*) can be
     used for one or two purposes: (1) It may create files (such as *timefile*) that will be needed by *mainscript*
     to make the movie, and (2) It may make a static background plot that should form the basis for all frames.
+    If a plot is generated it should make sure it uses the same positioning (i.e., **-X -Y**) as the main script
+    so that they will stack correctly.
 
 .. _-Sf:
 
 **-Sf**\ *foregroundscript*
     The optional GMT modern mode *foregroundscript* (in the same scripting language as *mainscript*) can be
-    used to make a static foreground plot that should be overlain on all frames.
+    used to make a static foreground plot that should be overlain on all frames.  Make sure it uses the same
+    positioning (i.e., **-X -Y**) as the main script so that they will stack correctly.
 
 .. _movie-V:
 
@@ -137,9 +140,10 @@ GMT_MOVIE_FRAME: The current frame number,
 GMT_MOVIE_NFRAMES: The total number of frames,
 GMT_MOVIE_WIDTH: The width of the paper,
 GMT_MOVIE_HEIGHT: The height of the paper,
-GMT_MOVIE_DPU: The current dots-per-unit,
-GMT_MOVIE_DIR: The directory where any files created by *backgroundscript* can be found.  Your
-*mainscript* must use a full path using GMT_MOVIE_DIR to access such files.
+GMT_MOVIE_DPU: The current dots-per-unit.
+
+Furthermore, the scripts will be able to find any files in the starting directory as well as files produced
+by *mainscript* and the optional scripts set via **-S**.
 
 Examples
 --------
@@ -149,7 +153,7 @@ frame number to compute a view angle, using 360 frames and a custom square 600x6
 
    ::
 
-    gmt movie globe.sh -Nglobe -Y360 -Fgif -W6ix6ix100
+    gmt movie globe.sh -Nglobe -T360 -Fgif -W6ix6ix100
 
 See Also
 --------

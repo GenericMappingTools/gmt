@@ -104,7 +104,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 				}
 			}
 			else {	/* Check if valid psconvert options */
-				if (!strchr ("ACDEPQS", p[0])) {
+				if (!strchr ("ACDEPMQS", p[0])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized psconvert option  -%s\n", p);
 					n_errors++;
 				}
