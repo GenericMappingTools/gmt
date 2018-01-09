@@ -2563,6 +2563,8 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	if ((this_c = getenv ("HOME")) != NULL)				/* HOME was set */
 		GMT->session.HOMEDIR = strdup (this_c);
 #ifdef WIN32
+	else if ((this_c = getenv ("USERPROFILE")) != NULL)	/* USERPROFILE was set */
+		GMT->session.HOMEDIR = strdup (this_c);
 	else if ((this_c = getenv ("HOMEPATH")) != NULL)	/* HOMEPATH was set */
 		GMT->session.HOMEDIR = strdup (this_c);
 #endif
