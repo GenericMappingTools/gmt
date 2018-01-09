@@ -476,8 +476,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psconvert <psfile1> <psfile2> <...> -A[u][<margins>][-][+p[<pen>]][+g<fill>][+r][+s[m]|S<width[u]>[/<height>[u]]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-I] [-L<listfile>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-I] [-L<listfile>]");
+	if (API->GMT->current.setting.run_mode == GMT_MODERN)
+		GMT_Message (API, GMT_TIME_NONE, " [-Mb|f<psfile>]");
+	GMT_Message (API, GMT_TIME_NONE, "\n\t[-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
 		GMT_Message (API, GMT_TIME_NONE, "\t[-Z]\n");
@@ -531,6 +533,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that for GS >= 9.00 and < 9.05 the gray-shade shifting is applied\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to all but PDF format. We have no solution to offer other than ... upgrade GS\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L The <listfile> is an ASCII file with names of files to be converted.\n");
+	if (API->GMT->current.setting.run_mode == GMT_MODERN) {
+		GMT_Message (API, GMT_TIME_NONE, "\t-M Sandwich current plot between background and foreground plots:\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   -Mb Append the name of a background PostScript plot [none].\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   -Mf Append name of foreground PostScript plot [none].\n");
+	}
 	GMT_Message (API, GMT_TIME_NONE, "\t-P Force Portrait mode. All Landscape mode plots will be rotated back\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   so that they show unrotated in Portrait mode.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This is practical when converting to image formats or preparing\n");
@@ -677,6 +684,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 					n_errors++;
 				break;
 			case 'M':	/* Manage background and foreground layers [PW: Movie experiment, undocumented] */
+				if (GMT->current.setting.run_mode == GMT_CLASSIC) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The -M option is not available in CLASSIC mode!\n");
+					n_errors++;
+					break;
+				}
 				switch (opt->arg[0]) {
 					case 'b':	j = 0;	break;	/* background */
 					case 'f':	j = 1;	break;	/* foreground */
