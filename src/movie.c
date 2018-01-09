@@ -394,7 +394,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode == MOVIE_NONE && Ctrl->E.active, "Syntax error -E: Cannot be used without -F specifying a movie product\n");
 	
 	if (n_files == 1) {	/* Determine script language from extension and open main script */
-		if (strstr (Ctrl->In.file, ".bash") || strstr (Ctrl->In.file, ".sh"))
+		if (!Ctrl->In.file)
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not find the script file\n");
+		else if (strstr (Ctrl->In.file, ".bash") || strstr (Ctrl->In.file, ".sh"))
 			Ctrl->In.mode = BASH_MODE;
 		else if (strstr (Ctrl->In.file, ".csh"))
 			Ctrl->In.mode = CSH_MODE;
