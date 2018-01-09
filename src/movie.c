@@ -216,14 +216,16 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify layout of the custom paper size. Choose from known dimensions or set them manually:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Recognized 16:9 ratio formats:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     name:	pixel size	page size (SI)	page size (US)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     4k:	3840 x 2160	24 x 13.5 cm	 9.6 x 5.4 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     2160p:	3840 x 2160	24 x 13.5 cm	 9.6 x 5.4 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     1080p:	1920 x 1080	24 x 13.5 cm	 9.6 x 5.4 inch\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     720p:	1280 x 720	24 x 13.5 cm	 9.6 x 5.4 inch\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     540p:	 960 x 540	24 x 13.5 cm	 9.6 x 5.4 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      720p:	1280 x 720	24 x 13.5 cm	 9.6 x 5.4 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      540p:	 960 x 540	24 x 13.5 cm	 9.6 x 5.4 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     uhd or 4k can be used for 2160p and hd can be used for 1080p.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Recognized 4:3 ratio formats:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     name:	pixel size	page size (SI)	page size (US)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     480p:	 640 x 480	24 x 18 cm	 9.6 x 7.2 inch\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     360p:	 480 x 360	24 x 18 cm	 9.6 x 7.2 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      480p:	 640 x 480	24 x 18 cm	 9.6 x 7.2 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      360p:	 480 x 360	24 x 18 cm	 9.6 x 7.2 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     dvd can be used for 480p.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  Note: PROJ_LENGTH_UNIT determines if you set SI or US dimensions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set a custom format directly:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Give <width>x<height>x<dpi> for a custom frame dimension.\n");
@@ -257,7 +259,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 
 	unsigned int n_errors = 0, n_files = 0, k;
 	int n;
-	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL;
+	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, arg[GMT_LEN64] = {""}, *c = NULL;
 	double width, height16x9, height4x3, dpu;
 	struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
 	struct GMT_OPTION *opt = NULL;
@@ -343,26 +345,28 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'W':	/* Frame known dimension or custom sizes */
 				Ctrl->W.active = true;
-				if (!strcmp (opt->arg, "4k") || !strcmp (opt->arg, "4K")) {
+				strcpy (arg, opt->arg);		/* Get a copy... */
+				gmtlib_str_tolower (arg);	/* ..so we can make it lower case */
+				if (!strcmp (arg, "4k") || !strcmp (arg, "uhd") || !strcmp (arg, "2160p")) {
 					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height16x9;	Ctrl->W.dim[GMT_Z] = dpu;
 				}
-				else if (!strcmp (opt->arg, "1080p") || !strcmp (opt->arg, "1080P")) {
+				else if (!strcmp (arg, "1080p") || !strcmp (arg, "hd")) {
 					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height16x9;	Ctrl->W.dim[GMT_Z] = dpu / 2.0;
 				}
-				else if (!strcmp (opt->arg, "720p") || !strcmp (opt->arg, "720P")) {
+				else if (!strcmp (arg, "720p")) {
 					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height16x9;	Ctrl->W.dim[GMT_Z] = dpu / 3.0;
 				}
-				else if (!strcmp (opt->arg, "540p") || !strcmp (opt->arg, "540P")) {
+				else if (!strcmp (arg, "540p")) {
 					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height16x9;	Ctrl->W.dim[GMT_Z] = dpu / 4.0;
 				}
-				else if (!strcmp (opt->arg, "480p") || !strcmp (opt->arg, "480P")) {
+				else if (!strcmp (arg, "480p") || !strcmp (arg, "dvd")) {
 					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height4x3;	Ctrl->W.dim[GMT_Z] = dpu / 6.0;
 				}
-				else if (!strcmp (opt->arg, "360p") || !strcmp (opt->arg, "360P")) {
+				else if (!strcmp (arg, "360p")) {
 					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height4x3;	Ctrl->W.dim[GMT_Z] = dpu / 8.0;
 				}
 				else {	/* Custom paper dimensions */
-					if ((n = sscanf (opt->arg, "%[^x]x%[^x]x%lg", txt_a, txt_b, &Ctrl->W.dim[GMT_Z])) != 3) {
+					if ((n = sscanf (arg, "%[^x]x%[^x]x%lg", txt_a, txt_b, &Ctrl->W.dim[GMT_Z])) != 3) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -W: Requires a known format or give width x height x dpi\n");
 						n_errors++;
 					}
@@ -427,7 +431,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 	unsigned int n_values = 0, n_frames = 0, n_begin = 0, frame, col, p_width, p_height, k;
 	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_frame = 0, n_cores_unused;
-	bool done = false, layers = false;
+	bool done = false, layers = false, one_frame = false;
 	
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	char var[3] = "$$%", *rmdir[3] = {"rm -rf", "rm -rf", "deltree"}, *mvfile[3] = {"mv -f", "mv -rf", "move"}, *export[3] = {"export ", "export ", ""};
@@ -462,14 +466,13 @@ int GMT_movie (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the subplot main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_NORMAL, "MOVIE IS EXPERIMENTAL AND NOT FINISHED YET!!!.\n");
-
 	/* Determine pixel dimensions of images */
 	p_width =  urint (ceil (Ctrl->W.dim[GMT_X] * Ctrl->W.dim[GMT_Z]));
 	p_height = urint (ceil (Ctrl->W.dim[GMT_Y] * Ctrl->W.dim[GMT_Z]));
+	one_frame = (Ctrl->Q.active && Ctrl->Q.frame != -1);
 	
 	if (Ctrl->Q.active && Ctrl->Q.frame == -1) {	/* Nothing but scripts will be produced */
-		GMT_Report (API, GMT_MSG_NORMAL, "Dry-run enabled - only scripts will be created.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Dry-run enabled - Scripts will be created and any pre/post scripts will be executed.\n");
 		run_script = dry_run_only;
 	}
 	else {	/* Will run scripts and may even need to make a movie */
@@ -646,7 +649,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	/* Create parameter include files for each frame */
 	
 	for (frame = 0; frame < n_frames; frame++) {
-		if (Ctrl->Q.active && Ctrl->Q.frame != -1 && (int)frame != Ctrl->Q.frame) continue;	/* Just doing a single frame for debugging */
+		if (one_frame && (int)frame != Ctrl->Q.frame) continue;	/* Just doing a single frame for debugging */
 		sprintf (state_prefix, "movie_params_%6.6d", frame);
 		sprintf (state_file, "%s.%s", state_prefix, extension[Ctrl->In.mode]);
 		if ((fp = fopen (state_file, "w")) == NULL) {
@@ -716,9 +719,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	set_comment (fp, Ctrl->In.mode, "Move PNG file up to parent directory and cd up one level");
 	fprintf (fp, "%s %s.png ..\n", mvfile[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));	/* Move PNG plot up to parent dir */
 	fprintf (fp, "cd ..\n");	/* cd up to parent dir */
-	set_comment (fp, Ctrl->In.mode, "Remove frame directory and parameter file");
-	fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));	/* Remove the work dir and any files in it*/
-	fprintf (fp, "%s movie_params_%c1.%s\n", rmfile[Ctrl->In.mode], var[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Remove the parameter file */
+	if (!one_frame) {	/* We want to leave debug evidence when doing a single frame only */
+		set_comment (fp, Ctrl->In.mode, "Remove frame directory and parameter file");
+		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));	/* Remove the work dir and any files in it*/
+		fprintf (fp, "%s movie_params_%c1.%s\n", rmfile[Ctrl->In.mode], var[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Remove the parameter file */
+	}
 	fclose (fp);
 	
 	if (n_begin != 1) {

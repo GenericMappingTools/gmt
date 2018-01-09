@@ -32,8 +32,8 @@ Description
 -----------
 
 We can generate GMT animation sequences using a single-plot script that are repeated
-for each frame with some variation.  The **movie** module simplifies and hides many of
-the steps normally needed to set up a full-blown animation script.  Instead, we can
+for each frame, with some variation.  The **movie** module simplifies and hides many of
+the steps normally needed to set up a full-blown animation job.  Instead, we can
 focus on composing the main plot and let the loop and assembly of images into a movie
 take place in the background.
 
@@ -45,20 +45,23 @@ Required Arguments
     script may access frame parameters, such as frame number and others, and may be
     written using the Bourne shell (.sh), The Bourne again shell (.bash), the csh (.csh)
     or DOS batch scripts (.bat).  The script language is inferred from the file extension
-    and we supply hidden scripts using the same language.
+    and we build hidden scripts using the same language.  Parameters that can be accessed
+    are discussed below.
 
 .. _-N:
 
 **-N**\ *prefix*
-    Determines the name of sub-directory with frame images as well as the final movie file.
+    Determines the name of a sub-directory with frame images as well as the final movie file.
+    Note: If the subdirectory exist then we exit immediately, so make sure you remove any
+    old directory first.
 
 .. _-T:
 
 **-T**\ *frames*\ \|\ *timefile*
     Either specify now many image frames to make or supply a file with a set of parameters,
-    one record per row (i.e., frame).  The values in the columns will be available to the
-    *mainscript* as variables GMT_MOVIE_VAL1, GMT_MOVIE_VAL2, etc., while any trailing text
-    can be accessed as GMT_MOVIE_STRING.  The number of records sets the number of frames.
+    one record per frame (row).  The values in the columns will be available to the
+    *mainscript* as the variables GMT_MOVIE_VAL1, GMT_MOVIE_VAL2, etc., while any trailing text
+    can be accessed as GMT_MOVIE_STRING.  The number of records determines the number of frames.
     Note that the *background* script is allowed to create the *timefile*.
 
 .. _-W:
@@ -67,13 +70,15 @@ Required Arguments
     Specify the custom paper size used to compose the movie frames. You can choose from a
     a set of known preset formats or you can set a custom layout.  The recognized 16:9 ratio
     formats (with paper size and pixel dimensions in parenthesis) are
-    **4k** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 3840 x 2160),
+    **2160p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 3840 x 2160),
     **1080p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 1920 x 1080),
     **720p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 1280 x 720), or
     **540p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 960 x 540).
+    We also accept **4k** or **uhd** for **2160p** and **hd** for **1080p**.
     The recognized 4:3 ratio formats are
     **480p** (24 x 18 cm *or* 9.6 x 7.2 inch; 640 x 480) or
     **360p** (24 x 18 cm *or* 9.6 x 7.2 inch; 480 x 360).
+    We also accept **dvd** for **480p**.
     Note: :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` determines if you are expected to
     work with the SI or US dimensions.  Alternatively, set a custom format directly by
     giving *width*\ x\ *height*\ x\ *dpu* for a custom frame dimension, where *dpu* is
@@ -110,14 +115,16 @@ Optional Arguments
 
 **-Q**\ [*frame*]
     Dry-run; no movie is made but all the helper scripts are left in the *prefix* directory for examination.
-    Alternatively, append a *frame* number and we will make a single frame plot and exit.
+    Any background and foreground scripts set via **-S** will be run since they may produce data needed for
+    building the scripts.  Alternatively, append a *frame* number and we will make that single frame plot and
+    exit.  In this case we will leave the frame sub-directory intact so any temporary files in it may be examined.
 
 .. _-Sb:
 
 **-Sb**\ *backgroundscript*
     The optional GMT modern mode *backgroundscript* (in the same scripting language as *mainscript*) can be
     used for one or two purposes: (1) It may create files (such as *timefile*) that will be needed by *mainscript*
-    to make the movie, and (2) It may make a static background plot that should form the basis for all frames.
+    to make the movie, and (2) It may make a static background plot that should form the background for all frames.
     If a plot is generated it should make sure it uses the same positioning (i.e., **-X -Y**) as the main script
     so that they will stack correctly.
 
@@ -155,6 +162,16 @@ frame number to compute a view angle, using 360 frames and a custom square 600x6
    ::
 
     gmt movie globe.sh -Nglobe -T360 -Fgif -W6ix6ix100
+
+Here, the globle.sh script is simply
+
+   ::
+
+    gmt begin
+       gmt pscoast -Rg -JG${GMT_MOVIE_FRAME}/20/4i -Gmaroon -Sturquoise -P -Bg -X0 -Y0
+    gmt end
+
+where we use the frame number as our longitude.
 
 See Also
 --------
