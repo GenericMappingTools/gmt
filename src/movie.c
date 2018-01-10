@@ -935,7 +935,6 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		if (layers) 
 			fprintf (fp, "%s %s%c*.ps\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, dir_sep);	/* Delete any PostScript layers */
 	}
-	fprintf (fp, "%s %s\n", rmfile[Ctrl->In.mode], cleanup_file);	/* Delete the cleanup script itself when it finishes */
 	fclose (fp);
 #ifndef WIN32
 	/* Set executable bit if not Windows */
@@ -949,6 +948,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Running cleanup script %s returned error %d - exiting.\n", cleanup_file, error);
 		Return (GMT_RUNTIME_ERROR);
 	}
+	sprintf (line, "%s %s\n", rmfile[Ctrl->In.mode], cleanup_file);	/* Delete the cleanup script itself */
+	system(line);
 
 	Return (GMT_NOERROR);
 }
