@@ -895,8 +895,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (extra, "verbose");
 		else
 			sprintf (extra, "quiet");
-		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -pattern_type glob -vcodec %s -framerate %g -y -i \"%s/%s_*.png\" -pix_fmt yuv420p %s.%s",
-			extra, codec[Ctrl->F.mode], Ctrl->A.rate, Ctrl->N.prefix, Ctrl->N.prefix, Ctrl->N.prefix, ext[Ctrl->F.mode]);
+		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -pattern_type glob -framerate %g -y -i \"%s/%s_*.png\" -vcodec %s -pix_fmt yuv420p %s.%s",
+			extra, Ctrl->A.rate, Ctrl->N.prefix, Ctrl->N.prefix, codec[Ctrl->F.mode], Ctrl->N.prefix, ext[Ctrl->F.mode]);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Run: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running ffmpeg conversion to %s returned error %d - exiting.\n", ext[Ctrl->F.mode], error);
