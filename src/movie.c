@@ -734,6 +734,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));	/* Remove the work dir and any files in it*/
 		fprintf (fp, "%s movie_params_%c1.%s\n", rmfile[Ctrl->In.mode], var[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Remove the parameter file */
 	}
+	if (Ctrl->In.mode == DOS_MODE)		/* This is crutial to "start /B ..." be low not screw it all */
+		fprintf (fp, "exit\n");
 	fclose (fp);
 	
 	if (n_begin != 1) {
@@ -772,7 +774,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		/* Launch new jobs if posible */
 		while (n_frames_not_started && n_cores_unused) {
 			if (Ctrl->In.mode == DOS_MODE)
-	        	sprintf (loop_cmd, "call %s %6.6d", main_file, frame);
+	        	sprintf (loop_cmd, "start /B %s %6.6d", main_file, frame);
 			else
 	        	sprintf (loop_cmd, "%s %6.6d &", main_file, frame);
 
