@@ -889,7 +889,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	else if (Ctrl->F.mode > MOVIE_GIF) {
 		/* If more formats are added please check that items are in right order and of the right number */
 		char *codec[MOVIE_N_FORMATS] = {"", "", "libx264", "libtheora", "libvpx"};
-		char *ext[MOVIE_N_FORMATS] = {"", "", "m4v", "webm", "ogv"};
+		char *ext[MOVIE_N_FORMATS] = {"", "", "m4v", "ogv", "webm"};
 		/* Set up system call to ffmpeg */
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE))
 			sprintf (extra, "verbose");
