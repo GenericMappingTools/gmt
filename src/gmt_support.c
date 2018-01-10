@@ -978,7 +978,7 @@ GMT_LOCAL int support_name2pen (char *name) {
 	char Lname[GMT_LEN64] = {""};
 
 	strncpy (Lname, name, GMT_LEN64-1);
-	gmtlib_str_tolower (Lname);
+	gmt_str_tolower (Lname);
 	for (i = 0, k = -1; k < 0 && i < GMT_N_PEN_NAMES; i++) if (!strcmp (Lname, GMT_penname[i].name)) k = i;
 
 	return (k);
@@ -6022,7 +6022,7 @@ int gmt_colorname2index (struct GMT_CTRL *GMT, char *name) {
 	char Lname[GMT_LEN64] = {""};
 
 	strncpy (Lname, name, GMT_LEN64-1);
-	gmtlib_str_tolower (Lname);
+	gmt_str_tolower (Lname);
 	k = gmt_hash_lookup (GMT, Lname, GMT->session.rgb_hashnode, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES);
 
 	return (k);
@@ -12035,7 +12035,7 @@ unsigned int gmt_minmaxinc_verify (struct GMT_CTRL *GMT, double min, double max,
 }
 
 /*! . */
-void gmtlib_str_tolower (char *value) {
+void gmt_str_tolower (char *value) {
 	/* Convert entire string to lower case */
 	int i, c;
 	for (i = 0; value[i]; i++) {
@@ -12058,7 +12058,7 @@ void gmt_str_toupper (char *value) {
 void gmt_str_setcase (struct GMT_CTRL *GMT, char *value, int mode) {
 	if (mode == 0) return;	/* Do nothing */
 	if (mode == -1)
-		gmtlib_str_tolower (value);
+		gmt_str_tolower (value);
 	else if (mode == +1)
 		gmt_str_toupper (value);
 	else
@@ -14959,7 +14959,7 @@ char *gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lo
 			}
 		}
 	}
-	if (lower) gmtlib_str_tolower (string);
+	if (lower) gmt_str_tolower (string);
 	return string;
 }
 

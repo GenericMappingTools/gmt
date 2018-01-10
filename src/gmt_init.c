@@ -5379,7 +5379,7 @@ GMT_LOCAL unsigned int gmtinit_load_user_media (struct GMT_CTRL *GMT) {
 			GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 		}
 
-		gmtlib_str_tolower (media);	/* Convert string to lower case */
+		gmt_str_tolower (media);	/* Convert string to lower case */
 
 		if (n == n_alloc) {
 			size_t k = n_alloc;	/* So we don't update n_alloc in the first gmt_M_malloc call */
@@ -8008,7 +8008,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 
 	if (!value) return (1);		/* value argument missing */
 	strncpy (lower_value, value, GMT_BUFSIZ-1);	/* Get a lower case version */
-	gmtlib_str_tolower (lower_value);
+	gmt_str_tolower (lower_value);
 	len = strlen (value);
 
 	case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
@@ -10746,10 +10746,10 @@ int gmt_get_ellipsoid (struct GMT_CTRL *GMT, char *name) {
 	/* Try to get ellipsoid from the default list; use case-insensitive checking */
 
 	strncpy (ename, name, GMT_LEN64-1);		/* Make a copy of name */
-	gmtlib_str_tolower (ename);	/* Convert to lower case */
+	gmt_str_tolower (ename);	/* Convert to lower case */
 	for (i = 0; i < GMT_N_ELLIPSOIDS; i++) {
 		strcpy (line, GMT->current.setting.ref_ellipsoid[i].name);
-		gmtlib_str_tolower (line);	/* Convert to lower case */
+		gmt_str_tolower (line);	/* Convert to lower case */
 		if (!strcmp (ename, line)) return (i);
 	}
 

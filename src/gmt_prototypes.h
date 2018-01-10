@@ -311,6 +311,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC void gmt_str_tolower (char *string);
 EXTERN_MSC char * gmt_get_current_cpt (struct GMT_CTRL *GMT);
 EXTERN_MSC struct GMT_RECORD *gmt_new_record (struct GMT_CTRL *GMT, double *d, char *t);
 EXTERN_MSC void gmt_just_to_code (struct GMT_CTRL *GMT, int justify, char *key);

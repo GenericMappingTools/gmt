@@ -792,7 +792,7 @@ GMT_LOCAL bool gmtio_is_a_NaN_line (struct GMT_CTRL *GMT, char *line) {
 	char p[GMT_LEN256] = {""};
 
 	while ((gmt_strtok (line, GMT->current.io.scan_separators, &pos, p))) {
-		gmtlib_str_tolower (p);
+		gmt_str_tolower (p);
 		if (strncmp (p, "nan", 3U)) return (false);
 	}
 	return (true);
@@ -3147,7 +3147,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		else	/* Let gmt_scanf_arg figure it out for us by passing UNKNOWN since ABSTIME has been dealt above */
 			got = gmt_scanf_arg (GMT, token, GMT_IS_UNKNOWN, false, &value);
 		if (got == GMT_IS_NAN) {	/* Parsing failed, which means we found our first non-number; but it could also be a valid NaN */
-			gmtlib_str_tolower (token);
+			gmt_str_tolower (token);
 			if (strncmp (token, "nan", 3U))
 				found_text = true;
 			else
@@ -3841,7 +3841,7 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
 		/* Scan for geographical or time units */
 		if (gmtlib_nc_get_att_text (GMT, GMT->current.io.ncid, GMT->current.io.varid[i], "long_name", long_name, GMT_LEN256)) long_name[0] = 0;
 		if (gmtlib_nc_get_att_text (GMT, GMT->current.io.ncid, GMT->current.io.varid[i], "units", units, GMT_LEN256)) units[0] = 0;
-		gmtlib_str_tolower (long_name); gmtlib_str_tolower (units);
+		gmt_str_tolower (long_name); gmt_str_tolower (units);
 
 		if (gmt_M_type (GMT, GMT_IN, i) == GMT_IS_FLOAT)
 			{ /* Float type is preset, do not alter */ }

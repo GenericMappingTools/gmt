@@ -154,7 +154,6 @@ EXTERN_MSC void gmtlib_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, d
 EXTERN_MSC bool gmtlib_check_url_name (char *fname);
 EXTERN_MSC int64_t gmtlib_splitinteger (double value, int epsilon, double *doublepart);
 EXTERN_MSC bool gmtlib_is_gleap (int gyear);
-EXTERN_MSC void gmtlib_str_tolower (char *string);
 EXTERN_MSC char *gmtlib_file_unitscale (char *name);
 EXTERN_MSC void gmtlib_set_oblique_pole_and_origin (struct GMT_CTRL *GMT, double plon, double plat, double olon, double olat);
 EXTERN_MSC int gmtlib_get_grdtype (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);

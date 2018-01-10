@@ -285,7 +285,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-	gmtlib_str_tolower (record);
+	gmt_str_tolower (record);
 	if (!strncmp (record, "xllcorner", 9U)) header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->wesn[YLO]) != 1) {
@@ -294,7 +294,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-	gmtlib_str_tolower (record);
+	gmt_str_tolower (record);
 	if (!strncmp (record, "yllcorner", 9U)) header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->inc[GMT_X]) != 1) {

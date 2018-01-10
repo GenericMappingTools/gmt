@@ -31,11 +31,11 @@ Synopsis
 Description
 -----------
 
-We can generate GMT animation sequences using a single-plot script that are repeated
-for each frame, with some variation.  The **movie** module simplifies and hides many of
-the steps normally needed to set up a full-blown animation job.  Instead, we can
-focus on composing the main plot and let the loop and assembly of images into a movie
-take place in the background.
+We can generate GMT animation sequences using a single-plot script that is repeated
+for each frame, with some variation using specific frame bariables.  The **movie**
+module simplifies and hides most of the steps normally needed to set up a full-blown
+animation job.  Instead, the user can focus on composing the main plot and let the
+parallel execution of frames and assembly of images into a movie take place in the background.
 
 Required Arguments
 ------------------
@@ -43,8 +43,8 @@ Required Arguments
 *mainscript*
     Name of a stand-alone GMT modern script that makes the frame-dependent plot.  The
     script may access frame parameters, such as frame number and others, and may be
-    written using the Bourne shell (.sh), The Bourne again shell (.bash), the csh (.csh)
-    or DOS batch scripts (.bat).  The script language is inferred from the file extension
+    written using the Bourne shell (.sh), the Bourne again shell (.bash), the csh (.csh)
+    or DOS batch language (.bat).  The script language is inferred from the file extension
     and we build hidden scripts using the same language.  Parameters that can be accessed
     are discussed below.
 
@@ -53,15 +53,15 @@ Required Arguments
 **-N**\ *prefix*
     Determines the name of a sub-directory with frame images as well as the final movie file.
     Note: If the subdirectory exist then we exit immediately, so make sure you remove any
-    old directory first.
+    old directory first.  This is done to prevent the accidental loss of valuable data.
 
 .. _-T:
 
 **-T**\ *frames*\ \|\ *timefile*
-    Either specify now many image frames to make or supply a file with a set of parameters,
-    one record per frame (row).  The values in the columns will be available to the
-    *mainscript* as the variables GMT_MOVIE_VAL1, GMT_MOVIE_VAL2, etc., while any trailing text
-    can be accessed as GMT_MOVIE_STRING.  The number of records determines the number of frames.
+    Either specify how many image frames to make or supply a file with a set of parameters,
+    one record per frame (i.e., row).  The values in the columns will be available to the
+    *mainscript* as named variables GMT_MOVIE_VAL1, GMT_MOVIE_VAL2, etc., while any trailing text
+    can be accessed via the variable GMT_MOVIE_STRING.  The number of records equals the number of frames.
     Note that the *background* script is allowed to create the *timefile*.
 
 .. _-W:
@@ -104,7 +104,8 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *format*
-    Set the movie format for the final product.  Choose either gif (animated GIF) or mp4 (MPEG-4 video) [none].
+    Set the movie format for the final product.  Choose either gif (animated GIF) or one of the
+    movie formats mp4 (MPEG-4), Theora (Theora OGV) or webm (WebM) [none].
 
 .. _-G:
 
@@ -143,15 +144,18 @@ Optional Arguments
 Parameters
 ----------
 
-Several parameters are automatically assigned and can be used by *mainscript* in making the frame plot.
-GMT_MOVIE_FRAME: The current frame number,
-GMT_MOVIE_NFRAMES: The total number of frames,
+Several parameters are automatically assigned and can be used by *mainscript* and the optional
+*backgroundscript* and *foregroundscript* scripts in making the frame plot.
 GMT_MOVIE_WIDTH: The width of the paper,
 GMT_MOVIE_HEIGHT: The height of the paper,
 GMT_MOVIE_DPU: The current dots-per-unit.
-
-Furthermore, the scripts will be able to find any files in the starting directory as well as files produced
-by *mainscript* and the optional scripts set via **-S**.
+In addition, the *mainscript* also has access to additional parameters
+GMT_MOVIE_FRAME: The current frame number,
+GMT_MOVIE_NFRAMES: The total number of frames
+Finally, if a *timefile* was given then variables GMT_MOVIE_VAL1, GMT_MOVIE_VAL2, etc are
+also set, one per column in *timefile*.
+Furthermore, the scripts will be able to find any files present in the starting directory
+as well as any new files produced by *mainscript* and the optional scripts set via **-S**.
 
 Examples
 --------
@@ -163,7 +167,7 @@ frame number to compute a view angle, using 360 frames and a custom square 600x6
 
     gmt movie globe.sh -Nglobe -T360 -Fgif -W6ix6ix100
 
-Here, the globle.sh script is simply
+Here, the globe.sh bash script is simply
 
    ::
 
@@ -171,7 +175,25 @@ Here, the globle.sh script is simply
        gmt pscoast -Rg -JG${GMT_MOVIE_FRAME}/20/4i -Gmaroon -Sturquoise -P -Bg -X0 -Y0
     gmt end
 
-where we use the frame number as our longitude.
+where we use the frame number as our longitude.  The equivalent DOS script setup would be
+
+  ::
+
+    gmt movie globe.bat -Nglobe -T360 -Fgif -W6ix6ix100
+
+Now, the globe.bat DOS script is simply
+
+   ::
+
+    gmt begin
+       gmt pscoast -Rg -JG%GMT_MOVIE_FRAME%/20/4i -Gmaroon -Sturquoise -P -Bg -X0 -Y0
+    gmt end
+
+i.e., the syntax of how variables are used vary according to the scripting language.
+Note that there is no information set here to reflect the name of the plot, the paper size,
+the dimensions of the rasterized PostScript, and so on.  That is hidden from the user;
+the actual scripts that execute are derived from the user-provided scripts and supply
+the extra machinery.
 
 See Also
 --------

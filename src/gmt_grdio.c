@@ -823,7 +823,7 @@ void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 		}
 
 		/* Change name of variable and unit to lower case for comparison */
-		gmtlib_str_tolower (string[i]);
+		gmt_str_tolower (string[i]);
 
 		if ((!strncmp (string[i], "longitude", 9U) || strstr (string[i], "degrees_e")) && (header->wesn[XLO] > -360.0 && header->wesn[XHI] <= 360.0)) {
 			/* Input data type is longitude */

@@ -120,8 +120,6 @@ struct SUBPLOT_CTRL {
 	} T;
 };
 
-EXTERN_MSC void gmtlib_str_tolower (char *string);
-
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SUBPLOT_CTRL *C;
 
@@ -558,10 +556,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				}
 				for (k = px = 0; k < 6; k++)
 					if (strchr (Bframe->arg, Bx_items[k])) Ctrl->S[GMT_X].axes[px++] = Bx_items[k];
-				if (Ctrl->S[GMT_X].axes[0] && Ctrl->S[GMT_X].active) gmtlib_str_tolower (Ctrl->S[GMT_X].axes);	/* Used to control the non-annotated axes */
+				if (Ctrl->S[GMT_X].axes[0] && Ctrl->S[GMT_X].active) gmt_str_tolower (Ctrl->S[GMT_X].axes);	/* Used to control the non-annotated axes */
 				for (k = py = 0; k < 6; k++)
 					if (strchr (Bframe->arg, By_items[k])) Ctrl->S[GMT_Y].axes[py++] = By_items[k];
-				if (Ctrl->S[GMT_Y].axes[0] && Ctrl->S[GMT_Y].active) gmtlib_str_tolower (Ctrl->S[GMT_Y].axes);	/* Used to control the non-annotated axes */
+				if (Ctrl->S[GMT_Y].axes[0] && Ctrl->S[GMT_Y].active) gmt_str_tolower (Ctrl->S[GMT_Y].axes);	/* Used to control the non-annotated axes */
 				if (c) c[0] = '+';	/* Restore */
 			}
 		}
