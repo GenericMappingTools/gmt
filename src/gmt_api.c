@@ -6895,8 +6895,14 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 				return_null (API, API->error);
 			}
 		}
-		else if ((in_ID = GMT_Register_IO (API, family|module_input, method, geometry, GMT_IN, wesn, &input[first])) == GMT_NOTSET)
-			return_null (API, API->error);
+		else {	/* Not a CPT file but could be remote */
+			char file[PATH_MAX] = {""};
+			strcpy (file, &input[first]);
+			if (gmt_M_file_is_remotedata (input) && !strstr (input, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
+				strcat (file, ".grd");	/* Must supply the .grd */
+			if ((in_ID = GMT_Register_IO (API, family|module_input, method, geometry, GMT_IN, wesn, file)) == GMT_NOTSET)
+				return_null (API, API->error);
+		}
 		reg_here = true;
 	}
 	else if (input == NULL && geometry) {	/* Case 2: Load from stdin.  Register stdin first */

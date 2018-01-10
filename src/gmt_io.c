@@ -4838,6 +4838,8 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 		return (access (file, mode));	/* When writing, only look in current directory */
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existence */
 		char path[GMT_BUFSIZ];
+		if (gmt_M_file_is_remotedata (filename) && !strstr (filename, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
+			strcat (file, ".grd");	/* Must supply the .grd */
 		return (gmt_getdatapath (GMT, file, path, mode) ? 0 : -1);
 	}
 	/* If we get here then mode is bad (X_OK)? */
