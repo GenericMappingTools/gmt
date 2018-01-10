@@ -19,7 +19,7 @@ Synopsis
 |-W|\ *papersize*
 [ |-A|\ *rate*\ [**+l**\ [*n*]] ] 
 [ |-E| ]
-[ |-F|\ *format*\ ]
+[ |-F|\ *format*\ [**+o**\ *options*\ ]]
 [ |-G|\ *fill*\ ]
 [ |-Q|\ [*frame*] ]
 [ **Sb**\ *backgroundscript* ]
@@ -103,9 +103,10 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *format*
+**-F**\ *format* [**+o**\ *options*\ ]
     Set the movie format for the final product.  Choose either gif (animated GIF) or one of the
-    movie formats mp4 (MPEG-4), Theora (Theora OGV) or webm (WebM) [none].
+    movie formats mp4 (MPEG-4), Theora (Theora OGV) or webm (WebM) [none].  For the video formats
+    you may optionally add additional ffmpeg encoding options via the **+o** modifier.
 
 .. _-G:
 

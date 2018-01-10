@@ -75,10 +75,11 @@ struct MOVIE_CTRL {
 	struct E {	/* -E */
 		bool active;
 	} E;
-	struct F {	/* -F<videoformat> */
+	struct F {	/* -F<videoformat>[+o<options>] */
 		bool active;
 		unsigned int mode;
 		char *format;
+		char *options;
 	} F;
 	struct G {	/* -G<canvasfill> */
 		bool active;
@@ -130,6 +131,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MOVIE_CTRL *C) {	/* Deall
 	gmt_M_str_free (C->In.file);
 	gmt_M_str_free (C->W.string);
 	gmt_M_str_free (C->F.format);
+	gmt_M_str_free (C->F.options);
 	gmt_M_str_free (C->G.fill);
 	gmt_M_str_free (C->N.prefix);
 	gmt_M_str_free (C->S[MOVIE_PREFLIGHT].file);
@@ -214,7 +216,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: movie <mainscript> -N<prefix> -T<n_frames>|<timefile> -W<papersize>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A<rate>[+l[<n>]]] [-E] [-F<format>] [-G<fill>] [-Q[<frame>]] [-Sb<script>] [-Sf<script>] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A<rate>[+l[<n>]]] [-E] [-F<format>[+o<opts>]] [-G<fill>] [-Q[<frame>]] [-Sb<script>] [-Sf<script>] [%s]\n\n", GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -243,11 +245,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set frame rate in frames/second [24]. Append +l to enable looping [GIF only];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append a specific number of loops [infinite loop].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the final movie format. Choose from these selections:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     none:   Just create the PNG sequence [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     none:   Just create the PNG sequence.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     gif:    Convert PNG frames into an animated GIF.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     mp4:    Convert PNG frames into an MP4 movie.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Theora: Convert PNG frames into a Theora movie.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     webM:   Convert PNG frames into an WebM movie.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append +o<options> to add encoding options for mpg, Theora, or webM.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Default is none: No animated product; just create the PNG frames.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the canvas background color [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Dry-run.  Only the work scripts will be produced but none will be executed.\n");
@@ -309,8 +312,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 			case 'E':	/* Erase frames after movie has been made */
 				Ctrl->E.active = true;
 				break;
-			case 'F':	/* Set movie format */
+			case 'F':	/* Set movie format and optional ffmpeg options */
 				Ctrl->F.active = true;
+				if ((c = strchr (opt->arg, '+')) && c[1] == 'o') {	/* Gave options */
+					Ctrl->F.options = strdup (&c[2]);
+					c[0] = '\0';	/* Chop off options */
+				}
 				strcpy (arg, opt->arg);		/* Get a copy... */
 				gmt_str_tolower (arg);	/* ..so we can make it lower case */
 				if (!strcmp (arg, "none"))
@@ -327,6 +334,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -F: Unrecognized format %s\n", opt->arg);
 					n_errors++;
 				}
+				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'G':	/* Canvas fill */
 				Ctrl->G.active = true;
@@ -889,15 +897,17 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	else if (Ctrl->F.mode > MOVIE_GIF) {
 		/* If more formats are added please check that items are in right order and of the right number */
 		char *codec[MOVIE_N_FORMATS] = {"", "", "libx264", "libtheora", "libvpx"};
-		char *ext[MOVIE_N_FORMATS] = {"", "", "m4v", "ogv", "webm"};
+		char *ext[MOVIE_N_FORMATS] = {"", "", "mp4", "ogv", "webm"};
 		/* Set up system call to ffmpeg */
-		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE))
+		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE))
 			sprintf (extra, "verbose");
+		else if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE))
+			sprintf (extra, "warning");
 		else
 			sprintf (extra, "quiet");
-		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -pattern_type glob -framerate %g -y -i \"%s/%s_*.png\" -vcodec %s -pix_fmt yuv420p %s.%s",
-			extra, Ctrl->A.rate, Ctrl->N.prefix, Ctrl->N.prefix, codec[Ctrl->F.mode], Ctrl->N.prefix, ext[Ctrl->F.mode]);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Run: %s\n", cmd);
+		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -pattern_type glob -framerate %g -y -i \"%s/%s_*.png\" -vcodec %s %s -pix_fmt yuv420p %s.%s",
+			extra, Ctrl->A.rate, Ctrl->N.prefix, Ctrl->N.prefix, codec[Ctrl->F.mode], (Ctrl->F.options) ? Ctrl->F.options : "", Ctrl->N.prefix, ext[Ctrl->F.mode]);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running ffmpeg conversion to %s returned error %d - exiting.\n", ext[Ctrl->F.mode], error);
 			Return (GMT_RUNTIME_ERROR);
