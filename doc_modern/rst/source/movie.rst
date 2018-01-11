@@ -228,7 +228,7 @@ as the center longitude:
    ::
 
     gmt begin
-       gmt pscoast -Rg -JG${GMT_MOVIE_FRAME}/20/6i -Gmaroon -Sturquoise -P -Bg -X0 -Y0
+       gmt pscoast -Rg -JG${GMT_MOVIE_FRAME}/20/${GMT_MOVIE_WIDTH} -Gmaroon -Sturquoise -P -Bg -X0 -Y0
     gmt end
 
 As the automatic frame loop is executed the different frames will be produced with different
@@ -243,7 +243,7 @@ Now, the globe.bat DOS script is simply
    ::
 
     gmt begin
-       gmt pscoast -Rg -JG%GMT_MOVIE_FRAME%/20/6i -Gmaroon -Sturquoise -P -Bg -X0 -Y0
+       gmt pscoast -Rg -JG%GMT_MOVIE_FRAME%/20/%GMT_MOVIE_WIDTH% -Gmaroon -Sturquoise -P -Bg -X0 -Y0
     gmt end
 
 i.e., the syntax of how variables are used vary according to the scripting language. At the
@@ -267,9 +267,5 @@ as QuickTime Pro, iMovie, MovieMaker, and similar commercial programs.
 See Also
 --------
 
-:doc:`begin`,
-:doc:`clear`,
-:doc:`end`,
-:doc:`figure`,
-:doc:`subplot`,
-:doc:`gmt`
+:doc:`gmt`,
+:doc:`psconvert`
