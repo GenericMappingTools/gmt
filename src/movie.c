@@ -85,6 +85,7 @@ struct MOVIE_CTRL {
 	struct I {	/* -I<includefile> */
 		bool active;
 		char *file;
+		FILE *fp;
 	} I;
 	struct N {	/* -N<movieprefix> */
 		bool active;
@@ -173,10 +174,19 @@ GMT_LOCAL void set_ivalue (FILE *fp, int mode, char *name, int value) {
 
 GMT_LOCAL void set_tvalue (FILE *fp, int mode, char *name, char *value) {
 	/* Assigns a single named text variable given the script mode */
-	switch (mode) {
-		case BASH_MODE: fprintf (fp, "%s=%s\n", name, value);       break;
-		case CSH_MODE:  fprintf (fp, "set %s = %s\n", name, value); break;
-		case DOS_MODE:  fprintf (fp, "set %s=%s\n", name, value);   break;
+	if (strchr (value, ' ') || strchr (value, '\t')) {	/* String has spaces or tabs */
+		switch (mode) {
+			case BASH_MODE: fprintf (fp, "%s=\"%s\"\n", name, value);       break;
+			case CSH_MODE:  fprintf (fp, "set %s = \"%s\"\n", name, value); break;
+			case DOS_MODE:  fprintf (fp, "set %s=\'%s\'\n", name, value);   break;
+		}
+	}
+	else {	/* SIngle word */
+		switch (mode) {
+			case BASH_MODE: fprintf (fp, "%s=%s\n", name, value);       break;
+			case CSH_MODE:  fprintf (fp, "set %s = %s\n", name, value); break;
+			case DOS_MODE:  fprintf (fp, "set %s=%s\n", name, value);   break;
+		}
 	}
 }
 
@@ -508,8 +518,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 			if (!Ctrl->S[k].active) continue;	/* Not provided */
 			n_errors += check_language (GMT, Ctrl->In.mode, Ctrl->S[k].file);
 		}
-		if (!n_errors && Ctrl->I.active)	/* Also check the include file */
+		if (!n_errors && Ctrl->I.active) {	/* Also check the include file */
 			n_errors += check_language (GMT, Ctrl->In.mode, Ctrl->I.file);
+			if (n_errors == 0 && ((Ctrl->I.fp = fopen (Ctrl->I.file, "r")) == NULL)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open include script file %s\n", Ctrl->I.file);
+				n_errors++;
+			}
+		}
 		if (n_errors == 0 && ((Ctrl->In.fp = fopen (Ctrl->In.file, "r")) == NULL)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open main script file %s\n", Ctrl->In.file);
 			n_errors++;
@@ -612,6 +627,28 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Paper dimensions: Width = %g%c Height = %g%c\n", Ctrl->W.dim[GMT_X], Ctrl->W.unit, Ctrl->W.dim[GMT_Y], Ctrl->W.unit);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Pixel dimensions: %u x %u\n", p_width, p_height);
+
+	/* First try to read -T<timefile> in case it is prescribed directly (and before we change directory) */
+	if (!gmt_access (GMT, Ctrl->T.file, R_OK)) {	/* A file by that name exists and is readable */
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read time file: %s - exiting\n", Ctrl->T.file);
+			fclose (Ctrl->In.fp);
+			Return (API->error);
+		}
+		if (D->n_segments > 1) {	/* We insist on a simple file structure with a single segment */
+			GMT_Report (API, GMT_MSG_NORMAL, "Your time file %s has more than one segment - reformat first\n", Ctrl->T.file);
+			fclose (Ctrl->In.fp);
+			Return (API->error);
+		}
+		n_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
+		n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
+		has_text = (D && D->table[0]->segment[0]->text);	/* Trailing text present */
+		if (n_frames == 0) {	/* So not good... */
+			GMT_Report (API, GMT_MSG_NORMAL, "No frames specified! - exiting.\n");
+			fclose (Ctrl->In.fp);
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
 	
 	/* Get full path to the current working directory */
 	if (getcwd (topdir, PATH_MAX) == NULL) {
@@ -655,25 +692,20 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 	
-	sprintf (string, "Static parameters for animation sequence %s", Ctrl->N.prefix);
+	sprintf (string, "Static parameters set for animation sequence %s", Ctrl->N.prefix);
 	set_comment (fp, Ctrl->In.mode, string);
 	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_WIDTH",  Ctrl->W.dim[GMT_X], Ctrl->W.unit);
 	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_HEIGHT", Ctrl->W.dim[GMT_Y], Ctrl->W.unit);
 	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_DPU",    Ctrl->W.dim[GMT_Z], 0);
 	if (Ctrl->I.active) {	/* Append contents of an include file */
-		FILE *fpi = NULL;
-		if ((fpi = fopen (Ctrl->I.file, "r")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to open include file %s - exiting\n", Ctrl->I.file);
-			fclose (Ctrl->In.fp);
-			Return (GMT_ERROR_ON_FOPEN);
-		}
-		while (gmt_fgets (GMT, line, PATH_MAX, fpi)) {	/* Read the include file and copy to init script with some exceptions */
+		set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
+		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->I.fp)) {	/* Read the include file and copy to init script with some exceptions */
 			if (strstr (line, "gmt begin")) continue;	/* Skip gmt begin */
 			if (strstr (line, "gmt end")) continue;		/* Skip gmt end */
 			if (strstr (line, "#!/")) continue;		/* Skip any leading shell incantation */
 			fprintf (fp, "%s", line);			/* Just copy the line as is */
 		}
-		fclose (fpi);	/* Done reading the include script */
+		fclose (Ctrl->I.fp);	/* Done reading the include script */
 	}
 	fclose (fp);	/* Done writing the init script */
 	
@@ -730,24 +762,25 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 	/* Now we can complete -T parsing since any given file has now been created */
 	
-	if (!gmt_access (GMT, Ctrl->T.file, R_OK)) {	/* A file by that name exists and is readable */
-		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read time file: %s - exiting\n", Ctrl->T.file);
-			fclose (Ctrl->In.fp);
-			Return (API->error);
+	if (n_frames == 0) {	/* Must check again for a file or decode the argument as a number */
+		if (!gmt_access (GMT, Ctrl->T.file, R_OK)) {	/* A file by that name was created by preflight and is now available */
+			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to read time file: %s - exiting\n", Ctrl->T.file);
+				fclose (Ctrl->In.fp);
+				Return (API->error);
+			}
+			if (D->n_segments > 1) {	/* We insist on a simple file structure with a single segment */
+				GMT_Report (API, GMT_MSG_NORMAL, "Your time file %s has more than one segment - reformat first\n", Ctrl->T.file);
+				fclose (Ctrl->In.fp);
+				Return (API->error);
+			}
+			n_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
+			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
+			has_text = (D && D->table[0]->segment[0]->text);	/* Trailing text present */
 		}
-		if (D->n_segments > 1) {	/* We insist on a simple file structure with a single segment */
-			GMT_Report (API, GMT_MSG_NORMAL, "Your time file %s has more than one segment - reformat first\n", Ctrl->T.file);
-			fclose (Ctrl->In.fp);
-			Return (API->error);
-		}
-		n_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
-		n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
-		has_text = (D && D->table[0]->segment[0]->text);	/* Trailing text present */
+		else	/* Just gave the number of frames (we hope, or we got a bad filename and atoi should return 0) */
+			n_frames = atoi (Ctrl->T.file);
 	}
-	else	/* Just gave the number of frames (we hope, or we got a bad filename and atoi should return 0) */
-		n_frames = atoi (Ctrl->T.file);
-	
 	if (n_frames == 0) {	/* So not good... */
 		GMT_Report (API, GMT_MSG_NORMAL, "No frames specified! - exiting.\n");
 		fclose (Ctrl->In.fp);

@@ -21,11 +21,11 @@ Synopsis
 [ |-E| ]
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
 [ |-G|\ *fill*\ ]
+[ |-I|\ *includefile* ]
 [ |-Q|\ [*frame*] ]
 [ **Sb**\ *backgroundscript* ]
 [ **Sf**\ *foregroundscript* ]
 [ |SYN_OPT-V| ]
-[ |SYN_OPT-x| ]
 
 |No-spaces|
 
@@ -38,7 +38,8 @@ module simplifies (and hides) most of the steps normally needed to set up a full
 animation job.  Instead, the user can focus on composing the main frame plot and let the
 parallel execution of frames and assembly of images into a movie take place in the background.
 Individual frames are converted from PostScript plots to lossless PNG images and optionally
-assembled into an animation.
+assembled into an animation (this step requires external tools that must be present in
+your path; see Technical Details below).
 
 Required Arguments
 ------------------
@@ -150,8 +151,6 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. include:: explain_core.rst_
-
 .. include:: explain_help.rst_
 
 Parameters
@@ -200,6 +199,10 @@ run). For each frame there is a separate movie_params_###### script that provide
 variables (e.g., frame number and anything given via **-T**).  The pre- and post-flight scripts have
 access to the information in movie_init while the frame script in addition has access to the frame-
 specific parameter file.  Using the **-Q** option will just produce the scripts which you can then examine.
+
+The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on GraphicsMagick (http://www.graphicsmagick.org). 
+Thus, "gm" must be accessible via your standard search path. Likewise, the conversion of
+PNG frames to an MP4 movie (**-F**\ mp4) relies on ffmpeg (https://www.ffmpeg.org). 
 
 Examples
 --------
