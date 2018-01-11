@@ -7446,12 +7446,13 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 
 bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
-	char *c = NULL;
+	char *c = NULL, dummy[PATH_MAX] = {""};
 	if (cpt == NULL) return true;	/* No cpt given means use rainbow master */
 	if (gmt_M_file_is_memory (cpt)) return false;	/* A CPT was given via memory location */
 	if ((c = gmt_first_modifier (GMT, cpt, "uUw")))
 		c[0] = '\0';	/* Must chop off modifiers for access to work */
-	if (cpt[0] && !access (cpt, R_OK)) return false;	/* A CPT was given and exists */
+	if (cpt[0] && gmt_getdatapath (GMT, cpt, dummy, R_OK))	/* Must look anywhere data files may be found */
+		return false;	/* A CPT was given and exists */
 	return true;	/* Acting as if it is a master table */
 }
 
@@ -7528,12 +7529,14 @@ struct GMT_PALETTE *gmt_get_cpt (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 		/* Stretch to fit the data range */
 		/* Prevent slight round-off from causing the min/max float data values to fall outside the cpt range */
 		if (gmt_M_is_zero (dz)) {
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit data range %g to %g\n", file, zmin, zmax);
 			noise = (zmax - zmin) * GMT_CONV8_LIMIT;
 			zmin -= noise;	zmax += noise;
 		}
 		else {	/* Round to multiple of dz */
 			zmin = (floor (zmin / dz) * dz);
 			zmax = (ceil (zmax / dz) * dz);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-stretching CPT file %s to fit rounded data range %g to %g\n", file, zmin, zmax);
 		}
 		gmt_stretch_cpt (GMT, P, zmin, zmax);
 		support_save_current_cpt (GMT, P);	/* Save for use by session, if modern */
