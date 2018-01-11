@@ -521,7 +521,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	char init_file[GMT_LEN64] = {""}, state_prefix[GMT_LEN64] = {""}, state_file[GMT_LEN64] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[GMT_LEN64] = {""}, post_file[GMT_LEN64] = {""}, main_file[GMT_LEN64] = {""}, line[PATH_MAX] = {""};
 	char string[GMT_LEN64] = {""}, extra[GMT_LEN64] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[GMT_LEN64] = {""};
-	char loop_cmd[GMT_LEN64] = {""}, png_file[GMT_LEN64] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""};
+	char png_file[GMT_LEN64] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""};
 #ifdef _WIN32
 	char dir_sep = '\\';
 #else
@@ -880,10 +880,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->Q.active) {	/* Either write scripts only or build just a single frame and then exit (i.e., no animation sequence generated) */
 		if (one_frame) {	/* Just do one frame and exit */
-			char frame_cmd[GMT_LEN32] = {""};
-			sprintf (frame_cmd, "%s %6.6d", main_file, Ctrl->Q.frame);
-			if ((error = run_script (frame_cmd))) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Running script %s returned error %d - exiting.\n", frame_cmd, error);
+			sprintf (cmd, "%s %6.6d", main_file, Ctrl->Q.frame);
+			if ((error = run_script (cmd))) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Running script %s returned error %d - exiting.\n", cmd, error);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Single PNG frame built: %s_%6.6d.png\n", Ctrl->N.prefix, Ctrl->Q.frame);
@@ -902,15 +901,15 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		while (n_frames_not_started && n_cores_unused) {	/* Launch new jobs if possible */
 			/*
 			if (Ctrl->In.mode == DOS_MODE)
-				sprintf (loop_cmd, "start /B %s %6.6d", main_file, frame);
+				sprintf (cmd, "start /B %s %6.6d", main_file, frame);
 			else
-				sprintf (loop_cmd, "%s %6.6d &", main_file, frame);
+				sprintf (cmd, "%s %6.6d &", main_file, frame);
 			*/
-			sprintf (loop_cmd, "%s %s %6.6d &", sc_call[Ctrl->In.mode], main_file, frame);
+			sprintf (cmd, "%s %s %6.6d &", sc_call[Ctrl->In.mode], main_file, frame);
 
 			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for frame %6.6d\n", frame);
-			if ((error = system (loop_cmd))) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Running script %s returned error %d - aborting.\n", loop_cmd, error);
+			if ((error = system (cmd))) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Running script %s returned error %d - aborting.\n", cmd, error);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			status[frame].started = true;	/* We have now launched this frame job */
@@ -1010,8 +1009,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	/* Run cleanup script at the end */
 	if (Ctrl->In.mode == DOS_MODE)
 		error = system (cleanup_file);
-	else
-		error = system (strcat(sc_call[Ctrl->In.mode], cleanup_file));	/* From bash on Win, need to explicit it */
+	else {
+		sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], cleanup_file);
+		error = system (cmd);
+	}
 	if (error) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Running cleanup script %s returned error %d - exiting.\n", cleanup_file, error);
 		Return (GMT_RUNTIME_ERROR);
