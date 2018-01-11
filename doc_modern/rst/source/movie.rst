@@ -104,9 +104,8 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *format* [**+o**\ *options*\ ]
-    Set the movie format for the final product.  Choose either gif (animated GIF) or one of the
-    movie formats mp4 (MPEG-4), Theora (Theora OGV) or webm (WebM) [none].  For the video formats
-    you may optionally add additional ffmpeg encoding options via the **+o** modifier.
+    Set the movie format for the final product.  Choose either gif (animated GIF), mp4 (MPEG-4),
+    or none [Default].  For mp4 you may optionally add additional ffmpeg encoding options via the **+o** modifier.
 
 .. _-G:
 
@@ -195,6 +194,16 @@ Note that there is no information set here to reflect the name of the plot, the 
 the dimensions of the rasterized PostScript, and so on.  That is hidden from the user;
 the actual scripts that execute are derived from the user-provided scripts and supply
 the extra machinery.
+
+Other Movie Formats
+-------------------
+
+As configured, movie only offers a MP4 format for movies.  The conversion is performed by the
+tool ffmpeg (https://www.ffmpeg.org) which as more codecs and processing options than there are children in China.
+If you wish to run ffmpeg with other selections, simply run movie with long verbose (**-Vl**) and
+at the end it will print the ffmpeg command.  You can copy, paste, and modify this command to
+select other codecs and bit-rates.  You can also use the PNG sequence as input to tools such
+as QuickTime Pro, iMovie, MovieMaker, and similar commercial programs.
 
 See Also
 --------

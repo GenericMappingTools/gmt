@@ -52,10 +52,7 @@ enum enum_script {BASH_MODE = 0,	/* Write Bash script */
 
 enum enum_video {MOVIE_NONE = 0,	/* Do not make a video */
 	MOVIE_GIF,			/* Create an animated GIF image */
-	MOVIE_MP4,			/* Create a H.264 MP4 video */
-	MOVIE_THEORA,			/* Create a Theora video */
-	MOVIE_WEBM,			/* Create a webM video */
-	MOVIE_N_FORMATS};		/* Number of options */
+	MOVIE_MP4};			/* Create a H.264 MP4 video */
 
 /* Control structure for movie */
 
@@ -244,13 +241,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set frame rate in frames/second [24]. Append +l to enable looping [GIF only];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append a specific number of loops [infinite loop].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the final movie format. Choose from these selections:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the final animation format. Choose from these selections:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     none:   Just create the PNG sequence.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     gif:    Convert PNG frames into an animated GIF.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     mp4:    Convert PNG frames into an MP4 movie.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Theora: Convert PNG frames into a Theora movie.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     webM:   Convert PNG frames into an WebM movie.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append +o<options> to add encoding options for mpg, Theora, or webM.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append +o<options> to add custom encoding options for mp4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Default is none: No animated product; just create the PNG frames.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the canvas background color [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Dry-run.  Only the work scripts will be produced but none will be executed.\n");
@@ -326,10 +321,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					Ctrl->F.mode = MOVIE_GIF;
 				else if (!strcmp (opt->arg, "mp4"))
 					Ctrl->F.mode = MOVIE_MP4;
-				else if (!strcmp (opt->arg, "theora"))
-					Ctrl->F.mode = MOVIE_THEORA;
-				else if (!strcmp (opt->arg, "webm"))
-					Ctrl->F.mode = MOVIE_WEBM;
 				else {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -F: Unrecognized format %s\n", opt->arg);
 					n_errors++;
@@ -533,7 +524,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			}
 			else pclose (fp);
 		}
-		else if (Ctrl->F.mode > MOVIE_GIF && Ctrl->Q.frame == -1) {	/* Ensure we have ffmpeg installed */
+		else if (Ctrl->F.mode == MOVIE_MP4 && Ctrl->Q.frame == -1) {	/* Ensure we have ffmpeg installed */
 			sprintf (cmd, "ffmpeg -version");
 			if ((fp = popen (cmd, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "ffmpeg is not installed - cannot build a movie.\n");
@@ -841,7 +832,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			else
 	        		sprintf (loop_cmd, "%s %6.6d &", main_file, frame);
 
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Launch script for frame %6.6d\n", frame);
+			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for frame %6.6d\n", frame);
 			if ((error = system (loop_cmd))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Running script %s returned error %d - aborting.\n", loop_cmd, error);
 				Return (GMT_RUNTIME_ERROR);
@@ -892,10 +883,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GIF animation built: %s.gif\n", Ctrl->N.prefix);
 	}
-	else if (Ctrl->F.mode > MOVIE_GIF) {
+	else if (Ctrl->F.mode == MOVIE_MP4) {
 		/* If more formats are added please check that items are in right order and of the right number */
-		char *codec[MOVIE_N_FORMATS] = {"", "", "libx264", "libtheora", "libvpx"};
-		char *ext[MOVIE_N_FORMATS] = {"", "", "mp4", "ogv", "webm"};
 		/* Set up system call to ffmpeg */
 		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE))
 			sprintf (extra, "verbose");
@@ -903,14 +892,14 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (extra, "warning");
 		else
 			sprintf (extra, "quiet");
-		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -pattern_type glob -framerate %g -y -i \"%s/%s_*.png\" -vcodec %s %s -pix_fmt yuv420p %s.%s",
-			extra, Ctrl->A.rate, Ctrl->N.prefix, Ctrl->N.prefix, codec[Ctrl->F.mode], (Ctrl->F.options) ? Ctrl->F.options : "", Ctrl->N.prefix, ext[Ctrl->F.mode]);
+		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -pattern_type glob -framerate %g -y -i \"%s/%s_*.png\" -vcodec libx264 %s -pix_fmt yuv420p %s.mp4",
+			extra, Ctrl->A.rate, Ctrl->N.prefix, Ctrl->N.prefix, (Ctrl->F.options) ? Ctrl->F.options : "", Ctrl->N.prefix);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Running ffmpeg conversion to %s returned error %d - exiting.\n", ext[Ctrl->F.mode], error);
+			GMT_Report (API, GMT_MSG_NORMAL, "Running ffmpeg conversion to MP4 returned error %d - exiting.\n", error);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Movie built: %s.%s\n", Ctrl->N.prefix, ext[Ctrl->F.mode]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Movie built: %s.mp4\n", Ctrl->N.prefix);
 	}
 
 	/* Prepare the cleanup script */
