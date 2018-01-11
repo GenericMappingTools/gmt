@@ -72,13 +72,18 @@ Required Arguments
     formats (with paper size and pixel dimensions in parenthesis) are
     **2160p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 3840 x 2160),
     **1080p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 1920 x 1080),
-    **720p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 1280 x 720), or
+    **720p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 1280 x 720),
     **540p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 960 x 540).
+    **480p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 854 x 480).
+    **360p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 640 x 360).
+    **240p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 426 x 240).
     We also accept **4k** or **uhd** for **2160p** and **hd** for **1080p**.
     The recognized 4:3 ratio formats are
-    **480p** (24 x 18 cm *or* 9.6 x 7.2 inch; 640 x 480) or
-    **360p** (24 x 18 cm *or* 9.6 x 7.2 inch; 480 x 360).
-    We also accept **dvd** for **480p**.
+    **uxga**  (24 x 18 cm *or* 9.6 x 7.2 inch; 1600 x 1200),
+    **sxga+** (24 x 18 cm *or* 9.6 x 7.2 inch; 1400 x 1050),
+    **xga**   (24 x 18 cm *or* 9.6 x 7.2 inch; 1024 x 768),
+    **svga**  (24 x 18 cm *or* 9.6 x 7.2 inch; 800 x 600),
+    **dvd**   (24 x 18 cm *or* 9.6 x 7.2 inch; 640 x 480).
     Note: :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` determines if you are expected to
     work with the SI or US dimensions.  Alternatively, set a custom format directly by
     giving *width*\ x\ *height*\ x\ *dpu* for a custom frame dimension, where *dpu* is
@@ -156,6 +161,14 @@ Finally, if a *timefile* was given then variables GMT_MOVIE_VAL1, GMT_MOVIE_VAL2
 also set, one per column in *timefile*.
 Furthermore, the scripts will be able to find any files present in the starting directory
 as well as any new files produced by *mainscript* and the optional scripts set via **-S**.
+
+Your Canvas
+-----------
+
+As you can see from **-W**, you are given a custom paper that is either 24 x 13.5 cm (16:9)
+or 24 x 18 cm (4:3).  If your settings imply US units then the custom paper sizes are just
+1.6% larger than the SI sizes (9.6 x 5.4" or 9.6 x 7.2").  You should compose your plots using
+those paper sizes, and movie will make proper conversions to image pixel dimensions.
 
 Examples
 --------

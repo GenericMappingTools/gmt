@@ -224,17 +224,22 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <timefile> does not exist it must be created by the -Sf script.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify layout of the custom paper size. Choose from known dimensions or set it manually:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Recognized 16:9-ratio formats:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     name:	pixel size	page size (SI)	page size (US)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      name:	pixel size	page size (SI)	 page size (US)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     2160p:	3840 x 2160	24 x 13.5 cm	 9.6 x 5.4 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     1080p:	1920 x 1080	24 x 13.5 cm	 9.6 x 5.4 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      720p:	1280 x 720	24 x 13.5 cm	 9.6 x 5.4 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      540p:	 960 x 540	24 x 13.5 cm	 9.6 x 5.4 inch\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Note: uhd or 4k can be used for 2160p and hd can be used for 1080p.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      480p:	 854 x 480	24 x 13.5 cm	 9.6 x 5.4 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      360p:	 640 x 360	24 x 13.5 cm	 9.6 x 5.4 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      240p:	 426 x 240	24 x 13.5 cm	 9.6 x 5.4 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: uhd and 4k can be used for 2160p and hd can be used for 1080p.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Recognized 4:3-ratio formats:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     name:	pixel size	page size (SI)	page size (US)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      480p:	 640 x 480	24 x 18 cm	 9.6 x 7.2 inch\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      360p:	 480 x 360	24 x 18 cm	 9.6 x 7.2 inch\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Note: dvd can be used for 480p.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      name:	pixel size	page size (SI)	 page size (US)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      uxga: 1600 x 1200	24 x 18 cm	 9.6 x 7.2 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     sxga+: 1400 x 1050	24 x 18 cm	 9.6 x 7.2 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       xga: 1024 x 768	24 x 18 cm	 9.6 x 7.2 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      svga:	 800 x 600	24 x 18 cm	 9.6 x 7.2 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       dvd:	 640 x 480	24 x 18 cm	 9.6 x 7.2 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Current PROJ_LENGTH_UNIT determines if you get SI or US paper dimensions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Alternatively, set a custom paper size and dots-per-unit directly:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       Give <width>x<height>x<dpu> for a custom frame dimension.\n");
@@ -372,23 +377,42 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				Ctrl->W.active = true;
 				strcpy (arg, opt->arg);		/* Get a copy... */
 				gmt_str_tolower (arg);		/* ..so we can make it lower case */
-				if (!strcmp (arg, "4k") || !strcmp (arg, "uhd") || !strcmp (arg, "2160p")) {
+				/* 16x9 formats */
+				if (!strcmp (arg, "4k") || !strcmp (arg, "uhd") || !strcmp (arg, "2160p")) {	/* 2160x3840 */
 					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height16x9;	Ctrl->W.dim[GMT_Z] = dpu;
 				}
-				else if (!strcmp (arg, "1080p") || !strcmp (arg, "hd")) {
+				else if (!strcmp (arg, "1080p") || !strcmp (arg, "hd")) {	/* 1080x1920 */
 					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height16x9;	Ctrl->W.dim[GMT_Z] = dpu / 2.0;
 				}
-				else if (!strcmp (arg, "720p")) {
+				else if (!strcmp (arg, "720p")) {	/* 720x1280 */
 					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height16x9;	Ctrl->W.dim[GMT_Z] = dpu / 3.0;
 				}
-				else if (!strcmp (arg, "540p")) {
+				else if (!strcmp (arg, "540p")) {	/* 540x960 */
 					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height16x9;	Ctrl->W.dim[GMT_Z] = dpu / 4.0;
+				}	/* 4x3 formats below */
+				else if (!strcmp (arg, "480p")) {	/* 480x854 */
+					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height16x9;	Ctrl->W.dim[GMT_Z] = dpu / 6.0;
 				}
-				else if (!strcmp (arg, "480p") || !strcmp (arg, "dvd")) {
+				else if (!strcmp (arg, "360p")) {	/* 360x640 */
+					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height16x9;	Ctrl->W.dim[GMT_Z] = dpu / 8.0;
+				}
+				else if (!strcmp (arg, "240p")) {	/* 240x426 */
+					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height16x9;	Ctrl->W.dim[GMT_Z] = dpu / 12.0;
+				}	/* Below are 4x3 formats */
+				else if (!strcmp (arg, "uxga") ) {	/* 1200x1600 */
+					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height4x3;	Ctrl->W.dim[GMT_Z] = 2.5 * dpu / 6.0;
+				}
+				else if (!strcmp (arg, "sxga+") ) {	/* 1050x1400 */
+					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height4x3;	Ctrl->W.dim[GMT_Z] = 2.1875 * dpu / 6.0;
+				}
+				else if (!strcmp (arg, "xga") ) {	/* 768x1024 */
+					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height4x3;	Ctrl->W.dim[GMT_Z] = 1.6 * dpu / 6.0;
+				}
+				else if (!strcmp (arg, "sgva") ) {	/* 600x800 */
+					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height4x3;	Ctrl->W.dim[GMT_Z] = 1.25 * dpu / 6.0;
+				}
+				else if (!strcmp (arg, "dvd")) {	/* 480x640 */
 					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height4x3;	Ctrl->W.dim[GMT_Z] = dpu / 6.0;
-				}
-				else if (!strcmp (arg, "360p")) {
-					Ctrl->W.dim[GMT_X] = width;	Ctrl->W.dim[GMT_Y] = height4x3;	Ctrl->W.dim[GMT_Z] = dpu / 8.0;
 				}
 				else {	/* Custom paper dimensions */
 					if ((n = sscanf (arg, "%[^x]x%[^x]x%lg", txt_a, txt_b, &Ctrl->W.dim[GMT_Z])) != 3) {
