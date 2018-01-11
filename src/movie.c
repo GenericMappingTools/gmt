@@ -46,6 +46,8 @@
 #define MOVIE_PREFLIGHT		0
 #define MOVIE_POSTFLIGHT	1
 
+#define MOVIE_WAIT_TO_CHECK	10000	/* In microseconds, so 0.01 seconds */
+
 enum enum_script {BASH_MODE = 0,	/* Write Bash script */
 	CSH_MODE,			/* Write C-shell script */
 	DOS_MODE};			/* Write DOS script */
@@ -978,7 +980,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			n_frames_not_started--;		/* One fewer frames remaining */
 			n_cores_unused--;		/* This core is now busy */
 		}
-		gmt_sleep (1000);	/* Wait 1 millisecond - then check for completion of the PNG images */
+		gmt_sleep (MOVIE_WAIT_TO_CHECK);	/* Wait 0.01 second - then check for completion of the PNG images */
 		for (k = first_frame; k < frame; k++) {	/* Only loop over the range of frames that we know are currently in play */
 			if (status[k].completed) continue;	/* Already finished with this frame */
 			if (!status[k].started) continue;	/* Not started this frame yet */
