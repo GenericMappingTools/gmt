@@ -937,8 +937,13 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Running cleanup script %s returned error %d - exiting.\n", cleanup_file, error);
 		Return (GMT_RUNTIME_ERROR);
 	}
+
+	/* Finally, delete the clean-up script separately since under DOS we got complaints when we had it delete itself (which works under *nix) */
 	sprintf (line, "%s %s\n", rmfile[Ctrl->In.mode], cleanup_file);	/* Delete the cleanup script itself */
-	system(line);
+	if ((error = system (line))) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Deleting the cleanup script %s returned error %d.\n", cleanup_file, error);
+		Return (GMT_RUNTIME_ERROR);
+	}
 
 	Return (GMT_NOERROR);
 }
