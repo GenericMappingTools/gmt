@@ -180,10 +180,10 @@ GMT_LOCAL void set_tvalue (FILE *fp, int mode, char *name, char *value) {
 		switch (mode) {
 			case BASH_MODE: fprintf (fp, "%s=\"%s\"\n", name, value);       break;
 			case CSH_MODE:  fprintf (fp, "set %s = \"%s\"\n", name, value); break;
-			case DOS_MODE:  fprintf (fp, "set %s=\'%s\'\n", name, value);   break;
+			case DOS_MODE:  fprintf (fp, "set %s=\"%s\"\n", name, value);   break;
 		}
 	}
-	else {	/* SIngle word */
+	else {	/* Single word */
 		switch (mode) {
 			case BASH_MODE: fprintf (fp, "%s=%s\n", name, value);       break;
 			case CSH_MODE:  fprintf (fp, "set %s = %s\n", name, value); break;
