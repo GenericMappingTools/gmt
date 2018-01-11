@@ -7446,13 +7446,12 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 
 bool gmt_is_cpt_master (struct GMT_CTRL *GMT, char *cpt) {
 	/* Return true if cpt is the name of a GMT CPT master table and not a local file */
-	char *c = NULL, dummy[PATH_MAX] = {""};
+	char *c = NULL;
 	if (cpt == NULL) return true;	/* No cpt given means use rainbow master */
 	if (gmt_M_file_is_memory (cpt)) return false;	/* A CPT was given via memory location */
 	if ((c = gmt_first_modifier (GMT, cpt, "uUw")))
 		c[0] = '\0';	/* Must chop off modifiers for access to work */
-	if (cpt[0] && gmt_getdatapath (GMT, cpt, dummy, R_OK))	/* Must look anywhere data files may be found */
-		return false;	/* A CPT was given and exists */
+	if (cpt[0] && !gmt_access (GMT, cpt, R_OK)) return false;	/* A CPT was given and exists */
 	return true;	/* Acting as if it is a master table */
 }
 
