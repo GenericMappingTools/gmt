@@ -25,27 +25,30 @@ Synopsis
 [ **Sb**\ *backgroundscript* ]
 [ **Sf**\ *foregroundscript* ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-x| ]
 
 |No-spaces|
 
 Description
 -----------
 
-We can generate GMT animation sequences using a single-plot script that is repeated
-for each frame, with some variation using specific frame bariables.  The **movie**
-module simplifies and hides most of the steps normally needed to set up a full-blown
-animation job.  Instead, the user can focus on composing the main plot and let the
+The **movie** module can generate GMT animation sequences using a single-plot script
+that is repeated for all frames, with some variation using specific frame variables.  The 
+module simplifies (and hides) most of the steps normally needed to set up a full-blown
+animation job.  Instead, the user can focus on composing the main frame plot and let the
 parallel execution of frames and assembly of images into a movie take place in the background.
+Individual frames are converted from PostScript plots to lossless PNG images and optionally
+assembled into an animation.
 
 Required Arguments
 ------------------
 
 *mainscript*
     Name of a stand-alone GMT modern script that makes the frame-dependent plot.  The
-    script may access frame parameters, such as frame number and others, and may be
+    script may access frame variables, such as frame number and others, and may be
     written using the Bourne shell (.sh), the Bourne again shell (.bash), the csh (.csh)
     or DOS batch language (.bat).  The script language is inferred from the file extension
-    and we build hidden scripts using the same language.  Parameters that can be accessed
+    and we build hidden movie scripts using the same language.  Parameters that can be accessed
     are discussed below.
 
 .. _-N:
@@ -67,27 +70,21 @@ Required Arguments
 .. _-W:
 
 **-W**\ *papersize*
-    Specify the custom paper size used to compose the movie frames. You can choose from a
-    a set of known preset formats or you can set a custom layout.  The recognized 16:9 ratio
-    formats (with paper size and pixel dimensions in parenthesis) are
-    **2160p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 3840 x 2160),
-    **1080p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 1920 x 1080),
-    **720p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 1280 x 720),
-    **540p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 960 x 540).
-    **480p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 854 x 480).
-    **360p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 640 x 360).
-    **240p** (24 x 13.5 cm *or* 9.6 x 5.4 inch; 426 x 240).
-    We also accept **4k** or **uhd** for **2160p** and **hd** for **1080p**.
-    The recognized 4:3 ratio formats are
-    **uxga**  (24 x 18 cm *or* 9.6 x 7.2 inch; 1600 x 1200),
-    **sxga+** (24 x 18 cm *or* 9.6 x 7.2 inch; 1400 x 1050),
-    **xga**   (24 x 18 cm *or* 9.6 x 7.2 inch; 1024 x 768),
-    **svga**  (24 x 18 cm *or* 9.6 x 7.2 inch; 800 x 600),
-    **dvd**   (24 x 18 cm *or* 9.6 x 7.2 inch; 640 x 480).
-    Note: :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` determines if you are expected to
-    work with the SI or US dimensions.  Alternatively, set a custom format directly by
-    giving *width*\ x\ *height*\ x\ *dpu* for a custom frame dimension, where *dpu* is
-    the dots per unit pixel density.
+    Specify the paper size used when composing the movie frames. You can choose from a
+    a set of known preset formats or you can set a custom layout.  The named 16:9 ratio
+    formats have a paper dimension of 24 x 13.5 cm *or* 9.6 x 5.4 inch and are listed
+    below (with pixel dimensions given in parenthesis):
+    **2160p** (3840 x 2160), **1080p** (1920 x 1080), **720p** (1280 x 720),
+    **540p** (960 x 540), **480p** (854 x 480), **360p** (640 x 360), and **240p** (426 x 240).
+    We also accept **4k** or **uhd** to mean **2160p** and **hd** to mean **1080p**.
+    The recognized 4:3 ratio formats have a paper dimension of 24 x 18 cm *or* 9.6 x 7.2 inch
+    and are listed below (with pixel dimensions given in parenthesis):
+    **uxga** (1600 x 1200), **sxga+** (1400 x 1050), **xga** (1024 x 768),
+    **svga** (800 x 600), and **dvd** (640 x 480).
+    Note: Your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting determines if movie sets
+    you up to work with the SI or US paper dimensions.  Instead of a named format you can
+    request a custom format directly by giving *width*\ x\ *height*\ x\ *dpu*, where *dpu* is
+    the dots-per-unit pixel density.
 
 
 Optional Arguments
@@ -96,99 +93,113 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *rate*\ [**+l**\ [*n*]]
-    Set the frame rate in frames per seconds for the final movie (if selected) [24].
-    Optionally, for animated GIF movies you may control if the movie should loop (**+l**)
-    and how many loops to set [infinite].
+    Set the frame rate in frames per seconds for the final animation [24].
+    Optionally, for an animated GIF (**-F**\ gif) you may specify if the movie should loop (**+l**)
+    and if so how many times to repeat [infinite].
 
 .. _-E:
 
 **-E**
-    Erase the *prefix* directory after assembling the final movie [leave directory with all images;
-    script files, parameter files, and layer PostScript files are removed].
+    Erase the entire *prefix* directory after assembling the final movie [leave directory with all images;
+    script files, parameter files, and layer PostScript files are removed (but see **-Q**)].
 
 .. _-F:
 
 **-F**\ *format* [**+o**\ *options*\ ]
-    Set the movie format for the final product.  Choose either gif (animated GIF), mp4 (MPEG-4),
+    Set the format of the final animation.  Choose either gif (animated GIF), mp4 (MPEG-4 movie),
     or none [Default].  For mp4 you may optionally add additional ffmpeg encoding options via the **+o** modifier.
 
 .. _-G:
 
 **-G**\ *fill*
-    Set the canvas fill before plotting commences [none].
+    Set the canvas color or fill before plotting commences [none].
 
 .. _-Q:
 
 **-Q**\ [*frame*]
-    Dry-run; no movie is made but all the helper scripts are left in the *prefix* directory for examination.
-    Any background and foreground scripts set via **-S** will be run since they may produce data needed for
-    building the scripts.  Alternatively, append a *frame* number and we will make that single frame plot and
-    exit.  In this case we will leave the frame sub-directory intact so any temporary files in it may be examined.
+    Dry-run; no movie is made but all the movie scripts we build are left in the *prefix* directory for further examination.
+    Any background and foreground scripts derived from **-S** will be run since they may produce data needed when
+    building the movie scripts.  Alternatively, append a single *frame* number and we will instead produce that single frame plot and
+    exit.  In this case we will leave the frame sub-directory (see **-N**) intact so any temporary files in it may be examined.
 
 .. _-Sb:
 
 **-Sb**\ *backgroundscript*
-    The optional GMT modern mode *backgroundscript* (in the same scripting language as *mainscript*) can be
+    The optional GMT modern mode *backgroundscript* (written in the same scripting language as *mainscript*) can be
     used for one or two purposes: (1) It may create files (such as *timefile*) that will be needed by *mainscript*
     to make the movie, and (2) It may make a static background plot that should form the background for all frames.
-    If a plot is generated it should make sure it uses the same positioning (i.e., **-X -Y**) as the main script
-    so that they will stack correctly.
+    If a plot is generated the script must make sure it uses the same positioning (i.e., **-X -Y**) as the main script
+    so that the layered plot will stack correctly.
 
 .. _-Sf:
 
 **-Sf**\ *foregroundscript*
-    The optional GMT modern mode *foregroundscript* (in the same scripting language as *mainscript*) can be
-    used to make a static foreground plot that should be overlain on all frames.  Make sure it uses the same
-    positioning (i.e., **-X -Y**) as the main script so that they will stack correctly.
+    The optional GMT modern mode *foregroundscript* (written in the same scripting language as *mainscript*) can be
+    used to make a static foreground plot that should be overlain on all frames.  Make sure the script uses the same
+    positioning (i.e., **-X -Y**) as the main script so that the layers will stack correctly.
 
 .. _movie-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. include:: explain_core.rst_
+
+.. include:: explain_help.rst_
+
 Parameters
 ----------
 
-Several parameters are automatically assigned and can be used by *mainscript* and the optional
-*backgroundscript* and *foregroundscript* scripts in making the frame plot.
-GMT_MOVIE_WIDTH: The width of the paper,
-GMT_MOVIE_HEIGHT: The height of the paper,
-GMT_MOVIE_DPU: The current dots-per-unit.
+Several parameters are automatically assigned and can be used when composing *mainscript* and the optional
+*backgroundscript* and *foregroundscript* scripts. These are
+**GMT_MOVIE_WIDTH**\ : The width of the paper,
+**GMT_MOVIE_HEIGHT**\ : The height of the paper,
+**GMT_MOVIE_DPU**\ : The current dots-per-unit.
 In addition, the *mainscript* also has access to additional parameters
-GMT_MOVIE_FRAME: The current frame number,
-GMT_MOVIE_NFRAMES: The total number of frames
-Finally, if a *timefile* was given then variables GMT_MOVIE_VAL1, GMT_MOVIE_VAL2, etc are
-also set, one per column in *timefile*.
+**GMT_MOVIE_FRAME**\ : The current frame number,
+**GMT_MOVIE_NFRAMES**\ : The total number of frames
+Finally, if a *timefile* was given then variables **GMT_MOVIE_VAL1**\ , **GMT_MOVIE_VAL2**\ , etc are
+also set, one variable per column in *timefile*.  If *timefile* has trailing text then that text can
+be accessed via the variable **GMT_MOVIE_STRING**.
 Furthermore, the scripts will be able to find any files present in the starting directory
 as well as any new files produced by *mainscript* and the optional scripts set via **-S**.
+No path specification are needed to access these files.  Files outside those two directories may
+require full paths or their directories may be included in the :ref:`DIR_DATA <DIR_DATA>` setting.
 
 Your Canvas
 -----------
 
-As you can see from **-W**, you are given a custom paper that is either 24 x 13.5 cm (16:9)
-or 24 x 18 cm (4:3).  If your settings imply US units then the custom paper sizes are just
-1.6% larger than the SI sizes (9.6 x 5.4" or 9.6 x 7.2").  You should compose your plots using
-those paper sizes, and movie will make proper conversions to image pixel dimensions.
+As you can see from **-W**, unless you specified a custom format you are given a paper size that is either 24 x 13.5 cm (16:9)
+or 24 x 18 cm (4:3).  If your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting is inch then the custom paper sizes are just
+slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2").  You should compose your plots using
+the given paper size, and movie will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
+to use **-X -Y** to allow for suitable margins and any positioning of items on the frame.  To minimize processing time it is
+recommended that any static part of the movie be considered either a static background (to be made by *backgroundscript*) and/or
+a static foreground (to be made by *foregroundscript*) which will overlay any other plot features.  Also, any calculations of
+data files to be used in the loop over frames can be produced by *backgroundscript*.  Any data or variables that depend on the
+frame number must be computed or set by *mainscript*.
 
 Examples
 --------
 
-To make an animated GIF movie based on the script globe.sh, which spins a globe using the
-frame number to compute a view angle, using 360 frames and a custom square 600x600 image, try
+To make an animated GIF movie based on the script globe.sh, which simply spins a globe using the
+frame number to serve as the view longitude over 360 separate frames, using a custom square 600x600 pixel cancas, try
 
    ::
 
     gmt movie globe.sh -Nglobe -T360 -Fgif -W6ix6ix100
 
-Here, the globe.sh bash script is simply
+Here, the globe.sh bash script simply plots a map with :doc:`pscoast` but uses the frame number variable
+as the center longitude:
 
    ::
 
     gmt begin
-       gmt pscoast -Rg -JG${GMT_MOVIE_FRAME}/20/4i -Gmaroon -Sturquoise -P -Bg -X0 -Y0
+       gmt pscoast -Rg -JG${GMT_MOVIE_FRAME}/20/6i -Gmaroon -Sturquoise -P -Bg -X0 -Y0
     gmt end
 
-where we use the frame number as our longitude.  The equivalent DOS script setup would be
+As the automatic frame loop is executed the different frames will be produced with different
+longitudes.  The equivalent DOS batch script setup would be
 
   ::
 
@@ -199,20 +210,22 @@ Now, the globe.bat DOS script is simply
    ::
 
     gmt begin
-       gmt pscoast -Rg -JG%GMT_MOVIE_FRAME%/20/4i -Gmaroon -Sturquoise -P -Bg -X0 -Y0
+       gmt pscoast -Rg -JG%GMT_MOVIE_FRAME%/20/6i -Gmaroon -Sturquoise -P -Bg -X0 -Y0
     gmt end
 
-i.e., the syntax of how variables are used vary according to the scripting language.
-Note that there is no information set here to reflect the name of the plot, the paper size,
-the dimensions of the rasterized PostScript, and so on.  That is hidden from the user;
-the actual scripts that execute are derived from the user-provided scripts and supply
-the extra machinery.
+i.e., the syntax of how variables are used vary according to the scripting language. At the
+end of the execution we find the animated GIF globe.gif and a directory (called globe) that contains all 360 PNG images.
+Note that there is no information in the globe scripts that reflects the name of the plot, the paper size,
+the dimensions of the rasterized PostScript, and so on.  That information is hidden from the user;
+the actual movie scripts that execute are derived from the user-provided scripts and supply
+the extra machinery. The **movie** module manages the parallel execution loop over all frames using
+all available cores.
 
 Other Movie Formats
 -------------------
 
 As configured, movie only offers a MP4 format for movies.  The conversion is performed by the
-tool ffmpeg (https://www.ffmpeg.org) which as more codecs and processing options than there are children in China.
+tool ffmpeg (https://www.ffmpeg.org), which has more codecs and processing options than there are children in China.
 If you wish to run ffmpeg with other selections, simply run movie with long verbose (**-Vl**) and
 at the end it will print the ffmpeg command.  You can copy, paste, and modify this command to
 select other codecs and bit-rates.  You can also use the PNG sequence as input to tools such
