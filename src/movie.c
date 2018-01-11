@@ -516,6 +516,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "export ", ""};
 	char *mvfile[3] = {"mv -f", "mv -rf", "move"};
+	char *sc_call[3] = {"bash ", "csh ", "start /B"};
 	char var_token[3] = "$$%", path_sep[3] = "::;";
 	char init_file[GMT_LEN64] = {""}, state_prefix[GMT_LEN64] = {""}, state_file[GMT_LEN64] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[GMT_LEN64] = {""}, post_file[GMT_LEN64] = {""}, main_file[GMT_LEN64] = {""}, line[PATH_MAX] = {""};
@@ -898,10 +899,13 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 	while (!done) {	/* Keep running jobs until all frames have completed */
 		while (n_frames_not_started && n_cores_unused) {	/* Launch new jobs if possible */
+			/*
 			if (Ctrl->In.mode == DOS_MODE)
 				sprintf (loop_cmd, "start /B %s %6.6d", main_file, frame);
 			else
 				sprintf (loop_cmd, "%s %6.6d &", main_file, frame);
+			*/
+			sprintf (loop_cmd, "%s %s %6.6d &", sc_call[Ctrl->In.mode], main_file, frame);
 
 			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for frame %6.6d\n", frame);
 			if ((error = system (loop_cmd))) {
@@ -995,7 +999,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "%s %s%c*.ps\n", rmfile[Ctrl->In.mode], Ctrl->N.prefix, dir_sep);	/* Delete any PostScript layers */
 	}
 	fclose (fp);
-#ifndef WIN32
+#ifndef _WIN32
 	/* Set executable bit if not Windows */
 	if (chmod (cleanup_file, S_IRWXU)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to make cleanup script %s executable - exiting\n", cleanup_file);
@@ -1003,7 +1007,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 #endif
 	/* Run cleanup script at the end */
-	if ((error = system (cleanup_file))) {
+	if (Ctrl->In.mode == DOS_MODE)
+		error = system (cleanup_file);
+	else
+		error = system (strcat(sc_call[Ctrl->In.mode], cleanup_file));	/* From bash on Win, need to explicit it */
+	if (error) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Running cleanup script %s returned error %d - exiting.\n", cleanup_file, error);
 		Return (GMT_RUNTIME_ERROR);
 	}
