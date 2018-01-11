@@ -893,18 +893,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	/* Finally, we can run all the frames in a controlled loop, launching new parallel jobs as cores become available */
 
 	frame = first_frame = 0; n_frames_not_started = n_frames;
-	//n_cores_unused = MAX (1, GMT->common.x.n_threads - 1);			/* Remove one for the main movie module thread */
 	n_cores_unused = MAX (1, API->n_cores - 1);			/* Remove one for the main movie module thread */
 	status = gmt_M_memory (GMT, NULL, n_frames, struct MOVIE_STATUS);	/* Used to keep track of frame status */
 	
 	while (!done) {	/* Keep running jobs until all frames have completed */
 		while (n_frames_not_started && n_cores_unused) {	/* Launch new jobs if possible */
-			/*
-			if (Ctrl->In.mode == DOS_MODE)
-				sprintf (cmd, "start /B %s %6.6d", main_file, frame);
-			else
-				sprintf (cmd, "%s %6.6d &", main_file, frame);
-			*/
 			sprintf (cmd, "%s %s %6.6d &", sc_call[Ctrl->In.mode], main_file, frame);
 
 			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for frame %6.6d\n", frame);
