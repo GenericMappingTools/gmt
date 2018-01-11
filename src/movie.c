@@ -894,7 +894,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	/* Finally, we can run all the frames in a controlled loop, launching new parallel jobs as cores become available */
 
 	frame = first_frame = 0; n_frames_not_started = n_frames;
-	n_cores_unused = MAX (1, GMT->common.x.n_threads - 1);			/* Remove one for the main movie module thread */
+	//n_cores_unused = MAX (1, GMT->common.x.n_threads - 1);			/* Remove one for the main movie module thread */
+	n_cores_unused = MAX (1, API->n_cores - 1);			/* Remove one for the main movie module thread */
 	status = gmt_M_memory (GMT, NULL, n_frames, struct MOVIE_STATUS);	/* Used to keep track of frame status */
 	
 	while (!done) {	/* Keep running jobs until all frames have completed */
