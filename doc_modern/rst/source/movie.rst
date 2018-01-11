@@ -114,6 +114,13 @@ Optional Arguments
 **-G**\ *fill*
     Set the canvas color or fill before plotting commences [none].
 
+.. _-I:
+
+**-I**\ *includefile*
+    Insert the contents of *includefile* into the movie_init.sh script that is accessed by all the movie scripts.
+    This mechanism is used to add information (typically variables) that the *mainscript* and the two optional
+    **-S** scripts rely on.
+
 .. _-Q:
 
 **-Q**\ [*frame*]
@@ -178,6 +185,21 @@ recommended that any static part of the movie be considered either a static back
 a static foreground (to be made by *foregroundscript*) which will overlay any other plot features.  Also, any calculations of
 data files to be used in the loop over frames can be produced by *backgroundscript*.  Any data or variables that depend on the
 frame number must be computed or set by *mainscript*.
+
+Technical Details
+-----------------
+
+The **movie** module creates several hidden script files that are used in
+the generation of the images (here we have left the file extension off since it depends on the
+scripting language used): movie_init (initializes variables related to canvas size and dots-per-unit,
+and optionally includes the contents of the optional *includefile*), movie_preflight (optional since it derives
+from **-Sb** and computes needed data files and possibly a background layer), movie_postflight
+(optional since it derives from **-Sf** and builds a foreground layer), movie_frame.sh (accepts a frame counter
+argument and builds the frame image), movie_cleanup (removes temporary files at the end of the
+run). For each frame there is a separate movie_params_###### script that provides frame-specific
+variables (e.g., frame number and anything given via **-T**).  The pre- and post-flight scripts have
+access to the information in movie_init while the frame script in addition has access to the frame-
+specific parameter file.  Using the **-Q** option will just produce the scripts which you can then examine.
 
 Examples
 --------

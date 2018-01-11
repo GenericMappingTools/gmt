@@ -41,7 +41,7 @@
 #define THIS_MODULE_PURPOSE	"Create animation sequences and movies"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"V" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS	"V"
 
 #define MOVIE_PREFLIGHT		0
 #define MOVIE_POSTFLIGHT	1
@@ -82,6 +82,10 @@ struct MOVIE_CTRL {
 		bool active;
 		char *fill;
 	} G;
+	struct I {	/* -I<includefile> */
+		bool active;
+		char *file;
+	} I;
 	struct N {	/* -N<movieprefix> */
 		bool active;
 		char *prefix;
@@ -130,6 +134,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MOVIE_CTRL *C) {	/* Deall
 	gmt_M_str_free (C->F.format);
 	gmt_M_str_free (C->F.options);
 	gmt_M_str_free (C->G.fill);
+	gmt_M_str_free (C->I.file);
 	gmt_M_str_free (C->N.prefix);
 	gmt_M_str_free (C->S[MOVIE_PREFLIGHT].file);
 	gmt_M_str_free (C->S[MOVIE_POSTFLIGHT].file);
@@ -137,7 +142,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MOVIE_CTRL *C) {	/* Deall
 	gmt_M_free (GMT, C);
 }
 
-static int gmt_sleep (unsigned int microsec) {
+GMT_LOCAL int gmt_sleep (unsigned int microsec) {
 #ifdef WIN32
 	Sleep ((uint32_t)microsec/1000);	/* msec are microseconds but Sleep wants millisecs */
 	return 0;
@@ -146,7 +151,7 @@ static int gmt_sleep (unsigned int microsec) {
 #endif
 }
 
-static void set_dvalue (FILE *fp, int mode, char *name, double value, char unit) {
+GMT_LOCAL void set_dvalue (FILE *fp, int mode, char *name, double value, char unit) {
 	/* Assigns a single named floating point variable given the script mode */
 	switch (mode) {
 		case BASH_MODE: fprintf (fp, "%s=%g", name, value);       break;
@@ -157,7 +162,7 @@ static void set_dvalue (FILE *fp, int mode, char *name, double value, char unit)
 	fprintf (fp, "\n");
 }
 
-static void set_ivalue (FILE *fp, int mode, char *name, int value) {
+GMT_LOCAL void set_ivalue (FILE *fp, int mode, char *name, int value) {
 	/* Assigns a single named integer variable given the script mode */
 	switch (mode) {
 		case BASH_MODE: fprintf (fp, "%s=%d\n", name, value);       break;
@@ -166,7 +171,7 @@ static void set_ivalue (FILE *fp, int mode, char *name, int value) {
 	}
 }
 
-static void set_tvalue (FILE *fp, int mode, char *name, char *value) {
+GMT_LOCAL void set_tvalue (FILE *fp, int mode, char *name, char *value) {
 	/* Assigns a single named text variable given the script mode */
 	switch (mode) {
 		case BASH_MODE: fprintf (fp, "%s=%s\n", name, value);       break;
@@ -175,7 +180,7 @@ static void set_tvalue (FILE *fp, int mode, char *name, char *value) {
 	}
 }
 
-static void set_script (FILE *fp, int mode) {
+GMT_LOCAL void set_script (FILE *fp, int mode) {
 	/* Writes the script's incantation line (or comment for DOS) */
 	switch (mode) {
 		case BASH_MODE: fprintf (fp, "#!/bin/bash\n"); break;
@@ -184,7 +189,7 @@ static void set_script (FILE *fp, int mode) {
 	}
 }
 
-static void set_comment (FILE *fp, int mode, char *comment) {
+GMT_LOCAL void set_comment (FILE *fp, int mode, char *comment) {
 	/* Write a comment line given the script mode */
 	switch (mode) {
 		case BASH_MODE: case CSH_MODE:  fprintf (fp, "# %s\n", comment); break;
@@ -192,7 +197,7 @@ static void set_comment (FILE *fp, int mode, char *comment) {
 	}
 }
 
-static char *place_var (int mode, char *name) {
+GMT_LOCAL char *place_var (int mode, char *name) {
 	/* Prints a single variable to stdout where needed in the script via the string static variable.
 	 * PS!  Only one call per printf statement since string cannot hold more than one item at the time */
 	static char string[GMT_LEN128] = {""};	/* So max length of variable name is 127 */
@@ -209,11 +214,37 @@ int dry_run_only (const char *cmd) {
 	return 0;
 }
 
+GMT_LOCAL unsigned int check_language (struct GMT_CTRL *GMT, unsigned int mode, char *file) {
+	unsigned int n_errors = 0;
+	switch (mode) {
+		case BASH_MODE:
+			if (!(strstr (file, ".bash") || strstr (file, ".sh"))) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Main script is bash/sh but %s is not!\n", file);
+				n_errors++;
+			}
+			break;
+		case CSH_MODE:
+			if (!strstr (file, ".csh")) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Main script is csh but %s is not!\n", file);
+				n_errors++;
+			}
+			break;
+		case DOS_MODE:
+			if (!strstr (file, ".bat")) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Main script is bat but %s is not!\n", file);
+				n_errors++;
+			}
+			break;
+	}
+	return (n_errors);
+}
+
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: movie <mainscript> -N<prefix> -T<n_frames>|<timefile> -W<papersize>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A<rate>[+l[<n>]]] [-E] [-F<format>[+o<opts>]] [-G<fill>] [-Q[<frame>]] [-Sb<script>] [-Sf<script>] [%s] [%s]\n\n", GMT_V_OPT, GMT_x_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A<rate>[+l[<n>]]] [-E] [-F<format>[+o<opts>]] [-G<fill>] [-I<includefile>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Q[<frame>]] [-Sb<script>] [-Sf<script>] [%s]\n\n", GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -253,6 +284,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append +o<options> to add custom encoding options for mp4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Default is none: No animated product; just create the PNG frames.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the canvas background color [none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Include file that will be inserted into the movie_init.sh script [none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constants and variable settings needed by all movie scripts.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Dry-run.  Only the work scripts will be produced but none will be executed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append a frame number and we just produce that single PNG image.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the optional background and foreground GMT modern scripts:\n");
@@ -260,7 +293,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      Pre-compute items needed by <mainscript> and build a static background plot layer.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of foreground script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Build a static foreground plot overlay to be added to all frames.\n");
-	GMT_Option (API, "V,x,.");
+	GMT_Option (API, "V,.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -338,6 +371,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					n_errors++;
 				else
 					Ctrl->G.fill = strdup (opt->arg);
+				break;
+			case 'I':	/* Include file with settings used by all scripts */
+				Ctrl->I.active = true;
+				Ctrl->I.file = strdup (opt->arg);
 				break;
 			case 'N':	/* Movie prefix and directory name */
 				Ctrl->N.active = true;
@@ -469,27 +506,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 		/* Armed with script language we check that any back/fore-ground scripts are of the same kind */
 		for (k = 0; !n_errors && k < 2; k++) {
 			if (!Ctrl->S[k].active) continue;	/* Not provided */
-			switch (Ctrl->In.mode) {
-				case BASH_MODE:
-					if (!(strstr (Ctrl->S[k].file, ".bash") || strstr (Ctrl->S[k].file, ".sh"))) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Main script is bash/sh but Ctrl->S[k].file is not!\n");
-						n_errors++;
-					}
-					break;
-				case CSH_MODE:
-					if (!strstr (Ctrl->S[k].file, ".csh")) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Main script is csh but Ctrl->S[k].file is not!\n");
-						n_errors++;
-					}
-					break;
-				case DOS_MODE:
-					if (!strstr (Ctrl->S[k].file, ".bat")) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Main script is bat but Ctrl->S[k].file is not!\n");
-						n_errors++;
-					}
-					break;
-			}
+			n_errors += check_language (GMT, Ctrl->In.mode, Ctrl->S[k].file);
 		}
+		if (!n_errors && Ctrl->I.active)	/* Also check the include file */
+			n_errors += check_language (GMT, Ctrl->In.mode, Ctrl->I.file);
 		if (n_errors == 0 && ((Ctrl->In.fp = fopen (Ctrl->In.file, "r")) == NULL)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open main script file %s\n", Ctrl->In.file);
 			n_errors++;
@@ -640,7 +660,22 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_WIDTH",  Ctrl->W.dim[GMT_X], Ctrl->W.unit);
 	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_HEIGHT", Ctrl->W.dim[GMT_Y], Ctrl->W.unit);
 	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_DPU",    Ctrl->W.dim[GMT_Z], 0);
-	fclose (fp);
+	if (Ctrl->I.active) {	/* Append contents of an include file */
+		FILE *fpi = NULL;
+		if ((fpi = fopen (Ctrl->I.file, "r")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to open include file %s - exiting\n", Ctrl->I.file);
+			fclose (Ctrl->In.fp);
+			Return (GMT_ERROR_ON_FOPEN);
+		}
+		while (gmt_fgets (GMT, line, PATH_MAX, fpi)) {	/* Read the include file and copy to init script with some exceptions */
+			if (strstr (line, "gmt begin")) continue;	/* Skip gmt begin */
+			if (strstr (line, "gmt end")) continue;		/* Skip gmt end */
+			if (strstr (line, "#!/")) continue;		/* Skip any leading shell incantation */
+			fprintf (fp, "%s", line);			/* Just copy the line as is */
+		}
+		fclose (fpi);	/* Done reading the include script */
+	}
+	fclose (fp);	/* Done writing the init script */
 	
 	if (Ctrl->S[MOVIE_PREFLIGHT].active) {	/* Create the preflight script from the user's background script */
 		n_begin = 0;	/* Reset check */
