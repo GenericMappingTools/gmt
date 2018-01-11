@@ -440,17 +440,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 		
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->W.active, "Syntax error -W: Must specify a frame dimension\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.dim[GMT_X] <= 0.0 || Ctrl->W.dim[GMT_Y] <= 0.0,
-					"Syntax error -W: Zero or negative dimensions given\n");
+	i                                  "Syntax error -W: Zero or negative dimensions given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.dim[GMT_Z] <= 0.0,
-					"Syntax error -W: Zero or negative dots-per-unit given\n");
+	                                   "Syntax error -W: Zero or negative dots-per-unit given\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active || (Ctrl->N.prefix == NULL || strlen (Ctrl->N.prefix) == 0),
-					"Syntax error -N: Must specify a movie prefix\n");
+	                                   "Syntax error -N: Must specify a movie prefix\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active,
-					"Syntax error -T: Must specify number of frames or time file\n");
+	                                   "Syntax error -T: Must specify number of frames or time file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.loop && Ctrl->F.mode != MOVIE_GIF,
-					"Syntax error -A: The loop modifier +l only applies to GIF animations\n");
+                                       "Syntax error -A: The loop modifier +l only applies to GIF animations\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode == MOVIE_NONE && Ctrl->E.active,
-					"Syntax error -E: Cannot be used without -F specifying a movie product\n");
+                                       "Syntax error -E: Cannot be used without -F specifying a movie product\n");
 	
 	if (n_files == 1) {	/* Determine scripting language from file extension and open the main script file */
 		if (!Ctrl->In.file)
@@ -515,11 +515,12 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "export ", ""};
+	char *mvfile[3] = {"mv -f", "mv -rf", "move"};
 	char var_token[3] = "$$%", path_sep[3] = "::;";
 	char init_file[GMT_LEN64] = {""}, state_prefix[GMT_LEN64] = {""}, state_file[GMT_LEN64] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[GMT_LEN64] = {""}, post_file[GMT_LEN64] = {""}, main_file[GMT_LEN64] = {""}, line[PATH_MAX] = {""};
 	char string[GMT_LEN64] = {""}, extra[GMT_LEN64] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[GMT_LEN64] = {""};
-	char loop_cmd[GMT_LEN32] = {""}, png_file[GMT_LEN64] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""};
+	char loop_cmd[GMT_LEN64] = {""}, png_file[GMT_LEN64] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""};
 #ifdef _WIN32
 	char dir_sep = '\\';
 #else
@@ -842,7 +843,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 			set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
 			fprintf (fp, "\tgmt figure %s png", place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));
-			fprintf (fp, " D..,E%s,%s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_DPU"), extra);
+			//fprintf (fp, " D..,E%s,%s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_DPU"), extra);
+			fprintf (fp, " E%s,%s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_DPU"), extra);
 			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->W.dim[GMT_X], Ctrl->W.unit, Ctrl->W.dim[GMT_Y], Ctrl->W.unit, datadir);
 			n_begin++;	/* Processed the gmt begin line */
 		}
@@ -850,6 +852,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "%s", line);	/* Just copy the line as is */
 	}
 	fclose (Ctrl->In.fp);	/* Done reading the main script */
+	set_comment (fp, Ctrl->In.mode, "Move PNG file up to parent directory and cd up one level");
+	fprintf (fp, "%s %s.png ..\n", mvfile[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));	/* Move PNG plot up to parent dir */
 	fprintf (fp, "cd ..\n");	/* cd up to parent dir */
 	if (!one_frame) {	/* Delete evidence; otherwise we want to leave debug evidence when doing a single frame only */
 		set_comment (fp, Ctrl->In.mode, "Remove frame directory and frame parameter file");
@@ -895,9 +899,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	while (!done) {	/* Keep running jobs until all frames have completed */
 		while (n_frames_not_started && n_cores_unused) {	/* Launch new jobs if possible */
 			if (Ctrl->In.mode == DOS_MODE)
-	        		sprintf (loop_cmd, "start /B %s %6.6d", main_file, frame);
+				sprintf (loop_cmd, "start /B %s %6.6d", main_file, frame);
 			else
-	        		sprintf (loop_cmd, "%s %6.6d &", main_file, frame);
+				sprintf (loop_cmd, "%s %6.6d &", main_file, frame);
 
 			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for frame %6.6d\n", frame);
 			if ((error = system (loop_cmd))) {
@@ -925,7 +929,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		while (first_frame < n_frames && status[first_frame].completed) first_frame++;
 		if (n_frames_completed == n_frames) done = true;	/* All frames completed! */
 	}
-	
+
 	gmt_M_free (GMT, status);	/* Done with this structure array */
 	
 	/* Cd back up to the parent directory */
