@@ -102,8 +102,9 @@ struct MOVIE_CTRL {
 		char *file;
 		FILE *fp;
 	} S[2];
-	struct T {	/* -T<nframes>|<timefile> */
+	struct T {	/* -T<nframes>|<timefile>[+s] */
 		bool active;
+		bool split;
 		unsigned int n_frames;
 		char *file;
 	} T;
@@ -254,7 +255,7 @@ GMT_LOCAL unsigned int check_language (struct GMT_CTRL *GMT, unsigned int mode, 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: movie <mainscript> -N<prefix> -T<n_frames>|<timefile> -W<papersize>\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: movie <mainscript> -N<prefix> -T<n_frames>|<timefile>[+s] -W<papersize>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A<rate>[+l[<n>]]] [-E] [-F<format>[+o<opts>]] [-G<fill>] [-I<includefile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q[<frame>]] [-Sb<script>] [-Sf<script>] [%s]\n\n", GMT_V_OPT);
 
@@ -265,6 +266,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set project <prefix> used for movie files and directory name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set number of frames, or give a filename with frame-specific information.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <timefile> does not exist it must be created by the -Sf script.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to <timefile> to have trailing text be split into word variables [one string only].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify layout of the custom paper size. Choose from known dimensions or set it manually:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Recognized 16:9-ratio formats:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      name:	pixel size	page size (SI)	 page size (US)\n");
@@ -419,7 +421,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 	
 			case 'T':	/* Number of frames or the name of file with frame information (note: file may not exist yet) */
 				Ctrl->T.active = true;
+				if ((c = strstr (opt->arg, "+s"))) {	/* Split trailing text into words */
+					Ctrl->T.split = true;
+					c[0] = '\0';	/* Chop off modifier */
+				}
 				Ctrl->T.file = strdup (opt->arg);
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 				
 			case 'W':	/* Known frame dimension or set a custom paper size */
@@ -863,8 +870,19 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (string, "GMT_MOVIE_VAL%u", col+1);
 			set_dvalue (fp, Ctrl->In.mode, string, D->table[0]->segment[0]->data[col][frame], 0);
 		}
-		if (has_text)	/* Also place any string parameter as a single string variable */
+		if (has_text) {	/* Also place any string parameter as a single string variable */
 			set_tvalue (fp, Ctrl->In.mode, "GMT_MOVIE_STRING", D->table[0]->segment[0]->text[frame]);
+			if (Ctrl->T.split) {	/* Also split the string into individual words GMT_MOVIE_TXT1, GMT_MOVIE_TXT2, etc. */
+				char *word = NULL;
+				col = 0;
+				while ((word = strsep (&D->table[0]->segment[0]->text[frame], " \t")) != NULL) {
+					if (*word != '\0') {	/* Skip empty strings */
+						sprintf (string, "GMT_MOVIE_TXT%u", ++col);
+						set_tvalue (fp, Ctrl->In.mode, string, word);
+					}
+				}
+			}
+		}
 		fclose (fp);	/* Done writing this parameter file */
 	}
 	

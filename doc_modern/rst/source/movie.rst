@@ -15,7 +15,7 @@ Synopsis
 
 **gmt movie** *mainscript*
 |-N|\ *prefix*
-|-T|\ *frames*\ \|\ *timefile*
+|-T|\ *frames*\ \|\ *timefile*\ [**+s**]
 |-W|\ *papersize*
 [ |-A|\ *rate*\ [**+l**\ [*n*]] ] 
 [ |-E| ]
@@ -61,12 +61,14 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *frames*\ \|\ *timefile*
+**-T**\ *frames*\ \|\ *timefile*\ [**+s**]
     Either specify how many image frames to make or supply a file with a set of parameters,
     one record per frame (i.e., row).  The values in the columns will be available to the
     *mainscript* as named variables GMT_MOVIE_VAL1, GMT_MOVIE_VAL2, etc., while any trailing text
-    can be accessed via the variable GMT_MOVIE_STRING.  The number of records equals the number of frames.
-    Note that the *background* script is allowed to create the *timefile*.
+    can be accessed via the variable GMT_MOVIE_STRING.  Append **+s** to also split the trailing
+    string into individual words GMT_MOVIE_TXT1, GMT_MOVIE_TXT2, etc. The number of records equals
+    the number of frames. Note that the *background* script is allowed to create the *timefile*
+    hence we check of its existence both before and after the background script has run.
 
 .. _-W:
 
@@ -164,13 +166,19 @@ Several parameters are automatically assigned and can be used when composing *ma
 In addition, the *mainscript* also has access to additional parameters
 **GMT_MOVIE_FRAME**\ : The current frame number,
 **GMT_MOVIE_NFRAMES**\ : The total number of frames
-Finally, if a *timefile* was given then variables **GMT_MOVIE_VAL1**\ , **GMT_MOVIE_VAL2**\ , etc are
+Next, if a *timefile* was given then variables **GMT_MOVIE_VAL1**\ , **GMT_MOVIE_VAL2**\ , etc. are
 also set, one variable per column in *timefile*.  If *timefile* has trailing text then that text can
-be accessed via the variable **GMT_MOVIE_STRING**.
-Furthermore, the scripts will be able to find any files present in the starting directory
-as well as any new files produced by *mainscript* and the optional scripts set via **-S**.
-No path specification are needed to access these files.  Files outside those two directories may
-require full paths or their directories may be included in the :ref:`DIR_DATA <DIR_DATA>` setting.
+be accessed via the variable **GMT_MOVIE_STRING**, and if word-splitting was requested in **-T** then
+the trailing text is also split into individual words **GMT_MOVIE_TXT1**\ , **GMT_MOVIE_TXT2**\ , etc.
+Finally, if **-I** was used then any parameters listed there will be available as well.
+
+Data Files
+----------
+
+The movie scripts will be able to find any files present in the starting directory when **movie** was initiated,
+as well as any new files produced by *mainscript* or the optional scripts set via **-S**.
+No path specification is needed to access these files.  Other files may
+require full paths unless their directories were already included in the :ref:`DIR_DATA <DIR_DATA>` setting.
 
 Your Canvas
 -----------
@@ -179,10 +187,10 @@ As you can see from **-W**, unless you specified a custom format you are given a
 or 24 x 18 cm (4:3).  If your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting is inch then the custom paper sizes are just
 slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2").  You should compose your plots using
 the given paper size, and movie will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
-to use **-X -Y** to allow for suitable margins and any positioning of items on the frame.  To minimize processing time it is
-recommended that any static part of the movie be considered either a static background (to be made by *backgroundscript*) and/or
-a static foreground (to be made by *foregroundscript*) which will overlay any other plot features.  Also, any calculations of
-data files to be used in the loop over frames can be produced by *backgroundscript*.  Any data or variables that depend on the
+to use **-X -Y** to allow for suitable margins and any positioning of items on the canvas.  To minimize processing time it is
+recommended that any static part of the movie be considered either a static background (to be made once by *backgroundscript*) and/or
+a static foreground (to be made once by *foregroundscript*); **movie** will then assemble these layers per frame.  Also, any computation of
+static data files to be used in the loop over frames can be produced by *backgroundscript*.  Any data or variables that depend on the
 frame number must be computed or set by *mainscript*.
 
 Technical Details
@@ -208,7 +216,7 @@ Examples
 --------
 
 To make an animated GIF movie based on the script globe.sh, which simply spins a globe using the
-frame number to serve as the view longitude over 360 separate frames, using a custom square 600x600 pixel cancas, try
+frame number to serve as the view longitude, using a custom square 600x600 pixel canvas and 360 frames, try
 
    ::
 
