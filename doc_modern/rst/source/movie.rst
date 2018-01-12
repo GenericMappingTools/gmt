@@ -18,11 +18,12 @@ Synopsis
 |-T|\ *frames*\ \|\ *timefile*\ [**+s**]
 |-W|\ *papersize*
 [ |-A|\ *rate*\ [**+l**\ [*n*]] ] 
+[ |-C|\ [*frame*],[*format] ]
 [ |-E| ]
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
 [ |-G|\ *fill*\ ]
 [ |-I|\ *includefile* ]
-[ |-Q|\ [*frame*] ]
+[ |-Q| ]
 [ **Sb**\ *backgroundscript* ]
 [ **Sf**\ *foregroundscript* ]
 [ |SYN_OPT-V| ]
@@ -100,6 +101,13 @@ Optional Arguments
     Optionally, for an animated GIF (**-F**\ gif) you may specify if the movie should loop (**+l**)
     and if so how many times to repeat [infinite].
 
+.. _-C:
+
+**-C**\ [*frame*],[*format] ]
+    In addition to making the animation sequence, select a single frame for a cover page.  This frame will
+    be written in current directory with name *prefix*.*format*, where *format* can one of the
+    graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].
+
 .. _-E:
 
 **-E**
@@ -126,11 +134,10 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*frame*]
+**-Q**
     Dry-run; no movie is made but all the movie scripts we build are left in the *prefix* directory for further examination.
     Any background and foreground scripts derived from **-S** will be run since they may produce data needed when
-    building the movie scripts.  Alternatively, append a single *frame* number and we will instead produce that single frame plot and
-    exit.  In this case we will leave the frame sub-directory (see **-N**) intact so any temporary files in it may be examined.
+    building the movie scripts.  If combined with **-C** then only the cover plot is generated.
 
 .. _-Sb:
 

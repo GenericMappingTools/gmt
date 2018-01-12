@@ -71,6 +71,11 @@ struct MOVIE_CTRL {
 		double rate;
 		unsigned int n_loops;
 	} A;
+	struct C {	/* -C[<frame>][,format] */
+		bool active;
+		int frame;
+		char *format;
+	} C;
 	struct E {	/* -E */
 		bool active;
 	} E;
@@ -93,9 +98,8 @@ struct MOVIE_CTRL {
 		bool active;
 		char *prefix;
 	} N;
-	struct Q {	/* -Q[<frame>] */
+	struct Q {	/* -Q */
 		bool active;
-		int frame;
 	} Q;
 	struct S {	/* -Sb|f<script> */
 		bool active;
@@ -126,7 +130,6 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	C = gmt_M_memory (GMT, NULL, 1, struct MOVIE_CTRL);
 	C->A.rate = 24.0;	/* 24 frames/sec */
-	C->Q.frame = -1;	/* No frame during debug */
 	return (C);
 }
 
@@ -134,6 +137,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MOVIE_CTRL *C) {	/* Deall
 	gmt_M_unused (GMT);
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->C.format);
 	gmt_M_str_free (C->W.string);
 	gmt_M_str_free (C->F.format);
 	gmt_M_str_free (C->F.options);
@@ -268,8 +272,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: movie <mainscript> -N<prefix> -T<n_frames>|<timefile>[+s] -W<papersize>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A<rate>[+l[<n>]]] [-E] [-F<format>[+o<opts>]] [-G<fill>] [-I<includefile>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Q[<frame>]] [-Sb<script>] [-Sf<script>] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A<rate>[+l[<n>]]] [-C[<frame>][<format>]] [-E] [-F<format>[+o<opts>]] [-G<fill>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-Q] [-Sb<script>] [-Sf<script>] [%s]\n\n", GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -303,6 +307,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set frame rate in frames/second [24]. Append +l to enable looping [GIF only];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append a specific number of loops [infinite loop].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Create a master cover plot as well and optionally append desired frame [0] and format [pdf].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The cover plot will be called <prefix>.<format> and placed in the current directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the final animation format. Choose from these selections:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     none:   Just create the PNG sequence.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     gif:    Convert PNG frames into an animated GIF.\n");
@@ -312,8 +318,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the canvas background color [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Include file that will be inserted into the movie_init.sh script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constants and variable settings needed by all movie scripts.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Dry-run.  Only the work scripts will be produced but none will be executed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append a frame number and we just produce that single PNG image.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Dry-run.  Only the work scripts will be produced but none will be executed,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   except if -C is selected (a signle plot will be made).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the optional background and foreground GMT scripts:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sb Append the name of a background script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Pre-compute items needed by <mainscript> and build a static background plot layer.\n");
@@ -369,6 +375,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 
+			case 'C':	/* Create a single frame plot as well as movie (unless -Q is active) */
+				Ctrl->C.active = true;
+				if ((c = strchr (opt->arg, ',')) ) {	/* Gave frame and format */
+					Ctrl->C.format = strdup (&c[1]);
+					c[0] = '\0';	/* Chop off format */
+					Ctrl->C.frame = atoi (opt->arg);
+					c[0] = ',';	/* Restore format */
+				}
+				else if (isdigit (opt->arg[0])) {	/* Gave just a frame, deafult to PDF format */
+					Ctrl->C.format = strdup ("pdf");
+					Ctrl->C.frame = atoi (opt->arg);
+				}
+				else if (opt->arg[0])	/* Must be format, with frame = 0 implicit */
+					Ctrl->C.format = strdup (opt->arg);
+				else /* Default is PDF of frame 0 */
+					Ctrl->C.format = strdup ("pdf");
+				break;
 			case 'E':	/* Erase frames after movie has been made */
 				Ctrl->E.active = true;
 				break;
@@ -408,9 +431,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				Ctrl->N.prefix = strdup (opt->arg);
 				break;
 			
-			case 'Q':	/* Debug; optionally run a single frame */
+			case 'Q':	/* Debug; only write scripts */
 				Ctrl->Q.active = true;
-				if (opt->arg[0]) Ctrl->Q.frame = atoi (opt->arg);
 				break;
 			case 'S':	/* background and foreground scripts */
 				switch (opt->arg[0]) {
@@ -616,16 +638,17 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	/* Determine pixel dimensions of individual images */
 	p_width =  urint (ceil (Ctrl->W.dim[GMT_X] * Ctrl->W.dim[GMT_Z]));
 	p_height = urint (ceil (Ctrl->W.dim[GMT_Y] * Ctrl->W.dim[GMT_Z]));
-	one_frame = (Ctrl->Q.active && Ctrl->Q.frame != -1);	/* true if we want to create a single test image */
+	one_frame = (Ctrl->Q.active && Ctrl->C.active);	/* true if we want to create a single cover plot only */
 	
-	if (Ctrl->Q.active && Ctrl->Q.frame == -1) {	/* Nothing but scripts will be produced */
+	if (Ctrl->Q.active) {	/* No movie but scripts will be produced */
 		GMT_Report (API, GMT_MSG_NORMAL, "Dry-run enabled - Movie scripts will be created and any pre/post scripts will be executed.\n");
+		if (Ctrl->C.active) GMT_Report (API, GMT_MSG_NORMAL, "A single plot for frame %d will be create and named %s.%s\n", Ctrl->C.frame, Ctrl->N.prefix, Ctrl->C.format);
 		run_script = dry_run_only;	/* This prevents the main frame loop from executing the script */
 	}
 	else {	/* Will run scripts and may even need to make a movie */
 		run_script = system;	/* The standard system function */
 	
-		if (Ctrl->F.mode == MOVIE_GIF && Ctrl->Q.frame == -1) {	/* Ensure we have GraphicsMagick installed */
+		if (Ctrl->F.mode == MOVIE_GIF) {	/* Ensure we have GraphicsMagick installed */
 			sprintf (cmd, "gm version");
 			if ((fp = popen (cmd, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "GraphicsMagick is not installed - cannot build animated GIF.\n");
@@ -634,7 +657,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			}
 			else pclose (fp);
 		}
-		else if (Ctrl->F.mode == MOVIE_MP4 && Ctrl->Q.frame == -1) {	/* Ensure we have ffmpeg installed */
+		else if (Ctrl->F.mode == MOVIE_MP4) {	/* Ensure we have ffmpeg installed */
 			sprintf (cmd, "ffmpeg -version");
 			if ((fp = popen (cmd, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "ffmpeg is not installed - cannot build a MP4 movie.\n");
@@ -867,7 +890,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	/* Create parameter include files, one for each frame */
 	
 	for (frame = 0; frame < n_frames; frame++) {
-		if (one_frame && (int)frame != Ctrl->Q.frame) continue;	/* Just doing a single frame for debugging */
+		if (one_frame && (int)frame != Ctrl->C.frame) continue;	/* Just doing a single frame for debugging */
 		sprintf (state_prefix, "movie_params_%*.*d", precision, precision, frame);
 		sprintf (state_file, "%s.%s", state_prefix, extension[Ctrl->In.mode]);
 		if ((fp = fopen (state_file, "w")) == NULL) {
@@ -899,6 +922,96 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			}
 		}
 		fclose (fp);	/* Done writing this parameter file */
+	}
+
+	if (Ctrl->C.active) {	/* Make the master frame plot */
+		char cover_file[GMT_LEN64] = {""};
+		/* Because format may differ and name will differ we just make a special script for this job */
+		n_begin = 0;	/* Reset check again */
+		sprintf (cover_file, "movie_cover.%s", extension[Ctrl->In.mode]);
+		if ((fp = fopen (cover_file, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create loop frame script file %s - exiting\n", cover_file);
+			fclose (Ctrl->In.fp);
+			Return (GMT_ERROR_ON_FOPEN);
+		}
+		if (Ctrl->G.active)	/* Want to set a fixed background canvas color - we do this via the psconvert -A option */
+			sprintf (extra, "A+g%s,P", Ctrl->G.fill);
+		else	/* In either case we set Portrait mode */
+			sprintf (extra, "P");
+		if (!access ("gmt_movie_background.ps", R_OK)) {	/* Need to place a background layer first (which is in parent dir when loop script is run) */
+#ifdef WIN32
+			strcat (extra, ",Mb..\\gmt_movie_background.ps");
+#else
+			strcat (extra, ",Mb../gmt_movie_background.ps");
+#endif
+		}
+		if (!access ("gmt_movie_foreground.ps", R_OK)) {	/* Need to append foreground layer at end (which is in parent dir when script is run) */
+#ifdef WIN32
+			strcat (extra, ",Mf..\\gmt_movie_foreground.ps");
+#else
+			strcat (extra, ",Mf../gmt_movie_foreground.ps");
+#endif
+		}
+		set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
+		set_comment (fp, Ctrl->In.mode, "Poster frame loop script");
+		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a PPID since subshells may mess things up */
+		if (Ctrl->In.mode == DOS_MODE)	/* Set PPID under Windows to be the frame number */
+			fprintf (fp, "set GMT_PPID=%c1\n", var_token[Ctrl->In.mode]);
+		else	/* On UNIX we use the script's PID as PPID */
+			set_tvalue (fp, Ctrl->In.mode, "GMT_PPID", "$$");
+		set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
+		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
+		fprintf (fp, "%s movie_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the frame parameters */
+		fprintf (fp, "mkdir %s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));	/* Make a temp directory for this frame */
+		fprintf (fp, "cd %s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));		/* cd to the temp directory */
+		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the mainscript and copy to loop script, with some exceptions */
+			if (strstr (line, "gmt begin")) {	/* Need to insert a gmt figure call after this line */
+				fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
+				set_comment (fp, Ctrl->In.mode, "\tSet output name and plot conversion parameters");
+				fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->C.format);
+				fprintf (fp, " %s", extra);
+				if (strstr(Ctrl->C.format,"pdf") || strstr(Ctrl->C.format,"eps") || strstr(Ctrl->C.format,"ps"))
+					fprintf (fp, "\n");	/* No dpi needed */
+				else
+					fprintf (fp, ",E%s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_DPU"));
+				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->W.dim[GMT_X], Ctrl->W.unit, Ctrl->W.dim[GMT_Y], Ctrl->W.unit, datadir);
+				n_begin++;	/* Processed the gmt begin line */
+			}
+			else if (!strstr (line, "#!/"))		/* Skip any leading shell incantation since already placed */
+				fprintf (fp, "%s", line);	/* Just copy the line as is */
+		}
+		rewind (Ctrl->In.fp);	/*Get ready for main_frame reading */
+		set_comment (fp, Ctrl->In.mode, "Move cover file up to top directory and cd up one level");
+		fprintf (fp, "%s %s.%s ..%c..\n", mvfile[Ctrl->In.mode], Ctrl->N.prefix, Ctrl->C.format, dir_sep);	/* Move cover plot up to parent dir */
+		fprintf (fp, "cd ..\n");	/* cd up to parent dir */
+		set_comment (fp, Ctrl->In.mode, "Remove frame directory");
+		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));	/* Remove the work dir and any files in it */
+		fclose (fp);	/* Done writing loop script */
+
+		if (n_begin != 1) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Main script %s is not in modern mode - exiting\n", cover_file);
+			Return (GMT_RUNTIME_ERROR);
+		}
+
+#ifndef WIN32
+		/* Set executable bit if not Windows */
+		if (chmod (cover_file, S_IRWXU)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to make script %s executable - exiting\n", cover_file);
+			Return (GMT_RUNTIME_ERROR);
+		}
+#endif
+		sprintf (cmd, "%s %*.*d", cover_file, precision, precision, Ctrl->C.frame);
+		if ((error = system (cmd))) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Running script %s returned error %d - exiting.\n", cmd, error);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Single cover plot (frame %d) built: %s.%s\n", Ctrl->C.frame, Ctrl->N.prefix, Ctrl->C.format);
+		/* FDelete the coverfile script*/
+		sprintf (line, "%s %s\n", rmfile[Ctrl->In.mode], cover_file);	/* Delete the cover_file script */
+		if ((error = system (line))) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Deleting the cover file script %s returned error %d.\n", cover_file, error);
+			Return (GMT_RUNTIME_ERROR);
+		}
 	}
 	
 	/* Now build the main loop script from the mainscript */
@@ -980,16 +1093,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 #endif
 	
-	if (Ctrl->Q.active) {	/* Either write scripts only or build just a single frame and then exit (i.e., no animation sequence generated) */
-		if (one_frame) {	/* Just do one frame and exit */
-			sprintf (cmd, "%s %*.*d", main_file, precision, precision, Ctrl->Q.frame);
-			if ((error = run_script (cmd))) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Running script %s returned error %d - exiting.\n", cmd, error);
-				Return (GMT_RUNTIME_ERROR);
-			}
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Single PNG frame built: %s_%*.*d.png\n", Ctrl->N.prefix, precision, precision, Ctrl->Q.frame);
-		}
-		Return (GMT_NOERROR);	/* And we are done */
+	if (Ctrl->Q.active) {	/* No animation sequence generated */
+		Return (GMT_NOERROR);	/* We are done */
 	}
 
 	/* Finally, we can run all the frames in a controlled loop, launching new parallel jobs as cores become available */
