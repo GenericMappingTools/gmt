@@ -550,11 +550,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_movie (void *V_API, int mode, void *args) {
-	int error = 0;
+	int error = 0, precision;
 	int (*run_script)(const char *);	/* pointer to system function or a dummy */
 	
 	unsigned int n_values = 0, n_frames = 0, n_begin, frame, col, p_width, p_height, k;
 	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_frame = 0, n_cores_unused;
+	
 	bool done = false, layers = false, one_frame = false, has_text = false;
 	
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
@@ -571,6 +572,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 #else
 	char dir_sep = '/';
 #endif
+	double percent;
 	
 	FILE *fp = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -797,6 +799,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Number of animation frames: %d\n", n_frames);
+	precision = irint (ceil (log10 ((double)n_frames)));	/* Width needed to hold largest frame number */
 	
 	if (Ctrl->S[MOVIE_POSTFLIGHT].active) {	/* Prepare the postflight script */
 		n_begin = 0;	/* Reset check */
@@ -853,16 +856,16 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 	for (frame = 0; frame < n_frames; frame++) {
 		if (one_frame && (int)frame != Ctrl->Q.frame) continue;	/* Just doing a single frame for debugging */
-		sprintf (state_prefix, "movie_params_%6.6d", frame);
+		sprintf (state_prefix, "movie_params_%*.*d", precision, precision, frame);
 		sprintf (state_file, "%s.%s", state_prefix, extension[Ctrl->In.mode]);
 		if ((fp = fopen (state_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create frame parameter file %s - exiting\n", state_file);
 			fclose (Ctrl->In.fp);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		sprintf (state_prefix, "Parameter file for frame %6.6d", frame);
+		sprintf (state_prefix, "Parameter file for frame %*.*d", precision, precision, frame);
 		set_comment (fp, Ctrl->In.mode, state_prefix);
-		sprintf (state_prefix, "%s_%6.6d", Ctrl->N.prefix, frame);
+		sprintf (state_prefix, "%s_%*.*d", Ctrl->N.prefix, precision, precision, frame);
 		set_ivalue (fp, Ctrl->In.mode, "GMT_MOVIE_FRAME", frame);	/* Current frame number */
 		set_ivalue (fp, Ctrl->In.mode, "GMT_MOVIE_NFRAMES", n_frames);	/* Total frames */
 		set_tvalue (fp, Ctrl->In.mode, "GMT_MOVIE_NAME", state_prefix);	/* Current frame name prefix */
@@ -932,7 +935,6 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 			set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
 			fprintf (fp, "\tgmt figure %s png", place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));
-			//fprintf (fp, " D..,E%s,%s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_DPU"), extra);
 			fprintf (fp, " E%s,%s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_DPU"), extra);
 			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->W.dim[GMT_X], Ctrl->W.unit, Ctrl->W.dim[GMT_Y], Ctrl->W.unit, datadir);
 			n_begin++;	/* Processed the gmt begin line */
@@ -968,12 +970,12 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->Q.active) {	/* Either write scripts only or build just a single frame and then exit (i.e., no animation sequence generated) */
 		if (one_frame) {	/* Just do one frame and exit */
-			sprintf (cmd, "%s %6.6d", main_file, Ctrl->Q.frame);
+			sprintf (cmd, "%s %*.*d", main_file, precision, precision, Ctrl->Q.frame);
 			if ((error = run_script (cmd))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Running script %s returned error %d - exiting.\n", cmd, error);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Single PNG frame built: %s_%6.6d.png\n", Ctrl->N.prefix, Ctrl->Q.frame);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Single PNG frame built: %s_%*.*d.png\n", Ctrl->N.prefix, precision, precision, Ctrl->Q.frame);
 		}
 		Return (GMT_NOERROR);	/* And we are done */
 	}
@@ -986,9 +988,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 	while (!done) {	/* Keep running jobs until all frames have completed */
 		while (n_frames_not_started && n_cores_unused) {	/* Launch new jobs if possible */
-			sprintf (cmd, "%s %s %6.6d &", sc_call[Ctrl->In.mode], main_file, frame);
+			sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], main_file, precision, precision, frame);
 
-			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for frame %6.6d\n", frame);
+			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for frame %*.*d\n", precision, precision, frame);
 			if ((error = system (cmd))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Running script %s returned error %d - aborting.\n", cmd, error);
 				Return (GMT_RUNTIME_ERROR);
@@ -1003,12 +1005,13 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			if (status[k].completed) continue;	/* Already finished with this frame */
 			if (!status[k].started) continue;	/* Not started this frame yet */
 			/* Here we can check if the frame job has completed */
-			sprintf (png_file, "%s_%6.6d.png", Ctrl->N.prefix, k);
+			sprintf (png_file, "%s_%*.*d.png", Ctrl->N.prefix, precision, precision, k);
 			if (access (png_file, F_OK)) continue;	/* Not found yet */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Frame %6.6d completed\n", k);
+			n_frames_completed++;		/* One more frame completed */
 			status[k].completed = true;	/* Flag this frame as completed */
 			n_cores_unused++;		/* Free up the core */
-			n_frames_completed++;		/* One more frame completed */
+			percent = 100.0 * n_frames_completed / n_frames;
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Frame %*.*d of %d completed [%5.1f %%]\n", precision, precision, k, n_frames, percent);
 		}
 		/* Adjust first_frame, if needed */
 		while (first_frame < n_frames && status[first_frame].completed) first_frame++;
