@@ -165,7 +165,8 @@ Several parameters are automatically assigned and can be used when composing *ma
 **GMT_MOVIE_DPU**\ : The current dots-per-unit.
 In addition, the *mainscript* also has access to additional parameters
 **GMT_MOVIE_FRAME**\ : The current frame number,
-**GMT_MOVIE_NFRAMES**\ : The total number of frames
+**GMT_MOVIE_NFRAMES**\ : The total number of frames,
+and in addition, $1 (or %1 in DOS) holds the formatted frame number string (e.g., 000136).
 Next, if a *timefile* was given then variables **GMT_MOVIE_VAL1**\ , **GMT_MOVIE_VAL2**\ , etc. are
 also set, one variable per column in *timefile*.  If *timefile* has trailing text then that text can
 be accessed via the variable **GMT_MOVIE_STRING**, and if word-splitting was requested in **-T** then

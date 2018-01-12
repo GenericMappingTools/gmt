@@ -252,6 +252,18 @@ GMT_LOCAL unsigned int check_language (struct GMT_CTRL *GMT, unsigned int mode, 
 	return (n_errors);
 }
 
+GMT_LOCAL bool script_is_classic (struct GMT_CTRL *GMT, FILE *fp) {
+	/* Read script to determine if it is in classic mode, then rewind */
+	bool classic = true;
+	char line[PATH_MAX] = {""};
+	while (classic && gmt_fgets (GMT, line, PATH_MAX, fp)) {
+		if (strstr (line, "gmt begin"))	/* A modern mode script */
+			classic = false;
+	}
+	rewind (fp);	/* Go back to beginning of file */
+	return (classic);
+}
+
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
@@ -302,10 +314,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constants and variable settings needed by all movie scripts.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Dry-run.  Only the work scripts will be produced but none will be executed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append a frame number and we just produce that single PNG image.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the optional background and foreground GMT modern scripts:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the optional background and foreground GMT scripts:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sb Append the name of a background script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Pre-compute items needed by <mainscript> and build a static background plot layer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of foreground script [none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      If a plot is generated then the script must be in modern mode.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of foreground GMT modern mode script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Build a static foreground plot overlay to be added to all frames.\n");
 	GMT_Option (API, "V,.");
 	
@@ -556,7 +569,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	unsigned int n_values = 0, n_frames = 0, n_begin, frame, col, p_width, p_height, k;
 	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_frame = 0, n_cores_unused;
 	
-	bool done = false, layers = false, one_frame = false, has_text = false;
+	bool done = false, layers = false, one_frame = false, has_text = false, is_classic = false;
 	
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "export ", ""};
@@ -721,7 +734,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	fclose (fp);	/* Done writing the init script */
 	
 	if (Ctrl->S[MOVIE_PREFLIGHT].active) {	/* Create the preflight script from the user's background script */
-		n_begin = 0;	/* Reset check */
+		/* The background script is allowed to be classic if no plot is generated */
+		unsigned int rec = 0;
+		is_classic = script_is_classic (GMT, Ctrl->S[MOVIE_PREFLIGHT].fp);
 		sprintf (pre_file, "movie_preflight.%s", extension[Ctrl->In.mode]);
 		if ((fp = fopen (pre_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create preflight script %s - exiting\n", pre_file);
@@ -737,24 +752,21 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			set_tvalue (fp, Ctrl->In.mode, "GMT_PPID", "$$");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_PREFLIGHT].fp)) {	/* Read the background script and copy to preflight script with some exceptions */
-			if (strstr (line, "gmt begin")) {	/* Need to insert gmt figure after this line in case a background plot will be made */
+			if ((is_classic && rec == 0) || strstr (line, "gmt begin")) {	/* Need to insert gmt figure after this line (or as first line) in case a background plot will be made */
 				fprintf (fp, "gmt begin\n");	/* To ensure there are no args here since we are using gmt figure instead */
 				set_comment (fp, Ctrl->In.mode, "\tSet fixed background output ps name");
 				fprintf (fp, "\tgmt figure gmt_movie_background ps\n");
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->W.dim[GMT_X], Ctrl->W.unit, Ctrl->W.dim[GMT_Y], Ctrl->W.unit);
 				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
-				n_begin++;
 			}
 			else if (!strstr (line, "#!/"))	/* Skip any leading shell incantation since already placed by set_script */
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
+			rec++;
 		}
 		fclose (Ctrl->S[MOVIE_PREFLIGHT].fp);	/* Done reading the foreground script */
+		if (is_classic)	/* Must close modern session explicitly */
+			fprintf (fp, "gmt end\n");
 		fclose (fp);	/* Done writing the preflight script */
-		if (n_begin != 1) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Background script %s is not in modern mode - exiting\n", Ctrl->S[MOVIE_PREFLIGHT].file);
-			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
-		}
 #ifndef WIN32
 		/* Set executable bit if not Windows */
 		if (chmod (pre_file, S_IRWXU)) {
