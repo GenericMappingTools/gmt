@@ -1740,8 +1740,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					if (x1 <= x0 || y1 <= y0) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Unable to decode BoundingBox file %s\n", BB_file);
 						fclose (fpb);	fpb = NULL;            /* so we don't accidentally close twice */
-						if (!Ctrl->S.active && gmt_remove_file (GMT, BB_file))	/* Remove the file */
-							Return (GMT_RUNTIME_ERROR);
 						if (Ctrl->D.active)
 							sprintf (tmp_file, "%s/", Ctrl->D.dir);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
