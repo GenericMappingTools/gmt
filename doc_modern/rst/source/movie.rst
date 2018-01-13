@@ -17,8 +17,9 @@ Synopsis
 |-N|\ *prefix*
 |-T|\ *frames*\ \|\ *timefile*\ [**+s**]
 |-W|\ *papersize*
-[ |-A|\ *rate*\ [**+l**\ [*n*]] ] 
+[ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ] 
 [ |-C|\ [*frame*],[*format] ]
+[ |-D|\ *displayrate*
 [ |-E| ]
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
 [ |-G|\ *fill*\ ]
@@ -96,17 +97,24 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *rate*\ [**+l**\ [*n*]]
-    Set the frame rate in frames per seconds for the final animation [24].
-    Optionally, for an animated GIF (**-F**\ gif) you may specify if the movie should loop (**+l**)
-    and if so how many times to repeat [infinite].
+**-A**\ [**+l**\ [*n*]]\ [**+s**\ *stride*]
+    Build an animated GIF file.  You may specify if the movie should play more than once (i.e., loop)
+    via **+l** and if so append how many times to repeat [infinite].  If a video product is also
+    selected (**-F**) then you can limit the frames being used to make the GIF file.  Append **+s**\ *stride*
+    to only use every *stride* frame, with *stride* being one of a fixed set of strides: 2, 5, 10,
+    20, 50, 100, 200, and 500.
 
 .. _-C:
 
-**-C**\ [*frame*],[*format] ]
+**-C**\ [*frame*],[*format]
     In addition to making the animation sequence, select a single frame for a cover page.  This frame will
     be written in current directory with name *prefix*.*format*, where *format* can one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].
+
+.. _-D:
+
+**-D**\ *displayrate*
+    Set the display frame rate in frames per seconds for the final animation [24].
 
 .. _-E:
 
@@ -117,8 +125,8 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *format* [**+o**\ *options*\ ]
-    Set the format of the final animation.  Choose either gif (animated GIF), mp4 (MPEG-4 movie),
-    or none [Default].  For mp4 you may optionally add additional ffmpeg encoding options via the **+o** modifier.
+    Set the format of the final video product.  Repeatable.  Choose either mp4 (MPEG-4 movie) or webm (WebM movie).
+    You may optionally add additional ffmpeg encoding options for this format via the **+o** modifier.
 
 .. _-G:
 
@@ -128,14 +136,14 @@ Optional Arguments
 .. _-I:
 
 **-I**\ *includefile*
-    Insert the contents of *includefile* into the movie_init.sh script that is accessed by all the movie scripts.
-    This mechanism is used to add information (typically variables) that the *mainscript* and the two optional
-    **-S** scripts rely on.
+    Insert the contents of *includefile* into the movie_init.sh script that is accessed by all movie scripts.
+    This mechanism is used to add information (typically constant variable assignments) that the *mainscript*
+    (and the two optional **-S** scripts) relies on.
 
 .. _-Q:
 
 **-Q**
-    Dry-run; no movie is made but all the movie scripts we build are left in the *prefix* directory for further examination.
+    Dry-run; no movie is made, but all the movie scripts we build are left in the *prefix* directory for further examination.
     Any background and foreground scripts derived from **-S** will be run since they may produce data needed when
     building the movie scripts.  If combined with **-C** then only the cover plot is generated.
 
@@ -173,7 +181,7 @@ Several parameters are automatically assigned and can be used when composing *ma
 In addition, the *mainscript* also has access to additional parameters
 **GMT_MOVIE_FRAME**\ : The current frame number,
 **GMT_MOVIE_NFRAMES**\ : The total number of frames,
-and in addition, $1 (or %1 in DOS) holds the formatted frame number string (e.g., 000136).
+and in addition, **$1** (or **%1** in DOS) holds the formatted frame number string (e.g., 000136).
 Next, if a *timefile* was given then variables **GMT_MOVIE_VAL1**\ , **GMT_MOVIE_VAL2**\ , etc. are
 also set, one variable per column in *timefile*.  If *timefile* has trailing text then that text can
 be accessed via the variable **GMT_MOVIE_STRING**, and if word-splitting was requested in **-T** then
@@ -220,6 +228,24 @@ The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on Graphics
 Thus, "gm" must be accessible via your standard search path. Likewise, the conversion of
 PNG frames to an MP4 movie (**-F**\ mp4) relies on ffmpeg (https://www.ffmpeg.org). 
 
+Hints for Movie Makers
+----------------------
+
+Composing movies is relatively simple but you have to think in terms of variables.
+Examine the examples we have posted,  Then, start by making a single plot script (your *mainscript*) and identify which
+things should change with time (i.e., frame number).  Create variables for these values. If they
+are among the listed parameters that **movie** creates then use those names.  Unless you only
+require the frame number you will need to make a file that you can pass to **-T**.  This file should
+then have all the values you need, per frame (row), with values across all the columns you need.
+If you need to assign various fixed variables that do not change with time then your *mainscript*
+will look shorter and cleaner if you offload those assignments to an *includefile* (**-I**).
+To test your movie, start by using options **-Q -C** to ensure your cover page looks correct.
+This page shows you one frame of your movie (you can select which frame via **-C**).  Fix any
+issues with your use of variables and options until this works.  You can then try to remove **-Q**.
+We recommend you make a very short and small (i.e., **-W**) movie so you don't have to wait very
+long to see the result.  Once things are working you can beef up number of frames and movie
+quality.
+
 Examples
 --------
 
@@ -228,7 +254,7 @@ frame number to serve as the view longitude, using a custom square 600x600 pixel
 
    ::
 
-    gmt movie globe.sh -Nglobe -T360 -Fgif -W6ix6ix100
+    gmt movie globe.sh -Nglobe -T360 -Agif -W6ix6ix100
 
 Here, the globe.sh bash script simply plots a map with :doc:`pscoast` but uses the frame number variable
 as the center longitude:
@@ -244,7 +270,7 @@ longitudes.  The equivalent DOS batch script setup would be
 
   ::
 
-    gmt movie globe.bat -Nglobe -T360 -Fgif -W6ix6ix100
+    gmt movie globe.bat -Nglobe -T360 -Agif -W6ix6ix100
 
 Now, the globe.bat DOS script is simply
 
@@ -265,12 +291,12 @@ all available cores.
 Other Movie Formats
 -------------------
 
-As configured, movie only offers a MP4 format for movies.  The conversion is performed by the
+As configured, movie only offers the MP4 and WebM formats for movies.  The conversion is performed by the
 tool ffmpeg (https://www.ffmpeg.org), which has more codecs and processing options than there are children in China.
-If you wish to run ffmpeg with other selections, simply run movie with long verbose (**-Vl**) and
-at the end it will print the ffmpeg command.  You can copy, paste, and modify this command to
-select other codecs and bit-rates.  You can also use the PNG sequence as input to tools such
-as QuickTime Pro, iMovie, MovieMaker, and similar commercial programs.
+If you wish to run ffmpeg with other options, select mp4 and run movie with long verbose (**-Vl**).
+At the end it will print the ffmpeg command used.  You can copy, paste, and modify this command to
+select other codecs, bit-rates, and arguments.  You can also use the PNG sequence as input to tools such
+as QuickTime Pro, iMovie, MovieMaker, and similar commercial programs to make a movie that way.
 
 See Also
 --------
