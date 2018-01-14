@@ -6,7 +6,7 @@
 # Unix progs:   cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted as PS only.
 
-if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
+if [ $# -eq 1 ]; then	# Just make master PostScript frame 0
 	opt="-Mps -Fnone"
 else	# Make both movie formats and a thumbnail animated GIF using every 20th frame
 	opt="-Fmp4 -Fwebm -A+l+s20"
@@ -18,7 +18,7 @@ gmt project -C-73.8333/40.75 -E-80.133/25.75 -G5 -Q > flight_path.txt
 gmt grdgradient @USEast_Coast.nc -A90 -Nt1 -Gint_US.nc
 gmt makecpt -Cglobe > globe_US.cpt
 EOF
-# 2. Set of the main frame plot script
+# 2. Set up the main frame script
 cat << EOF > main.sh
 gmt begin
 	gmt grdimage -JG\${GMT_MOVIE_VAL1}/\${GMT_MOVIE_VAL2}/160/210/55/0/36/34/\${GMT_MOVIE_WIDTH}+ \

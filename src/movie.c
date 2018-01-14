@@ -588,7 +588,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, n_files != 1 || Ctrl->In.file == NULL, "Syntax error: Must specify a main script file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active, "Syntax error -C: Must specify a canvas dimension\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.exit && Ctrl->animate, "Syntax error -F: Cannot use none with other selections\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->M.active && !Ctrl->animate, "Syntax error: Must select an output product (-A, -F, -M)\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active && !Ctrl->M.active && !Ctrl->animate, "Syntax error: Must select an output product (-A, -F, -M)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_X] <= 0.0 || Ctrl->C.dim[GMT_Y] <= 0.0,
 					"Syntax error -C: Zero or negative canvas dimensions given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_Z] <= 0.0,
@@ -597,7 +597,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					"Syntax error -N: Must specify a movie prefix\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active,
 					"Syntax error -T: Must specify number of frames or a time file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !(Ctrl->animate || Ctrl->M.active),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !(Ctrl->Q.active || Ctrl->animate || Ctrl->M.active),
 					"Syntax error -Z: Cannot be used without specifying a GIF (-A), master (-M) or movie (-F) product\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.skip && !(Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]),
 					"Syntax error -A: Cannot specify a GIF stride > 1 without selecting a movie product (-F)\n");
@@ -1068,12 +1068,14 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Single master plot (frame %d) built: %s.%s\n", Ctrl->M.frame, Ctrl->N.prefix, Ctrl->M.format);
-		/* Delete the masterfile script*/
-		sprintf (line, "%s %s\n", rmfile[Ctrl->In.mode], master_file);	/* Delete the master_file script */
-		if ((error = system (line))) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Deleting the master file script %s returned error %d.\n", master_file, error);
-			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+		if (!Ctrl->Q.active) {
+			/* Delete the masterfile script */
+			sprintf (line, "%s %s\n", rmfile[Ctrl->In.mode], master_file);	/* Delete the master_file script */
+			if ((error = system (line))) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Deleting the master file script %s returned error %d.\n", master_file, error);
+				fclose (Ctrl->In.fp);
+				Return (GMT_RUNTIME_ERROR);
+			}
 		}
 		if (Ctrl->M.exit) {	/* Well, we are done */
 			fclose (Ctrl->In.fp);

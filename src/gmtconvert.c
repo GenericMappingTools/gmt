@@ -101,6 +101,10 @@ struct GMTCONVERT_CTRL {
 		bool active;
 		unsigned int mode;
 	} W;
+	struct Z {	/* -Z[<first>]:[<last>] */
+		bool active;
+		uint64_t first, last;
+	} Z;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -127,7 +131,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>[+o<orig>]]] [-E[f|l|m|M<stride>]] [-F<arg>] [-I[tsr]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N[+|-]<col>] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [-W[+n]] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N[+|-]<col>] [-Q[~]<selection>] [-S[~]\"search string\"] [-T[hd]] [%s] [-W[+n]] [-Z[<first>][:<last>]] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -179,6 +183,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   d: Prevent the writing of duplicate data records.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Convert trailing text to numbers, if possible.  Append +n to suppress NaN columns.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Select range of output records.  If not set, <first> = 0 and <last> = last record [all records].\n");
 	GMT_Option (API, "a,bi,bo,d,e,f,g,h,i,o,s,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -326,6 +331,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				if (!strncmp (opt->arg, "+n", 2U))
 					Ctrl->W.mode = 1;
 				break;
+			case 'Z':
+				Ctrl->Z.active = true;
+				if ((c = strchr (opt->arg, ':'))) {	/* Got [<first>]:[<last>] */
+					if (opt->arg[0] == ':') /* No first given, default to 0 */
+						Ctrl->Z.last = atol (&opt->arg[1]);
+					else { /* Gave first, and maybe last */
+						c[0] = '\0';	/* Chop off last */
+						Ctrl->Z.first = atol (opt->arg);
+						Ctrl->Z.last = (c[1]) ? atol (&c[1]) : UINTMAX_MAX;	/* Last record if not given */
+						c[0] = ':';	/* Restore */
+					}
+				}
+				else /* No colon means first is 0 and given value is last */
+					Ctrl->Z.last = atol (opt->arg);
+				/* Adjust to system where first record is 1 since we must increment n_in_rows before applying -Z check later */
+				Ctrl->Z.first++;	if (Ctrl->Z.last < UINTMAX_MAX) Ctrl->Z.last++;
+				GMT_Report (API, GMT_MSG_DEBUG, "Output record numbers %" PRIu64 " through = %" PRIu64 "\n", Ctrl->Z.first, Ctrl->Z.last);
+				break;
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -401,7 +424,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	int error = 0;
 	uint64_t out_col, col, n_cols_in = 0, n_cols_out, tbl, tlen;
 	uint64_t n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
-	uint64_t last_row, n_rows, row, seg, n_out_seg = 0, out_seg = 0;
+	uint64_t last_row, n_rows, n_in_rows, row, seg, n_out_seg = 0, out_seg = 0;
 
 	double *val = NULL;
 
@@ -608,7 +631,9 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			if (SHo->mode) continue;	/* No point copying values given segment content will be skipped */
 			n_out_seg++;	/* Number of segments that passed the test */
 			last_row = S->n_rows - 1;
-			for (row = n_rows = 0; row <= last_row; row++) {	/* Go down all the rows */
+			for (row = n_rows = n_in_rows = 0; row <= last_row; row++) {	/* Go down all the rows */
+				n_in_rows++;
+				if (Ctrl->Z.active && (n_in_rows < Ctrl->Z.first || n_in_rows > Ctrl->Z.last)) continue;	/* Skip if outside limited record range */
 				if (!Ctrl->E.active) {
 					if (Ctrl->T.active[1] && row && is_duplicate_row (S, row)) continue;	/* Skip duplicate records */
 				}
