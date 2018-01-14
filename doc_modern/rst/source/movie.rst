@@ -111,8 +111,10 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *format* [**+o**\ *options*\ ]
-    Set the format of the final video product.  Repeatable.  Choose either mp4 (MPEG-4 movie) or webm (WebM movie).
-    You may optionally add additional ffmpeg encoding options for this format via the **+o** modifier.
+    Set the format of the final video product.  Repeatable.  Choose either **mp4** (MPEG-4 movie) or
+    **webm** (WebM movie).  You may optionally add additional ffmpeg encoding settings for this format
+    via the **+o** modifier (in quotes if more than one word). If **none** is chosen then no PNGs will
+    be created at all; this requires **-M**.
 
 .. _-G:
 

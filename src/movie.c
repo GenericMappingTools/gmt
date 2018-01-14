@@ -60,6 +60,7 @@ enum enum_video {MOVIE_MP4,	/* Create a H.264 MP4 video */
 /* Control structure for movie */
 
 struct MOVIE_CTRL {
+	bool animate;	/* TRue if we are making any animated product (GIF, movies) */
 	struct In {	/* mainscript (Bourne, Bourne Again, csh, or DOS (bat) script) */
 		bool active;
 		enum enum_script mode;
@@ -103,6 +104,7 @@ struct MOVIE_CTRL {
 	} N;
 	struct M {	/* -M[<frame>][,format] */
 		bool active;
+		bool exit;
 		int frame;
 		char *format;
 	} M;
@@ -138,6 +140,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->A.loops = 1;		/* No loop, just play once */
 	C->C.unit = 'c';	/* c for SI units */
 	C->D.framerate = 24.0;	/* 24 frames/sec */
+	C->F.options[MOVIE_WEBM] = strdup ("-crf 10 -b:v 1.2M");	/* Default WebM options for now */
 	return (C);
 }
 
@@ -323,6 +326,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the final video format(s) from among these choices. Repeatable:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     mp4:    Convert PNG frames into an MP4 movie.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     webm:   Convert PNG frames into an WebM movie.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     none:   Make no PNGS - requires -M.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append +o<options> to add custom encoding options for mp4 or webm.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [No video product; just create the PNG frames].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the canvas background color [none].\n");
@@ -374,7 +378,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				break;
 				
 			case 'A':	/* Animated GIF */
-				Ctrl->A.active = true;
+				Ctrl->A.active = Ctrl->animate = true;
 				if ((c = gmt_first_modifier (GMT, opt->arg, "ls"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'A', c, "ls", &pos, p, &n_errors) && n_errors == 0) {
@@ -475,7 +479,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				strcpy (arg, opt->arg);	/* Get a copy of the args (minus encoding options)... */
 				gmt_str_tolower (arg);	/* ..so we can convert it to lower case for comparisions */
 				if (c) c[0] = '+';	/* Now we can restore the optional text */
-				if (!strcmp (opt->arg, "mp4"))
+				if (!strcmp (opt->arg, "none")) {	/* Do not make those PNGs at all, just a master plot */
+					Ctrl->M.exit = true;
+					break;
+				}
+				else if (!strcmp (opt->arg, "mp4"))
 					k = MOVIE_MP4;
 				else if (!strcmp (opt->arg, "webm"))
 					k = MOVIE_WEBM;
@@ -490,8 +498,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					break;
 				}
 				/* Here we have a new video format selected */
-				Ctrl->F.active[k] = true;
-				if (s) Ctrl->F.options[k] = strdup (s);
+				Ctrl->F.active[k] = Ctrl->animate = true;
+				if (s) {	/* Gave encoding options */
+					if (Ctrl->F.options[k]) gmt_M_str_free (Ctrl->F.options[k]);	/* Free old setting first */
+					Ctrl->F.options[k] = strdup (s);
+				}
 				break;
 
 			case 'G':	/* Canvas fill */
@@ -576,6 +587,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 		
 	n_errors += gmt_M_check_condition (GMT, n_files != 1 || Ctrl->In.file == NULL, "Syntax error: Must specify a main script file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active, "Syntax error -C: Must specify a canvas dimension\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.exit && Ctrl->animate, "Syntax error -F: Cannot use none with other selections\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->M.active && !Ctrl->animate, "Syntax error: Must select an output product (-A, -F, -M)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_X] <= 0.0 || Ctrl->C.dim[GMT_Y] <= 0.0,
 					"Syntax error -C: Zero or negative canvas dimensions given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_Z] <= 0.0,
@@ -584,8 +597,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					"Syntax error -N: Must specify a movie prefix\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active,
 					"Syntax error -T: Must specify number of frames or a time file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !(Ctrl->A.active || Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]),
-					"Syntax error -Z: Cannot be used without specifying a GIF (-A) or movie (-F) product\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !(Ctrl->animate || Ctrl->M.active),
+					"Syntax error -Z: Cannot be used without specifying a GIF (-A), master (-M) or movie (-F) product\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.skip && !(Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]),
 					"Syntax error -A: Cannot specify a GIF stride > 1 without selecting a movie product (-F)\n");
 	
@@ -684,7 +697,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	/* Determine pixel dimensions of individual images */
 	p_width =  urint (ceil (Ctrl->C.dim[GMT_X] * Ctrl->C.dim[GMT_Z]));
 	p_height = urint (ceil (Ctrl->C.dim[GMT_Y] * Ctrl->C.dim[GMT_Z]));
-	one_frame = (Ctrl->Q.active && Ctrl->M.active);	/* true if we want to create a single master plot only */
+	one_frame = (Ctrl->M.active && (Ctrl->Q.active || !Ctrl->animate || Ctrl->M.exit));	/* true if we want to create a single master plot only */
 	
 	if (Ctrl->Q.active) {	/* No movie but scripts will be produced */
 		GMT_Report (API, GMT_MSG_NORMAL, "Dry-run enabled - Movie scripts will be created and any pre/post scripts will be executed.\n");
@@ -999,7 +1012,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 #endif
 		}
 		set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
-		set_comment (fp, Ctrl->In.mode, "Poster frame loop script");
+		set_comment (fp, Ctrl->In.mode, "Master frame loop script");
 		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a PPID since subshells may mess things up */
 		if (Ctrl->In.mode == DOS_MODE)	/* Set PPID under Windows to be the frame number */
 			fprintf (fp, "set GMT_PPID=%c1\n", var_token[Ctrl->In.mode]);
@@ -1026,16 +1039,17 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			else if (!strstr (line, "#!/"))		/* Skip any leading shell incantation since already placed */
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
 		}
-		rewind (Ctrl->In.fp);	/*Get ready for main_frame reading */
+		rewind (Ctrl->In.fp);	/* Get ready for main_frame reading */
 		set_comment (fp, Ctrl->In.mode, "Move master file up to top directory and cd up one level");
 		fprintf (fp, "%s %s.%s ..%c..\n", mvfile[Ctrl->In.mode], Ctrl->N.prefix, Ctrl->M.format, dir_sep);	/* Move master plot up to parent dir */
-		fprintf (fp, "cd ..\n");	/* cd up to parent dir */
+		fprintf (fp, "cd ..\n");	/* cd up to prefix dir */
 		set_comment (fp, Ctrl->In.mode, "Remove frame directory");
 		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));	/* Remove the work dir and any files in it */
 		fclose (fp);	/* Done writing loop script */
 
 		if (n_begin != 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Main script %s is not in modern mode - exiting\n", master_file);
+			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
 		}
 
@@ -1043,12 +1057,14 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		/* Set executable bit if not Windows */
 		if (chmod (master_file, S_IRWXU)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to make script %s executable - exiting\n", master_file);
+			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
 		}
 #endif
 		sprintf (cmd, "%s %*.*d", master_file, precision, precision, Ctrl->M.frame);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running script %s returned error %d - exiting.\n", cmd, error);
+			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Single master plot (frame %d) built: %s.%s\n", Ctrl->M.frame, Ctrl->N.prefix, Ctrl->M.format);
@@ -1056,7 +1072,23 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (line, "%s %s\n", rmfile[Ctrl->In.mode], master_file);	/* Delete the master_file script */
 		if ((error = system (line))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Deleting the master file script %s returned error %d.\n", master_file, error);
+			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
+		}
+		if (Ctrl->M.exit) {	/* Well, we are done */
+			fclose (Ctrl->In.fp);
+			/* Cd back up to the parent directory */
+			if (chdir ("..")) {	/* Should never happen but we do check */
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to change directory to parent directory - exiting.\n");
+				perror (Ctrl->N.prefix);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			sprintf (line, "%s %s\n", rmdir[Ctrl->In.mode], Ctrl->N.prefix);	/* Delete the entire directory */
+			if ((error = system (line))) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Deleting the prefix directory %s returned error %d.\n", Ctrl->N.prefix, error);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			Return (GMT_NOERROR);
 		}
 	}
 	
@@ -1117,7 +1149,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	set_comment (fp, Ctrl->In.mode, "Move PNG file up to parent directory and cd up one level");
 	fprintf (fp, "%s %s.png ..\n", mvfile[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));	/* Move PNG plot up to parent dir */
 	fprintf (fp, "cd ..\n");	/* cd up to parent dir */
-	if (!one_frame) {	/* Delete evidence; otherwise we want to leave debug evidence when doing a single frame only */
+	if (!Ctrl->Q.active) {	/* Delete evidence; otherwise we want to leave debug evidence when doing a single frame only */
 		set_comment (fp, Ctrl->In.mode, "Remove frame directory and frame parameter file");
 		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));	/* Remove the work dir and any files in it */
 		fprintf (fp, "%s movie_params_%c1.%s\n", rmfile[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Remove the parameter file for this frame */
