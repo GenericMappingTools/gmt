@@ -22,8 +22,7 @@ Synopsis
 [ |-G|\ *ghost_path* ]
 [ |-I| ]
 [ |-L|\ *listfile* ]
-[ **Mb**\ *backgroundPS* ]
-[ **Mf**\ *foregroundPS* ]
+[ **-Mb**\ \|\ **f**\ *pslayer* ]
 [ |-P| ]
 [ |-Q|\ [**g**\ \|\ **t**][1\|2\|4] ]
 [ |-S| ]
@@ -146,17 +145,12 @@ Optional Arguments
     The *listfile* is an ASCII file with the names of the PostScript
     files to be converted.
 
-.. _-Mb:
+.. _-M:
 
-**-Mb**\ *backgroundPS*
-    Place the complete PostScript plot *backgroundPS* behind the current plot before
-    converting the combined plot [no background plot].
-
-.. _-Mf:
-
-**-Mf**\ *foregroundPS*
-    Place the complete PostScript plot *foregroundPS* on top of the current plot before
-    converting the combined plot [no foreground plot].
+**-Mb**\ \|\ **f**\ *pslayer*
+    Sandwich the current *psfile* between an optional background (**-Mb**) and
+    optional foreground (**-Mf**) Postscript plots.  These files are expected
+    to be stand-alone plots that will align when stacked.
 
 .. _-P:
 

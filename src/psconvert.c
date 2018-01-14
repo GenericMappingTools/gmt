@@ -476,10 +476,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psconvert <psfile1> <psfile2> <...> -A[u][<margins>][-][+p[<pen>]][+g<fill>][+r][+s[m]|S<width[u]>[/<height>[u]]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-I] [-L<listfile>]");
-	if (API->GMT->current.setting.run_mode == GMT_MODERN)
-		GMT_Message (API, GMT_TIME_NONE, " [-Mb|f<psfile>]");
-	GMT_Message (API, GMT_TIME_NONE, "\n\t[-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-I] [-L<listfile>] [-Mb|f<psfile>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
 		GMT_Message (API, GMT_TIME_NONE, "\t[-Z]\n");
@@ -533,11 +531,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that for GS >= 9.00 and < 9.05 the gray-shade shifting is applied\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to all but PDF format. We have no solution to offer other than ... upgrade GS\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L The <listfile> is an ASCII file with names of files to be converted.\n");
-	if (API->GMT->current.setting.run_mode == GMT_MODERN) {
-		GMT_Message (API, GMT_TIME_NONE, "\t-M Sandwich current plot between background and foreground plots:\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   -Mb Append the name of a background PostScript plot [none].\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   -Mf Append name of foreground PostScript plot [none].\n");
-	}
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Sandwich current psfile between background and foreground plots:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Mb Append the name of a background PostScript plot [none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Mf Append name of foreground PostScript plot [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-P Force Portrait mode. All Landscape mode plots will be rotated back\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   so that they show unrotated in Portrait mode.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This is practical when converting to image formats or preparing\n");
@@ -683,24 +679,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				else
 					n_errors++;
 				break;
-			case 'M':	/* Manage background and foreground layers [PW: Movie experiment, undocumented] */
-				if (GMT->current.setting.run_mode == GMT_CLASSIC) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The -M option is not available in CLASSIC mode!\n");
-					n_errors++;
-					break;
-				}
+			case 'M':	/* Manage background and foreground layers for PostScript sandwich */
 				switch (opt->arg[0]) {
 					case 'b':	j = 0;	break;	/* background */
 					case 'f':	j = 1;	break;	/* foreground */
-					default:	/* Bad option */
-						n_errors++;
-						j = 9;
+					default:	/* Bad argument */
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -M: Select -Mb or -Sf\n");
+						n_errors++;
 						break;
 				}
-				if (j != 9 && !Ctrl->M[j].active) {	/* Got a valid f or b */
-					Ctrl->M[j].active = true;
-					Ctrl->M[j].file = strdup (&opt->arg[1]);
+				if (!n_errors && !Ctrl->M[j].active) {	/* Got -Mb<file> or -Mf<file> */
+					if (!gmt_access (GMT, &opt->arg[1], R_OK)) {	/* The plot file exists */
+						Ctrl->M[j].active = true;
+						Ctrl->M[j].file = strdup (&opt->arg[1]);
+					}
+					else {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -M%c: Cannot read file %s\n", opt->arg[0], &opt->arg[1]);
+						n_errors++;
+					}
 				}
 				break;
 			case 'P':	/* Force Portrait mode */
@@ -1558,12 +1554,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Fattened up PS file %s\n", ps_names[0]);
 		}
-		if (Ctrl->M[0].active || Ctrl->M[1].active) {	/* Must sandwich file in-between one or two layers */
-			if (wrap_the_sandwich (GMT, ps_names[0], Ctrl->M[0].file, Ctrl->M[1].file)) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to wrap %s inside optional back- and fore-ground layers!\n", ps_names[0]);
-				Return (GMT_RUNTIME_ERROR);
-			}
-		}
 	}
 
 	/* -------------------- Special case of in-memory PS. Process it and return ------------------- */
@@ -1640,6 +1630,12 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		else
 			strncpy (ps_file, ps_names[k], PATH_MAX-1);
 
+		if (Ctrl->M[0].active || Ctrl->M[1].active) {	/* Must sandwich file in-between one or two layers */
+			if (wrap_the_sandwich (GMT, ps_file, Ctrl->M[0].file, Ctrl->M[1].file)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to wrap %s inside optional back- and fore-ground layers!\n", ps_file);
+				Return (GMT_RUNTIME_ERROR);
+			}
+		}
 		if (file_processing && (fp = fopen (ps_file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", ps_file);
 			continue;
