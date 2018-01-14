@@ -1221,8 +1221,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (extra, "warning");
 		else
 			sprintf (extra, "quiet");
-		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -pattern_type glob -framerate %g -y -i \"%s/%s_*.png\" -vcodec libx264 %s -pix_fmt yuv420p %s.mp4",
-			extra, Ctrl->D.framerate, Ctrl->N.prefix, Ctrl->N.prefix, (Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
+		sprintf (png_file, "%%0%dd", precision);
+		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s/%s_%s.png\" -vcodec libx264 %s -pix_fmt yuv420p %s.mp4",
+			extra, Ctrl->D.framerate, Ctrl->N.prefix, Ctrl->N.prefix, png_file, (Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running ffmpeg conversion to MP4 returned error %d - exiting.\n", error);
@@ -1240,8 +1241,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (extra, "warning");
 		else
 			sprintf (extra, "quiet");
-		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -pattern_type glob -framerate %g -y -i \"%s/%s_*.png\" -vcodec libvpx %s -pix_fmt yuv420p %s.webm",
-			extra, Ctrl->D.framerate, Ctrl->N.prefix, Ctrl->N.prefix, (Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", Ctrl->N.prefix);
+		sprintf (png_file, "%%0%dd", precision);
+		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s/%s_%s.png\" -vcodec libvpx %s -pix_fmt yuv420p %s.webm",
+			extra, Ctrl->D.framerate, Ctrl->N.prefix, Ctrl->N.prefix, png_file, (Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", Ctrl->N.prefix);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running ffmpeg conversion to webM returned error %d - exiting.\n", error);
