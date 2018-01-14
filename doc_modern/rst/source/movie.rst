@@ -14,20 +14,20 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt movie** *mainscript*
+|-C|\ *canvas*
 |-N|\ *prefix*
 |-T|\ *frames*\ \|\ *timefile*\ [**+s**]
-|-W|\ *papersize*
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ] 
-[ |-C|\ [*frame*],[*format] ]
 [ |-D|\ *displayrate*
-[ |-E| ]
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
 [ |-G|\ *fill*\ ]
 [ |-I|\ *includefile* ]
+[ |-M|\ [*frame*],[*format] ]
 [ |-Q| ]
 [ **Sb**\ *backgroundscript* ]
 [ **Sf**\ *foregroundscript* ]
 [ |SYN_OPT-V| ]
+[ |-Z| ]
 
 |No-spaces|
 
@@ -54,6 +54,24 @@ Required Arguments
     and we build hidden movie scripts using the same language.  Parameters that can be accessed
     are discussed below.
 
+.. _-C:
+
+**-C**\ *papersize*
+    Specify the canvas size used when composing the movie frames. You can choose from a
+    a set of known preset formats or you can set a custom layout.  The named 16:9 ratio
+    formats have a canvas dimension of 24 x 13.5 cm *or* 9.6 x 5.4 inch and are listed
+    below (with pixel dimensions given in parenthesis):
+    **2160p** (3840 x 2160), **1080p** (1920 x 1080), **720p** (1280 x 720),
+    **540p** (960 x 540), **480p** (854 x 480), **360p** (640 x 360), and **240p** (426 x 240).
+    We also accept **4k** or **uhd** to mean **2160p** and **hd** to mean **1080p**.
+    The recognized 4:3 ratio formats have a canvas dimension of 24 x 18 cm *or* 9.6 x 7.2 inch
+    and are listed below (with pixel dimensions given in parenthesis):
+    **uxga** (1600 x 1200), **sxga+** (1400 x 1050), **xga** (1024 x 768),
+    **svga** (800 x 600), and **dvd** (640 x 480).
+    Note: Your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting determines if movie sets
+    you up to work with the SI or US canvas dimensions.  Instead of a named format you can
+    request a custom format directly by giving *width*\ x\ *height*\ x\ *dpu*, where *dpu* is
+    the dots-per-unit pixel density.
 .. _-N:
 
 **-N**\ *prefix*
@@ -72,25 +90,6 @@ Required Arguments
     the number of frames. Note that the *background* script is allowed to create the *timefile*
     hence we check of its existence both before and after the background script has run.
 
-.. _-W:
-
-**-W**\ *papersize*
-    Specify the paper size used when composing the movie frames. You can choose from a
-    a set of known preset formats or you can set a custom layout.  The named 16:9 ratio
-    formats have a paper dimension of 24 x 13.5 cm *or* 9.6 x 5.4 inch and are listed
-    below (with pixel dimensions given in parenthesis):
-    **2160p** (3840 x 2160), **1080p** (1920 x 1080), **720p** (1280 x 720),
-    **540p** (960 x 540), **480p** (854 x 480), **360p** (640 x 360), and **240p** (426 x 240).
-    We also accept **4k** or **uhd** to mean **2160p** and **hd** to mean **1080p**.
-    The recognized 4:3 ratio formats have a paper dimension of 24 x 18 cm *or* 9.6 x 7.2 inch
-    and are listed below (with pixel dimensions given in parenthesis):
-    **uxga** (1600 x 1200), **sxga+** (1400 x 1050), **xga** (1024 x 768),
-    **svga** (800 x 600), and **dvd** (640 x 480).
-    Note: Your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting determines if movie sets
-    you up to work with the SI or US paper dimensions.  Instead of a named format you can
-    request a custom format directly by giving *width*\ x\ *height*\ x\ *dpu*, where *dpu* is
-    the dots-per-unit pixel density.
-
 
 Optional Arguments
 ------------------
@@ -104,23 +103,10 @@ Optional Arguments
     to only use every *stride* frame, with *stride* being one of a fixed set of strides: 2, 5, 10,
     20, 50, 100, 200, and 500.
 
-.. _-C:
-
-**-C**\ [*frame*],[*format]
-    In addition to making the animation sequence, select a single frame for a cover page.  This frame will
-    be written in current directory with name *prefix*.*format*, where *format* can one of the
-    graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].
-
 .. _-D:
 
 **-D**\ *displayrate*
     Set the display frame rate in frames per seconds for the final animation [24].
-
-.. _-E:
-
-**-E**
-    Erase the entire *prefix* directory after assembling the final movie [leave directory with all images;
-    script files, parameter files, and layer PostScript files are removed (but see **-Q**)].
 
 .. _-F:
 
@@ -140,12 +126,19 @@ Optional Arguments
     This mechanism is used to add information (typically constant variable assignments) that the *mainscript*
     (and the two optional **-S** scripts) relies on.
 
+.. _-M:
+
+**-M**\ [*frame*],[*format]
+    In addition to making the animation sequence, select a single frame for a cover page.  This frame will
+    be written in current directory with name *prefix*.*format*, where *format* can one of the
+    graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].
+
 .. _-Q:
 
 **-Q**
     Dry-run; no movie is made, but all the movie scripts we build are left in the *prefix* directory for further examination.
     Any background and foreground scripts derived from **-S** will be run since they may produce data needed when
-    building the movie scripts.  If combined with **-C** then only the cover plot is generated.
+    building the movie scripts.  If combined with **-M** then only the cover plot is generated.
 
 .. _-Sb:
 
@@ -168,6 +161,12 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. _-Z:
+
+**-Z**
+    Erase the entire *prefix* directory after assembling the final movie [leave directory with all images;
+    script files, parameter files, and layer PostScript files are removed (but see **-Q**)].
+
 .. include:: explain_help.rst_
 
 Parameters
@@ -175,8 +174,8 @@ Parameters
 
 Several parameters are automatically assigned and can be used when composing *mainscript* and the optional
 *backgroundscript* and *foregroundscript* scripts. These are
-**GMT_MOVIE_WIDTH**\ : The width of the paper,
-**GMT_MOVIE_HEIGHT**\ : The height of the paper,
+**GMT_MOVIE_WIDTH**\ : The width of the canvas,
+**GMT_MOVIE_HEIGHT**\ : The height of the canvas,
 **GMT_MOVIE_DPU**\ : The current dots-per-unit.
 In addition, the *mainscript* also has access to additional parameters
 **GMT_MOVIE_FRAME**\ : The current frame number,
@@ -199,10 +198,10 @@ require full paths unless their directories were already included in the :ref:`D
 Your Canvas
 -----------
 
-As you can see from **-W**, unless you specified a custom format you are given a paper size that is either 24 x 13.5 cm (16:9)
-or 24 x 18 cm (4:3).  If your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting is inch then the custom paper sizes are just
+As you can see from **-C**, unless you specified a custom format you are given a canvas size that is either 24 x 13.5 cm (16:9)
+or 24 x 18 cm (4:3).  If your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting is inch then the custom canvas sizes are just
 slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2").  You should compose your plots using
-the given paper size, and movie will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
+the given canvas size, and movie will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
 to use **-X -Y** to allow for suitable margins and any positioning of items on the canvas.  To minimize processing time it is
 recommended that any static part of the movie be considered either a static background (to be made once by *backgroundscript*) and/or
 a static foreground (to be made once by *foregroundscript*); **movie** will then assemble these layers per frame.  Also, any computation of
@@ -239,10 +238,10 @@ require the frame number you will need to make a file that you can pass to **-T*
 then have all the values you need, per frame (row), with values across all the columns you need.
 If you need to assign various fixed variables that do not change with time then your *mainscript*
 will look shorter and cleaner if you offload those assignments to an *includefile* (**-I**).
-To test your movie, start by using options **-Q -C** to ensure your cover page looks correct.
-This page shows you one frame of your movie (you can select which frame via **-C**).  Fix any
+To test your movie, start by using options **-Q -M** to ensure your cover page looks correct.
+This page shows you one frame of your movie (you can select which frame via **-M**).  Fix any
 issues with your use of variables and options until this works.  You can then try to remove **-Q**.
-We recommend you make a very short and small (i.e., **-W**) movie so you don't have to wait very
+We recommend you make a very short (i.e., **-T**) and small (i.e., **-C**) movie so you don't have to wait very
 long to see the result.  Once things are working you can beef up number of frames and movie
 quality.
 
@@ -254,7 +253,7 @@ frame number to serve as the view longitude, using a custom square 600x600 pixel
 
    ::
 
-    gmt movie globe.sh -Nglobe -T360 -Agif -W6ix6ix100
+    gmt movie globe.sh -Nglobe -T360 -Agif -C6ix6ix100
 
 Here, the globe.sh bash script simply plots a map with :doc:`pscoast` but uses the frame number variable
 as the center longitude:
@@ -270,7 +269,7 @@ longitudes.  The equivalent DOS batch script setup would be
 
   ::
 
-    gmt movie globe.bat -Nglobe -T360 -Agif -W6ix6ix100
+    gmt movie globe.bat -Nglobe -T360 -Agif -C6ix6ix100
 
 Now, the globe.bat DOS script is simply
 
@@ -282,7 +281,7 @@ Now, the globe.bat DOS script is simply
 
 i.e., the syntax of how variables are used vary according to the scripting language. At the
 end of the execution we find the animated GIF globe.gif and a directory (called globe) that contains all 360 PNG images.
-Note that there is no information in the globe scripts that reflects the name of the plot, the paper size,
+Note that there is no information in the globe scripts that reflects the name of the plot, the canvas size,
 the dimensions of the rasterized PostScript, and so on.  That information is hidden from the user;
 the actual movie scripts that execute are derived from the user-provided scripts and supply
 the extra machinery. The **movie** module manages the parallel execution loop over all frames using
