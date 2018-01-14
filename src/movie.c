@@ -584,7 +584,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				break;
 		}
 	}
-		
+
 	n_errors += gmt_M_check_condition (GMT, n_files != 1 || Ctrl->In.file == NULL, "Syntax error: Must specify a main script file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active, "Syntax error -C: Must specify a canvas dimension\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.exit && Ctrl->animate, "Syntax error -F: Cannot use none with other selections\n");
@@ -601,6 +601,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					"Syntax error -Z: Cannot be used without specifying a GIF (-A), master (-M) or movie (-F) product\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.skip && !(Ctrl->F.active[MOVIE_MP4] || Ctrl->F.active[MOVIE_WEBM]),
 					"Syntax error -A: Cannot specify a GIF stride > 1 without selecting a movie product (-F)\n");
+	
+	if (n_errors) return (GMT_PARSE_ERROR);	/* No point going further */
 	
 	/* Note: We open script files for reading below since we are changing cwd later */
 	
@@ -840,6 +842,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				fprintf (fp, "\tgmt figure gmt_movie_background ps\n");
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
+				if (is_classic)	/* Also write the current line since it was not a gmt begin line */
+					fprintf (fp, "%s", line);
 			}
 			else if (!strstr (line, "#!/"))	/* Skip any leading shell incantation since already placed by set_script */
 				fprintf (fp, "%s", line);	/* Just copy the line as is */

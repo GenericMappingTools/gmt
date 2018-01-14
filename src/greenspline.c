@@ -380,6 +380,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, txt[4], gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->R3.range[4]), txt[4]);
 					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, txt[5], gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->R3.range[5]), txt[5]);
 				}
+				if (Ctrl->R3.dimension > 1) gmt_M_memcpy (GMT->common.R.wesn, Ctrl->R3.range, 4, double);
 				break;
 
 			/* Processes program-specific parameters */
@@ -1712,13 +1713,13 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					r = get_radius (GMT, X[i], X[p], dimension);
 					if (gmt_M_is_zero (r)) {	/* Duplicates will give zero point separation */
 						if (doubleAlmostEqualZero (in[dimension], obs[i])) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Slope constraint %" PRIu64 " is identical to %" PRIu64
+							GMT_Report (API, GMT_MSG_VERBOSE, "Slope constraint %" PRIu64 " is identical to %" PRIu64
 							            " and will be skipped\n", n_read, i-n);
 							skip = true;
 							n_skip++;
 						}
 						else {
-							GMT_Report (API, GMT_MSG_NORMAL, "Slope constraint %" PRIu64 " and %" PRIu64
+							GMT_Report (API, GMT_MSG_VERBOSE, "Slope constraint %" PRIu64 " and %" PRIu64
 							            " occupy the same location but differ in observation (%.12g vs %.12g)\n", n_read, i-n, obs[p], obs[i]);
 							n_duplicates++;
 						}
@@ -1745,10 +1746,10 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Distance between distant constraints = %.12g]\n", r_max);
 
 	if (n_duplicates) {	/* These differ in observation value so need to be averaged, medianed, or whatever first */
-		GMT_Report (API, GMT_MSG_VERBOSE,
-		            "Found %" PRIu64 " data constraint duplicates with different observation values\n", n_duplicates);
 		if (!Ctrl->C.active || gmt_M_is_zero (Ctrl->C.value)) {
-			GMT_Report (API, GMT_MSG_VERBOSE,
+			GMT_Report (API, GMT_MSG_NORMAL,
+			            "Found %" PRIu64 " data constraint duplicates with different observation values\n", n_duplicates);
+			GMT_Report (API, GMT_MSG_NORMAL,
 			            "You must reconcile duplicates before running greenspline since they will result in a singular matrix\n");
 			for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
 			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
@@ -1758,13 +1759,16 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 			Return (GMT_DATA_READ_ERROR);
 		}
-		else
+		else {
+			GMT_Report (API, GMT_MSG_VERBOSE,
+			            "Found %" PRIu64 " data constraint duplicates with different observation values\n", n_duplicates);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Expect some eigenvalues to be identically zero\n");
+		}
 	}
 
 	if (m > 0 && (normalize & GREENSPLINE_TREND)) {
 		normalize = GREENSPLINE_NORM;	/* Only allow taking out data mean for mixed z/slope data */
-		GMT_Report (API, GMT_MSG_NORMAL, "Only remove/restore mean z in mixed {z, grad(z)} data sets\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Can only remove/restore mean z in mixed {z, grad(z)} data sets\n");
 	}
 
 	if (m == 0)
@@ -1935,7 +1939,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 #endif
 			if (Ctrl->A.active) Lg = gmt_M_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
 			L_Max = get_max_L (GMT, par[0], par[1]);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "New scheme p = %g, err = %g, L_Max = %u\n", par[0], par[1], L_Max);
+			GMT_Report (API, GMT_MSG_DEBUG, "New scheme p = %g, err = %g, L_Max = %u\n", par[0], par[1], L_Max);
 			series_prepare (GMT, par[0], L_Max, Lz, Lg);
 			/* Set up the cubic spline lookup/interpolation */
 			par[7] = Ctrl->S.value[3];
@@ -2146,7 +2150,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 	alpha = obs;	/* Just a different name since the obs vector now holds the alpha factors */
 #if 0
-	fp = fopen ("alpha.txt", "w");	/* Save alpah coefficients for debugging purposes */
+	fp = fopen ("alpha.txt", "w");	/* Save alpha coefficients for debugging purposes */
 	for (p = 0; p < nm; p++) fprintf (fp, "%g\n", alpha[p]);
 	fclose (fp);
 #endif
@@ -2197,7 +2201,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 		rms = sqrt (rms / nm);
 		std = (m > 1) ? sqrt (std / (m-1.0)) : GMT->session.d_NaN;
-		GMT_Report (API, GMT_MSG_NORMAL, "Misfit evaluation: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\n", nm, mean, std, rms);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Misfit evaluation: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\n", nm, mean, std, rms);
 		gmt_M_free (GMT, orig_obs);
 		if (Ctrl->E.mode) {	/* Want to write out prediction errors */
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.file, E) != GMT_NOERROR) {
