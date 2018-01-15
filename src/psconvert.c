@@ -1306,6 +1306,7 @@ GMT_LOCAL int wrap_the_sandwich (struct GMT_CTRL *GMT, char *main, char *bfile, 
 	
 	/* Create a temporary file name for the sandwich file and open it for writing */
 	sprintf (newfile, "%s/psconvert_sandwich_%d.ps", GMT->parent->tmp_dir, (int)getpid());
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Creating %s\n", newfile);
 	if ((fp = fopen (newfile, "w")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to create temporary file %s.\n", newfile);
 		return (GMT_RUNTIME_ERROR);

@@ -370,7 +370,7 @@ enum history_mode {
 /* List ps at end since it causes a renaming of ps- to ps only.  Also allow jpeg and tiff spellings */
 
 #include "gmt_gsformats.h"
-static char gmt_session_code[] =    { 'f',   'j',    'j',   'G',   'm',   't',    't',   'b',   'e',  'p',    0};
+static char gmt_session_code[] =    { 'f',   'j',    'j',   'g',   'G', 'm',   't',    't',   'b',   'e',  'p',    0};
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 

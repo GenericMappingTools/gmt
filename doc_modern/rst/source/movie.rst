@@ -16,14 +16,14 @@ Synopsis
 **gmt movie** *mainscript*
 |-C|\ *canvas*
 |-N|\ *prefix*
-|-T|\ *frames*\ \|\ *timefile*\ [**+s**]
+|-T|\ *frames*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ] 
 [ |-D|\ *displayrate*
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
 [ |-G|\ *fill*\ ]
 [ |-I|\ *includefile* ]
 [ |-M|\ [*frame*],[*format] ]
-[ |-Q| ]
+[ |-Q|\ [**s**] ]
 [ **Sb**\ *backgroundscript* ]
 [ **Sf**\ *foregroundscript* ]
 [ |SYN_OPT-V| ]
@@ -81,14 +81,20 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *frames*\ \|\ *timefile*\ [**+s**]
+**-T**\ *frames*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
     Either specify how many image frames to make or supply a file with a set of parameters,
     one record per frame (i.e., row).  The values in the columns will be available to the
     *mainscript* as named variables GMT_MOVIE_VAL1, GMT_MOVIE_VAL2, etc., while any trailing text
-    can be accessed via the variable GMT_MOVIE_STRING.  Append **+s** to also split the trailing
+    can be accessed via the variable GMT_MOVIE_STRING.  Append **+w** to also split the trailing
     string into individual words GMT_MOVIE_TXT1, GMT_MOVIE_TXT2, etc. The number of records equals
     the number of frames. Note that the *background* script is allowed to create the *timefile*
-    hence we check of its existence both before and after the background script has run.
+    hence we check of its existence both before and after the background script has run.  Normally,
+    the frame numbering starts at 0; you can change this by appending a different starting frame
+    number via **s**\ *first*.  Note: All frames are still included; this modifier only affects
+    the numbering of the given frames.  Finally, **+p** can be used to set the tag *width* of the format
+    used in naming frames.  For instance, name_000010.png has a tag width of 6.  By default, this
+    is automatically set but if you are splitting large jobs across several computers then you
+    will want to have the same tag width for all names [automatic].
 
 
 Optional Arguments
@@ -137,10 +143,11 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**
-    Dry-run; no movie is made, but all the movie scripts we build are left in the *prefix* directory for further examination.
-    Any background and foreground scripts derived from **-S** will be run since they may produce data needed when
-    building the movie scripts.  If combined with **-M** then only the cover plot is generated.
+**-Q**\ [**s**]
+    Debugging: Leave all files and directories we create behind for inspection.  Alternatively, append **s** to
+    only build movie scripts but not perform any execution.  The exception involves the optional
+    background script derived from **-Sb** since it may produce data needed when
+    building the movie scripts.
 
 .. _-Sb:
 

@@ -30,6 +30,6 @@
 #define _GMT_GSFORMATS_H
 
 /* List ps at end since it causes a renaming of ps- to ps only.  Also allow jpeg and tiff spellings */
-static char *gmt_session_format[] = {"pdf", "jpg", "jpeg", "png", "ppm", "tif", "tiff", "bmp", "eps", "ps", NULL};
+static char *gmt_session_format[] = {"pdf", "jpg", "jpeg", "png", "png+t", "ppm", "tif", "tiff", "bmp", "eps", "ps", NULL};
 
 #endif  /* _GMT_GSFORMATS_H */
