@@ -1053,10 +1053,12 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	/* find maximum singular value and total variance.  Assumes w[] may have negative eigenvalues */
 
 	sing_max = fabs (w[0]);
-	total_variance = w[0] * w[0];
+	//total_variance = w[0] * w[0];
+	total_variance = sing_max;
 	for (i = 1; i < n; i++) {
-		total_variance += (w[i] * w[i]);
+		//total_variance += (w[i] * w[i]);
 		w_abs = fabs (w[i]);
+		total_variance += w_abs;
 		sing_max = MAX (sing_max, w_abs);
 	}
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gmt_solve_svd: Total variance = %g\n", total_variance);
@@ -1085,7 +1087,8 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		else if (mode == 3) limit = total_variance - n * (*cutoff)*(*cutoff);	/* Unexplained variance desired given stated data rms */
 		for (i = 0; i < n; i++) {	/* Visit all singular values in decreasing magnitude */
 			if ((mode == 1 && variance < limit) || (mode == 2 && i < n_eigen) || (mode == 3 && variance < limit)) {	/* Still within specified limit so we add this singular value */
-				variance += (eigen[i].value * eigen[i].value);
+				//variance += (eigen[i].value * eigen[i].value);
+				variance += eigen[i].value;
 				w[eigen[i].order] = 1.0 / w[eigen[i].order];
 				n_use++;
 			}
@@ -1099,7 +1102,8 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		for (i = 0; i < n; i++) {
 			w_abs = fabs (w[i]);
 			if ((w_abs/sing_max) > limit) {
-				variance += (w[i] * w[i]);
+				//variance += (w[i] * w[i]);
+				variance += w_abs;
 				w[i] = 1.0 / w[i];
 				n_use++;
 			}
@@ -1229,6 +1233,31 @@ void gmt_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3
 	gmt_M_unused(GMT);
 
 	for (i = 0; i < dim; i++) for (j = 0, c[i] = 0.0; j < dim; j++) c[i] += a[i][j] * b[j];
+}
+
+/* Things to use if figuring out blas calls to speed up these multiplications:
+ * Then, if LAPACK is true then gmt_matrix_matrix_mult should call dgemm_ instead of plain code.
+ */
+#if 0		
+#ifndef __APPLE__	/* Since it is already declared in Accelerate.h */
+	extern int dgemm_ (char* tra, char* trb, int* na, int* nb, int* nc, double* alpha, double* a, int *nd, double* beta, double* c, int* ne);
+#endif
+#endif
+
+void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_rowsB, uint64_t n_colsB, double *C)
+{	/* Plain matrix multiplication, no speed up; space must exist */
+	uint64_t row, col, k, a_ij, b_ij, c_ij, n_colsA = n_rowsB;
+	gmt_M_unused(GMT);
+	for (row = 0; row < n_rowsA; row++) {
+		for (col = 0; col < n_colsB; col++) {
+			a_ij = row * n_colsA;		/* Start address of row in A */
+			b_ij = col;			/* Start address of col in B */
+			c_ij = row * n_colsB + col;	/* Address of C element to hold their dot-product */
+            		C[c_ij] = 0.0;
+            		for (k = 0; k < n_rowsB; k++)	/* Do the dot product */
+                		C[c_ij] += A[a_ij+k]*B[b_ij+k*n_colsB];
+		}
+	}
 }
 
 void gmt_make_rot_matrix2 (struct GMT_CTRL *GMT, double E[3], double w, double R[3][3]) {

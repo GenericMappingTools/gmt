@@ -1390,8 +1390,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	double *v = NULL, *s = NULL, *b = NULL, *ssave = NULL, eig_max = 0.0, limit;
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL, *orig_obs = NULL;
-	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad, weight_col, weight_row;
-	double *A = NULL, r_min, r_max, err_sum = 0.0;
+	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad;
+	double *A = NULL, *A_orig = NULL, r_min, r_max, err_sum = 0.0;
 #ifdef DEBUG
 	double x0 = 0.0, x1 = 5.0;
 #endif
@@ -1400,7 +1400,6 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	double (*G) (struct GMT_CTRL *, double, double *, struct GREENSPLINE_LOOKUP *) = NULL;		/* Pointer to chosen Green's function */
 	double (*dGdr) (struct GMT_CTRL *, double, double *, struct GREENSPLINE_LOOKUP *) = NULL;	/* Pointer to chosen gradient of Green's function */
-
 
 	struct GMT_GRID *Grid = NULL, *Out = NULL;
 	struct ZGRID Z;
@@ -1594,7 +1593,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	if (Ctrl->A.active) {	/* Read gradient constraints from file */
 		unsigned int n_A_cols = 0;
 		struct GMT_DATASET *Din = NULL;
-		struct GMT_DATATABLE *S = NULL;
+		struct GMT_DATASEGMENT *Slp = NULL;
 		switch (dimension) {
 			case 1:	/* 1-D */
 				switch (Ctrl->A.mode) {
@@ -1645,8 +1644,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			Return (GMT_DIM_TOO_SMALL);
 		}
 		gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
-		S = Din->table[0];	/* Can only be one table */
-		m = S->n_records;	/* Total number of gradient constraints */
+		m = Din->n_records;	/* Total number of gradient constraints */
 		nm += m;		/* New total of linear equations to solve */
 		X = gmt_M_memory (GMT, X, nm, double *);
 		for (k = n; k < nm; k++) X[k] = gmt_M_memory (GMT, NULL, n_cols, double);
@@ -1654,35 +1652,36 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		D = gmt_M_memory (GMT, NULL, m, double *);
 		for (k = 0; k < m; k++) D[k] = gmt_M_memory (GMT, NULL, n_cols, double);
 		n_skip = n_read = 0;
-		for (seg = k = 0, p = n; seg < S->n_segments; seg++) {
-			for (row = 0; row < S->segment[seg]->n_rows; row++, k++, p++) {
-				for (ii = 0; ii < n_cols; ii++) X[p][ii] = S->segment[seg]->data[ii][row];
+		for (seg = k = 0, p = n; seg < Din->n_segments; seg++) {
+			Slp = Din->table[0]->segment[seg];
+			for (row = 0; row < Slp->n_rows; row++, k++, p++) {
+				for (ii = 0; ii < n_cols; ii++) X[p][ii] = Slp->data[ii][row];
 				switch (dimension) {
 					case 1:	/* 1-D: x, slope */
 						D[k][0] = 1.0;	/* Dummy since there is no direction for 1-D spline (the gradient is in the x-y plane) */
-						obs[p] = S->segment[seg]->data[dimension][row];
+						obs[p] = Slp->data[dimension][row];
 						break;
 					case 2:	/* 2-D */
 						switch (Ctrl->A.mode) {
 							case 1:	/* (x, y, az, gradient) */
-								az = D2R * S->segment[seg]->data[2][row];
-								obs[p] = S->segment[seg]->data[3][row];
+								az = D2R * Slp->data[2][row];
+								obs[p] = Slp->data[3][row];
 								break;
 							case 2:	/* (x, y, gradient, azimuth) */
-								az = D2R * S->segment[seg]->data[3][row];
-								obs[p] = S->segment[seg]->data[2][row];
+								az = D2R * Slp->data[3][row];
+								obs[p] = Slp->data[2][row];
 								break;
 							case 3:	/* (x, y, direction, gradient) */
-								az = M_PI_2 - D2R * S->segment[seg]->data[2][row];
-								obs[p] = S->segment[seg]->data[3][row];
+								az = M_PI_2 - D2R * Slp->data[2][row];
+								obs[p] = Slp->data[3][row];
 								break;
 							case 4:	/* (x, y, gx, gy) */
-								az = atan2 (S->segment[seg]->data[2][row], S->segment[seg]->data[3][row]);		/* Get azimuth of gradient */
-								obs[p] = hypot (S->segment[seg]->data[3][row], S->segment[seg]->data[3][row]);	/* Get magnitude of gradient */
+								az = atan2 (Slp->data[2][row], Slp->data[3][row]);		/* Get azimuth of gradient */
+								obs[p] = hypot (Slp->data[3][row], Slp->data[3][row]);	/* Get magnitude of gradient */
 								break;
 							case 5:	/* (x, y, nx, ny, gradient) */
-								az = atan2 (S->segment[seg]->data[2][row], S->segment[seg]->data[3][row]);		/* Get azimuth of gradient */
-								obs[p] = S->segment[seg]->data[4][row];	/* Magnitude of gradient */
+								az = atan2 (Slp->data[2][row], Slp->data[3][row]);		/* Get azimuth of gradient */
+								obs[p] = Slp->data[4][row];	/* Magnitude of gradient */
 								break;
 						}
 						sincos (az, &D[k][GMT_X], &D[k][GMT_Y]);
@@ -1690,13 +1689,13 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 					case 3:	/* 3-D */
 						switch (Ctrl->A.mode) {
 							case 4:	/* (x, y, z, gx, gy, gz) */
-								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[seg]->data[3+ii][row];	/* Get the gradient vector */
+								for (ii = 0; ii < 3; ii++) D[k][ii] = Slp->data[3+ii][row];	/* Get the gradient vector */
 								obs[p] = gmt_mag3v (GMT, D[k]);	/* This is the gradient magnitude */
 								gmt_normalize3v (GMT, D[k]);		/* These are the direction cosines of the gradient */
 								break;
 							case 5: /* (x, y, z, nx, ny, nz, gradient) */
-								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[seg]->data[3+ii][row];	/* Get the unit vector */
-								obs[p] = S->segment[seg]->data[6][row];	/* This is the gradient magnitude */
+								for (ii = 0; ii < 3; ii++) D[k][ii] = Slp->data[3+ii][row];	/* Get the unit vector */
+								obs[p] = Slp->data[6][row];	/* This is the gradient magnitude */
 								break;
 						}
 						break;
@@ -1981,7 +1980,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	do_normalization (API, X, obs, n, normalize, dimension, norm);
 
-	/* Set up linear system Ax = z. To clarify, the matrix A will be
+	/* Set up linear system Ax = obs. To clarify, the matrix A will be
 	 * of size nm by nm, where nm = n + m. Again, n is the number of
 	 * value constraints and m is the number of gradient constraints.
 	 * for most problems m will be 0.
@@ -1989,11 +1988,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	 * (except for terms involving gradients where A_ij = -A_ji).  So we
 	 * start the loop over columns as col = row and deal with A)ij and A_ji
 	 * at the same time since we can evaluate the same costly G() function
-	 * [or dGdr () function)]  once.  Because of this we need to obtain the
-	 * weight for two different rows and we do that by calling the two weights
-	 * weight_row and weight_col, meaning it refers to observation weight
-	 * number col and row.  In the end, each row in A plus the row in obs
-	 * are scaled by weight_row.
+	 * [or dGdr () function)]  once.
 	 */
 
 	mem = (double)nm * (double)nm * (double)sizeof (double);	/* In bytes */
@@ -2002,47 +1997,37 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Build linear system using %s\n", method[Ctrl->S.mode]);
 
-	weight_col = weight_row = 1.0;
 	for (row = 0; row < nm; row++) {	/* For each value or slope constraint */
-		if (Ctrl->W.active) {
-			weight_row = X[row][dimension];
-			obs[row] *= weight_row;
-		}
 		for (col = row; col < nm; col++) {
-			if (Ctrl->W.active) weight_col = X[col][dimension];
 			ij = row * nm + col;
 			ji = col * nm + row;
 			r = get_radius (GMT, X[col], X[row], dimension);
 			if (row < n) {	/* Value constraint (so entire row uses G) */
 				A[ij] = G (GMT, r, par, Lz);
-				if (ij == ji) {	/* Do the diagonal terms only once */
-					A[ij] *= weight_row;
+				if (ij == ji)	/* Do the diagonal terms only once */
 					continue;
-				}
-				if (col < n) {
-					A[ji] = weight_col * A[ij];
-				}
+				if (col < n)
+					A[ji] = A[ij];
 				else {
 					/* Get D, the directional cosine between the two points */
 					/* Then get C = gmt_dot3v (GMT, D, dataD); */
 					/* A[ji] = dGdr (r, par, Lg) * C; */
 					C = get_dircosine (GMT, D[col-n], X[col], X[row], dimension, false);
 					grad = dGdr (GMT, r, par, Lg);
-					A[ji] = weight_col * grad * C;
+					A[ji] = grad * C;
 				}
-				A[ij] *= weight_row;
 			}
 			else if (col > n) {	/* Remaining gradient constraints (entire row uses dGdr) */
 				if (ij == ji) continue;	/* Diagonal gradient term from a point to itself is zero */
 				C = get_dircosine (GMT, D[row-n], X[col], X[row], dimension, true);
 				grad = dGdr (GMT, r, par, Lg);
-				A[ij] = weight_row * grad * C;
+				A[ij] = grad * C;
 				C = get_dircosine (GMT, D[col-n], X[col], X[row], dimension, false);
-				A[ji] = weight_col * grad * C;
+				A[ji] = grad * C;
 			}
 		}
 	}
-#if 0 /* Dump the A | b matrices */
+#if 0 /* Dump the A | b system */
 	fprintf (stderr, "Weight | Matrix row | obs\n");
 	for (row = 0; row < nm; row++) {
 		if (Ctrl->W.active)
@@ -2055,8 +2040,47 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		fprintf (stderr, "\t|\t%12.6f\n", obs[row]);
 	}
 #endif
-
+	if (Ctrl->E.active) A_orig = A;	/* To evaluate misfit */
 	if (Ctrl->W.active) {
+		/* Here we have requested an approximate fit instead of an exact interpolation.
+		 * For exact interpolation the weights do not matter, but here they do.  Since
+		 * we wish to solve via SVD we must convert our unweighted A*x = b linear system
+		 * to the weighted W*A*x = W*b whose normal equations are [A'*S*A]^(-1)*A'*S*b,
+		 * where S = W*W, the squared weights.  This is N*x = r where N = A'*S*A and
+		 * r = A'*S*b.  Thus, we do these multiplication and store the output in the
+		 * original A and obs vectors so that the continuation of the code can work as is.
+		 * Weighted solution idea credit: Leo Uieda.  Jan 14, 2018.
+		 */
+		
+		double *At = NULL, *AtS = NULL, *S = NULL;
+		At = gmt_M_memory (GMT, NULL, nm * nm, double);
+		AtS = gmt_M_memory (GMT, NULL, nm * nm, double);
+		S = gmt_M_memory (GMT, NULL, nm, double);
+		/* 1. Transpose A and set S */
+		for (row = 0; row < nm; row++) {
+			S[row] = X[row][dimension] * X[row][dimension];	/* This is the diagonal squared weights (=1/sigma^2) matrix */
+			for (col = 0; col < nm; col++) {
+				ij = row * nm + col;
+				ji = col * nm + row;
+				At[ji] = A[ij];
+			}
+		}
+		/* 2. Compute AtS = At * S.  This means scaling all terms in At columns by the corresponding S entry */
+		for (row = ij = 0; row < nm; row++) {
+			for (col = 0; col < nm; col++, ij++)
+				AtS[ij] = At[ij] * S[col];
+		}
+		/* 3. Compute r = AtS * obs (but we use S to hold r) */
+		gmt_matrix_matrix_mult (GMT, AtS, obs, nm, nm, 1, S);
+		/* 4. Compute N = AtS * A and store in At (which we call N) */
+		gmt_matrix_matrix_mult (GMT, AtS, A, nm, nm, nm, At);
+		/* Now free AtS and let "A" be N and "obs" be r; these are the weighted normal equations */
+		gmt_M_free (GMT, AtS);
+		if (!Ctrl->E.active) gmt_M_free (GMT, A);
+		A = At;
+		gmt_M_free (GMT, obs);
+		obs = S;
+		/* ---------- */
 		err_sum = sqrt (err_sum / nm);	/* Mean data variance */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean data uncertainty is %g\n", err_sum);
 		if (Ctrl->C.mode == 3 && Ctrl->C.value == 0.0) {
@@ -2064,7 +2088,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean data uncertainty selected as desired rms fit\n");
 		}
 	}
-
+	
 	if (Ctrl->C.active) {		/* Solve using svd decomposition */
 		int error;
 
@@ -2097,7 +2121,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			eig_max = eig[nm-1];
 			for (i = 0, j = nm-1; i < nm; i++, j--) {
 				E->table[0]->segment[0]->data[GMT_X][i] = i + 1.0;	/* Let 1 be x-value of the first eigenvalue */
-				E->table[0]->segment[0]->data[GMT_Y][i] = (Ctrl->C.mode == 2) ? eig[j] / eig_max : eig[j];
+				//E->table[0]->segment[0]->data[GMT_Y][i] = (Ctrl->C.mode == 2) ? eig[j] / eig_max : eig[j];
+				E->table[0]->segment[0]->data[GMT_Y][i] = eig[j];
 			}
 			E->table[0]->segment[0]->n_rows = nm;
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->C.file, E) != GMT_NOERROR) {
@@ -2157,8 +2182,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	if (Ctrl->C.movie == 0) gmt_M_free (GMT, A);
 
 	if (Ctrl->E.active) {
-		double here[4], mean = 0.0, std = 0.0, rms = 0.0, dev;
-		uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, nm, dimension+3};
+		double value, mean = 0.0, std = 0.0, rms = 0.0, dev, chi2, chi2_sum = 0, *y = NULL;
+		uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, nm, dimension+3+Ctrl->W.active};
 		unsigned int m = 0;
 		struct GMT_DATASET *E = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
@@ -2170,40 +2195,55 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			S = E->table[0]->segment[0];
 			S->n_rows = nm;
 		}
+		y = gmt_M_memory (GMT, NULL, nm, double);	/* To hold predictions */
+		gmt_matrix_matrix_mult (GMT, A_orig, alpha, nm, nm, 1, y);
 		for (j = 0; j < nm; j++) {	/* For each data constraint */
-			gmt_M_memset (here, 4, double);
-			gmt_M_memcpy (here, X[j], dimension, double);
-			for (p = 0; p < nm; p++) {	/* Evaluate solution using all components */
-				r = get_radius (GMT, here, X[p], dimension);
-				if (Ctrl->Q.active) {
-					C = get_dircosine (GMT, Ctrl->Q.dir, here, X[p], dimension, false);
-					part = dGdr (GMT, r, par, Lz) * C;
-				}
-				else
-					part = G (GMT, r, par, Lz);
-				here[dimension] += alpha[p] * part;
+			y[j] = undo_normalization (X[j], y[j], normalize, norm, dimension);
+			dev = orig_obs[j] - y[j];
+			rms += dev * dev;
+			if (Ctrl->W.active) {
+				chi2 = pow (dev * X[j][dimension], 2.0);
+				chi2_sum += chi2;
 			}
-			here[dimension] = undo_normalization (here, here[dimension], normalize, norm, dimension);
+			
 			/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
 			m++;
-			dev = orig_obs[j] - mean;
+			value = orig_obs[j] - y[j];
+			dev = value - mean;
 			mean += dev / m;
-			std += dev * (orig_obs[j] - mean);
-			dev = orig_obs[j] - here[dimension];
-			rms += dev * dev;
+			std += dev * (value - mean);
 			if (Ctrl->E.mode) {	
 				for (p = 0; p < dimension; p++)
 					S->data[p][j] = X[j][p];
 				S->data[p++][j] = orig_obs[j];
-				S->data[p++][j] = here[dimension];
+				S->data[p++][j] = y[j];
 				S->data[p][j]   = dev;
+				if (Ctrl->W.active)
+					S->data[++p][j] = chi2;
 			}
 		}
 		rms = sqrt (rms / nm);
 		std = (m > 1) ? sqrt (std / (m-1.0)) : GMT->session.d_NaN;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Misfit evaluation: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\n", nm, mean, std, rms);
+		if (Ctrl->W.active)
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Misfit evaluation: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\tChi^2 = %g\n", nm, mean, std, rms, chi2_sum);
+		else
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Misfit evaluation: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\n", nm, mean, std, rms);
 		gmt_M_free (GMT, orig_obs);
+		gmt_M_free (GMT, y);
+		gmt_M_free (GMT, A_orig);
 		if (Ctrl->E.mode) {	/* Want to write out prediction errors */
+			char header[GMT_LEN64] = {"#x\t"};
+			if (gmt_M_is_geographic (GMT, GMT_IN))
+				sprintf (header, "#lon\tlat\t");
+			else {
+				if (dimension > 1) strcat (header, "y\t");
+				if (dimension > 2) strcat (header, "z\t");
+			}
+			strcat (header, "obs\tpredict\tdev");
+			if (Ctrl->W.active) strcat (header, "\tchi2");
+			if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, E)) {
+				Return (API->error);
+			}
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.file, E) != GMT_NOERROR) {
 				Return (API->error);
 			}
