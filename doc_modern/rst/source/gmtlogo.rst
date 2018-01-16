@@ -16,7 +16,6 @@ Synopsis
 **gmt logo** [ |-D|\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]] ]
 [ |-F|\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
 [ |-J|\ *parameters* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
-[ |-P| ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -75,10 +74,6 @@ Optional Arguments
     **+s** to draw an offset background shaded region. Here, *dx*/*dy*
     indicates the shift relative to the foreground frame
     [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
-
-.. _-P:
-
-.. include:: explain_-P.rst_
 
 .. _-R:
 

@@ -21,7 +21,6 @@ Synopsis
 [ |-F|\ *box* ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-L|\ *scalebar* ]
-[ |-P| ]
 [ |SYN_OPT-U| ]
 [ |-T|\ *rose* ]
 [ |-T|\ *mag_rose* ]
@@ -130,10 +129,6 @@ Optional Arguments
 
 .. include:: explain_-L_scale.rst_
 
-.. _-P:
-
-.. include:: explain_-P.rst_
-
 .. _-T:
 
 .. include:: explain_-T_rose.rst_
@@ -226,7 +221,7 @@ A 10-cm-wide basemap using the Cassini projection may be obtained by
 
    ::
 
-    gmt basemap -R20/50/20/35 -JC35/28/10c -P -Bafg -B+tCassini -pdf cassini
+    gmt basemap -R20/50/20/35 -JC35/28/10c -Bafg -B+tCassini -pdf cassini
 
 Mercator [conformal]
 ~~~~~~~~~~~~~~~~~~~~
@@ -265,7 +260,7 @@ A regular Transverse Mercator basemap for some region may look like
 
    ::
 
-    gmt basemap -R69:30/71:45/-17/-15:15 -Jt70/1:1000000 -Bafg -B+t"Survey area" -P -pdf transmerc
+    gmt basemap -R69:30/71:45/-17/-15:15 -Jt70/1:1000000 -Bafg -B+t"Survey area" -pdf transmerc
 
 Equidistant Cylindrical Projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -521,12 +516,12 @@ Arbitrary rotation
 ~~~~~~~~~~~~~~~~~~
 
 If you need to plot a map but have it rotated about a vertical axis then
-use the **-p** option.  For instance, the rotate the basemap below 90
+use the **-p** option.  For instance, to rotate the basemap below 90
 degrees about an axis centered on the map, try
 
    ::
 
-    gmt basemap -R10/40/10/40 -JM10c -P -Bafg -B+t"I am rotated" -p90+w25/25 -Xc -pdf rotated
+    gmt basemap -R10/40/10/40 -JM10c -Bafg -B+t"I am rotated" -p90+w25/25 -Xc -pdf rotated
 
 Custom Labels or Intervals
 --------------------------

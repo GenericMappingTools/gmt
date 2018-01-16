@@ -129,10 +129,6 @@ Optional Arguments
 **-N**
     Does **not** skip symbols that fall outside map border [Default plots points inside border only].
 
-.. _-P:
-
-.. include:: ../../explain_-P.rst_
-
 .. _-Q:
 
 **-Q**\ *mode*\ [*args*]

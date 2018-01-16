@@ -22,7 +22,7 @@ EOF
 cat << EOF > main.sh
 gmt begin
 	gmt grdview above.nc -R-26/-12/63/67 -JM2.5i -Ciceland.cpt -Qi100 -Bafg \
-		-P -X0.5i -Y0.5i -p\${GMT_MOVIE_VAL1}/35+w20W/65N+v1.5i/0.75i
+		-X0.5i -Y0.5i -p\${GMT_MOVIE_VAL1}/35+w20W/65N+v1.5i/0.75i
 gmt end
 EOF
 # 3. Run the movie

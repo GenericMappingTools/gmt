@@ -22,7 +22,6 @@ Synopsis
 [ |-J|\ *parameters* ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-M| ]
-[ |-P| ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -119,10 +118,6 @@ Optional Arguments
 **-M**
     Convert color image to monochrome grayshades using the (television)
     YIQ-transformation.
-
-.. _-P:
-
-.. include:: explain_-P.rst_
 
 .. _-R:
 

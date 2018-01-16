@@ -21,7 +21,6 @@ Synopsis
 [ |-I| ] [ |-L|\ *nsamp* ]
 [ |-M|\ *ntrace* ]
 [ |-N| ]
-[ |-P| ]
 [ |-Q|\ *<mode><value>* ]
 [ |-S|\ *header_x*/*header_y* ]
 [ |SYN_OPT-U| ]
@@ -134,10 +133,6 @@ Optional Arguments
 
 **-N**
     Normalize trace by dividing by rms amplitude over full trace length.
-
-.. _-P:
-
-.. include:: ../../explain_-P.rst_
 
 .. _-Q:
 

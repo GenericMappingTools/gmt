@@ -21,7 +21,6 @@ Synopsis
 [ |-F|\ *panel* ]
 [ |-G|\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill* ]
 [ |-I|\ *fix_az* ]
-[ **-P** ]
 [ |-T|\ *pen* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -157,10 +156,6 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
-.. _-P:
-
-.. include:: explain_-P.rst_
-
 .. _-T:
 
 **-T**\ *pen*
@@ -222,7 +217,7 @@ points, use
    ::
 
     gmt wiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z500 -B5
-                 -C32000 -P -Gred -T0.25p,blue -DjRM+w1000+lnT -V > track_xym
+                 -C32000 -Gred -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
 
 and the positive anomalies will in general point in the north direction.
 We used **-D** to place a vertical scale bar indicating a 1000 nT anomaly.
@@ -232,7 +227,7 @@ and obtain
    ::
 
     gmt wiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5
-              -C32000 -P -Gred -I45 -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
+              -C32000 -Gred -I45 -T0.25p,blue -DjRM+w1000+lnT -V -pdf track_xym
 
 Bugs
 ----

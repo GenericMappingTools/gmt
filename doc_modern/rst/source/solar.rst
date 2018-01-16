@@ -21,7 +21,7 @@ Synopsis
 [ |-J|\ *parameters* ]
 [ |-M| ]
 [ |-N| ]
-[ |-P| ] [ |-Q| ]
+[ |-Q| ]
 [ |SYN_OPT-R| ]
 [ |-T|\ **dcna**\ [**+d**\ *date*][**+z**\ *TZ*]]
 [ |SYN_OPT-U| ]
@@ -93,10 +93,6 @@ Optional Arguments
 **-N**
     Invert the sense of what is inside and outside the terminator.  Only
     used with clipping (**-Gc**) and cannot be used together with **-B**.
-
-.. _-P:
-
-.. include:: explain_-P.rst_
 
 .. _-R:
 

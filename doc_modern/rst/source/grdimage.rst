@@ -22,7 +22,7 @@ Synopsis
 [ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
 [ |-J|\ **z**\ \|\ **-Z**\ *parameters* ]
 [ |-M| ] [ |-N| ]
-[ |-P| ] [ |-Q| ]
+[ |-Q| ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -171,10 +171,6 @@ Optional Arguments
 **-N**
     Do not clip the image at the map boundary (only relevant for
     non-rectangular maps).
-
-.. _-P:
-
-.. include:: explain_-P.rst_
 
 .. _-Q:
 

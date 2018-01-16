@@ -24,7 +24,7 @@ Synopsis
 [ |-G|\ *fill* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-L|\ [**+**\ \|\ **-**]\ *nodegrid* ]
 [ |-N| ]
-[ |-P| ] [ |-Q|\ *cut* ]
+[ |-Q|\ *cut* ]
 [ |-S|\ *search\_radius*\ [*unit*] ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
@@ -133,10 +133,6 @@ Optional Arguments
 
 **-N**
     Invert the sense of the test, i.e., clip regions where there is data coverage. 
-
-.. _-P:
-
-.. include:: explain_-P.rst_
 
 .. _-Q:
 

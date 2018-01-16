@@ -27,7 +27,6 @@ Synopsis
 [ |-L|\ *scalebar* ]
 [ |-M| ]
 [ |-N|\ *border*\ [/*pen*] ]
-[ |-P| ]
 [ |-Q| ]
 [ |-S|\ *fill*\ \|\ **c** ]
 [ |-T|\ *rose* ]
@@ -233,10 +232,6 @@ Optional Arguments
 
     a = All boundaries (1-3)
 
-.. _-P:
-
-.. include:: explain_-P.rst_
-
 .. _-Q:
 
 **-Q**
@@ -298,7 +293,7 @@ scale 0.1 inch/degree, use
    ::
 
     gmt coast -R-30/30/-40/40 -Jm0.1i -B5 -I1/1p,blue -N1/0.25p,-
-                -I2/0.25p,blue -W0.25p,white -Ggreen -Sblue -P -pdf africa
+                -I2/0.25p,blue -W0.25p,white -Ggreen -Sblue -pdf africa
 
 To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a
 Mercator map at scale 1 cm/degree, run
@@ -325,7 +320,7 @@ domain form the extents of these countries, use
 
    ::
 
-    gmt coast -JM6i -P -Baf -EGB,IT,FR+gblue+p0.25p,red -EES,PT,GR+gyellow -pdf map
+    gmt coast -JM6i -Baf -EGB,IT,FR+gblue+p0.25p,red -EES,PT,GR+gyellow -pdf map
 
 To extract a high-resolution coastline data table for Iceland to be used
 in your analysis, try

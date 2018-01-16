@@ -22,7 +22,6 @@ Synopsis
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-L|\ *low/high*\ \|\ **n**\ \|\ **N**\ \|\ **P**\ \|\ **p** ]
-[ |-P| ]
 [ |-Q|\ [*cut*\ [*unit*]][\ **+z**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smoothfactor* ]
@@ -153,10 +152,6 @@ Optional Arguments
     above *high*.  Alternatively, limit contours to negative (**n**)
     or positive (**p**) contours.  Use upper case **N** or **P** to
     include the zero contour.
-
-.. _-P:
-
-.. include:: explain_-P.rst_
 
 .. _-Q:
 

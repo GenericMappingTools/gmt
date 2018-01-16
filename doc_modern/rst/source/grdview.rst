@@ -19,7 +19,7 @@ Synopsis
 [ |-G|\ *drapefile* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]
 [ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
 [ **-Jz**\ \|\ **Z**\ *parameters* ]
-[ |-N|\ *level*\ [**+g**\ *fill*] ] [ **-P** ]
+[ |-N|\ *level*\ [**+g**\ *fill*] ]
 [ |-Q|\ *args*\ [**+m**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smooth* ]
@@ -112,10 +112,6 @@ Optional Arguments
     via the **+g** modifier,
     the frontal facade between the plane and the data perimeter is
     colored. See **-Wf** for setting the pen used for the outline. 
-
-.. _-P:
-
-.. include:: explain_-P.rst_
 
 .. _-Q:
 

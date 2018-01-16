@@ -24,7 +24,6 @@ Synopsis
 [ |-I|\ *intens* ]
 [ |-L|\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ]
 [ |-N|\ [**c**\ \|\ **r**] ]
-[ |-P| ]
 [ |-S|\ [*symbol*][\ *size*\ [**u**] ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
@@ -201,10 +200,6 @@ Optional Arguments
     boundary. The **-N** will turn off clipping and not plot repeating symbols.
     Use **-Nr** to turn off clipping but retain the plotting of such repeating symbols, or
     use **-Nc** to retain clipping but turn off plotting of repeating symbols.
-
-.. _-P:
-
-.. include:: explain_-P.rst_
 
 .. _-S:
 
@@ -418,20 +413,20 @@ See Also
         <a href="#close" title="Close" class="close">X</a>
         <h2>-L example</h2>
         <p>
-        ps=filler.ps</br>
         cat << EOF > t.txt</br>
         1 1</br>
         2 3</br>
         3 2</br>
         4 4</br>
         EOF</br>
-        gmt plot -R0/5/0/5 -JX3i -P -K -B0 t.txt -Gred -W2p -L+yb > $ps</br>
-        gmt plot -R -J -O -K -B0 t.txt -Gred -W2p -L+yt -X3.25i >> $ps</br>
-        gmt plot -R -J -O -K -B0 t.txt -Gred -W2p -L+xl -X-3.25i -Y3.25i >> $ps</br>
-        gmt plot -R -J -O -K -B0 t.txt -Gred -W2p -L+xr -X3.25i >> $ps</br>
-        gmt plot -R -J -O -K -B0 t.txt -Gred -W2p -L+y4 -X-3.25i -Y3.25i >> $ps</br>
-        gmt plot -R -J -O -K -B0 t.txt -Gred -W2p -L+x4.5 -X3.25i >> $ps</br>
-        gmt plot -R -J -O -T >> $ps</br>
+        gmt begin filler pdf</br>
+          gmt plot -R0/5/0/5 -JX3i -B t.txt -Gred -W2p -L+yb</br>
+          gmt plot -B t.txt -Gred -W2p -L+yt -X3.25i</br>
+          gmt plot -B t.txt -Gred -W2p -L+xl -X-3.25i -Y3.25i</br>
+          gmt plot -B t.txt -Gred -W2p -L+xr -X3.25i</br>
+          gmt plot -B t.txt -Gred -W2p -L+y4 -X-3.25i -Y3.25i</br>
+          gmt plot -B t.txt -Gred -W2p -L+x4.5 -X3.25i</br>
+        gmt end</br>
         </p>
     </div>
    </div>

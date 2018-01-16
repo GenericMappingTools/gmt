@@ -22,7 +22,6 @@ Synopsis
 [ |-F|\ [**i**][**q**][**r**] ]
 [ |-G|\ [**p**\|\ **n**][**+g**\ *fill*][**+z**\ *zero*][**+t**\ *t0/t1*] ]
 [ |-M|\ *size*\ [*u*][/*alpha*] ]
-[ |-P| ]
 [ |-Q| ]
 [ |-S|\ *sec_per_inch*\ [*unit*] ]
 [ |-T|\ [**+t**\ *n*][**+r**\ *reduce_vel*][**+s**\ *shift*] ]
@@ -154,10 +153,6 @@ Optional Arguments
             *alpha* = 0, multiply all traces by *size*. No unit is allowed.
 
             *alpha* > 0, multiply all traces by ``size*r^alpha``, r is the distance range in km.
-
-.. _-P:
-
-.. include:: ../../explain_-P.rst_
 
 .. _-Q:
 

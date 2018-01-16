@@ -21,7 +21,7 @@ Synopsis
 [ |-F|\ *color* ]
 [ |-G|\ *color* ]
 [ |-L| ]
-[ |-N| ] [ |-P| ]
+[ |-N| ]
 [ |-S|\ *symbol*/*scale*/*conf*/*font_size* ] [
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -211,10 +211,6 @@ Optional Arguments
 **-N**
     Do **NOT** skip symbols that fall outside the frame boundary
     specified by **-R**. [Default plots symbols inside frame only].
-
-.. _-P:
-
-.. include:: ../../explain_-P.rst_
 
 .. _-U:
 

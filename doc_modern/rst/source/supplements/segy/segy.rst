@@ -19,7 +19,7 @@ Synopsis
 |-F|\ [*color*] |-W|
 [ |-C|\ *clip* ]
 [ |-E|\ *error* ] [ |-I| ] [ |-L|\ *nsamp* ]
-[ |-M|\ *ntrace* ] [ |-N| ] [ |-P| ]
+[ |-M|\ *ntrace* ] [ |-N| ]
 [ |-Q|\ *<mode><value>* ]
 [ |-S|\ *header* ]
 [ |-T|\ *filename* ]
@@ -137,10 +137,6 @@ Optional Arguments
 
 **-N**
     Normalize trace by dividing by rms amplitude over full trace length.
-
-.. _-P:
-
-.. include:: ../../explain_-P.rst_
 
 .. _-Q:
 

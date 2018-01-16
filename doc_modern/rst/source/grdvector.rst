@@ -18,7 +18,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-G|\ *fill* ]
 [ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
-[ |-N| ] [ |-P| ] [ |-Q|\ *parameters* ]
+[ |-N| ] [ |-Q|\ *parameters* ]
 [ |SYN_OPT-R| ]
 [ |-S|\ [**i**\ \|\ **l**\ ]\ *scale* ]
 [ |-T| ]
@@ -97,10 +97,6 @@ Optional Arguments
 
 **-N**
     Do NOT clip vectors at map boundaries [Default will clip]. 
-
-.. _-P:
-
-.. include:: explain_-P.rst_
 
 .. _-Q:
 

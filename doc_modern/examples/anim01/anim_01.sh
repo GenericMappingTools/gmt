@@ -17,7 +17,7 @@ cat << EOF > pre.sh
 gmt math -T0/360/20 T SIND = sin_point.txt
 gmt math -T0/360/2 T SIND = sin_curve.txt
 gmt begin
-	gmt psbasemap -R0/360/-1.2/1.6 -JX3.5i/1.65i -P -X0.35i -Y0.25i \
+	gmt psbasemap -R0/360/-1.2/1.6 -JX3.5i/1.65i -X0.35i -Y0.25i \
 	-BWSne+glightgreen -Bxa90g90f30+u\\312 -Bya0.5f0.1g1 --FONT_ANNOT_PRIMARY=9p
 gmt end
 EOF
@@ -26,7 +26,7 @@ cat << EOF > main.sh
 gmt begin
 #	Plot smooth blue curve and dark red dots at all angle steps so far
 	last=\`gmt math -Q \${GMT_MOVIE_FRAME} 10 MUL =\`
-	gmt convert sin_curve.txt -Z0:\${last} | gmt psxy -W1p,blue -R0/360/-1.2/1.6 -JX3.5i/1.65i -P -X0.35i -Y0.25i
+	gmt convert sin_curve.txt -Z0:\${last} | gmt psxy -W1p,blue -R0/360/-1.2/1.6 -JX3.5i/1.65i -X0.35i -Y0.25i
 	gmt convert sin_point.txt -Z0:\${GMT_MOVIE_FRAME} | gmt psxy -Sc0.1i -Gdarkred
 #	Plot bright red dot at current angle and annotate
 	gmt psxy -Sc0.1i -Gred <<< "\${GMT_MOVIE_VAL1} \${GMT_MOVIE_VAL2}"

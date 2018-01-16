@@ -24,7 +24,7 @@ Synopsis
 [ |-L|\ [**i**][*gap*] ]
 [ |-M| ]
 [ |-N|\ [**p**\ \|\ *dpi* ]]
-[ |-P| ] [ |-Q| ]
+[ |-Q| ]
 [ |SYN_OPT-R| ]
 [ |-S| ]
 [ |SYN_OPT-U| ]
@@ -194,10 +194,6 @@ Optional Arguments
     To preferentially draw color rectangles (e.g., for discrete colors), append **p**.
     Otherwise we will preferentially draw images (e.g., for continuous colors).
     Optionally append effective dots-per-inch for rasterization of color scales [600].
-
-.. _-P:
-
-.. include:: explain_-P.rst_
 
 .. _-Q:
 

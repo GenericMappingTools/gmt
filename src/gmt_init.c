@@ -561,6 +561,14 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 }
 
 /*! . */
+GMT_LOCAL void gmtinit_setautopagesize (struct GMT_CTRL *GMT) {
+	/* In GMT modern mode we use the largest possible square page, portrait mode, and then crop automatically */
+	GMT->current.setting.ps_page_size[0] = GMT->current.setting.ps_page_size[1] = 32767;	/* Max area in pixels */
+	GMT->current.setting.ps_media = -USER_MEDIA_OFFSET;
+	GMT->current.setting.ps_orientation = PSL_PORTRAIT;
+}
+
+/*! . */
 GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double out_wesn[], bool get_R) {
 	/* If user gives -Re|f|k|M|n<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][r] then we must
 	 * call GMT_mapproject to convert this to geographic degrees.
@@ -5108,13 +5116,18 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	/* PS_PAGE_COLOR */
 	error += gmt_getrgb (GMT, "white", GMT->current.setting.ps_page_rgb);
 	/* PS_PAGE_ORIENTATION */
-	GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
 	/* PS_MEDIA */
-	i = gmtinit_key_lookup ("a4", GMT_media_name, GMT_N_MEDIA);
-	/* Use the specified standard format */
-	GMT->current.setting.ps_media = i;
-	GMT->current.setting.ps_page_size[0] = GMT_media[i].width;
-	GMT->current.setting.ps_page_size[1] = GMT_media[i].height;
+	if (GMT->current.setting.run_mode == GMT_MODERN) {
+		gmtinit_setautopagesize (GMT);
+	}
+	else {
+		GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
+		i = gmtinit_key_lookup ("a4", GMT_media_name, GMT_N_MEDIA);
+		/* Use the specified standard format */
+		GMT->current.setting.ps_media = i;
+		GMT->current.setting.ps_page_size[0] = GMT_media[i].width;
+		GMT->current.setting.ps_page_size[1] = GMT_media[i].height;
+	}
 	/* PS_SCALE_X */
 	GMT->current.setting.ps_magnify[GMT_X] = 1;
 	/* PS_SCALE_Y */
@@ -5266,13 +5279,17 @@ void gmtinit_conf_US (struct GMT_CTRL *GMT) {
 	strcpy (GMT->current.setting.ps_encoding.name, "Standard+");
 	gmtinit_load_encoding (GMT);
 	/* PS_MEDIA */
-	case_val = gmt_hash_lookup (GMT, "PS_MEDIA", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
-	i = gmtinit_key_lookup ("letter", GMT_media_name, GMT_N_MEDIA);
-	/* Use the specified standard format */
-	GMT->current.setting.ps_media = i;
-	GMT->current.setting.ps_page_size[0] = GMT_media[i].width;
-	GMT->current.setting.ps_page_size[1] = GMT_media[i].height;
+	if (GMT->current.setting.run_mode == GMT_MODERN)
+		gmtinit_setautopagesize (GMT);
+	else {
+		case_val = gmt_hash_lookup (GMT, "PS_MEDIA", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
+		if (case_val >= 0) GMT_keywords_updated[case_val] = true;
+		i = gmtinit_key_lookup ("letter", GMT_media_name, GMT_N_MEDIA);
+		/* Use the specified standard format */
+		GMT->current.setting.ps_media = i;
+		GMT->current.setting.ps_page_size[0] = GMT_media[i].width;
+		GMT->current.setting.ps_page_size[1] = GMT_media[i].height;
+	}
 	/* TIME_WEEK_START */
 	case_val = gmt_hash_lookup (GMT, "TIME_WEEK_START", keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 	if (case_val >= 0) GMT_keywords_updated[case_val] = true;
@@ -5953,17 +5970,17 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'K':	/* Append-more-PostScript-later */
 
-			gmt_message (GMT, "\t-K Allow for more plot code to be appended later.\n");
+			gmt_message (GMT, "\t-K Allow for more plot code to be appended later [CLASSIC MODE ONLY].\n");
 			break;
 
 		case 'O':	/* Overlay plot */
 
-			gmt_message (GMT, "\t-O Set Overlay plot mode, i.e., append to an existing plot.\n");
+			gmt_message (GMT, "\t-O Set Overlay plot mode, i.e., append to an existing plot [CLASSIC MODE ONLY].\n");
 			break;
 
 		case 'P':	/* Portrait or landscape */
 
-			gmt_message (GMT, "\t-P Set Portrait page orientation [%s].\n", GMT_choice[GMT->current.setting.ps_orientation]);
+			gmt_message (GMT, "\t-P Set Portrait page orientation [%s]; [CLASSIC MODE ONLY].\n", GMT_choice[GMT->current.setting.ps_orientation]);
 			break;
 
 		case 'S':	/* CarteSian Region option */
@@ -8775,6 +8792,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT_COMPAT_TRANSLATE ("PS_MEDIA");
 			break;
 		case GMTCASE_PS_MEDIA:
+			if (GMT->current.setting.run_mode == GMT_MODERN && !strcmp (lower_value, "auto")) {
+				gmtinit_setautopagesize (GMT);
+				break;
+			}
 			manual = false;
 			len--;
 			if (lower_value[len] == '-') {	/* Manual Feed selected */
@@ -11574,7 +11595,7 @@ GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_O
 		if (opt->option == 'O' || opt->option == 'K') return GMT_NOERROR;	/* Cannot be a one-liner if -O or -K are involved */
 	/* No -O -K present, so go ahead and check */
 	for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-		if (strlen (opt->arg) < 2) continue;	/* ps is the shortest format extension */
+		if (strlen (opt->arg) < 1) continue;	/* ps is the shortest format extension */
 		sprintf (figure, "%c%s", opt->option, opt->arg);	/* So -png,jpg, which would parse as -p with arg ng,jpg, are reunited to png,jpg */
 		if ((c = strchr (figure, ','))) c[0] = 0;	/* Chop off other format for the initial id test */
 		if ((k = gmt_get_graphics_id (API->GMT, figure)) == GMT_NOTSET) continue;	/* Not a quicky one-liner option */
@@ -11601,6 +11622,7 @@ GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_O
 				return GMT_NOTSET;
 			}
 			API->GMT->current.setting.run_mode = GMT_MODERN;
+			gmtinit_setautopagesize (API->GMT);
 			API->GMT->current.ps.oneliner = true;	/* Special flag */
 			API->GMT->hidden.func_level--;	/* Restore to what we had */
 			return GMT_NOERROR;	/* All set */
@@ -13600,8 +13622,14 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'P':
-			i += GMT_more_than_once (GMT, GMT->common.P.active);
-			GMT->common.P.active = true;
+			if (GMT->current.setting.run_mode == GMT_CLASSIC) {
+				i += GMT_more_than_once (GMT, GMT->common.P.active);
+				GMT->common.P.active = true;
+			}
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -%c is not a recognized common option in GMT modern mode\n", option);
+				return (1);
+			}
 			break;
 
 		case 'Q':
@@ -14542,7 +14570,7 @@ int gmtlib_set_current_figure (struct GMTAPI_CTRL *API, char *prefix, int this_k
 }
 
 int gmt_get_current_figure (struct GMTAPI_CTRL *API) {
-	/* Write the current figure number and prefix to the gmt.current file */
+	/* Get the current figure number and prefix from the gmt.current file */
 	FILE *fp = NULL;
 	int fig_no = 0;
 	char file[PATH_MAX] = {""};

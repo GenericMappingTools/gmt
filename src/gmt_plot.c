@@ -6170,6 +6170,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Running in PS mode %s\n", ps_mode[GMT->current.setting.run_mode]);
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Write PS to hidden gmt_#.ps- file.  No -O -K allowed */
 		char *verb[2] = {"Create", "Append to"};
+		bool wants_PS;
 		if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {	/* Get hidden file name for PS */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No workflow directory\n");
 			GMT_exit (GMT, GMT_ERROR_ON_FOPEN); return NULL;
@@ -6181,9 +6182,22 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		}
 		O_active = (k) ? true : false;	/* -O is determined by presence or absence of hidden PS file */
 		/* Determine paper size */
-	
-		if (O_active == false && !gmtlib_fig_is_ps (GMT))	/* Don't need -P since we will do -A */
-			media_size[GMT_X] = media_size[GMT_Y] = MAX(media_size[GMT_X], media_size[GMT_Y]);
+		wants_PS = gmtlib_fig_is_ps (GMT);	/* True if we have requested a PostScript output format */
+		if (wants_PS && media_size[GMT_X] > 32766.9) {	/* Cannot use "auto" if requesting a PostScript file */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Must specify a paper size when requesting a PostScript file\n");
+			if (GMT->current.setting.proj_length_unit == GMT_INCH) {	/* Use US settings */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Changing paper size to US Letter, but we cannot know if this is adequate for your plot; use PS_MEDIA.\n");
+				media_size[GMT_X] = 612.0; media_size[GMT_Y] = 792.0;
+			}
+			else {	/* Use SI settings */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Changing paper size to A4, but we cannot know if this is adequate for your plot.\n");
+				media_size[GMT_X] = 595.0; media_size[GMT_Y] = 842.0;
+			}
+			if ((((GMT->current.map.width + GMT->current.setting.map_origin[GMT_X]) * 72) > media_size[GMT_X]) && GMT->current.setting.ps_orientation == PSL_PORTRAIT) {
+				GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Also changing to landscape orientation based on plot dimensions but again not sure.\n");
+			}
+		}
 	}
 	else if ((Out = GMT_Find_Option (GMT->parent, '>', options))) {	/* Want to use a specific output file */
 		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */

@@ -20,7 +20,7 @@ Synopsis
 [ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*]] ]
 [ |-F|\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l**\|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **+z**\ [*format*]] ] 
 [ |-G|\ *color* ]
-[ |-L| ] [ |-M| ] [ |-N| ] [ |-P| ]
+[ |-L| ] [ |-M| ] [ |-N| ]
 [ |-Q|\ **l**\ \|\ **u** ]
 [ |-T|\ **o**\ \|\ **O**\ \|\ **c**\ \|\ **C** ] [
 [ |-W|\ *pen* ]
@@ -198,10 +198,6 @@ Optional Arguments
 **-N**
     Do NOT clip text at map boundaries [Default will clip]. 
 
-.. _-P:
-
-.. include:: explain_-P.rst_
-
 .. _-Q:
 
 **-Q**\ **l**\ \|\ **u**
@@ -271,13 +267,13 @@ file text.txt on a Mercator plot with the given specifications, use
 
    ::
 
-    gmt text text.txt -R-30/30/-10/20 -Jm0.1i -P -F+f18p,Helvetica,-=0.5p,red -B5 -pdf plot
+    gmt text text.txt -R-30/30/-10/20 -Jm0.1i -F+f18p,Helvetica,-=0.5p,red -B5 -pdf plot
 
 To plot a text at the upper left corner of a 10 cm map
 
    ::
 
-    echo TopLeft | gmt text -R1/10/1/10 -JX10 -F+cTL -P -pdf plot
+    echo TopLeft | gmt text -R1/10/1/10 -JX10 -F+cTL -pdf plot
 
 To add a typeset figure caption for a 3-inch wide illustration, use
 

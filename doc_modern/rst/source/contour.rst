@@ -23,7 +23,6 @@ Synopsis
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
 [ |-I| ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-L|\ *pen* ] [ |-N| ]
-[ |-P| ]
 [ |-Q|\ [*cut*\ [*unit*]][\ **+z**] ]
 [ |-S|\ [\ *p*\ \|\ *t*] ]
 [ |-T|\ [**+\|-**][**+a**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
@@ -166,10 +165,6 @@ Optional Arguments
 **-N**
     Do NOT clip contours or image at the boundaries [Default will clip
     to fit inside region **-R**].
-
-.. _-P:
-
-.. include:: explain_-P.rst_
 
 .. _-Q:
 

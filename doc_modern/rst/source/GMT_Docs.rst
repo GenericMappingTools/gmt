@@ -460,14 +460,14 @@ While pondering these facts, we have also started to gain experience with the MA
 toolboxes and the preliminary design of the Python package. We were noticing that
 the resulting scripts looked too much like the GMT shell command-line versions, setting
 users up for a continuation of the same rookie errors. 
-The solution to this conundrum was to introduce different run modes:
+The solution to this conundrum was to introduce different *run* modes:
 Starting with GMT 6 we introduce a new operating *mode* for GMT named *modern*.  In contrast
 to the *classic* (and only) mode available in earlier versions 1-5, the *modern* mode
 was designed to eliminate some of the hardest aspects of learning and using GMT.
-Depending on how GMT is started it will either be running in *classic*  or *modern* mode.
+Depending on how GMT is started it will either be running in *classic* or *modern* mode.
 Classic mode is the GMT scripting in use for decades and it will remain the default mode for
 command-line work. The *modern* mode invokes simpler rules that eliminate the possibility
-of the listed rookie errors and simplify scripting considerably across all interfaces.
+of the listed rookie errors and simplifies scripting considerably across all interfaces.
 It also imposes a structure and hence not every single classic script can be represented in
 modern mode.  Consequently, modern mode is less flexible but much easier to use, and we expect
 it will serve the needs of almost all GMT users.  We strongly encourage new users to use the
@@ -475,10 +475,10 @@ modern mode.
 
 To defeat the rookie errors listed above, here are the features of *modern* mode:
 
-#. The **-O** and **-K** options have been retired.
-#. Modules no longer write *PostScript* to standard output that the users must redirect to files.
+#. The **-O** and **-K** options have been removed.
+#. Modules no longer write *PostScript* to standard output that the users must manage.
    Instead, they write to hidden temporary files.  Checking the status of these files
-   is what allows us to know if *PostScript* should be appended or if we are starting
+   is what allows GMT to know if *PostScript* should be appended or if we are starting
    a new plot.
 #. The *modern* mode runs the entire workflow in a unique temporary directory, hence
    numerous scripts can execute simultaneously without interfering, and we can use
@@ -841,7 +841,7 @@ Standardized command line options
 ---------------------------------
 
 Most of the programs take many of the same arguments such as those related
-to setting the data region, the map projection, etc. The 26 switches in
+to setting the data region, the map projection, etc. The 23 switches in
 Table :ref:`switches <tbl-switches>` have the same meaning in all the programs (although
 some programs may not use all of them). These options will be described
 here as well as in the manual pages, as is vital that you understand how
@@ -855,8 +855,6 @@ importance (some are used a lot more than others).
 | **-B**   | Define tick marks, annotations, and labels for basemaps and axes   |
 +----------+--------------------------------------------------------------------+
 | **-J**   | Select a map projection or coordinate transformation               |
-+----------+--------------------------------------------------------------------+
-| **-P**   | Select Portrait plot orientation [Default is landscape]            |
 +----------+--------------------------------------------------------------------+
 | **-R**   | Define the extent of the map/plot region                           |
 +----------+--------------------------------------------------------------------+
@@ -1593,32 +1591,6 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
    :align: center
 
    Custom and irregular annotations, tick-marks, and gridlines.
-
-
-Portrait plot orientation: The **-P** option
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The **-P** option selects Portrait plotting mode [14]_. In general, a
-plot has an *x*-axis increasing from left to right and a *y*-axis
-increasing from bottom to top. If the paper is turned so that the long
-dimension of the paper is parallel to the *x*-axis then the plot is said
-to have *Landscape* orientation. If the long dimension of the paper
-parallels the *y*-axis the orientation is called *Portrait* (think of
-taking pictures with a camera and these words make sense). The default
-Landscape orientation is obtained by translating the origin in the
-*x*-direction (by the width of the chosen paper :ref:`PS_MEDIA <PS_MEDIA>`) and then
-rotating the coordinate system counterclockwise by 90. By default the
-:ref:`PS_MEDIA <PS_MEDIA>` is set to Letter (or A4 if SI is chosen); this value must
-be changed when using different media, such as 11" x 17" or large format
-plotters (Figure :ref:`Plot orientation <P_option>`).
-
-.. _P_option:
-
-.. figure:: /_images/GMT_-P.*
-   :width: 500 px
-   :align: center
-
-   Users can specify Landscape [Default] or Portrait -P) orientation.
 
 
 Timestamps on plots: The **-U** option

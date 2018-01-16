@@ -19,7 +19,7 @@ meca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
 [ |-E|\ *fill*]
 [ |-F|\ *mode*\ [*args*] ] [ |-G|\ *fill*] [ |-L|\ [*pen*\ ] ]
 [ |-M| ]
-[ |-N| ] [ |-P| ]
+[ |-N| ]
 [ |-S|\ *<format><scale>*\ [/**d**]]
 [ |-T|\ *num\_of\_plane*\ [*pen*\ ] ]
 [ |SYN_OPT-U| ]
@@ -311,10 +311,6 @@ Optional Arguments
 **-N**
     Does **not** skip symbols that fall outside frame boundary specified
     by **-R** [Default plots symbols inside frame only].
-
-.. _-P:
-
-.. include:: ../../explain_-P.rst_
 
 .. _-T:
 

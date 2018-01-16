@@ -24,7 +24,7 @@ Synopsis
 [ |-I|\ [**o**\ \|\ **O**] ]
 [ |-L|\ *pen* ] 
 [ |-N|\ [*mode*][**+p**\ *pen*] ]
-[ |-P| ] [ |-Q|\ **r** ]
+[ |-Q|\ **r** ]
 [ |SYN_OPT-R| ]
 [ |-S| ]
 [ |SYN_OPT-U| ]
@@ -138,10 +138,6 @@ Optional Arguments
     * 2 = LMS mode and scale.
 
     The **-N** option may be repeated to draw several of these curves.
-
-.. _-P:
-
-.. include:: explain_-P.rst_
 
 .. _-Q:
 

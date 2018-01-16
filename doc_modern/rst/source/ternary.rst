@@ -22,7 +22,6 @@ Synopsis
 [ |-L|\ *a*\ /*b*\ /*c* ]
 [ |-M| ]
 [ |-N| ]
-[ |-P| ]
 [ |-S|\ [*symbol*][\ *size*\ [**u**] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -113,10 +112,6 @@ Optional Arguments
     Do NOT clip symbols that fall outside map border [Default plots points
     whose coordinates are strictly inside the map border only].
 
-.. _-P:
-
-.. include:: explain_-P.rst_
-
 .. _-R:
 
 **-R**\ *amin/amax/bmin/bmax/cmin/cmax*
@@ -188,7 +183,7 @@ specified labeling, tru
 
    ::
 
-    gmt ternary ternary.txt -R0/100/0/100/0/100 -JX6i -P -Xc -Baafg+l"Water component"+u" %"
+    gmt ternary ternary.txt -R0/100/0/100/0/100 -JX6i -Xc -Baafg+l"Water component"+u" %"
         -Bbafg+l"Air component"+u" %" -Bcagf+l"Limestone component"+u" %"
         -B+givory+t"Example data from MATLAB Central" -Sc0.1c -Ct.cpt -Y2i -LWater/Air/Limestone -pdf map
 

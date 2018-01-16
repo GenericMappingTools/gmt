@@ -23,7 +23,6 @@ Synopsis
 [ |-J|\ **X**\ *diameter* ]
 [ |-L|\ [\ *wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*\ ] ]
 [ |-M|\ *parameters* ]
-[ |-P| ]
 [ |-Q|\ *alpha* ]
 [ |-R|\ *r0*/*r1*/*az_0*/*az_1* ]
 [ |-S| ]
@@ -150,10 +149,6 @@ Optional Arguments
     using **-M** will add vector heads to all individual directions
     using the supplied attributes.
 
-.. _-P:
-
-.. include:: explain_-P.rst_
-
 .. _-Q:
 
 **-Q**\ *alpha* ]
@@ -255,7 +250,7 @@ azimuth, and shown in Portrait orientation, use:
 
     gmt rose fault_segments.az_r -R0/150/-90/90 -Bx50g25+l"Fault length"
                -Byg30 -B+t"Rose diagram" -JX6i -Ar10 -Glightblue
-               -W0.75p,red -Z0.001 -Em -P -T -: > half_rose.ps
+               -W0.75p,red -Z0.001 -Em -T -: -pdf half_rose
 
 To plot a full circle wind rose diagram of the data in the file
 lines.r_az, on a circle of diameter = 10 cm, grid going out to radius =

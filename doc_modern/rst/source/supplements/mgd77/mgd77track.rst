@@ -24,7 +24,6 @@ Synopsis
 [ |-G|\ **d**\ \|\ **t**\ \|\ **n**\ *gap* ]
 [ |-I|\ *ignore* ]
 [ |-L|\ *trackticks* ]
-[ |SYN_OPT-P| ]
 [ |-S|\ **a**\ *startdist*\ [**u**] ]
 [ |-S|\ **b**\ *stopdist*\ [**u**] ]
 [ |-T|\ **T**\ \|\ **t**\ \|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc* ]
@@ -127,10 +126,6 @@ Optional Arguments
     500 km (**k**) and 24 **h**\ (ours), with
     (**t**)ickmarks every 500 km and 6 hours. Alternatively you may use
     the modifiers **d** (days) and **n** (nautical miles).
-
-.. _-P:
-
-.. include:: ../../explain_-P.rst_
 
 .. _-S:
 
