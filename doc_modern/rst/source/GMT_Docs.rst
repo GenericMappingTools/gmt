@@ -451,7 +451,7 @@ have a pretty clear idea of what is difficult.
 Given its almost limitless capabilities, GMT has always had a fairly steep learning curve.
 The hardest aspects that have percolated to the top of the "rookie error" list include
 
-#. The GMT "cake-baking": Handling the use of **-O** and **-K** to manage *PostScript* overlays.
+#. The GMT "cake-baking": Handling the use of **-O**, **-K**, and **-P** to manage *PostScript* overlays.
 #. The *PostScript* redirection: Creating a new file versus appending to an existing file.
 #. Reusing the current region (**-R**) and projection (**-J**) in multi-step scripts by repeating **-R -J** everywhere.
 #. Converting the *PostScript* plot to more desirable graphic formats, such as PDF.
@@ -475,7 +475,7 @@ modern mode.
 
 To defeat the rookie errors listed above, here are the features of *modern* mode:
 
-#. The **-O** and **-K** options have been removed.
+#. The **-O**, **-K**, and **P** options have been removed.
 #. Modules no longer write *PostScript* to standard output that the users must manage.
    Instead, they write to hidden temporary files.  Checking the status of these files
    is what allows GMT to know if *PostScript* should be appended or if we are starting
@@ -486,7 +486,7 @@ To defeat the rookie errors listed above, here are the features of *modern* mode
    projection (**-J**) arguments.
 #. When the workflow ends, the hidden *PostScript* files are automatically completed
    and converted to the chosen graphics format [Default is PDF for command-line work].
-#. Unless a plain *PostScript* is the chosen graphics format, the **-P** option no longer needed.
+#. Page size is now automatically set regardless of size and properly cropped.
 
 Not only does the new rules remove the greatest obstacles to GMT learning, it greatly
 simplifies scripting by eliminating needless repetition of options and output filenames.  The

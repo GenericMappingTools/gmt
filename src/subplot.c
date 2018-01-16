@@ -1017,7 +1017,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, T, vfile) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			sprintf (command, "-R0/%g/0/%g -Jx1i -P -N -F+jBC+f%s %s -X%c%gi -Y%c%gi --GMT_HISTORY=false",
+			sprintf (command, "-R0/%g/0/%g -Jx1i -N -F+jBC+f%s %s -X%c%gi -Y%c%gi --GMT_HISTORY=false",
 				width, height, gmt_putfont (GMT, &GMT->current.setting.font_heading), vfile, xymode, GMT->current.setting.map_origin[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]);
 			if (Bopt[0] == ' ') strcat (command, Bopt);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot to pstext: %s\n", command);
@@ -1027,7 +1027,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 				Return (API->error);
 		}
 		else {	/* psxy will do, since nothing is plotted (except for possibly the canvas fill/outline) */
-			sprintf (command, "-R0/%g/0/%g -Jx1i -P -T -X%c%gi -Y%c%gi --GMT_HISTORY=false", width, height, xymode, GMT->current.setting.map_origin[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]);
+			sprintf (command, "-R0/%g/0/%g -Jx1i -T -X%c%gi -Y%c%gi --GMT_HISTORY=false", width, height, xymode, GMT->current.setting.map_origin[GMT_X], xymode, GMT->current.setting.map_origin[GMT_Y]);
 			if (Bopt[0]) strcat (command, Bopt);
 			GMT_Report (API, GMT_MSG_DEBUG, "Subplot to psxy: %s\n", command);
 			if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, command) != GMT_OK)	/* Plot the cancas with heading */
