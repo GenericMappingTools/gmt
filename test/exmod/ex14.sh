@@ -17,7 +17,7 @@ gmt begin ex14 ps
   # Sample along diagonal
   gmt grdtrack track -Gdata.nc -o2,3 > data.d
   gmt grdtrack track -Gtrend.nc -o2,3 > trend.d
-  gmt plot -Ra -JX6i/1.4i data.d -Wthick -Bx1 -By50 -BWSne -P
+  gmt plot -Ra -JX6i/1.4i data.d -Wthick -Bx1 -By50 -BWSne
   gmt plot trend.d -Wthinner,-
   gmt subplot begin 2x2 -M0.05i -Ff6i/6i -BWSne -Yh+0.4i
     # First draw network and label the nodes

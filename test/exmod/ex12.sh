@@ -10,7 +10,7 @@ gmt begin ex12 ps
   gmt subplot begin 2x2 -M0.05i -Fs3i/0 -SCb -SRl -R0/6.5/-0.2/6.5 -Jx3i -BWSne -T"Delaunay Triangulation"
   # First draw network and label the nodes
   gmt triangulate @Table_5_11.txt -M > net.xy
-  gmt plot net.xy -Wthinner -P -c1,1
+  gmt plot net.xy -Wthinner -c1,1
   gmt plot @Table_5_11.txt -Sc0.12i -Gwhite -Wthinnest
   gmt text @Table_5_11.txt -F+f6p+r
   # Then draw network and print the node values
