@@ -124,6 +124,9 @@ struct GREENSPLINE_CTRL {
 		bool active;
 		unsigned int mode;	/* 0 = got sigmas, 1 = got weights */
 	} W;
+	struct Z {	/* -Z undocumented debugging option */
+		bool active;
+	} Z;
 };
 
 #define SANDWELL_1987_1D		0
@@ -213,7 +216,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	/*
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-E[<misfittable>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-E[<misfitfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>[/<dz>]] [-C[n|r|v]<val>[+f<file>]] [-D<mode>] [-L] [-N<nodefile>] [-Q<az>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]][-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]%s[%s]\n\n",
@@ -589,6 +592,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				if (opt->arg[0] == 'w') Ctrl->W.mode = 1;	/* Got weights instead of sigmas */
 				break;
 #ifdef DEBUG
+			case 'Z':	/* Dump matrices */
+				Ctrl->Z.active = true;
+				break;
 			case '+':	/* Turn on TEST mode */
 				TEST = true;
 				break;
@@ -1260,8 +1266,11 @@ GMT_LOCAL void do_normalization (struct GMTAPI_CTRL *API, double **X, double *ob
 
 	uint64_t i;
 	double d, min = DBL_MAX, max = -DBL_MAX;
-
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalization mode: %d\n", mode);
+	char *type[4] = {"Remove mean", "Normalization mode: Remove %d-D linear trend\n", "Remove mean and normalize data", "Normalization mode: Remove %d-D linear trend and normalize data\n"};
+	if (mode % 2)
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, type[mode], dim);
+	else
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalization mode: %s\n", type[mode]);
 	if (dim == 1) {	/* 1-D trend or mean only */
 		do_normalization_1d (API, X, obs, n, mode, coeff);
 		return;
@@ -1365,6 +1374,17 @@ GMT_LOCAL double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, dou
 	return (C);
 }
 
+GMT_LOCAL void dump_system (double *A, double *b, uint64_t nm, char *string) {
+	/* Dump an A | b system to stderr for debugging */
+	uint64_t row, col, ij;
+	fprintf (stderr, "\n%s\n", string);
+	for (row = 0; row < nm; row++) {
+		ij = row * nm;
+		fprintf (stderr, "%12.6f", A[ij++]);
+		for (col = 1; col < nm; col++, ij++) fprintf (stderr, "\t%12.6f", A[ij]);
+		fprintf (stderr, "\t||\t%12.6f\n", b[row]);
+	}
+}
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -1391,7 +1411,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	double *v = NULL, *s = NULL, *b = NULL, *ssave = NULL, eig_max = 0.0, limit;
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL, *orig_obs = NULL;
 	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad;
-	double *A = NULL, *A_orig = NULL, r_min, r_max, err_sum = 0.0;
+	double *A = NULL, *A_orig = NULL, r_min, r_max, err_sum = 0.0, var_sum = 0.0;
 #ifdef DEBUG
 	double x0 = 0.0, x1 = 5.0;
 #endif
@@ -1432,7 +1452,6 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the greenspline main code ----------------------------*/
 
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	dimension = (Ctrl->D.mode == 0) ? 1 : ((Ctrl->D.mode == 5) ? 3 : 2);
 	gmt_M_memset (par,   N_PARAMS, double);
 	gmt_M_memset (norm,  GSP_LENGTH, double);
@@ -1530,16 +1549,6 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 
 		for (k = 0; k < dimension; k++) X[n][k] = in[k];	/* Get coordinates + optional weights (if -W) */
-		if (Ctrl->W.active) {	/* Planning a weighted solution */
-			if (Ctrl->W.mode == 0) {	/* Got sigma, must convert to weight */
-				err_sum += in[w_col] * in[w_col];	/* Sum up variance first */
-				X[n][dimension] = 1.0 / in[w_col];
-			}
-			else {	/* Got weight */
-				err_sum += pow (in[w_col], -2.0);	/* Sum up variance */
-				X[n][dimension] = in[w_col];
-			}
-		}
 		/* Check for duplicates */
 		skip = false;
 		for (i = 0; !skip && i < n; i++) {
@@ -1566,6 +1575,17 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		n_read++;
 		if (skip) continue;	/* Current point was a duplicate of a previous point */
 
+		if (Ctrl->W.active) {	/* Planning a weighted solution */
+			if (Ctrl->W.mode == 0) {	/* Got sigma, must convert to weight */
+				err_sum += in[w_col] * in[w_col];	/* Sum up variance first */
+				X[n][dimension] = 1.0 / in[w_col];
+			}
+			else {	/* Got weight */
+				err_sum += pow (in[w_col], -2.0);	/* Sum up variance */
+				X[n][dimension] = in[w_col];
+			}
+		}
+		var_sum += in[dimension] * in[dimension];	/* Sum up data variance */
 		obs[n++] = in[dimension];
 
 		if (n == n_alloc) {	/* Get more memory */
@@ -1741,8 +1761,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	/* Check for duplicates which would result in a singular matrix system; also update min/max radius */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Distance between closest constraints = %.12g]\n", r_min);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Distance between distant constraints = %.12g]\n", r_max);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Distance between the closest constraints = %.12g]\n", r_min);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Distance between most distant constraints = %.12g]\n", r_max);
 
 	if (n_duplicates) {	/* These differ in observation value so need to be averaged, medianed, or whatever first */
 		if (!Ctrl->C.active || gmt_M_is_zero (Ctrl->C.value)) {
@@ -1992,7 +2012,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	 */
 
 	mem = (double)nm * (double)nm * (double)sizeof (double);	/* In bytes */
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Square matrix requires %s\n", gmt_memory_use ((size_t)mem, 1));
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Square matrix A requires %s\n", gmt_memory_use ((size_t)mem, 1));
 	A = gmt_M_memory (GMT, NULL, nm * nm, double);
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Build linear system using %s\n", method[Ctrl->S.mode]);
@@ -2027,36 +2047,29 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-#if 0 /* Dump the A | b system */
-	fprintf (stderr, "Weight | Matrix row | obs\n");
-	for (row = 0; row < nm; row++) {
-		if (Ctrl->W.active)
-			fprintf (stderr, "%12.6f\t|\t", X[row][dimension]);
-		else
-			fprintf (stderr, "%12.6f\t|\t", 1.0);
-		ij = row * nm;
-		fprintf (stderr, "%12.6f", A[ij++]);
-		for (col = 1; col < nm; col++, ij++) fprintf (stderr, "\t%12.6f", A[ij]);
-		fprintf (stderr, "\t|\t%12.6f\n", obs[row]);
+	
+	if (Ctrl->Z.active) dump_system (A, obs, nm, "A Matrix row || obs");	/* Dump the A | b system under debug */
+	if (Ctrl->E.active) {	/* Needed A to evaluate misfit later as predict = A_orig * x */
+		A_orig = gmt_M_memory (GMT, NULL, nm * nm, double);
+		gmt_M_memcpy (A_orig, A, nm * nm, double);
 	}
-#endif
-	if (Ctrl->E.active) A_orig = A;	/* To evaluate misfit */
+	
 	if (Ctrl->W.active) {
 		/* Here we have requested an approximate fit instead of an exact interpolation.
 		 * For exact interpolation the weights do not matter, but here they do.  Since
 		 * we wish to solve via SVD we must convert our unweighted A*x = b linear system
-		 * to the weighted W*A*x = W*b whose normal equations are [A'*S*A]^(-1)*A'*S*b,
-		 * where S = W*W, the squared weights.  This is N*x = r where N = A'*S*A and
-		 * r = A'*S*b.  Thus, we do these multiplication and store the output in the
+		 * to the weighted W*A*x = W*b whose normal equations are [A'*S*A]*x = A'*S*b,
+		 * where S = W*W, the squared weights.  This is N*x = r, where N = A'*S*A and
+		 * r = A'*S*b.  Thus, we do these multiplication and store N and r in the
 		 * original A and obs vectors so that the continuation of the code can work as is.
 		 * Weighted solution idea credit: Leo Uieda.  Jan 14, 2018.
 		 */
 		
-		double *At = NULL, *AtS = NULL, *S = NULL;
+		double *At = NULL, *AtS = NULL, *S = NULL;	/* Need temporary work space */
 		At = gmt_M_memory (GMT, NULL, nm * nm, double);
 		AtS = gmt_M_memory (GMT, NULL, nm * nm, double);
 		S = gmt_M_memory (GMT, NULL, nm, double);
-		/* 1. Transpose A and set S */
+		/* 1. Transpose A and set diagolal matrix with squared weights (here a vector) S */
 		for (row = 0; row < nm; row++) {
 			S[row] = X[row][dimension] * X[row][dimension];	/* This is the diagonal squared weights (=1/sigma^2) matrix */
 			for (col = 0; col < nm; col++) {
@@ -2070,18 +2083,16 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			for (col = 0; col < nm; col++, ij++)
 				AtS[ij] = At[ij] * S[col];
 		}
-		/* 3. Compute r = AtS * obs (but we use S to hold r) */
-		gmt_matrix_matrix_mult (GMT, AtS, obs, nm, nm, 1, S);
-		/* 4. Compute N = AtS * A and store in At (which we call N) */
+		/* 3. Compute r = AtS * obs (but we recycle S to hold r) */
+		gmt_matrix_matrix_mult (GMT, AtS, obs, nm, nm, 1U, S);
+		/* 4. Compute N = AtS * A (but we recycle At to hold N) */
 		gmt_matrix_matrix_mult (GMT, AtS, A, nm, nm, nm, At);
-		/* Now free AtS and let "A" be N and "obs" be r; these are the weighted normal equations */
-		gmt_M_free (GMT, AtS);
-		if (!Ctrl->E.active) gmt_M_free (GMT, A);
-		A = At;
-		gmt_M_free (GMT, obs);
-		obs = S;
-		/* ---------- */
-		err_sum = sqrt (err_sum / nm);	/* Mean data variance */
+		/* Now free A, AtS and obs and let "A" be N and "obs" be r; these are the weighted normal equations */
+		gmt_M_free (GMT, A);	gmt_M_free (GMT, AtS);	gmt_M_free (GMT, obs);
+		A = At;	obs = S;
+		if (Ctrl->Z.active) dump_system (A, obs, nm, "Normal equation N row || r");
+
+		err_sum = sqrt (err_sum / nm);	/* Mean data uncertainty */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean data uncertainty is %g\n", err_sum);
 		if (Ctrl->C.mode == 3 && Ctrl->C.value == 0.0) {
 			Ctrl->C.value = err_sum;
@@ -2089,50 +2100,49 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 	}
 	
-	if (Ctrl->C.active) {		/* Solve using svd decomposition */
+	if (Ctrl->C.active) {		/* Solve using SVD */
 		int error;
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Solve linear equations by SVD\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Solve linear equations by Singular Value Decomposition\n");
 #ifndef HAVE_LAPACK
-		GMT_Report (API, GMT_MSG_VERBOSE, "Note: SVD solution without LAPACK will be very very slow.\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Note: SVD solution without LAPACK will be very, very slow.\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "We strongly recommend you install LAPACK and recompile GMT.\n");
 #endif
 		v = gmt_M_memory (GMT, NULL, nm * nm, double);
 		s = gmt_M_memory (GMT, NULL, nm, double);
 		if ((error = gmt_svdcmp (GMT, A, (unsigned int)nm, (unsigned int)nm, s, v)) != 0) Return (error);
-		if (Ctrl->C.movie) {	/* Keep copy of original eigenvalues */
+		if (Ctrl->C.movie) {	/* Keep copy of original singular values */
 			ssave = gmt_M_memory (GMT, NULL, nm, double);
 			gmt_M_memcpy (ssave, s, nm, double);
 		}
-		if (Ctrl->C.file) {	/* Save the eigen-values for study */
+		if (Ctrl->C.file) {	/* Save the singular values for study */
 			double *eig = gmt_M_memory (GMT, NULL, nm, double);
 			uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, nm, 2};
 			unsigned int col_type[3];
 			struct GMT_DATASET *E = NULL;
 			for (i = 0; i < nm; i++) eig[i] = fabs (s[i]);
 			if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for saving eigenvalues\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for saving singular values\n");
 				Return (API->error);
 			}
-			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 3, unsigned int);	/* Save previous x/y/z output col types */
-			GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
-			/* Sort eigenvalues into ascending order */
+			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 2, unsigned int);	/* Save previous x/y output col types */
+			GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
+			/* Sort singular values into ascending order */
 			gmt_sort_array (GMT, eig, nm, GMT_DOUBLE);
 			eig_max = eig[nm-1];
 			for (i = 0, j = nm-1; i < nm; i++, j--) {
 				E->table[0]->segment[0]->data[GMT_X][i] = i + 1.0;	/* Let 1 be x-value of the first eigenvalue */
-				//E->table[0]->segment[0]->data[GMT_Y][i] = (Ctrl->C.mode == 2) ? eig[j] / eig_max : eig[j];
 				E->table[0]->segment[0]->data[GMT_Y][i] = eig[j];
 			}
 			E->table[0]->segment[0]->n_rows = nm;
+			if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, "index\teigenvalue", E)) {
+				Return (API->error);
+			}
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->C.file, E) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			gmt_M_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 3, unsigned int);	/* Restore output col types */
-			if (Ctrl->C.mode == 2)
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Eigen-value ratios s(i)/s(0) saved to %s\n", Ctrl->C.file);
-			else
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Eigen-values saved to %s\n", Ctrl->C.file);
+			gmt_M_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 2, unsigned int);	/* Restore output col types */
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Eigen-values saved to %s\n", Ctrl->C.file);
 			gmt_M_free (GMT, eig);
 
 			if (Ctrl->C.value < 0.0) {	/* We are done */
@@ -2182,7 +2192,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	if (Ctrl->C.movie == 0) gmt_M_free (GMT, A);
 
 	if (Ctrl->E.active) {
-		double value, mean = 0.0, std = 0.0, rms = 0.0, dev, chi2, chi2_sum = 0, *y = NULL;
+		double value, mean = 0.0, std = 0.0, rms = 0.0, dev, chi2, chi2_sum = 0, pvar_sum = 0.0, *predicted = NULL;
 		uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, nm, dimension+3+Ctrl->W.active};
 		unsigned int m = 0;
 		struct GMT_DATASET *E = NULL;
@@ -2195,28 +2205,29 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			S = E->table[0]->segment[0];
 			S->n_rows = nm;
 		}
-		y = gmt_M_memory (GMT, NULL, nm, double);	/* To hold predictions */
-		gmt_matrix_matrix_mult (GMT, A_orig, alpha, nm, nm, 1, y);
+		predicted = gmt_M_memory (GMT, NULL, nm, double);	/* To hold predictions */
+		gmt_matrix_matrix_mult (GMT, A_orig, alpha, nm, nm, 1U, predicted);	/* predicted = A * alpha are normalized predictions at data points */
 		for (j = 0; j < nm; j++) {	/* For each data constraint */
-			y[j] = undo_normalization (X[j], y[j], normalize, norm, dimension);
-			dev = orig_obs[j] - y[j];
-			rms += dev * dev;
-			if (Ctrl->W.active) {
+			predicted[j] = undo_normalization (X[j], predicted[j], normalize, norm, dimension);	/* undo normalization first */
+			pvar_sum += predicted[j] * predicted[j];	/* Sum of predicted variance */
+			dev = orig_obs[j] - predicted[j];	/* Deviation between observed and predicted */
+			rms += dev * dev;	/* Accumulate rms sum */
+			if (Ctrl->W.active) {	/* If data had uncertainties we also compute the chi2 sum */
 				chi2 = pow (dev * X[j][dimension], 2.0);
 				chi2_sum += chi2;
 			}
 			
-			/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
+			/* Use Welford (1962) algorithm to compute mean and variance */
 			m++;
-			value = orig_obs[j] - y[j];
+			value = orig_obs[j] - predicted[j];
 			dev = value - mean;
 			mean += dev / m;
 			std += dev * (value - mean);
-			if (Ctrl->E.mode) {	
-				for (p = 0; p < dimension; p++)
+			if (Ctrl->E.mode) {	/* Store assessment for each observation in misfit table */
+				for (p = 0; p < dimension; p++)	/* Duplicate point coordinates */
 					S->data[p][j] = X[j][p];
 				S->data[p++][j] = orig_obs[j];
-				S->data[p++][j] = y[j];
+				S->data[p++][j] = predicted[j];
 				S->data[p][j]   = dev;
 				if (Ctrl->W.active)
 					S->data[++p][j] = chi2;
@@ -2228,14 +2239,14 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Misfit evaluation: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\tChi^2 = %g\n", nm, mean, std, rms, chi2_sum);
 		else
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Misfit evaluation: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\n", nm, mean, std, rms);
-		gmt_M_free (GMT, orig_obs);
-		gmt_M_free (GMT, y);
-		gmt_M_free (GMT, A_orig);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Variance evaluation: Data = %g\tModel = %g\tExplained = %5.1lf %%\n", var_sum, pvar_sum, 100.0 * pvar_sum / var_sum);
+		gmt_M_free (GMT, orig_obs);	gmt_M_free (GMT, predicted);	gmt_M_free (GMT, A_orig);
 		if (Ctrl->E.mode) {	/* Want to write out prediction errors */
-			char header[GMT_LEN64] = {"#x\t"};
+			char header[GMT_LEN64] = {""};
 			if (gmt_M_is_geographic (GMT, GMT_IN))
 				sprintf (header, "#lon\tlat\t");
 			else {
+				sprintf (header, "#x\t");
 				if (dimension > 1) strcat (header, "y\t");
 				if (dimension > 2) strcat (header, "z\t");
 			}
@@ -2348,9 +2359,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				Return (API->error);
 			for (k = 0; k < nm; k++) {
 				fprintf (stderr, "Eigen # %d\n", (int)k+1);
-				limit = (double)k;
-				/* Update solution for k eigenvalues only */
-				gmt_M_memcpy (s, ssave, nm, double);
+				limit = (double)k;	/* Update solution for k eigenvalues only */
+				gmt_M_memcpy (s, ssave, nm, double);	/* Restore original values before call */
 				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, &limit, 2);
 				for (row = 0; row < Grid->header->n_rows; row++) {
 					V[GMT_Y] = yp[row];
@@ -2392,7 +2402,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		else {
 			Rec->data = V;
 			for (layer = 0, nz_off = 0; layer < Z.nz; layer++, nz_off += nxy) {	/* Might be dummy loop of 1 layer unless 3-D */
-				int64_t col, row, p; /* On Windows 'for' index variables must be signed, so redefine these 3 inside this block only */
+				int64_t col, row, p; /* On Windows, the 'for' index variables must be signed, so redefine these 3 inside this block only */
 				double z_level = 0.0;
 				if (dimension == 3) z_level = gmt_M_col_to_x (GMT, layer, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
 #ifdef _OPENMP

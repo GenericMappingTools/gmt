@@ -55,8 +55,8 @@
 #define GMT_x_OPT	" [-x[[-]<n>]] "	/* Must add spaces and brackets here and place via %s since it may be blank */
 #define GMT_ADD_x_OPT	"x"
 #else	/* No Open-MP support */
+#define GMT_x_OPT	" "
 #define GMT_ADD_x_OPT	""
-#define GMT_x_OPT	""
 #endif
 
 /* For options needing a length or radius */

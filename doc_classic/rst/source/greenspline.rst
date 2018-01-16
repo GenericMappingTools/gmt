@@ -104,7 +104,7 @@ Optional Arguments
     eigenvalues whose ratio to the largest eigenvalue is less than *value*
     [Default uses Gauss-Jordan elimination to solve the linear system
     and fit the data exactly]. Optionally, append **+f**\ *file* to save the
-    eigenvalue ratios to the specified file for further analysis.
+    eigenvalues to the specified file for further analysis.
     Finally, if a negative *value* is given then **+f**\ *file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
     output is produced.  Specify **-Cv** to use the

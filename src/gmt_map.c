@@ -373,7 +373,7 @@ GMT_LOCAL bool central_meridian_not_set (struct GMT_CTRL *GMT) {
 
 GMT_LOCAL void set_default_central_meridian (struct GMT_CTRL *GMT) {
 	GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);	/* Not set at all, set to middle lon */
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Central meridian not given, default to %g\n", GMT->current.proj.pars[0]);
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Central meridian not given, default to %g\n", GMT->current.proj.pars[0]);
 }
 
 /*! . */
@@ -3264,7 +3264,7 @@ GMT_LOCAL void map_get_rotate_pole (struct GMT_CTRL *GMT, double lon1, double la
 	sincosd (plat, &GMT->current.proj.o_sin_pole_lat, &GMT->current.proj.o_cos_pole_lat);
 	map_pole_rotate_forward (GMT, lon1, lat1, &beta, &dummy);
 	GMT->current.proj.o_beta = -beta;
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Oblique Mercator pole is %.12g %.12g, with beta = %.12g\n", plon, plat, -beta);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Oblique Mercator pole is %.12g %.12g, with beta = %.12g\n", plon, plat, -beta);
 }
 
 /*! . */
@@ -5398,7 +5398,7 @@ GMT_LOCAL double map_vincenty_dist_meter (struct GMT_CTRL *GMT, double lonS, dou
 	} while (fabs (d - x) > VINCENTY_EPS && n_iter <= 50);
 	if (n_iter > VINCENTY_MAX_ITER) {
 		GMT->current.proj.n_geodesic_approx++;	/* Count inaccurate results */
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
 		s = M_PI;
 	}
 	else {
@@ -5408,7 +5408,7 @@ GMT_LOCAL double map_vincenty_dist_meter (struct GMT_CTRL *GMT, double lonS, dou
 		d = (x * 0.375 * x - 1.0) * x;
 		s = ((((sy * sy * 4.0 - 3.0) * (1.0 - e - e) * cz * d / 6.0 - e * cy) * d / 4.0 + cz) * sy * d + y) * c * r;
 		if (s > M_PI) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
 			s = M_PI;
 		}
 	}
@@ -6116,80 +6116,80 @@ GMT_LOCAL void map_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned
 		case GMT_CARTESIAN_DIST_PERIODIC:	/* Cartesian 2-D x,y data but with one or two periodic dimensions */
 			GMT->current.map.dist[type].func = &gmt_cartesian_dist_periodic;
 			GMT->current.map.azimuth_func = &map_az_backaz_cartesian;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Cartesian [periodic]\n", type_name[type]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Cartesian [periodic]\n", type_name[type]);
 			break;
 		case GMT_CARTESIAN_DIST:	/* Cartesian 2-D x,y data */
 			GMT->current.map.dist[type].func = &gmt_cartesian_dist;
 			GMT->current.map.azimuth_func = &map_az_backaz_cartesian;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Cartesian\n", type_name[type]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Cartesian\n", type_name[type]);
 			break;
 		case GMT_CARTESIAN_DIST2:	/* Cartesian 2-D x,y data, use r^2 instead of hypot */
 			GMT->current.map.dist[type].func = &map_cartesian_dist2;
 			GMT->current.map.azimuth_func = &map_az_backaz_cartesian;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Cartesian\n", type_name[type]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Cartesian\n", type_name[type]);
 			break;
 		case GMT_CARTESIAN_DIST_PROJ:	/* Cartesian distance after projecting 2-D lon,lat data */
 			GMT->current.map.dist[type].func = &gmt_cartesian_dist_proj;
 			GMT->current.map.azimuth_func = &map_az_backaz_cartesian_proj;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Cartesian after first projecting via -J\n", type_name[type]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Cartesian after first projecting via -J\n", type_name[type]);
 			break;
 		case GMT_CARTESIAN_DIST_PROJ2:	/* Cartesian distance after projecting 2-D lon,lat data, use r^2 instead of hypot  */
 			GMT->current.map.dist[type].func = &map_cartesian_dist_proj2;
 			GMT->current.map.azimuth_func = &map_az_backaz_cartesian_proj;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Cartesian after first projecting via -J\n", type_name[type]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Cartesian after first projecting via -J\n", type_name[type]);
 			break;
 		case GMT_DIST_M+GMT_FLATEARTH:	/* 2-D lon, lat data, but scale to Cartesian flat earth in meter */
 			GMT->current.map.dist[type].func = &map_flatearth_dist_meter;
 			GMT->current.map.azimuth_func  = &map_az_backaz_flatearth;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Flat Earth in %s\n", type_name[type], unit_name);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Flat Earth in %s\n", type_name[type], unit_name);
 			break;
 		case GMT_DIST_M+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in meter */
 			GMT->current.map.dist[type].func = &gmt_great_circle_dist_meter;
 			GMT->current.map.azimuth_func = &map_az_backaz_sphere;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and %s radius = %.4f m, in %s.\n",
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and %s radius = %.4f m, in %s.\n",
 				type_name[type], aux[choice], rad[GMT->current.setting.proj_mean_radius], GMT->current.proj.mean_radius, unit_name);
 			break;
 		case GMT_DIST_M+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in meter */
 			GMT->current.map.dist[type].func = GMT->current.map.geodesic_meter;
 			GMT->current.map.azimuth_func = GMT->current.map.geodesic_az_backaz;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using %s geodesics in %s\n", type_name[type], GEOD_TEXT[GMT->current.setting.proj_geodesic], unit_name);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be using %s geodesics in %s\n", type_name[type], GEOD_TEXT[GMT->current.setting.proj_geodesic], unit_name);
 			break;
 		case GMT_DIST_DEG+GMT_FLATEARTH:	/* 2-D lon, lat data, use Flat Earth distances in degrees */
 			GMT->current.map.dist[type].func = map_flatearth_dist_degree;
 			GMT->current.map.azimuth_func = &map_az_backaz_flatearth;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Flat Earth in %s\n", type_name[type], unit_name);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Flat Earth in %s\n", type_name[type], unit_name);
 			break;
 		case GMT_DIST_DEG+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in degrees */
 			GMT->current.map.dist[type].func = &gmtlib_great_circle_dist_degree;
 			GMT->current.map.azimuth_func = &map_az_backaz_sphere;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return lengths in %s.\n", unit_name,
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return lengths in %s.\n", unit_name,
 				type_name[type], aux[choice]);
 			break;
 		case GMT_DIST_DEG+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in degrees */
 			GMT->current.map.dist[type].func = &map_geodesic_dist_degree;
 			GMT->current.map.azimuth_func = GMT->current.map.geodesic_az_backaz;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using geodesics in %s\n", type_name[type], unit_name);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be using geodesics in %s\n", type_name[type], unit_name);
 			break;
 		case GMT_DIST_COS+GMT_GREATCIRCLE:	/* 2-D lon, lat data, and Green's function needs cosine of spherical distance */
 			GMT->current.map.dist[type].func = &map_great_circle_dist_cos;
 			GMT->current.map.azimuth_func = &map_az_backaz_sphere;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return cosine of spherical angles.\n",
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return cosine of spherical angles.\n",
 				type_name[type], aux[choice]);
 			break;
 		case GMT_DIST_COS+GMT_GEODESIC:	/* 2-D lon, lat data, and Green's function needs cosine of geodesic distance */
 			GMT->current.map.dist[type].func = &map_geodesic_dist_cos;
 			GMT->current.map.azimuth_func = GMT->current.map.geodesic_az_backaz;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using cosine of geodesic angle\n", type_name[type]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be using cosine of geodesic angle\n", type_name[type]);
 			break;
 		case GMT_DIST_M+GMT_LOXODROME:	/* 2-D lon, lat data, but measure distance along rhumblines in meter */
 			GMT->current.map.dist[type].func = &map_loxodrome_dist_meter;
 			GMT->current.map.azimuth_func  = &map_az_backaz_loxodrome;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be along loxodromes in meters\n", type_name[type]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be along loxodromes in meters\n", type_name[type]);
 			break;
 		case GMT_DIST_DEG+GMT_LOXODROME:	/* 2-D lon, lat data, but measure distance along rhumblines in degrees */
 			GMT->current.map.dist[type].func = &map_loxodrome_dist_degree;
 			GMT->current.map.azimuth_func = &map_az_backaz_loxodrome;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be along loxodromes with %s auxiliary latitudes and return lengths in degrees.\n",
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be along loxodromes with %s auxiliary latitudes and return lengths in degrees.\n",
 				type_name[type], aux[choice]);
 			break;
 		default:	/* Cannot happen unless we make a bug */
@@ -6467,7 +6467,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	T = &A->item[item+4];
 	if (T->active && T->interval == 0.0) T->interval = set_a ? d : f, T->generated = true;
 	
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-frame interval for axis %d item %d: d = %g  f = %g\n", axis, item, d, f);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Auto-frame interval for axis %d item %d: d = %g  f = %g\n", axis, item, d, f);
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

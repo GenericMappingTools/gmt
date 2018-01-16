@@ -3176,16 +3176,16 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	}
 
 	/* Tell user how we interpreted their first record */
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Source col types: (%s)\n", message);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Source col types: (%s)\n", message);
 
 	for (k = 0; k < col; k++)	/* Check if we can utilize what we learned about each physical column */
 		gmtio_assign_col_type_if_notset (GMT, k, type[k]);
 	gmt_M_free (GMT, type);
 	
 
-	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Tell user how we interpreted their first record */
+	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Tell user how we interpreted their first record */
 		static char *tt = " NYY";
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "ASCII source scanned: Numerical columns: %" PRIu64 ", Trailing text: %c, Record type: %s\n",
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "ASCII source scanned: Numerical columns: %" PRIu64 ", Trailing text: %c, Record type: %s\n",
 			*n_columns, tt[ret_val], flavor[ret_val]);
 		if (GMT->common.i.select && GMT->common.i.n_cols > 0) {	/* Made a selection with -i */
 			message[0] = '\0';
@@ -3201,7 +3201,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 				if (pos) strcat (message, ",");
 				strcat (message, "String");
 			}
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Selected col types: (%s)\n", message);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Selected col types: (%s)\n", message);
 		}
 		if (GMT->common.o.select) {
 			message[0] = '\0';
@@ -3218,7 +3218,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 				if (pos) strcat (message, ",");
 				strcat (message, "String");
 			}
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Output col types: (%s)\n", message);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Output col types: (%s)\n", message);
 		}
 	}
 	

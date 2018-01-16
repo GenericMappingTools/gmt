@@ -1680,7 +1680,7 @@ void gmt_fft_initialization (struct GMT_CTRL *GMT) {
 		/* one-time initialization required to use FFTW3 threads */
 		if ( fftwf_init_threads() ) {
 			fftwf_plan_with_nthreads(n_cpu);
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Initialize FFTW with %d threads.\n", n_cpu);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Initialize FFTW with %d threads.\n", n_cpu);
 		}
 	}
 
