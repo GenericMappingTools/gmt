@@ -305,8 +305,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 			case 'W':	/* Expect data weights in last two columns */
 				Ctrl->W.active = true;
 				if (opt->arg[0] == 'w') Ctrl->W.mode = GPS_GOT_W;	/* Got weights instead of sigmas */
-				GMT_Report (API, GMT_MSG_VERBOSE, "The -W option is not stable.  We are trying to determine if this is a bug or feature.\n");
-				GMT_Report (API, GMT_MSG_VERBOSE, "Users beware.  Please compare to results obtained without -W for sanity checking.\n");
 				break;
 #ifdef DEBUG
 			case 'Z':	/* Dump matrices */
