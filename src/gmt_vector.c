@@ -1245,7 +1245,14 @@ void gmt_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3
 #endif
 
 void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_rowsB, uint64_t n_colsB, double *C)
-{	/* Plain matrix multiplication, no speed up; space must exist */
+{
+#ifdef HAVE_LAPACK
+	double one = 1.0, zero = 0.0;
+	gmt_M_unused(GMT);
+	gmt_M_memset (C, n_rowsA * n_colsB, double);
+	cblas_dgemm (CblasRowMajor, CblasNoTrans, CblasNoTrans, (int)n_rowsA, (int)n_colsB, (int)n_rowsB, one, A, (int)n_rowsB, B, (int)n_colsB, zero, C, (int)n_colsB);
+#else
+	/* Plain matrix multiplication, no speed up; space must exist */
 	uint64_t row, col, k, a_ij, b_ij, c_ij, n_colsA = n_rowsB;
 	gmt_M_unused(GMT);
 	for (row = 0; row < n_rowsA; row++) {
@@ -1258,6 +1265,7 @@ void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_
                 		C[c_ij] += A[a_ij+k]*B[b_ij+k*n_colsB];
 		}
 	}
+#endif
 }
 
 void gmt_make_rot_matrix2 (struct GMT_CTRL *GMT, double E[3], double w, double R[3][3]) {

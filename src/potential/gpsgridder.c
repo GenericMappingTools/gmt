@@ -824,17 +824,16 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		double *At = NULL, *AtS = NULL, *S = NULL;	/* Need temporary work space */
 		uint64_t ji;
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Form weighted normal equations A'WAx = A'Wb\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Form weighted normal equations A'SAx = A'Sb\n");
 		At  = gmt_M_memory (GMT, NULL, n_params * n_params, double);
 		AtS = gmt_M_memory (GMT, NULL, n_params * n_params, double);
 		S   = gmt_M_memory (GMT, NULL, n_params, double);
 		/* 1. Transpose A and set diagonal matrix with squared weights (here a vector) S */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create W diagonal matrix\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create S = W'*W diagonal matrix and A'\n");
 		for (row = 0; row < n_uv; row++) {	/* Set S, the diagonal squared weights (=1/sigma^2) matrix */
 			S[row]      = X[row][GMT_WU] * X[row][GMT_WU];
 			S[row+n_uv] = X[row][GMT_WV] * X[row][GMT_WV];
 		}
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Transpose A\n");
 		for (row = 0; row < n_params; row++) {	/* Transpose A */
 			for (col = 0; col < n_params; col++) {
 				ij = row * n_params + col;
@@ -843,16 +842,16 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			}
 		}
 		/* 2. Compute AtS = At * S.  This means scaling all terms in At columns by the corresponding S entry */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute A' * W\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute A' * S\n");
 		for (row = ij = 0; row < n_params; row++) {
 			for (col = 0; col < n_params; col++, ij++)
 				AtS[ij] = At[ij] * S[col];
 		}
 		/* 3. Compute r = AtS * obs (but we recycle S to hold r) */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute r = A'*W*b\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute r = A'*S*b\n");
 		gmt_matrix_matrix_mult (GMT, AtS, obs, n_params, n_params, 1U, S);
 		/* 4. Compute N = AtS * A (but we recycle At to hold N) */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute N = A'*W*A\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute N = A'*S*A\n");
 		gmt_matrix_matrix_mult (GMT, AtS, A, n_params, n_params, n_params, At);
 		/* Now free A, AtS and obs and let "A" be N and "obs" be r; these are the weighted normal equations */
 		gmt_M_free (GMT, A);	gmt_M_free (GMT, AtS);	gmt_M_free (GMT, obs);
@@ -1205,6 +1204,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, X);
 	gmt_M_free (GMT, u);
 	gmt_M_free (GMT, v);
+	if (Ctrl->W.active) gmt_M_free (GMT, obs);
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done\n");
 
