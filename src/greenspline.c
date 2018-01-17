@@ -2071,7 +2071,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		At = gmt_M_memory (GMT, NULL, nm * nm, double);
 		AtS = gmt_M_memory (GMT, NULL, nm * nm, double);
 		S = gmt_M_memory (GMT, NULL, nm, double);
-		/* 1. Transpose A and set diagolal matrix with squared weights (here a vector) S */
+		/* 1. Transpose A and set diagonal matrix with squared weights (here a vector) S */
 		for (row = 0; row < nm; row++) {
 			S[row] = X[row][dimension] * X[row][dimension];	/* This is the diagonal squared weights (=1/sigma^2) matrix */
 			for (col = 0; col < nm; col++) {

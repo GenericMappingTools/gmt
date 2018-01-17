@@ -79,6 +79,9 @@ struct GPSGRIDDER_CTRL {
 		bool active;
 		unsigned int mode;	/* 0 = got sigmas, 1 = got weights */
 	} W;
+	struct Z {	/* -Z undocumented debugging option */
+		bool active;
+	} Z;
 };
 
 enum Gpsgridded_enum {	/* Indices for coeff array for normalization */
@@ -305,6 +308,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 				GMT_Report (API, GMT_MSG_VERBOSE, "The -W option is not stable.  We are trying to determine if this is a bug or feature.\n");
 				GMT_Report (API, GMT_MSG_VERBOSE, "Users beware.  Please compare to results obtained without -W for sanity checking.\n");
 				break;
+#ifdef DEBUG
+			case 'Z':	/* Dump matrices */
+				Ctrl->Z.active = true;
+				break;
+#endif
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -499,6 +507,18 @@ GMT_LOCAL void evaluate_greensfunctions (struct GMT_CTRL *GMT, double *X0, doubl
 	G[GPS_FUNC_W]  = -c2_dr2 * dxdy_fudge;
 }
 
+GMT_LOCAL void dump_system (double *A, double *obs, uint64_t n_params, char *string) {
+	/* Dump an A | b system to stderr for debugging */
+	uint64_t row, col, ij;
+	fprintf (stderr, "\n%s\n", string);
+	for (row = 0; row < n_params; row++) {
+		ij = row * n_params;
+		fprintf (stderr, "%12.6f", A[ij++]);
+		for (col = 1; col < n_params; col++, ij++) fprintf (stderr, "\t%12.6f", A[ij]);
+		fprintf (stderr, "\t|\t%12.6f\n", obs[row]);
+	}
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -514,7 +534,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	double **X = NULL, *A = NULL, *u = NULL, *v = NULL, *obs = NULL;
 	double *f_x = NULL, *f_y = NULL, *in = NULL, *orig_u = NULL, *orig_v = NULL;
-	double mem, r, par[2], norm[GSP_LENGTH], weight_u, weight_v;
+	double mem, r, par[2], norm[GSP_LENGTH];
 	double err_sum = 0.0, r_min, r_max, G[3];
 	double *V = NULL, *s = NULL, *ssave = NULL, *b = NULL, eig_max = 0.0, limit = 0.0;
 
@@ -772,45 +792,73 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	else
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Build linear system Ax = b\n");
 
-	weight_u = weight_v = 1.0;	/* Unit weights unless -W was used */
 	off = n_uv * n_params;	/* Separation in 1-D index between rows evaluating u and v for same column */
 	for (row = 0; row < n_uv; row++) {	/* For each data constraint pair (u,v)_row */
-		if (Ctrl->W.active) {	/* Set and apply weights to the right-hand side of the equation (b) */
-			weight_u = X[row][GMT_WU];
-			weight_v = X[row][GMT_WV];
-			u[row] *= weight_u;
-			v[row] *= weight_v;
-		}
 		for (col = 0; col < n_uv; col++) {	/* For each body force pair (f_x,f_y)_col  */
 			Gu_ij  = row * n_params + col;	/* Index for Gu term in equation for u */
-			Guv_ij = Gu_ij + n_uv;			/* Index for Guv term in equation for u */
-			Gvu_ij = Gu_ij + off;			/* Index for Gvu term in equation for v */
-			Gv_ij  = Guv_ij + off;			/* Index for Gv term in equation for v */
+			Guv_ij = Gu_ij + n_uv;		/* Index for Guv term in equation for u */
+			Gvu_ij = Gu_ij + off;		/* Index for Gvu term in equation for v */
+			Gv_ij  = Guv_ij + off;		/* Index for Gv term in equation for v */
 			evaluate_greensfunctions (GMT, X[col], X[row], par, geo, G);
-			A[Gu_ij]  = weight_u * G[GPS_FUNC_Q];
-			A[Guv_ij] = weight_u * G[GPS_FUNC_W];
-			A[Gv_ij]  = weight_v * G[GPS_FUNC_P];
-			A[Gvu_ij] = weight_v * G[GPS_FUNC_W];
+			A[Gu_ij]  = G[GPS_FUNC_Q];
+			A[Gv_ij]  = G[GPS_FUNC_P];
+			A[Guv_ij] = A[Gvu_ij] = G[GPS_FUNC_W];
 		}
 	}
-#if 0 /* Dump the A | b matrices */
-	fprintf (stderr, "Weight | Matrix row | obs\n");
-	for (row = 0; row < n_params; row++) {
-		if (Ctrl->W.active)
-			fprintf (stderr, "%12.6f\t|\t", (row < n_uv) ? X[row][GMT_WU] : X[row-n_uv][GMT_WV]);
-		else
-			fprintf (stderr, "%12.6f\t|\t", 1.0);
-		ij = row * n_params;
-		fprintf (stderr, "%12.6f", A[ij++]);
-		for (col = 1; col < n_params; col++, ij++) fprintf (stderr, "\t%12.6f", A[ij]);
-		fprintf (stderr, "\t|\t%12.6f\n", (row < n_uv) ? u[row] : v[row-n_uv]);
-	}
-#endif
 
 	gmt_M_memcpy (&u[n_uv], v, n_uv, double);	/* Place v array at end of u array */
-	obs = u;				/* Hereafter, use obs to refer to the combined (u,v) array */
+	obs = u;					/* Hereafter, use obs to refer to the combined (u,v) array */
+	if (Ctrl->Z.active) dump_system (A, obs, n_params, "A Matrix row || u|v");	/* Dump the A | b system under debug */
 	
 	if (Ctrl->W.active) {	/* Compute mean data rms from (u,v) uncertainties */
+		/* Here we have requested an approximate fit instead of an exact interpolation.
+		 * For exact interpolation the weights do not matter, but here they do.  Since
+		 * we wish to solve via SVD we must convert our unweighted A*x = b linear system
+		 * to the weighted W*A*x = W*b whose normal equations are [A'*S*A]*x = A'*S*b,
+		 * where S = W*W, the squared weights.  This is N*x = r, where N = A'*S*A and
+		 * r = A'*S*b.  Thus, we do these multiplication and store N and r in the
+		 * original A and obs vectors so that the continuation of the code can work as is.
+		 * Weighted solution idea credit: Leo Uieda.  Jan 14, 2018.
+		 */
+		
+		double *At = NULL, *AtS = NULL, *S = NULL;	/* Need temporary work space */
+		uint64_t ji;
+
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Form weighted normal equations A'WAx = A'Wb\n");
+		At  = gmt_M_memory (GMT, NULL, n_params * n_params, double);
+		AtS = gmt_M_memory (GMT, NULL, n_params * n_params, double);
+		S   = gmt_M_memory (GMT, NULL, n_params, double);
+		/* 1. Transpose A and set diagonal matrix with squared weights (here a vector) S */
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create W diagonal matrix\n");
+		for (row = 0; row < n_uv; row++) {	/* Set S, the diagonal squared weights (=1/sigma^2) matrix */
+			S[row]      = X[row][GMT_WU] * X[row][GMT_WU];
+			S[row+n_uv] = X[row][GMT_WV] * X[row][GMT_WV];
+		}
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Transpose A\n");
+		for (row = 0; row < n_params; row++) {	/* Transpose A */
+			for (col = 0; col < n_params; col++) {
+				ij = row * n_params + col;
+				ji = col * n_params + row;
+				At[ji] = A[ij];
+			}
+		}
+		/* 2. Compute AtS = At * S.  This means scaling all terms in At columns by the corresponding S entry */
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute A' * W\n");
+		for (row = ij = 0; row < n_params; row++) {
+			for (col = 0; col < n_params; col++, ij++)
+				AtS[ij] = At[ij] * S[col];
+		}
+		/* 3. Compute r = AtS * obs (but we recycle S to hold r) */
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute r = A'*W*b\n");
+		gmt_matrix_matrix_mult (GMT, AtS, obs, n_params, n_params, 1U, S);
+		/* 4. Compute N = AtS * A (but we recycle At to hold N) */
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute N = A'*W*A\n");
+		gmt_matrix_matrix_mult (GMT, AtS, A, n_params, n_params, n_params, At);
+		/* Now free A, AtS and obs and let "A" be N and "obs" be r; these are the weighted normal equations */
+		gmt_M_free (GMT, A);	gmt_M_free (GMT, AtS);	gmt_M_free (GMT, obs);
+		A = At;	obs = S;
+		if (Ctrl->Z.active) dump_system (A, obs, n_params, "Normal equation N row || r");
+		
 		err_sum = sqrt (0.5 * err_sum / n_uv);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean data uncertainty is %g\n", err_sum);
 		if (Ctrl->C.mode == GPS_RMS_N && Ctrl->C.value == 0.0) {
@@ -827,7 +875,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "We strongly recommend you install LAPACK and recompile GMT.\n");
 #endif
 		V = gmt_M_memory (GMT, NULL, n_params * n_params, double);	/* Hold eigen-vectors */
-		s = gmt_M_memory (GMT, NULL, n_params, double);	/* Hold eigen-values */
+		s = gmt_M_memory (GMT, NULL, n_params, double);			/* Hold eigen-values */
 		if ((error = gmt_svdcmp (GMT, A, (unsigned int)n_params, (unsigned int)n_params, s, V)) != 0) {	/* Not good... */
 			gmt_M_free (GMT, s);
 			gmt_M_free (GMT, V);
