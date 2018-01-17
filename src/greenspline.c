@@ -2015,7 +2015,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Square matrix A requires %s\n", gmt_memory_use ((size_t)mem, 1));
 	A = gmt_M_memory (GMT, NULL, nm * nm, double);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Build linear system using %s\n", method[Ctrl->S.mode]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Build square linear system Ax = b using %s\n", method[Ctrl->S.mode]);
 
 	for (row = 0; row < nm; row++) {	/* For each value or slope constraint */
 		for (col = row; col < nm; col++) {
@@ -2066,6 +2066,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		 */
 		
 		double *At = NULL, *AtS = NULL, *S = NULL;	/* Need temporary work space */
+
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Form weighted normal equations A'WAx = A'Wb\n");
 		At = gmt_M_memory (GMT, NULL, nm * nm, double);
 		AtS = gmt_M_memory (GMT, NULL, nm * nm, double);
 		S = gmt_M_memory (GMT, NULL, nm, double);
