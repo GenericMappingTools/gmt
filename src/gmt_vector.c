@@ -1215,18 +1215,16 @@ void gmt_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3
 /* Things to use if figuring out blas calls to speed up these multiplications:
  * Then, if LAPACK is true then gmt_matrix_matrix_mult should call dgemm_ instead of plain code.
  */
-#if 0		
-#ifndef __APPLE__	/* Since it is already declared in Accelerate.h */
-	extern int dgemm_ (char* tra, char* trb, int* na, int* nb, int* nc, double* alpha, double* a, int *nd, double* beta, double* c, int* ne);
-#endif
-#endif
+extern int dgemm_ (char* tra, char* trb, int* na, int* nb, int* nc, double* alpha, double* a, int *nd, double* b, int *ne, double* beta, double* c, int* nf);
 
 void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_rowsB, uint64_t n_colsB, double *C) {
 #ifdef HAVE_LAPACK
 	double one = 1.0, zero = 0.0;
+	//int na = n_rowsA, nb = n_colsB, nc = n_rowsB, nd = n_rowsB, ne = n_colsB, nf = n_colsB;
 	gmt_M_unused(GMT);
 	gmt_M_memset (C, n_rowsA * n_colsB, double);
 	cblas_dgemm (CblasRowMajor, CblasNoTrans, CblasNoTrans, (int)n_rowsA, (int)n_colsB, (int)n_rowsB, one, A, (int)n_rowsB, B, (int)n_colsB, zero, C, (int)n_colsB);
+	//dgemm_ ("t", "t", &na, &nb, &nc, &one, A, &nd, B, &ne, &zero, C, &nf);
 #else
 	/* Plain matrix multiplication, no speed up; space must exist */
 	uint64_t row, col, k, a_ij, b_ij, c_ij, n_colsA = n_rowsB;
