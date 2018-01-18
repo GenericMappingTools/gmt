@@ -406,7 +406,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'W':		/* Set line attributes */
 				Ctrl->W.active = true;
-				if (opt->arg[0] && strchr ("-+", opt->arg[0]) ) {	/* Definitively old-style args */
+				if (opt->arg[0] == '-' || (opt->arg[0] == '+' && opt->arg[1] != 'c')) {	/* Definitively old-style args */
 					if (gmt_M_compat_check (API->GMT, 5)) {	/* Sorry */
 						GMT_Report (API, GMT_MSG_NORMAL, "Your -W syntax is obsolete; see program usage.\n");
 						n_errors++;
