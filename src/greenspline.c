@@ -65,7 +65,7 @@ struct GREENSPLINE_CTRL {
 		unsigned int mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
 		char *file;
 	} A	;
-	struct C {	/* -C[n|r|v]<cutoff>[+f<file>] */
+	struct C {	/* -C[n]<cutoff>[+f<file>] */
 		bool active;
 		unsigned int movie;	/* Undocumented and not-yet-working movie mode +m incremental grids, +M total grids vs eigenvalue */
 		unsigned int mode;
@@ -217,7 +217,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-E[<misfitfile>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>[/<dz>]] [-C[n|r|v]<val>[+f<file>]] [-D<mode>] [-L] [-N<nodefile>] [-Q<az>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>[/<dz>]] [-C[n]<val>[+f<file>]] [-D<mode>] [-L] [-N<nodefile>] [-Q<az>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]][-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]%s[%s]\n\n",
 		GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
@@ -242,9 +242,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append +f<filename> to save the eigenvalues to this file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A negative cutoff will stop execution after saving the eigenvalues.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cn to select only the largest <val> eigenvalues [all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cr to select only eigenvalues needed to yield a r.m.s misfit of ~<val> [all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     If <val> is not given then we compute <val> from the data uncertainties (requires -W).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cv to select only eigenvalues needed to explain <val> %% of data variance [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses Gauss-Jordan elimination to solve the linear system]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Distance flag determines how we calculate distances between (x,y) points:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Options 0 apples to Cartesian 1-D spline interpolation.\n");
@@ -421,9 +418,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				break;
 			case 'C':	/* Solve by SVD */
 				Ctrl->C.active = true;
-				if (opt->arg[0] == 'v') Ctrl->C.mode = 1;
-				else if (opt->arg[0] == 'n') Ctrl->C.mode = 2;
-				else if (opt->arg[0] == 'r') Ctrl->C.mode = 3;
+				if (opt->arg[0] == 'n') Ctrl->C.mode = 2;
 				k = (Ctrl->C.mode) ? 1 : 0;
 				if (gmt_get_modifier (opt->arg, 'f', p))
 					Ctrl->C.file = strdup (p);
@@ -437,7 +432,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 						Ctrl->C.file = strdup (p);
 					}
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expected -C[n|v]<cut>[+<file>]\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expected -C[n]<cut>[+<file>]\n");
 						n_errors++;
 					}
 				}
@@ -653,7 +648,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || (dimension > 1 && Ctrl->I.inc[GMT_Y] <= 0.0) || (dimension == 3 && Ctrl->I.inc[GMT_Z] <= 0.0)), "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, dimension == 2 && !Ctrl->N.active && !(Ctrl->G.active  || Ctrl->G.file), "Syntax error -G option: Must specify output grid file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value < 0.0 && !Ctrl->C.file, "Syntax error -C option: Must specify file name for eigenvalues if cut < 0\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode == 1 && Ctrl->C.value > 100.0, "Syntax error -Cv option: Variance explain cannot exceed 100%%\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error -T option: Must specify mask grid file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && dimension != 2, "Syntax error -T option: Only applies to 2-D gridding\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Syntax error -N option: Must specify node file name\n");
@@ -2067,11 +2061,12 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		
 		double *At = NULL, *AtS = NULL, *S = NULL;	/* Need temporary work space */
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Form weighted normal equations A'WAx = A'Wb\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Forming weighted normal equations A'SAx = A'Sb -> Nx = r\n");
 		At = gmt_M_memory (GMT, NULL, nm * nm, double);
 		AtS = gmt_M_memory (GMT, NULL, nm * nm, double);
 		S = gmt_M_memory (GMT, NULL, nm, double);
 		/* 1. Transpose A and set diagonal matrix with squared weights (here a vector) S */
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create S = W'*W diagonal matrix, A', and compute A' * S\n");
 		for (row = 0; row < nm; row++) {
 			S[row] = X[row][dimension] * X[row][dimension];	/* This is the diagonal squared weights (=1/sigma^2) matrix */
 			for (col = 0; col < nm; col++) {
@@ -2086,8 +2081,10 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				AtS[ij] = At[ij] * S[col];
 		}
 		/* 3. Compute r = AtS * obs (but we recycle S to hold r) */
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute r = A'*S*b\n");
 		gmt_matrix_matrix_mult (GMT, AtS, obs, nm, nm, 1U, S);
 		/* 4. Compute N = AtS * A (but we recycle At to hold N) */
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute N = A'*S*A\n");
 		gmt_matrix_matrix_mult (GMT, AtS, A, nm, nm, nm, At);
 		/* Now free A, AtS and obs and let "A" be N and "obs" be r; these are the weighted normal equations */
 		gmt_M_free (GMT, A);	gmt_M_free (GMT, AtS);	gmt_M_free (GMT, obs);
@@ -2096,10 +2093,6 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 		err_sum = sqrt (err_sum / nm);	/* Mean data uncertainty */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean data uncertainty is %g\n", err_sum);
-		if (Ctrl->C.mode == 3 && Ctrl->C.value == 0.0) {
-			Ctrl->C.value = err_sum;
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean data uncertainty selected as desired rms fit\n");
-		}
 	}
 	
 	if (Ctrl->C.active) {		/* Solve using SVD */
@@ -2160,10 +2153,10 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 		b = gmt_M_memory (GMT, NULL, nm, double);
 		gmt_M_memcpy (b, obs, nm, double);
-		limit = (Ctrl->C.mode == 3 && Ctrl->C.value == 0.0) ? err_sum : Ctrl->C.value;
+		limit = Ctrl->C.value;
 		n_use = gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, &limit, Ctrl->C.mode);
 		if (n_use == -1) Return (GMT_RUNTIME_ERROR);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%d of %" PRIu64 " eigen-values used to explain %.1f %% of data variance]\n", n_use, nm, limit);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%d of %" PRIu64 " eigen-values used]\n", n_use, nm);
 
 		if (Ctrl->C.movie == 0) {
 			gmt_M_free (GMT, s);
