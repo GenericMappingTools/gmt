@@ -1244,8 +1244,7 @@ void gmt_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3
 #endif
 #endif
 
-void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_rowsB, uint64_t n_colsB, double *C)
-{
+void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_rowsB, uint64_t n_colsB, double *C) {
 #ifdef HAVE_LAPACK
 	double one = 1.0, zero = 0.0;
 	gmt_M_unused(GMT);
@@ -1260,9 +1259,9 @@ void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_
 			a_ij = row * n_colsA;		/* Start address of row in A */
 			b_ij = col;			/* Start address of col in B */
 			c_ij = row * n_colsB + col;	/* Address of C element to hold their dot-product */
-            		C[c_ij] = 0.0;
-            		for (k = 0; k < n_rowsB; k++)	/* Do the dot product */
-                		C[c_ij] += A[a_ij+k]*B[b_ij+k*n_colsB];
+			C[c_ij] = 0.0;
+			for (k = 0; k < n_rowsB; k++)	/* Do the dot product */
+				C[c_ij] += A[a_ij+k]*B[b_ij+k*n_colsB];
 		}
 	}
 #endif
