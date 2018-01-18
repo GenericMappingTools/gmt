@@ -1604,6 +1604,9 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " unique data constraints\n", n);
 	if (n_skip) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " data constraints as duplicates\n", n_skip);
 
+	err_sum = sqrt (err_sum / nm);	/* Mean data uncertainty */
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean data uncertainty is %g\n", err_sum);
+
 	if (Ctrl->A.active) {	/* Read gradient constraints from file */
 		unsigned int n_A_cols = 0;
 		struct GMT_DATASET *Din = NULL;
@@ -2090,9 +2093,6 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, A);	gmt_M_free (GMT, AtS);	gmt_M_free (GMT, obs);
 		A = At;	obs = S;
 		if (Ctrl->Z.active) dump_system (A, obs, nm, "Normal equation N row || r");
-
-		err_sum = sqrt (err_sum / nm);	/* Mean data uncertainty */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean data uncertainty is %g\n", err_sum);
 	}
 	
 	if (Ctrl->C.active) {		/* Solve using SVD */

@@ -678,6 +678,13 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	err_sum_u = sqrt (err_sum_u / n_uv);
+	err_sum_v = sqrt (err_sum_v / n_uv);
+	err_sum = sqrt (0.5 * err_sum / n_uv);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean u-component uncertainty: %g\n", err_sum_u);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean v-component uncertainty: %g\n", err_sum_v);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Combined (u,v) uncertainty  : %g\n", err_sum);
+
 	n_params = 2 * n_uv;	/* Dimension of array is twice the size since using both u & v as separate observations */
 	for (k = n_uv; k < n_alloc; k++) gmt_M_free (GMT, X[k]);	/* Remove pointer memory that was not used */
 	X = gmt_M_memory (GMT, X, n_uv, double *);	/* Realloc to exact size */
@@ -853,13 +860,6 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, A);	gmt_M_free (GMT, AtS);	gmt_M_free (GMT, u);
 		A = At;	obs = u = S;
 		if (Ctrl->Z.active) dump_system (A, obs, n_params, "Normal equation N row || r");
-		
-		err_sum_u = sqrt (err_sum_u / n_uv);
-		err_sum_v = sqrt (err_sum_v / n_uv);
-		err_sum = sqrt (0.5 * err_sum / n_uv);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean u-component uncertainty: %g\n", err_sum_u);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean v-component uncertainty: %g\n", err_sum_v);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Combined (u,v) uncertainty  : %g\n", err_sum);
 	}
 	if (Ctrl->C.active) {		/* Solve using SVD decomposition */
 		int error;

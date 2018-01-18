@@ -10384,19 +10384,19 @@ int gmt_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	for (i = 1, same = true; same && i < 4; i++) if (HH->BC[i] != HH->BC[i-1]) same = false;
 
 	if (same)
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for all edges: %s\n", kind[HH->BC[XLO]]);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Chosen boundary condition for all edges: %s\n", kind[HH->BC[XLO]]);
 	else {
 		if (HH->BC[XLO] == HH->BC[XHI])
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for left and right edges: %s\n", kind[HH->BC[XLO]]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Chosen boundary condition for left and right edges: %s\n", kind[HH->BC[XLO]]);
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for left   edge: %s\n", kind[HH->BC[XLO]]);
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for right  edge: %s\n", kind[HH->BC[XHI]]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Chosen boundary condition for left   edge: %s\n", kind[HH->BC[XLO]]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Chosen boundary condition for right  edge: %s\n", kind[HH->BC[XHI]]);
 		}
 		if (HH->BC[YLO] == HH->BC[YHI])
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for bottom and top edges: %s\n", kind[HH->BC[YLO]]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Chosen boundary condition for bottom and top edges: %s\n", kind[HH->BC[YLO]]);
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for bottom edge: %s\n", kind[HH->BC[YLO]]);
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for top    edge: %s\n", kind[HH->BC[YHI]]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Chosen boundary condition for bottom edge: %s\n", kind[HH->BC[YLO]]);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Chosen boundary condition for top    edge: %s\n", kind[HH->BC[YHI]]);
 		}
 	}
 	/* Set this grid's interpolation parameters */

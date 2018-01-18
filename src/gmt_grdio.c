@@ -1256,33 +1256,33 @@ int gmtlib_get_grdtype (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	/* Determine if grid is Cartesian or geographic, and if so if longitude range is <360, ==360, or >360 */
 	if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Data set is geographic with x = longitudes */
 		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_CONV4_LIMIT) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Geographic grid, longitudes span exactly 360\n");
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Geographic grid, longitudes span exactly 360\n");
 			/* If w/e is 360 and gridline reg then we have a repeat entry for 360.  For pixel there are never repeat pixels */
 			return ((h->registration == GMT_GRID_NODE_REG) ? GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT : GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT);
 		}
 		else if (fabs (h->n_columns * h->inc[GMT_X] - 360.0) < GMT_CONV4_LIMIT) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Geographic grid, longitude cells span exactly 360\n");
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Geographic grid, longitude cells span exactly 360\n");
 			/* If n*xinc = 360 and previous test failed then we do not have a repeat node */
 			return (GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT);
 		}
 		else if ((h->wesn[XHI] - h->wesn[XLO]) > 360.0) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Geographic grid, longitudes span more than 360\n");
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Geographic grid, longitudes span more than 360\n");
 			return (GMT_GRID_GEOGRAPHIC_MORE360);
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Geographic grid, longitudes span less than 360\n");
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Geographic grid, longitudes span less than 360\n");
 			return (GMT_GRID_GEOGRAPHIC_LESS360);
 		}
 	}
 	else if (h->wesn[YLO] >= -90.0 && h->wesn[YHI] <= 90.0) {	/* Here we simply advice the user if grid looks like geographic but is not set as such */
 		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_CONV4_LIMIT) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Cartesian grid, yet x spans exactly 360 and -90 <= y <= 90.\n");
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cartesian grid, yet x spans exactly 360 and -90 <= y <= 90.\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
 			return (GMT_GRID_CARTESIAN);
 		}
 		else if (fabs (h->n_columns * h->inc[GMT_X] - 360.0) < GMT_CONV4_LIMIT) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Cartesian grid, yet x cells span exactly 360 and -90 <= y <= 90.\n");
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cartesian grid, yet x cells span exactly 360 and -90 <= y <= 90.\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
 			return (GMT_GRID_CARTESIAN);
 		}
 	}
