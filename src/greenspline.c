@@ -418,7 +418,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				break;
 			case 'C':	/* Solve by SVD */
 				Ctrl->C.active = true;
-				if (opt->arg[0] == 'n') Ctrl->C.mode = 2;
+				if (opt->arg[0] == 'n') Ctrl->C.mode = 1;
 				k = (Ctrl->C.mode) ? 1 : 0;
 				if (gmt_get_modifier (opt->arg, 'f', p))
 					Ctrl->C.file = strdup (p);
@@ -1402,7 +1402,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		"linear Cartesian spline [1-D]",
 		"bilinear Cartesian spline [2-D]"};
 
-	double *v = NULL, *s = NULL, *b = NULL, *ssave = NULL, eig_max = 0.0, limit;
+	double *v = NULL, *s = NULL, *b = NULL, *ssave = NULL, eig_max = 0.0;
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL, *orig_obs = NULL;
 	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad;
 	double *A = NULL, *A_orig = NULL, r_min, r_max, err_sum = 0.0, var_sum = 0.0;
@@ -2081,10 +2081,10 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				AtS[ij] = At[ij] * S[col];
 		}
 		/* 3. Compute r = AtS * obs (but we recycle S to hold r) */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute r = A'*S*b\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "Compute r = A'*S*b\n");
 		gmt_matrix_matrix_mult (GMT, AtS, obs, nm, nm, 1U, S);
 		/* 4. Compute N = AtS * A (but we recycle At to hold N) */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute N = A'*S*A\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "Compute N = A'*S*A\n");
 		gmt_matrix_matrix_mult (GMT, AtS, A, nm, nm, nm, At);
 		/* Now free A, AtS and obs and let "A" be N and "obs" be r; these are the weighted normal equations */
 		gmt_M_free (GMT, A);	gmt_M_free (GMT, AtS);	gmt_M_free (GMT, obs);
@@ -2153,8 +2153,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 		b = gmt_M_memory (GMT, NULL, nm, double);
 		gmt_M_memcpy (b, obs, nm, double);
-		limit = Ctrl->C.value;
-		n_use = gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, &limit, Ctrl->C.mode);
+		n_use = gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, Ctrl->C.value, Ctrl->C.mode);
 		if (n_use == -1) Return (GMT_RUNTIME_ERROR);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%d of %" PRIu64 " eigen-values used]\n", n_use, nm);
 
@@ -2354,9 +2353,9 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				Return (API->error);
 			for (k = 0; k < nm; k++) {
 				fprintf (stderr, "Eigen # %d\n", (int)k+1);
-				limit = (double)k;	/* Update solution for k eigenvalues only */
+				/* Update solution for k eigenvalues only */
 				gmt_M_memcpy (s, ssave, nm, double);	/* Restore original values before call */
-				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, &limit, 2);
+				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, (double)k, 1);
 				for (row = 0; row < Grid->header->n_rows; row++) {
 					V[GMT_Y] = yp[row];
 					for (col = 0; col < Grid->header->n_columns; col++) {

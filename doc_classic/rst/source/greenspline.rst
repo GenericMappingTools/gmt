@@ -15,7 +15,7 @@ Synopsis
 
 **greenspline** [ *table* ]
 [ |-A|\ *gradfile*\ **+f**\ **1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5** ]
-[ |-C|\ [**n**\ \|\ **r**\ \|\ **v**]\ *value*\ [**+f**\ *file*] ]
+[ |-C|\ [**n**\ ]\ *value*\ [**+f**\ *file*] ]
 [ |-D|\ *mode* ]
 [ |-E|\ [*misfitfile*] ]
 [ |-G|\ *grdfile* ]
@@ -98,23 +98,16 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**n**\ \|\ **r**\ \|\ **v**]\ *value*\ [**+f**\ *file*]
+**-C**\ [**n**\]\ *value*\ [**+f**\ *file*]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *value*
     [Default uses Gauss-Jordan elimination to solve the linear system
     and fit the data exactly]. Optionally, append **+f**\ *file* to save the
     eigenvalues to the specified file for further analysis.
-    Finally, if a negative *value* is given then **+f**\ *file* is required and
+    If a negative *value* is given then **+f**\ *file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
-    output is produced.  Specify **-Cv** to use the
-    largest eigenvalues needed to explain approximately *value* % of the data variance.
-    Specify **-Cr** to use the largest eigenvalues needed to leave approximately *value*
-    as the model misfit.  If *value* is not given then **-W** is required and we
-    compute *value* as the rms of the data uncertainties. 
-    Alternatively, use **-Cn** to select the *value* largest eigenvalues.
-    If a *file* is given with **-Cv** then we save the eigenvalues instead
-    of the ratios.
+    output is produced.  Specify **-Cn** to retain only the *value* largest eigenvalues.
 
 .. _-D:
 
@@ -139,9 +132,10 @@ Optional Arguments
 **E**\ [*misfitfile*]
 
     Evaluate the spline exactly at the input data locations and report
-    statistics of the misfit (mean, standard deviation, and rms).  Optionally,
+    statistics of the misfit (mean, standard deviation,  rms).  Optionally,
     append a filename and we will write the data table, augmented by
-    two extra columns holding the spline estimate and the misfit.
+    two extra columns holding the spline estimate and the misfit.  If
+    **-W** is used then a final column with the chi^2 value is added.
 
 .. _-G:
 
@@ -255,7 +249,7 @@ Optional Arguments
    Data one-sigma uncertainties are provided in the last column.
    We then compute weights that are inversely proportional to the uncertainties.
    Append **w** if weights are given instead of uncertainties.  This results in
-   a weighted least squares fit.  Note that this only has an effect if **-C** is used.
+   a weighted least squares fit.  Note that weights only have an effect if **-C** is used.
    [Default uses no weights or uncertainties].
 
 .. |Add_-bi| replace:: [Default is 2-4 input

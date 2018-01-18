@@ -1040,8 +1040,11 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 
 */
 
-int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode) {
-	double w_abs, sing_max, total_variance, variance = 0.0, limit = 0;
+int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double cutoff, unsigned int mode) {
+	/* Mode = 0: Use all singular values s_j for which s_j/s_0 > cutoff [0 = all]
+	 * mode = 1: Use the first cutoff singular values only.
+	 */
+	double w_abs, sing_max;
 	int i, j, n_use = 0, n = (int)nu;	/* Because OpenMP cannot handle unsigned loop variables */
 	double s, *tmp = gmt_M_memory (GMT, NULL, n, double);
 	gmt_M_unused(m);	/* Since we are actually only doing square matrices... */
@@ -1050,23 +1053,16 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	gmt_M_unused(v);	/* Not used when we solve via Lapack */
 #endif
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gmt_solve_svd: Evaluate solution\n");
-	/* find maximum singular value and total variance.  Assumes w[] may have negative eigenvalues */
+	/* find maximum singular value.  Assumes w[] may have negative eigenvalues */
 
 	sing_max = fabs (w[0]);
-	//total_variance = w[0] * w[0];
-	total_variance = sing_max;
 	for (i = 1; i < n; i++) {
-		//total_variance += (w[i] * w[i]);
 		w_abs = fabs (w[i]);
-		total_variance += w_abs;
 		sing_max = MAX (sing_max, w_abs);
 	}
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "gmt_solve_svd: Total variance = %g\n", total_variance);
 
 	if (mode) {
-		/* mode = 1: Find the m largest singular values needed to explain the specified variance level.
-		 * mode = 2: Find the m largest singular values, with m = limit.
-		 * mode = 3: Find the m largest singular values needed so residual rms is ~limit.
+		 /* mode = 1: Find the m largest singular values, with m = cutoff.
 		 * Either case requires sorted singular values so we need to do some work first.
 		 * It also assumes that the matrix passed is a squared normal equation kind of matrix
 		 * so that the singular values are the individual variace contributions. */
@@ -1082,13 +1078,9 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		}
 		qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), vector_compare_singular_values);
 		
-		if (mode == 1) limit = (*cutoff) * total_variance * 0.01;		/* Desired variance level given cutoff in % */
-		else if (mode == 2) n_eigen = (unsigned int)lrint (*cutoff);	/* Desired number of eigenvalues to use instead */
-		else if (mode == 3) limit = total_variance - n * (*cutoff)*(*cutoff);	/* Unexplained variance desired given stated data rms */
+		n_eigen = (unsigned int)lrint (cutoff);	/* Desired number of eigenvalues to use instead */
 		for (i = 0; i < n; i++) {	/* Visit all singular values in decreasing magnitude */
-			if ((mode == 1 && variance < limit) || (mode == 2 && i < n_eigen) || (mode == 3 && variance < limit)) {	/* Still within specified limit so we add this singular value */
-				//variance += (eigen[i].value * eigen[i].value);
-				variance += eigen[i].value;
+			if (i < n_eigen) {	/* Still within specified limit so we add this singular value */
 				w[eigen[i].order] = 1.0 / w[eigen[i].order];
 				n_use++;
 			}
@@ -1097,13 +1089,10 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		}
 		gmt_M_free (GMT, eigen);
 	}
-	else {	/* Loop through singular values removing small ones (if limit is nonzero) */
-		limit = *cutoff;
+	else {	/* Loop through singular values removing small ones (if cutoff is nonzero) */
 		for (i = 0; i < n; i++) {
 			w_abs = fabs (w[i]);
-			if ((w_abs/sing_max) > limit) {
-				//variance += (w[i] * w[i]);
-				variance += w_abs;
+			if ((w_abs/sing_max) > cutoff) {
 				w[i] = 1.0 / w[i];
 				n_use++;
 			}
@@ -1111,24 +1100,12 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 				w[i] = 0.0;
 		}
 	}
-	if (mode == 3) limit = *cutoff;
-	*cutoff = (100.0 * variance / total_variance);	/* Actual explained variance level in % */
 	if (mode == 0)
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
-		            "gmt_solve_svd: Ratio limit %g gave %d singular values that explain %g %% of total variance %g\n",
-		            limit, n_use, *cutoff, total_variance);
-	if (mode == 1)
+		            "gmt_solve_svd: Ratio limit %g ratained %d singular values\n", cutoff, n_use);
+	if (mode == 2)
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
-		            "gmt_solve_svd: Found %d singular values needed to explain %g %% of total variance %g\n",
-		            n_use, *cutoff, total_variance);
-	if (mode == 3)
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
-		            "gmt_solve_svd: Found %d singular values needed for an approximate rms misfit of %g (Closest was %g)\n",
-		            n_use, limit, sqrt ((total_variance - variance) / n));
-	else
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
-		            "gmt_solve_svd: Selected %d singular values that explain %g %% of total variance %g\n",
-		            n_use, *cutoff, total_variance);
+		            "gmt_solve_svd: Selected first %d singular values\n", n_use);
 
 	/* Here w contains 1/eigenvalue so we multiply by w if w != 0*/
 

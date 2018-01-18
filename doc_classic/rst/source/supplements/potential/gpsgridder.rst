@@ -17,7 +17,7 @@ Synopsis
 |-G|\ *outfile*
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
-[ |-C|\ [**n**\ \|\ **r**\ \|\ **v**]\ *value*\ [**+f**\ *file*] ]
+[ |-C|\ [**n**\ ]\ *value*\ [**+f**\ *file*] ]
 [ |-E|\ [*misfitfile*] ]
 [ |-F|\ [**d**\ \|\ **f**]\ *fudge*\ ]
 [ |-L| ]
@@ -76,23 +76,16 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**n**\ \|\ **r**\ \|\ **v**]\ *value*\ [**+f**\ *file*]
+**-C**\ [**n**\ ]\ *value*\ [**+f**\ *file*]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *value*
     [Default uses Gauss-Jordan elimination to solve the linear system
     and fit the data exactly]. Optionally, append **+f**\ *file* to save the
     eigenvalue ratios to the specified file for further analysis.
-    Finally, if a negative *value* is given then **+f**\ *file* is required and
+    If a negative *value* is given then **+f**\ *file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
-    output is produced.  Specify **-Cv**\ *value* to use the
-    largest eigenvalues needed to explain *value* % of the data variance.
-    Specify **-Cr**\ *value* to use the largest eigenvalues needed to leave approximately *value*
-    as the model misfit.  If *value* is not given then **-W** is required and we
-    compute *value* as the rms of the given data uncertainties. 
-    Alternatively, use **-Cn**\ *value* to select the *value* largest eigenvalues.
-    If a *file* is given with **-Cv** then we save the eigenvalues instead
-    of the ratios.
+    output is produced.  Specify **-Cn**\ *value* to retain only the *value* largest eigenvalues.
     Note: 1/4 of the total number of data constraints is a good starting point
     for further experiments.
 
@@ -104,7 +97,8 @@ Optional Arguments
     statistics of the misfit (mean, standard deviation, and rms) for *u* and
     *v* separately and combined.  Optionally, append a filename and we will
     write the data table, augmented by two extra columns after each of the
-    *u* and *v* columns holding the spline estimates and misfits.
+    *u* and *v* columns holding the spline estimates and misfits.  If **-W**
+    is given we also add two more columns with the chi^2 values.
 
 .. _-F:
 
@@ -162,11 +156,8 @@ Optional Arguments
    One-sigma data uncertainties for *u* and *v* are provided in the last two columns.
    We then compute weights that are inversely proportional to the uncertainties.
    Append **w** if weights are given instead of uncertainties.  This results in
-   a weighted least squares fit.  Note that **-W** only has an effect if **-C** is used.
+   a weighted least squares fit.  Note that weights only have an effect if **-C** is used.
    [Default uses no weights or uncertainties].
-   Note: At present the **-W** option is *unstable*.  We do not yet know if it reflects
-   a coding bug or a theoretical limitation.  Users beware, and make sure you compare
-   the results with non-weighted output for basic sanity checking.
 
 .. _-V:
 

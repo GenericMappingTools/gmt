@@ -105,9 +105,7 @@ enum Gpsgridded_enum {	/* Indices for coeff array for normalization */
 	GPS_FUNC_Q	= 0,	/* Next 3 are indices into G[] */
 	GPS_FUNC_P	= 1,	/* Next 3 are indices into G[] */
 	GPS_FUNC_W	= 2,	/* Next 3 are indices into G[] */
-	GPS_VAR_N   = 1,	/* Modes for -C */
-	GPS_TOP_N   = 2,
-	GPS_RMS_N   = 3,
+	GPS_TOP_N   = 1,	/* Modes for -C */
 	GPS_FUDGE_R = 1,	/* Modes for -F */
 	GPS_FUDGE_F = 2,
 	GPS_GOT_SIG = 0,	/* Modes for -W */
@@ -239,7 +237,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 				break;
 			case 'E':	/* Evaluate misfit -E[<file>]*/
 				Ctrl->E.active = true;
-				if (opt->arg) {
+				if (opt->arg[0]) {
 					Ctrl->E.file = strdup (opt->arg);
 					Ctrl->E.mode = GPS_MISFIT;
 				}
@@ -526,8 +524,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	double **X = NULL, *A = NULL, *u = NULL, *v = NULL, *obs = NULL;
 	double *f_x = NULL, *f_y = NULL, *in = NULL, *orig_u = NULL, *orig_v = NULL;
 	double mem, r, par[2], norm[GSP_LENGTH], var_sum = 0.0;
-	double err_sum = 0.0, r_min, r_max, G[3], *A_orig = NULL;
-	double *V = NULL, *s = NULL, *ssave = NULL, *b = NULL, eig_max = 0.0, limit = 0.0;
+	double err_sum = 0.0, err_sum_u = 0.0, err_sum_v = 0.0, r_min, r_max, G[3], *A_orig = NULL;
+	double *V = NULL, *s = NULL, *ssave = NULL, *b = NULL, eig_max = 0.0;
 
 #ifdef DUMPING
 	FILE *fp = NULL;
@@ -650,12 +648,17 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			X[n_uv][GMT_WU] = in[4];
 			X[n_uv][GMT_WV] = in[5];
 			if (Ctrl->W.mode == GPS_GOT_SIG) {	/* Got sigmas, so create weights */
-				err_sum += X[n_uv][GMT_WU]*X[n_uv][GMT_WU] + X[n_uv][GMT_WV]*X[n_uv][GMT_WV];	/* Update data variance */
+				err_sum_u += X[n_uv][GMT_WU]*X[n_uv][GMT_WU];	/* Update u variance */
+				err_sum_v += X[n_uv][GMT_WV]*X[n_uv][GMT_WV];	/* Update v variance */
+				err_sum += X[n_uv][GMT_WU]*X[n_uv][GMT_WU] + X[n_uv][GMT_WV]*X[n_uv][GMT_WV];	/* Update combined data variance */
 				X[n_uv][GMT_WU] = 1.0 / X[n_uv][GMT_WU];
 				X[n_uv][GMT_WV] = 1.0 / X[n_uv][GMT_WV];
 			}
-			else	/* Unscramble weights so we can update data variance */
+			else {	/* Unscramble weights so we can update data variance */
+				err_sum_u += pow (X[n_uv][GMT_WU], -2.0);	/* Update u variance */
+				err_sum_v += pow (X[n_uv][GMT_WV], -2.0);	/* Update v variance */
 				err_sum += pow (X[n_uv][GMT_WU], -2.0) + pow (X[n_uv][GMT_WV], -2.0);
+			}
 		}
 		var_sum += u[n_uv] * u[n_uv] + v[n_uv] * v[n_uv];
 		n_uv++;			/* Added a new data constraint */
@@ -841,18 +844,22 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				AtS[ij] = At[ij] * S[col];
 		}
 		/* 3. Compute r = AtS * obs (but we recycle S to hold r) */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute r = A'*S*b\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "Compute r = A'*S*b\n");
 		gmt_matrix_matrix_mult (GMT, AtS, obs, n_params, n_params, 1U, S);
 		/* 4. Compute N = AtS * A (but we recycle At to hold N) */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Compute N = A'*S*A\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "Compute N = A'*S*A\n");
 		gmt_matrix_matrix_mult (GMT, AtS, A, n_params, n_params, n_params, At);
 		/* Now free A, AtS and obs and let "A" be N and "obs" be r; these are the weighted normal equations */
 		gmt_M_free (GMT, A);	gmt_M_free (GMT, AtS);	gmt_M_free (GMT, u);
 		A = At;	obs = u = S;
 		if (Ctrl->Z.active) dump_system (A, obs, n_params, "Normal equation N row || r");
 		
+		err_sum_u = sqrt (err_sum_u / n_uv);
+		err_sum_v = sqrt (err_sum_v / n_uv);
 		err_sum = sqrt (0.5 * err_sum / n_uv);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean data uncertainty is %g\n", err_sum);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean u-component uncertainty: %g\n", err_sum_u);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean v-component uncertainty: %g\n", err_sum_v);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Combined (u,v) uncertainty  : %g\n", err_sum);
 	}
 	if (Ctrl->C.active) {		/* Solve using SVD decomposition */
 		int error;
@@ -918,8 +925,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 		b = gmt_M_memory (GMT, NULL, n_params, double);
 		gmt_M_memcpy (b, obs, n_params, double);
-		limit = Ctrl->C.value;
-		n_use = gmt_solve_svd (GMT, A, (unsigned int)n_params, (unsigned int)n_params, V, s, b, 1U, obs, &limit, Ctrl->C.mode);
+		n_use = gmt_solve_svd (GMT, A, (unsigned int)n_params, (unsigned int)n_params, V, s, b, 1U, obs, Ctrl->C.value, Ctrl->C.mode);
 		if (n_use == -1) {	/* Something failed in SVD */
 			gmt_M_free (GMT, b);
 			Return (GMT_RUNTIME_ERROR);
@@ -1049,13 +1055,13 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		std_v = (m > 1) ? sqrt (std_v / (m-1.0)) : GMT->session.d_NaN;
 		std   = (m2 > 1) ? sqrt (std / (m2-1.0)) : GMT->session.d_NaN;
 		if (Ctrl->W.active) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Misfit evaluation: N = %u\tMean u = %g\tStd.dev u = %g\tRMS u = %g\tChi^2 u = %g\n", n_uv, mean_u, std_u, rms_u, chi2u_sum);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Misfit evaluation: N = %u\tMean v = %g\tStd.dev v = %g\tRMS v = %g\tChi^2 v = %g\n", n_uv, mean_v, std_v, rms_v, chi2v_sum);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Total u,v Misfit : N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\tChi^2v = %g\n", n_params, mean, std, rms, chi2u_sum + chi2v_sum);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Separate u Misfit: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\tChi^2 = %g\n", n_uv, mean_u, std_u, rms_u, chi2u_sum);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Separate v Misfit: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\tChi^2 = %g\n", n_uv, mean_v, std_v, rms_v, chi2v_sum);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Total u,v Misfit : N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\tChi^2 = %g\n", n_params, mean, std, rms, chi2u_sum + chi2v_sum);
 		}
 		else {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Misfit evaluation: N = %u\tMean u = %g\tStd.dev u = %g\tRMS u = %g\n", n_uv, mean_u, std_u, rms_u);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Misfit evaluation: N = %u\tMean v = %g\tStd.dev v = %g\tRMS v = %g\n", n_uv, mean_v, std_v, rms_v);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Separate u Misfit: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\n", n_uv, mean_u, std_u, rms_u);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Separate v Misfit: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\n", n_uv, mean_v, std_v, rms_v);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Total u,v Misfit : N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\n", n_params, mean, std, rms);
 		}
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Variance evaluation: Data = %g\tModel = %g\tExplained = %5.1lf %%\n", var_sum, pvar_sum, 100.0 * pvar_sum / var_sum);
@@ -1134,9 +1140,9 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			
 			for (e = 1; e <= (int64_t)n_params; e++) {	/* For each eigenvalue */
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Add contribution from eigenvalue %" PRIu64 "\n", e);
-				limit = (double)e;	/* Update solution for e eigenvalues only */
+				/* Update solution for e eigenvalues only */
 				gmt_M_memcpy (s, ssave, n_params, double);
-				(void)gmt_solve_svd (GMT, A, (unsigned int)n_params, (unsigned int)n_params, V, s, b, 1U, obs, &limit, 2);
+				(void)gmt_solve_svd (GMT, A, (unsigned int)n_params, (unsigned int)n_params, V, s, b, 1U, obs, (double)e, GPS_TOP_N);
 				for (row = 0; row < Out[GMT_X]->header->n_rows; row++) {
 					V[GMT_Y] = yp[row];
 					for (col = 0; col < Out[GMT_X]->header->n_columns; col++) {
