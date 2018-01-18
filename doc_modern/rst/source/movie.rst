@@ -265,7 +265,7 @@ frame number to serve as the view longitude, using a custom square 600x600 pixel
 
     gmt movie globe.sh -Nglobe -T360 -Agif -C6ix6ix100
 
-Here, the globe.sh bash script simply plots a map with :doc:`pscoast` but uses the frame number variable
+Here, the globe.sh bash script simply plots a map with :doc:`coast` but uses the frame number variable
 as the center longitude:
 
    ::
