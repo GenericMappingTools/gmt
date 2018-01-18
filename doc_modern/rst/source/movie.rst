@@ -72,6 +72,7 @@ Required Arguments
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
     request a custom format directly by giving *width*\ x\ *height*\ x\ *dpu*, where *dpu* is
     the dots-per-unit pixel density.
+
 .. _-N:
 
 **-N**\ *prefix*
@@ -136,7 +137,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [*frame*],[*format]
+**-M**\ [*frame*],[*format*]
     In addition to making the animation sequence, select a single frame for a cover page.  This frame will
     be written in current directory with name *prefix*.*format*, where *format* can one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].
