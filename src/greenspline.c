@@ -1758,8 +1758,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	/* Check for duplicates which would result in a singular matrix system; also update min/max radius */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Distance between the closest constraints = %.12g]\n", r_min);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Distance between most distant constraints = %.12g]\n", r_max);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Distance between the closest constraints:  %.12g]\n", r_min);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Distance between most distant constraints: %.12g]\n", r_max);
 
 	if (n_duplicates) {	/* These differ in observation value so need to be averaged, medianed, or whatever first */
 		if (!Ctrl->C.active || gmt_M_is_zero (Ctrl->C.value)) {

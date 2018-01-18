@@ -345,8 +345,9 @@ GMT_LOCAL void do_gps_normalization (struct GMTAPI_CTRL *API, double **X, double
 
 	uint64_t i;
 	double d, umin = DBL_MAX, vmin = DBL_MAX, umax = -DBL_MAX, vmax = -DBL_MAX;
+	char *type[4] = {"Remove mean", "Remove 2-D linear trend\n", "Remove mean and normalize data", "Remove 2-D linear trend and normalize data\n"};
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalization mode: %d\n", mode);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalization mode: %s.\n", type[mode]);
 	gmt_M_memset (coeff, GSP_LENGTH, double);
 	for (i = 0; i < n_uv; i++) {	/* Find mean u and v-values */
 		coeff[GSP_MEAN_U] += u[i];
@@ -695,8 +696,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	/* Check for duplicates which would result in a singular matrix system; also update min/max radius */
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Distance between closest data constraints = %.12g\n", r_min);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Distance between distant data constraints = %.12g\n", r_max);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Distance between the closest data constraints:  %.12g\n", r_min);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Distance between most distant data constraints: %.12g\n", r_max);
 
 	if (n_duplicates) {	/* These differ in observation value so need to be averaged, medianed, or whatever first */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " data constraint duplicates with different observation values\n", n_duplicates);
