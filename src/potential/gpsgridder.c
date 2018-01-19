@@ -39,47 +39,47 @@
 /* Control structure for gpsgridder */
 
 struct GPSGRIDDER_CTRL {
-	struct C {	/* -C[n]<cutoff>[+f<file>] */
+	struct GPSGRIDDER_C {	/* -C[n]<cutoff>[+f<file>] */
 		bool active;
 		unsigned int movie;	/* Undocumented and not-yet-working movie mode +m incremental grids, +M total grids vs eigenvalue */
 		unsigned int mode;
 		double value;
 		char *file;
 	} C;
-	struct E {	/* -E[<file>] */
+	struct GPSGRIDDER_E {	/* -E[<file>] */
 		bool active;
 		unsigned int mode;
 		char *file;
 	} E;
-	struct F {	/* -F<fudgefactor> or -Fa<mindist> */
+	struct GPSGRIDDER_F {	/* -F<fudgefactor> or -Fa<mindist> */
 		bool active;
 		unsigned int mode;
 		double fudge;
 	} F;
-	struct G {	/* -G<output_grdfile_template_or_tablefile> */
+	struct GPSGRIDDER_G {	/* -G<output_grdfile_template_or_tablefile> */
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L */
+	struct GPSGRIDDER_L {	/* -L */
 		bool active;
 	} L;
-	struct N {	/* -N<outputnode_file> */
+	struct GPSGRIDDER_N {	/* -N<outputnode_file> */
 		bool active;
 		char *file;
 	} N;
-	struct S {	/* -S<nu> */
+	struct GPSGRIDDER_S {	/* -S<nu> */
 		bool active;
 		double nu;
 	} S;
-	struct T {	/* -T<mask_grdfile> */
+	struct GPSGRIDDER_T {	/* -T<mask_grdfile> */
 		bool active;
 		char *file;
 	} T;
-	struct W {	/* -W[w] */
+	struct GPSGRIDDER_W {	/* -W[w] */
 		bool active;
 		unsigned int mode;	/* 0 = got sigmas, 1 = got weights */
 	} W;
-	struct Z {	/* -Z undocumented debugging option */
+	struct GPSGRIDDER_Z {	/* -Z undocumented debugging option */
 		bool active;
 	} Z;
 };
