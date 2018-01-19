@@ -390,7 +390,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'W':		/* Set line attributes */
 				Ctrl->W.active = true;
-				if (opt->arg[0] && strchr ("-+", opt->arg[0]) ) {	/* Definitively old-style args */
+				if (opt->arg[0] == '-' || (opt->arg[0] == '+' && opt->arg[1] != 'c')) {	/* Definitively old-style args */
 					if (gmt_M_compat_check (API->GMT, 5)) {	/* Sorry */
 						GMT_Report (API, GMT_MSG_NORMAL, "Your -W syntax is obsolete; see program usage.\n");
 						n_errors++;
@@ -837,6 +837,16 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				S.size_y = in[ex2];
 				if (delayed_unit_scaling[GMT_Y]) S.size_y *= GMT->session.u2u[S.u][GMT_INCH];
 			}
+			if (Ctrl->W.cpt_effect) {
+				if (Ctrl->W.pen.cptmode & 1) {	/* Change pen color via CPT */
+					gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
+					current_pen = Ctrl->W.pen;
+				}
+				if ((Ctrl->W.pen.cptmode & 2) == 0 && !Ctrl->G.active)	/* Turn off CPT fill */
+					gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
+				else if (Ctrl->G.active)
+					current_fill = Ctrl->G.fill;
+			}
 			data[n].dim[0] = S.size_x;
 			data[n].dim[1] = S.size_y;
 
@@ -980,7 +990,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					data[n].dim[3] = s * S.v.h_length;
 					data[n].dim[4] = s * S.v.h_width;
 					if (S.v.parsed_v4) {	/* Parsed the old ways so plot the old ways... */
-						dim[4] *= 0.5;	/* Since it was double in the parsing */
+						data[n].dim[4] *= 0.5;	/* Since it was double in the parsing */
 						data[n].symbol = GMT_SYMBOL_VECTOR_V4;
 						data[n].dim[5] = GMT->current.setting.map_vector_shape;
 					}
@@ -1062,16 +1072,6 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (S.user_unit[GMT_X]) data[n].flag |= 4;
 			if (S.user_unit[GMT_Y]) data[n].flag |= 8;
 
-			if (Ctrl->W.cpt_effect) {
-				if (Ctrl->W.pen.cptmode & 1) {	/* Change pen color via CPT */
-					gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
-					current_pen = Ctrl->W.pen;
-				}
-				if ((Ctrl->W.pen.cptmode & 2) == 0 && !Ctrl->G.active)	/* Turn off CPT fill */
-					gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
-				else if (Ctrl->G.active)
-					current_fill = Ctrl->G.fill;
-			}
 			n++;
 			if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
 		} while (true);
@@ -1219,6 +1219,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						v4_outline = Ctrl->W.active;
 						if (Ctrl->G.active)
 							v4_rgb = Ctrl->G.fill.rgb;
+						else if (Ctrl->C.active)
+							v4_rgb = data[i].f.rgb;
 						else
 							v4_rgb = GMT->session.no_rgb;
 						if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);

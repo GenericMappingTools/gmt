@@ -466,7 +466,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 			case 'W':	/* Pen settings */
 				Ctrl->W.active = true;
 				k = reset = 0;
-				if (strchr ("-+", opt->arg[0])) {	/* Definitively old-style args */
+				if (opt->arg[0] == '-' || (opt->arg[0] == '+' && opt->arg[1] != 'c')) {	/* Definitively old-style args */
 					if (opt->arg[k] == '+') Ctrl->W.cptmode = 1, k++;
 					if (opt->arg[k] == '-') Ctrl->W.cptmode = 3, k++;
 					j = (opt->arg[k] == 'a' || opt->arg[k] == 'c') ? k+1 : k;
@@ -478,12 +478,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 							case 'f': Ctrl->W.cptmode = 2; break;
 							default:  Ctrl->W.cptmode = 3; break;
 						}
+						if (!strncmp (&c[2], "lf", 2U) || !strncmp (&c[2], "fl", 2U))	/* Catch any odd +clf or +cfl modifiers */
+							Ctrl->W.cptmode = 3;
 						c[0] = 0;	/* Temporarily chop of */
 						reset = 1;
 					}
 					j = (opt->arg[0] == 'a' || opt->arg[0] == 'c') ? k+1 : k;
 				}
-				if (j == k) {	/* Set both */
+				if (j == k && opt->arg[j]) {	/* Set both */
 					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[0])) {
 						gmt_pen_syntax (GMT, 'W', " ", 0);
 						n_errors++;
@@ -491,7 +493,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 					else
 						Ctrl->W.pen[1] = Ctrl->W.pen[0];
 				}
-				else {	/* Gave a or c.  Because the user may say -Wcyan we must prevent this from being seen as -Wc and color yan! */
+				else if (opt->arg[j]) {	/* Gave a or c.  Because the user may say -Wcyan we must prevent this from being seen as -Wc and color yan! */
 					/* Get the argument following a or c and up to first comma, slash (or to the end) */
 					n = k+1;
 					while (!(opt->arg[n] == ',' || opt->arg[n] == '/' || opt->arg[n] == '\0')) n++;
@@ -1236,10 +1238,9 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 		Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
 		if (Ctrl->W.cpt_effect) {
-			if (Ctrl->W.cptmode & 1) {	/* Override pen color according to CPT */
-				gmt_get_rgb_from_z (GMT, P, cval, rgb);
+			gmt_get_rgb_from_z (GMT, P, cval, rgb);
+			if (Ctrl->W.cptmode & 1)	/* Override pen color according to CPT */
 				gmt_M_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
-			}
 			if (Ctrl->W.cptmode & 2)	/* Override label color according to CPT */
 				gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
 		}

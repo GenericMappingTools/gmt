@@ -748,7 +748,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'W':		/* Set line attributes */
 				Ctrl->W.active = true;
-				if (opt->arg[0] && strchr ("-+", opt->arg[0]) ) {	/* Definitively old-style args */
+				if (opt->arg[0] == '-' || (opt->arg[0] == '+' && opt->arg[1] != 'c')) {	/* Definitively old-style args */
 					if (gmt_M_compat_check (API->GMT, 5)) {	/* Sorry */
 						GMT_Report (API, GMT_MSG_NORMAL, "Your -W syntax is obsolete; see program usage.\n");
 						n_errors++;
@@ -784,7 +784,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Syntax error: Binary input data cannot have symbol information\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode && !Ctrl->C.active, "Syntax error: -E option +|-<pen> requires the -C option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Syntax error: -W modifier +c requires the -C option\n");
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->W.pen.cptmode + Ctrl->E.mode) == 3, "Syntax error: Conflicting -E and -W options regarding -C option application\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (Ctrl->W.pen.cptmode + Ctrl->E.mode) == 3, "Syntax error: Conflicting -E and -W options regarding -C option application\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.anchor && !Ctrl->G.active && !Ctrl->L.outline, "Syntax error: -L<modifiers> must include +p<pen> if -G not given\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -1424,6 +1424,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						int v4_outline = Ctrl->W.active;
 						if (Ctrl->G.active)
 							v4_rgb = Ctrl->G.fill.rgb;
+						else if (Ctrl->C.active)
+							v4_rgb = current_fill.rgb;
 						else
 							v4_rgb = GMT->session.no_rgb;
 						if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);
