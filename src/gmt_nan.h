@@ -45,11 +45,15 @@
 #	define gmt_M_make_dnan(x) (x = DBL_MAX)
 #	define gmt_M_is_fnan(x) ((x) == FLT_MAX)
 #	define gmt_M_is_dnan(x) ((x) == DBL_MAX)
+#	define gmt_M_is_finf(x) ((x) == FLT_MAX)
+#	define gmt_M_is_dinf(x) ((x) == DBL_MAX)
 #else
 #	define gmt_M_make_fnan(x) (x = (float) NAN)
 #	define gmt_M_make_dnan(x) (x = NAN)
 #	define gmt_M_is_fnan isnan
 #	define gmt_M_is_dnan isnan
+#	define gmt_M_is_finf isinf
+#	define gmt_M_is_dinf isinf
 #endif
 
 #endif /* _GMT_NAN_H */

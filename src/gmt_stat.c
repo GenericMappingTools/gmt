@@ -1466,6 +1466,7 @@ double gmt_tcrit (struct GMT_CTRL *GMT, double alpha, double nu) {
 		sign = -1.0;
 	}
 	t_low = gmt_zcrit (GMT, alpha);
+	if (gmt_M_is_dinf (t_low) || gmt_M_is_dnan (t_low)) return (t_low);
 	t_high = 5.0;
 	NU = irint(nu);
 	gmtstat_student_t_a (GMT, t_high, NU, &p_high);
