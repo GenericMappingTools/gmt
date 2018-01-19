@@ -151,6 +151,7 @@
 
 # Set LAPACK location. Use this when want to link with LAPACK and it's not found automatically
 #set (LAPACK_LIBRARY "V:/lapack-3.5.0/build/lib/liblapack.lib")
+#set (BLAS_LIBRARY "V:/lapack-3.5.0/build/lib/libblas.lib")
 
 ##
 ## Section 3: GMT features
