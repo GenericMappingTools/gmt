@@ -17,10 +17,11 @@
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: grdfill.c reads a grid that has one or more holes in
- * it flagged by NaNs and interpolates across the holes.
+ * it flagged by NaNs and interpolates across the holes given a choice
+ * of algorithm.
  *
  * Author:	Paul Wessel
- * Date:	7-FEB-2017
+ * Date:	7-JAN-2018
  * Version:	6 API
  */
 
@@ -31,10 +32,13 @@
 #define THIS_MODULE_PURPOSE	"Interpolate across holes in a grid"
 #define THIS_MODULE_KEYS	"<G{,>G}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-RVf"
+#define THIS_MODULE_OPTIONS	"-RVf"
 
-#define	ALG_CONSTANT	1
-#define ALG_SPLINE		2
+enum GRDFILL_mode {
+	ALG_CONSTANT,
+	ALG_NN,
+	ALG_SPLINE
+};
 
 struct GRDFILL_CTRL {
 	struct In {
@@ -84,6 +88,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify algorithm and parameters for in-fill:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c<value> Fill in NaNs with the constant <value>.\n");
+	//GMT_Message (API, GMT_TIME_NONE, "\t   n<radius> Fill in NaNs with nearest neighbor values;\n");
+//	GMT_Message (API, GMT_TIME_NONE, "\t   append <max_radius> nodes for the outward search.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G <outgrid> is the file to write the filled-in grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Just list the subregions w/e/s/n of each hole.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   No grid fill takes place and -G is ignored.\n");
@@ -130,9 +136,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 			case 'A':
 				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
-					case 'c':	/* COnstant fill */
+					case 'c':	/* Constant fill */
+						Ctrl->A.mode = ALG_CONSTANT;
 						Ctrl->A.value = atof (&opt->arg[1]);
 						break;
+					case 'n':	/* Nearest neighbor fill */
+						Ctrl->A.mode = ALG_NN;
+						Ctrl->A.value = atof (&opt->arg[1]);
+						break;
+					default:
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: Unrecognized algorithm (%c)\n", opt->arg[0]);
+						n_errors++;
 				}
 				break;
 
@@ -278,6 +292,149 @@ GMT_LOCAL unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsign
 	return (n_nodes);
 }
 
+GMT_LOCAL int find_nearest (int i, int j, int *r2, int *is, int *js, int *xs, int *ys) {
+
+    // function to find the nearest point based on previous search, smallest distance ourside a radius
+    int ct=0,nx,ny,nx1,ii,k=0;
+    int rr;
+    
+    rr = *r2+1e7;
+    
+    // starting with nx = ny
+    nx = (int)(sqrt((double)(*r2)/2.0));
+    // loop over possible nx, find smallest rr
+    for (nx1=nx;nx1<=(int)sqrt((double)(*r2))+1;nx1++) {
+        if (nx1*nx1 < *r2) ny = (int)(sqrt((*r2)-nx1*nx1));
+        else ny = 0;
+        while (nx1*nx1+ny*ny <= (*r2) && ny<=nx1) {
+            ny++;
+        }
+        if (ny<=nx1) {
+            if (rr>nx1*nx1+ny*ny) {
+                k = 0;
+                rr = nx1*nx1+ny*ny;
+                xs[k] = nx1;
+                ys[k] = ny;
+            }
+            else if (rr == nx1*nx1+ny*ny) {
+                k++;
+                xs[k] = nx1;
+                ys[k] = ny;
+            }
+        }
+    }
+
+    // return the grid index, changing the order may lead to different solution, but mainly because nearest-neighbor is non-unique
+    for (ii=0;ii<=k;ii++) {
+        nx = xs[ii];
+        ny = ys[ii];
+
+        if (ny == 0 ) {
+            js[ct+0] = 0;  js[ct+1] = 0;   js[ct+2] = nx; js[ct+3] = -nx;
+            is[ct+0] = nx; is[ct+1] = -nx; is[ct+2] = 0;  is[ct+3] = 0;
+            ct = ct+4;
+        }
+        else if (nx != ny){
+            js[ct+0] = ny; js[ct+1] = ny;  js[ct+2] = -ny; js[ct+3] = -ny; js[ct+4] = nx; js[ct+5] = -nx; js[ct+6] = nx;  js[ct+7] = -nx;
+            is[ct+0] = nx; is[ct+1] = -nx; is[ct+2] = nx;  is[ct+3] = -nx; is[ct+4] = ny; is[ct+5] = ny;  is[ct+6] = -ny; is[ct+7] = -ny; 
+            ct = ct+8;
+        }
+        else {
+            js[ct+0] = nx; js[ct+1] = nx; js[ct+2] = -nx;  js[ct+3] = -nx;
+            is[ct+0] = nx; is[ct+1] = -nx;  is[ct+2] = nx; is[ct+3] = -nx;
+            ct = ct+4;
+        }
+    }
+
+    for (ii=0;ii<ct;ii++) {
+        is[ii] = is[ii]+i;
+        js[ii] = js[ii]+j;
+    }
+
+    *r2 = rr;
+
+    // return the indexes of the nearest neighbor
+    return(ct);
+
+}
+
+// GMT_LOCAL double nearest_interp(int nx,int ny, float *m, float *m_interp,int radius) {
+GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct GMT_GRID *Out, uint64_t radius) {
+	uint64_t ij;
+	float *m = NULL, *m_interp = NULL;
+	int nx = In->header->n_columns;
+	int ny = In->header->n_rows;
+ 	int i,j,flag,ct,k,kt,kk=1,recx=1,recy=1;
+ 	int *is, *js, *xs, *ys;
+ 	int cs=0;
+ 	int rr;
+	gmt_M_unused(GMT);
+ 	
+ 	// malloc memory for temporary indexes
+ 	is = (int *)malloc(sizeof(int)*2048);
+ 	js = (int *)malloc(sizeof(int)*2048);
+ 	xs = (int *)malloc(sizeof(int)*512);
+ 	ys = (int *)malloc(sizeof(int)*512);
+	m_interp = Out->data;
+	m = In->data;
+
+	printf("Interpolating to nearest neighbour...\n  ");
+	fprintf(stderr,"Working on line  ");
+	// loop over each line
+	gmt_M_row_loop (GMT, In, i) {
+        for (k=0;k<kk;k++) fprintf(stderr,"\b");
+        fprintf(stderr,"%d ...",i+1);
+        kk = floor(log10 ((double)(i+1)))+1+4;
+        rr = 0; 
+        // loop over each row
+	gmt_M_col_loop (GMT, In, i, j, ij) {
+            // if it's not NaN, copy value
+            if (gmt_M_is_fnan (m[ij]) == false) {
+                //m_interp[ij] = m[i*nx+j];	ALready duplicated in main
+                rr = 0;
+            }
+            // if it's NaN, search nearest neighbor, use previous nearest distance to exclude certain search area.
+            else {
+                flag=0;
+                // set the starting search radius based on last nearest distance
+                if (rr >= 4 && recy > 0 && recx > 0) rr = (recx-1)*(recx-1)+(recy-1)*(recy-1)-1;
+                else if (rr >= 4 && recy == 0 && recx > 0) rr = (recx-1)*(recx-1)-1;
+                else if (rr >= 4 && recy > 0 && recx == 0) rr = (recy-1)*(recy-1)-1;
+                else rr = 0;
+
+                while (flag == 0 && rr <= (double)(radius*radius)) {
+                    ct = find_nearest(i,j,&rr,is,js,xs,ys);
+                    cs++;
+                    for (k=0;k<ct;k++) {
+                        if (is[k]>=0 && is[k]<ny && js[k]>=0 && js[k]<nx) {
+                            if (isnan(m[is[k]*nx+js[k]]) == 0) {
+                                m_interp[i*nx+j] = m[is[k]*nx+js[k]];
+                                flag = 1;
+                                kt = k;
+                                recx = abs(is[k]-i);
+                                recy = abs(js[k]-j);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+            }
+        if (i == 0 && rr == -1) fprintf(stderr,"(%d %d %d %d)\n",j,rr,recx,recy);
+
+        }
+
+    }
+    fprintf(stderr,"\n");
+
+    printf("%d number of searches used ...\n",cs);
+
+    free(is);
+    free(js);
+    free(xs);
+    free(ys);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -333,6 +490,23 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 	}
 	else if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, Grid) == NULL) {
 		Return (API->error);	/* Get all */
+	}
+	
+	if (Ctrl->A.mode == ALG_NN) {	/* Do Eric Xu's NN algorithm */
+		uint64_t radius = lrint (Ctrl->A.value);
+		struct GMT_GRID *New = NULL;
+		if ((New = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, Grid)) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to duplicate input grid!\n");
+			Return (API->error);	/* Get subset */
+		}
+		//nearest_interp (nx,ny,m,m_interp,rr);	/* Perform the NN replacements */
+		nearest_interp (GMT, Grid, New, radius);	/* Perform the NN replacements */
+		
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, New)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to write output grid!\n");
+			Return (API->error);
+		}
+		Return (GMT_NOERROR);
 	}
 	
 	/* To avoid having to check every row,col for being inside the grid we set
