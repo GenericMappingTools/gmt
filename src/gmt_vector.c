@@ -995,7 +995,7 @@ int gmt_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int nu, double *b
 }
 
 #ifndef __APPLE__	/* Since it is already declared in Accelerate.h */
-	extern int dsyev_ (char* jobz, char* uplo, int* n, double* a, int* lda, double* w, double* work, int* lwork, int* info);
+extern int dsyev_ (char* jobz, char* uplo, int* n, double* a, int* lda, double* w, double* work, int* lwork, int* info);
 #endif
 
 int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v) {
@@ -1215,7 +1215,9 @@ void gmt_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3
 /* Things to use if figuring out blas calls to speed up these multiplications:
  * Then, if LAPACK is true then gmt_matrix_matrix_mult should call dgemm_ instead of plain code.
  */
+#ifndef __APPLE__	/* Since it is already declared in Accelerate.h */
 extern int dgemm_ (char* tra, char* trb, int* na, int* nb, int* nc, double* alpha, double* a, int *nd, double* b, int *ne, double* beta, double* c, int* nf);
+#endif
 
 void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_rowsB, uint64_t n_colsB, double *C) {
 #ifdef HAVE_LAPACK

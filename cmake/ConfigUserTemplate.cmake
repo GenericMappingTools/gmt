@@ -61,6 +61,7 @@
 #set (GMT_EXCLUDE_PCRE TRUE)
 #set (GMT_EXCLUDE_FFTW3 TRUE)
 #set (GMT_EXCLUDE_LAPACK TRUE)
+#set (GMT_EXCLUDE_BLAS TRUE)
 #set (GMT_EXCLUDE_ZLIB TRUE)
 
 # ============================================================================
