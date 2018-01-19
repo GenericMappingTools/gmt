@@ -25,6 +25,10 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
+#ifdef HAVE_BLAS
+#include <cblas.h>
+#endif
+
 #define MAX_SWEEPS 50
 
 struct GMT_SINGULAR_VALUE {	/* Used for sorting of eigenvalues in the SVD functions */
