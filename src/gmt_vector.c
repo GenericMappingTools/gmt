@@ -25,8 +25,10 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
+#ifndef __APPLE__	/* Since it is already declared in Accelerate.h */
 #ifdef HAVE_BLAS
 #include <cblas.h>
+#endif
 #endif
 
 #define MAX_SWEEPS 50

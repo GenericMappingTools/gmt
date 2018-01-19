@@ -52,6 +52,9 @@
 /* compile with LAPACK support */
 #cmakedefine HAVE_LAPACK
 
+/* compile with BLAS support */
+#cmakedefine HAVE_BLAS
+
 /* compile with FFTW3 support <fftw3.h> */
 #cmakedefine HAVE_FFTW3F
 #cmakedefine HAVE_FFTW3F_THREADS
