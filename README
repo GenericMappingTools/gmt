@@ -82,7 +82,9 @@ LAPACK (optional)
 To greatly speed up some linear algebra calculations (greenspline in 
 particular) you must have the LAPACK library and include files installed.
 LAPACK is available through your favorite package manager on many *NIX
-systems or in the case of OS X is built in.
+systems or in the case of OS X is built in.  Normally this also installs
+BLAS but if not you need to do that separately as we are using some
+cblas_* functions to do linear algebra calculations.
 
 
 Install support data
