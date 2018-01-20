@@ -88,8 +88,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify algorithm and parameters for in-fill:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c<value> Fill in NaNs with the constant <value>.\n");
-	//GMT_Message (API, GMT_TIME_NONE, "\t   n<radius> Fill in NaNs with nearest neighbor values;\n");
+//	GMT_Message (API, GMT_TIME_NONE, "\t   n<radius> Fill in NaNs with nearest neighbor values;\n");
 //	GMT_Message (API, GMT_TIME_NONE, "\t   append <max_radius> nodes for the outward search.\n");
+//	GMT_Message (API, GMT_TIME_NONE, "\t   [Default radius is sqrt(xn^2+by^2)]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G <outgrid> is the file to write the filled-in grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Just list the subregions w/e/s/n of each hole.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   No grid fill takes place and -G is ignored.\n");
@@ -142,7 +143,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 						break;
 					case 'n':	/* Nearest neighbor fill */
 						Ctrl->A.mode = ALG_NN;
-						Ctrl->A.value = atof (&opt->arg[1]);
+						Ctrl->A.value = (opt->arg[1]) ? atof (&opt->arg[1]) : -1;
 						break;
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A: Unrecognized algorithm (%c)\n", opt->arg[0]);
@@ -362,6 +363,7 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
  	int64_t i, j, flag, ct, k, kt, kk = 1, recx = 1, recy = 1, cs = 0, rr;
  	int64_t *is = NULL, *js = NULL, *xs = NULL, *ys = NULL;
 	float *m = In->data, *m_interp = Out->data;	/* Short-hand for input and output grids */
+	double rad2;
  	
  	/* Allocate memory for temporary indexes */
  	is = gmt_M_memory (GMT, NULL, 2048, int64_t);
@@ -369,6 +371,10 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
  	xs = gmt_M_memory (GMT, NULL, 512, int64_t);
  	ys = gmt_M_memory (GMT, NULL, 512, int64_t);
 
+	if (radius == -1)	/* Set default radius */
+		radius = (int64_t)floor (sqrt (nx&nx + ny*ny));
+	rad2 = (double)(radius * radius);
+	
 	GMT_Report (GMT, GMT_MSG_LONG_VERBOSE, "Interpolating to nearest neighbour...\n");
 	gmt_M_row_loop (GMT, In, i) {	/* Loop over each row in grid */
  		GMT_Report (GMT, GMT_MSG_LONG_VERBOSE, "Working on row %" PRIi64 "\n", i);
@@ -385,26 +391,28 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 				else if (rr >= 4 && recy > 0 && recx == 0) rr = (recy-1)*(recy-1)-1;
 				else rr = 0;
 
-				while (flag == 0 && rr <= (double)(radius*radius)) {
+				while (flag == 0 && rr <= rad2) {
 					ct = find_nearest (i, j, &rr, is, js, xs, ys);
 					cs++;
-					for (k = 0; k < ct; k++) {
-						if (is[k] >= 0 && is[k] < ny && js[k] >=0 && js[k] < nx) {
-							node = gmt_M_ijp (In->header, is[k], js[k]);
-							if (!gmt_M_is_fnan (m[node])) {
-								m_interp[ij] = m[node];
-								flag = 1;
-								kt = k;
-								recx = labs (is[k]-i);
-								recy = labs (js[k]-j);
-								break;
+					if (rr <= rad2) {
+						for (k = 0; k < ct; k++) {
+							if (is[k] >= 0 && is[k] < ny && js[k] >=0 && js[k] < nx) {
+								node = gmt_M_ijp (In->header, is[k], js[k]);
+								if (!gmt_M_is_fnan (m[node])) {
+									m_interp[ij] = m[node];
+									flag = 1;
+									kt = k;
+									recx = labs (is[k]-i);
+									recy = labs (js[k]-j);
+									break;
+								}
 							}
 						}
 					}
 				}
 			}
 			if (i == 0 && rr == -1)
-				GMT_Report (GMT, GMT_MSG_DEBUG, "(%d %d %d %d)\n",j,rr,recx,recy);
+				GMT_Report (GMT, GMT_MSG_DEBUG, "(%d %d %d %d)\n", j, rr, recx, recy);
 		}
 	}
 
@@ -474,7 +482,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 	}
 	
 	if (Ctrl->A.mode == ALG_NN) {	/* Do Eric Xu's NN algorithm */
-		uint64_t radius = lrint (Ctrl->A.value);
+		int64_t radius = lrint (Ctrl->A.value);
 		struct GMT_GRID *New = NULL;
 		if ((New = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, Grid)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to duplicate input grid!\n");
