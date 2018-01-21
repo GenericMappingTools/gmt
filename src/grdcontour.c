@@ -895,7 +895,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	char *cont_type = NULL, *cont_do_tick = NULL;
 	char cont_label[GMT_LEN256] = {""}, format[GMT_LEN256] = {""};
 
-	double aval, cval, small, xyz[2][3], z_range, t_offset = 0.0, wesn[4], rgb[4], c_length;
+	double aval, cval, small, xyz[2][3], z_range, t_offset = 0.0, wesn[4], rgb[4], c_length = 0.0;
 	double *xp = NULL, *yp = NULL, *contour = NULL, *x = NULL, *y = NULL, *cont_angle = NULL;
 
 	struct GRDCONTOUR_CTRL *Ctrl = NULL;

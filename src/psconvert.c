@@ -617,7 +617,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0, mode;
-	int j;
+	int j = 0;
 	bool grayscale, halfbaked = false;
 	struct GMT_OPTION *opt = NULL;
 
@@ -1350,7 +1350,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	double xt, yt, xt_bak, yt_bak, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0;
-	double gmtBB_x0, gmtBB_y0, gmtBB_height = 0, gmtBB_width = 0;
+	double gmtBB_x0 = 0.0, gmtBB_y0 = 0.0, gmtBB_height = 0, gmtBB_width = 0;
 	double old_scale_x = 1, old_scale_y = 1;
 
 	size_t n_alloc = GMT_SMALL_CHUNK;
