@@ -192,7 +192,7 @@ EXTERN_MSC struct GMT_DATASET * gmtlib_create_dataset (struct GMT_CTRL *GMT, uin
 EXTERN_MSC struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, unsigned int source_type, bool greenwich, unsigned int *geometry, unsigned int *datatype, bool use_GMT_io);
 EXTERN_MSC int gmtlib_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, struct GMT_DATASET *D, bool use_GMT_io, int table);
 EXTERN_MSC void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P);
-EXTERN_MSC int gmtlib_append_ogr_item (struct GMT_CTRL *GMT, char *name, unsigned int type, struct GMT_OGR *S);
+EXTERN_MSC int gmtlib_append_ogr_item (struct GMT_CTRL *GMT, char *name, enum GMT_enum_type type, struct GMT_OGR *S);
 EXTERN_MSC void gmtlib_write_ogr_header (FILE *fp, struct GMT_OGR *G);
 EXTERN_MSC struct GMT_IMAGE * gmtlib_create_image (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmtlib_free_image (struct GMT_CTRL *GMT, struct GMT_IMAGE **I, bool free_image);
