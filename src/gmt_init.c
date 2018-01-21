@@ -196,6 +196,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 0, "GMT_VERBOSE"},
 	{ 1, "I/O Parameters"},
 	{ 0, "IO_COL_SEPARATOR"},
+	{ 0, "IO_FIRST_HEADER"},
 	{ 0, "IO_GRIDFILE_FORMAT"},
 	{ 0, "IO_GRIDFILE_SHORTHAND"},
 	{ 0, "IO_HEADER"},
@@ -5143,6 +5144,8 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 
 	/* IO_COL_SEPARATOR */
 	strcpy (GMT->current.setting.io_col_separator, "\t");
+	/* IO_FIRST_HEADER */
+	GMT->current.setting.io_first_header = 0;
 	/* IO_GRIDFILE_FORMAT */
 	strcpy (GMT->current.setting.io_gridfile_format, "nf");
 	/* IO_GRIDFILE_SHORTHAND */
@@ -8897,6 +8900,16 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				strncpy (GMT->current.setting.io_col_separator, value, 8U);
 			GMT->current.setting.io_col_separator[7] = 0;	/* Just a precaution */
 			break;
+		case GMTCASE_IO_FIRST_HEADER:
+			if (!strcmp (lower_value, "maybe"))
+				GMT->current.setting.io_first_header = GMT_FIRST_SEGHEADER_MAYBE;
+			else if (!strcmp (lower_value, "always"))
+				GMT->current.setting.io_first_header = GMT_FIRST_SEGHEADER_ALWAYS;
+			else if (!strcmp (lower_value, "never"))
+				GMT->current.setting.io_first_header = GMT_FIRST_SEGHEADER_NEVER;
+			else
+				error = true;
+			break;
 		case GMTCASE_GRIDFILE_FORMAT:
 			GMT_COMPAT_TRANSLATE ("IO_GRIDFILE_FORMAT");
 			break;
@@ -10104,6 +10117,14 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				strcpy (value, "none");
 			else
 				strncpy (value, GMT->current.setting.io_col_separator, GMT_LEN256-1);
+			break;
+		case GMTCASE_IO_FIRST_HEADER:
+			if (GMT->current.setting.io_first_header == GMT_FIRST_SEGHEADER_MAYBE)
+				strcpy (value, "maybe");
+			else if (GMT->current.setting.io_first_header == GMT_FIRST_SEGHEADER_ALWAYS)
+				strcpy (value, "always");
+			else
+				strcpy (value, "never");
 			break;
 		case GMTCASE_GRIDFILE_FORMAT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */

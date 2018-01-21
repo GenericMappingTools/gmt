@@ -109,6 +109,7 @@ struct GMT_DEFAULTS {
 	unsigned int io_nan_mode;		/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */
 	size_t io_nc4_chunksize[2];         /* NetCDF chunk size (lat,lon) on output [0] */
 	unsigned int io_nc4_deflation_level;/* NetCDF deflation level on output [0] */
+	unsigned int io_first_header;       /* 2 means never write single-segment header, 1 means we always write segment header, 0 means write if needed [0] */
 	bool io_gridfile_shorthand;         /* Use shorthand suffix notation for embedded grid file formats [false] */
 	bool io_header[2];                  /* Input & Output data has header records [false, false] */
 	bool io_header_orig;                /* Copy of Input io_header */

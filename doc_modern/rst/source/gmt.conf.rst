@@ -525,6 +525,14 @@ fonts can be found in the :doc:`gmt` man page.
     data columns written by GMT. Choose from tab, space, comma, and
     none [tab].
 
+.. _IO_FIRST_HEADER:
+
+**IO_FIRST_HEADER**
+    This setting determines if the first segment header is written when
+    there is only a single segment (for multiple segment it must be written).
+    By default, such single-segment headers are only written if the header
+    has contents. Choose from always, never, or maybe [maybe].
+
 .. _IO_GRIDFILE_FORMAT:
 
 **IO_GRIDFILE_FORMAT**

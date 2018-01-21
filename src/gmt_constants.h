@@ -196,6 +196,12 @@ enum GMT_enum_tracklayout {
 	GMT_RIGHT_ONLY = 8,
 	GMT_ALTERNATE = 16};
 
+/*! Codes for first segment header */
+enum GMT_enum_firstseg {
+	GMT_FIRST_SEGHEADER_MAYBE = 0,
+	GMT_FIRST_SEGHEADER_ALWAYS,
+	GMT_FIRST_SEGHEADER_NEVER};
+
 /*! Return codes from gmt_inonout */
 enum GMT_enum_inside {
 	GMT_OUTSIDE = 0,

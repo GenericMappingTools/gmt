@@ -375,9 +375,9 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 		radius = (int64_t)floor (sqrt (nx&nx + ny*ny));
 	rad2 = (double)(radius * radius);
 	
-	GMT_Report (GMT, GMT_MSG_LONG_VERBOSE, "Interpolating to nearest neighbour...\n");
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Interpolating to nearest neighbour...\n");
 	gmt_M_row_loop (GMT, In, i) {	/* Loop over each row in grid */
- 		GMT_Report (GMT, GMT_MSG_LONG_VERBOSE, "Working on row %" PRIi64 "\n", i);
+ 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Working on row %" PRIi64 "\n", i);
 		kk = floor(log10 ((double)(i+1))) + 1 + 4;
 		rr = 0; 
 		gmt_M_col_loop (GMT, In, i, j, ij) {	/* Loop over all columns */
@@ -412,11 +412,11 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 				}
 			}
 			if (i == 0 && rr == -1)
-				GMT_Report (GMT, GMT_MSG_DEBUG, "(%d %d %d %d)\n", j, rr, recx, recy);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "(%d %d %d %d)\n", j, rr, recx, recy);
 		}
 	}
 
-	GMT_Report (GMT, GMT_MSG_LONG_VERBOSE, "%" PRIi64 " number of searches used\n", cs);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%" PRIi64 " number of searches used\n", cs);
 
 	gmt_M_free (GMT, is);
 	gmt_M_free (GMT, js);

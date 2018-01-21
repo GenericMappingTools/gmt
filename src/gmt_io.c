@@ -3573,7 +3573,17 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 			gmtlib_write_newheaders (GMT, fp, table->n_columns);	/* Write general header block */
 		}
 		if (TH->ogr) gmtlib_write_ogr_header (fp, TH->ogr);	/* Must write OGR/GMT header */
-		GMT->current.io.multi_segments[GMT_OUT] = (n_seg > 1 || (table->n_segments == 1 && table->segment[0]->header));
+		switch (GMT->current.setting.io_first_header) {
+			case GMT_FIRST_SEGHEADER_MAYBE:
+				GMT->current.io.multi_segments[GMT_OUT] = (n_seg > 1 || (table->n_segments == 1 && table->segment[0]->header));
+				break;
+			case GMT_FIRST_SEGHEADER_ALWAYS:
+				GMT->current.io.multi_segments[GMT_OUT] = true;
+				break;
+			case GMT_FIRST_SEGHEADER_NEVER:
+				GMT->current.io.multi_segments[GMT_OUT] = (n_seg >1);
+				break;
+		}
 	}
 
 	out = gmt_M_memory (GMT, NULL, table->n_columns, double);

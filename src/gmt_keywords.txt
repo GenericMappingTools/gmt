@@ -74,6 +74,7 @@ GMT_VERBOSE			# Verbosity level
 # IO Group:	I/O settings
 #-------------------------------------------------------
 IO_COL_SEPARATOR		# Column separator for output data records
+IO_FIRST_HEADER			# Always write first segment header or just when required
 IO_GRIDFILE_FORMAT		# Default gridfile format to use
 IO_GRIDFILE_SHORTHAND		# Should we decode file extensions for gridformat details?
 IO_HEADER			# Are there header records?
