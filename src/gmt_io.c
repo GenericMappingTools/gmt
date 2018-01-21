@@ -7311,12 +7311,14 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 					gmt_prep_tmp_arrays (GMT, GMT_IN, row, S->n_columns);	/* Maybe reallocate tmp read vectors */
 					for (col = 0; col < S->n_columns; col++) GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][0];
 					row++;	/* Explicitly close polygon */
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Explicitly closed open geographic polygon in file %s, segment %" PRIu64 "\n", file, seg);
 				}
 			}
 			else if (gmt_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row)) {	/* Cartesian closure */
 				gmt_prep_tmp_arrays (GMT, GMT_IN, row, S->n_columns);	/* Init or update tmp read vectors */
 				for (col = 0; col < S->n_columns; col++) GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][0];
 				row++;	/* Explicitly close polygon */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Explicitly closed open Cartesian polygon in file %s, segment %" PRIu64 "\n", file, seg);
 			}
 			if (gmt_parse_segment_item (GMT, S->header, "-Ph", NULL)) SH->pol_mode = GMT_IS_HOLE;
 			/* If this is a hole then set link from previous segment to this one */
