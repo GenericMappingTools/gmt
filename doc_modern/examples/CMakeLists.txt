@@ -109,7 +109,7 @@ add_custom_target (_docs_examples_verbatim DEPENDS ${_examples_txt})
 add_depend_to_target (docs_depends _docs_examples_fig _docs_examples_verbatim)
 
 # Animations
-if (UNIX)
+if (UNIX AND DO_ANIMATIONS)
 	configure_file (animate.in animate @ONLY)
 
 	foreach (_num 01 02 03 04 05)
@@ -159,7 +159,7 @@ if (UNIX)
 		COMMENT "Removing animations")
 	# register with spotless target
 	add_depend_to_target (spotless _anim_clean)
-endif (UNIX)
+endif (UNIX AND DO_ANIMATIONS)
 
 # run examples (test)
 if (MODERNIZE_TESTS)
