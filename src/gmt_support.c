@@ -10000,7 +10000,7 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 
 void gmt_set_inside_mode (struct GMT_CTRL *GMT, double *lat, unsigned int mode) {
 	/* Determine if we use spherical or Cartesian function for in--on-out polygon tests */
-	static char *type[2] = {"Cartesian", "spherical"};
+	static char *method[2] = {"Cartesian", "spherical"};
 	if (mode == GMT_IOO_SPHERICAL)
 		GMT->current.proj.sph_inside = true;
 	else if (mode == GMT_IOO_CARTESIAN)
@@ -10013,7 +10013,7 @@ void gmt_set_inside_mode (struct GMT_CTRL *GMT, double *lat, unsigned int mode) 
 		GMT->current.proj.sph_inside = true;
 	else
 		GMT->current.proj.sph_inside = false;
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "In-on-out function is %s\n", type[GMT->current.proj.sph_inside]);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "A point's inside/outside status w.r.t. polygon(s) will be determined using a %s algorithm.\n", method[GMT->current.proj.sph_inside]);
 }
 
 /*! . */

@@ -332,13 +332,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		}
 		else	/* REad x, y, radius */
 			n_cols = 3;
-	}
-	else {
-		char *method[2] = {"Cartesian non-zero winding", "spherical ray-intersection"};
-		int use = gmt_M_is_geographic (GMT, GMT_IN);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Node status w.r.t. the polygon(s) will be determined using a %s algorithm.\n", method[use]);
-	}
-	
+	}	
 	
 	periodic = gmt_M_is_geographic (GMT, GMT_IN);	/* Dealing with geographic coordinates */
 	gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
@@ -390,8 +384,10 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		}
 	}
 
-	lats[0] = D->min[GMT_Y]; lats[1] = D->max[GMT_Y];
-	gmt_set_inside_mode (GMT, lats, GMT_IOO_UNKNOWN);
+	if (!Ctrl->S.active) {
+		lats[0] = D->min[GMT_Y]; lats[1] = D->max[GMT_Y];
+		gmt_set_inside_mode (GMT, lats, GMT_IOO_UNKNOWN);
+	}
 
 	for (tbl = n_pol = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++, n_pol++) {	/* For each segment in the table */

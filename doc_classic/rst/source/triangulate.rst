@@ -193,6 +193,8 @@ Optional Arguments
 
 .. include:: explain_float.rst_
 
+.. include:: explain_inside.rst_
+
 Examples
 --------
 

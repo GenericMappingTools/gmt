@@ -157,6 +157,8 @@ Optional Arguments
 
 .. include:: explain_grd_coord.rst_
 
+.. include:: explain_inside.rst_
+
 Notes
 -----
 

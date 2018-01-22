@@ -123,7 +123,8 @@ Optional Arguments
 .. include:: ../../explain_help.rst_
 
 .. include:: explain_geodetic.rst_
-------------------
+
+.. include:: explain_inside.rst_
 
 Examples
 --------

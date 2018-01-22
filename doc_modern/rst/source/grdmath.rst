@@ -685,6 +685,8 @@ Notes On Operators
 
 .. include:: explain_gshhs.rst_
 
+.. include:: explain_inside.rst_
+
 Macros
 ------
 

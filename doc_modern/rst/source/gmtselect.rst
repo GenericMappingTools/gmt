@@ -326,6 +326,8 @@ and 5th column values are all negative, try
 
 .. include:: explain_gshhs.rst_
 
+.. include:: explain_inside.rst_
+
 
 See Also
 --------
