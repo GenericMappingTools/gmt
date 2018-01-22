@@ -194,5 +194,6 @@ See Also
 
 :doc:`gmt`,
 :doc:`grd2xyz`,
+:doc:`grdfill`,
 :doc:`grdinfo`
 :doc:`xyz2grd`

@@ -54,8 +54,9 @@ struct GRDFILL_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L */
+	struct L {	/* -L[p] */
 		bool active;
+		unsigned int mode;	/* 0 = region, 1 = polygons */
 	} L;
 };
 
@@ -79,7 +80,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdfill <ingrid> [-A<mode><options>] [-G<outgrid>] [-L]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdfill <ingrid> [-A<mode><options>] [-G<outgrid>] [-L[p]]\n\t[%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -94,6 +95,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G <outgrid> is the file to write the filled-in grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Just list the subregions w/e/s/n of each hole.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   No grid fill takes place and -G is ignored.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append p to write polygons corresponding to these regions.\n");
 	GMT_Option (API, "R,V,f,.");
 
 	return (GMT_MODULE_USAGE);
@@ -163,6 +165,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT
 
 			case 'L':
 				Ctrl->L.active = true;
+				if (opt->arg[0] == 'p')
+					Ctrl->L.mode = 1;
 				break;
 	
 			default:	/* Report bad options */
@@ -267,7 +271,7 @@ GMT_LOCAL void do_splinefill (struct GMT_GRID *G, double wesn[], unsigned int li
 
 GMT_LOCAL unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsigned int row, unsigned int col, int64_t *step, char *ID, unsigned int limit[]) {
 	/* Determine all the direct neighbor nodes in the W/E/S/N directions that are also NaN, recursively.
-	 * This is a limited form of Moore neighborhood called Von Neumann neighborhoold since we only do the
+	 * This is a limited form of Moore neighborhood called Von Neumann neighborhood since we only do the
 	 * four cardinal directions and ignore the diagonals.  Ignoring the diagonal means two holes that
 	 * touch at a diagonal will be encoded as two separate holes whereas a full Moore neighborhood
 	 * calculation would find a single hole.  For our purposes (filling in the hole), smaller holes
@@ -277,7 +281,7 @@ GMT_LOCAL unsigned int trace_the_hole (struct GMT_GRID *G, uint64_t node, unsign
 	int64_t ij;
 	
 	for (side = 0; side < 4; side++) {	/* For each of the 4 cardinal directions */
-		ij = node + step[side];	/* This is the grid node (and ID node) of this cardinal point */
+		ij = node + step[side];		/* This is the grid node (and ID node) of this cardinal point */
 		if (ID[ij] == 0 && gmt_M_is_fnan (G->data[ij])) {	/* Hole extends in this direction, follow it to its next neighbor */
 			next_row  = (unsigned int)(row + drow[side]);	/* Set col and row of next point */
 			next_rcol = (unsigned int)(col + dcol[side]);
@@ -297,7 +301,7 @@ GMT_LOCAL int64_t find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, 
 	/* function to find the nearest point based on previous search, smallest distance ourside a radius */
 	int64_t ct = 0, nx, ny, nx1, ii, k = 0, rr;
     
-	rr = *r2 + 1e7;
+	rr = INTMAX_MAX;	/* Ensure we reset this the first time */
     
 	/* starting with nx = ny */
 	nx = (int64_t)(sqrt((double)(*r2)/2.0));
@@ -360,7 +364,7 @@ GMT_LOCAL int64_t find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, 
 GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct GMT_GRID *Out, int64_t radius) {
 	uint64_t ij, node;
 	int64_t nx = In->header->n_columns, ny = In->header->n_rows;
- 	int64_t i, j, flag, ct, k, kt, kk = 1, recx = 1, recy = 1, cs = 0, rr;
+ 	int64_t i, j, flag, ct, k, recx = 1, recy = 1, cs = 0, rr;
  	int64_t *is = NULL, *js = NULL, *xs = NULL, *ys = NULL;
 	float *m = In->data, *m_interp = Out->data;	/* Short-hand for input and output grids */
 	double rad2;
@@ -378,7 +382,6 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Interpolating to nearest neighbour...\n");
 	gmt_M_row_loop (GMT, In, i) {	/* Loop over each row in grid */
  		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Working on row %" PRIi64 "\n", i);
-		kk = floor(log10 ((double)(i+1))) + 1 + 4;
 		rr = 0; 
 		gmt_M_col_loop (GMT, In, i, j, ij) {	/* Loop over all columns */
 			if (!gmt_M_is_fnan (m[ij]))	/* Already duplicated in the calling program */
@@ -401,7 +404,6 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 								if (!gmt_M_is_fnan (m[node])) {
 									m_interp[ij] = m[node];
 									flag = 1;
-									kt = k;
 									recx = labs (is[k]-i);
 									recy = labs (js[k]-j);
 									break;
@@ -481,14 +483,13 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 		Return (API->error);	/* Get all */
 	}
 	
-	if (Ctrl->A.mode == ALG_NN) {	/* Do Eric Xu's NN algorithm */
+	if (Ctrl->A.mode == ALG_NN) {	/* Do Eric Xu's NN algorithm and bail */
 		int64_t radius = lrint (Ctrl->A.value);
 		struct GMT_GRID *New = NULL;
 		if ((New = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, Grid)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to duplicate input grid!\n");
-			Return (API->error);	/* Get subset */
+			Return (API->error);
 		}
-		//nearest_interp (nx,ny,m,m_interp,rr);	/* Perform the NN replacements */
 		nearest_interp (GMT, Grid, New, radius);	/* Perform the NN replacements */
 		
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, New)) {
@@ -517,7 +518,7 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 	off[0] = Grid->header->mx;	off[1] = 1; 	off[2] = -off[0]; off[3] = -off[1];
 	
 	if (Ctrl->L.active) {
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, (Ctrl->L.mode) ? GMT_IS_POLYGON : GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
@@ -526,9 +527,10 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
 		}
-		if ((error = GMT_Set_Columns (API, GMT_OUT, 4, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 2 + 2*Ctrl->L.mode, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (API->error);
 		}
+		if (Ctrl->L.mode) gmt_set_segmentheader (GMT, GMT_OUT, true);
 	}
 	
 	Out = gmt_new_record (GMT, wesn, NULL);	/* Since we only need to worry about numerics in this module */
@@ -541,14 +543,29 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 			++hole_number;	/* Increase the current hole number */
 			/* Trace all the contiguous neighbors, updating the bounding box as we go along */
 			n_nodes = 1 + trace_the_hole (Grid, node, row, col, off, ID, limit);
-			limit[XHI]++;	limit[YHI]++;	/* Allow for the other side of the last pixel */
-			wesn[XLO] = gmt_M_col_to_x (GMT, limit[XLO], Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], 0, Grid->header->n_columns);
-			wesn[XHI] = gmt_M_col_to_x (GMT, limit[XHI], Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], 0, Grid->header->n_columns);
-			wesn[YLO] = gmt_M_row_to_y (GMT, limit[YHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], 0, Grid->header->n_columns);
-			wesn[YHI] = gmt_M_row_to_y (GMT, limit[YLO], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], 0, Grid->header->n_columns);
+			wesn[XLO] = gmt_M_grd_col_to_x (GMT, limit[XLO], Grid->header) - 0.5 * Grid->header->inc[GMT_X];
+			wesn[XHI] = gmt_M_grd_col_to_x (GMT, limit[XHI], Grid->header) + 0.5 * Grid->header->inc[GMT_X];
+			wesn[YLO] = gmt_M_grd_row_to_y (GMT, limit[YHI], Grid->header) - 0.5 * Grid->header->inc[GMT_Y];
+			wesn[YHI] = gmt_M_grd_row_to_y (GMT, limit[YLO], Grid->header) + 0.5 * Grid->header->inc[GMT_Y];
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Hole BB %u: -R: %g/%g/%g/%g [%u nodes]\n", hole_number, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], n_nodes);
 			if (Ctrl->L.active) {
-				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+				if (Ctrl->L.mode) {	/* Write a closed polygon */
+					double tmp[4];
+					gmt_M_memcpy (tmp, wesn, 4, double);
+					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
+					wesn[GMT_X] = tmp[XLO];	wesn[GMT_Y] = tmp[YLO];	
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+					wesn[GMT_X] = tmp[XHI];
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+					wesn[GMT_Y] = tmp[YHI];	
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+					wesn[GMT_X] = tmp[XLO];	
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+					wesn[GMT_Y] = tmp[YLO];	
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+				}
+				else	/* Write west east south north limits */
+					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
 			else {
 				switch (Ctrl->A.mode) {

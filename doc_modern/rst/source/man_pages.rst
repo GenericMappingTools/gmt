@@ -49,6 +49,7 @@ Core modules
    grdcut
    grdedit
    grdfft
+   grdfill
    grdfilter
    grdgradient
    grdhisteq
