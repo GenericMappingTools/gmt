@@ -732,6 +732,11 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 					pol->segment[seg]->data[GMT_Y][row] = yy;
 				}
 			}
+			gmt_set_inside_mode (GMT, NULL, GMT_IOO_CARTESIAN);
+		}
+		else {
+			double lats[2] = {Fin->min[GMT_Y], Fin->max[GMT_Y]};
+			gmt_set_inside_mode (GMT, lats, GMT_IOO_UNKNOWN);
 		}
 	}
 

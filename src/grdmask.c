@@ -249,7 +249,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 	gmt_grdfloat mask_val[3], value;
 	
-	double distance, xx, yy, z_value, xtmp, radius = 0.0, last_radius = -DBL_MAX, *grd_x0 = NULL, *grd_y0 = NULL;
+	double distance, xx, yy, z_value, xtmp, radius = 0.0, lats[2], last_radius = -DBL_MAX, *grd_x0 = NULL, *grd_y0 = NULL;
 
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
@@ -389,6 +389,9 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 			}
 		}
 	}
+
+	lats[0] = D->min[GMT_Y]; lats[1] = D->max[GMT_Y];
+	gmt_set_inside_mode (GMT, lats, GMT_IOO_UNKNOWN);
 
 	for (tbl = n_pol = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++, n_pol++) {	/* For each segment in the table */

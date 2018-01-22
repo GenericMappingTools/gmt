@@ -1093,6 +1093,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	if (Ctrl->S.active && !(Ctrl->S.mode == POL_SPLIT || Ctrl->S.mode == POL_HOLE)) external = 1;
 	
 	gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Use Cartesian calculations and user units */
+
+	gmt_set_inside_mode (GMT, NULL, (gmt_M_is_geographic (GMT, GMT_IN)) ? GMT_IOO_SPHERICAL : GMT_IOO_CARTESIAN);
 	
 	/* OK, with data in hand we can do some damage */
 	

@@ -457,6 +457,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		Dr = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, D);	/* Same table length as D */
 		polr = Dr->table[0];	/* Since we know it is also a single file */
 	}
+	gmt_set_inside_mode (GMT, NULL, GMT_IOO_SPHERICAL);
 
 	if (Ctrl->E.rot.single) {	/* Got a single rotation, create a rotation table with one entry */
 		Ctrl->T.n_times = n_stages = 1;

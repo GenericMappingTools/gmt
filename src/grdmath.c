@@ -2033,6 +2033,7 @@ GMT_LOCAL void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	int64_t row, col;			/* int since VS 2013/OMP 2.0 doesn't allow unsigned index variables */
 	uint64_t node, seg;
 	unsigned int inside;
+	double lats[2];
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -2050,6 +2051,8 @@ GMT_LOCAL void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	}
 	gmt_skip_xy_duplicates (GMT, false);	/* Reset */
 	T = D->table[0];	/* Only one table in a single file */
+	lats[0] = T->min[GMT_Y]; lats[1] = T->max[GMT_Y];
+	gmt_set_inside_mode (GMT, lats, GMT_IOO_UNKNOWN);
 
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,seg,node,inside,S) shared(info,stack,last,GMT,T)

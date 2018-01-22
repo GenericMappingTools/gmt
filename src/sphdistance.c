@@ -474,6 +474,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	nx1 = (Grid->header->registration == GMT_GRID_PIXEL_REG) ? Grid->header->n_columns : Grid->header->n_columns - 1;
 	periodic = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	duplicate_col = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
+	gmt_set_inside_mode (GMT, NULL, GMT_IOO_SPHERICAL);
 
 	if (Ctrl->Q.active)	/* Pre-chewed, just get number of nodes */
 		n = Table->n_segments;

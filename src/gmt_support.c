@@ -3119,9 +3119,9 @@ GMT_LOCAL unsigned int gmt_inonout_sphpol (struct GMT_CTRL *GMT, double plon, do
 GMT_LOCAL unsigned int support_inonout_sub (struct GMT_CTRL *GMT, double x, double y, struct GMT_DATASEGMENT *S) {
 	/* Front end for both spherical and Cartesian in-on-out functions */
 	unsigned int side;
-	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Assumes these are input polygons */
+	if (GMT->current.proj.sph_inside) {	/* Assumes these are input polygons */
+		struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 		if (SH->pole)	/* 360-degree polar cap, must check fully */
 			side = gmt_inonout_sphpol (GMT, x, y, S);
 		else {	/* See if we are outside range of longitudes for polygon */
@@ -3131,8 +3131,21 @@ GMT_LOCAL unsigned int support_inonout_sub (struct GMT_CTRL *GMT, double x, doub
 			side = gmt_inonout_sphpol (GMT, x, y, S);
 		}
 	}
-	else {	/* Cartesian case */
-		if (x < S->min[GMT_X] || x > S->max[GMT_X]) return (GMT_OUTSIDE);	/* Point outside, no need to assign value */
+	else {	/* Flat Earth case */
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Deal with longitude periodicity */
+			if (x < S->min[GMT_X]) {
+				x += 360.0;
+				if (x > S->max[GMT_X])
+					return (GMT_OUTSIDE);	/* Point outside, no need to assign value */
+			}
+			else if (x > S->max[GMT_X]) {
+				x -= 360.0;
+				if (x < S->min[GMT_X])
+					return (GMT_OUTSIDE);	/* Point outside, no need to assign value */
+			}
+		}
+		else if (x < S->min[GMT_X] || x > S->max[GMT_X])
+			return (GMT_OUTSIDE);	/* Point outside, no need to assign value */
 		side = gmt_non_zero_winding (GMT, x, y, S->data[GMT_X], S->data[GMT_Y], S->n_rows);
 	}
 	return (side);
@@ -9983,6 +9996,24 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 		strcpy (format, text);
 	}
 	return (ndec);
+}
+
+void gmt_set_inside_mode (struct GMT_CTRL *GMT, double *lat, unsigned int mode) {
+	/* Determine if we use spherical or Cartesian function for in--on-out polygon tests */
+	static char *type[2] = {"Cartesian", "spherical"};
+	if (mode == GMT_IOO_SPHERICAL)
+		GMT->current.proj.sph_inside = true;
+	else if (mode == GMT_IOO_CARTESIAN)
+		GMT->current.proj.sph_inside = false;
+	else if (gmt_M_is_cartesian (GMT, GMT_IN))
+		GMT->current.proj.sph_inside = false;
+	else if (GMT->current.map.is_world)	/* Here we are dealing with geographic data */
+		GMT->current.proj.sph_inside = true;
+	else if (lat && (doubleAlmostEqual (lat[GMT_Y], -90.0) || doubleAlmostEqual (lat[GMT_Y], +90.0)))
+		GMT->current.proj.sph_inside = true;
+	else
+		GMT->current.proj.sph_inside = false;
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "In-on-out function is %s\n", type[GMT->current.proj.sph_inside]);
 }
 
 /*! . */
