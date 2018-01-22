@@ -343,13 +343,15 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		if (fpi == NULL) fpi = stdin;
 	}
 	if ((check = segy_get_reelhd (fpi, reelhead)) != true) {
-		if (fpi != stdin) fclose (fpi); GMT_exit (GMT, GMT_RUNTIME_ERROR);
+		if (fpi != stdin) fclose (fpi);
 		gmt_M_free (GMT, flag);
+		GMT_exit (GMT, GMT_RUNTIME_ERROR);
 		return GMT_RUNTIME_ERROR;
 	}
 	if ((check = segy_get_binhd (fpi, &binhead)) != true) {
-		if (fpi != stdin) fclose (fpi); GMT_exit (GMT, GMT_RUNTIME_ERROR);
+		if (fpi != stdin) fclose (fpi);
 		gmt_M_free (GMT, flag);
+		GMT_exit (GMT, GMT_RUNTIME_ERROR);
 		return GMT_RUNTIME_ERROR;
 	}
 

@@ -4963,16 +4963,20 @@ void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 	for (i = k = 0; i <= GMT->current.map.n_lon_nodes; i++) {
 		x = (i == GMT->current.map.n_lon_nodes) ? xmax : xmin + i * dx;
 		gmt_xy_to_geo (GMT, &lon[k++], &lat, x, ymin);
-		if (lat < s) s = lat;	if (lat > n) n = lat;
+		if (lat < s) s = lat;
+		if (lat > n) n = lat;
 		gmt_xy_to_geo (GMT, &lon[k++], &lat, x, ymax);
-		if (lat < s) s = lat;	if (lat > n) n = lat;
+		if (lat < s) s = lat;
+		if (lat > n) n = lat;
 	}
 	for (j = 0; j <= GMT->current.map.n_lat_nodes; j++) {
 		y = (j == GMT->current.map.n_lat_nodes) ? ymax : ymin + j * dy;
 		gmt_xy_to_geo (GMT, &lon[k++], &lat, xmin, y);
-		if (lat < s) s = lat;	if (lat > n) n = lat;
+		if (lat < s) s = lat;
+		if (lat > n) n = lat;
 		gmt_xy_to_geo (GMT, &lon[k++], &lat, xmax, y);
-		if (lat < s) s = lat;	if (lat > n) n = lat;
+		if (lat < s) s = lat;
+		if (lat > n) n = lat;
 	}
 	gmtlib_get_lon_minmax (GMT, lon, k, &w, &e);	/* Determine lon-range by robust quandrant check */
 	gmt_M_free (GMT, lon);
@@ -7435,7 +7439,8 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 	 * Pen moves are caused by breakthroughs of the map boundary or when
 	 * a point has lon = NaN or lat = NaN (this means "pick up pen") */
 	uint64_t j, k, np, n_sections;
- 	bool last_inside = false, this_inside, jump, cartesian = gmt_M_is_cartesian (GMT, GMT_IN);
+	bool this_inside, jump, cartesian = gmt_M_is_cartesian (GMT, GMT_IN);
+	/* bool last_inside = false; */
 	unsigned int sides[4];
 	unsigned int nx;
 	double xlon[4], xlat[4], xx[4], yy[4];
@@ -7448,7 +7453,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 	if (!gmt_map_outside (GMT, lon[0], lat[0])) {
 		GMT->current.plot.x[0] = last_x;	GMT->current.plot.y[0] = last_y;
 		GMT->current.plot.pen[np++] = PSL_MOVE;
-		last_inside = true;
+		/* last_inside = true; */
 	}
 	for (j = 1; j < n; j++) {
 		gmt_geo_to_xy (GMT, lon[j], lat[j], &this_x, &this_y);
@@ -7458,7 +7463,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 			GMT->current.plot.x[np] = this_x;	GMT->current.plot.y[np] = this_y;
 			GMT->current.plot.pen[np++] = PSL_MOVE;
 			if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
-			last_x = this_x;	last_y = this_y;	last_inside = this_inside;
+			last_x = this_x;	last_y = this_y;	/* last_inside = this_inside; */
 			continue;
 		}
 		if ((nx = map_crossing (GMT, lon[j-1], lat[j-1], lon[j], lat[j], xlon, xlat, xx, yy, sides))) { /* Do nothing if we get crossings*/ }
@@ -7492,7 +7497,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 			}
 			if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 		}
-		last_x = this_x;	last_y = this_y;	last_inside = this_inside;
+		last_x = this_x;	last_y = this_y;	/* last_inside = this_inside; */
 	}
 	if (np) GMT->current.plot.pen[0] = PSL_MOVE;	/* Sanity override: Gotta start off with new start point */
 

@@ -526,7 +526,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	double *f_x = NULL, *f_y = NULL, *in = NULL, *orig_u = NULL, *orig_v = NULL;
 	double mem, r, par[2], norm[GSP_LENGTH], var_sum = 0.0;
 	double err_sum = 0.0, err_sum_u = 0.0, err_sum_v = 0.0, r_min, r_max, G[3], *A_orig = NULL;
-	double *V = NULL, *s = NULL, *ssave = NULL, *b = NULL, eig_max = 0.0;
+	double *V = NULL, *s = NULL, *ssave = NULL, *b = NULL;
 
 #ifdef DUMPING
 	FILE *fp = NULL;
@@ -898,7 +898,6 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			gmt_set_cartesian (GMT, GMT_OUT);
 			/* Sort eigenvalues into ascending order */
 			gmt_sort_array (GMT, eig, n_params, GMT_DOUBLE);
-			eig_max = eig[n_params-1];
 			for (i = 0, j = n_params-1; i < n_params; i++, j--) {
 				E->table[0]->segment[0]->data[GMT_X][i] = i + 1.0;	/* Let 1 be x-value of the first eigenvalue */
 				E->table[0]->segment[0]->data[GMT_Y][i] = eig[j];

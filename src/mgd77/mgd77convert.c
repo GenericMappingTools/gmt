@@ -278,8 +278,10 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 				continue;
 			}
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Assemble %s + %s --> %s\n", h77_file, a77_file, mgd77_file);
-			while ((c = fgetc (fph77)) != EOF) fputc (c, fpout);	fclose (fph77);
-			while ((c = fgetc (fpa77)) != EOF) fputc (c, fpout);	fclose (fpa77);
+			while ((c = fgetc (fph77)) != EOF) fputc (c, fpout);
+			fclose (fph77);
+			while ((c = fgetc (fpa77)) != EOF) fputc (c, fpout);
+			fclose (fpa77);
 			fclose (fpout);
 			++n_files;
 		}

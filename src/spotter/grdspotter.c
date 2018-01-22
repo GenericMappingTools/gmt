@@ -521,8 +521,10 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 	double *lat_area = NULL;	/* Area of each dx by dy note in km as function of latitude */
 	double this_wesn[4];
 	double this_pa, pa_val = 0.0, n_more_than_once = 0.0;
-	double *x_cva = NULL, *y_cva = NULL;		/* Coordinates on the CVA grid */
-	
+#ifdef DEBUG2
+	double *x_cva = NULL;		/* x-coordinates on the CVA grid */
+	double *y_cva = NULL;		/* y-coordinates on the CVA grid */
+#endif	
 	struct GMT_GRID *G = NULL;	/* Grid structure for output CVA grid */
 	struct GMT_GRID *G_rad = NULL;	/* Same but has radians in header (no grid) */
 	struct GMT_GRID *Z = NULL;	/* Grid structure for input topo/grav grid */
@@ -625,8 +627,10 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 
 	for (row = 0; row < Z->header->n_rows; row++) lat_area[row] = area * cos (y_smt[row]);
 	
+#ifdef DEBUG2
 	x_cva = G->x;
 	y_cva = G->y;
+#endif
 
 	if (Ctrl->A.file) {
 		if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */

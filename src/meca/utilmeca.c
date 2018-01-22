@@ -470,7 +470,7 @@ static double computed_rake1 (struct nodal_plane NP1) {
 	else
 		sinrake2 = -am * sd * cs / cd;
 
-		rake2 = d_atan2d (sinrake2, -am * sd * ss);
+	rake2 = d_atan2d (sinrake2, -am * sd * ss);
 
 	return (rake2);
 }

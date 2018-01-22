@@ -339,7 +339,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 					else { /* Gave first, and maybe last */
 						c[0] = '\0';	/* Chop off last */
 						Ctrl->Z.first = atol (opt->arg);
-						Ctrl->Z.last = (c[1]) ? atol (&c[1]) : UINTMAX_MAX;	/* Last record if not given */
+						Ctrl->Z.last = (c[1]) ? (uint64_t)atol (&c[1]) : UINTMAX_MAX;	/* Last record if not given */
 						c[0] = ':';	/* Restore */
 					}
 				}

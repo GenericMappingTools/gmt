@@ -372,7 +372,7 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
  	ys = gmt_M_memory (GMT, NULL, 512, int64_t);
 
 	if (radius == -1)	/* Set default radius */
-		radius = (int64_t)floor (sqrt (nx&nx + ny*ny));
+		radius = (int64_t)floor (sqrt (nx*nx + ny*ny));
 	rad2 = (double)(radius * radius);
 	
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Interpolating to nearest neighbour...\n");

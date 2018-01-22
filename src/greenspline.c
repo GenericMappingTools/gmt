@@ -1402,7 +1402,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		"linear Cartesian spline [1-D]",
 		"bilinear Cartesian spline [2-D]"};
 
-	double *v = NULL, *s = NULL, *b = NULL, *ssave = NULL, eig_max = 0.0;
+	double *v = NULL, *s = NULL, *b = NULL, *ssave = NULL;
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL, *orig_obs = NULL;
 	double mem, part, C, p_val, r, par[N_PARAMS], norm[GSP_LENGTH], az = 0, grad;
 	double *A = NULL, *A_orig = NULL, r_min, r_max, err_sum = 0.0, var_sum = 0.0;
@@ -2124,7 +2124,6 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
 			/* Sort singular values into ascending order */
 			gmt_sort_array (GMT, eig, nm, GMT_DOUBLE);
-			eig_max = eig[nm-1];
 			for (i = 0, j = nm-1; i < nm; i++, j--) {
 				E->table[0]->segment[0]->data[GMT_X][i] = i + 1.0;	/* Let 1 be x-value of the first eigenvalue */
 				E->table[0]->segment[0]->data[GMT_Y][i] = eig[j];

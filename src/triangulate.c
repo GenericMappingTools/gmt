@@ -722,9 +722,11 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			if ((row_max < 0) || (row_min >= n_rows)) continue;
 
 			/* Triangle covers boundary, left or right. */
-			if (col_min < 0) col_min = 0;       if (col_max >= n_columns) col_max = Grid->header->n_columns - 1;
+			if (col_min < 0) col_min = 0;
+			if (col_max >= n_columns) col_max = Grid->header->n_columns - 1;
 			/* Triangle covers boundary, top or bottom. */
-			if (row_min < 0) row_min = 0;       if (row_max >= n_rows) row_max = Grid->header->n_rows - 1;
+			if (row_min < 0) row_min = 0;
+			if (row_max >= n_rows) row_max = Grid->header->n_rows - 1;
 
 			for (row = row_min; row <= row_max; row++) {
 				yp = gmt_M_grd_row_to_y (GMT, row, Grid->header);
