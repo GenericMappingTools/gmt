@@ -1221,14 +1221,15 @@ extern int dgemm_ (char* tra, char* trb, int* na, int* nb, int* nc, double* alph
 void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_rowsB, uint64_t n_colsB, double *C) {
 #ifdef HAVE_LAPACK
 	double one = 1.0, zero = 0.0;
-	int na = n_rowsA, nb = n_colsB, nc = n_rowsB, nd = n_rowsB, ne = n_colsB, nf = n_colsB;
+	int na, nb, nc, nd, ne, nf;
 	char tr[2] = {'t', '\0'};	/* If B is a vector we must switch to n */
 	gmt_M_unused(GMT);
 	gmt_M_memset (C, n_rowsA * n_colsB, double);
+	na = (int)n_rowsA, nb = (int)n_colsB, nc = (int)n_rowsB, nd = (int)n_rowsB, ne = (int)n_colsB, nf = (int)n_colsB;
 	// cblas_dgemm (CblasRowMajor, CblasNoTrans, CblasNoTrans, (int)n_rowsA, (int)n_colsB, (int)n_rowsB, one, A, (int)n_rowsB, B, (int)n_colsB, zero, C, (int)n_colsB);
 	if (n_colsB == 1) {	/* Vector, so no transposing of the matrix */
 		tr[0] = 'n';
-		ne = nf = n_rowsB;
+		ne = nf = (int)n_rowsB;
 	}
 	dgemm_ ("t", tr, &na, &nb, &nc, &one, A, &nd, B, &ne, &zero, C, &nf);
 #else

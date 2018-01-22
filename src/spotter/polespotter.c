@@ -407,7 +407,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 								if (gmt_x_is_outside (GMT, &in[GMT_X], Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;		/* Outside x-range (or periodic longitude) */
 								if (gmt_row_col_out_of_bounds (GMT, in, Grid->header, &grow, &gcol)) continue;	/* Sorry, outside after all */
 								node = gmt_M_ijp (Grid->header, grow, gcol);		/* Bin index */
-								layer[node] = cosd (in[GMT_Y]) * L;			/* Any bin intersected will have this single value despite perhaps many intersections */
+								layer[node] = (gmt_grdfloat)(cosd (in[GMT_Y]) * L);			/* Any bin intersected will have this single value despite perhaps many intersections */
 							}
 							if (Ctrl->G.active) {	/* Add density layer of this great circle to the total density grid */
 								for (node = 0; node < Grid->header->size; node++) Grid->data[node] += layer[node];
@@ -577,7 +577,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 								L = d_acos (gmt_dot3v (GMT, P1, P2)) * RADIAN2KM;	/* Length of this segment */
 								del_angle =  get_angle_between_trends (GMT, P1, P2, d, X);
 								chi2 = L * pow (del_angle * seg_weight, 2.0);	/* The weighted chi2 increment from this line */
-								Grid->data[node] += chi2;			/* Add to total chi2 misfit for this pole */
+								Grid->data[node] += (gmt_grdfloat)chi2;		/* Add to total chi2 misfit for this pole */
 								gmt_M_memcpy (P1, P2, 3, double);		/* Let old P2 be next P1 */
 							}
 						}
@@ -588,14 +588,14 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, plon);
 		gmt_M_free (GMT, plat);
 			
-		for (node = 0; node < Grid->header->size; node++) Grid->data[node] /= sum_L;	/* Correct for weight sum */
+		for (node = 0; node < Grid->header->size; node++) Grid->data[node] /= (gmt_grdfloat)sum_L;	/* Correct for weight sum */
 	}
 	if (Ctrl->G.active) {	/* Write the spotting grid */
 		double max = -DBL_MAX;
 		if (Ctrl->N.active) {	/* Normalize grid */
 			for (node = 0; node < Grid->header->size; node++) if (Grid->data[node] > max) max = Grid->data[node];	/* Find max value */
 			max = 1.0 / max;	/* Do division here */
-			for (node = 0; node < Grid->header->size; node++) Grid->data[node] *= max;	/* Normalize */
+			for (node = 0; node < Grid->header->size; node++) Grid->data[node] *= (gmt_grdfloat)max;	/* Normalize */
 		}
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR) {
 			Return (API->error);
