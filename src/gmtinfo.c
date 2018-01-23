@@ -494,6 +494,14 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		if ((gmt_M_rec_is_segment_header (GMT) && Ctrl->A.mode != REPORT_PER_SEGMENT)) continue;	/* Since we are not reporting per segment they are just headers as far as we are concerned */
 		
 		if (gmt_M_rec_is_segment_header (GMT) || (Ctrl->A.mode == REPORT_PER_TABLE && gmt_M_rec_is_file_break (GMT)) || gmt_M_rec_is_eof (GMT)) {	/* Time to report */
+			if (Ctrl->A.active) {
+				if (Ctrl->A.mode == REPORT_PER_TABLE && gmt_M_rec_is_file_break (GMT)) {
+					e_min = DBL_MAX; e_max = -DBL_MAX;
+				}
+				else if (Ctrl->A.mode == REPORT_PER_SEGMENT && gmt_M_rec_is_segment_header (GMT)) {
+					e_min = DBL_MAX; e_max = -DBL_MAX;
+				}
+			}
 			if (gmt_M_rec_is_segment_header (GMT) && GMT->current.io.seg_no == 0) continue;	/* Very first segment header means there is no prior segment to report on yet */
 			if (gmt_M_rec_is_eof (GMT)) {	/* We are done after this since we hit EOF */
 				done = true;
