@@ -41,6 +41,10 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 		bool active;
 		char *file;
 	} In;
+	struct A {	/* -Aw/e/s/n */
+		bool active;
+		double wesn[4];
+	} A;
 	struct D {	/* -Drotpolfile or -Dtemplate */
 		bool active;
 		char *file;
@@ -93,7 +97,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdrotater <grid> %s -G<outgrid> [-F<polygontable>]\n", SPOTTER_E_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<rotoutline>] [-N] [%s] [-S] [-T<time(s)>] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A<region>] [-D<rotoutline>] [-N] [%s] [-S] [-T<time(s)>] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_g_OPT, GMT_h_OPT, GMT_n_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -107,6 +111,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	spotter_rot_usage (API, 'E');
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, specify a single finite rotation (in degrees) to be applied.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Set the west/east/south/north bounds for the rotated grid [Default will\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   determine the natural extent of the rotated grid instead].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Write the rotated polygon or grid outline to <rotoutline> [stdout].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Required if more than one reconstruction time is chosen and -N is not set\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and must then contain a C-format specifier for formatting a double (for the variable time).\n");
@@ -133,9 +139,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 	 */
 
 	unsigned int n_errors = 0, k, n_files = 0;
+	int n_items;
 	uint64_t t = 0;
 	bool gave_e = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
+	char txt[4][GMT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -154,6 +162,39 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 
 			/* Supplemental parameters */
 
+			case 'A':
+				Ctrl->A.active = true;
+				if (opt->arg[0] == 'g' && opt->arg[1] == '\0') {	/* Got -Ag */
+					Ctrl->A.wesn[0] = 0.0;	Ctrl->A.wesn[1] = 360.0;	Ctrl->A.wesn[2] = -90.0;	Ctrl->A.wesn[3] = 90.0;
+					break;
+				}
+				if (opt->arg[0] == 'd' && opt->arg[1] == '\0') {	/* Got -Rd */
+					Ctrl->A.wesn[0] = -180.0;	Ctrl->A.wesn[1] = 180.0;	Ctrl->A.wesn[2] = -90.0;	Ctrl->A.wesn[3] = 90.0;
+					break;
+				}
+				if (!gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file, presumably a grid */
+					struct GMT_GRID *G = NULL;
+					if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
+						return (API->error);
+					}
+					Ctrl->A.wesn[0] = G->header->wesn[XLO]; Ctrl->A.wesn[1] = G->header->wesn[XHI];
+					Ctrl->A.wesn[2] = G->header->wesn[YLO]; Ctrl->A.wesn[3] = G->header->wesn[YHI];
+					if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
+						return (API->error);
+					}
+					break;
+				}
+				/* Only get here if the above cases did not trip */
+				n_items = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt[0], txt[1], txt[2], txt[3]);
+				if (n_items != 4) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Give g, d, <grdfile>, or <west/east/south/north>\n");
+					n_errors++;
+				}
+				n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[0], gmt_M_type (GMT, GMT_IN, GMT_X), true, &Ctrl->A.wesn[0]), txt[0]);
+				n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[1], gmt_M_type (GMT, GMT_IN, GMT_X), true, &Ctrl->A.wesn[1]), txt[1]);
+				n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt[2], gmt_M_type (GMT, GMT_IN, GMT_Y), true, &Ctrl->A.wesn[2]), txt[2]);
+				n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt[3], gmt_M_type (GMT, GMT_IN, GMT_Y), true, &Ctrl->A.wesn[3]), txt[3]);
+				break;
 			case 'C':	/* Now done automatically in spotter_init */
 				if (gmt_M_compat_check (GMT, 4))
 					GMT_Report (API, GMT_MSG_COMPAT, "-C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
@@ -559,6 +600,12 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 		if (global)
 			gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
+		else if (Ctrl->A.active) {
+			gmt_M_memcpy (GMT->common.R.wesn, Ctrl->A.wesn, 4, double);
+			/* Adjust longitude range, as indicated by FORMAT_GEO_OUT */
+			gmt_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XLO]);
+			gmt_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XHI]);
+		}
 		else {
 			GMT->common.R.wesn[XLO] = floor (polr->min[GMT_X] * HH->r_inc[GMT_X]) * G->header->inc[GMT_X];
 			GMT->common.R.wesn[XHI] = ceil  (polr->max[GMT_X] * HH->r_inc[GMT_X]) * G->header->inc[GMT_X];
