@@ -49,6 +49,9 @@
 
 #define MOVIE_WAIT_TO_CHECK	10000	/* In microseconds, so 0.01 seconds */
 
+#define GRAPHICS_FORMAT		"tif"
+#define DEBUG_FORMAT		",pdf"
+
 enum enum_script {BASH_MODE = 0,	/* Write Bash script */
 	CSH_MODE,			/* Write C-shell script */
 	DOS_MODE};			/* Write DOS script */
@@ -686,7 +689,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	char init_file[GMT_LEN64] = {""}, state_prefix[GMT_LEN64] = {""}, state_file[GMT_LEN64] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[GMT_LEN64] = {""}, post_file[GMT_LEN64] = {""}, main_file[GMT_LEN64] = {""}, line[PATH_MAX] = {""};
 	char string[GMT_LEN64] = {""}, extra[GMT_LEN64] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[GMT_LEN64] = {""};
-	char png_file[GMT_LEN64] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN8] = {"png"};
+	char png_file[GMT_LEN64] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN8] = {GRAPHICS_FORMAT};
 #ifdef _WIN32
 	char dir_sep = '\\';
 #else
@@ -1129,7 +1132,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	
 	/* Now build the main loop script from the mainscript */
-	if (Ctrl->Q.active) strcat (frame_products, ",ps");	/* Want to save original PS file for devug */
+	if (Ctrl->Q.active) strcat (frame_products, DEBUG_FORMAT);	/* Want to save original PS file for devug */
 	
 	n_begin = 0;	/* Reset check again */
 	sprintf (main_file, "movie_frame.%s", extension[Ctrl->In.mode]);
@@ -1184,7 +1187,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	fclose (Ctrl->In.fp);	/* Done reading the main script */
 	set_comment (fp, Ctrl->In.mode, "Move PNG file up to parent directory and cd up one level");
-	fprintf (fp, "%s %s.png ..\n", mvfile[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));	/* Move PNG plot up to parent dir */
+	fprintf (fp, "%s %s.%s ..\n", mvfile[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"), GRAPHICS_FORMAT);	/* Move PNG plot up to parent dir */
 	fprintf (fp, "cd ..\n");	/* cd up to parent dir */
 	if (!Ctrl->Q.active) {	/* Delete evidence; otherwise we want to leave debug evidence when doing a single frame only */
 		set_comment (fp, Ctrl->In.mode, "Remove frame directory and frame parameter file");
@@ -1239,7 +1242,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			if (status[k].completed) continue;	/* Already finished with this frame */
 			if (!status[k].started) continue;	/* Not started this frame yet */
 			/* Here we can check if the frame job has completed */
-			sprintf (png_file, "%s_%*.*d.png", Ctrl->N.prefix, precision, precision, Ctrl->T.start_frame+k);
+			sprintf (png_file, "%s_%*.*d.%s", Ctrl->N.prefix, precision, precision, Ctrl->T.start_frame+k, GRAPHICS_FORMAT);
 			if (access (png_file, F_OK)) continue;	/* Not found yet */
 			n_frames_completed++;		/* One more frame completed */
 			status[k].completed = true;	/* Flag this frame as completed */
@@ -1278,7 +1281,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			else if (Ctrl->A.stride > 10)
 				strcat (files, "0");
 		}
-		sprintf (cmd, "gm convert -delay %u -loop %u +dither %s%c%s_%s.png %s.gif", delay, Ctrl->A.loops, Ctrl->N.prefix, dir_sep, Ctrl->N.prefix, files, Ctrl->N.prefix);
+		sprintf (cmd, "gm convert -delay %u -loop %u +dither %s%c%s_%s.%s %s.gif", delay, Ctrl->A.loops, Ctrl->N.prefix, dir_sep, Ctrl->N.prefix, files, Ctrl->N.prefix, GRAPHICS_FORMAT);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running GIF conversion returned error %d - exiting.\n", error);
@@ -1298,8 +1301,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		else
 			sprintf (extra, "quiet");
 		sprintf (png_file, "%%0%dd", precision);
-		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.png\" -vcodec libx264 %s -pix_fmt yuv420p %s.mp4",
-			extra, Ctrl->D.framerate, Ctrl->N.prefix, dir_sep, Ctrl->N.prefix, png_file, (Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
+		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec libx264 %s -pix_fmt yuv420p %s.mp4",
+			extra, Ctrl->D.framerate, Ctrl->N.prefix, dir_sep, Ctrl->N.prefix, png_file, GRAPHICS_FORMAT, (Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running ffmpeg conversion to MP4 returned error %d - exiting.\n", error);
@@ -1318,8 +1321,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		else
 			sprintf (extra, "quiet");
 		sprintf (png_file, "%%0%dd", precision);
-		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.png\" -vcodec libvpx %s -pix_fmt yuv420p %s.webm",
-			extra, Ctrl->D.framerate, Ctrl->N.prefix, dir_sep, Ctrl->N.prefix, png_file, (Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", Ctrl->N.prefix);
+		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec libvpx %s -pix_fmt yuv420p %s.webm",
+			extra, Ctrl->D.framerate, Ctrl->N.prefix, dir_sep, Ctrl->N.prefix, png_file, GRAPHICS_FORMAT, (Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", Ctrl->N.prefix);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running ffmpeg conversion to webM returned error %d - exiting.\n", error);
