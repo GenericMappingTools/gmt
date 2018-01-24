@@ -538,10 +538,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   so that they show unrotated in Portrait mode.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This is practical when converting to image formats or preparing\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   EPS or PDF plots for inclusion in documents.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Anti-aliasing setting for (g)raphics or (t)ext; append size (1,2,4)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of sub-sampling box.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Anti-aliasing setting for (g)raphics or (t)ext; append size (1,2,4) of sub-sampling box.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For PDF and EPS output, default is no anti-aliasing, which is the same as specifying size 1.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For raster formats the defaults are -Qg2 -Qt4 unless overridden explicitly.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For raster formats the defaults are -Qg4 -Qt4 unless overridden explicitly.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Apart from executing it, also writes the ghostscript command to\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   standard error and keeps all intermediate files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set output format [default is jpeg]:\n");
@@ -556,21 +555,21 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   m means PPM.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   s means SVG [if supported by your ghostscript version].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t means TIF.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For b, g, j, t, append - to get a grayscale image [24-bit color].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For b, g, j, and t, append - to get a grayscale image [color].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The EPS format can be combined with any of the other formats.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For example, -Tef creates both an EPS and PDF file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-V Provide progress report [default is silent] and shows the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-V Provide progress report [default is silent] and show the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   gdal_translate command, in case you want to use this program\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to create a geoTIFF file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Write a ESRI type world file suitable to make (e.g.,) .tif files be\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Write a ESRI type world file suitable to make (e.g.,) .tif files\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   recognized as geotiff by software that know how to do it. Be aware,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   however, that different results are obtained depending on the image\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   contents and if the -B option has been used or not. The trouble with\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -B is that it creates a frame and very likely its annotations and\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   that introduces pixels outside the map data extent. As a consequence,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the map extents estimation will be wrong. To avoid this problem, use\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the --MAP_FRAME_TYPE=inside option which plots all annotations related\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   stuff inside the image and does not compromise the coordinate.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -B is that it creates a frame and very likely its ticks and annotations\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   introduces pixels outside the map data extent. As a consequence,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the map extent estimation will be wrong. To avoid this problem, use\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the --MAP_FRAME_TYPE=inside option which plots all annotation-related\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   items inside the image and therefore does not compromise the coordinate\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   computations. The world file naming follows the convention of jamming\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a 'w' in the file extension. So, if the output is tif (-Tt) the world\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   file is a .tfw, for jpeg a .jgw, and so on.\n");
@@ -792,14 +791,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 	if (!Ctrl->T.active) Ctrl->T.device = GS_DEV_JPG;	/* Default output device if none is specified */
 
 	if (Ctrl->T.device > GS_DEV_SVG) {	/* Raster output, apply default -Q for rasters unless already specified */
-		/* For rasters, we should always add -Qt2 unless -Q was set manually.  This will improve the rasterization of text */
-		if (Ctrl->Q.on[PSC_TEXT] == false) {	/* Only override if not set */
+		/* For rasters, we should always add -Qt4 unless -Q was set manually.  This will improve the rasterization of text */
+		if (!Ctrl->Q.on[PSC_TEXT]) {	/* Only override if not set */
 			Ctrl->Q.on[PSC_TEXT] = true;
 			Ctrl->Q.bits[PSC_TEXT] = 4;
 		}
 		/* "ghostlines" seen in pscoast plots are usually a feature of a PDF or PS viewer and may be changed via their view settings.
-		 * We have found that the -TG device creates ghostlines in the rasters and that these are suppressed by -Qg2 so we enfore that here */
-		if (!Ctrl->Q.on[PSC_LINES] && Ctrl->T.device == GS_DEV_TPNG) {	/* Transparent PNG needs this antialiasing option as well, at least in gs 9.22 */
+		 * We have found that the -TG device creates ghostlines in the rasters and that these are suppressed by -Qg2 so we enfore that here for all rasters */
+		if (!Ctrl->Q.on[PSC_LINES]) {	/* Transparent PNG needs this antialiasing option as well, at least in gs 9.22 */
 			Ctrl->Q.on[PSC_LINES] = true;
 			Ctrl->Q.bits[PSC_LINES] = 2;
 		}
@@ -887,21 +886,21 @@ GMT_LOCAL inline char *alpha_bits (struct PS2RASTER_CTRL *Ctrl) {
 	char *c = alpha;
 	unsigned int bits;
 	*alpha = '\0'; /* reset string */
-	if (Ctrl->Q.on[0]) {
+	if (Ctrl->Q.on[PSC_LINES] && Ctrl->Q.bits[PSC_LINES]) {
 		if (Ctrl->T.device == GS_DEV_PDF || Ctrl->T.device == -GS_DEV_PDF)
 			/* Note: cannot set GraphicsAlphaBits > 1 with a vector device */
 			bits = 1;
 		else
-			bits = Ctrl->Q.bits[0];
+			bits = Ctrl->Q.bits[PSC_LINES];
 		sprintf (c, " -dGraphicsAlphaBits=%d", bits);
 		c = strrchr(c, '\0'); /* advance to end of string */
 	}
-	if (Ctrl->Q.on[1]) {
+	if (Ctrl->Q.on[PSC_TEXT] && Ctrl->Q.bits[PSC_TEXT]) {
 		if (Ctrl->T.device == GS_DEV_PDF || Ctrl->T.device == -GS_DEV_PDF)
 			/* Note: cannot set GraphicsAlphaBits > 1 with a vector device */
 			bits = 1;
 		else
-			bits = Ctrl->Q.bits[1];
+			bits = Ctrl->Q.bits[PSC_TEXT];
 		sprintf (c, " -dTextAlphaBits=%d", bits);
 	}
 	return alpha;
@@ -2209,7 +2208,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 			if (Ctrl->S.active)	/* Print GhostScript command */
 				GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
-
 			/* Execute the GhostScript command */
 			GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 			sys_retval = system (cmd);

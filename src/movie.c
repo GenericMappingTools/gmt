@@ -49,8 +49,8 @@
 
 #define MOVIE_WAIT_TO_CHECK	10000	/* In microseconds, so 0.01 seconds */
 
-#define GRAPHICS_FORMAT		"tif"
-#define DEBUG_FORMAT		",pdf"
+#define FRAME_RASTER_FORMAT	"png"	/* Lossless raster format */
+#define FRAME_DEBUG_FORMAT	",ps"	/* Comma is intentional since we append to a list of formats */
 
 enum enum_script {BASH_MODE = 0,	/* Write Bash script */
 	CSH_MODE,			/* Write C-shell script */
@@ -58,12 +58,12 @@ enum enum_script {BASH_MODE = 0,	/* Write Bash script */
 
 enum enum_video {MOVIE_MP4,	/* Create a H.264 MP4 video */
 	MOVIE_WEBM,		/* Create a WebM video */
-	MOVIE_N_FORMATS};	/* Number of formats above */
+	MOVIE_N_FORMATS};	/* Number of video formats above */
 
 /* Control structure for movie */
 
 struct MOVIE_CTRL {
-	bool animate;	/* TRue if we are making any animated product (GIF, movies) */
+	bool animate;	/* True if we are making any animated product (GIF, movies) */
 	struct In {	/* mainscript (Bourne, Bourne Again, csh, or DOS (bat) script) */
 		bool active;
 		enum enum_script mode;
@@ -301,6 +301,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify canvas size. Choose a known named canvas or set custom dimensions:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Recognized 16:9-ratio formats:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      name:	pixel size:   canvas size (SI):  canvas size (US):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     4320p:	7680 x 4320	24 x 13.5 cm	 9.6 x 5.4 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     2160p:	3840 x 2160	24 x 13.5 cm	 9.6 x 5.4 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     1080p:	1920 x 1080	24 x 13.5 cm	 9.6 x 5.4 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      720p:	1280 x  720	24 x 13.5 cm	 9.6 x 5.4 inch\n");
@@ -308,7 +309,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      480p:	 854 x  480	24 x 13.5 cm	 9.6 x 5.4 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      360p:	 640 x  360	24 x 13.5 cm	 9.6 x 5.4 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      240p:	 426 x  240	24 x 13.5 cm	 9.6 x 5.4 inch\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note: UHD and 4k can be used for 2160p and HD can be used for 1080p.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: 8k can be used for 4320p, UHD and 4k for 2160p and HD for 1080p.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Recognized 4:3-ratio formats:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      name:	pixel size:   canvas size (SI):	 canvas size (US):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      UXGA: 1600 x 1200	24 x 18 cm	 9.6 x 7.2 inch\n");
@@ -334,22 +335,22 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the final video format(s) from among these choices. Repeatable:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     mp4:    Convert PNG frames into an MP4 movie.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     webm:   Convert PNG frames into an WebM movie.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     none:   Make no PNGS - requires -M.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     none:   Make no PNG frames - requires -M.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append +o<options> to add custom encoding options for mp4 or webm.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [No video product; just create the PNG frames].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the canvas background color [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Include script file to be inserted into the movie_init.sh script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constant variables needed by all movie scripts.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Create a master frame plot as well; append desired frame [0] and format [pdf].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Create a master frame plot as well; append desired frame number [0] and format [pdf].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Master plot will be named <prefix>.<format> and placed in the current directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Debugging: Leave all intermediate files and directores behind for inspection.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to only create the work scripts but none will be executed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the optional background and foreground GMT scripts [none]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sb Append the name of a background script which can pre-compute\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      files needed by <mainscript> and build a static background plot layer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      If a plot is generated then the script must be in GMT modern mode.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       files needed by <mainscript> and build a static background plot layer.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       If a plot is generated then the script must be in GMT modern mode.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of foreground GMT modern mode script which will\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      build a static foreground plot overlay added to all frames.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       build a static foreground plot overlay added to all frames.\n");
 	GMT_Option (API, "V,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -369,7 +370,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 	struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
 	struct GMT_OPTION *opt = NULL;
 	
-	if (GMT->current.setting.proj_length_unit == GMT_INCH) {	/* Switch to US dimensions in inch given format names */
+	if (GMT->current.setting.proj_length_unit == GMT_INCH) {	/* Switch from SI to US dimensions in inch given format names */
 		width = 9.6;	height16x9 = 5.4;	height4x3 = 7.2;	dpu = 400.0;
 		Ctrl->C.unit = 'i';
 	}
@@ -401,7 +402,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 								if (!(Ctrl->A.stride == 2 || Ctrl->A.stride == 5 \
 									|| Ctrl->A.stride == 10 || Ctrl->A.stride == 20 || Ctrl->A.stride == 50 \
 									|| Ctrl->A.stride == 100 || Ctrl->A.stride == 200 || Ctrl->A.stride == 500)) {
-									GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -A+s: Allowable strides are 2,3,10,20,50,100,200, and 500\n");
+									GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -A+s: Allowable strides are 2,5,10,20,50,100,200,500\n");
 									n_errors++;
 								}	
 								break;
@@ -418,7 +419,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				strcpy (arg, opt->arg);		/* Get a copy... */
 				gmt_str_tolower (arg);		/* ..so we can make it lower case */
 				/* 16x9 formats */
-				if (!strcmp (arg, "4k") || !strcmp (arg, "uhd") || !strcmp (arg, "2160p")) {	/* 2160x3840 */
+				if (!strcmp (arg, "8k") || !strcmp (arg, "4320p")) {	/* 4320x7680 */
+					Ctrl->C.dim[GMT_X] = width;	Ctrl->C.dim[GMT_Y] = height16x9;	Ctrl->C.dim[GMT_Z] = 2.0 * dpu;
+				}
+				else if (!strcmp (arg, "4k") || !strcmp (arg, "uhd") || !strcmp (arg, "2160p")) {	/* 2160x3840 */
 					Ctrl->C.dim[GMT_X] = width;	Ctrl->C.dim[GMT_Y] = height16x9;	Ctrl->C.dim[GMT_Z] = dpu;
 				}
 				else if (!strcmp (arg, "1080p") || !strcmp (arg, "hd")) {	/* 1080x1920 */
@@ -689,7 +693,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	char init_file[GMT_LEN64] = {""}, state_prefix[GMT_LEN64] = {""}, state_file[GMT_LEN64] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[GMT_LEN64] = {""}, post_file[GMT_LEN64] = {""}, main_file[GMT_LEN64] = {""}, line[PATH_MAX] = {""};
 	char string[GMT_LEN64] = {""}, extra[GMT_LEN64] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[GMT_LEN64] = {""};
-	char png_file[GMT_LEN64] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN8] = {GRAPHICS_FORMAT};
+	char png_file[GMT_LEN64] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN8] = {FRAME_RASTER_FORMAT};
 #ifdef _WIN32
 	char dir_sep = '\\';
 #else
@@ -1132,7 +1136,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	
 	/* Now build the main loop script from the mainscript */
-	if (Ctrl->Q.active) strcat (frame_products, DEBUG_FORMAT);	/* Want to save original PS file for devug */
+	if (Ctrl->Q.active) strcat (frame_products, FRAME_DEBUG_FORMAT);	/* Want to save original PS file for devug */
 	
 	n_begin = 0;	/* Reset check again */
 	sprintf (main_file, "movie_frame.%s", extension[Ctrl->In.mode]);
@@ -1187,7 +1191,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	fclose (Ctrl->In.fp);	/* Done reading the main script */
 	set_comment (fp, Ctrl->In.mode, "Move PNG file up to parent directory and cd up one level");
-	fprintf (fp, "%s %s.%s ..\n", mvfile[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"), GRAPHICS_FORMAT);	/* Move PNG plot up to parent dir */
+	fprintf (fp, "%s %s.%s ..\n", mvfile[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"), FRAME_RASTER_FORMAT);	/* Move PNG plot up to parent dir */
 	fprintf (fp, "cd ..\n");	/* cd up to parent dir */
 	if (!Ctrl->Q.active) {	/* Delete evidence; otherwise we want to leave debug evidence when doing a single frame only */
 		set_comment (fp, Ctrl->In.mode, "Remove frame directory and frame parameter file");
@@ -1242,7 +1246,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			if (status[k].completed) continue;	/* Already finished with this frame */
 			if (!status[k].started) continue;	/* Not started this frame yet */
 			/* Here we can check if the frame job has completed */
-			sprintf (png_file, "%s_%*.*d.%s", Ctrl->N.prefix, precision, precision, Ctrl->T.start_frame+k, GRAPHICS_FORMAT);
+			sprintf (png_file, "%s_%*.*d.%s", Ctrl->N.prefix, precision, precision, Ctrl->T.start_frame+k, FRAME_RASTER_FORMAT);
 			if (access (png_file, F_OK)) continue;	/* Not found yet */
 			n_frames_completed++;		/* One more frame completed */
 			status[k].completed = true;	/* Flag this frame as completed */
@@ -1281,7 +1285,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			else if (Ctrl->A.stride > 10)
 				strcat (files, "0");
 		}
-		sprintf (cmd, "gm convert -delay %u -loop %u +dither %s%c%s_%s.%s %s.gif", delay, Ctrl->A.loops, Ctrl->N.prefix, dir_sep, Ctrl->N.prefix, files, Ctrl->N.prefix, GRAPHICS_FORMAT);
+		sprintf (cmd, "gm convert -delay %u -loop %u +dither %s%c%s_%s.%s %s.gif", delay, Ctrl->A.loops, Ctrl->N.prefix, dir_sep, Ctrl->N.prefix, files, Ctrl->N.prefix, FRAME_RASTER_FORMAT);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running GIF conversion returned error %d - exiting.\n", error);
@@ -1302,7 +1306,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (extra, "quiet");
 		sprintf (png_file, "%%0%dd", precision);
 		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec libx264 %s -pix_fmt yuv420p %s.mp4",
-			extra, Ctrl->D.framerate, Ctrl->N.prefix, dir_sep, Ctrl->N.prefix, png_file, GRAPHICS_FORMAT, (Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
+			extra, Ctrl->D.framerate, Ctrl->N.prefix, dir_sep, Ctrl->N.prefix, png_file, FRAME_RASTER_FORMAT, (Ctrl->F.options[MOVIE_MP4]) ? Ctrl->F.options[MOVIE_MP4] : "", Ctrl->N.prefix);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running ffmpeg conversion to MP4 returned error %d - exiting.\n", error);
@@ -1322,7 +1326,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (extra, "quiet");
 		sprintf (png_file, "%%0%dd", precision);
 		sprintf (cmd, "ffmpeg -loglevel %s -f image2 -framerate %g -y -i \"%s%c%s_%s.%s\" -vcodec libvpx %s -pix_fmt yuv420p %s.webm",
-			extra, Ctrl->D.framerate, Ctrl->N.prefix, dir_sep, Ctrl->N.prefix, png_file, GRAPHICS_FORMAT, (Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", Ctrl->N.prefix);
+			extra, Ctrl->D.framerate, Ctrl->N.prefix, dir_sep, Ctrl->N.prefix, png_file, FRAME_RASTER_FORMAT, (Ctrl->F.options[MOVIE_WEBM]) ? Ctrl->F.options[MOVIE_WEBM] : "", Ctrl->N.prefix);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Running: %s\n", cmd);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running ffmpeg conversion to webM returned error %d - exiting.\n", error);
