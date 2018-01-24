@@ -2210,7 +2210,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
 			/* Execute the GhostScript command */
 			GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
-		fprintf (stderr, "Running: %s\n", cmd);
 			sys_retval = system (cmd);
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
