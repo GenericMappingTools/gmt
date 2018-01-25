@@ -3888,6 +3888,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 
 			/* Default is not involving geographical coordinates */
 			gmt_set_column (GMT, GMT_IO, GMT_X, GMT_IS_UNKNOWN);
+			gmt_set_column (GMT, GMT_IO, GMT_Y, GMT_IS_UNKNOWN);
 			
 			error += (n_slashes > 1) ? 1 : 0;
 
