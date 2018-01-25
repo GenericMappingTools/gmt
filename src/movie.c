@@ -101,16 +101,16 @@ struct MOVIE_CTRL {
 		char *file;
 		FILE *fp;
 	} I;
-	struct N {	/* -N<movieprefix> */
-		bool active;
-		char *prefix;
-	} N;
 	struct M {	/* -M[<frame>][,format] */
 		bool active;
 		bool exit;
 		unsigned int frame;
 		char *format;
 	} M;
+	struct N {	/* -N<movieprefix> */
+		bool active;
+		char *prefix;
+	} N;
 	struct Q {	/* -Q[s] */
 		bool active;
 		bool scripts;
@@ -128,6 +128,10 @@ struct MOVIE_CTRL {
 		unsigned int precision;
 		char *file;
 	} T;
+	struct W {	/* -W<factor> */
+		bool active;
+		int factor;
+	} W;
 	struct Z {	/* -Z */
 		bool active;
 	} Z;
@@ -293,7 +297,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: movie <mainscript> -C<canvas> -N<prefix> -T<n_frames>|<timefile>[+p<width>][+s<first>][+w]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-M[<frame>][<format>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] [-I<includefile>] [-Q[s]] [-Sb<script>] [-Sf<script>] [%s] [-Z]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] [-I<includefile>] [-Q[s]] [-Sb<script>] [-Sf<script>] [%s] [-W<factor>] [-Z]\n\n", GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -326,7 +330,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<width> to set number of digits used to in the frame tags [automatic].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s<first> to change the value of the first frame [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to <timefile> to have trailing text be split into word variables.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase directory <prefix> after converting to movie [leave directory with PNGs alone].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Animated GIF: Append +l for looping [no loop]; optionally append number of loops [infinite loop].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -F is used you may restrict the GIF animation to use every <stride> frame only [all];\n");
@@ -352,6 +355,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of foreground GMT modern mode script which will\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       build a static foreground plot overlay added to all frames.\n");
 	GMT_Option (API, "V,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Temporarily increase dpi by <factor>, rasterize, then downsample [no downsampling].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Used to stabilize sub-pixel changes between frames, such as moving text.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase directory <prefix> after converting to movie [leave directory with PNGs alone].\n");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -603,6 +609,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 				
+			case 'W':	/* RIP at a higher dpi, then downsample in gs */
+				Ctrl->W.active = true;
+				Ctrl->W.factor = atoi (opt->arg);
+				break;
+				
 			case 'Z':	/* Erase frames after movie has been made */
 				Ctrl->Z.active = true;
 				break;
@@ -618,6 +629,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.exit && Ctrl->animate, "Syntax error -F: Cannot use none with other selections\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active && !Ctrl->M.active && !Ctrl->animate, "Syntax error: Must select an output product (-A, -F, -M)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Z.active, "Syntax error: Cannot use -Z if -Q is set\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.factor < 2, "Syntax error -W: factor must be > 1\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_X] <= 0.0 || Ctrl->C.dim[GMT_Y] <= 0.0,
 					"Syntax error -C: Zero or negative canvas dimensions given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_Z] <= 0.0,
@@ -699,7 +711,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 #else
 	char dir_sep = '/';
 #endif
-	double percent;
+	double percent, effective_dpi;
 	
 	FILE *fp = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -832,10 +844,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	
 	sprintf (string, "Static parameters set for animation sequence %s", Ctrl->N.prefix);
+	effective_dpi = (Ctrl->W.active) ? Ctrl->C.dim[GMT_Z] * Ctrl->W.factor : Ctrl->C.dim[GMT_Z];
 	set_comment (fp, Ctrl->In.mode, string);
 	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_WIDTH",  Ctrl->C.dim[GMT_X], Ctrl->C.unit);
 	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_HEIGHT", Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
-	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_DPU",    Ctrl->C.dim[GMT_Z], 0);
+	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_DPU",    effective_dpi, 0);
 	if (Ctrl->I.active) {	/* Append contents of an include file */
 		set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->I.fp)) {	/* Read the include file and copy to init script with some exceptions */
@@ -1050,6 +1063,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			strcat (extra, ",Mf../gmt_movie_foreground.ps");
 #endif
 		}
+		if (Ctrl->W.active) {	/* Must pass the downscalefactor option to psconvert */
+			sprintf (line, ",C-dDownScaleFactor=%d", Ctrl->W.factor);
+			strcat (extra, line);
+		}
 		set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 		set_comment (fp, Ctrl->In.mode, "Master frame loop script");
 		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a PPID since subshells may mess things up */
@@ -1164,6 +1181,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		strcat (extra, ",Mf../gmt_movie_foreground.ps");
 #endif
 		layers = true;
+	}
+	if (Ctrl->W.active) {	/* Must pass the downscalefactor option to psconvert */
+		sprintf (line, ",C-dDownScaleFactor=%d", Ctrl->W.factor);
+		strcat (extra, line);
 	}
 	set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 	set_comment (fp, Ctrl->In.mode, "Main frame loop script");
