@@ -1472,14 +1472,21 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Parameters for all the formats available */
 
-	if (gsVersion.major >= 9 && gsVersion.minor >= 21)
-		/* Artifex says that the -dSCANCONVERTERTYPE=2 new scan converter is faster (confirmed) and
-		   will be the default in a future release. Since it was introduced in 9.21 we start using it
-		   right now and remove this conditional once it becomes the default */
-		gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode -dSCANCONVERTERTYPE=2";
-	else
-		gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
-
+	if (Ctrl->T.device == GS_DEV_PDF) {	/* For PDF we want a bunch of prepress and other settings to maximize quality */
+		if (gsVersion.major >= 9 && gsVersion.minor >= 21)
+			/* Artifex says that the -dSCANCONVERTERTYPE=2 new scan converter is faster (confirmed) and
+		   	will be the default in a future release. Since it was introduced in 9.21 we start using it
+		   	right now and remove this conditional once it becomes the default */
+			gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode -dSCANCONVERTERTYPE=2";
+		else
+			gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
+	}
+	else {	/* For rasters */
+		if (gsVersion.major >= 9 && gsVersion.minor >= 21)
+			gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dSCANCONVERTERTYPE=2";
+		else
+			gs_params = "-q -dSAFER -dNOPAUSE -dBATCH";
+	}
 
 	gs_BB = "-q -dSAFER -dNOPAUSE -dBATCH -sDEVICE=bbox"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
 
