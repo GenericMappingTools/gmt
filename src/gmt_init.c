@@ -14545,22 +14545,26 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 			/* Here the file exists and we can call psconvert. Note we still pass *.ps- even if *.ps+ was found since psconvert will do the same check */
 			sprintf (cmd, "%s/gmt_%d.ps- -T%c -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
 			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
-			if (not_PS) {	/* Append psconvert optional settings */
-				if (fig[k].options[0]) {	/* Append figure-specific settings */
-					pos = 0;	/* Reset position counter */
-					while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
-						sprintf (option, " -%s", p);	/* Create proper ps_convert option syntax */
-						strcat (cmd, option);
-					}
-				}
-				else if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
-					pos = 0;	/* Reset position counter */
-					while ((gmt_strtok (API->GMT->current.setting.ps_convert, ",", &pos, p))) {
+			/* Append psconvert optional settings */
+			if (fig[k].options[0]) {	/* Append figure-specific settings */
+				pos = 0;	/* Reset position counter */
+				while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
+					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the formst */
 						sprintf (option, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
 					}
 				}
 			}
+			else if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
+				pos = 0;	/* Reset position counter */
+				while ((gmt_strtok (API->GMT->current.setting.ps_convert, ",", &pos, p))) {
+					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the formst */
+						sprintf (option, " -%s", p);	/* Create proper ps_convert option syntax */
+						strcat (cmd, option);
+					}
+				}
+			}
+			GMT_Report (API, GMT_MSG_DEBUG, "psconvert: %s\n", cmd);
 			if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to call psconvert\n");
 				gmt_M_free (API->GMT, fig);
@@ -14677,8 +14681,13 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 			return GMT_ERROR_ON_FOPEN;
 		/* Append the new entry */
 		fprintf (fp, "%d\t%s\t%s", this_k, prefix, formats);
-		if (options[0])	/* Append the options string */
+		if (options[0])	{	/* Append the options string */
+			GMT_Report (API, GMT_MSG_DEBUG, "New figure: %d\t%s\t%s\t%s\n", this_k, prefix, formats, options);
 			fprintf (fp, "\t%s", options);
+		}
+		else
+			GMT_Report (API, GMT_MSG_DEBUG, "New figure: %d\t%s\t%s", this_k, prefix, formats);
+		
 		fprintf (fp, "\n");
 		fclose (fp);
 	}
