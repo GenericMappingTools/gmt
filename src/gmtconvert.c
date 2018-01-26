@@ -103,7 +103,7 @@ struct GMTCONVERT_CTRL {
 	} W;
 	struct Z {	/* -Z[<first>]:[<last>] */
 		bool active;
-		uint64_t first, last;
+		int64_t first, last;
 	} Z;
 };
 
@@ -339,14 +339,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 					else { /* Gave first, and maybe last */
 						c[0] = '\0';	/* Chop off last */
 						Ctrl->Z.first = atol (opt->arg);
-						Ctrl->Z.last = (c[1]) ? (uint64_t)atol (&c[1]) : UINTMAX_MAX;	/* Last record if not given */
+						Ctrl->Z.last = (c[1]) ? (int64_t)atol (&c[1]) : INTMAX_MAX;	/* Last record if not given */
 						c[0] = ':';	/* Restore */
 					}
 				}
 				else /* No colon means first is 0 and given value is last */
 					Ctrl->Z.last = atol (opt->arg);
 				/* Adjust to system where first record is 1 since we must increment n_in_rows before applying -Z check later */
-				Ctrl->Z.first++;	if (Ctrl->Z.last < UINTMAX_MAX) Ctrl->Z.last++;
+				Ctrl->Z.first++;	if (Ctrl->Z.last < INTMAX_MAX) Ctrl->Z.last++;
 				GMT_Report (API, GMT_MSG_DEBUG, "Output record numbers %" PRIu64 " through = %" PRIu64 "\n", Ctrl->Z.first, Ctrl->Z.last);
 				break;
 
@@ -424,7 +424,8 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	int error = 0;
 	uint64_t out_col, col, n_cols_in = 0, n_cols_out, tbl, tlen;
 	uint64_t n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
-	uint64_t last_row, n_rows, n_in_rows, row, seg, n_out_seg = 0, out_seg = 0;
+	uint64_t last_row, n_rows, row, seg, n_out_seg = 0, out_seg = 0;
+	int64_t n_in_rows;
 
 	double *val = NULL;
 
@@ -631,7 +632,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			if (SHo->mode) continue;	/* No point copying values given segment content will be skipped */
 			n_out_seg++;	/* Number of segments that passed the test */
 			last_row = S->n_rows - 1;
-			for (row = n_rows = n_in_rows = 0; row <= last_row; row++) {	/* Go down all the rows */
+			for (row = n_rows = 0, n_in_rows = 0; row <= last_row; row++) {	/* Go down all the rows */
 				n_in_rows++;
 				if (Ctrl->Z.active && (n_in_rows < Ctrl->Z.first || n_in_rows > Ctrl->Z.last)) continue;	/* Skip if outside limited record range */
 				if (!Ctrl->E.active) {
