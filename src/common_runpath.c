@@ -387,7 +387,7 @@ int gmt_verify_sharedir_version (const char *dir) {
 	return true;
 #else
 	static char *required_version = GMT_PACKAGE_VERSION_WITH_SVN_REVISION;
-	char version_file[PATH_MAX+1];
+	char version_file[PATH_MAX];
 
 #ifdef DEBUG_RUNPATH
 	fprintf (stderr, "gmt_verify_sharedir_version: got dir '%s'.\n", dir);
@@ -395,8 +395,8 @@ int gmt_verify_sharedir_version (const char *dir) {
 
 	/* If the directory exists */
 	if (access (dir, R_OK | X_OK) == 0) {
-		snprintf (version_file, PATH_MAX+1, "%s/VERSION", dir);
-		/* Check correct ver  sion */
+		snprintf (version_file, PATH_MAX-1, "%s/VERSION", dir);
+		/* Check correct version */
 		if (gmt_match_string_in_file (version_file, required_version)) {
 #ifdef DEBUG_RUNPATH
 			fprintf (stderr, "gmt_verify_sharedir_version: found '%s' (%s).\n",
@@ -407,23 +407,9 @@ int gmt_verify_sharedir_version (const char *dir) {
 		else {
 			/* Special case: accept share dir in source tree.
 			 * Needed when running GMT from build dir. */
-			snprintf (version_file, PATH_MAX+1, "%s/VERSION.in", dir);
-			if (access (version_file, R_OK) == 0) {
-#ifdef DEBUG_RUNPATH
-				fprintf (stderr, "gmt_verify_sharedir_version: found '%s'.\n", version_file);
-#endif
+			snprintf (version_file, PATH_MAX-1, "%s/VERSION.in", dir);
+			if (access (version_file, R_OK) == 0)
 				return true;
-			}
-			else {
-				/* Yet another special case: accept a file called VERSION_all.txt. Needed when run from Mirone */
-				snprintf(version_file, PATH_MAX + 1, "%s/VERSION_all.txt", dir);
-				if (access(version_file, R_OK) == 0) {
-#ifdef DEBUG_RUNPATH
-					fprintf(stderr, "gmt_verify_sharedir_version: found '%s'.\n", version_file);
-#endif
-					return true;
-				}
-			}
 		}
 	}
 	return false;
