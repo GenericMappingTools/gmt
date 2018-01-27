@@ -22,7 +22,7 @@ Synopsis
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
 [ |-G|\ *fill*\ ]
 [ |-I|\ *includefile* ]
-[ |-M|\ [*frame*],[*format] ]
+[ |-M|\ [*frame*],[*format*] ]
 [ |-Q|\ [**s**] ]
 [ **Sb**\ *backgroundscript* ]
 [ **Sf**\ *foregroundscript* ]
@@ -60,14 +60,14 @@ Required Arguments
 
 **-C**\ *papersize*
     Specify the canvas size used when composing the movie frames. You can choose from a
-    a set of known preset formats or you can set a custom layout.  The named 16:9 ratio
-    formats have a canvas dimension of 24 x 13.5 cm *or* 9.6 x 5.4 inch and are listed
-    below (with pixel dimensions given in parenthesis):
+    set of known preset formats or you can set a custom layout.  The named 16:9 ratio
+    formats have a canvas dimension of 24 x 13.5 cm *or* 9.6 x 5.4 inch and are
+    (with pixel dimensions given in parenthesis):
     **4320p** (7680 x 4320), **2160p** (3840 x 2160), **1080p** (1920 x 1080), **720p** (1280 x 720),
     **540p** (960 x 540), **480p** (854 x 480), **360p** (640 x 360), and **240p** (426 x 240).
     We also accept **8k** to mean **4320p**, **4k** or **uhd** to mean **2160p** and **hd** to mean **1080p**.
     The recognized 4:3 ratio formats have a canvas dimension of 24 x 18 cm *or* 9.6 x 7.2 inch
-    and are listed below (with pixel dimensions given in parenthesis):
+    and are (with pixel dimensions given in parenthesis):
     **uxga** (1600 x 1200), **sxga+** (1400 x 1050), **xga** (1024 x 768),
     **svga** (800 x 600), and **dvd** (640 x 480).
     Note: Your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting determines if movie sets
@@ -79,17 +79,17 @@ Required Arguments
 
 **-N**\ *prefix*
     Determines the name of a sub-directory with frame images as well as the final movie file.
-    Note: If the subdirectory exist then we exit immediately, so make sure you remove any
-    old directory first.  This is done to prevent the accidental loss of valuable data.
+    Note: If the subdirectory exist then we exit immediately.  You are therefore required to remove any
+    old directory by that name first.  This is done to prevent the accidental loss of valuable data.
 
 .. _-T:
 
 **-T**\ *frames*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
     Either specify how many image frames to make or supply a file with a set of parameters,
     one record per frame (i.e., row).  The values in the columns will be available to the
-    *mainscript* as named variables GMT_MOVIE_VAL1, GMT_MOVIE_VAL2, etc., while any trailing text
-    can be accessed via the variable GMT_MOVIE_STRING.  Append **+w** to also split the trailing
-    string into individual words GMT_MOVIE_TXT1, GMT_MOVIE_TXT2, etc. The number of records equals
+    *mainscript* as named variables **GMT_MOVIE_VAL1**, **GMT_MOVIE_VAL2**, etc., while any trailing text
+    can be accessed via the variable **GMT_MOVIE_STRING**.  Append **+w** to also split the trailing
+    string into individual words **GMT_MOVIE_TXT1**, **GMT_MOVIE_TXT2**, etc. The number of records equals
     the number of frames. Note that the *background* script is allowed to create the *timefile*
     hence we check of its existence both before and after the background script has run.  Normally,
     the frame numbering starts at 0; you can change this by appending a different starting frame
@@ -141,7 +141,7 @@ Optional Arguments
 
 **-M**\ [*frame*],[*format*]
     In addition to making the animation sequence, select a single frame for a cover page.  This frame will
-    be written in current directory with name *prefix*.*format*, where *format* can one of the
+    be written in current directory with name *prefix.format*, where *format* can one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].
 
 .. _-Q:
@@ -188,10 +188,16 @@ Optional Arguments
     find that, in particular, moving text may appear jittery when seen in the final animation.  You can mitigate
     this effect by selecting a scale *factor* that, in effect, temporarily increases the effective dots-per-unit
     by *factor*, rasterizes the frame, then downsamples the image by the same factor at the end.  The larger
-    the *factor*, the smoother the transitions.  Because processing time scales with *factor* we suggest you
+    the *factor*, the smoother the transitions.  Because processing time increases with *factor* we suggest you
     try values in the 2-5 range [no downsampling].
 
-.. include:: explain_core.rst_
+.. _-cores:
+
+**-x**\ [[-]\ *n*]
+    Limit number of cores used when making the individual frames.
+    By default we try to use all available cores.  Append *n* to only use *n* cores
+    (if too large it will be truncated to the maximum cores available).  Finally,
+    give a negative *n* to select (all - *n*) cores (or at least 1 if *n* equals or exceeds all).
 
 .. include:: explain_help.rst_
 

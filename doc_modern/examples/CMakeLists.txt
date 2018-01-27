@@ -112,7 +112,7 @@ add_depend_to_target (docs_depends _docs_examples_fig _docs_examples_verbatim)
 if (UNIX AND DO_ANIMATIONS)
 	configure_file (animate.in animate @ONLY)
 
-	foreach (_num 01 02 03 04 05)
+	foreach (_num 01 02 03 04 05 06)
 		add_custom_command (
 			OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.gif
 			COMMAND ${BASH} animate anim${_num}/anim_${_num}.sh
@@ -127,21 +127,31 @@ if (UNIX AND DO_ANIMATIONS)
 		list (APPEND _animations ${RST_BINARY_DIR}/_images/anim_${_num}.gif)
 	endforeach ()
 
-	# copy video files from anim 04
+	# copy video files from anim 04, 06
 	add_custom_command (
 		OUTPUT
 		${RST_BINARY_DIR}/_images/anim_04.mp4
 		${RST_BINARY_DIR}/_images/anim_04.webm
+		${RST_BINARY_DIR}/_images/anim_06.mp4
+		${RST_BINARY_DIR}/_images/anim_06.webm
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 		${CMAKE_CURRENT_BINARY_DIR}/anim04/anim_04.mp4
 		${RST_BINARY_DIR}/_images/anim_04.mp4
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 		${CMAKE_CURRENT_BINARY_DIR}/anim04/anim_04.webm
 		${RST_BINARY_DIR}/_images/anim_04.webm
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		${CMAKE_CURRENT_BINARY_DIR}/anim06/anim_06.mp4
+		${RST_BINARY_DIR}/_images/anim_06.mp4
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		${CMAKE_CURRENT_BINARY_DIR}/anim06/anim_06.webm
+		${RST_BINARY_DIR}/_images/anim_06.webm
 		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim04/anim_04.gif)
 	list (APPEND _animations
 		${RST_BINARY_DIR}/_images/anim_04.mp4
-		${RST_BINARY_DIR}/_images/anim_04.webm)
+		${RST_BINARY_DIR}/_images/anim_04.webm
+		${RST_BINARY_DIR}/_images/anim_06.mp4
+		${RST_BINARY_DIR}/_images/anim_06.webm)
 	add_custom_target (animation DEPENDS ${_animations})
 
 	# clean target
@@ -156,6 +166,8 @@ if (UNIX AND DO_ANIMATIONS)
 		${CMAKE_CURRENT_BINARY_DIR}/anim04
 		COMMAND ${CMAKE_COMMAND} -E remove_directory
 		${CMAKE_CURRENT_BINARY_DIR}/anim05
+		COMMAND ${CMAKE_COMMAND} -E remove_directory
+		${CMAKE_CURRENT_BINARY_DIR}/anim06
 		COMMENT "Removing animations")
 	# register with spotless target
 	add_depend_to_target (spotless _anim_clean)
