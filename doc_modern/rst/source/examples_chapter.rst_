@@ -1321,27 +1321,28 @@ Creating GMT Animations
     is nothing more than a series of individual images played back in an
     orderly fashion. Here, these images will have been created with GMT.
     To ensure a smooth transition from frame to frame we will be following
-    some general guidelines when writing our scripts. Since there is no
-    "movie" mode in GMT we must take care of all the book-keeping in our
-    script. Thus, animations may require a bit of planning and may use more
-    advanced scripting than the previous static examples. Note: This is a
-    new chapter introduced with the 4.4.0 version and should be considered
-    work in progress.
+    some general guidelines when writing our scripts. With the introduction
+    of the :doc:`movie` module the whole process has been streamlined.
 
     Most, if not all, animation scripts must deal with several specific
     phases of movie making:
 
-    #. Define parameters that determine the dimension of the final movie.
+    #. Define parameters that are constants to be used in your scripts.
+       We save these statements to an optional *includescript* file.
 
     #. Pre-calculate all variables, data tables, grids, or background map
-       layers that are *independent* of your time variable.
+       layers that are *independent* of your time variable.  These commands
+       are stored in an optional *backgroundscript* file.
 
-    #. Have a frame-number loop where each frame is created as a
-       PostScript plot, then rasterized to a TIFF file of chosen dimension.
+    #. Pre-calculate any overlay (foreground) map via GMT commands that
+       are stored in an optional *foregroundscript* file.
 
-    #. Convert the individual frames to a single movie of suitable format.
+    #. The part of the movie that varies with frame is written in the
+       *mainscript* file.  This file has access to the variables and data
+       set earlier, plus several built in variables like frame counter.
 
-    #. Clean up temporary files and eventually the individual frames.
+    #. The movie module can now be run and carry out all computations,
+       frame building, and assembling of the final movie.
 
     We will discuss these phases in more detail before showing our first example.
 
@@ -1354,21 +1355,17 @@ Creating GMT Animations
        high-resolution plot in monochrome or color. However, movies are not
        device-independent and you must finally consider the third set of
        *pixel coordinates* which specifies the resolution of the final
-       movie. We control the frame size by selecting a suitable *dpi*
-       setting that will scale your physical dimensions to the desired frame
-       size in pixels. If you decide up front on a particular resolution
-       (e.g., 480 by 320 pixels) then you should specify a paper size and
-       *dpi* so that their product yields the desired pixel dimensions. For
-       instance, here it might make sense to plan your plotting on a 4.8 by
-       3.2 inch "paper" and use 100 *dpi* to convert it to pixels, but you
-       are free to use any combination that multiplies to the desired
-       dimensions. After deciding on frame size you need to consider how
+       movie. You must specify a canvas size as a fixed 16:9 or 4:3 canvas
+       or a custom canvas, and that setting determines the resolution of
+       your movie.
+
+    #. After deciding on canvas size you need to consider how
        many frames your movie should have. This depends on lots of things
        such as how patient you are, how many frames per second you need and
-       the time range of your animation. We recommend you use variables to
-       specify the items that go into computing the number of frames so that
-       you can easily test your script with a few frames before changing
-       settings and running the full Hollywood production overnight.
+       the time range of your animation. If your *mainscript* requires access
+       to one or more variables that depend on time then it is convenient
+       to make a table up front where each row corresponds to a frame and
+       the various columns are parameters needed.
 
     #. Depending on what you want to display, there are usually many
        elements that do not change between frames. Examples include a
@@ -1378,49 +1375,12 @@ Creating GMT Animations
        movie-making can take a long time if you are ambitious, it is best to
        compute or plot all the elements that can be done outside your main
        frame-loop rather than waste time doing the same thing over and over
-       again. You are then ready for the main loop.
+       again. Generate background plots in the *backgrundscript* and any
+       overlays in the *foregroundscript*.  Both of these are optional.
 
-    #. Initialize a frame counter to 0 and have a loop that continues until
-       your frame counter equals the desired number of frames. You must use
-       your frame counter to create a unique file name for each frame image
-       so that the series of images can be lexically arranged. We recommend
-       using the GMT shell function **gmt_set_framename** to format
-       the frame counter with an adequate number of leading zeros; see our
-       examples for details. The bulk of your main loop involves create the
-       single PostScript plot for this particular frame (time). This can
-       be trivial or a serious scripting exercise depending on what you want
-       to show. We will give a few examples with increasing complexity. Once
-       the PostScript plot is created you need to rasterize it; we
-       recommend you use :doc:`psconvert` to
-       generate a TIFF image at the agreed-upon resolution. We also
-       recommend that you place all frame images in a sub-directory. You may
-       increment your frame counter using **gmt_set_framenext**.
-
-    #. Once you have all your frames you are ready to combine them into an
-       animation. There are two general approaches. (a) If your image
-       sequence is not too long then you can convert the images into a
-       single animated GIF file. This file can be included in PowerPoint
-       presentations or placed on a web page and will play back as a movie
-       by pausing the specified amount between frames, optionally repeating
-       the entire sequence one or more times. (b) For more elaborate
-       projects you will need to convert the frames into a proper movie
-       format such as Quicktime, AVI, MPEG-2, MPEG-4, etc., etc. There are
-       both free and commercial tools that can help with this conversion and
-       they tend to be platform-specific. Most movie tools such as iMovie or
-       MovieMaker can ingest still images and let you specify the frame
-       duration. Under OS X we prefer to use Quicktime. [26]_ Free tools
-       exist to call the Quicktime library functions from the command line
-       as we prefer to do in our scripts. Another choice is to use the free
-       `mencoder <http://www.mplayerhq.hu/>`_.
-       You will find yourself
-       experimenting with compression settings and movie formats so that the
-       final movie has the resolution and portability you require.
-
-    #. Finally, when all is done you should delete any temporary files
-       created. However, since creating the frames may take a lot of time it
-       is best to not automatically delete the frame sub directory. That way
-       you can redo the frames-to-movie conversion with different settings
-       until you are satisfied.
+    #. You can now run the main movie command, passing the various scripts
+       and total number of frames (or time file) with other settings such
+       as video format.
 
     Animation of the sine function
     ------------------------------
@@ -1521,4 +1481,19 @@ Creating GMT Animations
        :language: bash
     
     .. figure:: /_images/anim_05.*
+
+
+    Demonstrate aliasing by sampling a chirp
+    ----------------------------------------
+    
+    Our next animation creates a chirp signal and then proceeds
+    to sample it twice a second.  We then try to reconstruct the
+    original signal via a cubic spline.  As the chirp frequency
+    passes the Nyquist frequency we struggle with keeping up and
+    end up introducing massive aliasing.
+    
+    .. literalinclude:: /_verbatim/anim_06.txt
+       :language: bash
+    
+    .. figure:: /_images/anim_06.*
 
