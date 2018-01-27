@@ -151,6 +151,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->C.unit = 'c';	/* c for SI units */
 	C->D.framerate = 24.0;	/* 24 frames/sec */
 	C->F.options[MOVIE_WEBM] = strdup ("-crf 10 -b:v 1.2M");	/* Default WebM options for now */
+	GMT->common.x.n_threads = GMT->parent->n_cores;
 	return (C);
 }
 
@@ -172,6 +173,21 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MOVIE_CTRL *C) {	/* Deall
 	gmt_M_str_free (C->T.file);
 	gmt_M_free (GMT, C);
 }
+
+/*! -x[[-]<ncores>] needed even if no OPenMP sicne not used that way in this module */
+#ifndef GMT_MP_ENABLED
+GMT_LOCAL int gmtinit_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
+	if (!arg) return (GMT_PARSE_ERROR);	/* -x requires a non-NULL argument */
+	if (arg[0])
+		GMT->common.x.n_threads = atoi (arg);
+
+	if (GMT->common.x.n_threads == 0)
+		GMT->common.x.n_threads = 1;
+	else if (GMT->common.x.n_threads < 0)
+		GMT->common.x.n_threads = MAX(GMT->parent->n_cores - GMT->common.x.n_threads, 1);		/* Max-n but at least one */
+	return (GMT_NOERROR);
+}
+#endif
 
 GMT_LOCAL int gmt_sleep (unsigned int microsec) {
 #ifdef WIN32
@@ -296,8 +312,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: movie <mainscript> -C<canvas> -N<prefix> -T<n_frames>|<timefile>[+p<width>][+s<first>][+w]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-M[<frame>,][<format>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] [-I<includefile>] [-Q[s]] [-Sb<script>] [-Sf<script>] [%s] [-W<factor>] [-Z]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-M[<frame>,][<format>]] [-G<fill>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-Q[s]] [-Sb<script>] [-Sf<script>] [%s] [-W<factor>] [-Z] [-x[[-]<n>]]\n\n", GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -354,10 +370,19 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t       If a plot is generated then the script must be in GMT modern mode.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of foreground GMT modern mode script which will\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       build a static foreground plot overlay added to all frames.\n");
-	GMT_Option (API, "V,.");
+	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Temporarily increase dpi by <factor>, rasterize, then downsample [no downsampling].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to stabilize sub-pixel changes between frames, such as moving text.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase directory <prefix> after converting to movie [leave directory with PNGs alone].\n");
+#ifndef GMT_MP_ENABLED
+	/* Number of threads (reassigned from -x in GMT_Option) */
+	GMT_Message (API, GMT_TIME_NONE, "\t-x Limit the number of cores used in frame generation [Default uses all cores = %d].\n", API->n_cores);
+	GMT_Message (API, GMT_TIME_NONE, "\t   -x<n>  Select <n> cores (up to all available).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -x-<n> Select (all - <n>) cores (or at least 1).\n");
+	GMT_Option (API, ".");
+#else
+	GMT_Option (API, "x,.");
+#endif
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -617,7 +642,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 			case 'Z':	/* Erase frames after movie has been made */
 				Ctrl->Z.active = true;
 				break;
-				
+
+#ifndef GMT_MP_ENABLED
+			case 'x':
+				n_errors += gmtinit_parse_x_option (GMT, opt->arg);
+				GMT->common.x.active = true;
+				break;
+#endif
+		
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -1244,8 +1276,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 
 	i_frame = first_frame = 0; n_frames_not_started = n_frames;
 	frame = Ctrl->T.start_frame;
-	n_cores_unused = MAX (1, API->n_cores - 1);			/* Remove one for the main movie module thread */
+	n_cores_unused = MAX (1, GMT->common.x.n_threads - 1);			/* Remove one for the main movie module thread */
 	status = gmt_M_memory (GMT, NULL, n_frames, struct MOVIE_STATUS);	/* Used to keep track of frame status */
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Build frames using %u cores\n", n_cores_unused);
 	
 	while (!done) {	/* Keep running jobs until all frames have completed */
 		while (n_frames_not_started && n_cores_unused) {	/* Launch new jobs if possible */

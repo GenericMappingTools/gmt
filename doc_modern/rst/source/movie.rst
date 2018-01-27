@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ *factor*\ ]
 [ |-Z| ]
+[ |SYN_OPT-x| ]
 
 |No-spaces|
 
@@ -189,6 +190,8 @@ Optional Arguments
     by *factor*, rasterizes the frame, then downsamples the image by the same factor at the end.  The larger
     the *factor*, the smoother the transitions.  Because processing time scales with *factor* we suggest you
     try values in the 2-5 range [no downsampling].
+
+.. include:: explain_core.rst_
 
 .. include:: explain_help.rst_
 
