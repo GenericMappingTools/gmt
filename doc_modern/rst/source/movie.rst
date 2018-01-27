@@ -189,7 +189,9 @@ Optional Arguments
     this effect by selecting a scale *factor* that, in effect, temporarily increases the effective dots-per-unit
     by *factor*, rasterizes the frame, then downsamples the image by the same factor at the end.  The larger
     the *factor*, the smoother the transitions.  Because processing time increases with *factor* we suggest you
-    try values in the 2-5 range [no downsampling].
+    try values in the 2-5 range.  Note that images can also suffer from quantizing when the original data have
+    much higher resolution than your final frame pixel dimensions.  The **-W** option may then be used to smooth the
+    result to avoid aliasing [no downsampling].
 
 .. _-cores:
 
