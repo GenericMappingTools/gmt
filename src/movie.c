@@ -915,7 +915,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			if ((is_classic && rec == 0) || strstr (line, "gmt begin")) {	/* Need to insert gmt figure after this line (or as first line) in case a background plot will be made */
 				fprintf (fp, "gmt begin\n");	/* To ensure there are no args here since we are using gmt figure instead */
 				set_comment (fp, Ctrl->In.mode, "\tSet fixed background output ps name");
-				fprintf (fp, "\tgmt figure gmt_movie_background ps\n");
+				fprintf (fp, "\tgmt figure movie_background ps\n");
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 				if (is_classic)	/* Also write the current line since it was not a gmt begin line */
@@ -998,7 +998,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			if (strstr (line, "gmt begin")) {	/* Need to insert gmt figure after this line */
 				fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 				set_comment (fp, Ctrl->In.mode, "\tSet fixed foreground output ps name");
-				fprintf (fp, "\tgmt figure gmt_movie_foreground ps\n");
+				fprintf (fp, "\tgmt figure movie_foreground ps\n");
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
 				fprintf (fp, "\tgmt set DIR_DATA %s\n", datadir);
 				n_begin++;
@@ -1078,21 +1078,19 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		if (Ctrl->G.active)	/* Want to set a fixed background canvas color - we do this via the psconvert -A option */
-			sprintf (extra, "A+g%s,P", Ctrl->G.fill);
-		else	/* In either case we set Portrait mode */
-			sprintf (extra, "P");
-		if (!access ("gmt_movie_background.ps", R_OK)) {	/* Need to place a background layer first (which is in parent dir when loop script is run) */
+			sprintf (extra, "A+g%s", Ctrl->G.fill);
+		if (!access ("movie_background.ps", R_OK)) {	/* Need to place a background layer first (which is in parent dir when loop script is run) */
 #ifdef WIN32
-			strcat (extra, ",Mb..\\gmt_movie_background.ps");
+			strcat (extra, ",Mb..\\movie_background.ps");
 #else
-			strcat (extra, ",Mb../gmt_movie_background.ps");
+			strcat (extra, ",Mb../movie_background.ps");
 #endif
 		}
-		if (!access ("gmt_movie_foreground.ps", R_OK)) {	/* Need to append foreground layer at end (which is in parent dir when script is run) */
+		if (!access ("movie_foreground.ps", R_OK)) {	/* Need to append foreground layer at end (which is in parent dir when script is run) */
 #ifdef WIN32
-			strcat (extra, ",Mf..\\gmt_movie_foreground.ps");
+			strcat (extra, ",Mf..\\movie_foreground.ps");
 #else
-			strcat (extra, ",Mf../gmt_movie_foreground.ps");
+			strcat (extra, ",Mf../movie_foreground.ps");
 #endif
 		}
 		if (Ctrl->W.active) {	/* Must pass the downscalefactor option to psconvert */
@@ -1194,23 +1192,22 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		fclose (Ctrl->In.fp);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
+	extra[0] = '\0';	/* Reset */
 	if (Ctrl->G.active)	/* Want to set a fixed background canvas color - we do this via the psconvert -A option */
-		sprintf (extra, "A+g%s,P", Ctrl->G.fill);
-	else	/* In either case we set Portrait mode */
-		sprintf (extra, "P");
-	if (!access ("gmt_movie_background.ps", R_OK)) {	/* Need to place a background layer first (which is in parent dir when loop script is run) */
+		sprintf (extra, "A+g%s", Ctrl->G.fill);
+	if (!access ("movie_background.ps", R_OK)) {	/* Need to place a background layer first (which is in parent dir when loop script is run) */
 #ifdef WIN32
-		strcat (extra, ",Mb..\\gmt_movie_background.ps");
+		strcat (extra, ",Mb..\\movie_background.ps");
 #else
-		strcat (extra, ",Mb../gmt_movie_background.ps");
+		strcat (extra, ",Mb../movie_background.ps");
 #endif
 		layers = true;
 	}
-	if (!access ("gmt_movie_foreground.ps", R_OK)) {	/* Need to append foreground layer at end (which is in parent dir when script is run) */
+	if (!access ("movie_foreground.ps", R_OK)) {	/* Need to append foreground layer at end (which is in parent dir when script is run) */
 #ifdef WIN32
-		strcat (extra, ",Mf..\\gmt_movie_foreground.ps");
+		strcat (extra, ",Mf..\\movie_foreground.ps");
 #else
-		strcat (extra, ",Mf../gmt_movie_foreground.ps");
+		strcat (extra, ",Mf../movie_foreground.ps");
 #endif
 		layers = true;
 	}
