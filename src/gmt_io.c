@@ -6436,6 +6436,8 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 			char c = s[len-1];	/* Trailing letter */
 			if ((s[0] == 'T' && isdigit (s[1])) || strchr (s, 'T'))	/* Found a T in the argument - must be Absolute time or junk */
 				expectation = GMT_IS_ARGTIME;
+			else if (strstr (s, "pi"))	/* Found "pi" in the number - will try scanning as float */
+				expectation = GMT_IS_FLOAT;
 			else if (!((s[0] >= 0 && isdigit (s[0])) || s[0] == '-' || s[0] == '+' || s[0] == '.')) {	/* All other numbers must be [-|+][<num>[.]<num>][<end>] */
 				*val = GMT->session.d_NaN;
 				return GMT_IS_NAN;	/* Cannot be a number so return as NaN */
@@ -6450,8 +6452,6 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 				expectation = GMT_IS_GEO;
 			else if (strchr (s, ':'))		/* Found a : in the argument - assume Geographic coordinates */
 				expectation = GMT_IS_GEO;
-			else if (strstr (s, "pi"))	/* Found "pi" in the number - will try scanning as float */
-				expectation = GMT_IS_FLOAT;
 			else if (strchr (GMT_DIM_UNITS, c))	/* Found a trailing dimension unit (c|i|p) */
 				expectation = GMT_IS_DIMENSION;
 			else if (strchr (GMT_LEN_UNITS, c))	/* Found a trailing geo-length unit (d|m|s|e|f|k|M|n|u) */
