@@ -48,9 +48,10 @@ Optional Arguments
 
 *options*
     Sets one or more comma-separated options arguments that
-    will be passed to :doc:`psconvert` when preparing this figure [A,P].
+    will be passed to :doc:`psconvert` when preparing this figure [A].
     The valid subset of options are
-    **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **P**\ ,\ **Q**\ *args*,\ **S**.
+    **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,
+    **M**\ *args*,\ **Q**\ *args*,\ **S**.
     See the :doc:`psconvert` documentation for details on these options.
 
 .. _figure-V:

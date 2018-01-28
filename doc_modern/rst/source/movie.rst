@@ -21,13 +21,13 @@ Synopsis
 [ |-D|\ *displayrate*
 [ |-F|\ *format*\ [**+o**\ *options*\ ]]
 [ |-G|\ *fill*\ ]
+[ |-H|\ *factor*\ ]
 [ |-I|\ *includefile* ]
 [ |-M|\ [*frame*],[*format*] ]
 [ |-Q|\ [**s**] ]
 [ **Sb**\ *backgroundscript* ]
 [ **Sf**\ *foregroundscript* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ *factor*\ ]
 [ |-Z| ]
 [ |SYN_OPT-x| ]
 
@@ -130,6 +130,20 @@ Optional Arguments
 **-G**\ *fill*
     Set the canvas color or fill before plotting commences [none].
 
+.. _-H:
+
+**-H**\ *factor*
+    Given the finite dots-per-unit used to rasterize PostScript frames to PNGs, the quantizing of features
+    to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings.  However,
+    changes from frame to frame is outside the control of the individual frame rasterization and we
+    find that, in particular, moving text may appear jittery when seen in the final animation.  You can mitigate
+    this effect by selecting a scale *factor* that, in effect, temporarily increases the effective dots-per-unit
+    by *factor*, rasterizes the frame, then downsamples the image by the same factor at the end.  The larger
+    the *factor*, the smoother the transitions.  Because processing time increases with *factor* we suggest you
+    try values in the 2-5 range.  Note that images can also suffer from quantizing when the original data have
+    much higher resolution than your final frame pixel dimensions.  The **-H** option may then be used to smooth the
+    result to avoid aliasing [no downsampling].
+
 .. _-I:
 
 **-I**\ *includefile*
@@ -178,20 +192,6 @@ Optional Arguments
 **-Z**
     Erase the entire *prefix* directory after assembling the final movie [leave directory with all images;
     script files, parameter files, and layer PostScript files are removed (but see **-Q**)].
-
-.. _-W:
-
-**-W**\ *factor*
-    Given the finite dots-per-unit used to rasterize PostScript frames to PNGs, the quantizing of features
-    to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings.  However,
-    changes from frame to frame is outside the control of the individual frame rasterization and we
-    find that, in particular, moving text may appear jittery when seen in the final animation.  You can mitigate
-    this effect by selecting a scale *factor* that, in effect, temporarily increases the effective dots-per-unit
-    by *factor*, rasterizes the frame, then downsamples the image by the same factor at the end.  The larger
-    the *factor*, the smoother the transitions.  Because processing time increases with *factor* we suggest you
-    try values in the 2-5 range.  Note that images can also suffer from quantizing when the original data have
-    much higher resolution than your final frame pixel dimensions.  The **-W** option may then be used to smooth the
-    result to avoid aliasing [no downsampling].
 
 .. _-cores:
 

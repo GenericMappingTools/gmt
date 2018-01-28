@@ -58,7 +58,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<psconvertoptions> contains one or more comma-separated options that\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   will be passed to psconvert when preparing this figure [%s].\n", GMT_SESSION_CONVERT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   The valid subset of psconvert options are\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     A[<args>],C<args>,D<dir>,E<dpi>,Mb|f<file>,P,Q<args>,S\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     A[<args>],C<args>,D<dir>,E<dpi>,H<factor>,Mb|f<file>,P,Q<args>,S\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   See the psconvert documentation for details.\n");
 	GMT_Option (API, "V");
 	
@@ -105,7 +105,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 				}
 			}
 			else {	/* Check if valid psconvert options */
-				if (!strchr ("ACDEPMQS", p[0])) {
+				if (!strchr ("ACDEHMQS", p[0])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized psconvert option  -%s\n", p);
 					n_errors++;
 				}

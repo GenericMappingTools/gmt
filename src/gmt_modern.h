@@ -36,6 +36,6 @@
 
 #define GMT_SESSION_NAME	"gmtsession"	/* Default prefix for single-figure modern sessions */
 #define GMT_SESSION_FORMAT	0		/* Default entry into gmt_session_format|code arrays -> PDF */
-#define GMT_SESSION_CONVERT	"A,P"		/* Default psconvert options in gmt figure */
+#define GMT_SESSION_CONVERT	"A"		/* Default psconvert options in gmt figure */
 
 #endif  /* _GMT_MODERN_H */
