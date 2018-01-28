@@ -1497,3 +1497,17 @@ Creating GMT Animations
     
     .. figure:: /_images/anim_06.*
 
+
+    Plate tectonic movie of crustal ages
+    ------------------------------------
+    
+    This movie shows a spinning globe with the ocean areas
+    highlighting crustal ages while land shows topography.
+    Shading derives from relief slopes plus a fake sun
+    illuminating from east.
+    
+    .. literalinclude:: /_verbatim/anim_07.txt
+       :language: bash
+    
+    .. figure:: /_images/anim_07.*
+

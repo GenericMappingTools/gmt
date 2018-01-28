@@ -134,6 +134,8 @@ if (UNIX AND DO_ANIMATIONS)
 		${RST_BINARY_DIR}/_images/anim_04.webm
 		${RST_BINARY_DIR}/_images/anim_06.mp4
 		${RST_BINARY_DIR}/_images/anim_06.webm
+		${RST_BINARY_DIR}/_images/anim_07.mp4
+		${RST_BINARY_DIR}/_images/anim_07.webm
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 		${CMAKE_CURRENT_BINARY_DIR}/anim04/anim_04.mp4
 		${RST_BINARY_DIR}/_images/anim_04.mp4
@@ -146,12 +148,21 @@ if (UNIX AND DO_ANIMATIONS)
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 		${CMAKE_CURRENT_BINARY_DIR}/anim06/anim_06.webm
 		${RST_BINARY_DIR}/_images/anim_06.webm
-		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim04/anim_04.gif)
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		${CMAKE_CURRENT_BINARY_DIR}/anim07/anim_07.mp4
+		${RST_BINARY_DIR}/_images/anim_07.mp4
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		${CMAKE_CURRENT_BINARY_DIR}/anim07/anim_07.webm
+		${RST_BINARY_DIR}/_images/anim_07.webm
+		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim04/anim_04.gif
+		${CMAKE_CURRENT_BINARY_DIR}/anim06/anim_06.gif ${CMAKE_CURRENT_BINARY_DIR}/anim07/anim_07.gif)
 	list (APPEND _animations
 		${RST_BINARY_DIR}/_images/anim_04.mp4
 		${RST_BINARY_DIR}/_images/anim_04.webm
 		${RST_BINARY_DIR}/_images/anim_06.mp4
-		${RST_BINARY_DIR}/_images/anim_06.webm)
+		${RST_BINARY_DIR}/_images/anim_06.webm
+		${RST_BINARY_DIR}/_images/anim_07.mp4
+		${RST_BINARY_DIR}/_images/anim_07.webm)
 	add_custom_target (animation DEPENDS ${_animations})
 
 	# clean target
@@ -168,6 +179,8 @@ if (UNIX AND DO_ANIMATIONS)
 		${CMAKE_CURRENT_BINARY_DIR}/anim05
 		COMMAND ${CMAKE_COMMAND} -E remove_directory
 		${CMAKE_CURRENT_BINARY_DIR}/anim06
+		COMMAND ${CMAKE_COMMAND} -E remove_directory
+		${CMAKE_CURRENT_BINARY_DIR}/anim07
 		COMMENT "Removing animations")
 	# register with spotless target
 	add_depend_to_target (spotless _anim_clean)
