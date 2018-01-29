@@ -122,7 +122,7 @@ Optional Arguments
 .. include:: ../../explain_-ocols.rst_
 .. include:: ../../explain_help.rst_
 
-.. include:: ../../explain_geodetic.rst_
+.. include:: explain_geodetic.rst_
 
 .. include:: ../../explain_inside.rst_
 

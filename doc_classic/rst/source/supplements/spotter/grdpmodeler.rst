@@ -125,7 +125,7 @@ Optional Arguments
 
 .. include:: explain_geodetic.rst_
 
-.. include:: explain_inside.rst_
+.. include:: ../../explain_inside.rst_
 
 Examples
 --------
