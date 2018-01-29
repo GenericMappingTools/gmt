@@ -69,5 +69,5 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Sbpre.sh -C7.2ix4.8ix100 -Iinit.sh -Tframe_times.txt -Nanim_06 -D24 $opt -Z
+gmt movie main.sh -Sbpre.sh -C7.2ix4.8ix100 -Iinit.sh -Tframe_times.txt -Nanim_06 -Z $opt
 rm -rf init.sh main.sh pre.sh
