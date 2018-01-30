@@ -330,7 +330,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 			radius = Ctrl->S.radius;
 			d_col = gmt_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
 		}
-		else	/* REad x, y, radius */
+		else	/* Read x, y, radius */
 			n_cols = 3;
 	}	
 	

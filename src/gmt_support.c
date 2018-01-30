@@ -12554,6 +12554,19 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 
 	if (na < 2 || nb < 2) return (0);	/* Need at least 2 points to make a segment */
 
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Since our algorithm is Cartesian we must do some extra checking to prevent shits */
+		double amin, amax, bmin, bmax;
+		gmtlib_get_lon_minmax (GMT, xa, na, &amin, &amax);
+		gmtlib_get_lon_minmax (GMT, xb, nb, &bmin, &bmax);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First line lon range: %g %g  Second line lon range: %g %g\n", amin, amax, bmin, bmax);
+		if (gmt_M_360_range (amin, amax))
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "First geographic line has 360-degree range.  This may fool the Cartesian crossover algorithm\n");
+		if (!internal && gmt_M_360_range (bmin, bmax))
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Second geographic line has 360-degree range.  This may fool the Cartesian crossover algorithm\n");
+		gmt_eliminate_lon_jumps (GMT, xa, na);
+		if (!internal) gmt_eliminate_lon_jumps (GMT, xb, nb);
+	}
+	
 	this_a = this_b = nx = 0;
 	new_a = new_b = true;
 	nx_alloc = GMT_SMALL_CHUNK;
