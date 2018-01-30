@@ -3132,6 +3132,8 @@ GMT_LOCAL unsigned int support_inonout_sub (struct GMT_CTRL *GMT, double x, doub
 		}
 	}
 	else {	/* Flat Earth case */
+		if (y < S->min[GMT_Y] || y > S->max[GMT_Y])
+			return (GMT_OUTSIDE);	/* Point outside, no need to assign value */
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Deal with longitude periodicity */
 			if (x < S->min[GMT_X]) {
 				x += 360.0;
@@ -9998,21 +10000,44 @@ int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 	return (ndec);
 }
 
-void gmt_set_inside_mode (struct GMT_CTRL *GMT, double *lat, unsigned int mode) {
+void gmt_set_inside_mode (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned int mode) {
 	/* Determine if we use spherical or Cartesian function for in--on-out polygon tests */
 	static char *method[2] = {"Cartesian", "spherical"};
-	if (mode == GMT_IOO_SPHERICAL)
+	if (mode == GMT_IOO_SPHERICAL)	/* Force spherical */
 		GMT->current.proj.sph_inside = true;
-	else if (mode == GMT_IOO_CARTESIAN)
+	else if (mode == GMT_IOO_CARTESIAN)	/* Force Cartesian */
 		GMT->current.proj.sph_inside = false;
-	else if (gmt_M_is_cartesian (GMT, GMT_IN))
+	else if (gmt_M_is_cartesian (GMT, GMT_IN))	/* If data is Cartesian then we do taht */
 		GMT->current.proj.sph_inside = false;
-	else if (GMT->current.map.is_world)	/* Here we are dealing with geographic data */
+	else if (GMT->current.map.is_world)	/* Here we are dealing with geographic data that has 360 degree range */
 		GMT->current.proj.sph_inside = true;
-	else if (lat && (doubleAlmostEqual (lat[GMT_Y], -90.0) || doubleAlmostEqual (lat[GMT_Y], +90.0)))
-		GMT->current.proj.sph_inside = true;
-	else
-		GMT->current.proj.sph_inside = false;
+	else {	/* Geographic data less than 360 degree range in longitudes */
+		double lat[2];
+		if (D) { lat[0] = D->min[GMT_Y]; lat[1] = D->max[GMT_Y]; }
+		if (D && (doubleAlmostEqual (lat[0], -90.0) || doubleAlmostEqual (lat[1], +90.0)))	/* Goes to a pole, must do spherical */
+			GMT->current.proj.sph_inside = true;
+		else {	/* Limited in lon and lat, can do Cartesian but must ensure polygons do not jump within range */
+			uint64_t tbl, seg, row;
+			unsigned int range;
+			struct GMT_DATASEGMENT *S = NULL;
+			
+			GMT->current.proj.sph_inside = false;
+			if (D->min[GMT_X] >= 0.0 && D->max[GMT_X] > 0.0)
+				range = GMT_IS_0_TO_P360_RANGE;
+			else if (D->min[GMT_X] < 0.0 && D->max[GMT_X] <= 0.0)
+				range = GMT_IS_M360_TO_0_RANGE;
+			else
+				range = GMT_IS_M180_TO_P180_RANGE;
+			/* Ensure that all longitudes are in the correct range as required by gmt_non_zero_winding */
+			for (tbl = 0; tbl < D->n_tables; tbl++) {
+				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+					S = D->table[tbl]->segment[seg];	/* Shorthand */
+					for (row = 0; row < S->n_rows; row++)
+						gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->data[GMT_X][row]);
+				}
+			}
+		}
+	}
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "A point's inside/outside status w.r.t. polygon(s) will be determined using a %s algorithm.\n", method[GMT->current.proj.sph_inside]);
 }
 

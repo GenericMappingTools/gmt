@@ -9,6 +9,7 @@
 
 if [ $# -eq 1 ]; then	# Just make master PostScript frame 0
 	opt="-Mps -Fnone"
+	ps=anim_01.ps
 else	# Make animated GIF
 	opt="-A"
 fi	
@@ -18,7 +19,7 @@ gmt math -T0/360/20 T SIND = sin_point.txt
 gmt math -T0/360/2 T SIND = sin_curve.txt
 gmt begin
 	gmt psbasemap -R0/360/-1.2/1.6 -JX3.5i/1.65i -X0.35i -Y0.25i \
-	-BWSne+glightgreen -Bxa90g90f30+u\\312 -Bya0.5f0.1g1 --FONT_ANNOT_PRIMARY=9p
+	-BWSne+glightgreen -Bxa90g90f30+u'\232' -Bya0.5f0.1g1 --FONT_ANNOT_PRIMARY=9p
 gmt end
 EOF
 # 2. Set up the main frame script
@@ -30,9 +31,8 @@ gmt begin
 	gmt convert sin_point.txt -Z0:\${GMT_MOVIE_FRAME} | gmt psxy -Sc0.1i -Gdarkred
 #	Plot bright red dot at current angle and annotate
 	gmt psxy -Sc0.1i -Gred <<< "\${GMT_MOVIE_VAL1} \${GMT_MOVIE_VAL2}"
-	echo "0 1.6 a = \${GMT_MOVIE_VAL1}" | gmt pstext -F+f14p,Helvetica-Bold+jTL -N -Dj0.1i/0.05i
+	printf "0 1.6 a = %3.3d" \${GMT_MOVIE_VAL1} | gmt pstext -F+f14p,Helvetica-Bold+jTL -N -Dj0.1i/0.05i
 gmt end
 EOF
 # 3. Run the movie
 gmt movie main.sh -Sbpre.sh -C4ix2ix125 -Tsin_point.txt -Z -Nanim_01 -D5 $opt
-rm -rf main.sh pre.sh

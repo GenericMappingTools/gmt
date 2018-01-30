@@ -9,6 +9,7 @@
 
 if [ $# -eq 1 ]; then	# Just make master PostScript frame 27 (az = 135)
 	opt="-Mps -Fnone"
+	ps=anim_05.ps
 else	# Make animated GIF, infinitely looping
 	opt="-A+l"
 fi	

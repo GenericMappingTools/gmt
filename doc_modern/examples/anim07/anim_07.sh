@@ -9,6 +9,7 @@
 
 if [ $# -eq 1 ]; then   # Just make master PostScript frame 30
         opt="-M30,ps -Fnone"
+	ps=anim_07.ps
 else    # Make both movie formats and a thumbnail animated GIF using every 20th frame
         opt="-Fmp4 -A+l+s10"
 fi

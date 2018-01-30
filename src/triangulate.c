@@ -558,11 +558,9 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active) {
 		char header[GMT_LEN64] = {""};
 		char *feature[2] = {"edges", "polygons"};
-		double lats[2];
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 " Voronoi %s found\n", V->n_segments, feature[Ctrl->Q.mode]);
 		zpol = gmt_M_memory (GMT, NULL, V->n_segments, double);
-		lats[0] = V->min[GMT_Y]; lats[1] = V->max[GMT_Y];
-		gmt_set_inside_mode (GMT, lats, GMT_IOO_UNKNOWN);
+		gmt_set_inside_mode (GMT, V, GMT_IOO_UNKNOWN);
 		if (triplets[GMT_IN] && Ctrl->Q.mode) {
 			for (seg = 0; seg < V->n_segments; seg++) {
 				P = V->table[0]->segment[seg];
@@ -614,7 +612,6 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		unsigned int row, col, p_col, west_col, east_col, nx1;
 		uint64_t n_set = 0;
 		double *grid_lon = NULL, *grid_lat = NULL;
-		double lats[2];
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Perform natural nearest neighbor gridding\n");
 		
 		nx1 = (Grid->header->registration == GMT_GRID_PIXEL_REG) ? Grid->header->n_columns : Grid->header->n_columns - 1;
@@ -622,8 +619,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		duplicate_col = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 		grid_lon = Grid->x;
 		grid_lat = Grid->y;
-		lats[0] = V->min[GMT_Y]; lats[1] = V->max[GMT_Y];
-		gmt_set_inside_mode (GMT, lats, GMT_IOO_UNKNOWN);
+		gmt_set_inside_mode (GMT, V, GMT_IOO_UNKNOWN);
 
 		for (seg = 0; seg < V->n_segments; seg++) {
 			P = V->table[0]->segment[seg];

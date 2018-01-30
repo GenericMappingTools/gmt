@@ -312,13 +312,11 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->F.active) {	/* Read the user's clip polygon file */
-		double lats[2];
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		pol = D->table[0];	/* Since it is a single file */
-		lats[0] = pol->min[GMT_Y]; lats[1] = pol->max[GMT_Y];
-		gmt_set_inside_mode (GMT, lats, GMT_IOO_UNKNOWN);
+		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
 	}
 
