@@ -1,6 +1,6 @@
 #!/bin/bash
 #	$Id$
-# Thest pscontour on stereographic projection with TIN data
+# Test pscontour on stereographic projection with TIN data
 # Comes from forum message http://gmt.soest.hawaii.edu/boards/1/topics/5532?r=5548
 ps=thickness.ps
 cat << EOF > t.cpt
