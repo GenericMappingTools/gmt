@@ -2227,8 +2227,11 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 				device_options[Ctrl->T.device], resolution, quote, out_file, quote, quote, tmp_file, quote);
 
-			if (Ctrl->S.active)	/* Print GhostScript command */
-				GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
+			if (Ctrl->S.active) {	/* Print GhostScript command */
+				API->print_func (GMT->session.std[GMT_ERR], cmd);
+				API->print_func (GMT->session.std[GMT_ERR], "\n");
+			}
+			
 			/* Execute the GhostScript command */
 			GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 			sys_retval = system (cmd);
