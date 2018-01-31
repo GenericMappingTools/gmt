@@ -43,7 +43,7 @@
 #define THIS_MODULE_NAME	"grdblend"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Blend several partially over-lapping grids into one larger grid"
-#define THIS_MODULE_KEYS	"<D{,GG}"
+#define THIS_MODULE_KEYS	"<G{,GG}"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVfnr"
 
@@ -53,31 +53,31 @@
 #define BLEND_LAST	3
 
 struct GRDBLEND_CTRL {
-	struct In {	/* Input files */
+	struct GRDBLEND_In {	/* Input files */
 		bool active;
 		char **file;
 		unsigned int n;	/* If n > 1 we probably got *.grd or something */
 	} In;
-	struct G {	/* -G<grdfile> */
+	struct GRDBLEND_G {	/* -G<grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct C {	/* -C */
+	struct GRDBLEND_C {	/* -C */
 		bool active;
 		unsigned int mode;
 	} C;
-	struct N {	/* -N<nodata> */
+	struct GRDBLEND_N {	/* -N<nodata> */
 		bool active;
 		double nodata;
 	} N;
-	struct Q {	/* -Q */
+	struct GRDBLEND_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct Z {	/* -Z<scale> */
+	struct GRDBLEND_Z {	/* -Z<scale> */
 		bool active;
 		double scale;
 	} Z;
-	struct W {	/* -W[z] */
+	struct GRDBLEND_W {	/* -W[z] */
 		bool active;
 		unsigned int mode;	/* 1 if -Wz was given */
 	} W;
@@ -293,7 +293,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			decode_R (GMT, &L[n].region[2], B[n].wesn);			/* Must decode the -R string */
 		/* Skip the file if its outer region does not lie within the final grid region */
 		if (h->wesn[YLO] > B[n].wesn[YHI] || h->wesn[YHI] < B[n].wesn[YLO]) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s entirely outside y-range of final grid region (skipped)\n", B[n].file);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+			            "File %s entirely outside y-range of final grid region (skipped)\n", B[n].file);
 			B[n].ignore = true;
 			continue;
 		}
@@ -302,7 +303,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			if (overlap_check (GMT, &B[n], h, 1)) continue;	/* Check inner region for -+360 issues and overlap */
 		}
 		else if (h->wesn[XLO] > B[n].wesn[XHI] || h->wesn[XHI] < B[n].wesn[XLO] || h->wesn[YLO] > B[n].wesn[YHI] || h->wesn[YHI] < B[n].wesn[YLO]) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s entirely outside x-range of final grid region (skipped)\n", B[n].file);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+			            "File %s entirely outside x-range of final grid region (skipped)\n", B[n].file);
 			B[n].ignore = true;
 			continue;
 		}
@@ -312,7 +314,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		Iargs[0] = Rargs[0] = '\0';
 		do_sample = 0;
 		if (not_supported) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s not supported via row-by-row read - must reformat first\n", B[n].file);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
+			            "File %s not supported via row-by-row read - must reformat first\n", B[n].file);
 			do_sample |= 2;
 		}
 		if (fabs((B[n].G->header->inc[GMT_X] - h->inc[GMT_X]) / h->inc[GMT_X]) > 0.002 ||
@@ -353,7 +356,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 					sprintf (buffer, "%s/grdblend_resampled_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
 				else	/* Must dump it in current directory */
 					sprintf (buffer, "grdblend_resampled_%d_%d.nc", (int)getpid(), n);
-				sprintf (cmd, "%s %s %s %s -G%s -V%c", B[n].file, h->registration ? "-r" : "", Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
+				sprintf (cmd, "%s %s %s %s -G%s -V%c", B[n].file, h->registration ? "-r" : "",
+				         Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (GMT->common.n.active) {	/* User changed BC/method via -n */
 					strcat (cmd, " -n");
 					strcat (cmd, GMT->common.n.string);
@@ -368,7 +372,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			}
 			else {	/* Just reformat to netCDF so this grid may be used as well */
 				if (srtm_job)
-					GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Convert SRTM%d tile from JPEG2000 to netCDF grid [%s]\n", srtm_res, B[n].file);
+					GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+					            "Convert SRTM%d tile from JPEG2000 to netCDF grid [%s]\n", srtm_res, B[n].file);
 				if (GMT->parent->tmp_dir)	/* Use the established temp directory */
 					sprintf (buffer, "%s/grdblend_reformatted_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
 				else	/* Must dump it in current directory */
@@ -586,7 +591,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GM
 
 			case '<':	/* Collect input files */
 				Ctrl->In.active = true;
-				if (n_alloc <= Ctrl->In.n) Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc += GMT_SMALL_CHUNK, char *);
+				if (n_alloc <= Ctrl->In.n)
+					Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc += GMT_SMALL_CHUNK, char *);
 				if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 					Ctrl->In.file[Ctrl->In.n++] = strdup (opt->arg);
 				else
@@ -645,7 +651,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GM
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error -R option: Must specify region\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive dx, dy\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
+	                                   "Syntax error -I option: Must specify positive dx, dy\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -691,11 +698,13 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	
 	/*---------------------------- This is the grdblend main code ----------------------------*/
 
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
-		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
+	                             GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL)
+		Return (API->error);
 
-	if ((err = gmt_grd_get_format (GMT, Ctrl->G.file, Grid->header, false)) != GMT_NOERROR){
-		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: %s [%s]\n", GMT_strerror(err), Ctrl->G.file); Return (GMT_RUNTIME_ERROR);
+	if ((err = gmt_grd_get_format (GMT, Ctrl->G.file, Grid->header, false)) != GMT_NOERROR) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: %s [%s]\n", GMT_strerror(err), Ctrl->G.file);
+		Return (GMT_RUNTIME_ERROR);
 	}
 	HH = gmt_get_H_hidden (Grid->header);
 	
@@ -883,12 +892,14 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 
 	/* Free up the list with grid information, closing files as necessary */
 	
-	for (k = 0; k < n_blend; k++) if (blend[k].open) {
-		gmt_M_free (GMT, blend[k].z);
-		gmt_M_free (GMT, blend[k].RbR);
-		if (blend[k].delete && gmt_remove_file (GMT, blend[k].file))	/* Delete the temporary resampled file */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to delete file %s\n", blend[k].file); 
-		if ((error = GMT_Destroy_Data (API, &blend[k].G)) != GMT_NOERROR) Return (error);
+	for (k = 0; k < n_blend; k++) {
+		if (blend[k].open) {
+			gmt_M_free (GMT, blend[k].z);
+			gmt_M_free (GMT, blend[k].RbR);
+			if (blend[k].delete && gmt_remove_file (GMT, blend[k].file))	/* Delete the temporary resampled file */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to delete file %s\n", blend[k].file); 
+			if ((error = GMT_Destroy_Data (API, &blend[k].G)) != GMT_NOERROR) Return (error);
+		}
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
