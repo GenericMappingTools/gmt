@@ -338,7 +338,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      SVGA:	 800 x  600	24 x 18 cm	 9.6 x 7.2 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       DVD:	 640 x  480	24 x 18 cm	 9.6 x 7.2 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Current PROJ_LENGTH_UNIT determines if you get SI or US canvas dimensions.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set acustom canvas dimensions and dots-per-unit manually by\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set a custom canvas with dimensions and dots-per-unit manually by\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     providing <width>[<unit>]x<height>[<unit>]x<dpu> (e.g., 15cx10cx50, 6ix6ix100, etc.).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set the <prefix> used for movie files and directory names.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set number of frames, or give name of file with frame-specific information.\n");
@@ -358,7 +358,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append +o<options> to add custom encoding options for mp4 or webm.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [No video product; just create the PNG frames].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the canvas background color [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Temporarily increase dpi by <factor>, rasterize, then downsample [no downsampling].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-H Temporarily increase dpu by <factor>, rasterize, then downsample [no downsampling].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to stabilize sub-pixel changes between frames, such as moving text.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Include script file to be inserted into the movie_init.sh script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constant variables needed by all movie scripts.\n");
@@ -491,12 +491,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				}
 				else {	/* Custom canvas dimensions */
 					if ((n = sscanf (arg, "%[^x]x%[^x]x%lg", txt_a, txt_b, &Ctrl->C.dim[GMT_Z])) != 3) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -C: Requires name of a known format or give width x height x dpi string\n");
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -C: Requires name of a known format or give width x height x dpu string\n");
 						n_errors++;
 					}
 					else {	/* Got three items; lets check */
-						Ctrl->C.dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);	
-						Ctrl->C.dim[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
+						Ctrl->C.dim[GMT_X] = atof (txt_a);	
+						Ctrl->C.dim[GMT_Y] = atof (txt_b);
 						if (strchr ("cip", txt_a[strlen(txt_a)-1]))	/* Width had recognized unit, set it */
 							Ctrl->C.unit = txt_a[strlen(txt_a)-1];
 						else if (strchr ("cip", txt_b[strlen(txt_b)-1]))	/* Height had recognized unit, set it instead */
@@ -556,7 +556,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 					Ctrl->G.fill = strdup (opt->arg);
 				break;
 
-			case 'H':	/* RIP at a higher dpi, then downsample in gs */
+			case 'H':	/* RIP at a higher dpu, then downsample in gs */
 				Ctrl->H.active = true;
 				Ctrl->H.factor = atoi (opt->arg);
 				break;
@@ -775,6 +775,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	p_width =  urint (ceil (Ctrl->C.dim[GMT_X] * Ctrl->C.dim[GMT_Z]));
 	p_height = urint (ceil (Ctrl->C.dim[GMT_Y] * Ctrl->C.dim[GMT_Z]));
 	one_frame = (Ctrl->M.active && (Ctrl->Q.scripts || !Ctrl->animate || Ctrl->M.exit));	/* true if we want to create a single master plot only */
+	if (Ctrl->C.unit == 'c') Ctrl->C.dim[GMT_Z] *= 2.54;		/* Since must be in dots per inches for gs but was given dots per cm */
+	else if (Ctrl->C.unit == 'p') Ctrl->C.dim[GMT_Z] *= 72.0;	/* Since must be in dots per inches for gs but was given dots per point */
 	
 	if (Ctrl->Q.scripts) {	/* No movie but scripts will be produced */
 		GMT_Report (API, GMT_MSG_NORMAL, "Dry-run enabled - Movie scripts will be created and any pre/post scripts will be executed.\n");
@@ -1115,7 +1117,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				fprintf (fp, "\tgmt figure %s %s", Ctrl->N.prefix, Ctrl->M.format);
 				fprintf (fp, " %s", extra);
 				if (strstr(Ctrl->M.format,"pdf") || strstr(Ctrl->M.format,"eps") || strstr(Ctrl->M.format,"ps"))
-					fprintf (fp, "\n");	/* No dpi needed */
+					fprintf (fp, "\n");	/* No dpu needed */
 				else
 					fprintf (fp, ",E%s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_DPU"));
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);

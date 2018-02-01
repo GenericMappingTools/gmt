@@ -146,7 +146,7 @@ struct PS2RASTER_CTRL {
 	} D;
 	struct PS2R_E {	/* -E<resolution> */
 		bool active;
-		unsigned int dpi;
+		double dpi;
 	} E;
 	struct PS2R_F {	/* -F<out_name> */
 		bool active;
@@ -476,6 +476,15 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* D
 	gmt_M_free (GMT, C);
 }
 
+#define GMT_CONV3_LIMIT	 1.0e-3
+GMT_LOCAL double smart_ceil (double x) {
+	/* Avoid ceil (integer+[0-0.0099999999999]) from increasing size by a full pixel */
+	double fx = floor(x);
+	if ((x - fx) > GMT_CONV3_LIMIT)	/* Only ceil if we exceed this limit */
+		fx = ceil (x);
+	return (fx);
+}
+
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
@@ -656,7 +665,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				break;
 			case 'E':	/* Set output dpi */
 				Ctrl->E.active = true;
-				Ctrl->E.dpi = atoi (opt->arg);
+				Ctrl->E.dpi = atof (opt->arg);
 				break;
 			case 'F':	/* Set explicitly the output file name */
 				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_DATASET)) != 0) {
@@ -1112,9 +1121,9 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	FILE     *fp = NULL;
 
 	/* sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=- -"); */
-	pix_w = urint (ceil (w * Ctrl->E.dpi / 72.0));
-	pix_h = urint (ceil (h * Ctrl->E.dpi / 72.0));
-	sprintf (cmd, "%s -r%d -g%dx%d ", Ctrl->G.file, Ctrl->E.dpi, pix_w, pix_h);
+	pix_w = urint (smart_ceil (w * Ctrl->E.dpi / 72.0));
+	pix_h = urint (smart_ceil (h * Ctrl->E.dpi / 72.0));
+	sprintf (cmd, "%s -r%g -g%dx%d ", Ctrl->G.file, Ctrl->E.dpi, pix_w, pix_h);
 	if (strlen(gs_params) < 450) strcat (cmd, gs_params);	/* We know it is but Coverity doesn't, and complains */
 
 	if (out_file[0] == '\0') {		/* Need to open a pipe to capture the popen output, which will contain the raster */
@@ -1515,7 +1524,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	/* Use default DPI if not already set */
-	if (Ctrl->E.dpi <= 0) Ctrl->E.dpi = (Ctrl->T.device == GS_DEV_PDF) ? 720 : 300;
+	if (Ctrl->E.dpi <= 0.0) Ctrl->E.dpi = (Ctrl->T.device == GS_DEV_PDF) ? 720 : 300;
 
 	line_size = GMT_LEN128;
 	line = gmt_M_memory (GMT, NULL, line_size, char);	/* Initial buffer size */
@@ -1609,7 +1618,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (!Ctrl->L.active) gmt_M_str_free (ps_names[k]);		/* Otherwise ps_names contents are the Garbageman territory */
 		}
 		cmd2 = gmt_M_memory (GMT, NULL, n_alloc + PATH_MAX, char);
-		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s%s -r%d -sOutputFile=%c%s.pdf%c %s",
+		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s%s -r%g -sOutputFile=%c%s.pdf%c %s",
 			at_sign, Ctrl->G.file, Ctrl->C.arg, alpha_bits(Ctrl), Ctrl->E.dpi, quote, Ctrl->F.file, quote, all_names_in);
 
 		GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd2);
@@ -1757,7 +1766,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							sprintf (tmp_file, "%s/", Ctrl->D.dir);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 						strcat (tmp_file, ext[Ctrl->T.device]);
-						sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -g1x1 -r%d -sOutputFile=%c%s%c -f%c%s%c",
+						sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -g1x1 -r%g -sOutputFile=%c%s%c -f%c%s%c",
 							at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 							device_options[Ctrl->T.device],
 							Ctrl->E.dpi, quote, tmp_file, quote, quote, ps_file, quote);
@@ -1973,7 +1982,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					w_t = Ctrl->A.new_size[0];		h_t = Ctrl->A.new_size[1];
 				}
 				if (got_BB && !Ctrl->A.round)
-					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (ceil(w_t)), lrint (ceil(h_t)));
+					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (smart_ceil(w_t)), lrint (smart_ceil(h_t)));
 				else if (got_BB && Ctrl->A.round)		/* Go against Adobe Law and round HRBB instead of ceil */
 					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (w_t), lrint (h_t));
 
@@ -2211,18 +2220,18 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			strcat (out_file, ext[Ctrl->T.device]);
 
 			if (Ctrl->A.new_dpi_x) {	/* We have a resize request (was Ctrl->A.resize = true;) */
-				pix_w = urint (ceil (w * Ctrl->A.new_dpi_x / 72.0));
-				pix_h = urint (ceil (h * Ctrl->A.new_dpi_y / 72.0));
+				pix_w = urint (smart_ceil (w * Ctrl->A.new_dpi_x / 72.0));
+				pix_h = urint (smart_ceil (h * Ctrl->A.new_dpi_y / 72.0));
 			}
 			else {
-				pix_w = urint (ceil (w * Ctrl->E.dpi / 72.0));
-				pix_h = urint (ceil (h * Ctrl->E.dpi / 72.0));
+				pix_w = urint (smart_ceil (w * Ctrl->E.dpi / 72.0));
+				pix_h = urint (smart_ceil (h * Ctrl->E.dpi / 72.0));
 			}
 
 			if (Ctrl->H.active)	/* Rasterize at higher resolution, then downsample in gs */
-				sprintf (resolution, "-g%dx%d -r%d -dDownScaleFactor=%d", pix_w * Ctrl->H.factor, pix_h * Ctrl->H.factor, Ctrl->E.dpi * Ctrl->H.factor, Ctrl->H.factor);
+				sprintf (resolution, "-g%dx%d -r%g -dDownScaleFactor=%d", pix_w * Ctrl->H.factor, pix_h * Ctrl->H.factor, Ctrl->E.dpi * Ctrl->H.factor, Ctrl->H.factor);
 			else
-				sprintf (resolution, "-g%dx%d -r%d", pix_w, pix_h, Ctrl->E.dpi);
+				sprintf (resolution, "-g%dx%d -r%g", pix_w, pix_h, Ctrl->E.dpi);
 			sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s %s -sOutputFile=%c%s%c -f%c%s%c",
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
 				device_options[Ctrl->T.device], resolution, quote, out_file, quote, quote, tmp_file, quote);
@@ -2461,7 +2470,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				else
 					quiet = "";
 
-				sprintf (cmd, "gdal_translate -mo TIFFTAG_XRESOLUTION=%d -mo TIFFTAG_YRESOLUTION=%d -a_srs %c%s%c "
+				sprintf (cmd, "gdal_translate -mo TIFFTAG_XRESOLUTION=%g -mo TIFFTAG_YRESOLUTION=%g -a_srs %c%s%c "
 				              "-co COMPRESS=LZW -co TILED=YES %s %c%s%c %c%s%c",
 					Ctrl->E.dpi, Ctrl->E.dpi, quote, proj4_cmd, quote, quiet, quote, out_file, quote, quote, world_file, quote);
 				gmt_M_str_free (proj4_cmd);
