@@ -2883,7 +2883,7 @@ static int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *l
 				*hires_try = *try;
 				if (fgets(buf, PSL_BUFSIZ, fp) != NULL) {
 					if  (!strncmp(buf, "%%HiResBoundingBox:", 19U) && !strstr(buf, "(atend)")) {
-						if (sscanf(strchr(buf, ':') + 1, "%lg %lg %lg %lg", hires_llx, hires_lly, hires_trx, hires_try) < 4) return -1;
+						if (sscanf(strchr(buf, ':') + 1, "%.4lf %.4lf %.4lf %.4lf", hires_llx, hires_lly, hires_trx, hires_try) < 4) return -1;
 					}
 				}
 				return 0;
@@ -4132,7 +4132,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 		PSL_command (PSL, "%%%%BoundingBox: 0 0 %d %d\n", lrint (PSL->internal.p_width), lrint (PSL->internal.p_height));
 		/* The spaces below are to accommodate eventual need by psconvert when working with in-memory-PS */
-		PSL_command (PSL, "%%%%HiResBoundingBox: 0 0 %g %g             \n", PSL->internal.p_width, PSL->internal.p_height);
+		PSL_command (PSL, "%%%%HiResBoundingBox: 0 0 %.4lf %.4lf             \n", PSL->internal.p_width, PSL->internal.p_height);
 		if (title) {
 			PSL_command (PSL, "%%%%Title: %s\n", title);
 			PSL_command (PSL, "%%%%Creator: %s\n", PSL->init.session);

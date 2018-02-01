@@ -1990,7 +1990,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				if (file_has_HRBB)
 					continue;	/* High-res BB will be put elsewhere */
 				if (got_HRBB)
-					fprintf (fpo, "%%%%HiResBoundingBox: 0 0 %g %g\n", w_t, h_t);
+					fprintf (fpo, "%%%%HiResBoundingBox: 0 0 %.4f %.4f\n", w_t, h_t);
 				got_HRBB = false;
 				continue;
 			}
@@ -2001,7 +2001,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					w_t = Ctrl->A.new_size[0];		h_t = Ctrl->A.new_size[1];
 				}
 				if (got_HRBB)
-					fprintf (fpo, "%%%%HiResBoundingBox: 0 0 %g %g\n", w_t, h_t);
+					fprintf (fpo, "%%%%HiResBoundingBox: 0 0 %.4f %.4f\n", w_t, h_t);
 				got_HRBB = false;
 				continue;
 			}
