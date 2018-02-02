@@ -29,6 +29,7 @@ Synopsis
 [ **Sf**\ *foregroundscript* ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
+[ |-W|\ *workdir* ]
 [ |SYN_OPT-x| ]
 
 |No-spaces|
@@ -187,6 +188,12 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. _-W:
+
+**-W**\ *workdir*
+    In addition to the current directory, the *prefix* directory, and any directories specified via the
+    GMT defaults :ref:`DIR_DATA <DIR_DATA>`, add *workdir* as a place to scan for data files needed by the scripts.
+
 .. _-Z:
 
 **-Z**
@@ -227,7 +234,8 @@ Data Files
 The movie scripts will be able to find any files present in the starting directory when **movie** was initiated,
 as well as any new files produced by *mainscript* or the optional scripts set via **-S**.
 No path specification is needed to access these files.  Other files may
-require full paths unless their directories were already included in the :ref:`DIR_DATA <DIR_DATA>` setting.
+require full paths unless their directories were already included in the :ref:`DIR_DATA <DIR_DATA>` setting
+or specified via **-W**.
 
 Your Canvas
 -----------

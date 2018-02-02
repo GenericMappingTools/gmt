@@ -132,6 +132,10 @@ struct MOVIE_CTRL {
 		unsigned int precision;
 		char *file;
 	} T;
+	struct W {	/* -W<dir> */
+		bool active;
+		char *dir;
+	} W;
 	struct Z {	/* -Z */
 		bool active;
 	} Z;
@@ -171,6 +175,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MOVIE_CTRL *C) {	/* Deall
 	gmt_M_str_free (C->S[MOVIE_PREFLIGHT].file);
 	gmt_M_str_free (C->S[MOVIE_POSTFLIGHT].file);
 	gmt_M_str_free (C->T.file);
+	gmt_M_str_free (C->W.dir);
 	gmt_M_free (GMT, C);
 }
 
@@ -313,7 +318,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: movie <mainscript> -C<canvas> -N<prefix> -T<n_frames>|<timefile>[+p<width>][+s<first>][+w]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]]  [-G<fill>] [-H<factor>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-M[<frame>,][<format>]] [-Q[s]] [-Sb<script>] [-Sf<script>] [%s] [-Z] [-x[[-]<n>]]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-M[<frame>,][<format>]] [-Q[s]] [-Sb<script>] [-Sf<script>] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-W<workdir>] [-Z] [-x[[-]<n>]]\n\n");
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -373,16 +379,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of foreground GMT modern mode script which will\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       build a static foreground plot overlay added to all frames.\n");
 	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Add the given <workdir> to path where data files may be found\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is current dir, <prefix> dir, and directories set via DIR_DATA].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase directory <prefix> after converting to movie [leave directory with PNGs alone].\n");
-#ifndef GMT_MP_ENABLED
 	/* Number of threads (reassigned from -x in GMT_Option) */
 	GMT_Message (API, GMT_TIME_NONE, "\t-x Limit the number of cores used in frame generation [Default uses all cores = %d].\n", API->n_cores);
 	GMT_Message (API, GMT_TIME_NONE, "\t   -x<n>  Select <n> cores (up to all available).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -x-<n> Select (all - <n>) cores (or at least 1).\n");
 	GMT_Option (API, ".");
-#else
-	GMT_Option (API, "x,.");
-#endif
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -639,6 +643,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 				
+			case 'W':	/* Work dir where data files may be found */
+				Ctrl->W.active = true;
+				Ctrl->W.dir = strdup (opt->arg);
+				break;
+				
 			case 'Z':	/* Erase frames after movie has been made */
 				Ctrl->Z.active = true;
 				break;
@@ -861,12 +870,25 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		fclose (Ctrl->In.fp);
 		Return (GMT_RUNTIME_ERROR);
 	}
-	
+
 	/* We use DATADIR to include the top and working directory so any files we supply or create can be found while inside frame directory */
 	if (GMT->session.DATADIR)	/* Prepend initial and subdir as new datadirs to the existing list */
 		sprintf (datadir, "%s%c%s%c%s", topdir, path_sep[Ctrl->In.mode], cwd, path_sep[Ctrl->In.mode], GMT->session.DATADIR);
 	else	/* Set the initial and prefix subdirectory as data dirs */
 		sprintf (datadir, "%s%c%s", topdir, path_sep[Ctrl->In.mode], cwd);
+	if (Ctrl->W.active && strlen (Ctrl->W.dir) > 2) {	/* Also specified a specific work directory with data files taht we should scan */
+		char work_dir[PATH_MAX] = {""};
+#ifdef WIN32
+		if (Ctrl->W.dir[1] != ':') /* Not hard path */
+#else
+		if (Ctrl->W.dir[0] != '/') /* Not hard path */
+#endif
+			/* Prepend cwd to the given relative path and update Ctrl->D.dir */
+			sprintf (work_dir, "%c%s%c%s", path_sep[Ctrl->In.mode], topdir, dir_sep, Ctrl->W.dir);
+		else
+			sprintf (work_dir, "%c%s", path_sep[Ctrl->In.mode], Ctrl->W.dir);
+		strcat (datadir, work_dir);
+	}
 		
 	/* Create the initialization file with settings common to all frames */
 	

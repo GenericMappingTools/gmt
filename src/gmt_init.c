@@ -7935,7 +7935,7 @@ int GMT_get_V (char arg) {
 int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 	static int gmt_version_major = GMT_PACKAGE_VERSION_MAJOR;
 	unsigned int error = 0, rec = 0, ver;
-	char line[GMT_BUFSIZ] = {""}, keyword[GMT_LEN256] = {""}, value[GMT_LEN256] = {""};
+	char line[GMT_BUFSIZ] = {""}, keyword[GMT_LEN256] = {""}, value[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
 
 	if ((fp = fopen (file, "r")) == NULL) return (-1);
@@ -9487,12 +9487,12 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 /*! . */
 char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 	/* value must hold at least GMT_BUFSIZ chars */
-	static char value[GMT_LEN256] = {""}, txt[GMT_LEN8];
+	static char value[GMT_BUFSIZ] = {""}, txt[GMT_LEN8];
 	int case_val;
 	bool error = false;
 	char pm[2] = {'+', '-'}, *ft[2] = {"false", "true"};
 
-	gmt_M_memset (value, GMT_LEN256, char);
+	gmt_M_memset (value, GMT_BUFSIZ, char);
 	if (!keyword) return (value);		/* keyword argument missing */
 
 	case_val = gmt_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
@@ -9504,87 +9504,87 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_CLOCK_IN:
-			strncpy (value, GMT->current.setting.format_clock_in,  GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.format_clock_in,  GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_INPUT_DATE_FORMAT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_DATE_IN:
-			strncpy (value, GMT->current.setting.format_date_in, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.format_date_in, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_OUTPUT_CLOCK_FORMAT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_CLOCK_OUT:
-			strncpy (value, GMT->current.setting.format_clock_out, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.format_clock_out, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_OUTPUT_DATE_FORMAT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_DATE_OUT:
-			strncpy (value, GMT->current.setting.format_date_out, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.format_date_out, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_OUTPUT_DEGREE_FORMAT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_GEO_OUT:
-			strncpy (value, GMT->current.setting.format_geo_out, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.format_geo_out, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_PLOT_CLOCK_FORMAT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_CLOCK_MAP:
-			strncpy (value, GMT->current.setting.format_clock_map, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.format_clock_map, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_PLOT_DATE_FORMAT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_DATE_MAP:
-			strncpy (value, GMT->current.setting.format_date_map, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.format_date_map, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_PLOT_DEGREE_FORMAT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_GEO_MAP:
-			strncpy (value, GMT->current.setting.format_geo_map, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.format_geo_map, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_TIME_FORMAT_PRIMARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_TIME_PRIMARY_MAP:
-			strncpy (value, GMT->current.setting.format_time[GMT_PRIMARY], GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.format_time[GMT_PRIMARY], GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_TIME_FORMAT_SECONDARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_TIME_SECONDARY_MAP:
-			strncpy (value, GMT->current.setting.format_time[GMT_SECONDARY], GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.format_time[GMT_SECONDARY], GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_D_FORMAT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_FLOAT_OUT:
-			strncpy (value, GMT->current.setting.format_float_out_orig, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.format_float_out_orig, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_FORMAT_FLOAT_MAP:
-			strncpy (value, GMT->current.setting.format_float_map, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.format_float_map, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_UNIX_TIME_FORMAT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_TIME_STAMP:
-			strncpy (value, GMT->current.setting.format_time_stamp, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.format_time_stamp, GMT_BUFSIZ-1);
 			break;
 
 		/* FONT GROUP */
@@ -9594,38 +9594,38 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FONT_ANNOT_PRIMARY:
-			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]), GMT_LEN256-1);
+			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]), GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_ANNOT_FONT_SECONDARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FONT_ANNOT_SECONDARY:
-			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_SECONDARY]), GMT_LEN256-1);
+			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_SECONDARY]), GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_FONT_HEADING:
-			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_heading), GMT_LEN256-1);
+			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_heading), GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_HEADER_FONT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FONT_TITLE:
-			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_title), GMT_LEN256-1);
+			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_title), GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_FONT_TAG:
-			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_tag), GMT_LEN256-1);
+			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_tag), GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_LABEL_FONT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FONT_LABEL:
-			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_label), GMT_LEN256-1);
+			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_label), GMT_BUFSIZ-1);
 			break;
 
 		case GMTCASE_FONT_LOGO:
-			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_logo), GMT_LEN256-1);
+			strncpy (value, gmt_putfont (GMT, &GMT->current.setting.font_logo), GMT_BUFSIZ-1);
 			break;
 
 		/* FONT GROUP ... obsolete options */
@@ -9705,7 +9705,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ANNOT_ORTHO:
-			strncpy (value, GMT->current.setting.map_annot_ortho, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.map_annot_ortho, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_DEGREE_SYMBOL:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -9725,7 +9725,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_FRAME_AXES:
-			strncpy (value, GMT->current.setting.map_frame_axes, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.map_frame_axes, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_BASEMAP_FRAME_RGB:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -9954,7 +9954,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_PS_CHAR_ENCODING:
-			strncpy (value, GMT->current.setting.ps_encoding.name, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.ps_encoding.name, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_PS_COLOR:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -10090,7 +10090,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			strncpy (value, GMT->current.setting.ps_transpmode, GMT_LEN16-1);
 			break;
 		case GMTCASE_PS_CONVERT:
-			strncpy (value, GMT->current.setting.ps_convert, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.ps_convert, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_PS_VERBOSE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -10117,7 +10117,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else if (!GMT->current.setting.io_col_separator[0])
 				strcpy (value, "none");
 			else
-				strncpy (value, GMT->current.setting.io_col_separator, GMT_LEN256-1);
+				strncpy (value, GMT->current.setting.io_col_separator, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_IO_FIRST_HEADER:
 			if (GMT->current.setting.io_first_header == GMT_FIRST_SEGHEADER_MAYBE)
@@ -10132,7 +10132,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_IO_GRIDFILE_FORMAT:
-			strncpy (value, GMT->current.setting.io_gridfile_format, GMT_LEN256-1);
+			strncpy (value, GMT->current.setting.io_gridfile_format, GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_GRIDFILE_SHORTHAND:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -10314,15 +10314,15 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			break;
 
 		case GMTCASE_GMT_AUTO_DOWNLOAD:
-			strncpy (value, (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) ? "off" : "on", GMT_LEN256-1);
+			strncpy (value, (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) ? "off" : "on", GMT_BUFSIZ-1);
 			break;
 
 		case GMTCASE_GMT_DATA_URL:	/* The default is set by cmake, see ConfigDefault.cmake */
-			strncpy (value, (GMT->session.DATAURL) ? GMT->session.DATAURL : "", GMT_LEN256-1);
+			strncpy (value, (GMT->session.DATAURL) ? GMT->session.DATAURL : "", GMT_BUFSIZ-1);
 			break;
 
 		case GMTCASE_GMT_CUSTOM_LIBS:
-			strncpy (value, (GMT->session.CUSTOM_LIBS) ? GMT->session.CUSTOM_LIBS : "", GMT_LEN256-1);
+			strncpy (value, (GMT->session.CUSTOM_LIBS) ? GMT->session.CUSTOM_LIBS : "", GMT_BUFSIZ-1);
 			break;
 
 		case GMTCASE_GMT_EXPORT_TYPE:
@@ -10452,20 +10452,20 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 
 		case GMTCASE_DIR_CACHE:
 			/* Force update of session.CACHEDIR before copying the string */
-			strncpy (value, (GMT->session.CACHEDIR) ? GMT->session.CACHEDIR : "", GMT_LEN256-1);
+			strncpy (value, (GMT->session.CACHEDIR) ? GMT->session.CACHEDIR : "", GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_DIR_DATA:
 			/* Force update of session.DATADIR before copying the string */
-			strncpy (value, (GMT->session.DATADIR) ? GMT->session.DATADIR : "", GMT_LEN256-1);
+			strncpy (value, (GMT->session.DATADIR) ? GMT->session.DATADIR : "", GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_DIR_DCW:
 			/* Force update of session.DCWDIR before copying the string */
-			strncpy (value, (GMT->session.DCWDIR) ? GMT->session.DCWDIR : "", GMT_LEN256-1);
+			strncpy (value, (GMT->session.DCWDIR) ? GMT->session.DCWDIR : "", GMT_BUFSIZ-1);
 			break;
 		case GMTCASE_DIR_GSHHG:
 			/* Force update of session.GSHHGDIR before copying the string */
 			gmt_shore_adjust_res (GMT, 'c');
-			strncpy (value, (GMT->session.GSHHGDIR) ? GMT->session.GSHHGDIR : "", GMT_LEN256-1);
+			strncpy (value, (GMT->session.GSHHGDIR) ? GMT->session.GSHHGDIR : "", GMT_BUFSIZ-1);
 			break;
 
 		/* TIME GROUP */
