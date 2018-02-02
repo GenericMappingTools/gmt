@@ -2883,7 +2883,7 @@ static int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *l
 				*hires_try = *try;
 				if (fgets(buf, PSL_BUFSIZ, fp) != NULL) {
 					if  (!strncmp(buf, "%%HiResBoundingBox:", 19U) && !strstr(buf, "(atend)")) {
-						if (sscanf(strchr(buf, ':') + 1, "%.4lf %.4lf %.4lf %.4lf", hires_llx, hires_lly, hires_trx, hires_try) < 4) return -1;
+						if (sscanf(strchr(buf, ':') + 1, "%lg %lg %lg %lg", hires_llx, hires_lly, hires_trx, hires_try) < 4) return -1;
 					}
 				}
 				return 0;
