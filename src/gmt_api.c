@@ -1234,8 +1234,8 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 			/* Must first determine which data type we are dealing with via -Y<type> */
 			if ((opt = GMT_Find_Option (API, s[k][K_FAMILY], head))) {	/* A -Y<type> option was passed to the module */
 				type = (char)toupper (opt->arg[0]);	/* Find type and replace any ? in keys with this type in uppercase (CDGIP) in api_process_keys below */
-				if (gmt_M_compat_check (API->GMT, 5) && type == 'T')	/* There is no longer a T type but we will honor T from GMT5 */
-					type = 'D';
+				if (type == 'T')	/* There is no longer a T type but we may honor T from GMT5.  The gmtread|write module will decide depending on compatibility level set */
+					type = 'D';	/* opt->arg will still be 't' and is handled in the modules */
 				if (!strchr ("CDGIP", type)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "api_process_keys: No or bad data type given to read|write (%c)\n", type);
 					return_null (NULL, GMT_NOT_A_VALID_TYPE);	/* Unknown type */
