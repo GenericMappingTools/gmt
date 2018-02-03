@@ -119,6 +119,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GM
 				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 'd': Ctrl->T.mode = GMT_IS_DATASET; break;
+					case 't':
+						if (gmt_M_compat_check (GMT, 5))
+							Ctrl->T.mode = GMT_IS_DATASET;
+						else {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized data type %c.  Choose from c, d, g, i, and p\n");
+							n_errors++;
+						}
+						break;
 					case 'g': Ctrl->T.mode = GMT_IS_GRID;	 break;
 					case 'c': Ctrl->T.mode = GMT_IS_PALETTE;	 break;
 					case 'i': Ctrl->T.mode = GMT_IS_IMAGE;	 break;
