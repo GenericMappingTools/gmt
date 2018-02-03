@@ -5317,21 +5317,27 @@ int gmtlib_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint6
 	 * -2 : A south polar cap going counter-clockwise
 	 * +1 : A north polar cap going clockwise
 	 * +2 : A north polar cap going counter-clockwise.
-	 * -99: Returned if there is an error (open polygon or no points)
+	 * -99: Returned if there is an error (no points)
+	 * Here, we tolerate open polygons and reuse 1st point to close it in the calculation.
 	 */
-	bool touched_N = false, touched_S = false;
-	uint64_t row;
+	bool touched_N = false, touched_S = false, open = false;
+	uint64_t row, n_unique, last_point, next;
 	int type = 0, n_360;
 	double dlon, lon_sum = 0.0, lat_sum = 0.0;
 	static char *pole[5] = {"south (CCW)", "south (CW)", "no", "north (CW)", "north (CCW)"};
 
 	if (n == 0) return -99;	/* Nothing given */
-	if (gmt_polygon_is_open (GMT, lon, lat, n)) {	/* Should not happen */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot call gmtlib_determine_pole on an open polygon\n");
-		return -99;
+	if (gmt_polygon_is_open (GMT, lon, lat, n)) {	/* No repeat last = first point so reuse first */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Calling gmtlib_determine_pole on an open polygon\n");
+		n_unique = n;	/* Need to loop over all input points and then go to point 0 for last leg */
+		open = true;
+		last_point = n - 1;
 	}
-	for (row = 0; row < n - 1; row++) {	/* Add up angular increments between vertices */
-		gmt_M_set_delta_lon (lon[row], lon[row+1], dlon);	/* Handles the 360 jump cases */
+	else	/* Stop 1 short since last point is the duplicate first point */
+		n_unique = n - 1;
+	for (row = 0; row < n_unique; row++) {	/* Add up angular increments between vertices */
+		next = (open && row == last_point) ? 0 : row + 1;
+		gmt_M_set_delta_lon (lon[row], lon[next], dlon);	/* Handles the 360 jump cases */
 		lon_sum += dlon;
 		lat_sum += lat[row];
 		if (doubleAlmostEqual (lat[row], +90.0)) touched_N = true;
