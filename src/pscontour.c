@@ -1098,7 +1098,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	}
 	else {	/* Set up contour intervals automatically from Ctrl->C.interval and Ctrl->A.interval */
 		int ic;
-		double min, max, aval;
+		double min, max, aval, noise;
 		if (!Ctrl->C.active && (!Ctrl->A.active || Ctrl->A.interval == 0.0)) {	/* Want automatic annotations */
 			double x, range = xyz[1][GMT_Z] - xyz[0][GMT_Z];
 			int nx;
@@ -1113,7 +1113,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			Ctrl->C.active  = Ctrl->A.active = Ctrl->contour.annot = true;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Auto-determined contour inverval = %g and annotation interval = %g\n", Ctrl->C.interval, Ctrl->A.interval);
 		}
-		
+		noise = GMT_CONV4_LIMIT * Ctrl->C.interval;
 		min = floor (xyz[0][GMT_Z] / Ctrl->C.interval) * Ctrl->C.interval; if (min < xyz[0][GMT_Z]) min += Ctrl->C.interval;
 		max = ceil  (xyz[1][GMT_Z] / Ctrl->C.interval) * Ctrl->C.interval; if (max > xyz[1][GMT_Z]) max -= Ctrl->C.interval;
 
@@ -1132,8 +1132,8 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				c--;	/* Since gets incremented each time */
 				continue;
 			}
-			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_CONV4_LIMIT) aval += Ctrl->A.interval;
-			cont[c].type = (fabs (cont[c].val - aval) < GMT_CONV4_LIMIT) ? 'A' : 'C';
+			if (Ctrl->contour.annot && (cont[c].val - aval) > noise) aval += Ctrl->A.interval;
+			cont[c].type = (fabs (cont[c].val - aval) < noise) ? 'A' : 'C';
 			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			cont[c].do_tick = Ctrl->T.active;
 		}

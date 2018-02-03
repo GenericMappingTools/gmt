@@ -1156,7 +1156,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Set up contour intervals automatically from Ctrl->C.interval and Ctrl->A.interval */
-		double min, max;
+		double min, max, noise = GMT_CONV4_LIMIT * Ctrl->C.interval;
 		min = floor (G->header->z_min / Ctrl->C.interval) * Ctrl->C.interval;
 		if (!GMT->current.map.z_periodic && min < G->header->z_min) min += Ctrl->C.interval;
 		max = ceil (G->header->z_max / Ctrl->C.interval) * Ctrl->C.interval;
@@ -1172,8 +1172,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 				gmt_M_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
 			}
 			contour[n_contours] = c * Ctrl->C.interval;
-			if (Ctrl->contour.annot && (contour[n_contours] - aval) > GMT_CONV4_LIMIT) aval += Ctrl->A.interval;
-			cont_type[n_contours] = (fabs (contour[n_contours] - aval) < GMT_CONV4_LIMIT) ? 'A' : 'C';
+			if (Ctrl->contour.annot && (contour[n_contours] - aval) > noise) aval += Ctrl->A.interval;
+			cont_type[n_contours] = (fabs (contour[n_contours] - aval) < noise) ? 'A' : 'C';
 			cont_angle[n_contours] = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			cont_do_tick[n_contours] = (char)Ctrl->T.active;
 		}
