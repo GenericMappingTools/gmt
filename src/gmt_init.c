@@ -2826,7 +2826,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	 */
 	int error, k, n_errors = 0;
 	bool save_trailing;
-	unsigned int save_coltype;
+	unsigned int save_coltype, save_max_cols_to_read;
 	uint64_t row;
 	char type[GMT_LEN8] = {""};
 	struct GMT_DATASET *D = NULL;
@@ -2835,6 +2835,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	/* Temporarily change what data type col one is */
 	save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
 	save_trailing = GMT->current.io.trailing_text[GMT_IN];
+	save_max_cols_to_read = GMT->current.io.max_cols_to_read;
 	GMT->current.io.col_type[GMT_IN][GMT_X] = gmt_M_type (GMT, GMT_IN, A->id);
 	gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading this file */
 	GMT->current.io.record_type[GMT_IN] = GMT_READ_MIXED;
@@ -2846,6 +2847,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	}
 	GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
 	GMT->current.io.trailing_text[GMT_IN] = save_trailing;
+	GMT->current.io.max_cols_to_read = save_max_cols_to_read;
 	gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
 
 	gmt_M_memset (n_int, 4, int);
@@ -3059,7 +3061,7 @@ GMT_LOCAL int gmtinit_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, c
 			GMT->current.map.frame.draw = true;
 		}
 		else
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot access custom file in -B string %c-component %s\n", str[axis], in);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot access custom file in -B string %c-component %s\n", str[axis], &in[1]);
 	}
 	else
 		gmtinit_set_titem (GMT, A, in, flag, str[axis], false);

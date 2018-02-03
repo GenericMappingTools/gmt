@@ -13111,10 +13111,10 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	 * The item argument specifies which type to consider [a|i,f,g].  We return
 	 * an array with coordinates and labels, and set interval to true if applicable.
 	 */
-	int nc;
-	unsigned int save_coltype;
+	int nc, error;
+	unsigned int save_coltype, save_max_cols_to_read;
 	uint64_t row;
-	bool text, found;
+	bool text, found, save_trailing;
  	unsigned int k = 0, n_annot = 0, n_int = 0;
 	double *x = NULL;
 	char **L = NULL, type[GMT_LEN8] = {""}, txt[GMT_BUFSIZ] = {""};
@@ -13123,17 +13123,23 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 
 	/* Temporarily change what data type col one is */
 	save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
+	save_trailing = GMT->current.io.trailing_text[GMT_IN];
+	save_max_cols_to_read = GMT->current.io.max_cols_to_read;
 	GMT->current.io.col_type[GMT_IN][GMT_X] = gmt_M_type (GMT, GMT_IN, A->id);
+	GMT->current.io.trailing_text[GMT_IN] = true;	/* Since we definitively have that here */
 	text = ((item == 'a' || item == 'i') && labels);
 
 	gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -F files */
-	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
+	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
+	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open custom annotation file %s!\n", A->file_custom);
 		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
 		return (0);
 	}
 	gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
 	GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
+	GMT->current.io.trailing_text[GMT_IN] = save_trailing;
+	GMT->current.io.max_cols_to_read = save_max_cols_to_read;
 	S = D->table[0]->segment[0];	/* All we got */
 	
 	x = gmt_M_memory (GMT, NULL, S->n_rows, double);
