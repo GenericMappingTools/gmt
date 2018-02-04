@@ -1482,7 +1482,6 @@ Creating GMT Animations
     
     .. figure:: /_images/anim_05.*
 
-
     Demonstrate aliasing by sampling a chirp
     ----------------------------------------
     
@@ -1497,7 +1496,6 @@ Creating GMT Animations
     
     .. figure:: /_images/anim_06.*
 
-
     Plate tectonic movie of crustal ages
     ------------------------------------
     
@@ -1510,4 +1508,3 @@ Creating GMT Animations
        :language: bash
     
     .. figure:: /_images/anim_07.*
-

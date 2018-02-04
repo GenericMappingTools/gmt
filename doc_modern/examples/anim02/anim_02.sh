@@ -11,7 +11,7 @@ if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
 	opt="-Mps -Fnone"
 	ps=anim_02.ps
 else	# Make animated GIF
-	opt="-A"
+	opt="-A+l"
 fi	
 # 1. Create files needed in the loop
 cat << EOF > pre.sh
