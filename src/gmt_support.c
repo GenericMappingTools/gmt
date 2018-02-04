@@ -13070,20 +13070,17 @@ unsigned int gmtlib_pow_array (struct GMT_CTRL *GMT, double min, double max, dou
 }
 
 /*! . */
-unsigned int gmtlib_time_array (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array) {
+unsigned int gmt_time_array (struct GMT_CTRL *GMT, double min, double max, double inc, char unit, bool interval, double **array) {
 	/* When T->active is true we must return interval start/stop even if outside min/max range */
 	unsigned int n = 0;
-	bool interval;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	struct GMT_MOMENT_INTERVAL I;
 	double *val = NULL;
 
-	if (!T->active) return (0);
 	val = gmt_M_memory (GMT, NULL, n_alloc, double);
 	gmt_M_memset (&I, 1, struct GMT_MOMENT_INTERVAL);
-	I.unit = T->unit;
-	I.step = urint (T->interval);
-	interval = (T->type == 'i' || T->type == 'I');	/* Only for i/I axis items */
+	I.unit = unit;
+	I.step = urint (inc);
 	gmtlib_moment_interval (GMT, &I, min, true);	/* First time we pass true for initialization */
 	while (I.dt[0] <= max) {		/* As long as we are not gone way past the end time */
 		if (I.dt[0] >= min || interval) val[n++] = I.dt[0];		/* Was inside region */
@@ -13097,6 +13094,19 @@ unsigned int gmtlib_time_array (struct GMT_CTRL *GMT, double min, double max, st
 	val = gmt_M_memory (GMT, val, n, double);
 
 	*array = val;
+
+	return (n);
+}
+
+/*! . */
+unsigned int gmtlib_time_array (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array) {
+	/* When T->active is true we must return interval start/stop even if outside min/max range */
+	unsigned int n;
+	bool interval;
+
+	if (!T->active) return (0);
+	interval = (T->type == 'i' || T->type == 'I');	/* Only true for i/I axis items */
+	n = gmt_time_array (GMT, min, max, T->interval, T->unit, interval, array);
 
 	return (n);
 }
