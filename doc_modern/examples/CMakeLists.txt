@@ -148,9 +148,10 @@ if (UNIX AND DO_ANIMATIONS)
 
 	# clean target
 	foreach (_num 01 02 03 04 05 06 07)
-	add_custom_target (_anim_clean
-		COMMAND ${CMAKE_COMMAND} -E remove_directory
-		${CMAKE_CURRENT_BINARY_DIR}/anim${_num}
+		add_custom_target (_anim_clean
+			COMMAND ${CMAKE_COMMAND} -E remove_directory
+			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}
+			COMMENT "Removing animations")
 	endforeach ()
 	# register with spotless target
 	add_depend_to_target (spotless _anim_clean)
