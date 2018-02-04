@@ -6,7 +6,7 @@
 # Unix progs:   cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted as PS only.
 
-if [ $# -eq 1 ]; then	# Just make master PostScript frame 0
+if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
 	opt="-Mps -Fnone"
 	ps=anim_04.ps
 else	# Make both movie formats and a thumbnail animated GIF using every 20th frame

@@ -7,7 +7,7 @@
 # Unix progs:   echo, cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 
-if [ $# -eq 1 ]; then	# Just make master PostScript frame 27 (az = 135)
+if [ $# -eq 0 ]; then	# Just make master PostScript frame 27 (az = 135)
 	opt="-M27,ps -Fnone"
 	ps=anim_03.ps
 else	# Make animated GIF, infinitely looping

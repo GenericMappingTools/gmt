@@ -7,11 +7,11 @@
 # Unix progs:   cat
 # Note:         Run with any argument to build movie; otherwise one frame is plotted only.
 
-if [ $# -eq 1 ]; then   # Just make master PostScript frame 30
+if [ $# -eq 0 ]; then   # Just make master PostScript frame 30
         opt="-M30,ps -Fnone"
 	ps=anim_07.ps
 else    # Make both movie formats and a thumbnail animated GIF using every 20th frame
-        opt="-Fmp4 -A+l+s10"
+        opt="-Fmp4 -Fwebm -A+l+s10"
 fi
 # 1. Create background plot and data files needed in the loop
 cat << EOF > pre.sh

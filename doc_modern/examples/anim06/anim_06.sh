@@ -7,7 +7,7 @@
 # Unix progs:   echo, cat
 # Note:         Run with any argument to build movie; otherwise 1200th frame is plotted only.
 
-if [ $# -eq 1 ]; then   # Just make master PostScript frame 1200
+if [ $# -eq 0 ]; then   # Just make master PostScript frame 1200
         opt="-M1200,ps -Fnone"
 	ps=anim_06.ps
 else    # Make both movie formats and a thumbnail animated GIF using every 20th frame

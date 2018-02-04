@@ -7,7 +7,7 @@
 # Unix progs:   cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 
-if [ $# -eq 1 ]; then	# Just make master PostScript frame 0
+if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
 	opt="-Mps -Fnone"
 	ps=anim_02.ps
 else	# Make animated GIF
