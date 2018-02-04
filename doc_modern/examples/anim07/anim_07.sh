@@ -28,9 +28,9 @@ gmt begin
 	# Let HSV minimum value go to zero
 	gmt set COLOR_HSV_MIN_V 0
 	# Fake simulation of sun illumination from east combined with relief slopes
-	gmt grdmath intens.nc X \${GMT_MOVIE_VAL2} SUB DUP -180 LE 360 MUL ADD 90 DIV ERF ADD 0.25 SUB = s.nc
+	gmt grdmath intens.nc X \${MOVIE_COL2} SUB DUP -180 LE 360 MUL ADD 90 DIV ERF ADD 0.25 SUB = s.nc
 	# Plot age grid first using age cpt
-	gmt grdimage @age.3.10.nc -Is.nc -C@crustal_age.cpt -JG\${GMT_MOVIE_VAL1}/0/6i -X0 -Y0
+	gmt grdimage @age.3.10.nc -Is.nc -C@crustal_age.cpt -JG\${MOVIE_COL1}/0/6i -X0 -Y0
 	# Clip to expose land areas only
 	gmt pscoast -Gc
 	# Overlay relief over land only using dem cpt

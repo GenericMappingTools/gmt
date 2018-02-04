@@ -21,11 +21,11 @@ EOF
 # 2. Set up the main frame script
 cat << EOF > main.sh
 gmt begin
-	width=\`gmt math -Q \${GMT_MOVIE_WIDTH} 0.5i SUB =\`
-	gmt grdimage @tut_relief.nc -I+a\${GMT_MOVIE_VAL1}+nt2 -JM\${width} -Cmain.cpt \
+	width=\`gmt math -Q \${MOVIE_WIDTH} 0.5i SUB =\`
+	gmt grdimage @tut_relief.nc -I+a\${MOVIE_COL1}+nt2 -JM\${width} -Cmain.cpt \
 		-BWSne -B1 -X0.35i -Y0.3i --FONT_ANNOT_PRIMARY=9p
 	gmt psxy -Sc0.8i -Gwhite -Wthin <<< "256.25 35.6" 
-	gmt psxy -Sv0.1i+e -Gred -Wthick <<< "256.25 35.6 \${GMT_MOVIE_VAL2} 0.37i" 
+	gmt psxy -Sv0.1i+e -Gred -Wthick <<< "256.25 35.6 \${MOVIE_COL2} 0.37i" 
 gmt end
 EOF
 # 3. Run the movie

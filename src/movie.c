@@ -743,7 +743,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	char *mvfile[3] = {"mv -f", "mv -rf", "move"};
 	char *sc_call[3] = {"bash ", "csh ", "start /B"};
 	char var_token[3] = "$$%", path_sep[3] = "::;";
-	char init_file[GMT_LEN64] = {""}, state_prefix[GMT_LEN64] = {""}, state_file[GMT_LEN64] = {""}, cwd[PATH_MAX] = {""};
+	char init_file[GMT_LEN64] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, state_file[GMT_LEN64] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[GMT_LEN64] = {""}, post_file[GMT_LEN64] = {""}, main_file[GMT_LEN64] = {""}, line[PATH_MAX] = {""};
 	char string[GMT_LEN64] = {""}, extra[GMT_LEN64] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[GMT_LEN64] = {""};
 	char png_file[GMT_LEN64] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN8] = {FRAME_RASTER_FORMAT};
@@ -901,9 +901,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 	sprintf (string, "Static parameters set for animation sequence %s", Ctrl->N.prefix);
 	set_comment (fp, Ctrl->In.mode, string);
-	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_WIDTH",  Ctrl->C.dim[GMT_X], Ctrl->C.unit);
-	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_HEIGHT", Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
-	set_dvalue (fp, Ctrl->In.mode, "GMT_MOVIE_DPU",    Ctrl->C.dim[GMT_Z], 0);
+	set_dvalue (fp, Ctrl->In.mode, "MOVIE_WIDTH",  Ctrl->C.dim[GMT_X], Ctrl->C.unit);
+	set_dvalue (fp, Ctrl->In.mode, "MOVIE_HEIGHT", Ctrl->C.dim[GMT_Y], Ctrl->C.unit);
+	set_dvalue (fp, Ctrl->In.mode, "MOVIE_DPU",    Ctrl->C.dim[GMT_Z], 0);
+	set_dvalue (fp, Ctrl->In.mode, "MOVIE_RATE",   Ctrl->D.framerate, 0);
 	if (Ctrl->I.active) {	/* Append contents of an include file */
 		set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->I.fp)) {	/* Read the include file and copy to init script with some exceptions */
@@ -1057,31 +1058,33 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	for (i_frame = 0; i_frame < n_frames; i_frame++) {
 		frame = i_frame + Ctrl->T.start_frame;	/* Actual frame number */
 		if (one_frame && frame != Ctrl->M.frame) continue;	/* Just doing a single frame for debugging */
-		sprintf (state_prefix, "movie_params_%*.*d", precision, precision, frame);
+		sprintf (state_tag, "%*.*d", precision, precision, frame);
+		sprintf (state_prefix, "movie_params_%s", state_tag);
 		sprintf (state_file, "%s.%s", state_prefix, extension[Ctrl->In.mode]);
 		if ((fp = fopen (state_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create frame parameter file %s - exiting\n", state_file);
 			fclose (Ctrl->In.fp);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		sprintf (state_prefix, "Parameter file for frame %*.*d", precision, precision, frame);
+		sprintf (state_prefix, "Parameter file for frame %s", state_tag);
 		set_comment (fp, Ctrl->In.mode, state_prefix);
-		sprintf (state_prefix, "%s_%*.*d", Ctrl->N.prefix, precision, precision, frame);
-		set_ivalue (fp, Ctrl->In.mode, "GMT_MOVIE_FRAME", frame);	/* Current frame number */
-		set_ivalue (fp, Ctrl->In.mode, "GMT_MOVIE_NFRAMES", n_frames);	/* Total frames */
-		set_tvalue (fp, Ctrl->In.mode, "GMT_MOVIE_NAME", state_prefix);	/* Current frame name prefix */
-		for (col = 0; col < n_values; col++) {	/* Derine frame variables from <timefile> in each parameter file */
-			sprintf (string, "GMT_MOVIE_VAL%u", col+1);
+		sprintf (state_prefix, "%s_%s", Ctrl->N.prefix, state_tag);
+		set_ivalue (fp, Ctrl->In.mode, "MOVIE_FRAME", frame);		/* Current frame number */
+		set_ivalue (fp, Ctrl->In.mode, "MOVIE_NFRAMES", n_frames);	/* Total frames */
+		set_tvalue (fp, Ctrl->In.mode, "MOVIE_TAG", state_tag);		/* Current frame tag (formatted frame number) */
+		set_tvalue (fp, Ctrl->In.mode, "MOVIE_NAME", state_prefix);	/* Current frame name prefix */
+		for (col = 0; col < n_values; col++) {	/* Derive frame variables from <timefile> in each parameter file */
+			sprintf (string, "MOVIE_COL%u", col+1);
 			set_dvalue (fp, Ctrl->In.mode, string, D->table[0]->segment[0]->data[col][frame], 0);
 		}
 		if (has_text) {	/* Also place any string parameter as a single string variable */
-			set_tvalue (fp, Ctrl->In.mode, "GMT_MOVIE_STRING", D->table[0]->segment[0]->text[frame]);
-			if (Ctrl->T.split) {	/* Also split the string into individual words GMT_MOVIE_TXT1, GMT_MOVIE_TXT2, etc. */
+			set_tvalue (fp, Ctrl->In.mode, "MOVIE_TEXT", D->table[0]->segment[0]->text[frame]);
+			if (Ctrl->T.split) {	/* Also split the string into individual words MOVIE_WORD1, MOVIE_WORD2, etc. */
 				char *word = NULL;
 				col = 0;
 				while ((word = strsep (&D->table[0]->segment[0]->text[frame], " \t")) != NULL) {
 					if (*word != '\0') {	/* Skip empty strings */
-						sprintf (string, "GMT_MOVIE_TXT%u", ++col);
+						sprintf (string, "MOVIE_WORD%u", ++col);
 						set_tvalue (fp, Ctrl->In.mode, string, word);
 					}
 				}
@@ -1141,7 +1144,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				if (strstr(Ctrl->M.format,"pdf") || strstr(Ctrl->M.format,"eps") || strstr(Ctrl->M.format,"ps"))
 					fprintf (fp, "\n");	/* No dpu needed */
 				else
-					fprintf (fp, ",E%s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_DPU"));
+					fprintf (fp, ",E%s\n", place_var (Ctrl->In.mode, "MOVIE_DPU"));
 				fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 				n_begin++;	/* Processed the gmt begin line */
 			}
@@ -1248,14 +1251,14 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
 	fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 	fprintf (fp, "%s movie_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the frame parameters */
-	fprintf (fp, "mkdir %s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));	/* Make a temp directory for this frame */
-	fprintf (fp, "cd %s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));		/* cd to the temp directory */
+	fprintf (fp, "mkdir %s\n", place_var (Ctrl->In.mode, "MOVIE_NAME"));	/* Make a temp directory for this frame */
+	fprintf (fp, "cd %s\n", place_var (Ctrl->In.mode, "MOVIE_NAME"));		/* cd to the temp directory */
 	while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->In.fp)) {	/* Read the mainscript and copy to loop script, with some exceptions */
 		if (strstr (line, "gmt begin")) {	/* Need to insert a gmt figure call after this line */
 			fprintf (fp, "gmt begin\n");	/* Ensure there are no args here since we are using gmt figure instead */
 			set_comment (fp, Ctrl->In.mode, "\tSet output PNG name and plot conversion parameters");
-			fprintf (fp, "\tgmt figure %s %s", place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"), frame_products);
-			fprintf (fp, " E%s,%s\n", place_var (Ctrl->In.mode, "GMT_MOVIE_DPU"), extra);
+			fprintf (fp, "\tgmt figure %s %s", place_var (Ctrl->In.mode, "MOVIE_NAME"), frame_products);
+			fprintf (fp, " E%s,%s\n", place_var (Ctrl->In.mode, "MOVIE_DPU"), extra);
 			fprintf (fp, "\tgmt set PS_MEDIA %g%cx%g%c DIR_DATA %s\n", Ctrl->C.dim[GMT_X], Ctrl->C.unit, Ctrl->C.dim[GMT_Y], Ctrl->C.unit, datadir);
 			n_begin++;	/* Processed the gmt begin line */
 		}
@@ -1264,11 +1267,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	fclose (Ctrl->In.fp);	/* Done reading the main script */
 	set_comment (fp, Ctrl->In.mode, "Move PNG file up to parent directory and cd up one level");
-	fprintf (fp, "%s %s.%s ..\n", mvfile[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"), FRAME_RASTER_FORMAT);	/* Move PNG plot up to parent dir */
+	fprintf (fp, "%s %s.%s ..\n", mvfile[Ctrl->In.mode], place_var (Ctrl->In.mode, "MOVIE_NAME"), FRAME_RASTER_FORMAT);	/* Move PNG plot up to parent dir */
 	fprintf (fp, "cd ..\n");	/* cd up to parent dir */
 	if (!Ctrl->Q.active) {	/* Delete evidence; otherwise we want to leave debug evidence when doing a single frame only */
 		set_comment (fp, Ctrl->In.mode, "Remove frame directory and frame parameter file");
-		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], place_var (Ctrl->In.mode, "GMT_MOVIE_NAME"));	/* Remove the work dir and any files in it */
+		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], place_var (Ctrl->In.mode, "MOVIE_NAME"));	/* Remove the work dir and any files in it */
 		fprintf (fp, "%s movie_params_%c1.%s\n", rmfile[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Remove the parameter file for this frame */
 	}
 	if (Ctrl->In.mode == DOS_MODE)	/* This is crucial to the "start /B ..." statement below to ensure the process terminates */

@@ -88,9 +88,9 @@ Required Arguments
 **-T**\ *frames*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
     Either specify how many image frames to make or supply a file with a set of parameters,
     one record per frame (i.e., row).  The values in the columns will be available to the
-    *mainscript* as named variables **GMT_MOVIE_VAL1**, **GMT_MOVIE_VAL2**, etc., while any trailing text
-    can be accessed via the variable **GMT_MOVIE_STRING**.  Append **+w** to also split the trailing
-    string into individual words **GMT_MOVIE_TXT1**, **GMT_MOVIE_TXT2**, etc. The number of records equals
+    *mainscript* as named variables **MOVIE_COL1**, **MOVIE_COL2**, etc., while any trailing text
+    can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to also split the trailing
+    string into individual words **MOVIE_WORD1**, **MOVIE_WORD2**, etc. The number of records equals
     the number of frames. Note that the *background* script is allowed to create the *timefile*
     hence we check of its existence both before and after the background script has run.  Normally,
     the frame numbering starts at 0; you can change this by appending a different starting frame
@@ -215,17 +215,19 @@ Parameters
 
 Several parameters are automatically assigned and can be used when composing *mainscript* and the optional
 *backgroundscript* and *foregroundscript* scripts. These are
-**GMT_MOVIE_WIDTH**\ : The width of the canvas,
-**GMT_MOVIE_HEIGHT**\ : The height of the canvas,
-**GMT_MOVIE_DPU**\ : The current dots-per-unit.
+**MOVIE_WIDTH**\ : The width of the canvas,
+**MOVIE_HEIGHT**\ : The height of the canvas,
+**MOVIE_DPU**\ : The current dots-per-unit.
+**MOVIE_RATE**\ : The current number of frames per second.
 In addition, the *mainscript* also has access to additional parameters
-**GMT_MOVIE_FRAME**\ : The current frame number,
-**GMT_MOVIE_NFRAMES**\ : The total number of frames,
-and in addition, **$1** (or **%1** in DOS) holds the formatted frame number string (e.g., 000136).
-Next, if a *timefile* was given then variables **GMT_MOVIE_VAL1**\ , **GMT_MOVIE_VAL2**\ , etc. are
+**MOVIE_FRAME**\ : The current frame number,
+**MOVIE_NFRAMES**\ : The total number of frames,
+**MOVIE_TAG**\ : The formatted frame number (e.g., 000136), and
+**MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _**MOVIE_TAG**),
+Next, if a *timefile* was given then variables **MOVIE_COL1**\ , **MOVIE_COL2**\ , etc. are
 also set, one variable per column in *timefile*.  If *timefile* has trailing text then that text can
-be accessed via the variable **GMT_MOVIE_STRING**, and if word-splitting was requested in **-T** then
-the trailing text is also split into individual words **GMT_MOVIE_TXT1**\ , **GMT_MOVIE_TXT2**\ , etc.
+be accessed via the variable **MOVIE_TEXT**, and if word-splitting was requested in **-T** then
+the trailing text is also split into individual words **MOVIE_WORD1**\ , **MOVIE_WORD2**\ , etc.
 Finally, if **-I** was used then any parameters listed there will be available as well.
 
 Data Files
@@ -303,7 +305,7 @@ as the center longitude:
    ::
 
     gmt begin
-       gmt pscoast -Rg -JG${GMT_MOVIE_FRAME}/20/${GMT_MOVIE_WIDTH} -Gmaroon -Sturquoise -P -Bg -X0 -Y0
+       gmt pscoast -Rg -JG${MOVIE_FRAME}/20/${MOVIE_WIDTH} -Gmaroon -Sturquoise -P -Bg -X0 -Y0
     gmt end
 
 As the automatic frame loop is executed the different frames will be produced with different
@@ -318,7 +320,7 @@ Now, the globe.bat DOS script is simply
    ::
 
     gmt begin
-       gmt pscoast -Rg -JG%GMT_MOVIE_FRAME%/20/%GMT_MOVIE_WIDTH% -Gmaroon -Sturquoise -P -Bg -X0 -Y0
+       gmt pscoast -Rg -JG%MOVIE_FRAME%/20/%MOVIE_WIDTH% -Gmaroon -Sturquoise -P -Bg -X0 -Y0
     gmt end
 
 i.e., the syntax of how variables are used vary according to the scripting language. At the

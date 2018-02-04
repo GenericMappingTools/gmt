@@ -22,7 +22,7 @@ EOF
 # 2. Set up the main frame script
 cat << EOF > main.sh
 gmt begin
-	gmt grdimage -JG\${GMT_MOVIE_VAL1}/\${GMT_MOVIE_VAL2}/160/210/55/0/36/34/\${GMT_MOVIE_WIDTH}+ \
+	gmt grdimage -JG\${MOVIE_COL1}/\${MOVIE_COL2}/160/210/55/0/36/34/\${MOVIE_WIDTH}+ \
 		-Rg @USEast_Coast.nc -Iint_US.nc -Cglobe_US.cpt -X0 -Y0
 	gmt psxy -W1p flight_path.txt
 	gmt pstext -R0/7.2/0/4.8 -Jx1i -F+f14p,Helvetica-Bold+jTL <<< "0.1 4.7 \${1}"
