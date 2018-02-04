@@ -651,8 +651,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 						n_errors++;
 					}
 					else {	/* OK to parse individual items */
-						gmt_scanf_float (GMT, txt_a, &Ctrl->T.min);
-						gmt_scanf_float (GMT, txt_b, &Ctrl->T.max);
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false, &Ctrl->T.min), txt_a);
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_X), false, &Ctrl->T.max), txt_b);
 						if ((c = strrchr (txt_c, '+')) && (c[1] == 'n' || c[1] == '\0'))	/* Gave number of points instead; calculate inc */
 							c[0] = '\0';
 						gmt_scanf_float (GMT, txt_c, &Ctrl->T.inc);
