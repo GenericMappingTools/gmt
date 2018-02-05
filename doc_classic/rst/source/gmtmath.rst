@@ -143,7 +143,11 @@ Optional Arguments
     the number of equidistant points instead. If there is no time column
     (only data columns), give **-T** with no arguments; this also
     implies **-Ca**. Alternatively, give the name of a file whose first
-    column contains the desired t-coordinates which may be irregular. 
+    column contains the desired t-coordinates which may be irregular.
+    For setting up absolute time increments, append a unit to *inc* from
+    the list **y**\ ear, m\ **o**\ nth, **d**\ ay, **h**\ our, **m**\ inute,
+    and **s**\ econd.  Note: The internal time unit is still controlled
+    independently by :ref:`TIME_UNIT <TIME_UNIT>`.
 
 .. _-V:
 
