@@ -35,8 +35,8 @@
  * ERE pattern matching with PCRE2, PCRE or POSIX
  */
 #ifdef HAVE_PCRE2
+#define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
-#define PCRE2_CODE_UNIT_WITH 8
 #elif defined HAVE_PCRE
 #include <pcre.h>
 #define OVECCOUNT 30        /* should be a multiple of 3 */
@@ -53,9 +53,7 @@ int gmtlib_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *
 	/* Use PCRE2 for matching
 	 * Based on PCRE2 DEMONSTRATION PROGRAM pcre2demo.c
 	 */
-	pcre2 *re;
-	PCRE2_SPTR pattern;	/* PCRE2_SPTR is a pointer to unsigned code units of */
-	PCRE2_SPTR subject;	/* the appropriate width (8, 16, or 32 bits). */
+	pcre2_code *re;
 	PCRE2_SIZE erroffset;
 	pcre2_match_data *match_data;
 	int errornumber;
@@ -67,10 +65,10 @@ int gmtlib_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *
 	 * any errors that are detected.                                          *
 	 *************************************************************************/
 
-	if (caseless) options = options|PCRE_CASELESS;      /* caseless matching */
+	if (caseless) options = options|PCRE2_CASELESS;      /* caseless matching */
 
 	re = pcre2_compile(
-			pattern,              /* the pattern */
+			(PCRE2_SPTR) pattern, /* the pattern */
 			PCRE2_ZERO_TERMINATED, /* indicates pattern is zero-terminated */
 			options,              /* options */
 			&errornumber,         /* for error number */
@@ -98,9 +96,9 @@ int gmtlib_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *
 
 	match_data = pcre2_match_data_create_from_pattern(re, NULL);
 	
-	rc = pcre2_exec(
+	rc = pcre2_match(
 			re,                   /* the compiled pattern */
-			subject,              /* the subject string */
+			(PCRE2_SPTR) subject, /* the subject string */
 			(int)strlen(subject), /* the length of the subject */
 			0,                    /* start at offset 0 in the subject */
 			0,                    /* default options */
@@ -113,7 +111,7 @@ int gmtlib_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *
 	pcre2_match_data_free(match_data);  /* release memory for the match data */
 	if (rc < 0) {
 		switch(rc) {
-			case PCRE_ERROR_NOMATCH: break;
+			case PCRE2_ERROR_NOMATCH: break;
 			/* Handle other special cases if you like */
 			default: 
 				 GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_regexp_match: PCRE matching error %d.\n", rc);

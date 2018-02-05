@@ -14102,7 +14102,7 @@ bool gmt_get_segtext_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION 
 		uint64_t k = 0;
 		match = false;
 		while (!match && k < S->n) {
-#if !defined(WIN32) || (defined(WIN32) && defined(HAVE_PCRE))
+#if !defined(WIN32) || (defined(WIN32) && defined(HAVE_PCRE)) || (defined(WIN32) && defined(HAVE_PCRE2))
 			if (S->regexp[k])
 			 	match = gmtlib_regexp_match (GMT, T->header, S->pattern[k], S->caseless[k]);	/* true if we matched */
 			else
