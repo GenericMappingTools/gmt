@@ -345,7 +345,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				}
 				else if (opt->arg[0] == '-')
 					Ctrl->A.mode = 1;	/* Turn off all labels */
-				else if (opt->arg[0] == '+' && (isdigit(opt->arg[1]) || opt->arg[1] == '.')) {
+				else if (opt->arg[0] == '+' && (isdigit(opt->arg[1]) || strchr ("-+.", opt->arg[1]))) {
 					Ctrl->A.single_cont = atof (&opt->arg[1]);
 					Ctrl->contour.annot = true;
 				}
@@ -368,7 +368,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 					gmt_M_str_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
-				else if (opt->arg[0] == '+')
+				else if (opt->arg[0] == '+' && (isdigit(opt->arg[1]) || strchr ("-+.", opt->arg[1])))
 					Ctrl->C.single_cont = atof (&opt->arg[1]);
 				else
 					Ctrl->C.interval = atof (opt->arg);
