@@ -123,7 +123,9 @@ struct GMTMATH_CTRL {	/* All control options for this program (except common arg
 	struct T {	/* -T[<tmin/tmax/t_inc>[+]] | -T<file> */
 		bool active;
 		bool notime;
+		uint64_t n;
 		double min, max, inc;
+		double *t;
 		char *file;
 	} T;
 };
@@ -172,6 +174,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *C) {	/* Dea
 	gmt_M_str_free (C->A.file);
 	gmt_M_free (GMT, C->C.cols);
 	gmt_M_str_free (C->T.file);
+	gmt_M_free (GMT, C->T.t);
 	gmt_M_free (GMT, C);
 }
 
@@ -538,7 +541,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 	unsigned int n_errors = 0, k, n_files = 0;
 	bool missing_equal = true;
 	char *c = NULL;
-	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, txt_c[GMT_LEN32] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
@@ -645,21 +647,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 					Ctrl->T.notime = true;
 				else if (gmt_M_file_is_memory (opt->arg) || !gmt_access (GMT, opt->arg, R_OK))	/* Argument given and file can be opened */
 					Ctrl->T.file = strdup (opt->arg);
-				else {	/* Presumably gave tmin/tmax/tinc[+n] */
-					if (sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c) != 3) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T: Unable to decode arguments\n");
-						n_errors++;
-					}
-					else {	/* OK to parse individual items */
-						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false, &Ctrl->T.min), txt_a);
-						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_X), false, &Ctrl->T.max), txt_b);
-						if ((c = strrchr (txt_c, '+')) && (c[1] == 'n' || c[1] == '\0'))	/* Gave number of points instead; calculate inc */
-							c[0] = '\0';
-						gmt_scanf_float (GMT, txt_c, &Ctrl->T.inc);
-						if (c)
-							Ctrl->T.inc = (Ctrl->T.max - Ctrl->T.min) / (Ctrl->T.inc - 1.0);
-					}
-				}
+				else	/* Presumably gave tmin/tmax/tinc[+n] */
+					n_errors += gmt_create_1D_array (GMT, 'T', opt->arg, &Ctrl->T.min, &Ctrl->T.max, &Ctrl->T.inc, &Ctrl->T.n, &Ctrl->T.t);
 				break;
 
 			default:	/* Report bad options */
@@ -5101,6 +5090,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		Ctrl->N.active = set_equidistant_t = true;
 		Ctrl->T.min = Ctrl->T.max = 0.0;
 		Ctrl->T.inc = 1.0;
+		Ctrl->T.n = 1;
+		Ctrl->T.t = gmt_M_memory (GMT, NULL, 1, double);
 		Ctrl->T.notime = true;
 		n_rows = n_columns = 1;
 	}
@@ -5122,27 +5113,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	}
 
 	if (set_equidistant_t && !Ctrl->Q.active) {
-		/* Make sure the min/man/inc values harmonize */
-		switch (gmt_minmaxinc_verify (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, GMT_CONV4_LIMIT)) {
-			case 1:
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: (max - min) is not a whole multiple of inc\n");
-				Return (GMT_RUNTIME_ERROR);
-				break;
-			case 2:
-				if (Ctrl->T.inc != 1.0) {	/* Allow for somebody explicitly saying -T0/0/1 */
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: (max - min) is <= 0\n");
-					Return (GMT_RUNTIME_ERROR);
-				}
-				break;
-			case 3:
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: inc is <= 0\n");
-				Return (GMT_RUNTIME_ERROR);
-				break;
-			default:	/* OK */
-				break;
-		}
-
-		n_rows = lrint ((Ctrl->T.max - Ctrl->T.min) / Ctrl->T.inc) + 1;
+		n_rows = Ctrl->T.n;
 		n_columns = Ctrl->N.ncol;
 	}
 
@@ -5152,6 +5123,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		Ctrl->T.min = rhs->min[0];
 		Ctrl->T.max = rhs->max[0];
 		Ctrl->T.inc = (rhs->max[0] - rhs->min[0]) / (rhs->n_records - 1);
+		Ctrl->T.n = gmt_make_array (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, &Ctrl->T.t);
 	}
 	if (Ctrl->T.file) n_columns = Ctrl->N.ncol;
 
@@ -5192,8 +5164,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		dim[GMT_COL] = 3;	dim[GMT_ROW] = n_rows;
 		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
-        info.T->segment[0]->n_rows = n_rows;
-		for (row = 0; row < info.T->segment[0]->n_rows; row++) info.T->segment[0]->data[COL_T][row] = (row == (info.T->segment[0]->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
+        	info.T->segment[0]->n_rows = n_rows;
+		gmt_M_memcpy (info.T->segment[0]->data[COL_T], Ctrl->T.t, n_rows, double);
 	}
 
 	for (seg = n_records = 0; seg < info.T->n_segments; seg++) {	/* Create normalized times and possibly reverse time (-I) */
