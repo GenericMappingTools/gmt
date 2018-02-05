@@ -43,6 +43,7 @@
 
 
 /* which regex library <pcre.h>, <regex.h> */
+#cmakedefine HAVE_PCRE2
 #cmakedefine HAVE_PCRE
 #cmakedefine HAVE_POSIX_ERE
 
