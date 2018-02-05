@@ -56,9 +56,10 @@
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
 #set (GMT_INSTALL_RELOCATABLE TRUE)
 
-# Exclude optional GDAL, PCRE, FFTW3, LAPACK, ZLIB dependencies even if you have them installed [FALSE]
+# Exclude optional GDAL, PCRE, PCRE2, FFTW3, LAPACK, ZLIB dependencies even if you have them installed [FALSE]
 #set (GMT_EXCLUDE_GDAL TRUE)
 #set (GMT_EXCLUDE_PCRE TRUE)
+#set (GMT_EXCLUDE_PCRE2 TRUE)
 #set (GMT_EXCLUDE_FFTW3 TRUE)
 #set (GMT_EXCLUDE_LAPACK TRUE)
 #set (GMT_EXCLUDE_ZLIB TRUE)
@@ -123,7 +124,10 @@
 # gdal-config) [auto]:
 #set (GDAL_ROOT "gdal_install_prefix")
 
-# Set location of PCRE (can be root directory, path to header file or path to
+# Set location of PCRE2 (can be root directory, path to header file or path to
+# pcre2-config) [auto]:
+#set (PCRE2_ROOT "pcre2_install_prefix")
+# Alternatively, set location of PCRE (can be root directory, path to header file or path to
 # pcre-config) [auto]:
 #set (PCRE_ROOT "pcre_install_prefix")
 

@@ -54,7 +54,7 @@ else
   CONFIG_GDAL_ENABLED=no
 fi
 
-if [ "@HAVE_PCRE@" == "TRUE" ]; then
+if [ "@HAVE_PCRE@" == "TRUE" ] || [ "@HAVE_PCRE2@" == "TRUE" ]; then
   CONFIG_PCRE_ENABLED=yes
 else
   CONFIG_PCRE_ENABLED=no
