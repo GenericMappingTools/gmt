@@ -11215,9 +11215,9 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 GMT_LOCAL bool is_PS_module (struct GMTAPI_CTRL *API, const char *name, const char *keys, struct GMT_OPTION **in_options) {
 	struct GMT_OPTION *opt = NULL, *options = NULL;
 
-	if (strstr (keys, ">X}") == NULL && strstr (keys, ">?}") == NULL) return false;	/* Can never produce PostScript */
+	if (keys == NULL || in_options == NULL) return false;	/* Definitively classic code, possibly MB system */
+	if (keys[0] == '\0' || (strstr (keys, ">X}") == NULL && strstr (keys, ">?}") == NULL)) return false;	/* Can never produce PostScript */
 
-	if (in_options == NULL) return false;	/* Modules not yet passing proper keys and options */
 	options = *in_options;
 
 	if (!strncmp (name, "gmtinfo", 7U)) return false;	/* Does not ever return PS */
@@ -11736,7 +11736,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
 	 * make sure pscoast -E, if passing old +r|R area settings via -E, is split into -R before GMT_Parse_Common is called */
 
-	if (gmt_M_compat_check (GMT, 5) && !strncmp (mod_name, "pscoast", 7U) && (E = GMT_Find_Option (API, 'E', *options)) && (opt = GMT_Find_Option (API, 'R', *options)) == NULL) {
+	if (options && gmt_M_compat_check (GMT, 5) && !strncmp (mod_name, "pscoast", 7U) && (E = GMT_Find_Option (API, 'E', *options)) && (opt = GMT_Find_Option (API, 'R', *options)) == NULL) {
 		/* Running pscoast -E without -R: Must make sure any the region-information in -E is added as args to new -R.
 		 * If there are no +r|R in the -E then we consult the history to see if there is an -R in effect. */
 		char r_code[GMT_LEN256] = {""};
@@ -11754,7 +11754,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append -R option */
 		}
 	}
-	else if (gmt_M_compat_check (GMT, 6) && !strncmp (mod_name, "psrose", 6U) && (opt = GMT_Find_Option (API, 'J', *options)) == NULL) {
+	else if (options && gmt_M_compat_check (GMT, 6) && !strncmp (mod_name, "psrose", 6U) && (opt = GMT_Find_Option (API, 'J', *options)) == NULL) {
 		/* Running psrose with old -S[n]<radius syntax.  Need to replace with new -J [-S] syntax */
 		struct GMT_OPTION *S = GMT_Find_Option (API, 'S', *options);
 		if (S) {	/* Gave -S option */
@@ -12023,7 +12023,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		}
 	}
 
-	if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {
+	if (options && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {
 		if (gmtlib_file_is_srtmrequest (API, opt->arg, &srtm_res)) {
 			unsigned int level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmt_begin_module_sub has not been reached yet */
 			char *list = NULL;
