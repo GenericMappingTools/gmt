@@ -92,7 +92,8 @@ Optional Arguments
 **-C**\ *cols*
     Select the columns that will be operated on until next occurrence of
     **-C**. List columns separated by commas; ranges like 1,3-5,7 are
-    allowed. **-C** (no arguments) resets the default action of using
+    allowed, plus -Cx can be used for -C0 and -Cy can be used for -C1.
+    **-C** (no arguments) resets the default action of using
     all columns except time column (see **-N**). **-Ca** selects all
     columns, including time column, while **-Cr** reverses (toggles) the
     current choices.  When **-C** is in effect it also controls which
