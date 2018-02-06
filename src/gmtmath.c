@@ -201,6 +201,10 @@ GMT_LOCAL bool decode_columns (char *txt, bool *skip, uint64_t n_col, uint64_t t
 		while ((gmt_strtok (txt, ",", &pos, p))) {
 			if (strchr (p, '-'))
 				sscanf (p, "%" PRIu64 "-%" PRIu64, &start, &stop);
+			else if (strchr (p, 'x')) /* -Cx is the x/lon column */
+				start = stop = GMT_X;
+			else if (strchr (p, 'y')) /* -Cy is the y/lat column */
+				start = stop = GMT_Y;
 			else {
 				sscanf (p, "%" PRIu64, &start);
 				stop = start;
