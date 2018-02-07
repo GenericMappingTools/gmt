@@ -347,9 +347,9 @@ we let the canvas be painted light red and have dimensions of
 
    ::
 
-    gmt basemap -R10/70/-3/8 -JX4i/3i -Ba -B+glightred+t"My first plot" -pdf GMT_tut_1
+    gmt basemap -R10/70/-3/8 -JX4i/3i -B -B+glightred+t"My first plot" -pdf GMT_tut_1
 
-You can view the result with gv GMT_tut_1.ps and it should look like :ref:`our example 1 below <gmt_tut_1>`.
+You can view the result GMT_tut_1.pdf in a PDF viewer and it should look like :ref:`our example 1 below <gmt_tut_1>`.
 Examine the :doc:`basemap` documentation so you understand what each option means.
 
 .. _gmt_tut_1:
@@ -445,7 +445,7 @@ example is from Latin America:
 
    ::
 
-    gmt coast -R-90/-70/0/20 -JM6i -P -Ba -Gchocolate -pdf GMT_tut_3
+    gmt coast -R-90/-70/0/20 -JM6i -B -Gchocolate -pdf GMT_tut_3
 
 Your plot should look like :ref:`our example 3 below <gmt_tut_3>`
 
@@ -488,7 +488,7 @@ We try the following command:
 
    ::
 
-    gmt coast -R-130/-70/24/52 -JB-100/35/33/45/6i -Ba -B+t"Conic Projection" -N1/thickest -N2/thinnest -A500 -Ggray -Wthinnest -pdf GMT_tut_4
+    gmt coast -R-130/-70/24/52 -JB-100/35/33/45/6i -B -B+t"Conic Projection" -N1/thickest -N2/thinnest -A500 -Ggray -Wthinnest -pdf GMT_tut_4
 
 Your plot should look like :ref:`our example 4 below <gmt_tut_4>`
 
@@ -818,7 +818,7 @@ To simply plot the data as a line we choose no symbol and specify a pen thicknes
 
    ::
 
-    gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -P -Baf -Wthinner > GMT_tut_7.ps
+    gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -B -Wthinner > GMT_tut_7.ps
 
 Your plot should look like :ref:`our example 7 below <gmt_tut_7>`
 
@@ -847,8 +847,10 @@ symbols with a line we must use the overlay approach:
 
    ::
 
-    gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -Baf -P -K -Wthinner > GMT_tut_8.ps
-    gmt plot tut_data.txt -R -J -O -W -Si0.2i >> GMT_tut_8.ps
+    gmt begin GMT_tut_8 pdf
+      gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -B -Wthinner
+      gmt plot tut_data.txt Wthin -Si0.2
+    gmt end
 
 Your plot should look like :ref:`our example 8 below <gmt_tut_8>`. The
 two-step procedure also makes it easy to plot the line over the symbols
@@ -919,9 +921,11 @@ We may now complete our example using the Mercator projection:
 
    ::
 
-    gmt makecpt -Cred,green,blue -T0,70,300,10000 > quakes.cpt
-    gmt coast -R130/150/35/50 -JM6i -B5 -P -Ggray -K > GMT_tut_9.ps
-    gmt plot -R -J -O @tut_quakes.ngdc -Wfaint -i4,3,5,6s0.1 -h3 -Scc -Cquakes.cpt >> GMT_tut_9.ps
+    gmt begin GMT_tut_9 pdf
+      gmt makecpt -Cred,green,blue -T0,70,300,10000 > quakes.cpt
+      gmt coast -R130/150/35/50 -JM6i -B -Ggray
+      gmt plot @tut_quakes.ngdc -Wfaint -i4,3,5,6s0.1 -h3 -Scc -Cquakes.cpt
+    gmt end
 
 where the **c** appended to the **-Sc** option ensures that symbols
 sizes are interpreted to be in cm.  Your plot should look like :ref:`our example 9 below <gmt_tut_9>`
@@ -1023,7 +1027,7 @@ We will demonstrate :doc:`text` with the following script:
 
    ::
 
-    gmt text -R0/7/0/5 -Jx1i -P -Ba -F+f30p,Times-Roman,DarkOrange+jBL << EOF > GMT_tut_10.ps
+    gmt text -R0/7/0/5 -Jx1i -B -F+f30p,Times-Roman,DarkOrange+jBL << EOF -pdf GMT_tut_10
     1  1  It's P@al, not Pal!
     1  2  Try @%33%ZapfChancery@%% today
     1  3  @~D@~g@-b@- = 2@~pr@~G@~D@~h.
@@ -1146,7 +1150,7 @@ Mercator plot and annotate the borders every 2º:
 
    ::
 
-    gmt grdcontour @tut_bathy.nc -JM7i -C250 -A1000 -P -Ba > GMT_tut_11.ps
+    gmt grdcontour @tut_bathy.nc -JM7i -C250 -A1000 -B -pdf GMT_tut_11
 
 Your plot should look like :ref:`our example 11 below <gmt_tut_11>`
 
@@ -1254,7 +1258,7 @@ so we choose the region accordingly, and get a view of the contour map using
    ::
 
     gmt nearneighbor -R245/255/20/30 -I5m -S40k -Gship.nc -V @tut_ship.xyz
-    gmt grdcontour ship.nc -JM6i -P -Ba -C250 -A1000 > GMT_tut_12.ps
+    gmt grdcontour ship.nc -JM6i -B -C250 -A1000 -pdf GMT_tut_12
 
 
 Your plot should look like :ref:`our example 12 below <gmt_tut_12>`
@@ -1367,9 +1371,11 @@ call to :doc:`mask`.  Here's the recipe:
 
    ::
 
-    gmt mask -R245/255/20/30 -I5m ship_5m.xyz -JM6i -Ba -P -K -V > GMT_tut_13.ps
-    gmt grdcontour ship.nc -J -O -K -C250 -A1000 >> GMT_tut_13.ps
-    gmt mask -C -O >> GMT_tut_13.ps
+    gmt begin GMT_tut_13 pdf
+      gmt mask -R245/255/20/30 -I5m ship_5m.xyz -JM6i -B -V
+      gmt grdcontour ship.nc -C250 -A1000
+      gmt mask -C
+    gmt end
 
 Your plot should look like :ref:`our example 13 below <gmt_tut_13>`
 
@@ -1468,11 +1474,13 @@ Here is an example of four different ways of presenting the color bar:
 
    ::
 
-    gmt basemap -R0/6/0/9 -Jx1i -P -B0 -K -Xc > GMT_tut_14.ps
-    gmt colorbar -Dx1i/1i+w4i/0.5i+h -Cdisc.cpt -B+tdiscrete -O -K >> GMT_tut_14.ps
-    gmt colorbar -Dx1i/3i+w4i/0.5i+h -Ccont.cpt -B+tcontinuous -O -K >> GMT_tut_14.ps
-    gmt colorbar -Dx1i/5i+w4i/0.5i+h -Cdisc.cpt -B+tdiscrete -I0.5 -O -K >> GMT_tut_14.ps
-    gmt colorbar -Dx1i/7i+w4i/0.5i+h -Ccont.cpt -B+tcontinuous -I0.5 -O >> GMT_tut_14.ps
+    gmt begin GMT_tut_14 pdf
+      gmt basemap -R0/6/0/9 -Jx1i -B0 -Xc
+      gmt colorbar -Dx1i/1i+w4i/0.5i+h -Cdisc.cpt -B+tdiscrete
+      gmt colorbar -Dx1i/3i+w4i/0.5i+h -Ccont.cpt -B+tcontinuous
+      gmt colorbar -Dx1i/5i+w4i/0.5i+h -Cdisc.cpt -B+tdiscrete -I0.5
+      gmt colorbar -Dx1i/7i+w4i/0.5i+h -Ccont.cpt -B+tcontinuous -I0.5
+    gmt end
 
 Your plot should look like :ref:`our example 14 below <gmt_tut_14>`
 
@@ -1574,8 +1582,10 @@ the plot.  We try
 
    ::
 
-    gmt grdimage @tut_relief.nc -JM6i -P -Ba -Ctopo.cpt -V -K > GMT_tut_15.ps
-    gmt colorbar -DjTC+w5i/0.25i+h+o0/-1i -Rtut_relief.nc -J -Ctopo.cpt -I0.4 -By+lm -O >> GMT_tut_15.ps
+    gmt begin GMT_tut_15 pdf
+      gmt grdimage @tut_relief.nc -JM6i -B -Ctopo.cpt -V
+      gmt colorbar -DjTC+w5i/0.25i+h+o0/-1i -Ctopo.cpt -I0.4 -By+lm
+    gmt end
 
 Your plot should look like :ref:`our example 15 below <gmt_tut_15>`
 
@@ -1640,8 +1650,10 @@ create the shaded relief image:
 
    ::
 
-    gmt grdimage @tut_relief.nc -Ius_i.nc -JM6i -P -Ba -Ctopo.cpt -K > GMT_tut_16.ps
-    gmt colorbar -DjTC+w5i/0.25i+h+o0/-1i -Rtut_relief.nc -J -Ctopo.cpt -I0.4 -By+lm -O >> GMT_tut_16.ps
+    gmt begin GMT_tut_16 pdf
+      gmt grdimage @tut_relief.nc -Ius_i.nc -JM6i -B -Ctopo.cpt
+      gmt colorbar -DjTC+w5i/0.25i+h+o0/-1i -Ctopo.cpt -I0.4 -By+lm
+    gmt end
 
 Your plot should look like :ref:`our example 16 below <gmt_tut_16>`
 
@@ -1694,7 +1706,7 @@ use:
 
    ::
 
-    gmt grdimage -Rg -JW180/9i "@otemp.anal1deg.nc?otemp[2,0]" -Cotemp.cpt -Bag > GMT_tut_17.ps
+    gmt grdimage -Rg -JW180/9i "@otemp.anal1deg.nc?otemp[2,0]" -Cotemp.cpt -Bag -pdf GMT_tut_17
 
 The addition "?otemp[2,0]" indicates which variable to retrieve from the netCDF
 file (otemp) and that we need the third time step and first level. The numbering of the
@@ -1777,7 +1789,7 @@ A simple mesh plot can therefore be obtained with
 
    ::
 
-    gmt grdview @tut_bathy.nc -JM5i -P -JZ2i -p135/30 -Ba -Cbermuda.cpt > GMT_tut_18.ps
+    gmt grdview @tut_bathy.nc -JM5i -JZ2i -p135/30 -B -Cbermuda.cpt -pdf GMT_tut_18
 
 Your plot should look like :ref:`our example 18 below <gmt_tut_18>`
 
@@ -1801,7 +1813,7 @@ from the southeast.  This is done using
 
    ::
 
-    gmt grdview @tut_relief.nc -JM6i -p135/35 -Qi50 -Ius_i.nc -Ctopo.cpt -V -Ba -JZ0.5i > GMT_tut_19.ps
+    gmt grdview @tut_relief.nc -JM6i -p135/35 -Qi50 -Ius_i.nc -Ctopo.cpt -V -B -JZ0.5i -pdf GMT_tut_19
 
 
 Your plot should look like :ref:`our example 19 below <gmt_tut_19>`
