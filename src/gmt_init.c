@@ -12214,6 +12214,32 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	gmt_M_str_free (Ccopy);	/* Good riddance */
 }
 
+void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char *argv[]) {
+	/* Determine if user is attempting a modern mode one-liner plot, and if so, set run mode to GMT_MODERN */
+	unsigned modern = 0, pos, k;
+	char figure[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
+
+	for (k = 1; !modern && k < (unsigned int)argc; k++) {
+		if (argv[k][0] != '-') continue;	/* Skip file names */
+		if (strlen (argv[k]) < 3 || strlen (argv[k]) >= GMT_LEN128) continue;	/* -ps is the shortest format extension, and very long args are filenames*/
+		strcpy (figure, &argv[k][1]);			/* Get a local copy so we can mess with it, but skip the leading - */
+		if ((c = strchr (figure, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
+		if (gmt_get_graphics_id (API->GMT, figure) != GMT_NOTSET) {	/* Found a valid one-liner option */
+			modern = 1;	/* Seems like it is, but check the rest of the formats, if there are more */
+			if (c == NULL) continue;	/* Nothing else to check */
+			/* Make sure any other formats are valid, too */
+			if (c) c[0] = ',';	/* Restore any comma we found */
+			pos = 0;
+			while (modern && gmt_strtok (figure, ",", &pos, p)) {	/* Check each format to make sure each is OK */
+				if (gmt_get_graphics_id (API->GMT, p) == GMT_NOTSET)
+					modern = 0;
+			}
+		}
+	}
+	if (modern)
+		API->GMT->current.setting.run_mode = GMT_MODERN;
+}
+
 /*! Update vector head length and width parameters based on size_z and v_angle, and deal with pen/fill settings */
 int gmt_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set, bool outline, struct GMT_PEN *pen, bool do_fill, struct GMT_FILL *fill) {
 	bool no_outline = false, no_fill = false;
