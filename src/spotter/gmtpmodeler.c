@@ -213,6 +213,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+GMT_LOCAL int signum (double x) {
+	if (x < 0.0) return -1;
+	if (x > 0.0) return +1;
+	return 0;
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {if (p) gmt_M_free (GMT, p); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -399,7 +405,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		for (k = 0; k < Ctrl->S.n_items; k++) {	/* Loop over desired output components */
 			switch (Ctrl->S.mode[k]) {
 				case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
-					value = gmt_az_backaz (GMT, in[GMT_X], lat_c, p[stage].lon, p[stage].lat, false) - 90.0;
+					value = gmt_az_backaz (GMT, in[GMT_X], lat_c, p[stage].lon, p[stage].lat, false) + 90.0 * signum (p[stage].omega);
 					gmt_lon_range_adjust (GMT->current.io.geo.range, &value);
 					break;
 				case PM_DIST:	/* Compute great-circle distance between node and point of origin at ridge */
