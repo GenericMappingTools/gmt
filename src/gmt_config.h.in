@@ -42,9 +42,9 @@
 #include "config.h"
 
 
-/* which regex library <pcre.h>, <regex.h> */
-#cmakedefine HAVE_PCRE2
+/* which regex library <pcre.h>, <pcre2.h>, <regex.h> */
 #cmakedefine HAVE_PCRE
+#cmakedefine HAVE_PCRE2
 #cmakedefine HAVE_POSIX_ERE
 
 /* compile with GDAL support <gdal.h> */

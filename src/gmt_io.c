@@ -402,7 +402,7 @@ GMT_LOCAL bool gmt_skip_record (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION 
 	if (S == NULL || S->n == 0) return (true);	/* No selection criteria given, so can only return true */
 	/* Could be one or n patterns to check */
 	for (uint64_t k = 0; !match && k < S->n; k++) {
-#if !defined(WIN32) || (defined(WIN32) && defined(HAVE_PCRE))
+#if !defined(WIN32) || (defined(WIN32) && defined(HAVE_PCRE)) || (defined(WIN32) && defined(HAVE_PCRE2))
 		if (S->regexp[k])
 		 	match = gmtlib_regexp_match (GMT, record, S->pattern[k], S->caseless[k]);	/* true if we matched */
 		else
