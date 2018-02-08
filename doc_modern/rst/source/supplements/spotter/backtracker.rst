@@ -18,6 +18,7 @@ Synopsis
 [ |-D|\ **f**\ \|\ **b** ]
 [ |-F|\ *drift.txt* ]
 [ |-L|\ **f**\ \|\ **b**\ [*step*] ]
+[ |-M|\ [*fact*] ]
 [ |-N|\ *upper_age* ]
 [ |-Q|\ *fixed_age* ]
 [ |-S|\ *filestem* ]
@@ -124,6 +125,12 @@ Optional Arguments
     **-LB** is used, the third output column will contain the stage id
     (1 is youngest) [Default is along-track predicted ages]. You can
     control the direction of the paths by using **-D**.
+
+.. _-M:
+
+**-M**\ [*fact*]
+    Scale opening angles by *fact* on output [0.5]. 
+    Typically used to get half-rates needed for flowlines.
 
 .. _-N:
 

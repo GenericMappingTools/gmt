@@ -78,7 +78,7 @@
 #define THIS_MODULE_PURPOSE	"Generate forward and backward flowlines and hotspot tracks"
 #define THIS_MODULE_KEYS	"<D{,>D},FD("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdefghios" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vbdefghios"
 
 struct BACKTRACKER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -105,6 +105,10 @@ struct BACKTRACKER_CTRL {	/* All control options for this program (except common
 		bool stage_id;	/* 1 returns stage id instead of ages */
 		double d_km;	/* Resampling spacing */
 	} L;
+	struct M {	/* -M[<value>] */
+		bool active;
+		double value;
+	} M;
 	struct N {	/* -N */
 		bool active;
 		double t_upper;
@@ -133,6 +137,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_M_memory (GMT, NULL, 1, struct BACKTRACKER_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	C->M.value = 0.5;	/* To get half-angles */
 
 	return (C);
 }
@@ -149,7 +154,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: backtracker [<table>] %s [-A[<young></old>]] [-Df|b]\n", SPOTTER_E_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F<driftfile] [-Lf|b<d_km>] [-N<upper_age>] [-Q<t_fix>] [-S<stem>] [-T<t_zero>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F<driftfile] [-Lf|b<d_km>] [-M[<factor>]] [-N<upper_age>] [-Q<t_fix>] [-S<stem>] [-T<t_zero>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -173,6 +178,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Lf Compute flowline for seamounts of unknown but maximum age [Default projects single points].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    If no <d_km> is given, the start/stop points for each stage are returned.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    If B and F is used instead, stage id is returned as z-value [Default is predicted ages].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Reduce opening angles for stage rotations by <factor> [0.5].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Typically used to get half-rates needed for flowlines.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Extend earliest stage pole back to <upper_age> [no extension].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Assigned a fixed age to all input points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Add -L<smt_no> to segment header and 4th output column (requires -L).\n");
@@ -290,6 +297,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 				Ctrl->L.d_km = (opt->arg[1]) ? atof (&opt->arg[1]) : -1.0;
 				break;
 
+			case 'M':	/* Convert to total reconstruction rotation poles instead */
+				Ctrl->M.active = true;
+				if (opt->arg[0]) Ctrl->M.value = atof (opt->arg);
+				break;
+				
+			case 'N':	/* Extend oldest stage back to this time [no extension] */
+				Ctrl->N.active = true;
+				Ctrl->N.t_upper = atof (opt->arg);
+				break;
+				
 			case 'Q':	/* Fixed age for all points */
 				Ctrl->Q.active = true;
 				Ctrl->Q.t_fix = atof (opt->arg);
@@ -317,10 +334,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 				Ctrl->W.mode = opt->arg[0];
 				break;
 
-			case 'N':	/* Extend oldest stage back to this time [no extension] */
-				Ctrl->N.active = true;
-				Ctrl->N.t_upper = atof (opt->arg);
-				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -423,7 +436,19 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 		gmt_make_rot_matrix (GMT, Ctrl->E.rot.lon, Ctrl->E.rot.lat, Ctrl->E.rot.w, R);
 	}
 	else {	/* Load in the stage poles */
-		n_stages = spotter_init (GMT, Ctrl->E.rot.file, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.rot.invert, &Ctrl->N.t_upper);
+		if (Ctrl->M.active) {	/* Must convert to stage poles and adjust opening angles */
+			char tmpfile[GMT_LEN32] = {""}, cmd[GMT_LEN128] = {""};
+			sprintf (tmpfile, "gmt_half_rots.%d", (int)getpid());
+			sprintf (cmd, "%s -M%g -Fs ->%s", Ctrl->E.rot.file, Ctrl->M.value, tmpfile);
+			if (GMT_Call_Module (API, "rotconverter", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to convert %s to half-rates\n", Ctrl->E.rot.file);
+				Return (API->error);
+			}
+			n_stages = spotter_init (GMT, tmpfile, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.rot.invert, &Ctrl->N.t_upper);
+			gmt_remove_file (GMT, tmpfile);
+		}
+		else
+			n_stages = spotter_init (GMT, Ctrl->E.rot.file, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.rot.invert, &Ctrl->N.t_upper);
 		spotter_way = ((Ctrl->L.mode + Ctrl->D.mode) == 1) ? SPOTTER_FWD : SPOTTER_BACK;
 
 		if (fabs (Ctrl->L.d_km) > GMT_CONV4_LIMIT) {		/* User wants to interpolate tracks rather than project individual points */
