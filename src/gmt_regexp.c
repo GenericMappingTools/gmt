@@ -48,7 +48,73 @@
 int gmtlib_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *pattern, bool caseless) {
 /* Match string against the extended regular expression in pattern. Return 1 for match, 0 for no match. */
 
-#ifdef HAVE_PCRE2
+#ifdef HAVE_PCRE
+
+	/* Use PCRE for matching
+	 * Based on PCRE DEMONSTRATION PROGRAM pcredemo.c
+	 */
+	pcre *re;
+	const char *error;
+	int erroffset;
+	int ovector[OVECCOUNT];
+	int rc;
+	int options = 0; /* default options */
+
+	/*************************************************************************
+	 * Now we are going to compile the regular expression pattern, and handle *
+	 * any errors that are detected.                                          *
+	 *************************************************************************/
+
+	if (caseless) options = options|PCRE_CASELESS;      /* caseless matching */
+
+	re = pcre_compile(
+			pattern,              /* the pattern */
+			options,              /* options */
+			&error,               /* for error message */
+			&erroffset,           /* for error offset */
+			NULL);                /* use default character tables */
+	
+	/* Compilation failed: print the error message and exit */
+
+	if (re == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_regexp_match: PCRE compilation failed at offset %d: %s.\n", erroffset, error);
+		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+	}
+	
+	/*************************************************************************
+ 	* If the compilation succeeded, we call PCRE again, in order to do a     *
+ 	* pattern match against the subject string. This does just ONE match. If *
+ 	* further matching is needed, it will be done below.                     *
+ 	*************************************************************************/
+	
+	rc = pcre_exec(
+			re,                   /* the compiled pattern */
+			NULL,                 /* no extra data - we didn't study the pattern */
+			subject,              /* the subject string */
+			(int)strlen(subject), /* the length of the subject */
+			0,                    /* start at offset 0 in the subject */
+			0,                    /* default options */
+			ovector,              /* output vector for substring information */
+			OVECCOUNT);           /* number of elements in the output vector */
+
+	/* Matching failed: handle error cases */
+	
+	pcre_free(re);	/* Release memory used for the compiled pattern */
+	if (rc < 0) {
+		switch(rc) {
+			case PCRE_ERROR_NOMATCH: break;
+			/* Handle other special cases if you like */
+			default: 
+				 GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_regexp_match: PCRE matching error %d.\n", rc);
+				 GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
+				 break;
+		}
+		return (0);	/* Match failed */
+	}
+	
+	return (1); /* Match succeeded */
+
+#elif defined HAVE_PCRE2
 
 	/* Use PCRE2 for matching
 	 * Based on PCRE2 DEMONSTRATION PROGRAM pcre2demo.c
@@ -114,73 +180,7 @@ int gmtlib_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *
 			case PCRE2_ERROR_NOMATCH: break;
 			/* Handle other special cases if you like */
 			default: 
-				 GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_regexp_match: PCRE matching error %d.\n", rc);
-				 GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
-				 break;
-		}
-		return (0);	/* Match failed */
-	}
-	
-	return (1); /* Match succeeded */
-
-#elif defined HAVE_PCRE
-
-	/* Use PCRE for matching
-	 * Based on PCRE DEMONSTRATION PROGRAM pcredemo.c
-	 */
-	pcre *re;
-	const char *error;
-	int erroffset;
-	int ovector[OVECCOUNT];
-	int rc;
-	int options = 0; /* default options */
-
-	/*************************************************************************
-	 * Now we are going to compile the regular expression pattern, and handle *
-	 * any errors that are detected.                                          *
-	 *************************************************************************/
-
-	if (caseless) options = options|PCRE_CASELESS;      /* caseless matching */
-
-	re = pcre_compile(
-			pattern,              /* the pattern */
-			options,              /* options */
-			&error,               /* for error message */
-			&erroffset,           /* for error offset */
-			NULL);                /* use default character tables */
-	
-	/* Compilation failed: print the error message and exit */
-
-	if (re == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_regexp_match: PCRE compilation failed at offset %d: %s.\n", erroffset, error);
-		GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
-	}
-	
-	/*************************************************************************
- 	* If the compilation succeeded, we call PCRE again, in order to do a     *
- 	* pattern match against the subject string. This does just ONE match. If *
- 	* further matching is needed, it will be done below.                     *
- 	*************************************************************************/
-	
-	rc = pcre_exec(
-			re,                   /* the compiled pattern */
-			NULL,                 /* no extra data - we didn't study the pattern */
-			subject,              /* the subject string */
-			(int)strlen(subject), /* the length of the subject */
-			0,                    /* start at offset 0 in the subject */
-			0,                    /* default options */
-			ovector,              /* output vector for substring information */
-			OVECCOUNT);           /* number of elements in the output vector */
-
-	/* Matching failed: handle error cases */
-	
-	pcre_free(re);	/* Release memory used for the compiled pattern */
-	if (rc < 0) {
-		switch(rc) {
-			case PCRE_ERROR_NOMATCH: break;
-			/* Handle other special cases if you like */
-			default: 
-				 GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_regexp_match: PCRE matching error %d.\n", rc);
+				 GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtlib_regexp_match: PCRE2 matching error %d.\n", rc);
 				 GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
 				 break;
 		}

@@ -75,6 +75,9 @@ search options, e.g., gmtconvert) you must have the PCRE library and include
 files installed.  PCRE is available through your favorite package manager
 on many *NIX systems.
 
+Because GDAL already links with PCRE1 it is most practical to use that version.
+But if you insist, GMT can also be compiled with PCRE2.
+
 
 LAPACK (optional)
 ---------------

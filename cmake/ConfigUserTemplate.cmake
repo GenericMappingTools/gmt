@@ -128,12 +128,12 @@
 # gdal-config) [auto]:
 #set (GDAL_ROOT "gdal_install_prefix")
 
-# Set location of PCRE2 (can be root directory, path to header file or path to
-# pcre2-config) [auto]:
-#set (PCRE2_ROOT "pcre2_install_prefix")
-# Alternatively, set location of PCRE (can be root directory, path to header file or path to
+# Set location of PCRE (can be root directory, path to header file or path to
 # pcre-config) [auto]:
 #set (PCRE_ROOT "pcre_install_prefix")
+# Alternatively, set location of PCRE2 (can be root directory, path to header file or path to
+# pcre2-config) [auto]:
+#set (PCRE2_ROOT "pcre2_install_prefix")
 
 # Set location of single precision FFTW (can be root directory or path to
 # header file) [auto]:

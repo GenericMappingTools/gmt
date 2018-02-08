@@ -20,7 +20,7 @@ Build and runtime prerequisites
 
 1. Software:
   You need Ghostscript, CMake (>=2.8.5), netCDF (>=4.0, netCDF-4/HDF5
-  support mandatory).  Optionally install Sphinx, PCRE, GDAL, LAPACK,
+  support mandatory).  Optionally install Sphinx, PCRE1 or PCRE2, GDAL, LAPACK,
   BLAS and FFTW (single precision version).
 2. Data:
   You need gshhg (>=2.2.2); optionally install dcw-gmt (>=1.0.5)
