@@ -80,10 +80,6 @@ struct ROTCONVERTER_CTRL {	/* All control options for this program (except commo
 	struct D {	/* -D */
 		bool active;
 	} D;
-	struct E {	/* -E[<value>] */
-		bool active;
-		double value;
-	} E;
 	struct F {	/* -F */
 		bool active;
 		bool mode;	/* out mode (true if total reconstruction rotations) */
@@ -91,6 +87,10 @@ struct ROTCONVERTER_CTRL {	/* All control options for this program (except commo
 	struct G {	/* -G */
 		bool active;
 	} G;
+	struct M {	/* -M[<value>] */
+		bool active;
+		double value;
+	} M;
 	struct N {	/* -N */
 		bool active;
 	} N;
@@ -112,7 +112,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
-	C->E.value = 0.5;	/* To get half-angles */
+	C->M.value = 0.5;	/* To get half-angles */
 	C->F.mode = true;	/* Default format is total reconstruction rotation poles for both input and output */
 	return (C);
 }
@@ -125,8 +125,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *C) {	/
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: rotconverter [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D] [-E[<factor>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F<out>] [-G] [-N] [-S] [-T] [%s] [-W]\n\t[%s]\n\n", GMT_V_OPT, GMT_h_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: rotconverter [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D] [-F<out>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G] [-M[<factor>]] [-N] [-S] [-T] [%s] [-W]\n\t[%s]\n\n", GMT_V_OPT, GMT_h_OPT);
 	
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -139,10 +139,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Report angles as time [Default uses time].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Report all longitudes in -180/+180 range [Default is 0-360].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Reduce opening angles for stage rotations by <factor> [0.5].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Typically used to get half-rates needed for flowlines.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set output file type: t for total reconstruction and s for stage rotations [Default is -Ft].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Write rotations using GPlates format [Default is spotter format].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Reduce opening angles for stage rotations by <factor> [0.5].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Typically used to get half-rates needed for flowlines.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Ensure all poles are in northern hemisphere [Default ensures positive opening angles/rates].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Ensure all poles are in southern hemisphere [Default ensures positive opening angles/rates].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Transpose the result (i.e., change sign of final rotation angle).\n");
@@ -180,9 +180,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 				Ctrl->D.active = true;
 				break;
 
-			case 'E':	/* Convert to total reconstruction rotation poles instead */
-				Ctrl->E.active = true;
-				if (opt->arg[0]) Ctrl->E.value = atof (opt->arg);
+			case 'E':	/* Convert to half-spreading stage rotations [NOW -M] */
+				if (gmt_M_compat_check (GMT, 5)) { /* Warn and fall through */
+					GMT_Report (API, GMT_MSG_COMPAT, "-E is deprecated; use -M instead.\n");
+					Ctrl->M.active = true;
+					if (opt->arg[0]) Ctrl->M.value = atof (opt->arg);
+				}
+				else {
+					GMT_Report (API, GMT_MSG_NORMAL, "No such option -E\n");
+					n_errors++;
+				}
 				break;
 
 			case 'F':
@@ -218,6 +225,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 				Ctrl->G.active = true;
 				break;
 
+			case 'M':	/* Convert to total reconstruction rotation poles instead */
+				Ctrl->M.active = true;
+				if (opt->arg[0]) Ctrl->M.value = atof (opt->arg);
+				break;
+
 			case 'N':	/* Ensure all poles reported are in northern hemisphere */
 				Ctrl->N.active = true;
 				break;
@@ -245,7 +257,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 	}
 
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->S.active + Ctrl->N.active + Ctrl->W.active) > 1, "Syntax error: Specify only one of -N, -S, and -W!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->F.mode, "Syntax error: -E requires stage rotations on output\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.mode, "Syntax error: -M requires stage rotations on output.  Please add -Fs\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->F.mode, "Syntax error: -G requires total reconstruction rotations on output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -474,7 +486,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 		while (a[stage].lon <= -180.0) a[stage].lon += 360.0;				/* Force geodetic longitude range */
 		while (!Ctrl->D.active && a[stage].lon < 0.0) a[stage].lon += 360.0;		/* Force geodetic longitude range */
 		while (Ctrl->D.active && a[stage].lon > 180.0) a[stage].lon -= 360.0;		/* Force a geographic longitude range */
-		if (Ctrl->E.active) a[stage].omega *= Ctrl->E.value;
+		if (Ctrl->M.active) a[stage].omega *= Ctrl->M.value;
 		out[GMT_X] = a[stage].lon;	out[GMT_Y] = a[stage].lat;
 		col = 2;
 		if (Ctrl->G.active) {

@@ -15,7 +15,10 @@ Synopsis
 
 **rotconverter** [ **+**\ \|\ **-** ] *rotA* [ **+**\ \|\ **-** *rotB* ]
 [ **+**\ \|\ **-** *rotC* ] ... [ |-A| ] [ |-D| ]
-[ |-E|\ [*fact*] ] [ |-F|\ *out* ] [ |-G| ] [ |-N| ] [ |-S| ]
+[ |-F|\ *out* ]
+[ |-G| ]
+[ |-M|\ [*fact*] ]
+[ |-N| ] [ |-S| ]
 [ |-T| ] [ |-W| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-h| ]
@@ -63,13 +66,6 @@ Optional Arguments
 **-D**
     Report longitudes use the -180/+180 range [Default is 0/360].
 
-.. _-E:
-
-**-E**\ [*fact*]
-    Scale opening angles by *fact* on output [0.5]. 
-    Typically used to get half-rates needed for flowlines.
-    Requires stage pole output (see **-F**).
-
 .. _-F:
 
 **-F**\ *out*
@@ -82,6 +78,13 @@ Optional Arguments
 
 **-G**
     Output final rotations in the Plates4 format used by GPlates [Default is spotter format].
+
+.. _-M:
+
+**-M**\ [*fact*]
+    Scale opening angles by *fact* on output [0.5]. 
+    Typically used to get half-rates needed for flowlines.
+    Requires stage pole output (see **-F**).
 
 .. _-N:
 
@@ -149,8 +152,8 @@ symmetric spreading, try
 
    ::
 
-    gmt rotconverter PL1-PL2.RPM -E -Fs > PL1-PL2_half.RPM
-    gmt rotconverter - PL1-PL2.RPM -E -Fs > PL2-PL1_half.RPM
+    gmt rotconverter PL1-PL2.RPM -M -Fs > PL1-PL2_half.RPM
+    gmt rotconverter - PL1-PL2.RPM -M -Fs > PL2-PL1_half.RPM
 
 To compute rotations for India relative to a fixed Africa using the
 plate circuit India-Central Indian Basin-Antarctica-Africa, based on the
