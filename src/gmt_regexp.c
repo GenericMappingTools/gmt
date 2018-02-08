@@ -34,12 +34,12 @@
 /*
  * ERE pattern matching with PCRE2, PCRE or POSIX
  */
-#ifdef HAVE_PCRE2
-#define PCRE2_CODE_UNIT_WIDTH 8
-#include <pcre2.h>
-#elif defined HAVE_PCRE
+#ifdef HAVE_PCRE
 #include <pcre.h>
 #define OVECCOUNT 30        /* should be a multiple of 3 */
+#elif defined HAVE_PCRE2
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
 #elif defined HAVE_POSIX_ERE
 #include <regex.h>
 #define MAX_ERR_LENGTH 80   /* max error message length */
