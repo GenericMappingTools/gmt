@@ -13155,7 +13155,7 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	x = gmt_M_memory (GMT, NULL, S->n_rows, double);
 	if (text) L = gmt_M_memory (GMT, NULL, S->n_rows, char *);
 	for (row = 0; row < S->n_rows; row++) {
-		nc = sscanf (S->text[row], "%s %[^\0]", type, txt);
+		nc = sscanf (S->text[row], "%s %[^\n]", type, txt);
 		found = ((item == 'a' && (strchr (type, 'a') || strchr (type, 'i'))) || (strchr (type, item) != NULL));
 		if (!found) continue;	/* Not the type we were requesting */
 		if (strchr (type, 'i')) n_int++;
