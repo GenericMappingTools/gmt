@@ -677,7 +677,7 @@ GMT_LOCAL void plot_timey_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 
 	ny = gmtlib_time_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item], &y);
 	plot_y_grid (GMT, PSL, w, e, y, ny);
-	if (ny) gmt_M_free (GMT, y);
+	if (y) gmt_M_free (GMT, y);
 }
 
 GMT_LOCAL void plot_logx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
