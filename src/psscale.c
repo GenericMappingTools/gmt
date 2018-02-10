@@ -525,7 +525,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 	if (GMT->current.setting.run_mode == GMT_MODERN && (!Ctrl->C.active || (Ctrl->C.file[0] =='+' && strchr ("uU", Ctrl->C.file[1])))) {
 		sprintf (string, "%s/gmt.cpt", API->gwf_dir);	/* Use this if it exists */
 		if (!access (string, R_OK)) {	/* It does, activate -C<string> */
-			if (Ctrl->C.file) strcat (string, Ctrl->C.file);	/* Append the +u|u<unit> instruction */
+			if (Ctrl->C.file) strncat (string, Ctrl->C.file, GMT_LEN256-1);	/* Append the +u|u<unit> instruction */
 			gmt_M_str_free (Ctrl->C.file);
 			Ctrl->C.file = strdup (string);
 			Ctrl->C.active = true;
