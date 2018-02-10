@@ -1422,6 +1422,7 @@ GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_I
 		}
 		if ((fp2 = fopen (fname2, "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create file %s\n", fname1);
+			fclose (fp1);
 			return;
 		}
 	}
@@ -1826,7 +1827,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 int GMT_surface (void *V_API, int mode, void *args) {
 	int error = 0, key, one = 1, end;
 	char *limit[2] = {"lower", "upper"};
-	double wesn[4];
+	double wesn[6];
 	
 	struct SURFACE_INFO C;
 	struct SURFACE_CTRL *Ctrl = NULL;
@@ -1875,8 +1876,8 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->A.mode) Ctrl->A.value = cosd (0.5 * (wesn[YLO] + wesn[YHI]));	/* Set cos of middle latitude as aspect ratio */
 	
-	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL, \
-		GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, NULL,
+	                               GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	
 	if (C.Grid->header->n_columns < 4 || C.Grid->header->n_rows < 4) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->n_columns, C.Grid->header->n_rows);
