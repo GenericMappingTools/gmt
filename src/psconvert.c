@@ -957,7 +957,6 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	int       fd[2] = { 0, 0 };
 	FILE     *fp = NULL;
 #else
-	int ios;
 	struct popen2 *H = NULL;
 #endif
 
@@ -1000,7 +999,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 		GMT_Report(API, GMT_MSG_NORMAL, "Error closing pipe used for GhostScript command.\n");
 	fh = fd[0];	/* File handle for reading */
 #else
- 	ios = write (H->fd[1], PS->data, PS->n_bytes);
+ 	write (H->fd[1], PS->data, PS->n_bytes);
 	/* Now closed for writing */
     gmt_pclose2 (&H, 1);
 	fh = H->fd[0];	/* File handle for reading */
@@ -1069,16 +1068,18 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 
 	/* Find where is the setpagedevice line */
 	if ((pch = strstr(PS->data, "setpagedevice")) != NULL) {
-		while (pch[c_begin] != '\n') c_begin--;		c_begin++;	/* It receded one too much */
+		while (pch[c_begin] != '\n') c_begin--;
+		c_begin++;	/* It receded one too much */
 		/* So now we know where the line starts. Put a 'translate' command in its place. */
 		(r == 0) ? sprintf(buf, "%.3f %.3f translate", xt, yt) : sprintf(buf, "%d rotate\n%.3f %.3f translate", r, xt, yt);
 		for (n = 0; n < strlen(buf); n++, c_begin++) pch[c_begin] = buf[n];
-		while (pch[c_begin] != '\n')  pch[c_begin++] = ' ';     /* Make sure that there are only spaces till EOL */
+		while (pch[c_begin] != '\n')  pch[c_begin++] = ' ';     /* Make sure there are only spaces till EOL */
 	}
 	else {
 		if ((pch = strstr(PS->data, " translate")) != NULL) {		/* If user runs through this function twice 'setpagedevice' was changed to 'translate' */
 			double old_xt, old_yt;
-			while (pch[c_begin] != '\n') c_begin--;		c_begin++;	/* Goto line start but it receded one too much */
+			while (pch[c_begin] != '\n') c_begin--;
+			c_begin++;	/* Goto line start but it receded one too much */
 			sscanf (&pch[c_begin], "%lf %lf", &old_xt, &old_yt);
 			(r == 0) ? sprintf(buf, "%.3f %.3f translate", xt + old_xt, yt + old_xt) : sprintf(buf, "%d rotate\n%.3f %.3f translate", r, xt + old_xt, yt + old_xt);
 			for (n = 0; n < strlen(buf); n++, c_begin++) pch[c_begin] = buf[n];
@@ -1107,7 +1108,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	      2. If it holds a file name plus the settings for that driver, than we save the result in a file.
 	*/
 	char      cmd[1024] = {""}, buf[GMT_LEN128], t[16] = {""};
-	int       fd[2] = {0, 0}, fh, n, k, pix_w, pix_h, ios;
+	int       fd[2] = {0, 0}, fh, n, k, pix_w, pix_h;
 	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands;
 	unsigned char *tmp;
 	unsigned int nopad[4] = {0, 0, 0, 0};
@@ -1185,7 +1186,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript process.\n");
 	}
 	else {	/* On non-Windows and want a raster back */
- 		ios = write (H->fd[1], PS->data, PS->n_bytes);
+ 		write (H->fd[1], PS->data, PS->n_bytes);
 		/* Now closed for writing */
     	gmt_pclose2 (&H, 1);
 		fh = H->fd[0];	/* File handle for reading */
@@ -1237,11 +1238,11 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 		}
 	}
 	else if (!strncmp (I->header->mem_layout, "TRP", 3)) {	/* Very cheap this one since is gs native order. */
-		ios = read (fd[0], I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
+		read (fd[0], I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
 	}
 	else {
 		for (row = 0; row < nRows; row++) {
-			ios = read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
+			read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
 			for (col = n = 0; col < nCols; col++)
 				for (band = 0; band < nBands; band++)
 					I->data[row + col*nRows + band*nXY] = tmp[n++];	/* Band interleaved, the best for MEX. */
@@ -2337,7 +2338,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			uint64_t row, col, band, nCols, nRows, nBands, nXY;
 			FILE *fp_raw = NULL;
 			unsigned char *tmp;
-			int ios;
 			if ((fp_raw = fopen (out_file, "rb")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open image file %s\n", out_file);
 				Return (GMT_ERROR_ON_FOPEN);
@@ -2361,7 +2361,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			nCols = dim[GMT_X];		nRows = dim[GMT_Y];		nBands = dim[2];	nXY = nRows * nCols;
 			tmp   = gmt_M_memory(GMT, NULL, nCols * nBands, char);
 			for (row = 0; row < nRows; row++) {
-				ios = fread(tmp, sizeof (unsigned char), nCols * nBands, fp_raw);		/* Read a row of nCols by nBands bytes of data */
+				fread(tmp, sizeof (unsigned char), nCols * nBands, fp_raw);		/* Read a row of nCols by nBands bytes of data */
 				for (col = 0; col < nCols; col++) {
 					for (band = 0; band < nBands; band++) {
 						I->data[row + col*nRows + band*nXY] = tmp[band + col*nBands];
@@ -2580,8 +2580,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, PS);
 	/* According to Coverity there are still paths that may reach here with the files not closed */
 	if (fp != NULL) fclose (fp);
-	if (fpo != NULL) fclose (fpo);	if (fpb != NULL) fclose (fpb);
-	if (fp2 != NULL) fclose (fp2);	if (fpw != NULL) fclose (fpw);
+	if (fpo != NULL) fclose (fpo);
+	if (fpb != NULL) fclose (fpb);
+	if (fp2 != NULL) fclose (fp2);
+	if (fpw != NULL) fclose (fpw);
 	GMT_Report (API, GMT_MSG_DEBUG, "Final input buffer length was % "PRIuS "\n", line_size);
 
 	Return (GMT_NOERROR);
