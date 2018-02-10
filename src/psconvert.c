@@ -1674,6 +1674,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			int dump = true;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Strip GMT time-stamp...\n");
 			sprintf (no_U_file, "%s/psconvert_%db.eps", Ctrl->D.dir, (int)getpid());
+			if (fp2) fclose (fp2);
 			if ((fp2 = fopen (no_U_file, "w+")) == NULL) {
 				unsigned int kk;
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
@@ -1733,6 +1734,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				fclose (fp);	fclose (fp2);
+				fp = fp2 = NULL;
 				gmt_M_free (GMT, PS);
 				if (gmt_remove_file (GMT, BB_file))
 					Return (GMT_RUNTIME_ERROR);
@@ -1746,6 +1748,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s\n", BB_file);
 				gmt_M_free (GMT, PS);
 				fclose (fp);	fclose (fp2);
+				fp = fp2 = NULL;
 				if (gmt_truncate_file (API, ps_file, half_baked_size))
 					Return (GMT_RUNTIME_ERROR);
 				if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
@@ -1803,6 +1806,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 			if (!Ctrl->S.active && gmt_remove_file (GMT, BB_file)) {	/* Remove the file with BB info */
 				fclose (fp);	fclose (fp2);
+				fp = fp2 = NULL;
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (got_BB) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%g %g %g %g]...\n", x0, y0, x1, y1);
