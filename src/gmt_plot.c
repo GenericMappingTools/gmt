@@ -686,7 +686,7 @@ GMT_LOCAL void plot_logx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 
 	nx = gmtlib_log_array (GMT, w, e, dval, &x);
 	plot_x_grid (GMT, PSL, s, n, x, nx);
-	if (nx) gmt_M_free (GMT, x);
+	if (x) gmt_M_free (GMT, x);
 }
 
 GMT_LOCAL void plot_logy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
@@ -695,7 +695,7 @@ GMT_LOCAL void plot_logy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 
 	ny = gmtlib_log_array (GMT, s, n, dval, &y);
 	plot_y_grid (GMT, PSL, w, e, y, ny);
-	if (ny) gmt_M_free (GMT, y);
+	if (y) gmt_M_free (GMT, y);
 }
 
 GMT_LOCAL void plot_powx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
@@ -704,7 +704,7 @@ GMT_LOCAL void plot_powx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 
 	nx = gmtlib_pow_array (GMT, w, e, dval, 0, &x);
 	plot_x_grid (GMT, PSL, s, n, x, nx);
-	if (nx) gmt_M_free (GMT, x);
+	if (x) gmt_M_free (GMT, x);
 }
 
 GMT_LOCAL void plot_powy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
@@ -713,7 +713,7 @@ GMT_LOCAL void plot_powy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 
 	ny = gmtlib_pow_array (GMT, s, n, dval, 1, &y);
 	plot_y_grid (GMT, PSL, w, e, y, ny);
-	if (ny) gmt_M_free (GMT, y);
+	if (y) gmt_M_free (GMT, y);
 }
 
 GMT_LOCAL double plot_shift_gridline (struct GMT_CTRL *GMT, double val, unsigned int type) {
