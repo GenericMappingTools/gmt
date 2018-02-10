@@ -10011,10 +10011,10 @@ void gmt_set_inside_mode (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned 
 		GMT->current.proj.sph_inside = false;
 	else if (GMT->current.map.is_world)	/* Here we are dealing with geographic data that has 360 degree range */
 		GMT->current.proj.sph_inside = true;
-	else {	/* Geographic data less than 360 degree range in longitudes */
+	else if (D) {	/* Geographic data less than 360 degree range in longitudes */
 		double lat[2];
-		if (D) { lat[0] = D->min[GMT_Y]; lat[1] = D->max[GMT_Y]; }
-		if (D && (doubleAlmostEqual (lat[0], -90.0) || doubleAlmostEqual (lat[1], +90.0)))	/* Goes to a pole, must do spherical */
+		lat[0] = D->min[GMT_Y]; lat[1] = D->max[GMT_Y];
+		if (doubleAlmostEqual (lat[0], -90.0) || doubleAlmostEqual (lat[1], +90.0))	/* Goes to a pole, must do spherical */
 			GMT->current.proj.sph_inside = true;
 		else {	/* Limited in lon and lat, can do Cartesian but must ensure polygons do not jump within range */
 			uint64_t tbl, seg, row;
@@ -10033,11 +10033,13 @@ void gmt_set_inside_mode (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned 
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 					S = D->table[tbl]->segment[seg];	/* Shorthand */
 					for (row = 0; row < S->n_rows; row++)
-						gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->data[GMT_X][row]);
+						gmt_lon_range_adjust (range, &S->data[GMT_X][row]);
 				}
 			}
 		}
 	}
+	else
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not enough information given to gmt_set_inside_mode.\n");
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "A point's inside/outside status w.r.t. polygon(s) will be determined using a %s algorithm.\n", method[GMT->current.proj.sph_inside]);
 }
 

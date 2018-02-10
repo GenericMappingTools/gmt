@@ -1175,7 +1175,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 	double u_change, max_u_change, max_z_change, sum_bk_uk, u_00;
 	gmt_grdfloat *b = NULL;
 #ifdef _OPENMP	/* We will alternate between treating the two grids as old (reading from) and new (writing to) */
-	bool dump;
+	//bool dump;
 	gmt_grdfloat *u_new = C->Grid->data, *u_old = C->alternate_grid;
 #else		/* Here they are the same single grid */
 	//bool dump;
@@ -1243,7 +1243,8 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Iteration %d\n", iteration_count);
 
 #ifdef _OPENMP
-#pragma omp parallel for private(row,node,col,u_00,set,k,b,quadrant,sum_bk_uk,briggs_index,u_change,dump) shared(C,status,u_new,u_old,d_node) //reduction(max:max_u_change)
+//#pragma omp parallel for private(row,node,col,u_00,set,k,b,quadrant,sum_bk_uk,briggs_index,u_change,dump) shared(C,status,u_new,u_old,d_node) //reduction(max:max_u_change)
+#pragma omp parallel for private(row,node,col,u_00,set,k,b,quadrant,sum_bk_uk,briggs_index,u_change) shared(C,status,u_new,u_old,d_node) //reduction(max:max_u_change)
 #endif
 		for (row = 0; row < C->current_ny; row++) {	/* Loop over rows */
 			node = C->node_nw_corner + row * C->current_mx;	/* Node at left side of this row */

@@ -549,6 +549,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				/* Now we have the current tile region */
 				if ((T = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Zgrid, NULL)) == NULL) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Unable to read in grid tile!\n");
+					gmt_M_free (GMT, Q);
 					Return (API->error);
 				}
 				/* Determine if we have any non-NaN data points inside this grid */
@@ -565,6 +566,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 					/* Open the grid subset as a virtual file we can pass to grdimage */
 					if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, T, z_data) == GMT_NOTSET) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Unable to open grid tile as virtual file!\n");
+						gmt_M_free (GMT, Q);
 						Return (API->error);
 					}
 					/* Will pass -W to notify us if there was no valid image data imaged */
@@ -578,6 +580,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 					GMT_Close_VirtualFile (API, z_data);
 					if (GMT_Destroy_Data (API, &T) != GMT_NOERROR) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Unable to free memory of grid tile!\n");
+						gmt_M_free (GMT, Q);
 						Return (API->error);
 					}
 					if (error == GMT_IMAGE_NO_DATA) {	/* Must have found non-Nans in the pad since the image is all NaN? */
@@ -594,6 +597,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 							sprintf (cmd, "-TG -E100 -P -Vn  -D%s -FR%dC%d.png %s", level_dir, row, col, psfile);
 						if (GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Unable to rasterize current PNG tile!\n");
+							gmt_M_free (GMT, Q);
 							Return (API->error);
 						}
 						/* Update our list of tiles */

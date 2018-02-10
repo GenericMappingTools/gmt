@@ -206,7 +206,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 
 GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int row0, unsigned int row1, unsigned int col0, unsigned int col1, unsigned int count[], unsigned int mode, unsigned int *side, bool *all) {
 	/* Loop around current perimeter and count # of nans, return sum and pass back which side had most nans */
-	unsigned int col, row, sum = 0, k, dim[2] = {0, 0};
+	unsigned int col, row, sum = 0, k, dim[4] = {0, 0, 0, 0};
 	uint64_t node;
 	
 	gmt_M_memset (count, 4, unsigned int);	/* Reset count */
@@ -221,7 +221,7 @@ GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, uns
 	for (col = col0, node = gmt_M_ijp (G->header, row0, col); col <= col1; col++, node++) if (gmt_M_is_fnan (G->data[node])) count[2]++;
 	/* West count: */
 	for (row = row0, node = gmt_M_ijp (G->header, row, col0); row <= row1; row++, node += G->header->mx) if (gmt_M_is_fnan (G->data[node])) count[3]++;
-	for (k = 0; k < 4; k++) {	/* TIme to sum up and determine side with most NaNs */
+	for (k = 0; k < 4; k++) {	/* Time to sum up and determine side with most NaNs */
 		sum += count[k];
 		if (mode == NAN_IS_FRAME) {
 			if (k && count[k] > dim[*side]) *side = k;
@@ -230,7 +230,7 @@ GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, uns
 			if (k && count[k] > count[*side]) *side = k;
 		}
 	}
-	*all = (count[*side] == dim[*side%2]);	/* True of every node along size is NaN */
+	*all = (count[*side] == dim[*side%2]);	/* True if every node along size is NaN */
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Nans found: W = %d E = %d S = %d N = %d\n", count[3], count[1], count[0], count[2]);
 	return ((row0 == row1 && col0 == col1) ? 0 : sum);	/* Return 0 if we run out of grid, else the sum */
 }

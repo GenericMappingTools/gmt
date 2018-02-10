@@ -652,7 +652,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 				else if (gmt_M_file_is_memory (opt->arg) || !gmt_access (GMT, opt->arg, R_OK))	/* Argument given and file can be opened */
 					Ctrl->T.file = strdup (opt->arg);
 				else	/* Presumably gave tmin/tmax/tinc[+n] */
-					n_errors += gmt_create_1D_array (GMT, 'T', opt->arg, &Ctrl->T.min, &Ctrl->T.max, &Ctrl->T.inc, &Ctrl->T.n, &Ctrl->T.t);
+					n_errors += gmt_create_1D_array (GMT, 'T', opt->arg, &Ctrl->T.min, &Ctrl->T.max, &Ctrl->T.inc, &Ctrl->T.n, &(Ctrl->T.t));
 				break;
 
 			default:	/* Report bad options */

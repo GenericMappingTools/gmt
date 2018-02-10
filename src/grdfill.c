@@ -499,6 +499,22 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 		Return (GMT_NOERROR);
 	}
 	
+	if (Ctrl->L.active) {
+		if (GMT_Init_IO (API, GMT_IS_DATASET, (Ctrl->L.mode) ? GMT_IS_POLYGON : GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+			Return (API->error);
+		}
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 2 + 2*Ctrl->L.mode, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		if (Ctrl->L.mode) gmt_set_segmentheader (GMT, GMT_OUT, true);
+	}
+	
 	/* To avoid having to check every row,col for being inside the grid we set
 	 * the boundary row/cols in the ID grid to 1. */
 	
@@ -516,22 +532,6 @@ int GMT_grdfill (void *V_API, int mode, void *args) {
 	}
 	/* Initiate the node offsets in the cardinal directions */
 	off[0] = Grid->header->mx;	off[1] = 1; 	off[2] = -off[0]; off[3] = -off[1];
-	
-	if (Ctrl->L.active) {
-		if (GMT_Init_IO (API, GMT_IS_DATASET, (Ctrl->L.mode) ? GMT_IS_POLYGON : GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
-			Return (API->error);
-		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
-			Return (API->error);
-		}
-		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
-			Return (API->error);
-		}
-		if ((error = GMT_Set_Columns (API, GMT_OUT, 2 + 2*Ctrl->L.mode, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-			Return (API->error);
-		}
-		if (Ctrl->L.mode) gmt_set_segmentheader (GMT, GMT_OUT, true);
-	}
 	
 	Out = gmt_new_record (GMT, wesn, NULL);	/* Since we only need to worry about numerics in this module */
 	gmt_M_grd_loop (GMT, Grid, row, col, node) {	/* Loop over all grid nodes */

@@ -1213,7 +1213,7 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 	   We sort, mark redundant data as SURFACE_OUTSIDE, and sort again, chopping off the excess.
 	*/
 
-	uint64_t last_index, n_outside, k,  n_ignored;
+	uint64_t last_index = UINTMAX_MAX, n_outside = 0, k;
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Eliminate data points that are not nearest a node.\n");
 
@@ -1224,7 +1224,6 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 	/* If more than one datum is indexed to the same node, only the first should be kept.
 	   Mark the additional ones as SURFACE_OUTSIDE.
 	*/
-	last_index = UINTMAX_MAX;	n_outside = n_ignored = 0;
 	for (k = 0; k < C->npoints; k++) {
 		if (C->data[k].index == last_index) {	/* Same node but further away than our guy */
 			C->data[k].index = SURFACE_OUTSIDE;
@@ -1239,12 +1238,10 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 		qsort_r (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points, &(C->info));
 		C->npoints -= n_outside;	/* Effectively chopping off the eliminated points */
 		C->data = gmt_M_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);	/* Adjust memory accordingly */
-		if (n_ignored) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%" PRIu64 " unusable points were supplied; these will be ignored.\n", n_ignored);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "You should have pre-processed the data with block-mean, -median, or -mode.\n");
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Check that previous processing steps write results with enough decimals.\n");
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Possibly some data were half-way between nodes and subject to IEEE 754 rounding.\n");
-		}
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%" PRIu64 " unusable points were supplied; these will be ignored.\n", n_outside);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "You should have pre-processed the data with block-mean, -median, or -mode.\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Check that previous processing steps write results with enough decimals.\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Possibly some data were half-way between nodes and subject to IEEE 754 rounding.\n");
 	}
 }
 
@@ -1419,8 +1416,14 @@ GMT_LOCAL void interpolate_add_breakline (struct GMT_CTRL *GMT, struct SURFACE_I
 	if (file) {
 		sprintf (fname1, "%s.int",   file);
 		sprintf (fname2, "%s.final", file);
-		fp1 = fopen (fname1, "w");
-		fp2 = fopen (fname2, "w");
+		if ((fp1 = fopen (fname1, "w")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create file %s\n", fname1);
+			return;
+		}
+		if ((fp2 = fopen (fname2, "w")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create file %s\n", fname1);
+			return;
+		}
 	}
 	/* Add constraints from breaklines */
 	/* Reduce breaklines to the nearest point per node of cells crossed */
