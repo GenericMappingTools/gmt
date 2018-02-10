@@ -6889,7 +6889,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 					gmt_M_str_free (input);
 					return_null (API, GMT_FILE_NOT_FOUND);	/* Failed to find the file anywyere */
 				}
-				if (q) {q[0] = '+'; strcat (CPT_file, q); }	/* Add back the z-scale modifier */
+				if (q) {q[0] = '+'; strncat (CPT_file, q, GMT_LEN256-1);}	/* Add back the z-scale modifier */
 			}
 			else	/* Got color list, now a temp CPT instead */
 				strncpy (CPT_file, file, GMT_LEN256-1);
@@ -6901,7 +6901,7 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 		}
 		else {	/* Not a CPT file but could be remote */
 			char file[PATH_MAX] = {""};
-			strcpy (file, &input[first]);
+			strncpy (file, &input[first], PATH_MAX-1);
 			if (gmt_M_file_is_remotedata (input) && !strstr (input, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
 				strcat (file, ".grd");	/* Must supply the .grd */
 			if ((in_ID = GMT_Register_IO (API, family|module_input, method, geometry, GMT_IN, wesn, file)) == GMT_NOTSET) {
