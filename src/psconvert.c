@@ -1037,12 +1037,17 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 		if (margin == 0) margin = Ctrl->A.margin[0];		/* We may have margins set via -A*/
 	}
 	else {		/* Get the page size from original PS headers */
-		pch = strstr(PS->data, "%%HiResB");
-		sscanf (&pch[20], "%lf %lf %lf %lf", &x0, &y0, &x1, &y1);
-		if (landscape)	
-			*w = y1, *h = x1, r = -90;
-		else
-			*w = x1, *h = y1, r = 0;
+		if ((pch = strstr(PS->data, "%%HiResB")) == NULL) {
+			x0 = y0 = 0;	x1 = y1 = 10;
+			GMT_Report (API, GMT_MSG_NORMAL, "Something bad, the GMT PS does not have a %%HiResBoundingBox! Expect the worst.\n");
+		}
+		else {
+			sscanf (&pch[20], "%lf %lf %lf %lf", &x0, &y0, &x1, &y1);
+			if (landscape)	
+				*w = y1, *h = x1, r = -90;
+			else
+				*w = x1, *h = y1, r = 0;
+		}
 	}
 
 	/* Add a margin if user requested it (otherwise margin = 0) */
