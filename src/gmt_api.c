@@ -6885,8 +6885,10 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 				if ((q = gmtlib_file_unitscale (file))) q[0] = '\0';	/* Truncate modifier */
 				if (elen)	/* Master: Append extension and supply path */
 					gmt_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
-				else if (!gmt_getdatapath (API->GMT, file, CPT_file, R_OK)) /* Use name.cpt as is but look for it */
+				else if (!gmt_getdatapath (API->GMT, file, CPT_file, R_OK)) {	/* Use name.cpt as is but look for it */
+					gmt_M_str_free (input);
 					return_null (API, GMT_FILE_NOT_FOUND);	/* Failed to find the file anywyere */
+				}
 				if (q) {q[0] = '+'; strcat (CPT_file, q); }	/* Add back the z-scale modifier */
 			}
 			else	/* Got color list, now a temp CPT instead */
@@ -6902,14 +6904,18 @@ void *GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, unsi
 			strcpy (file, &input[first]);
 			if (gmt_M_file_is_remotedata (input) && !strstr (input, ".grd"))	/* A remote @earth_relief_xxm|s grid without extension */
 				strcat (file, ".grd");	/* Must supply the .grd */
-			if ((in_ID = GMT_Register_IO (API, family|module_input, method, geometry, GMT_IN, wesn, file)) == GMT_NOTSET)
+			if ((in_ID = GMT_Register_IO (API, family|module_input, method, geometry, GMT_IN, wesn, file)) == GMT_NOTSET) {
+				gmt_M_str_free (input);
 				return_null (API, API->error);
+			}
 		}
 		reg_here = true;
 	}
 	else if (input == NULL && geometry) {	/* Case 2: Load from stdin.  Register stdin first */
-		if ((in_ID = GMT_Register_IO (API, family|module_input, GMT_IS_STREAM, geometry, GMT_IN, wesn, API->GMT->session.std[GMT_IN])) == GMT_NOTSET)
+		if ((in_ID = GMT_Register_IO (API, family|module_input, GMT_IS_STREAM, geometry, GMT_IN, wesn, API->GMT->session.std[GMT_IN])) == GMT_NOTSET) {
+			gmt_M_str_free (input);
 			return_null (API, API->error);	/* Failure to register std??? */
+		}
 		reg_here = true;
 	}
 	else {	/* Case 3: input == NULL && geometry == 0, so use all previously registered sources (unless already used). */
