@@ -576,7 +576,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 
 	/* Load in the Euler stage poles */
 
-	n_stages = spotter_init (GMT, Ctrl->E.file, &p, true, false, Ctrl->E.mode, &Ctrl->N.t_upper);
+	n_stages = spotter_init (GMT, Ctrl->E.file, &p, 1, false, Ctrl->E.mode, &Ctrl->N.t_upper);
 
 	/* Assign grid-region variables in radians to avoid conversions inside convolution loop */
 

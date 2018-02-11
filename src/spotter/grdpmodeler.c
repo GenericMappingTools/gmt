@@ -331,7 +331,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		spotter_setrot (GMT, &(p[0]));
 	}
 	else	/* Got a file or Gplates plate pair */
-		n_stages = spotter_init (GMT, Ctrl->E.rot.file, &p, false, false, Ctrl->E.rot.invert, &Ctrl->N.t_upper);
+		n_stages = spotter_init (GMT, Ctrl->E.rot.file, &p, 0, false, Ctrl->E.rot.invert, &Ctrl->N.t_upper);
 	for (stage = 0; stage < n_stages; stage++) {
 		if (p[stage].omega < 0.0) {	/* Ensure all stages have positive rotation angles */
 			p[stage].omega = -p[stage].omega;

@@ -80,6 +80,12 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>Vbdefghios"
 
+#define SPOTTER_TOWARDS_PRESENT 0
+#define SPOTTER_TOWARDS_PAST	1
+
+#define SPOTTER_TRAILLINE	0
+#define SPOTTER_FLOWLINE 	1
+
 struct BACKTRACKER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct A {	/* -A[young/old] */
@@ -101,7 +107,7 @@ struct BACKTRACKER_CTRL {	/* All control options for this program (except common
 	} F;
 	struct L {	/* -L */
 		bool active;
-		bool mode;		/* false = hotspot tracks, true = flowlines */
+		unsigned int mode;	/* 0 = hotspot tracks, 1 = flowlines */
 		bool stage_id;	/* 1 returns stage id instead of ages */
 		double d_km;	/* Resampling spacing */
 	} L;
@@ -181,7 +187,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Reduce opening angles for stage rotations by <factor> [0.5].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Typically used to get half-rates needed for flowlines.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Extend earliest stage pole back to <upper_age> [no extension].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Assigned a fixed age to all input points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Assign <t_fix> age to all input points [Use 3rd column ages].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Add -L<smt_no> to segment header and 4th output column (requires -L).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set the current age in Ma [0].\n");
 	GMT_Option (API, "V");
@@ -246,13 +252,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 			case 'D':	/* Specify in which direction we should project */
 				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
-					case 'B':	/* Go FROM hotspot TO seamount */
+					case 'B':	/* Go from locations formed in the past towards present zero time */
 					case 'b':
-						Ctrl->D.mode = false;
+						Ctrl->D.mode = SPOTTER_TOWARDS_PRESENT;
 						break;
-					case 'F':	/* Go FROM seamount TO hotspot */
+					case 'F':	/* Go from locations with zero age towards the past locations */
 					case 'f':
-						Ctrl->D.mode = true;
+						Ctrl->D.mode = SPOTTER_TOWARDS_PAST;
 						break;
 					default:
 						n_errors++;
@@ -282,12 +288,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 					case 'F':	/* Calculate flowlines */
 						Ctrl->L.stage_id = true;
 					case 'f':
-						Ctrl->L.mode = true;
+						Ctrl->L.mode = SPOTTER_FLOWLINE;
 						break;
 					case 'B':	/* Calculate hotspot tracks */
 						Ctrl->L.stage_id = true;
 					case 'b':
-						Ctrl->L.mode = false;
+						Ctrl->L.mode = SPOTTER_TRAILLINE;
 						break;
 					default:
 						n_errors++;
@@ -345,6 +351,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 3 + ((Ctrl->A.mode == 2) ? 2 : 0);
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->L.active, "Syntax error: -A requires -L.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->M.active, "Syntax error: -M cannot be used with -F.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->L.active && Ctrl->D.mode == SPOTTER_TOWARDS_PRESENT && Ctrl->L.mode == SPOTTER_TRAILLINE,
+		"Syntax error: -Lb -Db with -F not possible.  Backtrack end point first with -Db, then draw -Lb -Df from that point forward instead.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -396,6 +405,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 	double *c = NULL;		/* Array of track chunks returned by libeuler routines */
 	double lon, lat;		/* Seamounts location in decimal degrees */
 	double age, t, t_end;		/* Age of seamount, in Ma */
+	double hlon, hlat;		/* Location of drifting hotspot at a given time */
 	double t_low = 0.0, t_high = 0.0;
 	double *in = NULL, out[10];	/* i/o arrays used by GMT */
 	double R[3][3];			/* Rotation matrix */
@@ -436,6 +446,8 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 		gmt_make_rot_matrix (GMT, Ctrl->E.rot.lon, Ctrl->E.rot.lat, Ctrl->E.rot.w, R);
 	}
 	else {	/* Load in the stage poles */
+		char *emode[2] = {"trail", "flow"};
+		char *fmode[2] = {"back", "for"};
 		if (Ctrl->M.active) {	/* Must convert to stage poles and adjust opening angles */
 			char tmpfile[GMT_LEN32] = {""}, cmd[GMT_LEN128] = {""};
 			sprintf (tmpfile, "gmt_half_rots.%d", (int)getpid());
@@ -449,17 +461,19 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 		}
 		else
 			n_stages = spotter_init (GMT, Ctrl->E.rot.file, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.rot.invert, &Ctrl->N.t_upper);
+			
 		spotter_way = ((Ctrl->L.mode + Ctrl->D.mode) == 1) ? SPOTTER_FWD : SPOTTER_BACK;
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Loaded rotations in order for %slines; calling spotter_track with direction %swards\n", emode[mode], fmode[(spotter_way+1)/2]);
 
 		if (fabs (Ctrl->L.d_km) > GMT_CONV4_LIMIT) {		/* User wants to interpolate tracks rather than project individual points */
 			make_path = true;
 			gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-			(Ctrl->L.mode) ? sprintf (type, "Flowline") : sprintf (type, "Hotspot track");
-			(Ctrl->D.mode) ? sprintf (dir, "from") : sprintf (dir, "to");
+			(Ctrl->L.mode == SPOTTER_FLOWLINE) ? sprintf (type, "Flowline") : sprintf (type, "Hotspot track");
+			(Ctrl->D.mode == SPOTTER_TOWARDS_PAST) ? sprintf (dir, "from") : sprintf (dir, "to");
 		}
 	}
 
-	if (Ctrl->F.active) {	/* Get hotspot motion file */
+	if (Ctrl->F.active) {	/* Get and use hotspot motion file */
 		gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((F = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
@@ -467,6 +481,10 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 		if (F->n_columns < 3) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 3 are needed\n", Ctrl->F.file, (int)F->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
+		}
+		if (F->table[0]->segment[0]->data[GMT_Z][0] > GMT_CONV4_LIMIT) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s does not start at the present\n", Ctrl->F.file);
+			Return (GMT_RUNTIME_ERROR);
 		}
 		gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		H = F->table[0]->segment[0];	/* Only one table with one segment for histories */
@@ -532,8 +550,9 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 
 		/* Data record to process */
 		in = In->data;	/* Only need to process numerical part here */
+		in[GMT_Y] = gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric latitude */
 
-		if (Ctrl->E.rot.single) {	/* Simple reconstruction, then exit */
+		if (Ctrl->E.rot.single) {	/* Simple reconstruction, then return to top of read loop */
 			if (E_first) {
 				if ((error = GMT_Set_Columns (API, GMT_OUT, n_fields, (In->text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)) != GMT_NOERROR) {
 					Return (error);
@@ -541,17 +560,16 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 				E_first = false;
 			}
 			Out->text = In->text;
-			in[GMT_Y] = gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			gmt_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], x, true);		/* Get x-vector */
 			gmt_matrix_vect_mult (GMT, 3U, R, x, y);			/* Rotate the x-vector */
 			gmt_cart_to_geo (GMT, &out[GMT_Y], &out[GMT_X], y, true);	/* Recover lon lat representation; true to get degrees */
 			out[GMT_Y] = gmt_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
-			if (n_fields > 2) gmt_M_memcpy (&out[GMT_Z], &in[GMT_Z], n_fields - 2, double);
+			if (n_fields > 2) gmt_M_memcpy (&out[GMT_Z], &in[GMT_Z], n_fields - 2, double);	/* Append any other items */
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			continue;
+			continue;	/* Go back for next point */
 		}
 
-		if (Ctrl->Q.active) in[GMT_Z] = Ctrl->Q.t_fix;
+		if (Ctrl->Q.active) in[GMT_Z] = Ctrl->Q.t_fix;	/* Override point age with a fixed age */
 		if (in[GMT_Z] < 0.0) {	/* Negative ages are flags for points to be skipped */
 			n_skipped++;
 			continue;
@@ -559,16 +577,16 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 
 		if (Ctrl->A.mode) {	/* Consider just a time interval */
 			if (Ctrl->A.mode == 1) {	/* Get limits from -A */
-				t_low = Ctrl->A.t_low;
+				t_low  = Ctrl->A.t_low;
 				t_high = Ctrl->A.t_high;
 			}
-			else if (Ctrl->A.mode == 2) {	/* Get limits from the input file */
-				t_low = in[3];
+			else if (Ctrl->A.mode == 2) {	/* Get limits from the input file cols 4 and 5 */
+				t_low  = in[3];
 				t_high = in[4];
 			}
 			age = t_high;	/* No point working more than necessary */
 		}
-		else
+		else	/* Use the age as given (but see -Q) */
 			age = in[GMT_Z];
 
 		if (age > Ctrl->N.t_upper) {	/* Points older than oldest stage cannot be used */
@@ -577,17 +595,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 			continue;
 		}
 
-		if (Ctrl->F.active) {	/* Must account for hotspot drift, use interpolation for given age */
-			gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &age, &lon, GMT->current.setting.interpolant);
-			gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], H->n_rows, 1, &age, &lat, GMT->current.setting.interpolant);
-		}
-		else {	/* Use input location */
-			in[GMT_Y] = gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
-			lon = in[GMT_X];
-			lat = in[GMT_Y];
-		}
-
-		if (make_path) {	/* Asked for paths, now write out several multiple segment tracks */
+		if (make_path) {	/* Asked for flowline or backtrack paths, must write out several multiple segment tracks */
 			if (Ctrl->S.active) {
 				out[3] = (double)n_points;	/* Put the seamount id number in 4th column and use -L in header */
 				sprintf (GMT->current.io.segment_header, "%s %s %g %g -L%" PRIu64, type, dir, in[GMT_X], in[GMT_Y], n_points);
@@ -596,66 +604,107 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 				sprintf (GMT->current.io.segment_header, "%s %s %g %g", type, dir, in[GMT_X], in[GMT_Y]);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 
-			if (Ctrl->F.active) {	/* Must generate intermediate points in time, then rotatate each adjusted location */
+			if (Ctrl->F.active && Ctrl->L.mode == SPOTTER_TRAILLINE && Ctrl->D.mode == SPOTTER_TOWARDS_PAST) {	/* Must deal with drift before or after rotations */
+				/* Take the drift curve and obtain dlon,dlat for a given time, then apply rotation of that point for the given time.  This combines
+				 * both the drift and the rotation and is used to PREDICT positions along trails based on hotspot location */
 				t = (Ctrl->A.mode) ? t_low : 0.0;
 				t_end = (Ctrl->A.mode) ? t_high : age;
+				
 				while (t <= t_end) {
-					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &t, &lon, GMT->current.setting.interpolant);
-					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], H->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
+					/* Determine location along the drift curve for this time */
+					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &t, &hlon, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], H->n_rows, 1, &t, &hlat, GMT->current.setting.interpolant);
+					lon = in[GMT_X];	lat = in[GMT_Y];
+					if (Ctrl->D.mode == SPOTTER_TOWARDS_PAST) {	/* Add the drift amount to our input point to simulate where drift would have placed this point */
+						lon += (hlon - H->data[GMT_X][0]);
+						lat += (hlat - H->data[GMT_Y][0]);
+					}
 					lon *= D2R;	lat *= D2R;
 					if (spotter_track (GMT, spotter_way, &lon, &lat, &t, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
 					out[GMT_X] = lon * R2D;
-					out[GMT_Y] = gmt_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+					out[GMT_Y] = lat * R2D;
+					if (Ctrl->F.active && Ctrl->D.mode == SPOTTER_TOWARDS_PRESENT && Ctrl->L.mode == SPOTTER_TRAILLINE) {	/* Must account for hotspot drift, use interpolation for given age */
+						out[GMT_X] -= (hlon - H->data[GMT_X][0]);
+						out[GMT_Y] -= (hlat - H->data[GMT_Y][0]);
+					}
+					out[GMT_Y] = gmt_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					out[GMT_Z] = t;
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 					t += Ctrl->L.d_km;	/* dt, actually */
 				}
 				t -= Ctrl->L.d_km;	/* Last time used in the loop */
 				if (!(doubleAlmostEqualZero (t_end, t))) {	/* One more point since t_end was not a multiple of d_km from t_start */
-					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &t_end, &lon, GMT->current.setting.interpolant);
-					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], H->n_rows, 1, &t_end, &lat, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &t_end, &hlon, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], H->n_rows, 1, &t_end, &hlat, GMT->current.setting.interpolant);
+					lon = in[GMT_X];	lat = in[GMT_Y];
+					if (Ctrl->D.mode == SPOTTER_TOWARDS_PAST) {	/* Add the drift amount to our input point to simulate where drift would have placed this point */
+						lon += (hlon - H->data[GMT_X][0]);
+						lat += (hlat - H->data[GMT_Y][0]);
+					}
 					lon *= D2R;	lat *= D2R;
 					if (spotter_track (GMT, spotter_way, &lon, &lat, &t_end, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
 					out[GMT_X] = lon * R2D;
-					out[GMT_Y] = gmt_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+					out[GMT_Y] = lat * R2D;	
+					if (Ctrl->F.active && Ctrl->D.mode == SPOTTER_TOWARDS_PRESENT && Ctrl->L.mode == SPOTTER_TRAILLINE) {	/* Must account for hotspot drift, use interpolation for given age */
+						out[GMT_X] -= (hlon - H->data[GMT_X][0]);
+						out[GMT_Y] -= (hlat - H->data[GMT_Y][0]);
+					}
+					out[GMT_Y] = gmt_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					out[GMT_Z] = t_end;
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 			}
-			else {
-				lon *= D2R;	lat *= D2R;
+			else {	/* Either no drift or we are asking for flowlines */
+				lon = in[GMT_X];	lat = in[GMT_Y];
+				lon *= D2R;		lat *= D2R;
 				if (!Ctrl->W.active) {
 					if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
 				}
-
 				n_track = lrint (c[0]);
 				for (j = 0, i = 1; j < n_track; j++, i += 3) {
 					out[GMT_Z] = c[i+2];
 					if (Ctrl->A.mode && (out[GMT_Z] < t_low || out[GMT_Z] > t_high)) continue;
 					out[GMT_X] = c[i] * R2D;
-					out[GMT_Y] = gmt_lat_swap (GMT, c[i+1] * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+					out[GMT_Y] = c[i+1] * R2D;
+					if (Ctrl->F.active && Ctrl->D.mode == SPOTTER_TOWARDS_PRESENT && Ctrl->L.mode == SPOTTER_TRAILLINE) {	/* Must account for hotspot drift, use interpolation for given age */
+						double t_use = H->data[GMT_Z][H->n_rows-1] - out[GMT_Z];
+						gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &t_use, &hlon, GMT->current.setting.interpolant);
+						gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], H->n_rows, 1, &t_use, &hlat, GMT->current.setting.interpolant);
+						out[GMT_X] -= (hlon - H->data[GMT_X][0]);
+						out[GMT_Y] -= (hlat - H->data[GMT_Y][0]);
+					}
+					out[GMT_Y] = gmt_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				}
 			}
 			gmt_M_free (GMT, c);
 		}
-		else {	/* Just return the projected locations */
+		else {	/* Just return the projected final locations */
+			if (Ctrl->F.active) {	/* Must account for hotspot drift, use interpolation at given age */
+				gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_X], H->n_rows, 1, &age, &hlon, GMT->current.setting.interpolant);
+				gmt_intpol (GMT, H->data[GMT_Z], H->data[GMT_Y], H->n_rows, 1, &age, &hlat, GMT->current.setting.interpolant);
+			}
+			lon = in[GMT_X];	lat = in[GMT_Y];
+			if (Ctrl->F.active && Ctrl->D.mode == SPOTTER_TOWARDS_PAST && Ctrl->L.mode == SPOTTER_TRAILLINE) {	/* Must account for hotspot drift */
+				lon += (hlon - H->data[GMT_X][0]);
+				lat += (hlat - H->data[GMT_Y][0]);
+			}
 			if (Ctrl->W.active) {	/* Asked for confidence ellipses on reconstructed points */
 				if (spotter_conf_ellipse (GMT, lon, lat, age, p, n_stages, Ctrl->W.mode, Ctrl->D.mode, out)) {
 					GMT_Report (API, GMT_MSG_VERBOSE, "Confidence ellipses only for the age of rotations.  Point with age %g skipped\n", age);
 					continue;
 				}
 			}
-			else {
+			else {	/* Reconstruct the point */
 				lon *= D2R;	lat *= D2R;
 				if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
@@ -663,7 +712,11 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 				}
 				out[GMT_X] = lon * R2D;
 				out[GMT_Y] = lat * R2D;
-				for (col = 2; col < n_expected_fields; col++) out[col] = in[col];
+				if (Ctrl->F.active && Ctrl->D.mode == SPOTTER_TOWARDS_PRESENT && Ctrl->L.mode == SPOTTER_TRAILLINE) {	/* Must account for hotspot drift, use interpolation for given age */
+					out[GMT_X] -= (hlon - H->data[GMT_X][0]);
+					out[GMT_Y] -= (hlat - H->data[GMT_Y][0]);
+				}
+				for (col = GMT_Z; col < n_expected_fields; col++) out[col] = in[col];
 			}
 			Out->text = In->text;
 			out[GMT_Y] = gmt_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */

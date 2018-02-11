@@ -25,5 +25,5 @@ gmt backtracker suiko.txt -Db -Lf25 -E@WK97.txt | gmt psxy -R -JM -O -K -W1p,. >
 echo "170 44 64.7" > suiko.txt
 # Task 1.4:
 gmt backtracker suiko.txt -Db -E@WK97.txt | gmt psxy -R -JM -O -K -St0.1i -Gyellow -W0.5p >> $ps
-gmt psxy -R -JM -O -ST0.1 -Gcyan -W0.5p suiko.txt >> $ps
+gmt psxy -R -JM -O -ST0.1i -Gcyan -W0.5p suiko.txt >> $ps
 

@@ -94,7 +94,7 @@ EXTERN_MSC unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *
 EXTERN_MSC int spotter_stage (struct GMT_CTRL *GMT, double t, struct EULER p[], unsigned int ns);
 EXTERN_MSC void spotter_rot_usage (struct GMTAPI_CTRL *API, char option);
 EXTERN_MSC bool spotter_GPlates_pair (char *file);
-EXTERN_MSC unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, bool flowline, bool total_out, bool invert, double *t_max);
+EXTERN_MSC unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, unsigned int flowline, bool total_out, bool invert, double *t_max);
 EXTERN_MSC int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, struct HOTSPOT **p);
 EXTERN_MSC unsigned int spotter_backtrack  (struct GMT_CTRL *GMT, double xp[], double yp[], double tp[], unsigned int np, struct EULER p[], unsigned int ns, double d_km, double t_zero, unsigned int do_time, double wesn[], double **c);
 EXTERN_MSC unsigned int spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[], double tp[], unsigned int np, struct EULER p[], unsigned int ns, double d_km, double t_zero, unsigned int do_time, double wesn[], double **c);

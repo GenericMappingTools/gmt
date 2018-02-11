@@ -406,7 +406,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 				if (online_stage) spotter_stages_to_total (GMT, a, n_a, true, true);
 			}
 			else
-				n_a = spotter_init (GMT, opt->arg, &a, false, true, false, &zero);	/* Return total reconstruction rotations */
+				n_a = spotter_init (GMT, opt->arg, &a, 0, true, false, &zero);	/* Return total reconstruction rotations */
 			zero = 0.0;
 			if (last_sign == -1) {	/* Leading - sign, simply reverse the rotation angles */
 				for (stage = 0; stage < n_a; stage++) {
@@ -428,7 +428,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 				if (online_stage) spotter_stages_to_total (GMT, b, n_b, true, true);
 			}
 			else
-				n_b = spotter_init (GMT, opt->arg, &b, false, true, false, &zero);	/* Return total reconstruction rotations */
+				n_b = spotter_init (GMT, opt->arg, &b, 0, true, false, &zero);	/* Return total reconstruction rotations */
 			zero = 0.0;
 			spotter_add_rotations (GMT, a, n_a, b, last_sign * n_b, &p, &n_p);		/* Add the two total reconstruction rotations sets, returns total reconstruction rotations in p */
 			gmt_M_free (GMT, a);

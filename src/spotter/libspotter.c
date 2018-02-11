@@ -398,10 +398,10 @@ void spotter_setrot (struct GMT_CTRL *GMT, struct EULER *e) {
 	e->lat_r = e->lat * D2R;
 }
 
-unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, bool flowline, bool total_out, bool invert, double *t_max) {
+unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, unsigned int flowline, bool total_out, bool invert, double *t_max) {
 	/* file;	Name of file with backward stage poles, always GEOCENTRIC */
 	/* p;		Pointer to stage pole array */
-	/* flowline;	true if flowlines rather than hotspot-tracks are needed */
+	/* flowline;	1 if flowlines rather than hotspot-tracks are needed */
 	/* total_out;	true if we want to return finite (total construction poles) [alternative is stage poles] */
 	/* invert;	true if we want to invert all the rotations */
 	/* t_max;	Extend earliest stage pole back to this age */
