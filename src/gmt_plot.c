@@ -3355,7 +3355,7 @@ GMT_LOCAL uint64_t plot_small_circle_arc (struct GMT_CTRL *GMT, double *A, doubl
 	uint64_t k, n;
 	double X[3], R[3][3], R0[3][3], w, *xx = NULL, *yy = NULL;
 
-	if (gmt_M_is_zero (step)) step = GMT->current.map.path_step;	/* Use default map-step if given as 0 */
+	if (step == 0 || gmt_M_is_zero (step)) step = GMT->current.map.path_step;	/* Use default map-step if given as 0 */
 	n = lrint (ceil (fabs (rot) / step)) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
 	step = D2R * rot / (n - 1);	/* Adjust step for exact fit, convert to radians */
 	gmt_M_malloc2 (GMT, xx, yy, n, NULL, double);	/* Allocate space for arrays */
