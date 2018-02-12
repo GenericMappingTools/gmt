@@ -463,10 +463,6 @@ GMT_LOCAL unsigned int gmtio_ogr_decode_aspatial_types (struct GMT_CTRL *GMT, ch
 			continue;
 		}
 		S->type[col] = t;
-		if (S->type[col] == GMT_TEXT)
-			S->rec_type |= GMT_READ_TEXT;
-		else
-			S->rec_type |= GMT_READ_DATA;
 		col++;
 	}
 	if (col < n_alloc) S->type = gmt_M_memory (GMT, S->type, col, enum GMT_enum_type);
@@ -748,6 +744,21 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 		while (*p && (quote || *p != '@')) if (*p++ == '\"') quote = !quote;	/* Wind to next @ except skip if inside double quotes */
 	}
 	return (true);
+}
+
+/*! . */
+GMT_LOCAL unsigned int gmtio_reconsider_rectype (struct GMT_CTRL *GMT) {
+	/* If any text aspatial field is selected the record type must change to mixed. */
+
+	unsigned int k, val = 0;
+	if (GMT->current.io.ogr != GMT_OGR_TRUE) return (0);	/* No point checking further since file is not GMT/OGR */
+	
+	for (k = 0; k < GMT->common.a.n_aspatial; k++) {	/* For each item specified in -a */
+		if (GMT->common.a.col[k] < 0) continue;		/* Not meant for data columns but for segment headers */
+		if (GMT->current.io.OGR->type[GMT->common.a.ogr[k]] == GMT_TEXT)
+			val |= GMT_READ_TEXT;	/* Since it may not have been set */
+	}
+	return (val);
 }
 
 /*! . */
@@ -3171,8 +3182,8 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	else	/* No trailing text found, reset tpos */
 		*tpos = 0;
 	if (GMT->current.io.OGR) {	/* A few decision specific to OGR files */
-		if (GMT->current.io.OGR->rec_type) ret_val |= GMT->current.io.OGR->rec_type;	/* FConsider the nature of aspatial information */
-		gmtio_select_all_ogr_if_requested (GMT);
+		gmtio_select_all_ogr_if_requested (GMT);	/* Finalize choice of aspatial fields */
+		ret_val |= gmtio_reconsider_rectype (GMT);	/* Consider the nature of aspatial information */
 	}
 
 	/* Tell user how we interpreted their first record */
