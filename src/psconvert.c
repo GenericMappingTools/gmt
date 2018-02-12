@@ -1115,7 +1115,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	*/
 	char      cmd[1024] = {""}, buf[GMT_LEN128], t[16] = {""};
 	int       fd[2] = {0, 0}, fh, n, k, pix_w, pix_h;
-	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands;
+	uint64_t  dim[4], nXY, row, col, band, nCols, nRows, nBands;
 	unsigned char *tmp;
 	unsigned int nopad[4] = {0, 0, 0, 0};
 	struct GMT_IMAGE *I = NULL;
@@ -1901,7 +1901,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL,
 			            "The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
 			if (!Ctrl->T.eps && gmt_remove_file (GMT, tmp_file)) {	/* Remove the temporary EPS file */
-				fclose (fp);	fclose (fp2);
+				fclose (fp);	fclose (fp2);	fclose (fpo);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			continue;
