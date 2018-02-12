@@ -16,7 +16,7 @@ Synopsis
 **gmtflexure** |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
 [ |-A|\ [**l**\|\ **r**][/*args*] ]
 [ |-C|\ **p**\ *Poisson* ] [ |-C|\ **y**\ *Young* ]
-[ |-F|\ *force* ]
+[ |-F|\ *force* ] [ |-L| ]
 [ |-Q|\ *args*\ ] [ |-S| ] [ |-T|\ *wfile*\ ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *wd*]
@@ -86,6 +86,11 @@ Optional Arguments
 
 **-F**\ *force*]
     Set a constant horizontal in-plane force, in Pa m [0] 
+
+.. _-L:
+
+**-L**
+    Use a variable restoring force that depends on sign of the flexure [constant]. 
 
 .. _-Q:
 

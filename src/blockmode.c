@@ -713,7 +713,6 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		first_in_cell = first_in_new_cell;
 	}
 
-	error = 0;
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		error = API->error;
 	}

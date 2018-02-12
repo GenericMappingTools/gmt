@@ -84,6 +84,9 @@ struct GMTFLEXURE_CTRL {
 		bool active;
 		double force;
 	} F;
+	struct L {	/* Use variable restoring force [constant] */
+		bool active;
+	} L;
 	struct M {	/* -Mx|z  */
 		bool active[2];	/* True if km, else m */
 	} M;
@@ -94,7 +97,7 @@ struct GMTFLEXURE_CTRL {
 		double min, max, inc;
 		char *file;
 	} Q;
-	struct S {	/* Variable restoring force */
+	struct S {	/* Compute second derivatives (curvatures) */
 		bool active;
 	} S;
 	struct T {	/* Pre-existing deformation */
@@ -230,6 +233,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct 
 				Ctrl->F.active = true;
 				Ctrl->F.force = atof (opt->arg);
 				break;
+			case 'L':	/* Variable restoring force */
+				Ctrl->L.active = true;
+				break;
 			case 'M':	/* Length units */
 				both = false;	side = 0;
 				switch (opt->arg[0]) {
@@ -297,7 +303,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtflexure -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -Q<loadinfo> [-A[l|r]<bc>[/<args>]]\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t[-C[p|y]<value] [-F<force>] [-S] [-T<wpre>] [%s] [-W<w0>] [-Z<zm>]\n\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_e_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[-C[p|y]<value] [-F<force>] [-L] [-S] [-T<wpre>] [%s] [-W<w0>] [-Z<zm>]\n\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_e_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -319,14 +325,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Al2/w0 or -Ar2/w0 :   \"Clamped\", w at end = w0 [0], w' = 0\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Al3/m/f or -Ar3/m/f : \"Free\" condition, specify (m)oment and (f)orce at end [0/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default BCs are -Al0 -Ar0.  Use SI units for any optional arguments.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C use -Cy<Young> or -Cp<poisson> to change Young's modulus [%g] or Poisson's ratio [%g].\n", YOUNGS_MODULUS, POISSONS_RATIO);
-	GMT_Message (API, GMT_TIME_NONE, "\t-F specifies the uniform, horizontal stress in the plate [Pa m].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L uses variable restoring force k(x) that depends on w(x).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M sets units used, as follows:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Use -Cy<Young> or -Cp<poisson> to change Young's modulus [%g] or Poisson's ratio [%g].\n", YOUNGS_MODULUS, POISSONS_RATIO);
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Specifies the uniform, horizontal stress in the plate [Pa m].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Use variable restoring force k(x) that depends on w(x).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Sets units used, as follows:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Mx indicates all x-distances are in km [meters]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Mz indicates all z-deflections are in km [meters]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Also compute second derivatives (curvatures) on output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T to use file <wpre> with pre-existing deflections [none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T To use file <wpre> with pre-existing deflections [none].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify water depth in m; append k for km.  Must be positive.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Subaerial topography will be scaled by -D to account for density differences.\n");
@@ -1435,7 +1441,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculate flexure of pre-deformed surface\n");
 				error = flx1dw0 (GMT, deflection, w0, rigidity, load, (int)S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
-			else if (Ctrl->S.active) {
+			else if (Ctrl->L.active) {
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculate flexure with variable restoring force\n");
 				error = flx1dk (GMT, deflection, rigidity, load, (int)S->n_rows, x_inc, Ctrl->D.rhom, Ctrl->D.rhol, Ctrl->D.rhoi, Ctrl->D.rhow, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
