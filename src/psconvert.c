@@ -1416,7 +1416,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
 #endif
 
-	FILE *fp = NULL, *fpo = NULL, *fpb = NULL, *fp2 = NULL, *fpw = NULL;
+	FILE *fp = NULL, *fpo = NULL, *fpb = NULL, *fp2 = NULL, *fpw = NULL, *fpp = NULL;
 
 	struct GMT_OPTION *opt = NULL;
 	struct PS2RASTER_CTRL *Ctrl = NULL;
@@ -1451,10 +1451,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Test if GhostScript can be executed (version query) */
 	sprintf(cmd, "%s --version", Ctrl->G.file);
-	if ((fp = popen(cmd, "r")) != NULL) {
+	if ((fpp = popen(cmd, "r")) != NULL) {
 		int n;
-		n = fscanf(fp, "%d.%d", &gsVersion.major, &gsVersion.minor);
-		if (pclose(fp) == -1)
+		n = fscanf(fpp, "%d.%d", &gsVersion.major, &gsVersion.minor);
+		if (pclose(fpp) == -1)
 			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript version query.\n");
 		if (n != 2) {
 			/* command execution failed or cannot parse response */
@@ -1680,7 +1680,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			int dump = true;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Strip GMT time-stamp...\n");
 			sprintf (no_U_file, "%s/psconvert_%db.eps", Ctrl->D.dir, (int)getpid());
-			if (fp2) fclose (fp2);
+			if (fp2) {fclose (fp2);		fp2 = NULL;}
 			if ((fp2 = fopen (no_U_file, "w+")) == NULL) {
 				unsigned int kk;
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
