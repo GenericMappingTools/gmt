@@ -5213,6 +5213,10 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	gmtmath_init (call_operator, consumed_operands, produced_operands);
 	op = decode_gmt_argument (GMT, "EXCH", &value, &dimension, localhashnode);
+	if (op == GMTMATH_ARG_IS_BAD) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Bad input argument!\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
 	consumed_operands[op] = produced_operands[op] = 0;	/* Modify items since we simply swap pointers */
 
 	for (opt = list, error = false; !error && opt; opt = opt->next) {
