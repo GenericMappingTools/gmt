@@ -15052,7 +15052,7 @@ char *gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lo
 	return string;
 }
 
-uint64_t gmt_make_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
+uint64_t gmt_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
 	/* Just makes an equidistant array given wetted input parameters */
 	uint64_t k, n = lrint ((max - min) / inc) + 1;
 	double *val = gmt_M_memory (GMT, NULL, n, double);
@@ -15101,11 +15101,8 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	
 	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, txt_c[GMT_LEN32] = {""}, *c = NULL;
 	int ns = 0;
+	size_t len = 0;
 	
-	if (flags & GMT_ARRAY_DIST) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Geospatial distance increment not implemented\n", option);
-		return GMT_PARSE_ERROR;
-	}
 	if (argument == NULL || argument[0] == '\0') {	/* A nothingburger */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: No arguments given\n", option);
 		return GMT_PARSE_ERROR;
@@ -15143,10 +15140,10 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		c[0] = '\0';	/* But first we chop off the modifier */
 		T->count = true;
 	}
+	len = strlen (txt_c);	if (len) len--;	/* Now txt_c[len] holds a unit (or not) */
 		
 	/* 4. Check if we are working with absolute time.  This means there must be a T in both min and max arguments */
 	if (strchr (txt_a, 'T') && strchr (txt_b, 'T')) {	/* Gave absolute time limits */
-		size_t len = strlen (txt_c);
 		T->temporal = true;
 		if (!(flags & GMT_ARRAY_TIME)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Calendar time not allowed for this module\n", option);
@@ -15160,18 +15157,29 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		gmt_set_column (GMT, GMT_IN,  GMT_X, GMT_IS_ABSTIME);
 		gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_ABSTIME);
 		/* Now worry about an increment with time units */
-		T->unit = txt_c[len-1];
+		T->unit = txt_c[len];
 		if (strchr ("youdhms", T->unit)) {	/* Must set TIME_UNIT and update time system scalings */
 			T->vartime = (strchr ("yo", T->unit) != NULL);
 			if (GMT->current.setting.time_system.unit != T->unit) {	/* Must update time */
 				GMT->current.setting.time_system.unit = T->unit;
 				(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
 			}
-			txt_c[len-1] = '\0';	/* Chop off time unit since we are done with it */
+			txt_c[len] = '\0';	/* Chop off time unit since we are done with it */
 		}
 		else	/* Means the user relies on the setting of TIME_UNIT, but we must check if it is set to a variable increment */
 			T->vartime = (strchr ("yo", GMT->current.setting.time_system.unit) != NULL);
 	}
+	if (!T->temporal && strchr (GMT_LEN_UNITS, txt_c[len])) {
+		if (!(flags & GMT_ARRAY_DIST)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Geospatial distance unit not allowed for this module\n", option);
+			return GMT_PARSE_ERROR;
+		}
+		/* Gave geospatial distance increment, so initialize distance machinery */
+		T->distmode = gmt_get_distance (GMT, txt_c, &(T->inc), &(T->unit));
+		gmt_init_distaz (GMT, T->unit, T->distmode, GMT_MAP_DIST);
+		T->spatial = true;	
+	}
+	
 	/* 5. Get the increment (or count) */
 	gmt_scanf_float (GMT, txt_c, &(T->inc));
 	/* 6. If the min/max limits were given via argument then it is OK to parse */
@@ -15255,7 +15263,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 			default:	/* OK as is */
 				break;
 		}
-		T->n = gmt_make_array (GMT, T->min, T->max, inc, &(T->array));
+		T->n = gmt_make_equidistant_array (GMT, T->min, T->max, inc, &(T->array));
 	}
 	if (T->vartime && GMT->current.setting.time_system.unit != unit) {
 		uint64_t k;
@@ -15337,7 +15345,7 @@ unsigned int gmt_create_1D_array (struct GMT_CTRL *GMT, char option, char *strin
 			default:	/* OK as is */
 				break;
 		}
-		*n = gmt_make_array (GMT, *min, *max, *inc, array);
+		*n = gmt_make_equidistant_array (GMT, *min, *max, *inc, array);
 	}
 	if (is_time && GMT->current.setting.time_system.unit != unit) {
 		uint64_t k;

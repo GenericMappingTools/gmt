@@ -82,7 +82,8 @@ struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays
 	bool temporal;	/* true if array will be in absolute time */ 
 	bool vartime;	/* true if <unit> implies a variable calendar unit */ 
 	bool spatial;	/* true if <unit> implies a geospatial distance */ 
-	bool count;	/* true if we got number of items rather than increment */ 
+	bool count;	/* true if we got number of items rather than increment */
+	unsigned int distmode;	/* Type of geospatial calculation mode for distances */
 	uint64_t n;	/* Number of elements in the array when complete */
 	double min, max, inc;	/* Equidistant items */
 	double *array;	/* This will eventually hold the array */

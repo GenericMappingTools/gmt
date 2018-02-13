@@ -5127,7 +5127,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		Ctrl->T.min = rhs->min[0];
 		Ctrl->T.max = rhs->max[0];
 		Ctrl->T.inc = (rhs->max[0] - rhs->min[0]) / (rhs->n_records - 1);
-		Ctrl->T.n = gmt_make_array (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, &Ctrl->T.t);
+		Ctrl->T.n = gmt_make_equidistant_array (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, &Ctrl->T.t);
 	}
 	if (Ctrl->T.file) n_columns = Ctrl->N.ncol;
 
