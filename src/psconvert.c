@@ -1666,6 +1666,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (Ctrl->M[0].active || Ctrl->M[1].active) {	/* Must sandwich file in-between one or two layers */
 			if (wrap_the_sandwich (GMT, ps_file, Ctrl->M[0].file, Ctrl->M[1].file)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to wrap %s inside optional back- and fore-ground layers!\n", ps_file);
+				if (fp) fclose (fp);
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
