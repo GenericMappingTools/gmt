@@ -1366,8 +1366,8 @@ void spotter_get_rotation (struct GMT_CTRL *GMT, struct EULER *p, unsigned int n
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "spotter_get_rotation: Internal error - cannot copy two rotations!");
 		return;
 	}
-	gmt_M_memcpy (e[0], &p[i], 1, struct EULER);	/* Duplicate the two finite rotations bracketing the desired time */
-	gmt_M_memcpy (e[1], &p[i], 1, struct EULER);
+	gmt_M_memcpy (&e[0], &p[i], 1, struct EULER);	/* Duplicate the two finite rotations bracketing the desired time */
+	gmt_M_memcpy (&e[1], &p[i], 1, struct EULER);
 	spotter_total_to_stages (GMT, e, 2, true, true);	/* Convert total reconstruction poles to forward stage poles */
 	gmt_make_rot_matrix (GMT, e[1].lon, e[1].lat, e[1].omega * e[1].duration, R);	/* Get matrix R for main rotation */
 	omega = e[1].omega * (t - e[0].t_stop);						/* Compute rotation angle for the partial rotation */

@@ -832,7 +832,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		if (Ctrl->G.file[len] == '.') {	/* Make a filename template from the CVA filename using the period as delimiter */
 			strncpy (format, Ctrl->G.file, len);	/* Should keep the prefix from a file called prefix.ext */
 			strcat (format, "_%%d");		/* Make filenames like prefix_#.ext */
-			stnrcat (format, &Ctrl->G.file[len], PATH_MAX-1);	/* Should add the extension from said file */
+			strncat (format, &Ctrl->G.file[len], PATH_MAX-1);	/* Should add the extension from said file */
 		}
 		CVA_inc = gmt_M_memory (GMT, NULL, G->header->size, gmt_grdfloat);
 		nz = urint ((Ctrl->Z.max - Ctrl->Z.min) / Ctrl->Z.inc);
