@@ -1114,7 +1114,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	      2. If it holds a file name plus the settings for that driver, than we save the result in a file.
 	*/
 	char      cmd[1024] = {""}, buf[GMT_LEN128], t[16] = {""};
-	int       fd[2] = {0, 0}, fh, n, k, pix_w, pix_h;
+	int       fd[2] = {0, 0}, fh, n, k, pix_w, pix_h, junk_n;
 	uint64_t  dim[4], nXY, row, col, band, nCols, nRows, nBands;
 	unsigned char *tmp;
 	unsigned int nopad[4] = {0, 0, 0, 0};
@@ -1244,11 +1244,11 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 		}
 	}
 	else if (!strncmp (I->header->mem_layout, "TRP", 3)) {	/* Very cheap this one since is gs native order. */
-		read (fd[0], I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
+		junk_n = read (fd[0], I->data, (unsigned int)(nCols * nRows * nBands));		/* ... but may overflow */
 	}
 	else {
 		for (row = 0; row < nRows; row++) {
-			read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
+			junk_n = read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
 			for (col = n = 0; col < nCols; col++)
 				for (band = 0; band < nBands; band++)
 					I->data[row + col*nRows + band*nXY] = tmp[n++];	/* Band interleaved, the best for MEX. */
