@@ -1367,13 +1367,13 @@ void spotter_get_rotation (struct GMT_CTRL *GMT, struct EULER *p, unsigned int n
 		return;
 	}
 	gmt_M_memcpy (&e[0], &p[i], 1, struct EULER);	/* Duplicate the two finite rotations bracketing the desired time */
-	gmt_M_memcpy (&e[1], &p[i], 1, struct EULER);
+	gmt_M_memcpy (&e[1], &p[i+1], 1, struct EULER);
 	spotter_total_to_stages (GMT, e, 2, true, true);	/* Convert total reconstruction poles to forward stage poles */
 	gmt_make_rot_matrix (GMT, e[1].lon, e[1].lat, e[1].omega * e[1].duration, R);	/* Get matrix R for main rotation */
 	omega = e[1].omega * (t - e[0].t_stop);						/* Compute rotation angle for the partial rotation */
 	gmt_make_rot_matrix (GMT, e[0].lon, e[0].lat, omega, dR);			/* Get matrix Dr for the partial rotation */
 	spotter_matrix_mult (GMT, R, dR, X);						/* Calculate the combined rotation ,X */
-	spotter_matrix_to_pole (GMT, X, lon, lat, w);						/* Convert to rotation parameters lon, lat, w */
+	spotter_matrix_to_pole (GMT, X, lon, lat, w);					/* Convert to rotation parameters lon, lat, w */
 }
 
 bool spotter_conf_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double t, struct EULER *p, unsigned int np, char flag, bool forward, double out[]) {
