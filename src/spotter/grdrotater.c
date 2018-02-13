@@ -412,7 +412,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	int n_stages;
 	bool not_global, global = false;
 	unsigned int col, row, col_o, row_o, start_row, stop_row, start_col, stop_col;
-	char gfile[GMT_BUFSIZ] = {""};
+	char gfile[PATH_MAX] = {""};
 
 	uint64_t ij, ij_rot, seg, rec, t;
 
@@ -573,7 +573,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		}
 		gmt_set_tbl_minmax (GMT, GMT_IS_POLY, polr);	/* Update table domain */
 		if (!Ctrl->N.active && not_global) {
-			char dfile[GMT_BUFSIZ] = {""}, *file = NULL;
+			char dfile[PATH_MAX] = {""}, *file = NULL;
 			if (Ctrl->T.n_times > 1) {
 				sprintf (dfile, Ctrl->D.file, Ctrl->T.value[t]);
 				file = dfile;
@@ -581,7 +581,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			else
 				file = Ctrl->D.file;
 			if (!Ctrl->E.rot.single) {	/* Add a segment header with the age via -Z */
-				char txt[BUFSIZ] = {""};
+				char txt[PATH_MAX] = {""};
 				sprintf (txt, "-Z%g", Ctrl->T.value[t]);
 				for (seg = 0; seg < polr->n_segments; seg++) {
 					Sr = polr->segment[seg];	/* Shorthand for current rotated segment */
@@ -705,7 +705,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		if (Ctrl->T.n_times > 1)	/* Use template to create name */
 			sprintf (gfile, Ctrl->G.file, Ctrl->T.value[t]);
 		else
-			strcpy (gfile, Ctrl->G.file);
+			strncpy (gfile, Ctrl->G.file, PATH_MAX-1);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, gfile, G_rot) != GMT_NOERROR) {
 			Return (API->error);
 		}
