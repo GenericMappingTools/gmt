@@ -702,7 +702,7 @@ unsigned int spotter_backtrack (struct GMT_CTRL *GMT, double xp[], double yp[], 
 
 	if (path) {
 		track = gmt_M_memory (GMT, NULL, n_alloc, double);
-		i_km = EQ_RAD / d_km;
+		if (d_km != 0.0) i_km = EQ_RAD / d_km;
 	}
 
 	if (p[ns-1].t_stop > t_zero) t_zero = p[ns-1].t_stop;	/* In case we don't go all the way to zero */
@@ -883,7 +883,7 @@ unsigned int spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[],
 
 	if (path) {
 		track = gmt_M_memory (GMT, NULL, n_alloc, double);
-		i_km = EQ_RAD / d_km;
+		if (d_km != 0.0) i_km = EQ_RAD / d_km;
 	}
 
 	if (p[ns-1].t_stop > t_zero) t_zero = p[ns-1].t_stop;	/* In case we don't go all the way to zero */

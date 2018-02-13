@@ -663,11 +663,9 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 			else {	/* Either no drift or we are asking for flowlines */
 				lon = in[GMT_X];	lat = in[GMT_Y];
 				lon *= D2R;		lat *= D2R;
-				if (!Ctrl->W.active) {
-					if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
-						Return (GMT_RUNTIME_ERROR);
-					}
+				if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
+					Return (GMT_RUNTIME_ERROR);
 				}
 				n_track = lrint (c[0]);
 				for (j = 0, i = 1; j < n_track; j++, i += 3) {
