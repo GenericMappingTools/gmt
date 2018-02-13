@@ -15062,6 +15062,212 @@ uint64_t gmt_make_array (struct GMT_CTRL *GMT, double min, double max, double in
 	return (n);
 }
 
+unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument, struct GMT_ARRAY *T, unsigned int flags) {
+	/* Many GMT modules need to set up an equidistant set of values to
+	 * serve as output times (or distances), binning boundaries, or similar.
+	 * We expect such 1-D arrays to be specified on the command line
+	 * via a syntax such as:]
+	 *
+	 *	-T<argument>
+	 *
+	 * where <argument> is one of these:
+	 *	[<min/max/]<inc>[<unit>|+n]
+	 *	<file>
+	 *
+	 * Parsing:
+	 *	1) If <argument> is a file found in our search path then
+	 *	   we assume it contains one column with the final values.
+	 *	   These are then read in via GMT_Read_Data, which means
+	 *	   these values could be passed via VirtualFiles.
+	 *	2) If +n is given it means that <inc> is an integer that
+	 *	   says how many points we want equidistantly distributed
+	 *	   between <min> and <max>.
+	 *	3) If <min>/<max> are missing then it means these will
+	 *	   be derived from the data extent.  Unless +n is also
+	 *	   given then the data extremes will be rounded to the
+	 *	   first and last multiple of <inc> that is inside the
+	 *	   moin-max data range.
+	 *	4) If <unit> is given and is any of the temporal units
+	 *	   o|y then we will compute a non-equidistant set of calendar
+	 *	   time values.
+	 *	5) If <unit> is given and it is any of the spatial length units
+	 *	   d|m|s|e|f|k|M|n|u, then we will compute distances along a
+	 *	   track given by the first two columns in lon,lat and the
+	 *	   resulting distances are our time-series values. [NOT IMPLEMENTED YET]
+	 *
+	 * Note:   The effects in 4) and 5) are only allowed if the corresponding
+	 *	   flags are passed to the parser.
+	 */
+	
+	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, txt_c[GMT_LEN32] = {""}, *c = NULL;
+	int ns = 0;
+	
+	if (flags & GMT_ARRAY_DIST) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Geospatial distance increment not implemented\n", option);
+		return GMT_PARSE_ERROR;
+	}
+	if (argument == NULL || argument[0] == '\0') {	/* A nothingburger */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: No arguments given\n", option);
+		return GMT_PARSE_ERROR;
+	}
+	gmt_M_str_free (T->file);		/* In case earlier parsing */
+	gmt_M_memset (T, 1, struct GMT_ARRAY);	/* Wipe clean the structure */
+	
+	/* 1a. Check if argument is a remote file */
+	if (gmt_M_file_is_remotedata (argument) || gmt_M_file_is_url (argument)) {	/* Remote file, must check */
+		char path[PATH_MAX] = {""};
+		unsigned int first = gmt_download_file_if_not_found (GMT, argument, GMT_CACHE_DIR);
+		if (gmt_getdatapath (GMT, &argument[first], path, R_OK) == NULL) {	/* Remote file was not found? */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot find/open file %s\n", &argument[first]);
+			return (GMT_PARSE_ERROR);
+		}
+		/* File successfully downloaded, just refer to it by actual name */
+		T->file = strdup (&argument[first]);
+		return (GMT_NOERROR);
+	}
+	
+	/* 1b. Check if argument is a local file */
+	if (!gmt_access (GMT, argument, F_OK)) {	/* File exists */
+		T->file = strdup (argument);
+		return (GMT_NOERROR);
+	}
+	
+	/* 2. Dealt with the file option, now parse [<min/max/]<inc>[<unit>|+n] */
+	ns = sscanf (argument, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+	if ((flags & GMT_ARRAY_RANGE) && ns == 1) {	/* Need to spell out all 3 items */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Must specify valid min/max/inc[<unit>|+n] option\n", option);
+		return GMT_PARSE_ERROR;
+	}
+	/* 3. Did we get increment or count? */
+	if ((c = strrchr (txt_c, '+')) && (c[1] == 'n' || c[1] == '\0')) {	/* Gave number of points instead; calculate inc later */
+		c[0] = '\0';	/* But first we chop off the modifier */
+		T->count = true;
+	}
+		
+	/* 4. Check if we are working with absolute time.  This means there must be a T in both min and max arguments */
+	if (strchr (txt_a, 'T') && strchr (txt_b, 'T')) {	/* Gave absolute time limits */
+		size_t len = strlen (txt_c);
+		T->temporal = true;
+		if (!(flags & GMT_ARRAY_TIME)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Calendar time not allowed for this module\n", option);
+			return GMT_PARSE_ERROR;
+		}
+		if (T->count) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Cannot use +n modifier with calendar time data\n", option);
+			return GMT_PARSE_ERROR;
+		}
+		/* Set input column type as time */
+		gmt_set_column (GMT, GMT_IN,  GMT_X, GMT_IS_ABSTIME);
+		gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_ABSTIME);
+		/* Now worry about an increment with time units */
+		T->unit = txt_c[len-1];
+		if (strchr ("youdhms", T->unit)) {	/* Must set TIME_UNIT and update time system scalings */
+			T->vartime = (strchr ("yo", T->unit) != NULL);
+			if (GMT->current.setting.time_system.unit != T->unit) {	/* Must update time */
+				GMT->current.setting.time_system.unit = T->unit;
+				(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
+			}
+			txt_c[len-1] = '\0';	/* Chop off time unit since we are done with it */
+		}
+		else	/* Means the user relies on the setting of TIME_UNIT, but we must check if it is set to a variable increment */
+			T->vartime = (strchr ("yo", GMT->current.setting.time_system.unit) != NULL);
+	}
+	/* 5. Get the increment (or count) */
+	gmt_scanf_float (GMT, txt_c, &(T->inc));
+	/* 6. If the min/max limits were given via argument then it is OK to parse */
+	if (ns == 3) {
+		if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt_a)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min value from %s\n", option, txt_a);
+			return GMT_PARSE_ERROR;
+		}
+		if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->max)), txt_b)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse max value from %s\n", option, txt_b);
+			return GMT_PARSE_ERROR;
+		}
+	}
+	return GMT_NOERROR;
+}
+
+unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARRAY *T, double *min, double *max) {
+	char unit = GMT->current.setting.time_system.unit;
+	double scale = GMT->current.setting.time_system.scale, inc = T->inc;
+
+	if (T->array) gmt_M_free (GMT, T->array);	/* Free if previously set */
+	
+	if (T->file) {	/* Got a file, read first column into the array; must be one segment only */
+		/* Temporarily change what data type col zero is */
+		struct GMT_DATASET *D = NULL;
+		unsigned int save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
+		unsigned int save_trailing = GMT->current.io.trailing_text[GMT_IN];
+		unsigned int save_max_cols_to_read = GMT->current.io.max_cols_to_read;
+		int error;
+		if (T->temporal) GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_ABSTIME;
+		gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading this file */
+		GMT->current.io.record_type[GMT_IN] = GMT_READ_NORMAL;
+		GMT->current.io.trailing_text[GMT_IN] = false;
+		if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) return (GMT_PARSE_ERROR);
+		if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, T->file, NULL)) == NULL) {
+			return (GMT_PARSE_ERROR);
+		}
+		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
+		GMT->current.io.trailing_text[GMT_IN] = save_trailing;
+		GMT->current.io.max_cols_to_read = save_max_cols_to_read;
+		gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
+		if (D->n_segments > 1) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: File %s has more than one segment\n", option, T->file);
+			GMT_Destroy_Data (GMT->parent, &D);
+			return GMT_PARSE_ERROR;
+		}
+		T->n = D->n_records;
+		T->array = gmt_M_memory (GMT, NULL, T->n, double);
+		gmt_M_memcpy (T->array, D->table[0]->segment[0]->data[GMT_X], T->n, double);
+		GMT_Destroy_Data (GMT->parent, &D);
+		return GMT_NOERROR;
+	}
+	
+	if (! (min == NULL && max == NULL)) {		/* Update min,max now */
+		T->min = *min;	T->max = *max;
+	}
+	if (T->count)	/* This means we gave a count instead of increment  */
+		inc = (T->max - T->min) / (T->inc - 1.0);
+	if (T->temporal && GMT->current.setting.time_system.unit != T->unit) {	/* Dealing with calendar time and must update time unit */
+		GMT->current.setting.time_system.unit = T->unit;
+		(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
+	}
+	if (T->vartime)	/* Must call special function that knows about variable months and years */
+		T->n = gmt_time_array (GMT, T->min, T->max, inc, GMT->current.setting.time_system.unit, false, &(T->array));
+	else {	/* Equidistant intervals are straightforward - make sure the min/man/inc values harmonize */
+		switch (gmt_minmaxinc_verify (GMT, T->min, T->max, inc, GMT_CONV4_LIMIT)) {
+			case 1:
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: (max - min) is not a whole multiple of inc\n", option);
+				return (GMT_PARSE_ERROR);
+				break;
+			case 2:
+				if (inc != 1.0) {	/* Allow for somebody explicitly saying -T0/0/1 */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: (max - min) is <= 0\n", option);
+					return (GMT_PARSE_ERROR);
+				}
+				break;
+			case 3:
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: inc is <= 0\n", option);
+				return (GMT_PARSE_ERROR);
+				break;
+			default:	/* OK as is */
+				break;
+		}
+		T->n = gmt_make_array (GMT, T->min, T->max, inc, &(T->array));
+	}
+	if (T->vartime && GMT->current.setting.time_system.unit != unit) {
+		uint64_t k;
+		/* Restore to original TIME_UNIT unit and update val array to have same units */
+		scale = GMT->current.setting.time_system.scale / scale;
+		GMT->current.setting.time_system.unit = unit;
+		(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
+		for (k = 0; k < T->n; k++) T->array[k] *= scale;
+	}
+	return (GMT_NOERROR);
+}
+
 unsigned int gmt_create_1D_array (struct GMT_CTRL *GMT, char option, char *string, double *min, double *max, double *inc, uint64_t *n, double **array) {
 	/* Presumably gave min/max/inc[+n] */
 	bool var_time = false, is_time = false;

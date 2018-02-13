@@ -120,6 +120,12 @@ enum GMT_enum_unit {
 	GMT_M,
 	GMT_PT};
 
+/*! Flags for 1-D array arg parsing */
+enum GMT_enum_array {
+	GMT_ARRAY_RANGE = 1,
+	GMT_ARRAY_TIME = 2,
+	GMT_ARRAY_DIST = 4};
+
 /*! Handling of swap/no swap in i/o */
 enum GMT_swap_direction {
 	k_swap_none = 0,

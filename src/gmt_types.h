@@ -76,6 +76,20 @@ struct GMT_OBSERVATION {
 	gmt_grdfloat weight;
 };
 
+/*! For information on 1-D array */
+
+struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays */
+	bool temporal;	/* true if array will be in absolute time */ 
+	bool vartime;	/* true if <unit> implies a variable calendar unit */ 
+	bool spatial;	/* true if <unit> implies a geospatial distance */ 
+	bool count;	/* true if we got number of items rather than increment */ 
+	uint64_t n;	/* Number of elements in the array when complete */
+	double min, max, inc;	/* Equidistant items */
+	double *array;	/* This will eventually hold the array */
+	char *file;	/* In case a file is given with the values */
+	char unit;	/* To remind us what units the inc is in, if given */
+};
+
 /*! For keeping table,segment IDs in a 1-D array */
 struct GMT_TBLSEG {
 	uint64_t tbl, seg;

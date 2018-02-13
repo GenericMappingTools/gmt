@@ -115,7 +115,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *t_col*\ \|\ **-Nc**\ \|\ **g**\ [[±]*unit*][**+a**]
+**-N**\ *t_col*\ \|\ **-Nc**\ \|\ **g**\ [[±]\ *unit*\ ][**+a**]
     Indicates which column contains the independent variable (time). The
     left-most column is # 0, the right-most is # (*n_cols* - 1).  [Default is 0].
     Alternatively, indicate spatial filtering in which the first two columns provide
