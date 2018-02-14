@@ -361,7 +361,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	x2sys_path (GMT, old_track_file, old_track_path);
 	x2sys_path (GMT, old_index_file, old_index_path);
 
-	if (gmt_remove_file (GMT, old_track_path)) {	/* First delete old file */
+	if (!access (old_track_path, F_OK) && gmt_remove_file (GMT, old_track_path)) {	/* First delete old file */
 		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
 	}
@@ -370,7 +370,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
 	}
-	if (gmt_remove_file (GMT, old_index_path)) {	/* First delete old file */
+	if (!access (old_index_path, F_OK) && gmt_remove_file (GMT, old_index_path)) {	/* First delete old file */
 		x2sys_end (GMT, s);
 		Return (GMT_RUNTIME_ERROR);
 	}
