@@ -12,8 +12,21 @@ Nyquist frequency it breaks down badly.
 .. literalinclude:: /_verbatim/anim_06.txt
    :language: bash
 
-.. figure:: /_images/anim_06.*
-   :width: 400 px
-   :align: center
 
-   The effect of aliasing when sampling a chirp.
+.. Need to include the following 0 px wide dummy image for video poster
+
+.. only:: html
+
+   .. image:: /_images/anim_06.png
+      :width: 0 px
+
+.. raw:: html
+
+   <div class="figure align-center">
+     <video width="720" height="480" poster="../_images/anim_06.png" controls>
+       <source src="../_static/anim_06.mp4" type="video/mp4">
+       <source src="../_static/anim_06.webm" type="video/webm">
+       Your browser does not support the video tag.
+     </video>
+     <p class="caption">Demonstrate aliasing by sampling a chirp.</p>
+   </div>
