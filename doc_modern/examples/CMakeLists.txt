@@ -154,14 +154,14 @@ if (UNIX AND DO_ANIMATIONS)
 			COMMENT "Removing animation ${_num}")
 		add_depend_to_target (spotless _anim_clean${_num})
 	endforeach ()
-	# register with spotless target
 endif (UNIX AND DO_ANIMATIONS)
 
 # run examples (test)
 if (MODERNIZE_TESTS)
 	set (SCRIPT_MODE "M")
 else (MODERNIZE_TESTS)
-	set (SCRIPT_MODE "C")
+#set (SCRIPT_MODE "C")
+	set (SCRIPT_MODE "")
 endif (MODERNIZE_TESTS)
 
 if (DO_EXAMPLES) # AND UNIX)
