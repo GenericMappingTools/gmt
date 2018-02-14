@@ -721,7 +721,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open main script file %s\n", Ctrl->In.file);
 			n_errors++;
 		}
-		if (script_is_classic (GMT, Ctrl->In.fp)) {
+		if (n_errors == 0 && script_is_classic (GMT, Ctrl->In.fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your main script file %s is not in GMT modern mode\n", Ctrl->In.file);
 			n_errors++;
 		}
@@ -1232,8 +1232,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		layers = true;
 	}
 	if (Ctrl->H.active) {	/* Must pass the downscalefactor option to psconvert */
-		sprintf (line, ",H%d", Ctrl->H.factor);
-		strcat (extra, line);
+		char htxt[GMT_LEN16] = {""};
+		sprintf (htxt, ",H%d", Ctrl->H.factor);
+		strcat (extra, htxt);
 	}
 	set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 	set_comment (fp, Ctrl->In.mode, "Main frame loop script");
