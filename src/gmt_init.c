@@ -12222,7 +12222,7 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 	for (k = 1; !modern && k < (unsigned int)argc; k++) {
 		if (argv[k][0] != '-') continue;	/* Skip file names */
 		if (strlen (argv[k]) < 3 || strlen (argv[k]) >= GMT_LEN128) continue;	/* -ps is the shortest format extension, and very long args are filenames*/
-		strcpy (figure, &argv[k][1]);			/* Get a local copy so we can mess with it, but skip the leading - */
+		strncpy (figure, &argv[k][1],  GMT_LEN128-1);	/* Get a local copy so we can mess with it, but skip the leading - */
 		if ((c = strchr (figure, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
 		if (gmt_get_graphics_id (API->GMT, figure) != GMT_NOTSET) {	/* Found a valid one-liner option */
 			modern = 1;	/* Seems like it is, but check the rest of the formats, if there are more */

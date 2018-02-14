@@ -877,7 +877,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 		size = Ctrl->S.scale;
 
 		if (In->text)
-			strcpy (event_title, In->text);
+			strncpy (event_title, In->text, GMT_BUFSIZ-1);
 		else
 			sprintf (event_title,"\n");
 		depth = in[2];
