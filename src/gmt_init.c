@@ -786,7 +786,7 @@ GMT_LOCAL int gmtinit_parse_a_option (struct GMT_CTRL *GMT, char *arg) {
 	strncpy (GMT->common.a.string, arg, GMT_LEN256-1);	/* Verbatim copy */
 
 	if ((s = strstr (arg, "+g")) || (s = strstr (arg, "+G"))) {	/* Also got +g|G<geometry> */
-		if ((t = gmtinit_ogr_get_geometry (s+2)) < 0) {
+		if ((t = (int)gmtinit_ogr_get_geometry (s+2)) < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -a: No such geometry: %s.\n", s+2);
 			return (GMT_PARSE_ERROR);
 		}
