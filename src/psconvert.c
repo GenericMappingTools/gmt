@@ -1362,6 +1362,17 @@ GMT_LOCAL int wrap_the_sandwich (struct GMT_CTRL *GMT, char *main, char *bfile, 
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL int get_extension_period (char *file) {
+	int i, pos_ext = 0;
+	for (i = (int)strlen(file) - 1; i > 0; i--) {
+		if (file[i] == '.') { 	/* Beginning of file extension */
+			pos_ext = i;
+			break;
+		}
+	}
+	return (pos_ext);
+}
+
 EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
 int GMT_psconvert (void *V_API, int mode, void *args) {
@@ -2434,14 +2445,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 			if (Ctrl->D.active) sprintf (world_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 			if (Ctrl->F.active) {		/* Must rip the raster file extension before adding the world one */
-				for (i = (int)strlen(out_file) - 1; i > 0; i--) {
-					if (out_file[i] == '.') { 	/* Beginning of file extension */
-						pos_ext = i;
-						break;
-					}
-				}
-				out_file[pos_ext] = '\0';
+				pos_ext = get_extension_period (out_file);	/* Get beginning of file extension */
+				out_file[pos_ext] = '\0';	/* Remove/restore extension to get world_file prefix */
 				strcat(world_file, out_file);
+				out_file[pos_ext] = '.';
 			}
 			else
 				strncat (world_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
@@ -2467,12 +2474,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (Ctrl->W.warp && proj4_cmd && proj4_cmd[1] == 'p') {	/* We got a usable Proj4 string. Run it (if gdal is around) */
 				/* The true geotiff file will have the same base name plus a .tiff extension.
 				   We will reuse the world_file variable because all it is need is to replace the extension */
-				for (i = (int)strlen(world_file) - 1; i > 0; i--) {
-					if (world_file[i] == '.') { 	/* Beginning of file extension */
-						pos_ext = i;
-						break;
-					}
-				}
+				pos_ext = get_extension_period (world_file);	/* Get beginning of file extension */
 				world_file[pos_ext] = '\0';
 				strcat (world_file, ".tiff");
 
@@ -2485,9 +2487,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				              "-co COMPRESS=LZW -co TILED=YES %s %c%s%c %c%s%c",
 					Ctrl->E.dpi, Ctrl->E.dpi, quote, proj4_cmd, quote, quiet, quote, out_file, quote, quote, world_file, quote);
 				gmt_M_str_free (proj4_cmd);
-				GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 				sys_retval = system (cmd);		/* Execute the gdal_translate command */
-				GMT_Report (API, GMT_MSG_NORMAL, "The gdal_translate command: \n%s\n", cmd);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "The gdal_translate command: \n%s\n", cmd);
 				if (sys_retval) {
 					GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 					Return (GMT_RUNTIME_ERROR);
@@ -2502,12 +2503,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (Ctrl->D.active)
 				sprintf (kml_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 			if (Ctrl->F.active) {		/* Must rip the raster file extension before adding the kml one */
-				for (i = (int)strlen(out_file) - 1; i > 0; i--) {
-					if (out_file[i] == '.') { 	/* Beginning of file extension */
-						pos_ext = i;
-						break;
-					}
-				}
+				pos_ext = get_extension_period (out_file);	/* Get beginning of file extension */
 				out_file[pos_ext] = '\0';
 				strcat (kml_file, out_file);
 				out_file[pos_ext] = '.';	/* Reset the extension */
