@@ -671,7 +671,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			ok_to_read = false;
 			tmp_string = gmt_M_memory (GMT, NULL, n_alloc, char *);
 			while (gmt_fgets (GMT, word, GMT_BUFSIZ, fp)) {
-				if (word[0] == '#') continue;
+				if (word[0] == GMT->current.setting.io_head_marker[GMT_IN]) continue;
 				width = (int)strlen (word);
 				tmp_string[n] = gmt_M_memory (GMT, NULL, width + 1, char);
 				strcpy (tmp_string[n], word);

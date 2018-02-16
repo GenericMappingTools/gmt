@@ -2832,7 +2832,7 @@ GMT_LOCAL struct GMT_MATRIX *api_read_matrix (struct GMT_CTRL *GMT, void *source
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Read Matrix from %s\n", M_file);
 
 	while (!error && fgets (line, GMT_BUFSIZ, fp)) {
-		if (line[0] == '#') continue;	/* Just skip headers */
+		if (line[0] == GMT->current.setting.io_head_marker[GMT_IN]) continue;	/* Just skip headers */
 		if (line[0] == '>') {
 			if (first) {	/* Have not allocated yet so just skip that row for now and deal with it later */
 				first = false;
@@ -3266,7 +3266,7 @@ GMT_LOCAL struct GMT_VECTOR *api_read_vector (struct GMT_CTRL *GMT, void *source
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Read Vector from %s\n", V_file);
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
-		if (line[0] == '#') continue;	/* Just skip headers */
+		if (line[0] == GMT->current.setting.io_head_marker[GMT_IN]) continue;	/* Just skip headers */
 		if (line[0] == '>') {
 			if (first) {	/* Have not allocated yet so just skip that row for now */
 				first = false;

@@ -120,6 +120,7 @@ struct GMT_DEFAULTS {
 	char io_col_separator[GMT_LEN8];    /* Separator between output ASCII data columns [tab] */
 	char io_gridfile_format[GMT_LEN64]; /* Default grid file format */
 	char io_seg_marker[2];              /* Character used to recognize and write segment headers [>,>] */
+	char io_head_marker[2];             /* Character used to recognize and write header records [#,#] */
 	/* MAP group */
 	double map_annot_offset[2];		/* Distance between primary or secondary annotation and tickmarks [5p/5p] */
 	double map_annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */

@@ -3302,7 +3302,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		gmt_strstrip (line, false); /* Eliminate DOS endings and trailing white space, add linefeed */
 
 		if (gmtio_ogr_parser (GMT, line)) continue;	/* If we parsed a GMT/OGR record we must go up to top of loop and get the next record */
-		if (line[0] == '#') {	/* Got a file header, copy it and return */
+		if (line[0] == GMT->current.setting.io_head_marker[GMT_IN]) {	/* Got a file header, copy it and return */
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
 			gmtio_set_current_record (GMT, line);
 			GMT->current.io.status = GMT_IO_TABLE_HEADER;
@@ -4066,7 +4066,7 @@ void gmtlib_write_tableheader (struct GMT_CTRL *GMT, FILE *fp, char *txt) {
 	else if (!txt || !txt[0])				/* Blank header */
 		fprintf (fp, "#\n");
 	else {
-		if (txt[0] != '#') fputc ('#', fp);	/* Make sure we have # at start ... if not multi-segment */
+		if (txt[0] != GMT->current.setting.io_head_marker[GMT_OUT]) fputc (GMT->current.setting.io_head_marker[GMT_OUT], fp);	/* Make sure we have # at start ... if not multi-segment */
 		while (strchr ("#\t ", *txt)) txt++;	/* Skip header record indicator and leading whitespace */
 		fprintf (fp, " %s", txt);
 		if (txt[strlen(txt)-1] != '\n') fputc ('\n', fp);	/* Make sure we have \n at end */
@@ -4932,7 +4932,7 @@ void * gmtio_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *
 			*status = -1;
 			return (NULL);
 		}
-		if (line[0] == '#') {	/* Got a file header, take action and return */
+		if (line[0] == GMT->current.setting.io_head_marker[GMT_IN]) {	/* Got a file header, take action and return */
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
 			gmtio_set_current_record (GMT, line);
 			GMT->current.io.status = GMT_IO_TABLE_HEADER;

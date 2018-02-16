@@ -6105,7 +6105,9 @@ are always processed correctly. If your data file has leading header
 records that do *not* start with '#' then you must make sure to use the
 **-h** option and set the parameter :ref:`IO_N_HEADER_RECS <IO_N_HEADER_RECS>` in the :doc:`gmt.conf` file
 (GMT default is one header record if **-h** is given; you may also use
-**-h**\ *nrecs* directly). Fields within a record must be separated by
+**-h**\ *nrecs* directly). Alternatively, you can override the header record marker '#'
+by modifying the :ref:`IO_HEADER_MARKER <IO_HEADER_MARKER>` default setting.
+Fields within a record must be separated by
 spaces, tabs, commas, or semi-colons. Each field can be an integer or floating-point
 number or a geographic coordinate string using the
 [±]dd[:mm[:ss]][W:\ \|\ S\ \|\ N\ \|\ E\ \|\ w\ \|\ s\ \|\ n\ \|\ e]

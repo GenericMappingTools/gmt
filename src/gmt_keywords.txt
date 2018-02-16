@@ -78,6 +78,7 @@ IO_FIRST_HEADER			# Always write first segment header or just when required
 IO_GRIDFILE_FORMAT		# Default gridfile format to use
 IO_GRIDFILE_SHORTHAND		# Should we decode file extensions for gridformat details?
 IO_HEADER			# Are there header records?
+IO_HEADER_MARKER		# 1st char in header records for input and output
 IO_N_HEADER_RECS		# How many header records to expect
 IO_NAN_RECORDS			# How NaNs in input should be interpreted
 IO_NC4_CHUNK_SIZE	# Chunk size (lat,lon) of netCDF output

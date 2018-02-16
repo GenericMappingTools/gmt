@@ -438,7 +438,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < In->table[tbl]->n_segments; seg++) {	/* We only expect one segment in each table but again... */
 			for (row = 0; row < In->table[tbl]->segment[seg]->n_rows; row++) {	/* Finally processing the rows */
 				line = In->table[tbl]->segment[seg]->text[row];
-				if (line[0] == '#' || gmt_is_a_blank_line (line)) continue;	/* Skip all headers or blank lines  */
+				if (line[0] == GMT->current.setting.io_head_marker[GMT_IN] || gmt_is_a_blank_line (line)) continue;	/* Skip all headers or blank lines  */
 
 				/* Data record to process */
 
@@ -689,7 +689,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < In->table[tbl]->n_segments; seg++) {	/* We only expect one segment in each table but again... */
 			for (row = 0; row < In->table[tbl]->segment[seg]->n_rows; row++) {	/* Finally processing the rows */
 				line = In->table[tbl]->segment[seg]->text[row];
-				if (line[0] == '#' || gmt_is_a_blank_line (line)) continue;	/* Skip all headers */
+				if (line[0] == GMT->current.setting.io_head_marker[GMT_IN] || gmt_is_a_blank_line (line)) continue;	/* Skip all headers */
 
 				/* Data record to process */
 
