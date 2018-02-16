@@ -308,7 +308,7 @@ GMT_LOCAL int64_t find_nearest (int64_t i, int64_t j, int64_t *r2, int64_t *is, 
 	/* loop over possible nx, find smallest rr */
 	for (nx1 = nx; nx1 <= (int64_t)sqrt((double)(*r2))+1; nx1++) {
 		if (nx1*nx1 < *r2)
-			ny = (int64_t)(sqrt((*r2)-nx1*nx1));
+			ny = (int64_t)(sqrt((double)((*r2)-nx1*nx1)));
 		else
 			ny = 0;
 		while (nx1*nx1+ny*ny <= (*r2) && ny<=nx1)
@@ -376,7 +376,7 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
  	ys = gmt_M_memory (GMT, NULL, 512, int64_t);
 
 	if (radius == -1)	/* Set default radius */
-		radius = (int64_t)floor (sqrt (nx*nx + ny*ny));
+		radius = (int64_t)floor (sqrt ((double)(nx*nx + ny*ny)));
 	rad2 = (double)(radius * radius);
 	
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Interpolating to nearest neighbour...\n");
