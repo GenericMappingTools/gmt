@@ -17,7 +17,7 @@ Synopsis
 [ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
 [ |-F|\ **l**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **+2**] ]
 [ |-N|\ *col* ]
-[ |-T|[\ *min/max*\ /]\ inc*\ [**+a**\ \|\ **n**] ]
+[ |-T|\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -90,7 +90,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [\ *min/max*\ /]\ inc*\ [**+a**\ \|\ **n**]
+**-T**\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**]
     Make evenly spaced time-steps from *min* to *max* by *inc*
     [Default uses input times]. Append **+n** if *inc* is meant to
     indicate the number of equidistant points instead. 

@@ -16,7 +16,8 @@ Synopsis
 **filter1d** [ *table* ] |-F|\ *type<width>*\ [*modifiers*]
 [ |-D|\ *increment* ] [ |-E| ]
 [ |-L|\ *lack\_width* ] [ |-N|\ *t\_col* ] [ |-Q|\ *q\_factor* ]
-[ |-S|\ *symmetry\_factor* ] [ |-T|[\ *min/max*\ /]\ inc*\ [**+a**\ \|\ **n**] ]
+[ |-S|\ *symmetry\_factor* ]
+[ |-T|\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -115,15 +116,9 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *t_col*\ \|\ **-Nc**\ \|\ **g**\ [[±]\ *unit*\ ][**+a**]
+**-N**\ *t_col*
     Indicates which column contains the independent variable (time). The
     left-most column is # 0, the right-most is # (*n_cols* - 1).  [Default is 0].
-    Alternatively, indicate spatial filtering in which the first two columns provide
-    longitude, latitude (**-Ng**) or Cartesian x, y (**-Nc**) and we create a
-    along-track distance column and choose it as the *t_col* setting.  For geospatial
-    filtering you can append the desired distance unit (see UNITS for available
-    units and how distances are computed) [meter].  Optionally, you may append **+a** to have
-    the along-track distance being output as a new final column in the filtered data.
 
 .. _-Q:
 
@@ -142,7 +137,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [\ *min/max*\ /]\ inc*\ [**+a**\ \|\ **n**]
+**-T**\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**]
     Make evenly spaced time-steps from *min* to *max* by *inc*
     [Default uses input times]. Append **+n** if *inc* is meant to
     indicate the number of equidistant points instead. 
