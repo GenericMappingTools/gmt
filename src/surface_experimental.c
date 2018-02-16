@@ -1506,9 +1506,9 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 			C->data[k].index = SURFACE_OUTSIDE;
 #ifdef DEBUG
 			if (C->data[k].kind != last_kind)
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The %s point %" PRId64 " has been replaced by a %s point.\n", point_type[C->data[k].kind], labs(C->data[k].number), point_type[last_kind]);
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The %s point %" PRId64 " has been replaced by a %s point.\n", point_type[C->data[k].kind], int64_abs(C->data[k].number), point_type[last_kind]);
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The %s point %" PRId64 " will be ignored.\n", point_type[C->data[k].kind], labs(C->data[k].number));
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The %s point %" PRId64 " will be ignored.\n", point_type[C->data[k].kind], int64_abs(C->data[k].number));
 				n_ignored++;
 			}
 			//fprintf (stderr, "This points (x,y) vs previous (x,y): (%g, %g) vs {%g, %g}\n", C->data[k].x, C->data[k].y, C->data[k-1].x, C->data[k-1].y);

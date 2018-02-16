@@ -310,7 +310,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				Ctrl->N.active = true;
 				value = atol (opt->arg);
 				Ctrl->N.dir = (value < 0 || opt->arg[0] == '-') ? -1 : +1;
-				Ctrl->N.col = labs ((long)value);
+				Ctrl->N.col = int64_abs (value);
 				break;
 			case 'Q':	/* Only report for specified segment numbers */
 				Ctrl->Q.active = true;
