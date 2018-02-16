@@ -404,8 +404,8 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 								if (!gmt_M_is_fnan (m[node])) {
 									m_interp[ij] = m[node];
 									flag = 1;
-									recx = labs (is[k]-i);
-									recy = labs (js[k]-j);
+									recx = int64_abs (is[k]-i);
+									recy = int64_abs (js[k]-j);
 									break;
 								}
 							}
