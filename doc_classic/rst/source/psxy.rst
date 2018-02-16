@@ -104,8 +104,7 @@ Optional Arguments
 
 **-C**\ *cpt*
     Give a CPT or specify **-C**\ *color1,color2*\ [*,color3*\ ,...]
-    to build a linear continuous CPT from those colors automatically,
-    where *z* starts at 0 and is incremented by one for each color.
+    to build a linear continuous CPT from those colors automatically.
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
     If **-S** is set, let symbol fill color be

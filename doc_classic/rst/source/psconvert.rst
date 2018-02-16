@@ -20,10 +20,8 @@ Synopsis
 [ |-E|\ *resolution* ]
 [ |-F|\ *out_name* ]
 [ |-G|\ *ghost_path* ]
-[ |-H|\ *factor*\ ]
 [ |-I| ]
 [ |-L|\ *listfile* ]
-[ **-Mb**\ \|\ **f**\ *pslayer* ]
 [ |-P| ]
 [ |-Q|\ [**g**\ \|\ **t**][1\|2\|4] ]
 [ |-S| ]
@@ -129,18 +127,6 @@ Optional Arguments
     So in case of 'get from registry' failure the default name (when no
     **-G** is used) is the one of the 64 bits version, or gswin64c
 
-.. _-H:
-
-**-H**\ *factor*
-    Given the finite dots-per-unit used to rasterize PostScript frames to rasters, the quantizing of features
-    to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings (**-Q**)
-    which affects lines and text only.  The scale *factor* temporarily increases the effective dots-per-unit
-    by *factor*, rasterizes the plot, then downsamples the image by the same factor at the end.  The larger
-    the *factor*, the smoother the raster.  Because processing time increases with *factor* we suggest you
-    try values in the 2-5 range.  Note that raster images can also suffer from quantizing when the original data
-    have much higher resolution than your raster pixel dimensions.  The **-H** option may then be used to smooth
-    the result to avoid aliasing [no downsampling].
-
 .. _-I:
 
 **-I**
@@ -158,13 +144,6 @@ Optional Arguments
     The *listfile* is an ASCII file with the names of the PostScript
     files to be converted.
 
-.. _-M:
-
-**-Mb**\ \|\ **f**\ *pslayer*
-    Sandwich the current *psfile* between an optional background (**-Mb**) and
-    optional foreground (**-Mf**) Postscript plots.  These files are expected
-    to be stand-alone plots that will align when stacked.
-
 .. _-P:
 
 **-P**
@@ -177,10 +156,8 @@ Optional Arguments
 
 **-Q**\ [**g**\ \|\ **t**][1\|2\|4]
     Set the anti-aliasing options for **g**\ raphics or **t**\ ext.
-    Append the size of the subsample box (1, 2, or 4) [4]. For vector
-    formats the default is no anti-aliasing (same as *bits* = 1).
-    For any raster format the default setting is **-Qt4**, while transparent
-    PNG also adds **-Qg2**.  These defaults may be overruled manually.
+    Append the size of the subsample box (1, 2, or 4) [4]. Default is no
+    anti-aliasing (same as *bits* = 1).
 
 .. _-S:
 

@@ -45,7 +45,6 @@ Core modules
    grdcut
    grdedit
    grdfft
-   grdfill
    grdfilter
    grdgradient
    grdhisteq
@@ -141,7 +140,7 @@ Supplementary modules
    supplements/spotter/grdrotater
    supplements/spotter/grdspotter
    supplements/spotter/hotspotter
-   supplements/spotter/originater
+   supplements/spotter/originator
    supplements/spotter/polespotter
    supplements/spotter/rotconverter
    supplements/spotter/rotsmoother

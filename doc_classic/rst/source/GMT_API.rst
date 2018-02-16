@@ -1234,7 +1234,7 @@ and pass the ``par`` array with contents as indicated below:
     The ``data`` argument should be NULL.  As for vectors, to use custom data you must (for input) pass the
     mode as GMT_CONTAINER_ONLY and hook your custom matrix in via a call to GMT_Put_Matrix_.  The matrix may either
     be row- or column-oriented and this is normally determined when you created the session with GMT_Create_Session_ (see the bit 3 setting).
-    However, you can pass ``pad`` = 1 (GMT_IS_ROW_FORMAT; set row major) or ``pad`` = 2 (GMT_IS_COL_FORMAT; set col major) to override the default.
+    However, you can pass ``pad`` = 1 (set row major) or ``pad`` = 2 (set col major) to override the default.
     As for vectors, if this container is for output then pass mode as GMT_IS_OUTPUT instead.
 
 Users wishing to pass their own data matrices and vectors to GMT modules will need to do so via
@@ -1276,13 +1276,10 @@ The following utility functions are used for these tasks:
 
   ::
 
-    int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, int pad, void *matrix);
+    int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, void *matrix);
 
 where ``M`` is a :ref:`GMT_MATRIX <struct-matrix>` created by GMT_Create_Data_, the ``type`` is one of the
-recognized data :ref:`types <tbl-types>`, ``pad`` indicates if the matrix has or should have padding,
-and ``matrix`` is your custom matrix.  The ``pad`` entry is typically 0 (no pad present), but if you
-intend the matrix to serve as grid input to a module then GMT will expect 2.  If your matrix already has
-been extended by 2 extra rows and columns then pass ``pad`` = 2.
+recognized data :ref:`types <tbl-types>`, and ``matrix`` is your custom matrix.
 To extract a custom matrix from an output :ref:`GMT_MATRIX <struct-matrix>` you can use
 
 .. _GMT_Get_Matrix:

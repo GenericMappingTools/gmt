@@ -1,7 +1,7 @@
 #
 # $Id$
 #
-# Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@ foreach (_ps ${_examples})
 			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 			COMMAND
 			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A+S0.6 -P -Tf
-			-C-sFONTPATH="${GMT_SOURCE_DIR}/doc_classic/examples/ex31/fonts"
+			-C-sFONTPATH="${GMT_SOURCE_DIR}/doc/examples/ex31/fonts"
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -52,7 +52,7 @@ foreach (_ps ${_examples})
 			COMMAND
 			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
 			-A -P -E150 -TG -Qg4 -Qt4 -C-dDOINTERPOLATE
-			-C-sFONTPATH="${GMT_SOURCE_DIR}/doc_classic/examples/ex31/fonts"
+			-C-sFONTPATH="${GMT_SOURCE_DIR}/doc/examples/ex31/fonts"
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -64,7 +64,7 @@ foreach (_ps ${_examples})
 			GMT_USERDIR=${GMT_BINARY_DIR}/share
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A+S0.6 -P -Tf
-			-C-sFONTPATH="${GMT_SOURCE_DIR}/doc_classic/examples/ex31/fonts"
+			-C-sFONTPATH="${GMT_SOURCE_DIR}/doc/examples/ex31/fonts"
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -76,7 +76,7 @@ foreach (_ps ${_examples})
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
 			-A -P -E150 -TG -Qg4 -Qt4 -C-dDOINTERPOLATE
-			-C-sFONTPATH="${GMT_SOURCE_DIR}/doc_classic/examples/ex31/fonts"
+			-C-sFONTPATH="${GMT_SOURCE_DIR}/doc/examples/ex31/fonts"
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

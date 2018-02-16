@@ -16,8 +16,10 @@ Synopsis
 **sample1d** [ *table* ]
 [ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
 [ |-F|\ **l**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **+2**] ]
-[ |-N|\ *col* ]
-[ |-T|\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**] ]
+[ |-I|\ *inc*\ [*unit*] ]
+[ |-N|\ *knotfile* ]
+[ |-S|\ *start*\ [/*stop*] ]
+[ |-T|\ *col* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -82,25 +84,40 @@ Optional Arguments
     You may optionally evaluate the first or second derivative of the spline
     by appending **1** or **2**, respectively.
 
+.. _-I:
+
+**-I**\ *inc*\ [*unit*]
+    *inc* defines the sampling interval [Default is the separation
+    between the first and second abscissa point in the *table*]. Append
+    a distance unit (see UNITS) to indicate that the first two columns
+    contain longitude, latitude and you wish to resample this path with
+    a spacing of *inc* in the chosen units. For sampling of (x, y)
+    Cartesian tracks, specify the unit as c. Use **-A** to control how
+    path resampling is performed.
+
 .. _-N:
 
-**-N**\ *col*
-    Sets the column number of the independent *time* variable [Default is 0
-    (first)]. 
+**-N**\ *knotfile*
+    *knotfile* is an optional ASCII file with the *time* locations where the
+    data set will be resampled in the first column. Note: If **-H** is
+    selected it applies to both *table* and *knotfile*. Also note that
+    **-i** never applies to *knotfile* since we always consider the
+    first column only.
+
+.. _-S:
+
+**-S**\ *start*\ [*stop*] 
+    For equidistant sampling, *start* indicates the *time* of the
+    first output value. [Default is the smallest even multiple of *inc*
+    inside the range of *table*]. Optionally, append /*stop* to
+    indicate the *time* of the last output value [Default is the
+    largest even multiple of *inc* inside the range of *table*].
 
 .. _-T:
 
-**-T**\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**]
-    Make evenly spaced time-steps from *min* to *max* by *inc*
-    [Default uses input times]. Append **+n** if *inc* is meant to
-    indicate the number of equidistant points instead. 
-    To resample an absolute time series, append a valid time unit
-    (**y**\ \|\ **o**\ \|\ **w**\ \|\ **d**\ \|\ **h**\ \|\ **m**\ \|\ **s**) to the increment.
-    For spatial resampling with distance computed from the first two columns, specify the increment as
-    [*unit*]\ *inc* and append a geospatial distance unit from the list
-    **d**\ \|\ **m**\ \|\ **s**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**)
-    or use **c** (for Cartesian distances).
-    Optionally, append **+a** to add such internal distances as a final output column [no distances added].
+**-T**\ *col*
+    Sets the column number of the independent *time* variable [Default is 0
+    (first)]. 
 
 .. _-V:
 
@@ -138,6 +155,14 @@ Optional Arguments
 
 .. include:: explain_precision.rst_
 
+Calendar Time Sampling
+----------------------
+
+If the abscissa are calendar times then you must use the **-f** option
+to indicate this. Furthermore, **-I** then expects an increment in the
+current :ref:`TIME_UNIT <TIME_UNIT>` units. There is not yet support for variable
+intervals such as months.
+
 Examples
 --------
 
@@ -147,47 +172,41 @@ intervals using Akima's spline, use
 
    ::
 
-    gmt sample1d profiles.tdgmb -N1 -Fa -T1 > profiles_equi_d.tdgmb
+    gmt sample1d profiles.tdgmb -I1 -Fa -T1 > profiles_equi_d.tdgmb
 
 To resample the file depths.dt at positions listed in the file
 grav_pos.dg, using a cubic spline for the interpolation, use
 
    ::
 
-    gmt sample1d depths.txt -Tgrav_pos.dg -Fc > new_depths.txt
+    gmt sample1d depths.dt -Ngrav_pos.dg -Fc > new_depths.dt
 
 To resample the file points.txt every 0.01 from 0-6, using a cubic spline for the
 interpolation, but output the first derivative instead (the slope), try
 
    ::
 
-    gmt sample1d points.txt -T0/6/0.01 -Fc+1 > slopes.txt
+    gmt sample1d points.txt S0/6 -I0.01 -Fc+1 > slopes.txt
 
 To resample the file track.txt which contains lon, lat, depth every 2
 nautical miles, use
 
    ::
 
-    gmt sample1d track.txt -T2n -AR > new_track.txt
+    gmt sample1d track.txt -I2n -AR > new_track.dt
 
 To do approximately the same, but make sure the original points are
 included, use
 
    ::
 
-    gmt sample1d track.txt -T2n -Af > new_track.txt
+    gmt sample1d track.txt -I2n -Af > new_track.dt
 
 To obtain a rhumb line (loxodrome) sampled every 5 km instead, use
 
    ::
 
-    gmt sample1d track.txt -T5k -AR+l > new_track.txt
-
-To sample temperatures.txt every month from 2000 to 2018, use
-
-   ::
-
-    gmt sample1d temperatures.txt -T2000T/2018T/1o > monthly_temp.txt
+    gmt sample1d track.txt -I5k -AR+l > new_track.dt
 
 See Also
 --------

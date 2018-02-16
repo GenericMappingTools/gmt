@@ -97,8 +97,6 @@ exchange 17 for 11 and all values < 10 to 0 in file classes.nc, try
 See Also
 --------
 
-:doc:`gmt`,
-:doc:`grdfill`,
-:doc:`grdlandmask`,
+:doc:`gmt`, :doc:`grdlandmask`,
 :doc:`grdmask`, :doc:`grdmath`,
 :doc:`grd2xyz`, :doc:`xyz2grd`

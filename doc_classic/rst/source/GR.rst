@@ -16,7 +16,6 @@ GR
    grdcut
    grdedit
    grdfft
-   grdfill
    grdfilter
    grdgradient
    grdhisteq

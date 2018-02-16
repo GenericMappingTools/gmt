@@ -92,8 +92,7 @@ Optional Arguments
 **-C**\ *cols*
     Select the columns that will be operated on until next occurrence of
     **-C**. List columns separated by commas; ranges like 1,3-5,7 are
-    allowed, plus -Cx can be used for -C0 and -Cy can be used for -C1.
-    **-C** (no arguments) resets the default action of using
+    allowed. **-C** (no arguments) resets the default action of using
     all columns except time column (see **-N**). **-Ca** selects all
     columns, including time column, while **-Cr** reverses (toggles) the
     current choices.  When **-C** is in effect it also controls which
@@ -144,11 +143,7 @@ Optional Arguments
     the number of equidistant points instead. If there is no time column
     (only data columns), give **-T** with no arguments; this also
     implies **-Ca**. Alternatively, give the name of a file whose first
-    column contains the desired t-coordinates which may be irregular.
-    For setting up absolute time increments, append a unit to *inc* from
-    the list **y**\ ear, m\ **o**\ nth, **d**\ ay, **h**\ our, **m**\ inute,
-    and **s**\ econd.  Note: The internal time unit is still controlled
-    independently by :ref:`TIME_UNIT <TIME_UNIT>`.
+    column contains the desired t-coordinates which may be irregular. 
 
 .. _-V:
 

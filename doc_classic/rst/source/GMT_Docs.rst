@@ -159,7 +159,7 @@ such decisions by supporting the GMT project.
 Copyright and Caveat Emptor!
 ============================
 
-Copyright ©1991--2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
+Copyright ©1991--2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
 Luis and F. Wobbe
 
 The Generic Mapping Tools (GMT) is free software; you can
@@ -4164,8 +4164,6 @@ via :doc:`grdmath` first, i.e.,
 
 then plot the ``sst.nc`` directly.
 
-.. _Write-grids-images:
-
 Writing grids and images
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -6049,7 +6047,7 @@ grids using a finite rotation,
 grids based on seamount locations and a set of absolute plate motion
 stage poles (:doc:`grdspotter <supplements/spotter/grdspotter>` does the
 same using a bathymetry grid instead of seamount locations),
-:doc:`originater <supplements/spotter/originater>`, which associates
+:doc:`originator <supplements/spotter/originator>`, which associates
 seamounts with the most likely hotspot origins, 
 :doc:`polespotter <supplements/spotter/polespotter>`, which determines
 likely stage pole locations from seafloor fabric, and
@@ -6105,9 +6103,7 @@ are always processed correctly. If your data file has leading header
 records that do *not* start with '#' then you must make sure to use the
 **-h** option and set the parameter :ref:`IO_N_HEADER_RECS <IO_N_HEADER_RECS>` in the :doc:`gmt.conf` file
 (GMT default is one header record if **-h** is given; you may also use
-**-h**\ *nrecs* directly). Alternatively, you can override the header record marker '#'
-by modifying the :ref:`IO_HEADER_MARKER <IO_HEADER_MARKER>` default setting.
-Fields within a record must be separated by
+**-h**\ *nrecs* directly). Fields within a record must be separated by
 spaces, tabs, commas, or semi-colons. Each field can be an integer or floating-point
 number or a geographic coordinate string using the
 [±]dd[:mm[:ss]][W:\ \|\ S\ \|\ N\ \|\ E\ \|\ w\ \|\ s\ \|\ n\ \|\ e]

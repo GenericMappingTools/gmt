@@ -15,7 +15,6 @@ Synopsis
 
 **grdrotater** *ingrdfile* |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
 |-G|\ *outgrdfile*
-[ |-A|\ *region* ]
 [ |-D|\ *rotoutline* ]
 [ |-F|\ *polygonfile* ]
 [ |-N| ]
@@ -87,14 +86,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-.. _-A:
-
-[ **-A**\ *region* ]
-    Specify directly the region of the rotated grid.  By default, the
-    output grid has a region that exactly matches the extent of the rotated
-    domain, but **-A** can be used to crop or extend this region to that
-    provided via *region*.
 
 .. _-D:
 
@@ -228,5 +219,5 @@ See Also
 :doc:`grdpmodeler`,
 :doc:`grdspotter`,
 :doc:`hotspotter`,
-:doc:`originater`,
+:doc:`originator`,
 :doc:`rotconverter`

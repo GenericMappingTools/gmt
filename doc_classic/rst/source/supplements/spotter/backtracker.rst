@@ -18,7 +18,6 @@ Synopsis
 [ |-D|\ **f**\ \|\ **b** ]
 [ |-F|\ *drift.txt* ]
 [ |-L|\ **f**\ \|\ **b**\ [*step*] ]
-[ |-M|\ [*fact*] ]
 [ |-N|\ *upper_age* ]
 [ |-Q|\ *fixed_age* ]
 [ |-S|\ *filestem* ]
@@ -108,15 +107,12 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *drift.txt*
-    Supply a file with (lon, lat, age) records that describe the history
+    Supply a file with lon, lat, age records that describe the history
     of hotspot motion for the current hotspot. The reconstructions will
-    use the 3rd data input column (i.e., the age) to obtain the
+    only use the 3rd data input column (i.e., the age) to obtain the
     location of the hotspot at that time, via an interpolation of the
-    hotspot motion history. Input data locations are then adjusted by the
-    change in hotspot location when reconstructing the point or path [No drift].
-    Note: (1) When **-F** is used the **-L** *step* values will be in time (Myr).
-    (2) Drift is only considered when backtracking a point (**-Db**) or predicting
-    seamount trails (**-Df** **-Lb**). (3) Cannot be used with **-M**.
+    hotspot motion history. This adjusted location is then used to
+    reconstruct the point or path [No drift].
 
 .. _-L:
 
@@ -128,12 +124,6 @@ Optional Arguments
     **-LB** is used, the third output column will contain the stage id
     (1 is youngest) [Default is along-track predicted ages]. You can
     control the direction of the paths by using **-D**.
-
-.. _-M:
-
-**-M**\ [*fact*]
-    Scale opening angles by *fact* on output [0.5]. 
-    Typically used to get half-rates needed for flowlines.
 
 .. _-N:
 
@@ -226,20 +216,6 @@ total reconstruction rotations for the plate (PAC_APM.txt), try
 
     echo 204 19 80 | gmt backtracker -Df -EPAC_APM.txt -Lb1 > path.txt
 
-To predict Hawaiian-Emperor seamount trail using the Pacific absolute plate
-and plume motion from Doubrovine et al. (2012), use
-
-   ::
-
-    echo -155.2872 19.3972 80 | gmt backtracker -Df -Lb1 -ED2012.txt -FD2012_HI_drift.txt > traildrift.txt
-
-To predict the Hawaiian-Emperor seamount trail that would have resulted if no plume drift had been in effect,
-using the Pacific absolute plate motion model from Doubrovine et al. (2012), use
-
-   ::
-
-    echo -155.2872 19.3972 80 | gmt backtracker -Df -Lb1 -ED2012.txt > trail.txt
-
 Notes
 -----
 
@@ -257,7 +233,7 @@ See Also
 :doc:`grdspotter`,
 :doc:`hotspotter`,
 :doc:`mapproject </mapproject>`,
-:doc:`originater`,
+:doc:`originator`,
 :doc:`project </project>`,
 :doc:`psxy </psxy>`
 
@@ -266,5 +242,3 @@ References
 
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29),
 p. 319.
-
-Doubrovine, P. V., B. Steinberger, and T. H. Torsvik, 2012, Absolute plate motions in a reference frame defined by moving hot spots in the Pacific, Atlantic, and Indian oceans, J. Geophys. Res., 117(B09101), doi:10.1029/2011jb009072.

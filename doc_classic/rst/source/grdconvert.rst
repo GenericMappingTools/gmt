@@ -181,7 +181,7 @@ numerous third-party programs and are platform-independent. Some
 disk-space can be saved by storing the data as bytes or shorts in stead
 of integers. Use the *scale* and *offset* parameters to make this work
 without loss of data range or significance. For more details, see
-:ref:`App-file-formats` and :ref:`Write-grids-images`.
+:ref:`App-file-formats`.
 
 **Multi-variable grid files**
 

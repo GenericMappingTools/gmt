@@ -143,5 +143,5 @@ See Also
 :doc:`grdpmodeler`,
 :doc:`grdspotter`,
 :doc:`hotspotter`,
-:doc:`originater`,
+:doc:`originator`,
 :doc:`rotconverter`

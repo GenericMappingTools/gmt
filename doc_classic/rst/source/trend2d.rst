@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**trend2d** [ *table* ] |-F|\ **xyzmrw**\ \|\ **p** |-N|\ *n_model*\ [**+r**]
+**trend2d** [ *table* ] |-F|\ **xyzmrw** |-N|\ *n_model*\ [**+r**]
 [ *xyz[w]file* ]
 [ |-C|\ *condition\_number* ]
 [ |-I|\ [*confidence\_level*] ]
@@ -57,12 +57,11 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ **xyzmrw**\ \|\ **p**
+**-F**\ **xyzmrw**
     Specify up to six letters from the set {**x y z m r w**\ } in any
     order to create columns of ASCII [or binary] output. **x** = x,
     **y** = y, **z** = z, **m** = model f(x,y), **r** = residual z -
-    **m**, **w** = weight used in fitting.  Alternatively, to just
-    report the model parameters, specify **-Fp**.
+    **m**, **w** = weight used in fitting.
 
 .. _-N:
 
@@ -182,26 +181,20 @@ kept low.
 Examples
 --------
 
-To remove a planar trend from data.xyz by ordinary least squares, use
+To remove a planar trend from data.xyz by ordinary least squares, use:
 
    ::
 
-    gmt trend2d data.xyz -Fxyr -N3 > detrended_data.xyz
+    gmt trend2d data.xyz -Fxyr -N2 > detrended_data.xyz
 
-To simply report the three coefficients, use
-
-   ::
-
-    gmt trend2d data.xyz -Fp -N3 > parameters.txt
-
-To make the above planar trend robust with respect to outliers, use
+To make the above planar trend robust with respect to outliers, use:
 
    ::
 
-    gmt trend2d data.xzy -Fxyr -N3+r > detrended_data.xyz
+    gmt trend2d data.xzy -Fxyr -N2+r > detrended_data.xyz
 
 To find out how many terms (up to 10 in a robust interpolant are
-significant in fitting data.xyz, use
+significant in fitting data.xyz, use:
 
    ::
 

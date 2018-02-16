@@ -525,14 +525,6 @@ fonts can be found in the :doc:`gmt` man page.
     data columns written by GMT. Choose from tab, space, comma, and
     none [tab].
 
-.. _IO_FIRST_HEADER:
-
-**IO_FIRST_HEADER**
-    This setting determines if the first segment header is written when
-    there is only a single segment (for multiple segment it must be written).
-    By default, such single-segment headers are only written if the header
-    has contents. Choose from always, never, or maybe [maybe].
-
 .. _IO_GRIDFILE_FORMAT:
 
 **IO_GRIDFILE_FORMAT**
@@ -557,14 +549,6 @@ fonts can be found in the :doc:`gmt` man page.
 
 **IO_HEADER**
     (**-h**) Specifies whether input/output ASCII files have header record(s) or not [false].
-
-.. _IO_HEADER_MARKER:
-
-**IO_HEADER_MARKER**
-    This holds the character we expect to indicate a header record in
-    an incoming ASCII data or text table [#]. If this marker should be
-    different for output then append another character for the output
-    header record marker. The two characters must be separated by a comma.
 
 .. _IO_LONLAT_TOGGLE:
 

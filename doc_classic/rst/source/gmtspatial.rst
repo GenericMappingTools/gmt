@@ -231,8 +231,6 @@ Optional Arguments
 
 .. include:: explain_distunits.rst_
 
-.. include:: explain_inside.rst_
-
 .. include:: explain_precision.rst_
 
 Example
