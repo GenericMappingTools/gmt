@@ -55,26 +55,27 @@ struct SAMPLE1D_CTRL {
 		unsigned int mode;
 		unsigned int type;
 	} F;
+	struct SAMP1D_N {	/* -N<time_col> */
+		bool active;
+		unsigned int col;
+	} N;
+	struct SAMP1D_T {	/* -T<tmin/tmax/tinc>[+a|n] */
+		bool active;
+		struct GMT_ARRAY T;
+		bool got_one;
+		double start;	/* Left-over from old -Sstart that we need to parse later */
+	} T;
+	/* Deprecated options in GMT 6 now handled by -T */
 	struct SAMP1D_I {	/* -I<inc>[d|m|s|e|f|k|M|n|u|c] (c means x/y Cartesian path) */
 		bool active;
 		unsigned int mode;
 		int smode;
 		double inc;
 		char unit;
-	} I;
-	struct SAMP1D_N {	/* -N<knotfile> */
-		bool active;
-		char *file;
-	} N;
-	struct SAMP1D_S {	/* -S<xstart>[/<xstop>] */
-		bool active;
-		unsigned int mode;
-		double start, stop;
-	} S;
-	struct SAMP1D_T {	/* -T<time_col> */
-		bool active;
-		unsigned int col;
-	} T;
+	} I_deprecated;
+	/* -N<knotfile> */
+	/* -S<xstart>[/<xstop>] */
+	/* -T<time_col> */
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -91,7 +92,6 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);	
-	gmt_M_str_free (C->N.file);	
 	gmt_M_free (GMT, C);	
 }
 
@@ -100,15 +100,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: sample1d [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n][+1|2] [-I<inc>[<unit>]] [-N<knottable>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: sample1d [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n][+1|2] [-N<time_col>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T[<min>/<max>/][-|+]<inc>[<unit>][+n|a] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 	             GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The independent variable (see -T) must be monotonically in/de-creasing.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The independent variable (see -N) must be monotonically in/de-creasing.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Controls how the input track in <table> is resampled when -I..<unit> is selected:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f: Keep original points, but add intermediate points if needed [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m: Same, but first follow meridian (along y) then parallel (along x).\n");
@@ -123,17 +123,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   n No interpolation (nearest point).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +1 for 1st derivative or +2 for 2nd derivative.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is -F%c].\n", type[API->GMT->current.setting.interpolant]);
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Set equidistant grid interval <inc> [t1 - t0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append %s to indicate that the first two columns contain\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   longitude, latitude and you wish to resample this path with a nominal spacing of <inc>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   in the chosen units.  For Cartesian paths specify unit as c.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   See -A to control how the resampling is done.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N The <knottable> is an ASCII table with the desired time positions in column 0.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Overrides the -I and -S settings.  If none of -I, -S, and -N is set\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   then <tstart> = first input point, <t_inc> = (t[1] - t[0]).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the first output point to be <start> [first multiple of inc in range].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append /<stop> for last output point [last multiple of inc in range].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Give column number of the independent variable (time) [Default is 0 (first)].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Give column number of the independent variable (time) [Default is 0 (first)].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <min> to <max> by <inc>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of t-values to produce over the range instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time resampling, append a valid time unit (%s) to the increment.\n", GMT_TIME_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   For spatial resampling with distance computed from the first two columns, specify increment as\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [-|+][<unit>]<inc>, with - for fast (Flat Earth) or + for slow (ellipsoidal) calculations [great circle].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append a geospatial distance unit (%s) or c (for Cartesian distances).\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   See -A to control how the spatial resampling is done.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +a to add such internal distances as a final output column [no distances added].\n");
 	GMT_Option (API, "V,bi2,bo,d,e,f,g,h,i,o,s,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -148,10 +146,32 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 
 	unsigned int n_errors = 0, n_files = 0;
 	int col;
-	char A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""}, *c = NULL;
+	bool old_syntax = false;
+	char string[GMT_LEN64] = {""};
+	char *i_arg = NULL, *s_arg = NULL, *t_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
+	/* Determine if we are using GMT 6 syntax with -T<tmin/tmax/tinc>[+a|n] vs old ways of using -N -I -S -T<col> */
+
+	for (opt = options; opt; opt = opt->next) {
+		switch (opt->option) {
+
+			case 'I':	/* Always indicative of old option */
+				old_syntax = true;
+				break;
+			case 'N':	/* Indicative of old option if a valid file is appended */
+				if ((Ctrl->N.active = gmt_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
+					old_syntax = true;
+				break;
+			case 'S':	/* Always indicative of old option */
+				old_syntax = true;
+				break;
+			default:
+				break;
+		}
+	}
+	
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
@@ -201,35 +221,54 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				}
 				if (opt->arg[1] == '+') Ctrl->F.type = (opt->arg[2] - '0');	/* Want first or second derivatives */
 				break;
-			case 'I':
-				Ctrl->I.active = true;
-				if ((c = strchr (opt->arg, 'c')) != NULL) Ctrl->I.mode = INT_2D_CART, c[0] = 0;	/* Chop off unit c as not understood by gmt_get_distance */
-				Ctrl->I.smode = gmt_get_distance (GMT, opt->arg, &(Ctrl->I.inc), &(Ctrl->I.unit));
-				if (strchr (GMT_LEN_UNITS, Ctrl->I.unit)) Ctrl->I.mode = INT_2D_GEO;
-				if (Ctrl->I.mode == INT_2D_CART && c) c[0] = 'c';	/* Restore the c */
+			case 'I':	/* Deprecated, but keep pointer to the arguments so we can build -T argument */
+				i_arg = opt->arg;
+				if (i_arg[0] == '+') i_arg++;	/* Skip posible geodesic mode */
 				break;
 			case 'N':
-				if ((Ctrl->N.active = gmt_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
-					Ctrl->N.file = strdup (opt->arg);
-				else
+				if (gmt_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)) {
+					if (gmt_M_compat_check (GMT, 5)) {
+						GMT_Report (API, GMT_MSG_COMPAT, "-N<knotfile> is deprecated; use -T<knotfile> instead.\n");
+						Ctrl->T.active = true;
+						t_arg = opt->arg;
+					}
+					else
+						n_errors += gmt_default_error (GMT, opt->option);
+				}
+				else if (opt->arg[0]) {
+					col = atoi (opt->arg);
+					n_errors += gmt_M_check_condition (GMT, col < 0, "Syntax error -N option: Column number cannot be negative\n");
+					Ctrl->N.col = col;
+				}
+				else	/* Gave no argument */
 					n_errors++;
 				break;
-			case 'S':
-				Ctrl->S.active = true;
-				if (strchr (opt->arg, '/')) {	/* Got start/stop */
-					Ctrl->S.mode = 1;
-					sscanf (opt->arg, "%[^/]/%s", A, B);
-					gmt_scanf_arg (GMT, A, GMT_IS_UNKNOWN, false, &Ctrl->S.start);
-					gmt_scanf_arg (GMT, B, GMT_IS_UNKNOWN, false, &Ctrl->S.stop);
+			case 'S':	/* Deprecated, but keep pointers to the arguments so we can build -T argument */
+				if (gmt_M_compat_check (GMT, 5)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "-S<start>[/<stop>] option is deprecated; use -T<tmin/tmax/tinc>[+a|n] instead.\n");
+					if (strchr (opt->arg, '/'))	/* Got start/stop */
+						s_arg = opt->arg;
+					else {
+						Ctrl->T.got_one = true;
+						gmt_scanf_arg (GMT, opt->arg, GMT_IS_UNKNOWN, false, &Ctrl->T.start);
+					}
 				}
 				else
-					gmt_scanf_arg (GMT, opt->arg, GMT_IS_UNKNOWN, false, &Ctrl->S.start);
+					n_errors += gmt_default_error (GMT, opt->option);
+				
 				break;
 			case 'T':
 				Ctrl->T.active = true;
-				col = atoi (opt->arg);
-				n_errors += gmt_M_check_condition (GMT, col < 0, "Syntax error -T option: Column number cannot be negative\n");
-				Ctrl->T.col = col;
+				if (gmt_M_compat_check (GMT, 5) && old_syntax) {
+					GMT_Report (API, GMT_MSG_COMPAT, "-T<col> option is deprecated; use -N<col> instead.\n");
+					col = atoi (opt->arg);
+					n_errors += gmt_M_check_condition (GMT, col < 0, "Syntax error -T option: Column number cannot be negative\n");
+					Ctrl->N.col = col;
+				}
+				else {	/* Set output knots */
+					Ctrl->T.active = true;
+					t_arg = opt->arg;
+				}
 				break;
 
 			default:	/* Report bad options */
@@ -238,11 +277,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == 1 && Ctrl->S.stop <= Ctrl->S.start, "Syntax error -S option: <stop> must exceed <start>\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->I.active, "Syntax error: Specify only one of -N and -S\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.inc <= 0.0, "Syntax error -I option: Must specify positive increment\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && gmt_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N. Cannot read file %s\n", Ctrl->N.file);
-	n_errors += gmt_check_binary_io (GMT, (Ctrl->T.col >= 2) ? Ctrl->T.col + 1 : 2);
+	if (i_arg && !Ctrl->T.active) {	/* Combine -I [and maybe -Sstart/stop] into a temporary -T option and parse that */
+		if (s_arg)	/* Build -Tmin/max/inc */
+			sprintf (string, "%s/%s", s_arg, i_arg);
+		else	/* Build -Tinc */
+			sprintf (string, "%s", i_arg);
+		t_arg = string;
+		Ctrl->T.active = true;
+	}
+	if (Ctrl->T.active) {	/* Do this one here since we need Ctrl->N.col to be set first, if selected */
+		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST, Ctrl->N.col);
+	}
+
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->I_deprecated.active, "Syntax error: Specify only one of -N and -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I_deprecated.active && Ctrl->I_deprecated.inc <= 0.0, "Syntax error -I option: Must specify positive increment\n");
+	n_errors += gmt_check_binary_io (GMT, (Ctrl->N.col >= 2) ? Ctrl->N.col + 1 : 2);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Syntax error -F option: Only 1st or 2nd derivatives may be requested\n");
 
@@ -254,19 +303,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 
 int GMT_sample1d (void *V_API, int mode, void *args) {
 	unsigned int geometry, int_mode;
-	bool resample_path = false;
 	int error = 0, result;
 	
 	unsigned char *nan_flag = NULL;
 	
-	size_t m_alloc;
-	uint64_t k, tbl, col, row, seg, m = 0, m_supplied = 0, dim[GMT_DIM_SIZE] = {0, 0, 0, 0};
+	uint64_t k, tbl, col, row, seg, m = 0, dim[GMT_DIM_SIZE] = {0, 0, 0, 0};
 
-	double *t_supplied_out = NULL, *t_out = NULL, *dist_in = NULL, *ttime = NULL, *data = NULL;
-	double tt, low_t, high_t, last_t, *lon = NULL, *lat = NULL;
+	double *t_out = NULL, *dist_in = NULL, *ttime = NULL, *data = NULL;
+	double low_t, high_t, *lon = NULL, *lat = NULL;
 
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
-	struct GMT_DATATABLE *T = NULL, *Tout = NULL;
+	struct GMT_DATATABLE *Tout = NULL;
 	struct GMT_DATASEGMENT *S = NULL, *Sout = NULL;
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct SAMPLE1D_CTRL *Ctrl = NULL;
@@ -295,25 +342,18 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	GMT->current.setting.interpolant = Ctrl->F.mode % 10;
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling for (x,y) which is not the case here */
-	GMT->current.io.skip_if_NaN[Ctrl->T.col] = true;				/* ... But disallow NaN in "time" column */
+	GMT->current.io.skip_if_NaN[Ctrl->N.col] = true;				/* ... But disallow NaN in "time" column */
 	int_mode = Ctrl->F.mode + 10*Ctrl->F.type;
 	
-	if (Ctrl->I.mode) {
-		if (Ctrl->I.smode == GMT_GEODESIC) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot use geodesic distances as path interpolation is spherical; changed to spherical\n");
-			Ctrl->I.smode = GMT_GREATCIRCLE;
-		}
-		if (Ctrl->I.mode == INT_2D_GEO && gmt_M_is_cartesian (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+	if (Ctrl->T.T.spatial) {
 		if (gmt_M_is_cartesian (GMT, GMT_IN) && Ctrl->A.loxo) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Loxodrome mode ignored for Cartesian data.\n");
 			Ctrl->A.loxo = false;
 		}
 		if (Ctrl->A.loxo) GMT->current.map.loxodrome = true;
-		gmt_init_distaz (GMT, Ctrl->I.unit, Ctrl->I.smode, GMT_MAP_DIST);		
-		resample_path = true;	/* Resample (x,y) track according to -I and -A */
 	}
 
-	geometry = (resample_path) ? GMT_IS_LINE : GMT_IS_NONE;
+	geometry = (Ctrl->T.T.spatial) ? GMT_IS_LINE : GMT_IS_NONE;
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
 	}
@@ -331,32 +371,24 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least 2 are needed\n", (int)Din->n_columns);
 		Return (GMT_DIM_TOO_SMALL);
 	}
-	if (Ctrl->T.active && Ctrl->T.col >= Din->n_columns) {	/*  */
+	if (Ctrl->N.active && Ctrl->N.col >= Din->n_columns) {	/*  */
 		GMT_Report (API, GMT_MSG_NORMAL, "Requested time column is greater than data number of columns (%d)\n", (int)Din->n_columns);
 		Return (GMT_RUNTIME_ERROR);
 	}
+	if (!Ctrl->T.active) {	/* Did not have information for -Tinc during parsing, do now */
+		char string[GMT_LEN32] = {""};
+		/* Get the first data increment as our fixed increment */
+		double inc = Din->table[0]->segment[0]->data[Ctrl->N.col][1] - Din->table[0]->segment[0]->data[Ctrl->N.col][0];
+		sprintf (string, "%g", inc);
+		if (gmt_parse_array (GMT, 'T', string, &(Ctrl->T.T), 0, Ctrl->N.col))
+			Return (GMT_RUNTIME_ERROR);
+	}
 	
-	if (Ctrl->N.active) {	/* read file with abscissae */
-		struct GMT_DATASET *Cin = NULL;
-		gmt_init_io_columns (GMT, GMT_IN);	/* Reset any effects of -i */
-		
-		gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
-		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
-			Return (API->error);
-		}
-		gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
-		T = Cin->table[0];	/* Since we only have one table here */
-		t_supplied_out = gmt_M_memory (GMT, NULL, Cin->table[0]->n_records, double);
-		for (seg = 0; seg < T->n_segments; seg++) {
-			gmt_M_memcpy (&t_supplied_out[m], T->segment[seg]->data[GMT_X], T->segment[seg]->n_rows, double);
-			m += T->segment[seg]->n_rows;
-		}
-		m_supplied = m;
-		t_out = gmt_M_memory (GMT, NULL, m_supplied, double);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " knots from file\n", m_supplied);
-		if (GMT_Destroy_Data (API, &Cin) != GMT_NOERROR) {
-			Return (API->error);
-		}
+	if (Ctrl->T.T.file) {	/* Read file with abscissae */
+		if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL))
+			Return (GMT_RUNTIME_ERROR);
+		t_out = gmt_M_memory (GMT, NULL, Ctrl->T.T.n, double);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " knots from file\n", Ctrl->T.T.n);
 	}
 
 	dim[GMT_COL] = Din->n_columns;	/* Only known dimension, the rest is 0 */
@@ -376,78 +408,52 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 			}
 			gmt_M_memset (nan_flag, Din->n_columns, unsigned char);
 			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (gmt_M_is_dnan (S->data[col][row])) nan_flag[col] = true;
-			if (resample_path) {	/* Need distances for path interpolation */
+			if (Ctrl->T.T.spatial) {	/* Need distances for path interpolation */
 				dist_in = gmt_dist_array (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, true);
 				lon = gmt_M_memory (GMT, NULL, S->n_rows, double);
 				lat = gmt_M_memory (GMT, NULL, S->n_rows, double);
 				gmt_M_memcpy (lon, S->data[GMT_X], S->n_rows, double);
 				gmt_M_memcpy (lat, S->data[GMT_Y], S->n_rows, double);
-				m = gmt_resample_path (GMT, &lon, &lat, S->n_rows, Ctrl->I.inc, Ctrl->A.mode);
+				m = gmt_resample_path (GMT, &lon, &lat, S->n_rows, Ctrl->I_deprecated.inc, Ctrl->A.mode);
 				t_out = gmt_dist_array (GMT, lon, lat, m, true);
 			}
-			else if (Ctrl->N.active) {	/* Get relevant t_out segment */
+			else if (Ctrl->T.T.file) {	/* Get relevant t_out segment */
 				uint64_t n_outside = 0;
-				low_t  = MIN (S->data[Ctrl->T.col][0], S->data[Ctrl->T.col][S->n_rows-1]);
-				high_t = MAX (S->data[Ctrl->T.col][0], S->data[Ctrl->T.col][S->n_rows-1]);
-				for (row = m = 0; row < m_supplied; row++) {
-					if (t_supplied_out[row] < low_t || t_supplied_out[row] > high_t) n_outside++;
-					t_out[m++] = t_supplied_out[row];
+				low_t  = MIN (S->data[Ctrl->N.col][0], S->data[Ctrl->N.col][S->n_rows-1]);
+				high_t = MAX (S->data[Ctrl->N.col][0], S->data[Ctrl->N.col][S->n_rows-1]);
+				t_out = gmt_M_memory (GMT, NULL, Ctrl->T.T.n, double);
+				for (row = m = 0; row < Ctrl->T.T.n; row++) {
+					if (Ctrl->T.T.array[row] < low_t || Ctrl->T.T.array[row] > high_t) n_outside++;
+					t_out[m++] = Ctrl->T.T.array[row];
 				}
 				if (n_outside) {
-					GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " knot points outside range %g to %g\n", n_outside, S->data[Ctrl->T.col][0], S->data[Ctrl->T.col][S->n_rows-1]);
+					GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " knot points outside range %g to %g\n", n_outside, S->data[Ctrl->N.col][0], S->data[Ctrl->N.col][S->n_rows-1]);
 				}
 			}
 			else {	/* Generate evenly spaced output */
-				uint64_t first_k, last_k;
-				double abs_inc;
-				if (!Ctrl->I.active) Ctrl->I.inc = S->data[Ctrl->T.col][1] - S->data[Ctrl->T.col][0];
-				if (Ctrl->I.active && (S->data[Ctrl->T.col][1] - S->data[Ctrl->T.col][0]) < 0.0 && Ctrl->I.inc > 0.0) Ctrl->I.inc = -Ctrl->I.inc;	/* For monotonically decreasing data */
-				first_k = (Ctrl->I.inc > 0.0) ? 0 : S->n_rows-1;	/* Index of point with earliest time */
-				last_k  = (Ctrl->I.inc > 0.0) ? S->n_rows-1 : 0;	/* Index of point with latest time */
-				abs_inc = fabs (Ctrl->I.inc);
-				if (!Ctrl->S.active) {	/* Set first output time */
-					Ctrl->S.start = floor (S->data[Ctrl->T.col][first_k] / abs_inc) * abs_inc;
-					if (Ctrl->S.start < S->data[Ctrl->T.col][first_k]) Ctrl->S.start += abs_inc;
-				}
-				last_t = (Ctrl->S.mode) ? Ctrl->S.stop : S->data[Ctrl->T.col][last_k];
-				/* So here, Ctrl->S.start holds to smallest t value and last_t holds the largest t_value, regardless of inc sign */
-				m = m_alloc = lrint (fabs((last_t - Ctrl->S.start) / abs_inc)) + 1;
-				t_out = gmt_M_memory (GMT, t_out, m_alloc, double);
-				row = 1;
-				if (Ctrl->I.inc > 0.0) {
-					t_out[0] = Ctrl->S.start;
-					while (row < m && (tt = Ctrl->S.start + row * Ctrl->I.inc) <= last_t) {
-						t_out[row] = tt;
-						row++;
-					}
-					if (fabs (t_out[row-1]-last_t) < GMT_CONV4_LIMIT) t_out[row-1] = last_t;	/* Fix roundoff */
-				}
-				else {
-					t_out[0] = last_t;
-					while (row < m && (tt = last_t + row * Ctrl->I.inc) >= Ctrl->S.start) {
-						t_out[row] = tt;
-						row++;
-					}
-					if (fabs (t_out[row-1]-Ctrl->S.start) < GMT_CONV4_LIMIT) t_out[row-1] = Ctrl->S.start;	/* Fix roundoff */
-				}
-				m = row;
+				double min, max;
+				min = (Ctrl->T.got_one) ? Ctrl->T.start : S->data[Ctrl->N.col][0];
+				max = S->data[Ctrl->N.col][S->n_rows-1];
+				gmt_create_array (GMT, 'T', &(Ctrl->T.T), &min, &max);
+				m = Ctrl->T.T.n;
+				t_out = Ctrl->T.T.array;
 			}
 			/* Readjust the row allocation for the current output segment */
 			Sout = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, m, Din->n_columns, NULL, Tout->segment[seg]);
-			if (resample_path) {	/* Use resampled path coordinates */
+			if (Ctrl->T.T.spatial) {	/* Use resampled path coordinates */
 				gmt_M_memcpy (Sout->data[GMT_X], lon, m, double);
 				gmt_M_memcpy (Sout->data[GMT_Y], lat, m, double);
 			}
 			else
-				gmt_M_memcpy (Sout->data[Ctrl->T.col], t_out, m, double);
+				gmt_M_memcpy (Sout->data[Ctrl->N.col], t_out, m, double);
 			if (S->header) Sout->header = strdup (S->header);	/* Duplicate header */
 			SH = gmt_get_DS_hidden (Sout);
 			Sout->n_rows = SH->n_alloc = m;
 				
 			for (col = 0; m && col < Din->n_columns; col++) {
 
-				if (col == Ctrl->T.col && !resample_path) continue;	/* Skip the time column */
-				if (resample_path && col <= GMT_Y) continue;		/* Skip the lon,lat columns */
+				if (col == Ctrl->N.col && !Ctrl->T.T.spatial) continue;	/* Skip the time column */
+				if (Ctrl->T.T.spatial && col <= GMT_Y) continue;		/* Skip the lon,lat columns */
 				
 				if (nan_flag[col] && !GMT->current.setting.io_nan_records) {	/* NaN's present, need "clean" time and data columns */
 
@@ -455,7 +461,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 					data = gmt_M_memory (GMT, NULL, S->n_rows, double);
 					for (row = k = 0; row < S->n_rows; row++) {
 						if (gmt_M_is_dnan (S->data[col][row])) continue;
-						ttime[k] = (resample_path) ? dist_in[row] : S->data[Ctrl->T.col][row];
+						ttime[k] = (Ctrl->T.T.spatial) ? dist_in[row] : S->data[Ctrl->N.col][row];
 						data[k++] = S->data[col][row];
 					}
 					result = gmt_intpol (GMT, ttime, data, k, m, t_out, Sout->data[col], int_mode);
@@ -463,7 +469,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 					gmt_M_free (GMT, data);
 				}
 				else {
-					ttime = (resample_path) ? dist_in : S->data[Ctrl->T.col];
+					ttime = (Ctrl->T.T.spatial) ? dist_in : S->data[Ctrl->N.col];
 					result = gmt_intpol (GMT, ttime, S->data[col], S->n_rows, m, t_out, Sout->data[col], int_mode);
 				}
 
@@ -472,11 +478,11 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 					return (result);
 				}
 			}
-			if (resample_path) {	/* Free up memory used */
+			if (Ctrl->T.T.spatial) {	/* Free up memory used */
 				gmt_M_free (GMT, dist_in);	gmt_M_free (GMT, t_out);
 				gmt_M_free (GMT, lon);		gmt_M_free (GMT, lat);
 			}
-			else if (!Ctrl->N.active)
+			else if (Ctrl->T.T.file)
 				gmt_M_free (GMT, t_out);
 			Dout->table[tbl]->segment[seg] = Sout;
 		}
@@ -487,7 +493,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 
 	if (Ctrl->N.active) gmt_M_free (GMT, t_out);
 	gmt_M_free (GMT, nan_flag);
-	if (Ctrl->N.active) gmt_M_free (GMT, t_supplied_out);
+	gmt_M_free (GMT, Ctrl->T.T.array);
 	
 	Return (GMT_NOERROR);
 }

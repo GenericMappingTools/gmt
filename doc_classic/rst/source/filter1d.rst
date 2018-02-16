@@ -15,8 +15,8 @@ Synopsis
 
 **filter1d** [ *table* ] |-F|\ *type<width>*\ [*modifiers*]
 [ |-D|\ *increment* ] [ |-E| ]
-[ |-L|\ *lack\_width* ] [ |-N|\ *t\_col*\ \|\ *params* ] [ |-Q|\ *q\_factor* ]
-[ |-S|\ *symmetry\_factor* ] [ |-T|\ *t\_min/t\_max/t\_inc*\ [**+n**] ]
+[ |-L|\ *lack\_width* ] [ |-N|\ *t\_col* ] [ |-Q|\ *q\_factor* ]
+[ |-S|\ *symmetry\_factor* ] [ |-T|[\ *min/max*\ /]\ inc*\ [**+a**\ \|\ **n**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -142,10 +142,18 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *t_min/t_max/t_inc*\ [**+**]
-    Make evenly spaced time-steps from *t\_min* to *t_max* by *t_inc*
-    [Default uses input times]. Append **+n** to *t_inc* if you are
-    specifying the number of equidistant points instead. 
+**-T**\ [\ *min/max*\ /]\ inc*\ [**+a**\ \|\ **n**]
+    Make evenly spaced time-steps from *min* to *max* by *inc*
+    [Default uses input times]. Append **+n** if *inc* is meant to
+    indicate the number of equidistant points instead. 
+    To filter an absolute time series, append a valid time unit
+    (**y**\ \|\ **o**\ \|\ **w**\ \|\ **d**\ \|\ **h**\ \|\ **m**\ \|\ **s**) to the increment.
+    For spatial filtering with distance computed from the first two columns, specify the increment as
+    [±][*unit*]\ *inc*, where - means fast (Flat Earth) and + means slow (ellipsoidal) calculations [great circle],
+    and append a geospatial distance unit from the list
+    **d**\ \|\ **m**\ \|\ **s**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**)
+    or use **c** (for Cartesian distances).
+    Optionally, append **+a** to add such internal distances as a final output column [no distances added].
 
 .. _-V:
 
@@ -207,11 +215,11 @@ v3312.dt, checking for gaps of 10km and asymmetry of 0.3:
     gmt filter1d v3312.dt -FM50 -T0/100000/25 -L10 -S0.3 > v3312_filt.dt
 
 To smooth a noisy geospatial track using a Gaussian filter of full-width 100 km
-and not shorten the track, use
+and not shorten the track, and add the distances to the file, use
 
    ::
 
-    gmt filter1d track.txt -Ngk+a -E -Fg200 |> smooth_track.txt
+    gmt filter1d track.txt -Tk+a -E -Fg200 > smooth_track.txt
 
 See Also
 --------

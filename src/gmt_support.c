@@ -15053,11 +15053,17 @@ char *gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lo
 }
 
 uint64_t gmt_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
-	/* Just makes an equidistant array given wetted input parameters */
-	uint64_t k, n = lrint ((max - min) / inc) + 1;
+	/* Just makes an equidistant array given vetted input parameters */
+	uint64_t k, n = lrint ((max - min) / fabs (inc)) + 1;
 	double *val = gmt_M_memory (GMT, NULL, n, double);
-	for (k = 0; k < n; k++) val[k] = min + k * inc;
-	val[n-1] = max;	/* To avoid round-off all the way to the end */
+	if (inc < 0.0) {	/* Reverse direction max:inc:min */
+		for (k = 0; k < n; k++) val[k] = max + k * inc;
+		val[n-1] = min;	/* To avoid round-off all the way to the end */
+	}
+	else {
+		for (k = 0; k < n; k++) val[k] = min + k * inc;
+		val[n-1] = max;	/* To avoid round-off all the way to the end */
+	}
 	*array = val;
 	return (n);
 }
@@ -15198,13 +15204,24 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		}
 		if (txt[ns][len] == 'c') txt[ns][len] = '\0';	/* The c unit has served its purpose */
 		/* Gave geospatial distance increment, so initialize distance machinery */
-		T->distmode = gmt_get_distance (GMT, txt[ns], &(T->inc), &(T->unit));
+		if (txt[ns][0] == '-' && strchr ("-+", txt[ns][1])) {	/* Rare negative increment before -|+ for geospatial calculation mode */
+			T->distmode = gmt_get_distance (GMT, &txt[ns][1], &(T->inc), &(T->unit));
+			T->reverse = true;	/* Want array to be reversed */
+		}
+		else
+			T->distmode = gmt_get_distance (GMT, txt[ns], &(T->inc), &(T->unit));
 		gmt_init_distaz (GMT, T->unit, T->distmode, GMT_MAP_DIST);
 		T->spatial = (T->unit == 'X') ? 1 : 2;	
 	}
 
 	/* 5. Get the increment (or count) */
-	gmt_scanf_float (GMT, txt[ns], &(T->inc));
+	if (!T->spatial) {
+		gmt_scanf_float (GMT, txt[ns], &(T->inc));
+		if (T->inc < 0.0) {	/* Flag to be reversed */
+			T->inc = -T->inc;
+			T->reverse = true;	/* Want array to be reversed */
+		}
+	}
 	/* 6. If the min/max limits were given via argument then it is OK to parse */
 	T->set = 1;	/* Set inc so far */
 	if (ns == 2) {
