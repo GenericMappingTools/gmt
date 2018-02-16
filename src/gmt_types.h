@@ -81,9 +81,11 @@ struct GMT_OBSERVATION {
 struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays */
 	bool temporal;	/* true if array will be in absolute time */ 
 	bool vartime;	/* true if <unit> implies a variable calendar unit */ 
-	bool spatial;	/* true if <unit> implies a geospatial distance */ 
 	bool count;	/* true if we got number of items rather than increment */
+	bool add;	/* true if we are asked to add a computed spatial distance column to output */
+	unsigned int spatial;	/* 1 if <unit> implies a Cartesian and 2 if a geospatial distance */ 
 	unsigned int distmode;	/* Type of geospatial calculation mode for distances */
+	unsigned int set;	/* 1 if inc set, 3 if min/max/in set, 0 otherwise */
 	uint64_t n;	/* Number of elements in the array when complete */
 	double min, max, inc;	/* Equidistant items */
 	double *array;	/* This will eventually hold the array */
