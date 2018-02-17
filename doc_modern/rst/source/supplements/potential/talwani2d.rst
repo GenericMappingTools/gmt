@@ -126,7 +126,7 @@ Optional Arguments
 
 .. include:: ../../explain_distunits.rst_
 
-.. include:: explain_array.rst_
+.. include:: ../../explain_array.rst_
 
 Examples
 --------
