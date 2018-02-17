@@ -132,6 +132,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a geospatial distance unit (%s) or c (for Cartesian distances).\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   See -A to control how the spatial resampling is done.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +a to add such internal distances as a final output column [no distances added].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column.\n");
 	GMT_Option (API, "V,bi2,bo,d,e,f,g,h,i,o,s,.");
 	
 	return (GMT_MODULE_USAGE);

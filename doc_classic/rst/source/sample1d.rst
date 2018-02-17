@@ -16,10 +16,8 @@ Synopsis
 **sample1d** [ *table* ]
 [ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
 [ |-F|\ **l**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **+2**] ]
-[ |-I|\ *inc*\ [*unit*] ]
-[ |-N|\ *knotfile* ]
-[ |-S|\ *start*\ [/*stop*] ]
-[ |-T|\ *col* ]
+[ |-N|\ *col* ]
+[ |-T|\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -84,40 +82,26 @@ Optional Arguments
     You may optionally evaluate the first or second derivative of the spline
     by appending **1** or **2**, respectively.
 
-.. _-I:
-
-**-I**\ *inc*\ [*unit*]
-    *inc* defines the sampling interval [Default is the separation
-    between the first and second abscissa point in the *table*]. Append
-    a distance unit (see UNITS) to indicate that the first two columns
-    contain longitude, latitude and you wish to resample this path with
-    a spacing of *inc* in the chosen units. For sampling of (x, y)
-    Cartesian tracks, specify the unit as c. Use **-A** to control how
-    path resampling is performed.
-
 .. _-N:
 
-**-N**\ *knotfile*
-    *knotfile* is an optional ASCII file with the *time* locations where the
-    data set will be resampled in the first column. Note: If **-H** is
-    selected it applies to both *table* and *knotfile*. Also note that
-    **-i** never applies to *knotfile* since we always consider the
-    first column only.
-
-.. _-S:
-
-**-S**\ *start*\ [*stop*] 
-    For equidistant sampling, *start* indicates the *time* of the
-    first output value. [Default is the smallest even multiple of *inc*
-    inside the range of *table*]. Optionally, append /*stop* to
-    indicate the *time* of the last output value [Default is the
-    largest even multiple of *inc* inside the range of *table*].
+**-N**\ *col*
+    Sets the column number of the independent *time* variable [Default is 0
+    (first)]. 
 
 .. _-T:
 
-**-T**\ *col*
-    Sets the column number of the independent *time* variable [Default is 0
-    (first)]. 
+**-T**\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**]
+    Make evenly spaced time-steps from *min* to *max* by *inc*
+    [Default uses input times]. Append **+n** if *inc* is meant to
+    indicate the number of equidistant points instead. 
+    To resample an absolute time series, append a valid time unit
+    (**y**\ \|\ **o**\ \|\ **w**\ \|\ **d**\ \|\ **h**\ \|\ **m**\ \|\ **s**) to the increment.
+    For spatial resampling with distance computed from the first two columns, specify the increment as
+    [*unit*]\ *inc* and append a geospatial distance unit from the list
+    **d**\ \|\ **m**\ \|\ **s**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**)
+    or use **c** (for Cartesian distances).
+    Optionally, append **+a** to add such internal distances as a final output column [no distances added].
+    Alternatively, give a file with output times in the first column.
 
 .. _-V:
 

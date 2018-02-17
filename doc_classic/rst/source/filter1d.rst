@@ -149,6 +149,7 @@ Optional Arguments
     **d**\ \|\ **m**\ \|\ **s**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**)
     or use **c** (for Cartesian distances).
     Optionally, append **+a** to add such internal distances as a final output column [no distances added].
+    Alternatively, give a file with output times in the first column.
 
 .. _-V:
 

@@ -75,11 +75,9 @@ struct TALWANI2D_CTRL {
 		bool active;
 		char *file;
 	} N;
-	struct T {	/* -T[<tmin/tmax/t_inc>[+]] | -T<file> */
+	struct T {	/* -T<min/max/inc>[+n] | -T<file> */
 		bool active;
-		bool notime;
-		double min, max, inc;
-		char *file;
+		struct GMT_ARRAY T;
 	} T;
 	struct Z {	/* Observation level constant */
 		bool active;
@@ -120,6 +118,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *C) {	/* D
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->N.file);	
+	gmt_M_free (GMT, C->T.T.array);
 	gmt_M_free (GMT, C);	
 }
 
@@ -178,14 +177,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 				break;
 			case 'T':	/* Either get a file with time coordinate or a min/max/dt setting */
 				Ctrl->T.active = true;
-				/* Presumably gave tmin/tmax/tinc */
-				if (sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.min, &Ctrl->T.max, &Ctrl->T.inc) != 3) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unable to decode arguments for -T\n");
-					n_errors++;
-				}
-				if (opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of points instead; calculate inc */
-					Ctrl->T.inc = (Ctrl->T.max - Ctrl->T.min) / (Ctrl->T.inc - 1.0);
-				}
+				n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_DIST, 0);
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
@@ -217,7 +209,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: talwani2d <modelfile> [-A] [-D<rho>] [-Ff|n[<lat>]|v]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [-T[<xmin>/<xmax>/<xinc>[+]]] [%s] [-Z[<level>][/<ymin/<ymax>]]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [-T[<xmin>/<xmax>/<xinc>[+n]]] [%s] [-Z[<level>][/<ymin/<ymax>]]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE,"\t[%s] [%s] [%s]\n\t[%s] [%s]%s\n\n", GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -237,7 +229,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   z-coordinates then these are used as observation levels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   You can use -Z to override these by setting a constant level.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set domain from <xmin> to <xmax> in steps of <xinc>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to xinc to indicate the number of points instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to xinc to indicate the number of points instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output positions in the first column.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set observation level for output locations [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For FAA only: Optionally append <ymin/ymax> to get a 2.5-D solution.\n");
@@ -564,31 +557,14 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	scl = (Ctrl->M.active[TALWANI2D_HOR]) ? METERS_IN_A_KM : 1.0;	/* Perhaps convert to m */
 	
 	if (Ctrl->T.active) {
-		/* Make sure the min/man/inc values harmonize */
-		switch (gmt_minmaxinc_verify (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, GMT_CONV4_LIMIT)) {
-			case 1:
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: (max - min) is not a whole multiple of inc\n");
-				Return (GMT_PARSE_ERROR);
-				break;
-			case 2:
-				if (Ctrl->T.inc != 1.0) {	/* Allow for somebody explicitly saying -T0/0/1 */
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: (max - min) is <= 0\n");
-					Return (GMT_PARSE_ERROR);
-				}
-				break;
-			case 3:
-				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: inc is <= 0\n");
-				Return (GMT_PARSE_ERROR);
-				break;
-			default:	/* OK */
-				break;
-		}
+		if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL))
+			Return (GMT_RUNTIME_ERROR);
 		geometry = GMT_IS_LINE;
-		dim[GMT_ROW] = lrint ((Ctrl->T.max - Ctrl->T.min) / Ctrl->T.inc) + 1;
+		dim[GMT_ROW] = Ctrl->T.T.n;
 		if ((Out = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		S = Out->table[0]->segment[0];	/* Only one segment when -T is used */
 		S->n_rows = dim[GMT_ROW];
-		for (row = 0; row < dim[GMT_ROW]; row++) S->data[GMT_X][row] = (row == (S->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
+		gmt_M_memcpy (S->data[GMT_X], Ctrl->T.T.array, Ctrl->T.T.n, double);
 	}
 	else {	/* Got a dataset with output locations */
 		geometry = GMT_IS_PLP;	/* We don't really know */
