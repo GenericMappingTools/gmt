@@ -15144,10 +15144,11 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 				case 'a':	/* Add spatial distance column to output */
 					T->add = true; 
 					break;
-				case 'N':	/* Gave number of points instead; calculate inc later */
+				case 'n':	/* Gave number of points instead; calculate inc later */
 					T->count = true;
 					break;
 				default:
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-%cmin/max/inc+ modifier +%s not recognized.\n", option, p);
 					break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 			}
 		}
