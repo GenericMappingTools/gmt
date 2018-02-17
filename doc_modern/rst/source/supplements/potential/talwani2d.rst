@@ -18,7 +18,7 @@ Synopsis
 [ |-F|\ **f**\ \|\ **n**\ [*lat*]\ \|\ **v** ] 
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
-[ |-T|\ *min*\ /*max*\ /*inc*\ [**n**] ]
+[ |-T|\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list* ]
 [ |-Z|\ *level*\ [*ymin*\ /*ymax*\ ] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -87,11 +87,9 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *min*\ *max*\ /*inc*\ [**n**]
-    Specify an equidistant output lattice starting at *x = min*, with increments *inc* and
-    ending at *x = max*.  To specify the desired number of points between the limits instead,
-    let *inc* be the number of points and append **+n**.  Alternatively, give a file with
-    output locations in the first column.
+**-T**\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list*
+    Specify an equidistant output lattice.
+    For details on array creation, see `Generate 1D Array`_.
 
 .. _-Z:
 
@@ -128,6 +126,7 @@ Optional Arguments
 
 .. include:: ../../explain_distunits.rst_
 
+.. include:: explain_array.rst_
 
 Examples
 --------

@@ -147,7 +147,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *C) {	/* 
 	gmt_M_str_free (C->E.file);
 	gmt_M_str_free (C->Q.file);
 	gmt_M_str_free (C->T.file);
-	gmt_M_free (GMT, C->Q.T.array);
+	gmt_free_array (GMT, &(C->Q.T));
 	gmt_M_free (GMT, C);
 }
 

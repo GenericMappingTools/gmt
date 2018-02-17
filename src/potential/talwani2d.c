@@ -118,7 +118,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *C) {	/* D
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->N.file);	
-	gmt_M_free (GMT, C->T.T.array);
+	gmt_free_array (GMT, &(C->T.T));
 	gmt_M_free (GMT, C);	
 }
 

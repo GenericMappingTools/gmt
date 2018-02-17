@@ -174,6 +174,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->F.file);
+	gmt_free_array (GMT, &(C->T.T));
 	gmt_M_free (GMT, C);
 }
 

@@ -170,7 +170,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *C) {	/* Dea
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->A.file);
 	gmt_M_free (GMT, C->C.cols);
-	gmt_M_free (GMT, C->T.T.array);
+	gmt_free_array (GMT, &(C->T.T));
 	gmt_M_free (GMT, C);
 }
 

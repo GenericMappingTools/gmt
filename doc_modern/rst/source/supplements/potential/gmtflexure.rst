@@ -98,9 +98,9 @@ Optional Arguments
     Sets the vertical load specification. Choose among these three options:
     **-Qn** means there is no input load file and that any deformation is
     simply driven by the boundary conditions set via **-A**.  If no rigidity or
-    elastic thickness file is given via **-E** then you must also append *min*/*max*/*inc*
-    to initiate the locations used for the calculations.  Append **+n** to *inc*
-    to indicate the number of points instead.
+    elastic thickness file is given via **-E** then you must also append arguments
+    to create the locations used for the calculations; for details on array creation,
+    see `Generate 1D Array`_.
     **-Qq**\ [*loadfile*] is a file (or stdin if not given) with (x,load in Pa)
     for all equidistant data locations.  Finally, **-Qt**\ [*topofile*] is a file
     (or stdin if not given) with (x,load in m or km, positive up); see **-M** for
@@ -152,6 +152,8 @@ Optional Arguments
 .. include:: ../../explain_-ocols.rst_
 
 .. include:: ../../explain_help.rst_
+
+.. include:: explain_array.rst_
 
 Note on Units
 -------------

@@ -87,10 +87,12 @@ struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays
 	unsigned int spatial;	/* 1 if <unit> implies a Cartesian and 2 if a geospatial distance */ 
 	unsigned int distmode;	/* Type of geospatial calculation mode for distances */
 	unsigned int set;	/* 1 if inc set, 3 if min/max/in set, 0 otherwise */
+	unsigned int col;	/* The column that this array goes with */
 	uint64_t n;	/* Number of elements in the array when complete */
 	double min, max, inc;	/* Equidistant items */
 	double *array;	/* This will eventually hold the array */
 	char *file;	/* In case a file is given with the values */
+	char *list;	/* In case a comma-separated list of values */
 	char unit;	/* To remind us what units the inc is in, if given */
 };
 

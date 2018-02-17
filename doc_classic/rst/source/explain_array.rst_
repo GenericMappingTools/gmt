@@ -1,0 +1,20 @@
+Generate 1D Array
+-----------------
+
+Make an evenly spaced coordinate array from *min* to *max* in steps of *inc*.
+Append **+n** if *inc* is meant to indicate the number of equidistant coordinates
+instead.   Alternatively, give a file with output coordinates in the first column,
+or provide a comma-separated list of coordinates.
+
+If the module allows you to set up an absolute time series, append a valid time unit from the list
+**y**\ ear, m\ **o**\ nth, **w**\ eek, **d**\ ay, **h**\ our, **m**\ inute, and **s**\ econd
+to the given increment. Note: The internal time unit is still controlled
+independently by :ref:`TIME_UNIT <TIME_UNIT>`.
+
+Likewise, if the module allows you to set up a spatial distance series (with distance computed
+from the first two data columns), specify the increment as [±][*unit*]\ *inc*, where - means fast
+(Flat Earth) and + means slow (ellipsoidal) distance calculations [great circle], and append a
+geospatial distance unit from the list
+**d**\ egree (arc), **m**\ inute (arc), **s**\ econd (arc), m\ **e**\ ter, **f**\ oot, **k**\ ilometer,
+**M**\ iles (statute), **n**\ autical miles, or s\ **u**\ rvey foot.  For Cartesian distances, you must
+use the special unit **c**.

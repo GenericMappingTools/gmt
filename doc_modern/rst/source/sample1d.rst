@@ -17,7 +17,7 @@ Synopsis
 [ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
 [ |-F|\ **l**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **+2**] ]
 [ |-N|\ *col* ]
-[ |-T|\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**] ]
+[ |-T|\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**] \|\ |-T|\ *file*\ \|\ *list* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -90,18 +90,9 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**]
-    Make evenly spaced time-steps from *min* to *max* by *inc*
-    [Default uses input times]. Append **+n** if *inc* is meant to
-    indicate the number of equidistant points instead. 
-    To resample an absolute time series, append a valid time unit
-    (**y**\ \|\ **o**\ \|\ **w**\ \|\ **d**\ \|\ **h**\ \|\ **m**\ \|\ **s**) to the increment.
-    For spatial resampling with distance computed from the first two columns, specify the increment as
-    [*unit*]\ *inc* and append a geospatial distance unit from the list
-    **d**\ \|\ **m**\ \|\ **s**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**)
-    or use **c** (for Cartesian distances).
-    Optionally, append **+a** to add such internal distances as a final output column [no distances added].
-    Alternatively, give a file with output times in the first column.
+**-T**\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**] \|\ |-T|\ *file*\ \|\ *list*
+    Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
+    For details on array creation, see `Generate 1D Array`_.
 
 .. _-V:
 
@@ -138,6 +129,8 @@ Optional Arguments
 .. include:: explain_distunits.rst_
 
 .. include:: explain_precision.rst_
+
+.. include:: explain_array.rst_
 
 Examples
 --------

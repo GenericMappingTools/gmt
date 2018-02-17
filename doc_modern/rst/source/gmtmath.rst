@@ -18,7 +18,7 @@ Synopsis
 [ |-E|\ *eigen* ] [ |-I| ]
 [ |-N|\ *n\_col*\ [/*t_col*] ]
 [ |-Q| ] [ |-S|\ [**f**\ \|\ **l**] ]
-[ |-T|\ *min*/*max*/*inc*\ [**+n**\ ]\|\ *file* ]
+[ |-T|\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -137,18 +137,12 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *min*/*max*/*inc*\ [**+n**\ ]\|\ *file*
-    Required when no input files are given. Sets the t-coordinates of
-    the first and last point and the equidistant sampling interval for
-    the "time" column (see **-N**). Append **+n** if you are specifying
-    the number of equidistant points instead. If there is no time column
-    (only data columns), give **-T** with no arguments; this also
-    implies **-Ca**. Alternatively, give the name of a file whose first
-    column contains the desired t-coordinates which may be irregular.
-    For setting up absolute time increments, append a unit to *inc* from
-    the list **y**\ ear, m\ **o**\ nth, **d**\ ay, **h**\ our, **m**\ inute,
-    and **s**\ econd.  Note: The internal time unit is still controlled
-    independently by :ref:`TIME_UNIT <TIME_UNIT>`.
+**-T**\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ]
+    Required when no input files are given. Builds an array for 
+    the "time" column (see **-N**). If there is no time column
+    (i.e., your input has only data columns), give **-T** with
+    no arguments; this also implies **-Ca**. 
+    For details on array creation, see `Generate 1D Array`_.
 
 .. _-V:
 
@@ -183,6 +177,8 @@ Optional Arguments
 .. include:: explain_-s.rst_
 
 .. include:: explain_help.rst_
+
+.. include:: explain_array.rst_
 
 Operators
 ---------
