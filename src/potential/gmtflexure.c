@@ -94,7 +94,7 @@ struct GMTFLEXURE_CTRL {
 		bool active;
 		bool set_x;
 		unsigned int mode;
-		double min, max, inc;
+		struct GMT_ARRAY T;
 		char *file;
 	} Q;
 	struct S {	/* Compute second derivatives (curvatures) */
@@ -147,6 +147,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *C) {	/* 
 	gmt_M_str_free (C->E.file);
 	gmt_M_str_free (C->Q.file);
 	gmt_M_str_free (C->T.file);
+	gmt_M_free (GMT, C->Q.T.array);
 	gmt_M_free (GMT, C);
 }
 
@@ -259,13 +260,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct 
 					case 'n':	Ctrl->Q.mode = NO_LOAD;
 						if (opt->arg[1]) {	/* Gave domain info */
 							Ctrl->Q.set_x = true;
-							if (sscanf (&opt->arg[1], "%lf/%lf/%lf", &Ctrl->Q.min, &Ctrl->Q.max, &Ctrl->Q.inc) != 3) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Unable to decode distance arguments for -Q\n");
-								n_errors++;
-							}
-							if (opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of points instead; calculate inc */
-								Ctrl->Q.inc = (Ctrl->Q.max - Ctrl->Q.min) / (Ctrl->Q.inc - 1.0);
-							}
+							n_errors += gmt_parse_array (GMT, 'Q', &opt->arg[1], &(Ctrl->Q.T), GMT_ARRAY_DIST, 0);
 						}
 						break;
 					case 'q':	Ctrl->Q.mode = F_LOAD; break;
@@ -314,7 +309,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Input load option. Choose among these options:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qn indicates there is no load (only -A and -L contribute to deformation).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      If no file is given via -E<file> then append <min/max/inc> to set an equidistant profile.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append + to inc to indicate the number of points instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Append +n to inc to indicate the number of points instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qq[<load>] is a file (or stdin) with (x,load in Pa) for all points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qt[<load>] is a file (or stdin) with (x,load in m or km) for all points (see -M).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -1341,16 +1336,16 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		}
 		else {	/* No input files given, create single equidistant profile */
 			uint64_t dim[GMT_DIM_SIZE] = {1, 1, 0, 2};
-			dim[2] = urint ((Ctrl->Q.max - Ctrl->Q.min)/Ctrl->Q.inc) + 1;
+			if (gmt_create_array (GMT, 'Q', &(Ctrl->Q.T), NULL, NULL))
+				Return (GMT_RUNTIME_ERROR);
+			dim[2] = Ctrl->Q.T.n;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create empty load table data\n");
 			if ((Q = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				Return (API->error);	/* An empty table */
 			}
 			S = Q->table[0]->segment[0];	/* Only a single segment here */
 			S->n_rows = dim[GMT_ROW];
-			for (row = 0; row < dim[GMT_ROW]; row++) {	/* Fill in x values */
-				S->data[GMT_X][row] = (row == (S->n_rows-1)) ? Ctrl->Q.max: Ctrl->Q.min + row * Ctrl->Q.inc;
-			}
+			gmt_M_memcpy (S->data[GMT_X], Ctrl->Q.T.array, Ctrl->Q.T.n, double);
 		}
 	}
 	if (!Ctrl->E.file) {	/* Got a constant Te in m instead */

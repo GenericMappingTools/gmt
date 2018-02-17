@@ -99,7 +99,7 @@ Optional Arguments
     **-Qn** means there is no input load file and that any deformation is
     simply driven by the boundary conditions set via **-A**.  If no rigidity or
     elastic thickness file is given via **-E** then you must also append *min*/*max*/*inc*
-    to initiate the locations used for the calculations.  Append **+** to *inc*
+    to initiate the locations used for the calculations.  Append **+n** to *inc*
     to indicate the number of points instead.
     **-Qq**\ [*loadfile*] is a file (or stdin if not given) with (x,load in Pa)
     for all equidistant data locations.  Finally, **-Qt**\ [*topofile*] is a file
