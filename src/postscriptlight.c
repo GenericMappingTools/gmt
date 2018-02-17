@@ -1583,7 +1583,7 @@ static char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const c
 	return (NULL);	/* No file found, give up */
 }
 
-static void psl_place_encoding (struct PSL_CTRL *PSL, const char *encoding) {
+static int psl_place_encoding (struct PSL_CTRL *PSL, const char *encoding) {
 	/* Write the specified encoding string to file */
 	int k = 0, match = 0;
 	while (PSL_ISO_name[k] && (match = strcmp (encoding, PSL_ISO_name[k])) != 0) k++;
@@ -1593,6 +1593,7 @@ static void psl_place_encoding (struct PSL_CTRL *PSL, const char *encoding) {
 		PSL_message (PSL, PSL_MSG_NORMAL, "Fatal Error: Could not find ISO encoding %s\n", encoding);
 		PSL_exit (EXIT_FAILURE);
 	}
+	return 0;
 }
 
 /* psl_bulkcopy copies the given long static string (defined in PSL_strings.h)
@@ -2895,7 +2896,7 @@ static int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *l
 	return 1;
 }
 
-static void psl_init_fonts (struct PSL_CTRL *PSL) {
+static int psl_init_fonts (struct PSL_CTRL *PSL) {
 	FILE *in = NULL;
 	int n_PSL_fonts;
 	unsigned int i = 0;
@@ -2942,6 +2943,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL) {
 	}
 	/* Final allocation of font array */
 	PSL->internal.font = PSL_memory (PSL, PSL->internal.font, PSL->internal.N_FONTS, struct PSL_FONT);
+	return PSL_NO_ERROR;
 }
 
 static char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset) {
@@ -3218,8 +3220,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int flags, char *sharedir, 
 	}
 
 	if (!PSL->init.encoding) PSL->init.encoding = strdup ("Standard");		/* Character encoding to use */
-	psl_init_fonts (PSL);								/* Load the available font information */
-	return (PSL_NO_ERROR);
+	return (psl_init_fonts (PSL));								/* Load the available font information */
 }
 
 int PSL_endsession (struct PSL_CTRL *PSL) {
@@ -4052,7 +4053,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
    title:	Title of the plot (or NULL if not specified)
    font_no:	Array of font numbers used in the document (or NULL if not determined)
 */
-	int i, manual_feed = false;
+	int i, manual_feed = false, err = 0;
 	double no_rgb[4] = {-1.0, -1.0, -1.0, 0.0}, dummy_rgb[4] = {-2.0, -2.0, -2.0, 0.0}, black[4] = {0.0, 0.0, 0.0, 0.0}, scl;
 	time_t right_now;
 	const char *uname[4] = {"cm", "inch", "meter", "point"}, xy[2] = {'x', 'y'};
@@ -4161,7 +4162,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		PSL_command (PSL, "%%%%BeginProlog\n");
 		psl_bulkcopy (PSL, "PSL_prologue");	/* General PS code */
 		sprintf (PSL_encoding, "PSL_%s", PSL->init.encoding);	/* Prepend the PSL_ prefix */
-		psl_place_encoding (PSL, PSL_encoding);
+		err = psl_place_encoding (PSL, PSL_encoding);
+		if (err) return err;
 		psl_def_font_encoding (PSL);		/* Initialize book-keeping for font encoding and write font macros */
 
 		psl_bulkcopy (PSL, "PSL_label");	/* PS code for label line annotations and clipping */
