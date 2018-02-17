@@ -15052,7 +15052,7 @@ char *gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lo
 	return string;
 }
 
-uint64_t gmt_make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
+GMT_LOCAL uint64_t make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
 	/* Just makes an equidistant array given vetted input parameters */
 	uint64_t k, n = lrint ((max - min) / fabs (inc)) + 1;
 	double *val = gmt_M_memory (GMT, NULL, n, double);
@@ -15299,7 +15299,10 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 	if (T->vartime)	/* Must call special function that knows about variable months and years */
 		T->n = gmt_time_array (GMT, t0, t1, inc, GMT->current.setting.time_system.unit, false, &(T->array));
 	else {	/* Equidistant intervals are straightforward - make sure the min/man/inc values harmonize */
-		t0 = rint (t0 / inc) * inc;	t1 = rint (t1 / inc) * inc;
+		if (!T->count) {	/* Ensure nice rounding */
+			t0 = rint (t0 / inc) * inc;	if (t0 < T->min) t0 += inc;
+			t1 = rint (t1 / inc) * inc;	if (t1 > T->max) t1 -= inc;
+		}
 		switch (gmt_minmaxinc_verify (GMT, t0, t1, inc, GMT_CONV4_LIMIT)) {
 			case 1:
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: (max - min) is not a whole multiple of inc\n", option);
@@ -15318,7 +15321,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 			default:	/* OK as is */
 				break;
 		}
-		T->n = gmt_make_equidistant_array (GMT, t0, t1, inc, &(T->array));
+		T->n = make_equidistant_array (GMT, t0, t1, inc, &(T->array));
 	}
 	if (T->vartime && GMT->current.setting.time_system.unit != unit) {
 		uint64_t k;
@@ -15329,88 +15332,6 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		for (k = 0; k < T->n; k++) T->array[k] *= scale;
 	}
 	return (GMT_NOERROR);
-}
-
-unsigned int gmt_create_1D_array (struct GMT_CTRL *GMT, char option, char *string, double *min, double *max, double *inc, uint64_t *n, double **array) {
-	/* Presumably gave min/max/inc[+n] */
-	bool var_time = false, is_time = false;
-	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, txt_c[GMT_LEN32] = {""}, *c = NULL, unit = GMT->current.setting.time_system.unit;
-	double scale = GMT->current.setting.time_system.scale;
-	
-	if (sscanf (string, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c) != 3) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to extract min/max/inc arguments from %s\n", option, string);
-		return GMT_PARSE_ERROR;
-	}
-	if ((c = strrchr (txt_c, '+')) && (c[1] == 'n' || c[1] == '\0'))	/* Gave number of points instead; calculate inc later */
-		c[0] = '\0';	/* But first we chop off the modifier */
-		
-	/* Check if we are working with absolute time.  This means there must be a T in both min and max arguments */
-	if (strchr (txt_a, 'T') && strchr (txt_b, 'T')) {	/* Gave absolute time limits */
-		size_t len = strlen (txt_c);
-		gmt_set_column (GMT, GMT_IN,  GMT_X, GMT_IS_ABSTIME);
-		gmt_set_column (GMT, GMT_OUT, GMT_X, GMT_IS_ABSTIME);
-		is_time = true;
-		/* Now worry about an increment with time units */
-		if (strchr ("yodhms", txt_c[len-1])) {	/* Must set TIME_UNIT and update time system scalings */
-			var_time = (strchr ("yo", txt_c[len-1]) != NULL);
-			if (GMT->current.setting.time_system.unit != txt_c[len-1]) {	/* Must update time */
-				GMT->current.setting.time_system.unit = txt_c[len-1];
-				(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
-			}
-			txt_c[len-1] = '\0';	/* Chop off time unit since we are done with it */
-			if (c) {	/* Just to be safe */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Cannot use both +n and increment units\n", option);
-				return GMT_PARSE_ERROR;
-			}
-		}
-		else	/* it means the user relies on the setting of TIME_UNIT, but we must check if it selected a variable increment */
-			var_time = (strchr ("yo", GMT->current.setting.time_system.unit) != NULL);
-	}
-	
-	/* OK to parse the two limits */
-	if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X), false, min), txt_a)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min value from %s\n", option, txt_a);
-		return GMT_PARSE_ERROR;
-	}
-	if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_X), false, max), txt_b)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse max value from %s\n", option, txt_b);
-		return GMT_PARSE_ERROR;
-	}
-	gmt_scanf_float (GMT, txt_c, inc);	/* Get the increment (or count) */
-	if (c) /* This means we gave a count instead of increment */
-		*inc = (*max - *min) / (*inc - 1.0);
-	if (var_time)	/* Must call special function that knows about variable months and years */
-		*n = gmt_time_array (GMT, *min, *max, *inc, GMT->current.setting.time_system.unit, false, array);
-	else {	/* Equidistant intervals are straightforward - make sure the min/man/inc values harmonize */
-		switch (gmt_minmaxinc_verify (GMT, *min, *max, *inc, GMT_CONV4_LIMIT)) {
-			case 1:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: (max - min) is not a whole multiple of inc\n", option);
-				return (GMT_PARSE_ERROR);
-				break;
-			case 2:
-				if (*inc != 1.0) {	/* Allow for somebody explicitly saying -T0/0/1 */
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: (max - min) is <= 0\n", option);
-					return (GMT_PARSE_ERROR);
-				}
-				break;
-			case 3:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: inc is <= 0\n", option);
-				return (GMT_PARSE_ERROR);
-				break;
-			default:	/* OK as is */
-				break;
-		}
-		*n = gmt_make_equidistant_array (GMT, *min, *max, *inc, array);
-	}
-	if (is_time && GMT->current.setting.time_system.unit != unit) {
-		uint64_t k;
-		/* Restore to curent TIME_UNIT unit and update val array to have same units */
-		scale = GMT->current.setting.time_system.scale / scale;
-		GMT->current.setting.time_system.unit = unit;
-		(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
-		for (k = 0; k < *n; k++) *array[k] *= scale;
-	}
-	return GMT_NOERROR;
 }
 
 #if 0	/* Probably not needed after all */

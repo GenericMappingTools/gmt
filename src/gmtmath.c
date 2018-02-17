@@ -644,14 +644,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 			case 'T':	/* Either get a file with time coordinate or a min/max/dt setting */
 				Ctrl->T.active = true;
 				t_arg = opt->arg;
-#if 0
-				if (!opt->arg[0])	/* Turn off default GMT NaN-handling in t column */
-					Ctrl->T.notime = true;
-				else if (gmt_M_file_is_memory (opt->arg) || !gmt_access (GMT, opt->arg, R_OK))	/* Argument given and file can be opened */
-					Ctrl->T.file = strdup (opt->arg);
-				else	/* Presumably gave tmin/tmax/tinc[+n] */
-					n_errors += gmt_create_1D_array (GMT, 'T', opt->arg, &Ctrl->T.min, &Ctrl->T.max, &Ctrl->T.inc, &Ctrl->T.n, &(Ctrl->T.t));
-#endif
 				break;
 
 			default:	/* Report bad options */
@@ -669,7 +661,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && gmt_access (GMT, Ctrl->A.file, R_OK), "Syntax error -A: Cannot read file %s!\n", Ctrl->A.file);
-	//n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.min > Ctrl->T.max, "Syntax error -T: min > max!\n");
 	n_errors += gmt_M_check_condition (GMT, missing_equal, "Syntax error: Usage is <operations> = [outfile]\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && (Ctrl->T.active || Ctrl->N.active || Ctrl->C.active), "Syntax error: Cannot use -T, -N, or -C when -Q has been set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (Ctrl->N.ncol == 0 || Ctrl->N.tcol >= Ctrl->N.ncol),
@@ -5117,12 +5108,6 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot use -T when data files are specified\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-#if 0
-		if ((T_in = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s\n", Ctrl->T.file);
-			Return (API->error);
-		}
-#endif
 		use_t_col = 0;
 	}
 
@@ -5137,7 +5122,6 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		Ctrl->T.T.min = rhs->min[0];
 		Ctrl->T.T.max = rhs->max[0];
 		Ctrl->T.T.inc = (rhs->max[0] - rhs->min[0]) / (rhs->n_records - 1);
-		//Ctrl->T.n = gmt_make_equidistant_array (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, &Ctrl->T.t);
 		if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL))
 			Return (GMT_RUNTIME_ERROR);
 	}

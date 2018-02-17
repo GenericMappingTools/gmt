@@ -18,7 +18,7 @@ Synopsis
 [ |-E|\ *eigen* ] [ |-I| ]
 [ |-N|\ *n\_col*\ [/*t_col*] ]
 [ |-Q| ] [ |-S|\ [**f**\ \|\ **l**] ]
-[ |-T|\ *t\_min*/*t_max*/*t_inc*\ [**+n**\ ]\|\ *tfile* ]
+[ |-T|\ *min*/*max*/*inc*\ [**+n**\ ]\|\ *file* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -137,7 +137,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *t_min*/*t_max*/*t_inc*\ [**+n**\ ]\|\ *tfile*
+**-T**\ *min*/*max*/*inc*\ [**+n**\ ]\|\ *file*
     Required when no input files are given. Sets the t-coordinates of
     the first and last point and the equidistant sampling interval for
     the "time" column (see **-N**). Append **+n** if you are specifying

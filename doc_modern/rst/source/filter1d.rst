@@ -15,7 +15,7 @@ Synopsis
 
 **gmt filter1d** [ *table* ] |-F|\ *type<width>*\ [*modifiers*]
 [ |-D|\ *increment* ] [ |-E| ]
-[ |-L|\ *lack\_width* ] [ |-N|\ *t\_col*\ \|\ *params* ] [ |-Q|\ *q\_factor* ]
+[ |-L|\ *lack\_width* ] [ |-N|\ *t\_col* ] [ |-Q|\ *q\_factor* ]
 [ |-S|\ *symmetry\_factor* ]
 [ |-T|\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**] ]
 [ |SYN_OPT-V| ]
@@ -137,7 +137,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**]
+**-T**\ [*min/max*\ /]*inc*\ [**+a**\ \|\ **n**]
     Make evenly spaced time-steps from *min* to *max* by *inc*
     [Default uses input times]. Append **+n** if *inc* is meant to
     indicate the number of equidistant points instead. 
