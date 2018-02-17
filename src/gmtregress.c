@@ -95,11 +95,10 @@ struct GMTREGRESS_CTRL {
 		bool active;
 		unsigned int mode;
 	} S;
-	struct T {	/* 	-T<min>/<max>/<inc> or -T<n> */
+	struct T {	/* 	-T[<min>/<max>/]<inc>[+n] */
 		bool active;
-		bool reset;	/* True if -T<n> was given */
-		uint64_t n;
-		double min, max, inc;
+		bool no_eval;
+		struct GMT_ARRAY T;
 	} T;
 	struct W {	/* 	-W[s]x|y|r */
 		bool active;
@@ -131,7 +130,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtregress [<table>] [-A[<min>/<max>/<inc>]] [-C<level>] [-Ex|y|o|r] [-F<flags>] [-N1|2|r|w]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[r]] [-T<min>/<max>/<inc> | -T<n>] [%s] [-W[w][x][y][r]] [%s]\n", GMT_V_OPT, GMT_a_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S[r]] [-T[<min>/<max>/]<inc>[+n] [%s] [-W[w][x][y][r]] [%s]\n", GMT_V_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -168,8 +167,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Skip records identified as outliers on output. Append r to reverse mode and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   only output the outlier records. Cannot be used with -T [output all records].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Evaluate model at the equidistant points implied by the arguments.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -T<n> is given instead we reset <min> and <max> to the extreme x-values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   for each segment and recalculate <inc> to give <n> output values per segment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If only -T<inc>[+n] is given we reset <min> and <max> to the extreme x-values\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   for each segment.  Append +n if <inc> is the number of t-values to produce instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time data, append a valid time unit (%s) to the increment.\n", GMT_TIME_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -T0 to bypass model evaluation entirely.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses locations of input data to evaluate the model].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Supply individual 1-sigma uncertainties for data points [no weights].\n");
@@ -273,14 +274,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct 
 				break;
 			case 'T':	/* Output lattice or length */
 				Ctrl->T.active = true;
-				if (strchr (opt->arg, '/')) {
-					n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.min, &Ctrl->T.max, &Ctrl->T.inc);
-					n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error -T option: Must specify min/max/inc\n");
-				}
-				else {
-					Ctrl->T.reset = true;
-					Ctrl->T.n = atol (opt->arg);
-				}
+				if (!strcmp (opt->arg, "0"))	/* -T0 means no model evaluation */
+					Ctrl->T.no_eval = true;
+				else
+					n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST, 0);
 				break;
 			case 'W':	/* Weights or not */
 				Ctrl->W.active = true;
@@ -1001,7 +998,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	unsigned geometry = GMT_IS_NONE;
 	
 	double *x = NULL, *U = NULL, *V = NULL, *W = NULL, *e = NULL, *w[3] = {NULL, NULL, NULL};
-	double t_scale = 0.0, par[GMTREGRESS_NPAR], out[9], *t = NULL;
+	double t_scale = 0.0, par[GMTREGRESS_NPAR], out[9];
 	
 	char buffer[GMT_LEN256];
 	
@@ -1055,54 +1052,45 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 		}
 	}
 	
-	if (Ctrl->T.active) {	/* Evaluate solution for equidistant spacing instead of at the input locations */
-		unsigned int bad = 0;	/* Must chech for conflict between -T and -F settings */
-		if (!Ctrl->T.reset)	/* Compute number of points given fixed range and increment */
-			Ctrl->T.n = gmt_M_get_n (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, 0);
-		for (col = 0; col < n_columns; col++) if (Ctrl->T.n && strchr ("yrzw", (int)Ctrl->F.col[col])) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F: Cannot include %c when -T is in effect\n", (int)Ctrl->F.col[col]);
-			bad++;
-		}
-		if (bad) Return (GMT_RUNTIME_ERROR);
-		if (Ctrl->T.n) t = gmt_M_memory (GMT, NULL, Ctrl->T.n, double);	/* Allocate space for output x-values (unless when -T0 is given) */
-		geometry = GMT_IS_LINE;
-	}
-
 	/* Allocate memory and read in all the files; each file can have many records */
 	
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
-		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (API->error);	/* Establishes data files or stdin */
 	}
 	if ((error = GMT_Set_Columns (API, GMT_IN, 2 + Ctrl->W.n_weights, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (error);
 	}
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
-		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (API->error);
 	}
 	if (Din->n_columns < (2 + Ctrl->W.n_weights)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Dataset only has %" PRIu64 " columns but %d are required by your settings!\n", Din->n_columns, 2 + Ctrl->W.n_weights);
-		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
-		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
-		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (API->error);
 	}
 	if (GMT_Set_Geometry (API, GMT_OUT, geometry) != GMT_NOERROR) {	/* Sets output geometry */
-		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (API->error);
 	}
 	if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_columns, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-		if (Ctrl->T.n) gmt_M_free (GMT, t);
 		Return (error);
+	}
+
+	if (Ctrl->T.active) {	/* Evaluate solution for equidistant spacing instead of at the input locations */
+		unsigned int bad = 0;	/* Must chech for conflict between -T and -F settings */
+		for (col = 0; col < n_columns; col++) if (!Ctrl->T.no_eval && strchr ("yrzw", (int)Ctrl->F.col[col])) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F: Cannot include %c when -T is in effect\n", (int)Ctrl->F.col[col]);
+			bad++;
+		}
+		if (bad) Return (GMT_RUNTIME_ERROR);
+		if (Ctrl->T.T.set == 3 && gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL))
+			Return (GMT_RUNTIME_ERROR);
+		geometry = GMT_IS_LINE;
 	}
 
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* To write segment headers regardless of input */
@@ -1192,15 +1180,16 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 					if (Ctrl->F.band)	/* For confidence band we need the student-T scale given the significance level and degrees of freedom */
 						t_scale = fabs (gmt_tcrit (GMT, 0.5 * (1.0 - Ctrl->C.value), S->n_rows - 2.0));
 
-					if (Ctrl->T.active) {	/* Evaluate the model at the chosen equidistant output points */
-						if (Ctrl->T.reset) {	/* Got -T<n>, so must recompute a new increment for the present segment's x-range */
-							Ctrl->T.min = S->min[GMT_X];	Ctrl->T.max = S->max[GMT_X];
-							if (Ctrl->T.n) Ctrl->T.inc = gmt_M_get_inc (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.n, 0);	/* Protect against -T0 */
+					if (Ctrl->T.no_eval)	/* No model evaluation */
+						n_t = 0;
+					else if (Ctrl->T.active) {	/* Evaluate the model at the chosen equidistant output points */
+						if (Ctrl->T.T.set == 1) {	/* Must update the output t array */
+							gmt_M_free (GMT, Ctrl->T.T.array);
+							if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), &(S->min[GMT_X]), &(S->max[GMT_X])))
+								Return (GMT_RUNTIME_ERROR);
 						}
-						for (k = 0; k < Ctrl->T.n; k++)	/* Build new output x-coordinates */
-							t[k] = gmt_M_col_to_x (GMT, k, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, 0, Ctrl->T.n);
-						x = t;	/* Pass these coordinates as our "x" */
-						n_t = Ctrl->T.n;
+						x = Ctrl->T.T.array;	/* Pass these coordinates as our "x" */
+						n_t = Ctrl->T.T.n;
 					}
 					else {	/* Use the given data abscissae instead */
 						x = S->data[GMT_X];
@@ -1262,8 +1251,6 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	}
 	for (k = GMT_X; k <= GMT_Z; k++)	/* Free arrays used for weights */
 		if (Ctrl->W.col[k]) gmt_M_free (GMT, w[k]);
-	if (Ctrl->T.n)	/* Finally, free output locations for -T */
-		gmt_M_free (GMT, t);
 	
 	Return (error);
 }

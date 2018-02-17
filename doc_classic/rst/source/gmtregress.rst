@@ -19,7 +19,7 @@ Synopsis
 [ |-F|\ *flags* ]
 [ |-N|\ **1**\ \|\ **2**\ \|\ **r**\ \|\ **w** ]
 [ |-S|\ [**r**] ]
-[ |-T|\ *min*\ /*max*\ /*inc* \| |-T|\ *n* ]
+[ |-T|\ [\ *min/max*\ /]\ *inc*\ [**+n**] ]
 [ |-W|\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
@@ -117,10 +117,12 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *min*\ /*max*\ /*inc* \| **-T**\ *n*
-    Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If
-    **-T**\ *n* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment and determine *inc*
-    so that there are exactly *n* output values for each segment.  To skip the model evaluation entirely, simply provide **-T**\ 0.
+**-T**\ [\ *min/max*\ /]\ *inc*\ [**+n**]
+    Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If just
+    **-T**\ *inc* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment.
+    If **+n** is appended then we will interpret *inc* to mean the number of output values per segment.
+    Alternatively, give a file with output coordinates in the first column.
+    To skip the model evaluation entirely, simply provide **-T**\ 0.
 
 .. _-W:
 
