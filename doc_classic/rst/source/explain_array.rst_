@@ -3,8 +3,8 @@ Generate 1D Array
 
 Make an evenly spaced coordinate array from *min* to *max* in steps of *inc*.
 Append **+n** if *inc* is meant to indicate the number of equidistant coordinates
-instead.   Alternatively, give a file with output coordinates in the first column,
-or provide a comma-separated list of coordinates.
+instead.   Alternatively, give a *file* with output coordinates in the first column,
+or provide a comma-separated *list* of coordinates.
 
 If the module allows you to set up an absolute time series, append a valid time unit from the list
 **y**\ ear, m\ **o**\ nth, **w**\ eek, **d**\ ay, **h**\ our, **m**\ inute, and **s**\ econd
