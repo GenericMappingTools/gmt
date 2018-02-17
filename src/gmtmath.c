@@ -123,10 +123,7 @@ struct GMTMATH_CTRL {	/* All control options for this program (except common arg
 	struct T {	/* -T[<tmin/tmax/t_inc>[+]] | -T<file> */
 		bool active;
 		bool notime;
-		uint64_t n;
-		double min, max, inc;
-		double *t;
-		char *file;
+		struct GMT_ARRAY T;
 	} T;
 };
 
@@ -173,8 +170,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *C) {	/* Dea
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->A.file);
 	gmt_M_free (GMT, C->C.cols);
-	gmt_M_str_free (C->T.file);
-	gmt_M_free (GMT, C->T.t);
+	gmt_M_free (GMT, C->T.T.array);
 	gmt_M_free (GMT, C);
 }
 
@@ -544,7 +540,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 
 	unsigned int n_errors = 0, k, n_files = 0;
 	bool missing_equal = true;
-	char *c = NULL;
+	char *c = NULL, *t_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
@@ -647,12 +643,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 				break;
 			case 'T':	/* Either get a file with time coordinate or a min/max/dt setting */
 				Ctrl->T.active = true;
+				t_arg = opt->arg;
+#if 0
 				if (!opt->arg[0])	/* Turn off default GMT NaN-handling in t column */
 					Ctrl->T.notime = true;
 				else if (gmt_M_file_is_memory (opt->arg) || !gmt_access (GMT, opt->arg, R_OK))	/* Argument given and file can be opened */
 					Ctrl->T.file = strdup (opt->arg);
 				else	/* Presumably gave tmin/tmax/tinc[+n] */
 					n_errors += gmt_create_1D_array (GMT, 'T', opt->arg, &Ctrl->T.min, &Ctrl->T.max, &Ctrl->T.inc, &Ctrl->T.n, &(Ctrl->T.t));
+#endif
 				break;
 
 			default:	/* Report bad options */
@@ -660,8 +659,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 		}
 	}
 
+	if (Ctrl->T.active) {	/* Do this one here since we need Ctrl->N.col to be set first, if selected */
+		if (t_arg[0]) {	/* Gave an argument, so we can parse and create the array */
+			n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_RANGE, Ctrl->N.tcol);
+			n_errors += gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL);
+		}
+		else
+			Ctrl->T.notime = true;
+	}
+
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && gmt_access (GMT, Ctrl->A.file, R_OK), "Syntax error -A: Cannot read file %s!\n", Ctrl->A.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.min > Ctrl->T.max, "Syntax error -T: min > max!\n");
+	//n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.min > Ctrl->T.max, "Syntax error -T: min > max!\n");
 	n_errors += gmt_M_check_condition (GMT, missing_equal, "Syntax error: Usage is <operations> = [outfile]\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && (Ctrl->T.active || Ctrl->N.active || Ctrl->C.active), "Syntax error: Cannot use -T, -N, or -C when -Q has been set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (Ctrl->N.ncol == 0 || Ctrl->N.tcol >= Ctrl->N.ncol),
@@ -5058,7 +5066,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		n_columns  = D_in->n_columns;
 		if (n_columns == 1) Ctrl->T.notime = true;	/* Only one column to work with implies -T */
 	}
-	set_equidistant_t = (Ctrl->T.active && !Ctrl->T.file && !Ctrl->T.notime);	/* We were given -Tmin/max/inc */
+	set_equidistant_t = (Ctrl->T.active && !Ctrl->T.T.file && !Ctrl->T.notime);	/* We were given -Tmin/max/inc */
 	if (D_in && set_equidistant_t) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot use -T when data files are specified\n");
 		Return (GMT_RUNTIME_ERROR);
@@ -5092,10 +5100,10 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		Ctrl->N.ncol = 1;
 		Ctrl->N.tcol = 0;
 		Ctrl->N.active = set_equidistant_t = true;
-		Ctrl->T.min = Ctrl->T.max = 0.0;
-		Ctrl->T.inc = 1.0;
-		Ctrl->T.n = 1;
-		Ctrl->T.t = gmt_M_memory (GMT, NULL, 1, double);
+		Ctrl->T.T.min = Ctrl->T.T.max = 0.0;
+		Ctrl->T.T.inc = 1.0;
+		Ctrl->T.T.n = 1;
+		Ctrl->T.T.array = gmt_M_memory (GMT, NULL, 1, double);
 		Ctrl->T.notime = true;
 		n_rows = n_columns = 1;
 	}
@@ -5104,32 +5112,36 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		GMT->current.io.skip_if_NaN[Ctrl->N.tcol] = true;
 		n_columns = Ctrl->N.ncol;
 	}
-	if (Ctrl->T.active && Ctrl->T.file) {	/* Gave a file that we will use to obtain the T vector only */
+	if (Ctrl->T.active && Ctrl->T.T.file) {	/* Gave a file that we will use to obtain the T vector only */
 		if (D_in) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot use -T when data files are specified\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
+#if 0
 		if ((T_in = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s\n", Ctrl->T.file);
 			Return (API->error);
 		}
+#endif
 		use_t_col = 0;
 	}
 
 	if (set_equidistant_t && !Ctrl->Q.active) {
-		n_rows = Ctrl->T.n;
+		n_rows = Ctrl->T.T.n;
 		n_columns = Ctrl->N.ncol;
 	}
 
 	if (Ctrl->A.active) {	/* Get number of rows and time from the file, but not n_cols (that takes -N, which defaults to 2) */
 		n_rows = rhs->n_records;
 		n_columns = Ctrl->N.ncol;
-		Ctrl->T.min = rhs->min[0];
-		Ctrl->T.max = rhs->max[0];
-		Ctrl->T.inc = (rhs->max[0] - rhs->min[0]) / (rhs->n_records - 1);
-		Ctrl->T.n = gmt_make_equidistant_array (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, &Ctrl->T.t);
+		Ctrl->T.T.min = rhs->min[0];
+		Ctrl->T.T.max = rhs->max[0];
+		Ctrl->T.T.inc = (rhs->max[0] - rhs->min[0]) / (rhs->n_records - 1);
+		//Ctrl->T.n = gmt_make_equidistant_array (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, &Ctrl->T.t);
+		if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL))
+			Return (GMT_RUNTIME_ERROR);
 	}
-	if (Ctrl->T.file) n_columns = Ctrl->N.ncol;
+	if (Ctrl->T.T.file) n_columns = Ctrl->N.ncol;
 
 	if (!(D_in || T_in || A_in || set_equidistant_t)) {	/* Neither a file nor -T given; must read data from stdin */
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expression must contain at least one table file or -T [and -N]\n");
@@ -5155,10 +5167,10 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			gmt_M_memcpy (info.T->segment[seg]->data[COL_T], D->segment[seg]->data[use_t_col], D->segment[seg]->n_rows, double);
 			if (!done) {
 				for (row = 1; row < info.T->segment[seg]->n_rows && (gmt_M_is_dnan (info.T->segment[seg]->data[COL_T][row-1]) || gmt_M_is_dnan (info.T->segment[seg]->data[COL_T][row])); row++);	/* Find the first real two records in a row */
-				Ctrl->T.inc = (row == info.T->segment[seg]->n_rows) ? GMT->session.d_NaN : info.T->segment[seg]->data[COL_T][row] - info.T->segment[seg]->data[COL_T][row-1];
-				t_noise = fabs (GMT_CONV4_LIMIT * Ctrl->T.inc);
+				Ctrl->T.T.inc = (row == info.T->segment[seg]->n_rows) ? GMT->session.d_NaN : info.T->segment[seg]->data[COL_T][row] - info.T->segment[seg]->data[COL_T][row-1];
+				t_noise = fabs (GMT_CONV4_LIMIT * Ctrl->T.T.inc);
 			}
-			for (row = 1; row < info.T->segment[seg]->n_rows && !info.irregular; row++) if (fabs (fabs (info.T->segment[seg]->data[COL_T][row] - info.T->segment[seg]->data[COL_T][row-1]) - fabs (Ctrl->T.inc)) > t_noise) info.irregular = true;
+			for (row = 1; row < info.T->segment[seg]->n_rows && !info.irregular; row++) if (fabs (fabs (info.T->segment[seg]->data[COL_T][row] - info.T->segment[seg]->data[COL_T][row-1]) - fabs (Ctrl->T.T.inc)) > t_noise) info.irregular = true;
 		}
 		if (!read_stdin && GMT_Destroy_Data (API, &D_in) != GMT_NOERROR) {
 			Return (API->error);
@@ -5169,7 +5181,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
         	info.T->segment[0]->n_rows = n_rows;
-		gmt_M_memcpy (info.T->segment[0]->data[COL_T], Ctrl->T.t, n_rows, double);
+		gmt_M_memcpy (info.T->segment[0]->data[COL_T], Ctrl->T.T.array, n_rows, double);
 	}
 
 	for (seg = n_records = 0; seg < info.T->n_segments; seg++) {	/* Create normalized times and possibly reverse time (-I) */
@@ -5182,7 +5194,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		}
 		n_records += info.T->segment[seg]->n_rows;
 	}
-	info.t_min = Ctrl->T.min;	info.t_max = Ctrl->T.max;	info.t_inc = Ctrl->T.inc;
+	info.t_min = Ctrl->T.T.min;	info.t_max = Ctrl->T.T.max;	info.t_inc = Ctrl->T.T.inc;
 	info.n_col = n_columns;		info.local = Ctrl->L.active;
 	info.notime = Ctrl->T.notime;
 	gmt_set_tbl_minmax (GMT, GMT_IS_POINT, info.T);
@@ -5205,10 +5217,10 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_F_EPS]   = FLT_EPSILON;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_D_EPS]   = DBL_EPSILON;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_EULER]  = M_EULER;
-	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TMIN]   = Ctrl->T.min;
-	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TMAX]   = Ctrl->T.max;
-	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TRANGE] = Ctrl->T.max - Ctrl->T.min;
-	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TINC]   = Ctrl->T.inc;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TMIN]   = Ctrl->T.T.min;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TMAX]   = Ctrl->T.T.max;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TRANGE] = Ctrl->T.T.max - Ctrl->T.T.min;
+	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_TINC]   = Ctrl->T.T.inc;
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N]      = (double)n_records;
 
 	gmtmath_init (call_operator, consumed_operands, produced_operands);
