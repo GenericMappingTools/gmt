@@ -15239,6 +15239,10 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	/* 5. Get the increment (or count) */
 	if (has_inc && !T->spatial) {
 		gmt_scanf_float (GMT, txt[ns], &(T->inc));
+		if (gmt_M_is_zero (T->inc)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Increment is zero\n", option);
+			return GMT_PARSE_ERROR;
+		}
 		if (T->inc < 0.0) {	/* Flag to be reversed */
 			T->inc = -T->inc;
 			T->reverse = true;	/* Want array to be reversed */
@@ -15332,10 +15336,6 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 	if (T->vartime)	/* Must call special function that knows about variable months and years */
 		T->n = gmt_time_array (GMT, t0, t1, inc, GMT->current.setting.time_system.unit, false, &(T->array));
 	else {	/* Equidistant intervals are straightforward - make sure the min/man/inc values harmonize */
-		if (!T->count) {	/* Ensure nice rounding */
-			t0 = rint (t0 / inc) * inc;	if (t0 < T->min) t0 += inc;
-			t1 = rint (t1 / inc) * inc;	if (t1 > T->max) t1 -= inc;
-		}
 		switch (gmt_minmaxinc_verify (GMT, t0, t1, inc, GMT_CONV4_LIMIT)) {
 			case 1:
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: (max - min) is not a whole multiple of inc\n", option);

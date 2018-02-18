@@ -234,7 +234,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [-|+][<unit>]<inc>, with - for fast (Flat Earth) or + for slow (ellipsoidal) calculations [great circle].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a geospatial distance unit (%s) or c (for Cartesian distances).\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +a to add such internal distances as a final output column [no distances added].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column or a comma-separated list.\n");
 	GMT_Option (API, "V,bi,bo,d,e,f,g,h,i,o,:,.");
 	
 	return (GMT_MODULE_USAGE);

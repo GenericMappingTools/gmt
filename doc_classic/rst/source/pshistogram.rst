@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **pshistogram** [ *table* ] |-J|\ **x**\ \|\ **X**\ *parameters*
-|-W|\ *bin_width*\ [**+l**\ \|\ **h**\ \|\ **b**]
+|-T|\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list*
 [ |-A| ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
@@ -29,6 +29,7 @@ Synopsis
 [ |-S| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
+[ |-W|\ **l**\ \|\ **h**\ \|\ **b**] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |-Z|\ [*type*][**+w**] ]
@@ -59,16 +60,12 @@ Required Arguments
 **-Jx**
     *xscale[/yscale]* (Linear scale(s) in distance unit/data unit).
 
-.. _-W:
+.. _-T:
 
-**-W**\ *bin_width*\ [**+l**\ \|\ **h**\ \|\ **b**]
-    Sets the bin width used for histogram calculations.
-    The modifiers specify the handling of extreme values that fall outside the range
-    set by **-R**.  By default these values are ignored.  Use **+b** to let
-    these values be included in the first or last bins.  To only include
-    extreme values below first bin into the first bin, use **+l**, and to
-    only include extreme values above the last bin into that last bin, use
-    **+h**.
+**-T**\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list*
+    Make evenly spaced array of bin boundaries from *min* to *max* by *inc*.
+    If *min/max* are not given then we default to the range in **-R**.
+    For details on array creation, see `Generate 1D Array`_.
 
 Optional Arguments
 ------------------
@@ -180,6 +177,16 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. _-W:
+
+**-Wl**\ \|\ **h**\ \|\ **b**
+    The modifiers specify the handling of extreme values that fall outside the range
+    set by **-T**.  By default these values are ignored.  Append **b** to let
+    these values be included in the first or last bins.  To only include
+    extreme values below first bin into the first bin, use **l**, and to
+    only include extreme values above the last bin into that last bin, use
+    **h**.
+
 .. _-X:
 
 .. include:: explain_-XY.rst_
@@ -231,7 +238,7 @@ using a 250 meter bin width, center bars, and draw bar outline, use:
 
    ::
 
-    gmt pshistogram v3206.t -JXh -W250 -F -LP0.5p -V > plot.ps
+    gmt pshistogram v3206.t -JXh -T250 -F -LP0.5p -V > plot.ps
 
 If you know the distribution of your data, you may explicitly specify
 range and scales. E.g., to plot a histogram of the y-values (2nd column)
@@ -241,19 +248,11 @@ bars, run:
 
    ::
 
-    gmt pshistogram errors.xy -W1 -R-10/10/0/0 -Jxc/0.01c \
+    gmt pshistogram errors.xy -T1 -R-10/10/0/0 -Jxc/0.01c \
                     -Bx2+lError -By100+lCounts -Gblack -i1 -V > plot.ps
 
 Since no y-range was specified, **pshistogram** will calculate *ymax* in even
 increments of 100.
-
-Bugs
-----
-
-The **-W** option does not yet work properly with time series data
-(e.g., **-f**\ 0T). Thus, such variable intervals as months and years
-are not calculated. Instead, specify your interval in the same units as
-the current setting of **TIME_UNIT**.
 
 See Also
 --------

@@ -13,7 +13,7 @@ ps=example_43.ps
 file=`gmt which -G @bb_weights.txt`
 gmt regress -Ey -Nw -i0:1+l $file > model.txt
 gmt regress -Ey -Nw -i0:1+l $file -Fxmc -T-2/6/0.1 > rls_line.txt
-gmt regress -Ey -N2 -i0:1+l $file -Fxm -T-2/6/8 > ls_line.txt
+gmt regress -Ey -N2 -i0:1+l $file -Fxm -T-2/6/2+n > ls_line.txt
 grep -v '^>' model.txt > A.txt
 grep -v '^#' $file > B.txt
 $AWK '{if ($7 == 0) printf "%dp\n", NR}' A.txt > sed.txt

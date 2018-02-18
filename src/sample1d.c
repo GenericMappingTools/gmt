@@ -66,13 +66,7 @@ struct SAMPLE1D_CTRL {
 		double start;	/* Left-over from old -Sstart that we need to parse later */
 	} T;
 	/* Deprecated options in GMT 6 now handled by -T */
-	struct SAMP1D_I {	/* -I<inc>[d|m|s|e|f|k|M|n|u|c] (c means x/y Cartesian path) */
-		bool active;
-		unsigned int mode;
-		int smode;
-		double inc;
-		char unit;
-	} I_deprecated;
+	/* -I<inc>[d|m|s|e|f|k|M|n|u|c] (c means x/y Cartesian path) */
 	/* -N<knotfile> */
 	/* -S<xstart>[/<xstop>] */
 	/* -T<time_col> */
@@ -133,7 +127,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a geospatial distance unit (%s) or c (for Cartesian distances).\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   See -A to control how the spatial resampling is done.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +a to add such internal distances as a final output column [no distances added].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column, or a comma-separated list.\n");
 	GMT_Option (API, "V,bi2,bo,d,e,f,g,h,i,o,s,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -291,8 +285,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST, Ctrl->N.col);
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->I_deprecated.active, "Syntax error: Specify only one of -N and -S\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I_deprecated.active && Ctrl->I_deprecated.inc <= 0.0, "Syntax error -I option: Must specify positive increment\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && s_arg, "Syntax error: Specify only one of -N and -S\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->N.col >= 2) ? Ctrl->N.col + 1 : 2);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Syntax error -F option: Only 1st or 2nd derivatives may be requested\n");
@@ -416,7 +409,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 				lat = gmt_M_memory (GMT, NULL, S->n_rows, double);
 				gmt_M_memcpy (lon, S->data[GMT_X], S->n_rows, double);
 				gmt_M_memcpy (lat, S->data[GMT_Y], S->n_rows, double);
-				m = gmt_resample_path (GMT, &lon, &lat, S->n_rows, Ctrl->I_deprecated.inc, Ctrl->A.mode);
+				m = gmt_resample_path (GMT, &lon, &lat, S->n_rows, Ctrl->T.T.inc, Ctrl->A.mode);
 				t_out = gmt_dist_array (GMT, lon, lat, m, true);
 			}
 			else if (Ctrl->T.T.file) {	/* Get relevant t_out segment */
