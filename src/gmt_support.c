@@ -7962,6 +7962,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	bool close_file = false;
 	double cmyk[5];
 	char format[GMT_BUFSIZ] = {""}, cpt_file[GMT_BUFSIZ] = {""}, code[3] = {'B', 'F', 'N'};
+	char lo[GMT_LEN64] = {""}, hi[GMT_LEN64] = {""};
 	static char *msg1[2] = {"Writing", "Appending"};
 	FILE *fp = NULL;
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
@@ -8035,43 +8036,45 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 	if (P->is_wrapping)
 		fprintf (fp, "# CYCLIC\n");
 
-	sprintf (format, "%s\t%%s%%c", GMT->current.setting.format_float_out);
+	sprintf (format, "%%s\t%%s%%c");
 
 	/* Determine color at lower and upper limit of each interval */
 
 	for (i = 0; i < P->n_colors; i++) {
 
 		/* Print out one row */
+		gmt_ascii_format_col (GMT, lo, P->data[i].z_low,  GMT_OUT, GMT_Z);
+		gmt_ascii_format_col (GMT, hi, P->data[i].z_high, GMT_OUT, GMT_Z);
 
 		if (P->categorical) {
 			if (P->model & GMT_HSV)
-				fprintf (fp, format, P->data[i].z_low, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\n');
+				fprintf (fp, format, lo, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\n');
 			else if (P->model & GMT_CMYK) {
 				support_rgb_to_cmyk (P->data[i].rgb_low, cmyk);
-				fprintf (fp, format, P->data[i].z_low, gmtlib_putcmyk (GMT, cmyk), '\n');
+				fprintf (fp, format, lo, gmtlib_putcmyk (GMT, cmyk), '\n');
 			}
 			else if (P->model & GMT_NO_COLORNAMES)
-				fprintf (fp, format, P->data[i].z_low, gmt_putrgb (GMT, P->data[i].rgb_low), '\n');
+				fprintf (fp, format, lo, gmt_putrgb (GMT, P->data[i].rgb_low), '\n');
 			else
-				fprintf (fp, format, P->data[i].z_low, gmt_putcolor (GMT, P->data[i].rgb_low), '\n');
+				fprintf (fp, format, lo, gmt_putcolor (GMT, P->data[i].rgb_low), '\n');
 		}
 		else if (P->model & GMT_HSV) {
-			fprintf (fp, format, P->data[i].z_low, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\t');
-			fprintf (fp, format, P->data[i].z_high, gmtlib_puthsv (GMT, P->data[i].hsv_high), '\n');
+			fprintf (fp, format, lo, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\t');
+			fprintf (fp, format, hi, gmtlib_puthsv (GMT, P->data[i].hsv_high), '\n');
 		}
 		else if (P->model & GMT_CMYK) {
 			support_rgb_to_cmyk (P->data[i].rgb_low, cmyk);
-			fprintf (fp, format, P->data[i].z_low, gmtlib_putcmyk (GMT, cmyk), '\t');
+			fprintf (fp, format, lo, gmtlib_putcmyk (GMT, cmyk), '\t');
 			support_rgb_to_cmyk (P->data[i].rgb_high, cmyk);
-			fprintf (fp, format, P->data[i].z_high, gmtlib_putcmyk (GMT, cmyk), '\n');
+			fprintf (fp, format, hi, gmtlib_putcmyk (GMT, cmyk), '\n');
 		}
 		else if (P->model & GMT_NO_COLORNAMES) {
-			fprintf (fp, format, P->data[i].z_low, gmt_putrgb (GMT, P->data[i].rgb_low), '\t');
-			fprintf (fp, format, P->data[i].z_high, gmt_putrgb (GMT, P->data[i].rgb_high), '\n');
+			fprintf (fp, format, lo, gmt_putrgb (GMT, P->data[i].rgb_low), '\t');
+			fprintf (fp, format, hi, gmt_putrgb (GMT, P->data[i].rgb_high), '\n');
 		}
 		else {
-			fprintf (fp, format, P->data[i].z_low, gmt_putcolor (GMT, P->data[i].rgb_low), '\t');
-			fprintf (fp, format, P->data[i].z_high, gmt_putcolor (GMT, P->data[i].rgb_high), '\n');
+			fprintf (fp, format, lo, gmt_putcolor (GMT, P->data[i].rgb_low), '\t');
+			fprintf (fp, format, hi, gmt_putcolor (GMT, P->data[i].rgb_high), '\n');
 		}
 	}
 
@@ -15250,13 +15253,17 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	}
 	/* 6. If the min/max limits were given via argument then it is OK to parse */
 	T->set = (has_inc) ? 1 : 0;	/* Maybe have inc so far */
-	if (ns > 1) {
+	if (ns >= 1) {
 		if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min value from %s\n", option, txt[GMT_X]);
 			return GMT_PARSE_ERROR;
 		}
 		if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_Y], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->max)), txt[GMT_Y])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse max value from %s\n", option, txt[GMT_Y]);
+			return GMT_PARSE_ERROR;
+		}
+		if (T->min >= T->max) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: min >= max\n", option);
 			return GMT_PARSE_ERROR;
 		}
 		T->set += 2;
@@ -15333,6 +15340,8 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		scale = GMT->current.setting.time_system.scale / scale;
 		t0 /= scale;	t1 /= scale;
 	}
+	if (T->set == 2) return (GMT_NOERROR);	/* Probably makecpt giving just a range */
+	
 	if (T->vartime)	/* Must call special function that knows about variable months and years */
 		T->n = gmt_time_array (GMT, t0, t1, inc, GMT->current.setting.time_system.unit, false, &(T->array));
 	else {	/* Equidistant intervals are straightforward - make sure the min/man/inc values harmonize */

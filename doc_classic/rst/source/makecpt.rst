@@ -22,7 +22,7 @@ Synopsis
 [ |-I|\ [**c**][**z**] ] [ |-M| ]
 [ |-N| ] [ |-Q|\ [**i**\ \|\ **o**] ]
 [ |-S|\ [*mode*] ]
-[ |-T|\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable* \| **-T**\ *z1,z2,...,zn* ]
+[ |-T|\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ] ]
 [ |-V|\ [*level*\ ] ]
 [ |-W|\ [**w**] ]
 [ |-Z| ]
@@ -176,15 +176,11 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable* \| **-T**\ *z1,z2,...,zn*
+**-T**\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ]
     Defines the range of the new CPT by giving the lowest and
-    highest z-value and interval.  Append /*z_inc* to sample the input CPT
-    discretely at intervals *z_inc* between *z_min* and *z_max*;
-    append a trailing **+** to interpret *z_inc* as the number of desired intervals instead.
-    Alternatively, give the name of a ASCII file that has one z-value
-    per record, or provide a list of comma-separated z-values instead.
-    If **-T** is not given, the existing range in the master
-    CPT will be used intact.
+    highest z-value (and optionally an interval).  If **-T** is
+    not given, the existing range in the master CPT will be used intact.
+    For details on array creation, see `Generate 1D Array`_.
 
 .. _-V:
 
@@ -221,6 +217,8 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 .. include:: explain_transparency.rst_
+
+.. include:: explain_array.rst_
 
 Color Hinges
 ------------
