@@ -599,12 +599,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 				break;
 			case 'T':
 				t_arg = opt->arg;
-				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "The -T option is deprecated; use -i instead.\n");
-					n_errors += gmt_parse_i_option (GMT, opt->arg);
-				}
-				else
-					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'W':
 				w_arg = opt->arg;
@@ -728,12 +722,12 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	F.weights = Ctrl->Z.weights;
 	F.T = &(Ctrl->T.T);
 	if (!Ctrl->I.active && !GMT->common.R.active[RSET]) automatic = true;
-	if (Ctrl->T.T.set == 3) {	/* Gave a specific -Tmin/max/inc setting */
-		F.wesn[XLO] = Ctrl->T.T.min; F.wesn[XHI] = Ctrl->T.T.max;
-	}
-	else if (GMT->common.R.active[RSET]) {
+	if (GMT->common.R.active[RSET]) {	/* Gave -R which initially defines the bins also */
 		gmt_M_memcpy (F.wesn, GMT->common.R.wesn, 4, double);
 		Ctrl->T.T.min = F.wesn[XLO]; Ctrl->T.T.max = F.wesn[XHI];
+	}
+	if (Ctrl->T.T.set == 3) {	/* Gave a specific -Tmin/max/inc setting */
+		F.wesn[XLO] = Ctrl->T.T.min; F.wesn[XHI] = Ctrl->T.T.max;
 	}
 	n_cols = (F.weights) ? 2 : 1;
 
