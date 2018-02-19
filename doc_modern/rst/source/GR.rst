@@ -11,7 +11,6 @@ GR
    grd2xyz
    grdblend
    grdclip
-   grdcontour
    grdconvert
    grdcut
    grdedit
@@ -20,7 +19,6 @@ GR
    grdfilter
    grdgradient
    grdhisteq
-   grdimage
    grdinfo
    grdlandmask
    grdmask
@@ -30,6 +28,4 @@ GR
    grdsample
    grdtrack
    grdtrend
-   grdvector
-   grdview
    grdvolume

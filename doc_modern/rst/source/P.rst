@@ -7,3 +7,4 @@ P
 
    postscriptlight
    project
+   psconvert

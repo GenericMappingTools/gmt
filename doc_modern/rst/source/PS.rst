@@ -20,7 +20,6 @@ Mapping
    mask
    plot
    plot3d
-   psconvert
    rose
    solar
    ternary
