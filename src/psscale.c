@@ -32,10 +32,11 @@
 #define THIS_MODULE_PURPOSE	"Plot a gray-scale or color-scale on maps"
 #define THIS_MODULE_KEYS	"CC{,>X},ZD("
 #define THIS_MODULE_NEEDS	"rj"
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxy" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxyf" GMT_OPT("c")
 
 EXTERN_MSC void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
 EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T);
+EXTERN_MSC void plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item);
 
 #define H_BORDER 16	/* 16p horizontal border space for -T [not used] */
 #define V_BORDER 8	/* 8p vertical border space for -T [not used] */
@@ -1065,7 +1066,10 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if (A->item[GMT_GRID_UPPER].active) {
 				dx = gmtlib_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
-				gmt_linearx_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx);
+				if (A->type == GMT_TIME)
+					plot_timex_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, GMT_GRID_UPPER);
+				else
+					gmt_linearx_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx);
 			}
 		}
 		else {	/* When no -B we annotate every CPT bound which may be non-equidistant, hence this code (i.e., we cannot fake a call to -B) */
@@ -1316,7 +1320,10 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if (A->item[GMT_GRID_UPPER].active) {	/* Gridlines work fine without kludging since no annotations involved */
 				dx = gmtlib_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
-				gmt_linearx_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx);
+				if (A->type == GMT_TIME)
+					plot_timex_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, GMT_GRID_UPPER);
+				else
+					gmt_linearx_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, dx);
 			}
 			PSL_setorigin (PSL, 0.0, 0.0, -90.0, PSL_FWD);	/* Rotate back so we can plot y-axis */
 			/* Copy x-axis annotation and scale info to y-axis.  We don't need to undo this since gmt_end_module will restore it for us */
@@ -1570,6 +1577,8 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 			Ctrl->D.dim[GMT_Y] = PSSCALE_W_SCALE * Ctrl->D.dim[GMT_X];
 			if (Ctrl->Q.active && GMT->current.map.frame.draw)
 				sprintf (text, "X%gil/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
+			else if (P->mode & GMT_CPT_TIME)	/* Need time axis */
+				sprintf (text, "X%giT/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
 			else
 				sprintf (text, "X%gi/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
 			GMT_Report (API, GMT_MSG_DEBUG, "Scale mapping set to -J%s\n", text);

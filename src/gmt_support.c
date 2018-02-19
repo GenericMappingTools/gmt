@@ -7238,6 +7238,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		if (X->model & GMT_CMYK && nread != 10) error = true;	/* CMYK should results in 10 fields */
 		if (!(X->model & GMT_CMYK) && !(nread == 2 || nread == 4 || nread == 8)) error = true;	/* HSV or RGB should result in 8 fields, gray, patterns, or skips in 4 */
 		gmt_scanf_arg (GMT, T0, GMT_IS_UNKNOWN, false, &X->data[n].z_low);
+		if (strchr (T0, 'T')) X->mode |= GMT_CPT_TIME;
 		X->data[n].skip = false;
 		if (T1[0] == '-') {				/* Skip this slice */
 			if (nread != 4) {

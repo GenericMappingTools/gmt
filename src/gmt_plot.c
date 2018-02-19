@@ -662,7 +662,7 @@ GMT_LOCAL void plot_y_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w
 	}
 }
 
-GMT_LOCAL void plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item) {
+void plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item) {
 	unsigned int nx;
 	double *x = NULL;
 
