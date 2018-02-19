@@ -525,13 +525,13 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				wesn[XHI] = ceil  (wesn[XHI] / F->inc[XHI]) * F->inc[XHI];
 				wesn[YHI] = ceil  (wesn[YHI] / F->inc[YHI]) * F->inc[YHI];
 			}
-			/* Do basic sanity checks */
-			if (wesn[YLO] < -90.0) wesn[YLO] = -90.0;
-			if (wesn[YHI] > +90.0) wesn[YHI] = +90.0;
-			if (fabs (wesn[XHI] - wesn[XLO]) > 360.0) {
-				wesn[XLO] = 0.0;
-				wesn[XHI] = 360.0;
-			}
+		}
+		/* Do basic sanity checks */
+		if (wesn[YLO] < -90.0) wesn[YLO] = -90.0;
+		if (wesn[YHI] > +90.0) wesn[YHI] = +90.0;
+		if (fabs (wesn[XHI] - wesn[XLO]) > 360.0) {
+			wesn[XLO] = 0.0;
+			wesn[XHI] = 360.0;
 		}
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Region implied by DCW polygons is %g/%g/%g/%g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 	}

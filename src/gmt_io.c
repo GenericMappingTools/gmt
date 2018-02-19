@@ -5312,6 +5312,7 @@ void gmt_update_west_east_limits (struct GMT_CTRL *GMT, double *W, double *E, do
 	if (*W > *E) *W -= 360.0;
 	if (*W < 0.0 && *E < 0.0) { *W += 360.0; *E += 360.0;}
 	else if (*E > 360.0) { *W -= 360.0; *E -= 360.0;}
+	if ((*E - *W) > 360.0) { *W = 0.0; *E = 360.0;}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Longitude range %g/%g + %g/%g = %g/%g\n", WW, EE, w, e, *W, *E);
 }
 
