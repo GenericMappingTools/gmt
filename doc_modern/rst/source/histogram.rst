@@ -22,14 +22,14 @@ Synopsis
 [ |-F| ]
 [ |-G|\ *fill* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-I|\ [**o**\ \|\ **O**] ]
-[ |-L|\ *pen* ] 
+[ |-L|\ **l**\ \|\ **h**\ \|\ **b**] ]
 [ |-N|\ [*mode*][**+p**\ *pen*] ]
 [ |-Q|\ **r** ]
 [ |SYN_OPT-R| ]
 [ |-S| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ **l**\ \|\ **h**\ \|\ **b**] ]
+[ |-W|\ *pen* ] 
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |-Z|\ [*type*][**+w**] ]
@@ -121,8 +121,13 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *pen*
-    Draw bar outline using the specified pen thickness. [Default is no outline]. 
+**-Ll**\ \|\ **h**\ \|\ **b**
+    The modifiers specify the handling of extreme values that fall outside the range
+    set by **-T**.  By default these values are ignored.  Append **b** to let
+    these values be included in the first or last bins.  To only include
+    extreme values below first bin into the first bin, use **l**, and to
+    only include extreme values above the last bin into that last bin, use
+    **h**.
 
 .. _-N:
 
@@ -167,13 +172,8 @@ Optional Arguments
 
 .. _-W:
 
-**-Wl**\ \|\ **h**\ \|\ **b**
-    The modifiers specify the handling of extreme values that fall outside the range
-    set by **-T**.  By default these values are ignored.  Append **b** to let
-    these values be included in the first or last bins.  To only include
-    extreme values below first bin into the first bin, use **l**, and to
-    only include extreme values above the last bin into that last bin, use
-    **h**.
+**-W**\ *pen*
+    Draw bar outline (or stair-case curve) using the specified pen thickness. [Default is no outline]. 
 
 .. _-X:
 
@@ -226,7 +226,7 @@ using a 250 meter bin width, center bars, and draw bar outline, use:
 
    ::
 
-    gmt histogram v3206.t -JXh -T250 -F -LP0.5p -V -pdf plot
+    gmt histogram v3206.t -JXh -T250 -F -W0.5p -V -pdf plot
 
 If you know the distribution of your data, you may explicitly specify
 range and scales. E.g., to plot a histogram of the y-values (2nd column)

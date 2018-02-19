@@ -64,9 +64,9 @@ struct PSHISTOGRAM_CTRL {
 		bool active;
 		unsigned int mode;
 	} I;
-	struct L {	/* -L<pen> */
+	struct L {	/* -Ll|h|b */
 		bool active;
-		struct GMT_PEN pen;
+		unsigned int mode;
 	} L;
 	struct N {	/* -N[<kind>]+p<pen>, <kind = 0,1,2 */
 		bool active;
@@ -84,9 +84,9 @@ struct PSHISTOGRAM_CTRL {
 		bool active;
 		struct GMT_ARRAY T;
 	} T;
-	struct W {	/* -Wl|h|b */
+	struct W {	/* -W<pen> */
 		bool active;
-		unsigned int mode;
+		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z<type>[+w] */
 		bool active;
@@ -137,7 +137,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->D.offset = 6.0 / 72.0;	/* 6 points */
 	C->D.font = GMT->current.setting.font_annot[GMT_PRIMARY];		/* Default font */
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Do not fill is default */
-	C->L.pen = GMT->current.setting.map_default_pen;
+	C->W.pen = GMT->current.setting.map_default_pen;
 	for (k = 0; k < 3; k++) C->N.pen[k] = GMT->current.setting.map_default_pen;
 
 	return (C);
@@ -432,12 +432,43 @@ GMT_LOCAL int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, doubl
 	return (0);
 }
 
+GMT_LOCAL bool new_syntax (struct GMT_CTRL *GMT, char *L, char *T, char *W) {
+	 /* If there is no -T then we know for sure it is old syntax (or bad arguments).
+	 * If there is a -T then -T<col> vs -T<width> cannot uniquely be told apart (e.g., -T2).
+	 * Thus, here we need to examine the other options.  If there is no -W then it means
+	 * new syntax and no pen was set.  If -L is given and it is -Lh|l|b then it is new syntax,
+	 * else -L must be the pen and it is old syntax.  The remaining case to consider is this:
+	 * -T<number> -W<something>
+	 * if -W contains +l|h|b then it is old syntax, and if there is a trailing unit c,i,p then 
+	 * is a pen and hence new syntax.  Thus, things like -T1 -W2 cannot be uniquely identified.
+	 * In that case all we can do is warn the user as to how we interpreted their command line. */
+	double w_val, t_val;
+	if (T == NULL) return false;	/* Cannot be new syntax since -T is required */
+	if (W == NULL) return true;	/* Cannot be old syntax since -W is required */
+	if (L && strchr ("bhl", L[0])) return true;	/* Gave -Lb|h|l so clearly new syntax */
+	if (L) return false;				/* Here, must have given -L<pen> */
+	if (W && (strstr (W, "+b") || strstr (W, "+h") || strstr (W, "+l"))) return false;	/* Gave -W<width>+b|h|l */
+	if (W && strchr (GMT_DIM_UNITS, W[strlen(W)-1])) return true;	/* Must have given a -W<pen> */
+	/* Unclear, get -T and -W args and see if we can learn from their values */
+	w_val = atof (W);	t_val = atof (T);
+	if (w_val == 0.0) return true;	/* Must have given a zero pen width (faint) */
+	if (fabs (rint (t_val) - t_val)) return true;	/* Argument to -T is not an integer, hence new style */
+	if (t_val > 5) {	/* Here we must guess that 6 is too large to be a column entry and hence it is a new syntax */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cannot tell if -T%s -W%s is new or deprecated syntax; selected new.\n", T, W);
+		return true;
+	}
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cannot tell if -T%s -W%s is new or deprecated syntax; selected deprecated.\n", T, W);
+		return false;
+	}
+}
+
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pshistogram [<table>] %s -T[<min>/<max>/]<inc>[<unit>][+n] [-A] [%s] [-C<cpt>] [-D[+b][+f<font>][+o<off>][+r]]\n", GMT_Jx_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F] [-G<fill>] [-I[o|O]] [%s] [-K] [-L<pen>] [-N[<mode>][+p<pen>]] [-O] [-P] [-Q[r]]\n", GMT_Jz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s]\n\t[%s] [-Wl|h|b] [%s] [%s] [-Z[0-5][+w]]\n", GMT_Rx_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F] [-G<fill>] [-I[o|O]] [%s] [-K] [-Ll|h|b] [-N[<mode>][+p<pen>]] [-O] [-P] [-Q[r]]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s]\n\t[%s] [-W<pen>] [%s] [%s] [-Z[0-5][+w]]\n", GMT_Rx_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT);
 
@@ -465,7 +496,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to output the resulting x, y data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append O to output all resulting x, y data even with y=0.\n");
 	GMT_Option (API, "K");
-	gmt_pen_syntax (API->GMT, 'L', "Specify pen to draw histogram.", 0);
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Append l|h|b to place extreme values in the first, last, or both bins [skip extremes].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw the equivalent normal distribution; append desired pen [0.25p,black].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <mode> selects which central location and scale to use:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   0 = mean and standard deviation [Default]\n");
@@ -477,7 +508,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If neither -R nor -I are set, w/e/s/n will be based on input data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Draw a stairs-step diagram [Default is bar histogram].\n");
 	GMT_Option (API, "U,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Append l|h|b to place extreme values in the first, last, or both bins [skip extremes].\n");
+	gmt_pen_syntax (API->GMT, 'W', "Specify pen for histogram outline or stair-step curves.", 0);
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z To choose type of vertical axis.  Select from\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   0 - Counts [Default].\n");
@@ -502,7 +533,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 
 	unsigned int n_errors = 0, n_files = 0, mode = 0, pos = 0;
 	int sval;
-	char *c = NULL, *t_arg = NULL, *w_arg = NULL, p[GMT_BUFSIZ] = {""};
+	char *c = NULL, *l_arg = NULL, *t_arg = NULL, *w_arg = NULL, p[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -566,11 +597,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 				if (opt->arg[0] == 'O') Ctrl->I.mode = 2;
 				break;
 			case 'L':		/* Set line attributes */
-				Ctrl->L.active = true;
-				if (gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
-					gmt_pen_syntax (GMT, 'L', " ", 0);
-					n_errors++;
-				}
+				l_arg = opt->arg;
 				break;
 			case 'N':		/* Draw normal distribution */
 				Ctrl->N.active = true;
@@ -623,40 +650,74 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 		}
 	}
 
-	/* Must handle some backwards compatible issues first */
-	if (w_arg) {	/* Gave a -W selection */
-		c = w_arg;
-		while (*c && strchr ("+bhl", *c)) c++;	/* Go past the mode selectors */
-		if (*c) {	/* Gave old -W with unit, convert to new syntax.  Error if -T was also given */
-			if (t_arg) {	/* Any -T is therefore GMT4-style -Tcol selection.  Deal with that first */
-				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "The -T option is deprecated; use -i instead.\n");
-					n_errors += gmt_parse_i_option (GMT, t_arg);
-				}
-				else
-					n_errors += gmt_default_error (GMT, 'T');
-				t_arg = NULL;	/* So it is not confused with new -T parsed below */
-			}
-			/* Now parse bin width via -T */
-			n_errors += gmt_parse_array (GMT, 'T', c, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST, 0);
-			Ctrl->T.active = true;
-		}
-		/* Now worry about the modes, if any.  This handles [+]l|h|b */
-		if (strchr (w_arg, 'l')) Ctrl->W.mode = PSHISTOGRAM_LEFT;
-		else if (strchr (w_arg, 'h')) Ctrl->W.mode = PSHISTOGRAM_RIGHT;
-		else if (strchr (w_arg, 'b')) Ctrl->W.mode = PSHISTOGRAM_BOTH;
-	}
-	if (t_arg) {	/* GMT6 selection of bin width and range */
+	/* Must handle some backwards compatible issues first. The problem is a change in syntax: 
+	 * Old syntax: -W<width>[+l|h|b] [-L<pen>] [-T<col>]
+	 * New syntax: -T<width> [-Ll|h|b] [-W<pen>]
+	 * See logic in get_syntax. */
+	if (new_syntax (GMT, l_arg, t_arg, w_arg)) {
+		/* Process -T<width>[unit] [-Lb|h|l] [-W<pen>] */
 		Ctrl->T.active = true;
 		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST, 0);
+		if (l_arg) {	/* Gave -Lb|h|l */
+			Ctrl->L.active = true;
+			if (l_arg[0] == 'l') Ctrl->L.mode = PSHISTOGRAM_LEFT;
+			else if (l_arg[0] == 'h') Ctrl->L.mode = PSHISTOGRAM_RIGHT;
+			else if (l_arg[0] == 'b') Ctrl->L.mode = PSHISTOGRAM_BOTH;
+		}
+		if (w_arg) {	/* Gave -W<pen> */
+			Ctrl->W.active = true;
+			if (gmt_getpen (GMT, w_arg, &Ctrl->W.pen)) {
+				gmt_pen_syntax (GMT, 'W', " ", 0);
+				n_errors++;
+			}
+		}
 	}
-
+	else {
+		/* Process -W<width>[+b|h|l] [-L<pen>] */
+		c = strrchr (w_arg, '+');
+		/* Worry about the modes, if any.  This handles +l|h|b */
+		if (c) {	/* Gave old -W with mode, convert to new syntax.  Error if -T was also given */
+			if (c[1] == 'l')      Ctrl->L.mode = PSHISTOGRAM_LEFT;
+			else if (c[1] == 'h') Ctrl->L.mode = PSHISTOGRAM_RIGHT;
+			else if (c[1] == 'b') Ctrl->L.mode = PSHISTOGRAM_BOTH;
+			if (Ctrl->L.mode) {
+				Ctrl->L.active = true;
+				c[0] = '\0';	/* Chop off modifier */
+			}
+		}
+		if (t_arg) {	/* Any -T is a GMT4-style -Tcol selection.  Deal with that first */
+			if (gmt_M_compat_check (GMT, 4)) {
+				GMT_Report (API, GMT_MSG_COMPAT, "The -T<col> option is deprecated; use -i<col> instead.\n");
+				n_errors += gmt_parse_i_option (GMT, t_arg);
+			}
+			else
+				n_errors += gmt_default_error (GMT, 'T');
+			t_arg = NULL;	/* So it is not confused with new -T parsed below */
+		}
+			/* Now parse bin width via -T */
+		n_errors += gmt_parse_array (GMT, 'T', w_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST, 0);
+		Ctrl->T.active = true;
+		if (c) c[0] = '+';	/* Restore */
+		if (l_arg) {	/* Gave -L<pen> ==> -W<pen> */
+			if (gmt_M_compat_check (GMT, 6)) {
+				Ctrl->W.active = true;
+				//GMT_Report (API, GMT_MSG_COMPAT, "The -L<pen> option is deprecated; use -W<pen> instead.\n");
+				if (gmt_getpen (GMT, l_arg, &Ctrl->W.pen)) {
+					gmt_pen_syntax (GMT, 'W', " ", 0);
+					n_errors++;
+				}
+			}
+			else
+				n_errors += gmt_default_error (GMT, 'T');
+		}
+	}
+	
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->T.T.vartime, "Syntax error -F option: Cannot be used with variable time bin widths\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Syntax error -T option: Must specify bin width\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->I.active && !gmt_M_is_linear (GMT), "Syntax error -J option: Only linear projection supported.\n");
 
-	/* Now must specify either fill color with -G or outline pen with -L */
-	n_errors += gmt_M_check_condition (GMT, !(Ctrl->C.active || Ctrl->I.active || Ctrl->G.active || Ctrl->L.active), "Must specify either fill (-G) or lookup colors (-C), outline pen attributes (-L), or both.\n");
+	/* Now must specify either fill color with -G or outline pen with -W */
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->C.active || Ctrl->I.active || Ctrl->G.active || Ctrl->W.active), "Must specify either fill (-G) or lookup colors (-C), outline pen attributes (-W), or both.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Cannot specify both fill (-G) and lookup colors (-C).\n");
 	n_errors += gmt_check_binary_io (GMT, 0);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
@@ -718,7 +779,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	F.hist_type  = Ctrl->Z.mode;
 	F.cumulative = Ctrl->Q.mode;
 	F.center_box = Ctrl->F.active;
-	F.extremes = Ctrl->W.mode;
+	F.extremes = Ctrl->L.mode;
 	F.weights = Ctrl->Z.weights;
 	F.T = &(Ctrl->T.T);
 	if (!Ctrl->I.active && !GMT->common.R.active[RSET]) automatic = true;
@@ -1034,7 +1095,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	if (Ctrl->D.just == 0) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
-	area = plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->L.active, &Ctrl->L.pen, &Ctrl->G.fill, Ctrl->C.active, &Ctrl->D);
+	area = plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->W.active, &Ctrl->W.pen, &Ctrl->G.fill, Ctrl->C.active, &Ctrl->D);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Area under histogram is %g\n", area);
 
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */
