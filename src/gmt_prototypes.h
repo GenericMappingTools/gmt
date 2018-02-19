@@ -222,6 +222,7 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 /* gmt_io.c: */
 
+EXTERN_MSC void gmt_update_west_east_limits (struct GMT_CTRL *GMT, double *W, double *E, double w, double e);
 EXTERN_MSC void gmt_eliminate_lon_jumps (struct GMT_CTRL *GMT, double *lon, uint64_t n_rows);
 EXTERN_MSC bool gmt_polygon_is_hole (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S);
 EXTERN_MSC void gmt_free_header (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER **header);

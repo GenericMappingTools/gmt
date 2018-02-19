@@ -5288,6 +5288,33 @@ unsigned int gmt_quad_finalize (struct GMT_CTRL *GMT, struct GMT_QUAD *Q) {
 	return (way);
 }
 
+void gmt_update_west_east_limits (struct GMT_CTRL *GMT, double *W, double *E, double w, double e) {
+	/* Longitudes are tricky and we must find total extent by adding one new segment at the time.
+	 * Extend the previous W/E extent with the new w/e to minimize final longitude range */
+	double shift, best_shift = 0.0, range, range_max = DBL_MAX, WW = *W, EE = *E;
+	int k;
+	if (*W == *E) {	/* Initialization */
+		*W = w;	*E = e;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Longitude range initialized to %g/%g\n", *W, *E);
+		return;
+	}
+	for (k = -1; k <= +1; k++) {	/* Try to shift 2nd range by -360, 0, and +360 */
+		shift = k * 360.0;
+		range = MAX (*E, e + shift) - MIN (*W, w + shift);
+		if (range < range_max) {	/* This is a tighter fit */
+			best_shift = shift;
+			range_max = range;
+		}
+	}
+	*W = MIN (*W, w + best_shift);	
+	*E = MAX (*E, e + best_shift);
+	/* Ensure w < e and fits inside usual limits */
+	if (*W > *E) *W -= 360.0;
+	if (*W < 0.0 && *E < 0.0) { *W += 360.0; *E += 360.0;}
+	else if (*E > 360.0) { *W -= 360.0; *E -= 360.0;}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Longitude range %g/%g + %g/%g = %g/%g\n", WW, EE, w, e, *W, *E);
+}
+
 /*! . */
 void gmtlib_get_lon_minmax (struct GMT_CTRL *GMT, double *lon, uint64_t n_rows, double *min, double *max) {
 	/* Return the min/max longitude in array lon using clever quadrant checking. */

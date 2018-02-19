@@ -513,10 +513,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 		char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
 		struct GMT_RECORD *Rec = gmt_new_record (GMT, NULL, record);
 		size_t i, j;
-		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
-			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
-		else
-			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
+		GMT->current.io.geo.range = GMT_IGNORE_RANGE;	/* wesn is set correctly so dont mess with it during formatting */
 		gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
 		gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
 		gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");

@@ -242,7 +242,6 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	struct GMT_RECORD *Out = NULL;
 	struct GMT_DCW_COUNTRY *GMT_DCW_country = NULL;
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
-	struct GMT_QUAD *Q = NULL;
 
 	for (j = ks = 0; j < F->n_items; j++) {
 		if (!F->item[j]->codes || F->item[j]->codes[0] == '\0') continue;
@@ -256,14 +255,13 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Implementation error: Must pass wesn array if mode == %d\n", GMT_DCW_REGION);
 			return NULL;
 		}
-		wesn[XLO] = wesn[YLO] = +9999.0;	wesn[XHI] = wesn[YHI] = -9999.0;	/* Initialize so we can shrink it below */
-		Q = gmt_quad_init (GMT, 1);
+		wesn[XLO] = wesn[XHI] = 0.0;			/* Set to zero so it can grow below */
+		wesn[YLO] = +9999.0;	wesn[YHI] = -9999.0;	/* Initialize so we can shrink it below */
 	}
 
-	if (dcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, NULL, n_bodies)) {	/* Something went wrong */
-		gmt_M_free (GMT, Q);
+	if (dcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, NULL, n_bodies))	/* Something went wrong */
 		return NULL;
-	}
+
 	GMT_DCW_COUNTRIES = n_bodies[0];
 	GMT_DCW_STATES = n_bodies[1];
 
@@ -300,7 +298,6 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No countries selected\n");
 		gmt_M_free (GMT, order);
-		gmt_M_free (GMT, Q);
 		gmt_M_free (GMT, GMT_DCW_country);
 		gmt_M_free (GMT, GMT_DCW_state);
 		return NULL;
@@ -308,7 +305,6 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	if (!dcw_get_path (GMT, "dcw-gmt", ".nc", path)) {
 		gmt_M_free (GMT, order);
-		gmt_M_free (GMT, Q);
 		return NULL;
 	}
 
@@ -322,7 +318,6 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create empty dataset for DCW polygons\n");
 			gmt_free_segment (GMT, &P);
-			gmt_M_free (GMT, Q);
 			gmt_M_free (GMT, order);
 			return NULL;
 		}
@@ -332,7 +327,6 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s!\n", path);
 		gmt_free_segment (GMT, &P);
 		gmt_M_free (GMT, order);
-		gmt_M_free (GMT, Q);
 		return NULL;
 	}
 
@@ -343,20 +337,17 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot obtain attribute version\n");
 			gmt_free_segment (GMT, &P);
 			gmt_M_free (GMT, order);
-			gmt_M_free (GMT, Q);
 			return NULL;
 		}
 		if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title))) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot obtain attribute title\n");
 			gmt_free_segment (GMT, &P);
-			gmt_M_free (GMT, Q);
 			gmt_M_free (GMT, order);
 			return NULL;
 		}
 		if ((retval = nc_get_att_text (ncid, NC_GLOBAL, "source", source))) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot obtain attribute source\n");
 			gmt_free_segment (GMT, &P);
-			gmt_M_free (GMT, Q);
 			gmt_M_free (GMT, order);
 			return NULL;
 		}
@@ -435,10 +426,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		if ((retval = nc_get_att_double (ncid, yvarid, "max", &north))) continue;
 		if ((retval = nc_get_att_double (ncid, yvarid, "scale", &yscl))) continue;
 		if (mode & GMT_DCW_REGION) {	/* Just update wesn */
-			gmt_quad_add (GMT, &Q[GMT_X], west);
-			gmt_quad_add (GMT, &Q[GMT_X], east);
-			if (west < wesn[XLO])  wesn[XLO] = west;
-			if (east > wesn[XHI])  wesn[XHI] = east;
+			gmt_update_west_east_limits (GMT, &wesn[XLO], &wesn[XHI], west, east);
 			if (south < wesn[YLO]) wesn[YLO] = south;
 			if (north > wesn[YHI]) wesn[YHI] = north;
 		}
@@ -523,10 +511,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	gmt_M_free (GMT, Out);
 
 	if (mode & GMT_DCW_REGION) {
-		j = gmt_quad_finalize (GMT, &Q[GMT_X]);
-		GMT->current.io.geo.range = Q[GMT_X].range[j];		/* Override this setting explicitly */
-		wesn[XLO] = Q[GMT_X].min[j];	wesn[XHI] = Q[GMT_X].max[j];
-		gmt_M_free (GMT, Q);
+		GMT->current.io.geo.range = GMT_IGNORE_RANGE;		/* Override this setting explicitly */
 		if (F->adjust) {
 			if (F->extend) {	/* Extend the region by increments */
 				wesn[XLO] -= F->inc[XLO];
