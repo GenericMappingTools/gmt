@@ -229,7 +229,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	int64_t first, last;
 	size_t np, max_np = 0U, n_alloc;
 	uint64_t k, seg, n_segments;
-	unsigned int n_items = 0, pos = 0, kk, tbl = 0, j = 0, *order = NULL;
+	unsigned int n_items = 0, r_item = 0, pos = 0, kk, tbl = 0, j = 0, *order = NULL;
 	unsigned short int *dx = NULL, *dy = NULL;
 	unsigned int GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[3] = {0, 0, 0};
 	bool done, new_set, want_state, outline, fill = false;
@@ -237,6 +237,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
 	char msg[GMT_BUFSIZ] = {""}, segment[GMT_LEN32] = {""}, path[GMT_BUFSIZ] = {""}, list[GMT_BUFSIZ] = {""};
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
+	struct GMT_RANGE *Z = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *P = NULL, *S = NULL;
 	struct GMT_RECORD *Out = NULL;
@@ -359,7 +360,11 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	if ((mode & GMT_DCW_DUMP) || (mode & GMT_DCW_REGION)) {	/* Dump the coordinates to stdout or return -R means setting col types */
 		gmt_set_geographic (GMT, GMT_OUT);
 	}
-	pos = 0;
+
+	if (mode & GMT_DCW_REGION)	/* Just update wesn */
+		Z = gmt_M_memory (GMT, NULL, n_items, struct GMT_RANGE);
+
+	pos = item = 0;
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 	while (gmt_strtok (list, ",", &pos, code)) {	/* Loop over countries */
 		want_state = false;
@@ -426,7 +431,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		if ((retval = nc_get_att_double (ncid, yvarid, "max", &north))) continue;
 		if ((retval = nc_get_att_double (ncid, yvarid, "scale", &yscl))) continue;
 		if (mode & GMT_DCW_REGION) {	/* Just update wesn */
-			gmt_update_west_east_limits (GMT, &wesn[XLO], &wesn[XHI], west, east);
+			Z[r_item].west = west;	Z[r_item++].east = east;
 			if (south < wesn[YLO]) wesn[YLO] = south;
 			if (north > wesn[YHI]) wesn[YHI] = north;
 		}
@@ -511,6 +516,8 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	gmt_M_free (GMT, Out);
 
 	if (mode & GMT_DCW_REGION) {
+		gmt_find_range (GMT, Z, n_items, &wesn[XLO], &wesn[XHI]);
+		gmt_M_free (GMT, Z);
 		GMT->current.io.geo.range = GMT_IGNORE_RANGE;		/* Override this setting explicitly */
 		if (F->adjust) {
 			if (F->extend) {	/* Extend the region by increments */

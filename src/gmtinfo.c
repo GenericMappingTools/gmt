@@ -332,14 +332,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, xyzmin); gmt_M_free (GMT, xyzmax); gmt_M_free (GMT, xyzminL); gmt_M_free (GMT, lonmin);  gmt_M_free (GMT, lonmax); gmt_M_free (GMT, xyzmaxL); gmt_M_free (GMT, Q); gmt_M_free (GMT, Out); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, xyzmin); gmt_M_free (GMT, xyzmax); gmt_M_free (GMT, xyzminL); gmt_M_free (GMT, lonmin);  gmt_M_free (GMT, lonmax); gmt_M_free (GMT, xyzmaxL); gmt_M_free (GMT, Q); gmt_M_free (GMT, Z); gmt_M_free (GMT, Out); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtinfo (void *V_API, int mode, void *args) {
-	bool got_stuff = false, first_data_record, give_r_string = false, reset_west_east = true;
+	bool got_stuff = false, first_data_record, give_r_string = false;
 	bool brackets = false, work_on_abs_value, do_report, done, full_range = false;
 	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];
-	unsigned int fixed_phase[2] = {1, 1}, min_cols, save_range;
-	uint64_t col, ncol = 0, n = 0;
+	unsigned int fixed_phase[2] = {1, 1}, min_cols, save_range, n_items = 0;
+	uint64_t col, ncol = 0, n = 0, n_alloc = GMT_BIG_CHUNK;
 
 	char file[GMT_BUFSIZ] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""};
 	char buffer[GMT_BUFSIZ] = {""}, delimiter[2] = {""}, *t_ptr = NULL;
@@ -350,6 +350,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	double out[5] = {0.0, 0.0, 0.0, 0.0, 0.0}, *lonmin = NULL, *lonmax = NULL;
 
 	struct GMT_QUAD *Q = NULL;
+	struct GMT_RANGE **Z = NULL;
 	struct MINMAX_CTRL *Ctrl = NULL;
 	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -484,7 +485,6 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	d_ptr = (Ctrl->C.active || Ctrl->E.active) ? GMT->current.io.curr_rec : ((Ctrl->I.mode == BOUNDBOX) ? out : NULL);
 	t_ptr = (d_ptr && !Ctrl->E.active) ? NULL : record;
 	Out = gmt_new_record (GMT, d_ptr, t_ptr);
-	
 	first_data_record = true;
 	done = false;
 	while (!done) {	/* Keep returning records until we reach EOF of last file */
@@ -493,16 +493,14 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		if (gmt_M_rec_is_error (GMT)) Return (GMT_RUNTIME_ERROR);
 		if (gmt_M_rec_is_table_header (GMT)) continue;	/* Skip table headers */
 		if (gmt_M_rec_is_segment_header (GMT) || gmt_M_rec_is_file_break (GMT) || gmt_M_rec_is_eof (GMT)) {	/* Need per segment scrutiny of longitudes */
-			double segment_west, segment_east;
+			bool alloc_more = (n_items == n_alloc);
+			if (alloc_more) n_alloc <<= 1;	/* Double the memory */
 			for (col = 0; col < ncol; col++) if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) {	/* Must finalize longitudes first */
 				j = gmt_quad_finalize (GMT, &Q[col]);
-				segment_west = Q[col].min[j];	segment_east = Q[col].max[j];
-				if (reset_west_east) {
-					lonmin[col] = segment_west;	lonmax[col] = segment_east;
-					reset_west_east = false;
-				}
-				else
-					gmt_update_west_east_limits (GMT, &lonmin[col], &lonmax[col], segment_west, segment_east);
+				if (alloc_more)
+					Z[col] = gmt_M_memory (GMT, Z[col], n_alloc, struct GMT_RANGE);
+				Z[col][n_items].west = Q[col].min[j];	Z[col][n_items].east = Q[col].max[j];
+				n_items++;
 			}
 			gmt_quad_reset (GMT, Q, ncol);
 			if (gmt_M_rec_is_segment_header (GMT) && Ctrl->A.mode != REPORT_PER_SEGMENT) continue;	/* Since we are not reporting per segment they are just headers as far as we are concerned */
@@ -528,10 +526,10 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			
 			do_report = true;
 			if (Ctrl->L.active && !gmt_M_rec_is_eof (GMT)) do_report = false;	/* Only final report for -L */
- 			for (col = 0; col < ncol; col++) if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) {	/* Must update longitudes seaprately */
-				xyzmin[col] = lonmin[col];	xyzmax[col] = lonmax[col];
+ 			for (col = 0; col < ncol; col++) if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) {	/* Must update longitudes separately */
+				gmt_find_range (GMT, Z[col], n_items, &xyzmin[col], &xyzmax[col]);
+				n_items = 0;
 			}
-			GMT->current.io.geo.range = -99;	/* Leave as is */
 			if (Ctrl->I.active) {	/* Must report multiples of dx/dy etc */
 				if (n > 1 && fixed_phase[GMT_X] && fixed_phase[GMT_Y]) {	/* Got xy[z] data that lined up on a grid, so use the common phase shift */
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input (x,y) data are regularly distributed; fixed phase shifts are %g/%g.\n",
@@ -712,8 +710,8 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			for (col = 0; col < ncol; col++) {	/* Reset counters for next block */
 				xyzmin[col] = DBL_MAX;
 				xyzmax[col] = -DBL_MAX;
+				lonmin[col] = lonmax[col] = 0.0;
 			}
-			reset_west_east = true;
 			n = 0;
 			file[0] = '\0';
 			fixed_phase[GMT_X] = fixed_phase[GMT_Y] = 1;	/* Get ready for next batch */
@@ -758,6 +756,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			/* Now we know number of columns, so allocate memory */
 
 			Q = gmt_quad_init (GMT, ncol);
+			Z = gmt_M_memory (GMT, NULL, ncol, struct GMT_RANGE *);
 			xyzmin = gmt_M_memory (GMT, NULL, ncol, double);
 			xyzmax = gmt_M_memory (GMT, NULL, ncol, double);
 			xyzminL = gmt_M_memory (GMT, NULL, ncol, double);
@@ -768,6 +767,8 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			for (col = 0; col < ncol; col++) {	/* Initialize */
 				xyzmin[col] = xyzmaxL[col] = DBL_MAX;
 				xyzmax[col] = xyzminL[col] = -DBL_MAX;
+				if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON)
+					Z[col] = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_RANGE);
 			}
 			n = 0;
 			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = false;
@@ -853,6 +854,8 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->E.active)
 		gmt_M_free (GMT, dchosen);
+
+	for (col = 0; col < ncol; col++) gmt_M_free (GMT, Z[col]);
 
 	Return (GMT_NOERROR);
 }

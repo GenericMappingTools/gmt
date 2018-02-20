@@ -76,6 +76,13 @@ struct GMT_OBSERVATION {
 	gmt_grdfloat weight;
 };
 
+/*! For finding tightest west/east range of multiple items */
+struct GMT_RANGE {
+	double west;
+	double east;
+	double center;	/* Forced to be 0-360 */
+};
+
 /*! For information on 1-D array */
 
 struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays */

@@ -5288,7 +5288,7 @@ unsigned int gmt_quad_finalize (struct GMT_CTRL *GMT, struct GMT_QUAD *Q) {
 	return (way);
 }
 
-void gmt_update_west_east_limits (struct GMT_CTRL *GMT, double *W, double *E, double w, double e) {
+GMT_LOCAL void gmtio_update_west_east_limits (struct GMT_CTRL *GMT, double *W, double *E, double w, double e) {
 	/* Longitudes are tricky and we must find total extent by adding one new segment at the time.
 	 * Extend the previous W/E extent with the new w/e to minimize final longitude range */
 	double shift, best_shift = 0.0, range, range_max = DBL_MAX, WW = *W, EE = *E;
@@ -5314,6 +5314,26 @@ void gmt_update_west_east_limits (struct GMT_CTRL *GMT, double *W, double *E, do
 	else if (*E > 360.0) { *W -= 360.0; *E -= 360.0;}
 	if ((*E - *W) > 360.0) { *W = 0.0; *E = 360.0;}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Longitude range %g/%g + %g/%g = %g/%g\n", WW, EE, w, e, *W, *E);
+}
+
+GMT_LOCAL int compare_center (const void *p1, const void *p2) {
+	const struct GMT_RANGE *a = p1, *b = p2;
+	if (a->center < b->center) return (-1);
+	if (a->center > b->center) return (+1);
+	return (0);
+}
+
+void gmt_find_range (struct GMT_CTRL *GMT, struct GMT_RANGE *Z, uint64_t n_items, double *west, double *east) {
+	/* Need to sort Z on center longitude, then build final range incrementally and return answer via west/east */
+	uint64_t k;
+	for (k = 0; k < n_items; k++) {	/* Find middle point, and force 0-360 range */
+		Z[k].center = 0.5 * (Z[k].east + Z[k].west);
+		if (Z[k].center < 0.0) Z[k].center += 360.0;
+	}
+	qsort (Z, n_items, sizeof (struct GMT_RANGE), compare_center);
+	*west = *east = 0.0;	/* Initialized to have no range yet */
+	for (k = 0; k < n_items; k++)
+		gmtio_update_west_east_limits (GMT, west, east, Z[k].west, Z[k].east);
 }
 
 /*! . */
