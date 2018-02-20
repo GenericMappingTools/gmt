@@ -266,16 +266,27 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 
 	num_report = (Ctrl->C.active && Ctrl->C.mode != GRDINFO_TRADITIONAL);
 	no_file_OK = (Ctrl->D.active && Ctrl->D.mode == 0 && GMT->common.R.active[RSET]);
-	n_errors += gmt_M_check_condition (GMT, n_files == 0 && !no_file_OK, "Syntax error: Must specify one or more input files\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.mode && n_files != 1, "Syntax error -D: The +n modifier requires a single grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc < 0.0, "Syntax error -T: The optional increment must be positive\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode & 2 && n_files != 1, "Syntax error -T: The optional alpha-trim value can only work with a single grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->T.alpha < 0.0 || Ctrl->T.alpha > 100.0), "Syntax error -T: The optional alpha-trim value must be in the 0 < alpha < 100 %% range\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I: Must specify a positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->M.active, "Syntax error -M: Not compatible with -I or -T\n");
-	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->L.active, "Syntax error -L: Not compatible with -I or -T\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->I.active, "Syntax error: Only one of -I -T can be specified\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.o.active && !num_report, "Syntax error: The -o option requires -Cn\n");
+	n_errors += gmt_M_check_condition (GMT, n_files == 0 && !no_file_OK,
+	                                   "Syntax error: Must specify one or more input files\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.mode && n_files != 1,
+	                                   "Syntax error -D: The +n modifier requires a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc < 0.0,
+	                                   "Syntax error -T: The optional increment must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode & 2 && n_files != 1,
+	                                   "Syntax error -T: The optional alpha-trim value can only work with a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->T.alpha < 0.0 || Ctrl->T.alpha > 100.0),
+	                                   "Syntax error -T: The optional alpha-trim value must be in the 0 < alpha < 100 %% range\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED &&
+	                                   (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0),
+									   "Syntax error -I: Must specify a positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->M.active,
+	                                   "Syntax error -M: Not compatible with -I or -T\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->L.active,
+	                                   "Syntax error -L: Not compatible with -I or -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->I.active,
+	                                   "Syntax error: Only one of -I -T can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.o.active && !num_report,
+	                                   "Syntax error: The -o option requires -Cn\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -536,9 +547,9 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		HH = gmt_get_H_hidden (G->header);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing grid %s\n", HH->name);
 
-		if (G->header->ProjRefPROJ4 && !Ctrl->C.active && !Ctrl->T.active)
+		if (G->header->ProjRefPROJ4 && !Ctrl->C.active && !Ctrl->T.active && !Ctrl->I.active)
 			projStr = strdup (G->header->ProjRefPROJ4);		/* Copy proj string to print at the end */
-		else if (G->header->ProjRefWKT && !Ctrl->C.active && !Ctrl->T.active) 
+		else if (G->header->ProjRefWKT && !Ctrl->C.active && !Ctrl->T.active && !Ctrl->I.active) 
 			projStr = strdup (G->header->ProjRefWKT);
 
 		for (n = 0; n < GMT_Z; n++)
@@ -627,8 +638,10 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 		i_status = Ctrl->I.status;
 		if (Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_IMG) {
-			if (!(strstr (G->header->command, "img2grd") || strstr (G->header->command, "img2mercgrd") || strstr (G->header->remark, "img2mercgrd"))) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Could not find a -Rw/e/s/n string produced by img tools - returning regular grid -R\n");
+			if (!(strstr (G->header->command, "img2grd") || strstr (G->header->command, "img2mercgrd") ||
+			      strstr (G->header->remark, "img2mercgrd"))) {
+				GMT_Report (API, GMT_MSG_NORMAL,
+				            "Could not find a -Rw/e/s/n string produced by img tools - returning regular grid -R\n");
 				i_status = GRDINFO_GIVE_REG_ORIG;
 			}
 		}
@@ -702,20 +715,28 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				record[0] = '\0';
 				if (Ctrl->C.mode != GRDINFO_TRAILING)
 					sprintf (record, "%s%s", HH->name, sep);
-				gmt_ascii_format_col (GMT, text, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
-				gmt_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
-				gmt_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
-				gmt_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
-				gmt_ascii_format_col (GMT, text, G->header->z_min, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
-				gmt_ascii_format_col (GMT, text, G->header->z_max, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
+				gmt_ascii_format_col (GMT, text, G->header->wesn[XLO], GMT_OUT, GMT_X);
+				strcat (record, text);	strcat (record, sep);
+				gmt_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);
+				strcat (record, text);	strcat (record, sep);
+				gmt_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);
+				strcat (record, text);	strcat (record, sep);
+				gmt_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);
+				strcat (record, text);	strcat (record, sep);
+				gmt_ascii_format_col (GMT, text, G->header->z_min, GMT_OUT, GMT_Z);
+				strcat (record, text);	strcat (record, sep);
+				gmt_ascii_format_col (GMT, text, G->header->z_max, GMT_OUT, GMT_Z);
+				strcat (record, text);	strcat (record, sep);
 				gmt_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_OUT, GMT_X);
 				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 				strcat (record, text);	strcat (record, sep);
 				gmt_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_OUT, GMT_Y);
 				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 				strcat (record, text);	strcat (record, sep);
-				gmt_ascii_format_col (GMT, text, (double)G->header->n_columns, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
-				gmt_ascii_format_col (GMT, text, (double)G->header->n_rows, GMT_OUT, GMT_Z);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, (double)G->header->n_columns, GMT_OUT, GMT_Z);
+				strcat (record, text);	strcat (record, sep);
+				gmt_ascii_format_col (GMT, text, (double)G->header->n_rows, GMT_OUT, GMT_Z);
+				strcat (record, text);
 
 				if (Ctrl->M.active) {
 					strcat (record, sep);	gmt_ascii_format_col (GMT, text, x_min, GMT_OUT, GMT_X);	strcat (record, text);
@@ -745,7 +766,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			char *gtype[2] = {"Cartesian grid", "Geographic grid"};
 			sprintf (record, "%s: Title: %s", HH->name, G->header->title);		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			sprintf (record, "%s: Command: %s", HH->name, G->header->command);	GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-			sprintf (record, "%s: Remark: %s", HH->name, G->header->remark);		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			sprintf (record, "%s: Remark: %s", HH->name, G->header->remark);	GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			if (G->header->registration == GMT_GRID_NODE_REG || G->header->registration == GMT_GRID_PIXEL_REG)
 				sprintf (record, "%s: %s node registration used [%s]", HH->name, type[G->header->registration], gtype[gmt_M_is_geographic (GMT, GMT_IN)]);
 			else
@@ -811,7 +832,8 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);
 				strcat (record, " x_inc: ");	smart_increments (GMT, G->header->inc, GMT_X, text);	strcat (record, text);
 				strcat (record, " name: ");
-				if ((c = strstr (G->header->x_units, " [degrees"))) c[0] = '\0'; strcat (record, G->header->x_units); if (c) c[0] = ' ';
+				if ((c = strstr (G->header->x_units, " [degrees")))
+					c[0] = '\0'; strcat (record, G->header->x_units); if (c) c[0] = ' ';
 				sprintf (text, " n_columns: %d", G->header->n_columns);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				sprintf (record, "%s: y_min: ", HH->name);
@@ -820,7 +842,8 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
 				strcat (record, " y_inc: ");	smart_increments (GMT, G->header->inc, GMT_Y, text);	strcat (record, text);
 				strcat (record, " name: ");
-				if ((c = strstr (G->header->y_units, " [degrees"))) c[0] = '\0'; strcat (record, G->header->y_units); if (c) c[0] = ' ';
+				if ((c = strstr (G->header->y_units, " [degrees")))
+					c[0] = '\0'; strcat (record, G->header->y_units); if (c) c[0] = ' ';
 				sprintf (text, " n_rows: %d", G->header->n_rows);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
