@@ -207,7 +207,7 @@
 /* extern functions from various gmt_* only used here */
 EXTERN_MSC void gmtfft_fourt_stats (struct GMT_CTRL *GMT, unsigned int n_columns, unsigned int n_rows, unsigned int *f, double *r, size_t *s, double *t);
 EXTERN_MSC unsigned int gmtgrdio_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool free_grid);
-EXTERN_MSC int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, uint64_t dim[], double wesn[], double inc[], unsigned int registration, unsigned int mode);
+EXTERN_MSC int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, uint64_t dim[], double wesn[], double inc[], unsigned int registration, unsigned int mode);
 
 #define GMTAPI_MAX_ID 999999	/* Largest integer that will fit in the %06d format */
 #define GMTAPI_UNLIMITED	0	/* Using 0 to mean we may allow 1 or more data objects of this family */
@@ -1703,7 +1703,7 @@ GMT_LOCAL unsigned int api_decode_layout (struct GMTAPI_CTRL *API, const char *c
 /*! . */
 GMT_LOCAL int api_init_grid (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_GRID *G) {
 	if (direction == GMT_OUT) return (GMT_OK);	/* OK for creating a blank container for output */
-	gmtgrdio_init_grdheader (API->GMT, G->header, opt, dim, range, inc, registration, mode);
+	gmtgrdio_init_grdheader (API->GMT, direction, G->header, opt, dim, range, inc, registration, mode);
 	return (GMT_OK);
 }
 
@@ -1713,7 +1713,7 @@ GMT_LOCAL int api_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, u
 	if (direction == GMT_OUT) return (GMT_OK);	/* OK for creating blank container for output */
 	alpha = (dim && (dim[GMT_Z] == 2 || dim[GMT_Z] == 4));	/* Must allocate alpha array later */
 	if (alpha) dim[GMT_Z]--;	/* Remove this flag before grdheader is set */
-	gmtgrdio_init_grdheader (API->GMT, I->header, opt, dim, range, inc, registration, mode);
+	gmtgrdio_init_grdheader (API->GMT, direction, I->header, opt, dim, range, inc, registration, mode);
 	if (alpha) dim[GMT_Z]++;	/* Restore */
 	return (GMT_OK);
 }
@@ -2397,7 +2397,7 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 		case GMT_IS_GRID:	/* Grids need to update the grdtype setting, possibly rotate geographic grids, and maybe deal with subsets */
 			G = api_get_grid_data (data);	/* Get the right grid pointer */
 			gmtlib_grd_get_units (API->GMT, G->header);	/* Set the unit names */
-			G->header->grdtype = gmtlib_get_grdtype (API->GMT, G->header);
+			G->header->grdtype = gmtlib_get_grdtype (API->GMT, GMT_IN, G->header);
 			if (wesn && G->data) {	/* Subset or global rotation was requested */
 				if (gmt_M_grd_is_global (API->GMT, G->header)) {	/* May have to rotate a geographic grid since we are not reading from file this time */
 					double shift_amount = wesn[XLO] - G->header->wesn[XLO];
@@ -2425,7 +2425,7 @@ GMT_LOCAL void *api_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 		case GMT_IS_IMAGE:	/* Images need to update the grdtype setting, possibly rotate geographic grids, and maybe deal with subsets */
 			I = api_get_image_data (data);	/* Get the right image pointer */
 			gmtlib_grd_get_units (API->GMT, I->header);	/* Set the unit names */
-			I->header->grdtype = gmtlib_get_grdtype (API->GMT, I->header);
+			I->header->grdtype = gmtlib_get_grdtype (API->GMT, GMT_IN, I->header);
 			if (wesn && I->data) {	/* Subset or global rotation was requested */
 				if (gmt_M_grd_is_global (API->GMT, I->header)) {	/* May have to rotate geographic grid since we are not reading from file here */
 					double shift_amount = wesn[XLO] - I->header->wesn[XLO];

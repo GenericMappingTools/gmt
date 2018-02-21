@@ -212,6 +212,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+EXTERN_MSC int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *h);
+
 int GMT_grdproject (void *V_API, int mode, void *args) {
 	bool set_n = false, shift_xy = false;
 	unsigned int use_nx = 0, use_ny = 0, offset, k, unit = 0;
@@ -352,6 +354,10 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
 		gmt_set_cartesian (GMT, GMT_IN);
 	}
+	else {
+		gmt_set_geographic (GMT, GMT_IN);	/* Forward projection expects lon, la and gives x,y */
+		gmt_set_cartesian (GMT, GMT_OUT);
+	}
 
 	xmin = (Ctrl->C.active) ? GMT->current.proj.rect[XLO] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XLO];
 	xmax = (Ctrl->C.active) ? GMT->current.proj.rect[XHI] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XHI];
@@ -467,6 +473,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 		gmt_grd_project (GMT, Rect, Geo, true);
 
+		Geo->header->grdtype = gmtlib_get_grdtype (GMT, GMT_OUT, Geo->header);	/* Determine grid type */
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Geo)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Geo) != GMT_NOERROR) {
@@ -546,6 +553,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		strncpy (Rect->header->y_units, unit_name, GMT_GRID_UNIT_LEN80-1);
 
 		Rect->header->ProjRefPROJ4 = gmt_export2proj4(GMT);	/* Convert the GMT -J<...> into a proj4 string and save it in the header */
+		Rect->header->grdtype = gmtlib_get_grdtype (GMT, GMT_OUT, Rect->header);	/* Determine grid type */
 
 		/* rect xy values are here in GMT projected units chosen by user */
 
