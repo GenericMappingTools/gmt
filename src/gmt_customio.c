@@ -1786,7 +1786,7 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	else if (from_gdalread->Double.active)
 		HH->orig_datatype = GMT_DOUBLE;
 
-	HH->grdtype = gmtlib_get_grdtype (GMT, header);
+	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, header);
 	header->type = GMT_GRID_IS_GD;
 	header->registration = (int)from_gdalread->hdr[6];	/* Which registration? */
 	strcpy (header->title, "Grid imported via GDAL");

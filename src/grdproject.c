@@ -217,6 +217,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+EXTERN_MSC int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *h);
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -231,6 +233,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, fwd_scale, inv_scale;
 
 	struct GMT_GRID *Geo = NULL, *Rect = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GRDPROJECT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -360,6 +363,10 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
 		gmt_set_cartesian (GMT, GMT_IN);
 	}
+	else {
+		gmt_set_geographic (GMT, GMT_IN);	/* Forward projection expects lon, lat and gives x,y */
+		gmt_set_cartesian (GMT, GMT_OUT);
+	}
 
 	xmin = (Ctrl->C.active) ? GMT->current.proj.rect[XLO] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XLO];
 	xmax = (Ctrl->C.active) ? GMT->current.proj.rect[XHI] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XHI];
@@ -403,6 +410,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		}
 
 		if ((Geo = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Rect)) == NULL) Return (API->error);	/* Just to get a header we can change */
+		HH = gmt_get_H_hidden (Geo->header);	/* Get the hidden info structure */
 
 		if (gmt_M_is_azimuthal(GMT) && GMT->current.proj.polar) {	/* Watch out for polar cap grids */
 			double px, py;
@@ -475,6 +483,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 		gmt_grd_project (GMT, Rect, Geo, true);
 
+		HH->grdtype = gmtlib_get_grdtype (GMT, GMT_OUT, Geo->header);	/* Determine grid type */
+		
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Geo)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Geo) != GMT_NOERROR) {
@@ -488,6 +498,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		}
 
 		if ((Rect = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Geo)) == NULL) Return (API->error);	/* Just to get a header we can change */
+		HH = gmt_get_H_hidden (Rect->header);	/* Get the hidden info structure */
+		
 		gmt_M_memcpy (Rect->header->wesn, GMT->current.proj.rect, 4, double);
 		if (Ctrl->F.active) {	/* Convert from 1:1 scale */
 			if (unit) {	/* Undo the 1:1 unit used */
@@ -562,6 +574,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 		/* rect xy values are here in GMT projected units chosen by user */
 
+		HH->grdtype = gmtlib_get_grdtype (GMT, GMT_OUT, Rect->header);	/* Determine grid type */
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Rect)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Rect) != GMT_NOERROR) {
