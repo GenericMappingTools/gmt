@@ -2440,7 +2440,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	xx[1] = (heads & 2) ? length_inch - off[PSL_END] : length_inch;
 	if (heads & 1 && asymmetry[PSL_BEGIN] && kind[PSL_BEGIN] == PSL_VEC_CIRCLE) xx[0] = -r;
 	if (heads & 2 && asymmetry[PSL_END] && kind[PSL_END] == PSL_VEC_CIRCLE) xx[1] += r;
-	PSL_plotsegment (PSL, xx[0], 0.0, xx[1], 0.0);				/* Draw vector line body */
+	if (xx[1] > xx[0]) PSL_plotsegment (PSL, xx[0], 0.0, xx[1], 0.0);		/* Draw vector line body unless head length equals or exceeds total length */
 
 	if (status & PSL_VEC_MID_FWD) {	/* Want forward-pointing mid-point head instead of at end */
 		xp = -0.5 * length_inch;	heads = 2;
