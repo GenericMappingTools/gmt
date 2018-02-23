@@ -384,6 +384,22 @@ circles) can be designed - these polygons can be painted and filled with
 a pattern. Other standard geometric symbols can also be used. See Appendix
 :ref:`App-custom_symbols` for macro definitions.
 
+GMT4 Vector
+-----------
+
+Note: The old-style, single-polygon vector available in GMT4 and earlier versions
+has been added to GMT5 for backwards compatibility with old scripts.
+For reference, the old vector syntax is listed here:
+The *size*, if present, will be interpreted as *arrowwidth/headlength/headwidth*.
+By default, arrow attributes remain invariant to the length
+of the arrow.  To have the size of the vector scale down with decreasing length,
+append **n**\ *norm*, so that vectors shorter than *norm* will have their
+dimensions scaled by the vector length divided by *norm*.
+To center the vector on the balance (mid) point, use **-Svb**; to align point with the vector head,
+use **-Svh**; to align point with the vector tail, use **-Svt** [Default].
+If the input has the head point's coordinates instead of direction and length, use **-Svs**.
+Upper case **B**, **H**, **T**, or **S** will draw a double-headed vector [Default is single head].
+
 Polar Caps
 ----------
 

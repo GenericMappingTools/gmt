@@ -12600,33 +12600,30 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 	else if (strchr (GMT_VECTOR_CODES, text[0])) {
 		/* Vectors gets separate treatment because of optional modifiers [+j<just>+b+e+s+l+r+a<angle>+n<norm>] */
-		char arg[GMT_LEN64] = {""};
+		int one;
+		char arg[GMT_LEN64] = {""}, txt_c[GMT_LEN256] = {""};
 		n = sscanf (text, "%c%[^+]", &symbol_type, arg);	/* arg should be symbols size with no +<modifiers> at the end */
 		if (n == 1) strncpy (arg, &text[1], GMT_LEN64-1);	/* No modifiers present, set arg to text following symbol code */
 		k = 1;
-		if (gmt_M_compat_check (GMT, 4)) {
-			int one;
-			char txt_c[GMT_LEN256] = {""};
-			p->v.parsed_v4 = false;
-			if (strchr (text, '/') && !strchr (text, '+')) {
-				/* Gave old-style arrow dimensions; cannot exactly reproduce GMT 4 arrows since those were polygons */
-				p->v.status |= PSL_VEC_END;		/* Default is head at end */
-				p->size_y = p->given_size_y = 0.0;
-				one = (strchr ("bhstBHST", text[1])) ? 2 : 1;
-				sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-				p->v.v_width  = (float)gmt_M_to_inch (GMT, txt_a);
-				p->v.h_length = (float)gmt_M_to_inch (GMT, txt_b);
-				p->v.h_width  = (float)(gmt_M_to_inch (GMT, txt_c) * 2.0);
-				p->v.v_angle  = (float)atand ((0.5 * p->v.h_width / p->v.h_length) * 2.0);
-				p->v.parsed_v4 = true;
-				p->size_x = p->given_size_x = p->v.h_length;
-			}
-			else if (strchr ("vV", symbol_type) && text[1] && strchr ("bhstBHST", text[1])) {	/* Old style */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "bhstBHST vector modifiers is deprecated GMT3/4 syntax; see -S%c for current syntax.\n", text[0]);
-				p->v.status |= PSL_VEC_END;		/* Default is head at end */
-				k = 2;
-				strncpy (arg, &text[2], GMT_LEN64-1);
-			}
+		p->v.parsed_v4 = false;
+		if (strchr (text, '/') && !strchr (text, '+')) {
+			/* Gave old-style arrow dimensions; cannot exactly reproduce GMT 4 arrows since those were polygons */
+			p->v.status |= PSL_VEC_END;		/* Default is head at end */
+			p->size_y = p->given_size_y = 0.0;
+			one = (strchr ("bhstBHST", text[1])) ? 2 : 1;
+			sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+			p->v.v_width  = (float)gmt_M_to_inch (GMT, txt_a);
+			p->v.h_length = (float)gmt_M_to_inch (GMT, txt_b);
+			p->v.h_width  = (float)(gmt_M_to_inch (GMT, txt_c) * 2.0);
+			p->v.v_angle  = (float)atand ((0.5 * p->v.h_width / p->v.h_length) * 2.0);
+			p->v.parsed_v4 = true;
+			p->size_x = p->given_size_x = p->v.h_length;
+		}
+		else if (strchr ("vV", symbol_type) && text[1] && strchr ("bhstBHST", text[1])) {	/* Old style */
+			//GMT_Report (GMT->parent, GMT_MSG_COMPAT, "bhstBHST vector modifiers is deprecated GMT3/4 syntax; see -S%c for current syntax.\n", text[0]);
+			p->v.status |= PSL_VEC_END;		/* Default is head at end */
+			k = 2;
+			strncpy (arg, &text[2], GMT_LEN64-1);
 		}
 		if (text[k] && strchr (GMT_DIM_UNITS, (int) text[k])) {	/* No size given, only unit information */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
