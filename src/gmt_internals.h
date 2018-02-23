@@ -49,6 +49,8 @@ struct GMT_XINGS {
         unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
+EXTERN_MSC double gmtlib_cartesian_dist (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1);
+EXTERN_MSC double gmtlib_cartesian_dist_proj (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 EXTERN_MSC uint64_t gmtlib_read_list (struct GMT_CTRL *GMT, char *file, char ***list);
 EXTERN_MSC void gmtlib_finalize_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
 EXTERN_MSC bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt, bool *no_T);

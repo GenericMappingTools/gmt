@@ -128,8 +128,6 @@ EXTERN_MSC void gmt_fft_cleanup (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmtapi_garbage_collection (struct GMTAPI_CTRL *API, int level);	/* From gmt_api.c */
 EXTERN_MSC void gmt_translin (struct GMT_CTRL *GMT, double forw, double *inv);				/* Forward linear	*/
 EXTERN_MSC void gmt_itranslin (struct GMT_CTRL *GMT, double *forw, double inv);				/* Inverse linear	*/
-EXTERN_MSC double gmt_cartesian_dist (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
-EXTERN_MSC double gmt_cartesian_dist_proj (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 
 /*--------------------------------------------------------------------*/
 /* Load private fixed array parameters from include files */
@@ -1862,7 +1860,7 @@ GMT_LOCAL double gmtinit_abs_col_map_dist (struct GMT_CTRL *GMT, uint64_t col) {
 /*! Compute point-separation after mapping */
 GMT_LOCAL double gmtinit_xy_map_dist (struct GMT_CTRL *GMT, uint64_t col) {
 	gmt_M_unused(col);
-	return (gmt_cartesian_dist_proj (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
+	return (gmtlib_cartesian_dist_proj (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
 /*! . */
@@ -1880,7 +1878,7 @@ GMT_LOCAL double gmtinit_xy_true_dist (struct GMT_CTRL *GMT, uint64_t col) {
 /*! . */
 GMT_LOCAL double gmtinit_xy_cart_dist (struct GMT_CTRL *GMT, uint64_t col) {
 	gmt_M_unused(col);
-	return (gmt_cartesian_dist (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
+	return (gmtlib_cartesian_dist (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
 /*! Parse the -n option for 2-D grid resampling parameters -n[b|c|l|n][+a][+t<BC>][+<threshold>] */

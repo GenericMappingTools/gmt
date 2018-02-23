@@ -234,9 +234,7 @@ EXTERN_MSC double gmt_left_sinusoidal (struct GMT_CTRL *GMT, double y);	/* For s
 EXTERN_MSC double gmt_right_sinusoidal (struct GMT_CTRL *GMT, double y);	/* For sinusoidal maps	*/
 EXTERN_MSC double gmt_left_polyconic (struct GMT_CTRL *GMT, double y);	/* For polyconic maps	*/
 EXTERN_MSC double gmt_right_polyconic (struct GMT_CTRL *GMT, double y);	/* For polyconic maps	*/
-EXTERN_MSC double gmt_cartesian_dist (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1);
 EXTERN_MSC double gmt_cartesian_dist_periodic (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1);
-EXTERN_MSC double gmt_cartesian_dist_proj (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 
 /*! CCW order of side in some tests */
 enum GMT_side {
@@ -6123,7 +6121,7 @@ GMT_LOCAL void map_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Cartesian [periodic]\n", type_name[type]);
 			break;
 		case GMT_CARTESIAN_DIST:	/* Cartesian 2-D x,y data */
-			GMT->current.map.dist[type].func = &gmt_cartesian_dist;
+			GMT->current.map.dist[type].func = &gmtlib_cartesian_dist;
 			GMT->current.map.azimuth_func = &map_az_backaz_cartesian;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Cartesian\n", type_name[type]);
 			break;
@@ -6133,7 +6131,7 @@ GMT_LOCAL void map_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Cartesian\n", type_name[type]);
 			break;
 		case GMT_CARTESIAN_DIST_PROJ:	/* Cartesian distance after projecting 2-D lon,lat data */
-			GMT->current.map.dist[type].func = &gmt_cartesian_dist_proj;
+			GMT->current.map.dist[type].func = &gmtlib_cartesian_dist_proj;
 			GMT->current.map.azimuth_func = &map_az_backaz_cartesian_proj;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be Cartesian after first projecting via -J\n", type_name[type]);
 			break;
@@ -6946,14 +6944,14 @@ double gmt_cartesian_dist_periodic (struct GMT_CTRL *GMT, double x0, double y0, 
 }
 
 /*! . */
-double gmt_cartesian_dist (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1) {
+double gmtlib_cartesian_dist (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1) {
 	/* Calculates the good-old straight line distance in users units */
 	gmt_M_unused(GMT);
 	return (hypot ( (x1 - x0), (y1 - y0)));
 }
 
 /*! . */
-double gmt_cartesian_dist_proj (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2) {
+double gmtlib_cartesian_dist_proj (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2) {
 	/* Calculates the good-old straight line distance after first projecting the data */
 	double x0, y0, x1, y1;
 	gmt_geo_to_xy (GMT, lon1, lat1, &x0, &y0);
