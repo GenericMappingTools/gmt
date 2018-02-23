@@ -234,7 +234,6 @@ EXTERN_MSC double gmt_left_sinusoidal (struct GMT_CTRL *GMT, double y);	/* For s
 EXTERN_MSC double gmt_right_sinusoidal (struct GMT_CTRL *GMT, double y);	/* For sinusoidal maps	*/
 EXTERN_MSC double gmt_left_polyconic (struct GMT_CTRL *GMT, double y);	/* For polyconic maps	*/
 EXTERN_MSC double gmt_right_polyconic (struct GMT_CTRL *GMT, double y);	/* For polyconic maps	*/
-EXTERN_MSC double gmt_cartesian_dist_periodic (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1);
 
 /*! CCW order of side in some tests */
 enum GMT_side {
@@ -6106,6 +6105,15 @@ GMT_LOCAL double map_great_circle_dist_cos (struct GMT_CTRL *GMT, double lon1, d
 }
 
 /*! . */
+GMT_LOCAL double gmt_cartesian_dist_periodic (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1) {
+	/* Calculates the good-old straight line distance in users units */
+	double dx = x1 - x0, dy = y1 - y0;
+	if (GMT->common.n.periodic[GMT_X] && (dx = fabs (dx)) > GMT->common.n.half_range[GMT_X]) dx = GMT->common.n.range[GMT_X] - dx;
+	if (GMT->common.n.periodic[GMT_Y] && (dy = fabs (dy)) > GMT->common.n.half_range[GMT_Y]) dy = GMT->common.n.range[GMT_Y] - dy;
+	return (hypot (dx, dy));
+}
+
+/*! . */
 GMT_LOCAL void map_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type, char *unit_name) {
 	/* Assigns pointers to the chosen distance and azimuth functions */
 	char *type_name[3] = {"Map", "Contour", "Contour annotation"};
@@ -6933,15 +6941,6 @@ bool gmt_near_a_line (struct GMT_CTRL *GMT, double lon, double lat, uint64_t seg
 }
 
 /* Specific functions that are accessed via pointer only */
-
-/*! . */
-double gmt_cartesian_dist_periodic (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1) {
-	/* Calculates the good-old straight line distance in users units */
-	double dx = x1 - x0, dy = y1 - y0;
-	if (GMT->common.n.periodic[GMT_X] && (dx = fabs (dx)) > GMT->common.n.half_range[GMT_X]) dx = GMT->common.n.range[GMT_X] - dx;
-	if (GMT->common.n.periodic[GMT_Y] && (dy = fabs (dy)) > GMT->common.n.half_range[GMT_Y]) dy = GMT->common.n.range[GMT_Y] - dy;
-	return (hypot (dx, dy));
-}
 
 /*! . */
 double gmtlib_cartesian_dist (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1) {

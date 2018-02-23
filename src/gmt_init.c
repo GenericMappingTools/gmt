@@ -121,7 +121,6 @@
    So far, only gmtset calls this function with core = true, but this is a too fragile solution */
 #define GMT_KEYWORD_UPDATE(val) if (core) GMT_keywords_updated[val] = true
 
-EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customio.c and only used here */
 EXTERN_MSC void gmt_fft_initialization (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_fft_cleanup (struct GMT_CTRL *GMT);
