@@ -14690,8 +14690,10 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	int n = 0, n_figs, this_k, k, err;
 	bool found = false;
 	char prefix[GMT_LEN256] = {""}, formats[GMT_LEN64] = {""}, options[GMT_LEN128] = {""};
+	char *L = NULL;
 	struct GMT_FIGURE *fig = NULL;
 	FILE *fp = NULL;
+	
 	if (API->gwf_dir == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "gmt figure: No workflow directory set\n");
 		return GMT_NOT_A_VALID_DIRECTORY;
@@ -14745,6 +14747,21 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	/* Set the current figure */
 	if (gmtlib_set_current_figure (API, prefix, this_k))
 		return GMT_ERROR_ON_FOPEN;
+
+	/* See if movie set up a frame label */
+	
+	if ((L = getenv ("MOVIE_LABEL_ARG")) != NULL) {	/* MOVIE_LABEL_ARG was set */
+		char file[PATH_MAX] = {""};
+		GMT_Report (API, GMT_MSG_DEBUG, "New figure: Has special MOVIE_LABEL_ARG = %s\n", L);
+		sprintf (file, "%s/gmt.movie", API->gwf_dir);
+		if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot create file %s\n", file);
+			return GMT_ERROR_ON_FOPEN;
+		}
+		fprintf (fp, "# movie label information file\n");
+		fprintf (fp, "%s\n", L);
+		fclose (fp);
+	}
 
 	return GMT_NOERROR;
 }

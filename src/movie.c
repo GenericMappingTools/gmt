@@ -61,6 +61,10 @@ enum enum_video {MOVIE_MP4,	/* Create a H.264 MP4 video */
 	MOVIE_WEBM,		/* Create a WebM video */
 	MOVIE_N_FORMATS};	/* Number of video formats above */
 
+enum enum_label {MOVIE_LABEL_IS_FRAME = 1,
+	MOVIE_LABEL_IS_COL_C = 2,
+	MOVIE_LABEL_IS_COL_T};
+
 /* Control structure for movie */
 
 struct MOVIE_CTRL {
@@ -106,6 +110,18 @@ struct MOVIE_CTRL {
 		char *file;
 		FILE *fp;
 	} I;
+	struct L {	/* -L[f|c#|t#][+c<clearance>][+f<fmt>][+g<fill>][+j<justify>][+o<offset>][+p<pen>] */
+		bool active;
+		char format[GMT_LEN64];
+		char fill[GMT_LEN64];
+		char pen[GMT_LEN64];
+		char placement[3];
+		unsigned int mode;
+		unsigned int col;
+		double x, y;
+		double off[2];
+		double clearance[2];
+	} L;
 	struct M {	/* -M[<frame>][,format] */
 		bool active;
 		bool exit;
@@ -156,6 +172,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->C.unit = 'c';	/* c for SI units */
 	C->D.framerate = 24.0;	/* 24 frames/sec */
 	C->F.options[MOVIE_WEBM] = strdup ("-crf 10 -b:v 1.2M");	/* Default WebM options for now */
+	C->L.fill[0] = C->L.pen[0] = '-';	/* No fill or outline */
+	C->L.off[GMT_X] = C->L.off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% */
+	C->L.clearance[GMT_X] = C->L.clearance[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;	/* 15% */
+	sprintf (C->L.placement, "TL");
 	GMT->common.x.n_threads = GMT->parent->n_cores;
 	return (C);
 }
@@ -320,8 +340,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: movie <mainscript> -C<canvas> -N<prefix> -T<n_frames>|<timefile>[+p<width>][+s<first>][+w]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]]  [-G<fill>] [-H<factor>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-M[<frame>,][<format>]] [-Q[s]] [-Sb<script>] [-Sf<script>] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-G<fill>] [-H<factor>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-L<labelinfo>] [-M[<frame>,][<format>]] [-Q[s]] [-Sb<script>] [-Sf<script>] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W<workdir>] [-Z] [-x[[-]<n>]]\n\n");
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -371,6 +391,17 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Stabilize sub-pixel changes between frames, such as moving text and lines.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Include script file to be inserted into the movie_init.sh script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constant variables needed by all movie scripts.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Automatic labeling of frames.  Places chosen label at the frame perimeter:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     f selectes the running frame number as the label.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c<col> uses the value in column <col> of <timefile> (first column is 1).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     t<col> uses word number <col> from the trailing text in <timefile> (requires -T...+w).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between label and surrounding box.  Only\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     used if +g or +p are set.  Append units {%s} or %% of fontsize [%d%%].\n", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f to provide a format statement to be used with the item selected [none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to fill the label textbox with <fill> color [no fill].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j<refpoint> to specify where the label should be plotted [TL].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset label in direction implied by <justify> [%d%% of font size].\n", GMT_TEXT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the textbox using selected pen [no outline].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Create a master frame plot as well; append comma-separated frame number [0] and format [pdf].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Master plot will be named <prefix>.<format> and placed in the current directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Debugging: Leave all intermediate files and directores behind for inspection.\n");
@@ -403,9 +434,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 	unsigned int n_errors = 0, n_files = 0, k, pos, mag;
 	int n;
 	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, arg[GMT_LEN64] = {""}, p[GMT_LEN256] = {""};
-	char *c = NULL, *s = NULL;
+	char *c = NULL, *s = NULL, string[GMT_LEN128] = {""};
 	double width = 24.0, height16x9 = 13.5, height4x3 = 18.0, dpu = 160.0;	/* SI values */
 	struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
+	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
 	struct GMT_OPTION *opt = NULL;
 	
 	if (GMT->current.setting.proj_length_unit == GMT_INCH) {	/* Switch from SI to US dimensions in inch given format names */
@@ -573,6 +605,40 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				Ctrl->I.file = strdup (opt->arg);
 				break;
 
+			case 'L':	/* Label frame and get attributes */
+				Ctrl->L.active = true;
+				if ((c = strchr (opt->arg, '+'))) c[0] = '\0';	/* Chop off modifiers for now */
+				switch (opt->arg[0]) {
+					case 'c':	Ctrl->L.mode = MOVIE_LABEL_IS_COL_C;	Ctrl->L.col = atoi (&opt->arg[1]);	break;
+					case 't':	Ctrl->L.mode = MOVIE_LABEL_IS_COL_T;	Ctrl->L.col = atoi (&opt->arg[1]);	break;
+					case 'f': case '\0': Ctrl->L.mode = MOVIE_LABEL_IS_FRAME;	break;
+					default:	/* Not recognized */
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -L: Select -Lf, -Lc<col> or -Lt<col>\n");
+						n_errors++;
+						break;
+				}
+				if (c) {	/* Gave modifiers so we must parse those now */
+					c[0] = '+';	/* Restore modifiers */
+					/* Modifiers are [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>] */
+					if (gmt_get_modifier (opt->arg, 'c', string) && string[0])	/* Clearance for box */
+						if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->L.clearance) < 0) n_errors++;
+					if (gmt_get_modifier (opt->arg, 'f', Ctrl->L.format) && !Ctrl->L.format[0]) {
+						n_errors++;
+					}
+					if (gmt_get_modifier (opt->arg, 'g', Ctrl->L.fill) && Ctrl->L.fill[0]) {
+						if (gmt_getfill (GMT, Ctrl->L.fill, &fill)) n_errors++;
+					}
+					if (gmt_get_modifier (opt->arg, 'j', Ctrl->L.placement)) {	/* Inside placement */
+						gmt_just_validate (GMT, Ctrl->L.placement, "TL");
+					}
+					if (gmt_get_modifier (opt->arg, 'o', string))	/* Offset refpoint */
+						if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->L.off) < 0) n_errors++;
+					if (gmt_get_modifier (opt->arg, 'p', Ctrl->L.pen) && Ctrl->L.pen[0]) {
+						if (gmt_getpen (GMT, Ctrl->L.pen, &pen)) n_errors++;
+					}
+				}
+				break;
+
 			case 'M':	/* Create a single frame plot as well as movie (unless -Q is active) */
 				Ctrl->M.active = true;
 				if ((c = strchr (opt->arg, ',')) ) {	/* Gave frame and format */
@@ -632,7 +698,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 							case 's':	/* Specify start frame other than 0 */
 								Ctrl->T.start_frame = atoi (&p[1]);
 								break;
-							case 'w':	/* SSplit trailing text into words. */
+							case 'w':	/* Split trailing text into words. */
 								Ctrl->T.split = true;
 								break;
 							default:
@@ -674,6 +740,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active && !Ctrl->M.active && !Ctrl->animate, "Syntax error: Must select at least one output product (-A, -F, -M)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Z.active, "Syntax error: Cannot use -Z if -Q is also set\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor < 2, "Syntax error -H: factor must be and integer > 1\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == MOVIE_LABEL_IS_COL_T && !Ctrl->T.split, "Syntax error -L: Must split trailing text to use -Lt\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_X] <= 0.0 || Ctrl->C.dim[GMT_Y] <= 0.0,
 					"Syntax error -C: Zero or negative canvas dimensions given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dim[GMT_Z] <= 0.0,
@@ -748,14 +815,14 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	char var_token[3] = "$$%", path_sep[3] = "::;";
 	char init_file[GMT_LEN64] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, state_file[GMT_LEN64] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[GMT_LEN64] = {""}, post_file[GMT_LEN64] = {""}, main_file[GMT_LEN64] = {""}, line[PATH_MAX] = {""};
-	char string[GMT_LEN64] = {""}, extra[GMT_LEN64] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[GMT_LEN64] = {""};
+	char string[GMT_LEN64] = {""}, extra[GMT_LEN64] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[GMT_LEN64] = {""}, L_txt[GMT_LEN64] = {""};
 	char png_file[GMT_LEN64] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN8] = {MOVIE_RASTER_FORMAT};
 #ifdef _WIN32
 	char dir_sep = '\\';
 #else
 	char dir_sep = '/';
 #endif
-	double percent;
+	double percent, L_col;
 	
 	FILE *fp = NULL;
 	
@@ -790,6 +857,21 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	one_frame = (Ctrl->M.active && (Ctrl->Q.scripts || !Ctrl->animate || Ctrl->M.exit));	/* true if we want to create a single master plot only */
 	if (Ctrl->C.unit == 'c') Ctrl->C.dim[GMT_Z] *= 2.54;		/* Since gs requires dots per inches but we were given dots per cm */
 	else if (Ctrl->C.unit == 'p') Ctrl->C.dim[GMT_Z] *= 72.0;	/* Since gs requires dots per inches but we were given dots per point */
+	
+	if (Ctrl->L.active) {	/* Compute label placement */
+		int i, j, justify = gmt_just_decode (GMT, Ctrl->L.placement, PSL_TL);
+		i = (justify % 4) - 1;	/* Split the 2-D justify code into x just 0-2 */
+		j = justify / 4;	/* Split the 2-D justify code into y just 0-2 */
+		Ctrl->L.x = 0.5 * Ctrl->C.dim[GMT_X] * i;
+		Ctrl->L.y = 0.5 * Ctrl->C.dim[GMT_Y] * j;
+		if (i != 1) Ctrl->L.x += (1-i) * Ctrl->L.off[GMT_X];
+		if (j != 1) Ctrl->L.y += (1-j) * Ctrl->L.off[GMT_Y];
+		Ctrl->L.col--;	/* So 0 becomes -1 (INTMAX, actually), 1 becomes 0, etc */
+		if (Ctrl->L.mode == MOVIE_LABEL_IS_COL_T && !strchr (Ctrl->L.format, 's')) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L: Using +f<format> with word variables requires a \'%%s\'-style format.\n");
+			Return (GMT_PARSE_ERROR);
+		}
+	}
 	
 	if (Ctrl->Q.scripts) {	/* No movie, but scripts will be produced */
 		GMT_Report (API, GMT_MSG_NORMAL, "Dry-run enabled - Movie scripts will be created and any pre/post scripts will be executed.\n");
@@ -1079,6 +1161,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		for (col = 0; col < n_values; col++) {	/* Derive frame variables from <timefile> in each parameter file */
 			sprintf (string, "MOVIE_COL%u", col+1);
 			set_dvalue (fp, Ctrl->In.mode, string, D->table[0]->segment[0]->data[col][frame], 0);
+			if (Ctrl->L.mode == MOVIE_LABEL_IS_COL_C && Ctrl->L.col == col) L_col = D->table[0]->segment[0]->data[col][frame];
 		}
 		if (has_text) {	/* Also place any string parameter as a single string variable */
 			set_tvalue (fp, Ctrl->In.mode, "MOVIE_TEXT", D->table[0]->segment[0]->text[frame]);
@@ -1089,9 +1172,41 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					if (*word != '\0') {	/* Skip empty strings */
 						sprintf (string, "MOVIE_WORD%u", ++col);
 						set_tvalue (fp, Ctrl->In.mode, string, word);
+						if (Ctrl->L.mode == MOVIE_LABEL_IS_COL_T && Ctrl->L.col == col) strcpy (L_txt, word);
 					}
 				}
 			}
+		}
+		if (Ctrl->L.active) {	/* Want to place a user label in a corner */
+			char label[GMT_LEN256] = {""};
+			/* Place x/y/just/clearance_x/clearance_Y/pen/fill/txt in MOVIE_LABEL_ARG */
+			sprintf (label, "%g%c,%g%c,%s,%g,%g,%s,%s,", Ctrl->L.x, Ctrl->C.unit, Ctrl->L.y, Ctrl->C.unit,
+				Ctrl->L.placement, Ctrl->L.clearance[GMT_X], Ctrl->L.clearance[GMT_Y], Ctrl->L.pen, Ctrl->L.fill);
+			if (Ctrl->L.mode == MOVIE_LABEL_IS_FRAME) {
+				if (Ctrl->L.format[0] && strchr (Ctrl->L.format, 'd'))	/* Set as integer */
+					sprintf (string, Ctrl->L.format, (int)frame);
+				else if (Ctrl->L.format[0])	/* Set as floating point */
+					sprintf (string, Ctrl->L.format, (double)frame);
+				else
+					strcpy (string, state_tag);
+			}
+			else if (Ctrl->L.mode == MOVIE_LABEL_IS_COL_C) {	/* Format a number */
+				if (Ctrl->L.format[0] && strchr (Ctrl->L.format, 'd'))	/* Set as integer */
+					sprintf (string, Ctrl->L.format, (int)L_col);
+				else if (Ctrl->L.format[0])	/* Set as floating point */
+					sprintf (string, Ctrl->L.format, L_col);
+				else	/* Uses FORMAT_FLOAT_MAP */
+					sprintf (string, GMT->current.setting.format_float_map, L_col);
+			}
+			else if (Ctrl->L.mode == MOVIE_LABEL_IS_COL_T) {
+				if (Ctrl->L.format[0])
+					sprintf (string, Ctrl->L.format, L_txt);
+				else
+					strcpy (string, L_txt);
+			}
+			strcat (label, string);
+			fprintf (fp, "%s", export[Ctrl->In.mode]);	/* Set MOVIE_LABEL_ARG as exported variable */
+			set_tvalue (fp, Ctrl->In.mode, "MOVIE_LABEL_ARG", label);
 		}
 		fclose (fp);	/* Done writing this parameter file */
 	}

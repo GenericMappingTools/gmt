@@ -3991,7 +3991,9 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 	if (!PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) PSL_command (PSL, "1 /Normal PSL_transp\n");
 
 	if (lastpage) {
+		PSL_comment (PSL, "Run PSL movie completion function, if defined\n");
 		PSL_command (PSL, "\ngrestore\n");	/* End encapsulation of main body for this plot */
+		PSL_command (PSL, "PSL_movie_completion /PSL_movie_completion {} def\n");	/* Run then make it a null function */
 		PSL_command (PSL, "%%PSL_Begin_Trailer\n");
 		PSL_command (PSL, "%%%%PageTrailer\n");
 		if (PSL->init.runmode) {
@@ -4109,8 +4111,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
 
-	if (overlay) {	/* Must issue PSL header - this is the start of a new plot */
-		if (PSL->current.complete) {	/* Execute the completion function, then disable again */
+	if (overlay) {	/* Must issue PSL header - this is the start of a new panel */
+		if (PSL->current.complete) {	/* Execute the panel completion function, then disable again */
 			PSL_comment (PSL, "Run PSL completion function from last overlay, if defined\n");
 			PSL_command (PSL, "PSL_completion /PSL_completion {} def\n");	/* Run then make it a null function */
 			PSL->current.complete = 0;
@@ -4200,6 +4202,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		PSL_defpoints (PSL, "PSL_page_ysize", PSL->internal.landscape ? PSL->internal.p_width : PSL->internal.p_height);
 		
 		PSL_command (PSL, "/PSL_completion {} def\n");	/* Initialize custom procedure as a null function */
+		PSL_command (PSL, "/PSL_movie_completion {} def\n");	/* Initialize custom procedure as a null function */
 
 		/* Write out current settings for cap, join, and miter; these may be changed by user at any time later */
 		i = PSL->internal.line_cap;	PSL->internal.line_cap = PSL_BUTT_CAP;		PSL_setlinecap (PSL, i);

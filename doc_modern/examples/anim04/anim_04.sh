@@ -22,12 +22,12 @@ EOF
 # 2. Set up the main frame script
 cat << EOF > main.sh
 gmt begin
+	gmt set FONT_TAG 14p,Helvetica-Bold
 	gmt grdimage -JG\${MOVIE_COL1}/\${MOVIE_COL2}/160/210/55/0/36/34/\${MOVIE_WIDTH}+ \
 		-Rg @USEast_Coast.nc -Iint_US.nc -Cglobe_US.cpt -X0 -Y0
 	gmt psxy -W1p flight_path.txt
-	gmt pstext -R0/7.2/0/4.8 -Jx1i -F+f14p,Helvetica-Bold+jTL <<< "0.1 4.7 \${1}"
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -C7.2ix4.8ix100 -Nanim_04 -Tflight_path.txt -Sbpre.sh -Z -H2 $opt
+gmt movie main.sh -C7.2ix4.8ix100 -Nanim_04 -Tflight_path.txt -Sbpre.sh -Z -H2 -Lf+o0.1i $opt
 rm -f main.sh pre.sh

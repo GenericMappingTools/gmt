@@ -23,6 +23,7 @@ Synopsis
 [ |-G|\ *fill*\ ]
 [ |-H|\ *factor*\ ]
 [ |-I|\ *includefile* ]
+[ |-L|\ *labelinfo* ]
 [ |-M|\ [*frame*],[*format*] ]
 [ |-Q|\ [**s**] ]
 [ **Sb**\ *backgroundscript* ]
@@ -151,6 +152,25 @@ Optional Arguments
     Insert the contents of *includefile* into the movie_init.sh script that is accessed by all movie scripts.
     This mechanism is used to add information (typically constant variable assignments) that the *mainscript*
     (and the two optional **-S** scripts) relies on.
+
+.. _-L:
+
+**-L**\ *labelinfo*
+
+    Automatic labeling of individual frames.  Places the chosen label at the frame perimeter:
+    **f** selects the running frame number as the label, **c**\ *col* uses the value in column
+    number *col* of *timefile* as label (first column is 1), while **t**\ *col* uses word number
+    *col* from the trailing text in *timefile* (requires **-T**\ ...**+w**).
+    Append **+c**\ *dx*\ [/*dy*] for the clearance between label and surrounding box.  Only
+    used if **+g** or **+p** are set.  Append units **c**\ \|\ **i**\ \|\ **p** or % of the font size [15%].
+    Append **+f** to provide a *format* statement to be used with the label item selected [no special formatting].
+    If **-Lt** is used the the format statement must contain a %s-like format, else it may have an integer
+    or floating point format.
+    Append **+g** to fill the label textbox with *fill* color [no fill].
+    Use **+j**\ *refpoint* to specify where the label should be plotted [TL].
+    Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*.. Append units
+    **c**\ \|\ **i**\ \|\ **p** or % of the font size [20% of font size].
+    Append **+p** to draw the outline of the textbox using selected *pen* [no outline].
 
 .. _-M:
 

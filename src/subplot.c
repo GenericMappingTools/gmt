@@ -943,7 +943,10 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		
 		/* Write out the subplot information file */
 		
-		fp = fopen (file, "w");
+		if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot create file %s\n", file);
+			Return (GMT_ERROR_ON_FOPEN);
+		}
 		fprintf (fp, "# subplot panel information file\n");
 		cmd = GMT_Create_Cmd (API, options);
 		fprintf (fp, "# Command: %s %s\n", THIS_MODULE_NAME, cmd);
