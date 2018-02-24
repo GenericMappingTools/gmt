@@ -14751,6 +14751,11 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	/* See if movie set up a frame label */
 	
 	if ((L = getenv ("MOVIE_LABEL_ARG")) != NULL) {	/* MOVIE_LABEL_ARG was set */
+		/* Special processing for gmt movie: If -L is used to set labeling then we
+		 * need to ensure the label is on top of the frame and unaffected by any
+		 * -X -Y that may have been used in the main script. We do this by implementing
+		 * the label via a PSL procedure that is called at the end of the file.
+		 * This is set up by gmt_plotinit in gmt_plot.c */
 		char file[PATH_MAX] = {""};
 		GMT_Report (API, GMT_MSG_DEBUG, "New figure: Has special MOVIE_LABEL_ARG = %s\n", L);
 		sprintf (file, "%s/gmt.movie", API->gwf_dir);

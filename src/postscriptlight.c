@@ -3991,8 +3991,8 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 	if (!PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) PSL_command (PSL, "1 /Normal PSL_transp\n");
 
 	if (lastpage) {
-		PSL_comment (PSL, "Run PSL movie completion function, if defined\n");
 		PSL_command (PSL, "\ngrestore\n");	/* End encapsulation of main body for this plot */
+		PSL_comment (PSL, "Run PSL movie completion function, if defined\n");
 		PSL_command (PSL, "PSL_movie_completion /PSL_movie_completion {} def\n");	/* Run then make it a null function */
 		PSL_command (PSL, "%%PSL_Begin_Trailer\n");
 		PSL_command (PSL, "%%%%PageTrailer\n");

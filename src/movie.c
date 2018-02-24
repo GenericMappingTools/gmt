@@ -1177,7 +1177,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		if (Ctrl->L.active) {	/* Want to place a user label in a corner */
+		if (Ctrl->L.active) {	/* Want to place a user label in a corner of the frame */
 			char label[GMT_LEN256] = {""};
 			/* Place x/y/just/clearance_x/clearance_Y/pen/fill/txt in MOVIE_LABEL_ARG */
 			sprintf (label, "%g%c,%g%c,%s,%g,%g,%s,%s,", Ctrl->L.x, Ctrl->C.unit, Ctrl->L.y, Ctrl->C.unit,
@@ -1205,7 +1205,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					strcpy (string, L_txt);
 			}
 			strcat (label, string);
-			fprintf (fp, "%s", export[Ctrl->In.mode]);	/* Set MOVIE_LABEL_ARG as exported variable */
+			/* Set MOVIE_LABEL_ARG as exported variable. gmt figure will check for this and if found create gmt.movie in session directory */
+			fprintf (fp, "%s", export[Ctrl->In.mode]);
 			set_tvalue (fp, Ctrl->In.mode, "MOVIE_LABEL_ARG", label);
 		}
 		fclose (fp);	/* Done writing this parameter file */
