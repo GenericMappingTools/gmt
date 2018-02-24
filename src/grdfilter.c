@@ -1345,7 +1345,7 @@ GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 
 	for (row_out = r_start; row_out < r_stop; row_out++) {
 
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Processing output line %d\r", row_out);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Processing output line %d\n", row_out);
 #ifdef DEBUG
 		if (Ctrl->A.active && row_out != Ctrl->A.ROW) continue;		/* Not at our selected row for testing */
 #endif
@@ -1502,7 +1502,7 @@ GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 		}
 	}
 
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Processing output line %d\n", row_out);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Processing output line %d\n", row_out);
 
 	if (slow) {
 		if (slower) gmt_M_free (GMT, work_data);

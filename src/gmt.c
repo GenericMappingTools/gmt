@@ -80,6 +80,8 @@ int main (int argc, char *argv[]) {
 	/* Look for and process any -V[flag] so we may use GMT_Report_Error early on for debugging.
 	 * Note: Because first 16 bits of mode may be used for other things we must left-shift by 16 */
 	for (k = 1; k < argc; k++) if (!strncmp (argv[k], "-V", 2U)) v_mode = gmt_get_V (argv[k][2]);
+	/* DEBUG */
+v_mode = GMT_MSG_LONG_VERBOSE;
 	if (v_mode) mode = (v_mode << 16);	/* Left-shift the mode by 16 */
 	
 	progname = strdup (basename (argv[0])); /* Last component from the pathname */

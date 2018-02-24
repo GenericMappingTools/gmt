@@ -582,7 +582,5 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G_rad\n");
 	}
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done\n");
-
 	Return (GMT_NOERROR);
 }

@@ -878,7 +878,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						}
 						if (text[0] == '\0') {	/* Nothing to do, just skip to next */
 							column_number++;
-							GMT_Report (API, GMT_MSG_LONG_VERBOSE, "The L record give no info so skip to next cell\n");
+							GMT_Report (API, GMT_MSG_DEBUG, "The L record gave no info so skip to next cell\n");
 							drawn = true;
 							break;
 						}
@@ -1515,8 +1515,6 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 				Return (API->error);
 		}
 	}
-
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done\n");
 
 	Return (GMT_NOERROR);
 }

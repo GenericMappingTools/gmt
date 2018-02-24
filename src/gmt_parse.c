@@ -504,7 +504,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 			head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Create_Options: Must expand list file %s\n", args[arg]);
 			for (f = 0; f < n_files; f++) {	/* Now expand all the listed files into options */
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Create_Options: Adding input file: %s\n", flist[f]);
+				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Options: Adding input file: %s\n", flist[f]);
 				if ((new_opt = GMT_Make_Option (API, GMT_OPT_INFILE, flist[f])) == NULL)
 					return_null (API, error);	/* Create the new option structure given the args, or return the error */
 				new_opt = fix_gdal_files (new_opt);

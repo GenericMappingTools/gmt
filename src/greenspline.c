@@ -1260,7 +1260,7 @@ GMT_LOCAL void do_normalization (struct GMTAPI_CTRL *API, double **X, double *ob
 
 	uint64_t i;
 	double d, min = DBL_MAX, max = -DBL_MAX;
-	char *type[4] = {"Remove mean", "Normalization mode: Remove %d-D linear trend\n", "Remove mean and normalize data", "Normalization mode: Remove %d-D linear trend and normalize data\n"};
+	char *type[4] = {"Remove mean", "Normalization mode: Remove %d-D linear trend\n", "Remove mean and normalize data", "Normalization mode: Remove %d-D linear trend and normalize data"};
 	if (mode % 2)
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, type[mode], dim);
 	else
@@ -2479,8 +2479,6 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 	free_lookup (GMT, &Lz, 0);
 	free_lookup (GMT, &Lg, 1);
-
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done\n");
 
 	Return (GMT_NOERROR);
 }

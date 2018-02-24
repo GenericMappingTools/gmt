@@ -782,7 +782,11 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution political boundaries]\n", GMT_strerror(err), shore_resolution[base]);
 		Ctrl->N.active = false;
 	}
-	if (need_coast_base) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
+	if (need_coast_base) {
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GSHHG version %s\n", c.version);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s\n", c.title);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s\n", c.source);
+	}
 
 	if (Ctrl->I.active && (err = gmt_init_br (GMT, 'r', Ctrl->D.set, &r, GMT->common.R.wesn)) != 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution rivers]\n", GMT_strerror(err), shore_resolution[base]);
@@ -851,8 +855,6 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			gmt_plane_perspective (GMT, -1, 0.0);
 	
 			gmt_plotend (GMT);
-
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 
 			Return (GMT_NOERROR);
 		}
@@ -964,7 +966,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on bin # %5d\r", bin);
+		GMT_Report (API, GMT_MSG_DEBUG, "Working on bin # %5d\r", bin);
 		if (!Ctrl->M.active) PSL_comment (PSL, "Bin # %d\n", bin);
 
 		if (GMT->current.map.is_world && greenwich) {
@@ -1085,7 +1087,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	}
 	if (need_coast_base) {
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on bin # %5ld\n", bin);
+		GMT_Report (API, GMT_MSG_DEBUG, "Working on bin # %5ld\n", bin);
 		gmt_shore_cleanup (GMT, &c);
 		GMT->current.map.coastline = false;
 	}
@@ -1229,8 +1231,6 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, Out);
 	
 	GMT->current.map.coastline = false;
-
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done\n");
 
 	Return (GMT_NOERROR);
 }

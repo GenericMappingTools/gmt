@@ -673,7 +673,6 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 			Return (API->error);
 		}
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 	}
 	else if (Ctrl->G.active && !Ctrl->Q.active) {	/* Grid via planar triangle segments */
 		int n_columns = Grid->header->n_columns, n_rows = Grid->header->n_rows;	/* Signed versions */
@@ -786,7 +785,6 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			if (triplets[GMT_IN]) gmt_M_free (GMT, zz);
 			Return (API->error);
 		}
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 	}
 	
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
@@ -924,7 +922,6 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, vv);
 	}
 	if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 
 	Return (GMT_NOERROR);
 }

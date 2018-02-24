@@ -1028,7 +1028,5 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, R);
 	if (retain_original) gmt_M_free (GMT, orig_load);
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
-
 	Return (error);
 }

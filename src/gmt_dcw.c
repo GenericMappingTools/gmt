@@ -352,10 +352,10 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			gmt_M_free (GMT, order);
 			return NULL;
 		}
-		GMT_Message (GMT->parent, GMT_TIME_NONE, "Using country and state data from gmt-dcw\n");
-		GMT_Message (GMT->parent, GMT_TIME_NONE, "Title  : %s\n", title);
-		GMT_Message (GMT->parent, GMT_TIME_NONE, "Source : %s\n", source);
-		GMT_Message (GMT->parent, GMT_TIME_NONE, "Version: %s\n", version);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Using country and state data from gmt-dcw\n");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Title  : %s\n", title);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Source : %s\n", source);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Version: %s\n", version);
 	}
 	if ((mode & GMT_DCW_DUMP) || (mode & GMT_DCW_REGION)) {	/* Dump the coordinates to stdout or return -R means setting col types */
 		gmt_set_geographic (GMT, GMT_OUT);

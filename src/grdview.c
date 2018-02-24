@@ -1247,7 +1247,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Start rasterization\n");
 		for (j = j_start; j != j_stop; j += j_inc) {
 
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Scan line conversion at j-line %.6ld\r", j);
+			GMT_Report (API, GMT_MSG_DEBUG, "Scan line conversion at j-line %.6ld\n", j);
 
 			for (i = i_start; i != i_stop; i += i_inc) {
 				bin = gmt_M_ij0 (Z->header, j, i);
@@ -1912,8 +1912,6 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	if (get_contours && GMT_Destroy_Data (API, &Z) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Z\n");
 	}
-
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 
 	Return (GMT_NOERROR);
 }

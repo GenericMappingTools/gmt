@@ -938,7 +938,6 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	}
 
 	GMT->current.map.z_periodic = Ctrl->Z.periodic;	/* Phase data */
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Allocate memory and read data file\n");
 
 	mem_G = gmt_M_file_is_memory (Ctrl->In.file);
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
@@ -1487,8 +1486,6 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, cont_type);
 	gmt_M_free (GMT, cont_angle);
 	gmt_M_free (GMT, cont_do_tick);
-
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 
 	Return (GMT_NOERROR);
 }

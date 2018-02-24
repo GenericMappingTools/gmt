@@ -540,7 +540,5 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, grd_y);
 	gmt_M_free (GMT, grd_yc);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
-
 	Return (GMT_NOERROR);
 }

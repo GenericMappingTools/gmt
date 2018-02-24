@@ -643,8 +643,6 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			
 			if (Ctrl->C.active) tic = clock();	/* To report execution time from this pair */
 
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing %s - %s : ", trk_name[A], trk_name[B]);
-
 			if (same) {	/* Just set pointers */
 				data[1] = data[0];
 				dist[1] = dist[0];
@@ -911,10 +909,10 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, ylist_B);
 			}
 			if (!Ctrl->C.active)
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 "\n", nx);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing %s - %s : %" PRIu64 "\n", trk_name[A], trk_name[B], nx);
 			else {
 				toc = clock();
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%" PRIu64 "\t%.3f sec\n", nx, (double)(toc - tic)/1000);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing %s - %s : %" PRIu64 "\t%.3f sec\n", trk_name[A], trk_name[B], nx, (double)(toc - tic)/1000);
 				if (fpC)	/* Save also the run time in file */
 					fprintf (fpC, "%s\t%s\t%d\t%.3f\n", trk_name[A], trk_name[B], (int)nx, (double)(toc - tic)/1000);
 			}

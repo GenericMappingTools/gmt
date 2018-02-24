@@ -334,7 +334,9 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GSHHG version %s\n", c.version);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s\n", c.title);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s\n", c.source);
 
 		sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 		if (Ctrl->N.wetdry) {
@@ -402,7 +404,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */
 
 		bin = c.bins[ind];
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Working on block # %5ld\r", bin);
+		GMT_Report (API, GMT_MSG_DEBUG, "Working on block # %5ld\n", bin);
 
 		if ((err = gmt_get_shore_bin (GMT, ind, &c))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
@@ -678,7 +680,6 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Border between Levels %d-%d set for %" PRIu64 " nodes\n", (k-1)/2, (k+1)/2, count[k]);
 		}
 	}
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 
 	Return (GMT_NOERROR);
 }

@@ -1075,6 +1075,6 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	}
 
 	gmt_M_free (GMT, Out);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
+
 	Return (GMT_NOERROR);
 }

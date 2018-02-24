@@ -345,7 +345,7 @@ GMT_LOCAL void do_gps_normalization (struct GMTAPI_CTRL *API, double **X, double
 
 	uint64_t i;
 	double d, umin = DBL_MAX, vmin = DBL_MAX, umax = -DBL_MAX, vmax = -DBL_MAX;
-	char *type[4] = {"Remove mean", "Remove 2-D linear trend\n", "Remove mean and normalize data", "Remove 2-D linear trend and normalize data\n"};
+	char *type[4] = {"Remove mean", "Remove 2-D linear trend\n", "Remove mean and normalize data", "Remove 2-D linear trend and normalize data"};
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalization mode: %s.\n", type[mode]);
 	gmt_M_memset (coeff, GSP_LENGTH, double);
@@ -1226,8 +1226,6 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, X);
 	gmt_M_free (GMT, u);
 	gmt_M_free (GMT, v);
-
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done\n");
 
 	Return (GMT_NOERROR);
 }

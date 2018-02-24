@@ -276,7 +276,6 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &Intmp) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 		Return (GMT_NOERROR);
 	}
 	
@@ -363,7 +362,6 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 	if (!(Ctrl->I.mode == GMT_IS_REFERENCE && Ctrl->W.mode == GMT_IS_REFERENCE) && GMT_Destroy_Data (API, &Out) != GMT_NOERROR) {
 		Return (API->error);
 	}
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
 	Return (GMT_NOERROR);
 }
 

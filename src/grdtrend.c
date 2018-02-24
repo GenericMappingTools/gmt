@@ -685,7 +685,5 @@ END:
 	gmt_M_free (GMT, yval);
 	gmt_M_free (GMT, xval);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
-
 	Return (error);
 }

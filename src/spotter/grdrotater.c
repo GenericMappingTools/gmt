@@ -730,7 +730,5 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	if (Dr && GMT_Destroy_Data (API, &Dr) != GMT_NOERROR)
 		Return (API->error);
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Done!\n");
-
 	Return (GMT_NOERROR);
 }
