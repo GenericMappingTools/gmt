@@ -756,7 +756,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	
 	double cval, x_left, x_right, y_top, y_bottom, small = GMT_CONV4_LIMIT, z_ave;
 	double inc2[2], wesn[4] = {0.0, 0.0, 0.0, 0.0}, z_val, x_pixel_size, y_pixel_size;
-	double d_off, this_intensity = 0.0, next_up = 0.0, xmesh[4], ymesh[4], rgb[4];
+	double this_intensity = 0.0, next_up = 0.0, xmesh[4], ymesh[4], rgb[4];
 	double *x_imask = NULL, *y_imask = NULL, x_inc[4], y_inc[4], *x = NULL, *y = NULL;
 	double *z = NULL, *v = NULL, *xx = NULL, *yy = NULL, *xval = NULL, *yval = NULL;
 
@@ -1285,7 +1285,9 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		 * each pixel will get color contribution from the 4 nodes making up the tile, and we base it on the distance
 		 * from the current pixel to each of the 4 nodes.  We weigh the contributions using w = 1/(d_off+dist) so
 		 * that we dont blow up at a node.  We choose d_off as 10% of typical pixels per tile. This filters the values
-		 * a little bit.  */
+		 * a little bit.
+		 * PW Feb-24-2018: Commented out for now.  What we had is not that bad but suffers from aliasing when the dpi
+		 * is low.  Perhaps a scheme that sets d_off to tiny when dpi passes some threshold.  */
 		
 		d_off = 0.1 * hypot ((max_i - min_i)/((double)Z->header->n_columns), (max_j - min_j)/((double)Z->header->n_rows));
 		GMT_Report (API, GMT_MSG_DEBUG, "Zero-distance 1/(off+r) offset for tile averaging: %g\n", d_off);
