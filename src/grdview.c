@@ -205,7 +205,7 @@ GMT_LOCAL double get_intensity (struct GMT_GRID *I, uint64_t k) {
 	return (0.25 * (I->data[k] + I->data[k+1] + I->data[k-I->header->mx] + I->data[k-I->header->mx+1]));
 }
 
-GMT_LOCAL unsigned int pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *iy, uint64_t bin, int bin_inc[]) {
+GMT_LOCAL unsigned int pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *iy, int64_t bin, int bin_inc[]) {
 	/* Returns true of the ip,jp point is inside the polygon defined by the tile */
 	unsigned int i, what;
 	double x[6], y[6];
@@ -300,6 +300,70 @@ GMT_LOCAL void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, str
 		PSL_setfill (PSL, rgb, outline);
 	}
 	PSL_plotpolygon (PSL, x, y, n);
+}
+
+GMT_LOCAL void set_loop_order (struct GMT_CTRL *GMT, struct GMT_GRID *Z, int start[], int stop[], int inc[], unsigned int id[]) {
+	/* We want to loop over the grid from "back" to "front".  What is back and what is front depends on the
+	 * projection (-J) and view angles (-p).  We pick a point in the middle of the grid and the point above it
+	 * (i.e., north of it) and compute their projected coordinates, then calculate the angle from center to north.
+	 * We use this orientation of the grid to determine which way we loop (rows then columns or columns then rows)
+	 * and which direction.
+	 * The start and stop items work like this: start is the lower-left row,col values of the first tile,
+	 * while stop is 1 beyond the last valid index - we loop as long as current index is NOT equal to stop.
+	 */
+	unsigned int col, row, oct;
+	double az, x0, x1, y0, y1;
+	char *kind = "xy";
+	col = Z->header->n_columns / 2;
+	row = Z->header->n_rows / 2;
+	gmt_geoz_to_xy (GMT, Z->x[col], Z->y[row],   GMT->current.proj.z_project.level, &x0, &y0);
+	gmt_geoz_to_xy (GMT, Z->x[col], Z->y[row-1], GMT->current.proj.z_project.level, &x1, &y1);
+	if (doubleAlmostEqualZero (x0, x1))	/* Vertical orientation */
+		az = (y1 > y0) ? 90.0 : -90.0;
+	else
+		az = d_atan2d (y1 - y0, x1 - x0);
+	if (az < 0.0) az += 360.0;
+	else if (az >= 360.0) az -= 360.0;
+	oct = 1 + urint (floor (az / 45.0));	/* Gives octants 1 - 8 */
+	switch (oct) {
+		case 1:	/* 0-45: Outer loop over columns */
+			id[0] = GMT_X;	start[0] = 0;	stop[0] = Z->header->n_columns - 1;	inc[0] = +1;
+			id[1] = GMT_Y;	start[1] = 1;	stop[1] = Z->header->n_rows;		inc[1] = +1;
+			break;
+		case 2:	/* 45-90: Outer loop over rows */
+			id[0] = GMT_Y;	start[0] = 1;	stop[0] = Z->header->n_rows; 		inc[0] = +1;
+			id[1] = GMT_X;	start[1] = 0;	stop[1] = Z->header->n_columns - 1;	inc[1] = +1;
+			break;
+		case 3:	/* 90-135: Outer loop over rows */
+			id[0] = GMT_Y;	start[0] = 1;	stop[0] = Z->header->n_rows; 		inc[0] = +1;
+			id[1] = GMT_X;	start[1] = Z->header->n_columns - 2;	stop[1] = -1;	inc[1] = -1;
+			break;
+		case 4:	/* 135-180: Outer loop over columns */
+			id[0] = GMT_X;	start[0] = Z->header->n_columns - 2;	stop[0] = -1; 	inc[0] = -1;
+			id[1] = GMT_Y;	start[1] = 1;	stop[1] = Z->header->n_rows;		inc[1] = +1;
+			break;
+		case 5:	/* 180-225: Outer loop over columns */
+			id[0] = GMT_X;	start[0] = Z->header->n_columns - 2;	stop[0] = -1; 	inc[0] = -1;
+			id[1] = GMT_Y;	start[1] = Z->header->n_rows - 1;	stop[1] = 0;	inc[1] = -1;
+			break;
+		case 6:	/* 225-270: Outer loop over rows */
+			id[0] = GMT_Y;	start[0] = Z->header->n_rows - 1;	stop[0] = 0;	inc[0] = -1;
+			id[1] = GMT_X;	start[1] = Z->header->n_columns - 2;	stop[1] = -1; 	inc[1] = -1;
+			break;
+		case 7:	/* 270-315: Outer loop over rows */
+			id[0] = GMT_Y;	start[0] = Z->header->n_rows - 1;	stop[0] = 0;	inc[0] = -1;
+			id[1] = GMT_X;	start[1] = 0;	stop[1] = Z->header->n_columns - 1;	inc[1] = +1;
+			break;
+		case 8:	/* 315-360: Outer loop over columns */
+			id[0] = GMT_X;	start[0] = 0;	stop[0] = Z->header->n_columns - 1;	inc[0] = +1;
+			id[1] = GMT_Y;	start[1] = Z->header->n_rows - 1;	stop[1] = 0;	inc[1] = -1;
+			break;
+		default:	/* For Coverity */
+			break;
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Octant %d (az = %g)\n", oct, az);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Outer loop over %c doing %d:%d:%d\n", kind[id[0]], start[0], inc[0], stop[0]);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Inner loop over %c doing %d:%d:%d\n", kind[id[1]], start[1], inc[1], stop[1]);
 }
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -679,12 +743,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 int GMT_grdview (void *V_API, int mode, void *args) {
 	bool get_contours, bad, good, pen_set, begin, saddle, drape_resample = false;
 	bool nothing_inside = false, use_intensity_grid, do_G_reading = true;
-	unsigned int c, nk, n4, row, col, n_edges, d_reg[3], i_reg = 0;
+	unsigned int c, nk, n4, row, col, n_edges, d_reg[3], i_reg = 0, id[2];
 	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
-	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, i_start, i_stop, j_start, j_stop;
-	int i_inc, j_inc, way, bin_inc[4], ij_inc[4], error = 0;
+	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, way, bin_inc[4], ij_inc[4], error = 0;
+	int start[2], stop[2], inc[2];
 
-	uint64_t ij, sw, se, nw, ne, bin, n, pt;
+	uint64_t sw, se, nw, ne, n, pt, ij, bin;
 
 	size_t max_alloc;
 
@@ -692,7 +756,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	
 	double cval, x_left, x_right, y_top, y_bottom, small = GMT_CONV4_LIMIT, z_ave;
 	double inc2[2], wesn[4] = {0.0, 0.0, 0.0, 0.0}, z_val, x_pixel_size, y_pixel_size;
-	double this_intensity = 0.0, next_up = 0.0, xmesh[4], ymesh[4], rgb[4];
+	double d_off, this_intensity = 0.0, next_up = 0.0, xmesh[4], ymesh[4], rgb[4];
 	double *x_imask = NULL, *y_imask = NULL, x_inc[4], y_inc[4], *x = NULL, *y = NULL;
 	double *z = NULL, *v = NULL, *xx = NULL, *yy = NULL, *xval = NULL, *yval = NULL;
 
@@ -903,12 +967,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	grdview_init_setup (GMT, Topo, Ctrl->N.active, Ctrl->N.level);	/* Find projected min/max in y-direction */
 #endif
 
-	i_start = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 2) ? 0 : Z->header->n_columns - 2;
-	i_stop  = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 2) ? Z->header->n_columns : 0;	i_stop--;
-	i_inc   = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 2) ? 1 : -1;
-	j_start = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 4) ? Z->header->n_rows - 1 : 1;
-	j_stop  = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 4) ? 0 : Z->header->n_rows;
-	j_inc   = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 4) ? -1 : 1;
+	set_loop_order (GMT, Z, start, stop, inc, id);
+
 	gmt_grd_set_ij_inc (GMT, Z->header->n_columns, bin_inc);	/* Offsets for bin (no pad) indices */
 
 	x_inc[0] = x_inc[3] = 0.0;	x_inc[1] = x_inc[2] = Z->header->inc[GMT_X];
@@ -1165,26 +1225,33 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		nx_i = irint (x_width * Ctrl->Q.dpi);	/* Size of image in pixels */
 		ny_i = irint (y_width * Ctrl->Q.dpi);
 		last_i = nx_i - 1;	last_j = ny_i - 1;
+		min_i = min_j = INT_MAX;	max_i = max_j = -INT_MAX;
 
 		if (drape_resample) {
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Resampling illumination grid to drape grid resolution\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Resampling relief grid to drape grid resolution\n");
+			if (use_intensity_grid) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Resampling illumination grid to drape grid resolution\n");
 			ix = gmt_M_memory (GMT, NULL, Z->header->nm, int);
 			iy = gmt_M_memory (GMT, NULL, Z->header->nm, int);
 			x_drape = Z->x;
 			y_drape = Z->y;
 			if (use_intensity_grid) int_drape = gmt_M_memory (GMT, NULL, Z->header->mx*Z->header->my, gmt_grdfloat);
-			bin = 0;
+			bin = 0;	/* bin cycles over a grid with no padding, hence bin++ is good enough */
 			gmt_M_grd_loop (GMT, Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
-				value = gmt_bcr_get_z (GMT, Topo, x_drape[col], y_drape[row]);
+				value = gmt_bcr_get_z (GMT, Topo, x_drape[col], y_drape[row]);	/* Relief value at drape coordinate */
 				if (gmt_M_is_dnan (value))	/* Outside -R or NaNs not used */
 					ix[bin] = iy[bin] = -1;
-				else {
+				else {	/* Valid relief, compute projected point on 3-D surface */
 					gmt_geoz_to_xy (GMT, x_drape[col], y_drape[row], value, &xp, &yp);
-					/* Make sure ix,iy fall in the range (0,nx_i-1), (0,ny_i-1) */
+					/* Make sure ix,iy pixel values fall in the range (0,nx_i-1), (0,ny_i-1) */
 					ix[bin] = MAX(0, MIN(irint (floor((xp - GMT->current.proj.z_project.xmin) * Ctrl->Q.dpi)), last_i));
 					iy[bin] = MAX(0, MIN(irint (floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi)), last_j));
 				}
-				if (use_intensity_grid) int_drape[ij] = (gmt_grdfloat)gmt_bcr_get_z (GMT, Intens, x_drape[col], y_drape[row]);
+				if (use_intensity_grid)	/* Get intensity value at drape coordinate */
+					int_drape[ij] = (gmt_grdfloat)gmt_bcr_get_z (GMT, Intens, x_drape[col], y_drape[row]);
+				if (ix[bin] < min_i) min_i = ix[bin];
+				if (ix[bin] > max_i) max_i = ix[bin];
+				if (iy[bin] < min_j) min_j = iy[bin];
+				if (iy[bin] > max_j) max_j = iy[bin];
 				bin++;
 			}
 			if (use_intensity_grid) {	/* Reset intensity grid so that we have no boundary row/cols */
@@ -1192,11 +1259,11 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				Intens->data = int_drape;
 			}
 		}
-		else {
+		else {	/* Drape and relief grid [and optional intensity grid] all of same dimensions */
 			ix = gmt_M_memory (GMT, NULL, Topo->header->nm, int);
 			iy = gmt_M_memory (GMT, NULL, Topo->header->nm, int);
 			bin = 0;
-			gmt_M_grd_loop (GMT, Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
+			gmt_M_grd_loop (GMT, Z, row, col, ij) {	/* Get projected relief coordinates converted to pixel locations */
 				if (gmt_M_is_fnan (Topo->data[ij]))	/* Outside -R or NaNs not used */
 					ix[bin] = iy[bin] = -1;
 				else {
@@ -1204,10 +1271,25 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					/* Make sure ix,iy fall in the range (0,nx_i-1), (0,ny_i-1) */
 					ix[bin] = MAX(0, MIN(irint (floor((xp - GMT->current.proj.z_project.xmin) * Ctrl->Q.dpi)), last_i));
 					iy[bin] = MAX(0, MIN(irint (floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi)), last_j));
+					if (ix[bin] < min_i) min_i = ix[bin];
+					if (ix[bin] > max_i) max_i = ix[bin];
+					if (iy[bin] < min_j) min_j = iy[bin];
+					if (iy[bin] > max_j) max_j = iy[bin];
 				}
 				bin++;
 			}
 		}
+
+#if 0
+		/* Get a sensible zero distance adjustment for Shepard weights in blending colors for pixels inside a tile.
+		 * each pixel will get color contribution from the 4 nodes making up the tile, and we base it on the distance
+		 * from the current pixel to each of the 4 nodes.  We weigh the contributions using w = 1/(d_off+dist) so
+		 * that we dont blow up at a node.  We choose d_off as 10% of typical pixels per tile. This filters the values
+		 * a little bit.  */
+		
+		d_off = 0.1 * hypot ((max_i - min_i)/((double)Z->header->n_columns), (max_j - min_j)/((double)Z->header->n_rows));
+		GMT_Report (API, GMT_MSG_DEBUG, "Zero-distance 1/(off+r) offset for tile averaging: %g\n", d_off);
+#endif
 
 		/* Allocate image array and set background to PAGE_COLOR */
 
@@ -1245,30 +1327,35 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 		gmt_M_memset (rgb, 4, double);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Start rasterization\n");
-		for (j = j_start; j != j_stop; j += j_inc) {
+		for (j = start[0]; j != stop[0]; j += inc[0]) {
 
 			GMT_Report (API, GMT_MSG_DEBUG, "Scan line conversion at j-line %.6ld\n", j);
 
-			for (i = i_start; i != i_stop; i += i_inc) {
-				bin = gmt_M_ij0 (Z->header, j, i);
-				ij = gmt_M_ijp (Z->header, j, i);
+			for (i = start[1]; i != stop[1]; i += inc[1]) {
+				if (id[0] == GMT_Y) {
+					bin = gmt_M_ij0 (Z->header, j, i);
+					ij = gmt_M_ijp (Z->header, j, i);
+				}
+				else {
+					bin = gmt_M_ij0 (Z->header, i, j);
+					ij = gmt_M_ijp (Z->header, i, j);
+				}
 				for (k = bad = 0; !bad && k < 4; k++) bad = (ix[bin+bin_inc[k]] < 0 || iy[bin+bin_inc[k]] < 0);
 				if (bad) continue;
-
 				min_i = max_i = ix[bin];
 				min_j = max_j = iy[bin];
-				for (k = 1; k < 4; k++) {
+				for (k = 1; k < 4; k++) {	/* Loop over the tile made up of bin and its 3 neighbors to the E, NE, and N */
 					p = bin+bin_inc[k];
 					if (ix[p] < min_i) min_i = ix[p];
 					if (ix[p] > max_i) max_i = ix[p];
 					if (iy[p] < min_j) min_j = iy[p];
 					if (iy[p] > max_j) max_j = iy[p];
 				}
-				for (jp = min_j; jp <= max_j; jp++) {	/* Loop over all the pixels that will make up this tile */
+				for (jp = min_j; jp <= max_j; jp++) {	/* Loop over all the pixels (rectangular domain) that may make up this tile */
 					if (jp < 0 || jp >= ny_i) continue;
 					for (ip = min_i; ip <= max_i; ip++) {
 						if (ip < 0 || ip >= nx_i) continue;
-						if (!pixel_inside (GMT, ip, jp, ix, iy, bin, bin_inc)) continue;
+						if (!pixel_inside (GMT, ip, jp, ix, iy, bin, bin_inc)) continue;	/* Checks if actually inside the projected tile polygon */
 						/* These pixels are part of the current tile */
 						if (!Ctrl->Q.mask) {	/* Update clip mask */
 							if (jp > top_jp[ip]) top_jp[ip] = jp;
@@ -1287,7 +1374,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 								}
 								if (Ctrl->C.active && gmt_M_same_rgb (rgb, P->bfn[GMT_NAN].rgb)) continue;	/* Skip NaN colors */
 							}
-							else {		/* Use lookup to get color */
+							else {		/* Use lookup to get color from either relief or drape grid (Z points to it) */
 								gmt_get_rgb_from_z (GMT, P, Z->data[d_node], rgb);
 								if (gmt_M_is_fnan (Z->data[d_node])) continue;	/* Skip NaNs in the z-data*/
 							}
@@ -1296,7 +1383,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 							good++;
 							dist = quick_idist (ip, jp, ix[node], iy[node]);
-							if (dist == 0) {	/* Only need this corner value */
+							if (dist == 0) {	/* Only need this node value */
 								done = true;
 								if (Ctrl->I.active) intval = (use_intensity_grid) ? Intens->data[d_node] : Ctrl->I.value;
 							}
@@ -1380,40 +1467,42 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 
 	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL_Y) {	/* Plot Y waterfall */
+		unsigned int ix = (id[0] == GMT_X) ? 0 : 1, iy = (id[0] == GMT_Y) ? 0 : 1;
 		double z_base = Ctrl->N.active ? Ctrl->N.level : Z->header->z_min;
 		PSL_comment (PSL, "Start of waterfall plot\n");
 		gmt_setpen (GMT, &Ctrl->W.pen[1]);
 		gmt_setfill (GMT, &Ctrl->Q.fill, true);
 		if (Ctrl->Q.monochrome)
 			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = gmt_M_yiq (Ctrl->Q.fill.rgb);	/* Do gmt_M_yiq transformation */
-		for (i = i_start+1; i != i_stop; i += i_inc) {
-			for (k = 0, j = j_start-1; j != j_stop; j += j_inc, k++) {
-				ij  = gmt_M_ijp(Topo->header, j, i);
-				if (gmt_M_is_fnan(Topo->data[ij+ij_inc[0]])) continue;
+		for (i = start[ix]+1; i != stop[ix]; i += inc[ix]) {
+			for (k = 0, j = start[iy]-1; j != stop[iy]; j += inc[iy], k++) {
+				ij = gmt_M_ijp (Topo->header, j, i);
+				if (gmt_M_is_fnan (Topo->data[ij+ij_inc[0]])) continue;
 				gmt_geoz_to_xy (GMT, xval[i], yval[j], (double)(Topo->data[ij+ij_inc[1]]), &xx[k], &yy[k]);
 			}
-			gmt_geoz_to_xy (GMT, xval[i], yval[j_start-1] + (k - 1) * (i_inc * Z->header->inc[GMT_Y]), z_base, &xx[k], &yy[k]);
-			gmt_geoz_to_xy (GMT, xval[i], yval[j_start-1], z_base, &xx[k+1], &yy[k+1]);
+			gmt_geoz_to_xy (GMT, xval[i], yval[start[iy]-1] + (k - 1) * (inc[ix] * Z->header->inc[GMT_Y]), z_base, &xx[k], &yy[k]);
+			gmt_geoz_to_xy (GMT, xval[i], yval[start[iy]-1], z_base, &xx[k+1], &yy[k+1]);
 			PSL_plotpolygon (PSL, xx, yy, k+2);
 		}
 	}
 
 	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL_X) {	/* Plot X waterfall */
+		unsigned int ix = (id[0] == GMT_X) ? 0 : 1, iy = (id[0] == GMT_Y) ? 0 : 1;
 		double z_base = Ctrl->N.active ? Ctrl->N.level : Z->header->z_min;
 		PSL_comment (PSL, "Start of waterfall plot\n");
 		gmt_setpen (GMT, &Ctrl->W.pen[1]);
 		gmt_setfill (GMT, &Ctrl->Q.fill, true);
 		if (Ctrl->Q.monochrome)
 			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = gmt_M_yiq (Ctrl->Q.fill.rgb);	/* Do gmt_M_yiq transformation */
-		for (j = j_start-1; j != j_stop; j += j_inc) {
-			for (k = 0, i = i_start+1; i != i_stop; i += i_inc, k++) {
-				ij  = gmt_M_ijp(Topo->header, j, i);
-				if (gmt_M_is_fnan(Topo->data[ij+ij_inc[0]])) continue;
-				gmt_geoz_to_xy (GMT, xval[i_start+1] + k * (i_inc * Z->header->inc[GMT_X]), yval[j],
-	                (double)(Topo->data[ij+ij_inc[1]]), &xx[k], &yy[k]);
+		for (j = start[iy]-1; j != stop[iy]; j += inc[iy]) {
+			for (k = 0, i = start[ix]+1; i != stop[ix]; i += inc[ix], k++) {
+				ij = gmt_M_ijp (Topo->header, j, i);
+				if (gmt_M_is_fnan (Topo->data[ij+ij_inc[0]])) continue;
+				gmt_geoz_to_xy (GMT, xval[start[ix]+1] + k * (inc[ix] * Z->header->inc[GMT_X]), yval[j],
+					(double)(Topo->data[ij+ij_inc[1]]), &xx[k], &yy[k]);
 			}
-			gmt_geoz_to_xy (GMT, xval[i_start+1] + (k - 1) * (i_inc * Z->header->inc[GMT_X]), yval[j], z_base, &xx[k], &yy[k]);
-			gmt_geoz_to_xy (GMT, xval[i_start+1], yval[j], z_base, &xx[k+1], &yy[k+1]);
+			gmt_geoz_to_xy (GMT, xval[start[ix]+1] + (k - 1) * (inc[ix] * Z->header->inc[GMT_X]), yval[j], z_base, &xx[k], &yy[k]);
+			gmt_geoz_to_xy (GMT, xval[start[ix]+1], yval[j], z_base, &xx[k+1], &yy[k+1]);
 			PSL_plotpolygon (PSL, xx, yy, k+2);
 		}
 	}
@@ -1424,16 +1513,24 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		gmt_setpen (GMT, &Ctrl->W.pen[1]);
 		if (Ctrl->Q.monochrome)
 			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = gmt_M_yiq (Ctrl->Q.fill.rgb);	/* Do gmt_M_yiq transformation */
-		for (j = j_start; j != j_stop; j += j_inc) {
-			y_bottom = yval[j];
-			y_top = y_bottom + abs (j_inc) * Z->header->inc[GMT_Y];
-			for (i = i_start; i != i_stop; i += i_inc) {
-				bin = gmt_M_ij0 (Z->header, j, i);
-				ij = gmt_M_ijp (Topo->header, j, i);
+		for (j = start[0]; j != stop[0]; j += inc[0]) {
+			for (i = start[1]; i != stop[1]; i += inc[1]) {
+				if (id[0] == GMT_Y) {
+					y_bottom = yval[j];
+					x_left = xval[i];
+					bin = gmt_M_ij0 (Z->header, j, i);
+					ij = gmt_M_ijp (Topo->header, j, i);
+				}
+				else {
+					y_bottom = yval[i];
+					x_left = xval[j];
+					bin = gmt_M_ij0 (Z->header, i, j);
+					ij = gmt_M_ijp (Topo->header, i, j);
+				}
 				for (k = bad = 0; !bad && k < 4; k++) bad += gmt_M_is_fnan (Topo->data[ij+ij_inc[k]]);
 				if (bad) continue;
-				x_left = xval[i];
-				x_right = x_left + abs (i_inc) * Z->header->inc[GMT_X];
+				y_top = y_bottom + Z->header->inc[GMT_Y];
+				x_right = x_left + Z->header->inc[GMT_X];
 				gmt_geoz_to_xy (GMT, x_left, y_bottom, (double)(Topo->data[ij+ij_inc[0]]), &xx[0], &yy[0]);
 				gmt_geoz_to_xy (GMT, x_right, y_bottom, (double)(Topo->data[ij+ij_inc[1]]), &xx[1], &yy[1]);
 				gmt_geoz_to_xy (GMT, x_right, y_top, (double)(Topo->data[ij+ij_inc[2]]), &xx[2], &yy[2]);
@@ -1499,13 +1596,21 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		PSL_comment (PSL, "Start of filled surface\n");
 		if (Ctrl->Q.outline) gmt_setpen (GMT, &Ctrl->W.pen[1]);
 
-		for (j = j_start; j != j_stop; j += j_inc) {
-			y_bottom = yval[j];
-			y_top = y_bottom + Z->header->inc[GMT_Y];
-			for (i = i_start; i != i_stop; i += i_inc) {
-				ij = gmt_M_ijp (Topo->header, j, i);
-				bin = gmt_M_ij0 (Topo->header, j, i);
-				x_left = xval[i];
+		for (j = start[0]; j != stop[0]; j += inc[0]) {
+			for (i = start[1]; i != stop[1]; i += inc[1]) {
+				if (id[0] == GMT_Y) {
+					y_bottom = yval[j];
+					x_left = xval[i];
+					bin = gmt_M_ij0 (Topo->header, j, i);
+					ij = gmt_M_ijp (Topo->header, j, i);
+				}
+				else {
+					y_bottom = yval[i];
+					x_left = xval[j];
+					bin = gmt_M_ij0 (Topo->header, i, j);
+					ij = gmt_M_ijp (Topo->header, i, j);
+				}
+				y_top = y_bottom + Z->header->inc[GMT_Y];
 				x_right = x_left + Z->header->inc[GMT_X];
 				for (k = bad = 0; !bad && k < 4; k++) bad += gmt_M_is_fnan (Topo->data[ij+ij_inc[k]]);
 				if (bad) {
