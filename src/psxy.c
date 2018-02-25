@@ -1497,8 +1497,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						dim[1] = 90.0 - in[ex2+S.read_size];
 					}
 					else {
-						dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex1+S.read_size]);
-						dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex2+S.read_size]);
+						dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
+						dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex2+S.read_size]);
 					}
 					if (S.w_active) {	/* Geo-wedge */
 						if (Ctrl->G.active && S.w_type < 3) gmt_setfill (GMT, &no_fill, outline_active);	/* Cannot fill */
