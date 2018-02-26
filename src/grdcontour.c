@@ -659,9 +659,17 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 			while (!done && col <= stop) {
 				this_lon = gmt_M_grd_col_to_x (GMT, col, G->header);	/* Current longitude */
 				inside = gmt_non_zero_winding (GMT, this_lon, this_lat, save[pol].x, save[pol].y, np);
-				if (inside == 2)	/* OK, this point is inside */
-					done = true;
-				else
+				/* Worry about this point being ~exactly on the border but returned inside = 2, but
+				 * the grid node will be exactly the contour value and then fail the assignment of high
+				 * below.  We therefore check if the value is not equal to the contour value as well */
+				if (inside == 2) {	/* Might be inside */
+					ij = gmt_M_ijp (G->header, row, col);
+					if (!doubleAlmostEqual (G->data[ij], save[pol].cval))	/* OK, this point is truly inside */
+						done = true;
+					else	/* March along to the next point */
+						col++;
+				}
+				else	/* March along to the next point */
 					col++;
 			}
 			if (!done) continue;	/* Failed to find an inside point */
