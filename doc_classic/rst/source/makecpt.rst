@@ -176,10 +176,12 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ]
+**-T**\ [*min*/*max*/*inc*\ [**+e**\ \|\ **l**\ \|\ **n**\ ]\|\ *file*\ \|\ *list*\ ]
     Defines the range of the new CPT by giving the lowest and
     highest z-value (and optionally an interval).  If **-T** is
     not given, the existing range in the master CPT will be used intact.
+    The values produces defines the color slice boundaries.  If **+n** is
+    used it refers to the number of such boundaries and not the number of slices.
     For details on array creation, see `Generate 1D Array`_.
 
 .. _-V:

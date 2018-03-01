@@ -62,6 +62,7 @@
 
 /*! Safe math macros that check arguments */
 
+#define d_log2(C,x) ((x) <= 0.0f ? C->session.f_NaN : log2 (x))
 #define d_log10(C,x) ((x) <= 0.0 ? C->session.d_NaN : log10 (x))
 #define d_log10f(C,x) ((x) <= 0.0f ? C->session.f_NaN : log10f (x))
 #define d_log101p(C,x) ((x) <= -1.0 ? C->session.d_NaN : log10 (1.0+(x)))
@@ -74,7 +75,6 @@
 #define d_atan2(y,x) ((x) == 0.0 && (y) == 0.0 ? 0.0 : atan2(y, x))
 #define d_atan2f(y,x) ((x) == 0.0f && (y) == 0.0f ? 0.0f : atan2f(y, x))
 #define d_log(C,x) ((x) <= 0.0 ? C->session.d_NaN : log (x))
-#define d_log2(C,x) ((x) <= 0.0f ? C->session.f_NaN : logf (x))
 #define d_logf(C,x) ((x) <= 0.0f ? C->session.f_NaN : logf (x))
 #define d_log1p(C,x) ((x) <= -1.0 ? C->session.d_NaN : log1p (x))
 #define d_log1pf(C,x) ((x) <= -1.0f ? C->session.f_NaN : log1pf (x))

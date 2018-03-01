@@ -13039,6 +13039,42 @@ unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, dou
 }
 
 /*! . */
+unsigned int gmtlib_log2_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array) {
+	/* Create an array of values between min and max, with steps delta.
+	   However, take log2 first then use the delta as increment in log2 space
+	*/
+
+	int first, last, i, n;
+	double *val = NULL;
+
+	if (delta <= 0.0) return (0);
+
+	min = d_log2 (GMT, min) / delta;
+	max = d_log2 (GMT, max) / delta;
+
+	/* Look for first value */
+	first = irint (floor (min));
+	while (min - first > GMT_CONV4_LIMIT) first++;
+
+	/* Look for last value */
+	last = irint (ceil (max));
+	while (last - max > GMT_CONV4_LIMIT) last--;
+
+	n = last - first + 1;
+	if (n <= 0) return (0);
+
+	/* Create an array of n equally spaced elements */
+	val = gmt_M_memory (GMT, NULL, n, double);
+	for (i = 0; i < n; i++) val[i] = (first + i) * delta;	/* Rescale to original values */
+
+	/* Convert from log2 to values */
+	for (i = 0; i < n; i++) val[i] = pow (2.0, val[i]);
+	*array = val;
+
+	return (n);
+}
+
+/*! . */
 unsigned int gmtlib_pow_array (struct GMT_CTRL *GMT, double min, double max, double delta, unsigned int x_or_y_or_z, double **array) {
 	int i, n = 0;
 	double *val = NULL, v0, v1;
@@ -15081,7 +15117,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	-T<argument>
 	 *
 	 * where <argument> is one of these:
-	 *	[<min/max/]<inc>[<unit>|+n]
+	 *	[<min/max/]<inc>[<unit>|+a|n|b|l]
 	 *	<file>
 	 *
 	 * Parsing:
@@ -15104,6 +15140,13 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	   d|m|s|e|f|k|M|n|u or c (Cartesian), then we will compute
 	 *	   distances along a track given by the first two columns and the
 	 *	   resulting distances are our time-series values.
+	 *      6) If +l is given then we are setting up a log10 array which is
+	 *	   equidistant in log10(t).  Here, inc must be 1, 2, or 3 exclusively
+	 *	   which translates into
+	 *      7) If +b is given then we are setting up a log2 array which is
+	 *	   equidistant in log2(t).  Here, inc must be an integer and indicates
+	 *	   the log2 increment.
+	 *      8) If +a is given then we will add the output array as a new output column.
 	 *
 	 * Note:   The effects in 4) and 5) are only allowed if the corresponding
 	 *	   flags are passed to the parser.
@@ -15151,17 +15194,23 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		return (GMT_NOERROR);
 	}
 
-	if ((m = gmt_first_modifier (GMT, argument, "an"))) {	/* Process optional modifiers +a, +n */
+	if ((m = gmt_first_modifier (GMT, argument, "abln"))) {	/* Process optional modifiers +a, +n */
 		unsigned int pos = 0;	/* Reset to start of new word */
 		unsigned int n_errors = 0;
 		char p[GMT_LEN32] = {""};
-		while (gmt_getmodopt (GMT, 'T', m, "an", &pos, p, &n_errors) && n_errors == 0) {
+		while (gmt_getmodopt (GMT, 'T', m, "abln", &pos, p, &n_errors) && n_errors == 0) {
 			switch (p[0]) {
 				case 'a':	/* Add spatial distance column to output */
 					T->add = true; 
 					break;
+				case 'b':	/* Do a log2 grid */
+					T->logarithmic2 = true; 
+					break;
 				case 'n':	/* Gave number of points instead; calculate inc later */
 					T->count = true;
+					break;
+				case 'l':	/* Do a log10 grid */
+					T->logarithmic = true; 
 					break;
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-%cmin/max/inc+ modifier +%s not recognized.\n", option, p);
@@ -15190,7 +15239,10 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	has_inc = (ns != 2);	/* This means we gave an increment */
 	ns--;	/* ns is now the index to the txt array with the increment or count (2 or 0) */
 	len = strlen (txt[ns]);	if (len) len--;	/* Now txt[ns][len] holds a unit (or not) */
-		
+	if (!has_inc && (T->logarithmic || T->logarithmic2)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Logarithmic array requires and increment argument\n", option);
+		return GMT_PARSE_ERROR;
+	}
 	/* 3. Check if we are working with absolute time.  This means there must be a T in both min and max arguments */
 	if (ns > 1 && strchr (txt[GMT_X], 'T') && strchr (txt[GMT_Y], 'T')) {	/* Gave absolute time limits */
 		T->temporal = true;
@@ -15247,9 +15299,20 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Increment is zero\n", option);
 			return GMT_PARSE_ERROR;
 		}
-		if (T->inc < 0.0) {	/* Flag to be reversed */
+		if (T->inc < 0.0 && !T->logarithmic) {	/* Flag to be reversed */
 			T->inc = -T->inc;
 			T->reverse = true;	/* Want array to be reversed */
+		}
+		if (T->logarithmic || T->logarithmic2) {
+			unsigned int k_inc = urint (T->inc);
+			if (!gmt_M_is_zero (fabs (T->inc - (double)k_inc))) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Logarithmic increment must be an integer\n", option);
+				return GMT_PARSE_ERROR;
+			}
+			if (T->logarithmic && !(k_inc == 1 || k_inc == 2 || k_inc == 3)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Log10 increment must be 1, 2, or 3\n", option);
+				return GMT_PARSE_ERROR;
+			}
 		}
 	}
 	/* 6. If the min/max limits were given via argument then it is OK to parse */
@@ -15345,6 +15408,10 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 	
 	if (T->vartime)	/* Must call special function that knows about variable months and years */
 		T->n = gmt_time_array (GMT, t0, t1, inc, GMT->current.setting.time_system.unit, false, &(T->array));
+	else if (T->logarithmic)	/* Must call special function that deals with logarithmic arrays */
+		T->n = gmtlib_log_array (GMT, t0, t1, inc, &(T->array));
+	else if (T->logarithmic2)	/* Must call special function that deals with logarithmic arrays */
+		T->n = gmtlib_log2_array (GMT, t0, t1, inc, &(T->array));
 	else {	/* Equidistant intervals are straightforward - make sure the min/man/inc values harmonize */
 		switch (gmt_minmaxinc_verify (GMT, t0, t1, inc, GMT_CONV4_LIMIT)) {
 			case 1:

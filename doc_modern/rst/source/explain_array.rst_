@@ -2,6 +2,11 @@ Generate 1D Array
 -----------------
 
 Make an evenly spaced coordinate array from *min* to *max* in steps of *inc*.
+Append **+b** if we should take log2 of *min* and *max* and build an equidistant
+log2-array using *inc*.
+Append **+l** if we should take log10 of *min* and *max* and build an
+array where *inc* can be 1 (every magnitude), 2, (1, 2, 5 times magnitude) or 3
+(1-9 times magnitude).
 Append **+n** if *inc* is meant to indicate the number of equidistant coordinates
 instead.   Alternatively, give a *file* with output coordinates in the first column,
 or provide a comma-separated *list* of coordinates.

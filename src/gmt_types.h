@@ -91,6 +91,8 @@ struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays
 	bool count;	/* true if we got number of items rather than increment */
 	bool add;	/* true if we are asked to add a computed spatial distance column to output */
 	bool reverse;	/* true if we want to reverse the array to give high to low on output */
+	bool logarithmic;	/* true if inc = 1,2,3 and we want logarithmic scale */
+	bool logarithmic2;	/* true if inc = integer and we want log2 scale */
 	unsigned int spatial;	/* 1 if <unit> implies a Cartesian and 2 if a geospatial distance */ 
 	unsigned int distmode;	/* Type of geospatial calculation mode for distances */
 	unsigned int set;	/* 1 if inc set, 3 if min/max/in set, 0 otherwise */
