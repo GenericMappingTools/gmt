@@ -491,7 +491,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	/* Set up arrays */
 
 	if (Ctrl->T.active && gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) Return (GMT_RUNTIME_ERROR);
-	nz = Ctrl->T.T.n;	z = Ctrl->T.T.array;
+	nz = (int)Ctrl->T.T.n;		z = Ctrl->T.T.array;
 
 	if (Ctrl->T.T.list && (Pin->mode & GMT_CPT_TEMPORARY)) {	/* Array was passed as a comma-separated list of z-values so make sure it matches a list of colors, if given */
 		/* Got -Zcolor,color,... and -Tz,z,z */
