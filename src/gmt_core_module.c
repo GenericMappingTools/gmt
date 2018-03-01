@@ -146,6 +146,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"blockmedian", "core", "Block average (x,y,z) data tables by L1 norm (spatial median)", "<D{,>D}", &GMT_blockmedian},
 	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation", "<D{,>D}", &GMT_blockmode},
 	{"clear", "core", "Delete current history, conf, cpt, or the cache directory", "", &GMT_clear},
+	{"docs", "core", "Show the HTML doc of the module name passed in", "", &GMT_docs},
 	{"end", "core", "Terminate GMT modern mode session and produce optional graphics", "", &GMT_end},
 	{"figure", "core", "Set attributes for the current figure", "", &GMT_figure},
 	{"filter1d", "core", "Time domain filtering of 1-D data tables", "<D{,>D},FD(1", &GMT_filter1d},

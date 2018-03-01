@@ -327,6 +327,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_sharedlibs.c gmt_core_module.c gmt_init.c gmt_map.c gmt_plot.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h
+	docs.c webview.h
 	${GMT_TRIANGLE_SRCS})
 
 if (BUILD_SUPPLEMENTS)
@@ -605,6 +606,10 @@ endif (HAVE_DLADDR AND HAVE_LIBDL)
 if (MSVC AND FFTW3_FOUND)
 	target_link_libraries(gmtlib ws2_32)
 endif (MSVC AND FFTW3_FOUND)
+
+if (MSVC AND WEBVIEW)
+	target_link_libraries(gmtlib ole32 comctl32 oleaut32 uuid Gdi32 Advapi32)
+endif (MSVC AND WEBVIEW)
 
 # build targets for standalone gmt target and demos
 string (REPLACE ".c" "" _gmt_progs "gmt.c;${GMT_DEMOS_SRCS}")
