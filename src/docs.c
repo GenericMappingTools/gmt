@@ -40,22 +40,22 @@
 
 #define THIS_MODULE_NAME	"docs"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Show the HTML doc of the module name passed in"
+#define THIS_MODULE_PURPOSE	"Show the HTML documentation of the specified module"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"V"
+#define THIS_MODULE_OPTIONS	""
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: docs <module-name> [<-option>] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: docs <module-name> [<-option>]\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<module-name> is one of the core or supplemental modules\n");
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<-option> is the one-letter option of the module in question (e.g, -R)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tThen, we display the help positioned at that specific option.\n");
-	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Display the documentation positioned at that specific option.\n");
 	
 	return (GMT_MODULE_USAGE);
 }

@@ -220,6 +220,9 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "Session management:\n");
 		fprintf (stderr, "  gmt begin         Initiate a new GMT session using modern mode [classic].\n");
 		fprintf (stderr, "  gmt end           Terminate the current GMT modern mode session.\n");
+#ifdef WEBVIEW
+		fprintf (stderr, "  gmt docs          Display the HTML documentation for selected module.\n");
+#endif
 		fprintf (stderr, "  gmt figure        Set figure format specifics under a GMT modern mode session.\n");
 		fprintf (stderr, "  gmt subplot       Initiate a multi-panel figure.\n");
 		//fprintf (stderr, "  gmt revert        Undo last <n> layers from current figure.\n");
