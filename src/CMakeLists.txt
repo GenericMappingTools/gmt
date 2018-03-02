@@ -150,6 +150,16 @@ if (APPLE)
 	find_library (ACCELERATE_FRAMEWORK Accelerate)
 	mark_as_advanced (ACCELERATE_FRAMEWORK)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${ACCELERATE_FRAMEWORK})
+	if (WEBVIEW)
+		# AppKit framework
+		find_library (APPKIT_FRAMEWORK AppKit)
+		mark_as_advanced (APPKIT_FRAMEWORK)
+		list (APPEND GMT_OPTIONAL_LIBRARIES ${APPKIT_FRAMEWORK})
+		# WebKit framework
+		find_library (WEBKIT_FRAMEWORK WebKit)
+		mark_as_advanced (WEBKIT_FRAMEWORK)
+		list (APPEND GMT_OPTIONAL_LIBRARIES ${WEBKIT_FRAMEWORK})
+	endif (WEBVIEW)
 endif (APPLE)
 
 if (DEFINED GMT_ENABLE_OPENMP)
@@ -604,11 +614,11 @@ if (HAVE_DLADDR AND HAVE_LIBDL)
 endif (HAVE_DLADDR AND HAVE_LIBDL)
 
 if (MSVC AND FFTW3_FOUND)
-	target_link_libraries(gmtlib ws2_32)
+	target_link_libraries (gmtlib ws2_32)
 endif (MSVC AND FFTW3_FOUND)
 
 if (MSVC AND WEBVIEW)
-	target_link_libraries(gmtlib ole32 comctl32 oleaut32 uuid Gdi32 Advapi32)
+	target_link_libraries (gmtlib ole32 comctl32 oleaut32 uuid Gdi32 Advapi32)
 endif (MSVC AND WEBVIEW)
 
 # build targets for standalone gmt target and demos

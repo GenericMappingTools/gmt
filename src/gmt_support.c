@@ -1966,15 +1966,24 @@ GMT_LOCAL void support_setcontjump (gmt_grdfloat *z, uint64_t nz) {
 /*! . */
 GMT_LOCAL uint64_t support_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool test, unsigned int *edge, double **x, double **y, unsigned int col, unsigned int row, unsigned int side, uint64_t offset, unsigned int *bit, unsigned int *nan_flag) {
 	/* Note: side must be signed due to calculations like (side-2)%2 which will not work with unsigned */
-	unsigned int side_in, this_side, old_side, n_exits, opposite_side, n_nan, edge_word, edge_bit;
+	unsigned int side_in, this_side, old_side, n_exits, opposite_side, n_nan, edge_word, edge_bit, periodic = 0;
 	int p[5] = {0, 0, 0, 0, 0}, mx;
-	bool more;
+	bool more, crossed = false;
 	size_t n_alloc;
 	uint64_t n = 1, m, ij0, ij_in, ij;
 	gmt_grdfloat z[5] = {0.0, 0.0, 0.0, 0.0, 0.0}, dz;
 	double xk[5] = {0.0, 0.0, 0.0, 0.0, 0.0}, dist1, dist2, *xx = NULL, *yy = NULL;
 	static int d_col[5] = {0, 1, 0, 0, 0}, d_row[5] = {0, 0, -1, 0, 0}, d_side[5] = {0, 1, 0, 1, 0};
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
+#if 0
+	/* WORK IN PROGRESS.  Currently has trouble with some contours streaking across a W/E map */
+	/* For periodic grids we must also be sensitive to exiting in west and reenter in east, and vice versa */
+	if (HH->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT)
+		periodic = 1;
+	else if (HH->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT)
+		periodic = 2;
+#endif
 	/* Note: We need gmt_M_ijp to get us the index into the padded G->data whereas we use gmt_M_ij0 to get the corresponding index for non-padded edge array */
 	mx = G->header->mx;	/* Need signed mx below */
 	p[0] = p[4] = 0;	p[1] = 1;	p[2] = 1 - mx;	p[3] = -mx;	/* Padded offsets for G->data array */
@@ -1985,7 +1994,7 @@ GMT_LOCAL uint64_t support_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID 
 	ij0 = gmt_M_ij0 (G->header, row + d_row[side], col + d_col[side]);	/* Index to use with the edge array */
 	edge_word = (unsigned int)(ij0 / 32 + d_side[side] * offset);
 	edge_bit = (unsigned int)(ij0 % 32);
-	if (test && (edge[edge_word] & bit[edge_bit])) return (0);
+	if (test && (edge[edge_word] & bit[edge_bit])) return (0);	/* Been here */
 
 	ij_in = gmt_M_ijp (G->header, row, col);	/* Index to use with the padded G->data array */
 	side_in = side;
@@ -2014,7 +2023,7 @@ GMT_LOCAL uint64_t support_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID 
 		/* If this is the box and edge we started from, explicitly close the polygon and exit */
 
 		if (n > 1 && ij == ij_in && side == side_in) {	/* Yes, we close and exit */
-			xx[n-1] = xx[0]; yy[n-1] = yy[0];
+			xx[n-1] = xx[0]; yy[n-1] = yy[0];	/* Ensure no roundoff */
 			more = false;
 			continue;
 		}
@@ -2102,9 +2111,33 @@ GMT_LOCAL uint64_t support_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID 
 		edge_bit  = (unsigned int)(ij0 % 32);
 		edge[edge_word] |= bit[edge_bit];
 
-		if ((side == 0 && row == G->header->n_rows - 1) || (side == 1 && col == G->header->n_columns - 2) ||
-			(side == 2 && row == 1) || (side == 3 && col == 0)) {	/* Going out of grid */
+		if ((side == 0 && row == G->header->n_rows - 1) || (side == 2 && row == 1)) {	/* Going out of grid at N or S */
 			more = false;
+			continue;
+		}
+		else if ((side == 1 && col == G->header->n_columns - 2) || (side == 3 && col == 0)) {	/* Going out of grid E-W */
+			if (periodic == 0) {	/* And that is it. */
+				more = false;
+				continue;
+			}
+			if (side == 1) {	/* Exiting on east to reappear on west */
+				side = 3;	/* So entering first col bin from left (3) */
+				col = 0;	/* First column bin */
+				xx[n] = xx[n-1] - 360.0;
+			}
+			else {			/* Exiting on west to reappear on east */
+				side = 1;	/* So entering last col bin from right (1) */
+				col = G->header->n_columns - 2;	/* Last column bin since next col is the boundary of the grid */
+				xx[n] = xx[n-1] + 360.0;
+			}
+			yy[n] = yy[n-1];
+			crossed = true;	/* Flag that we crossed periodic boundary and add the duplicate coordinate point to array */
+			n++;
+			ij0 = gmt_M_ij0 (G->header, row + d_row[side], col + d_col[side]);	/* Flag this edge as used as well */
+			edge_word = (unsigned int)(ij0 / 32 + d_side[side] * offset);
+			edge_bit  = (unsigned int)(ij0 % 32);
+			if (test && (edge[edge_word] & bit[edge_bit])) more = false;	/* Been here before */
+			edge[edge_word] |= bit[edge_bit];
 			continue;
 		}
 
@@ -2119,6 +2152,11 @@ GMT_LOCAL uint64_t support_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID 
 
 	xx = gmt_M_memory (GMT, xx, n, double);
 	yy = gmt_M_memory (GMT, yy, n, double);
+
+	if (crossed) {
+		if ((gmtlib_determine_pole (GMT, xx, yy, n) == 0))
+			gmt_eliminate_lon_jumps (GMT, xx, n);	/* Ensure longitudes are in the same quadrants */
+	}
 
 	*x = xx;	*y = yy;
 	return (n);
@@ -2146,7 +2184,11 @@ GMT_LOCAL uint64_t support_smooth_contour (struct GMT_CTRL *GMT, double **x_in, 
 
 	t_in[0] = 0.0;
 	for (i = j = 1; i < n; i++)	{
-		ds = hypot ((x[i]-x[i-1]), (y[i]-y[i-1]));
+		if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_360_range (x[i-1], x[i])) {
+			ds = 0.0;	/* 360 degree jumps are excluded */
+		}
+		else
+			ds = hypot ((x[i]-x[i-1]), (y[i]-y[i-1]));
 		if (ds > 0.0) {
 			t_in[j] = t_in[j-1] + ds;
 			x[j] = x[i];
@@ -9694,6 +9736,8 @@ uint64_t gmt_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int sm
 	if (side == 4) {	/* Then loop over interior boxes (vertical edges) */
 		for (row = row_0; row < G->header->n_rows; row++) {
 			for (col = col_0; col < G->header->n_columns-1; col++) {
+                if (row == 60 && col == 1)
+                    n = 0;
 				if ((n = support_trace_contour (GMT, G, true, edge, x, y, col, row, 3, offset, bit, &nans))) {
 					if (nans && (n2 = support_trace_contour (GMT, G, false, edge, &x2, &y2, col-1, row, 1, offset, bit, &nans))) {
 						/* Must trace in other direction, then splice */
