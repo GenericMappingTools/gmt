@@ -106,10 +106,15 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the docs main code ----------------------------*/
 
 	opt = GMT_Find_Option (API, GMT_OPT_INFILE, options);	/* action target will appear as file name */
-	if (opt->next)		/* If an option request was made */
-		sprintf(fname, "file:///%s/doc/html/%s.html#%c", API->GMT->session.SHAREDIR, opt->arg, tolower(opt->next->option));
-	else
-		sprintf(fname, "file:///%s/doc/html/%s.html", API->GMT->session.SHAREDIR, opt->arg);
+	sprintf(fname, "file:///%s/doc/html/%s.html", API->GMT->session.SHAREDIR, opt->arg);
+	if (access (&fname[8], R_OK)) 		/* file does not exists */
+		sprintf(fname, "https://gmt.soest.hawaii.edu/doc/latest/%s.html", opt->arg);
+
+	if (opt->next) {		/* If an option request was made */
+		char t[4];
+		sprintf(t, "#%c", tolower(opt->next->option));
+		strncat(fname, t, PATH_MAX-1);
+	}
 #ifdef WEBVIEW
 	webview("GMT docs", fname, 900, 600, 1);
 #endif
