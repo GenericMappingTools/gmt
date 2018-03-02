@@ -137,7 +137,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>|colors] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c][+c]] [-G<zlo>/<zhi>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "	[-I[c][z]] [-M] [-N] [-Q[i|o]] [-S[<mode>]] [-T<min>/<max>[/<inc>[+b|l|n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]]\n\t[-Z] [%s] [%s] [%s]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "	[-I[c][z]] [-M] [-N] [-Q] [-S[<mode>]] [-T<min>/<max>[/<inc>[+b|l|n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]]\n\t[-Z] [%s] [%s] [%s]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -162,11 +162,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Use GMT defaults to set back-, foreground, and NaN colors\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the settings in the color table].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not write back-, foreground, and NaN colors [Default will].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Assign a logarithmic colortable [Default is linear].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qi: z-values are log10(z). Assign colors and write z [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qo: z-values are z; take log10(z), assign colors and write z.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        If -T<z_min/z_max/z_inc> is given, then z_inc must be 1, 2, or 3\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        (as in logarithmic annotations; see -B in psbasemap).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q The z-values given to -T are log10(z). Assign colors via log10(z) but write z.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Determine range in -T from input data table(s) instead.  Choose operation:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sa<scl> Make symmetric range around average (i.e., mean) and +/- <scl> * sigma.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sm<scl> Make symmetric range around median and +/- <scl> * L1_scale.\n");
@@ -300,6 +296,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 				break;
 			case 'Q':	/* Logarithmic scale */
 				Ctrl->Q.active = true;
+				if (opt->arg[0] != '\0' && gmt_M_compat_check (GMT, 5))
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -Qi or -Qo are deprecated; Use -T+l for old -Qo and -Q for old -Qi.\n");
 				if (opt->arg[0] == 'o')	/* Input data is z, but take log10(z) before interpolation colors */
 					Ctrl->Q.mode = 2;
 				else			/* Input is log10(z) */
@@ -321,7 +319,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	if (Ctrl->Q.active) Ctrl->T.T.logarithmic = true;
+	if (Ctrl->Q.active && Ctrl->Q.mode == 2) Ctrl->T.T.logarithmic = true;
 	
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 0 && !(Ctrl->E.active || Ctrl->S.active),
 	                                   "Syntax error: No input files expected unless -E or -S are used\n");

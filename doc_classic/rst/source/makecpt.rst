@@ -20,7 +20,7 @@ Synopsis
 [ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ][**+c**\ ]]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-I|\ [**c**][**z**] ] [ |-M| ]
-[ |-N| ] [ |-Q|\ [**i**\ \|\ **o**] ]
+[ |-N| ] [ |-Q| ]
 [ |-S|\ [*mode*] ]
 [ |-T|\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ] ]
 [ |-V|\ [*level*\ ] ]
@@ -154,11 +154,10 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [**i**\ \|\ **o**]
-    Selects a logarithmic interpolation scheme [Default is linear].
-    **-Qi** expects input z-values to be log10(z), assigns colors, and
-    writes out z [Default]. **-Qo** takes log10(z) first, assigns
-    colors, and writes out z.
+**-Q**
+    For logarithmic interpolation scheme with input given as logarithms.
+    Expects input z-values provided via **-T** to be log10(*z*\ ), assigns colors, and
+    writes out *z*.
 
 .. _-S:
 
@@ -176,7 +175,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min*/*max*/*inc*\ [**+e**\ \|\ **l**\ \|\ **n**\ ]\|\ *file*\ \|\ *list*\ ]
+**-T**\ [*min*/*max*/*inc*\ [**+b**\ \|\ **l**\ \|\ **n**\ ]\|\ *file*\ \|\ *list*\ ]
     Defines the range of the new CPT by giving the lowest and
     highest z-value (and optionally an interval).  If **-T** is
     not given, the existing range in the master CPT will be used intact.
