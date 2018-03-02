@@ -109,6 +109,10 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the docs main code ----------------------------*/
 
 	opt = GMT_Find_Option (API, GMT_OPT_INFILE, options);	/* action target will appear as file name */
+	if (!opt) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot use an option (-%c) without a module name\n", options->option);
+		Return (GMT_RUNTIME_ERROR);
+	}
 	group = api_get_module_group (API, opt->arg);
 
 	if (group != NULL && !strcmp (group, "core"))	/* Core module */
