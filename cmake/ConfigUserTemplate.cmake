@@ -240,6 +240,9 @@
 # Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 # [Release]:
 #set (CMAKE_BUILD_TYPE Debug)
+if (WEBVIEW AND APPLE)
+        add_definitions("-DWEBVIEW -x objective-c")
+endif (WEBVIEW AND APPLE)
 
 # Extra debugging for developers:
 #if ( CMAKE_GENERATOR STREQUAL "Xcode" )
