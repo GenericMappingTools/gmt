@@ -9758,7 +9758,7 @@ int GMT_Call_Module_ (const char *module, int *mode, void *args, int *length) {
 #endif
 
 /*! . */
-GMT_LOCAL const char * gmt_get_shared_module_info (struct GMTAPI_CTRL *API, char *module, unsigned int lib_no) {
+GMT_LOCAL const char * gmt_get_shared_module_keys (struct GMTAPI_CTRL *API, char *module, unsigned int lib_no) {
 	/* Function that returns a pointer to the module keys in specified shared library lib_no, or NULL if not found  */
 	/* DO not rename this function */
 	char function[GMT_LEN64] = {""};
@@ -9770,7 +9770,7 @@ GMT_LOCAL const char * gmt_get_shared_module_info (struct GMTAPI_CTRL *API, char
 		API->lib[lib_no].skip = true;	/* Not bother the next time... */
 		return (NULL);			/* ...and obviously no keys would be found */
 	}
-	snprintf (function, GMT_LEN64, "gmt_%s_module_info", API->lib[lib_no].name);
+	snprintf (function, GMT_LEN64, "gmt_%s_module_keys", API->lib[lib_no].name);
 	/* Here the library handle is available; try to get pointer to specified module */
 	*(void **) (&func) = dlsym (API->lib[lib_no].handle, function);
 	if (func) keys = (*func) (API, module);
@@ -9778,16 +9778,79 @@ GMT_LOCAL const char * gmt_get_shared_module_info (struct GMTAPI_CTRL *API, char
 }
 
 /*! . */
-GMT_LOCAL const char * gmt_get_module_info (struct GMTAPI_CTRL *API, char *module, unsigned int lib_no) {
+GMT_LOCAL const char * gmt_get_shared_module_group (struct GMTAPI_CTRL *API, char *module, unsigned int lib_no) {
+	/* Function that returns a pointer to the module group string in specified shared library lib_no, or NULL if not found  */
 	/* DO not rename this function */
-	if (lib_no == 0)	/* Get core module */
-		return (gmt_core_module_info (API, module));
-	/* Else we get custom module below */
-	return (gmt_get_shared_module_info (API, module, lib_no));
+	char function[GMT_LEN64] = {""};
+	const char *group = NULL;       /* char pointer to module group */
+	const char * (*func)(void*, char*) = NULL;       /* function pointer */
+	if (API->lib[lib_no].skip) return (NULL);	/* Tried to open this shared library before and it was not available */
+	if (API->lib[lib_no].handle == NULL && (API->lib[lib_no].handle = dlopen (API->lib[lib_no].path, RTLD_LAZY)) == NULL) {	/* Not opened this shared library yet */
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open GMT shared %s library: %s\n", API->lib[lib_no].name, dlerror());
+		API->lib[lib_no].skip = true;	/* Not bother the next time... */
+		return (NULL);			/* ...and obviously no keys would be found */
+	}
+	snprintf (function, GMT_LEN64, "gmt_%s_module_group", API->lib[lib_no].name);
+	/* Here the library handle is available; try to get pointer to specified module */
+	*(void **) (&func) = dlsym (API->lib[lib_no].handle, function);
+	if (func) group = (*func) (API, module);
+	return (group);
 }
 
 /*! . */
-GMT_LOCAL const char * api_get_moduleinfo (void *V_API, char *module) {
+GMT_LOCAL const char * gmt_get_module_group (struct GMTAPI_CTRL *API, char *module, unsigned int lib_no) {
+	/* DO not rename this function */
+	if (lib_no == 0)	/* Get core module */
+		return (gmt_core_module_group (API, module));
+	/* Else we get custom module below */
+	return (gmt_get_shared_module_group (API, module, lib_no));
+}
+
+/*! . */
+GMT_LOCAL const char * gmt_get_module_keys (struct GMTAPI_CTRL *API, char *module, unsigned int lib_no) {
+	/* DO not rename this function */
+	if (lib_no == 0)	/* Get core module */
+		return (gmt_core_module_keys (API, module));
+	/* Else we get custom module below */
+	return (gmt_get_shared_module_keys (API, module, lib_no));
+}
+
+/*! . */
+const char * api_get_module_group (void *V_API, char *module) {
+	/* Call the specified shared module and retrieve the group of the module.
+ 	 * This function, while in the API, is only for API developers and thus has a
+	 * "undocumented" status in the API documentation.
+	 */
+	unsigned int lib;
+	struct GMTAPI_CTRL *API = NULL;
+	char gmt_module[GMT_LEN32] = "gmt";
+	const char *group = NULL;
+
+	if (V_API == NULL) return_null (NULL, GMT_NOT_A_SESSION);
+	if (module == NULL) return_null (V_API, GMT_ARG_IS_NULL);
+	API = api_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
+
+	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for module in any of the shared libs */
+		group = gmt_get_module_group (API, module, lib);
+		if (group) return (group);	/* Found it in this shared library, return the group */
+	}
+	/* If we get here we did not found it.  Try to prefix module with gmt */
+	strncat (gmt_module, module, GMT_LEN32-4);		/* Concatenate gmt and module name to get function name */
+	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for gmt_module in any of the shared libs */
+		group = gmt_get_module_group (API, gmt_module, lib);
+		if (group) {	/* Found it in this shared library, adjust module name and return the group */
+			strncpy (module, gmt_module, strlen(gmt_module));	/* Rewrite module name to contain prefix of gmt */
+			return (group);
+		}
+	}
+	/* Not in any of the shared libraries */
+	GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: %s \n", module);
+	return_null (V_API, GMT_NOT_A_VALID_MODULE);
+}
+
+/*! . */
+GMT_LOCAL const char * api_get_module_keys (void *V_API, char *module) {
 	/* Call the specified shared module and retrieve the API developer options keys.
  	 * This function, while in the API, is only for API developers and thus has a
 	 * "undocumented" status in the API documentation.
@@ -9803,15 +9866,15 @@ GMT_LOCAL const char * api_get_moduleinfo (void *V_API, char *module) {
 	API->error = GMT_NOERROR;
 
 	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for module in any of the shared libs */
-		keys = gmt_get_module_info (API, module, lib);
+		keys = gmt_get_module_keys (API, module, lib);
 		if (keys) return (keys);	/* Found it in this shared library, return the keys */
 	}
 	/* If we get here we did not found it.  Try to prefix module with gmt */
 	strncat (gmt_module, module, GMT_LEN32-4);		/* Concatenate gmt and module name to get function name */
 	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for gmt_module in any of the shared libs */
-		keys = gmt_get_module_info (API, gmt_module, lib);
+		keys = gmt_get_module_keys (API, gmt_module, lib);
 		if (keys) {	/* Found it in this shared library, adjust module name and return the keys */
-			strncpy(module, gmt_module, strlen(gmt_module));	/* Rewrite module name to contain prefix of gmt */
+			strncpy (module, gmt_module, strlen(gmt_module));	/* Rewrite module name to contain prefix of gmt */
 			return (keys);
 		}
 	}
@@ -9985,10 +10048,10 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		*n = UINT_MAX;
 		return NULL;
 	}
-	module = calloc (strlen (module_name) + 4, sizeof(char));	/* Allow space for any "gmt" prefix added to module in api_get_moduleinfo */
+	module = calloc (strlen (module_name) + 4, sizeof(char));	/* Allow space for any "gmt" prefix added to module in api_get_module_keys */
 	strcpy (module, module_name);			/* This string can grow by 3 if need be */
 	/* 0. Get the keys for the module, possibly prepend "gmt" to module if required, or list modules and return NULL if unknown module */
-	if ((keys = api_get_moduleinfo (V_API, module)) == NULL) {	/* Gave an unknown module */
+	if ((keys = api_get_module_keys (V_API, module)) == NULL) {	/* Gave an unknown module */
 		if (GMT_Call_Module (V_API, NULL, GMT_MODULE_PURPOSE, NULL))	/* List the available modules */
 			return_null (NULL, GMT_NOT_A_VALID_MODULE);
 		gmt_M_str_free (module);

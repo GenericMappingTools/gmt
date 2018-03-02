@@ -53,8 +53,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<-option> is the one letter option of the module in question. For example -R\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tThen, we dispplay the help centered at that specific option.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<-option> is the one-letter option of the module in question (e.g, -R)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tThen, we display the help positioned at that specific option.\n");
 	GMT_Option (API, "V");
 	
 	return (GMT_MODULE_USAGE);
@@ -81,9 +81,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+EXTERN_MSC const char * api_get_module_group (void *V_API, char *module);
+
 int GMT_docs (void *V_API, int mode, void *args) {
 	int error = 0;
-	char fname[PATH_MAX] = {""};
+	char URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""};
+	const char *group = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -106,17 +109,27 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the docs main code ----------------------------*/
 
 	opt = GMT_Find_Option (API, GMT_OPT_INFILE, options);	/* action target will appear as file name */
-	sprintf(fname, "file:///%s/doc/html/%s.html", API->GMT->session.SHAREDIR, opt->arg);
-	if (access (&fname[8], R_OK)) 		/* file does not exists */
-		sprintf(fname, "https://gmt.soest.hawaii.edu/doc/latest/%s.html", opt->arg);
+	if ((group = api_get_module_group (API, opt->arg)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Module name not recognized\n");
+		Return (GMT_RUNTIME_ERROR);
+	};
+	
+	if (!strcmp (group, "core"))	/* Core module */
+		sprintf (module, "%s.html", opt->arg);
+	else	/* A supplemental module */
+		sprintf (module, "supplements/%s/%s.html", group, opt->arg);
+	/* Get the local URL (which may not exist) */
+	sprintf (URL, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
+	if (access (&URL[8], R_OK)) 		/* file does not exists, go to SOEST site */
+		sprintf (URL, "https://gmt.soest.hawaii.edu/doc/latest/%s", module);
 
 	if (opt->next) {		/* If an option request was made */
 		char t[4];
-		sprintf(t, "#%c", tolower(opt->next->option));
-		strncat(fname, t, PATH_MAX-1);
+		sprintf (t, "#%c", tolower (opt->next->option));
+		strncat (URL, t, PATH_MAX-1);
 	}
 #ifdef WEBVIEW
-	webview("GMT docs", fname, 900, 600, 1);
+	webview ("GMT docs", URL, 900, 600, 1);
 #endif
 
 	Return (error);

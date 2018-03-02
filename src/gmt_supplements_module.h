@@ -57,6 +57,7 @@ EXTERN_MSC int GMT_segy2grd (void *API, int mode, void *args);
 EXTERN_MSC int GMT_backtracker (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtpmodeler (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdpmodeler (void *API, int mode, void *args);
+EXTERN_MSC int GMT_grdpolespotter (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdrotater (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdspotter (void *API, int mode, void *args);
 EXTERN_MSC int GMT_hotspotter (void *API, int mode, void *args);
@@ -80,7 +81,9 @@ EXTERN_MSC void gmt_supplements_module_show_all (void *API);
 /* List all modules in the GMT supplements library to stdout */
 EXTERN_MSC void gmt_supplements_module_list_all (void *API);
 /* Function called by GMT_Encode_Options so developers can get information about a module */
-EXTERN_MSC const char * gmt_supplements_module_info (void *API, char *candidate);
+EXTERN_MSC const char * gmt_supplements_module_keys (void *API, char *candidate);
+/* Function returns name of group that module belongs to (core, spotter, etc.) */
+EXTERN_MSC const char * gmt_supplements_module_group (void *API, char *candidate);
 
 #ifdef __cplusplus
 }
