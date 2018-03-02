@@ -29,6 +29,59 @@
 
 #include "gmt_dev.h"
 
+const char *gmt_current_name (const char *module, char modname[]) {
+	/* Given a module, return its document (modern name) and set its classic modname */
+	
+	/* First check for modern names and set the classic name in modname */
+	if      (!strncmp (module, "sac",          3U)) { strcpy (modname, "pssac");       return module; }
+	else if (!strncmp (module, "clip",         4U)) { strcpy (modname, "psclip");      return module; }
+	else if (!strncmp (module, "mask",         4U)) { strcpy (modname, "psmask");      return module; }
+	else if (!strncmp (module, "rose",         4U)) { strcpy (modname, "psrose");      return module; }
+	else if (!strncmp (module, "meca",         4U)) { strcpy (modname, "psmeca");      return module; }
+	else if (!strncmp (module, "plot",         4U)) { strcpy (modname, "psxy");        return module; }
+	else if (!strncmp (module, "text",         4U)) { strcpy (modname, "text");        return module; }
+	else if (!strncmp (module, "segy",         4U)) { strcpy (modname, "pssegy");      return module; }
+	else if (!strncmp (module, "velo",         4U)) { strcpy (modname, "psvelo");      return module; }
+	else if (!strncmp (module, "coast",        5U)) { strcpy (modname, "pscoast");     return module; }
+	else if (!strncmp (module, "coupe",        5U)) { strcpy (modname, "pscoupe");     return module; }
+	else if (!strncmp (module, "image",        5U)) { strcpy (modname, "psimage");     return module; }
+	else if (!strncmp (module, "polar",        5U)) { strcpy (modname, "pspolar");     return module; }
+	else if (!strncmp (module, "solar",        5U)) { strcpy (modname, "pssolar");     return module; }
+	else if (!strncmp (module, "segyz",        5U)) { strcpy (modname, "pssegyz");     return module; }
+	else if (!strncmp (module, "plot3d",       6U)) { strcpy (modname, "psxyz");       return module; }
+	else if (!strncmp (module, "legend",       6U)) { strcpy (modname, "pslegend");    return module; }
+	else if (!strncmp (module, "wiggle",       6U)) { strcpy (modname, "pswiggle");    return module; }
+	else if (!strncmp (module, "basemap",      7U)) { strcpy (modname, "psbasemap");   return module; }
+	else if (!strncmp (module, "contour",      7U)) { strcpy (modname, "pscontour");   return module; }
+	else if (!strncmp (module, "ternary",      7U)) { strcpy (modname, "psternary");   return module; }
+	else if (!strncmp (module, "colorbar",     8U)) { strcpy (modname, "psscale");     return module; }
+	else if (!strncmp (module, "histogram",    9U)) { strcpy (modname, "pshistogram"); return module; }
+	/* Then look for modules that now have a different modern mode name */
+	else if (!strncmp (module, "psxy",         4U)) { strcpy (modname, module); return "plot";      }
+	else if (!strncmp (module, "psxyz",        5U)) { strcpy (modname, module); return "plot3d";    }
+	else if (!strncmp (module, "psclip",       6U)) { strcpy (modname, module); return "clip";      }
+	else if (!strncmp (module, "psmask",       6U)) { strcpy (modname, module); return "mask";      }
+	else if (!strncmp (module, "psrose",       6U)) { strcpy (modname, module); return "rose";      }
+	else if (!strncmp (module, "psmeca",       6U)) { strcpy (modname, module); return "meca";      }
+	else if (!strncmp (module, "pstext",       6U)) { strcpy (modname, module); return "text";      }
+	else if (!strncmp (module, "pssegy",       6U)) { strcpy (modname, module); return "segy";      }
+	else if (!strncmp (module, "psvelo",       6U)) { strcpy (modname, module); return "velo";      }
+	else if (!strncmp (module, "pscoast",      7U)) { strcpy (modname, module); return "coast";     }
+	else if (!strncmp (module, "pscoupe",      7U)) { strcpy (modname, module); return "coupe";     }
+	else if (!strncmp (module, "psimage",      7U)) { strcpy (modname, module); return "image";     }
+	else if (!strncmp (module, "pspolar",      7U)) { strcpy (modname, module); return "polar";     }
+	else if (!strncmp (module, "psscale",      7U)) { strcpy (modname, module); return "colorbar";  }
+	else if (!strncmp (module, "pssolar",      7U)) { strcpy (modname, module); return "solar";     }
+	else if (!strncmp (module, "pssegyz",      7U)) { strcpy (modname, module); return "segyz";     }
+	else if (!strncmp (module, "pslegend",     8U)) { strcpy (modname, module); return "legend";    }
+	else if (!strncmp (module, "pswiggle",     8U)) { strcpy (modname, module); return "wiggle";    }
+	else if (!strncmp (module, "psbasemap",    9U)) { strcpy (modname, module); return "basemap";   }
+	else if (!strncmp (module, "pscontour",    9U)) { strcpy (modname, module); return "contour";   }
+	else if (!strncmp (module, "psternary",    9U)) { strcpy (modname, module); return "ternary";   }
+	else if (!strncmp (module, "pshistogram", 11U)) { strcpy (modname, module); return "histogram"; }
+	strcpy (modname, module);
+	return module;
+}
 
 int GMT_basemap (void *V_API, int mode, void *args) {
 	/* This is the GMT6 modern mode name */

@@ -82,11 +82,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC const char * api_get_module_group (void *V_API, char *module);
+EXTERN_MSC const char *gmt_current_name (const char *module, char modname[]);
 
 int GMT_docs (void *V_API, int mode, void *args) {
 	int error = 0;
-	char URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""};
-	const char *group = NULL;
+	char URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[GMT_LEN64] = {""};
+	const char *group = NULL, *docname = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -109,19 +110,16 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the docs main code ----------------------------*/
 
 	opt = GMT_Find_Option (API, GMT_OPT_INFILE, options);	/* action target will appear as file name */
-	if (!opt) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot use an option (-%c) without a module name\n", options->option);
+
+	docname = gmt_current_name (opt->arg, name);
+
+	if ((group = api_get_module_group (API, name)) == NULL)
 		Return (GMT_RUNTIME_ERROR);
-	}
-	group = api_get_module_group (API, opt->arg);
 
-	if (group != NULL && !strcmp (group, "core"))	/* Core module */
-		sprintf (module, "%s.html", opt->arg);
-	else if (group != NULL)		/* A supplemental module */
-		sprintf (module, "supplements/%s/%s.html", group, opt->arg);
-	else						/* Assume it is modern mode name (e.g. plot). If not, browser will complain */
-		sprintf(module, "%s.html", opt->arg);
-
+	if (!strcmp (group, "core"))	/* Core module */
+		sprintf (module, "%s.html", docname);
+	else			/* A supplemental module */
+		sprintf (module, "supplements/%s/%s.html", group, docname);
 	/* Get the local URL (which may not exist) */
 	sprintf (URL, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
 	if (access (&URL[8], R_OK)) 		/* file does not exists, go to SOEST site */
