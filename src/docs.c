@@ -110,14 +110,17 @@ int GMT_docs (void *V_API, int mode, void *args) {
 
 	opt = GMT_Find_Option (API, GMT_OPT_INFILE, options);	/* action target will appear as file name */
 	if ((group = api_get_module_group (API, opt->arg)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Module name not recognized\n");
-		Return (GMT_RUNTIME_ERROR);
+		//GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Module name not recognized\n");
+		//Return (GMT_RUNTIME_ERROR);
 	};
-	
-	if (!strcmp (group, "core"))	/* Core module */
+
+	if (group != NULL && !strcmp (group, "core"))	/* Core module */
 		sprintf (module, "%s.html", opt->arg);
-	else	/* A supplemental module */
+	else if (group != NULL)			/* A supplemental module */
 		sprintf (module, "supplements/%s/%s.html", group, opt->arg);
+	else							/* Assume it is modern mode name (e.g. plot). If not, browser will complain */
+		sprintf(module, "%s.html", opt->arg);
+
 	/* Get the local URL (which may not exist) */
 	sprintf (URL, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
 	if (access (&URL[8], R_OK)) 		/* file does not exists, go to SOEST site */
