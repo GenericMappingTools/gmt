@@ -166,11 +166,12 @@ EXTERN_MSC int gmt_f77_readgrdinfo_ (unsigned int dim[], double wesn[], double i
 EXTERN_MSC int gmt_f77_readgrd_	    (gmt_grdfloat *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file, int ltitle, int lremark, int lfile);
 EXTERN_MSC int gmt_f77_writegrd_    (gmt_grdfloat *array, unsigned int dim[], double wesn[], double inc[], const char *title, const char *remark, const char *file, int ltitle, int lremark, int lfile);
 
-/* 3 for external API developers only */
+/* 4 for external API developers only */
 EXTERN_MSC struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *module, int n_in, struct GMT_OPTION **head, unsigned int *n);
 EXTERN_MSC int GMT_Expand_Option		   (void *API, struct GMT_OPTION *current, const char *txt);
 EXTERN_MSC int GMT_Get_Enum			   (char *key);
 EXTERN_MSC int GMT_Set_AllocMode		   (void *API, unsigned int family, void *object);
+EXTERN_MSC int GMT_Extract_Region		   (void *API, char *file, double wesn[]);
 
 /* These 7 functions are provided for backwards compatibility but are considered obsolete as of 6 */
 EXTERN_MSC void *GMT_Get_Data       (void *API, int object_ID, unsigned int mode, void *data);

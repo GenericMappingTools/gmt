@@ -12157,3 +12157,68 @@ int GMT_Set_AllocMode (void *V_API, unsigned int family, void *object) {
 	return_error (V_API, error);
 }
 
+#ifdef FORTRAN_API
+int GMT_Set_AllocMode_ (unsigned int *family, void *object) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Set_AllocMode (GMT_FORTRAN, *family, object));
+}
+#endif
+
+int GMT_Extract_Region (void *V_API, char *file, double wesn[]) {
+	FILE *fp = NULL;
+	bool found = false;
+	struct GMTAPI_CTRL *API = api_get_api_ptr (V_API);
+	char xx1[GMT_LEN64] = {""}, xx2[GMT_LEN64] = {""}, yy1[GMT_LEN64] = {""}, yy2[GMT_LEN64] = {""}, line[GMT_LEN128] = {""};
+	
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (wesn == NULL) return_error (V_API, GMT_PTR_IS_NULL);
+
+	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode, file must be NULL */
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Extract_Region: Modern mode\n");
+		if (file) {	/* Cannot specify file in modern mode */
+			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Extract_Region: Cannot give a PostScript filename in modern mode\n");
+			return_error (V_API, GMT_FILE_NOT_FOUND);
+		}
+		if (gmt_set_psfilename (API->GMT) == 0) {	/* Get hidden file name for current PS */
+			GMT_Report (API, GMT_MSG_NORMAL, "No hidden PS file found\n");
+			return_error (V_API, GMT_FILE_NOT_FOUND);
+		}
+		GMT_Report (API, GMT_MSG_DEBUG, "Hidden PS file %s found\n", API->GMT->current.ps.filename);
+		if ((fp = fopen (API->GMT->current.ps.filename, "r")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Extract_Region: Failed to find/open current PS file %s\n", API->GMT->current.ps.filename);
+			return_error (V_API, GMT_FILE_NOT_FOUND);
+		}
+	}
+	else {	/* Classic mode, file must be given */
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Extract_Region: Classic mode\n");
+		if (file == NULL) {	/* Must specify file in classic mode */
+			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Extract_Region: Filename required in classic mode\n");
+			return_error (V_API, GMT_FILE_NOT_FOUND);
+		}
+		if ((fp = fopen (file, "r")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Extract_Region: Failed to find/open %s\n", file);
+			return_error (V_API, GMT_FILE_NOT_FOUND);
+		}
+	}
+	
+	/* We expect GMT_Extract_Region to be applied to GMT-produced PS files so we know they are clean records readable with fgets */
+	
+	while (!found && gmt_fgets (API->GMT, line, GMT_LEN128, fp)) {
+		if (!strncmp (&line[2], "PROJ", 4)) {	/* Search for the PROJ tag in the ps file */
+			sscanf (&line[8], "%*s %s %s %s %s", xx1, xx2, yy1, yy2);
+			wesn[XLO] = atof (xx1);		wesn[XHI] = atof (xx2);
+			wesn[YLO] = atof (yy1);		wesn[YHI] = atof (yy2);
+			if (wesn[XLO] > 180.0 && wesn[XHI] > 180.0) {
+				wesn[XLO] -= 360.0;
+				wesn[XHI] -= 360.0;
+			}
+			found = true;
+		}
+	}
+	fclose (fp);
+	if (!found) {
+		GMT_Report (API, GMT_MSG_NORMAL, "GMT_Extract_Region: Failed to find the PROJ tag with the region\n");
+		return_error (V_API, GMT_VALUE_NOT_SET);
+	}
+	return_error (V_API, GMT_NOERROR);
+}
