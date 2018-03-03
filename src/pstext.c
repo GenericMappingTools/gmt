@@ -703,8 +703,14 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE, false));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE, false));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS, false));	/* Return the synopsis */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Classic requires options, while modern does not */
+		if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE, false));	/* Return the usage message */
+		if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS, false));	/* Return the synopsis */
+	}
+	else {
+		if (options && options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE, false));	/* Return the usage message */
+		if (options && options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS, false));	/* Return the synopsis */
+	}
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
