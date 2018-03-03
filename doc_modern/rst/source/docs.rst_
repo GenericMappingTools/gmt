@@ -1,0 +1,45 @@
+.. index:: ! docs
+
+.. only:: not man
+
+    Show the HTML documentation for selected module
+
+Synopsis
+--------
+
+.. include:: common_SYN_OPTs.rst_
+
+**gmt docs** *<module-name>* [*-option*]
+
+|No-spaces|
+
+Description
+-----------
+
+**docs** tells GMT to display the HTML version of a module's documentation using a webview.
+For the time being, only modern mode module names are displayed. That is, if user asks for
+*gmt docs psxy* he will see the *plot* documentation.
+
+Optional Arguments
+------------------
+
+*-option*
+    Where *-option* is the one-letter option of the module in question (e.g, **-R**)
+    It then displays the documentation positioned at that specific option.
+
+Examples
+--------
+
+To see the documentation of *grdimage*
+
+   ::
+
+    gmt docs grdimage
+
+To see the documentation of the **-B** option in *pscoast*
+
+   ::
+
+    gmt docs pscoast -B
+
+And do not be surprised to see that it says *coast* instead of *pscoast*.

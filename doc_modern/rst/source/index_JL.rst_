@@ -11,10 +11,19 @@ Quick Reference
 |    quick_ref    |    std_opts     |    proj_codes_GMT |    proj_codes_PROJ4 |
 +-----------------+-----------------+-------------------+---------------------+
 
+Session management
+==================
+
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+
+| .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    |
+|    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |
+|                 |                 |                 |                 |                 |                 |
+|    begin        |    end          |    docs         |    figure       |    subplot      |    clear        |
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+
+
 .. toctree::
    :hidden:
 
-   man_pages
 
 Man pages
 =========
