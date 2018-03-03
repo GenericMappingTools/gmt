@@ -85,8 +85,9 @@ EXTERN_MSC const char * api_get_module_group (void *V_API, char *module);
 EXTERN_MSC const char *gmt_current_name (const char *module, char modname[]);
 
 int GMT_docs (void *V_API, int mode, void *args) {
+	bool other_file = false;
 	int error = 0;
-	char URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[GMT_LEN64] = {""};
+	char URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[GMT_LEN64] = {""}, *t;
 	const char *group = NULL, *docname = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
@@ -118,20 +119,49 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	docname = gmt_current_name (opt->arg, name);
 	
 	if (strcmp (opt->arg, docname))
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "For now, HTML documentation only uses GMT modern mode names, hence %s will display as %s\n", opt->arg, docname);
-	
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+		            "For now, HTML documentation only uses GMT modern mode names, hence %s will display as %s\n",
+		            opt->arg, docname);
 
-	if ((group = api_get_module_group (API, name)) == NULL)
+	t = strdup(docname);	/* Make a copy because gmt_str_tolower changes the input that may be a const char */
+	gmt_str_tolower(t);
+	if (!strcmp(t, "cookbook")) {
+		docname = "cookbook";	group   = "core";		/* Pretend it is */
+	}
+	else if (!strcmp(t, "api")) {
+		docname = "api";		group   = "core";		/* Pretend it is */
+	}
+	else if (!strcmp(t, "tutorial")) {
+		docname = "tutorial";	group   = "core";		/* Pretend it is */
+	}
+	else if (!strcmp(t, "gallery")) {
+		docname = "Gallery";	group   = "core";		/* Pretend it is */
+	}
+	else if (gmt_get_ext(docname)) {
+		group = "other";
+		other_file = true;
+	}
+	else if ((group = api_get_module_group (API, name)) == NULL)
 		Return (GMT_RUNTIME_ERROR);
 
+	free (t);
 	if (!strcmp (group, "core"))	/* Core module */
 		sprintf (module, "%s.html", docname);
-	else			/* A supplemental module */
+	else if (!other_file)			/* A supplemental module */
 		sprintf (module, "supplements/%s/%s.html", group, docname);
+
 	/* Get the local URL (which may not exist) */
-	sprintf (URL, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
-	if (access (&URL[8], R_OK)) 		/* file does not exists, go to SOEST site */
-		sprintf (URL, "https://gmt.soest.hawaii.edu/doc/latest/%s", module);
+	if (other_file) {		/* A local or Web file */
+		if (!strncmp(docname, "http", 4U) || !strncmp(docname, "ftp", 3U))
+			sprintf (URL, "%s", docname);	/* Must assume that the address is correct */
+		else
+			sprintf (URL, "file:///%s", docname);
+	}
+	else {
+		sprintf (URL, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
+		if (access (&URL[8], R_OK)) 		/* file does not exists, go to SOEST site */
+			sprintf (URL, "https://gmt.soest.hawaii.edu/doc/latest/%s", module);
+	}
 
 	if (opt->next) {		/* If an option request was made */
 		char t[4];
