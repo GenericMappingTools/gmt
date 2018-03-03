@@ -87,7 +87,7 @@ EXTERN_MSC const char *gmt_current_name (const char *module, char modname[]);
 int GMT_docs (void *V_API, int mode, void *args) {
 	bool other_file = false;
 	int error = 0;
-	char URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[GMT_LEN64] = {""}, *t;
+	char URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t;
 	const char *group = NULL, *docname = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
