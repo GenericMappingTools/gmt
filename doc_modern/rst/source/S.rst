@@ -12,5 +12,4 @@ S
    sphinterpolate
    sphtriangulate
    splitxyz
-   subplot
    surface
