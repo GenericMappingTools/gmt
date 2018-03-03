@@ -18,7 +18,11 @@ Description
 
 **docs** tells GMT to display the HTML version of a module's documentation using a webview.
 For the time being, only modern mode module names are displayed. That is, if user asks for
-*gmt docs psxy* he will see the *plot* documentation.
+*gmt docs psxy* he will see the *plot* documentation. Besides the modules names, the special
+forms (no quotes) 'cookbook', 'gallery', 'api' and 'tutorial' are also accepted.
+
+However, this program can also be used to open local files such as PDF or image formats or
+web link addresses, though for the moment HTPPS seems not to be allowed.
 
 Optional Arguments
 ------------------
@@ -43,3 +47,15 @@ To see the documentation of the **-B** option in *pscoast*
     gmt docs pscoast -B
 
 And do not be surprised to see that it says *coast* instead of *pscoast*.
+
+To see the Gallery
+
+   ::
+
+    gmt docs gallery
+
+To see the beautiful figure that I just created with GMT.
+
+   ::
+
+    gmt docs my_beautiful_figure.pdf
