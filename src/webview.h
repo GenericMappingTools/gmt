@@ -21,8 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifdef WEBVIEW
-
 #ifndef WEBVIEW_H
 #define WEBVIEW_H
 
@@ -1855,5 +1853,3 @@ WEBVIEW_API void webview_print_log(const char *s) { NSLog(@"%s", s); }
 #endif
 
 #endif /* WEBVIEW_H */
-
-#endif /* WEBVIEW */
