@@ -1,6 +1,6 @@
-#
-M
-#
+##
+MN
+##
 
 .. toctree::
    :maxdepth: 1
