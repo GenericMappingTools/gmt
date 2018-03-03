@@ -2801,8 +2801,21 @@ GMT_LOCAL void plot_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL 
 					xtxt[m]    = L->L[k].x;
 					ytxt[m]    = L->L[k].y;
 				}
-				font = PSL_makefont (PSL, G->font_label.size, L->L[k].rgb);
-				fonts[m] = strdup (font);
+				if (G->font_label.form & 2) {	/* Must supply both font rgb and pen rgb and use charpath and S to fill and outline text */
+					char string[GMT_LEN128] = {""};
+					char *F = PSL_makecolor (PSL, L->L[k].rgb);
+					char *P = PSL_makepen (PSL, G->font_label.pen.width, G->font_label.pen.rgb, G->font_label.pen.style, G->font_label.pen.offset);
+					font = PSL_makefontsize (PSL, G->font_label.size);
+					sprintf (string, "{%s} FS %s %s", F, P, font);	/* E.g., "{1 0 0 C} FS 4 W 0 A [] 0 B 667 F5" */
+					fonts[m] = strdup (string);
+				}
+				else {	/* Regular font fill */
+					font = PSL_makefont (PSL, G->font_label.size, L->L[k].rgb);	/* e.g., "1 0 0 C 667 F5" */
+					fonts[m] = strdup (font);
+				}
+				/* Note for PSL_strings.h: The function PSL_ST_prepare_text will examine the font string above and if it
+				 * contains the substring "FS" then we set PSL_fmode to 2, else it is 1.  Then, PSL_ST_place_label will
+				 * consult PSL_fmode and call show or false charpath fs S accordingly. */
 			}
 			this_seg++;
 		}

@@ -380,6 +380,7 @@ EXTERN_MSC int PSL_endsession (struct PSL_CTRL *PSL);
 EXTERN_MSC char * PSL_getplot (struct PSL_CTRL *PSL);
 EXTERN_MSC char * PSL_makecolor (struct PSL_CTRL *PSL, double rgb[]);
 EXTERN_MSC char * PSL_makefont (struct PSL_CTRL *PSL, double size, double rgb[]);
+EXTERN_MSC char * PSL_makefontsize (struct PSL_CTRL *PSL, double size);
 EXTERN_MSC char * PSL_makepen (struct PSL_CTRL *PSL, double linewidth, double rgb[], char *pattern, double offset);
 EXTERN_MSC int PSL_plotarc (struct PSL_CTRL *PSL, double x, double y, double radius, double az1, double az2, int type);
 EXTERN_MSC int PSL_plotaxis (struct PSL_CTRL *PSL, double annotation_int, char *label, double annotfontsize, int side);

@@ -4428,6 +4428,13 @@ char * PSL_makefont (struct PSL_CTRL *PSL, double size, double rgb[]) {
 	return (buffer);
 }
 
+char * PSL_makefontsize (struct PSL_CTRL *PSL, double size) {
+	/* Creates a text string with the corresponding PS command to set the font (current font) with no color info */
+	static char buffer[PSL_BUFSIZ];
+	sprintf (buffer, "%d F%d", psl_ip (PSL, size), PSL->current.font_no);
+	return (buffer);
+}
+
 char * PSL_makecolor (struct PSL_CTRL *PSL, double rgb[]) {
 	/* Creates a text string with the corresponding PS command to set the color */
 	static char buffer[PSL_BUFSIZ];
