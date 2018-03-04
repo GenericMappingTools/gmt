@@ -22,7 +22,7 @@ For the time being, only modern mode module names are displayed. That is, if use
 forms (no quotes) 'cookbook', 'gallery', 'api' and 'tutorial' are also accepted.
 
 However, this program can also be used to open local files such as PDF or image formats or
-web link addresses, though for the moment HTPPS seems not to be allowed.
+web link addresses.
 
 Optional Arguments
 ------------------
@@ -63,5 +63,5 @@ To see the beautiful figure that I just created with GMT.
 Notes
 -----
 
-The default window size is 900 by 600 pixels but this can be changed via
+The default window size is 1200 by 900 pixels but this can be changed via
 the GMT default :ref:`GMT_DOC_WINSIZE <GMT_DOC_WINSIZE>`.
