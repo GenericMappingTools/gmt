@@ -500,7 +500,7 @@ set_target_properties (pslib
 # If a renaming of the gmtpslpsl dll has been set in ConfigUser.cmake
 if (WIN32 AND PSL_DLL_RENAME)
 	set_target_properties (pslib PROPERTIES RUNTIME_OUTPUT_NAME ${PSL_DLL_RENAME})
-endif ()
+endif (WIN32 AND PSL_DLL_RENAME)
 
 if (BUILD_SUPPLEMENTS)
 	# supplement directories (only those, which are to be included in gmtlib)
@@ -558,7 +558,7 @@ if (BUILD_SUPPLEMENTS)
 		foreach (_f ${EXTRA_INCLUDE_GMTSUPPL})
 			include (${_f})
 		endforeach(_f)
-	endif ()
+	endif (EXTRA_INCLUDE_GMTSUPPL)
 
 	set_target_properties (supplib
 		PROPERTIES
@@ -572,7 +572,7 @@ if (BUILD_SUPPLEMENTS)
 
 	if (WIN32 AND SUPP_DLL_RENAME)
 		set_target_properties (supplib PROPERTIES RUNTIME_OUTPUT_NAME ${SUPP_DLL_RENAME})
-	endif ()
+	endif (WIN32 AND SUPP_DLL_RENAME)
 
 	if (HAVE_DLADDR AND HAVE_LIBDL)
 		# link the dynamic linking loader library
@@ -598,7 +598,7 @@ if (EXTRA_INCLUDE_NEWSUPPL)
 	foreach (_f ${EXTRA_INCLUDE_NEWSUPPL})
 		include (${_f})
 	endforeach(_f)
-endif ()
+endif (EXTRA_INCLUDE_NEWSUPPL)
 
 
 # make UNIX PATH variable
@@ -639,7 +639,7 @@ set_target_properties (gmtlib
 # If a renaming of the gmt dll has been set in ConfigUser.cmake
 if (WIN32 AND GMT_DLL_RENAME)
 	set_target_properties (gmtlib PROPERTIES RUNTIME_OUTPUT_NAME ${GMT_DLL_RENAME})
-endif ()
+endif (WIN32 AND GMT_DLL_RENAME)
 
 if (HAVE_DLADDR AND HAVE_LIBDL)
 	# link the dynamic linking loader library
@@ -704,7 +704,7 @@ if (MSVC)
 	# To expand the command line arguments in Windows, see:
 	# http://msdn.microsoft.com/en-us/library/8bch7bkk.aspx
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} setargv.obj")
-endif(MSVC)
+endif (MSVC)
 
 # add the install targets
 install (TARGETS gmtlib pslib gmt

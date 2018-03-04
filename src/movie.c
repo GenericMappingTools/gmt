@@ -830,7 +830,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 #else
 	char dir_sep = '/';
 #endif
-	double percent, L_col;
+	double percent = 0.0, L_col = 0;
 	
 	FILE *fp = NULL;
 	
