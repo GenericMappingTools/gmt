@@ -83,7 +83,7 @@ void gmt_chop (char *string) {
 		*p = '\0';
 }
 
-char *gmt_get_ext (char *string) {
+char *gmt_get_ext (const char *string) {
 	/* Returns a pointer to the filename extension (e.g., .ps)  or NULL if not found. */
 	char *p;
 	assert (string != NULL); /* NULL pointer */

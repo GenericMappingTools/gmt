@@ -181,6 +181,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 1, "GMT Miscellaneous Parameters"},
 	{ 0, "GMT_AUTO_DOWNLOAD"},
 	{ 0, "GMT_DATA_URL"},
+	{ 0, "GMT_DOC_WINSIZE"},
 	{ 0, "GMT_COMPATIBILITY"},
 	{ 0, "GMT_CUSTOM_LIBS"},
 	{ 0, "GMT_EXPORT_TYPE"},
@@ -5198,6 +5199,8 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	/* GMTCASE_GMT_AUTO_DOWNLOAD */
 	GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
 	/* GMT_CUSTOM_LIBS (default to none) */
+	/* GMTCASE_GMT_DOC_WINSIZE */
+	GMT->current.setting.doc_winsize[GMT_X] = 900; GMT->current.setting.doc_winsize[GMT_Y] = 600;
 	/* GMT_EXPORT_TYPE */
 	GMT->current.setting.export_type = GMT_DOUBLE;
 	/* GMT_EXTRAPOLATE_VAL (NaN) */
@@ -9185,6 +9188,18 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			break;
 
+		case GMTCASE_GMT_DOC_WINSIZE:	/* The default is set by cmake, see ConfigDefault.cmake */
+			if (*value) {
+				unsigned int w, h;
+				if (sscanf (value, "%ux%u", &w, &h) != 2)
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error decoding GMT_DOC_WINSIZE: Give <width>x<height in pixels.\n");
+				else {
+					GMT->current.setting.doc_winsize[GMT_X] = w;
+					GMT->current.setting.doc_winsize[GMT_Y] = h;
+				}
+			}
+			break;
+
 		case GMTCASE_GMT_CUSTOM_LIBS:
 			if (*value) {
 				if (GMT->session.CUSTOM_LIBS) {
@@ -10347,6 +10362,10 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 
 		case GMTCASE_GMT_DATA_URL:	/* The default is set by cmake, see ConfigDefault.cmake */
 			strncpy (value, (GMT->session.DATAURL) ? GMT->session.DATAURL : "", GMT_BUFSIZ-1);
+			break;
+
+		case GMTCASE_GMT_DOC_WINSIZE:
+			sprintf (value, "%ux%u", GMT->current.setting.doc_winsize[GMT_X], GMT->current.setting.doc_winsize[GMT_Y]);
 			break;
 
 		case GMTCASE_GMT_CUSTOM_LIBS:

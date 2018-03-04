@@ -337,8 +337,12 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_sharedlibs.c gmt_core_module.c gmt_init.c gmt_map.c gmt_plot.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h
-	docs.c webview.h
 	${GMT_TRIANGLE_SRCS})
+
+if (WEBVIEW)
+	# Add in the codes used by gmt docs
+	list (APPEND GMT_LIB_SRCS docs.c webview.h)
+endif (WEBVIEW)
 
 if (BUILD_SUPPLEMENTS)
 	# Needed in supplib, + supplements themselves

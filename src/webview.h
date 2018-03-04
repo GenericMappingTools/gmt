@@ -174,7 +174,8 @@ WEBVIEW_API void webview_print_log(const char *s);
 
 WEBVIEW_API int webview(const char *title, const char *url, int width,
                         int height, int resizable) {
-  struct webview webview = {0};
+  struct webview webview;
+  memset (&webview, 0, sizeof (struct webview));
   webview.title = title;
   webview.url = url;
   webview.width = width;
@@ -1581,29 +1582,35 @@ WEBVIEW_API void webview_print_log(const char *s) { OutputDebugString(s); }
 #define NSModalResponseOK NSFileHandlingPanelOKButton
 #endif /* MAC_OS_X_VERSION_10_12, MAC_OS_X_VERSION_10_13 */
 static void webview_window_will_close(id self, SEL cmd, id notification) {
-  struct webview *w =
-      (struct webview *)objc_getAssociatedObject(self, "webview");
+  struct webview *w = (struct webview *)objc_getAssociatedObject(self, "webview");
+  gmt_M_unused(cmd);
+  gmt_M_unused(notification);
   webview_terminate(w);
 }
 
-static BOOL webview_is_selector_excluded_from_web_script(id self, SEL cmd,
-                                                         SEL selector) {
+static BOOL webview_is_selector_excluded_from_web_script(id self, SEL cmd, SEL selector) {
+  gmt_M_unused(self);
+  gmt_M_unused(cmd);
   return selector != @selector(invoke:);
 }
 
-static NSString *webview_webscript_name_for_selector(id self, SEL cmd,
-                                                     SEL selector) {
+static NSString *webview_webscript_name_for_selector(id self, SEL cmd, SEL selector) {
+  gmt_M_unused(self);
+  gmt_M_unused(cmd);
   return selector == @selector(invoke:) ? @"invoke" : nil;
 }
 
-static void webview_did_clear_window_object(id self, SEL cmd, id webview,
-                                            id script, id frame) {
+static void webview_did_clear_window_object(id self, SEL cmd, id webview, id script, id frame) {
+  gmt_M_unused(self);
+  gmt_M_unused(cmd);
+  gmt_M_unused(webview);
+  gmt_M_unused(frame);
   [script setValue:self forKey:@"external"];
 }
 
 static void webview_external_invoke(id self, SEL cmd, id arg) {
-  struct webview *w =
-      (struct webview *)objc_getAssociatedObject(self, "webview");
+  struct webview *w = (struct webview *)objc_getAssociatedObject(self, "webview");
+  gmt_M_unused(cmd);
   if (w == NULL || w->external_invoke_cb == NULL) {
     return;
   }
@@ -1841,7 +1848,7 @@ WEBVIEW_API void webview_dispatch(struct webview *w, webview_dispatch_fn fn,
 WEBVIEW_API void webview_terminate(struct webview *w) {
   w->priv.should_exit = 1;
 }
-WEBVIEW_API void webview_exit(struct webview *w) { [NSApp terminate:NSApp]; }
+WEBVIEW_API void webview_exit(struct webview *w) { gmt_M_unused(w); [NSApp terminate:NSApp]; }
 WEBVIEW_API void webview_print_log(const char *s) { NSLog(@"%s", s); }
 
 #endif /* WEBVIEW_COCOA */

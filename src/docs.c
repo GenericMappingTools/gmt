@@ -26,17 +26,15 @@
 
 #include "gmt_dev.h"
 
-#ifdef WEBVIEW
 #define WEBVIEW_IMPLEMENTATION
 #if defined(WIN32)
 #	define WEBVIEW_WINAPI
 #elif defined __APPLE__
 #	define WEBVIEW_COCOA
-#else 			// Not particular safe this default to unix
+#else 			/* Not particular safe this default to unix */
 #	define WEBVIEW_GTK
 #endif
 #include "webview.h"
-#endif
 
 #define THIS_MODULE_NAME	"docs"
 #define THIS_MODULE_LIB		"core"
@@ -89,6 +87,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	int error = 0;
 	char URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t;
 	const char *group = NULL, *docname = NULL;
+	static const char *known_group[2] = {"core", "other"}, *known_doc[4] = {"cookbook", "api", "tutorial", "Gallery"};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -123,28 +122,28 @@ int GMT_docs (void *V_API, int mode, void *args) {
 		            "For now, HTML documentation only uses GMT modern mode names, hence %s will display as %s\n",
 		            opt->arg, docname);
 
-	t = strdup(docname);	/* Make a copy because gmt_str_tolower changes the input that may be a const char */
-	gmt_str_tolower(t);
+	t = strdup (docname);	/* Make a copy because gmt_str_tolower changes the input that may be a const char */
+	gmt_str_tolower (t);
 	if (!strcmp(t, "cookbook")) {
-		docname = "cookbook";	group   = "core";		/* Pretend it is */
+		docname = known_doc[0];	group   = known_group[0];		/* Pretend it is */
 	}
 	else if (!strcmp(t, "api")) {
-		docname = "api";		group   = "core";		/* Pretend it is */
+		docname = known_doc[1];		group   = known_group[0];		/* Pretend it is */
 	}
 	else if (!strcmp(t, "tutorial")) {
-		docname = "tutorial";	group   = "core";		/* Pretend it is */
+		docname = known_doc[2];	group   = known_group[0];		/* Pretend it is */
 	}
 	else if (!strcmp(t, "gallery")) {
-		docname = "Gallery";	group   = "core";		/* Pretend it is */
+		docname = known_doc[3];	group   = known_group[0];		/* Pretend it is */
 	}
-	else if (gmt_get_ext(docname)) {
-		group = "other";
+	else if (gmt_get_ext (docname)) {
+		group = known_group[1];
 		other_file = true;
 	}
 	else if ((group = api_get_module_group (API, name)) == NULL)
 		Return (GMT_RUNTIME_ERROR);
 
-	free (t);
+	gmt_M_str_free (t);
 	if (!strcmp (group, "core"))	/* Core module */
 		sprintf (module, "%s.html", docname);
 	else if (!other_file)			/* A supplemental module */
@@ -152,25 +151,24 @@ int GMT_docs (void *V_API, int mode, void *args) {
 
 	/* Get the local URL (which may not exist) */
 	if (other_file) {		/* A local or Web file */
-		if (!strncmp(docname, "http", 4U) || !strncmp(docname, "ftp", 3U))
+		if (!strncmp (docname, "http", 4U) || !strncmp (docname, "ftp", 3U))
 			sprintf (URL, "%s", docname);	/* Must assume that the address is correct */
-		else
+		else	/* Must assume this is a local file */
 			sprintf (URL, "file:///%s", docname);
 	}
-	else {
+	else {	/* One of the fixed doc files */
 		sprintf (URL, "file:///%s/doc/html/%s", API->GMT->session.SHAREDIR, module);
-		if (access (&URL[8], R_OK)) 		/* file does not exists, go to SOEST site */
-			sprintf (URL, "https://gmt.soest.hawaii.edu/doc/latest/%s", module);
+		if (access (&URL[8], R_OK)) 	/* File does not exists, go to SOEST site */
+			sprintf (URL, "http://gmt.soest.hawaii.edu/doc/latest/%s", module);
 	}
 
-	if (opt->next) {		/* If an option request was made */
-		char t[4];
+	if (opt->next) {	/* If an option request was made we position the doc there */
+		char t[4] = {""};
 		sprintf (t, "#%c", tolower (opt->next->option));
 		strncat (URL, t, PATH_MAX-1);
 	}
-#ifdef WEBVIEW
-	webview ("GMT docs", URL, 900, 600, 1);
-#endif
+
+	webview ("GMT documentation viewer", URL, GMT->current.setting.doc_winsize[GMT_X], GMT->current.setting.doc_winsize[GMT_Y], 1);
 
 	Return (error);
 }

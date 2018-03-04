@@ -381,6 +381,11 @@ fonts can be found in the :doc:`gmt` man page.
 **GMT_DATA_URL**
     Address of the data directory on the remote server [The SOEST server].
 
+.. _GMT_DOC_WINSIZE:
+
+**GMT_DOC_WINSIZE**
+    The pixel width x height of the documentation window opened by gmt docs [900x600].
+
 .. _GMT_COMPATIBILITY:
 
 **GMT_COMPATIBILITY**

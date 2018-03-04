@@ -58,7 +58,7 @@ EXTERN_MSC void gmt_strtok_m (char *in, char **token, char **remain, char *sep);
 EXTERN_MSC unsigned int gmt_get_modifier (const char *string, char modifier, char *token);
 EXTERN_MSC void gmt_chop (char *string);
 EXTERN_MSC char *gmt_chop_ext (char *string);
-EXTERN_MSC char *gmt_get_ext (char *string);
+EXTERN_MSC char *gmt_get_ext (const char *string);
 EXTERN_MSC void gmt_strstrip(char *string, bool strip_leading);
 EXTERN_MSC void gmt_strlshift (char *string, size_t n);
 EXTERN_MSC void gmt_strrepc (char *string, int c, int r);
