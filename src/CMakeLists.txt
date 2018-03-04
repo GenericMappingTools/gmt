@@ -37,6 +37,11 @@ else (WIN32)
 	set(LIB_PREFIX "lib")
 endif (WIN32)
 
+# On Windows always build with WebView
+if (WIN32)
+	set (WEBVIEW TRUE)
+endif (WIN32)
+
 # Include CREATE_DEBUG_SYM macro and set DEBUG_BUILD
 include (CreateDebugSym)
 
