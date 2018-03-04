@@ -53,7 +53,7 @@
 # gmt program and access modules as "gmt modulename options" [TRUE]:
 #set (GMT_INSTALL_MODULE_LINKS FALSE)
 
-# Testing WebView via docs.c
+# Testing WebView via docs.c [Only for Linux - wet to TRUE for Win and OSX]
 # set (WEBVIEW TRUE)
 
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
@@ -236,6 +236,11 @@
 #
 # Debugging
 #
+
+# On Windows and OSX always build with WebView
+if (WIN32 OR APPLE)
+	set (WEBVIEW TRUE)
+endif (WIN32 OR APPLE)
 
 # Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 # [Release]:
