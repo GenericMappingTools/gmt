@@ -237,11 +237,6 @@
 # Debugging
 #
 
-# On Windows and OSX always build with WebView
-if (WIN32 OR APPLE)
-	set (WEBVIEW TRUE)
-endif (WIN32 OR APPLE)
-
 # Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 # [Release]:
 #set (CMAKE_BUILD_TYPE Debug)
