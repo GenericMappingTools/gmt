@@ -71,6 +71,11 @@ project (GMT C)
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/"
 	CACHE INTERNAL "Location of our custom CMake modules." FORCE)
 
+# On Windows and OSX always build with WebView
+if (WIN32 OR APPLE)
+	set (WEBVIEW TRUE)
+endif (WIN32 OR APPLE)
+
 # Include configuration options (default options and options overridden by user).
 include (ConfigCMake)
 
