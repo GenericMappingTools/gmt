@@ -83,44 +83,18 @@ if (UNIX AND NOT WEBKIT_FOUND)
 	endif (WEBKIT_CONFIG)
 endif (UNIX AND NOT WEBKIT_FOUND)
 
-find_path (WEBKIT_INCLUDE_DIR webkit2.h
-	HINTS
-	${_webkit_includepath}
-	${WEBKIT_DIR}
-	${WEBKIT_ROOT}
-	$ENV{WEBKIT_DIR}
-	$ENV{WEBKIT_ROOT}
-	PATH_SUFFIXES
-	include
-	PATHS
-	/sw # Fink
-	/opt/local # DarwinPorts
-	/opt/csw # Blastwave
-	/opt
-	/usr/local
-)
+# find all include dirs that pkg-config --cflags reported
+foreach (_extrainc ${_webkit_includepath})
+	list (APPEND WEBKIT_INCLUDE_DIR ${_webkit_includepath})
+endforeach (_extrainc)
 
-find_library (WEBKIT_LIBRARY
-	NAMES ${_webkit_lib} WEBKIT
-	HINTS
-	${WEBKIT_DIR}
-	${WEBKIT_ROOT}
-	$ENV{WEBKIT_DIR}
-	$ENV{WEBKIT_ROOT}
-	${_webkit_libpath}
-	PATH_SUFFIXES lib
-	PATHS
-	/sw # Fink
-	/opt/local # DarwinPorts
-	/opt/csw # Blastwave
-	/opt
-	/usr/local
-)
-
-include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (WEBKIT DEFAULT_MSG WEBKIT_LIBRARY WEBKIT_INCLUDE_DIR)
+# find all libs that pkg-config --libs reported
+foreach (_extralib ${_webkit_lib})
+	find_library (_found_lib_${_extralib}
+		NAMES ${_extralib}
+		PATHS ${_webkit_libpath})
+	list (APPEND WEBKITF_LIBRARY ${_found_lib_${_extralib}})
+endforeach (_extralib)
 
 set (WEBKIT_LIBRARIES ${WEBKIT_LIBRARY})
 set (WEBKIT_INCLUDE_DIRS ${WEBKIT_INCLUDE_DIR})
-
-# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
