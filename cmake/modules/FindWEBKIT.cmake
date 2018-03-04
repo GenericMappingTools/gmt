@@ -80,6 +80,7 @@ if (UNIX AND NOT WEBKIT_FOUND)
 			string (REGEX MATCHALL "-L[^ ]+" _webkit_dashL ${WEBKIT_CONFIG_LIBS})
 			string (REGEX REPLACE "-L" "" _webkit_libpath "${_webkit_dashL}")
 		endif (WEBKIT_CONFIG_LIBS)
+		SET (WEBKIT_FOUND true)
 	endif (WEBKIT_CONFIG)
 endif (UNIX AND NOT WEBKIT_FOUND)
 
