@@ -175,13 +175,14 @@ WEBVIEW_API void webview_print_log(const char *s);
 WEBVIEW_API int webview(const char *title, const char *url, int width,
                         int height, int resizable) {
   struct webview webview;
+  int r;
   memset (&webview, 0, sizeof (struct webview));
   webview.title = title;
   webview.url = url;
   webview.width = width;
   webview.height = height;
   webview.resizable = resizable;
-  int r = webview_init(&webview);
+  r = webview_init(&webview);
   if (r != 0) {
     return r;
   }
@@ -223,16 +224,16 @@ static int webview_js_encode(const char *s, char *esc, size_t n) {
 }
 
 WEBVIEW_API int webview_inject_css(struct webview *w, const char *css) {
-  int n = webview_js_encode(css, NULL, 0);
-  char *esc = (char *)calloc(1, sizeof(CSS_INJECT_FUNCTION) + n + 4);
+  int n = webview_js_encode(css, NULL, 0), r;
+  char *js, *esc = (char *)calloc(1, sizeof(CSS_INJECT_FUNCTION) + n + 4);
   if (esc == NULL) {
     return -1;
   }
-  char *js = (char *)calloc(1, n);
+  js = (char *)calloc(1, n);
   webview_js_encode(css, js, n);
   snprintf(esc, sizeof(CSS_INJECT_FUNCTION) + n + 4, "%s(\"%s\")",
            CSS_INJECT_FUNCTION, js);
-  int r = webview_eval(w, esc);
+  r = webview_eval(w, esc);
   free(js);
   free(esc);
   return r;
@@ -242,16 +243,21 @@ WEBVIEW_API int webview_inject_css(struct webview *w, const char *css) {
 static void external_message_received_cb(WebKitUserContentManager *m,
                                          WebKitJavascriptResult *r,
                                          gpointer arg) {
-  (void)m;
   struct webview *w = (struct webview *)arg;
+  char *s;
+  JSGlobalContextRef context;
+  JSValueRef value;
+  JSStringRef js;
+  size_t n;
+  (void)m;
   if (w->external_invoke_cb == NULL) {
     return;
   }
-  JSGlobalContextRef context = webkit_javascript_result_get_global_context(r);
-  JSValueRef value = webkit_javascript_result_get_value(r);
-  JSStringRef js = JSValueToStringCopy(context, value, NULL);
-  size_t n = JSStringGetMaximumUTF8CStringSize(js);
-  char *s = g_new(char, n);
+  context = webkit_javascript_result_get_global_context(r);
+  value = webkit_javascript_result_get_value(r);
+  js = JSValueToStringCopy(context, value, NULL);
+  n = JSStringGetMaximumUTF8CStringSize(js);
+  s = g_new(char, n);
   JSStringGetUTF8CString(js, s, n);
   w->external_invoke_cb(w, s);
   JSStringRelease(js);
@@ -260,16 +266,16 @@ static void external_message_received_cb(WebKitUserContentManager *m,
 
 static void webview_load_changed_cb(WebKitWebView *webview,
                                     WebKitLoadEvent event, gpointer arg) {
-  (void)webview;
   struct webview *w = (struct webview *)arg;
+  (void)webview;
   if (event == WEBKIT_LOAD_FINISHED) {
     w->priv.ready = 1;
   }
 }
 
 static void webview_destroy_cb(GtkWidget *widget, gpointer arg) {
-  (void)widget;
   struct webview *w = (struct webview *)arg;
+  (void)widget;
   webview_terminate(w);
 }
 
@@ -287,6 +293,7 @@ static gboolean webview_context_menu_cb(WebKitWebView *webview,
 }
 
 WEBVIEW_API int webview_init(struct webview *w) {
+  WebKitUserContentManager *m;
   if (gtk_init_check(0, NULL) == FALSE) {
     return -1;
   }
@@ -308,7 +315,7 @@ WEBVIEW_API int webview_init(struct webview *w) {
   w->priv.scroller = gtk_scrolled_window_new(NULL, NULL);
   gtk_container_add(GTK_CONTAINER(w->priv.window), w->priv.scroller);
 
-  WebKitUserContentManager *m = webkit_user_content_manager_new();
+  m = webkit_user_content_manager_new();
   webkit_user_content_manager_register_script_message_handler(m, "external");
   g_signal_connect(m, "script-message-received::external",
                    G_CALLBACK(external_message_received_cb), w);
@@ -370,6 +377,7 @@ WEBVIEW_API void webview_dialog(struct webview *w,
                                 const char *title, const char *arg,
                                 char *result, size_t resultsz) {
   GtkWidget *dlg;
+  gint response;
   if (result != NULL) {
     result[0] = '\0';
   }
@@ -390,7 +398,7 @@ WEBVIEW_API void webview_dialog(struct webview *w,
     gtk_file_chooser_set_show_hidden(GTK_FILE_CHOOSER(dlg), TRUE);
     gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dlg), TRUE);
     gtk_file_chooser_set_create_folders(GTK_FILE_CHOOSER(dlg), TRUE);
-    gint response = gtk_dialog_run(GTK_DIALOG(dlg));
+    response = gtk_dialog_run(GTK_DIALOG(dlg));
     if (response == GTK_RESPONSE_ACCEPT) {
       gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
       g_strlcpy(result, filename, resultsz);

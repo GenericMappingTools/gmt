@@ -177,6 +177,11 @@ endif (APPLE)
 
 if (WEBVIEW AND LINUX)
 	find_package (WEBKIT)
+	include_directories (${WEBKIT_INCLUDE_DIR})
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${WEBKIT_LIBRARIES})
+	find_package (GTK)
+	include_directories (${GTK_INCLUDE_DIR})
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${GTK_LIBRARIES})
 endif (WEBVIEW AND LINUX)
 
 if (WEBKIT_FOUND)
