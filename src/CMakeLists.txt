@@ -646,7 +646,7 @@ if (MSVC AND FFTW3_FOUND)
 	target_link_libraries (gmtlib ws2_32)
 endif (MSVC AND FFTW3_FOUND)
 
-if (MSVC AND WEBVIEW)
+if (WIN32 AND WEBVIEW)
 	target_link_libraries (gmtlib ole32 comctl32 oleaut32 uuid Gdi32 Advapi32)
 endif (MSVC AND WEBVIEW)
 
