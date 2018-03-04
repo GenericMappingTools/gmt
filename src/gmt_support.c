@@ -8632,6 +8632,7 @@ void gmt_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 	}
 	sprintf (G->label_file, "%s_labels.txt", G->line_name);
 	G->must_clip = true;
+	G->draw = true;
 	G->spacing = true;
 	G->half_width = UINT_MAX;	/* Auto */
 	G->label_dist_spacing = 4.0;	/* Inches */
@@ -8659,13 +8660,15 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 
 	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+x|X<suffix>][+=<prefix>] strings */
 
+	G->nudge_flag = 0;
+	G->draw = true;
+
 	for (k = 0; txt[k] && txt[k] != '+'; k++);	/* Look for +<options> strings */
 
 	if (!txt[k]) return (0);
 
 	/* Decode new-style +separated substrings */
 
-	G->nudge_flag = 0;
 	specs = &txt[k+1];
 	while ((gmt_strtok (specs, "+", &pos, p))) {
 		switch (p[0]) {
@@ -8719,6 +8722,10 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				if (p[1] && gmt_getrgb (GMT, &p[1], G->rgb)) bad++;
 				G->fillbox = true;
 				G->must_clip = (G->rgb[3] > 0.0);	/* May still be transparent if gave transparency; else opaque */
+				break;
+
+			case 'h':	/* Hide the lines used to place labels */
+				G->draw = false;
 				break;
 
 			case 'j':	/* Justification specification */

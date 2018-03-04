@@ -26,6 +26,9 @@
        Selects opaque text boxes [Default is transparent]; optionally
        specify the color [Default is **PS\_PAGE\_COLOR**].
 
+    **+h**
+       Hide the lines [Default draws the lines].
+
     **+j**\ *just*
        Sets label justification [Default is MC].
 

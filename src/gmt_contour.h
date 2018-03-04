@@ -130,6 +130,7 @@ struct GMT_CONTOUR {
 	bool curved_text;		/* true for text to follow curved lines */
 	bool no_gap;		/* Clip contour or not depends on label placement */
 	bool data_col;		/* true if there is data in the zz arrays passed, false if they are NULL */
+	bool draw;			/* true of we want to draw the text lines [true] */
 	bool debug;			/* true of we want to draw helper lines/points */
 	bool delay;			/* true of we want to delay the actual annotation plotting until later */
 	bool crossect;			/* For SqN2 only: if true we want to add special suffixes to the 2 labels */
