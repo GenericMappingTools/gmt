@@ -93,7 +93,7 @@ foreach (_extralib ${_webkit_lib})
 	find_library (_found_lib_${_extralib}
 		NAMES ${_extralib}
 		PATHS ${_webkit_libpath})
-	list (APPEND WEBKITF_LIBRARY ${_found_lib_${_extralib}})
+	list (APPEND WEBKIT_LIBRARY ${_found_lib_${_extralib}})
 endforeach (_extralib)
 
 set (WEBKIT_LIBRARIES ${WEBKIT_LIBRARY})
