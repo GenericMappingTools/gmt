@@ -30,7 +30,7 @@
 
 #define THIS_MODULE_NAME	"project"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Project table data onto lines or great circles, generate tracks, or translate coordinates"
+#define THIS_MODULE_PURPOSE	"Project data onto lines or great circles, generate tracks, or translate coordinates"
 #define THIS_MODULE_KEYS	"<D{,>D},G-("
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>Vbdefghis" GMT_OPT("HMm")

@@ -36,7 +36,7 @@
 
 #define THIS_MODULE_NAME	"gravfft"
 #define THIS_MODULE_LIB		"potential"
-#define THIS_MODULE_PURPOSE	"Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)"
+#define THIS_MODULE_PURPOSE	"Spectral calculations of gravity, isostasy, admittance, and coherence for grids"
 #define THIS_MODULE_KEYS	"<G{+,GG},DG(,GDC,GDI"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-Vf"

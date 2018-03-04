@@ -6,7 +6,7 @@ gravfft
 
 .. only:: not man
 
-    gravfft - Compute gravitational attraction of 3-D surfaces in the wavenumber (or frequency) domain
+    gravfft - Spectral calculations of gravity, isostasy, admittance, and coherence for grids
 
 Synopsis
 --------

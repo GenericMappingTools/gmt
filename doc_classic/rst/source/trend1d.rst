@@ -6,7 +6,7 @@ trend1d
 
 .. only:: not man
 
-    trend1d - Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data
+    trend1d - Fit a [weighted] [robust] polynomial/Fourier model for y = f(x) to xy[w] data
 
 Synopsis
 --------

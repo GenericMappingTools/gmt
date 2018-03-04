@@ -6,7 +6,7 @@ grdseamount
 
 .. only:: not man
 
-    grdseamount - Compute synthetic seamount (Gaussian, parabolic, cone, disc, circular or elliptical) bathymetry
+    grdseamount - Create synthetic seamounts (Gaussian, parabolic, cone or disc, circular or elliptical)
 
 Synopsis
 --------
