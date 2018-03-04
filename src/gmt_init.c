@@ -5200,7 +5200,7 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
 	/* GMT_CUSTOM_LIBS (default to none) */
 	/* GMTCASE_GMT_DOC_WINSIZE */
-	GMT->current.setting.doc_winsize[GMT_X] = 900; GMT->current.setting.doc_winsize[GMT_Y] = 600;
+	GMT->current.setting.doc_winsize[GMT_X] = 1200; GMT->current.setting.doc_winsize[GMT_Y] = 800;
 	/* GMT_EXPORT_TYPE */
 	GMT->current.setting.export_type = GMT_DOUBLE;
 	/* GMT_EXTRAPOLATE_VAL (NaN) */
