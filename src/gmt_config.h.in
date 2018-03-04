@@ -69,6 +69,9 @@
 /* compile with pthreads support <pthread.h> */
 #cmakedefine HAVE_PTHREAD
 
+/* compile with WEBKIT support */
+#cmakedefine HAVE_WEBKIT
+
 /* shared library */
 #cmakedefine BUILD_SHARED_LIBS
 
