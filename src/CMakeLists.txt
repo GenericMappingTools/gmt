@@ -24,6 +24,12 @@
 include (ManageString)
 include (GmtHelperMacros)
 
+if (UNIX AND NOT APPLE)
+        set (LINUX TRUE)
+else (UNIX AND NOT APPLE)
+	set (LINUX FALSE)
+endif (UNIX AND NOT APPLE)
+
 # On Windows do not prefix the DLLs with the 'lib' prefix
 if (WIN32)
 	set(LIB_PREFIX "")
@@ -145,6 +151,7 @@ if (ZLIB_FOUND)
 	include_directories (${ZLIB_INCLUDE_DIRS})
 endif (ZLIB_FOUND)
 
+
 if (APPLE)
 	# Accelerate framework
 	find_library (ACCELERATE_FRAMEWORK Accelerate)
@@ -159,8 +166,20 @@ if (APPLE)
 		find_library (WEBKIT_FRAMEWORK WebKit)
 		mark_as_advanced (WEBKIT_FRAMEWORK)
 		list (APPEND GMT_OPTIONAL_LIBRARIES ${WEBKIT_FRAMEWORK})
+		set (WEBKIT_FOUND TRUE)
 	endif (WEBVIEW)
 endif (APPLE)
+
+if (WEBVIEW AND LINUX)
+	find_package (WEBKIT)
+endif (WEBVIEW AND LINUX)
+
+if (WEBKIT_FOUND)
+	set (HAVE_WEBKIT TRUE CACHE INTERNAL "System has WebKit")
+	set (GMT_CONFIG_WEBKIT_MESSAGE "yes" CACHE INTERNAL "WEBKIT config message")
+	include_directories (${WEBKIT_INCLUDE_DIR})
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${WEBKIT_LIBRARIES})
+endif (WEBKIT_FOUND)
 
 if (DEFINED GMT_ENABLE_OPENMP)
 	set (GMT_OPENMP TRUE CACHE INTERNAL "Turn on GMT OpenMP")
@@ -341,7 +360,8 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 
 if (WEBVIEW)
 	# Add in the codes used by gmt docs
-	list (APPEND GMT_LIB_SRCS docs.c webview.h)
+	list (APPEND GMT_PROGS_SRCS docs.c)
+	list (APPEND GMT_LIB_SRCS webview.h)
 endif (WEBVIEW)
 
 if (BUILD_SUPPLEMENTS)

@@ -196,6 +196,7 @@ message(
 	"*  ZLIB include dir           : ${ZLIB_INCLUDE_DIR}\n"
 	"*  LAPACK library             : ${GMT_CONFIG_LAPACK_MESSAGE}\n"
 	"*  BLAS library               : ${GMT_CONFIG_BLAS_MESSAGE}\n"
+	"*  WebKit library             : ${GMT_CONFIG_WEBKIT_MESSAGE}\n"
 	"*  License restriction        : ${LICENSE_RESTRICTED}\n"
 	"*  Triangulation method       : ${GMT_TRIANGULATE}\n"
 	"*  OpenMP support             : ${GMT_CONFIG_OPENMP_MESSAGE}\n"
