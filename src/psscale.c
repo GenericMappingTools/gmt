@@ -223,6 +223,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 
 	unsigned int n_errors = 0, n_files = 0;
 	int n, j;
+	bool auto_m = false;
 	char string[GMT_LEN256] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *c = NULL;
 	char txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
@@ -268,7 +269,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else {	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
 						Ctrl->D.justify = gmt_M_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
-						switch (Ctrl->D.refpoint->justify) {	/* Autoset +h|v, +m, +o when placed centered on a side: Note: +h|v, +m. +o may overrule this later */
+						auto_m = true;
+						switch (Ctrl->D.refpoint->justify) {	/* Autoset +h|v, +m, +o when placed centered on a side: Note: +h|v, +m, +o may overrule this later */
 							case PSL_TC:
 								Ctrl->D.mmode = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
 								Ctrl->D.horizontal = true;
@@ -290,6 +292,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 								Ctrl->D.off[GMT_X] = (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;
 								break;
 							default:
+								auto_m = false;	/* None of the 4 above */
 								break;
 						}
 					}
@@ -320,13 +323,33 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 						Ctrl->D.horizontal = false;
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'm', string)) {
 						Ctrl->D.move = true;
-						if (!string[0]) Ctrl->D.mmode = (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL);	/* Default is +mal */
-						for (j = 0; string[j]; j++) {
-							switch (string[j]) {
-								case 'a': Ctrl->D.mmode |= PSSCALE_FLIP_ANNOT; break;
-								case 'l': Ctrl->D.mmode |= PSSCALE_FLIP_LABEL; break;
-								case 'c': Ctrl->D.mmode |= PSSCALE_FLIP_VERT;  break;
-								case 'u': Ctrl->D.mmode |= PSSCALE_FLIP_UNIT;  break;
+						if (auto_m && !string[0]) {	/* Means flip might have been set and no arg, so invert it */
+							switch (Ctrl->D.refpoint->justify) {	/* Autoset +h|v, +m, +o when placed centered on a side: Note: +h|v, +m, +o may overrule this later */
+								case PSL_TC:
+									Ctrl->D.mmode = (Ctrl->D.refpoint->mode != GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
+									break;
+								case PSL_BC:
+									Ctrl->D.mmode = (Ctrl->D.refpoint->mode != GMT_REFPOINT_JUST) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if inside */
+									break;
+								case PSL_ML:
+									Ctrl->D.mmode = (Ctrl->D.refpoint->mode != GMT_REFPOINT_JUST_FLIP) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if outside */
+									break;
+								case PSL_MR:
+									Ctrl->D.mmode = (Ctrl->D.refpoint->mode != GMT_REFPOINT_JUST) ? (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL) : 0;	/* +mal if inside */
+									break;
+								default:
+									break;
+							}
+						}
+						else {
+							if (!string[0]) Ctrl->D.mmode = (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL);	/* Default is +mal */
+							for (j = 0; string[j]; j++) {
+								switch (string[j]) {
+									case 'a': Ctrl->D.mmode |= PSSCALE_FLIP_ANNOT; break;
+									case 'l': Ctrl->D.mmode |= PSSCALE_FLIP_LABEL; break;
+									case 'c': Ctrl->D.mmode |= PSSCALE_FLIP_VERT;  break;
+									case 'u': Ctrl->D.mmode |= PSSCALE_FLIP_UNIT;  break;
+								}
 							}
 						}
 					}

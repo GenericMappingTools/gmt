@@ -1,4 +1,9 @@
 #!/bin/bash
+# Addresses issue #1205.  The bottom plot is all auto and
+# correct, while the top plot failed to flip the annotation
+# side whem +m was added, because it had already been flipped
+# for BC and RM (the cause of the issue).  I know check if
+# flipped and then +m implies the opposite flip.
 ps=scalings.ps
 
 gmt psbasemap -R0/10/0/10 -JX12c -B0 -K -P -Xc -Y1c > $ps
