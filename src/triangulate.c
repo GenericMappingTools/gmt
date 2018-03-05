@@ -36,7 +36,7 @@
 
 #define THIS_MODULE_NAME	"triangulate"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Optimal (Delaunay) triangulation and gridding of Cartesian table data"
+#define THIS_MODULE_PURPOSE	"Delaunay triangulation or Voronoi partitioning and gridding of Cartesian data"
 #define THIS_MODULE_KEYS	"<D{,CG(,>D},GG)"
 #define THIS_MODULE_NEEDS	"r"
 #define THIS_MODULE_OPTIONS "-:>JRVbdefhirs" GMT_OPT("Hm")
