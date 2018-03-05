@@ -13921,15 +13921,17 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 		case 't':
 			error += GMT_more_than_once (GMT, GMT->common.t.active);
 			if (item[0]) {
-				GMT->common.t.active = true;
 				GMT->common.t.value = atof (item);
-				if (GMT->common.t.value < 0.0 || GMT->common.t.value > 100.0) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -t: Transparency must be in 0-100%% range!\n");
+				if (GMT->common.t.value <= 0.0 || GMT->common.t.value > 100.0) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -t: Transparency must be in (0-100]%% range!\n");
+					GMT->common.t.value = 0.0;
 					error++;
 				}
+				else
+					GMT->common.t.active = true;
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -t was not given any value (please add transparency in 0-100%% range)!\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -t was not given any value (please add transparency in (0-100]0%% range)!\n");
 				error++;
 			}
 			break;
