@@ -38,9 +38,15 @@ else (WIN32)
 endif (WIN32)
 
 # On Windows and OSX always build with WebView
-if (WIN32)
+if (WIN32 OR APPLE)
 	set (WEBVIEW TRUE)
-endif (WIN32)
+endif (WIN32 OR APPLE)
+if (WEBVIEW)
+	add_definitions(-DWEBVIEW)
+	if (APPLE)
+	        add_definitions("-x objective-c")
+	endif (APPLE)
+endif (WEBVIEW)
 
 # Include CREATE_DEBUG_SYM macro and set DEBUG_BUILD
 include (CreateDebugSym)
