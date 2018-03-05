@@ -15,7 +15,7 @@ Synopsis
 
 **dimfilter** *input_file.nc* |-D|\ *distance_flag*
 |-F|\ **x**\ *width*\ [*mode*] |-G|\ *output_file.nc*
-|-N|\ **x**\ *sectors* [ |-Q|\ *cols* ]
+|-N|\ **x**\ *sectors* [ |-Q| ]
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
 [ |-T| ]
@@ -36,9 +36,8 @@ The output *.nc* file can optionally be generated as a subregion of the
 input and/or with a new **-I**\ ncrement. In this way, one may have
 "extra space" in the input data so that there will be no edge effects
 for the output grid. If the filter is low-pass, then the output may be
-less frequently sampled than the input. **-Q** is for the error analysis
-mode and only requires the total number of columns in the input file,
-which contains the filtered depths. Finally, one should know that
+less frequently sampled than the input. The **-Q** option is for the error analysis
+mode and expects the input file to contains the filtered depths. Finally, one should know that
 **dimfilter** will not produce a smooth output as other spatial filters
 do because it returns a minimum median out of *N* medians of *N*
 sectors. The output can be rough unless the input data is noise-free.
@@ -143,8 +142,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *cols*
-    *cols* is the total number of columns in the input text table file.
+**-Q**
     For this mode, it expects to read depths consisted of several
     columns. Each column represents a filtered grid with a filter width,
     which can be obtained by **grd2xyz -Z**. The outcome will be median,
@@ -206,7 +204,7 @@ will need to do:
     gmt grd2xyz f120.nc -Z > f120.txt
     gmt grd2xyz f130.nc -Z > f130.txt
     paste f100.txt f110.txt f120.txt f130.txt > depths.txt
-    gmt dimfilter depths.txt -Q4 > output.z
+    gmt dimfilter depths.txt -Q > output.z
 
 Limitations
 -----------

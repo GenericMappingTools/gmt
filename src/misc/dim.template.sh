@@ -101,7 +101,7 @@ if [ ! -f $dim ]; then
 		gmt grd2xyz $bathy $box -V > $bathy.xyz
 	fi
 
-	gmt dimfilter $alldepth -Q${n_widths} > /tmp/$$.out
+	gmt dimfilter $alldepth -Q > /tmp/$$.out
 	wc -l /tmp/$$.out $bathy.xyz
 
 	paste $bathy.xyz /tmp/$$.out | awk '{print $1,$2,$4}' > /tmp/$$.dim.xyz

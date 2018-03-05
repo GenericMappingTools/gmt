@@ -74,7 +74,6 @@ struct DIMFILTER_CTRL {
 	} N;
 	struct Q {	/* -Q */
 		bool active;
-		unsigned int err_cols;
 	} Q;
 	struct S {	/* -S<file> */
 		bool active;
@@ -109,7 +108,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: dimfilter <ingrid> -D<distance_flag> -F<type><filter_width> -G<outgrid> -N<type><n_sectors>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Q<cols>]\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Q]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -136,8 +135,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Sets new Increment of output grid; enter xinc, optionally xinc/yinc.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is yinc = xinc.  Append an m [or s] to xinc or yinc to indicate minutes [or seconds];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Select error analysis mode and requires the total number of depth columns in the input file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   See documentation for how to prepare for using this option.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Select error analysis mode; see documentation for how to prepare for using this option.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R Sets new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 #ifdef OBSOLETE
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets output name for standard error grdfile and implies that we will compute a 2nd grid with\n");
@@ -253,7 +251,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 				break;
 			case 'Q':	/* entering the MAD error analysis mode */
 				Ctrl->Q.active = true;
-				Ctrl->Q.err_cols = atoi (opt->arg);
 				break;
 #ifdef OBSOLETE
 			case 'S':
@@ -284,7 +281,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 	}
 	else {
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active, "Syntax error: Must use -Q to specify total # of columns in the input file.\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->Q.err_cols > 50, "Syntax error -Q option: Total # of columns cannot exceed 50.\n");
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -950,12 +946,16 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 	}
 	else {	/* Here -Q is active */
-		int err_l = 1;
-		double err_workarray[50], err_min, err_max, err_null_median = 0.0, err_median, err_mad, err_depth, err_sum, out[3];
+		double *err_workarray = NULL, err_min, err_max, err_null_median = 0.0, err_median, err_mad, err_sum, out[3];
+		uint64_t row, col;
 		struct GMT_RECORD *Out = NULL;
+		struct GMT_DATASET *D = NULL;
+		struct GMT_DATASEGMENT *S = NULL;
 
-		FILE *ip = NULL;
-
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->In.file, NULL)) == NULL) {
+			Return (API->error);
+		}
+		
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
@@ -969,57 +969,44 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		}
 		gmt_set_cartesian (GMT, GMT_OUT);	/* No coordinates here */
 		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
+		err_workarray = gmt_M_memory (GMT, NULL, S->n_columns, double);
 
-		/* Check the crucial condition to run the program*/
-		if ((ip = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s\n", Ctrl->In.file);
-			Return (GMT_ERROR_ON_FOPEN);
-		}
-
-		/* read depths from each column until EOF */
-		while (fscanf (ip, "%lf", &err_depth) != EOF) {
-			err_sum = 0.0;	/* start with empty sum */
-			/* store data into array and find min/max */
-			err_workarray[0] = err_min = err_max = err_depth;
-			err_sum += err_depth;
-			for (i = 1; i < Ctrl->Q.err_cols; i++) {
-				if (fscanf (ip, "%lf", &err_depth) != 1) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Unable to read depths for column %d\n", i);
-					fclose (ip);
-					Return (GMT_DATA_READ_ERROR);
-				}
-				err_workarray[i] = err_depth;
-				err_sum += err_depth;
-				if (err_depth < err_min) err_min = err_depth;
-				if (err_depth > err_max) err_max = err_depth;
+		S = D->table[0]->segment[0];	/* A Single-segment data file */
+		for (row = 0; row < S->n_rows; row++) {
+			/* Store data into array and find sum/min/max, starting with col 0 */
+			err_sum = err_workarray[0] = err_min = err_max = S->data[0][row];
+			for (col = 1; col < S->n_columns; col++) {
+				err_workarray[col] = S->data[col][row];
+				err_sum += S->data[col][row];
+				if (S->data[col][row] < err_min) err_min = S->data[col][row];
+				if (S->data[col][row] > err_max) err_max = S->data[col][row];
 			}
-
+			
 			/* calculate MEDIAN and MAD for each row */
-			gmt_median (GMT, err_workarray, Ctrl->Q.err_cols, err_min, err_max, err_null_median, &err_median);
-			err_workarray[0] = fabs (err_workarray[0] - err_median);
-			err_min = err_max = err_workarray[0];
-			for (i = 1; i < Ctrl->Q.err_cols; i++) {
-				err_workarray[i] = fabs (err_workarray[i] - err_median);
-				if (err_workarray[i] < err_min) err_min=err_workarray[i];
-				if (err_workarray[i] > err_max) err_max=err_workarray[i];
+			gmt_median (GMT, err_workarray, S->n_columns, err_min, err_max, err_null_median, &err_median);
+			err_workarray[0] = err_min = err_max = fabs (err_workarray[0] - err_median);
+			for (col = 1; col < S->n_columns; col++) {
+				err_workarray[col] = fabs (err_workarray[col] - err_median);
+				if (err_workarray[col] < err_min) err_min=err_workarray[col];
+				if (err_workarray[col] > err_max) err_max=err_workarray[col];
 			}
-			gmt_median (GMT, err_workarray, Ctrl->Q.err_cols, err_min, err_max, err_null_median, &err_mad);
+			gmt_median (GMT, err_workarray, S->n_columns, err_min, err_max, err_null_median, &err_mad);
 			err_mad *= MAD_NORMALIZE;
 
 			/* calculate MEAN for each row */
 			out[0] = err_median;
 			out[1] = err_mad;
-			out[2] = (Ctrl->Q.err_cols) ? err_sum / Ctrl->Q.err_cols : 0.0;
+			out[2] = (S->n_columns) ? err_sum / S->n_columns : 0.0;
 
 			/* print out the results */
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 
-			GMT_Report (API, GMT_MSG_DEBUG, "line %d passed\n", err_l);
-			err_l++;
+			GMT_Report (API, GMT_MSG_DEBUG, "line %d passed\n", row);
 		}
-		/* close the input */
-		fclose (ip);
+
 		gmt_M_free (GMT, Out);
+		gmt_M_free (GMT, err_workarray);
+		
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {
 			Return (API->error);	/* Disables further data output */
 		}
