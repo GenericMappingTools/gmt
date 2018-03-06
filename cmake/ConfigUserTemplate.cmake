@@ -53,9 +53,6 @@
 # gmt program and access modules as "gmt modulename options" [TRUE]:
 #set (GMT_INSTALL_MODULE_LINKS FALSE)
 
-# Testing WebView via docs.c [Only for Linux - set to TRUE for Win and OSX]
-# set (WEBVIEW TRUE)
-
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
 #set (GMT_INSTALL_RELOCATABLE TRUE)
 

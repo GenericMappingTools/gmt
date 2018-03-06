@@ -26,6 +26,7 @@
 
 #include "gmt_dev.h"
 
+#if 0
 #define WEBVIEW_IMPLEMENTATION
 #if defined(WIN32)
 #	define WEBVIEW_WINAPI
@@ -35,6 +36,7 @@
 #	define WEBVIEW_GTK
 #endif
 #include "webview.h"
+#endif
 
 #define THIS_MODULE_NAME	"docs"
 #define THIS_MODULE_LIB		"core"
@@ -84,10 +86,11 @@ EXTERN_MSC const char *gmt_current_name (const char *module, char modname[]);
 
 int GMT_docs (void *V_API, int mode, void *args) {
 	bool other_file = false;
-	int error = 0;
-	char URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t;
+	int error = 0, k;
+	char cmd[PATH_MAX] = {""}, URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t = NULL;
 	const char *group = NULL, *docname = NULL;
 	static const char *known_group[2] = {"core", "other"}, *known_doc[4] = {"cookbook", "api", "tutorial", "Gallery"};
+	static const char *can_opener[3] = {"open", "open", "xdg-open"};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -168,7 +171,21 @@ int GMT_docs (void *V_API, int mode, void *args) {
 		strncat (URL, t, PATH_MAX-1);
 	}
 
-	webview ("GMT documentation viewer", URL, GMT->current.setting.doc_winsize[GMT_X], GMT->current.setting.doc_winsize[GMT_Y], 1);
+#ifdef WIN32
+	//webview ("GMT documentation viewer", URL, GMT->current.setting.doc_winsize[GMT_X], GMT->current.setting.doc_winsize[GMT_Y], 1);
+	k = 0;
+#elif defined(__APPLE__)
+	k = 1;
+#else
+	k = 2;
+#endif
+
+	sprintf (cmd, "%s %s", can_opener[k], URL);
+	if ((error = system (cmd))) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s in the browser via %s failed with error %d\n", URL, can_opener[k], error);
+		perror ("docs");
+		Return (GMT_RUNTIME_ERROR);
+	}
 
 	Return (error);
 }

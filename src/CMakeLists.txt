@@ -37,16 +37,11 @@ else (WIN32)
 	set(LIB_PREFIX "lib")
 endif (WIN32)
 
-# On Windows and OSX always build with WebView
-if (WIN32 OR APPLE)
+# On Windows we always build with WebView
+if (WIN32)
 	set (WEBVIEW TRUE)
-endif (WIN32 OR APPLE)
-if (WEBVIEW)
 	add_definitions(-DWEBVIEW)
-	if (APPLE)
-	        add_definitions("-x objective-c")
-	endif (APPLE)
-endif (WEBVIEW)
+endif (WIN32)
 
 # Include CREATE_DEBUG_SYM macro and set DEBUG_BUILD
 include (CreateDebugSym)
@@ -168,34 +163,7 @@ if (APPLE)
 	find_library (ACCELERATE_FRAMEWORK Accelerate)
 	mark_as_advanced (ACCELERATE_FRAMEWORK)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${ACCELERATE_FRAMEWORK})
-	if (WEBVIEW)
-		# AppKit framework
-		find_library (APPKIT_FRAMEWORK AppKit)
-		mark_as_advanced (APPKIT_FRAMEWORK)
-		list (APPEND GMT_OPTIONAL_LIBRARIES ${APPKIT_FRAMEWORK})
-		# WebKit framework
-		find_library (WEBKIT_FRAMEWORK WebKit)
-		mark_as_advanced (WEBKIT_FRAMEWORK)
-		list (APPEND GMT_OPTIONAL_LIBRARIES ${WEBKIT_FRAMEWORK})
-		set (WEBKIT_FOUND TRUE)
-	endif (WEBVIEW)
 endif (APPLE)
-
-if (WEBVIEW AND LINUX)
-	find_package (WEBKIT)
-	include_directories (${WEBKIT_INCLUDE_DIR})
-	list (APPEND GMT_OPTIONAL_LIBRARIES ${WEBKIT_LIBRARIES})
-	find_package (GTK)
-	include_directories (${GTK_INCLUDE_DIR})
-	list (APPEND GMT_OPTIONAL_LIBRARIES ${GTK_LIBRARIES})
-endif (WEBVIEW AND LINUX)
-
-if (WEBKIT_FOUND)
-	set (HAVE_WEBKIT TRUE CACHE INTERNAL "System has WebKit")
-	set (GMT_CONFIG_WEBKIT_MESSAGE "yes" CACHE INTERNAL "WEBKIT config message")
-	include_directories (${WEBKIT_INCLUDE_DIR})
-	list (APPEND GMT_OPTIONAL_LIBRARIES ${WEBKIT_LIBRARIES})
-endif (WEBKIT_FOUND)
 
 if (DEFINED GMT_ENABLE_OPENMP)
 	set (GMT_OPENMP TRUE CACHE INTERNAL "Turn on GMT OpenMP")
@@ -323,7 +291,7 @@ else (NOT LICENSE_RESTRICTED) # on
 endif (NOT LICENSE_RESTRICTED)
 
 # Note: Developers can set EXTRA_MODULES in ConfigUser.cmake to test new modules
-set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c filter1d.c grd2kml.c
+set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c filter1d.c grd2kml.c
 	fitcircle.c gmt2kml.c gmtconvert.c gmtlogo.c gmtmath.c gmtselect.c gmtsimplify.c
 	gmtspatial.c gmtconnect.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c
 	grd2xyz.c grdblend.c grdclip.c grdcut.c grdedit.c grdfft.c grdfill.c grdfilter.c
@@ -375,8 +343,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	${GMT_TRIANGLE_SRCS})
 
 if (WEBVIEW)
-	# Add in the codes used by gmt docs
-	list (APPEND GMT_PROGS_SRCS docs.c)
+	# Add in the webview codes used by gmt docs
 	list (APPEND GMT_LIB_SRCS webview.h)
 endif (WEBVIEW)
 
@@ -657,9 +624,9 @@ if (MSVC AND FFTW3_FOUND)
 	target_link_libraries (gmtlib ws2_32)
 endif (MSVC AND FFTW3_FOUND)
 
-if (WIN32 AND WEBVIEW)
+if (WEBVIEW)
 	target_link_libraries (gmtlib ole32 comctl32 oleaut32 uuid Gdi32 Advapi32)
-endif (WIN32 AND WEBVIEW)
+endif (EBVIEW)
 
 # build targets for standalone gmt target and demos
 string (REPLACE ".c" "" _gmt_progs "gmt.c;${GMT_DEMOS_SRCS}")

@@ -71,11 +71,6 @@ project (GMT C)
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/"
 	CACHE INTERNAL "Location of our custom CMake modules." FORCE)
 
-# On Windows and OSX always build with WebView
-if (WIN32 OR APPLE)
-	set (WEBVIEW TRUE)
-endif (WIN32 OR APPLE)
-
 # Include configuration options (default options and options overridden by user).
 include (ConfigCMake)
 
@@ -201,7 +196,6 @@ message(
 	"*  ZLIB include dir           : ${ZLIB_INCLUDE_DIR}\n"
 	"*  LAPACK library             : ${GMT_CONFIG_LAPACK_MESSAGE}\n"
 	"*  BLAS library               : ${GMT_CONFIG_BLAS_MESSAGE}\n"
-	"*  WebKit library             : ${GMT_CONFIG_WEBKIT_MESSAGE}\n"
 	"*  License restriction        : ${LICENSE_RESTRICTED}\n"
 	"*  Triangulation method       : ${GMT_TRIANGULATE}\n"
 	"*  OpenMP support             : ${GMT_CONFIG_OPENMP_MESSAGE}\n"
