@@ -6353,8 +6353,14 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	
 	PSL_beginlayer (GMT->PSL, ++GMT->current.ps.layer);
 	/* Set layer transparency, if requested. Note that PSL_transp actually sets the opacity alpha, which is (1 - transparency) */
-	if (GMT->common.t.active) PSL_command (PSL, "%g /%s PSL_transp\n", 1.0 - 0.01 * GMT->common.t.value, GMT->current.setting.ps_transpmode);
-
+	if (GMT->common.t.active) {
+		if (GMT->common.t.value == 0.0) {
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "A transparency of 0 is the same as opaque. Skipped\n");
+			GMT->common.t.active = false;
+		}
+		else
+			PSL_command (PSL, "%g /%s PSL_transp\n", 1.0 - 0.01 * GMT->common.t.value, GMT->current.setting.ps_transpmode);
+	}
 	/* If requested, place the timestamp */
 
 	if (GMT->current.ps.map_logo_label[0] == 'c' && GMT->current.ps.map_logo_label[1] == 0) {
