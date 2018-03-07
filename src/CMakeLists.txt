@@ -626,7 +626,7 @@ endif (MSVC AND FFTW3_FOUND)
 
 if (WEBVIEW)
 	target_link_libraries (gmtlib ole32 comctl32 oleaut32 uuid Gdi32 Advapi32)
-endif (EBVIEW)
+endif (WEBVIEW)
 
 # build targets for standalone gmt target and demos
 string (REPLACE ".c" "" _gmt_progs "gmt.c;${GMT_DEMOS_SRCS}")
