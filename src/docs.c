@@ -90,7 +90,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	char cmd[PATH_MAX] = {""}, URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t = NULL;
 	const char *group = NULL, *docname = NULL;
 	static const char *known_group[2] = {"core", "other"}, *known_doc[4] = {"cookbook", "api", "tutorial", "Gallery"};
-	static const char *can_opener[3] = {"open", "open", "xdg-open"};
+	static const char *can_opener[3] = {"cmd /c start", "open", "xdg-open"};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
