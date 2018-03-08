@@ -26,18 +26,6 @@
 
 #include "gmt_dev.h"
 
-#if 0
-#define WEBVIEW_IMPLEMENTATION
-#if defined(WIN32)
-#	define WEBVIEW_WINAPI
-#elif defined __APPLE__
-#	define WEBVIEW_COCOA
-#else 			/* Not particular safe this default to unix */
-#	define WEBVIEW_GTK
-#endif
-#include "webview.h"
-#endif
-
 #define THIS_MODULE_NAME	"docs"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Show the HTML documentation of the specified module"
@@ -89,7 +77,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	int error = 0, k;
 	char cmd[PATH_MAX] = {""}, URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t = NULL;
 	const char *group = NULL, *docname = NULL;
-	static const char *known_group[2] = {"core", "other"}, *known_doc[4] = {"cookbook", "api", "tutorial", "Gallery"};
+	static const char *known_group[2] = {"core", "other"}, *known_doc[5] = {"cookbook", "api", "tutorial", "Gallery", "gmt.conf"};
 	static const char *can_opener[3] = {"cmd /c start", "open", "xdg-open"};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
@@ -127,17 +115,20 @@ int GMT_docs (void *V_API, int mode, void *args) {
 
 	t = strdup (docname);	/* Make a copy because gmt_str_tolower changes the input that may be a const char */
 	gmt_str_tolower (t);
-	if (!strcmp(t, "cookbook")) {
+	if (!strcmp (t, "cookbook")) {
 		docname = known_doc[0];	group   = known_group[0];		/* Pretend it is */
 	}
-	else if (!strcmp(t, "api")) {
+	else if (!strcmp (t, "api")) {
 		docname = known_doc[1];		group   = known_group[0];		/* Pretend it is */
 	}
-	else if (!strcmp(t, "tutorial")) {
+	else if (!strcmp (t, "tutorial")) {
 		docname = known_doc[2];	group   = known_group[0];		/* Pretend it is */
 	}
-	else if (!strcmp(t, "gallery")) {
+	else if (!strcmp (t, "gallery")) {
 		docname = known_doc[3];	group   = known_group[0];		/* Pretend it is */
+	}
+	else if (!strcmp (t, "gmt.conf")) {
+		docname = known_doc[4];	group   = known_group[0];		/* Pretend it is */
 	}
 	else if (gmt_get_ext (docname)) {
 		group = known_group[1];
@@ -172,7 +163,6 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	}
 
 #ifdef WIN32
-	//webview ("GMT documentation viewer", URL, GMT->current.setting.doc_winsize[GMT_X], GMT->current.setting.doc_winsize[GMT_Y], 1);
 	k = 0;
 #elif defined(__APPLE__)
 	k = 1;
@@ -182,7 +172,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 
 	sprintf (cmd, "%s %s", can_opener[k], URL);
 	if ((error = system (cmd))) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s in the browser via %s failed with error %d\n", URL, can_opener[k], error);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s in the efault browser via %s failed with error %d\n", URL, can_opener[k], error);
 		perror ("docs");
 		Return (GMT_RUNTIME_ERROR);
 	}

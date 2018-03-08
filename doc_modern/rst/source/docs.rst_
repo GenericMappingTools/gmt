@@ -16,10 +16,10 @@ Synopsis
 Description
 -----------
 
-**docs** tells GMT to display the HTML version of a module's documentation using a webview.
+**docs** tells GMT to display the HTML version of a module's documentation using the default browser.
 For the time being, only modern mode module names are displayed. That is, if user asks for
 *gmt docs psxy* she will see the *plot* documentation. Besides the modules names, the special
-forms (no quotes) 'cookbook', 'gallery', 'api' and 'tutorial' are also accepted.
+forms (no quotes) 'cookbook', 'gallery', 'gmt.conf', 'api' and 'tutorial' are also accepted.
 
 However, this program can also be used to open local files such as PDF or image formats or
 web link addresses.
@@ -59,9 +59,3 @@ To see the beautiful figure that I just created with GMT.
    ::
 
     gmt docs my_beautiful_figure.pdf
-
-Notes
------
-
-The default window size is 1200 by 900 pixels but this can be changed via
-the GMT default :ref:`GMT_DOC_WINSIZE <GMT_DOC_WINSIZE>`.
