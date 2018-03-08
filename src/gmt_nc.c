@@ -448,21 +448,34 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		if (!nc_inq_dimid (ncid, "xysize", &i)) return (gmt_cdf_grd_info (GMT, ncid, header, job));
 
 		/* Find first 2-dimensional (z) variable or specified variable */
-		if (!HH->varname[0]) {
+		if (!HH->varname[0]) {	/* No specific named variable was requested; search for suitable matrix */
+			int ID = -1, dim = 0;
 			gmt_M_err_trap (nc_inq_nvars (ncid, &nvars));
 			i = 0;
-			while (i < nvars && z_id < 0) {
+			while (i < nvars && z_id < 0) {	/* Look for first 2D grid, with fallback to first higher-dimension (3-4D) grid if 2D not found */
 				gmt_M_err_trap (nc_inq_varndims (ncid, i, &ndims));
-				if (ndims == 2) z_id = i;
+				if (ndims == 2)	/* Found the first 2-D grid */
+					z_id = i;
+				else if (ID == -1 && ndims > 2 && ndims < 5) {	/* Also look for higher-dim grid in case no 2-D */
+					ID = i;
+					dim = ndims;
+				}
 				i++;
 			}
+			if (z_id < 0) {	/* No 2-D grid found, check if we found a higher dimension cube */
+				if (ID == -1) return (GMT_GRDIO_NO_2DVAR);	/* No we didn't */
+				z_id = ID;		/* Pick the higher dimensioned cube instead, get its name, and warn */
+				nc_inq_varname (ncid, z_id, HH->varname);
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, HH->varname);
+			}
 		}
-		else if (nc_inq_varid (ncid, HH->varname, &z_id) == NC_NOERR) {
+		else if (nc_inq_varid (ncid, HH->varname, &z_id) == NC_NOERR) {	/* Gave a named variable that exist, is it 2-4 D? */
 			gmt_M_err_trap (nc_inq_varndims (ncid, z_id, &ndims));
 			if (ndims < 2 || ndims > 5) return (GMT_GRDIO_BAD_DIM);
 		}
-		else
+		else	/* No such named variable in the grid */
 			return (GMT_GRDIO_NO_VAR);
+			
 		if (z_id < 0) return (GMT_GRDIO_NO_2DVAR);
 
 		/* Get the z data type and determine its dimensions */
@@ -1282,16 +1295,24 @@ int gmt_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		if (nc_inq_varid (ncid, varname, &z_id))
 			return (GMT_GRDIO_NO_VAR);
 	}
-	else {
-		/* Look for first 2D grid */
+	else {	/* Look for first 2D grid, with fallback to first higher-dimension (3-4D) grid if 2D not found */
+		int ID = -1, dim = 0;
 		nc_inq_nvars (ncid, &nvars);
 		for (j = 0; j < nvars && z_id < 0; j++) {
 			gmt_M_err_trap (nc_inq_varndims (ncid, j, &ndims));
-			if (ndims == 2)
+			if (ndims == 2)	/* Found the first 2-D grid */
 				z_id = j;
+			else if (ID == -1 && ndims > 2 && ndims < 5) {	/* Also look for higher-dim grid in case no 2-D */
+				ID = j;
+				dim = ndims;
+			}
 		}
-		if (z_id < 0)
-			return (GMT_GRDIO_NO_2DVAR);
+		if (z_id < 0) {	/* No 2-D grid found, check if we found a higher dimension cube */
+			if (ID == -1) return (GMT_GRDIO_NO_2DVAR);	/* No we didn't */
+			z_id = ID;	/* Pick the higher dimensioned cube instead, get its name, and warn */
+			nc_inq_varname (ncid, z_id, varname);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No 2-D array in file %s.  Selecting first 2-D slice in the %d-D array %s\n", HH->name, dim, varname);
+		}
 	}
 
 	gmt_M_err_trap (nc_inq_vartype (ncid, z_id, &z_type));

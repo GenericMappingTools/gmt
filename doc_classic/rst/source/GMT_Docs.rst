@@ -3938,6 +3938,10 @@ get information on the variable "slp" in file , use:
 Since COARDS-compliant netCDF files are the default, the additional
 suffix "=nf" can be omitted.
 
+If there are no 2-dimensional variables and no specific variable was
+selected, we default to the first higher-dimensional matrix and select
+the first layer.
+
 In case the named grid is 3-dimensional, GMT will load the first
 (bottom) layer. If another layer is required, either add "[*index*]"
 or "(*level*)", where *index* is the index of the third (depth) variable
