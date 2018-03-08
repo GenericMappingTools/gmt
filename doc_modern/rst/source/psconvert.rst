@@ -24,7 +24,6 @@ Synopsis
 [ |-I| ]
 [ |-L|\ *listfile* ]
 [ **-Mb**\ \|\ **f**\ *pslayer* ]
-[ |-P| ]
 [ |-Q|\ [**g**\ \|\ **t**][1\|2\|4] ]
 [ |-S| ]
 [ |-T|\ **b**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s**\ \|\ **t** ]
@@ -164,14 +163,6 @@ Optional Arguments
     Sandwich the current *psfile* between an optional background (**-Mb**) and
     optional foreground (**-Mf**) Postscript plots.  These files are expected
     to be stand-alone plots that will align when stacked.
-
-.. _-P:
-
-**-P**
-    Force Portrait mode. All Landscape mode plots will be rotated back
-    so that they show unrotated in Portrait mode. This is practical when
-    converting to image formats or preparing EPS or PDF plots for
-    inclusion in documents.
 
 .. _-Q:
 
@@ -353,12 +344,11 @@ inserted into other documents (articles, presentations, posters, etc.).
 Examples
 --------
 
-To convert the file psfile.ps to PNG using a tight BoundingBox and
-rotating it back to normal orientation in case it was in Landscape mode:
+To convert the file psfile.ps to PNG using a tight BoundingBox:
 
    ::
 
-    gmt psconvert psfile.ps -A -P -Tg
+    gmt psconvert psfile.ps -A -Tg
 
 To convert the file map.ps to PDF, extend the BoundingBox by 0.2 cm,
 fill it with lightblue paint and draw outline with a thick pen:
@@ -384,7 +374,7 @@ To create a simple linear map with :doc:`coast` and convert it to tif with a
 
    ::
 
-    gmt coast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
+    gmt coast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -G200 --MAP_FRAME_TYPE=inside > cara.ps
     gmt psconvert cara.ps -Tt -W
 
 To create a Mercator version of the above example and use GDAL to
@@ -392,21 +382,21 @@ produce a true geotiff file.
 
    ::
 
-    gmt coast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
+    gmt coast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -G200 --MAP_FRAME_TYPE=inside > cara.ps
     gdalwarp -s_srs +proj=merc cara.tif carageo.tiff
 
 To create a Polar Stereographic geotiff file of Patagonia
 
    ::
 
-    gmt coast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2 --MAP_FRAME_TYPE=inside > patagonia.ps
+    gmt coast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -Bg2 --MAP_FRAME_TYPE=inside > patagonia.ps
     gmt psconvert patagonia.ps -Tt -W+g -V
 
 To create a simple KML file for use in Google Earth, try
 
    ::
 
-    gmt grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -P -B0g2 --MAP_FRAME_TYPE=inside > tile.ps
+    gmt grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -B0g2 --MAP_FRAME_TYPE=inside > tile.ps
     gmt psconvert tile.ps -Tg -W+k+t"my title"+l256/-1 -V
 
 (These commands assume that GhostScript can be found in your system's path.)
