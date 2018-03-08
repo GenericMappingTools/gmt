@@ -83,9 +83,10 @@ struct PSSAC_CTRL {
 	struct PSSAC_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct PSSAC_S {	/* -S<sec_per_measure> */
+	struct PSSAC_S {	/* -S[i]<scale>[<unit>] */
 		bool active;
-		double sec_per_measure;
+		double factor;
+		char unit;
 	} S;
 	struct PSSAC_T {   /* -T+t<n>+r<reduce_vel>+s<shift> */
 		bool active;
@@ -135,7 +136,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: pssac [<saclist>|<SACfiles>] %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<t0>/<t1>]] [-D<dx>[/<dy>]] [-Ea|b|k|d|n[<n>]|u[<n>]] [-F[i][q][r]]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G[p|n][+g<fill>][+t<t0>/<t1>][+z<zero>]] [-K] [-M<size>[<unit>]/<alpha>] [-O] [-P] [-Q]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S<sec_per_measure>[<unit>]] [-T[+t<tmark>][+r<reduce_vel>][+s<shift>]] \n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S[i]<scale>[<unit>]] [-T[+t<tmark>][+r<reduce_vel>][+s<shift>]] \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_h_OPT, GMT_t_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\n");
@@ -188,7 +189,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      <alpha> > 0, multiply all traces by size*r^alpha, r is the distance range in km.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot traces vertically.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify the time scale in seconds per <unit> while plotting on geographic plots. Use PROJ_LENGTH_UNIT if <unit> is omitted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets time scale in seconds per <unit> while plotting on geographic plots. \n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append c, i, or p to indicate cm, inch or points as the unit. Use PROJ_LENGTH_UNIT if <unit> is omitted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale><unit> to give the reciprocal scale, i.e. cm per second or inch per second.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Time alignment. \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +t<tmark> align all trace along time mark. Choose <tmark> from -5(b), -4(e), -3(o), -2(a), 0-9(t0-t9).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +r<reduce_vel> reduce velocity in km/s.\n");
@@ -211,7 +214,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 
 	unsigned int n_errors = 0, pos = 0;
 	int j, k;
-	size_t n_alloc = 0;
+	size_t n_alloc = 0, len;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
 	char path[GMT_BUFSIZ] = {""};	/* Full path to sac file */
 	struct GMT_OPTION *opt = NULL;
@@ -330,7 +333,33 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'S':
 				Ctrl->S.active = true;
-				Ctrl->S.sec_per_measure = gmt_M_to_inch (GMT, opt->arg);
+				len = strlen (opt->arg) - 1;
+				j = (opt->arg[0] == 'i') ? 1 : 0;
+				if (strchr(GMT_DIM_UNITS, (int)opt->arg[len])) /* Recognized unit character */
+					Ctrl->S.unit = opt->arg[len];
+				else if (! (opt->arg[len] == '.' || isdigit ((int)opt->arg[len]))) {    /* Not decimal point or digit means trouble */
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized unit %c\n", opt->arg[len]);
+					n_errors++;
+				}
+				if (j == 0) {
+					Ctrl->S.factor = 1.0 / atof(&opt->arg[j]);
+				} else {
+					Ctrl->S.factor = atof(&opt->arg[j]);
+				}
+				switch (Ctrl->S.unit) { /* Adjust for possible unit selection */
+					case 'c':
+						Ctrl->S.factor *= GMT->session.u2u[GMT_CM][GMT_INCH];
+						break;
+					case 'i':
+						Ctrl->S.factor *= GMT->session.u2u[GMT_INCH][GMT_INCH];
+						break;
+					case 'p':
+						Ctrl->S.factor *= GMT->session.u2u[GMT_PT][GMT_INCH];
+						break;
+					default:
+						Ctrl->S.factor *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+						break;
+				}
 				break;
 			case 'T':
 				pos = 0;
@@ -369,7 +398,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_M_is_zero(Ctrl->S.sec_per_measure), "Syntax error -S option: <sec_per_measure> must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_M_is_zero(Ctrl->S.factor), "Syntax error -S option: <scale> must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.reduce && gmt_M_is_zero(Ctrl->T.reduce_vel), "Syntax error -T option: <reduce_vel> must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.align && !(Ctrl->T.tmark >= -5 && Ctrl->T.tmark <= 9 && Ctrl->T.tmark != -1), "Syntax error -T option: <tmark> should be chosen from -5, -4, -3, -2, 0-9\n");
 
@@ -670,7 +699,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 		y = gmt_M_memory (GMT, NULL, hd.npts, double);
 
 		if (gmt_M_is_linear(GMT)) dt = hd.delta;
-		else if (Ctrl->S.active) dt = hd.delta/Ctrl->S.sec_per_measure;
+		else if (Ctrl->S.active) dt = hd.delta * Ctrl->S.factor;
 		else {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: -S option is needed in geographic plots.\n");
 			gmt_M_free(GMT, x);		gmt_M_free(GMT, y);		gmt_M_free (GMT, L);
