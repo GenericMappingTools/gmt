@@ -1974,9 +1974,9 @@ GMT_LOCAL uint64_t support_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID 
 	gmt_grdfloat z[5] = {0.0, 0.0, 0.0, 0.0, 0.0}, dz;
 	double xk[5] = {0.0, 0.0, 0.0, 0.0, 0.0}, dist1, dist2, *xx = NULL, *yy = NULL;
 	static int d_col[5] = {0, 1, 0, 0, 0}, d_row[5] = {0, 0, -1, 0, 0}, d_side[5] = {0, 1, 0, 1, 0};
+#if 0
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (G->header);
 
-#if 0
 	/* WORK IN PROGRESS.  Currently has trouble with some contours streaking across a W/E map */
 	/* For periodic grids we must also be sensitive to exiting in west and reenter in east, and vice versa */
 	if (HH->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT)
