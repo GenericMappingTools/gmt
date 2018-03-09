@@ -235,6 +235,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Get enough decimals */
 	
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Out);	/* Write this to output */
+	Out->text = NULL;
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (strstr (line, "<Placemark")) {	/* New Placemark, reset name and description */
@@ -257,8 +258,10 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			gmt_chop (name);
 			if (first && !skip) {
 				sprintf (buffer, "%s", &line[start]);
+				Out->text = buffer;
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Out);	/* Write this to output */
 				first = false;
+				Out->text = NULL;
 			}
 		}
 		if (strstr (line, "<description>")) {
@@ -270,7 +273,9 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			gmt_chop (description);
 			if (first && !skip) {
 				sprintf (buffer, "%s", &line[start]);
+				Out->text = buffer;
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, Out);	/* Write this to output */
+				Out->text = NULL;
 				first = false;
 			}
 		}
