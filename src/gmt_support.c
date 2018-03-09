@@ -15499,7 +15499,7 @@ void gmt_free_array (struct GMT_CTRL *GMT, struct GMT_ARRAY *T) {
 	/* Free anyting that was allocated during parsing and creating a 1D array */
 	gmt_M_str_free (T->file);
 	gmt_M_str_free (T->list);
-	gmt_M_free (GMT, T->array);
+	if (T->array) gmt_M_free (GMT, T->array);
 }
 
 #if 0	/* Probably not needed after all */

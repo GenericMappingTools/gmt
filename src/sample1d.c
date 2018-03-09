@@ -157,7 +157,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				old_syntax = true;
 				break;
 			case 'N':	/* Indicative of old option if a valid file is appended */
-				if ((Ctrl->N.active = gmt_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
+				if (!gmt_access (GMT, opt->arg, F_OK))
 					old_syntax = true;
 				break;
 			case 'S':	/* Always indicative of old option */
@@ -222,7 +222,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				if (i_arg[0] == '+') i_arg++;	/* Skip posible geodesic mode */
 				break;
 			case 'N':
-				if (gmt_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)) {
+				if (!gmt_access (GMT, opt->arg, F_OK)) {
 					if (gmt_M_compat_check (GMT, 5)) {
 						GMT_Report (API, GMT_MSG_COMPAT, "-N<knotfile> is deprecated; use -T<knotfile> instead.\n");
 						Ctrl->T.active = true;
@@ -235,6 +235,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 					col = atoi (opt->arg);
 					n_errors += gmt_M_check_condition (GMT, col < 0, "Syntax error -N option: Column number cannot be negative\n");
 					Ctrl->N.col = col;
+					Ctrl->N.active = true;
 				}
 				else	/* Gave no argument */
 					n_errors++;
@@ -254,8 +255,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				
 				break;
 			case 'T':
-				Ctrl->T.active = true;
-				if (gmt_M_compat_check (GMT, 5) && old_syntax) {
+				if (old_syntax && gmt_M_compat_check (GMT, 5)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "-T<col> option is deprecated; use -N<col> instead.\n");
 					col = atoi (opt->arg);
 					n_errors += gmt_M_check_condition (GMT, col < 0, "Syntax error -T option: Column number cannot be negative\n");
@@ -382,7 +382,6 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	if (Ctrl->T.T.file) {	/* Read file with abscissae */
 		if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL))
 			Return (GMT_RUNTIME_ERROR);
-		t_out = gmt_M_memory (GMT, NULL, Ctrl->T.T.n, double);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " knots from file\n", Ctrl->T.T.n);
 	}
 
@@ -486,7 +485,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (Ctrl->N.active) gmt_M_free (GMT, t_out);
+	if (t_out) gmt_M_free (GMT, t_out);
 	gmt_M_free (GMT, nan_flag);
 	
 	Return (GMT_NOERROR);
