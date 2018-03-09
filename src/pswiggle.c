@@ -310,7 +310,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 				}
 				else {
 					Ctrl->D.active = Ctrl->D.scale.vertical = true;
-					n_errors += gmt_getscale (GMT, 'D', opt->arg, &Ctrl->D.scale);
+					n_errors += gmt_getscale (GMT, 'D', opt->arg, GMT_SCALE_MAP, &Ctrl->D.scale);
 				}
 				break;
 			case 'F':

@@ -11673,7 +11673,7 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 	return (error);
 }
 
-int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_SCALE *ms) {
+int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, unsigned int flag, struct GMT_MAP_SCALE *ms) {
 	/* This function parses the -L map scale syntax:
 	 *   -L[g|j|J|n|x]<refpoint>+c[/<slon>]/<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+j<just>][+l<label>][+u]
 	 * If the required +w is not present we call the backwards compatible parsert for the previous map scale syntax.
@@ -11707,6 +11707,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "acfjlouwv")) return (1);
 
 	/* Required modifiers +c, +w */
+
 	if (gmt_get_modifier (ms->refpoint->args, 'c', string)) {
 		if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* No use */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Not allowed for Cartesian projections\n", option);
@@ -11737,7 +11738,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 			error++;
 		}
 	}
-	else if (gmt_M_is_geographic (GMT, GMT_IN) && !vertical) {
+	else if ((flag & GMT_SCALE_MAP) && gmt_M_is_geographic (GMT, GMT_IN) && !vertical) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale origin modifier +c[<lon>/]/<lat> is required\n", option);
 		error++;
 	}

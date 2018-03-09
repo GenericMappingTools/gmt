@@ -177,7 +177,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 				break;
 			case 'L':	/* Draw map scale */
 				Ctrl->L.active = true;
-				n_errors += gmt_getscale (GMT, 'L', opt->arg, &Ctrl->L.scale);
+				n_errors += gmt_getscale (GMT, 'L', opt->arg, GMT_SCALE_MAP, &Ctrl->L.scale);
 				break;
 			case 'T':	/* Draw map rose */
 				Ctrl->T.active = true;
