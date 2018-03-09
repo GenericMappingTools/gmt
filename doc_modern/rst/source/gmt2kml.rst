@@ -20,7 +20,8 @@ Synopsis
 [ |-G|\ **f\|n**\ **-**\ \|\ *fill* ]
 [ |-I|\ *icon* ] [ **-K**]
 [ |-L|\ *col1:name1*,\ *col2:name2*,... ]
-[ |-N|\ [+\|\ *name\_template*\ \|\ *name*] ] [ **-O**]
+[ |-N|\ [**t**\ \|\ *col* \ \|\ *name\_template*\ \|\ *name*] ]
+[ **-O**]
 [ |-Q|\ **a**\ \|\ **i**\ *az* ]
 [ |-Q|\ **s**\ *scale*\ [*unit*\ ] ]
 [ |-R|\ **e**\ \|\ *w/e/s/n* ]
@@ -153,19 +154,23 @@ Optional Arguments
 **-K**
     Allow more KML code to be appended to the output later [finalize the KML file].
 
-.. _-L:
-
 **-L**\ *name1*,\ *name2*,...
     Extended data given. Append one or more column names separated by
     commas. We will expect the listed data columns to exist in the input
-    immediately following the data coordinates and they will be encoded
+    immediately following the data coordinates required for the selected
+    feature set by **-F***, and they will be encoded
     in the KML file as Extended Data sets, whose attributes will be
     available in a Google Earth balloon when the item is selected.
-    This option is not available unless input is an ASCII file.
+    The data file must have enough data columns and trialing text to
+    accommodate the number of columns requested.  If the number of extended
+    data is one larger than the number of available numerical columns then
+    the entire trailing text is set as the last extended data column.
+    Otherwise, the trailing text is split into individual words and
+    set as separate extended columns.
 
 .. _-N:
 
-**-N**\ [-\|+\|\ *name\_template*\ \|\ *name*]
+**-N**\ [**t**\ \|\ *col* \ \|\ *name\_template*\ \|\ *name*]
     By default, if segment headers contain a **-L**"label string" then
     we use that for the name of the KML feature (polygon, line segment
     or set of symbols). Default names for these segments are "Line %d"
@@ -173,19 +178,15 @@ Optional Arguments
     number of line segments within a file. Each point within a line
     segment will be named after the line segment plus a sequence number.
     Default is simply "Point %d".
-    Alternatively, select one of these options: (1) append **-** to
-    supply individual symbol labels (single word) via the field
-    immediately following the data coordinates, (2) append **+** to
-    supply individual symbol labels as everything to the end of the data
-    record following the data coordinates, (3) append a string that may
+    Alternatively, select one of these options: (1) append *col* to
+    supply individual symbol labels as the string formatted from the *col*
+    data column, (2) append **t** to let individual symbol labels
+    be the trailing text of each record (3) append a string that may
     include %d or a similar integer format to assign unique name IDs for
     each feature, with the segment number (for lines and polygons) or
     point number (symbols) appearing where %d is placed, (4) give no
     arguments to turn symbol labeling off; line segments will still be
-    named. Note: if **-N-** is used with **-L** then the label must
-    appear before the extended data columns.  Also note that options
-    (1) and (2) are not available unless input is an ASCII file.
-
+    named. Also note that
 .. _-O:
 
 **-O**
@@ -328,7 +329,7 @@ transparency), try
 
     gmt grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
     gmt gmt2kml    contours.txt -Fl -W1p,red@75 -K > contours.kml
-    gmt gmt2kml    -O -N+ -Fs -Sn2 -Gnred@0 label.txt -I- >> contours.kml
+    gmt gmt2kml    -O -Nt -Fs -Sn2 -Gnred@0 label.txt -I- >> contours.kml
 
 To instead plot the contours as lines with colors taken from the cpt
 file contours.cpt, try

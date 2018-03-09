@@ -1180,15 +1180,17 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		if (has_text) {	/* Also place any string parameter as a single string variable */
 			set_tvalue (fp, Ctrl->In.mode, "MOVIE_TEXT", D->table[0]->segment[0]->text[frame]);
 			if (Ctrl->T.split) {	/* Also split the string into individual words MOVIE_WORD1, MOVIE_WORD2, etc. */
-				char *word = NULL;
+				char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[frame]);
 				col = 0;
-				while ((word = strsep (&D->table[0]->segment[0]->text[frame], " \t")) != NULL) {
+				trail = orig;
+				while ((word = strsep (&trail, " \t")) != NULL) {
 					if (*word != '\0') {	/* Skip empty strings */
 						sprintf (string, "MOVIE_WORD%u", ++col);
 						set_tvalue (fp, Ctrl->In.mode, string, word);
 						if (Ctrl->L.mode == MOVIE_LABEL_IS_COL_T && Ctrl->L.col == col) strcpy (L_txt, word);
 					}
 				}
+				gmt_M_str_free (orig);
 			}
 		}
 		if (Ctrl->L.active) {	/* Want to place a user label in a corner of the frame */

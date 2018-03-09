@@ -111,6 +111,7 @@ struct GMT2KML_CTRL {
 	} L;
 	struct N {	/* -N */
 		bool active;
+		unsigned int col;
 		unsigned int mode;
 		char *fmt;
 	} N;
@@ -201,7 +202,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmt2kml [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fe|s|t|l|p|w] [-Gf|n[-|<fill>] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N-|+|<template>|<name>] [-O] [-Q[a|i]<az>] [-Qs<scale>[unit]] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N<col>|t|<template>|<name>] [-O] [-Q[a|i]<az>] [-Qs<scale>[unit]] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<title>[/<foldername>] [%s] [-W[<pen>][<attr>]] [-Z<opts>] [%s]\n", GMT_V_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
@@ -236,8 +237,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Supply extended named data columns via <name1>,<name2>,... [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Control the feature labels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default, -L\"label\" statements in the segment header are used. Alternatively,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     1. Specify -N- if first non-coordinate column of data record is a single-word label (-Fe|s|t only).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     2. Specify -N+ if the rest of the data record should be used as label (-Fe|s|t only).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     1. Specify -N<col> to use a column from the data record a single-word label (-Fe|s|t only).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     2. Specify -Nt if the trailing record text should be used as label (-Fe|s|t only).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     3. Append a string that may contain the format %%d for a running feature count.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     4. Give no argument to indicate no labels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-O Append the KML code to an existing document [OFF].\n");
@@ -424,19 +425,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				break;
 			case 'N':	/* Feature label */
 				Ctrl->N.active = true;
-				if (opt->arg[0] == '-') {	/* First non-coordinate field as label */
+				if (opt->arg[0] == '-') {	/* First non-coordinate field as label (Backwards compatible) */
 					Ctrl->N.mode = GET_COL_LABEL;
+					Ctrl->N.col = GMT_Z;
 				}
-				else if (opt->arg[0] == '+') {	/* Everything following coordinates is a label */
+				else if ((opt->arg[0] == 't' || opt->arg[0] == '+') && opt->arg[0] == '\0') {	/* Trailing text (+ is backwards compatible)  */
 					Ctrl->N.mode = GET_LABEL;
+				}
+				else if (strchr (opt->arg, '%')) {	/* Want a format */
+					Ctrl->N.fmt = strdup (opt->arg);
+					Ctrl->N.mode = FMT_LABEL;
+				}
+				else if (isdigit (opt->arg[0])) {	/* Assume it is a numerical column */
+					Ctrl->N.mode = GET_COL_LABEL;
+					Ctrl->N.col = atoi (opt->arg);
 				}
 				else if (!opt->arg[0]) {	/* Want no label */
 					Ctrl->t_transp = 0.0;
 					Ctrl->N.mode = NO_LABEL;
-				}
-				else {
-					Ctrl->N.fmt = strdup (opt->arg);
-					Ctrl->N.mode = FMT_LABEL;
 				}
 				break;
 			case 'Q':	/* Wiggle azimuth and scale settings in data units for map distance [unit] */
@@ -549,11 +555,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->R2.automatic && n_files > 1, "Syntax error: -Ra without arguments only accepted for single table\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale[F_ID] < 0.0 || Ctrl->S.scale[N_ID] < 0.0, "Syntax error: -S takes scales > 0.0\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->t_transp < 0.0 || Ctrl->t_transp > 1.0, "Syntax error: -Q takes transparencies in range 0-1\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == GET_LABEL && Ctrl->F.mode >= LINE, "Syntax error: -N+ not valid for lines and polygons\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == GET_LABEL && Ctrl->F.mode >= LINE, "Syntax error: -Nt not valid for lines and polygons\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode == WIGGLE && Ctrl->Q.scale <= 0.0, "Syntax error: -Fw requires -Qs\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.width < 1.0, "Syntax error: -W given pen width < 1 pixel.  Use integers and append p as unit.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Syntax error: -W option +|-<pen> requires the -C option.\n");
-	n_errors += gmt_M_check_condition (GMT, (GMT->common.b.active[GMT_IN] || GMT->common.i.select) && (Ctrl->N.mode == GET_COL_LABEL || Ctrl->N.mode == GET_LABEL), "Syntax error: Cannot use -N- or -N+ when -b or -i are used.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && Ctrl->N.mode == GET_LABEL, "Syntax error: Cannot use -Nt when -b is used.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -805,7 +811,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	size_t L = 0;
 	int set_nr = 0, index, N = 1, error = 0, process_id;
 
-	char extra[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, description[GMT_BUFSIZ] = {""}, item[GMT_LEN128] = {""};
+	char buffer[GMT_BUFSIZ] = {""}, description[GMT_BUFSIZ] = {""}, item[GMT_LEN128] = {""};
 	char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"}, *Document[2] = {"Document", "Folder"};
 	char *name[5] = {"Point", "Event", "Timespan", "Line", "Polygon"};
 	char text[GMT_LEN256] = {""}, record[GMT_BUFSIZ] = {""};
@@ -846,8 +852,13 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	/* gmt2kml only applies to geographic data so we do a -fg implicitly here */
 	gmt_set_geographic (GMT, GMT_IN);
 	gmt_set_geographic (GMT, GMT_OUT);
-	extra[0] = '\0';
 	gmt_M_memset (out, 5, double);	/* Set to zero */
+
+	n_coord = (Ctrl->F.mode < LINE) ? Ctrl->F.mode + 2 : 2;		/* This is a cryptic way to determine if there are 2,3 or 4 columns... */
+	if (Ctrl->F.mode == WIGGLE) n_coord = 3;	/* But here we need exactly 3 */
+	get_z = (Ctrl->F.mode < LINE && (Ctrl->C.active || Ctrl->A.get_alt));
+	if (get_z) n_coord++;
+
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
@@ -859,7 +870,21 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least %d are needed\n", (int)D->n_columns, n_coord);
 		Return (GMT_DIM_TOO_SMALL);
 	}
+ //       if (Ctrl->L.active && Ctrl->L.n_cols >= (D->n_columns-2)) {
+ //       	GMT_Report (API, GMT_MSG_NORMAL, "Input data have %d column(s) but at least %d are needed because of -L\n", (int)D->n_columns, n_coord+Ctrl->L.n_cols);
+ //       	Return (GMT_DIM_TOO_SMALL);
+ //       }
+	
 	n_tables = D->n_tables;
+
+	if (Ctrl->N.mode == GET_LABEL && D->type != GMT_READ_MIXED) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Data file has no trailing text but -Nt was selected\n");
+		Return (GMT_DIM_TOO_SMALL);
+	}
+	if (Ctrl->N.mode == GET_COL_LABEL && Ctrl->N.col >= D->n_columns ) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Data file has fewer columns than implied by -N<col>");
+		Return (GMT_DIM_TOO_SMALL);
+	}
 
 	if (Ctrl->C.active) {	/* Process CPT */
 		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
@@ -885,10 +910,6 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	out[GMT_Z] = Ctrl->A.altitude;
 	strcpy (GMT->current.setting.io_col_separator, ",");		/* Specify comma-separated output */
 	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Make sure we use enough decimals */
-	n_coord = (Ctrl->F.mode < LINE) ? Ctrl->F.mode + 2 : 2;		/* This is a cryptic way to determine if there are 2,3 or 4 columns... */
-	if (Ctrl->F.mode == WIGGLE) n_coord = 3;	/* But here we need exactly 3 */
-	get_z = (Ctrl->F.mode < LINE && (Ctrl->C.active || Ctrl->A.get_alt));
-	if (get_z) n_coord++;
 	t1_col = 2 + get_z;
 	t2_col = 3 + get_z;
 	if (Ctrl->F.mode == EVENT || Ctrl->F.mode == SPAN) gmt_set_column (GMT, GMT_IO, t1_col, GMT_IS_ABSTIME);
@@ -1140,11 +1161,13 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 			}
 			else {
 				unsigned int col;
+				bool all_text = ((Ctrl->L.n_cols + n_coord) - D->n_columns == 1);	/* Use all trailing text as single last -L item */
+				char *word = NULL;
+				struct GMT_DATASEGMENT *S = D->table[tbl]->segment[seg];
 				for (row = 0; row < n_rows; row++) {
 					for (col = 0; col < n_coord; col++)
-						out[col] = D->table[tbl]->segment[seg]->data[col][row];
+						out[col] = S->data[col][row];
 					if (GMT->common.R.active[RSET] && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
-					pos = 0;
 					if (get_z) {	/* For point data we use z to determine color */
 						if (Ctrl->C.active) index = gmt_get_index (GMT, P, out[GMT_Z]);
 						out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
@@ -1156,11 +1179,11 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						kml_print (API, Out, N++, "<Placemark>");
 						if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
 						else if (Ctrl->N.mode == GET_COL_LABEL) {
-							gmt_strtok (extra, GMT_TOKEN_SEPARATORS, &pos, item);
+							gmt_ascii_format_one (GMT, item, S->data[Ctrl->N.col][row], Ctrl->N.col);
 							kml_print (API, Out, N, "<name>%s</name>", item);
 						}
 						else if (Ctrl->N.mode == GET_LABEL)
-							kml_print (API, Out, N, "<name>%s</name>", extra);
+							kml_print (API, Out, N, "<name>%s</name>", S->text[row]);
 						else if (Ctrl->N.mode == FMT_LABEL) {
 							kml_print (API, Out, N, "<name>");
 							kml_print (API, Out, 0, Ctrl->N.fmt, pnt_nr);
@@ -1173,21 +1196,35 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						else
 							kml_print (API, Out, N, "<name>%s %d</name>", name[Ctrl->F.mode], pnt_nr);
 						if (Ctrl->L.n_cols) {
+							size_t P = 0;
+							char *trail, *orig = strdup (S->text[row]);
+							trail = orig;
 							kml_print (API, Out, N++, "<ExtendedData>");
 							for (col = 0; col < Ctrl->L.n_cols; col++) {
 								kml_print (API, Out, N, "<Data name = \"%s\">", Ctrl->L.name[col]);
 								kml_print (API, Out, N++, "<value>");
-								gmt_strtok (extra, GMT_TOKEN_SEPARATORS, &pos, item);
-								L = strlen (item);
-								if (L && item[0] == '\"' && item[L-1] == '\"') {	/* Quoted string on input, remove quotes on output */
-									item[L-1] = '\0';
-									kml_print (API, Out, N, "%s", &item[1]);
-								}
-								else
+								if ((n_coord+col) < S->n_columns) {	/* Part of the numerical section */
+									gmt_ascii_format_one (GMT, item, S->data[n_coord+col][row], n_coord+col);
 									kml_print (API, Out, N, "%s", item);
+								}
+								else if (all_text) {	/* Place entire trailing text */
+									kml_print (API, Out, N, "%s", orig);
+								}
+								else {	/* Biting into trailing text */
+									word = strsepz (&trail, " \t", &P);
+									strcpy (item, word);
+									L = strlen (item);
+									if (L && item[0] == '\"' && item[L-1] == '\"') {	/* Quoted string on input, remove quotes on output */
+										item[L-1] = '\0';
+										kml_print (API, Out, N, "%s", &item[1]);
+									}
+									else
+										kml_print (API, Out, N, "%s", item);
+								}
 								kml_print (API, Out, --N, "</value>");
 								kml_print (API, Out, N, "</Data>");
 							}
+							gmt_M_str_free (orig);
 							kml_print (API, Out, --N, "</ExtendedData>");
 						}
 						if (Ctrl->F.mode == SPAN) {
