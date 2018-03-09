@@ -15295,8 +15295,8 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Logarithmic array requires and increment argument\n", option);
 		return GMT_PARSE_ERROR;
 	}
-	/* 3. Check if we are working with absolute time.  This means there must be a T in both min and max arguments */
-	if (ns > 1 && strchr (txt[GMT_X], 'T') && strchr (txt[GMT_Y], 'T')) {	/* Gave absolute time limits */
+	/* 3. Check if we are working with absolute time.  This means there must be a T in both min or max arguments */
+	if (ns > 1 && (strchr (txt[GMT_X], 'T') || strchr (txt[GMT_Y], 'T'))) {	/* Gave absolute time limits */
 		T->temporal = true;
 		if (!(flags & GMT_ARRAY_TIME)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Calendar time not allowed for this module\n", option);
@@ -15370,20 +15370,31 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	/* 6. If the min/max limits were given via argument then it is OK to parse */
 	T->set = (has_inc) ? 1 : 0;	/* Maybe have inc so far */
 	if (ns >= 1) {
-		if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
+		if (!strcmp (txt[GMT_X], "-"))	/* Must get this value later */
+			T->delay[GMT_X] = true;
+		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min value from %s\n", option, txt[GMT_X]);
 			return GMT_PARSE_ERROR;
 		}
-		if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_Y], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->max)), txt[GMT_Y])) {
+		if (!strcmp (txt[GMT_Y], "-"))	/* Must get this value later */
+			T->delay[GMT_Y] = true;
+		else if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_Y], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->max)), txt[GMT_Y])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse max value from %s\n", option, txt[GMT_Y]);
 			return GMT_PARSE_ERROR;
 		}
-		if (T->min >= T->max) {
+		if ((T->delay[GMT_X] || T->delay[GMT_Y]) && !(flags & GMT_ARRAY_NOMINMAX)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Cannot specify - as min or max value in this module\n", option);
+			return GMT_PARSE_ERROR;
+		}
+		if (!(T->delay[GMT_X] || T->delay[GMT_Y]) && T->min >= T->max) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: min >= max\n", option);
 			return GMT_PARSE_ERROR;
 		}
 		T->set += 2;
 	}
+	else
+		T->delay[GMT_X] = T->delay[GMT_Y] = true;
+	
 	if (m) m[0] = '+';	/* Restore the modifiers */
 	T->col = tcol;
 	
@@ -15449,6 +15460,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 	}
 	if (T->count)	/* This means we gave a count instead of increment  */
 		inc = (T->max - T->min) / (T->inc - 1.0);
+
 	t0 = T->min;	t1 = T->max;
 	if (T->temporal && GMT->current.setting.time_system.unit != T->unit) {	/* Dealing with calendar time and must update time unit */
 		GMT->current.setting.time_system.unit = T->unit;
@@ -15457,7 +15469,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		t0 /= scale;	t1 /= scale;
 	}
 	if (T->set == 2) return (GMT_NOERROR);	/* Probably makecpt giving just a range */
-	
+
 	if (T->vartime)	/* Must call special function that knows about variable months and years */
 		T->n = gmt_time_array (GMT, t0, t1, inc, GMT->current.setting.time_system.unit, false, &(T->array));
 	else if (T->logarithmic)	/* Must call special function that deals with logarithmic arrays */

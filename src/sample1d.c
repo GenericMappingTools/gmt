@@ -62,8 +62,6 @@ struct SAMPLE1D_CTRL {
 	struct SAMP1D_T {	/* -T<tmin/tmax/tinc>[+a|n] */
 		bool active;
 		struct GMT_ARRAY T;
-		bool got_one;
-		double start;	/* Left-over from old -Sstart that we need to parse later */
 	} T;
 	/* Deprecated options in GMT 6 now handled by -T */
 	/* -I<inc>[d|m|s|e|f|k|M|n|u|c] (c means x/y Cartesian path) */
@@ -244,11 +242,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				if (gmt_M_compat_check (GMT, 5)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "-S<start>[/<stop>] option is deprecated; use -T<tmin/tmax/tinc>[+a|n] instead.\n");
 					if (strchr (opt->arg, '/'))	/* Got start/stop */
-						s_arg = opt->arg;
-					else {
-						Ctrl->T.got_one = true;
-						gmt_scanf_arg (GMT, opt->arg, GMT_IS_UNKNOWN, false, &Ctrl->T.start);
-					}
+						sprintf (string, "%s", opt->arg);
+					else
+						sprintf (string, "%s/-", opt->arg);
+					s_arg = string;
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -274,15 +271,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 	}
 
 	if (i_arg && !Ctrl->T.active) {	/* Combine -I [and maybe -Sstart/stop] into a temporary -T option and parse that */
-		if (s_arg)	/* Build -Tmin/max/inc */
-			sprintf (string, "%s/%s", s_arg, i_arg);
+		if (s_arg) {	/* Build -Tmin/max/inc */
+			strcat (string, "/");
+			strcat (string, i_arg);
+		}
 		else	/* Build -Tinc */
 			sprintf (string, "%s", i_arg);
 		t_arg = string;
 		Ctrl->T.active = true;
 	}
 	if (Ctrl->T.active) {	/* Do this one here since we need Ctrl->N.col to be set first, if selected */
-		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST, Ctrl->N.col);
+		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_NOMINMAX, Ctrl->N.col);
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && s_arg, "Syntax error: Specify only one of -N and -S\n");
@@ -426,8 +425,8 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 			}
 			else {	/* Generate evenly spaced output */
 				double min, max;
-				min = (Ctrl->T.got_one) ? Ctrl->T.start : S->data[Ctrl->N.col][0];
-				max = S->data[Ctrl->N.col][S->n_rows-1];
+				min = (Ctrl->T.T.delay[GMT_X]) ? ceil (S->data[Ctrl->N.col][0] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.min;
+				max = (Ctrl->T.T.delay[GMT_Y]) ? floor (S->data[Ctrl->N.col][S->n_rows-1] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.max;
 				gmt_create_array (GMT, 'T', &(Ctrl->T.T), &min, &max);
 				m = Ctrl->T.T.n;
 				t_out = Ctrl->T.T.array;
@@ -485,7 +484,6 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (t_out) gmt_M_free (GMT, t_out);
 	gmt_M_free (GMT, nan_flag);
 	
 	Return (GMT_NOERROR);
