@@ -1396,7 +1396,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	     out_file[PATH_MAX] = "", BB_file[PATH_MAX] = "", resolution[GMT_LEN128] = "";
 	char *line = NULL, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""},
 	     cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
-	char *gs_params = NULL, *gs_BB = NULL, *proj4_cmd = NULL;
+	char *gs_BB = NULL, *proj4_cmd = NULL;
 	char *device[N_GS_DEVICES] = {"", "pdfwrite", "svg", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha",
 	                              "jpeggray", "pnggray", "tiffgray", "bmpgray"};
 	char *device_options[N_GS_DEVICES] = {
@@ -1421,7 +1421,12 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 #else
 	char at_sign[2] = "";
 #endif
-
+	/* Define the 4 different sets of GS parameters for PDF or rasters, before and after SCANCONVERTERTYPE=2 added in 9.21 */
+	static char *gs_params_pdfnew = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode -dSCANCONVERTERTYPE=2";
+	static char *gs_params_pdfold = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
+	static char *gs_params_rasnew = "-q -dSAFER -dNOPAUSE -dBATCH -dSCANCONVERTERTYPE=2";
+	static char *gs_params_rasold = "-q -dSAFER -dNOPAUSE -dBATCH";
+	static char *gs_params = NULL;
 #ifdef HAVE_GDAL
 	struct GMT_GDALREAD_IN_CTRL  *to_gdalread = NULL;
 	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
@@ -1509,21 +1514,15 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Parameters for all the formats available */
 
-	if (Ctrl->T.device == GS_DEV_PDF) {	/* For PDF we want a bunch of prepress and other settings to maximize quality */
-		if (gsVersion.major >= 9 && gsVersion.minor >= 21)
-			/* Artifex says that the -dSCANCONVERTERTYPE=2 new scan converter is faster (confirmed) and
-		   	will be the default in a future release. Since it was introduced in 9.21 we start using it
-		   	right now and remove this conditional once it becomes the default */
-			gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode -dSCANCONVERTERTYPE=2";
-		else
-			gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
-	}
-	else {	/* For rasters */
-		if (gsVersion.major >= 9 && gsVersion.minor >= 21)
-			gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dSCANCONVERTERTYPE=2";
-		else
-			gs_params = "-q -dSAFER -dNOPAUSE -dBATCH";
-	}
+	/* Artifex says that the -dSCANCONVERTERTYPE=2 new scan converter is faster (confirmed) and
+   	   will be the default in a future release. Since it was introduced in 9.21 we start using it
+   	   right now and remove this conditional once it becomes the default */
+
+	/* INitial assignment of gs_params. NOte: If we detect transparency then we must select the PDF settings since we must convert to PDF first */
+	if (Ctrl->T.device == GS_DEV_PDF)	/* For PDF (and PNG via PDF) we want a bunch of prepress and other settings to maximize quality */
+		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
+	else	/* For rasters */
+		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_rasnew : gs_params_rasold;
 
 	gs_BB = "-q -dSAFER -dNOPAUSE -dBATCH -sDEVICE=bbox"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
 
@@ -2212,6 +2211,9 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		fclose (fpo);	fpo = NULL;
 		fclose (fp);	fp  = NULL;
+
+		if (transparency && Ctrl->T.device != GS_DEV_PDF)	/* Must reset to PDF settings since we have transparency */
+			gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
 
 		/* Build the converting ghostscript command and execute it */
 
