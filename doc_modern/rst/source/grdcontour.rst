@@ -22,6 +22,7 @@ Synopsis
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-L|\ *low/high*\ \|\ **n**\ \|\ **N**\ \|\ **P**\ \|\ **p** ]
+[ |-N|\ [*cpt*] ]
 [ |-Q|\ [*cut*\ [*unit*]][\ **+z**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smoothfactor* ]
@@ -152,6 +153,14 @@ Optional Arguments
     above *high*.  Alternatively, limit contours to negative (**n**)
     or positive (**p**) contours.  Use upper case **N** or **P** to
     include the zero contour.
+
+.. _-N:
+
+**-N**\ [*cpt*]
+    Fill the area between contours using the discrete color table given by *cpt*.
+    Then, **-C** and **-A** can be used as well to control the contour lines and
+    annotations.  If no *cpt* is appended then a discrete color table must be given
+    via **-C** instead.
 
 .. _-Q:
 

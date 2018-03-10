@@ -171,8 +171,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdcontour <grid> [-A[-|[+]<annot_int>][<labelinfo>] [%s]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t [-C[+]<cont_int>|<cpt>][%s] [-D<template>] [-F[l|r]] [%s] [%s] [-K]\n", GMT_J_OPT, GMT_Jz_OPT, GMT_CONTG);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<low>/<high>|n|N|P|p] [-O] [-P] [-Q[<cut>[<unit>]][+z]] [%s]\n", GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C[+]<cont_int>|<cpt>] [%s] [-D<template>] [-F[l|r]] [%s] [%s] [-K]\n", GMT_J_OPT, GMT_Jz_OPT, GMT_CONTG);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L<low>/<high>|n|N|P|p] [-N[<cpt>]] [-O] [-P] [-Q[<cut>[<unit>]][+z]] [%s]\n", GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[a|c]<pen>[+c[l|f]]]\n\t[%s] [%s] [-Z[+s<fact>][+o<shift>][+p]\n",
 	                                 GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
@@ -219,6 +219,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Only contour inside specified range.  Alternatively, give -Ln or -Lp to just draw\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   negative or positive contours, respectively. Upper case N or P includes zero contour.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Fill area between contour with the colors in a discrete CPT. If <cpt> is given the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   we use that <cpt> for the fill, else -C<cpt> must be given and used instead [no fill].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a minimum contour length and append a unit (%s, or c for Cartesian).\n", GMT_LEN_UNITS_DISPLAY);
@@ -917,7 +919,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	struct GMT_GRID *G = NULL, *G_orig = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	struct GMT_OPTION *options = NULL;
+	struct GMT_OPTION *options = NULL, *optN = NULL;
 	struct PSL_CTRL *PSL = NULL;	/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
@@ -930,7 +932,64 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
-	/* Parse the command-line arguments */
+	if ((optN = GMT_Find_Option (API, 'N', options))) {	/* Split into two module calls */
+		/* If -N[<cpt>] is given then we split the call into a grdview + grdcontour sequence.
+	 	 * We DO NOT parse any option here or initialize GMT, and just bail after running the two modules */
+	
+		char cmd1[GMT_LEN512] = {""}, cmd2[GMT_LEN512] = {""}, string[GMT_LEN128] = {""};
+		struct GMT_OPTION *opt = NULL;
+		
+		/* Make sure we dont pass options not compatible with -N */
+		if ((opt = GMT_Find_Option (API, 'D', options))) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot use -D with -N\n");
+			bailout (GMT_PARSE_ERROR);
+		}
+		if ((opt = GMT_Find_Option (API, 'Z', options))) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot use -Z with -N\n");
+			bailout (GMT_PARSE_ERROR);
+		}
+
+		for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
+			sprintf (string, " -%c%s", opt->option, opt->arg);
+			switch (opt->option) {
+				case 'A' : case 'B' : case 'D': case 'F': case 'G': case 'K': case 'L': case 'Q': case 'T': case 'U': case 'W': case 'Z':	/* Only for grdcontour */
+					strcat (cmd2, string); break;
+				case 'C':	/* grdcontour, but maybe this is a cpt for grdview as well */
+					strcat (cmd2, string);
+					if (optN->arg[0]) sprintf (string, " -C%s", optN->arg);
+					strcat (cmd1, string);	break;
+				case 'O': case 'P':
+					strcat (cmd1, string);	break;
+				case 'N':	/* Just skip */
+					break;
+				case 'X': case 'Y':	/* Only grdview gets these unless absolute */
+					strcat (cmd1, string);
+					if (opt->arg[0] == 'a') strcat (cmd2, string);
+					break;
+				
+				default:	/* Goes into both commands */
+					strcat (cmd1, string);	strcat (cmd2, string);
+					break;
+			}
+		}
+		/* Required options for grdview */
+		strcat (cmd1, " -Qs -K");
+		GMT_Report (API, GMT_MSG_DEBUG, "Run: grdview %s\n", cmd1);
+		if ((API->error = GMT_Call_Module (API, "grdview", GMT_MODULE_CMD, cmd1))) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to call grdview\n");
+			Return (API->error);
+		}
+		/* Required options for grdcontour */
+		strcat (cmd2, " -O");
+		GMT_Report (API, GMT_MSG_DEBUG, "Run: grdcontour %s\n", cmd2);
+		if ((API->error = GMT_Call_Module (API, "grdcontour", GMT_MODULE_CMD, cmd2))) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to call grdcontour\n");
+			Return (API->error);
+		}
+		bailout (GMT_NOERROR);	/* Home scott free */
+	}
+	
+	/* NOT -N, so parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
@@ -963,7 +1022,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (need_proj && gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to actually read the grid file */
-
+	
 	if (!gmt_grd_setregion (GMT, G->header, wesn, BCR_BILINEAR)) {
 		/* No grid to plot; just do empty map and return */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No data within specified region\n");
@@ -980,7 +1039,15 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 		Return (GMT_NOERROR);
 	}
-
+	
+	if (Ctrl->C.cpt) {	/* Presumably got a CPT */
+		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+			Return (API->error);
+		}
+		if (P->categorical)
+			GMT_Report (API, GMT_MSG_VERBOSE, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
+	}
+	
 	/* Read data */
 
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {
@@ -1059,13 +1126,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	else	/* No annotations, set aval outside range */
 		aval = G->header->z_max + 1.0;
 
-	if (Ctrl->C.cpt) {	/* Presumably got a CPT */
-		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
-			Return (API->error);
-		}
-		if (P->categorical) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "Categorical data (as implied by CPT) do not have contours.  Check plot.\n");
-		}
+	if (Ctrl->C.cpt) {	/* Got a CPT */
 		/* Set up which contours to draw based on the CPT slices and their attributes */
 		n_contours = P->n_colors + 1;	/* Since n_colors refer to slices */
 		n_tmp = 0;
