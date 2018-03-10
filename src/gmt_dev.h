@@ -159,9 +159,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_prototypes.h"     /* All GMT low-level API */
 #include "common_string.h"      /* All code shared between GMT and PSL */
 
-//#ifdef MB_DEFINED
-#include "gmt_mb.h"          /* GMT redefines for MB-system compatibility */
-//#endif /* MB_DEFINED */
+#include "gmt_mb.h"		/* GMT redefines for MB-system compatibility */
 
 /* If GLIBC compatible qsort_r is not available */
 #ifndef HAVE_QSORT_R_GLIBC
