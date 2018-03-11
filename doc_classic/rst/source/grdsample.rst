@@ -106,6 +106,26 @@ Bilinear interpolation [**-n**] uses only a 2 by 2 neighborhood, but
 yields only zero-order continuity. Use bicubic when smoothness is
 important. Use bilinear to minimize the propagation of NaNs.
 
+Notes
+-----
+
+As an alternative to bicubic spline, linear spline or nearest neighbor interpolation one can
+instead send the entire dataset through :doc:`surface` for re-gridding.  This approach allows
+more control on aspects such as tension but it also leads to a solution that
+is not likely to have fully converged.  The general approach would be
+something like
+
+   ::
+
+    gmt grd2xyz old.grd | gmt surface -Rold.grd -Inewinc -Gnew.grd [other options]
+
+For moderate data set one could also achieve an exact solution with :doc:`greenspline`,
+such as
+
+::
+
+ gmt grd2xyz old.grd | gmt greenspline -Rold.grd -Inewinc -Gnew.grd [other options]
+
 Examples
 --------
 
@@ -125,5 +145,9 @@ registration while keeping the same region and grid interval:
 See Also
 --------
 
-:doc:`gmt`, :doc:`grdedit`,
-:doc:`grdfft`, :doc:`grdfilter`
+:doc:`gmt`,
+:doc:`grdedit`,
+:doc:`grdfft`,
+:doc:`grdfilter`,
+:doc:`greenspline`,
+:doc:`surface`
