@@ -185,7 +185,7 @@ Examples
 --------
 
 To plot the SEGY file wa1.segy with normalized traces plotted at true
-offset locations, clipped at +/-3 and with wiggle trace and positive
+offset locations, clipped at ±3 and with wiggle trace and positive
 variable area shading in black, use
 
    ::

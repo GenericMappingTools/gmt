@@ -65,7 +65,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *azimuth*/*tolerance*
-    Write out only those segments which are within +/- *tolerance*
+    Write out only those segments which are within ±\ *tolerance*
     degrees of *azimuth* in heading, measured clockwise from North, [0 -
     360]. [Default writes all acceptable segments, regardless of
     orientation].

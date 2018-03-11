@@ -263,7 +263,7 @@ defined by the great circle from the pole to a point 15E,15N, try
 To project the shiptrack gravity, magnetics, and bathymetry in
 c2610.xygmb along a great circle through an origin at 30S, 30W, the
 great circle having an azimuth of N20W at the origin, keeping only the
-data from NE of the profile and within +/- 500 km of the origin, run:
+data from NE of the profile and within ±\ 500 km of the origin, run:
 
    ::
 

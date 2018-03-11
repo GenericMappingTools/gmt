@@ -180,7 +180,7 @@ Optional Arguments
     all cross-profiles. **+r** : Append data residuals (data - stack) to
     all cross-profiles. **+s**\ [*file*] : Save stacked profile to
     *file* [grdtrack_stacked_profile.txt]. **+c**\ *fact* : Compute
-    envelope on stacked profile as +/- *fact* \*\ *deviation* [2].
+    envelope on stacked profile as ±\ *fact* \*\ *deviation* [2].
     Notes: (1) Deviations depend on *method* and are st.dev (**a**), L1
     scale (**m** and **p**), or half-range (upper-lower)/2. (2) The
     stacked profile file contains a leading column plus groups of 4-6 columns, with one

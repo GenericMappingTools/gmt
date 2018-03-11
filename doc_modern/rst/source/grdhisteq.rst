@@ -136,7 +136,7 @@ Notes
    of data in the input grid (nx \* ny) and the cumulative Gaussian
    distribution function F(x). That is, let N = nx \* ny. Then x will be
    adjusted so that F(x) = (N - 1 + 0.5)/N. Since about 68% of the values
-   from a standard normal distribution fall within +/- 1, this will be true
+   from a standard normal distribution fall within ±\ 1, this will be true
    of the output grid. But if N is very large, it is possible for x to be
    greater than 4. Therefore, with the :doc:`grdview` program clipping
    gradients to the range [-1, 1], you will get correct shading of 68% of
