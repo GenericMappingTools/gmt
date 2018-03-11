@@ -187,6 +187,7 @@ Optional Arguments
     point number (symbols) appearing where %d is placed, (4) give no
     arguments to turn symbol labeling off; line segments will still be
     named. Also note that
+
 .. _-O:
 
 **-O**
