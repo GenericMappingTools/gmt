@@ -17,12 +17,12 @@
  *--------------------------------------------------------------------*/
 
 /*
- * File with definitions that allows compatibility between GMT 5 and 6 with
- * th eMB-system programs mbcontour.c, mbgrdtiff.c, and mbswath.c.
+ * File with definitions that allows compatibility between GMT 5 and
+ * the MB-system programs mbcontour.c, mbgrdtiff.c, and mbswath.c.
  *
  * Author:      Paul Wessel
  * Date:        11-Mar-2018
- * Version:     5/6 API
+ * Version:     5 API
  */
 
 /* Only included when compiling the MB system */
@@ -76,9 +76,6 @@
 #define gmt_rgb_syntax GMT_rgb_syntax
 #define gmt_set_grddim GMT_set_grddim
 #define gmt_show_name_and_purpose GMT_show_name_and_purpose
-#endif
-#if GMT_MAJOR_VERSION == 6
-#define gmt_get_cpt(GMT,file,flag,min,max) gmt_get_palette(GMT,file,flag,min,max,0.0)
 #endif
 
 #endif /* GMT_MB_H */
