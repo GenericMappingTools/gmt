@@ -325,6 +325,7 @@ GMT_LOCAL void set_loop_order (struct GMT_CTRL *GMT, struct GMT_GRID *Z, int sta
 	if (az < 0.0) az += 360.0;
 	else if (az >= 360.0) az -= 360.0;
 	oct = 1 + urint (floor (az / 45.0));	/* Gives octants 1 - 8 */
+	id[0] = id[1] = start[0] = start[1] = stop[0] = stop[1] = inc[0] = inc[1] = 0;	/* Init arrays */
 	switch (oct) {
 		case 1:	/* 0-45: Outer loop over columns */
 			id[0] = GMT_X;	start[0] = 0;	stop[0] = Z->header->n_columns - 1;	inc[0] = +1;

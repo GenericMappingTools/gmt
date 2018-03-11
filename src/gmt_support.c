@@ -15356,13 +15356,13 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 			T->reverse = true;	/* Want array to be reversed */
 		}
 		if (T->logarithmic || T->logarithmic2) {
-			unsigned int k_inc = urint (T->inc);
+			int k_inc = irint (T->inc);
 			if (!gmt_M_is_zero (fabs (T->inc - (double)k_inc))) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Logarithmic increment must be an integer\n", option);
 				return GMT_PARSE_ERROR;
 			}
-			if (T->logarithmic && !(k_inc == 1 || k_inc == 2 || k_inc == 3)) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Log10 increment must be 1, 2, or 3\n", option);
+			if (T->logarithmic && !(k_inc == 1 || k_inc == 2 || k_inc == 3 || k_inc < 0)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Log10 increment must be 1, 2, 3 (or a negative integer)\n", option);
 				return GMT_PARSE_ERROR;
 			}
 		}
