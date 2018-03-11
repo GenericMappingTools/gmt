@@ -36,7 +36,7 @@ that copyright notice and this permission notice appear in supporting documentat
 #define THIS_MODULE_NAME	"pssac"
 #define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot seismograms in SAC format on maps"
-#define THIS_MODULE_KEYS	">XO,RG-"
+#define THIS_MODULE_KEYS	">X},RG-"
 #define THIS_MODULE_NEEDS	"RJ"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYht" GMT_OPT("c")
 
