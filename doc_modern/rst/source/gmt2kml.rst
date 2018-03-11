@@ -158,7 +158,7 @@ Optional Arguments
     Extended data given. Append one or more column names separated by
     commas. We will expect the listed data columns to exist in the input
     immediately following the data coordinates required for the selected
-    feature set by **-F***, and they will be encoded
+    feature set by **-F**, and they will be encoded
     in the KML file as Extended Data sets, whose attributes will be
     available in a Google Earth balloon when the item is selected.
     The data file must have enough data columns and trialing text to
