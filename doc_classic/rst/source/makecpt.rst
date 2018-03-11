@@ -112,7 +112,7 @@ Optional Arguments
 .. _-F:
 
 **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**][**+c**\ ]]
-    Force output CPT to written with r/g/b codes, gray-scale values
+    Force output CPT to be written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
     append **+c** to write discrete palettes in categorical format.
