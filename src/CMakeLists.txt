@@ -311,6 +311,8 @@ set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h
 	PSL_ISO-8859-10.h PSL_ISO-8859-13.h PSL_ISO-8859-14.h PSL_ISO-8859-15.h
 	PSL_strings.h PSL_patterns.h)
 
+set (GMT_MBSYSTEM_SRCS gmt_mbsystem_module.c gmt_mbsystem_module.h)
+
 # libgmt
 set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	common_runpath.h common_sighandler.c common_string.h clear.c begin.c
@@ -334,7 +336,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_sharedlibs.c gmt_core_module.c gmt_init.c gmt_map.c gmt_plot.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h
-	${GMT_TRIANGLE_SRCS})
+	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS})
 
 if (BUILD_SUPPLEMENTS)
 	# Needed in supplib, + supplements themselves

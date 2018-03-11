@@ -109,6 +109,7 @@
 
 #define gmt_M_bool_swap(x, y) {bool bool_tmp; bool_tmp = x, x = y, y = bool_tmp;}
 #define gmt_M_char_swap(x, y) {char char_tmp; char_tmp = x, x = y, y = char_tmp;}
+#define gmt_M_charp_swap(x, y) {char *char_tmp; char_tmp = x, x = y, y = char_tmp;}
 #define gmt_M_uint64_swap(x, y) {uint64_t uint64_t_tmp; uint64_t_tmp = x, x = y, y = uint64_t_tmp;}
 #define gmt_M_int_swap(x, y) {int int_tmp; int_tmp = x, x = y, y = int_tmp;}
 #define gmt_M_uint_swap(x, y) {unsigned int uint_tmp; uint_tmp = x, x = y, y = uint_tmp;}

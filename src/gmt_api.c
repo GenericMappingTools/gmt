@@ -759,6 +759,8 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Loading GMT plugins from: %s\n", plugindir);
 		for (e = 0; e < n_extensions; e++) {	/* Handle case of more than one allowed shared library extension */
 			if ((list = gmtlib_get_dir_list (GMT, plugindir, extension[e]))) {	/* Add these files to the libs */
+				for (k = 0; list[k] && strncmp (list[k], "supplements", 11U); k++);	/* Look for supplements */
+				if (list[k] && k) gmt_M_charp_swap (list[0], list[k]);	/* Put supplements first if not first already */
 				k = 0;
 				while (list[k]) {
 					snprintf (path, GMT_LEN256, "%s/%s", plugindir, list[k]);
