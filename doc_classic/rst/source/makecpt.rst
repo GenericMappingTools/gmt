@@ -167,9 +167,9 @@ Optional Arguments
     **-S** will use the data min/max, **-S**\ *inc*\ [**+d**\ ] will use the data min/max but rounded
     to nearest *inc* (append **+d** to resample to a discrete CPT), **-Sa**\ *scl* will
     make a symmetric range around the average (i.e., mean)
-    and +/- *scl* * *sigma*, **-Sm**\ *scl* will make a symmetric range around the median
-    and +/- *scl* * *L1_scale*, **-Sp**\ *scl* will make symmetric range around mode and
-    +/- *scl* * *LMS_scale*, while **-Sq**\ *low/high* sets the range from *low* quartile
+    and ±\ *scl* * *sigma*, **-Sm**\ *scl* will make a symmetric range around the median
+    and ±\ *scl* * *L1_scale*, **-Sp**\ *scl* will make symmetric range around mode and
+    ±\ *scl* * *LMS_scale*, while **-Sq**\ *low/high* sets the range from *low* quartile
     to *high* quartile (in percentages).  We use the last data column for this calculation;
     use **i** if you need to adjust the column orders.
 
