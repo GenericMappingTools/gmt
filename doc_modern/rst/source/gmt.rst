@@ -25,18 +25,18 @@ Synopsis
 
 **gmt** is the main program that can start any of the modules:
 
-**gmt** module module-options
+**gmt** *module* *module-options*
 
-where module is the name of a GMT module and the options are those
+Starts a given GMT *module* with the *module-options*
 that pertain to that particular module.  A few special commands
 are also available:
 
 **gmt clear** *items*
 
-while delete the user's history.  Choose between *history* (deletes the
-gmt.history file in the current directory), *conf* (deletes the gmt.conf
-file in the current directory), *cache* (deletes the user's cache directory
-and all of its content), or *all* (does all of the above).
+Deletes the user's history.  Choose between **history** (deletes the
+gmt.history file in the current directory), **conf** (deletes the gmt.conf
+file in the current directory), **cache** (deletes the user's cache directory
+and all of its content), or **all** (does all of the above).
 
 **gmt begin** [*session-prefix*] [*format*]
 
