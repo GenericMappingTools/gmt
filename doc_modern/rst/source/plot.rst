@@ -211,9 +211,8 @@ Optional Arguments
     Ignore all input files, including standard input. This is the same
     as specifying /dev/null (or NUL for Windows users) as input file.
     Use this to activate only the options that are not related to
-    plotting of lines or symbols, such as **plot** **-R** **-J** **-O**
-    **-T** to terminate a sequence of GMT plotting commands without
-    producing any plotting output.
+    plotting of lines or symbols, such as **plot** **-R** **-J** **-T**
+    to terminate a sequence of GMT plotting commands without producing any plotting output.
 
 .. _-U:
 
