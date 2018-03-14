@@ -263,7 +263,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 	/* When converting from netcdf to netcdf, we will keep the old command, so we need to make a copy of it now */
 	command[0] = '\n';	command[1] = '\t';
 	strcat(command, "(old cmd) ");
-	strcat(command, Grid->header->command);
+	strncat(command, Grid->header->command, GMT_GRID_COMMAND_LEN320-13);
 
 	gmt_grd_init (GMT, Grid->header, options, true);
 
