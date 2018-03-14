@@ -41,6 +41,8 @@
 
 Acknowledgments
 ===============
+Words of thanks
+---------------
 
 The Generic Mapping Tools (GMT) could not have been designed without
 the generous support of several people. The Founders (Wessel and Smith)
@@ -281,7 +283,7 @@ summary of these changes:
 *  We have updated the online documentation of user-contributed custom symbols and
    restored the beautiful biological symbols for whales and dolphins created by
    Pablo Valdés during the GMT4 era.  These are now complemented by new custom
-   symbols for structural geology designed by José A. Álvarez-Gómez.  
+   symbols for structural geology designed by José A. Álvarez-Gómez.
 
 *  The :doc:`PSL <postscriptlight>` library no longer needs run-time files to configure the
    list of standard fonts and character encodings, reducing the number of configure
@@ -523,9 +525,9 @@ as well. For specific enhancements, we have:
 *  We continue to extend support for OpenMP in GMT.  New modules that are
    OpenMP-enabled are :doc:`grdgradient`, :doc:`grdlandmask`, and :doc:`sph2grd`.
 
-*  :doc:`blockmean`, :doc:`blockmedian` and :doc:`blockmode` have a new 
+*  :doc:`blockmean`, :doc:`blockmedian` and :doc:`blockmode` have a new
    modifier **+s** to the **-W** option.  When used we expect 1-sigma
-   uncertainties instead of weights and compute weight = 1/sigma. 
+   uncertainties instead of weights and compute weight = 1/sigma.
 
 *  :doc:`filter1d`: can now compute high-pass filtered output via a new
    **+h** modifier to the filter settings, similar to existing capability
@@ -541,7 +543,7 @@ as well. For specific enhancements, we have:
    optional, with modifiers **+s** forcing a symmetric range and **+a**
    offering *alpha*-trimming of the tails before estimating the range.
 
-*  :doc:`gmtmath` has gained new operators **VAR**, 
+*  :doc:`gmtmath` has gained new operators **VAR**,
    **RMS**, **DENAN**, as well as the weighted statistical operators
    **LMSSCLW**, **MADW**, **MEANW**, **MEDIANW**, **MODEW**, **PQUANTW**,
    **STDW**, and **VARW**.  Finally, we added a **SORT** operator that lets
@@ -565,7 +567,7 @@ as well. For specific enhancements, we have:
 *  :doc:`grdfft` has a new modifier to the **-E** option that allows for more
    control of the power normalization for radial spectra.
 
-*  :doc:`grdmath` also has the new operators **VAR**, 
+*  :doc:`grdmath` also has the new operators **VAR**,
    **RMS**, **DENAN**, as well as the weighted statistical operators
    **LMSSCLW**, **MADW**, **MEANW**, **MEDIANW**, **MODEW**, **PQUANTW**,
    **STDW**, and **VARW**.  In addition it gains a new
@@ -4677,7 +4679,7 @@ color tables are useful for highlighting small changes.
    :width: 500 px
    :align: center
 
-   Cyclic color bars are indicated by a cycle symbol on the left side of the bar. 
+   Cyclic color bars are indicated by a cycle symbol on the left side of the bar.
 
 .. _manipulating_CPTs:
 
@@ -5345,7 +5347,7 @@ where certain formats are tentatively decoded with GMT internal drivers and if t
 we resort to use the GDAL library to do the readings. This normally works pretty well but in case
 of failure (e.g. a GMT driver failed to read binary file with a separate header that also could
 have been stored in an ASCII file with embed header) the user should explicitly try to force a
-reading via GDAL. That is, to append a *=gd* suffix to file name. 
+reading via GDAL. That is, to append a *=gd* suffix to file name.
 
 By default, GMT will create new grid files using the **nf** format;
 however, this behavior can be overridden by setting the
@@ -9633,7 +9635,7 @@ out parameters for pre-processing. The available types are
   **a** Geographic azimuth (positive clockwise from north toward east). Parameters
   identified as azimuth will first be converted to map angle
   (positive counter-clockwise from horizontal) given the current
-  map projection (or simply via 90-azimuth for Cartesian plots). 
+  map projection (or simply via 90-azimuth for Cartesian plots).
   We ensure the angles fall in the 0-360 range and any macro test can rely on this range.
 
   **l** Length, i.e., an additional length scale (in cm, inch, or point as
