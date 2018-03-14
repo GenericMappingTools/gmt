@@ -41,6 +41,8 @@
 
 Acknowledgments
 ===============
+Words of thanks
+---------------
 
 The Generic Mapping Tools (GMT) could not have been designed without
 the generous support of several people. The Founders (Wessel and Smith)
@@ -459,7 +461,7 @@ The hardest aspects that have percolated to the top of the "rookie error" list i
 While pondering these facts, we have also started to gain experience with the MATLAB and Octave
 toolboxes and the preliminary design of the Python package. We were noticing that
 the resulting scripts looked too much like the GMT shell command-line versions, setting
-users up for a continuation of the same rookie errors. 
+users up for a continuation of the same rookie errors.
 The solution to this conundrum was to introduce different run modes:
 Starting with GMT 6 we introduce a new operating *mode* for GMT named *modern*.  In contrast
 to the *classic* (and only) mode available in earlier versions 1-5, the *modern* mode
@@ -2999,7 +3001,7 @@ color tables are useful for highlighting small changes.
    :width: 500 px
    :align: center
 
-   Cyclic color bars are indicated by a cycle symbol on the left side of the bar. 
+   Cyclic color bars are indicated by a cycle symbol on the left side of the bar.
 
 .. _manipulating_CPTs:
 
@@ -3697,7 +3699,7 @@ where certain formats are tentatively decoded with GMT internal drivers and if t
 we resort to use the GDAL library to do the readings. This normally works pretty well but in case
 of failure (e.g. a GMT driver failed to read binary file with a separate header that also could
 have been stored in an ASCII file with embed header) the user should explicitly try to force a
-reading via GDAL. That is, to append a *=gd* suffix to file name. 
+reading via GDAL. That is, to append a *=gd* suffix to file name.
 
 By default, GMT will create new grid files using the **nf** format;
 however, this behavior can be overridden by setting the
@@ -4183,7 +4185,7 @@ where *driver* is the same as explained above and *dataType* is a 2 or 3 chars c
 u8\|u16\|i16\|u32\|i32\|float32, and where i\|u denotes signed\|unsigned. If not provided the default type
 is float32. Both driver names and data types are case insensitive. The *options* is a list of one or more concatenated
 number of GDAL *-co* options. For example, to write a lossless JPG2000 grid one would append
-**+c**\ QUALITY=100\ **+c**\ REVERSIBLE=YES\ **+c**\ YCBCR420=NO 
+**+c**\ QUALITY=100\ **+c**\ REVERSIBLE=YES\ **+c**\ YCBCR420=NO
 Note: you will have to specify a *nan* value for integer data types unless you wish that all NaN data values
 should be replaced by zero.
 
@@ -6052,7 +6054,7 @@ grids based on seamount locations and a set of absolute plate motion
 stage poles (:doc:`grdspotter <supplements/spotter/grdspotter>` does the
 same using a bathymetry grid instead of seamount locations),
 :doc:`originator <supplements/spotter/originator>`, which associates
-seamounts with the most likely hotspot origins, 
+seamounts with the most likely hotspot origins,
 :doc:`polespotter <supplements/spotter/polespotter>`, which determines
 likely stage pole locations from seafloor fabric, and
 :doc:`rotconverter <supplements/spotter/rotconverter>` which does various
@@ -7994,7 +7996,7 @@ out parameters for pre-processing. The available types are
   **a** Geographic azimuth (positive clockwise from north toward east). Parameters
   identified as azimuth will first be converted to map angle
   (positive counter-clockwise from horizontal) given the current
-  map projection (or simply via 90-azimuth for Cartesian plots). 
+  map projection (or simply via 90-azimuth for Cartesian plots).
   We ensure the angles fall in the 0-360 range and any macro test can rely on this range.
 
   **l** Length, i.e., an additional length scale (in cm, inch, or point as
