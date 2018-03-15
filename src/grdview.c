@@ -741,6 +741,13 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 	}
 
+	if (gmt_M_is_dnan (Topo->header->z_min) && gmt_M_is_dnan (Topo->header->z_max)) {
+		GMT_Report (API, GMT_MSG_VERBOSE, "Grid information has zmin = zmax = NaN. Reset to 0\n");
+		Topo->header->z_min = Topo->header->z_max = GMT->common.R.wesn[ZLO] = GMT->common.R.wesn[ZHI] = 0.0;
+		if (gmt_M_is_dnan (GMT->common.R.wesn[ZLO]) && gmt_M_is_dnan (GMT->common.R.wesn[ZHI]))	/* Got set under the hood already */
+			GMT->common.R.wesn[ZLO] = GMT->common.R.wesn[ZHI] = 0.0;
+	}
+
 	/* Determine what wesn to pass to map_setup */
 
 	if (!GMT->common.R.active[RSET])	/* No -R, use grid region */
