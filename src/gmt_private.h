@@ -152,6 +152,7 @@ struct GMTAPI_CTRL {
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	char *session_tag;			/* Name tag for this session (or NULL) */
 	char *tmp_dir;				/* System tmp_dir (NULL if not found) */
+	char *session_dir;			/* GMT Session dir (NULL if not running in modern mode) */
 	char *gwf_dir;				/* GMT WorkFlow dir (NULL if not running in modern mode) */
 	char **tmp_header;			/* Temporary table headers held until we are able to write them to destination */
 	char *tmp_segmentheader;		/* Temporary segment header held until we are able to write it to destination */

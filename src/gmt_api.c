@@ -5920,6 +5920,7 @@ int GMT_Destroy_Session (void *V_API) {
 	gmt_end (API->GMT);	/* Terminate GMT machinery */
 	gmt_M_str_free (API->session_tag);
 	gmt_M_str_free (API->tmp_dir);
+	gmt_M_str_free (API->session_dir);
 	gmt_M_memset (API, 1U, struct GMTAPI_CTRL);	/* Wipe it clean first */
  	gmt_M_str_free (API);	/* Not gmt_M_free since this item was allocated before GMT was initialized */
 

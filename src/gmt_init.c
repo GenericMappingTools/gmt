@@ -2523,6 +2523,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	char *this_c = NULL, path[PATH_MAX+1];
 	static char *how[2] = {"detected", "created"};
 	unsigned int u = 0, c = 0;
+	size_t len = 0;
 
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 	/* If SUPPORT_EXEC_IN_BINARY_DIR is defined we try to set the share dir to
@@ -2583,7 +2584,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 #endif
 	}
 	gmt_dos_path_fix (GMT->session.HOMEDIR);
-    GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.HOMEDIR = %s\n", GMT->session.HOMEDIR);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.HOMEDIR = %s\n", GMT->session.HOMEDIR);
 
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
@@ -2620,10 +2621,28 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		}
 	}
 
+	if ((this_c = getenv ("GMT_SESSIONDIR")) != NULL)		/* GMT_SESSIONDIR was set */
+		GMT->parent->session_dir = strdup (this_c);
+	else if (GMT->session.USERDIR != NULL) {	/* Use default path for GMT_SESSIONDIR as GMT_USERDIR/sessions */
+		sprintf (path, "%s/%s", GMT->session.USERDIR, "sessions");
+		GMT->parent->session_dir = strdup (path);
+	}
+	else {
+		GMT->parent->session_dir = strdup (GMT->parent->tmp_dir);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No GMT User directory set, GMT session dir selected: %s\n", GMT->parent->session_dir);
+	}
+	if ((len = strlen (GMT->parent->session_dir)) > 2 && GMT->parent->session_dir[len-1] == '/') GMT->parent->session_dir[len-1] = '\0';	/* Chop off trailing slash */
+	if (GMT->parent->session_dir != NULL && access (GMT->parent->session_dir, R_OK)) {
+		/* If we cannot access this dir then we create it first */
+		if (gmt_mkdir (GMT->parent->session_dir)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT User sessions directory : %s\n", GMT->parent->session_dir);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Modern mode will fail.\n");
+		}
+	}
 	gmt_dos_path_fix (GMT->session.USERDIR);
 	gmt_dos_path_fix (GMT->session.CACHEDIR);
-    if (GMT->session.USERDIR)  GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.USERDIR = %s [%s]\n",  GMT->session.USERDIR,  how[u]);
-    if (GMT->session.CACHEDIR) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.CACHEDIR = %s [%s]\n", GMT->session.CACHEDIR, how[c]);
+	if (GMT->session.USERDIR)  GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.USERDIR = %s [%s]\n",  GMT->session.USERDIR,  how[u]);
+	if (GMT->session.CACHEDIR) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.CACHEDIR = %s [%s]\n", GMT->session.CACHEDIR, how[c]);
 
 	if (gmt_M_compat_check (GMT, 4)) {
 		/* Check if obsolete GMT_CPTDIR was specified */
@@ -14592,8 +14611,8 @@ GMT_LOCAL int process_figures (struct GMTAPI_CTRL *API) {
 			if (access (cmd, F_OK)) {	/* No such file, check if the fully baked file is there instead */
 				mark = '+';	/* This is the last char in extension for a fully-baked GMT PostScript file */
 				sprintf (cmd, "%s/gmt_%d.ps%c", API->gwf_dir, fig[k].ID, mark);	/* Check if the file exists */
-				if (access (cmd, F_OK)) {	/* No such file ether, give up */
-					GMT_Report (API, GMT_MSG_VERBOSE, "Figure # %d was registered but no matching PostScript-|+ file found - skipping\n", fig[k].ID, cmd);
+				if (access (cmd, F_OK)) {	/* No such file ether, give up; warn if a fig set via gmt figure (k > 0) */
+					if (k) GMT_Report (API, GMT_MSG_VERBOSE, "Figure # %d was registered but no matching PostScript-|+ file found - skipping\n", fig[k].ID, cmd);
 					continue;
 				}
 			}
@@ -14817,7 +14836,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	int err = 0, fig, error = GMT_NOERROR;
 	struct stat S;
 
-	sprintf (dir, "%s/gmt%d.%d", API->tmp_dir, GMT_MAJOR_VERSION, API->PPID);
+	sprintf (dir, "%s/gmt%d.%d", API->session_dir, GMT_MAJOR_VERSION, API->PPID);
 	API->gwf_dir = strdup (dir);
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
 
@@ -14874,9 +14893,9 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 				GMT_Report (API, GMT_MSG_NORMAL, "subplot was never completed - plot items in last panel may be missing\n");
 			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  PPID = %d. Directory %s %s.\n", smode[mode], API->PPID, API->gwf_dir, fstatus[3]);
 			if ((error = process_figures (API)))
-				return error;
+				GMT_Report (API, GMT_MSG_NORMAL, "process_figures returned error %d\n", error);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Destroying the current workflow directory %s\n", API->gwf_dir);
-			error = gmt_remove_dir (API, dir, false);
+			gmt_remove_dir (API, dir, false);
 			API->GMT->current.setting.run_mode = GMT_CLASSIC;	/* Disable modern mode */
 			break;
 		default:
