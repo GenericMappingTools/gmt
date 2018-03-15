@@ -1,12 +1,9 @@
-.. TODO: set tocdepth=2 when this issue resolved https://bitbucket.org/birkenfeld/sphinx/issue/1251
-
-:tocdepth: 3
-
 .. set default highlighting language for this document:
 
 .. highlight:: bash
 
-**The Generic Mapping Tools**
+The Generic Mapping Tools
+=========================
 
 **Technical Reference and Cookbook**
 
@@ -40,8 +37,6 @@
 
 
 Acknowledgments
-===============
-Words of thanks
 ---------------
 
 The Generic Mapping Tools (GMT) could not have been designed without
