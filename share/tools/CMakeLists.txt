@@ -38,16 +38,12 @@ if (NOT DEFINED BASH_COMPLETION_DIR)
 endif (NOT DEFINED BASH_COMPLETION_DIR)
 
 if (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
-	install (PROGRAMS
-		gmt_completion.bash
-		DESTINATION ${GMT_DATADIR}/tools
-		COMPONENT Runtime)
-else (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
-	install (FILES
-		gmt_completion.bash
-		DESTINATION ${BASH_COMPLETION_DIR}
-		COMPONENT Runtime
-		RENAME gmt)
+	set (BASH_COMPLETION_DIR ${GMT_DATADIR}/tools)
 endif (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
+
+install (FILES
+	gmt_completion.bash
+	DESTINATION ${BASH_COMPLETION_DIR}
+	COMPONENT Runtime)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
