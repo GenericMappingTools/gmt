@@ -2518,12 +2518,20 @@ GMT_LOCAL void gmtinit_free_plot_array (struct GMT_CTRL *GMT) {
 	GMT->current.plot.n = GMT->current.plot.n_alloc = 0;
 }
 
+GMT_LOCAL void trim_off_any_slash_at_end (char *dir) {
+	size_t L = strlen (dir);
+#ifdef WIN32
+	if (L && dir[L-1] == '\\') dir[L-1] = '\0';
+#else
+	if (L && dir[L-1] == '/') dir[L-1] = '\0';
+#endif
+}
+
 /*! . */
 GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	char *this_c = NULL, path[PATH_MAX+1];
 	static char *how[2] = {"detected", "created"};
 	unsigned int u = 0, c = 0;
-	size_t len = 0;
 
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 	/* If SUPPORT_EXEC_IN_BINARY_DIR is defined we try to set the share dir to
@@ -2564,7 +2572,8 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		}
 	}
 	gmt_dos_path_fix (GMT->session.SHAREDIR);
-    GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.SHAREDIR = %s\n", GMT->session.SHAREDIR);
+	trim_off_any_slash_at_end (GMT->session.SHAREDIR);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.SHAREDIR = %s\n", GMT->session.SHAREDIR);
 
 	/* Determine HOMEDIR (user home directory) */
 
@@ -2584,6 +2593,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 #endif
 	}
 	gmt_dos_path_fix (GMT->session.HOMEDIR);
+	trim_off_any_slash_at_end (GMT->session.HOMEDIR);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.HOMEDIR = %s\n", GMT->session.HOMEDIR);
 
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
@@ -2595,6 +2605,8 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		GMT->session.USERDIR = strdup (path);
 		u = 1;
 	}
+	gmt_dos_path_fix (GMT->session.USERDIR);
+	trim_off_any_slash_at_end (GMT->session.USERDIR);
 	if (GMT->session.USERDIR != NULL && access (GMT->session.USERDIR, R_OK)) {
 		/* If we cannot access this dir then we create it first */
 		if (gmt_mkdir (GMT->session.USERDIR)) {
@@ -2611,6 +2623,8 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		GMT->session.CACHEDIR = strdup (path);
 		c = 1;
 	}
+	gmt_dos_path_fix (GMT->session.CACHEDIR);
+	trim_off_any_slash_at_end (GMT->session.CACHEDIR);
 	if (GMT->session.CACHEDIR != NULL && access (GMT->session.CACHEDIR, R_OK)) {
 		/* If we cannot access this dir then we create it first */
 		if (gmt_mkdir (GMT->session.CACHEDIR)) {
@@ -2631,7 +2645,8 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		GMT->parent->session_dir = strdup (GMT->parent->tmp_dir);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No GMT User directory set, GMT session dir selected: %s\n", GMT->parent->session_dir);
 	}
-	if ((len = strlen (GMT->parent->session_dir)) > 2 && GMT->parent->session_dir[len-1] == '/') GMT->parent->session_dir[len-1] = '\0';	/* Chop off trailing slash */
+	gmt_dos_path_fix (GMT->parent->session_dir);
+	trim_off_any_slash_at_end (GMT->parent->session_dir);
 	if (GMT->parent->session_dir != NULL && access (GMT->parent->session_dir, R_OK)) {
 		/* If we cannot access this dir then we create it first */
 		if (gmt_mkdir (GMT->parent->session_dir)) {
@@ -2639,8 +2654,6 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Modern mode will fail.\n");
 		}
 	}
-	gmt_dos_path_fix (GMT->session.USERDIR);
-	gmt_dos_path_fix (GMT->session.CACHEDIR);
 	if (GMT->session.USERDIR)  GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.USERDIR = %s [%s]\n",  GMT->session.USERDIR,  how[u]);
 	if (GMT->session.CACHEDIR) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.CACHEDIR = %s [%s]\n", GMT->session.CACHEDIR, how[c]);
 
@@ -2658,6 +2671,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		GMT->session.DATAURL = strdup (this_c);
 	else
 		GMT->session.DATAURL = strdup (GMT_DATA_URL);	/* SOEST default */
+	trim_off_any_slash_at_end (GMT->session.DATAURL);
 
 	/* Determine GMT_DATADIR (data directories) */
 
@@ -2686,6 +2700,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		else
 			GMT->session.TMPDIR = strdup (this_c);
 		gmt_dos_path_fix (GMT->session.TMPDIR);
+		trim_off_any_slash_at_end (GMT->session.TMPDIR);
 	}
 	return GMT_OK;
 }
