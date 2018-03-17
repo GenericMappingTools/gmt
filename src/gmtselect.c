@@ -890,7 +890,12 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 		if (Ctrl->G.active) {	/* Check if we are in/out-side mask cell */
 			unsigned int row, col;
-			inside = !gmt_row_col_out_of_bounds (GMT, in, G->header, &row, &col);
+			if (gmt_M_y_is_outside (GMT, in[GMT_Y], G->header->wesn[YLO], G->header->wesn[YHI]) ||	/* Outside y-range */
+				gmt_x_is_outside (GMT, &in[GMT_X], G->header->wesn[XLO], G->header->wesn[XHI])) {	/* Outside x-range */
+				inside = false;	/* Outside both y- and x-range (or periodic longitude) for this grid */
+			}
+			else
+				inside = !gmt_row_col_out_of_bounds (GMT, in, G->header, &row, &col);
 			if (inside) {	/* Inside -R so check the node value */
 				uint64_t node = gmt_M_ijp (G->header, row, col);
 				inside = !(gmt_M_is_fnan (G->data[node]) || G->data[node] == 0);
