@@ -2520,11 +2520,7 @@ GMT_LOCAL void gmtinit_free_plot_array (struct GMT_CTRL *GMT) {
 
 GMT_LOCAL void trim_off_any_slash_at_end (char *dir) {
 	size_t L = strlen (dir);
-#ifdef WIN32
-	if (L && dir[L-1] == '\\') dir[L-1] = '\0';
-#else
-	if (L && dir[L-1] == '/') dir[L-1] = '\0';
-#endif
+	if (L && (dir[L-1] == '/' || dir[L-1] == '\\')) dir[L-1] = '\0';
 }
 
 /*! . */
