@@ -1115,7 +1115,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			}
 			contour[n_contours] = c * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (contour[n_contours] - aval) > GMT_CONV4_LIMIT) aval += Ctrl->A.interval;
-			cont_type[n_contours] = (fabs (contour[n_contours] - aval) < GMT_CONV4_LIMIT) ? 'A' : 'C';
+			if (Ctrl->A.mode)	/* No labels */
+				cont_type[n_contours] = 'C';
+			else
+				cont_type[n_contours] = (fabs (contour[n_contours] - aval) < GMT_CONV4_LIMIT) ? 'A' : 'C';
 			cont_angle[n_contours] = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
 			cont_do_tick[n_contours] = (char)Ctrl->T.active;
 		}
