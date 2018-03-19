@@ -202,6 +202,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 }
 
 EXTERN_MSC int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item);
+EXTERN_MSC int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *h);
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdimage and sets parameters in Ctrl.
@@ -660,6 +661,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			I->header->inc[GMT_X] = dx;	I->header->inc[GMT_Y] = dy;
 			HH->r_inc[GMT_X] = 1.0 / dx;	/* Get inverse increments to avoid divisions later */
 			HH->r_inc[GMT_Y] = 1.0 / dy;
+			HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, I->header);	/* Since we now have a proper region */
 		}
 
 		Ctrl->In.do_rgb = (I->header->n_bands >= 3);
