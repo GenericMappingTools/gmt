@@ -300,7 +300,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 
 			case 'D':	/* Get an image via GDAL */
 				Ctrl->D.active = true;
-				Ctrl->D.mode = (opt->arg[0] == 'r');
 				break;
 
 			case 'E':	/* Sets dpi */
@@ -402,22 +401,26 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 		GMT->common.J.active = true;
 	}
 #endif
+
 	if (n_files == 3) Ctrl->In.do_rgb = true;
 	if (Ctrl->D.active) {	/* Only OK with memory input or GDAL support */
 		if (!gmt_M_file_is_memory (Ctrl->In.file[0])) {
 #ifndef HAVE_GDAL
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D: Requires building GMT with GDAL support.\n");
+			n_errors++;
 #endif
 		}	
+		if (GMT->common.R.active[RSET])
+			Ctrl->D.mode = true;
 	}
 	n_errors += gmt_M_check_condition (GMT, GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->common.J.active, 
-					"Syntax error: Must specify a map projection with the -J option\n");
+	                                   "Syntax error: Must specify a map projection with the -J option\n");
 	if (!API->external) {	/* I.e, not an External interface */
 		n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3), 
 		                                   "Syntax error: Must specify one (or three) input file(s)\n");
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
-	                                 "Syntax error -I option: Must specify intensity file, value, or modifiers\n");
+	                                   "Syntax error -I option: Must specify intensity file, value, or modifiers\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.derive && n_files == 3, 
 	                                   "Syntax error -I option: Cannot derive intensities when r,g,b grids are given as data\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.derive && Ctrl->D.active, 
@@ -622,12 +625,18 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->D.active) {	/* Main input is a single image and not a grid */
-		/* One more test though */
-		if (Ctrl->D.mode && !GMT->common.R.active[RSET]) {
-			GMT_Report (API, GMT_MSG_NORMAL, "-Dr without -R makes no sense. Ignoring -Dr.\n");
-			Ctrl->D.mode = false;
+#if 0
+	if (!Ctrl->D.active) {	/* See if input is an image and we don't know that yet. */
+		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[0], NULL)) != NULL) {
+			gmtlib_read_grd_info (GMT, Ctrl->In.file[0], I->header);
+			HH = gmt_get_H_hidden (I->header);
+			if (HH->orig_datatype == GMT_UCHAR) Ctrl->D.active = true;
+			if (Ctrl->D.active && GMT->common.R.active[RSET]) Ctrl->D.mode = true;
 		}
+	}
+#endif
+
+	if (Ctrl->D.active) {	/* Main input is a single image and not a grid */
 
 		if (use_intensity_grid && GMT->common.R.active[RSET]) {
 			if (GMT->common.R.wesn[XLO] < Intens_orig->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Intens_orig->header->wesn[XHI] || 
