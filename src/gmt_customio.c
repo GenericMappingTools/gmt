@@ -1785,6 +1785,8 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 		HH->orig_datatype = GMT_FLOAT;
 	else if (from_gdalread->Double.active)
 		HH->orig_datatype = GMT_DOUBLE;
+	else if (!strcmp(from_gdalread->band_field_names->DataType, "Byte"))
+		HH->orig_datatype = GMT_UCHAR;
 
 	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, header);
 	header->type = GMT_GRID_IS_GD;
