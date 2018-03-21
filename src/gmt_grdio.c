@@ -3058,7 +3058,7 @@ void gmtlib_contract_pad (struct GMT_CTRL *GMT, void *object, int family, unsign
 int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	/* Returns the type of the file (either grid or image) */
 	FILE *fp = NULL;
-	unsigned char data[8] = {""};
+	unsigned char data[16] = {""};
 	char *F = NULL, path[PATH_MAX] = {""};
 	int j, code;
 	
@@ -3083,7 +3083,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 		return (GMT_ERROR_ON_FOPEN);
 	}
 	gmt_M_str_free (F);
-	if (gmt_M_fread (data, sizeof (unsigned char), 8, fp) < 4) {
+	if (gmt_M_fread (data, sizeof (unsigned char), 16, fp) < 16) {
 		fclose (fp);
 		return (GMT_GRDIO_READ_FAILED);	/* Failed to get one row */
 	}
@@ -3100,46 +3100,65 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	   .ico   00 00 01 00
 	          00 00 02 00 ( cursor files )
 	   .ras   59 A6 6A 95
+	   .pj2   00 00 00 0C 6A 50 20 20 0D 0A 87 0A
+	   .fits  53 49 4d 50 4c 45
+	   .pbm   P 1-6
+	   .img   "EHFA_HEADER_TAG"
+	   .rgb   01 da
  	*/
 
 	switch (data[0]) {
-		case 0xFF:
-			code = ( !strncmp( (const char*)data, "\xFF\xD8\xFF", 3 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+		case 0x01:	/* SGI Iris */
+			code = (( data[1] == 0xda )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
-		case 0x89:
-			code = ( !strncmp( (const char*)data, "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A", 8 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+		case 0xFF:	/* JPG */
+			code = ( !strncmp( (const char *)data, "\xFF\xD8\xFF", 3 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
-		case 'G':
-			code = ( !strncmp( (const char*)data, "GIF87a", 6 ) || !strncmp( (const char*)data, "GIF89a", 6 ) ) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+		case 0x53:	/* FITS */
+			code = ( !strncmp( (const char *)data, "\x53\x49\x4d\x50\x4c\x45", 6 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
-		case 'I':
-			code = ( !strncmp( (const char*)data, "\x49\x49\x2A\x00", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+		case 0x89:	/* PNG */
+			code = ( !strncmp( (const char *)data, "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A", 8 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
-		case 'M':
-			code = ( !strncmp( (const char*)data, "\x4D\x4D\x00\x2A", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+		case 'E':	/* Erdas img */
+			code = ( !strncmp( (const char *)data, "EHFA_HEADER_TAG", 15 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
-		case 'B':
+		case 'G':	/* GIF */
+			code = ( !strncmp( (const char *)data, "GIF87a", 6 ) || !strncmp( (const char *)data, "GIF89a", 6 ) ) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+
+		case 'I':	/* TIFF */
+			code = ( !strncmp( (const char *)data, "\x49\x49\x2A\x00", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+
+		case 'M':	/* TIFF, GEOTIFF */
+			code = ( !strncmp( (const char *)data, "\x4D\x4D\x00\x2A", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+
+		case 'B':	/* BMP */
 			code = (( data[1] == 'M' )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
-		case 0x59:
-			return ( !strncmp( (const char*)data, "\x59\xA6\x6A\x95", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+		case 0x59:	/* Sun raster */
+			return ( !strncmp( (const char *)data, "\x59\xA6\x6A\x95", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
-		case 'R':
-			if ( strncmp( (const char*)data,     "RIFF", 4 )) 
+		case 'P':	/* PPM */
+			code = (data[1] >= '1' && data[1] <= '6') ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+
+		case 'R':	/* Google WEBP */
+			if ( strncmp( (const char *)data,     "RIFF", 4 )) 
 				code = GMT_IS_GRID;
-			else if ( strncmp( (const char*)(data+8), "WEBP", 4 )) 
+			else if ( strncmp( (const char *)(data+8), "WEBP", 4 )) 
 				code = GMT_IS_GRID;
 			else
 				code = GMT_IS_IMAGE;
 			break;
 
-		case '\0':
-			if ( !strncmp( (const char*)data, "\x00\x00\x01\x00", 4 )) 
-				code =  GMT_IS_GRID;
-			else if ( !strncmp( (const char*)data, "\x00\x00\x02\x00", 4 )) 
-				code =  GMT_IS_GRID;
-			else
+		case '\0':	/* ICO, JP2 */
+			if ( !strncmp( (const char *)data, "\x00\x00\x01\x00", 4 )) 
 				code =  GMT_IS_IMAGE;
+			else if ( !strncmp( (const char *)data, "\x00\x00\x02\x00", 4 )) 
+				code =  GMT_IS_IMAGE;
+			else if ( !strncmp( (const char *)data, "\x00\x00\x00\x0c\x6a\x50\x20\x20\x0d\x0a\x87\x0a", 12 )) 
+				code =  GMT_IS_IMAGE;
+			else
+				code =  GMT_IS_GRID;
 			break;
 
 		default:
