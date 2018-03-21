@@ -3063,9 +3063,9 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	int j, code;
 	
 	if (!file) return (GMT_ARG_IS_NULL);	/* Gave nothing */
-	if (gmt_M_file_is_cache (file)) {	/* Must download, then modify the name */
-		F = strdup (&file[1]);
-		(void)gmt_download_file_if_not_found (GMT, file, 0);
+	if (gmt_M_file_is_cache (file) || gmt_M_file_is_url (file)) {	/* Must download, then modify the name */
+		j = gmt_download_file_if_not_found (GMT, file, 0);
+		F = strdup (&file[j]);
 	}
 	else
 		F = strdup (file);
@@ -3093,17 +3093,10 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	   .png:  89 50 4E 47 0D 0A 1A 0A
 	   .gif:  GIF87a      
 	          GIF89a
-	   .tiff: 49 49 2A 00
-	          4D 4D 00 2A
 	   .bmp:  BM 
 	   .webp: RIFF ???? WEBP 
-	   .ico   00 00 01 00
-	          00 00 02 00 ( cursor files )
 	   .ras   59 A6 6A 95
-	   .pj2   00 00 00 0C 6A 50 20 20 0D 0A 87 0A
-	   .fits  53 49 4d 50 4c 45
 	   .pbm   P 1-6
-	   .img   "EHFA_HEADER_TAG"
 	   .rgb   01 da
  	*/
 
@@ -3114,23 +3107,11 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 		case 0xFF:	/* JPG */
 			code = ( !strncmp( (const char *)data, "\xFF\xD8\xFF", 3 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
-		case 0x53:	/* FITS */
-			code = ( !strncmp( (const char *)data, "\x53\x49\x4d\x50\x4c\x45", 6 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
-
 		case 0x89:	/* PNG */
 			code = ( !strncmp( (const char *)data, "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A", 8 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
-		case 'E':	/* Erdas img */
-			code = ( !strncmp( (const char *)data, "EHFA_HEADER_TAG", 15 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
-
 		case 'G':	/* GIF */
 			code = ( !strncmp( (const char *)data, "GIF87a", 6 ) || !strncmp( (const char *)data, "GIF89a", 6 ) ) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
-
-		case 'I':	/* TIFF */
-			code = ( !strncmp( (const char *)data, "\x49\x49\x2A\x00", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
-
-		case 'M':	/* TIFF, GEOTIFF */
-			code = ( !strncmp( (const char *)data, "\x4D\x4D\x00\x2A", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
 		case 'B':	/* BMP */
 			code = (( data[1] == 'M' )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
@@ -3148,17 +3129,6 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 				code = GMT_IS_GRID;
 			else
 				code = GMT_IS_IMAGE;
-			break;
-
-		case '\0':	/* ICO, JP2 */
-			if ( !strncmp( (const char *)data, "\x00\x00\x01\x00", 4 )) 
-				code =  GMT_IS_IMAGE;
-			else if ( !strncmp( (const char *)data, "\x00\x00\x02\x00", 4 )) 
-				code =  GMT_IS_IMAGE;
-			else if ( !strncmp( (const char *)data, "\x00\x00\x00\x0c\x6a\x50\x20\x20\x0d\x0a\x87\x0a", 12 )) 
-				code =  GMT_IS_IMAGE;
-			else
-				code =  GMT_IS_GRID;
 			break;
 
 		default:
@@ -3181,7 +3151,7 @@ GMT_LOCAL void gdal_free_from (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTR
 	if (from_gdalread->ColorMap) gmt_M_free (GMT, from_gdalread->ColorMap);	/* Maybe we will have a use for this in future, but not yet */
 }
 
-int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) {
+int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image, struct GMT_IMAGE *I) {
 	size_t k;
 	double dumb;
 	struct GMT_GDALREAD_IN_CTRL *to_gdalread = NULL;
@@ -3209,7 +3179,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *
 		gmt_M_free (GMT, from_gdalread);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-	if (from_gdalread->band_field_names != NULL && strcmp(from_gdalread->band_field_names[0].DataType, "Byte")) {
+	if (must_be_image && from_gdalread->band_field_names != NULL && strcmp(from_gdalread->band_field_names[0].DataType, "Byte")) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Using data type other than byte (unsigned char) is not implemented\n");
 		gmt_M_free (GMT, to_gdalread);
 		gdal_free_from (GMT, from_gdalread);

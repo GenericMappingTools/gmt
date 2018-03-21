@@ -4053,7 +4053,7 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 	 */
 
 	int item, new_item, new_ID;
-	bool done = true, via = false;
+	bool done = true, via = false, must_be_image = true;
 	uint64_t i0, i1, j0, j1, ij, ij_orig, row, col;
 	unsigned int both_set = (GMT_CONTAINER_ONLY | GMT_DATA_ONLY);
 	double dx, dy, d;
@@ -4079,6 +4079,14 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))
 		return_null (API, GMT_READ_ONCE);	/* Already read this resources before, so fail unless overridden by mode */
 	if ((mode & both_set) == both_set) mode -= both_set;	/* Allow users to have set GMT_CONTAINER_ONLY | GMT_DATA_ONLY; reset to GMT_CONTAINER_AND_DATA */
+	if ((mode & GMT_GRID_IS_IMAGE) == GMT_GRID_IS_IMAGE) {	/* Only allowed when fishing the image header and it may in fact be a grid */
+		if (mode & GMT_DATA_ONLY) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot pass mode = GMT_GRID_IS_IMAGE when reading the image for file %s\n", S_obj->filename);
+			return_null (API, GMT_IMAGE_READ_ERROR);
+		}
+		mode -= GMT_GRID_IS_IMAGE;
+		must_be_image = false;
+	}
 
 	switch (S_obj->method) {
 		case GMT_IS_FILE:	/* Name of a image file on disk */
@@ -4094,7 +4102,7 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			I_obj->header->complex_mode = mode;		/* Pass on any bitflags */
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_DATA_ONLY)) {		/* Must init header and read the header information from file */
-				if (gmt_M_err_pass (GMT, gmtlib_read_image_info (GMT, S_obj->filename, I_obj), S_obj->filename)) {
+				if (gmt_M_err_pass (GMT, gmtlib_read_image_info (GMT, S_obj->filename, must_be_image, I_obj), S_obj->filename)) {
 					if (new) gmtlib_free_image (GMT, &I_obj, false);
 					return_null (API, GMT_IMAGE_READ_ERROR);
 				}

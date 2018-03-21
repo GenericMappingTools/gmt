@@ -116,10 +116,13 @@ Optional Arguments
 .. _-D:
 
 **-D**\ [**r**]
-    Specifies that the grid supplied is an image file to be read via
+    GMT will detect if any standard image format (Geotiff, TIFF, JPG, PNG,
+    GIF, etc.) is given and will automatically handle reading those via
+    GDAL.  For very obscure image formats you may need to explicitly set **-D**, which
+    specifies that the grid supplied is an image file to be read via
     GDAL. Obviously this option will work only with GMT versions
     built with GDAL support. The image can be indexed or true color
-    (RGB) and can be an URL of a remotely located file. That is **-D**
+    (RGB) and can be an URL of a remotely located file. That means
     `http://www.somewhere.com/image.jpg <http://www.somewhere.com/image.jpg>`_
     is a valid file syntax. Note, however, that to use it this way you
     must not be blocked by a proxy. If you are, chances are good that it
@@ -127,7 +130,7 @@ Optional Arguments
     *http_proxy* with the value 'your_proxy:port' Append
     **r** to use the region specified by **-R** to apply to the image.
     For example, if you have used **-Rd** then the image will be
-    assigned the limits of a global domain. The interest of this mode is
+    assigned the limits of a global domain. The purpose of this mode is
     that you can project a raw image (an image without referencing
     coordinates).
 
@@ -284,7 +287,7 @@ remotely located Jessica Rabbit
 
    ::
 
-    gmt grdimage -JI15c -Rd -Dr \
+    gmt grdimage -JI15c -Rd \
         http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg \
         -P > jess.ps
 

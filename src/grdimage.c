@@ -560,6 +560,8 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+EXTERN_MSC int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header);
+
 int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
 	bool nothing_inside = false, use_intensity_grid;
@@ -625,22 +627,20 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 	}
 
-#if 0
-	if (!Ctrl->D.active) {	/* See if input is an image and we don't know that yet. */
-		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[0], NULL)) != NULL) {
-			gmtlib_read_grd_info (GMT, Ctrl->In.file[0], I->header);
-			HH = gmt_get_H_hidden (I->header);
-			if (HH->orig_datatype == GMT_UCHAR) Ctrl->D.active = true;
-			if (Ctrl->D.active && GMT->common.R.active[RSET]) Ctrl->D.mode = true;
-		}
-	}
-#endif
-
 	if (!Ctrl->D.active && gmt_raster_type (GMT, Ctrl->In.file[0]) == GMT_IS_IMAGE) {	/* Check if input is a valid image instead of a raster */
 		Ctrl->D.active = true;
 		if (GMT->common.R.active[RSET]) Ctrl->D.mode = true;
 	}
 	
+	if (!Ctrl->D.active) {	/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
+		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_GRID_IS_IMAGE, NULL, Ctrl->In.file[0], NULL)) != NULL) {
+			gmtlib_read_grd_info (GMT, Ctrl->In.file[0], I->header);	/* Re-read header as grid to ensure orig_datatype is set*/
+			HH = gmt_get_H_hidden (I->header);	/* Get hidden structure */
+			if (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR) Ctrl->D.active = true;
+			if (Ctrl->D.active && GMT->common.R.active[RSET]) Ctrl->D.mode = true;
+		}
+	}
+
 	if (Ctrl->D.active) {	/* Main input is a single image and not a grid */
 
 		if (use_intensity_grid && GMT->common.R.active[RSET]) {

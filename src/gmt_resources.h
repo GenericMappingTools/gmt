@@ -340,7 +340,8 @@ enum GMT_enum_gridio {
 	GMT_GRID_ROW_BY_ROW	   = 32U,   /* Read|write the grid array one row at the time sequentially */
 	GMT_GRID_ROW_BY_ROW_MANUAL = 64U,   /* Read|write the grid array one row at the time in any order */
 	GMT_GRID_XY		   = 128U,  /* Allocate and initialize x,y vectors */
-	GMT_GRID_IS_GEO		   = 256U   /* Grid is a geographic grid, not Cartesian */
+	GMT_GRID_IS_GEO		   = 256U,  /* Grid is a geographic grid, not Cartesian */
+	GMT_GRID_IS_IMAGE	   = 512U   /* Grid may be an image, only allowed with GMT_CONTAINER_ONLY */
 };
 
 #define GMT_GRID_ALL		0U   /* Backwards compatibility for < 5.3.3; See GMT_CONTAINER_AND_DATA */

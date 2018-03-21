@@ -231,7 +231,7 @@ EXTERN_MSC int gmtlib_get_option_id (int start, char *this_option);
 #ifdef HAVE_GDAL
 EXTERN_MSC int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, double *wesn,
 			unsigned int *pad, unsigned int complex_mode);		/* Function to read true images via GDAL */
-int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I);
+int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image, struct GMT_IMAGE *I);
 #endif
 
 /* LOCAL MACROS USED BY GMT_*.C ONLY - NOT PART OF GMT_DEV.H DISTRIBUTION */
