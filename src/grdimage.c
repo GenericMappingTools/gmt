@@ -625,8 +625,10 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (gmt_raster_type (GMT, Ctrl->In.file[0]) == GMT_IS_IMAGE)	/* Check if input is a valid image instead of a raster */
+	if (gmt_raster_type (GMT, Ctrl->In.file[0]) == GMT_IS_IMAGE) {	/* Check if input is a valid image instead of a raster */
 		Ctrl->D.active = true;
+		if (GMT->common.R.active[RSET]) Ctrl->D.mode = true;
+	}
 	
 	if (Ctrl->D.active) {	/* Main input is a single image and not a grid */
 
