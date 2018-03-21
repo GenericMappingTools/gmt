@@ -3055,6 +3055,94 @@ void gmtlib_contract_pad (struct GMT_CTRL *GMT, void *object, int family, unsign
 	gmtlib_contract_headerpad (GMT, h, orig_pad, orig_wesn);
 }
 
+int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
+	/* Returns the type of the file (either grid or image) */
+	FILE *fp = NULL;
+	unsigned char data[8] = {""};
+	char *F = NULL, path[PATH_MAX] = {""};
+	int j;
+	
+	if (!file) return (GMT_ARG_IS_NULL);	/* Gave nothing */
+	if (gmt_M_file_is_cache (file)) {	/* Must download, then modify the name */
+		F = strdup (&file[1]);
+		(void)gmt_download_file_if_not_found (GMT, file, 0);
+	}
+	else
+		F = strdup (file);
+	
+	j = (int)strlen(F) - 1;
+	while (j && F[j] && F[j] != '+') j--;	/* See if we have a band request */
+	if (j && F[j+1] == 'b') F[j] = '\0';			/* Temporarily strip the band request string so that the opening test doesn't fail */
+	if (!gmt_getdatapath (GMT, F, path, R_OK)) {
+		gmt_M_str_free (F);
+		return GMT_GRDIO_FILE_NOT_FOUND;
+	}
+
+	if ((fp = fopen (path, "rb")) == NULL) {
+		gmt_M_str_free (F);
+		return (GMT_ERROR_ON_FOPEN);
+	}
+	gmt_M_str_free (F);
+	if (gmt_M_fread (data, sizeof (unsigned char), 8, fp) < 4) {
+		fclose (fp);
+		return (GMT_GRDIO_READ_FAILED);	/* Failed to get one row */
+	}
+
+	/* Different magic chars for different image formats:
+	   .jpg:  FF D8 FF
+	   .png:  89 50 4E 47 0D 0A 1A 0A
+	   .gif:  GIF87a      
+	          GIF89a
+	   .tiff: 49 49 2A 00
+	          4D 4D 00 2A
+	   .bmp:  BM 
+	   .webp: RIFF ???? WEBP 
+	   .ico   00 00 01 00
+	          00 00 02 00 ( cursor files )
+	   .ras   59 A6 6A 95
+ 	*/
+
+	switch (data[0]) {
+		case 0xFF:
+			return ( !strncmp( (const char*)data, "\xFF\xD8\xFF", 3 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+
+		case 0x89:
+			return ( !strncmp( (const char*)data, "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A", 8 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+
+		case 'G':
+			return ( !strncmp( (const char*)data, "GIF87a", 6 ) || !strncmp( (const char*)data, "GIF89a", 6 ) ) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+
+		case 'I':
+			return ( !strncmp( (const char*)data, "\x49\x49\x2A\x00", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+
+		case 'M':
+			return ( !strncmp( (const char*)data, "\x4D\x4D\x00\x2A", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+
+		case 'B':
+			return (( data[1] == 'M' )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+
+		case 0x59:
+			return ( !strncmp( (const char*)data, "\x59\xA6\x6A\x95", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+
+		case 'R':
+			if ( strncmp( (const char*)data,     "RIFF", 4 )) 
+				return GMT_IS_GRID;
+			if ( strncmp( (const char*)(data+8), "WEBP", 4 )) 
+				return GMT_IS_GRID;
+			return GMT_IS_IMAGE;	break;
+
+		case '\0':
+			if ( !strncmp( (const char*)data, "\x00\x00\x01\x00", 4 )) 
+				return GMT_IS_GRID;
+			if ( !strncmp( (const char*)data, "\x00\x00\x02\x00", 4 )) 
+				return GMT_IS_GRID;
+			return GMT_IS_IMAGE;	break;
+
+		default:
+			return GMT_IS_GRID;	break;
+	}
+}
+
 #ifdef HAVE_GDAL
 GMT_LOCAL void gdal_free_from (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread) {
 	int i;

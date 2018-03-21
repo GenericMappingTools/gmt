@@ -147,6 +147,7 @@ EXTERN_MSC bool gmt_file_is_srtmtile (struct GMTAPI_CTRL *API, const char *file,
 
 /* gmt_grdio.c: */
 
+EXTERN_MSC int gmt_raster_type (struct GMT_CTRL *GMT, char *file);
 EXTERN_MSC void gmt_copy_gridheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *to, struct GMT_GRID_HEADER *from);
 EXTERN_MSC struct GMT_GRID *gmt_get_grid (struct GMT_CTRL *GMT);
 EXTERN_MSC bool gmt_grd_is_global (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
