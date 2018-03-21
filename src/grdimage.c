@@ -625,6 +625,17 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 	}
 
+#if 0
+	if (!Ctrl->D.active) {	/* See if input is an image and we don't know that yet. */
+		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[0], NULL)) != NULL) {
+			gmtlib_read_grd_info (GMT, Ctrl->In.file[0], I->header);
+			HH = gmt_get_H_hidden (I->header);
+			if (HH->orig_datatype == GMT_UCHAR) Ctrl->D.active = true;
+			if (Ctrl->D.active && GMT->common.R.active[RSET]) Ctrl->D.mode = true;
+		}
+	}
+#endif
+
 	if (!Ctrl->D.active && gmt_raster_type (GMT, Ctrl->In.file[0]) == GMT_IS_IMAGE) {	/* Check if input is a valid image instead of a raster */
 		Ctrl->D.active = true;
 		if (GMT->common.R.active[RSET]) Ctrl->D.mode = true;
