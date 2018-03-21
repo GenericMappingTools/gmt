@@ -3060,7 +3060,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	FILE *fp = NULL;
 	unsigned char data[8] = {""};
 	char *F = NULL, path[PATH_MAX] = {""};
-	int j;
+	int j, code;
 	
 	if (!file) return (GMT_ARG_IS_NULL);	/* Gave nothing */
 	if (gmt_M_file_is_cache (file)) {	/* Must download, then modify the name */
@@ -3104,43 +3104,50 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 
 	switch (data[0]) {
 		case 0xFF:
-			return ( !strncmp( (const char*)data, "\xFF\xD8\xFF", 3 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+			code = ( !strncmp( (const char*)data, "\xFF\xD8\xFF", 3 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
 		case 0x89:
-			return ( !strncmp( (const char*)data, "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A", 8 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+			code = ( !strncmp( (const char*)data, "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A", 8 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
 		case 'G':
-			return ( !strncmp( (const char*)data, "GIF87a", 6 ) || !strncmp( (const char*)data, "GIF89a", 6 ) ) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+			code = ( !strncmp( (const char*)data, "GIF87a", 6 ) || !strncmp( (const char*)data, "GIF89a", 6 ) ) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
 		case 'I':
-			return ( !strncmp( (const char*)data, "\x49\x49\x2A\x00", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+			code = ( !strncmp( (const char*)data, "\x49\x49\x2A\x00", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
 		case 'M':
-			return ( !strncmp( (const char*)data, "\x4D\x4D\x00\x2A", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+			code = ( !strncmp( (const char*)data, "\x4D\x4D\x00\x2A", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
 		case 'B':
-			return (( data[1] == 'M' )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
+			code = (( data[1] == 'M' )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
 		case 0x59:
 			return ( !strncmp( (const char*)data, "\x59\xA6\x6A\x95", 4 )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
 
 		case 'R':
 			if ( strncmp( (const char*)data,     "RIFF", 4 )) 
-				return GMT_IS_GRID;
-			if ( strncmp( (const char*)(data+8), "WEBP", 4 )) 
-				return GMT_IS_GRID;
-			return GMT_IS_IMAGE;	break;
+				code = GMT_IS_GRID;
+			else if ( strncmp( (const char*)(data+8), "WEBP", 4 )) 
+				code = GMT_IS_GRID;
+			else
+				code = GMT_IS_IMAGE;
+			break;
 
 		case '\0':
 			if ( !strncmp( (const char*)data, "\x00\x00\x01\x00", 4 )) 
-				return GMT_IS_GRID;
-			if ( !strncmp( (const char*)data, "\x00\x00\x02\x00", 4 )) 
-				return GMT_IS_GRID;
-			return GMT_IS_IMAGE;	break;
+				code =  GMT_IS_GRID;
+			else if ( !strncmp( (const char*)data, "\x00\x00\x02\x00", 4 )) 
+				code =  GMT_IS_GRID;
+			else
+				code =  GMT_IS_IMAGE;
+			break;
 
 		default:
-			return GMT_IS_GRID;	break;
+			code =  GMT_IS_GRID;	break;
 	}
+	if (code == GMT_IS_IMAGE)
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Detected a valid image instead of grid\n");
+	return code;
 }
 
 #ifdef HAVE_GDAL
