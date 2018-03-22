@@ -297,11 +297,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 				Ctrl->C.file = strdup (opt->arg);
 				if (c) c[0] = '+';	/* Restore */
 				break;
-
+#ifdef HAVE_GDAL
 			case 'D':	/* Get an image via GDAL */
 				Ctrl->D.active = true;
+				Ctrl->D.mode = (opt->arg[0] == 'r');
 				break;
-
+#endif
 			case 'E':	/* Sets dpi */
 				Ctrl->E.active = true;
 				if (opt->arg[0] == 'i')	/* Interpolate image to device resolution */
@@ -410,8 +411,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 			n_errors++;
 #endif
 		}	
-		if (GMT->common.R.active[RSET])
-			Ctrl->D.mode = true;
 	}
 	n_errors += gmt_M_check_condition (GMT, GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->common.J.active, 
 	                                   "Syntax error: Must specify a map projection with the -J option\n");
@@ -633,11 +632,12 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 	}
 
+#ifdef HAVE_GDAL
 	if (!Ctrl->D.active && gmt_raster_type (GMT, Ctrl->In.file[0]) == GMT_IS_IMAGE) {	/* Check if input is a valid image instead of a raster */
 		Ctrl->D.active = true;
 		if (GMT->common.R.active[RSET]) Ctrl->D.mode = true;
 	}
-	
+
 	if (!Ctrl->D.active) {	/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_GRID_IS_IMAGE, NULL, Ctrl->In.file[0], NULL)) != NULL) {
 			gmtlib_read_grd_info (GMT, Ctrl->In.file[0], I->header);	/* Re-read header as grid to ensure orig_datatype is set*/
@@ -650,6 +650,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			}
 		}
 	}
+#endif
 
 	if (Ctrl->D.active) {	/* Main input is a single image and not a grid */
 
