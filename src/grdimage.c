@@ -562,9 +562,11 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 
 EXTERN_MSC int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header);
 
-#define img_inc_is_one(h) (h->inc[GMT_X] == 0.0 && h->inc[GMT_Y] == 0.0)
-#define img_region_is_dimension(h) (h->wesn[XLO] == 0.0 && h->wesn[XHI] == 0.0 && img_inc_is_one(h) && urint (h->wesn[XHI]) == h->n_columns && urint (h->wesn[YHI]) == h->n_rows)
-#define img_region_is_invalid(h) (h->wesn[XLO] == 0.0 && h->wesn[XHI] == 0.0 && img_inc_is_one(h) && (h->wesn[YHI] > 90.0 || h->wesn[XHI] > 720.0))
+#define img_inc_is_one(h) (h->inc[GMT_X] == 1.0 && h->inc[GMT_Y] == 1.0)
+#define img_region_is_dimension(h) (h->wesn[XLO] == 0.0 && h->wesn[YLO] == 0.0 && img_inc_is_one(h) && \
+                                    urint (h->wesn[XHI]) == h->n_columns && urint (h->wesn[YHI]) == h->n_rows)
+#define img_region_is_invalid(h) (h->wesn[XLO] == 0.0 && h->wesn[YLO] == 0.0 && img_inc_is_one(h) && \
+                                  (h->wesn[YHI] > 90.0 || h->wesn[XHI] > 720.0))
 
 int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
@@ -667,7 +669,6 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file[0], NULL)) == NULL) {
 			Return (API->error);
 		}
-		//if (gmt_M_is_geographic (GMT, GMT_IN) && I->header->wesn[YHI] > 90.0) Ctrl->D.mode = true;	/* Need to set image -R to projection region */
 		mixed = clean_global_headers (GMT, I->header);
 		HH = gmt_get_H_hidden (I->header);
 		if (strncmp (I->header->mem_layout, "BRP", 3) != 0)
@@ -695,7 +696,6 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 		header_work = I->header;	/* OK, that's what what we'll use to send to gmt_grd_setregion */
 	}
-
 
 	if (!Ctrl->D.active) {	/* Read the headers of 1 or 3 grids */
 		for (k = 0; k < n_grids; k++) {
