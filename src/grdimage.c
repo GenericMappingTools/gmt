@@ -659,7 +659,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->In.file[0], NULL)) == NULL) {
 			Return (API->error);
 		}
-		if (gmt_M_is_geographic (GMT, GMT_IN) && I->header->wesn[YHI] > 90.0) Ctrl->D.mode = true;	/* Need to set image -R to projection region */
+		//if (gmt_M_is_geographic (GMT, GMT_IN) && I->header->wesn[YHI] > 90.0) Ctrl->D.mode = true;	/* Need to set image -R to projection region */
 		mixed = clean_global_headers (GMT, I->header);
 		HH = gmt_get_H_hidden (I->header);
 		if (strncmp (I->header->mem_layout, "BRP", 3) != 0)
