@@ -562,6 +562,10 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 
 EXTERN_MSC int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header);
 
+#define img_inc_is_one(h) (h->inc[GMT_X] == 0.0 && h->inc[GMT_Y] == 0.0)
+#define img_region_is_dimension(h) (h->wesn[XLO] == 0.0 && h->wesn[XHI] == 0.0 && img_inc_is_one(h) && urint (h->wesn[XHI]) == h->n_columns && urint (h->wesn[YHI]) == h->n_rows)
+#define img_region_is_invalid(h) (h->wesn[XLO] == 0.0 && h->wesn[XHI] == 0.0 && img_inc_is_one(h) && (h->wesn[YHI] > 90.0 || h->wesn[XHI] > 720.0))
+
 int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
 	bool nothing_inside = false, use_intensity_grid;
@@ -637,7 +641,11 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			gmtlib_read_grd_info (GMT, Ctrl->In.file[0], I->header);	/* Re-read header as grid to ensure orig_datatype is set*/
 			HH = gmt_get_H_hidden (I->header);	/* Get hidden structure */
 			if (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR) Ctrl->D.active = true;
-			if (Ctrl->D.active && GMT->common.R.active[RSET]) Ctrl->D.mode = true;
+			/* Guess that if the image region goes from 0 to col/rol-dimensions then we want -Dr */
+			if (Ctrl->D.active && GMT->common.R.active[RSET]) {	/* Should we add -Dr or is it just a valid subset specification? */
+				if (gmt_M_is_geographic (GMT, GMT_IN) && img_region_is_invalid (I->header)) Ctrl->D.mode = true;
+				else if (img_region_is_dimension (I->header)) Ctrl->D.mode = true;
+			}
 		}
 	}
 
