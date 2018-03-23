@@ -561,8 +561,8 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 
 /*! . */
 GMT_LOCAL void gmtinit_setautopagesize (struct GMT_CTRL *GMT) {
-	/* In GMT modern mode we use the largest possible square page, portrait mode, and then crop automatically */
-	GMT->current.setting.ps_page_size[0] = GMT->current.setting.ps_page_size[1] = 32767;	/* Max area in pixels */
+	/* In GMT modern mode we use the largest possible square page (~11x11 meters), portrait mode, and then crop automatically */
+	GMT->current.setting.ps_page_size[0] = GMT->current.setting.ps_page_size[1] = GMT_PAPER_DIM;	/* Max area in points */
 	GMT->current.setting.ps_media = -USER_MEDIA_OFFSET;
 	GMT->current.setting.ps_orientation = PSL_PORTRAIT;
 }

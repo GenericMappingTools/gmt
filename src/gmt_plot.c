@@ -6199,7 +6199,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		O_active = (k) ? true : false;	/* -O is determined by presence or absence of hidden PS file */
 		/* Determine paper size */
 		wants_PS = gmtlib_fig_is_ps (GMT);	/* True if we have requested a PostScript output format */
-		if (wants_PS && media_size[GMT_X] > 32766.9) {	/* Cannot use "auto" if requesting a PostScript file */
+		if (wants_PS && media_size[GMT_X] > (GMT_PAPER_DIM-0.1)) {	/* Cannot use "auto" if requesting a PostScript file */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Must specify a paper size when requesting a PostScript file\n");
 			if (GMT->current.setting.proj_length_unit == GMT_INCH) {	/* Use US settings */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Changing paper size to US Letter, but we cannot know if this is adequate for your plot; use PS_MEDIA.\n");
@@ -6213,6 +6213,10 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Also changing to landscape orientation based on plot dimensions but again not sure.\n");
 			}
+		}
+		if (!wants_PS && !O_active) {	/* Not desiring PS output so we can add safety margin of 5 inch for initial layer */
+			if (!(GMT->common.X.active || GMT->common.Y.active))
+				GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = GMT_PAPER_MARGIN;
 		}
 		if (!O_active) {	/* See if special movie labeling file exists under modern mode */
 			char file[PATH_MAX] = {""};

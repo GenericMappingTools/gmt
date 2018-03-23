@@ -14643,6 +14643,34 @@ void gmt_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x,
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Converted code %d to i = %d, j = %d and finally x = %g and y = %g\n", justify, i, j, *x, *y);
 }
 
+void gmt_just_to_xy (struct GMT_CTRL *GMT, int justify,double *x, double *y) {
+	/* See gmt_just_decode for how text code becomes the justify integer.
+ 	 * If an oblique projection is in effect OR the spacing between graticules is
+ 	 * nonlinear AND we are requesting a justification centered in y, then we must
+	 * use the projectioned coordinates directly and return x,y in plot coordintaes. */
+	int i, j;
+
+	i = justify % 4;	/* Split the 2-D justify code into x just 1-3 */
+	j = justify / 4;	/* Split the 2-D justify code into y just 0-2 */
+	/* Check for negative Cartesian scales */
+	if (!GMT->current.proj.xyz_pos[GMT_X]) i = 4 - i;	/* Negative x-scale, flip left-to-right */
+	if (!GMT->current.proj.xyz_pos[GMT_Y]) j = 2 - j;	/* Negative y-scale, flip top-to-bottom */
+	if (i == 1)
+		*x = GMT->current.proj.rect[XLO];
+	else if (i == 2)
+		*x = (GMT->current.proj.rect[XLO] + GMT->current.proj.rect[XHI]) / 2;
+	else
+		*x = GMT->current.proj.rect[XHI];
+
+	if (j == 0)
+		*y = GMT->current.proj.rect[YLO];
+	else if (j == 1)
+		*y = (GMT->current.proj.rect[YLO] + GMT->current.proj.rect[YHI]) / 2;
+	else
+		*y = GMT->current.proj.rect[YHI];
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Converted code %d to i = %d, j = %d and finally x = %g and y = %g\n", justify, i, j, *x, *y);
+}
+
 /*! . */
 void gmtlib_refpoint_to_panel_xy (struct GMT_CTRL *GMT, int refpoint, struct GMT_SUBPLOT *P, double *x, double *y) {
 	/* Takes the refpoint value and converts to panel position in inches. */
@@ -14807,10 +14835,17 @@ void gmt_set_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *A) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert map reference point coordinates from %g, %g to %g, %g\n", A->x, A->y, x, y);
 		A->x = x;	A->y = y;
 	}
-	else if (A->mode == GMT_REFPOINT_JUST || A->mode == GMT_REFPOINT_JUST_FLIP) {	/* Convert from justify code to map coordinates, then to plot coordinates */
+	else if (A->mode == GMT_REFPOINT_JUST) {	/* Convert from justify code to map coordinates, then to plot coordinates */
+		/* Since intended for inside frame items (scales) we use the wesn rectangle to get the lon/lat coordinate from the code */
 		gmt_just_to_lonlat (GMT, A->justify, gmt_M_is_geographic (GMT, GMT_IN), &A->x, &A->y);
 		gmt_geo_to_xy (GMT, A->x, A->y, &x, &y);
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert code reference point coordinates from justification %s to %g, %g\n", GMT_just_code[A->justify], A->x, A->y);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert code inside reference point coordinates from justification %s to %g, %g\n", GMT_just_code[A->justify], A->x, A->y);
+		A->x = x;	A->y = y;
+	}
+	else if (A->mode == GMT_REFPOINT_JUST_FLIP) {	/* Convert from justify code to plot coordinates */
+		/* Since intended for outside frame items (scales) we use the bounding box rectangle to get the plot coordinate from the code */
+		gmt_just_to_xy (GMT, A->justify, &x, &y);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert code outside reference point coordinates from justification %s to %g, %g\n", GMT_just_code[A->justify], A->x, A->y);
 		A->x = x;	A->y = y;
 	}
 	else if (A->mode == GMT_REFPOINT_NORM) {	/* Convert relative to plot coordinates */

@@ -82,6 +82,8 @@
 #define GMT_CONTROLLER	0	/* func_level of controlling process (gmt.c or external API) */
 #define GMT_TOP_MODULE	1	/* func_level of top-level module being called */
 
+#define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode */
+#define GMT_PAPER_MARGIN	5	/* Default paper margin in inches under modern mode */
 
 /* Specific feature geometries as obtained from OGR */
 /* Note: As far as registering or reading data, GMT only needs to know if data type is POINT, LINE, or POLY */
