@@ -575,7 +575,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	unsigned int colormask_offset = 0, try, row, actual_row, col, mixed = 0;
 	uint64_t node_RGBA = 0;             /* uint64_t for the RGB(A) image array. */
 	uint64_t node, k, kk, byte, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
-	int index = 0, ks, error = 0, ret_val = GMT_NOERROR;
+	int index = 0, ks, error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET;
 	
 	char   *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"}, cmd[GMT_LEN256] = {""};
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
@@ -633,12 +633,13 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 
 #ifdef HAVE_GDAL
-	if (!Ctrl->D.active && gmt_raster_type (GMT, Ctrl->In.file[0]) == GMT_IS_IMAGE) {	/* Check if input is a valid image instead of a raster */
+	if (!Ctrl->D.active && (ftype = gmt_raster_type (GMT, Ctrl->In.file[0])) == GMT_IS_IMAGE) {
+		/* The input file is an ordinary image instead of a grid and -R may be required to use it */
 		Ctrl->D.active = true;
 		if (GMT->common.R.active[RSET]) Ctrl->D.mode = true;
 	}
 
-	if (!Ctrl->D.active) {	/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
+	if (!Ctrl->D.active && ftype == GMT_NOTSET) {	/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_GRID_IS_IMAGE, NULL, Ctrl->In.file[0], NULL)) != NULL) {
 			gmtlib_read_grd_info (GMT, Ctrl->In.file[0], I->header);	/* Re-read header as grid to ensure orig_datatype is set*/
 			HH = gmt_get_H_hidden (I->header);	/* Get hidden structure */

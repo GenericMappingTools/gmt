@@ -28,6 +28,7 @@
  *		31-MAR-2006: Changed -X to -L to avoid GMT collision
  *		23-MAY-2006: Added -Q for limits on speed/azimuths
  *		21-FEB-2008: Added -Ga|b<rec> for limits on rec range
+ *		22-MAR-2018: Added -am8|16 for recompute mag using diur
  *
  *
  */
@@ -56,26 +57,28 @@
 #define ADJ_MG	3
 
 /* Carter adjustment options */
-#define CT_U_MINUS_DEPTH				1
-#define CT_U_MINUS_CARTER				2
-#define CT_UCORR_MINUS_CARTER_TU		4
+#define CT_U_MINUS_DEPTH		1
+#define CT_U_MINUS_CARTER		2
+#define CT_UCORR_MINUS_CARTER_TU	4
 #define CT_UCORR_CARTER_TU_MINUS_DEPTH	8
 
 /* FAA adjustment options */
-#define GR_FAA_STORED					1
-#define GR_OBS_MINUS_NGRAV				2
-#define GR_OBS_PLUS_EOT_MINUS_NGRAV		4
+#define GR_FAA_STORED			1
+#define GR_OBS_MINUS_NGRAV		2
+#define GR_OBS_PLUS_EOT_MINUS_NGRAV	4
 #define GR_OBS_PLUS_CEOT_MINUS_NGRAV	8
 
 /* Depth adjustment options */
-#define DP_DEPTH_STORED				1
-#define DP_TWT_X_V					2
+#define DP_DEPTH_STORED			1
+#define DP_TWT_X_V			2
 #define DP_TWT_X_V_MINUS_CARTER		4
 
 /* Mag adjustment options */
 #define MG_MAG_STORED			1
 #define MG_MTF1_MINUS_IGRF		2
 #define MG_MTF2_MINUS_IGRF		4
+#define MG_MTF1_PLUS_DIUR_MINUS_IGRF	8
+#define MG_MTF2_PLUS_DIUR_MINUS_IGRF	16
 
 #define N_D	0	/* These are indices for -N subsets */
 #define N_S	1
@@ -300,9 +303,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t       f4 return difference gobs + eot - ngrav.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       f8 return difference gobs + ceot - ngrav.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m<code> Adjust field mag.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       m1 return mag as stored in file [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       m2 return difference mtfx - igrf, where x = msens (or 1 if undefined).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       m4 return difference mtfx - igrf, where x != msens (or 2 if undefined).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       m1  return mag as stored in file [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       m2  return difference mtfx - igrf, where x = msens (or 1 if undefined).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       m4  return difference mtfx - igrf, where x != msens (or 2 if undefined).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       m8  return difference mtfx + diur - igrf, where x = msens (or 1 if undefined).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       m16 return difference mtfx + diur - igrf, where x != msens (or 2 if undefined).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       mc<offset>[unit] Apply cable tow distance correction to mtf1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t will compute fake times for cruises with known duration but lacking record times.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The optional -A+ means selected anomalies will be recalculated even when the original\n");
@@ -440,8 +445,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						}
 						else {
 							code = atoi (&opt->arg[k+1]);
-							if (code < 1 || code > 7) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Am<code>.  <code> must be 1,2,4 or binary combination.\n");
+							if (code < 1 || code > 33) {
+								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Am<code>.  <code> must be 1,2,4,8,16 or binary combination.\n");
 								n_errors++;
 							}
 							Ctrl->A.code[ADJ_MG] |= code;
@@ -749,7 +754,7 @@ GMT_LOCAL int augment_aux_columns (int n_items, char **item_name, struct MGD77_A
 int GMT_mgd77list (void *V_API, int mode, void *args) {
 	int i, c, id, k, time_column, lon_column, lat_column, error = 0;
 	int t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0;
-	int ms_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
+	int ms_col = 0, md_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
 	int sep_flag, n_paths;
 	
 	unsigned int select_option, n_out = 0, argno, n_cruises = 0, kx, n_items = 0;
@@ -922,23 +927,27 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	need_depth = ((Ctrl->A.code[ADJ_CT] & (CT_U_MINUS_DEPTH | CT_UCORR_MINUS_CARTER_TU | CT_UCORR_CARTER_TU_MINUS_DEPTH)) ||
 	              (Ctrl->A.code[ADJ_DP] & DP_DEPTH_STORED));
 	if (need_depth) {                   /* Need depth*/
-		 if (MGD77_Get_Column (GMT, "depth", &M) == MGD77_NOT_SET)
+		if (MGD77_Get_Column (GMT, "depth", &M) == MGD77_NOT_SET)
 		 	strcat (fx_setting, ",depth"), n_sub++;	/* Must append depth to requested list */
 	}
 	if (Ctrl->A.code[ADJ_GR] > GR_FAA_STORED) {     /* Need gobs */
-		 if (MGD77_Get_Column (GMT, "gobs", &M) == MGD77_NOT_SET)
+		if (MGD77_Get_Column (GMT, "gobs", &M) == MGD77_NOT_SET)
 		 	strcat (fx_setting, ",gobs"), n_sub++;	/* Must append gobs to requested list */
 	}
 	if (Ctrl->A.code[ADJ_GR] & GR_OBS_PLUS_EOT_MINUS_NGRAV) {    /* Need stored eot */
-		 if (MGD77_Get_Column (GMT, "eot", &M) == MGD77_NOT_SET) strcat (fx_setting, ",eot"), n_sub++;	/* Must append eot to requested list */
+		if (MGD77_Get_Column (GMT, "eot", &M) == MGD77_NOT_SET) strcat (fx_setting, ",eot"), n_sub++;	/* Must append eot to requested list */
 	}
 	if (Ctrl->A.code[ADJ_MG] > MG_MAG_STORED) {     /* Need mtf1,2, and msens */
-		 if (MGD77_Get_Column (GMT, "mtf1", &M) == MGD77_NOT_SET)
+		if (MGD77_Get_Column (GMT, "mtf1", &M) == MGD77_NOT_SET)
 		 	strcat (fx_setting, ",mtf1"), n_sub++;	/* Must append mtf1 to requested list */
-		 if (MGD77_Get_Column (GMT, "mtf2", &M) == MGD77_NOT_SET)
+		if (MGD77_Get_Column (GMT, "mtf2", &M) == MGD77_NOT_SET)
 		 	strcat (fx_setting, ",mtf2"), n_sub++;	/* Must append mtf2 to requested list */
-		 if (MGD77_Get_Column (GMT, "msens", &M) == MGD77_NOT_SET)
+		if (MGD77_Get_Column (GMT, "msens", &M) == MGD77_NOT_SET)
 		 	strcat (fx_setting, ",msens"), n_sub++;	/* Must append msens to requested list */
+		if (Ctrl->A.code[ADJ_MG] >= 8) {     /* Need mtf1,2, msens and diur */
+			if (MGD77_Get_Column (GMT, "diur", &M) == MGD77_NOT_SET)
+		 		strcat (fx_setting, ",diur"), n_sub++;	/* Must append diur to requested list */
+		}
 	}
 	else if (Ctrl->A.cable_adjust)
 		 if (MGD77_Get_Column (GMT, "mtf1", &M) == MGD77_NOT_SET) strcat (fx_setting, ",mtf1"), n_sub++;	/* Must append mtf1 to requested list */
@@ -1151,6 +1160,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			m1_col = MGD77_Get_Column (GMT, "mtf1",  &M);
 			m2_col = MGD77_Get_Column (GMT, "mtf2",  &M);
 			ms_col = MGD77_Get_Column (GMT, "msens",  &M);
+			md_col = MGD77_Get_Column (GMT, "diur",  &M);
 		}
 		if ((auxlist[MGD77_AUX_GR].requested || (Ctrl->A.code[ADJ_GR] > GR_FAA_STORED)) && Ctrl->A.GF_version == MGD77_NOT_SET) {
 			Ctrl->A.GF_version = D->H.mgd77[use]->Gravity_Theoretical_Formula_Code - '0';
@@ -1420,6 +1430,24 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 					i = irint (dvalue[ms_col][rec]);
 					k = (i == 2) ? m1_col : m2_col;
 					m = MGD77_Recalc_Mag_Anomaly_IGRF (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], false);
+				}
+				if ((Ctrl->A.code[ADJ_MG] & MG_MTF1_PLUS_DIUR_MINUS_IGRF) && gmt_M_is_dnan (m)) {	/* Try mtf 1st + diur - igrf */
+					if (need_date) {	/* Did not get computed already */
+						date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
+						need_date = false;
+					}
+					i = irint (dvalue[ms_col][rec]);
+					k = (i == 2) ? m2_col : m1_col;
+					m = dvalue[md_col][rec] + MGD77_Recalc_Mag_Anomaly_IGRF (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], false);
+				}
+				if ((Ctrl->A.code[ADJ_MG] & MG_MTF2_PLUS_DIUR_MINUS_IGRF) && gmt_M_is_dnan (m)) {	/* Try mtf 2nd + diur - igrf */
+					if (need_date) {	/* Did not get computed already */
+						date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
+						need_date = false;
+					}
+					i = irint (dvalue[ms_col][rec]);
+					k = (i == 2) ? m1_col : m2_col;
+					m = dvalue[md_col][rec] + MGD77_Recalc_Mag_Anomaly_IGRF (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], false);
 				}
 				if (Ctrl->A.force || !gmt_M_is_dnan(dvalue[m_col][rec])) dvalue[m_col][rec] = m;
 			}

@@ -3061,6 +3061,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	unsigned char data[16] = {""};
 	char *F = NULL, path[PATH_MAX] = {""};
 	int j, code;
+	size_t L;
 	
 	if (!file) return (GMT_ARG_IS_NULL);	/* Gave nothing */
 	if (gmt_M_file_is_cache (file) || gmt_M_file_is_url (file)) {	/* Must download, then modify the name */
@@ -3069,10 +3070,11 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	}
 	else
 		F = strdup (file);
+	L = strlen (F);
 	
-	j = (int)strlen(F) - 1;
+	j = (int)L - 1;
 	while (j && F[j] && F[j] != '+') j--;	/* See if we have a band request */
-	if (j && F[j+1] == 'b') F[j] = '\0';			/* Temporarily strip the band request string so that the opening test doesn't fail */
+	if (j && F[j+1] == 'b') F[j] = '\0';	/* Temporarily strip the band request string so that the opening test doesn't fail */
 	if (!gmt_getdatapath (GMT, F, path, R_OK)) {
 		gmt_M_str_free (F);
 		return GMT_GRDIO_FILE_NOT_FOUND;
@@ -3099,7 +3101,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	   .pbm   P 1-6
 	   .rgb   01 da
  	*/
-
+	
 	switch (data[0]) {
 		case 0x01:	/* SGI Iris */
 			code = (( data[1] == 0xda )) ? GMT_IS_IMAGE : GMT_IS_GRID;	break;
@@ -3136,6 +3138,15 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	}
 	if (code == GMT_IS_IMAGE)
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Detected a valid image instead of grid\n");
+	else {
+		L = strlen (file);
+		if (L >= 4 && (!strncmp (&file[L-3], ".nc", 3U) || !strncmp (&file[L-4], ".grd", 4U))) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Detected a valid grid name ending in .nc or .grd\n");
+			code = GMT_IS_GRID;
+		}
+		else
+			code = GMT_NOTSET;
+	}
 	return code;
 }
 
