@@ -7852,7 +7852,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 	/* Precalculate grid coordinates */
 
-	if (I->x) {	/* Reuse existing arrays */
+	if (I->x && 0) {	/* Reuse existing arrays */
 		x_in = I->x;	y_in = I->y;	in = true;
 	}
 	else {	/* Must allocate here */
