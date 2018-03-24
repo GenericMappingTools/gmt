@@ -3129,20 +3129,42 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	   .jp2   00 00 00 0C 6A 50 20 20 0D 0A 87 0A
 	   .img   EHFA_HEADER_TAG
 	   .ige   ERDAS_IMG_EXTERNAL_RASTER
+	   .fits  53 49 4d 50 4c 45
+	   .ewc   06 02 01 02
  	*/
 	
 	switch (data[0]) {
+		case 0x00:	/* JP2 */
+			code = ( !strncmp( (const char *)data, "\x00\x00\x00\x0C\x6A\x50\x20\x20\x0d\x0a\x87\x0a", 12 )) ? GMT_IS_GRID : GMT_NOTSET;	break;
+
 		case 0x01:	/* SGI Iris */
 			code = (( data[1] == 0xda )) ? GMT_IS_IMAGE : GMT_NOTSET;	break;
+
+		case 0x06:	/* EWC */
+			code = ( !strncmp( (const char *)data, "\x06\x02\x01\x02", 4 )) ? GMT_IS_GRID : GMT_NOTSET;	break;
+
+		case 0x53:	/* FITS */
+			code = ( !strncmp( (const char *)data, "\x53\x49\x4d\x50\x4c\x45", 6 )) ? GMT_IS_GRID : GMT_NOTSET;	break;
+
+		case 0x59:	/* Sun raster */
+			code =  ( !strncmp( (const char *)data, "\x59\xA6\x6A\x95", 4 )) ? GMT_IS_IMAGE : GMT_NOTSET;	break;
+
+		case 0x77:	/* OZI */
+			if (data[1] == 0x80 && gmt_strlcmp (&path[pos_ext], "ozfx3"))
+				code = GMT_IS_GRID;
+			else if (data[1] == 0x78 && gmt_strlcmp (&path[pos_ext], "ozf2"))
+				code = GMT_IS_GRID;
+			else
+				code = GMT_NOTSET;
+
+		case 0x89:	/* PNG */
+			code = ( !strncmp( (const char *)data, "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A", 8 )) ? GMT_IS_IMAGE : GMT_NOTSET;	break;
 
 		case 0xFF:	/* JPG */
 			code = ( !strncmp( (const char *)data, "\xFF\xD8\xFF", 3 )) ? GMT_IS_IMAGE : GMT_NOTSET;	break;
 
-		case 0x00:	/* JP2 */
-			code = ( !strncmp( (const char *)data, "\x00\x00\x00\x0C\x6A\x50\x20\x20\x0d\x0a\x87\x0a", 12 )) ? GMT_IS_GRID : GMT_NOTSET;	break;
-
-		case 0x89:	/* PNG */
-			code = ( !strncmp( (const char *)data, "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A", 8 )) ? GMT_IS_IMAGE : GMT_NOTSET;	break;
+		case 'B':	/* BMP */
+			code = (( data[1] == 'M' && gmt_strlcmp (&path[pos_ext], "bmp"))) ? GMT_IS_IMAGE : GMT_NOTSET;	break;
 
 		case 'E':	/* IMG or IGE */
 			code = ( !strncmp( (const char *)data, "EHFA_HEADER_TAG", 15 ) || !strncmp( (const char *)data, "ERDAS_IMG_EXTER", 15 ) ) ? GMT_IS_GRID : GMT_NOTSET;	break;
@@ -3156,33 +3178,28 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 		case 'M':	/* TIF */
 			code = ( !strncmp( (const char*)data, "\x4D\x4D\x00\x2A", 4 )) ? GMT_IS_GRID : GMT_NOTSET;	break;
 
-		case 'B':	/* BMP */
-			code = (( data[1] == 'M' )) ? GMT_IS_IMAGE : GMT_NOTSET;	break;
-
-		case 0x59:	/* Sun raster */
-			code =  ( !strncmp( (const char *)data, "\x59\xA6\x6A\x95", 4 )) ? GMT_IS_IMAGE : GMT_NOTSET;	break;
-
 		case 'P':	/* PPM (also check that extension starts with p since the magic bytes are a bit weak ) */
 			code = (data[1] >= '1' && data[1] <= '6' && tolower (path[pos_ext]) == 'p') ? GMT_IS_IMAGE : GMT_NOTSET;	break;
 
 		case 'R':	/* Google WEBP */
-			if ( strncmp( (const char *)data,     "RIFF", 4 )) 
-				code = GMT_NOTSET;
-			else if ( strncmp( (const char *)(data+8), "WEBP", 4 )) 
-				code = GMT_NOTSET;
-			else
+			if ( !strncmp ((const char *)data, "RIFF", 4) || !strncmp ((const char *)(data+8), "WEBP", 4)) 
 				code = GMT_IS_IMAGE;
+			else
+				code = GMT_NOTSET;
 			break;
 
-		default:
-			code =  GMT_NOTSET;	break;
+		default:	/* Just consider file extensions at this point */
+			if (gmt_strlcmp (&path[pos_ext], "sid"))
+				code = GMT_IS_GRID;
+			else
+				code =  GMT_NOTSET;	break;
 	}
 	if (code == GMT_IS_IMAGE)
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Detected a valid image instead of grid. Open via GDAL\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s considered a valid image instead of grid. Open via GDAL\n", file);
 	else if (code == GMT_IS_GRID)
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Detected file that may be image or grid.  Open via GDAL for checking\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s may be image or grid.  Open via GDAL for checking\n");
 	else
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Most likely grid. Open as grid\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s is most likely a grid. Open in GMT as grid\n");
 
 	return code;
 }
