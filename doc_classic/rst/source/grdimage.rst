@@ -51,7 +51,7 @@ clipped. Such intensity files can be created from the grid using
 :doc:`grdgradient` and, optionally, modified by :doc:`grdmath` or
 :doc:`grdhisteq`. A third alternative is available when GMT is build
 with GDAL support. Pass *img* which can be an image file (geo-referenced or not).
-In this case the images can opetionally be illuminated with the
+In this case the images can optionally be illuminated with the
 file provided via the **-I** option. Here, if image has no coordinates
 then those of the intensity file will be used.
 
