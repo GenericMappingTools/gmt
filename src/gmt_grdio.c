@@ -3189,11 +3189,15 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 			break;
 
 		default:	/* Just consider file extensions at this point */
-			if (gmt_strlcmp (&path[pos_ext], "sid"))
+			/* .sid (MrSID), .ecw (ECW), .kap (BSB), .gen (ADRG), .map (OZI) */
+			if (gmt_strlcmp (&path[pos_ext], "sid") || gmt_strlcmp (&path[pos_ext], "ecw") ||
+			    gmt_strlcmp (&path[pos_ext], "kap") || gmt_strlcmp (&path[pos_ext], "gen") ||
+				gmt_strlcmp (&path[pos_ext], "map"))
 				code = GMT_IS_GRID;
 			else
 				code =  GMT_NOTSET;	break;
 	}
+
 	if (code == GMT_IS_IMAGE)
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s considered a valid image instead of grid. Open via GDAL\n", file);
 	else if (code == GMT_IS_GRID)
