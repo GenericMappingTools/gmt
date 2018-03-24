@@ -13,11 +13,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdimage** *grd_z* \| *grd_r grd_g grd_b*
+**gmt grdimage** *grd_z* \| *img* \| *grd_r grd_g grd_b*
 [ |-A|\ *out_img*\ [**=**\ *driver*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
-[ |-D|\ [**r**\ ] ] [ |-E|\ [\ **i**\ \|\ *dpi*] ] |-J|\ *parameters*
+[ |-E|\ [\ **i**\ \|\ *dpi*] ] |-J|\ *parameters*
 [ |-G|\ [**f**\ \|\ **b**]\ *color* ]
 [ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
 [ |-J|\ **z**\ \|\ **-Z**\ *parameters* ]
@@ -48,9 +48,9 @@ intensities in the (-1,+1) range or instructions to derive intensities
 from the input data grid. Values outside this range will be
 clipped. Such intensity files can be created from the grid using
 :doc:`grdgradient` and, optionally, modified by :doc:`grdmath` or
-:doc:`grdhisteq`. Yet as a third alternative available when GMT is build
-with GDAL support the grd_z file can be an image referenced or not
-(than see **-Dr**). In this case the images can be illuminated with the
+:doc:`grdhisteq`. A third alternative is available when GMT is build
+with GDAL support. Pass *img* which can be an image file (geo-referenced or not).
+In this case the images can opetionally be illuminated with the
 file provided via the **-I** option. Here, if image has no coordinates
 then those of the intensity file will be used.
 
@@ -71,8 +71,8 @@ than that implied by the extent of the grid.
 Required Arguments
 ------------------
 
-*grd_z* \| *grd_r grd_g grd_b*
-    2-D gridded data set (or red, green, blue grids) to be imaged (See
+*grd_z* \| *img* \| *grd_r grd_g grd_b*
+    2-D gridded data set (or red, green, blue grids)  or image to be imaged (See
     GRID FILE FORMATS below.)
 
 .. _-J:
@@ -86,7 +86,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *out_img*\ [**=**\ *driver*]
-    Save an image in a raster format instead of PostScript. Use extension .ppm for a Portable
+    Save an image in a raster format instead of *PostScript*. Use extension .ppm for a Portable
     Pixel Map format. For GDAL-aware versions there are more choices: Append *out_img* to select
     the image file name and extension. If the extension is one of .bmp, .gif, .jpg, .png, or .tif
     then no driver information is required. For other output formats you must append the required
@@ -111,34 +111,13 @@ Optional Arguments
     In this case *color1* etc can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
 
-.. _-D:
-
-**-D**\ [**r**]
-    GMT will detect if any standard image format (Geotiff, TIFF, JPG, PNG,
-    GIF, etc.) is given and will automatically handle reading those via
-    GDAL.  For very obscure image formats you may need to explicitly set **-D**, which
-    specifies that the grid supplied is an image file to be read via
-    GDAL. Obviously this option will work only with GMT versions
-    built with GDAL support. The image can be indexed or true color
-    (RGB) and can be an URL of a remotely located file. That means
-    `http://www.somewhere.com/image.jpg <http://www.somewhere.com/image.jpg>`_
-    is a valid file syntax. Note, however, that to use it this way you
-    must not be blocked by a proxy. If you are, chances are good that it
-    can work by setting the environmental variable
-    *http_proxy* with the value 'your_proxy:port' Append
-    **r** to use the region specified by **-R** to apply to the image.
-    For example, if you have used **-Rd** then the image will be
-    assigned the limits of a global domain. The purpose of this mode is
-    that you can project a raw image (an image without referencing
-    coordinates).
-
 .. _-E:
 
 **-E**\ [\ **i**\ \|\ *dpi*]
     Sets the resolution of the projected grid that will be created if a
     map projection other than Linear or Mercator was selected [100]. By
     default, the projected grid will be of the same size (rows and
-    columns) as the input file. Specify **i** to use the PostScript
+    columns) as the input file. Specify **i** to use the *PostScript*
     image operator to interpolate the image at the device resolution.
 
 .. _-G:
@@ -179,7 +158,7 @@ Optional Arguments
 
 **-Q**
     Make grid nodes with z = NaN transparent, using the colormasking
-    feature in PostScript Level 3 (the PS device must support PS Level 3).
+    feature in *PostScript* Level 3 (the PS device must support PS Level 3).
 
 .. _-R:
 
@@ -227,12 +206,19 @@ Imaging Grids With Nans
 Be aware that if your input grid contains patches of NaNs, these patches
 can become larger as a consequence of the resampling that must take
 place with most map projections. Because **grdimage** uses the
-PostScript colorimage operator, for most non-linear projections we
+*PostScript* colorimage operator, for most non-linear projections we
 must resample your grid onto an equidistant rectangular lattice. If you
 find that the NaN areas are not treated adequately, consider (a) use a
 linear projection, or (b) use :doc:`grdview` **-Ts** instead.
 
 .. include:: explain_grdresample.rst_
+
+Image formats recognized
+------------------------
+
+We automatically recognize image formats via their magic bytes.  For formats
+that could contain either an image of a data set (e.g., geotiff) we determine
+which case it is and act accordingly.
 
 Examples
 --------
@@ -252,7 +238,7 @@ on a Lambert map at 1.5 cm/degree along the standard parallels 18 and
 
     gmt grdimage hawaii_grav.nc -Jl18/24/1.5c -Cshades.cpt -B1 -pdf hawaii_grav_image
 
-To create an illuminated color PostScript plot of the gridded data set
+To create an illuminated color *PostScript* plot of the gridded data set
 image.nc, using the intensities provided by the file intens.nc, and
 color levels in the file colors.cpt, with linear scaling at 10
 inch/x-unit, tickmarks every 5 units:
@@ -261,7 +247,7 @@ inch/x-unit, tickmarks every 5 units:
 
     gmt grdimage image.nc -Jx10i -Ccolors.cpt -Iintens.nc -B5 -pdf image
 
-To create an false color PostScript plot from the three grid files
+To create an false color *PostScript* plot from the three grid files
 red.nc, green.nc, and blue.nc, with linear scaling at 10 inch/x-unit,
 tickmarks every 5 units:
 
