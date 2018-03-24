@@ -17,6 +17,7 @@ Synopsis
 [ |-A|\ *out_img*\ [**=**\ *driver*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
+[ |-D|\ [**r**\ ] ]
 [ |-E|\ [\ **i**\ \|\ *dpi*] ] |-J|\ *parameters*
 [ |-G|\ [**f**\ \|\ **b**]\ *color* ]
 [ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
@@ -110,6 +111,18 @@ Optional Arguments
     to build a linear continuous CPT from those colors automatically.
     In this case *color1* etc can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
+
+.. _-D:
+
+**-D**\ [**r**]
+    GMT will automatically detect standard image files (Geotiff, TIFF,
+    JPG, PNG, GIF, etc.) and will read those via GDAL.  For very
+    obscure image formats you may need to explicitly set **-D**, which
+    specifies that the grid is in fact an image file to be read via
+    GDAL. Append **r** to assign the region specified by **-R** to the image.
+    For example, if you have used **-Rd** then the image will be
+    assigned a global domain. This mode allows you to project a raw image
+    (an image without referencing coordinates).
 
 .. _-E:
 
@@ -218,7 +231,8 @@ Image formats recognized
 
 We automatically recognize image formats via their magic bytes.  For formats
 that could contain either an image of a data set (e.g., geotiff) we determine
-which case it is and act accordingly.
+which case it is and act accordingly.  If your favorite image format is not
+automatically detected then please let us know its magic bytes so we can add it.
 
 Examples
 --------

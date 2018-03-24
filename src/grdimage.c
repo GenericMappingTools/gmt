@@ -131,15 +131,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	if (API->external) {	/* External interface */
 		GMT_Message (API, GMT_TIME_NONE, "usage: grdimage <grd_z>|<img>|<grd_r> <grd_g> <grd_b> %s [%s] [-A] [-C<cpt>]\n", GMT_J_OPT, GMT_B_OPT); 
-		GMT_Message (API, GMT_TIME_NONE, "\t[-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers>]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
-		//GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers>]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers>]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
 	}
 	else {
 #ifdef HAVE_GDAL
 		GMT_Message (API, GMT_TIME_NONE, "usage: grdimage <grd_z>|<img>|<grd_r> <grd_g> <grd_b> %s [%s] [-A<out_img>[=<driver>]] [-C<cpt>]\n",
 		             GMT_J_OPT, GMT_B_OPT); 
-		GMT_Message (API, GMT_TIME_NONE, "\t[-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
-		//GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers]] [-K] [-M] [-N] [-O] [-P] [-Q]\n");
 #else
 		GMT_Message (API, GMT_TIME_NONE, "usage: grdimage <grd_z>|<img>|<grd_r> <grd_g> <grd_b> %s [%s] [-C<cpt>] [-Ei[|<dpi>]]\n",
 		             GMT_J_OPT, GMT_B_OPT);
@@ -156,10 +154,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t  converted to rgb colors via the CPT.  Alternatively, give an image or three separate\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  grid files that contain the red, green, and blue components in the 0-255 range.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  If the image is plain (e.g., JPG, PNG, GIF) you must also give a corresponding -R.\n");
-#if 0	/* No longer required but wait a bit until purging */
 	if (API->external)	/* External interface */
 		GMT_Message (API, GMT_TIME_NONE, "\t  If -D is used then <grd_z> is instead expected to be an image.\n");
-#endif
 
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -181,13 +177,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
-#if 0	/* No longer required but wait a bit until purging */
 	if (API->external)	/* External interface */
-		GMT_Message (API, GMT_TIME_NONE, "\t-D <grd_z> is an image instead of a grid. Append r to equate image region to -R region.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t-D <img> is an image instead of a grid. Append r to equate image region to -R region.\n");
 #ifdef HAVE_GDAL
-	else
-		GMT_Message (API, GMT_TIME_NONE, "\t-D Use to read an image via GDAL. Append r to equate image region to -R region.\n");
-#endif
+	else {
+		GMT_Message (API, GMT_TIME_NONE, "\t-D GMT automatically detects standard image formats. For non-standard formats you must\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   use -D to force it to be seen as an image. Append r to equate image region with -R region.\n");
+	}
 #endif
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set dpi for the projected grid which must be constructed [100]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   if -Jx or -Jm is not selected [Default gives same size as input grid].\n");
