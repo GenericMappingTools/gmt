@@ -381,6 +381,11 @@ fonts can be found in the :doc:`gmt` man page.
 **GMT_DATA_URL**
     Address of the data directory on the remote server [The SOEST server].
 
+.. _GMT_DATA_URL_LIMIT:
+
+**GMT_DATA_URL_LIMIT**
+    Upper limit on the size of remote file to download [unlimited].
+
 .. _GMT_COMPATIBILITY:
 
 **GMT_COMPATIBILITY**

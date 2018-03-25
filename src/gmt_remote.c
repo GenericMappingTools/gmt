@@ -49,6 +49,15 @@ struct FtpFile {
 	FILE *fp;
 };
 
+GMT_LOCAL size_t throw_away(void *ptr, size_t size, size_t nmemb, void *data)
+{
+	(void)ptr;
+	(void)data;
+	/* we are not interested in the headers itself,
+	   so we only return the size we would have saved ... */
+		return (size_t)(size * nmemb);
+}
+
 GMT_LOCAL size_t fwrite_callback (void *buffer, size_t size, size_t nmemb, void *stream) {
 	struct FtpFile *out = (struct FtpFile *)stream;
 	if (out == NULL) return 0;	/* This cannot happen but Coverity fusses */
@@ -77,6 +86,44 @@ GMT_LOCAL int give_data_attribution (struct GMT_CTRL *GMT, const char *file) {
 	return (match == -1);	/* Not found */
 }
 
+GMT_LOCAL size_t skip_large_files (struct GMT_CTRL *GMT, char* URL, size_t limit) {
+	CURL *curl = NULL;
+	CURLcode res;
+	double filesize = 0.0;
+	size_t action = 0;
+
+	if (limit == 0) return 0;	/* Download regardless of size */
+	curl_global_init (CURL_GLOBAL_DEFAULT);
+
+	if ((curl = curl_easy_init ())) {
+		curl_easy_setopt (curl, CURLOPT_URL, URL);
+		/* Do not download the file */
+		curl_easy_setopt (curl, CURLOPT_NOBODY, 1L);
+		/* No header output: TODO 14.1 http-style HEAD output for ftp */
+		curl_easy_setopt (curl, CURLOPT_HEADERFUNCTION, throw_away);
+		curl_easy_setopt (curl, CURLOPT_HEADER, 0L);
+
+		res = curl_easy_perform (curl);
+
+		if ((res = curl_easy_perform (curl)) == CURLE_OK) {
+      			res = curl_easy_getinfo (curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &filesize);
+			if ((CURLE_OK == res) && (filesize > 0.0)) {	/* Got the size */
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Remote file %s: Size is %0.0f bytes\n", URL, filesize);
+				action = (filesize < (double)limit) ? 0 : (size_t)filesize;
+			}
+		}
+		else	/* We failed */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Remote file %s: Curl returned error %d\n", URL, res);
+
+		/* always cleanup */
+		curl_easy_cleanup (curl);
+	}
+
+	curl_global_cleanup ();
+
+	return action;
+}
+
 unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name, unsigned int mode) {
 	/* Downloads a file if not found locally.  Returns the position in file_name of the
  	 * start of the actual file (e.g., if given an URL). Values for mode:
@@ -88,7 +135,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	unsigned int kind = 0, pos = 0, from = 0, to = 0, res = 0, be_fussy;
 	int curl_err = 0;
 	bool is_srtm = false;
-	size_t len;
+	size_t len, fsize;
 	CURL *Curl = NULL;
 	static char *cache_dir[4] = {"/cache", "", "/srtm1", "/srtm3"}, *name[3] = {"CACHE", "USER", "LOCAL"};
 	char *user_dir[3] = {GMT->session.CACHEDIR, GMT->session.USERDIR, NULL};
@@ -146,6 +193,26 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			            "The GMT_%s directory is not defined - download file to current directory\n", name[to]);
 		sprintf (local_path, "%s", &file[pos]);
 	}
+	
+	/* Create the remote URL */
+	if (kind == GMT_URL_FILE || kind == GMT_URL_QUERY)	/* General URL given */
+		sprintf (url, "%s", file);
+	else {	/* Use GMT data dir, possible from subfolder cache */
+		sprintf (url, "%s%s/%s", GMT->session.DATAURL, cache_dir[from], &file[pos]);
+		if (kind == GMT_DATA_FILE && !strstr (url, ".grd")) strcat (url, ".grd");	/* Must supply the .grd */
+		len = strlen (url);
+		if (is_srtm && !strncmp (&url[len-3], ".nc", 3U))
+			strncpy (&url[len-2], GMT_SRTM_EXTENSION_REMOTE, PATH_MAX-1);	/* Switch extension for download */
+	}
+	
+	if ((fsize = skip_large_files (GMT, url, GMT->current.setting.url_size_limit))) {
+		char *S = strdup (gmt_memory_use (fsize, 3));
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "File %s skipped as size [%s] exceeds limit set by GMT_DATA_URL_LIMIT [%s]\n", &file[pos], S, gmt_memory_use (GMT->current.setting.url_size_limit, 0));
+		gmt_M_free (GMT, file);
+		gmt_M_str_free (S);
+		return 0;
+	}
+
 	/* Here we will try to download a file */
 
   	if ((Curl = curl_easy_init ()) == NULL) {
@@ -184,15 +251,6 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in filename */
 		c = strchr (local_path, '?');
 		if (c) c[0] = '\0';	/* Chop off ?CGI parameters from local_path */
-	}
-	if (kind == GMT_URL_FILE || kind == GMT_URL_QUERY)	/* General URL given */
-		sprintf (url, "%s", file);
-	else {	/* Use GMT data dir, possible from subfolder cache */
-		sprintf (url, "%s%s/%s", GMT->session.DATAURL, cache_dir[from], &file[pos]);
-		if (kind == GMT_DATA_FILE && !strstr (url, ".grd")) strcat (url, ".grd");	/* Must supply the .grd */
-		len = strlen (url);
-		if (is_srtm && !strncmp (&url[len-3], ".nc", 3U))
-			strncpy (&url[len-2], GMT_SRTM_EXTENSION_REMOTE, PATH_MAX-1);	/* Switch extension for download */
 	}
 
  	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */

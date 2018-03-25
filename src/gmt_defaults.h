@@ -90,6 +90,7 @@ struct GMT_DEFAULTS {
 	char format_time[2][GMT_LEN64];	/* Controls annotation format for Months/Weeks/Weekdays for primary and secondary axes */
 	char format_time_stamp[GMT_LEN256];	/* Specify the format for writing time stamps (see strftime) */
 	/* GMT group */
+	size_t url_size_limit;
 	unsigned int compatibility; /* Choose between 4 (GMT4) and up to latest version (5 for now) */
 	unsigned int auto_download;   /* 0 (GMT_NO_DOWNLOAD) or 1 (GMT_YES_DOWNLOAD): For auto-downlaod of known files */
 	unsigned int interpolant; /* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */

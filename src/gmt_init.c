@@ -181,6 +181,7 @@ static struct GMT5_params GMT5_keywords[]= {
 	{ 1, "GMT Miscellaneous Parameters"},
 	{ 0, "GMT_AUTO_DOWNLOAD"},
 	{ 0, "GMT_DATA_URL"},
+	{ 0, "GMT_DATA_URL_LIMIT"},
 	{ 0, "GMT_COMPATIBILITY"},
 	{ 0, "GMT_CUSTOM_LIBS"},
 	{ 0, "GMT_EXPORT_TYPE"},
@@ -5227,6 +5228,8 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.compatibility = 4;
 	/* GMTCASE_GMT_AUTO_DOWNLOAD */
 	GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
+	/* GMTCASE_GMT_DATA_URL_LIMIT */
+	GMT->current.setting.url_size_limit = 0;
 	/* GMT_CUSTOM_LIBS (default to none) */
 	/* GMT_EXPORT_TYPE */
 	GMT->current.setting.export_type = GMT_DOUBLE;
@@ -9218,6 +9221,22 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			break;
 
+		case GMTCASE_GMT_DATA_URL_LIMIT:	/* The default is set by cmake, see ConfigDefault.cmake */
+			if (!strcmp (lower_value, "0") || !strncmp (lower_value, "unlim", 5U))
+				GMT->current.setting.url_size_limit = 0;
+			else {
+				size_t f, k = len - 1;
+				if (k && (lower_value[k] == 'b' || lower_value[k] == 'B')) k--;
+				switch (lower_value[k]) {
+					case 'k':	case 'K':	f = 1024;		break;
+					case 'm':	case 'M':	f = 1024*1024;		break;
+					case 'g':	case 'G':	f = 1024*1024*1024;	break;
+					default:	f = 1;	break;
+				}
+				GMT->current.setting.url_size_limit = atoi (lower_value) * f;
+			}
+			break;
+
 		case GMTCASE_GMT_CUSTOM_LIBS:
 			if (*value) {
 				if (GMT->session.CUSTOM_LIBS) {
@@ -10380,6 +10399,19 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 
 		case GMTCASE_GMT_DATA_URL:	/* The default is set by cmake, see ConfigDefault.cmake */
 			strncpy (value, (GMT->session.DATAURL) ? GMT->session.DATAURL : "", GMT_BUFSIZ-1);
+			break;
+			
+		case GMTCASE_GMT_DATA_URL_LIMIT:
+			if (GMT->current.setting.url_size_limit == 0)
+				strcpy (value, "unlimited");
+			else if (GMT->current.setting.url_size_limit < 1024)
+				sprintf (value, "%" PRIu64, (uint64_t)GMT->current.setting.url_size_limit);
+			else if (GMT->current.setting.url_size_limit < 1024*1024)
+				sprintf (value, "%" PRIu64 "Kb", (uint64_t)GMT->current.setting.url_size_limit/1024);
+			else if (GMT->current.setting.url_size_limit < 1024*1024*1024)
+				sprintf (value, "%" PRIu64 "Mb", (uint64_t)GMT->current.setting.url_size_limit/(1024*1024));
+			else
+				sprintf (value, "%" PRIu64 "Gb", (uint64_t)GMT->current.setting.url_size_limit/(1024*1024*1024));
 			break;
 
 		case GMTCASE_GMT_CUSTOM_LIBS:
