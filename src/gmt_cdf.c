@@ -139,7 +139,7 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 		gmt_M_err_trap (nc_get_var_double (ncid, z_range_id, dummy));
 		header->z_min = dummy[0];
 		header->z_max = dummy[1];
-		HH->row_order = k_nc_start_north; /* N->S */
+		//HH->row_order = k_nc_start_north; /* N->S but that is just when read.  We dont want to set this for writing later */
 	}
 	else {
 		int reg;
