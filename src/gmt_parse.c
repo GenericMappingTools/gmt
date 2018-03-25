@@ -270,6 +270,23 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 	for (k = 0, B_id = GMT_NOTSET; k < GMT_N_UNIQUE && B_id == GMT_NOTSET; k++)
 		if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id === 0 but just in case this changes we do this search anyway */
 
+	if (GMT->current.setting.run_mode == GMT_MODERN && n_B && strncmp (GMT->init.module_name, "psscale", 7U)) {	/* Write gmt.frame file unless module is psscale, overwriting any previous file */
+		char file[PATH_MAX] = {""};
+		FILE *fp = NULL;
+		sprintf (file, "%s/gmt%d.%d/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->PPID);
+		if ((fp = fopen (file, "w")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to create file %s\n", file);
+			return (-1);
+		}
+		for (k = 0, opt = options; opt; opt = opt->next) {
+			if (opt->option != 'B') continue;
+			if (k) fprintf (fp, "%s", B_delim);
+			fprintf (fp, "%s", opt->arg);
+			k++;
+		}
+		fprintf (fp, "\n");
+		fclose (fp);
+	}
 	for (opt = options; opt; opt = opt->next) {
 		if (!strchr (GMT_SHORTHAND_OPTIONS, opt->option)) continue;	/* Not one of the shorthand options */
 		if (GMT->current.setting.run_mode == GMT_MODERN && opt->option == 'B') continue;	/* The -B option is NOT a shorthand option under modern mode */

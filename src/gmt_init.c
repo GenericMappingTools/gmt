@@ -14998,6 +14998,62 @@ unsigned int gmt_file_type (struct GMT_CTRL *GMT, const char *file, unsigned int
 }
 #endif
 
+void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int justify) {
+	/* We wish to examine the previous -B setting for information as to which axes was
+	 * annotated and possibly labeled, and if the colorbar is requested to be placed on
+	 * such an axis side we need to make more space by increasing the offset. This is
+	 * only possible under modern mode since classic updated -B in the history. */
+	
+	char side, axis, B_delim[2] = {30, 0}, p[GMT_BUFSIZ] = {""};	/* Use ASCII 30 RS Record Separator between -B strings */
+	char file[PATH_MAX] = {""};
+	unsigned int pos = 0;
+	bool add_label = false, add_annot = false, axis_set = false;
+	double GMT_LETTER_HEIGHT = 0.736;
+	FILE *fp = NULL;
+	/* Initialize the default settings before considering any -B history */
+	offset[GMT_OUT] = GMT->current.setting.map_label_offset + GMT->current.setting.map_frame_width;
+	offset[GMT_IN]  = GMT->current.setting.map_label_offset;
+	
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) return;	/* No can do */
+
+	switch (justify) {	/* Only the four sides are automated */
+		case PSL_TC: side = 'N'; axis = 'x'; break;
+		case PSL_BC: side = 'S'; axis = 'x'; break;
+		case PSL_ML: side = 'W'; axis = 'y'; break;
+		case PSL_MR: side = 'E'; axis = 'y'; break;
+		default: return; break;	/* No auto-adjust for the rest */
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Determined colorbar side = %c and axis = %c\n", side, axis);
+
+	sprintf (file, "%s/gmt%d.%d/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->PPID);
+	if ((fp = fopen (file, "r")) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No file %s with frame information - no adjustments made\n", file);
+		return;
+	}
+	fgets (file, PATH_MAX, fp);	fclose (fp);	/* Recycle file to hold the -B arguments */
+	while (file[0] && gmt_strtok (file, B_delim, &pos, p)) {	/* Parse the -B options from last call */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "B item = %s\n", p);
+		if (p[0] == axis && strstr (p, "+l")) add_label = true;	/* User specified a axis label on that side */
+		if (strchr ("WESNwesn", p[0])) {	/* Gave a -B<axis> option */
+			axis_set = true;
+			if (strchr (p, side)) add_annot = true;
+		}
+	}
+	/* If -BWE.. was not set we must rely on MAP_FRAME_AXES default setting */
+	if (!axis_set && strchr (GMT->current.setting.map_frame_axes, side)) add_annot = true;
+	if (add_label && gmt_M_is_geographic (GMT, GMT_IN)) add_label = false;	/* Not allowed anyway */
+	/* Time to make updates, if any */
+	if (add_annot) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Adding annotation space\n");
+		offset[GMT_OUT] += MAX(0,GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Any tick length */
+		offset[GMT_OUT] += (GMT_LETTER_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]);	/* Allow for space between axis and annotations */
+	}
+	if (add_label) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Adding label space\n");
+		offset[GMT_OUT] += (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset);
+	}
+}
+
 unsigned int gmtlib_count_slashes (struct GMT_CTRL *GMT, char *txt) {
 	unsigned int i, n;
 	gmt_M_unused (GMT);
