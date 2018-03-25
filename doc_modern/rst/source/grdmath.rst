@@ -758,11 +758,18 @@ where we store and recall the normalized radial arguments in radians:
 
     gmt grdmath -R0/10/0/10 -I0.25 5 5 CDIST 2 MUL PI MUL 5 DIV STO@r COS @r SIN MUL = wave.nc
 
-To creat a dumb file saved as a 32 bits float GeoTiff using GDAL, run
+To create a dumb file saved as a 32 bits float GeoTiff using GDAL, run
 
    ::
 
     gmt grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
+
+To compute distances in km from the line trace.txt for the area represented by the
+geographic grid data.grd, run
+
+   ::
+
+    gmt grdmath -Rdata.grd trace.txt LDIST = dist_from_line.grd
 
 References
 ----------
@@ -772,7 +779,7 @@ Functions*, Applied Mathematics Series, vol. 55, Dover, New York.
 
 Holmes, S. A., and W. E. Featherstone, 2002, A unified approach to the
 Clenshaw summation and the recursive computation of very high degree and
-order normalised associated Legendre functions. *Journal of Geodesy*,
+order normalized associated Legendre functions. *Journal of Geodesy*,
 76, 279-299.
 
 Press, W. H., S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery,
