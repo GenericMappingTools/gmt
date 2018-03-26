@@ -97,19 +97,16 @@ GMT_LOCAL int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, d
 /*                        ReportCorner()                                */
 /************************************************************************/
 
-GMT_LOCAL int ReportCorner (struct GMT_CTRL *GMT, GDALDatasetH hDataset, double x, double y, double *xy_c, double *xy_geo) {
+GMT_LOCAL int ReportCorner (struct GMT_CTRL *GMT, GDALDatasetH hDataset, OGRCoordinateTransformationH hTransform,
+                            double x, double y, double *xy_c, double *xy_geo) {
 	double	dfGeoX, dfGeoY;
-	const char  *pszProjection = NULL;
 	double	adfGeoTransform[6];
-	OGRCoordinateTransformationH hTransform = NULL;
-	OGRSpatialReferenceH hProj, hLatLong = NULL;
 
 	xy_geo[0] = xy_geo[1] = GMT->session.d_NaN;		/* Default return values */
-/* -------------------------------------------------------------------- */
-/*      Transform the point into georeferenced coordinates.             */
-/* -------------------------------------------------------------------- */
+	/* -------------------------------------------------------------------- */
+	/*      Transform the point into georeferenced coordinates.             */
+	/* -------------------------------------------------------------------- */
 	if (GDALGetGeoTransform(hDataset, adfGeoTransform) == CE_None) {
-		pszProjection = GDALGetProjectionRef(hDataset);
 		if (!strcmp(GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)),"netCDF") && GDAL_VERSION_NUM <= 1450) {
 			adfGeoTransform[3] *= -1;
 			adfGeoTransform[5] *= -1;
@@ -122,42 +119,20 @@ GMT_LOCAL int ReportCorner (struct GMT_CTRL *GMT, GDALDatasetH hDataset, double 
 		return false;
 	}
 
-/* -------------------------------------------------------------------- */
-/*      Report the georeferenced coordinates.                           */
-/* -------------------------------------------------------------------- */
+	/* -------------------------------------------------------------------- */
+	/*      Report the georeferenced coordinates.                           */
+	/* -------------------------------------------------------------------- */
 	xy_c[0] = dfGeoX;	xy_c[1] = dfGeoY;
 
-/* -------------------------------------------------------------------- */
-/*      Setup transformation to lat/long.                               */
-/* -------------------------------------------------------------------- */
-	if (pszProjection != NULL && pszProjection[0] != '\0') {
-
-		hProj = OSRNewSpatialReference(pszProjection);
-		if (hProj != NULL) hLatLong = OSRCloneGeogCS(hProj);
-
-		if (hLatLong != NULL) {
-			CPLPushErrorHandler(CPLQuietErrorHandler);
-			hTransform = OCTNewCoordinateTransformation(hProj, hLatLong);
-			CPLPopErrorHandler();
-			OSRDestroySpatialReference(hLatLong);
-		}
-
-		if (hProj != NULL) OSRDestroySpatialReference(hProj);
-	}
-/*
- * --------------------------------------------------------------------
- *      Transform to latlong and report.
- * --------------------------------------------------------------------
- */
+	/* --------------------------------------------------------------------
+	 *      Transform to latlong and report.
+	 * -------------------------------------------------------------------- */
 	if (hTransform != NULL && OCTTransform(hTransform,1,&dfGeoX,&dfGeoY,NULL)) {
 		xy_geo[0] = dfGeoX;
 		xy_geo[1] = dfGeoY;
 	}
 
-	if (hTransform != NULL)
-		OCTDestroyCoordinateTransformation(hTransform);
-
-	return true;
+	return 0;
 }
 
 /* -------------------------------------------------------------------- */
@@ -335,7 +310,9 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	GDALRasterBandH hBand;
 	GDALColorTableH	hTable;
 	GDALColorEntry	sEntry;
+	OGRCoordinateTransformationH hTransform = NULL;
 
+	const char  *pszProjection = NULL;
 	int     i, j;
 	int     status, bSuccess;	/* success or failure */
 	int     nBand, raster_count;
@@ -431,7 +408,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		anSrcWin[0] = anSrcWin[1] = anSrcWin[2] = anSrcWin[3] = 0;
 		if (adfGeoTransform[2] != 0.0 || adfGeoTransform[4] != 0.0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The -projwin option was used, but the geotransform is rotated."
-							" This configuration is not supported.\n");
+			                                         " This configuration is not supported.\n");
 			GDALClose(hDataset);
 			GDALDestroyDriverManager();
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Quitting with error\n");
@@ -571,33 +548,62 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* ------------------------------------------------------------------------- */
 	/* Record corners. */
 	/* ------------------------------------------------------------------------- */
+
+	/* -------------------------------------------------------------------- */
+	/*      Setup projected to lat/long transform if appropriate.           */
+	/* -------------------------------------------------------------------- */
+	if (!got_R) {
+		if (GDALGetGeoTransform(hDataset, adfGeoTransform) == CE_None)
+			pszProjection = GDALGetProjectionRef(hDataset);
+
+		if (pszProjection != NULL && strlen(pszProjection) > 0) {
+			OGRSpatialReferenceH hProj, hLatLong = NULL;
+			hProj = OSRNewSpatialReference( pszProjection );
+			if (hProj != NULL)
+				hLatLong = OSRCloneGeogCS(hProj);
+
+			if (hLatLong != NULL) {
+				CPLPushErrorHandler( CPLQuietErrorHandler );
+				hTransform = OCTNewCoordinateTransformation( hProj, hLatLong );
+				CPLPopErrorHandler();
+				OSRDestroySpatialReference(hLatLong);
+			}
+
+			if (hProj != NULL)
+				OSRDestroySpatialReference(hProj);
+		}
+	}
+
 	if (!got_R)					/* Lower Left */
-		ReportCorner (GMT, hDataset, 0.0, GDALGetRasterYSize(hDataset), xy_c, xy_geo[0]);
+		ReportCorner (GMT, hDataset, hTransform, 0.0, GDALGetRasterYSize(hDataset), xy_c, xy_geo[0]);
 	else
 		xy_c[0] = dfULX, xy_c[1] = dfLRY;
 	Ctrl->Corners.LL[0] = Ctrl->hdr[0] = xy_c[0];	/* xmin, ymin */
 	Ctrl->Corners.LL[1] = Ctrl->hdr[2] = xy_c[1];
 
 	if (!got_R)					/* Upper Left */
-		ReportCorner (GMT, hDataset, 0.0, 0.0, xy_c, xy_geo[1]);
+		ReportCorner (GMT, hDataset, hTransform, 0.0, 0.0, xy_c, xy_geo[1]);
 	else
 		xy_c[0] = dfULX, xy_c[1] = dfULY;
 	Ctrl->Corners.UL[0] = xy_c[0];
 	Ctrl->Corners.UL[1] = xy_c[1];
 
 	if (!got_R)					/* Upper Right */
-		ReportCorner (GMT, hDataset, GDALGetRasterXSize(hDataset), 0.0, xy_c, xy_geo[2]);
+		ReportCorner (GMT, hDataset, hTransform, GDALGetRasterXSize(hDataset), 0.0, xy_c, xy_geo[2]);
 	else
 		xy_c[0] = dfLRX, xy_c[1] = dfULY;
 	Ctrl->Corners.UR[0] = Ctrl->hdr[1] = xy_c[0];	/* xmax, ymax */
 	Ctrl->Corners.UR[1] = Ctrl->hdr[3] = xy_c[1];
 
 	if (!got_R)					/* Lower Right */
-		ReportCorner (GMT, hDataset, GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset), xy_c, xy_geo[3]);
+		ReportCorner (GMT, hDataset, hTransform, GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset), xy_c, xy_geo[3]);
 	else
 		xy_c[0] = dfLRX, xy_c[1] = dfLRY;
 	Ctrl->Corners.LR[0] = xy_c[0];
 	Ctrl->Corners.LR[1] = xy_c[1];
+
+	if (hTransform != NULL)
+		OCTDestroyCoordinateTransformation(hTransform);
 
 	/* Must check that geog grids have not y_max > 90.0 We'll be eps tollerant ... but how do I know that it's geog?*/
 
