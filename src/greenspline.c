@@ -2009,7 +2009,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	 */
 
 	mem = (double)nm * (double)nm * (double)sizeof (double);	/* In bytes */
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Square matrix A (size %d x %d) requires %s\n", gmt_memory_use ((size_t)mem, 1), (int)nm, (int)nm);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Square matrix A (size %d x %d) requires %s\n", (int)nm, (int)nm, gmt_memory_use ((size_t)mem, 1));
 	A = gmt_M_memory (GMT, NULL, nm * nm, double);
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Build square linear system Ax = b using %s\n", method[Ctrl->S.mode]);
