@@ -14983,7 +14983,7 @@ bool gmt_trim_requested (struct GMT_CTRL *GMT, struct GMT_PEN *P) {
 
 unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t *nn, struct GMT_PEN *P) {
 	/* Recompute start and end points of line if offset trims are set */
-	uint64_t last, next, current = 0, inc, n, new_n, start[2] = {0,0}, orig_start[2] = {0,0}, stop[2] = {0,0}, new[2] = {0,0};
+	int64_t last, next, current = 0, inc, n, new_n, start[2] = {0,0}, orig_start[2] = {0,0}, stop[2] = {0,0}, new[2] = {0,0};
 	int increment[2] = {1, -1};
 	unsigned int k, proj_type, effect;
 	double *x = NULL, *y = NULL, dist, ds = 0.0, f1, f2, x0, x1 = 0, y0, y1 = 0, offset;
@@ -14991,7 +14991,7 @@ unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 	if (!gmt_trim_requested (GMT, P)) return 0;	/* No trimming requested */
 
 	/* Here we must do some trimming */
-	x = *xx;	y = *yy;	n = *nn;	/* Input arrays and length */
+	x = *xx;	y = *yy;	n = (int64_t)*nn;	/* Input arrays and length */
 	new[END] = start[END] = orig_start[END] = stop[BEG] = n-1;
 	for (effect = 0; effect < 2; effect++) {	/* effect = 0: +o trimming, effect = 1: +v trimming */
 		for (k = 0; k < 2; k++) {
@@ -15022,8 +15022,14 @@ unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 			/* Must revise terminal point */
 			f1 = (gmt_M_is_zero (ds)) ? 1.0 : (dist - offset) / ds;
 			f2 = 1.0 - f1;
-			x[current] = x[current] * f1 + x[next] * f2;
 			y[current] = y[current] * f1 + y[next] * f2;
+			if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must worry about longitude jump */
+				double del = x[next] - x[current];
+				gmt_M_set_delta_lon (x[current], x[next], del);
+				x[current] += del * f2;
+			}
+			else	/* Cartesian */
+				x[current] = x[current] * f1 + x[next] * f2;
 			new[k] = current;	/* First (or last) point in trimmed line */
 		}
 		start[BEG] = new[BEG];	start[END] = new[END];
@@ -15038,7 +15044,7 @@ unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 	gmt_M_free (GMT, x);	gmt_M_free (GMT, y);
 	*xx = gmtlib_assign_vector (GMT, new_n, GMT_X);
 	*yy = gmtlib_assign_vector (GMT, new_n, GMT_Y);
-	*nn = new_n;
+	*nn = (uint64_t)new_n;
 	return 0;
 }
 
