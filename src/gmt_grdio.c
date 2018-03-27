@@ -1074,7 +1074,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 				strncpy (HH->name, tmp, GMT_LEN256-1);
 			}
 			else
-				strncpy (HH->name, &HH->name[i+3], GMT_LEN256-1);
+				memmove (HH->name, &HH->name[i+3], strlen(&HH->name[i+3])+1); 
 			magic = 0;	/* We don't want it to try to prepend any path */
 		} /* if (header->type == GMT_GRID_IS_GD && HH->name[i+2] && HH->name[i+2] == '?') */
 		else if (header->type == GMT_GRID_IS_GD && HH->name[i+2] && HH->name[i+2] == '+' && HH->name[i+3] == 'b') { /* A Band request for GDAL */
