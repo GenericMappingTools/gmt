@@ -159,14 +159,14 @@ GMT_LOCAL int64_t get_bin (struct GMT_ARRAY *T, double x, int64_t last_bin) {
 	if (bin != last_bin) return bin;		/* Means we searched to the left and either found the bin or ran off and got -1 */
 	/* We come here when no revised bin was computed (so bin == last_bin).  We now search to the right */
 	while (bin < (int64_t)T->n && x >= T->array[bin+1]) bin++;	/* Need a later bin */
-	return bin;	/* Either a valid bin or F->T.n */
+	return bin;	/* Either a valid bin or F->T.n (which is 1 larger than n_boxes) */
 }
 
 GMT_LOCAL int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, double *weights, uint64_t n) {
 
 	double w, b0, b1, count_sum;
 	uint64_t ibox, i;
-	int64_t sbox, last_box = 0;
+	int64_t sbox, last_box = 0, hi_bin = F->T->n - 2;
 
 	F->n_boxes = F->T->n - 1;	/* One less than the bin boundaries */
 	F->boxh = gmt_M_memory (GMT, NULL, F->n_boxes, double);
@@ -175,15 +175,17 @@ GMT_LOCAL int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, doub
 	/* First fill boxes with counts  */
 
 	for (i = 0; i < n; i++) {
+        if (i == 17985)
+            sbox = 1;
 		sbox = get_bin (F->T, data[i], last_box);	/* Get the bin where this data point falls */
 		if (sbox < 0) {	/* Extreme value left of first bin; check if -W was set */
 			if ((F->extremes & PSHISTOGRAM_LEFT) == 0) continue;	/* No, we skip this value */
 			sbox = 0;	/* Put in first bin instead */
 		}
 		ibox = (uint64_t)sbox;	/* We know sbox is positive now */
-		if (ibox == F->n_boxes) {	/* Extreme value right of last bin; check if -W was set */
+		if (ibox >= F->n_boxes) {	/* Extreme value right of last bin; check if -W was set */
 			if ((F->extremes & PSHISTOGRAM_RIGHT) == 0) continue;	/* No, we skip this value */
-			ibox--;	/* Put in last bin instead */
+			ibox = hi_bin;	/* Put in last bin instead */
 		}
 		w = (weights) ? weights[i] : 1.0;
 		F->boxh[ibox] += w;
