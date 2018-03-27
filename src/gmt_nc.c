@@ -622,10 +622,10 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			gmtnc_check_step (GMT, header->n_rows, xy, header->y_units, HH->name);
 			dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
 		}
-		if (!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", dummy) ||
+		if (!has_vector && (!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", dummy) ||
 			!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_range", dummy) ||
 			!(nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_min", &dummy[0]) +
-			nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_max", &dummy[1])))
+			nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_max", &dummy[1]))) )
 			{} /* Nothing */
 
 		/* Check for reverse order of y-coordinate */
