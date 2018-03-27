@@ -36,6 +36,7 @@
 #define THIS_MODULE_OPTIONS "-:RVabdefghinrs" GMT_ADD_x_OPT GMT_OPT("FHMm")
 
 #define GRDMASK_N_CLASSES	3	/* outside, on edge, and inside */
+#define GRDMASK_N_CART_MASK	9
 
 struct GRDMASK_CTRL {
 	struct A {	/* -A[m|p|x|y|step] */
@@ -57,6 +58,7 @@ struct GRDMASK_CTRL {
 		bool variable_radius;	/* true when radii is read in on a per-record basis [false] */
 		int mode;	/* Could be negative */
 		double radius;
+		double limit[2];
 		char unit;
 	} S;
 };
@@ -82,7 +84,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdmask [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[m|p|x|y]] [-N[z|Z|p|P][<values>]]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]%s[%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S%s | <xlim>/<ylim>] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]%s[%s]\n\n",
 		GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
 		GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
@@ -110,6 +112,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   inside the circle of specified radius [0] from the nearest data point.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give radius as 'z' if individual radii are provided via the 3rd data column\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and append a fixed unit unless Cartesian.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian grids with different x and y units you may append <xlim>/<ylim>;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   this sets all nodes within the rectangular area of the given half-widths to inside.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is to assume <table> contains polygons and use inside/outside searching].\n");
 	GMT_Option (API, "V,a,bi2,di,e,f,g,h,i");
 	if (gmt_M_showusage (API)) {
@@ -208,6 +212,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 					Ctrl->S.variable_radius = true;
 					c[0] = 'z';	/* Restore v */
 				}
+				else if (strchr (opt->arg, '/')) {	/* Gave -S<xlim>/<ylim> for Cartesian masking instead */
+					if ((j = gmt_get_pair (GMT, opt->arg, GMT_PAIR_DIM_NODUP, Ctrl->S.limit)) == 0) {
+						n_errors++;
+					}
+					Ctrl->S.mode = GRDMASK_N_CART_MASK;
+				}
 				else	/* Gave -S[-|=|+]<radius>[d|e|f|k|m|M|n] which means radius is fixed or 0 */ 
 					Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				break;
@@ -227,6 +237,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == GRDMASK_N_CART_MASK && Ctrl->S.limit[GMT_X] <= 0.0 || Ctrl->S.limit[GMT_Y] <= 0.0, "Syntax error -S: x-limit or y-limit is negative\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.mode, "Syntax error -S, -N: Cannot specify -Nz|Z|p|P for points\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 	
@@ -323,15 +334,23 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	y_wrap = (Grid->header->n_rows - 1) * Grid->header->n_columns;	/* Add to node index to go to bottom row */
 
 	if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
-		gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+		if (Ctrl->S.mode == GRDMASK_N_CART_MASK) {
+			max_d_col = urint (Ctrl->S.limit[GMT_X] / Grid->header->inc[GMT_X]);
+			d_row = urint (Ctrl->S.limit[GMT_Y] / Grid->header->inc[GMT_Y]);
+			d_col = gmt_M_memory (GMT, NULL, Grid->header->n_rows, double);
+			for (rowu = 0; rowu < Grid->header->n_rows; rowu++) d_col[rowu] = max_d_col;
+		}
+		else {
+			gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+			if (!Ctrl->S.variable_radius) {	/* Read x,y, fixed radius from -S */
+				radius = Ctrl->S.radius;
+				d_col = gmt_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
+			}
+			else	/* Read x, y, radius */
+				n_cols = 3;
+		}
 		grd_x0 = Grid->x;
 		grd_y0 = Grid->y;
-		if (!Ctrl->S.variable_radius) {	/* Read x,y, fixed radius from -S */
-			radius = Ctrl->S.radius;
-			d_col = gmt_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
-		}
-		else	/* Read x, y, radius */
-			n_cols = 3;
 	}	
 	
 	periodic = gmt_M_is_geographic (GMT, GMT_IN);	/* Dealing with geographic coordinates */
@@ -356,7 +375,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	}
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL)
 		error = API->error;
-	if (Ctrl->S.active && error) {
+	if (error && Ctrl->S.active) {
 		gmt_M_free (GMT, d_col);
 		Return (error);
 	}
@@ -463,9 +482,13 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 							if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */ 
 							colu = ii;
 							ij = gmt_M_ijp (Grid->header, rowu, colu);
-							distance = gmt_distance (GMT, xtmp, S->data[GMT_Y][k], grd_x0[colu], grd_y0[rowu]);
-							if (distance > radius) continue;	/* Clearly outside */
-							Grid->data[ij] = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
+							if (Ctrl->S.mode == GRDMASK_N_CART_MASK)	/* Rectangular are for Cartesian so no need to check radius */
+								Grid->data[ij] = mask_val[GMT_INSIDE];	/* The inside value */
+							else {
+								distance = gmt_distance (GMT, xtmp, S->data[GMT_Y][k], grd_x0[colu], grd_y0[rowu]);
+								if (distance > radius) continue;	/* Clearly outside */
+								Grid->data[ij] = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
+							}
 							/* With periodic, gridline-registered grids there are duplicate rows and/or columns
 							   so we may have to assign the point to more than one node.  The next section deals
 							   with this situation.
