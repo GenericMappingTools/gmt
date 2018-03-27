@@ -9,7 +9,7 @@ echo "168 53
 gmt psxy points -JQ180/57.5/6i -R160/200/50/65 -W0.1c,blue+s+ve0.4c -A -Bx10 -By5 -BswNE -P -K > $ps
 gmt psxy points -JQ180/57.5/15c -R160/200/50/65 -W0.1c,blue+s -A -Bx10 -By5 -BswNE -P -K > $ps
 gmt psxy points -J -R -W2p,black+s+ve0.4c -P -K -O >> $ps
-gmt psxy points -J -R -W0.5p,red+ve0.4c -A> -P -K -O >> $ps
+gmt psxy points -J -R -W0.5p,red+ve0.4c -A -P -K -O >> $ps
 gmt psxy points -J -R -W0.5p,pink+s -P -K -O >> $ps
 gmt psxy points -J -R -Sx0.5c -W1p,green -P -O -K >> $ps
 # Resampled

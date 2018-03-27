@@ -91,7 +91,7 @@ Optional Arguments
     Only plot vectors at nodes every *x\_inc*, *y\_inc* apart (must be
     multiples of original grid spacing). Append **m** for arc minutes or
     **s** for arc seconds.  Alternatively, use **-Ix** to specify the
-    multiples *multx*\ [/*multy*] directly [Default plots every node]. 
+    multiples *multx*\ [/*multy*] directly [Default plots every node].
 
 .. _-K:
 
@@ -197,6 +197,14 @@ using a scale of 200 km per data unit and only plot every 3rd node in either dir
    ::
 
     gmt grdvector comp_x.nc comp_y.nc -Ix3 -JH0/20c -Q0.1i+e+jc -S200 > globe.ps
+
+Notes
+-----
+
+Be aware that using **-I** may lead to aliasing unless
+your grid is smoothly varying over the new length increments.
+It is generally better to filter your grids and resample at a
+larger grid increment and use these grids instead of the originals.
 
 See Also
 --------
