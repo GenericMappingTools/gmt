@@ -595,7 +595,8 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			{} /* Nothing */
 
 		/* If we have vector, but dummy is different, then we have pixel registration */
-		if (has_vector && fabs(dummy[1] - dummy[0]) / fabs(xy[header->n_columns-1] - xy[0]) - 1.0 > 0.5 / (header->n_columns - 1)) registration = header->registration = GMT_GRID_PIXEL_REG;
+		if (has_vector && fabs(dummy[1] - dummy[0]) / fabs(xy[header->n_columns-1] - xy[0]) - 1.0 > 0.5 / (header->n_columns - 1))
+			registration = header->registration = GMT_GRID_PIXEL_REG;
 
 #ifdef NC4_DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x registration: %u\n", registration);
@@ -622,10 +623,10 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			gmtnc_check_step (GMT, header->n_rows, xy, header->y_units, HH->name);
 			dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
 		}
-		if (!has_vector && (!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", dummy) ||
+		if (!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", dummy) ||
 			!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_range", dummy) ||
 			!(nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_min", &dummy[0]) +
-			nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_max", &dummy[1]))) )
+			nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_max", &dummy[1])) )
 			{} /* Nothing */
 
 		/* Check for reverse order of y-coordinate */
@@ -633,11 +634,14 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			HH->row_order = k_nc_start_north;
 			tmp = dummy[1], dummy[1] = dummy[0], dummy[0] = tmp;
 		}
+		else if (has_vector && (xy[0] > xy[header->n_rows-1]) && (dummy[0] > dummy[1])) 	/* Here the lat vector is top-down but range is bottum-up */
+			HH->row_order = k_nc_start_north;
 		else
 			HH->row_order = k_nc_start_south;
 
 		/* If we have vector, but dummy is different, then we have pixel registration */
-		if (has_vector && fabs(dummy[1] - dummy[0]) / fabs(xy[header->n_rows-1] - xy[0]) - 1.0 > 0.5 / (header->n_rows - 1)) registration = header->registration = GMT_GRID_PIXEL_REG;
+		if (has_vector && fabs(dummy[1] - dummy[0]) / fabs(xy[header->n_rows-1] - xy[0]) - 1.0 > 0.5 / (header->n_rows - 1))
+			registration = header->registration = GMT_GRID_PIXEL_REG;
 
 #ifdef NC4_DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "y registration: %u\n", registration);
