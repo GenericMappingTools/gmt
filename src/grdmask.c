@@ -39,21 +39,21 @@
 #define GRDMASK_N_CART_MASK	9
 
 struct GRDMASK_CTRL {
-	struct A {	/* -A[m|p|x|y|step] */
+	struct GRDMASK_A {	/* -A[m|p|x|y|step] */
 		bool active;
 		unsigned int mode;
 		double step;
 	} A;
-	struct G {	/* -G<maskfile> */
+	struct GRDMASK_G {	/* -G<maskfile> */
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N<maskvalues> */
+	struct GRDMASK_N {	/* -N<maskvalues> */
 		bool active;
 		unsigned int mode;	/* 0 for out/on/in, 1 for polygon ID inside, 2 for polygon ID inside+path */
 		double mask[GRDMASK_N_CLASSES];	/* values for each level */
 	} N;
-	struct S {	/* -S[-|=|+]<radius|z>[d|e|f|k|m|M|n] */
+	struct GRDMASK_S {	/* -S[-|=|+]<radius|z>[d|e|f|k|m|M|n] */
 		bool active;
 		bool variable_radius;	/* true when radii is read in on a per-record basis [false] */
 		int mode;	/* Could be negative */
@@ -216,6 +216,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 					if ((j = gmt_get_pair (GMT, opt->arg, GMT_PAIR_DIM_NODUP, Ctrl->S.limit)) == 0) {
 						n_errors++;
 					}
+					if (Ctrl->S.limit[GMT_Y] == 0.0) Ctrl->S.limit[GMT_Y] = Ctrl->S.limit[GMT_X];
 					Ctrl->S.mode = GRDMASK_N_CART_MASK;
 				}
 				else	/* Gave -S[-|=|+]<radius>[d|e|f|k|m|M|n] which means radius is fixed or 0 */ 
@@ -232,12 +233,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 		gmt_parse_common_options (GMT, "f", 'f', "g");
 		
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
+	                                        "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == GRDMASK_N_CART_MASK && Ctrl->S.limit[GMT_X] <= 0.0 || Ctrl->S.limit[GMT_Y] <= 0.0, "Syntax error -S: x-limit or y-limit is negative\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == GRDMASK_N_CART_MASK && (Ctrl->S.limit[GMT_X] <= 0.0 ||
+	                                        Ctrl->S.limit[GMT_Y] <= 0.0), "Syntax error -S: x-limit or y-limit is negative\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.mode, "Syntax error -S, -N: Cannot specify -Nz|Z|p|P for points\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 	
