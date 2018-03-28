@@ -409,6 +409,8 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	if (!Ctrl->S.active)
 		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
 
+	if (Ctrl->S.mode == GRDMASK_N_CART_MASK) radius = 1;	/* radius not used in this case and this avoids another if test */
+
 	for (tbl = n_pol = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++, n_pol++) {	/* For each segment in the table */
 			S = D->table[tbl]->segment[seg];		/* Current data segment */
@@ -458,7 +460,9 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					if (gmt_x_out_of_bounds (GMT, &col_0, Grid->header, wrap_180)) continue;	/* Outside x-range,  This call must happen AFTER gmt_y_out_of_bounds which sets wrap_180 */ 
 					ij = gmt_M_ijp (Grid->header, row_0, col_0);
 					Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is the nearest node */
-					if (Grid->header->registration == GMT_GRID_NODE_REG && (col_0 == 0 || col_0 == (int)(Grid->header->n_columns-1)) && periodic_grid) {	/* Must duplicate the entry at periodic point */
+					if (Grid->header->registration == GMT_GRID_NODE_REG &&
+					    (col_0 == 0 || col_0 == (int)(Grid->header->n_columns-1)) && periodic_grid) {
+						/* Must duplicate the entry at periodic point */
 						col = (col_0 == 0) ? Grid->header->n_columns-1 : 0;
 						ij = gmt_M_ijp (Grid->header, row_0, col);
 						Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is also the nearest node */
@@ -470,7 +474,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 						d_col = gmt_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);
 						last_radius = radius;
 					}
-					
+
 					row_end = row_0 + d_row;
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,rowu,colu,col_end,jj,ii,ij,wrap_180,distance) shared(Grid,HH,row_0,d_row,col_0,d_col,row_end,xtmp,S,grd_x0,grd_y0,replicate_x,replicate_y,x_wrap,y_wrap,radius,mask_val)
@@ -530,11 +534,9 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					z_value += 1.0;
 
 				for (row = 0; row < n_rows; row++) {	/* Loop over grid rows */
-
 					yy = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 					
 					/* First check if y/latitude is outside, then there is no need to check all the x/lon values */
-					
 					if (periodic) {	/* Containing annulus test */
 						do_test = true;
 						switch (SH->pole) {
