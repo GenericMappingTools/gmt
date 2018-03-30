@@ -692,10 +692,12 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			HH->r_inc[GMT_X] = 1.0 / dx;	/* Get inverse increments to avoid divisions later */
 			HH->r_inc[GMT_Y] = 1.0 / dy;
 			HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, I->header);	/* Since we now have a proper region */
-			/* Reset the grid x/y arrays */
-			gmt_M_free (GMT, I->x);	gmt_M_free (GMT, I->y);
-			I->x = gmt_grd_coord (GMT, I->header, GMT_X);
-			I->y = gmt_grd_coord (GMT, I->header, GMT_Y);
+			if (!API->external) {
+				/* Reset the grid x/y arrays */
+				gmt_M_free (GMT, I->x);	gmt_M_free (GMT, I->y);
+				I->x = gmt_grd_coord (GMT, I->header, GMT_X);
+				I->y = gmt_grd_coord (GMT, I->header, GMT_Y);
+			}
 		}
 
 		Ctrl->In.do_rgb = (I->header->n_bands >= 3);
