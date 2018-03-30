@@ -3114,6 +3114,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 		fclose (fp);
 		return (GMT_GRDIO_READ_FAILED);	/* Failed to get one row */
 	}
+	fclose (fp);
 
 	/* Different magic chars for different image formats:
 	   .jpg:  FF D8 FF
