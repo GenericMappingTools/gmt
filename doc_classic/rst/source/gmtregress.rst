@@ -37,14 +37,17 @@ Description
 -----------
 
 **gmtregress** reads one or more data tables [or *stdin*]
-and determines the best linear regression model *y* = *a* + *b*\ \* *x* for each segment using the chosen parameters.
-The user may specify which data and model components should be reported.  By default, the model will be evaluated at the
+and determines the best linear regression model *y* = *a* + *b*\ \* *x*
+for each segment using the chosen parameters.
+The user may specify which data and model components should be reported.
+By default, the model will be evaluated at the
 input points, but alternatively you can specify an equidistant range over which to evaluate
 the model, or turn off evaluation completely.  Instead of determining the best fit we can
 perform a scan of all possible regression lines
 (for a range of slope angles) and examine how the chosen misfit measure varies with slope.
 This is particularly useful when analyzing data with many outliers.  Note: If you
-actually need to work with log10 of *x* or *y* you can accomplish that transformation during read by using the **-i** option.
+actually need to work with log10 of *x* or *y* you can accomplish that transformation
+during read by using the **-i** option.
 
 
 Required Arguments
@@ -171,6 +174,14 @@ Optional Arguments
 .. include:: explain_precision.rst_
 
 .. include:: explain_array.rst_
+
+Note:
+-----
+
+The output segment header will contain all the various statistics we compute for each segment.
+These are in order: N (number of points), x0 (weighted mean x), y0 (weighted mean y),
+angle (of line), E (misfit), slope, intercept, sigma_slope, sigma_intercept, correlation (r),
+coefficient of determination (R).
 
 Examples
 --------

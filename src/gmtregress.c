@@ -53,7 +53,9 @@ enum GMT_enum_regress {
 	GMTREGRESS_SIGIC	= 5,
 	GMTREGRESS_XMEAN	= 6,
 	GMTREGRESS_YMEAN	= 7,
-	GMTREGRESS_NPAR		= 8,
+	GMTREGRESS_R		= 8,
+	GMTREGRESS_CORR		= 9,
+	GMTREGRESS_NPAR		= 10,
 	GMTREGRESS_NPAR_MAIN	= 4,
 	GMTREGRESS_OUTPUT_GOOD  = 1,
 	GMTREGRESS_OUTPUT_BAD   = 2};
@@ -513,6 +515,33 @@ GMT_LOCAL void ones (double *x, uint64_t n) {
 	/* Set a unitary vector */
 	uint64_t k;
 	for (k = 0; k < n; k++) x[k] = 1.0;
+}
+
+GMT_LOCAL void get_correlation (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, double *par) {
+	/* Compute coefficient of determination, R = r^2 (Pearsonian correlation).
+	 * Currently only set up to do standard y on x (weights on y) only.
+	 * Compute both coefficient of determination (R) and the correlation coefficient (r).
+	 *   R = 1 - SSR/SST, with
+	 *   SSR is the sum of squared residuals: sum (y_i - y(x_i))^2
+	 *   and SST is the sum of total variance of the model : sum (y_i - mean(y))^2
+	 *   We augment these with weights w_i as well.
+	 * standard r = s_xy / (s_x * s_y), using the weighted expressions for these terms.
+	 */
+
+	uint64_t k;
+	double SSR = 0.0, SST = 0.0, y_hat, sx = 0.0, sy = 0.0, sxy = 0.0;
+	gmt_M_unused(GMT);
+	
+	for (k = 0; k < n; k++) {
+		y_hat = par[GMTREGRESS_SLOPE] * X[k] + par[GMTREGRESS_ICEPT];
+		sx += w[GMT_Y][k] * pow (X[k] - par[GMTREGRESS_XMEAN], 2.0);
+		sy += w[GMT_Y][k] * pow (Y[k] - par[GMTREGRESS_YMEAN], 2.0);
+		sxy += w[GMT_Y][k] * (X[k] - par[GMTREGRESS_XMEAN]) * (Y[k] - par[GMTREGRESS_YMEAN]);
+		SSR += w[GMT_Y][k] * pow (Y[k] - y_hat, 2.0);
+		SST += w[GMT_Y][k] * pow (y_hat - par[GMTREGRESS_YMEAN], 2.0);
+	}
+	par[GMTREGRESS_R]    = 1.0 - SSR / SST;
+	par[GMTREGRESS_CORR] = sxy / sqrt (sx * sy);
 }
 
 GMT_LOCAL double gmt_demeaning (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, double *par, double *U, double *V, double *W, double *alpha, double *beta) {
@@ -984,6 +1013,8 @@ GMT_LOCAL double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_i
 		for (col = first_col; col <= GMT_Y; col++)	/* Free any arrays we allocated */
 			if (made[col]) gmt_M_free (GMT, www[col]);
 	}
+	get_correlation (GMT, x_in, y_in, w, n, par);	/* Evaluate R and r */
+	
 	return (z);	/* Return those z-scores, calling unit must free this array when done */
 }
 
@@ -1146,7 +1177,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 					}
 					for (k = 0; k < GMTREGRESS_NPAR_MAIN; k++) Sa->data[k][row] = par[k];	/* Save the results into this row */
 				}
-				/* Make segment header with the findings forthe overall best regression */
+				/* Make segment header with the findings for the overall best regression */
 				snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: --N/A-- sig_icept: --N/A--", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN], Sa->data[0][min_row],
 					Sa->data[1][min_row], Sa->data[2][min_row], Sa->data[3][min_row]);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s\n", buffer);	/* Report results if verbose */
@@ -1173,8 +1204,8 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 				}
 				else {
 					/* Make segment header with the findings for best regression */
-					snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
-						par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC]);
+					snprintf (buffer, GMT_LEN256, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g corr: %g R: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
+						par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC], par[GMTREGRESS_CORR], par[GMTREGRESS_R]);
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s\n", buffer);	/* Report results if verbose */
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, buffer);	/* Also include in segment header */
 

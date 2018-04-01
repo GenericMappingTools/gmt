@@ -172,6 +172,14 @@ Optional Arguments
 
 .. include:: explain_array.rst_
 
+Note:
+-----
+
+The output segment header will contain all the various statistics we compute for each segment.
+These are in order: N (number of points), x0 (weighted mean x), y0 (weighted mean y),
+angle (of line), E (misfit), slope, intercept, sigma_slope, sigma_intercept, correlation (r),
+coefficient of determination (R).
+
 Examples
 --------
 
