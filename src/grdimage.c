@@ -587,6 +587,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	double  dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0, rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	double	img_wesn[4], img_inc[2] = {1.0, 1.0};    /* Image increments & min/max for writing images or external interfaces */
 	double *NaN_rgb = NULL, red[4] = {1.0, 0.0, 0.0, 0.0}, wesn[4] = {0.0, 0.0, 0.0, 0.0};
+	double *Ix = NULL, *Iy = NULL;
 
 	struct GMT_GRID *Grid_orig[3] = {NULL, NULL, NULL}, *Grid_proj[3] = {NULL, NULL, NULL};
 	struct GMT_GRID *Intens_orig = NULL, *Intens_proj = NULL;
@@ -692,12 +693,13 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			HH->r_inc[GMT_X] = 1.0 / dx;	/* Get inverse increments to avoid divisions later */
 			HH->r_inc[GMT_Y] = 1.0 / dy;
 			HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, I->header);	/* Since we now have a proper region */
-			if (!API->external) {
-				/* Reset the grid x/y arrays */
-				gmt_M_free (GMT, I->x);	gmt_M_free (GMT, I->y);
-				I->x = gmt_grd_coord (GMT, I->header, GMT_X);
-				I->y = gmt_grd_coord (GMT, I->header, GMT_Y);
+			if (API->external) {	/* Cannot free and update read-only image so just juggle new and old arrays */
+				Ix = I->x;	Iy = I->y;	/* Keep old arrays */
 			}
+			else	/* Reset the grid x/y arrays */
+				gmt_M_free (GMT, I->x);	gmt_M_free (GMT, I->y);
+			I->x = gmt_grd_coord (GMT, I->header, GMT_X);
+			I->y = gmt_grd_coord (GMT, I->header, GMT_Y);
 		}
 
 		Ctrl->In.do_rgb = (I->header->n_bands >= 3);
@@ -1314,6 +1316,11 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (need_to_project && n_grids && GMT_Destroy_Data (API, &Grid_proj[0]) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid_proj[0]\n");
+	}
+
+	if (API->external && Ix && Iy) {	/* Restore old arrays since read-only image */
+		gmt_M_free (GMT, I->x);	gmt_M_free (GMT, I->y);
+		I->x = Ix;	I->y = Iy;
 	}
 
 	if (!need_to_project) {
