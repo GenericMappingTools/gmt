@@ -213,7 +213,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 					c[0] = 'z';	/* Restore v */
 				}
 				else if (strchr (opt->arg, '/')) {	/* Gave -S<xlim>/<ylim> for Cartesian masking instead */
-					if ((j = gmt_get_pair (GMT, opt->arg, GMT_PAIR_DIM_NODUP, Ctrl->S.limit)) == 0) {
+					if (sscanf (opt->arg, "%lg/%lg", &Ctrl->S.limit[GMT_X], &Ctrl->S.limit[GMT_Y]) != 2) {
 						n_errors++;
 					}
 					if (Ctrl->S.limit[GMT_Y] == 0.0) Ctrl->S.limit[GMT_Y] = Ctrl->S.limit[GMT_X];
@@ -229,7 +229,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	if (Ctrl->S.mode && gmt_M_is_cartesian (GMT, GMT_IN))	/* Gave a geographic search radius but not -fg so do that automatically */
+	if (Ctrl->S.mode && Ctrl->S.mode != GRDMASK_N_CART_MASK && gmt_M_is_cartesian (GMT, GMT_IN))	/* Gave a geographic search radius but not -fg so do that automatically */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
 		
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");

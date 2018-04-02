@@ -2068,6 +2068,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &V) != GMT_NOERROR) {	/* Done with the data set */
 			Return (API->error);
 		}
+		gmt_M_free (GMT, data[GMT_X]);	gmt_M_free (GMT, data[GMT_Y]);
 		if ((Gmask = GMT_Read_VirtualFile (API, mask)) == NULL) {	/* Load in the mask grid */
 			Return (API->error);
 		}
