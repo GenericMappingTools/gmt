@@ -696,8 +696,9 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (API->external) {	/* Cannot free and update read-only image so just juggle new and old arrays */
 				Ix = I->x;	Iy = I->y;	/* Keep old arrays */
 			}
-			else	/* Reset the grid x/y arrays */
+			else {	/* Reset the grid x/y arrays */
 				gmt_M_free (GMT, I->x);	gmt_M_free (GMT, I->y);
+			}
 			I->x = gmt_grd_coord (GMT, I->header, GMT_X);
 			I->y = gmt_grd_coord (GMT, I->header, GMT_Y);
 		}
