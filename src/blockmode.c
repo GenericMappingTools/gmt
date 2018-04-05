@@ -185,7 +185,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA *d, double width, bool center, int mode_choice, bool is_integer, uint64_t n, uint64_t k) {
+GMT_LOCAL struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, double width, bool center, int mode_choice, bool is_integer, double z_min, double z_max) {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning the data with the specified width. Note that the
 	 * data array is already sorted on a[k]. We check if we find more
@@ -217,8 +217,8 @@ GMT_LOCAL struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA
 	B->o_offset = (center) ? 0.0 : 0.5;
 	B->width = width;
 	B->i_width = 1.0 / width;
-	B->min = irint (floor ((d[0].a[k]   * B->i_width) + B->i_offset));
-	B->max = irint (ceil  ((d[n-1].a[k] * B->i_width) + B->i_offset));
+	B->min = irint (floor ((z_min * B->i_width) + B->i_offset));
+	B->max = irint (ceil  ((z_max * B->i_width) + B->i_offset));
 	B->n_bins = B->max - B->min + 1;
 	B->count = gmt_M_memory (GMT, NULL, B->n_bins, double);
 	B->mode_choice = (mode_choice == BLOCKMODE_DEF) ? BLOCKMODE_AVE : mode_choice;
@@ -412,6 +412,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	size_t n_alloc = 0, nz_alloc = 0;
 
 	double out[7], wesn[4], i_n_in_cell, d_intval, weight, half_dx, *in = NULL, *z_tmp = NULL;
+	double z_min = DBL_MAX, z_max = -DBL_MAX;
 
 	char format[GMT_LEN256] = {""}, *old_format = NULL;
 
@@ -535,6 +536,11 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 			if (!doubleAlmostEqual (d_intval, in[GMT_Z])) is_integer = false;
 		}
 
+		if (Ctrl->D.active) {	/* Must find extreme values in z since sorting is per index, not on z alone */
+			if (in[GMT_Z] < z_min) z_min = in[GMT_Z];
+			else if (in[GMT_Z] > z_max) z_max = in[GMT_Z];
+		}
+
 		node = gmt_M_ijp (Grid->header, row, col);		/* Bin node */
 
 		if (n_pitched == n_alloc) data = gmt_M_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
@@ -595,7 +601,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	qsort (data, n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
 
 	if (Ctrl->D.active) {	/* Choose to compute unweighted modes by histogram binning */
-		B = bin_setup (GMT, data, Ctrl->D.width, Ctrl->D.center, Ctrl->D.mode, is_integer, n_pitched, GMT_Z);
+		B = bin_setup (GMT, Ctrl->D.width, Ctrl->D.center, Ctrl->D.mode, is_integer, z_min, z_max);
 		Ctrl->Q.active = true;	/* Cannot do modal positions */
 	}
 
