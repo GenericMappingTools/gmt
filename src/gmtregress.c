@@ -524,21 +524,22 @@ GMT_LOCAL void get_correlation (struct GMT_CTRL *GMT, double *X, double *Y, doub
 	 *   R = 1 - SSR/SST, with
 	 *   SSR is the sum of squared residuals: sum (y_i - y(x_i))^2
 	 *   and SST is the sum of total variance of the model : sum (y_i - mean(y))^2
-	 *   We augment these with weights w_i as well.
+	 *   We augment these with weights w_i as well, if given.
 	 * standard r = s_xy / (s_x * s_y), using the weighted expressions for these terms.
 	 */
 
 	uint64_t k;
-	double SSR = 0.0, SST = 0.0, y_hat, sx = 0.0, sy = 0.0, sxy = 0.0;
+	double SSR = 0.0, SST = 0.0, y_hat, sx = 0.0, sy = 0.0, sxy = 0.0, ww = 1.0;
 	gmt_M_unused(GMT);
 	
 	for (k = 0; k < n; k++) {
+		if (w[GMT_Y]) ww = w[GMT_Y][k];	/* Was given weights */
 		y_hat = par[GMTREGRESS_SLOPE] * X[k] + par[GMTREGRESS_ICEPT];
-		sx += w[GMT_Y][k] * pow (X[k] - par[GMTREGRESS_XMEAN], 2.0);
-		sy += w[GMT_Y][k] * pow (Y[k] - par[GMTREGRESS_YMEAN], 2.0);
-		sxy += w[GMT_Y][k] * (X[k] - par[GMTREGRESS_XMEAN]) * (Y[k] - par[GMTREGRESS_YMEAN]);
-		SSR += w[GMT_Y][k] * pow (Y[k] - y_hat, 2.0);
-		SST += w[GMT_Y][k] * pow (y_hat - par[GMTREGRESS_YMEAN], 2.0);
+		sx  += ww * pow (X[k] - par[GMTREGRESS_XMEAN], 2.0);
+		sy  += ww * pow (Y[k] - par[GMTREGRESS_YMEAN], 2.0);
+		sxy += ww * (X[k] - par[GMTREGRESS_XMEAN]) * (Y[k] - par[GMTREGRESS_YMEAN]);
+		SSR += ww * pow (Y[k] - y_hat, 2.0);
+		SST += ww * pow (y_hat - par[GMTREGRESS_YMEAN], 2.0);
 	}
 	par[GMTREGRESS_R]    = 1.0 - SSR / SST;
 	par[GMTREGRESS_CORR] = sxy / sqrt (sx * sy);
