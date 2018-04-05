@@ -884,6 +884,31 @@ GMT_LOCAL enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, stru
 	return (closed);
 }
 
+GMT_LOCAL void embed_quotes (char *orig, char *dup) {
+	/* Add quotes around text strings with spaces in a -B option where the quotes have been lost.
+	 * Because the original quotes are gone there is no way to detect things like ...+t"Title with+u in it"
+	 * since now it is just +tTitle with+u in it and thre is no way to distinguish the two possibilities
+	 * +t"Title with"+u" in it" from +t"Title with +u in it".  We insist that +<code> must not have a space
+	 * before the <code> in order to be a modifier.  This will catch things like +t"Title with +u in it" and
+	 * treat the +u as part of the text.
+	 */
+	bool quote = false;
+	size_t i, o;
+	for (i = o = 0; i < strlen (orig); i++) {	/* Process each character in input */
+		if (orig[i] == '+' && (i == 0 || orig[i-1] != ' ') && strchr ("lpstu", orig[i+1])) {	/* Beginning of modifier that takes text, possibly with spaces */
+			if (quote) dup[o++] = '\"';	/* Terminate previous quoted string */
+			dup[o++] = '+';
+			dup[o++] = orig[++i];
+			dup[o++] = '\"';	/* Start new text quoting */
+			quote = true;
+		}
+		else	/* Regular character, just copy */
+			dup[o++] = orig[i];
+	}
+	if (quote) dup[o++] = '\"';	/* Terminate last quoted string */
+	dup[o] = '\0';	/* Terminate string */
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -938,6 +963,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	
 		char cmd1[GMT_LEN512] = {""}, cmd2[GMT_LEN512] = {""}, string[GMT_LEN128] = {""};
 		struct GMT_OPTION *opt = NULL;
+		bool got_cpt = (optN->arg[0]);
 		
 		/* Make sure we dont pass options not compatible with -N */
 		if ((opt = GMT_Find_Option (API, 'D', options))) {
@@ -952,9 +978,17 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 			sprintf (string, " -%c%s", opt->option, opt->arg);
 			switch (opt->option) {
-				case 'A' : case 'B' : case 'D': case 'F': case 'G': case 'K': case 'L': case 'Q': case 'T': case 'U': case 'W': case 'Z':	/* Only for grdcontour */
+				case 'A' : case 'D': case 'F': case 'G': case 'K': case 'L': case 'Q': case 'T': case 'U': case 'W': case 'Z':	/* Only for grdcontour */
+					strcat (cmd2, string); break;
+				case 'B':	/* Must worry about spaces*/
+					if (strchr (opt->arg, ' ') || strchr (opt->arg, '\t')) {	/* Must place all string arguments in quotes */
+						char dup_string[GMT_LEN128] = {""};
+						embed_quotes (opt->arg, dup_string);
+						sprintf (string, " -%c%s", opt->option, dup_string);
+					}
 					strcat (cmd2, string); break;
 				case 'C':	/* grdcontour, but maybe this is a cpt for grdview as well */
+					got_cpt = true;
 					strcat (cmd2, string);
 					if (optN->arg[0]) sprintf (string, " -C%s", optN->arg);
 					strcat (cmd1, string);	break;
@@ -971,6 +1005,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					strcat (cmd1, string);	strcat (cmd2, string);
 					break;
 			}
+		}
+		if (!got_cpt) {
+			GMT_Report (API, GMT_MSG_NORMAL, "The -N option requires a <cpt> argument if -C<cpt> is not given\n");
+			bailout (GMT_PARSE_ERROR);
 		}
 		/* Required options for grdview */
 		strcat (cmd1, " -Qs -K");
