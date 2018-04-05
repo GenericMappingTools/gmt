@@ -163,19 +163,19 @@ Optional Arguments
 Examples
 --------
 
-To find 5 by 5 minute block mode estimates from the double precision
-binary data in hawaii_b.xyg and output an ASCII table, run:
+To find 5 by 5 minute block mode from the ASCII data in ship_15.txt
+and output a binary table with double precision triplets, run
 
    ::
 
-    gmt blockmode hawaii_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii_5x5.xyg
+    gmt blockmedian @ship_15.txt -R245/255/20/30 -I5m -bo3d > ship_5x5.b
 
-To determine the most frequently occurring values per 5x5 block using histogram binning, with
+To determine the most frequently occurring values per 2x2 block using histogram binning, with
 data representing integer counts, try
 
    ::
 
-    gmt blockmode data.txt -R0/100/0/100 -I5 -r -C -D
+    gmt blockmode @ship_15.txt -R245/255/20/30 -I2  -r -C -D
 
 See Also
 --------

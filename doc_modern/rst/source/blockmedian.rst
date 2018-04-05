@@ -160,21 +160,21 @@ Optional Arguments
 Examples
 --------
 
-To find 5 by 5 minute block medians from the double precision binary
-data in hawaii_b.xyg and output an ASCII table, run
+To find 5 by 5 minute block medians from the ASCII data in ship_15.txt
+and output a binary table with double precision triplets, run
 
    ::
 
-    gmt blockmedian hawaii_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii_5x5.xyg
+    gmt blockmedian @ship_15.txt -R245/255/20/30 -I5m -bo3d > ship_5x5.b
 
 To compute the shape of a data distribution per bin via a
 box-and-whisker diagram we need the 0%, 25%, 50%, 75%, and 100%
 quantiles. To do so on a global 5 by 5 degree basis from the ASCII table
-depths.xyz and send output to an ASCII table, run
+mars370.txt and send output to an ASCII table, run
 
    ::
 
-    gmt blockmedian depths.xyz -Rg -I5 -Eb -r > depths_5x5.txt
+    gmt gmt blockmedian @mars370.txt -Rg -I5 -Eb -r > mars_5x5.txt
 
 See Also
 --------

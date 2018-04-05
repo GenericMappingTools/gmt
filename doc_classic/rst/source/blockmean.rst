@@ -144,11 +144,17 @@ Optional Arguments
 Examples
 --------
 
-To find 5 by 5 minute block mean values from the ASCII data in hawaii.xyg, run
+To find 5 by 5 minute block mean values from the ASCII data in ship_15.txt, run
 
    ::
 
-    gmt blockmean hawaii.xyg -R198/208/18/25 -I5m > hawaii_5x5.xyg
+    gmt blockmean @ship_15.txt -R245/255/20/30 -I5m > ship_5x5.txt
+
+To determine how many values were found in each 5x5 minute bin, try
+
+   ::
+
+    gmt blockmean @ship_15.txt -R245/255/20/30 -I5m -Sn > ship_5x5_count.txt
 
 See Also
 --------
