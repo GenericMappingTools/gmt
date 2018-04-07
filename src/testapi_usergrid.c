@@ -260,14 +260,14 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 
 int main (int argc, char *argv[]) {
 	unsigned int in, mem_mode, def_mode, answer, out, bad = 0, n = 0, V = (argc > 1), Q = (argc > 2);
-	char *passfail[2] = {"PASS", "FAIL"}, *kind[2] = {"GMT alloc", "prealloc"}, *def[2] = {"dim", "R/I"};
+	char *passfail[2] = {"PASS", "FAIL"}, *kind[2] = {"GMTalloc", "prealloc"}, *def[2] = {"dim", "R/I"};
 	unsigned int quiet = (argc == 2 && !strcmp (argv[1], "-q"));
 	if (quiet) V = 0;
 	for (def_mode = 0; def_mode < 2; def_mode++) {
 		for (mem_mode = 0; mem_mode < 2; mem_mode++) {
 			for (in = GMT_CHAR; in <= GMT_DOUBLE; in++) {
 				for (out = GMT_CHAR; out <= GMT_DOUBLE; out++) {
-					if (!quiet) printf ("[%s] Test matrix/grid/matrix(%s) for Input = index [%s], output = 10*input + 1 [%s] : ", def[def_mode], kind[mem_mode], type[in], type[out]);
+					if (!quiet) printf ("[%s] Test matrix/grid/matrix(%s) for Input = index [%6s], output = 10*input + 1 [%6s] : ", def[def_mode], kind[mem_mode], type[in], type[out]);
 					answer = deploy_test (in, out, mem_mode, def_mode, V);
 					if (!quiet || answer) printf ("%s\n", passfail[answer]);
 					bad += answer;

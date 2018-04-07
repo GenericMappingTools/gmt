@@ -1641,10 +1641,17 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 	unsigned int dims = (M->n_layers > 1) ? 3 : 2;
 	size_t size = 0;
 	GMT_Report (API, GMT_MSG_DEBUG, "Initializing a matrix for handing external %s [mode = %u]\n", GMT_direction[direction], mode);
-	if (direction == GMT_OUT) {	/* OK for creating blank container for output */
-		if (dim) {	/* Dimensions are given when we are using external memory for the matrix and must specify the dimensions specifically */
+	if (direction == GMT_OUT) {	/* OK to create blank container for output unless dims or range/inc is also set */
+		if (dim && dim[GMTAPI_DIM_ROW]) {	/* Dimensions are given when we are using external memory for the matrix and must specify the dimensions specifically */
 			M->n_rows    = dim[GMTAPI_DIM_ROW];
 			M->n_columns = dim[GMTAPI_DIM_COL];
+			M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;	/* Matrix layout order */
+		}
+		else if (range) {	/* Giving dimensions via range and inc when using external memory */
+			if (!inc || (inc[GMT_X] == 0.0 && inc[GMT_Y] == 0.0)) return (GMT_VALUE_NOT_SET);
+			gmt_M_memcpy (M->range, range, 2 * dims, double);
+			M->n_rows    = gmt_M_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], off);
+			M->n_columns = gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
 			M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;	/* Matrix layout order */
 		}
 		return (GMT_NOERROR);
@@ -11783,10 +11790,12 @@ int GMT_Change_Layout_ (unsigned int *family, char *code, unsigned int *mode, vo
 
 int GMT_Put_Vector (void *API, struct GMT_VECTOR *V, unsigned int col, unsigned int type, void *vector) {
 	/* Hooks a users custom vector onto V's column array and sets the type.
-	 * It is the user's respondibility to pass correct type for the given vector. */
+	 * It is the user's respondibility to pass correct type for the given vector.
+	 * We also check that the number of rows have been set earlier. */
 	struct GMT_VECTOR_HIDDEN *VH = NULL;
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (V == NULL) return_error (API, GMT_PTR_IS_NULL);
+	if (V->n_rows == 0) return_error (API, GMT_DIM_TOO_SMALL);
 	if (col >= V->n_columns) return_error (API, GMT_DIM_TOO_LARGE);
 	switch (type) {
 		case GMT_DOUBLE:	V->type[col] = GMT_DOUBLE;	V->data[col].f8  = vector;	break;
@@ -11849,10 +11858,12 @@ void * GMT_Get_Vector_ (struct GMT_VECTOR *V, unsigned int *col) {
 
 int GMT_Put_Matrix (void *API, struct GMT_MATRIX *M, unsigned int type, int pad, void *matrix) {
 	/* Hooks a user's custom matrix onto M's data array and sets the type.
-	 * It is the user's respondibility to pass correct type for the given matrix. */
+	 * It is the user's respondibility to pass correct type for the given matrix.
+	 * We check that dimensions have been set earlier */
 	struct GMT_MATRIX_HIDDEN *MH = NULL;
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (M == NULL) return_error (API, GMT_PTR_IS_NULL);
+	if (M->n_columns == 0 || M->n_rows == 0) return_error (API, GMT_DIM_TOO_SMALL);
 	switch (type) {
 		case GMT_DOUBLE:	M->type = GMT_DOUBLE;	M->data.f8  = matrix;	break;
 		case GMT_FLOAT:		M->type = GMT_FLOAT;	M->data.f4  = matrix;	break;
