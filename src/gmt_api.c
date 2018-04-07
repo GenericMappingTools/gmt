@@ -1633,6 +1633,9 @@ GMT_LOCAL int api_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, u
 
 /*! . */
 GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_MATRIX *M) {
+	/* If range = inc = NULL then add dimensioning is set via dim: ncols, nrow, nlayers, type.
+	 * else, ncols,nrows is set via range and inc and registration. dim, if not null, sets dim[2] = nlayers [1] and dim[3] = type [double]
+	 */
 	double off = 0.5 * registration;
 	int error;
 	unsigned int dims = (M->n_layers > 1) ? 3 : 2;
@@ -1640,7 +1643,7 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 	GMT_Report (API, GMT_MSG_DEBUG, "Initializing a matrix for handing external %s [mode = %u]\n", GMT_direction[direction], mode);
 	if (direction == GMT_OUT) {	/* OK for creating blank container for output */
 		if (dim) {	/* Dimensions are given when we are using external memory for the matrix and must specify the dimensions specifically */
-			M->n_rows = dim[GMTAPI_DIM_ROW];
+			M->n_rows    = dim[GMTAPI_DIM_ROW];
 			M->n_columns = dim[GMTAPI_DIM_COL];
 			M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;	/* Matrix layout order */
 		}
@@ -1649,7 +1652,7 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 	if (full_region (range) && (dims == 2 || (!range || range[ZLO] == range[ZHI]))) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
 		gmt_M_memcpy (M->range, dummy_range, 2 * dims, double);
-		M->n_rows = dim[GMTAPI_DIM_ROW];
+		M->n_rows    = dim[GMTAPI_DIM_ROW];
 		M->n_columns = dim[GMTAPI_DIM_COL];
 	}
 	else {	/* Was apparently given valid range and inc */
@@ -1658,7 +1661,7 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 		M->n_rows    = gmt_M_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], off);
 		M->n_columns = gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
 	}
-	M->type = dim[3];	/* Use selected data type for export */
+	M->type = (dim == NULL) ? GMT_DOUBLE : dim[3];	/* Use selected data type for export or default to double */
 	M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;
 	size = M->n_rows * M->n_columns * M->n_layers;	/* Size in bytes of the initial matrix allocation */
 	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Must allocate data memory */
@@ -1678,6 +1681,9 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 
 /*! . */
 GMT_LOCAL int api_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_VECTOR *V) {
+	/* If range = inc = NULL then add dimensioning is set via dim: ncols, nrow, type.
+	 * else, ncols,nrows is set via range and inc and registration. dim[2], if not null, sets type [double]
+	 */
 	int error;
 	uint64_t col;
 	GMT_Report (API, GMT_MSG_DEBUG, "Initializing a vector for handing external %s\n", GMT_direction[direction]);
@@ -1697,8 +1703,8 @@ GMT_LOCAL int api_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 		V->n_rows = gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
 		gmt_M_memcpy (V->range, range, 2, double);
 	}
-	for (col = 0; col < V->n_columns; col++)	/* Set the same export data type for all vectors */
-		V->type[col] = dim[2];
+	for (col = 0; col < V->n_columns; col++)	/* Set the same export data type for all vectors (or default to double) */
+		V->type[col] = (dim == NULL) ? GMT_DOUBLE : dim[GMT_Z];
 	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Must allocate space */
 		struct GMT_VECTOR_HIDDEN *VH = gmt_get_V_hidden (V);
 		if (V->n_rows) {	/* Must allocate space */
@@ -6170,7 +6176,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			break;
 	}
 
-	if (!full_region (wesn)) {	/* Copy the subset region if it was given (for grids) */
+	if (a_grid_or_image (family) && !full_region (wesn)) {	/* Copy the subset region if it was given (for grids) */
 		gmt_M_memcpy (S_obj->wesn, wesn, 4, double);
 		S_obj->region = true;
 	}
@@ -8498,7 +8504,9 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 	 *     for the container.  For grids and images we fill out the GMT_GRID_HEADER;
 	 *     for vectors and matrices we fill out their internal parameters.
 	 *     For complex grids pass registration + GMT_GRID_IS_COMPLEX_{REAL|IMAG}
-	 *     For GMT_IS_MATRIX and GMT_IS_IMAGE, par[GMT_Z] = holds the number of layers or bands (dim == NULL means just 1).
+	 *     For GMT_IS_MATRIX and GMT_IS_IMAGE, dim[GMT_Z] = holds the number of layers or bands (dim == NULL means just 1),
+	 *     and dim[3] holds the data type (dim == NULL means GMT_DOUBLE).
+	 *     For GMT_IS_VECTOR, dim[GMT_Z] holds the data type (dim == NULL means GMT_DOUBLE).
 	 * pad sets the padding for grids and images, while for matrices it can be
 	 *     0 for the default row/col orientation
 	 *     1 for row-major format (C)
@@ -8631,7 +8639,7 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with the requested number of layers, rows & columns */
 			if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
-			n_layers = (this_dim[GMTAPI_DIM_COL] == 0 && this_dim[GMTAPI_DIM_ROW] == 0) ? 1U : this_dim[GMT_Z];	/* Only by specifying nx,ny dimension might there be > 1 layer */
+			n_layers = (this_dim == NULL || (this_dim[GMTAPI_DIM_COL] == 0 && this_dim[GMTAPI_DIM_ROW] == 0)) ? 1U : this_dim[GMT_Z];	/* Only by specifying nx,ny dimension might there be > 1 layer */
 		 	new_obj = gmtlib_create_matrix (API->GMT, n_layers, def_direction, pad);
 			if ((API->error = api_init_matrix (API, this_dim, range, inc, registration, mode, def_direction, new_obj))) {	/* Failure, must free the object */
 				struct GMT_MATRIX *M = api_return_address (new_obj, GMT_IS_MATRIX);	/* Get pointer to resource */
