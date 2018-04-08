@@ -55,7 +55,7 @@ GMT_LOCAL size_t throw_away(void *ptr, size_t size, size_t nmemb, void *data)
 	(void)data;
 	/* we are not interested in the headers itself,
 	   so we only return the size we would have saved ... */
-		return (size_t)(size * nmemb);
+	return (size_t)(size * nmemb);
 }
 
 GMT_LOCAL size_t fwrite_callback (void *buffer, size_t size, size_t nmemb, void *stream) {
@@ -330,7 +330,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 /* Support functions for SRTM tile grids
  * gmtlib_file_is_srtm:	Determine if a SRTM 1 or 3 arc second request was given
  * gmtlib_file_is_srtmlist: Determine if file is a listfile with SRTM tile info
- * gmtlib_get_srtmlist:		Convert -Rw/e/s/n into a file with a list of the tiles needed
+ * gmtlib_get_srtmlist:	Convert -Rw/e/s/n into a file with a list of the tiles needed
  */
 
 bool gmtlib_file_is_srtmrequest (struct GMTAPI_CTRL *API, const char *file, unsigned int *res) {
@@ -472,40 +472,3 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	HH->orig_datatype = GMT_SHORT;	/* Since we know this */
 	return (G);
 }
-
-#if 0
-/* Code to apply and restore d2dxdy on integer grids (SRTM) */
-void gmtlib_srtm_d2dxdy (struct GMTAPI_CTRL *API, struct GMT_GRID *G, int way) {
-	/* way = +1 apply d2dxdy to grid, -1 undo this effect */
-	int row, col;
-	uint64_t ij;
-	
-	if (way == +1) {	/* Apply d2dxdy to our grid */
-		int last_row = (int)(G->header->n_rows - 1), last_col = (int)(G->header->n_columns - 1);
-		for (row = last_row; row >= 0; row--) {	/* Start on last row and move to top */
-			ij = gmt_M_ijp (G->header, row, last_col);	/* Last node on this row */
-			for (col = last_col; col > 0; col--, ij--)
-				G->data[ij] -= G->data[ij-1];	/* Do d/dx from end to beginning of row */
-			if (row < last_row) {	/* Once past last row we can do d/dy */
-				ij = gmt_M_ijp (G->header, row, 0);	/* Start of current row */
-				for (col = 0; col < (int)G->header->n_columns; col++, ij++)
-					G->data[ij+G->header->mx] -= G->data[ij];
-			}
-		}
-	}
-	else if (way == -1) {	/* Undo d2dxdy for our grid */
-		for (row = 0; row < (int)G->header->n_rows; row++) {	/* Undo d/dx */
-			ij = gmt_M_ijp (G->header, row, 1);	/* 2nd node on this row */
-			for (col = 1; col < (int)G->header->n_columns; col++, ij++)
-				G->data[ij] += G->data[ij-1];
-			if (row) {	/* Undo d/dy once we have one row above us */
-				ij = gmt_M_ijp (G->header, row, 0);	/* Start of current row */
-				for (col = 0; col < (int)G->header->n_columns; col++, ij++)
-					G->data[ij] += G->data[ij-G->header->mx];
-			}
-		}
-	}
-	else
-		GMT_Report (API, GMT_MSG_NORMAL, "Must select way = -1 | +1!\n");
-}
-#endif
