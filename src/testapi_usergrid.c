@@ -12,7 +12,7 @@
  * end up with 2 * 2 * 10 * 10 = 400 separate calls to grdmath.
  * Each input matrix is loaded with the index numbers 0 through (NM-1)
  * which here is 0 to 11.  The grdmath command reads this grid,
- * multibplies by 10 and adds 1.  The calling program then sums
+ * multiplies by 10 and adds 1.  The calling program then sums
  * the output which should be 10*sum(1-11) + 1 = 672. Since the
  * sum of the input is sum(1-11) = 66 the differences is 606.
  * The test is therefore checking that difference.
@@ -260,7 +260,7 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 
 int main (int argc, char *argv[]) {
 	unsigned int in, mem_mode, def_mode, answer, out, bad = 0, n = 0, V = (argc > 1), Q = (argc > 2);
-	char *passfail[2] = {"PASS", "FAIL"}, *kind[2] = {"GMTalloc", "prealloc"}, *def[2] = {"dim", "R/I"};
+	char *passfail[2] = {"PASS", "FAIL"}, *kind[2] = {"prealloc", "GMTalloc"}, *def[2] = {"dim", "R/I"};
 	unsigned int quiet = (argc == 2 && !strcmp (argv[1], "-q"));
 	if (quiet) V = 0;
 	for (def_mode = 0; def_mode < 2; def_mode++) {
