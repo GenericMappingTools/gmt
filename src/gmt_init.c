@@ -6445,8 +6445,8 @@ void gmt_inc_syntax (struct GMT_CTRL *GMT, char option, bool error) {
 	gmt_message (GMT, "\t   Append = to adjust the region to fit increments [Adjust increment to fit domain].\n");
 	gmt_message (GMT, "\t   Alternatively, specify number of nodes by appending +. Then, the increments\n");
 	gmt_message (GMT, "\t   are calculated from the given domain and node-registration settings\n");
-	gmt_message (GMT, "\t   (see Appendix B for details).  Note: If -R<grdfile> was used then\n");
-	gmt_message (GMT, "\t   both -R and -%c have been set; use -%c to override those values.\n", option, option);
+	gmt_message (GMT, "\t   (see Appendix B for details).  Note: If -R<grdfile> was used then -%c\n", option);
+	gmt_message (GMT, "\t   (and -R and maybe -r) have been set; use -%c to override those increments.\n", option);
 }
 
 /*! .
@@ -6512,7 +6512,7 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned i
 		gmt_message (GMT, "\t     +c Controls how pens and fills are affected if a CPT is specified via -C:\n");
 		gmt_message (GMT, "\t          Append l to let pen colors follow the CPT setting.\n");
 		gmt_message (GMT, "\t          Append f to let fill/font colors follow the CPT setting.\n");
-		gmt_message (GMT, "\t          Default is both effects.\n");
+		gmt_message (GMT, "\t          Default activates both effects.\n");
 	}
 }
 
@@ -6544,7 +6544,7 @@ void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsi
 		gmt_message (GMT, "\t   %s  Use -%sn to specify <refpoint> with normalized coordinates in 0-1 range.\n", tab[shift], option);
 		gmt_message (GMT, "\t   %s  Use -%sx to specify <refpoint> with plot coordinates.\n", tab[shift], option);
 		gmt_message (GMT, "\t   %sAll except -%sx require the -R and -J options to be set.\n", tab[shift], option);
-		gmt_message (GMT, "\t   %sUse J if item should be placed outside map and j if inside.\n", tab[shift]);
+		gmt_message (GMT, "\t   %sUse J if item should be placed outside the map frame and j if inside.\n", tab[shift]);
 	}
 	/* May need to place other things in the middle */
 	if (part & 2) {	/* Here string is irrelevant */
