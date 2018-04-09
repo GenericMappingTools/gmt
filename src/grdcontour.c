@@ -333,6 +333,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 
 	unsigned int n_errors = 0, n_files = 0, id, reset = 0;
 	int j, k, n;
+	size_t L;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, string[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -369,16 +370,33 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				}
 				break;
 			case 'C':	/* Contour interval/cpt */
+				if (Ctrl->C.active) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: Given more than once\n");
+					n_errors++;
+					break;
+				}
 				Ctrl->C.active = true;
+				L = strlen (opt->arg);
+				if (L >= 4) Ctrl->C.cpt = (!strncmp (&opt->arg[L-4], ".cpt", 4U)) ? true : false;
 				if (gmt_M_file_is_memory (opt->arg)) {	/* Passed a memory reference from a module */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = true;
 					gmt_M_str_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
-				else if (gmt_M_file_is_cache (opt->arg) || !gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
+				else if (Ctrl->C.cpt) {	/* Passed a cpt file, it must exist */
+					if (!gmt_M_file_is_cache (opt->arg) && gmt_access (GMT, opt->arg, R_OK)) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: CPT file %s not found\n", opt->arg);
+						n_errors++;
+					}
+					else {	/* FOund it or a cache file */
+						Ctrl->C.interval = 1.0;
+						gmt_M_str_free (Ctrl->C.file);
+						Ctrl->C.file = strdup (opt->arg);
+					}
+				}
+				else if (gmt_M_file_is_cache (opt->arg) || !gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a readable table file */
 					Ctrl->C.interval = 1.0;
-					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", 4U)) ? true : false;
 					gmt_M_str_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
