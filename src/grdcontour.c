@@ -982,6 +982,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		char cmd1[GMT_LEN512] = {""}, cmd2[GMT_LEN512] = {""}, string[GMT_LEN128] = {""};
 		struct GMT_OPTION *opt = NULL;
 		bool got_cpt = (optN->arg[0]);
+		size_t L;
 		
 		/* Make sure we dont pass options not compatible with -N */
 		if ((opt = GMT_Find_Option (API, 'D', options))) {
@@ -993,6 +994,13 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			bailout (GMT_PARSE_ERROR);
 		}
 
+		if ((L = strlen (optN->arg)) >= 4 && !strncmp (&optN->arg[L-4], ".cpt", 4U)) {	/* Gave a cpt argument, check that it is valid */
+			if (!gmt_M_file_is_cache (optN->arg) && gmt_access (API->GMT, optN->arg, R_OK)) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: CPT file %s not found\n", optN->arg);
+				bailout (GMT_PARSE_ERROR);
+			}
+		}
+		
 		for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 			sprintf (string, " -%c%s", opt->option, opt->arg);
 			switch (opt->option) {
@@ -1008,7 +1016,14 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 				case 'C':	/* grdcontour, but maybe this is a cpt for grdview as well */
 					got_cpt = true;
 					strcat (cmd2, string);
-					if (optN->arg[0]) sprintf (string, " -C%s", optN->arg);
+					if (optN->arg[0])	/* Use the -N cpt instead */
+						sprintf (string, " -C%s", optN->arg);
+					else if ((L = strlen (opt->arg)) >= 4 && !strncmp (&opt->arg[L-4], ".cpt", 4U)) {	/* Gave a cpt argument, check that it is valid */
+						if (!gmt_M_file_is_cache (opt->arg) && gmt_access (API->GMT, opt->arg, R_OK)) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: CPT file %s not found\n", opt->arg);
+							bailout (GMT_PARSE_ERROR);
+						}
+					}
 					strcat (cmd1, string);	break;
 				case 'O': case 'P':
 					strcat (cmd1, string);	break;
