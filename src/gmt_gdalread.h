@@ -165,7 +165,11 @@ struct GMT_GDALREAD_OUT_CTRL {
 	} Int32;
 	struct Float {			/* Declare float pointers */
 		bool active;
+#ifdef DOUBLE_PRECISION_GRID
+		double *data;
+#else
 		float *data;
+#endif
 	} Float;
 	struct Double {			/* Declare double pointers */
 		bool active;
