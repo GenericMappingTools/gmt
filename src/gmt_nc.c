@@ -670,8 +670,13 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		gmtnc_get_units (GMT, ncid, z_id, header->z_units);
 		if (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor)) header->z_scale_factor = 1.0;
 		if (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset)) header->z_add_offset = 0.0;
+#ifdef DOUBLE_PRECISION_GRID
+		if (nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value))
+		    nc_get_att_double (ncid, z_id, "missing_value", &header->nan_value);
+#else
 		if (nc_get_att_float (ncid, z_id, "_FillValue", &header->nan_value))
 		    nc_get_att_float (ncid, z_id, "missing_value", &header->nan_value);
+#endif
 		if (!nc_get_att_double (ncid, z_id, "actual_range", dummy)) {
 			/* z-limits need to be converted from actual to internal grid units. */
 			header->z_min = (dummy[0] - header->z_add_offset) / header->z_scale_factor;
@@ -838,11 +843,19 @@ L100:
          Edit: This work-around should eventually be removed because the bug was fixed as of 2015-04-02 (any version >4.3.3.1 should be fine).
 			*/
 			gmt_M_err_trap (nc_rename_att (ncid, z_id, "_FillValue", "_fillValue"));
+#ifdef DOUBLE_PRECISION_GRID
+			gmt_M_err_trap (nc_put_att_double (ncid, z_id, "_fillValue", z_type, 1U, &header->nan_value));
+#else
 			gmt_M_err_trap (nc_put_att_float (ncid, z_id, "_fillValue", z_type, 1U, &header->nan_value));
+#endif
 			gmt_M_err_trap (nc_rename_att (ncid, z_id, "_fillValue", "_FillValue"));
 		}
 		else {
+#ifdef DOUBLE_PRECISION_GRID
+			gmt_M_err_trap (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
+#else
 			gmt_M_err_trap (nc_put_att_float (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
+#endif
 		}
 
 		/* Limits need to be stored in actual, not internal grid, units */

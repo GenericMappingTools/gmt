@@ -366,7 +366,7 @@ GMT_LOCAL void nearest_interp (struct GMT_CTRL *GMT, struct GMT_GRID *In, struct
 	int64_t nx = In->header->n_columns, ny = In->header->n_rows;
  	int64_t i, j, flag, ct, k, recx = 1, recy = 1, cs = 0, rr;
  	int64_t *is = NULL, *js = NULL, *xs = NULL, *ys = NULL;
-	float *m = In->data, *m_interp = Out->data;	/* Short-hand for input and output grids */
+	gmt_grdfloat *m = In->data, *m_interp = Out->data;	/* Short-hand for input and output grids */
 	double rad2;
  	
  	/* Allocate memory for temporary indexes */

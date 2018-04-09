@@ -162,7 +162,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 				case 'a':
 					Ctrl->S.mode |= GRDCLIP_ABOVE;
+#ifdef DOUBLE_PRECISION_GRID
+					n = sscanf (&opt->arg[1], "%lf/%s", &Ctrl->S.high, txt);
+#else
 					n = sscanf (&opt->arg[1], "%f/%s", &Ctrl->S.high, txt);
+#endif
 					if (n != n_to_expect) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Sa option: Expected -Sa<high>/<above>, <above> may be set to NaN\n");
 						n_errors++;
@@ -172,7 +176,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 					break;
 				case 'b':
 					Ctrl->S.mode |= GRDCLIP_BELOW;
+#ifdef DOUBLE_PRECISION_GRID
+					n = sscanf (&opt->arg[1], "%lf/%s", &Ctrl->S.low, txt);
+#else
 					n = sscanf (&opt->arg[1], "%f/%s", &Ctrl->S.low, txt);
+#endif
 					if (n != n_to_expect) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Sb option: Expected -Sb<low>/<below>, <below> may be set to NaN\n");
 						n_errors++;
@@ -189,7 +197,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 						Ctrl->S.class = gmt_M_memory (GMT, Ctrl->S.class, n_alloc, struct GRDCLIP_RECLASSIFY);
 					}
 					if (n_to_expect == 3) {
+#ifdef DOUBLE_PRECISION_GRID
+						n = sscanf (&opt->arg[1], "%lf/%lf/%s", &Ctrl->S.class[n_class].low, &Ctrl->S.class[n_class].high, txt);
+#else
 						n = sscanf (&opt->arg[1], "%f/%f/%s", &Ctrl->S.class[n_class].low, &Ctrl->S.class[n_class].high, txt);
+#endif
 						if (n != n_to_expect) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Si option: Expected -Si<low>/<high>/<between>, <between> may be set to NaN\n");
 							n_errors++;
@@ -198,7 +210,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 							Ctrl->S.class[n_class].between = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (gmt_grdfloat)atof (txt);
 					}
 					else {
+#ifdef DOUBLE_PRECISION_GRID
+						n = sscanf (&opt->arg[1], "%lf/%s", &Ctrl->S.class[n_class].low, txt);
+#else
 						n = sscanf (&opt->arg[1], "%f/%s", &Ctrl->S.class[n_class].low, txt);
+#endif
 						if (n != n_to_expect) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Sr option: Expected -Sr<old>/<new>, <new> may be set to NaN\n");
 							n_errors++;

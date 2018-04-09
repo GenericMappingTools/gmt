@@ -90,6 +90,10 @@ EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, stru
 
 #define GMT_OPT_OUTFILE2	'='	/* Unlike GMT_OPT_OUTFILE this one has no restriction of just one output file */
 
+#ifdef DOUBLE_PRECISION_GRID
+#define fabsf(x) fabs(x)
+#endif
+
 struct GRDMATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct Out {	/* = <filename> */
@@ -1628,7 +1632,7 @@ GMT_LOCAL void grd_FACT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 
 /* Subroutines for grd_EXTREMA */
 
-GMT_LOCAL int do_derivative (float *z, uint64_t this_node, int off, unsigned int type)
+GMT_LOCAL int do_derivative (gmt_grdfloat *z, uint64_t this_node, int off, unsigned int type)
 {	/* Examine a line of 3-points centered on the current this_node.
 	 * z is the data matrix.
 	 * off is shift to add to get index of the next value and subtract to get previous node.
@@ -4094,7 +4098,7 @@ GMT_LOCAL void grd_TRIM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	 * then set grid values in the tails to NaN */
 	uint64_t node;
 	unsigned int prev1, prev2, row, col;
-	float global_zmin, global_zmax, *tmp_grid = NULL;
+	gmt_grdfloat global_zmin, global_zmax, *tmp_grid = NULL;
 
 	prev1 = last - 1;
 	prev2 = last - 2;
@@ -4122,11 +4126,15 @@ GMT_LOCAL void grd_TRIM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Right alpha for TRIM must exceed left alpha!\n");
 		return;
 	}
-	tmp_grid = gmt_M_memory_aligned (GMT, NULL, stack[last]->G->header->size, float);
-	gmt_M_memcpy (tmp_grid, stack[last]->G->data, stack[last]->G->header->size, float);
+	tmp_grid = gmt_M_memory_aligned (GMT, NULL, stack[last]->G->header->size, gmt_grdfloat);
+	gmt_M_memcpy (tmp_grid, stack[last]->G->data, stack[last]->G->header->size, gmt_grdfloat);
+#ifdef DOUBLE_PRECISION_GRID
+	gmt_sort_array (GMT, tmp_grid, stack[last]->G->header->size, GMT_DOUBLE);	/* Sort so we can find quantiles */
+#else
 	gmt_sort_array (GMT, tmp_grid, stack[last]->G->header->size, GMT_FLOAT);	/* Sort so we can find quantiles */
-	global_zmin = (float)gmt_quantile_f (GMT, tmp_grid, stack[prev2]->factor, stack[last]->G->header->size);	/* "Left" quantile */
-	global_zmax = (float)gmt_quantile_f (GMT, tmp_grid, stack[prev1]->factor, stack[last]->G->header->size);	/* "Right" quantile */
+#endif
+	global_zmin = (gmt_grdfloat)gmt_quantile_f (GMT, tmp_grid, stack[prev2]->factor, stack[last]->G->header->size);	/* "Left" quantile */
+	global_zmax = (gmt_grdfloat)gmt_quantile_f (GMT, tmp_grid, stack[prev1]->factor, stack[last]->G->header->size);	/* "Right" quantile */
 	gmt_M_free (GMT, tmp_grid);
 	gmt_M_grd_loop (GMT, info->G, row, col, node) {
 		stack[prev2]->G->data[node] = (stack[last]->G->data[node] < global_zmin || stack[last]->G->data[node] > global_zmax) ? GMT->session.f_NaN : stack[last]->G->data[node];

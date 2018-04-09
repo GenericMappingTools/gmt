@@ -118,7 +118,11 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 		gmt_M_err_trap (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset));
 		gmt_M_err_trap (nc_get_att_int (ncid, z_id, "node_offset", &reg));
 		header->registration = reg;
+#ifdef DOUBLE_PRECISION_GRID
+		nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value);
+#else
 		nc_get_att_float (ncid, z_id, "_FillValue", &header->nan_value);
+#endif
 		gmt_M_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "title", header->title));
 		gmt_M_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "source", text));
 		strncpy (header->command, text, GMT_GRID_COMMAND_LEN320-1);
@@ -152,7 +156,11 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 		gmt_M_err_trap (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1U, &header->z_add_offset));
 		if (z_type != NC_FLOAT && z_type != NC_DOUBLE)
 			header->nan_value = rintf (header->nan_value); /* round to integer */
+#ifdef DOUBLE_PRECISION_GRID
+		gmt_M_err_trap (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
+#else
 		gmt_M_err_trap (nc_put_att_float (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
+#endif
 		reg = header->registration;
 		gmt_M_err_trap (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, 1U, &reg));
 		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", GMT_GRID_TITLE_LEN80, header->title));

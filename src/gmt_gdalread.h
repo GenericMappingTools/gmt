@@ -110,7 +110,7 @@ struct GMT_GDALREAD_IN_CTRL {
 	} c_ptr;
 	struct GD_fp {	/* Send in a pointer with allocated floats */
 		bool active;
-		float *grd;
+		gmt_grdfloat *grd;
 	} f_ptr;
 	struct GD_r {	/* Sub-region in row/column coords */
 		bool active;

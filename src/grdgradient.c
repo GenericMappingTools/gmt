@@ -688,7 +688,11 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 				if (!sigma_set) {
 					Ctrl->N.sigma = 0.0;
 					gmt_M_grd_loop (GMT, Out, row, col, ij) {
+#ifdef DOUBLE_PRECISION_GRID
+						if (!gmt_M_is_fnan (Out->data[ij])) Ctrl->N.sigma += fabs (Out->data[ij]);
+#else
 						if (!gmt_M_is_fnan (Out->data[ij])) Ctrl->N.sigma += fabsf (Out->data[ij]);
+#endif
 					}
 					Ctrl->N.sigma = M_SQRT2 * Ctrl->N.sigma / n_used;
 				}

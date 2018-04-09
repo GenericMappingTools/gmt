@@ -90,6 +90,10 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-RV"
 
+#ifdef DOUBLE_PRECISION_GRID
+#define fabsf(x) fabs(x)
+#endif
+
 struct GRDTREND_CTRL {	/* All control options for this program (except common args) */
 	struct In {
 		bool active;

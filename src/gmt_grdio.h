@@ -131,7 +131,7 @@ struct GMT_GRID_ROWBYROW {
 #endif
 
 /*! Routine that scales and offsets the data in a vector */
-static inline void scale_and_offset_f (float *data, size_t length, float scale, float offset) {
+static inline void scale_and_offset_f (gmt_grdfloat *data, size_t length, gmt_grdfloat scale, gmt_grdfloat offset) {
 	/*  data:   Single-precision real input vector
 	 *  length: The number of elements to process
 	 * This function uses the vDSP portion of the Accelerate framework if possible */
@@ -140,21 +140,33 @@ static inline void scale_and_offset_f (float *data, size_t length, float scale, 
 #endif
 	if (scale == 1) /* offset only */
 #ifdef __APPLE__ /* Accelerate framework */
+#ifdef DOUBLE_PRECISION_GRID
+		vDSP_vsaddD (data, 1, &offset, data, 1, length);
+#else
 		vDSP_vsadd (data, 1, &offset, data, 1, length);
+#endif
 #else
 		for (n = 0; n < length; ++n)
 			data[n] += offset;
 #endif
 	else if (offset == 0) /* scale only */
 #ifdef __APPLE__ /* Accelerate framework */
+#ifdef DOUBLE_PRECISION_GRID
+		vDSP_vsmulD (data, 1, &scale, data, 1, length);
+#else
 		vDSP_vsmul (data, 1, &scale, data, 1, length);
+#endif
 #else
 		for (n = 0; n < length; ++n)
 			data[n] *= scale;
 #endif
 	else /* scale + offset */
 #ifdef __APPLE__ /* Accelerate framework */
+#ifdef DOUBLE_PRECISION_GRID
+		vDSP_vsmsaD (data, 1, &scale, &offset, data, 1, length);
+#else
 		vDSP_vsmsa (data, 1, &scale, &offset, data, 1, length);
+#endif
 #else
 		for (n = 0; n < length; ++n)
 			data[n] = data[n] * scale + offset;
@@ -165,7 +177,7 @@ EXTERN_MSC int gmt_grd_format_decoder (struct GMT_CTRL *GMT, const char *code, u
 EXTERN_MSC int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header, bool magic);
 EXTERN_MSC int gmt_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double wesn[], unsigned int *width, unsigned int *height, int *first_col, int *last_col, int *first_row, int *last_row, unsigned int **index);
 EXTERN_MSC int gmt_update_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header);
-EXTERN_MSC void gmt_scale_and_offset_f (struct GMT_CTRL *GMT, float *data, size_t length, double scale, double offset);
+EXTERN_MSC void gmt_scale_and_offset_f (struct GMT_CTRL *GMT, gmt_grdfloat *data, size_t length, double scale, double offset);
 EXTERN_MSC int gmt_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, gmt_grdfloat *grid, unsigned int complex_mode, unsigned int direction);
 EXTERN_MSC void gmt_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, gmt_grdfloat *data, unsigned int mode);
 

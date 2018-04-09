@@ -374,7 +374,11 @@ GMT_LOCAL int grdio_parse_grd_format_scale_old (struct GMT_CTRL *Ctrl, struct GM
 	if (p != NULL && *p) {
 		++p;
 		/* parse invalid value */
+#ifdef DOUBLE_PRECISION_GRID
+		sscanf (p, "%lf", &header->nan_value);
+#else
 		sscanf (p, "%f", &header->nan_value);
+#endif
 
 		/* header->nan_value should be of same type as (float)*grid to avoid
 		 * round-off errors. For example, =gd///-3.4028234e+38:gtiff, would fail

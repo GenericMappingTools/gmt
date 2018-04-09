@@ -85,7 +85,7 @@ struct SPECTRUM1D_CTRL {
 struct SPECTRUM1D_INFO {	/* Control structure for spectrum1d */
 	unsigned int y_given;
 	int n_spec, window, window_2;
-	float *datac;
+	gmt_grdfloat *datac;
 	double dt, x_variance, y_variance, d_n_windows, y_pow;
 	struct SPEC {
 		double xpow;	/* PSD in X(t)  */
@@ -102,7 +102,7 @@ GMT_LOCAL void alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C) {
 	C->window_2 = 2 * C->window;		/* This is for complex array stuff  */
 
 	C->spec = gmt_M_memory (GMT, NULL, C->n_spec, struct SPEC);
-	C->datac = gmt_M_memory (GMT, NULL, C->window_2, float);
+	C->datac = gmt_M_memory (GMT, NULL, C->window_2, gmt_grdfloat);
 }
 
 GMT_LOCAL void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, unsigned int mode) {
@@ -155,11 +155,11 @@ GMT_LOCAL void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend,
 			hc = cos(t * h_period);
 			hw = h_scale * (1.0 - hc * hc);
 			tt = t * t_factor - 1.0;
-			C->datac[i] -= (float)(x_mean + tt * x_slope);
-			C->datac[i] *= (float)hw;
+			C->datac[i] -= (gmt_grdfloat)(x_mean + tt * x_slope);
+			C->datac[i] *= (gmt_grdfloat)hw;
 			C->x_variance += (C->datac[i] * C->datac[i]);
-			C->datac[i+1] -= (float)(y_mean + tt * y_slope);
-			C->datac[i+1] *= (float)hw;
+			C->datac[i+1] -= (gmt_grdfloat)(y_mean + tt * y_slope);
+			C->datac[i+1] *= (gmt_grdfloat)hw;
 			C->y_variance += (C->datac[i+1] * C->datac[i+1]);
 		}
 		C->x_variance /= C->window;
@@ -170,8 +170,8 @@ GMT_LOCAL void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend,
 			hc = cos(t * h_period);
 			hw = h_scale * (1.0 - hc * hc);
 			tt = t * t_factor - 1.0;
-			C->datac[i] -= (float)(x_mean + tt * x_slope);
-			C->datac[i] *= (float)hw;
+			C->datac[i] -= (gmt_grdfloat)(x_mean + tt * x_slope);
+			C->datac[i] *= (gmt_grdfloat)hw;
 			C->x_variance += (C->datac[i] * C->datac[i]);
 		}
 		C->x_variance /= C->window;
@@ -203,14 +203,14 @@ GMT_LOCAL int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, 
 		t_stop = t_start + C->window;
 		if (C->y_given) {
 			for (t = t_start, i = 0; t < t_stop; t++, i+=2) {
-				C->datac[i] = (float)x[t];
-				C->datac[i+1] = (float)y[t];
+				C->datac[i] = (gmt_grdfloat)x[t];
+				C->datac[i+1] = (gmt_grdfloat)y[t];
 			}
 		}
 		else {
 			for (t = t_start, i = 0; t < t_stop; t++, i+=2) {
-				C->datac[i] = (float)x[t];
-				C->datac[i+1] = 0.0f;
+				C->datac[i] = (gmt_grdfloat)x[t];
+				C->datac[i+1] = 0.0;
 			}
 		}
 

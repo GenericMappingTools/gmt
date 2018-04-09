@@ -128,7 +128,11 @@ GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	while (strncmp (record, "NODATA", 6) )		/* Keep reading till find this keyword */
 		gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
+#ifdef DOUBLE_PRECISION_GRID
+	if (sscanf (record, "%*s %lf", &header->nan_value) != 1) {
+#else
 	if (sscanf (record, "%*s %f", &header->nan_value) != 1) {
+#endif
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding nan_value_value record\n");
 		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
@@ -308,7 +312,11 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 	ungetc (c, fp);	/* ...and put it back where it came from */
 	if (c == 'n' || c == 'N') {	/*	Assume this is a nodata_value record since we found an 'n|N' */
 		gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
+#ifdef DOUBLE_PRECISION_GRID
+		if (sscanf (record, "%*s %lf", &header->nan_value) != 1) {
+#else
 		if (sscanf (record, "%*s %f", &header->nan_value) != 1) {
+#endif
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding nan_value_value record\n");
 			if (fpBAK) gmt_fclose (GMT, fp2);
 			gmt_fclose (GMT, fp);
@@ -606,7 +614,11 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		check = !isnan (header->nan_value);
 		in_nx = header->n_columns;
 		header->n_columns = width_in;	/* Needed to be set here due to gmt_M_ijp below */
+#ifdef DOUBLE_PRECISION_GRID
+		while (fscanf (fp, "%lf", &value) == 1 && n_left) {	/* We read all values and skip those not inside our w/e/s/n */
+#else
 		while (fscanf (fp, "%f", &value) == 1 && n_left) {	/* We read all values and skip those not inside our w/e/s/n */
+#endif
 			tmp[col] = value;	/* Build up a single input row */
 			col++;
 			if (col == in_nx) {	/* End of input row */
@@ -650,7 +662,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	return (GMT_NOERROR);
 }
 
-int gmt_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode, int floating) {
+int gmt_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode, int floating) {
 	unsigned int i2, j, j2, width_out, height_out, last;
 	int first_col, last_col, first_row, last_row;
 	unsigned int i, *actual_col = NULL;
@@ -705,12 +717,12 @@ int gmt_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	return (GMT_NOERROR);
 }
 
-int gmt_esri_writei_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+int gmt_esri_writei_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
 	/* Standard integer values on output only */
 	return (gmt_esri_write_grd (GMT, header, grid, wesn, pad, complex_mode, false));
 }
 
-int gmt_esri_writef_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+int gmt_esri_writef_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
 	/* Write floating point on output */
 	return (gmt_esri_write_grd (GMT, header, grid, wesn, pad, complex_mode, true));
 }

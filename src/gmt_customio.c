@@ -1947,10 +1947,10 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 
 	if (from_gdalread->Float.active) {
 		if (!to_gdalread->f_ptr.active)		/* If the float array was allocated inside _gdalread */
-			gmt_M_memcpy (grid, from_gdalread->Float.data, header->size, float);
+			gmt_M_memcpy (grid, from_gdalread->Float.data, header->size, gmt_grdfloat);
 		else if (!to_gdalread->c_ptr.active && from_gdalread->UInt8.active) {		/* If the char array was allocated inside _gdalread */
 			for (j = 0; j < header->size; j++)
-				grid[j] = (float)from_gdalread->UInt8.data[j];
+				grid[j] = (gmt_grdfloat)from_gdalread->UInt8.data[j];
 		}
 	}
 	else {
@@ -1959,16 +1959,16 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		i = nBand * header->size;
 		if (from_gdalread->UInt8.active)
 			for (j = 0; j < header->size; j++)
-				grid[j] = (float)from_gdalread->UInt8.data[j+i];
+				grid[j] = (gmt_grdfloat)from_gdalread->UInt8.data[j+i];
 		else if (from_gdalread->UInt16.active)
 			for (j = 0; j < header->size; j++)
-				grid[j] = (float)from_gdalread->UInt16.data[j+i];
+				grid[j] = (gmt_grdfloat)from_gdalread->UInt16.data[j+i];
 		else if (from_gdalread->Int16.active)
 			for (j = 0; j < header->size; j++)
-				grid[j] = (float)from_gdalread->Int16.data[j+i];
+				grid[j] = (gmt_grdfloat)from_gdalread->Int16.data[j+i];
 		else if (from_gdalread->Int32.active)
 			for (j = 0; j < header->size; j++)
-				grid[j] = (float)from_gdalread->Int32.data[j+i];
+				grid[j] = (gmt_grdfloat)from_gdalread->Int32.data[j+i];
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR data type not supported with gdalread in gmt_customio.\n");
 			gmt_M_free (GMT, to_gdalread);
@@ -1988,7 +1988,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		if (subset) {	/* We had a Sub-region demand so n_rows * n_columns == grid's allocated size */
 			for (row = 0; row < header->n_rows; row++) {
 				for (col = 0; col < header->n_columns; col++, grid++) {
-					if (*grid == (float)from_gdalread->nodata) {
+					if (*grid == (gmt_grdfloat)from_gdalread->nodata) {
 						*grid = GMT->session.f_NaN;
 						HH->has_NaNs = GMT_GRID_HAS_NANS;
 					}
@@ -1998,7 +1998,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		else {			/* Full region. We are scanning also the padding zone which is known to have only 0's but never mind */
 			for (row = 0; row < header->my; row++) {
 				for (col = 0; col < header->mx; col++, grid++) {
-					if (*grid == (float)from_gdalread->nodata) {
+					if (*grid == (gmt_grdfloat)from_gdalread->nodata) {
 						*grid = GMT->session.f_NaN;
 						HH->has_NaNs = GMT_GRID_HAS_NANS;
 					}
@@ -2027,7 +2027,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 	return (GMT_NOERROR);
 }
 
-int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[],
+int gmt_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, double wesn[],
 	                    unsigned int *pad, unsigned int complex_mode) {
 	uint64_t node = 0, ij, imag_offset, imsize;
 	int first_col, last_col;    /* First and last column to deal with */

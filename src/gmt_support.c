@@ -1944,6 +1944,25 @@ GMT_LOCAL void support_setcontjump (gmt_grdfloat *z, uint64_t nz) {
 	bool jump = false;
 	gmt_grdfloat dz;
 
+#ifdef DOUBLE_PRECISION_GRID
+	for (i = 1; !jump && i < nz; i++) {
+		dz = z[i] - z[0];
+		if (fabs (dz) > 180.0) jump = true;
+	}
+
+	if (!jump) return;
+
+	z[0] = fmod (z[0], 360.0);
+	if (z[0] > 180.0) z[0] -= 360.0;
+	else if (z[0] < -180.0) z[0] += 360.0;
+	for (i = 1; i < nz; i++) {
+		if (z[i] > 180.0) z[i] -= 360.0;
+		else if (z[i] < -180.0) z[i] += 360.0;
+		dz = z[i] - z[0];
+		if (fabs (dz) > 180.0) z[i] -= copysign (360.0, dz);
+		z[i] = fmod (z[i], 360.0);
+	}
+#else
 	for (i = 1; !jump && i < nz; i++) {
 		dz = z[i] - z[0];
 		if (fabsf (dz) > 180.0f) jump = true;
@@ -1961,6 +1980,7 @@ GMT_LOCAL void support_setcontjump (gmt_grdfloat *z, uint64_t nz) {
 		if (fabsf (dz) > 180.0f) z[i] -= copysignf (360.0f, dz);
 		z[i] = fmodf (z[i], 360.0f);
 	}
+#endif
 }
 
 /*! . */
