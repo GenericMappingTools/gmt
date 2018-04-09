@@ -1011,14 +1011,15 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			bailout (GMT_PARSE_ERROR);
 		}
 		/* Required options for grdview */
-		strcat (cmd1, " -Qs -K");
+		strcat (cmd1, " -Qs");
+		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd1, " -K");
 		GMT_Report (API, GMT_MSG_DEBUG, "Run: grdview %s\n", cmd1);
 		if ((API->error = GMT_Call_Module (API, "grdview", GMT_MODULE_CMD, cmd1))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to call grdview\n");
 			Return (API->error);
 		}
 		/* Required options for grdcontour */
-		strcat (cmd2, " -O");
+		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd2, " -O");
 		GMT_Report (API, GMT_MSG_DEBUG, "Run: grdcontour %s\n", cmd2);
 		if ((API->error = GMT_Call_Module (API, "grdcontour", GMT_MODULE_CMD, cmd2))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to call grdcontour\n");
