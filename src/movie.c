@@ -1238,7 +1238,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		if (Ctrl->G.active)	/* Want to set a fixed background canvas color - we do this via the psconvert -A option */
-			sprintf (extra, "A+g%s", Ctrl->G.fill);
+			sprintf (extra, "A+g%s+n", Ctrl->G.fill);
+		else
+			sprintf (extra, "A+n");	/* No cropping, image size is fixed */
 		if (!access ("movie_background.ps", R_OK)) {	/* Need to place a background layer first (which is in parent dir when loop script is run) */
 #ifdef WIN32
 			strcat (extra, ",Mb..\\movie_background.ps");
@@ -1347,7 +1349,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	extra[0] = '\0';	/* Reset */
 	if (Ctrl->G.active)	/* Want to set a fixed background canvas color - we do this via the psconvert -A option */
-		sprintf (extra, "A+g%s", Ctrl->G.fill);
+		sprintf (extra, "A+g%s+n", Ctrl->G.fill);
+	else
+		sprintf (extra, "A+n");	/* No cropping, image size is fixed */
 	if (!access ("movie_background.ps", R_OK)) {	/* Need to place a background layer first (which will be in parent dir when loop script is run) */
 #ifdef WIN32
 		strcat (extra, ",Mb..\\movie_background.ps");

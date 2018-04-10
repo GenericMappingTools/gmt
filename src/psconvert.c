@@ -119,7 +119,7 @@ struct PS2RASTER_CTRL {
 	struct PS2R_In {	/* Input file info */
 		unsigned int n_files;
 	} In;
-	struct PS2R_A {             /* -A[-][u][<margins>][+g<fill>][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]] */
+	struct PS2R_A {             /* -A[+g<fill>][+m<margins>][+n][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]][+u] */
 		bool active;
 		bool max;          /* Only scale if dim exceeds the given size */
 		bool round;        /* Round HiRes BB instead of ceil */
@@ -264,7 +264,10 @@ void gmt_pclose2 (struct popen2 **Faddr, int dir) {
 #endif
 
 GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ctrl) {
-	/* Syntax: -A[-][u][<margins>][+g<fill>][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]] */
+	/* Syntax:
+	 * New : -A[+g<fill>][+m<margins>][+n][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]][+u]
+	 * Old : -A[-][u][<margins>][+g<fill>][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]]
+	 */
 
 	bool error = false;
 	unsigned int pos = 0;
@@ -276,12 +279,13 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 
 	/* For historical reasons we may encounter -A-<stuff> or -Au- so check for both */
 	
+	/* The next lines down to NEW is simply backwards compatible parsing */
 	if (arg[k] == 'u') {Ctrl->A.strip = true; k++;}		/* Eliminate GMT time stamp */
 	else if (arg[k] == '-') {Ctrl->A.crop = false; k++;}	/* No cropping requested */
 	/* If there are +modifiers later we need to temporarily disable them: */
 	for (j = k; arg[j] && arg[j] != '+'; j++);	/* Find position of first + */
 	if (arg[j] == '+') arg[j] = 0, trim_j = j;	/* Remember that position and chop off modifiers */
-	if (arg[k] && arg[k] != '+') {	/* Also specified desired margin(s) */
+	if (arg[k] && arg[k] != '+') {	/* Also specified desired margin(s) using the old syntax */
 		j = sscanf (&arg[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 		switch (j) {
 			case 1:	/* Got uniform margin */
@@ -304,18 +308,10 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 		}
 	}
 	if (trim_j >= 0) arg[trim_j] = '+';	/* Restore the chopped off section */
+	/* Here we are doing the NEW syntax parsin */
 	strncpy (txt, arg, GMT_LEN128-1);
 	while (!error && (gmt_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
-			case 'p':	/* Draw outline */
-				Ctrl->A.outline = true;
-				if (!p[1])
-					Ctrl->A.pen = GMT->current.setting.map_default_pen;
-				else if (gmt_getpen (GMT, &p[1], &Ctrl->A.pen)) {
-					gmt_pen_syntax (GMT, 'A', "sets background outline pen attributes", 0);
-					error++;
-				}
-				break;
 			case 'g':	/* Fill background */
 				Ctrl->A.paint = true;
 				if (!p[1]) {
@@ -324,6 +320,40 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 				}
 				else if (gmt_getfill (GMT, &p[1], &Ctrl->A.fill)) {
 					gmt_pen_syntax (GMT, 'A', "sets background fill attributes", 0);
+					error++;
+				}
+				break;
+			case 'm':	/* Margins */
+				j = sscanf (&p[1], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
+				switch (j) {
+					case 1:	/* Got uniform margin */
+						Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = gmt_M_to_points (GMT, txt_a);
+						break;
+					case 2:	/* Got separate x/y margins */
+						Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = gmt_M_to_points (GMT, txt_a);
+						Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = gmt_M_to_points (GMT, txt_b);
+						break;
+					case 4:	/* Got different margins for all sides */
+						Ctrl->A.margin[XLO] = gmt_M_to_points (GMT, txt_a);
+						Ctrl->A.margin[XHI] = gmt_M_to_points (GMT, txt_b);
+						Ctrl->A.margin[YLO] = gmt_M_to_points (GMT, txt_c);
+						Ctrl->A.margin[YHI] = gmt_M_to_points (GMT, txt_d);
+						break;
+					default:
+						error++;
+						GMT_Report (Ctrl, GMT_MSG_NORMAL, "-A: Must specify 1, 2, or 4 margins\n");
+						break;
+				}
+				break;
+			case 'n':	/* No crop */
+				Ctrl->A.crop = false;
+				break;
+			case 'p':	/* Draw outline */
+				Ctrl->A.outline = true;
+				if (!p[1])
+					Ctrl->A.pen = GMT->current.setting.map_default_pen;
+				else if (gmt_getpen (GMT, &p[1], &Ctrl->A.pen)) {
+					gmt_pen_syntax (GMT, 'A', "sets background outline pen attributes", 0);
 					error++;
 				}
 				break;
@@ -351,6 +381,9 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 						error++;
 						break;
 					}
+				break;
+			case 'u':	/* Strip timestamp */
+				Ctrl->A.strip = true;
 				break;
 		}
 	}
@@ -487,7 +520,7 @@ GMT_LOCAL double smart_ceil (double x) {
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psconvert <psfile1> <psfile2> <...> -A[-][u][<margins>][+p[<pen>]][+g<fill>][+r][+s[m]|S<width[u]>[/<height>[u]]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: psconvert <psfile1> <psfile2> <...> -A[+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width[u]>[/<height>[u]]][+u]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<factor>] [-I] [-L<listfile>] [-Mb|f<psfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
@@ -505,22 +538,22 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\tTo access the current internal GMT plot, specify <psfile> as \"=\".\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust the BoundingBox to the minimum required by the image contents.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append - to leave the BoundingBox as is.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to strip out time-stamps (produced by GMT -U options).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append margin(s) to adjusted BoundingBox.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -A<off>[u] sets uniform margin for all 4 sides.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -A<xoff>[u]/<yoff>[u] set separate x- and y-margins.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -A<woff>[u]/<eoff>[u]/<soff>[u]/<noff>[u] set separate w-,e-,s-,n-margins.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Add +g<paint> to paint the BoundingBox [no paint].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Add +p[<pen>] to outline the BoundingBox [%s].\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<paint> to paint the BoundingBox [no paint].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +m<margin(s)> to adjusted BoundingBox, with <margin(s)> being\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     <off>[u] for uniform margin for all 4 sides.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     <xoff>[u]/<yoff>[u] for separate x- and y-margins.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     <woff>[u]/<eoff>[u]/<soff>[u]/<noff>[u] for separate w-,e-,s-,n-margins.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to leave the BoundingBox as is.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p[<pen>] to outline the BoundingBox [%s].\n",
 	             gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
-	GMT_Message (API, GMT_TIME_NONE, "\t   Add +r to force rounding of HighRes BoundingBox instead of ceil.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Add +s[m]<width[u]>[/<height>[u]] option the select a new image size\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to force rounding of HighRes BoundingBox instead of ceil.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[m]<width[u]>[/<height>[u]] option the select a new image size\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     but maintaining the DPI set by -E (ghostscript does the re-interpolation work).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use +sm to only change size if figure size exceeds the new maximum size(s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append unit u (%s) [%c].\n",
 	             GMT_DIM_UNITS_DISPLAY, &API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -A+S<scale> to scale the image by the <scale> factor.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +u to strip out time-stamps (produced by GMT -U options).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a single, custom option that will be passed on to GhostScript\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   as is. Repeat to add several options [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set an alternative output directory (which must exist)\n");

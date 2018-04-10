@@ -63,12 +63,12 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**-**][**u**][*margins*][**+g**\ *paint*\ ][**+p**\ [\ *pen*\ ]][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]]
+**-A**\ [**+g**\ *paint*\ ][**+m**\ *margins*][**+n**][**+p**\ [\ *pen*\ ]][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]][**+u**]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
-    by the image content. Append **-** to leave the BoundingBoxes as they are
+    by the image content. Append **+n** to leave the BoundingBoxes as they are
     (e.g., to override any automatic setting of **-A** by **-W**).
-    Append **u** to first remove any GMT-produced time-stamps.
-    Optionally, append extra margins to extend the bounding box.
+    Append **+u** to first remove any GMT-produced time-stamps.
+    Optionally, append **+m** to specify extra margins to extend the bounding box.
     Give either one (uniform), two (x and y) or four (individual sides)
     margins; append unit [Default is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`].
 
@@ -317,7 +317,7 @@ compression of raster images embedded in the PostScript file.
 
 Although **psconvert** was developed as part of the GMT, it can be
 used to convert PostScript files created by nearly any graphics
-program. However, **-Au** is GMT-specific.
+program. However, **-A+u** is GMT-specific.
 
 The **ghostscript** program continues to be developed and occasionally its
 developers make decisions that affect **psconvert**.  As of version 9.16 the
@@ -343,7 +343,7 @@ fill it with lightblue paint and draw outline with a thick pen:
 
    ::
 
-    gmt psconvert map.ps -A0.2c+glightblue+pthick -Tf
+    gmt psconvert map.ps -A+m0.2c+glightblue+pthick -Tf
 
 To create a 5 cm PNG version at 300 dpi of our example_01.ps file
 
