@@ -119,16 +119,16 @@ struct PS2RASTER_CTRL {
 	struct PS2R_In {	/* Input file info */
 		unsigned int n_files;
 	} In;
-	struct PS2R_A {             /* -A[u][-] [Adjust boundingbox] */
+	struct PS2R_A {             /* -A[-][u][<margins>][+g<fill>][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]] */
 		bool active;
 		bool max;          /* Only scale if dim exceeds the given size */
 		bool round;        /* Round HiRes BB instead of ceil */
 		bool strip;        /* Remove the -U time-stamp */
-		bool reset;        /* The -A- turns -A off, overriding any automode in effect */
 		bool resize;       /* Resize to a user selected size */
 		bool rescale;      /* Resize to a user selected scale factor */
 		bool outline;      /* Draw frame around plot with selected pen [0.25p] */
 		bool paint;        /* Paint box behind plot with selected fill */
+		bool crop;         /* If true we must find the BB; turn off via -A- */
 		double scale;      /* Scale factor to go along with the 'rescale' option */
 		double new_size[2];
 		double margin[4];
@@ -264,7 +264,7 @@ void gmt_pclose2 (struct popen2 **Faddr, int dir) {
 #endif
 
 GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ctrl) {
-	/* Syntax: -A[u][<margins>][-][+r][+s|S[m]<width>[u][/<height>[u]]] */
+	/* Syntax: -A[-][u][<margins>][+g<fill>][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]] */
 
 	bool error = false;
 	unsigned int pos = 0;
@@ -272,27 +272,26 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 	char txt[GMT_LEN128] = {""}, p[GMT_LEN128] = {""};
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
 
-	Ctrl->A.active = true;
+	Ctrl->A.active = Ctrl->A.crop = true;	/* The default is to crop unless we get -A- */
 
-	if (arg[k] == 'u') {Ctrl->A.strip = true; k++;}
+	/* For historical reasons we may encounter -A-<stuff> or -Au- so check for both */
+	
+	if (arg[k] == 'u') {Ctrl->A.strip = true; k++;}		/* Eliminate GMT time stamp */
+	else if (arg[k] == '-') {Ctrl->A.crop = false; k++;}	/* No cropping requested */
 	/* If there are +modifiers later we need to temporarily disable them: */
-	for (j = k; arg[j] && arg[j] != '+'; j++);
-	if (arg[j] == '+') arg[j] = 0, trim_j = j;
-	if (*arg != '\0' && arg[strlen(arg)-1] == '-') {
-		Ctrl->A.reset = true;
-		return (error);
-	}
-	if (arg[k] && arg[k] != '+') {	/* Also specified margin(s) */
+	for (j = k; arg[j] && arg[j] != '+'; j++);	/* Find position of first + */
+	if (arg[j] == '+') arg[j] = 0, trim_j = j;	/* Remember that position and chop off modifiers */
+	if (arg[k] && arg[k] != '+') {	/* Also specified desired margin(s) */
 		j = sscanf (&arg[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 		switch (j) {
 			case 1:	/* Got uniform margin */
 				Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = gmt_M_to_points (GMT, txt_a);
 				break;
-			case 2:	/* Got seprate x/y margins */
+			case 2:	/* Got separate x/y margins */
 				Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = gmt_M_to_points (GMT, txt_a);
 				Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = gmt_M_to_points (GMT, txt_b);
 				break;
-			case 4:	/* Got uniform margin */
+			case 4:	/* Got different margins for all sides */
 				Ctrl->A.margin[XLO] = gmt_M_to_points (GMT, txt_a);
 				Ctrl->A.margin[XHI] = gmt_M_to_points (GMT, txt_b);
 				Ctrl->A.margin[YLO] = gmt_M_to_points (GMT, txt_c);
@@ -300,7 +299,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 				break;
 			default:
 				error++;
-				GMT_Report (Ctrl, GMT_MSG_NORMAL, "-A: Give 1, 2, or 4 margins\n");
+				GMT_Report (Ctrl, GMT_MSG_NORMAL, "-A: Must specify 1, 2, or 4 margins\n");
 				break;
 		}
 	}
@@ -488,7 +487,7 @@ GMT_LOCAL double smart_ceil (double x) {
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psconvert <psfile1> <psfile2> <...> -A[u][<margins>][-][+p[<pen>]][+g<fill>][+r][+s[m]|S<width[u]>[/<height>[u]]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: psconvert <psfile1> <psfile2> <...> -A[-][u][<margins>][+p[<pen>]][+g<fill>][+r][+s[m]|S<width[u]>[/<height>[u]]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<factor>] [-I] [-L<listfile>] [-Mb|f<psfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
@@ -506,22 +505,22 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\tTo access the current internal GMT plot, specify <psfile> as \"=\".\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust the BoundingBox to the minimum required by the image contents.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append - to leave the BoundingBox as is.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to strip out time-stamps (produced by GMT -U options).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append - to make sure -A is NOT activated by -W.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append margin(s) to adjusted BoundingBox.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -A<off>[u] sets uniform margin for all 4 sides.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -A<xoff>[u]/<yoff>[u] set separate x- and y-margins.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -A<woff>[u]/<eoff>[u]/<soff>[u]/<noff>[u] set separate w-,e-,s-,n-margins.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use the -A+s[m]<width[u]>[/<height>[u]] option the select a new image size\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   but maintaining the DPI set by -E (ghostscript does the re-interpolation work).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +g<paint> to paint the BoundingBox [no paint].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +p[<pen>] to outline the BoundingBox [%s].\n",
 	             gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +sm to only change size if figure size exceeds the new maximum size(s).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit u (%s) [%c].\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t   Add +r to force rounding of HighRes BoundingBox instead of ceil.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Add +s[m]<width[u]>[/<height>[u]] option the select a new image size\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     but maintaining the DPI set by -E (ghostscript does the re-interpolation work).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Use +sm to only change size if figure size exceeds the new maximum size(s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append unit u (%s) [%c].\n",
 	             GMT_DIM_UNITS_DISPLAY, &API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively use -A+S<scale> to scale the image by the <scale> factor.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -A+r to force rounding of HighRes BoundingBox instead of ceil.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -A+S<scale> to scale the image by the <scale> factor.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a single, custom option that will be passed on to GhostScript\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   as is. Repeat to add several options [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set an alternative output directory (which must exist)\n");
@@ -1028,7 +1027,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	if (pch != NULL) landscape = true;
 	PS->data[500] = c;				/* Restore the deleted character */
 
-	if (Ctrl->A.active) {
+	if (Ctrl->A.crop) {
 		if (landscape)					/* We will need these in pipe_ghost() */
 			xt = -x1, yt = -y0, *w = y1-y0, *h = x1-x0, r = -90;
 		else
@@ -1536,8 +1535,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->W.active) {	/* Implies -P and -A (unless -A- is set ) */
-		Ctrl->P.active = Ctrl->A.active = true;
-		if (Ctrl->A.reset) Ctrl->A.active = false;
+		if (!Ctrl->A.active) Ctrl->A.active = Ctrl->A.crop = true;
+		Ctrl->P.active = true;
 	}
 
 	/* Use default DPI if not already set */
@@ -1739,7 +1738,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		/* Adjust to a tight BoundingBox if user requested so */
 
-		if (Ctrl->A.active) {
+		if (Ctrl->A.crop) {
 			char *psfile_to_use = NULL;
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Find HiResBoundingBox ...\n");
 			sprintf (BB_file, "%s/psconvert_%dc.bb", Ctrl->D.dir, (int)getpid());
@@ -2142,7 +2141,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				r = 0;
 			}
 #ifdef HAVE_GDAL
-			else if (Ctrl->A.active && found_proj && !strncmp (line, "%%PageTrailer", 13)) {
+			else if (Ctrl->A.crop && found_proj && !strncmp (line, "%%PageTrailer", 13)) {
 				file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos);
 				fprintf (fpo, "%%%%PageTrailer\n");
 				fprintf (fpo, "%s\n", line);

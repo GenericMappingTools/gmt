@@ -15086,6 +15086,20 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	}
 }
 
+bool gmt_option_set (struct GMT_CTRL *GMT, bool *active, unsigned int *errors) {
+	/* General function used to check if an option has already been processed once.
+	 * We use this to prevent user errors such as "-Q45.7 -O -P -Q33" where -Q is given twice. */
+	gmt_M_unused (GMT);
+	if (*active) {		/* Already set, so return error and increase errors count */
+		(*errors)++;
+		return true;
+	}
+	else {	/* First time here, set to true and return false */
+		*active = true;
+		return false;
+	}
+}
+
 unsigned int gmtlib_count_slashes (struct GMT_CTRL *GMT, char *txt) {
 	unsigned int i, n;
 	gmt_M_unused (GMT);

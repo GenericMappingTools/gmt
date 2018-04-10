@@ -64,13 +64,14 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**u**][*margins*][**-**][**+g**\ *paint*\ ][**+p**\ [\ *pen*\ ]][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]]
+**-A**\ [**-**][**u**][*margins*][**+g**\ *paint*\ ][**+p**\ [\ *pen*\ ]][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
-    by the image content. Append **u** to first remove any GMT-produced
-    time-stamps. Optionally, append extra margins to the bounding box.
+    by the image content. Append **-** to leave the BoundingBoxes as they are
+    (e.g., to override any automatic setting of **-A** by **-W**).
+    Append **u** to first remove any GMT-produced time-stamps.
+    Optionally, append extra margins to extend the bounding box.
     Give either one (uniform), two (x and y) or four (individual sides)
     margins; append unit [Default is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`].
-    Alternatively, use **-A-** to override any automatic setting of **-A** by **-W**.
 
     Use the **-A+s**\ *new_width* to resize the output image to exactly *new_width* units.
     The default is to use what is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`
@@ -133,7 +134,7 @@ Optional Arguments
 **-H**\ *factor*
     Given the finite dots-per-unit used to rasterize PostScript frames to rasters, the quantizing of features
     to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings (**-Q**)
-    which affects lines and text only.  The scale *factor* temporarily increases the effective dots-per-unit
+    which affect lines and text only.  The scale *factor* temporarily increases the effective dots-per-unit
     by *factor*, rasterizes the plot, then downsamples the image by the same factor at the end.  The larger
     the *factor*, the smoother the raster.  Because processing time increases with *factor* we suggest you
     try values in the 2-5 range.  Note that raster images can also suffer from quantizing when the original data

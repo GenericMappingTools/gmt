@@ -189,11 +189,11 @@ double sum_arrays (void *vector[], unsigned int type) {
 
 int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, int def_mode, int verbose) {
 	/* Run the test using the specified in and out types */
-	uint64_t dim[4] = {NCOLS, NROWS, 1, 0};		/* ncols, nrows, nlayers, type */
+	uint64_t dim[3] = {NCOLS, NROWS, 0};		/* ncols, nrows, type */
 	int bad = 0;
 	unsigned int out_via = (outtype + 1) * 100 + GMT_IS_POINT;	/* To get GMT_VIA_<type */
 	unsigned int mode = GMT_SESSION_EXTERNAL;
-	double diff, wesn[6] = {1.0, NCOLS, 1.0, NROWS, 0.0, 0.0}, inc[2] = {1.0, 1.0};
+	double diff, range[2] = {1.0, NROWS}, inc[2] = {1.0, 1.0};
 	//void *API = NULL;                           /* The API control structure */
 	struct GMT_VECTOR *V[2] = {NULL, NULL};     /* Structure to hold input/output datasets as vectors */
 	char input[GMT_STR16] = {""};               /* String to hold virtual input filename */
@@ -212,8 +212,9 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 	if (def_mode == 0) {	/* Use dimensions to allocate */
 		if ((V[GMT_IN] = GMT_Create_Data (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_CONTAINER_ONLY, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (EXIT_FAILURE);
 	}
-	else {	/* Use region and inc to allocate space */
-		if ((V[GMT_IN] = GMT_Create_Data (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_CONTAINER_ONLY, NULL, wesn, inc, 0, 0, NULL)) == NULL) return (EXIT_FAILURE);
+	else {	/* Use col dimension and range and inc to allocate space */
+		dim[1] = 0;	/* So that we compute it in GMT_Create_Vector */
+		if ((V[GMT_IN] = GMT_Create_Data (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_CONTAINER_ONLY, dim, range, inc, 0, 0, NULL)) == NULL) return (EXIT_FAILURE);
 	}
 	/* Hook the user input arrays up to this container */
 	GMT_Put_Vector (API, V[GMT_IN], GMT_X, intype, in_data[GMT_X]);
@@ -230,7 +231,7 @@ int deploy_test (unsigned int intype, unsigned int outtype, int alloc_in_GMT, in
 			V[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IS_OUTPUT, dim, NULL, NULL, 0, 0, NULL);
 		}
 		else {	/* Use region and inc instead */
-			V[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IS_OUTPUT, NULL, wesn, inc, 0, 0, NULL);
+			V[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET|GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IS_OUTPUT, dim, range, inc, 0, 0, NULL);
 		}
 		/* Hook the user output array up to this containers */
 		GMT_Put_Vector (API, V[GMT_OUT], GMT_X, outtype, out_data[GMT_X]);
