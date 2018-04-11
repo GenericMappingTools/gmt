@@ -8597,6 +8597,8 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 		if (this_dim == NULL) this_dim = zero_dim;	/* Provide dimensions set to zero */
 	}
 
+	if (mode & GMT_GRID_IS_GEO) gmt_set_geographic (API->GMT, GMT_OUT);	/* From API to tell a grid is geographic */
+
 	/* Below, data can only be non-NULL for Grids or Images passing back G or I to allocate the data array */
 
 	switch (actual_family) {	/* dataset, cpt, text, grid , image, vector, matrix */
