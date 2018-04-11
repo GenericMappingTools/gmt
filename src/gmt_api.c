@@ -1688,11 +1688,18 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 
 /*! . */
 GMT_LOCAL uint64_t api_vector_nrows (uint64_t dim[], double *range, double *inc, int registration, unsigned int dir) {
-	if (dim) return dim[GMTAPI_DIM_ROW];	/* Gave the dimension directly */
+	if (dim && dim[GMTAPI_DIM_ROW]) return dim[GMTAPI_DIM_ROW];	/* Gave the dimension directly */
 	if (dir == GMT_IN && (!inc || inc[GMT_X] == 0.0)) return (GMT_NOTSET);
 	if (dir == GMT_IN && (!range || (range[XLO] == 0.0 && range[XHI] == 0.0))) return (GMT_NOTSET);
 	if (range && inc) return (gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], 0.5 * registration));
 	return (0);	/* When dir == GMT_OUT */
+}
+
+/*! . */
+GMT_LOCAL int64_t api_vector_ncols (uint64_t dim[], unsigned int dir) {
+	if (dim) return (int64_t) dim[GMTAPI_DIM_COL];	/* Gave the dimension directly */
+	if (dir == GMT_OUT) return (0);		/* Not set for output to be allocated later */
+	return (GMT_NOTSET);	/* When dir == GMT_IN and we fail */
 }
 
 /*! . */
@@ -8674,7 +8681,8 @@ void *GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, 
 			break;
 		case GMT_IS_VECTOR:	/* GMT vector container, allocate one with the requested number of columns & rows */
 			if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
-			if (!dim || (n_cols = dim[GMTAPI_DIM_COL]) == 0) return_null (API, GMT_N_COLS_NOT_SET);
+			n_cols = api_vector_ncols (dim, def_direction);
+			if (n_cols == GMT_NOTSET) return_null (API, GMT_N_COLS_NOT_SET);
 	 		new_obj = gmt_create_vector (API->GMT, n_cols, def_direction);
 			if (pad) GMT_Report (API, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
 			if ((API->error = api_init_vector (API, this_dim, range, inc, registration, mode, def_direction, new_obj))) {	/* Failure, must free the object */
