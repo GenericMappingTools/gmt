@@ -1024,6 +1024,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 							bailout (GMT_PARSE_ERROR);
 						}
 					}
+					else if (L < 4) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C or -N: No CPT given\n");
+						bailout (GMT_PARSE_ERROR);
+					}
 					strcat (cmd1, string);	break;
 				case 'O': case 'P':
 					strcat (cmd1, string);	break;
