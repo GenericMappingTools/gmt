@@ -996,7 +996,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 			if (cval < Z->header->z_min || cval > Z->header->z_max) continue;
 
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Now tracing contour interval %8g\r", cval);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Now tracing contour interval %8g\n", cval);
 			/* Old version of loop below could give round-off since we kept subtracting the increments between successive contours.
 			 * The safer way is to always start with original grid and subtract current contour value instead, as in grdcontour.
 			   PW, 11/18/2011 */
@@ -1214,6 +1214,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		double sum_r, sum_g, sum_b, intval = 0.0, *y_drape = NULL, *x_drape = NULL;
 		gmt_grdfloat *int_drape = NULL;
 		unsigned char *bitimage_24 = NULL, *bitimage_8 = NULL;
+
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Place image\n");
 
 		if (Ctrl->C.active && P->has_pattern)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Patterns in CPT will not work with -Qi\n");
@@ -1472,6 +1474,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL_Y) {	/* Plot Y waterfall */
 		unsigned int ix = (id[0] == GMT_X) ? 0 : 1, iy = (id[0] == GMT_Y) ? 0 : 1;
 		double z_base = Ctrl->N.active ? Ctrl->N.level : Z->header->z_min;
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Place Y waterfall plot\n");
 		PSL_comment (PSL, "Start of waterfall plot\n");
 		gmt_setpen (GMT, &Ctrl->W.pen[1]);
 		gmt_setfill (GMT, &Ctrl->Q.fill, true);
@@ -1492,6 +1495,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL_X) {	/* Plot X waterfall */
 		unsigned int ix = (id[0] == GMT_X) ? 0 : 1, iy = (id[0] == GMT_Y) ? 0 : 1;
 		double z_base = Ctrl->N.active ? Ctrl->N.level : Z->header->z_min;
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Place X waterfall plot\n");
 		PSL_comment (PSL, "Start of waterfall plot\n");
 		gmt_setpen (GMT, &Ctrl->W.pen[1]);
 		gmt_setfill (GMT, &Ctrl->Q.fill, true);
@@ -1568,6 +1572,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		double *xcont = NULL, *ycont = NULL, *zcont = NULL, *vcont = NULL, X_vert[4], Y_vert[4], saddle_small;
 		gmt_grdfloat Z_vert[4];
 
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Place filled surface\n");
 		/* PW: Bugs fixed in Nov, 2011: Several problems worth remembering:
 			1) Earlier [2004] we had fixed grdcontour but not grdview in dealing with the current zero contour.  Because
 			   of gmt_grdfloat precision we cannot take the grid and repeatedly subtract the difference in contour values.

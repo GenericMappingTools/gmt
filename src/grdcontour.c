@@ -979,9 +979,9 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		/* If -N[<cpt>] is given then we split the call into a grdview + grdcontour sequence.
 	 	 * We DO NOT parse any option here or initialize GMT, and just bail after running the two modules */
 	
-		char cmd1[GMT_LEN512] = {""}, cmd2[GMT_LEN512] = {""}, string[GMT_LEN128] = {""};
+		char cmd1[GMT_LEN512] = {""}, cmd2[GMT_LEN512] = {""}, string[GMT_LEN128] = {""}, cptfile[PATH_MAX] = {""};
 		struct GMT_OPTION *opt = NULL;
-		bool got_cpt = (optN->arg[0]);
+		bool got_cpt = (optN->arg[0]), is_continuous;
 		size_t L;
 		
 		/* Make sure we dont pass options not compatible with -N */
@@ -999,6 +999,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: CPT file %s not found\n", optN->arg);
 				bailout (GMT_PARSE_ERROR);
 			}
+			strcpy (cptfile, optN->arg);
 		}
 		
 		for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -1023,6 +1024,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: CPT file %s not found\n", opt->arg);
 							bailout (GMT_PARSE_ERROR);
 						}
+						strcpy (cptfile, opt->arg);
 					}
 					else if (L < 4) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C or -N: No CPT given\n");
@@ -1047,6 +1049,20 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The -N option requires a <cpt> argument if -C<cpt> is not given\n");
 			bailout (GMT_PARSE_ERROR);
 		}
+		/* Check if CPT is discrete */
+		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, cptfile, NULL)) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read CPT file %s\n", cptfile);
+			bailout (GMT_PARSE_ERROR);
+		}
+		is_continuous = P->is_continuous;
+		if (GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		if (is_continuous) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: CPT file must be discrete, not continuous\n");
+			bailout (GMT_PARSE_ERROR);
+		}
+		
 		/* Required options for grdview */
 		strcat (cmd1, " -Qs");
 		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd1, " -K");
