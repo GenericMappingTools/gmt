@@ -14814,23 +14814,30 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	if (gmtlib_set_current_figure (API, prefix, this_k))
 		return GMT_ERROR_ON_FOPEN;
 
-	/* See if movie set up a frame label */
+	/* See if movie set up a set of frame labels */
 	
-	if ((L = getenv ("MOVIE_LABEL_ARG")) != NULL) {	/* MOVIE_LABEL_ARG was set */
-		/* Special processing for gmt movie: If -L is used to set labeling then we
-		 * need to ensure the label is on top of the frame and unaffected by any
-		 * -X -Y that may have been used in the main script. We do this by implementing
-		 * the label via a PSL procedure that is called at the end of the file.
-		 * This is set up by gmt_plotinit in gmt_plot.c */
-		char file[PATH_MAX] = {""};
-		GMT_Report (API, GMT_MSG_DEBUG, "New figure: Has special MOVIE_LABEL_ARG = %s\n", L);
+	if ((L = getenv ("MOVIE_N_LABELS")) != NULL) {	/* MOVIE_N_LABELS was set */
+		unsigned int T, n_tags;
+		char file[PATH_MAX] = {""}, name[GMT_LEN32] = {""};
+		GMT_Report (API, GMT_MSG_DEBUG, "New figure: Found special MOVIE_N_LABELS = %s\n", L);
 		sprintf (file, "%s/gmt.movie", API->gwf_dir);
 		if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot create file %s\n", file);
 			return GMT_ERROR_ON_FOPEN;
 		}
 		fprintf (fp, "# movie label information file\n");
-		fprintf (fp, "%s\n", L);
+		n_tags = atoi (L);
+		for (T = 0; T < n_tags; T++) {
+			sprintf (name, "MOVIE_LABEL_ARG%d", T);
+			if ((L = getenv (name)) != NULL) {	/* MOVIE_LABEL_ARG# was set */
+				/* Special processing for gmt movie: If -L is used to set labeling then we
+			 	* need to ensure the label is on top of the frame and unaffected by any
+			 	* -X -Y that may have been used in the main script. We do this by implementing
+			 	* the label via a PSL procedure that is called at the end of the file.
+			 	* This is set up by gmt_plotinit in gmt_plot.c */
+				fprintf (fp, "%s\n", L);
+			}
+		}
 		fclose (fp);
 	}
 

@@ -157,21 +157,22 @@ Optional Arguments
 
 **-L**\ *labelinfo*
 
-    Automatic labeling of individual frames.  Places the chosen label at the frame perimeter:
+    Automatic labeling of individual frames.  Repeatable.  Places the chosen label at the frame perimeter:
     **f** selects the running frame number as the label, **c**\ *col* uses the value in column
     number *col* of *timefile* as label (first column is 1), while **t**\ *col* uses word number
     *col* from the trailing text in *timefile* (requires **-T**\ ...**+w**).
     The label font is set via :ref:`FONT_TAG <FONT_TAG>`.
     Append **+c**\ *dx*\ [/*dy*] for the clearance between label and bounding box.  Only
     used if **+g** or **+p** are set.  Append units **c**\ \|\ **i**\ \|\ **p** or % of the font size [15%].
-    Append **+f** to provide a *format* statement to be used with the label item selected [no special formatting].
-    If **-Lt** is used the the format statement must contain a %s-like format, else it may have an integer (%d)
-    or floating point  (%e, %f, %g) format specification.
+    Append **+f** to use a specific *font* [:ref:`FONT_TAG <FONT_TAG>`].
     Append **+g** to fill the label bounding box with *fill* color [no fill].
     Use **+j**\ *refpoint* to specify where the label should be plotted [TL].
     Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*.. Append units
     **c**\ \|\ **i**\ \|\ **p** or % of the font size [20% of font size].
     Append **+p** to draw the outline of the bounding box using selected *pen* [no outline].
+    Append **+t** to provide a *format* statement to be used with the label item selected [no special formatting].
+    If **-Lt** is used the the format statement must contain a %s-like format, else it may have an integer (%d)
+    or floating point  (%e, %f, %g) format specification.
 
 .. _-M:
 
