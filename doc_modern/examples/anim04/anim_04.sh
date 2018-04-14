@@ -2,7 +2,7 @@
 #               GMT ANIMATION 04
 #
 # Purpose:      Make custom 480p movie of NY to Miami flight
-# GMT modules:  gmtset, grdgradient, grdimage, makecpt, project, pstext, psxy, movie
+# GMT modules:  gmtset, grdgradient, grdimage, makecpt, project, psxy, movie
 # Unix progs:   cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted as PS only.
 
