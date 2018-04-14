@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 518 346
-%%HiResBoundingBox: 0 0 518.4 345.6             
-%%Title: GMT v6.0.0_r19589 [64-bit] Document from grdimage
+%%HiResBoundingBox: 0 0 518.4000 345.6000             
+%%Title: GMT v6.0.0_r20019 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Jan 13 18:08:12 2018
+%%CreationDate: Fri Apr 13 16:47:46 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -592,7 +592,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +637,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath fs S} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -658,6 +661,7 @@ V 0.06 0.06 scale
 /PSL_page_xsize 8640 def
 /PSL_page_ysize 5760 def
 /PSL_completion {} def
+/PSL_movie_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -666,13 +670,20 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: grdimage -JG-73.8333/40.75/160/210/55/0/36/34/7.2i+ -Rg -P @USEast_Coast.nc -Iint_US.nc -Cglobe_US.cpt -X0 -Y0
+%@GMT: grdimage -JG-73.8333/40.75/160/210/55/0/36/34/7.2i+ -Rg @USEast_Coast.nc -Iint_US.nc -Cglobe_US.cpt -X0 -Y0
 %@PROJ: nsper 270.88197816 302.85975350 28.05526994 53.55861342 -88530.167 88530.167 -83761.464 83761.464 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %GMTBoundingBox: 0 0 518.4 463.228
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
+/PSL_movie_completion {
+V
+120 5640 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+333 F0
+(000) tl Z
+U
+}!
 clipsave
 8640 0 M
 -8640 0 D
@@ -7283,31 +7294,9 @@ O0
 0 1 D
 S
 %%EndObject
-0 A
-FQ
-O0
-0 0 TM
 
-% PostScript produced by:
-%@GMT: pstext -R0/7.2/0/4.8 -Jx1i -F+f14p,Helvetica-Bold+jTL
-%@PROJ: xy 0.00000000 7.20000000 0.00000000 4.80000000 0.000 7.200 0.000 4.800 +xy
-%%BeginObject PSL_Layer_3
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
-clipsave
-0 0 M
-8640 0 D
-0 5760 D
--8640 0 D
-P
-PSL_clip N
-PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-120 5640 M 233 F1
-(000) tl Z
-PSL_cliprestore
-%%EndObject
 grestore
+PSL_movie_completion /PSL_movie_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U
