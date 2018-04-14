@@ -1240,12 +1240,17 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				}
 				else if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_C) {	/* Format a floatingpoint number */
 					L_col = D->table[0]->segment[0]->data[Ctrl->L.tag[T].col][frame];
-					if (Ctrl->L.tag[T].format[0] && strchr (Ctrl->L.tag[T].format, 'd'))	/* Set as integer */
-						sprintf (string, Ctrl->L.tag[T].format, (int)irint (L_col));
-					else if (Ctrl->L.tag[T].format[0])	/* Set as floating point */
-						sprintf (string, Ctrl->L.tag[T].format, L_col);
-					else	/* Uses FORMAT_FLOAT_MAP */
-						sprintf (string, GMT->current.setting.format_float_map, L_col);
+					if (gmt_M_type (GMT, GMT_IN, Ctrl->L.tag[T].col) == GMT_IS_ABSTIME) {	/* Time formatting */
+						gmt_ascii_format_one (GMT, string, L_col, Ctrl->L.tag[T].col);
+					}
+					else {
+						if (Ctrl->L.tag[T].format[0] && strchr (Ctrl->L.tag[T].format, 'd'))	/* Set as integer */
+							sprintf (string, Ctrl->L.tag[T].format, (int)irint (L_col));
+						else if (Ctrl->L.tag[T].format[0])	/* Set as floating point */
+							sprintf (string, Ctrl->L.tag[T].format, L_col);
+						else	/* Uses FORMAT_FLOAT_MAP */
+							sprintf (string, GMT->current.setting.format_float_map, L_col);
+					}
 				}
 				else if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_T) {	/* Place a word label */
 					char *word = NULL, *trail = NULL, *orig = strdup (D->table[0]->segment[0]->text[frame]);

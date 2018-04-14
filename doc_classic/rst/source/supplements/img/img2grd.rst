@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-R|
 |-T|\ *type*
 [ |-C| ]
-[ |-D|\ [*minlat/maxlat*] ] [ |-E| ] [ |-I|\ *minutes* ]
+[ |-D|\ [*minlat/maxlat*] ] [ |-E| ] [ |-I|\ *inc* ]
 [ |-M| ] [ |-N|\ *navg* ] [ |-S|\ [*scale*] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *maxlon* ]
@@ -88,8 +88,9 @@ Optional Arguments
 .. _-I:
 
 **-I**
-    Indicate *minutes* as the width of an input img pixel in minutes of
-    longitude. [Default is 2.0]. Not usually required since we can
+    Indicate *inc* as the width of an input img pixel in minutes of
+    longitude [Default is 2]. Append **m** [Default] or **s** to
+    indicate unit.  Not usually required since we can
     determine the pixel size from inspection of the size.
 
 .. _-M:

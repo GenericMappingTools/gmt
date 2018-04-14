@@ -49,6 +49,7 @@
  **  PW 18 Oct 1999 Use WORDS_BIGENDIAN macro set by configure.
  *   PW 12 Apr 2006 Replaced -x -y with -W -D
  *   PW 28 Nov 2006 Added -C for setting origin to main img origin (0,0)
+ *   PW 13 APr 2018 Get ready for grids with < 1min spacing
  *
  */
 
@@ -174,7 +175,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: img2grd <world_image_filename> %s -G<outgrid> -T<type> [-C]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<minlat>/<maxlat>]] [-E] [-I<min>] [-M] [-N<navg>] [-S[<scale>]] [%s]\n\t[-W<maxlon>] [%s]\n\n", GMT_V_OPT, GMT_n_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<minlat>/<maxlat>]] [-E] [-I<min>[m|s]] [-M] [-N<navg>] [-S[<scale>]] [%s]\n\t[-W<maxlon>] [%s]\n\n", GMT_V_OPT, GMT_n_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -216,6 +217,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 	 */
 
 	unsigned int n_errors = 0, n_files = 0;
+	bool sec = false, min = false;
+	size_t L = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -265,10 +268,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 				}
 			case 'I':
 				Ctrl->I.active = true;
+				L = strlen (opt->arg);
+				if (strchr ("ms", opt->arg[L])) {	/* Valid minute or second unit */
+					if (opt->arg[L] == 's') sec = true;
+					if (opt->arg[L] == 'm') min = true;
+					opt->arg[L] = '\0';
+				}
 				if ((sscanf (opt->arg, "%lf", &Ctrl->I.value)) != 1) {
 					n_errors++;
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -I requires a positive value.\n");
 				}
+				if (sec) {
+					Ctrl->I.value /= 60.0;
+					opt->arg[L] = 's';
+				}
+				else if (min)
+					opt->arg[L] = 'm';
 				break;
 			case 'M':
 				Ctrl->M.active = true;
