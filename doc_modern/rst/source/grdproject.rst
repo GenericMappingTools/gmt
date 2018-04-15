@@ -15,7 +15,7 @@ Synopsis
 
 **gmt grdproject** *in_grdfile* |-G|\ *out_grdfile* |-J|\ *parameters*
 [ |-C|\ [*dx/dy*] ]
-[ |-D|\ *xinc*\ [*unit*][\ **+e**\ \|\ **n**][/\ *yinc*\ [*unit*][\ ***+e**\ \|\ **n**]] ]
+[ |-D|\ *xinc*\ [*unit*][\ **+e**\ \|\ **n**][/\ *yinc*\ [*unit*][\ **+e**\ \|\ **n**]] ]
 [ |-E|\ *dpi* ] [ |-F|\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**] ] [ |-I| ] [ |-M|\ **c**\ \|\ **i**\ \|\ **p** ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]

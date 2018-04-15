@@ -6439,11 +6439,11 @@ void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 void gmt_inc_syntax (struct GMT_CTRL *GMT, char option, bool error) {
 	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	gmt_message (GMT, "\t-%c Specify increment(s) and optionally append units or flags.\n", option);
-	gmt_message (GMT, "\t   Full syntax is <xinc>[%s|+][=][/<yinc>[%s|+][=]]\n", GMT_LEN_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
+	gmt_message (GMT, "\t   Full syntax is <xinc>[%s][+e|n][/<yinc>[%s][+e|n]]]\n", GMT_LEN_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 	gmt_message (GMT, "\t   For geographic regions in degrees you can optionally append units from this list:\n");
 	gmt_message (GMT, "\t   (d)egree [Default], (m)inute, (s)econd, m(e)ter, (f)oot, (k)ilometer, (M)ile, (n)autical mile, s(u)rvey foot.\n");
-	gmt_message (GMT, "\t   Append = to adjust the region to fit increments [Adjust increment to fit domain].\n");
-	gmt_message (GMT, "\t   Alternatively, specify number of nodes by appending +. Then, the increments\n");
+	gmt_message (GMT, "\t   Append +e to adjust the region to fit increments [Adjust increment to fit domain].\n");
+	gmt_message (GMT, "\t   Alternatively, specify number of nodes by appending +n. Then, the increments\n");
 	gmt_message (GMT, "\t   are calculated from the given domain and node-registration settings\n");
 	gmt_message (GMT, "\t   (see Appendix B for details).  Note: If -R<grdfile> was used then -%c\n", option);
 	gmt_message (GMT, "\t   (and -R and maybe -r) have been set; use -%c to override those increments.\n", option);
