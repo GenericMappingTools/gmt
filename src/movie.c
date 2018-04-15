@@ -43,7 +43,7 @@
 #define THIS_MODULE_PURPOSE	"Create animation sequences and movies"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"Vx"
+#define THIS_MODULE_OPTIONS	"-Vx"
 
 #define MOVIE_PREFLIGHT		0
 #define MOVIE_POSTFLIGHT	1
@@ -62,7 +62,8 @@ enum enum_video {MOVIE_MP4,	/* Create a H.264 MP4 video */
 	MOVIE_N_FORMATS};	/* Number of video formats above */
 
 enum enum_label {MOVIE_LABEL_IS_FRAME = 1,
-	MOVIE_LABEL_IS_COL_C = 2,
+	MOVIE_LABEL_IS_ELAPSED,
+	MOVIE_LABEL_IS_COL_C,
 	MOVIE_LABEL_IS_COL_T};
 
 /* Control structure for movie */
@@ -110,7 +111,7 @@ struct MOVIE_CTRL {
 		char *file;
 		FILE *fp;
 	} I;
-	struct L {	/* Repeatable: -L[f|c#|t#][+c<clearance>][+f<font>][+g<fill>][+j<justify>][+o<offset>][+p<pen>][+t<fmt>] */
+	struct L {	/* Repeatable: -L[e|f|c#|t#][+c<clearance>][+f<font>][+g<fill>][+j<justify>][+o<offset>][+p<pen>][+t<fmt>][+s<scl>] */
 		bool active;
 		unsigned int n_tags;
 		struct MOVIE_TAG {
@@ -121,6 +122,8 @@ struct MOVIE_CTRL {
 			char placement[3];
 			unsigned int mode;
 			unsigned int col;
+			unsigned int ne;	/* Number of elements in elapsed format */
+			double scale;
 			double x, y;
 			double off[2];
 			double clearance[2];
@@ -387,17 +390,18 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append +o<options> to add custom encoding options for mp4 or webm.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is no video products; just create the PNG frames].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the canvas background color [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Temporarily increase dpu by <factor>, rasterize, then downsample [no downsampling].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Stabilize sub-pixel changes between frames, such as moving text and lines.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-H Temporarily increase <dpu> by <factor>, rasterize, then downsample [no downsampling].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Stabilizes sub-pixel changes between frames, such as moving text and lines.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Include script file to be inserted into the movie_init.sh script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constant variables needed by all movie scripts.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Automatic labeling of frames.  Repeatable.  Places chosen label at the frame perimeter:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     e selectes elapsed time as the label. Use +s<scl> to set time in sec per frame [1/<framerate>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f selectes the running frame number as the label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c<col> uses the value in column <col> of <timefile> (first column is 1).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     t<col> uses word number <col> from the trailing text in <timefile> (requires -T...+w).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between label and surrounding box.  Only\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     used if +g or +p are set.  Append units {%s} or %% of fontsize [%d%%].\n", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f[<fontinfo>] sets the size, font, and optionally the label color [%s].\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f[<fontinfo>] to set the size, font, and optionally the label color [%s].\n",
 		gmt_putfont (API->GMT, &API->GMT->current.setting.font_tag));
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to fill the label textbox with <fill> color [no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j<refpoint> to specify where the label should be plotted [TL].\n");
@@ -407,7 +411,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Create a master frame plot as well; append comma-separated frame number [0] and format [pdf].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Master plot will be named <prefix>.<format> and placed in the current directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Debugging: Leave all intermediate files and directores behind for inspection.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to only create the work scripts but none will be executed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to only create the work scripts but none will be executed (except background script).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the optional background and foreground GMT scripts [none]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sb Append the name of a background script that may pre-compute\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       files needed by <mainscript> and build a static background plot layer.\n");
@@ -623,6 +627,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				switch (opt->arg[0]) {
 					case 'c':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_COL_C;	Ctrl->L.tag[T].col = atoi (&opt->arg[1]);	break;
 					case 't':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_COL_T;	Ctrl->L.tag[T].col = atoi (&opt->arg[1]);	break;
+					case 'e':	Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_ELAPSED;	break;
 					case 'f': case '\0': Ctrl->L.tag[T].mode = MOVIE_LABEL_IS_FRAME;	break;	/* Frame number is default */
 					default:	/* Not recognized */
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -L: Select -Lf, -Lc<col> or -Lt<col>\n");
@@ -652,6 +657,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 						if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->L.tag[T].off) < 0) n_errors++;
 					if (gmt_get_modifier (&opt->arg[1], 'p', Ctrl->L.tag[T].pen) && Ctrl->L.tag[T].pen[0]) {
 						if (gmt_getpen (GMT, Ctrl->L.tag[T].pen, &pen)) n_errors++;
+					}
+					if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_ELAPSED && gmt_get_modifier (&opt->arg[1], 's', string)) {	/* Gave frame time length */
+						Ctrl->L.tag[T].scale = atof (string);
 					}
 					if (gmt_get_modifier (&opt->arg[1], 't', Ctrl->L.tag[T].format) && !Ctrl->L.tag[T].format[0]) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option -L: +t not given any format\n");
@@ -838,8 +846,9 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	
 	unsigned int n_values = 0, n_frames = 0, frame, i_frame, col, p_width, p_height, k, T;
 	unsigned int n_frames_not_started = 0, n_frames_completed = 0, first_frame = 0, n_cores_unused;
+	unsigned int dd, hh, mm, ss, flavor = 0;
 	
-	bool done = false, layers = false, one_frame = false, has_text = false, is_classic = false;
+	bool done = false, layers = false, one_frame = false, has_text = false, is_classic = false, upper_case = false;
 	
 	char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
 	char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "export ", ""};
@@ -1179,6 +1188,48 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 	}
 	
+
+	if (Ctrl->L.active) {	/* Set elapse time label format if chosen */
+		char *format = NULL;
+		for (T = 0; T < Ctrl->L.n_tags; T++) {
+			if (Ctrl->L.tag[T].mode != MOVIE_LABEL_IS_ELAPSED) continue;
+			frame = n_frames + Ctrl->T.start_frame;	/* Max frame number */
+			L_col = (Ctrl->L.tag[T].scale > 0.0) ? frame * Ctrl->L.tag[T].scale : frame / Ctrl->D.framerate;
+			ss = urint (fmod (L_col, 60.0));	L_col = (L_col - ss) / 60.0;	/* Get seconds and switch to minutes */
+			mm = urint (fmod (L_col, 60.0));	L_col = (L_col - mm) / 60.0;	/* Get seconds and switch to hours */
+			hh = urint (fmod (L_col, 24.0));	L_col = (L_col - hh) / 24.0;	/* Get seconds and switch to days */
+			dd = urint (L_col);
+			if (dd > 0)
+				Ctrl->L.tag[T].ne = 4, strcpy (Ctrl->L.tag[T].format, "%d %2.2d:%2.2d:%2.2d");
+			else if (hh > 0)
+				Ctrl->L.tag[T].ne = 3, strcpy (Ctrl->L.tag[T].format, "%2.2d:%2.2d:%2.2d");
+			else if (mm > 0)
+				Ctrl->L.tag[T].ne = 2, strcpy (Ctrl->L.tag[T].format, "%2.2d:%2.2d");
+			else
+				Ctrl->L.tag[T].ne = 1, strcpy (Ctrl->L.tag[T].format, "%2.2d");
+		}
+		format = (GMT->current.map.frame.primary) ? GMT->current.setting.format_time[GMT_PRIMARY] : GMT->current.setting.format_time[GMT_SECONDARY];
+		switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
+			case 'F':	/* Full name, upper case */
+				upper_case = true;
+			case 'f':	/* Full name, lower case */
+				flavor = 0;
+				break;
+			case 'A':	/* Abbreviated name, upper case */
+				upper_case = true;
+			case 'a':	/* Abbreviated name, lower case */
+				flavor = 1;
+				break;
+			case 'C':	/* 1-char name, upper case */
+				upper_case = true;
+			case 'c':	/* 1-char name, lower case */
+				flavor = 2;
+				break;
+			default:
+				break;
+		}
+	}
+
 	/* Create parameter include files, one for each frame */
 	
 	for (i_frame = 0; i_frame < n_frames; i_frame++) {
@@ -1202,7 +1253,6 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		for (col = 0; col < n_values; col++) {	/* Derive frame variables from <timefile> in each parameter file */
 			sprintf (string, "MOVIE_COL%u", col+1);
 			set_dvalue (fp, Ctrl->In.mode, string, D->table[0]->segment[0]->data[col][frame], 0);
-			//if (Ctrl->L.mode == MOVIE_LABEL_IS_COL_C && Ctrl->L.col == col) L_col = D->table[0]->segment[0]->data[col][frame];
 		}
 		if (has_text) {	/* Also place any string parameter as a single string variable */
 			set_tvalue (fp, Ctrl->In.mode, "MOVIE_TEXT", D->table[0]->segment[0]->text[frame]);
@@ -1221,6 +1271,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->L.active) {	/* Want to place a user label in a corner of the frame */
 			char label[GMT_LEN256] = {""}, name[GMT_LEN32] = {""};
+			unsigned int type;
 			/* Set MOVIE_N_LABELS as exported environmental variable. gmt_add_figure will check for this and if found create gmt.movie in session directory */
 			fprintf (fp, "%s", export[Ctrl->In.mode]);
 			set_ivalue (fp, Ctrl->In.mode, "MOVIE_N_LABELS", Ctrl->L.n_tags);
@@ -1238,18 +1289,34 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					else	/* Default to the frame tag string */
 						strcpy (string, state_tag);
 				}
+				else if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_ELAPSED) {	/* Place elapsed time */
+					gmt_M_memset (string, GMT_LEN64, char);
+					L_col = (Ctrl->L.tag[T].scale > 0.0) ? frame * Ctrl->L.tag[T].scale : frame / Ctrl->D.framerate;
+					ss = urint (fmod (L_col, 60.0));	L_col = (L_col - ss) / 60.0;	/* Get seconds and switch to minutes*/
+					mm = urint (fmod (L_col, 60.0));	L_col = (L_col - mm) / 60.0;	/* Get seconds and switch to hours */
+					hh = urint (fmod (L_col, 24.0));	L_col = (L_col - hh) / 24.0;	/* Get seconds and switch to days */
+					dd = urint (L_col);
+					switch (Ctrl->L.tag[T].ne) {
+						case 4: 	sprintf (string, Ctrl->L.tag[T].format, dd, hh, mm, ss); break;
+						case 3: 	sprintf (string, Ctrl->L.tag[T].format, hh, mm, ss); break;
+						case 2: 	sprintf (string, Ctrl->L.tag[T].format, mm, ss); break;
+						case 1: 	sprintf (string, Ctrl->L.tag[T].format, ss); break;
+					}
+				}
 				else if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_C) {	/* Format a floatingpoint number */
 					L_col = D->table[0]->segment[0]->data[Ctrl->L.tag[T].col][frame];
-					if (gmt_M_type (GMT, GMT_IN, Ctrl->L.tag[T].col) == GMT_IS_ABSTIME) {	/* Time formatting */
-						gmt_ascii_format_one (GMT, string, L_col, Ctrl->L.tag[T].col);
+					if ((type = gmt_M_type (GMT, GMT_IN, Ctrl->L.tag[T].col)) == GMT_IS_ABSTIME) {	/* Time formatting */
+						char date[GMT_LEN16] = {""}, clock[GMT_LEN16] = {""};
+						gmt_format_calendar (GMT, date, clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, upper_case, flavor, L_col);
+						sprintf (string, "%s %s", date, clock);
 					}
-					else {
-						if (Ctrl->L.tag[T].format[0] && strchr (Ctrl->L.tag[T].format, 'd'))	/* Set as integer */
+					else {	/* Regular floating point (or latitude, etc.) */
+						if (Ctrl->L.tag[T].format[0] && strchr (Ctrl->L.tag[T].format, 'd'))	/* Set as an integer */
 							sprintf (string, Ctrl->L.tag[T].format, (int)irint (L_col));
 						else if (Ctrl->L.tag[T].format[0])	/* Set as floating point */
 							sprintf (string, Ctrl->L.tag[T].format, L_col);
-						else	/* Uses FORMAT_FLOAT_MAP */
-							sprintf (string, GMT->current.setting.format_float_map, L_col);
+						else	/* Uses standard formatting*/
+							gmt_ascii_format_one (GMT, string, L_col, type);
 					}
 				}
 				else if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_COL_T) {	/* Place a word label */

@@ -158,6 +158,8 @@ Optional Arguments
 **-L**\ *labelinfo*
 
     Automatic labeling of individual frames.  Repeatable.  Places the chosen label at the frame perimeter:
+    **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
+    in seconds of each frame [Default is 1/*framerate*],
     **f** selects the running frame number as the label, **c**\ *col* uses the value in column
     number *col* of *timefile* as label (first column is 1), while **t**\ *col* uses word number
     *col* from the trailing text in *timefile* (requires **-T**\ ...**+w**).
