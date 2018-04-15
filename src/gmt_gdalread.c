@@ -701,7 +701,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	int	complex_mode = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
 	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
-	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nBufXSize, nBufYSize;
+	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY;
 	int	n, m;
 	int	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	int error = 0, gdal_code = 0;
@@ -716,7 +716,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	int     pad_w = 0, pad_e = 0, pad_s = 0, pad_n = 0;    /* Different pads for when sub-regioning near the edges */
 	unsigned int nn, mm;
 	uint64_t ij;
-	size_t  n_alloc;
+	size_t  n_alloc, nBufXSize, nBufYSize;
 	unsigned char *tmp = NULL;
 	double  adfMinMax[2];
 	double  dfULX = 0.0, dfULY = 0.0, dfLRX = 0.0, dfLRY = 0.0;
@@ -961,7 +961,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	if (nReqBands) nBands = MIN(nBands,nReqBands);	/* If a band selection was made */
 
-	n_alloc = nBands * (nBufXSize + pad_w + pad_e) * (nBufYSize + pad_s + pad_n);
+	n_alloc = ((size_t)nBands) * (nBufXSize + pad_w + pad_e) * (nBufYSize + pad_s + pad_n);
 	switch (GDALGetRasterDataType(hBand)) {
 		case GDT_Byte:
 			if (prhs->c_ptr.active)	/* We have a pointer with already allocated memory ready to use */
@@ -1028,7 +1028,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	/* ------ compute two vectors indices that will be used inside loops below --------- */
 	/* In the "Preview" mode those guys below are different and what we need is the BufSize */
 	if (jump)
-		nX = nBufXSize,	nY = nBufYSize;
+		nX = (int)nBufXSize,	nY = (int)nBufYSize;
 	else
 		nX = nXSize,	nY = nYSize;
 
