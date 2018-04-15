@@ -135,7 +135,7 @@ with a warning under compatibility mode:
 *  :doc:`grdsample`: **-Q** is deprecated;
    use **-n**\ *mode*\ [**+a**][\ **+t**\ *threshold*] instead. Also,
    **-L** is deprecated; use common option **-n** instead, and
-   **-N**\ *nx/ny* is deprecated; use **-I**\ *nx+/ny+* instead.
+   **-N**\ *nx/ny* is deprecated; use **-I**\ *nx*\ **+n**\ /*ny*\ **+n** instead.
 
 *  :doc:`grdtrack`: **-Q** is deprecated;
    use **-n**\ *mode*\ [**+a**][\ **+t**\ *threshold*] instead. Also,
