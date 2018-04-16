@@ -8233,7 +8233,6 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_FONT_HEADING:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_heading)) error = true;
-			break;
 			GMT_COMPAT_TRANSLATE ("FONT_TITLE");
 			break;
 		case GMTCASE_FONT_TITLE:
@@ -13540,7 +13539,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		char *pch2;
 		len = strlen(item_t2);
 		if (item_t2[len-1] == 'W') {				/* See if scale is in fact a width */
-			item_t2[0] = toupper(item_t2[0]);		/* and let the GMT machinery detect this fact */
+			item_t2[0] = (char)toupper(item_t2[0]);		/* and let the GMT machinery detect this fact */
 			item_t2[len-1] = '\0';
 		}
 		if (scale_pos != 0) {	/* Because if == 0 than it means we have a scale only string (i.e. no GMT mapped proj) */
