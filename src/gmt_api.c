@@ -1689,8 +1689,8 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 /*! . */
 GMT_LOCAL uint64_t api_vector_nrows (uint64_t dim[], double *range, double *inc, int registration, unsigned int dir) {
 	if (dim && dim[GMTAPI_DIM_ROW]) return dim[GMTAPI_DIM_ROW];	/* Gave the dimension directly */
-	if (dir == GMT_IN && (!inc || inc[GMT_X] == 0.0)) return (GMT_NOTSET);
-	if (dir == GMT_IN && (!range || (range[XLO] == 0.0 && range[XHI] == 0.0))) return (GMT_NOTSET);
+	if (dir == GMT_IN && (!inc || inc[GMT_X] == 0.0)) return ((uint64_t)GMT_NOTSET);
+	if (dir == GMT_IN && (!range || (range[XLO] == 0.0 && range[XHI] == 0.0))) return ((uint64_t)GMT_NOTSET);
 	if (range && inc) return (gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], 0.5 * registration));
 	return (0);	/* When dir == GMT_OUT */
 }

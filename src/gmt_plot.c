@@ -5680,7 +5680,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		}
 	}
 	else if (!strcmp(prjcode, "utm")) {
-		unsigned int zone = 100;
+		int zone = 100;
 		strcat (opt_J, "U");
 		while (gmt_strtok (szProj4, " \t+", &pos, token)) {
 			if ((pch = strstr(token, "zone=")) != NULL) {	
@@ -5980,8 +5980,8 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		strcat(opt_J, scale_c);	/* Append the scale */
 
 	if (strchr(scale_c, ':')) {	/* If we have a scale in the 1:xxxx form use lower case codes */
-		opt_J[0] = tolower(opt_J[0]);
-		if (!strcmp(prjcode, "omerc")) opt_J[1] = tolower(opt_J[1]);
+		opt_J[0] = (char)tolower(opt_J[0]);
+		if (!strcmp(prjcode, "omerc")) opt_J[1] = (char)tolower(opt_J[1]);
 	}
 
 #if 0

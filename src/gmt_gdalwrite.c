@@ -214,7 +214,7 @@ GMT_LOCAL int write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, 
 		gmt_M_free (GMT, dataT);
 	}
 	else if (prhs->orig_type == GMT_UINT) {
-		short int *dataT = gmt_M_memory(GMT, NULL, nm, unsigned int);
+		unsigned int *dataT = gmt_M_memory(GMT, NULL, nm, unsigned int);
 		for (i = 0, k = 0; i < n_rows; i++) {
 			n = i*prhs->nXSizeFull + prhs->pad[0];
 			for (j = 0; j < n_cols; j++)

@@ -823,7 +823,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		y = Ctrl->F.dim[GMT_Y];	/* Start off at top edge of figure area */
 		last_row = Ctrl->N.dim[GMT_Y] - 1;
 		for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each row of panels */
-			axes[0] = axes[1] = k = 0;
+			axes[0] = axes[1] = 0;	k = 0;
 			if (row) y -= Ctrl->M.margin[YHI];
 			if (Ctrl->F.debug) {	/* All rows share this upper y */
 				for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) {	/* For each col of panels */
@@ -884,7 +884,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		x = 0.0;	/* Start off at left edge of plot area */
 		last_col = Ctrl->N.dim[GMT_X] - 1;
 		for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) {	/* For each col of panels */
-			axes[0] = axes[1] = k = 0;
+			axes[0] = axes[1] = 0;	k = 0;
 			if (col) x += Ctrl->M.margin[XLO];
 			if (Ctrl->F.debug) {	/* All cols share this left x */
 				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each col of panels */

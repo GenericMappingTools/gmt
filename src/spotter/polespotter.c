@@ -381,7 +381,7 @@ int GMT_polespotter (void *V_API, int mode, void *args) {
 						if (Ctrl->S.dump_crossings) {	/* Keep track of great circles to each line */
 							gmt_M_memcpy (&GG[4*ng], G, 3, double);
 							GG[4*ng+3] = L;
-							code[ng++] = d;
+							code[ng++] = (char)d;
 							if (ng == n_alloc) {
 								n_alloc <<= 1;
 								GG = gmt_M_memory (GMT, GG, n_alloc*4, double);
