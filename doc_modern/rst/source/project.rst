@@ -16,7 +16,7 @@ Synopsis
 **gmt project** [ *table* ] |-C|\ *cx*/*cy* [ |-A|\ *azimuth* ]
 [ |-E|\ *bx*/*by* ] [ |-F|\ *flags* ]
 [ |-G|\ *dist*\ [/*colat*][**+h**] ]
-[ |-L|\ [**w**\ ][\ *l\_min*/*l\_max*] ]
+[ |-L|\ [**w**\ \|\ *l\_min*/*l\_max*] ]
 [ |-N| ] [ |-Q| ] [ |-S| ]
 [ |-T|\ *px*/*py* ]
 [ |SYN_OPT-V| ]
@@ -155,10 +155,10 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**w**\ ][\ *l\_min*/*l\_max*]
+**-L**\ [**w**\ \|\ *l\_min*/*l\_max*]
     Length controls. Project only those points whose *p* coordinate is
     within *l\_min* < *p* < *l\_max*. If **-E** has been set, then you
-    may use **-Lw** to stay within the distance from **C** to **E**.
+    may alternatively use **-Lw** to stay within the distance from **C** to **E**.
 
 .. _-N:
 

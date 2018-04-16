@@ -122,7 +122,7 @@ GMT_LOCAL int grdio_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 	if ((complex_mode & GMT_GRID_IS_COMPLEX_MASK) == 0) return GMT_OK;	/* Regular, non-complex grid, nothing special to do */
 
-	needed_size = 2ULL * header->mx * header->my;	/* For the complex array */
+	needed_size = 2ULL * ((size_t)header->mx) * ((size_t)header->my);	/* For the complex array */
 	if (header->size < needed_size) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Complex grid not large enough to hold both components!.\n");
 		GMT_exit (GMT, GMT_DIM_TOO_SMALL); return GMT_DIM_TOO_SMALL;
@@ -652,7 +652,7 @@ GMT_LOCAL void grdio_pad_grd_on_sub (struct GMT_CTRL *GMT, struct GMT_GRID *G, s
 	/* See if the index of start of last new row exceeds index of last node in old grid */
 	start_last_new_row = gmt_M_get_nm (GMT, G->header->pad[YHI] + G->header->n_rows - 1, G->header->pad[XLO] + G->header->n_columns + G->header->pad[XHI]) + G->header->pad[XLO];
 	end_last_old_row   = gmt_M_get_nm (GMT, h_old->pad[YHI] + h_old->n_rows - 1, h_old->pad[XLO] + h_old->n_columns + h_old->pad[XHI]) + h_old->pad[XLO] + h_old->n_columns - 1;
-	if (start_last_new_row > end_last_old_row) {        /* May copy whole rows from bottom to top */
+	if (start_last_new_row > end_last_old_row && (start_last_new_row - end_last_old_row) > G->header->n_columns) {        /* May copy whole rows from bottom to top */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_pad_grd_on_sub can copy row-by-row\n");
 		for (row = G->header->n_rows; row > 0; row--) {
 			ij_new = gmt_M_ijp (G->header, row-1, 0);   /* Index of this row's first column in new padded grid  */
@@ -2483,7 +2483,7 @@ void gmt_grd_pad_on (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int *pad
 	}
 	/* Here the pads differ (or G has no pad at all) */
 	is_complex = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK);
-	size = gmt_M_grd_get_nxpad (G->header, pad) * gmt_M_grd_get_nypad (G->header, pad);	/* New array size after pad is added */
+	size = ((size_t)gmt_M_grd_get_nxpad (G->header, pad)) * ((size_t)gmt_M_grd_get_nypad (G->header, pad));	/* New array size after pad is added */
 	if (is_complex) size *= 2;	/* Twice the space for complex grids */
 	if (size > G->header->size) {	/* Must allocate more space, but since no realloc for aligned memory we must do it the hard way */
 		gmt_grdfloat *f = NULL;

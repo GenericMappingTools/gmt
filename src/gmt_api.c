@@ -1670,7 +1670,7 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 	}
 	M->type = (dim == NULL) ? GMT_DOUBLE : dim[3];	/* Use selected data type for export or default to double */
 	M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;
-	size = M->n_rows * M->n_columns * M->n_layers;	/* Size in bytes of the initial matrix allocation */
+	size = M->n_rows * M->n_columns * ((size_t)M->n_layers);	/* Size in bytes of the initial matrix allocation */
 	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Must allocate data memory */
 		struct GMT_MATRIX_HIDDEN *MH = gmt_get_M_hidden (M);
 		if (size) {	/* Must allocate data matrix and possibly string array */

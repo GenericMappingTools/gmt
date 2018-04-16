@@ -76,7 +76,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**d**]\ *filter*
+**-F**\ [**k**]\ *filter*
     Filter coefficients according to one of two kinds of filter
     specifications:.  Select **-Fk** if values are given in km
     [Default is coefficient harmonic degree L]. a) Cosine band-pass: Append

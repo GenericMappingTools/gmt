@@ -8607,7 +8607,7 @@ void gmtlib_inplace_transpose (gmt_grdfloat *A, unsigned int n_rows, unsigned in
 	 * code from http://www.geeksforgeeks.org/inplace-m-x-n-size-matrix-transpose
 	 * Switched to C-style bit flag.
 	 */
-	uint64_t size = n_rows * n_cols - 1ULL;
+	uint64_t size = ((uint64_t)n_rows) * ((uint64_t)n_cols) - 1ULL;
 	gmt_grdfloat t;	/* holds element to be replaced, eventually becomes next element to move */
 	uint64_t next;	/* location of 't' to be moved */
 	uint64_t cycleBegin;	/* holds start of cycle */
