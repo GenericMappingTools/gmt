@@ -2958,17 +2958,17 @@ bool gmtlib_init_complex (struct GMT_GRID_HEADER *header, unsigned int complex_m
 }
 
 /* Reverses the grid vertically, that is, from north up to south up or vice versa. */
-void gmtlib_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size) {
+void gmtlib_grd_flip_vertical (void *gridp, const unsigned n_cols32, const unsigned n_rows32, const unsigned n_stride32, size_t cell_size) {
 	/* Note: when grid is complex, pass 2x n_rows */
-	unsigned rows_over_2 = (unsigned) floor (n_rows / 2.0);
-	unsigned row;
-	unsigned stride = n_cols; /* stride is the distance between rows. defaults to n_cols */
+	size_t row, n_cols = n_cols32, n_rows = n_rows32;
+	size_t rows_over_2 = (size_t) floor (n_rows / 2.0);
+	size_t stride = n_cols;	/* stride is the distance between rows. defaults to n_cols */
 	char *grid = (char*)gridp;
 	char *tmp = calloc (n_cols, cell_size);
 	char *top, *bottom;
 
-	if (n_stride != 0)
-		stride = n_stride;
+	if (n_stride32 != 0)
+		stride = (size_t)n_stride32;
 
 	for (row = 0; row < rows_over_2; ++row) {
 		/* pointer to top row: */
