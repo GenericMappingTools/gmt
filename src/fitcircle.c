@@ -130,7 +130,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F We normally write a mixed numerical/text report.  Use -F to return just data.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Indicate what output columns you want as one or more of fmnsc in any order:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append the output columns you want as one or more of fmnsc in any order:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f: Flat Earth mean location\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     m: Fisher (L1) or Eigenvalue (L2) mean location\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     n: North hemisphere pole location\n");

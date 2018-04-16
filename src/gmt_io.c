@@ -5992,7 +5992,7 @@ int gmt_set_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct GMT_GRID *G) 
 	r->get_gmt_ij = (r->format == GMT_IS_COL_FORMAT) ? gmtio_col_ij : gmtio_row_ij;
 	r->x_period = G->header->n_columns - r->x_missing;
 	r->y_period = G->header->n_rows - r->y_missing;
-	r->n_expected = r->x_period * r->y_period;
+	r->n_expected = ((uint64_t)r->x_period) * ((uint64_t)r->y_period);
 	return (GMT_NOERROR);
 }
 

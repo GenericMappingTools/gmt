@@ -78,11 +78,11 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ **f**\ \|\ **m**\ \|\ **n**\ \|\ **s**\ \|\ **c**
-    Normally, **fitcircle** will write its results in the form of a text report, with
+**-F**\ *flags*
+    Traditionally, **fitcircle** will write its results in the form of a text report, with
     the values intermingled with report sentences.  Use **-F** to only return data
     coordinates, and append *flags* to specify which coordinates you would like. You
-    can choose from **f** (Flat Earth mean location), **m** (mean location),
+    can choose one or more items from **f** (Flat Earth mean location), **m** (mean location),
     **n** (north pole of great circle), **s** (south pole of great circle), and
     **c** (pole of small circle and its colatitude, which requires **-S**).
 
