@@ -1740,7 +1740,7 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 	}
 	M->type = dim[3];	/* Use selected data type for export */
 	M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;
-	size = M->n_rows * M->n_columns * M->n_layers;	/* Size in bytes of the initial matrix allocation */
+	size = M->n_rows * M->n_columns * ((size_t)M->n_layers);	/* Size in bytes of the initial matrix allocation */
 	if (size && (mode & GMT_CONTAINER_ONLY) == 0) {	/* Must allocate memory */
 		if ((error = gmtlib_alloc_univector (API->GMT, &(M->data), M->type, size)) != GMT_OK)
 			return (error);
