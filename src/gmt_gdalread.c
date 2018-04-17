@@ -1094,7 +1094,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			if (just_copy || copy_flipud)					/* In this case nBlocks was set to 1 above */
 				tmp = &Ctrl->UInt8.data[i_x_nXYSize];		/* These cases don't need any temporary array */
 #else
-		buffY = nBufYSize;
+		buffy = nBufYSize;
 		row_i = 0;	row_e = nYSize;		endRow = nYSize + startRow;
 		nYOff = yOrigin;
 #endif
