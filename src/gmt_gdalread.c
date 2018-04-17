@@ -699,9 +699,12 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	const char	*format = NULL;
 	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated below) */
 	int	complex_mode = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
-	int	nPixelSize, nBands, i, nReqBands = 0;
+	int	nPixelSize, nBands, i, k, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY;
+	int nBufXSize, nBufYSize, buffy, startRow = 0, endRow;
+	int nRowsPerBlock, nBlocks, nYOff, row_i, row_e;
+	int pad = 0, pad_w = 0, pad_e = 0, pad_s = 0, pad_n = 0;    /* Different pads for when sub-regioning near the edges */
 	int	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	int error = 0, gdal_code = 0;
 	bool   do_BIP;		/* For images if BIP == true data is stored Pixel interleaved, otherwise Band interleaved */
@@ -712,9 +715,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	bool   just_copy = false, copy_flipud = false;
 	int	   *whichBands = NULL;
 	size_t *rowVec = NULL, *colVec = NULL;
-	int     pad = 0, pad_w = 0, pad_e = 0, pad_s = 0, pad_n = 0;    /* Different pads for when sub-regioning near the edges */
-	int  nBufXSize, nBufYSize;
-	size_t  off, i_x_nXYSize, startColPos = 0, startRow = 0, nXSize_withPad = 0, nYSize_withPad;
+	size_t  off, i_x_nXYSize, startColPos = 0, nXSize_withPad = 0, nYSize_withPad;
 	size_t  n_alloc, n, m, nn, mm, ij;
 	unsigned char *tmp = NULL;
 	double  adfMinMax[2];
@@ -1017,7 +1018,20 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			break;
 	}
 
+	/* 16 Mb worth of rows */
+	nRowsPerBlock = MIN(nYSize, (int)(1024 * 1024 * 16 / (nXSize * nPixelSize)));
+	nBlocks = (int)ceil((float)nYSize / nRowsPerBlock);
+
+#ifdef READ_BY_BLOCKS
+	if (!(just_copy || copy_flipud))
+		tmp = calloc((size_t)nRowsPerBlock * (size_t)nBufXSize, nPixelSize);
+	else {
+		nRowsPerBlock = nYSize;
+		nBlocks = 1;
+	}
+#else
 	tmp = calloc((size_t)nBufYSize * (size_t)nBufXSize, nPixelSize);
+#endif
 	if (tmp == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdalread: failure to allocate enough memory\n");
 		GDALDestroyDriverManager();
@@ -1059,8 +1073,34 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				pixel_reg = true;
 		}
 
-		if ((gdal_code = GDALRasterIO(hBand, GF_Read, xOrigin, yOrigin, nXSize, nYSize, tmp,
-		                 nBufXSize, nBufYSize, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
+		i_x_nXYSize = i * ((size_t)nBufXSize + pad_w + pad_e) * ((size_t)nBufYSize + pad_s + pad_n);
+
+#ifdef READ_BY_BLOCKS
+		for (k = 0; k < nBlocks; k++) {
+			nYOff = yOrigin + k * nRowsPerBlock;	/* Move data Y origin to the begining of next block to be read */
+			row_i = k * nRowsPerBlock;
+			row_e = (k + 1) * nRowsPerBlock;
+			buffy = nRowsPerBlock;
+			for (m = 0; m < nRowsPerBlock; m++) rowVec[m] = m * nX;
+			if (k == nBlocks-1) {					/* Last block only by chance is not smaller than the others */
+				buffy = nBufYSize - k * nRowsPerBlock;
+				row_e = nYSize;
+				for (m = 0; m < buffy; m++) rowVec[m] = m * nX;
+				nYOff = yOrigin + k * nRowsPerBlock; 
+			}
+			startRow = row_i;
+			endRow   = row_e;
+
+			if (just_copy || copy_flipud)					/* In this case nBlocks was set to 1 above */
+				tmp = &Ctrl->UInt8.data[i_x_nXYSize];		/* These cases don't need any temporary array */
+#else
+		buffY = nBufYSize;
+		row_i = 0;	row_e = nYSize;		endRow = nYSize + startRow;
+		nYOff = yOrigin;
+#endif
+
+		if ((gdal_code = GDALRasterIO(hBand, GF_Read, xOrigin, nYOff, nXSize, buffy, tmp,
+		                 nBufXSize, buffy, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to open band %d [err = %d]\n", i, gdal_code);
 			continue;
 		}
@@ -1070,18 +1110,14 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 		/* In the "Preview" mode those guys below are different and what we need is the BufSize */
 		if (jump) {
-			nXSize = nBufXSize;
-			nYSize = nBufYSize;
-			i_x_nXYSize = i*(nXSize + pad_w + pad_e)*(nYSize + pad_s + pad_n);		/* We don't need to recompute this every time */
+			nXSize = nBufXSize;		nYSize = nBufYSize;
 		}
-		else
-			i_x_nXYSize = i * ((size_t)nBufXSize + pad_w + pad_e) * ((size_t)nBufYSize + pad_s + pad_n);
 
 		startColPos = pad_w + i_x_nXYSize + (complex_mode > 1);	/* Take into account nBands, Padding and Complex */
 		nXSize_withPad = nXSize + pad_w + pad_e;
 		nYSize_withPad = nYSize + pad_n + pad_s;
 
-		if (prhs->mini_hdr.active) {
+		if (prhs->mini_hdr.active) {				/* What does this mean? */
 			if (prhs->mini_hdr.side[0] == 'l' || prhs->mini_hdr.side[0] == 'r') {
 				nXSize_withPad = prhs->mini_hdr.mx;
 				if (prhs->mini_hdr.side[0] == 'r')
@@ -1089,6 +1125,13 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			}
 			else if (prhs->mini_hdr.side[0] == 'b') {
 				startRow = prhs->mini_hdr.offset;
+#ifdef READ_BY_BLOCKS
+				endRow = (k + 1) * nRowsPerBlock;	// This certainly wrong and will crash but can't do better without a test case
+				if (k == nBlocks-1)
+					endRow = nYSize;
+#else
+				endRow = nYSize + startRow;
+#endif
 			}
 		}
 
@@ -1110,7 +1153,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				if (do_BIP || !GMT->current.gdal_read_in.O.mem_layout[0]) {
 					/* Currently all calls to send image to GMT (BIP case) must come through here */
 					if (rowmajor) {
-						for (m = 0; m < nYSize; m++) {
+						for (m = row_i; m < row_e; m++) {
 							off = nRGBA * pad_w + (pad_w+m) * (nRGBA * (nXSize_withPad)); /* Remember, nRGBA is variable */
 							for (n = 0; n < nXSize; n++)
 								Ctrl->UInt8.data[colVec[n] + off] = tmp[rowVec[m]+n];
@@ -1119,13 +1162,14 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					else {
 						for (n = 0; n < nXSize; n++) {
 							off = nRGBA * pad_n + (pad_n+n) * (nRGBA * nYSize_withPad) + i;
-							for (m = 0; m < nYSize; m++)
+							for (m = row_i; m < row_e; m++)
 								Ctrl->UInt8.data[m * nRGBA + off] = tmp[rowVec[m] + n];
 						}
 					}
 				}
 				else {
-					if (just_copy) {	/* Here we send out the array as is, but the usage of a tmp array was an waste. Needs fix */
+#ifndef READ_BY_BLOCKS
+					if (just_copy) {	/* Here we send out the array as is, but the usage of a tmp array was a waste. Needs fix */
 						memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, (size_t)nBufYSize * (size_t)nBufXSize);
 					}
 					else if (copy_flipud) {
@@ -1133,15 +1177,19 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 						memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, (size_t)nBufYSize * (size_t)nBufXSize);
 						gmtlib_grd_flip_vertical (&Ctrl->UInt8.data[i_x_nXYSize], (unsigned)nX, (unsigned)nY, 0, 1);
 					}
+#else
+					if (copy_flipud)
+						gmtlib_grd_flip_vertical (&Ctrl->UInt8.data[i_x_nXYSize], (unsigned)nX, (unsigned)nY, 0, 1);
+#endif
 					else if (fliplr) {				/* No BIP option yet, and maybe never */
-						for (m = 0; m < nYSize; m++) {
+						for (m = row_i; m < row_e; m++) {
 							nn = (pad_w+m)*(nXSize_withPad) + startColPos;
 							for (n = nXSize-1; n >= 0; n--)
 								Ctrl->UInt8.data[nn++] = tmp[rowVec[m]+n];
 						}
 					}
 					else if (topdown) {			/* No BIP option yet, and maybe never */
-						for (m = 0; m < nYSize; m++) {
+						for (m = row_i; m < row_e; m++) {
 							for (n = 0; n < nXSize; n++) {
 								ij = colVec[n] + m;
 								Ctrl->UInt8.data[ij] = tmp[rowVec[m]+n];
@@ -1152,7 +1200,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				break;
 			case GDT_Int16:
 				if (!prhs->f_ptr.active) Ctrl->Int16.active = true;
-				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+				for (m = startRow, mm = 0; m < endRow; m++, mm++) {
 					nn = (pad_w+m)*(nXSize_withPad) + startColPos;
 					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
 						if (prhs->f_ptr.active) {
@@ -1166,7 +1214,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				break;
 			case GDT_UInt16:
 				if (!prhs->f_ptr.active) Ctrl->UInt16.active = true;
-				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+				for (m = startRow, mm = 0; m < endRow; m++, mm++) {
 					nn = (pad_w+m)*(nXSize_withPad) + startColPos;
 					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
 						if (prhs->f_ptr.active) {
@@ -1180,7 +1228,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				break;
 			case GDT_Int32:
 				if (!prhs->f_ptr.active) Ctrl->Int32.active = true;
-				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+				for (m = startRow, mm = 0; m < endRow; m++, mm++) {
 					nn = (pad_w+m)*(nXSize_withPad) + startColPos;
 					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
 						if (prhs->f_ptr.active) {
@@ -1194,7 +1242,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				break;
 			case GDT_UInt32:
 				if (!prhs->f_ptr.active) Ctrl->UInt32.active = true;
-				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+				for (m = startRow, mm = 0; m < endRow; m++, mm++) {
 					nn = (pad_w+m)*(nXSize_withPad) + startColPos;
 					for (n = fliplr ? nXSize-1 : 0; fliplr ? n >= 0 : n < nXSize; fliplr ? n-- : n++)
 						if (prhs->f_ptr.active) {
@@ -1208,7 +1256,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				break;
 			case GDT_Float32:
 				Ctrl->Float.active = true;
-				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+				for (m = startRow, mm = 0; m < endRow; m++, mm++) {
 					nn = (pad_w+m)*(nXSize_withPad) + startColPos;
 					for (n = 0; n < nXSize; n++) {
 						memcpy (&Ctrl->Float.data[nn], &tmp[(rowVec[mm]+n) * sizeof(float)], sizeof(float));
@@ -1218,7 +1266,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				break;
 			case GDT_Float64:	/* For now we don't care about doubles */
 				Ctrl->Float.active = true;
-				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+				for (m = startRow, mm = 0; m < endRow; m++, mm++) {
 					nn = (pad_w+m)*(nXSize_withPad) + startColPos;
 					for (n = 0; n < nXSize; n++) {
 						double tmpF64;
@@ -1231,6 +1279,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			default:
 				CPLAssert(false);
 		}
+#ifdef READ_BY_BLOCKS
+}
+#endif
 	}
 
 #if 0	/* This code is problematic and commented out for now. PW, 5/15/2016 */
