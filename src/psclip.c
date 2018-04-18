@@ -32,7 +32,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Initialize or terminate polygonal clip paths"
 #define THIS_MODULE_KEYS	"<D{,>X},C-("
-#define THIS_MODULE_NEEDS	"dJ"
+#define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipstxy" GMT_OPT("EZMmc")
 
 struct PSCLIP_CTRL {

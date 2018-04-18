@@ -32,7 +32,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Project grids or images and plot them on maps"
 #define THIS_MODULE_KEYS	"<G{+,CC(,IG(,>X},>IA,<ID@<G{+,CC(,IG(,AI),<ID"
-#define THIS_MODULE_NEEDS	"gJ"
+#define THIS_MODULE_NEEDS	"Jg"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Sc")
 
 #ifdef HAVE_GDAL

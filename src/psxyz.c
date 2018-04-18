@@ -30,7 +30,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols in 3-D"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,>X},S?(=2"
-#define THIS_MODULE_NEEDS	"dJ"
+#define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghiptxy" GMT_OPT("EZHMmc")
 
 /* Control structure for psxyz */

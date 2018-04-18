@@ -40,7 +40,7 @@
 #define THIS_MODULE_LIB		"segy"
 #define THIS_MODULE_PURPOSE	"Plot a SEGY file on a map in 3-D"
 #define THIS_MODULE_KEYS	">X}"
-#define THIS_MODULE_NEEDS	"RJ"
+#define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYpt" GMT_OPT("c")
 
 #define B_ID	0	/* Indices into Q values */

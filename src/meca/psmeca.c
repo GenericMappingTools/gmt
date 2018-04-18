@@ -29,7 +29,7 @@ PostScript code is written to stdout.
 #define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot focal mechanisms on maps"
 #define THIS_MODULE_KEYS	"<D{,>X}"
-#define THIS_MODULE_NEEDS	"dJ"
+#define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehit" GMT_OPT("c")
 
 #define DEFAULT_FONTSIZE	9.0	/* In points */

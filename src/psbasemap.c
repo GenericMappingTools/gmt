@@ -32,7 +32,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot base maps and frames"
 #define THIS_MODULE_KEYS	">X},>DA@AD)"
-#define THIS_MODULE_NEEDS	"RJ"
+#define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfptxy" GMT_OPT("EZc")
 
 /* Control structure for psbasemap */

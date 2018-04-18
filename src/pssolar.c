@@ -29,7 +29,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot day-light terminators and other sunlight parameters"
 #define THIS_MODULE_KEYS	">X},>DI,>DM@ID),MD)"
-#define THIS_MODULE_NEEDS	"RJ"
+#define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbpto" GMT_OPT("c")
 
 EXTERN_MSC void gmtlib_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);	/* Break internal time into calendar and clock struct info  */

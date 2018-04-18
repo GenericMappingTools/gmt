@@ -37,7 +37,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot z = f(x,y) anomalies along tracks"
 #define THIS_MODULE_KEYS	"<D{,>X}"
-#define THIS_MODULE_NEEDS	"dJ"
+#define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipstxy" GMT_OPT("EHMmc")
 
 EXTERN_MSC int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt);

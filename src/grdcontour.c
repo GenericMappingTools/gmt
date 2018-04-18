@@ -31,7 +31,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make contour map using a grid"
 #define THIS_MODULE_KEYS	"<G{,AD)=t,CC(,DDD,>X},G?(=1@<G{,AD)=t,CC(,DD),G?(=1"
-#define THIS_MODULE_NEEDS	"gJ"
+#define THIS_MODULE_NEEDS	"Jg"
 #define THIS_MODULE_OPTIONS "-BJKOPRUVXYbdfhptxy" GMT_OPT("EMmc")
 
 /* Control structure for grdcontour */

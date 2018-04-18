@@ -14120,7 +14120,7 @@ int gmt_set_missing_options (struct GMT_CTRL *GMT, char *options) {
 	assert (options);	/* Should never be NULL */
 
 	for (j = 0; options[j]; j++) {	/* Do this for all required options listed */
-		assert (strchr ("RJ", options[j]));	/* Only R and/or J should be present in options */
+		assert (strchr ("JR", options[j]));	/* Only J and/or R should be present in options */
 		if (options[j] == 'R' && GMT->common.R.active[RSET]) continue;	/* Set already */
 		if (options[j] == 'J' && GMT->common.J.active) continue;	/* Set already */
 		/* Must dig around in the history array */

@@ -31,7 +31,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot data on ternary diagrams"
 #define THIS_MODULE_KEYS	"<D{,>X},>DM,C-(@<D{,MD),C-("
-#define THIS_MODULE_NEEDS	"dJ"
+#define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipstxy"
 
 struct PSTERNARY_CTRL {

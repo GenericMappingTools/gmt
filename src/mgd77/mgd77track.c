@@ -28,7 +28,7 @@
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Plot track-line map of MGD77 cruises"
 #define THIS_MODULE_KEYS	">X}"
-#define THIS_MODULE_NEEDS	"RJ"
+#define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxy" GMT_OPT("c")
 
 #define MGD77TRACK_ANSIZE 0.125

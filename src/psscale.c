@@ -31,7 +31,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot a gray-scale or color-scale on maps"
 #define THIS_MODULE_KEYS	"CC{,>X},ZD("
-#define THIS_MODULE_NEEDS	"rj"
+#define THIS_MODULE_NEEDS	"jr"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxyf" GMT_OPT("c")
 
 EXTERN_MSC void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);

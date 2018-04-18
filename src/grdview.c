@@ -43,7 +43,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create 3-D perspective image or surface mesh from a grid"
 #define THIS_MODULE_KEYS	"<G{,CC(,GG(,IG(,>X}"
-#define THIS_MODULE_NEEDS	"gJ"
+#define THIS_MODULE_NEEDS	"Jg"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYfnptxy" GMT_OPT("Ec")
 
 /* grdview needs to work on "tiles" which is defined as the "square" regions made

@@ -14747,13 +14747,13 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char op
 		case 'n':	mode = GMT_REFPOINT_NORM;		break;	/* Normalized coordinates */
 		case 'g':	mode = GMT_REFPOINT_MAP;		break;	/* Map coordinates */
 		case 'j':	mode = GMT_REFPOINT_JUST;		break;	/* Map box with justification code */
-		case 'J':	mode = GMT_REFPOINT_JUST_FLIP;	break;	/* Map box with mirrored justification code */
+		case 'J':	mode = GMT_REFPOINT_JUST_FLIP;		break;	/* Map box with mirrored justification code */
 		case 'x':	mode = GMT_REFPOINT_PLOT;		break;	/* Plot coordinates */
 		default: 	k = 0;	break;	/* None given, reset first arg to be at position 0 */
 	}
 	if (mode == GMT_REFPOINT_JUST || mode == GMT_REFPOINT_JUST_FLIP) {
-		n = support_find_mod_syntax_start (arg, k);
-		if (arg[n]) {	/* Separated via +modifiers (or nothing follows), but here we know just is 2 chars */
+		n = support_find_mod_syntax_start (arg, k);	/* Returns position of first modifier +? */
+		if (arg[n] || k == 1) {	/* Separated via +modifiers (or nothing follows), but here we know just is 2 chars */
 			strncpy (txt_x, &arg[k], 2);	txt_x[2] = 0;
 			strncpy (the_rest, &arg[n], GMT_LEN256-1);
 		}
@@ -14800,7 +14800,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char op
 	/* Here we know or have assumed the mode and can process coordinates accordingly */
 
 	if (mode != GMT_REFPOINT_PLOT) {	/* Will require -R -J so check that these have been parsed */
-		gmt_set_missing_options (GMT, "RJ");	/* If mode is modern, they exist in the history, and if an overlay we may add these from history automatically */
+		gmt_set_missing_options (GMT, "JR");	/* If mode is modern, they exist in the history, and if an overlay we may add these from history automatically */
 		if (GMT->common.J.active == false && GMT->common.R.active[RSET] == false) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your -%c%c reference point coordinates require both -R -J to be specified\n", option, kind[mode]);
 			return NULL;

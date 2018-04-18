@@ -31,7 +31,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot legends on maps"
 #define THIS_MODULE_KEYS	"<D{,>X}"
-#define THIS_MODULE_NEEDS	"rj"
+#define THIS_MODULE_NEEDS	"jr"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYpt" GMT_OPT("c")
 
 struct PSLEGEND_CTRL {

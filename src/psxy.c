@@ -30,7 +30,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols on maps"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,>X},S?(=2"
-#define THIS_MODULE_NEEDS	"dJ"
+#define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghipt" GMT_OPT("HMmc")
 
 /* Control structure for psxy */

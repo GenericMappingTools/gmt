@@ -57,7 +57,7 @@
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot continents, countries, shorelines, rivers, and borders on maps"
 #define THIS_MODULE_KEYS	">?}"
-#define THIS_MODULE_NEEDS	"RJ"
+#define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdptxy" GMT_OPT("Zc")
 
 #define LAKE	0
