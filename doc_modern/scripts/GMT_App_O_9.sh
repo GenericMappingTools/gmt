@@ -16,7 +16,7 @@ gmt grdcontour @App_O_ttt.nc -R -J -O -K -C0.5 -A1+u" hour"+v+f8p,Bookman-Demi \
 gmt psxy -R -J -Wfatter,white great_NY_Canaries.txt -O -K  >> GMT_App_O_9.ps
 gmt pscoast -R -J -B20f5 -BWSne+t"Tsunami travel times from the Canaries" -N1/thick -O -K \
 	-Glightgray -Wfaint -A500 >> GMT_App_O_9.ps
-gmt convert great_NY_*.txt -E | gmt psxy -R -J -O -K -Sa0.15i -Gred -Wthin >> GMT_App_O_9.ps
+gmt convert great_NY_*.txt -E | gmt psxy $R -J -O -K -Sa0.15i -Gred -Wthin >> GMT_App_O_9.ps
 gmt psxy -R -J -Wthick great_NY_Canaries.txt -O -K \
 	-Sqn1:+f8p,Times-Italic+l"Distance Canaries to New York = $km km"+ap+v >> GMT_App_O_9.ps
 gmt psxy -R -J great_NY_Paris.txt -O -K -Sc0.08c -Gblack >> GMT_App_O_9.ps
