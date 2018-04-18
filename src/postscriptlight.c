@@ -4043,7 +4043,7 @@ char * PSL_getplot (struct PSL_CTRL *PSL) {
 int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay, int color_mode, char origin[], double offset[], double page_size[], char *title, int font_no[]) {
 /* fp:		Output stream or NULL for standard output
    orientation:	0 = landscape, 1 = portrait.  If orientation &2 then we write to memory array [Default is to fp]
-		If orientation&4 then we must reissue font encoding due to change in charset
+		If orientation&4 then we must reissue font encoding due to a change in charset
    overlay:	true if this is an overlay plot [false means print headers and macros first]
    color_mode:	0 = RGB color, 1 = CMYK color, 2 = HSV color, 3 = Gray scale
    origin:	Two characters indicating origin of new position for x and y respectively:
@@ -4095,8 +4095,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 	PSL->current.outline = -1;				/* Will be changed by PSL_setfill */
 	PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], dummy_rgb);	/* Will be changed by PSL_setfill */
 
-	PSL->internal.dpu = PSL_DOTS_PER_INCH / units_per_inch[PSL->init.unit];	/* Dots pr. unit resolution of output device */
-	PSL->internal.dpp = PSL_DOTS_PER_INCH / units_per_inch[PSL_PT];		/* Dots pr. point resolution of output device */
+	PSL->internal.dpu = PSL_DOTS_PER_INCH / units_per_inch[PSL->init.unit];	/* Dots per unit resolution of output device */
+	PSL->internal.dpp = PSL_DOTS_PER_INCH / units_per_inch[PSL_PT];		/* Dots per point resolution of output device */
 	PSL->internal.x2ix = PSL->internal.dpu;					/* Scales x coordinates to dots */
 	PSL->internal.y2iy = PSL->internal.dpu;					/* Scales y coordinates to dots */
 	PSL->internal.x0 = PSL->internal.y0 = 0;				/* Offsets for x and y when mapping user x,y to PS ix,iy */
@@ -4117,6 +4117,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	if (overlay) {	/* Must issue PSL header - this is the start of a new panel */
 		if (change_charset) {
+			PSL_comment (PSL, "Encode fonts using selected character set: %s\n", PSL->init.encoding);
 			sprintf (PSL_encoding, "PSL_%s", PSL->init.encoding);	/* Prepend the PSL_ prefix */
 			err = psl_place_encoding (PSL, PSL_encoding);
 			if (err) return err;
