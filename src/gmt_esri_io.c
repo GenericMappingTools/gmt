@@ -634,7 +634,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	return (GMT_NOERROR);
 }
 
-int gmt_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode, int floating) {
+int gmt_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode, bool floating) {
 	unsigned int i2, j, j2, width_out, height_out, last;
 	int first_col, last_col, first_row, last_row;
 	unsigned int i, *actual_col = NULL;
@@ -642,7 +642,7 @@ int gmt_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	char item[GMT_LEN64], c[2] = {0, 0};
 	FILE *fp = NULL;
 
-	if (!doubleAlmostEqual ((header->inc[GMT_X] / header->inc[GMT_Y]), 1.0))
+	if (fabs (header->inc[GMT_X] / header->inc[GMT_Y] - 1.0) > GMT_CONV8_LIMIT)
 		return (GMT_GRDIO_ESRI_NONSQUARE);	/* Only square pixels allowed */
 	if (!strcmp (header->name, "="))	/* Write to pipe */
 		fp = GMT->session.std[GMT_OUT];
