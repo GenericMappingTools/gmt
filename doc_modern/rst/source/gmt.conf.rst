@@ -1074,7 +1074,11 @@ fonts can be found in the :doc:`gmt` man page.
     that the PostScript output generates the correct characters on the
     plot.. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
     ISO-8859-x (where x is in the ranges [1,10] or [13,15]). See
-    Appendix F for details [ISOLatin1+ (or Standard+)].
+    Appendix F for details [ISOLatin1+ (or Standard+)].  Note: Normally
+    the character set is written as part of the PostScript header.  If
+    you need to switch to another character set for a later overlay then
+    you must use --PS_CHAR_ENCODING=*encoding* on the command line and
+    not via gmt set.
 
 .. _PS_COLOR_MODEL:
 

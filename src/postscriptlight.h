@@ -130,6 +130,7 @@ enum PSL_enum_const {PSL_CM	= 0,
 	PSL_FINALIZE		= 1,
 	PSL_OVERLAY		= 1,
 	PSL_MEMORY		= 2,
+	PSL_CHANGESET		= 4,
 	PSL_MEM_ALLOC		= 2097152, /* 2 Mb of memory */
 	PSL_INIT		= 0,
 	PSL_LANDSCAPE		= 0,

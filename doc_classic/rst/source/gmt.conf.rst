@@ -502,7 +502,11 @@ fonts can be found in the :doc:`gmt` man page.
     submit it to the GMT Developers for official inclusion. Custom
     language files can be placed in directories **$GMT_SHAREDIR**/localization
     or ~/.gmt. Note: Some of these languages may require you to also
-    change the **PS_CHAR_ENCODING** setting.
+    change the **PS_CHAR_ENCODING** setting.  Note: Normally
+    the character set is written as part of the PostScript header.  If
+    you need to switch to another character set for a later overlay then
+    you must use --PS_CHAR_ENCODING=*encoding* on the command line and
+    not via gmt set.
 
 .. _GMT_TRIANGULATE:
 

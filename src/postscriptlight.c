@@ -4043,6 +4043,7 @@ char * PSL_getplot (struct PSL_CTRL *PSL) {
 int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay, int color_mode, char origin[], double offset[], double page_size[], char *title, int font_no[]) {
 /* fp:		Output stream or NULL for standard output
    orientation:	0 = landscape, 1 = portrait.  If orientation &2 then we write to memory array [Default is to fp]
+		If orientation&4 then we must reissue font encoding due to change in charset
    overlay:	true if this is an overlay plot [false means print headers and macros first]
    color_mode:	0 = RGB color, 1 = CMYK color, 2 = HSV color, 3 = Gray scale
    origin:	Two characters indicating origin of new position for x and y respectively:
@@ -4055,16 +4056,19 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
    title:	Title of the plot (or NULL if not specified)
    font_no:	Array of font numbers used in the document (or NULL if not determined)
 */
-	int i, manual_feed = false, err = 0;
+	int i, manual_feed = false, err = 0, change_charset = 0;
 	double no_rgb[4] = {-1.0, -1.0, -1.0, 0.0}, dummy_rgb[4] = {-2.0, -2.0, -2.0, 0.0}, black[4] = {0.0, 0.0, 0.0, 0.0}, scl;
 	time_t right_now;
 	const char *uname[4] = {"cm", "inch", "meter", "point"}, xy[2] = {'x', 'y'};
 	const double units_per_inch[4] = {2.54, 1.0, 0.0254, 72.0};	/* cm, inch, m, points per inch */
+	char PSL_encoding[64] = {""};
 
 	if (!PSL) return (PSL_NO_SESSION);	/* Never was allocated */
 
 	PSL->internal.memory = (orientation & PSL_MEMORY);	/* true if we wish to write PS to memory instead of to file */
 	if (PSL->internal.memory) orientation -= PSL_MEMORY;
+	change_charset = (orientation & PSL_CHANGESET);	/* true if we must update the character set */
+	if (change_charset) orientation -= PSL_CHANGESET;
 
 	/* Save original initialization settings */
 
@@ -4112,6 +4116,12 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
 
 	if (overlay) {	/* Must issue PSL header - this is the start of a new panel */
+		if (change_charset) {
+			sprintf (PSL_encoding, "PSL_%s", PSL->init.encoding);	/* Prepend the PSL_ prefix */
+			err = psl_place_encoding (PSL, PSL_encoding);
+			if (err) return err;
+			psl_def_font_encoding (PSL);		/* Initialize book-keeping for font encoding and write font macros */
+		}
 		if (PSL->current.complete) {	/* Execute the panel completion function, then disable again */
 			PSL_comment (PSL, "Run PSL completion function from last overlay, if defined\n");
 			PSL_command (PSL, "PSL_completion /PSL_completion {} def\n");	/* Run then make it a null function */
@@ -4119,7 +4129,6 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		}
 	}
 	else {	/* Must issue PSL header - this is the start of a new plot */
-		char PSL_encoding[64] = {""};
 
 		if (PSL->internal.memory) {	/* Will be writing to memory so need to set that up */
 			psl_freeplot (PSL);	/* Free any previous plot laying around */

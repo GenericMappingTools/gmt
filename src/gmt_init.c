@@ -1188,9 +1188,11 @@ GMT_LOCAL int gmtinit_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 		n = gmtlib_setparameter (GMT, text, &this_c[1], false);
 		this_c[0] = '=';	/* Put it back were it was */
 	}
-	else
+	else {
 		/* Got --PAR */
 		n = gmtlib_setparameter (GMT, text, "true", false);
+	}
+	if (!strncmp (text, "PS_CHAR_ENCODING", 16U)) GMT->current.ps.switch_set = true;
 	return (n);
 }
 

@@ -6166,7 +6166,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 	int k, id, fno[PSL_MAX_EPS_FONTS], n_fonts, last, form, justify;
 	bool O_active = GMT->common.O.active;
-	unsigned int this_proj, write_to_mem = 0, n_movie_labels = 0;
+	unsigned int this_proj, write_to_mem = 0, switch_charset = 0, n_movie_labels = 0;
 	char *mode[2] = {"w","a"}, *movie_label_arg[GMT_LEN16];
 	static char *ps_mode[2] = {"classic", "modern"};
 	double media_size[2], plot_x, plot_y;
@@ -6301,11 +6301,16 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			PSL_setexec (PSL, 1);
 	}
 	
+	if (O_active && GMT->current.ps.switch_set) {	/* User used --PS_CHAR_ENCODING=<encoding> to change it */
+		GMT->current.ps.switch_set = false;
+		switch_charset = 4;
+	}
+	
 	/* Get title */
 
 	sprintf (GMT->current.ps.title, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
 
-	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation|write_to_mem, O_active, GMT->current.setting.ps_color_mode,
+	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation|write_to_mem|switch_charset, O_active, GMT->current.setting.ps_color_mode,
 		GMT->current.ps.origin, GMT->current.setting.map_origin, media_size, GMT->current.ps.title, fno);
 
 	/* Issue the comments that allow us to trace down what command created this layer */
