@@ -56,6 +56,8 @@
 
 .. |No-spaces| replace:: **Note:** No space is allowed between the option flag and the associated arguments. 
 
+.. |SYN_OPT--| replace:: **--PAR**\ =*value*
+
 .. |br| raw:: html
 
    <br />

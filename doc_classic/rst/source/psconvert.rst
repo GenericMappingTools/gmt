@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ *params* ]
 [ |-Z| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

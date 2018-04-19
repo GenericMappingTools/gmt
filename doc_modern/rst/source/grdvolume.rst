@@ -21,6 +21,7 @@ Synopsis
 [ |-Z|\ *fact*\ [/*shift*] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT--| ]
 
 
 |No-spaces|

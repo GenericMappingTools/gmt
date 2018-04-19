@@ -22,7 +22,8 @@ Synopsis
 [ |-W|\ [**z**] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
-[ **-r** ]
+[ |SYN_OPT-r| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 
@@ -83,7 +84,7 @@ Optional Arguments
     list all the grids on the command line instead of providing a
     *blendfile*. You must specify at least 2 input grids for this
     mechanism to work. Any grid that is not co-registered with the
-    desired output layout implied by **-R**, **-I** (and **-r**) will
+    desired output layout implied by **-R**, **-I** (and |SYN_OPT-r|) will
     first be resampled via :doc:`grdsample`. Also, grids that are not in
     netCDF or native binary format will first be reformatted via :doc:`grdconvert`.
 

@@ -32,6 +32,7 @@ Synopsis
 [ |-Z| ]
 [ |-W|\ *workdir* ]
 [ |SYN_OPT-x| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

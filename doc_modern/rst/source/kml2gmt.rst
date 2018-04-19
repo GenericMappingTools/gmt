@@ -20,6 +20,7 @@ Synopsis
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
 [ |SYN_OPT-:| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

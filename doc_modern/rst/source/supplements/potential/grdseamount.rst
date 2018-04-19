@@ -31,9 +31,10 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-e| ]
-[ **-fg** ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-i| ]
-[ **-r** ] 
+[ |SYN_OPT-r| ] 
+[ |SYN_OPT--| ]
 
 |No-spaces|
 
@@ -85,7 +86,7 @@ Optional Arguments
 
 **-D**\ *unit*
     Append the unit used for horizontal distances in the input file (see UNITS).
-    Does not apply for geographic data (**-fg**) which we convert to km.
+    Does not apply for geographic data (|SYN_OPT-f|) which we convert to km.
 
 .. _-E:
 
@@ -165,7 +166,7 @@ Optional Arguments
 .. |Add_-e| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-e.rst_
 
-**-fg**
+|SYN_OPT-f|
     Geographic grids (dimensions of longitude, latitude) will be converted to
     km via a "Flat Earth" approximation using the current ellipsoid parameters.
 

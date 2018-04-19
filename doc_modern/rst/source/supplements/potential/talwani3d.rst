@@ -26,11 +26,12 @@ Synopsis
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
-[ **-fg** ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
-[ **-r** ] 
+[ |SYN_OPT-r| ] 
 [ |SYN_OPT-x| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 
@@ -127,7 +128,7 @@ Optional Arguments
 .. |Add_-e| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-e.rst_
 
-**-fg**
+|SYN_OPT-f|
     Geographic grids (i.e., dimensions of longitude, latitude) will be converted to
     km via a "Flat Earth" approximation using the current ellipsoidal parameters.
 

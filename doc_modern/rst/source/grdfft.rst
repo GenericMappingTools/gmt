@@ -24,7 +24,8 @@ Synopsis
 [ |-N|\ *params* ]
 [ |-S|\ *scale* ]
 [ |SYN_OPT-V| ]
-[ **-fg** ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 
@@ -36,7 +37,7 @@ one or more mathematical operations in the frequency domain before
 transforming back to the space domain. An option is provided to scale
 the data before writing the new values to an output file. The horizontal
 dimensions of the grid are assumed to be in meters. Geographical grids
-may be used by specifying the **-fg** option that scales degrees to
+may be used by specifying the |SYN_OPT-f| option that scales degrees to
 meters. If you have grids with dimensions in km, you could change this
 to meters using :doc:`grdedit` or scale the output with :doc:`grdmath`. 
 
@@ -103,11 +104,11 @@ Optional Arguments
     filter, or a Butterworth band-pass filter. 
 
     Cosine-taper:
-        Specify four wavelengths *lc*/*lp*/*hp*/*hc* in correct units (see **-fg**)
+        Specify four wavelengths *lc*/*lp*/*hp*/*hc* in correct units (see |SYN_OPT-f|)
         to design a bandpass filter: wavelengths greater than *lc* or less
         than *hc* will be cut, wavelengths greater than *lp* and less than
         *hp* will be passed, and wavelengths in between will be
-        cosine-tapered. E.g., **-F**\ 1000000/250000/50000/10000 **-fg**
+        cosine-tapered. E.g., **-F**\ 1000000/250000/50000/10000 |SYN_OPT-f|
         will bandpass, cutting wavelengths > 1000 km and < 10 km, passing
         wavelengths between 250 km and 50 km. To make a highpass or lowpass
         filter, give hyphens (-) for *hp*/*hc* or *lc*/*lp*. E.g.,
@@ -116,7 +117,7 @@ Optional Arguments
         passing wavelengths < 250 and rejecting wavelengths > 1000.
     Gaussian band-pass:
         Append *lo*/*hi*, the two wavelengths in correct units
-        (see **-fg**) to design a bandpass filter. At the given wavelengths
+        (see |SYN_OPT-f|) to design a bandpass filter. At the given wavelengths
         the Gaussian filter weights will be 0.5. To make a highpass or
         lowpass filter, give a hyphen (-) for the *hi* or *lo* wavelength,
         respectively. E.g., **-F**-/30 will lowpass the data using a
@@ -124,7 +125,7 @@ Optional Arguments
         highpass the data. 
     Butterworth band-pass:
         Append *lo*/*hi*/*order*,
-        the two wavelengths in correct units (see **-fg**) and the filter
+        the two wavelengths in correct units (see |SYN_OPT-f|) and the filter
         order (an integer) to design a bandpass filter. At the given cut-off
         wavelengths the Butterworth filter weights will be 0.707 (i.e., the
 	power spectrum will therefore be reduced by 0.5). To make a
@@ -163,7 +164,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-fg**
+|SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
@@ -175,14 +176,14 @@ Grid Distance Units
 -------------------
 
 If the grid does not have meter as the horizontal unit, append **+u**\ *unit* to the input file name to convert from the
-specified unit to meter.  If your grid is geographic, convert distances to meters by supplying **-fg** instead.
+specified unit to meter.  If your grid is geographic, convert distances to meters by supplying |SYN_OPT-f| instead.
 
 Considerations
 --------------
 
 netCDF COARDS grids will automatically be recognized as geographic. For
 other grids geographical grids were you want to convert degrees into
-meters, select **-fg**. If the data are close to either pole, you should
+meters, select |SYN_OPT-f|. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using :doc:`grdproject`
 

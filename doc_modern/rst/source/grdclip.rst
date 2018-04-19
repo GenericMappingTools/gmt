@@ -18,6 +18,7 @@ Synopsis
 [ |-S|\ **a**\ *high/above* ]
 [ |-S|\ **b**\ *low/below* ] [ |-S|\ **i**\ *low/high/between* ] [ |-S|\ **r**\ *old/new* ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

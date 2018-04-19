@@ -18,6 +18,7 @@ Synopsis
 [ |-N|\ *flags* ] [
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

@@ -27,7 +27,8 @@ Synopsis
 [ |-T|\ **t**\ \|\ **u**\ *fixed_val* ] [
 [ |SYN_OPT-V| ]
 [ |-W|\ *n\_try* ]] [ **-Z**\ *z_min*\ [/*z_max*\ [/*z_inc*]] ]
-[ **-r** ]
+[ |SYN_OPT-r| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

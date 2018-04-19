@@ -10,6 +10,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt figure** *prefix* [*formats*] [*options*] [ |SYN_OPT-V| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

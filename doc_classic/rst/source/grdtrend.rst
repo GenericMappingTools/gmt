@@ -17,6 +17,7 @@ grdtrend
 [ |-D|\ *diff.nc* ]
 [ |SYN_OPT-R| ]
 [ |-T|\ *trend.nc* ] [ |-W|\ *weight.nc* ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

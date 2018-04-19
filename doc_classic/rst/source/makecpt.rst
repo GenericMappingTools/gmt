@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

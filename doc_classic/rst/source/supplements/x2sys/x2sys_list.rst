@@ -26,6 +26,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ [*list*] ]
 [ |SYN_OPT-bo| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

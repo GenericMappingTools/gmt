@@ -32,6 +32,7 @@ Synopsis
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
 [ |SYN_OPT-n| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

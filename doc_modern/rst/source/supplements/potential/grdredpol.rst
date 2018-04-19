@@ -25,6 +25,7 @@ Synopsis
 [ |-Z|\ *filtergrd* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-n| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

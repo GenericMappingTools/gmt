@@ -19,6 +19,7 @@ Synopsis
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

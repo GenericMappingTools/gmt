@@ -33,8 +33,9 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
-[ **-r** ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 
@@ -77,7 +78,7 @@ Optional Arguments
     Read a slope grid (in degrees) and compute the propagated uncertainty in the
 	bathymetry using the CURVE algorithm [Zambo et al, 2016].  Requires the **-G**
 	option to specify the output grid.  Note that the *slpgrid* sets the domain
-	for the output grid so **-R**, **-I**, [**-r**\ ] are not required.
+	for the output grid so **-R**, **-I**, [|SYN_OPT-r|\ ] are not required.
 	Cannot be used in conjunction with **-D**, **-F**, **-M**, **-N**, **-Q**,
 	**-S** and **-T**.
 

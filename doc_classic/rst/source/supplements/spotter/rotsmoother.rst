@@ -30,6 +30,7 @@ Synopsis
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

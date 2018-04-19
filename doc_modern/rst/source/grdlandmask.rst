@@ -20,8 +20,9 @@ Synopsis
 [ |-D|\ *resolution*\ [**+**] ]
 [ |-E|\ [*bordervalues*] ]
 [ |-N|\ *maskvalues* ]
-[ |-V|\ [*level*] ] [ **-r** ]
+[ |-V|\ [*level*] ] [ |SYN_OPT-r| ]
 [ |SYN_OPT-x| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

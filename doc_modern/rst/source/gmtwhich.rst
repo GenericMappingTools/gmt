@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt which** *files* [ |-A| ] [ |-C| ] [ |-D| ] [ |-G|\ [**c**\ \|\ **l**\ \|\ **u**] ] [ |SYN_OPT-V| ]
+**gmt which** *files* [ |-A| ] [ |-C| ] [ |-D| ] [ |-G|\ [**c**\ \|\ **l**\ \|\ **u**] ] [ |SYN_OPT-V| ] [ |SYN_OPT--| ]
 
 |No-spaces|
 

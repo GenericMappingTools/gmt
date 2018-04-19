@@ -19,6 +19,7 @@ Synopsis
 [ |-D| ]
 [ |-L|\ [**w**][**e**][**+**] ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

@@ -31,8 +31,9 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
-[ **-r** ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 
@@ -114,8 +115,8 @@ Optional Arguments
     **-Ip**\ *dx*. If the input *x*- and *y*-coordinates all have the
     same phase shift relative to the *dx* and *dy* increments then we
     use those phase shifts in determining the region, and you may use
-    **-r** to switch from gridline-registration to pixel-registration.
-    For irregular data both phase shifts are set to 0 and the **-r** is ignored.
+    |SYN_OPT-r| to switch from gridline-registration to pixel-registration.
+    For irregular data both phase shifts are set to 0 and the |SYN_OPT-r| is ignored.
     Use **-If**\ *dx*\ [/*dy*] to report an extended region optimized
     to give grid dimensions for fastest results in programs using FFTs.
     Use **-Is**\ *dx*\ [/*dy*] to report an extended region optimized to

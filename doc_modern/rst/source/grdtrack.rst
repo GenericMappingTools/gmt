@@ -32,6 +32,7 @@ Synopsis
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-s| ]
 [ **-:**\ [**i**\ \|\ **o**] ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

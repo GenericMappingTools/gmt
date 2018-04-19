@@ -27,6 +27,7 @@ Synopsis
 [ |-U|\ *URL* ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
+[ |SYN_OPT--| ]
 
 Description
 -----------

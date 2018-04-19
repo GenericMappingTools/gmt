@@ -23,6 +23,7 @@ Synopsis
 [ **-S**\ *layout* ]
 [ **-T**\ *title* ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

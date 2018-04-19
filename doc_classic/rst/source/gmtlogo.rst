@@ -23,6 +23,7 @@ Synopsis
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-t| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

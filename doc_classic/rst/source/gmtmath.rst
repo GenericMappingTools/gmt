@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-s| ]
+[ |SYN_OPT--| ]
 *operand* [ *operand* ] **OPERATOR** [ *operand* ] **OPERATOR** ...
 **=** [ *outfile* ]
 

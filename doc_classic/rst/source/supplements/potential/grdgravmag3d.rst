@@ -25,8 +25,9 @@ Synopsis
 [ |-S|\ *radius* ]
 [ |SYN_OPT-V| ]
 [ |-Z|\ *level*\ [\ **b**\ \|\ **t**] ]
-[ **-fg** ]
+[ |SYN_OPT-f| ]
 [ **-x**\ *+a|n|-n* ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 
@@ -144,7 +145,7 @@ Optional Arguments
     the body at its bottom (for example, to compute the effect of a dome) or
     at its top (to compute the effect of a *spoon*).
 
-**-fg**
+|SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
@@ -163,7 +164,7 @@ Grid Distance Units
 -------------------
 
 If the grid does not have meter as the horizontal unit, append **+u**\ *unit* to the input file name to convert from the
-specified unit to meter. If your grid is geographic, convert distances to meters by supplying **-fg** instead.
+specified unit to meter. If your grid is geographic, convert distances to meters by supplying |SYN_OPT-f| instead.
 
 Examples
 --------

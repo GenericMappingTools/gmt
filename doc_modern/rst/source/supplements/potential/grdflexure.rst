@@ -23,7 +23,8 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ *wd*]
 [ |-Z|\ *zm*]
-[ **-fg** ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 
@@ -158,7 +159,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
-**-fg**
+|SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
@@ -171,14 +172,14 @@ Grid Distance Units
 
 If the grid does not have meter as the horizontal unit, append **+u**\ *unit*
 to the input file name to convert from the specified unit to meter.  If your
-grid is geographic, convert distances to meters by supplying **-fg** instead.
+grid is geographic, convert distances to meters by supplying |SYN_OPT-f| instead.
 
 Considerations
 --------------
 
 netCDF COARDS grids will automatically be recognized as geographic. For
 other grids geographical grids were you want to convert degrees into
-meters, select **-fg**. If the data are close to either pole, you should
+meters, select |SYN_OPT-f|. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using :doc:`grdproject </grdproject>`.
 

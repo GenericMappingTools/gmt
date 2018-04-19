@@ -41,6 +41,7 @@ Synopsis
 [ **-ho**\ [*n*] ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

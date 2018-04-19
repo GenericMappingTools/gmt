@@ -19,6 +19,7 @@ Synopsis
 [ |-M|\ **f**\ [*item*]\|\ **r**\ \|\ **e**\ \|\ **h** ]
 [ |-L|\ [**v**\ ] ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

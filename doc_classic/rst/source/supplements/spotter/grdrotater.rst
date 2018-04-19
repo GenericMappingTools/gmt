@@ -27,6 +27,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-:| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

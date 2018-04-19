@@ -15,6 +15,7 @@ Synopsis
 
 **x2sys_put** [ *info.tbf* ] |-T|\ *TAG* [ |-D| ] [ |-F| ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

@@ -19,8 +19,9 @@ Synopsis
 [ |-L|\ *flag* ] 
 [ |-N|\ [**e**\ \|\ **t**][*amp*][**+s**\ *sigma*\ ][**+o**\ *offset*\ ] ]
 [ |SYN_OPT-R| ] [ |-S|\ *slopefile* ]
-[ |SYN_OPT-V| ] [ **-fg** ]
+[ |SYN_OPT-V| ] [ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 
@@ -144,7 +145,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-fg**
+|SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
@@ -156,7 +157,7 @@ Grid Distance Units
 -------------------
 
 If the grid does not have meter as the horizontal unit, append **+u**\ *unit* to the input file name to convert from the
-specified unit to meter.  If your grid is geographic, convert distances to meters by supplying **-fg** instead.
+specified unit to meter.  If your grid is geographic, convert distances to meters by supplying |SYN_OPT-f| instead.
 
 Hints
 -----

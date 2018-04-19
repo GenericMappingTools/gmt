@@ -22,6 +22,7 @@ Synopsis
 [ [ |SYN_OPT-R| ]
 [ |-S|\ *track* ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

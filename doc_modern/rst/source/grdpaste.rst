@@ -16,6 +16,7 @@ Synopsis
 **gmt grdpaste** *file_a.nc file_b.nc* |-G|\ *outfile.nc*
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

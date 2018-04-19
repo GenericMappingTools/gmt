@@ -17,6 +17,7 @@ Synopsis
 [ |-H|\ *headervalues.txt* ]
 [ |-M|\ **f**\ [*item*]\|\ **r**\ \|\ **t** ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

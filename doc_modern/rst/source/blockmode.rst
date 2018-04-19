@@ -28,8 +28,9 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
-[ **-r** ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 
@@ -151,7 +152,7 @@ Optional Arguments
 
 .. |Add_nodereg| replace:: 
     Each block is the locus of points nearest the grid value location. Consider an example with
-    **-R**\ 10/15/10/15 and **-I**\ 1: With the **-r** option, 10 <=
+    **-R**\ 10/15/10/15 and **-I**\ 1: With the |SYN_OPT-r| option, 10 <=
     (*x*,\ *y*) < 11 is one of 25 blocks; without it 9.5 <= (*x*,\ *y*)
     < 10.5 is one of 36 blocks.
 .. include:: explain_nodereg.rst_

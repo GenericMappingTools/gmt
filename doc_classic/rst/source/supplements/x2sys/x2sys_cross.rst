@@ -21,6 +21,7 @@ Synopsis
 [ |-W|\ *size* ] [ |-Z| ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

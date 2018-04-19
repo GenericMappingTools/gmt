@@ -37,9 +37,10 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
-[ **-r** ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

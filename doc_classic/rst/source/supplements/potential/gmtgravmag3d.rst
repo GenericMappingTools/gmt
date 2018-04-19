@@ -25,6 +25,7 @@ Synopsis
 [ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
 [ **-fg**\ ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

@@ -34,6 +34,7 @@ Synopsis
 [ |-Z|\ *+*\ \|\ **-** ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-h| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

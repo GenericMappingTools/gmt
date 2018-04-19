@@ -15,15 +15,15 @@ Synopsis
 
 **gmt_remove_tmpdir**
 
-**gmt_clean_up** [*prefix*]
+**gmt_clean_up** [ *prefix* ]
 
 **gmt_message** *message*
 
 **gmt_abort** *message*
 
-**gmt_build_movie** [**-d** *directory*] [**-n**] [**-r** *framerate*] [**-v**] *namestem*
+**gmt_build_movie** [ **-d** *directory* ] [ **-n** ] [ **-r** *framerate* ] [ **-v** ] *namestem*
 
-**gmt_build_gif** [**-d** *directory*] [**-l** *loop*] [**-r** *delay*] *namestem*
+**gmt_build_gif** [ **-d** *directory* ] [ **-l** *loop* ] [ **-r** *delay* ] *namestem*
 
 **gmt_build_kmz** **-p** *prefix* [ **-r** ] *files*
 
@@ -35,18 +35,18 @@ Synopsis
 
 **gmt_get_field** *string*
 
-**gmt_get_region** *file(s)* [*options*]
+**gmt_get_region** *file(s)* [ *options* ]
 
-**gmt_get_gridregion** *file* [*options*]
+**gmt_get_gridregion** *file* [ *options* ]
 
 **gmt_get_map_width** **-R** **-J**
 
 **gmt_get_map_height** **-R** **-J**
 
-**gmt_movie_script** [**-c** *canvas* OR **-e** *dpi* **-h** *height* **-w** *width*] [**-f** *format*]
-	[**-g** *fill*] [**-n** *frames*] [**-m** *margin*] [**-r** *rate*] *namestem*
+**gmt_movie_script** [ **-c** *canvas* OR **-e** *dpi* **-h** *height* **-w** *width* ] [ **-f** *format* ]
+	[ **-g** *fill* ] [ **-n** *frames* ] [ **-m** *margin* ] [ **-r** *rate* ] *namestem*
 
-**gmt_launch_jobs** [**-c** *n_cores*] [**-l** *nlines_per_cluster*] [**-n**] [**-v**] [**-w**] *commandfile*
+**gmt_launch_jobs** [ **-c** *n_cores* ] [ **-l** *nlines_per_cluster* ] [ **-n** ] [ **-v** ] [ **-w** ] *commandfile*
 
 **gmt_set_psfile** *scriptfile*
 
@@ -150,7 +150,7 @@ functions made available are:
 **gmt_build_movie**
     Accepts a *namestem* which gives the prefix of a series of image files
     with names *dir*/*namestem*\ _*.*.  Optional argument sets the
-    directory [same as *namestem*], and frame rate [24].
+    directory [same as *namestem* ], and frame rate [24].
     Without arguments the function will display its usage.
 
 **gmt_build_gif**

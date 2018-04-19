@@ -22,6 +22,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ *maxlon* ]
 [ |SYN_OPT-n| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

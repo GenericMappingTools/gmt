@@ -25,8 +25,9 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-n| ]
-[ **-r** ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT-x| ]
+[ |SYN_OPT--| ]
 *operand* [ *operand* ] **OPERATOR** [ *operand* ]
 **OPERATOR** ... **=** *outgrdfile*
 
@@ -43,7 +44,7 @@ final result is written to an output grid file. Grid operations are
 element-by-element, not matrix manipulations. Some operators only
 require one operand (see below). If no grid files are used in the
 expression then options **-R**, **-I** must be set (and optionally
-**-r**). The expression **=** *outgrdfile* can occur as many times as
+|SYN_OPT-r|). The expression **=** *outgrdfile* can occur as many times as
 the depth of the stack allows in order to save intermediate results.
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations.

@@ -23,6 +23,7 @@ Synopsis
 [ **-ho**\ [*n*] ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-s| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

@@ -21,6 +21,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-Z|\ [\ **n**\ \|\ **N** \|\ **r**]\ [*min/max*] ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

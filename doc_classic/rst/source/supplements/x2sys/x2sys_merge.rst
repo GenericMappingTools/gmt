@@ -14,6 +14,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **x2sys_merge** |-A|\ *main_COElist.d* |-M|\ *new_COElist.d*
+[ |SYN_OPT--| ]
 
 |No-spaces|
 

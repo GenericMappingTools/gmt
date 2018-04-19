@@ -35,6 +35,7 @@ Synopsis
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-t| ]
+[ |SYN_OPT--| ]
 
 |No-spaces|
 
