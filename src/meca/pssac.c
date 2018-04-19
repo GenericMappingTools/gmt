@@ -138,7 +138,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G[p|n][+g<fill>][+t<t0>/<t1>][+z<zero>]] [-K] [-M<size>[<unit>]/<alpha>] [-O] [-P] [-Q]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[i]<scale>[<unit>]] [-T[+t<tmark>][+r<reduce_vel>][+s<shift>]] \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_h_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_h_OPT, GMT_t_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\n");
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);

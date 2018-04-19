@@ -54,14 +54,14 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct REVERT_CTRL *C) {	/* Deal
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: revert [<nlayers>|all] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: revert [<nlayers>|all] [%s] [%s]\n\n", GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<nlayers> is the number of layers to strip off [1]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Giving all will delete the current figure.\n\n");
-	GMT_Option (API, "V");
+	GMT_Option (API, "V,.");
 	
 	return (GMT_MODULE_USAGE);
 }

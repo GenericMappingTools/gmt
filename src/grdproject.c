@@ -89,7 +89,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_J_OPT, GMT_inc_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<dpi>] [-F[%s|%s]] [-I] [-M%s] [%s] [%s]\n", GMT_LEN_UNITS2_DISPLAY,
 		GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\n", GMT_n_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_n_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 

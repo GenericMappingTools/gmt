@@ -570,7 +570,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdfft <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<scale>|g]] [-E[r|x|y][+w[k]][+n]] [-F[r|x|y]<parameters>] [-I[<scale>|g]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s] [-S<scale>]\n", GMT_FFT_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-fg] [%s]\n\n", GMT_V_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-fg] [%s] [%s]\n\n", GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 

@@ -50,6 +50,7 @@
 #define GMT_fi_OPT	"-f<info>"
 #define GMT_fo_OPT	"-f<info>"
 #define GMT_ho_OPT	"-ho[<nrecs>][+c][+d][+r<remark>][+t<title>]"
+#define GMT_PAR_OPT	"--PAR=<value>"
 
 #ifdef GMT_MP_ENABLED
 #define GMT_x_OPT	" [-x[[-]<n>]] "	/* Must add spaces and brackets here and place via %s since it may be blank */

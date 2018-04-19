@@ -121,7 +121,7 @@ GMT_LOCAL int GMT_segy2grd_usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: segy2grd <segyfile> -G<grdfile> %s\n", GMT_Id_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[n|z]]\n\t[%s] [-L<nsamp>]\n", GMT_Rgeo_OPT, GMT_GRDEDIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M<ntraces>] [-N<nodata>] [-Q<mode><value>] [-S<header>] [%s] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M<ntraces>] [-N<nodata>] [-Q<mode><value>] [-S<header>] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 

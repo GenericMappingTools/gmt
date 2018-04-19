@@ -6283,7 +6283,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t-^ (or -) Print short synopsis message.\n");
 			gmt_message (GMT, "\t-+ (or +) Print longer synopsis message.\n");
-			gmt_message (GMT, "\t-? (or no arguments) Print this usage message\n");
+			gmt_message (GMT, "\t-? (or no arguments) Print this usage message.\n");
+			gmt_message (GMT, "\t--PAR=<value> Temporarily override GMT default setting(s) (repeatable).\n");
 			gmt_message (GMT, "\t(See gmt.conf man page for GMT default parameters).\n");
 			break;
 

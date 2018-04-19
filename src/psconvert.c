@@ -525,8 +525,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
-		GMT_Message (API, GMT_TIME_NONE, "\t[-Z]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t[-Z] ");
+	GMT_Message (API, GMT_TIME_NONE, "[%s]\nn", GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -651,6 +651,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Escape any +? modifier inside strings with \\.\n");
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
 		GMT_Message (API, GMT_TIME_NONE, "\t-Z Remove input PostScript file(s) after successful conversion.\n");
+	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);
 }

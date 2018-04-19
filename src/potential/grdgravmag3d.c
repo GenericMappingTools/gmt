@@ -193,7 +193,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdgravmag3d grdfile_top [grdfile_bot] [-C<density>] [-D] [-E<thick>] [-F<xy_file>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<outfile>] [-H<...>] [%s] [-L<z_obs>]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 

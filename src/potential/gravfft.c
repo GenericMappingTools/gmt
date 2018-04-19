@@ -420,7 +420,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: gravfft <topo_grd> [<ingrid2>] -G<outgrid> [-C<n/wavelength/mean_depth/tbw>]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-D<density|grid>] [-E<n_terms>] [-F[f[+]|g|v|n|e]] [-I<wbctk>]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-Q]\n", GMT_FFT_OPT);
-	GMT_Message (API, GMT_TIME_NONE,"\t[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-W<wd>] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-W<wd>] [-Z<zm>[/<zl>]] [-fg] [%s]\n\n", GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
