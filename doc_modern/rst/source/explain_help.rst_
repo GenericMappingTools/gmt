@@ -5,5 +5,5 @@
     any module-specific option (but not the GMT common options), then exits.
 **-?** or no arguments
     Print a complete usage (help) message, including the explanation of all options, then exits.
-**--PAR**\ =*value*
+**--PAR**\ =\ *value*
     Temporarily override a GMT default setting; repeatable.  See gmt.conf for parameters.
