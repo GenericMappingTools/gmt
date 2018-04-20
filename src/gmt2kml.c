@@ -805,7 +805,7 @@ GMT_LOCAL void kml_plot_wiggle (struct GMT_CTRL *GMT, struct GMT_RECORD *Out, st
 
 int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	bool first = true, get_z = false, use_folder = false, do_description, no_dateline = false, act;
-	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl, pos;
+	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl;
 
 	uint64_t row, seg, n_tables, n_segments, n_rows;
 	size_t L = 0;
@@ -1174,7 +1174,6 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					}
 					if (Ctrl->F.mode < LINE && gmt_M_is_dnan (out[GMT_Z])) continue;	/* Symbols with NaN height are not plotted anyhow */
 
-					pos = 0;
 					if (Ctrl->F.mode < LINE) {	/* Print the information for this point */
 						kml_print (API, Out, N++, "<Placemark>");
 						if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
