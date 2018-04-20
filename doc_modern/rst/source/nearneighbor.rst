@@ -15,7 +15,7 @@ Synopsis
 
 **gmt nearneighbor** [ *table* ] |-G|\ *out_grdfile*
 |SYN_OPT-I|
-|-N|\ *sectors*\ [/*min_sectors*]
+|-N|\ *sectors*\ [**+m**\ *min_sectors*]
 |SYN_OPT-R|
 |-S|\ *search_radius*\ [*unit*]
 [ |-E|\ *empty* ]
@@ -61,7 +61,7 @@ Required Arguments
 
 .. _-N:
 
-**-N**\ *sectors*\ [/*min_sectors*]
+**-N**\ *sectors*\ [**+m**\ *min_sectors*]
     The circular area centered on each node is divided into *sectors*
     sectors. Average values will only be computed if there is at least
     one value inside each of at least *min_sectors* of the sectors for a given
@@ -153,7 +153,7 @@ using a 0.5 min grid, a 5 km search radius, using an octant search with
    ::
 
     gmt nearneighbor seaMARCII_bathy.lon_lat_z -R242/244/-22/-20 -I0.5m \
-                     -E-9999 -Gbathymetry.nc -S5k -N8/8
+                     -E-9999 -Gbathymetry.nc -S5k -N8+m8
 
 To make a global grid file from the data in geoid.xyz using a 1 degree
 grid, a 200 km search radius, spherical distances, using an quadrant

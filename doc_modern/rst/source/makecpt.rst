@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt makecpt** [ |-A|\ [**+**\ ]\ *transparency* ]
+**gmt makecpt** [ |-A|\ *transparency*\ [**+a**\ ] ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\ \|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
@@ -36,7 +36,7 @@ Synopsis
 Description
 -----------
 
-**makecpt** is a utility that will help you make static color palette tables
+**makecpt** is a module that will help you make static color palette tables
 (CPTs). You define an equidistant set of contour intervals or pass
 your own z-table or list, and create a new CPT based on an existing master (dynamic)
 CPT. The resulting CPT can be reversed relative to the master
@@ -73,9 +73,9 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+**\ ]\ *transparency*
+**-A**\ *transparency*\ [**+a**\ ]
     Sets a constant level of transparency (0-100) for all color slices.
-    Prepend **+** to also affect the fore-, back-, and nan-colors
+    Append **+a** to also affect the fore-, back-, and nan-colors
     [Default is no transparency, i.e., 0 (opaque)].
 
 .. _-C:

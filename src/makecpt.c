@@ -54,7 +54,7 @@ struct MAKECPT_CTRL {
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A+ */
+	struct A {	/* -A<transp>[+a] */
 		bool active;
 		unsigned int mode;
 		double value;
@@ -136,14 +136,14 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>|colors] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c][+c]] [-G<zlo>/<zhi>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A<transparency>[+a]] [-C<cpt>|colors] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c][+c]] [-G<zlo>/<zhi>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "	[-I[c][z]] [-M] [-N] [-Q] [-S[<mode>]] [-T<min>/<max>[/<inc>[+b|l|n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Set constant transparency for all colors; prepend + to also include back-, for-, and nan-colors [0]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Set constant transparency for all colors; append +a to also include back-, for-, and nan-colors [0]\n");
 	if (gmt_list_cpt (API->GMT, 'C')) return (GMT_CPT_READ_ERROR);	/* Display list of available color tables */
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set back- and foreground color to match the bottom/top limits\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   in the output CPT [Default uses color table]. Append i to match the\n");
@@ -211,10 +211,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* Sets transparency */
+			case 'A':	/* Sets transparency [-A<transp>[+a]] */
 				Ctrl->A.active = true;
-				if (opt->arg[0] == '+') Ctrl->A.mode = 1;
-				Ctrl->A.value = 0.01 * atof (&opt->arg[Ctrl->A.mode]);
+				if (opt->arg[0] == '+') {	/* Old syntax */
+					Ctrl->A.mode = 1;
+					Ctrl->A.value = 0.01 * atof (&opt->arg[1]);
+				}
+				else if ((c = strstr (opt->arg, "+a"))) {
+					Ctrl->A.mode = 1;
+					c[0] = '\0';
+					Ctrl->A.value = 0.01 * atof (opt->arg);
+					c[0] = '+';
+				}
+				else
+					Ctrl->A.value = 0.01 * atof (opt->arg);
 				break;
 			case 'C':	/* CTP table */
 				Ctrl->C.active = true;

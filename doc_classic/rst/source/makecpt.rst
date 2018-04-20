@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**makecpt** [ |-A|\ [**+**\ ]\ *transparency* ]
+**makecpt** [ |-A|\ *transparency*\ [**+a**\ ] ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\ \|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
@@ -73,9 +73,9 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+**\ ]\ *transparency*
+**-A**\ *transparency*\ [**+a**\ ]
     Sets a constant level of transparency (0-100) for all color slices.
-    Prepend **+** to also affect the fore-, back-, and nan-colors
+    Append **+a** to also affect the fore-, back-, and nan-colors
     [Default is no transparency, i.e., 0 (opaque)].
 
 .. _-C:
