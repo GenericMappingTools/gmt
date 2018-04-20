@@ -6223,7 +6223,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			FILE *fpl = NULL;
 			sprintf (file, "%s/gmt.movie", GMT->parent->gwf_dir);
 			if (!access (file, R_OK) && (fpl = fopen (file, "r"))) {	/* File exists and could be opened for reading */
-				while (fgets (record, PATH_MAX, fpl)) {
+				while (fgets (record, GMT_LEN128, fpl)) {
 					if (record[0] == '#') continue;	/* Skip header */
 					gmt_chop (record);		/* Chop off LF or CR/LF */
 					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found MOVIE_LABEL_ARG%d = %s.\n", n_movie_labels, record);
