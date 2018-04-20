@@ -110,7 +110,8 @@ Optional Arguments
         plot a single annotated contour and another single non-annotated contour,
         as in '... -A+10 -C+5' that plots an annotated 10 contour and an non-annotated 5 contour.
         If **-A** is set and **-C** is not, then the contour interval is set
-        equal to the specified annotation interval.
+        equal to the specified annotation interval. Note to specify a negative
+        value you must still prepend the +, as in '... -C+-10'.
 
     If a file is given and **-T** is set, then only contours marked with
     upper case C or A will have tick-marks. In all cases the contour

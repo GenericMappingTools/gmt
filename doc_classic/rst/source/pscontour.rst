@@ -124,7 +124,8 @@ Optional Arguments
         option offers the same possibility so they may be used together to
         plot only one annotated and one non-annotated contour.
         If **-A** is set and **-C** is not, then the contour interval is set
-        equal to the specified annotation interval.
+        equal to the specified annotation interval. Note to specify a negative
+        value you must still prepend the +, as in '... -C+-10'.
 
     If a file is given and **-T** is set, then only contours marked with
     upper case C or A will have tick-marks. In all cases the contour
