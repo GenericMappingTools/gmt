@@ -146,6 +146,8 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. include:: explain_help.rst_
+
 **gmt subplot set** *row,col* [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
 
 Before you start plotting you must first select the active subplot panel.
@@ -185,6 +187,7 @@ Optional Arguments
 
 .. include:: explain_-V.rst_
 
+.. include:: explain_help.rst_
 
 Any number of plotting command can now take place and all output will be directed to the
 selected subplot panel.  There are a few other rules that need to be followed:
@@ -206,6 +209,7 @@ Optional Arguments
 .. _subplot_end-V:
 
 .. include:: explain_-V.rst_
+.. include:: explain_help.rst_
 
 
 **gmt subplot end** [ |SYN_OPT-V| ]

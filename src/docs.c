@@ -36,7 +36,7 @@
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: docs <module-name> [<-option>] [%s]\n\n", GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: docs <module-name> [<-option>]\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<module-name> is one of the core or supplemental modules\n");
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -45,7 +45,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<-option> is the one-letter option of the module in question (e.g, -R)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Display the documentation positioned at that specific option.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Option (API, ".");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -174,7 +173,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 
 	sprintf (cmd, "%s %s", can_opener[k], URL);
 	if ((error = system (cmd))) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s in the efault browser via %s failed with error %d\n", URL, can_opener[k], error);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s in the default browser via %s failed with error %d\n", URL, can_opener[k], error);
 		perror ("docs");
 		Return (GMT_RUNTIME_ERROR);
 	}
