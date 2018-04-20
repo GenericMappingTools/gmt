@@ -714,9 +714,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	bool   topdown = false, rowmajor = true;               /* arrays from GDAL have this order */
 	bool   just_copy = false, copy_flipud = false;
 	int	   *whichBands = NULL;
-	size_t *rowVec = NULL, *colVec = NULL;
-	size_t  off, i_x_nXYSize, startColPos = 0, nXSize_withPad = 0, nYSize_withPad;
-	size_t  n_alloc, n, m, nn, mm, ij;
+	int64_t *rowVec = NULL, *colVec = NULL;
+	int64_t  off, i_x_nXYSize, startColPos = 0, nXSize_withPad = 0, nYSize_withPad;
+	int64_t  n_alloc, n, m, nn, mm, ij;
 	unsigned char *tmp = NULL;
 	double  adfMinMax[2];
 	double  dfULX = 0.0, dfULY = 0.0, dfLRX = 0.0, dfLRY = 0.0;
