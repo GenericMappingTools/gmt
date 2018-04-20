@@ -301,7 +301,7 @@ Mercator map at scale 1 cm/degree, run
 
    ::
 
-    gmt coast -R-30/-10/60/65 -Jm1c -B5 -Gp28+r100 -pdf iceland
+    gmt coast -RIS+r1 -Jm1c -B -Wthin -Gp28+r100 -pdf iceland
 
 To initiate a clip path for Africa so that the subsequent colorimage of
 gridded topography is only seen over land, using a Mercator map at scale
@@ -328,7 +328,7 @@ in your analysis, try
 
    ::
 
-    gmt coast -R-26/-12/62/68 -Dh -W -M > iceland.txt
+    gmt pscoast -RIS -Dh -W -M > iceland.txt
 
 **coast** will first look for coastline files in directory
 **$GMT_SHAREDIR**/coast If the desired file is not found, it will look

@@ -448,7 +448,7 @@ following sequence of commands:
 
     gmt begin
     gmt basemap -R-160/-20/-90/90 -Ji-90/0.02i -Bx30g30 -By15g15 -BWesn 
-    gmt basemap -Bx30g30 -By15g15 -Bwesn --X2.8i
+    gmt basemap -Bx30g30 -By15g15 -Bwesn -X2.8i
     gmt basemap -Bx30g30 -By15g15 -BwEsn -X1.6i
     gmt end
 
