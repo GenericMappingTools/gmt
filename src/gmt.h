@@ -166,7 +166,7 @@ EXTERN_MSC int gmt_f77_readgrdinfo_ (unsigned int dim[], double wesn[], double i
 EXTERN_MSC int gmt_f77_readgrd_	    (gmt_grdfloat *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file, int ltitle, int lremark, int lfile);
 EXTERN_MSC int gmt_f77_writegrd_    (gmt_grdfloat *array, unsigned int dim[], double wesn[], double inc[], const char *title, const char *remark, const char *file, int ltitle, int lremark, int lfile);
 
-/* 4 for external API developers only */
+/* 5 for external API developers only */
 EXTERN_MSC struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *module, int n_in, struct GMT_OPTION **head, unsigned int *n);
 EXTERN_MSC int GMT_Expand_Option		   (void *API, struct GMT_OPTION *current, const char *txt);
 EXTERN_MSC int GMT_Get_Enum			   (char *key);
