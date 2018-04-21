@@ -337,6 +337,9 @@ GMT_LOCAL double get_image_aspect (struct GMTAPI_CTRL *API, char *file) {
 #define FONT_HEIGHT(font_id) (GMT->session.font[font_id].height)
 #define FONT_HEIGHT_LABEL (GMT->session.font[GMT->current.setting.font_label.id].height)
 
+#define DX1_MUL 1.0	/* Default offset from margin to center of symbol if given as '*' */
+#define DX2_MUL 2.0	/* Default offset from margin to start of label if given as '*' */
+
 #define SYM 	0
 #define FRONT	1
 #define QLINE	2
@@ -371,7 +374,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 	double x_orig, y_orig, x_off, x, y, r, col_left_x, row_base_y, dx, d_line_half_width, d_line_hor_offset, off_ss, off_tt;
 	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl, aspect, xy_offset[2];
-	double half_line_spacing, quarter_line_spacing, one_line_spacing, v_line_y_start = 0.0, d_off;
+	double half_line_spacing, quarter_line_spacing, one_line_spacing, v_line_y_start = 0.0, d_off, def_size = 0.0;
 	double sum_width, h, gap, d_line_after_gap = 0.0, d_line_last_y0 = 0.0, col_width[PSLEGEND_MAX_COLS], x_off_col[PSLEGEND_MAX_COLS];
 
 	struct imageinfo header;
@@ -569,6 +572,10 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							column_number = 0;
 						}
 						column_number++;
+						sscanf (line, "%*s %*s %*s %s", size);
+						/* Find the largest symbol size specified */
+						x = gmt_M_to_inch (GMT, size);
+						if (x > def_size) def_size = x;
 						break;
 
 					case 'T':	/* paragraph text record */
@@ -1075,11 +1082,18 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							off_ss = (justify%4 == 1) ? Ctrl->C.off[GMT_X] : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.off[GMT_X] : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
 							x_off = Ctrl->D.refpoint->x + x_off_col[column_number];
 						}
-						else {
+						else if (!strcmp (txt_a, "-")) {	/* Automatic margin offset */
+							off_ss = DX1_MUL * def_size;
+							x_off = col_left_x + x_off_col[column_number];
+						}
+						else {	/* Gave a specific offset */
 							off_ss = gmt_M_to_inch (GMT, txt_a);
 							x_off = col_left_x + x_off_col[column_number];
 						}
-						off_tt = gmt_M_to_inch (GMT, txt_b);
+						if (!strcmp (txt_b, "-"))	/* Automatic label offset */
+							off_tt = DX2_MUL * def_size;
+						else	/* Gave a specific offset */
+							off_tt = gmt_M_to_inch (GMT, txt_b);
 						d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* To center the text */
 						row_base_y += half_line_spacing;	/* Move to center of box */
 						if (symbol[0] == 'f') {	/* Front is different, must plot as a line segment */

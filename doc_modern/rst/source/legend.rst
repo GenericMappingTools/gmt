@@ -230,13 +230,15 @@ legend Codes
     Plots the selected symbol with specified diameter, fill, and outline
     (see :doc:`plot`). The symbol is centered at *dx1* from the left margin
     of the column, with the optional explanatory *text* starting *dx2*
-    from the margin, printed with **FONT\_ANNOT\_PRIMARY**. Use **-** if
+    from the margin, printed with **FONT\_ANNOT\_PRIMARY**. If *dx1* is given
+    as **-** then it is automatically computed from the largest symbol size.
+    If *dx2* is given as **-** then it is automatically computed as three
+    times the largest symbol size.  Use **-** if
     no *fill* or outline (*pen*) is required. Alternatively, the *fill*
     may be specified indirectly via z=\ *value* and the color is assigned
-    vi the CPT look-up (requires a prior **A** code).
-    When plotting just a
+    via the CPT look-up (requires a prior **A** code).  When plotting just a
     symbol, without text, *dx2* and *text* can be omitted.  The *dx1* value
-    can also be given as a justification code L, C, R which justifies the
+    can also be given as a justification code **L**\ , **C**\ , or **R** which justifies the
     symbol with respect to the current column.  If no arguments are given
     to **S** then we simply skip to the next column.  Three :doc:`plot`
     symbols may take special modifiers: front (**f**), quoted line (**q**)  and vector (**v**).

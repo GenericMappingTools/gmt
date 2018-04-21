@@ -242,25 +242,27 @@ Pslegend Codes
     value to **-**.
 **S** [*dx1 symbol size fill pen* [ *dx2 text* ]]
     Plots the selected symbol with specified diameter, fill, and outline
-    (see :doc:`psxy`). The symbol is centered at *dx1* from the left margin
+    (see :doc:`plot`). The symbol is centered at *dx1* from the left margin
     of the column, with the optional explanatory *text* starting *dx2*
-    from the margin, printed with **FONT\_ANNOT\_PRIMARY**. Use **-** if
+    from the margin, printed with **FONT\_ANNOT\_PRIMARY**. If *dx1* is given
+    as **-** then it is automatically computed from the largest symbol size.
+    If *dx2* is given as **-** then it is automatically computed as three
+    times the largest symbol size.  Use **-** if
     no *fill* or outline (*pen*) is required. Alternatively, the *fill*
     may be specified indirectly via z=\ *value* and the color is assigned
-    vi the CPT look-up (requires a prior **A** code).
-    When plotting just a
+    via the CPT look-up (requires a prior **A** code).  When plotting just a
     symbol, without text, *dx2* and *text* can be omitted.  The *dx1* value
-    can also be given as a justification code L, C, R which justifies the
+    can also be given as a justification code **L**\ , **C**\ , or **R** which justifies the
     symbol with respect to the current column.  If no arguments are given
-    to **S** then we simply skip to the next column.  Three :doc:`psxy`
+    to **S** then we simply skip to the next column.  Three :doc:`plot`
     symbols may take special modifiers: front (**f**), quoted line (**q**)  and vector (**v**).
     You can append modifiers to the symbol and affect how the fronts, quoted lines and
-    vectors are presented (see :doc:`psxy` man page for modifiers).
-    **pslegend** will determine default settings for all modifiers and
+    vectors are presented (see :doc:`plot` man page for modifiers).
+    **legend** will determine default settings for all modifiers and
     secondary arguments if not provided.  A few other symbols (the rectangles,
     ellipse, wedge, mathangle) may take more than a single argument size.
     Note that for a line segment you should use the horizontal dash symbol (**-**).
-    If just a single size if given then **pslegend** will provide reasonable
+    If just a single size if given then **legend** will provide reasonable
     arguments to plot the symbol  (See `Defaults`_).
     Alternatively, combine the required
     arguments into a single, comma-separated string and use that as the
