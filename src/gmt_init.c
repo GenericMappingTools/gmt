@@ -1034,19 +1034,6 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 	return (error);
 }
 
-/*! . */
-GMT_LOCAL int gmtinit_parse_c_option (struct GMT_CTRL *GMT, char *arg) {
-	int i, error = 0;
-	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -c requires an argument */
-
-	i = atoi (arg);
-	if (i < 1)
-		error++;
-	else
-		GMT->PSL->init.copies = i;
-	return (error);
-}
-
 /*! Routine will decode the -f[i|o]<col>|<colrange>[t|T|g|c],... arguments */
 GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 
@@ -6951,11 +6938,6 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 			gmt_message (GMT, "\t   Append w to byte swap an item; append +L|B to fix endianness of file.\n");
 			break;
 
-		case 'c':	/* Set number of plot copies option */
-			gmt_message (GMT, "\t%s\n", GMT_c_OPT);
-			gmt_message (GMT, "\t   Set the number of PS copies\n");
-			break;
-
 		case 'f':	/* Column information option  */
 			gmt_message (GMT, "\t%s\n", GMT_f_OPT);
 			gmt_message (GMT, "\t   Column information, add i for input, o for output [Default is both].\n");
@@ -7079,7 +7061,6 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 		case 'a': error += GMT->common.a.active == false; break;
 		case 'b': error += ((GMT->common.b.active[GMT_IN] == false && GMT->common.b.nc[GMT_IN] == false) \
 			&& (GMT->common.b.active[GMT_OUT] == false && GMT->common.b.nc[GMT_OUT] == false)); break;
-		case 'c': error += GMT->common.c.active == false; break;
 		case 'd': error += (GMT->common.d.active[GMT_IN] == false && GMT->common.d.active[GMT_OUT] == false); break;
 		case 'e': error += GMT->common.e.active == false; break;
 		case 'f': error += (GMT->common.f.active[GMT_IN] == false &&  GMT->common.f.active[GMT_OUT] == false); break;
@@ -11144,7 +11125,7 @@ GMT_LOCAL struct GMT_CTRL *gmt_begin_module_sub (struct GMTAPI_CTRL *API, const 
 	GMT->common.P.active = GMT->common.U.active = GMT->common.V.active = false;
 	GMT->common.X.active = GMT->common.Y.active = false;
 	GMT->common.R.active[RSET] = GMT->common.R.active[ISET] = GMT->common.R.active[GSET] = GMT->common.R.active[FSET] = GMT->common.J.active = false;
-	GMT->common.a.active = GMT->common.b.active[GMT_IN] = GMT->common.b.active[GMT_OUT] = GMT->common.c.active = false;
+	GMT->common.a.active = GMT->common.b.active[GMT_IN] = GMT->common.b.active[GMT_OUT] = false;
 	GMT->common.f.active[GMT_IN] = GMT->common.f.active[GMT_OUT] = GMT->common.g.active = GMT->common.h.active = false;
 	GMT->common.p.active = GMT->common.s.active = GMT->common.t.active = GMT->common.colon.active = false;
 	gmt_M_memset (GMT->common.b.ncol, 2, int);
@@ -13860,18 +13841,6 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					break;
 			}
 			error += gmtinit_parse_b_option (GMT, item);
-			break;
-
-		case 'c':	/* Backwards compatibility */
-			if (gmt_M_compat_check (GMT, 5)) {
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -%c is deprecated.\n", option);
-			}
-			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -%c is not a recognized common option\n", option);
-				return (1);
-			}
-			error += (GMT_more_than_once (GMT, GMT->common.c.active) || gmtinit_parse_c_option (GMT, item));
-			GMT->common.c.active = true;
 			break;
 
 		case 'd':

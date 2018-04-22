@@ -137,10 +137,6 @@ struct GMT_COMMON {
 		char varnames[GMT_BUFSIZ];	/* List of variable names to be input/output in netCDF mode [GMT4 COMPATIBILITY ONLY] */
 		char string[GMT_LEN256];
 	} b;
-	struct c {	/* -c */
-		bool active;
-		unsigned int copies;
-	} c;
 	struct d {	/* -d[i][o]<nan_proxy> */
 		bool active[2];
 		bool is_zero[2];

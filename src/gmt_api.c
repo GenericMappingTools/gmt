@@ -10465,7 +10465,6 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[]) {
 			break;
 		case 'a':	if (GMT->common.a.active) ret = GMT->common.a.geometry; break;
 		case 'b':	if (GMT->common.b.active[GMT_IN]) ret = GMT_IN; else if (GMT->common.b.active[GMT_OUT]) ret = GMT_OUT; break;
-		case 'c':	if (GMT->common.c.active) ret = GMT->common.c.copies; break;
 		case 'f':	if (GMT->common.f.active[GMT_IN]) ret = GMT_IN; else if (GMT->common.f.active[GMT_OUT]) ret = GMT_OUT; break;
 		case 'g':	if (GMT->common.g.active) ret = 0; break;
 		case 'h':	if (GMT->common.h.active) ret = GMT->common.h.mode; break;
