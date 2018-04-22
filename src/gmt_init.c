@@ -7634,6 +7634,12 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 	return (GMT_NOERROR);
 }
 
+int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
+	if (arg == NULL || arg[0] == '\0') return GMT_PARSE_ERROR;
+	strncpy (GMT->common.l.label, arg, GMT_LEN128-1);
+	return (GMT_NOERROR);
+}
+	
 /*! Routine will decode the -[<col>|<colrange>|t,... arguments or just -on */
 int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 
@@ -13928,6 +13934,11 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			GMT->common.i.active = true;
 			break;
 
+		case 'l':
+			error += (GMT_more_than_once (GMT, GMT->common.l.active) || gmt_parse_l_option (GMT, item));
+			GMT->common.l.active = true;
+			break;
+
 		case 'M':	/* Backwards compatibility */
 		case 'm':
 			if (gmt_M_compat_check (GMT, 4)) {
@@ -14873,6 +14884,40 @@ int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size) {
 	return GMT_NOERROR;
 }
 
+#if 0
+int gmt_set_legend_file (struct GMTAPI_CTRL *API, char *file) {
+	unsigned int fig;
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return GMT_NOTSET;	/* This is a modern mode only feature */
+	/* Get figure number */
+	fig = gmt_get_current_figure (API);
+	sprintf (file, "%s/gmt_%d.legend", API->gwf_dir, fig);
+	if (access (file, R_OK)) return 0;	/* No such file yet */
+	return 1;	/* Found it */
+}
+
+int gmt_add_legend_item (struct GMTAPI_CTRL *API, char *symbol, char *size, struct GMT_FILL *fill, struct GMT_PEN *pen, char *label) {
+	/* Add another entry to the legends file for automatic legend building */
+	char file[PATH_MAX] = {""};
+	FILE *fp = NULL;
+	
+	if (gmt_set_legend_file (API, file) == GMT_NOTSET) return GMT_NOERROR;	/* This is a modern mode only feature */
+	if ((fp = fopen (file, "r")) == NULL) {	/* Does not exist yet, create */
+		if ((fp = fopen (file, "w")) == NULL) {	/* Could not create, WTF */
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to create file %s\n", file);
+			return GMT_ERROR_ON_FOPEN;
+		}
+		fprintf (fp, "# Automatically created legend file for symbols\n");
+		fprintf (fp, "# S <dx1> <symbol> <size> <fill> <pen> <dx2> <label>\n");
+	}
+	/* Add the new entry */
+	fprintf (fp, "S - %s %s ", symbol, size);
+	(fill) ? fprintf (fp, "%s ", gmtlib_putfill (API->GMT, fill)) : fprintf (fp, "- ");
+	(pen)  ? fprintf (fp, "%s ", gmt_putpen (API->GMT, pen))   : fprintf (fp, "- ");
+	fprintf (fp, "- %s\n", label);
+	fclose (fp);
+	return GMT_NOERROR;
+}
+#endif
 
 /*! . */
 int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text) {

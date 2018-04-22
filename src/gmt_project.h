@@ -51,8 +51,8 @@ EXTERN_MSC double gmtmap_lat_swap_quick (struct GMT_CTRL *GMT, double lat, doubl
 /*! Macros returns true if the two coordinates are lon/lat; way should be GMT_IN or GMT_OUT */
 #define gmt_M_x_is_lon(C,way) (C->current.io.col_type[way][GMT_X] & GMT_IS_LON)
 #define gmt_M_y_is_lon(C,way) (C->current.io.col_type[way][GMT_Y] & GMT_IS_LON)
+#define gmt_M_x_is_lat(C,way) (C->current.io.col_type[way][GMT_X] & GMT_IS_LAT)
 #define gmt_M_y_is_lat(C,way) (C->current.io.col_type[way][GMT_Y] & GMT_IS_LAT)
-#define gmt_M_x_is_lat(C,way) (C->current.io.col_type[way][GMT_Y] & GMT_IS_LAT)
 #define gmt_M_is_geographic(C,way) (gmt_M_x_is_lon(C,way) && gmt_M_y_is_lat(C,way))
 #define gmt_M_is_cartesian(C,way) (!gmt_M_is_geographic(C,way))
 

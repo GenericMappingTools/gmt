@@ -8924,6 +8924,19 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 			wesn[XHI] -= 360.0;
 		}
 	}
+	else if (gmt_M_y_is_lon (GMT, GMT_IN)) {
+		/* Limit east-west range to 360 and make sure east > -180 and west < 360 */
+		if (wesn[YHI] < wesn[YLO]) wesn[YHI] += 360.0;
+		if ((fabs (wesn[YHI] - wesn[YLO]) - 360.0) > GMT_CONV4_LIMIT) Return (GMT_MAP_EXCEEDS_360);
+		while (wesn[YHI] < -180.0) {
+			wesn[YLO] += 360.0;
+			wesn[YHI] += 360.0;
+		}
+		while (wesn[YLO] > 360.0) {
+			wesn[YLO] -= 360.0;
+			wesn[YHI] -= 360.0;
+		}
+	}
 	if (GMT->current.proj.got_elevations) {
 		if (wesn[YLO] < 0.0 || wesn[YLO] >= 90.0) Return (GMT_MAP_BAD_ELEVATION_MIN);
 		if (wesn[YHI] <= 0.0 || wesn[YHI] > 90.0) Return (GMT_MAP_BAD_ELEVATION_MAX);
@@ -8931,6 +8944,10 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	if (gmt_M_y_is_lat (GMT, GMT_IN)) {
 		if (wesn[YLO] < -90.0 || wesn[YLO] > 90.0) Return (GMT_MAP_BAD_LAT_MIN);
 		if (wesn[YHI] < -90.0 || wesn[YHI] > 90.0) Return (GMT_MAP_BAD_LAT_MAX);
+	}
+	else if (gmt_M_x_is_lat (GMT, GMT_IN)) {
+		if (wesn[XLO] < -90.0 || wesn[XLO] > 90.0) Return (GMT_MAP_BAD_LAT_MIN);
+		if (wesn[XHI] < -90.0 || wesn[XHI] > 90.0) Return (GMT_MAP_BAD_LAT_MAX);
 	}
 
 	if (GMT->common.R.wesn != wesn)		/* In many cases they are both copies of same pointer */

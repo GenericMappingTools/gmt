@@ -184,6 +184,10 @@ struct GMT_COMMON {
 		uint64_t n_actual_cols;
 		char string[GMT_LEN64];
 	} i;
+	struct l {	/* -l<label> */
+		bool active;
+		char label[GMT_LEN128];
+	} l;
 	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] */
 		bool active;
 		bool antialias;	/* Defaults to true, if supported */
