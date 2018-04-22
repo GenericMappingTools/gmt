@@ -11603,8 +11603,9 @@ GMT_LOCAL unsigned int strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, struct G
 	/* Separate out any region-specific parts from one or more -E arguments and
 	 * pass those separately to a new -R instead (if -R not given).
 	 * Return code is bitflags:
+	 *	0 : No _r|R or +l|L given, most likely just setting contries and implicitly -R
 	 * 	1 : Found a region-modifying modifier +r or +R
-	 *  2 : Found a list-request +l or +L.  Not plotting or region desired.
+	 * 	2 : Found a list-request +l or +L.  Not plotting or region desired.
 	 */
 	char p[GMT_LEN256] = {""}, *c = NULL;
 	char e_code[GMT_LEN256] = {""}, r_opt[GMT_LEN128] = {""};
@@ -12065,7 +12066,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if (got_R == false && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
 			/* First consult the history */
 			id = gmtlib_get_option_id (0, "R");	/* The -RP history item */
-			if (GMT->current.ps.active) {	/* A plotting module; first check -RP history */
+			if (GMT->current.ps.active || !strncmp (mod_name, "pscoast", 7U)) {	/* A plotting module (or pscoast which may run -M); first check -RP history */
 				if (!GMT->init.history[id]) id++;	/* No history for -RP, increment to -RG as fallback */
 			}
 			else id++;	/* Only examine -RG history if not a plotter */
