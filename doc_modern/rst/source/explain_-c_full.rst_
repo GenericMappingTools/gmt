@@ -1,0 +1,5 @@
+.. _-c_full:
+
+**-c**\ *row*\ ,\ *col*
+    Used to advance to the selected subplot panel.  Only allowed when in
+    subplot mode.  Available to all plot modules.
