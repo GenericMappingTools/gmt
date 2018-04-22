@@ -7616,7 +7616,11 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 }
 
 int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
-	if (arg == NULL || arg[0] == '\0') return GMT_PARSE_ERROR;
+	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Not in modern mode */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-l is only allowed in modern mode\n");
+		return GMT_PARSE_ERROR;
+	}
+	if (arg == NULL || arg[0] == '\0') return GMT_PARSE_ERROR;	/* Must supply the label arg */
 	strncpy (GMT->common.l.label, arg, GMT_LEN128-1);
 	return (GMT_NOERROR);
 }
