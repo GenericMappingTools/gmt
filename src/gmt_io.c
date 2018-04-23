@@ -797,6 +797,17 @@ GMT_LOCAL unsigned int gmtio_assign_aspatial_cols (struct GMT_CTRL *GMT) {
 	return (n);	/* Only numerical columns add to the count */
 }
 
+/*! Fill a string with the aspatial columns */
+void gmt_list_aspatials (struct GMT_CTRL *GMT, char buffer[]) {
+	char item[GMT_LEN64] = {""};
+	sprintf (buffer, "Aspatial columns:");
+	for (unsigned int k = 0; k < GMT->common.a.n_aspatial; k++) {
+		sprintf (item, " %s[%s]", GMT->common.a.name[k], GMT_type[GMT->common.a.type[k]]);
+		strcat (buffer, item);
+	}
+	strcat (buffer, "\n");
+}
+
 /*! Returns true if record is NaN NaN [NaN NaN] etc */
 GMT_LOCAL bool gmtio_is_a_NaN_line (struct GMT_CTRL *GMT, char *line) {
 	unsigned int pos = 0;

@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Get information about data tables"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdefghiors" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vabdefghiors" GMT_OPT("HMm")
 
 EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
 EXTERN_MSC unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
@@ -51,6 +51,7 @@ EXTERN_MSC unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, doub
 
 struct MINMAX_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
+	unsigned int n_files;
 	struct A {	/* -A */
 		bool active;
 		unsigned int mode;	/* 0 reports range for all tables, 1 is per table, 2 is per segment */
@@ -123,8 +124,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtinfo [<table>] [-Aa|f|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h><col>] [-Fi|d|t] [-I[b|p|f|s]<dx>[/<dy>[/<dz>..]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-S[x][y]] [-T<dz>[+c<col>]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-S[x][y]] [-T<dz>[+c<col>]] [%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -160,7 +161,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -S or -Sxy leaves space for both error bars using values in third&fourth (2&3) columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Calculations are based on the first (0) column; append +c<col> to use another column.\n");
-	GMT_Option (API, "V,bi2,d,e,f,g,h,i,o,r,s,:,.");
+	GMT_Option (API, "V,a,bi2,d,e,f,g,h,i,o,r,s,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -184,6 +185,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 
 			case '<':	/* Input files */
 				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				Ctrl->n_files++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -375,6 +377,10 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gmtinfo main code ----------------------------*/
 
+	if (Ctrl->n_files > 1 && GMT->common.a.active) {
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Cannot give multiple files when -a is selected!\n");
+		Return (GMT_DIM_TOO_LARGE);
+	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	
 	if (Ctrl->F.active) {	/* Special case of reporting on record numbers */
@@ -838,6 +844,10 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		n++;	/* Number of records processed in current block (all/table/segment; see -A) */
 		if (file[0] == 0) strncpy (file, GMT->current.io.filename[GMT_IN], GMT_BUFSIZ-1);	/* Grab name of current file while we can */
 		
+	}
+	if (GMT->common.a.active) {
+		gmt_list_aspatials (GMT, buffer);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, buffer);
 	}
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);

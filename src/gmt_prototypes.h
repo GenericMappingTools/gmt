@@ -225,6 +225,7 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 /* gmt_io.c: */
 
+EXTERN_MSC void gmt_list_aspatials (struct GMT_CTRL *GMT, char buffer[]);
 EXTERN_MSC void gmt_find_range (struct GMT_CTRL *GMT, struct GMT_RANGE *Z, uint64_t n_items, double *west, double *east);
 EXTERN_MSC void gmt_eliminate_lon_jumps (struct GMT_CTRL *GMT, double *lon, uint64_t n_rows);
 EXTERN_MSC bool gmt_polygon_is_hole (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S);
