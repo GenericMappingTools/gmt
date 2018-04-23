@@ -699,7 +699,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	const char	*format = NULL;
 	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated below) */
 	int	complex_mode = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
-	int	nPixelSize, nBands, i, k, nReqBands = 0;
+	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY;
 	int nBufXSize, nBufYSize, buffy, startRow = 0, endRow;
@@ -1086,7 +1086,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				buffy = nBufYSize - k * nRowsPerBlock;
 				row_e = nYSize;
 				for (m = 0; m < buffy; m++) rowVec[m] = m * nX;
-				nYOff = yOrigin + k * nRowsPerBlock; 
+				nYOff = yOrigin + k * nRowsPerBlock;
 			}
 			startRow = row_i;
 			endRow   = row_e;
