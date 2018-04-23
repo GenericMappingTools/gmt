@@ -6465,7 +6465,7 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 			}
 		}
 	}
-	else {
+	else {	/* Input files were closed when we tried to go to next item */
 		if (API->current_get_V_val) gmt_M_free (API->GMT, API->current_get_V_val);
 	}
 	API->io_enabled[direction] = false;	/* No longer OK to access resources or destinations */

@@ -271,10 +271,13 @@ struct GMT_IO {				/* Used to process input data records */
 	char curr_trailing_text[GMT_BUFSIZ];	/* Current text portion of current record (or NULL) */
 	char segment_header[GMT_BUFSIZ];	/* Current ASCII segment header */
 	char filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
+#ifdef GMT_SHAPEFILE_IO
+	char tempfile[GMT_BUFSIZ];	/* Temporary file used to read - should be removed when closed */
+#endif
 	char col_set[2][GMT_MAX_COLUMNS];	/* Keeps track of which columns have had their type set */
 	char *o_format[GMT_MAX_COLUMNS];	/* Custom output ASCII format to overrule format_float_out */
 	int ncid;			/* NetCDF file ID (when opening netCDF file) */
-	int nvars;			/* Number of requested variablesin netCDF file */
+	int nvars;			/* Number of requested variables in netCDF file */
 	uint64_t ncols;			/* Number of total columns in netCDF file */
 	size_t t_index[GMT_MAX_COLUMNS][5];		/* Indices for cross-sections (netCDF only) */
 	size_t count[GMT_MAX_COLUMNS][5];		/* Count used for cross-sections (netCDF only) */

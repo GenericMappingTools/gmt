@@ -4110,6 +4110,7 @@ char *gmt_fgets (struct GMT_CTRL *GMT, char *str, int size, FILE *stream) {
 
 /*! . */
 int gmt_fclose (struct GMT_CTRL *GMT, FILE *stream) {
+	int err;
 	if (!stream || stream == NULL)  return (0);
 	/* First skip any stream related to the three Unix i/o descriptors */
 	if (stream == GMT->session.std[GMT_IN])  return (0);
@@ -4130,7 +4131,15 @@ int gmt_fclose (struct GMT_CTRL *GMT, FILE *stream) {
 		return (0);
 	}
 	/* Regular file */
-	return (fclose (stream));
+	err = fclose (stream);
+#ifdef GMT_SHAPEFILE_IO
+	if (GMT->current.io.tempfile[0] && !access (GMT->current.io.tempfile, F_OK)) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Remove temporary GMT/OGR file %s\n", GMT->current.io.tempfile);
+		gmt_remove_file (GMT, GMT->current.io.tempfile);
+		GMT->current.io.tempfile[0] = '\0';		
+	}
+#endif
+	return (err);
 }
 
 /*! . */
@@ -4488,9 +4497,28 @@ FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) 
 	}
 	else {	/* Maybe netCDF */
 		fd = gmt_nc_fopen (GMT, &filename[first], mode);
-		if (!fd) {
-			if ((c = gmt_getdatapath(GMT, &filename[first], path, R_OK)) != NULL)
-                fd = fopen (c, mode);
+		if (!fd) {	/* No, was not a netCDF file */
+			if ((c = gmt_getdatapath (GMT, &filename[first], path, R_OK)) != NULL) {	/* Got the file path */
+#ifdef GMT_SHAPEFILE_IO
+				char *ext = gmt_get_ext (c);	/* Get pointer to extension (or NULL if no extension) */
+				if (ext && mode[0] == 'r' && !strcmp (ext, "shp")) {	/* Got a shapefile for reading */
+					char cmd[GMT_LEN256] = {""};
+					int error = 0;
+					if (GMT->parent->tmp_dir)	/* Make unique file in temp dir */
+						sprintf (GMT->current.io.tempfile, "%s/gmt_ogr_%d.gmt", GMT->parent->tmp_dir, (int)getpid());
+					else	/* Make unique file in current dir */
+						sprintf (GMT->current.io.tempfile, "gmt_ogr_%d.gmt", (int)getpid());
+					GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Convert %s to GMT/OGR file %s\n", c, GMT->current.io.tempfile);
+					sprintf (cmd, "ogr2ogr -mapFieldType Integer64=Integer -f \"OGR_GMT\" %s %s", GMT->current.io.tempfile, c);
+					if ((error = system (cmd))) {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "FAILED with error %d: %s.\n", error, cmd);
+						return NULL;
+					}
+					c = GMT->current.io.tempfile;	/* Open this instead */
+				}
+#endif
+                		fd = fopen (c, mode);
+			}
 		}
 		return (fd);
 	}
