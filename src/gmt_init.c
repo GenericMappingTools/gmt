@@ -2849,7 +2849,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	char type[GMT_LEN8] = {""};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
-	
+
 	/* Temporarily change what data type col one is */
 	save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
 	save_trailing = GMT->current.io.trailing_text[GMT_IN];
@@ -2870,7 +2870,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 
 	gmt_M_memset (n_int, 4, int);
 	S = D->table[0]->segment[0];	/* All we got */
-	
+
 	for (row = 0; row < S->n_rows; row++) {
 		k = sscanf (S->text[row], "%s", type);
 		if (k != 1) {
@@ -3909,7 +3909,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			/* Default is not involving geographical coordinates */
 			gmt_set_column (GMT, GMT_IO, GMT_X, GMT_IS_UNKNOWN);
 			gmt_set_column (GMT, GMT_IO, GMT_Y, GMT_IS_UNKNOWN);
-			
+
 			error += (n_slashes > 1) ? 1 : 0;
 
 			/* Find occurrences of /, l, p, t, or d */
@@ -7524,10 +7524,10 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -i requires an argument */
 
 	strncpy (copy, arg, GMT_BUFSIZ-1);
-	
+
 	GMT->current.io.trailing_text[GMT_IN] = GMT->current.io.trailing_text[GMT_OUT] = false;	/* When using -i you have to specifically add column t to parse trailing text */
 	if (!strcmp (arg, "n")) return GMT_NOERROR;	/* We just wanted to process the numerical columns */
-	
+
 	new_style = (strstr (arg, "+s") || strstr (arg, "+o") || strstr (arg, "+l"));
 
 	strncpy (GMT->common.i.string, arg, GMT_LEN64-1);	/* Verbatim copy */
@@ -7624,7 +7624,7 @@ int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
 	strncpy (GMT->common.l.label, arg, GMT_LEN128-1);
 	return (GMT_NOERROR);
 }
-	
+
 /*! Routine will decode the -[<col>|<colrange>|t,... arguments or just -on */
 int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 
@@ -7636,10 +7636,10 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -o requires an argument */
 
 	strncpy (copy, arg, GMT_BUFSIZ-1);
-	
+
 	GMT->current.io.trailing_text[GMT_OUT] = false;	/* When using -o you have to specifically add column t to parse trailing text */
 	if (! strcmp (arg, "n")) return GMT_NOERROR;	/* We just wanted to select numerical output only */
-	
+
 	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		if (!strcmp (p, "t"))
 			GMT->current.io.trailing_text[GMT_OUT] = true;	/* Include trailing text */
@@ -8162,7 +8162,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			        gmtlib_setparameter (GMT, "FONT_TITLE", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_TAG", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_HEADING", value, core) +
-				gmtlib_setparameter (GMT, "FONT_LABEL", value, core);
+					gmtlib_setparameter (GMT, "FONT_LABEL", value, core);
 			/*      FONT_LOGO is purposely skipped */
 			break;
 		case GMTCASE_FONT_ANNOT:
@@ -8227,7 +8227,6 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_FONT_HEADING:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_heading)) error = true;
-			GMT_COMPAT_TRANSLATE ("FONT_TITLE");
 			break;
 		case GMTCASE_FONT_TITLE:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_title)) error = true;
@@ -10393,7 +10392,7 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 		case GMTCASE_GMT_DATA_URL:	/* The default is set by cmake, see ConfigDefault.cmake */
 			strncpy (value, (GMT->session.DATAURL) ? GMT->session.DATAURL : "", GMT_BUFSIZ-1);
 			break;
-			
+
 		case GMTCASE_GMT_DATA_URL_LIMIT:
 			if (GMT->current.setting.url_size_limit == 0)
 				strcpy (value, "unlimited");
@@ -11725,7 +11724,7 @@ GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_O
 				return GMT_NOTSET;
 			}
 			API->GMT->hidden.func_level++;	/* Must do this here since it has not yet been increased by gmt_begin_module_sub ! */
-			
+
 			if ((error = GMT_Call_Module (API, "begin", GMT_MODULE_CMD, session))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to call module begin from set_modern_mode_if_oneliner.\n");
 				return GMT_NOTSET;
@@ -11867,7 +11866,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append -J option */
 		}
 	}
-	
+
 	is_PS = is_PS_module (API, mod_name, keys, options);	/* true if module will produce PS */
 	if (is_PS) {
 		if (set_modern_mode_if_oneliner (API, options))	/* Look out for modern -png mymap and similar specs */
@@ -14746,7 +14745,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	char *L = NULL;
 	struct GMT_FIGURE *fig = NULL;
 	FILE *fp = NULL;
-	
+
 	if (API->gwf_dir == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "gmt figure: No workflow directory set\n");
 		return GMT_NOT_A_VALID_DIRECTORY;
@@ -14793,7 +14792,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 		}
 		else
 			GMT_Report (API, GMT_MSG_DEBUG, "New figure: %d\t%s\t%s", this_k, prefix, formats);
-		
+
 		fprintf (fp, "\n");
 		fclose (fp);
 	}
@@ -14802,7 +14801,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 		return GMT_ERROR_ON_FOPEN;
 
 	/* See if movie set up a set of frame labels */
-	
+
 	if ((L = getenv ("MOVIE_N_LABELS")) != NULL) {	/* MOVIE_N_LABELS was set */
 		unsigned int T, n_tags;
 		char file[PATH_MAX] = {""}, name[GMT_LEN32] = {""};
@@ -14873,7 +14872,7 @@ int gmt_add_legend_item (struct GMTAPI_CTRL *API, char *symbol, char *size, stru
 	/* Add another entry to the legends file for automatic legend building */
 	char file[PATH_MAX] = {""};
 	FILE *fp = NULL;
-	
+
 	if (gmt_set_legend_file (API, file) == GMT_NOTSET) return GMT_NOERROR;	/* This is a modern mode only feature */
 	if ((fp = fopen (file, "r")) == NULL) {	/* Does not exist yet, create */
 		if ((fp = fopen (file, "w")) == NULL) {	/* Could not create, WTF */
@@ -15063,7 +15062,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	 * annotated and possibly labeled, and if the colorbar is requested to be placed on
 	 * such an axis side we need to make more space by increasing the offset. This is
 	 * only possible under modern mode since classic updated -B in the history. */
-	
+
 	char side, axis, B_delim[2] = {30, 0}, p[GMT_BUFSIZ] = {""};	/* Use ASCII 30 RS Record Separator between -B strings */
 	char file[PATH_MAX] = {""};
 	unsigned int pos = 0;
@@ -15073,7 +15072,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	/* Initialize the default settings before considering any -B history */
 	offset[GMT_OUT] = GMT->current.setting.map_label_offset + GMT->current.setting.map_frame_width;
 	offset[GMT_IN]  = GMT->current.setting.map_label_offset;
-	
+
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) return;	/* No can do */
 
 	switch (justify) {	/* Only the four sides are automated */
