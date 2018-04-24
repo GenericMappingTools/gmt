@@ -699,7 +699,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	const char	*format = NULL;
 	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated below) */
 	int	complex_mode = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
-	int	nPixelSize, nBands, i, k, nReqBands = 0;
+	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY;
 	int nBufXSize, nBufYSize, buffy, startRow = 0, endRow;
@@ -724,6 +724,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	GDALDatasetH	hDataset;
 	GDALRasterBandH	hBand;
 	GDALDriverH	hDriver;
+#ifdef READ_BY_BLOCKS
+	int k;
+#endif
 
 	Ctrl->band_field_names = NULL;		/* So we can test before trying to read its fields */
 	Ctrl->RasterCount = 0;	/* To avoid attempting to use Ctrl->band_field_names[i] */
