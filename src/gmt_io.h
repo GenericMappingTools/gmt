@@ -271,7 +271,7 @@ struct GMT_IO {				/* Used to process input data records */
 	char curr_trailing_text[GMT_BUFSIZ];	/* Current text portion of current record (or NULL) */
 	char segment_header[GMT_BUFSIZ];	/* Current ASCII segment header */
 	char filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
-#ifdef GMT_SHAPEFILE_IO
+#ifdef HAVE_GDAL
 	char tempfile[GMT_BUFSIZ];	/* Temporary file used to read - should be removed when closed */
 #endif
 	char col_set[2][GMT_MAX_COLUMNS];	/* Keeps track of which columns have had their type set */

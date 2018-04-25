@@ -161,7 +161,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -S or -Sxy leaves space for both error bars using values in third&fourth (2&3) columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Calculations are based on the first (0) column; append +c<col> to use another column.\n");
-	GMT_Option (API, "V,a,bi2,d,e,f,g,h,i,o,r,s,:,.");
+	GMT_Option (API, "V,a");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Reports the names and data types of the aspatial fields.\n");
+	GMT_Option (API, "bi2,d,e,f,g,h,i,o,r,s,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -653,6 +655,10 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			}
 			else {				/* Return min/max for each column */
 				if (!Ctrl->C.active) {	/* Want info about each item */
+					if (GMT->common.a.active) {	/* Write text record with name[type] of the aspatial fields */
+						gmt_list_aspatials (GMT, record);
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+					}
 					record[0] = '\0';	/* Start with blank slate */
 					if (Ctrl->A.mode == REPORT_PER_DATASET && GMT->current.io.tbl_no > 1)	/* More than one table given */
 						strcpy (record, "dataset");

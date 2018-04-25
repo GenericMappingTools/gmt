@@ -51,6 +51,10 @@ struct PSLEGEND_CTRL {
 		bool debug;			/* If true we draw guide lines */
 		struct GMT_MAP_PANEL *panel;
 	} F;
+	struct PSLEGND_S {	/* -S<legendfile> */
+		bool active;
+		char *file;
+	} S;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -69,6 +73,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* De
 	if (!C) return;
 	gmt_free_refpoint (GMT, &C->D.refpoint);
 	gmt_M_free (GMT, C->F.panel);
+	gmt_M_str_free (C->S.file);
 	gmt_M_free (GMT, C);
 }
 
@@ -228,6 +233,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 				Ctrl->D.spacing = atof (opt->arg);
 				break;
 
+			case 'S':	/* Sets legendfile for saving the hidden file */
+				Ctrl->S.active = true;
+				if (opt->arg[0])
+					Ctrl->S.file = strdup (opt->arg);
+				else {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -S requires a filename\n");
+					n_errors++;
+				}
+				break;
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -365,7 +380,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	char font[GMT_LEN256] = {""}, lspace[GMT_LEN256] = {""}, tw[GMT_LEN256] = {""}, jj[GMT_LEN256] = {""};
 	char bar_cpt[GMT_LEN256] = {""}, bar_gap[GMT_LEN256] = {""}, bar_height[GMT_LEN256] = {""}, bar_modifiers[GMT_LEN256] = {""};
 	char module_options[GMT_LEN256] = {""}, r_options[GMT_LEN256] = {""}, xy_mode[3] = {""};
-	char txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""};
+	char txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""}, legend_file[GMT_LEN256] = {""};
 	char path[GMT_BUFSIZ] = {""}, B[GMT_LEN32] = {""}, C[GMT_LEN32] = {""}, p[GMT_LEN256] = {""};
 	char *line = NULL, string[GMT_STR16] = {""}, *c = NULL, *fill[PSLEGEND_MAX_COLS];
 #ifdef DEBUG
@@ -423,11 +438,21 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		GMT->current.setting.io_seg_marker[GMT_IN] = '#';
 	}
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
-		Return (API->error);
+	if (gmt_legend_file (API, legend_file) == 1) {	/* Running modern mode and we have a hidden legend file to read */
+		if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, GMT_READ_NORMAL, NULL, legend_file, NULL)) == NULL) {
+			Return (API->error);
+		}
+		if (Ctrl->S.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_TEXT, 0, NULL, Ctrl->S.file, In) != GMT_NOERROR) {
+			Return (API->error);
+		}
 	}
-	if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
-		Return (API->error);
+	else {	/* Possibly register stdin and/or read specified input file(s) */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
+			Return (API->error);
+		}
+		if ((In = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+			Return (API->error);
+		}
 	}
 
 	/* First attempt to compute the legend height */

@@ -6172,6 +6172,13 @@ latter option is particularly practical when more than one file is read:
 the **-bic** option will apply to all files. Currently, GMT only
 reads, but does not write, netCDF tabular data.
 
+Shapefiles
+~~~~~~~~~~
+
+GMT programs that read tables also support ESRI shapefiles, provided GMT was compiled
+with GDAL support.  By default, only the geographic coordinates are read.  To select
+some or all aspatial fields, see the :ref:`**-a** option <-aspatial_full>`
+
 Grid files
 ----------
 

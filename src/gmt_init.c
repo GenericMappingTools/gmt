@@ -6103,7 +6103,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'a':	/* -a option for aspatial field substitution into data columns */
 
-			gmt_message (GMT, "\t-a Give one or more comma-separated <col>=<name> associations.\n");
+			gmt_message (GMT, "\t-a Give one or more comma-separated <col>=<name> associations\n");
+			gmt_message (GMT, "\t   [Default selects all aspatial fields].\n");
 			break;
 
 		case 'C':	/* -b binary option with input only */
@@ -14857,8 +14858,10 @@ int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size) {
 	return GMT_NOERROR;
 }
 
-#if 0
-int gmt_set_legend_file (struct GMTAPI_CTRL *API, char *file) {
+int gmt_legend_file (struct GMTAPI_CTRL *API, char *file) {
+	/* Under modern mode, determines the name for the legend file for the curent plot,
+	 * then returns 0 if file does not already exist and 1 if it does.
+	 * Returns -1 if under classic mode. */
 	unsigned int fig;
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) return GMT_NOTSET;	/* This is a modern mode only feature */
 	/* Get figure number */
@@ -14873,24 +14876,24 @@ int gmt_add_legend_item (struct GMTAPI_CTRL *API, char *symbol, char *size, stru
 	char file[PATH_MAX] = {""};
 	FILE *fp = NULL;
 
-	if (gmt_set_legend_file (API, file) == GMT_NOTSET) return GMT_NOERROR;	/* This is a modern mode only feature */
+	if (gmt_legend_file (API, file) == GMT_NOTSET) return GMT_NOERROR;	/* This is a modern mode only feature */
 	if ((fp = fopen (file, "r")) == NULL) {	/* Does not exist yet, create */
 		if ((fp = fopen (file, "w")) == NULL) {	/* Could not create, WTF */
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to create file %s\n", file);
 			return GMT_ERROR_ON_FOPEN;
 		}
-		fprintf (fp, "# Automatically created legend file for symbols\n");
+		fprintf (fp, "# Automatically created entries for input to legend\n");
 		fprintf (fp, "# S <dx1> <symbol> <size> <fill> <pen> <dx2> <label>\n");
 	}
 	/* Add the new entry */
 	fprintf (fp, "S - %s %s ", symbol, size);
 	(fill) ? fprintf (fp, "%s ", gmtlib_putfill (API->GMT, fill)) : fprintf (fp, "- ");
-	(pen)  ? fprintf (fp, "%s ", gmt_putpen (API->GMT, pen))   : fprintf (fp, "- ");
+	(pen)  ? fprintf (fp, "%s ", gmt_putpen (API->GMT, pen))      : fprintf (fp, "- ");
 	fprintf (fp, "- %s\n", label);
 	fclose (fp);
+	
 	return GMT_NOERROR;
 }
-#endif
 
 /*! . */
 int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text) {

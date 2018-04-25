@@ -317,6 +317,8 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC int gmt_legend_file (struct GMTAPI_CTRL *API, char *file);
+EXTERN_MSC int gmt_add_legend_item (struct GMTAPI_CTRL *API, char *symbol, char *size, struct GMT_FILL *fill, struct GMT_PEN *pen, char *label);
 EXTERN_MSC unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument, struct GMT_ARRAY *T, unsigned int flags, unsigned int tcol);
 EXTERN_MSC unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARRAY *T, double *min, double *max);
 EXTERN_MSC void gmt_free_array (struct GMT_CTRL *GMT, struct GMT_ARRAY *T);

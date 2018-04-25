@@ -805,7 +805,6 @@ void gmt_list_aspatials (struct GMT_CTRL *GMT, char buffer[]) {
 		sprintf (item, " %s[%s]", GMT->common.a.name[k], GMT_type[GMT->common.a.type[k]]);
 		strcat (buffer, item);
 	}
-	strcat (buffer, "\n");
 }
 
 /*! Returns true if record is NaN NaN [NaN NaN] etc */
@@ -4143,11 +4142,12 @@ int gmt_fclose (struct GMT_CTRL *GMT, FILE *stream) {
 	}
 	/* Regular file */
 	err = fclose (stream);
-#ifdef GMT_SHAPEFILE_IO
+#ifdef HAVE_GDAL
 	if (GMT->current.io.tempfile[0] && !access (GMT->current.io.tempfile, F_OK)) {
+		/* Converted a shapefile to a temporary GMT/OGR file.  Now delete that file */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Remove temporary GMT/OGR file %s\n", GMT->current.io.tempfile);
 		gmt_remove_file (GMT, GMT->current.io.tempfile);
-		GMT->current.io.tempfile[0] = '\0';		
+		GMT->current.io.tempfile[0] = '\0';	/* Flag as no longer active */	
 	}
 #endif
 	return (err);
@@ -4510,9 +4510,10 @@ FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) 
 		fd = gmt_nc_fopen (GMT, &filename[first], mode);
 		if (!fd) {	/* No, was not a netCDF file */
 			if ((c = gmt_getdatapath (GMT, &filename[first], path, R_OK)) != NULL) {	/* Got the file path */
-#ifdef GMT_SHAPEFILE_IO
+#ifdef HAVE_GDAL
 				char *ext = gmt_get_ext (c);	/* Get pointer to extension (or NULL if no extension) */
 				if (ext && mode[0] == 'r' && !strcmp (ext, "shp")) {	/* Got a shapefile for reading */
+					/* We will do a system call to ogr2ogr in order to read the shapefile */
 					char cmd[GMT_LEN256] = {""};
 					int error = 0;
 					if (GMT->parent->tmp_dir)	/* Make unique file in temp dir */
@@ -4522,10 +4523,10 @@ FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) 
 					GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Convert %s to GMT/OGR file %s\n", c, GMT->current.io.tempfile);
 					sprintf (cmd, "ogr2ogr -mapFieldType Integer64=Integer -f \"OGR_GMT\" %s %s", GMT->current.io.tempfile, c);
 					if ((error = system (cmd))) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "FAILED with error %d: %s.\n", error, cmd);
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "System call [%s] FAILED with error %d.\n", cmd, error);
 						return NULL;
 					}
-					c = GMT->current.io.tempfile;	/* Open this instead */
+					c = GMT->current.io.tempfile;	/* Open this temporary instead */
 				}
 #endif
                 		fd = fopen (c, mode);
