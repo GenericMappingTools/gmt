@@ -8163,7 +8163,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			        gmtlib_setparameter (GMT, "FONT_TITLE", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_TAG", value, core) +
 			        gmtlib_setparameter (GMT, "FONT_HEADING", value, core) +
-					gmtlib_setparameter (GMT, "FONT_LABEL", value, core);
+			        gmtlib_setparameter (GMT, "FONT_LABEL", value, core);
 			/*      FONT_LOGO is purposely skipped */
 			break;
 		case GMTCASE_FONT_ANNOT:

@@ -1120,19 +1120,20 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		nXSize_withPad = nXSize + pad_w + pad_e;
 		nYSize_withPad = nYSize + pad_n + pad_s;
 
-		if (prhs->mini_hdr.active) {				/* What does this mean? */
+		if (prhs->mini_hdr.active) {				/* Read into a padded zone that can be larger then grid dims (grdpaste) */
 			if (prhs->mini_hdr.side[0] == 'l' || prhs->mini_hdr.side[0] == 'r') {
 				nXSize_withPad = prhs->mini_hdr.mx;
 				if (prhs->mini_hdr.side[0] == 'r')
 					startColPos += prhs->mini_hdr.offset;
 			}
 			else if (prhs->mini_hdr.side[0] == 'b') {
-				startRow = prhs->mini_hdr.offset;
 #ifdef READ_BY_BLOCKS
-				endRow = (k + 1) * nRowsPerBlock;	// This certainly wrong and will crash but can't do better without a test case
+				startRow = prhs->mini_hdr.offset + k * nRowsPerBlock;
+				endRow = startRow + nRowsPerBlock;
 				if (k == nBlocks-1)
-					endRow = nYSize;
+					endRow = prhs->mini_hdr.offset + nYSize;
 #else
+				startRow = prhs->mini_hdr.offset;
 				endRow = nYSize + startRow;
 #endif
 			}
