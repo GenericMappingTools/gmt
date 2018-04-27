@@ -15307,11 +15307,11 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		return (GMT_NOERROR);
 	}
 
-	if ((m = gmt_first_modifier (GMT, argument, "abln"))) {	/* Process optional modifiers +a, +n */
+	if ((m = gmt_first_modifier (GMT, argument, "ablnt"))) {	/* Process optional modifiers +a, +b, +l, +n, +t */
 		unsigned int pos = 0;	/* Reset to start of new word */
 		unsigned int n_errors = 0;
 		char p[GMT_LEN32] = {""};
-		while (gmt_getmodopt (GMT, 'T', m, "abln", &pos, p, &n_errors) && n_errors == 0) {
+		while (gmt_getmodopt (GMT, 'T', m, "ablnt", &pos, p, &n_errors) && n_errors == 0) {
 			switch (p[0]) {
 				case 'a':	/* Add spatial distance column to output */
 					T->add = true; 
@@ -15324,6 +15324,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 					break;
 				case 'l':	/* Do a log10 grid */
 					T->logarithmic = true; 
+					break;
+				case 't':	/* Do a time vector */
+					T->temporal = true; 
 					break;
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-%cmin/max/inc+ modifier +%s not recognized.\n", option, p);
@@ -15370,8 +15373,8 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		/* Now worry about an increment with time units */
 		if (has_inc) T->unit = txt[ns][len];
 	}
-	if (ns == 0 && strchr (GMT_TIME_UNITS, txt[ns][len])) {	/* Giving time increments only so need to switch to temporal */
-		T->temporal = true;
+	if (ns == 0 && strchr (GMT_TIME_UNITS, txt[ns][len]) && (T->temporal || (gmt_M_type (GMT, GMT_IN, tcol) & GMT_IS_RATIME))) {	/* Giving time increments only so need to switch to temporal */
+		T->temporal = true;	/* May already be set but who cares */
 		T->unit = txt[ns][len];
 	}
 	if (T->temporal) {	/* Must set TIME_UNIT and update time system scalings */

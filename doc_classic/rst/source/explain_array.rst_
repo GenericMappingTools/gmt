@@ -13,8 +13,8 @@ or provide a comma-separated *list* of coordinates.
 
 If the module allows you to set up an absolute time series, append a valid time unit from the list
 **y**\ ear, m\ **o**\ nth, **w**\ eek, **d**\ ay, **h**\ our, **m**\ inute, and **s**\ econd
-to the given increment. Note: The internal time unit is still controlled
-independently by :ref:`TIME_UNIT <TIME_UNIT>`.
+to the given increment; add **+t* to ensure time column (or use **-f**) Note: The internal time
+unit is still controlled independently by :ref:`TIME_UNIT <TIME_UNIT>`.
 
 Likewise, if the module allows you to set up a spatial distance series (with distance computed
 from the first two data columns), specify the increment as [±][*unit*]\ *inc*, where - means fast
