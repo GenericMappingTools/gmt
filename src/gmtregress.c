@@ -533,7 +533,7 @@ GMT_LOCAL double gmt_demeaning (struct GMT_CTRL *GMT, double *X, double *Y, doub
 			w_xy = w[GMT_X][i] * w[GMT_Y][i];
 			alpha_i = sqrt (w_xy);
 			if (w[GMT_Z]) corr_i = w[GMT_Z][i];
-			W[i] = w_xy / (w[GMT_X][i] + par[GMTREGRESS_SLOPE] * par[GMTREGRESS_SLOPE] * w[GMT_Y][i] - 2 * par[GMTREGRESS_SLOPE] * corr_i * alpha_i);
+			W[i] = (w_xy > 0.0) ? w_xy / (w[GMT_X][i] + par[GMTREGRESS_SLOPE] * par[GMTREGRESS_SLOPE] * w[GMT_Y][i] - 2 * par[GMTREGRESS_SLOPE] * corr_i * alpha_i) : 0.0;
 			if (alpha) alpha[i] = alpha_i;
 		}
 		/*  Step 4: Compute weighted X_mean, Y_mean, then U, V, and beta */
