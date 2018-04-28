@@ -518,31 +518,48 @@ GMT_LOCAL void ones (double *x, uint64_t n) {
 }
 
 GMT_LOCAL void get_correlation (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, double *par) {
-	/* Compute coefficient of determination, R = r^2 (Pearsonian correlation).
+	/* standard r = s_xy / (s_x * s_y), using the weighted expressions for these terms.
+	 */
+
+	uint64_t k;
+	double y_hat, sx = 0.0, sy = 0.0, sxy = 0.0, wx = 1.0, wy = 1.0, swx = 0.0, swy = 0.0, swxy = 0.0;
+	gmt_M_unused(GMT);
+	
+	for (k = 0; k < n; k++) {
+		if (w[GMT_X]) wx = w[GMT_X][k];	/* Was given x-weights */
+		if (w[GMT_Y]) wy = w[GMT_Y][k];	/* Was given y-weights */
+		y_hat = par[GMTREGRESS_SLOPE] * X[k] + par[GMTREGRESS_ICEPT];
+		sx  += wx * pow (X[k] - par[GMTREGRESS_XMEAN], 2.0);
+		sy  += wy * pow (Y[k] - par[GMTREGRESS_YMEAN], 2.0);
+		sxy += wx * wy * (X[k] - par[GMTREGRESS_XMEAN]) * (Y[k] - par[GMTREGRESS_YMEAN]);
+		swx += wx;	swy += wy;	swxy += wx * wy;
+	}
+	par[GMTREGRESS_CORR] = (sxy / swxy) / sqrt ((sx / swx) * (sy / swy));
+}
+
+GMT_LOCAL void get_coeffR (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, unsigned int regression, double *par) {
+	/* Compute coefficient of determination, R ( = r^2 for LSY Pearsonian correlation).
 	 * Currently only set up to do standard y on x (weights on y) only.
 	 * Compute both coefficient of determination (R) and the correlation coefficient (r).
 	 *   R = 1 - SSR/SST, with
 	 *   SSR is the sum of squared residuals: sum (y_i - y(x_i))^2
 	 *   and SST is the sum of total variance of the model : sum (y_i - mean(y))^2
 	 *   We augment these with weights w_i as well, if given.
-	 * standard r = s_xy / (s_x * s_y), using the weighted expressions for these terms.
 	 */
 
 	uint64_t k;
-	double SSR = 0.0, SST = 0.0, y_hat, sx = 0.0, sy = 0.0, sxy = 0.0, ww = 1.0;
+	double SSR = 0.0, SST = 0.0, y_hat, ww = 1.0, f;
 	gmt_M_unused(GMT);
 	
+	f = get_scale_factor (regression, par[GMTREGRESS_SLOPE]);
+	f *= f;	/* Since working on squared misfits */
 	for (k = 0; k < n; k++) {
 		if (w[GMT_Y]) ww = w[GMT_Y][k];	/* Was given weights */
 		y_hat = par[GMTREGRESS_SLOPE] * X[k] + par[GMTREGRESS_ICEPT];
-		sx  += ww * pow (X[k] - par[GMTREGRESS_XMEAN], 2.0);
-		sy  += ww * pow (Y[k] - par[GMTREGRESS_YMEAN], 2.0);
-		sxy += ww * (X[k] - par[GMTREGRESS_XMEAN]) * (Y[k] - par[GMTREGRESS_YMEAN]);
 		SSR += ww * pow (Y[k] - y_hat, 2.0);
 		SST += ww * pow (y_hat - par[GMTREGRESS_YMEAN], 2.0);
 	}
-	par[GMTREGRESS_R]    = 1.0 - SSR / SST;
-	par[GMTREGRESS_CORR] = sxy / sqrt (sx * sy);
+	par[GMTREGRESS_R] = 1.0 - f * SSR / SST;
 }
 
 GMT_LOCAL double gmt_demeaning (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, double *par, double *U, double *V, double *W, double *alpha, double *beta) {
@@ -561,7 +578,7 @@ GMT_LOCAL double gmt_demeaning (struct GMT_CTRL *GMT, double *X, double *Y, doub
 			w_xy = w[GMT_X][i] * w[GMT_Y][i];
 			alpha_i = sqrt (w_xy);
 			if (w[GMT_Z]) corr_i = w[GMT_Z][i];
-			W[i] = w_xy / (w[GMT_X][i] + par[GMTREGRESS_SLOPE] * par[GMTREGRESS_SLOPE] * w[GMT_Y][i] - 2 * par[GMTREGRESS_SLOPE] * corr_i * alpha_i);
+			W[i] = (w_xy > 0.0) ? w_xy / (w[GMT_X][i] + par[GMTREGRESS_SLOPE] * par[GMTREGRESS_SLOPE] * w[GMT_Y][i] - 2 * par[GMTREGRESS_SLOPE] * corr_i * alpha_i) : 0.0;
 			if (alpha) alpha[i] = alpha_i;
 		}
 		/*  Step 4: Compute weighted X_mean, Y_mean, then U, V, and beta */
@@ -1014,7 +1031,8 @@ GMT_LOCAL double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_i
 		for (col = first_col; col <= GMT_Y; col++)	/* Free any arrays we allocated */
 			if (made[col]) gmt_M_free (GMT, www[col]);
 	}
-	get_correlation (GMT, x_in, y_in, w, n, par);	/* Evaluate R and r */
+	get_correlation (GMT, x_in, y_in, w, n, par);	/* Evaluate r */
+	get_coeffR (GMT, x_in, y_in, w, n, regression, par);	/* Evaluate R */
 	
 	return (z);	/* Return those z-scores, calling unit must free this array when done */
 }
