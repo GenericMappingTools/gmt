@@ -711,13 +711,12 @@ GMT_LOCAL double LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *
 GMT_LOCAL double LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
 	/* Basic LS RMA orthogonal regression with no weights [Reference?] */
 	uint64_t k;
-	double mx, sx, my, sy, scale;
+	double sx, sy, scale;
 	double *U = gmt_M_memory (GMT, NULL, n, double), *V = gmt_M_memory (GMT, NULL, n, double), *W = gmt_M_memory (GMT, NULL, n, double);
 	gmt_M_memset (par, GMTREGRESS_NPAR, double);
 	(void)gmt_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);
-	mx = gmt_mean_and_std (GMT, U, n, &sx);
-	my = gmt_mean_and_std (GMT, V, n, &sy);
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "mx and my should be zero: %g %g\n", mx, my);
+	sx = gmt_std_weighted (GMT, U, w[GMT_X], 0.0, n);
+	sy = gmt_std_weighted (GMT, V, w[GMT_Y], 0.0, n);
 	par[GMTREGRESS_SLOPE] = sy / sx;
 	par[GMTREGRESS_ICEPT] = par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN];
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);

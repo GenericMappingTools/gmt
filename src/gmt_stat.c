@@ -1694,6 +1694,26 @@ double gmt_mean_and_std (struct GMT_CTRL *GMT, double *x, uint64_t n, double *st
 	return ((m) ? mean : GMT->session.d_NaN);
 }
 
+double gmt_std_weighted (struct GMT_CTRL *GMT, double *x, double *w, double wmean, uint64_t n) {
+	/* Return the weighted standard deviation of the non-NaN values in x.
+	 * If w == NULL then a regular std is computed. */
+	uint64_t k, m = 0;
+	double dx, sumw = 0.0, sum2 = 0.0, wk = 1.0;
+	for (k = 0; k < n; k++) {
+		if (gmt_M_is_dnan (x[k])) continue;
+		if (w) {
+			if (gmt_M_is_dnan (w[k])) continue;
+			if (gmt_M_is_zero (w[k])) continue;
+			wk = w[k];
+		}
+		dx = x[k] - wmean;
+		sum2 += wk * dx * dx;
+		sumw += wk;
+		m++;	/* Number of points with nonzero weights */
+	}
+	return (m > 1) ? sqrt (sum2 / (((m-1.0) * sumw) / m)) : GMT->session.d_NaN;
+}
+
 int gmt_median (struct GMT_CTRL *GMT, double *x, uint64_t n, double xmin, double xmax, double m_initial, double *med) {
 	double lower_bound, upper_bound, m_guess, t_0, t_1, t_middle;
 	double lub, glb, xx, temp;

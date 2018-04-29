@@ -620,6 +620,7 @@ EXTERN_MSC double gmt_mean_weighted (struct GMT_CTRL *GMT, double *x, double *w,
 EXTERN_MSC double gmt_quantile_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, double quantile);
 EXTERN_MSC double gmt_median_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n);
 EXTERN_MSC double gmt_mode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n);
+EXTERN_MSC double gmt_std_weighted (struct GMT_CTRL *GMT, double *x, double *w, double wmean, uint64_t n);
 EXTERN_MSC int gmt_sig_f (struct GMT_CTRL *GMT, double chi1, uint64_t n1, double chi2, uint64_t n2, double level, double *prob);
 EXTERN_MSC double gmt_t_pdf (struct GMT_CTRL *GMT, double t, uint64_t nu);
 EXTERN_MSC double gmt_t_cdf (struct GMT_CTRL *GMT, double t, uint64_t nu);
