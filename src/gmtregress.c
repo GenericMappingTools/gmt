@@ -329,6 +329,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+/* Some of the inspiration for this module came from the following two papers:
+ *
+ * Hartmann, C., P. Venkeerberghen, J. Smeyers-Verbeke, and D. L. Massart (1997),
+ *   Robust orthogonal regression for the outlier detection when comparing two
+ *   serious of measurement results, Analytica Chimica Acta, 344, 17–28.
+ * York, D., N. M. Evensen, M. L. Martínez, and J. De Basebe Delgado (2004),
+ *   Unified equations for the slope, intercept, and standard errors of the
+ *   best straight line, Am. J. Phys., 72(3), 367–375.
+ *
+ * as well as the standard book on regular and robust regression:
+ *
+ * Draper, N. R., and H. Smith (1998), Applied regression analysis,
+ *   3rd ed., 736 pp., John Wiley and Sons, New York.
+ *
+ * Rousseeuw, P. J., and A. M. Leroy (1987), Robust regression and outlier
+ *   detection, 329 pp., John Wiley and Sons, New York.
+ */
+
 GMT_LOCAL double model (double x, double *par) {
 	/* Evaluate the model given the parameters in par */
 	return (par[GMTREGRESS_SLOPE] * x + par[GMTREGRESS_ICEPT]);
