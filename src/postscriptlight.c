@@ -5553,7 +5553,7 @@ FILE *PSL_fopen (struct PSL_CTRL *C, char *file, char *mode) {
 int PSL_fclose (struct PSL_CTRL *C) {
 	/* Close except if stdout */
 	int err = 0;
-	if (C->internal.fp != stdout)
+	if (C->internal.fp && C->internal.fp != stdout)
 		err = fclose (C->internal.fp);
 	C->internal.fp = NULL;
 	return (err);
