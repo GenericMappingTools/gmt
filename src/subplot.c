@@ -296,6 +296,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 					if (c) {	/* Gave modifiers so we must parse those now */
 						c[0] = '+';	/* Restore modifiers */
 						/* Modifiers are [+c<dx/dy>][+g<fill>][+j|J<justify>][+o<dx/dy>][+p<pen>][+r|R][+v] */
+						if (gmt_validate_modifiers (GMT, opt->arg, 'A', "cgjJoprRv")) n_errors++;
 						if (gmt_get_modifier (opt->arg, 'j', Ctrl->A.placement)) {	/* Inside placement (?) */
 							gmt_just_validate (GMT, Ctrl->A.placement, "TL");
 							strncpy (Ctrl->A.justify, Ctrl->A.placement, 2);
@@ -447,6 +448,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				}
 				if (c) {	/* Gave paint/pen/debug modifiers */
 					c[0] = '+';	/* Restore modifiers */
+					if (gmt_validate_modifiers (GMT, opt->arg, 'F', "dgp")) n_errors++;
 					if (gmt_get_modifier (opt->arg, 'g', Ctrl->F.fill) && Ctrl->F.fill[0]) {
 						if (gmt_getfill (GMT, Ctrl->F.fill, &fill)) n_errors++;
 					}
@@ -478,6 +480,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				if ((k == GMT_X && opt->arg[1] == 'b') || (k == GMT_Y && opt->arg[1] == 'l')) Ctrl->S[k].annotate = Ctrl->S[k].tick = SUBPLOT_PLACE_AT_MIN;
 				else if ((k == GMT_X && opt->arg[1] == 't') || (k == GMT_Y && opt->arg[1] == 'r')) Ctrl->S[k].annotate = Ctrl->S[k].tick = SUBPLOT_PLACE_AT_MAX;
 				else Ctrl->S[k].annotate = Ctrl->S[k].tick = SUBPLOT_PLACE_AT_BOTH;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'S', "lspt")) n_errors++;
 				if (gmt_get_modifier (opt->arg, 'l', string)) {	/* Want space for (primary) x-labels */
 					Ctrl->S[k].has_label = true;
 					if (string[0]) Ctrl->S[k].label[GMT_PRIMARY] = strdup (string);

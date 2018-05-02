@@ -435,6 +435,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				if (n_slash == 2 || !(strstr (opt->arg, "+a") || strstr (opt->arg, "+i") || strstr (opt->arg, "+u") || strstr (opt->arg, "+v")))
 					n_errors += old_G_parse (GMT, opt->arg, Ctrl);		/* -G[<lon0/lat0>][/[+|-]unit][+|-] */
 				else {	/* -G[<lon0/lat0>][+i][+a][+u[+|-]<unit>][+v] */
+					if (gmt_validate_modifiers (GMT, opt->arg, 'G', "aiuv")) n_errors++;
 					if ((p = gmt_first_modifier (GMT, opt->arg, "aiuv")) == NULL) {	/* This cannot happen given the strstr checks, but Coverity prefers it */
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G: No modifiers?\n");
 						n_errors++;
@@ -494,6 +495,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				if (!(strstr (opt->arg, "+u") || strstr (opt->arg, "+p") || strchr (opt->arg, '/')))
 					n_errors += old_L_parse (API, opt->arg, Ctrl);
 				else {
+					if (gmt_validate_modifiers (GMT, opt->arg, 'L', "up")) n_errors++;
 					Ctrl->L.file = gmt_get_filename (opt->arg);
 					if (gmt_get_modifier (opt->arg, 'u', txt_a))
 						Ctrl->L.unit = set_unit_and_mode (txt_a, &Ctrl->L.sph);

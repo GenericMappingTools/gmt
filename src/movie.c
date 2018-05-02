@@ -636,7 +636,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				}
 				if (c) {	/* Gave modifiers so we must parse those now */
 					c[0] = '+';	/* Restore modifiers */
-					/* Modifiers are [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>] */
+					/* Modifiers are [+c<dx/dy>][+f<fmt>][+g<fill>][+j<justify>][+o<dx/dy>][+p<pen>][+s<scl>][+t<fmt>] */
+					if (gmt_validate_modifiers (GMT, opt->arg, 'L', "cfgjopst")) n_errors++;
 					if (gmt_get_modifier (&opt->arg[1], 'c', string) && string[0])	/* Clearance for box */
 						if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->L.tag[T].clearance) < 0) n_errors++;
 					if (gmt_get_modifier (&opt->arg[1], 'f', string)) {	/* Gave a separate font */

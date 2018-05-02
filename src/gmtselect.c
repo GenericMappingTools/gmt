@@ -406,6 +406,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 					break;
 				}
 				/* Here we perform new syntax parsing */
+				if (gmt_validate_modifiers (GMT, opt->arg, 'L', "dp")) n_errors++;
 				if (opt->arg[0] == 0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L option: No file given\n");
 					n_errors++;

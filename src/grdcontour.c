@@ -485,6 +485,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 					else
 						j = 0;
 					if (strstr (opt->arg, "+a") || strstr (opt->arg, "+d") || strstr (opt->arg, "+l")) {	/* New parser */
+						if (gmt_validate_modifiers (GMT, opt->arg, 'T', "adl")) n_errors++;
 						if (gmt_get_modifier (opt->arg, 'a', string))
 							Ctrl->T.all = true;
 						if (gmt_get_modifier (opt->arg, 'd', string))

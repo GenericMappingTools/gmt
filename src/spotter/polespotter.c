@@ -181,6 +181,7 @@ int n;
 					case 'p': Ctrl->S.mode = SPOTTER_SCAN_POLES;
 						break;
 					case 'l': Ctrl->S.mode = SPOTTER_SCAN_LINES;
+						if (gmt_validate_modifiers (GMT, opt->arg, 'S', "m")) n_errors++;
 						if ((c = strstr (opt->arg, "+m"))) {	/* Do midpoint analysis instead */
 							Ctrl->S.midpoint = true;
 							c[0] = '\0';	/* Chop off modifier */
@@ -196,6 +197,7 @@ int n;
 						if (c) c[0] = '+';	/* Restore modifier */
 						break;
 					case 's': Ctrl->S.mode = SPOTTER_SCAN_SPOTS;
+						if (gmt_validate_modifiers (GMT, opt->arg, 'S', "cl")) n_errors++;
 						if (gmt_get_modifier (opt->arg, 'l', txt_a))	/* Dump lines to stdout */
 							Ctrl->S.dump_lines = true;
 						if (gmt_get_modifier (opt->arg, 'c', txt_a) && txt_a[0]) {	/* Crossing output file */

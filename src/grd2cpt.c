@@ -234,6 +234,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'F':	/* Set color model for output */
+				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c")) n_errors++;
 				if (gmt_get_modifier (opt->arg, 'c', txt_a)) {
 					Ctrl->F.cat = true;
 					if (txt_a[0] == '\0') break;
