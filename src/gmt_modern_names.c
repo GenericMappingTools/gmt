@@ -29,6 +29,11 @@
 
 #include "gmt_dev.h"
 
+/* These are used when -O -K -P are not the first option on a synopsis line */
+char *GMT_O_OPT = "[-O] ", *GMT_K_OPT = "[-K] ", *GMT_P_OPT = "[-P] ";
+/* These are used when -O -K -P are the first option on a synopsis line */
+char *GMT_O_OPTf = "[-O] ", *GMT_K_OPTf = "[-K] ", *GMT_P_OPTf = "[-P] ";
+
 const char *gmt_current_name (const char *module, char modname[]) {
 	/* Given a module, return its document (modern name) and set its classic modname */
 	
@@ -81,6 +86,73 @@ const char *gmt_current_name (const char *module, char modname[]) {
 	else if (!strncmp (module, "pshistogram", 11U)) { strcpy (modname, module); return "histogram"; }
 	strcpy (modname, module);
 	return module;
+}
+
+const char *gmt_get_active_name (struct GMTAPI_CTRL *API, const char *module) {
+	/* Given a classic name module, return its name according to the run mode */
+	
+	if (!API->GMT->current.setting.use_modern_name)
+		return module;
+	/* Look for classic modules that now have a different modern mode name */
+	if      (!strncmp (module, "psxy",         4U)) return "plot";
+	else if (!strncmp (module, "psxyz",        5U)) return "plot3d";
+	else if (!strncmp (module, "psclip",       6U)) return "clip";
+	else if (!strncmp (module, "psmask",       6U)) return "mask";
+	else if (!strncmp (module, "psrose",       6U)) return "rose";
+	else if (!strncmp (module, "psmeca",       6U)) return "meca";
+	else if (!strncmp (module, "pstext",       6U)) return "text";
+	else if (!strncmp (module, "pssegy",       6U)) return "segy";
+	else if (!strncmp (module, "psvelo",       6U)) return "velo";
+	else if (!strncmp (module, "pscoast",      7U)) return "coast";
+	else if (!strncmp (module, "pscoupe",      7U)) return "coupe";
+	else if (!strncmp (module, "psimage",      7U)) return "image";
+	else if (!strncmp (module, "pspolar",      7U)) return "polar";
+	else if (!strncmp (module, "psscale",      7U)) return "colorbar";
+	else if (!strncmp (module, "pssolar",      7U)) return "solar";
+	else if (!strncmp (module, "pssegyz",      7U)) return "segyz";
+	else if (!strncmp (module, "pslegend",     8U)) return "legend";
+	else if (!strncmp (module, "pswiggle",     8U)) return "wiggle";
+	else if (!strncmp (module, "psbasemap",    9U)) return "basemap";
+	else if (!strncmp (module, "pscontour",    9U)) return "contour";
+	else if (!strncmp (module, "psternary",    9U)) return "ternary";
+	else if (!strncmp (module, "pshistogram", 11U)) return "histogram";
+	return module;
+}
+
+bool gmt_is_modern_name (struct GMTAPI_CTRL *API, char *module) {
+	bool is_modern = false;	/* If classic */
+	gmt_M_unused (API);
+	/* Returns true if module is a modern name */
+	
+	/* Look for modern mode name modules  */
+	if      (!strncmp (module, "plot",       4U)) is_modern = true;
+	else if (!strncmp (module, "plot3d",     5U)) is_modern = true;
+	else if (!strncmp (module, "clip",       6U)) is_modern = true;
+	else if (!strncmp (module, "mask",       6U)) is_modern = true;
+	else if (!strncmp (module, "rose",       6U)) is_modern = true;
+	else if (!strncmp (module, "meca",       6U)) is_modern = true;
+	else if (!strncmp (module, "text",       6U)) is_modern = true;
+	else if (!strncmp (module, "segy",       6U)) is_modern = true;
+	else if (!strncmp (module, "velo",       6U)) is_modern = true;
+	else if (!strncmp (module, "coast",      7U)) is_modern = true;
+	else if (!strncmp (module, "coupe",      7U)) is_modern = true;
+	else if (!strncmp (module, "image",      7U)) is_modern = true;
+	else if (!strncmp (module, "polar",      7U)) is_modern = true;
+	else if (!strncmp (module, "colorbar",   7U)) is_modern = true;
+	else if (!strncmp (module, "solar",      7U)) is_modern = true;
+	else if (!strncmp (module, "segyz",      7U)) is_modern = true;
+	else if (!strncmp (module, "legend",     8U)) is_modern = true;
+	else if (!strncmp (module, "wiggle",     8U)) is_modern = true;
+	else if (!strncmp (module, "basemap",    9U)) is_modern = true;
+	else if (!strncmp (module, "contour",    9U)) is_modern = true;
+	else if (!strncmp (module, "ternary",    9U)) is_modern = true;
+	else if (!strncmp (module, "histogram", 11U)) is_modern = true;
+	if (is_modern || API->GMT->current.setting.run_mode == GMT_MODERN) {	/* These dont exist in modern mode */
+		GMT_K_OPT = "";	GMT_K_OPTf = "";
+		GMT_O_OPT = "";	GMT_O_OPTf = "";
+		GMT_P_OPT = "";	GMT_P_OPTf = "";
+	}
+	return is_modern;
 }
 
 int GMT_basemap (void *V_API, int mode, void *args) {

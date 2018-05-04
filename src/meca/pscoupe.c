@@ -426,12 +426,12 @@ GMT_LOCAL void distaz (double lat1, double lon1, double lat2, double lon2, doubl
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the pscoupe synopsis and optionally full usage information */
 
-	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pscoupe [<table>] -A<params> %s %s [%s] [-E<fill>]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -A<params> %s %s [%s] [-E<fill>]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fa[<size>][/<Psymbol>[<Tsymbol>]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fs<symbol><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] [-K] [-L<pen>] [-M] [-N] [-O] [-P]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] %s[-L<pen>] [-M] [-N] %s%s\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] \n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<cpt>]\n", GMT_X_OPT, GMT_Y_OPT);

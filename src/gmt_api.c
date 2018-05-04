@@ -9703,15 +9703,25 @@ int GMT_FFT_Destroy_ (void *v_K) {
 #endif
 
 /*! Pretty print core module names and purposes */
-void gmt_show_name_and_purpose (void *API, const char *component, const char *name, const char *purpose) {
+const char * gmt_show_name_and_purpose (void *V_API, const char *component, const char *name, const char *purpose) {
 	char message[GMT_LEN256] = {""};
-	const char *lib = NULL;
+	static char full_name[GMT_LEN32] = {""};
+	const char *lib = NULL, *mode_name = name;
 	static char *core = "core";
+	struct GMTAPI_CTRL *API = NULL;
+	assert (V_API != NULL);
 	assert (name != NULL);
 	assert (purpose != NULL);
+	API = api_get_api_ptr (V_API);
+	mode_name = gmt_get_active_name (API, name);
 	lib = (component) ? component : core;
-	snprintf (message, GMT_LEN256, "%s(%s) %s - %s\n\n", name, lib, GMT_version(), purpose);
-	GMT_Message (API, GMT_TIME_NONE, message);
+	if (API->GMT->current.setting.use_modern_name || API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Must include the required "gmt " prefix */
+		sprintf (full_name, "gmt %s", mode_name);
+		mode_name = full_name;
+	}
+	snprintf (message, GMT_LEN256, "%s [%s] %s - %s\n\n", mode_name, lib, GMT_version(), purpose);
+	GMT_Message (V_API, GMT_TIME_NONE, message);
+	return mode_name;
 }
 
 /* Module Extension: Allow listing and calling modules by name */

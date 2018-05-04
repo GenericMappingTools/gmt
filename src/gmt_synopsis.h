@@ -119,6 +119,8 @@
 #define GMT_t_OPT	"-t<transp>"
 #define GMT_colon_OPT	"-:[i|o]"
 
+EXTERN_MSC char *GMT_O_OPT, *GMT_K_OPT, *GMT_P_OPT, *GMT_O_OPTf, *GMT_K_OPTf, *GMT_P_OPTf;
+
 /*! Macro for tools that need to specify FFT information (prepend option flag, e.g., -N and put GMT_FFT_OPT inside [] ) */
 
 #define GMT_FFT_OPT "[f|s|<n_columns>/<n_rows>][+a|d|l][+e|m|n][+t<width>][+v][+w<suffix>][+z[p]]"

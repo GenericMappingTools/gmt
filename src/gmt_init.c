@@ -5997,18 +5997,20 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			break;
 
 		case 'K':	/* Append-more-PostScript-later */
-
-			gmt_message (GMT, "\t-K Allow for more plot code to be appended later [CLASSIC MODE ONLY].\n");
+			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -K dont exist in modern mode */
+				gmt_message (GMT, "\t-K Allow for more plot code to be appended later [CLASSIC MODE ONLY].\n");
 			break;
 
 		case 'O':	/* Overlay plot */
 
-			gmt_message (GMT, "\t-O Set Overlay plot mode, i.e., append to an existing plot [CLASSIC MODE ONLY].\n");
+			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -O dont exist in modern mode */
+				gmt_message (GMT, "\t-O Set Overlay plot mode, i.e., append to an existing plot [CLASSIC MODE ONLY].\n");
 			break;
 
 		case 'P':	/* Portrait or landscape */
 
-			gmt_message (GMT, "\t-P Set Portrait page orientation [%s]; [CLASSIC MODE ONLY].\n", GMT_choice[GMT->current.setting.ps_orientation]);
+			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -P dont exist in modern mode */
+				gmt_message (GMT, "\t-P Set Portrait page orientation [%s]; [CLASSIC MODE ONLY].\n", GMT_choice[GMT->current.setting.ps_orientation]);
 			break;
 
 		case 'S':	/* CarteSian Region option */
@@ -12299,11 +12301,33 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	gmt_M_str_free (Ccopy);	/* Good riddance */
 }
 
-void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char *argv[]) {
+EXTERN_MSC bool gmt_is_modern_name (struct GMTAPI_CTRL *API, char *module);
+void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char *argv[], bool gmt_main) {
 	/* Determine if user is attempting a modern mode one-liner plot, and if so, set run mode to GMT_MODERN */
-	unsigned modern = 0, pos, k;
+	unsigned modern = 0, pos, k = 0;
+	int n_args = argc - 1;
 	char figure[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
 
+	if (gmt_main) {
+		n_args--;	/* Count number of args after module name */
+		k = 1;
+	}
+	API->GMT->current.setting.use_modern_name = gmt_is_modern_name (API, argv[k]);
+	
+	if (n_args == 0) {	/* Gave none or a single argument */
+		API->GMT->current.setting.run_mode = GMT_MODERN;
+		return;
+	}
+	if (n_args == 1) {	/* Gave a single argument */
+		if (argv[argc-1][0] == '+' && argv[argc-1][1] == '\0') {	/* Gave + */
+			modern = 1;
+		}
+		else if (argv[argc-1][0] == '-' && (argv[argc-1][1] == '\0' || argv[argc-1][1] == GMT_OPT_USAGE || argv[argc-1][1] == GMT_OPT_SYNOPSIS)) {	/* Gave a single argument */
+			modern = 1;
+		}
+	}
+	
+	/* Must check graphics situation */
 	for (k = 1; !modern && k < (unsigned int)argc; k++) {
 		if (argv[k][0] != '-') continue;	/* Skip file names */
 		if (strlen (argv[k]) < 3 || strlen (argv[k]) >= GMT_LEN128) continue;	/* -ps is the shortest format extension, and very long args are filenames*/
@@ -12323,6 +12347,8 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 	}
 	if (modern)
 		API->GMT->current.setting.run_mode = GMT_MODERN;
+	if (API->GMT->current.setting.run_mode == GMT_MODERN)
+		API->GMT->current.setting.use_modern_name = true;
 }
 
 /*! Update vector head length and width parameters based on size_z and v_angle, and deal with pen/fill settings */
@@ -14975,7 +15001,10 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
         	GMT_Report (API, GMT_MSG_NORMAL, "Illegal mode (%d) passed to gmt_manage_workflow\n", mode);
 			break;
 	}
-	if (API->GMT->current.setting.run_mode == GMT_MODERN) GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode [PPID = %d]\n", type[API->GMT->current.setting.run_mode], API->PPID);
+	if (API->GMT->current.setting.run_mode == GMT_MODERN) {
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode [PPID = %d]\n", type[API->GMT->current.setting.run_mode], API->PPID);
+		API->GMT->current.setting.use_modern_name = true;
+	}
 	return error;
 }
 
