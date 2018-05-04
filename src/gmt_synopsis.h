@@ -119,7 +119,7 @@
 #define GMT_t_OPT	"-t<transp>"
 #define GMT_colon_OPT	"-:[i|o]"
 
-EXTERN_MSC char *GMT_O_OPT, *GMT_K_OPT, *GMT_P_OPT, *GMT_O_OPTf, *GMT_K_OPTf, *GMT_P_OPTf;
+EXTERN_MSC char *GMT_O_OPT, *GMT_K_OPT, *GMT_P_OPT;	/* Used to print -O -K -P (classic mode) or not (modern mode) */
 
 /*! Macro for tools that need to specify FFT information (prepend option flag, e.g., -N and put GMT_FFT_OPT inside [] ) */
 
