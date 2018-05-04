@@ -552,6 +552,7 @@ GMT_LOCAL bool gmtio_ogr_data_parser (struct GMT_CTRL *GMT, char *record) {
 				n_aspatial = gmtio_ogr_decode_aspatial_values (GMT, &p[1], S);
 				if (S->n_aspatial != n_aspatial) {
 					GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "OGR/GMT: Some @D items not specified (set to NULL) near line %" PRIu64 "\n", GMT->current.io.rec_no);
+					GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "OGR/GMT: Offending record: %s\n", record);
 				}
 				break;
 
