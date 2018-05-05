@@ -1295,7 +1295,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
 		double out[3];
 		static char *type[2] = {"length", "area"}, upper[GMT_LEN16] = {"infinity"};
-		bool new_data = (Ctrl->Q.header || Ctrl->E.active);
+		bool new_data = (Ctrl->Q.header || Ctrl->Q.sort || Ctrl->E.active);
 		uint64_t seg, row_f, row_l, tbl, col, n_seg = 0, n_alloc_seg = 0;
 		unsigned int handedness = 0;
 		int qmode, poly = 0, geo;
@@ -1401,7 +1401,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 			}
 		}
-		if (Ctrl->Q.header || Ctrl->E.active) {		/* Must write out a revised dataset */
+		if (new_data) {		/* Must write out a revised dataset */
 			Dout->n_segments = Dout->table[0]->n_segments = n_seg;
 			Dout->table[0]->segment = gmt_M_memory (GMT, Dout->table[0]->segment, n_seg, struct GMT_DATASEGMENT *);
 			if (Ctrl->Q.sort) {	/* Sort on area or length and shuffle the order of segments before output */
