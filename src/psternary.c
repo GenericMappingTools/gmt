@@ -329,6 +329,16 @@ GMT_LOCAL void abc_to_xy (double a, double b, double c, double *x, double *y) {
 EXTERN_MSC void gmt_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D);
 #define PSL_IZ(PSL,z) ((int)lrint ((z) * PSL->internal.dpu))
 
+int GMT_ternary (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: ternary\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_psternary (V_API, mode, args);
+}
+
 int GMT_psternary (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int n_sides = 0, side[3];

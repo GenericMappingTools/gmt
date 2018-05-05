@@ -209,6 +209,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout(code);}
 
+int GMT_basemap (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: basemap\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_psbasemap (V_API, mode, args);
+}
+
 int GMT_psbasemap (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psbasemap task */
 	int error;

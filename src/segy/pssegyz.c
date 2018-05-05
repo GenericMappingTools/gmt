@@ -578,6 +578,16 @@ GMT_LOCAL void segyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, d
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+int GMT_segyz (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: segyz\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_pssegyz (V_API, mode, args);
+}
+
 int GMT_pssegyz (void *V_API, int mode, void *args) {
 	int nm, ix, iz, n_samp = 0, check, bm_nx, bm_ny, error;
 	double xlen, ylen, xpix, ypix, x0, y0, trans[3] = {-1.0,-1.0,-1.0};

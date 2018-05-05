@@ -396,6 +396,16 @@ GMT_LOCAL int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 	return (GMT_NOERROR);
 }
 
+int GMT_solar (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: solar\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_pssolar (V_API, mode, args);
+}
+
 /* --------------------------------------------------------------------------------------------------- */
 int GMT_pssolar (void *V_API, int mode, void *args) {
 	int     j, n, hour, min, error = 0;

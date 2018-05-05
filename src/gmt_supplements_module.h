@@ -76,6 +76,15 @@ EXTERN_MSC int GMT_x2sys_put (void *API, int mode, void *args);
 EXTERN_MSC int GMT_x2sys_report (void *API, int mode, void *args);
 EXTERN_MSC int GMT_x2sys_solve (void *API, int mode, void *args);
 
+/* Modern names */
+EXTERN_MSC int GMT_coupe (void *API, int mode, void *args);
+EXTERN_MSC int GMT_meca (void *API, int mode, void *args);
+EXTERN_MSC int GMT_polar (void *API, int mode, void *args);
+EXTERN_MSC int GMT_sac (void *API, int mode, void *args);
+EXTERN_MSC int GMT_velo (void *API, int mode, void *args);
+EXTERN_MSC int GMT_segyz (void *API, int mode, void *args);
+EXTERN_MSC int GMT_segy (void *API, int mode, void *args);
+
 /* Pretty print all modules in the GMT supplements library and their purposes */
 EXTERN_MSC void gmt_supplements_module_show_all (void *API);
 /* List all modules in the GMT supplements library to stdout */

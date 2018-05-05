@@ -119,6 +119,24 @@ EXTERN_MSC int GMT_trend2d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_triangulate (void *API, int mode, void *args);
 EXTERN_MSC int GMT_xyz2grd (void *API, int mode, void *args);
 
+/* Modern names */
+EXTERN_MSC int GMT_mask (void *API, int mode, void *args);
+EXTERN_MSC int GMT_clip (void *API, int mode, void *args);
+EXTERN_MSC int GMT_coast (void *API, int mode, void *args);
+EXTERN_MSC int GMT_contour (void *API, int mode, void *args);
+EXTERN_MSC int GMT_histogram (void *API, int mode, void *args);
+EXTERN_MSC int GMT_image (void *API, int mode, void *args);
+EXTERN_MSC int GMT_legend (void *API, int mode, void *args);
+EXTERN_MSC int GMT_mask (void *API, int mode, void *args);
+EXTERN_MSC int GMT_rose (void *API, int mode, void *args);
+EXTERN_MSC int GMT_colorbar (void *API, int mode, void *args);
+EXTERN_MSC int GMT_solar (void *API, int mode, void *args);
+EXTERN_MSC int GMT_ternary (void *API, int mode, void *args);
+EXTERN_MSC int GMT_text (void *API, int mode, void *args);
+EXTERN_MSC int GMT_wiggle (void *API, int mode, void *args);
+EXTERN_MSC int GMT_plot (void *API, int mode, void *args);
+EXTERN_MSC int GMT_plot (void *API, int mode, void *args);
+
 /* Pretty print all modules in the GMT core library and their purposes */
 EXTERN_MSC void gmt_core_module_show_all (void *API);
 /* List all modules in the GMT core library to stdout */

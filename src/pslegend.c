@@ -364,6 +364,16 @@ GMT_LOCAL double get_image_aspect (struct GMTAPI_CTRL *API, char *file) {
 
 #define PSLEGEND_MAX_COLS	100
 
+int GMT_legend (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: legend\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_pslegend (V_API, mode, args);
+}
+
 int GMT_pslegend (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pslegend task */
 	unsigned int tbl, pos, first = 0;
