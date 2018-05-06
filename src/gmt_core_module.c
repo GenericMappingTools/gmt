@@ -50,7 +50,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"blockmean", "core", "Block average (x,y,z) data tables by L2 norm", "<D{,>D}"},
 	{"blockmedian", "core", "Block average (x,y,z) data tables by L1 norm (spatial median)", "<D{,>D}"},
 	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation", "<D{,>D}"},
-	{"clear", "core", "Delete current history, conf, cpt, or the cache directory", ""},
+	{"clear", "core", "Delete current history, conf, cpt, or the cache or sessions directories", ""},
 	{"docs", "core", "Show the HTML documentation of the specified module", ""},
 	{"end", "core", "Terminate GMT modern mode session and produce optional graphics", ""},
 	{"figure", "core", "Set attributes for the current figure", ""},
@@ -138,7 +138,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"surface", "core", "Grid table data using adjustable tension continuous curvature splines", "<D{,DD(,LG(,GG}"},
 	{"trend1d", "core", "Fit a [weighted] [robust] polynomial/Fourier model for y = f(x) to xy[w] data", "<D{,>D}"},
 	{"trend2d", "core", "Fit a [weighted] [robust] polynomial for z = f(x,y) to xyz[w] data", "<D{,>D}"},
-	{"triangulate", "core", "Optimal (Delaunay) triangulation and gridding of Cartesian table data", "<D{,CG(,>D},GG)"},
+	{"triangulate", "core", "Delaunay triangulation or Voronoi partitioning and gridding of Cartesian data", "<D{,CG(,>D},GG)"},
 	{"xyz2grd", "core", "Convert data table to a grid file", "<D{,SD),GG}"},
 	{NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 #else
@@ -146,7 +146,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"blockmean", "core", "Block average (x,y,z) data tables by L2 norm", "<D{,>D}", &GMT_blockmean},
 	{"blockmedian", "core", "Block average (x,y,z) data tables by L1 norm (spatial median)", "<D{,>D}", &GMT_blockmedian},
 	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation", "<D{,>D}", &GMT_blockmode},
-	{"clear", "core", "Delete current history, conf, cpt, or the cache directory", "", &GMT_clear},
+	{"clear", "core", "Delete current history, conf, cpt, or the cache or sessions directories", "", &GMT_clear},
 	{"docs", "core", "Show the HTML documentation of the specified module", "", &GMT_docs},
 	{"end", "core", "Terminate GMT modern mode session and produce optional graphics", "", &GMT_end},
 	{"figure", "core", "Set attributes for the current figure", "", &GMT_figure},
@@ -234,7 +234,7 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{"surface", "core", "Grid table data using adjustable tension continuous curvature splines", "<D{,DD(,LG(,GG}", &GMT_surface},
 	{"trend1d", "core", "Fit a [weighted] [robust] polynomial/Fourier model for y = f(x) to xy[w] data", "<D{,>D}", &GMT_trend1d},
 	{"trend2d", "core", "Fit a [weighted] [robust] polynomial for z = f(x,y) to xyz[w] data", "<D{,>D}", &GMT_trend2d},
-	{"triangulate", "core", "Optimal (Delaunay) triangulation and gridding of Cartesian table data", "<D{,CG(,>D},GG)", &GMT_triangulate},
+	{"triangulate", "core", "Delaunay triangulation or Voronoi partitioning and gridding of Cartesian data", "<D{,CG(,>D},GG)", &GMT_triangulate},
 	{"xyz2grd", "core", "Convert data table to a grid file", "<D{,SD),GG}", &GMT_xyz2grd},
 	{NULL, NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 #endif
