@@ -35,15 +35,6 @@ EXTERN_MSC int GMT_gmt2rgb (void *V_API, int mode, void *args);
 EXTERN_MSC int GMT_ps2raster (void *V_API, int mode, void *args);
 EXTERN_MSC int GMT_originator (void *V_API, int mode, void *args);
 
-/* Modern names */
-EXTERN_MSC int GMT_coupe (void *API, int mode, void *args);
-EXTERN_MSC int GMT_meca (void *API, int mode, void *args);
-EXTERN_MSC int GMT_polar (void *API, int mode, void *args);
-EXTERN_MSC int GMT_sac (void *API, int mode, void *args);
-EXTERN_MSC int GMT_velo (void *API, int mode, void *args);
-EXTERN_MSC int GMT_segyz (void *API, int mode, void *args);
-EXTERN_MSC int GMT_segy (void *API, int mode, void *args);
-
 int GMT_gmtdp (void *V_API, int mode, void *args) {
 	/* This was the GMT4 name */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */

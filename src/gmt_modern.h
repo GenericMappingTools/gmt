@@ -38,4 +38,32 @@
 #define GMT_SESSION_FORMAT	0		/* Default entry into gmt_session_format|code arrays -> PDF */
 #define GMT_SESSION_CONVERT	"A"		/* Default psconvert options in gmt figure */
 
+/* Modern names: core */
+	
+EXTERN_MSC int GMT_mask (void *API, int mode, void *args);
+EXTERN_MSC int GMT_clip (void *API, int mode, void *args);
+EXTERN_MSC int GMT_coast (void *API, int mode, void *args);
+EXTERN_MSC int GMT_contour (void *API, int mode, void *args);
+EXTERN_MSC int GMT_histogram (void *API, int mode, void *args);
+EXTERN_MSC int GMT_image (void *API, int mode, void *args);
+EXTERN_MSC int GMT_legend (void *API, int mode, void *args);
+EXTERN_MSC int GMT_mask (void *API, int mode, void *args);
+EXTERN_MSC int GMT_rose (void *API, int mode, void *args);
+EXTERN_MSC int GMT_colorbar (void *API, int mode, void *args);
+EXTERN_MSC int GMT_solar (void *API, int mode, void *args);
+EXTERN_MSC int GMT_ternary (void *API, int mode, void *args);
+EXTERN_MSC int GMT_text (void *API, int mode, void *args);
+EXTERN_MSC int GMT_wiggle (void *API, int mode, void *args);
+EXTERN_MSC int GMT_plot (void *API, int mode, void *args);
+EXTERN_MSC int GMT_plot (void *API, int mode, void *args);
+
+/* Modern names: supplements */
+EXTERN_MSC int GMT_coupe (void *API, int mode, void *args);
+EXTERN_MSC int GMT_meca (void *API, int mode, void *args);
+EXTERN_MSC int GMT_polar (void *API, int mode, void *args);
+EXTERN_MSC int GMT_sac (void *API, int mode, void *args);
+EXTERN_MSC int GMT_velo (void *API, int mode, void *args);
+EXTERN_MSC int GMT_segyz (void *API, int mode, void *args);
+EXTERN_MSC int GMT_segy (void *API, int mode, void *args);
+
 #endif  /* _GMT_MODERN_H */
