@@ -40,7 +40,7 @@
 
 /* Modern names: core */
 	
-EXTERN_MSC int GMT_mask (void *API, int mode, void *args);
+EXTERN_MSC int GMT_basemap (void *API, int mode, void *args);
 EXTERN_MSC int GMT_clip (void *API, int mode, void *args);
 EXTERN_MSC int GMT_coast (void *API, int mode, void *args);
 EXTERN_MSC int GMT_contour (void *API, int mode, void *args);
@@ -55,7 +55,7 @@ EXTERN_MSC int GMT_ternary (void *API, int mode, void *args);
 EXTERN_MSC int GMT_text (void *API, int mode, void *args);
 EXTERN_MSC int GMT_wiggle (void *API, int mode, void *args);
 EXTERN_MSC int GMT_plot (void *API, int mode, void *args);
-EXTERN_MSC int GMT_plot (void *API, int mode, void *args);
+EXTERN_MSC int GMT_plot3d (void *API, int mode, void *args);
 
 /* Modern names: supplements */
 EXTERN_MSC int GMT_coupe (void *API, int mode, void *args);
