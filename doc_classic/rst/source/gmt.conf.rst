@@ -750,7 +750,9 @@ fonts can be found in the :doc:`gmt` man page.
 .. _MAP_FRAME_WIDTH:
 
 **MAP_FRAME_WIDTH**
-    Width (> 0) of map borders for fancy map frame [5p].
+    Width (> 0) of map borders for fancy map frame [5p]. Note: For fancy
+    frames, **MAP_FRAME_PEN** is automatically set to 0.1 times the
+    **MAP_FRAME_WIDTH** setting.
 
 .. _MAP_GRID_CROSS_SIZE:
 
