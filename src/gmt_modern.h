@@ -66,4 +66,6 @@ EXTERN_MSC int GMT_velo (void *API, int mode, void *args);
 EXTERN_MSC int GMT_segyz (void *API, int mode, void *args);
 EXTERN_MSC int GMT_segy (void *API, int mode, void *args);
 
+EXTERN_MSC const char *gmt_current_name (const char *module, char modname[]);
+
 #endif  /* _GMT_MODERN_H */

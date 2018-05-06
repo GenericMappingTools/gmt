@@ -49,7 +49,8 @@ struct GMT_XINGS {
         unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
-EXTERN_MSC const char *gmt_get_active_name (struct GMTAPI_CTRL *API, const char *module);
+EXTERN_MSC bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, char *module);
+EXTERN_MSC const char *gmtlib_get_active_name (struct GMTAPI_CTRL *API, const char *module);
 EXTERN_MSC double gmtlib_cartesian_dist (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1);
 EXTERN_MSC double gmtlib_cartesian_dist_proj (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 EXTERN_MSC uint64_t gmtlib_read_list (struct GMT_CTRL *GMT, char *file, char ***list);

@@ -71,7 +71,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC const char * api_get_module_group (void *V_API, char *module);
-EXTERN_MSC const char *gmt_current_name (const char *module, char modname[]);
 
 int GMT_docs (void *V_API, int mode, void *args) {
 	bool other_file = false;

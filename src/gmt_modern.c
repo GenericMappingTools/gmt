@@ -86,7 +86,7 @@ const char *gmt_current_name (const char *module, char modname[]) {
 	return module;
 }
 
-const char *gmt_get_active_name (struct GMTAPI_CTRL *API, const char *module) {
+const char *gmtlib_get_active_name (struct GMTAPI_CTRL *API, const char *module) {
 	/* Given a classic name module, return its name according to the run mode */
 	
 	if (!API->GMT->current.setting.use_modern_name)
@@ -117,7 +117,7 @@ const char *gmt_get_active_name (struct GMTAPI_CTRL *API, const char *module) {
 	return module;
 }
 
-bool gmt_is_modern_name (struct GMTAPI_CTRL *API, char *module) {
+bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, char *module) {
 	bool is_modern = false;	/* If classic */
 	gmt_M_unused (API);
 	/* Returns true if module is a modern name */

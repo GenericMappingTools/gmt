@@ -12301,7 +12301,6 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	gmt_M_str_free (Ccopy);	/* Good riddance */
 }
 
-EXTERN_MSC bool gmt_is_modern_name (struct GMTAPI_CTRL *API, char *module);
 void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char *argv[], bool gmt_main) {
 	/* Determine if user is attempting a modern mode one-liner plot, and if so, set run mode to GMT_MODERN.
 	 * This is needed since there is not gmt begin | end sequence in this case.
@@ -12316,7 +12315,7 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 		n_args--;	/* Count number of args after module name */
 		k = 1;
 	}
-	API->GMT->current.setting.use_modern_name = gmt_is_modern_name (API, argv[k]);
+	API->GMT->current.setting.use_modern_name = gmtlib_is_modern_name (API, argv[k]);
 	
 	if (API->GMT->current.setting.use_modern_name) {
 		if (n_args == 0) {	/* Gave none or a single argument */

@@ -9713,7 +9713,7 @@ const char * gmt_show_name_and_purpose (void *V_API, const char *component, cons
 	assert (name != NULL);
 	assert (purpose != NULL);
 	API = api_get_api_ptr (V_API);
-	mode_name = gmt_get_active_name (API, name);
+	mode_name = gmtlib_get_active_name (API, name);
 	lib = (component) ? component : core;
 	if (API->GMT->current.setting.use_modern_name || API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Must include the required "gmt " prefix */
 		sprintf (full_name, "gmt %s", mode_name);

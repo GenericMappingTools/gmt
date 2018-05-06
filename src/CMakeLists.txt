@@ -316,7 +316,7 @@ set (GMT_MBSYSTEM_SRCS gmt_mbsystem_module.c gmt_mbsystem_module.h)
 # libgmt
 set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	common_runpath.h common_sighandler.c common_string.h clear.c begin.c
-	gmt_modern_names.c end.c declspec.h gmt_hidden.h gmt_remote.h gmt_remote.c
+	gmt_modern.c end.c declspec.h gmt_hidden.h gmt_remote.h gmt_remote.c
 	figure.c getopt.h gmt_dev.h gmt_common.h gmt_constants.h compat/qsort.h
 	gmt_contour.h gmt_customio.h gmt_dcw.h gmt_decorate.h gmt_defaults.h
 	gmt_error.h gmt_gdalread.h gmt_glib.h gmt_grd.h gmt_grdio.h gmt_hash.h
@@ -340,7 +340,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 
 if (BUILD_SUPPLEMENTS)
 	# Needed in supplib, + supplements themselves
-	set (GMT_SUPPL_SRCS gmt_modern_names.c gmt_supplements_module.h gmt_supplements_module.c)
+	set (GMT_SUPPL_SRCS gmt_supplements_module.h gmt_supplements_module.c)
 endif (BUILD_SUPPLEMENTS)
 
 # dependencies on generated files
