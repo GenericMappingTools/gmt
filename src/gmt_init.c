@@ -12320,6 +12320,7 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 	if (API->GMT->current.setting.use_modern_name) {
 		if (n_args == 0) {	/* Gave none or a single argument */
 			API->GMT->current.setting.run_mode = GMT_MODERN;
+			API->usage = true;
 			return;
 		}
 		if (n_args == 1) {	/* Gave a single argument */
@@ -12329,6 +12330,7 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 			else if (argv[argc-1][0] == '-' && (argv[argc-1][1] == '\0' || argv[argc-1][1] == GMT_OPT_USAGE || argv[argc-1][1] == GMT_OPT_SYNOPSIS)) {	/* Gave a single argument */
 				modern = 1;
 			}
+			if (modern) API->usage = true;
 		}
 	}
 	/* Must check if a one-liner with special graphics format settings were given, e.g., -png map */

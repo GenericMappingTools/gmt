@@ -845,7 +845,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 	}
 	else {
-		if (options && options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+		if (API->usage || (options && options->option == GMT_OPT_USAGE)) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
 		if (options && options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 	}
 
