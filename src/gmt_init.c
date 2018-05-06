@@ -12303,7 +12303,11 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 EXTERN_MSC bool gmt_is_modern_name (struct GMTAPI_CTRL *API, char *module);
 void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char *argv[], bool gmt_main) {
-	/* Determine if user is attempting a modern mode one-liner plot, and if so, set run mode to GMT_MODERN */
+	/* Determine if user is attempting a modern mode one-liner plot, and if so, set run mode to GMT_MODERN.
+	 * This is needed since there is not gmt begin | end sequence in this case.
+	 * Also, if a user wants to get the usage message for a modern mode module then it is also a type
+	 * of one-liner and thus we set to GMT_MODERN as well, but only for modern module names. */
+	
 	unsigned modern = 0, pos, k = 0;
 	int n_args = argc - 1;
 	char figure[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
@@ -12314,20 +12318,21 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 	}
 	API->GMT->current.setting.use_modern_name = gmt_is_modern_name (API, argv[k]);
 	
-	if (n_args == 0) {	/* Gave none or a single argument */
-		API->GMT->current.setting.run_mode = GMT_MODERN;
-		return;
-	}
-	if (n_args == 1) {	/* Gave a single argument */
-		if (argv[argc-1][0] == '+' && argv[argc-1][1] == '\0') {	/* Gave + */
-			modern = 1;
+	if (API->GMT->current.setting.use_modern_name) {
+		if (n_args == 0) {	/* Gave none or a single argument */
+			API->GMT->current.setting.run_mode = GMT_MODERN;
+			return;
 		}
-		else if (argv[argc-1][0] == '-' && (argv[argc-1][1] == '\0' || argv[argc-1][1] == GMT_OPT_USAGE || argv[argc-1][1] == GMT_OPT_SYNOPSIS)) {	/* Gave a single argument */
-			modern = 1;
+		if (n_args == 1) {	/* Gave a single argument */
+			if (argv[argc-1][0] == '+' && argv[argc-1][1] == '\0') {	/* Gave + */
+				modern = 1;
+			}
+			else if (argv[argc-1][0] == '-' && (argv[argc-1][1] == '\0' || argv[argc-1][1] == GMT_OPT_USAGE || argv[argc-1][1] == GMT_OPT_SYNOPSIS)) {	/* Gave a single argument */
+				modern = 1;
+			}
 		}
 	}
-	
-	/* Must check graphics situation */
+	/* Must check if a one-liner with special graphics format settings were given, e.g., -png map */
 	for (k = 1; !modern && k < (unsigned int)argc; k++) {
 		if (argv[k][0] != '-') continue;	/* Skip file names */
 		if (strlen (argv[k]) < 3 || strlen (argv[k]) >= GMT_LEN128) continue;	/* -ps is the shortest format extension, and very long args are filenames*/
@@ -12345,9 +12350,9 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 			}
 		}
 	}
-	if (modern)
+	if (modern)	/* This is indeed a modern mode one-liner */
 		API->GMT->current.setting.run_mode = GMT_MODERN;
-	if (API->GMT->current.setting.run_mode == GMT_MODERN)
+	if (API->GMT->current.setting.run_mode == GMT_MODERN)	/* If running in modern mode we want to use modern names */
 		API->GMT->current.setting.use_modern_name = true;
 }
 
