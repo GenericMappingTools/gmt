@@ -120,7 +120,7 @@ EXTERN_MSC int GMT_triangulate (void *API, int mode, void *args);
 EXTERN_MSC int GMT_xyz2grd (void *API, int mode, void *args);
 
 /* Modern names */
-EXTERN_MSC int GMT_mask (void *API, int mode, void *args);
+EXTERN_MSC int GMT_basemap (void *API, int mode, void *args);
 EXTERN_MSC int GMT_clip (void *API, int mode, void *args);
 EXTERN_MSC int GMT_coast (void *API, int mode, void *args);
 EXTERN_MSC int GMT_contour (void *API, int mode, void *args);
