@@ -564,8 +564,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 	}
 	else {
-		if (API->usage || (options && options->option == GMT_OPT_USAGE)) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
 		if (options && options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+		if (API->usage || (options && options->option == GMT_OPT_USAGE)) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
 	}
 
 	/* Parse the command-line arguments; return if errors are encountered */

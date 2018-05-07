@@ -137,7 +137,7 @@ int main (int argc, char *argv[]) {
 
 			/* Print module list */
 			if (!strcmp (argv[arg_n], "--help")) {
-				fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
+				fprintf (stderr, "\n\t  GMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
 				fprintf (stderr, "(c) 1991-%d Paul Wessel, Walter H. F. Smith, Remko Scharroo, Joaquim Luis, and Florian Wobbe\n\n", GMT_VERSION_YEAR);
 				fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
 				fprintf (stderr, "and volunteers from around the world (see http://gmt.soest.hawaii.edu/).\n\n");
@@ -207,7 +207,7 @@ int main (int argc, char *argv[]) {
 		 * gmt-like application will write one separately [see mex API and documentation] */
 
 		if (modulename_arg_n == 1 && module[0] != '-') {
-			fprintf (stderr, "ERROR: No module named %s was found.  This could mean one of four cases:\n", module);
+			fprintf (stderr, "\nERROR: No module named %s was found.  This could mean one of four cases:\n", module);
 			fprintf (stderr, "  1. There actually is no such module; please check your spelling.\n");
 			fprintf (stderr, "  2. You used a modern mode module name while running in GMT classic mode.\n");
 			if (strlen (GMT_SUPPL_LIB_NAME))
@@ -221,7 +221,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "Shared libraries must be in standard system paths or set via environmental parameter %s.\n\n", LIB_PATH);
 		}
 		else {
-			fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
+			fprintf (stderr, "\n\t  GMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
 			fprintf (stderr, "(c) 1991-%d Paul Wessel, Walter H. F. Smith, Remko Scharroo, Joaquim Luis, and Florian Wobbe\n\n", GMT_VERSION_YEAR);
 			fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
 			fprintf (stderr, "and volunteers from around the world (see http://gmt.soest.hawaii.edu/).\n\n");
@@ -232,7 +232,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "For more information about legal matters, see the file named LICENSE.TXT.\n\n");
 			fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
-			fprintf (stderr, "Session management:\n");
+			fprintf (stderr, "session management:\n");
 			fprintf (stderr, "  gmt begin         Initiate a new GMT session using modern mode [classic].\n");
 			fprintf (stderr, "  gmt end           Terminate the current GMT modern mode session.\n");
 			fprintf (stderr, "  gmt docs          Display the HTML documentation for selected module.\n");
@@ -240,7 +240,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  gmt subplot       Initiate a multi-panel figure.\n");
 			//fprintf (stderr, "  gmt revert        Undo last <n> layers from current figure.\n");
 			fprintf (stderr, "  gmt clear history | conf | cache | all\n");
-			fprintf (stderr, "                    Deletes gmt.history, gmt.conf, the user cache dir, or all of them\n\n");
+			fprintf (stderr, "                    Delete gmt.history, gmt.conf, the user cache dir, or all of them.\n\n");
 			fprintf (stderr, "options:\n");
 			fprintf (stderr, "  --help            List descriptions of available GMT modules.\n");
 			fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
