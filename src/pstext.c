@@ -678,7 +678,7 @@ int GMT_text (void *V_API, int mode, void *args) {
 int GMT_pstext (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pstext task */
 
-	int  error = 0, k, fmode, nscan, *c_just = NULL;
+	int  error = 0, k, fmode, nscan = 0, *c_just = NULL;
 	int input_format_version = GMT_NOTSET, rec_number = 0;
 	
 	bool master_record = false, skip_text_records = false, old_is_world, clip_set = false, no_in_text;
