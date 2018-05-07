@@ -175,7 +175,7 @@ mars370.txt and send output to an ASCII table, run
 
    ::
 
-    gmt gmt blockmedian @mars370.txt -Rg -I5 -Eb -r > mars_5x5.txt
+    gmt blockmedian @mars370.txt -Rg -I5 -Eb -r > mars_5x5.txt
 
 See Also
 --------
