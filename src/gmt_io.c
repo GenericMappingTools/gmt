@@ -376,22 +376,30 @@ GMT_LOCAL double gmtio_convert_aspatial_value (struct GMT_CTRL *GMT, unsigned in
 }
 
 /*! . */
-GMT_LOCAL void gmtio_handle_bars (struct GMT_CTRL *GMT, char *in, unsigned way) {
+GGMT_LOCAL void gmtio_handle_bars (struct GMT_CTRL *GMT, char *in, unsigned way) {
 	/* Way = 0: replace | inside quotes with ASCII 1, Way = 1: Replace ASCII 1 with | */
+	/* Need to handle cases like ...|"St. George's Channel"|... with a mix of quotes. */
+	char the_quote = '\0';	/* Don't know what type of quote is used */
 	gmt_M_unused(GMT);
 	if (in == NULL || in[0] == '\0') return;	/* No string to check */
-	if (way == 0) {	/* Replace | within quotes with a single ASCII 1 */
+	if (way == 0) {	/* Replace | found inside quotes with a single ASCII 1 */
 		char *c = in;
 		bool replace = false;
+		while (*c && the_quote == '\0') {	/* Find the first quote character which we assume is what is used for a sentence which may contain another quote */
+			if (*c == '\"' || *c == '\'') the_quote = *c;
+			++c;
+		}
+		if (the_quote == '\0') the_quote = '\"';	/* No quotes found so just set the default quote */
+		c = in;	/* Start over */
 		while (*c) {
-			if (*c == '\"' || *c == '\'')
+			if (*c == the_quote)
 				replace = !replace;
 			else if (*c == '|' && replace)
 				*c = 1;
 			++c;
 		}
 	}
-	else /* way != 0: Replace single ASCII 1 with + */
+	else /* way != 0: Replace single ASCII 1 with | */
 		gmt_strrepc (in, 1, '|');
 }
 
