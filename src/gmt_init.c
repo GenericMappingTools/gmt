@@ -12135,10 +12135,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			GMT->common.R.wesn[XHI] = ceil  (GMT->common.R.wesn[XHI] / res[srtm_res]) * res[srtm_res];
 			GMT->common.R.wesn[YLO] = floor (GMT->common.R.wesn[YLO] / res[srtm_res]) * res[srtm_res];
 			GMT->common.R.wesn[YHI] = ceil  (GMT->common.R.wesn[YHI] / res[srtm_res]) * res[srtm_res];
+			/* Get a file with a list of all needed srtm tiles */
 			list = gmtlib_get_srtmlist (API, GMT->common.R.wesn, srtm_res);
+			/* Replace the @earth_relief_0xs file name with this local list */
 			gmt_M_str_free (opt->arg);
 			opt->arg = list;
-			GMT->common.R.active[RSET] = false;	/* Since we will parse it again officially in GMT_Parse_Common */
+			GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */
 		}
 		else if (gmt_M_file_is_remotedata (opt->arg) && !strstr (opt->arg, ".grd")) {
 			char *file = malloc (strlen(opt->arg)+5);
@@ -12311,6 +12313,7 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 	int n_args = argc - 1;
 	char figure[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
 
+    if (n_args == 0) return;    /* This is just typing gmt with no args */
 	if (gmt_main) {
 		n_args--;	/* Count number of args after module name */
 		k = 1;

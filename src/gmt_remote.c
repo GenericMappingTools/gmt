@@ -201,8 +201,8 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		sprintf (url, "%s%s/%s", GMT->session.DATAURL, cache_dir[from], &file[pos]);
 		if (kind == GMT_DATA_FILE && !strstr (url, ".grd")) strcat (url, ".grd");	/* Must supply the .grd */
 		len = strlen (url);
-		if (is_srtm && !strncmp (&url[len-3], ".nc", 3U))
-			strncpy (&url[len-2], GMT_SRTM_EXTENSION_REMOTE, PATH_MAX-1);	/* Switch extension for download */
+		if (is_srtm && !strncmp (&url[len-GMT_SRTM_EXTENSION_LOCAL_LEN-1U], ".nc", GMT_SRTM_EXTENSION_LOCAL_LEN+1U))
+			strncpy (&url[len-GMT_SRTM_EXTENSION_LOCAL_LEN], GMT_SRTM_EXTENSION_REMOTE, GMT_SRTM_EXTENSION_REMOTE_LEN);	/* Switch extension for download */
 	}
 	
 	if ((fsize = skip_large_files (GMT, url, GMT->current.setting.url_size_limit))) {
@@ -241,8 +241,8 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			sprintf (local_path, "%s/%s", srtmdir, &file[pos]);
 			srtm_local = strdup (local_path);	/* What we want the local file to be called */
 			len = strlen (local_path);
-			if (!strncmp (&local_path[len-3], ".nc", 3U))
-				strncpy (&local_path[len-2], GMT_SRTM_EXTENSION_REMOTE, PATH_MAX-1);	/* Switch extension for download */
+			if (!strncmp (&local_path[len-GMT_SRTM_EXTENSION_LOCAL_LEN-1U], ".nc", GMT_SRTM_EXTENSION_LOCAL_LEN+1U))
+				strncpy (&local_path[len-GMT_SRTM_EXTENSION_LOCAL_LEN], GMT_SRTM_EXTENSION_REMOTE, GMT_SRTM_EXTENSION_REMOTE_LEN);	/* Switch extension for download */
 		}
 		else
 			sprintf (local_path, "%s/%s", user_dir[to], &file[pos]);
@@ -334,13 +334,14 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
  */
 
 bool gmtlib_file_is_srtmrequest (struct GMTAPI_CTRL *API, const char *file, unsigned int *res) {
-	size_t len = strlen(GMT_DATA_PREFIX);
+	size_t len = strlen (GMT_DATA_PREFIX), flen = strlen (file);	/* Note: len does not include the leading @ character */
 	gmt_M_unused (API);
 	if (file[0] != '@') return false;	/* Not a remote file */
-	if (strncmp (&file[1], GMT_DATA_PREFIX, len)) return false;	/* Not a remote earth_relief grid */
+	if (strncmp (&file[1], GMT_DATA_PREFIX, len)) return false;	/* Not a remote earth_relief_xxx grid */
+	if ((len+3) >= flen) return false;	/* Prevent accessing beyond length of file */
 	if (file[len+3] != 's') return false;	/* Not an arcsec grid */
-	if (!(file[len+1] == '0' && (file[len+2] == '1' || file[len+2] == '3'))) return false;
-	/* Yes: a 1 or 3 arc sec SRTM request */
+	if (!(file[len+1] == '0' && (file[len+2] == '1' || file[len+2] == '3'))) return false;	/* Not 1 or 3 arc sec */
+	/* Yes: a 1 or 3 arc sec SRTM request, set res to 1 or 3 */
 	*res = (unsigned int)(file[len+2] - '0');
 	return true;
 }
