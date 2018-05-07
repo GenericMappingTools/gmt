@@ -2190,7 +2190,7 @@ grid via
 
 ::
 
- gmt grdimage -R109:30W/109:12W/27:14S/27:02S -JM6i -P -Baf @earth_relief_01s > easter.ps
+ gmt grdimage -R109:30W/109:12W/27:14S/27:02S -JM6i -B @earth_relief_01s -png easter
 
 Verbose operation
 -----------------
