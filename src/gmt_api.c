@@ -617,9 +617,15 @@ GMT_LOCAL void api_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJEC
 /* This was our effort to get PPID under Windows.  Remains as comments for now */
 #ifdef _WIN32
 #include <TlHelp32.h>
-int winppid () {
-	int pid = GetCurrentProcessId ();
-	int ppid = -1;
+int winppid (int pidin) {
+	/* If pidin == 0 get the PPID of current process
+	   otherwise, get the PPID of pidin process
+	*/
+	int pid, ppid = -1;
+	if (pidin)
+		pid = pidin;
+	else
+		pid = GetCurrentProcessId ();
 	HANDLE h = CreateToolhelp32Snapshot (TH32CS_SNAPPROCESS, 0);
 	PROCESSENTRY32 pe = { 0 };
 	pe.dwSize = sizeof (PROCESSENTRY32);
@@ -655,10 +661,13 @@ GMT_LOCAL int api_get_ppid (struct GMTAPI_CTRL *API) {
 	   is that Windows users running many bash windows concurrently should use GMT_PPID in their scripts
 	   to give unique values to different scripts.  */
 	if ((str = getenv ("SHELL")) != NULL) {	/* GMT_PPID was set in the environment */
-		if (ppid == -1) ppid = 0, k = 3;
+		//if (ppid == -1) ppid = 0, k = 3;
+		ppid = winppid(0);		/* First time get PPID of current process */
+		ppid = winppid(ppid);	/* Second time get PPPID of current process */
+		k = 1;
 	}
 	else {
-		if (ppid == -1) ppid = winppid(), k = 1;
+		if (ppid == -1) ppid = winppid(0), k = 1;
 	}
 #else	/* Normal situation */
 	else if (API->external)	/* Return PID of the controlling app instead for external interfaces */
