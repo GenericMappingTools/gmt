@@ -253,7 +253,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append /<foldername> to name folder when used with\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -O and -K to organize features into groups.\n");
 	GMT_Option (API, "V");
-	gmt_pen_syntax (API->GMT, 'W', "Specify pen attributes for lines and polygon outlines [Default is %s].", 8);
+	gmt_pen_syntax (API->GMT, 'W', "Specify pen attributes for lines and polygon outlines [Default is %s].\n", 8);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give width in pixels and append p.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Control visibility of features.  Append one or more modifiers:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +a<alt_min>/<alt_max> inserts altitude limits [no limit].\n");
