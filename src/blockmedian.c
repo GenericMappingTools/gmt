@@ -112,6 +112,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 				else
 					n_errors++;
 				break;
+			case 'G':	/* Write output grid */
+				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
+					Ctrl->G.file = strdup (opt->arg);
+				else
+					n_errors++;
+				break;
 			case 'I':	/* Get block dimensions */
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
@@ -241,18 +247,13 @@ GMT_LOCAL void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, u
 #define Return(code) {GMT_Destroy_Data (API, &Grid); gmt_M_free (GMT, Out); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_blockmedian (void *V_API, int mode, void *args) {
-	uint64_t n_lost, node, first_in_cell, first_in_new_cell;
-	uint64_t n_read, nz, n_pitched, n_cells_filled, w_col, i_col = 0, sid_col;
-
-	size_t n_alloc = 0, nz_alloc = 0;
-
-	bool do_extra = false, duplicate_col;
-
 	int error = 0;
+	bool do_extra = false, duplicate_col;
+	uint64_t n_lost, node, first_in_cell, first_in_new_cell;
+	uint64_t n_read, nz, n_pitched, n_cells_filled, w_col, i_col = 0, sid_col, ij;
+	size_t n_alloc = 0, nz_alloc = 0;
 	unsigned int row, col, emode = 0, n_input, n_output, n_quantiles = 1, go_quickly = 0;
-
 	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, half_dx, *in = NULL, *z_tmp = NULL;
-
 	char format[GMT_LEN256] = {""}, *old_format = NULL;
 
 	struct GMT_OPTION *options = NULL;
@@ -284,7 +285,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL, \
-		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);	/* Note: 0 for pad since no BC work needed */
+	                             GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);	/* Note: 0 for pad since no BC work needed */
 
 	duplicate_col = (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 	half_dx = 0.5 * Grid->header->inc[GMT_X];
@@ -432,6 +433,16 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 		GMT->current.io.o_format[i_col] = strdup ("%.0f");	/* Integer format for src_id */
 	}
 
+	if (Ctrl->G.active) {		/* Allocate the grid and initialize it to NaNs */
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY,
+		                             NULL, NULL, NULL, Grid->header->registration, 0, Grid)) == NULL) {
+			gmt_M_free (GMT, data);
+			Return (API->error);
+		}
+		for (ij = 0; ij < Grid->header->size; ij++)
+			Grid->data[ij] = Grid->header->nan_value;
+	}
+
 	/* Sort on node and Z value */
 
 	qsort (data, n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
@@ -463,6 +474,15 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 		median_output (GMT, Grid->header, first_in_cell, first_in_new_cell, weight, out, extra, go_quickly, emode, quantile, n_quantiles, data);
 		/* Here, x,y,z are loaded into out */
 
+		if (Ctrl->G.active) {
+			row = gmt_M_grd_y_to_row (GMT, out[GMT_Y], Grid->header);
+			col = gmt_M_grd_x_to_col (GMT, out[GMT_X], Grid->header);
+			node = gmt_M_ijp (Grid->header, row, col);	/* Bin node */
+			Grid->data[node] = (gmt_grdfloat)out[GMT_Z];
+			first_in_cell = first_in_new_cell;
+			continue;
+		}
+
 		if (Ctrl->E.mode & BLK_DO_EXTEND4) {	/* Need 7 items: x, y, median, min, 25%, 75%, max [,weight] */
 			out[3] = z_tmp[0];	/* 0% quantile (min value) */
 			out[4] = extra[0];	/* 25% quantile */
@@ -493,6 +513,11 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	gmt_M_free (GMT, data);
 	if (do_extra) gmt_M_free (GMT, z_tmp);
+
+	if (Ctrl->G.active)		{ /* Write the output grid */
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Grid) != GMT_NOERROR)
+		Return (API->error);
+	}
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
