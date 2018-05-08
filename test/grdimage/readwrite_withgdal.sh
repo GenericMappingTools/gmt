@@ -2,8 +2,8 @@
 #
 #	$Id$
 
-GDAL=`gmt grdconvert 2>&1 | grep -c gd`
-if [ $GDAL -eq 0 ]; then exit; fi
+GDAL=`gmt-config --has-gdal`
+if [ $GDAL = "no" ]; then exit; fi
 	
 ps=readwrite_withgdal.ps
 
