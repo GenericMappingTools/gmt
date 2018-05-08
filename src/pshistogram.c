@@ -502,8 +502,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw the equivalent normal distribution; append desired pen [0.25p,black].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <mode> selects which central location and scale to use:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   0 = mean and standard deviation [Default]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1 = median and L1 scale\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   2 = LMS mode and scale\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   1 = median and L1 scale (MAD w.r.t. median)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   2 = LMS mode and LMS scale (MAD w.r.t. mode)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The -N option may be repeated to draw several of these curves.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot a cumulative histogram; append r for reverse cumulative histogram.\n");

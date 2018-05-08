@@ -142,7 +142,7 @@ Optional Arguments
     The *mode* selects which central location and scale to use:
  
     * 0 = mean and standard deviation [Default];
-    * 1 = median and L1 scale;
+    * 1 = median and L1 scale (1.4826 \* median absolute deviation; MAD);
     * 2 = LMS mode and scale.
 
     The **-N** option may be repeated to draw several of these curves.

@@ -85,7 +85,7 @@ Required Arguments
 
     Upper case type **B**, **C**, **G**, **M**, **P**, **F** will use
     robust filter versions: i.e., replace outliers (2.5 L1 scale off
-    median) with median during filtering.
+    median, using 1.4826 \* median absolute deviation [MAD]) with median during filtering.
 
     In the case of **L**\ \|\ **U** it is possible that no data passes
     the initial sign test; in that case the filter will return 0.0.

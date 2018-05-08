@@ -79,8 +79,8 @@ Optional Arguments
 
 **-E**\ [**b**\ ]
     Provide Extended report which includes **s** (the L1 scale of the
-    median), **l**, the lowest value, and **h**, the high value for each
-    block. Output order becomes
+    median, i.e., 1.4826 \* median absolute deviation [MAD]), **l**, the lowest
+    value, and **h**, the high value for each block. Output order becomes
     *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. [Default outputs
     *x*,\ *y*,\ *z*\ [,\ *w*]. For box-and-whisker calculation, use
     **-Eb** which will output

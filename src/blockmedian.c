@@ -53,7 +53,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block as location [Default is (median x, median y), but see -Q].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend output with L1 scale (s), low (l), and high (h) value per block, i.e.,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend output with L1 scale (s=MAD), low (l), and high (h) value per block, i.e.,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Eb for box-and-whisker output (x,y,z,l,25%%q,75%%q,h[,w]).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Er to report record number of the median value per block,\n");

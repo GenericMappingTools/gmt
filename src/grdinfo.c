@@ -128,9 +128,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -Ir is given then the grid's -R string is issued.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set report mode:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -L0 reports range of data by actually reading them (not from header).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -L1 reports median and L1-scale of data set.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -L1 reports median and L1 scale (MAD w.r.t. median) of data set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -L[2] reports mean, standard deviation, and rms of data set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Lp reports mode (lms) and LMS-scale of data set.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Lp reports mode (lms) and LMS-scale (MAD w.r.t. mode) of data set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -La all of the above.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If grid is geographic then we report area-weighted statistics.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Search for the global min and max locations (x0,y0) and (x1,y1).\n");
