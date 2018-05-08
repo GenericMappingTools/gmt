@@ -4748,9 +4748,9 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			return_null (API, GMT_NOT_A_VALID_METHOD);
 			break;
 	}
-	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Also allocate and initialize the x and y vectors */
-		G_obj->x = api_grid_coord (API, GMT_X, G_obj);	/* Get array of x coordinates */
-		G_obj->y = api_grid_coord (API, GMT_Y, G_obj);	/* Get array of y coordinates */
+	if ((mode & GMT_CONTAINER_ONLY) == 0) {	/* Also allocate and initialize the x and y vectors unless already present  */
+		if (G_obj->x == NULL) G_obj->x = api_grid_coord (API, GMT_X, G_obj);	/* Get array of x coordinates */
+		if (G_obj->y == NULL) G_obj->y = api_grid_coord (API, GMT_Y, G_obj);	/* Get array of y coordinates */
 	}
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
