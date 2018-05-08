@@ -10695,7 +10695,7 @@ int GMT_Message (void *V_API, unsigned int mode, const char *format, ...) {
 	 * mode = 6:	Reset elapsed time and report it as well.
 	 */
 	size_t source_info_len;
-	char message[4*GMT_BUFSIZ] = {""}, *stamp = NULL;
+	char message[GMT_BUFSIZ] = {""}, *stamp = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	va_list args;
 
@@ -10707,9 +10707,9 @@ int GMT_Message (void *V_API, unsigned int mode, const char *format, ...) {
 	source_info_len = strlen (message);
 
 	va_start (args, format);
-	vsnprintf (message + source_info_len, 4*GMT_BUFSIZ - source_info_len, format, args);
+	vsnprintf (message + source_info_len, GMT_BUFSIZ - source_info_len, format, args);
 	va_end (args);
-	assert (strlen (message) < 4*GMT_BUFSIZ);
+	assert (strlen (message) < GMT_BUFSIZ);
 	API->print_func (API->GMT->session.std[GMT_ERR], message);	/* Do the printing */
 	return_error (V_API, GMT_NOERROR);
 }
