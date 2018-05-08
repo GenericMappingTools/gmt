@@ -452,7 +452,7 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	char res = file[strlen(file)-8];
 	struct GMT_GRID *G = NULL;
 	double *wesn = (region) ? region : API->GMT->common.R.wesn;	/* Default to -R */
-	char grid[GMT_STR16] = {""}, cmd[GMT_LEN128] = {""}, tag[4] = {"01s"};
+	char grid[GMT_STR16] = {""}, cmd[GMT_LEN256] = {""}, tag[4] = {"01s"};
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	
 	tag[1] = res;
@@ -460,7 +460,7 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Assembling SRTM grid from 1x1 degree tiles given by listfile %s\n", file);
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
 	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN */
-	sprintf (cmd, "%s -R%g/%g/%g/%g -I%cs -G%s -N0", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], res, grid);
+	sprintf (cmd, "%s -R%.16g/%.16g/%.16g/%.16g -I%cs -G%s -N0", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], res, grid);
 	if (GMT_Call_Module (API, "grdblend", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to produce blended grid from %s\n", file);
 		return NULL;
