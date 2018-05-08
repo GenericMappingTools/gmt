@@ -376,7 +376,7 @@ GMT_LOCAL double gmtio_convert_aspatial_value (struct GMT_CTRL *GMT, unsigned in
 }
 
 /*! . */
-GGMT_LOCAL void gmtio_handle_bars (struct GMT_CTRL *GMT, char *in, unsigned way) {
+GMT_LOCAL void gmtio_handle_bars (struct GMT_CTRL *GMT, char *in, unsigned way) {
 	/* Way = 0: replace | inside quotes with ASCII 1, Way = 1: Replace ASCII 1 with | */
 	/* Need to handle cases like ...|"St. George's Channel"|... with a mix of quotes. */
 	char the_quote = '\0';	/* Don't know what type of quote is used */
