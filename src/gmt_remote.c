@@ -452,7 +452,7 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	char res = file[strlen(file)-8];
 	struct GMT_GRID *G = NULL;
 	double *wesn = (region) ? region : API->GMT->common.R.wesn;	/* Default to -R */
-	char grid[GMT_STR16] = {""}, cmd[GMT_LEN256] = {""}, tag[4] = {"01s"};
+	char grid[GMT_STR16] = {""}, cmd[GMT_LEN128] = {""}, tag[4] = {"01s"};
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	
 	tag[1] = res;
