@@ -119,8 +119,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 
 	unsigned int n_errors = 0;
 	int n;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
-	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, string[GMT_LEN256] = {""};
+	char xx[GMT_LEN256] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
+	char yy[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, string[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -160,11 +160,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
 					}
 				}
-				else {	/* Backwards handling of old syntax. Args are args are <width>[/<height>][/<justify>][/<dx>/<dy>] */
+				else {	/* Backwards handling of old syntax. Args are args are [x]<x>/<y>/<width>[/<height>][/<justify>][/<dx>/<dy>] */
+					Ctrl->D.refpoint = gmt_M_memory (GMT, NULL, 1, struct GMT_REFPOINT);
+					Ctrl->D.refpoint->mode = GMT_REFPOINT_PLOT;
 					Ctrl->D.justify = PSL_TC;	/* Backwards compatible default justification */
-					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
-					n_errors += gmt_M_check_condition (GMT, n < 2, "Error: Syntax is -D[x]<x0>/<y0>/<width>[/<height>][/<justify>][/<dx>/<dy>]\n");
-					Ctrl->D.dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s", xx, yy, txt_a, txt_b, txt_c, txt_d, txt_e);
+					n_errors += gmt_M_check_condition (GMT, n < 3, "Error: Old syntax is -D[x]<x0>/<y0>/<width>[/<height>][/<justify>][/<dx>/<dy>]\n");
+					if (n_errors) break;
+					if (xx[0] == 'x') {
+						Ctrl->D.refpoint->x = gmt_M_to_inch (GMT, &xx[1]);
+						Ctrl->D.refpoint->y = gmt_M_to_inch (GMT, yy);
+					}
+					else {	/* The equivalent of -Dg<lon>/<lat>... */
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf (GMT, xx, gmt_M_type (GMT, GMT_IN, GMT_X), &Ctrl->D.refpoint->x), xx);
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf (GMT, yy, gmt_M_type (GMT, GMT_IN, GMT_Y), &Ctrl->D.refpoint->y), yy);
+						Ctrl->D.refpoint->mode = GMT_REFPOINT_MAP;
+					}
+					Ctrl->D.dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);	/* Width is always given */
+					n -= 2;	/* Remove the x/y count */
 					switch (n) {
 						case 1: /* Only gave reference point and width; change default justify if -Dj */
 							if (Ctrl->D.refpoint && Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* For -Dj with no 2nd justification, use same code as reference coordinate */
