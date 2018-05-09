@@ -787,7 +787,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (sector_plot && !Ctrl->A.rose && Ctrl->G.fill.rgb[0] >= 0) {	/* Draw pie slices for sector plot if fill is requested */
+	if (sector_plot && !Ctrl->A.rose && Ctrl->G.active) {	/* Draw pie slices for sector plot if fill is requested */
 
 		gmt_setfill (GMT, &(Ctrl->G.fill), false);
 		for (bin = 0; bin < n_bins; bin++) {
