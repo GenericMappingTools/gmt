@@ -3210,6 +3210,7 @@ GMT_LOCAL unsigned int support_inonout_sub (struct GMT_CTRL *GMT, double x, doub
 		}
 		else if (x < S->min[GMT_X] || x > S->max[GMT_X])
 			return (GMT_OUTSIDE);	/* Point outside, no need to assign value */
+		/* It is essential that the longitudes in S are within the min/max limits since this is a Cartesian algorithm */
 		side = gmt_non_zero_winding (GMT, x, y, S->data[GMT_X], S->data[GMT_Y], S->n_rows);
 	}
 	return (side);

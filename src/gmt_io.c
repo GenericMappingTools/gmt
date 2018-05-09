@@ -5388,16 +5388,23 @@ void gmt_find_range (struct GMT_CTRL *GMT, struct GMT_RANGE *Z, uint64_t n_items
 /*! . */
 void gmtlib_get_lon_minmax (struct GMT_CTRL *GMT, double *lon, uint64_t n_rows, double *min, double *max) {
 	/* Return the min/max longitude in array lon using clever quadrant checking. */
+	bool all_negative = true;
 	unsigned int way;
 	uint64_t row;
 	struct GMT_QUAD *Q = gmt_quad_init (GMT, 1);	/* Allocate and initialize one QUAD structure */
 
 	/* We must keep separate min/max for both Dateline and Greenwich conventions */
-	for (row = 0; row < n_rows; row++) gmt_quad_add (GMT, Q, lon[row]);
+	for (row = 0; row < n_rows; row++) {
+		if (lon[row] > 0.0) all_negative = false;
+		gmt_quad_add (GMT, Q, lon[row]);
+	}
 
 	/* Finalize longitude range settings */
 	way = gmt_quad_finalize (GMT, Q);
 	*min = Q->min[way];		*max = Q->max[way];
+	if (all_negative && *min >= 0.0 && *max > 0.0) {	/* Shift the min/max to negative longitudes */
+		*min -= 360.0;	*max -= 360.0;
+	}
 	gmt_M_free (GMT, Q);
 }
 
