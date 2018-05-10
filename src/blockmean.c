@@ -412,11 +412,11 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	if (Ctrl->G.active) {	/* Create the grid(s) */
 		for (k = 0; k < BLK_N_FIELDS; k++) {
 			if (Ctrl->A.select[k] == 0) continue;
-			if (k == 0)	/* Avoid double memory by reusing z grid*/
-				GridOut[k] = Grid;
-			else if ((GridOut[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
+			if ((GridOut[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 					GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 			if (G == NULL) G = GridOut[k];	/* First grid header used to get node later */
+			for (node = 0; node < G->header->size; node++) 
+				GridOut[k]->data[node] = GMT->session.f_NaN;
 		}
 	}
 	
