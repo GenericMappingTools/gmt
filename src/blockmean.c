@@ -34,7 +34,7 @@
 #define THIS_MODULE_NAME	"blockmean"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by L2 norm"
-#define THIS_MODULE_KEYS	"<D{,>D}"
+#define THIS_MODULE_KEYS	"<D{,>D},GGG"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:>RVabdefghior" GMT_OPT("FH")
 
@@ -113,7 +113,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 					Ctrl->A.n_select++;
 				}
 				if (Ctrl->A.n_select == 0) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-A requires comman-separated field arguments.\n");
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-A requires comma-separated field arguments.\n");
 					n_errors++;
 				}
 				break;
@@ -185,20 +185,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->G.active, "Syntax error: -A requires -G\n");
-	if (Ctrl->G.active) {
+	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
 		if (Ctrl->A.active && Ctrl->A.n_select > 1 && !strstr (Ctrl->G.file, "%s")) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G file format must contain a %%s for field type replacement.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G file format must contain a %%s for field type substitution.\n");
 			n_errors++; 
 		}
-		else if (!Ctrl->A.active)	/* Set default */
+		else if (!Ctrl->A.active)	/* Set default z output grid */
 			Ctrl->A.select[0] = Ctrl->A.n_select = 1;
-		else {	/* Make sure -A choices are valid */
+		else {	/* Make sure -A choices are valid and that -E is set if extended fields are selected */
 			if (!Ctrl->E.active && (Ctrl->A.select[1] || Ctrl->A.select[2] || Ctrl->A.select[3])) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-E is required if -A includes s, l, or h.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-E is required if -A specifices s, l, or h.\n");
 				n_errors++; 
 			}
 			if (Ctrl->A.select[4] && !Ctrl->W.weighted[GMT_OUT]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A includes w.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A specifices w.\n");
 				n_errors++; 
 			}
 		}
