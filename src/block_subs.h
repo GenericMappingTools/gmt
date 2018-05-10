@@ -35,6 +35,11 @@
 
 /*! All control options for this program (except common args) */
 struct BLOCK_CTRL {
+	struct A {	/* -A<fields> */
+		bool active;
+		unsigned int n_select;
+		unsigned int select[8];
+	} A;
 	struct C {	/* -C */
 		bool active;
 	} C;
@@ -164,6 +169,7 @@ struct BLK_DATA {
 #endif
 };
 #endif
+#define BLK_N_FIELDS	8
 
 /* Declaring the standard functions to allocate and free the program Ctrl structure */
 
