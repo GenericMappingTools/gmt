@@ -391,7 +391,24 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	fcol[4] = w_col;				/* Since we dont know what it is until parsed */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculating block means\n");
 
-	if (!Ctrl->G.active) {	/* Get ready for rec-by-rec output */
+	if (Ctrl->G.active) {	/* Create the grid(s) */
+		char *remarks[BLK_N_FIELDS] = {"Mean value per bin", "Standard deviation per bin", "Lowest value per bin", "Highest value per bin", "Weight per bin"};
+		for (k = 0; k < BLK_N_FIELDS; k++) {
+			if (Ctrl->A.select[k] == 0) continue;
+			field[NF] = fcol[k];	/* Just keep record of which fields we are actually using */
+			code[NF] = fcode[k];
+			if ((GridOut[NF] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
+				GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_TITLE, "Grid produced by blockmean", GridOut[NF]) != GMT_NOERROR) Return (API->error);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, GridOut[NF]) != GMT_NOERROR) Return (API->error);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remarks[k], GridOut[NF])) Return (API->error);
+			if (G == NULL) G = GridOut[NF];	/* First grid header used to get node later */
+			for (node = 0; node < G->header->size; node++) 
+				GridOut[NF]->data[node] = GMT->session.f_NaN;
+			NF++;	/* Number of actual field grids */
+		}
+	}
+	else {	/* Get ready for rec-by-rec output */
 		if (GMT->common.h.add_colnames) {	/* Create meaningful column header */
 			unsigned int k = 3;
 			char header[GMT_BUFSIZ] = {""}, txt[GMT_LEN16] = {""}, *names[4] = {"\tmean_z", "\tsum_z", "\twsum_z", "\tn_z"};
@@ -410,23 +427,6 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 		}
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
-		}
-	}
-	else {	/* Create the grid(s) */
-		char *remarks[BLK_N_FIELDS] = {"Mean value per bin", "Standard deviation per bin", "Lowest value per bin", "Highest value per bin", "Weight per bin"};
-		for (k = 0; k < BLK_N_FIELDS; k++) {
-			if (Ctrl->A.select[k] == 0) continue;
-			field[NF] = fcol[k];	/* Just keep record of which fields we are actually using */
-			code[NF] = fcode[k];
-			if ((GridOut[NF] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
-				GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_TITLE, "Grid produced by blockmean", GridOut[NF]) != GMT_NOERROR) Return (API->error);
-			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, GridOut[NF]) != GMT_NOERROR) Return (API->error);
-			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remarks[k], GridOut[NF])) Return (API->error);
-			if (G == NULL) G = GridOut[NF];	/* First grid header used to get node later */
-			for (node = 0; node < G->header->size; node++) 
-				GridOut[NF]->data[node] = GMT->session.f_NaN;
-			NF++;	/* Number of actual field grids */
 		}
 	}
 	

@@ -620,18 +620,8 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	/* Ready to go. */
 
-	if (!Ctrl->G.active) {	/* Get ready for rec-by-rec output */
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
-			gmt_M_free (GMT, data);
-			Return (API->error);
-		}
-		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
-			gmt_M_free (GMT, data);
-			Return (API->error);
-		}
-	}
-	else {	/* Create the grid(s) */
-		char *remarks[BLK_N_FIELDS] = {"Median value per bin", "Standard deviation per bin", "Lowest value per bin", "Highest value per bin", "Weight per bin"};
+	if (Ctrl->G.active) {	/* Create the grid(s) */
+		char *remarks[BLK_N_FIELDS] = {"Median value per bin", "L1 scale per bin", "Lowest value per bin", "Highest value per bin", "Weight per bin"};
 		for (k = 0; k < BLK_N_FIELDS; k++) {
 			if (Ctrl->A.select[k] == 0) continue;
 			field[NF] = fcol[k];	/* Just keep record of which fields we are actually using */
@@ -645,6 +635,16 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 			for (node = 0; node < G->header->size; node++) 
 				GridOut[NF]->data[node] = GMT->session.f_NaN;
 			NF++;	/* Number of actual field grids */
+		}
+	}
+	else {	/* Get ready for rec-by-rec output */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+			gmt_M_free (GMT, data);
+			Return (API->error);
+		}
+		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+			gmt_M_free (GMT, data);
+			Return (API->error);
 		}
 	}
 
