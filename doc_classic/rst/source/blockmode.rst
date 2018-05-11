@@ -16,9 +16,12 @@ Synopsis
 **blockmode** [ *table* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
+[ |-A|\ *fields* ]
 [ |-C| ]
 [ |-D|\ [*width*]\ [**+c**][**+a**\ \|\ **+l**\ \|\ **+h** ]
-[ |-E|\ **r**\ \|\ **s**\ [**-**] ] [ |-Q| ]
+[ |-E|\ **r**\ \|\ **s**\ [**-**] ]
+[ |-G|\ [*grdfile*] ]
+[ |-Q| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**i**\ \|\ **o**][**+s**] ]
 [ |SYN_OPT-b| ]
@@ -41,8 +44,8 @@ Description
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output mode estimates of
 position and value for every non-empty block in a grid region defined by
-the **-R** and **-I** arguments. Either :doc:`blockmean`, 
-:doc:`blockmedian`,
+the **-R** and **-I** arguments. See **-G** for writing gridded output directly.
+Either :doc:`blockmean`, :doc:`blockmedian`,
 or **blockmode** should be used as a pre-processor before running
 :doc:`surface` to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
@@ -68,6 +71,16 @@ Optional Arguments
     **-bi**] holding (*x*,\ *y*,\ *z*\ [,\ *w*])
     data values. [\ *w*] is an optional weight for the data. If no file
     is specified, **blockmode** will read from standard input.
+
+.. _-A:
+
+**-A**\ *fields*
+    Select which fields to write to individual grids.  Requires **-G**.
+    Append comma-separated codes for available fields: **z** (the modal
+    data z), **s** (the L1 scale of the mode), **l** (lowest
+    value), **h** (highest value) and **w** (the output weight; requires **-W**).
+    Note **s**\ \|\ **l**\ \|\ **h** requires **-E**, and **Es**\ \|\ **r**
+    cannot be used. [Default is just **z**].
 
 .. _-C:
 
@@ -105,6 +118,14 @@ Optional Arguments
     For **-E**\ **s** we expect input records of the form
     *x*,\ *y*,\ *z*\ [,\ *w*],\ *sid*, where *sid* is an unsigned integer
     source id.
+
+.. _-G:
+
+**-G**\ *grdfile*
+    Write one or more fields directly to grids; no table data are written to
+    standard output.  If more than one fields are specified via **-A** then
+    *grdfile* must contain the format flag %s so that we can embed the field
+    code in the file names.
 
 .. _-Q:
 
@@ -177,6 +198,13 @@ data representing integer counts, try
    ::
 
     gmt blockmode @ship_15.txt -R245/255/20/30 -I2  -r -C -D
+
+To determine the mode and L1 scale (MAD) on the mode per 10 minute bin and save these to two separate grids
+called field_z.nc and field_s.nc, run
+
+   ::
+
+    gmt blockmode @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Az,s
 
 See Also
 --------

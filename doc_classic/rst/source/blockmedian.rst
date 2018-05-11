@@ -16,8 +16,11 @@ Synopsis
 **blockmedian** [ *table* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
+[ |-A|\ *fields* ]
 [ |-C| ]
-[ |-E|\ [**b**] ] [ |-E|\ **r**\ \|\ **s**\ [**-**] ] [ |-Q| ]
+[ |-E|\ [**b**] ] [ |-E|\ **r**\ \|\ **s**\ [**-**] ]
+[ |-G|\ [*grdfile*] ]
+[ |-Q| ]
 [ |-T|\ *quantile* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**i**\ \|\ **o**][**+s**] ]
@@ -41,7 +44,8 @@ Description
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output a median position and
 value for every non-empty block in a grid region defined by the **-R**
-and **-I** arguments. Either :doc:`blockmean`, **blockmedian**, or
+and **-I** arguments. See **-G** for writing gridded output directly.
+Either :doc:`blockmean`, **blockmedian**, or
 :doc:`blockmode` should be used as a pre-processor before running
 :doc:`surface` to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
@@ -68,6 +72,17 @@ Optional Arguments
     (*x*,\ *y*,\ *z*\ [,\ *w*]) data values. [\ *w*] is an optional weight
     for the data. If no file is specified, **blockmedian** will read
     from standard input.
+
+.. _-A:
+
+**-A**\ *fields*
+    Select which fields to write to individual grids.  Requires **-G**.
+    Append comma-separated codes for available fields: **z** (the median
+    data z, but see **-T**), **s** (the L1 scale of the median), **l** (lowest
+    value), **q25** (the 25% quartile), **q75** (the 75% quartile), **h** (highest value),
+    and **w** (the output weight; requires **-W**).  Note **s**\ \|\ **l**\ \|\ **h**
+    requires **-E**, while **l**\ \|\ **q25**\ \|\ **q75**\ \|\ **h** requires **-Eb**,
+    and **Es**\ \|\ **r** cannot be used. [Default is just **z**].
 
 .. _-C:
 
@@ -96,6 +111,14 @@ Optional Arguments
     specified. For **-E**\ **s** we expect input records of the form
     *x*,\ *y*,\ *z*\ [,\ *w*],\ *sid*, where *sid* is an unsigned integer
     source id.
+
+.. _-G:
+
+**-G**\ *grdfile*
+    Write one or more fields directly to grids; no table data are written to
+    standard output.  If more than one fields are specified via **-A** then
+    *grdfile* must contain the format flag %s so that we can embed the field
+    code in the file names.
 
 .. _-Q:
 
@@ -176,6 +199,13 @@ mars370.txt and send output to an ASCII table, run
    ::
 
     gmt blockmedian @mars370.txt -Rg -I5 -Eb -r > mars_5x5.txt
+
+To determine the median and L1 scale (MAD) on the median per 10 minute bin and save these to two separate grids
+called field_z.nc and field_s.nc, run
+
+   ::
+
+    gmt blockmedian @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Az,s
 
 See Also
 --------

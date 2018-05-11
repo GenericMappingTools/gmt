@@ -43,8 +43,8 @@
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-E[p]] [-S[m|n|s|w]] [%s] [-W[i][o][+s]]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s\n", name, GMT_I_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-E[p]] [-G<grdfile>] [-S[m|n|s|w]] [%s] [-W[i][o][+s]]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -53,11 +53,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A List of comma-separated fields to be written as grids (requires -G). Choose from\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   z, s, l, h, and w. s|l|h requires -E; w requires -W[o] [Default is z only].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block and mean z-value [Default outputs (mean x, mean y) location]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend output with st.dev (s), low (l), and high (h) value per block, i.e.,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   output (x,y,z,s,l,h[,w]) [Default is (x,y,z[,w])]; see -W regarding the weight w.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -Ep is used we assume weights are 1/sigma^2 and s becomes the propagated error.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the quantity to be reported per block; choose among:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify output grid file name; no table results will be written to stdout.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If more than one field is set via -A then <grdfile> must contain  %%s to format field code.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the quantity to be reported per block as z; choose among:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Sm report mean values [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Sn report number of data points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Ss report data sums.\n");
@@ -217,13 +221,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 
 int GMT_blockmean (void *V_API, int mode, void *args) {
 	uint64_t node, n_cells_filled, n_read, n_lost, n_pitched, w_col, *np = NULL;
-	unsigned int row, col, n_input, k, fcol[BLK_N_FIELDS] = {2,3,4,5,6,0,0,0};
+	unsigned int row, col, n_input, k, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,0,0,0}, field[BLK_N_FIELDS];
 	int error;
 	bool use_xy, use_weight, duplicate_col;
 
 	double weight, weighted_z, iw, half_dx, wesn[4], out[7], *in = NULL;
 
-	char format[GMT_LEN256] = {""}, *code[BLK_N_FIELDS] = {"z", "s", "l", "h", "w", "", "", ""};
+	char format[GMT_LEN256] = {""}, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "h", "w", "", "", ""}, *code[BLK_N_FIELDS];
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL, *G = NULL, *GridOut[BLK_N_FIELDS];
@@ -408,15 +412,21 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-
-	if (Ctrl->G.active) {	/* Create the grid(s) */
+	else {	/* Create the grid(s) */
+		char *remarks[BLK_N_FIELDS] = {"Mean value per bin", "Standard deviation per bin", "Lowest value per bin", "Highest value per bin", "Weight per bin"};
 		for (k = 0; k < BLK_N_FIELDS; k++) {
 			if (Ctrl->A.select[k] == 0) continue;
-			if ((GridOut[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
-					GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
-			if (G == NULL) G = GridOut[k];	/* First grid header used to get node later */
+			field[NF] = fcol[k];	/* Just keep record of which fields we are actually using */
+			code[NF] = fcode[k];
+			if ((GridOut[NF] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
+				GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_TITLE, "Grid produced by blockmean", GridOut[NF]) != GMT_NOERROR) Return (API->error);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, GridOut[NF]) != GMT_NOERROR) Return (API->error);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remarks[k], GridOut[NF])) Return (API->error);
+			if (G == NULL) G = GridOut[NF];	/* First grid header used to get node later */
 			for (node = 0; node < G->header->size; node++) 
-				GridOut[k]->data[node] = GMT->session.f_NaN;
+				GridOut[NF]->data[node] = GMT->session.f_NaN;
+			NF++;	/* Number of actual field grids */
 		}
 	}
 	
@@ -462,18 +472,15 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 		if (Ctrl->G.active) {	/* Fill in one or more grids */
 			col = (unsigned int)gmt_M_col (Grid->header, node);
 			row = (unsigned int)gmt_M_row (Grid->header, node);
-			for (k = 0; k < BLK_N_FIELDS; k++) {
-				if (Ctrl->A.select[k] == 0) continue;
-				GridOut[k]->data[node] = (gmt_grdfloat)out[fcol[k]];
-			}
+			for (k = 0; k < NF; k++)
+				GridOut[k]->data[node] = (gmt_grdfloat)out[field[k]];
 		}
 		else
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 	}
 	if (Ctrl->G.active) {	/* Writes the grid(s) */
 		char file[GMT_LEN128] = {""};
-		for (k = 0; k < BLK_N_FIELDS; k++) {
-			if (Ctrl->A.select[k] == 0) continue;
+		for (k = 0; k < NF; k++) {
 			if (strstr (Ctrl->G.file, "%s"))
 				sprintf (file, Ctrl->G.file, code[k]);
 			else

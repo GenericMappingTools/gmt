@@ -16,8 +16,11 @@ Synopsis
 **blockmean** [ *table* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
+[ |-A|\ *fields* ]
 [ |-C| ]
-[ |-E|\ [**p**] ] [ |-S|\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ]
+[ |-E|\ [**p**] ]
+[ |-G|\ [*grdfile*] ]
+[ |-S|\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**i**\ \|\ **o**][**+s**] ]
 [ |SYN_OPT-b| ]
@@ -40,7 +43,8 @@ Description
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output a mean position and
 value for every non-empty block in a grid region defined by the **-R**
-and **-I** arguments. Either **blockmean**, :doc:`blockmedian`, or
+and **-I** arguments. See **-G** for writing gridded output directly.
+Either **blockmean**, :doc:`blockmedian`, or
 :doc:`blockmode` should be used as a pre-processor before running
 :doc:`surface` to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
@@ -67,6 +71,15 @@ Optional Arguments
     data values. [\ *w*] is an optional weight for the data. If no file
     is specified, **blockmean** will read from standard input.
 
+.. _-A:
+
+**-A**\ *fields*
+    Select which fields to write to individual grids.  Requires **-G**.
+    Append comma-separated codes for available fields: **z** (the mean
+    data z, but see **-S**), **s** (standard deviation), **l** (lowest
+    value), **h** (highest value) and **w** (the output weight; requires **-W**)
+    Note **s**\ \|\ **l**\ \|\ **h** requires **-E** [Default is just **z**].
+
 .. _-C:
 
 **-C**
@@ -82,6 +95,14 @@ Optional Arguments
     *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
     If **-Ep** is used we assume weights are 1/(sigma squared) and *s*
     becomes the propagated error of the mean.
+
+.. _-G:
+
+**-G**\ *grdfile*
+    Write one or more fields directly to grids; no table data are written to
+    standard output.  If more than one fields are specified via **-A** then
+    *grdfile* must contain the format flag %s so that we can embed the field
+    code in the file names.
 
 .. _-S:
 
@@ -156,6 +177,13 @@ To determine how many values were found in each 5x5 minute bin, try
    ::
 
     gmt blockmean @ship_15.txt -R245/255/20/30 -I5m -Sn > ship_5x5_count.txt
+
+To determine the mean and standard deviation per 10 minute bin and save these to two separate grids
+called field_z.nc and field_s.nc, run
+
+   ::
+
+    gmt blockmean @ship_15.txt -I10m -R-115/-105/20/30 -E -Gfield_%s.nc -Az,s
 
 See Also
 --------
