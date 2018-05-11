@@ -29,6 +29,6 @@ q25=`gmt convert -A qdump.txt tmp -o0,2 | awk '{print ($1-$2)/$1}' | gmt math ST
 gmt grd2xyz field_q75.grd -s -o2 > tmp
 q75=`gmt convert -A qdump.txt tmp -o1,2 | awk '{print ($1-$2)/$1}' | gmt math STDIN  -T -Sf ABS UPPER 1e-7 LT =`
 echo $z $s $l $q25 $q75 $h
-if [ ! "$z $s $l $q25 $q75 $h" = "1 1 1 1 1 1"]
+if [ ! "$z $s $l $q25 $q75 $h" = "1 1 1 1 1 1"] ; then
  	echo "$z $s $l $q25 $q75 $h" > fail
 fi
