@@ -479,7 +479,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 		data = gmt_M_malloc (GMT, data, 0, &n_alloc, struct BLK_DATA);
 	}
 	w_col = gmt_get_cols (GMT, GMT_OUT) - 1;	/* Weights always reported in last output column */
-	fcol[6] = w_col;				/* Since we dont know what it is until parsed */
+	fcol[6] = (unsigned int)w_col;				/* Since we dont know what it is until parsed */
 
 	/* Ready to go. */
 

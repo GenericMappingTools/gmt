@@ -388,7 +388,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 	w_col = gmt_get_cols (GMT, GMT_OUT) - 1;	/* Index of weight column (the last output column) */
 	n_cells_filled = 0;				/* Number of blocks with values */
-	fcol[4] = w_col;				/* Since we dont know what it is until parsed */
+	fcol[4] = (unsigned int)w_col;				/* Since we dont know what it is until parsed */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculating block means\n");
 
 	if (Ctrl->G.active) {	/* Create the grid(s) */
