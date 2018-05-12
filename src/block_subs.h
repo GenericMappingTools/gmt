@@ -39,8 +39,8 @@
 struct BLOCK_CTRL {
 	struct A {	/* -A<fields> */
 		bool active;
-		unsigned int n_select;
-		unsigned int select[8];
+		unsigned int n_selected;
+		bool selected[8];
 	} A;
 	struct C {	/* -C */
 		bool active;

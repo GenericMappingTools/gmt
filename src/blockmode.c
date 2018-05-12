@@ -51,6 +51,10 @@ struct BIN_MODE_INFO {	/* Used for histogram binning */
 	unsigned int n_bins;/* Number of bins required */
 };
 
+/* Note: For external calls to block* we do not allow explicit -G options; these should be added by examining -A which
+ * is required for external calls to make grids, even if just z is requested.  This differs from the command line where
+ * -Az is the default and -G is required to set file name format.  */
+
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
@@ -126,21 +130,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 				case 'A':	/* Requires -G and selects which fields should be written as grids */
 				Ctrl->A.active = true;
 				pos = 0;
-				while ((gmt_strtok (opt->arg, ",", &pos, p)) && Ctrl->A.n_select < BLK_N_FIELDS) {
+				while ((gmt_strtok (opt->arg, ",", &pos, p)) && Ctrl->A.n_selected < BLK_N_FIELDS) {
 					switch (p[0]) {	/* z,s,l,h,w */
-						case 'z':	Ctrl->A.select[0] = 1;	break;
-						case 's':	Ctrl->A.select[1] = 1;	break;
-						case 'l':	Ctrl->A.select[2] = 1;	break;
-						case 'h':	Ctrl->A.select[3] = 1;	break;
-						case 'w':	Ctrl->A.select[4] = 1;	break;
+						case 'z':	Ctrl->A.selected[0] = true;	break;
+						case 's':	Ctrl->A.selected[1] = true;	break;
+						case 'l':	Ctrl->A.selected[2] = true;	break;
+						case 'h':	Ctrl->A.selected[3] = true;	break;
+						case 'w':	Ctrl->A.selected[4] = true;	break;
 						default:
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized field argument %s in -A!\n", p);
 							n_errors++;
 							break;
 					}
-					Ctrl->A.n_select++;
+					Ctrl->A.n_selected++;
 				}
-				if (Ctrl->A.n_select == 0) {
+				if (Ctrl->A.n_selected == 0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-A requires comma-separated field arguments.\n");
 					n_errors++;
 				}
@@ -156,8 +160,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 					while ((gmt_strtok (c, "+", &pos, p))) {
 						switch (p[0]) {
 							case 'c': Ctrl->D.center = true; break;	/* Center the histogram */
-							case 'a': Ctrl->D.mode = BLOCKMODE_AVE; break;	/* Pick average mode */
-							case 'l': Ctrl->D.mode = BLOCKMODE_LOW; break;	/* Pick low mode */
+							case 'a': Ctrl->D.mode = BLOCKMODE_AVE;  break;	/* Pick average mode */
+							case 'l': Ctrl->D.mode = BLOCKMODE_LOW;  break;	/* Pick low mode */
 							case 'h': Ctrl->D.mode = BLOCKMODE_HIGH; break;	/* Pick high mode */
 							default:	/* Bad modifier */
 								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized modifier +%c.\n", p[0]);
@@ -228,18 +232,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, GMT->parent->external && Ctrl->G.active && !Ctrl->A.active, "Syntax error: -G requires -A\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->E.mode == BLK_DO_INDEX_LO || Ctrl->E.mode == BLK_DO_INDEX_HI), "Syntax error: -Es|r are incompatible with -G\n");
 	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
-		if (Ctrl->A.active && Ctrl->A.n_select > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[0], "%s")) {
+		if (Ctrl->A.active && Ctrl->A.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[0], "%s")) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G file format must contain a %%s for field type substitution.\n");
 			n_errors++; 
 		}
 		else if (!Ctrl->A.active)	/* Set default z output grid */
-			Ctrl->A.select[0] = Ctrl->A.n_select = 1;
+			Ctrl->A.selected[0] = true, Ctrl->A.n_selected = 1;
 		else {	/* Make sure -A choices are valid and that -E is set if extended fields are selected */
-			if (!Ctrl->E.active && (Ctrl->A.select[1] || Ctrl->A.select[2] || Ctrl->A.select[3])) {
+			if (!Ctrl->E.active && (Ctrl->A.selected[1] || Ctrl->A.selected[2] || Ctrl->A.selected[3])) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-E is required if -A specifices s, l, or h.\n");
 				n_errors++; 
 			}
-			if (Ctrl->A.select[4] && !Ctrl->W.weighted[GMT_OUT]) {
+			if (Ctrl->A.selected[4] && !Ctrl->W.weighted[GMT_OUT]) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A specifices w.\n");
 				n_errors++; 
 			}
@@ -637,7 +641,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	if (Ctrl->G.active) {	/* Create the grid(s) */
 		char *remarks[BLK_N_FIELDS] = {"Median value per bin", "L1 scale per bin", "Lowest value per bin", "Highest value per bin", "Weight per bin"};
 		for (k = 0; k < BLK_N_FIELDS; k++) {
-			if (Ctrl->A.select[k] == 0) continue;
+			if (!Ctrl->A.selected[k]) continue;
 			field[NF] = fcol[k];	/* Just keep record of which fields we are actually using */
 			code[NF]  = fcode[k];
 			if ((GridOut[NF] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
