@@ -33,6 +33,8 @@
 #define BLOCKMODE_CTRL BLOCK_CTRL
 #endif
 
+#define BLK_N_FIELDS	8
+
 /*! All control options for this program (except common args) */
 struct BLOCK_CTRL {
 	struct A {	/* -A<fields> */
@@ -57,7 +59,8 @@ struct BLOCK_CTRL {
 	} E;
 	struct G {	/* -G<outfile> */
 		bool active;
-		char *file;
+		unsigned int n;			/* Number of output grids specified via -G */
+		char *file[BLK_N_FIELDS];	/* Only first is used for commandline but API may need many */
 	} G;
 	struct N {	/* -N<empty> */
 		bool active;
@@ -169,7 +172,6 @@ struct BLK_DATA {
 #endif
 };
 #endif
-#define BLK_N_FIELDS	8
 
 /* Declaring the standard functions to allocate and free the program Ctrl structure */
 
@@ -191,8 +193,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {
 
 /*! Deallocate control structure */
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
+	unsigned int k;
 	if (!C) return;
-	gmt_M_str_free (C->G.file);	
+	for (k = 0; k < C->G.n; k++)
+		gmt_M_str_free (C->G.file[k]);	
 	gmt_M_free (GMT, C);	
 }
 

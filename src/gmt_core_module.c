@@ -47,9 +47,9 @@ struct Gmt_moduleinfo {
 static struct Gmt_moduleinfo g_core_module[] = {
 #ifdef BUILD_SHARED_LIBS
 	{"begin", "core", "Initiate a new GMT session using modern mode [classic]", ""},
-	{"blockmean", "core", "Block average (x,y,z) data tables by L2 norm", "<D{,>D}"},
-	{"blockmedian", "core", "Block average (x,y,z) data tables by L1 norm (spatial median)", "<D{,>D}"},
-	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation", "<D{,>D}"},
+	{"blockmean", "core", "Block average (x,y,z) data tables by L2 norm", "<D{,>D},GG),A->"},
+	{"blockmedian", "core", "Block average (x,y,z) data tables by L1 norm (spatial median)", "<D{,>D},GG),A->"},
+	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation", "<D{,>D},GG),A->"},
 	{"clear", "core", "Delete current history, conf, cpt, or the cache or sessions directories", ""},
 	{"docs", "core", "Show the HTML documentation of the specified module", ""},
 	{"end", "core", "Terminate GMT modern mode session and produce optional graphics", ""},
@@ -143,9 +143,9 @@ static struct Gmt_moduleinfo g_core_module[] = {
 	{NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 #else
 	{"begin", "core", "Initiate a new GMT session using modern mode [classic]", "", &GMT_begin},
-	{"blockmean", "core", "Block average (x,y,z) data tables by L2 norm", "<D{,>D}", &GMT_blockmean},
-	{"blockmedian", "core", "Block average (x,y,z) data tables by L1 norm (spatial median)", "<D{,>D}", &GMT_blockmedian},
-	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation", "<D{,>D}", &GMT_blockmode},
+	{"blockmean", "core", "Block average (x,y,z) data tables by L2 norm", "<D{,>D},GG),A->", &GMT_blockmean},
+	{"blockmedian", "core", "Block average (x,y,z) data tables by L1 norm (spatial median)", "<D{,>D},GG),A->", &GMT_blockmedian},
+	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation", "<D{,>D},GG),A->", &GMT_blockmode},
 	{"clear", "core", "Delete current history, conf, cpt, or the cache or sessions directories", "", &GMT_clear},
 	{"docs", "core", "Show the HTML documentation of the specified module", "", &GMT_docs},
 	{"end", "core", "Terminate GMT modern mode session and produce optional graphics", "", &GMT_end},

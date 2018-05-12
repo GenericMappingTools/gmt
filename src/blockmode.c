@@ -34,7 +34,7 @@
 #define THIS_MODULE_NAME	"blockmode"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by mode estimation"
-#define THIS_MODULE_KEYS	"<D{,>D},GGG"
+#define THIS_MODULE_KEYS	"<D{,>D},GG),A->"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:>RVabdefghior" GMT_OPT("FH")
 
@@ -55,15 +55,22 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s\n", name, GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[-]] [-G<grdfile>] [-Q]\n\t[%s] [-W[i][o][+s]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	if (API->external)
+		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[-]] [-Q]\n", GMT_V_OPT);
+	else
+		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[-]] [-G<grdfile>] [-Q]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[i][o][+s]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+		GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A List of comma-separated fields to be written as grids (requires -G). Choose from\n");
+	if (API->external)
+		GMT_Message (API, GMT_TIME_NONE, "\t-A List of comma-separated fields to be written as grids. Choose from\n");
+	else
+		GMT_Message (API, GMT_TIME_NONE, "\t-A List of comma-separated fields to be written as grids (requires -G). Choose from\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   z, s, l, h, and w. s|l|h requires -E; w requires -W[o].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -Er|s [Default is z only].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block and mode z-value [Default is mode location (but see -Q)].\n");
@@ -77,8 +84,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Er to report record number of the modal value per block,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or -Es to report an unsigned integer source id (sid) taken from the x,y,z[,w],sid input.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For ties, report record number (or sid) of largest value; append - for smallest.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify output grid file name; no table results will be written to stdout.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If more than one field is set via -A then <grdfile> must contain  %%s to format field code.\n");
+	if (!API->external) {
+		GMT_Message (API, GMT_TIME_NONE, "\t-G Specify output grid file name; no table results will be written to stdout.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   If more than one field is set via -A then <grdfile> must contain  %%s to format field code.\n");
+	}
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Quicker; get mode z and mean x,y [Default gets mode x, mode y, mode z].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set Weight options.\n");
@@ -171,8 +180,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 					n_errors++;
 				break;
 			case 'G':	/* Write output grid(s) */
-				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
-					Ctrl->G.file = strdup (opt->arg);
+				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G can only be set once!\n");
+					n_errors++;
+				}
+				else if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
+					Ctrl->G.file[Ctrl->G.n++] = strdup (opt->arg);
 				else
 					n_errors++;
 				break;
@@ -212,9 +225,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->G.active, "Syntax error: -A requires -G\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->parent->external && Ctrl->G.active && !Ctrl->A.active, "Syntax error: -G requires -A\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->E.mode == BLK_DO_INDEX_LO || Ctrl->E.mode == BLK_DO_INDEX_HI), "Syntax error: -Es|r are incompatible with -G\n");
 	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
-		if (Ctrl->A.active && Ctrl->A.n_select > 1 && !strstr (Ctrl->G.file, "%s")) {
+		if (Ctrl->A.active && Ctrl->A.n_select > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[0], "%s")) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G file format must contain a %%s for field type substitution.\n");
 			n_errors++; 
 		}
@@ -805,15 +819,17 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->G.active) {	/* Writes the grid(s) */
+		unsigned int kk;
 		char file[GMT_LEN128] = {""};
-		for (k = 0; k < NF; k++) {
-			if (strstr (Ctrl->G.file, "%s"))
-				sprintf (file, Ctrl->G.file, code[k]);
+		for (k = kk = 0; k < NF; k++) {
+			if (strstr (Ctrl->G.file[kk], "%s"))
+				sprintf (file, Ctrl->G.file[kk], code[k]);
 			else
-				strncpy (file, Ctrl->G.file, GMT_LEN128-1);
+				strncpy (file, Ctrl->G.file[kk], GMT_LEN128-1);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, GridOut[k]) != GMT_NOERROR) {
 				Return (API->error);
 			}
+			if (Ctrl->G.n > 1) kk++;	/* Only true for APIs */
 		}
 	}
 	else if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */

@@ -10068,7 +10068,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	 *
 	 *   A few modules will have Y = - which is another magic key: If the -X option is given then either the input
 	 *   or output (depending on what Z is) will NOT be required. As an example of this behavior, consider psxy
-	 *   which has a -T option that means "read no input, just write trailer". So the key "T-(" in psxy means that
+	 *   which has a -T option that means "read no input, just write trailer". So the key "T-<" in psxy means that
 	 *   when -T is used then NO input is required.  This means the primary input key "<D{" is changed to "<D(" (secondary)
 	 *   and no attempt is made to connect external input to the psxy input.  If Z is none of () then we expect Z to
 	 *   be one of the options with required input (or output) and we change that option to option input (or output).
@@ -10203,6 +10203,16 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	else if (!strncmp (module, "talwani3d", 9U)) {
 		/* If we find the -N option, we set type to D, else G */
 		type = (GMT_Find_Option (API, 'N', *head)) ? 'D' : 'G';
+	}
+	/* 1j. Check if this is a block*** module using -A to set n output grids */
+	else if (!strncmp (module, "block", 5U) && (opt = GMT_Find_Option (API, 'A', *head)) && opt->arg[0]) {
+		/* Determine how many output grids are requested */
+		for (k = 1, len = 0; len < strlen (opt->arg); len++) if (opt->arg[len] == ',') k++;
+		while (k) {	/* Add k -G? options */
+			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */
+			*head = GMT_Append_Option (API, new_ptr, *head);
+			k--;
+		}
 	}
 
 	gmt_M_str_free (module);
