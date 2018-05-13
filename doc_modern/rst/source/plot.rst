@@ -25,7 +25,6 @@ Synopsis
 [ |-L|\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ]
 [ |-N|\ [**c**\ \|\ **r**] ]
 [ |-S|\ [*symbol*][\ *size*\ [**u**] ]
-[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
@@ -81,7 +80,7 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. |Add_intables| replace:: Use **-T** to ignore all input files, including standard input (see below).
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
 .. _-A:
@@ -205,15 +204,6 @@ Optional Arguments
 .. _-S:
 
 .. include:: explain_symbols.rst_
-
-.. _-T:
-
-**-T**
-    Ignore all input files, including standard input. This is the same
-    as specifying /dev/null (or NUL for Windows users) as input file.
-    Use this to activate only the options that are not related to
-    plotting of lines or symbols, such as **plot** **-R** **-J** **-T**
-    to terminate a sequence of GMT plotting commands without producing any plotting output.
 
 .. _-U:
 

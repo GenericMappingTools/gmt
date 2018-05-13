@@ -375,7 +375,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A[m|p|x|y]]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][+a][+c[l|f]][+n][+p<pen>][+w<width>]] [-F<arg>] [-G<fill>]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intens>] %s[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s%s\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [-T] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
+	if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
+		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [-T] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
+	else
+		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, \
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -501,7 +504,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Geovectors: Azimuth and length must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to length [k].\n", GMT_LEN_UNITS_DISPLAY);
 	gmt_vector_syntax (API->GMT, 3);
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Ignore all input files.\n");
+	if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
+		GMT_Message (API, GMT_TIME_NONE, "\t-T Ignore all input files.\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 15);
 	GMT_Option (API, "X,a,bi");

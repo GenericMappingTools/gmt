@@ -229,11 +229,11 @@ revisions.  We developed API to enable GMT access from other environments hence 
 the library to address the needs of such developers.  Here are the changes in the GMT 6
 API that are not backwards compatible with GMT 5:
 
-#. There are no longer a GMT_TEXTSET resource.  Data records are now generalized to
+#. There is no longer a GMT_TEXTSET resource.  Data records are now generalized to
    contain an optional leading numerical array followed by an optional trailing text.
-   a "TEXTSET" in this context is simply a DATASET that has no leading numerical array.
-   This change was necessary so that all modules reading tables expects the same fundamental
-   GMT_DATASET resources.  The alternative (which we lived to regret) was that developers
+   A "TEXTSET" in this context is simply a DATASET that has no leading numerical array.
+   This change was necessary so that all modules reading tables expect the same fundamental
+   GMT_DATASET resource.  The alternative (which we lived to regret) was that developers
    calling modules from their environment would have to format their data in different ways
    depending on the module, and in some case depending on module options.  Now, all table
    modules expect GMT_DATASET.
