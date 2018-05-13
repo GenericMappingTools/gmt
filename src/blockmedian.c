@@ -210,9 +210,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 		}
 	}
 
+	if (Ctrl->G.active) {
+		if (!Ctrl->E.active && (Ctrl->A.selected[2] || Ctrl->A.selected[5])) {
+			/* -E is required if -A specifices l or h */
+			Ctrl->E.active = true;				/* Report standard deviation, min, and max in cols 4-6 */
+			Ctrl->E.mode = BLK_DO_EXTEND3;		/* Report L1scale, low, high in cols 4-6 */
+		}
+		if (Ctrl->E.mode != BLK_DO_EXTEND4 && (Ctrl->A.selected[3] || Ctrl->A.selected[4])) {
+			/* -Eb is required if -A specifices q25 or q75. */
+			Ctrl->E.active = true;
+			Ctrl->E.mode = BLK_DO_EXTEND4;		/* Report min, 25%, 75% and max in cols 4-7 */
+		}
+	}
+
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->G.active, "Syntax error: -A requires -G\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->parent->external && Ctrl->G.active && !Ctrl->A.active, "Syntax error: -G requires -A\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->E.mode == BLK_DO_INDEX_LO || Ctrl->E.mode == BLK_DO_INDEX_HI), "Syntax error: -Es|r are incompatible with -G\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->parent->external && Ctrl->G.active && !Ctrl->A.active,
+	                                   "Syntax error: -G requires -A\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->E.mode == BLK_DO_INDEX_LO ||
+	                                   Ctrl->E.mode == BLK_DO_INDEX_HI),
+	                                   "Syntax error: -Es|r are incompatible with -G\n");
 	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
 		if (Ctrl->A.active && Ctrl->A.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[0], "%s")) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G file format must contain a %%s for field type substitution.\n");
@@ -221,14 +237,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 		else if (!Ctrl->A.active)	/* Set default z output grid */
 			Ctrl->A.selected[0] = true, Ctrl->A.n_selected = 1;
 		else {	/* Make sure -A choices are valid and that -E is set if extended fields are selected */
-			if (!Ctrl->E.active && (Ctrl->A.selected[2] || Ctrl->A.selected[5])) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-E is required if -A specifices l or h.\n");
-				n_errors++; 
-			}
-			if (Ctrl->E.mode != BLK_DO_EXTEND4 && (Ctrl->A.selected[3] || Ctrl->A.selected[4])) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-Eb is required if -A specifices q25 or q75.\n");
-				n_errors++; 
-			}
 			if (Ctrl->A.selected[6] && !Ctrl->W.weighted[GMT_OUT]) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A specifices w.\n");
 				n_errors++; 
@@ -237,9 +245,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 	}
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.quantile <= 0.0 || Ctrl->T.quantile >= 1.0,
-			"Syntax error: 0 < q < 1 for quantile in -T [0.5]\n");
+	                                   "Syntax error: 0 < q < 1 for quantile in -T [0.5]\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
-			"Syntax error -I option: Must specify positive increment(s)\n");
+	                                   "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.weighted[GMT_IN]) ? 4 : 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
