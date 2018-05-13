@@ -77,7 +77,7 @@ Optional Arguments
     Select which fields to write to individual grids.  Requires **-G**.
     Append comma-separated codes for available fields: **z** (the mean
     data z, but see **-S**), **s** (standard deviation), **l** (lowest
-    value), **h** (highest value) and **w** (the output weight; requires **-W**)
+    value), **h** (highest value) and **w** (the output weight; requires **-W**).
     Note **s**\ \|\ **l**\ \|\ **h** requires **-E** [Default is just **z**].
 
 .. _-C:

@@ -136,7 +136,7 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
-Pslegend Codes
+Legend Codes
 --------------
 
 *specfile*
@@ -156,8 +156,6 @@ Pslegend Codes
     The **B** record will plot a horizontal color bar, :doc:`psscale`-style
     in the middle, starting at *offset* from the left edge, and of the
     given *height*. You may add any additional :doc:`psscale` options as well.
-    Any of the modifiers [+e[b|f][<length>]][+h][+ma|c|l|u][+n[<txt>]] may be
-    given *height*. You may add any additional :doc:`psscale` options as well.
     Any of the modifiers
     [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**][**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]] may be
     appended to the *height* argument, while other module options
@@ -167,7 +165,7 @@ Pslegend Codes
 **C** *textcolor*
     The **C** record specifies the color with which the remaining text
     is to be printed. *textcolor* can be in the form *r/g/b*, *c/m/y/k*,
-    a named color, or an indirect color via z=\ *value\* (requires a prior **A** code as well).
+    a named color, or an indirect color via z=\ *value* (requires a prior **A** code as well).
     Use **-** to reset to default color.
 **D** [*offset*] *pen* [**-**\ \|\ **+**\ \|\ **=**]
     The **D** record results in a horizontal line with specified *pen*

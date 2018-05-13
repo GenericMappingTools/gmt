@@ -5902,7 +5902,7 @@ img: gridded altimetry extractor
 This package consists of the program
 :doc:`img2grd <supplements/img/img2grd>` to extract subsets of the
 global gravity and predicted topography solutions derived from satellite
-altimetry [28]_. The package is maintained by Walter Smith and Paul Wessel.
+altimetry [23]_. The package is maintained by Walter Smith and Paul Wessel.
 
 meca: seismology and geodesy symbols
 ------------------------------------
@@ -5932,7 +5932,7 @@ This package currently holds the programs
 :doc:`mgd77sniffer <supplements/mgd77/mgd77sniffer>`, and
 :doc:`mgd77track <supplements/mgd77/mgd77track>` which can be used to
 extract information or data values from or plot marine geophysical data
-files in the ASCII MGD77 or netCDF MGD77+ formats [29]_). This package
+files in the ASCII MGD77 or netCDF MGD77+ formats [24]_). This package
 has replaced the old **mgg** package. The package is maintained by Paul Wessel and Mike Chandler.
 
 misc: Miscellaneous tools
@@ -5956,11 +5956,11 @@ synthetic bathymetry over various seamount shapes, and
 :doc:`gmtgravmag3d <supplements/potential/gmtgravmag3d>` and
 :doc:`grdgravmag3d <supplements/potential/grdgravmag3d>`,
 which computes the gravity or
-magnetic anomaly of a body by the method of Okabe [30]_, and
+magnetic anomaly of a body by the method of Okabe [25]_, and
 :doc:`talwani2d <supplements/potential/talwani2d>` and
 :doc:`talwani3d <supplements/potential/talwani3d>` and
 which uses the methods of Talwani to compute various geopotential components
-from 2-D [31]_ or 3-D [32]_ bodies.
+from 2-D [26]_ or 3-D [27]_ bodies.
 The package is maintained by Joaquim Luis and Paul Wessel.
 
 segyprogs: plotting SEGY seismic data
@@ -5973,7 +5973,7 @@ and y:time/depth) while :doc:`segyz <supplements/segy/segyz>`
 generates a 3-D plot (x and y: location coordinates, z: time/depth).
 Locations may be read from predefined or arbitrary portions of each
 trace header. Finally, :doc:`segy2grd <supplements/segy/segy2grd>` can
-convert SEGY data to a GMT grid file. The package is maintained by Tim Henstock [33]_.
+convert SEGY data to a GMT grid file. The package is maintained by Tim Henstock [28]_.
 
 spotter: backtracking and hotspotting
 -------------------------------------
@@ -6856,7 +6856,7 @@ encoded fonts are shown in
 Figure :ref:`Octal codes for Standard and ISO <Octal_codes_stand_iso>`. Light red areas signify
 codes reserved for control characters. In order to use all the extended
 characters (shown in the light green boxes) you need to set
-:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` to Standard+ or ISOLatin1+ in your :doc:`gmt.conf` file [34]_.
+:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` to Standard+ or ISOLatin1+ in your :doc:`gmt.conf` file [29]_.
 
 .. _Octal_codes_stand_iso:
 
@@ -7392,7 +7392,7 @@ they require more work (doubling the width to achieve the same cut-off wavelengt
 One of the nice things about the gaussian filter is that its transfer
 functions are the same in 1-D and 2-D. Another nice property is that it
 has no negative side lobes. There are many definitions of the gaussian
-filter in the literature (see page 7 of Bracewell [35]_). We define
+filter in the literature (see page 7 of Bracewell [30]_). We define
 :math:`\sigma` equal to 1/6 of the filter width, and the impulse
 response proportional to :math:`\exp[-0.5(t/\sigma)^2)`. With this
 definition, the transfer function is :math:`\exp[-2(\pi\sigma f)^2]` and
@@ -7432,7 +7432,7 @@ data is far superior to the WDB data as far as data quality goes, but as
 noted it lacks lakes, not to mention rivers and borders. We decided to
 use the WVS whenever possible and supplement it with WDB data. We got
 these data over the Internet; they are also available on CD-ROM from the
-National Geophysical Data Center in Boulder, Colorado [36]_.
+National Geophysical Data Center in Boulder, Colorado [31]_.
 
 Format required by GMT
 ----------------------
@@ -7531,13 +7531,13 @@ becomes a complicated processing step.
    operation would take a very long time to complete. We chose to make 5
    versions on the database, corresponding to different resolutions. The
    decimation was carried out using the Douglas-Peucker (DP)
-   line-reduction algorithm [37]_. We chose the cutoffs so that each
+   line-reduction algorithm [32]_. We chose the cutoffs so that each
    subset was approximately 20% the size of the next higher resolution.
    The five resolutions are called **f**\ ull, **h**\ igh,
    **i**\ ntermediate, **l**\ ow, and **c**\ rude; they are accessed in
    :doc:`coast`, :doc:`gmtselect`, and
    :doc:`grdlandmask` with the **-D**
-   option [38]_. For each of these 5 data sets (**f**, **h**, **i**,
+   option [33]_. For each of these 5 data sets (**f**, **h**, **i**,
    **l**, **c**) we specified an equidistant grid (1, 2, 5, 10, 20) and
    split all polygons into line-segments that each fit inside one of the
    many boxes defined by these grid lines. Thus, to paint the entire
@@ -7548,7 +7548,7 @@ becomes a complicated processing step.
    feature is smaller than the cutoff specified by the user. The
    resulting segment coordinates were then scaled to fit in short
    integer format to preserve precision and written in netCDF format for
-   ultimate portability across hardware platforms [39]_.
+   ultimate portability across hardware platforms [34]_.
 
 *  While we are now back to a file of line-segments we are in a much
    better position to create smaller polygons for painting. Two problems
@@ -7810,7 +7810,7 @@ Built-in color palette tables (CPT)
 
 Figures :ref:`CPTs a <CPT_files_a>` and
 :ref:`b <CPT_files_b>` show the 40 built-in
-color palettes, stored in so-called CPTs [40]_. The programs
+color palettes, stored in so-called CPTs [35]_. The programs
 :doc:`makecpt` and
 :doc:`grd2cpt` are used to access these
 master CPTs and translate/scale them to fit the user's range of
@@ -8260,7 +8260,7 @@ a line to be labeled. The codes are:
     **D**\ *dist*\ [**d\ \|\ m\ \|\ s\ \|\ e\ \|\ f\ \|\ k\ \|\ M\ \|\ n**][/\ *frac*].
     This option is similar to **d** except the original data must be
     referred to geographic coordinates (and a map projection must have
-    been chosen) and actual Earth [41]_ surface distances along the
+    been chosen) and actual Earth [36]_ surface distances along the
     lines are considered. Append the unit you want to measure distances
     in; choose among arc **d**\ egree, **m**\ inute, and **s**\ econd,
     or m\ **e**\ ter [Default], **f**\ eet, **k**\ ilometer, statute
@@ -8755,7 +8755,7 @@ Finally, we will make a more complex composite illustration that uses
 several of the label placement and label attribute settings discussed in
 the previous sections. We make a map showing the tsunami travel times
 (in hours) from a hypothetical catastrophic landslide in the Canary
-Islands [42]_. We lay down a color map based on the travel times and the
+Islands [37]_. We lay down a color map based on the travel times and the
 shape of the seafloor, and travel time contours with curved labels as
 well as a few quoted lines. The final script is
 
@@ -9379,81 +9379,64 @@ Finally we show an example of a polygon file:
    file.
 
 .. [23]
-   These data are available on CD-ROM from NGDC (`<http://www.ngdc.noaa.gov/>`_).
-
-.. [24]
-   See `<http://topex.ucsd.edu/marine_grav/mar_grav.html>`_.
-
-.. [25]
-   Pedants who wish to argue about the "other" arc going the long way
-   should consider using it.
-
-.. [26]
-   While Quicktime is free you must upgrade to QuickTime Pro (USD 30) to
-   use the authoring functions.
-
-.. [27]
-   QuickTime Pro can do this, as can most video-editing programs.
-
-.. [28]
    For data bases, see `http://topex.ucsd.edu/marine_grav/mar_grav.html`_.
 
-.. [29]
+.. [24]
    The ASCII MGD77 data are available on CD-ROM from NGDC (`<http://www.ngdc.noaa.gov/>`_).
 
-.. [30]
+.. [25]
    Okabe, M., 1979, Analytical expressions for gravity anomalies due to
    polyhedral bodies and translation into magnetic anomalies,
    *Geophysics, 44*, 730--741.
 
-.. [31]
+.. [26]
    Talwani, M., J. L. Worzel, and M. Landisman (1959), Rapid gravity computations
    for two-dimensional bodies with application to the Mendocino submarine fracture zone,
    *J. Geophys. Res., 64*, 49-–59.
 
-.. [32]
+.. [27]
    Talwani, M., and M. Ewing (1960), Rapid computation of gravitational attraction of
    three-dimensional bodies of arbitrary shape, *Geophysics, 25*, 203--225.
 
-.. [33]
+.. [28]
    `Timothy J. Henstock <http://www.southampton.ac.uk/oes/research/staff/then.page>`_,
    University of Southampton
 
-.. [34]
+.. [29]
    If you chose SI units during the installation then the default
    encoding is ISOLatin1+, otherwise it is Standard+.
 
-.. [35]
+.. [30]
    R. Bracewell, *The Fourier Transform and its Applications*,
    McGraw-Hill, London, 444 p., 1965.
 
-.. [36]
+.. [31]
    `National Geophysical Data Center, Boulder, Colorado <http://www.ngdc.noaa.gov/>`_
 
-.. [37]
+.. [32]
    Douglas, D.H., and T. K. Peucker, 1973, Algorithms for the reduction
    of the number of points required to represent a digitized line or its
    caricature, *Canadian Cartographer*, 10, 112--122.
 
-.. [38]
+.. [33]
    The full and high resolution files are in separate archives because
    of their size. Not all users may need these files as the intermediate
    data set is better than the data provided with version 2.2.4.
 
-.. [39]
+.. [34]
    If you need complete polygons in a simpler format, see the article on
    GSHHG (Wessel, P., and W. H. F. Smith, 1996, A Global,
    self-consistent, hierarchical, high-resolution shoreline database,
    *J. Geophys. Res. 101*, 8741--8743).
 
-.. [40]
+.. [35]
    The 3rd palette is called *categorical* and produces a set of
    colors suitable for categorical plots.
 
-.. [41]
+.. [36]
    or whatever planet we are dealing with.
 
-.. [42]
+.. [37]
    Travel times were calculated using Geoware's travel time calculator,
    **ttt**; see `<http://www.geoware-online.com/>`_.
 
