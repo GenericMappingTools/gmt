@@ -163,7 +163,7 @@ Optional Arguments
     in seconds of each frame [Default is 1/*framerate*],
     **f** selects the running frame number as the label, **c**\ *col* uses the value in column
     number *col* of *timefile* as label (first column is 1), while **t**\ *col* uses word number
-    *col* from the trailing text in *timefile* (requires **-T**\ ...**+w**).
+    *col* from the trailing text in *timefile* (requires **-T**\ ...\ **+w**).
     The label font is set via :ref:`FONT_TAG <FONT_TAG>`.
     Append **+c**\ *dx*\ [/*dy*] for the clearance between label and bounding box.  Only
     used if **+g** or **+p** are set.  Append units **c**\ \|\ **i**\ \|\ **p** or % of the font size [15%].
@@ -248,7 +248,7 @@ In addition, the *mainscript* also has access to additional parameters
 **MOVIE_FRAME**\ : The current frame number,
 **MOVIE_NFRAMES**\ : The total number of frames,
 **MOVIE_TAG**\ : The formatted frame number (e.g., 000136), and
-**MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _**MOVIE_TAG**),
+**MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_TAG**),
 Next, if a *timefile* was given then variables **MOVIE_COL1**\ , **MOVIE_COL2**\ , etc. are
 also set, one variable per column in *timefile*.  If *timefile* has trailing text then that text can
 be accessed via the variable **MOVIE_TEXT**, and if word-splitting was requested in **-T** then

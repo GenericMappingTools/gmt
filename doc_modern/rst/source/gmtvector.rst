@@ -153,8 +153,8 @@ Optional Arguments
 
 .. include:: explain_precision.rst_
 
-`Examples`
-----------
+Examples
+--------
 
 Suppose you have a file with lon, lat called points.txt. You want to
 compute the spherical angle between each of these points and the
