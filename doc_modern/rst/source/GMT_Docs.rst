@@ -9341,10 +9341,6 @@ Finally we show an example of a polygon file:
 .. [13]
    Please consult the man page for *printf* or any book on C.
 
-.. [14]
-   For historical reasons, the GMT default is Landscape; see
-   :doc:`gmt.conf` to change this.
-
 .. [15]
    Ensures that boundary annotations do not fall off the page.
 
@@ -9379,7 +9375,7 @@ Finally we show an example of a polygon file:
    file.
 
 .. [23]
-   For data bases, see `http://topex.ucsd.edu/marine_grav/mar_grav.html`_.
+   For data bases, see `<http://topex.ucsd.edu/marine_grav/mar_grav.html>`_.
 
 .. [24]
    The ASCII MGD77 data are available on CD-ROM from NGDC (`<http://www.ngdc.noaa.gov/>`_).
