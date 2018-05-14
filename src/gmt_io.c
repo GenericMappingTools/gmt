@@ -2900,6 +2900,10 @@ GMT_LOCAL void gmtio_copy_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	uint64_t col;
 	gmt_M_unused(GMT);
 	for (col = 0; col < Sin->n_columns; col++) gmt_M_memcpy (Sout->data[col], Sin->data[col], Sin->n_rows, double);
+	if (Sin->text) {	/* Must also duplicate text strings */
+		uint64_t row;
+		for (row = 0; row < Sin->n_rows; row++) Sout->text[row] = strdup (Sin->text[row]);
+	}
 	gmt_M_memcpy (Sout->min, Sin->min, Sin->n_columns, double);
 	gmt_M_memcpy (Sout->max, Sin->max, Sin->n_columns, double);
 	Sout->n_rows = Sin->n_rows;
