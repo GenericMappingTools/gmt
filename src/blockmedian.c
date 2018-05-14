@@ -210,16 +210,27 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 		}
 	}
 
-	if (Ctrl->G.active) {
-		if (!Ctrl->E.active && (Ctrl->A.selected[2] || Ctrl->A.selected[5])) {
-			/* -E is required if -A specifices l or h */
-			Ctrl->E.active = true;				/* Report standard deviation, min, and max in cols 4-6 */
-			Ctrl->E.mode = BLK_DO_EXTEND3;		/* Report L1scale, low, high in cols 4-6 */
+	if (Ctrl->G.active && !Ctrl->E.active) {	/* See if we need to auto-supply -E or -Eb */
+		if (Ctrl->A.selected[1]) {	/* s cannot go with the qs, so check */
+			if (Ctrl->A.selected[3] || Ctrl->A.selected[4]) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot combine s with q25 or q75.\n");
+				n_errors++; 
+			}
+			else {	/* Plain -E is added */
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifices s, l, or h.  -E was added.\n");
+				Ctrl->E.active = true;
+				Ctrl->E.mode = BLK_DO_EXTEND3;		/* Report L1scale, low, high in cols 4-6 */
+			}
 		}
-		if (Ctrl->E.mode != BLK_DO_EXTEND4 && (Ctrl->A.selected[3] || Ctrl->A.selected[4])) {
-			/* -Eb is required if -A specifices q25 or q75. */
+		else if (Ctrl->A.selected[3] || Ctrl->A.selected[4]) {	/* Need q25 or q75 and s not set, so add -Eb */
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-Eb is required if -A specifices q25 or q75.  -Eb was added.\n");
 			Ctrl->E.active = true;
-			Ctrl->E.mode = BLK_DO_EXTEND4;		/* Report min, 25%, 75% and max in cols 4-7 */
+			Ctrl->E.mode = BLK_DO_EXTEND4;		/* Report low, 25%, 75% and high in cols 4-7 */
+		}
+		else if (Ctrl->A.selected[2] || Ctrl->A.selected[5]) {	/* Plain -E is added */
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifices s, l, or h.  -E was added.\n");
+			Ctrl->E.active = true;
+			Ctrl->E.mode = BLK_DO_EXTEND3;		/* Report L1scale, low, high in cols 4-6 */
 		}
 		if (GMT->parent->external && !Ctrl->A.active) {		/* From externals let -G equals -Az */
 			Ctrl->A.active = true;
