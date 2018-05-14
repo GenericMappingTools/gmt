@@ -33,6 +33,5 @@
 #define gmt_get_cpt(GMT,file,flag,min,max) gmt_get_palette(GMT,file,flag,min,max,0.0)
 #define gmt_M_grd_is_global gmt_grd_is_global
 #endif
-#define GMT_c_OPT	"-c<ncopies>"	/* OBSOLETE */
 
 #endif /* GMT_MB_H */
