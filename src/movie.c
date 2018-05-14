@@ -857,8 +857,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	char var_token[4] = "$$%", path_sep[4] = "::;";
 	char init_file[GMT_LEN64] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[GMT_LEN64] = {""}, cwd[PATH_MAX] = {""};
 	char pre_file[GMT_LEN64] = {""}, post_file[GMT_LEN64] = {""}, main_file[GMT_LEN64] = {""}, line[PATH_MAX] = {""};
-	char string[GMT_LEN64] = {""}, extra[GMT_LEN64] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[GMT_LEN64] = {""}, L_txt[GMT_LEN64] = {""};
-	char png_file[GMT_LEN64] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {MOVIE_RASTER_FORMAT};
+	char string[GMT_LEN128] = {""}, extra[GMT_LEN128] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[GMT_LEN128] = {""}, L_txt[GMT_LEN128] = {""};
+	char png_file[GMT_LEN128] = {""}, topdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {MOVIE_RASTER_FORMAT};
 #ifdef _WIN32
 	char dir_sep = '\\';
 #else
@@ -1291,7 +1291,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 						strcpy (string, state_tag);
 				}
 				else if (Ctrl->L.tag[T].mode == MOVIE_LABEL_IS_ELAPSED) {	/* Place elapsed time */
-					gmt_M_memset (string, GMT_LEN64, char);
+					gmt_M_memset (string, GMT_LEN128, char);
 					L_col = (Ctrl->L.tag[T].scale > 0.0) ? frame * Ctrl->L.tag[T].scale : frame / Ctrl->D.framerate;
 					ss = urint (fmod (L_col, 60.0));	L_col = (L_col - ss) / 60.0;	/* Get seconds and switch to minutes*/
 					mm = urint (fmod (L_col, 60.0));	L_col = (L_col - mm) / 60.0;	/* Get seconds and switch to hours */
@@ -1344,7 +1344,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->M.active) {	/* Make the master frame plot */
-		char master_file[GMT_LEN64] = {""};
+		char master_file[GMT_LEN128] = {""};
 		/* Because format may differ and name will differ we just make a special script for this job */
 		sprintf (master_file, "movie_master.%s", extension[Ctrl->In.mode]);
 		if ((fp = fopen (master_file, "w")) == NULL) {
