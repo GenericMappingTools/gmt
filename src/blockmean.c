@@ -204,8 +204,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 				break;
 		}
 	}
+
+	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
+		if (!Ctrl->E.active && (Ctrl->A.selected[1] || Ctrl->A.selected[2] || Ctrl->A.selected[3])) {
+			/* -E is required if -A specifices l or h */
+			Ctrl->E.active = true;			/* Extended report with standard deviation, min, and max in cols 4-6 */
+		}
+	}
+
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->G.active, "Syntax error: -A requires -G\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->parent->external && Ctrl->G.active && !Ctrl->A.active, "Syntax error: -G requires -A\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->parent->external && Ctrl->G.active && !Ctrl->A.active,
+	                                   "Syntax error: -G requires -A\n");
 	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
 		if (Ctrl->A.active && Ctrl->A.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[0], "%s")) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G file format must contain a %%s for field type substitution.\n");
@@ -214,10 +223,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 		else if (!Ctrl->A.active)	/* Set default z output grid */
 			Ctrl->A.selected[0] = true, Ctrl->A.n_selected = 1;
 		else {	/* Make sure -A choices are valid and that -E is set if extended fields are selected */
-			if (!Ctrl->E.active && (Ctrl->A.selected[1] || Ctrl->A.selected[2] || Ctrl->A.selected[3])) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-E is required if -A specifices s, l, or h.\n");
-				n_errors++; 
-			}
 			if (Ctrl->A.selected[4] && !Ctrl->W.weighted[GMT_OUT]) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A specifices w.\n");
 				n_errors++; 
@@ -225,8 +230,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode && !Ctrl->W.weighted[GMT_IN], "Syntax error: The -Ep option requires weights (= 1/sigma^2) on input\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode && !Ctrl->W.weighted[GMT_IN],
+	                                   "Syntax error: The -Ep option requires weights (= 1/sigma^2) on input\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
+	                                   "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.weighted[GMT_IN]) ? 4 : 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -241,9 +248,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	unsigned int row, col, n_input, k, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,0,0,0}, field[BLK_N_FIELDS];
 	int error;
 	bool use_xy, use_weight, duplicate_col;
-
 	double weight, weighted_z, iw, half_dx, wesn[4], out[7], *in = NULL;
-
 	char format[GMT_LEN256] = {""}, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "h", "w", "", "", ""}, *code[BLK_N_FIELDS];
 
 	struct GMT_OPTION *options = NULL;
@@ -307,8 +312,11 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* wesn may include some padding if gridline-registered */
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
-		snprintf (format, GMT_LEN256, "W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->n_columns, Grid->header->n_rows);
+		snprintf (format, GMT_LEN256, "W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d\n",
+		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+				  GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI],
+		            Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->n_columns, Grid->header->n_rows);
 	}
 	
 	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Memory reporting */
@@ -409,13 +417,14 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculating block means\n");
 
 	if (Ctrl->G.active) {	/* Create the grid(s) */
-		char *remarks[BLK_N_FIELDS] = {"Mean value per bin", "Standard deviation per bin", "Lowest value per bin", "Highest value per bin", "Weight per bin"};
+		char *remarks[BLK_N_FIELDS] = {"Mean value per bin", "Standard deviation per bin", "Lowest value per bin",
+		                               "Highest value per bin", "Weight per bin"};
 		for (k = 0; k < BLK_N_FIELDS; k++) {
 			if (!Ctrl->A.selected[k]) continue;
 			field[NF] = fcol[k];	/* Just keep record of which fields we are actually using */
 			code[NF]  = fcode[k];
-			if ((GridOut[NF] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
-				GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+			if ((GridOut[NF] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
+			                                    GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_TITLE, "Grid produced by blockmean", GridOut[NF]) != GMT_NOERROR) Return (API->error);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, GridOut[NF]) != GMT_NOERROR) Return (API->error);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remarks[k], GridOut[NF])) Return (API->error);
@@ -480,8 +489,9 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 				}
 			}
 			else {		/* Normal standard deviation of the values in this bin */
-				out[3] = (zw[node].a[BLK_W] > 1.0) ? d_sqrt ((zw[node].a[BLK_W] * slhg[node].a[BLK_S] - zw[node].a[BLK_Z] * zw[node].a[BLK_Z]) \
-				/ (zw[node].a[BLK_W] * (zw[node].a[BLK_W] - 1.0))) : GMT->session.d_NaN;
+				out[3] = (zw[node].a[BLK_W] > 1.0) ? d_sqrt ((zw[node].a[BLK_W] * slhg[node].a[BLK_S] - zw[node].a[BLK_Z] *
+				                                             zw[node].a[BLK_Z]) / (zw[node].a[BLK_W] * (zw[node].a[BLK_W] -
+															 1.0))) : GMT->session.d_NaN;
 			}
 			out[4] = slhg[node].a[BLK_L];	/* Minimum value in block */
 			out[5] = slhg[node].a[BLK_H];	/* Maximum value in block */
