@@ -210,6 +210,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 			/* -E is required if -A specifices l or h */
 			Ctrl->E.active = true;			/* Extended report with standard deviation, min, and max in cols 4-6 */
 		}
+		if (GMT->parent->external && !Ctrl->A.active) {		/* From externals let -G equals -Az */
+			Ctrl->A.active = true;
+			Ctrl->A.selected[0] = true;
+			Ctrl->A.n_selected = 1;
+		}
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->G.active, "Syntax error: -A requires -G\n");

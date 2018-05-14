@@ -221,6 +221,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 			Ctrl->E.active = true;
 			Ctrl->E.mode = BLK_DO_EXTEND4;		/* Report min, 25%, 75% and max in cols 4-7 */
 		}
+		if (GMT->parent->external && !Ctrl->A.active) {		/* From externals let -G equals -Az */
+			Ctrl->A.active = true;
+			Ctrl->A.selected[0] = true;
+			Ctrl->A.n_selected = 1;
+		}
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->G.active, "Syntax error: -A requires -G\n");
