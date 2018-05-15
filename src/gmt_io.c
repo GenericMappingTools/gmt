@@ -4096,6 +4096,12 @@ void gmtlib_write_tableheader (struct GMT_CTRL *GMT, FILE *fp, char *txt) {
 	}
 }
 
+void gmt_insert_tableheader (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T, char *txt) {
+	/* Add one more header record to the table */
+	T->header = gmt_M_memory (GMT, T->header, T->n_headers+1, char *);
+	T->header[T->n_headers++] = strdup (txt);
+}
+
 /* This version of fgets will check for input record truncation, that is,
  * the input record is longer than the given size.  Since calls to gmt_fgets
  * ASSUME they get a logical record, we will give a warning if truncation

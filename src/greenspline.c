@@ -92,6 +92,11 @@ struct GREENSPLINE_CTRL {
 	struct L {	/* -L */
 		bool active;
 	} L;
+	struct M {	/* -M<gfuncfile> */
+		bool active;
+		unsigned int mode;	/* GMT_IN or GMT_OUT */
+		char *file;
+	} M;
 	struct N {	/* -N<outputnode_file> */
 		bool active;
 		char *file;
@@ -467,6 +472,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 			case 'L':	/* Leave trend alone */
 				Ctrl->L.active = true;
 				break;
+			case 'M':	/* Read or write list of Green's function forces */
+				Ctrl->M.active = true;
+				Ctrl->M.file = strdup (opt->arg);
+				break;
 			case 'N':	/* Output locations */
 				if ((Ctrl->N.active = gmt_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->N.file = strdup (opt->arg);
@@ -491,6 +500,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				}
 				break;
 			case 'S':	/* Spline selection */
+				Ctrl->S.active = true;
 				Ctrl->S.arg = strdup (opt->arg);
 				switch (opt->arg[0]) {
 					case 'l':	/*  Cartesian linear spline in 1-D or 2-D (bilinear) */
@@ -600,6 +610,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 		}
 	}
 
+	if (Ctrl->M.active) {	/* Determine if this is for reading or writing Green's function forces */
+		if (Ctrl->S.active) /* Writing, since -S was given */
+			Ctrl->M.mode = GMT_OUT;
+		else if (gmt_access (GMT, Ctrl->M.file, F_OK)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "-M option given but file %s not found\n", Ctrl->M.file);
+			n_errors++;
+		}
+		else	/* Read in previous Green's function forces */
+			Ctrl->M.mode = GMT_IN;
+	}
+	
 	if (Ctrl->S.mode == WESSEL_BECKER_2008) {	/* Check that nodes is an odd integer */
 		double fn = rint (Ctrl->S.value[3]);
 		int64_t n = lrint (fn);
@@ -2177,11 +2198,32 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 	}
 	alpha = obs;	/* Just a different name since the obs vector now holds the alpha factors */
-#if 0
-	fp = fopen ("alpha.txt", "w");	/* Save alpha coefficients for debugging purposes */
-	for (p = 0; p < nm; p++) fprintf (fp, "%g\n", alpha[p]);
-	fclose (fp);
-#endif
+	
+	if (Ctrl->M.active && Ctrl->M.mode == GMT_OUT) {
+		/* EXPERIMENTAL and not completed - need normalization information, trend etc */
+		bool was = GMT->current.setting.io_header[GMT_OUT];	/* Current setting */
+		uint64_t m_dim[GMT_DIM_SIZE] = {1, 1, 0, 1};	/* Do not allocate any rows */
+		char header[GMT_LEN64] = {""};
+		struct GMT_DATASET *M = NULL;
+		
+		if ((M = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, m_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for saving misfit estimates\n");
+			Return (API->error);
+		}
+		M->table[0]->segment[0]->n_rows = nm;
+		M->table[0]->segment[0]->data[GMT_X] = alpha;
+		
+		sprintf (header, "N: %" PRIu64 " S: %s G: %s", nm, (Ctrl->C.active) ? "SVD" : "G-J", Ctrl->S.arg);
+		gmt_insert_tableheader (GMT, M->table[0], header);
+		GMT->current.setting.io_header[GMT_OUT] = true;
+		
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->M.file, M) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		M->table[0]->segment[0]->data[GMT_X] = NULL;	/* Since we did not allocate that array */
+		GMT->current.setting.io_header[GMT_OUT] = was;	/* Restore default */
+	}
+
 	if (Ctrl->C.movie == 0) gmt_M_free (GMT, A);
 
 	if (Ctrl->E.active) {
