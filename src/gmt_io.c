@@ -4543,7 +4543,7 @@ FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) 
 #if GDAL_VERSION_MAJOR == 2
 					sprintf (cmd, "ogr2ogr -mapFieldType Integer64=Integer -f \"OGR_GMT\" %s %s", GMT->current.io.tempfile, c);
 #else
-					sprintf (cmd, "ogr2ogr -f \"OGR_GMT\" %s %s", GMT->current.io.tempfile, c);
+					sprintf (cmd, "ogr2ogr -f \"GMT\" %s %s", GMT->current.io.tempfile, c);
 #endif
 					if ((error = system (cmd))) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "System call [%s] FAILED with error %d.\n", cmd, error);
