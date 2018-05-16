@@ -157,6 +157,7 @@ struct GMTAPI_CTRL {
 	char *gwf_dir;				/* GMT WorkFlow dir (NULL if not running in modern mode) */
 	char **tmp_header;			/* Temporary table headers held until we are able to write them to destination */
 	char *tmp_segmentheader;		/* Temporary segment header held until we are able to write it to destination */
+	char *message;				/* To be allocated by Create_Session and used for messages */
 	char error_msg[4096];			/* The cached last error message */
 	bool internal;				/* true if session was initiated by gmt.c */
 	bool deep_debug;			/* temporary for debugging */

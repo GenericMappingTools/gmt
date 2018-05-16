@@ -5883,6 +5883,8 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 		gmt_M_str_free (tmptag);
 	}
 
+	if ((API->message = calloc (4*GMT_BUFSIZ, sizeof (char))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the message string */
+
 	/* Set temp directory used by GMT */
 
 #ifdef WIN32
@@ -5975,6 +5977,7 @@ int GMT_Destroy_Session (void *V_API) {
 	gmt_M_str_free (API->session_tag);
 	gmt_M_str_free (API->tmp_dir);
 	gmt_M_str_free (API->session_dir);
+	gmt_M_str_free (API->message);
 	gmt_M_memset (API, 1U, struct GMTAPI_CTRL);	/* Wipe it clean first */
  	gmt_M_str_free (API);	/* Not gmt_M_free since this item was allocated before GMT was initialized */
 
@@ -10709,22 +10712,24 @@ int GMT_Message (void *V_API, unsigned int mode, const char *format, ...) {
 	 * mode = 6:	Reset elapsed time and report it as well.
 	 */
 	size_t source_info_len;
-	char message[GMT_BUFSIZ] = {""}, *stamp = NULL;
+	//char message[GMT_MSGSIZ] = {""}, *stamp = NULL;
+	char *stamp = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	va_list args;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
 	API = api_get_api_ptr (V_API);	/* Get the typecast structure pointer to API */
+	API->message[0] = '\0';	/* Start fresh */
 	if (mode) stamp = api_tictoc_string (API, mode);	/* Pointer to a timestamp string */
-	if (mode % 4) sprintf (message, "%s | ", stamp);	/* Lead with the time stamp */
-	source_info_len = strlen (message);
+	if (mode % 4) sprintf (API->message, "%s | ", stamp);	/* Lead with the time stamp */
+	source_info_len = strlen (API->message);
 
 	va_start (args, format);
-	vsnprintf (message + source_info_len, GMT_BUFSIZ - source_info_len, format, args);
+	vsnprintf (API->message + source_info_len, GMT_MSGSIZ - source_info_len, format, args);
 	va_end (args);
-	assert (strlen (message) < GMT_BUFSIZ);
-	API->print_func (API->GMT->session.std[GMT_ERR], message);	/* Do the printing */
+	assert (strlen (API->message) < GMT_MSGSIZ);
+	API->print_func (API->GMT->session.std[GMT_ERR], API->message);	/* Do the printing */
 	return_error (V_API, GMT_NOERROR);
 }
 
@@ -10740,7 +10745,7 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	/* Message whose output depends on verbosity setting */
 	size_t source_info_len = 0;
 	unsigned int g_level;
-	char message[GMT_BUFSIZ] = {""};
+	//char message[GMT_MSGSIZ] = {""};
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_CTRL *GMT = NULL;
 	va_list args;
@@ -10752,22 +10757,23 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	if (level > MAX(API->verbose, g_level))
 		return 0;
 	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
+	API->message[0] = '\0';	/* Start fresh */
 	if (GMT && GMT->current.setting.timer_mode > GMT_NO_TIMER) {
 		char *stamp = api_tictoc_string (API, GMT->current.setting.timer_mode);	/* NULL or pointer to a timestamp string */
 		if (stamp) {
-			sprintf (message, "%s | ", stamp);	/* Lead with the time stamp */
-			source_info_len = strlen (message);	/* Update length of message from 0 */
+			sprintf (API->message, "%s | ", stamp);	/* Lead with the time stamp */
+			source_info_len = strlen (API->message);	/* Update length of message from 0 */
 		}
 	}
-	snprintf (message + source_info_len, GMT_BUFSIZ-source_info_len, "%s [%s]: ", (GMT && GMT->init.module_name) ? GMT->init.module_name : API->session_tag, GMT_class[level]);
-	source_info_len = strlen (message);
+	snprintf (API->message + source_info_len, GMT_MSGSIZ-source_info_len, "%s [%s]: ", (GMT && GMT->init.module_name) ? GMT->init.module_name : API->session_tag, GMT_class[level]);
+	source_info_len = strlen (API->message);
 	va_start (args, format);
 	/* append format to the message: */
-	vsnprintf (message + source_info_len, GMT_BUFSIZ - source_info_len, format, args);
+	vsnprintf (API->message + source_info_len, GMT_MSGSIZ - source_info_len, format, args);
 	va_end (args);
-	assert (strlen (message) < GMT_BUFSIZ);
-	gmt_M_memcpy (API->error_msg, message, GMT_BUFSIZ-1, char);
-	API->print_func (GMT ? GMT->session.std[GMT_ERR] : stderr, message);
+	assert (strlen (API->message) < GMT_MSGSIZ);
+	gmt_M_memcpy (API->error_msg, API->message, GMT_BUFSIZ-1, char);
+	API->print_func (GMT ? GMT->session.std[GMT_ERR] : stderr, API->message);
 	return_error (V_API, GMT_NOERROR);
 }
 

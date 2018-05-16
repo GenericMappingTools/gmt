@@ -112,6 +112,7 @@ enum GMT_enum_length {
 	GMT_LEN1024     = 1024U,        /* For file names (antecipating web fnames) */
 	GMT_MAX_COLUMNS = 4096U,        /* Limit on number of columns in data tables (not grids) */
 	GMT_BUFSIZ      = 4096U,        /* Size of char record for i/o */
+	GMT_MSGSIZ      = 16384U,       /* Size of char record for messages and report */
 	GMT_MIN_MEMINC  = 1U,           /* E.g., 16 kb of 8-byte doubles */
 	GMT_MAX_MEMINC  = 67108864U};   /* E.g., 512 Mb of 8-byte doubles */
 
