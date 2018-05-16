@@ -10712,7 +10712,6 @@ int GMT_Message (void *V_API, unsigned int mode, const char *format, ...) {
 	 * mode = 6:	Reset elapsed time and report it as well.
 	 */
 	size_t source_info_len;
-	//char message[GMT_MSGSIZ] = {""}, *stamp = NULL;
 	char *stamp = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	va_list args;
@@ -10745,7 +10744,6 @@ int GMT_Report (void *V_API, unsigned int level, const char *format, ...) {
 	/* Message whose output depends on verbosity setting */
 	size_t source_info_len = 0;
 	unsigned int g_level;
-	//char message[GMT_MSGSIZ] = {""};
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_CTRL *GMT = NULL;
 	va_list args;
