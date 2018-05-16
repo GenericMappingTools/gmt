@@ -521,7 +521,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 					else
 						n_errors++;
 					Ctrl->G.n = 3;
-					Ctrl->G.image = true;
 				}
 				else if (n_commas == 0 && Ctrl->G.n < 3) {	/* Just got another drape grid or image */
 					if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
@@ -705,8 +704,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 				break;
 		}
 	}
-
-	if (Ctrl->G.active && gmt_M_file_is_image (Ctrl->G.file[0])) no_cpt = true;
+	
+	if (Ctrl->G.active) {
+		if (gmt_M_file_is_image (Ctrl->G.file[0])) no_cpt = true;
+		if (Ctrl->G.n == 3)
+			Ctrl->G.image = true;
+	}
 	
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="),
