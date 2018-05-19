@@ -552,7 +552,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the low-pass filter type and full diameter (6 sigma) filter-width.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Choose between convolution-type filters which differ in how weights are assigned\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and geospatial filters that seek to return a representative value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h select high-pass filtering [Default is low-pass filtering].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h to select high-pass filtering [Default is low-pass filtering].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Filters are isotropic.  For rectangular filtering append /<width2> (requires -Dp|0).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Convolution filters:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     b: Boxcar : a simple averaging of all points inside filter domain.\n");
@@ -611,7 +611,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0, n_files = 0;
-	char c, a[GMT_LEN64] = {""}, b[GMT_LEN64] = {""}, txt[GMT_LEN256] = {""}, *p = NULL;
+	char cc, a[GMT_LEN64] = {""}, b[GMT_LEN64] = {""}, txt[GMT_LEN256] = {""}, *p = NULL, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -676,30 +676,37 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 						Ctrl->F.operator = (Ctrl->F.filter == 'o');	/* Means weightsum is zero so no normalization, please */
 					}
 					else if (Ctrl->F.filter == 'h') {	/* Histogram-based mode filter */
-						sscanf (&txt[1], "%[^/]/%s", a, b);	/* Get filter width and bin width */
-						Ctrl->F.width = atof (a);
-						Ctrl->F.bin = atof (b);
-						sscanf (&txt[1], "%[^+]/%s", a, b);	/* Look for modifiers */
-						if (b[0]) {	/* Gave modifiers */
-							if ((p = strstr (b, "+l"))) Ctrl->F.mode = GRDFILTER_MODE_KIND_LOW;
-							if ((p = strstr (b, "+u"))) Ctrl->F.mode = GRDFILTER_MODE_KIND_HIGH;
-							if ((p = strstr (b, "+c"))) Ctrl->F.center = true;
+						if ((c = strchr (txt, '+'))) {	/* Gave modifiers */
+							if ((p = strstr (c, "+l"))) Ctrl->F.mode = GRDFILTER_MODE_KIND_LOW;
+							if ((p = strstr (c, "+u"))) Ctrl->F.mode = GRDFILTER_MODE_KIND_HIGH;
+							if ((p = strstr (c, "+c"))) Ctrl->F.center = true;
+							c[0] = '\0';	/* Hide modifiers */
 						}
+						if (sscanf (&txt[1], "%[^/]/%s", a, b) != 2) {	/* Get filter width and bin width */
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Fh: Must supply <filterwidth>/<binwidth>\n");
+							n_errors++;
+						}
+						else {	/* Ok to parse the strings */
+							Ctrl->F.width = atof (a);
+							Ctrl->F.bin   = atof (b);
+						}
+						if (c) c[0] = '+';	/* Restore modifiers */
 					}
 					else if (Ctrl->F.filter == 'p') {	/* LMS-based mode filter */
-						sscanf (&txt[1], "%[^+]/%s", a, b);
-						Ctrl->F.width = atof (a);
-						if (b[0]) {	/* Gave modifiers */
-							if ((p = strstr (b, "+l"))) Ctrl->F.mode = GRDFILTER_MODE_KIND_LOW;
-							if ((p = strstr (b, "+u"))) Ctrl->F.mode = GRDFILTER_MODE_KIND_HIGH;
-							if ((p = strstr (b, "+s"))) {
-								Ctrl->F.span = atof (&p[2]) / 100.0;	/* Got span in percent */
+						if ((c = strchr (txt, '+'))) {	/* Gave modifiers */
+							if ((p = strstr (c, "+l"))) Ctrl->F.mode = GRDFILTER_MODE_KIND_LOW;
+							if ((p = strstr (c, "+u"))) Ctrl->F.mode = GRDFILTER_MODE_KIND_HIGH;
+							if ((p = strstr (c, "+s"))) {
+								Ctrl->F.span = atof (&c[2]) / 100.0;	/* Got span in percent */
 								if (Ctrl->F.span <= 0.0 || Ctrl->F.span > 0.5) {
 									GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Fp: Span must be in 0-0.5 range\n");
 									n_errors++;
 								}
 							}
+							c[0] = '\0';	/* Hide modifiers */
 						}
+						Ctrl->F.width = atof (&txt[1]);
+						if (c) c[0] = '+';	/* Restore modifiers */
 					}
 					else if (strchr (txt, '/')) {	/* Gave xwidth/ywidth for rectangular Cartesian filtering */
 						sscanf (&txt[1], "%[^/]/%s", a, b);
@@ -723,9 +730,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 					}
 					Ctrl->F.width = fabs (Ctrl->F.width);
 					if (Ctrl->F.filter == 'h' || Ctrl->F.filter == 'p') {	/* Check for some further info in case of mode filtering */
-						c = opt->arg[strlen(txt)-1];
-						if (c == '-') Ctrl->F.mode = -1;
-						if (c == '+') Ctrl->F.mode = +1;
+						cc = opt->arg[strlen(txt)-1];
+						if (cc == '-' || cc == '+') {
+							GMT_Report (API, GMT_MSG_COMPAT,
+							            "Appending + or - for mode filtering is deprecated; use +l or +u instead.\n", opt->arg);
+							if (cc == '-') Ctrl->F.mode = -1;
+							if (cc == '+') Ctrl->F.mode = +1;
+						}
 					}
 				}
 				else {
