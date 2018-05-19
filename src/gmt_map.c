@@ -9114,6 +9114,9 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 		if (GMT->current.proj.central_meridian > GMT->common.R.wesn[XHI] && (GMT->current.proj.central_meridian - 360.0) >= GMT->common.R.wesn[XLO]) GMT->current.proj.central_meridian -= 360.0;
 	}
 	
+	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = urint (GMT->current.map.width / GMT->current.setting.map_line_step);
+	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
+
 	map_init_three_D (GMT);
 
 	return (GMT_NOERROR);
