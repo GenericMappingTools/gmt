@@ -4288,6 +4288,8 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 		if (!gmt_M_is_dnan (GMT->current.io.curr_rec[col_no])) {	/* Clean data */
 			if (col_no > 1 && gmt_input_is_nan_proxy (GMT, GMT->current.io.curr_rec[col_no]))	/* Input matched no-data setting, so change to NaN */
 				GMT->current.io.curr_rec[col_no] = GMT->session.d_NaN;
+			else if (GMT->common.i.select)	/* Cannot check here, done in gmtlib_bin_colselect instead when order is set */
+				continue;
 			else {	/* Still clean, so possibly adjust value and skip to next column */
 				switch (gmt_M_type (GMT, GMT_IN, col_no)) {
 					case GMT_IS_LON:	/* Must account for periodicity in 360 as per current rule */
@@ -5046,11 +5048,30 @@ bool gmt_is_a_blank_line (char *line) {
 /*! . */
 uint64_t gmtlib_bin_colselect (struct GMT_CTRL *GMT) {
 	/* When -i<cols> is used we must pull out and reset the current record */
-	uint64_t col;
+	uint64_t col, order;
 	static double tmp[GMT_BUFSIZ];
+	struct GMT_COL_INFO *S = NULL;
 	for (col = 0; col < GMT->common.i.n_cols; col++) {
-		tmp[GMT->current.io.col[GMT_IN][col].order] = GMT->current.io.curr_rec[GMT->current.io.col[GMT_IN][col].col];
-		gmt_convert_col (GMT->current.io.col[GMT_IN][col], tmp[GMT->current.io.col[GMT_IN][col].order]);
+		S = &(GMT->current.io.col[GMT_IN][col]);
+		order = S->order;
+		tmp[order] = GMT->current.io.curr_rec[S->col];
+		gmt_convert_col (GMT->current.io.col[GMT_IN][col], tmp[order]);
+		switch (gmt_M_type (GMT, GMT_IN, order)) {
+			case GMT_IS_LON:	/* Must account for periodicity in 360 as per current rule */
+				gmtio_adjust_periodic_lon (GMT, &tmp[order]);
+				break;
+			case GMT_IS_LAT:
+				if (tmp[order] < -90.0 || tmp[order] > +90.0) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Latitude (%g) at line # %" PRIu64 " exceeds -|+ 90! - set to NaN\n", tmp[order], GMT->current.io.rec_no);
+					tmp[S->order] = GMT->session.d_NaN;
+				}
+				break;
+			case GMT_IS_DIMENSION:	/* Convert to internal inches */
+				tmp[order] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+				break;
+			default:	/* Nothing to do */
+				break;
+		}
 	}
 	gmt_M_memcpy (GMT->current.io.curr_rec, tmp, GMT->common.i.n_cols, double);
 	return (GMT->common.i.n_cols);
