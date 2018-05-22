@@ -1098,11 +1098,12 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	
 	/* OK, with data in hand we can do some damage */
 	
-	if (Ctrl->A.active) {	/* Nearest neighbor analysis. We compute distance between all point pairs and sort on minimum distance */
+	if (Ctrl->A.active) {	/* Nearest neighbor analysis. We compute distances between all point pairs and sort on minimum distance */
 		uint64_t n_points, k, a, b, n, col;
 		double A[3], B[3], w, iw, d_bar, out[7];
 		struct NN_DIST *NN_dist = NULL;
 		struct NN_INFO  *NN_info = NULL;
+		
 		gmt_init_distaz (GMT, Ctrl->A.unit, Ctrl->A.smode, GMT_MAP_DIST);	/* Set the unit and distance calculation we requested */
 		
 		NN_dist = NNA_init_dist (GMT, D, &n_points);		/* Return array of NN results sorted on smallest distances */		
@@ -1127,7 +1128,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (Ctrl->A.mode) {	/* Need to combine close neighbors until minimum distance >= min_dist, then output revised dataset */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "NNA using min separation of %g%c\n", Ctrl->A.min_dist, Ctrl->A.unit);
 			n = 0;
-			while (n < n_points && NN_dist[n].distance < Ctrl->A.min_dist) n++;
+			while (n < n_points && NN_dist[n].distance < Ctrl->A.min_dist) n++;	/* Find # of pairs that are too close together */
 			while (n) {	/* Must do more combining since n pairs exceed threshold distance */
 				GMT_Report (API, GMT_MSG_VERBOSE, "NNA Found %" PRIu64 " points, %" PRIu64 " pairs are too close and will be combined by their weighted average\n", n_points, n/2);
 				if (Ctrl->A.mode == 2) {
@@ -1162,10 +1163,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				NN_dist = NNA_update_dist (GMT, NN_dist, &n_points);		/* Return recomputed array of NN NN_dist sorted on smallest distances */
 				NN_info = NNA_update_info (GMT, NN_info, NN_dist, n_points);	/* Return resorted array of NN ID lookups */
 				n = 0;
-				while (n < n_points && NN_dist[n].distance < Ctrl->A.min_dist) n++;	/* Any more pairs exceeding the threshold ? */
+				while (n < n_points && NN_dist[n].distance < Ctrl->A.min_dist) n++;	/* Any more pairs with distances less than the threshold? */
 			}
-		}
-		if (Ctrl->A.mode) {	/* Output the revised data set plus NN analysis results */
 			if ((error = GMT_Set_Columns (API, GMT_OUT, 7, GMT_COL_FIX_NO_TEXT)) != 0) {
 				gmt_M_free (GMT, NN_dist);	gmt_M_free (GMT, NN_info);	
 				Return (error);
@@ -1203,7 +1202,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			out[col++] = NN_dist[k].distance;
 			out[col++] = (double)NN_dist[k].ID;
 			out[col++] = (double)NN_dist[k].neighbor;
-			GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write area or length to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write points of NN info to stdout */
 		}
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			d_bar /= n_points;
