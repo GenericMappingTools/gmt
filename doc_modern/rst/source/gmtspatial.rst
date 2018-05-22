@@ -6,7 +6,7 @@ spatial
 
 .. only:: not man
 
-    Geospatial operations on lines and polygons
+    Geospatial operations on points, lines and polygons
 
 Synopsis
 --------

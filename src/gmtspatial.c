@@ -28,7 +28,7 @@
 
 #define THIS_MODULE_NAME	"gmtspatial"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Geospatial operations on lines and polygons"
+#define THIS_MODULE_PURPOSE	"Geospatial operations on points, lines and polygons"
 #define THIS_MODULE_KEYS	"<D{,DD(=f,ND(=,TD(,>D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:RVabdefghios" GMT_OPT("HMm")
