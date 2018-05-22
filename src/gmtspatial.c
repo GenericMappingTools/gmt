@@ -475,7 +475,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 				}
 				np++;	/* Number of points within the overlap zone */
 			}
-            separation[0] = (np > 1) ? separation[0] / np : DBL_MAX;	/* Mean distance between S and S' */
+			separation[0] = (np > 1) ? separation[0] / np : DBL_MAX;	/* Mean distance between S and S' */
 			use_length = (np) ? length[0] * np / S->n_rows : length[0];	/* ~reduce length to overlap section assuming equal point spacing */
 			close[0] = (np > 1) ? separation[0] / use_length : DBL_MAX;	/* Closeness as viewed from S */
 			use_sep = (separation[0] == DBL_MAX) ? GMT->session.d_NaN : separation[0];
@@ -598,25 +598,35 @@ GMT_LOCAL int compare_nn_points (const void *point_1v, const void *point_2v) {
 GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST *P, uint64_t *n_points) {
 	/* Return array of NN results sorted on smallest distances */
 	uint64_t k, k2, np;
-	double distance;
+	double *distance = gmt_M_memory (GMT, NULL, *n_points, double);
 	
 	np = *n_points;
 	for (k = 0; k < (np-1); k++) {
 		if (gmt_M_is_dnan (P[k].distance)) continue;	/* Skip deleted point */
 		P[k].distance = DBL_MAX;
+		/* We split the loop over calculation of distance from the loop over assignments since
+		 * if OpenMP is used then we cannot interchange k and k2 as there may be overprinting.
+		 */
+#ifdef _OPENMP
+#pragma omp parallel for private(k2) shared(k,np,GMT,P,distance)
+#endif 
 		for (k2 = k + 1; k2 < np; k2++) {
 			if (gmt_M_is_dnan (P[k2].distance)) continue;	/* Skip deleted point */
-			distance = gmt_distance (GMT, P[k].data[GMT_X], P[k].data[GMT_Y], P[k2].data[GMT_X], P[k2].data[GMT_Y]);
-			if (distance < P[k].distance) {
-				P[k].distance = distance;
+			distance[k2] = gmt_distance (GMT, P[k].data[GMT_X], P[k].data[GMT_Y], P[k2].data[GMT_X], P[k2].data[GMT_Y]);
+		}
+		for (k2 = k + 1; k2 < np; k2++) {
+			if (gmt_M_is_dnan (P[k2].distance)) continue;	/* Skip deleted point */
+			if (distance[k2] < P[k].distance) {
+				P[k].distance = distance[k2];
 				P[k].neighbor = P[k2].ID;
 			}
-			if (distance < P[k2].distance) {
-				P[k2].distance = distance;
+			if (distance[k2] < P[k2].distance) {
+				P[k2].distance = distance[k2];
 				P[k2].neighbor = P[k].ID;
 			}
 		}
 	}
+	gmt_M_free (GMT, distance);
 	qsort (P, np, sizeof (struct NN_DIST), compare_nn_points);	/* Sort on small to large distances */
 	for (k = np; k > 0 && gmt_M_is_dnan (P[k-1].distance); k--);	/* Skip the NaN distances that were placed at end */
 	*n_points = k;	/* Update point count */
@@ -626,12 +636,14 @@ GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST 
 GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t *n_points) {
 	/* Return array of NN results sorted on smallest distances */
 	uint64_t np = 0, k, tbl, seg, row, col, n_cols;
-	double distance;
+	double *distance = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	struct NN_DIST *P = gmt_M_memory (GMT, NULL, D->n_records, struct NN_DIST);
 	
 	n_cols = MIN (D->n_columns, 4);	/* Expects lon,lat and makes room for at least z, w and other columns */
-	for (tbl = 0; tbl < D->n_tables; tbl++) {
+	np = (D->n_records * (D->n_records - 1)) / 2;
+	distance = gmt_M_memory (GMT, NULL, np, double);
+	for (tbl = np = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 			S = D->table[tbl]->segment[seg];
 			for (row = 0; row < S->n_rows; row++) {
@@ -639,14 +651,22 @@ GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASE
 				if (n_cols < 4) P[np].data[GMT_W] = 1.0;	/* No weight provided, set to unity */
 				P[np].ID = np;	/* Assign ID based on input record # from 0 */
 				P[np].distance = DBL_MAX;
+				/* We split the loop over calculation of distance from the loop over assignments since
+		 		 * if OpenMP is used then we cannot interchange k and np as there may be overprinting.
+		 		 */
+#ifdef _OPENMP
+#pragma omp parallel for private(k) shared(np,GMT,P,distance)
+#endif 
+				for (k = 0; k < np; k++) {	/* Get distances to other points */
+					distance[k] = gmt_distance (GMT, P[k].data[GMT_X], P[k].data[GMT_Y], P[np].data[GMT_X], P[np].data[GMT_Y]);
+				}
 				for (k = 0; k < np; k++) {	/* Compare this point to all previous points */
-					distance = gmt_distance (GMT, P[k].data[GMT_X], P[k].data[GMT_Y], P[np].data[GMT_X], P[np].data[GMT_Y]);
-					if (distance < P[k].distance) {	/* Update shortest distance so far, and with which neighbor */
-						P[k].distance = distance;
+					if (distance[k] < P[k].distance) {	/* Update shortest distance so far, and with which neighbor */
+						P[k].distance = distance[k];
 						P[k].neighbor = np;
 					}
-					if (distance < P[np].distance) {	/* Update shortest distance so far, and with which neighbor */
-						P[np].distance = distance;
+					if (distance[k] < P[np].distance) {	/* Update shortest distance so far, and with which neighbor */
+						P[np].distance = distance[k];
 						P[np].neighbor = k;
 					}
 				}
@@ -654,6 +674,7 @@ GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASE
 			}
 		}
 	}
+	gmt_M_free (GMT, distance);
 	qsort (P, np, sizeof (struct NN_DIST), compare_nn_points);
 	*n_points = np;
 	return (P);
@@ -1200,8 +1221,14 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				col = 0;
 			}
 			out[col++] = NN_dist[k].distance;
-			out[col++] = (double)NN_dist[k].ID;
-			out[col++] = (double)NN_dist[k].neighbor;
+			if (NN_dist[k].ID < NN_dist[k].neighbor) {
+				out[col++] = (double)NN_dist[k].ID;
+				out[col++] = (double)NN_dist[k].neighbor;
+			}
+			else {
+				out[col++] = (double)NN_dist[k].neighbor;
+				out[col++] = (double)NN_dist[k].ID;
+			}
 			GMT_Put_Record (API, GMT_WRITE_DATA, &Out);	/* Write points of NN info to stdout */
 		}
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
