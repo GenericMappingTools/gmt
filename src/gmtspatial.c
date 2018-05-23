@@ -597,7 +597,7 @@ GMT_LOCAL int compare_nn_points (const void *point_1v, const void *point_2v) {
 
 GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST *P, uint64_t *n_points) {
 	/* Return array of NN results sorted on smallest distances */
-	uint64_t k, k2, np;
+	int64_t k, k2, np;
 	double *distance = gmt_M_memory (GMT, NULL, *n_points, double);
 	
 	np = *n_points;
@@ -635,7 +635,8 @@ GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST 
 
 GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t *n_points) {
 	/* Return array of NN results sorted on smallest distances */
-	uint64_t np = 0, k, tbl, seg, row, col, n_cols;
+	uint64_t np = 0, tbl, seg, row, col, n_cols;
+	int64_t  k;
 	double *distance = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	struct NN_DIST *P = gmt_M_memory (GMT, NULL, D->n_records, struct NN_DIST);
