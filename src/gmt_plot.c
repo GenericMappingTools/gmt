@@ -3275,7 +3275,9 @@ GMT_LOCAL bool at_pole (double *lat, uint64_t n) {
 GMT_LOCAL uint64_t plot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, bool add_pole, bool first, const char *comment) {
 	/* Handles the laying down of polygons suitable for filling only; outlines are done separately later.
 	 * Polar caps need special treatment in that we must add a detour to the pole.
-	 * That detour will not be drawn, only used for fill. */
+	 * That detour will not be drawn, only used for fill. However, due to the insanity that is called GIS,
+	 * some user polygons may already have artificial lines drawn to the pole in order to work in GIS.
+	 * Thus, if we detect such a pole as part of the line then we do NOT add yet another detour.  */
 
 	uint64_t n = S->n_rows, k;
 	double *plon = S->data[GMT_X], *plat = S->data[GMT_Y], t_lat;
@@ -3283,6 +3285,22 @@ GMT_LOCAL uint64_t plot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DA
 	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 	if (ap) plon[n-1] = plon[0];
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Polar cap: %d\n", (int)add_pole);
+	if (add_pole) {	/* Make sure there is not already a detour in the data as given */
+		double p_lat = SH->pole * 90.0;	/* Latitude of pole in question */
+		bool need_detour = true;	/* Until proven otherwise */
+		for (k = 0; need_detour && k < S->n_rows; k++) {
+			if (doubleAlmostEqual (S->data[GMT_Y][k], p_lat)) {	/* Point is at the pole */
+				/* We want to distinguish between a path that gently touches the pole and one that has a straight detour to the pole.
+				 * We assume a detour will have the same longitudes for this point and the previous. */
+				if (k && doubleAlmostEqual (S->data[GMT_X][k], S->data[GMT_X][k-1]))
+					need_detour = false;	/* Well, what do you know... */
+			}
+		}
+		if (!need_detour) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Path already had a detour to the pole, skip adding another detour\n");
+			add_pole = false;
+		}
+	}
 	if (add_pole) {
 		if ((n = gmt_geo_polarcap_segment (GMT, S, &plon, &plat)) == 0) {	/* Not a global map */
 			/* Here we must detour to the N or S pole, then resample the path */
@@ -6699,6 +6717,7 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	if (k0) {	/* Occurred somewhere along the perimeter between points k0 and k0-1 */
 		double x_dist = S->data[GMT_X][k0-1] - GMT->common.R.wesn[XLO];
 		gmt_M_set_delta_lon (S->data[GMT_X][k0-1], S->data[GMT_X][k0], dx);	/* Handles the 360 jump cases */
+		gmt_M_set_delta_lon (S->data[GMT_X][k0-1], GMT->common.R.wesn[XLO], x_dist);	/* Handles the 360 jump cases */
 		yc = S->data[GMT_Y][k0-1] - (S->data[GMT_Y][k0] - S->data[GMT_Y][k0-1]) * x_dist / dx;
 	}
 	else	/* Very first point is at the right longitude */
