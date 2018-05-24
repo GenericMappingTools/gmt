@@ -3290,9 +3290,9 @@ GMT_LOCAL uint64_t plot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DA
 		bool need_detour = true;	/* Until proven otherwise */
 		for (k = 0; need_detour && k < S->n_rows; k++) {
 			if (doubleAlmostEqual (S->data[GMT_Y][k], p_lat)) {	/* Point is at the pole */
-				/* We want to distinguish between a path that gently touches the pole and one that has a straight detour to the pole.
-				 * We assume a detour will have the same longitudes for this point and the previous. */
-				if (k && doubleAlmostEqual (S->data[GMT_X][k], S->data[GMT_X][k-1]))
+				/* We want to distinguish between a path that gently touches the pole and one that has a fake straight detour to the pole.
+				 * We assume a detour will have the same longitudes for this point and the previous and that they are either +/-180 or 0. */
+				if (k && doubleAlmostEqual (S->data[GMT_X][k], S->data[GMT_X][k-1]) && (doubleAlmostEqual (fabs (S->data[GMT_X][k]), 180.0) || gmt_M_is_zero (S->data[GMT_X][k])))
 					need_detour = false;	/* Well, what do you know... */
 			}
 		}
