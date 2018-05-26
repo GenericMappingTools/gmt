@@ -3206,9 +3206,9 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	if (code == GMT_IS_IMAGE)
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s considered a valid image instead of grid. Open via GDAL\n", file);
 	else if (code == GMT_IS_GRID)
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s may be image or grid.  Open via GDAL for checking\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s may be image or grid.  Open via GDAL for checking\n", file);
 	else
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s is most likely a grid. Open in GMT as grid\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s is most likely a grid. Open in GMT as grid\n", file);
 
 	return code;
 }
