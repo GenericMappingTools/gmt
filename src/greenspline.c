@@ -134,21 +134,27 @@ struct GREENSPLINE_CTRL {
 	} Z;
 };
 
-#define SANDWELL_1987_1D		0
-#define SANDWELL_1987_2D		1
-#define SANDWELL_1987_3D		2
-#define WESSEL_BERCOVICI_1998_1D	3
-#define WESSEL_BERCOVICI_1998_2D	4
-#define WESSEL_BERCOVICI_1998_3D	5
-#define MITASOVA_MITAS_1993_2D		6
-#define MITASOVA_MITAS_1993_3D		7
-#define PARKER_1994			8
-#define WESSEL_BECKER_2008		9
-#define LINEAR_1D			10
-#define LINEAR_2D			11
-
-#define N_METHODS			12
-#define N_PARAMS			11
+enum Greenspline_modes {	/* Various integer mode flags */
+	SANDWELL_1987_1D		= 0,
+	SANDWELL_1987_2D		= 1,
+	SANDWELL_1987_3D		= 2,
+	WESSEL_BERCOVICI_1998_1D	= 3,
+	WESSEL_BERCOVICI_1998_2D	= 4,
+	WESSEL_BERCOVICI_1998_3D	= 5,
+	MITASOVA_MITAS_1993_2D		= 6,
+	MITASOVA_MITAS_1993_3D		= 7,
+	PARKER_1994			= 8,
+	WESSEL_BECKER_2008		= 9,
+	LINEAR_1D			= 10,
+	LINEAR_2D			= 11,
+	N_METHODS			= 12,
+	N_PARAMS			= 11,
+	GREENSPLINE_TREND		= 1,		/* Remove/Restore linear trend */
+	GREENSPLINE_NORM		= 2,		/* Normalize residual data to 0-1 range */
+	SQ_N_NODES 			= 10001,	/* Default number of nodes in the precalculated -Sq spline */
+	GSP_GOT_SIG			= 0,
+	GSP_GOT_WEIGHTS			= 1
+};
 
 #ifndef M_LOG_2
 #define M_LOG_2 0.69314718055994530942
@@ -163,11 +169,7 @@ struct GREENSPLINE_CTRL {
 #define M_INV_SQRT_PI (1.0 / M_SQRT_PI)
 #endif
 
-#define SQ_N_NODES 		10001	/* Default number of nodes in the precalculated -Sq spline */
 #define SQ_TRUNC_ERROR		1.0e-6	/* Max truncation error in Parker's simplified sum for WB'08 */
-
-#define GREENSPLINE_TREND	1	/* Remove/Restore linear trend */
-#define GREENSPLINE_NORM	2	/* Normalize residual data to 0-1 range */
 
 enum Greenspline_index {	/* Indices for coeff array for normalization */
 	GSP_MEAN_X	= 0,
@@ -288,7 +290,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Expects one extra input column with data errors sigma_i.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append w to indicate this column carries weights instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default makes weights via w_i = 1/sigma_i].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default makes weights via w_i = 1/sigma_i^2] for the least squares solution.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note this will only have an effect if -C is used.\n");
 	GMT_Option (API, "V,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2-5 input columns depending on dimensionality (see -D) and weights (see -W).\n");
@@ -594,7 +596,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				break;
 			case 'W':	/* Expect data uncertainty or weights in last column */
 				Ctrl->W.active = true;
-				if (opt->arg[0] == 'w') Ctrl->W.mode = 1;	/* Got weights instead of sigmas */
+				if (opt->arg[0] == 'w') Ctrl->W.mode = GSP_GOT_WEIGHTS;	/* Got weights instead of sigmas */
 				break;
 #ifdef DEBUG
 			case 'Z':	/* Dump matrices */
@@ -1591,14 +1593,12 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (skip) continue;	/* Current point was a duplicate of a previous point */
 
 		if (Ctrl->W.active) {	/* Planning a weighted solution */
-			if (Ctrl->W.mode == 0) {	/* Got sigma, must convert to weight */
+			if (Ctrl->W.mode == GSP_GOT_SIG) {	/* Got sigma, must convert to weight */
 				err_sum += in[w_col] * in[w_col];	/* Sum up variance first */
-				X[n][dimension] = 1.0 / in[w_col];
+				X[n][dimension] = 1.0 / in[w_col];	/* We will square later */
 			}
-			else {	/* Got weight */
-				err_sum += pow (in[w_col], -2.0);	/* Sum up variance */
+			else	/* Got weight, use as is, no squaring later */
 				X[n][dimension] = in[w_col];
-			}
 		}
 		var_sum += in[dimension] * in[dimension];	/* Sum up data variance */
 		obs[n++] = in[dimension];
@@ -1625,8 +1625,10 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " unique data constraints\n", n);
 	if (n_skip) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " data constraints as duplicates\n", n_skip);
 
-	err_sum = sqrt (err_sum / nm);	/* Mean data uncertainty */
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean data uncertainty is %g\n", err_sum);
+	if (Ctrl->W.active && Ctrl->W.mode == GSP_GOT_SIG) {	/* Got data uncertainties */
+		err_sum = sqrt (err_sum / nm);	/* Mean data uncertainty */
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean data uncertainty is %g\n", err_sum);
+	}
 
 	if (Ctrl->A.active) {	/* Read gradient constraints from file */
 		unsigned int n_A_cols = 0;
@@ -2092,7 +2094,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		/* 1. Transpose A and set diagonal matrix with squared weights (here a vector) S */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create S = W'*W diagonal matrix, A', and compute A' * S\n");
 		for (row = 0; row < nm; row++) {
-			S[row] = X[row][dimension] * X[row][dimension];	/* This is the diagonal squared weights (=1/sigma^2) matrix */
+			/* Set the diagonal using (=1/sigma^2) if given sigmas or the weights as given */
+			S[row] = (Ctrl->W.mode == GSP_GOT_SIG) ? X[row][dimension] * X[row][dimension] : X[row][dimension];
 			for (col = 0; col < nm; col++) {
 				ij = row * nm + col;
 				ji = col * nm + row;

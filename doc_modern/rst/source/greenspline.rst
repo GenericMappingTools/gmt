@@ -247,10 +247,10 @@ Optional Arguments
 
 **-W**\ [**w**]
    Data one-sigma uncertainties are provided in the last column.
-   We then compute weights that are inversely proportional to the uncertainties.
-   Append **w** if weights are given instead of uncertainties.  This results in
-   a weighted least squares fit.  Note that weights only have an effect if **-C** is used.
-   [Default uses no weights or uncertainties].
+   We then compute weights that are inversely proportional to the uncertainties squared.
+   Append **w** if weights are given instead of uncertainties and then they will be used
+   as is (no squaring).  This results in a weighted least squares fit.  Note that this
+   only has an effect if **-C** is used.  [Default uses no weights or uncertainties].
 
 .. |Add_-bi| replace:: [Default is 2-4 input
    columns (**x**,\ *w*); the number depends on the chosen dimension].

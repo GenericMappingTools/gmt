@@ -161,13 +161,11 @@ Optional Arguments
 
 **-W**\ [**w**]
    One-sigma data uncertainties for *u* and *v* are provided in the last two columns.
-   We then compute weights that are inversely proportional to the uncertainties.
-   Append **w** if weights are given instead of uncertainties.  This results in
+   We then compute least squares weights that are inversely proportional to the square
+   of the uncertainties.  Append **w** if weights are given instead of uncertainties,
+   in which case we just use the weights as provided (no squaring).  This results in
    a weighted least squares fit.  Note that **-W** only has an effect if **-C** is used.
    [Default uses no weights or uncertainties].
-   Note: At present the **-W** option is *unstable*.  We do not yet know if it reflects
-   a coding bug or a theoretical limitation.  Users beware, and make sure you compare
-   the results with non-weighted output for basic sanity checking.
 
 .. _-V:
 

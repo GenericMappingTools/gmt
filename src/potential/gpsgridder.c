@@ -182,7 +182,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Expects two extra input columns with data errors sigma_x, sigma_y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append w to indicate these columns carry weights instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default makes weights via 1/sigma_x, 1/sigma_y].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default makes weights via 1/sigma_x^2, 1/sigma_y^2].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note this option will only have an effect if -C is used.\n");
 	GMT_Option (API, "V,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 4-6 input columns (see -W); use -i to select columns from any data table.\n");
@@ -646,19 +646,14 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		if (skip) continue;	/* Current point was an exact duplicate of a previous point */
 		u[n_uv] = in[GMT_U];	v[n_uv] = in[GMT_V];	/* Save current u,v data pair */
 		if (Ctrl->W.active) {	/* Got sigmas (or weights) in cols 4 and 5 */
-			X[n_uv][GMT_WU] = in[4];
+			X[n_uv][GMT_WU] = in[4];	/* First just copy over what we got */
 			X[n_uv][GMT_WV] = in[5];
-			if (Ctrl->W.mode == GPS_GOT_SIG) {	/* Got sigmas, so create weights */
+			if (Ctrl->W.mode == GPS_GOT_SIG) {	/* Got sigmas, so create weights from them */
 				err_sum_u += X[n_uv][GMT_WU]*X[n_uv][GMT_WU];	/* Update u variance */
 				err_sum_v += X[n_uv][GMT_WV]*X[n_uv][GMT_WV];	/* Update v variance */
 				err_sum += X[n_uv][GMT_WU]*X[n_uv][GMT_WU] + X[n_uv][GMT_WV]*X[n_uv][GMT_WV];	/* Update combined data variance */
-				X[n_uv][GMT_WU] = 1.0 / X[n_uv][GMT_WU];
-				X[n_uv][GMT_WV] = 1.0 / X[n_uv][GMT_WV];
-			}
-			else {	/* Unscramble weights so we can update data variance */
-				err_sum_u += pow (X[n_uv][GMT_WU], -2.0);	/* Update u variance */
-				err_sum_v += pow (X[n_uv][GMT_WV], -2.0);	/* Update v variance */
-				err_sum += pow (X[n_uv][GMT_WU], -2.0) + pow (X[n_uv][GMT_WV], -2.0);
+				X[n_uv][GMT_WU] = 1.0 / X[n_uv][GMT_WU];	/* We will square these weights later */
+				X[n_uv][GMT_WV] = 1.0 / X[n_uv][GMT_WV];	/* We will square these weights later */
 			}
 		}
 		var_sum += u[n_uv] * u[n_uv] + v[n_uv] * v[n_uv];
@@ -679,12 +674,14 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	err_sum_u = sqrt (err_sum_u / n_uv);
-	err_sum_v = sqrt (err_sum_v / n_uv);
-	err_sum = sqrt (0.5 * err_sum / n_uv);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean u-component uncertainty: %g\n", err_sum_u);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean v-component uncertainty: %g\n", err_sum_v);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Combined (u,v) uncertainty  : %g\n", err_sum);
+	if (Ctrl->W.active && Ctrl->W.mode == GPS_GOT_SIG) {	/* Able to report mean uncertainties */
+		err_sum_u = sqrt (err_sum_u / n_uv);
+		err_sum_v = sqrt (err_sum_v / n_uv);
+		err_sum = sqrt (0.5 * err_sum / n_uv);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean u-component uncertainty: %g\n", err_sum_u);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean v-component uncertainty: %g\n", err_sum_v);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Combined (u,v) uncertainty  : %g\n", err_sum);
+	}
 
 	n_params = 2 * n_uv;	/* Dimension of array is twice the size since using both u & v as separate observations */
 	for (k = n_uv; k < n_alloc; k++) gmt_M_free (GMT, X[k]);	/* Remove pointer memory that was not used */
@@ -835,9 +832,9 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		S   = gmt_M_memory (GMT, NULL, n_params, double);
 		/* 1. Transpose A and set diagonal matrix with squared weights (here a vector) S */
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create S = W'*W diagonal matrix, A', and compute A' * S\n");
-		for (row = 0; row < n_uv; row++) {	/* Set S, the diagonal squared weights (=1/sigma^2) matrix */
-			S[row]      = X[row][GMT_WU] * X[row][GMT_WU];
-			S[row+n_uv] = X[row][GMT_WV] * X[row][GMT_WV];
+		for (row = 0; row < n_uv; row++) {	/* Set S, the diagonal squared weights (=1/sigma^2) matrix if given sigma, else use weights as they are */
+			S[row]      = (Ctrl->W.mode == GPS_GOT_SIG) ? X[row][GMT_WU] * X[row][GMT_WU] : X[row][GMT_WU];
+			S[row+n_uv] = (Ctrl->W.mode == GPS_GOT_SIG) ? X[row][GMT_WV] * X[row][GMT_WV] : X[row][GMT_WV];
 		}
 		for (row = 0; row < n_params; row++) {	/* Transpose A */
 			for (col = 0; col < n_params; col++) {
@@ -1007,7 +1004,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			pvar_sum += here[GMT_U] * here[GMT_U] + here[GMT_V] * here[GMT_V];
 			
 			rms += pow (dev_u, 2.0) + pow (dev_v, 2.0);
-			if (Ctrl->W.active) {	/* If data had uncertainties we also compute the chi2 sum */
+			if (Ctrl->W.active && Ctrl->W.mode == GPS_GOT_SIG) {	/* If data had uncertainties we also compute the chi2 sum */
 				chi2u = pow (dev_u * X[j][GMT_WU], 2.0);
 				chi2v = pow (dev_v * X[j][GMT_WV], 2.0);
 				chi2u_sum += chi2u;
@@ -1051,10 +1048,10 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		rms_u = sqrt (rms_u / n_uv);
 		rms_v = sqrt (rms_v / n_uv);
 		rms = sqrt (rms / n_params);
-		std_u = (m > 1) ? sqrt (std_u / (m-1.0)) : GMT->session.d_NaN;
-		std_v = (m > 1) ? sqrt (std_v / (m-1.0)) : GMT->session.d_NaN;
-		std   = (m2 > 1) ? sqrt (std / (m2-1.0)) : GMT->session.d_NaN;
-		if (Ctrl->W.active) {
+		std_u = (m > 1)  ? sqrt (std_u / (m-1.0)) : GMT->session.d_NaN;
+		std_v = (m > 1)  ? sqrt (std_v / (m-1.0)) : GMT->session.d_NaN;
+		std   = (m2 > 1) ? sqrt (std / (m2-1.0))  : GMT->session.d_NaN;
+		if (Ctrl->W.active && Ctrl->W.mode == GPS_GOT_SIG) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Separate u Misfit: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\tChi^2 = %g\n", n_uv, mean_u, std_u, rms_u, chi2u_sum);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Separate v Misfit: N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\tChi^2 = %g\n", n_uv, mean_v, std_v, rms_v, chi2v_sum);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Total u,v Misfit : N = %u\tMean = %g\tStd.dev = %g\tRMS = %g\tChi^2 = %g\n", n_params, mean, std, rms, chi2u_sum + chi2v_sum);
