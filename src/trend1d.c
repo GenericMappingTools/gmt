@@ -115,8 +115,9 @@ struct TREND1D_CTRL {
 		bool active;
 		struct GMT_MODEL M;
 	} N;
-	struct W {	/* -W */
+	struct W {	/* -W[+s] */
 		bool active;
+		unsigned int mode;
 	} W;
 };
 
@@ -129,7 +130,7 @@ struct	TREND1D_DATA {
 	double	w;
 };
 
-GMT_LOCAL int read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, int weighted_input, double **work) {
+GMT_LOCAL int read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, unsigned int weighted_input, double **work) {
 	uint64_t i;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	double *in = NULL;
@@ -154,7 +155,12 @@ GMT_LOCAL int read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **dat
 
 		(*data)[i].x = (*data)[i].t = in[GMT_X];
 		(*data)[i].y = in[GMT_Y];
-		(*data)[i].w = (weighted_input) ? in[GMT_Z] : 1.0;
+		if (weighted_input == 2)	/* Got sigma, set weight = 1/s^2 */
+			(*data)[i].w = 1.0 / (in[GMT_Z] * in[GMT_Z]);
+		else if (weighted_input == 1)	/* Got weight  */
+			(*data)[i].w = in[GMT_Z];
+		else	/* Default is unit weight */
+			(*data)[i].w = 1.0;
 
 		if (i) {
 			if (*xmin > (*data)[i].x) *xmin = (*data)[i].x;
@@ -518,7 +524,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -F<xymrw|p|P|c> -N[p|P|f|F|c|C|s|S|x|X]<list-of-terms>[,...][+l<length>][+o<origin>][+r]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<condition_#>] [-I[<confidence>]] [%s] [-W] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<condition_#>] [-I[<confidence>]] [%s] [-W[+s]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -548,6 +554,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give -I without a number to default to 0.51 confidence level.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Weighted input given, weights in 3rd column [Default is unweighted].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to read standard deviations and compute weights as 1/s^2.\n");
 	GMT_Option (API, "bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 (or 3 if -W is set) input columns.\n");
 	GMT_Option (API, "bo,d,e,h,i,s,:,.");
@@ -603,6 +610,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':
 				Ctrl->W.active = true;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s")) n_errors++;
+				Ctrl->W.mode = (strstr (opt->arg, "+s")) ? 2 : 1;
 				break;
 
 			default:	/* Report bad options */
@@ -690,7 +699,7 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	allocate_the_memory (GMT, np, &gtg, &v, &gtd, &lambda, &workb, &workz, &c_model, &o_model, &w_model);
-	if ((error = read_data_trend1d (GMT, &data, &n_data, &xmin, &xmax, Ctrl->W.active, &work)) != 0) {
+	if ((error = read_data_trend1d (GMT, &data, &n_data, &xmin, &xmax, Ctrl->W.mode, &work)) != 0) {
 		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}

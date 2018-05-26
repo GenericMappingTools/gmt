@@ -16,7 +16,7 @@ grdtrend
 **grdtrend** *grdfile* |-N|\ *n\_model*\ [**+r**]
 [ |-D|\ *diff.nc* ]
 [ |SYN_OPT-R| ]
-[ |-T|\ *trend.nc* ] [ |-W|\ *weight.nc* ]
+[ |-T|\ *trend.nc* ] [ |-W|\ *weight.nc*\ [**+s**] ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -79,11 +79,12 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ *weight.nc*
+**-W**\ *weight.nc*\ [**+s**]
     If *weight.nc* exists, it will be read and used to solve a weighted
-    least-squares problem. [Default: Ordinary least-squares fit.] If the
-    robust option has been selected, the weights used in the robust fit
-    will be written to *weight.nc*. 
+    least-squares problem. [Default: Ordinary least-squares fit]. Append
+    **+s** to instead read data uncertainties (one sigma) and create weights
+    as 1/sigma^2.  If the robust option has been selected, the weights used
+    in the robust fit will be written to *weight.nc*. 
 
 .. include:: explain_help.rst_
 

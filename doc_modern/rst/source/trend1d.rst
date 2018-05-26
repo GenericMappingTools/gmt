@@ -18,7 +18,7 @@ Synopsis
 [ |-C|\ *condition_number* ]
 [ |-I|\ [*confidence_level*] ]
 [ |SYN_OPT-V| ]
-[ |-W| ]
+[ |-W|\ [**+s**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -112,10 +112,11 @@ Optional Arguments
 
 .. _-W:
 
-**-W**
+**-W**\ [**+s**]
     Weights are supplied in input column 3. Do a weighted least squares
     fit [or start with these weights when doing the iterative robust
-    fit]. [Default reads only the first 2 columns.] 
+    fit]. Append **+s** to instead read data uncertainties (one sigma)
+    and create weights as 1/sigma^2 [Default reads only the first 2 columns].
 
 .. |Add_-bi| replace:: [Default is 2 (or 3 if **-W** is set) columns]. 
 .. include:: explain_-bi.rst_

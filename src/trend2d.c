@@ -64,8 +64,9 @@ struct TREND2D_CTRL {
 		bool robust;
 		unsigned int value;
 	} N;
-	struct W {	/* -W */
+	struct W {	/* -W[+s] */
 		bool active;
+		unsigned int mode;
 	} W;
 };
 
@@ -78,7 +79,7 @@ struct TREND2D_DATA {
 	double	w;
 };
 
-GMT_LOCAL int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, double *ymin, double *ymax, int weighted_input, double **work) {
+GMT_LOCAL int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, double *ymin, double *ymax, unsigned int weighted_input, double **work) {
 	uint64_t i;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	double *in = NULL;
@@ -106,7 +107,12 @@ GMT_LOCAL int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **dat
 		(*data)[i].x = in[GMT_X];
 		(*data)[i].y = in[GMT_Y];
 		(*data)[i].z = in[GMT_Z];
-		(*data)[i].w = (weighted_input) ? in[3] : 1.0;
+		if (weighted_input == 2)	/* Got sigma, set weight = 1/s^2 */
+			(*data)[i].w = 1.0 / (in[3] * in[3]);
+		else if (weighted_input == 1)	/* Got weight  */
+			(*data)[i].w = in[3];
+		else	/* Default is unit weight */
+			(*data)[i].w = 1.0;
 
 		if (i) {
 			if (*xmin > (*data)[i].x) *xmin = (*data)[i].x;
@@ -416,7 +422,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -F<xyzmrw>|p -N<n_model>[+r] [-C<condition_#>] [-I[<confidence>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[+s]] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -436,6 +442,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give -I without a number to default to 0.51 confidence level.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Weighted input given, weights in 4th column [Default is unweighted].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to read standard deviations and compute weights as 1/s^2.\n");
 	GMT_Option (API, "bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.\n");
 	GMT_Option (API, "bo,d,e,f,h,i,s,:,.");
@@ -490,6 +497,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND2D_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':
 				Ctrl->W.active = true;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s")) n_errors++;
+				Ctrl->W.mode = (strstr (opt->arg, "+s")) ? 2 : 1;
 				break;
 
 			default:	/* Report bad options */
@@ -571,44 +580,44 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 	allocate_the_memory (GMT, np, &gtg, &v, &gtd, &lambda, &workb, &workz, &c_model, &o_model, &w_model);
 
 	if ((error = GMT_Set_Columns (API, GMT_IN, 3 + Ctrl->W.active, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
 	i = (Ctrl->F.report) ? np : Ctrl->n_outputs;
 	if ((error = GMT_Set_Columns (API, GMT_OUT, i, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
-		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
-		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
 
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
-		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
-	if ((error = read_data_trend2d (GMT,&data, &n_data, &xmin, &xmax, &ymin, &ymax, Ctrl->W.active, &work)) != 0) {
-		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+	if ((error = read_data_trend2d (GMT,&data, &n_data, &xmin, &xmax, &ymin, &ymax, Ctrl->W.mode, &work)) != 0) {
+		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
-		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
 
 	if (xmin == xmax || ymin == ymax) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Maximum and minimum input values are the same.\n");
-		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (n_data == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not read any data.\n");
-		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (n_data < (uint64_t)Ctrl->N.value) {
@@ -627,7 +636,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 
 		/* Fit first model  */
 		load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
-		solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+		solve_system_2d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 		calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 		c_chisq = get_chisq_2d (data, n_data, n_model);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n_model, rank, c_chisq, 1.0);
@@ -636,7 +645,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 				recompute_weights_2d (GMT, data, n_data, work, &scale);
 				move_model_a_to_b_2d (c_model, w_model, n_model, &c_chisq, &w_chisq);
 				load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
-				solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+				solve_system_2d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 				calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 				c_chisq = get_chisq_2d (data, n_data, n_model);
 				significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
@@ -658,7 +667,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 
 			/* Fit next model  */
 			load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
-			solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+			solve_system_2d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 			calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 			c_chisq = get_chisq_2d (data, n_data, n_model);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n_model, rank, c_chisq, 1.0);
@@ -667,7 +676,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 					recompute_weights_2d (GMT, data, n_data, work, &scale);
 					move_model_a_to_b_2d (c_model, w_model, n_model, &c_chisq, &w_chisq);
 					load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
-					solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+					solve_system_2d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 					calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 					c_chisq = get_chisq_2d (data, n_data, n_model);
 					significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
@@ -695,7 +704,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 	else {
 		n_model = Ctrl->N.value;
 		load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
-		solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+		solve_system_2d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 		calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 		c_chisq = get_chisq_2d (data, n_data, n_model);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, n_model, rank, c_chisq, 1.0);
@@ -704,7 +713,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 				recompute_weights_2d (GMT, data, n_data, work, &scale);
 				move_model_a_to_b_2d (c_model, w_model, n_model, &c_chisq, &w_chisq);
 				load_gtg_and_gtd_2d (GMT,data, n_data, gtg, gtd, workb, n_model, np);
-				solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
+				solve_system_2d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 				calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 				c_chisq = get_chisq_2d (data, n_data, n_model);
 				significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
@@ -750,7 +759,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+	free_the_memory (GMT, gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 
 	Return (GMT_NOERROR);
 }

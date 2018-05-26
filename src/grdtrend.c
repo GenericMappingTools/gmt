@@ -112,8 +112,9 @@ struct GRDTREND_CTRL {	/* All control options for this program (except common ar
 		bool active;
 		char *file;
 	} T;
-	struct W {	/* -W<weight.grd> */
+	struct W {	/* -W<weight.grd>[+s] */
 		bool active;
+		unsigned int mode;
 		char *file;
 	} W;
 };
@@ -141,7 +142,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -N<n_model>[+r] [-D<diffgrid>] [%s]\n", name, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<trendgrid>] [%s] [-W<weightgrid>] [%s]\n\n", GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T<trendgrid>] [%s] [-W<weightgrid>[+s]] [%s]\n\n", GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -157,6 +158,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Supply filename if you want to [read and] write grid file of weights.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <weightgrid> can be read at run, and if robust = false, weighted problem will be solved.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If robust = true, weights used for robust fit will be written to <weightgrid>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to read standard deviations from file and compute weights as 1/s^2.\n");
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);
@@ -171,6 +173,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GM
 	 * returned when registering these sources/destinations with the API.
 	 */
 
+	char *c = NULL;
 	unsigned int n_errors = 0, n_files = 0, j;
 	struct GMT_OPTION *opt = NULL;
 
@@ -209,6 +212,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GM
 				break;
 			case 'W':
 				Ctrl->W.active = true;
+				if (opt->arg[0] != '+' && (c = strstr (opt->arg, "+s"))) {	/* Gave a file arg plus a +s modifier */
+					Ctrl->W.mode = 2;
+					c[0] = '\0';	/* Chop off modifier */
+				}
+				else
+					Ctrl->W.mode = 1;
 				/* OK if this file doesn't exist; we always write to that file on output */
 				if (gmt_check_filearg (GMT, 'W', opt->arg, GMT_IN, GMT_IS_GRID) || gmt_check_filearg (GMT, 'W', opt->arg, GMT_OUT, GMT_IS_GRID))
 					Ctrl->W.file = strdup (opt->arg);
@@ -252,7 +261,8 @@ GMT_LOCAL void set_up_vals (double *val, unsigned int nval, double vmin, double 
 
 GMT_LOCAL void load_pstuff (double *pstuff, unsigned int n_model, double x, double y, unsigned int newx, unsigned int newy) {
 	/* Compute Legendre polynomials of x[i],y[j] as needed  */
-	/* If either x or y has changed, compute new Legendre polynomials as needed  */
+	/* If either x or y has changed, compute new Legendre polynomials as needed.
+	 * Remember: pstuff[0] == 1 throughout.  */
 
 	if (newx) {
 		if (n_model >= 2) pstuff[1] = x;
@@ -444,8 +454,8 @@ GMT_LOCAL void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, doubl
 
 			if (weighted) {
 				/* Loop over all gtg and gtd elements */
-				gtd[0] += (G->data[ij] * W->data[ij]);
-				gtg[0] += W->data[ij];
+				gtd[0] += (G->data[ij] * W->data[ij]);	/* Implicitly multiply by pstuff[0] which is 1 */
+				gtg[0] += W->data[ij];			/* Implicitly multiply by pstuff[0] which is 1 */
 				for (k = 1; k < n_model; k++) {
 					gtd[k] += (G->data[ij] * W->data[ij] * pstuff[k]);
 					gtg[k] += (W->data[ij] * pstuff[k]);
@@ -454,7 +464,7 @@ GMT_LOCAL void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, doubl
 			}
 			else {	/* If !weighted  */
 				/* Loop over all gtg and gtd elements */
-				gtd[0] += G->data[ij];
+				gtd[0] += G->data[ij];	/* Implicitly multiply by pstuff[0] which is 1 */
 				for (k = 1; k < n_model; k++) {
 					gtd[k] += (G->data[ij] * pstuff[k]);
 					gtg[k] += pstuff[k];
@@ -566,6 +576,11 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->W.file, W) == NULL) {	/* Get data */
 					error = API->error;
 					goto END;
+				}
+				if (Ctrl->W.mode == 2) {	/* Convert sigmas to weights */
+					gmt_M_grd_loop (GMT, W, row, col, ij) {
+						W->data[ij] = 1.0 / (W->data[ij] * W->data[ij]);
+					}
 				}
 				set_ones = false;
 			}
