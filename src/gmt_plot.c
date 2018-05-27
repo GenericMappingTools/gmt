@@ -3280,28 +3280,30 @@ GMT_LOCAL uint64_t plot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DA
 	 * Thus, if we detect such a pole as part of the line then we do NOT add yet another detour.  */
 
 	uint64_t n = S->n_rows, k;
-	double *plon = S->data[GMT_X], *plat = S->data[GMT_Y], t_lat;
-	bool ap = at_pole (plat, n);
+	double *plon = S->data[GMT_X], *plat = S->data[GMT_Y], t_lat;	/* Default is to plot incoming array as is via plon,plat pointers */
+	bool ap = at_pole (plat, n);	/* Is the first and last point exactly at the pole? */
+	bool free_memory = add_pole;
 	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
-	if (ap) plon[n-1] = plon[0];
+	if (ap) plon[n-1] = plon[0];	/* Just enforce the same longitude at the pole point */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Polar cap: %d\n", (int)add_pole);
 	if (add_pole) {	/* Make sure there is not already a detour in the data as given */
-		double p_lat = SH->pole * 90.0;	/* Latitude of pole in question */
-		bool need_detour = true;	/* Until proven otherwise */
-		for (k = 0; need_detour && k < S->n_rows; k++) {
-			if (doubleAlmostEqual (S->data[GMT_Y][k], p_lat)) {	/* Point is at the pole */
+		double p_lat = SH->pole * 90.0;	/* Latitude of the pole in question */
+		bool need_detour = true;	/* Until proven otherwise we assume we must add a detour */
+		for (k = 0; need_detour && k < S->n_rows; k++) {	/* Check every point */
+			if (doubleAlmostEqual (S->data[GMT_Y][k], p_lat)) {	/* Point is exactly at the pole in question */
 				/* We want to distinguish between a path that gently touches the pole and one that has a fake straight detour to the pole.
-				 * We assume a detour will have the same longitudes for this point and the previous and that they are either +/-180 or 0. */
+				 * We assume a fake detour will have the same longitudes for this point and the previous and that they are both either +/-180 or 0. */
 				if (k && doubleAlmostEqual (S->data[GMT_X][k], S->data[GMT_X][k-1]) && (doubleAlmostEqual (fabs (S->data[GMT_X][k]), 180.0) || gmt_M_is_zero (S->data[GMT_X][k])))
-					need_detour = false;	/* Well, what do you know... */
+					need_detour = false;	/* Well, what do you know. Probably arcGIS or some other handicapped program */
 			}
 		}
-		if (!need_detour) {
+		if (!need_detour) {	/* Do not add another detour but process via gmt_geo_polarcap_segment to handle jumps in our polygon */
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Path already had a detour to the pole, skip adding another detour\n");
 			add_pole = false;
+			n = gmt_geo_polarcap_segment (GMT, S, &plon, &plat);
 		}
 	}
-	if (add_pole) {
+	if (add_pole) {	/* If we get here then a detour will be needed */
 		if ((n = gmt_geo_polarcap_segment (GMT, S, &plon, &plat)) == 0) {	/* Not a global map */
 			/* Here we must detour to the N or S pole, then resample the path */
 			n = S->n_rows + 2;	/* Add new first and last point to connect to the pole */
@@ -3322,7 +3324,7 @@ GMT_LOCAL uint64_t plot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DA
 		}
 	}
 	k = plot_geo_polygon (GMT, plon, plat, n, first, comment);	/* Plot filled polygon [no outline] */
-	if (add_pole) {		/* Delete what we made */
+	if (free_memory) {	/* Delete what we allocated */
 		gmt_M_free (GMT, plon);
 		gmt_M_free (GMT, plat);
 	}
@@ -6711,14 +6713,24 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 		if (S->data[GMT_X][k] >= 180.0) S->data[GMT_X][k] -= 360.0;
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First longitude = %g.  Last longitude = %g\n", S->data[GMT_X][0], S->data[GMT_X][n-1]);
 	for (k = 1, k0 = 0; k0 == 0 && k < n; k++) {	/* Determine where the perimeter crossing with the west boundary occurs */
-		if ((GMT->common.R.wesn[XLO]-S->data[GMT_X][k]) >= 0.0 && (GMT->common.R.wesn[XLO]-S->data[GMT_X][k-1]) <= 0.0) k0 = k;
+		/* Must assume longitudes randomly adds/subtracts 360 and hence carefully check for the crossing */
+		//double R0, L0;
+		double R, L, D;
+		//R0 = GMT->common.R.wesn[XLO]-S->data[GMT_X][k];
+		//L0 = GMT->common.R.wesn[XLO]-S->data[GMT_X][k-1];
+		gmt_M_set_delta_lon (S->data[GMT_X][k],   GMT->common.R.wesn[XLO], R);	/* Handles the 360 jump cases */
+		gmt_M_set_delta_lon (S->data[GMT_X][k-1], GMT->common.R.wesn[XLO], L);	/* Handles the 360 jump cases */
+		D = R - L;
+		//fprintf (stderr, "k = %d L0 R0 = %g %g  L R = %g %g  D = %g\n", (int)k, L0, R0, L, R, D);
+		if (D >= 0.0 && D < 180.0 && L <= 0.0 && R >= 0.0) k0 = k;
 	}
 	/* Determine the latitude of that crossing */
 	if (k0) {	/* Occurred somewhere along the perimeter between points k0 and k0-1 */
-		double x_dist = S->data[GMT_X][k0-1] - GMT->common.R.wesn[XLO];
+		//double x_dist = S->data[GMT_X][k0-1] - GMT->common.R.wesn[XLO];
+		double x_dist;
 		gmt_M_set_delta_lon (S->data[GMT_X][k0-1], S->data[GMT_X][k0], dx);	/* Handles the 360 jump cases */
 		gmt_M_set_delta_lon (S->data[GMT_X][k0-1], GMT->common.R.wesn[XLO], x_dist);	/* Handles the 360 jump cases */
-		yc = S->data[GMT_Y][k0-1] - (S->data[GMT_Y][k0] - S->data[GMT_Y][k0-1]) * x_dist / dx;
+		yc = S->data[GMT_Y][k0-1] + (S->data[GMT_Y][k0] - S->data[GMT_Y][k0-1]) * x_dist / dx;
 	}
 	else	/* Very first point is at the right longitude */
 		yc = S->data[GMT_Y][k0];
