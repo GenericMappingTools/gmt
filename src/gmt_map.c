@@ -7419,14 +7419,20 @@ GMT_LOCAL bool accept_the_jump (struct GMT_CTRL *GMT, double lon1, double lon0, 
 	 * We want to avoid E-W wrapping lines for near-global areas where points simply move
 	 * from being > 180 degres from the map area to < -180 even though the points do not
 	 * really reflect motion across the area */
-	double dlon;
-	gmt_M_unused(GMT);
-	gmt_M_unused(xx);
-	if (!cartesian) return true;	/* No wrap issues if Cartesian x,y */
+	double dlon0, dlon1, dlon;
+	int xm, ym;
 	if (cartesian) return true;	/* No wrap issues if Cartesian x,y */
-	gmt_M_set_delta_lon (lon1, lon0, dlon);
-	//fprintf (stderr, "lon0 = %g lon1 = %g dlon = %g xx0 = %g xx1 = %g\n", lon0, lon1, dlon, xx[0], xx[1]);
-	if (fabs (dlon) > 1.0 && fabs (dlon) < 90.0) return true;
+	xm = GMT->current.map.this_x_status - GMT->current.map.prev_x_status;
+	ym = GMT->current.map.this_y_status - GMT->current.map.prev_y_status;
+	gmt_M_set_delta_lon (lon0, GMT->current.proj.central_meridian, dlon0);
+	gmt_M_set_delta_lon (lon1, GMT->current.proj.central_meridian, dlon1);
+	dlon = dlon1 - dlon0;
+	/* When the line is so far away from the regino that it crosses 180 from the central meridian
+	 * we get false jumps.  However, we find those by looking at the two dlons and that the change
+	 * in x status is 4 (going from left of region to right of region of the opposite).  We then
+	 * reject the jump, otherwise we accept it. */
+	//fprintf (stderr, "dlon0 = %g dlon1 = %g dlon = %g xx0 = %g xx1 = %g xm = %d ym = %d\n", dlon0, dlon1, dlon, xx[0], xx[1], xm, ym);
+	if (!(fabs (dlon) > 180.0 && abs (xm) == 4 && ym == 0)) return true;	/* Very unlikely to be a real wrap/jump */
 	return false;
 }
 
