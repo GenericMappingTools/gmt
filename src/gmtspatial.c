@@ -635,22 +635,22 @@ GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST 
 
 GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t *n_points) {
 	/* Return array of NN results sorted on smallest distances */
-	uint64_t np = 0, tbl, seg, row, col, n_cols;
-	int64_t  k;
+	uint64_t tbl, seg, row, col, n_cols;
+	int64_t k, np = 0;	/* Must be signed due to Win OpenMP retardedness */
 	double *distance = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	struct NN_DIST *P = gmt_M_memory (GMT, NULL, D->n_records, struct NN_DIST);
 	
 	n_cols = MIN (D->n_columns, 4);	/* Expects lon,lat and makes room for at least z, w and other columns */
-	np = (D->n_records * (D->n_records - 1)) / 2;
+	np = (int64_t)(D->n_records * (D->n_records - 1)) / 2;
 	distance = gmt_M_memory (GMT, NULL, np, double);
-	for (tbl = np = 0; tbl < D->n_tables; tbl++) {
+	for (tbl = 0, np = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 			S = D->table[tbl]->segment[seg];
 			for (row = 0; row < S->n_rows; row++) {
 				for (col = 0; col < n_cols; col++) P[np].data[col] = S->data[col][row];	/* Duplicate coordinates */
 				if (n_cols < 4) P[np].data[GMT_W] = 1.0;	/* No weight provided, set to unity */
-				P[np].ID = np;	/* Assign ID based on input record # from 0 */
+				P[np].ID = (uint64_t)np;	/* Assign ID based on input record # from 0 */
 				P[np].distance = DBL_MAX;
 				/* We split the loop over calculation of distance from the loop over assignments since
 		 		 * if OpenMP is used then we cannot interchange k and np as there may be overprinting.
@@ -677,7 +677,7 @@ GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASE
 	}
 	gmt_M_free (GMT, distance);
 	qsort (P, np, sizeof (struct NN_DIST), compare_nn_points);
-	*n_points = np;
+	*n_points = (uint64_t)np;
 	return (P);
 }
 

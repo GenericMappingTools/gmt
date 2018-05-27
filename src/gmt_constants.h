@@ -89,11 +89,12 @@
 /* Note: As far as registering or reading data, GMT only needs to know if data type is POINT, LINE, or POLY */
 
 enum GMT_enum_ogr {
-	GMT_IS_LINESTRING = 2,
-	GMT_IS_POLYGON,
-	GMT_IS_MULTIPOINT,
-	GMT_IS_MULTILINESTRING,
-	GMT_IS_MULTIPOLYGON};
+	GMT_IS_LINESTRING	= 2U,
+	GMT_IS_POLYGON		= 4U,
+	GMT_IS_MULTI		= 64U,	/* Flag for multi-versions of geometry */
+	GMT_IS_MULTIPOINT	= 65U,	/* 1 plus 64 for multi */
+	GMT_IS_MULTILINESTRING	= 66U,	/* 2 plus 64 for multi */
+	GMT_IS_MULTIPOLYGON	= 68U};	/* 4 plus 64 for multi */
 
 /*! Various allocation-length parameters */
 enum GMT_enum_length {
@@ -102,8 +103,8 @@ enum GMT_enum_length {
 	GMT_SMALL_CHUNK = 64U,
 	GMT_CHUNK       = 2048U,
 	GMT_BIG_CHUNK   = 65536U,
-	GMT_LEN8	    = 8U,
-	GMT_LEN16	    = 16U,          /* All strings used to format date/clock output must be this length */
+	GMT_LEN8	= 8U,
+	GMT_LEN16	= 16U,          /* All strings used to format date/clock output must be this length */
 	GMT_LEN32       = 32U,          /* Small length of texts */
 	GMT_LEN64       = 64U,          /* Intermediate length of texts */
 	GMT_LEN128      = 128U,         /* Double of 64 */
