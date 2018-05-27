@@ -72,11 +72,12 @@ enum GMT_ogr_status {
 /* Note: As far as registering or reading data, GMT only needs to know if data type is POINT, LINE, or POLY */
 
 enum GMT_enum_ogr {
-	GMT_IS_LINESTRING = 2,
-	GMT_IS_POLYGON,
-	GMT_IS_MULTIPOINT,
-	GMT_IS_MULTILINESTRING,
-	GMT_IS_MULTIPOLYGON};
+	GMT_IS_LINESTRING	= 2U,
+	GMT_IS_POLYGON		= 4U,
+	GMT_IS_MULTI		= 64U,	/* Flag for multi-versions of geometry */
+	GMT_IS_MULTIPOINT	= 65U,	/* 1 plus 64 for multi */
+	GMT_IS_MULTILINESTRING	= 66U,	/* 2 plus 64 for multi */
+	GMT_IS_MULTIPOLYGON	= 68U};	/* 4 plus 64 for multi */
 
 /*! Codes for aspatial association with segment header options: */
 enum GMT_enum_segopt {
