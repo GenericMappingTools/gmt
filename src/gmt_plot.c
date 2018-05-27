@@ -3289,6 +3289,19 @@ GMT_LOCAL uint64_t plot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DA
 	if (add_pole) {	/* Make sure there is not already a detour in the data as given */
 		double p_lat = SH->pole * 90.0;	/* Latitude of the pole in question */
 		bool need_detour = true;	/* Until proven otherwise we assume we must add a detour */
+		if (GMT->common.R.oblique) {	/* Determine if any of the 4 map corners are inside this polygon */
+			double X, Y;
+			gmt_set_inside_mode (GMT, NULL, GMT_IOO_SPHERICAL);
+			gmt_xy_to_geo (GMT, &X, &Y, GMT->current.proj.rect[XLO], GMT->current.proj.rect[YLO]);
+			GMT->current.proj.corner[0] = gmt_inonout (GMT, X, Y, S);
+			gmt_xy_to_geo (GMT, &X, &Y, GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO]);
+			GMT->current.proj.corner[1] = gmt_inonout (GMT, X, Y, S);
+			gmt_xy_to_geo (GMT, &X, &Y, GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI]);
+			GMT->current.proj.corner[2] = gmt_inonout (GMT, X, Y, S);
+			gmt_xy_to_geo (GMT, &X, &Y, GMT->current.proj.rect[XLO], GMT->current.proj.rect[YHI]);
+			GMT->current.proj.corner[3] = gmt_inonout (GMT, X, Y, S);
+			need_detour = false;	/* Trying a different tack for these cases */
+		}
 		for (k = 0; need_detour && k < S->n_rows; k++) {	/* Check every point */
 			if (doubleAlmostEqual (S->data[GMT_Y][k], p_lat)) {	/* Point is exactly at the pole in question */
 				/* We want to distinguish between a path that gently touches the pole and one that has a fake straight detour to the pole.
@@ -6697,7 +6710,7 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	FILE *fp;
 	bool aap = at_pole (S->data[GMT_Y], S->n_rows);
 #endif
-	if (GMT->common.R.oblique) return 0;	/* Algorithm assumes meridian boundaries */
+	if (GMT->common.R.oblique) return n;	/* Algorithm assumes meridian boundaries */
 	/* We want this code to be used for the misc. global projections but also global cylindrical or linear(if degrees) maps */
 	if (!(gmt_M_is_misc(GMT) || (GMT->current.map.is_world  && (gmt_M_is_cylindrical(GMT) || (gmt_M_is_linear(GMT) && gmt_M_is_geographic(GMT,GMT_IN)))))) return 0;	/* We are only concerned with the global misc projections here */
 	/* Global projection need to handle pole path properly */
