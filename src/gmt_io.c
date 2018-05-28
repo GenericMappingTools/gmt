@@ -5473,7 +5473,7 @@ int gmtlib_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint6
 	bool touched_N = false, touched_S = false, open = false;
 	uint64_t row, n_unique, last_point, next;
 	int type = 0, n_360;
-	double dlon, lon_sum = 0.0, lat_sum = 0.0;
+	double dlon, lon_sum = 0.0, lat_sum = 0.0, lat_S = 90.0, lat_N = -90.0;
 	static char *pole[5] = {"south (CCW)", "south (CW)", "no", "north (CW)", "north (CCW)"};
 
 	if (n == 0) return -99;	/* Nothing given */
@@ -5492,11 +5492,15 @@ int gmtlib_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint6
 		lat_sum += lat[row];
 		if (doubleAlmostEqual (lat[row], +90.0)) touched_N = true;
 		else if (doubleAlmostEqual (lat[row], -90.0)) touched_S = true;
+		if (lat[row] < lat_S) lat_S = lat[row];
+		if (lat[row] > lat_N) lat_N = lat[row];
 	}
 	n_360 = irint (lon_sum / 360.0);	/* This is either -1, 0, or +1 since lon_sum is either -360, 0, +360 plus some noise */
 	if (n_360) {	/* test is true if contains a pole; adjust rectangular bounds and set pole flag accordingly */
 		dlon = (n_360 > 0) ? 2.0 : 1.0;			/* 2 for CCW, 1 for CW paths */
 		type = irint (copysign (dlon, lat_sum));	/* Here, either -2, -1 or +1, +2 */
+		if (type < 0 && touched_N && lat_S > -90.0) type = -type;
+		else if (type > 0 && touched_S && lat_N < 90.0) type = -type;
 	}
 	if (type == 0 && touched_N) type = 1;	/* Cuts through the N pole */
 	else if (type == 0 && touched_S) type = -1;	/* Cuts through the S pole */
