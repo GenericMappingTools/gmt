@@ -5502,7 +5502,8 @@ int gmtlib_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint6
 		if (type < 0 && touched_N && lat_S > -90.0) type = -type;
 		else if (type > 0 && touched_S && lat_N < 90.0) type = -type;
 	}
-	if (type == 0 && touched_N) type = 1;	/* Cuts through the N pole */
+    if (touched_N && touched_S) type = 0;   /* Cannot contain both poles */
+	else if (type == 0 && touched_N) type = 1;	/* Cuts through the N pole */
 	else if (type == 0 && touched_S) type = -1;	/* Cuts through the S pole */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtlib_determine_pole: N = %" PRIu64 " Multiples of 360: %d  Residual: %g Polygon contains %s pole.\n", n, n_360, lon_sum - n_360 * 360.0, pole[type+2]);
 	return (type);
