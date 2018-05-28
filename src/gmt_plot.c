@@ -3059,11 +3059,8 @@ GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *
 #define JUMP_L 0
 #define JUMP_R 1
 
-	int jump_dir = JUMP_L;
-	bool jump;
-	uint64_t k, first, i, total = 0;
+	uint64_t total = 0;
 	double *xp = NULL, *yp = NULL;
-	double (*x_on_border[2]) (struct GMT_CTRL *, double) = {NULL, NULL};
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	if (gmt_M_eq (PSL->current.rgb[PSL_IS_FILL][0], -1.0)) {
@@ -3076,6 +3073,7 @@ GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *
 		 */
 
 		if ((GMT->current.plot.n = gmt_clip_to_map (GMT, lon, lat, n, &xp, &yp)) == 0) return 0;		/* All points are outside region */
+		
 		if (init) {
 			PSL_comment (PSL, "Temporarily set FO to P for complex polygon building\n");
 			PSL_command (PSL, "/FO {P}!\n");		/* Temporarily replace FO so we can build a complex path of closed polygons using {P} */
@@ -3088,6 +3086,11 @@ GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *
 		total = GMT->current.plot.n;
 	}
 	else {
+		uint64_t k, first, i;
+		int jump_dir = JUMP_L;
+		bool jump;
+		double (*x_on_border[2]) (struct GMT_CTRL *, double) = {NULL, NULL};
+
 		/* Here we come for all non-azimuthal projections */
 
 		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, lon, lat, n)) == 0) return 0;		/* Convert to (x,y,pen) - return if nothing to do */

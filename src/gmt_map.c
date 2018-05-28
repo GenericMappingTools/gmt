@@ -1108,7 +1108,7 @@ GMT_LOCAL unsigned int map_genper_crossing (struct GMT_CTRL *GMT, double lon1, d
 
 GMT_LOCAL int map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1) {
 	/* true if x-distance between points exceeds 1/2 map width at this y value */
-	double dx, map_half_size;
+	double dx, map_half_size, half_lon_range;
 
 	if (!(gmt_M_is_cylindrical (GMT) || gmt_M_is_perspective (GMT) || gmt_M_is_misc (GMT))) return (0);	/* Only projections with peroidic boundaries may apply */
 
@@ -1117,6 +1117,7 @@ GMT_LOCAL int map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1,
 	map_half_size = MAX (gmtlib_half_map_width (GMT, y0), gmtlib_half_map_width (GMT, y1));
 	if (fabs (map_half_size) < GMT_CONV4_LIMIT) return (0);
 
+	half_lon_range = (GMT->common.R.oblique) ? 180.0 : 0.5 * (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]);
 	dx = x1 - x0;
 	if (fabs (dx) > map_half_size) {	/* Possible jump; let's see how far apart those longitudes really are */
 		/* This test on longitudes was added to deal with issue #672, also see test/psxy/nojump.sh */
@@ -1124,7 +1125,7 @@ GMT_LOCAL int map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1,
 		gmt_xy_to_geo (GMT, &last_lon, &dummy, x0, y0);
 		gmt_xy_to_geo (GMT, &this_lon, &dummy, x1, y1);
 		gmt_M_set_delta_lon (last_lon, this_lon, dlon);	/* Beware of jumps due to sign differences */
-		if (fabs (dlon) < 180.0) /* Not going the long way so we judge this to be no jump */
+		if (fabs (dlon) < half_lon_range) /* Not going the long way so we judge this to be no jump */
 			return (0);
 		/* Jump it is */
 		if (dx > map_half_size)	return (-1);	/* Cross left/west boundary */
@@ -5129,7 +5130,8 @@ GMT_LOCAL bool map_will_it_wrap_x (struct GMT_CTRL *GMT, double *x, double *y, u
 	double w_last, w_this;
 
 	if (!GMT->current.map.is_world) return (false);
-
+	//if (!GMT->current.map.is_world)
+	//	f = (2.0 - GMT_CONV8_LIMIT);
 	w_this = gmtlib_half_map_width (GMT, y[0]);
 	for (i = 1, wrap = false; !wrap && i < n; i++) {
 		w_last = w_this;
@@ -7435,6 +7437,7 @@ GMT_LOCAL bool accept_the_jump (struct GMT_CTRL *GMT, double lon1, double lon0, 
 	 * really reflect motion across the area */
 	double dlon0, dlon1, dlon;
 	int xm, ym;
+	gmt_M_unused(xx);
 	if (cartesian) return true;	/* No wrap issues if Cartesian x,y */
 	xm = GMT->current.map.this_x_status - GMT->current.map.prev_x_status;
 	ym = GMT->current.map.this_y_status - GMT->current.map.prev_y_status;
