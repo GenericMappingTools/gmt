@@ -16,6 +16,6 @@ gmt pssolar -I+d$date -C | gmt psxy -R -J -Sc1c -Gyellow -O -K -B+t"$date dump v
 
 # Draw in pssolar instead
 gmt pscoast -R -J -Dl -A5000 -W0.5p -S175/210/255 -Bafg --MAP_FRAME_TYPE=plain -O -K -Y5i >> $ps
-gmt psxy -R  -J t.txt -Wthick -Gnavy@95 -K -O >> $ps
-#gmt pssolar -R -J -Ta+d$date -Wthick -Gnavy@95 -K -O >> $ps
+#gmt psxy -R  -J t.txt -Wthick -Gnavy@95 -K -O >> $ps
+gmt pssolar -R -J -Ta+d$date -Wthick -Gnavy@95 -K -O >> $ps
 gmt pssolar -I+d$date -C | gmt psxy -R -J -Sc1c -Gyellow -O -B+t"$date directly via pssolar" >> $ps
