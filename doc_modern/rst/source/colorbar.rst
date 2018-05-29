@@ -104,7 +104,7 @@ Optional Arguments
 **-B**\ [**p**\ \|\ **s**]\ *parameters*
     Set annotation, tick, and gridline interval for the colorbar. The
     x-axis label will plot beneath a horizontal bar (or vertically to
-    the right of a vertical bar), except when using **-A**. As an
+    the right of a vertical bar), except when using the **+m** modifier of the **-D** option. As an
     option, use the y-axis label to plot the data unit to the right of a
     horizontal bar (and above a vertical bar). When using **-Ba** or
     **-Baf** annotation and/or minor tick intervals are chosen
