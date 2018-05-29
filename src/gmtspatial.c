@@ -1458,7 +1458,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->I.active || external) {	/* Crossovers between polygons */
 		bool same_feature, wrap;
-		unsigned int in;
+		unsigned int in, wtype, n_columns;
 		uint64_t tbl1, tbl2, col, nx, row, seg1, seg2;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
 		struct GMT_XOVER XC;
@@ -1492,8 +1492,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		else
 			C = D;	/* Compare with itself */
 		
-		geometry = (Ctrl->S.active) ? GMT_IS_PLP     : GMT_IS_NONE;
-		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)C->n_columns, (D->type == GMT_READ_DATA) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)) != GMT_NOERROR) {
+		geometry = (Ctrl->S.active) ? GMT_IS_PLP : GMT_IS_NONE;
+		n_columns = (Ctrl->S.active) ? C->n_columns : 4;
+		wtype = (Ctrl->S.active) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX;
+		if ((error = GMT_Set_Columns (API, GMT_OUT, n_columns, wtype)) != GMT_NOERROR) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
@@ -1611,7 +1613,6 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 								for (px = 0; px < nx; px++) {	/* Write these to output */
 									out[GMT_X] = XC.x[px];  out[GMT_Y] = XC.y[px];
 									out[2] = XC.xnode[0][px];   out[3] = XC.xnode[1][px];
-									sprintf (record, fmt, XC.x[px], XC.y[px], (double)XC.xnode[0][px], (double)XC.xnode[1][px], T1, T2);
 									GMT_Put_Record (API, GMT_WRITE_DATA, &Out);
 								}
 							}
