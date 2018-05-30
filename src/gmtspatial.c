@@ -1462,7 +1462,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		uint64_t tbl1, tbl2, col, nx, row, seg1, seg2;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
 		struct GMT_XOVER XC;
-		char record[GMT_BUFSIZ] = {""}, T1[GMT_BUFSIZ] = {""}, T2[GMT_BUFSIZ] = {""}, fmt[GMT_BUFSIZ] = {""};
+		char record[GMT_BUFSIZ] = {""}, fmt[GMT_BUFSIZ] = {""};
 		struct GMT_DATASET *C = NULL;
 		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
 		
