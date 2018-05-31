@@ -12262,7 +12262,7 @@ int GMT_Extract_Region (void *V_API, char *file, double wesn[]) {
 	FILE *fp = NULL;
 	bool found = false;
 	struct GMTAPI_CTRL *API = api_get_api_ptr (V_API);
-	char xx1[GMT_LEN64] = {""}, xx2[GMT_LEN64] = {""}, yy1[GMT_LEN64] = {""}, yy2[GMT_LEN64] = {""}, line[GMT_LEN128] = {""};
+	char xx1[GMT_LEN64] = {""}, xx2[GMT_LEN64] = {""}, yy1[GMT_LEN64] = {""}, yy2[GMT_LEN64] = {""}, line[GMT_LEN256] = {""};
 	
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (wesn == NULL) return_error (V_API, GMT_PTR_IS_NULL);
@@ -12297,7 +12297,7 @@ int GMT_Extract_Region (void *V_API, char *file, double wesn[]) {
 	
 	/* We expect GMT_Extract_Region to be applied to GMT-produced PS files so we know they are clean records readable with fgets */
 	
-	while (!found && gmt_fgets (API->GMT, line, GMT_LEN128, fp)) {
+	while (!found && gmt_fgets (API->GMT, line, GMT_LEN256, fp)) {
 		if (!strncmp (&line[2], "PROJ", 4)) {	/* Search for the PROJ tag in the ps file */
 			sscanf (&line[8], "%*s %s %s %s %s", xx1, xx2, yy1, yy2);
 			wesn[XLO] = atof (xx1);		wesn[XHI] = atof (xx2);

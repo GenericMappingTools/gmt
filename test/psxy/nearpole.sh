@@ -9,4 +9,8 @@ gmt psxy -R-180/180/-90/-60 -JW115/7i -Wfaint,red amundsen.txt -B+gyellow -P -K 
 gmt psxy -R -J -Gred amundsen.txt -B+gyellow -O -K -Y1i >> $ps
 gmt psxy -R -J -Wfaint,red amundsen.txt -Bxafg -Bafg10 -O -K -Y1i --MAP_FRAME_PEN=faint >> $ps
 gmt psxy -R -J -Gred amundsen.txt -Bafg -O -K -Y1.25i  --MAP_FRAME_PEN=faint >> $ps
-gmt psxy -R-180/180/-90/-80 -JA115/-90/5i -Bafg -O -Gred -Wfaint amundsen.txt -Y1.25i -X1i >> $ps
+gmt psxy -R-180/180/-90/-80 -JA115/-90/5i -Bafg -O -K -Gred -Wfaint amundsen.txt -Y1.25i -X1i >> $ps
+gmt psxy -R -J -O -Wfaint,blue -A << EOF >> $ps
+-65	-90
+-65	-80
+EOF

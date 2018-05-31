@@ -1114,7 +1114,7 @@ GMT_LOCAL int map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1,
 
 	if (gmt_M_is_cartesian (GMT, GMT_IN) || fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) < 90.0) return (0);
 
-	map_half_size = MAX (gmtlib_half_map_width (GMT, y0), gmtlib_half_map_width (GMT, y1));
+	map_half_size = MAX (gmt_half_map_width (GMT, y0), gmt_half_map_width (GMT, y1));
 	if (fabs (map_half_size) < GMT_CONV4_LIMIT) return (0);
 
 	half_lon_range = (GMT->common.R.oblique) ? 180.0 : 0.5 * (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]);
@@ -1144,7 +1144,7 @@ GMT_LOCAL int map_jump_not (struct GMT_CTRL *GMT, double x0, double y0, double x
 	 * the map region is a clipped circle and we have no effective way of determining which points
 	 * are outside the map of not.
 	 */
-	map_half_size = MAX (gmtlib_half_map_width (GMT, y0), gmtlib_half_map_width (GMT, y1));
+	map_half_size = MAX (gmt_half_map_width (GMT, y0), gmt_half_map_width (GMT, y1));
 	if (fabs (map_half_size) < GMT_CONV4_LIMIT) return (0);
 	dx = x1 - x0;
 	if (dx > map_half_size)	return (-1);	/* Cross left/west boundary */
@@ -5046,10 +5046,10 @@ GMT_LOCAL int map_horizon_search (struct GMT_CTRL *GMT, double w, double e, doub
 
 /*! . */
 GMT_LOCAL unsigned int map_wrap_around_check_x (struct GMT_CTRL *GMT, double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, unsigned int *sides) {
-	double dx, dy, width, jump, gmtlib_half_map_width (struct GMT_CTRL *GMT, double y);
+	double dx, dy, width, jump, gmt_half_map_width (struct GMT_CTRL *GMT, double y);
 
 	jump = this_x - last_x;
-	width = MAX (gmtlib_half_map_width (GMT, this_y), gmtlib_half_map_width (GMT, last_y));
+	width = MAX (gmt_half_map_width (GMT, this_y), gmt_half_map_width (GMT, last_y));
 
 	if (fabs (jump) - width <= GMT_CONV4_LIMIT || fabs (jump) <= GMT_CONV4_LIMIT) return (0);
 	dy = this_y - last_y;
@@ -5088,7 +5088,7 @@ GMT_LOCAL void map_get_crossings_x (struct GMT_CTRL *GMT, double *xc, double *yc
 		gmt_M_double_swap (ya, yb);
 	}
 
-	xb -= 2.0 * gmtlib_half_map_width (GMT, yb);
+	xb -= 2.0 * gmt_half_map_width (GMT, yb);
 
 	dxa = xa - gmtmap_left_boundary (GMT, ya);
 	left_yb = gmtmap_left_boundary (GMT, yb);
@@ -5132,10 +5132,10 @@ GMT_LOCAL bool map_will_it_wrap_x (struct GMT_CTRL *GMT, double *x, double *y, u
 	if (!GMT->current.map.is_world) return (false);
 	//if (!GMT->current.map.is_world)
 	//	f = (2.0 - GMT_CONV8_LIMIT);
-	w_this = gmtlib_half_map_width (GMT, y[0]);
+	w_this = gmt_half_map_width (GMT, y[0]);
 	for (i = 1, wrap = false; !wrap && i < n; i++) {
 		w_last = w_this;
-		w_this = gmtlib_half_map_width (GMT, y[i]);
+		w_this = gmt_half_map_width (GMT, y[i]);
 		wrap = map_this_point_wraps_x (GMT, x[i-1], x[i], w_last, w_this);
 	}
 	*start = i - 1;
@@ -5161,13 +5161,13 @@ GMT_LOCAL uint64_t map_truncate_x (struct GMT_CTRL *GMT, double *x, double *y, u
 	if (!GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 
 	GMT->current.plot.x[0] = x[i];	GMT->current.plot.y[0] = y[i];
-	w_this = gmtlib_half_map_width (GMT, y[i]);
+	w_this = gmt_half_map_width (GMT, y[i]);
 	k = j = 1;
 	while (k <= n) {
 		i1 = i;
 		i = (i + 1)%n;	/* Next point */
 		w_last = w_this;
-		w_this = gmtlib_half_map_width (GMT, y[i]);
+		w_this = gmt_half_map_width (GMT, y[i]);
 		if (map_this_point_wraps_x (GMT, x[i1], x[i], w_last, w_this)) {
 			(*GMT->current.map.get_crossings) (GMT, xc, yc, x[i1], y[i1], x[i], y[i]);
 			if (l_or_r == -1)
@@ -6860,7 +6860,7 @@ bool gmt_map_outside (struct GMT_CTRL *GMT, double lon, double lat) {
 }
 
 /*! . */
-double gmtlib_half_map_width (struct GMT_CTRL *GMT, double y) {
+double gmt_half_map_width (struct GMT_CTRL *GMT, double y) {
 	/* Returns 1/2-width of map in inches given y value */
 	double half_width;
 
@@ -8049,7 +8049,7 @@ double gmt_azim_to_angle (struct GMT_CTRL *GMT, double lon, double lat, double c
 	/* Check for wrap-around */
 
 	dx = x1 - x0;
-	if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && fabs (dx) > (width = gmtlib_half_map_width (GMT, y0))) {
+	if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && fabs (dx) > (width = gmt_half_map_width (GMT, y0))) {
 		width *= 2.0;
 		if (x1 < width)
 			x0 -= width;

@@ -416,6 +416,7 @@ EXTERN_MSC void gmt_gcal_from_rd (struct GMT_CTRL *GMT, int64_t rd, struct GMT_G
 
 /* gmt_map.c: */
 
+EXTERN_MSC double gmt_half_map_width (struct GMT_CTRL *GMT, double y);
 EXTERN_MSC double gmt_line_length (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, bool project);
 EXTERN_MSC void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymin, double ymax, double *west, double *east, double *south, double *north);
 EXTERN_MSC bool gmt_cart_outside (struct GMT_CTRL *GMT, double x, double y);

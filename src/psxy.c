@@ -117,7 +117,7 @@ enum Psxy_poltype {
 	PSXY_POL_ASYMM_DEV,
 	PSXY_POL_ASYMM_ENV};
 
-EXTERN_MSC double gmtlib_half_map_width (struct GMT_CTRL *GMT, double y);
+EXTERN_MSC double gmt_half_map_width (struct GMT_CTRL *GMT, double y);
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSXY_CTRL *C;
@@ -1216,7 +1216,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			
 			xpos[0] = plot_x;
 			if (periodic) {
-				width = 2.0 * gmtlib_half_map_width (GMT, plot_y);	/* Width of map at current latitude (not all projections have straight w/e boundaries */
+				width = 2.0 * gmt_half_map_width (GMT, plot_y);	/* Width of map at current latitude (not all projections have straight w/e boundaries */
 				if (plot_x < GMT->current.map.half_width)     /* Might reappear at right edge */
 					xpos[1] = xpos[0] + width;	/* Outside the right edge */
 				else      /* Might reappear at left edge */

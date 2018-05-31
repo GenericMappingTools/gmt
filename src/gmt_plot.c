@@ -3040,6 +3040,26 @@ GMT_LOCAL void plot_ellipsoid_name_convert (char *inname, char outname[]) {
 		sprintf(outname, "unnamed");
 }
 
+#if 0
+/* Used to dump an array to file for debug */
+GMT_LOCAL void dumpfile (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pen, uint64_t n, char *file) {
+	FILE *fp = fopen (file, "w");
+	uint64_t k;
+	unsigned int ps = 0;
+	double w;
+	for (k = 0; k < n; k++) {
+		w = 2.0 * gmt_half_map_width (GMT, y[k]);
+		if (pen) {
+			ps += pen[k];
+			fprintf (fp, "%.16g\t%.16g\t%d\t%.16g\n", x[k], y[k], ps, w);
+		}
+		else
+			fprintf (fp, "%.16g\t%.16g\t%.16g\n", x[k], y[k], w);
+			}
+	fclose (fp);
+}
+#endif
+
 GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, bool init, const char *comment) {
 	/* When geographic data are plotted, polygons that cross the west map boundary will
 	 * sometimes appear on the area bounded by the east map boundary - they "wrap around".
@@ -3089,7 +3109,7 @@ GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *
 	else {
 		uint64_t k, first, i;
 		int jump_dir = JUMP_L;
-		bool jump;
+		bool jump, plot_main = true;
 		double (*x_on_border[2]) (struct GMT_CTRL *, double) = {NULL, NULL};
 
 		/* Here we come for all non-azimuthal projections */
@@ -3100,6 +3120,7 @@ GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *
 			PSL_command (PSL, "/FO {P}!\n");		/* Temporarily replace FO so we can build a complex path of closed polygons using {P} */
 		}
 		PSL_comment (PSL, comment);
+		//dumpfile (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, "raw.txt");
 
 		if (gmt_M_is_cartesian (GMT, GMT_IN)) {		/* Not geographic data so there are no periodic boundaries to worry about */
 			PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);
@@ -3134,8 +3155,21 @@ GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *
 			}
 			xp[i] = (jump) ? (*x_on_border[jump_dir]) (GMT, GMT->current.plot.y[i]) : GMT->current.plot.x[i];
 		}
-		PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
-		total = GMT->current.plot.n;
+		if (GMT->current.map.is_world && doubleAlmostEqualZero (GMT->current.plot.y[0], GMT->current.plot.y[GMT->current.plot.n-1]) && !(gmt_M_is_zero (GMT->current.plot.y[0]) || doubleAlmostEqualZero (GMT->current.plot.y[0], GMT->current.proj.rect[YHI])) ) {
+			/* Watch for E-W line crossing jumps. We have no defense against these erratic near-pole polygons that are split across two periodic boundaries...
+			 * The test checks for horizontal lines NOT at top of bottom of plot, for global maps only.
+			 * For an example that triggers this, see test psxy/nearpole.sh and comments therein. PW, 5/29/2018 */
+			double w = 1.9 * gmt_half_map_width (GMT, GMT->current.plot.y[0]);
+			if (fabs (xp[GMT->current.plot.n-1] - xp[0]) > w) {	/* Does the jump exceed 85% of map width? */
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Truncated wrapped polygon still has E-W jump and was skipped. Please report to developers if plot has artifacts.\n");
+				plot_main = false;
+			}
+		}
+		//dumpfile (GMT, xp, GMT->current.plot.y, NULL, GMT->current.plot.n, "main.txt");
+		if (plot_main) {
+			PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
+			total = GMT->current.plot.n;
+		}
 
 		/* Then do the Left truncation since some wrapped pieces might not have been plotted (k > 0 means we found a piece) */
 
@@ -3148,6 +3182,7 @@ GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *
 			xp[i] = (jump || jump_dir == JUMP_R) ? (*x_on_border[JUMP_R]) (GMT, GMT->current.plot.y[i]) : GMT->current.plot.x[i], k++;
 		}
 		if (k) {
+			//dumpfile (GMT, xp, GMT->current.plot.y, NULL, GMT->current.plot.n, "L.txt");
 			PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
 			total += GMT->current.plot.n;
 		}
@@ -3163,6 +3198,7 @@ GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *
 			xp[i] = (jump || jump_dir == JUMP_L) ? (*x_on_border[JUMP_L]) (GMT, GMT->current.plot.y[i]) : GMT->current.plot.x[i], k++;
 		}
 		if (k) {
+			//dumpfile (GMT, xp, GMT->current.plot.y, NULL, GMT->current.plot.n, "R.txt");
 			PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
 			total = GMT->current.plot.n;
 		}
@@ -4402,7 +4438,7 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 		im1 = i - 1;
 		ip1 = i + 1;
 		if (pen[im1] == PSL_MOVE && pen[i] == PSL_DRAW && (ip1 == n || pen[ip1] == PSL_MOVE) && GMT->current.proj.projection_GMT == GMT_OBLIQUE_MERC && fabs (y[i]-y[im1]) < 0.001) {
-			double mw = 2.0 * gmtlib_half_map_width (GMT, y[i]);	/* Get map width */
+			double mw = 2.0 * gmt_half_map_width (GMT, y[i]);	/* Get map width */
 			/* We have a single 2-point ~horizontal line segment with move, draw, move.  Check if the draw is across the entire oblique Mercator map */
 			if (doubleAlmostEqual (fabs (x[i]-x[im1]), mw)) {	/* Yes, so skip such stray lines across map */
 				/* This fix was implemented in response to the problem first illustrated in test/psbasemap/oblique.sh.
@@ -7085,7 +7121,7 @@ void gmt_geo_rectangle (struct GMT_CTRL *GMT, double lon, double lat, double wid
 	while ((lon_w - center) > +180.0) lon_w -= 360.0;
 	gmt_geo_to_xy (GMT, lon_w, lat_w, &xw, &yw);	/* Get projected x,y coordinates */
 	if ((jump = (*GMT->current.map.jump) (GMT, xp, yp, xw, yw)))	/* Adjust for map jumps */
-		xw += jump * 2.0 * gmtlib_half_map_width (GMT, yp);
+		xw += jump * 2.0 * gmt_half_map_width (GMT, yp);
 	dim[1] = 2.0 * hypot (xp - xw, yp - yw);	/* Estimate of rectangle width in plot units (inch) */
 	/* Get 2nd point height away from center */
 	sincos (M_PI_2, &y, &x);
@@ -7109,7 +7145,7 @@ void gmt_geo_rectangle (struct GMT_CTRL *GMT, double lon, double lat, double wid
 	while ((lon_h - center) > +180.0) lon_h -= 360.0;
 	gmt_geo_to_xy (GMT, lon_h, lat_h, &xh, &yh);
 	if ((jump = (*GMT->current.map.jump) (GMT, xp, yp, xh, yh)))	/* Adjust for map jumps */
-		xh += jump * 2.0 * gmtlib_half_map_width (GMT, yp);
+		xh += jump * 2.0 * gmt_half_map_width (GMT, yp);
 	dim[2] = 2.0 * hypot (xp - xh, yp - yh);	/* Estimate of rectangle width in plot units (inch) */
 	PSL_plotsymbol (PSL, xp, yp, dim, PSL_ROTRECT);
 }
@@ -7128,7 +7164,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 	for (i = 1, s[0] = 0.0; i < n; i++) {
 		/* Watch out for longitude wraps */
 		dx = x[i] - x[i-1];
-		w = gmtlib_half_map_width (GMT, y[i]);
+		w = gmt_half_map_width (GMT, y[i]);
 		if (GMT->current.map.is_world && fabs (dx) > w) dx = copysign (2.0 * w - fabs (dx), -dx);
 		s[i] = s[i-1] + hypot (dx, y[i] - y[i-1]);
 	}
@@ -7181,7 +7217,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 				y0 = y[i] - dy * frac;
 			}
 			angle = d_atan2 (dy, dx);
-			skip = (GMT->current.map.is_world && fabs (dx) > gmtlib_half_map_width (GMT, y[i]));	/* Don't do ticks on jumps */
+			skip = (GMT->current.map.is_world && fabs (dx) > gmt_half_map_width (GMT, y[i]));	/* Don't do ticks on jumps */
 			if (skip) {
 				dist += gap;	i++;
 				continue;

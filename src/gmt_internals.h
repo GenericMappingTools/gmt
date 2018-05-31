@@ -136,7 +136,6 @@ EXTERN_MSC int gmtlib_y2_to_y4_yearfix (struct GMT_CTRL *GMT, unsigned int y2);	
 EXTERN_MSC bool gmtlib_g_ymd_is_bad (int y, int m, int d);	/* Check range of month and day for Gregorian YMD calendar values  */
 EXTERN_MSC bool gmtlib_iso_ywd_is_bad (int y, int w, int d);	/* Check range of week and day for ISO W calendar.  */
 EXTERN_MSC int gmtlib_genper_map_clip_path (struct GMT_CTRL *GMT, uint64_t np, double *work_x, double *work_y);
-EXTERN_MSC double gmtlib_half_map_width (struct GMT_CTRL *GMT, double y);
 EXTERN_MSC void gmtlib_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, double dt_in, bool init); /* step a time axis by time units */
 EXTERN_MSC int64_t gmtlib_rd_from_iywd (struct GMT_CTRL *GMT, int iy, int iw, int id);
 EXTERN_MSC void gmtlib_scale_eqrad (struct GMT_CTRL *GMT);
