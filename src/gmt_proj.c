@@ -46,7 +46,7 @@
  *	Oblique Mercator
  *	TM Transverse Mercator (Ellipsoidal and Spherical)
  *	UTM Universal Transverse Mercator
- *	Cylindrical Equal-area (e.g., Gall-Peters, Behrmann)
+ *	Cylindrical Equal-area (e.g., Gall, Behrmann)
  *	Cylindrical Equidistant (e.g., Plate Carree)
  *  Conic:
  *	Albers Equal-Area Conic

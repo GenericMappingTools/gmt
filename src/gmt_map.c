@@ -6644,7 +6644,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
  *	parameters[0] is longitude of origin
  *	parameters[1] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width
  *
- * CYLINDRICAL EQUAL-AREA projections (Behrmann, Gall-Peters):
+ * CYLINDRICAL EQUAL-AREA projections (Behrmann, Gall):
  *	parameters[0] is longitude of origin
  *	parameters[1] is the standard parallel
  *	parameters[2] is scale in inch (or cm)/degree along parallels OR 1:xxxxx OR map-width

@@ -288,12 +288,12 @@ Cylindrical Equal-Area
 
 First select which of the cylindrical equal-area projections you want by
 deciding on the standard parallel. Here we will use 45 degrees which
-gives the Gall-Peters projection. A 9 inch wide global basemap centered
+gives the Gall projection. A 9 inch wide global basemap centered
 on the Pacific is made by
 
    ::
 
-    gmt basemap -Rg -JY180/45/9i -Bafg -B+tGall-Peters -pdf gall-peters
+    gmt basemap -Rg -JY180/45/9i -Bafg -B+tGall -pdf gall
 
 Conic Map Projections
 ---------------------

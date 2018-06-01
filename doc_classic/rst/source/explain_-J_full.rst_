@@ -121,7 +121,7 @@ projection names stands for Equal-Area and Conformal, respectively):
         standard parallel is typically one of these (but can be any value):
 
           * 50 - Balthasart
-          * 45 - Gall-Peters
+          * 45 - Gall
           * 37.0666 - Caster
           * 37.4 - Trystan Edwards
           * 37.5 - Hobo-Dyer
