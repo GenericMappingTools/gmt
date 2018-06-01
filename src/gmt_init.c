@@ -5665,7 +5665,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scale>|<width> (Cylindrical Equal-area)\n");
 			gmt_message (GMT, "\t     Give central meridian (opt), standard parallel (opt) and scale\n");
-			gmt_message (GMT, "\t     <lat0> = 50 (Balthasart), 45 (Gall-Peters), 37.5 (Hobo-Dyer), 37.4 (Trystan Edwards),\n");
+			gmt_message (GMT, "\t     <lat0> = 50 (Balthasart), 45 (Gall), 37.5 (Hobo-Dyer), 37.4 (Trystan Edwards),\n");
 			gmt_message (GMT, "\t              37.0666 (Caster), 30 (Behrmann), 0 (Lambert, default)\n");
 
 			gmt_message (GMT, "\t   -Jx|X<x-scale|<width>[/<y-scale|height>] (Linear, log, power scaling)\n");
