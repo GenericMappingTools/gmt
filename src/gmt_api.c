@@ -4725,6 +4725,17 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 #else
 			G_obj->data = M_obj->data.f4;
 #endif
+			G_obj->header->z_min = +DBL_MAX;
+			G_obj->header->z_max = -DBL_MAX;
+			HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
+			gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
+				if (gmt_M_is_fnan (G_obj->data[ij]))
+					HH->has_NaNs = GMT_GRID_HAS_NANS;
+				else {
+					G_obj->header->z_min = MIN (G_obj->header->z_min, G_obj->data[ij]);
+					G_obj->header->z_max = MAX (G_obj->header->z_max, G_obj->data[ij]);
+				}
+			}
 			GH = gmt_get_G_hidden (G_obj);
 			S_obj->alloc_mode = MH->alloc_mode;	/* Pass on alloc_mode of matrix */
 			GH->alloc_mode = MH->alloc_mode;
