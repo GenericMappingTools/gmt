@@ -1299,7 +1299,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		double scale = (Ctrl->M.active[1]) ? 1000.0 : 1.0;	/* Either got Te in km or m */
 		double d_min = DBL_MAX, d_max = 0.0;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input Te or Rigidity table data\n");
-		gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
+		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -C,-F,-L files */
 		if ((E = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->E.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -1307,7 +1307,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->E.file, (int)E->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
+		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
 		for (tbl = 0; tbl < E->n_tables; tbl++) {
 			for (seg = 0; seg < E->table[tbl]->n_segments; seg++) {
 				S = E->table[tbl]->segment[seg];	/* Current segment */
@@ -1368,7 +1368,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->T.active && Ctrl->T.file)	{	/* Read pre-existing deflections */
-		gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
+		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -C,-F,-L files */
 		if ((T = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -1376,7 +1376,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->T.file, (int)T->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
+		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
 		if (T->n_tables != E->n_tables || T->n_segments != E->n_segments || T->n_records != E->n_records) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Number of pre-existing deflection records is not correct!\n");
 			Return (API->error);

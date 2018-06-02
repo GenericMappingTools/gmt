@@ -1698,8 +1698,9 @@ features that straddle the Dateline.
 Binary table i/o: The **-b** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-All GMT programs that accept table data input may read ASCII, native
-binary, or netCDF tables. Native binary files may have a header section
+All GMT programs that accept table data as *primary* input may read ASCII, native
+binary, shapefiles, or netCDF tables (Any *secondary* input files provided via command line
+options are always expected to be in ASCII format). Native binary files may have a header section
 and the **-h**\ *n* option (see Section `Header data records: The -h option`_) can be used to
 skip the first *n* bytes. The data record can be in any format, you may mix
 different data types and even byte-swap individual columns or the entire record. When using

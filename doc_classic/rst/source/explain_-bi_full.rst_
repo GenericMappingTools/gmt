@@ -1,7 +1,8 @@
 .. _-bi_full:
 
 **-bi**\ [*ncols*][*type*][w][\ **+L**\ \|\ **+B**]
-    Select native binary input. Here, *ncols* is the number of data columns of
+    Select native binary format for primary input (secondary inputs are always ASCII).
+    Here, *ncols* is the number of data columns of
     given *type*, which must be one of **c** (int8_t, aka char), **u**
     (uint8_t, aka unsigned char), **h** (int16_t, 2-byte signed int),
     **H** (uint16_t, 2-byte unsigned int), **i** (int32_t, 4-byte

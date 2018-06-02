@@ -958,11 +958,11 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 			if ((error = GMT_Set_Columns (API, GMT_IN, 1, GMT_COL_FIX_NO_TEXT)) != 0) Return (error, "Error in GMT_Set_Columns");
 			save_col = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
 			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Always read the weights as floats */
-			gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading from -F files */
+			gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -F files */
 			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 				Return (API->error, "Error Reading input\n");
 			}
-			gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
+			gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
 			gmt_set_column (GMT, GMT_IN, GMT_X, save_col);	/* Reset this col type to whatever it actually is */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;

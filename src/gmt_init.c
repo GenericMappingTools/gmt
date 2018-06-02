@@ -66,8 +66,6 @@
  *	gmt_parse_R_option
  *	gmt_parse_range
  *	gmt_parse_d_option
- *	gmt_disable_ih_opts
- *	gmt_reenable_ih_opts
  *	gmt_parse_i_option
  *	gmt_parse_o_option
  *	gmt_parse_model
@@ -2855,7 +2853,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	save_trailing = GMT->current.io.trailing_text[GMT_IN];
 	save_max_cols_to_read = GMT->current.io.max_cols_to_read;
 	GMT->current.io.col_type[GMT_IN][GMT_X] = gmt_M_type (GMT, GMT_IN, A->id);
-	gmt_disable_ih_opts (GMT);	/* Do not want any -i to affect the reading this file */
+	gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading this file */
 	GMT->current.io.record_type[GMT_IN] = GMT_READ_MIXED;
 	GMT->current.io.trailing_text[GMT_IN] = true;
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
@@ -2866,7 +2864,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
 	GMT->current.io.trailing_text[GMT_IN] = save_trailing;
 	GMT->current.io.max_cols_to_read = save_max_cols_to_read;
-	gmt_reenable_ih_opts (GMT);	/* Recover settings provided by user (if -i was used at all) */
+	gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
 
 	gmt_M_memset (n_int, 4, int);
 	S = D->table[0]->segment[0];	/* All we got */
@@ -7497,21 +7495,6 @@ GMT_LOCAL unsigned int gmtinit_parse_e_option (struct GMT_CTRL *GMT, char *arg) 
 	GMT->common.e.select = gmt_set_text_selection (GMT, arg);
 
 	return (GMT_NOERROR);
-}
-
-/*! Routine will temporarily suspend any -i, -h selections for secondary inputs */
-void gmt_disable_ih_opts (struct GMT_CTRL *GMT) {
-	/* Temporarily turn off any -i, -h selections */
-	GMT->common.i.select = false;
-	GMT->current.setting.io_header_orig = GMT->current.setting.io_header[GMT_IN];
-	GMT->current.setting.io_header[GMT_IN] = false;
-}
-
-/*! Routine will re-enable any suspended -i, -h selections */
-void gmt_reenable_ih_opts (struct GMT_CTRL *GMT) {
-	/* Turn on again any -i, -h selections */
-	GMT->common.i.select = GMT->common.i.orig;
-	GMT->current.setting.io_header[GMT_IN] = GMT->current.setting.io_header_orig;
 }
 
 /*! Routine will decode the -i<col>|<colrange>|t[+l][+s<scale>][+o<offset>],... arguments or just -in */
