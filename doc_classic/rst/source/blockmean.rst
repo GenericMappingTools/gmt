@@ -18,7 +18,7 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *fields* ]
 [ |-C| ]
-[ |-E|\ [**p**] ]
+[ |-E|\ [**+p**\ \|\ **P**] ]
 [ |-G|\ [*grdfile*] ]
 [ |-S|\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ]
 [ |SYN_OPT-V| ]
@@ -87,14 +87,14 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**p**]
+**-E**\ [**+p**\ \|\ **P**]
     Provide Extended report which includes **s** (the standard deviation
     about the mean), **l**, the lowest value, and **h**, the high value
     for each block. Output order becomes
     *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. [Default outputs
     *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
-    If **-Ep** is used we assume weights are 1/(sigma squared) and *s*
-    becomes the propagated error of the mean.
+    If **-E+p**\ \|\ **P** are used then input data uncertainties are expected and *s*
+    becomes the propagated error of the weighted (**+p**) or simple (**+P**) *z* mean.
 
 .. _-G:
 
