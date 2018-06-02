@@ -66,8 +66,6 @@
  *	gmt_parse_R_option
  *	gmt_parse_range
  *	gmt_parse_d_option
- *	gmt_disable_ih_opts
- *	gmt_reenable_ih_opts
  *	gmt_parse_i_option
  *	gmt_parse_o_option
  *	gmt_parse_model
@@ -7209,21 +7207,6 @@ GMT_LOCAL unsigned int gmtinit_parse_e_option (struct GMT_CTRL *GMT, char *arg) 
 	GMT->common.e.select = gmt_set_text_selection (GMT, arg);
 
 	return (GMT_NOERROR);
-}
-
-/*! Routine will temporarily suspend any -i, -h selections for secondary inputs */
-void gmt_disable_ih_opts (struct GMT_CTRL *GMT) {
-	/* Temporarily turn off any -i, -h selections */
-	GMT->common.i.active = false;
-	GMT->current.setting.io_header_orig = GMT->current.setting.io_header[GMT_IN];
-	GMT->current.setting.io_header[GMT_IN] = false;
-}
-
-/*! Routine will re-enable any suspended -i, -h selections */
-void gmt_reenable_ih_opts (struct GMT_CTRL *GMT) {
-	/* Turn on again any -i, -h selections */
-	GMT->common.i.active = GMT->common.i.orig;
-	GMT->current.setting.io_header[GMT_IN] = GMT->current.setting.io_header_orig;
 }
 
 /*! Routine will decode the -i<col>|<colrange>[+l][+s<scale>][+o<offset>],... arguments */

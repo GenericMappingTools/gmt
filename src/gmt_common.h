@@ -126,6 +126,7 @@ struct GMT_COMMON {
 		bool active[2];		/* true if current input/output is in native binary format */
 		bool nc[2];		/* True if netcdf i/o */
 		bool o_delay;		/* true if we don't know number of output columns until we have read at least one input record */
+		bool bin_primary;	/* true if we need to switch back to binary after reading a secondary file in ascii */
 		enum GMT_swap_direction swab[2];	/* k_swap_in or k_swap_out if current binary input/output must be byte-swapped, else k_swap_none */
 		uint64_t ncol[2];		/* Number of expected columns of input/output
 						   0 means it will be determined by program */

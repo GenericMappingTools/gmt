@@ -79,6 +79,8 @@
  * gmt_format_abstime_output
  * gmt_ascii_format_col
  * gmt_init_io_columns
+ * gmt_disable_bhi_opts
+ * gmt_reenable_bhi_opts
  * gmt_lon_range_adjust
  * gmt_quad_reset
  * gmt_quad_init
@@ -4898,6 +4900,32 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 	for (i = 2; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_type[GMT_IN][i] = GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_FLOAT;	/* Other columns default to floats */
 	gmt_M_memset (GMT->current.io.curr_rec, GMT_MAX_COLUMNS, double);	/* Initialize current and previous records to zero */
 	gmt_M_memset (GMT->current.io.prev_rec, GMT_MAX_COLUMNS, double);
+}
+
+/*! Routine will temporarily suspend any -i, -h selections for secondary inputs */
+void gmt_disable_bhi_opts (struct GMT_CTRL *GMT) {
+	/* Temporarily turn off any -i, -h selections */
+	GMT->common.i.active = false;
+	GMT->current.setting.io_header_orig = GMT->current.setting.io_header[GMT_IN];
+	GMT->current.setting.io_header[GMT_IN] = false;
+	/* Then deal with primary binary input selection */
+	if (GMT->common.b.active[GMT_IN]) {	/* Secondary file input requires ascii */
+		GMT->common.b.active[GMT_IN] = false;
+		GMT->common.b.bin_primary = true;
+		GMT->current.io.input = &gmtio_ascii_input;
+	}
+}
+
+/*! Routine will re-enable any suspended -i, -h selections */
+void gmt_reenable_bhi_opts (struct GMT_CTRL *GMT) {
+	/* Turn on again any -i, -h selections */
+	GMT->common.i.active = GMT->common.i.orig;
+	GMT->current.setting.io_header[GMT_IN] = GMT->current.setting.io_header_orig;
+	if (GMT->common.b.bin_primary) {	/* Switch back to primary i/o mode which was binary */
+		GMT->common.b.active[GMT_IN] = true;
+		GMT->common.b.bin_primary = false;
+		GMT->current.io.input = &gmtio_bin_input;
+	}
 }
 
 /*! . */

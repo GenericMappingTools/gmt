@@ -103,8 +103,6 @@ EXTERN_MSC unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION
 EXTERN_MSC int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file);
 EXTERN_MSC int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *p, unsigned int mode, bool cmd);
 EXTERN_MSC int gmt_message (struct GMT_CTRL *GMT, char *format, ...);
-EXTERN_MSC void gmt_disable_ih_opts (struct GMT_CTRL *GMT);
-EXTERN_MSC void gmt_reenable_ih_opts (struct GMT_CTRL *GMT);
 #ifdef WIN32
 EXTERN_MSC void gmt_setmode (struct GMT_CTRL *GMT, int direction);
 #endif
@@ -198,6 +196,8 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 /* gmt_io.c: */
 
+EXTERN_MSC void gmt_disable_bhi_opts (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmt_reenable_bhi_opts (struct GMT_CTRL *GMT);
 EXTERN_MSC int gmt_remove_file (struct GMT_CTRL *GMT, const char *file);
 EXTERN_MSC int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newfile);
 EXTERN_MSC void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
