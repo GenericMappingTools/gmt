@@ -3094,6 +3094,7 @@ GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *
 		 */
 
 		if ((GMT->current.plot.n = gmt_clip_to_map (GMT, lon, lat, n, &xp, &yp)) == 0) return 0;		/* All points are outside region */
+		//dumpfile (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, "raw.txt");
 		
 		if (init) {
 			PSL_comment (PSL, "Temporarily set FO to P for complex polygon building\n");

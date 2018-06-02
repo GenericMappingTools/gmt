@@ -4665,26 +4665,36 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_DATA_ONLY)) {
 				api_matrixinfo_to_grdheader (GMT, G_obj->header, M_obj);	/* Populate a GRD header structure */
-				if (mode & GMT_CONTAINER_ONLY) break;	/* Just needed the header */
+				if (mode & GMT_CONTAINER_ONLY) {	/* Just needed the header */
+					/* Must set the zmin/max range since unknown per header */
+					HH = gmt_get_H_hidden (G_obj->header);
+					GMT_2D_to_index = api_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
+					G_obj->header->z_min = +DBL_MAX;
+					G_obj->header->z_max = -DBL_MAX;
+					HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
+					api_get_val = api_select_get_function (API, M_obj->type);
+					gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
+						ij_orig = GMT_2D_to_index (row, col, M_obj->dim);
+						api_get_val (&(M_obj->data), ij_orig, &d);
+						if (gmt_M_is_dnan (d))
+							HH->has_NaNs = GMT_GRID_HAS_NANS;
+						else {
+							G_obj->header->z_min = MIN (G_obj->header->z_min, (gmt_grdfloat)d);
+							G_obj->header->z_max = MAX (G_obj->header->z_max, (gmt_grdfloat)d);
+						}
+					}
+					break;
+				}
 			}
-			/* Must convert to new array */
+			/* Must convert to new array. Here the header is fully filled */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Importing grid data from user memory location\n");
 			G_obj->data = gmt_M_memory_aligned (GMT, NULL, G_obj->header->size, gmt_grdfloat);
 			GMT_2D_to_index = api_get_2d_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
-			G_obj->header->z_min = +DBL_MAX;
-			G_obj->header->z_max = -DBL_MAX;
-			HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 			api_get_val = api_select_get_function (API, M_obj->type);
 			gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
 				ij_orig = GMT_2D_to_index (row, col, M_obj->dim);
 				api_get_val (&(M_obj->data), ij_orig, &d);
 				G_obj->data[ij] = (gmt_grdfloat)d;
-				if (gmt_M_is_fnan (G_obj->data[ij]))
-					HH->has_NaNs = GMT_GRID_HAS_NANS;
-				else {
-					G_obj->header->z_min = MIN (G_obj->header->z_min, G_obj->data[ij]);
-					G_obj->header->z_max = MAX (G_obj->header->z_max, G_obj->data[ij]);
-				}
 			}
 			gmt_BC_init (GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), "Grid memory"))
@@ -4713,7 +4723,27 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			done = (mode & GMT_CONTAINER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_DATA_ONLY)) {
 				api_matrixinfo_to_grdheader (GMT, G_obj->header, M_obj);	/* Populate a GRD header structure */
-				if (mode & GMT_CONTAINER_ONLY) break;	/* Just needed the header */
+				if (mode & GMT_CONTAINER_ONLY) {	/* Just needed the header but need to set zmin/zmax first */
+					/* Temporarily set data pointer for convenience; removed later */
+#ifdef DOUBLE_PRECISION_GRID
+					G_obj->data = M_obj->data.f8;
+#else
+					G_obj->data = M_obj->data.f4;
+#endif
+					G_obj->header->z_min = +DBL_MAX;
+					G_obj->header->z_max = -DBL_MAX;
+					HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
+					gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
+						if (gmt_M_is_fnan (G_obj->data[ij]))
+							HH->has_NaNs = GMT_GRID_HAS_NANS;
+						else {
+							G_obj->header->z_min = MIN (G_obj->header->z_min, G_obj->data[ij]);
+							G_obj->header->z_max = MAX (G_obj->header->z_max, G_obj->data[ij]);
+						}
+					}
+					G_obj->data = NULL;	/* Since data are not requested yet */
+					break;
+				}
 			}
 			if ((new_ID = api_get_object (API, GMT_IS_GRID, G_obj)) == GMT_NOTSET)
 				return_null (API, GMT_OBJECT_NOT_FOUND);
@@ -4725,17 +4755,6 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 #else
 			G_obj->data = M_obj->data.f4;
 #endif
-			G_obj->header->z_min = +DBL_MAX;
-			G_obj->header->z_max = -DBL_MAX;
-			HH->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
-			gmt_M_grd_loop (GMT, G_obj, row, col, ij) {
-				if (gmt_M_is_fnan (G_obj->data[ij]))
-					HH->has_NaNs = GMT_GRID_HAS_NANS;
-				else {
-					G_obj->header->z_min = MIN (G_obj->header->z_min, G_obj->data[ij]);
-					G_obj->header->z_max = MAX (G_obj->header->z_max, G_obj->data[ij]);
-				}
-			}
 			GH = gmt_get_G_hidden (G_obj);
 			S_obj->alloc_mode = MH->alloc_mode;	/* Pass on alloc_mode of matrix */
 			GH->alloc_mode = MH->alloc_mode;
