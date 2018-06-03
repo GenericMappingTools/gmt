@@ -6030,9 +6030,8 @@ Table data
 
 These files have *N* records which have *M* fields each. All programs
 that handle tables can read multicolumn files. GMT can read both
-ASCII, native binary, and netCDF table data.  For other formats (e.g.,
-ESRI shapefiles), convert them to GMT/OGR format via GDAL's ogr2ogr tool
-first.
+ASCII, native binary, netCDF table data, and ESRI shapefiles (which
+we convert to GMT/OGR format via GDAL's ogr2ogr tool under the hood).
 
 ASCII tables
 ~~~~~~~~~~~~

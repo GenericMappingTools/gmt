@@ -4535,7 +4535,7 @@ FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) 
 			if ((c = gmt_getdatapath (GMT, &filename[first], path, R_OK)) != NULL) {	/* Got the file path */
 #ifdef HAVE_GDAL
 				char *ext = gmt_get_ext (c);	/* Get pointer to extension (or NULL if no extension) */
-				if (ext && mode[0] == 'r' && !strcmp (ext, "shp")) {	/* Got a shapefile for reading */
+				if (ext && mode[0] == 'r' && !strncmp (ext, "shp", 3U)) {	/* Got a shapefile for reading */
 					/* We will do a system call to ogr2ogr in order to read the shapefile */
 					char cmd[GMT_LEN256] = {""};
 					int error = 0;
