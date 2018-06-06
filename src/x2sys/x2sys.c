@@ -1428,13 +1428,14 @@ int x2sys_bix_free (struct GMT_CTRL *GMT, struct X2SYS_BIX *B) {
 	/* First free all the index structures allocated by x2sys_bix_read_index */	
 	for (index = 0; index < B->nm_bin; index++) {
 		bin = B->base[index].first_track;
-		n_free = 1;	/* Since there is an extra head structure */
+		n_free = 0;
 		while (bin) {
 			bdel = bin;
 			bin = bin->next_track;
 			gmt_M_free (GMT, bdel);
 			n_free++;
 		}
+		if (n_free) n_free--;	/* Since there is an extra head structure not counted in n_tracks */
 		if (n_free != B->base[index].n_tracks)
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Deleted %d bin structs but should have been %d\n", n_free, B->base[index].n_tracks);
 	}
