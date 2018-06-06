@@ -991,9 +991,9 @@ int GMT_project (void *V_API, int mode, void *args) {
 			p_data[P.n_used].a[3] = xt[1];
 			p_data[P.n_used].t = NULL;	/* Initialize since that is not done by realloc */
 			p_data[P.n_used].z = NULL;	/* Initialize since that is not done by realloc */
+			if (P.want_z_output && In->text)	/* Must store all trailing text */
+				p_data[P.n_used].t = strdup (In->text);
 			if (P.n_z) {	/* Copy over z column(s) */
-				if (In->text)	/* Must store all trailing text */
-					p_data[P.n_used].t = strdup (In->text);
 				p_data[P.n_used].z = gmt_M_memory (GMT, NULL, P.n_z, double);
 				gmt_M_memcpy (p_data[P.n_used].z, &in[GMT_Z], P.n_z, double);
 			}
