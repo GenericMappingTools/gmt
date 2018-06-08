@@ -1,4 +1,4 @@
-/*--------------------------------------------------------------------
+Pot/*--------------------------------------------------------------------
  *	$Id$
  *
  *    Copyright (c) 1999-2018 by T. Henstock
@@ -166,7 +166,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Look in <filename> for a list of locations to select traces\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (same units as header * X, i.e., values printed by previous -V run).\n");
 	GMT_Option (API, "U,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Pot wiggle trace (must specify either -W or -F).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Plot wiggle trace (must specify either -W or -F).\n");
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Suppress plotting traces whose rms amplitude is 0.\n");
 	GMT_Option (API, "p,t,.");
