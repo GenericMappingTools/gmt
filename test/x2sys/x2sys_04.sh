@@ -16,7 +16,7 @@ ln -fs "${GMT_SRCDIR:-.}"/bad "${GMT_SRCDIR:-.}"/data .
 (cd bad; ls *.xyg) > bad.lis
 (cd data; ls *.xyg) > data.lis
 
-gmt x2sys_init TEST -D${GMT_SOURCE_DIR}/share/x2sys/geoz -Exyg -F -G -R180/185/0/5
+gmt x2sys_init TEST -Dgeoz -Exyg -F -G -R180/185/0/5
 echo "bad" >> TEST/TEST_paths.txt
 gmt x2sys_cross -TTEST =data.lis -Qe -Ia > COE_clean.txt
 gmt x2sys_cross -TTEST =bad.lis -Qe -Ia > COE_orig.txt

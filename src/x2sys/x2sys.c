@@ -363,6 +363,7 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 		if (!strcmp (X->info[i].name, "x") || !strcmp (X->info[i].name, "lon"))  X->x_col = i;
 		if (!strcmp (X->info[i].name, "y") || !strcmp (X->info[i].name, "lat"))  X->y_col = i;
 		if (!strcmp (X->info[i].name, "t") || !strcmp (X->info[i].name, "time")) X->t_col = i;
+		if (!strcmp (X->info[i].name, "rtime")) X->t_col = i, X->rel_time = true;
 		i++;
 		if (i == n_alloc) {
 			n_alloc <<= 1;
@@ -392,8 +393,10 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 			G->col_type[GMT_IN][i] = G->col_type[GMT_OUT][i] = GMT_IS_LON;
 		else if (X->y_col == is)
 			G->col_type[GMT_IN][i] = G->col_type[GMT_OUT][i] = GMT_IS_LAT;
-		else if (X->t_col == is)
-			G->col_type[GMT_IN][i] = G->col_type[GMT_OUT][i] = GMT_IS_ABSTIME;
+		else if (X->t_col == is) {
+			G->col_type[GMT_IN][i]  = (X->rel_time) ? GMT_IS_RELTIME : GMT_IS_ABSTIME;
+			G->col_type[GMT_OUT][i] = GMT_IS_ABSTIME;
+		}
 		else
 			G->col_type[GMT_IN][i] = G->col_type[GMT_OUT][i] = GMT_IS_UNKNOWN;
 	}

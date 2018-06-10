@@ -1457,7 +1457,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	}
 	
 	if (Ctrl->I.active || external) {	/* Crossovers between polygons */
-		bool same_feature, wrap;
+		bool same_feature;
 		unsigned int in, wtype, n_columns;
 		uint64_t tbl1, tbl2, col, nx, row, seg1, seg2;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
@@ -1507,7 +1507,6 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, geometry) != GMT_NOERROR) {	/* Sets output geometry */
 			Return (API->error);
 		}
-		wrap = (gmt_M_is_geographic (GMT, GMT_IN) && GMT->common.R.active[RSET] && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
 
 		sprintf (fmt, "%s%s%s%s%s%s%s%s%%s%s%%s\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, \
 			GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, \
@@ -1528,7 +1527,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							if (!external && !same_feature) continue;	/* Do not do external crossings */
 						}
 						gmt_init_track (GMT, S2->data[GMT_Y], S2->n_rows, &ylist2);
-						nx = gmt_crossover (GMT, S1->data[GMT_X], S1->data[GMT_Y], NULL, ylist1, S1->n_rows, S2->data[GMT_X], S2->data[GMT_Y], NULL, ylist2, S2->n_rows, false, wrap, &XC);
+						nx = gmt_crossover (GMT, S1->data[GMT_X], S1->data[GMT_Y], NULL, ylist1, S1->n_rows, S2->data[GMT_X], S2->data[GMT_Y], NULL, ylist2, S2->n_rows, false, gmt_M_is_geographic (GMT, GMT_IN), &XC);
 						if (nx) {	/* Polygon pair generated crossings */
 							uint64_t px;
 							if (Ctrl->S.active) {	/* Do the spatial clip operation */

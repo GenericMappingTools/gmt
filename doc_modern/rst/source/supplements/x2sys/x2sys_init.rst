@@ -175,10 +175,12 @@ attributes:
 
 *name type NaN NaN-proxy scale offset oformat*
 
-*name* is the name of the column variable. It is expected that you will
+*name* is the name of the column variable. You must
 use the special names *lon* (or *x* if Cartesian) and *lat* (or *y*) for
-the two required coordinate columns, and *time* when optional time data
-are present.
+the two required coordinate columns, *time* when optional absolute time data
+are present, and *rtime* when relative time data are given (make sure the
+GMT defaults **TIME_UNIT** and **TIME_EPOCH** are set properly). Regardless
+of input time flavor, we will write absolute time on output.
 
 *type* is always **a** for ASCII representations of numbers, whereas for
 binary files you may choose among **c** for signed 1-byte character

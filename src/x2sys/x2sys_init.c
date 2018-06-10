@@ -313,7 +313,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	if (!Ctrl->D.active) Ctrl->D.file = strdup (Ctrl->In.TAG);	/* Default */
 	sprintf (def_file, "%s.def", Ctrl->D.file);
 	if (access (def_file, R_OK)) {	/* No such local *.def file */
-		if (!gmt_getsharepath (GMT, "x2sys", Ctrl->D.file, ".def", def_file, R_OK)) {	/* Decode Custom font file */
+		if (!gmt_getsharepath (GMT, "x2sys", Ctrl->D.file, ".def", def_file, R_OK)) {	/* Not found in GMT x2sys share path */
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to find local definition file : %s\n", def_file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}

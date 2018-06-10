@@ -122,6 +122,7 @@ struct X2SYS_INFO {
 	bool multi_segment;		/* true if there are multiple segments in this file */
 	bool geographic;		/* true if x/y data are lon/lat */
 	bool ms_next;			/* true if we just read 1st record in a new segments in this file */
+	bool rel_time;			/* true if we have relative rather than absolute time */
 	char unit[2][2];		/* Units for distance (c = Cartesian, e = meter, k = km, m = miles, n = nautical miles)
 	 				   and speed (c = Cartesian, e = m/s, k = km/hr, m = miles/hr, n = knots) */
 	char ms_flag;			/* Multi-segment header flag */
