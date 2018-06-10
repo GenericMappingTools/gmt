@@ -635,7 +635,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				}
 				
 				if (do_project) {	/* Convert all the coordinates */
-					for (i = 0; i < n_rec[0]; i++) {
+					for (i = 0; i < n_rec[1]; i++) {
 						gmt_geo_to_xy (GMT, data[1][s->x_col][i], data[1][s->y_col][i], &xx, &yy);
 						data[1][s->x_col][i] = xx;
 						data[1][s->y_col][i] = yy;
