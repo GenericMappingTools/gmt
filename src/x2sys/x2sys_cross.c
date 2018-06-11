@@ -316,20 +316,20 @@ GMT_LOCAL bool is_outside_region (struct GMT_CTRL *GMT, double lon, double lat, 
 }
 
 GMT_LOCAL void local_geo_to_xy (double *lon, double *lat, double plat) {
-	/* Project to polar coordinates then x,y */
+	/* Project lon,lat to polar coordinates (r,theta) then Cartesian x,y */
 	double r, s, c;
-	r = fabs (*lat - plat);	/* Distance from the pole in degrees */
-	sincosd (*lon, &s, &c);	/* Longitude is theta */
-	*lon = r * c;	*lat = r * s;
+	r = fabs (*lat - plat);		/* Distance from the pole plat in degrees */
+	sincosd (*lon, &s, &c);		/* Longitude is our theta */
+	*lon = r * c;	*lat = r * s;	/* Cartesian coordinates */
 }
 
 GMT_LOCAL void local_xy_to_geo (double *x, double *y, int plat) {
-	/* Project to polar coordinates then x,y */
+	/* Project Cartesian x,y to polar coordinates (r,theta) then lon,lat */
 	double r, lon, lat;
-	r = hypot (*x, *y);	/* Distance from the pole in degrees */
-	lat = (plat == 1) ? 90.0 - r : r - 90.0;	/* N or S pole */
-	lon = d_atan2d (*y, *x);
-	*x = lon;	*y = lat;
+	r = hypot (*x, *y);				/* Distance from our pole in degrees */
+	lat = (plat == 1) ? 90.0 - r : r - 90.0;	/* Latitude depends on the which pole, N or S */
+	lon = d_atan2d (*y, *x);			/* Determine theta which is our longitude */
+	*x = lon;	*y = lat;			/* Pass back the geographic coordinates */
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -366,8 +366,8 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	bool internal = true;			/* false if only external xovers are needed */
 	bool external = true;			/* false if only internal xovers are needed */
 	bool do_project = false;		/* true if we must project first */
-	bool do_examine = false;		/* true if we should examine y-range */
-	bool is_geographic = false;		/* true if we must mapproject first */
+	bool do_examine = false;		/* true if we should examine y-range to pick closest pole*/
+	bool is_geographic = false;		/* true if we must project to polar cartesian */
 	bool got_time = false;			/* true if there is a time column */
 	bool first_header = true;		/* true for very first crossover */
 	bool first_crossover;			/* true for first crossover between two data sets */
@@ -399,11 +399,11 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	clock_t tic = 0, toc = 0;
 
 	struct X2SYS_INFO *s = NULL;			/* Data format information  */
-	struct GMT_XSEGMENT *ylist_A = NULL, *ylist_B = NULL;		/* y-indices sorted in increasing order */
+	struct GMT_XSEGMENT *ylist[2] = {NULL, NULL};	/* y-indices sorted in increasing order */
 	struct GMT_XOVER XC;				/* Structure with resulting crossovers */
 	struct X2SYS_FILE_INFO data_set[2];		/* File information */
 	struct X2SYS_BIX Bix;
-	struct PAIR *pair = NULL;		/* Used with -Akombinations.lis option */
+	struct PAIR *pair = NULL;			/* Used with -Akombinations.lis option */
 	FILE *fp = NULL, *fpC = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct X2SYS_CROSS_CTRL *Ctrl = NULL;
@@ -571,10 +571,16 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	/* PW: Cannot use gmt_proj_setup since all that stuff assumes lon,lat are now in cols
 	 * 0 and 1.  But that is not true in x2sys since it honors the *.def file layout.
 	 * Since gmt_crossover deals with periodic longitudes then we really do not need to
-	 * project to Cartesian anyway.  If -D is given and geographice then we internally
+	 * project to Cartesian anyway.  If -DS|N is given (or no -D) and geographice then we internally
 	 * project via a r-theta schene to x,y get the crossings and project back afterwards.
-	 * We examine the latitude range to select the most suitable pole for the projection.
-	 * This will fail if data cover both hemispheres. */
+	 * We examine the latitude range to select the most suitable pole for the projection (unless set in -D),
+	 * This may have issues if data cover both hemispheres to high latitudes. The projection we use is
+	 *
+	 * (lon,lat) --> (x,y), via x = r * cos(lon), y = r * sin(lon), with r = distance to the pole,
+	 *	so r is either 90 - lat for N pole or lat - 90 for S pole.  After computing crossovers we
+	 * recover the geographic coordinates via lon = atan2d (y, x) and r = hypot (x,y); the latitude
+	 * is then given as 90 - r or r - 90 depending on pole.
+	 */
 
 	do_examine = do_project = !(Ctrl->D.active || !s->geographic);	/* If -D is given then no examination, else examine if geographic */
 	is_geographic = s->geographic;
@@ -583,6 +589,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		is_geographic = false;		/* Once we project we have Cartesian data */
 		iplat = Ctrl->D.mode;		/* User specified which pole to project to */
 		plat[SET_A] = plat[SET_B] = iplat * 90.0;	/* Corresponding latitude of pole */
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Based on -D setting we will polar project all data using pole latitude %g\n", plat[SET_A]);
 	}
 	gmt_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);
 		
@@ -667,7 +674,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 		time[SET_A] = (has_time[SET_A]) ? data[SET_A][s->t_col] : x2sys_dummytimes (GMT, n_rec[SET_A]) ;
 
-		gmt_init_track (GMT, data[SET_A][s->y_col], n_rec[SET_A], &ylist_A);
+		gmt_init_track (GMT, data[SET_A][s->y_col], n_rec[SET_A], &ylist[SET_A]);
 
 		for (B = A; B < n_tracks; B++) {
 			if (duplicate[B]) continue;
@@ -690,7 +697,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				time[SET_B] = time[SET_A];
 				has_time[SET_B] = has_time[SET_A];
 				n_rec[SET_B] = n_rec[SET_A];
-				ylist_B = ylist_A;
+				ylist[SET_B] = ylist[SET_A];
 				data_set[SET_B] = data_set[SET_A];
 			}
 			else {	/* Must read a second file */
@@ -732,12 +739,12 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 				time[SET_B] = (has_time[SET_B]) ? data[SET_B][s->t_col] : x2sys_dummytimes (GMT, n_rec[SET_B]);
 
-				gmt_init_track (GMT, data[SET_B][s->y_col], n_rec[SET_B], &ylist_B);
+				gmt_init_track (GMT, data[SET_B][s->y_col], n_rec[SET_B], &ylist[SET_B]);
 			}
 
 			/* Calculate all possible crossover locations */
 
-			nx = gmt_crossover (GMT, data[SET_A][s->x_col], data[SET_A][s->y_col], data_set[SET_A].ms_rec, ylist_A, n_rec[SET_A], data[SET_B][s->x_col], data[SET_B][s->y_col], data_set[SET_B].ms_rec, ylist_B, n_rec[SET_B], (A == B), is_geographic, &XC);
+			nx = gmt_crossover (GMT, data[SET_A][s->x_col], data[SET_A][s->y_col], data_set[SET_A].ms_rec, ylist[SET_A], n_rec[SET_A], data[SET_B][s->x_col], data[SET_B][s->y_col], data_set[SET_B].ms_rec, ylist[SET_B], n_rec[SET_B], (A == B), is_geographic, &XC);
 
 			if (nx && xover_locations_only) {	/* Report crossover locations only */
 				sprintf (line, "%s - %s", trk_name[A], trk_name[B]);
@@ -967,7 +974,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				x2sys_free_data (GMT, data[SET_B], s->n_out_columns, &data_set[SET_B]);
 				gmt_M_free (GMT, dist[SET_B]);
 				if (!got_time) gmt_M_free (GMT, time[SET_B]);
-				gmt_M_free (GMT, ylist_B);
+				gmt_M_free (GMT, ylist[SET_B]);
 			}
 			if (!Ctrl->C.active)
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing %s - %s : %" PRIu64 "\n", trk_name[A], trk_name[B], nx);
@@ -984,7 +991,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		x2sys_free_data (GMT, data[SET_A], s->n_out_columns, &data_set[SET_A]);
 		gmt_M_free (GMT, dist[SET_A]);
 		if (!got_time) gmt_M_free (GMT, time[SET_A]);
-		gmt_M_free (GMT, ylist_A);
+		gmt_M_free (GMT, ylist[SET_A]);
 	}
 
 	if (fpC) fclose (fpC);
