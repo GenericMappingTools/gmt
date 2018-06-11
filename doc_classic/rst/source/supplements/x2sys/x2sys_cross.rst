@@ -14,8 +14,10 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **x2sys_cross** *track(s)* |-T|\ *TAG* [ |-A|\ *combi.lis* ]
-[ |-C|\ [*runtimes*] ] [ |-I|\ **l**\ \|\ **a**\ \|\ **c** ]
-[ |-J|\ *parameters* ] [ |-Q|\ **e**\ \|\ **i** ]
+[ |-C|\ [*runtimes*] ]
+[ |-D|\ [**S**\ \|\ **N**\ ] ]
+[ |-I|\ **l**\ \|\ **a**\ \|\ **c** ]
+[ |-Q|\ **e**\ \|\ **i** ]
 [ |-S|\ **l**\ \|\ **u**\ \|\ **h**\ *speed* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *size* ] [ |-Z| ]
@@ -64,6 +66,19 @@ Optional Arguments
     different processor of your multi-core machine. See the MATLAB
     function *split_file4coes.m* that lives in the x2sys supplement source code.
 
+.. _-D:
+
+**-D**\ [**S**\ \|\ **N**\ ] ]
+    Control how geographic coordinates are handled (Cartesian data are unaffected).
+    By default, we determine if the data are closer to one pole than the other, and
+    then we use a cylindrical polar conversion to avoid problems with longitude jumps.
+    You can turn this off entirely with **-D** and then the calculations uses the
+    original data (we have protections against longitude jumps).  However, you can
+    force the selection of the pole for the projection by appending **S** or **N**
+    for the south or north pole, respectively.  The conversion is used because the
+    algorithm used to find crossovers are inherently a Cartesian algorithm that can
+    run into trouble with data that has large longitudinal range at higher latitudes.
+
 .. _-I:
 
 **-Il**\ \|\ **a**\ \|\ **c**
@@ -74,12 +89,6 @@ Optional Arguments
     **a** Akima spline interpolation.
 
     **c** Cubic spline interpolation.
-
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
-    This option converts the coordinates to projected coordinates prior to crossover calculations.
-.. include:: ../../explain_-J.rst_
 
 .. _-Q:
 
@@ -176,14 +185,14 @@ and using the tag GMT, try
 
    ::
 
-    gmt x2sys_cross c2104.gmt -TGMT > c2104.d
+    gmt x2sys_cross c2104.gmt -TGMT > c2104.txt
 
 To find the crossover locations with bathymetry between the two MGD77
 files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
 
    ::
 
-    gmt x2sys_cross A13232.mgd77 A99938.mgd77 -Qe -TMGD77 > crossovers.d
+    gmt x2sys_cross A13232.mgd77 A99938.mgd77 -Qe -TMGD77 > crossovers.txt
 
 References
 ----------

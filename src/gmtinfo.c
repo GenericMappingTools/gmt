@@ -391,6 +391,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 		uint64_t tbl, seg, start_rec = 0;
+		
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 			Return (API->error);	/* Establishes data files or stdin */
 		}
@@ -404,6 +405,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if ((error = GMT_Set_Columns (API, GMT_OUT, 5, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);
+		for (col = 0; col < 5; col++) GMT->current.io.col_type[GMT_OUT][col] = GMT_IS_FLOAT;
 		
 		Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 

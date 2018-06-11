@@ -6,7 +6,7 @@
 #
 #---------------------------------------------------------------------
 #ASCII		# The input file is ASCII
-#SKIP 1		# The number of header records to skip
+#SKIP 0		# The number of header records to skip
 #---------------------------------------------------------------------
 #name	intype	NaN-proxy?	NaN-proxy	scale	offset	oformat
 lon	a	N		0		1	0	%10.5f

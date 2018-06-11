@@ -4335,56 +4335,24 @@ GMT_LOCAL void support_x_alloc (struct GMT_CTRL *GMT, struct GMT_XOVER *X, size_
 	}
 }
 
-#if 0
-/*! . */
-GMT_LOCAL bool support_x_overlap (double *xa, double *xb, uint64_t *xa_start, uint64_t *xa_stop, uint64_t *xb_start, uint64_t *xb_stop, bool geo) {
+GMT_LOCAL bool support_x_overlap (double *xa, double *xb, uint64_t *xa_start, uint64_t *xa_stop, uint64_t *xb_start, uint64_t *xb_stop, bool geo, double *dx) {
 	/* Return true if the two x-ranges overlap */
 	if (geo) {	/* More complicated, and may change both the start/stop indices and the array longitudes */
 		int k;
-		double dx = xa[*xa_stop] - xa[*xa_start];
-		if (dx > 180.0) {xa[*xa_start] += 360.0; gmt_M_uint64_swap(*xa_start, *xa_stop);}	/* Deal with 360 and swap start and stop indices */
-		dx = xb[*xb_stop] - xb[*xb_start];
-		if (dx > 180.0) {xb[*xb_start] += 360.0; gmt_M_uint64_swap(*xb_start, *xb_stop);}	/* Deal with 360 and swap start and stop indices */
-		/* Here we have fixed a 360 jump and reassign what is start and stop. We must now look for overlaps
-		 * by considering the segments may be off by -360, 0, or +360 degrees in longitude */
+		double del_x = xa[*xa_stop] - xa[*xa_start];	/* Check if line A has a longitude jump */
+		if (del_x > 180.0) {xa[*xa_start] += 360.0; gmt_M_uint64_swap(*xa_start, *xa_stop);}	/* Deal with 360 and swap start and stop indices */
+		del_x = xb[*xb_stop] - xb[*xb_start];		/* Check if line B has a longitude jump */
+		if (del_x > 180.0) {xb[*xb_start] += 360.0; gmt_M_uint64_swap(*xb_start, *xb_stop);}	/* Deal with 360 and swap start and stop indices */
+		/* Here we have fixed any 360 jumps in A and B and reassign what is start and stop. We must now look for overlaps
+		 * betwen the segments by considering that A may be off by -360, 0, or +360 degrees in longitude relative to B. */
 
-		for (k = -1; k <= 1; k++) {	/* Try these offsets of k * 360 */
-			dx = k * 360.0;
-			if ((xa[*xa_start] + dx) >= xb[*xb_start] && (xa[*xa_start] + dx) <= xb[*xb_stop]) {	/* Overlap when k*360 offset is considered */
-				xa[*xa_start] += dx;	xa[*xa_stop] += dx;	/* Make the adjustment to the array */
-				return true;
-			}
-			if ((xa[*xa_stop] + dx) >= xb[*xb_start] && (xa[*xa_stop] + dx) <= xb[*xb_stop]) {		/* Overlap when this 360 offset is considered */
-				xa[*xa_start] += dx;	xa[*xa_stop] += dx;	/* Make the adjustment to the array  */
-				return true;
-			}
+		for (k = -1; k <= 1; k++) {	/* Try offsets of k * 360. If we find overlap then *dx returns the shift we must add to the xa coordinates later */
+			*dx = k * 360.0;
+			if (!(((xa[*xa_stop] + (*dx)) < xb[*xb_start]) || ((xa[*xa_start] + (*dx)) > xb[*xb_stop]))) return true;
 		}
 		return false;	/* No overlap */
 	}
-	else {	/* Simple since xa_start <= xa_stop and xb_start <= xb_stop */
-		return (!((xa[*xa_stop] < xb[*xb_start]) || (xa[*xa_start] > xb[*xb_stop])));
-	}
-}
-#endif
-
-GMT_LOCAL bool support_x_overlap (double *xa, double *xb, uint64_t *xa_start, uint64_t *xa_stop, uint64_t *xb_start, uint64_t *xb_stop, bool geo) {
-	/* Return true if the two x-ranges overlap */
-	if (geo) {	/* More complicated, and may change both the start/stop indices and the array longitudes */
-		int k;
-		double dx = xa[*xa_stop] - xa[*xa_start];
-		if (dx > 180.0) {xa[*xa_start] += 360.0; gmt_M_uint64_swap(*xa_start, *xa_stop);}	/* Deal with 360 and swap start and stop indices */
-		dx = xb[*xb_stop] - xb[*xb_start];
-		if (dx > 180.0) {xb[*xb_start] += 360.0; gmt_M_uint64_swap(*xb_start, *xb_stop);}	/* Deal with 360 and swap start and stop indices */
-		/* Here we have fixed a 360 jump and reassign what is start and stop. We must now look for overlaps
-		 * by considering the segments may be off by -360, 0, or +360 degrees in longitude */
-
-		for (k = -1; k <= 1; k++) {	/* Try these offsets of k * 360 */
-			dx = k * 360.0;
-			if (!(((xa[*xa_stop] + dx) < xb[*xb_start]) || ((xa[*xa_start] + dx) > xb[*xb_stop]))) return true;
-		}
-		return false;	/* No overlap */
-	}
-	else {	/* Simple since xa_start <= xa_stop and xb_start <= xb_stop */
+	else {	/* Cartesian is simple since xa_start <= xa_stop and xb_start <= xb_stop */
 		return (!((xa[*xa_stop] < xb[*xb_start]) || (xa[*xa_start] > xb[*xb_stop])));
 	}
 }
@@ -12651,9 +12619,11 @@ int gmt_init_track (struct GMT_CTRL *GMT, double y[], uint64_t n, struct GMT_XSE
 uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t *sa0, struct GMT_XSEGMENT A[], uint64_t na, double xb[], double yb[], uint64_t *sb0, struct GMT_XSEGMENT B[], uint64_t nb, bool internal, bool geo, struct GMT_XOVER *X) {
 	size_t nx_alloc;
 	uint64_t nx, this_a, this_b, xa_start = 0, xa_stop = 0, xb_start = 0, xb_stop = 0, ta_start = 0, ta_stop = 0, tb_start, tb_stop, n_seg_a, n_seg_b;
-	bool new_a, new_b, new_a_time = false, xa_OK = false, xb_OK = false;
+	bool new_a, new_b, new_a_time = false, xa_OK = false, xb_OK = false, got_x = false;
 	uint64_t *sa = NULL, *sb = NULL;
 	double del_xa, del_xb, del_ya, del_yb, i_del_xa, i_del_xb, i_del_ya, i_del_yb, slp_a, slp_b, xc, yc, tx_a, tx_b;
+	double xshift = 0.0;	/* This may become +/-360 or 0 depending on longitude shifts for geo, else 0 */
+	double dx_ab;		/* Be careful due to longitude jumps are lurking everywhere; use this variable for that */
 
 	if (na < 2 || nb < 2) return (0);	/* Need at least 2 points to make a segment */
 
@@ -12733,33 +12703,42 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 			}
 
 			/* OK, first check for any overlap in x range */
+			got_x = false;
 
-			if (xa_OK && xb_OK && support_x_overlap (xa, xb, &xa_start, &xa_stop, &xb_start, &xb_stop, geo)) {
+			if (xa_OK && xb_OK && support_x_overlap (xa, xb, &xa_start, &xa_stop, &xb_start, &xb_stop, geo, &xshift)) {
 
-				/* We have segment overlap in x.  Now check if the segments cross  */
+				/* We have segment overlap in x.  Now check if the two segments cross. Note:
+				 * For geographic coordinates, the xa and xb for these two segments will be
+				 * offset by xshift [0 for Cartesian].  Thus we add xshift to each end of a segment
+				 * so the values have no 360-degree offset relative to the coordinates in xb.  */
 
-				del_xa = xa[xa_stop] - xa[xa_start];
+				if (geo) {	/* Do this once for this segment comparisons */
+					xa[xa_start] += xshift;
+					xa[xa_stop]  += xshift;
+				}
+				del_xa = xa[xa_stop] - xa[xa_start];	/* xshift would cancel out */
 				del_xb = xb[xb_stop] - xb[xb_start];
 				del_ya = ya[xa_stop] - ya[xa_start];
 				del_yb = yb[xb_stop] - yb[xb_start];
 
-				if (del_xa == 0.0) {	/* Vertical A segment: Special case */
-					if (del_xb == 0.0) {	/* Two vertical segments with some overlap */
+				if (gmt_M_is_zero (del_xa)) {	/* Vertical A segment: Special case */
+					if (gmt_M_is_zero (del_xb)) {	/* Two vertical segments with some overlap */
 						double y4[4];
 						/* Assign as crossover the middle of the overlapping segments */
 						X->x[nx] = xa[xa_start];
 						y4[0] = ya[xa_start];	y4[1] = ya[xa_stop];	y4[2] = yb[xb_start];	y4[3] = yb[xb_stop];
 						gmt_sort_array (GMT, y4, 4, GMT_DOUBLE);
-						if (y4[1] != y4[2]) {
+						if (!doubleAlmostEqual (y4[1], y4[2])) {
 							X->y[nx] = 0.5 * (y4[1] + y4[2]);
 							X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
 							X->xnode[1][nx] = 0.5 * (xb_start + xb_stop);
-							nx++;
+							nx++;	got_x = true;
 						}
 					}
-					else {
+					else {	/* B is not vertical so we can solve for intersection */
+						dx_ab = xa[xa_start] - xb[xb_start];
 						i_del_xb = 1.0 / del_xb;
-						yc = yb[xb_start] + (xa[xa_start] - xb[xb_start]) * del_yb * i_del_xb;
+						yc = yb[xb_start] + dx_ab * del_yb * i_del_xb;
 						if (!(yc < ya[A[this_a].start] || yc > ya[A[this_a].stop])) {	/* Did cross within the segment extents */
 							/* Only accept xover if occurring before segment end (in time) */
 
@@ -12783,22 +12762,23 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 								new_a_time = false;
 							}
 
+							dx_ab = xa[xa_start] - xb[tb_start];
 							tx_a = ta_start + fabs ((yc - ya[ta_start]) / del_ya);
-							tx_b = tb_start + fabs (xa[xa_start] - xb[tb_start]) * i_del_xb;
+							tx_b = tb_start + fabs (dx_ab) * i_del_xb;
 							if (tx_a < ta_stop && tx_b < tb_stop) {
 								X->x[nx] = xa[xa_start];
 								X->y[nx] = yc;
 								X->xnode[0][nx] = tx_a;
 								X->xnode[1][nx] = tx_b;
-								nx++;
+								nx++;	got_x = true;
 							}
 						}
 					}
 				}
-				else if (del_xb == 0.0) {	/* Vertical B segment: Special case */
-
+				else if (gmt_M_is_zero (del_xb)) {	/* Vertical B segment: Special case */
+					dx_ab = xb[xb_start] - xa[xa_start];
 					i_del_xa = 1.0 / del_xa;
-					yc = ya[xa_start] + (xb[xb_start] - xa[xa_start]) * del_ya * i_del_xa;
+					yc = ya[xa_start] + dx_ab * del_ya * i_del_xa;
 					if (!(yc < yb[B[this_b].start] || yc > yb[B[this_b].stop])) {	/* Did cross within the segment extents */
 						/* Only accept xover if occurring before segment end (in time) */
 
@@ -12822,33 +12802,35 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 							new_a_time = false;
 						}
 
-						tx_a = ta_start + fabs (xb[xb_start] - xa[ta_start]) * i_del_xa;
+						dx_ab = xb[xb_start] - xa[ta_start];
+						tx_a = ta_start + fabs (dx_ab) * i_del_xa;
 						tx_b = tb_start + fabs ((yc - yb[tb_start]) / del_yb);
 						if (tx_a < ta_stop && tx_b < tb_stop) {
 							X->x[nx] = xb[xb_start];
 							X->y[nx] = yc;
 							X->xnode[0][nx] = tx_a;
 							X->xnode[1][nx] = tx_b;
-							nx++;
+							nx++;	got_x = true;
 						}
 					}
 				}
-				else if (del_ya == 0.0) {	/* Horizontal A segment: Special case */
+				else if (gmt_M_is_zero (del_ya)) {	/* Horizontal A segment: Special case */
 
-					if (del_yb == 0.0) {	/* Two horizontal segments with some overlap */
+					if (gmt_M_is_zero (del_yb)) {	/* Two horizontal segments with some overlap */
 						double x4[4];
 						/* Assign as crossover the middle of the overlapping segments */
 						X->y[nx] = ya[xa_start];
-						x4[0] = xa[xa_start];	x4[1] = xa[xa_stop];	x4[2] = xb[xb_start];	x4[3] = xb[xb_stop];
+						x4[0] = xa[xa_start];	x4[1] = xa[xa_stop];
+						x4[2] = xb[xb_start];	x4[3] = xb[xb_stop];
 						gmt_sort_array (GMT, x4, 4, GMT_DOUBLE);
-						if (x4[1] != x4[2]) {
+						if (!doubleAlmostEqual (x4[1], x4[2])) {
 							X->x[nx] = 0.5 * (x4[1] + x4[2]);
 							X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
 							X->xnode[1][nx] = 0.5 * (xb_start + xb_stop);
-							nx++;
+							nx++;	got_x = true;
 						}
 					}
-					else {
+					else {	/* B is not horizontal so we can solve for intersection */
 						i_del_yb = 1.0 / del_yb;
 						xc = xb[xb_start] + (ya[xa_start] - yb[xb_start]) * del_xb * i_del_yb;
 						if (!(xc < xa[xa_start] || xc > xa[xa_stop])) {	/* Did cross within the segment extents */
@@ -12875,19 +12857,20 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 								new_a_time = false;
 							}
 
-							tx_a = ta_start + fabs (xc - xa[ta_start]) / del_xa;
+							dx_ab = xc - xa[ta_start];
+							tx_a = ta_start + fabs (dx_ab) / del_xa;
 							tx_b = tb_start + fabs ((ya[xa_start] - yb[tb_start]) * i_del_yb);
 							if (tx_a < ta_stop && tx_b < tb_stop) {
 								X->y[nx] = ya[xa_start];
 								X->x[nx] = xc;
 								X->xnode[0][nx] = tx_a;
 								X->xnode[1][nx] = tx_b;
-								nx++;
+								nx++;	got_x = true;
 							}
 						}
 					}
 				}
-				else if (del_yb == 0.0) {	/* Horizontal B segment: Special case */
+				else if (gmt_M_is_zero (del_yb)) {	/* Horizontal B segment: Special case */
 
 					i_del_ya = 1.0 / del_ya;
 					xc = xa[xa_start] + (yb[xb_start] - ya[xa_start]) * del_xa * i_del_ya;
@@ -12915,14 +12898,15 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 							new_a_time = false;
 						}
 
+						dx_ab = xc - xb[tb_start];
 						tx_a = ta_start + fabs ((yb[xb_start] - ya[ta_start]) * i_del_ya);
-						tx_b = tb_start + fabs (xc - xb[tb_start]) / del_xb;
+						tx_b = tb_start + fabs (dx_ab) / del_xb;
 						if (tx_a < ta_stop && tx_b < tb_stop) {
 							X->y[nx] = yb[xb_start];
 							X->x[nx] = xc;
 							X->xnode[0][nx] = tx_a;
 							X->xnode[1][nx] = tx_b;
-							nx++;
+							nx++;	got_x = true;
 						}
 					}
 				}
@@ -12932,12 +12916,13 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 					i_del_xb = 1.0 / del_xb;
 					slp_a = del_ya * i_del_xa;
 					slp_b = del_yb * i_del_xb;
-					if (slp_a == slp_b) {	/* Segments are parallel */
+					if (doubleAlmostEqual (slp_a, slp_b)) {	/* Segments are parallel */
 						double x4[4];
 						/* Assign as possible crossover the middle of the overlapping segments */
-						x4[0] = xa[xa_start];	x4[1] = xa[xa_stop];	x4[2] = xb[xb_start];	x4[3] = xb[xb_stop];
+						x4[0] = xa[xa_start];	x4[1] = xa[xa_stop];
+						x4[2] = xb[xb_start];	x4[3] = xb[xb_stop];
 						gmt_sort_array (GMT, x4, 4, GMT_DOUBLE);
-						if (x4[1] != x4[2]) {
+						if (!doubleAlmostEqual (x4[1], x4[2])) {
 							xc = 0.5 * (x4[1] + x4[2]);
 							yc = slp_a * (xc - xa[xa_start]) + ya[xa_start];
 							if ((slp_b * (xc - xb[xb_start]) + yb[xb_start]) == yc) {
@@ -12945,7 +12930,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 								X->x[nx] = xc;
 								X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
 								X->xnode[1][nx] = 0.5 * (xb_start + xb_stop);
-								nx++;
+								nx++;	got_x = true;
 							}
 						}
 					}
@@ -12982,12 +12967,11 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 								X->y[nx] = ya[xa_start] + (xc - xa[xa_start]) * slp_a;
 								X->xnode[0][nx] = tx_a;
 								X->xnode[1][nx] = tx_b;
-								nx++;
+								nx++;	got_x = true;
 							}
 						}
 					}
 				}
-
 				if (nx > 1 && fabs (X->xnode[0][nx-1] - X->xnode[0][nx-2]) < GMT_CONV8_LIMIT && fabs (X->xnode[1][nx-1] - X->xnode[1][nx-2]) < GMT_CONV8_LIMIT) {
 					/* Two consecutive crossing of the same node or really close, skip this repeat crossover */
 					nx--;

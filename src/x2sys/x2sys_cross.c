@@ -59,8 +59,9 @@ struct X2SYS_CROSS_CTRL {
 		bool active;
 		char *file;
 	} C;
-	struct X2S_CROSS_D {	/* -D */
-		bool active;
+	struct X2S_CROSS_D {	/* -Dg|s|n */
+		bool active;	/* Force selection if true, else examine */
+		int mode;	/* -1 for S pole, +1 for N pole */
 	} D;
 	struct X2S_CROSS_I {	/* -I */
 		bool active;
@@ -114,7 +115,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	/*
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <files> -T<TAG> [-A<combi.lis>] [-C[<fname>]] [-Il|a|c] [-Qe|i]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <files> -T<TAG> [-A<combi.lis>] [-C[<fname>]] [-D[S|N]] [-Il|a|c] [-Qe|i]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sl|h|u<speed>] [%s] [-W<size>] [-Z]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
 
@@ -128,6 +129,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Give list of file pairs that are ok to compare [Default is all combinations].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Print run time for each pair. Optionally append <fname> to save them in file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Control geographic coordinate conversions. By default we automatically convert\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   lon,lat to polar coordinates if within one hemisphere. -D turns this off, while\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -DS or -DN forces the conversion using the specified pole [auto-selected].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Set the interpolation mode.  Choose among:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     l Linear interpolation [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     a Akima spline interpolation.\n");
@@ -184,8 +188,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct
 				if (strlen(opt->arg))
 					Ctrl->C.file = strdup (opt->arg);
 				break;
-			case 'D':
+			case 'D':	/* Determines if projection should happen for geographic coordinates */
 				Ctrl->D.active = true;
+				switch (opt->arg[0]) {
+					case 'S':	Ctrl->D.mode = -1; break;	/* Force projection using S pole */
+					case 'N':	Ctrl->D.mode = +1; break;	/* Force projection using N pole */
+					case '\0':	Ctrl->D.mode =  0; break;	/* No projection  */
+				}
 				break;
 			case 'I':
 				Ctrl->I.active = true;
@@ -356,7 +365,8 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	bool xover_locations_only = false;	/* true if only x,y (and possible indices) to be output */
 	bool internal = true;			/* false if only external xovers are needed */
 	bool external = true;			/* false if only internal xovers are needed */
-	bool do_project = false;		/* true if we must mapproject first */
+	bool do_project = false;		/* true if we must project first */
+	bool do_examine = false;		/* true if we should examine y-range */
 	bool is_geographic = false;		/* true if we must mapproject first */
 	bool got_time = false;			/* true if there is a time column */
 	bool first_header = true;		/* true for very first crossover */
@@ -566,10 +576,13 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	 * We examine the latitude range to select the most suitable pole for the projection.
 	 * This will fail if data cover both hemispheres. */
 
+	do_examine = do_project = !(Ctrl->D.active || !s->geographic);	/* If -D is given then no examination, else examine if geographic */
 	is_geographic = s->geographic;
-	if (s->geographic && Ctrl->D.active) {
-		do_project = true;
-		is_geographic = false;
+	if (s->geographic && Ctrl->D.active && Ctrl->D.mode) {	/* Must project if geographic and user gave -Ds or -Dn */
+		do_project = true;		/* Convert lon,lat to a cylindrical, polar projection */
+		is_geographic = false;		/* Once we project we have Cartesian data */
+		iplat = Ctrl->D.mode;		/* User specified which pole to project to */
+		plat[SET_A] = plat[SET_B] = iplat * 90.0;	/* Corresponding latitude of pole */
 	}
 	gmt_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);
 		
@@ -638,13 +651,16 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 		if ((dist[SET_A] = gmt_dist_array_2 (GMT, data[SET_A][s->x_col], data[SET_A][s->y_col], n_rec[SET_A], dist_scale, s->dist_flag)) == NULL) gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 
-		if (do_project) {	/* Convert all the coordinates */
+		if (do_examine) {	/* Check all the coordinates and find suitable pole */
 			ymin[SET_A] = ymax[SET_A] = data[SET_A][s->y_col][i];
 			for (i = 1; i < n_rec[SET_A]; i++) {
 				if (data[SET_A][s->y_col][i] < ymin[SET_A]) ymin[SET_A] = data[SET_A][s->y_col][i];
 				if (data[SET_A][s->y_col][i] > ymax[SET_A]) ymax[SET_A] = data[SET_A][s->y_col][i];
 			}
-			plat[SET_A] = (ymin[SET_A] >= 0.0) ? 90.0 : -90.0;
+			plat[SET_A] = ((90.0 - ymax[SET_A]) <= (ymin[SET_A] + 90.0)) ? 90.0 : -90.0;	/* Pick closest pole */
+			iplat = (plat[SET_A] > 0.0) ? 1 : -1;
+		}
+		if (do_project) {	/* Convert coordinates */
 			for (i = 0; i < n_rec[SET_A]; i++)
 				local_geo_to_xy (&data[SET_A][s->x_col][i], &data[SET_A][s->y_col][i], plat[SET_A]);
 		}
@@ -693,19 +709,25 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 				if ((dist[SET_B] = gmt_dist_array_2 (GMT, data[SET_B][s->x_col], data[SET_B][s->y_col], n_rec[SET_B], dist_scale, s->dist_flag)) == NULL) gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 				
-				if (do_project) {	/* Convert all the coordinates */
+				if (do_examine) {	/* Check the coordinates and find suitable pole */
 					ymin[SET_B] = ymax[SET_B] = data[SET_B][s->y_col][i];
 					for (i = 1; i < n_rec[SET_B]; i++) {
 						if (data[SET_B][s->y_col][i] < ymin[SET_B]) ymin[SET_B] = data[SET_B][s->y_col][i];
 						if (data[SET_B][s->y_col][i] > ymax[SET_B]) ymax[SET_B] = data[SET_B][s->y_col][i];
 					}
-					plat[SET_B] = (ymin[SET_B] >= 0.0) ? 90.0 : -90.0;
-					if ((plat[SET_A] * plat[SET_B]) < 0.0) {
-						GMT_Report (API, GMT_MSG_NORMAL, "The two files occupy opposite hemispheres - trouble likely\n");
+					plat[SET_B] = ((90.0 - ymax[SET_B]) <= (ymin[SET_B] + 90.0)) ? 90.0 : -90.0;	/* Pick closest pole for dataset B */
+					if ((plat[SET_A] * plat[SET_B]) < 0.0) {	/* Auto-determined to be on separate hemispheres; check if this could be problematic */
+						/* Arbitrary consider data more than 45 from the Equator to possibly be at high latitude */
+						fprintf (stderr, "A (%d): %g/%g  B (%d): %g/%g\n", (int)A, ymin[SET_A], ymax[SET_A], (int)B, ymin[SET_B], ymax[SET_B]);
+						if (MAX (fabs (ymin[SET_A]), fabs (ymax[SET_A])) < 45.0 && MAX (fabs (ymin[SET_B]), fabs (ymax[SET_B])) < 45.0)
+							GMT_Report (API, GMT_MSG_VERBOSE, "The two files occupy opposite hemispheres at low latitudes - we select use pole at %g (see -D for discussion)\n", plat[SET_A]);
+						else
+							GMT_Report (API, GMT_MSG_VERBOSE, "The two files occupy opposite hemispheres at high latitudes - we select use pole at %g (see -D for discussion)\n", plat[SET_A]);
 					}
-					iplat = (plat[SET_B] > 0.0) ? 1 : -1;
+				}
+				if (do_project) {	/* Convert coordinates the same way as A */
 					for (i = 0; i < n_rec[SET_B]; i++)
-						local_geo_to_xy (&data[SET_B][s->x_col][i], &data[SET_B][s->y_col][i], plat[SET_B]);
+						local_geo_to_xy (&data[SET_B][s->x_col][i], &data[SET_B][s->y_col][i], plat[SET_A]);
 				}
 
 				time[SET_B] = (has_time[SET_B]) ? data[SET_B][s->t_col] : x2sys_dummytimes (GMT, n_rec[SET_B]);
