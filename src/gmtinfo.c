@@ -390,6 +390,8 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 5)) != 0) Return (error);
+		for (col = 0; col < 5; col++) GMT->current.io.col_type[GMT_OUT][col] = GMT_IS_FLOAT;
+
 		switch (Ctrl->F.mode) {
 			case GMT_INFO_TOTAL:	/* Report total number of tables */
 				out[0] = (double)D->n_tables;
