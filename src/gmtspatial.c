@@ -1491,9 +1491,9 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		else
 			C = D;	/* Compare with itself */
-		
+
 		geometry = (Ctrl->S.active) ? GMT_IS_PLP : GMT_IS_NONE;
-		n_columns = (Ctrl->S.active) ? C->n_columns : 4;
+		n_columns = (Ctrl->S.active) ? (unsigned int)C->n_columns : 4;
 		wtype = (Ctrl->S.active) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX;
 		if ((error = GMT_Set_Columns (API, GMT_OUT, n_columns, wtype)) != GMT_NOERROR) {
 			Return (error);

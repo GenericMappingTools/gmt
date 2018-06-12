@@ -579,7 +579,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 				}
 				if (Ctrl->W.mode == 2) {	/* Convert sigmas to weights */
 					gmt_M_grd_loop (GMT, W, row, col, ij) {
-						W->data[ij] = 1.0 / (W->data[ij] * W->data[ij]);
+						W->data[ij] = (gmt_grdfloat)(1.0 / (W->data[ij] * W->data[ij]));
 					}
 				}
 				set_ones = false;
