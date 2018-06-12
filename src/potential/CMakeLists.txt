@@ -22,7 +22,7 @@
 # source files
 set (SUPPL_LIB_SRCS okbfuns.h okbfuns.c talwani.h)
 set (SUPPL_PROGS_SRCS grdredpol.c gmtgravmag3d.c gmtflexure.c gravfft.c gpsgridder.c
-	grdflexure.c grdgravmag3d.c grdseamount.c talwani2d.c talwani3d.c)
+	grdflexure.c grdgravmag3d.c grdseamount.c talwani2d.c talwani3d.c earthtide.c)
 
 # lib sources
 set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
