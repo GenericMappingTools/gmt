@@ -26,17 +26,21 @@
 #define ECC2 0.00669438002290341574957
 
 struct EARTHTIDE_CTRL {
-	struct EARTHTIDE_T {	/* -T[] */
+	struct EARTHTIDE_C {	/* -Cx/y */
 		bool active;
-		int duration;
-		double time, start, stop;
-	} T;
-	struct EARTHTIDE_G {	/* -G<maskfile> */
+		double x, y;
+	} C;
+	struct EARTHTIDE_G {	/* -G<file> */
 		bool active;
 		bool do_north, do_east, do_up;
 		int  n;
 		char *file;
 	} G;
+	struct EARTHTIDE_T {	/* -T[] */
+		bool active;
+		int duration;
+		double time, start, stop;
+	} T;
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -75,7 +79,7 @@ GMT_LOCAL double getutcmtai(double tsec, bool *leapflag) {
 	int mjd0t;
 	double ttsec, tai_utc;
 
-	/* ** get utc - tai (s) */
+	/*  get utc - tai (s) */
 	/*  "Julian Date Converter" */
 	/*  http://aa.usno.navy.mil/data/docs/JulianDate.php */
 	/*  parameter(MJDUPPER=58299)    !*** upper limit, leap second table, 2018jun30 */
@@ -101,46 +105,47 @@ L2:
 	/*  test upper table limit         (upper limit set by bulletin C memos) */
 	if (mjd0t > 58664) {
 		*leapflag = true;		/* true means flag *IS* raised */
-		return -37.;			/* return the upper table valu */
+		return -37;				/* return the upper table valu */
 	}
 	/*  test lower table limit */
 	if (mjd0t < 41317) {
 		*leapflag = true;		/* true means flag *IS* raised */
 		return -10;				/* return the lower table valu */
 	}
-	/* **** http://maia.usno.navy.mil/ser7/tai-utc.dat */
-	/* ** 1972 JAN  1 =JD 2441317.5  TAI-UTC=  10.0s */
-	/* ** 1972 JUL  1 =JD 2441499.5  TAI-UTC=  11.0s */
-	/* ** 1973 JAN  1 =JD 2441683.5  TAI-UTC=  12.0s */
-	/* ** 1974 JAN  1 =JD 2442048.5  TAI-UTC=  13.0s */
-	/* ** 1975 JAN  1 =JD 2442413.5  TAI-UTC=  14.0s */
-	/* ** 1976 JAN  1 =JD 2442778.5  TAI-UTC=  15.0s */
-	/* ** 1977 JAN  1 =JD 2443144.5  TAI-UTC=  16.0s */
-	/* ** 1978 JAN  1 =JD 2443509.5  TAI-UTC=  17.0s */
-	/* ** 1979 JAN  1 =JD 2443874.5  TAI-UTC=  18.0s */
-	/* ** 1980 JAN  1 =JD 2444239.5  TAI-UTC=  19.0s */
-	/* ** 1981 JUL  1 =JD 2444786.5  TAI-UTC=  20.0s */
-	/* ** 1982 JUL  1 =JD 2445151.5  TAI-UTC=  21.0s */
-	/* ** 1983 JUL  1 =JD 2445516.5  TAI-UTC=  22.0s */
-	/* ** 1985 JUL  1 =JD 2446247.5  TAI-UTC=  23.0s */
-	/* ** 1988 JAN  1 =JD 2447161.5  TAI-UTC=  24.0s */
-	/* ** 1990 JAN  1 =JD 2447892.5  TAI-UTC=  25.0s */
-	/* ** 1991 JAN  1 =JD 2448257.5  TAI-UTC=  26.0s */
-	/* ** 1992 JUL  1 =JD 2448804.5  TAI-UTC=  27.0s */
-	/* ** 1993 JUL  1 =JD 2449169.5  TAI-UTC=  28.0s */
-	/* ** 1994 JUL  1 =JD 2449534.5  TAI-UTC=  29.0s */
-	/* ** 1996 JAN  1 =JD 2450083.5  TAI-UTC=  30.0s */
-	/* ** 1997 JUL  1 =JD 2450630.5  TAI-UTC=  31.0s */
-	/* ** 1999 JAN  1 =JD 2451179.5  TAI-UTC=  32.0s */
-	/* ** 2006 JAN  1 =JD 2453736.5  TAI-UTC=  33.0s */
-	/* ** 2009 JAN  1 =JD 2454832.5  TAI-UTC=  34.0s */
-	/* ** 2012 JUL  1 =JD 2456109.5  TAI-UTC=  35.0s */
-	/* ** 2015 JUL  1 =JD 2457204.5  TAI-UTC=  36.0s */
-	/* ** 2017 JAN  1 =JD 2457754.5  TAI-UTC=  37.0s */
-	/* **** other leap second references at: */
-	/* **** http://hpiers.obspm.fr/eoppc/bul/bulc/Leap_Second_History.dat */
-	/* **** http://hpiers.obspm.fr/eoppc/bul/bulc/bulletinc.dat */
-	/* ** test against newest leaps first */
+
+	/*  http://maia.usno.navy.mil/ser7/tai-utc.dat */
+	/* 1972 JAN  1 =JD 2441317.5  TAI-UTC=  10.0s */
+	/* 1972 JUL  1 =JD 2441499.5  TAI-UTC=  11.0s */
+	/* 1973 JAN  1 =JD 2441683.5  TAI-UTC=  12.0s */
+	/* 1974 JAN  1 =JD 2442048.5  TAI-UTC=  13.0s */
+	/* 1975 JAN  1 =JD 2442413.5  TAI-UTC=  14.0s */
+	/* 1976 JAN  1 =JD 2442778.5  TAI-UTC=  15.0s */
+	/* 1977 JAN  1 =JD 2443144.5  TAI-UTC=  16.0s */
+	/* 1978 JAN  1 =JD 2443509.5  TAI-UTC=  17.0s */
+	/* 1979 JAN  1 =JD 2443874.5  TAI-UTC=  18.0s */
+	/* 1980 JAN  1 =JD 2444239.5  TAI-UTC=  19.0s */
+	/* 1981 JUL  1 =JD 2444786.5  TAI-UTC=  20.0s */
+	/* 1982 JUL  1 =JD 2445151.5  TAI-UTC=  21.0s */
+	/* 1983 JUL  1 =JD 2445516.5  TAI-UTC=  22.0s */
+	/* 1985 JUL  1 =JD 2446247.5  TAI-UTC=  23.0s */
+	/* 1988 JAN  1 =JD 2447161.5  TAI-UTC=  24.0s */
+	/* 1990 JAN  1 =JD 2447892.5  TAI-UTC=  25.0s */
+	/* 1991 JAN  1 =JD 2448257.5  TAI-UTC=  26.0s */
+	/* 1992 JUL  1 =JD 2448804.5  TAI-UTC=  27.0s */
+	/* 1993 JUL  1 =JD 2449169.5  TAI-UTC=  28.0s */
+	/* 1994 JUL  1 =JD 2449534.5  TAI-UTC=  29.0s */
+	/* 1996 JAN  1 =JD 2450083.5  TAI-UTC=  30.0s */
+	/* 1997 JUL  1 =JD 2450630.5  TAI-UTC=  31.0s */
+	/* 1999 JAN  1 =JD 2451179.5  TAI-UTC=  32.0s */
+	/* 2006 JAN  1 =JD 2453736.5  TAI-UTC=  33.0s */
+	/* 2009 JAN  1 =JD 2454832.5  TAI-UTC=  34.0s */
+	/* 2012 JUL  1 =JD 2456109.5  TAI-UTC=  35.0s */
+	/* 2015 JUL  1 =JD 2457204.5  TAI-UTC=  36.0s */
+	/* 2017 JAN  1 =JD 2457754.5  TAI-UTC=  37.0s */
+	/*  other leap second references at: */
+	/*  http://hpiers.obspm.fr/eoppc/bul/bulc/Leap_Second_History.dat */
+	/*  http://hpiers.obspm.fr/eoppc/bul/bulc/bulletinc.dat */
+	/* test against newest leaps first */
 	if (mjd0t >= 57754)			/* 2017 JAN 1 = 57754 */
 		tai_utc = 37.;
 	else if (mjd0t >= 57204)    /* 2015 JUL 1 = 57204 */
@@ -223,6 +228,14 @@ GMT_LOCAL double gps2tai(double tgps) {
 	/*  http://tycho.usno.navy.mil/leapsec.html */
 	return tgps + 19;
 }
+/* ----------------------------------------------------------------------- */
+GMT_LOCAL double gps2ttt(double tgps) {
+	double ttai;
+
+	/* convert gps time (sec) to terrestrial time (sec) */
+	ttai = gps2tai(tgps);
+	return tai2tt(ttai);
+}
 #endif
 /* ----------------------------------------------------------------------- */
 GMT_LOCAL double utc2tai(double tutc, bool *leapflag) {
@@ -238,17 +251,6 @@ GMT_LOCAL double utc2ttt(double tutc, bool *leapflag) {
 	ttai = utc2tai(tutc, leapflag);
 	return tai2tt(ttai);
 }
-
-#if 0
-/* ----------------------------------------------------------------------- */
-GMT_LOCAL double gps2ttt(double tgps) {
-	double ttai;
-
-	/* convert gps time (sec) to terrestrial time (sec) */
-	ttai = gps2tai(tgps);
-	return tai2tt(ttai);
-}
-#endif
 
 /* ----------------------------------------------------------------------- */
 GMT_LOCAL void sprod(double *x, double *y, double *scal, double *r1, double *r2) {
@@ -993,23 +995,23 @@ GMT_LOCAL void mjdciv(int mjd, double fmjd, int *iyr, int *imo, int *idy, int *i
 	static double rjd, tmp;
 
 	rjd = mjd + fmjd + 2400000.5;
-	ia = (int) (rjd + .5);
+	ia = (int)(rjd + .5);
 	ib = ia + 1537;
-	ic = (int) ((ib - 122.1) / 365.25);
-	id = (int) (ic * 365.25);
-	ie = (int) ((ib - id) / 30.6001);
-	/* the fractional part of a julian day is fractional mjd + 0.5 */
-	/* therefore, fractional part of julian day + 0.5 is fractional mjd */
-	it1 = (int) (ie * 30.6001);
-	*idy = (int) (ib - id - it1 +fmjd);
-	it2 = (int) (ie / 14.);
+	ic = (int)((ib - 122.1) / 365.25);
+	id = (int)(ic * 365.25);
+	ie = (int)((ib - id) / 30.6001);
+	/* the fractional part of a julian day is fractional mjd + 0.5
+	   therefore, fractional part of julian day + 0.5 is fractional mjd */
+	it1  = (int)(ie * 30.6001);
+	*idy = (int)(ib - id - it1 +fmjd);
+	it2  = (int)(ie / 14.);
 	*imo = ie - 1 - it2 * 12;
-	it3 = (int) ((*imo + 7) / 10.);
+	it3  = (int)((*imo + 7) / 10.);
 	*iyr = ic - 4715 - it3;
-	tmp = fmjd * 24.;
-	*ihr = (int) tmp;
-	tmp = (tmp - *ihr) * 60.;
-	*imn = (int) tmp;
+	tmp  = fmjd * 24.;
+	*ihr = (int)tmp;
+	tmp  = (tmp - *ihr) * 60.;
+	*imn = (int)tmp;
 	*sec = (tmp - *imn) * 60.;
 }
 
@@ -1021,7 +1023,7 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 	size_t ij_n = 0, ij_e = 0, ij_u = 0, n_inc = 0, e_inc = 0, u_inc = 0;
 	float *grd_n, *grd_e, *grd_u;
 	double fmjd, xsta[3], rsun[3], etide[3], rmoon[3];
-	double lon, lat, ut, vt, wt;
+	double lon, lat, ut, vt, wt, *lons;
 
 	/* Select which indices to increment based on user selection */
 	/* Use the trick of not incrementing the indices of unwanted arrays to avoid IF branches inside the loops */
@@ -1046,23 +1048,30 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 	else
 		grd_u = (float *)malloc(1 * sizeof(float));
 
-	//if (GRD->x_min < 0)    GRD->x_min += 360;
-	//if (GRD->x_min >= 360) GRD->x_min += -360;
-
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
 	hour = (int)Cal->hour;	min = (int)Cal->min;
 	leapflag = false;                       /* false means flag not raised */
-	for (row = 0; row < Grid->header->n_rows; row++) {
-		lat = (Grid->header->wesn[YLO] + row * Grid->header->inc[GMT_Y]) * D2R;
-		for (col = 0; col < Grid->header->n_columns; col++) {
-			lon = (Grid->header->wesn[XLO] + col * Grid->header->inc[GMT_X]) * D2R;
-			geoxyz(lat, lon, 0, &xsta[0], &xsta[1], &xsta[2]);
-			civmjd(year, month, day, hour, min, Cal->sec, &mjd, &fmjd);
-			mjdciv(mjd, fmjd, &year, &month, &day, &hour, &min, &Cal->sec);	/* normalize civil time */
-			setjd0(year, month, day);
+	civmjd(year, month, day, hour, min, Cal->sec, &mjd, &fmjd);
+	mjdciv(mjd, fmjd, &year, &month, &day, &hour, &min, &Cal->sec);	/* normalize civil time */
+	setjd0(year, month, day);
+	sunxyz(mjd, fmjd, rsun, &leapflag);
+	moonxyz(mjd, fmjd, rmoon, &leapflag);
 
-			sunxyz(mjd, fmjd, rsun, &leapflag);
-			moonxyz(mjd, fmjd, rmoon, &leapflag);
+	/* Generate a vector of longitudes in radians and put them in the [0 360] interval */
+	lons = (double *)malloc(Grid->header->n_columns * sizeof(double));
+	for (col = 0; col < Grid->header->n_columns; col++) {
+		lons[col] = Grid->header->wesn[XLO] + col * Grid->header->inc[GMT_X];
+		if (lons[col] < 0) lons[col] += 360;
+		lons[col] *= D2R;
+	}
+
+	//for (row = 0; row < Grid->header->n_rows; row++) {
+	for (row = Grid->header->n_rows; row > 0; row--) {
+		lat = (Grid->header->wesn[YLO] + (row - 1) * Grid->header->inc[GMT_Y]) * D2R;
+		for (col = 0; col < Grid->header->n_columns; col++) {
+			//lon = (west + col * Grid->header->inc[GMT_X]) * D2R;
+			lon = lons[col];
+			geoxyz(lat, lon, 0, &xsta[0], &xsta[1], &xsta[2]);
 			detide(xsta, mjd, fmjd, rsun, rmoon, etide, &leapflag);
 			/* determine local geodetic horizon components (topocentric) */
 			rge(lat, lon, &ut, &vt, &wt, etide[0], etide[1], etide[2]);		/* tide vect */
@@ -1081,6 +1090,7 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 	if (!Ctrl->G.do_north) free(grd_n);
 	if (!Ctrl->G.do_east) free(grd_e);
 	if (!Ctrl->G.do_up) free(grd_u);
+	free(lons);
 }
 
 /* ------------------------------------------------------------------------------------------------------- */
@@ -1141,7 +1151,7 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s  -G<outgrid> %s\n", name, GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s -Clon/lat -G<outgrid> %s\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s -T<date1>/<date2>|n_minutes\n", GMT_Rgeo_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -1167,6 +1177,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0;
 	char *t, *t2 = NULL, *ptr = NULL;
+	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -1178,13 +1189,30 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 
 			/* Processes program-specific parameters */
 
+			case 'C':	/* Location for time-series */
+				Ctrl->C.active = true;
+				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Expected -C<lon>/<lat>\n");
+					n_errors++;
+				}
+				else {
+					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X),
+					                                     gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X),
+					                                     false, &Ctrl->C.x), txt_a);
+					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y),
+					                                     gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y),
+					                                     false, &Ctrl->C.y), txt_b);
+					if (n_errors) GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+					                          "Syntax error -C option: Undecipherable argument %s\n", opt->arg);
+				}
+				break;
 			case 'T':	/* Select time range for time-series tide estimates */
+				Ctrl->T.active = true;
 				if (!opt->arg) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -T: must provide a valide date\n", opt->arg);
 					n_errors++;
 					break;
 				}
-				Ctrl->T.active = true;
 				t = opt->arg;
 				if ((ptr = strchr(t, '/')) != NULL) {	/* Break string at '/' */
 					ptr[0] = '\0';
@@ -1226,11 +1254,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 	if (Ctrl->T.active && !Ctrl->T.duration && !Ctrl->T.stop)		/* Set a default duration of 10 days in minutes */
 		Ctrl->T.duration = 24 * 60 * 10;
 
-	//n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
+	if (Ctrl->G.active && !GMT->common.R.active[RSET]) {	/* implicitly set -Rd */
+		GMT->common.R.active[RSET] = true;
+		GMT->common.R.wesn[XLO] = -180.0;	GMT->common.R.wesn[XHI] = 180.0;
+		GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = +90.0;
+		gmt_set_geographic (GMT, GMT_IN);
+	}
+
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && (GMT->common.R.inc[GMT_X] <= 0 || GMT->common.R.inc[GMT_Y] <= 0),
-	                                        "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && !Ctrl->G.file, "Syntax error: Must specify -G or -T options\n");
-	
+	                                   "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && !Ctrl->G.active, "Syntax error: Must specify -G or -T options\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->C.active && !Ctrl->G.active,
+	                                   "Syntax error: -T option requires -C too.\n");
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -1288,8 +1324,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-
-	if (Ctrl->T.active) {
+	else {
 		/* Specify output expected columns */
 		if ((error = GMT_Set_Columns (API, GMT_OUT, 4, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
 			Return (error);
@@ -1304,7 +1339,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) 	/* Sets output geometry */
 			Return (API->error);
 	
-		solid_ts(GMT, &cal_start, -7, 37, Ctrl->T.duration);
+		solid_ts(GMT, &cal_start, Ctrl->C.x, Ctrl->C.y, Ctrl->T.duration);
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data output */
 			Return (API->error);
