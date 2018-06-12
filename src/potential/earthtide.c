@@ -36,6 +36,7 @@ struct EARTHTIDE_CTRL {
 	struct EARTHTIDE_G {	/* -G<maskfile> */
 		bool active;
 		bool do_north, do_east, do_up;
+		int  n;
 		char *file;
 	} G;
 };
@@ -1134,8 +1135,8 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[m|p|x|y]] [-N[z|Z|p|P][<values>]]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s  -G<outgrid> %s\n", name, GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s -T<date1>/<date2>|n_minutes\n", GMT_Rgeo_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -1152,7 +1153,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_OPTION *options) {
-	/* This parses the options provided to grdmask and sets parameters in CTRL.
+	/* This parses the options provided to earthtide and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
@@ -1255,7 +1256,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
-	/*---------------------------- This is the grdmask main code ----------------------------*/
+	/*---------------------------- This is the earthtide main code ----------------------------*/
 
 	if (!Ctrl->T.active) {
 		gmt_gcal_from_rd (GMT, GMT->current.time.today_rata_die, &cal_start);
