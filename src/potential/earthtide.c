@@ -20,9 +20,7 @@
 #define THIS_MODULE_PURPOSE	"Compute grids or time-series of Earth tides"
 #define THIS_MODULE_KEYS	">DI,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVabfginrs" GMT_ADD_x_OPT GMT_OPT("FHMm")
-
-EXTERN_MSC void gmtlib_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);	/* Break internal time into calendar and clock struct info  */
+#define THIS_MODULE_OPTIONS "-:RVabfginrs" GMT_ADD_x_OPT
 
 #define EARTH_RAD 6378137.0		// GRS80
 #define ECC2 0.00669438002290341574957
@@ -218,13 +216,14 @@ GMT_LOCAL double tai2tt(double ttai) {
 }
 
 /* ----------------------------------------------------------------------- */
+#if 0
 GMT_LOCAL double gps2tai(double tgps) {
 	/*  convert gps time (sec) to tai (sec) */
 	/*  http://leapsecond.com/java/gpsclock.htm */
 	/*  http://tycho.usno.navy.mil/leapsec.html */
 	return tgps + 19;
 }
-
+#endif
 /* ----------------------------------------------------------------------- */
 GMT_LOCAL double utc2tai(double tutc, bool *leapflag) {
 	/* convert utc (sec) to tai (sec) */
@@ -240,6 +239,7 @@ GMT_LOCAL double utc2ttt(double tutc, bool *leapflag) {
 	return tai2tt(ttai);
 }
 
+#if 0
 /* ----------------------------------------------------------------------- */
 GMT_LOCAL double gps2ttt(double tgps) {
 	double ttai;
@@ -248,6 +248,7 @@ GMT_LOCAL double gps2ttt(double tgps) {
 	ttai = gps2tai(tgps);
 	return tai2tt(ttai);
 }
+#endif
 
 /* ----------------------------------------------------------------------- */
 GMT_LOCAL void sprod(double *x, double *y, double *scal, double *r1, double *r2) {
@@ -555,39 +556,39 @@ GMT_LOCAL void step2lon(double *xsta, double t, double *xcorsta) {
 
 /* ------------------------------------------------------------------------------- */
 GMT_LOCAL void detide(double *xsta, int mjd, double fmjd, double *xsun, double *xmon, double *dxtide, bool *leapflag) {
-	/* computation of tidal corrections of station displacements caused
-	   by lunar and solar gravitational attraction
-	   UTC version.
-	/* step 1 (here general degree 2 and 3 corrections + */
-	/*         call st1idiu + call st1isem + call st1l1) */
-	/*   + step 2 (call step2diu + call step2lon + call step2idiu) */
-	/* it has been decided that the step 3 un-correction for permanent tide */
-	/* would *not* be applied in order to avoid jump in the reference frame */
-	/* (this step 3 must added in order to get the mean tide station position */
-	/* and to be conformed with the iag resolution.) */
-	/* inputs */
-	/*   xsta(i),i=1,2,3   -- geocentric position of the station (ITRF/ECEF) */
-	/*   xsun(i),i=1,2,3   -- geoc. position of the sun (ECEF) */
-	/*   xmon(i),i=1,2,3   -- geoc. position of the moon (ECEF) */
-	/*   mjd,fmjd          -- modified julian day (and fraction) (in GPS time) */
-	/* ***old calling sequence***************************************************** */
-	/*   dmjd               -- time in mean julian date (including day fraction) */
-	/*   fhr=hr+zmin/60.+sec/3600.   -- hr in the day */
-	/* outputs */
-	/*   dxtide(i),i=1,2,3           -- displacement vector (ITRF)
-	   flag              -- leap second table limit flag, false:flag not raised
-	/* author iers 1996 :  v. dehant, s. mathews and j. gipson */
-	/*    (test between two subroutines) */
-	/* author iers 2000 :  v. dehant, c. bruyninx and s. mathews */
-	/*    (test in the bernese program by c. bruyninx) */
-	/* created:  96/03/23 (see above) */
-	/* modified from dehanttideinelMJD.f by Dennis Milbert 2006sep10 */
-	/* bug fix regarding fhr (changed calling sequence, too) */
-	/* modified to reflect table 7.5a and b IERS Conventions 2003 */
-	/* modified to use TT time system to call step 2 functions */
-	/* sign correction by V.Dehant to match eq.16b, p.81, Conventions */
-	/* applied by Dennis Milbert 2007may05
-	   UTC version by Dennis Milbert 2018june01 */
+	/* Computation of tidal corrections of station displacements caused
+	 * by lunar and solar gravitational attraction.  UTC version.
+	 * step 1 (here general degree 2 and 3 corrections +
+	 *         call st1idiu + call st1isem + call st1l1)
+	 *   + step 2 (call step2diu + call step2lon + call step2idiu)
+	 * It has been decided that the step 3 un-correction for permanent tide
+	 * would *not* be applied in order to avoid jump in the reference frame
+	 * (this step 3 must added in order to get the mean tide station position
+	 * and to be conformed with the iag resolution.)
+	 * inputs:
+	 *   xsta(i),i=1,2,3   -- geocentric position of the station (ITRF/ECEF)
+	 *   xsun(i),i=1,2,3   -- geoc. position of the sun (ECEF)
+	 *   xmon(i),i=1,2,3   -- geoc. position of the moon (ECEF)
+	 *   mjd,fmjd          -- modified julian day (and fraction) (in GPS time)
+	 * ***old calling sequence*****************************************************
+	 *   dmjd               -- time in mean julian date (including day fraction)
+	 *   fhr=hr+zmin/60.+sec/3600.   -- hr in the day
+	 * outputs:
+	 *   dxtide(i),i=1,2,3           -- displacement vector (ITRF)
+	 *   flag              -- leap second table limit flag, false:flag not raised
+	 * Author iers 1996 :  V. Dehant, S. Mathews and J. Gipson
+	 *    (test between two subroutines)
+	 * Author iers 2000 :  V. Dehant, C. Bruyninx and S. Mathews
+	 *    (test in the bernese program by C. Bruyninx)
+	 * Created:  96/03/23 (see above)
+	 * Modified from dehanttideinelMJD.f by Dennis Milbert 2006sep10
+	 * Bug fix regarding fhr (changed calling sequence, too)
+	 * Modified to reflect table 7.5a and b IERS Conventions 2003
+	 * Modified to use TT time system to call step 2 functions
+	 * Sign correction by V.Dehant to match eq.16b, p.81, Conventions
+	 * applied by Dennis Milbert 2007may05
+	 * UTC version by Dennis Milbert 2018june01
+	 */
 
 	int i;
 	double h20 = .6078;
@@ -691,43 +692,46 @@ GMT_LOCAL void detide(double *xsta, int mjd, double fmjd, double *xsun, double *
 	dxtide[1] += xcorsta[1];
 	dxtide[2] += xcorsta[2];
 	/* ** consider corrections for step 3 */
-	/* ----------------------------------------------------------------------- */
-	/* The code below is commented to prevent restoring deformation */
-	/* due to permanent tide.  All the code above removes */
-	/* total tidal deformation with conventional Love numbers. */
-	/* The code above realizes a conventional tide free crust (i.e. ITRF). */
-	/* This does NOT conform to Resolution 16 of the 18th General Assembly */
-	/* of the IAG (1983).  This resolution has not been implemented by */
-	/* the space geodesy community in general (c.f. IERS Conventions 2003). */
-	/* ----------------------------------------------------------------------- */
-	/* ** uncorrect for the permanent tide  (only if you want mean tide system) */
-	/* **   pi=3.141592654 */
-	/* **   sinphi=xsta(3)/rsta */
-	/* **   cosphi=dsqrt(xsta(1)**2+xsta(2)**2)/rsta */
-	/* **   cosla=xsta(1)/cosphi/rsta */
-	/* **   sinla=xsta(2)/cosphi/rsta */
-	/* **   dr=-dsqrt(5./4./pi)*h2*0.31460*(3./2.*sinphi**2-0.5) */
-	/* **   dn=-dsqrt(5./4./pi)*l2*0.31460*3.*cosphi*sinphi */
-	/* **   dxtide(1)=dxtide(1)-dr*cosla*cosphi+dn*cosla*sinphi */
-	/* **   dxtide(2)=dxtide(2)-dr*sinla*cosphi+dn*sinla*sinphi */
-	/* **   dxtide(3)=dxtide(3)-dr*sinphi      -dn*cosphi */
+	/* -----------------------------------------------------------------------
+	 * The code below is commented to prevent restoring deformation
+	 * due to permanent tide.  All the code above removes
+	 * total tidal deformation with conventional Love numbers.
+	 * The code above realizes a conventional tide free crust (i.e. ITRF).
+	 * This does NOT conform to Resolution 16 of the 18th General Assembly
+	 * of the IAG (1983).  This resolution has not been implemented by
+	 * the space geodesy community in general (c.f. IERS Conventions 2003).
+	 * -----------------------------------------------------------------------
+	 * ** uncorrect for the permanent tide  (only if you want mean tide system)
+	 * **   pi=3.141592654
+	 * **   sinphi=xsta(3)/rsta
+	 * **   cosphi=dsqrt(xsta(1)**2+xsta(2)**2)/rsta
+	 * **   cosla=xsta(1)/cosphi/rsta
+	 * **   sinla=xsta(2)/cosphi/rsta
+	 * **   dr=-dsqrt(5./4./pi)*h2*0.31460*(3./2.*sinphi**2-0.5)
+	 * **   dn=-dsqrt(5./4./pi)*l2*0.31460*3.*cosphi*sinphi
+	 * **   dxtide(1)=dxtide(1)-dr*cosla*cosphi+dn*cosla*sinphi
+	 * **   dxtide(2)=dxtide(2)-dr*sinla*cosphi+dn*sinla*sinphi
+	 * **   dxtide(3)=dxtide(3)-dr*sinphi      -dn*cosphi
+	 */
 }
 
 /* ******************************************************************************* */
 GMT_LOCAL void getghar(int mjd, double fmjd, double *ghar) {
 	/* convert mjd/fmjd in UTC time to Greenwich hour angle (in radians)
-	/* "satellite orbits: models, methods, applications" montenbruck & gill(2000)
-	/* section 2.3.1, pg. 33
-	/* need UTC to get sidereal time  ("astronomy on the personal computer", 4th ed)
-	/*                               (pg.43, montenbruck & pfleger, springer, 2005) */
+	 * "satellite orbits: models, methods, applications" montenbruck & gill(2000)
+	 * section 2.3.1, pg. 33
+	 * need UTC to get sidereal time  ("astronomy on the personal computer", 4th ed)
+	 *                               (pg.43, montenbruck & pfleger, springer, 2005)
+	 */
 	int i;
 	double ghad, fmjdutc, tsecutc;
 
 	tsecutc = fmjd * 86400.;			/* UTC time (sec of day) */
 	fmjdutc = tsecutc / 86400.;			/* UTC time (fract. day) */
-	/* **** d = MJD - 51544.5d0                               !*** footnote */
-	/* ** greenwich hour angle for J2000  (12:00:00 on 1 Jan 2000) */
-	/* **** ghad = 100.46061837504d0 + 360.9856473662862d0*d  !*** eq. 2.85 (+digits) */
+	/* **** d = MJD - 51544.5d0                               !*** footnote
+	 * ** greenwich hour angle for J2000  (12:00:00 on 1 Jan 2000)
+	 * **** ghad = 100.46061837504d0 + 360.9856473662862d0*d  !*** eq. 2.85 (+digits)
+	 */
 	ghad = (mjd - 51544 + (fmjdutc - 0.5)) * 360.9856473662862 + 280.46061837504;	/* days since J2000 */
 
 	/* normalize to 0-360 and convert to radians */
@@ -789,14 +793,15 @@ GMT_LOCAL void rot3(double theta, double x, double y, double z, double *u, doubl
 /* ------------------------------------------------------------------------------- */
 GMT_LOCAL void moonxyz(int mjd, double fmjd, double *rm, bool *leapflag) {
 	/* get low-precision, geocentric coordinates for moon (ECEF)
-	   UTC Version
-	/* input:  mjd/fmjd, is Modified Julian Date (and fractional) in UTC time
-	/* output: rm, is geocentric lunar position vector [m] in ECEF
-			   lflag  -- leap second table limit flag,  false:flag not raised
-	/* 1."satellite orbits: models, methods, applications" montenbruck & gill(2000) */
-	/* section 3.3.2, pg. 72-73 */
-	/* 2."astronomy on the personal computer, 4th ed." montenbruck & pfleger (2005) */
-	/* section 3.2, pg. 38-39  routine MiniMoon */
+	 * UTC Version
+	 * input:  mjd/fmjd, is Modified Julian Date (and fractional) in UTC time
+	 * output: rm, is geocentric lunar position vector [m] in ECEF
+	 *		   lflag  -- leap second table limit flag,  false:flag not raised
+	 * 1."satellite orbits: models, methods, applications" montenbruck & gill(2000)
+	 * section 3.3.2, pg. 72-73
+	 * 2."astronomy on the personal computer, 4th ed." montenbruck & pfleger (2005)
+	 * section 3.2, pg. 38-39  routine MiniMoon
+	 */
 	double d2, d__, f, q, t, t1, t2, t3, el, el0;
 	double rm1, rm2, rm3, elp, rse, ghar, oblir, tjdtt;
 	double cselat, selatd,  selond, fmjdtt, tsectt, tsecutc;
@@ -867,13 +872,14 @@ GMT_LOCAL void moonxyz(int mjd, double fmjd, double *rm, bool *leapflag) {
 /* ******************************************************************************* */
 GMT_LOCAL void sunxyz(int mjd, double fmjd, double *rs, bool *leapflag) {
 	/* get low-precision, geocentric coordinates for sun (ECEF)
-	/* input, mjd/fmjd, is Modified Julian Date (and fractional) in UTC time
-	/* output, rs, is geocentric solar position vector [m] in ECEF
-			  lflag  -- leap second table limit flag,  false:flag not raised 
-	/* 1."satellite orbits: models, methods, applications" montenbruck & gill(2000) */
-	/* section 3.3.2, pg. 70-71 */
-	/* 2."astronomy on the personal computer, 4th ed." montenbruck & pfleger (2005) */
-	/* section 3.2, pg. 39  routine MiniSun */
+	 * input, mjd/fmjd, is Modified Julian Date (and fractional) in UTC time
+	 * output, rs, is geocentric solar position vector [m] in ECEF
+	 *      	  lflag  -- leap second table limit flag,  false:flag not raised 
+	 * 1."satellite orbits: models, methods, applications" montenbruck & gill(2000)
+	 * section 3.3.2, pg. 70-71
+	 * 2."astronomy on the personal computer, 4th ed." montenbruck & pfleger (2005)
+	 * section 3.2, pg. 39  routine MiniSun
+	 */
 	double r__, t, em, em2, rs1, rs2, rs3, obe;
 	double ghar, opod, slon, emdeg, slond, tjdtt, sslon;
 	double fmjdtt, tsectt, tsecutc;
@@ -1172,7 +1178,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 
 			/* Processes program-specific parameters */
 
-			case 'T':	/* Turn off draw_arc mode */
+			case 'T':	/* Select time range for time-series tide estimates */
 				if (!opt->arg) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -T: must provide a valide date\n", opt->arg);
 					n_errors++;
@@ -1258,14 +1264,14 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the earthtide main code ----------------------------*/
 
-	if (!Ctrl->T.active) {
+	if (!Ctrl->T.active) {	/* Select the current day as the time to evaluate */
 		gmt_gcal_from_rd (GMT, GMT->current.time.today_rata_die, &cal_start);
 		cal_start.hour = 0;
 		cal_start.min = 0;
 		cal_start.sec = 0;
 	}
 	else
-		gmtlib_gcal_from_dt (GMT, Ctrl->T.start, &cal_start);
+		gmt_gcal_from_dt (GMT, Ctrl->T.start, &cal_start);
 
 
 	if (Ctrl->G.active) {
@@ -1288,7 +1294,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		if ((error = GMT_Set_Columns (API, GMT_OUT, 4, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
 			Return (error);
 
-		/* Register likely data sources unless the caller has already done so */
+		/* Specify that output are points in a dataset */
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) 	/* Registers default output destination, unless already set */
 			Return (API->error);
 

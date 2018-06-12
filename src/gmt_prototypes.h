@@ -413,6 +413,7 @@ EXTERN_MSC void gmt_dt2rdc (struct GMT_CTRL *GMT, double t, int64_t *rd, double 
 EXTERN_MSC int64_t gmt_rd_from_gymd (struct GMT_CTRL *GMT, int gy, int gm, int gd);
 EXTERN_MSC void gmt_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *W, bool upper, unsigned int kind, double dt);
 EXTERN_MSC void gmt_gcal_from_rd (struct GMT_CTRL *GMT, int64_t rd, struct GMT_GCAL *gcal);
+EXTERN_MSC void gmt_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_GCAL *cal);
 
 /* gmt_map.c: */
 

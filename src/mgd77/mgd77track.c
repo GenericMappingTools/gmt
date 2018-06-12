@@ -554,8 +554,6 @@ GMT_LOCAL int bad_coordinates (double lon, double lat) {
 	return (gmt_M_is_dnan (lon) || gmt_M_is_dnan (lat));
 }
 
-/* Break internal time into calendar and clock struct info  */
-EXTERN_MSC void gmtlib_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
@@ -798,7 +796,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 				else
 					angle -= 90.0;
 				if (annot_tick[ANNOT] & 1) {	/* Time mark: Must subtack the annot_int_time since we already incremented it above */
-					gmtlib_gcal_from_dt (GMT, annot_time[ANNOT]-info[ANNOT]->annot_int_time, &calendar);	/* Convert t to a complete calendar structure */
+					gmt_gcal_from_dt (GMT, annot_time[ANNOT]-info[ANNOT]->annot_int_time, &calendar);	/* Convert t to a complete calendar structure */
 					gmt_format_calendar (GMT, the_date, the_clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock,
 					                     false, 1, annot_time[ANNOT]-info[ANNOT]->annot_int_time);
 					this_julian = calendar.day_y;

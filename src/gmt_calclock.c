@@ -35,7 +35,7 @@
  * gmt_dt2rdc           : 
  * gmt_format_calendar  : 
  * gmtlib_g_ymd_is_bad     : 
- * gmtlib_gcal_from_dt     : 
+ * gmt_gcal_from_dt     : 
  * gmt_gcal_from_rd     : 
  * gmtlib_get_time_label   : 
  * gmtlib_gmonth_length    : 
@@ -418,7 +418,7 @@ bool gmtlib_iso_ywd_is_bad (int y, int w, int d) {
 	return (false);
 }
 
-void gmtlib_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_GCAL *cal) {
+void gmt_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_GCAL *cal) {
 
 	/* Given time in internal units, load cal and clock info in cal.
 	   Note: uses 0 through 23 for hours (no am/pm inside here).
@@ -870,7 +870,7 @@ void gmt_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 
 	step = 0.5 / W->f_sec_to_int / GMT->current.setting.time_system.scale;	/* Precision desired in time units */
 
-	gmtlib_gcal_from_dt (GMT, dt + step, &calendar);			/* Convert dt to a complete calendar structure */
+	gmt_gcal_from_dt (GMT, dt + step, &calendar);			/* Convert dt to a complete calendar structure */
 
 	if (date) date[0] = 0;
 	if (date && !D->skip) {	/* Not NULL, want to format this string */
@@ -944,7 +944,7 @@ void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_
 	/* Assemble the annotation label given the formatting options presented */
 	struct GMT_GCAL calendar;
 
-	gmtlib_gcal_from_dt (GMT, t, &calendar);			/* Convert t to a complete calendar structure */
+	gmt_gcal_from_dt (GMT, t, &calendar);			/* Convert t to a complete calendar structure */
 
 	switch (T->unit) {
 		case 'Y':	/* 4-digit integer year */

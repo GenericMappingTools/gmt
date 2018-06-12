@@ -32,8 +32,6 @@
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbpto" GMT_OPT("c")
 
-EXTERN_MSC void gmtlib_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);	/* Break internal time into calendar and clock struct info  */
-
 struct SUN_PARAMS {
 	double EQ_time;
 	double SolarNoon;
@@ -200,7 +198,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 						Ctrl->I.TZ = TZ;
 						if (date) {
 							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, false, &t);
-							gmtlib_gcal_from_dt (GMT, t, &Ctrl->I.calendar);	/* Convert t to a complete calendar structure */
+							gmt_gcal_from_dt (GMT, t, &Ctrl->I.calendar);	/* Convert t to a complete calendar structure */
 							gmt_M_str_free (date);
 						}
 					}
@@ -220,7 +218,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 					Ctrl->T.TZ = TZ;
 					if (date) {
 						gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, false, &t);
-						gmtlib_gcal_from_dt (GMT, t, &Ctrl->T.calendar);	/* Convert t to a complete calendar structure */
+						gmt_gcal_from_dt (GMT, t, &Ctrl->T.calendar);	/* Convert t to a complete calendar structure */
 						gmt_M_str_free (date);
 					}
 					pch[0] = '\0';	/* Chop off date settting */

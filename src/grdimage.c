@@ -715,7 +715,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	if (!Ctrl->D.active) {	/* Read the headers of 1 or 3 grids */
 		for (k = 0; k < n_grids; k++) {
 			mem_G[k] = gmt_M_file_is_memory (Ctrl->In.file[k]);
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Allocates memory and read data file %s\n", Ctrl->In.file[k]);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read header from file %s\n", Ctrl->In.file[k]);
 			if ((Grid_orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
 				Return (API->error);
 			}
@@ -821,6 +821,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	/* Read the grid data, possibly via subset in wesn */
 
 	for (k = 0; k < n_grids; k++) {
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Allocate and read data from file %s\n", Ctrl->In.file[k]);
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->In.file[k], Grid_orig[k]) == NULL) {	/* Get grid data */
 			Return (API->error);
 		}

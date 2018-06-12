@@ -150,7 +150,6 @@ EXTERN_MSC void gmtlib_load_rot_matrix (double w, double R[3][3], double E[]);
 EXTERN_MSC int gmtlib_io_banner (struct GMT_CTRL *GMT, unsigned int direction);
 EXTERN_MSC double gmtlib_great_circle_dist_degree (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 EXTERN_MSC int gmtlib_gmonth_length (int year, int month);
-EXTERN_MSC void gmtlib_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_GCAL *cal);	/* Break internal time into calendar and clock struct info  */
 EXTERN_MSC int gmtlib_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist);
 EXTERN_MSC int gmtlib_small_circle_intersection (struct GMT_CTRL *GMT, double Ax, double Ay, double Ar, double Bx, double By, double Br, double lon[], double lat[]);
 EXTERN_MSC void gmtlib_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
