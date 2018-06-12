@@ -30,8 +30,7 @@ EXTERN_MSC void gmtlib_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GC
 struct EARTHTIDE_CTRL {
 	struct EARTHTIDE_T {	/* -T[] */
 		bool active;
-		int years;
-		int t_col;
+		int duration;
 		double time, start, stop;
 	} T;
 	struct EARTHTIDE_G {	/* -G<maskfile> */
@@ -1160,7 +1159,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0;
-	char *t;
+	char *t, *t2 = NULL, *ptr = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -1173,11 +1172,32 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 			/* Processes program-specific parameters */
 
 			case 'T':	/* Turn off draw_arc mode */
+				if (!opt->arg) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -T: must provide a valide date\n", opt->arg);
+					n_errors++;
+					break;
+				}
 				Ctrl->T.active = true;
 				t = opt->arg;
-				if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->T.start), t)) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -T: Start time (%s) in wrong format\n", opt->arg);
+				if ((ptr = strchr(t, '/')) != NULL) {	/* Break string at '/' */
+					ptr[0] = '\0';
+					t2 = &ptr[1];
+				}
+				if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME,
+				                             gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->T.start), t)) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -T: Start time (%s) in wrong format\n", t);
 					n_errors++;
+				}
+				if (t2) {
+					if (strchr(t2, 'T')) {		/* We have another date string */
+						if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, 
+						                             gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->T.stop), t2)) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -T: Stop time (%s) in wrong format\n", t2);
+							n_errors++;
+						}
+					}
+					else
+						Ctrl->T.duration = atoi(t2);
 				}
 				break;
 			case 'G':	/* Output filename */
@@ -1196,8 +1216,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 		}
 	}
 
+	if (Ctrl->T.active && !Ctrl->T.duration && !Ctrl->T.stop)		/* Set a default duration of 10 days in minutes */
+		Ctrl->T.duration = 24 * 60 * 10;
+
 	//n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0),
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && (GMT->common.R.inc[GMT_X] <= 0 || GMT->common.R.inc[GMT_Y] <= 0),
 	                                        "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && !Ctrl->G.file, "Syntax error: Must specify -G or -T options\n");
 	
@@ -1260,6 +1283,10 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->T.active) {
+		/* Specify output expected columns */
+		if ((error = GMT_Set_Columns (API, GMT_OUT, 4, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
+			Return (error);
+
 		/* Register likely data sources unless the caller has already done so */
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) 	/* Registers default output destination, unless already set */
 			Return (API->error);
@@ -1270,7 +1297,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) 	/* Sets output geometry */
 			Return (API->error);
 	
-		solid_ts(GMT, &cal_start, -7, 37, 100);
+		solid_ts(GMT, &cal_start, -7, 37, Ctrl->T.duration);
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data output */
 			Return (API->error);
