@@ -102,13 +102,13 @@ L2:
 		mjd0t--;
 		goto L2;
 	}
+
 	/*  test upper table limit         (upper limit set by bulletin C memos) */
 	if (mjd0t > 58664) {
 		*leapflag = true;		/* true means flag *IS* raised */
 		return -37;				/* return the upper table valu */
 	}
-	/*  test lower table limit */
-	if (mjd0t < 41317) {
+	else if (mjd0t < 41317) {	/*  test lower table limit */
 		*leapflag = true;		/* true means flag *IS* raised */
 		return -10;				/* return the lower table valu */
 	}
@@ -810,7 +810,7 @@ GMT_LOCAL void moonxyz(int mjd, double fmjd, double *rm, bool *leapflag) {
 
 	/* ** use TT for lunar ephemerides */
 	tsecutc = fmjd * 86400;	        		/* UTC time (sec of day) */
-	tsectt  = utc2ttt(tsecutc, leapflag);				/* TT  time (sec ofday)  */
+	tsectt  = utc2ttt(tsecutc, leapflag);	/* TT  time (sec ofday)  */
 	fmjdtt  = tsectt / 86400.;				/* TT  time (fract. day) */
 
 	/* julian centuries since 1.5 january 2000 (J2000) */
@@ -858,17 +858,18 @@ GMT_LOCAL void moonxyz(int mjd, double fmjd, double *rm, bool *leapflag) {
 	selond += t * 1.3972;
 	/* position vector of moon (mean equinox & ecliptic of J2000) (EME2000, ICRF) */
 	/*                         (plus long. advance due to precession -- eq. above) */
-	/*  degrees */
+	selatd *= D2R;
+	selond *= D2R;
 	oblir = 23.43929111 * D2R;			/* obliquity of the J2000 eclipti */
-	cselat = cos(selatd * D2R);
-	t1 = rse * cos(selond * D2R) * cselat;			/* meters          !*** eq. 3.51, */
-	t2 = rse * sin(selond * D2R) * cselat;			/* meters          !*** eq. 3.51, */
-	t3 = rse * sin(selatd * D2R);					/* meters          !*** eq. 3.51, */
+	cselat = cos(selatd);
+	t1 = rse * cos(selond) * cselat;		/* meters          !*** eq. 3.51, */
+	t2 = rse * sin(selond) * cselat;		/* meters          !*** eq. 3.51, */
+	t3 = rse * sin(selatd);					/* meters          !*** eq. 3.51, */
 	rot1(-oblir, t1, t2, t3, &rm1, &rm2, &rm3);
 	/* convert position vector of moon to ECEF  (ignore polar motion/LOD) */
 	/*  eq. 3.51, */
 	getghar(mjd, fmjd, &ghar);						/* sec 2.3.1, */
-	rot3(ghar, rm1, rm2, rm3, &rm[0], &rm[1], &rm[2]); /* *** eq. 2.89, */
+	rot3(ghar, rm1, rm2, rm3, &rm[0], &rm[1], &rm[2]); /* eq. 2.89, */
 }
 
 /* ******************************************************************************* */
@@ -909,7 +910,6 @@ GMT_LOCAL void sunxyz(int mjd, double fmjd, double *rs, bool *leapflag) {
 	slond += t * 1.3972;
 	/* position vector of sun (mean equinox & ecliptic of J2000) (EME2000, ICRF) */
 	/*                        (plus long. advance due to precession -- eq. above) */
-	/*  degrees */
 	slon = slond * D2R;
 	sslon = sin(slon);
 	rs1 = r__ * cos(slon);				/* meters  !*** eq. 3.46, */
@@ -920,7 +920,6 @@ GMT_LOCAL void sunxyz(int mjd, double fmjd, double *rs, bool *leapflag) {
 	getghar(mjd, fmjd, &ghar);			/* sec 2.3.1, */
 	rot3(ghar, rs1, rs2, rs3, &rs[0], &rs[1], &rs[2]);		/* eq. 2.89, */
 }
-
 
 /* ----------------------------------------------------------------------- */
 GMT_LOCAL void geoxyz(double lat, double lon, double eht, double *x, double *y, double *z) {
@@ -1309,6 +1308,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 	else
 		gmt_gcal_from_dt (GMT, Ctrl->T.start, &cal_start);
 
+	gmt_M_tic(GMT);
 
 	if (Ctrl->G.active) {
 		/* Create the empty grid and allocate space */
@@ -1344,6 +1344,8 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data output */
 			Return (API->error);
 	}
+
+	gmt_M_toc(GMT,"");		/* Print total run time, but only if -Vt was set */
 
 	Return (GMT_NOERROR);
 }
