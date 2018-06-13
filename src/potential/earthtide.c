@@ -90,20 +90,18 @@ GMT_LOCAL double getutcmtai(double tsec, bool *leapflag) {
 	/* clone for tests (and do any rollover) */
 	ttsec = tsec;
 	mjd0t = mjdoff_1.mjd0;
-L1:
-	if (ttsec >= 86400.) {
+
+	while (ttsec >= 86400.) {
 		ttsec += -86400.;
 		mjd0t++;
-		goto L1;
-	}
-L2:
-	if (ttsec < 0) {
-		ttsec += 86400.;
-		mjd0t--;
-		goto L2;
 	}
 
-	/*  test upper table limit         (upper limit set by bulletin C memos) */
+	while (ttsec < 0) {
+		ttsec += 86400.;
+		mjd0t--;
+	}
+
+	/*  test upper table limit (upper limit set by bulletin C memos) */
 	if (mjd0t > 58664) {
 		*leapflag = true;		/* true means flag *IS* raised */
 		return -37;				/* return the upper table valu */
@@ -292,12 +290,12 @@ GMT_LOCAL  void st1idiu(double *xsta, double *xsun, double *xmon, double fac2sun
 	rsun = enorm8(&xsun[0]);
 	inv_rsun2 = 1 / (rsun * rsun);
 	inv_rmon2 = 1 / (rmon * rmon);
-	drsun = dhi * -3 * sinphi * cosphi * fac2sun * xsun[2] * (xsun[0] * sinla - xsun[1] * cosla) * inv_rsun2;
-	drmon = dhi * -3 * sinphi * cosphi * fac2mon * xmon[2] * (xmon[0] * sinla - xmon[1] * cosla) * inv_rmon2;
+	drsun = dhi * -3 * sinphi  * cosphi  * fac2sun * xsun[2]  * (xsun[0] * sinla - xsun[1] * cosla) * inv_rsun2;
+	drmon = dhi * -3 * sinphi  * cosphi  * fac2mon * xmon[2]  * (xmon[0] * sinla - xmon[1] * cosla) * inv_rmon2;
 	dnsun = dli * -3 * cos2phi * fac2sun * xsun[2] * (xsun[0] * sinla - xsun[1] * cosla) * inv_rsun2;
 	dnmon = dli * -3 * cos2phi * fac2mon * xmon[2] * (xmon[0] * sinla - xmon[1] * cosla) * inv_rmon2;
-	desun = dli * -3 * sinphi * fac2sun * xsun[2] * (xsun[0] * cosla + xsun[ 1] * sinla) * inv_rsun2;
-	demon = dli * -3 * sinphi * fac2mon * xmon[2] * (xmon[0] * cosla + xmon[ 1] * sinla) * inv_rmon2;
+	desun = dli * -3 * sinphi  * fac2sun * xsun[2] * (xsun[0] * cosla + xsun[1] * sinla) * inv_rsun2;
+	demon = dli * -3 * sinphi  * fac2mon * xmon[2] * (xmon[0] * cosla + xmon[1] * sinla) * inv_rmon2;
 	dr = drsun + drmon;
 	dn = dnsun + dnmon;
 	de = desun + demon;
@@ -316,7 +314,7 @@ GMT_LOCAL void st1isem(double *xsta, double *xsun, double *xmon, double fac2sun,
 	const double dhi = -0.0022;
 	const double dli = -7e-4;
 	double costwola, sintwola, de, dn, dr, rsta, rmon, rsun, cosla, demon, sinla, dnmon, desun, drmon, dnsun, drsun;
-	double cosphi, sinphi, cosphi2, inv_rsun2, inv_rmon2, dif_xsun2, dif_xmon2;
+	double cosphi, sinphi, cosphi2, inv_rsun2, inv_rmon2, dif_xsun2, dif_xmon2, t;
 
 	rsta = enorm8(&xsta[0]);
 	sinphi = xsta[2] / rsta;
@@ -332,12 +330,15 @@ GMT_LOCAL void st1isem(double *xsta, double *xsun, double *xmon, double fac2sun,
 	inv_rmon2 = 1 / (rmon * rmon);
 	dif_xsun2 = xsun[0] * xsun[0] - xsun[1] * xsun[1];
 	dif_xmon2 = xmon[0] * xmon[0] - xmon[1] * xmon[1];
-	drsun = dhi * -0.75 * cosphi2 * fac2sun * (dif_xsun2 * sintwola - xsun[0] * 2 * xsun[1] * costwola) * inv_rsun2;
-	drmon = dhi * -0.75 * cosphi2 * fac2mon * (dif_xmon2 * sintwola - xmon[0] * 2 * xmon[1] * costwola) * inv_rmon2;
-	dnsun = dli * 1.5 * sinphi * cosphi * fac2sun * (dif_xsun2 * sintwola - xsun[0] * 2 * xsun[1] * costwola) * inv_rsun2;
-	dnmon = dli * 1.5 * sinphi * cosphi * fac2mon * (dif_xmon2 * sintwola - xmon[0] * 2 * xmon[1] * costwola) * inv_rmon2;
-	desun = dli * -1.5 * cosphi * fac2sun * (dif_xsun2 * costwola + xsun[0] * 2 * xsun[1] * sintwola) * inv_rsun2;
-	demon = dli * -1.5 * cosphi * fac2mon * (dif_xmon2 * costwola + xmon[0] * 2 * xmon[1] * sintwola) * inv_rmon2;
+	t = dhi * -0.75 * cosphi2;
+	drsun = t * fac2sun * (dif_xsun2 * sintwola - xsun[0] * 2 * xsun[1] * costwola) * inv_rsun2;
+	drmon = t * fac2mon * (dif_xmon2 * sintwola - xmon[0] * 2 * xmon[1] * costwola) * inv_rmon2;
+	t = dli * 1.5 * sinphi;
+	dnsun = t * cosphi * fac2sun * (dif_xsun2 * sintwola - xsun[0] * 2 * xsun[1] * costwola) * inv_rsun2;
+	dnmon = t * cosphi * fac2mon * (dif_xmon2 * sintwola - xmon[0] * 2 * xmon[1] * costwola) * inv_rmon2;
+	t = dli * -1.5 * cosphi;
+	desun = t * fac2sun * (dif_xsun2 * costwola + xsun[0] * 2 * xsun[1] * sintwola) * inv_rsun2;
+	demon = t * fac2mon * (dif_xmon2 * costwola + xmon[0] * 2 * xmon[1] * sintwola) * inv_rmon2;
 	dr = drsun + drmon;
 	dn = dnsun + dnmon;
 	de = desun + demon;
@@ -356,7 +357,7 @@ GMT_LOCAL void st1l1(double *xsta, double *xsun, double *xmon, double fac2sun, d
 	double l1d = .0012;
 	double l1sd = .0024;
 	double costwola, sintwola, l1, de, dn, rsta, rmon, rsun, cosla, demon, sinla, dnmon, desun, dnsun;
-	double cosphi, sinphi, cosphi2, sinphi2, inv_rsun2, inv_rmon2, dif_xsun2, dif_xmon2;
+	double cosphi, sinphi, cosphi2, sinphi2, inv_rsun2, inv_rmon2, dif_xsun2, dif_xmon2, t;
 
 	rsta = enorm8(&xsta[0]);
 	sinphi = xsta[2] / rsta;
@@ -373,8 +374,9 @@ GMT_LOCAL void st1l1(double *xsta, double *xsun, double *xmon, double fac2sun, d
 	inv_rmon2 = 1 / (rmon * rmon);
 	dnsun = -l1 * sinphi2 * fac2sun * xsun[2] * (xsun[0] * cosla + xsun[1] * sinla) * inv_rsun2;
 	dnmon = -l1 * sinphi2 * fac2mon * xmon[2] * (xmon[0] * cosla + xmon[1] * sinla) * inv_rmon2;
-	desun = l1 * sinphi * (cosphi2 - sinphi2) * fac2sun * xsun[2] * (xsun[0] * sinla - xsun[1] * cosla) * inv_rsun2;
-	demon = l1 * sinphi * (cosphi2 - sinphi2) * fac2mon * xmon[2] * (xmon[0] * sinla - xmon[1] * cosla) * inv_rmon2;
+	t = l1 * sinphi * (cosphi2 - sinphi2);
+	desun = t * fac2sun * xsun[2] * (xsun[0] * sinla - xsun[1] * cosla) * inv_rsun2;
+	demon = t * fac2mon * xmon[2] * (xmon[0] * sinla - xmon[1] * cosla) * inv_rmon2;
 	de = (desun + demon) * 3.;
 	dn = (dnsun + dnmon) * 3.;
 	xcorsta[0] = -de * sinla - dn * sinphi * cosla;
@@ -386,10 +388,12 @@ GMT_LOCAL void st1l1(double *xsta, double *xsun, double *xmon, double fac2sun, d
 	sintwola = cosla * 2 * sinla;
 	dif_xsun2 = xsun[0] * xsun[0] - xsun[1] * xsun[1];
 	dif_xmon2 = xmon[0] * xmon[0] - xmon[1] * xmon[1];
-	dnsun = -l1 / 2 * sinphi  * cosphi * fac2sun * (dif_xsun2 * costwola + xsun[0] * 2 * xsun[1] * sintwola) * inv_rsun2;
-	dnmon = -l1 / 2 * sinphi  * cosphi * fac2mon * (dif_xmon2 * costwola + xmon[0] * 2 * xmon[1] * sintwola) * inv_rmon2;
-	desun = -l1 / 2 * sinphi2 * cosphi * fac2sun * (dif_xsun2 * sintwola - xsun[0] * 2 * xsun[1] * costwola) * inv_rsun2;
-	demon = -l1 / 2 * sinphi2 * cosphi * fac2mon * (dif_xmon2 * sintwola - xmon[0] * 2 * xmon[1] * costwola) * inv_rmon2;
+	t = -l1 / 2 * sinphi  * cosphi;
+	dnsun = t * fac2sun * (dif_xsun2 * costwola + xsun[0] * 2 * xsun[1] * sintwola) * inv_rsun2;
+	dnmon = t * fac2mon * (dif_xmon2 * costwola + xmon[0] * 2 * xmon[1] * sintwola) * inv_rmon2;
+	t = -l1 / 2 * sinphi2 * cosphi;
+	desun = t * fac2sun * (dif_xsun2 * sintwola - xsun[0] * 2 * xsun[1] * costwola) * inv_rsun2;
+	demon = t * fac2mon * (dif_xmon2 * sintwola - xmon[0] * 2 * xmon[1] * costwola) * inv_rmon2;
 	de = (desun + demon) * 3;
 	dn = (dnsun + dnmon) * 3;
 	xcorsta[0] = xcorsta[0] - de * sinla - dn * sinphi * cosla;
@@ -422,7 +426,7 @@ GMT_LOCAL void step2diu(double *xsta, double fhr, double t, double *xcorsta) {
 		0.,0.,1.,0.,0.,.01,0.,0. };
 
 	int i, j;
-	double h, t2, t3, t4, cosphi2, sinphi2;
+	double h, t2, t3, t4, cosphi2, sinphi2, sin_tf, cos_tf;
 	double p, s, de, dn, dr, pr, ps, zla, tau, zns, rsta, cosla, sinla, thetaf, cosphi, sinphi;
 
 	/* ** note, following table is derived from dehanttideinelMJD.f (2000oct30 16:10) */
@@ -490,12 +494,13 @@ GMT_LOCAL void step2diu(double *xsta, double fhr, double t, double *xcorsta) {
 	for (i = 0; i < 3; ++i) xcorsta[i] = 0;
 
 	for (j = 1; j <= 31; j++) {
-		thetaf = (tau + datdi[j * 9 - 9] * s + datdi[j * 9 - 8] * h + datdi[j * 9 - 7] * p + datdi[j * 9 - 6] * zns + datdi[j * 9 - 5] * ps) * D2R;
-		dr     = datdi[j * 9 - 4] * 2. * sinphi * cosphi * sin(thetaf + zla) + datdi[j * 9 - 3] * 2. * sinphi * cosphi * cos(thetaf + zla);
-		dn     = datdi[j * 9 - 2] * (cosphi2 - sinphi2) * sin(thetaf + zla) + datdi[j * 9 - 1] * (cosphi2 - sinphi2) * cos(thetaf + zla);
+		thetaf = (tau + datdi[j * 9 - 9] * s + datdi[j * 9 - 8] * h + datdi[j * 9 - 7] * p + datdi[j * 9 - 6] * zns + datdi[j * 9 - 5] * ps) * D2R + zla;
+		sin_tf = sin(thetaf);		cos_tf = cos(thetaf);
+		dr     = datdi[j * 9 - 4] * 2 * sinphi * cosphi * sin_tf + datdi[j * 9 - 3] * 2 * sinphi * cosphi * cos_tf;
+		dn     = datdi[j * 9 - 2] * (cosphi2 - sinphi2) * sin_tf + datdi[j * 9 - 1] * (cosphi2 - sinphi2) * cos_tf;
 		/* following correction by V.Dehant to match eq.16b, p.81, 2003 Conventions */
 		/* de=datdi(8,j)*sinphi*cos(thetaf+zla)+ */
-		de = datdi[j * 9 - 2] * sinphi * cos(thetaf + zla) - datdi[j * 9 - 1] * sinphi * sin(thetaf + zla);
+		de = datdi[j * 9 - 2] * sinphi * cos_tf - datdi[j * 9 - 1] * sinphi * sin_tf;
 		xcorsta[0] += (dr * cosla * cosphi - de * sinla - dn * sinphi * cosla);
 		xcorsta[1] += (dr * sinla * cosphi + de * cosla - dn * sinphi * sinla);
 		xcorsta[2] += (dr * sinphi + dn * cosphi);
@@ -598,7 +603,7 @@ GMT_LOCAL void detide(double *xsta, int mjd, double fmjd, double *xsun, double *
 	double h3 = .292;
 	double l3 = .015;
 	double re_over_rsun, re_over_rmon;
-	double mass_ratio_moon, mass_ratio_sun, t, h2, l2, re, fhr, scm, scs;
+	double mass_ratio_moon, mass_ratio_sun, t, t2, h2, l2, fhr, scm, scs;
 	double rsta, rmon, rsun, p2mon, p3mon, x2mon, x3mon, p2sun, p3sun, x2sun, x3sun, scmon;
 	double scsun, cosphi, dmjdtt, fmjdtt, tsectt, fac2mon, fac3mon, fac2sun, fac3sun;
 	double tsecutc, xcorsta[3], inv_rsta;
@@ -611,12 +616,12 @@ GMT_LOCAL void detide(double *xsta, int mjd, double fmjd, double *xsun, double *
 	tsectt = utc2ttt(tsecutc, leapflag);			/* TT  time (sec of day) */
 	fmjdtt = tsectt / 86400.;			/* TT  time (fract. day) */
 	dmjdtt = mjd + fmjdtt;
-	/* ** commented line was live code in dehanttideinelMJD.f */
-	/* ** changed on the suggestion of Dr. Don Kim, UNB -- 09mar21 */
-	/* ** Julian date for 2000 January 1 00:00:00.0 UT is  JD 2451544.5 */
-	/* ** MJD         for 2000 January 1 00:00:00.0 UT is MJD   51544.0 */
-	/* **** t=(dmjdtt-51545.d0)/36525.d0                !*** days to centuries, TT */
-	/* *** float MJD in TT */
+	/*  commented line was live code in dehanttideinelMJD.f */
+	/*  changed on the suggestion of Dr. Don Kim, UNB -- 09mar21 */
+	/*  Julian date for 2000 January 1 00:00:00.0 UT is  JD 2451544.5 */
+	/*  MJD         for 2000 January 1 00:00:00.0 UT is MJD   51544.0 */
+	/*  t=(dmjdtt-51545.d0)/36525.d0                !*** days to centuries, TT */
+	/*  float MJD in TT */
 	t = (dmjdtt - 51544.) / 36525.;			/* days to centuries, TT */
 	fhr = (dmjdtt - (int) dmjdtt) * 24.;	/* hours in the day, TT */
 	/* ** scalar product of station vector with sun/moon vector */
@@ -626,36 +631,40 @@ GMT_LOCAL void detide(double *xsta, int mjd, double fmjd, double *xsun, double *
 	scmon = scm / rsta / rmon;
 	/* ** computation of new h2 and l2 */
 	cosphi = sqrt(xsta[0] * xsta[0] + xsta[1] * xsta[1]) / rsta;
-	h2 = h20 - (1. - cosphi * 1.5 * cosphi) * 6e-4;
-	l2 = l20 + (1. - cosphi * 1.5 * cosphi) * 2e-4;
+	t2 = (1. - cosphi * 1.5 * cosphi);
+	h2 = h20 - t2 * 6e-4;
+	l2 = l20 + t2 * 2e-4;
 	/* ** p2-term */
-	p2sun = (h2 / 2. - l2) * 3. * scsun * scsun - h2 / 2.;
-	p2mon = (h2 / 2. - l2) * 3. * scmon * scmon - h2 / 2.;
+	t2 = (h2 / 2. - l2) * 3;
+	p2sun = t2 * scsun * scsun - h2 / 2.;
+	p2mon = t2 * scmon * scmon - h2 / 2.;
 	/* ** p3-term */
-	p3sun = (h3 - l3 * 3.) * 2.5 * (scsun * scsun * scsun) + (l3 - h3) * 1.5 * scsun;
-	p3mon = (h3 - l3 * 3.) * 2.5 * (scmon * scmon * scmon) + (l3 - h3) * 1.5 * scmon;
+	t2 = (h3 - l3 * 3.) * 2.5;
+	p3sun = t2 * (scsun * scsun * scsun) + (l3 - h3) * 1.5 * scsun;
+	p3mon = t2 * (scmon * scmon * scmon) + (l3 - h3) * 1.5 * scmon;
 	/* ** term in direction of sun/moon vector */
 	x2sun = l2 * 3. * scsun;
 	x2mon = l2 * 3. * scmon;
-	x3sun = l3 * 3. / 2. * (scsun * 5. * scsun - 1.);
-	x3mon = l3 * 3. / 2. * (scmon * 5. * scmon - 1.);
+	x3sun = l3 * 3. / 2. * (scsun * 5 * scsun - 1);
+	x3mon = l3 * 3. / 2. * (scmon * 5 * scmon - 1);
 	/* ** factors for sun/moon */
 	mass_ratio_sun = 332945.943062;
 	mass_ratio_moon = 0.012300034;
-	re = 6378136.55;
-	re_over_rsun = re / rsun;
-	fac2sun = mass_ratio_sun * re * re_over_rsun * re_over_rsun * re_over_rsun;
-	re_over_rmon = re / rmon;
-	fac2mon = mass_ratio_moon * re * re_over_rmon * re_over_rmon * re_over_rmon;
+	//re = 6378136.55;		Use EARTH_RAD instead
+	re_over_rsun = EARTH_RAD / rsun;
+	fac2sun = mass_ratio_sun * EARTH_RAD * re_over_rsun * re_over_rsun * re_over_rsun;
+	re_over_rmon = EARTH_RAD / rmon;
+	fac2mon = mass_ratio_moon * EARTH_RAD * re_over_rmon * re_over_rmon * re_over_rmon;
 	fac3sun = fac2sun * re_over_rsun;
 	fac3mon = fac2mon * re_over_rmon;
 	/* ** total displacement */
 	inv_rsta = 1 / rsta;
 	for (i = 0; i < 3; i++) {
-		dxtide[i] = fac2sun * (x2sun * xsun[i] / rsun + p2sun * xsta[i] * inv_rsta) +
-					fac2mon * (x2mon * xmon[i] / rmon + p2mon * xsta[i] * inv_rsta) +
-					fac3sun * (x3sun * xsun[i] / rsun + p3sun * xsta[i] * inv_rsta) +
-					fac3mon * (x3mon * xmon[i] / rmon + p3mon * xsta[i] * inv_rsta);
+		t2 = xsta[i] * inv_rsta;
+		dxtide[i] = fac2sun * (x2sun * xsun[i] / rsun + p2sun * t2) +
+					fac2mon * (x2mon * xmon[i] / rmon + p2mon * t2) +
+					fac3sun * (x3sun * xsun[i] / rsun + p3sun * t2) +
+					fac3mon * (x3mon * xmon[i] / rmon + p3mon * t2);
 	}
 	xcorsta[0] = xcorsta[1] = xcorsta[2] = 0;
 	/* ** corrections for the out-of-phase part of love numbers */
@@ -730,37 +739,31 @@ GMT_LOCAL void getghar(int mjd, double fmjd, double *ghar) {
 
 	tsecutc = fmjd * 86400.;			/* UTC time (sec of day) */
 	fmjdutc = tsecutc / 86400.;			/* UTC time (fract. day) */
-	/* **** d = MJD - 51544.5d0                               !*** footnote
-	 * ** greenwich hour angle for J2000  (12:00:00 on 1 Jan 2000)
-	 * **** ghad = 100.46061837504d0 + 360.9856473662862d0*d  !*** eq. 2.85 (+digits)
+	/*  d = MJD - 51544.5d0                               !*** footnote
+	 *  greenwich hour angle for J2000  (12:00:00 on 1 Jan 2000)
+	 *  ghad = 100.46061837504d0 + 360.9856473662862d0*d  !*** eq. 2.85 (+digits)
 	 */
 	ghad = (mjd - 51544 + (fmjdutc - 0.5)) * 360.9856473662862 + 280.46061837504;	/* days since J2000 */
 
 	/* normalize to 0-360 and convert to radians */
 	i = (int)(ghad / 360.);
 	*ghar = (ghad - i * 360.) * D2R;
-L1:
-	if (*ghar > TWO_PI) {
+
+	while (*ghar > TWO_PI)
 		*ghar -= TWO_PI;
-		goto L1;
-	}
-L2:
-	if (*ghar < 0.) {
+
+	while (*ghar < 0.)
 		*ghar += TWO_PI;
-		goto L2;
-	}
 }
 
 /* ----------------------------------------------------------------------- */
-GMT_LOCAL void rge(double gla, double glo, double *u, double *v, double *w, double x, double y, double z) {
+GMT_LOCAL void rge(double lat, double lon, double *u, double *v, double *w, double x, double y, double z) {
 	/* given a rectangular cartesian system (x,y,z) */
 	/* compute a geodetic h cartesian sys   (u,v,w) */
 	static double cb, cl, sb, sl;
 
-	sb = sin(gla);
-	cb = cos(gla);
-	sl = sin(glo);
-	cl = cos(glo);
+	sincos(lat, &sb, &cb);
+	sincos(lon, &sl, &cl);
 	*u = -sb * cl * x - sb * sl * y + cb * z;
 	*v = -sl * x + cl * y;
 	*w = cb * cl * x + cb * sl * y + sb * z;
@@ -772,8 +775,9 @@ GMT_LOCAL void rot1(double theta, double x, double y, double z, double *u, doubl
 	/* ** x,y,z transformed into u,v,w */
 	static double c, s;
 
-	s = sin(theta);
-	c = cos(theta);
+	//s = sin(theta);
+	//c = cos(theta);
+	sincos(theta, &s, &c);
 	*u = x;
 	*v = c * y + s * z;
 	*w = c * z - s * y;
@@ -785,8 +789,7 @@ GMT_LOCAL void rot3(double theta, double x, double y, double z, double *u, doubl
 	/* x,y,z transformed into u,v,w */
 	static double c, s;
 
-	s = sin(theta);
-	c = cos(theta);
+	sincos(theta, &s, &c);
 	*u = c * x + s * y;
 	*v = c * y - s * x;
 	*w = z;
@@ -924,16 +927,15 @@ GMT_LOCAL void sunxyz(int mjd, double fmjd, double *rs, bool *leapflag) {
 /* ----------------------------------------------------------------------- */
 GMT_LOCAL void geoxyz(double lat, double lon, double eht, double *x, double *y, double *z) {
 	/* convert geodetic lat, long, ellip ht. to x,y,z */
+	double w, w2, en, cla, sla, t;
 
-	double w, w2, en, cla, sla;
-
-	sla = sin(lat);
-	cla = cos(lat);
+	sincos(lat, &sla, &cla);
 	w2 = 1. - ECC2 * sla * sla;
 	w = sqrt(w2);
 	en = EARTH_RAD / w;
-	*x = (en + eht) * cla * cos(lon);
-	*y = (en + eht) * cla * sin(lon);
+	t = (en + eht) * cla;
+	*x = t * cos(lon);
+	*y = t * sin(lon);
 	*z = (en * (1. - ECC2) + eht) * sla;
 }
 
@@ -1022,7 +1024,7 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 	size_t ij_n = 0, ij_e = 0, ij_u = 0, n_inc = 0, e_inc = 0, u_inc = 0;
 	float *grd_n, *grd_e, *grd_u;
 	double fmjd, xsta[3], rsun[3], etide[3], rmoon[3];
-	double lon, lat, ut, vt, wt, *lons;
+	double lat, ut, vt, wt, *lons;
 
 	/* Select which indices to increment based on user selection */
 	/* Use the trick of not incrementing the indices of unwanted arrays to avoid IF branches inside the loops */
@@ -1069,11 +1071,10 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 		lat = (Grid->header->wesn[YLO] + (row - 1) * Grid->header->inc[GMT_Y]) * D2R;
 		for (col = 0; col < Grid->header->n_columns; col++) {
 			//lon = (west + col * Grid->header->inc[GMT_X]) * D2R;
-			lon = lons[col];
-			geoxyz(lat, lon, 0, &xsta[0], &xsta[1], &xsta[2]);
+			geoxyz(lat, lons[col], 0, &xsta[0], &xsta[1], &xsta[2]);
 			detide(xsta, mjd, fmjd, rsun, rmoon, etide, &leapflag);
 			/* determine local geodetic horizon components (topocentric) */
-			rge(lat, lon, &ut, &vt, &wt, etide[0], etide[1], etide[2]);		/* tide vect */
+			rge(lat, lons[col], &ut, &vt, &wt, etide[0], etide[1], etide[2]);		/* tide vect */
 			grd_n[ij_n] = (float)ut;
 			grd_e[ij_e] = (float)vt;
 			grd_u[ij_u] = (float)wt;
@@ -1099,7 +1100,7 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 	/* idy	day          [1-31] */
 	/* lat	Lat. (pos N.) [- 90, +90] */
 	/* lon	Lon. (pos E.) [-360,+360] */
-	bool leapflag;
+	bool leapflag = false;
 	int k, mjd, year, month, day, hour, min;
 	double d__2, ut, vt, wt;
 	double fmjd, xsta[3], rsun[3], tdel2, etide[3], rmoon[3], out[4];
