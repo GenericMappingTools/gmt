@@ -1150,6 +1150,18 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				 * but reallocating x below lead to disasters.  */
 
 				change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, SH->ogr);
+				if (P && !strncmp (Ctrl->C.file, "categorical", 11U) && change == 0) {	/* Gave -Ccategorical but no -Z -G was set; auto-fill by cycling over the CPT */
+					double z_val = (double)_(seg_out % P->n_colors);	/* Wrap around the CPT */
+					if (polygon) {	/* Change fill color */
+						gmt_get_fill_from_z (GMT, P, z, &current_fill);
+						change |= 2;
+					else {	/* Change pen color */
+						struct GMT_FILL tmp_fill;
+						gmt_get_fill_from_z (GMT, P, z, &tmp_fill);
+						gmt_M_rgb_copy (current_pen->rgb, tmp_fill.rgb);
+						change |= 4;
+					}
+				}
 
 				if (P && PH->skip) continue;	/* Chosen CPT indicates skip for this z */
 

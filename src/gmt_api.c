@@ -6638,7 +6638,10 @@ GMT_LOCAL unsigned int separate_families (unsigned int *family) {
 }
 
 GMT_LOCAL void maybe_change_method_to_duplicate (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *S_obj, bool readonly) {
-	if (readonly) {	/* User insist we must duplicate this resource */
+	/* We want to pass a matrix from the outside as a grid.  If it is a float matrix then should be possible to pass
+	 * as is but the test below changes REF to DUPLICATE.  Without this we crash.  Need to either explain why it cannot
+	 * work that way or make changes.  As it stands, it seems all REF methods are converted to DUPLICATE. PW 6/6/2018 */
+	if (readonly) {	/* We must duplicate this resource */
 		S_obj->method = GMT_IS_DUPLICATE;
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE per input flag\n");
 	}
