@@ -14758,7 +14758,7 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	 * when gmt figure is called to select an earlier plot and
 	 * make it the current figure.
 	 */
-	int n = 0, n_figs, this_k, k, err;
+	int n = 0, n_figs, this_k = 0, k, err;
 	bool found = false;
 	char prefix[GMT_LEN256] = {""}, formats[GMT_LEN64] = {""}, options[GMT_LEN128] = {""};
 	char *L = NULL;
