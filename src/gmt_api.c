@@ -6001,7 +6001,7 @@ int GMT_Destroy_Session (void *V_API) {
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o) */
 	for (i = 0; i < API->n_objects; i++) gmtapi_unregister_io (API, (int)API->object[i]->ID, (unsigned int)GMT_NOTSET);
 	gmt_M_free (API->GMT, API->object);
-	if (API->log_level == GMT_LOG_SET)	/* Close the error log fp pointer */
+	if (API->GMT->session.std[GMT_ERR] != stderr)	/* Close the error log fp pointer */
 		fclose (API->GMT->session.std[GMT_ERR]);
 	gmt_end (API->GMT);	/* Terminate GMT machinery */
 	gmt_M_str_free (API->session_tag);
