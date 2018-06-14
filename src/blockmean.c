@@ -277,7 +277,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	unsigned int row, col, n_input, k, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,0,0,0}, field[BLK_N_FIELDS];
 	int error;
 	bool use_xy, use_weight, duplicate_col;
-	double weight, weight_s2, weight_pos, weighted_z, iw, half_dx, wesn[4], out[7], *in = NULL;
+	double weight, weight_s2 = 0, weight_pos, weighted_z, iw, half_dx, wesn[4], out[7], *in = NULL;
 	char format[GMT_LEN256] = {""}, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "h", "w", "", "", ""}, *code[BLK_N_FIELDS];
 
 	struct GMT_OPTION *options = NULL;
