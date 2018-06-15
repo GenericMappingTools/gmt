@@ -8810,7 +8810,7 @@ int GMT_Get_Info (void *V_API, unsigned int family, void *data, unsigned int *ge
 					for (k = XHI; k <= YHI; k++) if (G->header->pad[k] != G->header->pad[XLO]) bad++;
 					if (bad) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Grid sides have different padding, return pad as not set [-1]\n");
-						*pad = GMT_NOTSET
+						*pad = GMT_NOTSET;
 					}
 					else
 						*pad = G->header->pad[XLO];
@@ -8827,13 +8827,13 @@ int GMT_Get_Info (void *V_API, unsigned int family, void *data, unsigned int *ge
 				if (registration) *registration = I->header->registration;
 				if (pad) {	/* Need to check they are all the same, if not return undefined or something */
 					unsigned int bad = 0, k;
-					for (k = XHI; k <= YHI; k++) if (G->header->pad[k] != G->header->pad[XLO]) bad++;
+					for (k = XHI; k <= YHI; k++) if (I->header->pad[k] != I->header->pad[XLO]) bad++;
 					if (bad) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Image sides have different padding, return pad as not set [-1]\n");
-						*pad = GMT_NOTSET
+						*pad = GMT_NOTSET;
 					}
 					else
-						*pad = G->header->pad[XLO];
+						*pad = I->header->pad[XLO];
 				}
 			}
 			break;
