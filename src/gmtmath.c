@@ -653,7 +653,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 
 	if (Ctrl->T.active) {	/* Do this one here since we need Ctrl->N.col to be set first, if selected */
 		if (t_arg[0]) {	/* Gave an argument, so we can parse and create the array */
-			n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME |
+			n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_SCALAR |
 			                             GMT_ARRAY_RANGE, (unsigned int)Ctrl->N.tcol);
 			n_errors += gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL);
 		}

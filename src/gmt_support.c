@@ -15243,6 +15243,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	<file>
 	 *
 	 * Parsing:
+	 *      0) If <argument> is a single value and flags & GMT_ARRAY_SCALAR is set
+	 *	   then we create an array of one item. Otherwise <argument> may be
+	 *	   interpreted as <inc>.
 	 *	1) If <argument> is a file found in our search path then
 	 *	   we assume it contains one column with the final values.
 	 *	   These are then read in via GMT_Read_Data, which means
@@ -15353,7 +15356,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 
 	/* 2. Dealt with the file option, now parse [<min/max/]<inc>[<unit>] */
 	ns = sscanf (argument, "%[^/]/%[^/]/%s", txt[GMT_X], txt[GMT_Y], txt[GMT_Z]);
-	if ((flags & GMT_ARRAY_RANGE) && ns == 1) {	/* Need to spell out all 3 items */
+	if ((flags & GMT_ARRAY_RANGE) && ns == 1 && (flags & GMT_ARRAY_SCALAR) == 0) {	/* Need to spell out all 3 items */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Must specify valid min/max/inc[<unit>|+n] option\n", option);
 		return GMT_PARSE_ERROR;
 	}
@@ -15362,6 +15365,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		return GMT_PARSE_ERROR;
 	}
 	has_inc = (ns != 2);	/* This means we gave an increment */
+	if (ns == 1 && (flags & GMT_ARRAY_SCALAR)) has_inc = false;	/* Actually, just a single -T<value */
 	ns--;	/* ns is now the index to the txt array with the increment or count (2 or 0) */
 	len = strlen (txt[ns]);	if (len) len--;	/* Now txt[ns][len] holds a unit (or not) */
 	if (!has_inc && (T->logarithmic || T->logarithmic2)) {
@@ -15385,6 +15389,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	if (ns == 0 && strchr (GMT_TIME_UNITS, txt[ns][len]) && (T->temporal || (gmt_M_type (GMT, GMT_IN, tcol) & GMT_IS_RATIME))) {	/* Giving time increments only so need to switch to temporal */
 		T->temporal = true;	/* May already be set but who cares */
 		T->unit = txt[ns][len];
+	}
+	if (ns == 0 && (flags & GMT_ARRAY_SCALAR) && strchr (txt[GMT_X], 'T')) {	/* Giving time constant only so need to switch to temporal */
+		T->temporal = true;	/* May already be set but who cares */
 	}
 	if (T->temporal) {	/* Must set TIME_UNIT and update time system scalings */
 		/* Set input column type as time */
@@ -15465,9 +15472,17 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		}
 		T->set += 2;
 	}
-	else
+	else if (ns == 0 && (flags & GMT_ARRAY_SCALAR)) {
+		if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X), gmt_scanf_arg (GMT, txt[GMT_X], gmt_M_type (GMT, GMT_IN, GMT_X), false, &(T->min)), txt[GMT_X])) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse min value from %s\n", option, txt[GMT_X]);
+			return GMT_PARSE_ERROR;
+		}
+		T->max = T->min;
+	}
+	if (has_inc && ns == 0 && (flags & GMT_ARRAY_NOMINMAX)) {	/* The min/max will be set later */
 		T->delay[GMT_X] = T->delay[GMT_Y] = true;
-	
+	}
+		
 	if (m) m[0] = '+';	/* Restore the modifiers */
 	T->col = tcol;
 	
@@ -15543,7 +15558,12 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 	}
 	if (T->set == 2) return (GMT_NOERROR);	/* Probably makecpt giving just a range */
 
-	if (T->vartime)	/* Must call special function that knows about variable months and years */
+	if (doubleAlmostEqualZero (t0, t1) && gmt_M_is_zero (T->inc)) {	/* Got a single item for our "array" */
+		T->array = gmt_M_memory (GMT, NULL, 1, double);
+		T->array[0] = t0;
+		T->n = 1;
+	}
+	else if (T->vartime)	/* Must call special function that knows about variable months and years */
 		T->n = gmt_time_array (GMT, t0, t1, inc, GMT->current.setting.time_system.unit, false, &(T->array));
 	else if (T->logarithmic)	/* Must call special function that deals with logarithmic arrays */
 		T->n = gmtlib_log_array (GMT, t0, t1, inc, &(T->array));
