@@ -15379,10 +15379,12 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Calendar time not allowed for this module\n", option);
 			return GMT_PARSE_ERROR;
 		}
+#if 0	/* Not sure why I added this, commenting it out because it seems to work fine and why shouldn't it... */
 		if (T->count) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Cannot use +n modifier with calendar time data\n", option);
 			return GMT_PARSE_ERROR;
 		}
+#endif
 		/* Now worry about an increment with time units */
 		if (has_inc) T->unit = txt[ns][len];
 	}
