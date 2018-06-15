@@ -8781,6 +8781,99 @@ void *GMT_Create_Data_ (unsigned int *family, unsigned int *geometry, unsigned i
 }
 #endif
 
+int GMT_Get_Info (void *V_API, unsigned int family, void *data, unsigned int *geometry, uint64_t dim[], double *range, double *inc, unsigned int *registration, int *pad) {
+	/* Return information for this object identified by family and data pointer.
+	 * The known families are GMT_IS_{DATASET,GRID,PALETTE,IMAGE,POSTSCRIPT,GMT_IS_{VECTOR,MATRIX}.
+	 * Not all output args may be set as it depends on the family, and any output argument that
+	 * is NULL is always skipped.  This function is mostly useful for applications where the containers
+	 * are not easily inspected directly, e.g., we are calling from another programming language.
+	 */
+
+	struct GMTAPI_CTRL *API = NULL;
+
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (data == NULL) return_error (API, GMT_PTR_IS_NULL);	/* Error if data is NULL */
+	API = api_get_api_ptr (V_API);
+	API->error = GMT_NOERROR;
+
+	switch (family) {	/* dataset, cpt, text, grid , image, vector, matrix */
+		case GMT_IS_GRID:	/* GMT grid, allocate header but not data array */
+			{	/* Deal with a local grid pointer */
+				struct GMT_GRID *G = api_get_grid_data (data);
+				if (dim) { dim[GMT_X] = G->header->n_columns; dim[GMT_Y] = G->header->n_rows; }
+				if (range) gmt_M_memcpy (range, G->header->wesn, 4U, double);
+				if (inc) gmt_M_memcpy (inc, G->header->inc, 2U, double);
+				if (geometry) *geometry = GMT_IS_SURFACE;
+				if (registration) *registration = G->header->registration;
+				if (pad) *pad = G->header->pad[GMT_X];	/* Need to check they are all the same, if not return undefined or something */
+			}
+			break;
+		case GMT_IS_IMAGE:	/* GMT image, allocate header but not data array */
+			{	/* Deal with a local image pointer */
+				struct GMT_IMAGE *I = api_get_image_data (data);
+				if (dim) { dim[GMT_X] = I->header->n_columns; dim[GMT_Y] = I->header->n_rows; dim[GMT_Z] = I->header->n_bands; }
+				if (range) gmt_M_memcpy (range, I->header->wesn, 4U, double);
+				if (inc) gmt_M_memcpy (inc, I->header->inc, 2U, double);
+				if (geometry) *geometry = GMT_IS_IMAGE;
+				if (registration) *registration = I->header->registration;
+				if (pad) *pad = I->header->pad[GMT_X];	/* Need to check they are all the same, if not return undefined or something */
+			}
+			break;
+		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables, segments, rows, and columns */
+			{	/* Deal with a local image pointer */
+				struct GMT_DATASET *D = api_get_dataset_data (data);
+				if (dim) { dim[GMT_TBL] = D->n_tables; dim[GMT_SEG] = D->n_segments; dim[GMT_ROW] = D->n_records;  dim[GMT_COL] = D->n_columns; }
+				if (geometry) *geometry = D->geometry;
+			}
+			break;
+		case GMT_IS_PALETTE:	/* GMT CPT, allocate one with space for dim[0] color entries */
+			{	/* Deal with a local image pointer */
+				struct GMT_PALETTE *P = api_get_palette_data (data);
+				if (dim) dim[0] = P->n_colors;
+				if (range) gmt_M_memcpy (range, P->minmax, 2U, double);
+				if (geometry) *geometry = GMT_IS_NONE;
+			}
+			break;
+		case GMT_IS_POSTSCRIPT:	/* GMT PS struct, allocate one struct */
+			{	/* Deal with a local image pointer */
+				struct GMT_POSTSCRIPT *X = api_get_postscript_data (data);
+				if (dim) dim[0] = X->n_bytes;
+				if (geometry) *geometry = GMT_IS_NONE;
+			}
+			break;
+		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with the requested number of layers, rows & columns */
+			{	/* Deal with a local image pointer */
+				struct GMT_MATRIX *M = api_get_matrix_data (data);
+				if (dim) { dim[GMT_X] = M->n_columns; dim[GMT_Y] = M->n_rows; dim[GMT_Z] = M->n_layers; }
+				if (range) gmt_M_memcpy (range, M->range, 6U, double);
+				if (registration) *registration = M->registration;
+				if (geometry) *geometry = GMT_IS_SURFACE;
+			}
+			break;
+		case GMT_IS_VECTOR:	/* GMT vector container, allocate one with the requested number of columns & rows */
+			{	/* Deal with a local image pointer */
+				struct GMT_VECTOR *V = api_get_vector_data (data);
+				if (dim) { dim[GMT_X] = V->n_columns; dim[GMT_Y] = V->n_rows; }
+				if (range) gmt_M_memcpy (range, V->range, 2U, double);
+				if (registration) *registration = V->registration;
+				if (geometry) *geometry = GMT_IS_PLP;
+			}
+			break;
+		default:
+ 			return_error (API, GMT_NOT_A_VALID_FAMILY);
+			break;
+	}
+
+	return (API->error);
+}
+
+#ifdef FORTRAN_API
+int GMT_Get_Info_ (unsigned int *family, void *container, unsigned int *geometry, uint64_t *dim, double *range, double *inc, unsigned int *registration, int *pad) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Info (GMT_FORTRAN, *family, container, geometry, dim, range, inc, registration, pad));
+}
+#endif
+
 /*! Convenience function to get grid or image node */
 uint64_t GMT_Get_Index (void *V_API, struct GMT_GRID_HEADER *header, int row, int col) {
 	/* V_API not used but all API functions take V_API so no exceptions! */
