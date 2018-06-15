@@ -1810,7 +1810,7 @@ GMT_LOCAL void api_matrixinfo_to_grdheader (struct GMT_CTRL *GMT, struct GMT_GRI
 	}
 	else
 		gmt_M_memcpy (h->wesn, M_obj->range, 4, double);
-	gmt_M_memset (h->pad, 4, int);	/* External matrices have no padding */
+	/* External matrices have no padding but the internal grid will */
 	/* Compute xy_off and increments */
 	h->xy_off = (h->registration == GMT_GRID_NODE_REG) ? 0.0 : 0.5;
 	h->inc[GMT_X] = gmt_M_get_inc (GMT, h->wesn[XLO], h->wesn[XHI], h->n_columns, h->registration);
@@ -2842,7 +2842,7 @@ GMT_LOCAL struct GMT_MATRIX *api_read_matrix (struct GMT_CTRL *GMT, void *source
 
 	if (src_type == GMT_IS_FILE) {	/* dest is a file name */
 		strncpy (M_file, source, GMT_BUFSIZ-1);
-		if ((fp = fopen (M_file, "r")) == NULL) {
+		if ((fp = gmt_fopen (GMT, M_file, GMT->current.io.r_mode)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open Matrix file %s\n", M_file);
 			return_null (GMT->parent, GMT_ERROR_ON_FOPEN);
 		}
@@ -2910,8 +2910,8 @@ GMT_LOCAL struct GMT_MATRIX *api_read_matrix (struct GMT_CTRL *GMT, void *source
 			api_put_val (&(M->data), ij, GMT->hidden.mem_coord[col][row]);
 		}
 	}
-
-	if (close_file) fclose (fp);
+	M->size = dim[GMT_X] * dim[GMT_Y];
+	if (close_file) gmt_fclose (GMT, fp);
 	return (M);
 }
 
