@@ -40,37 +40,38 @@
  * GMT_Message		      : Report an message given a verbosity level
  * GMT_Report		      : Report an error given an error code
  *
- * There are 29 further public functions used for GMT i/o activities:
+ * There are 30 further public functions used for GMT i/o activities:
  *
  * GMT_Alloc_Segment      : Allocate a single DATASET segment
- * GMT_Begin_IO		      : Allow i/o to take place for rec-by-rec operations
+ * GMT_Begin_IO	          : Allow i/o to take place for rec-by-rec operations
  * GMT_Convert_Data       : Convert between different data sets, if possible
- * GMT_Create_Data	      : Return an empty container for a new data set
- * GMT_Destroy_Data	      : Destroy a data set and its container
+ * GMT_Create_Data        : Return an empty container for a new data set
+ * GMT_Destroy_Data       : Destroy a data set and its container
  * GMT_Duplicate_Data     : Make an exact duplicate of a dataset
  * GMT_Duplicate_String   : Allocates a copy of a string to be freed by API
- * GMT_End_IO		      : Disallow further rec-by-rec i/o
- * GMT_Get_Record	      : Get the next single data record from the source(s)
- * GMT_Get_Row		      : Read one row from a grid
- * GMT_Get_Matrix	      : Get user matrix from GMT_MATRIX array
- * GMT_Get_Vector	      : Get user vector from GMT_VECTOR column
- * GMT_Put_Strings	      : Get user strings from GMT_VECTOR or MATRIX container
- * GMT_Init_IO		      : Initialize rec-by-rec i/o machinery before program use
+ * GMT_End_IO             : Disallow further rec-by-rec i/o
+ * GMT_Get_Info           : Get meta-data from the object passed
+ * GMT_Get_Record         : Get the next single data record from the source(s)
+ * GMT_Get_Row            : Read one row from a grid
+ * GMT_Get_Status         : Exmine current status of record-by-record i/o
+ * GMT_Get_Matrix         : Get user matrix from GMT_MATRIX array
+ * GMT_Get_Vector         : Get user vector from GMT_VECTOR column
+ * GMT_Put_Strings        : Get user strings from GMT_VECTOR or MATRIX container
+ * GMT_Init_IO            : Initialize rec-by-rec i/o machinery before program use
  * GMT_Init_VirtualFile   : Reset a virtual file for reuse
  * GMT_Open_VirtualFile   : Open a memory location for reading or writing by a module
- * GMT_Put_Record	      : Send the next output record to its destination
- * GMT_Put_Row		      : Write one row to a grid
- * GMT_Put_Matrix	      : Hook user matrix to GMT_MATRIX array
- * GMT_Put_Vector	      : Hook user vector to GMT_VECTOR column
- * GMT_Put_Strings	      : Hook user strings to GMT_VECTOR or MATRIX container
- * GMT_Read_Data	      : Load data into program memory from selected source
- * GMT_Read_Group	      : Read numerous files into an array of objects
+ * GMT_Put_Record         : Send the next output record to its destination
+ * GMT_Put_Row            : Write one row to a grid
+ * GMT_Put_Matrix         : Hook user matrix to GMT_MATRIX array
+ * GMT_Put_Vector         : Hook user vector to GMT_VECTOR column
+ * GMT_Put_Strings        : Hook user strings to GMT_VECTOR or MATRIX container
+ * GMT_Read_Data          : Load data into program memory from selected source
+ * GMT_Read_Group         : Read numerous files into an array of objects
  * GMT_Read_VirtualFile   : Obtain the memory resource that a module wrote to.
- * GMT_Register_IO	      : Register a source (or destination) for i/o use
- * GMT_Set_Comment	      : Update a comment for a data set
- * GMT_Status_IO	      : Exmine current status of record-by-record i/o
- * GMT_Write_Data	      : Place data set from program memory to selected destination
- * GMT_Encode_Options	  : Used by external APIs to fill out options from implicit rules
+ * GMT_Register_IO        : Register a source (or destination) for i/o use
+ * GMT_Set_Comment        : Update a comment for a data set
+ * GMT_Write_Data         : Place data set from program memory to selected destination
+ * GMT_Encode_Options     : Used by external APIs to fill out options from implicit rules
 
  * The above 29 functions deal with registration of input sources (files,
  * streams, file handles, or memory locations) and output destinations
@@ -6531,12 +6532,12 @@ int GMT_End_IO_ (unsigned int *direction, unsigned int *mode) {
 #endif
 
 /*! . */
-int GMT_Status_IO (void *V_API, unsigned int mode) {
+int GMT_Get_Status (void *V_API, unsigned int mode) {
 	/* Returns nonzero (true) or 0 (false) if the current io status
 	 * associated with record-by-record reading matches the
 	 * specified mode.  The modes are:
 	 * GMT_IO_TABLE_HEADER		: Is current record a table header?
-	 * GMT_IO_SEGMENT_HEADER		: Is current record a segment header?
+	 * GMT_IO_SEGMENT_HEADER	: Is current record a segment header?
 	 * GMT_IO_ANY_HEADER		: Is current record a header or segment header?
 	 * GMT_IO_MISMATCH		: Did current record result in a parsing error?
 	 * GMT_IO_EOF			: Did we reach end-of-file for entire data set(EOF)?
@@ -6561,9 +6562,9 @@ int GMT_Status_IO (void *V_API, unsigned int mode) {
 }
 
 #ifdef FORTRAN_API
-int GMT_Status_IO_ (unsigned int *mode) {
+int GMT_Get_Status_ (unsigned int *mode) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Status_IO (GMT_FORTRAN, *mode));
+	return (GMT_Get_Status (GMT_FORTRAN, *mode));
 }
 #endif
 
@@ -12276,6 +12277,19 @@ int GMT_Get_ID (void *API, unsigned int family, unsigned int direction, void *re
 int GMT_Get_ID_ (unsigned int *family, unsigned int *direction, void *resource) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_ID (GMT_FORTRAN, *family, *direction, resource));
+}
+#endif
+
+/* Changed name to always have a verb */
+
+int GMT_Status_IO (void *V_API, unsigned int mode) {
+	return (GMT_Get_Status (V_API, mode));
+}
+
+#ifdef FORTRAN_API
+int GMT_Status_IO_ (unsigned int *mode) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Status (GMT_FORTRAN, *mode));
 }
 #endif
 

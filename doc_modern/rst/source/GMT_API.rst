@@ -794,6 +794,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Row_             | Import a single grid row                              |
     +--------------------------+-------------------------------------------------------+
+    | GMT_Get_Status_          | Check status of record-by-record i/o                  |
+    +--------------------------+-------------------------------------------------------+
     | GMT_Get_Strings_         | Obtain pointer to user strings from matrix or vector  |
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Values_          | Convert string into coordinates or dimensions         |
@@ -843,8 +845,6 @@ The C/C++ API is deliberately kept small to make it easy to use.
     | GMT_Set_Geometry_        | Specify data geometry for rec-by-rec i/o              |
     +--------------------------+-------------------------------------------------------+
     | GMT_Set_Index_           | Convert row, col into a grid or image index           |
-    +--------------------------+-------------------------------------------------------+
-    | GMT_Status_IO_           | Check status of record-by-record i/o                  |
     +--------------------------+-------------------------------------------------------+
     | GMT_Update_Option_       | Modify an option structure                            |
     +--------------------------+-------------------------------------------------------+
@@ -1818,7 +1818,7 @@ file). Using GMT_Get_Record_ requires you to first initialize the
 source(s) with GMT_Init_IO_. For certain records, GMT_Get_Record_
 will return NULL and sets status codes that your program will need to
 examine to take appropriate response. Table :ref:`IO-status <tbl-iostatus>` lists the
-various status codes you can check for, using the ``GMT_Status_IO`` function (see
+various status codes you can check for, using the ``GMT_Get_Status`` function (see
 next section).
 
 Examining record status
@@ -1829,11 +1829,11 @@ record represents. Given the presence of headers, data gaps, NaN-record,
 etc., the developer may want to check the status after reading the current
 record. The internal i/o status mode can be interrogated with the function
 
-.. _GMT_Status_IO:
+.. _GMT_Get_Status:
 
   ::
 
-    int GMT_Status_IO (void *API, unsigned int mode);
+    int GMT_Get_Status (void *API, unsigned int mode);
 
 which returns 0 (false) or 1 (true) if the current status is reflected
 by the specified ``mode``. There are 11 different modes available to

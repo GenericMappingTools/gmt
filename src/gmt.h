@@ -78,7 +78,7 @@ EXTERN_MSC int GMT_Register_IO        (void *API, unsigned int family, unsigned 
 EXTERN_MSC int GMT_Init_IO            (void *API, unsigned int family, unsigned int geometry, unsigned int direction,
                                           unsigned int mode, unsigned int n_args, void *args);
 EXTERN_MSC int GMT_Begin_IO           (void *API, unsigned int family, unsigned int direction, unsigned int header);
-EXTERN_MSC int GMT_Status_IO          (void *API, unsigned int mode);
+EXTERN_MSC int GMT_Get_Status         (void *API, unsigned int mode);
 EXTERN_MSC int GMT_End_IO             (void *API, unsigned int direction, unsigned int mode);
 EXTERN_MSC int GMT_Write_Data         (void *API, unsigned int family, unsigned int method, unsigned int geometry,
                                           unsigned int mode, double wesn[], const char *output, void *data);
@@ -174,14 +174,15 @@ EXTERN_MSC int GMT_Get_Enum			   (char *key);
 EXTERN_MSC int GMT_Set_AllocMode		   (void *API, unsigned int family, void *object);
 EXTERN_MSC int GMT_Extract_Region		   (void *API, char *file, double wesn[]);
 
-/* These 7 functions are provided for backwards compatibility but are considered obsolete as of 6 */
+/* These 8 functions are provided for backwards compatibility but are considered obsolete as of 6 */
 EXTERN_MSC void *GMT_Get_Data       (void *API, int object_ID, unsigned int mode, void *data);
 EXTERN_MSC int GMT_Put_Data         (void *API, int object_ID, unsigned int mode, void *data);
 EXTERN_MSC void *GMT_Retrieve_Data  (void *API, int object_ID);
 EXTERN_MSC int GMT_Encode_ID        (void *API, char *string, int object_ID);
 EXTERN_MSC int GMT_Get_ID           (void *API, unsigned int family, unsigned int direction, void *resource);
 EXTERN_MSC int GMT_Get_Value        (void *API, const char *arg, double *par);
-EXTERN_MSC int GMT_Get_Family	      (void *API, unsigned int direction, struct GMT_OPTION *head);
+EXTERN_MSC int GMT_Get_Family	    (void *API, unsigned int direction, struct GMT_OPTION *head);
+EXTERN_MSC int GMT_Status_IO        (void *API, unsigned int mode);
 
 #ifdef __cplusplus
 }
