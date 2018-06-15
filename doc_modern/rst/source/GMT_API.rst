@@ -784,6 +784,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Index_           | Convert row, col into a grid or image index           |
     +--------------------------+-------------------------------------------------------+
+    | GMT_Get_Info_            | Obtain meta data (range, dimension), ... from object  |
+    +--------------------------+-------------------------------------------------------+
     | GMT_Get_Matrix_          | Obtain pointer to user matrix from container          |
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Pixel_           | Get grid or image node                                |
@@ -1363,6 +1365,28 @@ of the segment; otherwise a new segment is first allocated.
 There is also the option of controlling the allocation of the segment
 array by setting n_rows = 0.  This would allow external arrays (double-precision only) to connect to
 the S->data[col] arrays and not be freed by GMT's garbage collector.
+
+
+Get information (meta data) about object
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are creating objects in an environment where the objects are opaque pointers, then it may
+be necessary to inquire about an objects dimension, range, registration, padding, etc.  We can
+do this with 
+
+
+.. _GMT_Get_Info:
+
+  ::
+
+    void *_GMT_Get_Info (void *API, unsigned int family, void *data, unsigned int *geometry,
+	uint64_t dim[], double *range, double *inc, unsigned int *registration, int *pad)
+
+where ``family`` is the type of object referenced by ``data``. Depending on the type of object,
+one or more of ``dim``, ``range``, ``inc``, ``registration``, and ``pad`` will be initialized,
+but only if they do not point to NULL.  The function returns an error code if an invalid family
+was selected.
+
 
 Duplicate resources
 -------------------

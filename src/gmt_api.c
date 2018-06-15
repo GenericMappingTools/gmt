@@ -8805,7 +8805,16 @@ int GMT_Get_Info (void *V_API, unsigned int family, void *data, unsigned int *ge
 				if (inc) gmt_M_memcpy (inc, G->header->inc, 2U, double);
 				if (geometry) *geometry = GMT_IS_SURFACE;
 				if (registration) *registration = G->header->registration;
-				if (pad) *pad = G->header->pad[GMT_X];	/* Need to check they are all the same, if not return undefined or something */
+				if (pad) {	/* Need to check they are all the same, if not return undefined or something */
+					unsigned int bad = 0, k;
+					for (k = XHI; k <= YHI; k++) if (G->header->pad[k] != G->header->pad[XLO]) bad++;
+					if (bad) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Grid sides have different padding, return pad as not set [-1]\n");
+						*pad = GMT_NOTSET
+					}
+					else
+						*pad = G->header->pad[XLO];
+				}
 			}
 			break;
 		case GMT_IS_IMAGE:	/* GMT image, allocate header but not data array */
@@ -8816,7 +8825,16 @@ int GMT_Get_Info (void *V_API, unsigned int family, void *data, unsigned int *ge
 				if (inc) gmt_M_memcpy (inc, I->header->inc, 2U, double);
 				if (geometry) *geometry = GMT_IS_IMAGE;
 				if (registration) *registration = I->header->registration;
-				if (pad) *pad = I->header->pad[GMT_X];	/* Need to check they are all the same, if not return undefined or something */
+				if (pad) {	/* Need to check they are all the same, if not return undefined or something */
+					unsigned int bad = 0, k;
+					for (k = XHI; k <= YHI; k++) if (G->header->pad[k] != G->header->pad[XLO]) bad++;
+					if (bad) {
+						GMT_Report (API, GMT_MSG_VERBOSE, "Image sides have different padding, return pad as not set [-1]\n");
+						*pad = GMT_NOTSET
+					}
+					else
+						*pad = G->header->pad[XLO];
+				}
 			}
 			break;
 		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables, segments, rows, and columns */
@@ -8827,7 +8845,7 @@ int GMT_Get_Info (void *V_API, unsigned int family, void *data, unsigned int *ge
 			}
 			break;
 		case GMT_IS_PALETTE:	/* GMT CPT, allocate one with space for dim[0] color entries */
-			{	/* Deal with a local image pointer */
+			{	/* Deal with a local palette pointer */
 				struct GMT_PALETTE *P = api_get_palette_data (data);
 				if (dim) dim[0] = P->n_colors;
 				if (range) gmt_M_memcpy (range, P->minmax, 2U, double);
@@ -8835,17 +8853,17 @@ int GMT_Get_Info (void *V_API, unsigned int family, void *data, unsigned int *ge
 			}
 			break;
 		case GMT_IS_POSTSCRIPT:	/* GMT PS struct, allocate one struct */
-			{	/* Deal with a local image pointer */
+			{	/* Deal with a local PostScript pointer */
 				struct GMT_POSTSCRIPT *X = api_get_postscript_data (data);
 				if (dim) dim[0] = X->n_bytes;
 				if (geometry) *geometry = GMT_IS_NONE;
 			}
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with the requested number of layers, rows & columns */
-			{	/* Deal with a local image pointer */
+			{	/* Deal with a local matrix pointer */
 				struct GMT_MATRIX *M = api_get_matrix_data (data);
 				if (dim) { dim[GMT_X] = M->n_columns; dim[GMT_Y] = M->n_rows; dim[GMT_Z] = M->n_layers; }
-				if (range) gmt_M_memcpy (range, M->range, 6U, double);
+				if (range) gmt_M_memcpy (range, M->range, (M->n_layers > 1) ? 6U : 4U, double);
 				if (registration) *registration = M->registration;
 				if (geometry) *geometry = GMT_IS_SURFACE;
 			}
