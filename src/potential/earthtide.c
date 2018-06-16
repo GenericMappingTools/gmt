@@ -1,11 +1,23 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
+ * 	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	See LICENSE.TXT file for copying and redistribution conditions.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
  *
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: ...
+ * Brief synopsis: Compute the three components of earthtides as time-series or grids.
+ * Optionally compute also Sun and Moon position in lon,lat
  *
  * Author:	Dennis Milbert (solif.f http://geodesyworld.github.io/SOFTS/solid.htm)
  *          Joaquim Luis (Translate to C and integrate in GMT)
@@ -1203,18 +1215,23 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -Clon/lat -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s -T<date1>/<date2>|n_minutes -S\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s -S -T[<min>/<max>/][-|+]<inc>[<unit>][+n]\n\n", GMT_Rgeo_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output grid file.\n");
-	GMT_Option (API, "I,R");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <min> to <max> by <inc>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of t-values to produce over the range instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append a valid time unit (%s) to the increment and add +t.\n", GMT_TIME_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no -T is provided get current time in UTC from the computer clock.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Option (API, "V,a,bi2,di,e,f,g,h,i");
-	if (gmt_M_showusage (API)) {
-	}
-	GMT_Option (API, "r,s,x,:,.");
+	GMT_Option (API, "I,R");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Output position of Sun and Moon in geographical coordinates plus\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   disatnce in meters. Output is a Mx7 matrix where M is number of\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   times (set by -T) and coluns are time, sun_lon, sun_lat, sun_dist\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   moon_lon, moon_lat, moon_dist\n");
+	GMT_Option (API, "V");
+	GMT_Option (API, "r,.");
 	
 	return (GMT_MODULE_USAGE);
 }
