@@ -42,8 +42,10 @@ struct EARTHTIDE_CTRL {
 	} G;
 	struct EARTHTIDE_T {	/* -T[] */
 		bool active;
+		bool one_time;
 		int duration;
 		double time, start, stop;
+		struct GMT_ARRAY T;
 	} T;
 };
 
@@ -58,8 +60,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->G.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->G.file);
+	gmt_free_array (GMT, &(C->T.T));
+	gmt_M_free (GMT, C);
 }
 
 struct {
@@ -649,8 +652,8 @@ GMT_LOCAL void detide(double *xsta, int mjd, double fmjd, double *xsun, double *
 	/* ** term in direction of sun/moon vector */
 	x2sun = l2 * 3. * scsun;
 	x2mon = l2 * 3. * scmon;
-	x3sun = l3 * 3. / 2. * (scsun * 5 * scsun - 1);
-	x3mon = l3 * 3. / 2. * (scmon * 5 * scmon - 1);
+	x3sun = l3 * 1.5 * (scsun * 5 * scsun - 1);
+	x3mon = l3 * 1.5 * (scmon * 5 * scmon - 1);
 	/* ** factors for sun/moon */
 	mass_ratio_sun = 332945.943062;
 	mass_ratio_moon = 0.012300034;
@@ -1021,7 +1024,7 @@ GMT_LOCAL void mjdciv(int mjd, double fmjd, int *iyr, int *imo, int *idy, int *i
 }
 
 /* ------------------------------------------------------------------------------------------------------- */
-GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, int duration) {
+GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct GMT_ARRAY T) {
 	/* Get the Sun & Moon position at times starting time */
 	bool leapflag = false;
 	int k, mjd, year, month, day, hour, min;
@@ -1030,17 +1033,25 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, int du
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
+	if (T.unit == 'm')
+		tdel2 = 1.0 / (24 * 60);	/* 1 minute steps */
+	else if (T.unit == 's') 
+		tdel2 = 1.0 / (24 * 3600);	/* 1 secons steps (????) */
+	else if (T.unit == 'h') 
+		tdel2 = 1.0 / 24;			/* 1 hour steps */
+
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
 	hour = (int)Cal->hour;	min = (int)Cal->min;
 	civmjd(year, month, day, hour, min, Cal->sec, &mjd, &fmjd);
 	mjdciv(mjd, fmjd, &year, &month, &day, &hour, &min, &Cal->sec);	/* normalize civil time */
 	setjd0(year, month, day);
-	tdel2 = 1.0 / 24 / 60;			/* 1 minute steps */
-	for (k = 0; k < duration; k++) {
+	//tdel2 = 1.0 / 24 / 60;			/* 1 minute steps */
+	for (k = 0; k < T.n; k++) {
 		sunxyz(mjd, fmjd, rsun, &leapflag);      /* mjd/fmjd in UTC */
 		moonxyz(mjd, fmjd, rmoon, &leapflag);
 		mjdciv(mjd, fmjd + 1.1574074074074074e-8, &year, &month, &day, &hour, &min, &Cal->sec);
-		out[0] = hour * 3600 + min * 60;
+		//out[0] = hour * 3600 + min * 60;
+		out[0] = T.array[k];
 		gmt_ECEF_inverse (GMT, rsun, convd);
 		out[1] = convd[0];	out[2] = convd[1];	out[3] = convd[2];
 		gmt_ECEF_inverse (GMT, rmoon, convd);
@@ -1101,11 +1112,9 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 		lons[col] *= D2R;
 	}
 
-	//for (row = 0; row < Grid->header->n_rows; row++) {
 	for (row = Grid->header->n_rows; row > 0; row--) {
 		lat = (Grid->header->wesn[YLO] + (row - 1) * Grid->header->inc[GMT_Y]) * D2R;
 		for (col = 0; col < Grid->header->n_columns; col++) {
-			//lon = (west + col * Grid->header->inc[GMT_X]) * D2R;
 			geoxyz(lat, lons[col], 0, &xsta[0], &xsta[1], &xsta[2]);
 			detide(xsta, mjd, fmjd, rsun, rmoon, etide, &leapflag);
 			/* determine local geodetic horizon components (topocentric) */
@@ -1129,7 +1138,7 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 }
 
 /* ------------------------------------------------------------------------------------------------------- */
-GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, double lat, int duration) {
+GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, double lat, struct GMT_ARRAY T) {
 	/* iyr	year    [1901-2099] */
 	/* imo	month number [1-12] */
 	/* idy	day          [1-31] */
@@ -1151,14 +1160,20 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
+	if (T.unit == 'm')
+		tdel2 = 1.0 / (24 * 60);	/* 1 minute steps */
+	else if (T.unit == 's') 
+		tdel2 = 1.0 / (24 * 3600);	/* 1 secons steps (????) */
+	else if (T.unit == 'h') 
+		tdel2 = 1.0 / 24;			/* 1 hour steps */
+
 	/* here comes the sun  (and the moon)  (go, tide!) */
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
 	hour = (int)Cal->hour;	min = (int)Cal->min;
 	civmjd(year, month, day, hour, min, Cal->sec, &mjd, &fmjd);
 	mjdciv(mjd, fmjd, &year, &month, &day, &hour, &min, &Cal->sec);	/* normalize civil time */
 	setjd0(year, month, day);
-	tdel2 = 1.0 / 24 / 60;			/* 1 minute steps */
-	for (k = 0; k < duration; k++) {
+	for (k = 0; k < T.n; k++) {
 		leapflag = false;                       /* false means flag not raised */
 		sunxyz(mjd, fmjd, rsun, &leapflag);      /* mjd/fmjd in UTC */
 		moonxyz(mjd, fmjd, rmoon, &leapflag);
@@ -1167,7 +1182,8 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 		rge(lat, lon, &ut, &vt, &wt, etide[0], etide[1], etide[2]);		/* tide vect */
 		d__2 = Cal->sec - 0.001;
 		mjdciv(mjd, fmjd + 1.1574074074074074e-8, &year, &month, &day, &hour, &min, &d__2);
-		out[0] = hour * 3600 + min * 60 + Cal->sec;
+		//out[0] = hour * 3600 + min * 60 + Cal->sec;
+		out[0] = T.array[k];
 		out[1] = ut;
 		out[2] = vt;
 		out[3] = wt;
@@ -1187,7 +1203,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -Clon/lat -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s -T<date1>/<date2>|n_minutes\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s -T<date1>/<date2>|n_minutes -S\n", GMT_Rgeo_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -1252,10 +1268,28 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 					n_errors++;
 					break;
 				}
+				//n_errors += gmt_parse_array(GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME, 0);
+
 				t = opt->arg;
 				if ((ptr = strchr(t, '/')) != NULL) {	/* Break string at '/' */
+					n_errors += gmt_parse_array(GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME, 0);
 					ptr[0] = '\0';
 					t2 = &ptr[1];
+				}
+				else {
+					/* Temporary hack to cheat away the fact that -Tdate alone is note working */
+					strcpy(txt_a, t);
+					strcat(txt_a, "/");
+					strcat(txt_a, t);
+					if (t[strlen(t)-1] == 'T')
+						strcat(txt_a, "00:00:01");
+					else
+						strcat(txt_a, ".5");
+
+					strcat(txt_a, "/0.5s");
+					Ctrl->T.one_time = true;
+
+					n_errors += gmt_parse_array(GMT, 'T', txt_a, &(Ctrl->T.T), GMT_ARRAY_TIME, 0);
 				}
 				if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME,
 				                             gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->T.start), t)) {
@@ -1290,8 +1324,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 		}
 	}
 
-	if (Ctrl->S.active && !Ctrl->T.duration)						/* For Sun/Moon tracks set a default duration of 1 */
-		Ctrl->T.duration = 1;
 	if (Ctrl->T.active && !Ctrl->T.duration && !Ctrl->T.stop)		/* Set a default duration of 10 days in minutes */
 		Ctrl->T.duration = 24 * 60 * 10;
 
@@ -1353,7 +1385,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		cal_start.sec = timeinfo->tm_sec;
 	}
 	else
-		gmt_gcal_from_dt (GMT, Ctrl->T.start, &cal_start);
+		gmt_gcal_from_dt (GMT, Ctrl->T.T.min, &cal_start);
 
 	gmt_M_tic(GMT);
 
@@ -1377,6 +1409,11 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 			gmt_ECEF_init (GMT, &Ctrl->S.datum);
 			n_out = 7;
 		}
+		if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) /* Get the array built or read */
+			Return (GMT_RUNTIME_ERROR);
+		
+		if (Ctrl->T.one_time)
+			Ctrl->T.T.n = 1;
 
 		/* Specify output expected columns */
 		if ((error = GMT_Set_Columns (API, GMT_OUT, n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
@@ -1392,10 +1429,12 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) 	/* Sets output geometry */
 			Return (API->error);
 	
+		gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_ABSTIME);
+
 		if (Ctrl->S.active)
-			sun_moon_track(GMT, &cal_start, Ctrl->T.duration);
+			sun_moon_track(GMT, &cal_start, Ctrl->T.T);
 		else
-			solid_ts(GMT, &cal_start, Ctrl->C.x, Ctrl->C.y, Ctrl->T.duration);
+			solid_ts(GMT, &cal_start, Ctrl->C.x, Ctrl->C.y, Ctrl->T.T);
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data output */
 			Return (API->error);
