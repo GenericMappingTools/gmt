@@ -1247,11 +1247,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 					n_errors++;
 				}
 				else {
-					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X),
-					                                     gmt_scanf_arg (GMT, txt_a, gmt_M_type (GMT, GMT_IN, GMT_X),
+					n_errors += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf_arg (GMT, txt_a, GMT_IS_LON,
 					                                     false, &Ctrl->C.x), txt_a);
-					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y),
-					                                     gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y),
+					n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf_arg (GMT, txt_b, GMT_IS_LAT,
 					                                     false, &Ctrl->C.y), txt_b);
 					if (n_errors) GMT_Report (GMT->parent, GMT_MSG_NORMAL,
 					                          "Syntax error -C option: Undecipherable argument %s\n", opt->arg);
@@ -1276,6 +1274,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 					ptr[0] = '\0';
 					t2 = &ptr[1];
 				}
+#if 1
 				else {
 					/* Temporary hack to cheat away the fact that -Tdate alone is note working */
 					strcpy(txt_a, t);
@@ -1291,6 +1290,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 
 					n_errors += gmt_parse_array(GMT, 'T', txt_a, &(Ctrl->T.T), GMT_ARRAY_TIME, 0);
 				}
+#endif
 				if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME,
 				                             gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->T.start), t)) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -T: Start time (%s) in wrong format\n", t);
