@@ -20,7 +20,7 @@
  * Optionally compute also Sun and Moon position in lon,lat
  *
  * Author:	Dennis Milbert (solif.f http://geodesyworld.github.io/SOFTS/solid.htm)
- *          Joaquim Luis (Translate to C and integrate in GMT)
+ *          Joaquim Luis (Translated to C and integrated in GMT)
  * Date:	12-JUN-2018
  * Version:	6 API
  */
@@ -29,10 +29,10 @@
 
 #define THIS_MODULE_NAME	"earthtide"
 #define THIS_MODULE_LIB		"potential"
-#define THIS_MODULE_PURPOSE	"Compute grids or time-series of Earth tides"
-#define THIS_MODULE_KEYS	">DI,GG}"
+#define THIS_MODULE_PURPOSE	"Compute grids or time-series of solid Earth tides"
+#define THIS_MODULE_KEYS	">DT,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVabfginrs" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-:RVbor" GMT_ADD_x_OPT
 
 #define EARTH_RAD 6378137.0		// GRS80
 #define ECC2 0.00669438002290341574957
@@ -1043,7 +1043,8 @@ GMT_LOCAL void mjdciv(int mjd, double fmjd, int *iyr, int *imo, int *idy, int *i
 GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct GMT_ARRAY T) {
 	/* Get the Sun & Moon position at times starting time */
 	bool leapflag = false;
-	int k, mjd, year, month, day, hour, min;
+	uint64_t k;
+	int mjd, year, month, day, hour, min;
 	double fmjd, rsun[3], tdel2, rmoon[3], out[7], convd[3];
 	struct GMT_RECORD *Out = NULL;
 
@@ -1170,7 +1171,8 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 	/* lat	Lat. (pos N.) [- 90, +90] */
 	/* lon	Lon. (pos E.) [-360,+360] */
 	bool leapflag = false;
-	int k, mjd, year, month, day, hour, min;
+	uint64_t k;
+	int mjd, year, month, day, hour, min;
 	double d__2, ut, vt, wt;
 	double fmjd, xsta[3], rsun[3], tdel2, etide[3], rmoon[3], out[4];
 	struct GMT_RECORD *Out = NULL;
@@ -1228,17 +1230,18 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<outgrid> -T[<min>/<max>/][-|+]<inc>[<unit>][+n] [-C<comp>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Llon/lat] [%s] [-S] \n\n", GMT_I_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-L<lon>/<lat>]\n\t[%s] [-S]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_bo_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output grid file(s).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If more than one component is set via -C then <grdfile> must contain %%s to format component code.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If more than one component is set via -C then <outgrid> must contain %%s to format component code.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <min> to <max> by <inc>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of t-values to produce over the range instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a valid time unit (%s) to the increment and add +t.\n", GMT_TIME_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no -T is provided get current time in UTC from the computer clock.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no -G or -S are provided -T is interpreted to mean compute a time-series\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no -G or -S are provided then -T is interpreted to mean compute a time-series\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   at the location specified by -L, thus then -L becomes mandatory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   When -G and -T only first time T series is considered.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -1248,14 +1251,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\t-C List of comma-separated components to be written as grids (requires -G). Choose from\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   x|e, y|n, z|v. [Default is v(ertical) only].\n");
 	GMT_Option (API, "I");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L <lon/lat> Geographical coordinates where to compute the time-series.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L <lon/lat> Geographical coordinate where to compute the time-series.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Output position of Sun and Moon in geographical coordinates plus\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   disatnce in meters. Output is a Mx7 matrix where M is number of\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   times (set by -T) and coluns are time, sun_lon, sun_lat, sun_dist\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   moon_lon, moon_lat, moon_dist\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   distance in meters. Output is a Mx7 matrix, where M is the number of\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   times (set by -T) and columns are time, sun_lon, sun_lat, sun_dist\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   moon_lon, moon_lat, moon_dist.\n");
 	GMT_Option (API, "V");
-	GMT_Option (API, "r,.");
+	GMT_Option (API, "b,o,r,x,.");
 	
 	return (GMT_MODULE_USAGE);
 }
