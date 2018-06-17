@@ -1445,7 +1445,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 			if (!Ctrl->C.selected[k]) continue;
 			/* Create the empty grid and allocate space */
 			if ((Grid[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
-			                             GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL)
+			                             GMT->common.R.registration, 0, NULL)) == NULL)
 				Return (API->error);
 
 		}
