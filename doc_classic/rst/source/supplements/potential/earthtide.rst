@@ -6,7 +6,7 @@ earthtide
 
 .. only:: not man
 
-    earthtide - Compute geopotential anomalies over 2-D bodies by the method of Talwani
+    earthtide - Compute grids or time-series of solid Earth tides
 
 Synopsis
 --------
@@ -17,9 +17,9 @@ Synopsis
 |-T|\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list*
 |-G|\ *grdfile*
 [ |-C|\ *x|e,y|n,z|v* ]
-|SYN_OPT-I|
+[ |SYN_OPT-I| ]
 [ |-L|\ *lon/lat* ] 
-|SYN_OPT-R|
+[ |SYN_OPT-R| ]
 [ |-S| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-r| ]
@@ -30,7 +30,7 @@ Synopsis
 Description
 -----------
 
-Compute the three components of earthtides as time-series or grids. Optionally compute also Sun and Moon position in lon,lat.
+Compute the three components of Earth tides as time-series or grids. Optionally compute also Sun and Moon position in lon,lat.
 The output can be either in the form of a grid or as a table printed to stdout. The format of the table data is:
 *time north east vertical* in units of meters.
 
@@ -45,9 +45,9 @@ Either **-G**, **-S** or **-T**
 **-G**\ *grdfile*
     Write one or more tide component directly to grids; no table data are written to standard output.
     If more than one component are specified via **-C** then *grdfile* must contain the format flag %s
-    so that we can embed the component code in the file names ('n' for north; 'e' for east and 'v' for vertical).
+    so that we can embed the component code in the file names (*n* for north; *e* for east and *v* for vertical).
     If only one component is selected with **-C** than no code is appended to grid name (an no need to 
-    set the format flag %s). The grid(s) are computed at the time set by -T, if that option is used, or
+    set the format flag %s). The grid(s) are computed at the time set by **-T**, if that option is used, or
     at the *now* time calculated in UTC from the computer clock.
 
 .. _-S:
@@ -61,10 +61,10 @@ Either **-G**, **-S** or **-T**
 
 **-T**\ [\ *min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\ \|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc*. Append +n to indicate <inc> is the number of t-values
-    to produce over the range instead. Append a valid time unit (h|m|s) to the increment. If no -T is provided get
-    current time in UTC from the computer clock. If no -G or -S are provided then -T is interpreted to mean compute
-    a time-series at the location specified by -L, thus then -L becomes mandatory.
-    When -G and -T, only first time T series is considered. Finally, dates may range from 1901 through 2099.
+    to produce over the range instead. Append a valid time unit (h|m|s) to the increment. If no **-T** is provided get
+    current time in UTC from the computer clock. If no **-G** or **-S** are provided then **-T** is interpreted to mean compute
+    a time-series at the location specified by **-L**, thus then **-L** becomes mandatory.
+    When **-G** and **-T**, only first time T series is considered. Finally, dates may range from 1901 through 2099.
 
 Optional Arguments
 ------------------
@@ -76,7 +76,7 @@ Optional Arguments
     Append comma-separated codes for available components: **x** or **e** for the east component;
     **y** or **n** for the north component; and **z** or **v** for the vertical component.
     For example, **-C**\ *e,v*, will write 2 grids. One with east and other with the vertical components.
-    If -G is set but not -C then the default is to write the vertical component.
+    If **-G** is set but not **-C** then the default is to write the vertical component.
 
 .. _-I:
 
