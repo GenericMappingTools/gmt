@@ -14,7 +14,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **earthtide**
-|-T|\ [\ *min/max*\ /]\ *inc*\ [**n**] \|\ |-T|\ *file*\ \|\ *list*
+|-T|\ [\ *min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\ \|\ *list*
 |-G|\ *grdfile*
 [ |-C|\ *x|e,y|n,z|v* ]
 [ |SYN_OPT-I| ]
@@ -53,7 +53,7 @@ Either **-G**, **-S** or **-T**
 .. _-S:
 
 **-S**
-    Output position of Sun and Moon in geographical coordinates plus disatnce
+    Output position of Sun and Moon in geographical coordinates plus distance
     in meters. Output is a Mx7 matrix where M is the number of times (set by -T)
     and coluns are time, sun_lon, sun_lat, sun_dist moon_lon, moon_lat, moon_dist
 
@@ -61,7 +61,8 @@ Either **-G**, **-S** or **-T**
 
 **-T**\ [\ *min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\ \|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc*. Append +n to indicate <inc> is the number of t-values
-    to produce over the range instead. Append a valid time unit (h|m|s) to the increment. If no **-T** is provided get
+    to produce over the range instead. Append a valid time unit (h|m|s) to the increment. If only *min* is given then
+    we use that date and time for the calculations.  If no **-T** is provided get
     current time in UTC from the computer clock. If no **-G** or **-S** are provided then **-T** is interpreted to mean compute
     a time-series at the location specified by **-L**, thus then **-L** becomes mandatory.
     When **-G** and **-T**, only first time T series is considered. Finally, dates may range from 1901 through 2099.
