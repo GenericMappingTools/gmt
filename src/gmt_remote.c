@@ -436,6 +436,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 			n_tiles++;
 		}
 	}
+	fprintf (fp, "@earth_relief_15s\n");	/* End with a resampled 15s grid to get bathymetry [-Co- clobber mode] */
 	fclose (fp);
 	if (GMT_Destroy_Data (API, &SRTM) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy list of available SRTM tiles.\n");
@@ -459,8 +460,8 @@ struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region,
 	give_data_attribution (API->GMT, tag);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Assembling SRTM grid from 1x1 degree tiles given by listfile %s\n", file);
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, grid);
-	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN */
-	sprintf (cmd, "%s -R%.16g/%.16g/%.16g/%.16g -I%cs -G%s -N0", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], res, grid);
+	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN, and -Co- to override using negative earth_relief_15s values */
+	sprintf (cmd, "%s -R%.16g/%.16g/%.16g/%.16g -I%cs -G%s -N0 -Co-", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], res, grid);
 	if (GMT_Call_Module (API, "grdblend", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR - Unable to produce blended grid from %s\n", file);
 		return NULL;

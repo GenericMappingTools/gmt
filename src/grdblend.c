@@ -672,11 +672,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GM
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-#define first_blend (m, in_x, old_z, sign) if (sign == -1 && )
 int GMT_grdblend (void *V_API, int mode, void *args) {
 	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend, nx_final, ny_final, out_case;
 	int status, pcol, err, error;
-	bool reformat, wrap_x, write_all_at_once = false;
+	bool reformat, wrap_x, write_all_at_once = false, first_grid;
 	
 	uint64_t ij, n_fill, n_tot;
 	double wt_x, w, wt;
@@ -814,6 +813,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 		for (col = 0; col < Grid->header->n_columns; col++) {	/* For each output node on the current row */
 
 			w = 0.0;	/* Reset weight */
+			first_grid = true;	/* Since some grids do not contain this (row,col) we want to know when we are processing the first grid inside */ 
 			for (k = m = 0; k < n_blend; k++) {	/* Loop over every input grid; m will be the number of contributing grids to this node  */
 				if (blend[k].ignore) continue;					/* This grid is entirely outside the s/n range */
 				if (blend[k].outside) continue;					/* This grid is currently outside the s/n range */
@@ -836,9 +836,9 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 						/* Last case BLEND_LAST is always true in that we always update z[col] */
 					}
 					switch (Ctrl->C.sign) {	/* Check if sign of input grid should be considered in decision */
-						case -1: if (k == 0) {z[col] = blend[k].z[kk]; continue; break;}	/* Must initialize with first grid in case nothing passes */
+						case -1: if (first_grid) {z[col] = blend[k].z[kk]; first_grid = false; continue; break;}	/* Must initialize with first grid in case nothing passes */
 							 else if (blend[k].z[kk] > 0.0) continue; break;		/* Only pick grids value if negative or zero */
-						case +1: if (k == 0) { z[col] = blend[k].z[kk];	continue; break;}	/* Must initialize with first grid in case nothing passes */
+						case +1: if (first_grid) { z[col] = blend[k].z[kk]; first_grid = false; continue; break;}	/* Must initialize with first grid in case nothing passes */
 							 else if (blend[k].z[kk] < 0.0) continue; break;		/* Only pick grids value if positive or zero */
 						default: break;						/* Always use the grid value */
 
