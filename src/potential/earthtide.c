@@ -1082,7 +1082,7 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_GCAL *Cal, struct GMT_GRID **Grid) {
 	bool leapflag;
 	int k, mjd, year, month, day, hour, min;
-	uint32_t row, col, n_columns, n_rows;
+	uint32_t row, col, n_columns = 0, n_rows;
 	size_t ij_n = 0, ij_e = 0, ij_u = 0, n_inc = 0, e_inc = 0, u_inc = 0;
 	float *grd_n, *grd_e, *grd_u;
 	double fmjd, xsta[3], rsun[3], etide[3], rmoon[3];
@@ -1374,10 +1374,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 			gmt_set_geographic (GMT, GMT_IN);
 			if (!GMT->common.R.inc[0])
 				n_errors += gmt_parse_inc_option (GMT, 'I', "0.5");
-			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot set -I without -R!\n");
-				n_errors++;
-			}
 		}
 		else if (!GMT->common.R.inc[0]) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "When setting -R must set -I too!\n");
