@@ -776,7 +776,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 					switch (Ctrl->C.mode) {
 						case BLEND_FIRST: if (m) continue; break;	/* Already set */
 						case BLEND_UPPER: if (m && blend[k].z[kk] <= z[col]) continue; break;	/* Already has a higher value; else set below */
-						case BLEND_LOWER: if (m && blend[k].z[kk] >- z[col]) continue; break;	/* Already has a lower value; else set below */
+						case BLEND_LOWER: if (m && blend[k].z[kk] >= z[col]) continue; break;	/* Already has a lower value; else set below */
 						/* Last case BLEND_LAST is always true in that we always update z[col] */
 					}
 					z[col] = blend[k].z[kk];					/* Just pick this grid's value */
