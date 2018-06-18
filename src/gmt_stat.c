@@ -2072,9 +2072,9 @@ void gmt_getmad_f (struct GMT_CTRL *GMT, gmt_grdfloat *x, uint64_t n, double loc
 
 double gmt_extreme (struct GMT_CTRL *GMT, double x[], uint64_t n, double x_default, int kind, int way) {
 	/* Returns the extreme value in the x array according to:
-	*  kind: -1 means only consider negative values.
+	*  kind: -1 means only consider negative values, including zero.
 	*  kind:  0 means consider all values.
-	*  kind: +1 means only consider positive values.
+	*  kind: +1 means only consider positive values, including zero.
 	*  way:  -1 means look for minimum.
 	*  way:  +1 means look for maximum.
 	* If kind is non-zero we assign x_default is no values are found.
