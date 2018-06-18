@@ -65,6 +65,7 @@ struct GRDBLEND_CTRL {
 	struct GRDBLEND_C {	/* -C */
 		bool active;
 		unsigned int mode;
+		int sign;
 	} C;
 	struct GRDBLEND_N {	/* -N<nodata> */
 		bool active;
@@ -534,7 +535,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<blendfile> | <grid1> <grid2> ...] -G<outgrid>\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s %s [-Cf|l|o|u]\n\t[-N<nodata>] [-Q] [%s] [-W[z]] [-Z<scale>] [%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t%s %s [-Cf|l|o|u][-|+]\n\t[-N<nodata>] [-Q] [%s] [-W[z]] [-Z<scale>] [%s] [%s] [%s] [%s]\n\n",
 		GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -560,6 +561,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     l: The lowest input grid value determines the final value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     o: The last input grid overrides any previous value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     u: The highest input grid value determines the final value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append - (only consider clobbering if grid value is <= 0) or\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   + (only consider clobbering if grid value is >= 0.0) [consider any value].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set value for nodes without constraints [Default is NaN].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Grdraster-compatible output without leading grid header [Default writes GMT grid file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Output grid must be in one of the native binary formats.\n");
@@ -613,6 +616,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GM
 						n_errors++;
 						break;
 				}
+				switch (opt->arg[1]) {	/* Any restriction due to sign */
+					case '-':  Ctrl->C.sign = -1; break;
+					case '+':  Ctrl->C.sign = +1; break;
+					case '\0': Ctrl->C.sign =  0; break;
+					default:
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C%c option: Sign modifiers are -|+ only\n", opt->arg[0]);
+						n_errors++;
+						break;
+				}
 				break;
 			case 'G':	/* Output filename */
 				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
@@ -660,6 +672,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GM
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+#define first_blend (m, in_x, old_z, sign) if (sign == -1 && )
 int GMT_grdblend (void *V_API, int mode, void *args) {
 	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend, nx_final, ny_final, out_case;
 	int status, pcol, err, error;
@@ -819,8 +832,16 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 					switch (Ctrl->C.mode) {
 						case BLEND_FIRST: if (m) continue; break;	/* Already set */
 						case BLEND_UPPER: if (m && blend[k].z[kk] <= z[col]) continue; break;	/* Already has a higher value; else set below */
-						case BLEND_LOWER: if (m && blend[k].z[kk] >- z[col]) continue; break;	/* Already has a lower value; else set below */
+						case BLEND_LOWER: if (m && blend[k].z[kk] >= z[col]) continue; break;	/* Already has a lower value; else set below */
 						/* Last case BLEND_LAST is always true in that we always update z[col] */
+					}
+					switch (Ctrl->C.sign) {	/* Check if sign of input grid should be considered in decision */
+						case -1: if (k == 0) {z[col] = blend[k].z[kk]; continue; break;}	/* Must initialize with first grid in case nothing passes */
+							 else if (blend[k].z[kk] > 0.0) continue; break;		/* Only pick grids value if negative or zero */
+						case +1: if (k == 0) { z[col] = blend[k].z[kk];	continue; break;}	/* Must initialize with first grid in case nothing passes */
+							 else if (blend[k].z[kk] < 0.0) continue; break;		/* Only pick grids value if positive or zero */
+						default: break;						/* Always use the grid value */
+
 					}
 					z[col] = blend[k].z[kk];					/* Just pick this grid's value */
 					w = 1.0;							/* Set weights to 1 */
@@ -841,6 +862,8 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 				}
 			}
 
+			if (Ctrl->C.sign && m == 0) m = 1, w = 1.0;	/* Since we started off with the first grid and never set m,w at that time */
+			
 			if (m) {	/* OK, at least one grid contributed to an output value */
 				switch (out_case) {
 					case 0: /* Blended average */
