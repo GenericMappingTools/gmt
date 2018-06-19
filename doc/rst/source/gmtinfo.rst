@@ -41,14 +41,14 @@ Description
 
 **gmtinfo** reads its standard input [or from files] and finds the
 extreme values in each of the columns. It recognizes NaNs and will print
-warnings if the number of columns vary from record to record. As an
+warnings if the number of columns vary from record to record. With the **-I**
 option, **gmtinfo** will find the extent of the first *n* columns rounded
-up and down to the nearest multiple of the supplied increments. By
-default, this output will be in the form **-R**\ *w/e/s/n* which can be
+up and down to the nearest multiple of the supplied increments. In that case, the
+output will be in the form **-R**\ *w/e/s/n* which can be
 used directly in the command line for other programs (hence only *dx*
-and *dy* are needed), or the output will be in column form for as many
+and *dy* are needed), or (with **-C**) the output will be in column form for as many
 columns as there are increments provided. A similar option (**-T**) will
-provide a **-T**\ *zmin/zmax/dz* string for makecpt. 
+provide a **-T**\ *zmin/zmax/dz* string for makecpt.
 
 Required Arguments
 ------------------
