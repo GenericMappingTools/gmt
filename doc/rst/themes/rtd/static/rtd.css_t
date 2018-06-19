@@ -74,7 +74,7 @@ div.documentwrapper {
 
 h1 {
     margin: 0;
-    padding: 3em 0 0.2em 0;
+    padding: 0.7em 0 0.3em 0;
     font-size: 1.5em;
     line-height: 1.15;
     color: {{ theme_h1 }};
@@ -92,12 +92,6 @@ h3 {
     margin: 1em 0 -0.3em 0;
     font-size: 1.2em;
     color: {{ theme_h3 }};
-}
-
-h4 {
-    margin: 1em 0 -0.3em 0;
-    font-size: 1.2em;
-    color: {{ theme_h4 }};
 }
 
 div.body h1 a, div.body h2 a, div.body h3 a, div.body h4 a, div.body h5 a, div.body h6 a {
