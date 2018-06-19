@@ -2,10 +2,8 @@
 
 .. highlight:: bash
 
-The Generic Mapping Tools
-=========================
-
-**Technical Reference and Cookbook**
+The Generic Mapping Tools - Technical Reference and Cookbook
+============================================================
 
 **Pål (Paul) Wessel**
 
@@ -79,7 +77,7 @@ Bremerhaven, Germany; September 2016
 
 
 A Reminder
-==========
+----------
 
 If you feel it is appropriate, you may consider paying us back by citing
 our EOS articles on GMT and technical papers on algorithms when you
@@ -154,7 +152,7 @@ such decisions by supporting the GMT project.
 
 
 Copyright and Caveat Emptor!
-============================
+----------------------------
 
 Copyright ©1991--2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
 Luis and F. Wobbe
@@ -185,8 +183,8 @@ maintenance of GMT are NOT responsible for any damage that may follow
 from correct or incorrect use of these programs.
 
 
-Preface
-=======
+Resources
+---------
 
 While GMT has served the map-making and data processing needs of
 scientists since 1988 [1]_, the current global use was heralded by the

@@ -1,14 +1,9 @@
-.. TODO: set tocdepth=2 when this issue resolved https://bitbucket.org/birkenfeld/sphinx/issue/1251
-
-:tocdepth: 3
-
 .. set default highlighting language for this document:
 
 .. highlight:: bash
 
-**The Generic Mapping Tools**
-
-**A Map-Making Tutorial**
+The Generic Mapping Tools - A Map-Making Tutorial
+=================================================
 
 **Pål (Paul) Wessel**
 
@@ -31,7 +26,7 @@
 **Alfred Wegener Institute, Germany**
 
 Introduction
-============
+------------
 
 The purpose of this tutorial is to introduce new users to GMT,
 outline the GMT environment, and enable you to make several
