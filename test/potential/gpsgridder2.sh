@@ -1,6 +1,6 @@
 #!/bin/bash
-# Test # 1 in Sandwell & Wessel tarball test data sets
-ps=gpsgridder1.ps
+# Test # 1 in Sandwell & Wessel tarball test data sets but with weights
+ps=gpsgridder2.ps
 #V=-Vl
 INC=5m
 DEC=2
@@ -13,7 +13,7 @@ gmt convert -A blk.llu blk.llv -o0-2,6,3,7 > blk.lluv
 #
 #  do the gridding. there are 2682 data so use about 1/4 this number of singular values
 #
-gmt gpsgridder $R -I${INC} -Gtmp_%s.nc blk.lluv -fg $V -Fd8 -Cn700+eigen.txt -S0.5
+gmt gpsgridder $R -I${INC} -Gtmp_%s.nc blk.lluv -fg $V -Fd8 -Cn700+eigen.txt -S0.5 -W
 #
 #  mask the grids
 #
