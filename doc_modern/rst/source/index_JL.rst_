@@ -89,6 +89,16 @@ The CookBook
 |    changes      |    compatibility  |    switching        |
 +-----------------+-------------------+---------------------+
 
+GMT Data Sets
+=============
+
++--------------------+
+| .. toctree::       |
+|    :maxdepth: 2    |
+|                    |
+|    datasets        |
++--------------------+
+
 The Tutorial
 ============
 

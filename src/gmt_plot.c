@@ -2219,15 +2219,15 @@ GMT_LOCAL void plot_echo_command (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, st
 	 * containing spaces will be enclosed in single quotes.
 	 */
 	size_t length = 0;
-	char outstring[GMT_BUFSIZ] = {""};
+	char outstring[GMT_LEN1024] = {""};
 	struct GMT_OPTION *opt = NULL;
 
-	PSL_command (PSL, "\n%% PostScript produced by:\n%%@GMT: %s", GMT->init.module_name);
+	PSL_command (PSL, "\n%% PostScript produced by:\n%%@GMT: gmt %s", GMT->init.module_name);
 	for (opt = options; opt; opt = opt->next) {
-		if (length >= 512) {
+		if (length >= GMT_LEN512) {
 			PSL_command (PSL, "%s \\\n%%@GMT:+", outstring);
 			length = 0;
-			gmt_M_memset (outstring, GMT_BUFSIZ, char);
+			gmt_M_memset (outstring, GMT_LEN1024, char);
 		}
 		strcat (outstring, " ");	length++;
 		if (!(opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE)) {
@@ -2235,7 +2235,7 @@ GMT_LOCAL void plot_echo_command (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, st
 			outstring[length++] = '-';
 			outstring[length++] = opt->option;
 		}
-		if ((strlen (opt->arg) + length) < GMT_BUFSIZ) strcat (outstring, opt->arg);
+		if ((strlen (opt->arg) + length) < GMT_LEN1024) strcat (outstring, opt->arg);
 		length += strlen (opt->arg);
 		if (strchr (opt->arg, ' ')) outstring[length++] = '\'';
 	}
