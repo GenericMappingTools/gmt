@@ -94,3 +94,13 @@ There are several ways to can control the amount of space taken up by your cache
 #. You can remove the entire cache directory via gmt clean cache.
 #. You can be clever and set up a crontab job that deletes cache files you have not
    touched in, say 6 months (or whatever).
+
+Data References
+~~~~~~~~~~~~~~~
+
+#. ETOPO2v2 [https://dx.doi.org/10.7289/V5J1012Q]
+#. ETOPO1: Amante, C., and B. W. Eakins (2008), ETOPO1 1 arc-minute global relief model: Procedures, data sources and analysisRep., National Geophysical Data Center, Boulder, CO. [https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/ice_surface/grid_registered/netcdf/ETOPO1_Ice_g_gmt4.grd.gz]
+#. SRTM30+: Becker, J. J., et al. (2009), Global Bathymetry and Elevation Data at 30 Arc Seconds Resolution: SRTM30_PLUS, Marine Geodesy, 32, 355–371. [ftp://topex.ucsd.edu/pub/srtm30_plus/topo30/topo30.grd]
+#. SRTM15+: Olson, C. L., J. J. Becker, and D. T. Sandwell (2014), A new global bathymetry map at 15 arcsecond resolution for resolving seafloor fabric: SRTM15_PLUS, in Eos Trans. AGU, edited, pp. Abstract OS34A-03. [ftp://topex.ucsd.edu/pub/srtm15_plus/topo15.grd]
+#. SRTMGL3 tiles: [https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl3_v003]
+#. SRTMGL1 tiles: [https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl1_v003]
