@@ -1660,6 +1660,7 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 		else if (range) {	/* Giving dimensions via range and inc when using external memory */
 			if (!inc || (inc[GMT_X] == 0.0 && inc[GMT_Y] == 0.0)) return (GMT_VALUE_NOT_SET);
 			gmt_M_memcpy (M->range, range, 2 * dims, double);
+			gmt_M_memcpy (M->inc, inc, dims, double);
 			M->n_rows    = gmt_M_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], off);
 			M->n_columns = gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
 			M->dim = (M->shape == GMT_IS_ROW_FORMAT) ? M->n_columns : M->n_rows;	/* Matrix layout order */
@@ -1669,12 +1670,14 @@ GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 	if (full_region (range) && (dims == 2 || (!range || range[ZLO] == range[ZHI]))) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
 		gmt_M_memcpy (M->range, dummy_range, 2 * dims, double);
+		gmt_M_memcpy (M->inc, dummy_range, dims, double);
 		M->n_rows    = dim[GMTAPI_DIM_ROW];
 		M->n_columns = dim[GMTAPI_DIM_COL];
 	}
 	else {	/* Was apparently given valid range and inc */
 		if (!inc || (inc[GMT_X] == 0.0 && inc[GMT_Y] == 0.0)) return (GMT_VALUE_NOT_SET);
 		gmt_M_memcpy (M->range, range, 2 * dims, double);
+		gmt_M_memcpy (M->inc, inc, dims, double);
 		M->n_rows    = gmt_M_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], off);
 		M->n_columns = gmt_M_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
 	}
@@ -1761,7 +1764,7 @@ GMT_LOCAL int api_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 /*! . */
 GMT_LOCAL double * api_matrix_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_MATRIX *M) {
 	/* Allocate and compute coordinates along one dimension of a matrix */
-	double *coord = NULL, off, inc;
+	double *coord = NULL, off;
 	unsigned int min, max;
 	uint64_t k, n;
 
@@ -1770,8 +1773,7 @@ GMT_LOCAL double * api_matrix_coord (struct GMTAPI_CTRL *API, int dim, struct GM
 	min = 2*dim, max = 2*dim + 1;	/* Indices into the min/max triplets in range */
 	coord = gmt_M_memory (API->GMT, NULL, n, double);
 	off = 0.5 * M->registration;
-	inc = gmt_M_get_inc (API->GMT, M->range[min], M->range[max], n, M->registration);
-	for (k = 0; k < n; k++) coord[k] = gmt_M_col_to_x (API->GMT, k, M->range[min], M->range[max], inc, off, n);
+	for (k = 0; k < n; k++) coord[k] = gmt_M_col_to_x (API->GMT, k, M->range[min], M->range[max], M->inc[dim], off, n);
 	return (coord);
 }
 
@@ -1796,6 +1798,7 @@ GMT_LOCAL void api_grdheader_to_matrixinfo (struct GMT_GRID_HEADER *h, struct GM
 	M_obj->n_rows = h->n_rows;
 	M_obj->registration = h->registration;
 	gmt_M_memcpy (M_obj->range, h->wesn, 4, double);
+	gmt_M_memcpy (M_obj->inc, h->inc, 2, double);
 }
 
 /*! . */
@@ -1808,14 +1811,15 @@ GMT_LOCAL void api_matrixinfo_to_grdheader (struct GMT_CTRL *GMT, struct GMT_GRI
 	if (M_obj->range[XLO] == M_obj->range[XHI] && M_obj->range[YLO] == M_obj->range[YHI]) {	/* No range data given */
 		h->wesn[XHI] = h->n_columns - 1.0;
 		h->wesn[YHI] = h->n_rows - 1.0;
+		h->inc[GMT_X] = h->inc[GMT_Y] = 1.0;
 	}
-	else
+	else {
 		gmt_M_memcpy (h->wesn, M_obj->range, 4, double);
+		gmt_M_memcpy (h->inc, M_obj->inc, 2, double);
+	}
 	/* External matrices have no padding but the internal grid will */
-	/* Compute xy_off and increments */
+	/* Compute xy_off  */
 	h->xy_off = (h->registration == GMT_GRID_NODE_REG) ? 0.0 : 0.5;
-	h->inc[GMT_X] = gmt_M_get_inc (GMT, h->wesn[XLO], h->wesn[XHI], h->n_columns, h->registration);
-	h->inc[GMT_Y] = gmt_M_get_inc (GMT, h->wesn[YLO], h->wesn[YHI], h->n_rows,    h->registration);
 	gmt_set_grddim (GMT, h);
 }
 
@@ -2912,6 +2916,11 @@ GMT_LOCAL struct GMT_MATRIX *api_read_matrix (struct GMT_CTRL *GMT, void *source
 		}
 	}
 	M->size = dim[GMT_X] * dim[GMT_Y];
+	/* Set Default range and inc to reflect dim, with inc = 1 */
+	M->range[XHI] = dim[GMT_X] - 1.0;
+	M->range[YHI] = dim[GMT_Y] - 1.0;
+	M->inc[GMT_X] = M->inc[GMT_Y] = 1.0;
+	
 	if (close_file) gmt_fclose (GMT, fp);
 	return (M);
 }
@@ -4649,14 +4658,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			if (grid == NULL) {	/* Only allocate when not already allocated */
 				uint64_t dim[3] = {M_obj->n_columns, M_obj->n_rows, 1};
-				double *this_inc = NULL, *this_range = NULL, inc[2];
-				if (M_obj->range[XHI] > M_obj->range[XLO]) {	/* Gave range so can get inc */
-					inc[GMT_X] = gmt_M_get_inc (API->GMT, M_obj->range[XLO], M_obj->range[XHI], M_obj->n_columns, M_obj->registration);
-					inc[GMT_Y] = gmt_M_get_inc (API->GMT, M_obj->range[YLO], M_obj->range[YHI], M_obj->n_rows, M_obj->registration);
-					this_range = M_obj->range;
-					this_inc = inc;
-				}
-				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, mode, dim, this_range, this_inc, M_obj->registration, GMT_NOTSET, NULL)) == NULL)
+				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, mode, dim, M_obj->range, M_obj->inc, M_obj->registration, GMT_NOTSET, NULL)) == NULL)
 					return_null (API, GMT_MEMORY_ERROR);
 			}
 			else
@@ -4721,14 +4723,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 				 return_null (API, GMT_NOT_A_VALID_IO_ACCESS);
 			if (grid == NULL) {	/* Only allocate when not already allocated */
 				uint64_t dim[3] = {M_obj->n_rows, M_obj->n_columns, 1};
-				double *this_inc = NULL, *this_range = NULL, inc[2];
-				if (M_obj->range[XHI] > M_obj->range[XLO]) {	/* Gave range so can get inc */
-					inc[GMT_X] = gmt_M_get_inc (API->GMT, M_obj->range[XLO], M_obj->range[XHI], M_obj->n_columns, M_obj->registration);
-					inc[GMT_Y] = gmt_M_get_inc (API->GMT, M_obj->range[YLO], M_obj->range[YHI], M_obj->n_rows, M_obj->registration);
-					this_range = M_obj->range;
-					this_inc = inc;
-				}
-				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, mode, dim, this_range, this_inc, M_obj->registration, GMT_NOTSET, NULL)) == NULL)
+				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, mode, dim, M_obj->range, M_obj->inc, M_obj->registration, GMT_NOTSET, NULL)) == NULL)
 					return_null (API, GMT_MEMORY_ERROR);
 			}
 			else
@@ -8879,6 +8874,7 @@ int GMT_Get_Info (void *V_API, unsigned int family, void *data, unsigned int *ge
 				struct GMT_MATRIX *M = api_get_matrix_data (data);
 				if (dim) { dim[GMT_X] = M->n_columns; dim[GMT_Y] = M->n_rows; dim[GMT_Z] = M->n_layers; }
 				if (range) gmt_M_memcpy (range, M->range, (M->n_layers > 1) ? 6U : 4U, double);
+				if (inc) gmt_M_memcpy (inc, M->inc, (M->n_layers > 1) ? 3U : 2U, double);
 				if (registration) *registration = M->registration;
 				if (geometry) *geometry = GMT_IS_SURFACE;
 			}

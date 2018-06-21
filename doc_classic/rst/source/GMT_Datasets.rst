@@ -25,7 +25,7 @@ The following codes for *rr*\ *u* are supported:
 .. _tbl-remotefiles:
 
     +------+------------------+--------+-----------------------------------------------+
-    | Code | Dimension        | Size   | Description                                   |
+    | Code | Dimensions       | Size   | Description                                   |
     +======+==================+========+===============================================+
     | 60m  |     361 x    181 | 111 KB | 60 arc minute global relief (ETOPO1 @ 111 km) |
     +------+------------------+--------+-----------------------------------------------+
@@ -63,21 +63,20 @@ Technical Information
 
 As you see, the 03m and lower resolutions are all derivatives of NOAA's ETOPO1 grid.  We have
 downsampled it via spherical Gaussian filtering to prevent aliasing.  The full (6 sigma)
-filter-width are indicated in parenthesis. For 2 arc minute we use the original ETOPO2v2
+filter-widths are indicated in parenthesis. For 2 arc minute we use the original ETOPO2v2
 file from NOAA (with ice_surface).  The 30 and 15 arc second grids are the global SRTM30+
 and SRTM15+ products from Dave Sandwell (Scripps), while the 3 and 1 arc second data are
 the SRTM 1x1 degree tiles from NASA.  When the 15s or lower resolution grids are accessed
 the first time we download the entire file, regardless of your selected region (**-R**).
 However, for the SRTM tiles we only download the tiles that are inside your selected region
 the first time they are referenced. Also note that the 3 and 1 arc second grids only extend
-to the latitudes ±60˚. The SRTM tiles are only valid over land.  However, when these grids
+to latitudes ±60˚. The SRTM tiles are only valid over land.  However, when these grids
 are accessed as @earth_relief_01s or @earth_relief_03s we will automatically upsample the
-@earth_relief_15s grid to fill in the ocean values.  If you just want the original land-only
-SRTM tiles use @srtm_relief_03s or @srtm_relief_01s instead. While the SRTM grids are
-pixel-registered, all other grids are gridline-registered.
+@earth_relief_15s grid to fill in the missing ocean values.  If you just want the original land-only
+SRTM tiles you may use @srtm_relief_03s or @srtm_relief_01s instead. All grids are gridline-registered.
 
 The dimensions above reflect the number of nodes covered by the global grids and the sizes are
-the file sizes of the netCDF4 compressed short int grids, making the files much smaller
+the file sizes of the netCDF-4 compressed short int grids, making the files much smaller
 than their original source files without any loss of precision.  To improve download speed,
 the SRTM tiles are stored as JPEG2000 images on the GMT server due to superior compression,
 but once downloaded to your cache directory they are converted to short int netCDF4 grids.
@@ -87,20 +86,20 @@ This step uses our GDAL bridge and thus requires that you have built GMT with GD
 Cache Space Concerns
 ~~~~~~~~~~~~~~~~~~~~
 
-There are several ways to can control the amount of space taken up by your cache directory:
+There are several ways you can control the amount of space taken up by your cache directory:
 
 #. You can set an upper file size limit for download via the GMT default setting
    :ref:`GMT_DATA_URL_LIMIT <GMT_DATA_URL_LIMIT>`; the default is unlimited.
-#. You can remove the entire cache directory via gmt clean cache.
+#. You can remove the entire cache directory via gmt :doc:`clear`.
 #. You can be clever and set up a crontab job that deletes cache files you have not
-   touched in, say 6 months (or whatever).
+   touched in, say, 6 months (or some other interval).
 
 Data References
 ~~~~~~~~~~~~~~~
 
-#. ETOPO2v2 [https://dx.doi.org/10.7289/V5J1012Q]
-#. ETOPO1: Amante, C., and B. W. Eakins (2008), ETOPO1 1 arc-minute global relief model: Procedures, data sources and analysisRep., National Geophysical Data Center, Boulder, CO. [https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/ice_surface/grid_registered/netcdf/ETOPO1_Ice_g_gmt4.grd.gz]
-#. SRTM30+: Becker, J. J., et al. (2009), Global Bathymetry and Elevation Data at 30 Arc Seconds Resolution: SRTM30_PLUS, Marine Geodesy, 32, 355–371. [ftp://topex.ucsd.edu/pub/srtm30_plus/topo30/topo30.grd]
-#. SRTM15+: Olson, C. L., J. J. Becker, and D. T. Sandwell (2014), A new global bathymetry map at 15 arcsecond resolution for resolving seafloor fabric: SRTM15_PLUS, in Eos Trans. AGU, edited, pp. Abstract OS34A-03. [ftp://topex.ucsd.edu/pub/srtm15_plus/topo15.grd]
-#. SRTMGL3 tiles: [https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl3_v003]
-#. SRTMGL1 tiles: [https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl1_v003]
+#. ETOPO2v2 [https://dx.doi.org/10.7289/V5J1012Q].
+#. ETOPO1: Amante, C., and B. W. Eakins (2008), ETOPO1 1 arc-minute global relief model: Procedures, data sources and analysisRep., National Geophysical Data Center, Boulder, CO [https://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/ice_surface/grid_registered/netcdf/ETOPO1_Ice_g_gmt4.grd.gz].
+#. SRTM30+: Becker, J. J., et al. (2009), Global Bathymetry and Elevation Data at 30 Arc Seconds Resolution: SRTM30_PLUS, Marine Geodesy, 32, 355–371 [ftp://topex.ucsd.edu/pub/srtm30_plus/topo30/topo30.grd].
+#. SRTM15+: Olson, C. L., J. J. Becker, and D. T. Sandwell (2014), A new global bathymetry map at 15 arcsecond resolution for resolving seafloor fabric: SRTM15_PLUS, in Eos Trans. AGU, edited, pp. Abstract OS34A-03 [ftp://topex.ucsd.edu/pub/srtm15_plus/topo15.grd].
+#. SRTMGL3 tiles: [https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl3_v003].
+#. SRTMGL1 tiles: [https://lpdaac.usgs.gov/dataset_discovery/measures/measures_products_table/srtmgl1_v003].
