@@ -30,7 +30,7 @@ Synopsis
 Description
 -----------
 
-Compute the three components of Earth tides as time-series or grids. Optionally compute also Sun and Moon position in lon,lat.
+Compute the three components of solid Earth tides as time-series or grids. Optionally compute also Sun and Moon position in lon,lat.
 The output can be either in the form of a grid or as a table printed to stdout. The format of the table data is:
 *time north east vertical* in units of meters.
 
@@ -55,7 +55,7 @@ Either **-G**, **-S** or **-T**
 **-S**
     Output position of Sun and Moon in geographical coordinates plus distance
     in meters. Output is a Mx7 matrix where M is the number of times (set by -T)
-    and coluns are time, sun_lon, sun_lat, sun_dist moon_lon, moon_lat, moon_dist
+    and columns are time, sun_lon, sun_lat, sun_dist moon_lon, moon_lat, moon_dist
 
 .. _-T:
 
@@ -141,7 +141,7 @@ The get the Sun and Moon position in geographical coordinates at the *now* time
 Notes
 -----
 
-#. 
+#. All times, both input and output, are in UTC.
 
 References
 ----------

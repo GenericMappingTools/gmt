@@ -92,7 +92,7 @@ There are several ways you can control the amount of space taken up by your cach
    :ref:`GMT_DATA_URL_LIMIT <GMT_DATA_URL_LIMIT>`; the default is unlimited.
 #. You can remove the entire cache directory via gmt :doc:`clear`.
 #. You can be clever and set up a crontab job that deletes cache files you have not
-touched in, say, 6 months (or some other interval).
+   touched in, say, 6 months (or some other interval).
 
 Data References
 ~~~~~~~~~~~~~~~
