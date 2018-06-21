@@ -4649,7 +4649,14 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			if (grid == NULL) {	/* Only allocate when not already allocated */
 				uint64_t dim[3] = {M_obj->n_columns, M_obj->n_rows, 1};
-				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, mode, dim, NULL, NULL, M_obj->registration, GMT_NOTSET, NULL)) == NULL)
+				double *this_inc = NULL, *this_range = NULL, inc[2];
+				if (M_obj->range[XHI] > M_obj->range[XLO]) {	/* Gave range so can get inc */
+					inc[GMT_X] = gmt_M_get_inc (API->GMT, M_obj->range[XLO], M_obj->range[XHI], M_obj->n_columns, M_obj->registration);
+					inc[GMT_Y] = gmt_M_get_inc (API->GMT, M_obj->range[YLO], M_obj->range[YHI], M_obj->n_rows, M_obj->registration);
+					this_range = M_obj->range;
+					this_inc = inc;
+				}
+				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, mode, dim, this_range, this_inc, M_obj->registration, GMT_NOTSET, NULL)) == NULL)
 					return_null (API, GMT_MEMORY_ERROR);
 			}
 			else
@@ -4714,7 +4721,14 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 				 return_null (API, GMT_NOT_A_VALID_IO_ACCESS);
 			if (grid == NULL) {	/* Only allocate when not already allocated */
 				uint64_t dim[3] = {M_obj->n_rows, M_obj->n_columns, 1};
-				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, mode, dim, NULL, NULL, M_obj->registration, GMT_NOTSET, NULL)) == NULL)
+				double *this_inc = NULL, *this_range = NULL, inc[2];
+				if (M_obj->range[XHI] > M_obj->range[XLO]) {	/* Gave range so can get inc */
+					inc[GMT_X] = gmt_M_get_inc (API->GMT, M_obj->range[XLO], M_obj->range[XHI], M_obj->n_columns, M_obj->registration);
+					inc[GMT_Y] = gmt_M_get_inc (API->GMT, M_obj->range[YLO], M_obj->range[YHI], M_obj->n_rows, M_obj->registration);
+					this_range = M_obj->range;
+					this_inc = inc;
+				}
+				if ((G_obj = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, mode, dim, this_range, this_inc, M_obj->registration, GMT_NOTSET, NULL)) == NULL)
 					return_null (API, GMT_MEMORY_ERROR);
 			}
 			else
