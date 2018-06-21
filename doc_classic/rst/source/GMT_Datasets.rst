@@ -1,8 +1,8 @@
-GMT Datasets
+Global Grids
 ============
 
 In addition to the GSHHS coastlines, rivers, and borders data built into some
-modules (:doc:`coast`, :doc:`select`, :doc:`grdlandmask`), we offer several
+modules (:doc:`coast`, :doc:`gmtselect`, :doc:`grdlandmask`), we offer several
 remote global data grids that you can access via our *remote file* mechanism.
 The first time you access one of these files we will download the file from
 the GMT server and save it to your GMT cache directory (:ref:`DIR_CACHE <DIR_CACHE>`).
@@ -14,7 +14,7 @@ Global Earth Relief Grids
 
 We have processed and reformatted various publicly available global relief
 grids and standardized their file names.  In GMT, you may access a global relief grid
-(or a subset only by using the**-R** option) by specifying the special name
+(or a subset only by using the **-R** option) by specifying the special name
 
    @earth_relief_\ *rr*\ *u*
 
@@ -61,7 +61,7 @@ The following codes for *rr*\ *u* are supported:
 Technical Information
 ~~~~~~~~~~~~~~~~~~~~~
 
-As you see, the lower resolutions are all derivatives of NOAA's ETOPO1 grid.  We have
+As you see, the 03m and lower resolutions are all derivatives of NOAA's ETOPO1 grid.  We have
 downsampled it via spherical Gaussian filtering to prevent aliasing.  The full (6 sigma)
 filter-width are indicated in parenthesis. For 2 arc minute we use the original ETOPO2v2
 file from NOAA (with ice_surface).  The 30 and 15 arc second grids are the global SRTM30+
