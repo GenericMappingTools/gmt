@@ -2759,6 +2759,12 @@ consecutive. The format is
 | key\ :sub:`n`   | *Fill* | [;\ *label*] |
 +-----------------+--------+--------------+
 
+For usage with points, lines, and polygons, the keys may be text (single words),
+and then GMT will use strings to find the corresponding *Fill* value. Strings
+may be supplied as trailing text in data files (for points) or via the **-Z**\ *category*
+option in multiple segment headers (or set via **-a**\ *Z*\ =*aspatialname*).
+If any of your keys are called B, F, or N you must escape them with a leading backslash
+to avoid confusion with the flags for background, foreground and NaN colors.
 The *Fill* information follows the format given in Section `Specifying area fill attributes`_.
 While not always applicable to categorical data, the background color
 (for *key*-values < :math:`key_1`), foreground color (for

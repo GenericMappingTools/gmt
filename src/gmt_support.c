@@ -7294,7 +7294,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		if (!(X->model & GMT_CMYK) && !(nread == 2 || nread == 4 || nread == 8)) error = true;	/* HSV or RGB should result in 8 fields, gray, patterns, or skips in 4 */
 		if (nread == 2 && gmt_not_numeric (GMT, T0)) {	/* Truly categorical CPT with named key */
 			X->data[n].z_low = n;	/* Just use counter as z value dummy */
-			X->data[n].key = strdup (T0);
+			X->data[n].key = (T0[0] == '\\') ? strdup (&T0[1]) : strdup (T0);	/* Skip escape: For user to have a name like B it must be \B to avoid conflict with BNF settings*/
 			X->categorical |= 2;	/* Flag this type of CPT */
 		}
 		else {	/* Floating point lookup values */
@@ -8381,7 +8381,9 @@ GMT_LOCAL int gmt_get_index_from_key (struct GMT_CTRL *GMT, struct GMT_PALETTE *
 	/* Will match key to a key in the color table.  Because a key is a string and may
 	 * some times (via shapefiles) be enclosed in quotes, we must skip using those quotes
 	 * in the string comparison.  The CPT key cannot have quotes and must be a single word.
-	 * Use the ;labal mechanism in the CPT to annotate colorbars with longer names. */
+	 * Use the ;labal mechanism in the CPT to annotate colorbars with longer names.
+	 * Also note that there is no fore or back-ground color in this case.  We may assign
+	 * the NaN color if the key is blank or not matched in the CPT. */
 	unsigned int index;
 	size_t len, pos = 0;
 	gmt_M_unused(GMT);
