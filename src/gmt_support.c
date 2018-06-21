@@ -7194,15 +7194,15 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		gmt_chop (line);	/* Chop '\r\n' */
 
 		T1[0] = T2[0] = T3[0] = T4[0] = T5[0] = T6[0] = T7[0] = T8[0] = T9[0] = 0;
-		switch (c) {
+		switch (c) {	/* Must check that B,F,N is a single word */
 			case 'B':
-				id = GMT_BGD;
+				id = (line[1] == ' ' || line[1] == '\t') ? GMT_BGD : 3;
 				break;
 			case 'F':
-				id = GMT_FGD;
+				id = (line[1] == ' ' || line[1] == '\t') ? GMT_FGD : 3;
 				break;
 			case 'N':
-				id = GMT_NAN;
+				id = (line[1] == ' ' || line[1] == '\t') ? GMT_NAN : 3;
 				break;
 			default:
 				id = 3;
@@ -7292,8 +7292,15 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		if (nread <= 0) continue;	/* Probably a line with spaces - skip */
 		if (X->model & GMT_CMYK && nread != 10) error = true;	/* CMYK should results in 10 fields */
 		if (!(X->model & GMT_CMYK) && !(nread == 2 || nread == 4 || nread == 8)) error = true;	/* HSV or RGB should result in 8 fields, gray, patterns, or skips in 4 */
-		gmt_scanf_arg (GMT, T0, GMT_IS_UNKNOWN, false, &X->data[n].z_low);
-		if (strchr (T0, 'T')) X->mode |= GMT_CPT_TIME;
+		if (nread == 2 && gmt_not_numeric (GMT, T0)) {	/* Truly categorical CPT with named key */
+			X->data[n].z_low = n;	/* Just use counter as z value dummy */
+			X->data[n].key = strdup (T0);
+			X->categorical |= 2;	/* Flag this type of CPT */
+		}
+		else {	/* Floating point lookup values */
+			gmt_scanf_arg (GMT, T0, GMT_IS_UNKNOWN, false, &X->data[n].z_low);
+			if (strchr (T0, 'T')) X->mode |= GMT_CPT_TIME;
+		}
 		X->data[n].skip = false;
 		if (T1[0] == '-') {				/* Skip this slice */
 			if (nread != 4) {
@@ -7320,7 +7327,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 			else if (nread == 2) {	/* Categorical cpt records with key fill [;label] */
 				X->data[n].z_high = X->data[n].z_low;
 				n_cat_records++;
-				X->categorical = true;
+				X->categorical |= 1;
 			}
 			else if (nread == 4) {
 				gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, false, &X->data[n].z_high);
@@ -7344,7 +7351,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 				snprintf (clo, GMT_LEN64, "%s", T1);
 				sprintf (chi, "-");
 				n_cat_records++;
-				X->categorical = true;
+				X->categorical |= 1;
 			}
 			else if (nread == 4) {	/* gray shades or color names */
 				gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, false, &X->data[n].z_high);
@@ -8103,6 +8110,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		gmt_ascii_format_col (GMT, hi, P->data[i].z_high, GMT_OUT, GMT_Z);
 
 		if (P->categorical) {
+			if (P->categorical == 2) strcpy (lo, P->data[i].key);
 			if (P->model & GMT_HSV)
 				fprintf (fp, format, lo, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\n');
 			else if (P->model & GMT_CMYK) {
@@ -8363,6 +8371,53 @@ int gmt_get_fill_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double val
 		gmt_M_memcpy (fill, f, 1, struct GMT_FILL);
 	else {
 		gmt_get_rgb_lookup (GMT, P, index, value, fill->rgb);
+		fill->use_pattern = false;
+	}
+	return (index);
+}
+
+/*! . */
+GMT_LOCAL int gmt_get_index_from_key (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *key) {
+	/* Will match key to a key in the color table.  Because a key is a string and may
+	 * some times (via shapefiles) be enclosed in quotes, we must skip using those quotes
+	 * in the string comparison.  The CPT key cannot have quotes and must be a single word.
+	 * Use the ;labal mechanism in the CPT to annotate colorbars with longer names. */
+	unsigned int index;
+	size_t len, pos = 0;
+	gmt_M_unused(GMT);
+
+	if (!key || key[0] == '\0') return (GMT_NAN - 3);	/* Set to NaN color */
+	len = strlen (key);
+	if ((key[0] == '\"' && key[len-1] == '\"') || (key[0] == '\'' && key[len-1] == '\'')) {	/* Must exclude quotes */
+		pos = 1; len -= 2;
+	}
+	/* Must search for correct index */
+
+	for (index = 0; index < P->n_colors; index++) {
+		if (!strncmp (P->data[index].key, &key[pos], len))
+			return (int)index;
+	}
+	return (GMT_NAN - 3);
+}
+
+/*! . */
+int gmt_get_fill_from_key (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *key, struct GMT_FILL *fill) {
+	int index;
+	struct GMT_FILL *f = NULL;
+
+	index = gmt_get_index_from_key (GMT, P, key);
+
+	/* Check if pattern */
+
+	if (index >= 0 && (f = P->data[index].fill))
+		gmt_M_memcpy (fill, f, 1, struct GMT_FILL);
+	else if (index < 0 && (f = P->bfn[index+3].fill))
+		gmt_M_memcpy (fill, f, 1, struct GMT_FILL);
+	else {	/* Not pattern */
+		if (index < 0) /* NaN color */
+			gmt_M_rgb_copy (fill->rgb, P->bfn[index+3].rgb);
+		else
+			gmt_M_rgb_copy (fill->rgb, P->data[index].rgb_low);
 		fill->use_pattern = false;
 	}
 	return (index);

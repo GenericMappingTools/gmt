@@ -513,6 +513,7 @@ EXTERN_MSC int gmt_get_format (struct GMT_CTRL *GMT, double interval, char *unit
 EXTERN_MSC int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value);
 EXTERN_MSC int gmt_get_rgb_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value, double *rgb);
 EXTERN_MSC int gmt_get_fill_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value, struct GMT_FILL *fill);
+EXTERN_MSC int gmt_get_fill_from_key (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *key, struct GMT_FILL *fill);
 EXTERN_MSC int gmt_get_rgbtxt_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *text);
 EXTERN_MSC bool gmt_getfill (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill);
 EXTERN_MSC bool gmt_getinc (struct GMT_CTRL *GMT, char *line, double inc[]);

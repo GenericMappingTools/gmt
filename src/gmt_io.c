@@ -6810,7 +6810,10 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 					}
 					break;
 				case GMT_IS_Z:
-					gmt_get_fill_from_z (GMT, P, z, fill);
+					if (P->categorical & 2)
+						gmt_get_fill_from_key (GMT, P, txt, fill);
+					else
+						gmt_get_fill_from_z (GMT, P, z, fill);
 					*use_fill = true;
 					change |= 2;
 					processed++;	/* Processed one option */
@@ -6852,8 +6855,11 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 			change |= 2;
 			processed++;	/* Processed one option */
 		}
-		else if (sscanf (line, "%lg", &z) == 1) {
-			gmt_get_fill_from_z (GMT, P, z, fill);
+		else {
+			if (P->categorical & 2)
+				gmt_get_fill_from_key (GMT, P, line, fill);
+			else if (sscanf (line, "%lg", &z) == 1)
+				gmt_get_fill_from_z (GMT, P, z, fill);
 			*use_fill = true;
 			change |= 2;
 			processed++;	/* Processed one option */

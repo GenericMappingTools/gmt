@@ -580,6 +580,7 @@ struct GMT_LUT {
 	unsigned int skip;	/* true means skip this slice */
 	struct GMT_FILL *fill;	/* For patterns instead of color */
 	char *label;		/* For non-number labels */
+	char *key;		/* For non-number categories */
 };
 
 struct GMT_BFN {		/* For back-, fore-, and nan-colors */
@@ -598,13 +599,13 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	unsigned int mode;		/* Flags controlling use of BFN colors */
 	unsigned int model;		/* RGB, HSV, CMYK */
 	unsigned int is_wrapping;	/* If 1 then we must wrap around to find color - can never be F or B */
-	unsigned int is_gray;		/* true if only grayshades are needed */
-	unsigned int is_bw;		/* true if only black and white are needed */
-	unsigned int is_continuous;	/* true if continuous color tables have been given */
-	unsigned int has_pattern;	/* true if CPT contains any patterns */
-	unsigned int has_hinge;		/* true if CPT is hinged at hinge (below) */
-	unsigned int has_range;		/* true if CPT has a natural range (minmax below) */
-	unsigned int categorical;	/* true if CPT applies to categorical data */
+	unsigned int is_gray;		/* 1 if only grayshades are needed */
+	unsigned int is_bw;		/* 1 if only black and white are needed */
+	unsigned int is_continuous;	/* 1 if continuous color tables have been given */
+	unsigned int has_pattern;	/* 1 if CPT contains any patterns */
+	unsigned int has_hinge;		/* 1 if CPT is hinged at hinge (below) */
+	unsigned int has_range;		/* 1 if CPT has a natural range (minmax below) */
+	unsigned int categorical;	/* 1 if CPT applies to categorical data */
 	double minmax[2];		/* Min/max z-value for a default range, if given */
 	double hinge;			/* z-value for hinged CPTs */
 	double wrap_length;		/* z-length of active CPT */

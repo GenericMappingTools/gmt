@@ -528,7 +528,7 @@ int GMT_plot3d (void *V_API, int mode, void *args) {
 int GMT_psxyz (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psxyz task */
 	bool polygon, penset_OK = true, not_line, old_is_world;
-	bool get_rgb, read_symbol, clip_set = false, fill_active;
+	bool get_rgb = false, read_symbol, clip_set = false, fill_active, rgb_from_z = false;
 	bool default_outline, outline_active, save_u = false, geovector = false;
 	unsigned int k, j, geometry, tbl, pos2x, pos2y;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
@@ -596,8 +596,6 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	/* Do we plot actual symbols, or lines */
 	not_line = (S.symbol != GMT_SYMBOL_FRONT && S.symbol != GMT_SYMBOL_QUOTED_LINE && S.symbol != GMT_SYMBOL_LINE);
 
-	get_rgb = (not_line && Ctrl->C.active);
-	if (get_rgb && S.symbol == GMT_SYMBOL_COLUMN && (n_z = get_column_bands (&S)) > 1) get_rgb = false;	/* Not used in the same way here */
 	read_symbol = (S.symbol == GMT_SYMBOL_NOT_SET);
 	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
 	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
@@ -612,14 +610,26 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "Option -T ignores all input files\n");
 
-	if (get_rgb) n_cols_start++;
+	if (Ctrl->C.active) {
+		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+			Return (API->error);
+		}
+		get_rgb = not_line;	/* Need to assign color from either z or text from input data file */
+		if ((P->categorical & 2))	/* Get rgb from trailing text, so read no extra z columns */
+			rgb_from_z = false;
+		else {	/* Read extra z column for symbols only */
+			rgb_from_z = not_line;
+			if (rgb_from_z && (P->categorical & 2) == 0) n_cols_start++;
+		}
+	}
+	if (get_rgb && S.symbol == GMT_SYMBOL_COLUMN && (n_z = get_column_bands (&S)) > 1) get_rgb = rgb_from_z = false;	/* Not used in the same way here */
 	if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols_start += 1;
 	if (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) n_cols_start += 2;
 
 	/* Extra columns 1, 2, and 3 */
-	ex1 = (get_rgb) ? 4 : 3;
-	ex2 = (get_rgb) ? 5 : 4;
-	ex3 = (get_rgb) ? 6 : 5;
+	ex1 = (rgb_from_z) ? 4 : 3;
+	ex2 = (rgb_from_z) ? 5 : 4;
+	ex3 = (rgb_from_z) ? 6 : 5;
 	pos2x = ex1 + GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd longitude (for VECTORS with two sets of coordinates) */
 	pos2y = ex2 - GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd latitude (for VECTORS with two sets of coordinates) */
 	if (S.symbol == GMT_SYMBOL_COLUMN) {
@@ -634,10 +644,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	if (not_line) {
 		for (j = n_cols_start; j < 7; j++) gmt_set_column (GMT, GMT_IN, j, GMT_IS_DIMENSION);	/* Since these may have units appended */
-		for (j = 0; j < S.n_nondim; j++) gmt_set_column (GMT, GMT_IN, S.nondim_col[j]+get_rgb, GMT_IS_FLOAT);	/* Since these are angles or km, not dimensions */
-	}
-	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
-		Return (API->error);
+		for (j = 0; j < S.n_nondim; j++) gmt_set_column (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles or km, not dimensions */
 	}
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (gmt_contlabel_prep (GMT, &S.G, NULL))
@@ -821,7 +828,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				/* Since we only now know if some of the input columns should NOT be considered dimensions we
 				 * must visit such columns and if the current length unit is NOT inch then we must undo the scaling */
 				if (S.n_nondim && GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Since these are not dimensions but angles or other quantities */
-					for (j = 0; j < S.n_nondim; j++) in[S.nondim_col[j]+get_rgb] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+					for (j = 0; j < S.n_nondim; j++) in[S.nondim_col[j]+rgb_from_z] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 				}
 
 				if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC) {	/* One of the vector symbols */
@@ -854,7 +861,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 
 			if (get_rgb) {	/* Lookup t to get rgb */
-				gmt_get_fill_from_z (GMT, P, in[3], &current_fill);
+				if (P->categorical & 2)
+					gmt_get_fill_from_key (GMT, P, In->text, &current_fill);
+				else
+					gmt_get_fill_from_z (GMT, P, in[3], &current_fill);
 				if (PH->skip) continue;	/* Chosen CPT indicates skip for this t */
 				if (Ctrl->I.active) gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 			}
