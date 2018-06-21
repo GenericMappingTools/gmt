@@ -333,16 +333,19 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
  * gmtlib_get_srtmlist:	Convert -Rw/e/s/n into a file with a list of the tiles needed
  */
 
-bool gmtlib_file_is_srtmrequest (struct GMTAPI_CTRL *API, const char *file, unsigned int *res) {
-	size_t len = strlen (GMT_DATA_PREFIX), flen = strlen (file);	/* Note: len does not include the leading @ character */
+bool gmtlib_file_is_srtmrequest (struct GMTAPI_CTRL *API, const char *file, unsigned int *res, bool *ocean) {
+	size_t len1 = strlen (GMT_DATA_PREFIX), len2 = strlen (GMT_SRTM_PREFIX);	/* Note: len[12] do not include the leading @ character */
+	size_t len, flen = strlen (file);	/* Note: len1 does not include the leading @ character */
 	gmt_M_unused (API);
 	if (file[0] != '@') return false;	/* Not a remote file */
-	if (strncmp (&file[1], GMT_DATA_PREFIX, len)) return false;	/* Not a remote earth_relief_xxx grid */
+	if (strncmp (&file[1], GMT_DATA_PREFIX, len1) && strncmp (&file[1], GMT_SRTM_PREFIX, len2)) return false;	/* Not a remote earth_relief_xxx or srtm_relief_xxx grid */
+	len = (!strncmp (&file[1], GMT_DATA_PREFIX, len1)) ? len1 : len2;	/* Get the corresponding length */
 	if ((len+3) >= flen) return false;	/* Prevent accessing beyond length of file */
 	if (file[len+3] != 's') return false;	/* Not an arcsec grid */
 	if (!(file[len+1] == '0' && (file[len+2] == '1' || file[len+2] == '3'))) return false;	/* Not 1 or 3 arc sec */
 	/* Yes: a 1 or 3 arc sec SRTM request, set res to 1 or 3 */
 	*res = (unsigned int)(file[len+2] - '0');
+	*ocean = (len == len1);	/* If we asked for earth_relief_xxx then we resample the ocean side as well, else pure SRTM land */
 	return true;
 }
 
@@ -363,7 +366,7 @@ bool gmt_file_is_srtmtile (struct GMTAPI_CTRL *API, const char *file, unsigned i
 	return true;	/* Found it */
 }
 
-char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int res) {
+char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int res, bool ocean) {
 	/* Builds a list of SRTM tile to download for the chosen region and resolution.
 	 * Uses the srtm_tiles.nc grid on the cache to know if a 1x1 degree has a tile. */
 	int x, lon, lat, iw, ie, is, in, n_tiles = 0;
@@ -436,7 +439,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 			n_tiles++;
 		}
 	}
-	fprintf (fp, "@earth_relief_15s\n");	/* End with a resampled 15s grid to get bathymetry [-Co- clobber mode] */
+	if (ocean) fprintf (fp, "@earth_relief_15s\n");	/* End with a resampled 15s grid to get bathymetry [-Co- clobber mode] */
 	fclose (fp);
 	if (GMT_Destroy_Data (API, &SRTM) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy list of available SRTM tiles.\n");

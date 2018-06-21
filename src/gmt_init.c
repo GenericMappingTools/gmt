@@ -12094,7 +12094,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	}
 
 	if (options && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {
-		if (gmtlib_file_is_srtmrequest (API, opt->arg, &srtm_res)) {
+		bool ocean;
+		if (gmtlib_file_is_srtmrequest (API, opt->arg, &srtm_res, &ocean)) {
 			unsigned int level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmt_begin_module_sub has not been reached yet */
 			char *list = NULL;
 			double res[4] = {0.0, 1.0/3600.0, 0.0, 3.0/3600.0};	/* Only access 1 or 3 here */
@@ -12119,7 +12120,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			GMT->common.R.wesn[YLO] = floor (GMT->common.R.wesn[YLO] / res[srtm_res]) * res[srtm_res];
 			GMT->common.R.wesn[YHI] = ceil  (GMT->common.R.wesn[YHI] / res[srtm_res]) * res[srtm_res];
 			/* Get a file with a list of all needed srtm tiles */
-			list = gmtlib_get_srtmlist (API, GMT->common.R.wesn, srtm_res);
+			list = gmtlib_get_srtmlist (API, GMT->common.R.wesn, srtm_res, ocean);
 			/* Replace the @earth_relief_0xs file name with this local list */
 			gmt_M_str_free (opt->arg);
 			opt->arg = list;
