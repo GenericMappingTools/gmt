@@ -35,9 +35,9 @@
 #define PA_2_T  (1.0 / T_2_PA)
 #define SQRT_CHI2 2.44774689322	/* This is sqrt (Chi^2) for 95% and 2 degrees of freedom */
 
-/* Latest GPlates rotation model and polygon IDs */
-#define GPLATES_PLATES    "Global_EarthByte_Plate_ID_Table_AREPS"	/* .txt */
-#define GPLATES_ROTATIONS "Global_EarthByte_230-0Ma_GK07_AREPS"		/* .rot */
+/* Latest GPlates rotation model and polygon IDs [GPlates 2.0.0] */
+#define GPLATES_PLATES    "Global_EarthByte_Plate_ID_Table"		/* .txt */
+#define GPLATES_ROTATIONS "Matthews_etal_GPC_2016_410-0Ma_GK07"		/* .rot */
 
 #define SPOTTER_E_OPT "-E[+]<rottable>|[+]<ID1>-<ID2>|<plon>/<plat>/<prot>"
 
