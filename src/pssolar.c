@@ -297,7 +297,7 @@ GMT_LOCAL int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 	radius = Ctrl->T.radius[Ctrl->T.which];
 	TZ = (Ctrl->I.TZ != 0) ? Ctrl->I.TZ : ((Ctrl->T.TZ != 0) ? Ctrl->I.TZ : 0);
 
-	/*  Date info may be in either of I or T options. If not, sue current time. */
+	/*  Date info may be in either of I or T options. If not, use current time. */
 	if (Ctrl->I.calendar.year != 0) {
 		year = Ctrl->I.calendar.year;		month = Ctrl->I.calendar.month;	day = Ctrl->I.calendar.day_m;
 		hour = Ctrl->I.calendar.hour;		min   = Ctrl->I.calendar.min;	sec = Ctrl->I.calendar.sec;
@@ -458,7 +458,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			out[0] = -Sun->HourAngle;		out[1] = Sun->SolarDec;		out[2] = Sun->SolarAzim;
-			out[3] = Sun->SolarElevation;		out[4] = Sun->Sunrise;		out[5] = Sun->Sunset;
+			out[3] = Sun->SolarElevation;	out[4] = Sun->Sunrise;		out[5] = Sun->Sunset;
 			out[6] = Sun->SolarNoon;		out[7] = Sun->Sunlight_duration;out[8] = Sun->SolarElevationCorrected;
 			out[9] = Sun->EQ_time;
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
@@ -551,7 +551,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) Return (API->error);
 	}
-	else {	/* Plotting the terminator as line, polygon, or cliup path */
+	else {	/* Plotting the terminator as line, polygon, or clip path */
 		double *lon = NULL, *lat = NULL, x0, y0;
 		unsigned int first = (Ctrl->N.active) ? 0 : 1;
 		
