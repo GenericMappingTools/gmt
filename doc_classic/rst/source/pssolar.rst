@@ -178,6 +178,22 @@ Set up a clip path overlay based on the day/night terminator:
     gmt pssolar -R -J -Gc -Tc -O -K >> someplot.ps
 
 
+References
+----------
+
+Code from the Excell spreadshits in http://www.esrl.noaa.gov/gmd/grad/solcalc/calcdetails.html
+
+
+Notes
+-----
+
+Taken from the NOOA site *Data for Litigation* note.
+
+*The NOAA Solar Calculator is for research and recreational use only. NOAA cannot certify or authenticate sunrise, sunset or solar position data. The U.S. Government does not collect observations of astronomical data, and due to atmospheric conditions our calculated results may vary significantly from actual observed values.*
+
+*For further information, please see the U.S. Naval Observatory's page* `Astronomical Data Used for Litigation <http://aa.usno.navy.mil/faq/docs/lawyers.php>`_
+
+
 See Also
 --------
 
