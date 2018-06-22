@@ -2372,8 +2372,10 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	if (getcwd (cwd, GMT_BUFSIZ) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to determine current working directory.\n");
 	}
-	if (GMT->current.setting.run_mode == GMT_MODERN)	/* Modern mode: Use the workflow directory */
-		sprintf (hfile, "%s/%s", GMT->parent->gwf_dir, GMT_HISTORY_FILE);
+	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory and one history per figure */
+		int fig = gmt_get_current_figure (GMT->parent);
+		sprintf (hfile, "%s/%s.%d", GMT->parent->gwf_dir, GMT_HISTORY_FILE, fig);
+	}
 	else if (GMT->session.TMPDIR)			/* Isolation mode: Use GMT->session.TMPDIR/gmt.history */
 		sprintf (hfile, "%s/%s", GMT->session.TMPDIR, GMT_HISTORY_FILE);
 	else if (!access (cwd, W_OK))		/* Current directory is writable */
@@ -2461,8 +2463,10 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	if (getcwd (cwd, GMT_BUFSIZ) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Unable to determine current working directory.\n");
 	}
-	if (GMT->current.setting.run_mode == GMT_MODERN)	/* Modern mode: Use the workflow directory */
-		sprintf (hfile, "%s/%s", GMT->parent->gwf_dir, GMT_HISTORY_FILE);
+	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory */
+		int fig = gmt_get_current_figure (GMT->parent);
+		sprintf (hfile, "%s/%s.%d", GMT->parent->gwf_dir, GMT_HISTORY_FILE, fig);
+	}
 	else if (GMT->session.TMPDIR)			/* Classic isolation mode: Use GMT->session.TMPDIR/gmt.history */
 		sprintf (hfile, "%s/%s", GMT->session.TMPDIR, GMT_HISTORY_FILE);
 	else if (!access (cwd, W_OK))	/* Current directory is writable */
@@ -11725,7 +11729,7 @@ GMT_LOCAL int set_modern_mode_if_oneliner (struct GMTAPI_CTRL *API, struct GMT_O
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int gmtinit_get_last_dimensions (struct GMTAPI_CTRL *API) {
+GMT_LOCAL int gmtinit_get_last_dimensions (struct GMTAPI_CTRL *API, int fig) {
 	/* Get dimensions of previous plot, if any */
 	FILE *fp = NULL;
 	char file[PATH_MAX] = {""};
@@ -11733,17 +11737,17 @@ GMT_LOCAL int gmtinit_get_last_dimensions (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_get_last_dimensions: No workflow directory set\n");
 		return GMT_NOT_A_VALID_DIRECTORY;
 	}
-	sprintf (file, "%s/gmt.canvas", API->gwf_dir);
-	/* See if there is a gmt.canvas file to read */
-	if (access (file, R_OK))	/* No gmt.canvas file available so return 0 */
+	sprintf (file, "%s/gmt.canvas.%d", API->gwf_dir, fig);
+	/* See if there is a gmt.canvas file to read for this figure */
+	if (access (file, R_OK))	/* No gmt.canvas file available for current figure so return 0 */
 		return GMT_NOERROR;
 	/* Get previous dimensions */
 	if ((fp = fopen (file, "r")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_get_last_dimensions: Could not open file %s\n", file);
+		GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_get_last_dimensions: Could not open file %s for figure %d\n", file, fig);
 		return GMT_ERROR_ON_FOPEN;
 	}
 	if (fscanf (fp, "%lg %lg", &API->GMT->current.map.last_width, &API->GMT->current.map.last_height) != 2) {
-		GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_get_last_dimensions: Could not read dimensions from file %s\n", file);
+		GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_get_last_dimensions: Could not read dimensions from file %s for figure %d\n", file, fig);
 		fclose (fp);
 		return GMT_DATA_READ_ERROR;
 	}
@@ -11753,6 +11757,7 @@ GMT_LOCAL int gmtinit_get_last_dimensions (struct GMTAPI_CTRL *API) {
 
 GMT_LOCAL int gmtinit_set_last_dimensions (struct GMTAPI_CTRL *API) {
 	/* Save dimensions of current plot */
+	int fig;
 	FILE *fp = NULL;
 	char file[PATH_MAX] = {""};
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)  return GMT_NOERROR;	/* Not in modern mode */
@@ -11761,10 +11766,11 @@ GMT_LOCAL int gmtinit_set_last_dimensions (struct GMTAPI_CTRL *API) {
 		GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_set_last_dimensions: No workflow directory set\n");
 		return GMT_NOT_A_VALID_DIRECTORY;
 	}
-	sprintf (file, "%s/gmt.canvas", API->gwf_dir);
+	fig = gmt_get_current_figure (API);
+	sprintf (file, "%s/gmt.canvas.%d", API->gwf_dir, fig);
 	/* Write current dimensions */
 	if ((fp = fopen (file, "w")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_set_last_dimensions: Could not create file %s\n", file);
+		GMT_Report (API, GMT_MSG_NORMAL, "gmtinit_set_last_dimensions: Could not create file %s for figure %d\n", file, fig);
 		return GMT_ERROR_ON_FOPEN;
 	}
 	fprintf (fp, "%lg %lg\n", API->GMT->current.map.width, API->GMT->current.map.height);
@@ -11867,9 +11873,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		struct GMT_OPTION *opt_J = NULL;
 		struct GMT_SUBPLOT *P = NULL;
 
-		gmtinit_get_last_dimensions (API);	/* Get dimensions of previous plot, if any */
-
 		fig = gmt_get_current_figure (API);	/* Get current figure number */
+
+		gmtinit_get_last_dimensions (API, fig);	/* Get dimensions of previous plot, if any */
 
 		GMT->current.ps.initialize = false;	/* Start from scratch */
 		GMT->current.ps.active = is_PS;	/* true if module will produce PS */
@@ -12175,7 +12181,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		GMT->parent->log_level = GMT_LOG_OFF;
 	}
 
-	gmtinit_set_last_dimensions (GMT->parent);	/* Save cancas size */
+	gmtinit_set_last_dimensions (GMT->parent);	/* Save canvas size */
 
 	if (GMT->current.proj.n_geodesic_approx) {
 		GMT_Report(GMT->parent, GMT_MSG_DEBUG, "Of % " PRIu64 " geodesic calls, % " PRIu64 " exceeded the iteration limit of 50.\n",

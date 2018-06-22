@@ -120,6 +120,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+GMT_LOCAL void reset_history (struct GMT_CTRL *GMT) {
+	/* Since figure switches to another plot (which may or may not have a history)
+	 * we must reset whatever history figure just read so it does not write any. */
+	unsigned int id;
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Wipe internal history from previous figure\n");
+	for (id = 0; id < GMT_N_UNIQUE; id++)
+		gmt_M_str_free (GMT->init.history[id]);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -158,5 +167,8 @@ int GMT_figure (void *V_API, int mode, void *args) {
 		error = GMT_RUNTIME_ERROR;
 		
 	if (options) GMT_Destroy_Cmd (API, &arg);
+	
+	reset_history (GMT);	/* Prevent gmt figure from copying previous history to this new fig */
+	
 	Return (error);
 }

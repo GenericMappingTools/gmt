@@ -2826,16 +2826,10 @@ option in multiple segment headers (or set via **-a**\ *Z*\ =*aspatialname*).
 If any of your keys are called B, F, or N you must escape them with a leading backslash
 to avoid confusion with the flags for background, foreground and NaN colors.
 The *Fill* information follows the format given in Section `Specifying area fill attributes`_.
-While not applicable to categorical data, the background color
-(for *key*-values < :math:`key_1`), foreground color (for
-*key*-values > :math:`key_{n}`), and not-a-number (NaN)
-color (for *key*-values = NaN) are all defined in the :doc:`gmt.conf` file, but can be
-overridden by the statements
+For categorical data, background color or foreground color do not apply. The not-a-number (NaN)
+color (for *key*-values not found or blank) is defined in the :doc:`gmt.conf` file, but it can be
+overridden by the statement
 
-+-----+---------------------+
-| B   | Fill\ :sub:`back`   |
-+-----+---------------------+
-| F   | Fill\ :sub:`fore`   |
 +-----+---------------------+
 | N   | Fill\ :sub:`nan`    |
 +-----+---------------------+
@@ -2872,8 +2866,7 @@ be omitted to determine the annotation and tick interval automatically
 make :doc:`psscale`, when used with the
 **-L** option, place the supplied label instead of formatted *z*-values.
 
-As for categorical tables, the background color (for *z*-values
-< :math:`z_0`), foreground color (for *z*-values >
+The background color (for *z*-values < :math:`z_0`), foreground color (for *z*-values >
 :math:`z_{n-1}`), and not-a-number (NaN) color (for *z*-values =
 NaN) are all defined in the :doc:`gmt.conf` file, but can be overridden by the
 statements

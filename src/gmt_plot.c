@@ -6603,8 +6603,8 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 	} *layer = NULL;
 	
 	fig = gmt_get_current_figure (API);
-	/* Get the name of the corresponding gmt.layers file */
-	sprintf (file, "%s/gmt_%d.layers", API->gwf_dir, fig);
+	/* Get the name of the corresponding gmt.layers.<fig> file */
+	sprintf (file, "%s/gmt.layers.%d", API->gwf_dir, fig);
 	if (nlayers == -1) {	/* Reset to nothing, but still remain at current figure */
 		if (gmt_remove_file (API->GMT, file))	/* Remove the layers file */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Failed to delete file: %s\n", file);
@@ -6647,7 +6647,7 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 		return GMT_RUNTIME_ERROR;
 	}
 	/* Finally, rewrite the layers file to skip the reverted layers */
-	sprintf (file, "%s/gmt_%d.layers", API->gwf_dir, fig);
+	sprintf (file, "%s/gmt.layers.%d", API->gwf_dir, fig);
 	if ((fp = fopen (file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not create new file %s\n", file);
 		gmt_M_free (API->GMT, layer);
@@ -6699,8 +6699,8 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Current size of half-baked PS file %s = %" PRIuS ".\n", GMT->current.ps.filename, buf.st_size);
 		GMT->current.ps.fp = NULL;
 		GMT->current.ps.filename[0] = '\0';
-		/* Write layer size to gmt.layers in case of revert calls */
-		sprintf (file, "%s/gmt_%d.layers", GMT->parent->gwf_dir, GMT->current.ps.figure);
+		/* Write layer size to gmt.layers.<fig> in case of revert calls */
+		sprintf (file, "%s/gmt.layers.%d", GMT->parent->gwf_dir, GMT->current.ps.figure);
 		if ((fp = fopen (file, "a")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not open/create file %s\n", file);
 			return;
