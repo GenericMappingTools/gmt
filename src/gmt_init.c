@@ -11138,7 +11138,7 @@ GMT_LOCAL int get_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int 
 	char file[PATH_MAX] = {""};
 	FILE *fp = NULL;
 	int ios;
-	sprintf (file, "%s/gmt_%d.panel", API->gwf_dir, fig);
+	sprintf (file, "%s/gmt.panel.%d", API->gwf_dir, fig);
 	if (access (file, F_OK))	{	/* Panel selection file not available so we are not doing subplots */
 		GMT_Report (API, GMT_MSG_DEBUG, "get_current_panel: No current panel selected so not in subplot mode\n");
 		API->error = GMT_NOERROR;
@@ -11174,7 +11174,7 @@ int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int row, u
 	static char *dummy = "@";	/* Signify "use the the auto label" */
 	FILE *fp = NULL;
 	L = (label && label[0]) ? label : dummy;
-	sprintf (file, "%s/gmt_%d.panel", API->gwf_dir, fig);
+	sprintf (file, "%s/gmt.panel.%d", API->gwf_dir, fig);
 	if ((fp = fopen (file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create file %s!\n", file);
 		API->error = GMT_RUNTIME_ERROR;
@@ -11205,7 +11205,7 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 		return NULL;
 
 	/* Now read subplot information file */
-	sprintf (file, "%s/gmt_%d.subplot", API->gwf_dir, fig);
+	sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 	if (access (file, F_OK))	{	/* Subplot information file not available */
 		GMT_Report (API, GMT_MSG_NORMAL, "No subplot information file found!\n");
 		return NULL;
@@ -14986,7 +14986,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			/* We only get here when gmt end is called */
 			/* Check if a subplot was left hanging */
 			fig = gmt_get_current_figure (API);	/* Get current figure number */
-			sprintf (file, "%s/gmt_%d.subplot", API->gwf_dir, fig);
+			sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 			if (!access (file, R_OK))	/* subplot end was never called */
 				GMT_Report (API, GMT_MSG_NORMAL, "subplot was never completed - plot items in last panel may be missing\n");
 			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  PPID = %d. Directory %s %s.\n", smode[mode], API->PPID, API->gwf_dir, fstatus[3]);
