@@ -1853,6 +1853,8 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	
 	/*---------------------------- This is the surface main code ----------------------------*/
 
+	gmt_M_tic(GMT);
+
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	/* Some initializations and defaults setting */
 	gmt_M_memset (&C, 1, struct SURFACE_INFO);
@@ -2083,6 +2085,8 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	
 	if ((error = write_surface (GMT, &C, Ctrl->G.file)) != 0)	/* Write the output grid */
 		Return (error);
+
+	gmt_M_toc(GMT,"");		/* Print total run time, but only if -Vt was set */
 
 	Return (GMT_NOERROR);
 }
