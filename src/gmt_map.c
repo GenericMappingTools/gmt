@@ -32,7 +32,7 @@
  * The ellipsoid used is selectable by editing the gmt.conf in your
  * home directory.  If no such file, create one by running gmtdefaults.
  *
- * Usage: Initialize system by calling gmt_map_setup (separate module), and
+ * Usage: Initialize system by calling gmt_g (separate module), and
  * then just use gmt_geo_to_xy() and gmt_xy_to_geo() functions.
  *
  * Author:	Paul Wessel
@@ -6438,13 +6438,33 @@ double gmt_az_backaz (struct GMT_CTRL *GMT, double lonE, double latE, double lon
 	return (GMT->current.map.azimuth_func (GMT, lonE, latE, lonS, latS, baz));
 }
 
+GMT_LOCAL double auto_time_increment (double inc, char *unit) {
+	/* Given the first guess interval inc, determine closest time unit and return
+	 * the number of seconds in that unit and its code */
+	int k, kk = -1;
+	double f;
+	static char units[6]  = {'S', 'M', 'H', 'D', 'O', 'Y'};
+	static double incs[6] = {1.0, GMT_MIN2SEC_F, GMT_HR2SEC_F, GMT_DAY2SEC_F, GMT_MON2SEC_F, GMT_YR2SEC_F};
+	for (k = 5; kk == -1 && k >= 0; k--) {	/* Find the largest time unit that is smaller than guess interval */
+		f = inc / incs[k];
+		if (irint (f) >= 1)
+			kk = k;
+	}
+	if (kk == -1) kk = 0;	/* Safety valve */
+	*unit = units[kk];
+	return (incs[kk]);
+}
+
 /*! . */
 void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned int item) {
 	/* Determine the annotation and frame tick interval when they are not set (interval = 0) */
-	int i = 0;
-	bool set_a = false;
-	double maj[7] = {2.0, 5.0, 10.0, 15.0, 30.0, 60.0, 90.0}, sub[7] = {1.0, 1.0, 2.0, 5.0, 10.0, 15.0, 30.0};
-	double d, f, p;
+	int i = 0, n = 6;
+	char unit, sunit[2], tmp[GMT_LEN16] = {""}, string[GMT_LEN64] = {""}, ax_code[3] = "xyz";
+	bool set_a = false, is_time = gmt_M_axis_is_time (GMT, axis);
+	double defmaj[7] = {2.0, 5.0, 10.0, 15.0, 30.0, 60.0, 90.0}, defsub[7] = {1.0, 1.0, 2.0, 5.0, 10.0, 15.0, 30.0};
+	double HOmaj[4] = {2.0, 3.0, 6.0, 12.0}, HOsub[4] = {1.0, 1.0, 3.0, 3.0};
+	double Dmaj[4] = {2.0, 3.0, 7.0, 14.0}, Dsub[4] = {1.0, 1.0, 1.0, 7.0};
+	double range, d, f, p, *maj = defmaj, *sub = defsub;
 	struct GMT_PLOT_AXIS *A = &GMT->current.map.frame.axis[axis];
 	struct GMT_PLOT_AXIS_ITEM *T;
 
@@ -6470,30 +6490,57 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	f *= GMT->session.u2u[GMT_INCH][GMT_PT];	/* Change to points */
 
 	/* First guess of interval */
+	range  = d;	/* Just so we have a copy of it since d gets clobbered */
 	d *= MAX (0.05, MIN (5.0 * GMT->current.setting.font_annot[item].size / f, 0.20));
 
 	/* Now determine 'round' major and minor tick intervals */
 	if (gmt_M_axis_is_geo (GMT, axis))	/* Geographical coordinate */
 		p = (d < GMT_MIN2DEG) ? GMT_SEC2DEG : (d < 1.0) ? GMT_MIN2DEG : 1.0;
+	else if (is_time)	/* Time axis coordinate, get p in seconds and the unit it represents */
+		p = auto_time_increment (d, &unit);
 	else	/* General (linear) axis */
 		p = pow (10.0, floor (log10 (d)));
-	d /= p;	/* d is now in degrees, minutes or seconds, or in the range [1;10) */
-	while (i < 6 && maj[i] < d) i++;
-	d = maj[i] * p, f = sub[i] * p;
-
+	d /= p;	/* d is now in degrees, minutes or seconds (or time seconds), or in the range [1;10) */
+	if (is_time) {	/* p was in seconds but we will use unit, so reset p = 1 */
+		p = 1.0;
+		switch (unit) {	/* Select other steps more suited for hour, day, month */
+			case 'O': maj = HOmaj; sub = HOsub; n = 3; break;
+			case 'D': maj = Dmaj;  sub = Dsub;  n = 3; break;
+			case 'H': maj = HOmaj; sub = HOsub; n = 4; break;
+		}
+	}
+	while (i < n && maj[i] < d) i++;	/* Wind up to largest reasonable interval */
+	d = maj[i] * p, f = sub[i] * p;		/* Scale up intervals in multiple of unit */
+	if (is_time) {	/* Last check to change a 12 month unit as 1 year */
+		if (unit == 'O' && d == 12.0) d = 1.0, f /= 12.0, unit = 'Y';
+		sunit[0] = unit;	/* Since we need a string in strcat */
+	}
+	
 	/* Set annotation/major tick interval */
 	T = &A->item[item];
-	if (T->active && T->interval == 0.0) T->interval = d, T->generated = set_a = true;
+	if (T->active && T->interval == 0.0) {
+		T->interval = d, T->generated = set_a = true;
+		sprintf (tmp, "a%g", T->interval); strcat (string, tmp);
+		if (is_time) T->unit = unit, strcat (string, sunit);
+	}
 
 	/* Set minor ticks as well (if copied from annotation, set to major interval) */
 	T = &A->item[item+2];
-	if (T->active && T->interval == 0.0) T->interval = (T->type == 'f' || T->type == 'F') ? f : d, T->generated = true;
+	if (T->active && T->interval == 0.0) {
+		T->interval = (T->type == 'f' || T->type == 'F') ? f : d, T->generated = true;
+		sprintf (tmp, "f%g", T->interval); strcat (string, tmp);
+		if (is_time) T->unit = unit, strcat (string, sunit);
+	}
 
 	/* Finally set grid interval (if annotation set as well, use major, otherwise minor interval) */
 	T = &A->item[item+4];
-	if (T->active && T->interval == 0.0) T->interval = set_a ? d : f, T->generated = true;
-	
+	if (T->active && T->interval == 0.0) {
+		T->interval = set_a ? d : f, T->generated = true;
+		sprintf (tmp, "g%g", T->interval); strcat (string, tmp);
+		if (is_time) T->unit = unit, strcat (string, sunit);
+	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Auto-frame interval for axis %d item %d: d = %g  f = %g\n", axis, item, d, f);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-frame interval for %c-axis (item %d): %s\n", ax_code[axis], item, string);
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
