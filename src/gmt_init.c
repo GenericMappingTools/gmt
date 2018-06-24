@@ -3386,14 +3386,15 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 
 	/* First determine that the given -B<in> string is indeed the framesetting option.  If not return -1 */
 
-	if (strchr ("pxyz", in[0])) return (-1);	/* -B[p[xyz] is definitively not the frame settings (-Bs is tricker; see below) */
+	if (strchr ("pxy", in[0])) return (-1);	/* -B[p[xy] is definitively not the frame settings (-Bz is tricker; see below) */
 	if (strstr (in, "+b")) is_frame++;	/* Found a +b so likely frame */
 	if (strstr (in, "+g")) is_frame++;	/* Found a +g so likely frame */
 	if (strstr (in, "+n")) is_frame++;	/* Found a +n so likely frame */
 	if (strstr (in, "+o")) is_frame++;	/* Found a +o so likely frame */
 	if (strstr (in, "+t")) is_frame++;	/* Found a +t so likely frame */
-	if (strchr ("WESNZwenzlrbtu", in[0])) is_frame++;	/* Found one of the side specifiers so likely frame (left s off since -Bs could trick it) */
+	if (in[0] != 'z' && strchr ("WESNZwenzlrbtu", in[0])) is_frame++;	/* Found one of the side specifiers so likely frame (check on z since -Bzaf could trick it) */
 	if (in[0] == 's' && (in[1] == 0 || strchr ("WESNZwenzlrbtu", in[1]) != NULL)) is_frame++;	/* Found -Bs (just draw south axis) or -Bs<another axis flag> */
+	if (in[0] == 'z' && !is_frame && (in[1] == 0 || strchr ("WESNwenlrbtu", in[1]) != NULL)) is_frame++;	/* Found -Bz in frame context, e.g. -Bzwn */
 	if (is_frame == 0) return (-1);		/* No, nothing matched */
 
 	/* OK, here we are pretty sure this is a frame -B statement */
