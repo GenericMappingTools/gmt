@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v5.4.3_r18845 [64-bit] Document from grdimage
-%%Creator: GMT5
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_r20285M [64-bit] Document from grdimage
+%%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Sep  5 15:06:13 2017
+%%CreationDate: Sun Jun 24 13:13:02 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -657,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 9000 TM
 
 % PostScript produced by:
-%@GMT: grdimage lat.nc -JI0/6.5i -Clat.cpt -P -K -Y7.5i -B0 -nl
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdimage lat.nc -JI0/6.5i -Clat.cpt -P -K -Y7.5i -B0 -nl
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 72 540 468 234
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -990,8 +1000,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pscoast -Rd -JI0/6.5i -O -K -Dc -A5000 -Gc
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -Rd -JI0/6.5i -O -K -Dc -A5000 -Gc
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -8032,8 +8042,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: grdimage lon.nc -JI0/6.5i -Clon.cpt -O -K -nl
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdimage lon.nc -JI0/6.5i -Clon.cpt -O -K -nl
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -8490,8 +8500,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pscoast -Rd -JI0/6.5i -O -K -Q
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -Rd -JI0/6.5i -O -K -Q
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -8504,8 +8514,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pscoast -Rd -JI0/6.5i -O -K -Dc -A5000 -Wthinnest
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -Rd -JI0/6.5i -O -K -Dc -A5000 -Wthinnest
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -14897,8 +14907,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -Rd -JI0/6.5i -O -K -F+f32p,Helvetica-Bold,red=thinner
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -Rd -JI0/6.5i -O -K -F+f32p,Helvetica-Bold,red=thinner
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -15019,7 +15029,11 @@ PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold P
 {1 0 0 C} FS
 O1
 3900 2382 M 533 F1
-(15TH INTERNATIONAL) mc false charpath fs S
+V MU 0 0 M (16) FP 0 187 G 373 F1 (TH) FP 0 -187 G 533 F1 ( INTERNATIONAL) FP pathbbox N 4 1 roll exch pop add exch U -2 div exch -2 div exch G
+(16) false charpath fs
+0 187 G 373 F1 (TH) false charpath fs
+0 -187 G 533 F1 ( INTERNATIONAL) false charpath fs
+S
 PSL_cliprestore
 %%EndObject
 0 A
@@ -15028,8 +15042,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -Rd -JI0/6.5i -O -K -F+f32p,Helvetica-Bold,red=thinner
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -Rd -JI0/6.5i -O -K -F+f32p,Helvetica-Bold,red=thinner
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -15159,8 +15173,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -Rd -JI0/6.5i -O -K -F+f18p,Helvetica-Bold,green=thinnest
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -Rd -JI0/6.5i -O -K -F+f18p,Helvetica-Bold,green=thinnest
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
@@ -15281,7 +15295,7 @@ PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold P
 {0 1 0 C} FS
 O1
 3900 1302 M 300 F1
-(Honolulu, Hawaii, April 1, 2018) mc false charpath fs S
+(Honolulu, Hawaii, April 1, 2019) mc false charpath fs S
 PSL_cliprestore
 %%EndObject
 0 A
@@ -15290,13 +15304,13 @@ O0
 0 -3900 TM
 
 % PostScript produced by:
-%@GMT: pscoast -Rd -JI0/6.5i -O -K -Dc -A5000 -Gp86+fred+byellow+r100 -Spcircuit.ras+r100 -B0 -Y-3.25i
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -Rd -JI0/6.5i -O -K -Dc -A5000 -Gp86+fred+byellow+r100 -Sp@circuit.png+r100 -B0 -Y-3.25i
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-/image91 {<~
+/image92 {<~
 G[>N`D2_`OH/H@N8E=?5e9elp\=C*RQJ:M),%kOkMB'fDC.PMK@6p$nK]S4')&rf:4A#`j#qI;:3$F+mQ":4Z;UDW_#`0]1
 IOU."1Amh#N$Kg/-4L"n2=_n#O:OVcIrZ*nBRtU=d/W_;STEqVEe/kZSXKBOr1E`H3TnuRA)5O94[.Gh*8?p"23YbgSf3#D
 ^C2HeoqQu`d+;kHUGM7R?T>0knI**mqYF(DeYpk*qKG'4FT1:=h)"5<`b0EDD-t&(l.YgDnas,AY-NF`9df,J)VSMe50^'M
@@ -15512,14 +15526,14 @@ nm$sn.RlU`fF<a+>a)H#r\r=LD;4Q'WR5@V2^M]!,j"OepR`3(Ume^-lDF(q>/,'K3CdCeDYVS9RRWqD
 C$Ku7c]g'?j[?'kIpL!ro*eur5^r1aKnVVQ<>S/_P5lJ/P%&hT<19^iBI#W.C$!.%m<bHj`WIaBpL8csE8rQSe^QTj/Z'_g
 -:7Crl<aGeU+qZ-#J.7dJc~>
 /FlateDecode filter} def
-/pattern91 {V 1620 1128 scale
+/pattern92 {V 1620 1128 scale
 << /PaintType 1 /PatternType 1 /TilingType 1 /BBox [0 0 1 1] /XStep 1 /YStep 1 /PaintProc
    {begin /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 135 /Height 94 /BitsPerComponent 8
-   /ImageMatrix [135 0 0 -94 0 94] /DataSource image91
+   /ImageMatrix [135 0 0 -94 0 94] /DataSource image92
 >> image end}
 >> matrix makepattern U} def
-{pattern91 I} FS
+{pattern92 I} FS
 3900 0 M
 706 226 D
 421 138 D
@@ -15709,7 +15723,7 @@ QC;gd7S=]=03)ks><C>Ufm?/&3JhM@+D5SfQQ:u:6l6/T2-c)prYe!oP<>6Oq#p\GG$Y~>
 P
 FO
 -2 5 -1 5 4 1 7 -9 -7 0 3 -8 -2 1 7 3972 3692 SP
-{pattern91 I} FS
+{pattern92 I} FS
 4115 3465 M
 -4 4 D
 13 -3 D
@@ -15755,7 +15769,7 @@ FO
 2 -5 2 -5 -12 10 2 -11 -4 8 -5 -5 -12 9 6 16 17 -5 -4 -8 7 1 11 3977 3677 SP
 2 -5 1 -4 -9 9 5 4 4 3986 3651 SP
 4 -8 6 3 6 -14 -8 -3 -11 13 5 4012 3631 SP
-{pattern91 I} FS
+{pattern92 I} FS
 4215 3596 M
 -3 -18 D
 16 -12 D
@@ -15816,7 +15830,7 @@ FO
 P
 FO
 19 -17 9 1 10 -8 1 -17 10 -2 -5 -4 8 -5 -9 -3 -12 3 -3 12 -14 15 -41 26 26 -1 13 4288 3481 SP
-{pattern91 I} FS
+{pattern92 I} FS
 4441 3465 M
 -22 19 D
 -22 13 D
@@ -15880,7 +15894,7 @@ FO
 P
 FO
 7 -7 7 -7 7 -7 0 -6 -18 -1 -4 -13 -18 16 17 20 -5 11 9 4243 3569 SP
-{pattern91 I} FS
+{pattern92 I} FS
 4517 3465 M
 -9 4 D
 -20 17 D
@@ -15954,7 +15968,7 @@ P
 FO
 -6 3 -6 3 -5 4 -6 3 -6 3 20 -1 33 -13 3 -13 -12 7 4 -5 -13 5 11 4284 3679 SP
 21 -22 -31 13 -13 10 6 5 4 4254 3682 SP
-{pattern91 I} FS
+{pattern92 I} FS
 4319 3659 M
 -85 49 D
 -182 105 D
@@ -16033,7 +16047,7 @@ P
 FO
 6 -3 5 -4 6 -3 6 -3 6 -4 -2 1 -33 19 7 4319 3659 SP
 -23 13 8 -7 -33 14 4 11 4 4354 3639 SP
-{pattern91 I} FS
+{pattern92 I} FS
 17 -10 3 -7 30 -13 -29 13 -3 7 -17 10 6 4832 3465 SP
 4648 3591 M
 -28 9 D
@@ -16100,7 +16114,7 @@ FO
 -2 2 4 0 1 -3 3 4822 3517 SP
 -2 0 2 0 1 -1 3 4768 3540 SP
 -8 3 -8 3 -8 4 -8 3 -7 3 10 1 43 -16 22 -14 -28 9 9 4648 3591 SP
-{pattern91 I} FS
+{pattern92 I} FS
 -1 1 -2 0 5 -2 3 4866 3498 SP
 -2 1 3 -1 1 0 3 4827 3514 SP
 4771 3539 M
@@ -16169,7 +16183,7 @@ FO
 8 -3 8 -4 8 -3 8 -3 8 -4 -13 4 26 -12 -58 15 -12 9 41 -15 -50 19 19 0 12 4695 3571 SP
 1 -1 11 -10 -32 10 -10 5 28 -4 5 4771 3539 SP
 -50 10 -10 8 24 -6 3 4729 3574 SP
-{pattern91 I} FS
+{pattern92 I} FS
 5176 3465 M
 -14 2 D
 6 -2 D
@@ -16191,7 +16205,7 @@ FO
 2 -1 -3 1 2 5091 3465 SP
 6 -2 -14 2 2 5176 3465 SP
 -7 3 -7 2 -8 3 0 2 30 -12 5 5149 3495 SP
-{pattern91 I} FS
+{pattern92 I} FS
 2621 3485 M
 38 7 D
 6 7 D
@@ -16217,7 +16231,7 @@ FO
 {pattern86 I} FS
 7 3 7 3 6 2 18 0 -20 -6 -31 -7 6 3 7 2737 3475 SP
 -7 -2 -7 -3 -8 -2 -14 -4 6 7 38 7 6 2621 3485 SP
-{pattern91 I} FS
+{pattern92 I} FS
 2839 3465 M
 1 2 D
 -46 6 D
@@ -16263,7 +16277,7 @@ FO
 -27 -10 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 2974 3465 M
 8 4 D
 -10 -4 D
@@ -16315,7 +16329,7 @@ FO
 P
 FO
 8 4 8 3 8 4 7 4 8 4 -7 -6 21 6 -60 -23 8 3312 3617 SP
-{pattern91 I} FS
+{pattern92 I} FS
 3149 3465 M
 7 4 D
 5 18 D
@@ -16486,7 +16500,7 @@ FO
 P
 FO
 6 -3 -17 -8 -14 0 3 3399 3637 SP
-{pattern91 I} FS
+{pattern92 I} FS
 8 -3 2 3 2 3294 3465 SP
 -1 -7 3 7 2 3289 3465 SP
 3211 3465 M
@@ -16854,7 +16868,7 @@ FO
 -28 2 50 26 13 -1 6 7 26 10 5 3261 3508 SP
 2 -4 -27 -17 2 10 22 11 4 3462 3636 SP
 27 20 6 -7 2 3356 3574 SP
-{pattern91 I} FS
+{pattern92 I} FS
 3399 3465 M
 2 7 D
 -15 -7 D
@@ -17103,7 +17117,7 @@ FO
 -4 -3 0 1 9 6 3 3456 3578 SP
 -3 -2 -1 2 7 2 3 3443 3569 SP
 -7 -5 -8 -5 -11 3 11 15 24 3 -2 -5 6 3390 3529 SP
-{pattern91 I} FS
+{pattern92 I} FS
 3506 3465 M
 1 4 D
 -11 1 D
@@ -17235,7 +17249,7 @@ FO
 63 92 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3733 3465 M
 3 2 D
 -20 7 D
@@ -17425,7 +17439,7 @@ FO
 P
 FO
 -18 -9 -20 7 3 2 3 3733 3465 SP
-{pattern91 I} FS
+{pattern92 I} FS
 3782 3558 M
 2 -1 D
 6 5 D
@@ -17470,7 +17484,7 @@ FO
 -1 0 1 1 2 3796 3598 SP
 -2 -4 -1 -5 -3 2 5 13 2 -2 5 3789 3578 SP
 -1 -3 -6 2 6 5 2 -1 4 3782 3558 SP
-{pattern91 I} FS
+{pattern92 I} FS
 3900 3048 M
 19 8 D
 0 5 D
@@ -17647,7 +17661,7 @@ FO
 0 -2 0 4 -1 -1 3 4054 3450 SP
 {pattern86 I} FS
 18 -26 -10 -5 -5 7 -1 -11 -7 12 7 13 6 4049 3139 SP
-{pattern91 I} FS
+{pattern92 I} FS
 -3 10 10 -1 -1 13 -16 -8 0 -13 5 4056 3233 SP
 {pattern86 I} FS
 4152 3128 M
@@ -17816,7 +17830,7 @@ P
 FO
 -17 -1 -6 10 10 19 10 3 -16 1 0 5 19 8 7 3900 3048 SP
 18 -26 -10 -5 -5 7 -1 -11 -7 12 7 13 6 4049 3139 SP
-{pattern91 I} FS
+{pattern92 I} FS
 -3 10 10 -1 -1 13 -16 -8 0 -13 5 4056 3233 SP
 0 2 -4 -4 5 1 3 4151 3131 SP
 4094 3324 M
@@ -17990,7 +18004,7 @@ P
 FO
 -3 6 7 -8 0 -4 3 4259 3370 SP
 1 -3 0 -5 -2 11 3 4053 3453 SP
-{pattern91 I} FS
+{pattern92 I} FS
 7 -3 -10 -10 4 -14 8 -3 -5 10 15 -3 5 -11 -14 9 32 -27 -14 15 0 10 -22 14 5 7 10 -4 -11 12 15 4192 3272 SP
 3 4 12 -12 -9 13 13 -12 -11 16 -23 15 8 2 -13 4 -2 -7 21 -28 17 -9 11 4244 3310 SP
 -30 29 -9 -17 32 -23 3 4219 3285 SP
@@ -18030,7 +18044,7 @@ P
 FO
 {pattern86 I} FS
 -1 -9 -15 9 3 8 3 4287 3437 SP
-{pattern91 I} FS
+{pattern92 I} FS
 4515 3132 M
 0 -7 D
 10 -8 D
@@ -18098,7 +18112,7 @@ P
 FO
 6 -8 5 -8 5 -9 -24 20 3 13 5 4247 3389 SP
 -1 -9 -15 9 3 8 3 4287 3437 SP
-{pattern91 I} FS
+{pattern92 I} FS
 4515 3132 M
 0 -7 D
 10 -8 D
@@ -18229,7 +18243,7 @@ FO
 -25 23 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 -2 2 -64 24 -43 22 -18 18 17 -18 24 -14 67 -30 20 -5 8 4786 3234 SP
 -14 6 9 -6 2 4522 3465 SP
 4735 3335 M
@@ -18284,7 +18298,7 @@ FO
 -49 30 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 4735 3335 M
 16 -14 D
 47 -22 D
@@ -18342,7 +18356,7 @@ FO
 -146 82 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 -18 26 -7 18 12 5 -20 5 -7 -6 13 -13 -1 -22 11 -4 7 -13 47 -34 8 -1 11 5240 3155 SP
 9 -6 -9 2 18 -9 5 -15 -6 -4 7 -4 8 -4 -13 29 -17 11 9 5809 3031 SP
 5194 3253 M
@@ -18481,7 +18495,7 @@ FO
 28 -16 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 5911 3031 M
 -75 33 D
 -132 63 D
@@ -18604,7 +18618,7 @@ FO
 P
 FO
 6 -3 6 -3 6 -3 7 -4 6 -3 -20 7 -17 11 0 1 8 5779 3071 SP
-{pattern91 I} FS
+{pattern92 I} FS
 5988 3098 M
 1 0 D
 -53 23 D
@@ -18726,7 +18740,7 @@ FO
 P
 FO
 7 -3 7 -3 6 -3 7 -3 6 -3 -40 17 1 0 7 5988 3098 SP
-{pattern91 I} FS
+{pattern92 I} FS
 2251 3358 M
 34 10 D
 48 17 D
@@ -18898,7 +18912,7 @@ FO
 46 29 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 1945 3156 M
 6 2 D
 -12 -7 D
@@ -19026,7 +19040,7 @@ FO
 P
 FO
 -17 -6 4 7 -27 -13 9 5 -21 -8 -3 3 20 9 2 -2 7 5 43 12 -22 -8 12 3 12 2075 3182 SP
-{pattern91 I} FS
+{pattern92 I} FS
 -4 -3 8 3 2 2168 3031 SP
 2154 3031 M
 7 7 D
@@ -19259,7 +19273,7 @@ FO
 -17 -20 -38 -24 -4 3 22 10 -36 -13 47 20 -4 3 14 5 8 2169 3093 SP
 -18 -8 6 1 -28 -17 19 20 12 2 -5 2 23 13 -7 -7 8 2249 3139 SP
 1 -5 16 8 -30 -18 -8 4 13 6 -1 -5 10 10 7 2325 3194 SP
-{pattern91 I} FS
+{pattern92 I} FS
 7 4 6 3 6 3 6 3 7 4 6 3 6 3 -11 -3 -18 -10 -14 1 -40 -21 22 8 11 -1 13 2854 3386 SP
 10 6 -23 -8 0 -4 3 1 4 2881 3400 SP
 3027 3465 M
@@ -19367,7 +19381,7 @@ FO
 P
 FO
 12 7 -6 -5 23 8 1 -3 19 13 -21 -9 14 11 30 2 -11 -13 48 17 44 6 -19 -12 6 -9 -18 -13 14 3027 3465 SP
-{pattern91 I} FS
+{pattern92 I} FS
 -79 -30 -19 -4 10 0 -16 -2 7 -1 24 7 -13 -6 -31 -3 14 -3 61 20 -3 -17 22 20 13 2 27 13 13 -3 -12 9 16 2683 3267 SP
 -40 -26 37 16 17 14 17 7 -13 -9 21 13 6 2654 3167 SP
 -41 -15 -41 -3 26 -7 53 20 4 2643 3219 SP
@@ -19469,7 +19483,7 @@ FO
 -10 -11 52 23 -13 -13 18 3 -24 -11 -59 -40 14 15 -11 -6 2 21 17 12 -14 -3 2 7 18 8 13 3112 3322 SP
 14 23 25 9 4 -10 3 3125 3441 SP
 40 17 -7 -7 -21 -9 3 3077 3310 SP
-{pattern91 I} FS
+{pattern92 I} FS
 10 4 15 19 -13 -4 17 15 -12 -3 34 26 -29 -18 -64 -62 -7 -7 20 15 8 -4 20 12 -1 6 13 2614 3097 SP
 {pattern86 I} FS
 2810 3056 M
@@ -19573,7 +19587,7 @@ FO
 -10 -11 52 23 -13 -13 18 3 -24 -11 -59 -40 14 15 -11 -6 2 21 17 12 -14 -3 2 7 18 8 13 3112 3322 SP
 14 23 25 9 4 -10 3 3125 3441 SP
 40 17 -7 -7 -21 -9 3 3077 3310 SP
-{pattern91 I} FS
+{pattern92 I} FS
 10 4 15 19 -13 -4 17 15 -12 -3 34 26 -29 -18 -64 -62 -7 -7 20 15 8 -4 20 12 -1 6 13 2614 3097 SP
 -2 -2 -3 -3 90 0 9 5 4 2968 3031 SP
 3305 3465 M
@@ -19761,7 +19775,7 @@ FO
 16 7 -15 -6 2 3125 3107 SP
 {pattern86 I} FS
 18 14 17 2 -30 -22 -6 6 4 3288 3421 SP
-{pattern91 I} FS
+{pattern92 I} FS
 9 0 -5 -11 7 13 8 2 -5 -23 14 18 -7 -8 -1 15 10 9 -5 1 -1 -7 -16 -8 -2 6 -16 -3 7 -2 -5 -15 16 3092 3134 SP
 {pattern86 I} FS
 2968 3031 M
@@ -19952,7 +19966,7 @@ P
 FO
 1 3 6 -3 2 3305 3465 SP
 18 14 17 2 -30 -22 -6 6 4 3288 3421 SP
-{pattern91 I} FS
+{pattern92 I} FS
 9 0 -5 -11 7 13 8 2 -5 -23 14 18 -7 -8 -1 15 10 9 -5 1 -1 -7 -16 -8 -2 6 -16 -3 7 -2 -5 -15 16 3092 3134 SP
 3115 3031 M
 3 3 D
@@ -20277,7 +20291,7 @@ FO
 -46 -55 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3538 3365 M
 3 3 D
 16 2 D
@@ -20379,7 +20393,7 @@ FO
 42 29 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3707 3328 M
 11 -7 D
 41 19 D
@@ -20576,7 +20590,7 @@ FO
 -5 -6 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3900 2784 M
 4 3 D
 -4 4 D
@@ -20719,7 +20733,7 @@ FO
 -17 -7 -11 16 0 26 19 7 4 4043 2792 SP
 4 -10 -53 -6 6 34 3 4161 2743 SP
 -13 -14 -4 19 8 14 3 4046 2846 SP
-{pattern91 I} FS
+{pattern92 I} FS
 4511 2598 M
 -12 26 D
 -9 7 D
@@ -20857,7 +20871,7 @@ FO
 {pattern86 I} FS
 2 -8 -42 11 -8 -5 1 7 25 0 5 4340 2706 SP
 -37 -13 9 10 -5 6 16 9 4 4490 2696 SP
-{pattern91 I} FS
+{pattern92 I} FS
 -68 35 -4 14 16 0 -2 16 12 4 -14 -4 1 -12 -19 -1 13 -26 6 3 10 4400 2998 SP
 {pattern86 I} FS
 4511 2598 M
@@ -21009,7 +21023,7 @@ P
 FO
 2 -8 -42 11 -8 -5 1 7 25 0 5 4340 2706 SP
 -37 -13 9 10 -5 6 16 9 4 4490 2696 SP
-{pattern91 I} FS
+{pattern92 I} FS
 -68 35 -4 14 16 0 -2 16 12 4 -14 -4 1 -12 -19 -1 13 -26 6 3 10 4400 2998 SP
 4 -3 8 3 16 -8 -3 8 18 -1 -1 1 6 4801 2598 SP
 -4 9 -4 10 -5 9 -4 9 -4 9 -3 0 -15 -10 -2 -10 15 -19 31 -16 10 4530 2889 SP
@@ -21113,7 +21127,7 @@ FO
 6 -17 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 4729 2799 M
 -8 18 D
 12 5 D
@@ -21207,7 +21221,7 @@ FO
 -279 0 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 -27 19 19 -22 -5 -15 -52 8 -4 -8 9 4 57 -8 4 9 8 5011 2953 SP
 -25 5 -5 -9 8 -3 3 5144 2873 SP
 {pattern86 I} FS
@@ -21229,7 +21243,7 @@ FO
 57 -72 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 5966 2760 M
 -4 -8 D
 -35 23 D
@@ -21273,7 +21287,7 @@ FO
 -5 6 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 6190 2598 M
 -20 7 D
 -18 -3 D
@@ -21529,7 +21543,7 @@ FO
 10 -8 9 -7 10 -8 5 -4 5 -4 -4 -7 -45 9 -11 11 13 -3 10 9 -13 11 13 -2 -10 5 -1 6 14 6014 2721 SP
 -10 11 15 -5 22 -27 21 -14 2 4 -16 10 8 2 15 -12 -13 6 21 -11 -11 -11 -45 20 -28 34 3 8 14 6330 2619 SP
 1 5 23 -15 4 2 6 -17 -10 5 -1 -10 -16 3 -15 8 -6 13 20 -6 -5 12 11 6320 2662 SP
-{pattern91 I} FS
+{pattern92 I} FS
 6389 2705 M
 -6 16 D
 -24 12 D
@@ -21632,7 +21646,7 @@ FO
 10 -10 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 7281 2598 M
 -375 0 D
 -97 66 D
@@ -21778,7 +21792,7 @@ P
 FO
 12 6 -2 -6 2 2158 3031 SP
 30 34 17 -6 -23 -11 21 5 -19 -22 5 2128 3031 SP
-{pattern91 I} FS
+{pattern92 I} FS
 -16 -26 19 -14 34 40 3 1748 2598 SP
 1752 2693 M
 17 -8 D
@@ -21816,7 +21830,7 @@ FO
 -45 -70 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 -7 -10 -7 -10 -7 -9 -8 -10 -7 -10 -8 -10 20 11 0 -6 2 7 33 21 11 26 11 2375 2598 SP
 5 -3 8 3 2 2312 2598 SP
 -3 -6 16 -2 -8 -2 21 3 -7 -6 25 9 -7 -4 -3 -8 10 10 45 2 -11 4 11 2216 2598 SP
@@ -21972,7 +21986,7 @@ FO
 -5 -6 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 2441 2657 M
 38 22 D
 62 24 D
@@ -22085,7 +22099,7 @@ FO
 {pattern86 I} FS
 -14 -10 10 13 -30 0 22 10 4 2951 2944 SP
 -21 5 -6 7 6 5 3 3018 3011 SP
-{pattern91 I} FS
+{pattern92 I} FS
 -11 0 10 6 31 0 22 12 -44 1 -19 -7 -8 -12 -16 -8 8 2726 2911 SP
 {pattern86 I} FS
 1 2 26 9 -4 -11 -34 -21 13 16 20 12 -5 0 -18 -13 -1 5 9 2997 2946 SP
@@ -22198,7 +22212,7 @@ P
 FO
 -14 -10 10 13 -30 0 22 10 4 2951 2944 SP
 -21 5 -6 7 6 5 3 3018 3011 SP
-{pattern91 I} FS
+{pattern92 I} FS
 -11 0 10 6 31 0 22 12 -44 1 -19 -7 -8 -12 -16 -8 8 2726 2911 SP
 2994 2943 M
 3 1 D
@@ -22306,7 +22320,7 @@ FO
 P
 FO
 -2 -1 0 2 3 1 3 2994 2943 SP
-{pattern91 I} FS
+{pattern92 I} FS
 3524 2598 M
 -375 0 D
 21 60 D
@@ -22417,7 +22431,7 @@ FO
 9 6 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 0 -7 8 3 5 -14 9 3 -18 30 -24 -12 6 4220 2231 SP
 {pattern86 I} FS
 3900 2166 M
@@ -22429,7 +22443,7 @@ FO
 -376 0 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 0 -7 8 3 5 -14 9 3 -18 30 -24 -12 6 4220 2231 SP
 4511 2598 M
 46 -50 D
@@ -22504,7 +22518,7 @@ FO
 -8 23 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 4986 2166 M
 -1 7 D
 11 2 D
@@ -22657,7 +22671,7 @@ FO
 32 -115 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 2 -8 2 -8 2 -9 2 -8 3 -9 2 -8 1 14 -10 30 12 1 2 5 10 5589 2166 SP
 5076 2496 M
 38 -6 D
@@ -22738,7 +22752,7 @@ FO
 13 -24 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3 -9 3 -9 3 -9 3 -10 3 -9 5 39 -2 7 7 6016 2166 SP
 0 -7 3 7 2 6003 2166 SP
 5594 2216 M
@@ -22890,7 +22904,7 @@ FO
 -1 -21 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 6437 2166 M
 14 11 D
 -13 19 D
@@ -22999,7 +23013,7 @@ P
 FO
 {pattern86 I} FS
 -4 -13 -33 -3 -7 8 -1 21 11 11 15 -4 6 6142 2346 SP
-{pattern91 I} FS
+{pattern92 I} FS
 6158 2166 M
 -20 15 D
 -26 40 D
@@ -23127,7 +23141,7 @@ FO
 -4 7 -4 7 -3 7 16 -19 2 -10 -3 1 6 6396 2303 SP
 2 -5 -4 8 0 1 3 6019 2212 SP
 -4 -13 -33 -3 -7 8 -1 21 11 11 15 -4 6 6142 2346 SP
-{pattern91 I} FS
+{pattern92 I} FS
 6158 2166 M
 -20 15 D
 -26 40 D
@@ -23288,7 +23302,7 @@ FO
 24 -17 -18 -1 -12 9 -16 25 19 -6 5 6556 2194 SP
 -25 11 -4 -4 -4 9 18 16 4 6500 2175 SP
 -30 8 -4 18 5 1 15 -16 4 6450 2230 SP
-{pattern91 I} FS
+{pattern92 I} FS
 7314 2166 M
 -426 0 D
 -32 66 D
@@ -23376,7 +23390,7 @@ FO
 {pattern86 I} FS
 -6 16 30 11 2 707 2360 SP
 -6 16 30 11 2 707 2360 SP
-{pattern91 I} FS
+{pattern92 I} FS
 1339 2166 M
 -427 0 D
 32 66 D
@@ -23497,7 +23511,7 @@ FO
 0 34 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 2130 2166 M
 -13 28 D
 36 65 D
@@ -23699,7 +23713,7 @@ FO
 5 7 4 8 32 -6 5 -5 -11 -2 2 -4 17 -1 35 17 19 1 -15 -3 -14 -15 -63 -11 -20 6 13 2303 2445 SP
 24 69 35 40 -3 -4 11 1 -7 -10 9 -7 -9 -23 8 1 -2 -12 -12 -10 9 1 -19 -21 4 -23 2 -2 14 2325 2598 SP
 21 8 -3 -8 2 2294 2598 SP
-{pattern91 I} FS
+{pattern92 I} FS
 -19 6 14 -22 2 2083 2211 SP
 2566 2166 M
 -7 8 D
@@ -23771,7 +23785,7 @@ FO
 7 -13 40 4 9 -9 -8 -5 -37 3 5 -11 -6 -9 13 -5 -15 -6 -56 6 -1 9 -12 -1 11 5 -22 11 9 8 40 -5 14 10 17 2433 2338 SP
 8 -11 -30 -1 -11 10 18 2 4 2311 2335 SP
 -2 -9 -34 -1 11 9 3 2539 2338 SP
-{pattern91 I} FS
+{pattern92 I} FS
 3046 2166 M
 -426 0 D
 12 60 D
@@ -23893,7 +23907,7 @@ FO
 0 432 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3900 2071 M
 29 12 D
 53 10 D
@@ -24018,7 +24032,7 @@ FO
 P
 FO
 -3 5 3 11 2 3900 2096 SP
-{pattern91 I} FS
+{pattern92 I} FS
 4747 1734 M
 -5 37 D
 5 10 D
@@ -24089,7 +24103,7 @@ FO
 -5 -103 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 4585 1906 M
 9 43 D
 13 7 D
@@ -24157,7 +24171,7 @@ FO
 1 -59 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 5526 2166 M
 13 -24 D
 24 -18 D
@@ -24194,7 +24208,7 @@ FO
 -2 9 -2 10 -2 9 -2 10 12 -26 -4 5 2 -27 7 5611 2149 SP
 3 -1 -2 -1 2 5608 2161 SP
 3 11 -8 5 19 5 1 14 11 7 24 -18 13 -24 7 5526 2166 SP
-{pattern91 I} FS
+{pattern92 I} FS
 5621 2101 M
 8 -22 D
 23 5 D
@@ -24243,7 +24257,7 @@ FO
 -2 8 -2 9 -2 9 -2 8 37 -36 7 4 2 -39 -10 0 -6 16 -13 0 -7 12 11 6042 2138 SP
 0 -1 1 6003 2166 SP
 -5 -1 -31 29 -17 32 9 17 23 5 8 -22 2 -10 2 -9 2 -10 2 -9 2 -10 1 -8 -8 2 9 -4 14 5609 2159 SP
-{pattern91 I} FS
+{pattern92 I} FS
 6067 1938 M
 6 -6 D
 25 -51 D
@@ -24507,7 +24521,7 @@ FO
 3 -15 14 -1 -5 -9 -16 -1 -4 17 -12 3 4 10 7 6209 1885 SP
 -10 -7 -23 7 10 -9 -6 -4 -24 12 51 10 6 6403 1754 SP
 15 10 8 -15 -10 0 3 6367 1774 SP
-{pattern91 I} FS
+{pattern92 I} FS
 6557 1734 M
 72 35 D
 -49 -6 D
@@ -24763,7 +24777,7 @@ FO
 -18 -18 -20 0 7 11 23 7 4 6858 1769 SP
 -11 -6 2 18 16 15 -8 -21 4 6794 1821 SP
 -9 11 13 6 13 -12 3 6626 1879 SP
-{pattern91 I} FS
+{pattern92 I} FS
 7099 1734 M
 -2 4 D
 8 4 D
@@ -24869,7 +24883,7 @@ FO
 33 6 23 -16 -33 -1 -8 -11 3 11 -18 -1 -20 -13 2 -14 -15 -2 -5 5 13 14 -1 8 26 13 13 7155 1821 SP
 -19 29 10 2 7 -14 3 7239 1816 SP
 7 -26 30 -24 -43 33 3 7207 1862 SP
-{pattern91 I} FS
+{pattern92 I} FS
 7318 1742 M
 16 -5 D
 -14 10 D
@@ -24900,7 +24914,7 @@ P
 FO
 {pattern86 I} FS
 -1 -3 -14 10 16 -5 3 7318 1742 SP
-{pattern91 I} FS
+{pattern92 I} FS
 486 1734 M
 -427 0 D
 -13 24 D
@@ -25075,7 +25089,7 @@ FO
 P
 FO
 -2 4 7 6 10 -8 -1 -2 4 2072 2166 SP
-{pattern91 I} FS
+{pattern92 I} FS
 -2 10 -2 11 -2 10 -2 10 -2 10 -3 10 -38 0 25 -39 27 -31 0 -1 10 2179 1805 SP
 0 7 -1 7 -5 -17 4 -8 3 4 5 2168 1898 SP
 0 2 -1 -1 1 -4 3 2167 1958 SP
@@ -25269,7 +25283,7 @@ FO
 0 -2 -2 -1 -1 1 4 4 4 2188 2147 SP
 -1 -4 -4 0 -4 -1 -1 2 11 8 5 2186 2135 SP
 1 0 1 2181 2112 SP
-{pattern91 I} FS
+{pattern92 I} FS
 2602 1881 M
 2 0 D
 -2 1 D
@@ -25439,7 +25453,7 @@ P
 FO
 -2 1 2 0 2 2602 1881 SP
 -43 4 10 25 21 8 16 -1 5 -14 -6 -2 6 -5 7 2800 1933 SP
-{pattern91 I} FS
+{pattern92 I} FS
 3129 1734 M
 22 36 D
 1 26 D
@@ -25470,7 +25484,7 @@ FO
 7 -77 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3601 2166 M
 10 -5 D
 -4 -6 D
@@ -25531,7 +25545,7 @@ FO
 43 18 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 0 432 -323 0 32 -80 1 -82 47 -98 -2 -46 -19 -53 -25 -25 -6 -27 9 -21 10 4186 1734 SP
 {pattern86 I} FS
 4186 1734 M
@@ -25550,7 +25564,7 @@ FO
 3 48 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 4480 1302 M
 11 12 D
 26 20 D
@@ -25608,7 +25622,7 @@ FO
 -17 -108 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 4733 1600 M
 23 30 D
 -3 41 D
@@ -25703,7 +25717,7 @@ FO
 -2 -58 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 5403 1302 M
 -376 0 D
 47 96 D
@@ -25802,7 +25816,7 @@ FO
 P
 FO
 1 1 1 -1 2 6459 1734 SP
-{pattern91 I} FS
+{pattern92 I} FS
 6460 1733 M
 8 -6 D
 10 7 D
@@ -25994,7 +26008,7 @@ FO
 13 6 12 1 -5 -7 3 6537 1734 SP
 -17 0 10 7 8 -6 3 6460 1733 SP
 17 11 5 -17 -6 8 -5 -4 4 6683 1705 SP
-{pattern91 I} FS
+{pattern92 I} FS
 6780 1302 M
 45 30 D
 24 29 D
@@ -26090,7 +26104,7 @@ FO
 P
 FO
 -1 2 -17 3 19 10 6 -8 41 -5 0 -2 6 7051 1734 SP
-{pattern91 I} FS
+{pattern92 I} FS
 7647 1602 M
 -44 -15 D
 31 1 D
@@ -26126,7 +26140,7 @@ FO
 -14 -5 6 7 31 1 -44 -15 4 7647 1602 SP
 7 -7 -32 -14 4 15 3 7583 1562 SP
 -9 -28 -10 49 2 7249 1468 SP
-{pattern91 I} FS
+{pattern92 I} FS
 153 1602 M
 -15 16 D
 -42 55 D
@@ -26152,7 +26166,7 @@ FO
 P
 FO
 {pattern86 I} FS
-{pattern91 I} FS
+{pattern92 I} FS
 1270 1302 M
 -376 0 D
 -95 72 D
@@ -26284,7 +26298,7 @@ FO
 -3 18 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 -1 12 -19 9 -4 -4 -7 11 -3 -8 26 -18 6 2447 1618 SP
 2959 1302 M
 1 15 D
@@ -26355,7 +26369,7 @@ FO
 27 -54 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3085 1521 M
 2 6 D
 -4 27 D
@@ -26390,7 +26404,7 @@ FO
 19 -90 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3900 1302 M
 -376 0 D
 -21 132 D
@@ -26417,7 +26431,7 @@ P
 FO
 {pattern86 I} FS
 2 10 2 10 2 11 2 10 2 11 2 10 2 11 2 10 2 10 2 11 18 -16 8 5 5 -32 -10 -7 -1 -18 13 -36 16 4223 1302 SP
-{pattern91 I} FS
+{pattern92 I} FS
 4256 1198 M
 50 18 D
 40 -5 D
@@ -26445,7 +26459,7 @@ FO
 -204 0 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 4738 869 M
 -279 0 D
 90 181 D
@@ -26480,7 +26494,7 @@ FO
 {pattern86 I} FS
 7 10 -11 -4 9 7 -19 -4 8 7 11 -1 -3 7 9 -5 9 5 9 4869 876 SP
 7 10 -11 -4 9 7 -19 -4 8 7 11 -1 -3 7 9 -5 9 5 9 4869 876 SP
-{pattern91 I} FS
+{pattern92 I} FS
 5296 869 M
 -279 0 D
 26 24 D
@@ -26537,7 +26551,7 @@ FO
 51 47 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 6060 1217 M
 64 0 D
 36 20 D
@@ -26616,7 +26630,7 @@ FO
 -75 -69 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 6312 1141 M
 -9 -12 D
 23 -18 D
@@ -26683,7 +26697,7 @@ FO
 P
 FO
 -14 -10 0 4 -21 -20 -26 -17 -10 13 -42 -10 48 31 -7 -6 52 28 -7 -11 40 20 2 -7 12 6206 1014 SP
-{pattern91 I} FS
+{pattern92 I} FS
 6413 869 M
 -279 0 D
 193 94 D
@@ -26827,7 +26841,7 @@ FO
 -3 -11 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 1666 869 M
 -279 0 D
 -177 76 D
@@ -27138,7 +27152,7 @@ FO
 P
 FO
 15 -22 7 -10 -9 0 -26 29 4 5 5 2732 1013 SP
-{pattern91 I} FS
+{pattern92 I} FS
 2885 1112 M
 22 6 D
 10 9 D
@@ -27208,7 +27222,7 @@ FO
 P
 FO
 4 -7 4 -8 -7 0 -8 16 3 7 5 2785 1279 SP
-{pattern91 I} FS
+{pattern92 I} FS
 3621 869 M
 -280 0 D
 -90 181 D
@@ -27256,7 +27270,7 @@ FO
 -1 0 1 3943 435 SP
 -3 -3 -21 3 2 3984 435 SP
 1 3 52 0 -16 -12 -4 8 -17 -4 -8 8 -8 -6 -1 0 8 4051 441 SP
-{pattern91 I} FS
+{pattern92 I} FS
 4187 435 M
 -6 6 D
 12 10 D
@@ -27281,7 +27295,7 @@ FO
 -1 -3 -1 -3 -13 6 3 4064 435 SP
 -69 -29 -14 22 -13 -9 12 10 -6 6 5 4187 435 SP
 4 7 4 6 4 7 9 0 -24 -26 -2 0 6 4215 461 SP
-{pattern91 I} FS
+{pattern92 I} FS
 4400 490 M
 -7 1 D
 -10 8 D
@@ -27334,7 +27348,7 @@ FO
 5 4 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 4551 478 M
 -16 -5 D
 -30 -17 D
@@ -27378,7 +27392,7 @@ FO
 149 0 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 4794 528 M
 -18 0 D
 11 16 D
@@ -27430,7 +27444,7 @@ FO
 133 82 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 4922 502 M
 -23 -2 D
 -5 12 D
@@ -27481,7 +27495,7 @@ FO
 19 9 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 5104 507 M
 -12 15 D
 -44 -2 D
@@ -27527,7 +27541,7 @@ FO
 70 31 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 5111 443 M
 6 3 D
 -3 12 D
@@ -27578,7 +27592,7 @@ FO
 148 0 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 5095 435 M
 31 14 D
 77 30 D
@@ -27600,7 +27614,7 @@ P
 FO
 {pattern86 I} FS
 -11 -4 -10 -4 16 8 3 5095 435 SP
-{pattern91 I} FS
+{pattern92 I} FS
 2710 435 M
 -149 0 D
 -177 61 D
@@ -27845,7 +27859,7 @@ FO
 P
 FO
 -8 -7 -7 7 -7 -1 20 -10 -24 10 1 -5 -9 8 0 -5 23 -9 3 -14 16 -1 13 -13 -18 -5 -39 28 -50 17 13 8 16 3068 761 SP
-{pattern91 I} FS
+{pattern92 I} FS
 3352 540 M
 7 -2 D
 -10 5 D
@@ -27877,7 +27891,7 @@ FO
 5 -5 5 -4 -15 -14 -12 9 12 3 -11 17 11 -5 1 4 8 3338 555 SP
 2 -1 -10 5 7 -2 3 3352 540 SP
 9 -5 -4 -7 9 -13 -17 10 0 -6 -8 6 15 2 -9 5 5 1 9 3112 825 SP
-{pattern91 I} FS
+{pattern92 I} FS
 3751 435 M
 -149 0 D
 -115 181 D
@@ -27901,7 +27915,7 @@ P
 FO
 {pattern86 I} FS
 12 0 -6 -4 -6 -5 3 3900 444 SP
-{pattern91 I} FS
+{pattern92 I} FS
 0 3 -2 -3 2 3904 435 SP
 -17 6 -12 -6 2 3942 435 SP
 -12 4 -5 -4 2 3960 435 SP
@@ -27924,7 +27938,7 @@ FO
 8 24 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 -16 7 -17 -7 2 4097 435 SP
 -1 1 -1 -1 2 4189 435 SP
 {pattern86 I} FS
@@ -28021,7 +28035,7 @@ FO
 -51 -22 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 4726 265 M
 -20 14 D
 -44 -15 D
@@ -28079,7 +28093,7 @@ FO
 541 173 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3181 259 M
 17 -11 D
 -77 7 D
@@ -28105,7 +28119,7 @@ FO
 -25 8 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3131 318 M
 3 -3 D
 -34 3 D
@@ -28141,7 +28155,7 @@ FO
 -263 109 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3172 352 M
 -21 3 D
 -1 -4 D
@@ -28173,7 +28187,7 @@ FO
 -241 118 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3223 395 M
 -9 -9 D
 34 -19 D
@@ -28218,7 +28232,7 @@ FO
 -296 174 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3394 368 M
 -8 3 D
 16 -19 D
@@ -28255,7 +28269,7 @@ FO
 -105 78 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3338 435 M
 26 -11 D
 -4 -12 D
@@ -28317,7 +28331,7 @@ FO
 -97 95 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 3516 372 M
 -7 9 D
 -31 29 D
@@ -28360,7 +28374,7 @@ FO
 P
 FO
 7 -8 7 -7 -14 13 -7 9 4 3516 372 SP
-{pattern91 I} FS
+{pattern92 I} FS
 3774 367 M
 -4 -25 D
 -14 9 D
@@ -28402,7 +28416,7 @@ FO
 -72 208 D
 P
 FO
-{pattern91 I} FS
+{pattern92 I} FS
 -3 10 -4 9 -3 10 -3 10 -3 10 -4 9 -3 10 -2 -10 -37 -14 -2 -16 -22 -17 -38 -1 -12 -10 -1 0 14 3888 435 SP
 {pattern86 I} FS
 3888 435 M
@@ -28589,8 +28603,8 @@ P
 49 -16 D
 P S
 %%EndObject
-currentdict /image86 undef
-currentdict /pattern86 undef
+currentdict /image85 undef
+currentdict /pattern85 undef
 currentdict /image91 undef
 currentdict /pattern91 undef
 0 A
@@ -28599,8 +28613,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -Rd -JI0/6.5i -O -K -F+f32p,Helvetica-Bold,lightgreen=thinner
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -Rd -JI0/6.5i -O -K -F+f32p,Helvetica-Bold,lightgreen=thinner
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
@@ -28730,8 +28744,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -Rd -JI0/6.5i -O -K -F+f32p,Helvetica-Bold,magenta=thinner
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -Rd -JI0/6.5i -O -K -F+f32p,Helvetica-Bold,magenta=thinner
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
@@ -28861,8 +28875,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psimage -DjCM+w3i -Rd -JI0/6.5i GMT_covertext.eps -O -K
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psimage -DjCM+w3i -Rd -JI0/6.5i @GMT_covertext.eps -O -K
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
@@ -29195,8 +29209,8 @@ O0
 0 -3900 TM
 
 % PostScript produced by:
-%@GMT: grdimage lon.nc -JI0/6.5i -Clon.cpt -O -K -Y-3.25i -B0 -nl
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdimage lon.nc -JI0/6.5i -Clon.cpt -O -K -Y-3.25i -B0 -nl
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
@@ -29823,8 +29837,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pscoast -Rd -JI0/6.5i -O -K -Dc -A5000 -Gc
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -Rd -JI0/6.5i -O -K -Dc -A5000 -Gc
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_14
 0 setlinecap
 0 setlinejoin
@@ -36865,8 +36879,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: grdimage lat.nc -JI0/6.5i -Clat.cpt -O -K -nl
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdimage lat.nc -JI0/6.5i -Clat.cpt -O -K -nl
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_15
 0 setlinecap
 0 setlinejoin
@@ -37022,8 +37036,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pscoast -Rd -JI0/6.5i -O -K -Q
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -Rd -JI0/6.5i -O -K -Q
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_16
 0 setlinecap
 0 setlinejoin
@@ -37036,8 +37050,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pscoast -Rd -JI0/6.5i -O -K -Dc -A5000 -Wthinnest
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -Rd -JI0/6.5i -O -K -Dc -A5000 -Wthinnest
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_17
 0 setlinecap
 0 setlinejoin
@@ -43429,8 +43443,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -Rd -JI0/6.5i -O -K -F+f32p,Helvetica-Bold,red=thinner
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -Rd -JI0/6.5i -O -K -F+f32p,Helvetica-Bold,red=thinner
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_18
 0 setlinecap
 0 setlinejoin
@@ -43551,7 +43565,11 @@ PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold P
 {1 0 0 C} FS
 O1
 3900 2382 M 533 F1
-(15TH INTERNATIONAL) mc false charpath fs S
+V MU 0 0 M (16) FP 0 187 G 373 F1 (TH) FP 0 -187 G 533 F1 ( INTERNATIONAL) FP pathbbox N 4 1 roll exch pop add exch U -2 div exch -2 div exch G
+(16) false charpath fs
+0 187 G 373 F1 (TH) false charpath fs
+0 -187 G 533 F1 ( INTERNATIONAL) false charpath fs
+S
 PSL_cliprestore
 %%EndObject
 0 A
@@ -43560,8 +43578,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -Rd -JI0/6.5i -O -K -F+f32p,Helvetica-Bold,red=thinner
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -Rd -JI0/6.5i -O -K -F+f32p,Helvetica-Bold,red=thinner
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_19
 0 setlinecap
 0 setlinejoin
@@ -43691,8 +43709,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -Rd -JI0/6.5i -O -F+f18p,Helvetica-Bold,green=thinnest
-%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -Rd -JI0/6.5i -O -F+f18p,Helvetica-Bold,green=thinnest
+%@PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_20
 0 setlinecap
 0 setlinejoin
@@ -43813,9 +43831,13 @@ PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold P
 {0 1 0 C} FS
 O1
 3900 1302 M 300 F1
-(Honolulu, Hawaii, April 1, 2018) mc false charpath fs S
+(Honolulu, Hawaii, April 1, 2019) mc false charpath fs S
 PSL_cliprestore
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage
