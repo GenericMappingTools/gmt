@@ -42,7 +42,7 @@ set (GMT_VERSION_YEAR "2018")
 # The GMT package version.
 set (GMT_PACKAGE_VERSION_MAJOR 5)
 set (GMT_PACKAGE_VERSION_MINOR 4)
-set (GMT_PACKAGE_VERSION_PATCH 3)
+set (GMT_PACKAGE_VERSION_PATCH 4)
 
 # The subversion revision of the GMT source code.
 # This is manually set when making GMT *public* releases.

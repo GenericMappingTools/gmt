@@ -1215,6 +1215,59 @@ int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT
 	return (GMT_GRID_CARTESIAN);
 }
 
+GMT_LOCAL void doctor_geo_increments (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+	/* Check for sloppy arc min/sec increments due to divisions by 60 or 3600 */
+	double round_inc, scale, inc, slop;
+	unsigned int side;
+	static char *type[2] = {"longitude", "latitude"};
+	
+	for (side = GMT_X; side <= GMT_Y; side++) {	/* Check both increments */
+		scale = (header->inc[side] < GMT_MIN2DEG) ? 3600.0 : 60.0;	/* Check for clean multiples of minutes or seconds */
+		inc = header->inc[side] * scale;
+		round_inc = rint (inc);
+		slop = fabs (inc - round_inc);
+		if (slop > 0 && slop < GMT_CONV4_LIMIT) {
+			inc = header->inc[side];
+			header->inc[side] = round_inc / scale;
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Round-off patrol changed geographic grid increment for %s from %.16g to %.16g\n",
+				type[side], inc, header->inc[side]);
+		}
+	}
+}
+
+GMT_LOCAL void grdio_round_off_patrol (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+	/* This function is called after the read info functions return.  We use it to make
+	 * sure there are no tiny inconsistencies between grid increments and limits, and
+	 * also check that geographic latitudes are withing bounds. For geographic data we
+	 * also examine if the increment * 60 or 3600 is very close (< 1e-4) to an integer,
+	 * in which case we reset it to the exact reciprocal value. */
+	unsigned int k;
+	double norm_v, round_v, d, slop;
+	static char *type[4] = {"xmin", "xmax", "ymin", "ymax"};
+
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Correct any slop in geographic increments */
+		doctor_geo_increments (GMT, header);
+		if ((header->wesn[YLO]+90.0) < (-GMT_CONV4_LIMIT*header->inc[GMT_Y]))
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Round-off patrol found south latitude outside valid range (%.16g)!\n", header->wesn[YLO]);
+		if ((header->wesn[YHI]-90.0) > (GMT_CONV4_LIMIT*header->inc[GMT_Y]))
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Round-off patrol found north latitude outside valid range (%.16g)!\n", header->wesn[YHI]);
+	}
+	
+	/* If boundaries are close to multiple of inc/2 fix them */
+	for (k = XLO; k <= YHI; k++) {	/* Check all limits for closeness to 0.5*increments */
+		d = 0.5 * ((k < YLO) ? header->inc[GMT_X] : header->inc[GMT_Y]);
+		norm_v = header->wesn[k] / d;
+		round_v = rint (norm_v);
+		slop = fabs (norm_v - round_v);
+		if (slop > GMT_CONV12_LIMIT && slop < GMT_CONV4_LIMIT) {	/* Ignore super tiny-slop and larger mismatches */
+			header->wesn[k] = round_v * d;
+			norm_v = header->wesn[k];
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Round-off patrol changed grid limit for %s from %.16g to %.16g\n",
+				type[k], norm_v, header->wesn[k]);
+		}
+	}
+}
+
 int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *header) {
 	/* file:	File name
 	 * header:	grid structure header
@@ -1250,6 +1303,7 @@ int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEAD
 		header->nan_value = invalid;
 
 	gmtlib_grd_get_units (GMT, header);
+	grdio_round_off_patrol (GMT, header);	/* Ensure limit/inc consistency */
 	header->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, header);
 
 	gmt_M_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 0), file);
