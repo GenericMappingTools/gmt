@@ -1589,6 +1589,11 @@ int gmt_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, doubl
 		else if (wesn[XLO] < header->wesn[XLO] || wesn[XHI] > header->wesn[XHI])
 			geo = true;	/* Probably dealing with periodic grid */
 
+		x = fabs (header->wesn[YLO] - wesn[YLO]);	/* if |x| < GMT_CONV4_LIMIT * header->inc[GMT_Y] we set wesn to the grid limit */
+		if (x > 0.0 && x < GMT_CONV4_LIMIT * header->inc[GMT_Y]) wesn[YLO] = header->wesn[YLO];	/* Avoid snafu */
+		x = fabs (header->wesn[YHI] - wesn[YHI]);	/* if |x| < GMT_CONV4_LIMIT * header->inc[GMT_Y] we set wesn to the grid limit */
+		if (x > 0.0 && x < GMT_CONV4_LIMIT * header->inc[GMT_Y]) wesn[YHI] = header->wesn[YHI];	/* Avoid snafu */
+
 		if (wesn[YLO] < header->wesn[YLO] || wesn[YHI] > header->wesn[YHI]) return (GMT_GRDIO_DOMAIN_VIOLATION);	/* Calling program goofed... */
 
 		one_or_zero = (header->registration == GMT_GRID_PIXEL_REG) ? 0 : 1;

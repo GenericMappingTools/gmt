@@ -17,7 +17,7 @@ rm -f fail_count.d
 for o in $* ; do
         f=`basename $o .ps`
 	printf "%-32s" $f.ps
-	rms=`gm compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file $f.png $f.ps ../fig/$f.ps 2>&1`
+	rms=`gm compare -density 200 -maximum-error 0.003 -highlight-color magenta -highlight-style assign -metric rmse -file $f.png $f.ps ../fig/$f.ps 2>&1`
 	if test $? -ne 0; then
         	echo "[FAIL]"
 		rms=`(sed -nE '/Total:/s/ +Total: ([0-9.]+) .+/\1/p'|cut -c-5) <<< "$rms"`

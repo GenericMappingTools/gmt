@@ -536,6 +536,11 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		if (gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "history", header->command, GMT_GRID_COMMAND_LEN320))
 			gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "source", header->command, GMT_GRID_COMMAND_LEN320);
 		gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "description", header->remark, GMT_GRID_REMARK_LEN160);
+		header->registration = GMT_GRID_NODE_REG;
+		if (!nc_get_att_int (ncid, NC_GLOBAL, "node_offset", &i)) {	/* GMT wrote the registration in the grid */
+			header->registration = i;
+			set_reg = false;	/* Do not update it below since we know the registration */
+		}
 
 		if (gm_id > 0) {
 			size_t len;
