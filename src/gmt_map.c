@@ -6459,10 +6459,11 @@ GMT_LOCAL double auto_time_increment (double inc, char *unit) {
 void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned int item) {
 	/* Determine the annotation and frame tick interval when they are not set (interval = 0) */
 	int i = 0, n = 6;
-	char unit, sunit[2], tmp[GMT_LEN16] = {""}, string[GMT_LEN64] = {""}, ax_code[3] = "xyz";
-	bool set_a = false, is_time = gmt_M_axis_is_time (GMT, axis);
+	char unit, sunit[2], tmp[GMT_LEN16] = {""}, string[GMT_LEN64] = {""}, par[GMT_LEN128] = {""}, ax_code[3] = "xyz";
+	bool set_a = false, interval = false, is_time = gmt_M_axis_is_time (GMT, axis);
 	double defmaj[7] = {2.0, 5.0, 10.0, 15.0, 30.0, 60.0, 90.0}, defsub[7] = {1.0, 1.0, 2.0, 5.0, 10.0, 15.0, 30.0};
-	double HOmaj[4] = {2.0, 3.0, 6.0, 12.0}, HOsub[4] = {1.0, 1.0, 3.0, 3.0};
+	double Hmaj[4] = {2.0, 3.0, 6.0, 12.0}, Hsub[4] = {1.0, 1.0, 3.0, 3.0};
+	double Omaj[4] = {3.0, 6.0}, Osub[4] = {1.0, 3.0};
 	double Dmaj[4] = {2.0, 3.0, 7.0, 14.0}, Dsub[4] = {1.0, 1.0, 1.0, 7.0};
 	double range, d, f, p, *maj = defmaj, *sub = defsub;
 	struct GMT_PLOT_AXIS *A = &GMT->current.map.frame.axis[axis];
@@ -6503,16 +6504,38 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	d /= p;	/* d is now in degrees, minutes or seconds (or time seconds), or in the range [1;10) */
 	if (is_time) {	/* p was in seconds but we will use unit, so reset p = 1 */
 		p = 1.0;
-		switch (unit) {	/* Select other steps more suited for hour, day, month */
-			case 'O': maj = HOmaj; sub = HOsub; n = 3; break;
-			case 'D': maj = Dmaj;  sub = Dsub;  n = 3; break;
-			case 'H': maj = HOmaj; sub = HOsub; n = 4; break;
+		switch (unit) {	/* Select other steps more suitable for month, day, hour.  */
+			case 'O': maj = Omaj; sub = Osub; n = 1; break;
+			case 'D': maj = Dmaj; sub = Dsub; n = 3; break;
+			case 'H': maj = Hmaj; sub = Hsub; n = 3;
+				break;
 		}
+		if ((unit == 'H' || unit == 'M') && !strcmp (GMT->current.setting.format_clock_map, "hh:mm:ss")) {
+			/* Strip off the seconds from the formatting if default setting is used */
+			strcpy (GMT->current.setting.format_clock_map, "hh:mm");
+			gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_map, &GMT->current.plot.calclock.clock, 2);
+			sprintf (par, " --FORMAT_CLOCK_MAP=hh:mm");
+		}
+		else if (unit == 'D' && !strcmp (GMT->current.setting.format_date_map, "yyyy-mm-dd")) {
+			/* Use month name and day */
+			strcpy (GMT->current.setting.format_date_map, "o dd");
+			gmtlib_date_C_format (GMT, GMT->current.setting.format_date_map, &GMT->current.plot.calclock.date, 2);
+			sprintf (par, " --FORMAT_DATE_MAP=\"o dd\"");
+		}
+		else if (unit == 'O' && !strcmp (GMT->current.setting.format_date_map, "yyyy-mm-dd")) {
+			/* Use year and month name for month intervals */
+			strcpy (GMT->current.setting.format_date_map, "o yyyy");
+			gmtlib_date_C_format (GMT, GMT->current.setting.format_date_map, &GMT->current.plot.calclock.date, 2);
+			sprintf (par, " --FORMAT_DATE_MAP=\"o yyyy\"");
+		}
+		
+		interval = (unit == 'Y' || unit == 'O' || unit == 'D');
 	}
 	while (i < n && maj[i] < d) i++;	/* Wind up to largest reasonable interval */
 	d = maj[i] * p, f = sub[i] * p;		/* Scale up intervals in multiple of unit */
-	if (is_time) {	/* Last check to change a 12 month unit as 1 year */
+	if (is_time) {	/* Last check to change a 12 month unit to 1 year and 24 hours to 1 day */
 		if (unit == 'O' && d == 12.0) d = 1.0, f /= 12.0, unit = 'Y';
+		if (unit == 'H' && d == 24.0) d = 1.0, f /= 24.0, unit = 'D';
 		sunit[0] = unit;	/* Since we need a string in strcat */
 	}
 	
@@ -6522,6 +6545,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 		T->interval = d, T->generated = set_a = true;
 		sprintf (tmp, "a%g", T->interval); strcat (string, tmp);
 		if (is_time) T->unit = unit, strcat (string, sunit);
+		if (interval) T->type = 'i', T->flavor = 1;
 	}
 
 	/* Set minor ticks as well (if copied from annotation, set to major interval) */
@@ -6540,7 +6564,7 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 		if (is_time) T->unit = unit, strcat (string, sunit);
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Auto-frame interval for axis %d item %d: d = %g  f = %g\n", axis, item, d, f);
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-frame interval for %c-axis (item %d): %s\n", ax_code[axis], item, string);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Auto-frame interval for %c-axis (item %d): %s%s\n", ax_code[axis], item, string, par);
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
