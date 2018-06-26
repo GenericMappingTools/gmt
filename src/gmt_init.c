@@ -7162,7 +7162,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 
 	if (n_slash == 3 && !got_country && ((strchr ("LCR", item[0]) && strchr ("TMB", item[1])) || (strchr ("LCR", item[1]) && strchr ("TMB", item[0])))) {	/* Extended -R option using coordinate codes and grid increments */
 		char X[2][GMT_LEN64] = {"", ""}, code[3] = {""};
-		double xdim, ydim, orig[2];
+		double xdim, ydim, orig[2] = {0.0, 0.0};
 		int n_columns, n_rows, just, part;
 		gmt_M_memcpy (code, item, 2, char);
 		if ((just = gmt_just_decode (GMT, code, PSL_NO_DEF)) == -99) {	/* Since justify not in correct format */
@@ -7311,13 +7311,15 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 			inv_project = true;
 	}
 	else if (item[length] != 'r' && !strstr (item, "+r") && (GMT->current.proj.projection_GMT == GMT_UTM || GMT->current.proj.projection_GMT == GMT_TM ||
-	         GMT->current.proj.projection_GMT == GMT_STEREO)) {	/* Just _might_ be getting -R in meters, better check */
-		double rect[4];
-		strncpy (string, item, GMT_BUFSIZ-1);
-		sscanf (string, "%lg/%lg/%lg/%lg", &rect[XLO], &rect[XHI], &rect[YLO], &rect[YHI]);
-		if (fabs (rect[XLO]) > 360.0 || fabs (rect[XHI]) > 360.0 || fabs (rect[YLO]) > 90.0 || fabs (rect[YHI]) > 90.0) {	/* Oh, yeah... */
+	         GMT->current.proj.projection_GMT == GMT_STEREO)) {	/* Just _might_ be getting -R in meters, better check if argument is too large to be degrees */
+		double rect[4] = {0.0, 0.0, 0.0, 0.0};
+		int n_rect_read;
+		strncpy (string, item, GMT_BUFSIZ-1);	/* Try to read these as 4 limits in meters */
+		n_rect_read = sscanf (string, "%lg/%lg/%lg/%lg", &rect[XLO], &rect[XHI], &rect[YLO], &rect[YHI]);
+		if (n_rect_read == 4 && (fabs (rect[XLO]) > 360.0 || fabs (rect[XHI]) > 360.0 || fabs (rect[YLO]) > 90.0 || fabs (rect[YHI]) > 90.0)) {	/* Oh, yeah... */
 			inv_project = true;
 			r_unit = 'e';	/* Must specify the "missing" leading e for meter */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "For a UTM or TM projection, your region %s is too large to be in degrees and thus assumed to be in meters", string);
 		}
 	}
 	else	/* Plain old -Rw/e/s/n */
@@ -7393,7 +7395,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		gmt_M_memcpy (GMT->common.R.wesn_orig, p, 4, double);	/* Save these in case they get enlarged by oblique projections */
 	}
 	if (inv_project) {	/* Convert rectangular distances to geographic corner coordinates */
-		double wesn[4];
+		double wesn[4] = {0.0, 0.0, 0.0, 0.0};
 		GMT->common.R.oblique = false;
 		error += gmtinit_rectR_to_geoR (GMT, r_unit, p, wesn, true);
 		gmt_M_memcpy (p, wesn, 4, double);
