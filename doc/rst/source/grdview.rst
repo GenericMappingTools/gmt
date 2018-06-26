@@ -178,7 +178,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ **c**\ |\ **m**\ |\ **f**\ *pen*
+**-W**\ **c**\ \|\ **m**\ \|\ **f**\ *pen*
 
     **-Wc**
         Draw contour lines on top of surface or mesh (not image). Append pen
