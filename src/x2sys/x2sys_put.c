@@ -361,24 +361,41 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	x2sys_path (GMT, old_track_file, old_track_path);
 	x2sys_path (GMT, old_index_file, old_index_path);
 
-	if (!access (old_track_path, F_OK) && gmt_remove_file (GMT, old_track_path)) {	/* First delete old file */
-		x2sys_end (GMT, s);
-		Return (GMT_RUNTIME_ERROR);
+	/* First deal with the possible existence of a current track/index pair and possibly an old track/index pair of fails */
+	
+	if (!access (old_track_path, F_OK)) {	/* First delete old file */
+		GMT_Report (API, GMT_MSG_DEBUG, "Found old track file %s.  Try to remove it.\n", old_track_path);
+		if (gmt_remove_file (GMT, old_track_path)) {	/* First delete old track file */
+			GMT_Report (API, GMT_MSG_DEBUG, "Unable to delete %s.  Aborting!\n", old_track_path);
+			x2sys_end (GMT, s);
+			Return (GMT_RUNTIME_ERROR);
+		}
 	}
-	if (gmt_rename_file (GMT, track_path, old_track_path)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Rename failed for %s\t%s. Aborting %d!\n", track_path, old_track_path, i);
-		x2sys_end (GMT, s);
-		Return (GMT_RUNTIME_ERROR);
+	if (!access (track_path, F_OK)) {	/* Next rename current file (if it exists) to the old file */
+		GMT_Report (API, GMT_MSG_DEBUG, "Found current track file %s.  Try to rename it.\n", track_path);
+		if (gmt_rename_file (GMT, track_path, old_track_path)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Rename failed for %s -> %s. Aborting!\n", track_path, old_track_path);
+			x2sys_end (GMT, s);
+			Return (GMT_RUNTIME_ERROR);
+		}
 	}
-	if (!access (old_index_path, F_OK) && gmt_remove_file (GMT, old_index_path)) {	/* First delete old file */
-		x2sys_end (GMT, s);
-		Return (GMT_RUNTIME_ERROR);
+	if (!access (old_index_path, F_OK)) {	/* First delete old file */
+		GMT_Report (API, GMT_MSG_DEBUG, "Found old index file %s.  Try to remove it.\n", old_index_path);
+		if (gmt_remove_file (GMT, old_index_path)) {	/* First delete old index file */
+			x2sys_end (GMT, s);
+			Return (GMT_RUNTIME_ERROR);
+		}
 	}
-	if (gmt_rename_file (GMT, index_path, old_index_path)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Rename failed for %s. Aborts!\n", index_path);
-		x2sys_end (GMT, s);
-		Return (GMT_RUNTIME_ERROR);
+	if (!access (index_path, F_OK)) {	/* Next rename current file (if it exists) to the old file */
+		GMT_Report (API, GMT_MSG_DEBUG, "Found current index file %s.  Try to rename it\n", index_path);
+		if (gmt_rename_file (GMT, index_path, old_index_path)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Rename failed for %s. Aborts!\n", index_path);
+			x2sys_end (GMT, s);
+			Return (GMT_RUNTIME_ERROR);
+		}
 	}
+
+	/* Now we can create new files since any existing files have been removed or renamed */
 
 	if ((ftrack = fopen (track_path, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create %s. Aborts!\n", track_path);
