@@ -21,7 +21,8 @@
  * Version:	6 API
  *
  * Brief synopsis: grd2kml reads a single grid and makes a Google Earth
- * image quadtree.  Optionally supply an intensity grid and a CPT.
+ * image quadtree.  Optionally supply an intensity grid (or auto-derive it)
+ * and a CPT (or use default table).
  *
  */
 
@@ -32,7 +33,9 @@
 #define THIS_MODULE_PURPOSE	"Create KML image quadtree from single grid"
 #define THIS_MODULE_KEYS	"<G{,CC(,IG("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"-Vf"
+#define THIS_MODULE_OPTIONS	"-Vfn"
+
+/* Note: If -n is given here it is automatically set in any module called below, such as grdimage */
 
 struct GRD2KML_CTRL {
 	struct GRD2KM_In {
@@ -185,7 +188,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* min fade sizes */
+			case 'A':	/* min fade sizes  [EXPERIMENTAL, to delay fade out] */
 				Ctrl->A.active = true;
 				Ctrl->A.size = atoi (opt->arg);
 				if (Ctrl->A.size <= 0) {
@@ -252,7 +255,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 					n_errors++;
 				}
 				break;
-			case 'M':	/* Magnify and/or interpolate */
+			case 'M':	/* Magnify and/or interpolate [EXPERIMENTAL, to boost coarser grids] */
 				Ctrl->M.active = true;
 				if ((c = strstr (opt->arg, "+i"))) {
 					Ctrl->M.interpolate = true;
@@ -341,7 +344,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 
 	uint64_t node;
 	
-	double factor, dim, wesn[4], ext_wesn[4], inc[2];
+	double factor, dim, west, east, wesn[4], ext_wesn[4], inc[2];
 	
 
 	char cmd[GMT_BUFSIZ] = {""}, level_dir[PATH_MAX] = {""}, Zgrid[PATH_MAX] = {""}, Igrid[PATH_MAX] = {""};
@@ -462,7 +465,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	inc[GMT_X] = factor * G->header->inc[GMT_X];
 	inc[GMT_Y] = factor * G->header->inc[GMT_Y];
 	ext_wesn[XLO] = floor (G->header->wesn[XLO] / inc[GMT_X]) * inc[GMT_X];
-	ext_wesn[XHI] = ceil  (G->header->wesn[XHI] / inc[GMT_X]) * inc[GMT_X];
+	ext_wesn[XHI] = MIN (ext_wesn[XLO]+360.0, ceil  (G->header->wesn[XHI] / inc[GMT_X]) * inc[GMT_X]);
 	ext_wesn[YLO] = MAX (-90.0, floor (G->header->wesn[YLO] / inc[GMT_Y]) * inc[GMT_Y]);
 	ext_wesn[YHI] = MIN (+90.0, ceil  (G->header->wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y]);
 	if (ext_wesn[XLO] < G->header->wesn[XLO] || ext_wesn[XHI] > G->header->wesn[XHI] || ext_wesn[YLO] < G->header->wesn[YLO] || ext_wesn[YHI] > G->header->wesn[YHI]) {
@@ -536,16 +539,20 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		gmt_ascii_format_one (GMT, S, wesn[YLO], GMT_IS_LAT);
 		 
 		while (wesn[YLO] < (G->header->wesn[YHI]-G->header->inc[GMT_Y])) {	/* Small correction to avoid issues due to round-off */
-			wesn[YHI] = wesn[YLO] + factor * Ctrl->L.size * G->header->inc[GMT_Y];	/* Top row may extend beyond grid and be transparent */
+			wesn[YHI] = MIN (90.0, wesn[YLO] + factor * Ctrl->L.size * G->header->inc[GMT_Y]);	/* Top row may extend beyond grid and be transparent */
 			gmt_ascii_format_one (GMT, N, wesn[YHI], GMT_IS_LAT);
 			/* Loop over all columns at this level */
 			col = 0;
 			wesn[XLO] = ext_wesn[XLO];
-			gmt_ascii_format_one (GMT, W, wesn[XLO], GMT_IS_LON);
 			while (wesn[XLO] < (G->header->wesn[XHI]-G->header->inc[GMT_X])) {
 				uint64_t trow, tcol;
-				wesn[XHI] = wesn[XLO] + factor * Ctrl->L.size * G->header->inc[GMT_X];	/* So right column may extend beyond grid and be transparent */
-				gmt_ascii_format_one (GMT, E, wesn[XHI], GMT_IS_LON);
+				wesn[XHI] = MIN (ext_wesn[XLO]+360.0, wesn[XLO] + factor * Ctrl->L.size * G->header->inc[GMT_X]);	/* So right column may extend beyond grid and be transparent */
+				/* Must make sure we have a proper formatting of these longitudes so handle any east > 360 */
+				west = wesn[XLO];	east = wesn[XHI];
+				if (east > 360.0) west -= 360.0, east -= 360.0;	/* Keep within -180 to 360 ramnge */
+				GMT->current.io.geo.range = (west < 0.0 && east > 0.0) ? GMT_IS_M180_TO_P180_RANGE : GMT_IS_0_TO_P360_RANGE;
+				gmt_ascii_format_one (GMT, W, west, GMT_IS_LON);
+				gmt_ascii_format_one (GMT, E, east, GMT_IS_LON);
 				/* Now we have the current tile region */
 				if ((T = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Zgrid, NULL)) == NULL) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Unable to read in grid tile!\n");
