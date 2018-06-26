@@ -6469,7 +6469,8 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	struct GMT_PLOT_AXIS *A = &GMT->current.map.frame.axis[axis];
 	struct GMT_PLOT_AXIS_ITEM *T;
 
-	if (A->type == GMT_LOG10 || A->type == GMT_POW) return;
+	if (A->special == GMT_CUSTOM) return;	/* Got custom annotation/tick information via user file */
+	if (A->type == GMT_LOG10 || A->type == GMT_POW) return;	/* These axes still needs to have automatic selections implemented */
 
 	if (!(A->item[item].active && A->item[item].interval == 0.0) &&
 		!(A->item[item+2].active && A->item[item+2].interval == 0.0) &&
