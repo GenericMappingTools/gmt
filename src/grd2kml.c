@@ -89,6 +89,10 @@ struct GRD2KML_CTRL {
 	struct GRD2KML_S {	/* -S */
 		bool active;
 	} S;
+	struct  GRD2KML_T {	/* -T */
+		bool active;
+		char *title;
+	} T;
 };
 
 /* Structure used to keep track of which tile and its 4 possible underlings */
@@ -96,6 +100,7 @@ struct GMT_QUADTREE {
 	unsigned int level, q;
 	unsigned int row, col;
 	char tag[16];
+	char *region;
 	double wesn[4];
 	struct GMT_QUADTREE *next[4];
 };
@@ -122,6 +127,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *C) {	/* Dea
 	gmt_M_str_free (C->I.file);
 	gmt_M_str_free (C->I.azimuth);
 	gmt_M_str_free (C->I.method);
+	gmt_M_str_free (C->T.title);
 	gmt_M_free (GMT, C);
 }
 
@@ -129,7 +135,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -N<name> [-C<cpt>] [-D] [-E<url>] [-F<filter>] [-I[<intensgrid>|<value>|<modifiers>]] [-L<size>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "	[-Q] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "	[-Q] [-T<title>] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -155,7 +161,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -I+ to accept the default values (see grdgradient for details).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Set tile size as a power of 2 [256].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use PS Level 3 colormasking to make nodes with z = NaN transparent.\n");
-	GMT_Option (API, "V,f.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Set title (document description) for the top-level KML.\n");
+	GMT_Option (API, "V,f,n,.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -281,6 +288,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 			case 'S':	/* Single level directory */
 				Ctrl->S.active = true;
 				break;
+			case 'T':	/* Title */
+				Ctrl->T.active = true;
+				if (opt->arg[0]) Ctrl->T.title = strdup (opt->arg);
+				break;
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -350,6 +361,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	char cmd[GMT_BUFSIZ] = {""}, level_dir[PATH_MAX] = {""}, Zgrid[PATH_MAX] = {""}, Igrid[PATH_MAX] = {""};
 	char W[GMT_LEN16] = {""}, E[GMT_LEN16] = {""}, S[GMT_LEN16] = {""}, N[GMT_LEN16] = {""}, file[PATH_MAX] = {""};
 	char DataGrid[PATH_MAX] = {""}, IntensGrid[PATH_MAX] = {""}, path[PATH_MAX] = {""}, im_arg[16] = {""};
+	char region[GMT_LEN128] = {""}, *cmd_args = NULL;
 
 	FILE *fp = NULL;
 	struct GMT_QUADTREE **Q = NULL;
@@ -549,7 +561,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				wesn[XHI] = MIN (ext_wesn[XLO]+360.0, wesn[XLO] + factor * Ctrl->L.size * G->header->inc[GMT_X]);	/* So right column may extend beyond grid and be transparent */
 				/* Must make sure we have a proper formatting of these longitudes so handle any east > 360 */
 				west = wesn[XLO];	east = wesn[XHI];
-				if (east > 360.0) west -= 360.0, east -= 360.0;	/* Keep within -180 to 360 ramnge */
+				if (east > 360.0) west -= 360.0, east -= 360.0;	/* Keep within -180 to 180 range */
 				GMT->current.io.geo.range = (west < 0.0 && east > 0.0) ? GMT_IS_M180_TO_P180_RANGE : GMT_IS_0_TO_P360_RANGE;
 				gmt_ascii_format_one (GMT, W, west, GMT_IS_LON);
 				gmt_ascii_format_one (GMT, E, east, GMT_IS_LON);
@@ -597,7 +609,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 					}
 					else {	/* Made a meaningful plot, time to rip. */
 						/* Create the psconvert command to convert the PS to transparent PNG */
-						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Level %d: Mapped tile %s/%s/%s/%s\n", level, W, E, S, N);
+						sprintf (region, "%s/%s/%s/%s", W, E, S, N);
+						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Level %d: Mapped tile %s\n", level, region);
 						if (Ctrl->S.active)
 							sprintf (cmd, "-TG -E100 -P -Vn -Z -D%s/%s -FL%dR%dC%d.png %s", Ctrl->N.prefix, Ctrl->N.prefix, level, row, col, psfile);
 						else
@@ -610,9 +623,10 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						/* Update our list of tiles */
 						Q[n] = gmt_M_memory (GMT, NULL, 1, struct GMT_QUADTREE);
 						Q[n]->row = row; Q[n]->col = col;	Q[n]->level = level;
-						Q[n]->wesn[XLO] = wesn[XLO];	Q[n]->wesn[XHI] = wesn[XHI];
+						Q[n]->wesn[XLO] = west;		Q[n]->wesn[XHI] = east;
 						Q[n]->wesn[YLO] = wesn[YLO];	Q[n]->wesn[YHI] = wesn[YHI];
 						sprintf (Q[n]->tag, "L%2.2dR%2.2dC%2.2d", level, row, col);
+						Q[n]->region = strdup (region);
 						if (++n == n_alloc) {	/* Extend the array */
 							n_alloc <<= 1;
 							Q = gmt_M_memory (GMT, Q, n_alloc, struct GMT_QUADTREE *);
@@ -675,24 +689,24 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	
 	/* Create the top-level KML file */ 
 	sprintf (file, "%s/%s.kml", Ctrl->N.prefix, Ctrl->N.prefix);
+	cmd_args = GMT_Create_Cmd (API, options);
 	if ((fp = fopen (file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create file : %s\n", file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 	fprintf (fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n  <kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
 	fprintf (fp, "    <Document>\n      <name>%s</name>\n", Ctrl->N.prefix);
-	fprintf (fp, "      <description>GMT image quadtree</description>\n\n");
+	fprintf (fp, "    <!-- Produced by the Generic Mapping Tools [gmt.soest.hawaii.edu] -->\n");
+	fprintf (fp, "    <!-- cmd: gmt %s %s -->\n", GMT->init.module_name, cmd_args);
+	gmt_M_free (GMT, cmd_args);
+	if (Ctrl->T.active)
+		fprintf (fp, "      <description>%s</description>\n\n", Ctrl->T.title);
+	else
+		fprintf (fp, "      <description>GMT image quadtree representation of %s</description>\n\n", Ctrl->In.file);
         fprintf (fp, "      <Style>\n");
         fprintf (fp, "        <ListStyle id=\"hideChildren\">          <listItemType>checkHideChildren</listItemType>\n        </ListStyle>\n");
         fprintf (fp, "      </Style>\n");
-#if 0
-	if (Ctrl->S.active)
-		fprintf (fp, "      <NetworkLink>\n        <name>%s/L0R0C0.png</name>\n", Ctrl->N.prefix);
-	else if (Ctrl->E.active)
-		fprintf (fp, "      <NetworkLink>\n        <name>%s/0/R0C0.png</name>\n", Ctrl->E.url);
-	else
-		fprintf (fp, "      <NetworkLink>\n        <name>0/R0C0.png</name>\n");
-#endif
+
 	set_dirpath (Ctrl->S.active, NULL, Ctrl->N.prefix, 0, 1, path);
 	fprintf (fp, "      <NetworkLink>\n        <name>%sR0C0.png</name>\n", path);
 	fprintf (fp, "        <Region>\n          <LatLonAltBox>\n");
@@ -715,7 +729,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	for (k = 0; k < n; k++) {
 		if (Q[k]->q) {	/* Only examine tiles with children */
 			if (Ctrl->D.active) {
-				printf ("%s:", Q[k]->tag);
+				printf ("%s [%s]:\t", Q[k]->tag, Q[k]->region);
 				for (quad = 0; quad < 4; quad++)
 					if (Q[k]->next[quad]) printf (" %c=%s", 'A'+quad, Q[k]->next[quad]->tag);
 				printf ("\n");
@@ -776,7 +790,8 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			fclose (fp);
 		        
 		}
-		gmt_M_free (GMT, Q[k]);	/* Free this tile information */
+		gmt_M_str_free (Q[k]->region);	/* Free this tile region */
+		gmt_M_free (GMT, Q[k]);		/* Free this tile information */
 	}
 	gmt_M_free (GMT, Q);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done: %d files written to directory %s\n", 2*n+1, Ctrl->N.prefix);
