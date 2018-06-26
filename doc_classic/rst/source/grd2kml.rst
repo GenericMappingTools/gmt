@@ -21,7 +21,9 @@ Synopsis
 [ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
 [ |-L|\ *tilesize* ]
 [ |-N|\ *prefix* ]
+[ |-Q| ]
 [ |-S| ]
+[ |-T|\ *title* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -110,11 +112,22 @@ Optional Arguments
     Sets a unique name prefixed used for the top-level KML filename *and* the
     directory where all referenced KML files and PNG images will be written [GMT_Quadtree].
 
+.. _-Q:
+
+**-Q**
+    Make grid nodes with z = NaN transparent, using the color-masking
+    feature in *PostScript* Level 3 (the PS device must support PS Level 3).
+
 .. _-S:
 
 **-S**
     Place all the level files in a single directory (named *prefix*) instead of
     writing them to sub-directories named after the levels 0, 1, ...
+
+.. _-T:
+
+**-T**\ *title*
+    Sets the title of the top-level document (i.e., its description).
 
 .. _-V:
 
@@ -138,11 +151,11 @@ Examples
 
 To make a quadtree image representation of the large topography grid file ellice_basin.nc, using
 the default tile size, supply automatic shading based on the topography, and use the larger 512x512 tiles,
-try
+supplying a suitable title, try
 
    ::
 
-    gmt grd2kml ellice_basin.nc -I+ -Nellice -L512
+    gmt grd2kml ellice_basin.nc -I+ -Nellice -L512 -T"Ellice Basin Bathymetry"
 
 See Also
 --------
