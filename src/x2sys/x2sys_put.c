@@ -398,12 +398,12 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	/* Now we can create new files since any existing files have been removed or renamed */
 
 	if ((ftrack = fopen (track_path, "w")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create %s. Aborts!\n", track_path);
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create track data base %s. Aborts!\n", track_path);
 		x2sys_end (GMT, s);
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 	if ((fbin = fopen (index_path, "wb")) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create %s. Aborts!\n", index_path);
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create index data base %s. Aborts!\n", index_path);
 		fclose (ftrack);
 		x2sys_end (GMT, s);
 		Return (GMT_ERROR_ON_FOPEN);
@@ -414,7 +414,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 	fclose (ftrack);
 	if (chmod (track_file, (mode_t)S_RDONLY))
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Failed to change file %s to read-only!\n", track_file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Failed to change track file %s to read-only!\n", track_file);
 
 	for (index = 0; index < B.nm_bin; index++) {
 		if (B.base[index].n_tracks == 0) continue;
@@ -444,7 +444,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	}
 	fclose (fbin);
 	if (chmod (index_file, (mode_t)S_RDONLY))
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Failed to change file %s to read-only!\n", index_file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Failed to change index file %s to read-only!\n", index_file);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "completed successfully\n");
 
