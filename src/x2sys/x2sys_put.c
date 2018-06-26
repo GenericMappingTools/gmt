@@ -361,7 +361,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	x2sys_path (GMT, old_track_file, old_track_path);
 	x2sys_path (GMT, old_index_file, old_index_path);
 
-	/* First deal with the possible existance of a current track/index pair and possibly an old track/index pair of fails */
+	/* First deal with the possible existence of a current track/index pair and possibly an old track/index pair of fails */
 	
 	if (!access (old_track_path, F_OK)) {	/* First delete old file */
 		GMT_Report (API, GMT_MSG_DEBUG, "Found old track file %s.  Try to remove it.\n", old_track_path);
