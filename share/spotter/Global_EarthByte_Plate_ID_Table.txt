@@ -787,7 +787,7 @@
 7218	PRP	Proto-pamir embayment pre-Cenozoic 	
 7219	SZN	subduction zone post-65	
 7220	INYL	Indus-Yarlung ophiolites 	
-7221	MCT	more or less arbitarily chosen within the 'missing shortening interval'	
+7221	MCT	more or less arbitrarily chosen within the 'missing shortening interval'	
 7222	LHSI	LH & Siwalik/MFT part of Greater India	
 7223	LHGH	LH - GH boundary	
 7224	GRA	Greater Asia: northern boundary 	

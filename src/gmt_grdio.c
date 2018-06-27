@@ -1238,7 +1238,7 @@ GMT_LOCAL void doctor_geo_increments (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 GMT_LOCAL void grdio_round_off_patrol (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* This function is called after the read info functions return.  We use it to make
 	 * sure there are no tiny inconsistencies between grid increments and limits, and
-	 * also check that geographic latitudes are withing bounds. For geographic data we
+	 * also check that geographic latitudes are within bounds. For geographic data we
 	 * also examine if the increment * 60 or 3600 is very close (< 1e-4) to an integer,
 	 * in which case we reset it to the exact reciprocal value. */
 	unsigned int k;
