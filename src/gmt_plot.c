@@ -1734,8 +1734,8 @@ GMT_LOCAL void plot_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 
 	if (! (GMT->current.map.frame.axis[GMT_X].item[item].active || GMT->current.map.frame.axis[GMT_Y].item[item].active)) return;
 
-	dx = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[item]);
-	dy = gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[item]);
+	dx = (GMT->current.map.frame.axis[GMT_X].file_custom) ? 1.0 : gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_X].item[item]);
+	dy = (GMT->current.map.frame.axis[GMT_Y].file_custom) ? 1.0 : gmtlib_get_map_interval (GMT, &GMT->current.map.frame.axis[GMT_Y].item[item]);
 
 	if (dx <= 0.0 && dy <= 0.0) return;
 
@@ -1884,6 +1884,9 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	else
 		dy[0] = dy[1] = 0.0;
 
+	if (GMT->current.map.frame.axis[GMT_X].file_custom) dx[0] = 1.0;	/* To pass checks below */
+	if (GMT->current.map.frame.axis[GMT_Y].file_custom) dy[0] = 1.0;	/* To pass checks below */
+	
 	if (dx[0] <= 0.0 && dy[0] <= 0.0) return;
 
 	dual[GMT_X] = (dx[1] > 0.0);
