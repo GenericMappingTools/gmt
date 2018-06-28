@@ -195,7 +195,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 	char track[GMT_LEN64] = {""}, line[GMT_BUFSIZ] = {""};
 	char track_file[GMT_BUFSIZ] = {""}, index_file[GMT_BUFSIZ] = {""}, old_track_file[GMT_BUFSIZ] = {""}, old_index_file[GMT_BUFSIZ] = {""};
-	char track_path[] = {""}, index_path[GMT_BUFSIZ] = {""}, old_track_path[GMT_BUFSIZ] = {""}, old_index_path[GMT_BUFSIZ] = {""};
+	char track_path[GMT_BUFSIZ] = {""}, index_path[GMT_BUFSIZ] = {""}, old_track_path[GMT_BUFSIZ] = {""}, old_index_path[GMT_BUFSIZ] = {""};
 
 	int error = 0, k;
 	bool found_it, skip;
