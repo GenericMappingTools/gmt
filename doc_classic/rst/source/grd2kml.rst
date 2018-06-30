@@ -15,14 +15,13 @@ Synopsis
 
 **grd2kml** *grid* 
 [ |-C|\ *cpt* ]
-[ |-D| ]
 [ |-E|\ *URL* ]
 [ |-F|\ *filtercode* ]
+[ |-H|\ *factor* ]
 [ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
 [ |-L|\ *tilesize* ]
 [ |-N|\ *prefix* ]
 [ |-Q| ]
-[ |-S| ]
 [ |-T|\ *title* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
@@ -66,11 +65,6 @@ Optional Arguments
     In this case *color1* etc can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
 
-.. _-D:
-
-**-D**
-    Write a listing of the quadtree dependencies to stdout [Default is no listing.]
-
 .. _-E:
 
 **-E**\ *URL*
@@ -87,6 +81,12 @@ Optional Arguments
     distant viewing.  Choose among **b**\ oxcar, **c**\ osine arch,
     **g**\ aussian, or **m**\ edian [Gaussian].  The filter width is set
     automatically depending on the level.
+
+.. _-H:
+
+**-H**\ *factor*
+    Improve the quality of rasterization by passing the sub-pixel smoothing flag
+    to psconvert [no sub-pixel smoothing].
 
 .. _-I:
 
@@ -117,12 +117,6 @@ Optional Arguments
 **-Q**
     Make grid nodes with z = NaN transparent, using the color-masking
     feature in *PostScript* Level 3 (the PS device must support PS Level 3).
-
-.. _-S:
-
-**-S**
-    Place all the level files in a single directory (named *prefix*) instead of
-    writing them to sub-directories named after the levels 0, 1, ...
 
 .. _-T:
 

@@ -787,8 +787,12 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
 			else
 				sprintf (buffer, "%s", opt->arg);
 		}
-		else if (opt->arg && opt->arg[0])			/* Regular -?arg commandline option with argument for some ? */
-			sprintf (buffer, "-%c%s", opt->option, opt->arg);
+		else if (opt->arg && opt->arg[0]) {			/* Regular -?arg commandline option with argument for some ? */
+			if (strchr (opt->arg, ' '))	/* Has a space in the argument, e.g., a title or similar */
+				sprintf (buffer, "-%c\"%s\"", opt->option, opt->arg);
+			else
+				sprintf (buffer, "-%c%s", opt->option, opt->arg);
+		}
 		else							/* Regular -? commandline argument without argument */
 			sprintf (buffer, "-%c", opt->option);
 

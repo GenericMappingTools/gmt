@@ -50,8 +50,10 @@ struct GRD2KML_CTRL {
 		bool active;
 		char *file;
 	} C;
-	struct GRD2KML_D {	/* -D */
+	struct GRD2KML_D {	/* -D[+s][+d]  [DEBUG ONLY, NOT DOCUMENTED] */
 		bool active;
+		bool single;
+		bool dump;
 	} D;
 	struct GRD2KML_E {	/* -E<url> */
 		bool active;
@@ -61,6 +63,10 @@ struct GRD2KML_CTRL {
 		bool active;
 		char filter;
 	} F;
+	struct GRD2KML_H {	/* -H<factor> */
+		bool active;
+		int factor;
+	} H;
 	struct GRD2KML_M {	/* -M[<magnify>]+i */
 		bool active;
 		bool interpolate;
@@ -86,9 +92,6 @@ struct GRD2KML_CTRL {
 	struct GRD2KML_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct GRD2KML_S {	/* -S */
-		bool active;
-	} S;
 	struct  GRD2KML_T {	/* -T */
 		bool active;
 		char *title;
@@ -134,8 +137,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -N<name> [-C<cpt>] [-D] [-E<url>] [-F<filter>] [-I[<intensgrid>|<value>|<modifiers>]] [-L<size>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "	[-Q] [-T<title>] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -N<name> [-C<cpt>] [-E<url>] [-F<filter>] [-H<factor>] [-I[<intensgrid>|<value>|<modifiers>]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "	[-L<size>] [-Q] [-T<title>] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -148,13 +151,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign 16 continuous colors over the data range [rainbow].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Write a list of quadtree associations to stdout [no listing].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E To store all files remotely, give leading URL [local files only].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify filter type used for downsampling.  Choose among.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     b: Boxcar      : Simple averaging of all points inside filter domain.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c: Cosine arch : Weighted averaging with cosine arc weights.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     g: Gaussian    : Weighted averaging with Gaussian weights [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     m: Median      : Median (50%% quantile) value of all points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-H Tell psconvert to do sub-pixel smoothing using factor <factor> [no sub-pixel smoothing].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply directional illumination. Append name of intensity grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity (i.e., change the ambient light), append a single value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grid> instead, append +a<azim> [-45] and +n<method> [t1].\n");
@@ -208,8 +211,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 				gmt_M_str_free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				break;
-			case 'D':	/* Listing */
+			case 'D':	/* Debug options - may fade away when happy with the performance */
 				Ctrl->D.active = true;
+				if (strstr (opt->arg, "+s")) Ctrl->D.single = true;	/* Write all files in a single directory instead of one directory per level */
+				if (strstr (opt->arg, "+d")) Ctrl->D.dump = true;	/* Dump quadtree information to stdou */
 				break;
 			case 'E':	/* Remove URL for all contents but top driver kml */
 				Ctrl->E.active = true;
@@ -224,6 +229,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -F: Choose among b, c, g, m!\n");
 					n_errors++;
 				}
+				break;
+			case 'H':	/* RIP at a higher dpi, then downsample in gs */
+				Ctrl->H.active = true;
+				Ctrl->H.factor = atoi (opt->arg);
 				break;
 			case 'I':	/* Here, intensity must be a grid file since we need to filter it */
 				Ctrl->I.active = true;
@@ -285,9 +294,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 			case 'Q':	/* Colormasking */
 				Ctrl->Q.active = true;
 				break;
-			case 'S':	/* Single level directory */
-				Ctrl->S.active = true;
-				break;
 			case 'T':	/* Title */
 				Ctrl->T.active = true;
 				if (opt->arg[0]) Ctrl->T.title = strdup (opt->arg);
@@ -302,6 +308,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file == NULL, "Syntax error: Must specify a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.prefix == NULL, "Syntax error -N: Must specify a prefix for naming usage.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->H.active && Ctrl->H.factor <= 1, "Syntax error -H: Must specify an integer factor > 1.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.url == NULL, "Syntax error -E: Must specify an URL.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file && !Ctrl->I.derive,
 	                                 "Syntax error -I option: Must specify intensity file, value, or modifiers\n");
@@ -325,8 +332,10 @@ void set_dirpath (bool single, char *url, char *prefix, unsigned int level, int 
 	if (single) {	/* Write everything into the prefix dir */
 		if (url && level == 0)	/* Set the leading URL for zero-level first kml */
 			sprintf (string, "%s/%s/L%d", url, prefix, level);
+#if 0
 		else if (level == 0 && dir == 1)	/* For top level we must write prefix dir */
 			sprintf (string, "%s/L%d", prefix, level);
+#endif
 		else	/* Everything below is in same folder */
 			sprintf (string, "L%d", level);
 	}
@@ -361,7 +370,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	char cmd[GMT_BUFSIZ] = {""}, level_dir[PATH_MAX] = {""}, Zgrid[PATH_MAX] = {""}, Igrid[PATH_MAX] = {""};
 	char W[GMT_LEN16] = {""}, E[GMT_LEN16] = {""}, S[GMT_LEN16] = {""}, N[GMT_LEN16] = {""}, file[PATH_MAX] = {""};
 	char DataGrid[PATH_MAX] = {""}, IntensGrid[PATH_MAX] = {""}, path[PATH_MAX] = {""}, im_arg[16] = {""};
-	char region[GMT_LEN128] = {""}, *cmd_args = NULL;
+	char region[GMT_LEN128] = {""}, ps_cmd[GMT_LEN128] = {""}, *cmd_args = NULL;
 
 	FILE *fp = NULL;
 	struct GMT_QUADTREE **Q = NULL;
@@ -505,6 +514,11 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			strcpy (IntensGrid, Ctrl->I.file);
 	}
 
+	if (Ctrl->H.active)	/* Do sub-pixel smoothing */
+		sprintf (ps_cmd, "-TG -E100 -P -Vn -Z -H%d", Ctrl->H.factor);
+	else
+		sprintf (ps_cmd, "-TG -E100 -P -Vn -Z");
+	
 	/* Loop over all the levels, starting at the top level (0) */
 	for (level = 0; level <= max_level; level++) {
 		factor = pow (2.0, max_level - level);	/* Width of imaged pixels in multiples of original grid spacing for this level */
@@ -513,12 +527,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Level %d: Factor = %g Dim = %d x %d -> %d x %d\n",
 			level, factor, irint (factor * Ctrl->L.size), irint (factor * Ctrl->L.size), Ctrl->L.size, Ctrl->L.size);
 		/* Create the level directory */
-		if (Ctrl->S.active && level == 0) {
-			sprintf (level_dir, "%s/%s", Ctrl->N.prefix, Ctrl->N.prefix);
-			if (gmt_mkdir (level_dir))
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Level directory %s already exist - overwriting files\n", level_dir);
-		}
-		else if (!Ctrl->S.active) {
+		if (!Ctrl->D.single) {
 			sprintf (level_dir, "%s/%d", Ctrl->N.prefix, level);
 			if (gmt_mkdir (level_dir))
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Level directory %s already exist - overwriting files\n", level_dir);
@@ -590,7 +599,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 					}
 					/* Will pass -W to notify us if there was no valid image data imaged */
 					sprintf (psfile, "grd2kml_tile_tmp_%6.6d.ps", uniq);
-					if (Ctrl->I.active)
+					if (Ctrl->I.active)	/* Must pass two grids */
 						sprintf (cmd, "%s -I%s -JX%3.2lfid -X0 -Y0 -W -R%s/%s/%s/%s%s -Vn --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, Igrid, dim, W, E, S, N, im_arg, dim, dim, psfile);
 					else
 						sprintf (cmd, "%s -JX%3.2lfid -X0 -Y0 -W -R%s/%s/%s/%s%s -Vn --PS_MEDIA=%3.2lfix%3.2lfi ->%s", z_data, dim, W, E, S, N, im_arg, dim, dim, psfile);
@@ -611,10 +620,10 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 						/* Create the psconvert command to convert the PS to transparent PNG */
 						sprintf (region, "%s/%s/%s/%s", W, E, S, N);
 						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Level %d: Mapped tile %s\n", level, region);
-						if (Ctrl->S.active)
-							sprintf (cmd, "-TG -E100 -P -Vn -Z -D%s/%s -FL%dR%dC%d.png %s", Ctrl->N.prefix, Ctrl->N.prefix, level, row, col, psfile);
+						if (Ctrl->D.single)
+							sprintf (cmd, "%s -D%s -FL%dR%dC%d.png %s", ps_cmd, Ctrl->N.prefix, level, row, col, psfile);
 						else
-							sprintf (cmd, "-TG -E100 -P -Vn  -D%s -FR%dC%d.png %s", level_dir, row, col, psfile);
+							sprintf (cmd, "%s -D%s -FR%dC%d.png %s", ps_cmd, level_dir, row, col, psfile);
 						if (GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Unable to rasterize current PNG tile!\n");
 							gmt_M_free (GMT, Q);
@@ -707,7 +716,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
         fprintf (fp, "        <ListStyle id=\"hideChildren\">          <listItemType>checkHideChildren</listItemType>\n        </ListStyle>\n");
         fprintf (fp, "      </Style>\n");
 
-	set_dirpath (Ctrl->S.active, NULL, Ctrl->N.prefix, 0, 1, path);
+	set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, 0, 1, path);
 	fprintf (fp, "      <NetworkLink>\n        <name>%sR0C0.png</name>\n", path);
 	fprintf (fp, "        <Region>\n          <LatLonAltBox>\n");
 	fprintf (fp, "            <north>%.14g</north>\n", G->header->wesn[YHI]);
@@ -717,7 +726,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	fprintf (fp, "          </LatLonAltBox>\n");
 	fprintf (fp, "          <Lod>\n            <minLodPixels>%d</minLodPixels>\n            <maxLodPixels>-1</maxLodPixels>\n          </Lod>\n", Ctrl->A.size);
         fprintf (fp, "        </Region>\n");
-	set_dirpath (Ctrl->S.active, Ctrl->E.url, Ctrl->N.prefix, 0, 1, path);
+	set_dirpath (Ctrl->D.single, Ctrl->E.url, Ctrl->N.prefix, 0, 1, path);
 	fprintf (fp, "        <Link>\n          <href>%sR0C0.kml</href>\n", path);
 	fprintf (fp, "          <viewRefreshMode>onRegion</viewRefreshMode>\n          <viewFormat/>\n");
 	fprintf (fp, "        </Link>\n      </NetworkLink>\n");
@@ -728,14 +737,14 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	
 	for (k = 0; k < n; k++) {
 		if (Q[k]->q) {	/* Only examine tiles with children */
-			if (Ctrl->D.active) {
+			if (Ctrl->D.dump) {
 				printf ("%s [%s]:\t", Q[k]->tag, Q[k]->region);
 				for (quad = 0; quad < 4; quad++)
 					if (Q[k]->next[quad]) printf (" %c=%s", 'A'+quad, Q[k]->next[quad]->tag);
 				printf ("\n");
 			}
-			if (Ctrl->S.active)
-				sprintf (file, "%s/%s/L%dR%dC%d.kml", Ctrl->N.prefix, Ctrl->N.prefix, Q[k]->level, Q[k]->row, Q[k]->col);
+			if (Ctrl->D.single)
+				sprintf (file, "%s/L%dR%dC%d.kml", Ctrl->N.prefix, Q[k]->level, Q[k]->row, Q[k]->col);
 			else
 				sprintf (file, "%s/%d/R%dC%d.kml", Ctrl->N.prefix, Q[k]->level, Q[k]->row, Q[k]->col);
 			if ((fp = fopen (file, "w")) == NULL) {
@@ -744,7 +753,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			}
 			/* First this tile's kml and png */
 			fprintf (fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n  <kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
-			set_dirpath (Ctrl->S.active, NULL, Ctrl->N.prefix, Q[k]->level, 1, path);
+			set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 1, path);
 			fprintf (fp, "    <Document>\n      <name>%sR%dC%d.kml</name>\n", path, Q[k]->row, Q[k]->col);
 			fprintf (fp, "      <description></description>\n\n");
 		        fprintf (fp, "      <Style>\n");
@@ -759,7 +768,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>2048</maxLodPixels>\n        </Lod>\n", Ctrl->A.size);
 		        fprintf (fp, "      </Region>\n");
 			fprintf (fp, "      <GroundOverlay>\n        <drawOrder>%d</drawOrder>\n", 10+2*Q[k]->level);
-			set_dirpath (Ctrl->S.active, NULL, Ctrl->N.prefix, Q[k]->level, 0, path);
+			set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->level, 0, path);
 			fprintf (fp, "        <Icon>\n          <href>%sR%dC%d.png</href>\n        </Icon>\n", path, Q[k]->row, Q[k]->col);
 		        fprintf (fp, "        <LatLonBox>\n");
 			fprintf (fp, "           <north>%.14g</north>\n", Q[k]->wesn[YHI]);
@@ -771,7 +780,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			for (quad = 0; quad < 4; quad++) {
 				if (Q[k]->next[quad] == NULL) continue;
 					
-				set_dirpath (Ctrl->S.active, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, 1, path);
+				set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, 1, path);
 				fprintf (fp, "\n      <NetworkLink>\n        <name>%sR%dC%d.png</name>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);
 			        fprintf (fp, "        <Region>\n          <LatLonAltBox>\n");
 				fprintf (fp, "            <north>%.14g</north>\n", Q[k]->next[quad]->wesn[YHI]);
@@ -781,7 +790,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				fprintf (fp, "        </LatLonAltBox>\n");
 				fprintf (fp, "        <Lod>\n          <minLodPixels>%d</minLodPixels>\n          <maxLodPixels>-1</maxLodPixels>\n        </Lod>\n", Ctrl->A.size);
 			        fprintf (fp, "        </Region>\n");
-				set_dirpath (Ctrl->S.active, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, -1, path);
+				set_dirpath (Ctrl->D.single, NULL, Ctrl->N.prefix, Q[k]->next[quad]->level, -1, path);
 				fprintf (fp, "        <Link>\n          <href>%sR%dC%d.kml</href>\n", path, Q[k]->next[quad]->row, Q[k]->next[quad]->col);
 				fprintf (fp, "          <viewRefreshMode>onRegion</viewRefreshMode><viewFormat/>\n");
 				fprintf (fp, "        </Link>\n      </NetworkLink>\n");
