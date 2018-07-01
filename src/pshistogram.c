@@ -674,7 +674,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 			}
 		}
 	}
-	else {
+	else if (w_arg) {
 		/* Process -W<width>[+b|h|l] [-L<pen>] */
 		c = strrchr (w_arg, '+');
 		/* Worry about the modes, if any.  This handles +l|h|b */
@@ -712,6 +712,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 			else
 				n_errors += gmt_default_error (GMT, 'T');
 		}
+	}
+	else {
+		GMT_Report (API, GMT_MSG_NORMAL, "Required argument for bin width not set\n");
+		n_errors++;
 	}
 	
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->T.T.vartime, "Syntax error -F option: Cannot be used with variable time bin widths\n");
