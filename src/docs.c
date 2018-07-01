@@ -57,14 +57,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	if ((opt = options) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Required module name not specified\n");
 		return GMT_PARSE_ERROR;
 	}
-	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
+	return GMT_NOERROR;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
