@@ -992,7 +992,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	}
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
-		gmt_M_free (GMT, ind);
+		if (Ctrl->E.active) gmt_M_free (GMT, ind);
 		else gmt_delaunay_free (GMT, &ind);
 		Return (API->error);
 	}
