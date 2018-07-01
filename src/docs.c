@@ -134,8 +134,10 @@ int GMT_docs (void *V_API, int mode, void *args) {
 		group = known_group[1];
 		other_file = true;
 	}
-	else if ((group = api_get_module_group (API, name)) == NULL)
+	else if ((group = api_get_module_group (API, name)) == NULL) {
+		gmt_M_str_free (t);
 		Return (GMT_RUNTIME_ERROR);
+	}
 
 	gmt_M_str_free (t);
 	if (!strcmp (group, "core"))	/* Core module */
