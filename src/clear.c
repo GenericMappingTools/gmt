@@ -152,6 +152,10 @@ int GMT_clear (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the clear main code ----------------------------*/
 
 	opt = GMT_Find_Option (API, GMT_OPT_INFILE, options);	/* action target will appear as file name */
+	if (opt == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "No clear target given\n");
+		Return (GMT_RUNTIME_ERROR);
+	}
 	if (!strcmp (opt->arg, "all")) {	/* Clear all */
 		if (clear_cache (API))
 			error = GMT_RUNTIME_ERROR;
