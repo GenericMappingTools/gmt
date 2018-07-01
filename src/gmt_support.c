@@ -8110,7 +8110,7 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		gmt_ascii_format_col (GMT, hi, P->data[i].z_high, GMT_OUT, GMT_Z);
 
 		if (P->categorical) {
-			if (P->categorical == 2) strcpy (lo, P->data[i].key);
+			if (P->categorical == 2) strncpy (lo, P->data[i].key, GMT_LEN64-1);
 			if (P->model & GMT_HSV)
 				fprintf (fp, format, lo, gmtlib_puthsv (GMT, P->data[i].hsv_low), '\n');
 			else if (P->model & GMT_CMYK) {
