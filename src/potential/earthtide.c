@@ -102,7 +102,7 @@ GMT_LOCAL double d_mod(const double x, const double y) {
 GMT_LOCAL double getutcmtai(double tsec, bool *leapflag) {
 
 	int mjd0t;
-	double ttsec, tai_utc;
+	double ttsec, tai_utc = 0;
 
 	/*  get utc - tai (s) */
 	/*  "Julian Date Converter" */
@@ -1041,7 +1041,7 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 	bool leapflag = false;
 	uint64_t k;
 	int mjd, year, month, day, hour, min;
-	double fmjd, rsun[3], tdel2, rmoon[3], out[7], convd[3];
+	double fmjd, rsun[3], tdel2 = 0, rmoon[3], out[7], convd[3];
 	struct GMT_RECORD *Out = NULL;
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
@@ -1078,12 +1078,12 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_GCAL *Cal, struct GMT_GRID **Grid) {
 	bool leapflag;
 	int k, mjd, year, month, day, hour, min;
-	uint32_t row, col, n_columns = 0, n_rows;
+	uint32_t row, col, n_columns = 0, n_rows = 0;
 	size_t ij_n = 0, ij_e = 0, ij_u = 0, n_inc = 0, e_inc = 0, u_inc = 0;
 	float *grd_n, *grd_e, *grd_u;
 	double fmjd, xsta[3], rsun[3], etide[3], rmoon[3];
 	double lat, ut, vt, wt, *lons;
-	double west, south, x_inc, y_inc;
+	double west = 0, south = 0, x_inc = 0, y_inc = 0;
 
 	/* Select which indices to increment based on user selection */
 	/* Use the trick of not incrementing the indices of unwanted arrays to avoid IF branches inside the loops */
@@ -1170,7 +1170,7 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 	uint64_t k;
 	int mjd, year, month, day, hour, min;
 	double d__2, ut, vt, wt;
-	double fmjd, xsta[3], rsun[3], tdel2, etide[3], rmoon[3], out[4];
+	double fmjd, xsta[3], rsun[3], tdel2 = 0, etide[3], rmoon[3], out[4];
 	struct GMT_RECORD *Out = NULL;
 
 	/* position of observing point (positive East) */
