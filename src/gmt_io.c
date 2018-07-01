@@ -3771,7 +3771,7 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
  */
 
 	char file[GMT_BUFSIZ] = {""}, path[GMT_BUFSIZ] = {""};
-	int i, j, nvars, dimids[5] = {-1, -1, -1, -1, -1}, ndims, in, id;
+	int i, j, nvars, dimids[5] = {-1, -1, -1, -1, -1}, ndims, in, id, err;
 	size_t n, item[2];
 	size_t tmp_pointer; /* To avoid "cast from pointer to integer of different size" */
 	double t_value[5], dummy[2];
@@ -3833,7 +3833,9 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
 		nc_inq_varname (GMT->current.io.ncid, GMT->current.io.varid[i], varname);
 
 		/* Check number of dimensions */
-		nc_inq_varndims (GMT->current.io.ncid, GMT->current.io.varid[i], &ndims);
+		if ((err = nc_inq_varndims (GMT->current.io.ncid, GMT->current.io.varid[i], &ndims)) != GMT_NOERROR) {
+			GMT_exit (GMT, GMT_RUNTIME_ERROR); return NULL;
+		}
 		if (ndims > 5) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "NetCDF variable %s has too many dimensions (%d)\n", varname, j);
 			GMT_exit (GMT, GMT_DIM_TOO_LARGE); return NULL;
