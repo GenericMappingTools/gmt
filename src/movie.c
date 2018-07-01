@@ -492,7 +492,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 
 			case 'C':	/* Known frame dimension or set a custom canvas size */
 				Ctrl->C.active = true;
-				strcpy (arg, opt->arg);		/* Get a copy... */
+				strncpy (arg, opt->arg, GMT_LEN64-1);		/* Get a copy... */
 				gmt_str_tolower (arg);		/* ..so we can make it lower case */
 				/* 16x9 formats */
 				if (!strcmp (arg, "8k") || !strcmp (arg, "4320p")) {	/* 4320x7680 */
@@ -564,7 +564,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				}
 				else
 					s = NULL;	/* No encoding options given */
-				strcpy (arg, opt->arg);	/* Get a copy of the args (minus encoding options)... */
+				strncpy (arg, opt->arg, GMT_LEN64-1);	/* Get a copy of the args (minus encoding options)... */
 				gmt_str_tolower (arg);	/* ..so we can convert it to lower case for comparisions */
 				if (c) c[0] = '+';	/* Now we can restore the optional text we chopped off */
 				if (!strcmp (opt->arg, "none")) {	/* Do not make those PNGs at all, just a master plot */
