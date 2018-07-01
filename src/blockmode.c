@@ -462,7 +462,7 @@ GMT_LOCAL double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int em
 
 /* Must free allocated memory before returning */
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {GMT_Destroy_Data (API, &Grid); gmt_M_free (GMT, Out); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {GMT_Destroy_Data (API, &Grid); gmt_M_free (GMT, Out); gmt_M_free (GMT, data); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_blockmode (void *V_API, int mode, void *args) {
 	bool mode_xy, do_extra = false, is_integer, duplicate_col;
@@ -673,11 +673,9 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	}
 	else {	/* Get ready for rec-by-rec output */
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
-			gmt_M_free (GMT, data);
 			Return (API->error);
 		}
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
-			gmt_M_free (GMT, data);
 			Return (API->error);
 		}
 	}
@@ -861,7 +859,6 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		error = GMT_NOERROR;
 	}
 
-	gmt_M_free (GMT, data);
 	if (do_extra) gmt_M_free (GMT, z_tmp);
 
 	if (emode) {

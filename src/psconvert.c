@@ -1837,6 +1837,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							if (delete && gmt_remove_file (GMT, ps_file))	/* Since we created a temporary file from the memdata */
 								Return (GMT_RUNTIME_ERROR);
 							gmt_M_free (GMT, PS);
+							fclose (fp);	fclose (fp2);
+							fp = fp2 = NULL;
 							Return (GMT_RUNTIME_ERROR);
 						}
 						/* must leave loop because fpb has been closed and file_line_reader would
