@@ -6459,7 +6459,7 @@ GMT_LOCAL double auto_time_increment (double inc, char *unit) {
 void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned int item) {
 	/* Determine the annotation and frame tick interval when they are not set (interval = 0) */
 	int i = 0, n = 6;
-	char unit = 's', sunit[2], tmp[GMT_LEN16] = {""}, string[GMT_LEN64] = {""}, par[GMT_LEN128] = {""}, ax_code[3] = "xyz";
+	char unit = 's', sunit[2], tmp[GMT_LEN16] = {""}, string[GMT_LEN64] = {""}, par[GMT_LEN128] = {""}, ax_code[4] = "xyz";
 	bool set_a = false, interval = false, is_time = gmt_M_axis_is_time (GMT, axis);
 	double defmaj[7] = {2.0, 5.0, 10.0, 15.0, 30.0, 60.0, 90.0}, defsub[7] = {1.0, 1.0, 2.0, 5.0, 10.0, 15.0, 30.0};
 	double Hmaj[4] = {2.0, 3.0, 6.0, 12.0}, Hsub[4] = {1.0, 1.0, 3.0, 3.0};
@@ -8754,7 +8754,7 @@ double gmt_line_length (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n
 	/* Returns distance of line in units set by GMT_distaz. It bypassed points where x and/or y are NaN. */
 	uint64_t this_p, prev;
 	bool xy_not_NaN;
-	double cum_dist = 0.0, xp0, xp1, yp0, yp1;
+	double cum_dist = 0.0, xp0 = 0, xp1, yp0 = 0, yp1;
 
 	if (n == 0) return 0.0;
 	if (project) gmt_geo_to_xy (GMT, x[0], y[0], &xp0, &yp0);
