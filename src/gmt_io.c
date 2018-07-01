@@ -2708,6 +2708,10 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 		gmt_M_memcpy (&O, GMT->parent->object[item], 1, struct GMTAPI_DATA_OBJECT);
 		gmtapi_unregister_io (GMT->parent, object_ID, GMT_OUT);
 	}
+	else {	/* Cannot have registered more than one output for OGR data */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot specify more than one output file for OGR\n");
+		return (GMT_DIM_TOO_LARGE);
+	}
 
 	/* Determine w/e/s/n via GMT_gmtinfo */
 
@@ -5501,7 +5505,7 @@ int gmtlib_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint6
 	 * Here, we tolerate open polygons and reuse 1st point to close it in the calculation.
 	 */
 	bool touched_N = false, touched_S = false, open = false;
-	uint64_t row, n_unique, last_point, next;
+	uint64_t row, n_unique, last_point = 0, next;
 	int type = 0, n_360;
 	double dlon, lon_sum = 0.0, lat_sum = 0.0, lat_S = 90.0, lat_N = -90.0;
 	static char *pole[5] = {"south (CCW)", "south (CW)", "no", "north (CW)", "north (CCW)"};
