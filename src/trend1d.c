@@ -147,7 +147,6 @@ GMT_LOCAL int read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **dat
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			assert (In != NULL);						/* Should never get here */
 		}
 
 		/* Data record to process */

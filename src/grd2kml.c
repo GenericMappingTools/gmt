@@ -538,6 +538,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			sprintf (cmd, "%s -D0 -F%c%.16g -I%.16g -G%s", DataGrid, Ctrl->F.filter, inc[GMT_X], inc[GMT_X], Zgrid);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Running grdfilter : %s\n", cmd);
 			if ((error = GMT_Call_Module (API, "grdfilter", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
+				gmt_M_free (GMT, Q);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (Ctrl->I.active) {	/* Also filter the intensity grid */
@@ -545,6 +546,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				sprintf (cmd, "%s -D0 -F%c%.16g -I%.16g -G%s", IntensGrid, Ctrl->F.filter, inc[GMT_X], inc[GMT_X], Igrid);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Running grdfilter : %s\n", cmd);
 				if ((error = GMT_Call_Module (API, "grdfilter", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
+					gmt_M_free (GMT, Q);
 					Return (GMT_RUNTIME_ERROR);
 				}
 			}
