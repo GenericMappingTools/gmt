@@ -3215,7 +3215,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 				code = GMT_IS_GRID;
 			else
 				code = GMT_NOTSET;
-
+			break;
 		case 0x89:	/* PNG */
 			code = ( !strncmp( (const char *)data, "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A", 8 )) ? GMT_IS_IMAGE : GMT_NOTSET;	break;
 
