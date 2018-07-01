@@ -2685,10 +2685,11 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
 			GMT->session.TMPDIR = NULL;
 		}
-		else
+		else {
 			GMT->session.TMPDIR = strdup (this_c);
-		gmt_dos_path_fix (GMT->session.TMPDIR);
-		trim_off_any_slash_at_end (GMT->session.TMPDIR);
+			gmt_dos_path_fix (GMT->session.TMPDIR);
+			trim_off_any_slash_at_end (GMT->session.TMPDIR);
+		}
 	}
 	return GMT_OK;
 }
