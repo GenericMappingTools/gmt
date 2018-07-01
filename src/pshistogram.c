@@ -175,8 +175,6 @@ GMT_LOCAL int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, doub
 	/* First fill boxes with counts  */
 
 	for (i = 0; i < n; i++) {
-        if (i == 17985)
-            sbox = 1;
 		sbox = get_bin (F->T, data[i], last_box);	/* Get the bin where this data point falls */
 		if (sbox < 0) {	/* Extreme value left of first bin; check if -W was set */
 			if ((F->extremes & PSHISTOGRAM_LEFT) == 0) continue;	/* No, we skip this value */
