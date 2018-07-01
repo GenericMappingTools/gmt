@@ -225,10 +225,6 @@ GMT_LOCAL double getutcmtai(double tsec, bool *leapflag) {
 		tai_utc = 11.;
 	else if (mjd0t >= 41317)    /* 1972 JAN 1 = 41317 */
 		tai_utc = 10.;
-	else {                      /* should never, ever get here */
-		fprintf(stderr, "FATAL ERROR -- fell thru tests in gpsleap\n");
-		return -1;
-	}
 	/* return utc - tai (in seconds) */
 	return -tai_utc;
 }
