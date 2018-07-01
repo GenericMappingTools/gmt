@@ -832,8 +832,9 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);
 				strcat (record, " x_inc: ");	smart_increments (GMT, G->header->inc, GMT_X, text);	strcat (record, text);
 				strcat (record, " name: ");
-				if ((c = strstr (G->header->x_units, " [degrees")))
+				if ((c = strstr (G->header->x_units, " [degrees"))) {
 					c[0] = '\0'; strcat (record, G->header->x_units); if (c) c[0] = ' ';
+				}
 				sprintf (text, " n_columns: %d", G->header->n_columns);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				sprintf (record, "%s: y_min: ", HH->name);
@@ -842,8 +843,9 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
 				strcat (record, " y_inc: ");	smart_increments (GMT, G->header->inc, GMT_Y, text);	strcat (record, text);
 				strcat (record, " name: ");
-				if ((c = strstr (G->header->y_units, " [degrees")))
+				if ((c = strstr (G->header->y_units, " [degrees"))) {
 					c[0] = '\0'; strcat (record, G->header->y_units); if (c) c[0] = ' ';
+				}
 				sprintf (text, " n_rows: %d", G->header->n_rows);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
