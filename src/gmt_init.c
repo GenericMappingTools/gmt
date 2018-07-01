@@ -2580,9 +2580,11 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "HOME environment not set. Using root directory instead.\n");
 #endif
 	}
-	gmt_dos_path_fix (GMT->session.HOMEDIR);
-	trim_off_any_slash_at_end (GMT->session.HOMEDIR);
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.HOMEDIR = %s\n", GMT->session.HOMEDIR);
+	if (GMT->session.HOMEDIR) {	/* Mostly to keep Coverity happy */
+		gmt_dos_path_fix (GMT->session.HOMEDIR);
+		trim_off_any_slash_at_end (GMT->session.HOMEDIR);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.HOMEDIR = %s\n", GMT->session.HOMEDIR);
+	}
 
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
