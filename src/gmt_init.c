@@ -15019,7 +15019,8 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			if ((error = process_figures (API)))
 				GMT_Report (API, GMT_MSG_NORMAL, "process_figures returned error %d\n", error);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Destroying the current workflow directory %s\n", API->gwf_dir);
-			gmt_remove_dir (API, dir, false);
+			if (gmt_remove_dir (API, dir, false))
+				GMT_Report (API, GMT_MSG_VERBOSE, "Unable to remove directory %s [permissions?]\n", dir);
 			API->GMT->current.setting.run_mode = GMT_CLASSIC;	/* Disable modern mode */
 			break;
 		default:
