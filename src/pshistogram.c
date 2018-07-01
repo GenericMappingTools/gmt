@@ -917,8 +917,12 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		F.T->min -= 0.5 * F.T->inc;
 		F.T->max += 0.5 * F.T->inc;
 	}
-	if (gmt_create_array (GMT, 'T', F.T, NULL, NULL)) Return (GMT_RUNTIME_ERROR);
-		
+	if (gmt_create_array (GMT, 'T', F.T, NULL, NULL)) {
+		gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
+		if (F.weights) gmt_M_free (GMT, weights);
+		Return (GMT_RUNTIME_ERROR);
+	}
+
 	if (fill_boxes (GMT, &F, data, weights, n)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Fatal error during box fill.\n");
 		gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
