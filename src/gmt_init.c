@@ -14757,6 +14757,15 @@ int gmt_get_current_figure (struct GMTAPI_CTRL *API) {
 	return (fig_no);
 }
 
+GMT_LOCAL bool is_integer (char *L) {
+	/* Return true if string L is not an integer or is empty */
+	if (!L || L[0] == '\0') return false;
+	for (size_t k = 0; k < strlen (L); k++) {
+		if (!isdigit (L[k])) return false;	/* Got a bad boy */
+	}
+	return true;	/* Everything came up roses */
+}
+
 int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	/* Add another figure to the gmt.figure queue.
 	 * arg = "[prefix] [format] [options]"
@@ -14837,6 +14846,10 @@ int gmt_add_figure (struct GMTAPI_CTRL *API, char *arg) {
 	if ((L = getenv ("MOVIE_N_LABELS")) != NULL) {	/* MOVIE_N_LABELS was set */
 		unsigned int T, n_tags;
 		char file[PATH_MAX] = {""}, name[GMT_LEN32] = {""};
+		if (!is_integer (L)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "MOVIE_N_LABELS = %s but must be an integer\n", L);
+			return GMT_RUNTIME_ERROR;
+		}
 		GMT_Report (API, GMT_MSG_DEBUG, "New figure: Found special MOVIE_N_LABELS = %s\n", L);
 		sprintf (file, "%s/gmt.movie", API->gwf_dir);
 		if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
