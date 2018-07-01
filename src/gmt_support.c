@@ -15412,7 +15412,10 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	}
 
 	/* 2. Dealt with the file option, now parse [<min/max/]<inc>[<unit>] */
-	ns = sscanf (argument, "%[^/]/%[^/]/%s", txt[GMT_X], txt[GMT_Y], txt[GMT_Z]);
+	if ((ns = sscanf (argument, "%[^/]/%[^/]/%s", txt[GMT_X], txt[GMT_Y], txt[GMT_Z])) < 1) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Must specify valid min[/max[/inc[<unit>|+n]]] option\n", option);
+		return GMT_PARSE_ERROR;
+	}
 	if ((flags & GMT_ARRAY_RANGE) && ns == 1 && (flags & GMT_ARRAY_SCALAR) == 0) {	/* Need to spell out all 3 items */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Must specify valid min/max/inc[<unit>|+n] option\n", option);
 		return GMT_PARSE_ERROR;
