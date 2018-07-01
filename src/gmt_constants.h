@@ -458,4 +458,6 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 #define GMT_SRTM_EXTENSION_LOCAL "nc"				/* Tile extension of nc short int files to be saved */
 #define GMT_SRTM_EXTENSION_LOCAL_LEN 2U				/* Length of  nc short int file extension */
 
+#define GMT_DEFAULT_CPT "rainbow"				/* When no CPT is given we choose this one */
+
 #endif  /* _GMT_CONSTANTS_H */

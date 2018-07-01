@@ -409,7 +409,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	}
 	else {	/* No table specified; set default rainbow table */
 		Ctrl->C.active = true;
-		Ctrl->C.file = strdup ("rainbow");
+		Ctrl->C.file = strdup (GMT_DEFAULT_CPT);
 	}
 
 	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->S.n_levels > 0) ? Ctrl->S.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */
