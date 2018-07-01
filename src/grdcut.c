@@ -35,7 +35,7 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-JRV"
 
-/* Control structure for grdcontour */
+/* Control structure for grdcut */
 
 struct GRDCUT_CTRL {
 	struct GRDCUT_In {
@@ -100,11 +100,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is file to extract a subset from.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify output grid file.\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The w/e/s/n you specify must be within the region of the input grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If in doubt, run grdinfo first and check range of old file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Typically, the w/e/s/n you specify must be within the region of the input\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   grid.  If in doubt, run grdinfo first and check range of old file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, see -N below.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-J Specify oblique projection and compute corresponding rectangular.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-J Specify oblique projection and compute corresponding rectangular\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   region that needs to be extracted.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Allow grid to be extended if new -R exceeds existing boundaries.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append value to initialize nodes outside current region [Default is NaN].\n");
