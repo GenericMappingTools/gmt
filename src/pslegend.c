@@ -180,7 +180,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 					n -= 2;	/* Remove the x/y count */
 					switch (n) {
 						case 1: /* Only gave reference point and width; change default justify if -Dj */
-							if (Ctrl->D.refpoint && Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* For -Dj with no 2nd justification, use same code as reference coordinate */
+							if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* For -Dj with no 2nd justification, use same code as reference coordinate */
 								Ctrl->D.justify = Ctrl->D.refpoint->justify;
 							break;
 						case 2:	/* Gave width and (height or justify) */
