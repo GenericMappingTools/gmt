@@ -3473,7 +3473,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		}
 		if (start_of_text) {	/* Save pointer to start of trailing text portion of the record */
 			while (start_of_text < (GMT_BUFSIZ-1) && GMT->current.io.curr_text[start_of_text] && strchr (GMT->current.io.scan_separators, GMT->current.io.curr_text[start_of_text])) start_of_text++;	/* First wind to start of trailing text */
-			strcpy (GMT->current.io.curr_trailing_text, &GMT->current.io.curr_text[start_of_text]);
+			strncpy (GMT->current.io.curr_trailing_text, &GMT->current.io.curr_text[start_of_text], GMT_BUFSIZ-1);
 			GMT->current.io.record.text = GMT->current.io.curr_trailing_text;
 		}
 
