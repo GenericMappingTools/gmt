@@ -119,6 +119,7 @@ int GMT_revert (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_NORMAL, "Experimental and not yet available\n");
 	return (GMT_NOERROR);
 
+#if 0
 	if (options) {
 		if (options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));		/* Return the usage message */
 		if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
@@ -141,4 +142,5 @@ int GMT_revert (void *V_API, int mode, void *args) {
 		error = GMT_RUNTIME_ERROR;
 		
 	Return (error);
+#endif
 }
