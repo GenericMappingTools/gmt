@@ -1532,7 +1532,7 @@ GMT_LOCAL uint64_t map_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 		}
 #endif
 		if (GMT->common.R.oblique) {	/* Ensure region corners are added if any poles are enclosed */
-			double ycoord_pole;
+			double ycoord_pole = 0;
 			bool do_it = true;
 			if (GMT->current.proj.corner[0] && GMT->current.proj.corner[1])	/* Ensure S pole is included */
 				ycoord_pole = GMT->current.proj.rect[YLO];
@@ -1540,9 +1540,12 @@ GMT_LOCAL uint64_t map_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 				ycoord_pole = GMT->current.proj.rect[YHI];
 			else
 				do_it = false;
-			for (i = 1; do_it && i < m; i++) {
-				if (doubleAlmostEqual (fabs (xtmp[0][i] - xtmp[0][i-1]), GMT->current.map.width))
-					ytmp[0][i] = ytmp[0][i-1] = ycoord_pole;
+
+			if (do_it) {
+				for (i = 1; i < m; i++) {
+					if (doubleAlmostEqual (fabs (xtmp[0][i] - xtmp[0][i-1]), GMT->current.map.width))
+						ytmp[0][i] = ytmp[0][i-1] = ycoord_pole;
+				}
 			}
 		}
 	}

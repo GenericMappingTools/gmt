@@ -3771,7 +3771,7 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
  */
 
 	char file[GMT_BUFSIZ] = {""}, path[GMT_BUFSIZ] = {""};
-	int i, j, nvars, dimids[5] = {-1, -1, -1, -1, -1}, ndims, in, id, err;
+	int i, j, nvars, dimids[5] = {-1, -1, -1, -1, -1}, ndims, in, id;
 	size_t n, item[2];
 	size_t tmp_pointer; /* To avoid "cast from pointer to integer of different size" */
 	double t_value[5], dummy[2];
