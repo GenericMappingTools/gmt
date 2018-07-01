@@ -1732,6 +1732,10 @@ GMT_LOCAL int api_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *
 	}
 	else if (V->n_columns == 0)
 		return (GMT_VALUE_NOT_SET);	/* Must know the number of columns to do this */
+	if ((range && inc == NULL) || (range == NULL && inc)) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Passed one of range, inc as NULL\n");
+		return (GMT_VALUE_NOT_SET);
+	}
 	if ((range == NULL && inc == NULL) || (range[XLO] == range[XHI] && inc[GMT_X] == 0.0)) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[2] = {0.0, 0.0};	/* Flag vector as such */
 		V->n_rows = dim[GMTAPI_DIM_ROW];		/* If so, n_rows is passed via dim[GMTAPI_DIM_ROW], unless it is GMT_OUT when it is zero */
