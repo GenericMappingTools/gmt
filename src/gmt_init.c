@@ -2595,8 +2595,10 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		GMT->session.USERDIR = strdup (path);
 		u = 1;
 	}
-	gmt_dos_path_fix (GMT->session.USERDIR);
-	trim_off_any_slash_at_end (GMT->session.USERDIR);
+	if (GMT->session.USERDIR) {
+		gmt_dos_path_fix (GMT->session.USERDIR);
+		trim_off_any_slash_at_end (GMT->session.USERDIR);
+	}
 	if (GMT->session.USERDIR != NULL && access (GMT->session.USERDIR, R_OK)) {
 		/* If we cannot access this dir then we create it first */
 		if (gmt_mkdir (GMT->session.USERDIR)) {
@@ -2613,8 +2615,10 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		GMT->session.CACHEDIR = strdup (path);
 		c = 1;
 	}
-	gmt_dos_path_fix (GMT->session.CACHEDIR);
-	trim_off_any_slash_at_end (GMT->session.CACHEDIR);
+	if (GMT->session.CACHEDIR) {
+		gmt_dos_path_fix (GMT->session.CACHEDIR);
+		trim_off_any_slash_at_end (GMT->session.CACHEDIR);
+	}
 	if (GMT->session.CACHEDIR != NULL && access (GMT->session.CACHEDIR, R_OK)) {
 		/* If we cannot access this dir then we create it first */
 		if (gmt_mkdir (GMT->session.CACHEDIR)) {
@@ -2635,8 +2639,10 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		GMT->parent->session_dir = strdup (GMT->parent->tmp_dir);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No GMT User directory set, GMT session dir selected: %s\n", GMT->parent->session_dir);
 	}
-	gmt_dos_path_fix (GMT->parent->session_dir);
-	trim_off_any_slash_at_end (GMT->parent->session_dir);
+	if (GMT->parent->session_dir) {
+		gmt_dos_path_fix (GMT->parent->session_dir);
+		trim_off_any_slash_at_end (GMT->parent->session_dir);
+	}
 	if (GMT->parent->session_dir != NULL && access (GMT->parent->session_dir, R_OK)) {
 		/* If we cannot access this dir then we create it first */
 		if (gmt_mkdir (GMT->parent->session_dir)) {
@@ -2661,7 +2667,8 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		GMT->session.DATAURL = strdup (this_c);
 	else
 		GMT->session.DATAURL = strdup (GMT_DATA_URL);	/* SOEST default */
-	trim_off_any_slash_at_end (GMT->session.DATAURL);
+	if (GMT->session.DATAURL)
+		trim_off_any_slash_at_end (GMT->session.DATAURL);
 
 	/* Determine GMT_DATADIR (data directories) */
 
