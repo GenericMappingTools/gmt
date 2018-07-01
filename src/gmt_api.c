@@ -5923,7 +5923,10 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 		gmt_M_str_free (tmptag);
 	}
 
-	if ((API->message = calloc (4*GMT_BUFSIZ, sizeof (char))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the message string */
+	if ((API->message = calloc (4*GMT_BUFSIZ, sizeof (char))) == NULL) {	/* Failed to allocate the message string */
+	 	gmt_M_str_free (API);	/* Not gmt_M_free since this item was allocated before GMT was initialized */
+		return_null (NULL, GMT_MEMORY_ERROR);
+	}
 
 	/* Set temp directory used by GMT */
 
