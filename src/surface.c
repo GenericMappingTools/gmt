@@ -1708,7 +1708,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 					Ctrl->D.file = strdup (opt->arg);
 				else
 					n_errors++;
-				if (Ctrl->D.debug) c[0] = '+';	/* Restore original string */
+				if (c) c[0] = '+';	/* Restore original string */
 				break;
 			case 'G':
 				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)

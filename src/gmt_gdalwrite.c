@@ -177,7 +177,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 GMT_LOCAL int write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, GDALRasterBandH hBand, void *data, int n_rows, int n_cols) {
 	int error = 0, i, j;
 	float *t = (float *)data;
-	uint64_t k, n, nm = (size_t)n_rows * n_cols;
+	uint64_t k, n, nm = (uint64_t)n_rows * n_cols;
 	/* In gmt_gdal_write_grd we made the pointer to point to the begining of the non-padded zone, so to make it
 	   coherent we retriet pad[0]. However, nothing of this is taking into account a -R subregion so all of this
 	   (and not only this case) will probably fail for that case.
@@ -186,7 +186,7 @@ GMT_LOCAL int write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, 
 	if (prhs->orig_type == GMT_UCHAR) {
 		char *dataT = gmt_M_memory(GMT, NULL, nm, char);
 		for (i = 0, k = 0; i < n_rows; i++) {
-			n = i*prhs->nXSizeFull + prhs->pad[0];
+			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[0];
 			for (j = 0; j < n_cols; j++)
 				dataT[k++] = (char)t[n + j];
 		}
@@ -196,7 +196,7 @@ GMT_LOCAL int write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, 
 	else if (prhs->orig_type == GMT_USHORT) {
 		short int *dataT = gmt_M_memory(GMT, NULL, nm, unsigned short int);
 		for (i = 0, k = 0; i < n_rows; i++) {
-			n = i*prhs->nXSizeFull + prhs->pad[0];
+			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[0];
 			for (j = 0; j < n_cols; j++)
 				dataT[k++] = (unsigned short int)t[n + j];
 		}
@@ -206,7 +206,7 @@ GMT_LOCAL int write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, 
 	else if (prhs->orig_type == GMT_SHORT) {
 		short int *dataT = gmt_M_memory(GMT, NULL, nm, short int);
 		for (i = 0, k = 0; i < n_rows; i++) {
-			n = i*prhs->nXSizeFull + prhs->pad[0];
+			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[0];
 			for (j = 0; j < n_cols; j++)
 				dataT[k++] = (short int)t[n + j];
 		}
@@ -216,7 +216,7 @@ GMT_LOCAL int write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, 
 	else if (prhs->orig_type == GMT_UINT) {
 		unsigned int *dataT = gmt_M_memory(GMT, NULL, nm, unsigned int);
 		for (i = 0, k = 0; i < n_rows; i++) {
-			n = i*prhs->nXSizeFull + prhs->pad[0];
+			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[0];
 			for (j = 0; j < n_cols; j++)
 				dataT[k++] = (unsigned int)t[n + j];
 		}
