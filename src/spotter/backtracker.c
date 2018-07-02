@@ -545,7 +545,6 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 				if (!make_path) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 				continue;
 			}
-			assert (In != NULL);						/* Should never get here */
 		}
 
 		/* Data record to process */

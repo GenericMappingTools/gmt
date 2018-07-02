@@ -647,7 +647,6 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 				}
 				continue;
 			}
-			assert (In != NULL);						/* Should never get here */
 		}
 		/* Clean data record to process.  Add point unless duplicate */
 		in = In->data;	/* Only need to process numerical part here */

@@ -330,7 +330,6 @@ int GMT_rotsmoother (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 				continue;
 			}
-			assert (In != NULL);						/* Should never get here */
 		}
 		in = In->data;	/* Only need to process numerical part here */
 
