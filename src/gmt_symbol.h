@@ -65,16 +65,25 @@ struct GMT_REFPOINT {	/* Used to hold items relevant for a reference point */
 
 #define CUSTOM_SYMBOL_MAXVAR	3	/* So we can check in the code if we exceed this */
 
+enum gmt_enum_custsymb {
+	GMT_BEGIN_SINGLE_IF	= 1,	/* We have a single, 1-liner if condition, with no end if */
+	GMT_BEGIN_BLOCK_IF	= 2,	/* Starting a new if branch */
+	GMT_END_IF		= 4,	/* Ending an if branch */
+	GMT_END_IF_ELSE		= 6,	/* Ending an if-branch and start the else branch */
+	GMT_BEGIN_ELSEIF	= 8	/* Ending the if-branch and start another if branch */
+};
+
 struct GMT_CUSTOM_SYMBOL_ITEM {
 	double x, y, p[CUSTOM_SYMBOL_MAXVAR], const_val[CUSTOM_SYMBOL_MAXVAR];
-	int action, operator, var_pen, var[CUSTOM_SYMBOL_MAXVAR];	/* For conditionals: var[0] refers to variable on left hand side of operator, var[1] and var[2] to the right hand */
-	unsigned int conditional;
+	int operator, var_pen, var[CUSTOM_SYMBOL_MAXVAR];	/* For conditionals: var[0] refers to variable on left hand side of operator, var[1] and var[2] to the right hand */
+	enum gmt_enum_custsymb conditional;
 	unsigned int justify;	/* For macro code l text justification [PSL_MC] */
 	bool negate, is_var[CUSTOM_SYMBOL_MAXVAR];
 	struct GMT_FILL *fill;
 	struct GMT_PEN *pen;
 	struct GMT_CUSTOM_SYMBOL_ITEM *next;
 	struct GMT_FONT font;	/* Font to use for the l macro */
+	char action;
 	char *string;
 };
 

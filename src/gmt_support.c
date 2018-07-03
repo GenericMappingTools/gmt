@@ -4667,11 +4667,11 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		if (strstr (buffer, "if $")) {	/* Parse a logical if-test or elseif here */
 			if (strstr (buffer, "} elseif $")) {	/* Actually, it is an elseif-branch [skip { elseif]; nc -=3 means we count the cols only */
 				nc = sscanf (buffer, "%*s %*s %s %s %s %*s %s %s %s %s %s %s %s %s", arg[0], OP, right, col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7]) - 3;
-				s->conditional = 8;	/* elseif test */
+				s->conditional = GMT_BEGIN_ELSEIF;	/* elseif test */
 			}
 			else {	/* Starting if-branch [skip if] */
 				nc = sscanf (buffer, "%*s %s %s %s %*s %s %s %s %s %s %s %s %s", arg[0], OP, right, col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7]) - 3;
-				s->conditional = (col[nc-1][0] == '{') ? 2 : 1;		/* If block (2) or single command (1) */
+				s->conditional = (col[nc-1][0] == '{') ? GMT_BEGIN_BLOCK_IF : GMT_BEGIN_SINGLE_IF;		/* If block or single if command */
 			}
 			for (k = 0; right[k]; k++) if (right[k] == ':') right[k] = ' ';	/* Remove any colon in case right side has two range values */
 			nv = sscanf (right, "%s %s", arg[1], arg[2]);	/* Get one [or two] constants or variables on right hand side */
@@ -4715,9 +4715,9 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			}
 		}
 		else if (strstr (buffer, "} else {"))	/* End of if-block and start of else-block */
-			s->conditional = 6;
+			s->conditional = GMT_END_IF_ELSE;
 		else if (strchr (buffer, '}'))		/* End of if-block */
-			s->conditional = 4;
+			s->conditional = GMT_END_IF;
 		else					/* Regular command, no conditional test prepended */
 			nc = sscanf (buffer, "%s %s %s %s %s %s %s %s", col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7]);
 
@@ -4732,10 +4732,10 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		if (last < 0) error++;
 
 		s->action = col[last][0];
-		if (s->conditional == 4) s->action = '}';	/* The {, }, E, and F are dummy actions */
-		if (s->conditional == 6) s->action = 'E';
-		if (s->conditional == 8) s->action = 'F';
-		if (last >= 2 && s->conditional < 2) {	/* OK to parse x,y coordinates */
+		if (s->conditional == GMT_END_IF) s->action = '}';	/* The {, }, E, and F are dummy actions */
+		if (s->conditional == GMT_END_IF_ELSE) s->action = 'E';
+		if (s->conditional == GMT_BEGIN_ELSEIF) s->action = 'F';
+		if (last >= 2 && s->conditional < GMT_BEGIN_BLOCK_IF) {	/* OK to parse x,y coordinates */
 			s->x = atof (col[GMT_X]);
 			s->y = atof (col[GMT_Y]);
 		}

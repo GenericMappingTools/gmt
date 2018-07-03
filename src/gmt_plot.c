@@ -5207,8 +5207,8 @@ GMT_LOCAL void get_the_fill (struct GMT_FILL *f, struct GMT_CUSTOM_SYMBOL_ITEM *
 
 int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline) {
 	int action;
-	unsigned int na, i, id = 0, level = 0;
-	bool flush = false, this_outline = false, found_elseif = false, skip[GMT_N_COND_LEVELS+1];
+	unsigned int na, i, id = 0, level;
+	bool flush = false, this_outline = false, skip[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
 	double x, y, lon, lat, angle1, angle2, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
@@ -5251,6 +5251,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	gmt_M_memset (&f, 1, struct GMT_FILL);
 	gmt_M_memset (&p, 1, struct GMT_PEN);
+	gmt_M_memset (skip, GMT_N_COND_LEVELS+1, bool);
 
 	if (symbol->text) {	/* This symbol places text, so we must set macros for fonts and fontsizes outside the gsave/grestore around each symbol */
 		symbol->text = 0;	/* Only do this formatting once */
@@ -5275,26 +5276,25 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	gmt_set_meminc (GMT, GMT_SMALL_CHUNK);
 
 	s = symbol->first;
-	id = 0;
+	id = level = 0;
 	while (s) {
-		if (s->conditional > 1) {	/* Process if/elseif/else and } by updating level and skip array, then go to next item */
-			if (s->conditional == 2) {	/* Beginning of if branch. If we are inside an earlier branch whose test false then all is false */
+		if (s->conditional > GMT_BEGIN_SINGLE_IF) {	/* Process if/elseif/else and endif by updating level and skip array, then go to next item */
+			/* We keep track of all the nested levels of tests via the skip array.  If a higher level test fails, then we will skip anything inside
+			 * it (e.g., lower-level nested test) since those tests dont matter since the upper test failed.  Hence skip is set to true for all deeper
+			 * tests (regardless of their actual test result) since we will not get there anyway if the earlier test failed. */
+			if (s->conditional == GMT_BEGIN_BLOCK_IF) {	/* Beginning of a new if branch. If we are inside an earlier branch whose test was false then all inside shall be false */
 				skip[level+1] = (level > 0 && skip[level]) ? true : plot_custum_failed_bool_test (GMT, s, size), level++;
-				found_elseif = !skip[level];
+				if (level == GMT_N_COND_LEVELS) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Symbol macro (%s) logical nesting too deep [> %d]\n", symbol->name, GMT_N_COND_LEVELS);
+					GMT_exit (GMT, GMT_DIM_TOO_LARGE); return GMT_DIM_TOO_LARGE;
+				}
 			}
-			if (level == GMT_N_COND_LEVELS) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Symbol macro (%s) logical nesting too deep [> %d]\n", symbol->name, GMT_N_COND_LEVELS);
-				GMT_exit (GMT, GMT_DIM_TOO_LARGE); return GMT_DIM_TOO_LARGE;
-			}
-			if (s->conditional == 4) level--, found_elseif = false;	/* Simply reduce indent */
-			if (s->conditional == 6) {	/* else branch */
-				skip[level] = (found_elseif) ? true : !skip[level];	/* Reverse test-result to apply to else branch */
-				found_elseif = false;
-			}
-			if (s->conditional == 8) {	/* Skip if prior if/elseif was true, otherwise evaluate */
-				skip[level] = (skip[level]) ? plot_custum_failed_bool_test (GMT, s, size) : true;
-				if (!skip[level]) found_elseif = true;	/* Needed since a final else branch will need to know if any of the if/elseifs kicked in */
-			}
+			else if (s->conditional == GMT_END_IF)	/* Simply reduce indent */
+				level--;
+			else if (s->conditional == GMT_END_IF_ELSE)	/* else branch */
+				skip[level] = (skip[level] && !skip[level-1]) ? false : true;
+			else if (s->conditional == GMT_BEGIN_ELSEIF)	/* Skip if prior if/elseif was true, otherwise evaluate test at this level */
+				skip[level] = (skip[level] && !skip[level-1]) ? plot_custum_failed_bool_test (GMT, s, size) : true;
 			s = s->next;
 			continue;
 		}
@@ -5303,7 +5303,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			continue;
 		}
 		/* Finally, check for 1-line if tests */
-		if (s->conditional == 1 && plot_custum_failed_bool_test (GMT, s, size)) {	/* Done here, move to next item */
+		if (s->conditional == GMT_BEGIN_SINGLE_IF && plot_custum_failed_bool_test (GMT, s, size)) {	/* Done here, move to next item */
 			s = s->next;
 			continue;
 		}
