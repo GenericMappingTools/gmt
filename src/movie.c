@@ -1372,7 +1372,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->H.active) {	/* Must pass the DownScaleFactor option to psconvert */
 			sprintf (line, ",H%d", Ctrl->H.factor);
-			strcat (extra, line);
+			strncat (extra, line, GMT_LEN128);
 		}
 		set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 		set_comment (fp, Ctrl->In.mode, "Master frame loop script");
