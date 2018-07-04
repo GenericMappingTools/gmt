@@ -1359,6 +1359,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 		if (!Ctrl->C.active) {	/* Default to vertical component */
 			Ctrl->C.selected[2] = Ctrl->G.do_up = true;
 			Ctrl->C.n_selected = 1;
+			if (GMT->parent->external)
+				Ctrl->G.file[2]	= strdup(Ctrl->G.file[0]);	/* For time being this avoids a crash, but not nice solution */
 		}
 	}
 
