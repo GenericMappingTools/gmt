@@ -373,6 +373,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 					double f = 0.0;
 					if ((q = strchr (opt->arg, ':')) != NULL) {	/* Gave optional instructions on how to partition width and height on a per row/col basis */
 						char *ytxt = strchr (&q[1], '/');	/* Find the slash */
+						if (!ytxt) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Ff...: badly constructed option.\n");
+							n_errors++;
+							break;
+						}
 						k = GMT_Get_Values (GMT->parent, &ytxt[1], Ctrl->F.h, Ctrl->N.dim[GMT_Y]);
 						if (k == 1) {	/* Constant, must duplicate */
 							for (j = 1; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = Ctrl->F.h[j-1];
