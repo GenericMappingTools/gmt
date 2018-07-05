@@ -495,6 +495,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 		sprintf (cmd, "%s -R%.16g/%.16g/%.16g/%.16g -N -G%s", Ctrl->In.file, ext_wesn[XLO], ext_wesn[XHI], ext_wesn[YLO], ext_wesn[YHI], DataGrid);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Extend original data grid to multiple of largest grid spacing\n");
 		if ((error = GMT_Call_Module (API, "grdcut", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
+			gmt_M_free (GMT, Q);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		z_extend = true;	/* We made a temp file we need to zap */
@@ -503,6 +504,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 			sprintf (cmd, "%s -R%.16g/%.16g/%.16g/%.16g -N -G%s", Ctrl->I.file, ext_wesn[XLO], ext_wesn[XHI], ext_wesn[YLO], ext_wesn[YHI], IntensGrid);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Extend intensity grid to multiple of largest grid spacing\n");
 			if ((error = GMT_Call_Module (API, "grdcut", GMT_MODULE_CMD, cmd)) != GMT_NOERROR) {
+				gmt_M_free (GMT, Q);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			i_extend = true;	/* We made a temp file we need to zap */
