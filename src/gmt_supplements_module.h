@@ -24,7 +24,6 @@ extern "C" {
 #include "declspec.h"
 
 /* Prototypes of all modules in the GMT supplements library */
-EXTERN_MSC int GMT_earthtide (void *V_API, int mode, void *args);
 EXTERN_MSC int GMT_gshhg (void *API, int mode, void *args);
 EXTERN_MSC int GMT_img2grd (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pscoupe (void *API, int mode, void *args);
@@ -42,6 +41,7 @@ EXTERN_MSC int GMT_mgd77path (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77sniffer (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mgd77track (void *API, int mode, void *args);
 EXTERN_MSC int GMT_dimfilter (void *API, int mode, void *args);
+EXTERN_MSC int GMT_earthtide (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtflexure (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtgravmag3d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gpsgridder (void *API, int mode, void *args);
@@ -58,6 +58,7 @@ EXTERN_MSC int GMT_segy2grd (void *API, int mode, void *args);
 EXTERN_MSC int GMT_backtracker (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtpmodeler (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdpmodeler (void *API, int mode, void *args);
+EXTERN_MSC int GMT_grdpolespotter (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdrotater (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdspotter (void *API, int mode, void *args);
 EXTERN_MSC int GMT_hotspotter (void *API, int mode, void *args);
