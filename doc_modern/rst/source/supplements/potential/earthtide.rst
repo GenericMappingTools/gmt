@@ -38,7 +38,7 @@ The output can be either in the form of a grid or as a table printed to stdout. 
 Required Arguments
 ------------------
 
-Either **-G**, **-S** or **-T**
+Either **-G**, **-S** or **-L**
 
 .. _-G:
 
