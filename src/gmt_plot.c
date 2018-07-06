@@ -5311,7 +5311,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			s = s->next;
 			continue;
 		}
-		done[level] = true;	/* Here ww will actually draw something */
+		done[level] = true;	/* Here we will actually draw something */
 		
 		/* Scale coordinates and size parameters by the scale in size[0] */
 
