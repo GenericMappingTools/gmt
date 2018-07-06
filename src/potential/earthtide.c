@@ -30,7 +30,7 @@
 #define THIS_MODULE_NAME	"earthtide"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute grids or time-series of solid Earth tides"
-#define THIS_MODULE_KEYS	">DT,GG}"
+#define THIS_MODULE_KEYS	">D},GG)"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVbor" GMT_ADD_x_OPT
 
