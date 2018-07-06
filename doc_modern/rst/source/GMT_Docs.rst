@@ -8142,7 +8142,7 @@ Simple conditional test
 
 The simple if-test uses a one-line format, defined as
 
-    **if** *left* *OP* *right* **then** *command*
+    **if** *left* *operator* *right* **then** *command*
 
 where *left* must be one of the symbol parameters, specified as $1, $2,
 $3, etc., or a constant. You must document what these additional parameters control. For
@@ -8174,9 +8174,9 @@ Complete conditional test
 
 The complete conditional test uses a multi-line format, such as
 
-| **if** *left* *OP *right* **then** {
+| **if** *left* *operator* *right* **then** {
 |  <one or more lines with commands>
-| } **elseif** *left* OP *right* **then** {
+| } **elseif** *left* *operator* *right* **then** {
 |  <one or more lines with commands>
 | } **else** {
 |  <one or more lines with commands>
