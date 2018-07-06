@@ -1384,7 +1384,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && !Ctrl->G.active && !Ctrl->S.active,
 	                                   "Syntax error: Must specify -S, -G or -T options\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->L.active && !Ctrl->S.active && !Ctrl->G.active,
-	                                   "Syntax error: -T option requires -C too.\n");
+	                                   "Syntax error: -T option requires -L or -S too.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
