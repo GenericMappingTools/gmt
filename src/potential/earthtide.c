@@ -1052,6 +1052,11 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
+	gmt_set_column (GMT, GMT_OUT, 1, GMT_IS_LON);
+	gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_LAT);
+	gmt_set_column (GMT, GMT_OUT, 4, GMT_IS_LON);
+	gmt_set_column (GMT, GMT_OUT, 5, GMT_IS_LAT);
+
 	if (T.unit == 'm')
 		tdel2 = 1.0 / (24 * 60);	/* 1 minute steps */
 	else if (T.unit == 's') 
@@ -1443,6 +1448,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		char file[GMT_LEN512] = {""}, *code[N_COMPS] = {"e", "n", "v"};
 		struct GMT_GRID *Grid[N_COMPS] = {NULL, NULL, NULL};
 
+		gmt_set_geographic (GMT, GMT_OUT);
 		for (k = 0; k < N_COMPS; k++) {
 			if (!Ctrl->C.selected[k]) continue;
 			/* Create the empty grid and allocate space */
