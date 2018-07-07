@@ -30,7 +30,7 @@
 #define THIS_MODULE_NAME	"earthtide"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute grids or time-series of solid Earth tides"
-#define THIS_MODULE_KEYS	">D},GG),>DL,>DS"
+#define THIS_MODULE_KEYS	"GG},>D),>DL,>DS"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS	"-:RVbor" GMT_ADD_x_OPT
 
@@ -1365,8 +1365,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 		if (!Ctrl->C.active) {	/* Default to vertical component */
 			Ctrl->C.selected[Z_COMP] = Ctrl->G.do_up = true;
 			Ctrl->C.n_selected = 1;
-			if (GMT->parent->external)
-				Ctrl->G.file[Z_COMP]	= strdup(Ctrl->G.file[X_COMP]);	/* For time being this avoids a crash, but not nice solution */
 		}
 	}
 
@@ -1386,12 +1384,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (GMT->common.R.inc[GMT_X] <= 0 || GMT->common.R.inc[GMT_Y] <= 0),
-					"Syntax error -I option: Absent or no positive increment(s)\n");
+	                                   "Syntax error -I option: Absent or no positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && !Ctrl->G.active && !Ctrl->S.active,
-					"Syntax error: Must specify -S, -G or -T options\n");
+	                                   "Syntax error: Must specify -S, -G or -T options\n");
 	if (!GMT->parent->external)
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->L.active && !Ctrl->S.active && !Ctrl->G.active,
-					"Syntax error: -T option requires one of -G, -L, or -S.\n");
+		                                   "Syntax error: -T option requires one of -G, -L, or -S.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
