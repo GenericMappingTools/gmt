@@ -52,56 +52,56 @@
 #define THIS_MODULE_OPTIONS "-:RVabdefhirs" GMT_ADD_x_OPT GMT_OPT("FH")
 
 struct SURFACE_CTRL {
-	struct A {	/* -A<aspect_ratio> */
+	struct SRF_A {	/* -A<aspect_ratio> */
 		bool active;
 		unsigned int mode;	/* 1 if given as fraction */
 		double value;
 	} A;
-	struct C {	/* -C<converge_limit> */
+	struct SRF_C {	/* -C<converge_limit> */
 		bool active;
 		unsigned int mode;	/* 1 if given as fraction */
 		double value;
 	} C;
-	struct D {	/* -D<line.xyz>[+d] */
+	struct SRF_D {	/* -D<line.xyz>[+d] */
 		bool active;
 		bool debug;
 		char *file;	/* Name of file with breaklines */
 	} D;
-	struct G {	/* -G<file> */
+	struct SRF_G {	/* -G<file> */
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -Ll|u<limit> */
+	struct SRF_L {	/* -Ll|u<limit> */
 		bool active;
 		char *file[2];
 		double limit[2];
 		unsigned int mode[2];
 	} L;
-	struct M {	/* -M<radius> */
+	struct SRF_M {	/* -M<radius> */
 		bool active;
 		char *arg;
 	} M;
-	struct N {	/* -N<max_iterations> */
+	struct SRF_N {	/* -N<max_iterations> */
 		bool active;
 		unsigned int value;
 	} N;
-	struct Q {	/* -Q */
+	struct SRF_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct S {	/* -S<radius>[m|s] */
+	struct SRF_S {	/* -S<radius>[m|s] */
 		bool active;
 		double radius;
 		char unit;
 	} S;
-	struct T {	/* -T<tension>[i][b] */
+	struct SRF_T {	/* -T<tension>[i][b] */
 		bool active;
 		double b_tension, i_tension;
 	} T;
-	struct W {	/* -W[<logfile>] */
+	struct SRF_W {	/* -W[<logfile>] */
 		bool active;
 		char *file;
 	} W;
-	struct Z {	/* -Z<over_relaxation_parameter> */
+	struct SRF_Z {	/* -Z<over_relaxation_parameter> */
 		bool active;
 		double value;
 	} Z;
@@ -1596,13 +1596,13 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->G.file);	
-	if (C->D.file) gmt_M_str_free (C->D.file);	
-	if (C->L.file[LO]) gmt_M_str_free (C->L.file[LO]);	
-	if (C->L.file[HI]) gmt_M_str_free (C->L.file[HI]);	
-	if (C->M.arg) gmt_M_str_free (C->M.arg);	
-	if (C->W.file) gmt_M_str_free (C->W.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->G.file);
+	if (C->D.file) gmt_M_str_free (C->D.file);
+	if (C->L.file[LO]) gmt_M_str_free (C->L.file[LO]);
+	if (C->L.file[HI]) gmt_M_str_free (C->L.file[HI]);
+	if (C->M.arg) gmt_M_str_free (C->M.arg);
+	if (C->W.file) gmt_M_str_free (C->W.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -1811,11 +1811,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
+	                                   "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value < 1, "Syntax error -N option: Max iterations must be nonzero\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.value < 0.0 || Ctrl->Z.value > 2.0, "Syntax error -Z option: Relaxation value must be 1 <= z <= 2\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.value < 0.0 || Ctrl->Z.value > 2.0,
+	                                   "Syntax error -Z option: Relaxation value must be 1 <= z <= 2\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error option -G: Must specify output grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode && gmt_M_is_cartesian (GMT, GMT_IN), "Syntax error option -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode && gmt_M_is_cartesian (GMT, GMT_IN),
+	                                   "Syntax error option -G: Must specify output file\n");
 	n_errors += gmt_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -1928,7 +1931,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	if (key == 1) {	/* Data lie exactly on a plane; write a grid with the plan and exit */
 		gmt_M_free (GMT, C.data);	/* The data set is no longer needed */
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL,
-			0, 0, C.Grid) == NULL) Return (API->error);	/* Get a grid of zeros... */
+		                     0, 0, C.Grid) == NULL) Return (API->error);	/* Get a grid of zeros... */
 		restore_planar_trend (&C);	/* ...and restore the plane we found */
 		if ((error = write_surface (GMT, &C, Ctrl->G.file)) != 0)	/* Write this grid */
 			Return (error);
@@ -2056,8 +2059,9 @@ int GMT_surface (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT, NULL, mask) == GMT_NOTSET) {
 			Return (API->error);
 		}
-		sprintf (cmd, "%s -G%s -R%g/%g/%g/%g -I%g/%g -NNaN/1/1 -S%s -V%c --GMT_HISTORY=false", input, mask, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI],
-			GMT->common.R.inc[GMT_X], GMT->common.R.inc[GMT_Y], Ctrl->M.arg, V_level[GMT->current.setting.verbose]);
+		sprintf (cmd, "%s -G%s -R%g/%g/%g/%g -I%g/%g -NNaN/1/1 -S%s -V%c --GMT_HISTORY=false",
+		         input, mask, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->common.R.inc[GMT_X],
+				 GMT->common.R.inc[GMT_Y], Ctrl->M.arg, V_level[GMT->current.setting.verbose]);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Masking grid nodes away from data points via grdmask\n");
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Calling grdsample with args %s\n", cmd);
 		if (GMT_Call_Module (API, "grdmask", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Resample the file */
