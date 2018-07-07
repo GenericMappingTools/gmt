@@ -114,6 +114,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   and append a fixed unit unless Cartesian.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian grids with different x and y units you may append <xlim>/<ylim>;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   this sets all nodes within the rectangular area of the given half-widths to inside.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   One can also achieve the rectangular selection effect by using the -S<n_cells>c\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   form. Here n_cells means the number of cells arround each data point. As an example,");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -S0c means that only the cell where point lies is masked, -S1c masks one cell\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   beyond that (i.e. makes a 3x3 neighborhood), and so on.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is to assume <table> contains polygons and use inside/outside searching].\n");
 	GMT_Option (API, "V,a,bi2,di,e,f,g,h,i");
 	if (gmt_M_showusage (API)) {
@@ -143,7 +147,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 	 */
 
 	unsigned int n_errors = 0, j, pos;
-	char ptr[GMT_BUFSIZ] = {""}, *c = NULL;
+	char ptr[PATH_MAX] = {""}, *c = NULL, *S_copy = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -219,14 +223,29 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 					if (Ctrl->S.limit[GMT_Y] == 0.0) Ctrl->S.limit[GMT_Y] = Ctrl->S.limit[GMT_X];
 					Ctrl->S.mode = GRDMASK_N_CART_MASK;
 				}
-				else	/* Gave -S[-|=|+]<radius>[d|e|f|k|m|M|n] which means radius is fixed or 0 */ 
-					Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
+				else {		/* Gave -S[-|=|+]<radius>[d|e|f|k|m|M|n|c] which means radius is fixed or 0 */ 
+					if ((opt->arg[strlen(opt->arg)-1] == 'c')) {	/* A n of cells request for radius. The problem is that */
+						S_copy = strdup (opt->arg);					/* we can't process it yet because we need -I. So, delay it */
+					}
+					else
+						Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
+				}
 				break;
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
+	}
+
+	if (S_copy) {	/* OK, time to process a -S<n_cells>c option. We had to wait till be sure that the -I option was parsed */
+		char txt[64] = {""};
+		int n_cells;
+		S_copy[strlen(S_copy)-1] = '\0';		/* Drop the 'c' */
+		n_cells = atoi(S_copy) + 1;				/* + 1 so that 0 means cell with point only */
+		sprintf(txt, "%.12g/%.12g", n_cells * GMT->common.R.inc[GMT_X]/2, n_cells * GMT->common.R.inc[GMT_Y]/2);
+		Ctrl->S.mode = gmt_get_distance (GMT, txt, &(Ctrl->S.radius), &(Ctrl->S.unit));
+		free (S_copy);
 	}
 
 	if (Ctrl->S.mode && Ctrl->S.mode != GRDMASK_N_CART_MASK && gmt_M_is_cartesian (GMT, GMT_IN))	/* Gave a geographic search radius but not -fg so do that automatically */
