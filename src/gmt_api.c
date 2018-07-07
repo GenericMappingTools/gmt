@@ -10384,9 +10384,12 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		}
 	}
 	/* 1k. Check if this is the earthtide module requesting output grids */
-	else if (!strncmp (module, "earthtide", 9U) && !GMT_Find_Option (API, 'L', *head) && !GMT_Find_Option (API, 'S', *head) && (opt = GMT_Find_Option (API, 'C', *head))) {
-		/* Determine how many output grids are requested */
-		for (k = 1, len = 0; len < strlen (opt->arg); len++) if (opt->arg[len] == ',') k++;
+	else if (!strncmp (module, "earthtide", 9U) && !GMT_Find_Option (API, 'L', *head) && !GMT_Find_Option (API, 'S', *head)) {
+		if ((opt = GMT_Find_Option (API, 'C', *head))) {	/* Determine how many output grids are requested */
+			for (k = 1, len = 0; len < strlen (opt->arg); len++) if (opt->arg[len] == ',') k++;
+		}
+		else
+			k = 1;	/* Default is the Gz grid */
 		if ((opt = GMT_Find_Option (API, 'G', *head))) {	/* This is a problem */
 			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
 			return_null (NULL, GMT_NOT_A_VALID_OPTION);	/* Too many output objects */
