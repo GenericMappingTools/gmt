@@ -30,9 +30,9 @@
 #define THIS_MODULE_NAME	"earthtide"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute grids or time-series of solid Earth tides"
-#define THIS_MODULE_KEYS	">D},GG)"
+#define THIS_MODULE_KEYS	">D},GG),>DL,>DS"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVbor" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS	"-:RVbor" GMT_ADD_x_OPT
 
 #define EARTH_RAD 6378137.0		// GRS80
 #define ECC2 0.00669438002290341574957
@@ -76,9 +76,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file[0]) gmt_M_str_free (C->G.file[0]);
-	if (C->G.file[1]) gmt_M_str_free (C->G.file[1]);
-	if (C->G.file[2]) gmt_M_str_free (C->G.file[2]);
+	for (unsigned int k = 0; k < 3; k++)
+		if (C->G.file[k]) gmt_M_str_free (C->G.file[k]);
 	gmt_free_array (GMT, &(C->T.T));
 	gmt_M_free (GMT, C);
 }
@@ -1433,8 +1432,8 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 
 	gmt_M_tic(GMT);
 
-	if (Ctrl->G.active) {
-		int k;
+	if (Ctrl->G.active) {	/* Return/write 1-3 grids */
+		int k, kk;
 		char file[GMT_LEN512] = {""}, *code[3] = {"e", "n", "v"};
 		struct GMT_GRID *Grid[3] = {NULL, NULL, NULL};
 
@@ -1450,22 +1449,24 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		solid_grd(GMT, Ctrl, &cal_start, Grid);
 
 		/* Now write the one to three grids */
-		for (k = 0; k < 3; k++) {
+		for (k = kk = 0; k < 3; k++) {
 			if (!Ctrl->C.selected[k]) continue;
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[k]))
 				Return (API->error);
 
-			if (strstr (Ctrl->G.file[k], "%s"))
-				sprintf (file, Ctrl->G.file[k], code[k]);
+			if (!API->external) kk = k;	/* On command line we pick iten k from an array of 3 items */
+			if (strstr (Ctrl->G.file[kk], "%s"))
+				sprintf (file, Ctrl->G.file[kk], code[k]);
 			else
-				strncpy (file, Ctrl->G.file[k], GMT_LEN512-1);
+				strncpy (file, Ctrl->G.file[kk], GMT_LEN512-1);
 
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, Grid[k]) != GMT_NOERROR) {
 				Return (API->error);
 			}
+			kk++;	/* For the mex we do them in the order given as there is not an array of 3 */
 		}
 	}
-	else {
+	else {	/* Write data table with 4 columns to stdout */
 		int n_out = 4;
 		if (Ctrl->S.active) {
 			gmt_ECEF_init (GMT, &Ctrl->S.datum);

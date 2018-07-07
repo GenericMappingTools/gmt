@@ -59,7 +59,7 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"mgd77sniffer", "mgd77", "Along-track quality control of MGD77 cruises", ""},
 	{"mgd77track", "mgd77", "Plot track-line map of MGD77 cruises", ">X}"},
 	{"dimfilter", "misc", "Directional filtering of grids in the space domain", "<G{,GG},>DQ"},
-	{"earthtide", "potential", "Compute grids or time-series of solid Earth tides", ">D},GG)"},
+	{"earthtide", "potential", "Compute grids or time-series of solid Earth tides", ">D},GG),>DL,>DS"},
 	{"gmtflexure", "potential", "Compute flexural deformation of 2-D loads, forces, and bending moments", "ED(,QD(,TD(,>D}"},
 	{"gmtgravmag3d", "potential", "Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe", "TD{,FD(,GG),>D}"},
 	{"gpsgridder", "potential", "Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet", "<D{,ND(,TG(,CD)=f,GG}"},
