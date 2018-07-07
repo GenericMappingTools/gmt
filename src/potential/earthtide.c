@@ -37,10 +37,17 @@
 #define EARTH_RAD 6378137.0		// GRS80
 #define ECC2 0.00669438002290341574957
 
+enum earthtide_mode {
+	X_COMP = 0,
+	Y_COMP,
+	Z_COMP,
+	N_COMPS
+};
+
 struct EARTHTIDE_CTRL {
 	struct EARTHTIDE_C {	/* -Cx/y */
 		bool active;
-		bool selected[3];
+		bool selected[N_COMPS];
 		int n_selected;
 	} C;
 	struct EARTHTIDE_L {	/* -Cx/y */
@@ -55,7 +62,7 @@ struct EARTHTIDE_CTRL {
 		bool active;
 		bool do_north, do_east, do_up;
 		int  n;			/* Number of output grids specified via -G */
-		char *file[3];	/* Only first is used for commandline but API may need many */
+		char *file[N_COMPS];	/* Only first is used for commandline but API may need many */
 	} G;
 	struct EARTHTIDE_T {	/* -T[] */
 		bool active;
@@ -76,7 +83,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	for (unsigned int k = 0; k < 3; k++)
+	for (unsigned int k = 0; k < N_COMPS; k++)
 		if (C->G.file[k]) gmt_M_str_free (C->G.file[k]);
 	gmt_free_array (GMT, &(C->T.T));
 	gmt_M_free (GMT, C);
@@ -1048,9 +1055,9 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 	if (T.unit == 'm')
 		tdel2 = 1.0 / (24 * 60);	/* 1 minute steps */
 	else if (T.unit == 's') 
-		tdel2 = 1.0 / (24 * 3600);	/* 1 secons steps (????) */
+		tdel2 = 1.0 / (24 * 3600);	/* 1 seconds steps (????) */
 	else if (T.unit == 'h') 
-		tdel2 = 1.0 / 24;			/* 1 hour steps */
+		tdel2 = 1.0 / 24;		/* 1 hour steps */
 
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
 	hour = (int)Cal->hour;	min = (int)Cal->min;
@@ -1087,31 +1094,31 @@ GMT_LOCAL void solid_grd(struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, stru
 	/* Select which indices to increment based on user selection */
 	/* Use the trick of not incrementing the indices of unwanted arrays to avoid IF branches inside the loops */
 	if (Ctrl->G.do_east) {
-		grd_e = Grid[0]->data;
+		grd_e = Grid[X_COMP]->data;
 		e_inc = 1;
 	}
 	else
 		grd_e = (float *)malloc(1 * sizeof(float));
 
 	if (Ctrl->G.do_north) {
-		grd_n = Grid[1]->data;
+		grd_n = Grid[Y_COMP]->data;
 		n_inc = 1;
 	}
 	else
 		grd_n = (float *)malloc(1 * sizeof(float));
 
 	if (Ctrl->G.do_up) {
-		grd_u = Grid[2]->data;
+		grd_u = Grid[Z_COMP]->data;
 		u_inc = 1;
 	}
 	else
 		grd_u = (float *)malloc(1 * sizeof(float));
 
 	/* Get header params. Since all three have the same dims we stop when we find the first grid required */
-	for (k = 0; k < 3; k++) {
+	for (k = 0; k < N_COMPS; k++) {
 		if (Ctrl->C.selected[k]) {
 			n_columns = Grid[k]->header->n_columns;		n_rows = Grid[k]->header->n_rows;
-			west = Grid[k]->header->wesn[XLO];			south = Grid[k]->header->wesn[YLO];
+			west = Grid[k]->header->wesn[XLO];		south = Grid[k]->header->wesn[YLO];
 			x_inc = Grid[k]->header->inc[GMT_X];		y_inc = Grid[k]->header->inc[GMT_Y];
 			break;
 		}
@@ -1280,11 +1287,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 
 			case 'C':	/* Requires -G and selects which components should be written as grids */
 				Ctrl->C.active = true;
-				while ((gmt_strtok (opt->arg, ",", &pos, p)) && Ctrl->C.n_selected < 3) {
+				while ((gmt_strtok (opt->arg, ",", &pos, p)) && Ctrl->C.n_selected < N_COMPS) {
 					switch (p[0]) {
-						case 'x': case 'e':		Ctrl->C.selected[0] = Ctrl->G.do_east = true;	break;
-						case 'y': case 'n':		Ctrl->C.selected[1] = Ctrl->G.do_north = true;	break;
-						case 'z': case 'v':		Ctrl->C.selected[2] = Ctrl->G.do_up = true;		break;
+						case 'x': case 'e':		Ctrl->C.selected[X_COMP] = Ctrl->G.do_east = true;	break;
+						case 'y': case 'n':		Ctrl->C.selected[Y_COMP] = Ctrl->G.do_north = true;	break;
+						case 'z': case 'v':		Ctrl->C.selected[Z_COMP] = Ctrl->G.do_up = true;		break;
 						default:
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized field argument %s in -C.!\n", p);
 							n_errors++;
@@ -1308,8 +1315,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 					n_errors++;
 
 				if (!GMT->parent->external) {		/* Copy the name into the 3 slots to simplify the grid writing algo */
-					Ctrl->G.file[1] = strdup (opt->arg);
-					Ctrl->G.file[2] = strdup (opt->arg);
+					Ctrl->G.file[Y_COMP] = strdup (opt->arg);
+					Ctrl->G.file[Z_COMP] = strdup (opt->arg);
 				}
 				break;
 			case 'I':	/* Grid spacings */
@@ -1351,15 +1358,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 	}
 
 	if (Ctrl->G.active) {
-		if (Ctrl->C.active && Ctrl->C.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[0], "%s")) {
+		if (Ctrl->C.active && Ctrl->C.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[X_COMP], "%s")) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-G file format must contain a %%s for field type substitution.\n");
 			n_errors++; 
 		}
 		if (!Ctrl->C.active) {	/* Default to vertical component */
-			Ctrl->C.selected[2] = Ctrl->G.do_up = true;
+			Ctrl->C.selected[Z_COMP] = Ctrl->G.do_up = true;
 			Ctrl->C.n_selected = 1;
 			if (GMT->parent->external)
-				Ctrl->G.file[2]	= strdup(Ctrl->G.file[0]);	/* For time being this avoids a crash, but not nice solution */
+				Ctrl->G.file[Z_COMP]	= strdup(Ctrl->G.file[X_COMP]);	/* For time being this avoids a crash, but not nice solution */
 		}
 	}
 
@@ -1379,11 +1386,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (GMT->common.R.inc[GMT_X] <= 0 || GMT->common.R.inc[GMT_Y] <= 0),
-	                                   "Syntax error -I option: Absent or no positive increment(s)\n");
+					"Syntax error -I option: Absent or no positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && !Ctrl->G.active && !Ctrl->S.active,
-	                                   "Syntax error: Must specify -S, -G or -T options\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->L.active && !Ctrl->S.active && !Ctrl->G.active,
-	                                   "Syntax error: -T option requires -L or -S too.\n");
+					"Syntax error: Must specify -S, -G or -T options\n");
+	if (!GMT->parent->external)
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->L.active && !Ctrl->S.active && !Ctrl->G.active,
+					"Syntax error: -T option requires one of -G, -L, or -S.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -1421,23 +1429,23 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->T.active) {	/* Select the current day as the time to evaluate */
 		gmt_gcal_from_rd (GMT, GMT->current.time.today_rata_die, &cal_start);
-		time(&rawtime);
-		timeinfo = gmtime(&rawtime);			/* Get the time in UTC */
+		time (&rawtime);
+		timeinfo = gmtime (&rawtime);			/* Get the time in UTC */
 		cal_start.hour = timeinfo->tm_hour;
-		cal_start.min = timeinfo->tm_min;
-		cal_start.sec = timeinfo->tm_sec;
+		cal_start.min  = timeinfo->tm_min;
+		cal_start.sec  = timeinfo->tm_sec;
 	}
 	else
 		gmt_gcal_from_dt (GMT, Ctrl->T.T.min, &cal_start);
 
-	gmt_M_tic(GMT);
+	gmt_M_tic (GMT);
 
 	if (Ctrl->G.active) {	/* Return/write 1-3 grids */
 		int k, kk;
-		char file[GMT_LEN512] = {""}, *code[3] = {"e", "n", "v"};
-		struct GMT_GRID *Grid[3] = {NULL, NULL, NULL};
+		char file[GMT_LEN512] = {""}, *code[N_COMPS] = {"e", "n", "v"};
+		struct GMT_GRID *Grid[N_COMPS] = {NULL, NULL, NULL};
 
-		for (k = 0; k < 3; k++) {
+		for (k = 0; k < N_COMPS; k++) {
 			if (!Ctrl->C.selected[k]) continue;
 			/* Create the empty grid and allocate space */
 			if ((Grid[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
@@ -1446,10 +1454,10 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 
 		}
 
-		solid_grd(GMT, Ctrl, &cal_start, Grid);
+		solid_grd (GMT, Ctrl, &cal_start, Grid);
 
 		/* Now write the one to three grids */
-		for (k = kk = 0; k < 3; k++) {
+		for (k = kk = 0; k < N_COMPS; k++) {
 			if (!Ctrl->C.selected[k]) continue;
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[k]))
 				Return (API->error);
@@ -1466,7 +1474,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 			kk++;	/* For the mex we do them in the order given as there is not an array of 3 */
 		}
 	}
-	else {	/* Write data table with 4 columns to stdout */
+	else {	/* Write data table with 4 or 7 columns to stdout */
 		int n_out = 4;
 		if (Ctrl->S.active) {
 			gmt_ECEF_init (GMT, &Ctrl->S.datum);
@@ -1495,15 +1503,15 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_ABSTIME);
 
 		if (Ctrl->S.active)
-			sun_moon_track(GMT, &cal_start, Ctrl->T.T);
+			sun_moon_track (GMT, &cal_start, Ctrl->T.T);
 		else
-			solid_ts(GMT, &cal_start, Ctrl->L.x, Ctrl->L.y, Ctrl->T.T);
+			solid_ts (GMT, &cal_start, Ctrl->L.x, Ctrl->L.y, Ctrl->T.T);
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) 	/* Disables further data output */
 			Return (API->error);
 	}
 
-	gmt_M_toc(GMT,"");		/* Print total run time, but only if -Vt was set */
+	gmt_M_toc (GMT,"");		/* Print total run time, but only if -Vt was set */
 
 	Return (GMT_NOERROR);
 }
