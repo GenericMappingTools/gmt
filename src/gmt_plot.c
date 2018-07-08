@@ -2544,49 +2544,64 @@ GMT_LOCAL void plot_savepen (struct GMT_CTRL *GMT, struct GMT_PEN *pen) {
 	gmt_M_rgb_copy (pen->rgb, PSL->current.rgb[PSL_IS_STROKE]);
 }
 
+enum plot_operand {
+	LEFT_OPERAND = 0,
+	RIGHT_OPERAND1 = 1,
+	RIGHT_OPERAND2 = 2
+};
+
 GMT_LOCAL bool plot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[]) {
+	unsigned int k;
 	bool result;
-	double left, right, right2;
+	double arg[3];
 
 	/* Perform the boolean comparison and return false if test is true */
 
-	left   = s->is_var[0] ? size[s->var[0]] : s->const_val[0];
-	right  = s->is_var[1] ? size[s->var[1]] : s->const_val[1];
-	right2 = s->is_var[2] ? size[s->var[2]] : s->const_val[2];
-
+	for (k = 0; k < 3; k++) {	/* Load up the left and 1-2 right operands */
+		switch (s->var[k]) {
+			case -2:	/* User y-coordinate */
+				arg[k] = GMT->current.io.curr_rec[GMT_Y];	break;
+			case -1:	/* User x-coordinate */
+				arg[k] = GMT->current.io.curr_rec[GMT_X];	break;
+			case 0:		/* A constant */
+				arg[k] = s->const_val[k];	break;
+			default:	/* One of the variables 1-* */
+				arg[k] = size[s->var[k]];	break;
+		}
+	}
 	switch (s->operator) {
 		case '<':	/* < */
-			result = (left < right);
+			result = (arg[LEFT_OPERAND] < arg[RIGHT_OPERAND1]);
 			break;
 		case 'L':	/* <= */
-			result = (left <= right);
+			result = (arg[LEFT_OPERAND] <= arg[RIGHT_OPERAND1]);
 			break;
 		case '=':	/* == */
-			result = (left == right);
+			result = (arg[LEFT_OPERAND] == arg[RIGHT_OPERAND1]);
 			break;
 		case 'G':	/* >= */
-			result = (left >= right);
+			result = (arg[LEFT_OPERAND] >= arg[RIGHT_OPERAND1]);
 			break;
 		case '>':	/* > */
-			result = (left > right);
+			result = (arg[LEFT_OPERAND] > arg[RIGHT_OPERAND1]);
 			break;
 		case '%':	/* % */
-			result = (!gmt_M_is_zero (fmod (left, right)));
+			result = (!gmt_M_is_zero (fmod (arg[LEFT_OPERAND], arg[RIGHT_OPERAND1])));
 			break;
 		case 'I':	/* [] inclusive range */
-			result = (left >= right && left <= right2);
+			result = (arg[LEFT_OPERAND] >= arg[RIGHT_OPERAND1] && arg[LEFT_OPERAND] <= arg[RIGHT_OPERAND2]);
 			break;
 		case 'i':	/* <> exclusive range */
-			result = (left > right && left < right2);
+			result = (arg[LEFT_OPERAND] > arg[RIGHT_OPERAND1] && arg[LEFT_OPERAND] < arg[RIGHT_OPERAND2]);
 			break;
 		case 'l':	/* [> in/ex-clusive range */
-			result = (left >= right && left < right2);
+			result = (arg[LEFT_OPERAND] >= arg[RIGHT_OPERAND1] && arg[LEFT_OPERAND] < arg[RIGHT_OPERAND2]);
 			break;
 		case 'r':	/* <] ex/in-clusive range */
-			result = (left > right && left <= right2);
+			result = (arg[LEFT_OPERAND] > arg[RIGHT_OPERAND1] && arg[LEFT_OPERAND] <= arg[RIGHT_OPERAND2]);
 			break;
 		case 'E':	/* var == NaN */
-			result = gmt_M_is_dnan (left);
+			result = gmt_M_is_dnan (arg[LEFT_OPERAND]);
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized symbol macro operator (%d = '%c') passed to gmt_draw_custom_symbol\n", s->operator, (char)s->operator);

@@ -4678,7 +4678,12 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			for (k = 0; k < nv + 1; k++) {
 				if (arg[k][0] == '$') {	/* Left or right hand side value is a variable */
 					s->is_var[k] = true;
-					s->var[k] = atoi (&arg[k][1]);	/* Get the variable number $<varno> */
+					if (arg[k][1] == 'x' || arg[k][1] == 'X')
+						s->var[k] = -1;
+					else if (arg[k][1] == 'y' || arg[k][1] == 'Y')
+						s->var[k] = -2;
+					else
+						s->var[k] = atoi (&arg[k][1]);	/* Get the variable number $<varno> */
 					s->const_val[k] = 0.0;
 				}
 				else {

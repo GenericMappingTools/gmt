@@ -8193,6 +8193,9 @@ one) of many logical operators, as listed in Table :ref:`custop <tbl-custop>`.
 Above, *left* refers to one of your variable arguments (e.g., $1, $2) or any constant (e.g. 45) on the left hand side of the operator.
 On the right hand side of the operator, *right* is either one of your other variables, or a constant, or a range indicated by
 two colon-separated constants or variables (e.g., 10:50, $2:60, $3:$4, etc.).
+You can also use $x and $y for tests involving the current point's longitude (or *x*) and
+latitude (or *y*) values, respectively.  Note that any tests involving $x will not consider
+the periodicity of longitudes.
 
 Simple conditional test
 ^^^^^^^^^^^^^^^^^^^^^^^
