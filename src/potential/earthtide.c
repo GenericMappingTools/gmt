@@ -19,8 +19,8 @@
  * Brief synopsis: Compute the three components of earthtides as time-series or grids.
  * Optionally compute also Sun and Moon position in lon,lat
  *
- * Author:	Dennis Milbert (solif.f http://geodesyworld.github.io/SOFTS/solid.htm)
- *          Joaquim Luis (Translated to C and integrated in GMT)
+ * Author:	Dennis Milbert (solid.f http://geodesyworld.github.io/SOFTS/solid.htm)
+ *		Joaquim Luis (Translated to C and integrated in GMT)
  * Date:	12-JUN-2018
  * Version:	6 API
  */
@@ -1404,8 +1404,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 
 int GMT_earthtide (void *V_API, int mode, void *args) {
 	int error = 0;
-	time_t rawtime;
-	struct tm *timeinfo;	
 	struct EARTHTIDE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -1431,6 +1429,8 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the earthtide main code ----------------------------*/
 
 	if (!Ctrl->T.active) {	/* Select the current day as the time to evaluate */
+		time_t rawtime;
+		struct tm *timeinfo;	
 		gmt_gcal_from_rd (GMT, GMT->current.time.today_rata_die, &cal_start);
 		time (&rawtime);
 		timeinfo = gmtime (&rawtime);			/* Get the time in UTC */
@@ -1458,7 +1458,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 
 		}
 
-		solid_grd (GMT, Ctrl, &cal_start, Grid);
+		solid_grd (GMT, Ctrl, &cal_start, Grid);	/* Evaluate the chosen component(s) on the grids */
 
 		/* Now write the one to three grids */
 		for (k = kk = 0; k < N_COMPS; k++) {
@@ -1466,7 +1466,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[k]))
 				Return (API->error);
 
-			if (!API->external) kk = k;	/* On command line we pick iten k from an array of 3 items */
+			if (!API->external) kk = k;	/* On command line we pick item k from an array of 3 items */
 			if (strstr (Ctrl->G.file[kk], "%s"))
 				sprintf (file, Ctrl->G.file[kk], code[k]);
 			else
@@ -1475,11 +1475,11 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, Grid[k]) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			kk++;	/* For the mex we do them in the order given as there is not an array of 3 */
+			kk++;	/* For the external interface we take them in the order given as there is not an array of 3 */
 		}
 	}
 	else {	/* Write data table with 4 or 7 columns to stdout */
-		int n_out = 4;
+		int n_out = 4;	/* If -L */
 		if (Ctrl->S.active) {
 			gmt_ECEF_init (GMT, &Ctrl->S.datum);
 			n_out = 7;
@@ -1504,7 +1504,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) 	/* Sets output geometry */
 			Return (API->error);
 	
-		gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_ABSTIME);
+		gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_ABSTIME);	/* Common for both tables; other column types set in the two functions */
 
 		if (Ctrl->S.active)
 			sun_moon_track (GMT, &cal_start, Ctrl->T.T);
