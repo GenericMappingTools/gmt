@@ -242,7 +242,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 		int n_cells;
 		S_copy[strlen(S_copy)-1] = '\0';		/* Drop the 'c' */
 		n_cells = atoi(S_copy) + 1;				/* + 1 so that 0 means cell with point only */
-		sprintf(txt, "%.12g/%.12g", n_cells * GMT->common.R.inc[GMT_X]/2, n_cells * GMT->common.R.inc[GMT_Y]/2);
+		sprintf(txt, "%.12g/%.12g", n_cells * GMT->common.R.inc[GMT_X], n_cells * GMT->common.R.inc[GMT_Y]);
 		Ctrl->S.mode = gmt_get_distance (GMT, txt, &(Ctrl->S.radius), &(Ctrl->S.unit));
 		free (S_copy);
 	}
