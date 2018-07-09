@@ -144,9 +144,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 					}
 					Ctrl->A.n_selected++;
 				}
-				if (Ctrl->A.n_selected == 0) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-A requires comma-separated field arguments.\n");
-					n_errors++;
+				if (Ctrl->A.n_selected == 0) {	/* Let -Az be the default */
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "-A interpreted to mean -Az.\n");
+					Ctrl->A.selected[0] = true;
+					Ctrl->A.n_selected = 1;
 				}
 				break;
 			case 'C':	/* Report center of block instead */

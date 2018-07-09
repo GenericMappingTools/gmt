@@ -139,9 +139,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 					}
 					Ctrl->A.n_selected++;
 				}
-				if (Ctrl->A.n_selected == 0) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-A requires comma-separated field arguments.\n");
-					n_errors++;
+				if (Ctrl->A.n_selected == 0) {	/* Let -Az be the default */
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "-A interpreted to mean -Az.\n");
+					Ctrl->A.selected[0] = true;
+					Ctrl->A.n_selected = 1;
 				}
 				break;
 			case 'C':	/* Report center of block instead */
@@ -239,7 +240,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && !Ctrl->G.active, "Syntax error: -A requires -G\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->parent->external && Ctrl->A.active && !Ctrl->G.active, "Syntax error: -A requires -G\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->parent->external && Ctrl->G.active && !Ctrl->A.active,
 	                                   "Syntax error: -G requires -A\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->E.mode == BLK_DO_INDEX_LO ||
