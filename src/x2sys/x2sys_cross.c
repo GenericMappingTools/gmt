@@ -659,7 +659,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		if ((dist[SET_A] = gmt_dist_array_2 (GMT, data[SET_A][s->x_col], data[SET_A][s->y_col], n_rec[SET_A], dist_scale, s->dist_flag)) == NULL) gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 
 		if (do_examine) {	/* Check all the coordinates and find suitable pole */
-			ymin[SET_A] = ymax[SET_A] = data[SET_A][s->y_col][i];
+			ymin[SET_A] = ymax[SET_A] = data[SET_A][s->y_col][0];
 			for (i = 1; i < n_rec[SET_A]; i++) {
 				if (data[SET_A][s->y_col][i] < ymin[SET_A]) ymin[SET_A] = data[SET_A][s->y_col][i];
 				if (data[SET_A][s->y_col][i] > ymax[SET_A]) ymax[SET_A] = data[SET_A][s->y_col][i];
@@ -717,7 +717,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				if ((dist[SET_B] = gmt_dist_array_2 (GMT, data[SET_B][s->x_col], data[SET_B][s->y_col], n_rec[SET_B], dist_scale, s->dist_flag)) == NULL) gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 				
 				if (do_examine) {	/* Check the coordinates and find suitable pole */
-					ymin[SET_B] = ymax[SET_B] = data[SET_B][s->y_col][i];
+					ymin[SET_B] = ymax[SET_B] = data[SET_B][s->y_col][0];
 					for (i = 1; i < n_rec[SET_B]; i++) {
 						if (data[SET_B][s->y_col][i] < ymin[SET_B]) ymin[SET_B] = data[SET_B][s->y_col][i];
 						if (data[SET_B][s->y_col][i] > ymax[SET_B]) ymax[SET_B] = data[SET_B][s->y_col][i];
