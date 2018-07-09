@@ -46,9 +46,6 @@ extern "C" {
 
 #include <limits.h> /* defines PATH_MAX */
 #include <stdlib.h> /* defines _MAX_PATH on WIN32 */
-#if ! defined PATH_MAX && defined _MAX_PATH
-#	define PATH_MAX _MAX_PATH
-#endif
 #ifndef PATH_MAX
 #	define PATH_MAX 1024
 #endif

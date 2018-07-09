@@ -155,9 +155,6 @@
 #	include <zlib.h>
 #endif
 
-#if ! defined PATH_MAX && defined _MAX_PATH
-#	define PATH_MAX _MAX_PATH
-#endif
 #ifndef PATH_MAX
 #	define PATH_MAX 1024
 #endif
