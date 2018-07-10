@@ -555,7 +555,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 			free_node (GMT, grid_node[ij0]);
 			ij0++;
 		}
-		if ((row % 16) == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Gridded row %10ld\r", row);
+		if ((row % 128) == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Gridded row %10ld\r", row);
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Gridded row %10ld\n", row);
 
