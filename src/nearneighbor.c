@@ -490,7 +490,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 			}
 		}
 		n++;
-		if (!(n%1000)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed record %10ld\r", n);
+		if (!(n % 16384)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed record %10ld\r", n);	/* 16384 = 2^14 */
 		if (n == n_alloc) {
 			size_t old_n_alloc = n_alloc;
 			n_alloc <<= 1;
@@ -528,7 +528,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 				continue;
 			}
 
-			for (k = 0, n_filled = 0; k < Ctrl->N.sectors; k++) if (grid_node[ij0]->datum[k] >= 0) n_filled++;
+			for (k = 0, n_filled = 0; k < Ctrl->N.sectors; k++)
+				if (grid_node[ij0]->datum[k] >= 0) n_filled++;
 			if (n_filled < Ctrl->N.min_sectors) { 	/* Not minimum set of neighbors in all sectors, set to empty and goto next node */
 				n_almost++;
 				Grid->data[ij] = (gmt_grdfloat)Ctrl->E.value;
@@ -554,7 +555,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 			free_node (GMT, grid_node[ij0]);
 			ij0++;
 		}
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Gridded row %10ld\r", row);
+		if ((row % 16) == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Gridded row %10ld\r", row);
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Gridded row %10ld\n", row);
 
