@@ -1048,7 +1048,11 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	else
 		nX = nXSize,	nY = nYSize;
 
+#ifdef READ_BY_BLOCKS
+	rowVec = gmt_M_memory(GMT, NULL, nRowsPerBlock*nBlocks, size_t);
+#else
 	rowVec = gmt_M_memory(GMT, NULL, nY, size_t);
+#endif
 	for (m = 0; m < nY; m++) rowVec[m] = m * nX;
 	colVec = gmt_M_memory(GMT, NULL, nX+pad_w+pad_e, size_t);	/* For now this will be used only to select BIP ordering */
 	/* --------------------------------------------------------------------------------- */
@@ -1084,11 +1088,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			row_i = k * nRowsPerBlock;
 			row_e = (k + 1) * nRowsPerBlock;
 			buffy = nRowsPerBlock;
-			for (m = 0; m < nRowsPerBlock; m++) rowVec[m] = m * nX;
+			for (m = 0; m < nRowsPerBlock; m++) rowVec[m+k*nRowsPerBlock] = m * nX;
 			if (k == nBlocks-1) {					/* Last block only by chance is not smaller than the others */
 				buffy = nBufYSize - k * nRowsPerBlock;
 				row_e = nYSize;
-				for (m = 0; m < buffy; m++) rowVec[m] = m * nX;
 				nYOff = yOrigin + k * nRowsPerBlock;
 			}
 			startRow = row_i;
