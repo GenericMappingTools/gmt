@@ -421,9 +421,12 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, u
 	}
 	if (spotter_GPlates_pair (file)) {	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */
 		sscanf (file, "%[^-]-%s", A, B);
-		if ((this_c = getenv ("GPLATES_PLATES")))
+		if ((this_c = getenv ("GPLATES_PLATES"))) {
 			strncpy (Plates, this_c, GMT_BUFSIZ-1);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Use environmental value of GPLATES_PLATES = %s\n", Plates);
+		}
 		else {
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Use default plate ID file = %s\n", GPLATES_PLATES);
 			if (!gmt_getsharepath (GMT, "spotter", GPLATES_PLATES, ".txt", Plates, R_OK)) {	/* Decode GPlates ID file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find GPLATES_PLATES file : %s\n", Plates);
 				GMT_exit (GMT, GMT_FILE_NOT_FOUND); return GMT_FILE_NOT_FOUND;
@@ -454,9 +457,12 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, u
 			GMT_exit (GMT, GMT_NOT_A_VALID_ARG); return GMT_NOT_A_VALID_ARG;
 		}
 		/* OK, here we have the two IDs */
-		if ((this_c = getenv ("GPLATES_ROTATIONS")))
+		if ((this_c = getenv ("GPLATES_ROTATIONS"))) {
 			strncpy (Rotations, this_c, GMT_BUFSIZ-1);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Use environmental value of GPLATES_ROTATIONS = %s\n", Rotations);
+		}
 		else {
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Use default rotation file = %s\n", GPLATES_ROTATIONS);
 			if (!gmt_getsharepath (GMT, "spotter", GPLATES_ROTATIONS, ".rot", Rotations, R_OK)) {	/* Decode GPlates rotations file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find GPLATES_ROTATIONS file : %s\n", Rotations);
 				GMT_exit (GMT, GMT_FILE_NOT_FOUND); return GMT_FILE_NOT_FOUND;

@@ -307,7 +307,6 @@ GMT_LOCAL int file_is_eps (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 if 
 	FILE *fp = NULL;
 	unsigned char c[4], magic_ps[4] = {'%', '!', 'P', 'S'};
 	char *F = *file;
-	int j;
 
 	if (F == NULL || F[0] == '\0') return GMT_NOTSET;	/* Nothing given */
 	if (gmt_M_file_is_memory (F)) return (0);	/* Special passing of image */
@@ -317,9 +316,8 @@ GMT_LOCAL int file_is_eps (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 if 
 		gmt_M_str_free (*file);
 		*file = F = tmp;
 	}
-	j = (int)strlen(F) - 1;
-	while (j && F[j] && F[j] != '+') j--;	/* See if we have a band request */
-	if (j && F[j+1] == 'b') F[j] = '\0';			/* Temporarily strip the band request string so that the opening test doesn't fail */
+	if (strstr (F, "=gd")) return (0);		/* Passing an image via GDAL cannot be EPS */
+	if (strstr (F, "+b"))  return (0);		/* Band request of an image cannot be EPS */
 
 	if ((fp = gmt_fopen (GMT, F, "rb")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", F);
@@ -331,7 +329,6 @@ GMT_LOCAL int file_is_eps (struct GMT_CTRL *GMT, char **file) {	/* Returns 1 if 
 		return (GMT_NOTSET);
 	}
 	gmt_fclose (GMT, fp);
-	if (j) F[j] = '+';			/* Reset the band request string */
 	/* Note: cannot use gmt_M_same_rgb here, because that requires doubles */
 	if (c[0] == magic_ps[0] && c[1] == magic_ps[1] && c[2] == magic_ps[2] && c[3] == magic_ps[3]) return(1);
 	return (0);
