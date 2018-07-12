@@ -3142,7 +3142,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	 */
 	FILE *fp = NULL;
 	unsigned char data[16] = {""};
-	char *F = NULL, path[PATH_MAX] = {""};
+	char *F = NULL, *p = NULL, path[PATH_MAX] = {""};
 	int j, code, pos_ext;
 	size_t L;
 	
@@ -3155,9 +3155,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 		F = strdup (file);
 	L = strlen (F);
 	
-	j = (int)L - 1;
-	while (j && F[j] && F[j] != '+') j--;	/* See if we have a band request */
-	if (j && F[j+1] == 'b') F[j] = '\0';	/* Temporarily strip the band request string so that the opening test doesn't fail */
+	if ((p = strstr(F, "=gd")) != NULL) *p = '\0';	/* Chop off any =gd<stuff> so that the opening test doesn't fail */
 	if (!gmt_getdatapath (GMT, F, path, R_OK)) {
 		gmt_M_str_free (F);
 		return GMT_GRDIO_FILE_NOT_FOUND;
