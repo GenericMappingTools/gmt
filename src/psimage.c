@@ -402,7 +402,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	unsigned char *picture = NULL, *buffer = NULL;
 
-	char path[GMT_BUFSIZ] = {""}, *file = NULL;
+	char path[GMT_BUFSIZ] = {""}, *file = NULL, *c = NULL;
 
 	struct imageinfo header;
 
@@ -438,6 +438,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	PS_interpolate = (Ctrl->D.interpolate) ? -1 : +1;
 
 	file = strdup (Ctrl->In.file);
+	if ((c = strstr (file, "=gd"))) c[0] = '\0';	/* Chop off unnecessary =gd mandate */
 	is_eps = file_is_eps (GMT, &file);	/* Determine if this is an EPS file or other */
 	if (is_eps < 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", file);
