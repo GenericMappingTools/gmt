@@ -1027,19 +1027,22 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 #ifdef READ_BY_BLOCKS
 	if (!(just_copy || copy_flipud))
-		tmp = calloc((size_t)nRowsPerBlock * (size_t)nBufXSize, nPixelSize);
+		if ((tmp = calloc((size_t)nRowsPerBlock * (size_t)nBufXSize, nPixelSize)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdalread: failure to allocate enough memory\n");
+			GDALDestroyDriverManager();
+			return(-1);
+		}
 	else {
 		nRowsPerBlock = nYSize;
 		nBlocks = 1;
 	}
 #else
-	tmp = calloc((size_t)nBufYSize * (size_t)nBufXSize, nPixelSize);
-#endif
-	if (tmp == NULL) {
+	if ((tmp = calloc((size_t)nBufYSize * (size_t)nBufXSize, nPixelSize)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdalread: failure to allocate enough memory\n");
 		GDALDestroyDriverManager();
 		return(-1);
 	}
+#endif
 
 	/* ------ compute two vectors indices that will be used inside loops below --------- */
 	/* In the "Preview" mode those guys below are different and what we need is the BufSize */
@@ -1303,7 +1306,12 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	}
 #endif
 	gmt_M_free (GMT, rowVec);
+#ifdef READ_BY_BLOCKS
+	if (!(just_copy || copy_flipud))
+		gmt_M_str_free (tmp);
+#else
 	gmt_M_str_free (tmp);
+#endif
 	gmt_M_free (GMT, whichBands);
 	gmt_M_free (GMT, colVec);
 
