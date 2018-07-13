@@ -3,7 +3,7 @@
 #
 # Check two custom symbols symbols with new variables and text capabilities
 
-ps=custum_azim.ps
+ps=custom_azim.ps
 
 cat << EOF > t.txt
 5	25	0	20
@@ -18,7 +18,6 @@ cat << EOF > t.txt
 EOF
 
 cat << EOF > dip2.def
-# $Id$
 # Macro for geologic strike/dip takes strike (azimuth) and dip (angle) from input file
 N:	1	a
 # First rotate so strike is horizontal
@@ -38,7 +37,6 @@ S
 0.025	0.20	D
 EOF
 cat << EOF > dip3.def
-# $Id$
 # Macro for geologic strike/dip takes strike (azimuth) and dip (angle) from input file
 N:	1	o
 # First rotate so strike is horizontal

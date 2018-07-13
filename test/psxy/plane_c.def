@@ -1,4 +1,4 @@
-N: 2 as
+N: 2 ao
 # Note: $1 is azimuth
 # Note: For now assumes Standard+ encoding for degree symbol
 if $1 [> 0:90 then 0.5 -0.5 0.2 $2\312 l+fHelvetica-Oblique -W-

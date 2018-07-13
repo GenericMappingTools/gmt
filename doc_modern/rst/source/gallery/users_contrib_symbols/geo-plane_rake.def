@@ -4,7 +4,7 @@
 #
 # The symbol reads the strike, dip and rake in the 3rd, 4th and 5th columns in psxy
 #
-N: 3 aso
+N: 3 aoo
 if $1 [> 0:90 then 0.5 -0.5 0.3 $2 l+fHelvetica-Oblique+jBR -W-
 if $1 [> 90:180 then -0.5 -0.5 0.3 $2 l+fHelvetica-Oblique+jBL -W-
 if $1 [> 180:270 then -0.5 0.5 0.3 $2 l+fHelvetica-Oblique+jTL -W-

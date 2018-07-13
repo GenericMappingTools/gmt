@@ -4,7 +4,7 @@
 #
 # The symbol reads the trend and plunge in the 3rd and 4th columns in psxy
 #
-N: 2 as
+N: 2 ao
 if $1 [> 0:90 then 0.2 -0.2 0.3 $2 l+fHelvetica-Oblique+jCM -W-
 if $1 [> 90:180 then -0.2 -0.2 0.3 $2 l+fHelvetica-Oblique+jCM -W-
 if $1 [> 180:270 then -0.2 0.2 0.3 $2 l+fHelvetica-Oblique+jCM -W-

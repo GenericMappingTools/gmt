@@ -2650,6 +2650,18 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
 		strcpy (text, s->string);
 	else if (!strcmp (s->string, "$t"))	/* Get entire string from trailing text in the input */
 		strcpy (text, GMT->current.io.curr_trailing_text);
+	else if (!strncmp (s->string, "$t:", 3U)) {	/* Get word number n from trailing text in the input */
+		char *word = NULL, *trail = NULL, *orig = strdup (GMT->current.io.curr_trailing_text);
+		int col = 0;
+		trail = orig;
+		while (col < s->var[0] && (word = strsep (&trail, " \t")) != NULL)
+			col++;	/* Advance to the right word */
+		if (*word != '\0')	/* Skip empty strings */
+			strcpy (text, word);
+		else
+			strcpy (text, GMT->current.io.curr_trailing_text);
+		gmt_M_str_free (orig);
+	}
 	else {	/* Must replace special items within a template string */
 		unsigned int n_skip, in, out;
 		char tmp[GMT_LEN64] = {""};
@@ -2694,11 +2706,10 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
 	}
 }
 
-GMT_LOCAL void plot_encodefont (struct PSL_CTRL *PSL, int font_no, double size, char *name, unsigned int id) {
+GMT_LOCAL void plot_encodefont (struct PSL_CTRL *PSL, int font_no, char *name, unsigned int id) {
 	/* Create the custom symbol macro that selects the correct font and size for the symbol item */
 
 	bool encode = (PSL->init.encoding && !PSL->internal.font[font_no].encoded);
-	int is = (int)lrint (size * PSL->internal.dpp);	/* Basically psl_ip */
 
 	if (PSL->internal.comments) PSL_command (PSL, "%% Set font encoding and size for this custom symbol %s item %d\n", name, id);
 	PSL_command (PSL, "/PSL_symbol_%s_setfont_%d {", name, id);
@@ -2706,7 +2717,7 @@ GMT_LOCAL void plot_encodefont (struct PSL_CTRL *PSL, int font_no, double size, 
 		PSL_command (PSL, " PSL_font_encode %d get 0 eq {%s_Encoding /%s /%s PSL_reencode PSL_font_encode %d 1 put} if", font_no, PSL->init.encoding, PSL->internal.font[font_no].name, PSL->internal.font[font_no].name, font_no);
 		PSL->internal.font[font_no].encoded = true;
 	}
-	PSL_command (PSL, " %d F%d } def\n", is, font_no);
+	PSL_command (PSL, " F%d } def\n", font_no);
 }
 
 GMT_LOCAL void plot_contlabel_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_CONTOUR *G) {
@@ -5223,7 +5234,7 @@ GMT_LOCAL void get_the_fill (struct GMT_FILL *f, struct GMT_CUSTOM_SYMBOL_ITEM *
 }
 
 int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline) {
-	int action;
+	int action, ifs;
 	unsigned int na, i, id = 0, level;
 	bool flush = false, this_outline = false, skip[GMT_N_COND_LEVELS+1], done[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
@@ -5282,7 +5293,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				else	/* Fractional size that depends on symbol size */
 					s->font.size = s->p[0] * size[0] * PSL_POINTS_PER_INCH;
 				/* Set PS macro for fetching this font and size */
-				plot_encodefont (PSL, s->font.id, s->font.size, symbol->name, id++);
+				plot_encodefont (PSL, s->font.id, symbol->name, id++);
 			}
 			s = s->next;
 		}
@@ -5497,6 +5508,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 					font.size = -s->p[0];
 				else	/* Fractional size */
 					font.size = s->p[0] * size[0] * PSL_POINTS_PER_INCH;
+				ifs = (int)lrint (font.size * PSL->internal.dpp);	/* Basically psl_ip */
 				gmt_setfont (GMT, &s->font);
 				if (f.rgb[0] >= 0.0 && this_outline)
 					gmt_setfill (GMT, &f, this_outline);
@@ -5504,7 +5516,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 					PSL_setcolor (PSL, f.rgb, PSL_IS_FONT);
 				else
 					PSL_setfill (PSL, GMT->session.no_rgb, this_outline);
-				PSL_command (PSL, "PSL_symbol_%s_setfont_%d\n", symbol->name, id++);
+				PSL_command (PSL, "%d PSL_symbol_%s_setfont_%d\n", ifs, symbol->name, id++);
 				PSL_plottext (PSL, x, y, font.size, user_text, 0.0, s->justify, this_outline);
 				break;
 

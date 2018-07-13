@@ -4557,7 +4557,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 	 * 4. In the user data dir [~/.gmt/data]
 	 * 5. In the system share/custom dir
 	 * THus we must use both gmt_getsharepath and gmtlib_getuserpath when looking */
-	unsigned int k, bb, nc = 0, nv, error = 0, var_symbol = 0, pos = 0;
+	unsigned int k, bb, nc = 0, nv, error = 0, var_symbol = 0, pos = 0, n_txt = 0;
 	int last;
 	size_t length;
 	bool do_fill, do_pen, first = true, got_BB[2] = {false, false};
@@ -4653,7 +4653,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 						case 'r':	head->type[k] = GMT_IS_ANGLE; break;		/* Angles, we enforce 0-360 range */
 						case 'l':	head->type[k] = GMT_IS_DIMENSION; break;	/* Length that will be in the current measure unit */
 						case 'o':	head->type[k] = GMT_IS_FLOAT; break;		/* Other, i.e, non-dimensional quantity not to be changed */
-						case 's':	head->type[k] = GMT_IS_STRING; break;		/* A text string */
+						case 's':	head->type[k] = GMT_IS_STRING; n_txt++;	break;		/* A text string */
 						default:
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Custom symbol %s has unrecognized <types> declaration in %s\n", &name[pos], flags);
 							fclose (fp);
@@ -4827,8 +4827,10 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 					s->p[0] = -s->p[0];	/* Mark fixed size via a negative point size */
 				s->string = gmt_M_memory (GMT, NULL, strlen (col[3]) + 1, char);
 				strcpy (s->string, col[3]);
-				if ((c = strchr (s->string, '$')) && (c[1] == 't' || isdigit (c[1]))) {	/* Got a text string containing one or more variables */
+				if ((c = strchr (s->string, '$'))) {	/* Got a text string variable */
 					s->action = GMT_SYMBOL_VARTEXT;
+					if (c[1] == 't' && c[2] == ':' && isdigit (c[3]))	/* Select this word from trailing text */
+						s->var[0] = atoi (&c[3]);
 				}
 				s->font = GMT->current.setting.font_annot[GMT_PRIMARY];	/* Default font for symbols */
 				s->justify = PSL_MC;				/* Default justification of text */
@@ -4956,6 +4958,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "EPS symbol %s is a GMT-produced macro\n", head->name);
 		head->PS |= 4;	/* So we know to scale the EPS by 1200/72 or not in gmt_plot.c */
 	}
+	head->n_required -= n_txt;	/* WOrds from trailing text is not part of required arguments (which are all numerical) */
 	*S = head;
 	return (GMT_NOERROR);
 }

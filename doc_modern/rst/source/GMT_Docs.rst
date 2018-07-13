@@ -8073,7 +8073,10 @@ Text substitution
 Normally, the **l** macro code will place a hard-wired text string.  However,
 you can also obtain the entire string from your input file via a single symbol
 variable **$t** that must be declared with type **s** (string).  The string will be taken
-as all trialing text in your data record.  To place the dollar sign $ itself you must
+as all trialing text in your data record.  To select a single word from the trailing text
+you just use $k, where k starts at 1 for the first word, regardless of how many numerical
+columns that precede it.  For each word you plan to use you must add a type **s** above.
+Words must be separated by one tab or space only.  To place the dollar sign $ itself you must
 use octal \\044 so as to not confuse the parser with a symbol variable.
 The string itself, if obtained from the symbol definition file,
 may contain special codes that will be expanded given information from the current record.  You

@@ -13294,7 +13294,6 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			}
 			p->symbol = GMT_SYMBOL_CUSTOM;
 			p->n_required = p->custom->n_required;
-			if (p->custom->text == 2) p->n_required--;	/* Since trailing text is not counted as a numerical column */
 			for (ju = p->n_nondim = 0; ju < p->n_required; ju++) {	/* Flag input columns that are NOT lengths */
 				if (p->custom->type[ju] != GMT_IS_DIMENSION) p->nondim_col[p->n_nondim++] = 2 + col_off + ju;
 			}
