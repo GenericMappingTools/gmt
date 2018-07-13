@@ -1,10 +1,10 @@
 N: 2 as
-# Note: $1 is now plot angle and now longer azimuth
+# Note: $1 is azimuth
 # Note: For now assumes Standard+ encoding for degree symbol
 if $1 [> 0:90 then 0.5 -0.5 0.2 $2\312 l+fHelvetica-Oblique -W-
-if $1 [> 90:180 then 0.5 0.5 0.2 $2\312 l+fHelvetica-Oblique -W-
+if $1 [> 90:180 then -0.5 -0.5 0.2 $2\312 l+fHelvetica-Oblique -W-
 if $1 [> 180:270 then -0.5 0.5 0.2 $2\312 l+fHelvetica-Oblique -W-
-if $1 [> 270:360 then -0.5 -0.5 0.2 $2\312 l+fHelvetica-Oblique -W-
+if $1 [> 270:360 then 0.5 0.5 0.2 $2\312 l+fHelvetica-Oblique -W-
 $1 R
-0 0 1 -
-0 -0.125 0.25 y
+0 0 1 y
+0.125 0 0.25 -

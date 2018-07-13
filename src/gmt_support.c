@@ -4525,9 +4525,16 @@ GMT_LOCAL int support_decode_arg (char *txt, int column, struct GMT_CUSTOM_SYMBO
 	int new_action = s->action;	/* This output is only used for the ROTATE symbol */
 	size_t k = strlen (txt) - 1;	/* Index of last character */
 	assert (column < CUSTOM_SYMBOL_MAXVAR);	/* Otherwise we want to know */
-	if (txt[0] == '$') {	/* Got a variable as angle (azimuths has long been converted to plot angle by now) */
+	if (txt[0] == '$') {	/* Got a variable as angle */
 		s->var[column] = atoi (&txt[1]);
 		s->is_var[column] = true;
+		s->var_sign[column] = 1.0;
+		new_action = GMT_SYMBOL_VARROTATE;	/* Mark as a different rotate action */
+	}
+	else if (txt[0] == '-' && txt[1] == '$') {	/* Got a variable as negative angle */
+		s->var[column] = atoi (&txt[2]);
+		s->is_var[column] = true;
+		s->var_sign[column] = -1.0;
 		new_action = GMT_SYMBOL_VARROTATE;	/* Mark as a different rotate action */
 	}
 	else if (txt[k] == 'a') {	/* Got a fixed azimuth and must flag via a different action */

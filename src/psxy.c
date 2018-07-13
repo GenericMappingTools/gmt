@@ -1513,6 +1513,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					}
 					break;
 				case GMT_SYMBOL_CUSTOM:
+#if 0
 					for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Convert any azimuths to plot angles first */
 						if (S.custom->type[j] == GMT_IS_AZIMUTH) {	/* Make sure plot angles are 0-360 for macro conditionals */
 							dim[j+1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size+j]);
@@ -1522,6 +1523,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							dim[j+1] = in[ex1+S.read_size+j];
 							if (S.custom->type[j] == GMT_IS_ANGLE && dim[j+1] < 0.0) dim[j+1] += 360.0;
 						}
+					}
+#endif
+					for (j = 0; S.custom->type && j < S.n_required; j++) {
+						/* Angles (enforce 0-360), dimensions or other quantities */
+						dim[j+1] = in[ex1+S.read_size+j];
+						if (S.custom->type[j] == GMT_IS_ANGLE && dim[j+1] < 0.0) dim[j+1] += 360.0;
 					}
 					if (!S.custom->start) S.custom->start = (get_rgb) ? 3 : 2;
 					gmt_draw_custom_symbol (GMT, xpos[item], plot_y, dim, S.custom, &current_pen, &current_fill, outline_active);

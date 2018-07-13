@@ -10,6 +10,5 @@ if $1 [> 90:180 then 0.5 0.5 0.3 $2 l+fHelvetica-Oblique+jTR -W-
 if $1 [> 180:270 then -0.5 0.5 0.3 $2 l+fHelvetica-Oblique+jTL -W-
 if $1 [> 270:360 then -0.5 -0.5 0.3 $2 l+fHelvetica-Oblique+jBL -W-
 $1 R
--90 R
 0 0 1 y
 0.05 0 0.1 0.2 r

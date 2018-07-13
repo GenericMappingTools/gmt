@@ -3,6 +3,7 @@
 N:	2	as
 # First rotate so strike is horizontal
 $1	R
+90	R
 # Draw the strike line
 -0.5	0	M
 0.5	0	D

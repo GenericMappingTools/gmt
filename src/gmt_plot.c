@@ -5228,7 +5228,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	bool flush = false, this_outline = false, skip[GMT_N_COND_LEVELS+1], done[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
-	double x, y, lon, lat, angle1, angle2, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
+	double x, y, lon, lat, az, angle1, angle2, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
 	char user_text[GMT_LEN256] = {""};
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
 	struct GMT_FILL f, *current_fill = fill;
@@ -5398,7 +5398,13 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 			case GMT_SYMBOL_VARROTATE:	/* Rotate the symbol coordinate system by a variable amount */
 				if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
-				PSL_setorigin (PSL, 0.0, 0.0, size[s->var[0]], PSL_FWD);
+				if (symbol->type[s->var[0]-1] == GMT_IS_AZIMUTH) {	/* Must convert azimuth to map angle then  rotatate by -pseudoazimuth */
+					gmt_xy_to_geo (GMT, &lon, &lat, x0, y0);
+					az = 90.0 - gmt_azim_to_angle (GMT, lon, lat, 0.1, s->var_sign[0] * size[s->var[0]]);
+					PSL_setorigin (PSL, 0.0, 0.0, -az, PSL_FWD);
+				}
+				else	/* Use rotation angle as given */
+					PSL_setorigin (PSL, 0.0, 0.0, s->var_sign[0] * size[s->var[0]], PSL_FWD);
 				break;
 
 			case GMT_SYMBOL_TEXTURE:	/* Change the current pen/fill settings */

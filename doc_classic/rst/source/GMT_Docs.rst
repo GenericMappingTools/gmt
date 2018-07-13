@@ -8085,6 +8085,8 @@ Note for **R**\: if an **a** is appended to the angle then :math:`\alpha` is con
 to be a map azimuth; otherwise it is a Cartesian map angle.  The **a** modifier
 does not apply if the angle is given via a variable, in which case the type of angle
 has already been specified via **N:** above and already converged before seen by **R**.
+Finally, the **R** command can also be given the negative of a variable, e.g., -$2 to
+undo a rotation, if necessary.
 
 Symbol fill and outline
 ~~~~~~~~~~~~~~~~~~~~~~~
