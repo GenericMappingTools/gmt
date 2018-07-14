@@ -81,6 +81,8 @@ struct GMTMGG_REC {	/* Format of old *.gmt file records */
 #define S_RDONLY 0000444
 
 #define X2SYS_VERSION "1.2"
+#define X2SYS_FMT_EXT "fmt"		/* File extension for crossover track definition format files */
+#define X2SYS_FMT_EXT_OLD "def"		/* Old file extension for crossover track definition format files */
 
 /* Make sure structure sizes are multiples of 8 */
 

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_init** *TAG* |-D|\ *deffile*
+**x2sys_init** *TAG* |-D|\ *fmtfile*
 [ |-C|\ **c**\ \|\ **f**\ \|\ **g**\ \|\ **e** ]
 [ |-E|\ *suffix* ]
 [ |-F| ]
@@ -60,8 +60,8 @@ Required Arguments
 
 .. _-D:
 
-**-D**\ *deffile*
-    Definition file prefix for this data set [See DEFINITION FILES below
+**-D**\ *fmtfile*
+    Format definition file prefix for this data set [See Format Definition Files below
     for more information]. Specify full path if the file is not in the
     current directory.
 
@@ -85,7 +85,7 @@ Optional Arguments
 
 **-E**\ *suffix*
     Specifies the file extension (suffix) for these data files. If not
-    given we use the definition file prefix as the suffix (see **-D**).
+    given we use the format definition file prefix as the suffix (see **-D**).
 
 .. _-F:
 
@@ -142,10 +142,10 @@ Optional Arguments
 
 .. include:: ../../explain_help.rst_
 
-Definition Files
-----------------
+Format Definition Files
+-----------------------
 
-These \*.def files contain information about the data file format and
+These \*.fmt files contain information about the data file format and
 have two sections: (1) header information and (2) column
 information. All header information starts with the character # in the
 first column, immediately followed by an upper-case directive. If the
@@ -219,10 +219,10 @@ track data file format consist of 2 header records with text information
 followed by any number of identically formatted data records with 6
 columns (lat, lon, time, obs1, obs2, obs3) and that files are called
 \*.trk. We will call this the "line" format. First, we create the
-line.def file:
+line.fmt file:
 
 ======  ====  ===  =========  =====  ======  ========
-# Define file for the line format
+# Format define file for the line format
 -----------------------------------------------------
 # SKIP 2                      # Skip 2 header records
 -----------------  ----------------------------------
@@ -253,10 +253,10 @@ read your line data files they will first look in the current directory
 and second look in the file *TAG*\ \_paths.txt for a list of additional
 directories to examine. Therefore, create such a file (here
 LINE_paths.txt) and stick the full paths to your data directories
-there. All TAG-related files (definition files, tag files, and track
+there. All TAG-related files (format definition files, tag files, and track
 data bases created) will be expected to be in the directory pointed to
 by **$X2SYS_HOME**/*TAG* (in our case **$X2SYS_HOME**/LINE). Note that
-the argument to **-D** must contain the full path if the \*.def file is
+the argument to **-D** must contain the full path if the \*.fmt file is
 not in the current directory. **x2sys_init** will copy this file to the
 **$X2SYS_HOME**/*TAG* directory where all other x2sys tools will expect
 to find it.
@@ -295,11 +295,11 @@ to find it.
        gmt x2sys_get -V -TLINE -R20/40/-40/-20 -Fobs1,obs3 > tracks.tbf
 
 **MGD77[+] or GMT:**
-    Definition files already exist for MGD77 files (both standard ASCII
+    Format definition files already exist for MGD77 files (both standard ASCII
     and enhanced netCDF-based MGD77+ files) and the old \*.gmt files
     manipulated by the mgg supplements; for these data sets the **-C**
     and **-N** will default to great circle distance calculation in km
-    and speed in m/s. There are also definition files for plain x,y[,z]
+    and speed in m/s. There are also format definition files for plain x,y[,z]
     and lon,lat[,z] tracks. To initiate new track databases to be used
     with MGD77 data from NGDC, try
 
@@ -318,10 +318,10 @@ to find it.
     while the three observations are 2-byte integers which must be
     multiplied by 0.1. Finally, the first two observations may be -32768
     which means there is no data available. All that is needed is a
-    different line.def file:
+    different line.fmt file:
 
     ======  ====  ===  =========  =====  ======  ========
-    # Define file for the binary line format
+    # Format define file for the binary line format
     -----------------------------------------------------
     # BINARY                      # File is now binary
     -----------------  ----------------------------------
@@ -345,10 +345,10 @@ to find it.
     Finally, suppose that your line files actually are netCDF files that
     conform to the COARDS convention, with data columns named *lon*,
     *lat*, *time*, *obs1*, *obs2*, and *obs3*. All that is needed is a
-    different line.def file:
+    different line.fmt file:
 
     ======  ====  ===  =========  =====  ======  ========
-    # Define file for the netCDF COARDS line format
+    # Format define file for the netCDF COARDS line format
     -----------------------------------------------------
     # NETCDF                      # File is now netCDF
     -----------------  ----------------------------------
@@ -366,6 +366,13 @@ to find it.
 
     Note we use no scaling or NAN proxies since those issues are usually
     handled internally in the netCDF format description.
+
+Deprecated behavior
+-------------------
+
+The Format Definition Files used to have extension .def but since that is also used
+by GMT's symbol macro files we have deprecated that extension and now use .fmt.
+However, old .def files are still being read.
 
 See Also
 --------

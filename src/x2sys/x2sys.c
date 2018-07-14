@@ -296,13 +296,16 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 	X->file_type = X2SYS_ASCII;
 	X->x_col = X->y_col = X->t_col = -1;
 	X->ms_flag = '>';	/* Default multisegment header flag */
-	sprintf (line, "%s/%s.def", TAG, fname);
+	sprintf (line, "%s/%s.%s", TAG, fname, X2SYS_FMT_EXT);
 	X->dist_flag = 0;	/* Cartesian distances */
 	sprintf (X->separators, "%s\n", GMT_TOKEN_SEPARATORS);
 
-	if ((fp = x2sys_fopen (GMT, line, "r")) == NULL) {
-		gmt_M_free (GMT, X);
-		return (X2SYS_BAD_DEF);
+	if ((fp = x2sys_fopen (GMT, line, "r")) == NULL) {	/* Failed, try to deprecated extension instead */
+		sprintf (line, "%s/%s.%s", TAG, fname, X2SYS_FMT_EXT_OLD);
+		if ((fp = x2sys_fopen (GMT, line, "r")) == NULL) {	/* Even that failed so out of here */
+			gmt_M_free (GMT, X);
+			return (X2SYS_BAD_DEF);
+		}
 	}
 
 	X->unit[X2SYS_DIST_SELECTION][0] = 'k';		X->unit[X2SYS_DIST_SELECTION][1] = '\0';	/* Initialize for geographic data (km and m/s) */

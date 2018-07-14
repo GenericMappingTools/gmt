@@ -128,7 +128,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   f Flat Earth.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   g Great circle [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e Ellipsoidal (geodesic) using current ellipsoid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Definition file for the track data set [<TAG>.def].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Definition file for the track data set [<TAG>.%s].\n", X2SYS_FMT_EXT);
+	GMT_Message (API, GMT_TIME_NONE, "\t   (Note: deprecated extension .%s will work but consider renaming the file)\n", X2SYS_FMT_EXT_OLD);
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Extension (suffix) for these data files\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default equals the prefix for the definition file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Force creating new files if old ones are present [Default will abort if old files are found].\n");
@@ -191,9 +192,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				if ((c = strstr (opt->arg, ".def")) == NULL)
-					Ctrl->D.file = strdup (opt->arg);
-				else {
+				if ((c = strstr (opt->arg, "." X2SYS_FMT_EXT)) == NULL && (c = strstr (opt->arg, "." X2SYS_FMT_EXT_OLD)) == NULL)
+					Ctrl->D.file = strdup (opt->arg);	/* Gave no extension so store everything */
+				else {	/* Must avoid the extension */
 					c[0] = '\0';	/* Chop off extension */
 					Ctrl->D.file = strdup (opt->arg);
 					c[0] = '.';	/* Restore extension */
@@ -311,11 +312,18 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the x2sys_init main code ----------------------------*/
 
 	if (!Ctrl->D.active) Ctrl->D.file = strdup (Ctrl->In.TAG);	/* Default */
-	sprintf (def_file, "%s.def", Ctrl->D.file);
-	if (access (def_file, R_OK)) {	/* No such local *.def file */
-		if (!gmt_getsharepath (GMT, "x2sys", Ctrl->D.file, ".def", def_file, R_OK)) {	/* Not found in GMT x2sys share path */
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to find local definition file : %s\n", def_file);
-			Return (GMT_ERROR_ON_FOPEN);
+	sprintf (def_file, "%s.%s", Ctrl->D.file, X2SYS_FMT_EXT);
+	if (access (def_file, R_OK)) {	/* No such local *.fmt file */
+		if (!gmt_getsharepath (GMT, "x2sys", Ctrl->D.file, "." X2SYS_FMT_EXT, def_file, R_OK)) {	/* Not found in GMT x2sys share path */
+			/* Try old deprecated extension */
+			sprintf (def_file, "%s.%s", Ctrl->D.file, X2SYS_FMT_EXT_OLD);
+			if (access (def_file, R_OK)) {	/* No such local *.def file */
+				if (!gmt_getsharepath (GMT, "x2sys", Ctrl->D.file, "." X2SYS_FMT_EXT_OLD, def_file, R_OK)) {	/* Not found in GMT x2sys share path */
+					GMT_Report (API, GMT_MSG_NORMAL, "Unable to find definition file : %s\n", def_file);
+					Return (GMT_ERROR_ON_FOPEN);
+				}
+			}
+			GMT_Report (API, GMT_MSG_VERBOSE, "Found deprecated file extension .%s, please rename to .%s\n", X2SYS_FMT_EXT_OLD, X2SYS_FMT_EXT);
 		}
 	}
 	if ((fp_def = fopen (def_file, "r")) == NULL) {
@@ -345,7 +353,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	/* Initialize the system TAG files in X2SYS_HOME/TAG */
 
 	sprintf (tag_file,   "%s/%s.tag",       Ctrl->In.TAG, Ctrl->In.TAG);
-	sprintf (def_file,   "%s/%s.def",       Ctrl->In.TAG, &Ctrl->D.file[d_start]);
+	sprintf (def_file,   "%s/%s.%s",       Ctrl->In.TAG, &Ctrl->D.file[d_start], X2SYS_FMT_EXT);
 	sprintf (path_file,  "%s/%s_paths.txt", Ctrl->In.TAG, Ctrl->In.TAG);
 	sprintf (track_file, "%s/%s_tracks.d",  Ctrl->In.TAG, Ctrl->In.TAG);
 	sprintf (bin_file,   "%s/%s_index.b",   Ctrl->In.TAG, Ctrl->In.TAG);
