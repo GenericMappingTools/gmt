@@ -68,7 +68,7 @@ Optional Arguments
 
 **-F**\ *name1*,\ *name2*,...
     Give a comma-separated sub-set list of column names defined in the
-    definition file. [Default selects all data columns].
+    format definition file. [Default selects all data columns].
 
 .. _-I:
 

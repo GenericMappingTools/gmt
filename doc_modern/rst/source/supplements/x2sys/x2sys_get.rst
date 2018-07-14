@@ -55,7 +55,7 @@ Optional Arguments
 
 **-F**\ *flags*
     Give a comma-separated list of column names (as described in the
-    definition file) that should be present. [Default selects all data columns].
+    format definition file) that should be present. [Default selects all data columns].
 
 .. _-G:
 
@@ -80,7 +80,7 @@ Optional Arguments
 
 **-N**\ *flags*
     Give a comma-separated list of column names (as described in the
-    definition file) that must be absent.
+    format definition file) that must be absent.
 
 .. _-R:
 
