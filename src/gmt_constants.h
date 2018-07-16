@@ -85,6 +85,13 @@
 #define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode */
 #define GMT_PAPER_MARGIN	5	/* Default paper margin in inches under modern mode */
 
+/*! whether to ignore/read/write history file gmt.history */
+enum GMT_enum_history {
+	/*! 0 */	GMT_HISTORY_OFF = 0,
+	/*! 1 */	GMT_HISTORY_READ,
+	/*! 2 */	GMT_HISTORY_WRITE
+};
+
 /* Specific feature geometries as obtained from OGR */
 /* Note: As far as registering or reading data, GMT only needs to know if data type is POINT, LINE, or POLY */
 

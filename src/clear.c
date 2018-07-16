@@ -183,6 +183,8 @@ int GMT_clear (void *V_API, int mode, void *args) {
 	else if (!strcmp (opt->arg, "history")) {	/* Clear the history */
 		if (gmt_remove_file (API->GMT, "gmt.history"))
 			error = GMT_RUNTIME_ERROR;
+		/* Must turn off history writing otherwise we write out history again... */
+		API->clear = true;
 	}
 	else if (!strcmp (opt->arg, "conf")) {	/* Clear the configuration */
 		if (gmt_remove_file (API->GMT, "gmt.conf"))

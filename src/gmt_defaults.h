@@ -102,7 +102,7 @@ struct GMT_DEFAULTS {
 	bool use_modern_name;     /* true if we should use the modern name in usage message */
 	double extrapolate_val[2];/* Choose between [0] = 0, 1D extrapolated vals are NaN, = 1 -> extrapolate, = 2 -> set to const stored in [1] */
 	bool fftwf_threads;   /* Only accessed if HAVE_FFTW3F_THREADS is defined: Any of FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
-	unsigned int history;     /* mode to pass information via history file gmt.history (k_history_off, k_history_read, k_history_write) */
+	unsigned int history;     /* mode to pass information via history file gmt.history (GMT_HISTORY_OFF, GMT_HISTORY_READ, GMT_HISTORY_WRITE) */
 	unsigned int history_orig;     /* Copy of history */
 	unsigned int export_type;     /* What data type to export to external APIs [GMT_DOUBLE] */
 	/* IO group */

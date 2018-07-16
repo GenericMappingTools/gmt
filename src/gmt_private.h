@@ -142,6 +142,7 @@ struct GMTAPI_CTRL {
 	bool io_enabled[2];			/* true if access has been allowed (in and out) */
 	bool module_input;			/* true when we are about to read inputs to the module (command line) */
 	bool usage;				/* Flag when 1-liner modern mode modules just want usage */
+	bool clear;				/* True if clear history was called to prevent the creation of a new history file */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */

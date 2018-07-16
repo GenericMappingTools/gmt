@@ -358,13 +358,6 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 
 static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
 
-/*! whether to ignore/read/write history file gmt.history */
-enum history_mode {
-	/*! 0 */	k_history_off = 0,
-	/*! 1 */	k_history_read,
-	/*! 2 */	k_history_write
-};
-
 /* List ps at end since it causes a renaming of ps- to ps only.  Also allow jpeg and tiff spellings */
 
 #include "gmt_gsformats.h"
@@ -2360,7 +2353,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	FILE *fp = NULL; /* For gmt.history file */
 	static struct GMT_HASH unique_hashnode[GMT_N_UNIQUE];
 
-	if (!(GMT->current.setting.history & k_history_read))
+	if (!(GMT->current.setting.history & GMT_HISTORY_READ))
 		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
 
 	/* This is called once per GMT Session by GMT_Create_Session via gmt_begin and before any GMT_* module is called.
@@ -2442,8 +2435,13 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 	char hfile[GMT_BUFSIZ] = {""}, cwd[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL; /* For gmt.history file */
 
-	if (!(GMT->current.setting.history & k_history_write)) {
-		if (GMT->current.setting.run_mode == GMT_MODERN && GMT->current.setting.history == k_history_off)
+	if (GMT->parent->clear) {	/* gmt clear history was called, override put history once */
+		GMT->parent->clear = false;
+		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
+	}
+	
+	if (!(GMT->current.setting.history & GMT_HISTORY_WRITE)) {
+		if (GMT->current.setting.run_mode == GMT_MODERN && GMT->current.setting.history == GMT_HISTORY_OFF)
 			GMT->current.setting.history = GMT->current.setting.history_orig;
 		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
 	}
@@ -5240,7 +5238,7 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	/* GMT_FFT */
 	GMT->current.setting.fft = k_fft_auto;
 	/* GMT_HISTORY */
-	GMT->current.setting.history = (k_history_read | k_history_write);
+	GMT->current.setting.history = (GMT_HISTORY_READ | GMT_HISTORY_WRITE);
 	/* GMT_INTERPOLANT */
 	GMT->current.setting.interpolant = GMT_SPLINE_AKIMA;
 	/* GMT_LANGUAGE */
@@ -9334,11 +9332,11 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_GMT_HISTORY:
 			if      (strspn (lower_value, "1t"))
-				GMT->current.setting.history = (k_history_read | k_history_write);
+				GMT->current.setting.history = (GMT_HISTORY_READ | GMT_HISTORY_WRITE);
 			else if (strchr (lower_value, 'r'))
-				GMT->current.setting.history = k_history_read;
+				GMT->current.setting.history = GMT_HISTORY_READ;
 			else if (strspn (lower_value, "0f"))
-				GMT->current.setting.history = k_history_off;
+				GMT->current.setting.history = GMT_HISTORY_OFF;
 			else
 				error = true;
 			break;
@@ -10485,9 +10483,9 @@ char *gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_GMT_HISTORY:
-			if (GMT->current.setting.history & k_history_write)
+			if (GMT->current.setting.history & GMT_HISTORY_WRITE)
 				snprintf (value, GMT_LEN256, "true");
-			else if (GMT->current.setting.history & k_history_read)
+			else if (GMT->current.setting.history & GMT_HISTORY_READ)
 				snprintf (value, GMT_LEN256, "readonly");
 			else
 				snprintf (value, GMT_LEN256, "false");
@@ -14999,7 +14997,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			error = put_session_name (API, text);			/* Store session name */
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode */
 			API->GMT->current.setting.history_orig = API->GMT->current.setting.history;	/* Temporarily turn off history so nothing is copied into the workflow dir */
-			API->GMT->current.setting.history = k_history_off;	/* Turn off so that no history is copied into the workflow directory */
+			API->GMT->current.setting.history = GMT_HISTORY_OFF;	/* Turn off so that no history is copied into the workflow directory */
 			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  PPID = %d. Directory %s %s.\n", smode[mode], API->PPID, API->gwf_dir, fstatus[2]);
 			break;
 		case GMT_USE_WORKFLOW:
