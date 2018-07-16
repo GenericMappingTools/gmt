@@ -7807,8 +7807,8 @@ Of Colors and Color Legends
 Built-in color palette tables (CPT)
 -----------------------------------
 
-Figures :ref:`CPTs a <CPT_files_a>` and
-:ref:`b <CPT_files_b>` show the 40 built-in
+Figures :ref:`CPTs a <CPT_files_a>`, :ref:`b <CPT_files_b>` and
+:ref:`b <CPT_files_c>` show the ~60 built-in
 color palettes, stored in so-called CPTs [35]_. The programs
 :doc:`makecpt` and
 :doc:`grd2cpt` are used to access these
@@ -7825,7 +7825,7 @@ bar are built by using :doc:`makecpt`
    :width: 500 px
    :align: center
 
-   The first 22 of the standard 44 CPTs supported by GMT
+   The first 22 of the standard CPTs supported by GMT.
 
 .. _CPT_files_b:
 
@@ -7833,8 +7833,19 @@ bar are built by using :doc:`makecpt`
    :width: 500 px
    :align: center
 
-   The second 22 of the standard 44 CPTs supported by GMT
+   The second 22 of the standard CPTs supported by GMT.
 
+.. _CPT_files_c:
+
+.. figure:: /_images/GMT_App_M_1c.*
+   :width: 500 px
+   :align: center
+
+   The 17 scientific color maps by Fabio Crameri supported by GMT.
+
+For additional color tables, visit
+`cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_ and
+`Scientific Colour-Maps <http://www.fabiocrameri.ch/colourmaps.php>`_.
 
 Labeled and non-equidistant color legends
 -----------------------------------------
@@ -7859,9 +7870,6 @@ and how to switch the color bar around (by using a negative length).
 .. figure:: /_images/GMT_App_M_2.*
    :width: 600 px
    :align: center
-
-For additional color tables, visit
-`cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_.
 
 .. _App-custom_symbols:
 

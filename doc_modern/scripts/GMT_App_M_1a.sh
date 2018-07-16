@@ -4,9 +4,33 @@
 #	Makes the inserts for Appendix M(cpt)
 #	[skip srtm which is just a special verison of dem2]
 #
-# Use the knowledge that we need 2 pages.
+# Use the knowledge that we need 3 pages: First two pages are the
+# 44 original GMT 5 CPTs and the last page has 17 scientific colormaps
+# from Fabio [www.fabiocrameri.ch/visualisation]
 
-sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | grep -v srtm | awk '{print $1}' | sort -r > tt.lis
+cat << EOF > skip.lis
+batlow
+berlin
+bilbao
+broc
+cork
+davos
+grayC
+lajolla
+lapaz
+lisbon
+oleron
+oslo
+roma
+tofino
+tokyo
+turku
+vik
+srtm
+EOF
+
+#sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | grep -v srtm | awk '{print $1}' | sort -r > tt.lis
+sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | fgrep -v -f skip.lis | awk '{print $1}' | sort -r > tt.lis
 
 ps=GMT_App_M_1a.ps
 n=`cat tt.lis | wc -l`

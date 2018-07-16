@@ -3,13 +3,13 @@
 #
 #	Makes the inserts for Appendix M(cpt)
 #	[skip srtm which is just a special verison of dem2]
-#
-# Use the knowledge that we need 3 pages: First two pages are the
+# Use the knowledge that we need 3 pages.
 # 44 original GMT 5 CPTs and the last page has 17 scientific colormaps
 # from Fabio [www.fabiocrameri.ch/visualisation]
 
-cat << EOF > skip.lis
-batlow
+#batlow Add later when we have 2.  Need to be even number
+
+cat << EOF > tt.lis
 berlin
 bilbao
 broc
@@ -26,15 +26,12 @@ tofino
 tokyo
 turku
 vik
-srtm
 EOF
 
-#sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | grep -v srtm | awk '{print $1}' | sort -r > tt.lis
-sed -e 's/"//g' "${GMT_SOURCE_DIR}"/src/gmt_cpt_masters.h | fgrep -v -f skip.lis | awk '{print $1}' | sort -r > tt.lis
-
-ps=GMT_App_M_1a.ps
+ps=GMT_App_M_1c.ps
 n=`cat tt.lis | wc -l`
 let n2=n/2
+let n2=n
 # dy is line spacing and y0 is total box height
 dy=0.75
 y0=`echo "$n2 * $dy * 0.5" | bc`
@@ -42,10 +39,10 @@ y0=`echo "$n2 * $dy * 0.5" | bc`
 gmt set MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
 gmt psbasemap -R0/6.1/0/$y0 -Jx1i -P -K -B0 > $ps
 
-let i=1+n2
+i=1
 y=0.475
 y2=0.35
-while [ $i -le $n ]
+while [ $i -le $n2 ]
 do
 	j=`expr $i + 1`
 	left=`sed -n ${j}p tt.lis`
