@@ -158,7 +158,7 @@ off=`gmt math -Q $INC 2 MUL 60 DIV NEG =`
 if [ X"$C" = "X" ]; then	# No clipping, just lay down image
 	gmt grdimage $$.tile.nc -I$$.tile_grad.nc -C$$.cpt -Jx1id -Y$off -X$off -O -K $V --PROJ_ELLIPSOID=WGS-84 >> $$.ps
 else	# Use GSHHS high clip path to only show ocean areas
-	gmt pscoast $R -Jx1id Y$off -X$off -O -K $V --PROJ_ELLIPSOID=WGS-84 -Dh -Sc >> $$.ps
+	gmt pscoast $R -Jx1id -Y$off -X$off -O -K $V --PROJ_ELLIPSOID=WGS-84 -Dh -Sc >> $$.ps
 	gmt grdimage $$.tile.nc -I$$.tile_grad.nc -C$$.cpt -J -O -K $V --PROJ_ELLIPSOID=WGS-84 >> $$.ps
 fi
 gmt psxy $$.track.xyz -J $R -Sc.005i -Gblack $V -O -K --PROJ_ELLIPSOID=WGS-84 >> $$.ps
