@@ -12697,7 +12697,7 @@ int gmt_init_track (struct GMT_CTRL *GMT, double y[], uint64_t n, struct GMT_XSE
 uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t *sa0, struct GMT_XSEGMENT A[], uint64_t na, double xb[], double yb[], uint64_t *sb0, struct GMT_XSEGMENT B[], uint64_t nb, bool internal, bool geo, struct GMT_XOVER *X) {
 	size_t nx_alloc;
 	uint64_t nx, this_a, this_b, xa_start = 0, xa_stop = 0, xb_start = 0, xb_stop = 0, ta_start = 0, ta_stop = 0, tb_start, tb_stop, n_seg_a, n_seg_b;
-	bool new_a, new_b, new_a_time = false, xa_OK = false, xb_OK = false, got_x = false;
+	bool new_a, new_b, new_a_time = false, xa_OK = false, xb_OK = false;
 	uint64_t *sa = NULL, *sb = NULL;
 	double del_xa, del_xb, del_ya, del_yb, i_del_xa, i_del_xb, i_del_ya, i_del_yb, slp_a, slp_b, xc, yc, tx_a, tx_b;
 	double xshift = 0.0;	/* This may become +/-360 or 0 depending on longitude shifts for geo, else 0 */
@@ -12781,7 +12781,6 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 			}
 
 			/* OK, first check for any overlap in x range */
-			got_x = false;
 
 			if (xa_OK && xb_OK && support_x_overlap (xa, xb, &xa_start, &xa_stop, &xb_start, &xb_stop, geo, &xshift)) {
 
@@ -12810,7 +12809,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 							X->y[nx] = 0.5 * (y4[1] + y4[2]);
 							X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
 							X->xnode[1][nx] = 0.5 * (xb_start + xb_stop);
-							nx++;	got_x = true;
+							nx++;
 						}
 					}
 					else {	/* B is not vertical so we can solve for intersection */
@@ -12848,7 +12847,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 								X->y[nx] = yc;
 								X->xnode[0][nx] = tx_a;
 								X->xnode[1][nx] = tx_b;
-								nx++;	got_x = true;
+								nx++;
 							}
 						}
 					}
@@ -12888,7 +12887,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 							X->y[nx] = yc;
 							X->xnode[0][nx] = tx_a;
 							X->xnode[1][nx] = tx_b;
-							nx++;	got_x = true;
+							nx++;
 						}
 					}
 				}
@@ -12905,7 +12904,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 							X->x[nx] = 0.5 * (x4[1] + x4[2]);
 							X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
 							X->xnode[1][nx] = 0.5 * (xb_start + xb_stop);
-							nx++;	got_x = true;
+							nx++;
 						}
 					}
 					else {	/* B is not horizontal so we can solve for intersection */
@@ -12943,7 +12942,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 								X->x[nx] = xc;
 								X->xnode[0][nx] = tx_a;
 								X->xnode[1][nx] = tx_b;
-								nx++;	got_x = true;
+								nx++;
 							}
 						}
 					}
@@ -12984,7 +12983,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 							X->x[nx] = xc;
 							X->xnode[0][nx] = tx_a;
 							X->xnode[1][nx] = tx_b;
-							nx++;	got_x = true;
+							nx++;
 						}
 					}
 				}
@@ -13008,7 +13007,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 								X->x[nx] = xc;
 								X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
 								X->xnode[1][nx] = 0.5 * (xb_start + xb_stop);
-								nx++;	got_x = true;
+								nx++;
 							}
 						}
 					}
@@ -13045,7 +13044,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 								X->y[nx] = ya[xa_start] + (xc - xa[xa_start]) * slp_a;
 								X->xnode[0][nx] = tx_a;
 								X->xnode[1][nx] = tx_b;
-								nx++;	got_x = true;
+								nx++;
 							}
 						}
 					}

@@ -3144,7 +3144,6 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	unsigned char data[16] = {""};
 	char *F = NULL, *p = NULL, path[PATH_MAX] = {""};
 	int j, code, pos_ext;
-	size_t L;
 	
 	if (!file) return (GMT_ARG_IS_NULL);	/* Gave nothing */
 	if (gmt_M_file_is_cache (file) || gmt_M_file_is_url (file)) {	/* Must download, then modify the name */
@@ -3153,7 +3152,6 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	}
 	else
 		F = strdup (file);
-	L = strlen (F);
 	
 	if ((p = strstr(F, "=gd")) != NULL) *p = '\0';	/* Chop off any =gd<stuff> so that the opening test doesn't fail */
 	if (!gmt_getdatapath (GMT, F, path, R_OK)) {

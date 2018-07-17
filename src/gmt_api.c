@@ -6727,7 +6727,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 			return_error (API, GMT_OBJECT_NOT_FOUND);	/* Could not find that item in the array despite finding its ID? */
 		}
 		S_obj = API->object[item_s];	/* Short-hand for later */
-		if (!(S_obj->family == (int)family && S_obj->actual_family == (int)actual_family))
+		if (!(S_obj->family == family && S_obj->actual_family == actual_family))
 			 return GMT_NOT_A_VALID_FAMILY;
 	}
 	if (direction == GMT_IN) {	/* Set things up for reading */
@@ -6741,7 +6741,7 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 			S_obj = API->object[item_s];	/* Short-hand for later */
 		}
 		else {	/* Found the object earlier; recycle the address and ensure it is a readable object */
-			if (S_obj->family != (int)family || S_obj->actual_family != (int)actual_family)
+			if (S_obj->family != family || S_obj->actual_family != actual_family)
 				return_error (API, GMT_WRONG_FAMILY);	/* Mixup between what was created and what was passed in */
 			S_obj->status = 0;					/* Open for business */
 			S_obj->method = GMT_IS_REFERENCE;	/* Now a memory resource */

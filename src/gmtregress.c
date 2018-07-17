@@ -540,13 +540,12 @@ GMT_LOCAL void get_correlation (struct GMT_CTRL *GMT, double *X, double *Y, doub
 	 */
 
 	uint64_t k;
-	double y_hat, sx = 0.0, sy = 0.0, sxy = 0.0, wx = 1.0, wy = 1.0, swx = 0.0, swy = 0.0, swxy = 0.0;
+	double sx = 0.0, sy = 0.0, sxy = 0.0, wx = 1.0, wy = 1.0, swx = 0.0, swy = 0.0, swxy = 0.0;
 	gmt_M_unused(GMT);
 	
 	for (k = 0; k < n; k++) {
 		if (w[GMT_X]) wx = w[GMT_X][k];	/* Was given x-weights */
 		if (w[GMT_Y]) wy = w[GMT_Y][k];	/* Was given y-weights */
-		y_hat = par[GMTREGRESS_SLOPE] * X[k] + par[GMTREGRESS_ICEPT];
 		sx  += wx * pow (X[k] - par[GMTREGRESS_XMEAN], 2.0);
 		sy  += wy * pow (Y[k] - par[GMTREGRESS_YMEAN], 2.0);
 		sxy += wx * wy * (X[k] - par[GMTREGRESS_XMEAN]) * (Y[k] - par[GMTREGRESS_YMEAN]);
