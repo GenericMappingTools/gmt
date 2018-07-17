@@ -176,6 +176,8 @@ struct GMT_GRID_HEADER_HIDDEN {
 	unsigned int is_netcdf4;         /* true if netCDF-4/HDF5 format */
 	enum GMT_enum_type orig_datatype; /* GMT_FLOAT, GMT_SHORT, etc how the source grid was represented */
 	size_t z_chunksize[2];           /* chunk size (lat,lon) */
+	unsigned int z_scale_given;	 /* 1 if +s was specified */
+	unsigned int z_offset_given;	 /* 1 if +o was specified */
 	unsigned int z_shuffle;          /* if shuffle filter is turned on */
 	unsigned int z_deflate_level;    /* if deflate filter is in use */
 	unsigned int z_scale_autoadjust; /* if z_scale_factor should be auto-detected */

@@ -437,6 +437,7 @@ GMT_LOCAL int grdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct GMT
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_parse_grd_format_scale_new: Setting offset as %s\n", &p[1]);
 				if (p[1] != 'a') {
 					HH->z_offset_autoadjust = false;
+					HH->z_offset_given = true;
 					header->z_add_offset = atof (&p[1]);
 				}
 				else
@@ -446,8 +447,10 @@ GMT_LOCAL int grdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct GMT
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "grdio_parse_grd_format_scale_new: Setting scale as %s\n", &p[1]);
 				if (p[1] == 'a') /* This sets both scale and offset to auto */
 					HH->z_scale_autoadjust = HH->z_offset_autoadjust = true;
-				else
+				else {
 					header->z_scale_factor = atof (&p[1]);
+					HH->z_scale_given = true;
+				}
 				break;
 			default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
 				break;
@@ -1362,7 +1365,7 @@ int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEAD
 	gmt_grdfloat invalid;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
-	gmt_M_err_trap (gmt_grd_get_format (GMT, file, header, true));
+	gmt_M_err_trap (gmt_grd_get_format (GMT, file, header, true));	/* Get format and also parse any +s<scl> +o<offset> +n<nan> modifers */
 	HH = gmt_get_H_hidden (header);
 
 	/* remember scale, offset, and invalid: */
@@ -1376,11 +1379,11 @@ int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEAD
 	grdio_grd_xy_scale (GMT, header, GMT_IN);	/* Possibly scale wesn,inc */
 
 	/* restore non-default scale, offset, and invalid: */
-	if (scale != 1.0)
+	if (HH->z_scale_given)	/* User used +s<scl> */
 		header->z_scale_factor = scale;
-	if (offset != 0.0)
+	if (HH->z_offset_given)	/* User used +s<off> */
 		header->z_add_offset = offset;
-	if (isfinite(invalid))
+	if (isfinite(invalid))	/* Means user used +n<invalid> */
 		header->nan_value = invalid;
 
 	gmtlib_grd_get_units (GMT, header);

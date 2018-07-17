@@ -3744,6 +3744,12 @@ You may the scale as *a* for auto-adjusting the scale and/or offset of
 packed integer grids (=\ *ID*\ **+s**\ *a* is a shorthand for
 =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).
 
+Note that the GMT netCDF and native binary grids store the grid scale and offset
+in the file, hence if you specify these attributes when writing a file then upon reading the grid
+these settings will automatically take effect.  You can override them by supplying different scales
+and offsets, of course.  For the  grid formats that do not store these attributes
+you will need to supply them both when reading and writing.
+
 Some of the grid formats allow writing to standard output and reading
 from standard input which means you can connect GMT programs that
 operate on grid files with pipes, thereby speeding up execution and
