@@ -165,6 +165,8 @@ int GMT_clear (void *V_API, int mode, void *args) {
 			error = GMT_RUNTIME_ERROR;
 		if (gmt_remove_file (API->GMT, "gmt.conf"))
 			error = GMT_RUNTIME_ERROR;
+		/* Must turn off history writing otherwise we write out history again... */
+		API->clear = true;
 	}
 	else if (!strcmp (opt->arg, "cache")) {	/* Clear the cache */
 		if (clear_cache (API))
