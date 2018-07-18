@@ -13,4 +13,3 @@ G
    gmtcolors
    gmt_shell_functions.sh
    gmtswitch
-   greenspline
