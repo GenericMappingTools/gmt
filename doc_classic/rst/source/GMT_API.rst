@@ -2676,14 +2676,13 @@ shared GMT API library, then you can access any GMT enum via
 
   ::
 
-    int GMT_Get_Enum (const char *enumname);
+    int GMT_Get_Enum (void *API, const char *enumname);
 
 where ``enumname`` is the name of one such enum (e.g., GMT_SESSION_EXTERNAL, GMT_IS_DATASET, etc.),
 including the ones listed in :ref:`types <tbl-types>` and :ref:`types <tbl-viatypes>`; see
 gmt_resources.h for the full listing.
 The function returns the corresponding integer value.  For unrecognized names we return -99999.
-Note: This is the only API function that does not require the API void pointer, so you may use
-it at any time to obtain enum values prior to calling GMT_Create_Session_.
+Note: You may pass a NULL pointer as API if you need to obtain enum values prior to calling GMT_Create_Session_.
 
 For indexed access to custom grids and images we may need to know the internal matrix layout.
 You can change this information via

@@ -12224,10 +12224,11 @@ char ** GMT_Get_Strings_ (unsigned int *family, void *object) {
 #define GMT_NO_SUCH_ENUM -99999
 #include "gmt_enum_dict.h"
 
-int GMT_Get_Enum (char *key) {
+int GMT_Get_Enum (void *V_API, char *key) {
 	/* Access to GMT enums from environments unable to parse in gmt_resources.h.
 	 * Return value of enum or GMT_NO_SUCH_ENUM if not found */
 	int lo = 0, hi = GMT_N_API_ENUMS, mid, value;
+	gmt_M_unused (V_API);
 	if (key == NULL || key[0] == '\0') return GMT_NO_SUCH_ENUM;
 	while (lo != hi) {	/* Do a binary search since gmt_api_enums is lexically sorted */
 		mid = (lo + hi) / 2;
@@ -12245,7 +12246,7 @@ int GMT_Get_Enum (char *key) {
 
 #ifdef FORTRAN_API
 int GMT_Get_Enum_ (char *arg, int len) {
-	return (GMT_Get_Enum (arg));
+	return (GMT_Get_Enum (GMT_FORTRAN, arg));
 }
 #endif
 
