@@ -1,8 +1,8 @@
 #
-X
+W
 #
 
 .. toctree::
    :maxdepth: 1
 
-   xyz2grd
+   gmtwhich

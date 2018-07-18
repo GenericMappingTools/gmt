@@ -1,8 +1,8 @@
 #
-X
+L
 #
 
 .. toctree::
    :maxdepth: 1
 
-   xyz2grd
+   gmtlogo

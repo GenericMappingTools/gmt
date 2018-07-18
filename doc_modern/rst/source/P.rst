@@ -1,6 +1,6 @@
-##
-PR
-##
+#
+P
+#
 
 .. toctree::
    :maxdepth: 1
@@ -8,4 +8,3 @@ PR
    postscriptlight
    project
    psconvert
-   gmtregress

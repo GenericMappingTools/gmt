@@ -1,8 +1,9 @@
 #
-X
+F
 #
 
 .. toctree::
    :maxdepth: 1
 
-   xyz2grd
+   filter1d
+   fitcircle

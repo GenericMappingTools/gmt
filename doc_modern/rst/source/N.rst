@@ -1,8 +1,8 @@
 #
-X
+N
 #
 
 .. toctree::
    :maxdepth: 1
 
-   xyz2grd
+   nearneighbor

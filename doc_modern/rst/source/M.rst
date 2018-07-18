@@ -1,6 +1,6 @@
-##
-MN
-##
+#
+M
+#
 
 .. toctree::
    :maxdepth: 1
@@ -9,4 +9,3 @@ MN
    mapproject
    gmtmath
    movie
-   nearneighbor
