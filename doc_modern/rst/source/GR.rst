@@ -5,7 +5,6 @@ GR
 .. toctree::
    :maxdepth: 1
 
-   greenspline
    grd2cpt
    grd2kml
    grd2xyz
@@ -29,3 +28,4 @@ GR
    grdtrack
    grdtrend
    grdvolume
+   greenspline
