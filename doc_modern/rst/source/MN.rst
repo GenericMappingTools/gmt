@@ -7,5 +7,6 @@ MN
 
    makecpt
    mapproject
+   gmtmath
    movie
    nearneighbor

@@ -8,3 +8,5 @@ BC
    blockmean
    blockmedian
    blockmode
+   gmtconnect
+   gmtconvert
