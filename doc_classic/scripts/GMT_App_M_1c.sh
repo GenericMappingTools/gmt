@@ -4,18 +4,18 @@
 #	Makes the inserts for Appendix M(cpt)
 #	[skip srtm which is just a special verison of dem2]
 # Use the knowledge that we need 3 pages.
-# 44 original GMT 5 CPTs and the last page has 17 scientific colormaps
+# 44 original GMT 5 CPTs and the last page has 18 scientific colormaps
 # from Fabio [www.fabiocrameri.ch/visualisation]
 
-#batlow Add later when we have 2.  Need to be even number
-
 cat << EOF > tt.lis
+batlow
 berlin
 bilbao
 broc
 cork
 davos
 grayC
+hawaii
 lajolla
 lapaz
 lisbon
