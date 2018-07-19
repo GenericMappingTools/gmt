@@ -7849,7 +7849,7 @@ bar are built by using :doc:`makecpt`
    :width: 500 px
    :align: center
 
-   The 16 scientific color maps by Fabio Crameri supported by GMT.
+   The 18 scientific color maps by Fabio Crameri supported by GMT.
 
 For additional color tables, visit
 `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_ and
