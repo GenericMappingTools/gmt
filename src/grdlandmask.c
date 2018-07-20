@@ -369,8 +369,8 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 		}
 	}
 
-	//gmt_parse_common_options (GMT, "J", 'J', "x1id");	/* Fake linear projection so the shore machinery will work */
-	gmt_parse_common_options (GMT, "J", 'J', "x100id");	/* Fake linear projection so the shore machinery will work */
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Apply linear scale to avoid wrap-around: -Jx100id; this temporarily changes the domain\n");
+	gmt_parse_common_options (GMT, "J", 'J', "x100id");	/* Fake linear projection so the shore machinery will work. Used bo be -Jx1id but had trouble with roundoff */
 	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	wrap = GMT->current.map.is_world = gmt_grd_is_global (GMT, Grid->header);
