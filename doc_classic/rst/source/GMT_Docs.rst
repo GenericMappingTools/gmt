@@ -2057,7 +2057,8 @@ spacing by
    :width: 500 px
    :align: center
 
-   Gridline- and pixel-registration of data nodes.
+   Gridline- and pixel-registration of data nodes.  The red shade indicates the
+   areas represented by the value at the node (solid circle).
 
 
 .. math::
