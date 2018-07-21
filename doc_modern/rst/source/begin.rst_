@@ -50,11 +50,11 @@ Optional Arguments
     +--------+-----------------------------------------+
     | Format | Explanation                             |
     +========+=========================================+
-    |  bmp   | MicroSoft BitMap.                       |
+    |  bmp   | Microsoft Bit Map                       |
     +--------+-----------------------------------------+
     |  eps   | Encapsulated *PostScript*               |
     +--------+-----------------------------------------+
-    |  jpg   | Joint Photographic Experts Group format |
+    |  jpg   | Joint Photographic Experts Group Format |
     +--------+-----------------------------------------+
     |  pdf   | Portable Document Format [Default]      |
     +--------+-----------------------------------------+
@@ -73,7 +73,7 @@ Examples
 --------
 
 To initiate a new modern session that should produce a single
-map we called Figure_2, and we would like both a PDF and a PNG
+map called Figure_2 represented by both a PDF and a PNG
 raster image, we would run
 
    ::
@@ -81,7 +81,7 @@ raster image, we would run
     gmt begin Figure_2 pdf,png
 
 If the modern session is only used for computations and no illustration
-is made then we do not need to give any arguments
+is made then we do not need to give any further arguments
 
    ::
 
@@ -94,6 +94,7 @@ See Also
 --------
 
 :doc:`clear`,
+:doc:`docs`,
 :doc:`end`,
 :doc:`figure`,
 :doc:`subplot`,

@@ -79,7 +79,7 @@ The dimensions above reflect the number of nodes covered by the global grids and
 the file sizes of the netCDF-4 compressed short int grids, making the files much smaller
 than their original source files without any loss of precision.  To improve download speed,
 the SRTM tiles are stored as JPEG2000 images on the GMT server due to superior compression,
-but once downloaded to your cache directory they are converted to short int netCDF4 grids.
+but once downloaded to your cache directory they are converted to short int compressed netCDF4 grids.
 This step uses our GDAL bridge and thus requires that you have built GMT with GDAL support
 *and* that your GDAL distribution was built with openjpeg support.
 

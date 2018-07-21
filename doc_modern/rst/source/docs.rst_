@@ -19,9 +19,9 @@ Description
 **docs** tells GMT to display the HTML version of a module's documentation using the default browser.
 For the time being, only modern mode module names are displayed. That is, if user asks for
 *gmt docs psxy* she will see the *plot* documentation. Besides the modules names, the special
-forms (no quotes) 'cookbook', 'gallery', 'gmt.conf', 'api' and 'tutorial' are also accepted.
+forms *cookbook*, *gallery*, *gmt.conf*, *api* and *tutorial* are also accepted.
 
-However, this program can also be used to open local files such as PDF or image formats or
+However, **docs** can also be used to open local files such as PDF or image formats or
 web link addresses.
 
 Optional Arguments
@@ -59,3 +59,13 @@ To see the beautiful figure that I just created with GMT.
    ::
 
     gmt docs my_beautiful_figure.pdf
+
+See Also
+--------
+
+:doc:`begin`,
+:doc:`clear`,
+:doc:`end`,
+:doc:`figure`,
+:doc:`subplot`,
+:doc:`gmt`

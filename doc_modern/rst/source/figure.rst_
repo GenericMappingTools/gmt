@@ -21,7 +21,9 @@ Description
 A GMT modern session can make any number of illustrations.  In this situation,
 the figure command tells GMT the name and format(s) to use for the current plot.
 It must be issued before you start plotting to the current figure, and each
-new call terminates the previous figure and changes focus to the next figure.
+new call changes focus to the next figure.  You may go back and forth between
+different figure but the optional arguments (*formats* and *options*) can only
+be given the first time to specify a new figure.
 In addition to *prefix* and *formats*, you can supply a comma-separated series of
 :doc:`psconvert` options that should override the default settings provided via
 :ref:`PS_CONVERT <PS_CONVERT>`. The only other available option controls verbosity.
@@ -70,7 +72,7 @@ a PDF and and EPS file, try
     gmt figure Regional pdf,eps
 
 To start a new figure GlobalMap that should be returned as a JPEG file with a 1 cm padding
-around the image, tr¥
+around the image, try
 
    ::
 
@@ -81,6 +83,7 @@ See Also
 
 :doc:`begin`,
 :doc:`clear`,
+:doc:`docs`,
 :doc:`end`,
 :doc:`subplot`,
 :doc:`gmt`

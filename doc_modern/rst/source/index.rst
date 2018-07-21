@@ -1,8 +1,8 @@
 .. GMT documentation master file
    Include man_pages to avoid "not included in toctree warning":
 
-Quick Reference
-===============
+Quick Reference [MODERN MODE]
+=============================
 
 +-----------------+-----------------+-------------------+---------------------+
 | .. toctree::    | .. toctree::    | .. toctree::      | .. toctree::        |

@@ -5,8 +5,9 @@
     Manage figure subplot configuration and selection
 
 The subplot command is used to split the current figure into a matrix of subplots
-that each may contain a single figure.  A subplot setup is started with the **begin**
-mode that defines the layout of the subplots:
+that each may contain a single panel figure.  A subplot setup is started with the **begin**
+mode that defines the layout of the subplots, while positioning to a particular panel for
+plotting is done via the **set** mode.  The subplot is completed via the **end** mode:
 
 Synopsis
 --------
@@ -30,7 +31,8 @@ Synopsis
 Description
 -----------
 
-The begin mode of subplot defines the layout of the entire multi-panel illustration.
+The **begin** mode of subplot defines the layout of the entire multi-panel illustration.  Several
+options are available to specify the systematic layout, labeling, dimensions, and more.
 
 Required Arguments
 ------------------
@@ -38,13 +40,15 @@ Required Arguments
 *nrows*\ **x**\ *ncols*
     Specifies the number of rows and columns of subplots.  Each row will have
     the same number of subplots.  To construct figures with different number of
-    subplots per row you will need to stack separate subplots.
+    subplots per row you will need to stack separate subplots.  Note: You are not
+    required to place a plot in each panel.
 
 .. _subplot_begin-F:
 
 **-F**\ [**f**\ \|\ **s**\ ]\ *width(s)*\ /*height(s)*\ [:*wfracs*\ /*hfracs*\ ]
-    Specify the dimensions of the figure.  There are two different ways to do this: (**f**) Specify overall figure dimension
-    or (**s**) specify the dimension of a single panel.
+    Specify the dimensions of the figure.  There are two different ways to do this:
+    (**f**) Specify overall figure dimensions or (**s**) specify the dimensions of
+    a single panel.
 
 **-Ff**
     Specify the final figure dimensions.  The subplot dimensions are then calculated from the figure
@@ -82,11 +86,11 @@ Optional Arguments
     Note: **+j** sets the justification of the tag to *refpoint* (suitable for interior tags)
     while **+J** instead selects the mirror opposite (suitable for exterior tags).
     Append **+c**\ *dx*\ [/*dy*] to set the clearance between the tag and a surrounding text box
-    requested via **+g** or **p** [3pt/3pt, i.e., 15% of the FONT_TAG size].
-    Append **+g** to paint the tag's text box with *fill* [no painting].
+    requested via **+g** or **p** [3pt/3pt, i.e., 15% of the :ref:`FONT_TAG size <FONT_TAG>` size].
+    Append **+g**\ *fill* to paint the tag's text box with *fill* [no painting].
     Append **+o**\ *dx*\ [/*dy*] to offset the tag's reference point in the direction implied
-    by the justification [4pt/4pt, i.e., 20% of the FONT_TAG size].
-    Append **+p** to draw the outline of the tag's text box using selected *pen* [no outline].
+    by the justification [4pt/4pt, i.e., 20% of the :ref:`FONT_TAG size <FONT_TAG>`].
+    Append **+p**\ *pen* to draw the outline of the tag's text box using selected *pen* [no outline].
     Append **+r** to typeset your tag numbers using lowercase Roman numerals;
     use **+R** for uppercase Roman numerals [Arabic numerals].
     Append **+v** to increase tag numbers vertically down columns [horizontally across rows].  
@@ -99,7 +103,7 @@ Optional Arguments
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
     side, using *side* values from **w**, **e**, **s**, or **n**.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can
-    be accessed by modules that plot scales, bars, text, etc.  Settings specified here apply to all panels.
+    be accessed by modules that plot scales, bars, text, etc.  Settings specified under **begin** mode apply to all panels.
 
 .. _-J:
 
@@ -110,9 +114,9 @@ Optional Arguments
 
 **-M**\ *margins*
     This is clearance that is added around each subplot beyond the automatic space allocated for tick marks,
-    annotations, and labels [0.5c].
-    The margins can be a single value, a pair of values separated by slashes (for setting separate horizontal and vertical margins),
-    or the full set of four margins (for setting separate left, right, bottom, and top margins).
+    annotations, and labels.  The margins can be a single value, a pair of values separated by slashes
+    (for setting separate horizontal and vertical margins), or the full set of four margins (for setting
+    separate left, right, bottom, and top margins) [0.5c].
 
 .. _-R:
 
@@ -127,13 +131,14 @@ Optional Arguments
     (i.e., **b**\ ottom) rows will have *x* annotations; append **t** or **b** to select only one of those two rows [both].
     Append **+l** if annotated *x*-axes should have a label [none]; optionally append the label if it is the same
     for the entire subplot.
-    **-SR**: Use when all subplots in a **R**\ ow share common *y*-range. The first (i.e., **l**\ eft) and the last
+    **-SR**: Use when all subplots in a **R**\ ow share a common *y*-range. The first (i.e., **l**\ eft) and the last
     (i.e., **r**\ ight) columns will have *y*-annotations; append **l** or **r** to select only one of those two columns [both].
     Append **+l** if annotated *y*-axes will have a label [none]; optionally, append the label if it is the same
     for the entire subplot.
-    Append **+p** to make all annotation axis-parallel [horizontal]; if used you may have to set **-C** to secure
+    Append **+p** to make all annotations axis-parallel [horizontal]; if used you may have to set **-C** to secure
     extra space for long horizontal annotations.
     Append **+t** to make space for subplot titles for each row; use **+tc** for top row titles only [no subplot titles].
+    Labels and titles that depends on which row or column are specified as usual via a panel's **-B** setting.
 
 .. _subplot_begin-T:
 
@@ -161,8 +166,8 @@ Required Arguments
 ------------------
 
 *row,col*
-    Sets the current subplot until further notice.  As an alternative, you may
-    instead supply **-c**\ *row,col* to the first plot command you issue in the subplot.
+    Sets the current subplot until further notice.  As an alternative, you may bypass the **set** mode and
+    instead supply the common option **-c**\ *row,col* to the first plot command you issue in that subplot.
     GMT maintains information about the current figure and subplot.
 
 Optional Arguments
@@ -172,7 +177,8 @@ Optional Arguments
 
 **-A**\ *fixedlabel*
     Overrides the automatic labeling with the given string.  No modifiers are allowed.
-    Placement, justification, etc are all inherited from the initial **subplot begin** command.
+    Placement, justification, etc. are all inherited from how **-A** was specified by the
+    initial **subplot begin** command.
 
 .. _subplot_set-C2:
 
@@ -181,7 +187,7 @@ Optional Arguments
     side, using *side* values from **w**, **e**, **s**, or **n**.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can
     be accessed by modules that plot scales, bars, text, etc.  This setting overrides the common
-    clearances set during **subplot begin**.
+    clearances set by **-C** during **subplot begin**.
 
 .. _subplot_set-V:
 
@@ -193,15 +199,17 @@ Any number of plotting command can now take place and all output will be directe
 selected subplot panel.  There are a few other rules that need to be followed:
 (1) The subplot machinery expects the first plotting command in a new subplot window
 to take care of plotting the base frame.  The particulars of this frame may have been 
-specified by **subplot begin**.  In either case, should you need to set or override
+specified by the **-S** option in **subplot begin**.  In either case, should you need to set or override
 frame and axis parameters then you must specify these **-B** options with this first plot
 command.  (2) The subplot machinery automatically uses the **-X** and **-Y** options under
-the hood so these are not available while a subplot is active.
+the hood so these options are not available while a subplot is active.
 
 **gmt subplot end** [ |SYN_OPT-V| ]
 
-Exits subplot mode and returns the current plot location to where it was prior to
-the subplot.
+This command finalizes the current subplot, including any placement of tags, and updates the
+dimensions of the last plot to that of the entire subplot. This allows **-X** and **-Y** to
+use *w* and *h* in setting the current point relative to the entire subplot.  We also reset
+the current plot location to where it was prior to the subplot.
 
 Optional Arguments
 ------------------
@@ -211,12 +219,6 @@ Optional Arguments
 .. include:: explain_-V.rst_
 .. include:: explain_help.rst_
 
-
-**gmt subplot end** [ |SYN_OPT-V| ]
-
-This command finalizes the current subplot, including any placement of tags, and updates the dimensions of the
-last plot to that of the entire subplot. This allows **-X** and **-Y** to
-use *w* and *h* in setting the current point relative to the entire subplot.
 
 Examples
 --------
@@ -233,6 +235,7 @@ See Also
 
 :doc:`begin`,
 :doc:`clear`,
+:doc:`docs`,
 :doc:`end`,
 :doc:`figure`,
 :doc:`gmt`
