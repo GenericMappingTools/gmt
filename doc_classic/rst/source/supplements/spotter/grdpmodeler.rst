@@ -13,7 +13,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdpmodeler** *agegrdfile* |-E|\ *rot_file* **-S**\ *flags*
+**grdpmodeler** |-E|\ *rot_file* **-S**\ *flags*
+[ *agegrdfile* ]
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *outgrdfile* ]
 [ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
@@ -40,10 +41,6 @@ prediction; the remainder of the grid is set to NaN.
 
 Required Arguments
 ------------------
-
-*ingrdfile*
-    Name of a grid file in geographical (lon, lat) coordinates with ages in Myr.
-    If no grid is provided then you may define the domain via **-R**, **-I**, and optionally **-r**.
 
 .. _-E:
 
@@ -87,6 +84,10 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+*ingrdfile*
+    Name of a grid file in geographical (lon, lat) coordinates with ages in Myr.
+    If no grid is provided then you may define the domain via **-R**, **-I**, and optionally **-r**.
 
 .. _-F:
 
