@@ -83,6 +83,7 @@ struct GRDVECTOR_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDVECTOR_CTRL *C = NULL;
+	char unit[5] = "cimp";
 	
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDVECTOR_CTRL);
 	
@@ -91,6 +92,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->Q.S.symbol = PSL_VECTOR;
 	C->W.pen = GMT->current.setting.map_default_pen;
 	C->S.factor = 1.0;
+	C->S.unit = unit[GMT->current.setting.proj_length_unit];
 	return (C);
 }
 
@@ -131,12 +133,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Modify vector attributes [Default gives stick-plot].\n");
 	gmt_vector_syntax (API->GMT, 15);
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Set scale for Cartesian vector lengths in data units per %s [1].\n",
-	             API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append c, i, or p to indicate cm, inch, or points as the distance unit.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, prepend l to indicate a fixed length for all vectors.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For Geographic vectors, set scale in data units per km.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale> to give the reciprocal scale, i.e., %s/unit or km/unit\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Set scale for vector lengths in data units per plot distance unit.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append c, i, or p to indicate cm, inch, or points as the distance unit  [1%s].\n",
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend l to instead set a fixed length (in given unit) for all vectors.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   These vectors are straight and their plot lengths are independent of the projection.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For Geographic vectors you may alternatively give data units per distance unit\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   by appending any of the units in %s to the scale.\n", GMT_DIM_UNITS);
+	GMT_Message (API, GMT_TIME_NONE, "\t   These are geovectors and their plot lengths depend on the projection.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale>[unit] to give the reciprocal scale, i.e., in %s/unit or km/unit\n",
 	             API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Transform angles for Cartesian grids when x- and y-scales differ [Leave alone].\n");
 	GMT_Option (API, "U,V");
@@ -265,7 +270,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 				Ctrl->S.active = true;
 				len = strlen (opt->arg) - 1;
 				j = (opt->arg[0] == 'i') ? 1 : 0;
-				if (strchr (GMT_DIM_UNITS, (int)opt->arg[len]))	/* Recognized unit character */
+				if (strchr (GMT_DIM_UNITS GMT_LEN_UNITS, (int)opt->arg[len]))	/* Recognized plot length or map distance unit character */
 					Ctrl->S.unit = opt->arg[len];
 				else if (! (opt->arg[len] == '.' || isdigit ((int)opt->arg[len]))) {	/* Not decimal point or digit means trouble */
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized unit %c\n", opt->arg[len]);
@@ -425,34 +430,69 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 		}
 	}
 
-	Geographic = (gmt_M_is_geographic (GMT, GMT_IN));
-	if (!Ctrl->S.constant) Ctrl->S.factor = 1.0 / Ctrl->S.factor;
+	Geographic = (gmt_M_is_geographic (GMT, GMT_IN));	/* Will be overridden if c|i|p units for scaling is selected */
 
+	switch (Ctrl->S.unit) {	/* Adjust for possible unit selection */
+		/* First three choices will give straight vectors scaled from user length to plot lengths */
+		case 'c':
+			Ctrl->S.factor *= GMT->session.u2u[GMT_CM][GMT_INCH];
+			Geographic = false;
+			break;
+		case 'i':
+			Ctrl->S.factor *= GMT->session.u2u[GMT_INCH][GMT_INCH];
+			Geographic = false;
+			break;
+		case 'p':
+			Ctrl->S.factor *= GMT->session.u2u[GMT_PT][GMT_INCH];
+			Geographic = false;
+			break;
+		/* Remaining choices will give geo vectors scaled from user length to distance lengths [dmsefkMnu] */
+		case 'd':
+			Ctrl->S.factor *= GMT->current.proj.KM_PR_DEG;
+			break;
+		case 'm':
+			Ctrl->S.factor *= (GMT->current.proj.KM_PR_DEG / GMT_DEG2MIN_F);
+			break;
+		case 's':
+			Ctrl->S.factor *= (GMT->current.proj.KM_PR_DEG / GMT_DEG2SEC_F);
+			break;
+		case 'e':
+			Ctrl->S.factor /= METERS_IN_A_KM;
+			break;
+		case 'f':
+			Ctrl->S.factor *= (METERS_IN_A_FOOT / METERS_IN_A_KM);
+			break;
+		case 'k':
+			/* Already in km */
+			break;
+		case 'M':
+			Ctrl->S.factor /= (METERS_IN_A_MILE / METERS_IN_A_KM);
+			break;
+		case 'n':
+			Ctrl->S.factor /= (METERS_IN_A_NAUTICAL_MILE / METERS_IN_A_KM);
+			break;
+		case 'u':
+			Ctrl->S.factor *= (METERS_IN_A_SURVEY_FOOT / METERS_IN_A_KM);
+			break;
+		default:
+			GMT_Report (API, GMT_MSG_NORMAL, "Bad scale unit %c\n", Ctrl->S.unit);
+			Return (GMT_RUNTIME_ERROR);
+			break;
+	}
+	
+	if (!Ctrl->S.constant) Ctrl->S.factor = 1.0 / Ctrl->S.factor;
 	if (Geographic) {	/* Now that we know this we make sure -T is disabled if given */
 		if (Ctrl->T.active) {	/* This is a mistake */
 			Ctrl->T.active = false;
 			GMT_Report (API, GMT_MSG_NORMAL, "-T does not apply to geographic grids - ignored\n");
 		}
-		GMT_Report (API, GMT_MSG_DEBUG, "Great-circle geo-vectors will be drawn\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "Great-circle geo-vectors will be drawn. Scale converting user lengths to km is %g\n", Ctrl->S.factor);
 	}
 	else {
 		GMT_Report (API, GMT_MSG_DEBUG, "Cartesian straight vectors will be drawn\n");
-		switch (Ctrl->S.unit) {	/* Adjust for possible unit selection */
-			case 'c':
-				Ctrl->S.factor *= GMT->session.u2u[GMT_CM][GMT_INCH];
-				break;
-			case 'i':
-				Ctrl->S.factor *= GMT->session.u2u[GMT_INCH][GMT_INCH];
-				break;
-			case 'p':
-				Ctrl->S.factor *= GMT->session.u2u[GMT_PT][GMT_INCH];
-				break;
-			default:
-				Ctrl->S.factor *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
-				break;
-		}
+		GMT_Report (API, GMT_MSG_DEBUG, "Cartesian straight vectors will be drawn. Scale converting user lengths to inches is %g\n", Ctrl->S.factor);
 	}
-
+	
 	if (Ctrl->Q.active) {	/* Prepare vector parameters */
 		if (Ctrl->Q.S.symbol == PSL_VECTOR) Ctrl->Q.S.v.v_width = (float)(Ctrl->W.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 		gmt_init_vector_param (GMT, &Ctrl->Q.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
@@ -590,7 +630,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 					f = scaled_vec_length / Ctrl->Q.S.v.v_norm;
 					for (k = 2; k <= 4; k++) dim[k] *= f;
 				}
-				if (Ctrl->Q.S.symbol == GMT_SYMBOL_VECTOR_V4) {
+				if (Ctrl->Q.S.symbol == GMT_SYMBOL_VECTOR_V4) {	/* Do the deprecated GMT4 vector polygon instead */
 					int v4_outline = Ctrl->W.active;
 					double *this_rgb = NULL;
 					if (Ctrl->G.active || Ctrl->C.active)

@@ -13,7 +13,7 @@ gmt convert -A blk.llu blk.llv -o0-2,6,3,7 > blk.lluv
 #
 #  do the gridding. there are 2682 data so use about 1/4 this number of singular values
 #
-gmt gpsgridder $R -I${INC} -Gtmp_%s.nc blk.lluv -fg $V -Fd8 -Cn700+eigen.txt -S0.5 -W
+gmt gpsgridder $R -I${INC} -Gtmp_%s.nc blk.lluv -fg $V -Fd8 -Cn700+feigen.txt -S0.5 -W
 #
 #  mask the grids
 #
@@ -42,7 +42,7 @@ gmt grdmath GPS_v.grd mask.grd MUL = GPS_v.nc
 gmt pscoast $R -JM7i -P -Glightgray -Ba1f30m -BWSne -K -Df -X1i -Wfaint > $ps
 gmt psxy @CA_fault_data.txt -J -R -W0.5 -O -K >> $ps
 gmt psvelo data.lluvenct -J -R -Se.008i/0.95/8 -A9p -W0.2p,red -O -K >> $ps
-gmt grdvector GPS_u.nc GPS_v.nc -Ix${DEC}/${DEC} -J -R -O -K -Q0.06i+e+n0.06i -Gblue -W0.2p,blue -S1i --MAP_VECTOR_SHAPE=0.2 >> $ps
+gmt grdvector GPS_u.nc GPS_v.nc -Ix${DEC}/${DEC} -J -R -O -K -Q0.06i+e+n0.06i -Gblue -W0.2p,blue -S100i --MAP_VECTOR_SHAPE=0.2 >> $ps
 #
 # Place the scale using a geovector of length RATE
 #

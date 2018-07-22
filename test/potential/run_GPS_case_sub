@@ -32,7 +32,7 @@ awk '{if($1 > -116.6 && $1 < -116.5 && $2 > 33.5 && $2 < 33.7) print($1,$2,-$3,$
 # Only use ~1/4 of the eigenvalues
 npairs=`cat blk.lluv | wc -l`
 ne=`gmt math -Q $npairs 2 MUL 40 DIV CEIL 10 MUL =`
-gmt gpsgridder $R -I$ginc -GGPS_%s.nc blk.lluv -fg -Fd4 -r -Cn${ne}+eigen.txt -S0.50 $W
+gmt gpsgridder $R -I$ginc -GGPS_%s.nc blk.lluv -fg -Fd4 -r -Cn${ne}+feigen.txt -S0.50 $W
 #
 
 gmt set FORMAT_GEO_MAP = dddF
@@ -55,4 +55,4 @@ gmt psxy -R -J -O -K -W0.25p,green -L << EOF
 -116.5	33.7
 -116.6	33.7
 EOF
-gmt grdvector GPS_u.nc GPS_v.nc -Ix$dec/$dec -J -R -O -Q0.03i+e+n0.03i -Gblue -W0.4p,blue -S1i --MAP_VECTOR_SHAPE=0.2
+gmt grdvector GPS_u.nc GPS_v.nc -Ix$dec/$dec -J -R -O -Q0.03i+e+n0.03i -Gblue -W0.4p,blue -S100i --MAP_VECTOR_SHAPE=0.2

@@ -143,7 +143,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	char srtmdir[PATH_MAX] = {""}, *srtm_local = NULL;
 	struct FtpFile ftpfile = {NULL, NULL};
 
-	if (!file_name) return 0;   /* Got nutin' */
+	if (!file_name || !file_name[0]) return 0;   /* Got nutin' */
 
 	be_fussy = ((mode & 4) == 0);	if (be_fussy == 0) mode -= 4;	/* Handle the optional 4 value */
 	
