@@ -16,11 +16,14 @@ Synopsis
 **grdpmodeler** *agegrdfile* |-E|\ *rot_file* **-S**\ *flags*
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *outgrdfile* ]
+[ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
+[ |SYN_OPT-R| ]
 [ |-T|\ *age* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-h| ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -40,6 +43,7 @@ Required Arguments
 
 *ingrdfile*
     Name of a grid file in geographical (lon, lat) coordinates with ages in Myr.
+    If no grid is provided then you may define the domain via **-R**, **-I**, and optionally **-r**.
 
 .. _-E:
 
@@ -107,6 +111,7 @@ Optional Arguments
 **-T**\ *age*
     Use a fixed age for model evaluation (i.e., override the ages in the
     age grid). This lets you evaluate the model at a snapshot in time.
+    Required if no age grid was provided.
 
 .. _-V:
 
