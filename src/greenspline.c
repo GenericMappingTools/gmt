@@ -1408,7 +1408,7 @@ GMT_LOCAL void dump_system (double *A, double *b, uint64_t nm, char *string) {
 int GMT_greenspline (void *V_API, int mode, void *args) {
 	uint64_t col, row, n_read, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
 	unsigned int dimension = 0, normalize = 0, n_cols, w_col, L_Max = 0;
-	size_t old_n_alloc, n_alloc;
+	size_t n_alloc;
 	int error, out_ID, way, n_columns, n_use;
 	bool delete_grid = false, check_longitude, skip;
 
@@ -1536,7 +1536,6 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		Return (error);
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	X = gmt_M_memory (GMT, NULL, n_alloc, double *);
-	for (k = 0; k < n_alloc; k++) X[k] = gmt_M_memory (GMT, NULL, n_cols, double);
 	obs = gmt_M_memory (GMT, NULL, n_alloc, double);
 	check_longitude = (dimension == 2 && (Ctrl->D.mode == 1 || Ctrl->D.mode == 2));
 	w_col = dimension + 1;	/* Where weights would be in input, if given */
@@ -1547,7 +1546,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
-				for (p = 0; p < n_alloc; p++) gmt_M_free (GMT, X[p]);
+				for (p = 0; p < n; p++) gmt_M_free (GMT, X[p]);
 				gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -1565,6 +1564,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			else if (in[GMT_X] > Ctrl->R3.range[XHI] && (in[GMT_X] - 360.0) > Ctrl->R3.range[XLO]) in[GMT_X] -= 360.0;
 		}
 
+		X[n] = gmt_M_memory (GMT, NULL, n_cols, double);	/* Allocate space for this constraint */
 		for (k = 0; k < dimension; k++) X[n][k] = in[k];	/* Get coordinates + optional weights (if -W) */
 		/* Check for duplicates */
 		skip = false;
@@ -1604,21 +1604,18 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		obs[n++] = in[dimension];
 
 		if (n == n_alloc) {	/* Get more memory */
-			old_n_alloc = n_alloc;
 			n_alloc <<= 1;
 			X = gmt_M_memory (GMT, X, n_alloc, double *);
-			for (k = old_n_alloc; k < n_alloc; k++) X[k] = gmt_M_memory (GMT, X[k], n_cols, double);
 			obs = gmt_M_memory (GMT, obs, n_alloc, double);
 		}
 	} while (true);
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
-		for (p = 0; p < n_alloc; p++) gmt_M_free (GMT, X[p]);
+		for (p = 0; p < n; p++) gmt_M_free (GMT, X[p]);
 		gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 		Return (API->error);
 	}
 
-	for (k = n; k < n_alloc; k++) gmt_M_free (GMT, X[k]);	/* Remove what was not used */
 	X = gmt_M_memory (GMT, X, n, double *);
 	obs = gmt_M_memory (GMT, obs, n, double);
 	nm = n;
