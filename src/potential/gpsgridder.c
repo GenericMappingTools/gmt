@@ -516,7 +516,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	uint64_t col, row, n_read, p, k, i, j, seg, n_uv, n_params, n_ok = 0, ij;
 	uint64_t Gu_ij, Gv_ij, Guv_ij, Gvu_ij, off, n_duplicates = 0, n_skip = 0;
 	unsigned int normalize, n_cols;
-	size_t old_n_alloc, n_alloc;
+	size_t n_alloc;
 	int n_use, error, out_ID;
 	bool geo, skip;
 
@@ -594,7 +594,6 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	X = gmt_M_memory (GMT, NULL, n_alloc, double *);
 	u = gmt_M_memory (GMT, NULL, n_alloc, double);
 	v = gmt_M_memory (GMT, NULL, n_alloc, double);
-	for (k = 0; k < n_alloc; k++) X[k] = gmt_M_memory (GMT, NULL, n_cols, double);
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read input data and check for data constraint duplicates\n");
 	n_uv = n_read = 0;
@@ -602,7 +601,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
-				gmt_M_free (GMT, X);
+				for (p = 0; p < n_uv; p++) gmt_M_free (GMT, X[p]);
+				gmt_M_free (GMT, X);	gmt_M_free (GMT, u);	gmt_M_free (GMT, v);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
@@ -619,6 +619,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			else if (in[GMT_X] > GMT->common.R.wesn[XHI] && (in[GMT_X] - 360.0) > GMT->common.R.wesn[XLO]) in[GMT_X] -= 360.0;
 		}
 
+		X[n_uv] = gmt_M_memory (GMT, NULL, n_cols, double);	/* Allocate space for this constraint */
 		X[n_uv][GMT_X] = in[GMT_X];	/* Save x,y  */
 		X[n_uv][GMT_Y] = in[GMT_Y];
 		/* Check for data duplicates by comparing this point to all previous points */
@@ -658,12 +659,10 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		var_sum += u[n_uv] * u[n_uv] + v[n_uv] * v[n_uv];
 		n_uv++;			/* Added a new data constraint */
 		if (n_uv == n_alloc) {	/* Get more memory */
-			old_n_alloc = n_alloc;
 			n_alloc <<= 1;
 			X = gmt_M_memory (GMT, X, n_alloc, double *);
 			u = gmt_M_memory (GMT, u, n_alloc, double);
 			v = gmt_M_memory (GMT, v, n_alloc, double);
-			for (k = old_n_alloc; k < n_alloc; k++) X[k] = gmt_M_memory (GMT, X[k], n_cols, double);
 		}
 	} while (true);
 
@@ -673,6 +672,13 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	n_params = 2 * n_uv;	/* Dimension of array is twice the size since using both u & v as separate observations */
+	X = gmt_M_memory (GMT, X, n_uv, double *);	/* Realloc to exact size */
+	u = gmt_M_memory (GMT, u, n_params, double);	/* We will append v to the end of u later so we need the extra space */
+	v = gmt_M_memory (GMT, v, n_uv, double);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " unique data constraints\n", n_uv);
+	if (n_skip) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " data constraints as duplicates\n", n_skip);
+
 	if (Ctrl->W.active && Ctrl->W.mode == GPS_GOT_SIG) {	/* Able to report mean uncertainties */
 		err_sum_u = sqrt (err_sum_u / n_uv);
 		err_sum_v = sqrt (err_sum_v / n_uv);
@@ -681,14 +687,6 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean v-component uncertainty: %g\n", err_sum_v);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Combined (u,v) uncertainty  : %g\n", err_sum);
 	}
-
-	n_params = 2 * n_uv;	/* Dimension of array is twice the size since using both u & v as separate observations */
-	for (k = n_uv; k < n_alloc; k++) gmt_M_free (GMT, X[k]);	/* Remove pointer memory that was not used */
-	X = gmt_M_memory (GMT, X, n_uv, double *);	/* Realloc to exact size */
-	u = gmt_M_memory (GMT, u, n_params, double);	/* We will append v to the end of u later so we need the extra space */
-	v = gmt_M_memory (GMT, v, n_uv, double);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " unique data constraints\n", n_uv);
-	if (n_skip) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " data constraints as duplicates\n", n_skip);
 
 	/* Check for duplicates which would result in a singular matrix system; also update min/max radius */
 
