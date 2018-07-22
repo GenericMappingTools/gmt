@@ -227,6 +227,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 
 	if (!Ctrl->In.file) {	/* Must have -R -I [-r] */
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET] && !GMT->common.R.active[ISET], "Syntax error: Must specify input file or -R -I [-r]\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active, "Syntax error: Must specify -T if no age grid is given.\n");
 	}
 	else {	/* Must not have -I -r */
 		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] || GMT->common.R.active[GSET], "Syntax error: Cannot specify input file AND -R -r\n");
