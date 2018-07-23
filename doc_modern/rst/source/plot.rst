@@ -308,7 +308,7 @@ linear map, use
 
    ::
 
-    gmt plot misc.txt -R0/100/-50/100 -JX6i -S -Cchrome -B20 -pdf map.ps
+    gmt plot misc.txt -R0/100/-50/100 -JX6i -S -Cchrome -B20 -pdf map
 
 If you need to place vectors on a plot you can choose among
 straight Cartesian vectors, math circular vectors, or geo-vectors (these

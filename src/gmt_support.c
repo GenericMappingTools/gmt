@@ -8926,7 +8926,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 
 			case 'x':	/* Crossection labeling for SqN2 only; add given text to start and end label */
 				if (!G->number || G->n_cont != 2) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Sq option: The + modifier is only valid with -SqN2\n");
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Sq option: The +x modifier is only valid with -SqN2\n");
 					bad++;
 				}
 				else {

@@ -167,8 +167,8 @@
                 contour when the cumulative along-contour distance equals *fraction
                 \* dist* [0.25].
 
-            **f**\ *ffile.d*
-                Reads the ASCII file *ffile.d* and places labels at locations in the
+            **f**\ *ffile.txt*
+                Reads the ASCII file *ffile.txt* and places labels at locations in the
                 file that matches locations along the quoted lines. Inexact matches
                 and points outside the region are skipped.
 
@@ -194,9 +194,9 @@
                 Same as **n**\ \|\ **N**\ *n_label* but implies that the input data are
                 first to be converted into a series of 2-point line segments before plotting.
 
-            **x**\ \|\ **X**\ *xfile.d*
-                Reads the multisegment file *xfile.d* and places labels at the
-                intersections between the quoted lines and the lines in *xfile.d*.
+            **x**\ \|\ **X**\ *xfile.txt*
+                Reads the multisegment file *xfile.txt* and places labels at the
+                intersections between the quoted lines and the lines in *xfile.txt*.
                 **X** will resample the lines first along great-circle arcs.
                 In addition, you may optionally append
                 **+r**\ *radius*\ [**c**\ \|\ **i**\ \|\ **p**] to set a minimum
@@ -263,7 +263,7 @@
                 Use text after the 2nd column in the fixed label location file
                 as the label. Requires the fixed label location setting.
                 **+Lx**
-                As **+Lh** but use the headers in the *xfile.d* instead.
+                As **+Lh** but use the headers in the *xfile.txt* instead.
                 Requires the crossing file option.
 
             **+n**\ *dx*\ [/*dy*]
@@ -343,7 +343,10 @@
         Same as **-Sv**, except azimuth (in degrees east of north) should be
         given instead of direction. The azimuth will be mapped into an angle
         based on the chosen map projection (**-Sv** leaves the directions
-        unchanged.) See VECTOR ATTRIBUTES for specifying other attributes.
+        unchanged.) If your *length* is not in plot units but in arbitrary
+        user units (e.g., a rate in mm/yr) then you can use the **-i** option
+        to scale the corresponding column via the **+s**\ *scale* modifier.
+        See VECTOR ATTRIBUTES for specifying symbol attributes.
 
     **-Sw**
         pie **w**\ edge. Start and stop directions (in degrees
@@ -391,8 +394,8 @@
                 line when the cumulative along-line distance equals *fraction
                 \* dist* [0.25].
 
-            **f**\ *ffile.d*
-                Reads the ASCII file *ffile.d* and places symbols at locations in the
+            **f**\ *ffile.txt*
+                Reads the ASCII file *ffile.txt* and places symbols at locations in the
                 file that matches locations along the decorated lines. Inexact matches
                 and points outside the region are skipped.
 
@@ -418,9 +421,9 @@
                 Same as **n**\ \|\ **N**\ *n_symbol* but implies that the input data are
 		        first to be converted into a series of 2-point line segments before plotting.
 
-            **x**\ \|\ **X**\ *xfile.d*
-                Reads the multisegment file *xfile.d* and places symbols at the
-                intersections between the decorated lines and the lines in *xfile.d*.
+            **x**\ \|\ **X**\ *xfile.txt*
+                Reads the multisegment file *xfile.txt* and places symbols at the
+                intersections between the decorated lines and the lines in *xfile.txt*.
                 **X** will resample the lines first along great-circle arcs.
  
             The optional *symbolinfo* controls the specifics of the symbol selection and
