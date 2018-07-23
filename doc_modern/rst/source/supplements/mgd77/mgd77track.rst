@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77track** *NGDC-ids*
+**gmt mgd77track** *NGDC-ids*
 |SYN_OPT-R|
 |-J|\ *parameters*
 [ |-A|\ [**c**][*size*][,\ *spacing*] ]
@@ -181,17 +181,17 @@ Optional Arguments
 Examples
 --------
 
-To generate a Mercator plot of the track of the cruise 01010007 in the
+To generate a Mercator map of the track of the cruise 01010007 in the
 area 70W to 20E, 40S to 20N, using a Mercator scale of 0.1inch/degree,
 label the tracks with 10 points characters, annotate the boundaries
 every 10 degrees, draw gridlines every 5 degrees, and mark the track
-every day and 1000 km, with ticks every 6 hours and 250 km, and send the
-plot to the default printer, enter the following command:
+every day and 1000 km, with ticks every 6 hours and 250 km, and create
+a PDF map, enter the following command:
 
    ::
 
     gmt mgd77track 01010007 -R70W/20E/40S/20N -Jm0.1 -B10g5 -A10 \
-                   -La1da1000kf6hf250k \| lpr
+                   -La1da1000kf6hf250k -pdf map
 
 See Also
 --------

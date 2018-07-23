@@ -13,10 +13,10 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_list** |-C|\ *column* |-T|\ *TAG* [ *coedbase.txt* ]
+**gmt x2sys_list** |-C|\ *column* |-T|\ *TAG* [ *coedbase.txt* ]
 [ |-A|\ *asymm_max* ]
 [ |-E| ]
-[ |-F|\ *acdhiInNtTvwxyz* ]
+[ |-F|\ *flags* ]
 [ |-I|\ [*list*] ]
 [ |-L|\ [*corrtable*] ]
 [ |-N|\ *nx_min* ]
@@ -75,9 +75,9 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *acdhiInNtTvwxyz*
+**-F**\ *flags*
     Specify your desired output using any combination of
-    *acdhiInNtTvwxyz*, in any order. Do not use space between the
+    **acdhiInNtTvwxyz**, in any order. Do not use space between the
     letters, and note your selection is case-sensitive. The output will
     be ASCII (or binary, **-bo**) columns of
     values. Description of codes: **a** is the angle (< 90) defined by

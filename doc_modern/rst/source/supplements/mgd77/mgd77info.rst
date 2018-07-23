@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77info** *NGDC-ids*
+**gmt mgd77info** *NGDC-ids*
 [ |-C|\ [**m**\ \|\ **e**] ]
 [ |-E|\ [**m**\ \|\ **e**] ] [ **-I**\ *ignore* ]
 [ |-M|\ **f**\ [*item*]\|\ **r**\ \|\ **e**\ \|\ **h** ]

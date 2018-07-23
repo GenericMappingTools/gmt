@@ -29,7 +29,7 @@ with a warning under compatibility mode:
    In addition, a few defaults are no longer recognized,
    such as N_COPIES, PS_COPIES, DOTS_PR_INCH, GMT_CPTDIR, PS_DPI, and PS_EPS,
    TRANSPARENCY. This also means the old common option **-c** for specifying
-   *PostScript* copies is no longer available.
+   PostScript copies is no longer available.
 
 *  **Units**: The unit abbreviation for arc seconds is finally **s**
    instead of **c**, with the same change for upper case in some clock

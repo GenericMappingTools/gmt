@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gravfft** *ingrid* [ *ingrid2* ] |-G|\ *outfile*
+**gmt gravfft** *ingrid* [ *ingrid2* ] |-G|\ *outfile*
 [ |-C|\ *n/wavelength/mean\_depth/tbw* ]
 [ |-D|\ *density*\ \|\ *rhogrid* ]
 [ |-E|\ *n_terms* ]

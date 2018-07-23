@@ -1,19 +1,19 @@
-.. index:: ! gmtgravmag3d
+.. index:: ! gravmag3d
 
-************
-gmtgravmag3d
-************
+*********
+gravmag3d
+*********
 
 .. only:: not man
 
-    gmtgravmag3d - Compute the gravity/magnetic effect of a 3-D body by the method of Okabe
+    gravmag3d - Compute the gravity/magnetic effect of a 3-D body by the method of Okabe
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmtgravmag3d** |-T|\ **p**\ *xyz_file*\ [**+m**] |-T|\ **v**\ *vert_file* OR |-T|\ **r\|s**\ *raw_file*
+**gmt gravmag3d** |-T|\ **p**\ *xyz_file*\ [**+m**] |-T|\ **v**\ *vert_file* OR |-T|\ **r\|s**\ *raw_file*
 [ |-C|\ *density* ]
 [ |-D| ]
 [ |-E|\ *thickness* ]
@@ -32,7 +32,7 @@ Synopsis
 Description
 -----------
 
-**gmtgravmag3d** will compute the gravity or magnetic anomaly of a body
+**gravmag3d** will compute the gravity or magnetic anomaly of a body
 described by a set of triangles. The output can either be along a given
 set of xy locations or on a grid. This method is not particularly fast
 but allows computing the anomaly of arbitrarily complex shapes.
@@ -138,7 +138,7 @@ Suppose you ...
 
    ::
 
-    gmt gmtgravmag3d ...
+    gmt gravmag3d ...
 
 See Also
 --------

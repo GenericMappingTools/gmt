@@ -50,8 +50,8 @@ z-values. These are the background color (B) assigned to values lower
 than the lowest *z*-value, the foreground color (F) assigned to values
 higher than the highest *z*-value, and the NaN color (N) painted
 wherever values are undefined.  For color tables beyond the
-standard GMT offerings, visit cpt-city:
-http://soliton.vm.bytemark.co.uk/pub/cpt-city/.
+standard GMT offerings, visit `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_ and
+`Scientific Colour-Maps <http://www.fabiocrameri.ch/colourmaps.php>`_.
 
 If the master CPT includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters

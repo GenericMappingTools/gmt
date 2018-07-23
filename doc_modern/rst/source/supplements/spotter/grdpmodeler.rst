@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdpmodeler** |-E|\ *rot_file* **-S**\ *flags*
+**gmt grdpmodeler** |-E|\ *rot_file* **-S**\ *flags*
 [ *agegrdfile* ]
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *outgrdfile* ]

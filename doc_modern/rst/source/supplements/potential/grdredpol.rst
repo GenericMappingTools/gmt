@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdredpol** *anom_grd* |-G|\ *rtp_grd* [|-C|\ *dec/dip*]
+**gmt grdredpol** *anom_grd* |-G|\ *rtp_grd* [|-C|\ *dec/dip*]
 [ |-E|\ **i**\ *inc_grd*]
 [ |-E|\ **d**\ *dec_grd*]
 [ |-F|\ *<m/n>*]

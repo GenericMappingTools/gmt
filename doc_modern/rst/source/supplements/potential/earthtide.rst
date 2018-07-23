@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**earthtide**
+**gmt earthtide**
 |-T|\ [\ *min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\ \|\ *list*
 |-G|\ *grdfile*
 [ |-C|\ *x|e,y|n,z|v* ]

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**originater** [ *tables* ] |-E|\ [**+**]\ *rotfile*
+**gmt originater** [ *tables* ] |-E|\ [**+**]\ *rotfile*
 |-F|\ [**+**]\ *hs_file* 
 [ |-D|\ *d_km* ]
 [ |-L|\ [*flag*] ]

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_init** *TAG* |-D|\ *fmtfile*
+**gmt x2sys_init** *TAG* |-D|\ *fmtfile*
 [ |-C|\ **c**\ \|\ **f**\ \|\ **g**\ \|\ **e** ]
 [ |-E|\ *suffix* ]
 [ |-F| ]

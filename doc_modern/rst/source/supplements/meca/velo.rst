@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**velo** [ *table* ] |-J|\ *parameters*
+**gmt velo** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-R|
 [ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]

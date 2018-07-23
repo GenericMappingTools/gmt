@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-meca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
+**gmt meca** [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
 [ |SYN_OPT-B| ]
 [ |-C|\ [*pen*\ ][\ **P**\ *pointsize*] ] [ |-D|\ *depmin*/*depmax* ]
 [ |-E|\ *fill*]

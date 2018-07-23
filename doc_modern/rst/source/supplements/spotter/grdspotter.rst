@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdspotter** [*grdfile*] |-E|\ *rotfile* |-G|\ *CVAgrid*
+**gmt grdspotter** [*grdfile*] |-E|\ *rotfile* |-G|\ *CVAgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ *agegrid* ]

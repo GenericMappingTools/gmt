@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_binlist** *track(s)* |-T|\ *TAG*
+**gmt x2sys_binlist** *track(s)* |-T|\ *TAG*
 [ |-D| ]
 [ |-E| ]
 [ |SYN_OPT-V| ]

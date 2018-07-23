@@ -116,7 +116,7 @@ Optional Arguments
 
 **-Q**
     Make grid nodes with z = NaN transparent, using the color-masking
-    feature in *PostScript* Level 3 (the PS device must support PS Level 3).
+    feature in PostScript Level 3 (the PS device must support PS Level 3).
 
 .. _-T:
 

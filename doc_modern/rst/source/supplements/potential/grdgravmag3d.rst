@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdgravmag3d** *grdfile_top* [*grdfile_bot*] [ |-C|\ *density* ]
+**gmt grdgravmag3d** *grdfile_top* [*grdfile_bot*] [ |-C|\ *density* ]
 [ |-E|\ *thick* ]
 [ |-F|\ *xy_file* ]
 [ |-G|\ *outgrid* ]

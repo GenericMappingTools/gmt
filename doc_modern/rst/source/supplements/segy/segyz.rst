@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**segyz** *SEGYfile* |-J|\ *parameters*
+**gmt segyz** *SEGYfile* |-J|\ *parameters*
 |-J|\ **z**\ \|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 |-D|\ *deviation* |-F|\ [*color*] **-W**
@@ -192,7 +192,7 @@ variable area shading in black, use
    ::
 
     gmt segyz wa1.segy -JX5i/-5i -D1 -Jz0.05i -E180/5 -R0/100/0/10/0/10 \
-            -C3 -N -So -W -Fblack > segy.ps
+            -C3 -N -So -W -Fblack -pdf segy
 
 Bugs
 ----
@@ -206,4 +206,6 @@ viewing elevation increases. Wiggle-trace plotting is not affected.
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`segy`, :doc:`segy2grd`
+:doc:`gmt </gmt>`,
+:doc:`segy`,
+:doc:`segy2grd`

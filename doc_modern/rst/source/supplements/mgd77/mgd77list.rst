@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77list** *NGDC-ids* |-F|\ *columns*\ [,\ *logic*][:\ *bittests*]
+**gmt mgd77list** *NGDC-ids* |-F|\ *columns*\ [,\ *logic*][:\ *bittests*]
 [ |-A|\ [**+**\ ]\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code* ]
 [ |-C|\ **f**\ \|\ **g**\ \|\ **e** ]
 [ |-D|\ **A**\ \|\ **a**\ *startdate* ]
@@ -502,7 +502,7 @@ To get a (distance, heading, gravity, bathymetry) listing from
 
    ::
 
-    gmt mgd77list 01010047 -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth > myfile.d
+    gmt mgd77list 01010047 -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth > myfile.txt
 
 To make input for :doc:`blockmean </blockmean>` and :doc:`surface </surface>` using free-air anomalies
 from all the cruises listed in the file cruises.lis, but only the data
@@ -518,7 +518,7 @@ cruises.lis:
 
    ::
 
-    gmt mgd77list `cat cruises.lis` -F"depth,DEPTH>9000,BTC!=1" > really_deep.d
+    gmt mgd77list `cat cruises.lis` -F"depth,DEPTH>9000,BTC!=1" > really_deep.txt
 
 To extract dist, faa, and grav12_2 from records whose depths are
 shallower than 3 km and where none of the requested fields are NaN, from
@@ -528,7 +528,7 @@ cruises.lis, we try
    ::
 
     gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2,depth<3000" > \
-        shallow_grav.d
+        shallow_grav.txt
 
 To extract dist, faa, and grav12_2 from all the MGD77+ netCDF files
 whose cruise ids are listed in the file cruises.lis, but only retrieve
@@ -536,7 +536,7 @@ records whose bitflag for faa indicates BAD values, we try
 
    ::
 
-    gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2:+faa" > bad_grav.d
+    gmt mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2:+faa" > bad_grav.txt
 
 To output lon, lat, mag, and faa from all the cruises listed in the file
 cruises.lis, but recalculate the two residuals based on the latest
@@ -544,7 +544,7 @@ reference fields, try:
 
    ::
 
-    gmt mgd77list `cat cruises.lis` -Flon,lat,mag,faa -Af2,4 -Am2 > data.d
+    gmt mgd77list `cat cruises.lis` -Flon,lat,mag,faa -Af2,4 -Am2 > data.txt
 
 Recalculated Anomalies
 ----------------------

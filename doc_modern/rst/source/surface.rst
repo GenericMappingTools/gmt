@@ -142,8 +142,7 @@ Optional Arguments
     is reached or when number of iterations reaches *max_iterations*.
     This is the final iteration limit at the desired grid spacing; for
     intermediate (coarser) grids the effective iteration limit is scaled
-    by the grid spacing multiplier.
-    [Default is 500.]
+    by the grid spacing multiplier [Default is 500].
 
 .. _-Q:
 

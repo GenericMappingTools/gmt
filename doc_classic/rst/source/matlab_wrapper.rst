@@ -249,4 +249,4 @@ Definition of the *CPT structure* that holds the color palette.
   mode            % 1 means has header only, 2 means has trailer only, 3 means complete
   comment         % Remark (Optional)
 
-Definition of the *PS structure* that holds the *PostScript* plot.
+Definition of the *PS structure* that holds the PostScript plot.

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**dimfilter** *input_file.nc* |-D|\ *distance_flag*
+**gmt dimfilter** *input_file.nc* |-D|\ *distance_flag*
 |-F|\ **x**\ *width*\ [*mode*] |-G|\ *output_file.nc*
 |-N|\ **x**\ *sectors* [ |-Q| ]
 [ |SYN_OPT-I| ]

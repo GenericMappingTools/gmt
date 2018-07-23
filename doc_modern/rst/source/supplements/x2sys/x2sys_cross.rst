@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_cross** *track(s)* |-T|\ *TAG* [ |-A|\ *combi.lis* ]
+**gmt x2sys_cross** *track(s)* |-T|\ *TAG* [ |-A|\ *combi.lis* ]
 [ |-C|\ [*runtimes*] ]
 [ |-D|\ [**S**\ \|\ **N**\ ] ]
 [ |-I|\ **l**\ \|\ **a**\ \|\ **c** ]

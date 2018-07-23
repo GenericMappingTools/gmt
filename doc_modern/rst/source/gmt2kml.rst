@@ -1,8 +1,8 @@
-.. index:: ! gmt2kml
+.. index:: ! 2kml
 
-*******
-gmt2kml
-*******
+****
+2kml
+****
 
 .. only:: not man
 
@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt gmt2kml** [ *table* ]
+**gmt 2kml** [ *table* ]
 [ |-A|\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ]
 [ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ] [ |-E|\ [*altitude*] ]
 [ |-F|\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p**\ \|\ **w** ]
@@ -45,7 +45,7 @@ Synopsis
 Description
 -----------
 
-**gmt2kml** reads one or more GMT table file and converts them to a
+**2kml** reads one or more GMT table file and converts them to a
 single output file using Google Earth's KML format. Data may represent
 points, lines, polygons, or wiggles, and you may specify additional attributes
 such as title, altitude mode, colors, pen widths, transparency, regions,
@@ -295,7 +295,7 @@ red circle symbols, try
 
    ::
 
-    gmt gmt2kml mypoints.txt -Gfred -Fs > mypoints.kml
+    gmt 2kml mypoints.txt -Gfred -Fs > mypoints.kml
 
 To convert a multisegment file with lines (lon, lat) separated by
 segment headers that contain a **-L**\ labelstring with the feature
@@ -303,7 +303,7 @@ name, selecting a thick white pen, and title the document, try
 
    ::
 
-    gmt gmt2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" > mylines.kml
+    gmt 2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" > mylines.kml
 
 To convert a multisegment file with polygons (lon, lat) separated by
 segment headers that contain a **-L**\ labelstring with the feature
@@ -313,7 +313,7 @@ limit, try
 
    ::
 
-    gmt gmt2kml mypolygons.txt -Gfyellow@50 -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
+    gmt 2kml mypolygons.txt -Gfyellow@50 -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
 
 To convert a file with point locations (lon, lat, time) into a KML file
 with green circle symbols that will go active at the specified time and
@@ -321,7 +321,7 @@ stay active going forward, try
 
    ::
 
-    awk '{print $1, $2, $3, "NaN"}' mypoints.txt | gmt gmt2kml -Gfgreen -Ft > mytimepoints.kml
+    awk '{print $1, $2, $3, "NaN"}' mypoints.txt | gmt 2kml -Gfgreen -Ft > mytimepoints.kml
 
 To extract contours and labels every 10 units from the grid temp.nc and
 plot them in KML, using red lines at 75% transparency and red labels (no
@@ -330,15 +330,15 @@ transparency), try
    ::
 
     gmt grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
-    gmt gmt2kml    contours.txt -Fl -W1p,red@75 -K > contours.kml
-    gmt gmt2kml    -O -Nt -Fs -Sn2 -Gnred@0 label.txt -I- >> contours.kml
+    gmt 2kml    contours.txt -Fl -W1p,red@75 -K > contours.kml
+    gmt 2kml    -O -Nt -Fs -Sn2 -Gnred@0 label.txt -I- >> contours.kml
 
 To instead plot the contours as lines with colors taken from the cpt
 file contours.cpt, try
 
    ::
 
-    gmt gmt2kml contours.txt -Fl -Ccontours.cpt > contours.kml
+    gmt 2kml contours.txt -Fl -Ccontours.cpt > contours.kml
 
 To plot magnetic anomalies as wiggles along track, with positive
 wiggles painted orange and the wiggle line drawn with a black pen
@@ -348,7 +348,7 @@ sea surface, use
 
    ::
 
-    gmt gmt2kml magnetics_lon_lat_mag.txt -Fw -Gforange -W2p -Ag50 -Qs50n > wiggles.kml
+    gmt 2kml magnetics_lon_lat_mag.txt -Fw -Gforange -W2p -Ag50 -Qs50n > wiggles.kml
 
 Limitations
 -----------
@@ -439,7 +439,7 @@ a crude example:
 Segment Information
 -------------------
 
-**gmt2kml** will scan the segment headers for substrings of the form
+**2kml** will scan the segment headers for substrings of the form
 **-L**"*some label*\ " [also see **-N** discussion] and **-T**"*some
 text description*\ ". If present, these are parsed to supply name and
 description tags, respectively, for the current feature.

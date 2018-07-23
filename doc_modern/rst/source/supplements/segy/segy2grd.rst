@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**segy2grd** *segyfile* |-G|\ *grdfile*
+**gmt segy2grd** *segyfile* |-G|\ *grdfile*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [**n**\ \|\ **z**] ]

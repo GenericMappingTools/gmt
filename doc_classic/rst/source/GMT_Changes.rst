@@ -75,7 +75,7 @@ summary of these changes:
    be a few lines.
 
 *  We have deprecated the **-c**\ *copies* option whose purpose was to modify the
-   number of copies a printer would issue give a *PostScript* file.  This is better
+   number of copies a printer would issue give a PostScript file.  This is better
    controlled by your printer driver and most users now work with PDF files.
 
 *  The **-p** option can now do a simple rotation about the z-axis (i.e., not a
@@ -384,7 +384,7 @@ as well. For specific enhancements, we have:
    symbols rather than text along the line.  Users also gain new controls
    over the plotting of lines, including the ability to add vector heads
    to the line endings, to trim back lines by specified amounts, and to
-   request a Bezier spline interpolation in *PostScript* (see enhanced
+   request a Bezier spline interpolation in PostScript (see enhanced
    **-W** option).  A new option (**-F**) for line segmentation and networks
    have also been added. Various geographic symbols (such as ellipses; **-SE**,
    rotatable rectangles **-SJ**; and geo-vectors **-S=**) can now take size in geographic
@@ -454,11 +454,11 @@ In addition, two established modules have been given more suitable names
     when GMT is running in compatibility mode).
 
 :doc:`psconvert`
-    Converts from *PostScript* to PDF, SVG, or various raster image formats.
+    Converts from PostScript to PDF, SVG, or various raster image formats.
     Previously known as ps2raster (this name is recognized
     when GMT is running in compatibility mode).
 
-Finally, we have renamed our *PostScript* Light (PSL) library from psl
+Finally, we have renamed our PostScript Light (PSL) library from psl
 to PostScriptLight to avoid package name conflicts.  This library will eventually
 become decoupled from GMT and end up as a required prerequisite.
 
@@ -681,7 +681,7 @@ changes to existing syntax will be backwards compatible:
    reporting dimensions of the plot when **-A** and **-V** are used,
    scaling the output plots via **-A+s**\ [**m**]\ *width*\ [**u**][/\ *height*\ [**u**]],
    paint and outline the bounding box via **-A** modifiers **g**\ *fill* and **+p**\ *pen*,
-   and **-Z** for removing the *PostScript* file on exit.  In addition, we have
+   and **-Z** for removing the PostScript file on exit.  In addition, we have
    added SVG as a new output vector graphics format and now handle transparency even if
    non-PDF output formats are requested.
 
@@ -769,9 +769,9 @@ New Features in GMT 5
 
 GMT 5 represents a new branch of GMT development that mostly preserves the
 capabilities of the previous versions while adding over 200 new features
-to an already extensive bag of tricks.  Our *PostScript* library
+to an already extensive bag of tricks.  Our PostScript library
 :doc:`PSL <postscriptlight>` has seen a complete rewrite as well
-and produce shorter and more compact *PostScript*. However, the big news
+and produce shorter and more compact PostScript. However, the big news
 is aimed for developers who wish to leverage GMT in their own applications.
 We have completely revamped the code base so that high-level
 GMT functionality is now accessible via GMT "modules". These are
@@ -923,7 +923,7 @@ implemented by a series of new lower-case GMT common options:
    handled with the new **-s** option.
 
 *  All plot programs can take a new **-t** option to modify the PDF
-   transparency level for that layer. However, as *PostScript* has no provision for
+   transparency level for that layer. However, as PostScript has no provision for
    transparency you can only see the effect if you convert it to PDF.
 
 Updated common options
@@ -1281,8 +1281,8 @@ Several supplements have new features as well:
    :doc:`rotconverter <supplements/spotter/rotconverter>` can extract plate
    circuit rotations on-the-fly from the GPlates rotation file.
 
-Note: GMT 5 only produces *PostScript* and no longer has a setting for
-Encapsulated *PostScript* (EPS). We made this decision since (a) our EPS determination
+Note: GMT 5 only produces PostScript and no longer has a setting for
+Encapsulated PostScript (EPS). We made this decision since (a) our EPS determination
 was always very approximate (no consideration of font metrics, etc.) and quite often wrong,
 and (b) :doc:`psconvert` handles it exactly.  Hence, users who need EPS plots should
-simply process their *PostScript* files via :doc:`psconvert`.
+simply process their PostScript files via :doc:`psconvert`.

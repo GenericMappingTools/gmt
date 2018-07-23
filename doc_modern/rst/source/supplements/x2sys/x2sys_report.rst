@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_report** |-C|\ *column* |-T|\ *TAG* [ *coedbase.txt* ]
+**gmt x2sys_report** |-C|\ *column* |-T|\ *TAG* [ *coedbase.txt* ]
 [ |-A| ]
 [ |-I|\ [*list*\ ] ]
 [ |-L|\ [*corrtable*] ]

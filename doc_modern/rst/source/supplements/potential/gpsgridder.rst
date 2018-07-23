@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gpsgridder** [ *table* ]
+**gmt gpsgridder** [ *table* ]
 |-G|\ *outfile*
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]

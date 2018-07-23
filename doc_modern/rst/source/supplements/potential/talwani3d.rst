@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**talwani3d** [ *modeltable* ]
+**gmt talwani3d** [ *modeltable* ]
 [ |-A| ] [ |-D|\ *rho* ] ]
 [ |-F|\ **f**\ \|\ **n**\ \|\ **v** ]
 [ |-G|\ *outfile* ]

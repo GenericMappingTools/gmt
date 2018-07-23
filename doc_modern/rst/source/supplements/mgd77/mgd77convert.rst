@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77convert** *NGDC-ids* |-F|\ **a**\ \|\ **c**\ \|\ **m** \|\ **t**
+**gmt mgd77convert** *NGDC-ids* |-F|\ **a**\ \|\ **c**\ \|\ **m** \|\ **t**
 |-T|\ [**+**]\ **a**\ \|\ **c**\ \|\ **m**\ \|\ **t**
 [ |-C| ]
 [ |-D| ]

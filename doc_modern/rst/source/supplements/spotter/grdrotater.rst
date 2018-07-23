@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdrotater** *ingrdfile* |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
+**gmt grdrotater** *ingrdfile* |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
 |-G|\ *outgrdfile*
 [ |-A|\ *region* ]
 [ |-D|\ *rotoutline* ]

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gshhg** *binaryfile.b* [ |-A|\ *min* ] [ |-G| ] [ |-I|\ *id* ]
+**gmt gshhg** *binaryfile.b* [ |-A|\ *min* ] [ |-G| ] [ |-I|\ *id* ]
 [ |-L| ] [ |-N|\ *level* ] [ |-Q|\ **e**\ \|\ **i** ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]

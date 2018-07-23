@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**rotsmoother** [ *rottable* ]
+**gmt rotsmoother** [ *rottable* ]
 [ |-A| ]
 [ |-C| ]
 [ |-N| ]

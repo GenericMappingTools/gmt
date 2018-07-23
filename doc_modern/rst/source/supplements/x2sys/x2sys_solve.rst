@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_solve** |-C|\ *column* |-T|\ *TAG* |-E|\ **c**\ \|\ **d**\ \|\**g**\ \|\**h**\ \|\**s**\ \|\**y**\ \|\**z**
+**gmt x2sys_solve** |-C|\ *column* |-T|\ *TAG* |-E|\ **c**\ \|\ **d**\ \|\ **g**\ \|\ **h**\ \|\ **s**\ \|\ **y**\ \|\ **z**
 [ *COE_list.txt* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ **[u]** ]
@@ -54,7 +54,7 @@ Required Arguments
 
 .. _-E:
 
-**-E**\ **c**\ \|\ **d**\ \|\**g**\ \|\**h**\ \|\**s**\ \|\**y**\ \|\**z**
+**-E**\ **c**\ \|\ **d**\ \|\ **g**\ \|\ **h**\ \|\ **s**\ \|\ **y**\ \|\ **z**
     The correction type you wish to model. Choose among the following
     functions f(*p*) , where *p* are the *m*
     parameters per track that we will fit simultaneously using a least

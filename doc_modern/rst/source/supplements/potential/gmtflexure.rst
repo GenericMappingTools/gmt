@@ -1,19 +1,19 @@
-.. index:: ! gmtflexure
+.. index:: ! flexure
 
-**********
-gmtflexure
-**********
+*******
+flexure
+*******
 
 .. only:: not man
 
-    gmtflexure - Compute flexural deformation of 2-D loads, forces, bending and moments
+    flexure - Compute flexural deformation of 2-D loads, forces, bending and moments
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmtflexure** |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
+**gmt flexure** |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
 [ |-A|\ [**l**\|\ **r**][/*args*] ]
 [ |-C|\ **p**\ *Poisson* ] [ |-C|\ **y**\ *Young* ]
 [ |-F|\ *force* ] [ |-L| ]
@@ -34,7 +34,7 @@ Synopsis
 Description
 -----------
 
-**gmtflexure** computes the flexural response to 2-D loads using a range
+**flexure** computes the flexural response to 2-D loads using a range
 of user-selectable options, such as boundary conditions, pre-existing
 deformations, variable rigidity and restoring force, and more.  The solutions
 are obtained using finite difference approximations to the differential

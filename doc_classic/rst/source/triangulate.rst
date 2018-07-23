@@ -76,11 +76,11 @@ Optional Arguments
 
 **-C**\ *slpfile*
     Read a slope grid (in degrees) and compute the propagated uncertainty in the
-	bathymetry using the CURVE algorithm [Zambo et al, 2016].  Requires the **-G**
-	option to specify the output grid.  Note that the *slpgrid* sets the domain
-	for the output grid so **-R**, **-I**, [|SYN_OPT-r|\ ] are not required.
-	Cannot be used in conjunction with **-D**, **-F**, **-M**, **-N**, **-Q**,
-	**-S** and **-T**.
+    bathymetry using the CURVE algorithm [Zambo et al, 2016].  Requires the **-G**
+    option to specify the output grid.  Note that the *slpgrid* sets the domain
+    for the output grid so **-R**, **-I**, [|SYN_OPT-r|\ ] are not required.
+    Cannot be used in conjunction with **-D**, **-F**, **-M**, **-N**, **-Q**,
+    **-S** and **-T**.
 
 .. _-D:
 
@@ -265,6 +265,7 @@ Geosci.*, **8**, 97-101.
 
 Zambo, S., Elmore, P. A., Bourgeois, B. S., and Perkins, A. L., 2016,
 Uncertainty estimation for sparse data gridding algorithms,
+Proceedings of the U.S. Hydro Conference,National Harbor, MD, 16-19 March 2015.
 
 Zhou, Q., and Liu, X., 2004, Error analysis on grid-based slope and aspect
 algorithms, *Photogrammetric Eng. & Remote Sensing*, **70** (8), 957-962.

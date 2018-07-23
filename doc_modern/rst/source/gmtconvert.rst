@@ -283,7 +283,7 @@ columns 4-6 and write ASCII with the command
     gmt convert results.b -o8,4-6 -bi9s | plot ...
 
 You want to plot the 2nd column of a 2-column file left.txt versus the
-first column of a file right.d:
+first column of a file right.txt:
 
    ::
 
@@ -294,7 +294,7 @@ the string "RIDGE AXIS", try
 
    ::
 
-    gmt convert big_file.txt -S"RIDGE AXIS" > subset.d
+    gmt convert big_file.txt -S"RIDGE AXIS" > subset.txt
 
 To invert the selection of segments whose headers begin with "profile "
 followed by an integer number and any letter between "g" and "l", try

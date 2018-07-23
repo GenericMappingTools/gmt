@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77magref** [ *inputfile* ]
+**gmt mgd77magref** [ *inputfile* ]
 [ |-A|\ [**+a**\ *alt*\ **+t**\ *date*\ **+y**] ]
 [ |-C|\ *cm4file* ]
 [ |-D|\ *Dstfile* ]

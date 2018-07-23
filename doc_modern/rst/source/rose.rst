@@ -274,7 +274,7 @@ Bugs
 ----
 
 No default radial scale and grid settings for polar histograms. User
-must run **rose** **-I** to find max length in binned data set.
+must run **gmt rose -I** to find max length in binned data set.
 
 References
 ----------

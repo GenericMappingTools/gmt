@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_merge** |-A|\ *main_COElist.d* |-M|\ *new_COElist.d*
+**gmt x2sys_merge** |-A|\ *main_COElist.txt* |-M|\ *new_COElist.txt*
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -35,13 +35,13 @@ Required Arguments
 
 .. _-A:
 
-**-A**\ *main_COElist.d*
-    Specify the file *main_COElist.d* with the main crossover error data base.
+**-A**\ *main_COElist.txt*
+    Specify the file *main_COElist.txt* with the main crossover error data base.
 
 .. _-M:
 
-**-M**\ *new_COElist.d*
-    Specify the file *new_COElist.d* with the newly computed crossover error data base.
+**-M**\ *new_COElist.txt*
+    Specify the file *new_COElist.txt* with the newly computed crossover error data base.
 
 Optional Arguments
 ------------------

@@ -305,7 +305,8 @@ values suffice, for Word documents and PowerPoint presentations a higher
 dpi value is recommended. **psconvert** uses the loss-less DEFLATE
 compression technique when creating PDF and PNG files and LZW compression
 for TIFF images.  For smaller dpi images, such as required for building
-animations, the use of **-Qt**\ 4 and **-Qg**\ 4 may help sharpen text and lines.
+animations, the use of **-Qt**\ 4 and **-Qg**\ 4 may help sharpen text and lines,
+as will the **-H** option.
 
 EPS is a vector (not a raster) format. Therefore, the **-E** option has
 no effect on the creation of EPS files. Using the option **-Te** will

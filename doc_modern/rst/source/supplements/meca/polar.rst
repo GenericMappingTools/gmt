@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-polar [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
+**gmt polar** [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
 |SYN_OPT-R|
 |-M|\ *size* |-S|\ *<symbol><size>*
 [ |SYN_OPT-B| ]

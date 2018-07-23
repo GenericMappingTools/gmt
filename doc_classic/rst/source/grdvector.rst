@@ -130,12 +130,12 @@ Optional Arguments
     unit [1]. Append **c**, **i**, or **p** to indicate the measurement
     unit (cm, inch, or point); if no unit is given we use the default value that
     is controlled by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`. Alternatively,
-    use **-Sl** to indicate a fixed plot length for all vectors.  Vectors given
+    use **-Sl**\ *length*\ [*unit*] to set a fixed plot length for all vectors.  Vectors given
     via plot unit scaling will plot as straight vectors and their lengths are not
     affected by map projection and coordinate locations.
-    For Geographic data, you may alternatively give scale in data units per
-    map distance unit (see UNITS). Then, your user units are scaled to map distances
-    which are projected to plot lengths.  These are geo-vectors that follow
+    For geographic data you may alternatively give *scale* in data units per
+    map distance unit (see UNITS). Then, your user units are scaled to map distances in the given unit
+    which are projected to plot dimensions.  These are geo-vectors that follow
     great circle paths and their lengths are affected by the map projection and their
     coordinates.  Finally, use **-Si** if it is simpler to give the reciprocal scale in
     measurement unit per data unit or km per data unit.
@@ -201,7 +201,7 @@ center vectors on the node locations, run
 
     gmt grdvector r.nc theta.nc -Jx5c -A -Q0.1i+e+jc -S10i > gradient.ps
 
-To plot a geographic data sets given the files com_x.nc and comp_y.nc,
+To plot a geographic data sets given the files comp_x.nc and comp_y.nc,
 using a length scale of 200 km per data unit and only plot every 3rd node in either direction, try
 
    ::

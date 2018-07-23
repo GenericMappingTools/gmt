@@ -75,7 +75,7 @@ UNIX tool.  GMT is written in the ANSI C programming language
 (very portable), is POSIX compliant, and is independent of
 hardware constraints (e.g., memory).  GMT was deliberately written
 for command-line usage, not a windows environment, in order to
-maximize flexibility.  We standardized early on to use *PostScript* output
+maximize flexibility.  We standardized early on to use PostScript output
 instead of other graphics formats.  Apart from the built-in support for
 coastlines, GMT completely decouples data retrieval from the main
 GMT modules.  GMT uses architecture-independent file formats.
@@ -84,7 +84,7 @@ GMT installation considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 See the GMT wiki for how to install GMT.  In addition, we recommend
-access to a *PostScript* previewer (e.g., gv (or ghostview or plain ghostscript)),
+access to a PostScript previewer (e.g., gv (or ghostview or plain ghostscript)),
 and any flavor of the UNIX operating system (UNIX, Linux, OS X, Cygwin, MinGW, etc.).
 We do not recommend using the DOS command window under Windows.
 
@@ -134,11 +134,11 @@ Tutorial setup
    command, e.g., the script figure\_1.sh is made executable
    with "chmod +x figure\_1.sh".
 
-#. To view a *PostScript* file (e.g., map.ps) on a UNIX workstation
+#. To view a PostScript file (e.g., map.ps) on a UNIX workstation
    we use gv map.ps.  On some systems there
    will be similar commands, like ghostview or gs and even open
-   under OS X (which first converts your *PostScript* to PDF).  In this text we will use
-   gv; please substitute the relevant *PostScript* previewer
+   under OS X (which first converts your PostScript to PDF).  In this text we will use
+   gv; please substitute the relevant PostScript previewer
    on your system.  Very often it is more productive to convert these PS
    files to PDF using the :doc:`psconvert` module.  Turning the file map.ps to map.pdf
    is done with
@@ -214,14 +214,14 @@ GMT modules may get operational parameters from several places:
 #. Implicitly using GMT defaults for a variety of parameters
    (stored in :doc:`gmt.conf`).
 
-#. May use hidden support data like coastlines or *PostScript* patterns.
+#. May use hidden support data like coastlines or PostScript patterns.
 
 Output data
 ~~~~~~~~~~~
 
 There are 6 general categories of output produced by GMT:
 
-#. *PostScript* plot commands.
+#. PostScript plot commands.
 
 #. Data Table(s).
 

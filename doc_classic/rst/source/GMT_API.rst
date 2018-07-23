@@ -1562,7 +1562,7 @@ different data types.
     Finally, as an option you may add ``GMT_GRID_XY`` to the mode and we also
     allocate the *x* and *y* coordinate vectors for the grid or image.
 
-**PostScript**.
+*PostScript*.
     ``mode`` is currently not used.
 
 If you need to read the same resource more than once you should add the

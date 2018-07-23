@@ -1,19 +1,19 @@
-.. index:: ! gmtpmodeler
+.. index:: ! pmodeler
 
-***********
-gmtpmodeler
-***********
+********
+pmodeler
+********
 
 .. only:: not man
 
-    gmtpmodeler - Evaluate a plate motion model at given locations
+    pmodeler - Evaluate a plate motion model at given locations
 
 Synopsis
 --------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmtpmodeler** *table* |-E|\ *rot_file* **-S**\ *flags*
+**gmt pmodeler** *table* |-E|\ *rot_file* **-S**\ *flags*
 [ |-F|\ *polygonfile* ]
 [ |-T|\ *age* ]
 [ |SYN_OPT-V| ]
@@ -31,7 +31,7 @@ Synopsis
 Description
 -----------
 
-**gmtpmodeler** reads a table with *lon*, *lat* and optionally *age* triplets
+**pmodeler** reads a table with *lon*, *lat* and optionally *age* triplets
 and a plate motion model
 and evaluates one of several model predictions. Optionally, the user may
 supply a clipping polygon in multiple-segment format; then, only the
@@ -137,7 +137,7 @@ azimuths at the present time for the Pacific, try
 
    ::
 
-    gmt gmtpmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
+    gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
                      -Sa -T0 > pac_dir_0.txt
 
 To determine the changes in latitude since crust formation for the
@@ -145,7 +145,7 @@ entire Pacific, try
 
    ::
 
-    gmt gmtpmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
+    gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
                     -Sy > pac_dlat.txt
 
 To determine the plate motion velocities in effect when the Pacific crust was
@@ -153,21 +153,21 @@ formed, try
 
    ::
 
-    gmt gmtpmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
+    gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
                     -Sv > pac_vel.txt 
 
 To determine how far the crust has moved since formation, try
 
    ::
 
-    gmt gmtpmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
+    gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
                     -Sd > pac_dist.txt
 
 To save the coordinates of the crust's formation, try
 
    ::
 
-    gmt gmtpmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
+    gmt pmodeler pac_age.txt -EPac_APM.txt -V -Fpac_clip_path.txt \
                     -SXY > ac_origin_xy.txt 
 
 Notes

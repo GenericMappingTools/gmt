@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ *Te*\ [**u**] |-G|\ *outgrid*
+**gmt grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ *Te*\ [**u**] |-G|\ *outgrid*
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
 [ |-C|\ **p**\ *poisson* ] [ |-C|\ **y**\ *Young* ]
 [ |-F|\ *nu_a*\ [/*h_a*/*nu_m*] ]

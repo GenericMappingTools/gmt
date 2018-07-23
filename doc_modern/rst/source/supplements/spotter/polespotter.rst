@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**polespotter**
+**gmt polespotter**
 [ |-A|\ *abyssalhills* ]
 [ |-D|\ *spacing* ]
 [ |-E|\ **a**\ \|\ **f**\ *sigma* ]

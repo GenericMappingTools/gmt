@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77path** *NGDC-ids* [ |-A|\ [**-**] ] [ |-D| ]
+**gmt mgd77path** *NGDC-ids* [ |-A|\ [**-**] ] [ |-D| ]
 [ |-I|\ *ignore* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]

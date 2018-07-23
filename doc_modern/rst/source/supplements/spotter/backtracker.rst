@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**backtracker** [ *table* ] |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
+**gmt backtracker** [ *table* ] |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
 [ |-A|\ [*young*/*old*] ]
 [ |-D|\ **f**\ \|\ **b** ]
 [ |-F|\ *drift.txt* ]

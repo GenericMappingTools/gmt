@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**img2grd** *imgfile* |-G|\ *grdfile*
+**gmt img2grd** *imgfile* |-G|\ *grdfile*
 |SYN_OPT-R|
 |-T|\ *type*
 [ |-C| ]

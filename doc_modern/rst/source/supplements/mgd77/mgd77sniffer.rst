@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77sniffer** *NGDC-ids* [ |-A|\ *fieldabbrev*,\ *scale*,\ *offset* ]
+**gmt mgd77sniffer** *NGDC-ids* [ |-A|\ *fieldabbrev*,\ *scale*,\ *offset* ]
 [ |-C|\ *maxspd* ]
 [ |-D|\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*] ]
 [ |-E| ]
@@ -49,15 +49,7 @@ optionally output (**-De** option) using a computer-parseable format
 (see E77 ERROR FORMAT description below). Default error thresholds are
 derived from histograms of all MGD77 geophysical data collected between
 1952 and January, 2006. Thresholds are adjustable with the **-L**
-option.
-
-Requirements
-------------
-
-The mgd77sniffer links with Generic Mapping Tools 4.0 or later along
-with the supplemental GMT packages x2sys and mgd77. See
-`http://gmt.soest.hawaii.edu <http://gmt.soest.hawaii.edu>`_ for GMT
-details. Grids for comparison with cruise data may be downloaded via the web. 
+option. Grids for comparison with cruise data may be downloaded via the web. 
 
 Required Arguments
 ------------------

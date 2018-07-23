@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdseamount** [ *intable* ]
+**gmt grdseamount** [ *intable* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [*out*/*in*\ ] ]

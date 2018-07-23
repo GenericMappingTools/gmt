@@ -70,7 +70,7 @@ value. Interpolation and aliasing is controlled with the **-n** option.
 The **-R** option can be used to select a map region larger or smaller
 than that implied by the extent of the grid.
 
-A (color) *PostScript* file is output.
+A (color) PostScript file is output.
 
 Required Arguments
 ------------------
@@ -90,7 +90,7 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *out_img*\ [**=**\ *driver*]
-    Save an image in a raster format instead of *PostScript*. Use extension
+    Save an image in a raster format instead of PostScript. Use extension
     .ppm for a Portable Pixel Map format.  For GDAL-aware versions there are more choices:
     Append *out_img* to select the image file name and extension.
     If the extension is one of .bmp, .gif, .jpg, .png, or .tif then no driver
@@ -133,7 +133,7 @@ Optional Arguments
     Sets the resolution of the projected grid that will be created if a
     map projection other than Linear or Mercator was selected [100]. By
     default, the projected grid will be of the same size (rows and
-    columns) as the input file. Specify **i** to use the *PostScript*
+    columns) as the input file. Specify **i** to use the PostScript
     image operator to interpolate the image at the device resolution.
 
 .. _-G:
@@ -186,7 +186,7 @@ Optional Arguments
 
 **-Q**
     Make grid nodes with z = NaN transparent, using the color-masking
-    feature in *PostScript* Level 3 (the PS device must support PS Level 3).
+    feature in PostScript Level 3 (the PS device must support PS Level 3).
 
 .. _-R:
 
@@ -233,7 +233,7 @@ Imaging Grids With Nans
 Be aware that if your input grid contains patches of NaNs, these patches
 can become larger as a consequence of the resampling that must take
 place with most map projections. Because **grdimage** uses the
-*PostScript* colorimage operator, for most non-linear projections we
+PostScript colorimage operator, for most non-linear projections we
 must resample your grid onto an equidistant rectangular lattice. If you
 find that the NaN areas are not treated adequately, consider (a) use a
 linear projection, or (b) use :doc:`grdview` **-Ts** instead.
@@ -266,7 +266,7 @@ on a Lambert map at 1.5 cm/degree along the standard parallels 18 and
 
     gmt grdimage hawaii_grav.nc -Jl18/24/1.5c -Cshades.cpt -B1 > hawaii_grav_image.ps
 
-To create an illuminated color *PostScript* plot of the gridded data set
+To create an illuminated color PostScript plot of the gridded data set
 image.nc, using the intensities provided by the file intens.nc, and
 color levels in the file colors.cpt, with linear scaling at 10
 inch/x-unit, tickmarks every 5 units:
@@ -275,7 +275,7 @@ inch/x-unit, tickmarks every 5 units:
 
     gmt grdimage image.nc -Jx10i -Ccolors.cpt -Iintens.nc -B5 > image.ps
 
-To create an false color *PostScript* plot from the three grid files
+To create an false color PostScript plot from the three grid files
 red.nc, green.nc, and blue.nc, with linear scaling at 10 inch/x-unit,
 tickmarks every 5 units:
 

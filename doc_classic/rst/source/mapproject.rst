@@ -307,20 +307,20 @@ those points that would fall outside the map area, run
     gmt mapproject tracks.* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 > tmfile.b
 
 To convert the geodetic coordinates (lon, lat, height) in the file
-old.dat from the NAD27 CONUS datum (Datum ID 131 which uses the
+old.txt from the NAD27 CONUS datum (Datum ID 131 which uses the
 Clarke-1866 ellipsoid) to WGS 84, run
 
    ::
 
-    gmt mapproject old.dat -Th131 > new.dat
+    gmt mapproject old.txt -Th131 > new.txt
 
 To compute the closest distance (in km) between each point in the input
-file quakes.dat and the line segments given in the multisegment ASCII
+file quakes.txt and the line segments given in the multisegment ASCII
 file coastline.xy, run
 
    ::
 
-    gmt mapproject quakes.dat -Lcoastline.xy+uk > quake_dist.dat
+    gmt mapproject quakes.txt -Lcoastline.xy+uk > quake_dist.txt
 
 Given a file with longitude and latitude, compute both incremental
 and accumulated distance along track, and estimate travel times

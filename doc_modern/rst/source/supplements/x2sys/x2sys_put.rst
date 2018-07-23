@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_put** [ *info.tbf* ] |-T|\ *TAG* [ |-D| ] [ |-F| ]
+**gmt x2sys_put** [ *info.tbf* ] |-T|\ *TAG* [ |-D| ] [ |-F| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
 

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**coupe** [ *files* ] |-J|\ *parameters*
+**gmt coupe** [ *files* ] |-J|\ *parameters*
 |SYN_OPT-R| |-A|\ *parameters*
 [ |SYN_OPT-B| ]
 [ |-E|\ *color* ]

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**rotconverter** [ **+**\ \|\ **-** ] *rotA* [ **+**\ \|\ **-** *rotB* ]
+**gmt rotconverter** [ **+**\ \|\ **-** ] *rotA* [ **+**\ \|\ **-** *rotB* ]
 [ **+**\ \|\ **-** *rotC* ] ... [ |-A| ] [ |-D| ]
 [ |-F|\ *out* ]
 [ |-G| ]

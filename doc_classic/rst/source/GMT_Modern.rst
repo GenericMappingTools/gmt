@@ -51,7 +51,7 @@ Optional Arguments
     +========+=========================================+
     |  bmp   | MicroSoft BitMap.                       |
     +--------+-----------------------------------------+
-    |  eps   | Encapsulated *PostScript*               |
+    |  eps   | Encapsulated PostScript                 |
     +--------+-----------------------------------------+
     |  jpg   | Joint Photographic Experts Group format |
     +--------+-----------------------------------------+
@@ -61,7 +61,7 @@ Optional Arguments
     +--------+-----------------------------------------+
     |  ppm   | Portable Pixel Map                      |
     +--------+-----------------------------------------+
-    |   ps   | Plain *PostScript*                      |
+    |   ps   | Plain PostScript                        |
     +--------+-----------------------------------------+
     |   tif  | Tagged Image Format File                |
     +--------+-----------------------------------------+

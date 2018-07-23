@@ -13,11 +13,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdview** *relief_file* |-J|\ *parameters*
+**gmt grdview** *reliefgrid* |-J|\ *parameters*
 [ |SYN_OPT-B| ]
 [ |-C|\ [*cpt*]]
-[ |-G|\ *drapefile* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]
-[ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
+[ |-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]
+[ |-I|\ [*intensgrid*\ \|\ *intensity*\ \|\ *modifiers*] ]
 [ **-Jz**\ \|\ **Z**\ *parameters* ]
 [ |-N|\ *level*\ [**+g**\ *fill*] ]
 [ |-Q|\ *args*\ [**+m**] ]
@@ -40,7 +40,7 @@ Description
 -----------
 
 **grdview** reads a 2-D grid file and produces a 3-D perspective plot by
-drawing a mesh, painting a colored/grayshaded surface made up of
+drawing a mesh, painting a colored/gray-shaded surface made up of
 polygons, or by scanline conversion of these polygons to a raster image.
 Options include draping a data set on top of a surface, plotting of
 contours on top of the surface, and apply artificial illumination based
@@ -49,7 +49,7 @@ on intensities provided in a separate grid file.
 Required Arguments
 ------------------
 
-*relief_file*
+*reliefgrid*
     2-D gridded data set to be imaged (the relief of the surface). (See
     GRID FILE FORMAT below.) 
 
@@ -69,7 +69,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*cpt* \|\ *master*\ [**+i**\ *zinc*] \|\ *color1,color2*\ [,*color3*,...]]
+**-C**\ [*cpt* \|\ *master*\ [**+i**\ *zinc*] \|\ *color1,color2*\ [,\ *color3*\ ,...]]
     The name of the CPT. Must be present if you want
     (1) mesh plot with contours (**-Qm**), or
     (2) shaded/colored perspective image (**-Qs** or
@@ -82,27 +82,27 @@ Optional Arguments
 
 .. _-G:
 
-|-G|\ *drapefile* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b*
-    Drape the image in *drapefile* on top of the relief provided by
-    *relief_file*. [Default determines colors from *relief_file*]. Note that **-Jz** and
-    **-N** always refers to the *relief_file*. The *drapefile* only
-    provides the information pertaining to colors, which (if *drapefile* is a grid) will be looked-up
+|-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b*
+    Drape the image in *drapegrid* on top of the relief provided by
+    *reliefgrid*. [Default determines colors from *reliefgrid*]. Note that **-Jz** and
+    **-N** always refers to the *reliefgrid*. The *drapegrid* only
+    provides the information pertaining to colors, which (if *drapegrid* is a grid) will be looked-up
     via the CPT (see **-C**). Instead, you may give three grid files
     via separate **-G** options in the specified order. These files must contain the red, green, and
     blue colors directly (in 0-255 range) and no CPT is needed. The
-    *drapefile* may be of a different resolution than the *relief_file*.
-    Finally, *drapefile* may be an image to be draped over the surface, in which
+    *drapegrid* may be of a different resolution than the *reliefgrid*.
+    Finally, *drapegrid* may be an image to be draped over the surface, in which
     case the **-C** option is not required.
 
 .. _-I:
 
-**-I**\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*]
+**-I**\ [*intensgrid*\ \|\ *intensity*\ \|\ *modifiers*]
     Gives the name of a grid file with intensities in the (-1,+1) range,
     or a constant intensity to apply everywhere; this simply affects the
     ambient light.  If just **+** is given then we derive an intensity
-    grid from the input data grid *grd_z* via a call to :doc:`grdgradient`
+    grid from the input data grid *reliefgrid* via a call to :doc:`grdgradient`
     using the arguments **-A**\ -45 and **-Nt**\ 1 for that module. You can
-    append **+a**\ *azimuth and **+n**\ *args* to override those values.  If you want
+    append **+a**\ *azimuth* and **+n**\ *args* to override those values.  If you want
     more specific intensities then run :doc:`grdgradient` separately first.
     [Default is no illumination].
 
@@ -135,9 +135,9 @@ Optional Arguments
 
 .. |Add_-Rz| replace:: This option may be used to
     indicate the range used for the 3-D axes [Default is region given by
-    the *relief_file*]. You may ask for a larger *w/e/s/n* region to
+    the *reliefgrid*]. You may ask for a larger *w/e/s/n* region to
     have more room between the image and the axes. A smaller region than
-    specified in the *relief_file* will result in a subset of the grid.
+    specified in the *reliefgrid* will result in a subset of the grid.
 .. include:: explain_-Rz.rst_
 
 .. _-S:
@@ -214,19 +214,19 @@ elevation, run
                 -Jz0.05c -Qm -N-100 -p225/30 -Wc -pdf hawaii_grav_image
 
 To create a illuminated color perspective plot of the gridded data set
-image.nc, using the CPT color.rgb, with linear scaling at
+image.nc, using the CPT color.cpt, with linear scaling at
 10 cm/x-unit and tickmarks every 5 units, with intensities provided by
 the file intens.nc, and looking from the SE, use
 
    ::
 
-    gmt grdview image.nc -Jx10.0c -Ccolor.rgb -Qs -p135/30 -Iintens.nc -pdf image3D
+    gmt grdview image.nc -Jx10c -Ccolor.cpt -Qs -p135/30 -Iintens.nc -pdf image3D
 
 To make the same plot using the rastering option with dpi = 50, use
 
    ::
 
-    gmt grdview image.nc -Jx10.0c -Ccolor.rgb -Qi50 -p135/30 -Iintens.nc -pdf image3D
+    gmt grdview image.nc -Jx10c -Ccolor.cpt -Qi50 -p135/30 -Iintens.nc -pdf image3D
 
 To create a color PostScript perspective plot of the gridded data set
 magnetics.nc, using the CPT mag_intens.cpt, draped over
@@ -242,7 +242,7 @@ topo_intens.nc, and looking from the SE, run
 Remarks
 -------
 
-For the **-Qs** option: PostScript provides no way of smoothly varying
+For the **-Qs** option: The PostScript language has no mechanism for smoothly varying
 colors within a polygon, so colors can only vary from polygon to
 polygon. To obtain smooth images this way you may resample the grid
 file(s) using :doc:`grdsample` or use a finer grid size when running

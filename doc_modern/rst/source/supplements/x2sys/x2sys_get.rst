@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_get** |-T|\ *TAG* [ |-C| ] [ |-F|\ *flags* ] [ |-G| ]
+**gmt x2sys_get** |-T|\ *TAG* [ |-C| ] [ |-F|\ *flags* ] [ |-G| ]
 [ |-L|\ [**+**\ ][*list*] ]
 [ |-N|\ *flags* ] [
 [ |SYN_OPT-R| ]
