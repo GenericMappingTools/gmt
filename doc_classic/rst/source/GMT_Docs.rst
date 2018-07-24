@@ -2184,18 +2184,18 @@ are simply data records whose fields are all set to NaN; see Chapter
 If filenames are given for reading, GMT programs will first look for
 them in the current directory. If the file is not found, the programs
 will look in other directories pointed to by the
-:ref:`directory parameters <DIR Parameters>` **DIR_DATA**,
-:ref:`directory parameters <DIR Parameters>` **DIR_CACHE** and
+:ref:`directory parameters <DIR Parameters>` **DIR_DATA** and **DIR_CACHE**
 or by the environmental parameters **$GMT_USERDIR**, **$GMT_CACHEDIR** and
 **$GMT_DATADIR** (if set). They may be set by the user to point to
 directories that contain data sets of general use, thus eliminating the
 need to specify a full path to these files. Usually, the **DIR_DATA**
 directory will hold data sets of a general nature (tables, grids),
 whereas the **$GMT_USERDIR** directory (its default value is $HOME/.gmt)
-may hold miscellaneous data sets more
-specific to the user; this directory also stores GMT defaults and other
-configuration files. The **DIR_CACHE** will typically contain data files
-downloaded automatically by GMT modules.  See :ref:`directory parameters <DIR Parameters>`
+may hold miscellaneous data sets more specific to the user; this directory
+also stores GMT defaults and other configuration files as well as the
+directory *server* which olds downloaded data sets from the GMT data server
+The **DIR_CACHE** will typically contain other data files
+downloaded when running tutorial or example scripts.  See :ref:`directory parameters <DIR Parameters>`
 for details. Program output is always written to the current directory
 unless a full path has been specified.
 
