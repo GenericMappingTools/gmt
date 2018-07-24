@@ -21,14 +21,14 @@
  * Version:	6 API
  *
  * Brief synopsis: gmt clear cleans up by removing files or dirs.
- *	gmt clear [all | cache | conf | cpt | history | sessions ]
+ *	gmt clear [all | cache | conf | cpt | data | history | sessions ]
  */
 
 #include "gmt_dev.h"
 
 #define THIS_MODULE_NAME	"clear"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Delete current history, conf, cpt, or the cache or sessions directories"
+#define THIS_MODULE_PURPOSE	"Delete current history, conf, cpt, or the cache, data or sessions directories"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"V"
@@ -39,7 +39,7 @@ EXTERN_MSC void gmtlib_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n)
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s all|cache|conf|history|sessions [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s all|cache|cpt|conf|data|history|sessions [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -47,6 +47,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   cache     Deletes the user\'s cache directory [%s].\n", API->GMT->session.CACHEDIR);
 	GMT_Message (API, GMT_TIME_NONE, "\t   conf      Deletes the user\'s gmt.conf file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   cpt       Deletes the current CPT file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   data      Deletes the user\'s data download directory [%s/server].\n", API->GMT->session.USERDIR);
 	GMT_Message (API, GMT_TIME_NONE, "\t   history   Deletes the user\'s gmt.history file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   sessions  Deletes the user\'s sessions directory [%s].\n", API->session_dir);
 	GMT_Message (API, GMT_TIME_NONE, "\t   all       All of the above.\n");
@@ -65,14 +66,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	 */
 
 	unsigned int n_errors = 0;
-	struct GMT_OPTION *opt = NULL;
 
-	if ((opt = options) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Required target not specified\n");
-		return GMT_PARSE_ERROR;
-	}
-	if (strcmp (opt->arg, "all") && strcmp (opt->arg, "cache") && strcmp (opt->arg, "conf") && strcmp (opt->arg, "cpt") && strcmp (opt->arg, "history") && strcmp (opt->arg, "sessions")) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized target %s\n", opt->arg);
+	if (options == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No target specified\n");
 		n_errors++;
 	}
 	
@@ -80,14 +76,32 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 }
 
 GMT_LOCAL int clear_cache (struct GMTAPI_CTRL *API) {
-	char dir[PATH_MAX] = {""};
-	sprintf (dir, "%s/srtm1", API->GMT->session.CACHEDIR);
-	if (access (dir, F_OK) == 0 && gmt_remove_dir (API, dir, false))
-		return GMT_RUNTIME_ERROR;
-	sprintf (dir, "%s/srtm3", API->GMT->session.CACHEDIR);
-	if (access (dir, F_OK) == 0 && gmt_remove_dir (API, dir, false))
-		return GMT_RUNTIME_ERROR;
 	if (gmt_remove_dir (API, API->GMT->session.CACHEDIR, true))
+		return GMT_RUNTIME_ERROR;
+	return GMT_NOERROR;
+}
+
+GMT_LOCAL int clear_cpt (struct GMTAPI_CTRL *API) {
+	int error = GMT_NOERROR;
+	char *cpt = gmt_get_current_cpt (API->GMT);
+	if (cpt) {
+		if (gmt_remove_file (API->GMT, cpt))
+			error = GMT_RUNTIME_ERROR;
+		gmt_M_str_free (cpt);
+	}
+	return error;
+}
+
+GMT_LOCAL int clear_data (struct GMTAPI_CTRL *API) {
+	char dir[PATH_MAX] = {""};
+	sprintf (dir, "%s/server/srtm1", API->GMT->session.USERDIR);
+	if (access (dir, F_OK) == 0 && gmt_remove_dir (API, dir, false))
+		return GMT_RUNTIME_ERROR;
+	sprintf (dir, "%s/server/srtm3", API->GMT->session.USERDIR);
+	if (access (dir, F_OK) == 0 && gmt_remove_dir (API, dir, false))
+		return GMT_RUNTIME_ERROR;
+	sprintf (dir, "%s/server", API->GMT->session.USERDIR);
+	if (access (dir, F_OK) == 0 && gmt_remove_dir (API, dir, false))
 		return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
 }
@@ -129,7 +143,7 @@ GMT_LOCAL int clear_sessions (struct GMTAPI_CTRL *API) {
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_clear (void *V_API, int mode, void *args) {
-	int error = 0;
+	int error = 0, n_given = 0;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL, *opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -151,46 +165,60 @@ int GMT_clear (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the clear main code ----------------------------*/
 
-	opt = GMT_Find_Option (API, GMT_OPT_INFILE, options);	/* action target will appear as file name */
-	if (opt == NULL) {
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option != GMT_OPT_INFILE) continue;	/* action target will appear as file name */
+		
+		n_given++;
+		if (!strcmp (opt->arg, "all")) {	/* Clear all */
+			if (clear_cache (API))
+				error = GMT_RUNTIME_ERROR;
+			if (clear_cpt (API))
+				error = GMT_RUNTIME_ERROR;
+			if (clear_data (API))
+				error = GMT_RUNTIME_ERROR;
+			if (clear_sessions (API))
+				error = GMT_RUNTIME_ERROR;
+			if (gmt_remove_file (API->GMT, "gmt.history"))
+				error = GMT_RUNTIME_ERROR;
+			if (gmt_remove_file (API->GMT, "gmt.conf"))
+				error = GMT_RUNTIME_ERROR;
+			/* Must turn off history writing otherwise we write out history again... */
+			API->clear = true;
+		}
+		else if (!strcmp (opt->arg, "cache")) {	/* Clear the cache */
+			if (clear_cache (API))
+				error = GMT_RUNTIME_ERROR;
+		}
+		else if (!strcmp (opt->arg, "data")) {	/* Clear the data */
+			if (clear_data (API))
+				error = GMT_RUNTIME_ERROR;
+		}
+		else if (!strcmp (opt->arg, "sessions")) {	/* Clear the sessions dir */
+			if (clear_sessions (API))
+				error = GMT_RUNTIME_ERROR;
+		}
+		else if (!strcmp (opt->arg, "cpt")) {	/* Clear the current CPT */
+			if (clear_cpt (API))
+				error = GMT_RUNTIME_ERROR;
+		}
+		else if (!strcmp (opt->arg, "history")) {	/* Clear the history */
+			if (gmt_remove_file (API->GMT, "gmt.history"))
+				error = GMT_RUNTIME_ERROR;
+			/* Must turn off history writing otherwise we write out history again... */
+			API->clear = true;
+		}
+		else if (!strcmp (opt->arg, "conf")) {	/* Clear the configuration */
+			if (gmt_remove_file (API->GMT, "gmt.conf"))
+				error = GMT_RUNTIME_ERROR;
+		}
+		else {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized target %s - skipped\n", opt->arg);
+			n_given--;	/* Undo the premature increment */
+		}
+	}
+	if (n_given == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No clear target given\n");
 		Return (GMT_RUNTIME_ERROR);
-	}
-	if (!strcmp (opt->arg, "all")) {	/* Clear all */
-		if (clear_cache (API))
-			error = GMT_RUNTIME_ERROR;
-		if (clear_sessions (API))
-			error = GMT_RUNTIME_ERROR;
-		if (gmt_remove_file (API->GMT, "gmt.history"))
-			error = GMT_RUNTIME_ERROR;
-		if (gmt_remove_file (API->GMT, "gmt.conf"))
-			error = GMT_RUNTIME_ERROR;
-		/* Must turn off history writing otherwise we write out history again... */
-		API->clear = true;
-	}
-	else if (!strcmp (opt->arg, "cache")) {	/* Clear the cache */
-		if (clear_cache (API))
-			error = GMT_RUNTIME_ERROR;
-	}
-	else if (!strcmp (opt->arg, "sessions")) {	/* Clear the sessions dir */
-		if (clear_sessions (API))
-			error = GMT_RUNTIME_ERROR;
-	}
-	else if (!strcmp (opt->arg, "cpt")) {	/* Clear the current CPT */
-		char *cpt = gmt_get_current_cpt (API->GMT);
-		if (cpt && gmt_remove_file (API->GMT, cpt))
-			error = GMT_RUNTIME_ERROR;
-		if (cpt) gmt_M_str_free (cpt);
-	}
-	else if (!strcmp (opt->arg, "history")) {	/* Clear the history */
-		if (gmt_remove_file (API->GMT, "gmt.history"))
-			error = GMT_RUNTIME_ERROR;
-		/* Must turn off history writing otherwise we write out history again... */
-		API->clear = true;
-	}
-	else if (!strcmp (opt->arg, "conf")) {	/* Clear the configuration */
-		if (gmt_remove_file (API->GMT, "gmt.conf"))
-			error = GMT_RUNTIME_ERROR;
 	}
 		
 	Return (error);

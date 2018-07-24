@@ -2168,7 +2168,7 @@ allows you to connect programs with pipes if you like.
 To give numerous input files you can either list them all (file1.txt file2.txt ...),
 use UNIX wild cards (file*.txt), or make a simple *listfile* with the
 names of all your datafiles (one per line) and then use the special
-=*filelist* mechanism to specify the input files to a module.
+=\ *filelist* mechanism to specify the input files to a module.
 This allows GMT modules to obtain the input file names from *filelist*.
 If your input is
 ASCII and has one or more header records that do not begin with #, you
@@ -2208,19 +2208,19 @@ Three classes of files are given special treatment in GMT.
    At the moment this collection is limited to Earth relief grids.  If you specify
    a grid input named **@earth_relief_**\ *res* on a command line then
    such a grid will automatically be downloaded from the GMT Data Site and placed
-   in **$GMT_USERDIR** [~/.gmt].  The resolution *res* allows a choice among
+   in a server directory under **$GMT_USERDIR** [~/.gmt].  The resolution *res* allows a choice among
    15 command grid spacings: 60m, 30m, 20m, 15m, 10m, 06m, 05m, 04m, 03m, 02m, 01m,
    30s, and 15s (with file sizes 111 kb, 376 kb, 782 kb, 1.3 Mb, 2.8 Mb, 7.5 Mb,
    11 Mb, 16 Mb, 27 Mb, 58 Mb, 214 Mb, 778 Mb, and 2.6 Gb respectively) as well
    as the SRTM tile resolutions 03s and 01s (6.8 Gb and 41 Gb, respectively). Once
    one of these grids have been downloaded any future reference will simply obtain the
-   file from **$GMT_USERDIR** or **DIR_CACHE** (except if explicitly removed by the user).
+   file from **$GMT_USERDIR** (except if explicitly removed by the user).
    Note: The four highest resolutions are the original data sets SRTM15+, SRTM30+,
    ETOPO1 and ETOPO2V2.  Lower resolutions are spherically Gaussian-filtered versions
    of ETOPO1.  The SRTM (version 3) 1 and 3 arc-sec tiles are only available over land
    between 60 degrees south and north latitude and are stored as highly compressed JPEG2000
    tiles on the GMT server.  These are individually downloaded as requested, converted to netCDF
-   grids and stored in subdirectories srtm1 and srtm3 under **DIR_CACHE**, and assembled
+   grids and stored in subdirectories srtm1 and srtm3 under the server directory, and assembled
    into a seamless grid using :doc:`grdblend`. A tile is only downloaded and converted
    once (unless the user cleans the cache directories).
 #. If a file is given as a full URL, starting with **http://**, **https://**,

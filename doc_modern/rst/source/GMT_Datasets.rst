@@ -5,7 +5,7 @@ In addition to the GSHHS coastlines, rivers, and borders data built into some
 modules (:doc:`coast`, :doc:`gmtselect`, :doc:`grdlandmask`), we offer several
 remote global data grids that you can access via our *remote file* mechanism.
 The first time you access one of these files we will download the file from
-the GMT server and save it to your GMT cache directory (:ref:`DIR_CACHE <DIR_CACHE>`).
+the GMT server and save it to the *server* directory under your GMT user directory (~/.gmt).
 We then read the file from there.  Should you have limited space then there
 are ways to control how much is downloaded (see below).
 
@@ -58,6 +58,9 @@ The following codes for *rr*\ *u* are supported:
     | 01s  | 1296000 x 432000 |  41 GB | 1 arc second global relief (SRTM1S)           |
     +------+------------------+--------+-----------------------------------------------+
 
+All of these data will, when downloaded, be placed in your ~/.gmt/server directory, with
+the SRTM data organized in sub-directories srtm1 and srtm3 within the server directory.
+
 Technical Information
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -79,19 +82,19 @@ The dimensions above reflect the number of nodes covered by the global grids and
 the file sizes of the netCDF-4 compressed short int grids, making the files much smaller
 than their original source files without any loss of precision.  To improve download speed,
 the SRTM tiles are stored as JPEG2000 images on the GMT server due to superior compression,
-but once downloaded to your cache directory they are converted to short int compressed netCDF4 grids.
+but once downloaded to your server directory they are converted to short int compressed netCDF4 grids.
 This step uses our GDAL bridge and thus requires that you have built GMT with GDAL support
 *and* that your GDAL distribution was built with openjpeg support.
 
-Cache Space Concerns
-~~~~~~~~~~~~~~~~~~~~
+Data Space Concerns
+~~~~~~~~~~~~~~~~~~~
 
-There are several ways you can control the amount of space taken up by your cache directory:
+There are several ways you can control the amount of space taken up by your server directory:
 
 #. You can set an upper file size limit for download via the GMT default setting
    :ref:`GMT_DATA_URL_LIMIT <GMT_DATA_URL_LIMIT>`; the default is unlimited.
-#. You can remove the entire cache directory via gmt :doc:`clear`.
-#. You can be clever and set up a crontab job that deletes cache files you have not
+#. You can remove the entire server directory via gmt :doc:`clear`.
+#. You can be clever and set up a crontab job that deletes data files you have not
    touched in, say, 6 months (or some other interval).
 
 Data References

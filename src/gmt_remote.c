@@ -134,13 +134,13 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	 */
 	unsigned int kind = 0, pos = 0, from = 0, to = 0, res = 0, be_fussy;
 	int curl_err = 0;
-	bool is_srtm = false;
+	bool is_srtm = false, is_data = false;
 	size_t len, fsize;
 	CURL *Curl = NULL;
 	static char *cache_dir[4] = {"/cache", "", "/srtm1", "/srtm3"}, *name[3] = {"CACHE", "USER", "LOCAL"};
 	char *user_dir[3] = {GMT->session.CACHEDIR, GMT->session.USERDIR, NULL};
 	char url[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, *c = NULL, *file = NULL;
-	char srtmdir[PATH_MAX] = {""}, *srtm_local = NULL;
+	char srtmdir[PATH_MAX] = {""}, serverdir[PATH_MAX] = {""}, *srtm_local = NULL;
 	struct FtpFile ftpfile = {NULL, NULL};
 
 	if (!file_name || !file_name[0]) return 0;   /* Got nutin' */
@@ -150,8 +150,10 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	file = gmt_M_memory (GMT, NULL, strlen (file_name)+2, char);	/* One extra in case need to change nc to jp2 for download of SRTM */
 	strcpy (file, file_name);
 	/* Because file_name may be <file>, @<file>, or URL/<file> we must find start of <file> */
-	if (gmt_M_file_is_remotedata (file))	/* A remote @earth_relief_xxm|s grid */
+	if (gmt_M_file_is_remotedata (file)) {	/* A remote @earth_relief_xxm|s grid */
 		pos = 1;
+		is_data = true;
+	}
 	else if (gmt_M_file_is_cache (file)) {	/* A leading '@' was found */
 		pos = 1;
 		if ((c = strchr (file, '?')))	/* Netcdf directive since URL was handled above */
@@ -176,15 +178,20 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	}
 	from = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Determine source directory on cache server */
 	to = (mode == GMT_LOCAL_DIR) ? GMT_LOCAL_DIR : from;
+	sprintf (serverdir, "%s/server", user_dir[GMT_DATA_DIR]);
+	if ((is_data || is_srtm) && access (serverdir, R_OK)) {
+		if (gmt_mkdir (serverdir))
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", serverdir);
+	}
 	if (gmt_file_is_srtmtile (GMT->parent, file, &res)) {	/* Select the right sub-dir on the server and cache locally */
 		from = (res == 1) ? 2 : 3;
 		to = GMT_CACHE_DIR;
 		is_srtm = true;
-		sprintf (srtmdir, "%s/srtm%d", user_dir[GMT_CACHE_DIR], res);
+		sprintf (srtmdir, "%s/srtm%d", serverdir, res);
 		/* Check if srtm1|3 subdir exist - if not create it */
 		if (access (srtmdir, R_OK)) {
 			if (gmt_mkdir (srtmdir))
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT Cache directory : %s\n", srtmdir);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", srtmdir);
 		}
 	}
 	if (mode == GMT_LOCAL_DIR || user_dir[to] == NULL) {
@@ -244,7 +251,9 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			if (!strncmp (&local_path[len-GMT_SRTM_EXTENSION_LOCAL_LEN-1U], ".nc", GMT_SRTM_EXTENSION_LOCAL_LEN+1U))
 				strncpy (&local_path[len-GMT_SRTM_EXTENSION_LOCAL_LEN], GMT_SRTM_EXTENSION_REMOTE, GMT_SRTM_EXTENSION_REMOTE_LEN);	/* Switch extension for download */
 		}
-		else
+		else if (is_data)
+			sprintf (local_path, "%s/server/%s", user_dir[GMT_DATA_DIR], &file[pos]);
+		else	/* Goes to cache */
 			sprintf (local_path, "%s/%s", user_dir[to], &file[pos]);
 	}
 	if (kind == GMT_DATA_FILE && !strstr (local_path, ".grd")) strcat (local_path, ".grd");	/* Must supply the .grd */

@@ -4763,16 +4763,19 @@ char *gmtlib_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path) {
 		if (!access (path, R_OK)) return (path);
 	}
 	if (GMT->session.USERDIR) {
-		sprintf (path, "%s/%s", GMT->session.USERDIR, stem);
-		if (!access (path, R_OK)) return (path);
+		if (strstr (stem, ".SRTMGL1.")) /* Special srtm1 subdirs */
+			sprintf (path, "%s/server/srtm1/%s", GMT->session.USERDIR, stem);
+		else if (strstr (stem, ".SRTMGL3.")) /* Special srtm3 subdirs */
+			sprintf (path, "%s/server/srtm3/%s", GMT->session.USERDIR, stem);
+		else {
+			sprintf (path, "%s/%s", GMT->session.USERDIR, stem);
+			if (!access (path, R_OK)) return (path);
+			sprintf (path, "%s/server/%s", GMT->session.USERDIR, stem);
+			if (!access (path, R_OK)) return (path);
+		}
 	}
 	if (GMT->session.CACHEDIR) {
-		if (strstr (stem, ".SRTMGL1.")) /* Special srtm1 subdirs */
-			sprintf (path, "%s/srtm1/%s", GMT->session.CACHEDIR, stem);
-		else if (strstr (stem, ".SRTMGL3.")) /* Special srtm3 subdirs */
-			sprintf (path, "%s/srtm3/%s", GMT->session.CACHEDIR, stem);
-		else
-			sprintf (path, "%s/%s", GMT->session.CACHEDIR, stem);
+		sprintf (path, "%s/%s", GMT->session.CACHEDIR, stem);
 		if (!access (path, R_OK)) return (path);
 	}
 
@@ -4790,8 +4793,8 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 	unsigned int d, pos;
 	size_t L;
 	bool found;
-	char *udir[5] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR, NULL, NULL}, dir[GMT_BUFSIZ];
-	char path_separator[2] = {PATH_SEPARATOR, '\0'}, srtm1dir[PATH_MAX] = {""}, srtm3dir[PATH_MAX] = {""};
+	char *udir[6] = {GMT->session.USERDIR, GMT->session.DATADIR, GMT->session.CACHEDIR, NULL, NULL, NULL}, dir[GMT_BUFSIZ];
+	char path_separator[2] = {PATH_SEPARATOR, '\0'}, serverdir[PATH_MAX] = {""}, srtm1dir[PATH_MAX] = {""}, srtm3dir[PATH_MAX] = {""};
 #ifdef HAVE_DIRENT_H_
 	size_t N;
 #endif /* HAVE_DIRENT_H_ */
@@ -4825,10 +4828,11 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 
 	/* Not found, see if there is a file in the GMT_{USER,DATA}DIR directories [if set] */
 	
-	sprintf (srtm1dir, "%s/srtm1", GMT->session.CACHEDIR);	udir[3] = srtm1dir;
-	sprintf (srtm3dir, "%s/srtm3", GMT->session.CACHEDIR);	udir[4] = srtm3dir;
+	sprintf (serverdir, "%s/server", GMT->session.USERDIR);	udir[3] = serverdir;
+	sprintf (srtm1dir, "%s/server/srtm1", GMT->session.USERDIR);	udir[4] = srtm1dir;
+	sprintf (srtm3dir, "%s/server/srtm3", GMT->session.USERDIR);	udir[5] = srtm3dir;
 
-	for (d = 0; d < 5; d++) {	/* Loop over USER, DATA and CACHE dirs */
+	for (d = 0; d < 6; d++) {	/* Loop over USER, DATA and CACHE dirs */
 		if (!udir[d]) continue;	/* This directory was not set */
 		found = false;
 		pos = 0;
