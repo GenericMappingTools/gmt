@@ -2241,7 +2241,8 @@ Three classes of files are given special treatment in GMT.
    parameter GMT_DATA_URL at compile time.
 
 The user cache (**DIR_CACHE**) and all its contents can be cleared any time
-via the command **gmt clear cache**.
+via the command **gmt clear cache**, while the server directory with downloaded data
+can be cleared via the command **gmt clear data**.
 
 .. figure:: /_images/GMT_SRTM.*
    :width: 700 px
