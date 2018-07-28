@@ -138,6 +138,9 @@
 # Set location of ZLIB (can be root directory or path to header file) [auto]:
 #set (ZLIB_ROOT "zlib_install_prefix")
 
+# Set location of CURL (can be root directory or path to header file) [auto]:
+#set (CURL_ROOT "curl_install_prefix")
+
 # Set location of GLIB component gthread [auto].  This is an optional (and
 # experimental) option which you need to enable:
 #set (GMT_USE_THREADS TRUE)
