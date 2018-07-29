@@ -311,9 +311,11 @@ GMT_LOCAL void set_loop_order (struct GMT_CTRL *GMT, struct GMT_GRID *Z, int sta
 	 * The start and stop items work like this: start is the lower-left row,col values of the first tile,
 	 * while stop is 1 beyond the last valid index - we loop as long as current index is NOT equal to stop.
 	 */
-	unsigned int col, row, oct;
+	unsigned int col, row, oct, one = 1;
 	double az, x0, x1, y0, y1;
 	char *kind = "xy";
+	
+	//if (gmt_M_is_azimuthal (GMT) && gmt_M_360_range (Z->header->wesn[XLO], Z->header->wesn[XHI])) one = 0;	/* Need to connect across the gap */
 	col = Z->header->n_columns / 2;
 	row = Z->header->n_rows / 2;
 	gmt_geoz_to_xy (GMT, Z->x[col], Z->y[row],   GMT->current.proj.z_project.level, &x0, &y0);
@@ -328,41 +330,41 @@ GMT_LOCAL void set_loop_order (struct GMT_CTRL *GMT, struct GMT_GRID *Z, int sta
 	id[0] = id[1] = start[0] = start[1] = stop[0] = stop[1] = inc[0] = inc[1] = 0;	/* Init arrays */
 	switch (oct) {
 		case 1:	/* 0-45: Outer loop over columns */
-			id[0] = GMT_X;	start[0] = 0;	stop[0] = Z->header->n_columns - 1;	inc[0] = +1;
+			id[0] = GMT_X;	start[0] = 0;	stop[0] = Z->header->n_columns - one;	inc[0] = +1;
 			id[1] = GMT_Y;	start[1] = 1;	stop[1] = Z->header->n_rows;		inc[1] = +1;
 			break;
 		case 2:	/* 45-90: Outer loop over rows */
 			id[0] = GMT_Y;	start[0] = 1;	stop[0] = Z->header->n_rows; 		inc[0] = +1;
-			id[1] = GMT_X;	start[1] = 0;	stop[1] = Z->header->n_columns - 1;	inc[1] = +1;
+			id[1] = GMT_X;	start[1] = 0;	stop[1] = Z->header->n_columns - one;	inc[1] = +1;
 			break;
 		case 3:	/* 90-135: Outer loop over rows */
 			id[0] = GMT_Y;	start[0] = 1;	stop[0] = Z->header->n_rows; 		inc[0] = +1;
-			id[1] = GMT_X;	start[1] = Z->header->n_columns - 2;	stop[1] = -1;	inc[1] = -1;
+			id[1] = GMT_X;	start[1] = Z->header->n_columns - 1 - one;	stop[1] = -1;	inc[1] = -1;
 			break;
 		case 4:	/* 135-180: Outer loop over columns */
-			id[0] = GMT_X;	start[0] = Z->header->n_columns - 2;	stop[0] = -1; 	inc[0] = -1;
+			id[0] = GMT_X;	start[0] = Z->header->n_columns - 1 - one;	stop[0] = -1; 	inc[0] = -1;
 			id[1] = GMT_Y;	start[1] = 1;	stop[1] = Z->header->n_rows;		inc[1] = +1;
 			break;
 		case 5:	/* 180-225: Outer loop over columns */
-			id[0] = GMT_X;	start[0] = Z->header->n_columns - 2;	stop[0] = -1; 	inc[0] = -1;
+			id[0] = GMT_X;	start[0] = Z->header->n_columns - 1 - one;	stop[0] = -1; 	inc[0] = -1;
 			id[1] = GMT_Y;	start[1] = Z->header->n_rows - 1;	stop[1] = 0;	inc[1] = -1;
 			break;
 		case 6:	/* 225-270: Outer loop over rows */
 			id[0] = GMT_Y;	start[0] = Z->header->n_rows - 1;	stop[0] = 0;	inc[0] = -1;
-			id[1] = GMT_X;	start[1] = Z->header->n_columns - 2;	stop[1] = -1; 	inc[1] = -1;
+			id[1] = GMT_X;	start[1] = Z->header->n_columns - 1 - one;	stop[1] = -1; 	inc[1] = -1;
 			break;
 		case 7:	/* 270-315: Outer loop over rows */
 			id[0] = GMT_Y;	start[0] = Z->header->n_rows - 1;	stop[0] = 0;	inc[0] = -1;
-			id[1] = GMT_X;	start[1] = 0;	stop[1] = Z->header->n_columns - 1;	inc[1] = +1;
+			id[1] = GMT_X;	start[1] = 0;	stop[1] = Z->header->n_columns - one;	inc[1] = +1;
 			break;
 		case 8:	/* 315-360: Outer loop over columns */
-			id[0] = GMT_X;	start[0] = 0;	stop[0] = Z->header->n_columns - 1;	inc[0] = +1;
+			id[0] = GMT_X;	start[0] = 0;	stop[0] = Z->header->n_columns - one;	inc[0] = +1;
 			id[1] = GMT_Y;	start[1] = Z->header->n_rows - 1;	stop[1] = 0;	inc[1] = -1;
 			break;
 		default:	/* For Coverity */
 			break;
 	}
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Octant %d (az = %g)\n", oct, az);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Octant %d (az = %g) one = %d\n", oct, az, one);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Outer loop over %c doing %d:%d:%d\n", kind[id[0]], start[0], inc[0], stop[0]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Inner loop over %c doing %d:%d:%d\n", kind[id[1]], start[1], inc[1], stop[1]);
 }
