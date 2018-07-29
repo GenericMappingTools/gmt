@@ -364,6 +364,15 @@ GMT_LOCAL void set_loop_order (struct GMT_CTRL *GMT, struct GMT_GRID *Z, int sta
 		default:	/* For Coverity */
 			break;
 	}
+	if (GMT->current.proj.projection == GMT_POLAR) {	/* Polar cylindrical has 0 at center, not pole */
+		unsigned int k = (id[0] == GMT_Y) ? 0 : 1, off = 0;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Loop over y flipped for cylindrical/polar projection\n");
+		off = (start[k] == 1) ? -1 : +1;
+		gmt_M_int_swap (start[k], stop[k]);
+		start[k] += off;	stop[k] += off;
+		inc[k] = -inc[k];
+	}
+	
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Octant %d (az = %g) one = %d\n", oct, az, one);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Outer loop over %c doing %d:%d:%d\n", kind[id[0]], start[0], inc[0], stop[0]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Inner loop over %c doing %d:%d:%d\n", kind[id[1]], start[1], inc[1], stop[1]);
