@@ -1250,9 +1250,12 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 					if (Ctrl->T.no_eval)	/* No model evaluation */
 						n_t = 0;
 					else if (Ctrl->T.active) {	/* Evaluate the model at the chosen equidistant output points */
-						if (Ctrl->T.T.set == 1) {	/* Must update the output t array */
+						if (Ctrl->T.T.set == 1) {	/* Must update the output t array to be nultiples of inc, possibly starting and ending outside range */
+							double min, max;
 							gmt_M_free (GMT, Ctrl->T.T.array);
-							if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), &(S->min[GMT_X]), &(S->max[GMT_X])))
+							min = floor (S->min[GMT_X] / Ctrl->T.T.inc) * Ctrl->T.T.inc;
+							max = ceil  (S->max[GMT_X] / Ctrl->T.T.inc) * Ctrl->T.T.inc ;
+							if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), &min, &max))
 								Return (GMT_RUNTIME_ERROR);
 						}
 						x = Ctrl->T.T.array;	/* Pass these coordinates as our "x" */
