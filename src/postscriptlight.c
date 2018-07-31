@@ -334,18 +334,19 @@ static struct PSL_FONT PSL_standard_fonts[PSL_N_STANDARD_FONTS] = {
 #define PSL_PAGE_HEIGHT_IN_PTS  842     /* A4 height */
 #define PSL_PEN_LEN		128	/* Style length string */
 #define PSL_SUBSUP_SIZE		0.7	/* Relative size of sub/sup-script to normal size */
-#define PSL_SCAPS_SIZE		0.85	/* Relative size of snall caps to normal size */
+#define PSL_SCAPS_SIZE		0.85	/* Relative size of small caps to normal size */
 #define PSL_SUB_DOWN		0.25	/* Baseline shift down in font size for subscript */
 #define PSL_SUP_UP_LC		0.35	/* Baseline shift up in font size for superscript after lowercase letter */
 #define PSL_SUP_UP_UC		0.35	/* Baseline shift up in font size for superscript after uppercase letter */
 #if 0
+/* These are potential revisions to some of the settings above but remains to be tested */
 #define PSL_SUBSUP_SIZE		0.58	/* Relative size of sub/sup-script to normal size */
-#define PSL_SCAPS_SIZE		0.80	/* Relative size of snall caps to normal size */
+#define PSL_SCAPS_SIZE		0.80	/* Relative size of small caps to normal size */
 #define PSL_SUB_DOWN		0.25	/* Baseline shift down in font size for subscript */
 #define PSL_SUP_UP_LC		0.35	/* Baseline shift up in font size for superscript after lowercase letter */
 #define PSL_SUP_UP_UC		0.45	/* Baseline shift up in font size for superscript after uppercase letter */
 #define PSL_SUBSUP_SIZE		0.58	/* Relative size of sub/sup-script to normal size */
-#define PSL_SCAPS_SIZE		0.80	/* Relative size of snall caps to normal size */
+#define PSL_SCAPS_SIZE		0.80	/* Relative size of small caps to normal size */
 #define PSL_SUB_DOWN		0.33	/* Baseline shift down in font size for subscript */
 #define PSL_SUP_UP		0.33	/* Baseline shift up in font size for superscript */
 #endif
