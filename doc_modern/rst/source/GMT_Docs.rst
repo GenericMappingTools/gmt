@@ -1924,6 +1924,7 @@ column **t** to your selections.  The text is always written after any
 numerical columns.  Note that if you wanted to scale or shift the output
 values you need to do so during reading, using the **-i** option.
 To output all numerical columns and ignoring trailing text, use **-on**.
+
 Perspective view: The **-p** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
