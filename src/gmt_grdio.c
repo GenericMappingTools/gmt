@@ -515,9 +515,9 @@ GMT_LOCAL void handle_pole_averaging (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 	gmt_M_unused(GMT);
 
 	if (pole == -1)
-		node = gmt_M_ijp (header, 0, 0);		/* First node at S pole */
+		node = gmt_M_ijp (header, header->n_rows-1, 0);	/* First node at S pole */
 	else
-		node = gmt_M_ijp (header, header->n_rows-1, 0);	/* First node at N pole */
+		node = gmt_M_ijp (header, 0, 0);		/* First node at N pole */
 	if (GMT->current.io.col_type[GMT_OUT][GMT_Z] == GMT_IS_AZIMUTH || GMT->current.io.col_type[GMT_OUT][GMT_Z] == GMT_IS_ANGLE) {	/* Must average azimuths */
 		uint64_t orig = node;
 		double s, c, sum_s = 0.0, sum_c = 0.0;
@@ -546,7 +546,7 @@ GMT_LOCAL void grdio_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRI
 	if (!gmt_M_is_geographic (GMT, GMT_OUT)) return;		/* Not geographic */
 	if (header->wesn[YLO] == -90.0) {	/* Check consistency of S pole duplicates */
 		double sum;
-		node = gmt_M_ijp (header, 0, 0);	/* First node at S pole */
+		node = gmt_M_ijp (header, header->n_rows-1, 0);	/* First node at S pole */
 		sum = grid[node++];
 		p_conflicts = 0;
 		for (col = 1; col < header->n_columns; col++, node++) {
@@ -561,7 +561,7 @@ GMT_LOCAL void grdio_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRI
 	}
 	if (header->wesn[YHI] == +90.0) {	/* Check consistency of N pole duplicates */
 		double sum;
-		node = gmt_M_ijp (header, header->n_rows-1, 0);	/* First node at N pole */
+		node = gmt_M_ijp (header, 0, 0);	/* First node at N pole */
 		sum = grid[node++];
 		p_conflicts = 0;
 		for (col = 1; col < header->n_columns; col++, node++) {
