@@ -3253,7 +3253,8 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 				gmt_strlcmp (&path[pos_ext], "map"))
 				code = GMT_IS_GRID;
 			else
-				code =  GMT_NOTSET;	break;
+				code =  GMT_NOTSET;
+			break;
 	}
 
 	if (code == GMT_IS_IMAGE)

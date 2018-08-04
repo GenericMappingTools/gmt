@@ -5631,6 +5631,11 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	gmt_M_make_dnan (GMT->session.d_NaN);
 	for (i = 0; i < 3; i++) GMT->session.no_rgb[i] = -1.0;
 
+#ifdef _OPENMP
+	/* Set the default number of threads = number of available cores, but only under OpenMP */
+	GMT->common.x.n_threads = gmtlib_get_num_processors();
+#endif
+
 	return (GMT);
 }
 

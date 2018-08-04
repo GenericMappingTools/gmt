@@ -960,7 +960,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	if (Ctrl->E.active) {	/* Want to estimate misfits between data and model */
 		double here[4], mean = 0.0, std = 0.0, rms = 0.0, *predicted = NULL;
 		double mean_u = 0.0, std_u = 0.0, rms_u = 0.0, dev_u, pvar_sum = 0.0;
-		double mean_v = 0.0, std_v = 0.0, rms_v = 0.0, dev_v, chi2u, chi2v, chi2u_sum = 0.0, chi2v_sum = 0.0;
+		double mean_v = 0.0, std_v = 0.0, rms_v = 0.0, dev_v, chi2u = 0.0, chi2v = 0.0, chi2u_sum = 0.0, chi2v_sum = 0.0;
 		uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_uv, 8+2*Ctrl->W.active};
 		unsigned int m = 0, m2 = 0;
 		struct GMT_DATASET *E = NULL;

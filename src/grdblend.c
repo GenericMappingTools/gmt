@@ -837,9 +837,11 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 					}
 					switch (Ctrl->C.sign) {	/* Check if sign of input grid should be considered in decision */
 						case -1: if (first_grid) {z[col] = blend[k].z[kk]; first_grid = false; continue; break;}	/* Must initialize with first grid in case nothing passes */
-							 else if (blend[k].z[kk] > 0.0) continue; break;		/* Only pick grids value if negative or zero */
+							 else if (blend[k].z[kk] > 0.0) continue;	/* Only pick grids value if negative or zero */
+							 break;
 						case +1: if (first_grid) { z[col] = blend[k].z[kk]; first_grid = false; continue; break;}	/* Must initialize with first grid in case nothing passes */
-							 else if (blend[k].z[kk] < 0.0) continue; break;		/* Only pick grids value if positive or zero */
+							 else if (blend[k].z[kk] < 0.0) continue;	/* Only pick grids value if positive or zero */
+							 break;
 						default: break;						/* Always use the grid value */
 
 					}

@@ -2381,59 +2381,84 @@ GMT_LOCAL void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: LDISTG 0 1 As LDIST, but operates on the GSHHG dataset (see -A, -D for options).  */
 {
-	uint64_t node, row, col, seg, tbl, old_row = INT64_MAX;
+	uint64_t node, col, seg, tbl, n_threads = 1, OFF = 0, thread_num = 0;
+	int64_t row, old_row = INT64_MAX;
 	int i, old_i = INT32_MAX;
 	double lon, lon1, lat, x, y, hor = DBL_MAX, bin_size, slop, d;
 	double max_hor = 0.0, wesn[4] = {0.0, 360.0, -90.0, 90.0};
+	double *curr_dist = NULL;
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
-	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 
+	/* LDISTG is now set up for OpenMP parallel execution. By default all threads are used; control this via -x.
+	 * We use helper array curr_dist which needs one sectiion per thread and we determine which thread we are
+	 * working on in the loop.  In OpenMP is not active then number of threads is 1 and the current thread is
+	 * always 0. PW Aug 4. 2018. */
+	
 	if (gmt_M_is_cartesian (GMT, GMT_IN)) /* Set -fg implicitly since not set already via input grid or -fg */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
-	gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
+	gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST);	/* Request distances in km */
 
 	/* We use the global GSHHG data set to construct distances to. Although we know that the
 	 * max distance to a coastline is ~2700 km, we cannot anticipate the usage of any user.
 	 * If (s)he's excluding small features, then the distance will be larger. So we do not
-	 * limit the region of GSHHG */
+	 * limit the region of GSHHG and ask for all. */
 	if ((D = gmt_get_gshhg_lines (GMT, wesn, info->gshhg_res, info->A)) == NULL) return;
 
-	bin_size = info->A->bin_size;	/* Current GSHHG bin size in degrees */
-	slop = 2 * gmt_distance (GMT, 0.0, 0.0, bin_size, 0.0);	/* Define slop in projected units (km) */
+	bin_size = info->A->bin_size;		/* Current GSHHG bin size in degrees */
+	slop = 2 * gmt_distance (GMT, 0.0, 0.0, bin_size, 0.0);	/* Define slop in projected units (km) for bin at Equator */
 	if (last == UINT32_MAX) last = 0;	/* Was called the very first time when n_stack - 1 goes crazy since it is unsigned */
-	grdmath_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
-		if (col == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
-		lon = info->d_grd_x[col], lat = info->d_grd_y[row];
-		i = (int)floor(lon/bin_size);
-		/* For any new bin along a row, find the closest center of coastline bins */
-		if (i != old_i || row != old_row) {
-			lon1 = (i + 0.5) * bin_size;
-			for (tbl = 0, hor = DBL_MAX; tbl < D->n_tables; tbl++) {
-				x = 0.5 * (D->table[tbl]->min[GMT_X] + D->table[tbl]->max[GMT_X]);
-				y = 0.5 * (D->table[tbl]->min[GMT_Y] + D->table[tbl]->max[GMT_Y]);
-				TH = gmt_get_DT_hidden (D->table[tbl]);
-				TH->dist = d = gmt_distance (GMT, lon1, lat, x, y);
-				if (d < hor) hor = d;
+#ifdef _OPENMP
+	n_threads = GMT->common.x.n_threads;	/* Use the number of selected threads (see -x) */
+#endif
+	curr_dist = gmt_M_memory (GMT, NULL, n_threads * D->n_tables, double);	/* Need one of these arrays sections per thread */
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node,d,lon,lat,i,lon1,tbl,x,y,T,seg) firstprivate(old_i,old_row,hor,max_hor,OFF,thread_num) shared(info,stack,GMT,D,bin_size,slop,last,curr_dist)
+#endif
+	for (row = 0; row < (int64_t)info->G->header->my; row++) {	/* Visit each row including the pad */
+#ifdef _OPENMP
+		thread_num = omp_get_thread_num();	/* Which thread are we at now? */
+		OFF = thread_num * D->n_tables;		/* Calculate offset into curr_dist array */
+#else		/* Only allow -Vl message if not threaded */
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
+#endif
+		node = gmt_M_ij (info->G->header, row, 0);	/* Starting node for this row */
+		for (col = 0; (int)col < (int)info->G->header->mx; col++, node++) {	/* Visit each col including the pad */
+			lon = info->d_grd_x[col], lat = info->d_grd_y[row];	/* Current node coordinates */
+			i = (int)floor(lon/bin_size);	/* Determine horizontal bin number given the bin size */
+			/* For any new bin along a row, find the closest center of coastline bins */
+			if (i != old_i || row != old_row) {
+				lon1 = (i + 0.5) * bin_size;	/* Mid-bin longitude */
+				for (tbl = 0, hor = DBL_MAX; tbl < D->n_tables; tbl++) {
+					/* Get mid-point of table coordinates */
+					x = 0.5 * (D->table[tbl]->min[GMT_X] + D->table[tbl]->max[GMT_X]);
+					y = 0.5 * (D->table[tbl]->min[GMT_Y] + D->table[tbl]->max[GMT_Y]);
+					curr_dist[OFF+tbl] = d = gmt_distance (GMT, lon1, lat, x, y);
+					if (d < hor) hor = d;	/* Keep track of shortest distance */
+				}
+				/* Add 2 bin sizes to the closest distance to a bin as slop. This should always include the closest points in any bin */
+				hor = hor + slop;
+				old_i = i, old_row = (int)row;
+				if (hor > max_hor) max_hor = hor;	/* Remember the max distance considered in this run */
 			}
-			/* Add 2 bin sizes to the closest distance to a bin as slop. This should always include the closest points in any bin */
-			hor = hor + slop;
-			old_i = i, old_row = (int)row;
-			if (hor > max_hor) max_hor = hor;
-		}
 
-		/* Loop over each line segment in each bin that is closer than the horizon defined above */
-		for (tbl = 0, d = DBL_MAX; tbl < D->n_tables; tbl++) {
-			T = D->table[tbl];
-			TH = gmt_get_DT_hidden (T);
-			if (TH->dist >= hor) continue;	/* Skip entire bins that are too far away */
-			for (seg = 0; seg < T->n_segments; seg++) {
-				(void) gmt_near_a_line (GMT, lon, lat, seg, T->segment[seg], true, &d, NULL, NULL);
+			/* Loop over each line segment in each bin that is closer than the horizon defined above */
+			for (tbl = 0, d = DBL_MAX; tbl < D->n_tables; tbl++) {
+				if (curr_dist[OFF+tbl] >= hor) continue;	/* Skip entire bins that are too far away */
+				T = D->table[tbl];	/* Examine this table's segments */
+				for (seg = 0; seg < T->n_segments; seg++) {
+					(void) gmt_near_a_line (GMT, lon, lat, seg, T->segment[seg], true, &d, NULL, NULL);
+				}
 			}
+			stack[last]->G->data[node] = (float)d;	/* Finally got the closest approach */
 		}
-		stack[last]->G->data[node] = (float)d;
 	}
+
+#ifndef _OPENMP
+	/* Can only report this if not threaded */
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Max LDISTG horizon distance used: %g\n", max_hor);
+#endif
+	gmt_M_free (GMT, curr_dist);
 	gmt_free_dataset (GMT, &D);
 }
 
