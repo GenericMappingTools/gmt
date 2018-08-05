@@ -2381,7 +2381,10 @@ GMT_LOCAL void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: LDISTG 0 1 As LDIST, but operates on the GSHHG dataset (see -A, -D for options).  */
 {
-	uint64_t node, col, seg, tbl, n_threads = 1, OFF = 0, thread_num = 0;
+#ifdef _OPENMP
+	uint64_t thread_num = 0;
+#endif
+	uint64_t node, col, seg, tbl, n_threads = 1, OFF = 0;
 	int64_t row, old_row = INT64_MAX;
 	int i, old_i = INT32_MAX;
 	double lon, lon1, lat, x, y, hor = DBL_MAX, bin_size, slop, d;
