@@ -802,6 +802,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Vector_          | Obtain pointer to user vector from container          |
     +--------------------------+-------------------------------------------------------+
+    | GMT_Get_Version_         | Return the current lib version as a float             |
+    +--------------------------+-------------------------------------------------------+
     | GMT_Init_IO_             | Initialize i/o given registered resources             |
     +--------------------------+-------------------------------------------------------+
     | GMT_Init_VirtualFile_    | Reset a virtual file for reuse                        |
@@ -1316,6 +1318,17 @@ To extract a custom vector from an output :ref:`GMT_VECTOR <struct-vector>` you 
     void *GMT_Get_Vector (void *API, struct GMT_VECTOR *V, unsigned int col);
 
 where ``col`` is the vector number you wish to obtain a pointer to.
+
+.. _GMT_Get_Version:
+
+  ::
+
+    void *GMT_Get_Version (void *API, unsigned int *major, unsigned int *minor, unsigned int *patch);
+
+Returns the current lib version as a float, e.g. *6.0*, and optionally its constituints. Either one or all
+of in *\ *major*, *\ *minor*, *\ *patch* args can be NULL. If they are not, one gets the corresponding
+version component. The *API* pointer is actually not used in this function, so passing NULL is the best
+option.
 
 Finally, for either vectors or matrices you may optionally add a pointer to an
 array of text strings, one per row.  This is done via 
