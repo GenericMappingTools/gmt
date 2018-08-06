@@ -167,22 +167,23 @@ EXTERN_MSC int gmt_f77_readgrdinfo_ (unsigned int dim[], double wesn[], double i
 EXTERN_MSC int gmt_f77_readgrd_	    (gmt_grdfloat *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file, int ltitle, int lremark, int lfile);
 EXTERN_MSC int gmt_f77_writegrd_    (gmt_grdfloat *array, unsigned int dim[], double wesn[], double inc[], const char *title, const char *remark, const char *file, int ltitle, int lremark, int lfile);
 
-/* 5 for external API developers only */
+/* 6 for external API developers only */
 EXTERN_MSC struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *module, int n_in, struct GMT_OPTION **head, unsigned int *n);
-EXTERN_MSC int GMT_Expand_Option		   (void *API, struct GMT_OPTION *current, const char *txt);
-EXTERN_MSC int GMT_Get_Enum			   (void *API, char *key);
-EXTERN_MSC int GMT_Set_AllocMode		   (void *API, unsigned int family, void *object);
-EXTERN_MSC int GMT_Extract_Region		   (void *API, char *file, double wesn[]);
+EXTERN_MSC int GMT_Expand_Option   (void *API, struct GMT_OPTION *current, const char *txt);
+EXTERN_MSC int GMT_Get_Enum	       (void *API, char *key);
+EXTERN_MSC int GMT_Set_AllocMode   (void *API, unsigned int family, void *object);
+EXTERN_MSC int GMT_Extract_Region  (void *API, char *file, double wesn[]);
+EXTERN_MSC float GMT_Get_Version   (void *API, int *major, int *minor, int *patch);
 
 /* These 8 functions are provided for backwards compatibility but are considered obsolete as of 6 */
-EXTERN_MSC void *GMT_Get_Data       (void *API, int object_ID, unsigned int mode, void *data);
-EXTERN_MSC int GMT_Put_Data         (void *API, int object_ID, unsigned int mode, void *data);
-EXTERN_MSC void *GMT_Retrieve_Data  (void *API, int object_ID);
-EXTERN_MSC int GMT_Encode_ID        (void *API, char *string, int object_ID);
-EXTERN_MSC int GMT_Get_ID           (void *API, unsigned int family, unsigned int direction, void *resource);
-EXTERN_MSC int GMT_Get_Value        (void *API, const char *arg, double *par);
-EXTERN_MSC int GMT_Get_Family	    (void *API, unsigned int direction, struct GMT_OPTION *head);
-EXTERN_MSC int GMT_Status_IO        (void *API, unsigned int mode);
+EXTERN_MSC void *GMT_Get_Data      (void *API, int object_ID, unsigned int mode, void *data);
+EXTERN_MSC int GMT_Put_Data        (void *API, int object_ID, unsigned int mode, void *data);
+EXTERN_MSC void *GMT_Retrieve_Data (void *API, int object_ID);
+EXTERN_MSC int GMT_Encode_ID       (void *API, char *string, int object_ID);
+EXTERN_MSC int GMT_Get_ID          (void *API, unsigned int family, unsigned int direction, void *resource);
+EXTERN_MSC int GMT_Get_Value       (void *API, const char *arg, double *par);
+EXTERN_MSC int GMT_Get_Family	   (void *API, unsigned int direction, struct GMT_OPTION *head);
+EXTERN_MSC int GMT_Status_IO       (void *API, unsigned int mode);
 
 #ifdef __cplusplus
 }
