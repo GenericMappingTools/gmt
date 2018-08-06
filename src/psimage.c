@@ -390,7 +390,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	unsigned char *picture = NULL, *buffer = NULL;
 
-	char path[GMT_BUFSIZ] = {""}, *format[2] = {"EPS", "Sun raster"};
+	char path[GMT_BUFSIZ] = {""}, *format[2] = {"EPS", "Sun raster"}, *c = NULL;
 
 	struct imageinfo header;
 
@@ -425,6 +425,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	PS_interpolate = (Ctrl->D.interpolate) ? -1 : +1;
 
+	if ((c = strstr (Ctrl->In.file, "=gd"))) c[0] = '\0';	/* Chop off unnecessary =gd mandate */ 
 	known = file_is_known (GMT, Ctrl->In.file);	/* Determine if this is an EPS file, Sun rasterfile, or other */
 	if (known < 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", Ctrl->In.file);
