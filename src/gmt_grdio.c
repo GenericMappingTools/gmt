@@ -2978,6 +2978,7 @@ GMT_LOCAL void gdal_free_from (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTR
 
 int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) {
 	size_t k;
+	char *p;
 	double dumb;
 	struct GMT_GDALREAD_IN_CTRL *to_gdalread = NULL;
 	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
@@ -2991,12 +2992,11 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *
 	k = strlen (file) - 1;
 	while (k && file[k] && file[k] != '+') k--;	/* See if we have a band request */
 	if (k && file[k+1] == 'b') {
-		char *p;
 		/* Yes we do. Put the band string into the 'pocket' where gmtlib_read_image will look and finish the request */
 		I->header->pocket = strdup (&file[k+2]);
 		file[k] = '\0';
-		if ((p = strchr (file, '=')) != NULL) *p = '\0';	/* Chop off any =<stuff> */
 	}
+	if ((p = strchr (file, '=')) != NULL) *p = '\0';	/* Chop off any =<stuff> */
 
 	if (gmt_gdalread (GMT, file, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading image with gdalread.\n");
