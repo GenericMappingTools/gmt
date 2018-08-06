@@ -107,13 +107,15 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 			to_GDALW->driver = strdup(gdal_drv[k]);
 	}
 	if (to_GDALW->driver == NULL) {	/* None of those; need to give a driver */
-		if ((c = strchr(fname, '='))) {	/* Found an '=<driver>' part */
+		if ((c = strchr(fname, ':'))) {	/* Found an ':<driver>' part */
 			to_GDALW->driver = strdup(&c[1]);
 			c[0] = '\0';			/* Remove the driver code from the name */
+			if ((c = strstr(fname, "=gd")))		/* Check if we have not a stray =gd in name*/
+				c[0] = '\0';					/* Yes, remove it too */
 		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unupported image format. Supported formats are:\nBMP,GIF,JPG,PNG & TIF\n");
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Alternatively, append =<driver> for a valid GDAL driver\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Alternatively, append :<driver> for a valid GDAL driver\n");
 			return GMT_NOTSET;
 		}
 	}
