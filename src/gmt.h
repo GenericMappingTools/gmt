@@ -173,7 +173,7 @@ EXTERN_MSC int GMT_Expand_Option   (void *API, struct GMT_OPTION *current, const
 EXTERN_MSC int GMT_Get_Enum	       (void *API, char *key);
 EXTERN_MSC int GMT_Set_AllocMode   (void *API, unsigned int family, void *object);
 EXTERN_MSC int GMT_Extract_Region  (void *API, char *file, double wesn[]);
-EXTERN_MSC float GMT_Get_Version   (void *API, int *major, int *minor, int *patch);
+EXTERN_MSC float GMT_Get_Version   (void *API, unsigned int *major, unsigned int *minor, unsigned int *patch);
 
 /* These 8 functions are provided for backwards compatibility but are considered obsolete as of 6 */
 EXTERN_MSC void *GMT_Get_Data      (void *API, int object_ID, unsigned int mode, void *data);
