@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: grdmath.c is a reverse polish calculator that operates on grid files
+ * Brief synopsis: grdmath is a reverse polish calculator that operates on grid files
  * (and constants) and perform basic mathematical operations
  * on them like add, multiply, etc.
  * Some operators only work on one operand (e.g., log, exp)
@@ -3068,7 +3068,7 @@ GMT_LOCAL void grd_POP (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 GMT_LOCAL void grd_PLM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: PLM 3 1 Associated Legendre polynomial P(A) degree B order C.  */
 {
-	uint64_t node;
+	int64_t node;	/* Bcause of Win OpenMP */
 	unsigned int prev = last - 1, first = last - 2;
 	int L, M;
 	double a = 0.0;
@@ -3084,10 +3084,13 @@ GMT_LOCAL void grd_PLM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 
 	if (stack[first]->constant) {
 		a = gmt_plm (GMT, L, M, stack[first]->factor);
-		for (node = 0; node < info->size; node++) stack[first]->G->data[node] = (float)a;
+		for (node = 0; node < (int64_t)info->size; node++) stack[first]->G->data[node] = (float)a;
 	}
 	else {
-		for (node = 0; node < info->size; node++)
+#ifdef _OPENMP
+#pragma omp parallel for private(node) shared(info,stack,first,GMT,L,M)
+#endif 
+		for (node = 0; node < (int64_t)info->size; node++)
 			stack[first]->G->data[node] = (float)gmt_plm (GMT, L, M, stack[first]->G->data[node]);
 	}
 }
@@ -3096,7 +3099,7 @@ GMT_LOCAL void grd_PLM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 GMT_LOCAL void grd_PLMg (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: PLMg 3 1 Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention).  */
 {
-	uint64_t node;
+	int64_t node;	/* Bcause of Win OpenMP */
 	unsigned int prev = last - 1, first = last - 2;
 	int L, M;
 	double a = 0.0;
@@ -3112,10 +3115,13 @@ GMT_LOCAL void grd_PLMg (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 
 	if (stack[first]->constant) {
 		a = gmt_plm_bar (GMT, L, M, stack[first]->factor, false);
-		for (node = 0; node < info->size; node++) stack[first]->G->data[node] = (float)a;
+		for (node = 0; node < (int64_t)info->size; node++) stack[first]->G->data[node] = (float)a;
 	}
 	else {
-		for (node = 0; node < info->size; node++)
+#ifdef _OPENMP
+#pragma omp parallel for private(node) shared(info,stack,first,GMT,L,M)
+#endif 
+		for (node = 0; node < (int64_t)info->size; node++)
 			stack[first]->G->data[node] = (float)gmt_plm_bar (GMT, L, M, stack[first]->G->data[node], false);
 	}
 }
@@ -3281,7 +3287,7 @@ GMT_LOCAL void grd_PQUANTW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 GMT_LOCAL void grd_PSI (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: PSI 1 1 Psi (or Digamma) of A.  */
 {
-	uint64_t node;
+	int64_t node;
 	float a = 0.0f;
 	double x[2];
 
@@ -3289,11 +3295,14 @@ GMT_LOCAL void grd_PSI (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	if (stack[last]->constant) {
 		x[0] = stack[last]->factor;
 		a = (float)gmt_psi (GMT, x, NULL);
-		for (node = 0; node < info->size; node++)
+		for (node = 0; node < (int64_t)info->size; node++)
 			stack[last]->G->data[node] = a;
 	}
 	else {
-		for (node = 0; node < info->size; node++) {
+#ifdef _OPENMP
+#pragma omp parallel for private(node) firstprivate(x) shared(info,stack,last,GMT)
+#endif 
+		for (node = 0; node < (int64_t)info->size; node++) {
 			x[0] = stack[last]->G->data[node];
 			stack[last]->G->data[node] = (float)gmt_psi (GMT, x, NULL);
 		}
@@ -4072,11 +4081,24 @@ GMT_LOCAL void grd_TCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	prev = last - 1;
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for TCRIT!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for TCRIT!\n");
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
-			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
-			b = irint ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
-			stack[prev]->G->data[node] = (float)gmt_tcrit (GMT, a, (double)b);
+	if (stack[prev]->constant && stack[last]->constant) {	/* Compute once then copy */
+		float tcrit;
+		a = stack[prev]->factor;
+		b = irint (stack[last]->factor);
+		tcrit = (float)gmt_tcrit (GMT, a, (double)b);
+		for (node = 0; node < info->size; node++)
+			stack[prev]->G->data[node] = tcrit;
+	}
+	else {
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node,a,b) shared(info,stack,prev,last,GMT)
+#endif 
+		for (row = 0; row < info->G->header->n_rows; row++) {
+			for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
+				a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
+				b = irint ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
+				stack[prev]->G->data[node] = (float)gmt_tcrit (GMT, a, (double)b);
+			}
 		}
 	}
 }
@@ -4560,24 +4582,24 @@ GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt,
 	if (!(strcmp (opt->arg, "PI") && strcmp (opt->arg, "pi"))) return GRDMATH_ARG_IS_PI;
 	if (!(strcmp (opt->arg, "E") && strcmp (opt->arg, "e"))) return GRDMATH_ARG_IS_E;
 	if (!(strcmp (opt->arg, "F_EPS") && strcmp (opt->arg, "EPS"))) return GRDMATH_ARG_IS_F_EPS;
-	if (!strcmp (opt->arg, "EULER")) return GRDMATH_ARG_IS_EULER;
-	if (!strcmp (opt->arg, "XMIN")) return GRDMATH_ARG_IS_XMIN;
-	if (!strcmp (opt->arg, "XMAX")) return GRDMATH_ARG_IS_XMAX;
+	if (!strcmp (opt->arg, "EULER"))  return GRDMATH_ARG_IS_EULER;
+	if (!strcmp (opt->arg, "XMIN"))   return GRDMATH_ARG_IS_XMIN;
+	if (!strcmp (opt->arg, "XMAX"))   return GRDMATH_ARG_IS_XMAX;
 	if (!strcmp (opt->arg, "XRANGE")) return GRDMATH_ARG_IS_XRANGE;
-	if (!strcmp (opt->arg, "XINC")) return GRDMATH_ARG_IS_XINC;
-	if (!strcmp (opt->arg, "NX")) return GRDMATH_ARG_IS_NX;
-	if (!strcmp (opt->arg, "YMIN")) return GRDMATH_ARG_IS_YMIN;
-	if (!strcmp (opt->arg, "YMAX")) return GRDMATH_ARG_IS_YMAX;
+	if (!strcmp (opt->arg, "XINC"))   return GRDMATH_ARG_IS_XINC;
+	if (!strcmp (opt->arg, "NX"))     return GRDMATH_ARG_IS_NX;
+	if (!strcmp (opt->arg, "YMIN"))   return GRDMATH_ARG_IS_YMIN;
+	if (!strcmp (opt->arg, "YMAX"))   return GRDMATH_ARG_IS_YMAX;
 	if (!strcmp (opt->arg, "YRANGE")) return GRDMATH_ARG_IS_YRANGE;
-	if (!strcmp (opt->arg, "YINC")) return GRDMATH_ARG_IS_YINC;
-	if (!strcmp (opt->arg, "NY")) return GRDMATH_ARG_IS_NY;
-	if (!strcmp (opt->arg, "X")) return GRDMATH_ARG_IS_X_MATRIX;
-	if (!strcmp (opt->arg, "XNORM")) return GRDMATH_ARG_IS_x_MATRIX;
-	if (!strcmp (opt->arg, "Y")) return GRDMATH_ARG_IS_Y_MATRIX;
-	if (!strcmp (opt->arg, "YNORM")) return GRDMATH_ARG_IS_y_MATRIX;
-	if (!strcmp (opt->arg, "XCOL")) return GRDMATH_ARG_IS_XCOL_MATRIX;
-	if (!strcmp (opt->arg, "YROW")) return GRDMATH_ARG_IS_YROW_MATRIX;
-	if (!strcmp (opt->arg, "NODE")) return GRDMATH_ARG_IS_NODE_MATRIX;
+	if (!strcmp (opt->arg, "YINC"))   return GRDMATH_ARG_IS_YINC;
+	if (!strcmp (opt->arg, "NY"))     return GRDMATH_ARG_IS_NY;
+	if (!strcmp (opt->arg, "X"))      return GRDMATH_ARG_IS_X_MATRIX;
+	if (!strcmp (opt->arg, "XNORM"))  return GRDMATH_ARG_IS_x_MATRIX;
+	if (!strcmp (opt->arg, "Y"))      return GRDMATH_ARG_IS_Y_MATRIX;
+	if (!strcmp (opt->arg, "YNORM"))  return GRDMATH_ARG_IS_y_MATRIX;
+	if (!strcmp (opt->arg, "XCOL"))   return GRDMATH_ARG_IS_XCOL_MATRIX;
+	if (!strcmp (opt->arg, "YROW"))   return GRDMATH_ARG_IS_YROW_MATRIX;
+	if (!strcmp (opt->arg, "NODE"))   return GRDMATH_ARG_IS_NODE_MATRIX;
 	if (!strcmp (opt->arg, "NaN")) {*value = GMT->session.d_NaN; return GRDMATH_ARG_IS_NUMBER;}
 
 	/* Preliminary test-conversion to a number */
