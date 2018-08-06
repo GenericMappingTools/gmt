@@ -9,8 +9,8 @@ ps=readwrite_withgdal.ps
 
 ln -fs "${GMT_SRCDIR:-.}/gdal" .
 
-# RGB image
-gmt grdimage -D gdal/needle.jpg -JX7c/0 -P -Y20c -K > $ps
+# RGB image. The +b0,1,2 also tests the bands request option
+gmt grdimage -D gdal/needle.jpg+b0,1,2 -JX7c/0 -P -Y20c -K > $ps
 
 # Same image as above but as idexed
 gmt grdimage -D gdal/needle.png -JX7c/0 -X7.5c -O -K >> $ps
