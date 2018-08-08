@@ -1026,12 +1026,13 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	nBlocks = (int)ceil((float)nYSize / nRowsPerBlock);
 
 #ifdef READ_BY_BLOCKS
-	if (!(just_copy || copy_flipud))
+	if (!(just_copy || copy_flipud)) {
 		if ((tmp = calloc((size_t)nRowsPerBlock * (size_t)nBufXSize, nPixelSize)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gdalread: failure to allocate enough memory\n");
 			GDALDestroyDriverManager();
 			return(-1);
 		}
+	}
 	else {
 		nRowsPerBlock = nYSize;
 		nBlocks = 1;
