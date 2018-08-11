@@ -2356,6 +2356,8 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	if (!(GMT->current.setting.history & GMT_HISTORY_READ))
 		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Enter: gmtinit_get_history\n");
+
 	/* This is called once per GMT Session by GMT_Create_Session via gmt_begin and before any GMT_* module is called.
 	 * It loads in the known shorthands found in the gmt.history file
 	 */
@@ -2424,6 +2426,8 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 	/* Close the file */
 	gmtinit_file_unlock (GMT, fileno(fp));
 	fclose (fp);
+
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exit:  gmtinit_get_history\n");
 
 	return (GMT_NOERROR);
 }
@@ -5535,6 +5539,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	};
 	gmt_M_unused(session);
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Enter: gmtinit_new_GMT_ctrl\n");
 	/* Alloc using calloc since gmt_M_memory may use resources not yet initialized */
 	GMT = calloc (1U, sizeof (struct GMT_CTRL));
 	gmt_M_memcpy (GMT->current.setting.ref_ellipsoid, ref_ellipsoid, 1, ref_ellipsoid);
@@ -5636,6 +5641,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	GMT->common.x.n_threads = gmtlib_get_num_processors();
 #endif
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exit:  gmtinit_new_GMT_ctrl\n");
 	return (GMT);
 }
 
@@ -10856,6 +10862,7 @@ int gmt_hash_init (struct GMT_CTRL *GMT, struct GMT_HASH *hashnode, char **keys,
 	unsigned int i, next;
 	int entry;
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Enter: gmt_hash_init\n");
 	gmt_M_memset (hashnode, n_hash, struct GMT_HASH);	/* Start with NULL everywhere */
 	for (i = 0; i < n_keys; i++) {
 		entry = gmtinit_hash (GMT, keys[i], n_hash);
@@ -10868,6 +10875,7 @@ int gmt_hash_init (struct GMT_CTRL *GMT, struct GMT_HASH *hashnode, char **keys,
 		hashnode[entry].id[next]  = i;
 		hashnode[entry].n_id++;
 	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exit:  gmt_hash_init\n");
 	return GMT_OK;
 }
 
@@ -14236,7 +14244,9 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	API->GMT = GMT;
 
 	sprintf (version, "GMT%d", GMT_MAJOR_VERSION);
+	GMT_Report (API, GMT_MSG_DEBUG, "Enter: New_PSL_Ctrl\n");
 	GMT->PSL = New_PSL_Ctrl (version);		/* Allocate a PSL control structure */
+	GMT_Report (API, GMT_MSG_DEBUG, "Exit:  New_PSL_Ctrl\n");
 	if (!GMT->PSL) {
 		GMT_Message (API, GMT_TIME_NONE, "Error: Could not initialize PSL - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
@@ -14254,7 +14264,9 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
 	PSL_setdefaults (GMT->PSL, GMT->current.setting.ps_magnify, GMT->current.setting.ps_page_rgb, GMT->current.setting.ps_encoding.name);
 
+	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmtlib_io_init\n");
 	gmtlib_io_init (GMT);		/* Init the table i/o structure before parsing GMT defaults */
+	GMT_Report (API, GMT_MSG_DEBUG, "Exit : gmtlib_io_init\n");
 
 	gmtinit_init_unit_conversion (GMT);	/* Set conversion factors from various units to meters */
 
@@ -14266,7 +14278,9 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	gmtinit_conf (GMT);	/* Initialize the standard GMT system default settings */
 
+	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmt_getdefaults\n");
 	gmt_getdefaults (GMT, NULL);	/* Override using local GMT default settings (if any) [and PSL if selected] */
+	GMT_Report (API, GMT_MSG_DEBUG, "Exit:  gmt_getdefaults\n");
 
 	if (API->runmode) GMT->current.setting.run_mode = GMT_MODERN;	/* Enforced at API Creation */
 
@@ -14282,8 +14296,10 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	 * While this is also done in the default parameter loop it is possible that when a decimal plain format has been selected
 	 * the format_float_out string has not yet been processed.  We clear that up by processing again here. */
 
+	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmtlib_plot_C_format\n");
 	gmtlib_geo_C_format (GMT);
 	gmtlib_plot_C_format (GMT);
+	GMT_Report (API, GMT_MSG_DEBUG, "Exit:  gmtlib_plot_C_format\n");
 
 	/* Set default for -n parameters */
 	GMT->common.n.antialias = true; GMT->common.n.interpolant = BCR_BICUBIC; GMT->common.n.threshold = 0.5;
