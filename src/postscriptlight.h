@@ -153,7 +153,7 @@ enum PSL_enum_const {PSL_CM	= 0,
 	PSL_MAX_DIMS		= 12,		/* Max number of dim arguments to PSL_plot_symbol */
 	PSL_N_PATTERNS		= 91,		/* Current number of predefined patterns + 1, # 91 is user-supplied */
 	PSL_NAME_LEN		= 32,		/* Max length of font names */
-	PSL_BUFSIZ		= 256U};
+	PSL_BUFSIZ		= 4096U};
 
 /* PSL codes for pen movements (used by PSL_plotpoint, PSL_plotline, PSL_plotarc) */
 
