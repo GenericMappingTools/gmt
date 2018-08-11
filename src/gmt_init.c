@@ -14253,16 +14253,22 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 		return NULL;
 	}
 
+	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmt_manage_workflow\n");
 	if (gmt_manage_workflow (API, GMT_USE_WORKFLOW, NULL)) {
 		GMT_Message (API, GMT_TIME_NONE, "Error: Could not initialize the GMT workflow - Aborting.\n");
 		gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
 	}
+	GMT_Report (API, GMT_MSG_DEBUG, "Exit : gmt_manage_workflow\n");
 
 	GMT->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
+	GMT_Report (API, GMT_MSG_DEBUG, "Enter: PSL_beginsession\n");
 	PSL_beginsession (GMT->PSL, API->external, GMT->session.SHAREDIR, GMT->session.USERDIR);	/* Initializes the session and sets a few defaults */
+	GMT_Report (API, GMT_MSG_DEBUG, "Exit : PSL_beginsession\n");
 	/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
+	GMT_Report (API, GMT_MSG_DEBUG, "Enter: PSL_setdefaults\n");
 	PSL_setdefaults (GMT->PSL, GMT->current.setting.ps_magnify, GMT->current.setting.ps_page_rgb, GMT->current.setting.ps_encoding.name);
+	GMT_Report (API, GMT_MSG_DEBUG, "Exit : PSL_setdefaults\n");
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmtlib_io_init\n");
 	gmtlib_io_init (GMT);		/* Init the table i/o structure before parsing GMT defaults */
