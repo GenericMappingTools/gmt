@@ -14973,7 +14973,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	 */
 
 	/* Set workflow directory */
-	char file[PATH_MAX] = {""}, dir[GMT_LEN256] = {""};
+	char file[PATH_MAX] = {""}, dir[PATH_MAX] = {""};
 	static char *type[2] = {"classic", "modern"}, *smode[3] = {"Use", "Begin", "End"}, *fstatus[4] = {"found", "not found", "created", "removed"};
 	int err = 0, fig, error = GMT_NOERROR;
 	struct stat S;
