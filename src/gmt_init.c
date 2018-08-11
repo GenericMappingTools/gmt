@@ -5539,7 +5539,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	};
 	gmt_M_unused(session);
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Enter: gmtinit_new_GMT_ctrl\n");
+	GMT_Report (API, GMT_MSG_DEBUG, "Enter: gmtinit_new_GMT_ctrl\n");
 	/* Alloc using calloc since gmt_M_memory may use resources not yet initialized */
 	GMT = calloc (1U, sizeof (struct GMT_CTRL));
 	gmt_M_memcpy (GMT->current.setting.ref_ellipsoid, ref_ellipsoid, 1, ref_ellipsoid);
@@ -5641,7 +5641,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	GMT->common.x.n_threads = gmtlib_get_num_processors();
 #endif
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exit:  gmtinit_new_GMT_ctrl\n");
+	GMT_Report (API, GMT_MSG_DEBUG, "Exit:  gmtinit_new_GMT_ctrl\n");
 	return (GMT);
 }
 
