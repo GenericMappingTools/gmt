@@ -798,7 +798,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 
 		n_read++;
-		if (n_read%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " records, passed %" PRIu64 "records\n", n_read, n_pass);
+		if (n_read%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " records, passed %" PRIu64 " records\n", n_read, n_pass);
 
 		if (n_fields < n_minimum) {	/* Bad number of columns */
 			if (Ctrl->Z.active)
