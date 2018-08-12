@@ -4074,8 +4074,8 @@ GMT_LOCAL void grd_TCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 /*OPERATOR: TCRIT 2 1 Student's t-distribution critical value for alpha = A and nu = B.  */
 {
 	uint64_t node;
-	int b;
-	unsigned int prev, row, col;
+	int b, row;
+	unsigned int prev, col;
 	double a;
 
 	prev = last - 1;
@@ -4093,7 +4093,7 @@ GMT_LOCAL void grd_TCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,a,b) shared(info,stack,prev,last,GMT)
 #endif 
-		for (row = 0; row < info->G->header->n_rows; row++) {
+		for (row = 0; row < (int)info->G->header->n_rows; row++) {
 			for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
 				a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 				b = irint ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
