@@ -161,7 +161,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s]\n\t[%s]\n\t[-D<resolution>][+] [%s]\n\t[-M] [-N] [%s] [%s] [%s] [%s]\n\t[%s]"
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s]\n\t[%s]\n\t[-D<resolution>][+] [%s]\n\t[-M] [-N] [-S] [%s] [%s] [%s] [%s]\n\t[%s]"
 		" [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t%s [%s]", name, GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT,
 		GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, " A B op C op D op ... = <outgrd>\n\n");
@@ -210,7 +210,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"\t   Default computes derivatives in units of data/grid_distance.\n"
 		"\t-N Do not perform strict domain check if several grids are involved.\n"
 		"\t   [Default checks that domain is within %g * [xinc or yinc] of each other].\n", GMT_CONV4_LIMIT);
-	GMT_Option (API, "R,V");
+	GMT_Option (API, "R");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Reduce the entire Stack to a single layer by applying the next operator to\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   co-registered nodes across the stack.  You must select a reducing operator, i.e.,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   ADD, AND, MAD, LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, or XOR.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Select -S after you have placed all items of interest on the stack.\n");
+	GMT_Option (API, "V");
 	GMT_Option (API, "bi2,di,e,f,g,h,i");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Only applies to the input files for operators LDIST, PDIST, POINT and INSIDE).\n");
 	GMT_Option (API, "n,r,s,x,.");
@@ -269,6 +274,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT
 			case 'N':	/* Relax domain check */
 				Ctrl->N.active = true;
 				break;
+			case 'S':	/* Only checked later */
+				break;
 
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -301,10 +308,208 @@ GMT_LOCAL int grdmath_find_stored_item (struct GMT_CTRL *GMT, struct GRDMATH_STO
 	return (k == n_stored ? GMT_NOTSET : k);
 }
 
+/* Stack collapsing operators taht work on same nodes across all stack items */
+
+GMT_LOCAL double stack_collapse_add (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	uint64_t k;
+	double sum = array[0];
+	gmt_M_unused (GMT);
+	for (k = 1; k < n; k++) sum += array[k];
+	return sum;
+}
+
+GMT_LOCAL double stack_collapse_and (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	uint64_t k;
+	double x = array[0];
+	gmt_M_unused (GMT);
+	for (k = 1; k < n; k++)
+		x = (gmt_M_is_dnan (x)) ? array[k] : x;
+	return x;
+}
+
+GMT_LOCAL double stack_collapse_lmsscl (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	double lmsscl;
+	gmt_sort_array (GMT, array, n, GMT_DOUBLE);
+	while (n > 1 && gmt_M_is_dnan (array[n-1])) n--;
+	if (n) {
+		unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0;
+		double mode;
+		gmt_mode (GMT, array, n, n/2, 0, gmt_mode_selection, &GMT_n_multiples, &mode);
+		gmt_getmad (GMT, array, n, mode, &lmsscl);
+	}
+	else
+		lmsscl = GMT->session.d_NaN;
+	return lmsscl;
+}
+
+GMT_LOCAL double stack_collapse_mad (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	double mad;
+	gmt_sort_array (GMT, array, n, GMT_DOUBLE);
+	while (n > 1 && gmt_M_is_dnan (array[n-1])) n--;
+	if (n) {
+		double med = (n%2) ? array[n/2] : 0.5 * (array[(n-1)/2] + array[n/2]);
+		gmt_getmad (GMT, array, n, med, &mad);
+	}
+	else
+		mad = GMT->session.d_NaN;
+	return mad;
+}
+
+GMT_LOCAL double stack_collapse_max (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	uint64_t k;
+	double max = array[0];
+	gmt_M_unused (GMT);
+	for (k = 1; k < n; k++)
+		if (array[k] > max) max = array[k];
+	return max;
+}
+
+GMT_LOCAL double stack_collapse_mean (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	double std = 0.0;
+	return gmt_mean_and_std (GMT, array, n, &std);
+}
+
+GMT_LOCAL double stack_collapse_median (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	double med;
+	gmt_sort_array (GMT, array, n, GMT_DOUBLE);
+	while (n > 1 && gmt_M_is_dnan (array[n-1])) n--;
+	if (n)
+		med = (n%2) ? array[n/2] : 0.5 * (array[(n-1)/2] + array[n/2]);
+	else
+		med = GMT->session.d_NaN;
+	return med;
+}
+
+GMT_LOCAL double stack_collapse_min (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	uint64_t k;
+	double min = array[0];
+	gmt_M_unused (GMT);
+	for (k = 1; k < n; k++)
+		if (array[k] < min) min = array[k];
+	return min;
+}
+
+GMT_LOCAL double stack_collapse_mode (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0;
+	double mode;
+	gmt_mode (GMT, array, n, n/2, true, gmt_mode_selection, &GMT_n_multiples, &mode);
+	return mode;
+}
+
+GMT_LOCAL double stack_collapse_mul (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	uint64_t k;
+	double prod = array[0];
+	gmt_M_unused (GMT);
+	for (k = 1; k < n; k++)
+		prod *= array[k];
+	return prod;
+}
+
+GMT_LOCAL double stack_collapse_or (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	uint64_t k;
+	double x = array[0];
+	gmt_M_unused (GMT);
+	for (k = 1; k < n; k++)
+	 	x = (gmt_M_is_dnan (x) || gmt_M_is_dnan (array[k])) ? GMT->session.d_NaN : x;
+	return x;
+}
+
+GMT_LOCAL double stack_collapse_rms (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	uint64_t k;
+	double rms = 0.0;
+	gmt_M_unused (GMT);
+	for (k = 0; k < n; k++)
+		rms += array[k] * array[k];
+	return sqrt (rms / n);
+}
+
+GMT_LOCAL double stack_collapse_std (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	double std = 0.0;
+	(void)gmt_mean_and_std (GMT, array, n, &std);
+	return std;
+}
+
+GMT_LOCAL double stack_collapse_sub (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	uint64_t k;
+	double sum = array[0];
+	gmt_M_unused (GMT);
+	for (k = 1; k < n; k++)
+		sum -= array[k];
+	return sum;
+}
+
+GMT_LOCAL double stack_collapse_xor (struct GMT_CTRL *GMT, double *array, uint64_t n) {
+	uint64_t k;
+	double x = array[0];
+	gmt_M_unused (GMT);
+	for (k = 1; k < n; k++)
+	 	x = (gmt_M_is_dnan (x) && gmt_M_is_dnan (array[k])) ? 0.0 : (gmt_M_is_dnan (array[k]) ? GMT->session.d_NaN : x);
+	return x;
+}
+
 /* -----------------------------------------------------------------
  *              Definitions of all operator functions
  * -----------------------------------------------------------------*/
 /* Note: The OPERATOR: **** lines are used to extract syntax for documentation */
+
+GMT_LOCAL int collapse_stack (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last, char *OP)
+{
+	/* Collapse stack will apply the given operator to all items on the stack, per node.
+	 * You may have 7 grids on the stack and you want to return the mean value per node
+	 * for all 7 grids, to be replaced by a single grid with those means.  You would do
+	 * gmt grdmath *.grd -S MEAN = means.grd
+	 * where the -S option turns on the collapsable stack operators.
+	 */
+	
+	uint64_t node, s;
+	double *array = NULL;
+	double (*func) (struct GMT_CTRL *, double *, uint64_t);	/* Pointer to function returning a double */
+
+	if (!strcmp (OP, "ADD"))
+		func = &stack_collapse_add;
+	else if (!strcmp (OP, "AND"))
+		func = &stack_collapse_and;
+	else if (!strcmp (OP, "LMSSCL"))
+		func = &stack_collapse_lmsscl;
+	else if (!strcmp (OP, "MAD"))
+		func = &stack_collapse_mad;
+	else if (!strcmp (OP, "MAX"))
+		func = &stack_collapse_max;
+	else if (!strcmp (OP, "MEAN"))
+		func = &stack_collapse_mean;
+	else if (!strcmp (OP, "MEDIAN"))
+		func = &stack_collapse_median;
+	else if (!strcmp (OP, "MIN"))
+		func = &stack_collapse_min;
+	else if (!strcmp (OP, "MODE"))
+		func = &stack_collapse_mode;
+	else if (!strcmp (OP, "MUL"))
+		func = &stack_collapse_mul;
+	else if (!strcmp (OP, "OR"))
+		func = &stack_collapse_or;
+	else if (!strcmp (OP, "STD"))
+		func = &stack_collapse_std;
+	else if (!strcmp (OP, "SUB"))
+		func = &stack_collapse_sub;
+	else if (!strcmp (OP, "RMS"))
+		func = &stack_collapse_rms;
+	else if (!strcmp (OP, "XOR"))
+		func = &stack_collapse_xor;
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized stack reduction operator %s - ignored\n", OP);
+		return 1;
+	}
+
+	array = gmt_M_memory (GMT, NULL, last, double);
+	for (node = 0; node < info->size; node++) {	/* For all nodes */
+		for (s = 0; s < last; s++)	/* For all items on stack */
+			array[s] = (stack[s]->constant) ? stack[last]->factor : stack[s]->G->data[node];
+		/* Now do operation on this stack array */
+		stack[0]->G->data[node] = func (GMT, array, last);
+	}
+	gmt_M_free (GMT, array);
+	return 0;
+}
 
 GMT_LOCAL void grd_ABS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: ABS 1 1 abs (A).  */
@@ -2410,7 +2615,7 @@ GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 
 	bin_size = info->A->bin_size;		/* Current GSHHG bin size in degrees */
 	slop = 2 * gmt_distance (GMT, 0.0, 0.0, bin_size, 0.0);	/* Define slop in projected units (km) for bin at Equator */
-	if (last == UINT32_MAX) last = 0;	/* Was called the very first time when n_stack - 1 goes crazy since it is unsigned */
+	if (last == UINT32_MAX) last = 0;	/* Was called the very first time when nstack - 1 goes crazy since it is unsigned */
 #ifdef _OPENMP
 	n_threads = GMT->common.x.n_threads;	/* Use the number of selected threads (see -x) */
 #endif
@@ -4911,6 +5116,12 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		/* First check if we should skip optional arguments */
 
 		if (strchr ("ADIMNRVbfnr-" GMT_OPT("F") GMT_ADD_x_OPT, opt->option)) continue;
+		if (opt->option == 'S' && nstack > 1) {
+			opt = opt->next;	/* Skip to actual operator */
+			if (collapse_stack (GMT, &info, stack, nstack, opt->arg)) continue;	/* Failed, just ignore */
+			nstack = 1;
+			continue;
+		}
 
 		op = decode_grd_argument (GMT, opt, &value, localhashnode);
 		if (op == GRDMATH_ARG_IS_BAD) Return (GMT_RUNTIME_ERROR);		/* Horrible way to go... */

@@ -18,7 +18,9 @@ Synopsis
 [ |-D|\ *resolution*\ [**+**] ]
 [ |SYN_OPT-I| ]
 [ |-M| ] [ |-N| ]
-[ |SYN_OPT-R| ] [ |SYN_OPT-V| ]
+[ |SYN_OPT-R| ]
+[ |-S| ]
+[ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
@@ -101,6 +103,15 @@ Optional Arguments
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
+
+.. _-S:
+
+**-S**
+    Reduce (collapse) the entire stack to a single grid by applying the
+    next operator to all co-registered nodes across the entire stack.  You
+    must specify **-S** *after* listing all of your grids.  Note: You can only
+    follow **-S** with a reducing operator, i.e., from the list ADD, AND, MAD,
+    LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, or XOR.
 
 .. _-V:
 
@@ -771,6 +782,13 @@ geographic grid data.grd, run
    ::
 
     gmt grdmath -Rdata.grd trace.txt LDIST = dist_from_line.grd
+
+To demonstrate the stack-reducing effect of **-S**, we compute the standard deviation
+per node of all the grids matching the name model_*.grd using
+
+   ::
+
+    gmt grdmath model_*.grd -S STD = std_of_models.grd
 
 References
 ----------
