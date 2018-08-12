@@ -448,7 +448,86 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 			n_tiles++;
 		}
 	}
-	if (ocean) fprintf (fp, "@earth_relief_15s\n");	/* End with a resampled 15s grid to get bathymetry [-Co- clobber mode] */
+	if (ocean) {	/* OK, so we requested to fill in with sampled 15s grid.  Do we have the file already */
+		if (gmt_access (API->GMT, "earth_relief_15s.grd", F_OK)) {	/* Not downloaded yet */
+			/* We will loop acround the perimeter of the requested grid and generate lon, lat points
+			 * that we will pass to gmtselect.  We determine if there are points that fall in the ocean
+			 * which means we must get the 15s grid for sure. */
+			uint64_t dim[GMT_DIM_SIZE] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
+			uint64_t row, col, n = 0;
+			double inc[2], lon, lat;
+			char output[GMT_STR16], input[GMT_STR16], cmd[GMT_LEN128] = {""};
+			struct GMT_GRID *G = NULL;
+			struct GMT_DATASET *Din = NULL, *Dout = NULL;
+			struct GMT_DATASEGMENT *S = NULL;
+			
+			/* Create a grid header that we can use to create the perimeter coordinates */
+			if (res == 1) inc[GMT_X] = inc[GMT_Y] = GMT_SEC2DEG; else inc[GMT_X] = inc[GMT_Y] = 3.0 * GMT_SEC2DEG;
+			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, wesn, inc, \
+				GMT_GRID_NODE_REG, GMT_NOTSET, NULL)) == NULL) {
+				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to create grid header used for building perimeter input.\n");
+				return NULL;
+			}
+			/* Create dataset to hold the perimeter coordinates. Compute how many there are */
+			dim[GMT_ROW] = 2 * (G->header->n_rows + (G->header->n_columns - 2));
+			if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+				return NULL;
+				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to create input dataset used for holding perimeter input.\n");
+			}
+			S = Din->table[0]->segment[0];	/* Shorthand to only segment */
+			gmt_M_row_loop (API->GMT, G, row) {	/* For entire west and east columns */
+				lat = gmt_M_grd_row_to_y (API->GMT, row, G->header);
+				S->data[GMT_X][n] = wesn[XLO];
+				S->data[GMT_Y][n++] = lat;
+				S->data[GMT_X][n] = wesn[XHI];
+				S->data[GMT_Y][n++] = lat;
+			}
+			for (col = 1; col < (G->header->n_columns-1); col++) {	/* For shortened north and south rows */
+				lon = gmt_M_grd_col_to_x (API->GMT, col, G->header);
+				S->data[GMT_X][n] = lon;
+				S->data[GMT_Y][n++] = wesn[YLO];
+				S->data[GMT_X][n] = lon;
+				S->data[GMT_Y][n++] = wesn[YHI];
+			}
+			/* Done with the grid for now */
+			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy grid used for perimeter.\n");
+				return NULL;
+			}
+			/* Set up virtual files for both input and output perimeter points */
+			GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, Din, input);
+			GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, NULL, output);
+			/* Call gmt select and return coordinates on land */
+			sprintf (cmd, "-Ns/k -Df %s ->%s", input, output);
+			if (GMT_Call_Module (API, "select", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Failure */
+				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: gntselect command for perimeter failed.\n");
+				return NULL;
+			}
+			if ((Dout = GMT_Read_VirtualFile (API, output)) == NULL) {	/* Access the output data table */
+				return NULL;
+			}
+			if (Din->n_records == Dout->n_records) {	/* All perimeter nodes on land; no need to read the ocean layer */
+				ocean = false;
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "gmtlib_get_srtmlist: Perimeter on land - no need to get @earth_relief_15s.\n");
+			}
+			else
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "gmtlib_get_srtmlist: Perimeter partly in ocean - must get @earth_relief_15s.\n");
+			/* Free structures used to hold the perimeter data tables */
+			if (GMT_Destroy_Data (API, &Din) != GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy data table used for perimeter input.\n");
+				return NULL;
+			}
+			if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy data table used for perimeter output.\n");
+				return NULL;
+			}
+			/* So here, ocean may have changed from true to false if we found no ocean... */
+		}
+		else
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "gmtlib_get_srtmlist: Already have @earth_relief_15s.\n");
+		if (ocean)	/* Either some perimiter nodes were in the ocean, so get the file, or we already have the file locally */
+			fprintf (fp, "@earth_relief_15s\n");	/* End with a resampled 15s grid to get bathymetry [-Co- clobber mode] */
+	}
 	fclose (fp);
 	if (GMT_Destroy_Data (API, &SRTM) != GMT_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy list of available SRTM tiles.\n");

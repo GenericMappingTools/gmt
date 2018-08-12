@@ -29,33 +29,33 @@ The following codes for *rr*\ *u* are supported:
     +======+==================+========+===============================================+
     | 60m  |     361 x    181 | 111 KB | 60 arc minute global relief (ETOPO1 @ 111 km) |
     +------+------------------+--------+-----------------------------------------------+
-    | 30m  |     721 x    362 | 376 KB | 30 arc minute global relief (ETOPO1 @ 55 km)  |
+    | 30m  |     721 x    361 | 376 KB | 30 arc minute global relief (ETOPO1 @ 55 km)  |
     +------+------------------+--------+-----------------------------------------------+
-    | 20m  |     721 x    362 | 782 KB | 20 arc minute global relief (ETOPO1 @ 37 km)  |
+    | 20m  |    1081 x    541 | 782 KB | 20 arc minute global relief (ETOPO1 @ 37 km)  |
     +------+------------------+--------+-----------------------------------------------+
-    | 15m  |     721 x    362 | 1.3 MB | 15 arc minute global relief (ETOPO1 @ 28 km)  |
+    | 15m  |    1441 x    721 | 1.3 MB | 15 arc minute global relief (ETOPO1 @ 28 km)  |
     +------+------------------+--------+-----------------------------------------------+
-    | 10m  |     721 x    362 | 2.8 MB | 30 arc minute global relief (ETOPO1 @ 18 km)  |
+    | 10m  |    2161 x   1081 | 2.8 MB | 30 arc minute global relief (ETOPO1 @ 18 km)  |
     +------+------------------+--------+-----------------------------------------------+
-    | 06m  |     721 x    362 | 7.4 MB | 6 arc minute global relief (ETOPO1 @ 10 km)   |
+    | 06m  |    3601 x   1801 | 7.4 MB | 6 arc minute global relief (ETOPO1 @ 10 km)   |
     +------+------------------+--------+-----------------------------------------------+
-    | 05m  |     721 x    362 |  11 MB | 5 arc minute global relief (ETOPO1 @ 9 km)    |
+    | 05m  |    4321 x   2161 |  11 MB | 5 arc minute global relief (ETOPO1 @ 9 km)    |
     +------+------------------+--------+-----------------------------------------------+
-    | 04m  |     721 x    362 |  16 MB | 4 arc minute global relief (ETOPO1 @ 7.5 km)  |
+    | 04m  |    5401 x   2701 |  16 MB | 4 arc minute global relief (ETOPO1 @ 7.5 km)  |
     +------+------------------+--------+-----------------------------------------------+
-    | 03m  |     721 x    362 |  27 MB | 3 arc minute global relief (ETOPO1 @ 5.6 km)  |
+    | 03m  |    7201 x   3601 |  27 MB | 3 arc minute global relief (ETOPO1 @ 5.6 km)  |
     +------+------------------+--------+-----------------------------------------------+
-    | 02m  |     721 x    362 |  58 MB | 2 arc minute global relief (ETOPO2v2)         |
+    | 02m  |   10801 x   5401 |  58 MB | 2 arc minute global relief (ETOPO2v2)         |
     +------+------------------+--------+-----------------------------------------------+
-    | 01m  |     721 x    362 | 214 MB | 1 arc minute global relief (ETOPO1)           |
+    | 01m  |   21601 x  10801 | 214 MB | 1 arc minute global relief (ETOPO1)           |
     +------+------------------+--------+-----------------------------------------------+
-    | 30s  |   43200 x  21600 | 778 MB | 30 arc second global relief (SRTM30+)         |
+    | 30s  |   43201 x  21601 | 778 MB | 30 arc second global relief (SRTM30+)         |
     +------+------------------+--------+-----------------------------------------------+
-    | 15s  |   86400 x  43200 | 2.6 GB | 15 arc second global relief (SRTM15+)         |
+    | 15s  |   86401 x  43201 | 2.6 GB | 15 arc second global relief (SRTM15+)         |
     +------+------------------+--------+-----------------------------------------------+
-    | 03s  |  432000 x 216000 | 6.8 GB | 3 arc second global relief (SRTM3S)           |
+    | 03s  |  432001 x 216001 | 6.8 GB | 3 arc second global relief (SRTM3S)           |
     +------+------------------+--------+-----------------------------------------------+
-    | 01s  | 1296000 x 432000 |  41 GB | 1 arc second global relief (SRTM1S)           |
+    | 01s  | 1296001 x 432001 |  41 GB | 1 arc second global relief (SRTM1S)           |
     +------+------------------+--------+-----------------------------------------------+
 
 All of these data will, when downloaded, be placed in your ~/.gmt/server directory, with
@@ -75,7 +75,8 @@ However, for the SRTM tiles we only download the tiles that are inside your sele
 the first time they are referenced. Also note that the 3 and 1 arc second grids only extend
 to latitudes ±60˚. The SRTM tiles are only valid over land.  However, when these grids
 are accessed as @earth_relief_01s or @earth_relief_03s we will automatically upsample the
-@earth_relief_15s grid to fill in the missing ocean values.  If you just want the original land-only
+@earth_relief_15s grid to fill in the missing ocean values (but only if the region includes oceanic areas).
+If you just want the original land-only
 SRTM tiles you may use @srtm_relief_03s or @srtm_relief_01s instead. All grids are gridline-registered.
 
 The dimensions above reflect the number of nodes covered by the global grids and the sizes are

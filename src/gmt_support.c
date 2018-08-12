@@ -14812,7 +14812,7 @@ void gmt_free_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT **Ap) {
 }
 
 /*! . */
-struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char option) {
+struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char option) {
 	/* Used to decipher option -D in psscale, pslegend, and psimage:
 	 * -D[g|j|n|x]<refpoint>[/<remainder]
 	 * where g means map coordinates, n means normalized coordinates, and x means plot coordinates.
@@ -14827,6 +14827,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char op
 	enum GMT_enum_refpoint mode = GMT_REFPOINT_NOTSET;
 	char txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""}, the_rest[GMT_LEN256] = {""};
 	static char *kind = "gjJnx";	/* The five types of refpoint specifications */
+	char *arg = strdup (arg_in);	/* SInce it may be a constant */
 	struct GMT_REFPOINT *A = NULL;
 
 	switch (arg[0]) {
@@ -14861,6 +14862,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char op
 			}
 			else if ((n2 = sscanf (&arg[k], "%[^/]/%s", txt_x, txt_y)) < 2) {
 				arg[n] = '+';	/* Restore modifiers */
+				gmt_M_str_free (arg);
 				return NULL;	/* Not so good */
 			}
 		}
@@ -14889,6 +14891,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char op
 		gmt_set_missing_options (GMT, "JR");	/* If mode is modern, they exist in the history, and if an overlay we may add these from history automatically */
 		if (GMT->common.J.active == false && GMT->common.R.active[RSET] == false) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your -%c%c reference point coordinates require both -R -J to be specified\n", option, kind[mode]);
+			gmt_M_str_free (arg);
 			return NULL;
 		}
 	}
@@ -14928,6 +14931,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char op
 		A->mode = mode;
 		A->args = strdup (the_rest);
 	}
+	gmt_M_str_free (arg);
 
 	return (A);
 }
