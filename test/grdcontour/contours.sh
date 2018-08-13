@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test that contours are oriented correctly
 

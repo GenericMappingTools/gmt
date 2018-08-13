@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT EXAMPLE 36
-#               $Id$
 #
 # Purpose:      Illustrate sphinterpolate with Mars radii data
 # GMT modules:  psxy, makecpt, grdimage, sphinterpolate

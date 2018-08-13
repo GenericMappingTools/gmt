@@ -1,6 +1,5 @@
 REM		GMT EXAMPLE 16
 REM
-REM		$Id$
 REM
 REM Purpose:	Illustrates interpolation methods using same data as Example 12.
 REM GMT progs:	gmtset, grdview, grdfilter, pscontour, psscale, pstext, surface, triangulate

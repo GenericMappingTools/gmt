@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test gmt sample1d interpolation with NaNs
 
 makeps () {

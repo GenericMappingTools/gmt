@@ -1,5 +1,4 @@
 REM             GMT EXAMPLE 39
-REM             $Id$
 REM
 REM Purpose:      Illustrate evaluation of spherical harmonic coefficients
 REM GMT progs:    psscale, pstext, makecpt, grdimage. sph2grd

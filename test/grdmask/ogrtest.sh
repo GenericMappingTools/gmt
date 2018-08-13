@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 #
 # Test gmt grdmask for proper handling of perimeter and holes [OGR].
 

@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 01
-#		$Id$
 #
 # Purpose:	Make two contour maps based on the data in the file osu91a1f_16.nc
 # GMT modules:	gmtset, grdcontour, psbasemap, pscoast

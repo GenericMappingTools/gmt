@@ -1,4 +1,3 @@
-#	$Id$
 #
 #	Definition file for diamond symbol.  Use in psxy
 #	as -Skdiamond/size.  Unlike -Sd, this allows for

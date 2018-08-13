@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 11
-#		$Id$
 #
 # Purpose:	Create a 3-D RGB Cube
 # GMT modules:	gmtset, grdimage, grdmath, pstext, psxy

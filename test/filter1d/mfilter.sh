@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Get and filter the Keeling curve with monthly averages
 ps=mfilter.ps
 gmt set MAP_ANNOT_ORTHO "" IO_HEADER_MARKER \" FORMAT_TIME_PRIMARY_MAP Abbreviated FORMAT_DATE_MAP o

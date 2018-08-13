@@ -1,6 +1,5 @@
 REM		GMT EXAMPLE 09
 REM
-REM		$Id$
 REM
 REM Purpose:	Make wiggle plot along track from geoid deflections
 REM GMT progs:	gmtconvert, pswiggle, pstext, psxy

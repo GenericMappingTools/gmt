@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Testing gmt pslegend in 3D [http://gmt.soest.hawaii.edu/boards/1/topics/5157]
 

@@ -3,7 +3,6 @@ function poldecimate(out_path::ASCIIString="")
 # PS       -> Full name of the created postscript file (built from OUT_PATH)
 # PATH     -> Path to where this file lives (useful for gmtest.m)
 #
-#	$Id$
 #	Testing gmt gmtspatial decimation near poles
 #
 # Input was made this way.

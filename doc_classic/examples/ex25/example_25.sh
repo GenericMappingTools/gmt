@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 25
-#		$Id$
 #
 # Purpose:	Display distribution of antipode types
 # GMT modules:	gmtset, grdlandmask, grdmath, grd2xyz, gmtmath, grdimage, pscoast, pslegend

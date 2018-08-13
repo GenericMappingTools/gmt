@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 
 ps=pacific_map_1.ps
 

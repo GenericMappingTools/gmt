@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 #	This script makes the documentation in Appendix E.
 #

@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing gmt grdfilter's weights at a given point for a given
 # filter diameter.  Specify which output you want (a|c|r|w).
 # Change args below to pick another filter.

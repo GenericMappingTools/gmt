@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing gmt spatial nearest neighbor options
 #
 # Input was made this way.

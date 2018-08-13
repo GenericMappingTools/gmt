@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT ANIMATION 04
-#               $Id$
 #
 # Purpose:      Make DVD-res movie of NY to Miami flight
 # GMT modules:  gmtset, grdgradient, grdimage, makecpt, project, pstext, psxy, psconvert

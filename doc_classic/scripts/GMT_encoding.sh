@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 #
 #	This plots the given encoding vector to stdout
 #

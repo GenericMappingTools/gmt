@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #	Testing gpsgridder for large region with weights
 #	Work is being done by run_GPS_case.sh
 # GMT CLASSIC mode

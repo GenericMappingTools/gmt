@@ -1,5 +1,4 @@
 /*-----------------------------------------------------------------
- *	$Id$
  *
  *      Copyright (c) 1999-2018 by J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.

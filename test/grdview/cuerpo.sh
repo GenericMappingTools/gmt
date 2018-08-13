@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 # This test is based on a query by Eduardo Suarez
 
 ps=cuerpo.ps

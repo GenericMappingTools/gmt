@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test makecpt -S options
 
 ps=autocpt.ps

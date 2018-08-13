@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing gmt grdfft power spectrum values
 
 ps=power2D.ps

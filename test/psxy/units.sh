@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test that symbol units is picked up from datafile, symbol option, and GMT default, in that order
 ps=units.ps
 # No unit in data, PROJ_LENGTH_UNIT decides the size

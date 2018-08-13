@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#       $Id$
 
 ps=sph_2.ps
 

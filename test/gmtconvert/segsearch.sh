@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test the gmtconvert -Q search option for all possibilities
 
 cat << EOF > data.txt

@@ -1,6 +1,5 @@
 REM		GMT EXAMPLE 12
 REM
-REM		$Id$
 REM
 REM Purpose:	Illustrates Delaunay triangulation of points, and contouring
 REM GMT progs:	makecpt, gmtinfo, pscontour, pstext, psxy, triangulate

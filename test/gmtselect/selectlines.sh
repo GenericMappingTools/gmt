@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Deal with gmtselect action on lines
 ps=selectlines.ps
 cat << EOF > lines.txt

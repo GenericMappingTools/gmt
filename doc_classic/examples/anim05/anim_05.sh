@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT ANIMATION 05
-#               $Id$
 #
 # Purpose:      Make web page with simple animated GIF of gridding
 # GMT modules:  grdcontour, greenspline, psxy, pstext, psconvert

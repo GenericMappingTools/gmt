@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Check clipping of lines crossing over the horizon AND dateline (N pole)
 

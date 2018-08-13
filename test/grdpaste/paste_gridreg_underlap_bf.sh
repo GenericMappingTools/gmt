@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Paste grid registered grids that do NOT share a row/column along X & Y edges
 # We simulate this by creating pastable pixreg grids and toggle their registration

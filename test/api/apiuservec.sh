@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test the C API for conversions between user vectors and
 # datasets.  A user input "dataset" is passed as a vector to

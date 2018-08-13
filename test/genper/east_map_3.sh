@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 
 ps=east_map_3.ps
 

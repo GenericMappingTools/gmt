@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Gridline registration
 gmt psxy -R0/3/0/3 -JX2.5i/1.25i -B1g1 -Bwesn -P -K -Wthinner -L -Glightred << EOF > GMT_registration.ps

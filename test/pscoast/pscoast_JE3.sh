@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 # Test a non-global -JE plot
 
 ps=pscoast_JE3.ps

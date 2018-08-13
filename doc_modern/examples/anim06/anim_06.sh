@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT ANIMATION 06
-#               $Id$
 #
 # Purpose:      Demonstrate aliasing by sampling a chirp
 # GMT modules:  gmtmath, gmtconvert, psbasemap, psxy, pstext, movie, sample1d

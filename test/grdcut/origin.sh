@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing gmt grdcut -S for 3 different points
 
 ps=origin.ps

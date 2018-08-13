@@ -1,5 +1,4 @@
 REM		GMT EXAMPLE 32
-REM		$Id$
 REM
 REM Purpose:	Illustrate draping of an image over topography
 REM GMT progs:	grdcut, grdedit, grdconvert, grdtrack, grdview

@@ -1,5 +1,4 @@
 /************************ segy_io.h *******************************
- * $Id$
  * Include file for segy_io.c, a suite of functions to
  * help reading and writing those annoying, redundant SEGY header
  * variables and for reading/writing to/from SEGY files.

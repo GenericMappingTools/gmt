@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Another test for gmt project in generating small and great circles
 ps=circles.ps

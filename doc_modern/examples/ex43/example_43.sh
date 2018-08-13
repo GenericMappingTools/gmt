@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT EXAMPLE 43
-#               $Id$
 #
 # Purpose:      Illustrate regression and outlier detection
 # GMT modules:  gmtregress, psbasemap, pslegend, pstext, psxy

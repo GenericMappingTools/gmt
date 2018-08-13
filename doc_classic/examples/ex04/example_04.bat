@@ -1,6 +1,5 @@
 REM		GMT EXAMPLE 04
 REM
-REM		$Id$
 REM
 REM Purpose:	3-D mesh plot of Hawaiian topography and geoid
 REM GMT progs:	grdcontour, grdimage, grdview, psbasemap, pscoast, pstext

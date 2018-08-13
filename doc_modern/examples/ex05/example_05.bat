@@ -1,6 +1,5 @@
 REM		GMT EXAMPLE 05
 REM
-REM		$Id$
 REM
 REM Purpose:	Generate grid and show monochrome 3-D perspective
 REM GMT progs:	grdmath, grdview, pstext

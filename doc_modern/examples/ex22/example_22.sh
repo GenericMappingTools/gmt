@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 22
-#		$Id$
 #
 # Purpose:	Automatic map of last month of world-wide seismicity
 # GMT modules:	gmtset, pscoast, psxy, pslegend

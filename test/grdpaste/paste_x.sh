@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Paste grids along X & Y
 

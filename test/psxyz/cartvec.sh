@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 ps=cartvec.ps
 
 cat << EOF > vec.txt

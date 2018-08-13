@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Compute E-W and N-S deflections over synthetic seamount
 ps=deflections.ps

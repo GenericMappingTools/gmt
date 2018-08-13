@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 
 makegrd () {
 gmt xyz2grd -I1 -Gt.nc -Z $1 <<%

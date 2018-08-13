@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT EXAMPLE 48
-#               $Id$
 #
 # Purpose:      Illustrate use of trimmed lines with vectors, networks, and local spiderwebs
 # GMT modules:  makecpt, pscoast, psxy, sphtriangulate, grdimate, gmtmath, pstext

@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 #
 # Check that vertical and horizontal box-and-whisker symbols work
 ps=boxwhisk.ps

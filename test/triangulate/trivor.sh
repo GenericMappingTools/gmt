@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test Delauney and Voronoi for Cartesian data
 

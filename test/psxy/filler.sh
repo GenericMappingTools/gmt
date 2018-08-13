@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test line to polygon completion option -L<modifiers> in psxy
 ps=filler.ps
 cat << EOF > t.txt

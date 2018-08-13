@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing gmt trend2d
 
 ps=trend.ps

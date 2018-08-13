@@ -1,6 +1,5 @@
 REM		GMT EXAMPLE 08
 REM
-REM		$Id$
 REM
 REM Purpose:	Make a 3-D bar plot
 REM GMT progs:	grd2xyz, makecpt, pstext, psxyz

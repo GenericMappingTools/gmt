@@ -3,7 +3,6 @@ function GMT_insert(out_path::ASCIIString="")
 # PS       -> Full name of the created postscript file (built from OUT_PATH)
 # PATH     -> Path to where this file lives (useful for gmtest.m)
 #
-#	$Id$
 
 	global outPath
 	if (isempty(out_path))	out_path = outPath;		end

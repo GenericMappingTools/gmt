@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Plot error bars and test [c+l|f]+p<epen>
 

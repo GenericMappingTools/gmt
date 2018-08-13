@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 # Testing gmtregress on the data in York [1966]
 # York, D. (1966), Least-squares fitting of a straight line,
 #    Can. J. Phys., 44, 1079-1086.

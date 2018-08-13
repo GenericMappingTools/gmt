@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 

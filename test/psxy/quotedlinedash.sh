@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Originated with issue # 1080 - should be fixed.
 ps=quotedlinedash.ps
 cat << EOF > line

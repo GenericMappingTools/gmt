@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test grdcontour -N with perspective
 #
 ps=view_filled.ps

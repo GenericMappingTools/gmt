@@ -1,4 +1,3 @@
-#	$Id$
 #
 # This file contains information on rasterfiles which are readable with grdraster.
 # This file must be named grdraster.info.  At run time, grdraster will look for

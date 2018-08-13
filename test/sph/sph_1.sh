@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#       $Id$
 
 ps=sph_1.ps
 mars370=@mars370d.txt

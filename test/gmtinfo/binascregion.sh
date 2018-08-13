@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 # Testing that both ascii and binary read with -i will properly
 # access the same files and apply the same col-type tests
 # Based on msg7140 by John.

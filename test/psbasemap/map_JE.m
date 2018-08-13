@@ -3,7 +3,6 @@ function [ps, path] = map_JE(out_path)
 % PS       -> Full name of the created postscript file (built from OUT_PATH)
 % PATH     -> Path to where this file lives (useful for gmtest.m)
 %
-%	$Id$
 
 	full = mfilename('fullpath');
 	[pato, fname] = fileparts(full);

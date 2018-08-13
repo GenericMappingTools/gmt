@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 19
-#		$Id$
 #
 # Purpose:	Illustrates various color pattern effects for maps
 # GMT modules:	grdimage, grdmath, makecpt, pscoast, pstext, psimage

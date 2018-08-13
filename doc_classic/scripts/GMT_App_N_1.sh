@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 #	Makes the insert for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex

@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 #
 # Check ellipse clipping and filling/outline
 # Note: This will pass the test since the original is the same as the output

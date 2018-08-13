@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Paste pixel registered grids along X & Y
 

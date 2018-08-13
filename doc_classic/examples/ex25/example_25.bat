@@ -1,7 +1,6 @@
 REM
 REM             GMT EXAMPLE 25
 REM
-REM             $Id$
 REM
 REM Purpose:    Display distribution of antipode types
 REM

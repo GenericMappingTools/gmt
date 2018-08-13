@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing gmt grdfft power spectrum for known signal
 
 ps=cylundulation.ps

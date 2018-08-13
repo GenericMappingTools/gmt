@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test to make sure the (x,y) <--> (i,j) macros work correctly
 # We use -R0/5/0/5 -I1 for pixel and gridline registrations

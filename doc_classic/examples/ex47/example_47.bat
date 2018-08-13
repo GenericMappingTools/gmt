@@ -1,5 +1,4 @@
 REM             GMT EXAMPLE 47
-REM             $Id$
 REM
 REM Purpose:      Illustrate use of gmtregress with different norms and types
 REM GMT progs:    gmtregress, psxy

@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing gmt grd2xyz with -R and -s
 
 ps=extract.ps

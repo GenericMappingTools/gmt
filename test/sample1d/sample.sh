@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Resampling of Cartesian and geographic tracks
 

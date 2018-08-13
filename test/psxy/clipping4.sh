@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 #
 # Check ellipse clipping and filling/outline
 

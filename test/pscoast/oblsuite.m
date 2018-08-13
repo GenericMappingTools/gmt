@@ -4,7 +4,6 @@ function [ps, path] = oblsuite(out_path)
 % PATH     -> Path to where this file lives (useful for gmtest.m)
 %
 %	Same as oblsuite_N.sh but with no hemisphere restriction on where the pole is
-%	$Id$
 
 	full = mfilename('fullpath');
 	[pato, fname] = fileparts(full);

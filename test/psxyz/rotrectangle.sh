@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test that psxyz properly plots rotatable rectangles -Sj and -SJ
 

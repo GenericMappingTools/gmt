@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing gmt grdfilter if openmp is used.
 
 ps=openmp.ps # same as test: openmp.sh

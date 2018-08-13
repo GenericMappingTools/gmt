@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test -Sqn versus -Sqs
 ps=segmentize.ps
 cat << EOF > t.txt

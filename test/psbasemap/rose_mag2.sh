@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing map directional roses for magnetics
 ps=rose_mag2.ps
 gmt set FONT_ANNOT_PRIMARY 9p FONT_ANNOT_SECONDARY 12p FONT_LABEL 14p FONT_TITLE 24p \

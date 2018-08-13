@@ -1,7 +1,6 @@
 REM
 REM             GMT EXAMPLE 21
 REM
-REM             $Id$
 REM
 REM Purpose:    Plot a time-series
 REM

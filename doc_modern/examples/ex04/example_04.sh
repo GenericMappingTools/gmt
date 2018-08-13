@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 04
-#		$Id$
 #
 # Purpose:	3-D mesh and color plot of Hawaiian topography and geoid
 # GMT modules:	grdcontour, grdimage, grdview, psbasemap, pscoast, pstext

@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 ps=GMT_mapscale.ps
 gmt psbasemap -R0/40/50/56 -JM5i -Baf -P -K -LjML+c53+w1000k+f+l"Scale at 53\\232N" -F+glightcyan+c0+p > $ps

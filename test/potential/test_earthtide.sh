@@ -1,5 +1,4 @@
 #! /bin/bash
-#	$Id$
 #
 # Tests gmt earthtide against the values of the original FORTRAN version 
 

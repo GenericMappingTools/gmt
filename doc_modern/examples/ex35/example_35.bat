@@ -1,5 +1,4 @@
 REM             GMT EXAMPLE 35
-REM             $Id$
 REM
 REM Purpose:    Illustrate sphtriangulate and sphdistance with GSHHG crude data
 REM GMT progs:  pscoast, psxy, makecpt, grdimage, grdcontour, sphtriangulate, sphdistance

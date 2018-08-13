@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 12
-#		$Id$
 #
 # Purpose:	Illustrates Delaunay triangulation of points, and contouring
 # GMT modules:	makecpt, gmtinfo, contour, text, plot, triangulate, subplot

@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 #
 # Check two custom symbols symbols with new variables and text capabilities
 

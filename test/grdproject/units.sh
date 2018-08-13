@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 
 # Make a small geographic grid
 gmt grdmath -R-70:10:17.05/-70:10:0.10/-42:40:31.10/-42:40:19.95 -I1.31151346331e-05/1.29590887959e-05 X Y MUL = tmp.nc

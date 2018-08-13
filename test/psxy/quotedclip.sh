@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Check clip path and delayed text using -Sq:+e for both
 # straight and curved text paths

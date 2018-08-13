@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Remove a bilinear robust trend
 ps=trend_robust.ps

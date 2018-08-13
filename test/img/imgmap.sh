@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 
 ps=imgmap.ps
 IMG=@topo.8.2.img

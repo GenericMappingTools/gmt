@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 #
 ps=GMT_lineoffset.ps
 gmt math -T10/30/1 T 20 SUB 10 DIV 2 POW 41.5 ADD = line.txt

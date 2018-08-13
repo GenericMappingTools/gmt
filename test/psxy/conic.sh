@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Check clipping of line for a global conic plot
 

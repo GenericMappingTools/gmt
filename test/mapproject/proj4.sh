@@ -1,5 +1,4 @@
 #!/bin/bash
-#		$Id$
 #
 #	Testing gmt mapproject pt.txt with proj4 cases.
 #

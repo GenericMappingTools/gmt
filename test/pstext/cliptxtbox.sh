@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #	Test pstext laying down clip path for text boxes, then contour, then show texts
 
 ps=cliptxtbox.ps

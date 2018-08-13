@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Tests gmt project in generating small and great circles
 

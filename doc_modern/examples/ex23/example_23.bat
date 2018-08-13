@@ -1,7 +1,6 @@
 REM
 REM             GMT EXAMPLE 23
 REM
-REM             $Id$
 REM
 REM Purpose:    Plot distances from Rome and draw shortest paths
 REM

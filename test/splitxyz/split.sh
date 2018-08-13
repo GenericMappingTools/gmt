@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Split a polyline into chunks
 

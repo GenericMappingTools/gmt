@@ -1,6 +1,5 @@
 REM		GMT EXAMPLE 19
 REM
-REM		$Id$
 REM
 REM Purpose:	Illustrates various color pattern effects for maps
 REM GMT progs:	grdimage, grdmath, makecpt, pscoast, pstext, psimage

@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT EXAMPLE 40
-#               $Id$
 #
 # Purpose:      Illustrate line simplification and area calculations
 # GMT modules:  psbasemap, pstext, psxy, gmtsimplify, gmtspatial

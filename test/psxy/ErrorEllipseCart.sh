@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test clipping of Cartesian -Se ellipses across periodic boundaries
 ps=ErrorEllipseCart.ps
 

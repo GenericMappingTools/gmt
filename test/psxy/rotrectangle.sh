@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test that gmt psxy properly plots rotatable rectangles -Sj and -SJ
 

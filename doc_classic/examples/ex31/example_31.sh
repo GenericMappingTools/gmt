@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 31
-#		$Id$
 #
 # Purpose:	Illustrate usage of non-default fonts in PostScript
 # GMT modules:	gmtset, pscoast, psxy, pstext, pslegend

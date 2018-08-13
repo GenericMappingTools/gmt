@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing gmt spatial decimation near poles
 #
 # Input was made this way.

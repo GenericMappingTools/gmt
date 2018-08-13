@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 ps=flowvectors.ps
 gmt makecpt -Cseis -T0/2000 > t.cpt
 

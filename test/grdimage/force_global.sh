@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # 6 different global grids specs - supposedly all covering the planet but
 # often have trouble saying that in the w/e/s/n specs.

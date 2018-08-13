@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 
 # Testing gmt math for BCDF PCDF ZCDF TCDF FCDF
 # Red dots are output from MATLAB for comparison

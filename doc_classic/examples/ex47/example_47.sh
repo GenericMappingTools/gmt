@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT EXAMPLE 47
-#               $Id$
 #
 # Purpose:      Illustrate use of gmtregress with different norms and types
 # GMT modules:  gmtregress, psxy

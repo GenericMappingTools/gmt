@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # These functions can be used from any sh/bash script by specifying
 # . gmt_shell_functions.sh

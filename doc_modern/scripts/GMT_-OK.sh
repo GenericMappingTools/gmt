@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 gmt psxy -R0/2.7/0/2.5 -Jx1i -K -L -N -P << EOF > GMT_-OK.ps
 > -Glightyellow

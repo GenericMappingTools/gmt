@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 gmt psbasemap -R0/12/0/0.95 -JX3i/0.3i -Ba4f2g1+lFrequency+u" %" -BS -K -P > GMT_-B_linear.ps
 gmt psxy -R -J -O -K -Sv2p+e+a60 -W0.5p -Gblack -Y0.1i -N << EOF >> GMT_-B_linear.ps

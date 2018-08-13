@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Showing map directional roses
 ps=GMT_dir_rose.ps
 gmt set FONT_LABEL 10p FONT_TITLE 12p MAP_ANNOT_OBLIQUE 34 MAP_TITLE_OFFSET 5p \

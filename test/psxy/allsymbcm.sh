@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Plot psxy symbols under CM default unit
 

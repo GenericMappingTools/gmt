@@ -1,4 +1,3 @@
-#	$Id$
 #
 #	Directories with MGD77 files
 #	Currently set for P Wessel data library

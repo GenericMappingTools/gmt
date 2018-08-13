@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 gmt psbasemap -R0/1.5/0/1.7 -Jx1i -P -K -B0 -B+glightyellow >| GMT_-XY.ps
 gmt psxy -R -J -O -K -Sv5p+e -W0.5p -Gblack << EOF >> GMT_-XY.ps

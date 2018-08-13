@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 # Demonstrates +L for horizontal labels for y-axis
 ps=horlabel.ps
 

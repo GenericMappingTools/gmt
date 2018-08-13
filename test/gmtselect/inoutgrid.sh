@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test gmtselect with points inside or outside a grid
 ps=inoutgrid.ps
 gmt xyz2grd -R0/5/0/5 -I1 -r -Gmask.nc << EOF

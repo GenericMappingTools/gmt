@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 13
-#		$Id$
 #
 # Purpose:	Illustrate vectors and contouring
 # GMT modules:	grdmath, grdcontour, grdvector, pstext

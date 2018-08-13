@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 09
-#		$Id$
 #
 # Purpose:	Make wiggle plot along track from geoid deflections
 # GMT modules:	gmtconvert, pswiggle, pstext, psxy

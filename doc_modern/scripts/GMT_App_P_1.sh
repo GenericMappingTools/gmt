@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT Appendix P, example 1
-#		$Id$
 #
 # Purpose:	Illustrates the use of isolation mode
 # GMT progs:	gmt set, gmt grdimage, gmt grdmath, gmt makecpt, gmt pscoast

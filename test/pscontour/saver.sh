@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 
 ps=saver.ps

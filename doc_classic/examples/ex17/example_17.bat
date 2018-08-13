@@ -1,7 +1,6 @@
 @echo off
 REM		GMT EXAMPLE 17
 REM
-REM		$Id$
 REM
 REM Purpose:	Illustrates clipping of images using coastlines
 REM GMT progs:	grd2cpt, grdimage, pscoast, pstext

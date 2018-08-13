@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test that the -i, -o, -bi and bo works OK.
 

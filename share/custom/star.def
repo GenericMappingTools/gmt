@@ -1,4 +1,3 @@
-#	$Id$
 #
 #	Definition file for star symbol.  Use in psxy
 #	as -Skstar/size.  Unlike -Sa, this allows for

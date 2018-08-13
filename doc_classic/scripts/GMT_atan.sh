@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 gmt grdgradient -A45 @tut_relief.nc -N -fg -Gtt.t.nc
 gmt grd2xyz -Z tt.t.nc > tt.d

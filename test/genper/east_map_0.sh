@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test of gmt projection
 
 ps=east_map_0.ps
