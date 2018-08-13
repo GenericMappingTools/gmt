@@ -17,7 +17,6 @@ exit
 COPY_YEAR=$(date +%Y)
 cat << EOF > PSL_patterns.h
 /*--------------------------------------------------------------------
- *      $Id$
  *
  *      Copyright (c) 2009-$COPY_YEAR by P. Wessel and R. Scharroo
  *
