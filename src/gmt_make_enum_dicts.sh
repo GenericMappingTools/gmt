@@ -20,7 +20,6 @@ COPY_YEAR=$(date +%Y)
 NOW=$(date +%d-%B-%Y)
 cat << EOF > gmt_enum_dict.h
 /*--------------------------------------------------------------------
- *      \$Id\$
  *
  *      Copyright (c) 1991-$COPY_YEAR by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *      See LICENSE.TXT file for copying and redistribution conditions.
