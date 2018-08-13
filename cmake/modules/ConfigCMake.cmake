@@ -47,7 +47,8 @@ set (HAVE_SVN_VERSION)
 if (NOT GMT_SOURCE_CODE_CONTROL_VERSION_STRING)
 	# Get the location, inside the staging area location, to copy the application bundle to.
 	execute_process (
-		COMMAND svnversion ${GMT_SOURCE_DIR}
+		COMMAND git describe --abbrev=7 --always --dirty
+        WORKING_DIRECTORY  ${GMT_SOURCE_DIR}
 		RESULT_VARIABLE SVN_VERSION_RESULT
 		OUTPUT_VARIABLE SVN_VERSION_OUTPUT
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
