@@ -11,7 +11,7 @@ branches:
 
 os:
     - linux
-    - osx
+    #- osx
 
 env:
     global:
@@ -26,7 +26,11 @@ before_install:
 
 install:
     # Build and install GMT
-    - bash ci/build-linux.sh
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+        bash ci/build-linux.sh;
+      else
+        echo "OSX not supported yet";
+      fi
 
 script:
     - gmt defaults -Vd

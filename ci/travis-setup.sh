@@ -2,8 +2,12 @@
 # Setup TravisCI to be able to build and test GMT
 
 # Install dependencies
-sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev \
-    libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev ghostscript
+if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+    sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev \
+        libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev ghostscript
+else
+    echo "OSX not supported yet";
+fi
 
 # Get the coastlines and country polygons
 EXT="tar.gz"
