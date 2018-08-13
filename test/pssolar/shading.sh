@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Test pssolar with shading
 
 ps=shading.ps

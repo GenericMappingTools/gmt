@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 #
 # Make an illustration of grid chunking
 #

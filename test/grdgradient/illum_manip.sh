@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Test the generation of illumination with yet another algorithm
 
 ps=illum_manip.ps

@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-# $Id$
 #
 # test reading and writing a very small grid via gdal
 

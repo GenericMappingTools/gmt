@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Test the generation of aspect maps
 
 ps=aspect.ps

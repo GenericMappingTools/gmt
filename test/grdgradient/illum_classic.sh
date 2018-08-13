@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Test the generation of illumination with the GMT original algorithm
 
 ps=illum_classic.ps

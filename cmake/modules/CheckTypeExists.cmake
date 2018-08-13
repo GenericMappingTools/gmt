@@ -1,5 +1,4 @@
 #
-# $Id$
 #
 # - Check if the given struct or class has the specified member variable
 # CHECK_STRUCT_MEMBER (STRUCT MEMBER HEADER VARIABLE)

@@ -1,5 +1,4 @@
 #! /bin/bash
-# $Id$
 #
 # Computes the gravity and VGG anomaly over a cylinder and compares
 # with theory and brute (sum of tiny cubes) results in cylinder25.txt

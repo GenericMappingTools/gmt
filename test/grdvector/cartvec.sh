@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Switch sign for scaling and try with/without -T
 # Red is original, blue subject to -T
 ps=cartvec.ps

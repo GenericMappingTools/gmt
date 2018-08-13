@@ -1,5 +1,4 @@
 #! /bin/bash
-# $Id$
 #
 # Computes the gravity anomaly over a sphere with radius r = 15 m and center at -15 m.
 # The sphere is aproximated by two hemi-spheres

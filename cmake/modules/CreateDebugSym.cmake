@@ -1,5 +1,4 @@
 #
-# $Id$
 #
 # - Generates Mac .dSYM bundle
 # CREATE_DEBUG_SYM ( DESTINATION TARGETS )

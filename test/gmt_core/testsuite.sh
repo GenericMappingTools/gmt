@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-# $Id$
 
 # test if testsuite is up to date and setup correctly
 # make sure we are using the gmt executable from the build tree

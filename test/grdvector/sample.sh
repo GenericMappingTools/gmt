@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Test sub-sampling of grids for vectors
 ps=sample.ps
 gmt pscoast -R60/105/-20/40 -JM95.0/35/16c -Gbisque -K -Bafg8 -P -Xc > $ps

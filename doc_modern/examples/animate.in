@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-# $Id$
 #
 # Bash script for creating videos of the animation examples.
 # The videos will optionally be included in the RST gallery.

@@ -1,5 +1,4 @@
 #
-# $Id$
 #
 # - Find regex
 # Find the native REGEX includes and library

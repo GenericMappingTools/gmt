@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Test reading directly from URL
 # Note: The URL tends to change every few years...
 ps=urlquakes.ps

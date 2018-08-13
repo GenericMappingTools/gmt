@@ -1,4 +1,3 @@
-# $Id$
 #
 # List of Datums available in GMT
 # The (Dx,Dy,Dz) values are in meters relative to WGS-84

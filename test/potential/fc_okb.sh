@@ -1,5 +1,4 @@
 #! /bin/bash
-# $Id$
 #
 # Compute the gravity anomaly of the Flemish Cap Guyot
 

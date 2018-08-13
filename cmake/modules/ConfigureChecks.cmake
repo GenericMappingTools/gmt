@@ -1,5 +1,4 @@
 #
-# $Id$
 #
 
 if(NOT DEFINED _INCLUDED_CHECK_MACROS_)

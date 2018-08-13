@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 #
 
 ln -fs "${GMT_SRCDIR:-.}"/../mgd77/01010221.mgd77 .

@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Test custom symbol with conditional statements.  From Kristof
 # http://gmt.soest.hawaii.edu/boards/1/topics/7399
 

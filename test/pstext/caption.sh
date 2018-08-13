@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Test gmt pstext paragraph with outline vs outline/fill
 # Making sure issue # 893 is dealt with.
 ps=caption.ps

@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 #
 # Testing crossings near a pole.
 

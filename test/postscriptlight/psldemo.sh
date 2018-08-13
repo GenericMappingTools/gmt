@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-# $Id$
 #
 # Purpose:      Test all PSL functions at least once
 # GMT progs:    libpostscriptlight, psldemo

@@ -1,5 +1,4 @@
 #
-# $Id$
 #
 # - Try to find Glib and its components (gio, gobject etc)
 # Once done, this will define

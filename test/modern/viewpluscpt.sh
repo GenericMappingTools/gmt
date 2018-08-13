@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Test automatic CPT scaling
 gmt begin viewpluscpt ps
 	gmt grdview @earth_relief_01m -RMG+r2 -Cgeo -I+ -Qi

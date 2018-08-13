@@ -1,4 +1,3 @@
-# $Id$
 #
 # CMAKE commands to actually use the LaTeX compiler
 # Version: 1.9.1

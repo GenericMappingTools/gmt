@@ -1,4 +1,3 @@
-# $Id$
 #
 # This is the core listing of supported ellipsoids in GMT map projections.
 # Please adhere to the format.

@@ -1,5 +1,4 @@
 #
-# $Id$
 #
 # - Check if the prototype for a function exists.
 # CHECK_PROTOTYPE_EXISTS (FUNCTION HEADER VARIABLE)

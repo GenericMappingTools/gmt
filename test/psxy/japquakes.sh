@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Plot data reusing a columm
 ps=japquakes.ps
 

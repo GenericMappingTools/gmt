@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 #
 # Purpose:  Compute Cartesian distances from square and triangular polygons
 ps=ldist.ps

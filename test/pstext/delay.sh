@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Test gmt pstext with text clip delay
 
 ps=delay.ps

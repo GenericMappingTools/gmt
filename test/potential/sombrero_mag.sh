@@ -1,5 +1,4 @@
 #! /bin/bash
-# $Id$
 #
 # Compute the magnetic anomaly of our Mexican hat split in two halves
 
