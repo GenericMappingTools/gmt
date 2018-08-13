@@ -1,0 +1,37 @@
+language: c
+
+sudo: required
+
+branches:
+    only:
+        - master
+        - 5.4
+        # Regex to build tagged commits with version numbers
+        - /\d+\.\d+(\.\d+)?(\S*)?$/
+
+os:
+    - linux
+    #- osx
+
+env:
+    global:
+        - INSTALLDIR="$HOME/gmt-install-dir"
+        - COASTLINEDIR="$HOME/gmt-install-dir/coast"
+        - PATH="$INSTALLDIR/bin:$PATH"
+        - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
+
+before_install:
+    # Install GMT dependencies
+    - bash ci/travis-setup.sh
+
+install:
+    # Build and install GMT
+    - bash ci/travis-build.sh;
+
+script:
+    - gmt defaults -Vd
+    - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
+
+
+notifications:
+    email: false
