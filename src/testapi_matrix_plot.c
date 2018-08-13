@@ -1,4 +1,4 @@
-/* $Id$
+/*
  * Testing the passing of a GMT_MATRIX via GRID to grd plotters.
  */
 #include "gmt.h"
