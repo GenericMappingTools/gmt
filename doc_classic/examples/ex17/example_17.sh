@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 17
-#		$Id$
 #
 # Purpose:	Illustrates clipping of images using coastlines
 # GMT modules:	grd2cpt, grdimage, pscoast, pstext

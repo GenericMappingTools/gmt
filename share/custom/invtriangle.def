@@ -1,4 +1,3 @@
-#	$Id$
 #
 #	Definition file for inverted triangle symbol.  Use in psxy
 #	as -Skinvtriangle/size.  Unlike -Si, this allows for

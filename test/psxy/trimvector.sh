@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test vectors with mid-heads and trimming
 

@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT EXAMPLE 38
-#               $Id$
 #
 # Purpose:      Illustrate histogram equalization on topography grids
 # GMT modules:  psscale, pstext, makecpt, grdhisteq, grdimage

@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 # Testing gmt filter1d
 
 ps=cfilter.ps

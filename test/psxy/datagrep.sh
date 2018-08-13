@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test that psxy can select on data records using -e
 ps=datagrep.ps
 cat << EOF > no_HI_LV.txt

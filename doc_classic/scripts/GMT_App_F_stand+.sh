@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 #	Makes the octal code charts in Appendix F
 #

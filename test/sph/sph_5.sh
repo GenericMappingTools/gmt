@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#       $Id$
 # Test sphdistance's -En and -Ez modes
 
 ps=sph_5.ps

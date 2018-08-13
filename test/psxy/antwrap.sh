@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test plotting of Antarctica polygon in different projections.
 

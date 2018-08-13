@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 cat << EOF >| xannots.txt
 416.0	ig	Devonian

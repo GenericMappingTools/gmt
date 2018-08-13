@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Paste overlapping pixel registered grids along X & Y
 

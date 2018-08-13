@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test makecpt -Q options
 
 ps=logcpt.ps

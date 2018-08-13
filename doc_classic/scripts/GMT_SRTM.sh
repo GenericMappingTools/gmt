@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #	Show distribution of SRTM tiles
 gmt set MAP_FRAME_TYPE plain
 gmt pscoast -R-180/180/-60/60 -JQ0/6i -Baf -BWStr -Dc -A5000 -Glightgray -P -K --FORMAT_GEO_MAP=dddF > GMT_SRTM.ps

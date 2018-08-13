@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Check clipping of ellipses that should wrap in a global gmt projection
 

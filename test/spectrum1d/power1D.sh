@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing gmt spectrum1d power spectrum values
 
 ps=power1D.ps

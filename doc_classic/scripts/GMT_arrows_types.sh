@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 #
 # Demonstrate how arrows heads can look like (just doing Cartesian arrows here)
 ps=GMT_arrows_types.ps

@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Plot lines with variable number of NaNs
 

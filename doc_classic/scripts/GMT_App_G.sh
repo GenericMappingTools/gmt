@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 #	Makes the insert for Appendix G (fonts)
 #

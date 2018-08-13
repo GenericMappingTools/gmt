@@ -1,5 +1,4 @@
 REM             GMT EXAMPLE 49
-REM             $Id$
 REM
 REM Purpose:    Illustrate data analysis using the seafloor depth/age relationship
 REM GMT progs:  blockmode, gmtmath, grdcontour, grdimage, grdsample, makecpt,

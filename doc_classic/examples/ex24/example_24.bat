@@ -1,7 +1,6 @@
 REM
 REM             GMT EXAMPLE 24
 REM
-REM             $Id$
 REM
 REM Purpose:    Extract subsets of data based on geospatial criteria
 REM

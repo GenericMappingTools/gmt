@@ -3,7 +3,6 @@ function [pass, d_path] = spotter_6(out_path)
 % PASS     -> Logical variable with the error status (PASS == true means the test passed)
 % PATH     -> Path to where this file lives (useful for gmtest.m)
 %
-%	$Id$
 
 	full = mfilename('fullpath');
 	[pato, fname] = fileparts(full);

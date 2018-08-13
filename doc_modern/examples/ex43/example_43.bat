@@ -1,5 +1,4 @@
 REM             GMT EXAMPLE 43
-REM             $Id$
 REM
 REM Purpose:      Illustrate regression and outlier detection
 REM GMT progs:    gmtregress, psbasemap, pstext, psxy

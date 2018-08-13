@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Check clipping of polygons outside region and with dateline
 

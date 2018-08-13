@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Basic segment connection of Cartesian and geographic data
 

@@ -1,4 +1,3 @@
-C	$Id$
 C	Example of using GMTAPI from Fortran
 C
 C	We will need some sort of include file to set the parameters later

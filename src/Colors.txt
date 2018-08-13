@@ -1,4 +1,3 @@
-#	$Id$
 #
 # This file lists the names and the equivalent Red, Green, and Blue values
 # of more than 500 unique colors that can be used as pen and fill attributes

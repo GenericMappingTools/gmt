@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT EXAMPLE 50
-#               $Id$
 #
 # Purpose:      Illustrate different statistical distributions in gmtmath
 # GMT modules:  gmtmath, gmtset, psxy, pstext

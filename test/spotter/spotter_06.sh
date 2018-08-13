@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#       $Id$
 
 # We are testing a few examples from Cox and Hart, Plate Tectonics - How it works.
 

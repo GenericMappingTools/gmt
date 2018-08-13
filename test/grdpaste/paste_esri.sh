@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Paste esri ASCII grids along Y
 

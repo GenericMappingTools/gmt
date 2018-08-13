@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#       $Id$
 
 # Test gmt surface with periodic boundary conditions in longitude
 ps=periodic.ps

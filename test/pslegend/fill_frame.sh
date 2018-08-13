@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Testing gmt pslegend fill and frames
 

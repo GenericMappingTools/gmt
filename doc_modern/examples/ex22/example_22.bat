@@ -1,7 +1,6 @@
 REM
 REM             GMT EXAMPLE 22
 REM
-REM             $Id$
 REM
 REM Purpose:    Automatic map of last month of world-wide seismicity
 REM

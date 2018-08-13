@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 #
 ps=GMT_linecap.ps
 cat << EOF > lines.txt

@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 #
 # This script runs some simple test to verify the that new time scheme
 # has been implemented successfully

@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Testing gmt pslegend capabilities for fronts and quoted lines
 

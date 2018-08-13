@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 #	Makes Fig 6 for Appendix O (labeled lines)
 #

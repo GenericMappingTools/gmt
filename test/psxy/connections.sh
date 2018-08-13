@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Plot a lot of line segments
 

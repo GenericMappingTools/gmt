@@ -1,4 +1,3 @@
-#	$Id$
 #
 #	Definition file for triangle symbol.  Use in psxy
 #	as -Sktriangle/size.  Unlike -St, this allows for

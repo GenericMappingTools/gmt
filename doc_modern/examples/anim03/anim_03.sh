@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT ANIMATION 03
-#               $Id$
 #
 # Purpose:      Make web page with simple animated GIF of Iceland topo
 # GMT modules:  grdclip, grdgradient, makecpt, grdview, psxy, movie

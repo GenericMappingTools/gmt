@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 ps=GMT_colorbar.ps
 gmt makecpt -T-15/15 -Cpolar > t.cpt

@@ -2,7 +2,6 @@
 #
 # Check if we can wrap global grids over longitude
 #
-#	$Id$
 
 ps=globalgrid.ps
 

@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 
 # Testing gmt math for LSQFIT and SVDFIT solutions to Ax = b
 ps=lsfit.ps

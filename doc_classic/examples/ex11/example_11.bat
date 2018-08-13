@@ -1,4 +1,3 @@
-REM		$Id$
 REM		GMT EXAMPLE 11
 REM
 REM Purpose:	Create a 3-D RGB Cube

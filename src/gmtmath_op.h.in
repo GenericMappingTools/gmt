@@ -1,6 +1,5 @@
 /*--------------------------------------------------------------------
  *
- *  $Id$
  *
  *  Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo,
  *  F. Wobbe, and J. Luis

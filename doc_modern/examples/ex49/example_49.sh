@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT EXAMPLE 49
-#               $Id$
 #
 # Purpose:      Illustrate data analysis using the seafloor depth/age relationship
 # GMT modules:  blockmode, gmtmath, grdcontour, grdimage, grdsample, makecpt,

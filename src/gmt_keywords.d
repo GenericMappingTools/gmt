@@ -1,4 +1,3 @@
-#	$Id$
 #
 # List of all deprecated GMT 4 defaults parameters (and some from GMT 5)
 # This file will eventually be removed when we no longer support GMT 4

@@ -1,5 +1,4 @@
 REM             GMT EXAMPLE 44
-REM             $Id$
 REM
 REM Purpose:      Illustrate use of map inserts
 REM GMT progs:    pscoast, psbasemap, mapproject

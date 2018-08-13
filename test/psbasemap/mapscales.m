@@ -4,7 +4,6 @@ function [ps, path] = mapscales(out_path)
 % PATH     -> Path to where this file lives (useful for gmtest.m)
 %
 %	Testing that map scales with various labels have reasonable panels behind them
-%	$Id$
 
 	full = mfilename('fullpath');
 	[pato, fname] = fileparts(full);

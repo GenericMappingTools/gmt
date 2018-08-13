@@ -1,5 +1,4 @@
 REM             GMT EXAMPLE 33
-REM             $Id$
 REM
 REM Purpose:    Illustrate grdtrack's new cross-track and stacking options
 REM GMT progs:  makecpt, gmtconvert, grdimage, grdtrack, pstext, psxy

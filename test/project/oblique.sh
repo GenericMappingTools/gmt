@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Tests gmt project to make oblique lines
 

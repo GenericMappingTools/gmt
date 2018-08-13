@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 gmt makecpt -Ctopo -T1000/5000 > t.cpt
 gmt grdgradient @tut_relief.nc -Ne0.8 -A100 -fg -Gus_i.nc

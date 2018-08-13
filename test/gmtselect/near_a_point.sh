@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test script used for problem reported bin gmt-user forum message
 # http://gmt.soest.hawaii.edu/boards/1/topics/6027

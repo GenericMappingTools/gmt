@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 # This is based on issue #816 where we lost some of the meridians when the phase was nonzero
 
 ps=phasegrid.ps

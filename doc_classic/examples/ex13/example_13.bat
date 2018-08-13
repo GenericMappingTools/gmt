@@ -1,6 +1,5 @@
 REM		GMT EXAMPLE 13
 REM
-REM		$Id$
 REM
 REM Purpose:	Illustrate vectors and contouring
 REM GMT progs:	grdmath, grdcontour, grdvector, pstext

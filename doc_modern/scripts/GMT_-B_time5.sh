@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 gmt set FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character FORMAT_TIME_SECONDARY_MAP full \
 	FONT_ANNOT_PRIMARY +9p

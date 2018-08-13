@@ -1,5 +1,4 @@
 REM             GMT EXAMPLE 37
-REM             $Id$
 REM
 REM Purpose:    Illustrate 2-D FFT and coherence between gravity and bathymetry grids
 REM GMT progs:  psbasemap, psxy, makecpt, grdfft, grdimage, grdinfo

@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 #
 # Set colors applied to lines via cpt and -Z in header
 

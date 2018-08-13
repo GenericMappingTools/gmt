@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 29
-#		$Id$
 #
 # Purpose:	Illustrates spherical surface gridding with Green's function of splines
 # GMT modules:	makecpt, grdcontour, grdimage, grdmath greenspline, psscale, pstext

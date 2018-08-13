@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test custom symbols with different fonts and both fixed and variable sizes.
 ps=txtsymb.ps
 

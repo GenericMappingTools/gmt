@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Testing gmt_shell_functions
 

@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test the C API for conversions between user matrices and
 # grids.  A user input "grid" is passed as a matrix to

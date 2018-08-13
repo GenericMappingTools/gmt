@@ -1,6 +1,5 @@
 echo OFF
 REM
-REM	$Id$
 REM
 REM	Examples of how to use the SPOTTER package
 REM	DOS version

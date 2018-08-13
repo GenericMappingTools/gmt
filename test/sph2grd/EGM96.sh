@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Evaluate first 36 degrees of EGM96 geoid model
 

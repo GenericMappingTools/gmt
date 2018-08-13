@@ -1,5 +1,4 @@
 REM             GMT EXAMPLE 29
-REM             $Id$
 REM
 REM Purpose:	Illustrates spherical surface gridding with Green's function of splines
 REM GMT progs:	makecpt, grdcontour, grdimage, grdmath greenspline, psscale, pstext

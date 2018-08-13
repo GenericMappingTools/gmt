@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test how gmt psxy handles polygons that wrap around periodic boundaries
 # testpol.d is a nasty polygon that exceeds 360-degree range.

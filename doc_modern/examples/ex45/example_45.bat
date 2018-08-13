@@ -1,5 +1,4 @@
 REM             GMT EXAMPLE 45
-REM             $Id$
 REM
 REM Purpose:      Illustrate use of trend1d mixed models
 REM GMT progs:    pstext, psxy, trend1d

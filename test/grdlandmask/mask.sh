@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test gmt grdlandmask for proper wrapping.
 

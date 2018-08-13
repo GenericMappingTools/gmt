@@ -1,7 +1,6 @@
 REM
 REM             GMT EXAMPLE 26
 REM
-REM             $Id$
 REM
 REM Purpose:    Demonstrate general vertical perspective projection
 REM GMT progs:  pscoast

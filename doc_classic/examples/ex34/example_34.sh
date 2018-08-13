@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT EXAMPLE 34
-#               $Id$
 #
 # Purpose:      Illustrate pscoast with DCW country polygons
 # GMT modules:  gmtset, pscoast, makecpt, grdimage

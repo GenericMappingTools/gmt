@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test all the ways of labeling the bars with -D
 ps=mmm.ps
 # Use blockmean to compute the mean

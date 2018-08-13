@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Compare the size and alignment of identical text plotted in different ways:
 # (lower): Plain text with box and margin
 # (upper): Plain text with textbox clip path, then red paint

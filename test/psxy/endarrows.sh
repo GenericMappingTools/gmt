@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Make sure the adding arrows at end of lines with two points work for geo and Cart
 ps=endarrows.ps
 cat << EOF > t.txt

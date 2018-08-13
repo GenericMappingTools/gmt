@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 gmt set FORMAT_GEO_MAP ddd:mm:ssF
 gmt psbasemap -R-1/2/0/0.4 -JM3i -Ba1f15mg5m -BS -K -P > GMT_-B_geo_1.ps

@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test the output of gmt grdflexure for single Gaussian seamount on elastic plate
 ps=flexure_e.ps

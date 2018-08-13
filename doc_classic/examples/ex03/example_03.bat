@@ -1,7 +1,6 @@
 REM
 REM		GMT EXAMPLE 03
 REM
-REM		$Id$
 REM
 echo GMT EXAMPLE 03
 set ps=example_03.ps

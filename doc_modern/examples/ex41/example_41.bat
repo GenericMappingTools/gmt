@@ -1,5 +1,4 @@
 REM             GMT EXAMPLE 41
-REM             $Id$
 REM
 REM Purpose:      Illustrate typesetting of legend with table
 REM GMT progs:    gmtset, pscoast, pslegend, psxy

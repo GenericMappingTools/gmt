@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Check gmt psmeca for plotting beach balls
 

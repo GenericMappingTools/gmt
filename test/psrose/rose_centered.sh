@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing psrose with centered bins for sectors and roses
 ps=rose_centered.ps
 cat << EOF > data.txt

@@ -4,7 +4,6 @@ function [ps, path] = sph_5(out_path)
 % PATH     -> Path to where this file lives (useful for gmtest.m)
 %
 %	Test sphdistance's -En and -Ez modes
-%	$Id$
 
 	full = mfilename('fullpath');
 	[pato, fname] = fileparts(full);

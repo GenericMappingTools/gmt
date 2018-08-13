@@ -1,5 +1,4 @@
 REM             GMT EXAMPLE 42
-REM             $Id$
 REM
 REM Purpose:      Illustrate Antarctica and stereographic projection
 REM GMT progs:    gmtset, makecpt, grdimage, pscoast, pslegend, psscale, pstext, psxy [grdconvert]

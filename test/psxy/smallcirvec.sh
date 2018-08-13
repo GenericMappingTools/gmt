@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 #
 # Check geovector symbols for small circle vectors
 

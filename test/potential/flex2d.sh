@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test gmtflexure for basic functionality
 flex () {	# $1 is width, $2 is Te, $3 is dy build a 4.05 km tall ridge and compute flexure
 	gmt math -T-800/800/1 T ABS $1 LT 4.05 MUL = topo.txt

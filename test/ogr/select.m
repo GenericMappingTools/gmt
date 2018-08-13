@@ -3,7 +3,6 @@ function [ps, path] = select(out_path)
 % PS       -> Full name of the created postscript file (built from OUT_PATH)
 % PATH     -> Path to where this file lives (useful for gmtest.m)
 %
-%	$Id$
 %
 % Test that gmtselect can apply a -Z test to data with OGR records,
 % where the z comes from the metadata header, and that output it

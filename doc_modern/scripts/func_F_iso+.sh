@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 #	Function that makes the octal code charts in Appendix F
 #	but writes to stdout

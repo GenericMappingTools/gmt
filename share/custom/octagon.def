@@ -1,4 +1,3 @@
-#	$Id$
 #
 #	Definition file for octagon symbol.  Use in psxy
 #	as -Skoctagon/size.  Unlike -Sg, this allows for

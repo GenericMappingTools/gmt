@@ -1,6 +1,5 @@
 REM		GMT EXAMPLE 15
 REM
-REM		$Id$
 REM
 REM Purpose:	Gridding and clipping when data are missing
 REM GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo

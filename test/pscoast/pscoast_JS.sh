@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 
 ps=pscoast_JS.ps

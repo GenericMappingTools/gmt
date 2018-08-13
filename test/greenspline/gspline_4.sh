@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#       $Id$
 
 ps=gspline_4.ps
 

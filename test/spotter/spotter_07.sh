@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#       $Id$
 
 ps=spotter_07.ps
 

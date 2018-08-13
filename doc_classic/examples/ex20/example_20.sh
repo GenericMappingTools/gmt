@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 20
-#		$Id$
 #
 # Purpose:	Extend GMT to plot custom symbols
 # GMT modules:	pscoast, psxy

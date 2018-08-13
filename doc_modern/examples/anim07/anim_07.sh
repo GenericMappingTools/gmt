@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT ANIMATION 07
-#               $Id$
 #
 # Purpose:      Make a Plate Tectonics movie of crustal ages
 # GMT modules:  gmtmath, gmtset, grdgradient, grdmath, grdimage, makecpt, movie, pscoast

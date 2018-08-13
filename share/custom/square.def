@@ -1,4 +1,3 @@
-#	$Id$
 #
 #	Definition file for square symbol.  Use in psxy
 #	as -Sksquare/size.  Unlike -Ss this allows for

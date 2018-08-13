@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 # Demonstrates use of dual (left vs right, bottom vs top) Cartesian axis labels
 # specified via -B +l"label" and +s"label" strings.
 ps=dual_labels.ps

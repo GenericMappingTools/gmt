@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT EXAMPLE 37
-#               $Id$
 #
 # Purpose:      Illustrate 2-D FFT and coherence between gravity and bathymetry grids
 # GMT modules:  psbasemap, psxy, makecpt, grdfft, grdimage, grdinfo

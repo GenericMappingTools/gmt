@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test the output of gmt grdseamount for evolving Gaussian shapes
 ps=growth.ps

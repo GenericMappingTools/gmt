@@ -1,5 +1,4 @@
 REM             GMT EXAMPLE 46
-REM             $Id$
 REM
 REM Purpose:      Illustrate use of pssolar to plot day/night terminators
 REM GMT progs:    pssolar, pscoast, psxy

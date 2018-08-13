@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT EXAMPLE 33
-#               $Id$
 #
 # Purpose:      Illustrate grdtrack's new cross-track and stacking options
 # GMT modules:  makecpt, gmtconvert, grdimage, grdtrack, pstext, psxy

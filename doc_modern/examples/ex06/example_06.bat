@@ -1,6 +1,5 @@
 REM		GMT EXAMPLE 06
 REM
-REM		$Id$
 REM
 REM Purpose:	Make standard and polar histograms
 REM GMT progs:	pshistogram, psrose

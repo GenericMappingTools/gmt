@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # grdview does not close gap across periodic boundary that is not split, such as for azimuthal projections
 # There are three troubles here:
 # 1) The gap, which is seen in the output of this script (no orig present to ensure test will fail)

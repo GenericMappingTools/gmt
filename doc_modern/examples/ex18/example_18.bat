@@ -1,6 +1,5 @@
 REM		GMT EXAMPLE 18
 REM
-REM		$Id$
 REM
 REM Purpose:	Illustrates volumes of grids inside contours and spatial
 REM		selection of data

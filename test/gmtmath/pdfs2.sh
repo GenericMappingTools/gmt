@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 
 # Testing gmt math for LPDF EPDF RPDF
 # Red dots are output from MATLAB (if available) for comparison

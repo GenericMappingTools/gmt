@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT ANIMATION 01
-#               $Id$
 #
 # Purpose:      Make web page with simple animated GIF of sine function
 # GMT modules:  gmtmath, psbasemap, pstext, psxy, psconvert

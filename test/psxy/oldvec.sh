@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id$
 #
 # Check GMT4-style vector symbols
 

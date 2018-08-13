@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test the C API for i/o involving datasets
 

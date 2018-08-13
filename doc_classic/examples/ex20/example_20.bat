@@ -1,6 +1,5 @@
 REM		GMT EXAMPLE 20
 REM
-REM		$Id$
 REM
 REM Purpose:	Extend GMT to plot custom symbols
 REM GMT progs:	pscoast, psxy

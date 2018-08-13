@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Place 3 lines with text along the straight lines and rounded boxes
 ps=quotedstraight.ps
 echo "> -L\"The first curve\"" > data.txt

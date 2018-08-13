@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 #
 # Test dumping of contour labels and replotting in pstext
 

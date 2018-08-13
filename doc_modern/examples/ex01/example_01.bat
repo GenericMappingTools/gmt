@@ -1,7 +1,6 @@
 REM
 REM		GMT EXAMPLE 01
 REM
-REM		$Id$
 REM
 REM Purpose:	Make two contour maps based on the data in the file osu91a1f_16.nc
 REM GMT progs:	gmtset, grdcontour, psbasemap, pscoast

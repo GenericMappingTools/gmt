@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 27
-#		$Id$
 #
 # Purpose:	Illustrates how to plot Mercator img grids
 # GMT modules:	makecpt, grdimage, grdinfo, pscoast

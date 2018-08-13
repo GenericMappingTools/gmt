@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Thest inside labeling for Cartesian and geographic maps
 ps=inside.ps
 

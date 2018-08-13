@@ -1,5 +1,4 @@
 #!/bin/bash
-#		$Id$
 #
 #	Testing GMT gmt mapproject on examples in Snyder.
 #

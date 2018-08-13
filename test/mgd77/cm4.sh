@@ -1,5 +1,4 @@
 #! /bin/bash
-#	$Id$
 #
 # Observatory magnetic data dl from ottawa.intermagnet.org/apps/dl_data_prel_e.php
 

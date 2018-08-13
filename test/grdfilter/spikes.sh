@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing gmt grdfilter's isotropic and rectangular filter
 # on a spike, using both -D0 and -Dp for pixel widths.
 

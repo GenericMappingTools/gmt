@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Plot bars symbols (horizontal and vertical) w/wo. base
 # Plots differ as the given x or y measures total height relative to base

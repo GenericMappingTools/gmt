@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test the output of gmt grdseamount for conical shapes
 ps=cseamounts.ps

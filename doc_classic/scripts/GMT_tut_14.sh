@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 gmt makecpt -Crainbow -T-20/60/10 > disc.cpt
 gmt makecpt -Crainbow -T-20/60 > cont.cpt

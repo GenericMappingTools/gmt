@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 # Make sure when fixed it works for all resolutions -D?
 
 ps=pscoast_JA.ps

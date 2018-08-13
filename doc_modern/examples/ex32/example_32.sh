@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 32
-#		$Id$
 #
 # Purpose:	Illustrate draping of an image over topography
 # GMT modules:	grdcut, grdedit, grdgradient, grdconvert, grdtrack, grdview

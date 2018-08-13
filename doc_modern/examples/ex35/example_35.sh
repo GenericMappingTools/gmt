@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT EXAMPLE 35
-#               $Id$
 #
 # Purpose:      Illustrate sphtriangulate and sphdistance with GSHHG crude data
 # GMT modules:  pscoast, psxy, makecpt, grdimage, grdcontour, sphtriangulate, sphdistance

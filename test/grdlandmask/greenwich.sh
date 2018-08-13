@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test grdlandmask across Greenwich
 
 ps=greenwich.ps

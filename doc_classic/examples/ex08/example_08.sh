@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 08
-#		$Id$
 #
 # Purpose:	Make a 3-D bar plot
 # GMT modules:	grd2xyz, makecpt, pstext, psxyz

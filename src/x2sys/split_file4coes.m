@@ -21,7 +21,6 @@ function split_file4coes(fname, n_int)
 %			of 'cruzados_%d.txt', e.g. cruzados_5.txt
 
 %  -------------------------------------------------------------------------------------
-% 	$Id$
 % 
 %       Copyright (c) 1999-2018 by J. Luis
 %       See LICENSE.TXT file for copying and redistribution conditions.

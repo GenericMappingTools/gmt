@@ -3,7 +3,6 @@ function measure(out_path::ASCIIString="")
 # PS       -> Full name of the created postscript file (built from OUT_PATH)
 # PATH     -> Path to where this file lives (useful for gmtest.m)
 #
-#	$Id$
 
 	pato, fname = fileparts(@__FILE__)
 	ps = out_path * fname * ".ps"

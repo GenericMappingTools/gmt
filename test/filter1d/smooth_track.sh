@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Make sure filter1d spatial filtering works
 ps=smooth_track.ps
 # km

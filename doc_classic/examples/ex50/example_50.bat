@@ -1,5 +1,4 @@
 REM             GMT EXAMPLE 50
-REM             $Id$
 REM
 REM Purpose:    Illustrate different statistical distributions in gmtmath
 REM GMT progs:  gmtmath, gmtset, psxy, pstext

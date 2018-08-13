@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing gmt logo options
 
 ps=logos.ps

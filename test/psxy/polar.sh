@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Check plotting of boxes in stereographic polar gmt projection
 # Original script by Bruce Raup.

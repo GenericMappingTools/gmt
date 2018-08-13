@@ -1,6 +1,5 @@
 REM		GMT EXAMPLE 02
 REM
-REM		$Id$
 REM
 REM Purpose:	Make two color images based gridded data
 REM GMT progs:	gmtset, grd2cpt, grdimage, makecpt, psscale, pstext

@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test crosslines for contour annotation placements and scaling
 

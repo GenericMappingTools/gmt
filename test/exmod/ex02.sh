@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 02
-#		$Id$
 #
 # Purpose:	Make two color images based gridded data
 # GMT modules:	set, grd2cpt, grdimage, makecpt, colorbar, subplot

@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 
 ps=annotations3.ps
 

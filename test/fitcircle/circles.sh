@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Tests gmt fitcircle on spherical data points
 

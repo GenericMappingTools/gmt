@@ -1,4 +1,3 @@
-#	$Id$
 #
 #	Definition file for circle symbol.  Use in psxy
 #	as -Skcircle/size.  Unlike -Sc, this allows for

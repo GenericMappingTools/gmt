@@ -1,4 +1,3 @@
-#	$Id$
 # ASCII Carter correction table (see mgd77togmt.c for format)
 # Based on the tree files carter_*.b in GMT prior to 3.2.
 # 

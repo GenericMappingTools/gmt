@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing gmt simplify on GSHHS high Australia polygon.
 
 ps=reduce.ps

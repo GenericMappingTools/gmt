@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test gmt convert with mixed format binary input
 
 # This is what the output should look like

@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Test clipping of Geographic -SE ellipses across periodic boundaries
 
 ps=ErrorEllipseGeo.ps

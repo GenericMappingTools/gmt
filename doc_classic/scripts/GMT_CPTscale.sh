@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 ps=GMT_CPTscale.ps
 gmt psxy -R0/6/0/6 -Jx1i -P -K -W0.25p << EOF > $ps

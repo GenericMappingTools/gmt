@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 ps=GMT_hinge.ps
 gmt makecpt -Cglobe -T-8000/3000 > t.cpt

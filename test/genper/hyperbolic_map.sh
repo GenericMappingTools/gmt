@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 
 ps=hyperbolic_map.ps
 

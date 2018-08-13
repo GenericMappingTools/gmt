@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 #	Test newly created plots for documentation against archive
 #

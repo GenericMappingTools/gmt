@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 # Testing gmt grdsample
 
 ps=sample.ps

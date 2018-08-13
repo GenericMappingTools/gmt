@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 #
 #	Simple driver to view all examples using ghostview
 #

@@ -1,6 +1,5 @@
 REM		GMT EXAMPLE 07
 REM
-REM		$Id$
 REM
 REM Purpose:	Make a basemap with earthquakes and isochrons etc
 REM GMT progs:	pscoast, pslegend, pstext, psxy

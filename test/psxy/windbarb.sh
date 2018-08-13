@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Test new custom symbol macros using a windbarb.def file
 

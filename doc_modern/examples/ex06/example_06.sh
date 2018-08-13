@@ -1,6 +1,5 @@
 #!/bin/bash
 #		GMT EXAMPLE 06
-#		$Id$
 #
 # Purpose:	Make standard and polar histograms
 # GMT modules:	pshistogram, psrose

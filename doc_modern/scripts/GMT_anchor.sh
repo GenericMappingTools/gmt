@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 ps=GMT_anchor.ps
 gmt psbasemap -R0/1/0/1 -JX5i/2i -Ba1f0.5 -BwSnE+gbisque -P -K -DjTL+o0.7i/0.5i+w1.5i/0.75i -F+glightgreen+p1p > $ps

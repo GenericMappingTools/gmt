@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#	$Id$
 #
 #	Examples of how to use the SPOTTER package
 #

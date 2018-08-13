@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id$
 #
 # Check clipping of grids on a global conic plot
 

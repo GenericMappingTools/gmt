@@ -1,4 +1,3 @@
-#	$Id$
 #
 #	Definition file for hexagon symbol.  Use in psxy
 #	as -Skhexagon/size.  Unlike -Sh, this allows for

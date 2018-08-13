@@ -1,6 +1,5 @@
 #!/bin/bash
 #               GMT ANIMATION 02
-#               $Id$
 #
 # Purpose:      Make simple animated GIF of an illuminated DEM grid
 # GMT modules   gmtmath, makecpt, grdimage, psxy, movie
