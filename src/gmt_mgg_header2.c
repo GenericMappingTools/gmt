@@ -1,5 +1,4 @@
-/*	$Id$
- *
+/*
  *	Code donated by David Divens, NOAA/NGDC
  *	Distributed under the GNU Public License (see LICENSE.TXT for details)
  *--------------------------------------------------------------------*/

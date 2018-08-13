@@ -1,5 +1,4 @@
-/* $Id$
- *
+/*
  * called by cmake to obtain date at build time
  */
 

@@ -1,5 +1,4 @@
-/* $Id$
- *
+/*
  * psldemo.c: Test all PSL functions at least once
  */
 
