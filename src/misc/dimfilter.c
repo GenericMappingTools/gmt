@@ -1,5 +1,4 @@
 /*
- * $Id$
  *
  * dimfilter.c  reads a grdfile and creates filtered grd file
  *

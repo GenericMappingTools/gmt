@@ -1,5 +1,4 @@
 /*--------------------------------------------------------------------
- *	$Id$
  *
  *    Copyright (c) 2005-2018 by P. Wessel
  * mgd77manage is used to (1) remove data columns from mgd77+ files

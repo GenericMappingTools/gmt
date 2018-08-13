@@ -1,5 +1,4 @@
 /*--------------------------------------------------------------------
- *	$Id$
  *
  *    Copyright (c) 2009-2018 by J. Luis and P. Wessel
  *    See README file for copying and redistribution conditions.
