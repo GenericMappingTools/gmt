@@ -1,5 +1,4 @@
 /*--------------------------------------------------------------------
- *	$Id$
  *
  *	Copyright (c) 1991-2018 by T. Henstock
  *	See LICENSE.TXT file for copying and redistribution conditions.
