@@ -1,4 +1,4 @@
-/*	$Id$
+/*
  *    Copyright (c) 1996-2012 by G. Patau
  *    Copyright (c) 2013-2018 by the GMT project
  *    Donated to the GMT project by G. Patau upon her retirement from IGPG

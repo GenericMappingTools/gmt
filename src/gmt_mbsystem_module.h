@@ -1,5 +1,4 @@
-/* $Id$
- *
+/*
  * Copyright (c) 2016-2018 by pwessel
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
