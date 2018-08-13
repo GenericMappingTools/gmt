@@ -22,11 +22,11 @@ env:
 
 before_install:
     # Install GMT dependencies
-    - bash .continuous-integration/travis-setup.sh
+    - bash ci/travis-setup.sh
 
 install:
     # Build and install GMT
-    - bash .continuous-integration/build-linux.sh
+    - bash ci/build-linux.sh
 
 script:
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P > test.ps
