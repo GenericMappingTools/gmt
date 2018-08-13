@@ -1,6 +1,6 @@
 language: c
 
-sudo: false
+sudo: required
 
 branches:
     only:
