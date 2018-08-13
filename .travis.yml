@@ -29,7 +29,8 @@ install:
     - bash ci/build-linux.sh
 
 script:
-    - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P > test.ps
+    - gmt defaults -Vd
+    - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
 
 
 notifications:
