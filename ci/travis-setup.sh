@@ -37,5 +37,7 @@ curl "http://www.soest.hawaii.edu/pwessel/dcw/$DCW.$EXT" > $DCW.$EXT
 tar xzf $DCW.$EXT
 cp $DCW/* $COASTLINEDIR
 
+ls $COASTLINEDIR
+
 # Turn off exit on failure.
 set +e
