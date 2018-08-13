@@ -6,13 +6,13 @@ set -e
 
 mkdir build && cd build
 
-cmake -D CMAKE_INSTALL_INSTALLDIR=$INSTALLDIR \
+cmake -D CMAKE_INSTALL_PREFIX=$INSTALLDIR \
       -D GMT_LIBDIR=$INSTALLDIR/lib \
       -D DCW_ROOT=$COASTLINEDIR \
       -D GSHHG_ROOT=$COASTLINEDIR \
       ..
 
-make
+make -j
 make check
 make install
 
