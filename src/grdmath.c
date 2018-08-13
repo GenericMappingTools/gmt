@@ -212,7 +212,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Reduce the entire Stack to a single layer by applying the next operator to\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   co-registered nodes across the stack.  You must select a reducing operator, i.e.,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   ADD, AND, MAD, LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, or XOR.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   ADD, AND, MAD, LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB or XOR.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Select -S after you have placed all items of interest on the stack.\n");
 	GMT_Option (API, "V");
 	GMT_Option (API, "bi2,di,e,f,g,h,i");
