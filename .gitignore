@@ -1,0 +1,8 @@
+build
+dbuild
+rbuild
+xbuild
+dbuild-mp
+rbuild-mp
+.*~
+cmake/ConfigUser.cmake
