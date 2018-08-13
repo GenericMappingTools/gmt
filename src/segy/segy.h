@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #pragma once
 #ifndef SEGY_H
 #define SEGY_H

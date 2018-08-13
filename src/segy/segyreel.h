@@ -1,5 +1,4 @@
-/* $Id$
- *
+/*
  * From PASSCAL code base which is in the public domain
  * http://www.passcal.nmt.edu/
  *
