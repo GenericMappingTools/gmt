@@ -21,7 +21,6 @@
 /* Placing content of PSL_label.ps */
 
 static char *PSL_label_str = 
-"%-	$Id$\n"
 "%-----------------------------------------------------------------------------\n"
 "%-	PS routines for handling contour labels and clipping of\n"
 "%-	contour lines going through labels.\n"
@@ -31,7 +30,6 @@ static char *PSL_label_str =
 "%-	The second part is the functions that assist in finding\n"
 "%-	out where labels are placed and setting clip paths etc.\n"
 "%-\n"
-"%-	Make sure that the version number matches the one mentioned in pslib.c\n"
 "%-----------------------------------------------------------------------------\n"
 "\n"
 "/PSL_pathtextdict 26 dict def			% Local storage for the procedure PSL_pathtext.\n"
@@ -674,7 +672,6 @@ static char *PSL_label_str =
 /* Placing content of PSL_text.ps */
 
 static char *PSL_text_str = 
-"%-	$Id$\n"
 "%-----------------------------------------------------------------------------\n"
 "%-	P. Wessel, version 1\n"
 "%-	Text justification for paragraphs.\n"
@@ -919,9 +916,6 @@ static char *PSL_text_str =
 /* Placing content of PSL_prologue.ps */
 
 static char *PSL_prologue_str = 
-"%-	$Id$\n"
-"%-----------------------------------------------------------------------------\n"
-"%-	Make sure that the version number matches the one mentioned in pslib.c\n"
 "%-----------------------------------------------------------------------------\n"
 "% Begin pslib header\n"
 "250 dict begin\n"
