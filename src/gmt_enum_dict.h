@@ -1,5 +1,4 @@
 /*--------------------------------------------------------------------
- *      $Id$
  *
  *      Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *      See LICENSE.TXT file for copying and redistribution conditions.
@@ -21,7 +20,7 @@
  * Rerun gmt_make_enum_dicts.sh after adding or changing enums.
  *
  * Author:      Paul Wessel
- * Date:        01-December-2017
+ * Date:        12-August-2018
  * Version:     6 API
  */
 
@@ -30,7 +29,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 220
+#define GMT_N_API_ENUMS 222
 
 GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -71,6 +70,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_CPT_NO_BNF", 1},
 	{"GMT_CPT_OPTIONAL", 1},
 	{"GMT_CPT_REQUIRED", 0},
+	{"GMT_CPT_TIME", 8},
 	{"GMT_DATA_ONLY", 2},
 	{"GMT_DATETIME", 11},
 	{"GMT_DOUBLE", 9},
@@ -90,6 +90,7 @@ GMT_LOCAL struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_GRID_IS_COMPLEX_MASK", 12},
 	{"GMT_GRID_IS_COMPLEX_REAL", 4},
 	{"GMT_GRID_IS_GEO", 256},
+	{"GMT_GRID_IS_IMAGE", 512},
 	{"GMT_GRID_IS_REAL", 0},
 	{"GMT_GRID_NAME_LEN256", 256},
 	{"GMT_GRID_NODE_REG", 0},
