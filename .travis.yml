@@ -15,8 +15,8 @@ os:
 
 env:
     global:
-        - COASTLINEDIR="$HOME/package/coast"
-        - INSTALLDIR="$HOME/package"
+        - INSTALLDIR="$HOME/gmt-install-dir"
+        - COASTLINEDIR="$HOME/gmt-install-dir/coast"
         - PATH="$INSTALLDIR/bin:$PATH"
         - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
 
