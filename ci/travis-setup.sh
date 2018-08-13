@@ -25,7 +25,7 @@ mkdir $COASTLINEDIR
 echo ""
 echo "Downloading and unpacking GSHHG"
 echo "================================================================================"
-wget "ftp://ftp.soest.hawaii.edu/gmt/$GSHHG.$EXT" -O $GSHHG.$EXT
+curl "http://www.soest.hawaii.edu/pwessel/gshhg/$GSHHG.$EXT" > $GSHHG.$EXT
 tar xzf $GSHHG.$EXT
 cp $GSHHG/* $COASTLINEDIR/
 
@@ -33,7 +33,7 @@ cp $GSHHG/* $COASTLINEDIR/
 echo ""
 echo "Downloading and unpacking DCW"
 echo "================================================================================"
-wget "ftp://ftp.soest.hawaii.edu/gmt/$DCW.$EXT" -O $DCW.$EXT
+curl "http://www.soest.hawaii.edu/pwessel/dcw/$DCW.$EXT" > $DCW.$EXT
 tar xzf $DCW.$EXT
 cp $DCW/* $COASTLINEDIR
 
