@@ -1,6 +1,9 @@
 #!/bin/bash
 # Setup TravisCI to be able to build and test GMT
 
+# To return a failure if any commands inside fail
+set -e
+
 # Install dependencies
 if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     sudo apt-get install build-essential cmake libcurl4-gnutls-dev libnetcdf-dev \
@@ -34,3 +37,6 @@ echo "==========================================================================
 curl "ftp://ftp.soest.hawaii.edu/dcw/$DCW.$EXT" > $DCW.$EXT
 tar xzf $DCW.$EXT
 cp $DCW/* $COASTLINEDIR
+
+# Turn off exit on failure.
+set +e

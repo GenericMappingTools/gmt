@@ -1,6 +1,9 @@
 #!/bin/bash
 # Build and install GMT
 
+# To return a failure if any commands inside fail
+set -e
+
 mkdir $INSTALLDIR
 
 mkdir build && cd build
@@ -14,3 +17,6 @@ cmake -D CMAKE_INSTALL_INSTALLDIR=$INSTALLDIR \
 make
 make check
 make install
+
+# Turn off exit on failure.
+set +e

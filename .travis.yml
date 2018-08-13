@@ -26,11 +26,7 @@ before_install:
 
 install:
     # Build and install GMT
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-        bash ci/build-linux.sh;
-      else
-        echo "OSX not supported yet";
-      fi
+    - bash ci/travis-build.sh;
 
 script:
     - gmt defaults -Vd
