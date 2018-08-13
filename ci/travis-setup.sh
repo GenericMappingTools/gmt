@@ -14,19 +14,17 @@ fi
 
 # Get the coastlines and country polygons
 EXT="tar.gz"
-GSHHG="gshhg-gmt-2.3.6"
-DCW="dcw-gmt-1.1.2"
+GSHHG="gshhg-gmt-2.3.7"
+DCW="dcw-gmt-1.1.4"
 
-echo ""
-echo "Creating folder $COASTLINEDIR for the coastline and coutry data."
-echo ""
+mkdir $INSTALLDIR
 mkdir $COASTLINEDIR
 
 # GSHHG (coastlines, rivers, and political boundaries):
 echo ""
 echo "Downloading and unpacking GSHHG"
 echo "================================================================================"
-curl "ftp://ftp.iag.usp.br/pub/gmt/$GSHHG.$EXT" > $GSHHG.$EXT
+curl "ftp://ftp.soest.hawaii.edu/gmt/$GSHHG.$EXT" > $GSHHG.$EXT
 tar xzf $GSHHG.$EXT
 cp $GSHHG/* $COASTLINEDIR/
 
@@ -34,7 +32,7 @@ cp $GSHHG/* $COASTLINEDIR/
 echo ""
 echo "Downloading and unpacking DCW"
 echo "================================================================================"
-curl "ftp://ftp.soest.hawaii.edu/dcw/$DCW.$EXT" > $DCW.$EXT
+curl "ftp://ftp.soest.hawaii.edu/gmt/$DCW.$EXT" > $DCW.$EXT
 tar xzf $DCW.$EXT
 cp $DCW/* $COASTLINEDIR
 
