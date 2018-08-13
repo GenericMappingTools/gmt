@@ -1,0 +1,36 @@
+language: c
+
+sudo: false
+
+branches:
+    only:
+        - master
+        - 5.4
+        # Regex to build tagged commits with version numbers
+        - /\d+\.\d+(\.\d+)?(\S*)?$/
+
+os:
+    - linux
+    - osx
+
+env:
+    global:
+        - COASTLINEDIR="$HOME/package/coast"
+        - INSTALLDIR="$HOME/package"
+        - PATH="$INSTALLDIR/bin:$PATH"
+        - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
+
+before_install:
+    # Install GMT dependencies
+    - bash .continuous-integration/travis-setup.sh
+
+install:
+    # Build and install GMT
+    - bash .continuous-integration/build-linux.sh
+
+script:
+    - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P > test.ps
+
+
+notifications:
+    email: false
