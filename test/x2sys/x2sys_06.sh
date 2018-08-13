@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 #
 # Testing absolute gravity crossovers from c2308 near Oahu.
 

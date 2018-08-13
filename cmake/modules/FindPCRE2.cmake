@@ -1,5 +1,4 @@
 #
-# $Id$
 #
 # Locate pcre2
 #

@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 #
 
 cat << EOF > area.txt

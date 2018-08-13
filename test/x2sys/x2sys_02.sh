@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 #
 # This is original Figure 2 script from
 # Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys package,

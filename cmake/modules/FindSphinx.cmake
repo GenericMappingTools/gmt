@@ -1,5 +1,4 @@
 #
-# $Id$
 #
 # Locate Sphinx documentation generator
 #

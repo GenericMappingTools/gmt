@@ -1,5 +1,4 @@
 #
-# $Id$
 #
 # Locate DCW Digital Chart of the World for GMT
 #

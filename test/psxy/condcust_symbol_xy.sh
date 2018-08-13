@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Test custom symbol with conditional statements accessing lon, lat or x,y
 
 ps=condcust_symbol_xy.ps

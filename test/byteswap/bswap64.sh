@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-# $Id$
 
 # test byteswapping 64 bit integers
 exit 0 # not implemented yet, disabled for the time being

@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-# $Id$
 
 # test byteswapping 16 bit integers
 

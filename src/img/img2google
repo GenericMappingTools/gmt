@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-# $Id$
 #
 # Copyright (c) 2009-2018 by David Sandwell and Paul Wessel
 # Credit to Joaquim Luis for adding KML output from ps2raster

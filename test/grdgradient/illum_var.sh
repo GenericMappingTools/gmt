@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Test the generation of illumination for variable azimuth
 
 ps=illum_var.ps

@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-# $Id$
 # Makes the data for GMT_App_O_[1-9].sh
 #
 gmt grdcut @osu91a1f_16.nc -R50/160/-15/15 -GApp_O_geoid.nc

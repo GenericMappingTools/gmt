@@ -1,5 +1,4 @@
 #
-# $Id$
 #
 # Useful CMake variables.
 #

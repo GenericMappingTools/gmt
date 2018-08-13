@@ -1,5 +1,4 @@
 #
-# $Id$
 #
 # - Collection of String utility macros.
 # Defines the following macros:

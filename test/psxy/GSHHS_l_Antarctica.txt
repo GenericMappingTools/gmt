@@ -1,4 +1,3 @@
-# $Id$
 #
 # GSHHS Master File: Resolution = low Continent = Antarctica
 #

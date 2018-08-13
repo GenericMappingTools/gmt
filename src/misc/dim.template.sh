@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-# $Id$
 #
 # Seung-Sep Kim, Chungnam National University, Daejeon, South Korea [seungsep@cnu.kr]
 # $Revision$    $Date$

@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 # Returns a count of how many time a GMT program is used in our test scripts
 # including doc and examples.  Give -l to see which scripts [Default returns the count]
 #

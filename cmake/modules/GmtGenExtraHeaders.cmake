@@ -1,5 +1,4 @@
 #
-# $Id$
 #
 # - Generates extra header files
 # GMT_CREATE_HEADERS ()
