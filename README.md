@@ -43,6 +43,20 @@ Trans. AGU, 94(45), 409-410, doi:10.1002/2013EO450001) in the reference list
 of your future publications that will benefit from the availability of GMT.
 
 
+## Docker
+
+If you wish to compile GMT from source, but do not wish to install the
+development environment locally. A  Docker image is available, this is
+equivalent to small virtual machine that builds and installs GMT, and
+allows you to use the compiled tools through this container. However
+it requires that the docker daemon is installed on your machine
+
+The container is also suitable for CI/CD pipelines and build automation
+
+More information in the [Docker Readme](README.docker)
+
+
+
 ## CMake
 
 Install CMake (>=2.8.5) from http://www.cmake.org/cmake/resources/software.html
