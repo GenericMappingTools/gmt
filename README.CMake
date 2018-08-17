@@ -30,10 +30,10 @@ Information for building GMT with CMake
 Quick start:
 ~~~~~~~~~~~~
 
-Checkout GMT5 from its subversion repository:
+Checkout GMT5 from its GitHub repository:
 
-  $ svn co svn://gmtserver.soest.hawaii.edu/gmt/trunk gmt-dev
-  $ cd gmt-dev
+  $ git clone https://github.com/GenericMappingTools/gmt
+  $ cd gmt
   $ cp cmake/ConfigUserTemplate.cmake cmake/ConfigUser.cmake
 
 Edit *cmake/ConfigUser.cmake* [see comments in the file]. Then:
@@ -70,8 +70,8 @@ There are two configuration files:
 
 1. "ConfigDefault.cmake" -- is version controlled and used to add new default
     variables and set defaults for everyone. You should not edit this file.
-2. "ConfigUser.cmake" -- is not version controlled (currently listed in
-    svn:ignore property) and used to override defaults on a per-user basis.
+2. "ConfigUser.cmake" -- is not version controlled and used to override defaults
+    on a per-user basis.
     There is a template file, ConfigUserTemplate.cmake, that you should copy
     to ConfigUser.cmake and make your changes therein.
 
@@ -149,7 +149,7 @@ Assuming you did not delete the build directory and that your current
 working directory is the build directory this is just as simple as
 
   $ cd ..
-  $ svn up
+  $ git pull
   $ cd -
   $ make -jx install
 
@@ -179,7 +179,7 @@ Set GMT_RELEASE_PREFIX in cmake/ConfigUser.cmake and run cmake. Then do
 You should then edit ${GMT_RELEASE_PREFIX}/cmake/ConfigDefault.cmake and
 set GMT_PACKAGE_VERSION_MAJOR, GMT_PACKAGE_VERSION_MINOR, and
 GMT_PACKAGE_VERSION_PATCH. Also uncomment and set
-GMT_SOURCE_CODE_CONTROL_VERSION_STRING to the current svn version. Then
+GMT_SOURCE_CODE_CONTROL_VERSION_STRING to the current git version. Then
 create tarballs with:
 
   $ make -jx gmt_release_tar
