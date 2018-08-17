@@ -13,6 +13,15 @@
 ## This is a development image so build dependencies and apt lists
 ## are left installed 
 ##
+## Build Args for Customization set with --build-arg
+##
+## BIN_DEPS : Binary/Executable Dependencies (will be persisted)
+## BUILD_DEPS : Build Dependencies (will be deleted)
+## GSHHG_VERSION : GSHHG Version to Download
+## DCW_VERSION : DCW Version to Download
+## GMT_INSTALL_DIR : Target Install Dir (Default: /opt/gmt)
+## GMT_CMAKE_ARGS : Extra CMAKE Arguments to pass
+##
 FROM ubuntu:16.04
 LABEL maintainer="akshmakov@nc5ng.org"
 

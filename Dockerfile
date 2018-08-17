@@ -1,5 +1,4 @@
-## Dockerfile for GMT Image nc5ng/gmt for 6.0.0 branch
-##     (Currently master)
+## Dockerfile for GenericMappingTools/GMT Travis CI and Development
 ##
 ## Approach: Perform development build in situ
 ##
@@ -8,7 +7,14 @@
 ## Also fetch DCW/GSSHG data first, this extends layer cache
 ## between subsequent builds (less to re-download).
 ##
-## Note: Dockerhub automated builds do not cache intermediate layers
+## Build Args for Customization set with --build-arg
+##
+## BIN_DEPS : Binary/Executable Dependencies (will be persisted)
+## BUILD_DEPS : Build Dependencies (will be deleted)
+## GSHHG_VERSION : GSHHG Version to Download
+## DCW_VERSION : DCW Version to Download
+## GMT_INSTALL_DIR : Target Install Dir (Default: /opt/gmt)
+## GMT_CMAKE_ARGS : Extra CMAKE Arguments to pass
 ##
 FROM ubuntu:16.04
 LABEL maintainer="akshmakov@nc5ng.org"

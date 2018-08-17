@@ -53,7 +53,7 @@ it requires that the docker daemon is installed on your machine
 
 The container is also suitable for CI/CD pipelines and build automation
 
-More information in the [Docker Readme](README.docker)
+More information in the [Docker Readme](README-docker.md)
 
 
 
