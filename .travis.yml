@@ -24,7 +24,7 @@ addons:
       - docker-ce
     
 install:
-    - docker build --tag gmt .
+    - docker build --build-arg BUILD_PARALLEL=2 --tag gmt .
     
 script:
     - docker run --rm gmt defaults -Vd
