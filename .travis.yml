@@ -10,7 +10,6 @@ services:
 
 branches:
     only:
-        # CI Development Branches
         - master
         - 5.4
         # Regex to build tagged commits with version numbers

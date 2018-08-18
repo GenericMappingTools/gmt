@@ -1,94 +1,55 @@
-## Dockerfile for GenericMappingTools/GMT Travis CI and Development
+## Development and CI/CD Dockerfile for GenericMappingTools/GMT
 ##
-## Approach: Perform development build in situ
+## Base Image https://github.com/nc5ng/gmt-builder-docker
 ##
-## Construct and delete the build environment.
-## This reduces image size at expense of longer build.
-## Also fetch DCW/GSSHG data first, this extends layer cache
-## between subsequent builds (less to re-download).
+## Pre Build Arguments
+## ===================
 ##
-## Build Args for Customization set with --build-arg
+## BUILD_IMAGE image source for build image
+## BUILD_IMAGE_TAG image tag for build image
 ##
-## BIN_DEPS : Binary/Executable Dependencies (will be persisted)
-## BUILD_DEPS : Build Dependencies (will be deleted)
-## GSHHG_VERSION : GSHHG Version to Download
-## DCW_VERSION : DCW Version to Download
-## GMT_INSTALL_DIR : Target Install Dir (Default: /opt/gmt)
-## GMT_CMAKE_ARGS : Extra CMAKE Arguments to pass
+## CMAKE_INSTALL_PREFIX internal install directory
+## GMT_CMAKE_ARGS extra arguments for cmake
+## BUILD_PARALLEL number of parallel compilers
 ##
-FROM ubuntu:16.04
-LABEL maintainer="akshmakov@nc5ng.org"
 
-## Part 1: Base Image and Run Dependencies
+## Base/Build Image
+## ----------------
+## Fetch from remote to save on CI Build Time
 
-ARG BIN_DEPS="wget libnetcdf11 libgdal1i libfftw3-3 libpcre3 liblapack3 graphicsmagick liblas3"
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update					 &&\
-    apt-get install -y					   \
-    	    software-properties-common 			   \
-	    python-software-properties 			   \
-	    $BIN_DEPS					 &&\
-    add-apt-repository universe        			 &&\
-    apt-get purge -y					   \
-            software-properties-common 			   \
-	    python-software-properties 			 &&\
-    apt-get autoremove -y 				 &&\
-    rm -rf /var/lib/apt/lists/*          
-
-## Part 2: GSHHG and DCW Base Data
-
-ARG GSHHG_VERSION=2.3.7
-ARG DCW_VERSION=1.1.4
-ARG GMT_INSTALL_DIR=/opt/gmt
-
-ENV GMT_DCW_HTTP=http://www.soest.hawaii.edu/pwessel/dcw/dcw-gmt-$DCW_VERSION.tar.gz \
-    GMT_GSHHG_HTTP=http://www.soest.hawaii.edu/pwessel/gshhg/gshhg-gmt-$GSHHG_VERSION.tar.gz \
-    GMT_DCW_FTP=ftp://ftp.soest.hawaii.edu/dcw/dcw-gmt-$DCW_VERSION.tar.gz \
-    GMT_GSHHG_FTP=ftp://ftp.soest.hawaii.edu/gshhg/gshhg-gmt-$GSHHG_VERSION.tar.gz
+ARG BUILD_IMAGE=nc5ng/gmt-builder
+ARG BUILD_IMAGE_TAG=6.0.0pre1
+FROM $BUILD_IMAGE:$BUILD_IMAGE_TAG
 
 
-RUN   mkdir -p $GMT_INSTALL_DIR				 &&\
-      cd $GMT_INSTALL_DIR			 	 &&\
-#      wget $GMT_DCW_FTP				 &&\
-      wget $GMT_DCW_HTTP				 &&\
-#      wget $GMT_GSHHG_FTP				 &&\
-      wget $GMT_GSHHG_HTTP		 		 &&\
-      tar -xzf dcw-gmt-$DCW_VERSION.tar.gz 		 &&\
-      tar -xzf gshhg-gmt-$GSHHG_VERSION.tar.gz 		 &&\
-      rm -f *.tar.gz                      		   
-    
-## Part 3: Copy and Build GMT
+## Build Arguments
+## ---------------
+## Customize the build
 
 ARG GMT_CMAKE_ARGS=""	    
-ARG BUILD_DEPS="subversion build-essential cmake libcurl4-gnutls-dev \
-	    libnetcdf-dev libgdal1-dev libfftw3-dev libpcre3-dev \
-	    liblapack-dev libblas-dev "
+ARG BUILD_PARALLEL=1
+
+
+
+## Copy and Build Source
+## ----------------------
+## GMT_INSTALL_DIR comes from Base Image
 
 COPY . $GMT_INSTALL_DIR/gmt-src
 
-RUN apt-get update							&&\
-    apt-get install -y $BUILD_DEPS					&&\
-    (									  \
-    	cd /opt/gmt							&&\
-    	mkdir build							&&\
-	cd build							&&\
-    	cmake -D CMAKE_INSTALL_PREFIX=$GMT_INSTALL_DIR			  \
-	      -D DCW_ROOT=$GMT_INSTALL_DIR/dcw-gmt-$DCW_VERSION		  \
+WORKDIR $GMT_INSTALL_DIR/build
+
+RUN cmake     -D DCW_ROOT=$GMT_INSTALL_DIR/dcw-gmt-$DCW_VERSION		  \
 	      -D GSHHG_PATH=$GMT_INSTALL_DIR/gshhg-gmt-$GSHHG_VERSION 	  \
 	      $GMT_CMAKE_ARGS						  \
 	      $GMT_INSTALL_DIR/gmt-src					&&\
-    	make  								&&\
-    	make install							  \
-    ) 		     	       						&&\
-    rm -rf /opt/gmt/build						&&\
-    apt-get purge  -y $BUILD_DEPS					&&\
-    apt-get autoremove -y 						&&\
-    rm -rf /var/lib/apt/lists/*						&&\
-    export PATH=$PATH:/opt/gmt/bin					
+	make -j $BUILD_PARALLEL 					&&\
+    	make install
+
+
+## Test Environment
+## ----------------
 
 WORKDIR /workspace
 
-ENV PATH=$PATH:/opt/gmt/bin
-
-ENTRYPOINT ["/opt/gmt/bin/gmt"]
+ENTRYPOINT [ "/usr/local/bin/gmt" ]
