@@ -1,12 +1,26 @@
 #!/bin/bash
-# $Id$
+# Test grdmath's stacking mode -S for the allowable operators
 ps=reduce.ps
 gmt set PS_MEDIA letter MAP_TITLE_OFFSET 4p FONT_TITLE 12p
 # Create 3 small grids with integers in 0-100 range
-gmt grdmath -R0/2/0/2 -I1 -r 0 100 RAND RINT = 1.grd
-gmt grdmath -R0/2/0/2 -I1 -r 0 100 RAND RINT = 2.grd
-gmt grdmath -R0/2/0/2 -I1 -r 0 100 RAND RINT = 3.grd
-
+cat << EOF | gmt xyz2grd -R0/2/0/2 -I1 -r -Z -G1.grd
+43
+31
+82
+82
+EOF
+cat << EOF | gmt xyz2grd -R0/2/0/2 -I1 -r -Z -G2.grd
+96
+74
+78
+79
+EOF
+cat << EOF | gmt xyz2grd -R0/2/0/2 -I1 -r -Z -G3.grd
+77
+71
+2
+48
+EOF
 # Plot the three grids on top
 gmt grd2xyz 1.grd | gmt pstext -R0/2/0/2 -JX1.75i -P -B0g1 -B+t1 -K -Y8.5i -F+f18p+jCM > $ps
 gmt grd2xyz 2.grd | gmt pstext -R -J -O -K -B0g1 -B+t2 -X2.25i -F+f18p+jCM >> $ps
@@ -38,8 +52,4 @@ gmt grd2xyz tmp.grd | gmt pstext -R -J -O -B0g1 -B+tADD -K -Y-2i -X-4.5i -F+f18p
 gmt grdmath [123].grd -S SUB = tmp.grd
 gmt grd2xyz tmp.grd | gmt pstext -R -J -O -K -B0g1 -B+tSUB -X2.25i -F+f18p+jCM+z%0.1f >> $ps
 gmt grdmath [123].grd -S AND = tmp.grd
-gmt grd2xyz tmp.grd | gmt pstext -R -J -O -K -B0g1 -B+tAND -X2.25i -F+f18p+jCM+z%0.1f >> $ps
-
-gmt psxy -R -J -O -T >> $ps
-gmt psconvert -Tf $ps -P
-open reduce.pdf
+gmt grd2xyz tmp.grd | gmt pstext -R -J -O -B0g1 -B+tAND -X2.25i -F+f18p+jCM+z%0.1f >> $ps
