@@ -8,3 +8,4 @@ rbuild-mp
 cmake/ConfigUser.cmake
 share/coast
 share/dcw
+**/gmt.history
