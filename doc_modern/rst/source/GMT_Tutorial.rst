@@ -849,7 +849,7 @@ symbols with a line we must use the overlay approach:
 
     gmt begin GMT_tut_8 pdf
       gmt plot @tut_data.txt -R0/6/0/6 -Jx1i -B -Wthinner
-      gmt plot tut_data.txt Wthin -Si0.2
+      gmt plot tut_data.txt -Wthin -Si0.2
     gmt end
 
 Your plot should look like :ref:`our example 8 below <gmt_tut_8>`. The
