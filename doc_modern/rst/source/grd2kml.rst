@@ -85,8 +85,8 @@ Optional Arguments
 .. _-H:
 
 **-H**\ *factor*
-    Improve the quality of rasterization by passing the sub-pixel smoothing flag
-    to psconvert [no sub-pixel smoothing].
+    Improve the quality of rasterization by passing the sub-pixel smoothing factor
+    to psconvert (same as **-H** option in psconvert) [no sub-pixel smoothing].
 
 .. _-I:
 
