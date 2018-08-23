@@ -185,8 +185,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 					k = 1;
 				}
 				if (sscanf (&opt->arg[k], "%[^/]/%s", za, zb) == 2) {
-					if (!(za[0] == '-' && za[1] == '\0')) n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, za, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.min), za);
-					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, zb, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.max), zb);
+					if (!(za[0] == '-' && za[1] == '\0'))
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, za, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.min), za);
+					if (!(zb[0] == '-' && zb[1] == '\0'))
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, zb, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.max), zb);
 				}
 				break;
 
@@ -196,7 +198,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 		}
 	}
 	
-	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[RSET] + Ctrl->S.active + Ctrl->Z.active) != 1, "Syntax error: Must specify only one of the -R, -S or the -Z options\n");
+	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[RSET] + Ctrl->S.active + Ctrl->Z.active) != 1,
+	                                   "Syntax error: Must specify only one of the -R, -S or the -Z options\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify one input grid file\n");
 
@@ -213,13 +216,17 @@ GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, uns
 	dim[GMT_Y] = row1 - row0 + 1;	/* Number of remaining nodes in y */
 	*side = 0;
 	/* South count: */
-	for (col = col0, node = gmt_M_ijp (G->header, row1, col); col <= col1; col++, node++) if (gmt_M_is_fnan (G->data[node])) count[0]++;
+	for (col = col0, node = gmt_M_ijp (G->header, row1, col); col <= col1; col++, node++)
+		if (gmt_M_is_fnan (G->data[node])) count[0]++;
 	/* East count: */
-	for (row = row0, node = gmt_M_ijp (G->header, row, col1); row <= row1; row++, node += G->header->mx) if (gmt_M_is_fnan (G->data[node])) count[1]++;
+	for (row = row0, node = gmt_M_ijp (G->header, row, col1); row <= row1; row++, node += G->header->mx)
+		if (gmt_M_is_fnan (G->data[node])) count[1]++;
 	/* North count: */
-	for (col = col0, node = gmt_M_ijp (G->header, row0, col); col <= col1; col++, node++) if (gmt_M_is_fnan (G->data[node])) count[2]++;
+	for (col = col0, node = gmt_M_ijp (G->header, row0, col); col <= col1; col++, node++)
+		if (gmt_M_is_fnan (G->data[node])) count[2]++;
 	/* West count: */
-	for (row = row0, node = gmt_M_ijp (G->header, row, col0); row <= row1; row++, node += G->header->mx) if (gmt_M_is_fnan (G->data[node])) count[3]++;
+	for (row = row0, node = gmt_M_ijp (G->header, row, col0); row <= row1; row++, node += G->header->mx)
+		if (gmt_M_is_fnan (G->data[node])) count[3]++;
 	for (k = 0; k < 4; k++) {	/* Time to sum up and determine side with most NaNs */
 		sum += count[k];
 		if (mode == NAN_IS_FRAME) {
@@ -230,7 +237,8 @@ GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, uns
 		}
 	}
 	*all = (count[*side] == dim[*side%2]);	/* True if every node along size is NaN */
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Nans found: W = %d E = %d S = %d N = %d\n", count[3], count[1], count[0], count[2]);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Nans found: W = %d E = %d S = %d N = %d\n",
+	            count[3], count[1], count[0], count[2]);
 	return ((row0 == row1 && col0 == col1) ? 0 : sum);	/* Return 0 if we run out of grid, else the sum */
 }
 
@@ -242,7 +250,9 @@ GMT_LOCAL int set_rectangular_subregion (struct GMT_CTRL *GMT, double wesn[], do
 	
 	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, wesn), "")) return (GMT_PROJECTION_ERROR);
 
-	gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
+	gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO],
+	                 GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI],
+					 &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
 
 	wesn[XLO] = floor (GMT->common.R.wesn[XLO] / inc[GMT_X]) * inc[GMT_X];
 	wesn[XHI] = ceil  (GMT->common.R.wesn[XHI] / inc[GMT_X]) * inc[GMT_X];
@@ -256,17 +266,22 @@ GMT_LOCAL int set_rectangular_subregion (struct GMT_CTRL *GMT, double wesn[], do
 		e = irint (floor (wesn[XHI]));	em = irint ((wesn[XHI] - e) * 60.0);
 		s = irint (floor (wesn[YLO]));	sm = irint ((wesn[YLO] - s) * 60.0);
 		n = irint (floor (wesn[YHI]));	nm = irint ((wesn[YHI] - n) * 60.0);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s -> -R%d:%02d/%d:%02d/%d:%02d/%d:%02d\n", GMT->common.R.string, w, wm, e, em, s, sm, n, nm);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s -> -R%d:%02d/%d:%02d/%d:%02d/%d:%02d\n",
+		            GMT->common.R.string, w, wm, e, em, s, sm, n, nm);
 	}
 	else if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) && rint (inc[GMT_X] * 3600.0) == (inc[GMT_X] * 3600.0)) {	/* Spacing in whole arc seconds */
 		int w, e, s, n, wm, em, sm, nm, ws, es, ss, ns;
 
-		w = irint (floor (wesn[XLO]));	wm = irint (floor ((wesn[XLO] - w) * 60.0));	ws = irint (floor ((wesn[XLO] - w - wm/60.0) * 3600.0));
-		e = irint (floor (wesn[XHI]));	em = irint (floor ((wesn[XHI] - e) * 60.0));	es = irint (floor ((wesn[XHI] - e - em/60.0) * 3600.0));
-		s = irint (floor (wesn[YLO]));	sm = irint (floor ((wesn[YLO] - s) * 60.0));	ss = irint (floor ((wesn[YLO] - s - sm/60.0) * 3600.0));
-		n = irint (floor (wesn[YHI]));	nm = irint (floor ((wesn[YHI] - n) * 60.0));	ns = irint (floor ((wesn[YHI] - n - nm/60.0) * 3600.0));
+		w = irint (floor (wesn[XLO]));	wm = irint (floor ((wesn[XLO] - w) * 60.0));
+		ws = irint (floor ((wesn[XLO] - w - wm/60.0) * 3600.0));
+		e = irint (floor (wesn[XHI]));	em = irint (floor ((wesn[XHI] - e) * 60.0));
+		es = irint (floor ((wesn[XHI] - e - em/60.0) * 3600.0));
+		s = irint (floor (wesn[YLO]));	sm = irint (floor ((wesn[YLO] - s) * 60.0));
+		ss = irint (floor ((wesn[YLO] - s - sm/60.0) * 3600.0));
+		n = irint (floor (wesn[YHI]));	nm = irint (floor ((wesn[YHI] - n) * 60.0));
+		ns = irint (floor ((wesn[YHI] - n - nm/60.0) * 3600.0));
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s -> -R%d:%02d:%02d/%d:%02d:%02d/%d:%02d:%02d/%d:%02d:%02d\n",
-			GMT->common.R.string, w, wm, ws, e, em, es, s, sm, ss, n, nm, ns);
+		            GMT->common.R.string, w, wm, ws, e, em, es, s, sm, ss, n, nm, ns);
 	}
 	else
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s -> -R%g/%g/%g/%g\n",
@@ -307,7 +322,8 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS,
+	                            &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -376,7 +392,8 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
-		/* Here NaNs have either been skipped by inward search, or will be ignored (NAN_IS_IGNORED) or will beconsider to be within range (NAN_IS_INRANGE) */
+		/* Here NaNs have either been skipped by inward search, or will be ignored (NAN_IS_IGNORED)
+		   or will beconsider to be within range (NAN_IS_INRANGE) */
 		for (row = row0, go = true; go && row <= row1; row++) {	/* Scan from ymax towards ymin */
 			for (col = col0, node = gmt_M_ijp (G->header, row, 0); go && col <= col1; col++, node++) {
 				if (gmt_M_is_fnan (G->data[node])) {
@@ -633,28 +650,36 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		ylo = outside[YLO] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YLO], G->header) : G->header->n_rows - 1;
 		yhi = outside[YHI] ? (unsigned int)gmt_M_grd_y_to_row (GMT, wesn_old[YHI], G->header) : 0;
 		if (outside[XLO]) {
-			for (row = 0; row < G->header->n_rows; row++) for (col = 0; col < xlo; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
+			for (row = 0; row < G->header->n_rows; row++)
+				for (col = 0; col < xlo; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
 		}
 		if (outside[XHI]) {
-			for (row = 0; row < G->header->n_rows; row++) for (col = xhi+1; col < G->header->n_columns; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
+			for (row = 0; row < G->header->n_rows; row++)
+				for (col = xhi+1; col < G->header->n_columns; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
 		}
 		if (outside[YLO]) {
-			for (row = ylo+1; row < G->header->n_rows; row++) for (col = xlo; col <= xhi; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
+			for (row = ylo+1; row < G->header->n_rows; row++)
+				for (col = xlo; col <= xhi; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
 		}
 		if (outside[YHI]) {
-			for (row = 0; row < yhi; row++) for (col = xlo; col <= xhi; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
+			for (row = 0; row < yhi; row++)
+				for (col = xlo; col <= xhi; col++) G->data[gmt_M_ijp(G->header,row,col)] = Ctrl->N.value;
 		}
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
 		char format[GMT_BUFSIZ];
-		sprintf (format, "\t%s\t%s\t%s\t%s\t%s\t%s\t%%d\t%%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
-			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "\t%s\t%s\t%s\t%s\t%s\t%s\t%%d\t%%d\n", GMT->current.setting.format_float_out,
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+		         GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "File spec:\tW E S N dx dy n_columns n_rows:\n");
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Old:");
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, wesn_old[XLO], wesn_old[XHI], wesn_old[YLO], wesn_old[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], nx_old, ny_old);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, wesn_old[XLO], wesn_old[XHI], wesn_old[YLO],
+		            wesn_old[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], nx_old, ny_old);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "New:");
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, wesn_new[XLO], wesn_new[XHI], wesn_new[YLO], wesn_new[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], G->header->n_columns, G->header->n_rows);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, wesn_new[XLO], wesn_new[XHI], wesn_new[YLO],
+		            wesn_new[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], G->header->n_columns, G->header->n_rows);
 	}
 
 	if (Ctrl->S.set_nan) {	/* Set all nodes outside the circle to NaN */
