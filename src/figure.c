@@ -27,7 +27,7 @@
 
 #define THIS_MODULE_NAME	"figure"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Set attributes for the current figure"
+#define THIS_MODULE_PURPOSE	"Set attributes for the current modern mode session figure"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"V"

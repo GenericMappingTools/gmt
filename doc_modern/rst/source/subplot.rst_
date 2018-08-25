@@ -2,15 +2,15 @@
 
 .. only:: not man
 
-    Manage figure subplot configuration and selection
+    Manage modern mode figure subplot configuration and selection
 
-The subplot command is used to split the current figure into a matrix of subplots
+The **subplot** module is used to split the current figure into a matrix of subplots
 that each may contain a single panel figure.  A subplot setup is started with the **begin**
 mode that defines the layout of the subplots, while positioning to a particular panel for
-plotting is done via the **set** mode.  The subplot is completed via the **end** mode:
+plotting is done via the **set** mode.  The subplot is completed via the **end** mode.
 
-Synopsis
---------
+Synopsis (begin mode)
+---------------------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -153,6 +153,9 @@ Optional Arguments
 
 .. include:: explain_help.rst_
 
+Synopsis (set mode)
+-------------------
+
 **gmt subplot set** *row,col* [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
 
 Before you start plotting you must first select the active subplot panel.
@@ -204,6 +207,9 @@ frame and axis parameters then you must specify these **-B** options with this f
 command.  (2) The subplot machinery automatically uses the **-X** and **-Y** options under
 the hood so these options are not available while a subplot is active.
 
+Synopsis (end mode)
+-------------------
+
 **gmt subplot end** [ |SYN_OPT-V| ]
 
 This command finalizes the current subplot, including any placement of tags, and updates the
@@ -223,11 +229,18 @@ Optional Arguments
 Examples
 --------
 
-To conclude the current subplot, simply use
+To make a minimalistic 2x2 basemap layout called panels.pdf, try
 
    ::
 
-    gmt subplot end
+    gmt begin panels pdf
+      gmt subplot begin 2x2 -Fs3i -M5p -A -SCb -SRl -Bwstr
+        gmt psbasemap -R0/80/0/10 -c1,1
+        gmt psbasemap -c1,2
+        gmt psbasemap -c2,1
+        gmt psbasemap -c2,2
+      gmt subplot end
+    gmt end
 
 
 See Also

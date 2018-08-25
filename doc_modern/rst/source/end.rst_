@@ -18,7 +18,7 @@ Synopsis
 Description
 -----------
 
-This command terminates the modern mode and finalizes the processing of all registered
+This **end** module terminates the modern mode and finalizes the processing of all registered
 figures.  The final graphics will be placed in the current directory.
 
 Optional Arguments
@@ -34,7 +34,7 @@ Optional Arguments
 Examples
 --------
 
-To close the session and finalize any plots requested, use
+To close the current modern session and finalize any plots requested, we use
 
    ::
 

@@ -2,7 +2,7 @@
 
 .. only:: not man
 
-    Initiate a new GMT session using modern mode
+    Initiate a new GMT modern mode session
 
 Synopsis
 --------
@@ -18,9 +18,9 @@ Synopsis
 Description
 -----------
 
-The **begin** tells GMT to begin a new modern session.  If your script only makes
+The **begin** module tells GMT to begin a new modern session.  If your script only makes
 a single plot then this is the most straightforward way to specify the name
-and format(s) of your plots.  However, if multiple illustrations will be made
+and format(s) of your plot.  However, if multiple illustrations will be made
 then you will need to use :doc:`figure` as well.
 
 Optional Arguments
@@ -29,13 +29,13 @@ Optional Arguments
 .. _begin-prefix:
 
 *prefix*
-    Name-stem used to construct the single final figure name.  Extensions are appended
-    automatically from your *formats* selection [gmtsession].
+    Name-stem used to construct the single final figure name.  The extension is appended
+    automatically from your *formats* selection(s) [gmtsession].
 
 .. _begin-formats:
 
 *formats*
-    Give one or more comma-separated graphics extensions from the allowable graphics
+    Give one or more comma-separated graphics extensions from the list of allowable graphics
     :ref:`formats <tbl-formats>` [pdf].
 
 .. _begin-V:
@@ -72,16 +72,16 @@ Optional Arguments
 Examples
 --------
 
-To initiate a new modern session that should produce a single
-map called Figure_2 represented by both a PDF and a PNG
-raster image, we would run
+To initiate a new modern session that will produce a single
+map called Figure_2 saved as both a PDF vector graphics file
+and an opaque PNG raster image, we would run
 
    ::
 
     gmt begin Figure_2 pdf,png
 
-If the modern session is only used for computations and no illustration
-is made then we do not need to give any further arguments
+If the modern session is only used for computations and no illustrations
+are produced then we do not need to give any further arguments:
 
    ::
 

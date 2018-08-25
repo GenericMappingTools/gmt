@@ -34,7 +34,7 @@
 
 #define THIS_MODULE_NAME	"subplot"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Manage figure subplot configuration and selection"
+#define THIS_MODULE_PURPOSE	"Manage modern mode figure subplot configuration and selection"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"JRVXY"
