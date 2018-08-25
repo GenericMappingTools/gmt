@@ -1235,7 +1235,7 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<outgrid> -T[<min>/<max>/][-|+]<inc>[<unit>][+n] [-C<comp>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmt %s -G<outgrid> -T[<min>/<max>/][-|+]<inc>[<unit>][+n] [-C<comp>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-L<lon>/<lat>]\n\t[%s] [-S]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_bo_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
