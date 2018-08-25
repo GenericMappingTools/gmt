@@ -2,7 +2,7 @@
 
 .. only:: not man
 
-    Set attributes for the current figure
+    Set attributes for the current modern mode session figure
 
 Synopsis
 --------
@@ -18,22 +18,23 @@ Synopsis
 Description
 -----------
 
-A GMT modern session can make any number of illustrations.  In this situation,
-the figure command tells GMT the name and format(s) to use for the current plot.
+A GMT modern session can make any number of illustrations (including none).
+In situations when many illustrations will be made during the session,
+the **figure** module specifies the name and format(s) to use for the current plot.
 It must be issued before you start plotting to the current figure, and each
-new call changes focus to the next figure.  You may go back and forth between
+new **figure** call changes plotting focus to the next figure.  You may go back and forth between
 different figure but the optional arguments (*formats* and *options*) can only
-be given the first time to specify a new figure.
+be given the first time you specify a new figure.
 In addition to *prefix* and *formats*, you can supply a comma-separated series of
-:doc:`psconvert` options that should override the default settings provided via
+:doc:`psconvert` options that will override the default settings provided via
 :ref:`PS_CONVERT <PS_CONVERT>`. The only other available option controls verbosity.
 
 Required Arguments
 ------------------
 
 *prefix*
-    Name-stem used to construct final figure names,  Extensions are appended
-    automatically from your *formats* selection.
+    Name stem used to construct final figure names,  The extension is appended
+    automatically from your *formats* selection(s).
 
 Optional Arguments
 ------------------
@@ -41,17 +42,16 @@ Optional Arguments
 .. _figure-formats:
 
 *formats*
-    Give one or more comma-separated graphics extensions from the allowable graphics
+    Give one or more comma-separated graphics extensions from the list of allowable graphics
     :ref:`formats <tbl-formats>` [pdf].
 
 .. _figure-options:
 
 *options*
     Sets one or more comma-separated options arguments that
-    will be passed to :doc:`psconvert` when preparing this figure [A].
+    can be passed to :doc:`psconvert` when preparing this figure [A].
     The valid subset of options are
-    **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,
-    **M**\ *args*,\ **Q**\ *args*,\ **S**.
+    **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,\ **M**\ *args*,\ **Q**\ *args*,\ **S**.
     See the :doc:`psconvert` documentation for details on these options.
 
 .. _figure-V:
@@ -64,8 +64,8 @@ Optional Arguments
 Examples
 --------
 
-To start a new figure in your session by the name Regional, and request we make both
-a PDF and and EPS file, try
+To start a new figure in your current modern mode session by the name Regional and
+request we make both a PDF and an EPS file, try
 
    ::
 

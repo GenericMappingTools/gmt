@@ -21,14 +21,14 @@ For the time being, only modern mode module names are displayed. That is, if use
 *gmt docs psxy* she will see the *plot* documentation. Besides the modules names, the special
 forms *cookbook*, *gallery*, *gmt.conf*, *api* and *tutorial* are also accepted.
 
-However, **docs** can also be used to open local files such as PDF or image formats or
+However, **docs** can also be used to open local files such as PDF or image files or
 web link addresses.
 
 Optional Arguments
 ------------------
 
 *-option*
-    Where *-option* is the one-letter option of the module in question (e.g, **-R**)
+    Where *-option* is the one-letter option of the module in question (e.g, **-R**).
     It then displays the documentation positioned at that specific option.
 
 Examples
