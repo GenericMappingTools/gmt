@@ -238,7 +238,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  gmt figure        Set figure format specifics under a GMT modern mode session.\n");
 			fprintf (stderr, "  gmt subplot       Initiate a multi-panel figure.\n");
 			//fprintf (stderr, "  gmt revert        Undo last <n> layers from current figure.\n");
-			fprintf (stderr, "  gmt all | cache | cpt | conf | data | history | sessions\n");
+			fprintf (stderr, "  gmt clear all | cache | cpt | conf | data | history | sessions\n");
 			fprintf (stderr, "                    Delete gmt.history, gmt.conf, session CPT, the user cache or data dir, or all of them.\n\n");
 			fprintf (stderr, "options:\n");
 			fprintf (stderr, "  --help            List descriptions of available GMT modules.\n");
