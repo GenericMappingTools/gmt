@@ -15615,7 +15615,10 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		uint64_t k;
 		unsigned int pos = 0;
 		char p[GMT_LEN64] = {""};
-		for (k = 0, T->n = 1; k < strlen (T->list); k++) if (T->list[k] == ',') T->n++;	/* Count the commas */
+		for (k = 0, T->n = 1; k < strlen (T->list); k++) {
+			if (T->list[k] == ',' && T->list[k+1])
+				T->n++;	/* Count the commas */
+		}
 		T->array = gmt_M_memory (GMT, NULL, T->n, double);
 		k = 0;
 		while ((gmt_strtok (T->list, ",", &pos, p))) {
