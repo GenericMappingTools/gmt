@@ -42,7 +42,7 @@
 #define THIS_MODULE_NAME	"grdblend"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Blend several partially over-lapping grids into one larger grid"
-#define THIS_MODULE_KEYS	"<G{,GG}"
+#define THIS_MODULE_KEYS	"<G{+,GG}"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVfnr"
 
@@ -97,6 +97,7 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	bool invert;					/* true if weight was given as negative and we want to taper to zero INSIDE the grid region */
 	bool open;					/* true if file is currently open */
 	bool delete;					/* true if file was produced by grdsample to deal with different registration/increments */
+	bool memory;					/* true if grid is a in memory array */
 	char file[GMT_LEN256];			/* Name of grid file */
 	double weight, wt_y, wxr, wxl, wyu, wyd;	/* Various weighting factors used for cosine-taper weights */
 	double wesn[4];					/* Boundaries of inner region */
@@ -265,7 +266,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	B = gmt_M_memory (GMT, NULL, n_files, struct GRDBLEND_INFO);
 	
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
-		
+
 		if (L[n].download) {
 			char tile[8] = {""};
 			strncpy (tile, &L[n].file[1], 7U);
@@ -273,6 +274,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		}
 			
 		strncpy (B[n].file, L[n].file, GMT_LEN256-1);
+		B[n].memory = gmt_M_file_is_memory (B[n].file);
 		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
 			for (n = 0; n < n_files; n++) {
 				gmt_M_str_free (L[n].file);	gmt_M_str_free (L[n].region);
@@ -402,7 +404,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		}
 		B[n].RbR = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_ROWBYROW);		/* Allocate structure */
 		GH = gmt_get_G_hidden (B[n].G);
-		gmt_M_memcpy (B[n].RbR, GH->extra, 1, struct GMT_GRID_ROWBYROW);	/* Duplicate, since GMT_Destroy_Data will free the header->extra */
+		if (GH->extra != NULL)
+			gmt_M_memcpy (B[n].RbR, GH->extra, 1, struct GMT_GRID_ROWBYROW);	/* Duplicate, since GMT_Destroy_Data will free the header->extra */
 
 		/* Here, i0, j0 is the very first col, row to read, while i1, j1 is the very last col, row to read .
 		 * Weights at the outside i,j should be 0, and reach 1 at the edge of the inside block */
@@ -457,6 +460,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 
 GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, unsigned int n_blend, double half) {
 	unsigned int k;
+	int G_row;
+	uint64_t node;
 
 	for (k = 0; k < n_blend; k++) {	/* Get every input grid ready for the new row */
 		if (B[k].ignore) continue;
@@ -482,6 +487,35 @@ GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_IN
 			B[k].wt_y = 1.0;
 		B[k].wt_y *= B[k].weight;
 
+		if (B[k].memory) {	/* Grid already in memory, just copy the relevant row */
+			/* This is guesswork needs to be tested: */
+			G_row = row - B[k].out_j0;	/* Is this the corresponding row number in this grid? */
+			node = gmt_M_ijp (B[k].G->header, G_row, 0);	/* Start of our row */
+			gmt_M_memcpy (B[k].z, &B[k].G->data[node], B[k].G->header->n_columns, float);	/* Copy that row */
+		}
+		else {	/* Deal with files that may need to be opened */
+			if (!B[k].open) {
+				struct GMT_GRID_HIDDEN *GH = NULL;
+				if ((B[k].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[k].file, NULL)) == NULL) {
+					GMT_exit (GMT, GMT_GRID_READ_ERROR); return GMT_GRID_READ_ERROR;
+				}
+				GH = gmt_get_G_hidden (B[k].G);
+				gmt_M_memcpy (B[k].RbR, GH->extra, 1, struct GMT_GRID_ROWBYROW);	/* Duplicate, since GMT_Destroy_Data will free the header->extra */
+				if (B[k].skip) {	/* Position for native binary files */
+					if (fseek (B[k].RbR->fp, B[k].skip, SEEK_CUR)) {    /* Position for native binary files */
+						GMT_exit (GMT, GMT_GRDIO_SEEK_FAILED); return GMT_GRDIO_SEEK_FAILED;
+					}
+				}
+				else {	/* Set offsets for netCDF files */
+					B[k].RbR->start[0] += B[k].offset;					/* Start position for netCDF files */
+					gmt_M_memcpy (GH->extra, B[k].RbR, 1, struct GMT_GRID_ROWBYROW);	/* Synchronize these two again */
+				}
+				B[k].open = true;
+			}
+			GMT_Get_Row (GMT->parent, 0, B[k].G, B[k].z);	/* Get one row from this file */
+		}
+
+#if 0
 		if (!B[k].open) {
 			struct GMT_GRID_HIDDEN *GH = NULL;
 			if ((B[k].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[k].file, NULL)) == NULL) {
@@ -503,6 +537,7 @@ GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_IN
 			}
 			B[k].open = true;
 		}
+#endif
 		GMT_Get_Row (GMT->parent, 0, B[k].G, B[k].z);	/* Get one row from this file */
 	}
 	return GMT_NOERROR;
