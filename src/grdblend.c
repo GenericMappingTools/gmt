@@ -267,15 +267,16 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
 
-		if (L[n].download) {
+		if (L[n].download) {	/* Report that we will be downloading this SRTM tile */
 			char tile[8] = {""};
 			strncpy (tile, &L[n].file[1], 7U);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Downloading SRTM%d tile %d of %d [%s]\n", srtm_res, ++down, n_download, tile);
 		}
 			
 		strncpy (B[n].file, L[n].file, GMT_LEN256-1);
-		B[n].memory = gmt_M_file_is_memory (B[n].file);
+		B[n].memory = gmt_M_file_is_memory (B[n].file);	/* If grid in memory then we only read once and have everything at once */
 		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
+			/* Failure somehow, free all grids read so far and bail */
 			for (n = 0; n < n_files; n++) {
 				gmt_M_str_free (L[n].file);	gmt_M_str_free (L[n].region);
 			}
@@ -284,7 +285,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		}
 		
 		if ((not_supported = found_unsupported_format (GMT, B[n].G->header, B[n].file)) == GMT_GRDIO_UNKNOWN_FORMAT) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal snafu - please post message on gmt forum\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal snafu - please report the problem on the GMT issues page\n");
 			return (-1);
 		}
 		B[n].HH = gmt_get_H_hidden (B[n].G->header);
@@ -404,7 +405,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		}
 		B[n].RbR = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_ROWBYROW);		/* Allocate structure */
 		GH = gmt_get_G_hidden (B[n].G);
-		if (GH->extra != NULL)
+		if (GH->extra != NULL)	/* Only memory grids will fail this test */
 			gmt_M_memcpy (B[n].RbR, GH->extra, 1, struct GMT_GRID_ROWBYROW);	/* Duplicate, since GMT_Destroy_Data will free the header->extra */
 
 		/* Here, i0, j0 is the very first col, row to read, while i1, j1 is the very last col, row to read .
@@ -439,21 +440,21 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Grid %s: out: %d/%d/%d/%d in: %d/%d/%d/%d skip: %d offset: %d\n",
 			B[n].file, B[n].out_i0, B[n].out_i1, B[n].out_j1, B[n].out_j0, B[n].in_i0, B[n].in_i1, B[n].in_j1, B[n].in_j0, (int)B[n].skip, (int)B[n].offset);
 
-		/* Allocate space for one entire row */
+		/* Allocate space for one entire row for this grid */
 
 		B[n].z = gmt_M_memory (GMT, NULL, B[n].G->header->n_columns, gmt_grdfloat);
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Blend file %s in %g/%g/%g/%g with %s weight %g [%d-%d]\n",
 			B[n].HH->name, B[n].wesn[XLO], B[n].wesn[XHI], B[n].wesn[YLO], B[n].wesn[YHI], sense[B[n].invert], B[n].weight, B[n].out_j0, B[n].out_j1);
 
-		if (GMT_Destroy_Data (GMT->parent, &B[n].G)) return (-1);
+		if (!B[n].memory && GMT_Destroy_Data (GMT->parent, &B[n].G)) return (-1);	/* Free grid unless it is a memory grid */
 	}
 
-	for (n = 0; n < n_files; n++) {
+	for (n = 0; n < n_files; n++) {	/* Free the list of filenames */
 		gmt_M_str_free (L[n].file);
 		gmt_M_str_free (L[n].region);
 	}
 	gmt_M_free (GMT, L);
-	*blend = B;
+	*blend = B;	/* Pass back array of structures with grid information */
 
 	return (n_files);
 }
@@ -464,10 +465,10 @@ GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_IN
 	uint64_t node;
 
 	for (k = 0; k < n_blend; k++) {	/* Get every input grid ready for the new row */
-		if (B[k].ignore) continue;
+		if (B[k].ignore) continue;	/* This grid is not even inside our area */
 		if (row < B[k].out_j0 || row > B[k].out_j1) {	/* Either done with grid or haven't gotten to this range yet */
 			B[k].outside = true;
-			if (B[k].open) {
+			if (B[k].open) {	/* If an open file then we wipe */
 				if (GMT_Destroy_Data (GMT->parent, &B[k].G)) return GMT_NOERROR;
 				B[k].open = false;
 				gmt_M_free (GMT, B[k].z);
@@ -478,7 +479,7 @@ GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_IN
 			}
 			continue;
 		}
-		B[k].outside = false;
+		B[k].outside = false;		/* Here we know the row is inside this grid */
 		if (row <= B[k].in_j0)		/* Top cosine taper weight */
 			B[k].wt_y = 0.5 * (1.0 - cos ((row - B[k].out_j0 + half) * B[k].wyu));
 		else if (row >= B[k].in_j1)	/* Bottom cosine taper weight */
@@ -487,13 +488,12 @@ GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_IN
 			B[k].wt_y = 1.0;
 		B[k].wt_y *= B[k].weight;
 
-		if (B[k].memory) {	/* Grid already in memory, just copy the relevant row */
-			/* This is guesswork needs to be tested: */
-			G_row = row - B[k].out_j0;	/* Is this the corresponding row number in this grid? */
-			node = gmt_M_ijp (B[k].G->header, G_row, 0);	/* Start of our row */
-			gmt_M_memcpy (B[k].z, &B[k].G->data[node], B[k].G->header->n_columns, float);	/* Copy that row */
+		if (B[k].memory) {	/* Grid already in memory, just copy the relevant row - no reading needed */
+			G_row = row - B[k].out_j0;	/* The corresponding row number in the k'th grid */
+			node = gmt_M_ijp (B[k].G->header, G_row, 0);	/* Start of our row at col = 0 */
+			gmt_M_memcpy (B[k].z, &B[k].G->data[node], B[k].G->header->n_columns, gmt_grdfloat);	/* Copy that row */
 		}
-		else {	/* Deal with files that may need to be opened */
+		else {	/* Deal with files that may need to be opened the first time we access it */
 			if (!B[k].open) {
 				struct GMT_GRID_HIDDEN *GH = NULL;
 				if ((B[k].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[k].file, NULL)) == NULL) {
@@ -505,6 +505,9 @@ GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_IN
 					if (fseek (B[k].RbR->fp, B[k].skip, SEEK_CUR)) {    /* Position for native binary files */
 						GMT_exit (GMT, GMT_GRDIO_SEEK_FAILED); return GMT_GRDIO_SEEK_FAILED;
 					}
+#ifdef DEBUG
+					B[k].RbR->pos = ftell (B[k].RbR->fp);
+#endif
 				}
 				else {	/* Set offsets for netCDF files */
 					B[k].RbR->start[0] += B[k].offset;					/* Start position for netCDF files */
@@ -514,31 +517,6 @@ GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_IN
 			}
 			GMT_Get_Row (GMT->parent, 0, B[k].G, B[k].z);	/* Get one row from this file */
 		}
-
-#if 0
-		if (!B[k].open) {
-			struct GMT_GRID_HIDDEN *GH = NULL;
-			if ((B[k].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[k].file, NULL)) == NULL) {
-				GMT_exit (GMT, GMT_GRID_READ_ERROR); return GMT_GRID_READ_ERROR;
-			}
-			GH = gmt_get_G_hidden (B[k].G);
-			gmt_M_memcpy (B[k].RbR, GH->extra, 1, struct GMT_GRID_ROWBYROW);	/* Duplicate, since GMT_Destroy_Data will free the header->extra */
-			if (B[k].skip) {	/* Position for native binary files */
-				if (fseek (B[k].RbR->fp, B[k].skip, SEEK_CUR)) {    /* Position for native binary files */
-					GMT_exit (GMT, GMT_GRDIO_SEEK_FAILED); return GMT_GRDIO_SEEK_FAILED;
-				}
-#ifdef DEBUG
-				B[k].RbR->pos = ftell (B[k].RbR->fp);
-#endif
-			}
-			else {	/* Set offsets for netCDF files */
-				B[k].RbR->start[0] += B[k].offset;					/* Start position for netCDF files */
-				gmt_M_memcpy (GH->extra, B[k].RbR, 1, struct GMT_GRID_ROWBYROW);	/* Synchronize these two again */
-			}
-			B[k].open = true;
-		}
-#endif
-		GMT_Get_Row (GMT->parent, 0, B[k].G, B[k].z);	/* Get one row from this file */
 	}
 	return GMT_NOERROR;
 }
@@ -952,9 +930,11 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 	/* Free up the list with grid information, closing files as necessary */
 	
 	for (k = 0; k < n_blend; k++) {
-		if (blend[k].open) {
+		if (blend[k].open || blend[k].memory) {
 			gmt_M_free (GMT, blend[k].z);
 			gmt_M_free (GMT, blend[k].RbR);
+		}
+		if (blend[k].open) {
 			if (blend[k].delete && gmt_remove_file (GMT, blend[k].file))	/* Delete the temporary resampled file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to delete file %s\n", blend[k].file); 
 			if ((error = GMT_Destroy_Data (API, &blend[k].G)) != GMT_NOERROR) Return (error);
