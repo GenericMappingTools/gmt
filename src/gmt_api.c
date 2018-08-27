@@ -9277,7 +9277,6 @@ void *GMT_FFT_Parse (void *V_API, char option, unsigned int dim, const char *arg
 	}
 	if (info->info_mode == GMT_FFT_LIST) {
 		fft_Singleton_list (API);
-		n_errors++;	/* So parsing fails and stops the program after this listing */
 	}
 	if (n_errors) {
 		gmt_M_free (API->GMT, info);
