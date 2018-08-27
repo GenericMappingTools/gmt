@@ -45,7 +45,7 @@ Edit *cmake/ConfigUser.cmake* [see comments in the file]. Then:
 
 where _x_ is the number of threads you want to use and depends on the number
 of cores in your CPU and if hyperthreading is available or not.
-cmake ill build out-of-source in the the directory _build_. 'CMAKE_BUILD_TYPE'
+cmake will build out-of-source in the the directory _build_. 'CMAKE_BUILD_TYPE'
 can be one of: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 
   $ make -jx install
@@ -97,7 +97,7 @@ tests the version (gshhg_version.c). If CMake cannot find the shorelines you
 have to configure _GSHHG_ROOT_ in cmake/ConfigUser.cmake.
 
 Finding DCW:
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~
 
 DCW (Digital Chart of the World) country polygons are searched at compile time.
 The DCW data are optional; they are currently used in pscoast -E for painting
