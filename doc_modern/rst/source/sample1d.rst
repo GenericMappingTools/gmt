@@ -27,6 +27,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -38,7 +39,7 @@ Description
 [or standard input] and interpolates the time-series or spatial profile at locations
 where the user needs the values. The user must provide the column number
 of the independent (monotonically increasing **or** decreasing)
-variable, here called *time* (it may of course be any type of quantity).
+variable, here called *time* (it may of course be any type of quantity) when that is not the first column in data set.
 Equidistant or arbitrary sampling can be selected. All columns
 are resampled based on the new sampling interval. Several interpolation
 schemes are available. Extrapolation outside the range of the input data
