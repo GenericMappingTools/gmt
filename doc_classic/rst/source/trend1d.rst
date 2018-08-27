@@ -14,7 +14,6 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **trend1d** [ *table* ] |-F|\ **xymrw\|p\|P\|c** |-N|\ *params*
-[ *xy[w]file* ]
 [ |-C|\ *condition_number* ]
 [ |-I|\ [*confidence_level*] ]
 [ |SYN_OPT-V| ]
