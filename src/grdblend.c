@@ -266,6 +266,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	}
 	
 	B = gmt_M_memory (GMT, NULL, n_files, struct GRDBLEND_INFO);
+	wesn[XLO] = wesn[YLO] = DBL_MAX;	wesn[XHI] = wesn[YHI] = -DBL_MAX;
 	
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
 
@@ -320,14 +321,14 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			            "Must specify -I if input grids have different increments\n");
 			return (-1);
 		}
-		/* Create the h structure */
+		/* Create the h structure and initialize it */
 		h = gmt_get_header (GMT);
 		gmt_M_memcpy (h->wesn, wesn, 4, double);
 		gmt_M_memcpy (h->inc, B[0].G->header->inc, 2, double);
 		h->registration = B[0].G->header->registration;
 		gmt_M_grd_setpad (GMT, h, GMT->current.io.pad); /* Assign default pad */
 		gmt_set_grddim (GMT, h);	/* Update dimensions */
-		*h_ptr = h;			/* Pass out the settings */
+		*h_ptr = h;			/* Pass out the updated settings */
 	}
 	
 	HH = gmt_get_H_hidden (h);
