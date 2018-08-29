@@ -912,7 +912,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL)
 				Return (API->error);	/* Failed to allocate memory for the projected image */
 			gmt_img_project (GMT, I, Img_proj, false);	/* Now project the image onto the projected rectangle */
-			if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {	/* Free the original image now we have projected.  Use Img_proj from now on */
+			if (!API->external && (GMT_Destroy_Data (API, &I) != GMT_NOERROR)) {	/* Free the original image now we have projected.  Use Img_proj from now on */
 				Return (API->error);	/* Failed to free the image */
 			}
 		}
