@@ -1057,7 +1057,7 @@ fonts can be found in the :doc:`gmt` man page.
     (static) Names the eight bit character set being used for text in
     files and in command line parameters. This allows GMT to ensure
     that the PostScript output generates the correct characters on the
-    plot.. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
+    plot. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
     ISO-8859-x (where x is in the ranges [1,10] or [13,15]). See
     Appendix F for details [ISOLatin1+ (or Standard+)].
 
