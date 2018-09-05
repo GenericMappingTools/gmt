@@ -32,7 +32,7 @@ be written and to specify scaling, translation, and NaN-value.
 Required Arguments
 ------------------
 
-*ingrdfile*
+*ingrdfile* [=id[+sscale][+ooffset][+ninvalid]]
     The grid file to be read. Append format =\ *id* code if not a
     standard COARDS-compliant netCDF grid file. If =\ *id* is set (see
     below), you may optionally append any of **+s**\ *scale*, **+o**\ *offset*,
@@ -49,7 +49,7 @@ Required Arguments
     *id=gd* forces a read via GDAL.
     See Section :ref:`grid-file-format` of the GMT Technical Reference and Cookbook for more information.
 
-**-G**\ *outgrdfile*
+**-G**\ *outgrdfile* [=id[+sscale][+ooffset][+ninvalid]][:driver[/datatype]]]
     The grid file to be written. Append format =\ *id* code if not a
     standard COARDS-compliant netCDF grid file. If =\ *id* is set (see
     below), you may optionally append  any of **+s**\ *scale*, 
