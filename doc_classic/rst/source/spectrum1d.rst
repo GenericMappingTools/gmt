@@ -120,9 +120,9 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [*name\_stem*]
-    Supply an alternate name stem to be used for output files [Default = "spectrum"].
+    Supply an alternate name stem to be used for each individual output file [Default = "spectrum"].
     If **-N** is given with no argument then we disable the writing of individual
-    output files and instead write a single table to standard output.
+    output files and instead write a single composite results table to standard output.
 
 .. _-V:
 
@@ -132,7 +132,8 @@ Optional Arguments
 .. _-T:
 
 **-T**
-    Disable the writing of a single composite results file to stdout.
+    Disable the writing of a single composite results table to stdout.  Only individual output
+    files for each selected component (see **-C**) will be written.
 
 .. _-W:
 

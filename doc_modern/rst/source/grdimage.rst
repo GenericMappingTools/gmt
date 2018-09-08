@@ -137,10 +137,10 @@ Optional Arguments
 .. _-G:
 
 **-G**\ [**f**\ \|\ **b**]\ *color*
-    This option only applies when the resulting image otherwise would
+    This option only applies when a resulting 1-bit image otherwise would
     consist of only two colors: black (0) and white (255). If so, this
     option will instead use the image as a transparent mask and paint
-    the mask (or its inverse, with **-Gb**) with the given color combination.
+    the mask with **-Gf** (or its inverse, with **-Gb**) with the given color combination.
 
 .. _-I:
 
