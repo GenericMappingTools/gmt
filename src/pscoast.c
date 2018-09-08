@@ -501,7 +501,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 
 	if (!GMT->common.J.active) {	/* So without -J we can only do -M or report region only */
 		if (Ctrl->M.active) Ctrl->E.info.mode = GMT_DCW_DUMP;
-		else if (GMT->common.B.active[GMT_PRIMARY] || Ctrl->C.active || Ctrl->G.active || Ctrl->I.active || Ctrl->N.active || GMT->common.P.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->W.active)
+		else if (GMT->common.B.active[GMT_PRIMARY] || Ctrl->C.active || Ctrl->G.active || Ctrl->I.active || Ctrl->N.active || GMT->common.P.active || Ctrl->S.active || Ctrl->W.active)
 			n_errors++;	/* Tried to make a plot but forgot -J */
 		else
 			Ctrl->E.info.region = true;
