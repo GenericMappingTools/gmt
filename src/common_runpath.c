@@ -368,49 +368,5 @@ char *gmt_guess_sharedir (char *sharedir, const char *runtime_bindir) {
 	fprintf (stderr, "guessed share dir '%s'.\n", sharedir);
 #endif
 
-	/* Test if the directory exists and is of correct version */
-	if ( gmt_verify_sharedir_version (sharedir) )
-		/* Return sharedir */
-		return sharedir;
-
-	return NULL;
-}
-
-/* Verifies the correct version of the share directory */
-int gmt_verify_sharedir_version (const char *dir) {
-
-#ifdef NO_SHAREDIR_VERIFY
-	/* For Mirone and probably other future external program call one cannot impose
-	 * a certain sharedir version. */
-	gmt_M_unused(dir);
 	return true;
-#else
-	static char *required_version = GMT_PACKAGE_VERSION_WITH_SVN_REVISION;
-	char version_file[PATH_MAX];
-
-#ifdef DEBUG_RUNPATH
-	fprintf (stderr, "gmt_verify_sharedir_version: got dir '%s'.\n", dir);
-#endif
-
-	/* If the directory exists */
-	if (access (dir, R_OK | X_OK) == 0) {
-		snprintf (version_file, PATH_MAX-1, "%s/VERSION", dir);
-		/* Check correct version */
-		if (gmt_match_string_in_file (version_file, required_version)) {
-#ifdef DEBUG_RUNPATH
-			fprintf (stderr, "gmt_verify_sharedir_version: found '%s' (%s).\n",
-				version_file, required_version);
-#endif
-			return true;
-		}
-		else {
-			/* Special case: accept share dir in source tree.
-			 * Needed when running GMT from build dir. */
-			snprintf (version_file, PATH_MAX-1, "%s/VERSION.in", dir);
-			if (access (version_file, R_OK) == 0)
-				return true;
-		}
-	}
-	return false;
-#endif /* NO_SHAREDIR_VERIFY */
 }
