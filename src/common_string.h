@@ -80,8 +80,6 @@ EXTERN_MSC char *strsepz  (char **stringp, const char *delim, size_t *pos);
 EXTERN_MSC char *strsepzp (char **stringp, const char *delim, size_t *pos);
 EXTERN_MSC char *stresep (char **stringp, const char *delim, int esc);
 
-EXTERN_MSC int gmt_match_string_in_file (const char *filename, const char *string);
-
 #ifndef HAVE_BASENAME
 EXTERN_MSC char *basename(char *path);
 #endif

@@ -40,7 +40,6 @@
  *  strsepz                 Like strsep but ignores empty fields
  *  stresep                 Like strsep but takes an additional argument esc in order
  *                          to ignore escaped chars (from NetBSD)
- *  gmt_match_string_in_file    Return true if a string is found in file
  *  basename                Extract the base portion of a pathname
  */
 
@@ -622,28 +621,6 @@ char *stresep(char **stringp, const char *delim, int esc) {
 			}
 		} while (sc != 0);
 	}
-}
-
-/* Return true if a string is found in file */
-int gmt_match_string_in_file (const char *filename, const char *string) {
-	FILE *fp;
-	char line[BUF_SIZE] = {""};
-
-	fp = fopen (filename, "r");
-	if (fp == NULL) return false;
-
-	/* search for string in each line */
-	while (fgets (line, BUF_SIZE-1, fp)) {
-		if (strstr (line, string)) {
-			/* line matches */
-			fclose (fp);
-			return true;
-		}
-	}
-
-	/* string not found in file */
-	fclose (fp);
-	return false;
 }
 
 /* $OpenBSD: basename.c,v 1.14 2005/08/08 08:05:33 espie Exp $
