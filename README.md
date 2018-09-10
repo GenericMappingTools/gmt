@@ -134,27 +134,30 @@ where you eventually want to install GMT).
 
 Checkout GMT5 from its GitHub repository:
 
-  $ git clone https://github.com/GenericMappingTools/gmt
-  $ cd gmt
-  $ cp cmake/ConfigUserTemplate.cmake cmake/ConfigUser.cmake
-
+<pre>
+git clone https://github.com/GenericMappingTools/gmt
+cd gmt
+cp cmake/ConfigUserTemplate.cmake cmake/ConfigUser.cmake
+</pre>
 Edit *cmake/ConfigUser.cmake* [see comments in the file]. Then:
 
-  $ mkdir build
-  $ cd build
-  $ cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
-  $ make -jx
-
+<pre>
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+make -j
+</pre>
 where _x_ is the number of threads you want to use and depends on the number
 of cores in your CPU and if hyperthreading is available or not.
 cmake will build out-of-source in the the directory _build_. 'CMAKE_BUILD_TYPE'
 can be one of: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 
-  $ make -jx install
-
+<pre>
+make -j install
+</pre>
 installs a basic gmt in _build/gmt_.
 
-NOTE: All cmake command line options such as _-DCMAKE_INSTALL_PREFIX_ can be
+NOTE: All cmake command line options such as _-DCMAKE\_INSTALL\_PREFIX_ can be
 configured in *cmake/ConfigUser.cmake*.
 
 ### In more detail
@@ -343,7 +346,7 @@ This is very convenient for testing. Just _enable\_testing()_, set
 _DO\_EXAMPLES_ and/or _DO\_TESTS_ in ConfigUser.cmake and do:
 
 <pre>
-make -jx
+make -j
 make check
 </pre>
 Optionally set _N\_TEST\_JOBS_ to the number of ctest jobs to run
