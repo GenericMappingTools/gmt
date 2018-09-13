@@ -6419,9 +6419,13 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 			switch (p[0]) {
 				case 'c':	/* Effect of CPT on lines and fills */
 					switch (p[1]) {
-						case 'l': P->cptmode = 1; break;
-						case 'f': P->cptmode = 2; break;
-						default:  P->cptmode = 3; break;
+						case 'l':   P->cptmode = 1; break;
+						case 'f':   P->cptmode = 2; break;
+						case '\0':  P->cptmode = 3; break;
+						default: 
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error parsing pen modification +%s\n", p);
+							return false;
+						break;
 					}
 					break;
 				case 's':
