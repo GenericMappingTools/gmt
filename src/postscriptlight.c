@@ -104,8 +104,6 @@
  *
  */
 
-#define OLD_shorten_path	/* Until bug in psl_shorten_path is fixed */
-
 /*--------------------------------------------------------------------
  *			SYSTEM HEADER FILES
  *--------------------------------------------------------------------*/
@@ -702,7 +700,7 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 	   "close" is defined as less than 1 "dot" (the PostScript resolution) in either direction.
 	   A point is always close when it coincides with one of the end points (i or j).
 	   An intermediate point is also considered "far" when it is beyond i or j.
-	   Algorithm requires that |dx by - bx dy| < max(|dx|,dy|).
+	   Algorithm requires that |dx by - bx dy| >= max(|dx|,|dy|) for points to be "far".
 	*/
 	for (i = k = 0, j = 2; j < n; j++) {
 		dx = ix[j] - ix[i];
@@ -721,6 +719,15 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 				if (bx > 0 || bx < dx) break;
 			}
 			by = iy[ij] - iy[i];
+			/* Check if the intermediate point is outside the y-range between points i and j.
+			   In case of a horizontal line, any point with a different y-coordinate is "far" */
+			if (dy > 0) {
+				if (by < 0 || by > dy) break;
+			}
+			else {
+				if (by > 0 || bx < dy) break;
+			}
+			/* Generic case where the intermediate point is within the x- and y-range */
 			db = abs((int)(dx * by) - (int)(bx * dy));
 			if (db >= d) break; /* Point ij is "far" from line connecting i and j */
 		}
