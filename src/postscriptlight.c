@@ -104,6 +104,8 @@
  *
  */
 
+#define OLD_shorten_path	/* Until bug in psl_shorten_path is fixed */
+
 /*--------------------------------------------------------------------
  *			SYSTEM HEADER FILES
  *--------------------------------------------------------------------*/
@@ -652,7 +654,7 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 	int i, k, dx, dy;
 #ifdef OLD_shorten_path
 	int old_dir = 0, new_dir;
-	double old_slope = 1.0e200, new_slope;
+	double old_slope = -DBL_MAX, new_slope;
 	/* These seeds for old_slope and old_dir make sure that first point gets saved */
 #else
 	int d, db, bx, by, j, ij;
@@ -675,7 +677,7 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 		dx = ix[i+1] - ix[i];
 		dy = iy[i+1] - iy[i];
 		if (dx == 0 && dy == 0) continue;	/* Skip duplicates */
-		new_slope = (dx == 0) ? copysign (1.0e100, (double)dy) : ((double)dy) / ((double)dx);
+		new_slope = (dx == 0) ? copysign (DBL_MAX, (double)dy) : ((double)dy) / ((double)dx);
 		new_dir = (dx >= 0) ? 1 : -1;
 		if (new_slope != old_slope || new_dir != old_dir) {
 			ix[k] = ix[i];
