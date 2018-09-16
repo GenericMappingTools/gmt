@@ -119,6 +119,10 @@
 # Copy DCW files to $/dcw [FALSE]:
 #set (COPY_DCW TRUE)
 
+# FOR WINDOWS ONLY
+# Set path to location where the gmtmex is located.
+#set (GMTMEX_PATH "C:/progs_cygw/GMTdev/gmtmex/${GMTver}")
+
 # Set location of NetCDF (can be root directory, path to header file or path
 # to nc-config) [auto]:
 #set (NETCDF_ROOT "netcdf_install_prefix")

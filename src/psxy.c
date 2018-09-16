@@ -1605,6 +1605,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 		if (GMT->current.io.OGR && (GMT->current.io.OGR->geometry == GMT_IS_POLYGON || GMT->current.io.OGR->geometry == GMT_IS_MULTIPOLYGON)) polygon = true;
 
+		if (Ctrl->W.cpt_effect && Ctrl->W.pen.cptmode & 2) polygon = true;
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from first header */
 				gmt_extract_label (GMT, D->table[tbl]->header[0], S.G.label, NULL);
@@ -1684,11 +1685,24 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 					gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 				}
-				if (change & 4 && penset_OK) gmt_setpen (GMT, &current_pen);
-				if (change & 1) polygon = true;
-				if (change & 2 && !Ctrl->L.polygon) {
-					polygon = false;
-					PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
+				if (Ctrl->W.cpt_effect) {
+					if (Ctrl->W.pen.cptmode & 1) {	/* Change pen color via CPT */
+						gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
+						current_pen = Ctrl->W.pen;
+						gmt_setpen (GMT, &current_pen);
+					}
+					if ((Ctrl->W.pen.cptmode & 2) == 0 && !Ctrl->G.active)	/* Turn off CPT fill */
+						gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
+					else if (Ctrl->G.active)
+						current_fill = Ctrl->G.fill;
+				}
+				else {
+					if (change & 4 && penset_OK) gmt_setpen (GMT, &current_pen);
+					if (change & 1) polygon = true;
+					if (change & 2 && !Ctrl->L.polygon) {
+						polygon = false;
+						PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
+					}
 				}
 				if (S.G.label_type == GMT_LABEL_IS_HEADER) {	/* Get potential label from segment header */
 					SH = gmt_get_DS_hidden (L);
