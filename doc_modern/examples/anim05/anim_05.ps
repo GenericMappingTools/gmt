@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 324 360
-%%HiResBoundingBox: 0 0 324 360             
-%%Title: GMT v6.0.0_r19682 [64-bit] Document from grdcontour
+%%HiResBoundingBox: 0 0 324.0000 360.0000             
+%%Title: GMT v6.0.0_720051f [64-bit] Document from grdcontour
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jan 29 18:49:33 2018
+%%CreationDate: Mon Sep 17 08:36:56 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -658,6 +663,7 @@ V 0.06 0.06 scale
 /PSL_page_xsize 5400 def
 /PSL_page_ysize 6000 def
 /PSL_completion {} def
+/PSL_movie_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -666,7 +672,7 @@ O0
 300 480 TM
 
 % PostScript produced by:
-%@GMT: grdcontour t.nc -C25 -A50 -Baf -BWsNE -JX4i -Gl3.6/6.5/4.05/0.75 -X0.25i -Y0.4i -R0/6.5/0/6.5
+%@GMT: gmt grdcontour t.nc -C25 -A50 -Baf -BWsNE -JX4i -Gl3.6/6.5/4.05/0.75 -X0.25i -Y0.4i -R0/6.5/0/6.5
 %@PROJ: xy 0.00000000 6.50000000 0.00000000 6.50000000 0.000 6.500 0.000 6.500 +xy
 %GMTBoundingBox: 18 28.8 288 288
 %%BeginObject PSL_Layer_1
@@ -748,12 +754,14 @@ PSL_path_pen 0 get cvx exec
 -34 -44 D
 -37 -40 D
 -36 -32 D
--45 -32 D
--29 -18 D
--39 -19 D
--72 -25 D
+-37 -27 D
+-37 -23 D
+-37 -18 D
+-37 -14 D
+-37 -12 D
 -37 -8 D
--37 -5 D
+-27 -4 D
+-10 -1 D
 -37 -3 D
 -37 1 D
 -37 4 D
@@ -814,17 +822,25 @@ PSL_path_pen 1 get cvx exec
 -41 -37 D
 -70 -56 D
 -37 -26 D
--74 -47 D
--43 -24 D
--68 -34 D
--73 -31 D
--74 -25 D
--74 -21 D
--74 -15 D
--74 -10 D
+-37 -24 D
+-37 -23 D
+-32 -18 D
+-42 -22 D
+-31 -15 D
+-43 -19 D
+-36 -15 D
+-37 -13 D
+-37 -12 D
+-37 -11 D
+-15 -4 D
+-22 -6 D
+-37 -8 D
+-37 -7 D
+-37 -5 D
+-37 -5 D
 -37 -3 D
--74 -1 D
--37 1 D
+-37 -1 D
+-74 1 D
 -73 8 D
 -37 6 D
 -37 8 D
@@ -885,20 +901,36 @@ PSL_path_pen 2 get cvx exec
 -37 -43 D
 -37 -39 D
 -65 -62 D
--46 -39 D
--43 -35 D
--68 -49 D
--37 -25 D
--73 -46 D
--74 -41 D
--74 -37 D
--74 -33 D
--111 -43 D
--147 -46 D
--111 -26 D
--74 -14 D
--111 -14 D
--111 -5 D
+-43 -37 D
+-40 -32 D
+-56 -42 D
+-54 -37 D
+-59 -37 D
+-52 -30 D
+-74 -39 D
+-37 -18 D
+-37 -17 D
+-37 -16 D
+-37 -15 D
+-32 -12 D
+-42 -16 D
+-37 -12 D
+-27 -9 D
+-46 -14 D
+-37 -11 D
+-37 -9 D
+-12 -3 D
+-25 -6 D
+-37 -8 D
+-37 -7 D
+-37 -7 D
+-37 -5 D
+-31 -4 D
+-6 -1 D
+-37 -4 D
+-37 -2 D
+-37 -2 D
+-37 -1 D
 -110 3 D
 -111 14 D
 -74 16 D
@@ -959,21 +991,50 @@ PSL_path_pen 3 get cvx exec
 -37 -37 D
 -40 -37 D
 -61 -50 D
--79 -60 D
--68 -47 D
--43 -27 D
--105 -61 D
--111 -56 D
--111 -50 D
--138 -55 D
--120 -41 D
--111 -35 D
--147 -41 D
--111 -26 D
--111 -22 D
--111 -16 D
--74 -8 D
--110 -5 D
+-30 -23 D
+-43 -33 D
+-60 -41 D
+-51 -34 D
+-68 -40 D
+-43 -24 D
+-25 -13 D
+-49 -25 D
+-24 -12 D
+-50 -23 D
+-30 -14 D
+-44 -19 D
+-36 -15 D
+-37 -15 D
+-37 -14 D
+-28 -11 D
+-46 -16 D
+-37 -13 D
+-23 -8 D
+-51 -16 D
+-21 -7 D
+-16 -5 D
+-30 -9 D
+-44 -12 D
+-37 -11 D
+-37 -10 D
+-14 -4 D
+-22 -6 D
+-37 -9 D
+-37 -9 D
+-37 -8 D
+-22 -4 D
+-15 -4 D
+-37 -7 D
+-37 -7 D
+-37 -6 D
+-37 -5 D
+-37 -5 D
+-30 -3 D
+-7 -1 D
+-37 -4 D
+-37 -2 D
+-36 -2 D
+-37 -1 D
 -37 -1 D
 -111 4 D
 -66 7 D
@@ -1038,23 +1099,68 @@ PSL_path_pen 4 get cvx exec
 -37 -41 D
 -53 -52 D
 -58 -48 D
--37 -27 D
--36 -25 D
--82 -48 D
--72 -37 D
--105 -46 D
--74 -29 D
--184 -63 D
--153 -46 D
--327 -94 D
--296 -77 D
--221 -53 D
--111 -23 D
--111 -21 D
--111 -17 D
--93 -11 D
--128 -9 D
--74 -2 D
+-35 -26 D
+-38 -26 D
+-74 -44 D
+-74 -38 D
+-37 -17 D
+-37 -16 D
+-37 -16 D
+-37 -14 D
+-34 -13 D
+-40 -15 D
+-37 -13 D
+-26 -9 D
+-47 -16 D
+-37 -12 D
+-30 -9 D
+-44 -14 D
+-37 -11 D
+-37 -11 D
+-37 -10 D
+-37 -11 D
+-37 -11 D
+-22 -6 D
+-52 -15 D
+-37 -11 D
+-37 -10 D
+-36 -10 D
+-37 -11 D
+-37 -10 D
+-27 -7 D
+-47 -12 D
+-37 -10 D
+-37 -10 D
+-20 -5 D
+-17 -4 D
+-37 -10 D
+-37 -9 D
+-37 -9 D
+-19 -5 D
+-18 -4 D
+-37 -9 D
+-36 -9 D
+-37 -8 D
+-29 -7 D
+-45 -10 D
+-37 -8 D
+-37 -7 D
+-37 -7 D
+-23 -5 D
+-14 -2 D
+-37 -7 D
+-37 -6 D
+-37 -5 D
+-37 -6 D
+-37 -4 D
+-36 -5 D
+-20 -2 D
+-17 -1 D
+-37 -3 D
+-37 -3 D
+-37 -2 D
+-37 -1 D
+-37 -1 D
 -111 3 D
 -111 11 D
 -73 12 D
@@ -1101,33 +1207,79 @@ PSL_path_pen 5 get cvx exec
 -37 -47 D
 -37 -42 D
 -62 -57 D
--50 -37 D
--35 -22 D
--37 -19 D
--37 -16 D
--50 -17 D
+-49 -36 D
+-36 -23 D
+-29 -15 D
+-45 -20 D
+-37 -13 D
+-13 -4 D
 -24 -7 D
 -37 -8 D
 -37 -6 D
--74 -7 D
+-37 -4 D
+-37 -3 D
 -37 -2 D
--111 1 D
+-37 0 D
+-74 1 D
 -147 10 D
 -251 19 D
 -155 6 D
 -111 1 D
--148 -5 D
--111 -8 D
--147 -16 D
--141 -20 D
--192 -37 D
--406 -95 D
--147 -31 D
--148 -27 D
--111 -16 D
--111 -12 D
--110 -6 D
--74 -2 D
+-37 -1 D
+-37 -1 D
+-37 -1 D
+-37 -2 D
+-33 -2 D
+-4 0 D
+-37 -3 D
+-37 -3 D
+-37 -4 D
+-36 -3 D
+-37 -5 D
+-37 -4 D
+-37 -5 D
+-37 -5 D
+-33 -5 D
+-34 -5 D
+-44 -8 D
+-37 -7 D
+-37 -7 D
+-37 -7 D
+-12 -3 D
+-25 -5 D
+-37 -8 D
+-36 -9 D
+-37 -9 D
+-27 -6 D
+-47 -11 D
+-37 -9 D
+-37 -9 D
+-34 -8 D
+-40 -9 D
+-37 -9 D
+-37 -8 D
+-37 -8 D
+-12 -3 D
+-25 -5 D
+-37 -8 D
+-36 -7 D
+-37 -7 D
+-37 -7 D
+-14 -3 D
+-23 -4 D
+-37 -6 D
+-37 -6 D
+-37 -5 D
+-37 -5 D
+-37 -4 D
+-37 -4 D
+-26 -2 D
+-11 -2 D
+-37 -2 D
+-37 -3 D
+-36 -1 D
+-37 -1 D
+-37 -1 D
 -74 2 D
 -111 10 D
 -37 5 D
@@ -1175,13 +1327,16 @@ PSL_path_pen 6 get cvx exec
 S
 PSL_path_pen 7 get cvx exec
 4800 929 M
--74 -49 D
--74 -39 D
--69 -29 D
+-65 -43 D
+-46 -26 D
+-20 -11 D
+-54 -24 D
+-32 -13 D
 -41 -13 D
 -37 -9 D
 -37 -7 D
--74 -7 D
+-37 -4 D
+-37 -3 D
 -37 -1 D
 -74 5 D
 -37 5 D
@@ -1202,20 +1357,55 @@ PSL_path_pen 7 get cvx exec
 -110 15 D
 -37 3 D
 -111 2 D
--74 -3 D
--111 -11 D
--111 -17 D
--184 -40 D
--74 -18 D
--148 -42 D
--187 -60 D
--256 -87 D
--147 -46 D
--74 -21 D
--111 -26 D
--74 -13 D
--74 -9 D
--74 -4 D
+-37 -1 D
+-37 -2 D
+-37 -3 D
+-7 -1 D
+-30 -3 D
+-37 -4 D
+-37 -5 D
+-37 -6 D
+-37 -6 D
+-36 -7 D
+-28 -6 D
+-46 -10 D
+-37 -8 D
+-37 -9 D
+-37 -9 D
+-37 -9 D
+-37 -10 D
+-37 -11 D
+-27 -7 D
+-47 -14 D
+-37 -12 D
+-37 -11 D
+-36 -12 D
+-37 -12 D
+-37 -12 D
+-37 -13 D
+-37 -12 D
+-37 -13 D
+-37 -13 D
+-37 -12 D
+-35 -12 D
+-39 -13 D
+-37 -12 D
+-37 -12 D
+-37 -11 D
+-36 -11 D
+-37 -11 D
+-16 -4 D
+-21 -6 D
+-37 -9 D
+-37 -9 D
+-37 -8 D
+-26 -5 D
+-11 -2 D
+-37 -6 D
+-37 -5 D
+-37 -4 D
+-37 -2 D
+-37 -2 D
 -73 3 D
 -37 4 D
 -37 6 D
@@ -1274,17 +1464,46 @@ PSL_path_pen 8 get cvx exec
 -74 11 D
 -74 6 D
 -111 2 D
--110 -7 D
--74 -8 D
--148 -25 D
--111 -25 D
--295 -74 D
--74 -17 D
--83 -16 D
--138 -22 D
--111 -11 D
--74 -3 D
--111 1 D
+-36 -2 D
+-37 -2 D
+-37 -3 D
+-37 -4 D
+-37 -4 D
+-37 -6 D
+-24 -4 D
+-13 -2 D
+-37 -6 D
+-37 -7 D
+-37 -8 D
+-37 -8 D
+-21 -5 D
+-16 -4 D
+-37 -9 D
+-36 -9 D
+-37 -10 D
+-22 -5 D
+-15 -4 D
+-37 -10 D
+-37 -9 D
+-37 -9 D
+-21 -5 D
+-16 -4 D
+-37 -8 D
+-37 -9 D
+-37 -7 D
+-37 -8 D
+-9 -1 D
+-28 -5 D
+-37 -6 D
+-36 -6 D
+-37 -5 D
+-37 -4 D
+-37 -4 D
+-37 -3 D
+-37 -2 D
+-37 -1 D
+-37 0 D
+-74 1 D
 -111 10 D
 -73 12 D
 -61 13 D
@@ -1460,7 +1679,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy misfit.txt -Ct.cpt -Sc0.15c -Wfaint -i0,1,4 -R0/6.5/0/6.5 -JX4i
+%@GMT: gmt psxy misfit.txt -Ct.cpt -Sc0.15c -Wfaint -i0,1,4 -R0/6.5/0/6.5 -JX4i
 %@PROJ: xy 0.00000000 6.50000000 0.00000000 6.50000000 0.000 6.500 0.000 6.500 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -1586,7 +1805,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -F+cTR+jTR+f18p -Dj0.1i -Gwhite -W0.25p -R0/6.5/0/6.5 -JX4i
+%@GMT: gmt pstext -F+cTR+jTR+f18p -Dj0.1i -Gwhite -W0.25p -R0/6.5/0/6.5 -JX4i
 %@PROJ: xy 0.00000000 6.50000000 0.00000000 6.50000000 0.000 6.500 0.000 6.500 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -1620,7 +1839,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -Ct.cpt -DJBC+e -Bxaf -By+lmisfit
+%@GMT: gmt psscale -Ct.cpt -DJBC+e -Bxaf -By+lmisfit
 %@PROJ: xy 0.00000000 6.50000000 0.00000000 6.50000000 0.000 6.500 0.000 6.500 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -1698,6 +1917,7 @@ N 2688 0 M 0 -42 D S
 %%EndObject
 
 grestore
+PSL_movie_completion /PSL_movie_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U
