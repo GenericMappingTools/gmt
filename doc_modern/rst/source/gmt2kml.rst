@@ -187,7 +187,7 @@ Optional Arguments
     each feature, with the segment number (for lines and polygons) or
     point number (symbols) appearing where %d is placed, (4) give no
     arguments to turn symbol labeling off; line segments will still be
-    named. Also note that
+    named. Also note that options (2) is not available unless input is an ASCII file.
 
 .. _-O:
 
