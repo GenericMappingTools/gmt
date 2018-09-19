@@ -15238,3 +15238,35 @@ int gmtlib_get_num_processors() {
 		n_cpu = 1; /* fallback */
 	return n_cpu;
 }
+
+int gmt_report_usage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, unsigned int special, int (*usage)(struct GMTAPI_CTRL *, int)) {
+	/* Handle the way classic and modern mode modules report their usage msssages.
+	 * Set special == 1 if the classic module can be run with no options at all and still be expected to do things (e.g., silently read stdin) */
+	int code = GMT_NOERROR;	/* Default is no usage message was requested and we move on to parsing the arguments */
+	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Under modern mode we always require an option like -? or -^ to call usage */
+		if (options) {	/* Modern mode will only print the usage if one of the usage-options are given (but see exception for one-liners) */
+			if (options->option == GMT_OPT_USAGE)	/* Return the usage message */
+				code = GMT_OPT_USAGE;
+			if (options->option == GMT_OPT_SYNOPSIS)	/* Return the synopsis message */
+				code = GMT_SYNOPSIS;
+		}
+		else if (API->usage)	/* One-liner modern mode with no args must give usage */
+			code = GMT_OPT_USAGE;
+	}
+	else if (special) {	/* Some classic modules require an option to show usage, otherwise expect input (e.g., gmtinfo) */
+		if (options && options->option == GMT_OPT_USAGE)
+			code = GMT_OPT_USAGE;
+		if (options && options->option == GMT_OPT_SYNOPSIS)
+			code = GMT_SYNOPSIS;
+	}
+	else {	/* Regular classic module behavior */
+		if (!options || options->option == GMT_OPT_USAGE)
+			code = GMT_OPT_USAGE;
+		else if (options->option == GMT_OPT_SYNOPSIS)
+			code = GMT_SYNOPSIS;
+	}
+	
+	if (code)	/* Must call the usage function */
+		usage (API, code);
+	return (code);	
+}

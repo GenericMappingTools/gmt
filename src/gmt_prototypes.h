@@ -41,6 +41,7 @@ EXTERN_MSC char *gmt_strdup (struct GMT_CTRL *GMT, const char *s);
 
 /* gmt_init.c: */
 
+EXTERN_MSC int gmt_report_usage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, unsigned int special, int (*usage)(struct GMTAPI_CTRL *, int));
 EXTERN_MSC bool gmt_option_set (struct GMT_CTRL *GMT, bool *active, unsigned int *errors);
 EXTERN_MSC void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int justify);
 EXTERN_MSC void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char *argv[], bool is_main);
