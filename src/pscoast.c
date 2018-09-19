@@ -768,23 +768,22 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		GMT->common.R.wesn[XHI] -= 360.0;
 	}
 
-	if (Ctrl->Q.active && !GMT->common.J.active) {	/* Fake area and linear projection */
-		gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection */
+	if (Ctrl->Q.active && !GMT->common.J.active) {	/* Set fake area and linear projection */
+		gmt_parse_common_options (GMT, "J", 'J', "x1d");
 		GMT->common.R.wesn[XLO] = GMT->common.R.wesn[YLO] = 0.0;
 		GMT->common.R.wesn[XHI] = GMT->common.R.wesn[YHI] = 1.0;
 	}
-	else if (Ctrl->M.active && !GMT->common.J.active)
-		gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection */
+	else if (Ctrl->M.active && !GMT->common.J.active)	/* Set fake linear projection */
+		gmt_parse_common_options (GMT, "J", 'J', "x1d");
+	else if (GMT->common.J.active && gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Gave -J but forgot the "d" */
+		gmt_set_geographic (GMT, GMT_IN);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Switching to -Jx|X...d[/...d] for geographic data\n");
+	}
 
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 
-	if (gmt_M_is_cartesian (GMT, GMT_IN)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "You must use a map projection or -Jx|X...d[/...d] for geographic data\n");
-		Return (GMT_RUNTIME_ERROR);
-	}
-	
 	world_map_save = GMT->current.map.is_world;
 
 	if (need_coast_base && (err = gmt_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info)) != 0)  {
