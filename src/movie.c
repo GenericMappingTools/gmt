@@ -1098,7 +1098,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 #endif
 		/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as a background plot */
-		if ((error = system (pre_file))) {
+		sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], pre_file);
+		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running preflight script %s returned error %d - exiting.\n", pre_file, error);
 			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
@@ -1181,7 +1182,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 #endif
 		/* Run post-flight now before dealing with the loop so the overlay exists */
-		if ((error = run_script (post_file))) {
+		sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], post_file);
+		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
 			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
