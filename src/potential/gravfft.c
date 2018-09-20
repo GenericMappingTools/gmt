@@ -504,10 +504,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	options = GMT_Create_Options (API, mode, args);
 	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE)
-		bailout (usage (API, GMT_USAGE));		/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS)
-		bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments */
 
