@@ -977,11 +977,11 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	if ((optN = GMT_Find_Option (API, 'N', options))) {	/* Split into two module calls */
 		/* If -N[<cpt>] is given then we split the call into a grdview + grdcontour sequence.
-	 	 * We DO NOT parse any option here or initialize GMT, and just bail after running the two modules */
+	 	 * We DO NOT parse any options here or initialize GMT, and just bail after running the two modules */
 	
 		char cmd1[GMT_LEN512] = {""}, cmd2[GMT_LEN512] = {""}, string[GMT_LEN128] = {""}, cptfile[PATH_MAX] = {""};
 		struct GMT_OPTION *opt = NULL;
-		bool got_cpt = (optN->arg[0]), is_continuous;
+		bool got_cpt = (optN->arg[0]), is_continuous, got_A = false, got_C_cpt = false;
 		size_t L;
 		
 		/* Make sure we dont pass options not compatible with -N */
@@ -1006,6 +1006,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			sprintf (string, " -%c%s", opt->option, opt->arg);
 			switch (opt->option) {
 				case 'A' : case 'D': case 'F': case 'G': case 'K': case 'L': case 'Q': case 'T': case 'U': case 'W': case 'Z':	/* Only for grdcontour */
+					if (opt->option == 'A') got_A = true;
 					strcat (cmd2, string); break;
 				case 'B':	/* Must worry about spaces*/
 					if (strchr (opt->arg, ' ') || strchr (opt->arg, '\t')) {	/* Must place all string arguments in quotes */
@@ -1019,12 +1020,13 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					strcat (cmd2, string);
 					if (optN->arg[0])	/* Use the -N cpt instead */
 						sprintf (string, " -C%s", optN->arg);
-					else if ((L = strlen (opt->arg)) >= 4 && !strncmp (&opt->arg[L-4], ".cpt", 4U)) {	/* Gave a cpt argument, check that it is valid */
+					else if ((L = strlen (opt->arg)) >= 4 && !strncmp (&opt->arg[L-4], ".cpt", 4U)) {	/* Gave a -C<cpt> argument, check that it is valid */
 						if (!gmt_M_file_is_cache (opt->arg) && gmt_access (API->GMT, opt->arg, R_OK)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: CPT file %s not found\n", opt->arg);
 							bailout (GMT_PARSE_ERROR);
 						}
 						strcpy (cptfile, opt->arg);
+						got_C_cpt = true;
 					}
 					else if (L < 4) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C or -N: No CPT given\n");
@@ -1066,6 +1068,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		/* Required options for grdview */
 		strcat (cmd1, " -Qs");
 		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd1, " -K");
+		if (got_A && !got_C_cpt) {	/* Must pass -N<cpt> via -C since no -C was given yet -A was set */
+			strcat (cmd1, " -C");
+			strcat (cmd1, optN->arg);
+		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Run: grdview %s\n", cmd1);
 		if ((API->error = GMT_Call_Module (API, "grdview", GMT_MODULE_CMD, cmd1))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to call grdview\n");
@@ -1078,10 +1084,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to call grdcontour\n");
 			Return (API->error);
 		}
-		bailout (GMT_NOERROR);	/* Home scott free */
+		bailout (GMT_NOERROR);	/* And we made it to the end */
 	}
 	
-	/* NOT -N, so parse the command-line arguments */
+	/* NOT -N, so parse the command-line arguments as a normal module would */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
