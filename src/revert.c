@@ -119,14 +119,7 @@ int GMT_revert (void *V_API, int mode, void *args) {
 	return (GMT_NOERROR);
 
 	/* For now this code is unreachable on purpose */
-	if (options) {
-		if (options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));		/* Return the usage message */
-		if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
-	}
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Not available in classic mode\n");
-		return (GMT_NOT_MODERN_MODE);
-	}
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments */
 
