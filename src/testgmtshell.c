@@ -24,6 +24,7 @@
  */
 
 #include "gmt.h"
+#include <string.h>
 
 int main () {
 
