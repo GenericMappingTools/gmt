@@ -980,7 +980,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	
 		char cmd1[GMT_LEN512] = {""}, cmd2[GMT_LEN512] = {""}, string[GMT_LEN128] = {""}, cptfile[PATH_MAX] = {""};
 		struct GMT_OPTION *opt = NULL;
-		bool got_cpt = (optN->arg[0]), is_continuous, got_A = false, got_C_cpt = false;
+		bool got_cpt = (optN->arg[0]), is_continuous, got_C_cpt = false;
 		size_t L;
 		
 		/* Make sure we dont pass options not compatible with -N */
@@ -1005,7 +1005,6 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			sprintf (string, " -%c%s", opt->option, opt->arg);
 			switch (opt->option) {
 				case 'A' : case 'D': case 'F': case 'G': case 'K': case 'L': case 'Q': case 'T': case 'U': case 'W': case 'Z':	/* Only for grdcontour */
-					if (opt->option == 'A') got_A = true;
 					strcat (cmd2, string); break;
 				case 'B':	/* Must worry about spaces*/
 					if (strchr (opt->arg, ' ') || strchr (opt->arg, '\t')) {	/* Must place all string arguments in quotes */
@@ -1067,7 +1066,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		/* Required options for grdview */
 		strcat (cmd1, " -Qs");
 		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd1, " -K");
-		if (got_A && !got_C_cpt) {	/* Must pass -N<cpt> via -C since no -C was given yet -A was set */
+		if (!got_C_cpt) {	/* Must pass -N<cpt> via -C since no -C was given */
 			strcat (cmd1, " -C");
 			strcat (cmd1, optN->arg);
 		}
