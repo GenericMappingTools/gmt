@@ -2631,7 +2631,7 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 				else	/* Go to next point in line */
 					i++;
 			}
-			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your -Gd|D option produced no contour labels for z = %g\n", zval);
+			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Your -Gd|D option produced no contour labels for z = %g\n", zval);
 
 		}
 		if (G->number) {	/* Place prescribed number of labels evenly along contours */
@@ -2705,7 +2705,7 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 				else	/* All in vain... */
 					gmt_M_free (GMT, new_label);
 			}
-			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your -Gn|N option produced no contour labels for z = %g\n", zval);
+			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Your -Gn|N option produced no contour labels for z = %g\n", zval);
 		}
 		if (G->crossing) {	/* Determine label positions based on crossing lines */
 			uint64_t left, right, line_no;
@@ -2757,7 +2757,7 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 				gmt_x_free (GMT, &G->XC);
 			}
 			gmt_M_free (GMT, G->ylist);
-			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your -Gx|X|l|L option produced no contour labels for z = %g\n", zval);
+			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Your -Gx|X|l|L option produced no contour labels for z = %g\n", zval);
 		}
 		if (G->fixed) {	/* Prescribed point locations for labels that match points in input records */
 			double dist, min_dist;
@@ -2794,7 +2794,7 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 				}
 			}
 
-			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your -Gf option produced no contour labels for z = %g\n", zval);
+			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Your -Gf option produced no contour labels for z = %g\n", zval);
 		}
 		support_contlabel_fixpath (GMT, &xx, &yy, map_dist, &nn, G);	/* Inserts the label x,y into path */
 		support_contlabel_addpath (GMT, xx, yy, nn, zval, label, true, G);		/* Appends this path and the labels to list */
