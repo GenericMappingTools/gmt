@@ -993,7 +993,9 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			bailout (GMT_PARSE_ERROR);
 		}
 
-		if ((L = strlen (optN->arg)) >= 4 && !strncmp (&optN->arg[L-4], ".cpt", 4U)) {	/* Gave a cpt argument, check that it is valid */
+		if (gmt_M_file_is_memory (optN->arg))	/* Got cpt via a memory object */
+			strcpy (cptfile, optN->arg);
+		else if ((L = strlen (optN->arg)) >= 4 && !strncmp (&optN->arg[L-4], ".cpt", 4U)) {	/* Gave a cpt argument, check that it is valid */
 			if (!gmt_M_file_is_cache (optN->arg) && gmt_access (API->GMT, optN->arg, R_OK)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: CPT file %s not found\n", optN->arg);
 				bailout (GMT_PARSE_ERROR);
@@ -1001,7 +1003,13 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			strcpy (cptfile, optN->arg);
 		}
 		
-		for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
+		/* Process all the options given.  Some are needed by both grdview and grdcontour while others are grdcontour only.
+		 * We must consider the situations arising form external API calls: The CPT's may be memory objects so we must
+		 * check for that and if found not free the resources.  Also, if a PostScript output file is set via ->file.ps then
+		 * we must make sure we append in the second module. Below cmd1 holds the grdview arguments and cmd2 holds the
+		 * overlay grdcontour arguments. These are built on the fly */
+		
+		for (opt = options; opt; opt = opt->next) {
 			sprintf (string, " -%c%s", opt->option, opt->arg);
 			switch (opt->option) {
 				case 'A' : case 'D': case 'F': case 'G': case 'K': case 'L': case 'Q': case 'T': case 'U': case 'W': case 'Z':	/* Only for grdcontour */
@@ -1013,11 +1021,15 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 						sprintf (string, " -%c%s", opt->option, dup_string);
 					}
 					strcat (cmd2, string); break;
-				case 'C':	/* grdcontour, but maybe this is a cpt for grdview as well */
+				case 'C':	/* grdcontour, but maybe this is a cpt to be used in grdview as well */
 					got_cpt = true;
 					strcat (cmd2, string);
 					if (optN->arg[0])	/* Use the -N cpt instead */
 						sprintf (string, " -C%s", optN->arg);
+					else if (gmt_M_file_is_memory (opt->arg)) {	/* CPT passed in as an object */
+						strcpy (cptfile, opt->arg);
+						got_C_cpt = true;
+					}
 					else if ((L = strlen (opt->arg)) >= 4 && !strncmp (&opt->arg[L-4], ".cpt", 4U)) {	/* Gave a -C<cpt> argument, check that it is valid */
 						if (!gmt_M_file_is_cache (opt->arg) && gmt_access (API->GMT, opt->arg, R_OK)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: CPT file %s not found\n", opt->arg);
@@ -1031,42 +1043,48 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 						bailout (GMT_PARSE_ERROR);
 					}
 					strcat (cmd1, string);	break;
-				case 'O': case 'P':
+				case 'O': case 'P':	/* This would only apply to the first grdcontour call */
 					strcat (cmd1, string);	break;
-				case 'N':	/* Just skip */
+				case 'N':	/* Just skip since it is what got us in here */
 					break;
-				case 'X': case 'Y':	/* Only grdview gets these unless absolute */
+				case 'X': case 'Y':	/* Only grdview gets these unless they are absolute positionings */
 					strcat (cmd1, string);
 					if (opt->arg[0] == 'a') strcat (cmd2, string);
 					break;
+				case GMT_OPT_OUTFILE:	/* PostScript file explicitly given in external interface in classic mode */
+					strcat (cmd1, string);
+					sprintf (string, " -%c%c%s", opt->option, opt->option, opt->arg);	/* Must explicitly append */
+					strcat (cmd2, string);
+					break;
 				
-				default:	/* Goes into both commands */
+				default:	/* These arguments go into both commands (may be -p -n etc) */
 					strcat (cmd1, string);	strcat (cmd2, string);
 					break;
 			}
 		}
-		if (!got_cpt) {
+		if (!got_cpt) {	/* No cpt is bad news */
 			GMT_Report (API, GMT_MSG_NORMAL, "The -N option requires a <cpt> argument if -C<cpt> is not given\n");
 			bailout (GMT_PARSE_ERROR);
 		}
-		/* Check if CPT is discrete */
-		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, cptfile, NULL)) == NULL) {
+		/* Check if the given CPT is discrete as required */
+		if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL | GMT_IO_RESET, NULL, cptfile, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read CPT file %s\n", cptfile);
 			bailout (GMT_PARSE_ERROR);
 		}
 		is_continuous = P->is_continuous;
-		if (GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
+		/* Free the P object unless it was an input memory object */
+		if (!gmt_M_file_is_memory (cptfile) && GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (is_continuous) {
+		if (is_continuous) {	/* More bad news */
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: CPT file must be discrete, not continuous\n");
 			bailout (GMT_PARSE_ERROR);
 		}
 		
-		/* Required options for grdview */
+		/* Required options for grdview to fill the grid */
 		strcat (cmd1, " -Qs");
-		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd1, " -K");
-		if (!got_C_cpt) {	/* Must pass -N<cpt> via -C since no -C was given */
+		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd1, " -K");	/* If classic mode then we need to say we will append more PostScript later */
+		if (!got_C_cpt) {	/* Must pass -N<cpt> via -C to grdview since no -C was given */
 			strcat (cmd1, " -C");
 			strcat (cmd1, optN->arg);
 		}
@@ -1076,13 +1094,13 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		/* Required options for grdcontour */
-		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd2, " -O");
+		if (API->GMT->current.setting.run_mode == GMT_CLASSIC) strcat (cmd2, " -O");	/* If classic mode then we need to say we this is an overlay */
 		GMT_Report (API, GMT_MSG_DEBUG, "Run: grdcontour %s\n", cmd2);
 		if ((API->error = GMT_Call_Module (API, "grdcontour", GMT_MODULE_CMD, cmd2))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to call grdcontour\n");
 			Return (API->error);
 		}
-		bailout (GMT_NOERROR);	/* And we made it to the end */
+		bailout (GMT_NOERROR);	/* And we made it to the end, so get out of here */
 	}
 	
 	/* NOT -N, so parse the command-line arguments as a normal module would */
