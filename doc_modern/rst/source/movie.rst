@@ -330,7 +330,7 @@ as the center longitude:
    ::
 
     gmt begin
-       gmt coast -Rg -JG${MOVIE_FRAME}/20/${MOVIE_WIDTH} -Gmaroon -Sturquoise -P -Bg -X0 -Y0
+       gmt coast -Rg -JG${MOVIE_FRAME}/20/${MOVIE_WIDTH} -Gmaroon -Sturquoise -Bg -X0 -Y0
     gmt end
 
 As the automatic frame loop is executed the different frames will be produced with different
@@ -345,7 +345,7 @@ Now, the globe.bat DOS script is simply
    ::
 
     gmt begin
-       gmt coast -Rg -JG%MOVIE_FRAME%/20/%MOVIE_WIDTH% -Gmaroon -Sturquoise -P -Bg -X0 -Y0
+       gmt coast -Rg -JG%MOVIE_FRAME%/20/%MOVIE_WIDTH% -Gmaroon -Sturquoise -Bg -X0 -Y0
     gmt end
 
 i.e., the syntax of how variables are used vary according to the scripting language. At the
