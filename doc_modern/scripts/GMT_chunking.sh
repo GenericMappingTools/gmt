@@ -33,8 +33,5 @@ for ((x=0;x<12;++x)); do
   fi
 done
 
-# finalize PS
-gmt plot <<< "-99 -99" 
-
 rm -f chunk.tmp
 gmt end

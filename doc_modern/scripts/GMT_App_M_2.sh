@@ -1,6 +1,6 @@
 #!/bin/bash
 gmt begin GMT_App_M_2 ps
-gmt set FONT_ANNOT_PRIMARY 10p PROJ_LENGTH_UNIT cm
+gmt set FONT_ANNOT_PRIMARY 10p PROJ_LENGTH_UNIT cm PS_MEDIA 8.5ix11i
 
 # Set up color palette with named annotations
 
