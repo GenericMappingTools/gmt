@@ -1,3 +1,2 @@
 #!/bin/bash
-#
-gmt pscoast -R-90/-70/0/20 -JM6i -P -Ba -Gchocolate > GMT_tut_3.ps
+gmt coast -R-90/-70/0/20 -JM6i -Ba -Gchocolate -ps GMT_tut_3
