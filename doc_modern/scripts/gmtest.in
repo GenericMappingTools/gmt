@@ -182,10 +182,10 @@ gmt set -Du PS_CHAR_ENCODING ISOLatin1+
 # Tentative PS file name
 ps="${script_name%.sh}.ps"
 # Modern mode needs a stable PPID but ctest messes that up when pipes are used
-if [ "X$script_mode" = "XM" ]; then
+#if [ "X$script_mode" = "XM" ]; then
 	export GMT_PPID=\$\$
 	echo "Set GMT_PPID = \$GMT_PPID"
-fi
+#fi
 # Now run the script
 . "${local_script}"
 EOF

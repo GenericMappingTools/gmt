@@ -6,6 +6,7 @@
 
 dy=-0.2222
 y0=4.3
+yy=4.5222
 tr '",' '  ' < "${GMT_SOURCE_DIR}"/src/standard_adobe_fonts.h | awk '{print $2}' > tt.d
 gmt begin GMT_App_G ps
 gmt set MAP_FRAME_PEN thinner
@@ -20,8 +21,7 @@ gmt plot -R0/5.4/0/$y0 -Jx1i -B0 <<EOF
 3	0
 3	$y0
 EOF
-gmt plot -Y${y0}i -T
-gmt text -Y${dy}i -F+f10p+jBC <<EOF
+gmt text -Y${yy}i -F+f10p+jBC <<EOF
 0.15	0.05	\\043
 1.55	0.05	Font Name
 2.85	0.05	\\043
