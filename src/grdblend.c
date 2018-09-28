@@ -582,7 +582,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmt %s [<blendfile> | <grid1> <grid2> ...] -G<outgrid>\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<blendfile> | <grid1> <grid2> ...] -G<outgrid>\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s %s [-Cf|l|o|u][-|+]\n\t[-N<nodata>] [-Q] [%s] [-W[z]] [-Z<scale>] [%s] [%s] [%s] [%s]\n\n",
 		GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
