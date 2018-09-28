@@ -1,3 +1,4 @@
 #!/bin/bash
-#
-gmt pscoast -Rg -JKs4.5i -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 -P > GMT_eckert6.ps
+gmt begin GMT_eckert6 ps
+gmt coast -Rg -JKs4.5i -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 
+gmt end

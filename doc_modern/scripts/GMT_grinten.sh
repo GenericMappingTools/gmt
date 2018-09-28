@@ -1,3 +1,2 @@
 #!/bin/bash
-#
-gmt pscoast -Rg -JV4i -Bg -Dc -Glightgray -Scornsilk -A10000 -Wthinnest -P > GMT_grinten.ps
+gmt coast -Rg -JV4i -Bg -Dc -Glightgray -Scornsilk -A10000 -Wthinnest -ps GMT_grinten

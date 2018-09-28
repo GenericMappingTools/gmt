@@ -1,7 +1,5 @@
 #!/bin/bash
-#
-ps=GMT_App_M_2.ps
-
+gmt begin GMT_App_M_2 ps
 gmt set FONT_ANNOT_PRIMARY 10p PROJ_LENGTH_UNIT cm
 
 # Set up color palette with named annotations
@@ -25,18 +23,19 @@ F	white
 END
 
 # Top row, left to right. Using names.
-gmt psscale -Cages.cpt  -D00/13+w-8/0.5+jML+ef    -K         > $ps
-gmt psscale -Cages.cpt  -D04/13+w-8/0.5+jML+ef -O -K -L     >> $ps
-gmt psscale -Cages.cpt  -D08/13+w-8/0.5+jML+ef -O -K -L0.0  >> $ps
-gmt psscale -Cages.cpt  -D12/13+w-8/0.5+jML+ef -O -K -L0.1  >> $ps
-gmt psscale -Cages.cpt  -D16/13+w08/0.5+jML+ef -O -K -L     >> $ps
-gmt psscale -Cages.cpt  -D20/13+w08/0.5+jML+ef -O -K -L0.1  >> $ps
+gmt colorbar -Cages.cpt  -D00/13+w-8/0.5+jML+ef         
+gmt colorbar -Cages.cpt  -D04/13+w-8/0.5+jML+ef -L     
+gmt colorbar -Cages.cpt  -D08/13+w-8/0.5+jML+ef -L0.0  
+gmt colorbar -Cages.cpt  -D12/13+w-8/0.5+jML+ef -L0.1  
+gmt colorbar -Cages.cpt  -D16/13+w08/0.5+jML+ef -L     
+gmt colorbar -Cages.cpt  -D20/13+w08/0.5+jML+ef -L0.1  
 
 # Bottom row, left to right. Using numbers.
 sed 's/;.*$//' ages.cpt > years.cpt
-gmt psscale -Cyears.cpt -D00/04+w08/0.5+jML+ef -O -K        >> $ps
-gmt psscale -Cyears.cpt -D04/04+w-8/0.5+jML+ef -O -K -L     >> $ps
-gmt psscale -Cyears.cpt -D08/04+w-8/0.5+jML+ef -O -K -L0.0  >> $ps
-gmt psscale -Cyears.cpt -D12/04+w-8/0.5+jML+ef -O -K -L0.1  >> $ps
-gmt psscale -Cyears.cpt -D16/04+w-8/0.5+jML+ef -O -K -Li    >> $ps
-gmt psscale -Cyears.cpt -D20/04+w-8/0.5+jML+ef -O    -Li0.1 >> $ps
+gmt colorbar -Cyears.cpt -D00/04+w08/0.5+jML+ef        
+gmt colorbar -Cyears.cpt -D04/04+w-8/0.5+jML+ef -L     
+gmt colorbar -Cyears.cpt -D08/04+w-8/0.5+jML+ef -L0.0  
+gmt colorbar -Cyears.cpt -D12/04+w-8/0.5+jML+ef -L0.1  
+gmt colorbar -Cyears.cpt -D16/04+w-8/0.5+jML+ef -Li    
+gmt colorbar -Cyears.cpt -D20/04+w-8/0.5+jML+ef -Li0.1
+gmt end

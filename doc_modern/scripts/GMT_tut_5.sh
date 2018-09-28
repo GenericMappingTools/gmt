@@ -1,3 +1,2 @@
 #!/bin/bash
-#
-gmt pscoast -Rg -JG280/30/6i -Bag -Dc -A5000 -Gwhite -SDarkTurquoise -P > GMT_tut_5.ps
+gmt coast -Rg -JG280/30/6i -Bag -Dc -A5000 -Gwhite -SDarkTurquoise -ps GMT_tut_5
