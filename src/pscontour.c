@@ -387,7 +387,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmt %s <table> %s %s\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> %s %s\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[-|[+]<annot_int>][<labelinfo>]\n\t[%s] [-C[+]<cont_int>|<cpt>] [-D<template>] ", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "[-E<indextable>] [%s] [-I] [%s] %s[-L<pen>] [-N]\n", GMT_CONTG, GMT_Jz_OPT, GMT_K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q[<cut>[<unit>]][+z]] [-S[p|t]] [%s]\n", GMT_O_OPT, GMT_P_OPT, GMT_CONTT);

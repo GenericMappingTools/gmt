@@ -229,7 +229,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "You may redistribute copies of this program under the terms of the\n");
 			fprintf (stderr, "GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html).\n");
 			fprintf (stderr, "For more information about legal matters, see the file named LICENSE.TXT.\n\n");
-			fprintf (stderr, "usage: gmt %s [options]\n", PROGRAM_NAME);
+			fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 			fprintf (stderr, "session management:\n");
 			fprintf (stderr, "  gmt begin         Initiate a new GMT session using modern mode [classic].\n");
