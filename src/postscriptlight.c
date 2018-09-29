@@ -4209,8 +4209,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		PSL_command (PSL, "%g %g scale\n", PSL->init.magnify[0] * scl, PSL->init.magnify[1] * scl);
 		PSL_command (PSL, "%%%%EndPageSetup\n\n");
 
-		if (!(PSL_is_gray(PSL->init.page_rgb) && PSL_eq(PSL->init.page_rgb[0],1.0)))	/* Change background color from white */
-			PSL_command (PSL, "clippath %s F N\n", psl_putcolor (PSL, PSL->init.page_rgb));
+		if (!(PSL_is_gray(PSL->init.page_rgb) && PSL_eq(PSL->init.page_rgb[0],1.0)))	/* Change background color from white but not if PSL_no_pagefill is set via psconvert */
+			PSL_command (PSL, "systemdict /PSL_no_pagefill known not {clippath %s F N} if\n", psl_putcolor (PSL, PSL->init.page_rgb));
 		PSL_comment (PSL, "End of PSL header\n");
 
 		/* Save page size */
