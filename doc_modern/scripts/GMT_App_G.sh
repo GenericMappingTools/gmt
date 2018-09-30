@@ -6,7 +6,7 @@
 
 dy=-0.2222
 y0=4.3
-yy=4.5222
+yy=4.0778
 tr '",' '  ' < "${GMT_SOURCE_DIR}"/src/standard_adobe_fonts.h | awk '{print $2}' > tt.d
 gmt begin GMT_App_G ps
 gmt set MAP_FRAME_PEN thinner

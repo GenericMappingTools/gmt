@@ -12319,8 +12319,9 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 	unsigned modern = 0, pos, k = 0;
 	int n_args = argc - 1;
 	char figure[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
+	bool usage = false;
 
-    if (n_args == 0) return;    /* This is just typing gmt with no args */
+	if (n_args == 0) return;    /* This is just typing gmt with no args */
 	if (gmt_main) {
 		n_args--;	/* Count number of args after module name */
 		k = 1;
@@ -12330,7 +12331,7 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 	if (API->GMT->current.setting.use_modern_name) {
 		if (n_args == 0) {	/* Gave none or a single argument */
 			API->GMT->current.setting.run_mode = GMT_MODERN;
-			API->usage = true;
+			usage = true;
 			return;
 		}
 		if (n_args == 1) {	/* Gave a single argument */
@@ -12340,7 +12341,7 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 			else if (argv[argc-1][0] == '-' && (argv[argc-1][1] == '\0' || argv[argc-1][1] == GMT_OPT_USAGE || argv[argc-1][1] == GMT_OPT_SYNOPSIS)) {	/* Gave a single argument */
 				modern = 1;
 			}
-			if (modern) API->usage = true;
+			if (modern) usage = true;
 		}
 	}
 	/* Must check if a one-liner with special graphics format settings were given, e.g., -png map */
@@ -12361,8 +12362,10 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 			}
 		}
 	}
-	if (modern)	/* This is indeed a modern mode one-liner */
+	if (modern) {	/* This is indeed a modern mode one-liner */
 		API->GMT->current.setting.run_mode = GMT_MODERN;
+		API->usage = usage;
+	}
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)	/* If running in modern mode we want to use modern names */
 		API->GMT->current.setting.use_modern_name = true;
 }
