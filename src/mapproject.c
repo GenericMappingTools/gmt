@@ -347,7 +347,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 
 	unsigned int n_slash, k, n_errors = 0, pos;
 	int n;
-	bool geodetic_calc = false;
+	bool geodetic_calc = false, will_need_RJ = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, from[GMT_LEN256] = {""}, to[GMT_LEN256] = {""};
 	char c, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -415,6 +415,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 					                                 "Syntax error: Expected -C[<false_easting>/<false_northing>]\n");
 					Ctrl->C.shift = true;
 				}
+				will_need_RJ = true;	/* Since -C is used with projections only */
 				break;
 			case 'D':
 				Ctrl->D.active = true;
@@ -427,6 +428,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 			case 'F':
 				Ctrl->F.active = true;
 				Ctrl->F.unit = opt->arg[0];
+				will_need_RJ = true;	/* Since -F is used with projections only */
 				break;
 			case 'G':	/* Syntax. Old: -G[<lon0/lat0>][/[+|-]units][+|-]  New: -G[<lon0/lat0>][+i][+a][+u[+|-]units][+v] */
 				Ctrl->G.active = true;
@@ -485,9 +487,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				if (Ctrl->G.unit == 'c') Ctrl->G.unit = 'X';	/* Internally, this is Cartesian data and distances */
 				if (Ctrl->G.mode & GMT_MP_INCR_DIST)  Ctrl->used[MP_COL_DS] = true;	/* Output incremental distances */
 				if (Ctrl->G.mode & GMT_MP_CUMUL_DIST) Ctrl->used[MP_COL_CS] = true;	/* Output cumulative distances */
+				if (Ctrl->G.unit == 'C') will_need_RJ = true;	/* Since unit C is projected distances */
 				break;
 			case 'I':
 				Ctrl->I.active = true;
+				will_need_RJ = true;	/* Since -I means inverse projection */
 				break;
 			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] */
 				Ctrl->L.active = true;
@@ -509,6 +513,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				if (Ctrl->L.unit == 'c') Ctrl->L.unit = 'X';		/* Internally, this is Cartesian data and distances */
 				if (!gmt_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				Ctrl->used[MP_COL_DS] = Ctrl->used[MP_COL_XN] = Ctrl->used[MP_COL_YN] = true;	/* Output dist, xnear, ynear */
+				if (Ctrl->L.unit == 'C') will_need_RJ = true;	/* Since unit C is projected distances */
 				break;
 			case 'N':
 				Ctrl->N.active = true;
@@ -555,6 +560,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				Ctrl->W.active = true;
 				if (opt->arg[0] == 'w') Ctrl->W.mode = 1;
 				else if (opt->arg[0] == 'h') Ctrl->W.mode = 2;
+				will_need_RJ = true;	/* Since knowing the dimensions means region and projection */
 				break;
 
 			case 'Z':
@@ -611,6 +617,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 		/* See if scale == 1:1 and if yes set -C -F */
 		if (GMT->current.proj.pars[14] == 1)
 			Ctrl->C.active = Ctrl->F.active = true;
+	}
+
+	if (will_need_RJ) {
+		/* Treat mapproject differently than other non-PS producing modules to allow a -R from previous plot to be used.
+		 * Perhaps this needs to be more nuanced beyond PS vs no-PS if other modules end up needed the same treatment */
+		GMT->current.ps.active = true;	/* Briefly pretend we are a PS-producing module */
+		gmt_set_missing_options (GMT, "RJ");
+		GMT->current.ps.active = true;	/* Come to our senses */
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->used[MP_COL_DS], "Syntax error: -Z requires -G+i\n");
