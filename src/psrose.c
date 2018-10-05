@@ -356,9 +356,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 			case 'N':	/* Make sectors area be proportional to frequency instead of radius */
 				Ctrl->N.active = true;
 				break;
-			case 'Q':	/* Scale radii before using data */
+			case 'Q':	/* Set critical value [0.05] */
 				Ctrl->Q.active = true;
-				Ctrl->Q.value = atof (opt->arg);
+				if (opt->arg[0]) Ctrl->Q.value = atof (opt->arg);
 				break;
 			case 'S':	/* Normalization */
 				Ctrl->S.active = true;
