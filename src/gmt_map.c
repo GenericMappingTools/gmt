@@ -5806,7 +5806,7 @@ GMT_LOCAL bool map_near_a_line_spherical (struct GMT_CTRL *P, double lon, double
 		if (return_mindist && d < (*dist_min)) {	/* Update minimum distance */
 			*dist_min = d;
 			if (return_mindist == 2) *x_near = S->data[GMT_X][row], *y_near = S->data[GMT_Y][row];	/* Also update (x,y) of nearest point on the line */
-			if (return_mindist == 3) *x_near = (double)seg, *y_near = (double)row;	/* Also update (seg, pt) of nearest point on the line */
+			else if (return_mindist == 3) *x_near = (double)seg, *y_near = (double)row;	/* Also update (seg, pt) of nearest point on the line */
 		}
 		interior = (row > 0 && row < (S->n_rows - 1));	/* Only false if we are processing one of the end points */
 		if (d <= SH->dist && (interior || !perpendicular_only)) return (true);			/* Node inside the critical distance; we are done */
