@@ -405,11 +405,11 @@ GMT_LOCAL int smooth(struct GRDPPA_CTRL *Ctrl, struct GMT_GRID *G, unsigned int 
 
 /* --------------------------------------------------------------------------------- */
 int GMT_grdppa (void *V_API, int mode, void *args) {
-	bool first = true;
+	bool first = true, mem_G = false;
 	unsigned int i, j, k;
 	int error = 0;
 	
-	float  z_scale, ww, x, y, v1, v2, x1, y1, heig, x_save, y_save;
+	float  z_scale, ww, x, y, v1, v2, x1, y1, x_save, y_save;
 	double wesn[4], out[2];
 
 	struct GMT_GRID *G = NULL, *W = NULL;
@@ -473,6 +473,12 @@ int GMT_grdppa (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	if (!Ctrl->A.ridges) {
+		mem_G = gmt_M_file_is_memory (Ctrl->In.file);
+		for (k = 0; k < G->header->size; k++)
+			G->data[k] *= -1;
+	}
+
 	Ctrl->w = gmt_M_memory (GMT, NULL, G->header->my*G->header->mx*4, float);
 	Ctrl->v = gmt_M_memory (GMT, NULL, G->header->my*G->header->mx*4, char);
 
@@ -492,12 +498,12 @@ int GMT_grdppa (void *V_API, int mode, void *args) {
 				smooth(Ctrl, G, i, j, &x, &y, &v1);
 				smooth(Ctrl, G, i + Ctrl->neigh_x[k-1], j + Ctrl->neigh_y[k-1], &x1, &y1, &v2);
 				ww = (v1 + v2) / 2;
-#if 0	// Not used???
+				/*	Not used!!
 				if (Ctrl->A.ridges)
 					heig = G->header->z_min + (ww - 1) / z_scale;
 				else
 					heig = G->header->z_max - (ww - 1) / z_scale;
-#endif
+				*/
 
 				if (first) {
 					if (!Ctrl->S.active)
@@ -536,6 +542,11 @@ int GMT_grdppa (void *V_API, int mode, void *args) {
 				}
 			}
 		}
+	}
+
+	if (!Ctrl->A.ridges && mem_G) {		/* Need to restore the input memory grid */
+		for (k = 0; k < G->header->size; k++)
+			G->data[k] *= -1;
 	}
 
 	gmt_M_free (GMT, Out);
