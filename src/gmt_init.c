@@ -51,7 +51,7 @@
  *	gmt_pen_syntax
  *	gmt_rgb_syntax
  *	gmt_refpoint_syntax
- *	gmt_mapinsert_syntax
+ *	gmt_mapinset_syntax
  *	gmt_mapscale_syntax
  *	gmt_maprose_syntax
  *	gmt_mappanel_syntax
@@ -6539,7 +6539,7 @@ void gmt_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsigned int kind, unsigned int part) {
 	/* For -Dg|j|J|n|x */
 	char *type[GMT_ANCHOR_NTYPES] = {"logo", "image", "legend", "color-bar", "insert", "map scale", "map rose", "vertical scale"}, *tab[2] = {"", "     "};
-	unsigned int shift = (kind == GMT_ANCHOR_INSERT) ? 1 : 0;	/* Add additional "tab" to front of message */
+	unsigned int shift = (kind == GMT_ANCHOR_INSET) ? 1 : 0;	/* Add additional "tab" to front of message */
 	if (part & 1) {	/* Here string is message, or NULL */
 		if (string) gmt_message (GMT, "\t-%s %s\n", option, string);
 		gmt_message (GMT, "\t   %sPositioning is specified via one of four coordinate systems:\n", tab[shift]);
@@ -6565,7 +6565,7 @@ void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsi
 	\param option ...
 	\param string ...
 */
-void gmt_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string) {
+void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	/* Only called in psbasemap.c for now */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	gmt_message (GMT, "\t-%c %s\n", option, string);
@@ -6574,9 +6574,9 @@ void gmt_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	gmt_message (GMT, "\t        Append +r if coordinates are the lower left and upper right corners of a rectangular area.\n");
 	gmt_message (GMT, "\t     b) Give <xmin>/<xmax>/<ymin>/<ymax>+u<unit> of bounding rectangle in projected coordinates.\n");
 	gmt_message (GMT, "\t     c) Set reference point and dimensions of the insert:\n");
-	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSERT, 1);
+	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
 	gmt_message (GMT, "\t        Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is unit).\n");
-	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSERT, 2);
+	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 2);
 	gmt_message (GMT, "\t     Append +s<file> to save insert lower left corner and dimensions to <file>.\n");
 	gmt_message (GMT, "\t     Append +t to translate plot origin to the lower left corner of the insert.\n");
 	gmt_message (GMT, "\t   Set panel attributes separately via the -F option.\n");

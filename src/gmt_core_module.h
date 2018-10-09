@@ -78,7 +78,7 @@ EXTERN_MSC int GMT_grdvector (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdview (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdvolume (void *API, int mode, void *args);
 EXTERN_MSC int GMT_greenspline (void *API, int mode, void *args);
-EXTERN_MSC int GMT_insert (void *API, int mode, void *args);
+EXTERN_MSC int GMT_inset (void *API, int mode, void *args);
 EXTERN_MSC int GMT_kml2gmt (void *API, int mode, void *args);
 EXTERN_MSC int GMT_makecpt (void *API, int mode, void *args);
 EXTERN_MSC int GMT_mapproject (void *API, int mode, void *args);

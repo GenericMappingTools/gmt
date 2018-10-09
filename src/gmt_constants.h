@@ -359,7 +359,7 @@ enum GMT_enum_anchors {	/* Various anchor strings */
 	GMT_ANCHOR_IMAGE,	/* Anchor for image */
 	GMT_ANCHOR_LEGEND,	/* Anchor for legend */
 	GMT_ANCHOR_COLORBAR,	/* Anchor for colorbar */
-	GMT_ANCHOR_INSERT,	/* Anchor for insert */
+	GMT_ANCHOR_INSET,	/* Anchor for insert */
 	GMT_ANCHOR_MAPSCALE,	/* Anchor for map scale */
 	GMT_ANCHOR_MAPROSE,	/* Anchor for map rose */
 	GMT_ANCHOR_VSCALE,	/* Anchor for vertical scale */
