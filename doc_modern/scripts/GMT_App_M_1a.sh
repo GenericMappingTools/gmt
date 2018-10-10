@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	Makes the inserts for Appendix M(cpt)
+#	Makes the insets for Appendix M(cpt)
 #	[skip srtm which is just a special verison of dem2]
 #
 # Use the knowledge that we need 3 pages: First two pages are the

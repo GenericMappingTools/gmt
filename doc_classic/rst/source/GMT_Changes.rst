@@ -161,9 +161,9 @@ Several modules have obtained new options to extend their capabilities:
    on distances and speeds, and has been redesigned to allow several outputs
    by combining the options **-A**, **-G**, **-L**, and **-Z**.
 
-*  :doc:`psbasemap` has a new map-insert (**-D**) modifier **+t** that will
+*  :doc:`psbasemap` has a new map-inset (**-D**) modifier **+t** that will
    translate the plot origin after determining the lower-left corner of the
-   map insert.
+   map inset.
 
 *  :doc:`pshistogram` has a new **-Z** modifier **+w** that will
    accumulate weights provided in the 2nd input column instead of pure counts.
@@ -297,7 +297,7 @@ as well. For specific enhancements, we have:
    color-model used.
 
 *  We have consolidated how map embellishments are specified.  This group
-   includes map scales, color bars, legends, map roses, map inserts,
+   includes map scales, color bars, legends, map roses, map insets,
    image overlays, the GMT logo, and a background panel.  A new section in the Cookbook is
    dedicated to these items and how they are specified.  Common to all is
    the concept of a *reference point* relative to which the item is
@@ -563,7 +563,7 @@ Several changes have affects across GMT; these are:
    vector head at the mid-point of the vector instead at the ends.
 
 *  All eight map embellishment features (map scale, color bar, direction rose, magnetic
-   rose, GMT logo, raster images, map inserts, and map legends) now use a uniform
+   rose, GMT logo, raster images, map insets, and map legends) now use a uniform
    mechanism for specifying placement, justification, and attributes and is supported
    by a new section in the documentation.
 
@@ -1214,7 +1214,7 @@ Finally, here is a list of numerous enhancements to individual programs:
    also modification to **-A** to add user-specified margins, and it automatically detects
    if transparent elements have been included (and a detour via PDF might be needed).
 
-*  :doc:`psbasemap` has added a **-D** option to place a map-insert box.
+*  :doc:`psbasemap` has added a **-D** option to place a map-inset box.
 
 *  :doc:`psclip` has added an extended **-C** option to close different types of clip paths.
 

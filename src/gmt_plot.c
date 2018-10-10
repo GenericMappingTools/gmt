@@ -47,7 +47,7 @@
  *	gmt_linearx_grid 	 : Draw linear x grid lines
  *	gmt_setfill              :
  *	gmt_setfont              :
- *	gmt_draw_map_insert      :
+ *	gmt_draw_map_inset      :
  *	gmt_setpen               :
  *	gmt_draw_custom_symbol   :
  *	gmt_add_label_record     :
@@ -4763,7 +4763,7 @@ unsigned int gmt_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F) {
 	return (outline);
 }
 
-void gmt_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
+void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B) {
 	/* Place a rectangle on the map, as defined by center point and dimensions or w/e/s/n in geo or projected coordinates */
 	unsigned int k;
 	double rect[4], dim[3], s;
@@ -4807,7 +4807,7 @@ void gmt_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
 			gmt_geo_to_xy (GMT, B->wesn[XLO], B->wesn[YLO], &rect[XLO], &rect[YLO]);	/* Lower left corner in inches */
 			gmt_geo_to_xy (GMT, B->wesn[XHI], B->wesn[YHI], &rect[XHI], &rect[YHI]);	/* Lower left corner in inches */
 		}
-		else {	/* Curved map insert */
+		else {	/* Curved map inset */
 			uint64_t np;
 			int outline;
 			double *lon = NULL, *lat = NULL;
@@ -4824,13 +4824,13 @@ void gmt_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
 		}
 	}
 
-	/* Deal with rectangular insert */
+	/* Deal with rectangular inset */
 	/* Determine panel dimensions */
 
 	dim[GMT_X] = rect[XHI] - rect[XLO];	dim[GMT_Y] = rect[YHI] - rect[YLO];
 	/* Report position and dimensions */
 	s = GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Map insert lower left corner and dimensions (in %s): %g %g %g %g\n",
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Map inset lower left corner and dimensions (in %s): %g %g %g %g\n",
 		GMT->session.unit_name[GMT->current.setting.proj_length_unit], rect[XLO]*s, rect[YLO]*s, dim[GMT_X]*s, dim[GMT_Y]*s);
 	if (B->file) {	/* Save x0 y0 w h to file */
 		FILE *fp = fopen (B->file, "w");
@@ -4844,7 +4844,7 @@ void gmt_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
 	}
 	if (panel) {	/* Requested to draw a panel */
 		panel->width = dim[GMT_X];	panel->height = dim[GMT_Y];
-		if (!panel->clearance) gmt_M_memset (panel->padding, 4, double);	/* No clearance is default for map inserts unless actually specified */
+		if (!panel->clearance) gmt_M_memset (panel->padding, 4, double);	/* No clearance is default for map insets unless actually specified */
 		gmt_draw_map_panel (GMT, 0.5 * (rect[XHI] + rect[XLO]), 0.5 * (rect[YHI] + rect[YLO]), 3U, panel);
 	}
 	if (B->translate)	/* Translate the plot origin */

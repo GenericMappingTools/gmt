@@ -72,8 +72,8 @@
 #define GMT_TROSE_DIR	GMT_XYANCHOR "+w<width>[+f[<level>]]" GMT_JUSTIFY "[+l<w,e,s,n>]" GMT_OFFSET
 #define GMT_TROSE_MAG	GMT_XYANCHOR "+w<width>[+d[<dec>[/<dlabel>]]][+i<pen>]" GMT_JUSTIFY "[+l<w,e,s,n>][+p<pen>][+t<ints>]" GMT_OFFSET
 #define GMT_SCALE	GMT_XYANCHOR "+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f]" GMT_JUSTIFY "[+l[<label>]]" GMT_OFFSET "[+u]"
-#define GMT_INSERT_A	GMT_XYANCHOR "+w<width>[<unit>][/<height>[<unit>]]" GMT_JUSTIFY GMT_OFFSET "[+s<file>][+t]"
-#define GMT_INSERT_B	"<xmin>/<xmax>/<ymin>/<ymax>[+r][+s<file>][+t][+u<unit>]"
+#define GMT_INSET_A	GMT_XYANCHOR "+w<width>[<unit>][/<height>[<unit>]]" GMT_JUSTIFY GMT_OFFSET "[+s<file>][+t]"
+#define GMT_INSET_B	"<xmin>/<xmax>/<ymin>/<ymax>[+r][+s<file>][+t][+u<unit>]"
 
 /* Options for background panel, used in gmtlogo, psimage, pslegend and psscale */
 
