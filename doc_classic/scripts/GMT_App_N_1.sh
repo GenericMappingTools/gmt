@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	Makes the insert for Appendix N(custom symbols)
+#	Makes the inset for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex
 #	file since the number of figures must be calculated.
 #	Dimensions are in inches

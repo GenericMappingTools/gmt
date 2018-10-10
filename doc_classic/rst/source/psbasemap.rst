@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
 [ |-A|\ [*file*] ]
-[ |-D|\ *insert box* ]
+[ |-D|\ *inset box* ]
 [ |-F|\ *box* ]
 [ |-K| ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
@@ -81,12 +81,12 @@ Optional Arguments
 .. _-D:
 
 **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*][**+t**] \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*][**+t**]
-    Draw a simple map insert box on the map.  Requires **-F**.  Specify the box in one of three ways:
+    Draw a simple map inset box on the map.  Requires **-F**.  Specify the box in one of three ways:
     (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **r** if the coordinates instead are the lower left and
     upper right corners of the desired rectangle. (b) Give **u**\ *xmin/xmax/ymin/ymax*
     of bounding rectangle in projected coordinates (here, **u** is the coordinate unit).
-    (c) Give the reference point on the map for the insert using one of four coordinate systems:
+    (c) Give the reference point on the map for the inset using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
@@ -98,16 +98,16 @@ Optional Arguments
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Add **+o** to offset the inset fig by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
-    If you need access to the placement of the lower left corner of the map insert and
+    If you need access to the placement of the lower left corner of the map inset and
     its dimensions in the current map unit, use **+s**\ *file* to write this information
     to *file*.  Alternatively, you may append **+t** to translate the plot origin to
-    the lower left corner of the map insert.
-    Specify insert box attributes via the **-F** option [outline only].
+    the lower left corner of the map inset.
+    Specify inset box attributes via the **-F** option [outline only].
 
 .. _-F:
 
 **-F**\ [**d**\ \|\ **l**\ \|\ **t**][\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
-    Without further options, draws a rectangular border around any map insert (**-D**),
+    Without further options, draws a rectangular border around any map inset (**-D**),
     map scale (**-L**) or map rose (**-T**) using
     :ref:`MAP_FRAME_PEN <MAP_FRAME_PEN>`; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the logo box [no fill].

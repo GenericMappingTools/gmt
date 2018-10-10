@@ -2,7 +2,7 @@
 #
 # Testing gmt legend capabilities for tables with colors
 
-gmt begin GMT_insert ps
+gmt begin GMT_inset ps
 # Bottom map of Australia
 gmt coast -R110E/170E/44S/9S -JM6i -Baf -BWSne -Wfaint -N2/1p  -EAU+gbisque -Gbrown -Sazure1 -Da -Xc --FORMAT_GEO_MAP=dddF
 gmt basemap -DjTR+w1.5i+o0.15i+stmp -F+gwhite+p1p+c0.1c+s

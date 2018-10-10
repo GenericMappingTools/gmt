@@ -1,6 +1,6 @@
 #!/bin/bash
 # Shows bug in grdblend when cutting across input grids
-# The bottom region should equal the insert box on top.
+# The bottom region should equal the inset box on top.
 # This is for the old netCDF grid format. Pixel registration.
 ps=center_cf_p.ps
 gmt grdmath -R-2/0/-2/0 -I1 -r X Y ADD = LL.cdf=cf
