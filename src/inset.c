@@ -32,8 +32,8 @@
 #define THIS_MODULE_NAME	"inset"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Manage modern mode figure inset design and completion"
-#define THIS_MODULE_KEYS	""
-#define THIS_MODULE_NEEDS	""
+#define THIS_MODULE_KEYS	">X}"
+#define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS	"V"
 
 /* Control structure for inset */
@@ -53,7 +53,7 @@ struct INSET_CTRL {
 	} D;
 	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
-		/* The panel is a member ofGMT_MAP_INSET */
+		/* The panel is a member of GMT_MAP_INSET */
 	} F;
 	struct M {	/* -M<margin>[u] | <xmargin>[u]/<ymargin>[u]  | <wmargin>[u]/<emargin>[u]/<smargin>[u]/<nmargin>[u]  */
 		bool active;
@@ -190,6 +190,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 	int error = 0, fig, k;
 	char file[PATH_MAX] = {""};
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct INSET_CTRL *Ctrl = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -220,16 +221,18 @@ int GMT_inset (void *V_API, int mode, void *args) {
 	fig = gmt_get_current_figure (API);	/* Get current figure number */
 
 	if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {	/* Get hidden file name for PS */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No workflow directory\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No active plot file to append to\n");
 		Return (GMT_ERROR_ON_FOPEN);
 	}
-	if ((PSL_fopen (GMT->PSL, GMT->current.ps.filename, "a")) == NULL) {	/* Must open inside PSL DLL */
-		GMT_Report (API, GMT_MSG_NORMAL, "Insert must be an overlay to an existing plot!\n");
-		GMT_Report (API, GMT_MSG_NORMAL, "Cannot open %s in append mode\n", GMT->current.ps.filename);
-		Return (GMT_ERROR_ON_FOPEN);
+
+	sprintf (file, "%s/gmt.inset.%d", API->gwf_dir, fig);	/* Inset information file */
+
+	if (Ctrl->In.mode == INSET_BEGIN && !access (file, F_OK)) {	/* Inset information file already exists which is a failure */
+		GMT_Report (API, GMT_MSG_NORMAL, "Inset information file already exists: %s\n", file);
+		Return (GMT_RUNTIME_ERROR);
 	}
-	
-	sprintf (file, "%s/gmt.inset.%d", API->gwf_dir, fig);	/* Insert information file */
+
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	if (Ctrl->In.mode == INSET_BEGIN) {	/* Determine and save inset attributes */
 		/* Here we need to compute dimensions and save those plus current -R -J to the inset information file,
@@ -237,33 +240,28 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		 * draw the panel. */
 		
 		char *cmd = NULL;
-		FILE *fpi = NULL;
-		
-		if (!access (file, F_OK))	{	/* Insert information file already exists which is failure */
-			GMT_Report (API, GMT_MSG_NORMAL, "Insert information file already exists: %s\n", file);
-			Return (GMT_RUNTIME_ERROR);
-		}
+		FILE *fp = NULL;
 		
 		/* OK, no other inset set for this figure (or panel).  Save graphics state before we draw the inset */
-		PSL_command (GMT->PSL, "V\n");
+		PSL_command (PSL, "V\n");
 
 		gmt_draw_map_inset (GMT, &Ctrl->D.inset);	/* Draw the inset */
 		
 		/* Write out the inset information file */
 		
-		if ((fpi = fopen (file, "w")) == NULL) {	/* Not good */
+		if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot create file %s\n", file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		fprintf (fpi, "# Figure inset information file\n");
+		fprintf (fp, "# Figure inset information file\n");
 		cmd = GMT_Create_Cmd (API, options);
-		fprintf (fpi, "# Command: %s %s\n", THIS_MODULE_NAME, cmd);
+		fprintf (fp, "# Command: %s %s\n", THIS_MODULE_NAME, cmd);
 		gmt_M_free (GMT, cmd);
-		fprintf (fpi, "# ORIGIN: %g %g\n", 0.0, 0.0);
-		fprintf (fpi, "# DIMENSION: %g %g\n", Ctrl->D.inset.dim[GMT_X], Ctrl->D.inset.dim[GMT_Y]);
-		fprintf (fpi, "# REGION: %s\n", GMT->common.R.string);
-		fprintf (fpi, "# PROJ: %s\n", GMT->common.J.string);
-		fclose (fpi);
+		fprintf (fp, "# ORIGIN: %g %g\n", 0.0, 0.0);
+		fprintf (fp, "# DIMENSION: %g %g\n", Ctrl->D.inset.dim[GMT_X], Ctrl->D.inset.dim[GMT_Y]);
+		fprintf (fp, "# REGION: %s\n", GMT->common.R.string);
+		fprintf (fp, "# PROJ: %s\n", GMT->common.J.string);
+		fclose (fp);
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Wrote inset settings to information file %s\n", file);
 		
 	}
@@ -271,18 +269,13 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		/* Here we need to finish the inset with a grestore and restate the original -R -J in the history file,
 		 * and finally remove the inset information file */
 		
-		PSL_command (GMT->PSL, "U\n");	/* Restore graphics state to what it was before the map inset */
+		PSL_command (PSL, "U\n");	/* Restore graphics state to what it was before the map inset */
 		/* Remove the inset information file */
 		gmt_remove_file (GMT, file);
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Removed inset file\n");
 	}
 	
-	/* In either case we need to manually close the PS file */
-	
-	if (PSL_fclose (GMT->PSL)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to close hidden PS file %s!\n", GMT->current.ps.filename);
-		Return (GMT_RUNTIME_ERROR);
-	}
+	gmt_plotend (GMT);
 
 	Return (error);
 }
