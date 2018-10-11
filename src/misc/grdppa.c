@@ -157,9 +157,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPPA_CTRL *Ctrl, struct GMT_
 }
 
 /* Table of constant values */
-static int c__0 = 0;
-static int c__1 = 1;
-static int c__2 = 2;
+static unsigned int c__0 = 0;
+static unsigned int c__1 = 1;
+static unsigned int c__2 = 2;
 
 /* --------------------------------------------------------------------------------- */
 GMT_LOCAL void con(struct GRDPPA_CTRL *Ctrl, struct GMT_GRID *G, unsigned int i,
@@ -204,7 +204,7 @@ GMT_LOCAL int neb(unsigned int i) {
 
 /* --------------------------------------------------------------------------------- */
 GMT_LOCAL int kst(struct GRDPPA_CTRL *Ctrl, struct GMT_GRID *G, unsigned int i,
-                  unsigned int j, unsigned int k, unsigned int jc) {
+                  unsigned int j, unsigned int k, int jc) {
 	/* ********************************************************************* */
 	/* function to handle connection status and tracing route tables */
 	/* jc=1: check the connection status; jc=-1: check the route status */
