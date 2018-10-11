@@ -23,6 +23,7 @@
  * It has two modes of operation:
  *	1) Initialize a new inset, which determines dimensions and sets parameters:
  *	   gmt inset begin -D<params> [-F<panel>] [-V]
+ *	   Sugsequent plot calls will be placed in the inset window.
  *	2) Exit inset mode:
  *	   gmt inset end [-V]
  */
@@ -34,7 +35,7 @@
 #define THIS_MODULE_PURPOSE	"Manage modern mode figure inset design and completion"
 #define THIS_MODULE_KEYS	">X}"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS	"V"
+#define THIS_MODULE_OPTIONS	"-JRV"
 
 /* Control structure for inset */
 
@@ -122,10 +123,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 		return GMT_PARSE_ERROR;
 	}
 	opt = opt->next;	/* Position to the next argument */
-	if (Ctrl->In.mode == INSET_END && opt && !(opt->option == 'V' && opt->next == NULL)) {	/* Only -V is optional for end or set */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "inset end: Unrecognized option: %s\n", opt->arg);
-		return GMT_PARSE_ERROR;
-	}
 
 	while (opt) {	/* Process all the options given */
 
@@ -137,7 +134,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				if (gmt_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->D.inset.panel))) {
+				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->D.inset.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel for the map inset", 3);
 					n_errors++;
 				}
@@ -179,6 +176,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) n_errors++;
 		}
 	}
+	else {	/* gmt inset end was given, when -D -F -M are not allowed */
+		if (Ctrl->D.active) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -D: Not valid for gmt inset end.\n");
+			n_errors++;
+		}
+		if (Ctrl->F.active) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -F: Not valid for gmt inset end.\n");
+			n_errors++;
+		}
+		if (Ctrl->M.active) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -M: Not valid for gmt inset end.\n");
+			n_errors++;
+		}
+	}
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -186,9 +197,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+EXTERN_MSC int gmtlib_get_option_id (int start, char *this_option);
+
 int GMT_inset (void *V_API, int mode, void *args) {
 	int error = 0, fig, k;
+	bool exist;
 	char file[PATH_MAX] = {""};
+	FILE *fp = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -227,8 +242,13 @@ int GMT_inset (void *V_API, int mode, void *args) {
 
 	sprintf (file, "%s/gmt.inset.%d", API->gwf_dir, fig);	/* Inset information file */
 
-	if (Ctrl->In.mode == INSET_BEGIN && !access (file, F_OK)) {	/* Inset information file already exists which is a failure */
-		GMT_Report (API, GMT_MSG_NORMAL, "Inset information file already exists: %s\n", file);
+	exist = !access (file, F_OK);	/* Determine if inset information file exists */
+	if (Ctrl->In.mode == INSET_BEGIN && exist) {	/* Inset information file already exists which is a failure */
+		GMT_Report (API, GMT_MSG_NORMAL, "In begin mode but inset information file already exists: %s\n", file);
+		Return (GMT_RUNTIME_ERROR);
+	}
+	else if (Ctrl->In.mode == INSET_END && !exist) {	/* Inset information file does not exist which is a failure */
+		GMT_Report (API, GMT_MSG_NORMAL, "In end mode and information file does not exist: %s\n", file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -240,8 +260,9 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		 * draw the panel. */
 		
 		char *cmd = NULL;
-		FILE *fp = NULL;
 		
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+
 		/* OK, no other inset set for this figure (or panel).  Save graphics state before we draw the inset */
 		PSL_command (PSL, "V\n");
 
@@ -257,7 +278,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		cmd = GMT_Create_Cmd (API, options);
 		fprintf (fp, "# Command: %s %s\n", THIS_MODULE_NAME, cmd);
 		gmt_M_free (GMT, cmd);
-		fprintf (fp, "# ORIGIN: %g %g\n", 0.0, 0.0);
+		fprintf (fp, "# ORIGIN: %g %g\n", Ctrl->D.inset.refpoint->x, Ctrl->D.inset.refpoint->y);
 		fprintf (fp, "# DIMENSION: %g %g\n", Ctrl->D.inset.dim[GMT_X], Ctrl->D.inset.dim[GMT_Y]);
 		fprintf (fp, "# REGION: %s\n", GMT->common.R.string);
 		fprintf (fp, "# PROJ: %s\n", GMT->common.J.string);
@@ -268,8 +289,32 @@ int GMT_inset (void *V_API, int mode, void *args) {
 	else {	/* INSET_END */
 		/* Here we need to finish the inset with a grestore and restate the original -R -J in the history file,
 		 * and finally remove the inset information file */
-		
+		int id;
+		char line[GMT_LEN128] = {""}, str[3] = {"J"};
+			
 		PSL_command (PSL, "U\n");	/* Restore graphics state to what it was before the map inset */
+		
+		/* Extract previous -R -J from the inset information file */
+		if ((fp = fopen (file, "r")) == NULL) {	/* Not good */
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot read file %s\n", file);
+			Return (GMT_ERROR_ON_FOPEN);
+		}
+		/* Skip the first 4 comments and get REGION line */
+		for (k = 0; k < 5; k++) gmt_fgets (GMT, line, GMT_LEN128, fp);
+		id = gmtlib_get_option_id (0, "R");	/* Get index for the -RP history item */
+		if (!GMT->init.history[id]) id++;	/* No history for -RP, increment to -RG as fallback */
+		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Free what it was */
+		GMT->init.history[id] = strdup (&line[10]);	/* Put back the original figure region */
+		gmt_fgets (GMT, line, GMT_LEN128, fp);	/* Read the PROJ line */
+		fclose (fp);
+		id = gmtlib_get_option_id (0, "J");	/* Get the -J index */
+		/* Must now search for actual option since -J only has the code (e.g., -JM) */
+		/* Continue looking for -J<code> */
+		str[1] = line[8];	/* This is the -J code */
+		id = gmtlib_get_option_id (id + 1, str);	/* Get the actual -J? code id */
+		if (GMT->init.history[id])	/* There is prior history for this -J (it should be) */
+			gmt_M_str_free (GMT->init.history[id]);	/* Remove it */
+		GMT->init.history[id] = strdup (&line[9]);	/* Insert the original code */
 		/* Remove the inset information file */
 		gmt_remove_file (GMT, file);
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Removed inset file\n");
