@@ -100,7 +100,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPPA_CTRL *Ctrl, struct GMT_
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMTAPI_CTRL *API = GMT->parent;
 
 	gmt_M_memset (io, 1, struct GMT_Z_IO);
 
@@ -141,9 +140,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPPA_CTRL *Ctrl, struct GMT_
 }
 
 /* Table of constant values */
-static int c__0 = 0;
-static int c__1 = 1;
-static int c__2 = 2;
+static unsigned int c__0 = 0;
+static unsigned int c__1 = 1;
+static unsigned int c__2 = 2;
 
 /* --------------------------------------------------------------------------------- */
 GMT_LOCAL void con(struct GRDPPA_CTRL *Ctrl, struct GMT_GRID *G, unsigned int i,
@@ -188,7 +187,7 @@ GMT_LOCAL int neb(unsigned int i) {
 
 /* --------------------------------------------------------------------------------- */
 GMT_LOCAL int kst(struct GRDPPA_CTRL *Ctrl, struct GMT_GRID *G, unsigned int i,
-                  unsigned int j, unsigned int k, unsigned int jc) {
+                  unsigned int j, unsigned int k, int jc) {
 	/* ********************************************************************* */
 	/* function to handle connection status and tracing route tables */
 	/* jc=1: check the connection status; jc=-1: check the route status */
@@ -409,7 +408,7 @@ int GMT_grdppa (void *V_API, int mode, void *args) {
 	unsigned int i, j, k;
 	int error = 0;
 	
-	float  z_scale, ww, x, y, v1, v2, x1, y1, heig, x_save, y_save;
+	float  z_scale, ww, x, y, v1, v2, x1, y1, x_save, y_save;
 	double wesn[4], out[2];
 
 	struct GMT_GRID *G = NULL, *W = NULL;
