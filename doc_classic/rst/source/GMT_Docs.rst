@@ -3197,7 +3197,7 @@ The 9 embellishments currently available are
 
 *  **GMT logo** overlay.
 
-*  **Map insert** showing perhaps the location of your detailed area in a regional or global context.
+*  **Map inset** showing perhaps the location of your detailed area in a regional or global context.
 
 *  **Vertical scale** showing the vertical scale of anomalies on a map.
 
@@ -3609,17 +3609,17 @@ In addition, we require one modifier to set the logo's size.
    Placement of the GMT logo. The logo itself only has a size modifier but the :doc:`gmtlogo`
    module allows additional attributes such as a background map panel.
 
-Placing map inserts
-~~~~~~~~~~~~~~~~~~~
+Placing map insets
+~~~~~~~~~~~~~~~~~~
 
-Our penultimate map embellishment is the map insert.
-A map insert may appear to be the easiest feature to add since it only consists of an empty map panel.
+Our penultimate map embellishment is the map inset.
+A map inset may appear to be the easiest feature to add since it only consists of an empty map panel.
 What you put in this panel is up to you (and we will show some examples).  However, unlike
-the other map features there are two ways to specify the placement of the map insert.
-The first is the standard way of specifying the reference and anchor points and the insert dimensions,
+the other map features there are two ways to specify the placement of the map inset.
+The first is the standard way of specifying the reference and anchor points and the inset dimensions,
 while the second specifies a *subregion* in the current plot that should be designated the
-map insert area.  Depending on the map projection this may or may not be a rectangular area.
-Map inserts are produced by the module :doc:`psbasemap` via the **-D** option. Unless you
+map inset area.  Depending on the map projection this may or may not be a rectangular area.
+Map insets are produced by the module :doc:`psbasemap` via the **-D** option. Unless you
 use the reference point approach you must first append *xmin*/*xmax*/*ymin*/*ymax*\ [**+r**][**+u**\ *unit*\ ],
 where the optional *unit* modifier **+u** indicates that the four coordinates to follow are projected
 distances (e.g., km, miles).  If the unit modifier is missing then we assume the coordinates are
@@ -3627,34 +3627,34 @@ map coordinates (e.g., geographic *west*, *east*, *south*, and *north*).  For ob
 projections you may wish to specify the domain using the lower-left and upper-right coordinates
 instead (similar to how the **-R** option works), by adding **+r**\ .  Some optional modifiers are available:
 
-#. Set insert size.  If you specified a reference point then you must also specify the insert dimensions with the
+#. Set inset size.  If you specified a reference point then you must also specify the inset dimensions with the
    **+w**\ *width*\ [*unit*][/*height*\ [*unit*]], where *height* defaults to *width* if not given.
    Append the unit of the dimensions, which may be distance units such as km, feet, etc., and
-   the map projection will be used to determine insert dimensions on the map.  For instance,
+   the map projection will be used to determine inset dimensions on the map.  For instance,
    **+w**\ 300k/200k is a 300x200 km region (which depends on the projection) while **+w**\ 5c
    is a 5cm square box.
 
-#. Save the location and dimensions.  For all but the simplest of map inserts you will need to
-   know the exact location of the resulting insert and its dimensions.  For instance, if you
-   specified the insert using the TR anchor point and a width and height of 100 km you will need to
+#. Save the location and dimensions.  For all but the simplest of map insets you will need to
+   know the exact location of the resulting inset and its dimensions.  For instance, if you
+   specified the inset using the TR anchor point and a width and height of 100 km you will need to
    know what this means in terms of positions on the map in plot units.  In terms of the modifiers
    this would be **j**\ TR\ **+w**\ 100k.  Running :doc:`psbasemap`
    in verbose mode will provide this information and you can use it accordingly.  However, for
    users who wish to script this automatically you can use **+s**\ *file* to save this information
    in a file that your script can ingest and act upon.  The file contains a single record with the
    four tab-separated values *x0 y0 width height* in the current plot units [cm], where *x0 y0* refers
-   to the lower-left point on the insert.  See the figure caption for an example.
+   to the lower-left point on the inset.  See the figure caption for an example.
 
-.. figure:: /_images/GMT_insert.*
+.. figure:: /_images/GMT_inset.*
    :width: 500 px
    :align: center
 
-   Demonstration of how a map insert may be used to place a global overview map as an insert in a
-   regional map.  Main map shows the regional area of Australia.  We place an insert in the upper
+   Demonstration of how a map inset may be used to place a global overview map as an inset in a
+   regional map.  Main map shows the regional area of Australia.  We place an inset in the upper
    right area with **-Dj**\ TR\ **+w**\ 1.5i\ **+o**\ 0.15i\ **+s**\ tmp and then read in the coordinates
-   of the lower-right corner of the insert and its dimension with UNIX ("read x0 y0 w h < tmp").
+   of the lower-right corner of the inset and its dimension with UNIX ("read x0 y0 w h < tmp").
    Knowing the placement (we know the size of the circular global map) we can correctly position it
-   in the insert with **-X$x0** and **-Y$y0**.
+   in the inset with **-X$x0** and **-Y$y0**.
    See Example :ref:`example_44` for more details.
 
 Placing a vertical scale on maps

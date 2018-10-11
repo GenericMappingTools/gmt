@@ -43,11 +43,11 @@ struct PSBASEMAP_CTRL {
 	} A;
 	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>][+t] */
 		bool active;
-		struct GMT_MAP_INSERT insert;
+		struct GMT_MAP_INSET inset;
 	} D;
 	struct F {	/* -F[d|f|l][+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
-		/* The panels are members of GMT_MAP_SCALE, GMT_MAP_ROSE, and GMT_MAP_INSERT */
+		/* The panels are members of GMT_MAP_SCALE, GMT_MAP_ROSE, and GMT_MAP_INSET */
 	} F;
 	struct L {	/* -L[g|j|n|x]<refpoint>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+l[<label>]][+u] */
 		bool active;
@@ -69,8 +69,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->A.file);
-	if (C->D.insert.refpoint) gmt_free_refpoint (GMT, &C->D.insert.refpoint);
-	gmt_M_free (GMT, C->D.insert.panel);
+	if (C->D.inset.refpoint) gmt_free_refpoint (GMT, &C->D.inset.refpoint);
+	gmt_M_free (GMT, C->D.inset.panel);
 	if (C->L.scale.refpoint) gmt_free_refpoint (GMT, &C->L.scale.refpoint);
 	gmt_M_free (GMT, C->L.scale.panel);
 	if (C->T.rose.refpoint) gmt_free_refpoint (GMT, &C->T.rose.refpoint);
@@ -83,7 +83,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s] |\n\t[-D%s] [%s]\n", GMT_INSERT_A, GMT_INSERT_B, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s] |\n\t[-D%s] [%s]\n", GMT_INSET_A, GMT_INSET_B, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s\n", GMT_PANEL, GMT_K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L%s]\n", GMT_SCALE);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Td%s]\n", GMT_O_OPT, GMT_P_OPT, GMT_TROSE_DIR);
@@ -100,8 +100,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   in projected coordinates is controlled by GMT default MAP_LINE_STEP [%gp].\n",
 		API->GMT->session.u2u[GMT_INCH][GMT_PT] * API->GMT->current.setting.map_line_step);
 	GMT_Option (API, "B");
-	gmt_mapinsert_syntax (API->GMT, 'D', "Draw a simple map insert box as specified below:");
-	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map insert, scale or rose.", 3);
+	gmt_mapinset_syntax (API->GMT, 'D', "Draw a simple map inset box as specified below:");
+	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map inset, scale or rose.", 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For separate panel attributes, use -Fd, -Fl, -Ft.\n");
 	GMT_Option (API, "K");
 	gmt_mapscale_syntax (API->GMT, 'L', "Draw a map scale at specified reference point.");
@@ -123,7 +123,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 	unsigned int n_errors = 0, k = 1;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-	char *kind[3] = {"Specify a rectanglar panel for the map insert", "Specify a rectanglar panel behind the map scale", "Specify a rectanglar panel behind the map rose"};
+	char *kind[3] = {"Specify a rectanglar panel for the map inset", "Specify a rectanglar panel behind the map scale", "Specify a rectanglar panel behind the map rose"};
 	bool get_panel[3] = {false, false, false};
 	
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -136,9 +136,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 				Ctrl->A.active = true;
 				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
 				break;
-			case 'D':	/* Draw map insert */
+			case 'D':	/* Draw map inset */
 				Ctrl->D.active = true;
-				n_errors += gmt_getinsert (GMT, 'D', opt->arg, &Ctrl->D.insert);
+				n_errors += gmt_getinset (GMT, 'D', opt->arg, &Ctrl->D.inset);
 				break;
 			case 'F':
 				Ctrl->F.active = true;
@@ -148,7 +148,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 					case 't': get_panel[2] = true; break;
 					default : get_panel[0] = get_panel[1] = get_panel[2] = true; k = 0; break;
 				}
-				if (get_panel[0] && gmt_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->D.insert.panel))) {
+				if (get_panel[0] && gmt_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->D.inset.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', kind[0], 3);
 					n_errors++;
 				}
@@ -299,7 +299,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 			gmt_draw_map_scale (GMT, &Ctrl->L.scale);
 	}
 	if (Ctrl->T.active) gmt_draw_map_rose (GMT, &Ctrl->T.rose);
-	if (Ctrl->D.active) gmt_draw_map_insert (GMT, &Ctrl->D.insert);
+	if (Ctrl->D.active) gmt_draw_map_inset (GMT, &Ctrl->D.inset);
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 

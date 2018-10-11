@@ -2,7 +2,7 @@
 #
 # Testing gmt pslegend capabilities for tables with colors
 
-ps=GMT_insert.ps
+ps=GMT_inset.ps
 
 # Bottom map of Australia
 gmt pscoast -R110E/170E/44S/9S -JM6i -P -Baf -BWSne -Wfaint -N2/1p  -EAU+gbisque -Gbrown -Sazure1 -Da -K -Xc --FORMAT_GEO_MAP=dddF > $ps
