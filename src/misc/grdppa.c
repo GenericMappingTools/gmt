@@ -26,7 +26,6 @@
  * ********************************************************************* */
 
 #include "gmt_dev.h"
-#include "gmt_internals.h"
 
 #define THIS_MODULE_NAME	"grdppa"
 #define THIS_MODULE_LIB		"misc"
@@ -37,6 +36,8 @@
 
 #define ij(h,i,j) ((i) + ((j)-1)*(h->mx) -1)
 #define ijk(h,i,j,k) ((i) + ((j)-1)*(h->mx) + ((k)-1)*(h->mx)*(h->my) -1)
+
+EXTERN_MSC void gmtlib_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size);
 
 /* Control structure */
 
