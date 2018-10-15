@@ -15,15 +15,15 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
-/* ********************************************************************* */
-/* Program for automatic extraction of ridge and valley axes from the */
-/* digital elevation data set. The main steps are: */
-/* step 1: data and parameters input by sub._input */
-/* step 2: TarGet ReCognition and CONnection by sub._TGRCON */
-/* step 3: SEGment checK-Out by sub._SEGKO */
-/* step 4: LiNe SMooth and OutPut by sub._LNSMOP
- *	 
-/* ********************************************************************* */
+/* *********************************************************************
+ * Program for automatic extraction of ridge and valley axes from the
+ * digital elevation data set. The main steps are:
+ * step 1: data and parameters input by sub._input
+ * step 2: TarGet ReCognition and CONnection by sub._TGRCON
+ * step 3: SEGment checK-Out by sub._SEGKO
+ * step 4: LiNe SMooth and OutPut by sub._LNSMOP
+ *
+ * ********************************************************************* */
 
 #include "gmt_dev.h"
 
@@ -36,6 +36,8 @@
 
 #define ij(h,i,j) ((i) + ((j)-1)*(h->mx) -1)
 #define ijk(h,i,j,k) ((i) + ((j)-1)*(h->mx) + ((k)-1)*(h->mx)*(h->my) -1)
+
+EXTERN_MSC void gmtlib_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size);
 
 /* Control structure */
 
@@ -69,11 +71,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->A.ridges = true;
 	C->L.n_pts = 3;
 	//neigh_x[8] = {0, 1, 1, 1, 0, -1, -1, -1};
-	C->neigh_x[0] = 0;	C->neigh_x[1] = 1;	C->neigh_x[2] = 1;	C->neigh_x[3] = 1;	
-	C->neigh_x[4] = 0;	C->neigh_x[5] = -1;	C->neigh_x[6] = -1;	C->neigh_x[7] = -1;	
+	C->neigh_x[0] = 0;	C->neigh_x[1] = 1;	C->neigh_x[2] = 1;	C->neigh_x[3] = 1;
+	C->neigh_x[4] = 0;	C->neigh_x[5] = -1;	C->neigh_x[6] = -1;	C->neigh_x[7] = -1;
 	//neigh_y[8] = {1, 1, 0, -1, -1, -1, 0, 1};
-	C->neigh_y[0] = 1;	C->neigh_y[1] = 1;	C->neigh_y[2] = 0;	C->neigh_y[3] = -1;	
-	C->neigh_y[4] = -1;	C->neigh_y[5] = -1;	C->neigh_y[6] = 0;	C->neigh_y[7] = 1;	
+	C->neigh_y[0] = 1;	C->neigh_y[1] = 1;	C->neigh_y[2] = 0;	C->neigh_y[3] = -1;
+	C->neigh_y[4] = -1;	C->neigh_y[5] = -1;	C->neigh_y[6] = 0;	C->neigh_y[7] = 1;
 	return (C);
 }
 
@@ -211,7 +213,8 @@ GMT_LOCAL int kst(struct GRDPPA_CTRL *Ctrl, struct GMT_GRID *G, unsigned int i,
 	/* jc=4: break the connection,        jc=-4: break the route */
 	/* jc=8: check number of connections, jc=-8: check number of routes */
 	/* ********************************************************************* */
-	int ret_val = 0, m, n;
+	int ret_val = 0, m;
+	unsigned int n;
 	static float v, w1, w2;
 
 	if (jc == 2) {
@@ -423,14 +426,13 @@ int GMT_grdppa (void *V_API, int mode, void *args) {
 	bool first = true, mem_G = false;
 	unsigned int i, j, k;
 	int error = 0;
-	
+
 	float  z_scale, ww, x, y, v1, v2, x1, y1, x_save, y_save;
 	double wesn[4], out[2];
 
-	struct GMT_GRID *G = NULL, *W = NULL;
+	struct GMT_GRID *G = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct GMT_Z_IO io;
-	struct GMT_OPTION *opt = NULL;
 	struct GRDPPA_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -450,11 +452,11 @@ int GMT_grdppa (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, &io, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the grd2xyz main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid(s)\n");
-	
+
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
 	if (io.binary)
