@@ -37,8 +37,6 @@
 #define ij(h,i,j) ((i) + ((j)-1)*(h->mx) -1)
 #define ijk(h,i,j,k) ((i) + ((j)-1)*(h->mx) + ((k)-1)*(h->mx)*(h->my) -1)
 
-EXTERN_MSC void gmtlib_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size);
-
 /* Control structure */
 
 struct GRDPPA_CTRL {
@@ -502,7 +500,7 @@ int GMT_grdppa (void *V_API, int mode, void *args) {
 	z_scale = 499.0 / (G->header->z_max - G->header->z_min);
 
 	/* Regarding the original fortran algo we need to flipud the grid */
-	gmtlib_grd_flip_vertical (G->data, G->header->mx, G->header->my, 0, sizeof(G->data[0]));
+	gmt_grd_flip_vertical (G->data, G->header->mx, G->header->my, 0, sizeof(G->data[0]));
 
 	tgrcon(API, Ctrl, G);
 	segko(API, Ctrl, G, z_scale);
