@@ -11385,7 +11385,7 @@ GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, 
 	 * We return the wesn array with the exact or rounded region, depending on the setting of exact.
 	 */
 	unsigned int item;
-bool geo;
+	bool geo;
 	struct GMT_GRID *G = NULL;
 	struct GMT_OPTION *opt = NULL, *head = NULL, *tmp = NULL;
 	struct GMT_DATASET *Out = NULL;
