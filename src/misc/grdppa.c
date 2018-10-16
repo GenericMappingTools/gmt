@@ -156,13 +156,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPPA_CTRL *Ctrl, struct GMT_
 }
 
 /* Table of constant values */
-static unsigned int c__0 = 0;
-static unsigned int c__1 = 1;
-static unsigned int c__2 = 2;
+static int c__0 = 0;
+static int c__1 = 1;
+static int c__2 = 2;
 
 /* --------------------------------------------------------------------------------- */
-GMT_LOCAL void con(struct GRDPPA_CTRL *Ctrl, struct GMT_GRID *G, unsigned int i,
-                   unsigned int j, unsigned int k, unsigned int *n, unsigned int jc, float *s) {
+GMT_LOCAL void con(struct GRDPPA_CTRL *Ctrl, struct GMT_GRID *G, int i,
+                   int j, int k, int *n, int jc, float *s) {
 	/* ********************************************************************* */
 	/* check or change the status of connection or route */
 	/* ********************************************************************* */
@@ -188,7 +188,7 @@ GMT_LOCAL void con(struct GRDPPA_CTRL *Ctrl, struct GMT_GRID *G, unsigned int i,
 }
 
 /* --------------------------------------------------------------------------------- */
-GMT_LOCAL int neb(unsigned int i) {
+GMT_LOCAL int neb(int i) {
 	/* ********************************************************************* */
 	/* function to scale the cycled neighbor order */
 	/* ********************************************************************* */
@@ -202,8 +202,8 @@ GMT_LOCAL int neb(unsigned int i) {
 }
 
 /* --------------------------------------------------------------------------------- */
-GMT_LOCAL int kst(struct GRDPPA_CTRL *Ctrl, struct GMT_GRID *G, unsigned int i,
-                  unsigned int j, unsigned int k, int jc) {
+GMT_LOCAL int kst(struct GRDPPA_CTRL *Ctrl, struct GMT_GRID *G, int i,
+                  int j, int k, int jc) {
 	/* ********************************************************************* */
 	/* function to handle connection status and tracing route tables */
 	/* jc=1: check the connection status; jc=-1: check the route status */
@@ -211,8 +211,7 @@ GMT_LOCAL int kst(struct GRDPPA_CTRL *Ctrl, struct GMT_GRID *G, unsigned int i,
 	/* jc=4: break the connection,        jc=-4: break the route */
 	/* jc=8: check number of connections, jc=-8: check number of routes */
 	/* ********************************************************************* */
-	int ret_val = 0, m;
-	unsigned int n;
+	int ret_val = 0, m, n;
 	static float v, w1, w2;
 
 	if (jc == 2) {
@@ -230,7 +229,7 @@ GMT_LOCAL int kst(struct GRDPPA_CTRL *Ctrl, struct GMT_GRID *G, unsigned int i,
 	}
 	ret_val = 0;
 	if (abs(jc) == 8) {
-		for (m = 1; m <= 8; ++m) {
+		for (m = 1; m <= 8; m++) {
 			con(Ctrl, G, i, j, m, &n, 1, &v);
 			if      (jc == 8 && n != 0)  ret_val++;
 			else if (jc == -8 && n == 2) ret_val++;
@@ -255,20 +254,21 @@ GMT_LOCAL int tgrcon(struct GMTAPI_CTRL *API, struct GRDPPA_CTRL *Ctrl, struct G
 	/* ********************************************************************* */
 	/* Subroutine for target recognition and connection */
 	/* ********************************************************************* */
-	unsigned int *b, i, j, k, n[8], mc, ii, jj, ml, mm, itg;
+	unsigned int *b, itg;
+	int i, j, k, n[8], mc, ii, jj, ml, mm;
 
 	b = gmt_M_memory (API->GMT, NULL, ((uint64_t)G->header->mx * G->header->my), unsigned int);
 
 	/* # recognize the targets along profiles in four direction */
 	itg = 0;
-	for (j = 2; j < G->header->my - 1; j++) {
-		for (i = 3; i < G->header->mx - 1; i++) {
+	for (j = 2; j < (int)G->header->my - 1; j++) {
+		for (i = 3; i < (int)G->header->mx - 1; i++) {
 			for (k = 1; k <= 8; ++k) {
 				n[k-1] = 0;
-				for (ml = 1; ml <= (unsigned int)Ctrl->L.n_pts / 2; ml++) {
+				for (ml = 1; ml <= Ctrl->L.n_pts / 2; ml++) {
 					ii = i + ml * Ctrl->neigh_x[k-1];
 					jj = j + ml * Ctrl->neigh_y[k-1];
-					if (ii < 2 || ii > G->header->mx - 1 || jj < 2 || jj > G->header->my - 1) continue;
+					if (ii < 2 || ii > (int)G->header->mx - 1 || jj < 2 || jj > (int)G->header->my - 1) continue;
 					if (G->data[ij(G->header, ii,jj)] < G->data[ij(G->header, i,j)]) n[k-1] = 1;
 				}
 			}
@@ -280,8 +280,8 @@ GMT_LOCAL int tgrcon(struct GMTAPI_CTRL *API, struct GRDPPA_CTRL *Ctrl, struct G
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, " %d\ttargets found\n", itg);
 	/* # target connection */
-	for (j = 2; j < G->header->my; j++) {
-		for (i = 2; i < G->header->mx; i++) {
+	for (j = 2; j < (int)G->header->my; j++) {
+		for (i = 2; i < (int)G->header->mx; i++) {
 			for (k = 1; k <= 4; k++) {
 				mm = kst(Ctrl, G, i, j, k, 4);
 				if (b[ij(G->header, i,j)] + b[ij(G->header, i + Ctrl->neigh_x[k-1],(j + Ctrl->neigh_y[k-1]))] == 2) {
@@ -300,7 +300,8 @@ GMT_LOCAL int segko(struct GMTAPI_CTRL *API, struct GRDPPA_CTRL *Ctrl, struct GM
 	/* check-out improper segments by polygon breaking and branch reduction */
 	/* ********************************************************************* */
 	float v, z, wn;
-	unsigned int id, ii, jj, kk, in, jn, mm, nv, i, j, k, l, m, n, *b;
+	int id, k, i, j, ii, jj, kk, in, jn, mm;
+	unsigned int nv, l, m, n, *b;
 
 	b = gmt_M_memory (API->GMT, NULL, ((uint64_t)G->header->mx * G->header->my), unsigned int);
 
@@ -311,8 +312,8 @@ GMT_LOCAL int segko(struct GMTAPI_CTRL *API, struct GRDPPA_CTRL *Ctrl, struct GM
 L1:
 	m++;
 	wn = 1001.;
-	for (j = 2; j < G->header->my; j++) {
-		for (i = 2; i < G->header->mx; i++) {
+	for (j = 2; j < (int)G->header->my; j++) {
+		for (i = 2; i < (int)G->header->mx; i++) {
 			if (b[ij(G->header, i,j)] == 1)  continue;
 			nv = 0;
 			for (k = 1; k <= 4; k++) {
@@ -372,8 +373,8 @@ L11:
 	/* # branch reduction */
 L4:
 	for (l = 1; l <= (unsigned int)Ctrl->L.n_pts / 2; l++) {
-		for (j = 2; j < G->header->my; j++) {
-			for (i = 2; i < G->header->mx; i++) {
+		for (j = 2; j < (int)G->header->my; j++) {
+			for (i = 2; i < (int)G->header->mx; i++) {
 				b[ij(G->header, i,j)] = 0;
 				if (kst(Ctrl, G, i, j, k, 8) != 1) continue;
 				for (k = 1; k <= 8; k++) {
@@ -381,8 +382,8 @@ L4:
 				}
 			}
 		}
-		for (j = 2; j < G->header->my; j++) {
-			for (i = 2; i < G->header->mx; i++) {
+		for (j = 2; j < (int)G->header->my; j++) {
+			for (i = 2; i < (int)G->header->mx; i++) {
 				mm = kst(Ctrl, G, i, j, b[ij(G->header, i,j)], 4);
 			}
 		}
