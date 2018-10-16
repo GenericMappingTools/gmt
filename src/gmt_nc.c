@@ -1554,7 +1554,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_g
 
 	/* Flip grid upside down */
 	if (HH->row_order == k_nc_start_south)
-		gmtlib_grd_flip_vertical (pgrid + HH->data_offset, width, height, HH->stride, sizeof(grid[0]));
+		gmt_grd_flip_vertical (pgrid + HH->data_offset, width, height, HH->stride, sizeof(grid[0]));
 
 	/* Add padding with border replication */
 	gmtnc_pad_grid (pgrid, width, height, pad, sizeof(grid[0]), k_pad_fill_zero);
@@ -1661,7 +1661,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 
 	/* Flip grid upside down */
 	if (HH->row_order == k_nc_start_south)
-		gmtlib_grd_flip_vertical (pgrid, width, height, 0, sizeof(grid[0]));
+		gmt_grd_flip_vertical (pgrid, width, height, 0, sizeof(grid[0]));
 
 	/* Get stats */
 	header->z_min = DBL_MAX;

@@ -74,7 +74,7 @@
  *  gmt_decode_grd_h_info   : Decodes a -Dstring into header text components
  *  gmt_grd_RI_verify       : Test to see if region and incs are compatible
  *  gmt_scale_and_offset_f  : Routine that scales and offsets the data in a vector
- *  gmtlib_grd_flip_vertical  : Flips the grid in vertical direction
+ *  gmt_grd_flip_vertical  : Flips the grid in vertical direction
  *  grdio_pack_grid         : Packs or unpacks a grid by calling gmt_scale_and_offset_f()
  *
  *  Reading images via GDAL (if enabled):
@@ -3014,7 +3014,7 @@ bool gmtlib_init_complex (struct GMT_GRID_HEADER *header, unsigned int complex_m
 }
 
 /* Reverses the grid vertically, that is, from north up to south up or vice versa. */
-void gmtlib_grd_flip_vertical (void *gridp, const unsigned n_cols32, const unsigned n_rows32, const unsigned n_stride32, size_t cell_size) {
+void gmt_grd_flip_vertical (void *gridp, const unsigned n_cols32, const unsigned n_rows32, const unsigned n_stride32, size_t cell_size) {
 	/* Note: when grid is complex, pass 2x n_rows */
 	size_t row, n_cols = n_cols32, n_rows = n_rows32;
 	size_t rows_over_2 = (size_t) floor (n_rows / 2.0);
