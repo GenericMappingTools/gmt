@@ -84,7 +84,6 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPPA_CTRL *C) {	/* Deal
 	gmt_M_free(GMT, C);
 }
 
-
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 
@@ -104,7 +103,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	return (GMT_MODULE_USAGE);
 }
-
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPPA_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdppa and sets parameters in Ctrl.
@@ -300,8 +298,8 @@ GMT_LOCAL int segko(struct GMTAPI_CTRL *API, struct GRDPPA_CTRL *Ctrl, struct GM
 	/* check-out improper segments by polygon breaking and branch reduction */
 	/* ********************************************************************* */
 	float v, z, wn;
-	int id, k, i, j, ii, jj, kk, in, jn, mm;
-	unsigned int nv, l, m, n, *b;
+	int id, k, i, j, ii, jj, kk, in, jn, mm, n;
+	unsigned int nv, l, m, *b;
 
 	b = gmt_M_memory (API->GMT, NULL, ((uint64_t)G->header->mx * G->header->my), unsigned int);
 
