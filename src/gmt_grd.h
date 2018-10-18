@@ -179,6 +179,8 @@ enum gmt_enum_wesnids {
 #define gmt_M_grd_same_region(C,G1,G2) (G1->header->wesn[XLO] == G2->header->wesn[XLO] && G1->header->wesn[XHI] == G2->header->wesn[XHI] && G1->header->wesn[YLO] == G2->header->wesn[YLO] && G1->header->wesn[YHI] == G2->header->wesn[YHI])
 /*! gmt_M_grd_same_inc is true if two grids have the exact same grid increments */
 #define gmt_M_grd_same_inc(C,G1,G2) (G1->header->inc[GMT_X] == G2->header->inc[GMT_X] && G1->header->inc[GMT_Y] == G2->header->inc[GMT_Y])
+/*! gmt_M_grd_equal_inc is true if a grid has approximately the same x and y grid increments (within 1e-6) */
+#define gmt_M_grd_equal_xy_inc(C,G) (fabs (1.0 - G->header->inc[GMT_X] / G->header->inc[GMT_Y]) < 1.0e-6)
 /*! GMT_grd_same_dim is true if two grids have the exact same dimensions and registrations */
 #define gmt_M_grd_same_shape(C,G1,G2) (G1->header->n_columns == G2->header->n_columns && G1->header->n_rows == G2->header->n_rows && G1->header->registration == G2->header->registration)
 /*! gmt_M_y_is_outside is true if y is outside the given range */
