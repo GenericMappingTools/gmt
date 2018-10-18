@@ -2442,7 +2442,7 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 		GMT->parent->clear = false;
 		return (GMT_NOERROR); /* gmt.history mechanism has been disabled */
 	}
-	
+
 	if (!(GMT->current.setting.history & GMT_HISTORY_WRITE)) {
 		if (GMT->current.setting.run_mode == GMT_MODERN && GMT->current.setting.history == GMT_HISTORY_OFF)
 			GMT->current.setting.history = GMT->current.setting.history_orig;
@@ -12315,7 +12315,7 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 	 * This is needed since there is not gmt begin | end sequence in this case.
 	 * Also, if a user wants to get the usage message for a modern mode module then it is also a type
 	 * of one-liner and thus we set to GMT_MODERN as well, but only for modern module names. */
-	
+
 	unsigned modern = 0, pos, k = 0;
 	int n_args = argc - 1;
 	char figure[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
@@ -12327,7 +12327,7 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 		k = 1;
 	}
 	API->GMT->current.setting.use_modern_name = gmtlib_is_modern_name (API, argv[k]);
-	
+
 	if (API->GMT->current.setting.use_modern_name) {
 		if (n_args == 0) {	/* Gave none or a single argument */
 			API->GMT->current.setting.run_mode = GMT_MODERN;
@@ -14962,7 +14962,7 @@ int gmt_add_legend_item (struct GMTAPI_CTRL *API, char *symbol, char *size, stru
 	(pen)  ? fprintf (fp, "%s ", gmt_putpen (API->GMT, pen))      : fprintf (fp, "- ");
 	fprintf (fp, "- %s\n", label);
 	fclose (fp);
-	
+
 	return GMT_NOERROR;
 }
 
@@ -15146,6 +15146,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	unsigned int pos = 0;
 	bool add_label = false, add_annot = false, axis_set = false;
 	double GMT_LETTER_HEIGHT = 0.736;
+	char *dummy;
 	FILE *fp = NULL;
 	/* Initialize the default settings before considering any -B history */
 	offset[GMT_OUT] = GMT->current.setting.map_label_offset + GMT->current.setting.map_frame_width;
@@ -15167,7 +15168,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No file %s with frame information - no adjustments made\n", file);
 		return;
 	}
-	fgets (file, PATH_MAX, fp);	fclose (fp);	/* Recycle file to hold the -B arguments */
+	dummy = fgets (file, PATH_MAX, fp);	fclose (fp);	/* Recycle file to hold the -B arguments */
 	while (file[0] && gmt_strtok (file, B_delim, &pos, p)) {	/* Parse the -B options from last call */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "B item = %s\n", p);
 		if (p[0] == axis && strstr (p, "+l")) add_label = true;	/* User specified a axis label on that side */
@@ -15268,8 +15269,8 @@ int gmt_report_usage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, unsig
 		else if (options->option == GMT_OPT_SYNOPSIS)
 			code = GMT_SYNOPSIS;
 	}
-	
+
 	if (code)	/* Must call the usage function */
 		usage (API, code);
-	return (code);	
+	return (code);
 }
