@@ -48,6 +48,8 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"pspolar", "meca", "Plot polarities on the inferior focal half-sphere on maps", "<D{,>X}"},
 	{"pssac", "meca", "Plot seismograms in SAC format on maps", ">X},RG-"},
 	{"psvelo", "meca", "Plot velocity vectors, crosses, and wedges on maps", "<D{,>X}"},
+	{"shake", "meca", "Compute Peak Ground Acceleration/Velocity and Intensity", "<G{,LD(=,>GG)"},
+	{"vs30", "meca", "Compute VS30 velocities", "<G{,CD(=,GG}"},
 	{"mgd77convert", "mgd77", "Convert MGD77 data to other file formats", ""},
 	{"mgd77header", "mgd77", "Create MGD77 headers from A77 files", ""},
 	{"mgd77info", "mgd77", "Extract information about MGD77 files", ""},

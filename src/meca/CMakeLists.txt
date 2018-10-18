@@ -20,7 +20,7 @@
 
 # source files
 set (SUPPL_LIB_SRCS utilmeca.c sacio.c)
-set (SUPPL_PROGS_SRCS psmeca.c pspolar.c psvelo.c pscoupe.c pssac.c)
+set (SUPPL_PROGS_SRCS psmeca.c pspolar.c psvelo.c pscoupe.c pssac.c shake.c vs30.c)
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.meca)
