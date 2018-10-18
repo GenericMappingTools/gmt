@@ -150,8 +150,8 @@ you to minimize transmission times:
 | GDS, Vienna U. of Technology, AUSTRIA                       | gd.tuwien.ac.at         |
 | TENET, Tertiary Education & Research Networks, SOUTH AFRICA | gmt.mirror.ac.za        |
 
-The development sources are available from the subversion repository at
-svn://gmtserver.soest.hawaii.edu/gmt/trunk
+The development sources are available from GitHub at 
+https://github.com/GenericMappingTools/gmt.
 
 Extract the files and put them in a separate directory (need not be
 where you eventually want to install GMT).
@@ -161,29 +161,32 @@ where you eventually want to install GMT).
 This is just a quick start description. For a more thorough description read more on [Building GMT with
 CMake](Building_GMT_with_CMake.md)
 
-Checkout GMT5 from its GitHub repository:
+Checkout GMT from its GitHub repository:
 
-<pre>
+```
 git clone https://github.com/GenericMappingTools/gmt
 cd gmt
 cp cmake/ConfigUserTemplate.cmake cmake/ConfigUser.cmake
-</pre>
+```
+
 Edit *cmake/ConfigUser.cmake* [see comments in the file]. Then:
 
-<pre>
+```
 mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
 make -j
-</pre>
+```
+
 where _x_ is the number of threads you want to use and depends on the number
 of cores in your CPU and if hyperthreading is available or not.
 cmake will build out-of-source in the the directory _build_. 'CMAKE_BUILD_TYPE'
 can be one of: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 
-<pre>
+```
 make -j install
-</pre>
+```
+
 installs a basic gmt in _build/gmt_.
 
 NOTE: All cmake command line options such as _-DCMAKE\_INSTALL\_PREFIX_ can be
