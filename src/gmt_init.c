@@ -12523,9 +12523,9 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				break;
 			case 'n':	/* Vector shrinking head */
 				len = strlen (p);
-				j = (symbol == 'v' || symbol == 'V') ? gmtinit_get_unit (GMT, p[len]) : -1;	/* Only -Sv|V takes unit */
-				if (j >= 0) { S->u = j; S->u_set = true; }
-				S->v.v_norm = (float)atof (&p[1]);
+				j = (symbol == 'v' || symbol == 'V') ? gmtinit_get_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
+				if (j >= GMT_CM) { S->u = j; S->u_set = true; }	/* Save the unit if given */
+				S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next line) */
 				if (symbol == '=') S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Since norm distance is in km and we compute spherical degrees later */
 				break;
 			case 'o':	/* Sets oblique pole for small or great circles */
