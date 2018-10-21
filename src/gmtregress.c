@@ -573,7 +573,7 @@ GMT_LOCAL void get_coeffR (struct GMT_CTRL *GMT, double *X, double *Y, double *w
 		if (w[GMT_Y]) ww = w[GMT_Y][k];	/* Was given weights */
 		y_hat = par[GMTREGRESS_SLOPE] * X[k] + par[GMTREGRESS_ICEPT];
 		SSR += ww * pow (Y[k] - y_hat, 2.0);
-		SST += ww * pow (y_hat - par[GMTREGRESS_YMEAN], 2.0);
+		SST += ww * pow (Y[k] - par[GMTREGRESS_YMEAN], 2.0);
 	}
 	par[GMTREGRESS_R] = 1.0 - f * SSR / SST;
 }
