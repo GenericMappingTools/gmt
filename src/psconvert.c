@@ -1370,15 +1370,17 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	
 	/* Parameters for all the formats available */
 
+	/* 2018=09-18 [PW]: Removed -DSAFER since it now prevents using the Adobe transparency extensions.
+	    All our test pass with no -DSAFER so we have removed it */
 	if (gsVersion.major >= 9 && gsVersion.minor >= 21)
 		/* Artifex says that the -dSCANCONVERTERTYPE=2 new scan converter is faster (confirmed) and
 		   will be the default in a future release. Since it was introduced in 9.21 we start using it
 		   right now and remove this conditional once it becomes the default */
-		gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode -dSCANCONVERTERTYPE=2";
+		gs_params = "-q -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode -dSCANCONVERTERTYPE=2";
 	else
-		gs_params = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
+		gs_params = "-q -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
 
-	gs_BB = "-q -dSAFER -dNOPAUSE -dBATCH -sDEVICE=bbox"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
+	gs_BB = "-q -dNOPAUSE -dBATCH -sDEVICE=bbox"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
 
 	add_to_list (Ctrl->C.arg, "-dMaxBitmap=2147483647");	/* Add this as GS option to fix bug in GS */
 
