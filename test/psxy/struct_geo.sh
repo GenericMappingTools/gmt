@@ -5,7 +5,7 @@ reg=-R0/10/0/10
 # Must temporarily change GMT_USERDIR to the gallery documentation dir
 export GMT_USERDIR=`gmt --show-sharedir`/../doc_classic/rst/source/gallery/users_contrib_symbols
 
-gmt psbasemap $reg -JM12c -Bwesn -K -P > $ps
+gmt psxy $reg -JM12c -T -K -P > $ps
 
 echo 1 9 60 40 | gmt psxy -R -J -Skgeo-plane/24p -Wthin -O -K >> $ps
 echo 1 9 1 | gmt pstext -R -J -F+f9p,29+jBC -D0/0.5c -O -K >> $ps
