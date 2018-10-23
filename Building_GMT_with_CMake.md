@@ -61,9 +61,9 @@ source tree 'mkdir build'.
 
 In the build subdirectory, type
 
-<pre>
+```
 cmake [options] ..
-</pre>
+```
 
 Append any of the options explained above as you see fit.  If CMake cannot
 figure out all the dependent libraries or required compiler and linker flags
@@ -88,21 +88,23 @@ configure _DCW_ROOT_ in cmake/ConfigUser.cmake.
 
 In the build directory, type
 
-<pre>
+```
 make -j all
-</pre>
+```
+
 which will compile all the programs.
 
 ### Build documentation
 
 The GMT manual is available in different formats and can be generated with:
 
-<pre>
+```
 make -j docs_man        # UNIX manual pages
 make -j docs_html       # HTML manual, cookbook, and API reference
 make -j docs_pdf        # PDF manual, cookbook, and API reference
 make -j docs_pdf_shrink # Like docs_pdf but with reduced size
-</pre>
+```
+
 To generate the documentation you need to install the Sphinx documentation
 builder, and for PDFs you also need LaTeX.  You can choose to install the
 documentation files from an external location instead of generating the
@@ -112,9 +114,10 @@ cmake/ConfigUser.cmake.
 
 ## Installing
 
-<pre>
+```
 make -j install
-</pre>
+```
+
 will install libps, libgmt, and the gmt executable. Optionally it
 will install the GSHHG shorelines (if found), DCW (if found), UNIX manpages,
 and HTML and PDF documentation.
@@ -136,12 +139,13 @@ GMT\_INSTALL\_MODULE\_LINKS to FALSE in cmake/ConfigUser.cmake.
 Assuming you did not delete the build directory and that your current
 working directory is the build directory this is just as simple as
 
-<pre>
+```
 cd ..
 git pull
 cd -
 make -j install
-</pre>
+```
+
 CMake will detect any changes to the source files and will automatically
 reconfigure. If you deleted all files inside the build directory you have to
 run cmake again manually.
@@ -153,28 +157,29 @@ Windows (ZIP, NSIS), and UNIX (TGZ, TBZ2). On Windows you need to install NSIS
 (http://nsis.sourceforge.net/). After building GMT and the documentation run
 either one of these:
 
-<pre>
+```
 make package
 cpack -G <TGZ|TBZ2|Bundle|ZIP|NSIS>
-</pre>
+```
 
 ## Creating a source package
 
 Set GMT\_RELEASE\_PREFIX in cmake/ConfigUser.cmake and run cmake. Then do
 
-<pre>
+```
 make -j docs_depends # optional but increases speed (parallel build)
 make gmt_release      # export the source tree and install doc
-</pre>
+```
+
 You should then edit ${GMT_RELEASE_PREFIX}/cmake/ConfigDefault.cmake and
 set GMT\_PACKAGE\_VERSION\_MAJOR, GMT\_PACKAGE\_VERSION\_MINOR, and
 GMT\_PACKAGE\_VERSION\_PATCH. Also uncomment and set
 GMT\_SOURCE\_CODE\_CONTROL\_VERSION\_STRING to the current git version. Then
 create tarballs with:
 
-<pre>
+```
 make -j gmt_release_tar
-</pre>
+```
 
 ## In-build-dir tests
 
@@ -184,25 +189,28 @@ Examples and tests can be build inside GMT\_BINARY\_DIR *without* installing.
 This is very convenient for testing. Just _enable\_testing()_, set
 _DO\_EXAMPLES_ and/or _DO\_TESTS_ in ConfigUser.cmake and do:
 
-<pre>
+```
 make -j
 make check
-</pre>
+```
+
 Optionally set _N\_TEST\_JOBS_ to the number of ctest jobs to run
 simultaneously. You can also select individual tests using regexp with ctest,
 e.g.:
 
-<pre>
+```
 ctest -R ex2[3-6]
-</pre>
+```
+
 Tests are preferably run through valgrind and GMT's internal memory tracker.
 Configure cmake with _add\_definitions(-DMEMDEBUG)_ and prior to invoking the
 test, export the following variables:
 
-<pre>
+```
 export GMT_TRACK_MEMORY=2
 export VALGRIND_ARGS="--track-origins=yes --leak-check=full"
-</pre>
+```
+
 The test script will keep gmt_memtrack_<pid>.log and valgrind\_<pid>.log files
 in the test directories for later inspection, when memory related errors were
 identified.
