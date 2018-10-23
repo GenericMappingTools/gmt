@@ -15,7 +15,7 @@ Synopsis
 
 **gmt2kml** [ *table* ]
 [ |-A|\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ]
-[ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ] [ |-E|\ [*altitude*] ]
+[ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ] [ |-E| ]
 [ |-F|\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p**\ \|\ **w** ]
 [ |-G|\ **f\|n**\ **-**\ \|\ *fill* ]
 [ |-I|\ *icon* ] [ **-K**]
@@ -108,7 +108,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [*altitude*]
+**-E**
     Extrude feature down to ground level [no extrusion].
 
 .. _-F:

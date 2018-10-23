@@ -159,7 +159,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *alpha* ]
+**-Q**\ [*alpha*\ ]
     Sets the confidence level used to determine if the mean resultant
     is significant (i.e., Lord Rayleigh test for uniformity) [0.05].
     Note: The critical values are approximated [Berens, 2009] and

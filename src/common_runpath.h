@@ -54,7 +54,6 @@ extern "C" {
 
 EXTERN_MSC char *gmt_runtime_libdir (char *result);
 EXTERN_MSC char *gmt_guess_sharedir (char *sharedir, const char *runpath);
-EXTERN_MSC int gmt_verify_sharedir_version (const char *dir);
 
 #ifdef __cplusplus
 }

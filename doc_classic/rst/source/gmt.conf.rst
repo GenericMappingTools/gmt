@@ -773,12 +773,6 @@ fonts can be found in the :doc:`gmt` man page.
     Size (>= 0) of grid cross at secondary lon-lat intersections. 0
     means draw continuous gridlines instead [0p].
 
-.. _MAP_GRID_CROSS_PEN:
-
-**MAP_GRID_CROSS_PEN**
-    Sets both **MAP_GRID_CROSS_PEN_PRIMARY** and **MAP_GRID_CROSS_PEN_SECONDARY** to the value specified.
-    This setting is not included in the **gmt.conf** file.
-
 .. _MAP_GRID_PEN_PRIMARY:
 
 **MAP_GRID_PEN_PRIMARY**

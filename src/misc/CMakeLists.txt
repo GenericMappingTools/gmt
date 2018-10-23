@@ -19,7 +19,7 @@
 #
 
 # source files
-set (SUPPL_PROGS_SRCS dimfilter.c)
+set (SUPPL_PROGS_SRCS dimfilter.c grdppa.c)
 
 # lib sources
 set (LIB_SRCS ${SUPPL_PROGS_SRCS})

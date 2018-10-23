@@ -9,7 +9,8 @@ array where *inc* can be 1 (every magnitude), 2, (1, 2, 5 times magnitude) or 3
 (1-9 times magnitude).  For less than every magnitude, use a negative integer *inc*.
 Append **+n** if *inc* is meant to indicate the number of equidistant coordinates
 instead.   Alternatively, give a *file* with output coordinates in the first column,
-or provide a comma-separated *list* of coordinates.
+or provide a comma-separated *list* of coordinates.  If you only want a *single* value
+then you must append a comma to distinguish the list from the setting of *inc*.
 
 If the module allows you to set up an absolute time series, append a valid time unit from the list
 **y**\ ear, m\ **o**\ nth, **w**\ eek, **d**\ ay, **h**\ our, **m**\ inute, and **s**\ econd

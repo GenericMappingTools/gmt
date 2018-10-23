@@ -173,7 +173,6 @@ EXTERN_MSC struct GMT_POSTSCRIPT * gmtlib_read_ps (struct GMT_CTRL *GMT, void *s
 EXTERN_MSC int gmtlib_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int mode, struct GMT_POSTSCRIPT *P);
 EXTERN_MSC void gmtlib_copy_ps (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P_copy, struct GMT_POSTSCRIPT *P_obj);
 EXTERN_MSC void gmtlib_inplace_transpose (gmt_grdfloat *A, unsigned int n_rows, unsigned int n_cols);
-EXTERN_MSC void gmtlib_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size);
 EXTERN_MSC void gmtlib_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data);
 EXTERN_MSC void gmtlib_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 EXTERN_MSC void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P);

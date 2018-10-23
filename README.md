@@ -1,14 +1,54 @@
 # Generic Mapping Tools
 
 [![TravisCI](http://img.shields.io/travis/GenericMappingTools/gmt/master.svg?style=flat-square&label=TravisCI)](https://travis-ci.org/GenericMappingTools/gmt)
+[![Coverity](https://scan.coverity.com/projects/7153/badge.svg)](https://scan.coverity.com/projects/gmt)
 
-## Information for installing GMT 6
+## What is GMT?
 
-Note: The build system has recently been switched to CMake which is a
-cross-platform system for managing the build process. If you are familiar
-with the old GNU Build Tools (automake, autoconf, and configure) you can
-probably skip over to the CMake quick start guide in README.CMake.
+GMT is an open source collection of about 80 command-line tools for manipulating 
+geographic and Cartesian data sets (including filtering, trend fitting, gridding, 
+projecting, etc.) and producing PostScript illustrations ranging from simple x–y 
+plots via contour maps to artificially illuminated surfaces and 3D perspective 
+views. The GMT supplements add another 40 more specialized and discipline-specific 
+tools. GMT supports over 30 map projections and transformations and requires 
+support data such as [GSHHG](http://www.soest.hawaii.edu/pwessel/gshhg/) 
+coastlines, rivers, and political boundaries and optionally 
+[DCW](http://www.soest.hawaii.edu/pwessel/dcw) country polygons. 
 
+GMT is developed and maintained by Paul Wessel, Walter H. F. Smith, Remko Scharroo, 
+Joaquim Luis and Florian Wobbe, with help from a global set of 
+[contributors](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Volunteers) and 
+support by the [National Science Foundation](http://www.nsf.gov/). 
+It is released under the 
+[GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html) 
+version 3 or any later version.
+
+## The GMT World Domination
+
+Considering its flexibility at no charge, people worldwide are using GMT in their 
+work and at home. Most users of GMT are Earth, ocean or planetary scientists, but 
+there are apparently no limits to the kind of applications that may benefit from 
+GMT. We know GMT is used in medical research, engineering, physics, mathematics, 
+social and biological sciences, and by geographers, fisheries institutes, oil 
+companies, a wide range of government agencies, and last but not least innumerable 
+hobbyists.
+
+![Map of GMT downloads](http://gmt.soest.hawaii.edu/gmt/map_geoip_all.png)
+
+The map above illustrates the spreading of the current GMT release around the world 
+based on web traffic. Each colored circle in the map above represents a 15x15 arc 
+minute block with one or more users who downloaded GMT. Download geolocation is based 
+on [MaxMind's](http://www.maxmind.com/) freely available GeoLite data.
+
+## A reminder
+
+If you think it is appropriate, you may consider paying us back by including
+our latest EOS article in the reference list of your future publications that 
+will benefit from the availability of GMT:
+
+> Wessel, P., W. H. F. Smith, R. Scharroo, J. F. Luis, and F. Wobbe (2013), 
+> Generic Mapping Tools: Improved version released, Eos Trans. AGU, 94(45), 
+> 409-410, doi:[10.1002/2013EO450001](https://doi.org/10.1002/2013EO450001)
 
 ## Introduction
 
@@ -26,7 +66,7 @@ Note there are three GMT tar archives available (#3 is optional):
 2. gshhg-gmt-2.x.x.tar.gz:     All five resolutions of GSHHG coastline data
 3. dcw-gmt-1.x.x.tar.bz2:      Digital Chart of the World polygon data
 
-The archives are available in bzip2 (*.bz2) and gzip (*.gz) formats.
+The archives are available in bzip2 (\*.bz2) and gzip (\*.gz) formats.
 If you do not have bzip2 installed you can obtain source or executables
 from http://www.bzip.org.
 
@@ -34,21 +74,25 @@ For Windows users there are separate Windows installers available; this
 discussion only considers UNIX/Linux/OS X installations. Windows users who
 which to build GMT from the sources refer to README.WIN32.
 
-## A reminder
+## Note to package maintainers
 
-If you think it is appropriate, you may consider paying us back by including
-our latest EOS article (Wessel, P., W. H. F. Smith, R. Scharroo, J. F. Luis,
-and F. Wobbe (2013), Generic Mapping Tools: Improved version released, Eos
-Trans. AGU, 94(45), 409-410, doi:10.1002/2013EO450001) in the reference list
-of your future publications that will benefit from the availability of GMT.
+Package maintainers note packaging recommendations at
+http://gmt.soest.hawaii.edu/projects/gmt/wiki/PackagingGMT
 
+## Build and runtime prerequisites
 
-## CMake
+- Software:
+  You need Ghostscript, CMake (>=2.8.5), netCDF (>=4.0, netCDF-4/HDF5
+  support mandatory).  Optionally install Sphinx, PCRE1 or PCRE2, GDAL, LAPACK,
+  BLAS and FFTW (single precision version).
+- Data:
+  You need gshhg (>=2.2.2); optionally install dcw-gmt (>=1.0.5)
+
+### CMake
 
 Install CMake (>=2.8.5) from http://www.cmake.org/cmake/resources/software.html
 
-
-## Install netCDF library
+### Install netCDF library
 
 For all major Linux distributions there are prepackaged development binaries
 available. netCDF is also available on MacOSX trough the macports and fink
@@ -58,21 +102,20 @@ Otherwise, get netCDF from http://www.unidata.ucar.edu/downloads/netcdf/.
 You need at least version 4.0 with netCDF-4/HDF5 data model support (do not
 disable HDF5/ZLIB in netCDF with --disable-netcdf-4).
 
-## Install CURL library
+### Install CURL library
 
 To handle URLs we depend on libcurl so install via your favorite package
 manager if it is not intrinsic to your Unix installation.  Otherwise, get
 it from https://curl.haxx.se.
 
-## GDAL (optional)
+### GDAL (optional)
 
 To use the GDAL interface (ability to provide grids or images to be imported
 via gdal) you must have the GDAL library and include files installed.  Like
 netCDF, GDAL is available through your favorite package manager on many *NIX
 systems.
 
-
-## PCRE (optional)
+### PCRE (optional)
 
 To use the PCRE interface (ability to specify regular expressions in some
 search options, e.g., gmtconvert) you must have the PCRE library and include
@@ -82,8 +125,7 @@ on many *NIX systems.
 Because GDAL already links with PCRE1 it is most practical to use that version.
 But if you insist, GMT can also be compiled with PCRE2.
 
-
-## LAPACK (optional)
+### LAPACK (optional)
 
 To greatly speed up some linear algebra calculations (greenspline in
 particular) you must have the LAPACK library and include files installed.
@@ -92,8 +134,7 @@ systems or in the case of OS X is built in.  Normally this also installs
 BLAS but if not you need to do that separately as we are using some
 cblas_* functions to do linear algebra calculations.
 
-
-## Install support data
+### Install support data
 
 You can obtain GMT from http://gmt.soest.hawaii.edu/. Alternatively you may
 get GMT from any of the following FTP sites. Try the site that is closest to
@@ -109,104 +150,53 @@ you to minimize transmission times:
 | GDS, Vienna U. of Technology, AUSTRIA                       | gd.tuwien.ac.at         |
 | TENET, Tertiary Education & Research Networks, SOUTH AFRICA | gmt.mirror.ac.za        |
 
-The development sources are available from the subversion repository at
-svn://gmtserver.soest.hawaii.edu/gmt/trunk
+The development sources are available from GitHub at 
+https://github.com/GenericMappingTools/gmt.
 
 Extract the files and put them in a separate directory (need not be
 where you eventually want to install GMT).
 
+## Building GMT (quick start)
 
-## Configuring
+This is just a quick start description. For a more thorough description read more on [Building GMT with
+CMake](Building_GMT_with_CMake.md)
 
-GMT can be build on any platform supported by CMake.  CMake is a
-cross-platform, open-source system for managing the build process.
-Refer to README.CMake for further details.  In the source tree copy
-cmake/ConfigUserTemplate.cmake to cmake/ConfigUser.cmake and edit
-the file according to your demands.
+Checkout GMT from its GitHub repository:
 
-By default, GMT will use Dave Watson's Delaunay triangulation routine.
-However, a much faster alternative is available from Jonathan Shewchuk, but
-his routine is not distributed under the GNU Public License.  If you work for
-a for-profit organization you should read Shewchuk's copyright statement (in
-src/triangle.c) first.  If you agree with the license terms you can enable
-Shewchuk's triangulation routine in cmake/ConfigUser.cmake.
+```
+git clone https://github.com/GenericMappingTools/gmt
+cd gmt
+cp cmake/ConfigUserTemplate.cmake cmake/ConfigUser.cmake
+```
 
-At run-time, GMT will initialize all default variables. You can change
-this by adding a gmt.conf file in your current or home directory
-and edit those settings since GMT will check for that file before loading
-system defaults (actually, it will first look in the current directory, then
-the home directory, and then finally in share).  See the gmt.conf man page
-for a description of all defaults.
+Edit *cmake/ConfigUser.cmake* [see comments in the file]. Then:
 
-To prevent two GMT processes writing to the same gmt.conf file simultaneously
-(thereby corrupting it), GMT can implement the POSIX advisory file locking
-scheme and sets and releases locks on these files.  This might not be reliable
-when the files reside in directories on network filesystems, such as NFS.
-Whether flock works on network filesystems is implementation dependent.  If
-you want to activate file locking you may enable it in cmake/ConfigUser.cmake.
+```
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+make -j
+```
 
-By default, both GMT and all its supplements are built.  You can turn
-off all supplements via the BUILD_SUPPLEMENTS setting in ConfigUsers.cmake
+where _x_ is the number of threads you want to use and depends on the number
+of cores in your CPU and if hyperthreading is available or not.
+cmake will build out-of-source in the the directory _build_. 'CMAKE_BUILD_TYPE'
+can be one of: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 
-The top-level installation directory is configured with the variable
-CMAKE_INSTALL_PREFIX.
+```
+make -j install
+```
 
-Now that you made your configuration choices it is time for invoking CMake.
-Create a subdirectory where the build files will be generated, e.g., in the
-source tree 'mkdir build'.
+installs a basic gmt in _build/gmt_.
 
-In the build subdirectory, type
+NOTE: All cmake command line options such as _-DCMAKE\_INSTALL\_PREFIX_ can be
+configured in *cmake/ConfigUser.cmake*.
 
-  cmake [options] ..
-
-Append any of the options explained above as you see fit.  If CMake cannot
-figure out all the dependent libraries or required compiler and linker flags
-it will give you a message and you will be asked to edit
-cmake/ConfigUser.cmake.
-
-
-## Build GMT
-
-In the build directory, type
-
-  make
-
-which will compile all the programs.  After a successful compilation you may
-install the executables in the designated bin directory with the command
-
-  make install
-
-After a successful install you can have the object files and the local
-executables removed by saying
-
-  make clean
-
-or just remove the entire build directory.
-
-
-## Documentation
-
-The documentation is available online at http://gmt.soest.hawaii.edu/
-or as platform independent package that you can install along with GMT.
-
-The GMT documentation includes HTML files for online browsing, user guide,
-cookbook, and manual pages. The Documentation also contains the
-GMT_Tutorial.pdf file which is a short course in how to use GMT.  It can be
-^^^^^^^^^^^^^^^^
-still missing!
-followed individually or in a lab setting by a group of users.
-
-The development sources from subversion do not contain the precompiled
-documentation. The manuals, HTML pages, and PDFs have to be created from
-source with Sphinx (see README.CMake).
-
-
-## Set path
+### Set path
 
 Make sure users set their PATH to include the directory containing
 the GMT executables (BINDIR) if this is not a standard directory
 like /usr/local/bin.  You should now be able to run GMT programs.
-
 
 ## GMT supplemental Code
 
@@ -226,7 +216,6 @@ libraries.  Currently, the supplemental archive include the directories:
   spotter   - Plate tectonic & kinematics applications.
   x2sys     - Track intersection (crossover) tools.
 
-
 ## Misc
 
 Before running programs, there are a few things you should do/know:
@@ -237,7 +226,6 @@ Before running programs, there are a few things you should do/know:
     understanding of how gmt "works", its option lists, I/O, and composite
     plot mechanisms.  Then, before running individual gmt programs, read
     the associated man page.
-
 
 ## Software support
 
@@ -251,14 +239,12 @@ In addition to the bug tracking feature (New Issues) on the website, you
 can also post general questions on the GMT user forum.  Note that registration
 is required to post on the site.
 
-
 ## Ordering the GMT package on CD/DVD-Rs
 
 Should you or someone you know without net-access need to obtain GMT:
 Geoware makes and distributes CD/DVD-Rs with the GMT package and many
 useful data sets.  For more details and a full description of the data
 sets (up to 60 Gb of data!) visit http://www.geoware-online.com/.
-
 
 Good luck!
 

@@ -108,6 +108,7 @@ struct PSCOAST_CTRL {
 	} L;
 	struct M {	/* -M */
 		bool active;
+		bool single;
 	} M;
 	struct N {	/* -N<feature>[/<pen>] */
 		bool active;
@@ -414,6 +415,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				}
 			case 'M':
 				Ctrl->M.active = true;
+				if (opt->arg[0] == 's') 	/* Write a single segment. Afects only external interfaces. */
+					Ctrl->M.single = true;
 				break;
 			case 'N':
 				Ctrl->N.active = true;
@@ -501,7 +504,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 
 	if (!GMT->common.J.active) {	/* So without -J we can only do -M or report region only */
 		if (Ctrl->M.active) Ctrl->E.info.mode = GMT_DCW_DUMP;
-		else if (GMT->common.B.active[GMT_PRIMARY] || Ctrl->C.active || Ctrl->G.active || Ctrl->I.active || Ctrl->N.active || GMT->common.P.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->W.active)
+		else if (GMT->common.B.active[GMT_PRIMARY] || Ctrl->C.active || Ctrl->G.active || Ctrl->I.active || Ctrl->N.active || GMT->common.P.active || Ctrl->S.active || Ctrl->W.active)
 			n_errors++;	/* Tried to make a plot but forgot -J */
 		else
 			Ctrl->E.info.region = true;
@@ -723,8 +726,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	options = GMT_Create_Options (API, mode, args);
 	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
@@ -768,23 +770,22 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		GMT->common.R.wesn[XHI] -= 360.0;
 	}
 
-	if (Ctrl->Q.active && !GMT->common.J.active) {	/* Fake area and linear projection */
-		gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection */
+	if (Ctrl->Q.active && !GMT->common.J.active) {	/* Set fake area and linear projection */
+		gmt_parse_common_options (GMT, "J", 'J', "x1d");
 		GMT->common.R.wesn[XLO] = GMT->common.R.wesn[YLO] = 0.0;
 		GMT->common.R.wesn[XHI] = GMT->common.R.wesn[YHI] = 1.0;
 	}
-	else if (Ctrl->M.active && !GMT->common.J.active)
-		gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection */
+	else if (Ctrl->M.active && !GMT->common.J.active)	/* Set fake linear projection */
+		gmt_parse_common_options (GMT, "J", 'J', "x1d");
+	else if (GMT->common.J.active && gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Gave -J but forgot the "d" */
+		gmt_set_geographic (GMT, GMT_IN);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Switching to -Jx|X...d[/...d] for geographic data\n");
+	}
 
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 
-	if (gmt_M_is_cartesian (GMT, GMT_IN)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "You must use a map projection or -Jx|X...d[/...d] for geographic data\n");
-		Return (GMT_RUNTIME_ERROR);
-	}
-	
 	world_map_save = GMT->current.map.is_world;
 
 	if (need_coast_base && (err = gmt_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info)) != 0)  {
@@ -818,7 +819,10 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
 		if (Ctrl->N.active) id = 1;
 		else if (Ctrl->I.active) id = 2;
-		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+		
+		if (!Ctrl->M.single)
+			gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+
 		if ((error = GMT_Set_Columns (API, GMT_OUT, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 			Return (error);
 		}
@@ -1071,8 +1075,14 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
-					sprintf (GMT->current.io.segment_header, "Shore Bin # %d, Level %d", bin, p[i].level);
-					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
+					if (!Ctrl->M.single) {
+						sprintf (GMT->current.io.segment_header, "Shore Bin # %d, Level %d", bin, p[i].level);
+						GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
+					}
+					else {
+						out[GMT_X] = out[GMT_Y] = GMT->session.d_NaN;
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+					}
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
@@ -1106,7 +1116,8 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		GMT->current.map.coastline = false;
 	}
 	
-	if (Ctrl->E.info.mode > GMT_DCW_REGION) (void)gmt_DCW_operation (GMT, &Ctrl->E.info, NULL, Ctrl->M.active ? GMT_DCW_DUMP : GMT_DCW_PLOT);
+	if (Ctrl->E.info.mode > GMT_DCW_REGION)
+		(void)gmt_DCW_operation (GMT, &Ctrl->E.info, NULL, Ctrl->M.active ? GMT_DCW_DUMP : GMT_DCW_PLOT);
 
 	if (clipping) PSL_beginclipping (PSL, xtmp, ytmp, 0, GMT->session.no_rgb, 2);	/* End clippath */
 
@@ -1135,8 +1146,14 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
-					sprintf (GMT->current.io.segment_header, "River Bin # %d, Level %d", bin, p[i].level);
-					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
+					if (!Ctrl->M.single) {
+						sprintf (GMT->current.io.segment_header, "River Bin # %d, Level %d", bin, p[i].level);
+						GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
+					}
+					else {
+						out[GMT_X] = out[GMT_Y] = GMT->session.d_NaN;
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+					}
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
@@ -1196,8 +1213,14 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
-					sprintf (GMT->current.io.segment_header, "Border Bin # %d, Level %d", bin, p[i].level);
-					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
+					if (!Ctrl->M.single) {
+						sprintf (GMT->current.io.segment_header, "Border Bin # %d, Level %d", bin, p[i].level);
+						GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
+					}
+					else {
+						out[GMT_X] = out[GMT_Y] = GMT->session.d_NaN;
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+					}
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];

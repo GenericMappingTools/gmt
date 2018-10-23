@@ -15,7 +15,7 @@ Synopsis
 
 **gmt 2kml** [ *table* ]
 [ |-A|\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ]
-[ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ] [ |-E|\ [*altitude*] ]
+[ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ] [ |-E| ]
 [ |-F|\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p**\ \|\ **w** ]
 [ |-G|\ **f\|n**\ **-**\ \|\ *fill* ]
 [ |-I|\ *icon* ] [ **-K**]
@@ -108,7 +108,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [*altitude*]
+**-E**
     Extrude feature down to ground level [no extrusion].
 
 .. _-F:
@@ -187,7 +187,7 @@ Optional Arguments
     each feature, with the segment number (for lines and polygons) or
     point number (symbols) appearing where %d is placed, (4) give no
     arguments to turn symbol labeling off; line segments will still be
-    named. Also note that
+    named. Also note that options (2) is not available unless input is an ASCII file.
 
 .. _-O:
 

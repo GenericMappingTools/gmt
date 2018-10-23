@@ -652,7 +652,7 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 	int i, k, dx, dy;
 #ifdef OLD_shorten_path
 	int old_dir = 0, new_dir;
-	double old_slope = 1.0e200, new_slope;
+	double old_slope = -DBL_MAX, new_slope;
 	/* These seeds for old_slope and old_dir make sure that first point gets saved */
 #else
 	int d, db, bx, by, j, ij;
@@ -675,7 +675,7 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 		dx = ix[i+1] - ix[i];
 		dy = iy[i+1] - iy[i];
 		if (dx == 0 && dy == 0) continue;	/* Skip duplicates */
-		new_slope = (dx == 0) ? copysign (1.0e100, (double)dy) : ((double)dy) / ((double)dx);
+		new_slope = (dx == 0) ? copysign (DBL_MAX, (double)dy) : ((double)dy) / ((double)dx);
 		new_dir = (dx >= 0) ? 1 : -1;
 		if (new_slope != old_slope || new_dir != old_dir) {
 			ix[k] = ix[i];
@@ -700,7 +700,7 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 	   "close" is defined as less than 1 "dot" (the PostScript resolution) in either direction.
 	   A point is always close when it coincides with one of the end points (i or j).
 	   An intermediate point is also considered "far" when it is beyond i or j.
-	   Algorithm requires that |dx by - bx dy| < max(|dx|,dy|).
+	   Algorithm requires that |dx by - bx dy| >= max(|dx|,|dy|) for points to be "far".
 	*/
 	for (i = k = 0, j = 2; j < n; j++) {
 		dx = ix[j] - ix[i];
@@ -719,6 +719,15 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 				if (bx > 0 || bx < dx) break;
 			}
 			by = iy[ij] - iy[i];
+			/* Check if the intermediate point is outside the y-range between points i and j.
+			   In case of a horizontal line, any point with a different y-coordinate is "far" */
+			if (dy > 0) {
+				if (by < 0 || by > dy) break;
+			}
+			else {
+				if (by > 0 || bx < dy) break;
+			}
+			/* Generic case where the intermediate point is within the x- and y-range */
 			db = abs((int)(dx * by) - (int)(bx * dy));
 			if (db >= d) break; /* Point ij is "far" from line connecting i and j */
 		}
@@ -4200,8 +4209,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		PSL_command (PSL, "%g %g scale\n", PSL->init.magnify[0] * scl, PSL->init.magnify[1] * scl);
 		PSL_command (PSL, "%%%%EndPageSetup\n\n");
 
-		if (!(PSL_is_gray(PSL->init.page_rgb) && PSL_eq(PSL->init.page_rgb[0],1.0)))	/* Change background color from white */
-			PSL_command (PSL, "clippath %s F N\n", psl_putcolor (PSL, PSL->init.page_rgb));
+		if (!(PSL_is_gray(PSL->init.page_rgb) && PSL_eq(PSL->init.page_rgb[0],1.0)))	/* Change background color from white but not if PSL_no_pagefill is set via psconvert */
+			PSL_command (PSL, "systemdict /PSL_no_pagefill known not {clippath %s F N} if\n", psl_putcolor (PSL, PSL->init.page_rgb));
 		PSL_comment (PSL, "End of PSL header\n");
 
 		/* Save page size */

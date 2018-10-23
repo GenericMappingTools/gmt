@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	Makes the insert for Appendix N(custom symbols)
+#	Makes the inset for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex
 #	file since the number of figures must be calculated.
 #	Dimensions are in inches
@@ -72,10 +72,12 @@ EOF
 			echo "$x $yt $width $dy" >> tt.bars
 		done
 	done
-	gmt psxy -R0/$n_cols/0/$H -Jx${width}i -P -K tt.lines -Wthick -B0 > GMT_App_N_$p.ps
-	gmt psxy -R -J -O -K -S${width}i -Wthinnest tt.symbols >> GMT_App_N_$p.ps
-	gmt psxy -R -J -O -K -Sri -Gblack tt.bars >> GMT_App_N_$p.ps
-	gmt pstext -R -J -O tt.text -F+f${fs}p,white >> GMT_App_N_$p.ps
+	gmt begin GMT_App_N_$p ps
+	gmt plot -R0/$n_cols/0/$H -Jx${width}i tt.lines -Wthick -B0 
+	gmt plot -S${width}i -Wthinnest tt.symbols 
+	gmt plot -Sri -Gblack tt.bars 
+	gmt text tt.text -F+f${fs}p,white
+	gmt end
 done
 
 if ! test -s GMT_Appendix_N_inc.tex ; then

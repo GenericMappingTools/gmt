@@ -39,6 +39,8 @@ EXTERN_MSC void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, u
 #define PSTEXT_CLIPPLOT		1
 #define PSTEXT_CLIPONLY		2
 
+#define PSTEXT_SHOW_FONTS	128
+
 #define GET_REC_TEXT	0	/* Free-form text as trailing text in the record */
 #define GET_SEG_LABEL	1	/* Use the curent segment label (-L<label>) as the text */
 #define GET_SEG_HEADER	2	/* Use the curent segment header as the text */
@@ -266,10 +268,12 @@ GMT_LOCAL int get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int 
 	return (4);
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the pstext synopsis and optionally full usage information */
+	bool show_fonts = false;
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level & PSTEXT_SHOW_FONTS) show_fonts = true, level -= PSTEXT_SHOW_FONTS;	/* Deal with the special bitflag for showing the fonts */
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-D[j|J]<dx>[/<dy>][+v[<pen>]]\n");
@@ -709,17 +713,10 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE, false));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Classic requires options, while modern does not */
-		if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE, false));	/* Return the usage message */
-		if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS, false));	/* Return the synopsis */
-	}
-	else {
-		if (options && options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE, false));	/* Return the usage message */
-		if (options && options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS, false));	/* Return the synopsis */
-	}
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
@@ -727,7 +724,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	if (Ctrl->L.active) Return (usage (API, GMT_SYNOPSIS, true));	/* Return the synopsis with font listing */
+	if (Ctrl->L.active) Return (usage (API, GMT_SYNOPSIS | PSTEXT_SHOW_FONTS));	/* Return the synopsis with font listing */
 
 	/*---------------------------- This is the pstext main code ----------------------------*/
 

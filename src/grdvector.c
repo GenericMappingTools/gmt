@@ -232,7 +232,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 					Ctrl->Q.S.v.pen = GMT->current.setting.map_default_pen;
 					for (j = 0; opt->arg[j] && opt->arg[j] != 'n'; j++);
 					if (opt->arg[j]) {	/* Normalize option used */
-						Ctrl->Q.S.v.v_norm = (float)gmt_M_to_inch (GMT, &opt->arg[j+1]);
+						Ctrl->Q.S.v.v_norm = (float)gmt_M_to_inch (GMT, &opt->arg[j+1]);	/* Getting inches directly here */
 						n_errors += gmt_M_check_condition (GMT, Ctrl->Q.S.v.v_norm <= 0.0, "Syntax error -Qn option: No reference length given\n");
 						opt->arg[j] = '\0';	/* Temporarily chop of the n<norm> string */
 					}
@@ -262,6 +262,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 						if (j == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
 						Ctrl->Q.S.size_x = gmt_M_to_inch (GMT, txt_a);	/* Length of vector */
 						n_errors += gmt_parse_vector (GMT, symbol, txt_b, &Ctrl->Q.S);
+					}
+					/* Must possibly change v_norm to inches if given in another Cartesian unit */
+					if (Ctrl->Q.S.u_set && Ctrl->Q.S.u != GMT_INCH) {
+						Ctrl->Q.S.v.v_norm *= GMT->session.u2u[Ctrl->Q.S.u][GMT_INCH];	/* Since we are not reading this again we change to inches */
+						Ctrl->Q.S.u = GMT_INCH;
 					}
 				}
 				break;
@@ -347,8 +352,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments */
 

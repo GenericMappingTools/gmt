@@ -51,7 +51,7 @@
  *	gmt_pen_syntax
  *	gmt_rgb_syntax
  *	gmt_refpoint_syntax
- *	gmt_mapinsert_syntax
+ *	gmt_mapinset_syntax
  *	gmt_mapscale_syntax
  *	gmt_maprose_syntax
  *	gmt_mappanel_syntax
@@ -2538,28 +2538,18 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 
 	/* Note: gmtinit_set_env cannot use GMT_Report because the verbose level is not yet set */
 
-	if ((this_c = getenv ("GMT5_SHAREDIR")) != NULL && gmt_verify_sharedir_version (this_c))	/* GMT5_SHAREDIR was set */
+	if ((this_c = getenv ("GMT5_SHAREDIR")) != NULL)	/* GMT5_SHAREDIR was set */
 		GMT->session.SHAREDIR = strdup (this_c);
-	else if ((this_c = getenv ("GMT_SHAREDIR")) != NULL && gmt_verify_sharedir_version (this_c)) /* GMT_SHAREDIR was set */
+	else if ((this_c = getenv ("GMT_SHAREDIR")) != NULL) /* GMT_SHAREDIR was set */
 		GMT->session.SHAREDIR = strdup (this_c);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
-	else if ( running_in_bindir_src && gmt_verify_sharedir_version (GMT_SHARE_DIR_DEBUG) )
+	else if (running_in_bindir_src)
 		/* Use ${GMT_SOURCE_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
 		GMT->session.SHAREDIR = strdup (GMT_SHARE_DIR_DEBUG);
 #endif
-	else if (gmt_verify_sharedir_version (GMT_SHARE_DIR))		/* Found in hardcoded GMT_SHARE_DIR */
-		GMT->session.SHAREDIR = strdup (GMT_SHARE_DIR);
-	else {
-		/* SHAREDIR still not found, make a smart guess based on runpath: */
-		if (gmt_guess_sharedir (path, GMT->init.runtime_bindir))
-			GMT->session.SHAREDIR = strdup (path);
-		else {
-			/* Still not found */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not locate share directory that matches the current GMT version %s.\n",
-			         GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
-			GMT_exit (GMT, GMT_RUNTIME_ERROR); return GMT_RUNTIME_ERROR;
-		}
-	}
+	else
+		GMT->session.SHAREDIR = strdup (GMT_SHARE_DIR);		/* Hardcoded GMT_SHARE_DIR */
+
 	gmt_dos_path_fix (GMT->session.SHAREDIR);
 	trim_off_any_slash_at_end (GMT->session.SHAREDIR);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.SHAREDIR = %s\n", GMT->session.SHAREDIR);
@@ -3381,6 +3371,7 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 	if (s_given) {
 		gmt_M_memcpy (GMT->current.map.frame.side, f_side, 5, unsigned int);	/* Overwrite the GMT defaults */
 		GMT->current.map.frame.no_frame = false;
+		GMT->current.map.frame.draw = true;
 	}
 	if (GMT->current.map.frame.no_frame) gmt_M_memset (GMT->current.map.frame.side, 5, unsigned int);	/* Set all to nothing */
 	if (z_axis[0] || z_axis[1] || z_axis[2] || z_axis[3]) gmt_M_memcpy (GMT->current.map.frame.z_axis, z_axis, 4, unsigned int);	/* Overwrite the GMT defaults */
@@ -6548,8 +6539,8 @@ void gmt_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 
 void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsigned int kind, unsigned int part) {
 	/* For -Dg|j|J|n|x */
-	char *type[GMT_ANCHOR_NTYPES] = {"logo", "image", "legend", "color-bar", "insert", "map scale", "map rose", "vertical scale"}, *tab[2] = {"", "     "};
-	unsigned int shift = (kind == GMT_ANCHOR_INSERT) ? 1 : 0;	/* Add additional "tab" to front of message */
+	char *type[GMT_ANCHOR_NTYPES] = {"logo", "image", "legend", "color-bar", "inset", "map scale", "map rose", "vertical scale"}, *tab[2] = {"", "     "};
+	unsigned int shift = (kind == GMT_ANCHOR_INSET) ? 1 : 0;	/* Add additional "tab" to front of message */
 	if (part & 1) {	/* Here string is message, or NULL */
 		if (string) gmt_message (GMT, "\t-%s %s\n", option, string);
 		gmt_message (GMT, "\t   %sPositioning is specified via one of four coordinate systems:\n", tab[shift]);
@@ -6575,20 +6566,20 @@ void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsi
 	\param option ...
 	\param string ...
 */
-void gmt_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string) {
+void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	/* Only called in psbasemap.c for now */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	gmt_message (GMT, "\t-%c %s\n", option, string);
-	gmt_message (GMT, "\t     Specify the map insert region using one of three specifications:\n");
+	gmt_message (GMT, "\t     Specify the map inset region using one of three specifications:\n");
 	gmt_message (GMT, "\t     a) Give <west>/<east>/<south>/<north> of geographic rectangle bounded by meridians and parallels.\n");
 	gmt_message (GMT, "\t        Append +r if coordinates are the lower left and upper right corners of a rectangular area.\n");
 	gmt_message (GMT, "\t     b) Give <xmin>/<xmax>/<ymin>/<ymax>+u<unit> of bounding rectangle in projected coordinates.\n");
-	gmt_message (GMT, "\t     c) Set reference point and dimensions of the insert:\n");
-	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSERT, 1);
+	gmt_message (GMT, "\t     c) Set reference point and dimensions of the inset:\n");
+	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
 	gmt_message (GMT, "\t        Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is unit).\n");
-	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSERT, 2);
-	gmt_message (GMT, "\t     Append +s<file> to save insert lower left corner and dimensions to <file>.\n");
-	gmt_message (GMT, "\t     Append +t to translate plot origin to the lower left corner of the insert.\n");
+	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 2);
+	gmt_message (GMT, "\t     Append +s<file> to save inset lower left corner and dimensions to <file>.\n");
+	gmt_message (GMT, "\t     Append +t to translate plot origin to the lower left corner of the inset.\n");
 	gmt_message (GMT, "\t   Set panel attributes separately via the -F option.\n");
 }
 
@@ -6655,7 +6646,7 @@ void gmt_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 	gmt_message (GMT, "\t   Without further options: draw border around the %s panel (using MAP_FRAME_PEN)\n", type[kind]);
 	gmt_message (GMT, "\t     [Default is no border].\n");
 	gmt_message (GMT, "\t   Append +c<clearance> where <clearance> is <gap>, <xgap/ygap>, or <lgap/rgap/bgap/tgap> [%gp].\n", GMT_FRAME_CLEARANCE);
-	gmt_message (GMT, "\t     Note: For a map insert the default clearance is zero.\n");
+	gmt_message (GMT, "\t     Note: For a map inset the default clearance is zero.\n");
 #ifdef DEBUG
 	gmt_message (GMT, "\t   Append +d to draw guide lines for debugging.\n");
 #endif
@@ -11395,7 +11386,7 @@ GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, 
 	 * We return the wesn array with the exact or rounded region, depending on the setting of exact.
 	 */
 	unsigned int item;
-bool geo;
+	bool geo;
 	struct GMT_GRID *G = NULL;
 	struct GMT_OPTION *opt = NULL, *head = NULL, *tmp = NULL;
 	struct GMT_DATASET *Out = NULL;
@@ -12329,8 +12320,9 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 	unsigned modern = 0, pos, k = 0;
 	int n_args = argc - 1;
 	char figure[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
+	bool usage = false;
 
-    if (n_args == 0) return;    /* This is just typing gmt with no args */
+	if (n_args == 0) return;    /* This is just typing gmt with no args */
 	if (gmt_main) {
 		n_args--;	/* Count number of args after module name */
 		k = 1;
@@ -12340,7 +12332,7 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 	if (API->GMT->current.setting.use_modern_name) {
 		if (n_args == 0) {	/* Gave none or a single argument */
 			API->GMT->current.setting.run_mode = GMT_MODERN;
-			API->usage = true;
+			usage = true;
 			return;
 		}
 		if (n_args == 1) {	/* Gave a single argument */
@@ -12350,7 +12342,7 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 			else if (argv[argc-1][0] == '-' && (argv[argc-1][1] == '\0' || argv[argc-1][1] == GMT_OPT_USAGE || argv[argc-1][1] == GMT_OPT_SYNOPSIS)) {	/* Gave a single argument */
 				modern = 1;
 			}
-			if (modern) API->usage = true;
+			if (modern) usage = true;
 		}
 	}
 	/* Must check if a one-liner with special graphics format settings were given, e.g., -png map */
@@ -12371,8 +12363,10 @@ void gmt_check_if_modern_mode_oneliner (struct GMTAPI_CTRL *API, int argc, char 
 			}
 		}
 	}
-	if (modern)	/* This is indeed a modern mode one-liner */
+	if (modern) {	/* This is indeed a modern mode one-liner */
 		API->GMT->current.setting.run_mode = GMT_MODERN;
+		API->usage = usage;
+	}
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)	/* If running in modern mode we want to use modern names */
 		API->GMT->current.setting.use_modern_name = true;
 }
@@ -12530,9 +12524,9 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				break;
 			case 'n':	/* Vector shrinking head */
 				len = strlen (p);
-				j = (symbol == 'v' || symbol == 'V') ? gmtinit_get_unit (GMT, p[len]) : -1;	/* Only -Sv|V takes unit */
-				if (j >= 0) { S->u = j; S->u_set = true; }
-				S->v.v_norm = (float)atof (&p[1]);
+				j = (symbol == 'v' || symbol == 'V') ? gmtinit_get_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
+				if (j >= GMT_CM) { S->u = j; S->u_set = true; }	/* Save the unit if given */
+				S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next line) */
 				if (symbol == '=') S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Since norm distance is in km and we compute spherical degrees later */
 				break;
 			case 'o':	/* Sets oblique pole for small or great circles */
@@ -15247,4 +15241,36 @@ int gmtlib_get_num_processors() {
 	if (n_cpu < 1)
 		n_cpu = 1; /* fallback */
 	return n_cpu;
+}
+
+int gmt_report_usage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, unsigned int special, int (*usage)(struct GMTAPI_CTRL *, int)) {
+	/* Handle the way classic and modern mode modules report their usage msssages.
+	 * Set special == 1 if the classic module can be run with no options at all and still be expected to do things (e.g., silently read stdin) */
+	int code = GMT_NOERROR;	/* Default is no usage message was requested and we move on to parsing the arguments */
+	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Under modern mode we always require an option like -? or -^ to call usage */
+		if (options) {	/* Modern mode will only print the usage if one of the usage-options are given (but see exception for one-liners) */
+			if (options->option == GMT_OPT_USAGE)	/* Return the usage message */
+				code = GMT_OPT_USAGE;
+			if (options->option == GMT_OPT_SYNOPSIS)	/* Return the synopsis message */
+				code = GMT_SYNOPSIS;
+		}
+		else if (API->usage)	/* One-liner modern mode with no args must give usage */
+			code = GMT_OPT_USAGE;
+	}
+	else if (special) {	/* Some classic modules require an option to show usage, otherwise expect input (e.g., gmtinfo) */
+		if (options && options->option == GMT_OPT_USAGE)
+			code = GMT_OPT_USAGE;
+		if (options && options->option == GMT_OPT_SYNOPSIS)
+			code = GMT_SYNOPSIS;
+	}
+	else {	/* Regular classic module behavior */
+		if (!options || options->option == GMT_OPT_USAGE)
+			code = GMT_OPT_USAGE;
+		else if (options->option == GMT_OPT_SYNOPSIS)
+			code = GMT_SYNOPSIS;
+	}
+	
+	if (code)	/* Must call the usage function */
+		usage (API, code);
+	return (code);	
 }

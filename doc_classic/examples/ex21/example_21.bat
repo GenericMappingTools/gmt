@@ -58,11 +58,11 @@ rem echo "2007-06-25T00:00:00 23.8852 PW sell" | gmt pstext -R -J -O -K -Dj0.8i/
 echo 2008-01-29T12:00:00 23.8852 PW sell | gmt pstext -R -J -O -K -Dj0.8i/0.05i -N -F+f12p,Bookman-Demi+jRB >> %ps%
 gmt set FORMAT_DATE_IN dd-o-yy
 
-REM Set smaller region for insert for trend since 2004
+REM Set smaller region for inset for trend since 2004
 
 set R=-R2004T/2007-12-31T00:00:00/0/30
 
-REM Lay down the basemap, using Finnish annotations and place the insert in the upper right
+REM Lay down the basemap, using Finnish annotations and place the inset in the upper right
 
 gmt psbasemap --TIME_LANGUAGE=fi %R% -JX6i/3i -Bpxa3Of3o -Bpy10+p"$ " -BESw+glightblue -Bsx1Y -O -K -X3i -Y3i >> %ps%
 

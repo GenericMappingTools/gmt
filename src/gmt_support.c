@@ -2631,7 +2631,7 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 				else	/* Go to next point in line */
 					i++;
 			}
-			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your -Gd|D option produced no contour labels for z = %g\n", zval);
+			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Your -Gd|D option produced no contour labels for z = %g\n", zval);
 
 		}
 		if (G->number) {	/* Place prescribed number of labels evenly along contours */
@@ -2705,7 +2705,7 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 				else	/* All in vain... */
 					gmt_M_free (GMT, new_label);
 			}
-			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your -Gn|N option produced no contour labels for z = %g\n", zval);
+			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Your -Gn|N option produced no contour labels for z = %g\n", zval);
 		}
 		if (G->crossing) {	/* Determine label positions based on crossing lines */
 			uint64_t left, right, line_no;
@@ -2757,7 +2757,7 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 				gmt_x_free (GMT, &G->XC);
 			}
 			gmt_M_free (GMT, G->ylist);
-			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your -Gx|X|l|L option produced no contour labels for z = %g\n", zval);
+			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Your -Gx|X|l|L option produced no contour labels for z = %g\n", zval);
 		}
 		if (G->fixed) {	/* Prescribed point locations for labels that match points in input records */
 			double dist, min_dist;
@@ -2794,7 +2794,7 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 				}
 			}
 
-			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your -Gf option produced no contour labels for z = %g\n", zval);
+			if (G->n_label == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Your -Gf option produced no contour labels for z = %g\n", zval);
 		}
 		support_contlabel_fixpath (GMT, &xx, &yy, map_dist, &nn, G);	/* Inserts the label x,y into path */
 		support_contlabel_addpath (GMT, xx, yy, nn, zval, label, true, G);		/* Appends this path and the labels to list */
@@ -3934,7 +3934,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_watson (struct GMT_CTRL *GMT, dou
 }
 
 /*! . */
-GMT_LOCAL int support_ensure_new_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *in_text, char *text, char *panel_txt) {
+GMT_LOCAL int support_ensure_new_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *in_text, char *text, char *panel_txt) {
 	/* Recasts any old syntax using new syntax and gives a warning.
  	   Assumes text and panel_text are blank and have adequate space */
 	if (strstr (in_text, "+c") || strstr (in_text, "+g") || strstr (in_text, "+p")) {	/* Tell-tale sign of old syntax */
@@ -3949,7 +3949,7 @@ GMT_LOCAL int support_ensure_new_mapinsert_syntax (struct GMT_CTRL *GMT, char op
 		}
 		while ((gmt_strtok (&in_text[start], "+", &pos, p))) {
 			switch (p[0]) {
-				case 'c':	/* Got insert center */
+				case 'c':	/* Got inset center */
 					center = true;
 					if ((n = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b)) != 2) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Must specify +c<lon>/<lat> for center [Also note this is obsolete syntax]\n", option);
@@ -3971,7 +3971,7 @@ GMT_LOCAL int support_ensure_new_mapinsert_syntax (struct GMT_CTRL *GMT, char op
 			}
 		}
 		in_text[start] = '\0';	/* Chop off modifiers for now */
-		if (center) {	/* Must extract dimensions of map insert */
+		if (center) {	/* Must extract dimensions of map inset */
 			char unit[2] = {0, 0};
 			sprintf (text, "g%s/%s/", txt_a, txt_b);	/* -Dg<lon>/<lat> is the new reference point */
 			n = sscanf (in_text, "%[^/]/%s", txt_a, txt_b);	/* Read dimensions */
@@ -6419,9 +6419,13 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 			switch (p[0]) {
 				case 'c':	/* Effect of CPT on lines and fills */
 					switch (p[1]) {
-						case 'l': P->cptmode = 1; break;
-						case 'f': P->cptmode = 2; break;
-						default:  P->cptmode = 3; break;
+						case 'l':   P->cptmode = 1; break;
+						case 'f':   P->cptmode = 2; break;
+						case '\0':  P->cptmode = 3; break;
+						default: 
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error parsing pen modification +%s\n", p);
+							return false;
+						break;
 					}
 					break;
 				case 's':
@@ -11612,8 +11616,8 @@ bool gmt_x_is_outside (struct GMT_CTRL *GMT, double *x, double left, double righ
 }
 
 /*! . */
-int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_MAP_INSERT *B) {
-	/* Parse the map insert option, which comes in two flavors:
+int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_MAP_INSET *B) {
+	/* Parse the map inset option, which comes in two flavors:
 	 * 1) -D<xmin/xmax/ymin/ymax>[+r][+s<file>][+u<unit>]
 	 * 2) -Dg|j|J|n|x<refpoint>+w<width>[<u>][/<height>[<u>]][+j<justify>][+o<dx>[/<dy>]][+s<file>]
 	 */
@@ -11627,10 +11631,10 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option %c: No argument given\n", option);
 		GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 	}
-	gmt_M_memset (B, 1, struct GMT_MAP_INSERT);
+	gmt_M_memset (B, 1, struct GMT_MAP_INSET);
 	B->panel = save_panel;	/* In case it is not NULL */
 
-	if (support_ensure_new_mapinsert_syntax (GMT, option, in_text, text, oldshit)) return (1);	/* This recasts any old syntax using new syntax and gives a warning */
+	if (support_ensure_new_mapinset_syntax (GMT, option, in_text, text, oldshit)) return (1);	/* This recasts any old syntax using new syntax and gives a warning */
 
 	/* Determine if we got an reference point or a region */
 
@@ -11640,8 +11644,8 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 		char *q[2] = {NULL, NULL};
 		size_t len;
 		if ((B->refpoint = gmt_get_refpoint (GMT, text, option)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error:  Map insert reference point was not accepted\n");
-			gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSERT, 1);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error:  Map inset reference point was not accepted\n");
+			gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
 			return (1);	/* Failed basic parsing */
 		}
 
@@ -11656,7 +11660,7 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 			}
 			else {	/* Gave some arguments */
 				n = sscanf (string, "%[^/]/%s", txt_a, txt_b);
-				/* First deal with insert dimensions and horizontal vs vertical */
+				/* First deal with inset dimensions and horizontal vs vertical */
 				/* Handle either <unit><width>/<height> or <width>[<unit>]/<height>[<unit>] */
 				q[GMT_X] = txt_a;	q[GMT_Y] = txt_b;
 				last = (n == 1) ? GMT_X : GMT_Y;
@@ -11698,7 +11702,7 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 		}
 		if (gmt_get_modifier (B->refpoint->args, 't', string))
 				B->translate = true;
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Map insert attributes: justify = %d, dx = %g dy = %g\n", B->justify, B->off[GMT_X], B->off[GMT_Y]);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Map inset attributes: justify = %d, dx = %g dy = %g\n", B->justify, B->off[GMT_X], B->off[GMT_Y]);
 	}
 	else {	/* Did the [<unit>]<xmin/xmax/ymin/ymax> thing - this is exact so justify, offsets do not apply. */
 		char *c = NULL, p[GMT_LEN128] = {""};
@@ -11757,7 +11761,7 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 
 	B->plot = true;
 	if (oldshit[0] && gmt_getpanel (GMT, 'F', oldshit, &(B->panel))) {
-		gmt_mappanel_syntax (GMT, 'F', "Specify the rectanglar panel attributes for map insert", 3);
+		gmt_mappanel_syntax (GMT, 'F', "Specify the rectanglar panel attributes for map inset", 3);
 		error++;
 	}
 	return (error);
@@ -15615,7 +15619,10 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		uint64_t k;
 		unsigned int pos = 0;
 		char p[GMT_LEN64] = {""};
-		for (k = 0, T->n = 1; k < strlen (T->list); k++) if (T->list[k] == ',') T->n++;	/* Count the commas */
+		for (k = 0, T->n = 1; k < strlen (T->list); k++) {
+			if (T->list[k] == ',' && T->list[k+1])
+				T->n++;	/* Count the commas */
+		}
 		T->array = gmt_M_memory (GMT, NULL, T->n, double);
 		k = 0;
 		while ((gmt_strtok (T->list, ",", &pos, p))) {

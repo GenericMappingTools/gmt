@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	Makes the insert for Appendix G (fonts)
+#	Makes the inset for Appendix G (fonts)
 #
 # dy is line spacing and y0 is total box height
 

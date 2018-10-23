@@ -113,19 +113,19 @@ struct GMT_MAP_PANEL {
 	bool debug;
 };
 
-/*! Plot a map insert box in psbasemap */
-struct GMT_MAP_INSERT {
+/*! Plot a map inset box in psbasemap */
+struct GMT_MAP_INSET {
 	/* -D[g|j|n|x]<refpoint>+w<width>[<unit>][/<height>[<unit>]][+j<justify>[+o<dx>[/<dy>]][+s<file>][+t] or [<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r][+s<file>][+t] */
-	int justify;		/* Gave center of insert */
-	bool plot;		/* true if we want to draw the insert */
+	int justify;		/* Gave center of inset */
+	bool plot;		/* true if we want to draw the inset */
 	bool oblique;		/* true if we want got <w/s/e/n>r instead of <w/e/s/n> */
-	bool translate;		/* true if we want to translate plot origin to the LL corner of insert */
+	bool translate;		/* true if we want to translate plot origin to the LL corner of inset */
 	char unit;		/* Unit of projected coordinates or 0 for geographic */
 	struct GMT_REFPOINT *refpoint;
 	double wesn[4];		/* Geographic or projected boundaries */
 	double off[2];		/* Offset from reference point */
 	double dim[2];		/* Width & height of box */
-	char *file;			/* Used to write insert location and dimensions [+s] */
+	char *file;			/* Used to write inset location and dimensions [+s] */
 	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
 };
 

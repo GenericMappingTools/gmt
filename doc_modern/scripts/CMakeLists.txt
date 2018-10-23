@@ -38,7 +38,7 @@ set (_scr_strip GMT_-B_custom.sh GMT_-B_time1.sh GMT_-B_time2.sh
 # Scripts that are not used in the documentation (but the figures are)
 # do not include GMT_-U.sh as this would always fail
 set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
-	GMT_-B_pow.sh GMT_-J.sh GMT_-OK.sh GMT_-P.sh GMT_-R.sh GMT_-XY.sh
+	GMT_-B_pow.sh GMT_-J.sh GMT_-R.sh GMT_-XY.sh
 	GMT_App_E.sh GMT_App_F_dingbats.sh GMT_App_F_iso+.sh GMT_App_F_stand+.sh
 	GMT_App_F_stand+_iso+.sh GMT_App_F_symbol.sh GMT_App_F_symbol_dingbats.sh
 	GMT_App_G.sh GMT_App_J_1.sh GMT_App_J_2.sh GMT_App_J_3.sh GMT_App_M_1a.sh GMT_App_M_1b.sh GMT_App_M_1c.sh
@@ -46,7 +46,7 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 	GMT_chunking.sh GMT_coverlogo.sh GMT_Defaults_1a.sh GMT_Defaults_1b.sh GMT_Defaults_1c.sh
 	GMT_bezier.sh GMT_linecap.sh GMT_lineoffset.sh GMT_nearneighbor.sh GMT_anchor.sh GMT_API_use.sh
 	GMT_API_flow.sh GMT_pstext_clearance.sh GMT_pstext_justify.sh GMT_registration.sh GMT_obl_nz.sh
-	GMT_utm_zones.sh GMT_volcano.sh GMT_panel.sh GMT_mapscale.sh GMT_insert.sh GMT_linearrow.sh
+	GMT_utm_zones.sh GMT_volcano.sh GMT_panel.sh GMT_mapscale.sh GMT_inset.sh GMT_linearrow.sh
 	GMT_dir_rose.sh GMT_images.sh GMT_colorbar.sh GMT_cyclic.sh GMT_legend.sh GMT_mag_rose.sh
 	GMT_hinge.sh GMT_CPTscale.sh GMT_SRTM.sh GMT_vertscale.sh
 	GMT_tut_1.sh GMT_tut_2.sh GMT_tut_3.sh GMT_tut_4.sh GMT_tut_5.sh

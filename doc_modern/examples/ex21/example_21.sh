@@ -56,11 +56,11 @@ echo "${wesn[1]} 23.8852 PW sell" | gmt pstext -R -J -O -K -Dj0.8i/0.05i -N \
 	-F+f12p,Bookman-Demi+jRB >> $ps
 gmt set FORMAT_DATE_IN dd-o-yy
 
-# Get smaller region for insert for trend since 2004
+# Get smaller region for inset for trend since 2004
 
 R="-R2004T/${wesn[1]}/${wesn[2]}/40"
 
-# Lay down the basemap, using Finnish annotations and place the insert in the upper right
+# Lay down the basemap, using Finnish annotations and place the inset in the upper right
 
 gmt psbasemap --GMT_LANGUAGE=fi $R -JX6i/3i -Bpxa3Of3o -Bpy10+p"$ " -BESw+glightblue -Bsx1Y \
 	-O -K -X3i -Y3i >> $ps

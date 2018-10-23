@@ -880,8 +880,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));		/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments */
 
@@ -1098,7 +1097,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 #endif
 		/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as a background plot */
-		if ((error = system (pre_file))) {
+		sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], pre_file);
+		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running preflight script %s returned error %d - exiting.\n", pre_file, error);
 			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
@@ -1181,7 +1181,8 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 #endif
 		/* Run post-flight now before dealing with the loop so the overlay exists */
-		if ((error = run_script (post_file))) {
+		sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], post_file);
+		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
 			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
@@ -1418,7 +1419,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 #endif
-		sprintf (cmd, "%s %*.*d", master_file, precision, precision, Ctrl->M.frame);
+		sprintf (cmd, "%s %s %*.*d", sc_call[Ctrl->In.mode], master_file, precision, precision, Ctrl->M.frame);
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running script %s returned error %d - exiting.\n", cmd, error);
 			fclose (Ctrl->In.fp);

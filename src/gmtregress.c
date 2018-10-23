@@ -573,7 +573,7 @@ GMT_LOCAL void get_coeffR (struct GMT_CTRL *GMT, double *X, double *Y, double *w
 		if (w[GMT_Y]) ww = w[GMT_Y][k];	/* Was given weights */
 		y_hat = par[GMTREGRESS_SLOPE] * X[k] + par[GMTREGRESS_ICEPT];
 		SSR += ww * pow (Y[k] - y_hat, 2.0);
-		SST += ww * pow (y_hat - par[GMTREGRESS_YMEAN], 2.0);
+		SST += ww * pow (Y[k] - par[GMTREGRESS_YMEAN], 2.0);
 	}
 	par[GMTREGRESS_R] = 1.0 - f * SSR / SST;
 }
@@ -1086,8 +1086,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (options && options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
-	if (options && options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if ((error = gmt_report_usage (API, options, 1, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments */
 

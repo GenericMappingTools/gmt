@@ -150,9 +150,20 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *C) {	/* 
 	gmt_M_free (GMT, C);	
 }
 
-GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_CTRL *Ctrl) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
+	char day_marker_size[8], dist_marker_size[8];
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
+	
+	if (API->GMT->current.setting.proj_length_unit == GMT_CM) {
+		strcpy (day_marker_size, "0.1c");	/* 1 mm */
+		strcpy (dist_marker_size, "0.15c");	/* 1.5 mm */
+	}
+	else {	/* Assume we think in inches */
+		strcpy (day_marker_size, "0.04i");
+		strcpy (dist_marker_size, "0.06i");
+	}
+	
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s cruise(s) %s %s\n\t[-A[c][<size>]][,<inc><unit>] [%s] ", name, GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "[-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-F]\n\t[-Gt|d|n<gap>] [-I<code>] %s[-L<trackticks>] [-N] %s%s[-Sa<startdist>[<unit>]]\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s]\n\t[%s] [-W<pen>] [%s] [%s]\n",
@@ -192,17 +203,17 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_CTRL 
 	GMT_Message (API, GMT_TIME_NONE, "\t   day marker, and d for distance marker.  Then, append 5 comma-separated items:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <markersize>[unit],<markercolor>,<markerfontsize,<markerfont>,<markerfontcolor>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default settings for the three marker types are:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -TT%g,black,%g,%d,black\n",
-	             Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].font.size,
-	             Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].font.id);
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Tt%g,white,%g,%d,black\n",
-	             Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.size,
-	             Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.id);
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Td%g,black,%g,%d,black\n",
-	             Ctrl->T.marker[MGD77TRACK_MARK_DIST].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.size,
-	             Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.id);
+	GMT_Message (API, GMT_TIME_NONE, "\t     -TT%s,black,%g,%d,black\n",
+	             day_marker_size, API->GMT->current.setting.font_annot[GMT_PRIMARY].size,
+	             API->GMT->current.setting.font_annot[GMT_PRIMARY].id);
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Tt%s,white,%g,%d,black\n",
+	             day_marker_size, API->GMT->current.setting.font_annot[GMT_PRIMARY].size,
+	             API->GMT->current.setting.font_annot[GMT_PRIMARY].id);
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Td%s,black,%g,%d,black\n",
+	             dist_marker_size, API->GMT->current.setting.font_annot[GMT_PRIMARY].size,
+	             API->GMT->current.setting.font_annot[GMT_PRIMARY].id);
 	GMT_Option (API, "U,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Set track pen attributes [%s].\n", gmt_putpen (API->GMT, &Ctrl->W.pen));
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set track pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X,p,t,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -586,13 +597,12 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE, NULL));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if (!options || options->option == GMT_OPT_USAGE) Return (usage (API, GMT_USAGE, Ctrl));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) Return (usage (API, GMT_SYNOPSIS, Ctrl));	/* Return the synopsis */
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments */
 

@@ -356,9 +356,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 			case 'N':	/* Make sectors area be proportional to frequency instead of radius */
 				Ctrl->N.active = true;
 				break;
-			case 'Q':	/* Scale radii before using data */
+			case 'Q':	/* Set critical value [0.05] */
 				Ctrl->Q.active = true;
-				Ctrl->Q.value = atof (opt->arg);
+				if (opt->arg[0]) Ctrl->Q.value = atof (opt->arg);
 				break;
 			case 'S':	/* Normalization */
 				Ctrl->S.active = true;
@@ -467,8 +467,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 

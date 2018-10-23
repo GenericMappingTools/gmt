@@ -1185,11 +1185,11 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					else if (copy_flipud) {
 						/* We could copy and flip but the idea here is also to not use a tmp array too */
 						memcpy (&Ctrl->UInt8.data[i_x_nXYSize], tmp, (size_t)nBufYSize * (size_t)nBufXSize);
-						gmtlib_grd_flip_vertical (&Ctrl->UInt8.data[i_x_nXYSize], (unsigned)nX, (unsigned)nY, 0, 1);
+						gmt_grd_flip_vertical (&Ctrl->UInt8.data[i_x_nXYSize], (unsigned)nX, (unsigned)nY, 0, 1);
 					}
 #else
 					if (copy_flipud)
-						gmtlib_grd_flip_vertical (&Ctrl->UInt8.data[i_x_nXYSize], (unsigned)nX, (unsigned)nY, 0, 1);
+						gmt_grd_flip_vertical (&Ctrl->UInt8.data[i_x_nXYSize], (unsigned)nX, (unsigned)nY, 0, 1);
 #endif
 					else if (fliplr) {				/* No BIP option yet, and maybe never */
 						for (m = row_i; m < row_e; m++) {

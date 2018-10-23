@@ -1454,10 +1454,11 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	char at_sign[2] = "";
 #endif
 	/* Define the 4 different sets of GS parameters for PDF or rasters, before and after SCANCONVERTERTYPE=2 added in 9.21 */
-	static char *gs_params_pdfnew = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode -dSCANCONVERTERTYPE=2";
-	static char *gs_params_pdfold = "-q -dSAFER -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
-	static char *gs_params_rasnew = "-q -dSAFER -dNOPAUSE -dBATCH -dSCANCONVERTERTYPE=2";
-	static char *gs_params_rasold = "-q -dSAFER -dNOPAUSE -dBATCH";
+	/* 2018=09-18 [PW]: Removed -DSAFER since it now prevents using the Adobe transparency extensions.  All our test pass with no -DSAFER so I have removed it */
+	static char *gs_params_pdfnew = "-q -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode -dSCANCONVERTERTYPE=2";
+	static char *gs_params_pdfold = "-q -dNOPAUSE -dBATCH -dPDFSETTINGS=/prepress -dDownsampleColorImages=false -dDownsampleGrayImages=false -dDownsampleMonoImages=false -dUseFlateCompression=true -dEmbedAllFonts=true -dSubsetFonts=true -dMonoImageFilter=/FlateEncode -dAutoFilterGrayImages=false -dGrayImageFilter=/FlateEncode -dAutoFilterColorImages=false -dColorImageFilter=/FlateEncode";
+	static char *gs_params_rasnew = "-q -dNOPAUSE -dBATCH -dSCANCONVERTERTYPE=2";
+	static char *gs_params_rasold = "-q -dNOPAUSE -dBATCH";
 	static char *gs_params = NULL;
 #ifdef HAVE_GDAL
 	struct GMT_GDALREAD_IN_CTRL  *to_gdalread = NULL;
@@ -1480,8 +1481,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments */
 
@@ -1556,7 +1556,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	else	/* For rasters */
 		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_rasnew : gs_params_rasold;
 
-	gs_BB = "-q -dSAFER -dNOPAUSE -dBATCH -sDEVICE=bbox"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
+	gs_BB = "-q -dSAFER -dNOPAUSE -dBATCH -sDEVICE=bbox -DPSL_no_pagefill"; /* -r defaults to 4000, see http://pages.cs.wisc.edu/~ghost/doc/cvs/Devices.htm#Test */
 
 	add_to_list (Ctrl->C.arg, "-dMaxBitmap=2147483647");	/* Add this as GS option to fix bug in GS */
 

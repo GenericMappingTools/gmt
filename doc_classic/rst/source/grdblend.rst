@@ -14,8 +14,8 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdblend** [ *blendfile* \| *grid1* *grid2* ... ] |-G|\ *outgrid*
-[ |SYN_OPT-I| ]
-[ |SYN_OPT-R| ]
+|SYN_OPT-I|
+|SYN_OPT-R|
 [ |-C|\ **f**\ \|\ **l**\ \|\ **o**\ \|\ **u** ][±] [ |-N|\ *nodata* ]
 [ |-Q| ] [ |-Z|\ *scale* ]
 [ |SYN_OPT-V| ]

@@ -843,14 +843,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Classic requires options, while modern does not */
-		if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
-		if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
-	}
-	else {
-		if (options && options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
-		if (API->usage || (options && options->option == GMT_OPT_USAGE)) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
-	}
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
@@ -1122,6 +1115,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					}
 					else if (S.v.status & PSL_VEC_FILL) {
 						current_fill = default_fill, Ctrl->G.active = true;	/* Return to default fill */
+					}
+					if (S.v.status & PSL_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length so need to undo dimension scaling */
+						in[pos2x] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+						in[pos2y] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 					}
 				}
 				else if (S.symbol == PSL_DOT && !Ctrl->G.active)	/* Must switch on default black fill */
@@ -1605,6 +1602,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 		if (GMT->current.io.OGR && (GMT->current.io.OGR->geometry == GMT_IS_POLYGON || GMT->current.io.OGR->geometry == GMT_IS_MULTIPOLYGON)) polygon = true;
 
+		if (Ctrl->W.cpt_effect && Ctrl->W.pen.cptmode & 2) polygon = true;
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from first header */
 				gmt_extract_label (GMT, D->table[tbl]->header[0], S.G.label, NULL);
@@ -1684,11 +1682,24 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 					gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 				}
-				if (change & 4 && penset_OK) gmt_setpen (GMT, &current_pen);
-				if (change & 1) polygon = true;
-				if (change & 2 && !Ctrl->L.polygon) {
-					polygon = false;
-					PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
+				if (Ctrl->W.cpt_effect) {
+					if (Ctrl->W.pen.cptmode & 1) {	/* Change pen color via CPT */
+						gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
+						current_pen = Ctrl->W.pen;
+						gmt_setpen (GMT, &current_pen);
+					}
+					if ((Ctrl->W.pen.cptmode & 2) == 0 && !Ctrl->G.active)	/* Turn off CPT fill */
+						gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
+					else if (Ctrl->G.active)
+						current_fill = Ctrl->G.fill;
+				}
+				else {
+					if (change & 4 && penset_OK) gmt_setpen (GMT, &current_pen);
+					if (change & 1) polygon = true;
+					if (change & 2 && !Ctrl->L.polygon) {
+						polygon = false;
+						PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
+					}
 				}
 				if (S.G.label_type == GMT_LABEL_IS_HEADER) {	/* Get potential label from segment header */
 					SH = gmt_get_DS_hidden (L);

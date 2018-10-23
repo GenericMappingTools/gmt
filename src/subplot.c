@@ -34,7 +34,7 @@
 
 #define THIS_MODULE_NAME	"subplot"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Manage figure subplot configuration and selection"
+#define THIS_MODULE_PURPOSE	"Manage modern mode figure subplot configuration and selection"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"JRVXY"
@@ -618,8 +618,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));		/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Not available in classic mode\n");
 		bailout (GMT_NOT_MODERN_MODE);

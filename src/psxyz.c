@@ -563,8 +563,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Classic requires options, while modern does not */
-		if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
-		if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+		if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 	}
 	else {
 		if (options && options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
@@ -843,6 +842,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					}
 					else if (S.v.status & PSL_VEC_FILL) {
 						current_fill = default_fill, Ctrl->G.active = true;	/* Return to default fill */
+					}
+					if (S.v.status & PSL_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length so need to undo dimension scaling */
+						in[pos2x] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+						in[pos2y] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 					}
 				}
 				else if (S.symbol == PSL_DOT && !Ctrl->G.active) {	/* Must switch on default black fill */

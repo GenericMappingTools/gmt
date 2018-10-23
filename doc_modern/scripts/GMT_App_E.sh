@@ -4,7 +4,6 @@
 #
 #	Paul Wessel, v 1.1
 #
-ps=GMT_App_E.ps
 xwidth=0.45	# Width of each box (all units are in inches)
 ywidth=0.45	# Height of each box
 w=0.9		# Width of two adjacent boxes
@@ -21,22 +20,23 @@ $xwidth	$ywidth
 0	$ywidth
 END
 
-gmt psbasemap -R0/5.75/0/7.55 -Jx1i -P -B0 -K > $ps
+gmt begin GMT_App_E ps
+gmt basemap -R0/5.75/0/7.55 -Jx1i -B0
 for iy in 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
 do
 	for ix in 1 2 3 4 5 6
 	do
 		p=`echo "$iy * 6 + $ix" | bc`
-		gmt psxy -R0/$xwidth/0/$ywidth -Jx1i -Gp$p+r300 -O -K tt.App_E.d -X${x}i -Y${y}i >> $ps
-		gmt psxy -R -J -Wthinner -L -O -K tt.App_E.d >> $ps
-		gmt psxy -R -J -GP$p+r300 -O -K tt.App_E.d -X${xwidth}i >> $ps
-		gmt psxy -R -J -Wthinner -L -O -K tt.App_E.d >> $ps
-		echo "0 0.225" | gmt psxy -R0/$w/0/$ywidth -J -O -K -N -Sc0.17i -Wthinnest -Gwhite >> $ps
-		echo "0 0.225 $p" | gmt pstext -R0/$w/0/$ywidth -J -O -K -N -F+f9p,Helvetica-Bold >> $ps
+		gmt plot -R0/$xwidth/0/$ywidth -Jx1i -Gp$p+r300 tt.App_E.d -X${x}i -Y${y}i
+		gmt plot -Wthinner -L tt.App_E.d 
+		gmt plot -GP$p+r300 tt.App_E.d -X${xwidth}i 
+		gmt plot -Wthinner -L tt.App_E.d 
+		echo "0 0.225" | gmt plot -R0/$w/0/$ywidth -N -Sc0.17i -Wthinnest -Gwhite 
+		echo "0 0.225 $p" | gmt text -R0/$w/0/$ywidth -N -F+f9p,Helvetica-Bold
 		y=0.0
 		x=$dx
 	done
 	y=$dy
 	x=$back
 done
-gmt psxy -R -J -T -O >> $ps
+gmt end

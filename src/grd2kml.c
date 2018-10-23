@@ -385,8 +385,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments */
 
@@ -403,13 +402,13 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	}
 	if (!gmt_M_is_geographic (GMT, GMT_IN)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid must be geographic (lon, lat)\n");
-		Return (API->error);
+		Return (GMT_RUNTIME_ERROR);
 	}
-	if (!doubleAlmostEqual (G->header->inc[GMT_X], G->header->inc[GMT_Y])) {
+	if (!gmt_M_grd_equal_xy_inc (GMT, G)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid spacing must be the same in longitude and latitude!\n");
-		Return (API->error);
+		Return (GMT_RUNTIME_ERROR);
 	}
-	
+
 	Ctrl->L.size /= Ctrl->M.magnify;
 	dpi = 100 * Ctrl->M.magnify;
 	/* Set specific grdimage option -Q or -Ei or neither */

@@ -68,10 +68,12 @@ Optional Arguments
 .. _-E:
 
 **-E**\ *URL*
-    Instead of hosting the files locally, prepend a site URL. The top-level
-    *prefix*\ .kml file will then use this URL to find the other files it references.
-    After building the files you must place the *prefix* directory at
-    the location pointed to by the *URL* [local files only].
+    Instead of hosting all files on your computer, you may prepend a remote site URL. Then,
+    the top-level *prefix*\ .kml file will use this URL to find all other files it references.
+    After building completes you must place the entire *prefix* directory at the remote
+    location pointed to by the *URL* [local files only]. With this arrangement you can
+    share the *prefix*\ .kml with others (say, via email or for download) and users can
+    open the file in their Google Earth and access the remote files from your server as needed.
 
 .. _-F:
 
@@ -85,8 +87,8 @@ Optional Arguments
 .. _-H:
 
 **-H**\ *factor*
-    Improve the quality of rasterization by passing the sub-pixel smoothing flag
-    to psconvert [no sub-pixel smoothing].
+    Improve the quality of rasterization by passing the sub-pixel smoothing factor
+    to psconvert (same as **-H** option in psconvert) [no sub-pixel smoothing].
 
 .. _-I:
 
