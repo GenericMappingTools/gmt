@@ -37,7 +37,7 @@ install:
     # Build and install GMT
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
         bash ci/travis-build.sh;
-      elif ["$TRAVIS_OS_NAME" == "osx" ]; then
+      elif [ "$TRAVIS_OS_NAME" == "osx" ]; then
         brew install --HEAD ci/gmt.rb;
       fi
 
