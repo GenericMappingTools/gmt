@@ -11,7 +11,7 @@ branches:
 
 os:
     - linux
-    #- osx
+    - osx
 
 env:
     global:
