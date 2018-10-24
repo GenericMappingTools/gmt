@@ -25,8 +25,8 @@ env:
           fi
 
 before_install:
-    # Install GMT dependencies
-    - bash ci/travis-setup.sh
+    # Linux: Install GMT dependencies
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then bash ci/travis-setup.sh; fi
     # Install GMT documentation dependencies
     - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
         git clone https://github.com/fatiando/continuous-integration.git;
@@ -35,7 +35,11 @@ before_install:
 
 install:
     # Build and install GMT
-    - bash ci/travis-build.sh;
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+        bash ci/travis-build.sh;
+      elif ["$TRAVIS_OS_NAME" == "osx" ]; then
+        brew install --HEAD ci/gmt.rb;
+      fi
 
 script:
     - gmt defaults -Vd
