@@ -38,6 +38,8 @@ install:
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
         bash ci/travis-build.sh;
       elif [ "$TRAVIS_OS_NAME" == "osx" ]; then
+        # something wrong with gcc
+        brew install gcc
         brew install --HEAD ci/gmt.rb;
       fi
 
