@@ -762,7 +762,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->M.active && !GMT->common.J.active)	/* Set fake linear projection */
 		gmt_parse_common_options (GMT, "J", 'J', "x1d");
-	else if (GMT->common.J.active && gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Gave -J but forgot the "d" */
+	else if (GMT->common.J.active && !gmt_M_is_geographic (GMT, GMT_IN)) {	/* Gave -J but forgot the "d" */
 		gmt_set_geographic (GMT, GMT_IN);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Switching to -Jx|X...d[/...d] for geographic data\n");
 	}
