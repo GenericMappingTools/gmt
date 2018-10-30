@@ -338,7 +338,7 @@
         if not specified on the command-line, should be  present in column 5.
         The *size* is the length of the vector head. Vector width is set by **-W**.
         See `VECTOR ATTRIBUTES`_ for specifying other attributes. But also be aware
-        that using color via a CPT imply a shift of columns 3 and on to accommodate
+        that using color via a CPT implies a shift of columns 3 and on to accommodate
         the color fill determined by the z-value in new 3rd column (See **-C** option).
 
     **-SV**
