@@ -137,7 +137,7 @@
         no arrow heads]. The *size* is the length of the vector head. Arc width
         is set by **-W**. The radius of the arc and its start and stop
         directions (in degrees counter-clockwise from horizontal) must be given
-        in columns 3-5. See VECTOR ATTRIBUTES for specifying other attributes.
+        in columns 3-5. See `VECTOR ATTRIBUTES`_ for specifying other attributes.
 
     **-SM**
         Same as **-Sm** but switches to straight angle symbol if angles subtend
@@ -337,7 +337,9 @@
         horizontal) and length must be found in columns 3 and 4, and *size*,
         if not specified on the command-line, should be  present in column 5.
         The *size* is the length of the vector head. Vector width is set by **-W**.
-        See VECTOR ATTRIBUTES for specifying other attributes.
+        See `VECTOR ATTRIBUTES`_ for specifying other attributes. But also be aware
+        that using color via a CPT implies a shift of columns 3 and on to accommodate
+        the color fill determined by the z-value in new 3rd column (See **-C** option).
 
     **-SV**
         Same as **-Sv**, except azimuth (in degrees east of north) should be
@@ -346,7 +348,7 @@
         unchanged.) If your *length* is not in plot units but in arbitrary
         user units (e.g., a rate in mm/yr) then you can use the **-i** option
         to scale the corresponding column via the **+s**\ *scale* modifier.
-        See VECTOR ATTRIBUTES for specifying symbol attributes.
+        See `VECTOR ATTRIBUTES`_ for specifying symbol attributes.
 
     **-Sw**
         pie **w**\ edge. Start and stop directions (in degrees
@@ -371,7 +373,7 @@
     **-S=**
         geovector. Azimuth (in degrees east from north) and geographical length
         must be found in columns 3 and 4. The *size* is the length of the
-        vector head. Vector width is set by **-W**. See VECTOR ATTRIBUTES
+        vector head. Vector width is set by **-W**. See `VECTOR ATTRIBUTES`_
         for specifying attributes. Note: Geovector stems are drawn as thin
         filled polygons and hence pen attributes like dashed and dotted are
         not available. For allowable geographical units, see UNITS.
