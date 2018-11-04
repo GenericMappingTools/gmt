@@ -6596,7 +6596,7 @@ bool gmt_getinc (struct GMT_CTRL *GMT, char *line, double inc[]) {
 
 	int n;
 
-	/* Syntax: -I<xinc>[m|s|e|f|k|M|n|u|+|=][/<yinc>][m|s|e|f|k|M|n|u|+|=]
+	/* Syntax: -I<xinc>[m|s|e|f|k|M|n|u|+e|n][/<yinc>][m|s|e|f|k|M|n|u|+e|n]
 	 * Units: d = arc degrees
 	 * 	  m = arc minutes
 	 *	  s = arc seconds [was c]
@@ -6606,8 +6606,8 @@ bool gmt_getinc (struct GMT_CTRL *GMT, char *line, double inc[]) {
 	 *	  k = km [Convert to degrees]
 	 *	  n = nautical miles [Convert to degrees]
 	 *	  u = survey feet [Convert to degrees]
-	 * Flags: = = Adjust -R to fit exact -I [Default modifies -I to fit -R]
-	 *	  + = incs are actually n_columns/n_rows - convert to get xinc/yinc
+	 * Flags: +e = Adjust -R to fit exact -I [Default modifies -I to fit -R]
+	 *	  +n = incs are actually n_columns/n_rows - convert to get xinc/yinc
 	 */
 
 	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to gmt_getinc\n"); return (true); }
@@ -15323,7 +15323,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	-T<argument>
 	 *
 	 * where <argument> is one of these:
-	 *	[<min/max/]<inc>[<unit>|+a|n|b|l]
+	 *	[<min/max/]<inc>[<unit>|+a|e|n|b|l]
 	 *	<file>
 	 *
 	 * Parsing:
@@ -15356,6 +15356,9 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	   equidistant in log2(t).  Here, inc must be an integer and indicates
 	 *	   the log2 increment.
 	 *      8) If +a is given then we will add the output array as a new output column.
+	 *      9) If +e is given when only an increment is given then we must keep the
+	 *	   increment exact and adjust max to ensure (max-min)/inc is an integer.
+	 *	   The default adjusts inc instead, if flag GMT_ARRAY_ROUND is passed.
 	 *
 	 * Note:   The effects in 4) and 5) are only allowed if the corresponding
 	 *	   flags are passed to the parser.
@@ -15403,17 +15406,20 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		return (GMT_NOERROR);
 	}
 
-	if ((m = gmt_first_modifier (GMT, argument, "ablnt"))) {	/* Process optional modifiers +a, +b, +l, +n, +t */
+	if ((m = gmt_first_modifier (GMT, argument, "abelnt"))) {	/* Process optional modifiers +a, +b, +e, +l, +n, +t */
 		unsigned int pos = 0;	/* Reset to start of new word */
 		unsigned int n_errors = 0;
 		char p[GMT_LEN32] = {""};
-		while (gmt_getmodopt (GMT, 'T', m, "ablnt", &pos, p, &n_errors) && n_errors == 0) {
+		while (gmt_getmodopt (GMT, 'T', m, "abelnt", &pos, p, &n_errors) && n_errors == 0) {
 			switch (p[0]) {
 				case 'a':	/* Add spatial distance column to output */
 					T->add = true; 
 					break;
 				case 'b':	/* Do a log2 grid */
 					T->logarithmic2 = true; 
+					break;
+				case 'e':	/* Increment must be honored exactly */
+					T->exact_inc = true; 
 					break;
 				case 'n':	/* Gave number of points instead; calculate inc later */
 					T->count = true;
@@ -15456,7 +15462,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	ns--;	/* ns is now the index to the txt array with the increment or count (2 or 0) */
 	len = strlen (txt[ns]);	if (len) len--;	/* Now txt[ns][len] holds a unit (or not) */
 	if (!has_inc && (T->logarithmic || T->logarithmic2)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Logarithmic array requires and increment argument\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Logarithmic array requires an increment argument\n", option);
 		return GMT_PARSE_ERROR;
 	}
 	/* 3. Check if we are working with absolute time.  This means there must be a T in both min or max arguments */
@@ -15531,7 +15537,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 				return GMT_PARSE_ERROR;
 			}
 			if (T->logarithmic && !(k_inc == 1 || k_inc == 2 || k_inc == 3 || k_inc < 0)) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Log10 increment must be 1, 2, 3 (or a negative integer)\n", option);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Logarithmic increment must be 1, 2, 3 (or a negative integer)\n", option);
 				return GMT_PARSE_ERROR;
 			}
 		}
@@ -15571,7 +15577,13 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	if (has_inc && ns == 0 && (flags & GMT_ARRAY_NOMINMAX)) {	/* The min/max will be set later */
 		T->delay[GMT_X] = T->delay[GMT_Y] = true;
 	}
-		
+	if (flags & GMT_ARRAY_ROUND)	/* Adjust increment to fit min/max so (max-min)/inc is an integer */
+		T->round = true;
+	if (T->exact_inc && T->set == 3) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Modifier +e only applies when increment is given without any range\n", option);
+		return GMT_PARSE_ERROR;
+
+	}
 	if (m) m[0] = '+';	/* Restore the modifiers */
 	T->col = tcol;
 	
@@ -15635,7 +15647,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		return GMT_NOERROR;
 	}
 	
-	if (! (min == NULL && max == NULL)) {		/* Update min,max now */
+	if (T->set < 3 && ! (min == NULL && max == NULL)) {		/* Update min,max now */
 		T->min = *min;	T->max = *max;
 	}
 	if (T->count)	/* This means we gave a count instead of increment  */
@@ -15661,7 +15673,24 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		T->n = gmtlib_log_array (GMT, t0, t1, inc, &(T->array));
 	else if (T->logarithmic2)	/* Must call special function that deals with logarithmic arrays */
 		T->n = gmtlib_log2_array (GMT, t0, t1, inc, &(T->array));
-	else {	/* Equidistant intervals are straightforward - make sure the min/man/inc values harmonize */
+	else {	/* Equidistant intervals are straightforward - make sure the min/max/inc values harmonize */
+		if (T->exact_inc) {	/* Must enforce that max-min is a multiple of inc and adjust max if it is not */
+			double new, range = t1 - t0;
+			new = rint (range / inc) * inc;
+			if (!doubleAlmostEqualZero (new, range)) {	/* Must adjust t1 to match proper range */
+				t1 = t0 + new;
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Range (max - min) is not a whole multiple of inc. Adjusted max to %g\n", option, t1);
+			}
+		}
+		else if (T->round) {	/* Must enforce an increment that fits the given range */
+			double new, range = t1 - t0;
+			unsigned int nt = urint (range / inc);
+			new = nt * inc;
+			if (nt && !doubleAlmostEqualZero (new, range)) {	/* Must adjust inc to match proper range */
+				inc = range / (nt - 1);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Range (max - min) is not a whole multiple of inc. Adjusted inc to %g\n", option, inc);
+			}
+		}
 		switch (gmt_minmaxinc_verify (GMT, t0, t1, inc, GMT_CONV4_LIMIT)) {
 			case 1:
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: (max - min) is not a whole multiple of inc\n", option);
