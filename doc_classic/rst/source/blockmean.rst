@@ -107,7 +107,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**]
-    Use **-Sn** to report the number of points inside each block,
+    Use **-Sn** to report the number of input points inside each block,
     **-Ss** to report the sum of all *z*-values inside a block, **-Sw**
     to report the sum of weights [Default (or **-Sm** reports mean value]. 
 
