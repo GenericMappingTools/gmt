@@ -691,6 +691,8 @@ int GMT_coast (void *V_API, int mode, void *args) {
 	return GMT_pscoast (V_API, mode, args);
 }
 
+EXTERN_MSC uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n_orig, double **x, double **y, uint64_t *total_nx);
+
 int GMT_pscoast (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pscoast task */
 
@@ -1074,7 +1076,9 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			}
 
 			for (i = 0; i < np; i++) {
-				if (Ctrl->M.active) {
+				if (Ctrl->M.active) {	/* Clip to specified region - this gives x,y coordinates in inches */
+					uint64_t unused, n_out = map_wesn_clip (GMT, p[i].lon, p[i].lat, p[i].n, &xtmp, &ytmp, &unused);
+					
 					if (!Ctrl->M.single) {
 						sprintf (GMT->current.io.segment_header, "Shore Bin # %d, Level %d", bin, p[i].level);
 						GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
@@ -1083,11 +1087,12 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 						out[GMT_X] = out[GMT_Y] = GMT->session.d_NaN;
 						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 					}
-					for (k = 0; k < p[i].n; k++) {
-						out[GMT_X] = p[i].lon[k];
-						out[GMT_Y] = p[i].lat[k];
+					for (k = 0; k < (int)n_out; k++) {	/* Convert back to lon,lat before writing output */
+						gmt_xy_to_geo (GMT, &out[GMT_X], &out[GMT_Y], xtmp[k], ytmp[k]);
 						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 					}
+					gmt_M_free (GMT, xtmp);
+					gmt_M_free (GMT, ytmp);
 				}
 				else if (Ctrl->W.use[p[i].level-1]) {
 					if (donut_hell) p[i].n = (int)gmt_fix_up_path (GMT, &p[i].lon, &p[i].lat, p[i].n, 0.0, 0);
