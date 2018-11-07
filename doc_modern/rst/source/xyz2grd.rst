@@ -230,6 +230,11 @@ swap the byte-order with
 
     gmt xyz2grd floats.bin -Snew_floats.bin -V -Zf
 
+To make a pixel node registrated tiff of the number of data points
+that is assigned to each node in a cartesian data set, use
+
+    gmt xyz2grd data.txt -R0/100/0/100 -r -I10 -An -Gnumber_of_points.tif=gd:GTiff
+
 See Also
 --------
 
