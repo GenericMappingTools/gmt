@@ -1279,9 +1279,8 @@ GMT_LOCAL int gmtnc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 				wesn[XHI] += 360;
 			}
 		}
-		else
-			assert ((wesn[XLO]+GMT_CONV8_LIMIT*header->inc[GMT_X]) >= header->wesn[XLO] && (wesn[XHI]-GMT_CONV8_LIMIT*header->inc[GMT_X]) <= header->wesn[XHI]);
-		//assert (wesn[XLO] >= header->wesn[XLO] && wesn[XHI] <= header->wesn[XHI]); /* Too harsh */
+		else /* Apply a 10^-4 times inc sloppiness in the test [it was zero which was too harsh for sloppy grids] */
+			assert ((wesn[XLO]+GMT_CONV4_LIMIT*header->inc[GMT_X]) >= header->wesn[XLO] && (wesn[XHI]-GMT_CONV4_LIMIT*header->inc[GMT_X]) <= header->wesn[XHI]);
 
 		/* Get dimension of subregion */
 		*width  = urint ((wesn[XHI] - wesn[XLO]) * HH->r_inc[GMT_X]) + is_gridline_reg;
