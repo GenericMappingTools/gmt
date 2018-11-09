@@ -19,14 +19,24 @@ env:
         - COASTLINEDIR="$HOME/gmt-install-dir/coast"
         - PATH="$INSTALLDIR/bin:$PATH"
         - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
+        - PYTHON=3.6
+        - CONDA_REQUIREMENTS="ci/requirements.txt"
 
 before_install:
     # Install GMT dependencies
     - bash ci/travis-setup.sh
+    # Install GMT documentation dependencies
+    # Get the Fatiando CI scripts
+    - git clone https://github.com/fatiando/continuous-integration.git
+    # Download and install miniconda and setup dependencies
+    # Need to source the script to set the PATH variable globaly
+    - source continuous-integration/travis/setup-miniconda.sh
 
 install:
     # Build and install GMT
     - bash ci/travis-build.sh;
+    # Build GMT documentations
+    - bash ci/travis-build-docs.sh;
 
 script:
     - gmt defaults -Vd
