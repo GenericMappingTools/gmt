@@ -476,6 +476,7 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	unsigned int type;		/* GMT_LINEAR, GMT_LOG10, GMT_POW, GMT_TIME */
 	unsigned int special;		/* See gmt_enum_annot values */
 	unsigned int label_mode;	/* 0 = parallel to all axes, 1 = always horizontal on map */
+	bool substitute_pi;		/* True if we need to plot fractions of pi on this axis */
 	struct GMT_PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	char label[GMT_LEN256];	/* Label of the axis */

@@ -3632,6 +3632,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 
 		if (orig_string[0] == '\0') continue;	/* Got nothing */
 		GMT->current.map.frame.set = true;	/* Got here so we are setting intervals */
+		if (strstr (orig_string, "pi")) GMT->current.map.frame.axis[no].substitute_pi = true;	/* Use pi in formatting labels */
 
 		gmt_M_memset (string, GMT_BUFSIZ, char);
 		strcpy (string, orig_string);	/* Make a copy of string as it gets messed with below */

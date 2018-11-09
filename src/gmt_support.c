@@ -9963,6 +9963,35 @@ char * gmt_make_filename (struct GMT_CTRL *GMT, char *template, unsigned int fmt
 	return (strdup (file));
 }
 
+
+/* Function to split a floating point into nearest fraction, with maxden the largest allowable denominator.
+ * Borrowed from https://www.ics.uci.edu/~eppstein/numth/frap.c */
+
+GMT_LOCAL void make_fraction (struct GMT_CTRL *GMT, double x0, int maxden, int *n, int *d) {
+	uint64_t m[2][2], ai;
+	double x = x0, e;
+	/* initialize matrix */
+	m[0][0] = m[1][1] = 1, m[0][1] = m[1][0] = 0;
+
+	/* loop finding terms until denom gets too big */
+	while (m[1][0] *  ( ai = (uint64_t)x ) + m[1][1] <= (uint64_t)maxden) {
+		uint64_t t = m[0][0] * ai + m[0][1];
+		m[0][1] = m[0][0];
+		m[0][0] = t;
+		t = m[1][0] * ai + m[1][1];
+		m[1][1] = m[1][0];
+		m[1][0] = t;
+		if (x == (double)ai) break;     // AF: division by zero
+		x = 1 / (x - (double) ai);
+		if (x > (double)0x7FFFFFFF) break;  // AF: representation failure
+ 	} 
+
+	*n = m[0][0];	*d = m[1][0];
+ 	e = x0 - ((double) *n / (double) *d);
+	if (e > GMT_CONV4_LIMIT)
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Bad fraftion, error = %g\n", e);
+}
+
 /*! . */
 void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double x) {
 	/* Determines if %-apostrophe is used in the format for a float. If so, must temporarily switch to LC_NUMERIC=en_US */
@@ -9970,34 +9999,33 @@ void gmt_sprintf_float (struct GMT_CTRL *GMT, char *string, char *format, double
 	char *use_locale = strstr (format, "%'");
 	if (use_locale) setlocale (LC_NUMERIC, "en_US");
 #endif
-	if (GMT->current.plot.substitute_pi) {	/* Want to use pi when close to known multiples of pi */
-		/* We only allow n pi, 1.5pi, and fractions 3/4, 2/3, 1/2, 1/3, and 1/4.
+	if (GMT->current.plot.substitute_pi) {	/* Want to use pi when close to known multiples of pi. This variable is set per axis in gmt_xy_axis */
+		/* Any fraction of pi up to 1/20th allowed.
 		 * substitute_pi becomes true when items with "pi" are used in -R, -I etc. */
-		double f = fabs (x / M_PI);	/* Float multiple of pi */
-		int n = irint (f);
-		char s = (x < 0.0) ? '-' : '+';
-		if (n > 1 && fabs (f-(double)n) < GMT_CONV4_LIMIT)	/* Exact multiple of 2*pi, 3*pi, etc */
-			sprintf (string, "%c@~%dp@~", s, n);
-		else if (n == 1 && fabs (f-(double)n) < GMT_CONV4_LIMIT)	/* Just pi instead of 1*pi */
-			sprintf (string, "%c@~p@~", s);
-		else if (fabs (f-1.5) < GMT_CONV4_LIMIT)	/* 3/2 pi */
-			sprintf (string, "%c@~3p/2@~", s);
-		else if (fabs (f-1.0) < GMT_CONV4_LIMIT)
-			sprintf (string, "%c@~p@~", s);
-		else if (fabs (f-0.75) < GMT_CONV4_LIMIT)
-			sprintf (string, "%c@~3p/4@~", s);
-		else if (fabs (f-0.6666666666666666) < GMT_CONV4_LIMIT)
-			sprintf (string, "%c@~2p/3@~", s);
-		else if (fabs (f-0.5) < GMT_CONV4_LIMIT)
-			sprintf (string, "%c@~p/2@~", s);
-		else if (fabs (f-0.3333333333333333) < GMT_CONV6_LIMIT)
-			sprintf (string, "%c@~p/3@~", s);
-		else if (fabs (f-0.25) < GMT_CONV4_LIMIT)
-			sprintf (string, "%c@~p/4@~", s);
-		else if (fabs (f) < GMT_CONV4_LIMIT)
+		int k = 1, m, n;
+		char fmt[16] = {""};
+		double f = fabs (x / M_PI);		/* Float multiples of pi */
+		if (fabs (f) < GMT_CONV4_LIMIT) {	/* Deal with special case of zero pi */
 			sprintf (string, "0");
-		else
-			sprintf (string, format, x);
+			return;
+		}
+		make_fraction (GMT, f, 20, &n, &m);	/* Max 20th of pi */
+		string[0] = (x < 0.0) ? '-' : '+';	/* Place leading sign */
+		string[1] = '\0';			/* Chop off old string */
+		if (n > 1) {	/* Need an integer in front of pi */
+			k += sprintf (fmt, "%d", n);
+			strcat (string, fmt);
+			//k += irint (floor (log10 ((double)n))) + 1;	/* Add how many decimals needed for n */
+		}
+		strcat (string, "@~p@~");	/* Place the pi symbol */
+		k += 5;	/* Add number of characters just placed to print pi */
+		if (m > 1) {	/* Add the fractions part */
+			k += sprintf (fmt, "/%d", m);
+			strcat (string, fmt);
+			//k += irint (floor (log10 ((double)m))) + 2;	/* Add how many decimals needed for /m */
+		}
+		string[k] = '\0';	/* Truncate any old string */
+		//fprintf (stderr, "f = %g n = %d  m = %d.  String = %s\n", f, n, m, string);
 	}
 	else
 		sprintf (string, format, x);

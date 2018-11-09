@@ -316,7 +316,6 @@ GMT_LOCAL void plot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *
 	y_length = GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO];
 
 	if (GMT->current.map.frame.draw) {
-
 		/* Temporarily change to square cap so rectangular frames have neat corners */
 		PSL_setlinecap (PSL, PSL_SQUARE_CAP);
 
@@ -4223,6 +4222,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	bool ortho = false;		/* true if annotations are orthogonal to axes */
 	bool flip = false;		/* true if annotations are inside axes */
 	bool MM_set = false;		/* true after we define the MM PS macro for label offsets */
+	bool save_pi = GMT->current.plot.substitute_pi;
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
 	double x, t_use, text_angle;		/* Misc. variables */
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
@@ -4304,6 +4304,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		return;
 	}
 
+	GMT->current.plot.substitute_pi = A->substitute_pi;
 	np = gmtlib_coordinate_array (GMT, val0, val1, &A->item[primary], &knots_p, NULL);	/* Get all the primary tick annotation knots */
 
 	/* Axis items are in order: GMT_ANNOT_UPPER, GMT_ANNOT_LOWER, GMT_TICK_UPPER, GMT_TICK_LOWER, GMT_GRID_UPPER, GMT_GRID_LOWER */
@@ -4426,6 +4427,8 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	else
 		PSL_comment (PSL, below ? "End of front z-axis\n" : "End of back z-axis\n");
 	PSL_setorigin (PSL, -x0, -y0, 0.0, PSL_INV);
+
+	GMT->current.plot.substitute_pi = save_pi;
 }
 
 void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pen, uint64_t n, unsigned int mode) {
