@@ -19,24 +19,31 @@ env:
         - COASTLINEDIR="$HOME/gmt-install-dir/coast"
         - PATH="$INSTALLDIR/bin:$PATH"
         - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
-        - PYTHON=3.6
-        - CONDA_REQUIREMENTS="ci/requirements.txt"
+        - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
+            export PYTHON=3.6
+            export CONDA_REQUIREMENTS="ci/requirements.txt"
+            export BUILD_DOCS=true
+          fi
 
 before_install:
     # Install GMT dependencies
     - bash ci/travis-setup.sh
-    # Install GMT documentation dependencies
-    # Get the Fatiando CI scripts
-    - git clone https://github.com/fatiando/continuous-integration.git
-    # Download and install miniconda and setup dependencies
-    # Need to source the script to set the PATH variable globaly
-    - source continuous-integration/travis/setup-miniconda.sh
+    - if [ "$BUILD_DOCS" == "true" ]; then
+        # Install GMT documentation dependencies
+        # Get the Fatiando CI scripts
+        git clone https://github.com/fatiando/continuous-integration.git
+        # Download and install miniconda and setup dependencies
+        # Need to source the script to set the PATH variable globaly
+        source continuous-integration/travis/setup-miniconda.sh
+      fi
 
 install:
     # Build and install GMT
     - bash ci/travis-build.sh;
-    # Build GMT documentations
-    - bash ci/travis-build-docs.sh;
+    - if [ "$BUILD_DOCS" == "true" ]; then
+        # Build GMT documentations
+        bash ci/travis-build-docs.sh;
+      fi
 
 script:
     - gmt defaults -Vd
