@@ -90,10 +90,14 @@ Examples
 
 To extract the lon,lat values from the KML file google.kml, try
 
+   ::
+
     gmt kml2gmt google.kml -V > google.txt
 
 
 To separate the point and polygon geometries from the KML file google.kml, try
+
+   ::
 
     gmt kml2gmt google.kml -Fp -V > polygons.txt
 
