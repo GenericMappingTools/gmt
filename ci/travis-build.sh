@@ -4,7 +4,7 @@
 # To return a failure if any commands inside fail
 set -e
 
-cat << EOF >> cmake/ConfigUser.cmake
+cat >> cmake/ConfigUser.cmake << 'EOF'
 set (CMAKE_INSTALL_PREFIX "$ENV{INSTALLDIR}")
 set (GMT_LIBDIR "$ENV{INSTALLDIR}/lib")
 set (DCW_ROOT "$ENV{COASTLINEDIR}")
