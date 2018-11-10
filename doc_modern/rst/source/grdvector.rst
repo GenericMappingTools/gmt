@@ -126,7 +126,8 @@ Optional Arguments
     which are projected to plot dimensions.  These are geo-vectors that follow
     great circle paths and their lengths are affected by the map projection and their
     coordinates.  Finally, use **-Si** if it is simpler to give the reciprocal scale in
-    measurement unit per data unit or km per data unit.
+    measurement unit per data unit or km per data unit.  To report the minimum, maximum,
+    and mean scaled vector length, use **-Vl**.
 
 .. _-T:
 

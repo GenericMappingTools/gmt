@@ -142,6 +142,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   These are geovectors and their plot lengths depend on the projection.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale>[unit] to give the reciprocal scale, i.e., in %s/unit or km/unit\n",
 	             API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Vl to see the min, max, and mean vector length.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Transform angles for Cartesian grids when x- and y-scales differ [Leave alone].\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes.", 0);
@@ -547,6 +548,56 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			gmt_M_rgb_copy (Ctrl->G.fill.rgb, GMT->session.no_rgb);
 	}
 
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Report min/max/mean scaled vector length */
+		double v_min = DBL_MAX, v_max = -DBL_MAX, v_mean = 0.0;
+		uint64_t v_n = 0;
+		char v_unit[GMT_LEN8] = {""};
+		
+		for (row = row_0; row < Grid[1]->header->n_rows; row += d_row) {
+			y = gmt_M_grd_row_to_y (GMT, row, Grid[0]->header);	/* Latitude OR y OR radius */
+			for (col = col_0; col < Grid[1]->header->n_columns; col += d_col) {
+
+				ij = gmt_M_ijp (Grid[0]->header, row, col);
+				if (gmt_M_is_fnan (Grid[0]->data[ij]) || gmt_M_is_fnan (Grid[1]->data[ij])) continue;	/* Cannot plot NaN-vectors */
+				x = gmt_M_grd_col_to_x (GMT, col, Grid[0]->header);	/* Longitude OR x OR theta [or azimuth] */
+				if (!Ctrl->N.active) {	/* Throw out vectors whose node is outside */
+					gmt_map_outside (GMT, x, y);
+					if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
+				}
+
+				if (Ctrl->A.active) {	/* Got r,theta grids */
+					vec_length = Grid[0]->data[ij];
+					if (vec_length == 0.0) continue;	/* No length = no plotting */
+					if (vec_length < 0.0)	/* Interpret negative lengths to mean pointing in opposite direction 180-degrees off */
+						vec_length = -vec_length;
+				}
+				else {	/* Cartesian component grids: Convert to polar form of radius, theta */
+					vec_length = hypot (Grid[GMT_X]->data[ij], Grid[GMT_Y]->data[ij]);
+					if (vec_length == 0.0) continue;	/* No length = no plotting */
+				}
+				scaled_vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_length * Ctrl->S.factor;
+				/* scaled_vec_length is now in inches (Cartesian) or km (Geographic) */
+				if (scaled_vec_length < v_min) v_min = scaled_vec_length;
+				if (scaled_vec_length > v_max) v_max = scaled_vec_length;
+				v_mean += scaled_vec_length;
+				v_n++;
+			}
+		}
+		if (v_n) v_mean /= v_n;
+		if (Geographic)
+			sprintf (v_unit, "km");
+		else {	/* Report length in selected unit and scale results to match */
+			strcpy (v_unit, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+			v_min *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+			v_max *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+			v_mean *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+		}
+						
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Minimum length of scaled vector in %s  : %g\n", v_unit, v_min);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Maximum length of scaled vector in %s  : %g\n", v_unit, v_max);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mean length of the scaled vector in %s : %g\n", v_unit, v_mean);
+	}
+	
 	PSL_command (GMT->PSL, "V\n");
 	for (row = row_0; row < Grid[1]->header->n_rows; row += d_row) {
 		y = gmt_M_grd_row_to_y (GMT, row, Grid[0]->header);	/* Latitude OR y OR radius */
