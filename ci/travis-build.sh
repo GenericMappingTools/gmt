@@ -9,6 +9,10 @@ set (CMAKE_INSTALL_PREFIX "$ENV{INSTALLDIR}")
 set (GMT_LIBDIR "$ENV{INSTALLDIR}/lib")
 set (DCW_ROOT "$ENV{COASTLINEDIR}")
 set (GSHHG_ROOT "$ENV{COASTLINEDIR}")
+enable_testing()
+set (DO_EXAMPLES TRUE)
+set (DO_TESTS TRUE)
+set (DO_ANIMATIONS TRUE)
 EOF
 
 cat cmake/ConfigUser.cmake
