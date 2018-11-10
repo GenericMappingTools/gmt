@@ -43,7 +43,7 @@ script:
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
     # Build GMT documentations
     - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
-        cd build; make -j docs_html
+        cd build; make -j docs_html;
       fi
 
 notifications:
