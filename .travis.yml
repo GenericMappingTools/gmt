@@ -19,7 +19,6 @@ env:
         - COASTLINEDIR="$HOME/gmt-install-dir/coast"
         - PATH="$INSTALLDIR/bin:$PATH"
         - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
-        - TRAVIS_EVENT_TYPE=cron
         - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
             export PYTHON=3.6
             export CONDA_INSTALL_EXTRA="sphinx"
