@@ -22,34 +22,29 @@ env:
         - TRAVIS_EVENT_TYPE=cron
         - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
             export PYTHON=3.6
-            export CONDA_REQUIREMENTS="ci/requirements.txt"
-            export BUILD_DOCS=true
+            export CONDA_INSTALL_EXTRA="sphinx"
           fi
 
 before_install:
     # Install GMT dependencies
     - bash ci/travis-setup.sh
-    - if [ "$BUILD_DOCS" == "true" ]; then
-        # Install GMT documentation dependencies
-        # Get the Fatiando CI scripts
+    # Install GMT documentation dependencies
+    - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
         git clone https://github.com/fatiando/continuous-integration.git
-        # Download and install miniconda and setup dependencies
-        # Need to source the script to set the PATH variable globaly
         source continuous-integration/travis/setup-miniconda.sh
       fi
 
 install:
     # Build and install GMT
     - bash ci/travis-build.sh;
-    - if [ "$BUILD_DOCS" == "true" ]; then
-        # Build GMT documentations
-        bash ci/travis-build-docs.sh;
-      fi
 
 script:
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-
+    # Build GMT documentations
+    - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
+        cd build; make -j docs_html
+      fi
 
 notifications:
     email: false
