@@ -19,10 +19,19 @@ env:
         - COASTLINEDIR="$HOME/gmt-install-dir/coast"
         - PATH="$INSTALLDIR/bin:$PATH"
         - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
+        - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
+            export PYTHON=3.6
+            export CONDA_INSTALL_EXTRA="sphinx"
+          fi
 
 before_install:
     # Install GMT dependencies
     - bash ci/travis-setup.sh
+    # Install GMT documentation dependencies
+    - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
+        git clone https://github.com/fatiando/continuous-integration.git;
+        source continuous-integration/travis/setup-miniconda.sh;
+      fi
 
 install:
     # Build and install GMT
@@ -31,7 +40,10 @@ install:
 script:
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-
+    # Build GMT documentations
+    - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
+        cd build; make -j docs_html;
+      fi
 
 notifications:
     email: false
