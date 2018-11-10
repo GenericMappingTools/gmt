@@ -30,8 +30,8 @@ before_install:
     - bash ci/travis-setup.sh
     # Install GMT documentation dependencies
     - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
-        git clone https://github.com/fatiando/continuous-integration.git
-        source continuous-integration/travis/setup-miniconda.sh
+        git clone https://github.com/fatiando/continuous-integration.git;
+        source continuous-integration/travis/setup-miniconda.sh;
       fi
 
 install:
