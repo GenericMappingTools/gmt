@@ -24,7 +24,6 @@ mkdir build && cd build
 cmake ..
 
 make -j
-make check
 make install
 
 # Turn off exit on failure.
