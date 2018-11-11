@@ -120,12 +120,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t  r Rotate grid 90 degrees right (clockwise).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  t Transpose grid [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  v Flip grid top-to-bottom (as grdmath FLIPUD).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Transpose the entire grid (this will exchange x and y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify new output grid file [Default updates given grid file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Shift the grid\'s longitude range (geographic grids only):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -L- Adjust <west>/<east> so <east> <= 0\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -L+ Adjust <west>/<east> so <west> >= 0\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default adjusts <west>/<east> <west> >= -180 or <east> <= +180\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default adjusts <west>/<east> so <west> >= -180 or <east> <= +180\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N <table> has new xyz values to replace existing grid nodes.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S For global grids of 360 degree longitude range.\n");
