@@ -6722,7 +6722,7 @@ void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 	gmt_message (GMT, "\t     c: %s continuous line segments for each group [Default].\n", verb[mode]);
 	gmt_message (GMT, "\t     r: %s line segments from a reference point reset for each group.\n", verb[mode]);
 	gmt_message (GMT, "\t     n: %s networks of line segments between all points in each group.\n", verb[mode]);
-	if (mode == 0) gmt_message (GMT, "\t     v: Form vector line segments suitable for psxy -Sv+s\n");
+	if (mode == 0) gmt_message (GMT, "\t     v: Form vector line segments suitable for psxy -Sv|=<size>+s\n");
 	gmt_message (GMT, "\t     Optionally, append one of five ways to define a \"group\":\n");
 	gmt_message (GMT, "\t       a: All data is consider a single group; reference point is first point in the group.\n");
 	gmt_message (GMT, "\t       f: Each file is a separate group; reference point is reset to first point in the group.\n");
@@ -7674,7 +7674,7 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int mode, struct GMT_SEGMENTIZE *S) {
 	/* Parse segmentizing options in gmt convert (mode == 0) or psxy (mode == 1).
 	 * Syntax is given below (assuming option = -F here):
-	 * -F[c|n|r|v][a|f|s|p] or -Fr<origin>
+	 * -F[c|n|r|v][a|f|s|R] or -Fr<origin>
 	 * where c = continuous [Defuult], n = network, r = reference point, and v = vectors.
 	 * a = all files, f = per file, s = per segment [Default], r = per record.
 	 * Four different segmentizing schemes:
