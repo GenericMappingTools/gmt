@@ -12526,9 +12526,14 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 			case 'n':	/* Vector shrinking head */
 				len = strlen (p);
 				j = (symbol == 'v' || symbol == 'V') ? gmtinit_get_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
-				if (j >= GMT_CM) { S->u = j; S->u_set = true; }	/* Save the unit if given */
-				S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next line) */
-				if (symbol == '=') S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Since norm distance is in km and we compute spherical degrees later */
+				S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next lines) */
+				if (symbol == '=')	/* Since norm distance is in km we convert to spherical degrees */
+					S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;
+				else if (j >= GMT_CM)	/* Convert length from given unit to inches */
+					S->v.v_norm *= GMT->session.u2u[j][GMT_INCH];
+				else	/* Convert length from default unit to inches */
+					S->v.v_norm *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+				/* Here, v_norm is either in inches (if Cartesian vector) or spherical degrees (if geovector) */
 				break;
 			case 'o':	/* Sets oblique pole for small or great circles */
 				S->v.status |= PSL_VEC_POLE;
@@ -13239,9 +13244,13 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				len = (int)strlen(text) - 1;
 				if (text[j] == 'n') {	/* Normalize option used */
 					k = gmtinit_get_unit (GMT, text[len]);
-					if (k >= 0) { p->u = k; p->u_set = true; }
 					p->v.v_norm = (float)atof (&text[j+1]);
+					if (k >= GMT_CM)	/* Convert length from given units to inch */
+						p->v.v_norm *= GMT->session.u2u[k][GMT_INCH];
+					else	/* Convert from default units to inch */
+						p->v.v_norm *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 					text[j] = 0;	/* Chop off the shrink part */
+					/* Here, p->v.v_norm will be in inches */
 				}
 				if (text[one]) {
 					char txt_c[GMT_LEN256] = {""};
