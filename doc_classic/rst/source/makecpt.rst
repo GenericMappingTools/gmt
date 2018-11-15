@@ -21,7 +21,7 @@ Synopsis
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-I|\ [**c**][**z**] ] [ |-M| ]
 [ |-N| ] [ |-Q| ]
-[ |-S|\ [*mode*] ]
+[ |-S|\ *mode* ]
 [ |-T|\ [*min*/*max*/*inc*\ [**+n**\ ]\|\ *file*\ \|\ *list*\ ] ]
 [ |-V|\ [*level*\ ] ]
 [ |-W|\ [**w**] ]
@@ -162,10 +162,10 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [*mode*]
+**-S**\ *mode*
     Determine a suitable range for the **-T** option from the input table(s) (or stdin).
     Choose from several types of range determinations: 
-    **-S** will use the data min/max, **-S**\ *inc*\ [**+d**\ ] will use the data min/max but rounded
+    **-Sr** will use the data range min/max, **-S**\ *inc*\ [**+d**\ ] will use the data min/max but rounded
     to nearest *inc* (append **+d** to resample to a discrete CPT), **-Sa**\ *scl* will
     make a symmetric range around the average (i.e., mean)
     and ±\ *scl* * *sigma*, **-Sm**\ *scl* will make a symmetric range around the median
