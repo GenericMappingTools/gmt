@@ -386,6 +386,44 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the makecpt main code ----------------------------*/
 
+	if (Ctrl->C.active) {
+		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
+	}
+	else {	/* No table specified; set default rainbow table */
+		Ctrl->C.active = true;
+		Ctrl->C.file = strdup (GMT_DEFAULT_CPT);
+	}
+
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Prepare CPT via the master file %s\n", Ctrl->C.file);
+
+	/* OK, we can now do the resampling */
+
+	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN is determined by parameters */
+	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
+	if (Ctrl->Z.active) cpt_flags |= GMT_CPT_CONTINUOUS;	/* Controls if final CPT should be continuous in case input is a list of colors */
+
+	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
+		Return (API->error);
+	}
+	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
+		gmt_scale_cpt (GMT, Pin, -1.0);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);
+	if (Ctrl->G.active) {	/* Attempt truncation */
+		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
+		if (Ptrunc == NULL)
+			Return (API->error);
+		Pin = Ptrunc;
+	}
+
+	if (Pin->categorical) Ctrl->W.active = true;	/* Do not want to sample a categorical table */
+	if (Ctrl->E.active) {
+		if (Ctrl->E.levels == 0)
+			Ctrl->E.levels = Pin->n_colors + 1;	/* Default number of levels */
+		else
+			Ctrl->T.interpolate = true;
+	}
+	if (Ctrl->W.wrap) Pin->is_wrapping = true;	/* A cyclic CPT has been requested */
+
 	if (Ctrl->S.active || Ctrl->E.active) {	/* Must read a data set and do statistics first, and then set -T values accordingly */
 		unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0;
 		uint64_t n = 0, zcol, tbl, seg;
@@ -463,39 +501,6 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input data and -S implies -T%g/%g\n", Ctrl->T.T.min, Ctrl->T.T.max);
 	}
 		
-	if (Ctrl->C.active) {
-		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
-	}
-	else {	/* No table specified; set default rainbow table */
-		Ctrl->C.active = true;
-		Ctrl->C.file = strdup (GMT_DEFAULT_CPT);
-	}
-
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Prepare CPT via the master file %s\n", Ctrl->C.file);
-
-	/* OK, we can now do the resampling */
-
-	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN is determined by parameters */
-	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
-	if (Ctrl->Z.active) cpt_flags |= GMT_CPT_CONTINUOUS;	/* Controls if final CPT should be continuous in case input is a list of colors */
-
-	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
-		Return (API->error);
-	}
-	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
-		gmt_scale_cpt (GMT, Pin, -1.0);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);
-	if (Ctrl->G.active) {	/* Attempt truncation */
-		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
-		if (Ptrunc == NULL)
-			Return (API->error);
-		Pin = Ptrunc;
-	}
-
-	if (Pin->categorical) Ctrl->W.active = true;	/* Do not want to sample a categorical table */
-	if (Ctrl->E.active && Ctrl->E.levels == 0) Ctrl->E.levels = Pin->n_colors + 1;	/* Default number of levels */
-	if (Ctrl->W.wrap) Pin->is_wrapping = true;	/* A cyclic CPT has been requested */
-
 	/* Set up arrays */
 
 	if (Ctrl->T.active && gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) Return (GMT_RUNTIME_ERROR);
