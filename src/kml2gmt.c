@@ -28,7 +28,7 @@
 #define THIS_MODULE_NAME	"kml2gmt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract GMT table data from Google Earth KML files"
-#define THIS_MODULE_KEYS	">D}"
+#define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:Vbdh" GMT_OPT("HMm")
 
@@ -37,16 +37,16 @@
 #define POLYGON			2
 
 struct KML2GMT_CTRL {
-	struct In {	/* in file */
+	struct KML2GMT_In {	/* in file */
 		bool active;
 		char *file;
 	} In;
-	struct F {	/* -F */
+	struct KML2GMT_F {	/* -F */
 		bool active;
 		unsigned int mode;
 		unsigned int geometry;
 	} F;
-	struct Z {	/* -Z */
+	struct KML2GMT_Z {	/* -Z */
 		bool active;
 	} Z;
 };
@@ -144,7 +144,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one file can be processed at the time\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->In.active && access (Ctrl->In.file, R_OK), "Syntax error: Cannot read file %s\n", Ctrl->In.file);
+	n_errors += gmt_M_check_condition (GMT, !GMT->parent->external && Ctrl->In.active && access (Ctrl->In.file, R_OK),
+	                                   "Syntax error: Cannot read file %s\n", Ctrl->In.file);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -212,7 +213,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	 * P. Wessel, April 2013. */
 	
 	if (Ctrl->In.active) {
-		if ((fp = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
+		if (!GMT->parent->external && (fp = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
