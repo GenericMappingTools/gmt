@@ -35,7 +35,7 @@
     **-Sb**\ [*size*\ [**c**\ \|\ **i**\ \|\ **p**\ \|\ **u**]][**+b**\ [*base*]]
         Vertical **b**\ ar extending from *base* to y. The *size* is bar width.
         Append **u** if *size* is in x-units [Default is plot-distance units].
-        By default, *base* = ymin. Append **+b**\ [*base*\ ] to change this
+        By default, *base* = 0. Append **+b**\ [*base*\ ] to change this
         value. If *base* is not appended then we read it from the last input
         data column.  Use **+B**\ [*base*\ ] if the bar height is measured relative
         to *base* [Relative to origin].
@@ -43,7 +43,7 @@
     **-SB**\ [*size*\ [**c**\ \|\ **i**\ \|\ **p**\ \|\ **u**]][**+b**\ [*base*]]
         Horizontal **b**\ ar extending from *base* to x. The *size* is bar width.
         Append **u** if *size* is in y-units [Default is plot-distance units].
-        By default, *base* = xmin. Append **+b**\ [*base*\ ] to change this
+        By default, *base* = 0. Append **+b**\ [*base*\ ] to change this
         value. If *base* is not appended then we read it from the last input
         data column.  Use **+B**\ [*base*\ ] if the bar length is measured relative
         to *base* [Relative to origin].
