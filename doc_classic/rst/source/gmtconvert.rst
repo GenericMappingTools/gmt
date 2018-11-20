@@ -16,7 +16,7 @@ Synopsis
 **gmtconvert** [ *table* ] [ |-A| ] [ |-C|\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]]
 [ |-D|\ [*template*\ [**+o**\ *orig*]] ]
 [ |-E|\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **M**\ *stride*] ] [ |-L| ]
-[ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][**a**\ \|\ **f**\ \|\ |**s**\ \|\ |**r**\ \|\ *refpoint*] ]
+[ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][**a**\ \|\ **f**\ \|\ **s**\ \|\ **r**\ \|\ *refpoint*] ]
 [ |-I|\ [**tsr**] ]
 [ |-N|\ [**-** \|\ **+**\ ]\ *col* ]
 [ |-Q|\ [**~**]\ *selection*]
@@ -114,7 +114,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][**a**\ \|\ **f**\ \|\ |**s**\ \|\ |**r**\ \|\ *refpoint*]
+**-F**\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][**a**\ \|\ **f**\ \|\ **s**\ \|\ **r**\ \|\ *refpoint*]
     Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
     Append one of four line connection schemes:
     **c**\ : Form continuous line segments for each group [Default].
