@@ -309,11 +309,6 @@ projection names stands for Equal-Area and Conformal, respectively):
            Input coordinates are absolute time.
 
 	For mixed axes with only one geographic axis you may need to set **-f** as well.
-        Default axis lengths (see **gmt.conf**) can be invoked using
-        **-JXh** (for landscape); **-JXv** (for portrait) will swap the
-        x- and y-axis lengths. The default unit for this installation is
-        either cm or inch, as defined in the file **share/gmt.conf**.
-        However, you may change this by editing your **gmt.conf** file(s).
 
 When **-J** is used without any further arguments, or just with the
 projection type, the arguments of the last used **-J**, or the last used
