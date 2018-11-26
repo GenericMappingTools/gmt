@@ -627,8 +627,10 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		}
 		else if (has_vector) {	/* No attribute for range, use coordinates */
 			dummy[0] = xy[0], dummy[1] = xy[header->n_columns-1];
-			if (set_reg && fabs (fmod (dummy[0], dx)) > (0.4999 * dx))	/* Pixel registration */
+			if (set_reg && fabs (fmod (dummy[0], dx)) > (0.4999 * dx)) {	/* Most likely pixel registration since off by dx/2 */
 				registration = header->registration = GMT_GRID_PIXEL_REG;
+				dummy[0] -= 0.5 * dx;	dummy[1] += 0.5 * dx;
+			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No range attribute, guessing registration to be %s\n", regtype[header->registration]);
 		}
 		else {	/* Only has the valid_range settings.  If no registration set, and no dx available, guess based on nx */
@@ -691,8 +693,14 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		}
 		else if (has_vector) {	/* No attribute for range, use coordinates */
 			dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
-			if ((fabs (fmod (dummy[0], dy)) > (0.4999 * dy)) && header->registration == GMT_GRID_NODE_REG)	/* Pixel registration? */
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
+			if ((fabs (fmod (dummy[0], dy)) > (0.4999 * dy))) {	/* Most likely pixel registration since off by dy/2 */
+				if (header->registration == GMT_GRID_NODE_REG)	/* No, somehow messed up now */
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Guessing of registration in conflict between x and y, using %s\n", regtype[header->registration]);
+				else {	/* Pixel registration confirmed */
+					dummy[0] -= 0.5 * dy;	dummy[1] += 0.5 * dy;
+					registration = GMT_GRID_PIXEL_REG;
+				}
+			}
 		}
 		else {	/* Only has the valid_range settings.  If no registration set, and no dy available, guess based on ny */
 			if ((header->n_rows%2) == 1 && header->registration == GMT_GRID_NODE_REG)	/* Pixel registration? */
