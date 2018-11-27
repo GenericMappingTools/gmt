@@ -737,7 +737,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			if (prhs->B.bands[nc_ind] == ',') n_commas++;
 		for (n = 0; prhs->B.bands[n]; n++)
 			if (prhs->B.bands[n] == '-') n_dash = (int)n;
-		if ((n_commas + n_dashes) == 0)
+		if ((n_commas + n_dash) == 0)
 			nn = atoi(prhs->B.bands);
 		else {
 			/* This part of the algorithm only works well for three bands. When more, it's very wrong MUST FIX */
