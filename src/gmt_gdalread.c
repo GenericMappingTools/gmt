@@ -737,13 +737,14 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			if (prhs->B.bands[nc_ind] == ',') n_commas++;
 		for (n = 0; prhs->B.bands[n]; n++)
 			if (prhs->B.bands[n] == '-') n_dash = (int)n;
-		nn = MAX(n_commas+1, n_dash);
-		if (nn) {
+		if ((n_commas + n_dashes) == 0)
+			nn = atoi(prhs->B.bands);
+		else {
+			/* This part of the algorithm only works well for three bands. When more, it's very wrong MUST FIX */
+			nn = MAX(n_commas+1, n_dash);
 			nn = MAX(nn, (unsigned int)atoi(&prhs->B.bands[nc_ind-1])+1);	/* +1 because band numbering in GMT is zero based */
 			if (n_dash)	nn = MAX(nn, (unsigned int)atoi(&prhs->B.bands[nn+1])+1);
 		}
-		else		/* Hmm, this else case is never reached */
-			nn = atoi(prhs->B.bands);
 		whichBands = gmt_M_memory (GMT, NULL, nn, int);
 		nReqBands = gdal_decode_columns (GMT, prhs->B.bands, whichBands, (unsigned int)nn);
 	}
