@@ -130,6 +130,8 @@ Examples
 To interpolate the points in the file testdata.txt on a global 1x1
 degree grid with no tension, use
 
+  ::
+
     sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
 
 See Also
