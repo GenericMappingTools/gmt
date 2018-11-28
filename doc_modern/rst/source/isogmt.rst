@@ -29,6 +29,8 @@ Examples
 
 Run the shell script *script.gmt* in isolation mode
 
+  ::
+
     isogmt sh script.gmt
 
 `See Also <#toc4>`_
