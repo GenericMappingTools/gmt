@@ -604,6 +604,66 @@ static void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, si
 	return (tmp);
 }
 
+/* Things to do with UTF8 */
+
+/* Try to convert UTF-8 accented characters to PostScriptLight octal codes.
+ * This depends on which character set we have.  We will limit this to just
+ * Standard, Standard+, ISOILatin1, and ISOLatin1+. Of these, Standard will
+ * only work for some of the encoded letters while the three others should
+ * all be fine. */
+
+
+static unsigned int psl_ut8_code_to_ISOLatin (char code) {
+	/* This is called when the previous character in a string has octal 0303 */
+	unsigned int kode = (unsigned char)code;
+
+	return (kode >= 0200 && kode <= 0277) ? kode += 64 : 0;
+}
+
+void psl_fix_utf8 (struct PSL_CTRL *PSL, char *string) {
+	/* Given string check if UTF8 characters are present and if so replace with PSL octal codes.  Assumes ISOLatin1+ */
+	unsigned int k, k2 = 0, use, utf8_codes = 0;
+	char *out = NULL, tmp[8] = {""};
+
+	if (strncmp (PSL->init.encoding, "ISOLatin1", 9U)) return;	/* Do nothing unless ISOLatin`[+] */
+
+	for (k = 0; string[k]; k++) {
+		if ((unsigned char)(string[k]) == 0303)
+			utf8_codes++;	/* Count them up */
+	}
+	if (utf8_codes == 0) return;	/* Nothing to do */
+
+	out = PSL_memory (PSL, NULL, 2 * PSL_BUFSIZ, char);	/* Get a new string of double length */
+	
+	for (k = k2 = 0; string[k]; k++) {
+		if ((unsigned char)(string[k]) == 0303) {    /* Found octal 303 */
+			k++;	/* Skip that one */
+			if ((use = psl_ut8_code_to_ISOLatin (string[k]))) {       /* Found a 2-char utf8 combo, replace with single octal code from our table */
+				sprintf (tmp, "\\%o", use);
+				strcat (out, tmp);
+			}
+			else {      /* Not a recognized code - just output both as they were */
+				tmp[0] = string[k-1];
+				tmp[1] = string[k];
+				tmp[2] = '\0';
+				strcat (out, tmp);
+			}
+		}
+		else if ((unsigned char)(string[k]) == 0305 || (unsigned char)(string[k]) == 0270) {    /* Found Ydieresis */
+			k++;	/* Skip that one */
+			sprintf (tmp, "\\%o", 0211);
+			strcat (out, tmp);
+		}
+		else {     /* Just output char as is */
+			tmp[0] = string[k];
+			tmp[1] = '\0';
+			strcat (out, tmp);
+		}
+	}
+	strncpy (string, out, strlen (out));	/* Overwrite old string */
+	PSL_free (out);
+}
+
 /* This one is NOT static since needed in psimage, at least for now */
 
 unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input) {
@@ -1497,6 +1557,9 @@ static char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 			}
 		}
 	}
+	
+	psl_fix_utf8 (PSL, string);
+	
 	return (string);
 }
 

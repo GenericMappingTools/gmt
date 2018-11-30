@@ -32,7 +32,7 @@
 #define THIS_MODULE_NAME	"makecpt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make GMT color palette tables"
-#define THIS_MODULE_KEYS	">C},ED(,SD(,TD("
+#define THIS_MODULE_KEYS	">C},ED(,SD(,TD(,<D("
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->Vbdhi"
 
