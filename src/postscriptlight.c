@@ -625,10 +625,10 @@ void psl_fix_utf8 (struct PSL_CTRL *PSL, char *string) {
 	unsigned int k, k2 = 0, use, utf8_codes = 0;
 	char *out = NULL, tmp[8] = {""};
 
-	if (strncmp (PSL->init.encoding, "ISOLatin1", 9U)) return;	/* Do nothing unless ISOLatin`[+] */
+	if (strncmp (PSL->init.encoding, "ISOLatin1", 9U)) return;	/* Do nothing unless ISOLatin[+] */
 
 	for (k = 0; string[k]; k++) {
-		if ((unsigned char)(string[k]) == 0303)
+		if ((unsigned char)(string[k]) == 0303 || (unsigned char)(string[k]) == 0305)
 			utf8_codes++;	/* Count them up */
 	}
 	if (utf8_codes == 0) return;	/* Nothing to do */
@@ -637,30 +637,49 @@ void psl_fix_utf8 (struct PSL_CTRL *PSL, char *string) {
 	
 	for (k = k2 = 0; string[k]; k++) {
 		if ((unsigned char)(string[k]) == 0303) {    /* Found octal 303 */
-			k++;	/* Skip that one */
+			k++;	/* Skip the control code */
 			if ((use = psl_ut8_code_to_ISOLatin (string[k]))) {       /* Found a 2-char utf8 combo, replace with single octal code from our table */
 				sprintf (tmp, "\\%o", use);
 				strcat (out, tmp);
 			}
-			else {      /* Not a recognized code - just output both as they were */
+			else {      /* Not a recognized code - just output both as they were given */
 				tmp[0] = string[k-1];
 				tmp[1] = string[k];
 				tmp[2] = '\0';
 				strcat (out, tmp);
 			}
 		}
-		else if ((unsigned char)(string[k]) == 0305 || (unsigned char)(string[k]) == 0270) {    /* Found Ydieresis */
-			k++;	/* Skip that one */
-			sprintf (tmp, "\\%o", 0211);
-			strcat (out, tmp);
+		else if ((unsigned char)(string[k]) == 0305) {    /* Found Ydieresis, ae, AE, the S,Z,s,z carons */
+			k++;	/* Skip the control code */
+			switch ((unsigned char)string[k]) {	/* These 7 chars are placed all over the table so must have individual cases */
+				case 0222: use = 0200; break;	/* ae */
+				case 0223: use = 0210; break;	/* AE */
+				case 0240: use = 0206; break;	/* Scaron */
+				case 0241: use = 0177; break;	/* scaron */
+				case 0270: use = 0211; break;	/* Ydieresis */
+				case 0275: use = 0212; break;	/* Zcaron */
+				case 0276: use = 0037; break;	/* zcaron */
+				default:   use = 0;    break;	/* Not one of the recognized ones in our table */
+			}
+			if (use) {	/* Found a 2-char utf8 combo */
+				sprintf (tmp, "\\%o", use);
+				strcat (out, tmp);
+			}
+			else {      /* Not a recognized code - just output both as they were given */
+				tmp[0] = string[k-1];
+				tmp[1] = string[k];
+				tmp[2] = '\0';
+				strcat (out, tmp);
+			}
 		}
-		else {     /* Just output char as is */
+		else {     /* Just output char as was given */
 			tmp[0] = string[k];
 			tmp[1] = '\0';
 			strcat (out, tmp);
 		}
 	}
-	strncpy (string, out, strlen (out));	/* Overwrite old string */
+	memset (string, 0, strlen (string));	/* Set old string to NULL */
+	strncpy (string, out, strlen (out));	/* Overwrite old string with possibly adjusted string */
 	PSL_free (out);
 }
 
