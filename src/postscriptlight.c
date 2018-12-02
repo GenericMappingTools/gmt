@@ -649,9 +649,11 @@ void psl_fix_utf8 (struct PSL_CTRL *PSL, char *string) {
 				strcat (out, tmp);
 			}
 		}
-		else if ((unsigned char)(string[k]) == 0305) {    /* Found Ydieresis, ae, AE, the S,Z,s,z carons */
+		else if ((unsigned char)(string[k]) == 0305) {    /* Found Ydieresis, ae, AE, L&l-slash and the S,Z,s,z carons */
 			k++;	/* Skip the control code */
-			switch ((unsigned char)string[k]) {	/* These 7 chars are placed all over the table so must have individual cases */
+			switch ((unsigned char)string[k]) {	/* These 9 chars are placed all over the table so must have individual cases */
+				case 0201: use = 0203; break;	/* Lslash */
+				case 0202: use = 0213; break;	/* lslash */
 				case 0222: use = 0200; break;	/* ae */
 				case 0223: use = 0210; break;	/* AE */
 				case 0240: use = 0206; break;	/* Scaron */
