@@ -81,8 +81,8 @@
 #define GMT_CONTROLLER	0	/* func_level of controlling process (gmt.c or external API) */
 #define GMT_TOP_MODULE	1	/* func_level of top-level module being called */
 
-#define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode */
-#define GMT_PAPER_MARGIN	5	/* Default paper margin in inches under modern mode */
+#define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode, in points (~11.6 meters) */
+#define GMT_PAPER_MARGIN	40	/* Default paper margin under modern mode, in inches (~1 meter) */
 
 /*! whether to ignore/read/write history file gmt.history */
 enum GMT_enum_history {

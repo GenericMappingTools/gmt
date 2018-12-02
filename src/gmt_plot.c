@@ -6333,7 +6333,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Also changing to landscape orientation based on plot dimensions but again not sure.\n");
 			}
 		}
-		if (!wants_PS && !O_active) {	/* Not desiring PS output so we can add safety margin of 5 inch for initial layer */
+		if (!wants_PS && !O_active) {	/* Not desiring PS output so we can add safety margin of GMT_PAPER_MARGIN inches for initial layer */
 			if (!(GMT->common.X.active || GMT->common.Y.active))
 				GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = GMT_PAPER_MARGIN;
 		}
