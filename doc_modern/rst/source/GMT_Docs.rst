@@ -3090,6 +3090,10 @@ you must use the full octal code):
 | @s       | ß          | @i       | í          |
 +----------+------------+----------+------------+
 
+However, if your input text contains UTF-8 code characters (e.g., ü, Î)
+and you select the ISOLatin1+ character encoding then GMT will substitute
+the correct PostScript octal codes for you automatically.
+
 PostScript fonts used in GMT may be re-encoded to include several
 accented characters used in many European languages. To access these,
 you must specify the full octal code \\xxx allowed for
