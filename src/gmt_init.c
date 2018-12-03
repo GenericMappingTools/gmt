@@ -4737,7 +4737,10 @@ GMT_LOCAL int gmtinit_scanf_epoch (struct GMT_CTRL *GMT, char *s, int64_t *rata_
 
 /*! Scan a PostScript encoding string and look for degree, ring and other special encodings.
  * Use Brute Force and Ignorance.
+ * Scanning to find the codes for 7 symbols we plot but whose code depends on character set
+ * (ring, degree, colon, squote, dquote, minus, hyphen).
  */
+
 GMT_LOCAL int gmtinit_load_encoding (struct GMT_CTRL *GMT) {
 	char symbol[GMT_LEN256] = {""};
 	unsigned int code = 0, pos = 0;
@@ -4764,6 +4767,10 @@ GMT_LOCAL int gmtinit_load_encoding (struct GMT_CTRL *GMT) {
 			enc->code[gmt_squote] = code;
 		else if (strcmp (symbol, "colon") == 0)
 			enc->code[gmt_colon] = code;
+		else if (strcmp (symbol, "minus") == 0)
+			enc->code[gmt_minus] = code;
+		else if (strcmp (symbol, "hyphen") == 0)
+			enc->code[gmt_hyphen] = code;
 		code++;
 	}
 
