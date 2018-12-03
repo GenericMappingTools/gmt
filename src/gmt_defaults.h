@@ -53,7 +53,7 @@ struct DATUM {
 
 struct GMT_ENCODING {
 	char name[GMT_LEN64];
-	int code[5]; /* Codes for symbols we print. */
+	int code[8]; /* Codes for 7 symbols we plot but whose code depends on character set (ring, degree, colon, squote, dquote, minus, hyphen). */
 };
 
 /*! Holds all variables directly controlled by GMT Default parameters */
@@ -148,7 +148,7 @@ struct GMT_DEFAULTS {
 	struct GMT_PEN map_tick_pen[2];		/* Pen attributes for primary and secondary tickmarks [thinner,black] */
 	char map_frame_axes[6];			/* Which axes to draw and annotate ["WESNZ"]  */
 	char map_annot_ortho[6];		/* Which axes have orthogonal annotations in linear projections ["we"] */
-	enum GMT_enum_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_lastsym } map_degree_symbol;
+	enum GMT_enum_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_minus, gmt_hyphen, gmt_lastsym } map_degree_symbol;
 	/* PROJ group */
 	double proj_scale_factor;		/* Central mapscale factor, typically 0.9996-1 (or -1 for default action) */
 	unsigned int proj_ellipsoid;		/* Which ellipsoid to use [0 = GRS 80] */
