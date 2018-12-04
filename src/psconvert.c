@@ -32,6 +32,8 @@
  */
 
 #include "gmt_dev.h"
+#include "gmt_gsformats.h"
+
 #define THIS_MODULE_NAME	"psconvert"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert [E]PS file(s) to other formats using GhostScript"
@@ -701,8 +703,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				break;
 			case 'F':	/* Set explicitly the output file name */
 				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_DATASET)) != 0) {
+					char *ext = NULL;
 					Ctrl->F.file = strdup (opt->arg);
-					if (!gmt_M_file_is_memory (Ctrl->F.file)) gmt_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
+					if (!gmt_M_file_is_memory (Ctrl->F.file) && (ext = strchr (Ctrl->F.file, '.'))) {	/* Make sure file name has no graphics file format extension */
+						unsigned int kk = 0;
+						ext++;	/* Skip the period */
+						while (gmt_session_format[kk] && strcmp (ext, gmt_session_format[kk]))
+							kk++;	/* Not matching that format, go to next */
+						if (gmt_session_format[kk])	/* Did match one of the extensions, remove it */
+							gmt_chop_ext (Ctrl->F.file);
+					}
 				}
 				else
 					n_errors++;
