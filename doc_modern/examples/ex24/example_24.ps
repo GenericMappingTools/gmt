@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v6.0.0_r18992M [64-bit] Document from pscoast
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from pscoast
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Oct  3 14:21:14 2017
+%%CreationDate: Thu Dec  6 10:51:31 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -658,14 +663,18 @@ V 612 0 T 90 R 0.06 0.06 scale
 /PSL_page_xsize 13200 def
 /PSL_page_ysize 10200 def
 /PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: pscoast -R100/200/-60/0 -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10 -BWeSn
-%@PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -R100/200/-60/0 -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10 -BWeSn
+%@PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 72 72 648 486.8
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -1733,7 +1742,8 @@ FO
 -2 -10 D
 -7 -2 D
 -9 12 D
--9 0 D
+-8 0 D
+-1 0 D
 10 -14 D
 12 0 D
 -6 -38 D
@@ -12515,16 +12525,16 @@ N 0 8197 M 0 -8280 D S
 N -83 8197 M 0 -8280 D S
 0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(100 ) tc Z
-2160 -167 M (120 ) tc Z
-4320 -167 M (140 ) tc Z
-6480 -167 M (160 ) tc Z
-8640 -167 M (180 ) tc Z
-10800 -167 M (-160 ) tc Z
--167 0 M (-60 ) mr Z
--167 3419 M (-40 ) mr Z
--167 5922 M (-20 ) mr Z
--167 8113 M (0 ) mr Z
+(100è) tc Z
+2160 -167 M (120è) tc Z
+4320 -167 M (140è) tc Z
+6480 -167 M (160è) tc Z
+8640 -167 M (180è) tc Z
+10800 -167 M (î160è) tc Z
+-167 0 M (î60è) mr Z
+-167 3419 M (î40è) mr Z
+-167 5922 M (î20è) mr Z
+-167 8113 M (0è) mr Z
 %%EndObject
 0 A
 FQ
@@ -12532,8 +12542,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R100/200/-60/0 -JM9i -O -K @oz_quakes_24.txt -Sc0.05i -Gred
-%@PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R100/200/-60/0 -JM9i -O -K @oz_quakes_24.txt -Sc0.05i -Gred
+%@PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -24780,8 +24790,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R100/200/-60/0 -JM9i -O -K -Sc0.05i -Ggreen
-%@PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R100/200/-60/0 -JM9i -O -K -Sc0.05i -Ggreen
+%@PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -25080,8 +25090,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy point.txt -R100/200/-60/0 -JM9i -O -K -SE- -Wfat,white
-%@PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy point.txt -R100/200/-60/0 -JM9i -O -K -SE- -Wfat,white
+%@PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -25180,36 +25190,264 @@ O1
 -137 13 D
 -137 8 D
 -113 3 D
--73 1 D
--154 -4 D
--137 -9 D
--112 -11 D
--169 -22 D
--143 -25 D
--151 -33 D
--95 -23 D
--31 -9 D
--63 -17 D
--116 -36 D
--108 -37 D
--100 -37 D
--99 -40 D
--82 -35 D
--83 -38 D
--125 -62 D
--102 -55 D
--72 -40 D
--121 -73 D
--98 -64 D
--76 -52 D
--122 -89 D
--60 -47 D
+-9 0 D
+-8 0 D
+-56 1 D
+-8 -1 D
+-8 0 D
+-8 0 D
+-8 0 D
+-9 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 -1 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 -1 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 -1 D
+-9 0 D
+-8 0 D
+-8 -1 D
+-8 0 D
+-8 -1 D
+-8 0 D
+-8 0 D
+-8 -1 D
+-8 0 D
+-8 -1 D
+-8 0 D
+-8 -1 D
+-8 0 D
+-8 -1 D
+-8 -1 D
+-9 0 D
+-8 -1 D
+-8 0 D
+-8 -1 D
+-8 -1 D
+-8 0 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 0 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 0 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-9 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -2 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -2 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -2 D
+-8 -1 D
+-8 -1 D
+-8 -2 D
+-8 -1 D
+-8 -2 D
+-8 -1 D
+-8 -2 D
+-8 -1 D
+-8 -1 D
+-8 -2 D
+-8 -1 D
+-7 -2 D
+-8 -1 D
+-8 -2 D
+-8 -2 D
+-8 -1 D
+-8 -2 D
+-8 -1 D
+-8 -2 D
+-8 -2 D
+-8 -1 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-8 -1 D
+-8 -2 D
+-8 -2 D
+-7 -2 D
+-8 -1 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-8 -1 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-7 -3 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-7 -2 D
+-8 -3 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-7 -3 D
+-8 -2 D
+-8 -2 D
+-8 -3 D
+-8 -2 D
+-7 -2 D
+-8 -3 D
+-8 -2 D
+-8 -2 D
+-8 -3 D
+-7 -2 D
+-8 -3 D
+-8 -2 D
+-8 -3 D
+-7 -2 D
+-8 -3 D
+-8 -2 D
+-8 -3 D
+-7 -2 D
+-8 -3 D
+-8 -3 D
+-7 -2 D
+-8 -3 D
+-8 -2 D
+-8 -3 D
+-7 -3 D
+-8 -2 D
+-8 -3 D
+-7 -3 D
+-8 -3 D
+-8 -2 D
+-7 -3 D
+-8 -3 D
+-8 -3 D
+-7 -3 D
+-8 -2 D
+-8 -3 D
+-7 -3 D
+-8 -3 D
+-8 -3 D
+-7 -3 D
+-8 -3 D
+-8 -3 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
+-8 -3 D
+-8 -3 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
+-8 -3 D
+-8 -3 D
+-15 -7 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
+-8 -3 D
+-15 -7 D
+-7 -3 D
+-8 -3 D
+-15 -7 D
+-15 -7 D
+-7 -3 D
+-8 -3 D
+-15 -7 D
+-15 -7 D
+-15 -7 D
+-15 -7 D
+-14 -7 D
+-8 -4 D
+-15 -7 D
+-14 -7 D
+-8 -4 D
+-15 -7 D
+-14 -7 D
+-15 -8 D
+-15 -7 D
+-14 -8 D
+-8 -4 D
+-14 -7 D
+-15 -8 D
+-14 -8 D
+-15 -8 D
+-14 -8 D
+-15 -8 D
+-14 -8 D
+-15 -8 D
+-14 -8 D
+-15 -8 D
+-14 -8 D
+-14 -9 D
+-15 -8 D
+-14 -9 D
+-14 -8 D
+-14 -9 D
+-14 -8 D
+-15 -9 D
+-14 -9 D
+-14 -9 D
+-14 -9 D
+-14 -9 D
+-14 -9 D
+-14 -9 D
+-21 -14 D
+-21 -14 D
+-20 -14 D
+-21 -14 D
+-21 -14 D
 -20 -15 D
--19 -16 D
--40 -32 D
--84 -72 D
--89 -80 D
--12 -12 D
+-21 -14 D
+-27 -20 D
+-27 -20 D
+-27 -20 D
+-27 -20 D
+-27 -21 D
+-26 -21 D
+-33 -26 D
+-39 -33 D
+-39 -33 D
+-39 -33 D
+-64 -57 D
+-37 -35 D
 -13 -11 D
 -105 -102 D
 -120 -126 D
@@ -25266,8 +25504,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext point.txt -R100/200/-60/0 -JM9i -F+f14p,Helvetica-Bold,white+jLT+tHobart -O -K -D0.1i/-0.1i
-%@PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext point.txt -R100/200/-60/0 -JM9i -F+f14p,Helvetica-Bold,white+jLT+tHobart -O -K -D0.1i/-0.1i
+%@PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -25291,8 +25529,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R100/200/-60/0 -JM9i -O -K point.txt -Wfat,white -S+0.2i
-%@PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R100/200/-60/0 -JM9i -O -K point.txt -Wfat,white -S+0.2i
+%@PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -25318,8 +25556,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R100/200/-60/0 -JM9i -O dateline.txt -Wfat,white -A
-%@PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R100/200/-60/0 -JM9i -O dateline.txt -Wfat,white -A
+%@PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -25330,6 +25568,10 @@ O0
 0 -8113 D
 S
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage
