@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v6.0.0_r19167M [64-bit] Document from psxyz
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxyz
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Oct 23 18:10:40 2017
+%%CreationDate: Thu Dec  6 10:50:23 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -658,14 +663,18 @@ V 0.06 0.06 scale
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
 /PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: psxyz -B1 '-Bz1000+lTopography (m)' -BWSneZ+b+tETOPO5 -R-0.1/5.1/-0.1/5.1/-5000/0 -JM5i -JZ6i -p200/30 -So0.0833333ub-5000 -P -Wthinnest -Ct.cpt -K -i0-2,2
-%@PROJ: merc -0.10000000 5.10000000 -0.10000000 5.10000000 -289430.676 289430.676 -11057.433 564684.941 +proj=merc +lon_0=2.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxyz -B1 '-Bz1000+lTopography (m)' -BWSneZ+b+tETOPO5 -R-0.1/5.1/-0.1/5.1/-5000/0 -JM5i -JZ6i -p200/30 -So0.0833333ub-5000 -P -Wthinnest -Ct.cpt -K -i0-2,2
+%@PROJ: merc -0.10000000 5.10000000 -0.10000000 5.10000000 -289430.676 289430.676 -11057.433 564684.941 +proj=merc +lon_0=2.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 72 72 360 358.06
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -761,18 +770,18 @@ N 6083 6051 M -6166 0 D S
 N 0 6051 M 0 -6134 D S
 N -83 6051 M 0 -6134 D S
 115 -167 M 200 F0
-(0 ) tc Z
-1269 -167 M (1 ) tc Z
-2423 -167 M (2 ) tc Z
-3577 -167 M (3 ) tc Z
-4731 -167 M (4 ) tc Z
-5885 -167 M (5 ) tc Z
--167 115 M (0 ) mr Z
--167 1261 M (1 ) mr Z
--167 2407 M (2 ) mr Z
--167 3555 M (3 ) mr Z
--167 4703 M (4 ) mr Z
--167 5853 M (5 ) mr Z
+(0è) tc Z
+1269 -167 M (1è) tc Z
+2423 -167 M (2è) tc Z
+3577 -167 M (3è) tc Z
+4731 -167 M (4è) tc Z
+5885 -167 M (5è) tc Z
+-167 115 M (0è) mr Z
+-167 1261 M (1è) mr Z
+-167 2407 M (2è) mr Z
+-167 3555 M (3è) mr Z
+-167 4703 M (4è) mr Z
+-167 5853 M (5è) mr Z
 4 W
 V
 {0.96 0.988 0.972 C} FS
@@ -38008,21 +38017,21 @@ N 0 5760 M -83 0 D S
 N 0 7200 M -83 0 D S
 /PSL_AH0 0
 /MM {neg exch M} def
-(-4000) sh mx
-(-3000) sh mx
-(-2000) sh mx
-(-1000) sh mx
+(î4000) sh mx
+(î3000) sh mx
+(î2000) sh mx
+(î1000) sh mx
 (0) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add def
 1440 PSL_A0_y MM
-V 90 R (-4000) bc Z U
+V 90 R (î4000) bc Z U
 2880 PSL_A0_y MM
-V 90 R (-3000) bc Z U
+V 90 R (î3000) bc Z U
 4320 PSL_A0_y MM
-V 90 R (-2000) bc Z U
+V 90 R (î2000) bc Z U
 5760 PSL_A0_y MM
-V 90 R (-1000) bc Z U
+V 90 R (î1000) bc Z U
 7200 PSL_A0_y MM
 V 90 R (0) bc Z U
 /PSL_A0_y PSL_A0_y PSL_AH0 add def
@@ -38040,8 +38049,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R-0.1/5.1/-0.1/5.1/-5000/0 -JM5i -JZ6i -Z0 -F+f24p,Helvetica-Bold+jTL -p200/30 -O
-%@PROJ: merc -0.10000000 5.10000000 -0.10000000 5.10000000 -289430.676 289430.676 -11057.433 564684.941 +proj=merc +lon_0=2.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -R-0.1/5.1/-0.1/5.1/-5000/0 -JM5i -JZ6i -Z0 -F+f24p,Helvetica-Bold+jTL -p200/30 -O
+%@PROJ: merc -0.10000000 5.10000000 -0.10000000 5.10000000 -289430.676 289430.676 -11057.433 564684.941 +proj=merc +lon_0=2.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -38060,6 +38069,10 @@ PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold P
 PSL_cliprestore
 PSL_GPP setmatrix
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage
