@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.1_r15196 [64-bit] Document from psvelo
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psvelo
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Nov  8 20:18:31 2015
+%%CreationDate: Thu Dec  6 10:52:57 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -337,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -523,7 +524,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +549,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -595,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -638,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -660,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 -3543 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
 
 % PostScript produced by:
-%%GMT: psvelo -Xc -JM15c -R241/242/34/35 -B0.5 -BWeSn+tpsvelo -Sw3c/1.e7 -W1p -G60 -E210 -D2 -P -K
-%%PROJ: merc 241.00000000 242.00000000 34.00000000 35.00000000 -55659.745 55659.745 4004909.109 4139372.762 +proj=merc +lon_0=241.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psvelo -Xc -JM15c -R241/242/34/35 -B0.5 -BWeSn+tpsvelo -Sw3c/1.e7 -W1p -G60 -E210 -D2 -P -K
+%@PROJ: merc 241.00000000 242.00000000 34.00000000 35.00000000 -55659.745 55659.745 4004909.109 4139372.762 +proj=merc +lon_0=241.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: -212.598 72 425.197 513.598
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -678,6 +685,7 @@ clipsave
 7087 0 D
 0 8560 D
 -7087 0 D
+P
 PSL_clip N
 {0.235 A} FS
 O1
@@ -717,21 +725,102 @@ FO
 {0.235 A} FS
 1417 4267 M
 0 1417 D
--68 -1 D
--76 -6 D
--109 -15 D
--33 -7 D
+-7 0 D
+-6 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-6 0 D
+-7 -1 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-7 -1 D
+-6 0 D
+-7 -1 D
+-7 -1 D
+-7 -1 D
+-7 -1 D
+-7 -1 D
+-6 -1 D
+-7 -1 D
+-7 -1 D
+-7 -1 D
+-7 -1 D
+-6 -1 D
+-7 -1 D
+-7 -1 D
+-7 -1 D
+-6 -2 D
+-7 -1 D
+-7 -1 D
+-7 -2 D
+-6 -1 D
 286 -1388 D
 -286 1388 D
--74 -17 D
--79 -23 D
--91 -33 D
--31 -14 D
+-7 -1 D
+-7 -2 D
+-7 -1 D
+-6 -2 D
+-7 -1 D
+-7 -2 D
+-6 -1 D
+-7 -2 D
+-7 -2 D
+-6 -1 D
+-7 -2 D
+-7 -2 D
+-6 -2 D
+-7 -2 D
+-7 -1 D
+-6 -2 D
+-7 -2 D
+-6 -2 D
+-7 -2 D
+-6 -2 D
+-7 -2 D
+-7 -2 D
+-6 -2 D
+-7 -3 D
+-6 -2 D
+-7 -2 D
+-6 -2 D
+-7 -3 D
+-6 -2 D
+-7 -2 D
+-6 -3 D
+-7 -2 D
+-6 -2 D
+-6 -3 D
+-7 -2 D
+-6 -3 D
+-7 -2 D
+-12 -6 D
+-7 -2 D
+-12 -6 D
 561 -1301 D
 -561 1301 D
--19 -8 D
--50 -23 D
--30 -16 D
+-7 -2 D
+-12 -6 D
+-13 -6 D
+-6 -3 D
+-6 -2 D
+-13 -6 D
+-12 -6 D
+-12 -7 D
+-12 -6 D
+-6 -3 D
 P
 FO
 {0.824 A} FS
@@ -792,19 +881,6 @@ N 0 4267 M -83 0 D S
 N 7087 4267 M 83 0 D S
 N 0 8560 M -83 0 D S
 N 7087 8560 M 83 0 D S
-/PSL_H_y 400 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(100\312) sh add def
-3543 8560 PSL_H_y add M
-400 F0
-(psvelo) bc Z
-0 -167 M 200 F0
-(-119 00©) tc Z
-3543 -167 M (-118 30©) tc Z
-7087 -167 M (-118 00©) tc Z
--167 0 M (34 00©) mr Z
--167 4267 M (34 30©) mr Z
--167 8560 M (35 00©) mr Z
 83 W
 N -42 0 M 0 4267 D S
 N 7128 0 M 0 4267 D S
@@ -827,6 +903,19 @@ N 7170 8560 M -7253 0 D S
 N 7170 8643 M -7253 0 D S
 N 0 8643 M 0 -8726 D S
 N -83 8643 M 0 -8726 D S
+/PSL_H_y 400 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(100è) sh add def
+3543 8560 PSL_H_y add M
+400 F0
+(psvelo) bc Z
+0 -167 M 200 F0
+(î119è00©) tc Z
+3543 -167 M (î118è30©) tc Z
+7087 -167 M (î118è00©) tc Z
+-167 0 M (34è00©) mr Z
+-167 4267 M (34è30©) mr Z
+-167 8560 M (35è00©) mr Z
 %%EndObject
 0 A
 FQ
@@ -834,8 +923,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psvelo -JM15c -R241/242/34/35 -Sw3c/1.e7 -W1p -D2 -O -K
-%%PROJ: merc 241.00000000 242.00000000 34.00000000 35.00000000 -55659.745 55659.745 4004909.109 4139372.762 +proj=merc +lon_0=241.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psvelo -JM15c -R241/242/34/35 -Sw3c/1.e7 -W1p -D2 -O -K
+%@PROJ: merc 241.00000000 242.00000000 34.00000000 35.00000000 -55659.745 55659.745 4004909.109 4139372.762 +proj=merc +lon_0=241.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -846,6 +935,7 @@ clipsave
 7087 0 D
 0 8560 D
 -7087 0 D
+P
 PSL_clip N
 4961 1704 M
 0 1417 D
@@ -878,20 +968,104 @@ P S
 P S
 4961 4267 M
 0 1417 D
--69 -1 D
--75 -6 D
--109 -15 D
--34 -7 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-7 -1 D
+-7 0 D
+-6 -1 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-7 -1 D
+-7 -1 D
+-6 -1 D
+-7 -1 D
+-7 -1 D
+-7 -1 D
+-7 -1 D
+-6 -1 D
+-7 -1 D
+-7 -1 D
+-7 -1 D
+-7 -1 D
+-6 -1 D
+-7 -2 D
+-7 -1 D
+-7 -1 D
+-6 -2 D
+-7 -1 D
 287 -1388 D
 -287 1388 D
--74 -17 D
--79 -23 D
--90 -33 D
--32 -14 D
+-7 -1 D
+-7 -2 D
+-6 -1 D
+-7 -2 D
+-7 -1 D
+-6 -2 D
+-7 -1 D
+-7 -2 D
+-6 -2 D
+-7 -1 D
+-7 -2 D
+-6 -2 D
+-7 -2 D
+-7 -2 D
+-6 -1 D
+-7 -2 D
+-6 -2 D
+-7 -2 D
+-7 -2 D
+-6 -2 D
+-7 -2 D
+-6 -2 D
+-7 -2 D
+-6 -3 D
+-7 -2 D
+-6 -2 D
+-7 -2 D
+-6 -3 D
+-7 -2 D
+-6 -2 D
+-7 -3 D
+-6 -2 D
+-7 -2 D
+-6 -3 D
+-6 -2 D
+-7 -3 D
+-6 -2 D
+-7 -3 D
+-6 -3 D
+-6 -2 D
+-7 -3 D
+-6 -3 D
 562 -1301 D
 -562 1301 D
--69 -31 D
--30 -16 D
+-6 -2 D
+-7 -3 D
+-12 -6 D
+-13 -6 D
+-6 -2 D
+-12 -6 D
+-13 -6 D
+-12 -7 D
+-12 -6 D
+-6 -3 D
 P S
 4961 4267 M
 -717 623 D
@@ -942,8 +1116,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pscoast -O -R241/242/34/35 -JM15c -W1p -Di
-%%PROJ: merc 241.00000000 242.00000000 34.00000000 35.00000000 -55659.745 55659.745 4004909.109 4139372.762 +proj=merc +lon_0=241.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -O -R241/242/34/35 -JM15c -W1p -Di
+%@PROJ: merc 241.00000000 242.00000000 34.00000000 35.00000000 -55659.745 55659.745 4004909.109 4139372.762 +proj=merc +lon_0=241.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -958,6 +1132,10 @@ O0
 263 -288 D
 S
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

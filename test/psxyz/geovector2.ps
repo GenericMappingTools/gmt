@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v6.0.0_r19508 [64-bit] Document from psxyz
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxyz
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Dec 18 17:03:33 2017
+%%CreationDate: Thu Dec  6 10:52:00 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -658,13 +663,16 @@ V 0.06 0.06 scale
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
 /PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: psxyz -R-180/180/-75/75 -JM6i -Bag -W0.5p,red -S=0.4i+jb+e+r+h1 -P -Gred t.txt -K -p155/35
+%@GMT: gmt psxyz -R-180/180/-75/75 -JM6i -Bag -W0.5p,red -S=0.4i+jb+e+r+h1 -P -Gred t.txt -K -p155/35
 %@PROJ: merc -180.00000000 180.00000000 -75.00000000 75.00000000 -20037508.343 20037508.343 -12890914.137 12890914.137 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %GMTBoundingBox: 72 72 432 277.923
 %%BeginObject PSL_Layer_1
@@ -771,26 +779,26 @@ N 0 4715 M 0 -4798 D S
 N -83 4715 M 0 -4798 D S
 0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-180 ) tc Z
-0 4799 M (-180 ) bc Z
-1200 -167 M (-120 ) tc Z
-1200 4799 M (-120 ) bc Z
-2400 -167 M (-60 ) tc Z
-2400 4799 M (-60 ) bc Z
-3600 -167 M (0 ) tc Z
-3600 4799 M (0 ) bc Z
-4800 -167 M (60 ) tc Z
-4800 4799 M (60 ) bc Z
-6000 -167 M (120 ) tc Z
-6000 4799 M (120 ) bc Z
-7200 -167 M (180 ) tc Z
-7200 4799 M (180 ) bc Z
--167 814 M (-60 ) mr Z
-7367 814 M (-60 ) ml Z
--167 2316 M (0 ) mr Z
-7367 2316 M (0 ) ml Z
--167 3818 M (60 ) mr Z
-7367 3818 M (60 ) ml Z
+(î180è) tc Z
+0 4799 M (î180è) bc Z
+1200 -167 M (î120è) tc Z
+1200 4799 M (î120è) bc Z
+2400 -167 M (î60è) tc Z
+2400 4799 M (î60è) bc Z
+3600 -167 M (0è) tc Z
+3600 4799 M (0è) bc Z
+4800 -167 M (60è) tc Z
+4800 4799 M (60è) bc Z
+6000 -167 M (120è) tc Z
+6000 4799 M (120è) bc Z
+7200 -167 M (180è) tc Z
+7200 4799 M (180è) bc Z
+-167 814 M (î60è) mr Z
+7367 814 M (î60è) ml Z
+-167 2316 M (0è) mr Z
+7367 2316 M (0è) ml Z
+-167 3818 M (60è) mr Z
+7367 3818 M (60è) ml Z
 clipsave
 0 0 M
 7200 0 D
@@ -868,19 +876,67 @@ V
 -112 22 D
 -114 15 D
 -116 8 D
--66 1 D
--83 -3 D
--83 -6 D
--114 -15 D
--112 -22 D
--108 -29 D
--90 -29 D
--73 -27 D
--85 -35 D
--82 -38 D
--26 -14 D
+-16 0 D
+-50 1 D
+-17 -1 D
+-16 0 D
+-17 0 D
+-17 -1 D
+-16 -1 D
+-17 -1 D
+-16 -1 D
+-17 -1 D
+-16 -2 D
+-17 -1 D
+-16 -2 D
+-16 -2 D
+-17 -2 D
+-16 -2 D
+-16 -2 D
+-17 -3 D
+-16 -2 D
+-16 -3 D
+-16 -3 D
+-16 -3 D
+-16 -3 D
+-16 -3 D
+-16 -4 D
+-16 -3 D
+-15 -4 D
+-16 -4 D
+-15 -4 D
+-16 -4 D
+-15 -4 D
+-16 -5 D
+-15 -4 D
+-15 -5 D
+-16 -4 D
+-15 -5 D
+-15 -5 D
+-15 -5 D
+-14 -5 D
+-15 -5 D
+-15 -6 D
+-14 -5 D
+-15 -5 D
+-14 -6 D
+-15 -6 D
+-14 -5 D
+-14 -6 D
+-14 -6 D
+-14 -6 D
+-14 -6 D
+-14 -6 D
+-14 -7 D
+-13 -6 D
+-14 -6 D
 -27 -13 D
--89 -49 D
+-26 -14 D
+-14 -6 D
+-26 -14 D
+-25 -14 D
+-26 -14 D
+-25 -14 D
 P
 FO
 /FO {fs os}!
@@ -1033,7 +1089,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxyz -R-180/180/-75/75 -JM6i -O -K -Sc0.05i -Gred t.txt -p155/35
+%@GMT: gmt psxyz -R-180/180/-75/75 -JM6i -O -K -Sc0.05i -Gred t.txt -p155/35
 %@PROJ: merc -180.00000000 180.00000000 -75.00000000 75.00000000 -20037508.343 20037508.343 -12890914.137 12890914.137 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -1065,7 +1121,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxyz -R-180/180/-75/75 -JM6i -W0.5p,blue -S=0.4i+jc+b+e+h1 -Gblue t.txt -O -K -p155/35
+%@GMT: gmt psxyz -R-180/180/-75/75 -JM6i -W0.5p,blue -S=0.4i+jc+b+e+h1 -Gblue t.txt -O -K -p155/35
 %@PROJ: merc -180.00000000 180.00000000 -75.00000000 75.00000000 -20037508.343 20037508.343 -12890914.137 12890914.137 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -1113,13 +1169,14 @@ V
 32 26 D
 11 8 D
 6 -7 D
--76 -59 D
--62 -52 D
--21 -17 D
--108 -95 D
--94 -87 D
--136 -131 D
--62 -61 D
+-44 -34 D
+-53 -43 D
+-52 -42 D
+-70 -61 D
+-96 -87 D
+-110 -104 D
+-107 -105 D
+-27 -26 D
 -8 -9 D
 -80 -78 D
 -17 -18 D
@@ -1131,8 +1188,9 @@ V
 -74 -70 D
 -29 -26 D
 -68 -61 D
--101 -86 D
--64 -52 D
+-70 -60 D
+-63 -52 D
+-32 -26 D
 -44 -34 D
 P
 FO
@@ -1145,11 +1203,34 @@ O1
 O0
 clipsave
 823 1806 M
--97 -49 D
--114 -52 D
--92 -37 D
--67 -25 D
--55 -18 D
+-24 -12 D
+-24 -13 D
+-13 -6 D
+-24 -12 D
+-25 -12 D
+-25 -12 D
+-12 -5 D
+-13 -6 D
+-13 -6 D
+-12 -6 D
+-13 -5 D
+-13 -6 D
+-13 -5 D
+-13 -6 D
+-13 -5 D
+-13 -5 D
+-13 -6 D
+-14 -5 D
+-13 -5 D
+-13 -5 D
+-14 -5 D
+-13 -5 D
+-14 -5 D
+-13 -5 D
+-14 -4 D
+-14 -5 D
+-14 -4 D
+-13 -5 D
 38 43 D
 73 85 D
 92 115 D
@@ -1158,11 +1239,34 @@ clipsave
 -91 -213 D
 PSL_clip N
 823 1806 M
--97 -49 D
--114 -52 D
--92 -37 D
--67 -25 D
--55 -18 D
+-24 -12 D
+-24 -13 D
+-13 -6 D
+-24 -12 D
+-25 -12 D
+-25 -12 D
+-12 -5 D
+-13 -6 D
+-13 -6 D
+-12 -6 D
+-13 -5 D
+-13 -6 D
+-13 -5 D
+-13 -6 D
+-13 -5 D
+-13 -5 D
+-13 -6 D
+-14 -5 D
+-13 -5 D
+-13 -5 D
+-14 -5 D
+-13 -5 D
+-14 -5 D
+-13 -5 D
+-14 -4 D
+-14 -5 D
+-14 -4 D
+-13 -5 D
 38 43 D
 73 85 D
 92 115 D
@@ -1171,11 +1275,34 @@ PSL_clip N
 -91 -213 D
 FO
 823 1806 M
--97 -49 D
--114 -52 D
--92 -37 D
--67 -25 D
--55 -18 D
+-24 -12 D
+-24 -13 D
+-13 -6 D
+-24 -12 D
+-25 -12 D
+-25 -12 D
+-12 -5 D
+-13 -6 D
+-13 -6 D
+-12 -6 D
+-13 -5 D
+-13 -6 D
+-13 -5 D
+-13 -6 D
+-13 -5 D
+-13 -5 D
+-13 -6 D
+-14 -5 D
+-13 -5 D
+-13 -5 D
+-14 -5 D
+-13 -5 D
+-14 -5 D
+-13 -5 D
+-14 -4 D
+-14 -5 D
+-14 -4 D
+-13 -5 D
 38 43 D
 73 85 D
 92 115 D
@@ -1278,8 +1405,10 @@ clipsave
 -30 -22 D
 -64 -42 D
 -68 -40 D
--111 -54 D
--80 -31 D
+-73 -36 D
+-38 -18 D
+-40 -16 D
+-40 -15 D
 -41 -14 D
 82 96 D
 70 93 D
@@ -1291,8 +1420,10 @@ PSL_clip N
 -30 -22 D
 -64 -42 D
 -68 -40 D
--111 -54 D
--80 -31 D
+-73 -36 D
+-38 -18 D
+-40 -16 D
+-40 -15 D
 -41 -14 D
 82 96 D
 70 93 D
@@ -1304,8 +1435,10 @@ FO
 -30 -22 D
 -64 -42 D
 -68 -40 D
--111 -54 D
--80 -31 D
+-73 -36 D
+-38 -18 D
+-40 -16 D
+-40 -15 D
 -41 -14 D
 82 96 D
 70 93 D
@@ -1357,7 +1490,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxyz -R-180/180/-75/75 -JM6i -Sc0.05i -Gblue t.txt -O -K -p155/35
+%@GMT: gmt psxyz -R-180/180/-75/75 -JM6i -Sc0.05i -Gblue t.txt -O -K -p155/35
 %@PROJ: merc -180.00000000 180.00000000 -75.00000000 75.00000000 -20037508.343 20037508.343 -12890914.137 12890914.137 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -1389,7 +1522,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxyz -R-180/180/-75/75 -JM6i -W0.5p,black -S=0.4i+je+e+a20+l+h1 t.txt -O -K -p155/35
+%@GMT: gmt psxyz -R-180/180/-75/75 -JM6i -W0.5p,black -S=0.4i+je+e+a20+l+h1 t.txt -O -K -p155/35
 %@PROJ: merc -180.00000000 180.00000000 -75.00000000 75.00000000 -20037508.343 20037508.343 -12890914.137 12890914.137 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
@@ -1527,9 +1660,14 @@ clipsave
 28 -3 D
 57 -3 D
 29 0 D
--80 -12 D
--53 -5 D
--81 -3 D
+-27 -5 D
+-26 -3 D
+-27 -4 D
+-26 -2 D
+-27 -3 D
+-27 -1 D
+-27 -1 D
+-27 -1 D
 -27 1 D
 PSL_clip N
 338 683 M
@@ -1541,9 +1679,14 @@ PSL_clip N
 28 -3 D
 57 -3 D
 29 0 D
--80 -12 D
--53 -5 D
--81 -3 D
+-27 -5 D
+-26 -3 D
+-27 -4 D
+-26 -2 D
+-27 -3 D
+-27 -1 D
+-27 -1 D
+-27 -1 D
 -27 1 D
 FO
 338 683 M
@@ -1555,9 +1698,14 @@ FO
 28 -3 D
 57 -3 D
 29 0 D
--80 -12 D
--53 -5 D
--81 -3 D
+-27 -5 D
+-26 -3 D
+-27 -4 D
+-26 -2 D
+-27 -3 D
+-27 -1 D
+-27 -1 D
+-27 -1 D
 -27 1 D
 P S
 PSL_cliprestore
@@ -1574,7 +1722,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxyz -R-180/180/-75/75 -JM6i -Sc0.05i -Gblack t.txt -O -p155/35
+%@GMT: gmt psxyz -R-180/180/-75/75 -JM6i -Sc0.05i -Gblack t.txt -O -p155/35
 %@PROJ: merc -180.00000000 180.00000000 -75.00000000 75.00000000 -20037508.343 20037508.343 -12890914.137 12890914.137 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
@@ -1600,6 +1748,10 @@ U
 PSL_cliprestore
 PSL_GPP setmatrix
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

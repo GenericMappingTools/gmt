@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v6.0.0_r19104 [64-bit] Document from psbasemap
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psbasemap
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Oct 14 18:05:14 2017
+%%CreationDate: Thu Dec  6 10:50:18 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -658,14 +663,18 @@ V 0.06 0.06 scale
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
 /PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 3000 1500 TM
 
 % PostScript produced by:
-%@GMT: psbasemap -R204/206/19/21 -JM4i -P -B1 -BWSne -K -X2.5i -Y1.25i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psbasemap -R204/206/19/21 -JM4i -P -B1 -BWSne -K -X2.5i -Y1.25i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 180 90 288 304.69
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -708,12 +717,12 @@ N 0 5161 M 0 -5244 D S
 N -83 5161 M 0 -5244 D S
 0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-156 ) tc Z
-2400 -167 M (-155 ) tc Z
-4800 -167 M (-154 ) tc Z
--167 0 M (19 ) mr Z
--167 2531 M (20 ) mr Z
--167 5078 M (21 ) mr Z
+(î156è) tc Z
+2400 -167 M (î155è) tc Z
+4800 -167 M (î154è) tc Z
+-167 0 M (19è) mr Z
+-167 2531 M (20è) mr Z
+-167 5078 M (21è) mr Z
 %%EndObject
 0 A
 FQ
@@ -721,8 +730,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: grdcontour BigIsland.nc -JM4i -C1000 -T+d0.1i/0.02i+l -S8 -O -K --FONT_ANNOT_PRIMARY=9p
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdcontour BigIsland.nc -JM4i -C1000 -T+d0.1i/0.02i+l -S8 -O -K --FONT_ANNOT_PRIMARY=9p
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -866,10 +875,26 @@ N 1169 2161 M -16 18 D S
 -35 11 D
 -123 31 D
 -56 10 D
--87 -1 D
--32 -3 D
--24 0 D
--15 5 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-1 0 D
+-8 0 D
+-8 0 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-16 5 D
 -64 35 D
 -84 46 D
 -84 50 D
@@ -967,15 +992,36 @@ N 1169 2161 M -16 18 D S
 -27 19 D
 -37 16 D
 -24 5 D
--55 -1 D
--32 -9 D
--36 -17 D
--29 -14 D
--23 -7 D
--32 -6 D
--39 1 D
--38 13 D
--23 8 D
+-7 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 -1 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-8 -3 D
+-7 -3 D
+-14 -7 D
+-8 -3 D
+-14 -8 D
+-15 -7 D
+-7 -3 D
+-7 -2 D
+-9 -2 D
+-7 -3 D
+-8 -1 D
+-8 -2 D
+-8 -1 D
+-8 -2 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-23 6 D
+-45 16 D
 -64 6 D
 -127 4 D
 -61 5 D
@@ -1019,7 +1065,8 @@ P S
 -33 -45 D
 -7 -7 D
 -7 -5 D
--9 -3 D
+-7 -3 D
+-2 0 D
 -5 0 D
 -14 7 D
 -8 7 D
@@ -1095,14 +1142,47 @@ P S
 -12 10 D
 -14 7 D
 -37 1 D
--60 -4 D
--111 -10 D
--59 -2 D
--23 1 D
--44 4 D
--22 0 D
--15 5 D
--7 6 D
+-8 -1 D
+-7 0 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-7 0 D
+-2 -1 D
+-6 0 D
+-4 -1 D
+-3 0 D
+-8 -1 D
+-7 0 D
+-7 -1 D
+-8 -1 D
+-7 0 D
+-8 -1 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-7 0 D
+-8 -1 D
+-7 0 D
+-8 -1 D
+-7 0 D
+-6 0 D
+-2 0 D
+-7 0 D
+-7 0 D
+-8 0 D
+-59 5 D
+-8 0 D
+-7 0 D
+-15 2 D
+-8 4 D
+-6 5 D
 -9 13 D
 -7 23 D
 -2 56 D
@@ -1196,9 +1276,35 @@ P S
 -56 22 D
 -36 11 D
 -44 7 D
--193 -1 D
--44 7 D
--37 11 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 -1 D
+-5 0 D
+-2 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-7 0 D
+-4 0 D
+-4 0 D
+-44 5 D
+-44 13 D
 -41 18 D
 -39 23 D
 -90 83 D
@@ -1236,7 +1342,8 @@ P S
 -25 17 D
 -90 39 D
 -22 4 D
--45 2 D
+-7 0 D
+-38 2 D
 -21 7 D
 -12 7 D
 -18 15 D
@@ -1309,19 +1416,61 @@ S
 -12 11 D
 -8 4 D
 -30 1 D
--31 -5 D
--45 -13 D
--67 -20 D
--70 -6 D
--37 -11 D
--36 -16 D
--20 -12 D
--25 -19 D
--40 -25 D
--36 -17 D
--30 -8 D
--19 -1 D
--167 9 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-7 -2 D
+-8 -2 D
+-8 -2 D
+-7 -2 D
+-7 -2 D
+-8 -3 D
+-7 -2 D
+-8 -3 D
+-6 -2 D
+-8 -2 D
+-8 -2 D
+-7 -3 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-7 -2 D
+-8 -1 D
+-8 -1 D
+-7 0 D
+-8 -1 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-8 -1 D
+-8 -1 D
+-3 -1 D
+-4 -1 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-7 -3 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
+-14 -7 D
+-7 -4 D
+-19 -13 D
+-19 -14 D
+-7 -4 D
+-20 -13 D
+-13 -8 D
+-5 -2 D
+-9 -5 D
+-8 -3 D
+-14 -7 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-7 -2 D
+-8 0 D
+-8 -1 D
+-170 9 D
 -29 10 D
 -49 27 D
 -6 5 D
@@ -1360,8 +1509,20 @@ S
 -28 15 D
 -68 16 D
 -38 1 D
--54 -7 D
--54 1 D
+-8 -1 D
+-8 -2 D
+-8 -1 D
+-7 -1 D
+-8 -1 D
+-8 -1 D
+-5 0 D
+-2 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-15 1 D
 -23 8 D
 -21 13 D
 -19 16 D
@@ -1429,11 +1590,37 @@ S
 -2 2 D
 -35 10 D
 -38 4 D
--54 -1 D
--41 -10 D
--56 -22 D
--24 -7 D
--52 1 D
+-8 0 D
+-7 0 D
+-1 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 -1 D
+-7 0 D
+-8 -2 D
+-8 -1 D
+-7 -2 D
+-8 -2 D
+-8 -2 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
+-7 -3 D
+-7 -2 D
+-8 -3 D
+-7 -2 D
+-8 -3 D
+-7 -1 D
+-2 -1 D
+-6 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-16 1 D
 -61 15 D
 -22 8 D
 -19 14 D
@@ -1529,12 +1716,29 @@ S
 -20 6 D
 -22 10 D
 -15 3 D
--62 0 D
--30 -7 D
--29 -11 D
--31 -3 D
--19 2 D
--18 6 D
+-7 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-7 -2 D
+-8 -1 D
+-7 -2 D
+-8 -2 D
+-7 -3 D
+-7 -3 D
+-8 -3 D
+-7 -2 D
+-7 -1 D
+-8 -1 D
+-8 -1 D
+-8 0 D
+-5 0 D
+-18 3 D
+-14 5 D
 -14 7 D
 -26 19 D
 -18 18 D
@@ -1662,24 +1866,76 @@ S
 -7 7 D
 -30 1 D
 -8 -1 D
--38 -13 D
--76 -2 D
--84 -12 D
--29 -9 D
--43 -20 D
--22 -7 D
--15 -3 D
--61 1 D
--31 6 D
--30 9 D
+-7 -3 D
+-8 -3 D
+-7 -2 D
+-8 -3 D
+-8 -2 D
+-7 -1 D
+-1 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 -1 D
+-7 0 D
+-8 -1 D
+-4 0 D
+-4 -1 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-8 -1 D
+-8 -1 D
+-7 -1 D
+-8 -2 D
+-7 -1 D
+-6 -1 D
+-9 -2 D
+-8 -2 D
+-7 -3 D
+-7 -2 D
+-14 -7 D
+-14 -7 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
+-7 -2 D
+-8 -2 D
+-7 -1 D
+-8 -2 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-30 5 D
+-38 11 D
 -22 2 D
--38 -6 D
--45 -13 D
--21 -13 D
--26 -19 D
--20 -9 D
--14 -1 D
--22 4 D
+-8 -1 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-8 -2 D
+-7 -2 D
+-7 -3 D
+-8 -2 D
+-14 -8 D
+-20 -15 D
+-13 -9 D
+-14 -7 D
+-6 -2 D
+-5 -1 D
+-2 0 D
+-29 4 D
 -29 15 D
 -27 21 D
 -26 30 D
@@ -1773,18 +2029,30 @@ S
 -21 11 D
 -7 3 D
 -31 3 D
--31 1 D
--88 17 D
--31 10 D
+-7 0 D
+-8 0 D
+-24 2 D
+-82 17 D
+-29 9 D
 -44 16 D
 -45 10 D
 -40 4 D
--29 -2 D
--38 -7 D
--38 1 D
--55 8 D
--21 7 D
--44 16 D
+-6 0 D
+-8 0 D
+-7 -1 D
+-8 -1 D
+-8 -2 D
+-7 -1 D
+-8 -2 D
+-8 -1 D
+-7 -1 D
+-8 0 D
+-5 0 D
+-2 0 D
+-8 0 D
+-53 6 D
+-31 7 D
+-51 19 D
 -22 3 D
 -84 9 D
 -76 12 D
@@ -1850,8 +2118,12 @@ S
 -12 8 D
 -7 3 D
 -61 6 D
--46 1 D
--15 3 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-23 2 D
+-7 2 D
 -13 9 D
 -9 13 D
 -12 23 D
@@ -1887,9 +2159,30 @@ S
 -53 13 D
 -76 13 D
 -26 2 D
--142 -6 D
--23 -1 D
--15 2 D
+-4 0 D
+-8 0 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-8 0 D
+-7 -1 D
+-7 0 D
+-1 0 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-8 -1 D
+-7 0 D
+-8 0 D
+-8 -1 D
+-7 0 D
+-8 -1 D
+-8 0 D
+-2 0 D
+-20 2 D
 -15 5 D
 -21 11 D
 -27 19 D
@@ -2015,10 +2308,26 @@ S
 -11 9 D
 -31 9 D
 -76 1 D
--23 -3 D
--60 -14 D
--53 -1 D
--23 2 D
+-8 -1 D
+-5 0 D
+-3 -1 D
+-7 -1 D
+-8 -2 D
+-7 -1 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-7 -2 D
+-7 -2 D
+-8 -1 D
+-8 -1 D
+-2 0 D
+-5 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-30 2 D
 -53 11 D
 -22 7 D
 -19 8 D
@@ -2110,12 +2419,23 @@ S
 -52 13 D
 -29 9 D
 -46 5 D
--53 3 D
--72 10 D
--81 -1 D
--29 10 D
--22 8 D
--28 5 D
+-8 0 D
+-53 4 D
+-64 9 D
+-4 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-23 7 D
+-28 11 D
+-29 5 D
 -29 14 D
 -27 17 D
 -12 10 D
@@ -2133,8 +2453,12 @@ S
 -45 9 D
 -30 5 D
 -23 1 D
--29 -9 D
--15 -6 D
+-7 -2 D
+-8 -2 D
+-7 -2 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
 0 -1 D
 -13 -8 D
 -11 -12 D
@@ -2161,12 +2485,19 @@ S
 -18 -30 D
 -8 -11 D
 -10 -9 D
--36 -21 D
+-12 -7 D
+-12 -7 D
+-12 -7 D
 -13 -16 D
 -19 -29 D
 -5 -7 D
 -35 -31 D
--93 -68 D
+-13 -10 D
+-19 -14 D
+-17 -12 D
+-17 -12 D
+-22 -16 D
+-5 -4 D
 S
 557 0 M
 -26 20 D
@@ -2303,7 +2634,11 @@ S
 -10 21 D
 -12 7 D
 -7 2 D
--47 1 D
+-8 0 D
+-7 0 D
+-9 0 D
+-8 0 D
+-15 1 D
 -13 7 D
 -6 5 D
 -19 23 D
@@ -2315,12 +2650,24 @@ S
 3 14 D
 -1 39 D
 -2 3 D
--40 -1 D
--20 -14 D
--22 -21 D
+-3 0 D
+-6 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-8 -1 D
+-14 -10 D
+-11 -9 D
+-17 -16 D
 -21 -13 D
 -7 -4 D
--50 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-7 0 D
+-6 0 D
+-6 0 D
 -9 13 D
 -8 22 D
 -7 84 D
@@ -2376,7 +2723,19 @@ S
 -19 11 D
 -75 32 D
 -72 28 D
--83 -1 D
+-3 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-8 -1 D
+-7 0 D
+-7 0 D
+-5 0 D
+-3 0 D
 -7 -1 D
 -13 -6 D
 -18 -16 D
@@ -2407,12 +2766,21 @@ S
 -20 -32 D
 -9 -12 D
 -17 -16 D
--45 -24 D
--47 -22 D
--24 -17 D
--22 -19 D
+-12 -7 D
+-14 -7 D
+-13 -7 D
+-13 -6 D
+-7 -3 D
+-13 -6 D
+-13 -7 D
+-13 -7 D
+-6 -4 D
+-29 -24 D
+-5 -4 D
 0 -1 D
--48 -35 D
+-24 -18 D
+-18 -13 D
+-6 -4 D
 S
 0 4522 M
 14 -14 D
@@ -2440,7 +2808,15 @@ S
 -15 -20 D
 -19 -20 D
 -4 -3 D
--62 0 D
+-3 0 D
+-8 0 D
+-7 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-7 0 D
+-8 0 D
+-7 0 D
 -29 9 D
 -35 8 D
 -35 12 D
@@ -2503,35 +2879,71 @@ P S
 -10 -22 D
 -21 -36 D
 -11 -12 D
--27 -15 D
--72 -30 D
--29 -9 D
--30 -1 D
--22 5 D
--39 19 D
--18 11 D
--39 27 D
+-13 -8 D
+-14 -7 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-4 -2 D
+-11 -4 D
+-7 -3 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
+-7 -2 D
+-8 -3 D
+-7 -2 D
+-7 -2 D
+-8 -1 D
+-3 0 D
+-4 0 D
+-7 0 D
+-15 1 D
+-22 7 D
+-44 23 D
+-45 31 D
 -14 7 D
--22 -2 D
--53 -13 D
--15 -3 D
--27 -15 D
+-7 0 D
+-2 0 D
+-6 -1 D
+-7 -1 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-7 -2 D
+-8 -1 D
+-7 -2 D
+-3 -1 D
+-5 -1 D
+-8 -1 D
+-6 -2 D
+-8 -3 D
+-14 -8 D
+-19 -13 D
+-25 -20 D
+-12 -8 D
+-14 -9 D
+-13 -8 D
+-13 -8 D
+-5 -3 D
+-15 -10 D
+-19 -13 D
 -25 -19 D
--32 -23 D
--53 -33 D
--32 -22 D
--61 -52 D
--10 -9 D
--19 -26 D
+-42 -36 D
+-16 -14 D
+-20 -27 D
 -23 -42 D
 -14 -19 D
 -36 -43 D
 -16 -17 D
 -6 -5 D
 -5 -6 D
--71 -63 D
--34 -31 D
--43 -47 D
+-40 -35 D
+-48 -43 D
+-23 -22 D
+-21 -23 D
+-16 -18 D
 -6 -5 D
 -20 -24 D
 -1 0 D
@@ -2540,12 +2952,28 @@ P S
 -9 -13 D
 -27 -30 D
 -19 -13 D
--30 -9 D
--47 -4 D
--84 1 D
--46 5 D
--38 8 D
--22 7 D
+-7 -3 D
+-8 -2 D
+-8 -2 D
+-7 -2 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-4 0 D
+-4 0 D
+-7 -1 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-62 5 D
+-37 7 D
+-30 9 D
 -35 16 D
 -26 18 D
 -23 21 D
@@ -2637,13 +3065,19 @@ P S
 -20 -23 D
 -37 -41 D
 -13 -7 D
--22 -8 D
--6 -4 D
+-7 -3 D
+-8 -2 D
+-7 -3 D
+-5 -4 D
+-1 0 D
 -15 -19 D
 -12 -21 D
 -10 -12 D
 -12 -8 D
--33 -14 D
+-8 -4 D
+-9 -3 D
+-8 -4 D
+-8 -3 D
 -9 -8 D
 -1 -5 D
 7 -9 D
@@ -2690,18 +3124,55 @@ P S
 -25 -40 D
 -9 -13 D
 -10 -11 D
--77 -65 D
--31 -22 D
--18 -13 D
--35 -30 D
--33 -21 D
--33 -17 D
--57 -23 D
--78 -28 D
--50 -16 D
--65 -1 D
--9 5 D
--17 16 D
+-17 -14 D
+-42 -36 D
+-17 -15 D
+-19 -13 D
+-19 -13 D
+-11 -8 D
+-30 -26 D
+-19 -13 D
+-20 -13 D
+-13 -7 D
+-13 -7 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -2 D
+-7 -3 D
+-7 -3 D
+-8 -3 D
+-7 -2 D
+-7 -3 D
+-7 -3 D
+-7 -2 D
+-5 -2 D
+-9 -4 D
+-7 -2 D
+-7 -3 D
+-7 -2 D
+-8 -3 D
+-7 -2 D
+-7 -2 D
+-7 -3 D
+-7 -2 D
+-7 -2 D
+-7 -3 D
+-8 -2 D
+-7 -2 D
+-8 -1 D
+-7 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-7 1 D
+-12 9 D
+-11 11 D
 -14 20 D
 -27 48 D
 -10 21 D
@@ -2769,10 +3240,16 @@ P S
 -1 -9 D
 -8 -7 D
 -9 -5 D
--34 -1 D
--15 5 D
--18 12 D
--8 7 D
+-5 -1 D
+-1 0 D
+-4 0 D
+-5 0 D
+-5 0 D
+-4 0 D
+-5 0 D
+-10 1 D
+-15 7 D
+-21 16 D
 -14 21 D
 -9 21 D
 -6 35 D
@@ -2793,8 +3270,18 @@ P S
 -35 -51 D
 -22 -26 D
 -5 -5 D
--14 -7 D
--71 1 D
+-12 -6 D
+-2 -1 D
+-4 0 D
+-6 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-6 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-13 1 D
 -17 9 D
 -48 25 D
 -24 11 D
@@ -2834,13 +3321,28 @@ P S
 -19 -24 D
 -15 -18 D
 -29 -26 D
--38 -25 D
--31 -15 D
--70 -38 D
--30 -9 D
--29 -3 D
--22 1 D
--14 3 D
+-19 -13 D
+-13 -8 D
+-13 -7 D
+-14 -7 D
+-7 -3 D
+-13 -7 D
+-13 -8 D
+-13 -7 D
+-14 -8 D
+-6 -3 D
+-14 -7 D
+-7 -3 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-7 0 D
+-8 0 D
+-2 0 D
+-26 4 D
 -21 10 D
 -19 13 D
 -14 13 D
@@ -2863,8 +3365,11 @@ P S
 -1 -2 D
 -4 -3 D
 -1 -2 D
--7 -3 D
--2 0 D
+-5 -3 D
+-1 0 D
+-1 0 D
+-1 0 D
+-1 0 D
 -1 11 D
 P S
 PSL_cliprestore
@@ -2875,8 +3380,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -5204,8 +5709,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -5304,8 +5809,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -7266,8 +7771,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -7558,8 +8063,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -8055,8 +8560,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
@@ -10167,8 +10672,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
@@ -10270,8 +10775,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
@@ -10546,8 +11051,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
@@ -12383,8 +12888,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
@@ -13813,8 +14318,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
@@ -13985,8 +14490,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_14
 0 setlinecap
 0 setlinejoin
@@ -14326,8 +14831,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_15
 0 setlinecap
 0 setlinejoin
@@ -14429,8 +14934,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_16
 0 setlinecap
 0 setlinejoin
@@ -14908,8 +15413,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_17
 0 setlinecap
 0 setlinejoin
@@ -15014,8 +15519,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_18
 0 setlinecap
 0 setlinejoin
@@ -17413,8 +17918,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_19
 0 setlinecap
 0 setlinejoin
@@ -17443,8 +17948,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_20
 0 setlinecap
 0 setlinejoin
@@ -20625,8 +21130,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_21
 0 setlinecap
 0 setlinejoin
@@ -20916,8 +21421,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_22
 0 setlinecap
 0 setlinejoin
@@ -21019,8 +21524,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_23
 0 setlinecap
 0 setlinejoin
@@ -24218,8 +24723,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_24
 0 setlinecap
 0 setlinejoin
@@ -24612,7 +25117,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -Ccontour.cpt -D2i/-0.35i -B1 -O -K
+%@GMT: gmt psscale -Ccontour.cpt -D2i/-0.35i+w4i/0.1i+h+jTC -B1 -O -K
 %@PROJ: xy 0.00000000 1.00000000 0.00000000 0.10000000 0.000 1.000 0.000 0.100 +xy
 %%BeginObject PSL_Layer_25
 0 setlinecap
@@ -24685,8 +25190,8 @@ O0
 0 5400 TM
 
 % PostScript produced by:
-%@GMT: psbasemap -R204/206/19/21 -JM4i -O -B1 -BWsNe -K -Y4.5i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psbasemap -R204/206/19/21 -JM4i -O -B1 -BWsNe -K -Y4.5i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_26
 0 setlinecap
 0 setlinejoin
@@ -24729,12 +25234,12 @@ N 0 5161 M 0 -5244 D S
 N -83 5161 M 0 -5244 D S
 0 5245 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-156 ) bc Z
-2400 5245 M (-155 ) bc Z
-4800 5245 M (-154 ) bc Z
--167 0 M (19 ) mr Z
--167 2531 M (20 ) mr Z
--167 5078 M (21 ) mr Z
+(î156è) bc Z
+2400 5245 M (î155è) bc Z
+4800 5245 M (î154è) bc Z
+-167 0 M (19è) mr Z
+-167 2531 M (20è) mr Z
+-167 5078 M (21è) mr Z
 %%EndObject
 0 A
 FQ
@@ -24742,8 +25247,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: grdcontour BigIsland.nc -JM4i -O -C1000 -T+d0.1i/0.02i+l -S8 -K --FONT_ANNOT_PRIMARY=9p
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdcontour BigIsland.nc -JM4i -O -C1000 -T+d0.1i/0.02i+l -S8 -K --FONT_ANNOT_PRIMARY=9p
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_27
 0 setlinecap
 0 setlinejoin
@@ -24887,10 +25392,26 @@ N 1169 2161 M -16 18 D S
 -35 11 D
 -123 31 D
 -56 10 D
--87 -1 D
--32 -3 D
--24 0 D
--15 5 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-1 0 D
+-8 0 D
+-8 0 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-8 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-16 5 D
 -64 35 D
 -84 46 D
 -84 50 D
@@ -24988,15 +25509,36 @@ N 1169 2161 M -16 18 D S
 -27 19 D
 -37 16 D
 -24 5 D
--55 -1 D
--32 -9 D
--36 -17 D
--29 -14 D
--23 -7 D
--32 -6 D
--39 1 D
--38 13 D
--23 8 D
+-7 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 -1 D
+-8 -2 D
+-8 -2 D
+-8 -2 D
+-8 -3 D
+-7 -3 D
+-14 -7 D
+-8 -3 D
+-14 -8 D
+-15 -7 D
+-7 -3 D
+-7 -2 D
+-9 -2 D
+-7 -3 D
+-8 -1 D
+-8 -2 D
+-8 -1 D
+-8 -2 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-23 6 D
+-45 16 D
 -64 6 D
 -127 4 D
 -61 5 D
@@ -25040,7 +25582,8 @@ P S
 -33 -45 D
 -7 -7 D
 -7 -5 D
--9 -3 D
+-7 -3 D
+-2 0 D
 -5 0 D
 -14 7 D
 -8 7 D
@@ -25116,14 +25659,47 @@ P S
 -12 10 D
 -14 7 D
 -37 1 D
--60 -4 D
--111 -10 D
--59 -2 D
--23 1 D
--44 4 D
--22 0 D
--15 5 D
--7 6 D
+-8 -1 D
+-7 0 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-7 0 D
+-2 -1 D
+-6 0 D
+-4 -1 D
+-3 0 D
+-8 -1 D
+-7 0 D
+-7 -1 D
+-8 -1 D
+-7 0 D
+-8 -1 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-7 0 D
+-8 -1 D
+-7 0 D
+-8 -1 D
+-7 0 D
+-6 0 D
+-2 0 D
+-7 0 D
+-7 0 D
+-8 0 D
+-59 5 D
+-8 0 D
+-7 0 D
+-15 2 D
+-8 4 D
+-6 5 D
 -9 13 D
 -7 23 D
 -2 56 D
@@ -25217,9 +25793,35 @@ P S
 -56 22 D
 -36 11 D
 -44 7 D
--193 -1 D
--44 7 D
--37 11 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 -1 D
+-5 0 D
+-2 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-7 0 D
+-4 0 D
+-4 0 D
+-44 5 D
+-44 13 D
 -41 18 D
 -39 23 D
 -90 83 D
@@ -25257,7 +25859,8 @@ P S
 -25 17 D
 -90 39 D
 -22 4 D
--45 2 D
+-7 0 D
+-38 2 D
 -21 7 D
 -12 7 D
 -18 15 D
@@ -25330,19 +25933,61 @@ S
 -12 11 D
 -8 4 D
 -30 1 D
--31 -5 D
--45 -13 D
--67 -20 D
--70 -6 D
--37 -11 D
--36 -16 D
--20 -12 D
--25 -19 D
--40 -25 D
--36 -17 D
--30 -8 D
--19 -1 D
--167 9 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-7 -2 D
+-8 -2 D
+-8 -2 D
+-7 -2 D
+-7 -2 D
+-8 -3 D
+-7 -2 D
+-8 -3 D
+-6 -2 D
+-8 -2 D
+-8 -2 D
+-7 -3 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-7 -2 D
+-8 -1 D
+-8 -1 D
+-7 0 D
+-8 -1 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-8 -1 D
+-8 -1 D
+-3 -1 D
+-4 -1 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-7 -3 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
+-14 -7 D
+-7 -4 D
+-19 -13 D
+-19 -14 D
+-7 -4 D
+-20 -13 D
+-13 -8 D
+-5 -2 D
+-9 -5 D
+-8 -3 D
+-14 -7 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-7 -2 D
+-8 0 D
+-8 -1 D
+-170 9 D
 -29 10 D
 -49 27 D
 -6 5 D
@@ -25381,8 +26026,20 @@ S
 -28 15 D
 -68 16 D
 -38 1 D
--54 -7 D
--54 1 D
+-8 -1 D
+-8 -2 D
+-8 -1 D
+-7 -1 D
+-8 -1 D
+-8 -1 D
+-5 0 D
+-2 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-15 1 D
 -23 8 D
 -21 13 D
 -19 16 D
@@ -25450,11 +26107,37 @@ S
 -2 2 D
 -35 10 D
 -38 4 D
--54 -1 D
--41 -10 D
--56 -22 D
--24 -7 D
--52 1 D
+-8 0 D
+-7 0 D
+-1 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 -1 D
+-7 0 D
+-8 -2 D
+-8 -1 D
+-7 -2 D
+-8 -2 D
+-8 -2 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
+-7 -3 D
+-7 -2 D
+-8 -3 D
+-7 -2 D
+-8 -3 D
+-7 -1 D
+-2 -1 D
+-6 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-16 1 D
 -61 15 D
 -22 8 D
 -19 14 D
@@ -25550,12 +26233,29 @@ S
 -20 6 D
 -22 10 D
 -15 3 D
--62 0 D
--30 -7 D
--29 -11 D
--31 -3 D
--19 2 D
--18 6 D
+-7 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-7 -2 D
+-8 -1 D
+-7 -2 D
+-8 -2 D
+-7 -3 D
+-7 -3 D
+-8 -3 D
+-7 -2 D
+-7 -1 D
+-8 -1 D
+-8 -1 D
+-8 0 D
+-5 0 D
+-18 3 D
+-14 5 D
 -14 7 D
 -26 19 D
 -18 18 D
@@ -25683,24 +26383,76 @@ S
 -7 7 D
 -30 1 D
 -8 -1 D
--38 -13 D
--76 -2 D
--84 -12 D
--29 -9 D
--43 -20 D
--22 -7 D
--15 -3 D
--61 1 D
--31 6 D
--30 9 D
+-7 -3 D
+-8 -3 D
+-7 -2 D
+-8 -3 D
+-8 -2 D
+-7 -1 D
+-1 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 -1 D
+-7 0 D
+-8 -1 D
+-4 0 D
+-4 -1 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-8 -1 D
+-8 -1 D
+-7 -1 D
+-8 -2 D
+-7 -1 D
+-6 -1 D
+-9 -2 D
+-8 -2 D
+-7 -3 D
+-7 -2 D
+-14 -7 D
+-14 -7 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
+-7 -2 D
+-8 -2 D
+-7 -1 D
+-8 -2 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-30 5 D
+-38 11 D
 -22 2 D
--38 -6 D
--45 -13 D
--21 -13 D
--26 -19 D
--20 -9 D
--14 -1 D
--22 4 D
+-8 -1 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-8 -2 D
+-7 -2 D
+-7 -3 D
+-8 -2 D
+-14 -8 D
+-20 -15 D
+-13 -9 D
+-14 -7 D
+-6 -2 D
+-5 -1 D
+-2 0 D
+-29 4 D
 -29 15 D
 -27 21 D
 -26 30 D
@@ -25794,18 +26546,30 @@ S
 -21 11 D
 -7 3 D
 -31 3 D
--31 1 D
--88 17 D
--31 10 D
+-7 0 D
+-8 0 D
+-24 2 D
+-82 17 D
+-29 9 D
 -44 16 D
 -45 10 D
 -40 4 D
--29 -2 D
--38 -7 D
--38 1 D
--55 8 D
--21 7 D
--44 16 D
+-6 0 D
+-8 0 D
+-7 -1 D
+-8 -1 D
+-8 -2 D
+-7 -1 D
+-8 -2 D
+-8 -1 D
+-7 -1 D
+-8 0 D
+-5 0 D
+-2 0 D
+-8 0 D
+-53 6 D
+-31 7 D
+-51 19 D
 -22 3 D
 -84 9 D
 -76 12 D
@@ -25871,8 +26635,12 @@ S
 -12 8 D
 -7 3 D
 -61 6 D
--46 1 D
--15 3 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-23 2 D
+-7 2 D
 -13 9 D
 -9 13 D
 -12 23 D
@@ -25908,9 +26676,30 @@ S
 -53 13 D
 -76 13 D
 -26 2 D
--142 -6 D
--23 -1 D
--15 2 D
+-4 0 D
+-8 0 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-8 0 D
+-7 -1 D
+-7 0 D
+-1 0 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-8 -1 D
+-7 0 D
+-8 0 D
+-8 -1 D
+-7 0 D
+-8 -1 D
+-8 0 D
+-2 0 D
+-20 2 D
 -15 5 D
 -21 11 D
 -27 19 D
@@ -26036,10 +26825,26 @@ S
 -11 9 D
 -31 9 D
 -76 1 D
--23 -3 D
--60 -14 D
--53 -1 D
--23 2 D
+-8 -1 D
+-5 0 D
+-3 -1 D
+-7 -1 D
+-8 -2 D
+-7 -1 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-7 -2 D
+-7 -2 D
+-8 -1 D
+-8 -1 D
+-2 0 D
+-5 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-30 2 D
 -53 11 D
 -22 7 D
 -19 8 D
@@ -26131,12 +26936,23 @@ S
 -52 13 D
 -29 9 D
 -46 5 D
--53 3 D
--72 10 D
--81 -1 D
--29 10 D
--22 8 D
--28 5 D
+-8 0 D
+-53 4 D
+-64 9 D
+-4 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-23 7 D
+-28 11 D
+-29 5 D
 -29 14 D
 -27 17 D
 -12 10 D
@@ -26154,8 +26970,12 @@ S
 -45 9 D
 -30 5 D
 -23 1 D
--29 -9 D
--15 -6 D
+-7 -2 D
+-8 -2 D
+-7 -2 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
 0 -1 D
 -13 -8 D
 -11 -12 D
@@ -26182,12 +27002,19 @@ S
 -18 -30 D
 -8 -11 D
 -10 -9 D
--36 -21 D
+-12 -7 D
+-12 -7 D
+-12 -7 D
 -13 -16 D
 -19 -29 D
 -5 -7 D
 -35 -31 D
--93 -68 D
+-13 -10 D
+-19 -14 D
+-17 -12 D
+-17 -12 D
+-22 -16 D
+-5 -4 D
 S
 557 0 M
 -26 20 D
@@ -26324,7 +27151,11 @@ S
 -10 21 D
 -12 7 D
 -7 2 D
--47 1 D
+-8 0 D
+-7 0 D
+-9 0 D
+-8 0 D
+-15 1 D
 -13 7 D
 -6 5 D
 -19 23 D
@@ -26336,12 +27167,24 @@ S
 3 14 D
 -1 39 D
 -2 3 D
--40 -1 D
--20 -14 D
--22 -21 D
+-3 0 D
+-6 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-8 -1 D
+-14 -10 D
+-11 -9 D
+-17 -16 D
 -21 -13 D
 -7 -4 D
--50 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-7 0 D
+-6 0 D
+-6 0 D
 -9 13 D
 -8 22 D
 -7 84 D
@@ -26397,7 +27240,19 @@ S
 -19 11 D
 -75 32 D
 -72 28 D
--83 -1 D
+-3 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-8 -1 D
+-7 0 D
+-7 0 D
+-5 0 D
+-3 0 D
 -7 -1 D
 -13 -6 D
 -18 -16 D
@@ -26428,12 +27283,21 @@ S
 -20 -32 D
 -9 -12 D
 -17 -16 D
--45 -24 D
--47 -22 D
--24 -17 D
--22 -19 D
+-12 -7 D
+-14 -7 D
+-13 -7 D
+-13 -6 D
+-7 -3 D
+-13 -6 D
+-13 -7 D
+-13 -7 D
+-6 -4 D
+-29 -24 D
+-5 -4 D
 0 -1 D
--48 -35 D
+-24 -18 D
+-18 -13 D
+-6 -4 D
 S
 0 4522 M
 14 -14 D
@@ -26461,7 +27325,15 @@ S
 -15 -20 D
 -19 -20 D
 -4 -3 D
--62 0 D
+-3 0 D
+-8 0 D
+-7 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-7 0 D
+-8 0 D
+-7 0 D
 -29 9 D
 -35 8 D
 -35 12 D
@@ -26524,35 +27396,71 @@ P S
 -10 -22 D
 -21 -36 D
 -11 -12 D
--27 -15 D
--72 -30 D
--29 -9 D
--30 -1 D
--22 5 D
--39 19 D
--18 11 D
--39 27 D
+-13 -8 D
+-14 -7 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-4 -2 D
+-11 -4 D
+-7 -3 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
+-7 -2 D
+-8 -3 D
+-7 -2 D
+-7 -2 D
+-8 -1 D
+-3 0 D
+-4 0 D
+-7 0 D
+-15 1 D
+-22 7 D
+-44 23 D
+-45 31 D
 -14 7 D
--22 -2 D
--53 -13 D
--15 -3 D
--27 -15 D
+-7 0 D
+-2 0 D
+-6 -1 D
+-7 -1 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-7 -2 D
+-8 -1 D
+-7 -2 D
+-3 -1 D
+-5 -1 D
+-8 -1 D
+-6 -2 D
+-8 -3 D
+-14 -8 D
+-19 -13 D
+-25 -20 D
+-12 -8 D
+-14 -9 D
+-13 -8 D
+-13 -8 D
+-5 -3 D
+-15 -10 D
+-19 -13 D
 -25 -19 D
--32 -23 D
--53 -33 D
--32 -22 D
--61 -52 D
--10 -9 D
--19 -26 D
+-42 -36 D
+-16 -14 D
+-20 -27 D
 -23 -42 D
 -14 -19 D
 -36 -43 D
 -16 -17 D
 -6 -5 D
 -5 -6 D
--71 -63 D
--34 -31 D
--43 -47 D
+-40 -35 D
+-48 -43 D
+-23 -22 D
+-21 -23 D
+-16 -18 D
 -6 -5 D
 -20 -24 D
 -1 0 D
@@ -26561,12 +27469,28 @@ P S
 -9 -13 D
 -27 -30 D
 -19 -13 D
--30 -9 D
--47 -4 D
--84 1 D
--46 5 D
--38 8 D
--22 7 D
+-7 -3 D
+-8 -2 D
+-8 -2 D
+-7 -2 D
+-8 -1 D
+-8 -1 D
+-8 -1 D
+-4 0 D
+-4 0 D
+-7 -1 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-62 5 D
+-37 7 D
+-30 9 D
 -35 16 D
 -26 18 D
 -23 21 D
@@ -26658,13 +27582,19 @@ P S
 -20 -23 D
 -37 -41 D
 -13 -7 D
--22 -8 D
--6 -4 D
+-7 -3 D
+-8 -2 D
+-7 -3 D
+-5 -4 D
+-1 0 D
 -15 -19 D
 -12 -21 D
 -10 -12 D
 -12 -8 D
--33 -14 D
+-8 -4 D
+-9 -3 D
+-8 -4 D
+-8 -3 D
 -9 -8 D
 -1 -5 D
 7 -9 D
@@ -26711,18 +27641,55 @@ P S
 -25 -40 D
 -9 -13 D
 -10 -11 D
--77 -65 D
--31 -22 D
--18 -13 D
--35 -30 D
--33 -21 D
--33 -17 D
--57 -23 D
--78 -28 D
--50 -16 D
--65 -1 D
--9 5 D
--17 16 D
+-17 -14 D
+-42 -36 D
+-17 -15 D
+-19 -13 D
+-19 -13 D
+-11 -8 D
+-30 -26 D
+-19 -13 D
+-20 -13 D
+-13 -7 D
+-13 -7 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -2 D
+-7 -3 D
+-7 -3 D
+-8 -3 D
+-7 -2 D
+-7 -3 D
+-7 -3 D
+-7 -2 D
+-5 -2 D
+-9 -4 D
+-7 -2 D
+-7 -3 D
+-7 -2 D
+-8 -3 D
+-7 -2 D
+-7 -2 D
+-7 -3 D
+-7 -2 D
+-7 -2 D
+-7 -3 D
+-8 -2 D
+-7 -2 D
+-8 -1 D
+-7 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-7 1 D
+-12 9 D
+-11 11 D
 -14 20 D
 -27 48 D
 -10 21 D
@@ -26790,10 +27757,16 @@ P S
 -1 -9 D
 -8 -7 D
 -9 -5 D
--34 -1 D
--15 5 D
--18 12 D
--8 7 D
+-5 -1 D
+-1 0 D
+-4 0 D
+-5 0 D
+-5 0 D
+-4 0 D
+-5 0 D
+-10 1 D
+-15 7 D
+-21 16 D
 -14 21 D
 -9 21 D
 -6 35 D
@@ -26814,8 +27787,18 @@ P S
 -35 -51 D
 -22 -26 D
 -5 -5 D
--14 -7 D
--71 1 D
+-12 -6 D
+-2 -1 D
+-4 0 D
+-6 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-6 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-13 1 D
 -17 9 D
 -48 25 D
 -24 11 D
@@ -26855,13 +27838,28 @@ P S
 -19 -24 D
 -15 -18 D
 -29 -26 D
--38 -25 D
--31 -15 D
--70 -38 D
--30 -9 D
--29 -3 D
--22 1 D
--14 3 D
+-19 -13 D
+-13 -8 D
+-13 -7 D
+-14 -7 D
+-7 -3 D
+-13 -7 D
+-13 -8 D
+-13 -7 D
+-14 -8 D
+-6 -3 D
+-14 -7 D
+-7 -3 D
+-8 -2 D
+-7 -2 D
+-8 -2 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-7 0 D
+-8 0 D
+-2 0 D
+-26 4 D
 -21 10 D
 -19 13 D
 -14 13 D
@@ -26884,8 +27882,11 @@ P S
 -1 -2 D
 -4 -3 D
 -1 -2 D
--7 -3 D
--2 0 D
+-5 -3 D
+-1 0 D
+-1 0 D
+-1 0 D
+-1 0 D
 -1 11 D
 P S
 PSL_cliprestore
@@ -26896,8 +27897,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_28
 0 setlinecap
 0 setlinejoin
@@ -29225,8 +30226,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_29
 0 setlinecap
 0 setlinejoin
@@ -29325,8 +30326,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_30
 0 setlinecap
 0 setlinejoin
@@ -31287,8 +32288,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_31
 0 setlinecap
 0 setlinejoin
@@ -31579,8 +32580,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_32
 0 setlinecap
 0 setlinejoin
@@ -32076,8 +33077,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_33
 0 setlinecap
 0 setlinejoin
@@ -34188,8 +35189,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_34
 0 setlinecap
 0 setlinejoin
@@ -34291,8 +35292,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_35
 0 setlinecap
 0 setlinejoin
@@ -34567,8 +35568,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_36
 0 setlinecap
 0 setlinejoin
@@ -36404,8 +37405,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_37
 0 setlinecap
 0 setlinejoin
@@ -37834,8 +38835,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_38
 0 setlinecap
 0 setlinejoin
@@ -38006,8 +39007,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_39
 0 setlinecap
 0 setlinejoin
@@ -38347,8 +39348,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_40
 0 setlinecap
 0 setlinejoin
@@ -38450,8 +39451,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_41
 0 setlinecap
 0 setlinejoin
@@ -38929,8 +39930,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_42
 0 setlinecap
 0 setlinejoin
@@ -39035,8 +40036,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_43
 0 setlinecap
 0 setlinejoin
@@ -41434,8 +42435,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_44
 0 setlinecap
 0 setlinejoin
@@ -41464,8 +42465,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_45
 0 setlinecap
 0 setlinejoin
@@ -44647,8 +45648,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_46
 0 setlinecap
 0 setlinejoin
@@ -44938,8 +45939,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_47
 0 setlinecap
 0 setlinejoin
@@ -45041,8 +46042,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_48
 0 setlinecap
 0 setlinejoin
@@ -48240,8 +49241,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -K -Ccontour.cpt -Sc0.005i
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_49
 0 setlinecap
 0 setlinejoin
@@ -48634,13 +49635,17 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R204/206/19/21 -JM4i -O -T
-%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R204/206/19/21 -JM4i -O -T
+%@PROJ: merc 204.00000000 206.00000000 19.00000000 21.00000000 -111319.491 111319.491 2141031.623 2376572.723 +proj=merc +lon_0=205 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_50
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

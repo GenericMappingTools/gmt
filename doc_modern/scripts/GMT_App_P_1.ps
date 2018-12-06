@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v6.0.0_r19029 [64-bit] Document from grdimage
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Oct  9 11:46:46 2017
+%%CreationDate: Thu Dec  6 10:52:04 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -658,14 +663,18 @@ V 0.06 0.06 scale
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
 /PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: grdimage /tmp/gmt.zvX3qH/lat.nc -JK6.5i -C/tmp/gmt.zvX3qH/lat.cpt -P -K -nl
-%@PROJ: eck6 -180.00000000 180.00000000 -90.00000000 90.00000000 -17653837.706 17653837.706 -8826918.853 8826918.853 +proj=eck6 +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdimage /tmp/gmt.9lGzSC/lat.nc -JK6.5i -C/tmp/gmt.9lGzSC/lat.cpt -P -K -nl
+%@PROJ: eck6 -180.00000000 180.00000000 -90.00000000 90.00000000 -17653837.706 17653837.706 -8826918.853 8826918.853 +proj=eck6 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 72 72 468 234
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -725,15 +734,37 @@ clipsave
 -56 35 D
 -19 13 D
 -90 57 D
--3902 -1 D
--88 -56 D
--345 -222 D
--259 -172 D
--136 -95 D
--78 -55 D
--194 -144 D
--149 -120 D
--89 -75 D
+-3900 0 D
+-9 -6 D
+-12 -7 D
+-16 -10 D
+-20 -13 D
+-24 -16 D
+-19 -11 D
+-9 -7 D
+-22 -13 D
+-34 -22 D
+-25 -16 D
+-40 -26 D
+-29 -18 D
+-44 -29 D
+-32 -20 D
+-49 -32 D
+-34 -22 D
+-52 -34 D
+-54 -36 D
+-56 -37 D
+-56 -37 D
+-58 -39 D
+-58 -40 D
+-58 -41 D
+-59 -41 D
+-59 -43 D
+-58 -42 D
+-78 -58 D
+-76 -59 D
+-93 -75 D
+-107 -90 D
 -101 -92 D
 -64 -62 D
 -60 -62 D
@@ -825,8 +856,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pscoast -Rd -JK6.5i -O -Dc -A5000 -Gwhite -Bx60g30 -By30g30
-%@PROJ: eck6 -180.00000000 180.00000000 -90.00000000 90.00000000 -17653837.706 17653837.706 -8826918.853 8826918.853 +proj=eck6 +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -Rd -JK6.5i -O -Dc -A5000 -Gwhite -Bx60g30 -By30g30
+%@PROJ: eck6 -180.00000000 180.00000000 -90.00000000 90.00000000 -17653837.706 17653837.706 -8826918.853 8826918.853 +proj=eck6 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -1532,7 +1563,8 @@ FO
 -1 1 D
 -2 -3 D
 4 0 D
--8 -4 D
+-5 -2 D
+-3 -2 D
 -4 -5 D
 24 0 D
 13 5 D
@@ -1938,6 +1970,7 @@ P
 FO
 3668 3810 M
 2 0 D
+-2 0 D
 P
 FO
 3665 3797 M
@@ -2183,7 +2216,9 @@ FO
 -14 5 D
 -9 -4 D
 -9 6 D
--87 0 D
+-67 0 D
+-1 0 D
+-19 0 D
 4 -4 D
 -12 4 D
 -13 -11 D
@@ -2245,6 +2280,7 @@ P
 0 -13 D
 -17 -10 D
 8 -2 D
+-13 -2 D
 P
 4369 3586 M
 19 -9 D
@@ -2853,17 +2889,29 @@ FO
 -17 -17 D
 25 28 D
 -24 24 D
--96 -63 D
+-20 -13 D
+-20 -13 D
+-21 -14 D
+-14 -9 D
+-21 -14 D
 P
 FO
 2153 3711 M
 -22 8 D
 -216 0 D
--25 -18 D
--136 -99 D
--88 -66 D
--23 -17 D
--23 -17 D
+-19 -13 D
+-12 -10 D
+-20 -14 D
+-26 -19 D
+-27 -20 D
+-21 -15 D
+-28 -21 D
+-22 -16 D
+-22 -16 D
+-30 -22 D
+-30 -22 D
+-22 -18 D
+-16 -11 D
 1 -12 D
 26 17 D
 -10 -12 D
@@ -2981,8 +3029,12 @@ FO
 -29 -8 D
 -3 -10 D
 -41 15 D
--145 -121 D
--80 -68 D
+-34 -28 D
+-36 -30 D
+-37 -31 D
+-44 -38 D
+-40 -33 D
+-34 -29 D
 13 5 D
 2 -6 D
 -12 -5 D
@@ -3127,7 +3179,8 @@ FO
 -26 10 D
 -45 -43 D
 11 -3 D
--22 -8 D
+-20 -7 D
+-2 -1 D
 -1 -2 D
 18 0 D
 18 6 D
@@ -3549,6 +3602,7 @@ FO
 2907 3719 M
 14 -2 D
 -1 2 D
+-13 0 D
 P
 FO
 2946 3684 M
@@ -3779,7 +3833,8 @@ FO
 P
 FO
 3900 3364 M
-0 15 D
+0 -1 D
+0 16 D
 -3 3 D
 -9 1 D
 12 1 D
@@ -6977,6 +7032,7 @@ FO
 8 -8 D
 10 8 D
 0 1 D
+-17 0 D
 P
 FO
 6693 1635 M
@@ -7622,7 +7678,9 @@ FO
 -6 7 D
 -18 -4 D
 -25 6 D
--70 -58 D
+-26 -21 D
+-30 -25 D
+-14 -12 D
 248 0 D
 P
 FO
@@ -7770,7 +7828,8 @@ FO
 P
 FO
 3900 188 M
--20 -7 D
+-11 -4 D
+-9 -3 D
 20 0 D
 P
 FO
@@ -7877,9 +7936,13 @@ FO
 42 31 D
 13 9 D
 -248 0 D
--48 -40 D
--30 -24 D
--129 -106 D
+-28 -23 D
+-26 -21 D
+-51 -43 D
+-40 -32 D
+-32 -26 D
+-23 -19 D
+-13 -11 D
 P
 FO
 5961 70 M
@@ -7904,10 +7967,20 @@ FO
 -63 5 D
 1 5 D
 -7 0 D
--61 -44 D
--134 -97 D
--38 -26 D
 -19 -14 D
+-24 -18 D
+-18 -12 D
+-17 -12 D
+-22 -16 D
+-30 -22 D
+-27 -19 D
+-24 -17 D
+-14 -11 D
+-19 -13 D
+-15 -10 D
+-14 -11 D
+-6 -4 D
+-3 -2 D
 217 0 D
 102 65 D
 P
@@ -8973,22 +9046,65 @@ N 1950 3900 M -83 0 D S
 -62 39 D
 -25 17 D
 -170 108 D
--3900 0 D
--176 -112 D
--88 -57 D
+-975 0 D
+-975 0 D
+-975 0 D
+-975 0 D
+-9 -6 D
+-12 -7 D
+-15 -10 D
+-20 -13 D
+-16 -10 D
+-18 -11 D
+-29 -19 D
+-11 -7 D
+-11 -7 D
+-17 -11 D
+-12 -7 D
+-13 -8 D
+-19 -13 D
+-20 -13 D
+-14 -8 D
+-21 -14 D
 -15 -9 D
--288 -188 D
--56 -38 D
--115 -78 D
--98 -68 D
--97 -69 D
--78 -57 D
+-22 -15 D
+-23 -15 D
+-16 -10 D
+-24 -16 D
+-25 -16 D
+-25 -16 D
+-25 -17 D
+-18 -11 D
+-26 -17 D
+-27 -18 D
+-27 -18 D
+-19 -12 D
+-27 -19 D
+-19 -12 D
+-28 -19 D
+-29 -19 D
+-28 -19 D
+-29 -20 D
+-29 -20 D
+-29 -20 D
+-30 -20 D
+-29 -21 D
+-29 -20 D
+-29 -21 D
+-30 -21 D
+-39 -29 D
+-29 -21 D
+-29 -21 D
 -19 -15 D
--58 -43 D
--140 -111 D
--80 -68 D
--103 -91 D
--89 -85 D
+-38 -29 D
+-20 -14 D
+-47 -37 D
+-47 -37 D
+-46 -37 D
+-54 -45 D
+-70 -61 D
+-84 -76 D
+-64 -62 D
 -7 -8 D
 -16 -15 D
 -44 -47 D
@@ -9043,35 +9159,39 @@ N 1950 3900 M -83 0 D S
 P S
 2020 -128 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 233 F0
-(-180š) tc Z
-2020 4028 M (-180š) bc Z
-2660 -141 M (-120š) tc Z
-2660 4041 M (-120š) bc Z
-3289 -157 M (-60š) tc Z
-3289 4057 M (-60š) bc Z
-3900 -167 M (0š) tc Z
-3900 4067 M (0š) bc Z
-4511 -157 M (60š) tc Z
-4511 4057 M (60š) bc Z
-5140 -141 M (120š) tc Z
-5140 4041 M (120š) bc Z
-5780 -128 M (180š) tc Z
-5780 4028 M (180š) bc Z
-1783 0 M (-90š) mr Z
-6017 0 M (-90š) ml Z
-1204 375 M (-60š) mr Z
-6596 375 M (-60š) ml Z
-248 1125 M (-30š) mr Z
-7552 1125 M (-30š) ml Z
--167 1950 M (0š) mr Z
-7967 1950 M (0š) ml Z
-248 2775 M (30š) mr Z
-7552 2775 M (30š) ml Z
-1204 3525 M (60š) mr Z
-6596 3525 M (60š) ml Z
-1783 3900 M (90š) mr Z
-6017 3900 M (90š) ml Z
+(-180°) tc Z
+2020 4028 M (-180°) bc Z
+2660 -141 M (-120°) tc Z
+2660 4041 M (-120°) bc Z
+3289 -157 M (-60°) tc Z
+3289 4057 M (-60°) bc Z
+3900 -167 M (0°) tc Z
+3900 4067 M (0°) bc Z
+4511 -157 M (60°) tc Z
+4511 4057 M (60°) bc Z
+5140 -141 M (120°) tc Z
+5140 4041 M (120°) bc Z
+5780 -128 M (180°) tc Z
+5780 4028 M (180°) bc Z
+1783 0 M (-90°) mr Z
+6017 0 M (-90°) ml Z
+1204 375 M (-60°) mr Z
+6596 375 M (-60°) ml Z
+248 1125 M (-30°) mr Z
+7552 1125 M (-30°) ml Z
+-167 1950 M (0°) mr Z
+7967 1950 M (0°) ml Z
+248 2775 M (30°) mr Z
+7552 2775 M (30°) ml Z
+1204 3525 M (60°) mr Z
+6596 3525 M (60°) ml Z
+1783 3900 M (90°) mr Z
+6017 3900 M (90°) ml Z
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage
