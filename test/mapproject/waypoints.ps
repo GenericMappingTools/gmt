@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v5.4.0_r17452 [64-bit] Document from psxy
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Jan 18 17:16:56 2017
+%%CreationDate: Thu Dec  6 10:51:22 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -657,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: psxy -R181/185/-7:30/-2 -JM6.5i -P -Baf -BWSne -W0.25p /Users/pwessel/GMTdev/gmt5-dev/trunk/test/mapproject/waypoints.txt -: -K
-%@PROJ: merc 181.00000000 185.00000000 -7.50000000 -2.00000000 -222638.982 222638.982 -831717.356 -221194.077 +proj=merc +lon_0=183 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R181/185/-7:30/-2 -JM6.5i -P -Baf -BWSne -W0.25p waypoints.txt -: -K
+%@PROJ: merc 181.00000000 185.00000000 -7.50000000 -2.00000000 -222638.982 222638.982 -831717.356 -221194.077 +proj=merc +lon_0=183 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 72 72 468 641.678
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -710,10 +720,76 @@ O0
 -226 835 D
 -259 956 D
 -92 338 D
--287 -46 D
--150 -23 D
--362 -58 D
--75 -11 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -1 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -1 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
 169 -53 D
 361 -112 D
 242 -74 D
@@ -723,7 +799,59 @@ O0
 -340 135 D
 -258 102 D
 -784 311 D
--655 -98 D
+-12 -2 D
+-13 -2 D
+-12 -1 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -1 D
+-12 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-12 -2 D
+-13 -2 D
+-12 -1 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-12 -1 D
+-13 -2 D
+-12 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -1 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-12 -2 D
+-13 -2 D
+-12 -1 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-12 -2 D
+-13 -1 D
+-12 -2 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-13 -2 D
+-12 -1 D
+-12 -2 D
+-13 -2 D
+-12 -2 D
+-12 -2 D
 S
 25 W
 8 W
@@ -749,19 +877,6 @@ N 0 8756 M -83 0 D S
 N 7800 8756 M 83 0 D S
 N 0 10695 M -83 0 D S
 N 7800 10695 M 83 0 D S
-0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(-179 ) tc Z
-1950 -167 M (-178 ) tc Z
-3900 -167 M (-177 ) tc Z
-5850 -167 M (-176 ) tc Z
-7800 -167 M (-175 ) tc Z
--167 976 M (-7 ) mr Z
--167 2926 M (-6 ) mr Z
--167 4872 M (-5 ) mr Z
--167 6815 M (-4 ) mr Z
--167 8756 M (-3 ) mr Z
--167 10695 M (-2 ) mr Z
 83 W
 N -42 0 M 0 488 D S
 N 7842 0 M 0 488 D S
@@ -886,6 +1001,19 @@ N 7883 10695 M -7966 0 D S
 N 7883 10778 M -7966 0 D S
 N 0 10778 M 0 -10861 D S
 N -83 10778 M 0 -10861 D S
+0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(î179è) tc Z
+1950 -167 M (î178è) tc Z
+3900 -167 M (î177è) tc Z
+5850 -167 M (î176è) tc Z
+7800 -167 M (î175è) tc Z
+-167 976 M (î7è) mr Z
+-167 2926 M (î6è) mr Z
+-167 4872 M (î5è) mr Z
+-167 6815 M (î4è) mr Z
+-167 8756 M (î3è) mr Z
+-167 10695 M (î2è) mr Z
 %%EndObject
 0 A
 FQ
@@ -893,8 +1021,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R181/185/-7:30/-2 -JM6.5i -O -K -Sc0.2c -Gblue /Users/pwessel/GMTdev/gmt5-dev/trunk/test/mapproject/waypoints.txt -:
-%@PROJ: merc 181.00000000 185.00000000 -7.50000000 -2.00000000 -222638.982 222638.982 -831717.356 -221194.077 +proj=merc +lon_0=183 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R181/185/-7:30/-2 -JM6.5i -O -K -Sc0.2c -Gblue waypoints.txt -:
+%@PROJ: merc 181.00000000 185.00000000 -7.50000000 -2.00000000 -222638.982 222638.982 -831717.356 -221194.077 +proj=merc +lon_0=183 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -904,6 +1032,7 @@ clipsave
 7800 0 D
 0 10695 D
 -7800 0 D
+P
 PSL_clip N
 4 W
 V
@@ -932,8 +1061,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R181/185/-7:30/-2 -JM6.5i -O -K -Sa0.4c -Gred
-%@PROJ: merc 181.00000000 185.00000000 -7.50000000 -2.00000000 -222638.982 222638.982 -831717.356 -221194.077 +proj=merc +lon_0=183 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R181/185/-7:30/-2 -JM6.5i -O -K -Sa0.4c -Gred
+%@PROJ: merc 181.00000000 185.00000000 -7.50000000 -2.00000000 -222638.982 222638.982 -831717.356 -221194.077 +proj=merc +lon_0=183 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -943,6 +1072,7 @@ clipsave
 7800 0 D
 0 10695 D
 -7800 0 D
+P
 PSL_clip N
 4 W
 V
@@ -957,8 +1087,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R181/185/-7:30/-2 -JM6.5i -O -K -F+f9p+r100 -D0/0.4c
-%@PROJ: merc 181.00000000 185.00000000 -7.50000000 -2.00000000 -222638.982 222638.982 -831717.356 -221194.077 +proj=merc +lon_0=183 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -R181/185/-7:30/-2 -JM6.5i -O -K -F+f9p+r100 -D0/0.4c
+%@PROJ: merc 181.00000000 185.00000000 -7.50000000 -2.00000000 -222638.982 222638.982 -831717.356 -221194.077 +proj=merc +lon_0=183 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -968,6 +1098,7 @@ clipsave
 7800 0 D
 0 10695 D
 -7800 0 D
+P
 PSL_clip N
 4190 1872 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 150 F0
@@ -993,8 +1124,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pslegend -R181/185/-7:30/-2 -JM6.5i -O -DjTL+w3.75i+o0.1i -F+p1p+gwhite+s /tmp/legend
-%@PROJ: merc 181.00000000 185.00000000 -7.50000000 -2.00000000 -222638.982 222638.982 -831717.356 -221194.077 +proj=merc +lon_0=183 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pslegend -R181/185/-7:30/-2 -JM6.5i -O -DjTL+w3.75i+o0.1i -F+p1p+gwhite+s legend
+%@PROJ: merc 181.00000000 185.00000000 -7.50000000 -2.00000000 -222638.982 222638.982 -831717.356 -221194.077 +proj=merc +lon_0=183 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -1020,7 +1151,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R0/6.5/0/8.91219 -Jx1i -O -K -N -F+f+j @GMTAPI@-000001
+%@GMT: gmt pstext -R0/6.5/0/8.91219 -Jx1i -O -K -N -F+f+j @GMTAPI@-000001 --GMT_HISTORY=false
 %@PROJ: xy 0.00000000 6.50000000 0.00000000 8.91219000 0.000 6.500 0.000 8.912 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
@@ -1035,64 +1166,68 @@ O0
 2712 4337 M (Distance) bc Z
 3945 4337 M (Time) bc Z
 462 3933 M (P-100) bc Z
-1968 3933 M (293.2\312) br Z
+1968 3933 M (293.2\217) br Z
 3324 3933 M (101.9 nm) br Z
 4433 3933 M (5.1 hr) br Z
 462 3640 M (P-101) bc Z
-1968 3640 M (280.1\312) br Z
+1968 3640 M (280.1\217) br Z
 3324 3640 M (13.1 nm) br Z
 4433 3640 M (5.7 hr) br Z
 462 3347 M (P-102) bc Z
-1968 3347 M (292.6\312) br Z
+1968 3347 M (292.6\217) br Z
 3324 3347 M (49.7 nm) br Z
 4433 3347 M (8.2 hr) br Z
 462 3053 M (P-103) bc Z
-1968 3053 M (68.1\312) br Z
+1968 3053 M (68.1\217) br Z
 3324 3053 M (13.1 nm) br Z
 4433 3053 M (8.9 hr) br Z
 462 2760 M (P-104) bc Z
-1968 2760 M (111.2\312) br Z
+1968 2760 M (111.2\217) br Z
 3324 2760 M (50.8 nm) br Z
 4433 2760 M (11.4 hr) br Z
 462 2467 M (P-105) bc Z
-1968 2467 M (99.7\312) br Z
+1968 2467 M (99.7\217) br Z
 3324 2467 M (12.2 nm) br Z
 4433 2467 M (12.0 hr) br Z
 462 2173 M (P-106) bc Z
-1968 2173 M (122.3\312) br Z
+1968 2173 M (122.3\217) br Z
 3324 2173 M (27.5 nm) br Z
 4433 2173 M (13.4 hr) br Z
 462 1880 M (P-107) bc Z
-1968 1880 M (33.9\312) br Z
+1968 1880 M (33.9\217) br Z
 3324 1880 M (62.8 nm) br Z
 4433 1880 M (16.6 hr) br Z
 462 1587 M (P-108) bc Z
-1968 1587 M (344.9\312) br Z
+1968 1587 M (344.9\217) br Z
 3324 1587 M (67.8 nm) br Z
 4433 1587 M (19.9 hr) br Z
 462 1293 M (P-109) bc Z
-1968 1293 M (260.9\312) br Z
+1968 1293 M (260.9\217) br Z
 3324 1293 M (27.2 nm) br Z
 4433 1293 M (21.3 hr) br Z
 462 1000 M (P-110) bc Z
-1968 1000 M (107.3\312) br Z
+1968 1000 M (107.3\217) br Z
 3324 1000 M (24.8 nm) br Z
 4433 1000 M (22.5 hr) br Z
 462 707 M (P-111) bc Z
-1968 707 M (165.0\312) br Z
+1968 707 M (165.0\217) br Z
 3324 707 M (13.2 nm) br Z
 4433 707 M (23.2 hr) br Z
 462 413 M (P-112) bc Z
-1968 413 M (291.7\312) br Z
+1968 413 M (291.7\217) br Z
 3324 413 M (45.6 nm) br Z
 4433 413 M (25.5 hr) br Z
 462 120 M (P-113) bc Z
-1968 120 M (261.4\312) br Z
+1968 120 M (261.4\217) br Z
 3324 120 M (20.3 nm) br Z
 4433 120 M (26.5 hr) br Z
 %%EndObject
 -120 -5498 T
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

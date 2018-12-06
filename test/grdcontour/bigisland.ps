@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v5.4.0_r18050 [64-bit] Document from pscoast
-%%Creator: GMT5
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from pscoast
+%%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Apr 27 17:48:20 2017
+%%CreationDate: Thu Dec  6 10:52:24 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -657,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: pscoast -R156:45W/154:15W/18:30N/20:30N -JM6i -Baf -Gburlywood -W0.75p -Df -P -K --FORMAT_GEO_MAP=dddF
-%@PROJ: merc -156.75000000 -154.25000000 18.50000000 20.50000000 -139149.363 139149.363 2082605.323 2317400.678 +proj=merc +lon_0=-155.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -R156:45W/154:15W/18:30N/20:30N -JM6i -Baf -Gburlywood -W0.75p -Df -P -K --FORMAT_GEO_MAP=dddF
+%@PROJ: merc -156.75000000 -154.25000000 18.50000000 20.50000000 -139149.363 139149.363 2082605.323 2317400.678 +proj=merc +lon_0=-155.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 72 72 432 364.47
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -796,8 +806,8 @@ O0
 -6 1 D
 3 2 D
 -1 4 D
--5 -2 D
--5 2 D
+-3 -2 D
+-7 2 D
 -5 6 D
 -2 -3 D
 -3 0 D
@@ -837,8 +847,8 @@ O0
 -5 5 D
 -27 0 D
 -7 8 D
--6 -1 D
-0 -3 D
+-5 0 D
+-1 -4 D
 -3 -4 D
 -12 0 D
 -8 8 D
@@ -852,8 +862,8 @@ O0
 -5 5 D
 -2 0 D
 -2 2 D
--11 -1 D
--1 -4 D
+-10 0 D
+-2 -5 D
 -3 0 D
 -2 3 D
 -7 2 D
@@ -870,7 +880,8 @@ O0
 -3 -3 D
 -9 0 D
 -5 -5 D
--7 -2 D
+-5 -2 D
+-2 0 D
 -7 -8 D
 -3 0 D
 -2 -2 D
@@ -940,7 +951,8 @@ O0
 -5 5 D
 -2 0 D
 -2 3 D
--8 -3 D
+-5 -1 D
+-3 -2 D
 -7 0 D
 -10 10 D
 -2 0 D
@@ -992,8 +1004,9 @@ O0
 -2 3 D
 -7 0 D
 -3 -3 D
--7 -2 D
--1 4 D
+-5 -2 D
+-3 1 D
+0 3 D
 2 2 D
 0 3 D
 -3 3 D
@@ -1234,7 +1247,7 @@ FO
 2 2 D
 4 1 D
 -1 7 D
--6 -1 D
+-5 0 D
 P
 FO
 3020 5144 M
@@ -1371,8 +1384,8 @@ FO
 -6 1 D
 3 2 D
 -1 4 D
--5 -2 D
--5 2 D
+-3 -2 D
+-7 2 D
 -5 6 D
 -2 -3 D
 -3 0 D
@@ -1412,8 +1425,8 @@ FO
 -5 5 D
 -27 0 D
 -7 8 D
--6 -1 D
-0 -3 D
+-5 0 D
+-1 -4 D
 -3 -4 D
 -12 0 D
 -8 8 D
@@ -1427,8 +1440,8 @@ FO
 -5 5 D
 -2 0 D
 -2 2 D
--11 -1 D
--1 -4 D
+-10 0 D
+-2 -5 D
 -3 0 D
 -2 3 D
 -7 2 D
@@ -1445,7 +1458,8 @@ FO
 -3 -3 D
 -9 0 D
 -5 -5 D
--7 -2 D
+-5 -2 D
+-2 0 D
 -7 -8 D
 -3 0 D
 -2 -2 D
@@ -1515,7 +1529,8 @@ FO
 -5 5 D
 -2 0 D
 -2 3 D
--8 -3 D
+-5 -1 D
+-3 -2 D
 -7 0 D
 -10 10 D
 -2 0 D
@@ -1567,8 +1582,9 @@ FO
 -2 3 D
 -7 0 D
 -3 -3 D
--7 -2 D
--1 4 D
+-5 -2 D
+-3 1 D
+0 3 D
 2 2 D
 0 3 D
 -3 3 D
@@ -1807,7 +1823,7 @@ S
 2 2 D
 4 1 D
 -1 7 D
--6 -1 D
+-5 0 D
 P S
 3020 5144 M
 6 -1 D
@@ -1845,8 +1861,8 @@ P S
 1 -3 D
 -3 -1 D
 -2 2 D
--3 0 D
--3 -3 D
+-2 0 D
+-4 -3 D
 -2 0 D
 -5 -5 D
 0 -5 D
@@ -1941,7 +1957,8 @@ P S
 5 1 D
 2 -4 D
 0 -9 D
--4 0 D
+-1 0 D
+-3 0 D
 -1 -10 D
 2 -3 D
 -6 0 D
@@ -2002,8 +2019,8 @@ FO
 1 -3 D
 -3 -1 D
 -2 2 D
--3 0 D
--3 -3 D
+-2 0 D
+-4 -3 D
 -2 0 D
 -5 -5 D
 0 -5 D
@@ -2098,7 +2115,8 @@ FO
 5 1 D
 2 -4 D
 0 -9 D
--4 0 D
+-1 0 D
+-3 0 D
 -1 -10 D
 2 -3 D
 -6 0 D
@@ -2491,9 +2509,11 @@ S
 -2 -2 D
 -2 0 D
 -2 -2 D
--4 -1 D
+-2 0 D
+-2 -1 D
 -1 -2 D
--7 0 D
+-1 0 D
+-6 0 D
 -3 -3 D
 -8 8 D
 -2 0 D
@@ -2516,11 +2536,12 @@ S
 -6 1 D
 2 3 D
 -2 4 D
--3 -1 D
--4 -4 D
+-2 0 D
+-5 -5 D
 -4 -1 D
 -2 -2 D
--5 0 D
+-4 0 D
+-1 0 D
 -2 -8 D
 -6 -7 D
 -5 -3 D
@@ -2529,29 +2550,34 @@ S
 -3 -3 D
 -2 0 D
 -2 4 D
--4 -1 D
+-2 0 D
+-2 -1 D
 -1 -7 D
--6 0 D
+-5 0 D
+-1 0 D
 -2 -5 D
 -3 0 D
 -4 -5 D
--3 -1 D
+-2 -1 D
+-1 0 D
 -1 -4 D
 -1 0 D
 0 5 D
 -2 2 D
 0 3 D
 -3 3 D
--8 -1 D
+-6 0 D
+-2 -1 D
 -3 -4 D
 -1 -3 D
--5 -1 D
--11 -11 D
+-3 0 D
+-13 -12 D
 -11 -1 D
 -4 3 D
 -4 0 D
 -2 2 D
--7 0 D
+-2 0 D
+-5 0 D
 -3 5 D
 0 3 D
 -6 3 D
@@ -2599,7 +2625,8 @@ S
 -4 0 D
 -7 4 D
 -3 4 D
--3 0 D
+-2 0 D
+-1 0 D
 0 4 D
 -3 4 D
 8 -1 D
@@ -2650,7 +2677,8 @@ S
 -1 5 D
 -5 3 D
 -4 -3 D
--9 0 D
+-7 0 D
+-2 0 D
 -2 2 D
 -4 1 D
 -8 12 D
@@ -2680,7 +2708,8 @@ S
 -13 14 D
 -2 0 D
 -4 3 D
--7 0 D
+-6 0 D
+-1 0 D
 -6 7 D
 -6 3 D
 -6 6 D
@@ -2721,8 +2750,8 @@ S
 -3 4 D
 -3 0 D
 -9 7 D
--7 0 D
--5 3 D
+-6 0 D
+-6 3 D
 -7 7 D
 -4 0 D
 -3 3 D
@@ -2741,7 +2770,8 @@ S
 -8 9 D
 -16 -1 D
 -3 2 D
--2 0 D
+-1 0 D
+-1 0 D
 -3 4 D
 -1 5 D
 -1672 0 D
@@ -2755,7 +2785,8 @@ S
 8 -8 D
 0 -2 D
 -6 -8 D
--5 -3 D
+-2 -1 D
+-3 -2 D
 1 -4 D
 2 -2 D
 -3 -5 D
@@ -2771,7 +2802,8 @@ S
 -5 -5 D
 -10 0 D
 -2 -2 D
--10 -3 D
+-5 -1 D
+-5 -2 D
 -5 -5 D
 -2 0 D
 -3 -3 D
@@ -2791,9 +2823,11 @@ S
 -2 -4 D
 -2 -1 D
 -4 -7 D
--2 0 D
+-1 0 D
+-1 0 D
 -4 -7 D
--3 0 D
+-1 0 D
+-2 0 D
 -5 5 D
 -5 0 D
 -4 -5 D
@@ -2825,7 +2859,8 @@ S
 -10 -10 D
 -11 1 D
 -6 -5 D
--5 -1 D
+-3 0 D
+-2 -1 D
 -6 -7 D
 0 -8 D
 -2 -3 D
@@ -2842,8 +2877,9 @@ S
 -2 -2 D
 0 -16 D
 -5 -4 D
--9 -2 D
--6 -7 D
+-7 -1 D
+-7 -6 D
+-1 -2 D
 1 -5 D
 -1 -3 D
 -7 -7 D
@@ -2860,11 +2896,12 @@ S
 -5 -4 D
 -2 -3 D
 -5 -3 D
--11 -1 D
--6 -4 D
+-9 0 D
+-8 -5 D
 -3 0 D
 0 -2 D
--15 -1 D
+-3 -1 D
+-12 0 D
 -5 4 D
 -3 4 D
 -5 3 D
@@ -2872,7 +2909,8 @@ S
 -3 -3 D
 -13 0 D
 -3 3 D
--7 0 D
+-2 0 D
+-5 0 D
 -3 -3 D
 -4 0 D
 -2 -2 D
@@ -2885,13 +2923,14 @@ S
 -18 -19 D
 -1 -6 D
 -3 -6 D
--8 -3 D
+-5 -2 D
+-3 -1 D
 -6 -7 D
 -1 -7 D
--4 -1 D
--4 -4 D
--6 -1 D
--4 -2 D
+-3 0 D
+-5 -5 D
+-4 0 D
+-6 -3 D
 -5 -5 D
 -2 0 D
 -4 -7 D
@@ -3152,7 +3191,8 @@ S
 1 -2 D
 -1 -2 D
 -7 -6 D
--5 -3 D
+-3 -1 D
+-2 -2 D
 1 -14 D
 -2 -7 D
 -1 -18 D
@@ -3168,8 +3208,8 @@ S
 1 -6 D
 6 -2 D
 1 -4 D
--5 -1 D
--7 -5 D
+-3 0 D
+-9 -6 D
 -4 -8 D
 0 -6 D
 -7 -11 D
@@ -3183,7 +3223,8 @@ S
 3 -3 D
 0 -3 D
 -6 -6 D
--4 -1 D
+-2 0 D
+-2 -1 D
 -1 -9 D
 -3 -1 D
 -2 -7 D
@@ -3306,7 +3347,9 @@ FO
 7 1 D
 2 3 D
 -4 6 D
--9 -1 D
+-2 0 D
+-5 0 D
+-2 -1 D
 -1 -5 D
 -1 -1 D
 2 -2 D
@@ -3585,7 +3628,8 @@ FO
 1 -2 D
 -1 -2 D
 -7 -6 D
--5 -3 D
+-3 -1 D
+-2 -2 D
 1 -14 D
 -2 -7 D
 -1 -18 D
@@ -3601,8 +3645,8 @@ FO
 1 -6 D
 6 -2 D
 1 -4 D
--5 -1 D
--7 -5 D
+-3 0 D
+-9 -6 D
 -4 -8 D
 0 -6 D
 -7 -11 D
@@ -3616,7 +3660,8 @@ FO
 3 -3 D
 0 -3 D
 -6 -6 D
--4 -1 D
+-2 0 D
+-2 -1 D
 -1 -9 D
 -3 -1 D
 -2 -7 D
@@ -4098,9 +4143,11 @@ S
 -2 -2 D
 -2 0 D
 -2 -2 D
--4 -1 D
+-2 0 D
+-2 -1 D
 -1 -2 D
--7 0 D
+-1 0 D
+-6 0 D
 -3 -3 D
 -8 8 D
 -2 0 D
@@ -4123,11 +4170,12 @@ S
 -6 1 D
 2 3 D
 -2 4 D
--3 -1 D
--4 -4 D
+-2 0 D
+-5 -5 D
 -4 -1 D
 -2 -2 D
--5 0 D
+-4 0 D
+-1 0 D
 -2 -8 D
 -6 -7 D
 -5 -3 D
@@ -4136,29 +4184,34 @@ S
 -3 -3 D
 -2 0 D
 -2 4 D
--4 -1 D
+-2 0 D
+-2 -1 D
 -1 -7 D
--6 0 D
+-5 0 D
+-1 0 D
 -2 -5 D
 -3 0 D
 -4 -5 D
--3 -1 D
+-2 -1 D
+-1 0 D
 -1 -4 D
 -1 0 D
 0 5 D
 -2 2 D
 0 3 D
 -3 3 D
--8 -1 D
+-6 0 D
+-2 -1 D
 -3 -4 D
 -1 -3 D
--5 -1 D
--11 -11 D
+-3 0 D
+-13 -12 D
 -11 -1 D
 -4 3 D
 -4 0 D
 -2 2 D
--7 0 D
+-2 0 D
+-5 0 D
 -3 5 D
 0 3 D
 -6 3 D
@@ -4206,7 +4259,8 @@ S
 -4 0 D
 -7 4 D
 -3 4 D
--3 0 D
+-2 0 D
+-1 0 D
 0 4 D
 -3 4 D
 8 -1 D
@@ -4257,7 +4311,8 @@ S
 -1 5 D
 -5 3 D
 -4 -3 D
--9 0 D
+-7 0 D
+-2 0 D
 -2 2 D
 -4 1 D
 -8 12 D
@@ -4287,7 +4342,8 @@ S
 -13 14 D
 -2 0 D
 -4 3 D
--7 0 D
+-6 0 D
+-1 0 D
 -6 7 D
 -6 3 D
 -6 6 D
@@ -4328,8 +4384,8 @@ S
 -3 4 D
 -3 0 D
 -9 7 D
--7 0 D
--5 3 D
+-6 0 D
+-6 3 D
 -7 7 D
 -4 0 D
 -3 3 D
@@ -4348,7 +4404,8 @@ S
 -8 9 D
 -16 -1 D
 -3 2 D
--2 0 D
+-1 0 D
+-1 0 D
 -3 4 D
 -1 5 D
 S
@@ -4363,7 +4420,8 @@ S
 8 -8 D
 0 -2 D
 -6 -8 D
--5 -3 D
+-2 -1 D
+-3 -2 D
 1 -4 D
 2 -2 D
 -3 -5 D
@@ -4379,7 +4437,8 @@ S
 -5 -5 D
 -10 0 D
 -2 -2 D
--10 -3 D
+-5 -1 D
+-5 -2 D
 -5 -5 D
 -2 0 D
 -3 -3 D
@@ -4399,9 +4458,11 @@ S
 -2 -4 D
 -2 -1 D
 -4 -7 D
--2 0 D
+-1 0 D
+-1 0 D
 -4 -7 D
--3 0 D
+-1 0 D
+-2 0 D
 -5 5 D
 -5 0 D
 -4 -5 D
@@ -4433,7 +4494,8 @@ S
 -10 -10 D
 -11 1 D
 -6 -5 D
--5 -1 D
+-3 0 D
+-2 -1 D
 -6 -7 D
 0 -8 D
 -2 -3 D
@@ -4450,8 +4512,9 @@ S
 -2 -2 D
 0 -16 D
 -5 -4 D
--9 -2 D
--6 -7 D
+-7 -1 D
+-7 -6 D
+-1 -2 D
 1 -5 D
 -1 -3 D
 -7 -7 D
@@ -4468,11 +4531,12 @@ S
 -5 -4 D
 -2 -3 D
 -5 -3 D
--11 -1 D
--6 -4 D
+-9 0 D
+-8 -5 D
 -3 0 D
 0 -2 D
--15 -1 D
+-3 -1 D
+-12 0 D
 -5 4 D
 -3 4 D
 -5 3 D
@@ -4480,7 +4544,8 @@ S
 -3 -3 D
 -13 0 D
 -3 3 D
--7 0 D
+-2 0 D
+-5 0 D
 -3 -3 D
 -4 0 D
 -2 -2 D
@@ -4493,13 +4558,14 @@ S
 -18 -19 D
 -1 -6 D
 -3 -6 D
--8 -3 D
+-5 -2 D
+-3 -1 D
 -6 -7 D
 -1 -7 D
--4 -1 D
--4 -4 D
--6 -1 D
--4 -2 D
+-3 0 D
+-5 -5 D
+-4 0 D
+-6 -3 D
 -5 -5 D
 -2 0 D
 -4 -7 D
@@ -4509,7 +4575,9 @@ S
 7 1 D
 2 3 D
 -4 6 D
--9 -1 D
+-2 0 D
+-5 0 D
+-2 -1 D
 -1 -5 D
 -1 -1 D
 2 -2 D
@@ -4688,7 +4756,8 @@ P S
 -2 3 D
 -3 0 D
 -6 5 D
--23 0 D
+-19 0 D
+-4 0 D
 -2 2 D
 -3 0 D
 -11 12 D
@@ -4699,8 +4768,9 @@ P S
 -8 -1 D
 -7 8 D
 -7 5 D
--13 0 D
--3 3 D
+-11 0 D
+-1 0 D
+-4 3 D
 -8 0 D
 -3 2 D
 -17 0 D
@@ -4717,7 +4787,8 @@ P S
 -8 0 D
 -8 5 D
 -13 15 D
--8 3 D
+-1 0 D
+-7 3 D
 -1 2 D
 -3 0 D
 -8 5 D
@@ -4736,7 +4807,8 @@ P S
 -2 2 D
 -4 0 D
 -4 2 D
--9 0 D
+-7 0 D
+-2 0 D
 -7 8 D
 -2 7 D
 -3 5 D
@@ -5002,7 +5074,8 @@ FO
 -2 3 D
 -3 0 D
 -6 5 D
--23 0 D
+-19 0 D
+-4 0 D
 -2 2 D
 -3 0 D
 -11 12 D
@@ -5013,8 +5086,9 @@ FO
 -8 -1 D
 -7 8 D
 -7 5 D
--13 0 D
--3 3 D
+-11 0 D
+-1 0 D
+-4 3 D
 -8 0 D
 -3 2 D
 -17 0 D
@@ -5031,7 +5105,8 @@ FO
 -8 0 D
 -8 5 D
 -13 15 D
--8 3 D
+-1 0 D
+-7 3 D
 -1 2 D
 -3 0 D
 -8 5 D
@@ -5050,7 +5125,8 @@ FO
 -2 2 D
 -4 0 D
 -4 2 D
--9 0 D
+-7 0 D
+-2 0 D
 -7 8 D
 -2 7 D
 -3 5 D
@@ -5612,26 +5688,26 @@ N 0 6158 M 0 -6241 D S
 N -83 6158 M 0 -6241 D S
 720 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(157 W) tc Z
-720 6241 M (157 W) bc Z
-2160 -167 M (156 W) tc Z
-2160 6241 M (156 W) bc Z
-3600 -167 M (156 W) tc Z
-3600 6241 M (156 W) bc Z
-5040 -167 M (155 W) tc Z
-5040 6241 M (155 W) bc Z
-6480 -167 M (155 W) tc Z
-6480 6241 M (155 W) bc Z
--167 0 M (19 N) mr Z
-7367 0 M (19 N) ml Z
--167 1512 M (19 N) mr Z
-7367 1512 M (19 N) ml Z
--167 3028 M (20 N) mr Z
-7367 3028 M (20 N) ml Z
--167 4549 M (20 N) mr Z
-7367 4549 M (20 N) ml Z
--167 6075 M (21 N) mr Z
-7367 6075 M (21 N) ml Z
+(157èW) tc Z
+720 6241 M (157èW) bc Z
+2160 -167 M (156èW) tc Z
+2160 6241 M (156èW) bc Z
+3600 -167 M (156èW) tc Z
+3600 6241 M (156èW) bc Z
+5040 -167 M (155èW) tc Z
+5040 6241 M (155èW) bc Z
+6480 -167 M (155èW) tc Z
+6480 6241 M (155èW) bc Z
+-167 0 M (19èN) mr Z
+7367 0 M (19èN) ml Z
+-167 1512 M (19èN) mr Z
+7367 1512 M (19èN) ml Z
+-167 3028 M (20èN) mr Z
+7367 3028 M (20èN) ml Z
+-167 4549 M (20èN) mr Z
+7367 4549 M (20èN) ml Z
+-167 6075 M (21èN) mr Z
+7367 6075 M (21èN) ml Z
 %%EndObject
 0 A
 FQ
@@ -5639,8 +5715,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: grdcontour -R156:45W/154:15W/18:30N/20:30N earth_relief_1m.grd -JM6i -Z+s0.001 -A1+f7p+a0 -Wc0.25p,gray -Wa0.75p,gray -O -K -L-7/-0.001 -Gxcrosslines.txt
-%@PROJ: merc -156.75000000 -154.25000000 18.50000000 20.50000000 -139149.363 139149.363 2082605.323 2317400.678 +proj=merc +lon_0=-155.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdcontour -R156:45W/154:15W/18:30N/20:30N @earth_relief_01m.grd -JM6i -Z+s0.001 -A1+f7p+a0 -Wc0.25p,gray -Wa0.75p,gray -O -K -L-7/-0.001 -Gxcrosslines.txt
+%@PROJ: merc -156.75000000 -154.25000000 18.50000000 20.50000000 -139149.363 139149.363 2082605.323 2317400.678 +proj=merc +lon_0=-155.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -5650,39 +5726,41 @@ clipsave
 7200 0 D
 0 6075 D
 -7200 0 D
+P
 PSL_clip N
 0.745 A
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
-	(12 W 0.745 A [] 0 B)
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
+	(12 W 0.745 A \[\] 0 B)
 ] def
 /PSL_label_justify [ 6 6 6 6 6 6 6 6 6 ] def
 /PSL_label_font [
@@ -5700,15 +5778,15 @@ PSL_clip N
 /PSL_gap_y 18 def
 /PSL_label_angle [ 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 ] def
 /PSL_label_str [
-	(-5)
-	(-4)
-	(-4)
-	(-3)
-	(-3)
-	(-2)
-	(-2)
-	(-1)
-	(-1)
+	(î5)
+	(î4)
+	(î4)
+	(î3)
+	(î3)
+	(î2)
+	(î2)
+	(î1)
+	(î1)
 ] def
 /PSL_label_n [ 0 0 1 0 0 1 1 0 0 0 
 	0 0 0 0 0 0 0 0 2 0 
@@ -6058,7 +6136,8 @@ PSL_path_pen 5 get cvx exec
 -1 -7 D
 -45 -50 D
 -1 -51 D
--2 0 D
+-1 0 D
+-1 0 D
 0 51 D
 -63 50 D
 -8 51 D
@@ -6180,7 +6259,8 @@ PSL_path_pen 6 get cvx exec
 -9 4 D
 -25 -4 D
 -23 -7 D
--52 -43 D
+-48 -40 D
+-4 -3 D
 -32 -51 D
 -12 -10 D
 -48 -22 D
@@ -6326,7 +6406,8 @@ PSL_path_pen 6 get cvx exec
 -7 4 D
 -41 12 D
 -48 -2 D
--48 -16 D
+-31 -10 D
+-17 -6 D
 -48 -1 D
 -48 -7 D
 -48 -4 D
@@ -6501,8 +6582,10 @@ PSL_path_pen 14 get cvx exec
 2 -50 D
 -10 -11 D
 -48 -17 D
--48 -30 D
--48 -44 D
+-36 -23 D
+-12 -7 D
+-47 -43 D
+-1 -1 D
 -48 3 D
 -48 -15 D
 -48 5 D
@@ -6697,11 +6780,12 @@ PSL_path_pen 18 get cvx exec
 -22 -10 D
 -48 -12 D
 -48 -18 D
--96 -31 D
+-37 -11 D
+-59 -20 D
 -29 -31 D
 -19 -17 D
--66 -33 D
--30 -17 D
+-48 -24 D
+-48 -26 D
 -25 -34 D
 -14 -51 D
 19 -101 D
@@ -6751,7 +6835,8 @@ PSL_path_pen 18 get cvx exec
 -15 -18 D
 -35 -33 D
 -13 -9 D
--76 -41 D
+-48 -25 D
+-28 -16 D
 -20 -20 D
 -48 -26 D
 -5 -5 D
@@ -6762,8 +6847,8 @@ PSL_path_pen 18 get cvx exec
 -21 -25 D
 -27 -26 D
 -48 -41 D
--48 -36 D
--48 -38 D
+-45 -34 D
+-51 -40 D
 -11 -10 D
 -37 -53 D
 -48 -39 D
@@ -6845,8 +6930,8 @@ PSL_path_pen 18 get cvx exec
 -34 -62 D
 -37 -39 D
 -11 -6 D
--49 -44 D
--23 -51 D
+-48 -43 D
+-24 -52 D
 -9 -50 D
 -7 -51 D
 -8 -32 D
@@ -6862,7 +6947,8 @@ PSL_path_pen 18 get cvx exec
 -33 -34 D
 -48 -30 D
 -48 -34 D
--48 -7 D
+-13 -2 D
+-35 -5 D
 -12 5 D
 -36 55 D
 -40 45 D
@@ -7043,7 +7129,8 @@ PSL_path_pen 18 get cvx exec
 -48 21 D
 -96 56 D
 -48 22 D
--48 -17 D
+-41 -14 D
+-7 -3 D
 -46 -48 D
 -2 -4 D
 -37 -46 D
@@ -7286,16 +7373,19 @@ PSL_path_pen 23 get cvx exec
 -21 -21 D
 -27 -13 D
 -48 -11 D
--96 -45 D
--144 -77 D
--48 -25 D
--54 -31 D
--42 -29 D
 -48 -23 D
+-48 -22 D
+-48 -26 D
+-96 -51 D
+-48 -25 D
+-48 -27 D
 -48 -33 D
+-44 -21 D
+-52 -35 D
 -18 -16 D
 -30 -34 D
--48 -23 D
+-34 -17 D
+-14 -6 D
 -31 -44 D
 -7 -51 D
 -11 -50 D
@@ -7306,7 +7396,8 @@ PSL_path_pen 23 get cvx exec
 -44 -40 D
 -38 -51 D
 -62 -41 D
--48 -11 D
+-35 -9 D
+-13 -2 D
 -48 4 D
 -13 -2 D
 -35 -66 D
@@ -7333,8 +7424,10 @@ PSL_path_pen 23 get cvx exec
 -4 2 D
 -140 30 D
 -48 14 D
--68 -44 D
--76 -14 D
+-48 -31 D
+-20 -13 D
+-28 -6 D
+-48 -8 D
 -48 -21 D
 -18 -16 D
 -30 -17 D
@@ -7507,17 +7600,21 @@ PSL_path_pen 23 get cvx exec
 4 3 D
 -4 5 D
 -48 11 D
--48 -21 D
+-35 -16 D
+-13 -5 D
 -48 -10 D
--61 -36 D
+-48 -28 D
+-13 -8 D
 -35 -14 D
--54 -37 D
+-48 -33 D
+-6 -4 D
 -57 -51 D
 -62 -51 D
 -19 -34 D
 -13 -17 D
 -35 -9 D
--71 -42 D
+-48 -28 D
+-23 -14 D
 -25 -6 D
 -48 -15 D
 -48 -2 D
@@ -7550,11 +7647,13 @@ PSL_path_pen 23 get cvx exec
 -23 51 D
 -5 51 D
 -48 12 D
--48 -22 D
--50 -41 D
--46 -51 D
+-28 -12 D
+-20 -10 D
+-48 -39 D
+-48 -53 D
 -48 -30 D
--48 -23 D
+-45 -21 D
+-3 -2 D
 S
 PSL_path_pen 24 get cvx exec
 1250 6075 M
@@ -7570,15 +7669,18 @@ PSL_path_pen 24 get cvx exec
 -48 12 D
 -48 5 D
 -48 -7 D
--69 -34 D
+-48 -23 D
+-21 -11 D
 -27 -9 D
 -48 -19 D
 -48 -1 D
 -48 2 D
 -48 -17 D
--96 -7 D
+-48 -4 D
+-48 -3 D
 -48 5 D
--96 -2 D
+-48 -1 D
+-48 -1 D
 -17 -3 D
 -31 -10 D
 -48 -1 D
@@ -7713,25 +7815,26 @@ PSL_path_pen 25 get cvx exec
 -9 -6 D
 -59 -50 D
 -28 -27 D
--48 -32 D
--66 -42 D
+-36 -24 D
+-60 -38 D
+-18 -12 D
 -108 -102 D
--66 -55 D
--48 -28 D
--48 -18 D
--48 -26 D
--49 -24 D
--97 -51 D
--78 -50 D
+-59 -50 D
+-55 -33 D
+-47 -18 D
+-97 -50 D
+-96 -49 D
+-80 -52 D
 -64 -45 D
 -13 -6 D
 -35 -21 D
--54 -29 D
+-48 -26 D
+-6 -3 D
 -42 -36 D
 -21 -15 D
 -27 -25 D
--48 -26 D
--48 -15 D
+-47 -26 D
+-49 -15 D
 -48 -13 D
 -48 -4 D
 -48 2 D
@@ -7927,8 +8030,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: grdcontour -R156:45W/154:15W/18:30N/20:30N earth_relief_1m.grd -JM6i -Z+s0.001 -A1+f7p+a0 -C0.5 -O -L0.001/5 -Gxcrosslines.txt
-%@PROJ: merc -156.75000000 -154.25000000 18.50000000 20.50000000 -139149.363 139149.363 2082605.323 2317400.678 +proj=merc +lon_0=-155.5 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdcontour -R156:45W/154:15W/18:30N/20:30N @earth_relief_01m.grd -JM6i -Z+s0.001 -A1+f7p+a0 -C0.5 -O -L0.001/5 -Gxcrosslines.txt
+%@PROJ: merc -156.75000000 -154.25000000 18.50000000 20.50000000 -139149.363 139149.363 2082605.323 2317400.678 +proj=merc +lon_0=-155.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -7938,25 +8041,27 @@ clipsave
 7200 0 D
 0 6075 D
 -7200 0 D
+P
 PSL_clip N
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
 ] def
 /PSL_label_justify [ 6 6 6 6 6 6 6 6 ] def
 /PSL_label_font [
@@ -8087,7 +8192,8 @@ PSL_path_pen 0 get cvx exec
 -71 -40 D
 -23 -11 D
 -25 -6 D
--96 -9 D
+-48 -5 D
+-48 -4 D
 -48 5 D
 -48 -11 D
 -48 -7 D
@@ -8102,7 +8208,8 @@ PSL_path_pen 0 get cvx exec
 -48 -18 D
 -48 -13 D
 -48 -3 D
--48 -9 D
+-17 -3 D
+-31 -6 D
 -48 -5 D
 -48 -18 D
 -23 -21 D
@@ -8124,7 +8231,8 @@ PSL_path_pen 0 get cvx exec
 -36 -23 D
 -12 -18 D
 -48 -40 D
--96 -37 D
+-48 -18 D
+-48 -19 D
 -48 33 D
 -48 12 D
 -48 19 D
@@ -8306,8 +8414,8 @@ PSL_path_pen 2 get cvx exec
 -39 12 D
 -9 1 D
 -48 -25 D
--48 -28 D
--74 -50 D
+-47 -27 D
+-75 -51 D
 -22 -14 D
 -48 -23 D
 -22 -13 D
@@ -8320,7 +8428,8 @@ PSL_path_pen 2 get cvx exec
 -17 -17 D
 -31 -39 D
 -48 -35 D
--65 -27 D
+-48 -20 D
+-17 -7 D
 -31 -28 D
 -48 -61 D
 -6 -12 D
@@ -8334,7 +8443,8 @@ PSL_path_pen 2 get cvx exec
 -48 -16 D
 -48 0 D
 -48 7 D
--96 0 D
+-48 0 D
+-48 0 D
 -48 11 D
 -96 50 D
 -16 13 D
@@ -8443,10 +8553,11 @@ PSL_path_pen 4 get cvx exec
 -8 -7 D
 -31 -51 D
 -57 -54 D
--64 -47 D
+-48 -36 D
+-16 -11 D
 -32 -17 D
--48 -35 D
--54 -49 D
+-47 -34 D
+-55 -50 D
 -42 -40 D
 -9 -11 D
 -53 -50 D
@@ -8472,8 +8583,8 @@ PSL_path_pen 4 get cvx exec
 -13 -5 D
 -35 -19 D
 -48 -23 D
--48 -16 D
--48 -18 D
+-27 -9 D
+-69 -25 D
 -48 -7 D
 -48 -3 D
 -48 10 D
@@ -8596,13 +8707,17 @@ PSL_path_pen 5 get cvx exec
 -58 -60 D
 -38 -43 D
 -48 -29 D
--48 -33 D
--48 -29 D
--48 -23 D
+-43 -29 D
+-53 -33 D
+-37 -18 D
+-11 -5 D
 -48 -28 D
--48 -22 D
--96 -24 D
--96 -41 D
+-36 -17 D
+-12 -5 D
+-48 -12 D
+-48 -12 D
+-48 -20 D
+-48 -21 D
 -48 19 D
 -30 51 D
 -23 50 D
@@ -8743,9 +8858,11 @@ PSL_path_pen 8 get cvx exec
 -48 -34 D
 -48 -29 D
 -48 -37 D
--96 -45 D
+-30 -14 D
+-66 -31 D
 -48 -12 D
--48 -18 D
+-19 -7 D
+-29 -11 D
 -48 -9 D
 -96 2 D
 -13 18 D
@@ -8783,7 +8900,8 @@ PSL_path_pen 9 get cvx exec
 -14 -50 D
 -31 -55 D
 -48 -42 D
--48 -7 D
+-33 -5 D
+-15 -2 D
 -48 9 D
 -48 11 D
 -48 19 D
@@ -8817,9 +8935,11 @@ PSL_path_pen 10 get cvx exec
 -37 -50 D
 -23 -25 D
 -48 -47 D
--48 -34 D
--96 -47 D
--48 -26 D
+-41 -29 D
+-7 -5 D
+-48 -23 D
+-47 -23 D
+-49 -27 D
 -48 -12 D
 -48 0 D
 -48 14 D
@@ -8868,7 +8988,8 @@ PSL_path_pen 12 get cvx exec
 -34 -33 D
 -14 -12 D
 -48 -30 D
--48 -18 D
+-23 -9 D
+-25 -9 D
 -48 -13 D
 -48 2 D
 -16 20 D
@@ -8904,6 +9025,10 @@ U
 [] 0 B
 PSL_cliprestore
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

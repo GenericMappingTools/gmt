@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v5.3.3_r17717 [64-bit] Document from psxy
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Mar 18 14:52:51 2017
+%%CreationDate: Thu Dec  6 10:51:16 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -657,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 -3600 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-80/120/0/53 -JM6i -Glightblue -P -K -Baf tmp -Xc
-%@PROJ: merc -80.00000000 120.00000000 0.00000000 53.00000000 -11131949.079 11131949.079 -0.000 6948849.385 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R-80/120/0/53 -JM6i -Glightblue -P -K -Baf tmp -Xc
+%@PROJ: merc -80.00000000 120.00000000 0.00000000 53.00000000 -11131949.079 11131949.079 -0.000 6948849.385 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: -216 72 432 134.833
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -695,15 +705,24 @@ O0
 -11 3 D
 -11 -1 D
 -33 2 D
--22 -5 D
+-11 -2 D
+-11 -3 D
 -14 -6 D
--29 -4 D
--18 -7 D
--26 -6 D
--19 -8 D
--35 -1 D
+-16 -2 D
+-13 -2 D
+-9 -4 D
+-9 -3 D
+-12 -2 D
+-14 -4 D
+-9 -4 D
+-10 -4 D
+-17 -1 D
+-18 0 D
 0 2 D
--49 -2 D
+-14 0 D
+-14 -1 D
+-11 0 D
+-10 -1 D
 -19 3 D
 -14 0 D
 -12 7 D
@@ -722,15 +741,20 @@ O0
 -31 1 D
 -12 -1 D
 -31 1 D
--37 -1 D
+-21 -1 D
+-16 0 D
 -16 -2 D
 -20 1 D
--39 -3 D
+-17 -2 D
+-22 -1 D
 -14 0 D
--48 -4 D
+-13 -2 D
+-13 -1 D
+-22 -1 D
 -21 -1 D
 -21 1 D
--34 -1 D
+-17 -1 D
+-17 0 D
 -39 6 D
 -36 14 D
 -15 12 D
@@ -738,7 +762,10 @@ O0
 -10 8 D
 -22 5 D
 -45 5 D
--30 -6 D
+-6 -1 D
+-2 0 D
+-10 -3 D
+-12 -2 D
 -19 -8 D
 -8 -7 D
 -3 -5 D
@@ -812,26 +839,6 @@ N 0 0 M -83 0 D S
 N 7200 0 M 83 0 D S
 N 0 1126 M -83 0 D S
 N 7200 1126 M 83 0 D S
-720 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(-60 ) tc Z
-720 2414 M (-60 ) bc Z
-1800 -167 M (-30 ) tc Z
-1800 2414 M (-30 ) bc Z
-2880 -167 M (0 ) tc Z
-2880 2414 M (0 ) bc Z
-3960 -167 M (30 ) tc Z
-3960 2414 M (30 ) bc Z
-5040 -167 M (60 ) tc Z
-5040 2414 M (60 ) bc Z
-6120 -167 M (90 ) tc Z
-6120 2414 M (90 ) bc Z
-7200 -167 M (120 ) tc Z
-7200 2414 M (120 ) bc Z
--167 0 M (0 ) mr Z
-7367 0 M (0 ) ml Z
--167 1126 M (30 ) mr Z
-7367 1126 M (30 ) ml Z
 83 W
 N -42 0 M 0 359 D S
 N 7242 0 M 0 359 D S
@@ -920,6 +927,26 @@ N 7283 2247 M -7366 0 D S
 N 7283 2331 M -7366 0 D S
 N 0 2331 M 0 -2414 D S
 N -83 2331 M 0 -2414 D S
+720 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(î60è) tc Z
+720 2414 M (î60è) bc Z
+1800 -167 M (î30è) tc Z
+1800 2414 M (î30è) bc Z
+2880 -167 M (0è) tc Z
+2880 2414 M (0è) bc Z
+3960 -167 M (30è) tc Z
+3960 2414 M (30è) bc Z
+5040 -167 M (60è) tc Z
+5040 2414 M (60è) bc Z
+6120 -167 M (90è) tc Z
+6120 2414 M (90è) bc Z
+7200 -167 M (120è) tc Z
+7200 2414 M (120è) bc Z
+-167 0 M (0è) mr Z
+7367 0 M (0è) ml Z
+-167 1126 M (30è) mr Z
+7367 1126 M (30è) ml Z
 %%EndObject
 0 A
 FQ
@@ -927,8 +954,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-80/120/0/53 -JM6i -W0.25p -O -K tmp
-%@PROJ: merc -80.00000000 120.00000000 0.00000000 53.00000000 -11131949.079 11131949.079 -0.000 6948849.385 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R-80/120/0/53 -JM6i -W0.25p -O -K tmp
+%@PROJ: merc -80.00000000 120.00000000 0.00000000 53.00000000 -11131949.079 11131949.079 -0.000 6948849.385 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -957,15 +984,24 @@ O0
 -11 3 D
 -11 -1 D
 -33 2 D
--22 -5 D
+-11 -2 D
+-11 -3 D
 -14 -6 D
--29 -4 D
--18 -7 D
--26 -6 D
--19 -8 D
--35 -1 D
+-16 -2 D
+-13 -2 D
+-9 -4 D
+-9 -3 D
+-12 -2 D
+-14 -4 D
+-9 -4 D
+-10 -4 D
+-17 -1 D
+-18 0 D
 0 2 D
--49 -2 D
+-14 0 D
+-14 -1 D
+-11 0 D
+-10 -1 D
 -19 3 D
 -14 0 D
 -12 7 D
@@ -984,15 +1020,20 @@ O0
 -31 1 D
 -12 -1 D
 -31 1 D
--37 -1 D
+-21 -1 D
+-16 0 D
 -16 -2 D
 -20 1 D
--39 -3 D
+-17 -2 D
+-22 -1 D
 -14 0 D
--48 -4 D
+-13 -2 D
+-13 -1 D
+-22 -1 D
 -21 -1 D
 -21 1 D
--34 -1 D
+-17 -1 D
+-17 0 D
 -39 6 D
 -36 14 D
 -15 12 D
@@ -1000,7 +1041,10 @@ O0
 -10 8 D
 -22 5 D
 -45 5 D
--30 -6 D
+-6 -1 D
+-2 0 D
+-10 -3 D
+-12 -2 D
 -19 -8 D
 -8 -7 D
 -3 -5 D
@@ -1058,8 +1102,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R-80/120/0/53 -JM6i -O -K -F+cTC+jTC+f18p -Dj0/0.2i
-%@PROJ: merc -80.00000000 120.00000000 0.00000000 53.00000000 -11131949.079 11131949.079 -0.000 6948849.385 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -R-80/120/0/53 -JM6i -O -K -F+cTC+jTC+f18p -Dj0/0.2i
+%@PROJ: merc -80.00000000 120.00000000 0.00000000 53.00000000 -11131949.079 11131949.079 -0.000 6948849.385 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -1069,10 +1113,11 @@ clipsave
 7200 0 D
 0 2247 D
 -7200 0 D
+P
 PSL_clip N
 3600 2007 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 300 F0
-(-R73/131.3/29.9/43.7) tc Z
+(îR73/131.3/29.9/43.7) tc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1081,8 +1126,8 @@ O0
 0 3600 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-80/120/0/53 -JM6i -Glightred -O -K -Baf -Y3i tmp
-%@PROJ: merc -80.00000000 120.00000000 0.00000000 53.00000000 -11131949.079 11131949.079 -0.000 6948849.385 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R-80/120/0/53 -JM6i -Glightred -O -K -Baf -Y3i tmp
+%@PROJ: merc -80.00000000 120.00000000 0.00000000 53.00000000 -11131949.079 11131949.079 -0.000 6948849.385 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -1114,9 +1159,26 @@ O0
 66 56 D
 24 18 D
 0 -486 D
--192 -37 D
--129 -96 D
--49 -36 D
+-11 -2 D
+-13 -3 D
+-13 -2 D
+-13 -2 D
+-12 -3 D
+-13 -2 D
+-13 -2 D
+-13 -3 D
+-13 -2 D
+-13 -3 D
+-13 -2 D
+-13 -3 D
+-13 -3 D
+-13 -2 D
+-13 -3 D
+-43 -32 D
+-33 -24 D
+-43 -32 D
+-32 -25 D
+-27 -19 D
 -118 128 D
 -32 30 D
 -10 8 D
@@ -1187,26 +1249,6 @@ N 0 0 M -83 0 D S
 N 7200 0 M 83 0 D S
 N 0 1126 M -83 0 D S
 N 7200 1126 M 83 0 D S
-720 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(-60 ) tc Z
-720 2414 M (-60 ) bc Z
-1800 -167 M (-30 ) tc Z
-1800 2414 M (-30 ) bc Z
-2880 -167 M (0 ) tc Z
-2880 2414 M (0 ) bc Z
-3960 -167 M (30 ) tc Z
-3960 2414 M (30 ) bc Z
-5040 -167 M (60 ) tc Z
-5040 2414 M (60 ) bc Z
-6120 -167 M (90 ) tc Z
-6120 2414 M (90 ) bc Z
-7200 -167 M (120 ) tc Z
-7200 2414 M (120 ) bc Z
--167 0 M (0 ) mr Z
-7367 0 M (0 ) ml Z
--167 1126 M (30 ) mr Z
-7367 1126 M (30 ) ml Z
 83 W
 N -42 0 M 0 359 D S
 N 7242 0 M 0 359 D S
@@ -1295,6 +1337,26 @@ N 7283 2247 M -7366 0 D S
 N 7283 2331 M -7366 0 D S
 N 0 2331 M 0 -2414 D S
 N -83 2331 M 0 -2414 D S
+720 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(î60è) tc Z
+720 2414 M (î60è) bc Z
+1800 -167 M (î30è) tc Z
+1800 2414 M (î30è) bc Z
+2880 -167 M (0è) tc Z
+2880 2414 M (0è) bc Z
+3960 -167 M (30è) tc Z
+3960 2414 M (30è) bc Z
+5040 -167 M (60è) tc Z
+5040 2414 M (60è) bc Z
+6120 -167 M (90è) tc Z
+6120 2414 M (90è) bc Z
+7200 -167 M (120è) tc Z
+7200 2414 M (120è) bc Z
+-167 0 M (0è) mr Z
+7367 0 M (0è) ml Z
+-167 1126 M (30è) mr Z
+7367 1126 M (30è) ml Z
 %%EndObject
 0 A
 FQ
@@ -1302,17 +1364,34 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-80/120/0/53 -JM6i -W0.25p -O -K tmp
-%@PROJ: merc -80.00000000 120.00000000 0.00000000 53.00000000 -11131949.079 11131949.079 -0.000 6948849.385 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R-80/120/0/53 -JM6i -W0.25p -O -K tmp
+%@PROJ: merc -80.00000000 120.00000000 0.00000000 53.00000000 -11131949.079 11131949.079 -0.000 6948849.385 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 4 W
 7200 781 M
--192 -37 D
--129 -96 D
--49 -36 D
+-11 -2 D
+-13 -3 D
+-13 -2 D
+-13 -2 D
+-12 -3 D
+-13 -2 D
+-13 -2 D
+-13 -3 D
+-13 -2 D
+-13 -3 D
+-13 -2 D
+-13 -3 D
+-13 -3 D
+-13 -2 D
+-13 -3 D
+-43 -32 D
+-33 -24 D
+-43 -32 D
+-32 -25 D
+-27 -19 D
 -118 128 D
 -32 30 D
 -10 8 D
@@ -1389,8 +1468,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R-80/120/0/53 -JM6i -O -K -F+cTC+jTC+f18p -Dj0/0.2i
-%@PROJ: merc -80.00000000 120.00000000 0.00000000 53.00000000 -11131949.079 11131949.079 -0.000 6948849.385 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -R-80/120/0/53 -JM6i -O -K -F+cTC+jTC+f18p -Dj0/0.2i
+%@PROJ: merc -80.00000000 120.00000000 0.00000000 53.00000000 -11131949.079 11131949.079 -0.000 6948849.385 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -1400,10 +1479,11 @@ clipsave
 7200 0 D
 0 2247 D
 -7200 0 D
+P
 PSL_clip N
 3600 2007 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 300 F0
-(-R96.1/129.2/16.8/34) tc Z
+(îR96.1/129.2/16.8/34) tc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1412,8 +1492,8 @@ O0
 0 3600 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-80/120/-72/-20 -JM6i -Glightgreen -P -Baf -O -K -Y3i tmp
-%@PROJ: merc -80.00000000 120.00000000 -72.00000000 -20.00000000 -11131949.079 11131949.079 -11712494.454 -2258423.649 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R-80/120/-72/-20 -JM6i -Glightgreen -P -Baf -O -K -Y3i tmp
+%@PROJ: merc -80.00000000 120.00000000 -72.00000000 -20.00000000 -11131949.079 11131949.079 -11712494.454 -2258423.649 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -1422,51 +1502,91 @@ O0
 {0.565 0.933 0.565 C} FS
 /FO {P}!
 7200 800 M
--97 -3 D
+-8 0 D
+-30 -2 D
+-29 0 D
+-30 -1 D
 -30 0 D
--107 -21 D
+-27 -6 D
+-27 -5 D
+-26 -5 D
+-27 -5 D
 -27 -4 D
--60 -1 D
--30 1 D
+-30 -1 D
+-60 1 D
 -88 13 D
 -29 5 D
--102 -9 D
+-25 -3 D
+-26 -2 D
+-26 -2 D
+-25 -2 D
 -58 65 D
 -24 66 D
--139 -14 D
--82 -5 D
+-4 0 D
+-27 -3 D
+-27 -3 D
+-27 -3 D
+-27 -3 D
+-27 -2 D
+-27 -2 D
+-27 -2 D
+-28 -1 D
 11 -94 D
 -45 -29 D
 -23 -14 D
--75 -29 D
--50 -18 D
--92 -17 D
--62 -9 D
+-25 -10 D
+-25 -10 D
+-25 -9 D
+-25 -9 D
+-25 -9 D
+-31 -6 D
+-30 -6 D
+-31 -5 D
+-31 -5 D
+-31 -4 D
 -66 11 D
 -70 52 D
 -37 -14 D
--52 -2 D
--63 7 D
+-25 -1 D
+-26 -1 D
+-64 7 D
 -32 5 D
 -73 39 D
--115 -2 D
+-4 0 D
+-27 -1 D
+-28 -1 D
+-28 0 D
+-28 0 D
 -87 2 D
--87 -5 D
--58 -2 D
+-29 -2 D
+-29 -2 D
+-29 -1 D
+-29 -1 D
+-29 -1 D
 -73 21 D
 -116 11 D
--61 -15 D
--66 -12 D
--85 -2 D
+-30 -7 D
+-31 -8 D
+-31 -6 D
+-31 -6 D
+-4 0 D
+-28 -1 D
+-28 0 D
+-29 -1 D
 -57 1 D
 -60 3 D
--91 -35 D
--81 -35 D
+-30 -12 D
+-31 -12 D
+-30 -11 D
+-27 -12 D
+-27 -11 D
+-27 -12 D
 -65 -52 D
 -46 -35 D
 -66 -59 D
 -46 -39 D
--71 -27 D
+-35 -14 D
+-36 -13 D
 -64 15 D
 -28 38 D
 30 73 D
@@ -1482,17 +1602,25 @@ O0
 -35 -132 D
 -30 -127 D
 -63 -54 D
--64 -26 D
--47 -14 D
--36 0 D
+-32 -13 D
+-32 -13 D
+-44 -14 D
+-3 0 D
+-15 0 D
+-1 0 D
+-4 0 D
+-12 0 D
+-4 0 D
 -18 -3 D
 -33 12 D
 -62 14 D
 -72 32 D
 -56 30 D
 -28 -8 D
--57 -26 D
--65 -4 D
+-28 -13 D
+-29 -13 D
+-32 -2 D
+-33 -2 D
 -20 -3 D
 -38 -27 D
 -33 -21 D
@@ -1502,8 +1630,10 @@ O0
 -18 -15 D
 -21 -6 D
 -16 5 D
--21 0 D
--60 -6 D
+-3 0 D
+-18 0 D
+-20 -2 D
+-40 -4 D
 -23 15 D
 -26 6 D
 -31 20 D
@@ -1537,26 +1667,6 @@ N 0 1083 M -83 0 D S
 N 7200 1083 M 83 0 D S
 N 0 2662 M -83 0 D S
 N 7200 2662 M 83 0 D S
-720 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(-60 ) tc Z
-720 3224 M (-60 ) bc Z
-1800 -167 M (-30 ) tc Z
-1800 3224 M (-30 ) bc Z
-2880 -167 M (0 ) tc Z
-2880 3224 M (0 ) bc Z
-3960 -167 M (30 ) tc Z
-3960 3224 M (30 ) bc Z
-5040 -167 M (60 ) tc Z
-5040 3224 M (60 ) bc Z
-6120 -167 M (90 ) tc Z
-6120 3224 M (90 ) bc Z
-7200 -167 M (120 ) tc Z
-7200 3224 M (120 ) bc Z
--167 1083 M (-60 ) mr Z
-7367 1083 M (-60 ) ml Z
--167 2662 M (-30 ) mr Z
-7367 2662 M (-30 ) ml Z
 83 W
 N -42 0 M 0 221 D S
 N 7242 0 M 0 221 D S
@@ -1645,6 +1755,26 @@ N 7283 3057 M -7366 0 D S
 N 7283 3141 M -7366 0 D S
 N 0 3141 M 0 -3224 D S
 N -83 3141 M 0 -3224 D S
+720 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(î60è) tc Z
+720 3224 M (î60è) bc Z
+1800 -167 M (î30è) tc Z
+1800 3224 M (î30è) bc Z
+2880 -167 M (0è) tc Z
+2880 3224 M (0è) bc Z
+3960 -167 M (30è) tc Z
+3960 3224 M (30è) bc Z
+5040 -167 M (60è) tc Z
+5040 3224 M (60è) bc Z
+6120 -167 M (90è) tc Z
+6120 3224 M (90è) bc Z
+7200 -167 M (120è) tc Z
+7200 3224 M (120è) bc Z
+-167 1083 M (î60è) mr Z
+7367 1083 M (î60è) ml Z
+-167 2662 M (î30è) mr Z
+7367 2662 M (î30è) ml Z
 %%EndObject
 0 A
 FQ
@@ -1652,59 +1782,99 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-80/120/-72/-20 -JM6i -W0.25p -O -K
-%@PROJ: merc -80.00000000 120.00000000 -72.00000000 -20.00000000 -11131949.079 11131949.079 -11712494.454 -2258423.649 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R-80/120/-72/-20 -JM6i -W0.25p -O -K
+%@PROJ: merc -80.00000000 120.00000000 -72.00000000 -20.00000000 -11131949.079 11131949.079 -11712494.454 -2258423.649 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 4 W
 7200 800 M
--97 -3 D
+-8 0 D
+-30 -2 D
+-29 0 D
+-30 -1 D
 -30 0 D
--107 -21 D
+-27 -6 D
+-27 -5 D
+-26 -5 D
+-27 -5 D
 -27 -4 D
--60 -1 D
--30 1 D
+-30 -1 D
+-60 1 D
 -88 13 D
 -29 5 D
--102 -9 D
+-25 -3 D
+-26 -2 D
+-26 -2 D
+-25 -2 D
 -58 65 D
 -24 66 D
--139 -14 D
--82 -5 D
+-4 0 D
+-27 -3 D
+-27 -3 D
+-27 -3 D
+-27 -3 D
+-27 -2 D
+-27 -2 D
+-27 -2 D
+-28 -1 D
 11 -94 D
 -45 -29 D
 -23 -14 D
--75 -29 D
--50 -18 D
--92 -17 D
--62 -9 D
+-25 -10 D
+-25 -10 D
+-25 -9 D
+-25 -9 D
+-25 -9 D
+-31 -6 D
+-30 -6 D
+-31 -5 D
+-31 -5 D
+-31 -4 D
 -66 11 D
 -70 52 D
 -37 -14 D
--52 -2 D
--63 7 D
+-25 -1 D
+-26 -1 D
+-64 7 D
 -32 5 D
 -73 39 D
--115 -2 D
+-4 0 D
+-27 -1 D
+-28 -1 D
+-28 0 D
+-28 0 D
 -87 2 D
--87 -5 D
--58 -2 D
+-29 -2 D
+-29 -2 D
+-29 -1 D
+-29 -1 D
+-29 -1 D
 -73 21 D
 -116 11 D
--61 -15 D
--66 -12 D
--85 -2 D
+-30 -7 D
+-31 -8 D
+-31 -6 D
+-31 -6 D
+-4 0 D
+-28 -1 D
+-28 0 D
+-29 -1 D
 -57 1 D
 -60 3 D
--91 -35 D
--81 -35 D
+-30 -12 D
+-31 -12 D
+-30 -11 D
+-27 -12 D
+-27 -11 D
+-27 -12 D
 -65 -52 D
 -46 -35 D
 -66 -59 D
 -46 -39 D
--71 -27 D
+-35 -14 D
+-36 -13 D
 -64 15 D
 -28 38 D
 30 73 D
@@ -1720,17 +1890,25 @@ O0
 -35 -132 D
 -30 -127 D
 -63 -54 D
--64 -26 D
--47 -14 D
--36 0 D
+-32 -13 D
+-32 -13 D
+-44 -14 D
+-3 0 D
+-15 0 D
+-1 0 D
+-4 0 D
+-12 0 D
+-4 0 D
 -18 -3 D
 -33 12 D
 -62 14 D
 -72 32 D
 -56 30 D
 -28 -8 D
--57 -26 D
--65 -4 D
+-28 -13 D
+-29 -13 D
+-32 -2 D
+-33 -2 D
 -20 -3 D
 -38 -27 D
 -33 -21 D
@@ -1740,8 +1918,10 @@ O0
 -18 -15 D
 -21 -6 D
 -16 5 D
--21 0 D
--60 -6 D
+-3 0 D
+-18 0 D
+-20 -2 D
+-40 -4 D
 -23 15 D
 -26 6 D
 -31 20 D
@@ -1758,8 +1938,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R-80/120/-72/-20 -JM6i -O -F+cTC+jTC+f18p -Dj0/0.2i
-%@PROJ: merc -80.00000000 120.00000000 -72.00000000 -20.00000000 -11131949.079 11131949.079 -11712494.454 -2258423.649 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -R-80/120/-72/-20 -JM6i -O -F+cTC+jTC+f18p -Dj0/0.2i
+%@PROJ: merc -80.00000000 120.00000000 -72.00000000 -20.00000000 -11131949.079 11131949.079 -11712494.454 -2258423.649 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
@@ -1769,12 +1949,17 @@ clipsave
 7200 0 D
 0 3057 D
 -7200 0 D
+P
 PSL_clip N
 3600 2817 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 300 F0
-(-R0/180/-90/-62.2) tc Z
+(îR0/180/-90/-62.2) tc Z
 PSL_cliprestore
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

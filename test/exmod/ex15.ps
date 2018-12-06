@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v6.0.0_r19398M [64-bit] Document from pstext
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from pstext
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Nov 27 09:41:54 2017
+%%CreationDate: Thu Dec  6 10:50:58 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -658,14 +663,18 @@ V 0.06 0.06 scale
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
 /PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: pstext -R0/6.331/0/6.8071 -Jx1i -P -N -F+jBC+f32p,Helvetica,black @GMTAPI@-000000 -Xr1i -Yr1i --GMT_HISTORY=false
+%@GMT: gmt pstext -R0/6.331/0/6.8071 -Jx1i -N -F+jBC+f32p,Helvetica,black @GMTAPI@-000000 -Xr1i -Yr1i --GMT_HISTORY=false
 %@PROJ: xy 0.00000000 6.33100000 0.00000000 6.80710000 0.000 6.331 0.000 6.807 +xy
+%GMTBoundingBox: 72 72 455.832 490.111
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -681,8 +690,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: grdcontour ship.nc -JM2.9i -C250 -A1000 -Gd2i -BWenS -Bxaf -Byaf -Xa0i -Ya0i -R245/255/20/30
-%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdcontour ship.nc -JM2.9i -C250 -A1000 -Gd2i -BWenS -Bxaf -Byaf -Xa0i -Ya0i -R245/255/20/30
+%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -697,249 +706,250 @@ PSL_clip N
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
 ] def
 /PSL_label_justify [ 6 6 6 6 6 6 6 ] def
 /PSL_label_font [
@@ -955,13 +965,13 @@ PSL_clip N
 /PSL_gap_y 22 def
 /PSL_label_angle [ 334.31 83.88 7.60 344.95 324.83 328.92 305.46 ] def
 /PSL_label_str [
-	(-3000)
-	(-3000)
-	(-3000)
-	(-2000)
-	(-2000)
-	(-1000)
-	(-1000)
+	(î3000)
+	(î3000)
+	(î3000)
+	(î2000)
+	(î2000)
+	(î1000)
+	(î1000)
 ] def
 /PSL_label_n [ 0 0 0 0 0 0 0 0 0 0 
 	0 0 0 0 0 0 0 0 0 0 
@@ -1994,7 +2004,8 @@ PSL_path_pen 85 get cvx exec
 20 -50 D
 7 -12 D
 -7 -22 D
--58 -15 D
+-42 -11 D
+-16 -4 D
 -10 -25 D
 10 -16 D
 58 -35 D
@@ -2047,6 +2058,7 @@ P S
 PSL_path_pen 93 get cvx exec
 2204 431 M
 1 0 D
+-1 0 D
 P S
 PSL_path_pen 94 get cvx exec
 2436 380 M
@@ -4376,19 +4388,18 @@ N 3563 3826 M -3646 0 D S
 N 3563 3909 M -3646 0 D S
 N 0 3909 M 0 -3992 D S
 N -83 3909 M 0 -3992 D S
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 348 -167 M 200 F0
-(-114 ) tc Z
-1044 -167 M (-112 ) tc Z
-1740 -167 M (-110 ) tc Z
-2436 -167 M (-108 ) tc Z
-3132 -167 M (-106 ) tc Z
--167 0 M (20 ) mr Z
--167 741 M (22 ) mr Z
--167 1493 M (24 ) mr Z
--167 2257 M (26 ) mr Z
--167 3034 M (28 ) mr Z
--167 3826 M (30 ) mr Z
+(î114è) tc Z
+1044 -167 M (î112è) tc Z
+1740 -167 M (î110è) tc Z
+2436 -167 M (î108è) tc Z
+3132 -167 M (î106è) tc Z
+-167 0 M (20è) mr Z
+-167 741 M (22è) mr Z
+-167 1493 M (24è) mr Z
+-167 2257 M (26è) mr Z
+-167 3034 M (28è) mr Z
+-167 3826 M (30è) mr Z
 %%EndObject
 0 0 TM
 PSL_completion /PSL_completion {} def
@@ -4398,8 +4409,8 @@ O0
 4117 0 TM
 
 % PostScript produced by:
-%@GMT: psmask -I10m ship.b -T -Glightgray -bi3d -BWenS -Bxaf -Byaf -Xa3.431i -Ya0i -R245/255/20/30 -JM2.9i
-%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psmask -I10m ship.b -T -Glightgray -bi3d -BWenS -Bxaf -Byaf -Xa3.431i -Ya0i -R245/255/20/30 -JM2.9i
+%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -6350,17 +6361,17 @@ N 0 3909 M 0 -3992 D S
 N -83 3909 M 0 -3992 D S
 348 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-114 ) tc Z
-1044 -167 M (-112 ) tc Z
-1740 -167 M (-110 ) tc Z
-2436 -167 M (-108 ) tc Z
-3132 -167 M (-106 ) tc Z
--167 0 M (20 ) mr Z
--167 741 M (22 ) mr Z
--167 1493 M (24 ) mr Z
--167 2257 M (26 ) mr Z
--167 3034 M (28 ) mr Z
--167 3826 M (30 ) mr Z
+(î114è) tc Z
+1044 -167 M (î112è) tc Z
+1740 -167 M (î110è) tc Z
+2436 -167 M (î108è) tc Z
+3132 -167 M (î106è) tc Z
+-167 0 M (20è) mr Z
+-167 741 M (22è) mr Z
+-167 1493 M (24è) mr Z
+-167 2257 M (26è) mr Z
+-167 3034 M (28è) mr Z
+-167 3826 M (30è) mr Z
 %%EndObject
 -4117 0 TM
 0 A
@@ -6369,8 +6380,8 @@ O0
 4117 0 TM
 
 % PostScript produced by:
-%@GMT: grdcontour ship.nc -C250 -L-8000/0 -A1000 -Gd2i -Xa3.431i -Ya0i -R245/255/20/30 -JM2.9i
-%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdcontour ship.nc -C250 -L-8000/0 -A1000 -Gd2i -Xa3.431i -Ya0i -R245/255/20/30 -JM2.9i
+%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -6385,140 +6396,141 @@ PSL_clip N
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
 ] def
 /PSL_label_justify [ 6 6 6 6 6 6 6 6 6 6 
 	6 6 6 6 ] def
@@ -6543,15 +6555,15 @@ PSL_clip N
 /PSL_label_angle [ 323.73 343.31 326.91 313.03 13.90 344.18 346.73 33.45 300.42 325.19 
 	288.18 285.07 3.07 337.73 ] def
 /PSL_label_str [
-	(-3000)
-	(-3000)
-	(-2000)
-	(-2000)
-	(-2000)
-	(-1000)
-	(-1000)
-	(-1000)
-	(-1000)
+	(î3000)
+	(î3000)
+	(î2000)
+	(î2000)
+	(î2000)
+	(î1000)
+	(î1000)
+	(î1000)
+	(î1000)
 	(0)
 	(0)
 	(0)
@@ -8288,7 +8300,8 @@ PSL_path_pen 101 get cvx exec
 -30 31 D
 -28 21 D
 -58 -8 D
--52 -13 D
+-22 -5 D
+-30 -8 D
 -6 -3 D
 -3 3 D
 -39 64 D
@@ -8508,8 +8521,8 @@ PSL_path_pen 107 get cvx exec
 25 62 D
 -23 45 D
 -58 -1 D
--59 -44 D
--46 -62 D
+-58 -43 D
+-47 -63 D
 -11 -5 D
 -61 67 D
 31 63 D
@@ -8919,7 +8932,8 @@ PSL_path_pen 112 get cvx exec
 -22 16 D
 -58 25 D
 -58 17 D
--58 -26 D
+-46 -21 D
+-12 -5 D
 -58 23 D
 -9 8 D
 9 9 D
@@ -9229,7 +9243,8 @@ PSL_path_pen 115 get cvx exec
 -54 65 D
 -4 -2 D
 -52 -63 D
--3 0 D
+-2 0 D
+-1 0 D
 -24 63 D
 25 45 D
 11 17 D
@@ -10041,8 +10056,8 @@ O0
 0 4343 TM
 
 % PostScript produced by:
-%@GMT: psmask -I10m ship_10m.b -bi3d -BWenS -Bxaf -Byaf -Xa0i -Ya3.619i -R245/255/20/30 -JM2.9i
-%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psmask -I10m ship_10m.b -bi3d -BWenS -Bxaf -Byaf -Xa0i -Ya3.619i -R245/255/20/30 -JM2.9i
+%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -10141,17 +10156,17 @@ N 0 3909 M 0 -3992 D S
 N -83 3909 M 0 -3992 D S
 348 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-114 ) tc Z
-1044 -167 M (-112 ) tc Z
-1740 -167 M (-110 ) tc Z
-2436 -167 M (-108 ) tc Z
-3132 -167 M (-106 ) tc Z
--167 0 M (20 ) mr Z
--167 741 M (22 ) mr Z
--167 1493 M (24 ) mr Z
--167 2257 M (26 ) mr Z
--167 3034 M (28 ) mr Z
--167 3826 M (30 ) mr Z
+(î114è) tc Z
+1044 -167 M (î112è) tc Z
+1740 -167 M (î110è) tc Z
+2436 -167 M (î108è) tc Z
+3132 -167 M (î106è) tc Z
+-167 0 M (20è) mr Z
+-167 741 M (22è) mr Z
+-167 1493 M (24è) mr Z
+-167 2257 M (26è) mr Z
+-167 3034 M (28è) mr Z
+-167 3826 M (30è) mr Z
 clipsave
 290 3859 M
 29 0 D
@@ -10720,8 +10735,8 @@ O0
 0 4343 TM
 
 % PostScript produced by:
-%@GMT: grdcontour ship.nc -C250 -A1000 -L-8000/0 -Gd2i -Xa0i -Ya3.619i -R245/255/20/30 -JM2.9i
-%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdcontour ship.nc -C250 -A1000 -L-8000/0 -Gd2i -Xa0i -Ya3.619i -R245/255/20/30 -JM2.9i
+%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -10736,140 +10751,141 @@ PSL_clip N
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
 ] def
 /PSL_label_justify [ 6 6 6 6 6 6 6 6 6 6 
 	6 6 6 6 ] def
@@ -10894,15 +10910,15 @@ PSL_clip N
 /PSL_label_angle [ 323.73 343.31 326.91 313.03 13.90 344.18 346.73 33.45 300.42 325.19 
 	288.18 285.07 3.07 337.73 ] def
 /PSL_label_str [
-	(-3000)
-	(-3000)
-	(-2000)
-	(-2000)
-	(-2000)
-	(-1000)
-	(-1000)
-	(-1000)
-	(-1000)
+	(î3000)
+	(î3000)
+	(î2000)
+	(î2000)
+	(î2000)
+	(î1000)
+	(î1000)
+	(î1000)
+	(î1000)
 	(0)
 	(0)
 	(0)
@@ -12639,7 +12655,8 @@ PSL_path_pen 101 get cvx exec
 -30 31 D
 -28 21 D
 -58 -8 D
--52 -13 D
+-22 -5 D
+-30 -8 D
 -6 -3 D
 -3 3 D
 -39 64 D
@@ -12859,8 +12876,8 @@ PSL_path_pen 107 get cvx exec
 25 62 D
 -23 45 D
 -58 -1 D
--59 -44 D
--46 -62 D
+-58 -43 D
+-47 -63 D
 -11 -5 D
 -61 67 D
 31 63 D
@@ -13270,7 +13287,8 @@ PSL_path_pen 112 get cvx exec
 -22 16 D
 -58 25 D
 -58 17 D
--58 -26 D
+-46 -21 D
+-12 -5 D
 -58 23 D
 -9 8 D
 9 9 D
@@ -13580,7 +13598,8 @@ PSL_path_pen 115 get cvx exec
 -54 65 D
 -4 -2 D
 -52 -63 D
--3 0 D
+-2 0 D
+-1 0 D
 -24 63 D
 25 45 D
 11 17 D
@@ -14391,8 +14410,8 @@ O0
 0 4343 TM
 
 % PostScript produced by:
-%@GMT: psmask -C -Xa0i -Ya3.619i -R245/255/20/30 -JM2.9i
-%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 0.000 0.000 0.000 0.000 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psmask -C -Xa0i -Ya3.619i -R245/255/20/30 -JM2.9i
+%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 0.000 0.000 0.000 0.000 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -14407,8 +14426,8 @@ O0
 4117 4343 TM
 
 % PostScript produced by:
-%@GMT: grdcontour ship_clipped.nc -C250 -A1000 -L-8000/0 -Gd2i -BWenS -Bxaf -Byaf -Xa3.431i -Ya3.619i -R245/255/20/30 -JM2.9i
-%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdcontour ship_clipped.nc -C250 -A1000 -L-8000/0 -Gd2i -BWenS -Bxaf -Byaf -Xa3.431i -Ya3.619i -R245/255/20/30 -JM2.9i
+%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
@@ -14423,153 +14442,154 @@ PSL_clip N
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
 ] def
 /PSL_label_justify [ 6 6 6 6 6 6 6 6 ] def
 /PSL_label_font [
@@ -14586,14 +14606,14 @@ PSL_clip N
 /PSL_gap_y 22 def
 /PSL_label_angle [ 323.73 343.31 326.91 313.03 13.90 344.18 346.73 332.47 ] def
 /PSL_label_str [
-	(-3000)
-	(-3000)
-	(-2000)
-	(-2000)
-	(-2000)
-	(-1000)
-	(-1000)
-	(-1000)
+	(î3000)
+	(î3000)
+	(î2000)
+	(î2000)
+	(î2000)
+	(î1000)
+	(î1000)
+	(î1000)
 ] def
 /PSL_label_n [ 0 0 0 0 0 0 0 0 0 0 
 	0 0 0 0 0 0 0 0 0 0 
@@ -16324,7 +16344,8 @@ PSL_path_pen 101 get cvx exec
 -30 31 D
 -28 21 D
 -58 -8 D
--52 -13 D
+-22 -5 D
+-30 -8 D
 -6 -3 D
 -3 3 D
 -39 64 D
@@ -16544,8 +16565,8 @@ PSL_path_pen 107 get cvx exec
 25 62 D
 -23 45 D
 -58 -1 D
--59 -44 D
--46 -62 D
+-58 -43 D
+-47 -63 D
 -11 -5 D
 -61 67 D
 31 63 D
@@ -16955,7 +16976,8 @@ PSL_path_pen 112 get cvx exec
 -22 16 D
 -58 25 D
 -58 17 D
--58 -26 D
+-46 -21 D
+-12 -5 D
 -58 23 D
 -9 8 D
 9 9 D
@@ -17945,19 +17967,18 @@ N 3563 3826 M -3646 0 D S
 N 3563 3909 M -3646 0 D S
 N 0 3909 M 0 -3992 D S
 N -83 3909 M 0 -3992 D S
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 348 -167 M 200 F0
-(-114 ) tc Z
-1044 -167 M (-112 ) tc Z
-1740 -167 M (-110 ) tc Z
-2436 -167 M (-108 ) tc Z
-3132 -167 M (-106 ) tc Z
--167 0 M (20 ) mr Z
--167 741 M (22 ) mr Z
--167 1493 M (24 ) mr Z
--167 2257 M (26 ) mr Z
--167 3034 M (28 ) mr Z
--167 3826 M (30 ) mr Z
+(î114è) tc Z
+1044 -167 M (î112è) tc Z
+1740 -167 M (î110è) tc Z
+2436 -167 M (î108è) tc Z
+3132 -167 M (î106è) tc Z
+-167 0 M (20è) mr Z
+-167 741 M (22è) mr Z
+-167 1493 M (24è) mr Z
+-167 2257 M (26è) mr Z
+-167 3034 M (28è) mr Z
+-167 3826 M (30è) mr Z
 %%EndObject
 -4117 -4343 TM
 0 A
@@ -17966,8 +17987,8 @@ O0
 4117 4343 TM
 
 % PostScript produced by:
-%@GMT: pscoast -Ggray -Wthinnest -Xa3.431i -Ya3.619i -R245/255/20/30 -JM2.9i
-%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -Ggray -Wthinnest -Xa3.431i -Ya3.619i -R245/255/20/30 -JM2.9i
+%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
@@ -19100,6 +19121,7 @@ P
 FO
 286 2993 M
 1 -4 D
+-1 5 D
 P
 FO
 293 2919 M
@@ -20267,6 +20289,7 @@ P S
 P S
 286 2993 M
 1 -4 D
+-1 5 D
 P S
 293 2919 M
 -6 2 D
@@ -20662,7 +20685,8 @@ FO
 -2 -5 D
 4 3 D
 8 -9 D
--1 10 D
+-1 14 D
+0 -4 D
 11 -2 D
 6 -12 D
 7 2 D
@@ -20772,6 +20796,7 @@ P
 8 1 D
 5 -6 D
 -15 -16 D
+-14 55 D
 P
 3250 3095 M
 -5 -27 D
@@ -20901,6 +20926,7 @@ P
 FO
 1932 2232 M
 8 -11 D
+-8 12 D
 P
 FO
 2364 1908 M
@@ -20923,6 +20949,7 @@ P
 FO
 2013 2390 M
 4 1 D
+-3 0 D
 P
 FO
 2348 1910 M
@@ -20941,6 +20968,7 @@ P
 FO
 2165 2075 M
 2 -3 D
+-2 4 D
 P
 FO
 1935 2231 M
@@ -21208,7 +21236,8 @@ FO
 -2 -5 D
 4 3 D
 8 -9 D
--1 10 D
+-1 14 D
+0 -4 D
 11 -2 D
 6 -12 D
 7 2 D
@@ -21341,6 +21370,7 @@ S
 P S
 1932 2232 M
 8 -11 D
+-8 12 D
 P S
 2364 1908 M
 5 -1 D
@@ -21358,6 +21388,7 @@ P S
 P S
 2013 2390 M
 4 1 D
+-3 0 D
 P S
 2348 1910 M
 4 -3 D
@@ -21372,6 +21403,7 @@ P S
 P S
 2165 2075 M
 2 -3 D
+-2 4 D
 P S
 1935 2231 M
 3 -1 D
@@ -21473,6 +21505,7 @@ P S
 8 1 D
 5 -6 D
 -15 -16 D
+-14 55 D
 P S
 3250 3095 M
 -5 -27 D
@@ -22176,7 +22209,8 @@ P S
 -1 -16 D
 14 17 D
 2 -5 D
--9 -4 D
+-6 -3 D
+-3 -1 D
 -4 -7 D
 9 0 D
 34 -31 D
@@ -22370,6 +22404,7 @@ FO
 4 8 D
 -8 13 D
 0 14 D
+-4 0 D
 P
 FO
 2362 1873 M
@@ -22432,6 +22467,7 @@ FO
 13 14 D
 -5 10 D
 -23 5 D
+-18 -9 D
 P
 FO
 1811 1547 M
@@ -22665,7 +22701,8 @@ FO
 -1 -16 D
 14 17 D
 2 -5 D
--9 -4 D
+-6 -3 D
+-3 -1 D
 -4 -7 D
 9 0 D
 34 -31 D
@@ -22833,6 +22870,7 @@ P S
 13 14 D
 -5 10 D
 -23 5 D
+-18 -9 D
 P S
 1811 1547 M
 -6 26 D
@@ -23005,8 +23043,8 @@ O0
 4117 4343 TM
 
 % PostScript produced by:
-%@GMT: psxy -Sa0.15i -Wthick -i10,11 -Xa3.431i -Ya3.619i -R245/255/20/30 -JM2.9i
-%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -Sa0.15i -Wthick -i10,11 -Xa3.431i -Ya3.619i -R245/255/20/30 -JM2.9i
+%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
@@ -23027,6 +23065,10 @@ PSL_cliprestore
 %%EndObject
 -4117 -4343 TM
 PSL_completion /PSL_completion {} def
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.1b_r10675 [64-bit] [C4] Document from psxyz
-%%Creator: GMT
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxyz
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Nov 20 09:30:51 2012
+%%CreationDate: Thu Dec  6 10:52:53 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -193,6 +193,7 @@
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
+    /ydepth exch def
     /textheight exch def
     /just exch def
     /offset exch def
@@ -200,7 +201,7 @@
     /pathdist 0 def
     /setdist offset def
     /charcount 0 def
-    /justy just 4 idiv textheight mul 2 div neg def
+    /justy just 4 idiv textheight mul 2 div neg ydepth sub def
     V flattenpath
 	{movetoproc} {linetoproc}
 	{curvetoproc} {closepathproc}
@@ -259,24 +260,54 @@ PSL_pathtextdict begin
     U /setdist setdist charwidth add def
   } def
 end
-/PSL_curved_text_labels
-{ /bits exch def
-  /PSL_clippath bits 1 and 1 eq def
-  /PSL_placetext bits 2 and 0 eq def
-  /PSL_strokeline bits 4 and 4 eq def
-  /PSL_firstcall bits 32 and 32 eq def
-  /PSL_lastcall bits 64 and 64 eq def
-  /PSL_fillbox bits 128 and 128 eq def
-  /PSL_drawbox bits 256 and 256 eq def
+/PSL_set_label_heights
+{
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
+  /PSL_heights PSL_n_labels array def
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    /psl_label PSL_label_str psl_k get def
+    PSL_label_font psl_k get cvx exec
+    psl_label sH /PSL_height edef
+    PSL_heights psl_k PSL_height put
+  } for
+} def
+/PSL_curved_path_labels
+{ /psl_bits exch def
+  /PSL_placetext psl_bits 2 and 2 eq def
+  /PSL_clippath psl_bits 4 and 4 eq def
+  /PSL_strokeline false def
+  /PSL_fillbox psl_bits 128 and 128 eq def
+  /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_n_paths1 PSL_n_paths 1 sub def
+  /PSL_usebox PSL_fillbox PSL_drawbox or def
+  PSL_clippath {clipsave N clippath} if
+  /psl_k 0 def
+  /psl_p 0 def
+  0 1 PSL_n_paths1
+  { /psl_kk exch def
+    /PSL_n PSL_path_n  psl_kk get def
+    /PSL_m PSL_label_n psl_kk get def
+    /PSL_x PSL_path_x psl_k PSL_n getinterval def
+    /PSL_y PSL_path_y psl_k PSL_n getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
+    PSL_curved_path_label
+    /psl_k psl_k PSL_n add def
+    /psl_p psl_p PSL_m add def
+  } for
+  PSL_clippath {PSL_eoclip} if N
+} def
+/PSL_curved_path_label
+{
   /PSL_n1 PSL_n 1 sub def
   /PSL_m1 PSL_m 1 sub def
-  /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
+  PSL_CT_excludelabels
   PSL_CT_addcutpoints
-  PSL_clippath PSL_firstcall and
-  {clipsave N clippath} if
-  PSL_setlinepen
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
   /k 0 def
@@ -303,23 +334,22 @@ end
     } if
   } for
   n 0 eq {PSL_CT_drawline} if
-  PSL_lastcall
-  {PSL_clippath
-    {PSL_clip} if N
-  } if
 } def
 /PSL_CT_textline
-{PSL_placetext
-  {PSL_clippath
-    {PSL_CT_clippath} {PSL_CT_placelabel} ifelse
-  } if
-  /n 0 def /k k 1 add def PSL_setlinepen
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
+  /PSL_height PSL_heights k get def
+  PSL_placetext	{PSL_CT_placelabel} if
+  PSL_clippath {PSL_CT_clippath} if
+  /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
-{ /PSL_width PSL_m array def
+{ /PSL_width_tmp PSL_m array def
   0 1 PSL_m1
   { /i exch def
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
   } for
 } def
 /PSL_CT_calclinedist
@@ -339,6 +369,33 @@ end
     /dist dist dx dx mul dy dy mul add sqrt add def
     PSL_dist i dist put
   } for
+} def
+/PSL_CT_excludelabels
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def
+  /PSL_m1 PSL_m 1 sub def
 } def
 /PSL_CT_addcutpoints
 { /k 0 def
@@ -403,14 +460,18 @@ end
 } def
 /PSL_CT_placelabel
 {
+  /PSL_just PSL_label_justify k get def
+  /PSL_height PSL_heights k get def
+  /psl_label PSL_str k get def
+  /psl_depth psl_label sd def
   PSL_usebox
   {PSL_CT_clippath
     PSL_fillbox
     {V PSL_setboxrgb fill U} if
     PSL_drawbox
-    {PSL_setboxpen S} if N
+    {V PSL_setboxpen S U} if N
   } if
-  PSL_settxtrgb PSL_CT_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+  PSL_CT_placeline psl_label PSL_gap_x PSL_just PSL_height psl_depth PSL_pathtext
 } def
 /PSL_CT_clippath
 {
@@ -434,7 +495,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if
     /sina angle sin def
     /cosa angle cos def
@@ -455,7 +516,7 @@ end
 {
   /str 20 string def
   PSL_strokeline
-  {PSL_CT_placeline PSL_setlinepen S} if
+  {PSL_CT_placeline S} if
   /PSL_seg PSL_seg 1 add def
   /n 1 def
 } def
@@ -463,93 +524,124 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-/PSL_straight_text_labels
+/PSL_draw_path_lines
 {
-  /bits exch def
-  /PSL_clippath bits 1 and 0 eq def
-  /PSL_rounded bits 16 and 16 eq def
-  /PSL_fillbox bits 128 and 128 eq def
-  /PSL_drawbox bits 256 and 256 eq def
-  /PSL_m1 PSL_m 1 sub def
-  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
-  /PSL_justy PSL_just 4 idiv PSL_height mul 2 div neg def
+  /PSL_n_paths1 PSL_n_paths 1 sub def
+  V
+  /psl_start 0 def
+  0 1 PSL_n_paths1
+  { /psl_k exch def
+    /PSL_n PSL_path_n psl_k get def
+    /PSL_n1 PSL_n 1 sub def
+    PSL_path_pen psl_k get cvx exec
+    N
+    PSL_path_x psl_start get PSL_path_y psl_start get M
+    1 1 PSL_n1
+    { /psl_i exch def
+      /psl_kk psl_i psl_start add def
+      PSL_path_x psl_kk get PSL_path_y psl_kk get L
+    } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if
+    S
+    /psl_start psl_start PSL_n add def
+  } for
+  U
+} def
+/PSL_straight_path_labels
+{
+  /psl_bits exch def
+  /PSL_placetext psl_bits 2 and 2 eq def
+  /PSL_rounded psl_bits 32 and 32 eq def
+  /PSL_fillbox psl_bits 128 and 128 eq def
+  /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
-  PSL_clippath
-  {PSL_ST_clippath}
-  {PSL_usebox {PSL_ST_clippath} if
-    PSL_ST_placelabel
-  } ifelse
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    PSL_ST_prepare_text
+    PSL_usebox
+    {  PSL_rounded
+        {PSL_ST_textbox_round}
+        {PSL_ST_textbox_rect}
+      ifelse
+      PSL_fillbox {V PSL_setboxrgb fill U} if
+      PSL_drawbox {V PSL_setboxpen S U} if
+      N
+    } if
+    PSL_placetext {PSL_ST_place_label} if
+  } for
 } def
-/PSL_ST_placelabel
-{PSL_settxtrgb
-  0 1 PSL_m1
-  { /k exch def
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def
-    V PSL_txt_x k get PSL_txt_y k get T
-    PSL_angle k get R
-    /BoxW PSL_str k get stringwidth pop def
-    BoxW PSL_justx mul PSL_justy M
-    PSL_str k get show
+/PSL_straight_path_clip
+{
+  /psl_bits exch def
+  /PSL_rounded psl_bits 32 and 32 eq def
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
+  N clipsave clippath
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    PSL_ST_prepare_text
+    PSL_rounded
+      {PSL_ST_textbox_round}
+      {PSL_ST_textbox_rect}
+    ifelse
+  } for
+  PSL_eoclip N
+} def
+/PSL_ST_prepare_text
+{
+  /psl_xp PSL_txt_x psl_k get def
+  /psl_yp PSL_txt_y psl_k get def
+  /psl_label PSL_label_str psl_k get def
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  /PSL_height PSL_heights psl_k get def
+  /psl_boxH PSL_height PSL_gap_y 2 mul add def
+  /PSL_just PSL_label_justify psl_k get def
+  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
+  /PSL_justy PSL_just 4 idiv 2 div neg def
+  /psl_SW psl_label stringwidth pop def
+  /psl_boxW psl_SW PSL_gap_x 2 mul add def
+  /psl_x0 psl_SW PSL_justx mul def
+  /psl_y0 PSL_justy PSL_height mul def
+  /psl_angle PSL_label_angle psl_k get def
+} def
+/PSL_ST_textbox_rect
+{
+  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T
+  PSL_gap_x neg PSL_gap_y neg M
+  0 psl_boxH D psl_boxW 0 D 0 psl_boxH neg D P
+  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T
+} def
+/PSL_ST_textbox_round
+{
+  /psl_BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
+  /psl_xd PSL_gap_x psl_BoxR sub def
+  /psl_yd PSL_gap_y psl_BoxR sub def
+  /psl_xL PSL_gap_x neg def
+  /psl_yB PSL_gap_y neg def
+  /psl_yT psl_boxH psl_yB add def
+  /psl_H2 PSL_height psl_yd 2 mul add def
+  /psl_W2 psl_SW psl_xd 2 mul add def
+  /psl_xR psl_xL psl_boxW add def
+  /psl_x0 psl_SW PSL_justx mul def
+  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T
+  psl_xL psl_yd M
+  psl_xL psl_yT psl_xR psl_yT psl_BoxR arct psl_W2 0 D
+  psl_xR psl_yT psl_xR psl_yB psl_BoxR arct 0 psl_H2 neg D
+  psl_xR psl_yB psl_xL psl_yB psl_BoxR arct psl_W2 neg 0 D
+  psl_xL psl_yB psl_xL psl_yd psl_BoxR arct P
+  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T
+} def
+/PSL_ST_place_label
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
-  } for
-} def
-/PSL_ST_clippath
-{N
-  PSL_usebox not {clipsave clippath} if
-  PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
-  PSL_usebox
-  {PSL_fillbox
-    {V PSL_setboxrgb fill U} if
-    PSL_drawbox
-    {PSL_setboxpen S} if N
-  }
-  {PSL_clip
-  } ifelse
-  N
-} def
-/PSL_ST_clippath_rect
-{
-  /BoxH PSL_height PSL_gap_y 2 mul add def
-  /DelY BoxH BoxH 0 3 array astore def
-  0 1 PSL_m1
-  { /k exch def
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def
-    /MAT PSL_angle k get matrix R def
-    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def
-    /x0 0 BoxW PSL_justx mul add def
-    /y0 0 PSL_justy add PSL_gap_y sub def
-    /DelX 0 BoxW BoxW 3 array astore def
-    x0 y0 MAT transform
-    /dy exch def /dx exch def
-    xp dx add yp dy add M
-    0 1 2
-    {
-      /ii exch def
-      x0 DelX ii get add y0 DelY ii get add MAT transform
-      /dy exch def /dx exch def
-      xp dx add yp dy add L
-    } for P
-  } for
-} def
-/PSL_ST_clippath_round
-{
-  /PSL_justy2 PSL_just 4 idiv 2 div neg def
-  /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
-  /BoxH PSL_height PSL_gap_y 2 mul add def
-  /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
-  0 1 PSL_m1
-  { /k exch def
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def
-    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def
-    /x0 BoxW PSL_justx mul def
-    xp yp T PSL_angle k get R x0 y0 T
-    BoxR 0 M
-    BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct P
-    x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T
-  } for
 } def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
@@ -570,62 +662,71 @@ V 612 0 T 90 R 0.06 0.06 scale
 
 /PSL_page_xsize 13200 def
 /PSL_page_ysize 10200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: psxyz -p130/30 -R-24.4/63.0/-13.1/66.7/0/200r -JZ-5c -JT-17.927/64.463/15c -Ba2f1/a1f0.5/50ESZ -Wthinnest -K
-%%PROJ: tmerc 334.57004582 347.00000020 62.89999998 66.87394195 -327594.325 212971.428 -146572.280 257674.062 +proj=tmerc +lat_0=64.46299999999999 +lon_0=-17.927 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psxyz -p130/30 -R-24.4/63.0/-13.1/66.7/0/200r -JZ-5c -JT-17.927/64.463/15c -Bxa2f1 -Bya1f0.5 -Bz50 -BESZ -Wthinnest -K
+%@PROJ: tmerc -25.42995418 -12.99999980 62.89999998 66.87394195 -327594.325 212971.428 -146572.280 257674.062 +proj=tmerc +lat_0=64.46299999999999 +lon_0=-17.927 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 72 72 425.197 317.971
+%%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 /PSL_GPP matrix currentmatrix def [0.642788 -0.383022 0.766044 0.321394 -0 2714.33] concat
+25 W
 8 W
-267 0 M -8 -83 D S
-1599 0 M -6 -83 D S
-2924 0 M -3 -83 D S
-4246 0 M 0 -83 D S
-5569 0 M 2 -83 D S
-6894 0 M 5 -83 D S
-7087 1340 M 83 6 D S
-7087 2806 M 83 6 D S
-7087 4273 M 83 6 D S
-267 0 M -4 -41 D S
-934 0 M -3 -42 D S
-1599 0 M -3 -42 D S
-2262 0 M -2 -42 D S
-2924 0 M -1 -42 D S
-3585 0 M 0 -42 D S
-4246 0 M 0 -42 D S
-4907 0 M 1 -42 D S
-5569 0 M 1 -42 D S
-6231 0 M 2 -42 D S
-6894 0 M 2 -42 D S
-7087 608 M 41 2 D S
-7087 1340 M 41 3 D S
-7087 2073 M 41 3 D S
-7087 2806 M 41 3 D S
-7087 3539 M 41 3 D S
-7087 4273 M 41 3 D S
-7087 5006 M 41 3 D S
-252 -166 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-V -5.42 R (-24 ) tc Z U
-1588 -166 M V -3.63 R (-22 ) tc Z U
-2919 -167 M V -1.85 R (-20 ) tc Z U
-4246 -167 M V -0.0651 R (-18 ) tc Z U
-5574 -167 M V 1.72 R (-16 ) tc Z U
-6904 -166 M V 3.5 R (-14 ) tc Z U
-7253 1352 M V 3.91 R (64 ) ml Z U
-7253 2818 M V 4.1 R (65 ) ml Z U
-7253 4285 M V 4.29 R (66 ) ml Z U
+N 267 0 M -8 -83 D S
+N 1599 0 M -6 -83 D S
+N 2924 0 M -3 -83 D S
+N 4246 0 M 0 -83 D S
+N 5569 0 M 2 -83 D S
+N 6894 0 M 5 -83 D S
+N 5 0 M 83 -8 D S
+N 7087 1340 M 83 6 D S
+N 7087 2806 M 83 6 D S
+N 7087 4273 M 83 6 D S
+N 267 0 M -4 -41 D S
+N 934 0 M -3 -42 D S
+N 1599 0 M -3 -42 D S
+N 2262 0 M -2 -42 D S
+N 2924 0 M -1 -42 D S
+N 3585 0 M 0 -42 D S
+N 4246 0 M 0 -42 D S
+N 4907 0 M 1 -42 D S
+N 5569 0 M 1 -42 D S
+N 6231 0 M 2 -42 D S
+N 6894 0 M 2 -42 D S
+N 5 0 M 42 -4 D S
+N 7087 608 M 41 2 D S
+N 7087 1340 M 41 3 D S
+N 7087 2073 M 41 3 D S
+N 7087 2806 M 41 3 D S
+N 7087 3539 M 41 3 D S
+N 7087 4273 M 41 3 D S
+N 7087 5006 M 41 3 D S
 25 W
 2 setlinecap
-7087 0 M 0 5300 D S
-0 0 M 7087 0 D S
+N 7087 0 M 0 5300 D S
+N 0 0 M 7087 0 D S
 0 setlinecap
+252 -166 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+V -5.42 R (î24è) tc Z U
+1588 -166 M V -3.63 R (î22è) tc Z U
+2919 -167 M V -1.85 R (î20è) tc Z U
+4246 -167 M V -0.0651 R (î18è) tc Z U
+5574 -167 M V 1.72 R (î16è) tc Z U
+6904 -166 M V 3.5 R (î14è) tc Z U
+7253 1352 M V 3.91 R (64è) ml Z U
+7253 2818 M V 4.1 R (65è) ml Z U
+7253 4285 M V 4.29 R (66è) ml Z U
 4 W
 PSL_GPP setmatrix
 {0.863 A} FS
@@ -636,18 +737,18 @@ O1
 0 -2046 1576 662 0 2045 3 2972 970 SP
 0 -2046 2460 1032 0 2046 3 6150 677 SP
 /PSL_GPP matrix currentmatrix def [0.766044 0.321394 0 0.866025 0 2714.33] concat
-/MM {neg exch M} def
+25 W
+N 0 2362 M 0 -2362 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
-25 W
-0 2362 M 0 -2362 D S
 8 W
-0 2362 M -83 0 D S
-0 1772 M -83 0 D S
-0 1181 M -83 0 D S
-0 591 M -83 0 D S
-0 0 M -83 0 D S
+N 0 2362 M -83 0 D S
+N 0 1772 M -83 0 D S
+N 0 1181 M -83 0 D S
+N 0 591 M -83 0 D S
+N 0 0 M -83 0 D S
 /PSL_AH0 0
+/MM {neg exch M} def
 (0) sh mx
 (50) sh mx
 (100) sh mx
@@ -665,14 +766,16 @@ V 90 R (150) bc Z U
 /PSL_A0_y PSL_A0_y PSL_AH0 add def
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 PSL_GPP setmatrix
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxyz -p130/30 -R-24.4/63.0/-13.1/66.7/0/200r -JT-17.927/64.463/15c -JZ-5c -Wthinnest -O -K
-%%PROJ: tmerc 334.57004582 347.00000020 62.89999998 66.87394195 -327594.325 212971.428 -146572.280 257674.062 +proj=tmerc +lat_0=64.46299999999999 +lon_0=-17.927 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psxyz -p130/30 -R-24.4/63.0/-13.1/66.7/0/200r -JT-17.927/64.463/15c -JZ-5c -Wthinnest -O -K
+%@PROJ: tmerc -25.42995418 -12.99999980 62.89999998 66.87394195 -327594.325 212971.428 -146572.280 257674.062 +proj=tmerc +lat_0=64.46299999999999 +lon_0=-17.927 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -685,14 +788,16 @@ PSL_GPP setmatrix
 1602 -954 D
 2460 1032 D
 S
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psclip -p130/30/0 -R-24.4/63.0/-13.1/66.7/0/200r -JZ-5c -JT-17.927/64.463/15c -O -K
-%%PROJ: tmerc 334.57004582 347.00000020 62.89999998 66.87394195 -327594.325 212971.428 -146572.280 257674.062 +proj=tmerc +lat_0=64.46299999999999 +lon_0=-17.927 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psclip -p130/30/0 -R-24.4/63.0/-13.1/66.7/0/200r -JZ-5c -JT-17.927/64.463/15c -O -K
+%@PROJ: tmerc -25.42995418 -12.99999980 62.89999998 66.87394195 -327594.325 212971.428 -146572.280 257674.062 +proj=tmerc +lat_0=64.46299999999999 +lon_0=-17.927 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -703,19 +808,585 @@ clipsave
 0 2058 D
 2491 0 D
 0 3212 D
--7079 0 D
-0 -5270 D
-PSL_eoclip N
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-13 0 D
+-12 0 D
+-2 -1744 D
+1 -3401 D
+1 -125 D
+PSL_clip N
 PSL_GPP setmatrix
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: grdimage D3-25TV24-resid.nc -E100 -nl -p130/30/0 -R-24.4/63.0/-13.1/66.7/0/200r -JT-17.927/64.463/15c -JZ-5c -C/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt5/trunk/test/grdview/resid.cpt \
-%%GMT:+ -O -K
-%%PROJ: tmerc 334.57004582 347.00000020 62.89999998 66.87394195 -327594.325 212971.428 -146572.280 257674.062 +proj=tmerc +lat_0=64.46299999999999 +lon_0=-17.927 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%@GMT: gmt grdimage @D3-25TV24-resid.nc -E100 -nl -p130/30/0 -R-24.4/63.0/-13.1/66.7/0/200r -JT-17.927/64.463/15c -JZ-5c -Cresid.cpt -O -K
+%@PROJ: tmerc -25.42995418 -12.99999980 62.89999998 66.87394195 -327594.325 212971.428 -146572.280 257674.062 +proj=tmerc +lat_0=64.46299999999999 +lon_0=-17.927 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -725,149 +1396,139 @@ clipsave
 7087 0 D
 0 5300 D
 -7087 0 D
-PSL_eoclip N
+P
+PSL_clip N
 V N -397 -216 T 7962 5834 scale [/Indexed /DeviceRGB 11 <
 8080800EFF009CFF00D9D9D900F1FFFFD400FF5400FF04000063FF0000FF260099000000>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 664 /Height 486 /BitsPerComponent 4
-   /ImageMatrix [664 0 0 -486 0 486] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
+   /ImageMatrix [664 0 0 -486 0 486] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-J,g]g3$]7K"UKcJ&9q_D*=mro@So+\<\5,H7Uo<*jE<TkO@!I*3@'nb-^757;RjZ">mZ5.-;uq#enm@95iqUJ"NGLITMT<$3
-E5R/+eMU\<4ZX!K1Dk5WANn:<ioG[J8-sPI87%SYZPR=Wo]Oj@^K<U;Muiih)r+#DHAf?[bl;(>q]9k%GL?%UXu]:4.IQA,+
-N#E(qP_@*E](FnMnahiuaVWfs4P(<`_G%)<NbQXR9j9SBpJ;iA$q5?*5#Xp-9'f)c&BGmV@-nIeS8ng"<[DXPVu[a.@5F>eT
-jOK/E]#L-1=U(2MFd83*6Tk;/[TLie!Urh!dies^lqS'N1ch9.!iIO#:s^[85tH1q2dcKjou^<`#I!PjdJ%0OEX.#.dgN`5f
-/-P1WG#/ZC2'+;\hbRF`mYcGqG]a:2SeNK#\9Gt`F9N;24OZXKl^FV?0bf">q>o,qLb]Ol@Z%LRE7Zj`%*^nE*N=AF?A4Iah
-XrN,(7']Je,Kc*9>:D`+=@F+LZ?n#O6@kr50u.i4m2njhg2/31b2geO9N*4Y/'[MCCF1BlAD3tS1TT7ic;LJ&5<4q?eLo0``
-;;k_PQ_.6;3("j1s;*-'"h*qI2thsF<*-ndVgu3REnjD?U`H3<B!ZA2,+HG;RIfF-rnR[=&q[GX;tD;FdgQ\;74A)?rRaR7[
-[?.rJ9Rdp(S*M^D8[:o[thPTiG7BeNI*c02P)U\CRbWCUa"SZN=?RFh70Kn(j+G.MjDSF2JfY]lr0iK9LR>[l*CF>aJaLE'K
-];G>qc?p&B-_p_F*Y-($RaIQ+b7T52bs`X@VK32:n[6[$0aLYk)L,D9<i";PT\GpP&+,T0%SPsCaK09'"8JeO2(fN"Js;428
-iS0h5fI@afVV?(.>=rn!?k?:5[T3,9.B#Em0/p3BC9m3L:BG7P<1u%\\=//aJQ4p)#Q3F=j>%qTr9C&^/fkt&!L<Pp#FAD,Q
-Bj1t4o#XsfokJ(X<`>H+:Ek)'27jj9ZLJek+_YRcqRM9";6AT_V0_#PAb.\#<o2sYrq;TBHiC^DEP.2F)=)]P.unbsDSJ2T4
-RTYEp<aZigkL74aS0oFVh93ahC":;]tO0'ODZ'?MjSa\/j\.dCgX6nV&GE$mC[o:^#eV\(Q"59I[A7aqRD.1iV[r0bP/4<rj
-0=fSotln?bq8B:WSa/e@b#">4b]h"oQ-4TZ!GF\mOq."rE(#"5#FB265-/_,qW=i55>C8>1*qa5$h?]38^++`]^;Eh/lnGCD
-4WP<`Z4$Qr'YBFpa8_`*8Vi>aI=:r4'8pjDZUKL&fiD6]IQM\4U"-A6>U*?DI\!8R>mHa,l``@.UiU*3BgEF9AIVgfI*r(2Q
-]J\dVmaW'7j[=E1GP.]GF&<Odp.rgS/7@-pmi^3Ks&@Gas`Z6-GlhZRa)D"BF8KFO'XGMWt7*/H`,27L)O=S0s_'pY1b`%jP
-5`*BMVpauYlm,I!)G3U^74&a+A!+]U)^AKa.[1@*PVTgOXI3VSU'.HZk:TfYaa1&K,dS`$eHnc(jW5"ED3o;^A$^GSrtq!GO
-HSa?'=e]4,CH_%o3@O(`#gSfe%CRW)K8Aa`/pii^l;8!3D6?b4(^>#O:n,ncAC(1?3InDTi<Lq.B&tNHr4;#BmEMMLim79"J
-Sjh.aI,0+t-EBSJ.hLcY<P(BH7e_;roZ0Lq?";gsA;_mYFaJ78)hqY+=d.K[P0(3[n!#PSAR*dMcObW&19F[+4Kgg,ARN=YH
-9&MP!iDJLKcPA;q;W:/SQ@Ni?R`VmSR`<#I6Nkqtn_<EbF1i^4\8D-Wq1H:69sZQ(C<<N,.[0V>;c>&.,RP1@)/<skn9WjNg
-:2.iFF3qHZh'_&&^c?[TZ<FH2UDm8pV]t*GF!G+\K8G1Nu=*l<$CLhCid?8rZ4#L%ii<cejI`+f]pi5Wljd7pN_:E']B<>aI
-OXNh?bbIaGkOL^Ccb_G@^s![K/S_XIP1Q1-HT!<AA@PV,]3&h='s9^Q\M\EZ+T%dIVTj\"'dh#@MXa@-c05YeWislBhf"=pk
-!-4-IRG\0=lRD8]iV6$e,,II0(a+s"Ch0KgB2l,*+QYR:@)?"dsET^m[c&:03WUUJo<MA_72Pn?-FLAA*sFCmpbf2]2AcL/P
-a3Mm]Kpm'Rt*3@]7l*D.7lK:[m3k\G,^1>J*7PZ'D3+MWYpD4;U:<eh!fK<u>HV.;!P-7%b<=lVe45P&<]oa3/fW4rc);=0<
-C_[#6HrMq<H_q[^PhHJhod;V4s?2n^)tra`P9F%lQfanLOj4D6cNn'4tZRF\"mPHe$ETc]F8%0XL?$Ff:!K?7*1(HM>gA]Z8
-&^30^]khB#En6V9mGk.!;h(NInAo3k![kTo?c^AnkG-jt)fY^efUF)#'?*qLH@-pNRoW$fp##dor%)6akbU1[SNeqN\H^Z16
-__IVs<94I+L3*?T]__@4CFbgT1r1Ec=;qA(/#dCCf%\rJO$`4S_5]'+,gX)kLQ^k69D3Pag)GLMaIS<uZZ]d"B%d,q4kHLpI
-,W=SL0?C6kqi(/Ni?5=,]J2E75bRMhm)o=lDa!!F+me'];pirSUWpbcO8S4RF,`gIE6Z)Y0<E&6;mbV`q&J=iS:sO^qO="q4
-BL][)8Bbfb90tV_-AfpLSF=^KrkEguS)@U7Fk+dKl>We!:;^F7&A+H4N?PqmJGSSIkIMpKHls>H_==T@eK,A;m(KX6.[g\PP
-*LjB]KWFt=`324;t\rEtJ*Y1MNWDH,g?pKiVkFh[>LL[Lt1_fO,8icli/U3cGnq!;)3p()9/qo/5QFN`OPF\JT7LcbFfFm(p
-oaRFY?m(5Z@f&ZB'H9L`IGg,F<I;c=Y*LFlo4`#D'@@lHEnH$8ZH!5NRlM)G+chAgmkd/Y_ghF89_nm)Xrae.^(DE3EbifrD
-R!6Y:=oEc/F1AqOZ8/&'O!b`RpO7N)qDTMgI\/aWY))k5XR^;:4MtG$`jkaJ?9RBsIP7A;&,Q=P*rmqUkfG=JK8r?p4TRrWs
-"DU::a5ikeAZ@Yda0Q&c]1&A;"jB<54BKW&3e'P7/ChTa0-]fE%^75C0Dmt"gD8+O&j@VB(upPi@o.0#t4?:YY$S\re]#+k<
-B5'<s13Fs6\JDc`[K>3<rA[=Kglm_s[jAI)D&Er@j,h&-W@H/I=e+:U$;s"7638R`c7t"Dg'k&1[BMP7*#'=)`Kr"5=;X#le
-i=!`2G_E/lo>p?+f*&&T7r#E\U.nC181rG`C!D58fpc@9`\%C$m-E1E6RGiFb]n*Y#N;"Y9:pd/sa0G-X:/E5Tkob=RL!f4)
-p-tO!)*tb9E"*#I]ClK3M9'U.A'a'L1D%aXH4Vt>*([_LH&7G*LLBOS0#7tq)0p^fq^DYFk!RBWcObhi?e<8,`0!T[>Ogc9l
-d-]($(f&$i0oS%_7i\6Aqdp?Vir:#ncMWd!$;Q9/d4lQcN;`qW]TF9X;-LA)UCM2%)NBFn:U8rb$QijX($MP0EYbBEr?)MU*
-,l3.6Y^I7&8-"p2pl+N;;C0YM&<Ai[L#ADJf,WH>pMgT,d=rInkg\bf-PFU&Q2s9Yuns+'dgh*$4k<!m<^4CijmJ"&VFhInU
-*dCV]s((.+.nLc.9e\>96[l(NMkm""O\r5(YOE-SbPPni2]Y4Wn`+/+:M&UeW5aaOtSi"u=RLaQ"jm,10<Dl*@$LVC$H6b:M
-(`cB;5\0lS`8Rk)BV&hfLPU5^XUYbeZ4$uH5'np;mLFYApt&0k(<"rqlNXRf/2eh"3X@qq:WSMTk"1[,*Ia';Rp;T2?7_@Y0
-P;,efNEcc=k4&Frq#6(0PjMOZT-#+^jZZ-oSg,1[27#+J5PCkWS.aUj/Z?)*d1K>Q]SG.(co`mE0;l(o.Y2mbQjY@teE^;^<
-h)D3@42T0''*gR72)rsB%l.EH@Q,W4I504#\723g7!L-Di3t4WcLA4F'@S;7q)*ejGLQXTP(b!?K0YX&1Gb4\!]g=%K/L!D2
-s4dQ,gd\Cd'j];`O$(:m:mkuUI2Au.IZda`A98+)ORm'7'SB\oFF)!1,ZE84`(s.#"DSs"K?3u7aoUN%N$Dm`:hTJ7B7=sLF
-!s^j#D-sU27:l<-:W+Gp)Snmdd/-'Kh=G'1fJ:9(VKkJjq]Hdmqo:6c0a:W81-hWn8$16Lsgp<5THtInd6M8Z#\XoZ9G,/PP
-`f,B:(h#;o0'+Y5C+/?(3t.s3]]O%f[=8j^aic?;O<fE*n<.qqFEXtq^_hT]Li7Ukgb%n])!=GaFM7'!mg2%*1p9JdJa;_p]
-uB0-tG+VaONk7pQbe3n<>$W0m7Q75<hXI)=RmNXLb.s1YaPSR+NO9A3@<&I(\8]b'Jr)Da(=r!f98Olit.WT[;,;b`kAij5"
-4ZVVf>Vg4lXIEJ%PtBBl>u[F)-/bFnD-df?7HjJIp!$3p"'4gj?PW.!asa8(?o>gG?kqftosn"$f3O*KS-fIt;ZB7Q)QIndE
-3I)c[L?MCVOb.Nr^+,R@QduXF^u/7@TGsmd/Qg2Y(RL4=`!k"L1+Ze0hq=R:,ZfrV28OO'/t%c0hLm.2"]Y5:4^8CA4g`+YV
-Tpj/SOcrAi0'0VlN^mCp$g32b$W!Q?>UgqcGWZCIORgFBN5l]g=WDC5(D>Optdg3$SUKCR2SGN?&[5h-0He=gm($eneNoSI`
-.30)"*U2BuK@Kl@fZ=YW9_Q<S%EnO^#7.Ki+VQCMXLDfPsZE_5e@!ae<\)f^R_D&03@f/Z]N4Id2GD^+"ZL>5bHPBAaTDH:s
-oP/&Ze"<t9SEMi\XG47o>Kk9sNEh]=Q@OZN196^,]0=QXN():kUa=,Z%,'T8Q=%uZTZ#nTe9M=,7G5No#WZkNJARsOd(S!te
-s&Jg0EEB,Q"u&]ghaQ!AG11@sp$$j*iG2t>62"#q\*>G$`H:h,IH!25\'1/VlTp3KB@.AcQUQC+%Utd23"i8HjSaPUeUSHWJ
-jM>G(_Y;/$$`qf9rM08\&KU=GXQX`G6J;)Zeo3nhh<6sB:*+075BPY)G0SqG?%:iD950YL.;I&Fihs?,0bo*4bQmHL*Sfl\;
-WRL?7u#<JqNZLfPj-QbiT$MMIPJ#VC@Bll9jt\i)ZZQ3.$K>[>Ai3([Y@Mf4f^Y[u:LdL@;ki#[EEmK8BZ?NeQSTeN"0DN0T
-d6<juFgk.:q=i27n>O*;d!\0brmDh#`^V^(2,3<;?hduV$OP!dh+fe!&!9oN.8MtoDK=[*(d+,oogPdq<4-G,!M-s!lFV08,
-h2M[G5:2(PR"hAC?oa_G@F-E##OZ;@36rFTt&.jjfBX0"LGE8)&OW<etGefH0=d>D005C<:RKB1;JfB@Z1IH&G6Wp[ai=PCE
-K9a![0K!E&3QU&f0q.pcRi/SEH.QnY$nIa]+bt-+m8cRll^kZUMA`sqR/*6Ihi)c3S>6gkH3^+RD4p_+/`M&JU(2B+9pT?GB
-A+N'":ppPl'Qc3=df;</T<sXl(e(ZnJOgqAd*@gUSQ@KV%*Plg/k,>$(huE+Q^XOK"%KV%5_7)PpO\Q3d%%*>m5HA?"t70_C
-g0rMNahJWB+1V6fXt@Tjq32Q.fkl)G`l6O?f89&HO\_qKYrJLTOSBF]]%rq8JB#]:N3JW?Dlf+Yj]L+fcH<VmU68p'7YPhBL
-\6O8A"_"66@!#HmpnY<"tBg6k%sN'jH_R(C1gR]&K@'qW#TZ+A8U0/"[3UP_&h?GbZ0kD=%:!^M'qZeJcm)^2RlgMS3%qut]
-Xe)>ot`]dRK[G+uj>*ZNW.!#/oH2CC?#U;L$3)@LpZ[&gbgO6LK-AEB[[WWoIqba+m&#e4JU)Tf8gOYmkYl=O#EB>V])j)ap
-'\`FeU)Q2+qXM3Yc9S1gA9ZNLi\CM'aBBOlZT;*]qqo+,jdR4Q8<e`l,!mM7/pf[F[pY&hS)LjQ>I5Y]Z<&q0*#6;:[:+B"\
-!u3j4$CB)Q)uh%K%qh$688.=2n)@?\\%s])]Q^uQb^6e=ki3C4>W4)NQ$_BZW]T5)a1c;<D31t8fVom=f6h,^Uq*<a;Z)>6f
-l(,_a[%jaS_0[S(<`agRrqbao!Nr>Hbu`DEHi.WHid282NTDS\R?rZ2DG8>(0%*a<H@+Q9<N@-#^?L]?Ar]_NsZ3]Z7uRc%m
-;mFiA::r:dPoGK,:tYN1Pc@O(rA\&gaWI_;)<*8/CQAZqR"dA<,R68-b]F4-F9dbFen]bACJTuoJi/@-YN![H2u6^-=UG<GK
-=]i22k^WlT/b+0X(3Lc9SCXC!-f,\qP=jt`DJ\o?NecI#G?"_C[8p;NiSK0N0]ogfk:!a#=ftnib*:)+?a3?_pSGdN:rE%/:
-A^gUIfFF>'=BpG?eX[`,a?A"i?+7i0INmUagcYu!I.>k"ceA<kXW=1^'E?Q&pu4?rJfY$BrX$c^%G=nuc924Qb\Q&NqL`&ai
--jq;SGU6n8`:qX,5C'Qnajpl"kqftY9#(P?$[pSX5b6WM\kl75!.47>M1$\gKOj9KMCOa:Q""IhH_e9hEU1V0?RJOM8X]'?>
-I_&fA)#aW?,9?NK`%DQpol)8KG`kr0Q]^l/VcJlTSgZ^:EBbhrA%YNIB"5?0gjk)2#Wp7fL$c`]S\(Q:X2Em!Xr_?KZj5GN>
-JKhnI@o^8L-8hsML`kFR%c53]FbM;`,TjW,B%T,5':F/M[/nieTms!UuuUb2JSki!-545odhCP"[e6bc"\7JYtf@R'j5n(k8
-A?Rn:r\*-$`Z[R]_j=TVaEeb\>f\E%fh]B_nFm&rWgVOith][KA86Z(Npf8ghKAH=9;;f3/omE\.?7mFOU$i0P;$2<ZGIoJ7
-Zh$C!`ZL>_AKdebNtq\b+TKI9++NkDmJS#?m/d8DJO&.H82M<B845f'OMo@,+VBPX+gG-Y&eQ"@7`]O>oFPIDO\"Pr=X8Gn.
-@!/Q!"!b]@54)L,BI"pY&QIm:8H@l0MYM&NCRW'=;6L<-_3`c;.s,[,uKIsU="h*?4T)m;J4Ko1q$t(Qe!^QRe<9""0PO5;d
-(KE;d6ZV-T!6r2Q9TQ`@?u'[?fW2[En7SMZo!UJ?iDK\Cjm*"qeF:ma97#HQsc+ARP7iF[Ga4^0b;mr)@F=R??S$n4Z"iA#H
-DDG+"=d7b_"uj=YXYhN8DDWUMaV.,=90\D$8W(nNVjQNOQtF]uj5Ebi&Cntgbj2\Un?i,e+.SQA8cYNF$@SIMcK%ud%I-f&[
-*P?Zf09"l9>!i"ZtYA,iR1G?(Jof[75NnQZ&bN,0L.LO?)/FT><V5$`V!tI!2>N56.E'%8,\Zks-a$J']G71BA6PRR*9TjFn
-6a=!]'>g_:,kNCD>@S>?&^kk<4jaU`&]h1$$Pp4N_J:+51("I+6rE<!+09LQ5dSR(\r@K7/-L_Q[db7Cho[[\[N[u:jK='W.
-@f'D-ZE<B,XQ<HaIL7IS=_X_:^]u;c,o>236k*kk^uZe'ah:CdhH2safr_b%8^"Dkpk'P63T@L'O;P"894;t9!r`j;!Lj&h,
-]1rFOH^L.'+^Z:f14=G9\W['dlUL'm"dgenT=6+OSA22-a!6bsu)D1i&jb]XAOQ@O"o/qd`5I.RQ#7o`u.D>dC,jnl\N^?!j
-K@F_,EP(#>=qggijcF%^^VM0.JCothU&pPLJK;AZ(RHX?HkGhTrWoOWOWBsn6d<1#_oKV<Wrk0(_17LO:9f4%1)VUpN7B]"'
-JF"F'<hCQ\spsX@mA9fY?PL*G:%@*hk%?Hk)N%@qdWqfXH"%JZL.<=UO/q0g62q&/&32s?IOjEI`Q[%\::7\"P9dZ\cj[f*G
-KkgE!ZWEt?p'6!3$-Z#H3#_M4$7ul?Rb@(Sc*J>@gV1G5-!R+\ic'7aN3fPj<d-67RqjFRE*2!*_e`-[(Brnup=!?G)FfpeD
-%frWZWXq%AIe<n*VQeq=f#uD@Q9\p6#'ZA;:VNu[h[L`(N`HAn*nXR.;E-_5Mi6p8!Dl@dj;#qCDtN9gT6OPJY@:+9XEp)53
-J\%bn0o5Rnh-ZEiS`&pV.gJ4[7&;dJ;hcaXFU$fqS)0>$$!F\bRSM`r-RG.WS<nJ=*81!ECBE4V._r5W3`cRj4&4Kc0.Y6V.
-BIj1Bn>;,'>h;$J'sr&!eE&fin=#[!jpKkrKY5*Cm6?TXX/d(PjbASS^1X,Vmn3QsYmFN%\r+*u.iZp]+EiE9tc0<m5%5)"a
-JU64h\;*HBOa?9Qt1f]FZ"mi2/+Cem1>CLQt;StAr>ThfWNUKH(`d#l3,.q8P9Z?`JFeZk8Uigl9*]>+80&k3AEK3]?5KF-5
-$s22Y.5340];/c?UFFefi6Fd4aVtDZ)7Md";7AC7_J/)dS<L-G8$N/k$!Q'2/(,Oa8pO8`A(kKTVkK*OV9EPu>Oe#a(#Z6o+
-Ka4hq-?n>iuc3l0I@2h,7_.'^PMHAAlQs';5fJul(9nDMk-1Ik%dW<]f(\n5Ws(DDbdSg'[.0cP#3i)-/$L/-UH"J;mLg5,@
-ri?,$1@Wb'J_4mVF8pqjiJ`AOZg+29ROgTQCfgd#'7O9EagU$@[ahdc!T-.>XYh<c4hGW@J\Z]9;f']M\7=88/dSE-,PU.u5
-8jB<<^9,Y"-H\h8Y;@a1`F#fb4PE(l.OihpgjY:%GLI933"75WfmS09[d.SO&^cAEMjMLroDD,NC%:l3_I[e33t9eD;E.Em(
-F;+ZaVXArH0,C2=A.n+/YPc5_LC>;K5Kn$<ANiTGf*r]9S2j[OQWRr.-@r%=p@&XV=Ze0skk1,Bp[V!<Wq4>E=/3gG',reY8
-0kROF@\FQ^\Cid2#3<D]NCPf.g3[O=B@?QGFl#[!<DQq;\ZiMcf&7FG3?p,l.WS6t\Mg;q='/b6\9C??=Tc!N/Rt/(QFsT[j
-n!RHQ/=Q@e4dU+<fZU[mr5`5`*=7tGU#MK@"qk8gmc[YmnmQ-QaZA$>6KJB[<B)5:AWUi@rO*OmC9,`]s?u']'p13\!Rs(i-
-Z*K:\bX>M(FnL*!M!F"qnZf;YI6*08:ik6G_:&%lOh^:2q$,_']<thq3,J8G0PcfWCFYWql]MINqck;P[^UDhf^#3ihdX*om
-0+TWPX$869!qjF!(h@[9[/QgY)Z$r0,?r_pt@?LBBrZ'K9j2m=0C(1^[0QuF<Ebdj2+U"j6nF&cO)fQ.PblP#ctL2nafBN8_
-/#V)n_*3^fI#N[KsT.5:kch[`1krg@CCPFPU):meY"fHl,epGfmLHcW7c(MG@Vp]lu).oF")XfSVe2;;<@N9lt27BI*k'pDu
-XZMD]f!2*@N3M3/or[pGVoseV^VjtpYI&2_;&[bhi-e>)p9oY&etApBo>I=7et6KB6IG-DA[*j/fA.?H>`dc!NAgJ$cWO1d>
-6ojgG;Zb`46JrqU+Nuq%Q2Q8K5b`\k36>='AWKNKkNX#7<eHL9tE,7E*Cr2oqeP>]J#!+PD!WZ%R\-;^L-LuQ^H=d#dZX/Q#
-F<ha/V>Ii]G%jnjFE2\OD&/4Kk#ic9KLW2&=G`3u)g(>KN/eUur``V/j_XWp/+hVqd?-1#?_KWu"Ff@dgFATlm1lk*n=H_l-
-Ua@FY.L9^*P[XDk>OgNqa_eNC5>eQsECH'QM0SXK(;'+rsof5C'uCThTRe!IY,'CSXoZkb:mb(X2Rn/]EDB5)5=]=jm-1j?p
-)*ui54LOnrBFus/l2k,3@Rc<1FcL7qYkPKGDoM:A8nLlW]iWlG0?E\d'mfDc;UX7.?Q_F:jA*3a9]%nG!hYJ;0>r!e7K`;Yo
-DF.Y2^.-`I^FQGOI_Ujdjmo9U8*N@"l<&MEf@^+=fDNMYm(R`q_>fS\`-R@;s$jHq?a!(G,W`D=1Z?*2j.YN0^Um]6bP[(Ka
-ZQ&ZSbqmsU$KK"U;!:e5I:L!/-E[U"Z.I@55X#tl#o/3beTSG5cb>M*!A?F%5]$l\blrN,R9\6#e-NI5U7"",SWO;mQ,.g_"
-&rb9G"j1&]$""_8I>.A-P>@7>ld</lW]'KGm'3)[01L6,XKt@.;"mpS5TF6?6[&UX_Xe.RL1@6/3a"#f<Pt0#DoOW[o)V'J[
-GQfTb+TN,"<h<&L@S2Sc[Y_CJSOA#I4#_[L:l_?7,*0h+OZqnqJY_i(+JiPlIg+2b`R+^?]c6mB<c><h'*7"dkEPY%C?isC)
-7`*>bpoB+!Mfu'gd'C/IUS3rNO90Pa;7*IDSEQuI"-:MG>(1ZStJN?5`e\s(<69,$6HsFQSo=H.^4g\R[A73(:>!6sX"]R^q
-q!l;h<KZ>*7J!O9KH\!E@E'O76^2C>@)jTFAX&Ek`q/K0]Q$F\6H66bVNbU!KOm:q4M<ji'%iUB"0>"GGdbOG`Ct*f8BA+7I
-6:2P&tFG?S7t.H>K#4"X"__mKBNUmIE-.24k,9O</Er[>Uumm$X:f=o=[\(Ar2Ir]DR^\N(lkPK#b,sPe3V=FHf>O&k7hH8U
-O`27#FO:F@\c]8M$B#'V.>XJB!h87k/G<`/>84O/=HpYH&s@>boL&O3*'PMP7YbdA0=OKfUK[$%oubbO%o3hj^pC`:0oC4H$
-i$Z:,_690;6)U_Urp%[.m+'7=+XX/X:(QV4-c^#ZfFXGP*a@)opSa@r)BI)(77V+O^Y9Jh%,Tu<oUK?SGA`U(XRPef@baipM
-abd0t_;G55EF\<CB8P(&(A!P7_r625P8cjdldUPC!P00O#c"Rj9Hd>EEohCshb&P)<>g:MmAihdi$&aM^'Y;R0XqdX28YhQb
-$s,BXk"@5U:(.Q>1tk\UisS30U%),G[-^EEI*V'm9J]%06(goqn]nKH^Dul<6YfGEma#['bY7:9N9*J2022;01bA==ULVX2p
-eQb=:^chaD$!NjLepM6Y9a@Ao`icaj$>7&b0:7<,m?t>[E[Ij/KgC1>n0Sg%o/;sd'3Z")ra^CQVfm[9<2RHZLQ$O(5rt:6(
-?n3SJk>j@o9mKVsOH2iP7s#+4::Q:Mdqqr=DV1[F.*-YluGrbpLiNdk)/9;OL3VXXctc/5T%JdFBk^;Z"oH0[[9_YDR-p1F1
-F<1rtA*:o+q)%6(5>(k;cM:mEoa!N=H&4>,?6M1n,c>sD584%nBq;a!+i1kA+Gl,0&9e6oY`+ICT*9K'9tdDX7-F\9@tYZ'@
-O_8C&s9i!0;:a`!A;H6UZ<Duh+\r9op-S7uA"]j/q_UX?$eWcu^V&mf+>ZJtndVLGaj&XXB?^:i^<Y]&U%:[Y+A%Dh!el#1A
-[:\!3,>hGUdqr(8W`R_^Cs04le4iA-'lTnMCY';,2R?uC,t_6(O/Rqm<P<OoX`i5WR8<L#L`G9i72]15caQ><5Nq:5eI5NMH
-<:W-2SDjB_AH=MC=l.*fNZF!)h(Z/IFjI.'d/iFX3ascN*"P?f):UtND\@*[b/8qea/s\jb/FIO',2B=Ufc%>sR'pQmJ;f=e
-05(F[+4>:Y/%!=Zr1bI?iLi-s7j'g!uYI1TjnMEn<0if);K!Q(qLT:/pV>fSrMW,ZrX:HWnU1==E@cIB-Q]Fk[q!=hU>*V5C
-)[[+?%b<fLfoSZ^G\YM05YL"h"0,^S/Z\(cU_g3p_?A91ub<Ek0egZ?=U[DZ,=?ea'u>Es$[Fem_k7G;=lJd'<JFj&L(DVRr
-U>Zu_aojQY[DGHaT>a<`h"hn4,FKF.QT<6(<FkBtn>MA1u<#*i[-/;dk^VgSo:rUPA-.gpfFP>9#[H5famG@t15[FVmac/mJ
-AP1c,KnKGn>s1]ec)k1*h;0DR?84>DAaPBjmaAN3[G?&]2:>]ZL>P8hefD>)rQJPQg=(KFhiUab`C""?n/g7EgWc9(Q20>16
-IN:Bh4:j4D1f\7Ql/'jNc"GW`Wf`alR-g-h^K)(c3b9pi8DSlgkG(BSXg3:&7GbN4GFI$AZ:YQ#Yelt%L*YV[1cr[I:-p-,/
-l"hklIF=)r_Erh"CPKXo)*DrD7?aTAW+H*[cj](?*g;i78@aDBFpR!9/_bNJ/&*1IK%%-J1b4Q\I,&2@<8+%H=5S??@&o^up
-MS1ZOcW5MdF<FpI#3qdZ3\j5?83c77h\42Q_9j<d3S>@LoMk2XBOh^]c/2FlhZ+5S%[_blc]G"C]69]<8XP@b[gj.g/9:urH
-i(594pJEQ"-;<:hYj^C0bFDe"b<ooWMjeb3A)_0sP<JUn~>
+G[Bd.99SAUObPa5?;T-@eT$//1?2\Lf`rq3WC<r0N4Qi%2jiH:JOT)5C>D.F)i0h"AgRS8a7'"S"9Lj&^(m%RiK(0)JBY)b
+s5=J$:JZHUT6jDTdi#U\JUs_ea+,f'.H;SYS_W<oBKOT&6YHl-+hN+-Xb=5I_kK7Q@WQgL`O^8.>b5@9n!A?eBC=b?qXjFU
+Krp2FFZI=U?R\p'>Ike_=g!LlYoR)0**BY-7FJE096U[>Kr)Hs=A)XH=g/fVQSU2m0%^DB2jZd@`87is>q!Xt4sDW/A\p?7
+^H3Q#lQ]jlQO[&6i9eT9X-CNmN3GKTp2\9$&:&'S^K>:PlQbPP>dgU'XH/a>>WUGh#W!gUU9`A31G_#.K%XQqa=q0L/25#K
+7Ukf*-&[[iI3d=P[(g?e37`]jF!f7U_QUg&CI-neZ\Dms0qL7cE$m9I(s@>43nApMPKQF\&!m83<5>h0;Kd'%HI->FffGFj
+23P8#9?2A*BQ;.'9!Cc?*\J10,8kj<A1a`:\D6;(=1MkHXKWaF)I0S0'!..a*F(YVK1`i#XiBqrji.3b&W:5=YpNEk/n7uo
+3qY+.6j_F7_8E+&B71J1n'\HfFK/V)*c]O&.,!H'CP'CXjfit2X:;ti]A.9T[s.(=(CVWDUWoWJD'1<5p3GEQ=;qYq08"t2
+Gh*%/F-is;9&7aiBe2D_!qQ0<?*\,Lc[*Ah>aBWcK#$M$*UAAVjg*j$He*eedH*0J3-(!2=g/OiJB[..=Xs]D^DI_:a0YUW
+DVV(-`4]+TX'VXB-&Z?Ni?#",![F@20,69+dDh0X7,+Pi4=n!oQ[<d&ec_SCA8@NCF7n1(jM_`*;H^ls<SWp6ccTJ1`\&9P
+;iBIC^6=hkN4X,p=a>r#]Wk,nVA?M]r.q]EQ>r0Bbr>4;,qEjV2(j6gmD3[T@1ED(0$fDZaN::KK;&i.*E5rHEu7GlZ/V)?
+Eg88:(X2N-Ze?19dk6hIT%19:NElm/C2%\08mBS`]!P`sP9\@&lbG*aN&Pu^=U2BXkl`loQk"DSJQ:9PcSt2G52r/6eq#<;
+//ZE!DJHGdN7YDQHEaYI8PM(-/q$U=kEiKcKj:ZO_p'PmicuPSgF)t6(#$M6]8Tg(A]-(qfmL=<QThP2V4`ak1"J/0G_-*o
+36=iWoR\M5nSBWNft7]Z5-=pels]L/>t/UX<.\Y$\]sV4H=e'kY\4`u9Kb6cUC+r=4<mmETZZBe[lpIR#)Gn1LoVk0(6.JD
+\r9\d\H"CN02#hnldA@2>-PVt.Sr!oBpKV<4>W$g0$C)?_8Jj6O6'$Hbcq,8Gs$+A/u+,Lb&:22/2M*lAfd!aFt%`O6$8#k
+W+uHEg15rocckF3bAsRg0V`3.8oG]mQc>@]@Il;HGiX0Ui_P,VZlaeol+b'P9erWkbi99NN8Z$4D&?PRl*IYmC#YtbiKV[I
+RE$O')T,-Ig/'Dhd4.AW:LsG!;abNoV.D?!e0R6:a]Kl>d5eBPbSt[BYF;aI.ZmE$&'VI7,q5rq\W"S7:^LZ5&*@`?A4IW<
+">Z63+LgSj?K4CnU9^"d4.,V7k4&_8`fQ^t@W<9+cVl'e/7dV(9B#"8O8.M0Up>5ZUi_3eEd;)3HQ$24.W_#CK6`Y5j!>lA
+FMu-3IO%#:=t_22kS!mAjj^3*EnOi<ld?)7R\;?^80-D`a0Lf+oMQ76k'CVdYJt.d^lOn]7LOK+s85+Os/)^,Ah\/[A]QF4
+r9M[!&t'8s&aJI54lS\eLb<HQq6dh&2]q^5M+je!R3$CFR@K7BDK6sl/jl9$=T3Gd.1^%0+g5t/U2`RMN?FSXo7"mk>fJ7W
+_/+63m<W@k0@;)W@)but]V3G<g!9uP'?ME4DjT1[7iKQ]0O$2t2s<#B3ohkurgY]-P9+bHS!9st=^EfBBDn2U>V9YrfiZCL
+WHFDFY:^3JnR+7]0Xl5i"=;;,/sFJT+4H6%c:>NH)%YlI-#aaMN\,!U\_(KkXZ=9(74]G!#tipn>p`@%[(/i&;EX#D4#(k1
+QbVq@alV1;FMskFBe\(d,&Z24+1#Q3d0W&.E1$cG4_'uX=N5t2+*-ZNF*!]H?PHXJ^*G>-Z&AnY:0hHjEof2#Nju##+7f;O
+R62:K>$]F/r8COmR9hN-,E<;FeRbiQp0@GKBBiAlH"AV!TVS"+?!:SLe[]5</3#pe4,HSk,n[ms7Mj91FdWXbGH"k#n]aR>
+-R*R+Hil!bBDe.giR5s+]'OnkNs@K>CR9KDBm2SpI&^I!0/'N[jl,1(+7im;O8CYCi_ib_?PI51bhS#t_a9^iqf"P/"uH/R
+hgS6j>^hZ;U)02#2`#S/HbA`Ka(6+3lqp!Ee6RO:CmWl57t`L\ntk1(fAF,HQVMVdOGh)N,7\#A\+-YRbNMEu1_[-WbP9\J
+$QN'L*&*ZoQ[d1`U)-7=0/;e&FF1Oq;N@Tij]U\HF<du3RAfK7o!!nmhdmQ6KdoKWUWO<VZ4DhO0&<cAjnYY4eaR'<a^n9d
++7dTqH"qsp^BoA5.(T6_>_3p*dS!!!9,;C*e-:8K'E"6fm..5+;L/'j?.+J;?jf:5K$3tG7i0C-Ega?:E,,DY))H<"o7NCj
+d[e#>FN##S)9)Jt8!iJ`b<@Pb2RFdr1FAp$eb'H1PZDDad:N.,`o$:_T%Tt))rrNZFBKRJRah]^cg;#k;^Rj;QG$N=D#g*]
+HtWAE0m9OGO5_?hHHW%j#t:B=_]KShT[/HqE+sUPj,,`+Eq>h.7DphO6f./b;n8=>H.C&j,*JEkof's]>Wsfa=gim#@e6,s
+7>qK@Wa*-@%>`YaDoR0]9A9ugmHtUo6.`5289jRKE6,6/V%[&$:.Ub^e->MR>e7ESYH8LBmnP9?D"&f1R.KG1iA)bpO^9_Q
+RE[AUQ^<V9VL<,.*ULF'I`saZ)@j;+F"<S.>`DB7R(ec$5Gegj:8S/\ZcYn,Q"QUUbM04'S)L!<D'L32mS]-lW@iV<g6C%n
+D1S7>DsVF(jME@\8sbDb^7p2j/@7CK68G=Zjo"Z1/hWta+:^5W8A5)@ME4).ie#;O9Z0hqqM-"@>+J;KG+Pk8,QnN.k<k8?
+7Sd?U9*[LR\%i`Dp^f!`)!TKJ6rEX'X7pc$`',lJo5m81Y^n6*BJCRPoV*3Dn>gV5X=jdg=A[<XCO.`6;p&W,H[Jh[oPKZ4
+qs\+u?!g"$B8SRW9F!B+9S]q4pE=a(R;DrIo8*(`Z)/jhQbV;!:%%FICBW\W`L\Yp@ZE<i=ir:PUmQ&[]=X$2GkAX!@kt^h
+.I-iq6ZL6Llam"S74\7E4!IbCJhj3\cZf15f%_U=)'AB+>h6Yro_OTGA(UPq&6&l#nklKe:F^F.Qdp!]]t2#]#`A.s>PrI<
+&L3KBII!kU=o8.OYH>87U)&!!>OkbK.?PK$/YaOsEgTKoVQIsD5ZC[Bn_*!.jKic1B"Sa(aEbmQ<a:79@[t-X)GjO/L2gSs
+@+))&1Hsga\J/VdRSN7CYVXEk<'^:S)+A/Mb]`<OqZ([gh[?,mHaNq8T(1MuLK:5,ati!W<gWWkcO;F[%NOgN0!,3\52u6p
+0RqfZoF<90ib"OF9T.)_G:7-9/MOCT33"h8egkp3/?uf\URPLTR;M=pE&]ZnbMP7Q'tI"_cBAtcLe,2)jq>$E1gFXn#=mo+
+"c=B/+=aEs`\NN+b=7/>6+0s%n'G$GEj_u/i_N-bX34bF_u2J(c\rRKh.8#k46PjlFY9HIMTbJ:<dYM\[sOf$bEmg;bj7>*
+.qdRLGF<,bW7cPq)cG`c0$?1&Zd/IT4ch0tS-H=:AK1jGR]gEn%*^]qjMm3FQ0Js*W0"6i`oUW,jhOg:Jp-5%CaUBMG2gP/
+V<Ur,,]'T(Gn/qhB?ngUA%ft&*=/E.(^om0iurHV9-$hq($e;sa]-8XY%3K=@4pANOe6GFAX@IP^3K(YpVL/fMX82X0<NSa
+*g(Um?fp@Yo2eM,=a";kQUOm3PfR[E4ujk+V!3]1;EeHZ9._pRRsZNp["b)lb7TNW0@$EC,.#PIG%m'k;qaZmIpTsfTk0XG
+JXpM--I[.ViP^,X/=16_i*qVblWROS)Yg%3\tsu&]0r!)oa)]5F+9MtUp32eZgBUl+q#m&7iW=d5qZ;J[U4sNo;1(cLcOJ#
+J8eA0Q\M(T/?C"4c#.V.;T@.IE$tW9WGHq9F0P:q?r7AQS\!WiX+<qYF<lnO(\N":@3,IXH<BNsbN,;(ah^_WL.fR=*Xm$k
+JGcI1bCi1-\3-!GX89Hh"'!-(*q:M1@f_GuWD%.[*Jnn#,$_F0B6j\P[j3_Ke2'N5O&iC@''@S\/E.Q),=oDf30rLgKN>55
+Opt4gM\fJ=Li"\eFQlXH)9:_?I#fDLL$=inDa,^K7b2N]2jfUoRo,oaXYX:?,2d977$m"Y4!9Rm$PjrkEGT9@(SaM<K<4&F
+-'E3u=Fq?`Y^HgU&.rE2<F")`-4?+!;%TYoao=XA'LDo@7-f#>ku]?%&Ofo_rm;ufLk8!&dDAmgHB\`Q,&-f``/..LJ$9I_
+>Hp(+MMr=RimRaYG:X<CX$PTOi[6jf/&@q+*\?*u-&]*c[uC)B<`fb=m_Qb_>bXmla5SWmqe+'4`93YU(4kLuKtFp,@2;\.
+9P&NNgC-gW(()OX]^7]\16jg7V&:tO\P-&Z$r-g=Y2n#`<!A:NBgko;bOhmI$(So"$ZFFhX>7KjGue7e_'Ha"\<9M6&TTEn
+,DsW7VJ"uo*),A8Kkn4%W<sUQdY9ZGnL8,4"WU990&4o%Mp[9^Z=P_0SoWXj/hLFQ(8?f:hT*YJrSKH!T%+XmH$lklpn6hs
+>o$rGrpc,nS<gJW!]Z;qeue)?9NAkp1m+j:(muJF*_ZePq-ooQ'(2otX=8onBH\><pRj:1bYBe6#&hatWq%BDQ8pO/"cbR4
+W`Za%94&I"i`LjL7$WnYBeW\D!M%<qbAPO8El:0tVC05q>2k@"/75iW9DVY4/3j<"anK'%/2OC$8oaBB6F)!bMD!q(&<6pm
+-Q5XNE]W<:6_6F'E&O?U\Q+teAN?,eD24p7-`"pDXltogEl[n*1QNh]3=TS&mtK1b:\%,am5O;c<VUG-YOUjraLtWAcQ=Q,
+pLBQ5htA$]1DR.]oh7k<1&9#%DuU+CSI_SuQT(-IXgq;qn!V<h-?JFGE0aCM]Qlr4jH-_(onY*49rEBc%s\f5<,*C]5F7CI
+Y6LNdDh6CarY3hXiG>>[!H-ZRUiJNX\]_liVTY_0W7HU<]P^H1EA]&&D6N%oEQ#U\Uk>*5I*kf()9uKf&$,DFg&6Nu,p1<4
+AJe,-&eUJqe<PJf[AM-,Da(_T?][p&a<A9leo<9`q8r,;ZV]jY@(U3rO*FHeNiYDrJhBc1^d)(!Napfo;3,tiOu?EFlZ&'F
+P39./J\d6?lHkUeg+JHP-("N@)":()7=@$-GB(I\?p*LQZ#'6@=j\NiAcXq$34?GV_WA7c3gW#\Q7P8[AX=s;"f/B&5!,M`
+Be0XYjH08?<i7T8Tt'G3',d<K]5%\ECPZI\]d8.aFm$)7S\G$??PJjMA`a`(Yh_0q'u,Z:=m7]Fe`k7QW%R>ZNo>Q*)7I//
+io@I6A`6O*Y,,7Njmp4j#-5nQOrs47/G"qY896B%,+"oKQ]#DVK/8PT[M.qk<>I6F2Ku_(PQQOoNpX82QMWlB!\-j0C2Y]C
+&sl5re!C9>ato2d0%!c:hks:t/*hB$l4N0!c,"L<Z^LH+#ut;^b;BORZ-?lIZ&203;OJ1p[_+Rb?*6/SNpS\[ep9O>==(J>
+.s'^nC?<D8l>jk[FDS.K7[N\9J?$Sr'AV\qKB_#h/'6mN39%9fki])0O=f"'Qg5)-gM,f%?)B*<%]1o&)IY_P1qSuV/$!gP
+g'R1fl!TfgNNeCS<cI;-au-\6CG=F21FAI;CSJnHg_qSE=up/4\Ss5g=k;T6`%In`3-6Ul"@W\K,:kG`%VAkp$-2bm)=)\%
+>YZa^QVqb9V-])'KnENoAZX/#!geL4hbpZ"jg)]*FkLLc1R<<0.9nPQQboPKK&O9XPKRNiks8TN?!X>bKS1i<b@TWFFpA@D
+b7[F4T8Hk]#Le=:SlTs4J)gf=U@pjgje<0Qb@Q;4lEZXd-i<$cE]L0'/jXu[?rn[M0tLUHR%UU[2-anRU*)(Hr]n:0A54hi
+>U1!4p!i1<Dp,n<<iV+=3-8:3VCr=#+EN.bjcWOPl?\>afY:6\94Nst<]QPsA_nN/)'hs*5MZ$eF.)nW6$5V]I5(sCHQ$[i
+F;6DQQ%I2\"B9H12oY-(a^B_3U<5_K(qHWN`:ooT+3\s\PJ=gTp?+`\Y/m)AGA1e.K*k7W>,!NQN?q=Po>.fD9Ii@S*sd%V
+SHmVtkJ!Ti!++o*XDi?N%;)\>EgcWfAj\RO8s_lA4BWD&@3I[ol-o#PGuFZjP]SHFQY?J3`G%q0NCu;n,+47bE\(r"4@&IJ
+kqX,MRnGZ,mQd^jflJjFB8kf-em/,hn`,u*(T"-:2Z-*CPtO<.77@7!7.TM1n5cn\CCRcV^VDd+p,,2)4pOQB9.!RtY?>Eh
+4J%5P2pLE34`Qh;.K@J6'2`h^"/F/<H45uL,B%P[SuQ_DUgl.aGgF&(L,T]e0\q:Wku*h8=s7g'Val`oT)^KM0^aF',!RP^
+$=A7M>*m+ij<jOum\F^qSoQ=eE[1cq,!WFZY.jX%dU?lr6CF[l2rJ7"D0j89r32kfjbe=;OK8;Tk'@..$L>i66&>s['OLsY
+AL[2Lg#\=Y9Ft"q_*YQQ/>$q8RB3Q3'A+OYP9XBHp:iDK`2.Ru%jpRI7[Duk%\RXYigd:nm?,+3*&#E_b$(L_R/g0tK8g)%
+7dtt/a&;PJF\*,>!0Y@_7H]M,eoPPTAZp%*e7JIO\iZ;$?%1+_<M3to462=$dH*H0M3939!mD?2q3TBc3gfD?$[-d:V*i(T
+b5in`i1E$NPV*COX_<Qn4%q9iBM2V`),/u:E"]7nH0;G[+4La_9#9W$lLKq@?ncYgk+"?J]^q:3>Igu9bMeH0h5)R$#pJ[u
+Q>&,J@3'Ki*qD5tGm/?oQc?ZXiQF>:pup]mq:\A-Gnes;;foRQbk_&Fh5.&JGYt7Wni%M5$"i`=MPAT&959*,ZLk;,0<8C$
+15@e-c%E"*1aaZ$g7i6;P;N)%?gglRj`)30]Eg$V9Co,*'Jbm(l&D%Qm*/fK&b9P2FYIs)'a8:3`?e<g*cWQ^Hs`bVGqb)u
+MNa`sjHMm//':dqV@/SA$WXVFB'/[]KiNpsjiK",O*LAaZtNp!q*ad7CiG`KFbg0!nqs/&=f(QWI;''X,o-nAH]@1B=f;78
+Jlc2h9=&&V?`(-rPabo9'[oCn$[%dfbqC(*$`e3.Blhs.:G$j/??)C:/M=n59@"7gYe'1Gcm=ttEH"9\Po.RuE9o3Dej_*'
+;cL>;0oK@6Ob-HjnmgM7bY.Ob.T^Rl0=/scMSiS<`'GIrHjd>@T[Y8D).6H$:fLJl;ZF:_Al'hB2O>WjX/1E\0OLZ^ae`F5
+X%%/mb7Rd:"oF3Ne4#QogSP=I4^@[td(Cu<Vm>95C#1+H/El-bA+=O#Fk*M!BpguBRq4;@PM+4B17NR&*h.8MKek&-'4D\]
+G=%EPB0C?Z\\r)d,?>,>RAb./\]^ADX35+EVQk6AV&>S/-I10j'5m.&ZI*8bBo>TqbOc1_<hDsl8H'9fh_S+VKM2a+=>m-8
+:0<Y&\BV=."dd!=6HU@2e"94DK.?\Xk8L02kLI/)Z\D*ZWJ5LmYY(64-nm\22mOH9?8ltO"P&UBeu7$\"MDH'IM"PD]0nE<
+cMX[piCcVJai``u9:9LD:aNk[*c1Gu][=Ui/r.)mUbAgt5mJ83-,NEcc,fT2o>+,?dP#R]Pt5ft%:98H41H9Y$BhQr9%+C8
+0'2iXCo<92-2K\'/!*dCpEZ[o\n'hImj&j3'J@SD:skgW/g)2N0;ruUK++Ho&S33a.bI!=fCh5C"[jA&.a9SG-0e6BUD_28
+W^<KYd9)8UNCWo>.a^1u),/TB>#(jjF$$["]1Z95gF7$A^uSCd=n+3/T:/VVg0KS.fY60ISnJ]s9^1^bY,HHJJca^RgXYPM
+06PrWF-s7/^%b>TO\F4_^VIQuQFj5J9fbu$VcLC>/18Z;ZFA"A11qerUH+"gF.<,5ju1oXOWK:jMp"_\6V)++>ZSIqL<MQ>
+7kVhnh)QQDo!t%"0$e.r+qL%%dNim=1kaq2/"Ks(TK'7*bpA_P/R/[<0t6Oj=nDK1!Lb8YrEKu'V^:AGFj0f'.AG[LOsOUU
+gT>*5QQ7]G*F1-MZTjX7k+3N;\1F:&0A'ik6QWd;,T.0uo9XjD3OSO#Gr7POf:FUK_2K-l>ag4r=Y;\3[bc<gEk2+"g".Mg
+9X*HFHKr@3>XF7h$[0)YOS<pdbKTu@*TWB^]UBdb]?>^'H7",H*R"$Xo9@pU\\)pK^F&k/GqQf1^jkG0P^.<6RECLo0"t^O
+\GYNn--:bkVL6B2Qd"M*\hq.g!?t1-ZVBM$3+]f`Q\uB"V+]3H-?Hn9AcWr*c_//rO^9rNbC;@ZFGbU/kb^=_Qb(7)AiSr;
++\+.J;gE.2RE#u_%Ogr@a>rkA_TfT<1V%$/"7[FWs$8:5+a7Dm?!2P"V_6(k1*J[>PKWcj)1T"JpV9aGFn8bj-*rpMDiJ(8
+-4^RK`,cH\WOrD$2'[ANhL9()+4);U9X4Q!oQ.QJjH1_+luKaNhP3_U/EO>cs$$Il1mmC6a.k!ZmC@&$`8;n2RA.m^D8s&V
+.[NnF^FuT8"-ZC6)<SDqo0^Bs4CUu(2t:k_li/7`_-gGPqM38O;U,fmK8EP;A)a;B]6B['AT/Ltk/4$\9Vp.uR+Lo\$tb1T
+41"QKhX3.#)-fXd*.>SLba\R,ktS[8*EE*3Bg^r/gurbqoB&9FHe0kXQ,"\*jMR@op^-.GG$1gR0&m=O3LI^O\,9t2rEV%h
+q)#Z6:\aP`ZdiWjh`Y1o-H\TC9;E32/._Of&qa6_?+NER-^X*%EsRV21O&$qWpJ\bd9hK.NoJ/IMbC,a\h#J$6V&d+.[/c;
+jUV$)Gd334W]-On,aNm2%*E\/ikG&*WQ@eq<'lqj+Wj$[nQ5)FaJGhUG,\b$LFKR^dbVEt<R*8K(V96_i_i\]?02sI3OAX1
+[+FU6Xj3c?EcS/8I-/AQ97Ia1eZl2tWVjkh_I`GBY\biD\l;]'F'/o`r++cp)k4Fga)Z@&gjGj?8lpmC?c_WSVCm"VVADZu
+B'#(5-n`\5]$\X]%uS1017#=hWOVSp94'm4N=B/KQ*i4p%QSdNM0k`Fc6ZInmF$I)VoSc6R$2_QZCOX#130ALaQ(eD6U!XC
++7-sY/t'f<l<W*SH$IiV7shM+9BPcc]Qu/rl(_#,hnhi8RDop3Ehc;!+V0X2/pe,k2D4fRkK(;"Egba2dc>FUM+`UFI-Nn_
+=AT1)#+%65-C7)_h"^]bo]T;bPWf"\4Q*u^\?p[?l/8=4h9S(Q;Zh6c'F+P"DinC7%V^*+0OnnG_cQ8h.@^rSVDk+j9/#ra
+.#Si752qK=4j9bm;L,([V)4R&1;Rr@eok2iE]'3*j'H][JX'LrI0kKuogP#%k;Sq#7/$Creof+$V6mcI##fV(%49l="D"D?
+fk&G(518Rk(sL[0n-n$X$m;G\d:KH&fVSD'c^QbYdTDN^=ZkC=+K(Bdb9'?AbZp"c;SW#=QhW$!k]23D8taAmR68p];Y`mX
+prlnm^\&_99U\3dU;eK!bfs/]E;>g1AB&/+]0m1587.]W(-uu/hL('`!n>ma[hk%0Y'Q*\s27$&Ydl<'jDZdp/gkC??j\O&
+K<%o$<R:Xsd37E&AWP#G2ja&-,0f4GQ2k+#?C/m""kb36Oi(Nm.j%r]ZDn*]e)f_V<Ae^r0"#V^D[!)>Sul9:Da#,hj`9&!
+AZRY0a`$8;+7b31IXn.2f\GQgMI<Qh%]H@Xf8%OU7sl>Dg)KS`'X@BUn)q!sgE+Tc^QJ!P&sUm4-^VqJU2$$A+*(=Y!tU`R
+.s<q'.eZ$dSM$75\@hU+ch4l^]UKE[W/8]:\aK\8(">PtQ`8-nEnTc7YN/T.j)]2V9MeJ'YA:f<a]r0IN?"23`XXUSm#ZEQ
+il;ReQmW7PQU`[HjaMt)<R]"n/hd(`dr?r9\BJ8c2RqQ0O?["D"4biB%PBF"Jr+5Vjj%0*4Q:9bhY%MIq2KbeKs7`3!EIRl
+`OO]90Ms.@XPu#4E8ttEG!4i5>imMm96e;.jcIAHRX)F0`tg:%2tB*AH/BkGp:?%&!EHFX92rn40$!&`LE)W-c7U_&jH+RL
+ibu$EP6L*sG4XDB-*1PV(Z]W.6]S3\B-3HBXC^G.m!ZfRE_5+U$8+7Y9O'qHmseuA/G*tnm9nolRecaRH]R&H@kNa"nnhZU
+52mZZb<INlg<8TTLKl7$OcRHB$"aWEHq`&VEm)958nd5e\82f3i,TBD@KQDRo8(/2Lb<IsEgP@Hc\@'$'[X^DkXol@_KHCU
+k]4#Glo:;p9&8Ts'jO?Ibfp>jb2:"i'GD?\7e@$nFr\](.HW;f)D,7C2j'iXN=L4uQg`0OcX]MU9Da]rUVW2#<thWNE]LF_
+b=r2IhcM4"0k$;2F`t=7@#E'AH1,<!iJ0I\nca)e_<a(Gn!tb:@$_TeT+)!'c>D^/H0>QU3QQ=u'oS2Q;dNVaC\#MlQYR+D
+_\%B0D/P<cjk>otAPRM^4mgSi8""**CQ9_^932&2nd5&sU.gg>Q'HWSHs0h<QeRd<i]AJXK*C_arr`"tgT^~>
 U
 PSL_cliprestore
 PSL_GPP setmatrix
+%%EndObject
 0 A
 FQ
 O0
+% Set plot origin:
 0 0 TM
 
 % PostScript produced by:
-%%GMT: grdcontour --PS_COMMENTS=1 D3-25TV24-resid.nc -p130/30/0 -R-24.4/63.0/-13.1/66.7/0/200r -JT-17.927/64.463/15c -JZ-5c -Wthinner -A- \
-%%GMT:+ -C/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt5/trunk/test/grdview/resid.cpt -W -K -O
-%%PROJ: tmerc 334.57004582 347.00000020 62.89999998 66.87394195 -327594.325 212971.428 -146572.280 257674.062 +proj=tmerc +lat_0=64.46299999999999 +lon_0=-17.927 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%@GMT: gmt grdcontour --PS_COMMENTS=1 @D3-25TV24-resid.nc -p130/30/0 -R-24.4/63.0/-13.1/66.7/0/200r -JT-17.927/64.463/15c -JZ-5c -Wthinner -A- -Cresid.cpt -W -K -O
+%@PROJ: tmerc -25.42995418 -12.99999980 62.89999998 66.87394195 -327594.325 212971.428 -146572.280 257674.062 +proj=tmerc +lat_0=64.46299999999999 +lon_0=-17.927 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -883,7 +1544,8 @@ clipsave
 7087 0 D
 0 5300 D
 -7087 0 D
-PSL_eoclip N
+P
+PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
@@ -1398,14 +2060,16 @@ PSL_cliprestore
 % Clipping reduced by 1 level
 %
 PSL_GPP setmatrix
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pscoast -p130/30/0 -R-24.4/63.0/-13.1/66.7/0/200r -JT-17.927/64.463/15c -JZ-5c -Dh -A100 -Wthinnest -S135/190/240 -O -K
-%%PROJ: tmerc 334.57004582 347.00000020 62.89999998 66.87394195 -327594.325 212971.428 -146572.280 257674.062 +proj=tmerc +lat_0=64.46299999999999 +lon_0=-17.927 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%@GMT: gmt pscoast -p130/30/0 -R-24.4/63.0/-13.1/66.7/0/200r -JT-17.927/64.463/15c -JZ-5c -Dh -A100 -Wthinnest -S135/190/240 -O -K
+%@PROJ: tmerc -25.42995418 -12.99999980 62.89999998 66.87394195 -327594.325 212971.428 -146572.280 257674.062 +proj=tmerc +lat_0=64.46299999999999 +lon_0=-17.927 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -1417,7 +2081,7 @@ O0
 -79 9 D
 0 884 D
 777 0 D
--93 -957 D
+P
 {0.529 0.745 0.941 C} FS
 FO
 1510 4272 M
@@ -1447,7 +2111,8 @@ FO
 -3 4 D
 -5 -1 D
 -1 -2 D
--15 1 D
+-5 0 D
+-10 1 D
 3 4 D
 4 31 D
 -3 11 D
@@ -1807,12 +2472,12 @@ FO
 9 -3 D
 25 -28 D
 -2 -3 D
--114 8 D
+P
 FO
 1890 4535 M
 -6 -4 D
 7 6 D
--1 -2 D
+P
 FO
 1897 4631 M
 -10 -5 D
@@ -2324,7 +2989,7 @@ S
 0 -16 D
 4 -5 D
 -339 15 D
--201 11 D
+P
 FO
 2279 4223 M
 -4 12 D
@@ -2553,7 +3218,16 @@ S
 -4 -10 D
 14 -30 D
 0 -4 D
--150 1 D
+-11 0 D
+-12 0 D
+-11 0 D
+-12 0 D
+-12 0 D
+-11 0 D
+-12 0 D
+-11 0 D
+-12 0 D
+P
 FO
 3946 4170 M
 -2 16 D
@@ -2862,7 +3536,19 @@ S
 -3 -12 D
 5 -12 D
 -18 -14 D
--152 -1 D
+-12 0 D
+-11 0 D
+-12 0 D
+-12 0 D
+-12 0 D
+-11 0 D
+-12 0 D
+-12 0 D
+-11 0 D
+-12 0 D
+-12 0 D
+-11 -1 D
+P
 FO
 5418 4950 M
 -10 23 D
@@ -3259,7 +3945,36 @@ S
 1157 0 D
 40 -631 D
 27 -428 D
--373 -21 D
+-13 -1 D
+-12 0 D
+-12 -1 D
+-13 -1 D
+-12 -1 D
+-13 0 D
+-12 -1 D
+-13 -1 D
+-12 -1 D
+-12 0 D
+-13 -1 D
+-12 -1 D
+-13 -1 D
+-12 0 D
+-13 -1 D
+-12 -1 D
+-12 0 D
+-13 -1 D
+-12 -1 D
+-13 0 D
+-12 -1 D
+-13 -1 D
+-12 -1 D
+-13 0 D
+-12 -1 D
+-12 -1 D
+-13 0 D
+-12 -1 D
+-13 -1 D
+P
 FO
 6258 4220 M
 -8 1 D
@@ -3459,11 +4174,81 @@ FO
 -3 6 D
 S
 7087 4273 M
--232 -17 D
--224 -15 D
+-3 -1 D
+-6 0 D
+-6 0 D
+-7 -1 D
+-6 0 D
+-6 -1 D
+-7 0 D
+-6 -1 D
+-7 0 D
+-6 -1 D
+-6 0 D
+-7 -1 D
+-6 0 D
+-7 -1 D
+-6 0 D
+-6 -1 D
+-7 0 D
+-6 0 D
+-6 -1 D
+-7 0 D
+-6 -1 D
+-7 0 D
+-6 -1 D
+-6 0 D
+-7 -1 D
+-6 0 D
+-7 -1 D
+-6 0 D
+-6 0 D
+-7 -1 D
+-6 0 D
+-7 -1 D
+-6 0 D
+-6 -1 D
+-7 0 D
+-6 -1 D
+-6 0 D
+-7 0 D
+-6 -1 D
+-7 0 D
+-6 -1 D
+-6 0 D
+-7 -1 D
+-6 0 D
+-7 -1 D
+-6 0 D
+-6 0 D
+-7 -1 D
+-6 0 D
+-7 -1 D
+-6 0 D
+-6 0 D
+-7 -1 D
+-6 0 D
+-6 -1 D
+-7 0 D
+-6 -1 D
+-7 0 D
+-6 0 D
+-6 -1 D
+-7 0 D
+-6 -1 D
+-7 0 D
+-6 0 D
+-6 -1 D
+-7 0 D
+-6 -1 D
+-7 0 D
+-6 -1 D
+-6 0 D
+-7 0 D
+-6 -1 D
 -67 1059 D
 523 0 D
-0 -1027 D
+P
 FO
 655 4041 M
 -7 11 D
@@ -3534,7 +4319,7 @@ FO
 0 2945 D
 302 -34 D
 382 -39 D
--29 -302 D
+P
 FO
 608 3557 M
 -49 42 D
@@ -3544,7 +4329,7 @@ FO
 9 0 D
 5 8 D
 7 1 D
--3 -27 D
+P
 FO
 622 3704 M
 -16 5 D
@@ -4050,7 +4835,7 @@ S
 -9 -13 D
 -7 -4 D
 1 -2 D
--99 7 D
+P
 FO
 608 3554 M
 4 0 D
@@ -4821,7 +5606,7 @@ FO
 -9 -2 D
 -24 -27 D
 -8 2 D
-81 835 D
+P
 FO
 627 3756 M
 4 1 D
@@ -4848,7 +5633,7 @@ FO
 -4 -5 D
 5 9 D
 -14 -2 D
-5 52 D
+P
 FO
 638 3870 M
 25 -10 D
@@ -4865,7 +5650,7 @@ FO
 -43 21 D
 -20 24 D
 -41 11 D
-4 41 D
+P
 FO
 813 4331 M
 13 -28 D
@@ -5002,7 +5787,7 @@ FO
 -25 36 D
 -27 13 D
 29 302 D
-129 -12 D
+P
 FO
 1046 4310 M
 0 -11 D
@@ -5013,7 +5798,7 @@ FO
 -9 14 D
 -10 3 D
 -1 5 D
-23 -2 D
+P
 FO
 1276 4290 M
 -1 -6 D
@@ -5025,7 +5810,7 @@ FO
 -9 3 D
 17 18 D
 17 29 D
-19 -2 D
+P
 FO
 1333 4286 M
 -11 -12 D
@@ -5034,7 +5819,7 @@ FO
 -8 7 D
 -6 24 D
 3 14 D
-18 -1 D
+P
 FO
 1374 4283 M
 -16 -24 D
@@ -5052,7 +5837,7 @@ FO
 11 17 D
 5 19 D
 16 27 D
-15 -1 D
+P
 FO
 1407 4280 M
 3 -15 D
@@ -5070,7 +5855,7 @@ FO
 8 28 D
 0 10 D
 -6 9 D
-24 -2 D
+P
 FO
 1624 4264 M
 15 -39 D
@@ -5155,12 +5940,12 @@ FO
 5 9 D
 -11 4 D
 1 10 D
-114 -8 D
+P
 FO
 1693 1474 M
 -5 3 D
 5 5 D
-0 -8 D
+P
 FO
 611 3584 M
 31 -16 D
@@ -6575,23 +7360,6 @@ S
 -9 -5 D
 -2 -3 D
 S
-1374 4283 M
--16 -24 D
--6 -26 D
--11 -14 D
--26 -17 D
--8 -16 D
--15 -11 D
--11 -18 D
--4 1 D
-8 23 D
-13 10 D
-12 20 D
-17 10 D
-11 17 D
-5 19 D
-16 27 D
-S
 1407 4280 M
 3 -15 D
 -11 -32 D
@@ -6608,6 +7376,23 @@ S
 8 28 D
 0 10 D
 -6 9 D
+S
+1374 4283 M
+-16 -24 D
+-6 -26 D
+-11 -14 D
+-26 -17 D
+-8 -16 D
+-15 -11 D
+-11 -18 D
+-4 1 D
+8 23 D
+13 10 D
+12 20 D
+17 10 D
+11 17 D
+5 19 D
+16 27 D
 S
 638 3870 M
 25 -10 D
@@ -6648,16 +7433,6 @@ S
 17 18 D
 17 29 D
 S
-1726 1999 M
--2 1 D
--7 -11 D
--5 -39 D
--8 -4 D
--1 -16 D
--10 -5 D
-10 -18 D
-16 -18 D
-S
 1046 4310 M
 0 -11 D
 12 -3 D
@@ -6668,13 +7443,15 @@ S
 -10 3 D
 -1 5 D
 S
-1333 4286 M
--11 -12 D
-7 -26 D
--3 -6 D
--8 7 D
--6 24 D
-3 14 D
+1726 1999 M
+-2 1 D
+-7 -11 D
+-5 -39 D
+-8 -4 D
+-1 -16 D
+-10 -5 D
+10 -18 D
+16 -18 D
 S
 1698 1565 M
 -7 5 D
@@ -6683,6 +7460,14 @@ S
 6 -9 D
 8 11 D
 10 -12 D
+S
+1333 4286 M
+-11 -12 D
+7 -26 D
+-3 -6 D
+-8 7 D
+-6 24 D
+3 14 D
 S
 1693 1474 M
 -5 3 D
@@ -6704,7 +7489,7 @@ S
 -12 7 D
 0 -8 D
 -2 -2 D
-2 33 D
+P
 FO
 1693 1482 M
 1 1 D
@@ -6735,7 +7520,7 @@ FO
 2 -2 D
 -16 -4 D
 -9 5 D
-0 8 D
+P
 FO
 1712 1769 M
 4 -3 D
@@ -6879,11 +7664,11 @@ FO
 -12 2 D
 -3 9 D
 -7 4 D
-14 204 D
+P
 FO
 1717 1849 M
 0 -1 D
-0 1 D
+P
 FO
 1719 1889 M
 9 -10 D
@@ -6917,7 +7702,7 @@ FO
 -6 -1 D
 -5 -13 D
 -5 -4 D
-2 32 D
+P
 FO
 1733 2102 M
 7 6 D
@@ -6996,7 +7781,7 @@ FO
 -6 -3 D
 1 -10 D
 -4 1 D
-7 103 D
+P
 FO
 1788 2955 M
 12 4 D
@@ -7045,7 +7830,7 @@ FO
 -2 -5 D
 -15 0 D
 -7 3 D
-8 125 D
+P
 FO
 1825 3530 M
 7 -2 D
@@ -7104,7 +7889,7 @@ FO
 -6 -5 D
 -4 -13 D
 -23 -1 D
-12 185 D
+P
 FO
 2819 4197 M
 11 -15 D
@@ -7459,7 +8244,7 @@ FO
 -2 5 D
 251 -13 D
 251 -11 D
-38 -2 D
+P
 FO
 2819 4197 M
 11 -15 D
@@ -8300,7 +9085,7 @@ S
 1 13 D
 -8 7 D
 194 -6 D
-132 -4 D
+P
 FO
 4096 4169 M
 1 -8 D
@@ -8403,7 +9188,7 @@ FO
 -15 12 D
 8 34 D
 0 5 D
-150 -1 D
+P
 FO
 4096 4169 M
 1 -8 D
@@ -8599,7 +9384,21 @@ S
 27 36 D
 70 73 D
 6 -171 D
--187 -6 D
+-13 -1 D
+-12 0 D
+-13 -1 D
+-12 0 D
+-13 0 D
+-12 -1 D
+-12 0 D
+-13 0 D
+-12 -1 D
+-13 0 D
+-12 0 D
+-12 -1 D
+-13 0 D
+-12 0 D
+P
 FO
 4604 4169 M
 -2 -14 D
@@ -8609,7 +9408,7 @@ FO
 -56 2 D
 -21 3 D
 -17 15 D
-152 1 D
+P
 FO
 4604 4169 M
 -2 -14 D
@@ -8969,12 +9768,193 @@ S
 31 28 D
 18 11 D
 66 -1058 D
--359 -20 D
--420 -20 D
--255 -10 D
--241 -8 D
 -7 0 D
--6 171 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-6 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-6 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-6 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-6 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-6 -1 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-6 0 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 0 D
+-6 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-6 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-6 0 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-6 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-6 0 D
+-7 0 D
+P
 FO
 6667 3663 M
 -49 14 D
@@ -9093,26 +10073,26 @@ FO
 -4 1 D
 286 16 D
 87 5 D
-36 -578 D
+P
 FO
 6698 3168 M
 -4 2 D
 1 12 D
 2 3 D
-1 -17 D
+P
 FO
 6705 3058 M
 -3 -1 D
 -6 5 D
 8 5 D
-1 -9 D
+P
 FO
 6717 2858 M
 -23 28 D
 0 6 D
 7 4 D
 15 -17 D
-1 -21 D
+P
 FO
 6721 2800 M
 -9 4 D
@@ -9129,14 +10109,14 @@ FO
 12 -1 D
 21 16 D
 41 7 D
-3 -44 D
+P
 FO
 6730 2657 M
 -13 3 D
 -15 17 D
 2 10 D
 25 -14 D
-1 -16 D
+P
 FO
 6745 2410 M
 -6 4 D
@@ -9156,7 +10136,7 @@ FO
 15 8 D
 3 -5 D
 4 6 D
-4 -66 D
+P
 FO
 5525 1435 M
 16 17 D
@@ -9904,9 +10884,48 @@ S
 339 23 D
 117 9 D
 0 -2933 D
--274 -18 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-6 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-6 0 D
+-7 -1 D
+-7 0 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-7 -1 D
+-7 0 D
+-6 -1 D
 -48 770 D
--18 288 D
+P
 FO
 6697 3185 M
 8 10 D
@@ -10149,7 +11168,7 @@ S
 -54 -569 D
 -82 -861 D
 -267 0 D
-0 1471 D
+P
 FO
 1217 1361 M
 -5 -8 D
@@ -10220,7 +11239,7 @@ FO
 136 1430 D
 366 -33 D
 303 -25 D
-145 -11 D
+P
 FO
 1436 1345 M
 1 -9 D
@@ -10236,7 +11255,7 @@ FO
 5 10 D
 -5 8 D
 3 8 D
-99 -7 D
+P
 FO
 1217 1361 M
 -5 -8 D
@@ -10508,7 +11527,7 @@ S
 -19 -593 D
 -1325 0 D
 26 417 D
-43 673 D
+P
 FO
 1668 1090 M
 21 -4 D
@@ -10830,7 +11849,7 @@ S
 17 9 D
 -1 -619 D
 -1322 0 D
-19 593 D
+P
 FO
 2943 593 M
 23 0 D
@@ -11191,7 +12210,7 @@ S
 187 6 D
 38 -1264 D
 -1323 0 D
-1 619 D
+P
 FO
 4247 619 M
 13 -3 D
@@ -11426,26 +12445,34 @@ S
 427 21 D
 297 17 D
 81 -1322 D
--1325 0 D
+P
 FO
 6894 0 M
 -81 1322 D
 274 18 D
 0 -1340 D
--193 0 D
+P
 FO
 PSL_GPP setmatrix
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psclip -C -O
+%@GMT: gmt psclip -C -O
+%@PROJ: xy 0.00000000 0.00000000 0.00000000 0.00000000 0.000 0.000 0.000 0.000 +xy
+%%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-PSL_cliprestore
+PSL_nclip {PSL_cliprestore} repeat
+%%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

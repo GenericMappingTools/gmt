@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14975M [64-bit] Document from psxy
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Oct 12 17:32:56 2015
+%%CreationDate: Thu Dec  6 10:52:45 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -337,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -523,7 +524,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +549,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -595,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -638,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -660,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: psxy line.txt -R8/32/40/44 -JM5i -P -Wfaint,red -K -Bxaf -Bya2f -BWSne --MAP_FRAME_TYPE=plain
-%%PROJ: merc 8.00000000 32.00000000 40.00000000 44.00000000 -1335833.890 1335833.890 4838471.398 5435749.888 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy line.txt -R8/32/40/44 -JM5i -Wfaint,red -Bxaf -Bya2f1 -BWSne --MAP_FRAME_TYPE=plain
+%@PROJ: merc 8.00000000 32.00000000 40.00000000 44.00000000 -1335833.890 1335833.890 4838471.398 5435749.888 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 72 72 360 80.4817
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -781,23 +788,26 @@ N 0 998 M -42 0 D S
 N 6000 998 M 42 0 D S
 N 0 1341 M -42 0 D S
 N 6000 1341 M 42 0 D S
-500 -167 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(10š) tc Z
-1750 -167 M (15š) tc Z
-3000 -167 M (20š) tc Z
-4250 -167 M (25š) tc Z
-5500 -167 M (30š) tc Z
--167 0 M (40š) mr Z
--167 660 M (42š) mr Z
--167 1341 M (44š) mr Z
 25 W
 0 0 M
 6000 0 D
 0 1341 D
--6000 0 D
+-1500 0 D
+-1500 0 D
+-1500 0 D
+-1500 0 D
 0 -1341 D
 P S
+500 -167 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(10°) tc Z
+1750 -167 M (15°) tc Z
+3000 -167 M (20°) tc Z
+4250 -167 M (25°) tc Z
+5500 -167 M (30°) tc Z
+-167 0 M (40°) mr Z
+-167 660 M (42°) mr Z
+-167 1341 M (44°) mr Z
 %%EndObject
 0 A
 FQ
@@ -805,8 +815,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy line.txt -R8/32/40/44 -JM5i -W2p+o1c/500k -O -K
-%%PROJ: merc 8.00000000 32.00000000 40.00000000 44.00000000 -1335833.890 1335833.890 4838471.398 5435749.888 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy line.txt -W2p+o1c/500k -R8/32/40/44 -JM5i
+%@PROJ: merc 8.00000000 32.00000000 40.00000000 44.00000000 -1335833.890 1335833.890 4838471.398 5435749.888 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -837,8 +847,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R8/32/40/44 -JM5i -O -K -F+f10p+jCM+a
-%%PROJ: merc 8.00000000 32.00000000 40.00000000 44.00000000 -1335833.890 1335833.890 4838471.398 5435749.888 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -F+f10p+jCM+a -R8/32/40/44 -JM5i
+%@PROJ: merc 8.00000000 32.00000000 40.00000000 44.00000000 -1335833.890 1335833.890 4838471.398 5435749.888 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -848,6 +858,7 @@ clipsave
 6000 0 D
 0 1341 D
 -6000 0 D
+P
 PSL_clip N
 750 862 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
@@ -855,19 +866,10 @@ V -11.5 R (1 cm) mc Z U
 4775 761 M V 9.5 R (500 km) mc Z U
 PSL_cliprestore
 %%EndObject
-0 A
-FQ
-O0
-0 0 TM
 
-% PostScript produced by:
-%%GMT: psxy -R8/32/40/44 -JM5i -O -T
-%%PROJ: merc 8.00000000 32.00000000 40.00000000 44.00000000 -1335833.890 1335833.890 4838471.398 5435749.888 +proj=merc +lon_0=20 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%%BeginObject PSL_Layer_4
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
-%%EndObject
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

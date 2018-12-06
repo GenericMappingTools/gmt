@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14058 [64-bit] Document from psbasemap
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psbasemap
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri Feb 13 13:36:29 2015
+%%CreationDate: Thu Dec  6 10:52:49 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -337,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -523,7 +524,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +549,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -595,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -638,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -660,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 2400 1200 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R2001-9-11T/2001-9-13T/0.01/100 -JX2.25iT/2.25il '-Bpxa6Hf1hg6h+lx-axis label' '-Bpya1g3p+ly-axis label' -BWSne -X2i -Bsxa1D -P -K '-UL/-0.75i/-0.85i/Dazed and Confused' --GMT_LANGUAGE=pt '--FORMAT_TIME_STAMP=2011 Jun 13 22:10:02'
-%%PROJ: xy 1000166400.00000000 1000339200.00000000 0.01000000 100.00000000 1000166400.000 1000339200.000 -2.000 2.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psbasemap -R2001-9-11T/2001-9-13T/0.01/100 -JX2.25iT/2.25il '-Bpxa6Hf1hg6h+lx-axis label' '-Bpya1g3p+ly-axis label' -BWSne -X2i -Bsxa1D '-UL/-0.75i/-0.85i/Dazed and Confused' --GMT_LANGUAGE=pt '--FORMAT_TIME_STAMP=2011 Jun 13 22:10:02'
+%@PROJ: xy 1000166400.00000000 1000339200.00000000 0.01000000 100.00000000 1000166400.000 1000339200.000 -2.000 2.000 +xy
+%GMTBoundingBox: 144 72 162 162
 %%BeginObject PSL_Layer_1
 % Begin GMT time-stamp
 V
@@ -696,9 +703,9 @@ A_IXcBTI'a1DeVhHggg<&%:Ao`&On~>
 U
 {1 A} FS
 PSL_g_h PSL_b_w PSL_g_w 0 Sb
-438 38 M (  2011 Jun 13 22:10:02  ) Z
+438 38 M (  2011 Jun 13 22:10:02  ) bl Z
 117 F0
-(   Dazed and Confused) Z
+(   Dazed and Confused) bl Z
 U
 % End GMT time-stamp
 FQ
@@ -768,22 +775,22 @@ N 0 2700 M -56 0 D S
 /PSL_AH0 0
 /MM {neg exch M} def
 133 F0
-V MU 0 0 M (10) FP 0 47 G 93 F0 (-2) FP 0 -47 G pathbbox N pop exch pop add U mx
-V MU 0 0 M (10) FP 0 47 G 93 F0 (-1) FP 0 -47 G pathbbox N pop exch pop add U mx
+V MU 0 0 M (10) FP 0 47 G 93 F0 (­2) FP 0 -47 G pathbbox N pop exch pop add U mx
+V MU 0 0 M (10) FP 0 47 G 93 F0 (­1) FP 0 -47 G pathbbox N pop exch pop add U mx
 V MU 0 0 M (10) FP 0 47 G 93 F0 (0) FP 0 -47 G pathbbox N pop exch pop add U mx
 V MU 0 0 M (10) FP 0 47 G 93 F0 (1) FP 0 -47 G pathbbox N pop exch pop add U mx
 V MU 0 0 M (10) FP 0 47 G 93 F0 (2) FP 0 -47 G pathbbox N pop exch pop add U mx
 def
 /PSL_A0_y PSL_A0_y 56 add def
 0 PSL_A0_y MM
-V MU 0 0 M (10) FP 0 47 G 93 F0 (-2) FP 0 -47 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
+V MU 0 0 M (10) FP 0 47 G 93 F0 (­2) FP 0 -47 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
 (10) Z
-0 47 G 93 F0 (-2) Z
+0 47 G 93 F0 (­2) Z
 0 -47 G 675 PSL_A0_y MM
 133 F0
-V MU 0 0 M (10) FP 0 47 G 93 F0 (-1) FP 0 -47 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
+V MU 0 0 M (10) FP 0 47 G 93 F0 (­1) FP 0 -47 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
 (10) Z
-0 47 G 93 F0 (-1) Z
+0 47 G 93 F0 (­1) Z
 0 -47 G 1350 PSL_A0_y MM
 133 F0
 V MU 0 0 M (10) FP 0 47 G 93 F0 (0) FP 0 -47 G pathbbox N 4 1 roll exch pop add exch U -2 div exch neg exch G
@@ -804,7 +811,7 @@ V MU 0 0 M (10) FP 0 47 G 93 F0 (2) FP 0 -47 G pathbbox N 4 1 roll exch pop add 
 (M) sh def
 /PSL_L_y PSL_A0_y PSL_A1_y mx 89 add def
 1350 PSL_L_y MM
-V 90 R (y-axis label) bc Z U
+V 90 R (y­axis label) bc Z U
 2700 0 T
 25 W
 N 0 2700 M 0 -2700 D S
@@ -918,7 +925,7 @@ N 2644 0 M 0 -28 D S
 (M) sh def
 /PSL_L_y PSL_A0_y PSL_A1_y mx 89 add PSL_LH add def
 1350 PSL_L_y MM
-(x-axis label) bc Z
+(x­axis label) bc Z
 0 2700 T
 25 W
 N 0 0 M 2700 0 D S
@@ -984,26 +991,26 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/2.25/0/2.25 -Jx1i -O -K -N -F+f7p,Helvetica-Bold,blue+j
-%%PROJ: xy 0.00000000 2.25000000 0.00000000 2.25000000 0.000 2.250 0.000 2.250 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt pstext -R0/2.25/0/2.25 -Jx1i -N -F+f7p,Helvetica-Bold,blue+j
+%@PROJ: xy 0.00000000 2.25000000 0.00000000 2.25000000 0.000 2.250 0.000 2.250 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
+PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 0 0 1 C
-720 2880 M PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-117 F1
+720 2880 M 117 F1
 (X_AXIS_LENGTH) br Z
 -480 2520 M (MAP_ANNOT_ORTHO) mr Z
 -480 2280 M (MAP_FRAME_AXES) mr Z
 -480 300 M (Y_AXIS_LENGTH) mr Z
--1080 -360 M (MAP_LOGO_POS) Z
--840 -540 M (MAP_LOGO) Z
+-1080 -360 M (MAP_LOGO_POS) bl Z
+-840 -540 M (MAP_LOGO) bl Z
 0 -720 M (FORMAT_TIME_STAMP) bc Z
 2520 -600 M (FONT_LABEL) ml Z
-2820 1080 M (FORMAT_DATE_MAP) Z
-2820 720 M (FORMAT_CLOCK_MAP) Z
-2820 360 M (GMT_LANGUAGE) Z
+2820 1080 M (FORMAT_DATE_MAP) bl Z
+2820 720 M (FORMAT_CLOCK_MAP) bl Z
+2820 360 M (GMT_LANGUAGE) bl Z
 2880 -324 M (FONT_ANNOT_SECONDARY) ml Z
 %%EndObject
 0 A
@@ -1012,8 +1019,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/2.25/0/2.25 -Jx1i -O -Sv0.06i+s+e -N -W0.5p,blue -Gblue
-%%PROJ: xy 0.00000000 2.25000000 0.00000000 2.25000000 0.000 2.250 0.000 2.250 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psxy -Sv0.06i+s+e -N -W0.5p,blue -Gblue -R0/2.25/0/2.25 -Jx1i
+%@PROJ: xy 0.00000000 2.25000000 0.00000000 2.25000000 0.000 2.250 0.000 2.250 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -1031,7 +1038,8 @@ V 1080 2760 T -21.8014 R
 0 0 M
 -72 19 D
 0 -38 D
-P clip fs P S U
+P clip fs P S 
+U
 8 W
 8 W
 V -420 2520 T N 0 0 M 288 0 D S
@@ -1039,7 +1047,8 @@ U
 V -60 2520 T 0 0 M
 -72 19 D
 0 -38 D
-P clip fs P S U
+P clip fs P S 
+U
 8 W
 8 W
 V -420 2280 T N 0 0 M 288 0 D S
@@ -1047,7 +1056,8 @@ U
 V -60 2280 T 0 0 M
 -72 19 D
 0 -38 D
-P clip fs P S U
+P clip fs P S 
+U
 8 W
 8 W
 V -420 300 T N 0 0 M 288 0 D S
@@ -1055,7 +1065,8 @@ U
 V -60 300 T 0 0 M
 -72 19 D
 0 -38 D
-P clip fs P S U
+P clip fs P S 
+U
 8 W
 8 W
 V -1080 -360 T -74.7449 R
@@ -1065,7 +1076,8 @@ V -900 -1020 T -74.7449 R
 0 0 M
 -72 19 D
 0 -38 D
-P clip fs P S U
+P clip fs P S 
+U
 8 W
 8 W
 V -840 -564 T -62.2415 R
@@ -1075,7 +1087,8 @@ V -720 -792 T -62.2415 R
 0 0 M
 -72 19 D
 0 -38 D
-P clip fs P S U
+P clip fs P S 
+U
 8 W
 8 W
 V 0 -744 T -33.0239 R
@@ -1085,7 +1098,8 @@ V 240 -900 T -33.0239 R
 0 0 M
 -72 19 D
 0 -38 D
-P clip fs P S U
+P clip fs P S 
+U
 8 W
 8 W
 V 2460 -600 T 180 R
@@ -1095,7 +1109,8 @@ V 2160 -600 T 180 R
 0 0 M
 -72 19 D
 0 -38 D
-P clip fs P S U
+P clip fs P S 
+U
 8 W
 8 W
 V 2760 1080 T -146.149 R
@@ -1105,7 +1120,8 @@ V 792 -240 T -146.149 R
 0 0 M
 -72 19 D
 0 -38 D
-P clip fs P S U
+P clip fs P S 
+U
 8 W
 8 W
 V 2760 720 T -147.529 R
@@ -1115,7 +1131,8 @@ V 1440 -120 T -147.529 R
 0 0 M
 -72 19 D
 0 -38 D
-P clip fs P S U
+P clip fs P S 
+U
 8 W
 8 W
 V 2760 360 T -135 R
@@ -1125,7 +1142,8 @@ V 2160 -240 T -135 R
 0 0 M
 -72 19 D
 0 -38 D
-P clip fs P S U
+P clip fs P S 
+U
 8 W
 8 W
 V 2820 -324 T 180 R
@@ -1135,9 +1153,14 @@ V 2520 -324 T 180 R
 0 0 M
 -72 19 D
 0 -38 D
-P clip fs P S U
+P clip fs P S 
+U
 U
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage
