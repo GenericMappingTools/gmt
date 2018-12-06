@@ -610,7 +610,13 @@ static void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, si
  * This depends on which character set we have.  We will limit this to just
  * Standard, Standard+, ISOILatin1, and ISOLatin1+. Of these, Standard will
  * only work for some of the encoded letters while the three others should
- * all be fine. */
+ * all be fine. We also handle the differences bewteen hyphens and minus symbol.
+ * In ISOLatin1 the hyphen key on the keyboard results in a minus sign while
+ * in Standard it gives a hyphen.  In GMT we want minus signs in annotations
+ * contours and other numerical negative values.  We assume that if a string
+ * begins with a hyphen then a minus sign is implied.  Likewise, if a hyphen
+ * is found later on in the string we assume it is a hyphen and under ISOLatin1
+ * we must insert the octal code for the hyphen (0255). */
 
 
 static unsigned int psl_ut8_code_to_ISOLatin (char code) {
@@ -620,38 +626,40 @@ static unsigned int psl_ut8_code_to_ISOLatin (char code) {
 	return (kode >= 0200 && kode <= 0277) ? kode += 64 : 0;
 }
 
-void psl_fix_utf8 (struct PSL_CTRL *PSL, char *string) {
-	/* Given string check if UTF8 characters are present and if so replace with PSL octal codes.  Assumes ISOLatin1+ */
-	unsigned int k, k2 = 0, use, utf8_codes = 0;
-	char *out = NULL, tmp[8] = {""};
+static void psl_fix_utf8 (struct PSL_CTRL *PSL, char *in_string) {
+	/* Given in_string check if UTF8 characters are present and if so replace with PSL octal codes.  Assumes ISOLatin1+ */
+	unsigned int k, kout, use, utf8_codes = 0;
+	char *out_string = NULL;
 
+	if (!strncmp (PSL->init.encoding, "Standard+", 9U)) {	/* For Standard+ encoding we need to swap leading minus values encoded as hyphen with the actual minus symbol */
+		if (in_string[0] == 0055)	/* Found leading hyphen which we interpret to be a minus sign */
+			in_string[0] = 0224;	/* Minus is octal 224 in Standard+ but not present in just Standard */
+	}
 	if (strncmp (PSL->init.encoding, "ISOLatin1", 9U)) return;	/* Do nothing unless ISOLatin[+] */
 
-	for (k = 0; string[k]; k++) {
-		if ((unsigned char)(string[k]) == 0303 || (unsigned char)(string[k]) == 0305)
+	for (k = 0; in_string[k]; k++) {
+		if ((unsigned char)(in_string[k]) == 0303 || (unsigned char)(in_string[k]) == 0305)
 			utf8_codes++;	/* Count them up */
+		else if (in_string[k] == 0055 && k && in_string[k-1] != '@')	/* A hyphen needs something before it (k > 0) unlike a negative number (but watch out for @- for subscript) */
+			in_string[k] = 0255;	/* Hyphen is octal 255 in ISOLatin1 */
 	}
 	if (utf8_codes == 0) return;	/* Nothing to do */
 
-	out = PSL_memory (PSL, NULL, 2 * PSL_BUFSIZ, char);	/* Get a new string of double length */
+	out_string = PSL_memory (PSL, NULL, strlen(in_string), char);	/* Get a new string of same length */
 	
-	for (k = k2 = 0; string[k]; k++) {
-		if ((unsigned char)(string[k]) == 0303) {    /* Found octal 303 */
+	for (k = kout = 0; in_string[k]; k++) {
+		if ((unsigned char)(in_string[k]) == 0303) {    /* Found octal 303 */
 			k++;	/* Skip the control code */
-			if ((use = psl_ut8_code_to_ISOLatin (string[k]))) {       /* Found a 2-char utf8 combo, replace with single octal code from our table */
-				sprintf (tmp, "\\%o", use);
-				strcat (out, tmp);
-			}
-			else {      /* Not a recognized code - just output both as they were given */
-				tmp[0] = string[k-1];
-				tmp[1] = string[k];
-				tmp[2] = '\0';
-				strcat (out, tmp);
+			if ((use = psl_ut8_code_to_ISOLatin (in_string[k])))       /* Found a 2-char utf8 combo, replace with single octal code from our table */
+				out_string[kout++] = use;
+			else {    /* Not a recognized code - just output both as they were given */
+				out_string[kout++] = in_string[k-1];
+				out_string[kout++] = in_string[k];
 			}
 		}
-		else if ((unsigned char)(string[k]) == 0305) {    /* Found Ydieresis, ae, AE, L&l-slash and the S,Z,s,z carons */
+		else if ((unsigned char)(in_string[k]) == 0305) {    /* Found Ydieresis, ae, AE, L&l-slash and the S,Z,s,z carons */
 			k++;	/* Skip the control code */
-			switch ((unsigned char)string[k]) {	/* These 9 chars are placed all over the table so must have individual cases */
+			switch ((unsigned char)in_string[k]) {	/* These 9 chars are placed all over the table so must have individual cases */
 				case 0201: use = 0203; break;	/* Lslash */
 				case 0202: use = 0213; break;	/* lslash */
 				case 0222: use = 0200; break;	/* ae */
@@ -663,26 +671,19 @@ void psl_fix_utf8 (struct PSL_CTRL *PSL, char *string) {
 				case 0276: use = 0037; break;	/* zcaron */
 				default:   use = 0;    break;	/* Not one of the recognized ones in our table */
 			}
-			if (use) {	/* Found a 2-char utf8 combo */
-				sprintf (tmp, "\\%o", use);
-				strcat (out, tmp);
-			}
-			else {      /* Not a recognized code - just output both as they were given */
-				tmp[0] = string[k-1];
-				tmp[1] = string[k];
-				tmp[2] = '\0';
-				strcat (out, tmp);
+			if (use)	/* Found a 2-char utf8 combo */
+				out_string[kout++] = use;
+			else  {    /* Not a recognized code - just output both as they were given */
+				out_string[kout++] = in_string[k-1];
+				out_string[kout++] = in_string[k];
 			}
 		}
-		else {     /* Just output char as was given */
-			tmp[0] = string[k];
-			tmp[1] = '\0';
-			strcat (out, tmp);
-		}
+		else    /* Just output char as was given */
+			out_string[kout++] = in_string[k];
 	}
-	memset (string, 0, strlen (string));	/* Set old string to NULL */
-	strncpy (string, out, strlen (out));	/* Overwrite old string with possibly adjusted string */
-	PSL_free (out);
+	memset (in_string, 0, strlen (in_string));		/* Set old in_string to NULL */
+	strncpy (in_string, out_string, strlen (out_string));	/* Overwrite old string with possibly adjusted string */
+	PSL_free (out_string);
 }
 
 /* This one is NOT static since needed in psimage, at least for now */
@@ -856,8 +857,12 @@ void psl_set_int_array (struct PSL_CTRL *PSL, const char *prefix, int *array, in
 
 void psl_set_txt_array (struct PSL_CTRL *PSL, const char *prefix, char *array[], int n) {
 	int i;
+	char *outtext = NULL;
 	PSL_command (PSL, "/PSL_%s [\n", prefix);
-	for (i = 0; i < n; i++) PSL_command (PSL, "\t(%s)\n", array[i]);
+	for (i = 0; i < n; i++) {
+		outtext = psl_prepare_text (PSL, array[i]);	/* Expand escape codes and fix utf-8 characters */
+		PSL_command (PSL, "\t(%s)\n", outtext);
+	}
 	PSL_command (PSL, "] def\n", n);
 }
 
@@ -1433,13 +1438,13 @@ static int psl_encodefont (struct PSL_CTRL *PSL, int font_no) {
 	return (PSL_NO_ERROR);
 }
 
-static char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
+char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 
 /*	Adds escapes for misc parenthesis, brackets etc.
 	Will also translate to some European characters such as the @a, @e
 	etc escape sequences. Calling function must REMEMBER to free memory
 	allocated by string */
-	const char *psl_scandcodes[15][5] = {	/* Short-hand conversion for some European characters in both Undefined [0], Standard [1], Standard+ [2], ISOLatin1 [3], and ISOLatin1+ [4] encoding */
+	const char *psl_scandcodes[16][5] = {	/* Short-hand conversion for some European characters in both Undefined [0], Standard [1], Standard+ [2], ISOLatin1 [3], and ISOLatin1+ [4] encoding */
 		{ "AA", "AA"   , "\\375", "\\305", "\\305"},	/* Aring */
 		{ "AE", "\\341", "\\341", "\\306", "\\306"},	/* AE */
 		{ "OE", "\\351", "\\351", "\\330", "\\330"},	/* Oslash */
@@ -1454,10 +1459,11 @@ static char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 		{ "ss", "\\373", "\\373", "\\337", "\\337"},	/* germandbls */
 		{ "u" , "ue"   , "\\370", "\\374", "\\374"},	/* udieresis */
 		{ "i" , "i"    , "\\354", "\\355", "\\355"},	/* iaccute */
-		{ "@" , "\\100", "\\100", "\\100", "\\100"}	/* atsign */
+		{ "@" , "\\100", "\\100", "\\100", "\\100"},	/* atsign */
+		{ "*" , "\\312", "\\217", "\\260", "\\260"}	/* degree */
 	};
 	char *string = NULL;
-	int i=0, j=0, font;
+	int i = 0, j = 0, font;
 	int he = 0;		/* PSL Historical Encoding (if any) */
 
 	if (!text) return NULL;
@@ -1537,6 +1543,10 @@ static char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 				case '@':
 					strcat (string, psl_scandcodes[14][he]);
 					j += (int)strlen(psl_scandcodes[14][he]); i++;
+					break;
+				case '.':
+					strcat (string, psl_scandcodes[15][he]);
+					j += (int)strlen(psl_scandcodes[15][he]); i++;
 					break;
 				case '%':	/* Font switcher */
 					if (isdigit ((int)text[i+1])) {	/* Got a font */

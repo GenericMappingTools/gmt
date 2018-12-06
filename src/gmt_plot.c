@@ -1847,7 +1847,12 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.map.frame.side[N_SIDE] & GMT_AXIS_ANNOT) {
 			PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
 			PSL_command (PSL, "/PSL_H_y %d ", PSL_IZ (PSL, GMT->current.setting.map_tick_length[GMT_PRIMARY] + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + GMT->current.setting.map_title_offset));
-			PSL_deftextdim (PSL, "-h", GMT->current.setting.font_annot[GMT_PRIMARY].size, "100\\312");
+			if (GMT->current.setting.map_degree_symbol == gmt_none)
+				PSL_deftextdim (PSL, "-h", GMT->current.setting.font_annot[GMT_PRIMARY].size, "100");
+			else {
+				snprintf (label, GMT_LEN16, "100%c",  (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);
+				PSL_deftextdim (PSL, "-h", GMT->current.setting.font_annot[GMT_PRIMARY].size, label);
+			}
 			PSL_command (PSL, "add def\n");
 		}
 		else

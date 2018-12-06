@@ -428,6 +428,7 @@ EXTERN_MSC int PSL_defunits (struct PSL_CTRL *PSL, const char *param, double val
 EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input);
 EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
 EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
+EXTERN_MSC char *psl_prepare_text (struct PSL_CTRL *PSL, char *text);
 
 /* Used indirectly by FORTRAN wrapper PSL_free_ . */
 EXTERN_MSC int PSL_free_nonmacro (void *addr);

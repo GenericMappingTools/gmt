@@ -20,7 +20,7 @@ ps=${name}.ps
 angle_step=`gmt math -Q 360 ${n_frames} DIV =`
 angle_inc=`gmt math -Q ${angle_step} 10 DIV =`
 gmt psbasemap -R0/360/-1.2/1.6 -JX3.5i/1.65i -P -K -X0.35i -Y0.25i \
-	-BWSne+glightgreen -Bxa90g90f30+u\\312 -Bya0.5f0.1g1 \
+	-BWSne+glightgreen -Bxa90g90f30+u@. -Bya0.5f0.1g1 \
 	--PS_MEDIA=${width}x${height} --FONT_ANNOT_PRIMARY=9p > $$.map.ps
 # 2. Main frame loop
 mkdir -p $$

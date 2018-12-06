@@ -12,7 +12,7 @@ gmt psxy -R0/25/0/25 -JX4i -P -K -X2i tt.xy -W2p,red > $ps
 echo 10 10 | gmt psxy -R -J -O -K -Sc0.1i -Gred >> $ps
 echo 10 10 0.4i 0 90 | gmt psxy -R -J -O -K -Sm0.15i+b -W0.75p,red -Gred >> $ps
 gmt pstext -R -J -F+f12p,Helvetica-Bold,red+jBL -O -K >> $ps <<< "21 11 E-W"
-gmt pstext -R -J -F+f12p,Helvetica-Bold,red+jBL -O -K >> $ps <<< "12 12 90\312"
+gmt pstext -R -J -F+f12p,Helvetica-Bold,red+jBL -O -K >> $ps <<< "12 12 90@."
 
 # 30 degrees azimuth
 gmt project -C5/5 -A30 -G1 -L-3/12 -N > tt.xy
@@ -20,7 +20,7 @@ gmt psxy -R -J -O -K tt.xy -W2p,green >> $ps
 echo 5 5 | gmt psxy -R -J -O -K -Sc0.1i -Ggreen >> $ps
 echo 5 5 0.4i 60 90 | gmt psxy -R -J -O -K -Sm0.15i+b -W0.75p,green -Ggreen >> $ps
 gmt pstext -R -J -F+f12p,Helvetica-Bold,green+jTR -O -K >> $ps <<< "3 2 -A30"
-gmt pstext -R -J -F+f12p,Helvetica-Bold,green+jTR -O -K >> $ps <<< "6.6 9 30\312"
+gmt pstext -R -J -F+f12p,Helvetica-Bold,green+jTR -O -K >> $ps <<< "6.6 9 3@."
 
 # Between two given points
 gmt project -C15/5 -E2/20 -G1 -N > tt.xy

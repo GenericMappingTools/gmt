@@ -633,7 +633,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 	int this_just, p_val;
 	bool reverse, all = true, use_image, center = false, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
 	bool B_set = GMT->current.map.frame.draw, skip_lines = Ctrl->S.active, need_image;
-	char format[GMT_LEN256] = {""}, text[GMT_LEN256] = {""}, test[GMT_LEN256] = {""}, unit[GMT_LEN256] = {""}, label[GMT_LEN256] = {""};
+	char format[GMT_LEN256] = {""}, text[GMT_LEN256] = {""}, test[GMT_LEN256] = {""}, unit[GMT_LEN256] = {""}, label[GMT_LEN256] = {""}, endash;
 	static char *method[2] = {"polygons", "colorimage"};
 	unsigned char *bar = NULL, *tmp = NULL;
 	double hor_annot_width, annot_off, label_off = 0.0, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
@@ -752,13 +752,19 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 	
 	if (Ctrl->D.emode & (reverse+1)) elength[XLO] =  Ctrl->D.elength;
 	if (Ctrl->D.emode & (2-reverse)) elength[XHI] =  Ctrl->D.elength;
+	if (!strncmp (PSL->init.encoding, "Standard", 8U))
+		endash = 0261;	/* endash code in Standard[+] charset */
+	else if (!strncmp (PSL->init.encoding, "ISOLatin1+", 10U))
+		endash = 0035;	/* endash code in ISOLatin1 charset */
+	else
+		endash = '-';	/* Use hyphen */
 
 	if ((gap >= 0.0 || Ctrl->L.interval) && !P->is_continuous) {	/* Want to center annotations for discrete colortable, using lower z0 value */
 		center = (Ctrl->L.interval || gap >= 0.0);
 		if (gap > 0.0) skip_lines = true;
 		gap *= 0.5;
 		if (Ctrl->L.interval) {
-			sprintf (text, "%s - %s", format, format);
+			sprintf (text, "%s%c%s", format, endash, format);
 			strncpy (format, text, GMT_LEN256-1);
 		}
 	}

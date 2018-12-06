@@ -5039,8 +5039,8 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.given_unit[GMTCASE_MAP_ANNOT_MIN_SPACING] = 'p';
 	/* MAP_ANNOT_ORTHO */
 	strcpy (GMT->current.setting.map_annot_ortho, "we");
-	/* MAP_DEGREE_SYMBOL (ring) */
-	GMT->current.setting.map_degree_symbol = gmt_ring;
+	/* MAP_DEGREE_SYMBOL (degree) */
+	GMT->current.setting.map_degree_symbol = gmt_degree;
 	/* MAP_FRAME_AXES */
 	strcpy (GMT->current.setting.map_frame_axes, "WESNZ");
 	for (i = 0; i < 5; i++) GMT->current.map.frame.side[i] = 0;	/* Unset default settings */
@@ -8384,10 +8384,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT_COMPAT_TRANSLATE ("MAP_DEGREE_SYMBOL");
 			break;
 		case GMTCASE_MAP_DEGREE_SYMBOL:
-			if (value[0] == '\0' || !strcmp (lower_value, "ring"))	/* Default */
-				GMT->current.setting.map_degree_symbol = gmt_ring;
-			else if (!strcmp (lower_value, "degree"))
+			if (value[0] == '\0' || !strcmp (lower_value, "degree"))	/* Default */
 				GMT->current.setting.map_degree_symbol = gmt_degree;
+			else if (!strcmp (lower_value, "ring"))
+				GMT->current.setting.map_degree_symbol = gmt_ring;
 			else if (!strcmp (lower_value, "colon"))
 				GMT->current.setting.map_degree_symbol = gmt_colon;
 			else if (!strcmp (lower_value, "none"))
