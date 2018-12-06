@@ -39,8 +39,8 @@ gmt psxy -R -J -O -K -Sm0.1i+e+b -W0.25p -Gblack << EOF >> $ps
 0 0 1.5i -60 0
 EOF
 gmt pstext -R -J -O -K -F+f12p << EOF >> $ps
-0.65 -0.35 60\232
-0.52 0.08 18\232
+0.65 -0.35 60@.
+0.52 0.08 18@.
 EOF
 gmt psscale -DJRM+w4.5i/0.1i -Ct.cpt -R -J -O -K >> $ps
 gmt psxy -R -J -O -T >> $ps

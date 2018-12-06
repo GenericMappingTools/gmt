@@ -10,7 +10,7 @@ gmt grdedit w.nc -Gh.nc -Eh
 gmt grdimage h.nc -Ct.cpt -J -Baf -BWSne+tFLIPLR -Y-2.5i -O -K --FONT_TITLE=18p >> $ps
 # grid after 180 rotation
 gmt grdedit w.nc -Ga.nc -Ea
-gmt grdimage a.nc -Ct.cpt -J -O -K -Baf -BWSne+t"180\312" -Y-2.5i --FONT_TITLE=18p >> $ps
+gmt grdimage a.nc -Ct.cpt -J -O -K -Baf -BWSne+t180@. -Y-2.5i --FONT_TITLE=18p >> $ps
 # Flip grid top-to-bottom
 gmt grdedit w.nc -Gv.nc -Ev
 gmt grdimage v.nc -Ct.cpt -J -O -Baf -BWSne+tFLIPUD -Y-2.5i --FONT_TITLE=18p >> $ps
