@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v6.0.0_r18495M [64-bit] Document from psxy
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_662b625-dirty [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Jun 28 13:47:05 2017
+%%CreationDate: Thu Dec  6 18:02:38 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -657,14 +662,19 @@ V 612 0 T 90 R 0.06 0.06 scale
 
 /PSL_page_xsize 13200 def
 /PSL_page_ysize 10200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 2400 1800 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-1200/1200/-75/200 '-UL/-1.75i/-1.25i/Example 3a in Cookbook' -BWeSn '-Bxa500f100+lDistance along great circle' '-Bya100f25+lGravity anomaly (mGal)' -JX8i/5i -X2i -Y1.5i -K -Wthick sat.pg
+%@GMT: gmt psxy -R-1200/1200/-75/200 '-UL/-1.75i/-1.25i/Example 3a in Cookbook' -BWeSn '-Bxa500f100+lDistance along great circle' '-Bya100f25+lGravity anomaly (mGal)' -JX8i/5i -X2i -Y1.5i -K -Wthick sat.pg
 %@PROJ: xy -1200.00000000 1200.00000000 -75.00000000 200.00000000 -1200.000 1200.000 -75.000 200.000 +xy
+%GMTBoundingBox: 144 108 576 360
 %%BeginObject PSL_Layer_1
 % Begin GMT time-stamp
 V
@@ -1334,17 +1344,17 @@ N 8800 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
 200 F0
-(-1000) sh mx
-(-500) sh mx
+(”1000) sh mx
+(”500) sh mx
 (0) sh mx
 (500) sh mx
 (1000) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 800 PSL_A0_y MM
-(-1000) bc Z
+(”1000) bc Z
 2800 PSL_A0_y MM
-(-500) bc Z
+(”500) bc Z
 4800 PSL_A0_y MM
 (0) bc Z
 6800 PSL_A0_y MM
@@ -1417,7 +1427,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-1200/1200/-75/200 -JX8i/5i -O -Sp0.03i ship.pg
+%@GMT: gmt psxy -R-1200/1200/-75/200 -JX8i/5i -O -Sp0.03i ship.pg
 %@PROJ: xy -1200.00000000 1200.00000000 -75.00000000 200.00000000 -1200.000 1200.000 -75.000 200.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -8437,6 +8447,10 @@ O1
 U
 PSL_cliprestore
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

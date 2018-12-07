@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v5.4.0_r17797M [64-bit] Document from pslegend
-%%Creator: GMT5
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_662b625-dirty [64-bit] Document from pslegend
+%%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Mar 26 19:48:11 2017
+%%CreationDate: Thu Dec  6 18:04:02 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -657,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: pslegend -Dx0/0 -C0.05i -L1.2 -F+p+gsnow1 -B0 table.txt -P --FONT_ANNOT_PRIMARY=12p --FONT_LABEL=12p
+%@GMT: gmt pslegend -Dx0/0+w5.6i+jBL+l1.2 -C0.05i -F+p+gsnow1 -B0 table.txt -P --FONT_ANNOT_PRIMARY=12p --FONT_LABEL=12p
 %@PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy
+%GMTBoundingBox: 72 72 403.2 259.2
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -730,7 +740,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R0/5.6/0/3.6 -Jx1i -O -K -N -S @GMTAPI@-000002 --GMT_HISTORY=false
+%@GMT: gmt psxy -R0/5.6/0/3.6 -Jx1i -O -K -N -S @GMTAPI@-000002 --GMT_HISTORY=false
 %@PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -765,7 +775,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R0/5.6/0/3.6 -Jx1i -O -K -N -F+f+j @GMTAPI@-000001 --GMT_HISTORY=false
+%@GMT: gmt pstext -R0/5.6/0/3.6 -Jx1i -O -K -N -F+f+j @GMTAPI@-000001 --GMT_HISTORY=false
 %@PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -839,7 +849,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R0/5.6/0/3.6 -Jx1i -O -K -N -M -F+f+a+j @GMTAPI@-000003 --GMT_HISTORY=false
+%@GMT: gmt pstext -R0/5.6/0/3.6 -Jx1i -O -K -N -M -F+a+f+j @GMTAPI@-000003 --GMT_HISTORY=false
 %@PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -1079,7 +1089,7 @@ O0
 (Many) (of) (these) (cities) (have) (hosted) (World) (Cup) (Soccer) (\(WC\)) (and)
 (some) (have) (hosted) (the) (Olympics) (\(OL\).) (The) (rest) (is) (just) (some)
 (basic) (information) (about) (each) (city,) (such) (as) (climate) (and) (population.)
-(Of) (course,) (this) (is) (all) (an) (excuse) (to) (demonstrate) (variable-width)
+(Of) (course,) (this) (is) (all) (an) (excuse) (to) (demonstrate) (variable­width)
 (tables) (and) (row) (coloring.)
 46 array astore def
 /PSL_fnt
@@ -1142,6 +1152,10 @@ PSL_x0 PSL_y0 T
 1 PSL_textjustifier U
 %%EndObject
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

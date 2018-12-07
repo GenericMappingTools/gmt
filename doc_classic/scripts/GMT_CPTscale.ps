@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v5.3.2_r17327 [64-bit] Document from psxy
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_662b625-dirty [64-bit] Document from psxy
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Nov 13 10:13:19 2016
+%%CreationDate: Thu Dec  6 18:03:48 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -657,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: psxy -R0/6/0/6 -Jx1i -P -K -W0.25p
+%@GMT: gmt psxy -R0/6/0/6 -Jx1i -P -K -W0.25p
 %@PROJ: xy 0.00000000 6.00000000 0.00000000 6.00000000 0.000 6.000 0.000 6.000 +xy
+%GMTBoundingBox: 72 72 432 432
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -697,7 +707,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -Cglobe -Baf -Dx3i/1.5i -O -K -W0.001
+%@GMT: gmt psscale -Cglobe -Baf -Dx3i/1.5i+w2.8i/0.15i+jCM -O -K -W0.001
 %@PROJ: xy -10.00000000 10.00000000 0.00000000 0.15000000 -10.000 10.000 0.000 0.150 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -797,7 +807,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -Ct.cpt -Baf -Dx5i/1.5i -O -K -W0.001
+%@GMT: gmt psscale -Ct.cpt -Baf -Dx5i/1.5i+w2.0i/0.15i+jLM -O -K -W0.001
 %@PROJ: xy -0.50000000 3.00000000 0.00000000 0.15000000 -0.500 3.000 0.000 0.150 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -811,29 +821,29 @@ V N 0 0 T 2400 180 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 1200 /Height 1 /BitsPerComponent 8
    /ImageMatrix [1200 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-G[BdSG?C*m!<@(UOs\FeC,;<u)W;NF2t\qpe>,ZG7[#Zc8PE]6&4I:4:f'GD5QsOnEdJlJGK9(O*,t8(aH1P&48+g\#RHgl
-r=1L<Qbkt8qIb<(O0IjiiI<e#bPEH')\0fiJ+)e7n(tZbI,Oj@OW3/?[/NdQ%<#g]s)$/<pCqL)Uh]i7/K8<oY$WupiQc/]
-l/f>JT[!89a7.L&i8\1[VnRu5hMGn5_@&QH/&0&=?1IUeml(K$fb1m"/Nf[N,.o]][O3Cj(Ip;-k4BtC/SU[QoTK341.u55
--*,1O?"5&-R>Ho8;R;e>@]$U-dG"I7SUJ_"'<Ba'esj0=;i]OugMc-^)Yq9?_5KXZ@E?2p&5O5jZ[1l+?FHM./ErGC3n:75
-i1<\lY?/+=.p%'3X$-$=*na/pFJW3IdOeei&hS=h06[_h3sEfur4AMFGAm'1NngIkS>?_`;EJNjS\<\$>&7\$[P8QPk_lRM
-Ki[J*.qRZDH/Stl%bO+\dmCRnP!+<ngALWFq<#osk)B,uoXUj"F%o`uRaU=:0AgY@^"o&r])bTsD7DE,IrVpr_JFYK9O6XO
-?,B:kq3ft3l.WZ3RWHq8B;]NSVlF7(Wm=@=T:W&DFfQu1Y)KqlH#g4]`+2<tA4=FI`USfU@h[ro-d'=Sb/20ANf7`aO)%,'
-[>2ao6cM_/Ng1Y&.g[7KffrXQ1g1k)NYD_WB`(@WINocgi?FoQ,4FJ7YMhgoTgFg6!r&Ai\"NlT6++n/HJbClhh.pN#?6$T
-<'Ld>^E6:$f+0A)oIIZC=+"M?Ir1>Jb9Hu/,5]e>qnao_Vcil,=o)9njO6<7-[h06-Lo,'nNT_,O%c8YNM=0,73<B<_=nE7
-]*uQk)2.GrK^\10J(4q`dIZ8HoAA!dhpgcHFa6&kH%5)?^!Y%#F"d"ThV?_/EaS4UIAJ=SA["8ZV/G^Zh:s#Vg`;rU*B-"(
-*?=6cNcQ/[\WuQ0KC.I2G.u7FC1]I`Z()_8:(8bPHDXU]e$0Zk_f2\h3*%aR.iF?^%#8l76Q+]G96Ve\4-\)3MJ5$Z%9Gs8
-'iK#T<1KD7;c2qI<-nef?B17Im%n6>$/&'I[M+ejnk"!kP+@,6a!Y`M,AuZV\*)HXXBtsK^hi@QgO;.u)gC\Ai(WJGl`D97
-9ZOmD4Q[BG^%RNR[/Y@gI.$0sR&lN:?maVl$X^cbB`60/$bsnZH5\Tep*hs%qn2UjiHU_u)[C9Vq)Qs2i9tLHZ05!3@o1LE
-s-A+[/^=-Vm1XFqC6\DO[a^Mn-Q^0a[!`XK=A,n_DZ-'4a0:UgJkcNfD'+MMY`F=L?@*M9XaQ!>MLESB5r]"2GjkaX"4k5=
-K<b0'RmDXKOR4A]T^?>XhueX_LPPsA'*B:!#!>NMJ"5a&"Ng[8P5c;\hbtf8Vb)?`P5Lmrq`[gLh+ICs7eYY5p9?"Bi$^dL
-'Q7WApC<)T9,-hrW*ZZ)]j@U_]g;>F8bIIplM24?o,X:_]/5TCBHFd!*Zr`k5,>f?7!JZumf!OKrA2%>kB+0d(iE\8gqIC1
-I`$-\_f5RGl1tM2j[Z2k5,O5Ge(']e]"*B.GB^KN#KZH-KY>%.TXQl3`s9iYonEABE^>2)O;AJD$Od10JqDqZqtXW=0`Soh
-:iPnH*"jFu%il:;L?=,D%tgT$8)UU*:`LN/5'dp-*'4?H5;!*a,,C?`n;.hJaceJ6.LM2rQCU&?T0<^V3<RE6@cXf!nCb/;
-\T;^p*#p'(3.DuE8:V?eiM7a<Ka[ChMkKXh,rdnfR?@WLVS\ZQ_eEg7nB)KreZ3Y83h2>+"uA'c=]t7%CB\*h2G>6DKg]An
-M$0$a73I9c;lN2BRKfS:@0QfbAho9I/==[7!BD-eb6:O[E_:Co@3,s/k2jF,^/c@)",0'$59DEmM.!Tu>Ts2!Uf(;AKB;Yr
-:n`E)b"@r!$<4(bJc`0fYRiE:Ji0"^io1l\U]`;%"`(ML\?$)k0<_FTJ1E//WiCBL\f.`N!?5ch)sZ_HqKfBNT`IV>+ds"p
-&M8eXLfQn_U)hX4\;BF^Y7&a;kX"hbF9k%HJ1r0@Ld$J0@6sN1#4<Eu)+#31)*o-/)+,93R6[0.\V2em16"&A15g/lAI`8m
-jj&8^.#TKH.!JOS;-$Lo;==D?J*SJZ#ltJ~>
+G[BdSG?C*m!<@(URO69mC,;<u)W;M[9p;G\7['8tC!:7R-F&E,lj]\FJdMi7.L;u'-pqn@`SGN\!!aKj,;Nfc*QK1IaUeRX
+bklj5?G9(CJ,8f`rgk3Lds^$ODX*OIa'p"u`GU(lDMNH)FVl(/ED3IO>>dDo$0UeYk/Q9k3P;92iJ?cY-au-1leAp]f\ru9
+]<eQhfW`WQW5l15cXN)E`+HZ8c.e)On%oDq_(*49C-Ag2_=+dbJ'f1FY:Vf21FB[`/tk3I?'g@+Ui;9,Ec\*i0WT:L]A/oT
+C!Nh=kLH#@od5'MM9o]U[@50R"-efH>1Wbfa2mI#1A++[^QE$kk774WLAUeArIT$AE6;!rgE<(F8ETTn"he_DY?91&=*:Nc
+?/^4&qL5&O*EK?;.b8t.CV@$]*pHjhA?AA7eh((m/m.KVY'(+P]D2-3o'bDo_4BAH:<lHZH_lA&d_T2V?nAe9QeQ5tmF:5U
+b#01(WK"9,PIP^uE#3?0heg?gD9Z:tEII@HmUAi7@S?E(9@cH$[>!bD$dG(I9ipa>A_^ul^XEIcbr8t#Dn%X]E,iT8Ffmo>
+Y!.-6rk_oGdVN4KD!h&Og2jU.B4krlAnoW8e=<,05'=Iu*j1C4?$12!lGRdUluZg_FQN%lMITR"8#Ii2Vokb]bE#>3%o6pb
+-ae^Vas&1T%Si6/Qm`Cc0ASj!)E(n7$BCC)N+mma1dPW?^sV.ld:3.'@_^;7hiT+TO[AN!6EcM<cXF6%Y^532qVT2jmtXkh
+LK*.?.DHm$rbE'ElkrcM1T:*&/H<jDs/0$!V-3MG8bT\dq@Ae^1R%I[!Qc\kP)fhn]8bg2N8hSk`?-!e+7tKjeh;?a^ArZ-
+:pA+cr2W-YY!MiC?LScEi,(XW/Ns,.*WHRS5$"#b;j[OI52PUR]Kc)Z?L-Xcg<9G)0DC`<c6'hCcHAB;Q[7:G]%K0V=?CE*
+gcJ[,*A$r.Q?sS"r?g",Q0EaMl.3^jCM((61#*ZbD@L]sHFdl4ZBjWV6Z]B,\Q7*_.qpUN<0qX*MjEX+7Wg/V\<KfD)@E@/
+JghmR$HX,B)5ABcP[nD1a]XXgOdr79B*lsW9QUmZSI,Wt6@tDOi5@!Zcc9teiO<lFEL&80*&,_<okcpa]8^\+HT9&p[cLPO
+"_QH&p4D,$0[olBbfp*3"ap<i)0Qn^^U9PCq](":r[#a#XY9Z14nT]).CN$ian@AirWZ,LBsrlVQ62_h4U:u?Q?j>F.;AqL
+)>%95:KpaK:Y@o<a.pXW5%.)JC&c-3G%5A2K4CuSQH(S,Bmn5)d7;T@@'o;GE0U;Gi%M/B_Z]:\$'Fol=oKD$Y_ta@OPL#)
+5D-l@mfte(36O#19t4$Sc+),UE$5bP6QX(!4GjYp$m5BM557]9n5G"u/VKdp#sllKJt=1i4\lK6JJbn^(q>PB\=FJp9FS^u
+!aJ=rmNhfQ,la3&ri_F^?7#K^7eV2"m'i2FqZbaJ9oADo']4*_54;BsG#<YDVtbX)p&:'<r=RTWA#f:$<3OWH?D#]Z^8-%&
+7J$GGk.-90q(:Fo41`K,FH:il%hH7L-Nj#3!h%p%9HP@<jm*<Oq6<58Is+'Wa9`9.K7^U@E%o?@$/pSmK)&h`nG`B60KbkT
+huG/bGS#mk&;#ZI#pUZ&^r(pnd?,Ym<"pa@NYW^"$;-=!K9%+@Jh]".fN@pe$2ERQ)&O.pa2c@uSUsY0L<l@jjTu7aZY/6<
+kMYspiP\,D.7nO<!h>bhVkh,-WJZTMiCfM&jlO[)>+.30*R;`VY?ZW71KEA`X/]sei2eIh4'N0VjJ[-@iTo)'_7VlILBEJ(
+p`]b?-5)5&&d]nKM^]>L8>X0[)H]>(QS971P?A6u=>63RQ>nlq>V=7\J_L$LR*X@k"Qc:Q#T"2*'d=5@(0=$P@&6g0b@Ih^
+?3MemYYnW#;H8?a2-a5heeAk8`Po&N;c?Rl$^R*qAS#8?<XY7\_\EpZQ'H;g'jP&#!7oZ8[C'CP?!Urg4l"Ba2DmD0Lh9$_
+iWc+lE>-`SBLd.e3YAh4>n;$%H4[cG5(jE>7i2g9#U<dY@7$=nK8?3+L/CE:7T%0%`_e'Z-;gX:VGV6+bb31Sbb<7Ugd,(.
+=[]gt^_4dFapQ9SPZ<r*P]`5fs7bFI!K3lW$N~>
 U
 2 setlinecap
 N 0 180 M 2400 0 D S
@@ -893,7 +903,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -Ct.cpt -Baf -Dx1i/1.5i -O -K -W0.001
+%@GMT: gmt psscale -Ct.cpt -Baf -Dx1i/1.5i+w2.0i/0.15i+jRM+ma -O -K -W0.001
 %@PROJ: xy -0.50000000 3.00000000 0.00000000 0.15000000 -0.500 3.000 0.000 0.150 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -984,7 +994,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R0/6/0/6 -Jx1i -O -N -F+f14p+j
+%@GMT: gmt pstext -R0/6/0/6 -Jx1i -O -N -F+f14p+j
 %@PROJ: xy 0.00000000 6.00000000 0.00000000 6.00000000 0.000 6.000 0.000 6.000 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
@@ -994,7 +1004,7 @@ O0
 233 F0
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 (Scale a subset \(via ) Z
-233 F1 (-G) Z
+233 F1 (­G) Z
 233 F0 (\)) Z
 7200 0 M 233 F0
 (Scale entire range) br Z
@@ -1002,6 +1012,10 @@ PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold 
 1200 3720 M (New CPT v1) bc Z
 6000 3720 M (New CPT v2) bc Z
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage
