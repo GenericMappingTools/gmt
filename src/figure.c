@@ -95,7 +95,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		pos = 0;
 		while (gmt_strtok (opt->arg, ",", &pos, p)) {	/* Check args to determine what kind it is */
 			if (arg_category == GMT_NOTSET)
-				arg_category = (strlen (p) == 1 || strchr (p, '+') || isupper (p[0])) ? GMT_IS_OPT : GMT_IS_FMT;
+				arg_category = (strlen (p) == 1 || strchr (p, '+') || (isupper (p[0]) && strcmp (p, "PNG"))) ? GMT_IS_OPT : GMT_IS_FMT;
 			if (arg_category == GMT_IS_FMT) {	/* Got format specifications, check if OK */
 				int k = gmt_get_graphics_id (GMT, p);
 				if (k == GMT_NOTSET) {
