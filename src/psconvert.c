@@ -1379,21 +1379,29 @@ GMT_LOCAL int wrap_the_sandwich (struct GMT_CTRL *GMT, char *main, char *bfile, 
 		return (GMT_RUNTIME_ERROR);
 	}
 	if (bfile) {	/* We have a background PS layer that should go first */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Prepend %s as background in %s\n", bfile, newfile);
 		gmt_ps_append (GMT, bfile, 1, fp);	/* Start with this file but skip trailer */
 		if (ffile) {	/* There is also a foreground PS layer that should go last */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Append %s as main content in %s\n", main, newfile);
 			gmt_ps_append (GMT, main,  0, fp);	/* Append main file first but exclude both header and trailer */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Append %s as forground in %s\n", ffile, newfile);
 			gmt_ps_append (GMT, ffile, 2, fp);	/* Append foreground file but exclude header */
 		}
-		else	/* No foreground, append main and its trailer */
+		else {	/* No foreground, append main and its trailer */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Append %s as main content in %s\n", main, newfile);
 			gmt_ps_append (GMT, main, 2, fp);	/* Append main file; skip header but include trailer */
+		}
 	}
 	else {	/* Just a foreground layer to append */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Prepend %s as main in %s\n", main, newfile);
 		gmt_ps_append (GMT, main,  1, fp);	/* Begin with main file but exclude trailer */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Append %s as forground in %s\n", ffile, newfile);
 		gmt_ps_append (GMT, ffile, 2, fp);	/* Append foreground file but exclude header */
 	}
 	fclose (fp);	/* Completed */
 	
 	/* Now remove original ps_file and rename the new file to main */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Remove old %s\n", main);
 	if (gmt_remove_file (GMT, main)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to remove original file %s.\n", main);
 		return (GMT_RUNTIME_ERROR);
