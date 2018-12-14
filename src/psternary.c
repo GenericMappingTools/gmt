@@ -166,7 +166,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct G
 				gmt_M_str_free (Ctrl->G.string);
 				Ctrl->G.string = strdup (opt->arg);
 				break;
-			case 'L':	/* get the three labels seaprated by slashes */
+			case 'L':	/* Get the three labels seaprated by slashes */
 				Ctrl->L.active = true;
 				sscanf (opt->arg, "%[^/]/%[^/]/%s", Ctrl->L.vlabel[GMT_X], Ctrl->L.vlabel[GMT_Y], Ctrl->L.vlabel[GMT_Z]);
 				break;
@@ -198,6 +198,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct G
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 		n_errors += gmt_M_check_condition (GMT, !(Ctrl->S.active || Ctrl->Q.active), "Syntax error: Must specify either -S or -Q\n");
 	}
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->S.string[0], "Syntax error: Must specify a symbol when using -S\n");
 
 	n_errors += gmt_check_binary_io (GMT, 2);
 
@@ -395,7 +396,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 		}
 	}
 	gmt_adjust_dataset (GMT, D, D->n_columns-1);	/* Remove all traces of the extra column */
-	gmt_set_dataset_minmax (GMT, D);				/* Update column stats */
+	gmt_set_dataset_minmax (GMT, D);		/* Update column stats */
 	
 	if (Ctrl->M.active) {	/* Just print the converted data and exit */
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, 0, NULL, NULL, D) != GMT_NOERROR) {
