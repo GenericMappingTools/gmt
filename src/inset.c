@@ -24,7 +24,7 @@
  *	1) Initialize a new inset, which determines dimensions and sets parameters:
  *	   gmt inset begin -D<params> [-F<panel>] [-V]
  *	   Sugsequent plot calls will be placed in the inset window.
- *	2) Exit inset mode:
+ *	2) Exit inset mode, which resets plot origin and previous -R -J parameters:
  *	   gmt inset end [-V]
  */
 
@@ -32,7 +32,7 @@
 
 #define THIS_MODULE_NAME	"inset"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Manage modern mode figure inset design and completion"
+#define THIS_MODULE_PURPOSE	"Manage figure inset design and completion"
 #define THIS_MODULE_KEYS	">X}"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS	"-JRV"
@@ -119,7 +119,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 	else if (!strncmp (opt->arg, "end", 3U))
 		Ctrl->In.mode = INSET_END;
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not a inset command: %s\n", opt->arg);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Not an inset command: %s\n", opt->arg);
 		return GMT_PARSE_ERROR;
 	}
 	opt = opt->next;	/* Position to the next argument */
@@ -218,7 +218,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 
 	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Not available in classic mode\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "module inset is not available in classic mode\n");
 		bailout (GMT_NOT_MODERN_MODE);
 	}
 
@@ -264,14 +264,14 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 		/* OK, no other inset set for this figure (or panel).  Save graphics state before we draw the inset */
-		PSL_command (PSL, "V\n");
+		PSL_command (PSL, "V %% (inset)\n");
 
-		gmt_draw_map_inset (GMT, &Ctrl->D.inset);	/* Draw the inset */
+		gmt_draw_map_inset (GMT, &Ctrl->D.inset);	/* Draw the inset background */
 		
 		/* Write out the inset information file */
 		
 		if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot create file %s\n", file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot create inset file %s\n", file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
 		fprintf (fp, "# Figure inset information file\n");
@@ -292,14 +292,14 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		int id;
 		char line[GMT_LEN128] = {""}, str[3] = {"J"};
 			
-		PSL_command (PSL, "U\n");	/* Restore graphics state to what it was before the map inset */
+		PSL_command (PSL, "U %% (inset)\n");	/* Restore graphics state to what it was before the map inset */
 		
 		/* Extract previous -R -J from the inset information file */
 		if ((fp = fopen (file, "r")) == NULL) {	/* Not good */
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot read file %s\n", file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		/* Skip the first 4 comments and get REGION line */
+		/* Skip the first 4 comments and get the 5th record which holds the REGION line */
 		for (k = 0; k < 5; k++) gmt_fgets (GMT, line, GMT_LEN128, fp);
 		id = gmtlib_get_option_id (0, "R");	/* Get index for the -RP history item */
 		if (!GMT->init.history[id]) id++;	/* No history for -RP, increment to -RG as fallback */
