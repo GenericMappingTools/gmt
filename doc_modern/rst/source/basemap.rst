@@ -1,8 +1,8 @@
 .. index:: ! basemap
 
-*********
+*******
 basemap
-*********
+*******
 
 .. only:: not man
 
@@ -15,10 +15,8 @@ Synopsis
 
 **gmt basemap** |-J|\ *parameters*
 |SYN_OPT-Rz|
-[ |SYN_OPT-B| ]
 [ |-A|\ [*file*] ]
-[ |-D|\ *inset box* ]
-[ |-F|\ *box* ]
+[ |SYN_OPT-B| ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-L|\ *scalebar* ]
 [ |SYN_OPT-U| ]
@@ -74,55 +72,6 @@ Optional Arguments
 .. _-B:
 
 .. include:: explain_-B.rst_
-
-.. _-D:
-
-**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*][**+t**] \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*][**+t**]
-    Draw a simple map inset box on the map.  Requires **-F**.  Specify the box in one of three ways:
-    (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
-    and meridians; append **r** if the coordinates instead are the lower left and
-    upper right corners of the desired rectangle. (b) Give **u**\ *xmin/xmax/ymin/ymax*
-    of bounding rectangle in projected coordinates (here, **u** is the coordinate unit).
-    (c) Give the reference point on the map for the inset using one of four coordinate systems:
-    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
-    a 2-char justification code that refers to the (invisible) map domain rectangle,
-    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
-    (inches, cm, etc.).
-    Append **+w**\ *width*\ [/*height*] of bounding rectangle or box in plot coordinates (inches, cm, etc.).
-    By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
-    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
-    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
-    if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
-    Add **+o** to offset the inset fig by *dx*/*dy* away from the *refpoint* point in
-    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
-    If you need access to the placement of the lower left corner of the map inset and
-    its dimensions in the current map unit, use **+s**\ *file* to write this information
-    to *file*.  Alternatively, you may append **+t** to translate the plot origin to
-    the lower left corner of the map inset.
-    Specify inset box attributes via the **-F** option [outline only].
-
-.. _-F:
-
-**-F**\ [**d**\ \|\ **l**\ \|\ **t**][\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
-    Without further options, draws a rectangular border around any map inset (**-D**),
-    map scale (**-L**) or map rose (**-T**) using
-    :ref:`MAP_FRAME_PEN <MAP_FRAME_PEN>`; specify a different pen with **+p**\ *pen*.
-    Add **+g**\ *fill* to fill the logo box [no fill].
-    Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
-    or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
-    x- and y-direction, or individual side spacings between logo and border.
-    Append **+i** to draw a secondary, inner border as well. We use a uniform
-    *gap* between borders of 2\ **p** and the :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`
-    unless other values are specified. Append **+r** to draw rounded
-    rectangular borders instead, with a 6\ **p** corner radius. You can
-    override this radius by appending another value. Finally, append
-    **+s** to draw an offset background shaded region. Here, *dx*/*dy*
-    indicates the shift relative to the foreground frame
-    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
-    Used in combination with **-D**, **-L** or **-T**. To specify separate parameters
-    for the various map features, append  **d**\ \|\ **l**\ \|\ **t** to **-F**
-    to specify panel parameters for just that panel [Default uses the same panel
-    parameters for all selected map features].
 
 .. include:: explain_-Jz.rst_
 

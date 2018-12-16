@@ -14747,7 +14747,7 @@ void gmt_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x,
  	 * If an oblique projection is in effect OR the spacing between graticules is
  	 * nonlinear AND we are requesting a justification centered in y, then we must
 	 * use the projectioned coordinates and invert for lon,lat, else we can do our
-	 * calculation on the origianl (geographic or Cartesian) coordinates. */
+	 * calculation on the original (geographic or Cartesian) coordinates. */
 	int i, j;
 	double *box = NULL;
 	bool use_proj;
@@ -14790,8 +14790,8 @@ void gmt_just_to_xy (struct GMT_CTRL *GMT, int justify,double *x, double *y) {
 	i = justify % 4;	/* Split the 2-D justify code into x just 1-3 */
 	j = justify / 4;	/* Split the 2-D justify code into y just 0-2 */
 	/* Check for negative Cartesian scales */
-	if (!GMT->current.proj.xyz_pos[GMT_X]) i = 4 - i;	/* Negative x-scale, flip left-to-right */
-	if (!GMT->current.proj.xyz_pos[GMT_Y]) j = 2 - j;	/* Negative y-scale, flip top-to-bottom */
+	//if (!GMT->current.proj.xyz_pos[GMT_X]) i = 4 - i;	/* Negative x-scale, flip left-to-right */
+	//if (!GMT->current.proj.xyz_pos[GMT_Y]) j = 2 - j;	/* Negative y-scale, flip top-to-bottom */
 	if (i == 1)
 		*x = GMT->current.proj.rect[XLO];
 	else if (i == 2)

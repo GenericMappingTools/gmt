@@ -14,12 +14,12 @@ Quick Reference [MODERN MODE]
 Session management
 ==================
 
-+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+
-| .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    |
-|    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |
-|                 |                 |                 |                 |                 |                 |
-|    begin        |    end          |    docs         |    figure       |    subplot      |    clear        |
-+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+
+| .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    |
+|    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |    :maxdepth: 1 |
+|                 |                 |                 |                 |                 |                 |                 |
+|    begin        |    end          |    docs         |    figure       |    inset        |    subplot      |    clear        |
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+
 
 .. toctree::
    :hidden:
