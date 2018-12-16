@@ -350,7 +350,7 @@ GMT_LOCAL inline GMT_getfunction api_select_get_function (struct GMTAPI_CTRL *AP
 GMT_LOCAL bool valid_input_family (unsigned int family) {
 	/* Return true for the main input types */
 	return (family == GMT_IS_DATASET || family == GMT_IS_GRID \
-	       || family == GMT_IS_IMAGE || family == GMT_IS_PALETTE);
+	       || family == GMT_IS_IMAGE || family == GMT_IS_PALETTE || family == GMT_IS_POSTSCRIPT);
 }
 
 GMT_LOCAL bool valid_output_family (unsigned int family) {
