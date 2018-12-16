@@ -471,6 +471,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 								if (!explicit_justify)	/* If not set explicitly, default to same justification as corner */
 									Ctrl->F.justify = Ctrl->F.R_justify;
 							}
+							Ctrl->N.active = true;	/* No clipping when +c is used */
 							break;
 						case 'l':	/* Segment label request */
 							if (Ctrl->F.get_text) {
@@ -616,7 +617,7 @@ GMT_LOCAL void add_xy_via_justify (struct GMT_CTRL *GMT, int justify) {
 	int ix, iy;
 
 	ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
-	gmt_just_to_lonlat (GMT, justify, gmt_M_is_geographic (GMT, GMT_IN), &GMT->current.io.curr_rec[ix], &GMT->current.io.curr_rec[iy]);
+	gmt_just_to_xy (GMT, justify, &GMT->current.io.curr_rec[ix], &GMT->current.io.curr_rec[iy]);
 	GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 }
 
@@ -641,7 +642,7 @@ GMT_LOCAL int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL 
 		}
 	}
 	else if (Ctrl->F.R_justify) {
-		gmt_just_to_lonlat (GMT, Ctrl->F.R_justify, gmt_M_is_geographic (GMT, GMT_IN), &GMT->current.io.curr_rec[ix], &GMT->current.io.curr_rec[iy]);
+		gmt_just_to_xy (GMT, Ctrl->F.R_justify, &GMT->current.io.curr_rec[ix], &GMT->current.io.curr_rec[iy]);
 		nscan = 2;	/* Since x,y are implicit */
 		nscan += sscanf (record, "%[^\n]\n", buffer);
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
@@ -748,6 +749,9 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	if (Ctrl->G.mode) gmt_map_basemap (GMT);	/* Must lay down basemap before text clipping is activated, otherwise we do it at the end */
+
+	if ((Ctrl->F.R_justify || Ctrl->F.get_xy_from_justify) && !gmt_M_is_rect_graticule (GMT) && !GMT->common.R.oblique)
+		Ctrl->N.active = true;	/* Cannot have clipping for those projections when +c is used */
 
 	if (!(Ctrl->N.active || Ctrl->Z.active)) {
 		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
@@ -1007,7 +1011,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 						case 'c':	/* Get x,y via code */
 							nscan += gmt_strtok (line, GMT->current.io.scan_separators, &pos, text);
 							justify = gmt_just_decode (GMT, text, PSL_NO_DEF);
-							gmt_just_to_lonlat (GMT, justify, gmt_M_is_geographic (GMT, GMT_IN), &coord[GMT_X], &coord[GMT_Y]);
+							gmt_just_to_xy (GMT, justify, &coord[GMT_X], &coord[GMT_Y]);
 							GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 							break;
 						case 'f':
@@ -1068,8 +1072,11 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			gmtlib_enforce_rgb_triplets (GMT, in_txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 			if (Ctrl->Q.active) gmt_str_setcase (GMT, in_txt, Ctrl->Q.mode);
 			n_read++;
-			if (Ctrl->F.get_xy_from_justify)
-				gmt_geo_to_xy (GMT, coord[GMT_X], coord[GMT_Y], &plot_x, &plot_y);
+			if (Ctrl->F.get_xy_from_justify) {
+				plot_x = coord[GMT_X], plot_y = coord[GMT_Y];
+			}
+			else if (Ctrl->F.R_justify)
+				plot_x = in[GMT_X], plot_y = in[GMT_Y];
 			else
 				gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 			xx[0] = plot_x;	yy[0] = plot_y;

@@ -1,6 +1,8 @@
 #!/bin/bash
 gmt begin GMT_anchor ps
-gmt basemap -R0/1/0/1 -JX5i/2i -Ba1f0.5 -BwSnE+gbisque -DjTL+o0.7i/0.5i+w1.5i/0.75i -F+glightgreen+p1p 
+gmt basemap -R0/1/0/1 -JX5i/2i -Ba1f0.5 -BwSnE+gbisque
+gmt inset begin -DjTL+o0.7i/0.5i+w1.5i/0.75i -F+glightgreen+p1p
+gmt inset end 
 gmt plot -W0.25p,- << EOF 
 0	0.75
 0.14	0.75

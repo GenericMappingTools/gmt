@@ -32,7 +32,7 @@
 
 #define THIS_MODULE_NAME	"inset"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Manage figure inset design and completion"
+#define THIS_MODULE_PURPOSE	"Manage figure inset setup and completion"
 #define THIS_MODULE_KEYS	">X}"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS	"-JRV"
@@ -231,8 +231,6 @@ int GMT_inset (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the inset main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_NORMAL, "THE INSET MODULE IS NOT YET OPERATIONAL\n");
-
 	fig = gmt_get_current_figure (API);	/* Get current figure number */
 
 	if ((k = gmt_set_psfilename (GMT)) == GMT_NOTSET) {	/* Get hidden file name for PS */
@@ -267,6 +265,10 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		PSL_command (PSL, "V %% (inset)\n");
 
 		gmt_draw_map_inset (GMT, &Ctrl->D.inset);	/* Draw the inset background */
+
+		/* Set the new origin as indicated */
+		
+		PSL_setorigin (PSL, Ctrl->D.inset.refpoint->x + Ctrl->M.margin[XLO], Ctrl->D.inset.refpoint->y + Ctrl->M.margin[YLO], 0.0, PSL_FWD);	/* Shift plot a bit */
 		
 		/* Write out the inset information file */
 		
@@ -280,6 +282,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, cmd);
 		fprintf (fp, "# ORIGIN: %g %g\n", Ctrl->D.inset.refpoint->x, Ctrl->D.inset.refpoint->y);
 		fprintf (fp, "# DIMENSION: %g %g\n", Ctrl->D.inset.dim[GMT_X], Ctrl->D.inset.dim[GMT_Y]);
+		fprintf (fp, "# MARGINS: %g %g %g %g\n", Ctrl->M.margin[XLO], Ctrl->M.margin[XHI], Ctrl->M.margin[YLO], Ctrl->M.margin[YHI]);
 		fprintf (fp, "# REGION: %s\n", GMT->common.R.string);
 		fprintf (fp, "# PROJ: %s\n", GMT->common.J.string);
 		fclose (fp);
@@ -289,7 +292,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 	else {	/* INSET_END */
 		/* Here we need to finish the inset with a grestore and restate the original -R -J in the history file,
 		 * and finally remove the inset information file */
-		int id;
+		int id, j_id;
 		char line[GMT_LEN128] = {""}, str[3] = {"J"};
 			
 		PSL_command (PSL, "U %% (inset)\n");	/* Restore graphics state to what it was before the map inset */
@@ -299,22 +302,29 @@ int GMT_inset (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot read file %s\n", file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		/* Skip the first 4 comments and get the 5th record which holds the REGION line */
-		for (k = 0; k < 5; k++) gmt_fgets (GMT, line, GMT_LEN128, fp);
+		/* For now, skip the first 5 comments and get the 6th record which holds the REGION line */
+		for (k = 0; k < 6; k++) gmt_fgets (GMT, line, GMT_LEN128, fp);
 		id = gmtlib_get_option_id (0, "R");	/* Get index for the -RP history item */
 		if (!GMT->init.history[id]) id++;	/* No history for -RP, increment to -RG as fallback */
 		if (GMT->init.history[id]) gmt_M_str_free (GMT->init.history[id]);	/* Free what it was */
+		gmt_chop (line);
 		GMT->init.history[id] = strdup (&line[10]);	/* Put back the original figure region */
-		gmt_fgets (GMT, line, GMT_LEN128, fp);	/* Read the PROJ line */
+		gmt_fgets (GMT, line, GMT_LEN128, fp);		/* Read the PROJ line */
 		fclose (fp);
-		id = gmtlib_get_option_id (0, "J");	/* Get the -J index */
+		gmt_chop (line);
+		j_id = gmtlib_get_option_id (0, "J");	/* Get the -J index */
+		if (GMT->init.history[j_id])	/* There is prior history for this -J (it should be) */
+			gmt_M_str_free (GMT->init.history[j_id]);	/* Remove it */
 		/* Must now search for actual option since -J only has the code (e.g., -JM) */
 		/* Continue looking for -J<code> */
 		str[1] = line[8];	/* This is the -J code */
-		id = gmtlib_get_option_id (id + 1, str);	/* Get the actual -J? code id */
+		id = gmtlib_get_option_id (j_id + 1, str);	/* Get the actual -J? code id */
 		if (GMT->init.history[id])	/* There is prior history for this -J (it should be) */
 			gmt_M_str_free (GMT->init.history[id]);	/* Remove it */
-		GMT->init.history[id] = strdup (&line[9]);	/* Insert the original code */
+		GMT->init.history[id] = strdup (&line[8]);	/* Insert the original code */
+		for (k = 8; isalpha (line[k]); k++);		/* Find end of code which may be 2 */
+		line[k] = '\0';
+		GMT->init.history[j_id] = strdup (&line[8]);	/* Insert the original code */
 		/* Remove the inset information file */
 		gmt_remove_file (GMT, file);
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Removed inset file\n");
