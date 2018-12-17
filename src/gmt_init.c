@@ -353,6 +353,33 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 #include "standard_adobe_fonts.h"
 };
 
+/* List of GMT common keyword/options values */
+#ifdef USE_GMT_KWD
+struct GMT_KW_DICT gmt_kw_common[] = {
+	{'R', "region"},
+	{'J', "proj"},
+	{'U', "timestamp"},
+	{'V', "verbose"},
+	{'X', "xoff"},
+	{'Y', "yoff"},
+	{'a', "aspatial"},
+	{'d', "nodata"},
+	{'e', "find"},
+	{'f', "coltypes"},
+	{'g', "gap"},
+	{'h', "header"},
+	{'i', "incol"},
+	{'o', "outcol"},
+	{'n', "interpol"},
+	{'p', "perspective"},
+	{'r', "registration"},
+	{'t', "transparency"},
+	{'x', "cores"},
+	{':', "order"},
+	{'\0', ""}
+};
+#endif
+
 /* Local variables to gmt_init.c */
 
 static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
@@ -440,6 +467,51 @@ GMT_LOCAL bool gmtinit_file_lock (struct GMT_CTRL *GMT, int fd) {
 /*! . */
 GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 	return false;
+}
+#endif
+
+#ifdef USE_GMT_KWD
+
+/*! . */
+GMT_LOCAL int gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *kw, char *arg) {
+	/* Determine if this arg is found in the keyword list */
+	int k;
+	gmt_M_unused (API);
+	if (kw == NULL) return -1;	/* No list to search in */
+	for (k = 0; kw[k].name[0]; k++) {
+		if (!strncmp (arg, kw[k].name, strlen(kw[k].name))) break;	/* Match */
+	}
+	return (kw[k].name[0]) ? k : -1;	/* Either return index or -1 if not found */
+}
+
+/*! . */
+GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *module_kw, struct GMT_OPTION **options) {
+	/* Loop over given options and replace any recognized long-form paramter=value with the corresponding
+	 * short option version */
+	struct GMT_OPTION *opt = NULL;
+	struct GMT_KW_DICT *kw = NULL;
+	char text[GMT_LEN256] = {""}, *e = NULL;
+	int k;
+	
+	for (opt = *options; opt; opt = opt->next) {
+		if (opt->option != GMT_OPT_INFILE) continue;	/* Cannot be a keyward=value pair since these will be seen as input files */
+		if (!strchr (opt->arg, '=')) continue;	/* Cannot be a keyward=value pair */
+		e = strchr (opt->arg, '=');	/* Get location of equal sign */
+		e[0] = '\0';	/* Cut off =value for now */
+		if ((k = gmtinit_find_kw (API, gmt_kw_common, opt->arg)) >= 0)	/* Got common kw pair */
+			kw = gmt_kw_common;
+		else if ((k = gmtinit_find_kw (API, module_kw, opt->arg)) >= 0)	/* Got module kw pair */
+			kw = module_kw;
+		else
+			kw = NULL;	/* Got nothing */
+		e[0] = '=';	/* Put back the = character */
+		if (kw) {	/* Do the substitution */
+			opt->option = kw[k].code;	/* Place the option character first */
+			sprintf (text, "%s", &e[1]);	/* Get string with the argument */
+			gmt_M_str_free (opt->arg);	/* Free old par=value string argument */
+			opt->arg = strdup (text);	/* Allocate copy of new argument */
+		}
+	}
 }
 #endif
 
@@ -11833,6 +11905,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	struct GMT_CTRL *GMT = API->GMT;
 	API->error = GMT_NOERROR;
 
+#ifdef USE_GMT_KWD
+	gmtinit_kw_replace (API, NULL, options);
+#endif
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
 	 * make sure pscoast -E, if passing old +r|R area settings via -E, is split into -R before GMT_Parse_Common is called */
 

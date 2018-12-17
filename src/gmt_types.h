@@ -43,6 +43,14 @@ struct GMT_MATH_MACRO {
 	char **arg;	/* List of those commands */
 };
 
+#ifdef USE_GMT_KWD
+/*! Definition of GMT_KW_DICT used to expand keyword-value pairs to GMT options */
+struct GMT_KW_DICT {	/* Used for keyword-value lookup */
+	char code;	/* Single character GMT option code */
+	char name[31];	/* Name of corresponding keyword */
+};
+#endif
+
 /*! Definition of structure use for finding optimal n_columns/n_rows for surface */
 struct GMT_SURFACE_SUGGESTION {	/* Used to find top ten list of faster grid dimensions  */
 	unsigned int n_columns;
