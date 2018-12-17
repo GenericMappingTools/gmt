@@ -13125,7 +13125,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'o':	/*3-D symbol */
 			p->shade3D = true;
-		case 'O':	/* Same but noe enabling shading */
+		case 'O':	/* Same but now enabling shading */
 			p->symbol = GMT_SYMBOL_COLUMN;
 			if (n_z) {
 				p->n_required = n_z;	/* Need more than one z value from file */

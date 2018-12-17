@@ -1504,7 +1504,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, D[SYM], string) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s --GMT_HISTORY=false", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
+		/* Because the sizes internally are in inches we must tell psxy that inch is the current length unit */
+		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s --PROJ_LENGTH_UNIT=inch --GMT_HISTORY=false", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
 		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: SYM: gmt psxy %s\n", buffer);
 		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the symbols */
 			Return (API->error);
