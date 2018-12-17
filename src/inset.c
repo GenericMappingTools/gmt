@@ -258,11 +258,9 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		 * draw the panel. */
 		
 		char *cmd = NULL;
-		
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 		/* OK, no other inset set for this figure (or panel).  Save graphics state before we draw the inset */
-		PSL_command (PSL, "V %% (inset)\n");
+		PSL_command (PSL, "V %% Begin inset\n");
 
 		gmt_draw_map_inset (GMT, &Ctrl->D.inset);	/* Draw the inset background */
 
@@ -295,7 +293,7 @@ int GMT_inset (void *V_API, int mode, void *args) {
 		int id, j_id;
 		char line[GMT_LEN128] = {""}, str[3] = {"J"};
 			
-		PSL_command (PSL, "U %% (inset)\n");	/* Restore graphics state to what it was before the map inset */
+		PSL_command (PSL, "U %% End inset\n");	/* Restore graphics state to what it was before the map inset */
 		
 		/* Extract previous -R -J from the inset information file */
 		if ((fp = fopen (file, "r")) == NULL) {	/* Not good */

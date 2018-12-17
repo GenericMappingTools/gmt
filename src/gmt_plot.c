@@ -40,6 +40,7 @@
  *	gmt_map_basemap 	 : Generic basemap function
  *	gmt_map_clip_off 	 : Deactivate map region clip path
  *	gmt_map_clip_on 	 : Activate map region clip path
+ *	gmt_BB_clip_on		 : Activate Bounding Box clip path
  *	gmt_plane_perspective	 : Adds PS matrix to simulate perspective plotting
  *	gmt_plot_line 		 : Plots path (in projected coordinates), takes care of boundary crossings
  *	gmt_vertical_axis 	 : Draw 3-D vertical axes
@@ -47,7 +48,7 @@
  *	gmt_linearx_grid 	 : Draw linear x grid lines
  *	gmt_setfill              :
  *	gmt_setfont              :
- *	gmt_draw_map_inset      :
+ *	gmt_draw_map_inset       :
  *	gmt_setpen               :
  *	gmt_draw_custom_symbol   :
  *	gmt_add_label_record     :
@@ -4702,7 +4703,7 @@ void gmt_map_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag) {
 	 * must have been called first.  If r >= 0, the map area will
 	 * first be painted in the r,g,b colors specified.  flag can
 	 * be 0-3, as described in PSL_beginclipping():
-	 * flag : 0 = continue adding pieces to the curent clipping path
+	 * flag : 0 = continue adding pieces to the current clipping path
 	 *        1 = start new clipping path (more must follows)
 	 *        2 = end clipping path (this is the last segment added)
 	 *        3 = this is the complete clipping path (start to end)
@@ -4733,6 +4734,31 @@ void gmt_map_clip_off (struct GMT_CTRL *GMT) {
 
 	PSL_comment (GMT->PSL, "Deactivate Map clip path\n");
 	PSL_endclipping (GMT->PSL, 1);		/* Reduce polygon clipping by one level */
+}
+
+void gmt_BB_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag) {
+	/* This function sets up a clip path so that only plotting
+	 * inside the bounding box rectangular area will be drawn on paper. map_setup
+	 * must have been called first.  If r >= 0, the map area will
+	 * first be painted in the r,g,b colors specified.  flag can
+	 * be 0-3, as described in PSL_beginclipping():
+	 * flag : 0 = continue adding pieces to the current clipping path
+	 *        1 = start new clipping path (more must follows)
+	 *        2 = end clipping path (this is the last segment added)
+	 *        3 = this is the complete clipping path (start to end)
+	 * 	  Add 4 to select even-odd clipping [nonzero-winding rule].
+	 */
+
+	double work_x[5], work_y[5];
+	struct PSL_CTRL *PSL= GMT->PSL;
+
+	work_x[0] = work_x[3] = work_x[4] = GMT->current.proj.rect[XLO];
+	work_x[1] = work_x[2] = GMT->current.proj.rect[XHI];
+	work_y[0] = work_y[1] = work_y[4] = GMT->current.proj.rect[YLO];
+	work_y[2] = work_y[3] = GMT->current.proj.rect[YHI];
+	
+	PSL_comment (PSL, "Activate BoundingBox Map clip path\n");
+	PSL_beginclipping (PSL, work_x, work_y, 5, rgb, flag);
 }
 
 void gmt_setfill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, int outline) {
