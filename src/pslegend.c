@@ -726,7 +726,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	row_base_y = Ctrl->D.refpoint->y + Ctrl->D.dim[GMT_Y] - Ctrl->C.off[GMT_Y];	/* Top justification edge of items inside legend box accounting for clearance  */
 	column_number = 0;	/* Start at first column in multi-column setup */
 	n_columns = 1;		/* Reset to default number of columns */
-	txtcolor[0] = '0';	/* Reset to black text color */
+	/* Reset to annotation font text color */
+	sprintf (txtcolor, "%s", gmt_putcolor (GMT, GMT->current.setting.font_annot[GMT_PRIMARY].fill.rgb));
 	x_off_col[0] = 0.0;	/* The x-coordinate of left side of first column */
 	x_off_col[n_columns] = Ctrl->D.dim[GMT_X];	/* Holds width of a row */
 
