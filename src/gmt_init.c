@@ -353,7 +353,7 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 #include "standard_adobe_fonts.h"
 };
 
-/* List of GMT common keyword/options values */
+/* List of GMT common keyword/options pairs */
 #ifdef USE_GMT_KWD
 struct GMT_KW_DICT gmt_kw_common[] = {
 	{'R', "region"},
@@ -363,6 +363,7 @@ struct GMT_KW_DICT gmt_kw_common[] = {
 	{'X', "xoff"},
 	{'Y', "yoff"},
 	{'a', "aspatial"},
+	{'b', "binary"},
 	{'d', "nodata"},
 	{'e', "find"},
 	{'f', "coltypes"},
@@ -376,7 +377,7 @@ struct GMT_KW_DICT gmt_kw_common[] = {
 	{'t', "transparency"},
 	{'x', "cores"},
 	{':', "order"},
-	{'\0', ""}
+	{'\0', ""}	/* End of list marked with empty code and string */
 };
 #endif
 
@@ -477,40 +478,44 @@ GMT_LOCAL int gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *kw, 
 	/* Determine if this arg is found in the keyword list */
 	int k;
 	gmt_M_unused (API);
-	if (kw == NULL) return -1;	/* No list to search in */
+	if (kw == NULL) return -1;	/* No list to search in yet */
 	for (k = 0; kw[k].name[0]; k++) {
-		if (!strncmp (arg, kw[k].name, strlen(kw[k].name))) break;	/* Match */
+		if (!strncmp (arg, kw[k].name, strlen(kw[k].name))) break;	/* Match found */
 	}
-	return (kw[k].name[0]) ? k : -1;	/* Either return index or -1 if not found */
+	return (kw[k].code) ? k : -1;	/* Either return index to match or -1 if not found */
 }
 
 /*! . */
 GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *module_kw, struct GMT_OPTION **options) {
-	/* Loop over given options and replace any recognized long-form paramter=value with the corresponding
-	 * short option version */
+	/* Loop over given options and replace any recognized long-form --parameter[=value]
+	 * with the corresponding short option version -<code>[value] */
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_KW_DICT *kw = NULL;
 	char text[GMT_LEN256] = {""}, *e = NULL;
 	int k;
 	
 	for (opt = *options; opt; opt = opt->next) {
-		if (opt->option != GMT_OPT_INFILE) continue;	/* Cannot be a keyward=value pair since these will be seen as input files */
-		if (!strchr (opt->arg, '=')) continue;	/* Cannot be a keyward=value pair */
-		e = strchr (opt->arg, '=');	/* Get location of equal sign */
-		e[0] = '\0';	/* Cut off =value for now */
+		if (opt->option != GMT_OPT_PARAMETER) continue;	/* Cannot be a --keyword[=value] pair */
+		if (isupper (opt->arg[0])) continue;		/* Skip the upper-case  GMT Default parameter settings */
+		e = strchr (opt->arg, '=');			/* Get location of equal sign, if present */
+		if (e) e[0] = '\0';				/* Cut off =value for now so opt->arg only has the keyword */
 		if ((k = gmtinit_find_kw (API, gmt_kw_common, opt->arg)) >= 0)	/* Got common kw pair */
 			kw = gmt_kw_common;
 		else if ((k = gmtinit_find_kw (API, module_kw, opt->arg)) >= 0)	/* Got module kw pair */
 			kw = module_kw;
 		else
-			kw = NULL;	/* Got nothing */
-		e[0] = '=';	/* Put back the = character */
-		if (kw) {	/* Do the substitution */
-			opt->option = kw[k].code;	/* Place the option character first */
+			continue;			/* Got nothing */
+		/* Do the long to short option substitution */
+		opt->option = kw[k].code;		/* Update the option character first */
+		if (e) {
+			e[0] = '=';			/* Put back the = character */
 			sprintf (text, "%s", &e[1]);	/* Get string with the argument */
-			gmt_M_str_free (opt->arg);	/* Free old par=value string argument */
-			opt->arg = strdup (text);	/* Allocate copy of new argument */
 		}
+		else
+			text[0] = '\0';			/* No argument to pass on */
+		gmt_M_str_free (opt->arg);		/* Free old par=value string argument */
+		GMT_Report (API, GMT_MSG_DEBUG, "Converting long-format --%s to -%c%s\n", opt->arg, opt->option, text);
+		opt->arg = strdup (text);		/* Allocate copy of new argument */
 	}
 }
 #endif
