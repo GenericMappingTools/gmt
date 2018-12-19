@@ -75,7 +75,7 @@ Required Arguments
     **svga** (800 x 600), and **dvd** (640 x 480).
     Note: Your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting determines if movie sets
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
-    request a custom format directly by giving *width*\ [*unit*] x\ *height*\ [*unit*] x\ *dpu*,
+    request a custom format directly by giving *width*\ [*unit*]\ x\ *height*\ [*unit*]\ x\ *dpu*,
     where *dpu* is the dots-per-unit pixel density.
 
 .. _-N:
@@ -92,11 +92,11 @@ Required Arguments
     one record per frame (i.e., row).  The values in the columns will be available to the
     *mainscript* as named variables **MOVIE_COL1**, **MOVIE_COL2**, etc., while any trailing text
     can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to also split the trailing
-    string into individual words **MOVIE_WORD1**, **MOVIE_WORD2**, etc. The number of records equals
-    the number of frames. Note that the *background* script is allowed to create the *timefile*
+    string into individual words that can be accessed via **MOVIE_WORD1**, **MOVIE_WORD2**, etc. The number of records equals
+    the number of frames. Note that the *background* script is allowed to create the *timefile*,
     hence we check of its existence both before and after the background script has run.  Normally,
     the frame numbering starts at 0; you can change this by appending a different starting frame
-    number via **s**\ *first*.  Note: All frames are still included; this modifier only affects
+    number via **+s**\ *first*.  Note: All frames are still included; this modifier only affects
     the numbering of the given frames.  Finally, **+p** can be used to set the tag *width* of the format
     used in naming frames.  For instance, name_000010.png has a tag width of 6.  By default, this
     is automatically set but if you are splitting large jobs across several computers then you
@@ -152,7 +152,7 @@ Optional Arguments
 **-I**\ *includefile*
     Insert the contents of *includefile* into the movie_init.sh script that is accessed by all movie scripts.
     This mechanism is used to add information (typically constant variable assignments) that the *mainscript*
-    (and the two optional **-S** scripts) relies on.
+    and any optional **-S** scripts rely on.
 
 .. _-L:
 
@@ -164,32 +164,32 @@ Optional Arguments
     **f** selects the running frame number as the label, **c**\ *col* uses the value in column
     number *col* of *timefile* as label (first column is 1), while **t**\ *col* uses word number
     *col* from the trailing text in *timefile* (requires **-T**\ ...\ **+w**).
-    The label font is set via :ref:`FONT_TAG <FONT_TAG>`.
-    Append **+c**\ *dx*\ [/*dy*] for the clearance between label and bounding box.  Only
+    The label font is controlled via :ref:`FONT_TAG <FONT_TAG>`.
+    Append **+c**\ *dx*\ [/*dy*] for the clearance between label and bounding box; only
     used if **+g** or **+p** are set.  Append units **c**\ \|\ **i**\ \|\ **p** or % of the font size [15%].
     Append **+f** to use a specific *font* [:ref:`FONT_TAG <FONT_TAG>`].
     Append **+g** to fill the label bounding box with *fill* color [no fill].
     Use **+j**\ *refpoint* to specify where the label should be plotted [TL].
-    Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*.. Append units
+    Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*. Append units
     **c**\ \|\ **i**\ \|\ **p** or % of the font size [20% of font size].
     Append **+p** to draw the outline of the bounding box using selected *pen* [no outline].
     Append **+t** to provide a *format* statement to be used with the label item selected [no special formatting].
-    If **-Lt** is used the the format statement must contain a %s-like format, else it may have an integer (%d)
+    If **-Lt** is used then the format statement must contain a %s-like format, else it may have an integer (%d)
     or floating point  (%e, %f, %g) format specification.
 
 .. _-M:
 
 **-M**\ [*frame*],[*format*]
     In addition to making the animation sequence, select a single frame for a cover page.  This frame will
-    be written in current directory with name *prefix.format*, where *format* can one of the
+    be written to the current directory with name *prefix.format*, where *format* can one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].
 
 .. _-Q:
 
 **-Q**\ [**s**]
     Debugging: Leave all files and directories we create behind for inspection.  Alternatively, append **s** to
-    only build movie scripts but not perform any execution.  The exception involves the optional
-    background script derived from **-Sb** since it may produce data needed when
+    only build the movie scripts but not perform any execution.  One exception involves the optional
+    background script derived from **-Sb** which is always executed since it may produce data needed when
     building the movie scripts.
 
 .. _-Sb:
@@ -199,7 +199,7 @@ Optional Arguments
     used for one or two purposes: (1) It may create files (such as *timefile*) that will be needed by *mainscript*
     to make the movie, and (2) It may make a static background plot that should form the background for all frames.
     If a plot is generated the script must make sure it uses the same positioning (i.e., **-X -Y**) as the main script
-    so that the layered plot will stack correctly.
+    so that the layered plot will stack correctly (unless you actually want a different offset).
 
 .. _-Sf:
 
@@ -217,18 +217,18 @@ Optional Arguments
 
 **-W**\ *workdir*
     In addition to the current directory, the *prefix* directory, and any directories specified via the
-    GMT defaults :ref:`DIR_DATA <DIR_DATA>`, add *workdir* as a place to scan for data files needed by the scripts.
+    GMT defaults setting :ref:`DIR_DATA <DIR_DATA>`, add *workdir* as a place to scan for data files needed by the scripts.
 
 .. _-Z:
 
 **-Z**
-    Erase the entire *prefix* directory after assembling the final movie [leave directory with all images;
-    script files, parameter files, and layer PostScript files are removed (but see **-Q**)].
+    Erase the entire *prefix* directory after assembling the final movie [Default leaves directory with all images;
+    the script files, parameter files, and layer PostScript files are all removed (but see **-Q**)].
 
 .. _-cores:
 
 **-x**\ [[-]\ *n*]
-    Limit number of cores used when making the individual frames.
+    Limit the number of cores used when making the individual frames.
     By default we try to use all available cores.  Append *n* to only use *n* cores
     (if too large it will be truncated to the maximum cores available).  Finally,
     give a negative *n* to select (all - *n*) cores (or at least 1 if *n* equals or exceeds all).
@@ -239,21 +239,22 @@ Parameters
 ----------
 
 Several parameters are automatically assigned and can be used when composing *mainscript* and the optional
-*backgroundscript* and *foregroundscript* scripts. These are
+*backgroundscript* and *foregroundscript* scripts. There are two sets of parameters: Those that are constants
+and those that change with the frame number.  The constants are accessible by all the scripts:
 **MOVIE_WIDTH**\ : The width of the canvas,
 **MOVIE_HEIGHT**\ : The height of the canvas,
-**MOVIE_DPU**\ : The current dots-per-unit.
-**MOVIE_RATE**\ : The current number of frames per second.
-In addition, the *mainscript* also has access to additional parameters
-**MOVIE_FRAME**\ : The current frame number,
-**MOVIE_NFRAMES**\ : The total number of frames,
-**MOVIE_TAG**\ : The formatted frame number (e.g., 000136), and
+**MOVIE_DPU**\ : The current dots-per-unit,
+**MOVIE_RATE**\ : The current number of frames per second,
+**MOVIE_NFRAMES**\ : The total number of frames.
+Also, if **-I** was used then any static parameters listed there will be available to all the scripts as well.
+In addition, the *mainscript* also has access to parameters that vary with the frame counter:
+**MOVIE_FRAME**\ : The current frame number (an integer),
+**MOVIE_TAG**\ : The formatted frame number (a string, e.g., 000136), and
 **MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_TAG**),
-Next, if a *timefile* was given then variables **MOVIE_COL1**\ , **MOVIE_COL2**\ , etc. are
-also set, one variable per column in *timefile*.  If *timefile* has trailing text then that text can
-be accessed via the variable **MOVIE_TEXT**, and if word-splitting was requested in **-T** then
-the trailing text is also split into individual words **MOVIE_WORD1**\ , **MOVIE_WORD2**\ , etc.
-Finally, if **-I** was used then any parameters listed there will be available as well.
+Furthermore, if a *timefile* was given then variables **MOVIE_COL1**\ , **MOVIE_COL2**\ , etc. are
+also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
+be accessed via the variable **MOVIE_TEXT**, and if word-splitting was requested in **-T** with the **+w** modifier then
+the trailing text is also split into individual word parameters **MOVIE_WORD1**\ , **MOVIE_WORD2**\ , etc.
 
 Data Files
 ----------
@@ -269,46 +270,47 @@ Your Canvas
 
 As you can see from **-C**, unless you specified a custom format you are given a canvas size that is either 24 x 13.5 cm (16:9)
 or 24 x 18 cm (4:3).  If your :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` setting is inch then the custom canvas sizes are just
-slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2").  You should compose your plots using
+slightly (1.6%) larger than the corresponding SI sizes (9.6 x 5.4" or 9.6 x 7.2"); this has no effect on the size of the movie
+frames but allow us to use good sizes that work well with the dpu chosen.  You should compose your plots using
 the given canvas size, and movie will make proper conversions of the canvas to image pixel dimensions. It is your responsibility
 to use **-X -Y** to allow for suitable margins and any positioning of items on the canvas.  To minimize processing time it is
 recommended that any static part of the movie be considered either a static background (to be made once by *backgroundscript*) and/or
 a static foreground (to be made once by *foregroundscript*); **movie** will then assemble these layers per frame.  Also, any computation of
 static data files to be used in the loop over frames can be produced by *backgroundscript*.  Any data or variables that depend on the
-frame number must be computed or set by *mainscript*.
+frame number must be computed or set by *mainscript* or provided via the parameters as discussed above.
 
 Technical Details
 -----------------
 
 The **movie** module creates several hidden script files that are used in
 the generation of the images (here we have left the file extension off since it depends on the
-scripting language used): movie_init (initializes variables related to canvas size and dots-per-unit,
-and optionally includes the contents of the optional *includefile*), movie_preflight (optional since it derives
-from **-Sb** and computes needed data files and possibly a background layer), movie_postflight
-(optional since it derives from **-Sf** and builds a foreground layer), movie_frame.sh (accepts a frame counter
-argument and builds the frame image), movie_cleanup (removes temporary files at the end of the
-run). For each frame there is a separate movie_params_###### script that provides frame-specific
+scripting language used): *movie_init* (initializes variables related to canvas size and dots-per-unit,
+and includes the contents of the optional *includefile*), *movie_preflight* (optional since it derives
+from **-Sb** and computes needed data files and possibly a background layer), *movie_postflight*
+(optional since it derives from **-Sf** and builds a foreground layer), *movie_frame* (accepts a frame counter
+argument and builds the frame image), and *movie_cleanup* (removes temporary files at the end of the
+run). For each frame there is a separate *movie_params_######* script that provides frame-specific
 variables (e.g., frame number and anything given via **-T**).  The pre- and post-flight scripts have
-access to the information in movie_init while the frame script in addition has access to the frame-
-specific parameter file.  Using the **-Q** option will just produce the scripts which you can then examine.
+access to the information in *movie_init* while the frame script in addition has access to the frame-
+specific parameter file.  Using the **-Q** option will just produce these scripts which you can then examine.
 
 The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on GraphicsMagick (http://www.graphicsmagick.org). 
 Thus, "gm" must be accessible via your standard search path. Likewise, the conversion of
-PNG frames to an MP4 movie (**-F**\ mp4) relies on ffmpeg (https://www.ffmpeg.org). 
+PNG frames to an MP4 movie (**-F**\ mp4) or WebM movie (**-F**\ webm) relies on ffmpeg (https://www.ffmpeg.org). 
 
 Hints for Movie Makers
 ----------------------
 
 Composing movies is relatively simple but you have to think in terms of variables.
-Examine the examples we have posted,  Then, start by making a single plot script (your *mainscript*) and identify which
-things should change with time (i.e., frame number).  Create variables for these values. If they
+Examine the examples we have described.  Then, start by making a single plot script (your *mainscript*) and identify which
+things should change with time (i.e., with the frame number).  Create variables for these values. If they
 are among the listed parameters that **movie** creates then use those names.  Unless you only
 require the frame number you will need to make a file that you can pass to **-T**.  This file should
-then have all the values you need, per frame (row), with values across all the columns you need.
+then have all the values you need, per frame (i.e., row), with values across all the columns you need.
 If you need to assign various fixed variables that do not change with time then your *mainscript*
-will look shorter and cleaner if you offload those assignments to an *includefile* (**-I**).
+will look shorter and cleaner if you offload those assignments to a separate *includefile* (**-I**).
 To test your movie, start by using options **-Q -M** to ensure your cover page looks correct.
-This page shows you one frame of your movie (you can select which frame via **-M**).  Fix any
+This page shows you one frame of your movie (you can select which frame via the **-M** arguments).  Fix any
 issues with your use of variables and options until this works.  You can then try to remove **-Q**.
 We recommend you make a very short (i.e., **-T**) and small (i.e., **-C**) movie so you don't have to wait very
 long to see the result.  Once things are working you can beef up number of frames and movie
@@ -353,8 +355,13 @@ end of the execution we find the animated GIF globe.gif and a directory (called 
 Note that there is no information in the globe scripts that reflects the name of the plot, the canvas size,
 the dimensions of the rasterized PostScript, and so on.  That information is hidden from the user;
 the actual movie scripts that execute are derived from the user-provided scripts and supply
-the extra machinery. The **movie** module manages the parallel execution loop over all frames using
+the extra machinery. The **movie** module automatically manages the parallel execution loop over all frames using
 all available cores.
+
+Longer Examples
+---------------
+
+To explore more elaborate movies, see the Animations examples under our Gallery.
 
 Other Movie Formats
 -------------------

@@ -108,7 +108,7 @@ Synopsis (end mode)
 **gmt inset end** [ |SYN_OPT-V| ]
 
 This command finalizes the current inset, which returns the plotting environment to
-the setup prior to the start of the inset.  The previous region and projection will be
+the state prior to the start of the inset.  The previous region and projection will be
 in effect going forward.
 
 Optional Arguments
