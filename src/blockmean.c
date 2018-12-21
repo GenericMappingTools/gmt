@@ -39,6 +39,16 @@
 
 #include "block_subs.h"
 
+GMT_LOCAL struct GMT_KW_DICT local_kw[] = {
+	{ 'A', "fields", "", "", "", "" },
+	{ 'C', "center", "", "", "", "" },
+	{ 'E', "extend", "", "", "P,p", "prop-error,prop-mean" },
+	{ 'G', "gridfile", "", "", "", "" },
+	{ 'S', "select", "m,n,s,w", "mean,count,sum,weight", "", "" },
+	{ 'W', "weights", "i,o", "in,out", "s", "sigma" },
+	{'\0', "", "", "", "", ""}	/* End of list marked with empty code and strings */
+};
+
 enum Block_Modes {
 	BLK_MODE_NOTSET = 0,	/* No -E+p|P (or -Ep) set */
 	BLK_MODE_OBSOLETE = 1,	/* Old -Ep for backwards compabitibility; assumes input weights are already set to 1/s^ */
@@ -299,7 +309,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, local_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

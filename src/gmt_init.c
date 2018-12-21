@@ -356,28 +356,28 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 /* List of GMT common keyword/options pairs */
 #ifdef USE_GMT_KWD
 struct GMT_KW_DICT gmt_kw_common[] = {
-	{'R', "region"},
-	{'J', "proj"},
-	{'U', "timestamp"},
-	{'V', "verbose"},
-	{'X', "xoff"},
-	{'Y', "yoff"},
-	{'a', "aspatial"},
-	{'b', "binary"},
-	{'d', "nodata"},
-	{'e', "find"},
-	{'f', "coltypes"},
-	{'g', "gap"},
-	{'h', "header"},
-	{'i', "incol"},
-	{'o', "outcol"},
-	{'n', "interpol"},
-	{'p', "perspective"},
-	{'r', "registration"},
-	{'t', "transparency"},
-	{'x', "cores"},
-	{':', "order"},
-	{'\0', ""}	/* End of list marked with empty code and string */
+	{'R', "region",       "", "", "rect", "r"},
+	{'J', "proj",         "", "", "", ""},
+	{'U', "timestamp",    "", "", "", ""},
+	{'V', "verbose",      "", "", "", ""},
+	{'X', "xoff",         "", "", "", ""},
+	{'Y', "yoff",         "", "", "", ""},
+	{'a', "aspatial",     "", "", "", ""},
+	{'b', "binary",       "", "", "", ""},
+	{'d', "nodata",       "i,o", "in,out", "", ""},
+	{'e', "find",         "", "", "f", "file"},
+	{'f', "coltypes",     "i,o", "in,out", "", ""},
+	{'g', "gap",          "", "", "", ""},
+	{'h', "header",       "i,o", "in,out", "c,d,r,t", "columns,delete,remark,title"},
+	{'i', "incol",        "", "", "", ""},
+	{'o', "outcol",       "", "", "", ""},
+	{'n', "interpol",     "", "", "", ""},
+	{'p', "perspective",  "", "", "", ""},
+	{'r', "registration", "g,p", "gridline,pixel", "", ""},
+	{'t', "transparency", "", "", "", ""},
+	{'x', "cores",        "", "", "", ""},
+	{':', "order",        "", "", "", ""},
+	{'\0', "",            "", "", "", ""}	/* End of list marked with empty code and strings */
 };
 #endif
 
@@ -474,15 +474,49 @@ GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 #ifdef USE_GMT_KWD
 
 /*! . */
-GMT_LOCAL int gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *kw, char *arg) {
-	/* Determine if this arg is found in the keyword list */
-	int k;
+GMT_LOCAL struct GMT_KW_DICT * gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *kw1, struct GMT_KW_DICT *kw2, char *arg, int *k) {
+	/* Determine if this arg is found in one of the two keyword lists */
+	size_t len, lent = strlen(arg);
 	gmt_M_unused (API);
-	if (kw == NULL) return -1;	/* No list to search in yet */
-	for (k = 0; kw[k].name[0]; k++) {
-		if (!strncmp (arg, kw[k].name, strlen(kw[k].name))) break;	/* Match found */
+	if (kw1) {	/* Search list 1 if not NULL */
+		for (*k = 0; kw1[*k].long_option[0]; (*k)++) {
+			len = MIN (lent, strlen (kw1[*k].long_option));	/* Only compare up to the given # of characters, but less than length of long_option */
+			if (!strncmp (arg, kw1[*k].long_option, len)) break;	/* Match found */
+		}
+		if (kw1[*k].short_option) return kw1;	/* Return if successful */
 	}
-	return (kw[k].code) ? k : -1;	/* Either return index to match or -1 if not found */
+	if (kw2) {	/* Search list 2 if not NULL */
+		for (*k = 0; kw2[*k].long_option[0]; (*k)++) {
+			len = MIN (lent, strlen(kw2[*k].long_option));	/* Only compare up to the given # of characters, but less than length of long_option */
+			if (!strncmp (arg, kw2[*k].long_option, len)) break;	/* Match found */
+		}
+		if (kw2[*k].short_option) return kw2;	/* Return if successful */
+	}
+	*k = -1;	/* No go */
+	return NULL;
+}
+
+/*! . */
+GMT_LOCAL char gmtinit_find_argument (struct GMTAPI_CTRL *API, char *longlist, char *shortlist, char *text, char sep, char *argument) {
+	unsigned int k = 0, pos = 0;
+	size_t len, lent = strlen(text);
+	char *c = strchr (text, sep), m = 0, item[GMT_LEN64] = {""};
+	gmt_M_unused (API);
+	if (c) c[0] = '0';	/* Chop off colon or equal for now */
+	while (m == 0 && (gmt_strtok (longlist, ",", &pos, item))) {	/* While there are unprocessed directives */
+		len = MIN (lent, strlen(item));	/* Only compare up to the given # of characters, but less than length of item */
+		if (!strncmp (item, text, len))	/* Found the directive */
+			m = shortlist[k];
+		k += 2;	/* Go to next char in comma-separated list of single characters */
+	}
+	if (m && c)
+		strcpy (argument, &c[1]);	/* Pass out the directive argument */
+	else if (m)
+		argument[0] = '\0';	/* Nothing */
+	else
+		strcpy (argument, text);	/* Not a directive, pass out the argument */
+	if (c) c[0] = sep;		/* Restore colon */
+	return m;
 }
 
 /*! . */
@@ -491,30 +525,55 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *
 	 * with the corresponding short option version -<code>[value] */
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_KW_DICT *kw = NULL;
-	char text[GMT_LEN256] = {""}, *e = NULL;
+	char text[GMT_LEN256] = {""}, add[GMT_LEN64] = {""}, argument[GMT_LEN64] = {""};
+	char *e = NULL, *p = NULL, c = 0;
 	int k;
 	
 	for (opt = *options; opt; opt = opt->next) {
 		if (opt->option != GMT_OPT_PARAMETER) continue;	/* Cannot be a --keyword[=value] pair */
-		if (isupper (opt->arg[0])) continue;		/* Skip the upper-case  GMT Default parameter settings */
+		if (isupper (opt->arg[0])) continue;		/* Skip the upper-case GMT Default parameter settings */
+		
 		e = strchr (opt->arg, '=');			/* Get location of equal sign, if present */
+		p = strchr (opt->arg, '+');			/* Get location of plus sign, if present */
+		if (e && p && ((e - opt->arg) > (p - opt->arg)))
+			e = NULL;	/* The = is part of a modifier so ignore for now */
 		if (e) e[0] = '\0';				/* Cut off =value for now so opt->arg only has the keyword */
-		if ((k = gmtinit_find_kw (API, gmt_kw_common, opt->arg)) >= 0)	/* Got common kw pair */
-			kw = gmt_kw_common;
-		else if ((k = gmtinit_find_kw (API, module_kw, opt->arg)) >= 0)	/* Got module kw pair */
-			kw = module_kw;
-		else
-			continue;			/* Got nothing */
-		/* Do the long to short option substitution */
-		opt->option = kw[k].code;		/* Update the option character first */
-		if (e) {
-			e[0] = '=';			/* Put back the = character */
-			sprintf (text, "%s", &e[1]);	/* Get string with the argument */
+		else if (p) p[0] = '\0';			/* Cut off +modifier for now so opt->arg only has the keyword */
+		if ((kw = gmtinit_find_kw (API, gmt_kw_common, module_kw, opt->arg, &k)) == NULL) {	/* Did not match anything in the list */
+			if (e) e[0] = '=';		/* Restore */
+			if (p) p[0] = '+';		/* Restore */
+			continue;			/* No matching keyword pair */
 		}
-		else
-			text[0] = '\0';			/* No argument to pass on */
+		
+		/* Here we found a matching long-format option name */
+		/* Do the long to short option substitution */
+		
+		opt->option = kw[k].short_option;	/* Update the option character first */
+		text[0] = '\0';			/* Initialize short option arguments */
+		if (e) {	/* Got a <directive>[:<arg>] or just <arg> */
+			if ((c = gmtinit_find_argument (API, kw[k].long_directives, kw[k].short_directives, &e[1], ':', argument)))	/* Get the directive, or 0 if it is an argument instead */
+				sprintf (add, "%c%s", c, argument);
+			else
+				sprintf (add, "%s", argument);
+			strcat (text, add);	/* Add to the short-format option argument */
+			e[0] = '=';			/* Put back the = character */
+		}
+		if (p) {	/* Do have one of more modifiers */
+			unsigned int pos = 0;
+			char item[GMT_LEN64] = {""};
+			p[0] = '+';	/* Put back the plus sign for the first modifier */
+			while ((gmt_strtok (p, "+", &pos, item))) {	/* While there are unprocessed modifiers */
+				if ((c = gmtinit_find_argument (API, kw[k].long_modifiers, kw[k].short_modifiers, item, '=', argument)))	/* Get the modifier, or 0 if unrecognized */
+					sprintf (add, "+%c%s", c, argument);
+				else {
+					GMT_Report (API, GMT_MSG_NORMAL, "Long-modifier form %s for option -%c not recognized!\n", &e[1], opt->option);
+					add[0] = '\0';
+				}
+				strcat (text, add);	/* Add to the short-format option argument */
+			}
+		}
+		GMT_Report (API, GMT_MSG_NORMAL, "Converting long-format --%s to -%c%s\n", opt->arg, opt->option, text);
 		gmt_M_str_free (opt->arg);		/* Free old par=value string argument */
-		GMT_Report (API, GMT_MSG_DEBUG, "Converting long-format --%s to -%c%s\n", opt->arg, opt->option, text);
 		opt->arg = strdup (text);		/* Allocate copy of new argument */
 	}
 }
@@ -11880,7 +11939,7 @@ GMT_LOCAL int gmtinit_set_last_dimensions (struct GMTAPI_CTRL *API) {
 }
 
 /*! Prepare options if missing and initialize module */
-struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
+struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *required, struct GMT_KW_DICT *module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmt_begin_module_sub.
 	 * We must consult the required string.  It may contain options that we need to set implicitly.
 	 * Possible letters in the required string are:
@@ -11911,7 +11970,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	API->error = GMT_NOERROR;
 
 #ifdef USE_GMT_KWD
-	gmtinit_kw_replace (API, NULL, options);
+	gmtinit_kw_replace (API, module_kw, options);
 #endif
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
 	 * make sure pscoast -E, if passing old +r|R area settings via -E, is split into -R before GMT_Parse_Common is called */
@@ -12256,7 +12315,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 /*! Backwards compatible gmt_begin_module function for external modules built with GMT 5.3 or learlier */
 struct GMT_CTRL * gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, struct GMT_CTRL **Ccopy) {
 	API->GMT->current.setting.run_mode = GMT_CLASSIC;	/* Since gmt_begin_module is 5.3 or earlier */
-	return (gmt_init_module (API, lib_name, mod_name, "", "", NULL, Ccopy));
+	return (gmt_init_module (API, lib_name, mod_name, "", "", NULL, NULL, Ccopy));
 }
 
 /*! . */

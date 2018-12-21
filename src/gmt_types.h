@@ -46,8 +46,12 @@ struct GMT_MATH_MACRO {
 #ifdef USE_GMT_KWD
 /*! Definition of GMT_KW_DICT used to expand keyword-value pairs to GMT options */
 struct GMT_KW_DICT {	/* Used for keyword-value lookup */
-	char code;	/* Single character GMT option code */
-	char name[31];	/* Name of corresponding keyword */
+	char short_option;		/* Single character GMT option code */
+	char long_option[31];		/* Name of corresponding long option */
+	char short_directives[32];	/* Single character directives, comma-separated */
+	char long_directives[256];	/* Long name directives, comma-separated */
+	char short_modifiers[32];	/* Single character modifiers, comma-separated */
+	char long_modifiers[256];	/* Long name modifiers, comma-separated */
 };
 #endif
 
