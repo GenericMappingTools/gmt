@@ -636,7 +636,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
 		return (err);
 	}
-	if (c->min_area > 0.0) {	/* Want to exclude small polygons so we need info about the node polygons */
+	if (c->min_area > 0.0 || (info->flag & GSHHS_NO_RIVERLAKES) || (info->flag & GSHHS_NO_LAKES)) {	/* Want to exclude small polygons so we need info about the node polygons, or need info about lakes */
 	        if ((err = nc_get_var1_int (c->cdfid, c->n_node_id, start, &c->n_nodes))) {
 			gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
 			return (err);
