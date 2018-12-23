@@ -6005,14 +6005,17 @@ int GMT_Destroy_Session (void *V_API) {
 	 * Returns false if all is well and true if there were errors. */
 
 	unsigned int i;
+	char *module = NULL;
 	struct GMTAPI_CTRL *API = api_get_api_ptr (V_API);
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	API->error = GMT_NOERROR;
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Entering GMT_Destroy_Session\n");
+	module = strdup (API->GMT->init.module_name);	/* Need a copy as the pointer to static memory in library will close soon */
 	gmtapi_garbage_collection (API, GMT_NOTSET);	/* Free any remaining memory from data registration during the session */
 	api_free_sharedlibs (API);			/* Close shared libraries and free list */
+	API->GMT->init.module_name = module;		/* So GMT_Report will function after supplemental.so shut down */
 
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o) */
 	for (i = 0; i < API->n_objects; i++) gmtapi_unregister_io (API, (int)API->object[i]->ID, (unsigned int)GMT_NOTSET);
@@ -6026,6 +6029,7 @@ int GMT_Destroy_Session (void *V_API) {
 	gmt_M_str_free (API->message);
 	gmt_M_memset (API, 1U, struct GMTAPI_CTRL);	/* Wipe it clean first */
  	gmt_M_str_free (API);	/* Not gmt_M_free since this item was allocated before GMT was initialized */
+ 	gmt_M_str_free (module);
 
 	return (GMT_NOERROR);
 }
