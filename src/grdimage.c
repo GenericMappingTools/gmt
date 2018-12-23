@@ -510,6 +510,7 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	unsigned int i, k;
 	bool all_lats = false, all_lons = false;
 	double x, y;
+	gmt_M_unused (mixed);
 
 	r->n_columns = g->n_columns;	r->n_rows = g->n_rows;
 	r->registration = g->registration;
