@@ -356,29 +356,29 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 /* List of GMT common keyword/options pairs */
 #ifdef USE_GMT_KWD
 struct GMT_KW_DICT gmt_kw_common[] = {
-	{'R', "region",       "", "", "r", "rect"},
-	{'J', "projection",   "", "", "", ""},
-	{'U', "timestamp",    "", "", "c,j,o", "command,justify,offset"},
-	{'V', "verbose",      "", "", "", ""},
-	{'X', "xoff",         "a,c,r", "absolute,center,relative", "", ""},
-	{'Y', "yoff",         "a,c,r", "absolute,center,relative", "", ""},
-	{'a', "aspatial",     "", "", "", ""},
-	{'b', "binary",       "", "", "B,L", "big-endian,little-endian"},
-	{'d', "nodata",       "i,o", "in,out", "", ""},
-	{'e', "find",         "", "", "f", "file"},
-	{'f', "coltypes",     "i,o", "in,out", "", ""},
-	{'g', "gap",          "", "", "", ""},
-	{'h', "header",       "i,o", "in,out", "c,d,r,t", "columns,delete,remark,title"},
-	{'i', "incol",        "", "", "", ""},
-	{'o', "outcol",       "", "", "", ""},
-	{'n', "interpolation", "b,c,l,n", "b-spline,bicubic,linear,nearest-neighbor", "c,t", "clip,threshold"},
-	{'p', "perspective",  "x,y,z", "x,y,z", "v,w", "view,world"},
-	{'r', "registration", "g,p", "gridline,pixel", "", ""},
-	{'s', "skip", "", "", "a,r", "any,reverse"},
-	{'t', "transparency", "", "", "", ""},
-	{'x', "cores",        "", "", "", ""},
-	{':', "order",        "i,o", "in,out", "", ""},
-	{'\0', "",            "", "", "", ""}	/* End of list marked with empty code and strings */
+	{0, 'R', "region",       "", "", "r", "rect"},
+	{0, 'J', "projection",   "", "", "", ""},
+	{0, 'U', "timestamp",    "", "", "c,j,o", "command,justify,offset"},
+	{0, 'V', "verbose",      "", "", "", ""},
+	{0, 'X', "xoff",         "a,c,r", "absolute,center,relative", "", ""},
+	{0, 'Y', "yoff",         "a,c,r", "absolute,center,relative", "", ""},
+	{0, 'a', "aspatial",     "", "", "", ""},
+	{0, 'b', "binary",       "", "", "B,L", "big-endian,little-endian"},
+	{0, 'd', "nodata",       "i,o", "in,out", "", ""},
+	{0, 'e', "find",         "", "", "f", "file"},
+	{0, 'f', "coltypes",     "i,o", "in,out", "", ""},
+	{0, 'g', "gap",          "", "", "", ""},
+	{0, 'h', "header",       "i,o", "in,out", "c,d,r,t", "columns,delete,remark,title"},
+	{0, 'i', "incol",        "", "", "", ""},
+	{0, 'o', "outcol",       "", "", "", ""},
+	{0, 'n', "interpolation", "b,c,l,n", "b-spline,bicubic,linear,nearest-neighbor", "c,t", "clip,threshold"},
+	{0, 'p', "perspective",  "x,y,z", "x,y,z", "v,w", "view,world"},
+	{0, 'r', "registration", "g,p", "gridline,pixel", "", ""},
+	{0, 's', "skip", "", "", "a,r", "any,reverse"},
+	{0, 't', "transparency", "", "", "", ""},
+	{0, 'x', "cores",        "", "", "", ""},
+	{0, ':', "order",        "i,o", "in,out", "", ""},
+	{0, '\0', "",            "", "", "", ""}	/* End of list marked with empty code and strings */
 };
 #endif
 
@@ -550,7 +550,7 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *
 		/* Do the long to short option substitution */
 		
 		opt->option = kw[k].short_option;	/* Update the option character first */
-		text[0] = '\0';			/* Initialize short option arguments */
+		text[0] = '\0';				/* Initialize short option arguments */
 		if (e) {	/* Got a <directive>[:<arg>] or just <arg> */
 			if ((c = gmtinit_find_argument (API, kw[k].long_directives, kw[k].short_directives, &e[1], ':', argument)))	/* Get the directive, or 0 if it is an argument instead */
 				sprintf (add, "%c%s", c, argument);
@@ -573,9 +573,13 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *
 				strcat (text, add);	/* Add to the short-format option argument */
 			}
 		}
-		GMT_Report (API, GMT_MSG_NORMAL, "Converting long-format --%s to -%c%s\n", opt->arg, opt->option, text);
-		gmt_M_str_free (opt->arg);		/* Free old par=value string argument */
-		opt->arg = strdup (text);		/* Allocate copy of new argument */
+		gmt_M_str_free (opt->arg);	/* Free old par=value string argument */
+		opt->arg = strdup (text);	/* Allocate copy of new argument */
+	}
+	if (gmt_M_is_verbose (API->GMT, GMT_MSG_LONG_VERBOSE)) {	/* Echo the converted options */
+		char *cmd = GMT_Create_Cmd (API, *options);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reformatted options: %s\n", cmd);
+		GMT_Destroy_Cmd (API, &cmd);	/* Free string */
 	}
 }
 #endif
