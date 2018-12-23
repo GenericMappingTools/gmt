@@ -17,13 +17,13 @@ Synopsis
 |SYN_OPT-Rz|
 [ |-A| ]
 |SYN_OPT-B|
+[ |-C|\ [\ **\ *dx/dy*\ ][\ **+t**\ o\|\O\|\c\|C] ]
 [ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*]] ]
 [ |-F|\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l**\|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **+z**\ [*format*]] ] 
 [ |-G|\ *color* ]
 [ |-K| ]
 [ |-L| ] [ |-M| ] [ |-N| ] [ |-O| ] [ |-P| ]
 [ |-Q|\ **l**\ \|\ **u** ]
-[ |-T|\ **o**\ \|\ **O**\ \|\ **c**\ \|\ **C** ] [
 [ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
@@ -111,11 +111,16 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *dx/dy*
-    Sets the clearance between the text and the surrounding box [15%].
+**-C\ [\ **\ *dx/dy*\ ][\ **+t**\ o\|\O\|\c\|C]
+    Adjust the clearance between the text and the surrounding box [15%].
     Only used if **-W** or **-G** are specified. Append the unit you
     want (**c**\ m, **i**\ nch, or **p**\ oint; if not given we consult
     :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) or % for a percentage of the font size.
+    Optionally, use modifier **+t** to set the shape of the textbox when using **-G** and/or **-W**.
+    Choose lower case o to get a straight rectangle [Default].
+    Choose upper case O to get a rounded rectangle. In paragraph
+    mode (**-M**) you can also choose lower case c to get a concave
+    rectangle or upper case C to get a convex rectangle. 
 
 .. _-D:
 
@@ -218,15 +223,6 @@ Optional Arguments
     Change all text to either **l**\ ower or **u**\ pper case [Default
     leaves all text as is].
 
-.. _-T:
-
-**-T**
-    Specify the shape of the textbox when using **-G** and/or **-W**.
-    Choose lower case **o** to get a straight rectangle [Default].
-    Choose upper case **O** to get a rounded rectangle. In paragraph
-    mode (**-M**) you can also choose lower case **c** to get a concave
-    rectangle or upper case **C** to get a convex rectangle. 
-
 .. _-U:
 
 .. include:: explain_-U.rst_
@@ -240,7 +236,7 @@ Optional Arguments
 
 **-W**\ *pen*
     Sets the pen used to draw a rectangle around the text string (see
-    **-T**) [Default is width = default, color = black, style = solid].
+    **-C**) [Default is width = default, color = black, style = solid].
 
 .. _-X:
 

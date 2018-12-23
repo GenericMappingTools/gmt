@@ -35,7 +35,7 @@ while read lon lat az1 az2 label just off; do
 	az2=`gmt math -Q $az2 $daz DIV FLOOR $daz MUL =`
 	gmt math -T${az1}/${az2}/$daz -N4/2 -fg -C0 0 $lon ADD -C1 $lat ADD -C3 2000 ADD = | gmt psxy -Rg -JG205/-10/7i -O -K -S=0.1 -W0.5p >> $ps
 	echo $lon $lat $label | gmt pstext -Rg -JG205/-10/7i -O -K -DJ${off}+v0.5p,white -F+f16p+j${just} -N >> $ps
-	echo $lon $lat $label | gmt pstext -Rg -JG205/-10/7i -O -K -DJ${off}+v0.25p -F+f16p+j${just} -N -Gwhite -W0.25p -TO >> $ps
+	echo $lon $lat $label | gmt pstext -Rg -JG205/-10/7i -O -K -DJ${off}+v0.25p -F+f16p+j${just} -N -Gwhite -W0.25p -C+tO >> $ps
 done < airports.txt
 # Plot trimmed lines and overlay airport locations
 gmt psxy airports.txt -R -J -O -K -Fn -W1.5p+o250k+v0.2i+gred+h0.5 >> $ps

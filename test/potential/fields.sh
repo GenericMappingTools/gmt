@@ -34,7 +34,7 @@ gmt grdimage smt.nc -R-100/100/-100/100 -JX3i -P -Bag -BWSne -Ct.cpt -K > $ps
 gmt grdtrack -Gsmt.nc -ELM/RM+d > smt.trk
 gmt psxy -R -J -O -K -W5p,white smt.trk >> $ps
 gmt psxy -R -J -O -K -W1p smt.trk >> $ps
-echo "-100 100 BATHYMETRY" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i -Gwhite -TO >> $ps
+echo "-100 100 BATHYMETRY" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i -Gwhite -C+tO >> $ps
 # 2. Compute the VGG anomaly
 gmt gravfft smt.nc+uk -D1670 -Nf+a -Fv -E$order -Gvgg.nc
 # BR plot the VGG anomaly
@@ -43,7 +43,7 @@ gmt grdimage vgg.nc -R-100/100/-100/100 -JX3i -O -Bag -BwSne -Ct.cpt -K -X3.5i >
 gmt grdtrack -Gvgg.nc -ELM/RM+d > vgg.trk
 gmt psxy -R -J -O -K -W5p,white vgg.trk >> $ps
 gmt psxy -R -J -O -K -W1p,blue vgg.trk >> $ps
-echo "-100 100 VGG" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i -Gwhite -TO >> $ps
+echo "-100 100 VGG" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i -Gwhite -C+tO >> $ps
 # 3. Compute the FAA anomaly
 gmt gravfft smt.nc+uk -D1670 -Nf+a -Ff -E$order -Gfaa.nc
 # Compute the exact analytical result for peak amplitude at center
@@ -64,7 +64,7 @@ gmt grdimage faa.nc -R-100/100/-100/100 -JX3i -O -Bag -BWsne -Ct.cpt -K -X-3.5i 
 gmt grdtrack -Gfaa.nc -ELM/RM+d > faa.trk
 gmt psxy -R -J -O -K -W5p,white faa.trk >> $ps
 gmt psxy -R -J -O -K -W1p,red faa.trk >> $ps
-echo "-100 100 FAA" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i -Gwhite -TO >> $ps
+echo "-100 100 FAA" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i -Gwhite -C+tO >> $ps
 # 4. Compute the geoid anomaly
 gmt gravfft smt.nc+uk -D1670 -Nf+a -Fg -E$order -Ggeoid.nc
 # MR plot the VGG anomaly
@@ -73,7 +73,7 @@ gmt grdimage geoid.nc -R-100/100/-100/100 -JX3i -O -Bag -Bwsne -Ct.cpt -K -X3.5i
 gmt grdtrack -Ggeoid.nc -ELM/RM+d > geoid.trk
 gmt psxy -R -J -O -K -W5p,white geoid.trk >> $ps
 gmt psxy -R -J -O -K -W1p,orange geoid.trk >> $ps
-echo "-100 100 GEOID" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i -Gwhite -TO >> $ps
+echo "-100 100 GEOID" | gmt pstext -R -J -O -K -F+jTL+f14p -Dj0.1i -Gwhite -C+tO >> $ps
 # 5 Plot crossections of bathy and faa crossections
 # TL plot the bathy and faa canomaly
 gmt psxy -R-100/100/-5100/1000 -JX3i/2.5i -O -K -W1p -i0,3 smt.trk -Baf -BWsN -X-3.5i -Y3.2i >> $ps
