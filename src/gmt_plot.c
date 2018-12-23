@@ -6525,7 +6525,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	}
 	/* If requested, place the timestamp */
 
-	if (GMT->current.ps.map_logo_label[0] == 'c' && GMT->current.ps.map_logo_label[1] == 0) {
+	if (GMT->current.ps.logo_cmd) {
 		char txt[4] = {' ', '-', 'X', 0};
 		struct GMT_OPTION *opt = NULL;
 		size_t len = strlen (GMT->init.module_name);
@@ -6538,6 +6538,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			len += 3;
 			strncat (GMT->current.ps.map_logo_label, opt->arg, GMT_LEN256-len);
 		}
+		GMT->current.ps.logo_cmd = false;	/* Mission accomplished */
 	}
 	if (GMT->current.setting.map_logo)
 		plot_timestamp (GMT, PSL, GMT->current.setting.map_logo_pos[GMT_X], GMT->current.setting.map_logo_pos[GMT_Y], GMT->current.setting.map_logo_justify, GMT->current.ps.map_logo_label);

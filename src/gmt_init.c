@@ -1842,38 +1842,78 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 
 #endif
 
-/*! Parse the -U option.  Full syntax: -U[[<just>]/<dx>/<dy>/][c|<label>] */
+/*! Parse the -U option.  Full syntax: -U[<label>][+c][+j<just>][+o]<dx>/<dy>]  Old syntax was -U[[<just>]/<dx>/<dy>/][c|<label>] */
 GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
-	int just, n = 0, n_slashes, error = 0;
-	char txt_j[GMT_LEN256] = {""}, txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""};
+	int just = 1, error = 0;
 
 	GMT->current.setting.map_logo = true;
 	if (!item || !item[0]) return (GMT_NOERROR);	/* Just basic -U with no args */
 
-	n_slashes = gmtlib_count_slashes (GMT, item);	/* Count slashes to detect [<just>]/<dx>/<dy>/ presence */
-
-	if (n_slashes >= 2) {	/* Probably gave -U[<just>]/<dx>/<dy>[/<string>] */
-		if (item[0] == '/') { /* No justification given */
-			n = sscanf (&item[1], "%[^/]/%[^/]/%[^\n]", txt_x, txt_y, GMT->current.ps.map_logo_label);
-			just = 1;	/* Default justification is LL */
+	if ((strstr (item, "+c")) || strstr (item, "+j") || strstr (item, "+o")) {	/* New syntax */
+		unsigned int pos = 0, uerr = 0;
+		int k = 1, len = (int)strlen (item);
+		char word[GMT_LEN256] = {""}, *c = NULL;
+		/* Find the first +c|j|o that looks like it may be a modifier and not random text */
+		while (k < len && !((item[k-1] == '+' && (item[k] == 'c' && (item[k+1] == '+' || item[k+1] == '\0'))) || \
+			(item[k] == 'j' && (strchr ("LCRBMT", item[k+1]) && strchr ("LCRBMT", item[k+2]))) || \
+			(item[k] == 'o' && strchr ("-+.0123456789", item[k+1])))) k++;
+		c = &item[k-1];	/* Start of the modifier */
+		c[0] = '\0';	/* Chop off the + so we can parse the label, if any */
+		if (item[0]) strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);	/* Got a label */
+		c[0] = '+';    /* Restore modifiers */
+		while (gmt_getmodopt (GMT, 'U', c, "cjo", &pos, word, &uerr) && uerr == 0) {
+			switch (word[0]) {
+				case 'c':	/* Maybe +c but only if at end of followed by another modifier */
+					if (word[1] == '+' || word[1] == '\0')	/* Use command string */
+						GMT->current.ps.logo_cmd = true;
+					break;
+				case 'j':	/* Maybe +j if the next two letters are from LCRBMT */
+					if (strchr ("LCRBMT", word[1]) && strchr ("LCRBMT", word[2]))
+						just = gmt_just_decode (GMT, &word[1], GMT->current.setting.map_logo_justify);
+					break;
+				case 'o':	/* Maybe +o if next letter could be part of a number */
+					if (strchr ("-+.0123456789", word[1])) {	/* Seems to be a number */
+						if ((k = gmt_get_pair (GMT, &word[1], GMT_PAIR_DIM_DUP, GMT->current.setting.map_logo_pos)) < 2) error++;
+					}
+					break;
+				default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+			}
 		}
-		else {
-			n = sscanf (item, "%[^/]/%[^/]/%[^/]/%[^\n]", txt_j, txt_x, txt_y, GMT->current.ps.map_logo_label);
-			just = gmt_just_decode (GMT, txt_j, GMT->current.setting.map_logo_justify);
-		}
-		if (just < 0) {
-			/* Garbage before first slash: we simply have -U<string> */
-			strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);
-		}
-		else {
-			GMT->current.setting.map_logo_justify = just;
-			GMT->current.setting.map_logo_pos[GMT_X] = gmt_M_to_inch (GMT, txt_x);
-			GMT->current.setting.map_logo_pos[GMT_Y] = gmt_M_to_inch (GMT, txt_y);
-		}
+		GMT->current.setting.map_logo_justify = just;
 	}
-	else
-		strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);
-	if ((item[0] == '/' && n_slashes == 1) || (item[0] == '/' && n_slashes >= 2 && n < 2)) error++;
+	else {	/* Old syntax or just -U */
+		int n = 0, n_slashes;
+		char txt_j[GMT_LEN256] = {""}, txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""};
+	
+		n_slashes = gmtlib_count_slashes (GMT, item);	/* Count slashes to detect [<just>]/<dx>/<dy>/ presence */
+
+		if (n_slashes >= 2) {	/* Probably gave -U[<just>]/<dx>/<dy>[/<string>] */
+			if (item[0] == '/') { /* No justification given */
+				n = sscanf (&item[1], "%[^/]/%[^/]/%[^\n]", txt_x, txt_y, GMT->current.ps.map_logo_label);
+				just = 1;	/* Default justification is LL */
+			}
+			else {
+				n = sscanf (item, "%[^/]/%[^/]/%[^/]/%[^\n]", txt_j, txt_x, txt_y, GMT->current.ps.map_logo_label);
+				just = gmt_just_decode (GMT, txt_j, GMT->current.setting.map_logo_justify);
+			}
+			if (just < 0) {
+				/* Garbage before first slash: we simply have -U<string> */
+				strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);
+			}
+			else {
+				GMT->current.setting.map_logo_justify = just;
+				GMT->current.setting.map_logo_pos[GMT_X] = gmt_M_to_inch (GMT, txt_x);
+				GMT->current.setting.map_logo_pos[GMT_Y] = gmt_M_to_inch (GMT, txt_y);
+			}
+		}
+		else
+			strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);
+		if (GMT->current.ps.map_logo_label[0] == 'c' && GMT->current.ps.map_logo_label[1] == 0) {	/* Old way of asking for +c */
+			GMT->current.ps.logo_cmd = true;
+			GMT->current.ps.map_logo_label[0] = '\0';
+		}
+		if ((item[0] == '/' && n_slashes == 1) || (item[0] == '/' && n_slashes >= 2 && n < 2)) error++;
+	}
 	return (error);
 }
 
@@ -2138,8 +2178,8 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 GMT_LOCAL bool gmtinit_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 	unsigned int error = 0, n, pos = 0;
 	int64_t i, start = -1, stop = -1, inc;
-	char p[GMT_BUFSIZ] = {""}, tmp[GMT_MAX_COLUMNS] = {""};
-	/* Parse the -s option.  Full syntax: -s[<cols>][r|a] */
+	char p[GMT_BUFSIZ] = {""}, tmp[GMT_MAX_COLUMNS] = {""}, *c = NULL;
+	/* Parse the -s option.  Full syntax: -s[<cols>][+r|a] Old syntax was -s[<cols>][r|a] */
 
 	gmt_M_memset (GMT->current.io.io_nan_col, GMT_MAX_COLUMNS, int);
 	GMT->current.io.io_nan_col[0] = GMT_Z;	/* The default is to examine the z-column */
@@ -2147,9 +2187,17 @@ GMT_LOCAL bool gmtinit_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 	GMT->current.setting.io_nan_mode = GMT_IO_NAN_SKIP;	/* Plain -s */
 	if (!item || !item[0]) return (false);	/* Nothing more to do */
 	strncpy (GMT->common.s.string, item, GMT_LEN64-1);	/* Make copy of -n argument verbatim */
+	if ((c = strstr (item, "+a")))
+		GMT->current.setting.io_nan_mode = GMT_IO_NAN_ONE, c[0] = '\0';		/* Set -s+a */
+	else if ((c = strstr (item, "+r")))
+		GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP, c[0] = '\0';		/* Set -s+r */
 	n = (int)strlen (item);
-	if (item[n-1] == 'a') GMT->current.setting.io_nan_mode = GMT_IO_NAN_ONE, n--;		/* Set -sa */
-	else if (item[n-1] == 'r') GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP, n--;	/* Set -sr */
+	if (n == 0) {
+		if (c) c[0] = '+';	/* Restore string */
+		return (false);		/* Nothing more to do */
+	}
+	if (item[n-1] == 'a') GMT->current.setting.io_nan_mode = GMT_IO_NAN_ONE, n--;		/* Old syntax set -sa */
+	else if (item[n-1] == 'r') GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP, n--;	/* Old syntax set -sr */
 	if (n == 0) return (false);		/* No column arguments to process */
 	/* Here we have user-supplied column information */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) tmp[i] = -1;
@@ -2166,6 +2214,7 @@ GMT_LOCAL bool gmtinit_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 		return true;
 	}
 	GMT->current.io.io_nan_ncols = n;
+	if (c) c[0] = '+';	/* Restore string */
 
 	return (false);
 }
@@ -6206,11 +6255,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'U':	/* Plot time mark and [optionally] command line */
 
-			gmt_message (GMT, "\t-U Plot Unix System Time stamp [and optionally appended text].\n");
-			gmt_message (GMT, "\t   You may also set the reference points and position of stamp\n");
-			gmt_message (GMT, "\t   [%s/%g%c/%g%c].  Give -Uc to have the command line plotted [%s].\n",
-			             GMT_just_string[GMT->current.setting.map_logo_justify], GMT->current.setting.map_logo_pos[GMT_X] * s, u,
-			             GMT->current.setting.map_logo_pos[GMT_Y] * s, u, GMT_choice[GMT->current.setting.map_logo]);
+			gmt_message (GMT, "\t-U Plot GMT Unix System Time stamp [and optionally appended text or command line].\n");
+			gmt_message (GMT, "\t   You may also set the justification point and the relative position of stamp\n");
+			gmt_message (GMT, "\t   [+jBL+o-54p/-54p].  Add +c to have the command line plotted [%s].\n", GMT_choice[GMT->current.setting.map_logo]);
 			break;
 
 		case 'V':	/* Verbose */
@@ -6406,8 +6453,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t-s Suppress output for records whose z-value (col = 2) equals NaN\n");
 			gmt_message (GMT, "\t   [Default prints all records].\n");
 			gmt_message (GMT, "\t   Append <cols> to examine other column(s) instead [2].\n");
-			gmt_message (GMT, "\t   Append a to suppress records where any column equals NaN.\n");
-			gmt_message (GMT, "\t   Append r to reverse the suppression (only output z = NaN records).\n");
+			gmt_message (GMT, "\t   Append +a to suppress records where any column equals NaN, or\n");
+			gmt_message (GMT, "\t   append +r to reverse the suppression (only output z = NaN records).\n");
 			break;
 
 		case 'F':	/* -r Pixel registration option  */
@@ -12163,7 +12210,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 								c += 2;
 								if (c[0] == '\0') strcat (arg, P->Bylabel);	/* Yes, +l was empty so add preset label */
 							}
-							else {	/* No panel-speicific label override, use the preset label */
+							else {	/* No panel-specific label override, use the preset label */
 								strcat (arg, "+l");
 								strcat (arg, P->Bylabel);
 							}

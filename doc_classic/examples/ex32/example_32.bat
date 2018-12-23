@@ -38,7 +38,7 @@ gmt grdview @topo_32.nc -JM13c %Rplot% -Ceuflag.cpt -G@euflag.nc -I+a0/270+ne0.6
 REM We now add borders. Because we have a 3-D plot, we want them to be plotted "at elevation".
 REM So we write out the borders, pipe them through grdtrack and then plot them with psxyz.
 
-gmt pscoast %Rflag% -Df -M -N1 | gmt grdtrack -G@topo_32.nc -sa | gmt psxyz %Rplot% -J -JZ -p -W1p,white -O -K >> %ps%
+gmt pscoast %Rflag% -Df -M -N1 | gmt grdtrack -G@topo_32.nc -s+a | gmt psxyz %Rplot% -J -JZ -p -W1p,white -O -K >> %ps%
 
 REM Finally, we add dots and names for three cities.
 REM Again, grdtrack is used to put the dots "at elevation".

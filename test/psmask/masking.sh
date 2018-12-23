@@ -65,13 +65,13 @@ echo 0 0 Oriented -Fr | gmt pstext -R -J -O -K -F+f12p+jLB -Gwhite -W0.5p >> $ps
 arrow clipf.txt >> $ps
 gmt psxy $Ro -J -O -Bafg1 -BWSne data.txt -Ss0.1i -Gblue -W0.25p -K -X-3.25i -Y3.4i >> $ps
 gmt psmask $Ri -J -I1 data.txt -Dclipn.txt -N -L+psmask.nc
-gmt grd2xyz -sa psmask.nc | gmt psxy $Ro -J -O -K -Sc0.03i -Gred >> $ps
+gmt grd2xyz -s+a psmask.nc | gmt psxy $Ro -J -O -K -Sc0.03i -Gred >> $ps
 gmt psxy $Ro -J -O -K clipn.txt -W1p,red >> $ps
 echo 0 0 Unoriented | gmt pstext -R -J -O -K -F+f12p+jLB -Gwhite -W0.5p >> $ps
 arrow clipn.txt >> $ps
 gmt psxy $Ro -J -O -Bafg1 -BwSnE data.txt -Ss0.1i -Gblue -W0.25p -K -X3.25i >> $ps
 gmt psmask $Ri -J -I1 data.txt -Dclipnf.txt -Fl -N -L+psmask.nc
-gmt grd2xyz -sa psmask.nc | gmt psxy $Ro -J -O -K -Sc0.03i -Gred >> $ps
+gmt grd2xyz -s+a psmask.nc | gmt psxy $Ro -J -O -K -Sc0.03i -Gred >> $ps
 gmt psxy $Ro -J -O -K clipnf.txt -W1p,red >> $ps
 echo 0 0 Oriented -Fl | gmt pstext -R -J -O -K -F+f12p+jLB -Gwhite -W0.5p >> $ps
 arrow clipnf.txt >> $ps

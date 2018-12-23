@@ -571,7 +571,7 @@ void gmt_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *wh
 	}
 
 #ifdef MEMDEBUG
-	if (GMT->hidden.mem_keeper->active) {
+	if (GMT->hidden.mem_keeper && GMT->hidden.mem_keeper->active) {
 		bool is_safe_to_free = gmt_memtrack_sub (GMT, where, addr);
 		if (is_safe_to_free == false)
 			return; /* Address addr was not allocated by gmt_memory_func before */
