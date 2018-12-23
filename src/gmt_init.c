@@ -2078,8 +2078,8 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 GMT_LOCAL bool gmtinit_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 	unsigned int error = 0, n, pos = 0;
 	int64_t i, start = -1, stop = -1, inc;
-	char p[GMT_BUFSIZ] = {""}, tmp[GMT_MAX_COLUMNS] = {""};
-	/* Parse the -s option.  Full syntax: -s[<cols>][r|a] */
+	char p[GMT_BUFSIZ] = {""}, tmp[GMT_MAX_COLUMNS] = {""}, *c = NULL;
+	/* Parse the -s option.  Full syntax: -s[<cols>][+r|a] Old syntax was -s[<cols>][r|a] */
 
 	gmt_M_memset (GMT->current.io.io_nan_col, GMT_MAX_COLUMNS, int);
 	GMT->current.io.io_nan_col[0] = GMT_Z;	/* The default is to examine the z-column */
@@ -2087,9 +2087,17 @@ GMT_LOCAL bool gmtinit_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 	GMT->current.setting.io_nan_mode = GMT_IO_NAN_SKIP;	/* Plain -s */
 	if (!item || !item[0]) return (false);	/* Nothing more to do */
 	strncpy (GMT->common.s.string, item, GMT_LEN64-1);	/* Make copy of -n argument verbatim */
+	if ((c = strstr (item, "+a")))
+		GMT->current.setting.io_nan_mode = GMT_IO_NAN_ONE, c[0] = '\0';		/* Set -s+a */
+	else if ((c = strstr (item, "+r")))
+		GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP, c[0] = '\0';		/* Set -s+r */
 	n = (int)strlen (item);
-	if (item[n-1] == 'a') GMT->current.setting.io_nan_mode = GMT_IO_NAN_ONE, n--;		/* Set -sa */
-	else if (item[n-1] == 'r') GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP, n--;	/* Set -sr */
+	if (n == 0) {
+		if (c) c[0] = '+';	/* Restore string */
+		return (false);		/* Nothing more to do */
+	}
+	if (item[n-1] == 'a') GMT->current.setting.io_nan_mode = GMT_IO_NAN_ONE, n--;		/* Old syntax set -sa */
+	else if (item[n-1] == 'r') GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP, n--;	/* Old syntax set -sr */
 	if (n == 0) return (false);		/* No column arguments to process */
 	/* Here we have user-supplied column information */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) tmp[i] = -1;
@@ -2106,6 +2114,7 @@ GMT_LOCAL bool gmtinit_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 		return true;
 	}
 	GMT->current.io.io_nan_ncols = n;
+	if (c) c[0] = '+';	/* Restore string */
 
 	return (false);
 }
@@ -6346,8 +6355,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t-s Suppress output for records whose z-value (col = 2) equals NaN\n");
 			gmt_message (GMT, "\t   [Default prints all records].\n");
 			gmt_message (GMT, "\t   Append <cols> to examine other column(s) instead [2].\n");
-			gmt_message (GMT, "\t   Append a to suppress records where any column equals NaN.\n");
-			gmt_message (GMT, "\t   Append r to reverse the suppression (only output z = NaN records).\n");
+			gmt_message (GMT, "\t   Append +a to suppress records where any column equals NaN, or\n");
+			gmt_message (GMT, "\t   append +r to reverse the suppression (only output z = NaN records).\n");
 			break;
 
 		case 'F':	/* -r Pixel registration option  */
@@ -12103,7 +12112,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 								c += 2;
 								if (c[0] == '\0') strcat (arg, P->Bylabel);	/* Yes, +l was empty so add preset label */
 							}
-							else {	/* No panel-speicific label override, use the preset label */
+							else {	/* No panel-specific label override, use the preset label */
 								strcat (arg, "+l");
 								strcat (arg, P->Bylabel);
 							}

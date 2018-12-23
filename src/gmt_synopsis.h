@@ -114,7 +114,7 @@
 #define GMT_o_OPT	"-o<cols>[,...]"
 #define GMT_p_OPT	"-p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>]"
 #define GMT_r_OPT	"-r"
-#define GMT_s_OPT	"-s[<cols>][a|r]"
+#define GMT_s_OPT	"-s[<cols>][+a|r]"
 #define GMT_t_OPT	"-t<transp>"
 #define GMT_colon_OPT	"-:[i|o]"
 
