@@ -824,7 +824,7 @@ fonts can be found in the :doc:`gmt` man page.
 **MAP_LOGO_POS**
     (**-U**) Sets the justification and the position of the
     logo/timestamp box relative to the current plots lower left corner
-    of the plot [BL/-54p/-54p].
+    of the plot [+jBL+o-54p/-54p].
 
 .. _MAP_ORIGIN_X:
 
