@@ -268,14 +268,14 @@ orientation with UNIX timestamp and command line plotted, use:
 
    ::
 
-    gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -Uc | lpr
+    gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -U+c | lpr
 
 Redo the same plot but this time add orange vector heads to each direction (with nominal head size
 0.5 cm but this will be reduced linearly for lengths less than 1 cm) and save the plot, use:
 
    ::
 
-    gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -Uc > rose.ps
+    gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -U+c > rose.ps
 
 Bugs
 ----

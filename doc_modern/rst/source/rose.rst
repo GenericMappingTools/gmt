@@ -261,14 +261,14 @@ orientation with a timestamp and command line plotted, use:
 
    ::
 
-    gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -Uc -pdf rose
+    gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -U+c -pdf rose
 
 Redo the same plot but this time add orange vector heads to each direction (with nominal head size
 0.5 cm but this will be reduced linearly for lengths less than 1 cm) and save the plot, use:
 
    ::
 
-    gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -Uc -pdf rose
+    gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -U+c -pdf rose
 
 Bugs
 ----

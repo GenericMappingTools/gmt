@@ -228,7 +228,7 @@ southeast at 30 degree elevation, use:
 
     gmt plot3d heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c
               -Gblue -Bx2+lXLABEL -By2+lYLABEL -Bz10+lZLABEL -B+t"3-D PLOT" -p135/30
-              -Uc -W -pdf heights
+              -U+c -W -pdf heights
 
 Segment Header Parsing
 ----------------------
