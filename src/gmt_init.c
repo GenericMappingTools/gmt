@@ -356,14 +356,14 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 /* List of GMT common keyword/options pairs */
 #ifdef USE_GMT_KWD
 struct GMT_KW_DICT gmt_kw_common[] = {
-	{'R', "region",       "", "", "rect", "r"},
-	{'J', "proj",         "", "", "", ""},
-	{'U', "timestamp",    "", "", "", ""},
+	{'R', "region",       "", "", "r", "rect"},
+	{'J', "projection",   "", "", "", ""},
+	{'U', "timestamp",    "", "", "c,j,o", "command,justify,offset"},
 	{'V', "verbose",      "", "", "", ""},
-	{'X', "xoff",         "", "", "", ""},
-	{'Y', "yoff",         "", "", "", ""},
+	{'X', "xoff",         "a,c,r", "absolute,center,relative", "", ""},
+	{'Y', "yoff",         "a,c,r", "absolute,center,relative", "", ""},
 	{'a', "aspatial",     "", "", "", ""},
-	{'b', "binary",       "", "", "", ""},
+	{'b', "binary",       "", "", "B,L", "big-endian,little-endian"},
 	{'d', "nodata",       "i,o", "in,out", "", ""},
 	{'e', "find",         "", "", "f", "file"},
 	{'f', "coltypes",     "i,o", "in,out", "", ""},
@@ -371,12 +371,13 @@ struct GMT_KW_DICT gmt_kw_common[] = {
 	{'h', "header",       "i,o", "in,out", "c,d,r,t", "columns,delete,remark,title"},
 	{'i', "incol",        "", "", "", ""},
 	{'o', "outcol",       "", "", "", ""},
-	{'n', "interpol",     "", "", "", ""},
-	{'p', "perspective",  "", "", "", ""},
+	{'n', "interpolation", "b,c,l,n", "b-spline,bicubic,linear,nearest-neighbor", "c,t", "clip,threshold"},
+	{'p', "perspective",  "x,y,z", "x,y,z", "v,w", "view,world"},
 	{'r', "registration", "g,p", "gridline,pixel", "", ""},
+	{'s', "skip", "", "", "a,r", "any,reverse"},
 	{'t', "transparency", "", "", "", ""},
 	{'x', "cores",        "", "", "", ""},
-	{':', "order",        "", "", "", ""},
+	{':', "order",        "i,o", "in,out", "", ""},
 	{'\0', "",            "", "", "", ""}	/* End of list marked with empty code and strings */
 };
 #endif
@@ -14145,7 +14146,18 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 		case 'r':
 			error += GMT_more_than_once (GMT, GMT->common.R.active[GSET]);
 			GMT->common.R.active[GSET] = true;
-			GMT->common.R.registration = GMT_GRID_PIXEL_REG;
+			if (item[0]) {	/* Gave argument for specific registration */
+				switch (item[0]) {
+					case 'p': GMT->common.R.registration = GMT_GRID_PIXEL_REG; break;
+					case 'g': GMT->common.R.registration = GMT_GRID_NODE_REG; break;
+					default:
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -r: Syntax is -r[g|p]\n");
+						error++;
+						break;
+				}
+			}
+			else	/* By default, -r means pixel registration */
+				GMT->common.R.registration = GMT_GRID_PIXEL_REG;
 			break;
 
 		case 's':

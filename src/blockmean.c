@@ -40,18 +40,19 @@
 #include "block_subs.h"
 
 GMT_LOCAL struct GMT_KW_DICT local_kw[] = {
+	/* Short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
 	{ 'A', "fields", "", "", "", "" },
 	{ 'C', "center", "", "", "", "" },
 	{ 'E', "extend", "", "", "P,p", "prop-error,prop-mean" },
 	{ 'G', "gridfile", "", "", "", "" },
 	{ 'S', "select", "m,n,s,w", "mean,count,sum,weight", "", "" },
 	{ 'W', "weights", "i,o", "in,out", "s", "sigma" },
-	{'\0', "", "", "", "", ""}	/* End of list marked with empty code and strings */
+	{'\0', "", "", "", "", ""}	/* End of list marked with empty option and strings */
 };
 
 enum Block_Modes {
 	BLK_MODE_NOTSET = 0,	/* No -E+p|P (or -Ep) set */
-	BLK_MODE_OBSOLETE = 1,	/* Old -Ep for backwards compabitibility; assumes input weights are already set to 1/s^ */
+	BLK_MODE_OBSOLETE = 1,	/* Old -Ep for backwards compabitibility; assumes input weights are already set to 1/s^2 */
 	BLK_MODE_WEIGHTED = 2,	/* -E+p computes weighted z means and error propagation on weighted z mean, using input s and w = 1/s^2 */
 	BLK_MODE_SIMPLE = 3	/* -E+P computes simple z means and error propagation on simple z mean, using input s and w = 1/s^2 */
 };
