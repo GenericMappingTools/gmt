@@ -2018,11 +2018,11 @@ NaN-record treatment: The **-s** option
 
 We can use this option to suppress output for records whose *z*-value
 equals NaN (by default we output all records). Alternatively, append
-**r** to reverse the suppression, i.e., only output the records whose
-*z*-value equals NaN. Use **-sa** to suppress output records where one
+**+r** to reverse the suppression, i.e., only output the records whose
+*z*-value equals NaN. Use **-s+a** to suppress output records where one
 or more fields (and not necessarily *z*) equal NaN. Finally, you can
 supply a comma-separated list of all columns or column ranges to
-consider for this NaN test.
+consider (before the optional modifiers) for this NaN test.
 
 Layer PDF transparency: The **-t** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
