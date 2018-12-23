@@ -354,7 +354,7 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 };
 
 /* List of GMT common keyword/options pairs */
-#ifdef USE_GMT_KWD
+
 struct GMT_KW_DICT gmt_kw_common[] = {
 	{0, 'R', "region",       "", "", "r", "rect"},
 	{0, 'J', "projection",   "", "", "", ""},
@@ -380,7 +380,6 @@ struct GMT_KW_DICT gmt_kw_common[] = {
 	{0, ':', "order",        "i,o", "in,out", "", ""},
 	{0, '\0', "",            "", "", "", ""}	/* End of list marked with empty code and strings */
 };
-#endif
 
 /* Local variables to gmt_init.c */
 
@@ -471,8 +470,6 @@ GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 	return false;
 }
 #endif
-
-#ifdef USE_GMT_KWD
 
 /*! . */
 GMT_LOCAL struct GMT_KW_DICT * gmtinit_find_kw (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *kw1, struct GMT_KW_DICT *kw2, char *arg, int *k) {
@@ -582,7 +579,6 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *
 		GMT_Destroy_Cmd (API, &cmd);	/* Free string */
 	}
 }
-#endif
 
 GMT_LOCAL int get_psl_encoding (const char *encoding) {
 	/* Return the specified encoding ID */
@@ -12021,9 +12017,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	struct GMT_CTRL *GMT = API->GMT;
 	API->error = GMT_NOERROR;
 
-#ifdef USE_GMT_KWD
 	gmtinit_kw_replace (API, module_kw, options);
-#endif
+
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
 	 * make sure pscoast -E, if passing old +r|R area settings via -E, is split into -R before GMT_Parse_Common is called */
 
