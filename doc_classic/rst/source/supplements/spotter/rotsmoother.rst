@@ -6,7 +6,7 @@ rotsmoother
 
 .. only:: not man
 
-    rotsmoother - Get mean rotations and covariance matrices from set of finite rotation
+    rotsmoother - Get mean rotations and covariance matrices from set of finite rotations
 
 Synopsis
 --------
