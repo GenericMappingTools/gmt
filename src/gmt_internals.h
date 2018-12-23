@@ -63,7 +63,7 @@ EXTERN_MSC char *gmtlib_get_srtmlist  (struct GMTAPI_CTRL *API, double wesn[], u
 EXTERN_MSC struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region, char *file);
 EXTERN_MSC bool gmtlib_fig_is_ps (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmtlib_refpoint_to_panel_xy (struct GMT_CTRL *GMT, int refpoint, struct GMT_SUBPLOT *P, double *x, double *y);
-EXTERN_MSC unsigned int gmtlib_count_slashes (struct GMT_CTRL *GMT, char *txt);
+EXTERN_MSC unsigned int gmtlib_count_char (struct GMT_CTRL *GMT, char *txt, char it);
 EXTERN_MSC int gmtlib_read_figures (struct GMT_CTRL *API, unsigned int mode, struct GMT_FIGURE **figs);
 EXTERN_MSC bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind);
 EXTERN_MSC unsigned int gmtlib_get_pos_of_filename (const char *url);

@@ -1825,7 +1825,7 @@ GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 		int n = 0, n_slashes;
 		char txt_j[GMT_LEN256] = {""}, txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""};
 	
-		n_slashes = gmtlib_count_slashes (GMT, item);	/* Count slashes to detect [<just>]/<dx>/<dy>/ presence */
+		n_slashes = gmtlib_count_char (GMT, item, '/');	/* Count slashes to detect [<just>]/<dx>/<dy>/ presence */
 
 		if (n_slashes >= 2) {	/* Probably gave -U[<just>]/<dx>/<dy>[/<string>] */
 			if (item[0] == '/') { /* No justification given */
@@ -4010,7 +4010,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 	}
 	if (mod_flag > 1) args[last_pos] = 0;	/* Temporarily chop off modifier */
 
-	n_slashes = gmtlib_count_slashes (GMT, args);	/* Count slashes to distinguis args */
+	n_slashes = gmtlib_count_char (GMT, args, '/');	/* Count slashes to distinguis args */
 
 	/* Differentiate between general perspective and orthographic projection based on number of slashes */
 	if (project == GMT_GENPER || project == GMT_ORTHO) {
@@ -7295,7 +7295,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 
 	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[L|C|R][B|M|T]<x0>/<y0>/<n_columns>/<n_rows> or -R[g|d]w/e/s/n[/z0/z1][r] */
 	length = strlen (item) - 1;
-	n_slash = gmtlib_count_slashes (GMT, item);
+	n_slash = gmtlib_count_char (GMT, item, '/');
 	got_r = (strstr (item, "+r") != NULL);
 	got_country = (got_r || (strstr (item, "+R") != NULL));	/* May have given DCW (true of +R, maybe if +r since the latter also means oblique) */
 
@@ -11805,7 +11805,7 @@ GMT_LOCAL bool is_region_geographic (struct GMT_CTRL *GMT, struct GMT_OPTION *op
 	if (!strncmp (module, "grdspotter", 10U)) return true;
 	if (!strncmp (module, "polespotter", 11U)) return true;
 	if ((opt = GMT_Find_Option (GMT->parent, 'R', options)) == NULL) return false;	/* Should not happen but lets just say Cartesian for now */
-	n_slashes = gmtlib_count_slashes (GMT, opt->arg);	/* Distinguies -Rw/e/s/n from other things */
+	n_slashes = gmtlib_count_char (GMT, opt->arg, '/');	/* Distinguies -Rw/e/s/n from other things */
 	/* Check if -R[=]<code>[,<code>,...][+r|R] which means use country name etc to set region; clearly geographical */
 	if (n_slashes == 0 && ((isupper ((int)opt->arg[0]) && isupper ((int)opt->arg[1])) || opt->arg[0] == '=' || strchr (opt->arg, ',') || strstr (opt->arg, "+r") || strstr (opt->arg, "+R"))) return true;
 	if (!gmt_access (GMT, opt->arg, F_OK)) {	/* Gave a grid file */
@@ -15352,10 +15352,10 @@ bool gmt_option_set (struct GMT_CTRL *GMT, bool *active, unsigned int *errors) {
 	}
 }
 
-unsigned int gmtlib_count_slashes (struct GMT_CTRL *GMT, char *txt) {
+unsigned int gmtlib_count_char (struct GMT_CTRL *GMT, char *txt, char it) {
 	unsigned int i, n;
 	gmt_M_unused (GMT);
-	for (i = n = 0; txt[i]; i++) if (txt[i] == '/') n++;
+	for (i = n = 0; txt[i]; i++) if (txt[i] == it) n++;
 	return (n);
 }
 
