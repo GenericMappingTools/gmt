@@ -12548,3 +12548,13 @@ float GMT_Get_Version (void *API, unsigned int *major, unsigned int *minor, unsi
 	if (patch) *patch = (unsigned int)patch_loc;
 	return major_loc + (float)minor_loc / 10;
 }
+
+void *GMT_Get_Ctrl (void *V_API) {
+	/* For external enviroments that need to get the GMT pointer for calling
+	 * lower-level GMT library functions that expects the GMT pointer */
+	struct GMTAPI_CTRL *API = NULL;
+	
+	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
+	API = api_get_api_ptr (V_API);
+	return API->GMT;	/* Pass back the GMT ctrl pointer as void pointer */
+}
