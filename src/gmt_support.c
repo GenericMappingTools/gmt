@@ -1031,7 +1031,7 @@ GMT_LOCAL int support_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_
 	if (!strncmp (line, "dotdash", 7U)) strcpy (line, ".-");	/* Accept "dotdash*" to mean .- */
 	if (!strncmp (line, "dash", 4U)) strcpy (line, "-");		/* Accept "dash*" to mean - */
 	if (!strncmp (line, "dot", 3U)) strcpy (line, ".");		/* Accept "dot*" to mean . */
-	if (!strncmp (line, "a")) {	/* Old GMT4 "a" style */
+	if (!strcmp (line, "a")) {	/* Old GMT4 "a" style */
 		if (gmt_M_compat_check (GMT, 4))
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Pen-style \"a\" is deprecated, use \"dashed\" or \"-\" instead\n");
 		else {
