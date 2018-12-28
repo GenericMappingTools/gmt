@@ -52,10 +52,11 @@ struct PSTEXT_CTRL {
 	struct PSTEXT_A {	/* -A */
 		bool active;
 	} A;
-	struct PSTEXT_C {	/* -C<dx>/<dy> */
+	struct PSTEXT_C {	/* -C[<dx>/<dy>][+to|O|c|C] */
 		bool active;
 		bool percent;
 		double dx, dy;
+		char mode;
 	} C;
 	struct PSTEXT_D {	/* -D[j]<dx>[/<dy>][v[<pen>]] */
 		bool active;
@@ -99,10 +100,6 @@ struct PSTEXT_CTRL {
 		bool active;
 		struct GMT_PEN pen;
 	} S;
-	struct PSTEXT_T {	/* -To|O|c|C */
-		bool active;
-		char mode;
-	} T;
 	struct PSTEXT_W {	/* -W[<pen>] */
 		bool active;
 		struct GMT_PEN pen;
@@ -138,12 +135,12 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->D.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	C->C.dx = C->C.dy = GMT_TEXT_CLEARANCE;	/* 15% of font size is default clearance */
 	C->C.percent = true;
+	C->C.mode = 'o';	/* Rectangular box shape */
 	C->F.justify = PSL_MC;		/* MC is the default */
 	C->F.font = GMT->current.setting.font_annot[GMT_PRIMARY];		/* Default font */
 	C->F.font.set = 0;
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* No fill */
 	C->S.pen = GMT->current.setting.map_default_pen;
-	C->T.mode = 'o';	/* Rectangular box shape */
 
 	return (C);
 }
@@ -201,9 +198,9 @@ GMT_LOCAL void output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 
 GMT_LOCAL void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C) {
 	gmt_M_memset (T, 1, struct PSTEXT_INFO);
-	if (C->T.mode != 'o' && C->C.dx == 0.0 && C->C.dy == 0.0) {
+	if (C->C.mode != 'o' && C->C.dx == 0.0 && C->C.dy == 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot have non-rectangular text box if clearance (-C) is zero.\n");
-		C->T.mode = 'o';
+		C->C.mode = 'o';
 	}
 	T->x_space = C->C.dx;
 	T->y_space = C->C.dy;
@@ -217,9 +214,9 @@ GMT_LOCAL void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO 
 	if (C->W.active || C->G.active) {
 		if (C->W.active) T->boxflag |= 1;	/* Want box outline */
 		if (C->G.active) T->boxflag |= 2;	/* Want filled box */
-		if (C->T.mode == 'O') T->boxflag |= 4;	/* Want rounded box outline */
-		if (C->T.mode == 'c') T->boxflag |= 8;	/* Want concave box outline */
-		if (C->T.mode == 'C') T->boxflag |= 16;	/* Want convex box outline */
+		if (C->C.mode == 'O') T->boxflag |= 4;	/* Want rounded box outline */
+		if (C->C.mode == 'c') T->boxflag |= 8;	/* Want concave box outline */
+		if (C->C.mode == 'C') T->boxflag |= 16;	/* Want convex box outline */
 		T->boxpen = C->W.pen;
 		T->boxfill = C->G.fill;
 	}
@@ -276,9 +273,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level & PSTEXT_SHOW_FONTS) show_fonts = true, level -= PSTEXT_SHOW_FONTS;	/* Deal with the special bitflag for showing the fonts */
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-D[j|J]<dx>[/<dy>][+v[<pen>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<dx>/<dy>][+to|O|c|C]] [-D[j|J]<dx>[/<dy>][+v[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|t|z[<fmt>]][+j[<justify>]]] [-G<color>|c|C] [%s] %s\n", GMT_Jz_OPT, GMT_K_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-M] [-N] %s%s[-Q<case>] [-To|O|c|C] [%s] [%s]\n", GMT_O_OPT, GMT_P_OPT, GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-M] [-N] %s%s[-Q<case>] [%s] [%s]\n", GMT_O_OPT, GMT_P_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[<pen>] [%s] [%s] [-Z[<zlevel>|+]]\n", GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n", GMT_a_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -318,6 +315,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between characters and surrounding box.  Only used\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   if -W has been set.  Append units {%s} or %% of fontsize [%d%%].\n", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append +t<shape> when -G and/or -W is used. Select o for rectangle [Default]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or O for rectangle with rounded corners.  For -M you can also set c for concave and C for convex rectangle.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Add <add_x>,<add_y> to the text origin AFTER projecting with -J [0/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dj to move text origin away from point (direction determined by text's justification).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Upper case -DJ will shorten diagonal shifts at corners by sqrt(2).\n");
@@ -352,9 +351,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip text that exceeds the map boundaries [Default will clip].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q For all text to be (l)lower or (u)pper-case [Default leaves text as is].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set shape of textbox when using -G and/or -W.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Add o for rectangle [Default] or O for rectangle with rounded corners,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   When -M is used you can also set c for concave and C for convex rectangle.\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Draw a box around the text with the specified pen [Default pen is %s].", 0);
 	GMT_Option (API, "X");
@@ -376,7 +372,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 	int j, k;
 	unsigned int pos, n_errors = 0;
 	bool explicit_justify = false;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -395,6 +391,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				break;
 			case 'C':
 				Ctrl->C.active = true;
+				c = strstr (opt->arg, "+t");
+				if ((c = strstr (opt->arg, "+t"))) {
+					Ctrl->C.mode = c[2];
+					n_errors += gmt_M_check_condition (GMT, !strchr("oOcC", Ctrl->C.mode), "Syntax error -C option: Modifer +t must add o, O, c, or C\n");
+					c[0] = '\0';	/* Hide modifier */
+				}
 				if (opt->arg[0]) {	/* Replace default settings with user settings */
 					Ctrl->C.percent = (strchr (opt->arg, '%')) ? true : false;
 					k = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
@@ -403,6 +405,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 					Ctrl->C.dx = (Ctrl->C.percent) ? atof (txt_a) : gmt_M_to_inch (GMT, txt_a);
 					Ctrl->C.dy = (k == 2) ? ((Ctrl->C.percent) ? atof (txt_b) : gmt_M_to_inch (GMT, txt_b)) : Ctrl->C.dx;
 				}
+				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'D':
 				Ctrl->D.active = true;
@@ -562,9 +565,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				if (opt->arg[0] == 'u') Ctrl->Q.mode = +1;
 				break;
 			case 'T':
-				Ctrl->T.active = true;
-				Ctrl->T.mode = opt->arg[0];
-				n_errors += gmt_M_check_condition (GMT, !strchr("oOcC", Ctrl->T.mode), "Syntax error -T option: must add o, O, c, or C\n");
+				if (gmt_M_compat_check (GMT, 5)) { /* Warn and pass through */
+					GMT_Report (API, GMT_MSG_COMPAT, "-T option is deprecated; use modifer +t in -C instead.\n");
+					Ctrl->C.mode = opt->arg[0];
+					n_errors += gmt_M_check_condition (GMT, !strchr("oOcC", Ctrl->C.mode), "Syntax error -T option: must add o, O, c, or C\n");
+				}
+				else
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'W':
 				Ctrl->W.active = true;
@@ -600,7 +607,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx == 0.0 && Ctrl->C.dy == 0.0 && Ctrl->T.mode && Ctrl->T.mode != 'o', "Warning: non-rectangular text boxes require a non-zero -C\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx == 0.0 && Ctrl->C.dy == 0.0 && Ctrl->C.mode && Ctrl->C.mode != 'o', "Warning: non-rectangular text boxes require a non-zero -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dx == 0.0 && Ctrl->D.dy == 0.0 && Ctrl->D.line, "Warning: -D<x/y>v requires one nonzero <x/y>\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && abs (Ctrl->Q.mode) > 1, "Syntax error -Q option: Use l or u for lower/upper-case.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->M.active, "Syntax error -Gc option: Cannot be used with -M.\n");
