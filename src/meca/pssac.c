@@ -97,6 +97,7 @@ struct PSSAC_CTRL {
 		double shift;
 	} T;
 	struct PSSAC_W {	/* -W<pen> */
+		bool active;
 		struct GMT_PEN pen;
 	} W;
 };
@@ -383,6 +384,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 			case 'W':		/* Set line attributes */
+				Ctrl->W.active = true;
 				if (opt->arg[0] && gmt_getpen (GMT, &opt->arg[0], &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 3);
 					n_errors++;
@@ -581,7 +583,7 @@ GMT_LOCAL int init_sac_list (struct GMT_CTRL *GMT, char **files, unsigned int n_
 }
 
 int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that implements the pssac task */
-	bool old_is_world, free_plot_pen = false, read_from_ascii;
+	bool old_is_world, free_plot_pen = false, read_from_ascii, draw_line;
 	unsigned int n_files, *plot_pen = NULL;
 	int error = GMT_NOERROR, n, i, npts;
 	double yscale = 1.0, y0 = 0.0, x0, tref, dt, *x = NULL, *y = NULL, *xp = NULL, *yp = NULL;
@@ -876,30 +878,34 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 			}
 		}
 
-		/* plot trace */
-		if (gmt_M_is_linear(GMT)) {
-			GMT->current.plot.n = gmt_geo_to_xy_line (GMT, x, y, hd.npts);
-			xp = GMT->current.plot.x;
-			yp = GMT->current.plot.y;
-			npts = (int)GMT->current.plot.n;
-			plot_pen = GMT->current.plot.pen;
-		}
-		else {
-			xp = x;
-			yp = y;
-			npts = hd.npts;
-			plot_pen = gmt_M_memory (GMT, NULL, npts, unsigned int);
-			plot_pen[0] = PSL_MOVE;
-			free_plot_pen = true;
-		}
-		if (L[n].custom_pen) {
-			current_pen = L[n].pen;
-			gmt_setpen (GMT, &L[n].pen);
-		}
-		gmt_plot_line (GMT, xp, yp, plot_pen, npts, current_pen.mode);
-		if (L[n].custom_pen) {
-			current_pen = Ctrl->W.pen;
-			gmt_setpen (GMT, &current_pen);
+		/* don't draw line if -G is used while -W isn't */
+		draw_line = Ctrl->W.active || !(Ctrl->G.active[0] || Ctrl->G.active[1]);
+		/* draw line */
+		if (draw_line) {
+			if (gmt_M_is_linear(GMT)) {
+				GMT->current.plot.n = gmt_geo_to_xy_line (GMT, x, y, hd.npts);
+				xp = GMT->current.plot.x;
+				yp = GMT->current.plot.y;
+				npts = (int)GMT->current.plot.n;
+				plot_pen = GMT->current.plot.pen;
+			}
+			else {
+				xp = x;
+				yp = y;
+				npts = hd.npts;
+				plot_pen = gmt_M_memory (GMT, NULL, npts, unsigned int);
+				plot_pen[0] = PSL_MOVE;
+				free_plot_pen = true;
+			}
+			if (L[n].custom_pen) {
+				current_pen = L[n].pen;
+				gmt_setpen (GMT, &L[n].pen);
+			}
+			gmt_plot_line (GMT, xp, yp, plot_pen, npts, current_pen.mode);
+			if (L[n].custom_pen) {
+				current_pen = Ctrl->W.pen;
+				gmt_setpen (GMT, &current_pen);
+			}
 		}
 
 		gmt_M_free(GMT, x);
