@@ -40,7 +40,7 @@
 #include "block_subs.h"
 
 GMT_LOCAL struct GMT_KW_DICT local_kw[] = {
-	/* Separator, Short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
+	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
 	{ 0, 'A', "fields", "", "", "", "" },
 	{ 0, 'C', "center", "", "", "", "" },
 	{ 0, 'D', "bin-width", "", "", "a,c,h,l", "average,center,high,low" },

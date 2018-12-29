@@ -353,32 +353,36 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 #include "standard_adobe_fonts.h"
 };
 
-/* List of GMT common keyword/options pairs */
+/* List of GMT common keyword/options pairs.  This list is used in gmtinit_kw_replace to convert
+ * the new long-format GMT options (e.g., --timestamp="My plot"+o5c/6c) to regular GMT short format
+ * options (e.g., -U/5c/6c/"My plot") that the common and module parsers expect. */
 
-struct GMT_KW_DICT gmt_kw_common[] = {
-	{0, 'R', "region",       "", "", "r", "rect"},
-	{0, 'J', "projection",   "", "", "", ""},
-	{0, 'U', "timestamp",    "", "", "c,j,o", "command,justify,offset"},
-	{0, 'V', "verbose",      "", "", "", ""},
-	{0, 'X', "xoff",         "a,c,r", "absolute,center,relative", "", ""},
-	{0, 'Y', "yoff",         "a,c,r", "absolute,center,relative", "", ""},
-	{0, 'a', "aspatial",     "", "", "", ""},
-	{0, 'b', "binary",       "", "", "B,L", "big-endian,little-endian"},
-	{0, 'd', "nodata",       "i,o", "in,out", "", ""},
-	{0, 'e', "find",         "", "", "f", "file"},
-	{0, 'f', "coltypes",     "i,o", "in,out", "", ""},
-	{0, 'g', "gap",          "", "", "", ""},
-	{0, 'h', "header",       "i,o", "in,out", "c,d,r,t", "columns,delete,remark,title"},
-	{',', 'i', "incol",        "", "", "l,o,s", "log,offset,scale"},
-	{',', 'o', "outcol",       "", "", "", ""},
-	{0, 'n', "interpolation", "b,c,l,n", "b-spline,bicubic,linear,nearest-neighbor", "c,t", "clip,threshold"},
-	{0, 'p', "perspective",  "x,y,z", "x,y,z", "v,w", "view,world"},
-	{0, 'r', "registration", "g,p", "gridline,pixel", "", ""},
-	{0, 's', "skip", "", "", "a,r", "any,reverse"},
-	{0, 't', "transparency", "", "", "", ""},
-	{0, 'x', "cores",        "", "", "", ""},
-	{0, ':', "order",        "i,o", "in,out", "", ""},
-	{0, '\0', "",            "", "", "", ""}	/* End of list marked with empty code and strings */
+GMT_LOCAL struct GMT_KW_DICT gmt_kw_common[] = {
+	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
+	{ '/', 'I', "increment",     "",        "",                                        "e,n",      "exact,number" },
+	{   0, 'J', "projection",    "",        "",                                        "",         ""},
+	{   0, 'R', "region",        "",        "",                                        "r",        "rect"},
+	{   0, 'U', "timestamp",     "",        "",                                        "c,j,o",    "command,justify,offset"},
+	{   0, 'V', "verbose",       "",        "",                                        "",         ""},
+	{   0, 'X', "xoffset",       "a,c,r",   "absolute,center,relative",                "",         ""},
+	{   0, 'Y', "yoffset",       "a,c,r",   "absolute,center,relative",                "",         ""},
+	{   0, 'a', "aspatial",      "",        "",                                        "",         ""},
+	{   0, 'b', "binary",        "",        "",                                        "B,L",      "big-endian,little-endian"},
+	{   0, 'd', "nodata",        "i,o",     "in,out",                                  "",         ""},
+	{   0, 'e', "find",          "",        "",                                        "f",        "file"},
+	{ ',', 'f', "coltypes",      "i,o",     "in,out",                                   "",        ""},
+	{   0, 'g', "gap",           "",        "",                                         "",        ""},
+	{   0, 'h', "header",        "i,o",     "in,out",                                   "c,d,r,t", "columns,delete,remark,title"},
+	{ ',', 'i', "input",         "",        "",                                         "l,o,s",   "log,offset,scale"},
+	{   0, 'n', "interpolation", "b,c,l,n", "b-spline,bicubic,linear,nearest-neighbor", "c,t",     "clip,threshold"},
+	{ ',', 'o', "output",        "",        "",                                         "",        ""},
+	{   0, 'p', "perspective",   "x,y,z",   "x,y,z",                                    "v,w",     "view,world"},
+	{   0, 'r', "registration",  "g,p",     "gridline,pixel",                           "",        ""},
+	{   0, 's', "skip",           "",       "",                                         "a,r",     "any,reverse"},
+	{   0, 't', "transparency",  "",        "",                                         "",        ""},
+	{   0, 'x', "cores",         "",        "",                                         "",        ""},
+	{   0, ':', "latlon",        "i,o",     "in,out",                                   "",        ""},
+	{   0, '\0', "",             "",        "",                                         "",        ""}	/* End of list marked with empty code and strings */
 };
 
 /* Local variables to gmt_init.c */
@@ -550,20 +554,21 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *
 	 *
 	 * --longoption[=[<directive>:]<arg>][+<mod1[=<arg1>]][+<mod2[=<arg2>]]...  
 	 *
-	 * For options that takes more than one set of arguments (e.g., -Idx/dy or -icols1,cols2,...)
+	 * For options that takes more than one section of arguments (e.g., -Idx/dy or -icols1,cols2,...)
 	 * the section
 	 *
 	 * [<arg>][+<mod1[=<arg1>]][+<mod2[=<arg2>]]
 	 *
 	 * may appear more than once after a section separator (e.g., '/' or ',').  The separator is
-	 * listed in module_kw.separator or it is 0 if no such feature.
+	 * given in module_kw.separator or it is 0 if the option does not take sections.
 	 */
 
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_KW_DICT *kw = NULL;
-	char text[GMT_LEN256] = {""}, add[GMT_LEN64] = {""}, argument[GMT_LEN64] = {""}, orig[GMT_BUFSIZ] = {""};
+	char new_arg[GMT_LEN256] = {""}, add[GMT_LEN64] = {""}, argument[GMT_LEN64] = {""}, orig[GMT_BUFSIZ] = {""};
 	char *e = NULL, *p = NULL, c = 0, e_code = '=', sep[2] = {'\0', '\0'};
-	int k, n_sections, section, s = 0, sx = 0;
+	int k, n_sections, section, sect_start = 0, sect_end = 0;
+	bool modified = false;
 	
 	for (opt = *options; opt; opt = opt->next) {
 		if (opt->option != GMT_OPT_PARAMETER) continue;	/* Cannot be a --keyword[=value] pair */
@@ -573,68 +578,69 @@ GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *
 		p = strchr (opt->arg, '+');			/* Get location of plus sign, if present */
 		/* Check for case where the = is part of a modifier, hence not a value or directive */
 		if (e && p && ((e - opt->arg) > (p - opt->arg)))
-			e = NULL;	/* The = is part of a modifier so ignore for now */
+			e = NULL;				/* The = is part of a modifier so ignore for now */
 		if (e) e[0] = '\0';				/* Cut off =value for now so opt->arg only has the keyword */
 		else if (p) p[0] = '\0';			/* Cut off +modifier for now so opt->arg only has the keyword */
-		if ((kw = gmtinit_find_kw (API, gmt_kw_common, module_kw, orig, &k)) == NULL) {
-			if (e) e[0] = '=';
+		if ((kw = gmtinit_find_kw (API, gmt_kw_common, module_kw, orig, &k)) == NULL) {	/* Find matching keyword listing */
+			if (e) e[0] = '=';	/* Undo damage to option argument */
 			if (p) p[0] = '+';
 			continue;	/* Did not match anything in the list */
 		}
 		
-		/* Here we found a matching long-format option name */
+		/* Here we found a matching long-format option name, returned as the kw[k] struct */
 		/* Do the long to short option substitution */
 		
-		e_code = '=';	/* When we remove the = we will replace it, but in multi-sections it may change after the first */
+		e_code = '=';	/* When we remove the '=' we will replace it, but in multi-sections it may change after the first section */
 		n_sections = ((kw[k].separator) ? gmtlib_count_char (API->GMT, orig, kw[k].separator) : 0) + 1;
 		opt->option = kw[k].short_option;	/* Update the option character first */
-		sep[0] = kw[k].separator;
-		text[0] = '\0';				/* Initialize short option arguments */
+		sep[0] = kw[k].separator;		/* Need a string with separator to strcat below */
+		new_arg[0] = '\0';			/* Initialize short option arguments */
+		modified = true;			/* We have at least modified one option */
 		
-		for (section = 0; section < n_sections; section++) {
+		for (section = 0; section < n_sections; section++) {	/* Parse the sections separately but strcat together a single short option */
 			/* Make sure a few things are correct */
 			/* Find separator, set to 0, check if p is after, if so set to NULL. */
-			if (n_sections > 1) {	/* Special case since there is only one leading =<value>; other values are after separators */
-				s = gmtinit_get_section (API, orig, kw[k].separator, section, &sx);	/* Get next section */
-				if (e)
-					e = (s) ? orig+s-1 : strchr (orig, '=');	/* Update what e is pointing to */
+			if (n_sections > 1) {	/* Special case since there is only one leading =<value>; other values are given after separators */
+				sect_start = gmtinit_get_section (API, orig, kw[k].separator, section, &sect_end);	/* Get next section start and truncate */
+				if (e)	/* Update what e is pointing to */
+					e = (sect_start) ? orig + sect_start - 1 : strchr (orig, '=');	/* e points to = or char before value */
 				p = strchr (e, '+');	/* Must also update to see if this section has modifiers... */
 				if (p) p[0] = '\0';	/* ...and if it does we temporarily chop it off here */
 			}
 
 			if (e) {	/* Got a <directive>[:<arg>] or just <arg> */
-				if ((c = gmtinit_find_argument (API, kw[k].long_directives, kw[k].short_directives, &e[1], ':', argument)))	/* Get the directive, or 0 if it is an argument instead */
-					sprintf (add, "%c%s", c, argument);
-				else
+				if ((c = gmtinit_find_argument (API, kw[k].long_directives, kw[k].short_directives, &e[1], ':', argument)))	/* Get the directive, or return 0 if it is an argument instead */
+					sprintf (add, "%c%s", c, argument);	/* Prepend directive code */
+				else	/* Just got an argument */
 					sprintf (add, "%s", argument);
-				strcat (text, add);	/* Add to the short-format option argument */
-				e[0] = e_code;		/* Put back the = character (at least the first time) */
+				strcat (new_arg, add);	/* Add string to the short-format option argument */
+				e[0] = e_code;		/* Put back the = character (at least the first time; later it is a separator) */
 			}
-			if (p) {	/* We have one of more modifiers */
+			if (p) {	/* We have one of more modifiers to process */
 				unsigned int pos = 0;
 				char item[GMT_LEN64] = {""};
 				p[0] = '+';	/* Put back the plus sign for the first modifier */
 				while ((gmt_strtok (p, "+", &pos, item))) {	/* While there are unprocessed modifiers */
-					if ((c = gmtinit_find_argument (API, kw[k].long_modifiers, kw[k].short_modifiers, item, '=', argument)))	/* Get the modifier, or 0 if unrecognized */
-						sprintf (add, "+%c%s", c, argument);
+					if ((c = gmtinit_find_argument (API, kw[k].long_modifiers, kw[k].short_modifiers, item, '=', argument)))	/* Get the modifier, or return 0 if unrecognized */
+						sprintf (add, "+%c%s", c, argument);	/* Append modifier with argument next to it (may be empty) */
 					else {
 						GMT_Report (API, GMT_MSG_NORMAL, "Long-modifier form %s for option -%c not recognized!\n", &e[1], opt->option);
 						add[0] = '\0';
 					}
-					strcat (text, add);	/* Add to the short-format option argument */
+					strcat (new_arg, add);	/* Add to the short-format option argument */
 				}
 			}
 			if (n_sections > 1) {	/* Need to separate results per section with the separator character */
-				if (section < (n_sections - 1))
-					strcat (text, sep);	/* Add to the short-format option argument */
-				if (sx > 0) orig[sx] = kw[k].separator;
-				e_code = kw[k].separator;	/* Since after first section we no longer have '=' */
+				if (section < (n_sections - 1))	/* Except for last we need to append separator */
+					strcat (new_arg, sep);	/* Add to the short-format option argument */
+				if (sect_end > 0) orig[sect_end] = kw[k].separator;	/* Put back separator at end of current section */
+				e_code = kw[k].separator;	/* Since after first section we no longer have '=' to replace */
 			}
 		}
 		gmt_M_str_free (opt->arg);	/* Free old par=value string argument */
-		opt->arg = strdup (text);	/* Allocate copy of new argument */
+		opt->arg = strdup (new_arg);	/* Allocate copy of new argument */
 	}
-	if (gmt_M_is_verbose (API->GMT, GMT_MSG_LONG_VERBOSE)) {	/* Echo the converted options */
+	if (modified && gmt_M_is_verbose (API->GMT, GMT_MSG_LONG_VERBOSE)) {	/* Echo the converted options */
 		char *cmd = GMT_Create_Cmd (API, *options);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reformatted options: %s\n", cmd);
 		GMT_Destroy_Cmd (API, &cmd);	/* Free string */
