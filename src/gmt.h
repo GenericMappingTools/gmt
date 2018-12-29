@@ -28,7 +28,7 @@
 /*
  * Author: 	Paul Wessel
  * Date:	11-JUN-2016
- * Version:	5.3 API
+ * Version:	6 API
  */
 
 #ifndef _GMT_H
@@ -114,12 +114,13 @@ EXTERN_MSC double * GMT_Get_Coord     (void *API, unsigned int family, unsigned 
 EXTERN_MSC int GMT_Set_Index	      (void *API, struct GMT_GRID_HEADER *header, char *code);	/* Experimental */
 EXTERN_MSC uint64_t GMT_Get_Pixel     (void *API, struct GMT_GRID_HEADER *header, int row, int col, int layer);	/* Experimental */
 
-/* 10 functions to show and inquire about GMT common options, GMT default settings, object metadata, convert strings to doubles, and message and report printing */
+/* 11 functions to show and inquire about GMT common options, GMT default settings, object metadata, convert strings to doubles, and message and report printing */
 
 EXTERN_MSC int GMT_Option             (void *API, const char *options);
 EXTERN_MSC int GMT_Get_Common         (void *API, unsigned int option, double *par);
 EXTERN_MSC int GMT_Get_Default        (void *API, const char *keyword, char *value);
 EXTERN_MSC int GMT_Set_Default        (void *API, const char *keyword, const char *value);
+EXTERN_MSC int GMT_Get_Enum           (void *API, char *key);
 EXTERN_MSC int GMT_Get_Info           (void *API, unsigned int family, void *data, unsigned int *geometry, uint64_t dim[], double *range, double *inc, unsigned int *registration, int *pad);
 EXTERN_MSC int GMT_Get_Values         (void *API, const char *arg, double *par, int maxpar);
 EXTERN_MSC int GMT_Report             (void *API, unsigned int level, const char *message, ...);
@@ -149,7 +150,6 @@ EXTERN_MSC int    GMT_Delete_Option                 (void *API, struct GMT_OPTIO
 EXTERN_MSC int    GMT_Parse_Common                  (void *API, const char *given_options, struct GMT_OPTION *options);
 EXTERN_MSC char  *GMT_Duplicate_String              (void *API, const char* string);
 
-
 /* 8 GMT_FFT_* functions */
 EXTERN_MSC unsigned int GMT_FFT_Option     (void *API, char option, unsigned int dim, const char *string);
 EXTERN_MSC void        *GMT_FFT_Parse      (void *API, char option, unsigned int dim, const char *args);
@@ -166,13 +166,13 @@ EXTERN_MSC int gmt_f77_readgrdinfo_ (unsigned int dim[], double wesn[], double i
 EXTERN_MSC int gmt_f77_readgrd_	    (gmt_grdfloat *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file, int ltitle, int lremark, int lfile);
 EXTERN_MSC int gmt_f77_writegrd_    (gmt_grdfloat *array, unsigned int dim[], double wesn[], double inc[], const char *title, const char *remark, const char *file, int ltitle, int lremark, int lfile);
 
-/* 6 for external API developers only */
+/* 7 for external API developers only */
 EXTERN_MSC struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *module, int n_in, struct GMT_OPTION **head, unsigned int *n);
 EXTERN_MSC int GMT_Expand_Option   (void *API, struct GMT_OPTION *current, const char *txt);
-EXTERN_MSC int GMT_Get_Enum	       (void *API, char *key);
 EXTERN_MSC int GMT_Set_AllocMode   (void *API, unsigned int family, void *object);
 EXTERN_MSC int GMT_Extract_Region  (void *API, char *file, double wesn[]);
 EXTERN_MSC float GMT_Get_Version   (void *API, unsigned int *major, unsigned int *minor, unsigned int *patch);
+EXTERN_MSC void *GMT_Get_Ctrl	   (void *API);
 
 /* These 8 functions are provided for backwards compatibility but are considered obsolete as of 6 */
 EXTERN_MSC void *GMT_Get_Data      (void *API, int object_ID, unsigned int mode, void *data);
