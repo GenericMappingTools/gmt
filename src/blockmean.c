@@ -43,8 +43,9 @@ GMT_LOCAL struct GMT_KW_DICT local_kw[] = {
 	/* Separator, Short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
 	{ 0, 'A', "fields", "", "", "", "" },
 	{ 0, 'C', "center", "", "", "", "" },
-	{ 0, 'E', "extend", "", "", "P,p", "prop-error,prop-mean" },
+	{ 0, 'E', "extend", "", "", "P,p", "prop-simple,prop-weighted" },
 	{ 0, 'G', "gridfile", "", "", "", "" },
+	{ '/', 'I', "increments", "", "", "e,n", "exact,number" },
 	{ 0, 'S', "select", "m,n,s,w", "mean,count,sum,weight", "", "" },
 	{ 0, 'W', "weights", "i,o", "in,out", "s", "sigma" },
 	{ 0, '\0', "", "", "", "", ""}	/* End of list marked with empty option and strings */

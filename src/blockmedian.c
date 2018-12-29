@@ -39,6 +39,18 @@
 
 #include "block_subs.h"
 
+GMT_LOCAL struct GMT_KW_DICT local_kw[] = {
+	/* Separator, Short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
+	{ 0, 'A', "fields", "", "", "", "" },
+	{ 0, 'C', "center", "", "", "", "" },
+	{ 0, 'E', "extend", "b,r,s", "box-whisker,record,source", "l", "lower" },
+	{ 0, 'G', "gridfile", "", "", "", "" },
+	{ 0, 'Q', "quicker", "", "", "", "" },
+	{ 0, 'T', "quantile", "", "", "", "" },
+	{ 0, 'W', "weights", "i,o", "in,out", "s", "sigma" },
+	{ 0, '\0', "", "", "", "", ""}	/* End of list marked with empty option and strings */
+};
+
 /* Note: For external calls to block* we do not allow explicit -G options; these should be added by examining -A which
  * is required for external calls to make grids, even if just z is requested.  This differs from the command line where
  * -Az is the default and -G is required to set file name format.  */
@@ -48,9 +60,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s\n", name, GMT_I_OPT, GMT_Rgeo_OPT);
 	if (API->external)
-		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-E[b]] [-Er|s[-]] [-Q] [-T<q>] [%s]\n", GMT_V_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-E[b]] [-Er|s[+l]] [-Q] [-T<q>] [%s]\n", GMT_V_OPT);
 	else
-		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-E[b]] [-Er|s[-]] [-G<grdfile>] [-Q] [-T<q>] [%s]\n", GMT_V_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-E[b]] [-Er|s[+l]] [-G<grdfile>] [-Q] [-T<q>] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[i][o][+s]] [%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -71,7 +83,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Eb for box-and-whisker output (x,y,z,l,25%%q,75%%q,h[,w]).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Er to report record number of the median value per block,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or -Es to report an unsigned integer source id (sid) taken from the x,y,z[,w],sid input.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For ties, report record number (or sid) of largest value; append - for smallest.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For ties, report record number (or sid) of highest value; append +l for lowest.\n");
 	if (!API->external) {
 		GMT_Message (API, GMT_TIME_NONE, "\t-G Specify output grid file name; no table results will be written to stdout.\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   If more than one field is set via -A then <grdfile> must contain  %%s to format field code.\n");
@@ -149,10 +161,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 				break;
 			case 'E':	/* Report extended statistics */
 				Ctrl->E.active = true;			/* Report standard deviation, min, and max in cols 4-6 */
-				if (opt->arg[0] == 'b')
+				if (opt->arg[0] == 'b')	/* Box-and-whisker directive */
 					Ctrl->E.mode = BLK_DO_EXTEND4;		/* Report min, 25%, 75% and max in cols 4-7 */
-				else if (opt->arg[0] == 'r' || opt->arg[0] == 's') {
-					Ctrl->E.mode = (opt->arg[1] == '-') ? BLK_DO_INDEX_LO : BLK_DO_INDEX_HI;	/* Report row number or sid of median */
+				else if (opt->arg[0] == 'r' || opt->arg[0] == 's') {	/* Report row number or sid of median */
+					if (opt->arg[1] == '-') {	/* Old-style, given - only */
+						if (gmt_M_compat_check (GMT, 4)) {
+							Ctrl->E.mode = BLK_DO_INDEX_LO;
+							GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Er|s- is deprecated; use +l for low index instead.\n");
+						}
+						else
+							n_errors += gmt_default_error (GMT, opt->option);
+					}
+					else if (strstr (opt->arg, "+l"))
+						Ctrl->E.mode = BLK_DO_INDEX_LO;
+					else
+						Ctrl->E.mode = BLK_DO_INDEX_HI;
 					if (opt->arg[0] == 's') /* report sid */
 						Ctrl->E.mode |= BLK_DO_SRC_ID;
 				}
@@ -377,7 +400,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, local_kw, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

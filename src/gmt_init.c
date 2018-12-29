@@ -369,8 +369,8 @@ struct GMT_KW_DICT gmt_kw_common[] = {
 	{0, 'f', "coltypes",     "i,o", "in,out", "", ""},
 	{0, 'g', "gap",          "", "", "", ""},
 	{0, 'h', "header",       "i,o", "in,out", "c,d,r,t", "columns,delete,remark,title"},
-	{0, 'i', "incol",        "", "", "", ""},
-	{0, 'o', "outcol",       "", "", "", ""},
+	{',', 'i', "incol",        "", "", "l,o,s", "log,offset,scale"},
+	{',', 'o', "outcol",       "", "", "", ""},
 	{0, 'n', "interpolation", "b,c,l,n", "b-spline,bicubic,linear,nearest-neighbor", "c,t", "clip,threshold"},
 	{0, 'p', "perspective",  "x,y,z", "x,y,z", "v,w", "view,world"},
 	{0, 'r', "registration", "g,p", "gridline,pixel", "", ""},
@@ -517,57 +517,118 @@ GMT_LOCAL char gmtinit_find_argument (struct GMTAPI_CTRL *API, char *longlist, c
 	return m;
 }
 
+GMT_LOCAL int gmtinit_get_section (struct GMTAPI_CTRL *API, char *arg, char separator, int k, int *sx) {
+	/* Find the k'th separator occurrence and chop off the rest, return pointer to start of section */
+	int j = 0, kk = -1, s0 = 0, s = 0, last_s = 0;
+	gmt_M_unused (API);
+	while (arg[j] && kk < k) {
+		if (arg[j] == separator) {
+			kk++;
+			s0 = s;
+			s = j+1;
+			last_s = j;
+			if (kk < k) j++;
+		}
+		else
+			j++;
+	}
+	if (kk == k) {	/* Found separator */
+		arg[j] = '\0';	/* Hide the rest */
+		*sx = j;	/* Return position of separator that was removed */
+	}
+	else if (last_s) {	/* Must be the last that is missing a trailing separator */
+		*sx = -1;	/* Nothing to chop */
+		s0 = last_s + 1;
+	}
+	return s0;	/* Return start of current section */
+}
+
 /*! . */
 GMT_LOCAL void gmtinit_kw_replace (struct GMTAPI_CTRL *API, struct GMT_KW_DICT *module_kw, struct GMT_OPTION **options) {
 	/* Loop over given options and replace any recognized long-form --parameter[=value]
-	 * with the corresponding short option version -<code>[value] */
+	 * with the corresponding short option version -<code>[value]. Specifically, format is
+	 *
+	 * --longoption[=[<directive>:]<arg>][+<mod1[=<arg1>]][+<mod2[=<arg2>]]...  
+	 *
+	 * For options that takes more than one set of arguments (e.g., -Idx/dy or -icols1,cols2,...)
+	 * the section
+	 *
+	 * [<arg>][+<mod1[=<arg1>]][+<mod2[=<arg2>]]
+	 *
+	 * may appear more than once after a section separator (e.g., '/' or ',').  The separator is
+	 * listed in module_kw.separator or it is 0 if no such feature.
+	 */
+
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_KW_DICT *kw = NULL;
-	char text[GMT_LEN256] = {""}, add[GMT_LEN64] = {""}, argument[GMT_LEN64] = {""};
-	char *e = NULL, *p = NULL, c = 0;
-	int k;
+	char text[GMT_LEN256] = {""}, add[GMT_LEN64] = {""}, argument[GMT_LEN64] = {""}, orig[GMT_BUFSIZ] = {""};
+	char *e = NULL, *p = NULL, c = 0, e_code = '=', sep[2] = {'\0', '\0'};
+	int k, n_sections, section, s = 0, sx = 0;
 	
 	for (opt = *options; opt; opt = opt->next) {
 		if (opt->option != GMT_OPT_PARAMETER) continue;	/* Cannot be a --keyword[=value] pair */
 		if (isupper (opt->arg[0])) continue;		/* Skip the upper-case GMT Default parameter settings */
-		
+		strcpy (orig, opt->arg);			/* Retain a copy of current option arguments */
 		e = strchr (opt->arg, '=');			/* Get location of equal sign, if present */
 		p = strchr (opt->arg, '+');			/* Get location of plus sign, if present */
+		/* Check for case where the = is part of a modifier, hence not a value or directive */
 		if (e && p && ((e - opt->arg) > (p - opt->arg)))
 			e = NULL;	/* The = is part of a modifier so ignore for now */
 		if (e) e[0] = '\0';				/* Cut off =value for now so opt->arg only has the keyword */
 		else if (p) p[0] = '\0';			/* Cut off +modifier for now so opt->arg only has the keyword */
-		if ((kw = gmtinit_find_kw (API, gmt_kw_common, module_kw, opt->arg, &k)) == NULL) {	/* Did not match anything in the list */
-			if (e) e[0] = '=';		/* Restore */
-			if (p) p[0] = '+';		/* Restore */
-			continue;			/* No matching keyword pair */
+		if ((kw = gmtinit_find_kw (API, gmt_kw_common, module_kw, orig, &k)) == NULL) {
+			if (e) e[0] = '=';
+			if (p) p[0] = '+';
+			continue;	/* Did not match anything in the list */
 		}
 		
 		/* Here we found a matching long-format option name */
 		/* Do the long to short option substitution */
 		
+		e_code = '=';	/* When we remove the = we will replace it, but in multi-sections it may change after the first */
+		n_sections = ((kw[k].separator) ? gmtlib_count_char (API->GMT, orig, kw[k].separator) : 0) + 1;
 		opt->option = kw[k].short_option;	/* Update the option character first */
+		sep[0] = kw[k].separator;
 		text[0] = '\0';				/* Initialize short option arguments */
-		if (e) {	/* Got a <directive>[:<arg>] or just <arg> */
-			if ((c = gmtinit_find_argument (API, kw[k].long_directives, kw[k].short_directives, &e[1], ':', argument)))	/* Get the directive, or 0 if it is an argument instead */
-				sprintf (add, "%c%s", c, argument);
-			else
-				sprintf (add, "%s", argument);
-			strcat (text, add);	/* Add to the short-format option argument */
-			e[0] = '=';			/* Put back the = character */
-		}
-		if (p) {	/* Do have one of more modifiers */
-			unsigned int pos = 0;
-			char item[GMT_LEN64] = {""};
-			p[0] = '+';	/* Put back the plus sign for the first modifier */
-			while ((gmt_strtok (p, "+", &pos, item))) {	/* While there are unprocessed modifiers */
-				if ((c = gmtinit_find_argument (API, kw[k].long_modifiers, kw[k].short_modifiers, item, '=', argument)))	/* Get the modifier, or 0 if unrecognized */
-					sprintf (add, "+%c%s", c, argument);
-				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Long-modifier form %s for option -%c not recognized!\n", &e[1], opt->option);
-					add[0] = '\0';
-				}
+		
+		for (section = 0; section < n_sections; section++) {
+			/* Make sure a few things are correct */
+			/* Find separator, set to 0, check if p is after, if so set to NULL. */
+			if (n_sections > 1) {	/* Special case since there is only one leading =<value>; other values are after separators */
+				s = gmtinit_get_section (API, orig, kw[k].separator, section, &sx);	/* Get next section */
+				if (e)
+					e = (s) ? orig+s-1 : strchr (orig, '=');	/* Update what e is pointing to */
+				p = strchr (e, '+');	/* Must also update to see if this section has modifiers... */
+				if (p) p[0] = '\0';	/* ...and if it does we temporarily chop it off here */
+			}
+
+			if (e) {	/* Got a <directive>[:<arg>] or just <arg> */
+				if ((c = gmtinit_find_argument (API, kw[k].long_directives, kw[k].short_directives, &e[1], ':', argument)))	/* Get the directive, or 0 if it is an argument instead */
+					sprintf (add, "%c%s", c, argument);
+				else
+					sprintf (add, "%s", argument);
 				strcat (text, add);	/* Add to the short-format option argument */
+				e[0] = e_code;		/* Put back the = character (at least the first time) */
+			}
+			if (p) {	/* We have one of more modifiers */
+				unsigned int pos = 0;
+				char item[GMT_LEN64] = {""};
+				p[0] = '+';	/* Put back the plus sign for the first modifier */
+				while ((gmt_strtok (p, "+", &pos, item))) {	/* While there are unprocessed modifiers */
+					if ((c = gmtinit_find_argument (API, kw[k].long_modifiers, kw[k].short_modifiers, item, '=', argument)))	/* Get the modifier, or 0 if unrecognized */
+						sprintf (add, "+%c%s", c, argument);
+					else {
+						GMT_Report (API, GMT_MSG_NORMAL, "Long-modifier form %s for option -%c not recognized!\n", &e[1], opt->option);
+						add[0] = '\0';
+					}
+					strcat (text, add);	/* Add to the short-format option argument */
+				}
+			}
+			if (n_sections > 1) {	/* Need to separate results per section with the separator character */
+				if (section < (n_sections - 1))
+					strcat (text, sep);	/* Add to the short-format option argument */
+				if (sx > 0) orig[sx] = kw[k].separator;
+				e_code = kw[k].separator;	/* Since after first section we no longer have '=' */
 			}
 		}
 		gmt_M_str_free (opt->arg);	/* Free old par=value string argument */

@@ -19,7 +19,7 @@ Synopsis
 [ |-A|\ *fields* ]
 [ |-C| ]
 [ |-D|\ [*width*]\ [**+c**][**+a**\ \|\ **+l**\ \|\ **+h** ]
-[ |-E|\ **r**\ \|\ **s**\ [**-**] ]
+[ |-E|\ **r**\ \|\ **s**\ [**+l**] ]
 [ |-G|\ [*grdfile*] ]
 [ |-Q| ]
 [ |SYN_OPT-V| ]
@@ -113,8 +113,8 @@ Optional Arguments
     Provide source id **s** or record number **r** output, i.e., append
     the source id or record number associated with the modal value. If
     tied then report the record number of the higher of the two values;
-    append **-** to instead report the record number of the lower value.
-    Note that both **-E** and **-E**\ **r**\ [**-**\ ] may be specified.
+    append **+l** to instead report the record number of the lower value.
+    Note that both **-E** and **-E**\ **r**\ [**+l**\ ] may be specified.
     For **-E**\ **s** we expect input records of the form
     *x*,\ *y*,\ *z*\ [,\ *w*],\ *sid*, where *sid* is an unsigned integer
     source id.
