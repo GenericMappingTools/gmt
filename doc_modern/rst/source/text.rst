@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-Rz|
 [ |-A| ]
 |SYN_OPT-B|
-[ |-C|\ [\ **\ *dx/dy*\ ][\ **+t**\ o\|\O\|\c\|C] ]
+[ |-C|\ [*dx/dy*\ ][\ **+t**\ o\|\O\|\c\|C\ ] ]
 [ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*]] ]
 [ |-F|\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l**\|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **+z**\ [*format*]] ] 
 [ |-G|\ *color* ]
@@ -110,7 +110,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C\ [\ **\ *dx/dy*\ ][\ **+t**\ o\|\O\|\c\|C]
+**-C**\ [*dx/dy*\ ][\ **+t**\ o\|\O\|\c\|C\ ]
     Adjust the clearance between the text and the surrounding box [15%].
     Only used if **-W** or **-G** are specified. Append the unit you
     want (**c**\ m, **i**\ nch, or **p**\ oint; if not given we consult
