@@ -940,9 +940,9 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 	if ((p = strchr (text, '+'))) {	/* Yes */
 		*p = '\0';	/* Temporarily chop off the modifier */
 		switch (p[1]) {
-			case 'B':
-			case 'L':
-				swab = (p[1] != GMT_ENDIAN);
+			case 'B':	case 'b':
+			case 'L':	case 'l':
+				swab = (toupper (p[1]) != GMT_ENDIAN);
 				break;	/* Must swap */
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -b: Bad endian modifier +%c\n", (int)p[1]);
@@ -6255,7 +6255,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'C':	/* -b binary option with input only */
 
-			gmt_message (GMT, "\t-bi For binary input; [<n>]<type>[w][+L|B]; <type> = c|u|h|H|i|I|l|L|f|D.\n");
+			gmt_message (GMT, "\t-bi For binary input; [<n>]<type>[w][+l|b]; <type> = c|u|h|H|i|I|l|L|f|D.\n");
 			break;
 
 		case '0':	/* -bi/-bo addendum when input format is unknown */
@@ -6276,7 +6276,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'D':	/* -b binary option with output only */
 
-			gmt_message (GMT, "\t-bo For binary output; append <type>[w][+L|B]; <type> = c|u|h|H|i|I|l|L|f|D..\n");
+			gmt_message (GMT, "\t-bo For binary output; append <type>[w][+l|b]; <type> = c|u|h|H|i|I|l|L|f|D..\n");
 			break;
 
 		case 'd':	/* -d option to tell GMT the relationship between NaN and a nan-proxy for input/output */
