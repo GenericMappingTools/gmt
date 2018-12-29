@@ -42,8 +42,8 @@
 
 /* Use b, f, h, when applies to both i and o, else use only the bi, bo, fi, fo variants */
 
-#define GMT_bi_OPT	"-bi[<ncol>][t][w][+L|B]"
-#define GMT_bo_OPT	"-bo[<ncol>][t][w][+L|B]"
+#define GMT_bi_OPT	"-bi[<ncol>][t][w][+l|b]"
+#define GMT_bo_OPT	"-bo[<ncol>][t][w][+l|b]"
 #define GMT_di_OPT	"-di<nodata>"
 #define GMT_do_OPT	"-do<nodata>"
 #define GMT_fi_OPT	"-f<info>"
@@ -103,7 +103,7 @@
 #define GMT_X_OPT	"-X[a|c|r]<xshift>[<unit>]"
 #define GMT_Y_OPT	"-Y[a|c|r]<yshift>[<unit>]"
 #define GMT_a_OPT	"-a<col>=<name>[,...]"
-#define GMT_b_OPT	"-b[i|o][<ncol>][t][w][+L|B]"
+#define GMT_b_OPT	"-b[i|o][<ncol>][t][w][+l|b]"
 #define GMT_d_OPT	"-d[i|o]<nodata>"
 #define GMT_e_OPT	"-e[~]<pattern>"
 #define GMT_f_OPT	"-f[i|o]<info>"
