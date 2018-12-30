@@ -16,7 +16,7 @@ Synopsis
 **gmtspatial** [ *table* ] [ |-A|\ [**a**\ *min_dist*][*unit*]]
 [ |-C| ]
 [ |-D|\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*] ]
-[ |-E|\ **+**\ \|\ **-** ]
+[ |-E|\ **+p**\ \|\ **n** ]
 [ |-F|\ [**l**] ]
 [ |-I|\ [**e**\ \|\ **i**] ]
 [ |-N|\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
@@ -109,9 +109,9 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ **+**\ \|\ **-** ]
-    Reset the handedness of all polygons to match the given **+**
-    (counter-clockwise) or **-** (clockwise). Implies **-Q+**.
+**-E**\ **+p**\ \|\ **n** ]
+    Reset the handedness of all polygons to match the given **+p**
+    (counter-clockwise; positive) or **+n** (clockwise; negative). Implies **-Q+**.
 
 .. _-F:
 
@@ -256,7 +256,7 @@ their areas to the segment headers, run
 
    ::
 
-    gmt spatial polygons.txt -Q+h -E+ > areas.txt
+    gmt spatial polygons.txt -Q+h -E+p > areas.txt
 
 To determine the areas of all the polygon segments in the file janmayen_land_full.txt,
 add this information to the segment headers, sort the segments from largest
