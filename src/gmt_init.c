@@ -3939,7 +3939,7 @@ int gmtlib_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		if (gmt_M_compat_check (GMT, 4))
 			error = gmtinit_parse4_B_option (GMT, in);
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Cannot use GMT 4 syntax except in compatibility mode\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Cannot use GMT 4 syntax except in GMT classic with compatibility mode\n");
 			error = 1;
 		}
 	}
@@ -5480,7 +5480,7 @@ void gmtinit_conf (struct GMT_CTRL *GMT) {
 		/* GMT group */
 
 	/* GMT_COMPATIBILITY */
-	GMT->current.setting.compatibility = 4;
+	GMT->current.setting.compatibility = (GMT->current.setting.run_mode == GMT_CLASSIC) ? 4 : 6;
 	/* GMTCASE_GMT_AUTO_DOWNLOAD */
 	GMT->current.setting.auto_download = GMT_YES_DOWNLOAD;
 	/* GMTCASE_GMT_DATA_URL_LIMIT */
@@ -8311,7 +8311,7 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *value, bool core) {
 	unsigned int pos;
 	size_t len;
-	int i, ival, case_val, manual;
+	int i, ival, case_val, manual, limit;
 	bool error = false, tf_answer = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, lower_value[GMT_BUFSIZ] = {""};
 
@@ -9441,12 +9441,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 
 		case GMTCASE_GMT_COMPATIBILITY:
 			ival = (int)atof (value);
-			if (ival < 4) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_COMPATIBILITY: Expects values from 4 to %d; reset to 4.\n", GMT_MAJOR_VERSION);
+			limit = (GMT->current.setting.run_mode == GMT_CLASSIC) ? 4 : 6;
+			if (ival < limit) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_COMPATIBILITY: Expects values from %d to %d; reset to %d.\n", limit, GMT_MAJOR_VERSION, limit);
 				GMT->current.setting.compatibility = 4;
 			}
 			else if (ival > GMT_MAJOR_VERSION) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_COMPATIBILITY: Expects values from 4 to %d; reset to %d.\n", GMT_MAJOR_VERSION, GMT_MAJOR_VERSION);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_COMPATIBILITY: Expects values from %d to %d; reset to %d.\n", limit, GMT_MAJOR_VERSION, GMT_MAJOR_VERSION);
 				GMT->current.setting.compatibility = GMT_MAJOR_VERSION;
 			}
 			else
