@@ -1214,7 +1214,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							S[SYM]->data[GMT_X][0] = x_off + off_ss;
 							S[SYM]->data[GMT_Y][0] = row_base_y;
 							S[SYM]->n_rows = 1;
-							sprintf (sub, "%s", symbol);
+							sprintf (sub, "%c", symbol[0]);
 							if (symbol[0] == 'E' || symbol[0] == 'e') {	/* Ellipse */
 								if (strchr (size, ',')) {	/* We got dir,major,minor instead of just size; parse and use */
 									sscanf (size, "%[^,],%[^,],%s", A, B, C);
