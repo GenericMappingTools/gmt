@@ -8,7 +8,7 @@ G=-Gl-90/90/-90/-90,90/90/90/-90
 # Make global synthetic grid
 gmt grdmath -Rg -I1 X SIND Y 3 MUL COSD MUL 99 MUL = t.nc
 gmt math -T-45/45/1 0 = path.txt
-# Sample this at ~200 places randomly; save random in svn sp repeatable
+# Sample this at ~200 places randomly; saved random in GitHub so repeatable
 #gmt math -T0/200/1 -o1 0 360 RAND = x
 #gmt math -T0/200/1 -o1 -90 90 RAND = y
 #paste x y > random_xy.txt

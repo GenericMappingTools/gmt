@@ -122,7 +122,7 @@ If $home contains spaces places the the above within double quotes.
 Change your PATH statement. Make sure it includes $home/this_gmt/bin
 If $home contains spaces places the the above within double quotes.
 
-3. SVN USERS:
+3. GitHub USERS:
 You will have to manually add the path to the GMT directory since
 it is not considered an official release.
 

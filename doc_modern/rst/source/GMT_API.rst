@@ -694,7 +694,7 @@ code, available from the repository gmt-custom, obtainable via
 
 .. code-block:: bash
 
-   svn checkout svn://gmtserver.soest.hawaii.edu/gmt-custom/trunk gmt-custom
+   git clone https://github.com/GenericMappingTools/gmt-custom.git
 
 
 List of API functions
