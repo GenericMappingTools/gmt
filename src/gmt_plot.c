@@ -6350,18 +6350,18 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		/* Determine paper size */
 		wants_PS = gmtlib_fig_is_ps (GMT);	/* True if we have requested a PostScript output format */
 		if (wants_PS && media_size[GMT_X] > (GMT_PAPER_DIM-0.1)) {	/* Cannot use "auto" if requesting a PostScript file */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Must specify a paper size when requesting a PostScript file\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Must specify a paper size when requesting a PostScript file\n");
 			if (GMT->current.setting.proj_length_unit == GMT_INCH) {	/* Use US settings */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Changing paper size to US Letter, but we cannot know if this is adequate for your plot; use PS_MEDIA.\n");
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Changing paper size to US Letter, but we cannot know if this is adequate for your plot; use PS_MEDIA.\n");
 				media_size[GMT_X] = 612.0; media_size[GMT_Y] = 792.0;
 			}
 			else {	/* Use SI settings */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Changing paper size to A4, but we cannot know if this is adequate for your plot.\n");
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Changing paper size to A4, but we cannot know if this is adequate for your plot.\n");
 				media_size[GMT_X] = 595.0; media_size[GMT_Y] = 842.0;
 			}
 			if ((((GMT->current.map.width + GMT->current.setting.map_origin[GMT_X]) * 72) > media_size[GMT_X]) && GMT->current.setting.ps_orientation == PSL_PORTRAIT) {
 				GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Also changing to landscape orientation based on plot dimensions but again not sure.\n");
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Also changing to landscape orientation based on plot dimensions but again not sure.\n");
 			}
 		}
 		if (!wants_PS && !O_active) {	/* Not desiring PS output so we can add safety margin of GMT_PAPER_MARGIN inches for initial layer */
