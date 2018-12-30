@@ -14,7 +14,7 @@
 # 	gmt_<TAG>_module.h	Function prototypes (required for Win32)
 # 	gmt_<TAG>_module.c	Look-up functions
 #
-# Note: gmt_<TAG>_module.[ch] are in svn.  Only rerun this
+# Note: gmt_<TAG>_module.[ch] are in GitHub.  Only rerun this
 # script when there are changes in the code, e.g. a new module.
 #
 SUPP_DIRS="gshhg|img|meca|mgd77|misc|potential|segy|spotter|x2sys"	# Edit this is new supplements are added
