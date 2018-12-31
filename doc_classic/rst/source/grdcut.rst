@@ -17,9 +17,9 @@ Synopsis
 |SYN_OPT-R|
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
-[ |-S|\ [**n**]\ *lon/lat/radius*\ [*unit*] ]
+[ |-S|\ *lon/lat/radius*\ [*unit*]\ [**+n**] ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ [\ **n**\ \|\ **N** \|\ **r**]\ [*min/max*] ]
+[ |-Z|\ [*min/max*]\ [\ **+n**\ \|\ **N** \|\ **r**] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
 
@@ -71,11 +71,11 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**n**]\ *lon/lat/radius*\ [*unit*]
+**-S**\ *lon/lat/radius*\ [*unit*]\ [**+n**]
     Specify an origin and radius; append a distance unit (see UNITS) and
     we determine the corresponding rectangular region so that all grid
     nodes on or inside the circle are contained in the subset. If
-    **-Sn** is used we set all nodes outside the circle to NaN. 
+    **+n** is appended we set all nodes outside the circle to NaN. 
 
 .. _-V:
 
@@ -84,17 +84,17 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ [\ **n**\ \|\ **N** \|\ **r**]\ [*min/max*]
+**-Z**\ [*min/max*]\ [\ **+n**\ \|\ **N** \|\ **r**]
     Determine a new rectangular region so that all nodes *outside* this
     region are also outside the given *z*-range [-inf/+inf]. To indicate
     no limit on min or max only, specify a hyphen (-). Normally, any NaNs
     encountered are simply skipped and not considered in the range-decision.
-    Use **-Zn** to consider a NaN to be outside the given *z*-range. This means
-    the new subset will be NaN-free. Alternatively, use **-Zr** to
+    Append **+n** to consider a NaN to be outside the given *z*-range. This means
+    the new subset will be NaN-free. Alternatively, append **+r** to
     consider NaNs to be within the data range. In this case we stop
     shrinking the boundaries once a NaN is found [Default simply skips NaNs
     when making the range decision].  Finally, if your core subset grid is
-    surrounded by rows and/or columns that are all NaNs, use **-ZN** to
+    surrounded by rows and/or columns that are all NaNs, append **+N** to
     strip off such columns before (optionally) considering the range of the
     core subset for further reduction of the area.
 
@@ -132,7 +132,7 @@ that are all NaNs, try
 
    ::
 
-    gmt grdcut bathy.nc -Gtrimmed_bathy.nc -ZN -V
+    gmt grdcut bathy.nc -Gtrimmed_bathy.nc -Z+N -V
 
 To return the subregion of a grid that contains all nodes within a
 distance of 500 km from the point 45,30 try
