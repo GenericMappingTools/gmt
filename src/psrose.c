@@ -221,7 +221,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 	 */
 
 	int n;
-	unsigned int n_errors = 0, k;
+	unsigned int n_errors = 0, k = 0;
 	double range;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
