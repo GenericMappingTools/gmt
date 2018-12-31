@@ -842,8 +842,13 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	/* OK, here we have a recognized dataset ID */
 
+	if (!GMT->common.R.active[ISET]) {	/* No -I was set, so do it via the grdraster.info file */
+		GMT->common.R.active[ISET] = true;	/* Implicitly set -I */
+		gmt_M_memcpy (GMT->common.R.inc, myras.h.inc, 2, double);
+	}
+
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, NULL, NULL,
-	                             GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
+	                             myras.h.registration, GMT_NOTSET, NULL)) == NULL) {
 		free (tselect);
 		Return (API->error);
 	}
