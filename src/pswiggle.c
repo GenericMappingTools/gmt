@@ -39,6 +39,9 @@
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipstxy" GMT_OPT("EHMmc")
 
+#define PSWIGGLE_POS	0
+#define PSWIGGLE_NEG	1
+
 EXTERN_MSC int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt);
 
 struct PSWIGGLE_CTRL {
@@ -58,7 +61,7 @@ struct PSWIGGLE_CTRL {
 	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;	/* Panel inside GMT_MAP_SCALE in -D */
 	} F;
-	struct G {	/* -G[+|-|=]<fill> */
+	struct G {	/* -G<fill>[+n][+p] */
 		bool active[2];
 		struct GMT_FILL fill[2];
 	} G;
@@ -219,7 +222,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -Z<scale>[<unit>]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<azimuth>]] [%s] [-C<center>] [-D[g|j|J|n|x]<refpoint>+w<length>[+a][+j<justify>][+o<dx>[/<dy>]][+l<label>]]\n", GMT_B_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_PANEL);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G[-|+|=]<fill>] [-I<az>] [%s] %s%s%s[-T<trackpen>] [%s]\n", GMT_Jz_OPT, GMT_K_OPT, GMT_O_OPT, GMT_P_OPT, GMT_U_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>[+n][+p]] [-I<az>] [%s] %s%s%s[-T<trackpen>] [%s]\n", GMT_Jz_OPT, GMT_K_OPT, GMT_O_OPT, GMT_P_OPT, GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<outlinepen>] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] ",
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -240,9 +243,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +l to set the unit label of the z-values for the scale bar label [no label].\n");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the vertical scale.", 4);
 	gmt_fill_syntax (API->GMT, 'G', "Specify color/pattern for positive and/or negative areas.");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + to fill positive areas (default).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to fill negative areas.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend = to fill positive and negative areas.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to fill positive areas only (Default).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to fill negative areas only.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append both to fill positive and negative areas.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Set fixed projection azimuths for wiggles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Azimuths of the normals to the track are reset to <az>.\n");
 	GMT_Option (API, "K");
@@ -268,9 +271,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int j, k, n_slash, wantx, wanty, n_errors = 0;
-	bool N_active = false;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *units = NULL;
+	unsigned int j, k, n_slash, wantx, wanty, n_errors = 0, pp = 0;
+	bool N_active = false, neg = false, pos = false;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *units = NULL, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -319,19 +322,36 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 					n_errors++;
 				}
 				break;
-			case 'G':
-				switch (opt->arg[0]) {
-					case '=':
-					case '+': j = 1, k = 0; break;
-					case '-': j = 1, k = 1; break;
-					default : j = 0, k = 0; break;
+			case 'G':	/* -G<fill>[+n][+p] */
+				j = 0;	neg = pos = false;
+				if ((c = gmt_first_modifier (GMT, opt->arg, "np"))) {	/* Gave +n and/or +p */
+					pp = 0;	txt_a[0] = 0;
+					while (gmt_getmodopt (GMT, 'G', c, "np", &pp, txt_a, &n_errors) && n_errors == 0) {
+						switch (txt_a[0]) {
+							case 'n': pos = true;	break;	/* Negative fill */
+							case 'p': neg = true;	break;	/* Positive fill */
+							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+						}
+					}
+					c[0] = '\0';	/* Chop off all modifiers */
 				}
+				else if (gmt_M_compat_check (GMT, 5)) {	/* Allow old syntax -G+|-|=<fill> */
+					switch (opt->arg[0]) {
+						case '=': j = 1, pos = neg = true; break;
+						case '+': j = 1, pos = true; 	   break;
+						case '-': j = 1, neg = true; 	   break;
+						default : j = 0, pos = true; 	   break;
+					}
+				}
+				if (!(pos || neg)) pos = true;	/* Default is positive fill */
+				k = (pos) ? PSWIGGLE_POS : PSWIGGLE_NEG;
 				Ctrl->G.active[k] = true;
 				if (gmt_getfill (GMT, &opt->arg[j], &Ctrl->G.fill[k])) {
 					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
-				if (opt->arg[0] == '=') Ctrl->G.fill[1] = Ctrl->G.fill[0];
+				if (c) c[0] = '+';	/* Restore modifiers */
+				if (pos && neg) Ctrl->G.fill[1-k] = Ctrl->G.fill[k];	/* Duplicate fill */
 				break;
 			case 'I':
 				Ctrl->I.value = atof (opt->arg);
@@ -339,7 +359,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 				break;
 			case 'N':
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "-N option is deprecated; use -G-<fill> instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-N option is deprecated; use -G<fill>+n instead.\n");
 					N_active = true;
 				}
 				else
@@ -394,9 +414,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 	}
 
 	if (N_active && gmt_M_compat_check (GMT, 4)) {
-		Ctrl->G.active[1] = Ctrl->G.active[0];
-		Ctrl->G.active[0] = false;
-		Ctrl->G.fill[1] = Ctrl->G.fill[0];
+		Ctrl->G.active[PSWIGGLE_NEG] = Ctrl->G.active[PSWIGGLE_POS];
+		Ctrl->G.active[PSWIGGLE_POS] = false;
+		Ctrl->G.fill[PSWIGGLE_NEG] = Ctrl->G.fill[PSWIGGLE_POS];
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
