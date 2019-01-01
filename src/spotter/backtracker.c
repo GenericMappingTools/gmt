@@ -96,7 +96,7 @@ struct BACKTRACKER_CTRL {	/* All control options for this program (except common
 		bool active;
 		unsigned int mode;		/* 1 we go FROM hotspot to seamount, 0 is reverse */
 	} D;
-	struct E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
+	struct E {	/* -Erotfile[+i], -E<ID1>-<ID2>[+i], or -E<lon/lat/angle> */
 		bool active;
 		struct SPOTTER_ROT rot;
 	} E;

@@ -13,8 +13,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**originater** [ *tables* ] |-E|\ [**+**]\ *rotfile*
-|-F|\ [**+**]\ *hs_file* 
+**originater** [ *tables* ] |-E|\ *rotfile*\ [**+i**]
+|-F|\ *hs_file*\ [**+d**]
 [ |-D|\ *d_km* ]
 [ |-L|\ [*flag*] ]
 [ |-N|\ *upper_age* ]
@@ -55,7 +55,7 @@ Required Arguments
 
 .. _-E:
 
-**-E**\ *rotfile*
+**-E**\ *rotfile*\ [**+i**]
     Give file with rotation parameters. This file must contain one
     record for each rotation; each record must be of the following
     format:
@@ -73,17 +73,17 @@ Required Arguments
     which shows **C** made up of three row vectors. If the degrees of
     freedom (*df*) in fitting the rotation is 0 or not given it is set
     to 10000. Blank lines and records whose first column contains # will
-    be ignored. You may prepend a leading + to the filename to indicate
+    be ignored. You may append **+i** to the filename to indicate
     you wish to invert the rotations.
     Alternatively, give the filename composed of two plate IDs
     separated by a hyphen (e.g., PAC-MBL) and we will instead extract
     that rotation from the GPlates rotation database. We return an error
-    if the rotation cannot be found. Prepend **+** if you want to invert
+    if the rotation cannot be found. Append **+i** if you want to invert
     the rotations prior to use.
 
 .. _-F:
 
-**-F**\ *file*
+**-F**\ *hs_file*\ [**+d**]
     Give file with hotspot locations. This file must contain one record
     for each hotspot to be considered; each record must be of the
     following format:
@@ -106,7 +106,7 @@ Required Arguments
     rotations, and if the hotspot should be included in various plots.
     The name is a 32-character maximum text string with the full hotspot
     name. Blank lines and records whose first column contains # will be
-    ignored. Prepend **+** if we should look for hotspot drift tables
+    ignored. Append **+d** if we should look for hotspot drift tables
     whose name must be *hs_abbrev*\ \_drift.txt. Such files may be
     located in the current directory, the same directory as *hs_file*,
     or in the directories pointed to by GMT_DATADIR. If found then we
@@ -213,7 +213,7 @@ the same exercise with a moving hotspot model, try
 
    ::
 
-    echo "1.55 -8.43 52.3" | gmt originater -F+ONeill_2005_hotspots.txt \
+    echo "1.55 -8.43 52.3" | gmt originater -FONeill_2005_hotspots.txt+d \
     -EOMS2005_APM_smooth.txt -Q1/120 -Lt
 
 Now the output is 80 -213.135 52.3. Negative distances means the closest
