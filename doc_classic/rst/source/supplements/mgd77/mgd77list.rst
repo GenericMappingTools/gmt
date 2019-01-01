@@ -14,7 +14,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **mgd77list** *NGDC-ids* |-F|\ *columns*\ [,\ *logic*][:\ *bittests*]
-[ |-A|\ [**+**\ ]\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code* ]
+[ |-A|\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code*\ [**+f**\ ] ]
 [ |-C|\ **f**\ \|\ **g**\ \|\ **e** ]
 [ |-D|\ **A**\ \|\ **a**\ *startdate* ]
 [ |-D|\ **B**\ \|\ **b**\ *stopdate* ]
@@ -31,7 +31,7 @@ Synopsis
 [ |-T|\ [**m**\ \|\ **e**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *weight* ]
-[ |-Z|\ *+*\ \|\ **-** ]
+[ |-Z|\ **n**\ \|\ **p** ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT--| ]
@@ -247,7 +247,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+**\ ]\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code*
+**-A**\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code*\ [**+f**\ ]
     By default, corrected depth (**depth**), magnetic residual anomaly
     (**mag**), free-air gravity anomaly (**faa**), and the derived
     quantity Carter depth correction (**carter**) are all output as is
@@ -261,7 +261,7 @@ Optional Arguments
     we will next try **-Ac**\ 2 which only uses **twt**. In all cases,
     if any of the values required by an adjustment procedure is NaN then
     the result will be NaN. This is also true if the original anomaly is
-    NaN. Specify **-A+** to recalculate anomalies even if the anomaly in
+    NaN. Append **+f** to recalculate anomalies even if the anomaly in
     the file is NaN. Additionally, you can use **-At** to create fake
     times for cruises that has no time; these are based on distances and
     cruise duration.
@@ -476,10 +476,10 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *+*\ \|\ **-**
+**-Z**\ **n**\ \|\ **p**
     Append the sign you want for **depth**, **carter**, and **msd**
-    values below sea level (**-Z-** gives negative bathymetry) [Default
-    is positive down]. 
+    values below sea level (**-Zn** gives negative bathymetry) [Default
+    is **-Zp** for positive down]. 
 
 .. |Add_-bo| replace:: ignored if **-bo** is selected. Likewise,
     string-fields cannot be selected. Note that if time is one of the

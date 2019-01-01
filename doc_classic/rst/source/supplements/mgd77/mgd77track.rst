@@ -16,7 +16,7 @@ Synopsis
 **mgd77track** *NGDC-ids*
 |SYN_OPT-R|
 |-J|\ *parameters*
-[ |-A|\ [**c**][*size*][,\ *spacing*] ]
+[ |-A|\ [**c**][*size*][**+i**\ *spacing*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ **f**\ \|\ **g**\ \|\ **e** ] [ **-Da**\ *startdate* ] 
 [ |-D|\ **b**\ *stopdate* ]
@@ -68,12 +68,12 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**c**][*size*][,\ *spacing*]
+**-A**\ [**c**][*size*][**+i**\ *spacing*]
     Append **c** to annotate using the MGD77 cruise ID [Default uses the
     filename prefix]. Optional *size* is the font size in points. The
     leg annotation font is controlled by :ref:`FONT_LABEL <FONT_LABEL>`. By default,
     each leg is annotated every time it enters the map region.
-    Alternatively, append ,\ *spacing* to place this label every
+    Alternatively, append **+i**\ *spacing* to place this label every
     *spacing* units apart along the track. Append one of the units **k**
     (km), **n** (nautical mile), **d** (day), or **h** (hour).
 
