@@ -14,7 +14,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt x2sys_get** |-T|\ *TAG* [ |-C| ] [ |-F|\ *flags* ] [ |-G| ]
-[ |-L|\ [**+**\ ][*list*] ]
+[ |-L|\ [*list*]\ [**+i**\ ] ]
 [ |-N|\ *flags* ] [
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -65,7 +65,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**+**\ ][*list*]
+**-L**\ [*list*]\ [**+i**\ ]
     Crossover mode. Return a list of track pairs that should be checked
     for possible crossovers. The list is determined from the bin-index
     data base on the assumption that tracks occupying the same bin are
@@ -74,7 +74,7 @@ Optional Arguments
     you want to limit the output to those pairs that involve at least
     one of the track names in your list. The output is suitable for the
     **-A** option in :doc:`x2sys_cross`. By default, only external
-    crossover pairs are listed. Use **-L+** to include internal pairs in the list.
+    crossover pairs are listed. Append **+i** to include internal pairs in the list.
 
 .. _-N:
 
