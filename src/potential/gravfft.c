@@ -73,7 +73,7 @@ struct GRAVFFT_CTRL {
 		bool active;
 		unsigned int n_terms;
 	} E;
-	struct GRVF_F {	/* -F[f[+]|g|e|n|v] */
+	struct GRVF_F {	/* -F[f[+s]|b|g|e|n|v] */
 		bool active;
 		bool slab;
 		bool bouger;
@@ -268,8 +268,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 						Ctrl->F.slab   = true;
 						Ctrl->F.bouger = true;
 						break;
-					default:  Ctrl->F.mode = GRAVFFT_FAA; 	   /* FAA */
-					 	if (opt->arg[1] == '+') Ctrl->F.slab = true;
+					case 'f': default:
+						Ctrl->F.mode = GRAVFFT_FAA; 	   /* FAA */
+					 	if (opt->arg[1] == '+' && (opt->arg[2] == 's' || opt->arg[2] == '\0')) Ctrl->F.slab = true;
 						break;
 				}
 				break;
@@ -417,7 +418,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <topo_grd> [<ingrid2>] -G<outgrid> [-C<n/wavelength/mean_depth/tbw>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE,"\t[-D<density|grid>] [-E<n_terms>] [-F[f[+]|g|v|n|e]] [-I<wbctk>]\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t[-D<density|grid>] [-E<n_terms>] [-F[f[+s]|b|g|v|n|e]] [-I<wbctk>]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-Q]\n", GMT_FFT_OPT);
 	GMT_Message (API, GMT_TIME_NONE,"\t[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-W<wd>] [-Z<zm>[/<zl>]] [-fg] [%s]\n\n", GMT_V_OPT, GMT_PAR_OPT);
 
@@ -451,8 +452,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t       theoretical admittance.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-E Number of terms used in Parker's expansion [Default = 3].\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-F Specify desired geopotential field:\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t   b = Bouguer anomalies (mGal).\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   f = Free-air anomalies (mGal) [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t       Append + to adjust for implied slab correction [none].\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t       Append +s to adjust for implied slab correction [none].\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   g = Geoid anomalies (m).\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   v = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   e = East deflections of the vertical (micro-radian).\n");
