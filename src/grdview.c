@@ -412,7 +412,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <topogrid> %s [%s] [-C[<cpt>]] [-G<drapegrid|image> | -G<grd_r> -G<grd_g> -G<grd_b>]\n",
 	             name, GMT_J_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intensgrid>|<value>|<modifiers>] [%s] %s[-N<level>[+g<fill>]] %s%s[-Q<args>[+m]]\n", GMT_Jz_OPT, GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<smooth>] [-T[s][o[<pen>]]]\n", GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<smooth>] [-T[+o[<pen>]][+s]]\n", GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<type><pen>] [%s]\n\t[%s] [%s] [%s]\n",
 	             GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_f_OPT, GMT_n_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -453,8 +453,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Smooth contours first (see grdview for <smooth> value info) [no smoothing].\n");
 	gmt_pen_syntax (API->GMT, 'T', "Image the data without interpolation by painting polygonal tiles.\n"
-	                "\t   Append s to skip tiles for nodes with z = NaN [Default paints all tiles].\n"
-	                "\t   Append o[<pen>] to draw tile outline [Default uses no outline].", 0);
+	                "\t   Append +s to skip tiles for nodes with z = NaN [Default paints all tiles].\n"
+	                "\t   Append +o[<pen>] to draw tile outline [Default uses no outline].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -Jz|Z as it produces a flat image.\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes for various features in form <type><pen>.", 0);
@@ -673,16 +673,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Syntax error -S option: smooth value must be positive\n");
 				Ctrl->S.value = sval;
 				break;
-			case 'T':	/* Tile plot */
+			case 'T':	/* Tile plot -T[+s][+o<pen>] */
 				Ctrl->T.active = true;
-				k = 0;
-				if (opt->arg[0] == 's') Ctrl->T.skip = true, k = 1;
-				if (opt->arg[k] == 'o') {	/* Want tile outline also */
-					Ctrl->T.outline = true;
-					k++;
-					if (opt->arg[k] && gmt_getpen (GMT, &opt->arg[k], &Ctrl->T.pen)) {
+				if (strchr (opt->arg, '+') || gmt_M_compat_check (GMT, 6)) {	/* New syntax */
+					if (strstr (opt->arg, "+s")) Ctrl->T.skip = true;
+					if ((c = strstr (opt->arg, "+o")) && gmt_getpen (GMT, &c[2], &Ctrl->T.pen)) {
 						gmt_pen_syntax (GMT, 'T', " ", 0);
 						n_errors++;
+					}
+				}
+				else {	/* Old-style syntax -T[s][o<pen>] */
+					k = 0;
+					if (opt->arg[0] == 's') Ctrl->T.skip = true, k = 1;
+					if (opt->arg[k] == 'o') {	/* Want tile outline also */
+						Ctrl->T.outline = true;
+						k++;
+						if (opt->arg[k] && gmt_getpen (GMT, &opt->arg[k], &Ctrl->T.pen)) {
+							gmt_pen_syntax (GMT, 'T', " ", 0);
+							n_errors++;
+						}
 					}
 				}
 				break;

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt rose** [ *table* ] [ |-A|\ [**r**]\ *sector_width* ]
+**gmt rose** [ *table* ] [ |-A|\ *sector_width*\ [**+r**] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D| ]
@@ -70,9 +70,9 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**r**]\ *sector_width*
+**-A**\ *sector_width*\ [**+r**]
     Gives the sector width in degrees for sector and rose diagram.
-    [Default 0 means windrose diagram]. Use **-Ar** to draw rose
+    [Default 0 means windrose diagram]. Append **+r** to draw rose
     diagram instead of sector diagram. 
 
 .. _-B:
@@ -250,7 +250,7 @@ azimuth, and shown in Portrait orientation, use:
    ::
 
     gmt rose fault_segments.az_r -R0/150/-90/90 -Bx50g25+l"Fault length"
-               -Byg30 -B+t"Rose diagram" -JX6i -Ar10 -Glightblue
+               -Byg30 -B+t"Rose diagram" -JX6i -A10+r -Glightblue
                -W0.75p,red -Z0.001 -Em -T -: -pdf half_rose
 
 To plot a full circle wind rose diagram of the data in the file
