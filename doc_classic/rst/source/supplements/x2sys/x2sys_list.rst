@@ -22,7 +22,7 @@ Synopsis
 [ |-N|\ *nx_min* ]
 [ |-Q|\ **e**\ \|\ **i** ]
 [ |SYN_OPT-R| ]
-[ |-S|\ *track* ]
+[ |-S|\ *track*\ [**+b**\ ] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*list*] ]
 [ |SYN_OPT-bo| ]
@@ -137,10 +137,11 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *track*
+**-S**\ *track*\ [**+b**\ ]
     Name of a single track. If given we restrict output to those
     crossovers involving this track [Default output is crossovers
-    involving any track pair].
+    involving any track pair].  Append **+b** to print info relative
+    to both tracks in the pair.
 
 .. _-V:
 
