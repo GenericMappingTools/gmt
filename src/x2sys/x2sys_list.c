@@ -118,7 +118,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -C<column> -T<TAG> [<COEdbase>] [-A<asymm_max] [-E] [-F<flags>] [-I<ignorelist>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<corrtable.txt>]] [-N<nx_min>] [-Qe|i] [-S[+]<track>]\n\t[%s] [%s] [-W<weight>] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<corrtable.txt>]] [-N<nx_min>] [-Qe|i] [-S<track>[+b]]\n\t[%s] [%s] [-W<weight>] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -157,7 +157,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Return only crossovers involving this track [Use all tracks].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend a '+' to make it print info relative to both tracks [Default is selected track].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +b to make it print info relative to both tracks [Default is selected track].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W If argument can be opened as a file then we expect a List of tracks and their\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   relative weights; otherwise the argument is the constant weight for all tracks [1].\n");
@@ -175,6 +175,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 	 */
 
 	unsigned int n_errors = 0, i, n_files[2] = {0, 0};
+	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -239,12 +240,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 					Ctrl->S.both = true;
 					Ctrl->S.file = strdup (&opt->arg[1]);
 				}
+				else if ((c = strstr (opt->arg, "+b"))) {
+					Ctrl->S.both = true;
+					c[0] = '\0';	/* Chop off modifier */
+					Ctrl->S.file = strdup (opt->arg);
+				}
 				else if (opt->arg[0])
 					Ctrl->S.file = strdup (opt->arg);
 				else {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S: Must supply a track name.\n");
 					n_errors++;
 				}
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'T':
 				Ctrl->T.active = true;
@@ -384,7 +391,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	/* Initialize column output types */
 	
 	one = 0;	two = 1;	/* Normal track order */
-	both = Ctrl->S.both;		/* Usually false unless -S+<track> is set */
+	both = Ctrl->S.both;		/* Usually false unless -S<track>+b is set */
 	if (!both) both = !Ctrl->S.active;	/* Two columns for many output choices */
 
 	gmt_set_column (GMT, GMT_OUT, GMT_X, (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT);

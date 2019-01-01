@@ -19,7 +19,7 @@ Synopsis
 [ |-C|\ *center* ]
 [ |-D|\ *refpoint* ]
 [ |-F|\ *panel* ]
-[ |-G|\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill* ]
+[ |-G|\ *fill*\ [**+n**\ ][**+p**\ ] ]
 [ |-I|\ *fix_az* ]
 [ |-T|\ *pen* ]
 [ |SYN_OPT-U| ]
@@ -141,11 +141,11 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill* :ref:`(more ...) <-Gfill_attrib>`
+**-G**\ *fill*\ [**+n**\ ][**+p**\ ] :ref:`(more ...) <-Gfill_attrib>`
     Set fill shade, color or pattern for positive and/or negative
-    wiggles [Default is no fill]. Optionally, prepend **+** to fill
-    positive areas (this is the default behavior). Prepend **-** to fill
-    negative areas. Prepend **=** to fill both positive and negative
+    wiggles [Default is no fill]. Optionally, append **+p** to fill
+    positive areas (this is the default behavior). Append **+n** to fill
+    negative areas. Append **+n+p** to fill both positive and negative
     areas with the same fill.
 
 .. _-I:

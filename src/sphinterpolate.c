@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2008-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 2008-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -92,7 +92,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][/<args>] [%s] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][<args>] [%s] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
                
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -103,20 +103,20 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Select tension factors to achieve the following [Default is no tension]:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   0: Piecewise linear interpolation ; no tension [Default]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1: Smooth interpolation with local gradient estimates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   2: Smooth interpolation with global gradient estimates and tension.  Optionally append /N/M/U:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      N = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      M = Number of Gauss-Seidel iterations when determining gradients [10],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      U = Maximum change in a gradient at the last iteration [0.01].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   3: Smoothing.  Optionally append /<E>/<U>/<N>, where\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Compute tension factors to achieve the following [Default is no tension]:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   p: Piecewise linear interpolation ; no tension [Default]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   l: Smooth interpolation with local gradient estimates.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   g: Smooth interpolation with global gradient estimates and tension.  Optionally append <N>/<M>/<U>:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      <N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3],\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      <M> = Number of Gauss-Seidel iterations when determining gradients [10],\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      <U> = Maximum change in a gradient at the last iteration [0.01].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s: Smoothing.  Optionally append <E>/<U>/<N>, where\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      <E> = Expected squared error in a typical (scaled) data value [0.01],\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      <U> = Upper bound on  weighted sum of squares of deviations from data [npoints],\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      <N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3].\n");
 	GMT_Option (API, "Rg");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no region is specified we default to the entire world [-Rg].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Use variable tension (ignored for -Q0) [constant].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Use variable tension (ignored for -Qp) [constant].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Scale data by 1/(max-min) prior to gridding [no scaling].\n");
 	GMT_Option (API, "bi3,di,e,h,i,r,s,:,.");
@@ -131,7 +131,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, str
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, k;
 	int m;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -157,25 +157,27 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, str
 			case 'Q':
 				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
-					case '0':	/* Linear */
+					case 'p':	case '0':	/* Piecewise Linear p (0 is old mode)*/
 						Ctrl->Q.mode = 0;	break;
-					case '1':
+					case 'l':	case '1':	/* Local gradients l (1 is old mode) */
 						Ctrl->Q.mode = 1;	break;
-					case '2':
+					case 'g':	case '2':	/* Global gradients g (2 is old mode) */
 						Ctrl->Q.mode = 2;
-						if (opt->arg[1] == '/') {	/* Gave optional n/m/dgmx */
-							if ((m = get_args (GMT, &opt->arg[2], Ctrl->Q.value, "-Q3/N[/M[/U]]")) < 0) n_errors++;
+						if (opt->arg[1]) {	/* Gave optional n/m/dgmx */
+							k = (opt->arg[1] == '/') ? 2 : 1;	/* Gave optional /n/m/dgmx */
+							if ((m = get_args (GMT, &opt->arg[k], Ctrl->Q.value, "-Qg<N>[/<M>[/<U>]]")) < 0) n_errors++;
 						}
 						break;
-					case '3':
+					case 's':	case '3':	/* Smoothing s (3 is old mode) */
 						Ctrl->Q.mode = 3;
-						if (opt->arg[1] == '/') {	/* Gave optional e/sm/niter */
-							if ((m = get_args (GMT, &opt->arg[2], Ctrl->Q.value, "-Q3/E[/U[/niter]]")) < 0) n_errors++;
+						if (opt->arg[1]) {	/* Gave optional e/sm/niter */
+							k = (opt->arg[1] == '/') ? 2 : 1;	/* Gave optional /e/sm/niter */
+							if ((m = get_args (GMT, &opt->arg[k], Ctrl->Q.value, "-Qs<E>[/<U>[/<niter>]]")) < 0) n_errors++;
 						}
 						break;
 					default:
 						n_errors++;
-						GMT_Report (API, GMT_MSG_NORMAL, "-%c Mode must be in 0-3 range\n", (int)opt->option);
+						GMT_Report (API, GMT_MSG_NORMAL, "-%c Mode must be one of p,l,g,s\n", (int)opt->option);
 						break;
 				}
 				break;

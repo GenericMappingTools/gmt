@@ -151,7 +151,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 		bool active;
 		double value;
 	} W;
-	struct MGD77LIST_Z {	/* -Z[-|+] */
+	struct MGD77LIST_Z {	/* -Z[n|p] */
 		bool active;
 		bool mode;
 	} Z;
@@ -188,9 +188,9 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *C) {	/* D
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> -F<dataflags>[,<tests>] [-A[+]c|d|f|m|t[<code>]] [-Cf|g|e]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> -F<dataflags>[,<tests>] [-Ac|d|f|m|t[<code>][+f]] [-Cf|g|e]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Da<startdate>] [-Db<stopdate>] [-E] [-Ga<startrec>] [-Gb<stoprec>] [-I<code>]\n\t[-L[<corrtable.txt>]] [-N[s|p][<unit>]]] [-Qa|v<min>/<max>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]]\n\t[-T[m|e]] [%s] [-W<Weight>] [-Z[+|-] [%s] [%s] [-h] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]]\n\t[-T[m|e]] [%s] [-W<Weight>] [-Z[n|p] [%s] [%s] [-h] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -309,7 +309,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t       m16 return difference mtfx + diur - igrf, where x != msens (or 2 if undefined).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       mc<offset>[unit] Apply cable tow distance correction to mtf1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t will compute fake times for cruises with known duration but lacking record times.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The optional -A+ means selected anomalies will be recalculated even when the original\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f to force selected anomalies to be recalculated even when the original\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   anomaly is NaN [Default honors NaNs in existing anomalies].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Select procedure for along-track distance and azimuth calculations:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f Flat Earth.\n");
@@ -348,7 +348,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For controlling application of point bit flags, see -F and the : modifier discussion.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set weight for these data [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Append - to report bathymetry & msd as negative depths [Default is positive -Z+].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Append n to report bathymetry and msd as negative depths [Default is positive -Zp].\n");
 	GMT_Option (API, "bo,do");
 	GMT_Message (API, GMT_TIME_NONE, "\t-h Write header record with column information [Default is no header].\n");
 	GMT_Option (API, ":,.");
@@ -365,7 +365,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, k;
 	int code;
-	char *t = NULL, buffer[GMT_BUFSIZ] = {""};
+	char *t = NULL, buffer[GMT_BUFSIZ] = {""}, *c = NULL;
 	double dist_scale;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -385,6 +385,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 				if (opt->arg[k] == '+') {	/* Recalculate anomalies even if original anomaly == NaN [Default leaves NaNs unchanged] */
 					Ctrl->A.force = true;
 					k++;
+				}
+				else if ((c = strstr (opt->arg, "+f"))) {
+					Ctrl->A.force = true;
+					c[0] = '\0';	/* Chop of modifier */
 				}
 				switch (opt->arg[k]) {
 					case 'c':	/* Carter correction adjustment */
@@ -459,6 +463,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						n_errors++;
 						break;
 				}
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 
 			case 'C':	/* Distance calculation flag */
@@ -682,9 +687,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 				Ctrl->W.value = (!strcmp (opt->arg, "NaN")) ? GMT->session.d_NaN : atof (opt->arg);
 				break;
 
-			case 'Z':		/* -Z- is negative down for depths */
+			case 'Z':		/* -Zn is negative down for depths */
 				Ctrl->Z.active = true;
-				Ctrl->Z.mode = (opt->arg[0] == '-') ? true : false;
+				switch (opt->arg[0]) {
+					case '-':	case 'n':	Ctrl->Z.mode = true;	break;
+					case '+':	case 'p':	Ctrl->Z.mode = false;	break;
+					default:
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Z: append n or p\n");
+						n_errors++;
+						break;
+				}
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);

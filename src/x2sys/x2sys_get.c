@@ -92,7 +92,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *C) {	/* D
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -T<TAG> [-C] [-D] [-F<fflags>] [-G] [-L[+][list]] [-N<nflags>]\n\t[%s] [%s] [%s]\n\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s -T<TAG> [-C] [-D] [-F<fflags>] [-G] [-L[<list>][+i]] [-N<nflags>]\n\t[%s] [%s] [%s]\n\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -104,7 +104,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Setup mode: Return all pairs of tracks that might intersect given\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the bin distribution.  Optionally, give file with a list of tracks.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Then, only pairs with at least one track from the list is output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -L+ to include internal pairs in the list [external only].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i to include internal pairs in the list [external only].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Comma-separated list of column field names that ALL must be missing.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
@@ -122,6 +122,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0, k = 0, n_files = 0;
+	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -156,8 +157,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct G
 				break;
 			case 'L':
 				if (opt->arg[0] == '+') {k = 1; Ctrl->L.mode = 0;}
+				else if ((c = strstr (opt->arg, "+i"))) {k = 0; Ctrl->L.mode = 0; c[0] = '\0';}
 				if (opt->arg[k]) Ctrl->L.file = strdup (&opt->arg[k]);
 				Ctrl->L.active = true;
+				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'N':
 				Ctrl->N.active = true;

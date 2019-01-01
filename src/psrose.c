@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -221,7 +221,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 	 */
 
 	int n;
-	unsigned int n_errors = 0, k = 0;
+	unsigned int n_errors = 0, k;
 	double range;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -239,14 +239,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 
 			case 'A':	/* Get Sector angle in degrees -A<inc>[+r]*/
 				Ctrl->A.active = true;
+				k = 0;
 				if ((c = strstr (opt->arg, "+r"))) {
 					Ctrl->A.rose = true;
 					c[0] = '\0';	/* Chop off modifier */
-					k = 0;
 				}
 				else if (strchr (opt->arg, 'r')) {	/* Old syntax -A[r]<inc> */
 					Ctrl->A.rose = true;
-					k = (opt->arg[0] == 'r') ? 1 : 0;
+					if (opt->arg[0] == 'r') k = 1;
 				}
 				Ctrl->A.inc = atof (&opt->arg[k]);
 				if (c) c[0] = '+';	/* Restore modifier */
