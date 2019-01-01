@@ -22,7 +22,7 @@
  * Brief synopsis: gmt subplot determines dimensions and offsets for a multi-subplot figure.
  * It has three modes of operation:
  *	1) Initialize a new figure with subplots, which determines dimensions and sets parameters:
- *	   gmt subplot begin <nrows>x<ncols> -F[f|s][<W/H>[:<wfracs/hfracs>]] [-A<labels>]
+ *	   gmt subplot begin <nrows>x<ncols> -F[f|s][<W/H>[+f<wfracs/hfracs>]] [-A<labels>]
  *		[-SC<layout>] [-SR<layout>] [-M<margins>] [-T<title>] [-R<region>] [-J<proj>] [-V]
  *	2) Select the curent subplot window for plotting, usually so we can use -A or -C (since -crow,col is faster):
  *	   gmt subplot [set] <row>,<col> [-A<fixlabel>] [-C<side><clearance>[u]] [-V]
@@ -82,7 +82,7 @@ struct SUBPLOT_CTRL {
 		bool active;
 		double gap[4];
 	} C;
-	struct F {	/* -F[f|s][<width>[u]/<height>[u]][:<wfracs/hfracs>] */
+	struct F {	/* -F[f|s][<width>[u]/<height>[u]][+f<wfracs/hfracs>] */
 		bool active;
 		bool debug;
 		bool reset_h;	/* True when height was given as 0 and we need to update based on what was learned */
@@ -151,7 +151,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[:<wfracs/hfracs>] [-A<autolabelinfo>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>] [-A<autolabelinfo>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t [-C<side><clearance>[u]] [-D[x][y]] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>] [-M<margins>] [%s] [-T<title>] [%s] [%s]\n\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <row>,<col> [-A<fixedlabel>] [-C<side><clearance>[u]] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s end [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
@@ -160,7 +160,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<nrows>x<ncols> is the number of rows and columns of panels in this figure.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F or -Ff: Specify dimension of the whole figure plot area. Subplot sizes will be computed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append :<wfracs/hfracs> to variable widths and heights by giving comma-separated lists\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f<wfracs/hfracs> to variable widths and heights by giving comma-separated lists\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of relative values, one per row or column, which we scale to match figure dimension.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If only columns or rows should have variable dimension you can set the other arg as 1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Fs: Set dimensions of area that each multi-subplot figure may occupy.  If these\n");
@@ -355,25 +355,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 
 			case 'F':
 				Ctrl->F.active = true;
-				if ((c = strchr (opt->arg, '+'))) c[0] = '\0';	/* Chop off modifiers for now */
 				switch (opt->arg[0]) {
-					case 'f':	Ctrl->F.mode = SUBPLOT_FIGURE; n = 1;	break; /* Figure dimension */
-					case 's':	Ctrl->F.mode = SUBPLOT_PANEL;  n = 1;	break; /* Panel dimension */
+					case 'f':	Ctrl->F.mode = SUBPLOT_FIGURE;  n = 1;	break; /* Figure dimension */
+					case 's':	Ctrl->F.mode = SUBPLOT_PANEL;   n = 1;	break; /* Panel dimension */
 					default:	Ctrl->F.mode = SUBPLOT_FIGURE;  n = 0;	break; /* Figure dimension is default */
 				}
-				if (Ctrl->F.mode == SUBPLOT_PANEL && strchr (opt->arg, ':')) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error Option -F: Colon modifier can only be used with -F[f].\n");
+				if (Ctrl->F.mode == SUBPLOT_PANEL && strstr (opt->arg, "+f")) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error Option -F: +f modifier can only be used with -F[f].\n");
 					n_errors++;
 				}
 				Ctrl->F.w = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_X], double);
 				Ctrl->F.h = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_Y], double);
+				c = strchr (opt->arg, '+');
 				if (Ctrl->F.mode == SUBPLOT_FIGURE) {
 					char *q = NULL;
 					double f = 0.0;
-					if ((q = strchr (opt->arg, ':')) != NULL) {	/* Gave optional instructions on how to partition width and height on a per row/col basis */
-						char *ytxt = strchr (&q[1], '/');	/* Find the slash */
+					if ((q = strstr (opt->arg, "+f")) != NULL) {	/* Gave optional fractions on how to partition width and height on a per row/col basis */
+						char *ytxt = strchr (&q[2], '/');	/* Find the slash */
 						if (!ytxt) {
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Ff...: badly constructed option.\n");
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Ff...+f missing slash between width and height fractions.\n");
 							n_errors++;
 							break;
 						}
@@ -382,17 +382,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 							for (j = 1; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = Ctrl->F.h[j-1];
 						}
 						else if (k < Ctrl->N.dim[GMT_Y]) {
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Ff...: requires as many height fractions as there are rows.\n");
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Ff...+f requires as many height fractions as there are rows.\n");
 							n_errors++;
 						}
 						ytxt[0] = '\0';	/* Chop off the slash at start of height fractions */
-						k = GMT_Get_Values (GMT->parent, &q[1], Ctrl->F.w, Ctrl->N.dim[GMT_X]);
+						k = GMT_Get_Values (GMT->parent, &q[2], Ctrl->F.w, Ctrl->N.dim[GMT_X]);
 						ytxt[0] = '/';	/* Restore the slash */
 						if (k == 1) {	/* Constant, must duplicate */
 							for (j = 1; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] = Ctrl->F.w[j-1];
 						}
 						else if (k < Ctrl->N.dim[GMT_X]) {
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Ff...: requires as many width fractions as there are columns.\n");
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Ff...+f requires as many width fractions as there are columns.\n");
 							n_errors++;
 						}
 						/* Normalize fractions */
@@ -400,12 +400,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 						for (j = 0; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] /= f;
 						for (j = 0, f = 0.0; j < Ctrl->N.dim[GMT_Y]; j++) f += Ctrl->F.h[j];
 						for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] /= f;
-						q[0] = '\0';	/* Chop off the fraction settings for now */
+						q[0] = '+';	/* Restore the fraction settings for now */
 					}
 					else {	/* Equal rows and cols */
 						for (j = 0, f = 1.0 / Ctrl->N.dim[GMT_X]; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] = f;
 						for (j = 0, f = 1.0 / Ctrl->N.dim[GMT_Y]; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = f;
 					}
+					if (c) c[0] = '\0';	/* Chop off modifiers for now */
 					if ((k = GMT_Get_Values (GMT->parent, &opt->arg[n], Ctrl->F.dim, 2)) < 2) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -F requires width and height of plot area.\n");
 						n_errors++;
@@ -414,6 +415,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 					for (k = 0; k < 2; k++) Ctrl->F.dim[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 				}
 				else {	/* Gave subplot dimension(s)  */
+					if (c) c[0] = '\0';	/* Chop off modifiers for now */
 					if (strchr (opt->arg, ',')) {	/* Gave separate widths and heights */
 						char *ytxt = strchr (opt->arg, '/');	/* Find the slash */
 						k = GMT_Get_Values (GMT->parent, &ytxt[1], Ctrl->F.h, Ctrl->N.dim[GMT_Y]);
@@ -421,7 +423,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 							for (j = 1; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = Ctrl->F.h[j-1];
 						}
 						else if (k < Ctrl->N.dim[GMT_Y]) {
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Fs...: requires as many height fractions as there are rows, or just one.\n");
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Fs requires as many heights as there are rows, or just a constant one.\n");
 							n_errors++;
 						}
 						ytxt[0] = '\0';	/* Chop off the slash at start of height fractions */
@@ -431,7 +433,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 							for (j = 1; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] = Ctrl->F.w[j-1];
 						}
 						else if (k < Ctrl->N.dim[GMT_X]) {
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Ff...: requires as many width fractions as there are columns, or just one.\n");
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -Fs requires as many width as there are columns, or just a constant one.\n");
 							n_errors++;
 						}
 						/* Since GMT_Get_Values returns in default project length unit, convert to inch */
@@ -452,7 +454,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT
 				}
 				if (c) {	/* Gave paint/pen/debug modifiers */
 					c[0] = '+';	/* Restore modifiers */
-					if (gmt_validate_modifiers (GMT, opt->arg, 'F', "dgp")) n_errors++;
+					if (gmt_validate_modifiers (GMT, opt->arg, 'F', "dgpf")) n_errors++;
 					if (gmt_get_modifier (opt->arg, 'g', Ctrl->F.fill) && Ctrl->F.fill[0]) {
 						if (gmt_getfill (GMT, Ctrl->F.fill, &fill)) n_errors++;
 					}
