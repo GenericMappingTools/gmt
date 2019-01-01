@@ -37,12 +37,12 @@ set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 
 # GMT_VERSION_YEAR is set to current date in
 # cmake/modules/ConfigCMake.cmake if not specified here:
-set (GMT_VERSION_YEAR "2018")
+set (GMT_VERSION_YEAR "2019")
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION_MAJOR 5)
 set (GMT_PACKAGE_VERSION_MINOR 4)
-set (GMT_PACKAGE_VERSION_PATCH 4)
+set (GMT_PACKAGE_VERSION_PATCH 5)
 
 # The subversion revision of the GMT source code.
 # This is manually set when making GMT *public* releases.
@@ -121,7 +121,7 @@ set (GMT_COPYRIGHT_STRING)
 set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}Copyright 1991-${GMT_VERSION_YEAR} Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis and F. Wobbe\\n")
 set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}This program comes with NO WARRANTY, to the extent permitted by law.\\n")
 set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}You may redistribute copies of this program under the terms of the\\n")
-set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}GNU General Public License.\\n")
+set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}GNU Lesser General Public License.\\n")
 set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}For more information about these matters, see the file named LICENSE.TXT.\\n")
 set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}\\n")
 
