@@ -48,7 +48,7 @@ PostScript code is written to stdout.
 /* Control structure for psmeca */
 
 struct PSMECA_CTRL {
-	struct C {	/* -C[<pen>][P<pointsize>] */
+	struct C {	/* -C[<pen>][+s<pointsize>] */
 		bool active;
 		double size;
 		struct GMT_PEN pen;
@@ -174,7 +174,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]] [%s]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<pen>][P<pointsize>]] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] %s[-L<pen>] [-M]\n", GMT_K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<pen>][+s<pointsize>]] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] %s[-L<pen>] [-M]\n", GMT_K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fa[<size>[/<Psymbol>[<Tsymbol>]]] [-Fe<fill>] [-Fg<fill>] [-Fo] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] [-Fz[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] %s%s[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>]\n", GMT_O_OPT, GMT_P_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<cpt>]\n", GMT_X_OPT, GMT_Y_OPT);
@@ -188,7 +188,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Offset focal mechanisms to the latitude and longitude specified in the last two columns of the input file before label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default pen attributes are set by -W.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A line is plotted between both positions.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   A small circle is plotted at the initial location. Add P<pointsize> to change the size of the circle.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   A small circle is plotted at the initial location. Append +s<pointsize> to change the size of the circle.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Plot events between <depmin> and <depmax> deep.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set color used for extensive parts [default is white].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets various attributes of symbols depending on <mode>:\n");
@@ -278,8 +278,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 				Ctrl->C.active = true;
 				if (!opt->arg[0]) break;
 				strncpy (txt, opt->arg, GMT_LEN256-1);
-				if ((p = strchr (txt, 'P')) != NULL) Ctrl->C.size = gmt_M_to_inch (GMT, (p+1));
-				if (txt[0] != 'P') {	/* Have a pen up front */
+				if ((p = strstr (txt, "+s")) != NULL) Ctrl->C.size = gmt_M_to_inch (GMT, (p+2));
+				else if ((p = strchr (txt, 'P')) != NULL) Ctrl->C.size = gmt_M_to_inch (GMT, (p+1));
+				if (txt[0] != 'P' && strncmp (txt, "+s", 2U)) {	/* Have a pen up front */
 					if (p) p[0] = '\0';
 					if (gmt_getpen (GMT, txt, &Ctrl->C.pen)) {
 						gmt_pen_syntax (GMT, 'C', " ", 0);
