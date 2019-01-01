@@ -15,7 +15,7 @@ Synopsis
 
 psmeca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
 [ |SYN_OPT-B| ]
-[ |-C|\ [*pen*\ ][\ **P**\ *pointsize*] ] [ |-D|\ *depmin*/*depmax* ]
+[ |-C|\ [*pen*\ ][\ **+s**\ *pointsize*] ] [ |-D|\ *depmin*/*depmax* ]
 [ |-E|\ *fill*]
 [ |-F|\ *mode*\ [*args*] ] [ |-G|\ *fill*] [ |-K| ] [ |-L|\ [*pen*\ ] ]
 [ |-M| ]
@@ -241,13 +241,13 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*pen*\ ][\ **P**\ *pointsize*]
+**-C**\ [*pen*\ ][\ **+s**\ *pointsize*]
     Offsets focal mechanisms to the longitude, latitude specified in the
     last two columns of the input file before the (optional) text
     string. A small circle is plotted at the initial location and a line
-    connects the beachball to the circle. Specify *pen* and/or
-    *pointsize* to change the line style and/or size of the circle.
-    [Defaults: *pen* as given by **-W**; *pointsize* 0].
+    connects the beachball to the circle. Specify *pen* and optionally append
+    **+s**\ *pointsize* to change the line style and/or size of the circle.
+    [Defaults: *pen* as given by **-W**; *pointsize* is 0].
 
 .. _-D:
 
