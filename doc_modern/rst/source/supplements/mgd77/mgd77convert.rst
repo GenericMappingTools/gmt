@@ -14,10 +14,10 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt mgd77convert** *NGDC-ids* |-F|\ **a**\ \|\ **c**\ \|\ **m** \|\ **t**
-|-T|\ [**+**]\ **a**\ \|\ **c**\ \|\ **m**\ \|\ **t**
+|-T|\ **a**\ \|\ **c**\ \|\ **m**\ \|\ **t**\ [**+f**]
 [ |-C| ]
 [ |-D| ]
-[ |-L|\ [**w**][**e**][**+**] ]
+[ |-L|\ [**w**][**e**][**+l**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
 
@@ -48,14 +48,14 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ [**+**]\ **a**\ \|\ **c**\ \|\ **m** \|\ **t**
+**-T**\ **a**\ \|\ **c**\ \|\ **m**\ \|\ **t**\ [**+f**]
     Specifies the format of the output (To) files. Choose from **a** for
     standard MGD77 ASCII table (with extension .mgd77), **c** for the
     new MGD77+ netCDF format (with extension .nc), **m** for the
     new MGD77T format (extension .m77t) and **t** for a plain
     ASCII tab-separated table dump (with extension .dat). We will refuse
     to create the file(s) if they already exist in the current
-    directory. Prepend **+** to override this policy.
+    directory. Append **+f** to force an override of this policy.
 
 Optional Arguments
 ------------------
@@ -81,10 +81,10 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**w**\ ][**e**\ ][**+**\ ]
+**-L**\ [**w**\ ][**e**\ ][**+l**\ ]
     Set the level of verification reporting [none] and where to send
-    such reports [stderr]. Append a combination of **w** for warnings,
-    **e** for errors, and **+** to send such log information to stdout.
+    such reports [stderr]. Append a combination of **w** for warnings and
+    **e** for errors, and append **+l** to send such log information to stdout.
  
 .. _-V:
 
@@ -107,7 +107,7 @@ and capture all verification messages, try
 
    ::
 
-    gmt mgd77convert 01010047 01010008 -Fa -Tc -V -Lew+ > log.lis
+    gmt mgd77convert 01010047 01010008 -Fa -Tc -V -Lew+l > log.lis
 
 To convert 01010047.nc back to MGD77 ASCII and make sure it is identical
 to the original file, try (Bourne shell syntax)
@@ -123,7 +123,7 @@ overwriting any existing table, try
 
    ::
 
-    gmt mgd77convert 01010047 -Fc -T+t -V
+    gmt mgd77convert 01010047 -Fc -Tt+f -V
 
 To recover the original NGDC MGD77 version of 01020051.nc and ignore any
 E77 corrections, use

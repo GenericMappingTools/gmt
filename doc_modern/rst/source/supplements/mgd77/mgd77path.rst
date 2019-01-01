@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77path** *NGDC-ids* [ |-A|\ [**-**] ] [ |-D| ]
+**gmt mgd77path** *NGDC-ids* [ |-A|\ [**c**] ] [ |-D| ]
 [ |-I|\ *ignore* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
@@ -37,9 +37,9 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**-**]
+**-A**\ [**c**]
     Display the full path to each cruise [Default]. Optionally, append
-    **-** which will list just the cruise IDs instead.
+    **c** which will list just the cruise IDs instead.
 
 .. _-D:
 
