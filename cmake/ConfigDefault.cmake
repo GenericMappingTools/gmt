@@ -36,7 +36,7 @@ set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 
 # GMT_VERSION_YEAR is set to current date in
 # cmake/modules/ConfigCMake.cmake if not specified here:
-set (GMT_VERSION_YEAR "2018")
+set (GMT_VERSION_YEAR "2019")
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION_MAJOR 6)
