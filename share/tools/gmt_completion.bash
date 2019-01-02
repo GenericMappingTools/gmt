@@ -222,10 +222,6 @@ _gmt()
                 modopts=( -A -C -D -E -G -I -J -M -R -V -r )
                 fileopts=( -G )
                 ;;
-            grdraster)
-                modopts=( -G -I -J -R -T -V -b -h -o )
-                fileopts=( -G )
-                ;;
             grdredpol)
                 modopts=( -C -E -F -G -M -N -R -T -V -W -Z )
                 fileopts=( -E -G -Z )
