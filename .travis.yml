@@ -46,6 +46,8 @@ script:
         cd build; make -j docs_html; cd ..;
         cd build; make -j check; cd ..;
       fi
+    - export COVERAGE=true
+    - cd build; make -j check; cd ..;
 
 after_success:
     - bash <(curl -s https://codecov.io/bash)
