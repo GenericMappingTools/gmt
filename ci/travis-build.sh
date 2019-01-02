@@ -15,6 +15,7 @@ enable_testing()
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_ANIMATIONS TRUE)
+set (N_TEST_JOBS 2)
 EOF
 
 if [ "$COVERAGE" == "true" ]; then
