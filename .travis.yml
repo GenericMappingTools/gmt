@@ -6,7 +6,6 @@ branches:
     only:
         - master
         - 5.4
-        - codecov
         # Regex to build tagged commits with version numbers
         - /\d+\.\d+(\.\d+)?(\S*)?$/
 
