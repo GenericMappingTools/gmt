@@ -1,6 +1,7 @@
 # Generic Mapping Tools
 
-[![TravisCI](http://img.shields.io/travis/GenericMappingTools/gmt/master.svg?style=flat-square&label=TravisCI)](https://travis-ci.org/GenericMappingTools/gmt)
+[![TravisCI](http://img.shields.io/travis/GenericMappingTools/gmt/master.svg?label=TravisCI)](https://travis-ci.org/GenericMappingTools/gmt)
+[![CodeCov](https://img.shields.io/codecov/c/github/GenericMappingTools/gmt.svg)](https://codecov.io/gh/GenericMappingTools/gmt/)
 [![Coverity](https://scan.coverity.com/projects/7153/badge.svg)](https://scan.coverity.com/projects/gmt)
 
 ## What is GMT?
