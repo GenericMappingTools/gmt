@@ -22,7 +22,7 @@ Synopsis
 [ |-G|\ *color* ]
 [ |-L| ]
 [ |-N| ]
-[ |-S|\ *symbol*/*scale*/*conf*/*font_size* ] [
+[ |-S|\ *symbol*/*scale*\ [/*args* ] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -71,10 +71,10 @@ Selects the meaning of the columns in the data file and the figure to be plotted
 
     **-Se**\ *velscale/confidence/fontsize*.
 
-        Velocity ellipses in (N,E) convention. *Vscale* sets the scaling of the
+        Velocity ellipses in (N,E) convention. *velscale* sets the scaling of the
         velocity arrows. This scaling gives inches (unless **c**, **i**,
-        or **p** is appended). *Confidence* sets the 2-dimensional confidence
-        limit for the ellipse, e.g., 0.95 for 95% confidence ellipse. *Fontsize*
+        or **p** is appended). *confidence* sets the 2-dimensional confidence
+        limit for the ellipse, e.g., 0.95 for 95% confidence ellipse. *fontsize*
         sets the size of the text in points. The ellipse will be filled with the
         color or shade specified by the |-G| option [default transparent]. The
         arrow and the circumference of the ellipse will be drawn with the pen
@@ -94,7 +94,7 @@ Selects the meaning of the columns in the data file and the figure to be plotted
 
     **-Sn**\ *barscale.*
 
-        Anisotropy bars. *Barscale* sets the scaling of the bars This scaling
+        Anisotropy bars. *barscale* sets the scaling of the bars. This scaling
         gives inches (unless **c**, **i**, or **p** is appended).
         Parameters are expected to be in the following columns:
 
@@ -105,11 +105,11 @@ Selects the meaning of the columns in the data file and the figure to be plotted
 
     **-Sr**\ *velscale/confidence/fontsize*
 
-        Velocity ellipses in rotated convention. *Vscale* sets the scaling of
+        Velocity ellipses in rotated convention. *velscale* sets the scaling of
         the velocity arrows. This scaling gives inches (unless **c**, **i**,
-        or **p** is appended). *Confidence* sets the 2-dimensional
+        or **p** is appended). *confidence* sets the 2-dimensional
         confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
-        *Fontsize* sets the size of the text in points. The ellipse will be
+        *fontsize* sets the size of the text in points. The ellipse will be
         filled with the color or shade specified by the |-G| option [default
         transparent]. The arrow and the circumference of the ellipse will be
         drawn with the pen attributes specified by the |-W| option. Parameters
@@ -126,12 +126,12 @@ Selects the meaning of the columns in the data file and the figure to be plotted
             **8**:
             name of station (optional)
 
-    **-Sw**\ *wedge\_scale/wedge\_mag*.
+    **-Sw**\ *wedgescale/wedgemag*.
 
-        Rotational wedges. *Wedge\_scale* sets the size of the wedges in inches
+        Rotational wedges. *wedgescale* sets the size of the wedges in inches
         (unless **c**, **i**, or **p** is appended). Values are
-        multiplied by *Wedge\_mag* before plotting. For example, setting
-        *Wedge\_mag* to 1.e7 works well for rotations of the order of 100
+        multiplied by *wedgemag* before plotting. For example, setting
+        *wedgemag* to 1.e7 works well for rotations of the order of 100
         nanoradians/yr. Use **-G** to set the fill color or shade for the wedge,
         and **-E** to set the color or shade for the uncertainty. Parameters are
         expected to be in the following columns:
@@ -145,7 +145,7 @@ Selects the meaning of the columns in the data file and the figure to be plotted
 
     **-Sx**\ *cross_scale*
 
-        gives Strain crosses. *Cross\_scale* sets the size of the cross in
+        gives Strain crosses. *cross_scale* sets the size of the cross in
         inches (unless **c**, **i**, or **p** is appended). Parameters
         are expected to be in the following columns:
 

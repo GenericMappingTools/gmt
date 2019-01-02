@@ -1,8 +1,8 @@
 .. index:: ! polar
 
-*******
+*****
 polar
-*******
+*****
 
 .. only:: not man
 
@@ -15,9 +15,10 @@ Synopsis
 
 **gmt polar** [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
 |SYN_OPT-R|
-|-M|\ *size* |-S|\ *<symbol><size>*
+|-M|\ *size*
+|-S|\ *<symbol><size>*
 [ |SYN_OPT-B| ]
-[ |-C|\ *lon*/*lat*\ [/*dash\_width*/*pointsize*] ]
+[ |-C|\ *lon*/*lat*\ [**+p**\ *pen*\ ][**+s**\ /*pointsize*] ]
 [ |-E|\ *color* ]
 [ |-F|\ *color* ]
 [ |-G|\ *color* ]
@@ -103,9 +104,10 @@ Optional Arguments
 
 .. _-C:
 
-**-C**
+**-C**\ *lon*/*lat*\ [**+p**\ *pen*\ ][**+s**\ /*pointsize*]
     Offsets focal mechanisms to the latitude and longitude specified in
-    the last two columns of the input file.
+    the last two columns of the input file.  Optionally set the pen and
+    symbol point size.
 
 .. _-E:
 
@@ -159,8 +161,8 @@ Optional Arguments
 
 .. _-Y:
 
-**-T**\ *angle/form/justify/fontsize in points*
-    To write station code. [Default is 0.0/0/5/12].
+**-T**\ *angle*/*form*/*justify*/*fontsize*
+    To write station code; *fontsize* must be given in points [Default is 0.0/0/5/12].
 
 .. _-U:
 

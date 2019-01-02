@@ -18,7 +18,7 @@ Synopsis
 [ |-D|\ [*dx*\ [/*dy*\ ]] ]
 [ |-E|\ **L**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col* ]
 [ |-F|\ [**i**\ \|\ **d**\ \|\ **t**\ ] ]
-[ |-I|\ [**b**\ \|\ **p**\ \|\ **f**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...] ]
+[ |-I|\ [**b**\ \|\ **e**\ \|\ **f**\ \|\ **p**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...] ]
 [ |-L| ]
 [ |-S|\ [**x**\ ][**y**] ]
 [ |-T|\ *dz*\ [\ **+c**\ *col*] ]
@@ -108,7 +108,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [**b**\ \|\ **p**\ \|\ **f**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...]
+**-I**\ [**b**\ \|\ **e**\ \|\ **f**\ \|\ **p**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...]
     Report the min/max of the first *n* columns to the nearest multiple
     of the provided increments (separate the *n* increments by slashes),
     and output results in the form **-R**\ *w/e/s/n* (unless **-C** is
@@ -126,7 +126,7 @@ Optional Arguments
     Use **-Ib** to write the bounding box of the data table or segments (see **-A**)
     as a closed polygon segment. Note: for oblique projections you should
     use the **-Ap** option in :doc:`psxy` to draw the box properly.
-    If *dx* is given as - then the actual min/max of the input is given in the **-R** string.
+    If **-Ie** is given then the exact min/max of the input is given in the **-R** string.
 
 .. _-L:
 

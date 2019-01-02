@@ -95,17 +95,17 @@ struct GRD2CPT_CTRL {
 		bool active;
 		unsigned int mode;
 	} Q;
-	struct S {	/* -S<z_start>/<z_stop>/<z_inc> or -S<n_levels> */
+	struct T {	/* -T<start>/<stop>/<inc> or -T<n_levels> */
 		bool active;
-		unsigned int mode;	/* 0 or 1 (-Sn) */
+		unsigned int mode;	/* 0 or 1 (-Tn) */
 		unsigned int n_levels;
 		double low, high, inc;
 		char *file;
-	} S;
-	struct T {	/* -T<kind> */
+	} T;
+	struct S {	/* -T<kind> */
 		bool active;
 		int kind; /* -1 symmetric +-zmin, +1 +-zmax, -2 = +-Minx(|zmin|,|zmax|), +2 = +-Max(|zmin|,|zmax|), 0 = min to max [Default] */
-	} T;
+	} S;
 	struct W {	/* -W[w] */
 		bool active;
 		bool wrap;
@@ -129,7 +129,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Dea
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->C.file);
-	gmt_M_str_free (C->S.file);
+	gmt_M_str_free (C->T.file);
 	gmt_M_free (GMT, C);
 }
 
@@ -137,7 +137,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A<transparency>[+a]] [-C<cpt>] [-D[i]] [-E[<nlevels>]] [-F[R|r|h|c][+c]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]]\n\t[%s] [-S<z_start>/<z_stop>/<z_inc> or -S<n>]\n\t[-T<-|+|=|_>] [%s] [-W[w]] [-Z] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]]\n\t[%s] [-T<start>/<stop>/<inc> or -T<n>]\n\t[-S<-|+|=|_>] [%s] [-W[w]] [-Z] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -166,15 +166,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qi: z-values are actually log10(z). Assign colors and write z [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qo: z-values are z, but take log10(z), assign colors and write z.\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S CDF sample points should Step from <z_start> to <z_stop> by <z_inc>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Force color tables to be symmetric about 0. Append one modifier:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   l (low)   for values symmetric about zero from -|zmin| to +|zmin|.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   u (upper) for values symmetric about zero from -|zmax| to +|zmax|.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m (min)   for values symmetric about zero -+min(|zmin|,|zmax|).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   h (high)  for values symmetric about zero -+max(|zmin|,|zmax|).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T CDF sample points should range from <start> to <stop> by <inc>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -S<n> to select <n> points from a cumulative normal distribution [%d].\n", GRD2CPT_N_LEVELS);
-	GMT_Message (API, GMT_TIME_NONE, "\t   <z_start> maps to data min and <z_stop> maps to data max (but see -L).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <start> maps to data min and <stop> maps to data max (but see -L).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses equidistant steps for a Gaussian CDF].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Force color tables to be symmetric about 0. Append one modifier:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   - for values symmetric about zero from -|zmin| to +|zmin|.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   + for values symmetric about zero from -|zmax| to +|zmax|.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   _ for values symmetric about zero -+min(|zmin|,|zmax|).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   = for values symmetric about zero -+max(|zmin|,|zmax|).\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Do not interpolate color palette. Alternatively, append w for a wrapped CPT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Create a continuous color palette [Default is discontinuous, i.e., constant color intervals].\n");
@@ -193,7 +193,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 	int n;
 	unsigned int n_errors = 0, n_files[2] = {0, 0};
 	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, *c;
-	char kind;
+	char *T_arg = NULL, *S_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -290,37 +290,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 				else			/* Input is log10(z) */
 					Ctrl->Q.mode = 1;
 				break;
-			case 'S':	/* Sets sample range */
-				Ctrl->S.active = true;
-				if (strchr (opt->arg, '/')) {	/* Gave low/high/inc */
-					if (sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->S.low, &Ctrl->S.high, &Ctrl->S.inc) != 3) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Cannot decode values\n");
-						n_errors++;
-					}
-					Ctrl->S.mode = 0;
-				}
-				else if (opt->arg[0]) {	/* Gave -S<nlevels> */
-					Ctrl->S.n_levels = atoi (opt->arg);
-					Ctrl->S.mode = 1;
-				}
-				break;
-			case 'T':	/* Force symmetry */
+			case 'T':	/* Sets sample range */
 				Ctrl->T.active = true;
-				kind = '\0';
-				if (sscanf (opt->arg, "%c", &kind) != 1) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Cannot decode option\n");
-					n_errors++;
-				}
-				switch (kind) {
-					case '-': Ctrl->T.kind = -1; break; /* Symmetric with |zmin| range */
-					case '+': Ctrl->T.kind = +1; break; /* Symmetric with |zmax| range */
-					case '_': Ctrl->T.kind = -2; break; /* Symmetric with min(|zmin|,|zmax|) range */
-					case '=': Ctrl->T.kind = +2; break; /* Symmetric with max(|zmin|,|zmax|) range */
-					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Must append modifier -, +, _, or =\n");
-						n_errors++;
-						break;
-				}
+				T_arg = opt->arg;
+				break;
+			case 'S':	/* Force symmetry */
+				Ctrl->S.active = true;
+				S_arg = opt->arg;
 				break;
 			case 'W':	/* Do not interpolate colors */
 				if (opt->arg[0] == 'w')
@@ -338,6 +314,71 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 		}
 	}
 
+	if (T_arg) {	/* Must handle old or new syntax */
+		if (strchr ("-+_=", T_arg[0]) && T_arg[1] == '\0') {	/* Old -Targs for symmetry given */
+			if (gmt_M_compat_check (GMT, 5)) {	/* OK to parse that? */
+				GMT_Report (API, GMT_MSG_COMPAT, "Option -T-|+|_|= is deprecated; use -Sl|u|m|h instead.\n");
+				Ctrl->S.active = true;
+				if (!S_arg) Ctrl->T.active = false;
+				switch (T_arg[0]) {
+					case '-': Ctrl->S.kind = -1; break; /* Symmetric with |zmin| range */
+					case '+': Ctrl->S.kind = +1; break; /* Symmetric with |zmax| range */
+					case '_': Ctrl->S.kind = -2; break; /* Symmetric with min(|zmin|,|zmax|) range */
+					case '=': Ctrl->S.kind = +2; break; /* Symmetric with max(|zmin|,|zmax|) range */
+					default: break;
+				}
+			}
+			else {
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Cannot decode values %s\n", T_arg);
+				n_errors++;
+			}
+		}
+		else {	/* Got correct modern args */
+			if (strchr (T_arg, '/')) {	/* Gave low/high/inc */
+				if (sscanf (T_arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc) != 3) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Cannot decode values\n");
+					n_errors++;
+				}
+				Ctrl->T.mode = 0;
+			}
+			else if (T_arg[0]) {	/* Gave -T<nlevels> */
+				Ctrl->T.n_levels = atoi (T_arg);
+				Ctrl->T.mode = 1;
+			}
+		}
+	}
+	if (S_arg) {	/* Must handle old or new syntax */
+		if (strchr ("hlmu", S_arg[0]) && S_arg[1] == '\0') {	/* New -S for symmetry */
+			switch (S_arg[0]) {
+				case 'l': Ctrl->S.kind = -1; break; /* Symmetric with |zmin| range */
+				case 'u': Ctrl->S.kind = +1; break; /* Symmetric with |zmax| range */
+				case 'm': Ctrl->S.kind = -2; break; /* Symmetric with min(|zmin|,|zmax|) range */
+				case 'h': Ctrl->S.kind = +2; break; /* Symmetric with max(|zmin|,|zmax|) range */
+				default: break;
+			}
+		}
+		else if (gmt_M_compat_check (GMT, 5)) {	/* Old-style -S range */
+			GMT_Report (API, GMT_MSG_COMPAT, "Option -S<start>/<stop>/<inc> or -S<n> is deprecated; use -T instead.\n");
+			if (strchr (S_arg, '/')) {	/* Gave low/high/inc */
+				if (sscanf (S_arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc) != 3) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Cannot decode values %s\n", S_arg);
+					n_errors++;
+				}
+				Ctrl->T.mode = 0;
+			}
+			else if (S_arg[0]) {	/* Gave -S<nlevels> */
+				Ctrl->T.n_levels = atoi (S_arg);
+				Ctrl->T.mode = 1;
+			}
+			if (!T_arg) Ctrl->S.active = false;
+			Ctrl->T.active = true;
+		}
+		else {
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Cannot decode values %s\n", S_arg);
+			n_errors++;
+		}
+	}
+	
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] < 1, "Error: No grid name(s) specified.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
 					"Syntax error: -W and -Z cannot be used simultaneously\n");
@@ -345,12 +386,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 	                                "Syntax error: -F+c and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.min >= Ctrl->L.max,
 					"Syntax error -L option: min_limit must be less than max_limit.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.mode == 0 && (Ctrl->S.high <= Ctrl->S.low || Ctrl->S.inc <= 0.0),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.mode == 0 && (Ctrl->T.high <= Ctrl->T.low || Ctrl->T.inc <= 0.0),
 					"Syntax error -S option: Bad arguments\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.mode == 1  && Ctrl->S.n_levels == 0,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.mode == 1  && Ctrl->T.n_levels == 0,
 					"Syntax error -S option: Bad arguments\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (Ctrl->T.active || Ctrl->E.active),
-					"Syntax error -S option: Cannot be combined with -E nor -T option.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->S.active || Ctrl->E.active),
+					"Syntax error -T option: Cannot be combined with -E nor -S option.\n");
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
 					"Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
@@ -420,7 +461,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		Ctrl->C.file = strdup (GMT_DEFAULT_CPT);
 	}
 
-	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->S.n_levels > 0) ? Ctrl->S.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */
+	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->T.n_levels > 0) ? Ctrl->T.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */
 	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;		/* bit 0 controls if BFN is determined by parameters */
 	if (Ctrl->D.mode == 2) cpt_flags |= GMT_CPT_EXTEND_BNF;		/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->Z.active) cpt_flags |= GMT_CPT_CONTINUOUS;	/* Controls if final CPT should be continuous in case input is a list of colors */
@@ -559,33 +600,33 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	}
 
 	/* Decide how to make steps in z.  */
-	if (Ctrl->S.active && Ctrl->S.mode == 0) {	/* Use predefined levels and interval */
+	if (Ctrl->T.active && Ctrl->T.mode == 0) {	/* Use predefined levels and interval */
 		unsigned int i, j;
 
-		Ctrl->E.levels = (G[0]->header->z_min < Ctrl->S.low) ? 1 : 0;
-		Ctrl->E.levels += urint (floor((Ctrl->S.high - Ctrl->S.low)/Ctrl->S.inc)) + 1;
-		if (G[0]->header->z_max > Ctrl->S.high) Ctrl->E.levels++;
+		Ctrl->E.levels = (G[0]->header->z_min < Ctrl->T.low) ? 1 : 0;
+		Ctrl->E.levels += urint (floor((Ctrl->T.high - Ctrl->T.low)/Ctrl->T.inc)) + 1;
+		if (G[0]->header->z_max > Ctrl->T.high) Ctrl->E.levels++;
 		cdf_cpt = gmt_M_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
-		if (G[0]->header->z_min < Ctrl->S.low) {
+		if (G[0]->header->z_min < Ctrl->T.low) {
 			cdf_cpt[0].z = G[0]->header->z_min;
-			cdf_cpt[1].z = Ctrl->S.low;
+			cdf_cpt[1].z = Ctrl->T.low;
 			i = 2;
 		}
 		else {
-			cdf_cpt[0].z = Ctrl->S.low;
+			cdf_cpt[0].z = Ctrl->T.low;
 			i = 1;
 		}
-		j = (G[0]->header->z_max > Ctrl->S.high) ? Ctrl->E.levels - 1 : Ctrl->E.levels;
+		j = (G[0]->header->z_max > Ctrl->T.high) ? Ctrl->E.levels - 1 : Ctrl->E.levels;
 		while (i < j) {
-			cdf_cpt[i].z = cdf_cpt[i-1].z + Ctrl->S.inc;
+			cdf_cpt[i].z = cdf_cpt[i-1].z + Ctrl->T.inc;
 			i++;
 		}
 		if (j == Ctrl->E.levels-1) cdf_cpt[j].z = G[0]->header->z_max;
 	}
-	else if (Ctrl->T.active || Ctrl->E.active) {	/* Make a equaldistant color map from G[k]->header->z_min to G[k]->header->z_max */
+	else if (Ctrl->S.active || Ctrl->E.active) {	/* Make a equaldistant color map from G[k]->header->z_min to G[k]->header->z_max */
 		double start, range;
 
-		switch (Ctrl->T.kind) {
+		switch (Ctrl->S.kind) {
 			case -1:
 				start = -fabs (G[0]->header->z_min);
 				break;
@@ -602,12 +643,12 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 				start = G[0]->header->z_min;
 				break;
 		}
-		range = (Ctrl->T.kind) ? 2.0 * fabs (start) : G[0]->header->z_max - G[0]->header->z_min;
+		range = (Ctrl->S.kind) ? 2.0 * fabs (start) : G[0]->header->z_max - G[0]->header->z_min;
 		range *= (1.0 + GMT_CONV8_LIMIT);	/* To ensure the max grid values do not exceed the CPT limit due to round-off issues */
 		start -= fabs (start) * GMT_CONV8_LIMIT;	/* To ensure the start of cpt is less than min value due to roundoff  */
-		Ctrl->S.inc = range / (double)(Ctrl->E.levels - 1);
+		Ctrl->T.inc = range / (double)(Ctrl->E.levels - 1);
 		cdf_cpt = gmt_M_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
-		for (j = 0; j < Ctrl->E.levels; j++) cdf_cpt[j].z = start + j * Ctrl->S.inc;
+		for (j = 0; j < Ctrl->E.levels; j++) cdf_cpt[j].z = start + j * Ctrl->T.inc;
 	}
 
 	else {	/* This is completely ad-hoc.  It chooses z based on equidistant steps [of 0.1 unless -Sn set] for a Gaussian CDF:  */
