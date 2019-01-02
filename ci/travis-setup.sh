@@ -8,7 +8,8 @@ set -e
 if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     sudo apt-get update
     sudo apt-get install -y build-essential cmake libcurl4-gnutls-dev libnetcdf-dev \
-        libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev ghostscript curl
+        libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev ghostscript curl \
+        graphicsmagick
 else
     echo "OSX not supported yet";
 fi
