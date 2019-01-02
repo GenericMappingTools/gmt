@@ -170,11 +170,11 @@ if (WIN32 AND NOT CYGWIN)
 	if (WIN32 AND TRUE) 
 		# Install the gmtmex on Windows. Need to make this work via variables in ConfigUser.cmake
 		if (BITAGE EQUAL 64)
-			install (PROGRAMS "C:/progs_cygw/GMTdev/gmt-mex/branches/5.4/src/gmtmex.mexw64" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
+			install (PROGRAMS ${GMTMEX_PATH}/gmtmex.mexw64 DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 		else ()
-			install (PROGRAMS "C:/progs_cygw/GMTdev/gmt-mex/branches/5.4/src/gmtmex.mexw32" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
+			install (PROGRAMS ${GMTMEX_PATH}/gmtmex.mexw32 DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 		endif ()
-		install (PROGRAMS "C:/progs_cygw/GMTdev/gmt-mex/branches/5.4/src/gmt.m" DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
+		install (PROGRAMS ${GMTMEX_PATH}/../../src/gmt.m DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
 	endif (WIN32 AND TRUE)
 
 	# Fix bundle:
