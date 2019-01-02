@@ -47,12 +47,8 @@ script:
         cd build; make -j docs_html; cd ..;
       fi
     # Build tests and check coverage
-    # - cd build; make -j check; cd ..
-    - cd build; ctest -R pssac; cd ..
-
-after_success:
+    - cd build; make -j check; cd ..
     - bash <(curl -s https://codecov.io/bash)
-
 
 notifications:
     email: false
