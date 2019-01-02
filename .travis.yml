@@ -46,6 +46,7 @@ script:
         cd build; make -j docs_html; cd ..;
         cd build; make -j check; cd ..;
       fi
+    # remove it before merge
     - export COVERAGE=true
     - cd build; make -j check; cd ..;
 
