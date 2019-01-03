@@ -1,6 +1,4 @@
 #!/bin/bash
-#
-#       $Id: periodic.sh 12115 2013-09-03 23:22:48Z fwobbe $
 
 # Test gmt surface with periodic boundary conditions in longitude
 ps=periodic_pix.ps

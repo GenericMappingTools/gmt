@@ -1,5 +1,4 @@
 #!/bin/bash
-#       $Id: geovector.sh 12520 2013-11-15 22:57:57Z pwessel $
 #
 # Check geovector symbols
 
