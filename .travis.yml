@@ -45,10 +45,8 @@ script:
     - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
         cd build; make -j docs_html; cd ..;
         cd build; make -j check; cd ..;
+        bash <(curl -s https://codecov.io/bash);
       fi
-
-after_success:
-    - bash <(curl -s https://codecov.io/bash)
 
 notifications:
     email: false
