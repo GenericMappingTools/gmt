@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id: ps=headercheck.ps
 # Test that symbols pick up correct -W -G from command line or ps=headercheck.ps
 
 ps=headercheck.ps

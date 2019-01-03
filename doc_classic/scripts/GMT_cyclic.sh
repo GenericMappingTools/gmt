@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id
 #
 ps=GMT_cyclic.ps
 gmt makecpt -T0/100 -Cjet -Ww > t.cpt

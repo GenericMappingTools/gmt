@@ -1,5 +1,4 @@
 #!/bin/bash
-#	$Id: trend.sh 14635 2015-07-28 23:06:07Z remko $
 # Testing gmt trend1d
 
 ps=trend1.ps

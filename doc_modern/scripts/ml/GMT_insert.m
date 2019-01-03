@@ -3,7 +3,6 @@ function [ps, path] = GMT_insert(out_path)
 % PS       -> Full name of the created postscript file (built from OUT_PATH)
 % PATH     -> Path to where this file lives (useful for gmtest.m)
 %
-%	$Id: GMT_insert.m 17328 2016-11-08 20:38:56Z pwessel $
 
 	full = mfilename('fullpath');
 	[pato, fname] = fileparts(full);

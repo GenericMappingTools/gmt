@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-# $Id: gmt_make_custom_code.sh 52 2017-05-05 23:31:19Z pwessel $
-#
 # Copyright (c) 2012-2018
 # by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
@@ -86,8 +84,7 @@ COPY_YEAR=$(date +%Y)
 echo "gmt_make_custom_code.sh: Generate ${FILE_CUSTOM_MODULE_H}" >&2
 
 cat << EOF > ${FILE_CUSTOM_MODULE_H}
-/* \$Id\$
- *
+/*
  * Copyright (c) 2016-${COPY_YEAR} by $USER
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
@@ -135,8 +132,7 @@ EOF
 echo "gmt_make_custom_code.sh: Generate ${FILE_CUSTOM_MODULE_C}" >&2
 
 cat << EOF > ${FILE_CUSTOM_MODULE_C}
-/* \$Id\$
- *
+/*
  * Copyright (c) 2016-${COPY_YEAR} by $USER
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
