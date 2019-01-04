@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test shrinking vector heads, part 2
 # Get fill and/or pen color via CPT on z values
 gmt begin shrinkvec2 ps

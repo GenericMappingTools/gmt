@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 18
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial

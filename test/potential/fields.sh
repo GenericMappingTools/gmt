@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Compute FAA, VGG, and geoid over synthetic seamount
 ps=fields.ps

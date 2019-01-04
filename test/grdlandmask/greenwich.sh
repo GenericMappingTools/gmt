@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test grdlandmask across Greenwich
 
 ps=greenwich.ps

@@ -159,7 +159,7 @@ Cetacea
 
 .. code-block:: none
 
-    #!/bin/bash
+    #!/usr/bin/env bash
     gmt pscoast -JM20c -R-10/6/33/36 -K -W0.5pt/0 -P -Gblack > myfile.ps
     gmt psxy cdolphin.xy -Skcommondolphin/ -JM20c -R-10/6/33/36 -P -K -O >> myfile.ps
     gmt psxy bottlenose_dolphin.xy -Skbottlenose_high/0.5 -K -O ...etc >> myfile.ps

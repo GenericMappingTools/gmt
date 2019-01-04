@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 ps=GMT_Defaults_1c.ps
 gmt set MAP_FRAME_TYPE plain FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh FONT_ANNOT_PRIMARY +8p

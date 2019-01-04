@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Several failures:
 # Using frame -B and CPT -B in pslegend fails
 # 1. filling of frame (lightgray) is shifted

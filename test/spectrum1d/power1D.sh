@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing gmt spectrum1d power spectrum values
 
 ps=power1D.ps

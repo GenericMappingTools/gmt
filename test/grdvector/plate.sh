@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Plot r,az vectors on the globe.  The issue here is that some tools
 # such as psvelo, scales the user lengths to inches and thus vectors
 # of the same user length become the same scaled lengthon the plot.

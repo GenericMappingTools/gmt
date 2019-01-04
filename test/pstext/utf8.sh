@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test that our UTF8 to PostScript code works.  We are using all the
 # letter codes in the ISOLatin1+ table.
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Set colors applied to lines via cpt and -Z in header
 

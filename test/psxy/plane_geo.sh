@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test strike/dip symbol from Jose for consistency across quadrants
 # This version is a Mercator plot and azimuths are given.
 ps=plane_geo.ps

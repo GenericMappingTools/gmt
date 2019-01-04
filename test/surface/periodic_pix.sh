@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Test gmt surface with periodic boundary conditions in longitude
 ps=periodic_pix.ps

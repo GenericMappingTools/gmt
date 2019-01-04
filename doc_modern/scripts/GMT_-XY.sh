@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin GMT_-XY ps
 gmt basemap -R0/1.5/0/1.7 -Jx1i -B0 -B+glightyellow
 gmt plot -Sv5p+e -W0.5p -Gblack << EOF

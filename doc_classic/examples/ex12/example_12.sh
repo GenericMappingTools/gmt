@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 12
 #
 # Purpose:	Illustrates Delaunay triangulation of points, and contouring

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 19
 #
 # Purpose:	Illustrates various color pattern effects for maps

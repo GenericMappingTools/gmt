@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 ps=GMT_color_interpolate.ps
 gmt psbasemap -Jx1i -R0/6.8/0/2.0 -B0 -K > $ps

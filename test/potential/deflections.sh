@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Compute E-W and N-S deflections over synthetic seamount
 ps=deflections.ps

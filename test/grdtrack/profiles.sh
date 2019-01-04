@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=profiles.ps
 # Test grdtrack -E option for Geo data
 gmt grdmath -R0/10/0/10 -I15m -fg X = t.nc

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin GMT_-B_log ps
 gmt set MAP_GRID_PEN_PRIMARY thinnest,.
 gmt basemap -R1/1000/0/1 -JX3il/0.25i -B1f2g3p+l"Axis Label" -BS

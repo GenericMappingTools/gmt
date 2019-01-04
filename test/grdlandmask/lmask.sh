@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test grdlandmask on ocean/land/lake
 ps=lmask.ps
 cat << EOF > t.cpt

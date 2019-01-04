@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin GMT_tut_14 ps
 gmt makecpt -Crainbow -T-20/60/10 > disc.cpt
 gmt makecpt -Crainbow -T-20/60 > cont.cpt

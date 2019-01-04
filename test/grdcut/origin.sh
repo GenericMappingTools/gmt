@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing gmt grdcut -S for 3 different points
 
 ps=origin.ps

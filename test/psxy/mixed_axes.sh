@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Check mix of geographic and Cartesian axes and point placements
 # This was initially created to test issue # 520
 ps=mixed_axes.ps

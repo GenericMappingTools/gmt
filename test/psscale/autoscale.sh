@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test the automatic placement of color bars when selecting a side mid-point
 ps=autoscale.ps
 gmt makecpt -Cjet -T0/100 > t.cpt

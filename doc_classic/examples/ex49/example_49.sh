@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 49
 #
 # Purpose:      Illustrate data analysis using the seafloor depth/age relationship

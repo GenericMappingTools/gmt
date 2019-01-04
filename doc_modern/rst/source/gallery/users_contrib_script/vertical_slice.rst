@@ -38,7 +38,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
 
 .. code-block:: bash
 
- #!/bin/bash
+ #!/usr/bin/env bash
  #
  gmt set GMT_COMPATIBILITY=5 MAP_FRAME_TYPE=plain
  #

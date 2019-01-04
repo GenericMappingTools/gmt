@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Vector components (dx, dy)
 # The given vectors (0,10) and (10,0) has length 10.  So a length of 10 is mapped to a length on the plot
 # psxy -SV..+z0.1: Scale 0.1 should yield a 1 plot unit long vector, we set unit to inch for 1i.

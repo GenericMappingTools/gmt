@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test that binary headers are handled properly
 gmt math -T1/50/1 -o1       T 10 MUL = t.txt
 gmt math -T1/50/1 -o1 -bo1f T 10 MUL = t.b

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 20
 #
 # Purpose:	Extend GMT to plot custom symbols

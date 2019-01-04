@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing gmt grdcut -Zmin/max
 
 ps=cut.ps

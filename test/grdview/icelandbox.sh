@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Script to plot 3D model of Iceland, provided by Peter Schmidt
 #

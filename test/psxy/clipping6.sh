@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=clipping6.ps
 cat << EOF > badpol.txt
 -70	-55

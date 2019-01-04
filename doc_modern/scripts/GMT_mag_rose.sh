@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin GMT_mag_rose ps
 # Magnetic rose with a specified declination
 gmt basemap -R-10/-2/12.8812380332/0.661018975345+r -JOc0/0/50/60/7i -Baf -BWSne -X1.25i --MAP_ANNOT_OBLIQUE=34 --FONT_ANNOT_PRIMARY=12p 

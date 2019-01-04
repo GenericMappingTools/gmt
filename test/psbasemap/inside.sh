@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Thest inside labeling for Cartesian and geographic maps
 ps=inside.ps
 

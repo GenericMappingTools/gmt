@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Testing gmt pslegend capabilities for fronts and quoted lines
 

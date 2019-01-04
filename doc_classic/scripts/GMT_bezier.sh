@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 ps=GMT_bezier.ps
 cat << EOF > line.txt

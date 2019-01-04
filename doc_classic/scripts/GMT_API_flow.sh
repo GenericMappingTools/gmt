@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=GMT_API_flow.ps
 gmt pstext -R-2/3/-1/1 -Jx1i -P -F+f14p,Helvetica-Bold -Gwhite -W0.5p -N -K -C50% -X2i << EOF > $ps
 -2	0	EXTERNAL INTERFACE

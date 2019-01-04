@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # More testing of issue #667
 ps=gridlines.ps
 lon0=188.144925731

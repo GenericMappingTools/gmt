@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test adding arrows to lines in psxy via -W<pen>+o<offsets>+v<vecs> for geo and Cartesian cases
 ps=linearrow.ps
 # Geographic

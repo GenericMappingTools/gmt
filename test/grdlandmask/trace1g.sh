@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test grdlandmask for border tracing [gridline grid]
 ps=trace1g.ps
 R=9/11/36/38

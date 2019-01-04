@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing psrose with centered bins for sectors and roses
 ps=rose_centered.ps
 cat << EOF > data.txt

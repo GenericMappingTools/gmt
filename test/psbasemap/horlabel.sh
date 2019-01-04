@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Demonstrates +L for horizontal labels for y-axis
 ps=horlabel.ps

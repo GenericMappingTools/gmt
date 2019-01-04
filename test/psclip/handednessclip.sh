@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Try clipping with different handedness and -N
 # draw line around working area
 ps=handednessclip.ps

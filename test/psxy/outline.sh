@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test issue #1204
 ps=outline.ps
 cat << EOF > t.txt

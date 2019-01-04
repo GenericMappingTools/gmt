@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Setup TravisCI to be able to build and test GMT
 
 # To return a failure if any commands inside fail

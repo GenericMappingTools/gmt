@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Draw fault planes and points that should lie on them
 # K. Feigl, 2015-11-08

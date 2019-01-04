@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test pen modifier +s for Bezier spline in psxy
 ps=bezierline.ps
 cat << EOF > t.txt

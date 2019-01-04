@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Make a seismicity symbol that does r, g, or b depending on depth
 # and picks a circle that scales with magnitude range
 # For testing, we place a small black triangle on top except

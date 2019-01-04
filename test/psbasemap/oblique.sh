@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Fixed 11/06/2015 P. Wessel: Treated as a special case where we
 # have a stray horizontal line streaking across the entire map when

@@ -124,7 +124,7 @@ Tutorial setup
    you place all the GMT (and UNIX) commands in a shell script
    file and make it executable.  To ensure that UNIX recognizes
    your script as a shell script it is a good habit always to start
-   the script with the line #!/bin/bash or #!/bin/csh, depending on the shell you prefer to use.
+   the script with the line #!/usr/bin/env bash or #!/usr/bin/env csh, depending on the shell you prefer to use.
    All the examples in this tutorial assumes you are running the Bourne Again shell, bash,
    and you will need to modify some of the constructs, such as i/o redirection, to run
    these examples under csh.

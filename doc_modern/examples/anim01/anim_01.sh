@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT ANIMATION 01
 #
 # Purpose:      Make web page with simple animated GIF of sine function

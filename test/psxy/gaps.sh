@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test gmt sample1d interpolation with NaNs
 
 makeps () {

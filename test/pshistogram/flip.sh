@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test -A with log axis
 ps=flip.ps
 gmt makecpt -Cdem4 -T0/5000/25 > color.cpt

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test talwani2d on 2-D horizontal cylinder
 ps=cyl2d.ps
 # Make a approximate cylinder with radius R = 1km and center depth 3 km

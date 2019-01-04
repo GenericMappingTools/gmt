@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Build and install GMT
 
 # To return a failure if any commands inside fail

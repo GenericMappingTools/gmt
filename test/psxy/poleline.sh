@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # What Issue #1060 should look like (after fix).  In 5.3.2 we got
 # fuzzy fat lines towards the pole due to excessive resampling in gmt_stat.c
 ps=poleline.ps

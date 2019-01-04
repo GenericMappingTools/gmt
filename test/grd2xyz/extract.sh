@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing gmt grd2xyz with -R and -s
 
 ps=extract.ps

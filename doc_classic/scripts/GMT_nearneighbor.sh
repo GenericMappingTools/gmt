@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 gmt psxy -R0/2/0/2 -Jx1i -P -K -Sc1i -Wthick -Glightgreen@70 -Bg0.25 << EOF > GMT_nearneighbor.ps
 0.75	1.25

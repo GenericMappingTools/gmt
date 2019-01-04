@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # This is based on issue #816 where we lost some of the meridians when the phase was nonzero
 

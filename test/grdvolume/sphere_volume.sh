@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Make a sphere of radius 10 using two half grids and compute volumnes
 # Addressing issue #895

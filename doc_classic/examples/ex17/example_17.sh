@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 17
 #
 # Purpose:	Illustrates clipping of images using coastlines
