@@ -103,10 +103,6 @@ add_subdirectory (cmake/dist) # make distribution bundles (always last)
 
 # Source release target
 if (GIT AND HAVE_SVN_VERSION)
-	# Export svn working tree
-	#add_custom_target (git_export_release_tar
-	#	COMMAND ${GIT} archive --prefix=gmt-${GMT_PACKAGE_VERSION}/ -o ${GMT_RELEASE_PREFIX}.tar master
-	#	WORKING_DIRECTORY ..)
 	if (GZIP AND XZ)
 		# Targets for creating tarballs
 		string (REGEX REPLACE ".*/" "" _release_dirname "${GMT_RELEASE_PREFIX}")
