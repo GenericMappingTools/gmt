@@ -20,33 +20,49 @@ env:
         - PATH="$INSTALLDIR/bin:$PATH"
         - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
         - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
-            export PYTHON=3.6
-            export CONDA_INSTALL_EXTRA="sphinx"
-            export COVERAGE=true
+            BUILD_DOCS=true
+            TEST=true
+          fi
+        - if [ "$BUILD_DOCS" == "true" ]; then
+            PYTHON=3.6
+            CONDA_INSTALL_EXTRA="sphinx"
+            HTML_BUILDDIR=build/doc_modern/rst/html
           fi
 
 before_install:
     # Install GMT dependencies
     - bash ci/travis-setup.sh
     # Install GMT documentation dependencies
-    - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
+    - if [ "$BUILD_DOCS" == "true" ]; then
         git clone https://github.com/fatiando/continuous-integration.git;
         source continuous-integration/travis/setup-miniconda.sh;
       fi
 
 install:
     # Build and install GMT
-    - bash ci/travis-build.sh;
+    - bash ci/travis-build.sh
 
 script:
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-    # Build documentations, tests and coverage reports
-    - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
+    # Build GMT documentations
+    - if [ "$BUILD_DOCS" == "true" ]; then
         cd build; make -j docs_html; cd ..;
+      fi
+    # Run tests and report coverage
+    - if [ "$TEST" == "true" ]; then
         cd build; make -j check; cd ..;
         bash <(curl -s https://codecov.io/bash);
       fi
+
+deploy:
+    # Push the built HTML to the gh-pages branch
+    - provider: script
+      script: continuous-integration/travis/deploy-gh-pages.sh
+      skip_cleanup: true
+      on:
+        branch: master
+        condition: '"$BUILD_DOCS" == "true"'
 
 notifications:
     email: false

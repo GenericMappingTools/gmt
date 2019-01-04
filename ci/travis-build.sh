@@ -18,7 +18,7 @@ set (DO_ANIMATIONS TRUE)
 set (N_TEST_JOBS 2)
 EOF
 
-if [ "$COVERAGE" == "true" ]; then
+if [ "$TEST" == "true" ]; then
     cat >> cmake/ConfigUser.cmake << 'EOF'
 set (CMAKE_BUILD_TYPE Debug)
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement -coverage -O0")
