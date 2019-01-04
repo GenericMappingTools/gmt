@@ -22,6 +22,7 @@ env:
         - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
             export PYTHON=3.6
             export CONDA_INSTALL_EXTRA="sphinx"
+            export COVERAGE=true
           fi
 
 before_install:
@@ -40,9 +41,11 @@ install:
 script:
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-    # Build GMT documentations
+    # Build documentations, tests and coverage reports
     - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
-        cd build; make -j docs_html;
+        cd build; make -j docs_html; cd ..;
+        cd build; make -j check; cd ..;
+        bash <(curl -s https://codecov.io/bash);
       fi
 
 notifications:

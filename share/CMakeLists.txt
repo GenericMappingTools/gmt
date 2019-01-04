@@ -18,7 +18,7 @@
 # share CMakeLists.txt
 #
 
-set (_gmt_share_dirs cpt custom dbase localization mgd77 mgg
+set (_gmt_share_dirs cpt custom localization mgd77 mgg
 	spotter x2sys)
 
 # install target for data
