@@ -3612,8 +3612,9 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	 * Axis settings:
 	 * 	-B[p|s][x|y|z]<info>
 	 *   where <info> is of the format
-	 * 	<intervals>[+L|l<label>][+S|s<altlabel>][+p<prefix>][+u<unit>]
+	 * 	<intervals>[+a<angle>][+L|l<label>][+S|s<altlabel>][+p<prefix>][+u<unit>]
 	 *   and each <intervals> is a concatenation of one or more [t][value][<unit>]
+	 *    		+a<angle> sets a fixed annotation angle with respect to axis (Cartesian only)
 	 *    		+l<label> as labels for the respective axes [none]. Use +L for only horizontal labels
 	 *    		+s<altlabel> as alternate label for the far axis [same as <label>]. Use +S for only horizontal labels
 	 *    		+u<unit> as as annotation suffix unit [none].
@@ -3697,8 +3698,14 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 			while ((gmt_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
 				switch (p[0]) {
 					case 'a':	/* Set annotation angle */
-						if (no < 2)
-							GMT->current.map.frame.axis[no].item[6].angle = GMT->current.map.frame.axis[no].item[7].angle = atof(&p[1]);
+						if (gmt_M_is_geographic (GMT, GMT_IN)) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Cannot use +a for geographic basemaps\n");
+							error++;
+						}
+						else if (no < 2)
+							GMT->current.map.frame.axis[no].angle = atof (&p[1]);
+						else
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -B option: The +a modifier is ignored for the z-axis\n");
 						break;
 					case 'L':	/* Force horizontal axis label */
 						GMT->current.map.frame.axis[no].label_mode = 1;

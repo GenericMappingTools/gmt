@@ -4252,9 +4252,9 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		gmt_get_format (GMT, gmtlib_get_map_interval (GMT, &A->item[GMT_ANNOT_UPPER]), A->unit, A->prefix, format);
 	text_angle = (ortho == horizontal) ? 90.0 : 0.0;
 	justify = (ortho) ? PSL_MR : PSL_BC;
-	if (axis == GMT_X && A->item[GMT_ANNOT_ANG_UPPER].angle != 0) {
-		text_angle = A->item[GMT_ANNOT_ANG_UPPER].angle;
-		justify = PSL_MR;
+	if (axis == GMT_X && !doubleAlmostEqual (A->angle, 0.0)) {	/* User override annotation angle */
+		text_angle = A->angle;
+		justify = (side == 0) ? PSL_MR : PSL_ML;
 	}
 	flip = (GMT->current.setting.map_frame_type & GMT_IS_INSIDE);	/* Inside annotation */
 	if (axis != GMT_Z && GMT->current.proj.three_D && GMT->current.proj.z_project.cos_az > 0) {	/* Rotate x/y-annotations when seen "from North" */
