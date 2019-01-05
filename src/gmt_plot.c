@@ -4231,7 +4231,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	bool angled = false;		/* Tru if user used +angle to select a slanted annotation */
 	bool save_pi = GMT->current.plot.substitute_pi;
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
-	double x, t_use, text_angle;		/* Misc. variables */
+	double x, t_use, text_angle, cos_a;	/* Misc. variables */
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;	/* Pointer to the current axis item */
 	char string[GMT_LEN256] = {""};	/* Annotation string */
@@ -4257,7 +4257,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		text_angle = A->angle;
 		angled = true;
 		justify = (below) ? PSL_MR : PSL_ML;
-		//justify = (below) ? PSL_TR : PSL_BL;
+		cos_a = 0.5 * cosd (text_angle);
 	}
 	flip = (GMT->current.setting.map_frame_type & GMT_IS_INSIDE);	/* Inside annotation */
 	if (axis != GMT_Z && GMT->current.proj.three_D && GMT->current.proj.z_project.cos_az > 0) {	/* Rotate x/y-annotations when seen "from North" */
@@ -4395,15 +4395,12 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				x = (*xyz_fwd) (GMT, t_use);	/* Convert to inches on the page */
 				/* Move to new anchor point */
 				PSL_command (PSL, "%d PSL_A%d_y MM\n", PSL_IZ (PSL, x), annot_pos);
-#if 0
-				if (axis == GMT_X && angled && below) {
-					double s = sind (text_angle);
-					if (below)
-						PSL_command (PSL, "0 PSL_A%d_y %g mul G\n", annot_pos, s);
-					else
-						PSL_command (PSL, "0 PSL_A%d_y %g mul G\n", annot_pos, s);
+				if (angled) {	/* Must compensate for rotated textbox */
+					//if (below)
+					//	PSL_command (PSL, "0 PSL_AH%d %g mul 2 mul G\n", annot_pos, cos_a);
+					//else
+						PSL_command (PSL, "0 PSL_AH%d %g mul G\n", annot_pos, cos_a);
 				}
-#endif
 				if (label_c && label_c[i] && label_c[i][0])
 					strncpy (string, label_c[i], GMT_LEN256-1);
 				else
