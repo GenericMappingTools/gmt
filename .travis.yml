@@ -20,13 +20,13 @@ env:
         - PATH="$INSTALLDIR/bin:$PATH"
         - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
         - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
-            BUILD_DOCS=true
-            TEST=true
+            export BUILD_DOCS=true
+            export TEST=true
           fi
         - if [ "$BUILD_DOCS" == "true" ]; then
-            PYTHON=3.6
-            CONDA_INSTALL_EXTRA="sphinx"
-            HTML_BUILDDIR=build/doc_modern/rst/html
+            export PYTHON=3.6
+            export CONDA_INSTALL_EXTRA="sphinx"
+            export HTML_BUILDDIR=build/doc_modern/rst/html
           fi
 
 before_install:
