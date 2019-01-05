@@ -434,9 +434,7 @@ enum GMT_enum_tick {GMT_ANNOT_UPPER = 0,	/* Tick annotations closest to the axis
 	GMT_TICK_UPPER,		/* Frame tick marks closest to the axis */
 	GMT_TICK_LOWER,		/* Frame tick marks farthest to the axis */
 	GMT_GRID_UPPER,		/* Gridline spacing */
-	GMT_GRID_LOWER,		/* Gridline spacing */
-	GMT_ANNOT_ANG_UPPER,/* Annotation angle closest to the axis */
-	GMT_ANNOT_ANG_LOWER};/* Annotation angle farthest to the axis */
+	GMT_GRID_LOWER};	/* Gridline spacing */
 
 /* Some convenient macros for axis routines */
 
