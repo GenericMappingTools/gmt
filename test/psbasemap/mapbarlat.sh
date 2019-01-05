@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=mapbarlat.ps
 gmt set FONT_LABEL 9p PROJ_ELLIPSOID sphere
 # Use sphere so we can compute scale between longitude and km exactly

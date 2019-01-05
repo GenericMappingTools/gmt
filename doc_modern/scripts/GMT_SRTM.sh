@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #	Show distribution of SRTM tiles
 gmt begin GMT_SRTM ps
 gmt set MAP_FRAME_TYPE plain

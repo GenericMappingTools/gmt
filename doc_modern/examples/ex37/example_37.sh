@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 37
 #
 # Purpose:      Illustrate 2-D FFT and coherence between gravity and bathymetry grids

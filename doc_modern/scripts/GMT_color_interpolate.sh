@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin GMT_color_interpolate ps
 gmt basemap -Jx1i -R0/6.8/0/2.0 -B0 
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT ANIMATION 04
 #
 # Purpose:      Make DVD-res movie of NY to Miami flight

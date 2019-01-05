@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 39
 #
 # Purpose:      Illustrate evaluation of spherical harmonic coefficients

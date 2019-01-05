@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing gmt simplify on GSHHS high Australia polygon.
 
 ps=reduce.ps

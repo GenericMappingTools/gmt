@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing gmt grdsample over a periodic grid boundary
 # Problem was issue # 1086
 ps=straddle.ps

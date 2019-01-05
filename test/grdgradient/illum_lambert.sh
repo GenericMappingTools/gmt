@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test the generation of illumination with the lambertian (same one as in Matlab) algorithm
 
 ps=illum_lambert.ps

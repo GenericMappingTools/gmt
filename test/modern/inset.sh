@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin inset ps
 	gmt psbasemap -R0/40/20/60 -JM6.5i -Bafg -B+glightgreen
 	gmt inset begin -DjTR+w2.5i+o0.2i -F+gpink+p0.5p -M0.1i

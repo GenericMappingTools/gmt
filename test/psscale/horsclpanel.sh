@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing horizontal psscale panel sizing if -+e +n and reverse scale.
 ps=horsclpanel.ps
 gmt set FONT_ANNOT_PRIMARY 9p,Helvetica,black

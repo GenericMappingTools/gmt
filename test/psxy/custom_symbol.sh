@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Check two custom symbols symbols with new variables and text capabilities
 

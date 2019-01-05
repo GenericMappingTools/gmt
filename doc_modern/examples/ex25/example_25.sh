@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 25
 #
 # Purpose:	Display distribution of antipode types

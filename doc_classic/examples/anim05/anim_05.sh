@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT ANIMATION 05
 #
 # Purpose:      Make web page with simple animated GIF of gridding

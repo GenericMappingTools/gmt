@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Demonstrate how arrows look like
 gmt begin GMT_arrows ps

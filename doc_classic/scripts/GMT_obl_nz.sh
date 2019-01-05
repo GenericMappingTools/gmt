@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Oblique Mercator map for NZ using complementary poles
 ps=GMT_obl_nz.ps
 lon=173:17:02E

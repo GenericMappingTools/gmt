@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #	Test psvelo with either old and new-style vector arguments
 #	The V4 vector is selected when -A is in old GMT4 format.

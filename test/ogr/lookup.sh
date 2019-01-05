@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test that @D records after a new segment header are properly
 #   processed so metadata is used to set color, etc.  Based on
 # example in issue # 539.  Original plot faked with direct psxy plot.

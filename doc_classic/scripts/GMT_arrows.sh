@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Demonstrate how arrows look like
 ps=GMT_arrows.ps

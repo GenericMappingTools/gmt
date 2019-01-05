@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 32
 #
 # Purpose:	Illustrate draping of an image over topography

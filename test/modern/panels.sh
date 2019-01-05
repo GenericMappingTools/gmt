@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test very minimal 2x2 basemap matrix
 gmt begin panels ps
   gmt subplot begin 2x2 -Fs3i -M5p -A -SCb -SRl -Bwstr

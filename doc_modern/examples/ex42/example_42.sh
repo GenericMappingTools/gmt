@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 42
 #
 # Purpose:      Illustrate Antarctica and stereographic projection

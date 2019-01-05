@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Examine issue #1201
 ps=arrowline.ps
 

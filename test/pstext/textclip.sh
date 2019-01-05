@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test gmt pstext with text path clipping
 
 ps=textclip.ps

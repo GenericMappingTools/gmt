@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 02
 #
 # Purpose:	Make two color images based gridded data

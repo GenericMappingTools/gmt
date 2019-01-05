@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test the variable widths and heights options for subplots
 # This test uses a variable subplot dimensions
 gmt begin vardims ps

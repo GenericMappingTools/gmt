@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=clipping7.ps
 cat << EOF > badpol.txt
 > -Gred

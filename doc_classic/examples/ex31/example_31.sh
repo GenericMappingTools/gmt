@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 31
 #
 # Purpose:	Illustrate usage of non-default fonts in PostScript

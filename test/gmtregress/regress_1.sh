@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing gmtregress on the Hertzsprung-Russell data from Rousseeuw & Leroy, 19987,
 # "Robust Regression and Outlier Detection", Wiley, 329pp [Table 3].
 # Data is Log Temperature (x) vs Log Light Intensity (y).

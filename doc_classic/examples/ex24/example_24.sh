@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 24
 #
 # Purpose:	Extract subsets of data based on geospatial criteria

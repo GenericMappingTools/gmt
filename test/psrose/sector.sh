@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test gmt psrose with -Em and basemap amd -Ccpt
 
 ps=sector.ps

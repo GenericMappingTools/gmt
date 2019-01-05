@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 08
 #
 # Purpose:	Make a 3-D bar plot

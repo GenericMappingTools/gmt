@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin GMT_hinge ps
 gmt makecpt -Cglobe -T-8000/3000 > t.cpt
 gmt colorbar -Ct.cpt  -Baf -Dx0/0+w4.5i/0.1i+h -W0.001 

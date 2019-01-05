@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Testing gmt pslegend absolute offsets in modern mode
 export GMT_PPID=$$

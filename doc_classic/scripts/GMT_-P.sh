@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 gmt psxy -R0/2.5/0/1.7 -Jx1i -P -K -Glightyellow -Wthinner << EOF >| GMT_-P.ps
 >

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing gmt grdfft -N+m mirror reflection and -N+e edge-point symmetry
 
 ps=out_taper.ps

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=placebars.ps
 gmt makecpt -Crainbow -T0/10 > t.cpt
 gmt pscoast -R-180/180/-90/-60 -JS0/-90/4i -Bfg -Di -Glightgray -P -K -Xc -Yc --MAP_FRAME_TYPE=plain > $ps

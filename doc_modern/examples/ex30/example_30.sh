@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 30
 #
 # Purpose:	Show graph mode and math angles

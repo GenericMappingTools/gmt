@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Compare cubic spline and Bezier line
 ps=cubic+Bezier.ps
 cat << EOF > t.txt

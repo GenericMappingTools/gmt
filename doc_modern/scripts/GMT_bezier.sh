@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 cat << EOF > line.txt
 0       0
 1	1

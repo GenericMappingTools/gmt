@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=matharcvar.ps
 cat << EOF > matharc-const.def
 0 0 1 y

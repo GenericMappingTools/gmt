@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Test case for line far outside a small region.  First point
 # is > 180 points away so is seen as -179 away while second is

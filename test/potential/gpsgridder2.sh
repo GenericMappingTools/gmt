@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test # 1 in Sandwell & Wessel tarball test data sets but with weights
 ps=gpsgridder2.ps
 #V=-Vl

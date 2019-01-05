@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Check custom symbol needed 2 column strings from trailing text
 # and using size to scale the texts.  Note words must be separated

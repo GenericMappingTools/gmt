@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test polygon wrapping when -R is not global but polygons may be
 # Based on issue # 949.  I identified three polygon of 272 that
 # failed to plot: These were 31,49,78.  I am keeping the original

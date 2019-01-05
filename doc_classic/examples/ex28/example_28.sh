@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 28
 #
 # Purpose:	Illustrates how to mix UTM data and UTM gmt projection

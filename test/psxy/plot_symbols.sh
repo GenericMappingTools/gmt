@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Plot all the symbols on a 1x1 inch grid pattern
 

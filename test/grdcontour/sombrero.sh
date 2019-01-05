@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test implementation of feature #1141
 ps=sombrero.ps
 

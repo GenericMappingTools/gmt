@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test pscontour on stereographic projection with TIN data
 # Comes from forum message http://gmt.soest.hawaii.edu/boards/1/topics/5532?r=5548
 ps=thickness.ps

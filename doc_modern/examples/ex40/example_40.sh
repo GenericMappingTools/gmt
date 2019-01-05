@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 40
 #
 # Purpose:      Illustrate line simplification and area calculations

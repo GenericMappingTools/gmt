@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing grdfill with -L to indicate regions of NaNs
 ps=showregions.ps
 # Get topo for Hawaiian Islands and set data on land to NaN

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Test that gmt psxy properly plots rotatable rectangles -Sj and -SJ
 

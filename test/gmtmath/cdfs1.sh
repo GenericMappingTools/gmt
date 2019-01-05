@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Testing gmt math for BCDF PCDF ZCDF TCDF FCDF
 # Red dots are output from MATLAB for comparison

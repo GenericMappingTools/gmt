@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Script to draw the impulse responses and transfer functions
 # for GMT cookbook Appendix_J.

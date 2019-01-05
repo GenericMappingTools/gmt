@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin GMT_registration ps
 # Gridline registration
 gmt plot -R0/3/0/3 -JX2.5i/1.25i -B1g1 -Bwesn -Wthinner -L -Glightred << EOF 

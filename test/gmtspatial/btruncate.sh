@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test gmtspatial truncating a polygon to a -R setting that
 # is tangent to the polygon at W/S.  Fails when polygon exceeds
 # x = 190 which is odd since not geographic (?). Issue #851, b

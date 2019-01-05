@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Shows the essence of issue # 949.  The problem is related
 # to the test in gmt_map.c in map_wesn_clip near #L1738.
 # That section finds that one end of the badpol.txt polygon

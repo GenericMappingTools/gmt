@@ -269,8 +269,8 @@ GMT_LOCAL void set_tvalue (FILE *fp, int mode, char *name, char *value) {
 GMT_LOCAL void set_script (FILE *fp, int mode) {
 	/* Writes the script's incantation line (or a comment for DOS, turning off default echo) */
 	switch (mode) {
-		case BASH_MODE: fprintf (fp, "#!/bin/bash\n"); break;
-		case CSH_MODE:  fprintf (fp, "#!/bin/csh\n"); break;
+		case BASH_MODE: fprintf (fp, "#!/usr/bin/env bash\n"); break;
+		case CSH_MODE:  fprintf (fp, "#!/usr/bin/env csh\n"); break;
 		case DOS_MODE:  fprintf (fp, "@echo off\nREM Start of script\n"); break;
 	}
 }

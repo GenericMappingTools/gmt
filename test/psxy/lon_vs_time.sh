@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test longitude vs time and time versus longitude.
 ps=lon_vs_time.ps
 gmt math -T1994/2015/1 T 1993 SUB 30 MUL 100 SUB 360 FMOD = | awk '{printf "%s-01-01T\t%s\n", $1, $2 }' > tx.txt

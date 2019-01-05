@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 
 GDAL=`gmt grdconvert 2>&1 | grep -c gd`

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test based on issue # 968.  This one uses -JP6i and works
 # polcontr.sh uses -JP6ir and failed.
 ps=polcont.ps

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test that the grid option in blockmedian matches the table output to ~EPS
 # If max fractional difference is < 1e-7 we assume it is good and write 1
 # else it is 0.  If any of the 6 outputs fail then the test fails, and

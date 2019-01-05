@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #	Testing gmt mapproject pt.txt with proj4 cases.
 #
