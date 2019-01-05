@@ -3053,7 +3053,7 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 		gmt_scanf_float (GMT, in, &val);
 	else {
 		/* Decode interval, get pointer to next segment */
-		if ((val = strtod (t, &s)) < 0.0 && GMT->current.proj.xyz_projection[A->id] != GMT_LOG10) {	/* Interval must be >= 0 */
+		if ((val = strtod (t, &s)) < 0.0 && flag != 'o' && GMT->current.proj.xyz_projection[A->id] != GMT_LOG10) {	/* Interval must be >= 0 */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Negative interval in -B option (%c-component, %c-info): %s\n", axis, flag, in);
 			return (3);
 		}
@@ -3129,6 +3129,12 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 		case 'G':	/* Lower gridline interval */
 			I = &A->item[GMT_GRID_LOWER];
 			break;
+		case 'o':	/* Upper annotations angle */
+			I = &A->item[GMT_ANNOT_ANG_UPPER];
+			break;
+		case 'O':	/* Lower annotations angle */
+			I = &A->item[GMT_ANNOT_ANG_LOWER];
+			break;
 		default:	/* Bad flag should never get here */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad flag (%c) passed to gmtinit_set_titem\n", flag);
 			GMT_exit (GMT, GMT_NOT_A_VALID_TYPE); return GMT_NOT_A_VALID_TYPE;
@@ -3153,6 +3159,7 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 	I->type = flag;
 	I->unit = unit;
 	I->interval = val;
+	I->angle = val;
 	I->flavor = 0;
 	I->active = true;
 	if (!custom && in[0] && val == 0.0) I->active = false;
@@ -3375,7 +3382,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 			error += gmtinit_decode_tinfo (GMT, i, 'c', out3, &GMT->current.map.frame.axis[i]);
 		else {	/* Parse from back for 'a', 'f', 'g' chunks */
 			for (k = (int)strlen (out3) - 1; k >= 0; k--) {
-				if (out3[k] == 'a' || out3[k] == 'f' || out3[k] == 'g') {
+				if (out3[k] == 'a' || out3[k] == 'f' || out3[k] == 'g' || out3[k] == 'o') {
 					error += gmtinit_decode_tinfo (GMT, i, out3[k], &out3[k+1], &GMT->current.map.frame.axis[i]);
 					out3[k] = '\0';	/* Done with this chunk; replace with terminator */
 				}
@@ -3766,7 +3773,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 			error += gmtinit_decode_tinfo (GMT, no, 'c', string, &GMT->current.map.frame.axis[no]);
 		else {				/* Parse from back of string for 'a', 'f', 'g' chunks */
 			for (k = (int)strlen (string) - 1; k >= 0; k--) {
-				if (string[k] == 'a' || string[k] == 'f' || string[k] == 'g') {
+				if (string[k] == 'a' || string[k] == 'f' || string[k] == 'g' || string[k] == 'o') {
 					error += gmtinit_decode_tinfo (GMT, no, string[k], &string[k+1], &GMT->current.map.frame.axis[no]);
 					string[k] = '\0';	/* Done with this chunk; replace with terminator */
 				}
