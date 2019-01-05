@@ -4256,7 +4256,10 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	if (axis == GMT_X && !doubleAlmostEqualZero (A->angle, 0.0)) {	/* User override annotation angle */
 		text_angle = A->angle;
 		angled = true;
-		justify = (below) ? PSL_MR : PSL_ML;
+		if (text_angle > 0.0)
+			justify = (below) ? PSL_MR : PSL_ML;
+		else
+			justify = (below) ? PSL_ML : PSL_MR;
 		cos_a = 0.5 * cosd (text_angle);
 	}
 	flip = (GMT->current.setting.map_frame_type & GMT_IS_INSIDE);	/* Inside annotation */
@@ -4396,9 +4399,9 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				/* Move to new anchor point */
 				PSL_command (PSL, "%d PSL_A%d_y MM\n", PSL_IZ (PSL, x), annot_pos);
 				if (angled) {	/* Must compensate for rotated textbox */
-					//if (below)
-					//	PSL_command (PSL, "0 PSL_AH%d %g mul 2 mul G\n", annot_pos, cos_a);
-					//else
+					if (below)
+						PSL_command (PSL, "0 PSL_AH%d 1 %g sub mul G\n", annot_pos, cos_a);
+					else
 						PSL_command (PSL, "0 PSL_AH%d %g mul G\n", annot_pos, cos_a);
 				}
 				if (label_c && label_c[i] && label_c[i][0])
