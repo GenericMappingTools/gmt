@@ -1140,11 +1140,11 @@ will appear centered above the plot frame.
 
 The Axes settings are specified by
 
--  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [\ **+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+-  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*][\ **+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
 
 but you may also split this into two separate invocations for clarity, i.e.,
 
--  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+-  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
 -  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
 The first optional flag following **-B** selects **p** (rimary) [Default] or
@@ -1161,6 +1161,10 @@ the addition of degree symbols, etc. is automatic (and controlled by the GMT
 default setting :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`).  However, for other plots you can add
 specific units by adding **+u**\ *unit*.  If any of these text strings contain
 spaces or special UNIX characters you will need to enclose them in quotes.
+Cartesian horizontal axes also allows for the optional **+a**\ *angle* which
+will plot slanted annotations; the angle is with respect to the horizontal
+and must be in the -90 <= *angle* <= 90 range only.
+
 The *intervals* specification is a concatenated string made up of substrings of the form
 
 [**t**]\ *stride*\ [*phase*][**u**].

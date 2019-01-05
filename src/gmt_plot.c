@@ -4231,7 +4231,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	bool angled = false;		/* Tru if user used +angle to select a slanted annotation */
 	bool save_pi = GMT->current.plot.substitute_pi;
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
-	double x, t_use, text_angle, cos_a;	/* Misc. variables */
+	double x, t_use, text_angle, cos_a = 0.0;	/* Misc. variables */
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;	/* Pointer to the current axis item */
 	char string[GMT_LEN256] = {""};	/* Annotation string */
@@ -4260,7 +4260,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			justify = (below) ? PSL_MR : PSL_ML;
 		else
 			justify = (below) ? PSL_ML : PSL_MR;
-		cos_a = 0.5 * cosd (text_angle);
+		cos_a = 0.5 * cosd (text_angle);	/* Half-height of text at an angle */
 	}
 	flip = (GMT->current.setting.map_frame_type & GMT_IS_INSIDE);	/* Inside annotation */
 	if (axis != GMT_Z && GMT->current.proj.three_D && GMT->current.proj.z_project.cos_az > 0) {	/* Rotate x/y-annotations when seen "from North" */

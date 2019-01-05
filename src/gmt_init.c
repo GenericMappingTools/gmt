@@ -3635,11 +3635,11 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	 *	-Bs must be in addition to -B[p].
 	 */
 
-	char string[GMT_BUFSIZ] = {""}, orig_string[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, *mod = NULL;
+	char string[GMT_BUFSIZ] = {""}, orig_string[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, *mod = NULL, *the_axes = "xyz";
 	struct GMT_PLOT_AXIS *A = NULL;
 	unsigned int no;
 	int k, error = 0;
-	bool side[3] = {false, false, false};
+	bool side[3] = {false, false, false}, implicit = false;
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 
@@ -3666,7 +3666,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		strncpy (GMT->common.B.string[no], in, GMT_LEN256-1);	/* Keep a copy of the actual option(s) */
 
 	/* Set which axes this option applies to */
-	while (in[k] && strchr ("xyz", in[k])) {	/* As long as there are leading x,y,z axes specifiers */
+	while (in[k] && strchr (the_axes, in[k])) {	/* As long as there are leading x,y,z axes specifiers */
 		switch (in[k]) {	/* We specified a named axis */
 			case 'x': side[GMT_X] = true; break;
 			case 'y': side[GMT_Y] = true; break;
@@ -3674,7 +3674,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		}
 		k++;
 	}
-	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) GMT->current.map.frame.set_both = side[GMT_X] = side[GMT_Y] = true;	/* If no axis were named we default to both x and y */
+	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) GMT->current.map.frame.set_both = side[GMT_X] = side[GMT_Y] = implicit = true;	/* If no axis were named we default to both x and y */
 
 	strncpy (text, &in[k], GMT_BUFSIZ-1);	/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
 	gmt_handle5_plussign (GMT, text, "aLlpsSu", 0);	/* Temporarily change any +<letter> except +L|l, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
@@ -3709,8 +3709,8 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 								error++;
 							}
 						}
-						else
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -B option: The +a modifier only applies to the x-axis; selection ignored\n");
+						else if (!implicit)
+							GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-B option: The +a modifier only applies to the x-axis; selection for %c-axis ignored\n", the_axes[no]);
 						break;
 					case 'L':	/* Force horizontal axis label */
 						GMT->current.map.frame.axis[no].label_mode = 1;
