@@ -3053,7 +3053,7 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 		gmt_scanf_float (GMT, in, &val);
 	else {
 		/* Decode interval, get pointer to next segment */
-		if ((val = strtod (t, &s)) < 0.0 && flag != 'o' && GMT->current.proj.xyz_projection[A->id] != GMT_LOG10) {	/* Interval must be >= 0 */
+		if ((val = strtod (t, &s)) < 0.0 && GMT->current.proj.xyz_projection[A->id] != GMT_LOG10) {	/* Interval must be >= 0 */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Negative interval in -B option (%c-component, %c-info): %s\n", axis, flag, in);
 			return (3);
 		}
@@ -3129,12 +3129,6 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 		case 'G':	/* Lower gridline interval */
 			I = &A->item[GMT_GRID_LOWER];
 			break;
-		case 'o':	/* Upper annotations angle */
-			I = &A->item[GMT_ANNOT_ANG_UPPER];
-			break;
-		case 'O':	/* Lower annotations angle */
-			I = &A->item[GMT_ANNOT_ANG_LOWER];
-			break;
 		default:	/* Bad flag should never get here */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad flag (%c) passed to gmtinit_set_titem\n", flag);
 			GMT_exit (GMT, GMT_NOT_A_VALID_TYPE); return GMT_NOT_A_VALID_TYPE;
@@ -3159,7 +3153,6 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 	I->type = flag;
 	I->unit = unit;
 	I->interval = val;
-	I->angle = val;
 	I->flavor = 0;
 	I->active = true;
 	if (!custom && in[0] && val == 0.0) I->active = false;
@@ -3382,7 +3375,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 			error += gmtinit_decode_tinfo (GMT, i, 'c', out3, &GMT->current.map.frame.axis[i]);
 		else {	/* Parse from back for 'a', 'f', 'g' chunks */
 			for (k = (int)strlen (out3) - 1; k >= 0; k--) {
-				if (out3[k] == 'a' || out3[k] == 'f' || out3[k] == 'g' || out3[k] == 'o') {
+				if (out3[k] == 'a' || out3[k] == 'f' || out3[k] == 'g') {
 					error += gmtinit_decode_tinfo (GMT, i, out3[k], &out3[k+1], &GMT->current.map.frame.axis[i]);
 					out3[k] = '\0';	/* Done with this chunk; replace with terminator */
 				}
@@ -3683,9 +3676,9 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) GMT->current.map.frame.set_both = side[GMT_X] = side[GMT_Y] = true;	/* If no axis were named we default to both x and y */
 
 	strncpy (text, &in[k], GMT_BUFSIZ-1);	/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
-	gmt_handle5_plussign (GMT, text, "LlpsSu", 0);	/* Temporarily change any +<letter> except +L|l, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
+	gmt_handle5_plussign (GMT, text, "aLlpsSu", 0);	/* Temporarily change any +<letter> except +L|l, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
 	k = 0;					/* Start at beginning of text and look for first occurrence of +L|l, +p, +S|s or +u */
-	while (text[k] && !(text[k] == '+' && strchr ("LlpSsu", text[k+1]))) k++;
+	while (text[k] && !(text[k] == '+' && strchr ("aLlpSsu", text[k+1]))) k++;
 	gmt_M_memset (orig_string, GMT_BUFSIZ, char);
 	strncpy (orig_string, text, k);		/* orig_string now has the interval information */
 	gmt_handle5_plussign (GMT, orig_string, NULL, 1);	/* Recover any non-modifier plus signs */
@@ -3703,6 +3696,10 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 			char p[GMT_BUFSIZ];
 			while ((gmt_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
 				switch (p[0]) {
+					case 'a':	/* Set annotation angle */
+						if (no < 2)
+							GMT->current.map.frame.axis[no].item[6].angle = GMT->current.map.frame.axis[no].item[7].angle = atof(&p[1]);
+						break;
 					case 'L':	/* Force horizontal axis label */
 						GMT->current.map.frame.axis[no].label_mode = 1;
 						/* Fall through on purpose */
@@ -3773,7 +3770,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 			error += gmtinit_decode_tinfo (GMT, no, 'c', string, &GMT->current.map.frame.axis[no]);
 		else {				/* Parse from back of string for 'a', 'f', 'g' chunks */
 			for (k = (int)strlen (string) - 1; k >= 0; k--) {
-				if (string[k] == 'a' || string[k] == 'f' || string[k] == 'g' || string[k] == 'o') {
+				if (string[k] == 'a' || string[k] == 'f' || string[k] == 'g') {
 					error += gmtinit_decode_tinfo (GMT, no, string[k], &string[k+1], &GMT->current.map.frame.axis[no]);
 					string[k] = '\0';	/* Done with this chunk; replace with terminator */
 				}
