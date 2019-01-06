@@ -38,7 +38,7 @@ set (_scr_strip GMT_-B_custom.sh GMT_-B_time1.sh GMT_-B_time2.sh
 # Scripts that are not used in the documentation (but the figures are)
 # do not include GMT_-U.sh as this would always fail
 set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
-	GMT_-B_pow.sh GMT_-J.sh GMT_-R.sh GMT_-XY.sh
+	GMT_-B_pow.sh GMT_-B_slanted.sh GMT_-J.sh GMT_-R.sh GMT_-XY.sh
 	GMT_App_E.sh GMT_App_F_dingbats.sh GMT_App_F_iso+.sh GMT_App_F_stand+.sh
 	GMT_App_F_stand+_iso+.sh GMT_App_F_symbol.sh GMT_App_F_symbol_dingbats.sh
 	GMT_App_G.sh GMT_App_J_1.sh GMT_App_J_2.sh GMT_App_J_3.sh GMT_App_M_1a.sh GMT_App_M_1b.sh GMT_App_M_1c.sh
