@@ -3777,9 +3777,29 @@ GMT_LOCAL uint64_t support_delaunay_watson (struct GMT_CTRL *GMT, double *x_in, 
 	double xmin, xmax, ymin, ymax, datax, dx, dy, dsq, dd;
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Delaunay triangulation calculated by Dave Watson's ACORD [Computers & Geosciences, 8, 97-101, 1982]\n");
+
+	{
+		/* Note 2019/01/02: We were notified via https://github.com/GenericMappingTools/gmt/issues/279
+		 * that the Watson algorithm may give junk unless the input is sorted on the x values.  Either
+		 * ascending or descending is fine.  Here, we check that x is sorted and if not we issue
+		 * a stern warning to users so they can sort the file first before calling support_delaunay_watson */
+	
+		uint64_t n_neg = 0, n_pos = 0;
+		for (i = 1; i < n; i++) {
+			dx = x_in[i] - x_in[i-1];
+			if (dx < -GMT_CONV6_LIMIT) n_neg++;
+			else if (dx > GMT_CONV6_LIMIT) n_pos++;
+		}
+		if (n_neg && n_pos) {	/* Clearly not monotonically increasing or decreasing in x */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "WARNING: Bug Report Notice for Watson ACORD External Code:\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The Watson algorithm seems to require the input data to be sorted on x.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Please run your data through sort first, i.e., sort data > sorted_data\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "and use sorted_data to perform the triangulation.\n");
+		}
+	}
+	
 	size = 10 * n + 1;
 	n += 3;
-
 	index = gmt_M_memory (GMT, NULL, 3 * size, int);
 	istack = gmt_M_memory (GMT, NULL, size, int64_t);
 	x_tmp = gmt_M_memory (GMT, NULL, size, int64_t);
