@@ -1328,7 +1328,8 @@ each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
 
 There are occasions when the length of the annotations are such that placing them
 horizontally (which is the default) may lead to overprinting or too few annotations.
-Once solution is to use slanted annotations for the x-axis (e.g., Figure :ref:`Axis label <axis_slanted_basemap>`).
+One solution is to request slanted annotations for the x-axis (e.g., Figure :ref:`Axis label <axis_slanted_basemap>`)
+via the **+a**\ *angle* modifier.
 
 
 .. _axis_slanted_basemap:
