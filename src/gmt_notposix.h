@@ -31,8 +31,8 @@
  * \brief Contains ifdefs to tell us if this system has functions not in POSIX but part of ANSI C
  */
 
-#ifndef _GMT_NOTPOSIX_H
-#define _GMT_NOTPOSIX_H
+#ifndef GMT_NOTPOSIX_H
+#define GMT_NOTPOSIX_H
 
 /* HAVE_<func> is undefined or defined as 1 depending on
  * whether or not <func> is available on this system.
@@ -593,4 +593,4 @@
 /* define custom function */
 #endif
 
-#endif /* _GMT_NOTPOSIX_H */
+#endif /* GMT_NOTPOSIX_H */

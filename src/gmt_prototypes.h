@@ -27,8 +27,8 @@
  * \brief All low-level GMT API function prototypes.
  */
 
-#ifndef _GMT_PROTOTYPES_H
-#define _GMT_PROTOTYPES_H
+#ifndef GMT_PROTOTYPES_H
+#define GMT_PROTOTYPES_H
 
 #ifdef DEBUG
 EXTERN_MSC void gmt_grd_dump (struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, bool is_complex, char *txt);
@@ -657,4 +657,4 @@ EXTERN_MSC double gmt_grd_mad (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct 
 EXTERN_MSC double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W, double *mode, bool overwrite);
 EXTERN_MSC void gmt_get_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 
-#endif /* _GMT_PROTOTYPES_H */
+#endif /* GMT_PROTOTYPES_H */

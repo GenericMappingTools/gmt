@@ -28,8 +28,8 @@
  * \brief Structures and variables needed for contour labels.
  */
 
-#ifndef _GMT_CONTOUR_H
-#define _GMT_CONTOUR_H
+#ifndef GMT_CONTOUR_H
+#define GMT_CONTOUR_H
 
 /*! Various settings for contour label placements at crossing lines */
 enum GMT_enum_contline {
@@ -158,4 +158,4 @@ struct GMT_CONTOUR {
 	struct GMT_CONTOUR_LINE **segment;	/* Array of segments */
 };
 
-#endif /* _GMT_CONTOUR_H */
+#endif /* GMT_CONTOUR_H */

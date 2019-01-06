@@ -78,8 +78,8 @@ cat << EOF > ${FILE_GMT_MODULE_H}
  */
 
 #pragma once
-#ifndef _GMT_${U_TAG}_MODULE_H
-#define _GMT_${U_TAG}_MODULE_H
+#ifndef GMT_${U_TAG}_MODULE_H
+#define GMT_${U_TAG}_MODULE_H
 
 #ifdef __cplusplus /* Basic C++ support */
 extern "C" {
@@ -106,7 +106,7 @@ EXTERN_MSC const char * gmt_${L_TAG}_module_group (void *API, char *candidate);
 }
 #endif
 
-#endif /* !_GMT_${U_TAG}_MODULE_H */
+#endif /* !GMT_${U_TAG}_MODULE_H */
 EOF
 
 #

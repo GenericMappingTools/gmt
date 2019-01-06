@@ -27,8 +27,8 @@
  * \brief Definitions of constants used through GMT.
  */
 
-#ifndef _GMT_CONSTANTS_H
-#define _GMT_CONSTANTS_H
+#ifndef GMT_CONSTANTS_H
+#define GMT_CONSTANTS_H
 
 /*=====================================================================================
  *	GMT API CONSTANTS DEFINITIONS
@@ -467,4 +467,4 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 
 #define GMT_DEFAULT_CPT "rainbow"				/* When no CPT is given we choose this one */
 
-#endif  /* _GMT_CONSTANTS_H */
+#endif  /* GMT_CONSTANTS_H */

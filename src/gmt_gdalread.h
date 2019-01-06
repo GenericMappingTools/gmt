@@ -20,8 +20,8 @@
  * \brief Define structures to interface with gdalread|write
  */
 
-#ifndef _GMT_GDALREAD_H
-#define _GMT_GDALREAD_H
+#ifndef GMT_GDALREAD_H
+#define GMT_GDALREAD_H
 
 #include <gdal.h>
 #include <ogr_srs_api.h>
@@ -199,4 +199,4 @@ struct GMT_GDALREAD_OUT_CTRL {
 	struct GDAL_BAND_FNAMES *band_field_names;
 };
 
-#endif  /* _GMT_GDALREAD_H */
+#endif  /* GMT_GDALREAD_H */

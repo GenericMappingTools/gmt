@@ -29,8 +29,8 @@
  * \brief Definitions for the GMT resources (GMT_GRID, GMT_DATASET, etc...)
  */
 
-#ifndef _GMT_HIDDEN_H
-#define _GMT_HIDDEN_H
+#ifndef GMT_HIDDEN_H
+#define GMT_HIDDEN_H
 
 GMT_LOCAL inline struct GMT_DATASET_HIDDEN     * gmt_get_DD_hidden (struct GMT_DATASET *p)     {return (p->hidden);}
 GMT_LOCAL inline struct GMT_DATATABLE_HIDDEN   * gmt_get_DT_hidden (struct GMT_DATATABLE *p)   {return (p->hidden);}
@@ -205,4 +205,4 @@ struct GMT_IMAGE_HIDDEN {	/* Supporting information hidden from the API */
 /* Get the segments next segment (for holes in perimeters */
 GMT_LOCAL inline struct GMT_DATASEGMENT * gmt_get_next_S (struct GMT_DATASEGMENT *S) {struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S); return (SH->next);}
 
-#endif /* _GMT_HIDDEN_H */
+#endif /* GMT_HIDDEN_H */

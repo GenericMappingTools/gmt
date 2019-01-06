@@ -27,8 +27,8 @@
  * \brief Include file for gmt_shore.c
  */
 
-#ifndef _GMT_SHORE_H
-#define _GMT_SHORE_H
+#ifndef GMT_SHORE_H
+#define GMT_SHORE_H
 
 /* Declaration modifier for netcdf DLL support
  * annoying: why can't netcdf.h do this on its own? */
@@ -248,4 +248,4 @@ struct GMT_GSHHS_POL {
 	double *lat;
 };
 
-#endif /* _GMT_SHORE_H */
+#endif /* GMT_SHORE_H */
