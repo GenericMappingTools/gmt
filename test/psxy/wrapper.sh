@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Examples of how large polygons (> 180 degree range) clipped by near-global regions
 # sometimes fails the inside/outside area tests.
 # There is not yet a orig to compare but it fails.

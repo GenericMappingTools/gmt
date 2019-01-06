@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 47
 #
 # Purpose:      Illustrate use of gmtregress with different norms and types

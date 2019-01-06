@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # We have a weakness in how the jumps are detected in GMT_split_line. It does
 # not work well for this gmt projection but seems OK for regular orthographic.
 # The problem shows up for the 2000 km distance which has a jump.

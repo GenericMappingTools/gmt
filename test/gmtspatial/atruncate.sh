@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test gmtspatial truncating a polygon to a -R setting that
 # is entirely inside the polygon, so should result in the -R
 # pollygon outline as answer.  Cartesian case.  Issue #851,a

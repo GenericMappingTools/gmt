@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Address issue #1126.  Should be fixed.
 ps=transparency.ps
 gmt xyz2grd -R0/2/0/2 -I1/1 -Gtest.grd << EOF

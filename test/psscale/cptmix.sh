@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # See issue # 1093.  Fixed in r18328
 ps=cptmix.ps
 cat << EOF > ex16_v9.cpt

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Make sure cycle symbol is not overprinting labels or nan box (issue #1175)
 ps=cyclecpt.ps
 gmt makecpt -Ccyclic -T0/180 -Ww > temp_cpt.cpt

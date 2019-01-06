@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # The given vector (0,10) has length 10.  So a length of 10 is mapped to a length on the plot
 # psvelo: Scale 0.1i should yield a 1i long vector
 # grdvector: Scale 0.1i should yield a 1i long vector.  However, until we fix things, scales

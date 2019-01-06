@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test -Sqn versus -Sqs
 ps=segmentize.ps
 cat << EOF > t.txt

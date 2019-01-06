@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Plots a page of all 555 unique named colors
 # Usage: GMT_RGBchart.sh <size>

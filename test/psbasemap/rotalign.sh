@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # The failure pointed out in http://gmt.soest.hawaii.edu/boards/1/topics/7776
 # The axes labels and annotations are 180 out of phase.
 #

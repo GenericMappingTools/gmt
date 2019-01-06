@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 10
 #
 # Purpose:	Make 3-D bar graph on top of perspective map

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing large isotropic component case by Jeremy Pesicek
 # as indicated by email:
 #----- Original Message ----

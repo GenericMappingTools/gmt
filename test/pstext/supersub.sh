@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test placement of sub, super-, and both with pstext, including
 # font changes, colors, and underline in sub/super scripts.
 ps=supersub.ps

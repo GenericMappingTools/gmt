@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #	Convert the trkdas.cod file into two usable files:
 #	1. mgd77_codes.h for inclusion by mgd77info.c

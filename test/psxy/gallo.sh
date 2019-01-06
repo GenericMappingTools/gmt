@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test rectangular EPS symbol in psxy
 ps=gallo.ps
 

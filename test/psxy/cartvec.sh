@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=cartvec.ps
 
 cat << EOF > vec.txt

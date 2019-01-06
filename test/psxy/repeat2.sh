@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test various repeating/clip mode for periodic and non-straight boundary
 function map { #  $1 = -N option, $2 is text, $3 is any -Y option
         gmt psxy -R -J t.txt -Ct.cpt -Sc -Bafg -BWsne -O -K --MAP_FRAME_TYPE=plain $1 $3

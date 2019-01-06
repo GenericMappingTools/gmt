@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #	Testing gpsgridder for small vs large region, with our without weights
 #
 #  Get data, region, dinc, ginc, decimate, weight option from first six arguments

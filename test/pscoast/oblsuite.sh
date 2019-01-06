@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Same as oblsuite_N.sh but with no hemisphere restriction on where the pole is
 ps=oblsuite.ps
 gmt pscoast -Rk-2000/2000/-1000/1000 -JoA-30/60/-180/1:60000000 -Ba0fg -P -Gred -K -X1.25i -Y9i > $ps

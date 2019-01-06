@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Address issue #1231
 ps=colorwithtitle.ps
 gmt makecpt -Cgeo -T-2000/2000/200 > col.cpt

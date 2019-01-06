@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin GMT_tut_19 ps
   gmt makecpt -Ctopo -T1000/5000 > t.cpt
   gmt grdgradient @tut_relief.nc -Ne0.8 -A100 -fg -Gus_i.nc

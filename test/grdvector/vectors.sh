@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Plot r,az vectors on the globe
 ps=vectors.ps
 gmt grdmath -Rg -I30 -r 0.5 Y COSD ADD = r.nc

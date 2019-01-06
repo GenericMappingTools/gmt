@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 22
 #
 # Purpose:	Automatic map of last month of world-wide seismicity

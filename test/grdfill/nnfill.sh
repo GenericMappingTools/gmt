@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing grdfill with NN infill of NaN areas
 ps=nnfill.ps
 # Get topo for Hawaiian Islands and set data inside a 200 km radius of 203/20:30 to NaN

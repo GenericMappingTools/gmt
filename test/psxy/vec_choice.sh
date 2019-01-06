@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Demonstrate GMT 4 and GMT5+ vectors.  Derived from issue #1183
 ps=vec_choice.ps
 cat << EOF > t.txt

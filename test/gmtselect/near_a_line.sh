@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Making sure both forms of "near a line" works:
 # Default (old) behavior is to think of a line as

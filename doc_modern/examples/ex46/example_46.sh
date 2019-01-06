@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 46
 #
 # Purpose:      Illustrate use of pssolar to plot day/night terminators

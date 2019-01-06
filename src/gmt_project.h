@@ -432,7 +432,7 @@ enum GMT_enum_frame {GMT_IS_PLAIN = 0,	/* Plain baseframe */
 enum GMT_enum_tick {GMT_ANNOT_UPPER = 0,	/* Tick annotations closest to the axis */
 	GMT_ANNOT_LOWER,	/* Tick annotations farthest from the axis*/
 	GMT_TICK_UPPER,		/* Frame tick marks closest to the axis */
-	GMT_TICK_LOWER,		/* Frame tick marks closest to the axis */
+	GMT_TICK_LOWER,		/* Frame tick marks farthest to the axis */
 	GMT_GRID_UPPER,		/* Gridline spacing */
 	GMT_GRID_LOWER};	/* Gridline spacing */
 
@@ -477,8 +477,9 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	unsigned int special;		/* See gmt_enum_annot values */
 	unsigned int label_mode;	/* 0 = parallel to all axes, 1 = always horizontal on map */
 	bool substitute_pi;		/* True if we need to plot fractions of pi on this axis */
-	struct GMT_PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
+	struct GMT_PLOT_AXIS_ITEM item[8];	/* see above defines for which is which */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
+	double angle;			/* Annotations angle set by user */
 	char label[GMT_LEN256];	/* Label of the axis */
 	char secondary_label[GMT_LEN256];	/* Optionally use this label when axis is right or top */
 	char unit[GMT_LEN64];	/* Axis unit appended to annotations */

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Test the new -N option in grdcontour and compare to manual grdview+grdcontour
 ps=filled_cont.ps

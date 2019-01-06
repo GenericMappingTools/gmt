@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test script for plain -p<rot> about map center.
 # This should place 4 plots that differ by a rotation about the S pole
 # Currently fails.  Faked the orig by using -JA<rot>... instead [in brackets]

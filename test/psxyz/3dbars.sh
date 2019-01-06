@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Show placements of columns on a variable surface
 ps=3dbars.ps
 gmt grdmath -R0/10E/0/10E -I1 X Y MUL = t.nc

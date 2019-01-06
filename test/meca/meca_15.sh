@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # The given vector (0,1) has length 1.  So a length of 1 will be mapped to a length on the plot
 # For psvelo, a map scale of 1.5i and a vector scale of 1.5i will yield a vector of length 1.5i
 # regardless of map projection and region.

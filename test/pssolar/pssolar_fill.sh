@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Documenting issue # 1155 [Andreas].  The problem is that the terminator
 # touches the N pole and what is inside and outside of the global polygon
 # becomes harder to decide.  The 11:30:58 time is ok but an hour later...

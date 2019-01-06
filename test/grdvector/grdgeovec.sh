@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing grdvectors geovector unit system with
 # The given vector (0,111.13) has length 111.13 which is mapped to km on the map
 # which are then projected to the corresponding lengths in plot units.  However,

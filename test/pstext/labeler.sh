@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test pstext options for accepting or modifiying text using a format
 ps=labeler.ps
 echo 3 2.5 > t.txt

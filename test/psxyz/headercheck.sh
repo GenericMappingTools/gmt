@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test that symbols pick up correct -W -G from command line or ps=headercheck.ps
 
 ps=headercheck.ps

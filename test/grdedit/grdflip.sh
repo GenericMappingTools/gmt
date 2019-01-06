@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #	Test grdedits grid rotations
 ps=grdflip.ps
 # Original grid

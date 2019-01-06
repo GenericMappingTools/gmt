@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test script for -p perspective. Ancient #131 issue.
 # The p<az>/90 is wrongly positioned while th p180/90 is always correct.
 

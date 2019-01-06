@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 38
 #
 # Purpose:      Illustrate histogram equalization on topography grids

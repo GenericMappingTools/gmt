@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test mapproject's distance and time calculations
 ps=waypoints.ps
 data=`gmt which -G @waypoints.txt`

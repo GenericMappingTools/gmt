@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 45
 #
 # Purpose:      Illustrate use of trend1d mixed models

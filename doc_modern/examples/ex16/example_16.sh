@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 16
 #
 # Purpose:	Illustrates interpolation methods using same data as Example 12.

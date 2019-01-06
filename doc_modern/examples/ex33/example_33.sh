@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 33
 #
 # Purpose:      Illustrate grdtrack's new cross-track and stacking options

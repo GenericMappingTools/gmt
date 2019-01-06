@@ -2,7 +2,7 @@
 
   ::
 
-   #!/bin/bash
+   #!/usr/bin/env bash
    ps=filler.ps
    cat << EOF > t.txt
    1 1

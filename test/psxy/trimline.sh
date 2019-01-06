@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Highlight the problem of line obliquely exiting and being cut in an ugly way
 

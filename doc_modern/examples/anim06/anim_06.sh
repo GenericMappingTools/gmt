@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT ANIMATION 06
 #
 # Purpose:      Demonstrate aliasing by sampling a chirp

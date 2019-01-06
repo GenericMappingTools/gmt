@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 #
 # Tests gmt earthtide against the values of the original FORTRAN version 
 

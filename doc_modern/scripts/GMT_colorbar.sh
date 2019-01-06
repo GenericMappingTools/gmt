@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin GMT_colorbar ps
 gmt makecpt -T-15/15 -Cpolar > t.cpt
 gmt basemap -R0/20/0/1 -JM5i -BWse -Baf 

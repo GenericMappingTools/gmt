@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test basic pswiggle operations
 # Create an artificial data set of cosine along track
 ps=wiggles.ps

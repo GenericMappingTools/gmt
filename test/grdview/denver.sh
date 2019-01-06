@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Purpose: 3-D view of Colorado DEM with shade from large spacecraft over Denver
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 27
 #
 # Purpose:	Illustrates how to plot Mercator img grids

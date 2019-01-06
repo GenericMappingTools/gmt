@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 35
 #
 # Purpose:      Illustrate sphtriangulate and sphdistance with GSHHG crude data

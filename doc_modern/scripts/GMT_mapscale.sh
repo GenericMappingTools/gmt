@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin GMT_mapscale ps
 gmt basemap -R0/40/50/56 -JM5i -Baf -LjML+c53+w1000k+f+l"Scale at 53\\232N" -F+glightcyan+c0+p 
 gmt basemap -LjBR+c53+w1000k+l+f -F+p1p+i+gwhite+c0.1i 

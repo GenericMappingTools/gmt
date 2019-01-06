@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Test the C API for conversions between datasets, matrices, and vectors.
 # Also read groups of items just to free them,

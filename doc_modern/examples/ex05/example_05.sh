@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 05
 #
 # Purpose:	Generate grid and show monochrome 3-D perspective

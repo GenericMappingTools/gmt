@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test psmask and oriented clip paths polygons
 ps=masking.ps
 
