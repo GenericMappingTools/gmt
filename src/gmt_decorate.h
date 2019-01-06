@@ -28,8 +28,8 @@
  * \brief Structures and variables needed for decorating lines.
  */
 
-#ifndef _GMT_DECORATE_H
-#define _GMT_DECORATE_H
+#ifndef GMT_DECORATE_H
+#define GMT_DECORATE_H
 
 /*! Various settings for symbol placements along lines */
 enum GMT_enum_decorate {
@@ -77,4 +77,4 @@ struct GMT_DECORATE {
 	struct GMT_XOVER XC;		/* Structure with resulting crossovers */
 };
 
-#endif /* _GMT_DECORATE_H */
+#endif /* GMT_DECORATE_H */

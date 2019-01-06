@@ -27,8 +27,8 @@
 
 */
 
-#ifndef _GMT_INTERNALS_H
-#define _GMT_INTERNALS_H
+#ifndef GMT_INTERNALS_H
+#define GMT_INTERNALS_H
 
 #ifdef HAVE_FFTW3F
 /* FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
@@ -258,4 +258,4 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 #define gmt_M_pole_is_point(C) ((C->current.proj.projection == GMT_OBLIQUE_MERC || C->current.proj.projection == GMT_OBLIQUE_MERC_POLE) || (C->current.proj.projection >= GMT_LAMBERT && C->current.proj.projection <= GMT_VANGRINTEN && C->current.proj.projection != GMT_POLAR))
 #define gmt_M_is_grdmapproject(C) (!strncmp (C->init.module_name, "grdproject", 10U) || !strncmp (C->init.module_name, "mapproject", 10U))
 
-#endif /* _GMT_INTERNALS_H */
+#endif /* GMT_INTERNALS_H */

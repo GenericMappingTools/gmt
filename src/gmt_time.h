@@ -27,8 +27,8 @@
  * \brief Definitions of structures dealing with time.
  */
 
-#ifndef _GMT_TIME_H
-#define _GMT_TIME_H
+#ifndef GMT_TIME_H
+#define GMT_TIME_H
 
 /*--------------------------------------------------------------------
  *			GMT TIME STRUCTURES
@@ -43,4 +43,4 @@ struct GMT_TIME_SYSTEM {
 	char unit;			/* User-defined time unit */
 };
 
-#endif  /* _GMT_TIME_H */
+#endif  /* GMT_TIME_H */

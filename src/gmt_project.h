@@ -29,8 +29,8 @@
  * \brief Include file for programs that use the map-projections functions.
  */
 
-#ifndef _GMT_PROJECT_H
-#define _GMT_PROJECT_H
+#ifndef GMT_PROJECT_H
+#define GMT_PROJECT_H
 
 #define HALF_DBL_MAX (DBL_MAX/2.0)
 
@@ -508,4 +508,4 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	unsigned int z_axis[4];		/* Which axes to use for the 3-D z-axis [auto] */
 };
 
-#endif /* _GMT_PROJECT_H */
+#endif /* GMT_PROJECT_H */

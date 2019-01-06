@@ -27,8 +27,8 @@
  * \brief Definition of the structure used for hashing
  */
 
-#ifndef _GMT_HASH_H
-#define _GMT_HASH_H
+#ifndef GMT_HASH_H
+#define GMT_HASH_H
 
 /*--------------------------------------------------------------------
  *			GMT HASH STRUCTURE DEFINITION
@@ -50,4 +50,4 @@ struct GMT_HASH {
 	char *key[GMT_HASH_MAXDEPTH];		/* Name of these entries */
 };
 
-#endif  /* _GMT_HASH_H */
+#endif  /* GMT_HASH_H */

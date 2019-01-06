@@ -27,8 +27,8 @@
  * \brief Definitions of special types used by GMT.
  */
 
-#ifndef _GMT_TYPES_H
-#define _GMT_TYPES_H
+#ifndef GMT_TYPES_H
+#define GMT_TYPES_H
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -439,4 +439,4 @@ static inline void GMT_exit (struct GMT_CTRL *GMT, int code) {
 		exit (code);
 }
 
-#endif  /* _GMT_TYPES_H */
+#endif  /* GMT_TYPES_H */
