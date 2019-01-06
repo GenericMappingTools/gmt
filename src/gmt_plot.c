@@ -4216,6 +4216,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	unsigned int primary;		/* Axis item number of annotation with largest interval/unit */
 	unsigned int axis = A->id;	/* Axis id (GMT_X, GMT_Y, GMT_Z) */
 	unsigned int justify;
+	unsigned int lx_just = PSL_BC, ly_just = PSL_BC;
 	bool horizontal;		/* true if axis is horizontal */
 	bool annotate = ((side & GMT_AXIS_ANNOT) > 0);
 	bool neg = below;		/* true if annotations are to the left of or below the axis */
@@ -4232,6 +4233,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	bool save_pi = GMT->current.plot.substitute_pi;
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
 	double x, t_use, text_angle, cos_a = 0.0;	/* Misc. variables */
+	double x_angle_add = 0.0, y_angle_add = 0.0;	/* Used when dealing with perspectives */
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;	/* Pointer to the current axis item */
 	char string[GMT_LEN256] = {""};	/* Annotation string */
@@ -4243,6 +4245,16 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 	/* Initialize parameters for this axis */
 
+	if (GMT->current.proj.three_D && axis != GMT_Z) {
+		/* Because perspective is now done in PostScript we must sometimes reverse the label orientations
+		 * so they dont appear upside down when viewed from certaint quadrants */
+		switch (GMT->current.proj.z_project.quadrant) {
+			case 1: x_angle_add = 180.0; lx_just = PSL_TC; break;
+			case 3: y_angle_add = 180.0; ly_just = PSL_TC; break;
+			case 4: x_angle_add = y_angle_add = 180.0; lx_just = ly_just = PSL_TC; break;
+			default: x_angle_add = y_angle_add = 0.0; break;
+		}
+	}
 	horizontal = (axis == GMT_X);	/* This is a horizontal axis */
 	xyz_fwd = ((axis == GMT_X) ? &gmt_x_to_xx : (axis == GMT_Y) ? &gmt_y_to_yy : &gmt_z_to_zz);
 	primary = plot_get_primary_annot (A);			/* Find primary axis items */
@@ -4437,10 +4449,13 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		PSL_command (PSL, "%d PSL_L_y MM\n", PSL_IZ (PSL, 0.5 * length));
 		if (axis == GMT_Y && A->label_mode) {
 			i = (below) ? PSL_MR : PSL_ML;
-			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, this_label, 0.0, i, form);
+			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, this_label, 0.0 + y_angle_add, i, form);
 		}
-		else
-			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, this_label, horizontal ? 0.0 : 90.0, PSL_BC, form);
+		else {
+			double angle_add = (axis == GMT_X) ? x_angle_add : y_angle_add;
+			unsigned int l_just = (axis == GMT_X) ? lx_just : ly_just;
+			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, this_label, (horizontal ? 0.0 : 90.0) + angle_add, l_just, form);
+		}
 	}
 	else
 		PSL_command (PSL, "/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def\n");
