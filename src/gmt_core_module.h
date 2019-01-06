@@ -12,8 +12,8 @@
  */
 
 #pragma once
-#ifndef _GMT_CORE_MODULE_H
-#define _GMT_CORE_MODULE_H
+#ifndef GMT_CORE_MODULE_H
+#define GMT_CORE_MODULE_H
 
 #ifdef __cplusplus /* Basic C++ support */
 extern "C" {
@@ -132,4 +132,4 @@ EXTERN_MSC const char * gmt_core_module_group (void *API, char *candidate);
 }
 #endif
 
-#endif /* !_GMT_CORE_MODULE_H */
+#endif /* !GMT_CORE_MODULE_H */

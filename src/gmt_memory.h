@@ -20,8 +20,8 @@
  * \brief 
  */
 
-#ifndef _GMT_MEMORY_H
-#define _GMT_MEMORY_H
+#ifndef GMT_MEMORY_H
+#define GMT_MEMORY_H
 
 enum GMT_enum_mem_alloc {	/* Initial memory for 2 double columns is 32 Mb */
 	GMT_INITIAL_MEM_COL_ALLOC	= 2U,
@@ -96,4 +96,4 @@ EXTERN_MSC void gmt_memtrack_report (struct GMT_CTRL *GMT);
 
 #endif
 
-#endif /* _GMT_MEMORY_H */
+#endif /* GMT_MEMORY_H */

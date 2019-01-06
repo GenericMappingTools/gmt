@@ -34,8 +34,8 @@
  * \brief Machine-dependent macros for generation and testing of NaNs
  */
 
-#ifndef _GMT_NAN_H
-#define _GMT_NAN_H
+#ifndef GMT_NAN_H
+#define GMT_NAN_H
 
 #include "gmt_notposix.h"
 
@@ -55,4 +55,4 @@
 #	define gmt_M_is_dinf isinf
 #endif
 
-#endif /* _GMT_NAN_H */
+#endif /* GMT_NAN_H */

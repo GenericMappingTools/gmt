@@ -28,8 +28,8 @@
  * \brief Definitions for using the DCW 
  */
 
-#ifndef _GMT_DCW_H
-#define _GMT_DCW_H
+#ifndef GMT_DCW_H
+#define GMT_DCW_H
 
 #define DCW_OPT "<code1,code2,...>[+l|L][+g<fill>][+p<pen>][+r|R[<incs>]]"
 
@@ -64,4 +64,4 @@ EXTERN_MSC void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned i
 EXTERN_MSC struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode);
 EXTERN_MSC void gmt_DCW_free (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F);
 
-#endif /* _GMT_DCW_H */
+#endif /* GMT_DCW_H */

@@ -31,8 +31,8 @@
  * \brief Miscellaneous definitions and structures related to symbols 
  */
 
-#ifndef _GMT_SYMBOLS_H
-#define _GMT_SYMBOLS_H
+#ifndef GMT_SYMBOLS_H
+#define GMT_SYMBOLS_H
 
 /* VECTOR attributes are used by psxy, psxyz, psrose, grdvector */
 #define VECTOR_LINE_WIDTH	2.0	/* Default vector attributes in points */
@@ -171,4 +171,4 @@ struct GMT_MAP_ROSE {
 	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
 };
 
-#endif	/* _GMT_SYMBOLS_H */
+#endif	/* GMT_SYMBOLS_H */

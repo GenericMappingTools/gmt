@@ -27,8 +27,8 @@
  * \brief Definition of the structure with PostScript settings 
  */
 
-#ifndef _GMT_PSL_H
-#define _GMT_PSL_H
+#ifndef GMT_PSL_H
+#define GMT_PSL_H
 
 /*--------------------------------------------------------------------
  *			GMT PS STRUCTURE DEFINITION
@@ -74,4 +74,4 @@ struct GMT_PSL {
 	FILE *fp;			/* Pointer to open but hidden PS file for RUNMODE = modern */
 };
 
-#endif  /* _GMT_PSL_H */
+#endif  /* GMT_PSL_H */

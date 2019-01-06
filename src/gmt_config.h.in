@@ -35,8 +35,8 @@
  */
 
 #pragma once
-#ifndef _GMT_CONFIG_H
-#define _GMT_CONFIG_H
+#ifndef GMT_CONFIG_H
+#define GMT_CONFIG_H
 
 #include "config.h"
 
@@ -339,6 +339,6 @@
 #	define NO_SIGHANDLER
 #endif
 
-#endif /* !_GMT_CONFIG_H */
+#endif /* !GMT_CONFIG_H */
 
 /* vim: set ft=c: */
