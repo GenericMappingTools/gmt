@@ -4247,6 +4247,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	xyz_fwd = ((axis == GMT_X) ? &gmt_x_to_xx : (axis == GMT_Y) ? &gmt_y_to_yy : &gmt_z_to_zz);
 	primary = plot_get_primary_annot (A);			/* Find primary axis items */
 	if (strchr (GMT->current.setting.map_annot_ortho, axis_chr[axis][below])) ortho = true;	/* Annotations are orthogonal */
+	if (axis == GMT_Y && doubleAlmostEqualZero (A->angle, 90.0)) ortho = false;	/* Y-Annotations are parallel */
 	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) neg = !neg;	/* Annotations go either below or above the axis */
 	faro = (neg == (horizontal && !ortho));			/* Current point is at the far side of the tickmark? */
 	if (A->type != GMT_TIME)						/* Set the annotation format template */
@@ -4399,9 +4400,9 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				/* Move to new anchor point */
 				PSL_command (PSL, "%d PSL_A%d_y MM\n", PSL_IZ (PSL, x), annot_pos);
 				if (angled) {	/* Must compensate for rotated textbox */
-					if (below)
+					if (below) /* S axis */
 						PSL_command (PSL, "0 PSL_AH%d 1 %g sub mul G\n", annot_pos, cos_a);
-					else
+					else /* N axis */
 						PSL_command (PSL, "0 PSL_AH%d %g mul G\n", annot_pos, cos_a);
 				}
 				if (label_c && label_c[i] && label_c[i][0])

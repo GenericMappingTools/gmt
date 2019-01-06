@@ -3702,10 +3702,21 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Cannot use +a for geographic basemaps\n");
 							error++;
 						}
-						else if (no == 0) {	/* This is only allowed for the x-axis */
-							GMT->current.map.frame.axis[no].angle = atof (&p[1]);
+						else if (no == 0) {	/* Variable angles are only allowed for the x-axis */
+							if (p[1] == 'n')	/* +an is short for +a90 or normal to x-axis */
+								GMT->current.map.frame.axis[no].angle = 90.0;
+							else	/* Assume a variable angle */
+								GMT->current.map.frame.axis[no].angle = atof (&p[1]);
 							if (GMT->current.map.frame.axis[no].angle < -90.0 || GMT->current.map.frame.axis[no].angle > 90.0) {
 								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: +a<angle> must be in the -90 to +90 range\n");
+								error++;
+							}
+						}
+						else if (no == 1 && !implicit) {	/* Only +ap is allowed for y-axis */
+							if (p[1] == 'p')	/* +ap is code for normal to y-axis; this triggers ortho=false later */
+								GMT->current.map.frame.axis[no].angle = 90.0;
+							else {
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Only modifier +ap is allowed for the y-axis\n");
 								error++;
 							}
 						}

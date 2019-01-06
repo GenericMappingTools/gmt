@@ -1148,22 +1148,27 @@ but you may also split this into two separate invocations for clarity, i.e.,
 -  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
 The first optional flag following **-B** selects **p** (rimary) [Default] or
-**s** (econdary) axes information (which is mostly used for time axes
-annotations; see examples below). The next optional flags specifies which
-axes you are providing information for.  This can be an individual axis
-(e.g., just **x**) or a combination (e.g., **xz**).  If none are given then
-we default to **xy**.  Thus, if you wish to give different annotation intervals
+**s** (econdary) axes information (mostly used for time axes annotations).
+The [**x**\|\ **y**\|\ **z**] flags specify which axes you are providing information for.
+If none are given then we default to **xy**.  If you wish to give different annotation intervals
 or labels for the various axes then you must repeat the **B** option for
-each axis.  To add a label to an axis, just append **+l**\ *label*.  If the
-axis annotation should have a leading text prefix (e.g., dollar sign for those
-plots of your net worth) you can append **+p**\ *prefix*.  For geographic maps
+each axis (If a 3-D basemap is selected with **-p** and **-Jz**, use **-Bz**
+to give settings for the vertical axis.).  To add a label to an axis,
+just append **+l**\ *label* (Cartesian projections only). Use **+L** to
+force a horizontal label for *y*-axes (useful for very short labels).
+For Cartesian axes you may specify an alternate via **+s** which is used for
+right or upper axis axis label (with any **+l** label used for left and bottom axes).
+If the axis annotation should have a leading text prefix (e.g., dollar sign for those
+plots of your net worth) you can append **+p**\ *prefix*. For geographic maps
 the addition of degree symbols, etc. is automatic (and controlled by the GMT
-default setting :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`).  However, for other plots you can add
+default setting :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`). However, for other plots you can add
 specific units by adding **+u**\ *unit*.  If any of these text strings contain
-spaces or special UNIX characters you will need to enclose them in quotes.
-Cartesian horizontal axes also allows for the optional **+a**\ *angle* which
+spaces or special characters you will need to enclose them in quotes.
+Cartesian x-axes also allow for the optional **+a**\ *angle* which
 will plot slanted annotations; the angle is with respect to the horizontal
-and must be in the -90 <= *angle* <= 90 range only.
+and must be in the -90 <= *angle* <= 90 range only, with **+an** a shorthand
+for normal (i.e., **+a**\ 90).  For the y-axis, **+ap** specifies annotations
+parallel to the axis (default is normal but see :ref:`MAP_ANNOT_ORTHO <MAP_ANNOT_ORTHO>`).
 
 The *intervals* specification is a concatenated string made up of substrings of the form
 
@@ -1325,7 +1330,23 @@ each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
 
    Linear Cartesian projection axis.  Long tick-marks accompany
    annotations, shorter ticks indicate frame interval. The axis label is
-   optional. For this example we used ``-R0/12/0/0.95 -JX3i/0.3i -Ba4f2g1+lFrequency+u" %" -BS``
+   optional. For this example we used ``-R0/12/0/0.95 -JX3i/0.3i -Ba4f2g1+lFrequency+u" %" -BS``.
+
+There are occasions when the length of the annotations are such that placing them
+horizontally (which is the default) may lead to overprinting or too few annotations.
+Once solution is to use slanted annotations for the x-axis (e.g., Figure :ref:`Axis label <axis_slanted_basemap>`).
+
+
+.. _axis_slanted_basemap:
+
+.. figure:: /_images/GMT_-B_slanted.*
+   :width: 500 px
+   :align: center
+
+   Linear Cartesian projection axis with slanted annotations.
+   For this example we used ``-R2000/2020/35/45 -JX12c -Bxa2f+a-30 -BS``.
+   For the y-axis only the modifier **+ap** for parallel is allowed.
+
 
 Cartesian log\ :sub:`10` axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
