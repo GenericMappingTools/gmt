@@ -1140,35 +1140,37 @@ will appear centered above the plot frame.
 
 The Axes settings are specified by
 
--  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*][\ **+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+-  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*\ \|\ **n**\ \|\ **p**\ ][\ **+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
 
 but you may also split this into two separate invocations for clarity, i.e.,
 
--  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
--  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
+-   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\ \|\ **n**\ \|\ **p**\ ][**+l**\ \|\ **L**\ *label*][**+p**\ *prefix*][**+s**\ \|\ **S**\ *seclabel*][**+u**\ *unit*]
+-   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
-The first optional flag following **-B** selects **p** (rimary) [Default] or
-**s** (econdary) axes information (mostly used for time axes annotations).
-The [**x**\|\ **y**\|\ **z**] flags specify which axes you are providing information for.
-If none are given then we default to **xy**.  If you wish to give different annotation intervals
-or labels for the various axes then you must repeat the **B** option for
-each axis (If a 3-D basemap is selected with **-p** and **-Jz**, use **-Bz**
-to give settings for the vertical axis.).  To add a label to an axis,
-just append **+l**\ *label* (Cartesian projections only). Use **+L** to
-force a horizontal label for *y*-axes (useful for very short labels).
-For Cartesian axes you may specify an alternate via **+s** which is used for
-right or upper axis axis label (with any **+l** label used for left and bottom axes).
-If the axis annotation should have a leading text prefix (e.g., dollar sign for those
-plots of your net worth) you can append **+p**\ *prefix*. For geographic maps
-the addition of degree symbols, etc. is automatic (and controlled by the GMT
-default setting :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`). However, for other plots you can add
-specific units by adding **+u**\ *unit*.  If any of these text strings contain
-spaces or special characters you will need to enclose them in quotes.
-Cartesian x-axes also allow for the optional **+a**\ *angle* which
-will plot slanted annotations; the angle is with respect to the horizontal
-and must be in the -90 <= *angle* <= 90 range only, with **+an** a shorthand
-for normal (i.e., **+a**\ 90).  For the y-axis, **+ap** specifies annotations
-parallel to the axis (default is normal but see :ref:`MAP_ANNOT_ORTHO <MAP_ANNOT_ORTHO>`).
+    The first optional flag following **-B** selects **p** (rimary) [Default] or
+    **s** (econdary) axes information (mostly used for time axes annotations).
+    The [**x**\|\ **y**\|\ **z**] flags specify which axes you are providing information for.
+    If none are given then we default to **xy**.  If you wish to give different annotation intervals
+    or labels for the various axes then you must repeat the **B** option for
+    each axis (If a 3-D basemap is selected with **-p** and **-Jz**, use **-Bz**
+    to give settings for the vertical axis.).  To add a label to an axis,
+    just append **+l**\ *label* (Cartesian projections only). Use **+L** to
+    force a horizontal label for *y*-axes (useful for very short labels).
+    For Cartesian axes you may specify an alternate via **+s** which is used for
+    right or upper axis axis label (with any **+l** label used for left and bottom axes).
+    If the axis annotation should have a leading text prefix (e.g., dollar sign for those
+    plots of your net worth) you can append **+p**\ *prefix*. For geographic maps
+    the addition of degree symbols, etc. is automatic (and controlled by the GMT
+    default setting :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`). However, for other plots you can add
+    specific units by adding **+u**\ *unit*.  If any of these text strings contain
+    spaces or special characters you will need to enclose them in quotes.
+    Cartesian x-axes also allow for the optional **+a**\ *angle*, which
+    will plot slanted annotations; *angle* is measured with respect to the horizontal
+    and must be in the -90 <= *angle* <= 90 range only.  Also, **+an** is a shorthand
+    for normal (i.e., **+a**\ 90) and **+ap** for parallel (i.e., **+a**\ 0) annotations
+    [Default].  For the y-axis, arbitrary angles are not allowed but **+an** and **+ap**
+    specify annotations normal [Default] and parallel to the axis, respectively.  Note that
+    these defaults can be changed via :ref:`MAP_ANNOT_ORTHO <MAP_ANNOT_ORTHO>`.
 
 The *intervals* specification is a concatenated string made up of substrings of the form
 

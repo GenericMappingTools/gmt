@@ -4229,7 +4229,8 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	bool ortho = false;		/* true if annotations are orthogonal to axes */
 	bool flip = false;		/* true if annotations are inside axes */
 	bool MM_set = false;		/* true after we define the MM PS macro for label offsets */
-	bool angled = false;		/* Tru if user used +angle to select a slanted annotation */
+	bool angled = false;		/* True if user used +angle to select a slanted annotation */
+	bool skip = false;
 	bool save_pi = GMT->current.plot.substitute_pi;
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
 	double x, t_use, text_angle, cos_a = 0.0;	/* Misc. variables */
@@ -4258,15 +4259,20 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	horizontal = (axis == GMT_X);	/* This is a horizontal axis */
 	xyz_fwd = ((axis == GMT_X) ? &gmt_x_to_xx : (axis == GMT_Y) ? &gmt_y_to_yy : &gmt_z_to_zz);
 	primary = plot_get_primary_annot (A);			/* Find primary axis items */
-	if (strchr (GMT->current.setting.map_annot_ortho, axis_chr[axis][below])) ortho = true;	/* Annotations are orthogonal */
-	if (axis == GMT_Y && doubleAlmostEqualZero (A->angle, 90.0)) ortho = false;	/* Y-Annotations are parallel */
+	if (A->use_angle) {	/* Must honor the +a modifier */
+		if (axis == GMT_Y && doubleAlmostEqualZero (A->angle, 90.0)) ortho = false;	/* Y-Annotations are parallel */
+		else if (axis == GMT_Y && doubleAlmostEqualZero (A->angle, 0.0)) ortho = true;	/* Y-Annotations are normal */
+		if (axis == GMT_X && doubleAlmostEqualZero (A->angle, 0.0)) skip = true;	/* X-Annotations are parallel so do nothing */
+	}
+	else if (strchr (GMT->current.setting.map_annot_ortho, axis_chr[axis][below]))
+		ortho = true;	/* Annotations are orthogonal for this axis */
 	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) neg = !neg;	/* Annotations go either below or above the axis */
 	faro = (neg == (horizontal && !ortho));			/* Current point is at the far side of the tickmark? */
 	if (A->type != GMT_TIME)						/* Set the annotation format template */
 		gmt_get_format (GMT, gmtlib_get_map_interval (GMT, &A->item[GMT_ANNOT_UPPER]), A->unit, A->prefix, format);
 	text_angle = (ortho == horizontal) ? 90.0 : 0.0;
 	justify = (ortho) ? PSL_MR : PSL_BC;
-	if (axis == GMT_X && !doubleAlmostEqualZero (A->angle, 0.0)) {	/* User override annotation angle */
+	if (axis == GMT_X && A->use_angle && !skip) {	/* User override annotation angle */
 		text_angle = A->angle;
 		angled = true;
 		if (text_angle > 0.0)
@@ -4411,7 +4417,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				x = (*xyz_fwd) (GMT, t_use);	/* Convert to inches on the page */
 				/* Move to new anchor point */
 				PSL_command (PSL, "%d PSL_A%d_y MM\n", PSL_IZ (PSL, x), annot_pos);
-				if (angled) {	/* Must compensate for rotated textbox */
+				if (angled) {	/* Must compensate for rotated textbox sticking too close to axis */
 					if (below) /* S axis */
 						PSL_command (PSL, "0 PSL_AH%d 1 %g sub mul G\n", annot_pos, cos_a);
 					else /* N axis */
