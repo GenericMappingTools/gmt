@@ -28,8 +28,8 @@
  */
 
 #pragma once
-#ifndef _COMMON_STRING_H
-#define _COMMON_STRING_H
+#ifndef COMMON_STRING_H
+#define COMMON_STRING_H
 
 #ifdef __cplusplus      /* Basic C++ support */
 extern "C" {
@@ -88,4 +88,4 @@ EXTERN_MSC char *basename(char *path);
 }
 #endif
 
-#endif /* !_COMMON_STRING_H */
+#endif /* !COMMON_STRING_H */
