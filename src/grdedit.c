@@ -64,7 +64,7 @@ struct GRDEDIT_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct L {	/* -L[-|+] */
+	struct L {	/* -L[+n|+p] */
 		bool active;
 		int mode;
 	} L;
@@ -103,7 +103,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A] [-C] [%s]\n", name, GMT_GRDEDIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|h|l|r|t|v]] [-G<outgrid>] [-L[-|+]] [-N<table>] [%s] [-S] [-T]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|h|l|r|t|v]] [-G<outgrid>] [-L[+n|+p]] [-N<table>] [%s] [-S] [-T]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -122,8 +122,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t  v Flip grid top-to-bottom (as grdmath FLIPUD).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify new output grid file [Default updates given grid file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Shift the grid\'s longitude range (geographic grids only):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -L- Adjust <west>/<east> so <east> <= 0\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -L+ Adjust <west>/<east> so <west> >= 0\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -L+n Adjust <west>/<east> so <east> <= 0\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -L+p Adjust <west>/<east> so <west> >= 0\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default adjusts <west>/<east> so <west> >= -180 or <east> <= +180\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N <table> has new xyz values to replace existing grid nodes.\n");
 	GMT_Option (API, "R");
@@ -192,8 +192,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 				break;
 			case 'L':	/* Rotate w/e */
 				Ctrl->L.active = true;
-				if (opt->arg[0] == '-') Ctrl->L.mode = -1;
-				else if (opt->arg[0] == '+') Ctrl->L.mode = +1;
+				if (strstr (opt->arg, "+n")) Ctrl->L.mode = -1;
+				else if (strstr (opt->arg, "+p")) Ctrl->L.mode = +1;
+				else if (opt->arg[0])
+					n_errors++;
 				break;
 			case 'N':	/* Replace nodes */
 				if ((Ctrl->N.active = gmt_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)))
