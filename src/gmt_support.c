@@ -3759,6 +3759,22 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
  *   Computers & Geosciences, 8, 97-101, 1982.
  */
 
+struct GMT_PAIR {
+	double x, y;
+	uint64_t rec;
+};
+
+/*! . */
+GMT_LOCAL int support_sort_pair (const void *p_1, const void *p_2) {
+	const struct GMT_PAIR *point_1 = (const struct GMT_PAIR *)p_1, *point_2 = (const struct GMT_PAIR *)p_2;
+
+	if (point_1->x < point_2->x) return -1;
+	if (point_1->x > point_2->x) return +1;
+	if (point_1->y < point_2->y) return -1;
+	if (point_1->y > point_2->y) return +1;
+	return 0;
+}
+
 /* Leave link as int**, not int** */
 /*! . */
 GMT_LOCAL uint64_t support_delaunay_watson (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, int **link) {
@@ -3779,23 +3795,31 @@ GMT_LOCAL uint64_t support_delaunay_watson (struct GMT_CTRL *GMT, double *x_in, 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Delaunay triangulation calculated by Dave Watson's ACORD [Computers & Geosciences, 8, 97-101, 1982]\n");
 
 	{
-		/* Note 2019/01/02: We were notified via https://github.com/GenericMappingTools/gmt/issues/279
-		 * that the Watson algorithm may give junk unless the input is sorted on the x values.  Either
-		 * ascending or descending is fine.  Here, we check that x is sorted and if not we issue
-		 * a stern warning to users so they can sort the file first before calling support_delaunay_watson */
+		/* Note 2019/01/07: We were notified via https://github.com/GenericMappingTools/gmt/issues/279
+		 * that the Watson algorithm may give junk if there are duplicate entries in the input, and if so we issue
+		 * a stern warning to users so they can clean up the file first before calling support_delaunay_watson */
 	
-		uint64_t n_neg = 0, n_pos = 0;
+		struct GMT_PAIR *P = gmt_M_memory (GMT, NULL, n, struct GMT_PAIR);
+		uint64_t n_duplicates = 0;
+		for (i = 0; i < n; i++) {
+			P[i].x = x_in[i];
+			P[i].y = y_in[i];
+			P[i].rec = i + 1;
+		}
+		qsort (P, n, sizeof (struct GMT_PAIR), support_sort_pair);
 		for (i = 1; i < n; i++) {
-			dx = x_in[i] - x_in[i-1];
-			if (dx < -GMT_CONV6_LIMIT) n_neg++;
-			else if (dx > GMT_CONV6_LIMIT) n_pos++;
+			if (doubleAlmostEqualZero (P[i].x, P[i-1].x) && doubleAlmostEqualZero (P[i].y, P[i-1].y)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Records %" PRIu64 " and %" PRIu64 " are duplicates!\n", P[i-1].rec, P[i].rec);
+				n_duplicates++;
+			}
 		}
-		if (n_neg && n_pos) {	/* Clearly not monotonically increasing or decreasing in x */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "WARNING: Bug Report Notice for Watson ACORD External Code:\n");
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The Watson algorithm seems to require the input data to be sorted on x.\n");
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Please run your data through sort first, i.e., sort data > sorted_data\n");
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "and use sorted_data to perform the triangulation.\n");
+		if (n_duplicates) {	/* Clearly not monotonically increasing or decreasing in x */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "WARNING: Bug Report Advice for Watson ACORD External Code:\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The Watson algorithm can fail if there are duplicate (x,y) records.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "We found %" PRIu64 " duplicate records in your data set.\n", n_duplicates);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Please remove duplicates and redo your analysis if the results are corrupted.\n");
 		}
+		gmt_M_free (GMT, P);
 	}
 	
 	size = 10 * n + 1;
