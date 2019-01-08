@@ -4674,7 +4674,8 @@ void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 	double nesw[4], old_level, xx, yy, az;
 	struct PSL_CTRL *PSL= GMT->PSL;
 
-	if (!GMT->current.proj.three_D || !GMT->current.map.frame.axis[GMT_Z].item[GMT_ANNOT_UPPER].active) return;
+	if (!GMT->current.proj.three_D) return;
+	if (!GMT->current.map.frame.drawz) return;
 
 	nesw[0] = GMT->current.proj.rect[YHI], nesw[1] = GMT->current.proj.rect[XHI], nesw[2] = GMT->current.proj.rect[YLO], nesw[3] = GMT->current.proj.rect[XLO];
 
