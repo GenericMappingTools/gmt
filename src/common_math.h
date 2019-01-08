@@ -28,8 +28,8 @@
  */
 
 #pragma once
-#ifndef _COMMON_MATH_H
-#define _COMMON_MATH_H
+#ifndef COMMON_MATH_H
+#define COMMON_MATH_H
 
 #ifdef __cplusplus      /* Basic C++ support */
 extern "C" {
@@ -104,4 +104,4 @@ extern "C" {
 }
 #endif
 
-#endif /* !_COMMON_MATH_H */
+#endif /* !COMMON_MATH_H */
