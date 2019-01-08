@@ -496,6 +496,7 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	bool init;			/* true if -B was used at all */
 	bool set;			/* true if -B was used to set any increments */
 	bool draw;			/* true if -B<int> was used, even -B0, as sign to draw axes */
+	bool drawz;			/* true if -B<int> was used, even -Bz0, as sign to draw z axes */
 	bool paint;			/* true if -B +g<fill> was used */
 	bool draw_box;			/* true if a 3-D Z-box is desired */
 	bool no_frame;			/* true if we just want gridlines but no frame, i.e +n was used */

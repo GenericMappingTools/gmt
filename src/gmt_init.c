@@ -2223,7 +2223,7 @@ GMT_LOCAL int gmtinit_decode4_wesnz (struct GMT_CTRL *GMT, const char *in, unsig
 
 	GMT->current.map.frame.set_frame[part]++;
 	if (GMT->current.map.frame.set_frame[GMT_PRIMARY] > 1 || GMT->current.map.frame.set_frame[GMT_SECONDARY] > 1) {
-		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESN-framesettings> given more than once!\n");
+		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESNZ-framesettings> given more than once!\n");
 		return (1);
 	}
 	i = (int)strlen (in);
@@ -3179,6 +3179,7 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 	}
 
 	GMT->current.map.frame.draw = true;
+	if (axis == 'z') GMT->current.map.frame.drawz = true;
 
 	return (GMT_NOERROR);
 }
@@ -3206,6 +3207,7 @@ GMT_LOCAL int gmtinit_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, c
 			}
 			if (n_int[1]) A->item[GMT_ANNOT_UPPER+!GMT->current.map.frame.primary].special = true;
 			GMT->current.map.frame.draw = true;
+			if (axis == GMT_Z) GMT->current.map.frame.drawz = true;
 		}
 		else
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot access custom file in -B string %c-component %s\n", str[axis], &in[1]);
@@ -3334,6 +3336,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 		if (!info[i][0]) continue;	 /* Skip empty format string */
 		if (info[i][0] == '0' && !info[i][1]) {	 /* Skip format '0' */
 			GMT->current.map.frame.draw = true;
+			if (i == GMT_Z) GMT->current.map.frame.drawz = true;
 			continue;
 		}
 
@@ -3447,7 +3450,7 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 	if (check) {	/* true if coming via -B, false if parsing gmt.conf */
 		GMT->current.map.frame.set_frame[GMT_PRIMARY]++, GMT->current.map.frame.set_frame[GMT_SECONDARY]++;
 		if (GMT->current.map.frame.set_frame[GMT_PRIMARY] > 1 || GMT->current.map.frame.set_frame[GMT_SECONDARY] > 1) {
-			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESN-framesettings> given more than once!\n");
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESNZ-framesettings> given more than once!\n");
 			return (1);
 		}
 	}
@@ -3498,6 +3501,7 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 		gmt_M_memcpy (GMT->current.map.frame.side, f_side, 5, unsigned int);	/* Overwrite the GMT defaults */
 		GMT->current.map.frame.no_frame = false;
 		GMT->current.map.frame.draw = true;
+		if (check && f_side[Z_SIDE]) GMT->current.map.frame.drawz = true;
 	}
 	if (GMT->current.map.frame.no_frame) gmt_M_memset (GMT->current.map.frame.side, 5, unsigned int);	/* Set all to nothing */
 	if (z_axis[0] || z_axis[1] || z_axis[2] || z_axis[3]) gmt_M_memcpy (GMT->current.map.frame.z_axis, z_axis, 4, unsigned int);	/* Overwrite the GMT defaults */
@@ -3686,9 +3690,10 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	if (text[k]) mod = &text[k];		/* mod points to the start of the modifier information in text*/
 	for (no = 0; no < 3; no++) {		/* Process each axis separately */
 		if (!side[no]) continue;	/* Except we did not specify this axis */
+		if (no == GMT_Z) GMT->current.map.frame.drawz = true;
 		if (!text[0]) continue;	 	/* Skip any empty format string */
 		if (text[0] == '0' && !text[1]) {	 /* Understand format '0' to mean "no annotation, ticks, or gridlines" */
-			GMT->current.map.frame.draw = true;	/* But we do wish to draw the frame */
+			GMT->current.map.frame.draw = GMT->current.map.frame.drawz = true;	/* But we do wish to draw the frame */
 			continue;
 		}
 
