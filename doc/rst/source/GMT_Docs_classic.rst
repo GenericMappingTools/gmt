@@ -207,9 +207,8 @@ The success of GMT is to a large degree due to the input of the user
 community. In fact, most of the capabilities and options in the
 GMT modules originated as user requests. We would like to hear from
 you should you have any suggestions for future enhancements and
-modification. Please send your comments to the GMT help list or create
-an issue in the bug tracker
-(see `<http://gmt.soest.hawaii.edu/projects/gmt/issues/>`_).
+modification. Please submit a bug report or a feature request
+on GitHub (see `<https://github.com/GenericMappingTools/gmt/issues>`_).
 
 .. _command-line-completion:
 
