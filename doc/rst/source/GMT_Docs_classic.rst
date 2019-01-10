@@ -2432,7 +2432,7 @@ A pen in GMT has three attributes: *width*, *color*, and
 *style*. Most programs will accept pen attributes in the form of an
 option argument, with commas separating the given attributes, e.g.,
 
-**-W**\ [*width*\ [**c\ \|\ i\ \|\ p**]],[*color*],[\ *style*\ [**c\ \|\ i\ \|\ p\ \|**]]
+**-W**\ [*width*\ [**c\ \|\ i\ \|\ p**]],[*color*],[\ *style*\ [**c\ \|\ i\ \|\ p**]]
 
     *Width* is by default measured in points (1/72 of an inch). Append
     **c**, **i**, or **p** to specify pen width in cm, inch, or points,
