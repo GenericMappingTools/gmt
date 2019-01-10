@@ -2705,12 +2705,15 @@ optional. The *size* is the font size (usually in points) but **c**,
 **i** or **p** can be added to indicate a specific unit. The *fonttype*
 is the name (case sensitive!) of the font or its equivalent numerical ID
 (e.g., Helvetica-Bold or 1). *fill* specifies the gray shade, color or
-pattern of the text (see section `Specifying area fill attributes`_ above). Optionally, you may
-append **=**\ *pen* to the *fill* value in order to draw the text
-outline with the specified *pen*; if used you may optionally skip the
-filling of the text by setting *fill* to **-**. If any of the attributes
-is omitted their default or previous setting will be retained. See
-Chapter `PostScript fonts used by GMT`_ for a list of all fonts recognized by GMT.
+pattern of the text (see section `Specifying area fill attributes`_ above).
+Optionally, you may append **=**\ *pen* to the *fill* value in order to draw a text
+outline. If you want to avoid that the outline partially obscures the text, append
+append **=~**\ *pen* instead; in that case only half the linewidth is plotted
+on the outside of the font only.  If an outline is requested, you may optionally
+skip the text *fill* by setting it to **-**, in which case the full pen width
+is always used. If any of the font attributes is omitted their default or
+previous setting will be retained. See Chapter `PostScript fonts used by GMT`_
+for a list of all fonts recognized by GMT.
 
 Stroke, Fill and Font Transparency
 ----------------------------------
