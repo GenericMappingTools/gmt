@@ -13088,7 +13088,9 @@ bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsign
 	 * Otherwise, it is just a file that does not exist and will yield an error upstream */
 	if (!strncmp (file, GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".grd"))	/* Useful data set distributed by GMT */
 		*kind = GMT_DATA_FILE;
-	return (*kind) ? true : false;	/* Download if flagged as special file, else not */
+    else if (file[0] == '@' && !strncmp (&file[1], GMT_DATA_PREFIX, strlen(GMT_DATA_PREFIX)) && strstr (file, ".grd"))    /* Useful data set distributed by GMT */
+        *kind = GMT_DATA_FILE;
+return (*kind) ? true : false;	/* Download if flagged as special file, else not */
 }
 
 /*! . */
