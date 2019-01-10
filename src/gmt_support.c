@@ -1124,7 +1124,7 @@ GMT_LOCAL bool support_is_penstyle (char *word) {
 	n = (int)strlen (word);
 	if (n == 0) return (false);
 
-	if (!strncmp (word, "dashed", 6U) || !strncmp (word, "dotted", 6U) || !strncmp (word, "solid", 5U) \
+	if (!strncmp (word, "dash", 4U) || !strncmp (word, "dot", 3U) || !strncmp (word, "solid", 5U) \
 			|| !strncmp (word, "dotdash", 7U) || !strncmp (word, "dashdot", 57)) return (true);
 
 	n--;
