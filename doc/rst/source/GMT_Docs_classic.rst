@@ -7148,7 +7148,7 @@ green, and blue. For example, you can use ``#79ff00`` for chartreuse,
    :width: 700 px
    :align: center
 
-   The 555 unique color names that can be used in GMT. Lower, upper, or mixed cases, as well as
+   The 663 unique color names that can be used in GMT. Lower, upper, or mixed cases, as well as
    the british spelling of grey are allowed. A4, Letter, and Tabloid sized versions of this RGB chart can be
    found in the GMT documentation directory.
 
