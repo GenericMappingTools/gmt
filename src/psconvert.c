@@ -110,7 +110,8 @@ enum GMT_KML_Elevation {
 
 enum psconv_alias {
 	PSC_LINES = 0,
-	PSC_TEXT = 1
+	PSC_TEXT = 1,
+	PSC_GEO = 2
 };
 
 #define add_to_list(list,item) { if (list[0]) strcat (list, " "); strcat (list, item); }
@@ -175,9 +176,9 @@ struct PS2RASTER_CTRL {
 	struct PS2R_P {	/* -P */
 		bool active;
 	} P;
-	struct PS2R_Q {	/* -Q[g|t]<bits> */
+	struct PS2R_Q {	/* -Q[g|t]<bits> -Qp */
 		bool active;
-		bool on[2];	/* [0] for graphics, [1] for text antialiasing */
+		bool on[3];	/* [0] for graphics, [1] for text antialiasing, [2] for pdfmark GeoPDF */
 		unsigned int bits[2];
 	} Q;
 	struct PS2R_S {	/* -S */
@@ -523,7 +524,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <psfile1> <psfile2> <...> -A[+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width[u]>[/<height>[u]]][+u]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<factor>] [-I] [-L<listfile>] [-Mb|f<psfile>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
 		GMT_Message (API, GMT_TIME_NONE, "\t[-Z] ");
@@ -589,6 +590,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Anti-aliasing setting for (g)raphics or (t)ext; append size (1,2,4) of sub-sampling box.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For PDF and EPS output, default is no anti-aliasing, which is the same as specifying size 1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For raster formats the defaults are -Qg4 -Qt4 unless overridden explicitly.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, use -Qp to create a GeoPDF (requires -Tf).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Apart from executing it, also writes the ghostscript command to\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   standard error and keeps all intermediate files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set output format [default is jpeg]:\n");
@@ -768,14 +770,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 					mode = PSC_LINES;
 				else if (opt->arg[0] == 't')
 					mode = PSC_TEXT;
+				else if (opt->arg[0] == 'p')
+					mode = PSC_GEO;
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The -Q option requires setting -Qg or -Qt!\n");
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The -Q option requires setting -Qg, -Qp, or -Qt!\n");
 					n_errors++;
 					continue;
 
 				}
 				Ctrl->Q.on[mode] = true;
-				Ctrl->Q.bits[mode] = (opt->arg[1]) ? atoi (&opt->arg[1]) : 4;
+				if (mode < PSC_GEO) Ctrl->Q.bits[mode] = (opt->arg[1]) ? atoi (&opt->arg[1]) : 4;
 				break;
 			case 'S':	/* Write the GS command to STDERR */
 				Ctrl->S.active = true;
@@ -875,10 +879,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[0] && (Ctrl->Q.bits[0] < 1 || Ctrl->Q.bits[0] > 4),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_GEO] && Ctrl->T.device != GS_DEV_PDF,
+	                                   "Syntax error: Creating GeoPDF format requires -Tf\n");
+
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_LINES] && (Ctrl->Q.bits[PSC_LINES] < 1 || Ctrl->Q.bits[PSC_LINES] > 4),
 	                                   "Syntax error: Anti-aliasing for graphics requires sub-sampling box of 1,2, or 4\n");
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[1] && (Ctrl->Q.bits[1] < 1 || Ctrl->Q.bits[1] > 4),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_TEXT] && (Ctrl->Q.bits[PSC_TEXT] < 1 || Ctrl->Q.bits[PSC_TEXT] > 4),
 	                                   "Syntax error: Anti-aliasing for text requires sub-sampling box of 1,2, or 4\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files > 1 && Ctrl->L.active,
@@ -2199,52 +2206,53 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				fprintf (fpo, "%%%%PageTrailer\n");
 				fprintf (fpo, "%s\n", line);
 
-				/* Write a GeoPDF registration info */
+				if (Ctrl->Q.on[PSC_GEO]) {	/* Write a GeoPDF registration info */
 
-				/* Allocate new control structures */
-				to_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
-				from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
-				to_gdalread->W.active = true;
-				from_gdalread->ProjRefPROJ4 = proj4_cmd;
-				gmt_gdalread (GMT, NULL, to_gdalread, from_gdalread);
-				if (from_gdalread->ProjRefWKT != NULL) {
-					char  *new_wkt = NULL;
+					/* Allocate new control structures */
+					to_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
+					from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
+					to_gdalread->W.active = true;
+					from_gdalread->ProjRefPROJ4 = proj4_cmd;
+					gmt_gdalread (GMT, NULL, to_gdalread, from_gdalread);
+					if (from_gdalread->ProjRefWKT != NULL) {
+						char  *new_wkt = NULL;
 
-					fprintf (fpo, "\n%% embed georegistation info\n");
-					fprintf (fpo, "[ {ThisPage} <<\n");
-					fprintf (fpo, "\t/VP [ <<\n");
-					fprintf (fpo, "\t\t/Type /Viewport\n");
-					fprintf (fpo, "\t\t/BBox[0 0 %g %g]\n", w, h);
-					fprintf (fpo, "\t\t/Measure <<\n");
-					fprintf (fpo, "\t\t\t/Type /Measure\n");
-					fprintf (fpo, "\t\t\t/Subtype /GEO\n");
-					fprintf (fpo, "\t\t\t/Bounds[0 0 0 1 1 1 1 0]\n");
-					fprintf (fpo, "\t\t\t/GPTS[%f %f %f %f %f %f %f %f]\n",
-					         south, west, north, west, north, east, south, east);
-					if (gmtBB_width == 0)	/* Older PS files that do not have yet the GMTBoundingBox */
-						fprintf (fpo, "\t\t\t/LPTS[0 0 0 1 1 1 1 0]\n");
-					else {
-						/* Compute the LPTS. Takes the projected coordinate system into the page coordinate system */
-						double h0, v0, x1,x2,y1,y2;
-						h0 = gmtBB_x0 + xt_bak;		/* x|yt_bak are negative */
-						v0 = gmtBB_y0 + yt_bak;
-						x1 = h0 / w;	x2 = (h0 + gmtBB_width) / w;
-						y1 = v0 / h;	y2 = (v0 + gmtBB_height) / h;
-						fprintf (fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n", x1,y1, x1,y2, x2,y2, x2,y1);
+						fprintf (fpo, "\n%% embed georegistation info\n");
+						fprintf (fpo, "[ {ThisPage} <<\n");
+						fprintf (fpo, "\t/VP [ <<\n");
+						fprintf (fpo, "\t\t/Type /Viewport\n");
+						fprintf (fpo, "\t\t/BBox[0 0 %g %g]\n", w, h);
+						fprintf (fpo, "\t\t/Measure <<\n");
+						fprintf (fpo, "\t\t\t/Type /Measure\n");
+						fprintf (fpo, "\t\t\t/Subtype /GEO\n");
+						fprintf (fpo, "\t\t\t/Bounds[0 0 0 1 1 1 1 0]\n");
+						fprintf (fpo, "\t\t\t/GPTS[%f %f %f %f %f %f %f %f]\n",
+						         south, west, north, west, north, east, south, east);
+						if (gmtBB_width == 0)	/* Older PS files that do not have yet the GMTBoundingBox */
+							fprintf (fpo, "\t\t\t/LPTS[0 0 0 1 1 1 1 0]\n");
+						else {
+							/* Compute the LPTS. Takes the projected coordinate system into the page coordinate system */
+							double h0, v0, x1,x2,y1,y2;
+							h0 = gmtBB_x0 + xt_bak;		/* x|yt_bak are negative */
+							v0 = gmtBB_y0 + yt_bak;
+							x1 = h0 / w;	x2 = (h0 + gmtBB_width) / w;
+							y1 = v0 / h;	y2 = (v0 + gmtBB_height) / h;
+							fprintf (fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n", x1,y1, x1,y2, x2,y2, x2,y1);
+						}
+						fprintf (fpo, "\t\t\t/GCS <<\n");
+						fprintf (fpo, "\t\t\t\t/Type /PROJCS\n");
+						fprintf (fpo, "\t\t\t\t/WKT\n");
+						new_wkt = gmt_strrep(from_gdalread->ProjRefWKT, "Mercator_1SP", "Mercator");	/* Because AR is dumb */
+						fprintf (fpo, "\t\t\t\t(%s)\n", new_wkt);
+						fprintf (fpo, "\t\t\t>>\n");
+						fprintf (fpo, "\t\t>>\n");
+						fprintf (fpo, "\t>>]\n");
+						fprintf (fpo, ">> /PUT pdfmark\n\n");
+						if (strlen(new_wkt) != strlen(from_gdalread->ProjRefWKT)) free(new_wkt);	/* allocated in strrep */
 					}
-					fprintf (fpo, "\t\t\t/GCS <<\n");
-					fprintf (fpo, "\t\t\t\t/Type /PROJCS\n");
-					fprintf (fpo, "\t\t\t\t/WKT\n");
-					new_wkt = gmt_strrep(from_gdalread->ProjRefWKT, "Mercator_1SP", "Mercator");	/* Because AR is dumb */
-					fprintf (fpo, "\t\t\t\t(%s)\n", new_wkt);
-					fprintf (fpo, "\t\t\t>>\n");
-					fprintf (fpo, "\t\t>>\n");
-					fprintf (fpo, "\t>>]\n");
-					fprintf (fpo, ">> /PUT pdfmark\n\n");
-					if (strlen(new_wkt) != strlen(from_gdalread->ProjRefWKT)) free(new_wkt);	/* allocated in strrep */
+					gmt_M_free (GMT, to_gdalread);
+					gmt_M_free (GMT, from_gdalread);
 				}
-				gmt_M_free (GMT, to_gdalread);
-				gmt_M_free (GMT, from_gdalread);
 				continue;
 			}
 #endif
