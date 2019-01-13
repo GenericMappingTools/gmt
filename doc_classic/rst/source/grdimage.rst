@@ -105,7 +105,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*cpt* \|\ *master*\ [**+i**\ *zinc*] \|\ *color1,color2*\ [,*color3*,...]]
+**-C**\ [*cpt* \|\ *master*\ [**+i**\ *zinc*] \|\ *color1,color2*\ [,\ *color3*,...]]
     Name of the CPT (for *grd_z* only). Alternatively,
     supply the name of a GMT color master dynamic CPT [rainbow] to
     automatically determine a continuous CPT from
