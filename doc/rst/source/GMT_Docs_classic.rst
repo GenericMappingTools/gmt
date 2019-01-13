@@ -2300,7 +2300,7 @@ progress of the operation you are running. Verbose reports things such
 as counts of points read, names of data files processed, convergence of
 iterative solutions, and the like. Since these messages are written to
 *stderr*, the verbose talk remains separate from your data output. You
-may optionally choose among five models of *verbosity*; each mode adds
+may optionally choose among six models of *verbosity*; each mode adds
 more messages with an increasing level of details. The modes are
 
   **q** Complete silence, not even fatal error messages.
