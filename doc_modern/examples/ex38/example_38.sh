@@ -10,7 +10,7 @@ ps=example_38.ps
 gmt makecpt -Crainbow -T0/1700 > t.cpt
 gmt makecpt -Crainbow -T0/15/1 > c.cpt
 gmt grdhisteq @topo_38.nc -Gout.nc -C16
-gmt grdimage @topo_38.nc -I+a45+nt1 -Ct.cpt -JM3i -Y6i -K -P -B5 -BWSne > $ps
+gmt grdimage @topo_38.nc -I+d -Ct.cpt -JM3i -Y6i -K -P -B5 -BWSne > $ps
 echo "315 -10 Original" | gmt pstext -R@topo_38.nc -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
 gmt grdimage out.nc -Cc.cpt -J -X3.5i -K -O -B5 -BWSne >> $ps
 echo "315 -10 Equalized" | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps

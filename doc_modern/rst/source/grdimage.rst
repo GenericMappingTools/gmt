@@ -103,7 +103,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*cpt* \|\ *master*\ [**+i**\ *zinc*] \|\ *color1,color2*\ [,\ *color3*,...]]
+**-C**\ [*cpt* \|\ *master*\ [**+i**\ *zinc*] \|\ *color1,color2*\ [,\ *color3*\ ,...]]
     Name of the CPT (for *grd_z* only). Alternatively,
     supply the name of a GMT color master dynamic CPT [rainbow] to
     automatically determine a continuous CPT from
@@ -146,12 +146,12 @@ Optional Arguments
 
 **-I**\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*]
     Gives the name of a grid file with intensities in the (-1,+1) range,
-    or a constant intensity to apply everywhere; this simply affects the
-    ambient light.  If just **+** is given then we derive an intensity
-    grid from the input data grid *grd_z* via a call to :doc:`grdgradient`
-    using the arguments **-A**\ -45 and **-Nt**\ 1 for that module. You can
-    append **+a**\ *azimuth* and **+n**\ *args* to override those values.  If you want
-    more specific intensities then run :doc:`grdgradient` separately first.
+    or a constant intensity to apply everywhere (affects the ambient light).
+    Alternatively, derive an intensity grid from the input data grid *grd_z*
+    via a call to :doc:`grdgradient`; append **+a**\ *azimuth* and **+n**\ *args*
+    to specify azimuth and intensity arguments for that module or just give **+d**
+    to select the default arguments (**+a**\ -45\ **+nt**\ 1). If you want a more
+    specific intensity scenario then run :doc:`grdgradient` separately first.
     [Default is no illumination].
 
 .. include:: explain_-Jz.rst_
@@ -243,7 +243,7 @@ the maximum map dimension limited to be 6 inches, try
 
    ::
 
-    gmt grdimage stuff.nc -JX6i+ -I+ -pdf quick
+    gmt grdimage stuff.nc -JX6i+ -I+d -pdf quick
 
 To gray-shade the file hawaii_grav.nc with shades given in shades.cpt
 on a Lambert map at 1.5 cm/degree along the standard parallels 18 and
