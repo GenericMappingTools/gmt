@@ -53,9 +53,7 @@ struct PSIMAGE_CTRL {
 	} F;
 	struct PSIMG_G {	/* -G[f|b|t]<rgb> */
 		bool active;
-		double f_rgb[4];
-		double b_rgb[4];
-		double t_rgb[4];
+		double rgb[3][4];
 	} G;
 	struct PSIMG_I {	/* -I */
 		bool active;
@@ -65,13 +63,17 @@ struct PSIMAGE_CTRL {
 	} M;
 };
 
+#define PSIMG_BGD	0
+#define PSIMG_FGD	1
+#define PSIMG_TRA	2
+
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSIMAGE_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSIMAGE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->G.f_rgb[0] = C->G.b_rgb[0] = C->G.t_rgb[0] = -2;
+	C->G.rgb[PSIMG_FGD][0] = C->G.rgb[PSIMG_BGD][0] = C->G.rgb[PSIMG_TRA][0] = -2;	/* All turned off */
 	C->D.n_columns = C->D.n_rows = 1;
 	return (C);
 }
@@ -91,7 +93,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <imagefile> [%s] [-D%s+w[-]<width>[/<height>][+n<n_columns>[/<n_rows>]]%s+r<dpi>]\n", name, GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_PANEL);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G[b|f|t]<color>] [-I] [%s] [%s] %s[-M] %s\n", GMT_J_OPT, GMT_Jz_OPT, GMT_K_OPT, GMT_O_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G[<color>][+b|+f|+t]] [-I] [%s] [%s] %s[-M] %s\n", GMT_J_OPT, GMT_Jz_OPT, GMT_K_OPT, GMT_O_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s]\n", GMT_P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
@@ -107,10 +109,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set image dpi (dots per inch) with +r.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +n to replicate image <n_columns> by <n_rows> times [Default is no replication].\n");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the image", 1);
-	GMT_Message (API, GMT_TIME_NONE, "\t-Gb and -Gf (1-bit images only) set the background and foreground color,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   respectively. Use <color> = - for transparency [Default is black and white].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Gt (not for 1-bit images) indicate which color should be made transparent\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default no transparency].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Change some pixels to given <color> depending on selected modifier (repeatable).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +b for replacing background and +f for foreground color (1-bit images only).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no color was given we make those pixels transparent [Default is black and white].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +t to indicate the given <color> should be made transparent [no transparency].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Invert 1-bit images (does not affect 8 or 24-bit images).\n");
 	GMT_Option (API, "J-Z,K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Force color -> monochrome image using gmt_M_yiq-transformation.\n");
@@ -129,10 +131,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0, ind, k;
 	int n;
 	bool p_fail = false;
-	char string[GMT_LEN256] = {""}, letter, *p = NULL;
+	char string[GMT_LEN256] = {""}, *p = NULL;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[4] = {""};
 	struct GMT_OPTION *opt = NULL;
 
@@ -211,42 +213,46 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				break;
 			case 'G':	/* Background/foreground color for 1-bit images */
 				Ctrl->G.active = true;
-				letter = (gmt_colorname2index (GMT, opt->arg) >= 0) ? 'x' : opt->arg[0];	/* If we have -G<colorname>, the x is used to bypass the case f|b|t switching below */
-				switch (letter) {
-					case 'f':
-						/* Set color for foreground pixels */
-						if (opt->arg[1] == '-' && opt->arg[2] == '\0')
-							Ctrl->G.f_rgb[0] = -1;
-						else if (gmt_getrgb (GMT, &opt->arg[1], Ctrl->G.f_rgb)) {
-							gmt_rgb_syntax (GMT, 'G', " ");
-							n_errors++;
-						}
-						break;
-					case 'b':
-						/* Set color for background pixels */
-						if (opt->arg[1] == '-' && opt->arg[2] == '\0')
-							Ctrl->G.b_rgb[0] = -1;
-						else if (gmt_getrgb (GMT, &opt->arg[1], Ctrl->G.b_rgb)) {
-							gmt_rgb_syntax (GMT, 'G', " ");
-							n_errors++;
-						}
-						break;
-					case 't':
-						/* Set transparent color */
-						if (gmt_getrgb (GMT, &opt->arg[1], Ctrl->G.t_rgb)) {
-							gmt_rgb_syntax (GMT, 'G', " ");
-							n_errors++;
-						}
-						break;
-					default:	/* Gave either -G<r/g/b>, -G-, or -G<colorname>; all treated as -Gf */
-						if (opt->arg[0] == '-' && opt->arg[1] == '\0')
-							Ctrl->G.f_rgb[0] = -1;
-						else if (gmt_getrgb (GMT, opt->arg, Ctrl->G.f_rgb)) {
-							gmt_rgb_syntax (GMT, 'G', " ");
-							n_errors++;
-						}
-						break;
+				if ((p = strstr (opt->arg, "+b")))	/* Background color (or transparency) selected */
+					ind = PSIMG_BGD, k = 0, p[0] = '\0';
+				else if ((p = strstr (opt->arg, "+f")))	/* Foreground color (or transparency) selected */
+					ind = PSIMG_FGD, k = 0, p[0] = '\0';
+				else if ((p = strstr (opt->arg, "+t"))) {	/* Transparency color specified */
+					ind = PSIMG_TRA;	k = 0; p[0] = '\0';
+					if (opt->arg[0] == '\0') {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -G: Must specify a color when +t is used\n");
+						n_errors++;
+					}
 				}
+				else if (gmt_M_compat_check (GMT, 5)) {	/* Must check old-style arguments */
+					if (opt->arg[0] == '-' || gmt_colorname2index (GMT, opt->arg) >= 0 || !gmt_getrgb (GMT, opt->arg, Ctrl->G.rgb[PSIMG_FGD]))	/* Foreground color selected as default */
+						ind = PSIMG_FGD, k = 0;
+					else if (opt->arg[0] == 'f')	/* Foreground color selected */
+						ind = PSIMG_FGD, k = 1;
+					else if (opt->arg[0] == 'b')	/* Background color (or transparency) selected */
+						ind = PSIMG_BGD, k = 1;
+					else if (opt->arg[0] == 't')	/* Transparency color specified */
+						ind = PSIMG_TRA, k = 1;
+				}
+				else	/* Just -G[<color>] for foreground */
+					ind = PSIMG_FGD, k = 0;
+				if (opt->arg[k] == '\0')	/* No color given means set transparency */
+					Ctrl->G.rgb[ind][0] = -1;
+				else if (opt->arg[k] == '-') {	/* - means set transparency but only in GMT 5 and earlier */
+					if (gmt_M_compat_check (GMT, 5)) {	/* - means set transparency in GMT 5 and earlier */
+						Ctrl->G.rgb[ind][0] = -1;
+						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-G with color - for transparency is deprecated; give no <color> instead.\n");
+					}
+					else {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -G: - is not a color\n");
+						n_errors++;
+					}
+				}
+				else if (gmt_getrgb (GMT, &opt->arg[k], Ctrl->G.rgb[ind])) {
+					gmt_rgb_syntax (GMT, 'G', " ");
+					n_errors++;
+				}
+				if (p) p[0] = '+';	/* Restore modifier */
 				break;
 			case 'I':	/* Invert 1-bit images */
 				Ctrl->I.active = true;
@@ -277,8 +283,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 
 	/* If not done previously, set foreground to black, background to white */
 
-	if (Ctrl->G.f_rgb[0] == -2) { Ctrl->G.f_rgb[0] = Ctrl->G.f_rgb[1] = Ctrl->G.f_rgb[2] = 0.0; }
-	if (Ctrl->G.b_rgb[0] == -2) { Ctrl->G.b_rgb[0] = Ctrl->G.b_rgb[1] = Ctrl->G.b_rgb[2] = 1.0; }
+	if (Ctrl->G.rgb[PSIMG_FGD][0] == -2) { Ctrl->G.rgb[PSIMG_FGD][0] = Ctrl->G.rgb[PSIMG_FGD][1] = Ctrl->G.rgb[PSIMG_FGD][2] = 0.0; }
+	if (Ctrl->G.rgb[PSIMG_BGD][0] == -2) { Ctrl->G.rgb[PSIMG_BGD][0] = Ctrl->G.rgb[PSIMG_BGD][1] = Ctrl->G.rgb[PSIMG_BGD][2] = 1.0; }
 
 	if (!Ctrl->D.active) {	/* Old syntax without reference point implies -Dx0/0 */
 		Ctrl->D.refpoint = gmt_get_refpoint (GMT, "x0/0", 'D');	/* Default if no -D given */
@@ -295,7 +301,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, !p_fail && Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Syntax error -D option: Must specify image width (+w) or dpi (+r)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.n_columns < 1 || Ctrl->D.n_rows < 1,
 			"Syntax error -D option: Must specify positive values for replication with +n\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.rgb[PSIMG_FGD][0] < 0 && Ctrl->G.rgb[PSIMG_BGD][0] < 0,
 			"Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -501,9 +507,9 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 		/* If a transparent color was found, we replace it with a unique one */
 		if (has_trans) {
-			Ctrl->G.t_rgb[0] = r / 255.;
-			Ctrl->G.t_rgb[1] = g / 255.;
-			Ctrl->G.t_rgb[2] = b / 255.;
+			Ctrl->G.rgb[PSIMG_TRA][0] = r / 255.;
+			Ctrl->G.rgb[PSIMG_TRA][1] = g / 255.;
+			Ctrl->G.rgb[PSIMG_TRA][2] = b / 255.;
 		}
 
 		picture = (unsigned char *)I->data;
@@ -537,14 +543,14 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	}
 
 	/* Add transparent color at beginning, if requested */
-	if (Ctrl->G.t_rgb[0] < 0)
+	if (Ctrl->G.rgb[PSIMG_TRA][0] < 0)
 		PS_transparent = 1;
 	else if (header.depth >= 8) {
 		PS_transparent = -1;
 		j = header.depth / 8;
 		n = j * (header.width * header.height + 1);
 		buffer = gmt_M_memory (GMT, NULL, n, unsigned char);
-		for (i = 0; i < j; i++) buffer[i] = (unsigned char)rint(255 * Ctrl->G.t_rgb[i]);
+		for (i = 0; i < j; i++) buffer[i] = (unsigned char)rint(255 * Ctrl->G.rgb[PSIMG_TRA][i]);
 		gmt_M_memcpy (&(buffer[j]), picture, n - j, unsigned char);
 #ifdef HAVE_GDAL
 		if (GMT_Destroy_Data (API, &I) != GMT_NOERROR) {	/* If I is NULL then nothing is done */
@@ -644,10 +650,10 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 				/* Invert is opposite from what is expected. This is to match the behaviour of -Gp */
 				if (Ctrl->I.active)
 					PSL_plotbitimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture,
-							header.width, header.height, Ctrl->G.f_rgb, Ctrl->G.b_rgb);
+							header.width, header.height, Ctrl->G.rgb[PSIMG_FGD], Ctrl->G.rgb[PSIMG_BGD]);
 				else
 					PSL_plotbitimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture,
-							header.width, header.height, Ctrl->G.b_rgb, Ctrl->G.f_rgb);
+							header.width, header.height, Ctrl->G.rgb[PSIMG_BGD], Ctrl->G.rgb[PSIMG_FGD]);
 			}
 			else
 				 PSL_plotcolorimage (PSL, x, y, Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y], PSL_BL, picture,

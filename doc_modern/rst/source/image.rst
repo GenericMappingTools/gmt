@@ -1,8 +1,8 @@
 .. index:: ! image
 
-*******
+*****
 image
-*******
+*****
 
 .. only:: not man
 
@@ -17,7 +17,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-D|\ *refpoint* ]
 [ |-F|\ *box* ]
-[ |-G|\ [**b**\ \|\ **f**\ \|\ **t**]\ *color* ]
+[ |-G|\ [*color*\ ][**+b**\ \|\ **+f**\ \|\ **+t**] ]
 [ |-I| ]
 [ |-J|\ *parameters* ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
@@ -107,6 +107,22 @@ Optional Arguments
     indicates the shift relative to the foreground frame
     [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
 
+.. _-G:
+
+**-G**\ [*color*\ ][**+b**\ \|\ **+f**\ \|\ **+t**]
+    Change certain pixel values to another color or make them transparent.
+    For 1-bit images you can specify an alternate *color* for the background (**+b**)
+    or the foreground (**+f**) pixels, or give no color to make those pixels
+    transparent.  Alternatively, for color images you can select a single *color*
+    that should be made transparent instead.
+
+.. _-I:
+
+**-I**
+   Invert 1-bit image before plotting. This is what is done when you
+   use **-GP** to invert patterns in other GMT plotting programs.  Ignored
+   if used with color images.
+
 .. _-J:
 
 .. |Add_-J| replace:: (Used only with **-p**)
@@ -141,31 +157,6 @@ Optional Arguments
 
 .. include:: explain_-XY.rst_
 
-The following options are for 1-bit images only. They have no effect when
-plotting other images or PostScript files.
-
-.. _-G:
-
-**-G**\ [**b**\ \|\ **f**\ \|\ **t**]\ *color*
-    **-Gb**
-        Sets background color (replace white pixel) of 1-bit images. Use -
-        for transparency (and set **-Gf** to the desired color).
-    **-Gf**
-        Sets foreground color (replace black pixel) of 1-bit images. Use -
-        for transparency (and set **-Gb** to the desired color).
-
-.. _-I:
-
-**-I**
-   Invert 1-bit image before plotting. This is what is done when you
-   use **-GP** to invert patterns in other GMT plotting programs.
-
-These options are for 8-, 24-, and 32-bit raster images only. They have
-no effect when plotting 1-bit images or PostScript files.
-
-**-Gt**
-    Assigns the color that is to be made transparent.
-
 .. |Add_perspective| replace:: (Requires **-R** and **-J** for proper functioning).
 .. include:: explain_perspective.rst_
 
@@ -173,7 +164,15 @@ no effect when plotting 1-bit images or PostScript files.
 
 .. include:: explain_help.rst_
 
-:doc:`gmt`, :doc:`legend`,
+Notes
+-----
+
+The **-G** and **-I** options are for raster images only. They have
+no effect when placing Encapsulated *PostScript* files.
+
+Examples
+--------
+
 To plot the image logo.jpg, scaling it be 1 inch wide (height is scaled
 accordingly), and outline with a thin, blue pen, use
 
@@ -196,7 +195,7 @@ to be 1 cm wide, use
 
    ::
 
-    gmt image 1_bit.ras -Gbbrown -Gfred -Dx0/0+w1c+n5 -pdf image
+    gmt image 1_bit.ras -Gbrown+b -Gred+f -Dx0/0+w1c+n5 -pdf image
 
 See Also
 --------
