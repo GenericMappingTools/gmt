@@ -17,7 +17,7 @@ Synopsis
 [ |-A|\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ]
 [ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ] [ |-E| ]
 [ |-F|\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p**\ \|\ **w** ]
-[ |-G|\ **f\|n**\ **-**\ \|\ *fill* ]
+[ |-G|\ [*color*\ ]**+f**\ \|\ **+n** ]
 [ |-I|\ *icon* ] [ **-K**]
 [ |-L|\ *col1:name1*,\ *col2:name2*,... ]
 [ |-N|\ [**t**\ \|\ *col* \ \|\ *name\_template*\ \|\ *name*] ]
@@ -132,13 +132,13 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ **f\|n**\ *fill*
-    Sets color fill (**-Gf**) or label font color (**-Gn**).
-    Fill: Set fill color for symbols, extrusions, polygons and positive anomaly
-    wiggles [Default is light orange at 75% transparency].  Optionally,
-    use **-Gf-** to turn off polygon fill.
-    Text labels: Specify color for font [Default is white]. Optionally
-    use **-Gn-** to disable labels.
+**-G**\ [*color*\ ]**+f**\ \|\ **+n**
+    Sets *color* for fill (modifier **+f**) or label font (modifier **+n**).
+    Fill sets infill color for symbols, extrusions, polygons and positive anomaly
+    wiggles [Default is light orange at 75% transparency].  Alternatively,
+    use **-G+f** to turn off such infill.
+    Text labels: Specify *color* for the font [Default is white]. Alternatively,
+    use **-G+n** to instead disable the labels.
 
 .. _-I:
 
@@ -295,7 +295,7 @@ red circle symbols, try
 
    ::
 
-    gmt 2kml mypoints.txt -Gfred -Fs > mypoints.kml
+    gmt 2kml mypoints.txt -Gred+f -Fs > mypoints.kml
 
 To convert a multisegment file with lines (lon, lat) separated by
 segment headers that contain a **-L**\ labelstring with the feature
@@ -313,7 +313,7 @@ limit, try
 
    ::
 
-    gmt 2kml mypolygons.txt -Gfyellow@50 -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
+    gmt 2kml mypolygons.txt -Gyellow@50+f -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
 
 To convert a file with point locations (lon, lat, time) into a KML file
 with green circle symbols that will go active at the specified time and
@@ -321,7 +321,7 @@ stay active going forward, try
 
    ::
 
-    awk '{print $1, $2, $3, "NaN"}' mypoints.txt | gmt 2kml -Gfgreen -Ft > mytimepoints.kml
+    awk '{print $1, $2, $3, "NaN"}' mypoints.txt | gmt 2kml -Ggreen+f -Ft > mytimepoints.kml
 
 To extract contours and labels every 10 units from the grid temp.nc and
 plot them in KML, using red lines at 75% transparency and red labels (no
@@ -331,7 +331,7 @@ transparency), try
 
     gmt grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
     gmt 2kml    contours.txt -Fl -W1p,red@75 -K > contours.kml
-    gmt 2kml    -O -Nt -Fs -Sn2 -Gnred@0 label.txt -I- >> contours.kml
+    gmt 2kml    -O -Nt -Fs -Sn2 -Gred@0+n label.txt -I- >> contours.kml
 
 To instead plot the contours as lines with colors taken from the cpt
 file contours.cpt, try
@@ -348,7 +348,7 @@ sea surface, use
 
    ::
 
-    gmt 2kml magnetics_lon_lat_mag.txt -Fw -Gforange -W2p -Ag50 -Qs50n > wiggles.kml
+    gmt 2kml magnetics_lon_lat_mag.txt -Fw -Gorange+f -W2p -Ag50 -Qs50n > wiggles.kml
 
 Limitations
 -----------
