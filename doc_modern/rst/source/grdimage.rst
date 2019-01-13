@@ -19,7 +19,7 @@ Synopsis
 [ |-C|\ *cpt* ]
 [ |-D|\ [**r**\ ] ]
 [ |-E|\ [\ **i**\ \|\ *dpi*] ] |-J|\ *parameters*
-[ |-G|\ [**f**\ \|\ **b**]\ *color* ]
+[ |-G|\ *color*\ [**+b**\ \|\ **+f**] ]
 [ |-I|\ [*intensfile*\ \|\ *intensity*\ \|\ *modifiers*] ]
 [ |-J|\ **z**\ \|\ **-Z**\ *parameters* ]
 [ |-M| ] [ |-N| ]
@@ -136,11 +136,12 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [**f**\ \|\ **b**]\ *color*
+**-G**\ *color*\ [**+b**\ \|\ **+f**]
     This option only applies when a resulting 1-bit image otherwise would
     consist of only two colors: black (0) and white (255). If so, this
     option will instead use the image as a transparent mask and paint
-    the mask with **-Gf** (or its inverse, with **-Gb**) with the given color combination.
+    the mask with the given *color*.  Append **+b** to paint the background
+    pixels (1) or **+f** for the foreground pixels [Default].
 
 .. _-I:
 
