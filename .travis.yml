@@ -38,6 +38,18 @@ addons:
             - graphicsmagick
             - python
             - python-pip
+    #homebrew:
+        #packages:
+            #- cmake
+            #- curl
+            #- netcdf
+            #- gdal
+            #- fftw
+            #- pcre2
+            #- ghostscript
+            #- curl
+            #- graphicsmagick
+            #- python
 
 # Define environment variables common to all builds
 env:
@@ -47,12 +59,12 @@ env:
         - PATH="$INSTALLDIR/bin:$PATH"
         - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
         - COVERAGE=true
-        - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
-            export BUILD_DOCS=true
-            export TEST_ALL=true
+        - if [ "$TRAVIS_EVENT_TYPE" == "cron" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then
+            export BUILD_DOCS=true;
+            export TEST_ALL=true;
           else
-            export BUILD_DOCS=false
-            export TEST_ALL=false
+            export BUILD_DOCS=false;
+            export TEST_ALL=false;
           fi
         - BUILD_DOCS=true
 
@@ -63,7 +75,7 @@ before_install:
     - bash ci/download-coastlines.sh
     # Install GMT documentation dependencies
     - if [ "$BUILD_DOCS" == "true" ]; then
-        pip install --user sphinx
+        pip install --user sphinx;
       fi
 
 # Install the package that we want to test
