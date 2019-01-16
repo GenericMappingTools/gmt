@@ -37,6 +37,7 @@ addons:
             - curl
             - graphicsmagick
             - python
+            - python-pip
             - python-sphinx
 
 # Define environment variables common to all builds
@@ -50,11 +51,11 @@ env:
         - CONDA_INSTALL_EXTRA="sphinx"
         - COVERAGE=true
         - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
-              export BUILD_DOCS=true
-              export TEST_ALL=true
+            export BUILD_DOCS=true
+            export TEST_ALL=true
           else
-              export BUILD_DOCS=false
-              export TEST_ALL=false
+            export BUILD_DOCS=false
+            export TEST_ALL=false
           fi
         - BUILD_DOCS=true
 
@@ -65,6 +66,7 @@ before_install:
     - bash ci/download-coastlines.sh
     # Install GMT documentation dependencies
     #- if [ "$BUILD_DOCS" == "true" ]; then
+        #pip install --user sphinx
         #git clone https://github.com/fatiando/continuous-integration.git;
         #source continuous-integration/travis/setup-miniconda.sh;
       #fi
@@ -78,12 +80,14 @@ install:
 script:
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
+    - cd build
     - if [ "$BUILD_DOCS" == "true" ]; then
-        cd build; make -j docs_html; cd ..;
+        make -j docs_html;
       fi
     - if [ "$TEST_ALL" == "true" ]; then
-        cd build; make -j check; cd ..;
+        make -j check;
       fi
+    - cd ..
 
 # Things to do if the build is successful
 after_success:
