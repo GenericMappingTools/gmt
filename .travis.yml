@@ -1,7 +1,12 @@
+# Configuration file for TravisCI
+
+# Use the container builds so we don't need sudo priviledges
+sudo: false
+
 language: c
 
-sudo: required
-
+# Only build pushes to select branches and tags. This avoids the double
+# builds than happen when working on a branch instead of a fork.
 branches:
     only:
         - master
@@ -12,6 +17,22 @@ branches:
 os:
     - linux
     #- osx
+
+addons:
+    # Dependencies for the Linux builds
+    apt:
+        packages:
+            - cmake
+            - build-essential
+            - libcurl4-gnutls-dev
+            - libnetcdf-dev
+            - libgdal1-dev
+            - libfftw3-dev
+            - libpcre3-dev
+            - liblapack-dev
+            - ghostscript
+            - curl
+            - graphicsmagick
 
 env:
     global:
