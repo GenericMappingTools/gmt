@@ -38,7 +38,6 @@ addons:
             - graphicsmagick
             - python
             - python-pip
-            - python-sphinx
 
 # Define environment variables common to all builds
 env:
@@ -65,11 +64,11 @@ before_install:
     - mkdir "$COASTLINEDIR"
     - bash ci/download-coastlines.sh
     # Install GMT documentation dependencies
-    #- if [ "$BUILD_DOCS" == "true" ]; then
-        #pip install --user sphinx
+    - if [ "$BUILD_DOCS" == "true" ]; then
+        pip install --user sphinx
         #git clone https://github.com/fatiando/continuous-integration.git;
         #source continuous-integration/travis/setup-miniconda.sh;
-      #fi
+      fi
 
 # Install the package that we want to test
 install:
