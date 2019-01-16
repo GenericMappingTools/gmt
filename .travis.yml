@@ -21,8 +21,8 @@ os:
 # Set the Ubuntu version for the Linux builds
 dist: xenial
 
+# Dependencies for the Linux and OSX builds
 addons:
-    # Dependencies for the Linux builds
     apt:
         packages:
             - cmake
@@ -46,8 +46,6 @@ env:
         - COASTLINEDIR="$HOME/gmt-install-dir/coast"
         - PATH="$INSTALLDIR/bin:$PATH"
         - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
-        - PYTHON=3.6
-        - CONDA_INSTALL_EXTRA="sphinx"
         - COVERAGE=true
         - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
             export BUILD_DOCS=true
@@ -66,8 +64,6 @@ before_install:
     # Install GMT documentation dependencies
     - if [ "$BUILD_DOCS" == "true" ]; then
         pip install --user sphinx
-        #git clone https://github.com/fatiando/continuous-integration.git;
-        #source continuous-integration/travis/setup-miniconda.sh;
       fi
 
 # Install the package that we want to test
