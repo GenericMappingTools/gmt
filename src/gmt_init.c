@@ -1909,6 +1909,12 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 
 #endif
 
+/* Some local macros to make the test below possible to understand */
+#define is_plus(item,k)  (item[k-1] == '+')	/* Previous char is a plus, so maybe start of modifier */
+#define is_label(item,k) (item[k] == 'c' && (item[k+1] == '+' || item[k+1] == '\0'))	/* Modifier c followed by another modifier or end of string */
+#define is_just(item,k)  (item[k] == 'j' && (strchr ("LCRBMT", item[k+1]) && strchr ("LCRBMT", item[k+2])))	/* Is +j<just> */
+#define is_off(item,k)   (item[k] == 'o' && strchr ("-+.0123456789", item[k+1]))	/* Looks like +onumber> */
+
 /*! Parse the -U option.  Full syntax: -U[<label>][+c][+j<just>][+o]<dx>/<dy>]  Old syntax was -U[[<just>]/<dx>/<dy>/][c|<label>] */
 GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 	int just = 1, error = 0;
@@ -1921,9 +1927,7 @@ GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 		int k = 1, len = (int)strlen (item);
 		char word[GMT_LEN256] = {""}, *c = NULL;
 		/* Find the first +c|j|o that looks like it may be a modifier and not random text */
-		while (k < len && !((item[k-1] == '+' && (item[k] == 'c' && (item[k+1] == '+' || item[k+1] == '\0'))) || \
-			(item[k] == 'j' && (strchr ("LCRBMT", item[k+1]) && strchr ("LCRBMT", item[k+2]))) || \
-			(item[k] == 'o' && strchr ("-+.0123456789", item[k+1])))) k++;
+		while (k < len && !(is_plus(item,k) && (is_label(item,k) || is_just(item,k) || is_off(item,k)))) k++;
 		c = &item[k-1];	/* Start of the modifier */
 		c[0] = '\0';	/* Chop off the + so we can parse the label, if any */
 		if (item[0]) strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);	/* Got a label */
