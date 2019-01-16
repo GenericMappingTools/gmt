@@ -14,10 +14,6 @@ branches:
         # Regex to build tagged commits with version numbers
         - /\d+\.\d+(\.\d+)?(\S*)?$/
 
-os:
-    - linux
-    #- osx
-
 # Set the Ubuntu version for the Linux builds
 dist: xenial
 
@@ -38,18 +34,18 @@ addons:
             - graphicsmagick
             - python
             - python-pip
-    #homebrew:
-        #packages:
-            #- cmake
-            #- curl
-            #- netcdf
-            #- gdal
-            #- fftw
-            #- pcre2
-            #- ghostscript
-            #- curl
-            #- graphicsmagick
-            #- python
+    homebrew:
+        packages:
+            - cmake
+            - curl
+            - netcdf
+            - gdal
+            - fftw
+            - pcre2
+            - ghostscript
+            - curl
+            - graphicsmagick
+            - python
 
 # Define environment variables common to all builds
 env:
@@ -59,14 +55,26 @@ env:
         - PATH="$INSTALLDIR/bin:$PATH"
         - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
         - COVERAGE=true
-        - if [ "$TRAVIS_EVENT_TYPE" == "cron" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then
-            export BUILD_DOCS=true;
-            export TEST_ALL=true;
-          else
-            export BUILD_DOCS=false;
-            export TEST_ALL=false;
-          fi
-        - BUILD_DOCS=true
+        - BUILD_DOCS=false
+        - TEST=false
+
+# Specify the build configurations. Be sure to only deploy from a single build.
+matrix:
+    include:
+        - name: "Linux"
+          os: linux
+          env:
+            - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
+                export BUILD_DOCS=true;
+                export TEST="all";
+              fi
+        - name: "Mac"
+          os: osx
+          env:
+            - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
+                export TEST="all";
+              fi
+
 
 # Setup the build environment
 before_install:
@@ -85,20 +93,20 @@ install:
 
 # Run the actual tests and checks
 script:
+    - cd build
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-    - cd build
+    - if [ "$TEST" == "all" ]; then
+        make -j check;
+      fi
     - if [ "$BUILD_DOCS" == "true" ]; then
         make -j docs_html;
-      fi
-    - if [ "$TEST_ALL" == "true" ]; then
-        make -j check;
       fi
     - cd ..
 
 # Things to do if the build is successful
 after_success:
-    - if [ "$TEST_ALL" == "true" ]; then
+    - if [ "$TEST" == "all" ]; then
         bash <(curl -s https://codecov.io/bash);
       fi
 
