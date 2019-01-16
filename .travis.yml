@@ -18,6 +18,9 @@ os:
     - linux
     #- osx
 
+# Set the Ubuntu version for the Linux builds
+dist: xenial
+
 addons:
     # Dependencies for the Linux builds
     apt:
@@ -33,6 +36,8 @@ addons:
             - ghostscript
             - curl
             - graphicsmagick
+            - python
+            - python-sphinx
 
 # Define environment variables common to all builds
 env:
@@ -51,6 +56,7 @@ env:
               export BUILD_DOCS=false
               export TEST_ALL=false
           fi
+        - BUILD_DOCS=true
 
 # Setup the build environment
 before_install:
@@ -58,10 +64,10 @@ before_install:
     - mkdir "$COASTLINEDIR"
     - bash ci/download-coastlines.sh
     # Install GMT documentation dependencies
-    - if [ "$BUILD_DOCS" == "true" ]; then
-        git clone https://github.com/fatiando/continuous-integration.git;
-        source continuous-integration/travis/setup-miniconda.sh;
-      fi
+    #- if [ "$BUILD_DOCS" == "true" ]; then
+        #git clone https://github.com/fatiando/continuous-integration.git;
+        #source continuous-integration/travis/setup-miniconda.sh;
+      #fi
 
 # Install the package that we want to test
 install:
