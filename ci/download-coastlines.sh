@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Setup TravisCI to be able to build and test GMT
+# Download and install the coastlines and boundaries datasets
 
 # To return a failure if any commands inside fail
 set -e
@@ -8,9 +8,6 @@ set -e
 EXT="tar.gz"
 GSHHG="gshhg-gmt-2.3.7"
 DCW="dcw-gmt-1.1.4"
-
-mkdir $INSTALLDIR
-mkdir $COASTLINEDIR
 
 # GSHHG (coastlines, rivers, and political boundaries):
 echo ""

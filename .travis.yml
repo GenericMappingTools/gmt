@@ -34,38 +34,54 @@ addons:
             - curl
             - graphicsmagick
 
+# Define environment variables common to all builds
 env:
     global:
         - INSTALLDIR="$HOME/gmt-install-dir"
         - COASTLINEDIR="$HOME/gmt-install-dir/coast"
         - PATH="$INSTALLDIR/bin:$PATH"
         - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
+        - PYTHON=3.6
+        - CONDA_INSTALL_EXTRA="sphinx"
+        - COVERAGE=true
         - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
-            export PYTHON=3.6
-            export CONDA_INSTALL_EXTRA="sphinx"
-            export COVERAGE=true
+              export BUILD_DOCS=true
+              export TEST_ALL=true
+          else
+              export BUILD_DOCS=false
+              export TEST_ALL=false
           fi
 
+# Setup the build environment
 before_install:
-    # Install GMT dependencies
-    - bash ci/travis-setup.sh
+    - mkdir "$INSTALLDIR"
+    - mkdir "$COASTLINEDIR"
+    - bash ci/download-coastlines.sh
     # Install GMT documentation dependencies
-    - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
+    - if [ "$BUILD_DOCS" == "true" ]; then
         git clone https://github.com/fatiando/continuous-integration.git;
         source continuous-integration/travis/setup-miniconda.sh;
       fi
 
+# Install the package that we want to test
 install:
     # Build and install GMT
-    - bash ci/travis-build.sh;
+    - bash ci/build-gmt.sh;
 
+# Run the actual tests and checks
 script:
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-    # Build documentations, tests and coverage reports
-    - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
+    - if [ "$BUILD_DOCS" == "true" ]; then
         cd build; make -j docs_html; cd ..;
+      fi
+    - if [ "$TEST_ALL" == "true" ]; then
         cd build; make -j check; cd ..;
+      fi
+
+# Things to do if the build is successful
+after_success:
+    - if [ "$TEST_ALL" == "true" ]; then
         bash <(curl -s https://codecov.io/bash);
       fi
 
