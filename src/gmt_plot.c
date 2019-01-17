@@ -2563,15 +2563,15 @@ GMT_LOCAL bool plot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CU
 
 	for (k = 0; k < 3; k++) {	/* Load up the left and 1-2 right operands */
 		switch (s->var[k]) {
-			case -3:	/* Symbol size */
+			case GMT_VAR_SIZE:	/* Symbol size */
 				arg[k] = size[0];	break;
-			case -2:	/* User y-coordinate */
+			case GMT_VAR_IS_Y:	/* User y-coordinate */
 				arg[k] = GMT->current.io.curr_rec[GMT_Y];	break;
-			case -1:	/* User x-coordinate */
+			case GMT_VAR_IS_X:	/* User x-coordinate */
 				arg[k] = GMT->current.io.curr_rec[GMT_X];	break;
-			case 0:		/* A constant */
+			case GMT_CONST_VAR:	/* A numeric constant */
 				arg[k] = s->const_val[k];	break;
-			default:	/* One of the variables 1-* */
+			default:		/* One of the variables 1-n */
 				arg[k] = size[s->var[k]];	break;
 		}
 	}

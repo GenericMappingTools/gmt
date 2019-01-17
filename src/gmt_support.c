@@ -4730,11 +4730,11 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 				if (arg[k][0] == '$') {	/* Left or right hand side value is a variable */
 					s->is_var[k] = true;
 					if (arg[k][1] == 'x' || arg[k][1] == 'X')	/* Test on x or longitude */
-						s->var[k] = -1;
+						s->var[k] = GMT_VAR_IS_X;
 					else if (arg[k][1] == 'y' || arg[k][1] == 'Y')	/* Test on y or latitude */
-						s->var[k] = -2;
+						s->var[k] = GMT_VAR_IS_Y;
 					else if (arg[k][1] == 's' || arg[k][1] == 'S')	/* Test on symbol size */
-						s->var[k] = -3;
+						s->var[k] = GMT_VAR_SIZE;
 					else
 						s->var[k] = atoi (&arg[k][1]);	/* Get the variable number $<varno> */
 					s->const_val[k] = 0.0;
@@ -4742,7 +4742,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 				else {
 					size_t len = strlen (arg[k]) - 1;
 					s->is_var[k] = false;
-					s->var[k] = 0;
+					s->var[k] = GMT_CONST_VAR;
 					s->const_val[k] = (strchr (GMT_DIM_UNITS, arg[k][len])) ? gmt_M_to_inch (GMT, arg[k]) : atof (arg[k]);	/* A constant, posibly a length unit */
 				}
 			}
