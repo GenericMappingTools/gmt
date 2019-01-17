@@ -47,7 +47,7 @@ addons:
             - graphicsmagick
             - python
 
-# Define environment variables common to all builds
+# Define environment variables and set build actions
 env:
     global:
         - INSTALLDIR="$HOME/gmt-install-dir"
@@ -58,23 +58,31 @@ env:
         - BUILD_DOCS=false
         - TEST=false
 
-# Specify the build configurations. Be sure to only deploy from a single build.
+# Create the build matrix with different jobs for each platform and cron jobs
 matrix:
     include:
         - name: "Linux"
           os: linux
+          if: type != cron
+        - name: "Linux"
+          os: linux
+          if: type = cron
           env:
-            - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
-                export BUILD_DOCS=true;
-                export TEST="all";
-              fi
+            - TEST="all"
         - name: "Mac"
           os: osx
+          if: type != cron
+        - name: "Max"
+          os: osx
+          if: type = cron
           env:
-            - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
-                export TEST="all";
-              fi
-
+            - TEST="all"
+        # Only build the docs on Linux cron jobs
+        - name: "Linux - Build docs"
+          os: linux
+          if: type = cron
+          env:
+            - BUILD_DOCS=true
 
 # Setup the build environment
 before_install:
