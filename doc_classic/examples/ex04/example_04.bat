@@ -17,7 +17,7 @@ REM
 echo GMT EXAMPLE 4 (color)
 set ps=example_04c.ps
 REM
-gmt grdimage @HI_geoid_04.nc -I+a0+nt0.75 -R195/210/18/25 -JM6.75i -p60/30 -C@geoid_04.cpt -E100 -K -X1.5i -Y1.25i -P -UL/-1.25i/-1i/"Example 04c in Cookbook" > %ps%
+gmt grdimage @HI_geoid_04.nc -I+a0+nt0.75 -R195/210/18/25 -JM6.75i -p60/30 -C@geoid_04.cpt -E100 -K -X1.5i -Y1.25i -P -U"Example 04c in Cookbook"+o-1.25i/-1i > %ps%
 gmt pscoast -R -J -p -B2 -BNEsw -Gblack -O -K >> %ps%
 gmt psscale -R -J -p -DjBC+o0/0.5i+jTC+w5i/0.3i+h -C@geoid_04.cpt -I -O -K -Bx2+l"Geoid (m)" >> %ps%
 gmt psbasemap -R -J -p -O -K -TdjBR+o0.1i+w1i+l --COLOR_BACKGROUND=red --MAP_TICK_PEN_PRIMARY=thinner,red --FONT=red >> %ps%

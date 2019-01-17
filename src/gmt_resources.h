@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2012-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 2012-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,8 +30,8 @@
  * \brief Definitions for the GMT resources (GMT_GRID, GMT_DATASET, etc...)
  */
 
-#ifndef _GMT_RESOURCES_H
-#define _GMT_RESOURCES_H
+#ifndef GMT_RESOURCES_H
+#define GMT_RESOURCES_H
 
 #define GMT_BACKWARDS_API	/* Try to be backwards compatible with API naming for now */
 
@@ -776,4 +776,4 @@ struct GMT_RESOURCE {	/* Information related to passing resources between GMT an
 	void *object;			/* Pointer to the actual GMT object */
 };
 
-#endif /* _GMT_RESOURCES_H */
+#endif /* GMT_RESOURCES_H */

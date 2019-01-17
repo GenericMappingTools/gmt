@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -46,13 +46,13 @@
 #define THIS_MODULE_NAME	"psrose"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot a polar histogram (rose, sector, windrose diagrams)"
-#define THIS_MODULE_KEYS	"<D{,CC(,ED(,>X}"
+#define THIS_MODULE_KEYS	"<D{,CC(,ED(,>X},>D),>DI@<D{,ID),CC("
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipstxy" GMT_OPT("c")
 
 struct PSROSE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A<sector_angle>[r] */
+	struct A {	/* -A<sector_angle>[+r] */
 		bool active;
 		bool rose;
 		double inc;
@@ -156,7 +156,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[r]<sector_angle>] [%s] [-C<cpt>] [-D] [-E[m|[+w]<modefile>]] [-G<fill>] [-I] [-JX<width[u]>]\n", name, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A<sector_angle>[+r]] [%s] [-C<cpt>] [-D] [-E[m|[+w]<modefile>]] [-G<fill>] [-I] [-JX<width[u]>]\n", name, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N] %s%s[-Q<alpha>]\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S] [-T] [%s]\n", GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
@@ -167,7 +167,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Sector width in degrees for sector diagram [Default is windrose];\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ar to get rose diagram.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to get rose diagram.\n");
 	GMT_Option (API, "B-");
 	if (gmt_M_showusage (API)) {
 		GMT_Message (API, GMT_TIME_NONE, "\t   The scale bar length is set to the radial gridline spacing.\n");
@@ -237,11 +237,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* Get Sector angle in degrees */
+			case 'A':	/* Get Sector angle in degrees -A<inc>[+r]*/
 				Ctrl->A.active = true;
-				if (strchr (opt->arg, 'r')) Ctrl->A.rose = true;
-				k = (opt->arg[0] == 'r') ? 1 : 0;
+				k = 0;
+				if ((c = strstr (opt->arg, "+r"))) {
+					Ctrl->A.rose = true;
+					c[0] = '\0';	/* Chop off modifier */
+				}
+				else if (strchr (opt->arg, 'r')) {	/* Old syntax -A[r]<inc> */
+					Ctrl->A.rose = true;
+					if (opt->arg[0] == 'r') k = 1;
+				}
 				Ctrl->A.inc = atof (&opt->arg[k]);
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'C':
 				if (gmt_M_compat_check (GMT, 5)) {	/* Need to check for deprecated -Cm|[+w]<modefile> option */
@@ -403,7 +411,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.inc < 0.0, "Syntax error -A option: sector width must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.value <= 0.0 || Ctrl->Q.value >= 1.0, "Syntax error -Q option: confidence level must be in 0-1 range\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Syntax error -C option: Cannot give both -C and -G\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->A.rose, "Syntax error -C option: Cannot be used with -Ar\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->A.rose, "Syntax error -C option: Cannot be used with -A+r\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->A.active, "Syntax error -C option: Requires -A\n");
 	if (!Ctrl->I.active) {
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify -JX option\n");

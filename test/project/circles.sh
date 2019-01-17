@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Another test for gmt project in generating small and great circles
 ps=circles.ps

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,8 @@
  * \brief All low-level GMT API function prototypes.
  */
 
-#ifndef _GMT_PROTOTYPES_H
-#define _GMT_PROTOTYPES_H
+#ifndef GMT_PROTOTYPES_H
+#define GMT_PROTOTYPES_H
 
 #ifdef DEBUG
 EXTERN_MSC void gmt_grd_dump (struct GMT_GRID_HEADER *header, gmt_grdfloat *grid, bool is_complex, char *txt);
@@ -202,6 +202,7 @@ EXTERN_MSC void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], ui
 EXTERN_MSC void gmt_map_basemap (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_map_clip_off (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_map_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag);
+EXTERN_MSC void gmt_BB_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag);
 EXTERN_MSC void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pen, uint64_t n, unsigned int mode);
 EXTERN_MSC void gmt_setpen (struct GMT_CTRL *GMT, struct GMT_PEN *pen);
 EXTERN_MSC void gmt_setfill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, int outline);
@@ -342,6 +343,7 @@ EXTERN_MSC void gmt_init_fill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, doub
 EXTERN_MSC int gmt_intpol (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint64_t m, double *u, double *v, int mode);
 EXTERN_MSC unsigned int gmt_inonout (struct GMT_CTRL *GMT, double x, double y, struct GMT_DATASEGMENT *S);
 EXTERN_MSC void gmt_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x, double *y);
+EXTERN_MSC void gmt_just_to_xy (struct GMT_CTRL *GMT, int justify,double *x, double *y);
 EXTERN_MSC struct GMT_REFPOINT *gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg, char option);
 EXTERN_MSC void gmt_set_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *A);
 EXTERN_MSC void gmt_free_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT **Ap);
@@ -655,4 +657,4 @@ EXTERN_MSC double gmt_grd_mad (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct 
 EXTERN_MSC double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W, double *mode, bool overwrite);
 EXTERN_MSC void gmt_get_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 
-#endif /* _GMT_PROTOTYPES_H */
+#endif /* GMT_PROTOTYPES_H */

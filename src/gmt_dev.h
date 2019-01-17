@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,8 +43,8 @@
  */
 
 #pragma once
-#ifndef _GMT_DEV_H
-#define _GMT_DEV_H
+#ifndef GMT_DEV_H
+#define GMT_DEV_H
 
 #ifdef __cplusplus	/* Basic C++ support */
 extern "C" {
@@ -176,4 +176,4 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 }
 #endif
 
-#endif  /* !_GMT_DEV_H */
+#endif  /* !GMT_DEV_H */

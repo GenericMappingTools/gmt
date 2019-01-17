@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Plot error bars and test [c+l|f]+p<epen>
 

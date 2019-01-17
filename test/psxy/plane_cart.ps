@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v5.3.4_r17749 [64-bit] Document from psxy
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Apr  1 11:05:55 2017
+%%CreationDate: Thu Dec  6 10:51:49 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -657,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-0.7/0.7/-0.7/0.7 -JX7c -Skplane_c/5c -P -N -W2p,red -Gred -Bag0.5 -BWSne q3.txt -K
+%@GMT: gmt psxy -R-0.7/0.7/-0.7/0.7 -JX7c -Sk/Users/pwessel/GMTdev/gmt-dev/test/psxy/plane_c/5c -P -N -W2p,red -Gred -Bag0.5 -BWSne q3.txt -K
 %@PROJ: xy -0.70000000 0.70000000 -0.70000000 0.70000000 -0.700 0.700 -0.700 0.700 +xy
+%GMTBoundingBox: 72 72 198.425 198.425
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -674,19 +684,19 @@ O0
 V
 {1 0 0 C} FS
 O1
-/PSL_symbol_plane_c_setfont_0 { PSL_font_encode 2 get 0 eq {Standard+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if 472 F2 } def
-/PSL_symbol_plane_c_setfont_1 { 472 F2 } def
-/PSL_symbol_plane_c_setfont_2 { 472 F2 } def
-/PSL_symbol_plane_c_setfont_3 { 472 F2 } def
+/PSL_symbol_plane_c_setfont_0 { PSL_font_encode 2 get 0 eq {Standard+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if F2 } def
+/PSL_symbol_plane_c_setfont_1 { F2 } def
+/PSL_symbol_plane_c_setfont_2 { F2 } def
+/PSL_symbol_plane_c_setfont_3 { F2 } def
 V 1654 1654 T
 0 A
 1 0 0 C
-PSL_symbol_plane_c_setfont_0
+472 PSL_symbol_plane_c_setfont_0
 -1181 1181 M 472 F2
-(30\312) mc Z
-210 R
-1181 0 0 S-
-295 0 -295 Sy
+(30\217) mc Z
+-240 R
+1181 0 0 Sy
+295 295 0 S-
 U
 U
 25 W
@@ -723,13 +733,13 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 /PSL_AH0 0
 /MM {neg exch M} def
 200 F0
-(-0.5) sw mx
+(”0.5) sw mx
 (0.0) sw mx
 (0.5) sw mx
 def
 /PSL_A0_y PSL_A0_y 83 add def
 472 PSL_A0_y MM
-(-0.5) mr Z
+(”0.5) mr Z
 1654 PSL_A0_y MM
 (0.0) mr Z
 2835 PSL_A0_y MM
@@ -757,13 +767,13 @@ N 1654 0 M 0 -83 D S
 N 2835 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-0.5) sh mx
+(”0.5) sh mx
 (0.0) sh mx
 (0.5) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 472 PSL_A0_y MM
-(-0.5) bc Z
+(”0.5) bc Z
 1654 PSL_A0_y MM
 (0.0) bc Z
 2835 PSL_A0_y MM
@@ -788,7 +798,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R-0.7/0.7/-0.7/0.7 -JX7c -O -K -F+f10p+cBL -Gwhite -Dj0.2c
+%@GMT: gmt pstext -R-0.7/0.7/-0.7/0.7 -JX7c -O -K -F+f10p+cBL -Gwhite -Dj0.2c
 %@PROJ: xy -0.70000000 0.70000000 -0.70000000 0.70000000 -0.700 0.700 -0.700 0.700 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -799,19 +809,20 @@ clipsave
 3307 0 D
 0 3307 D
 -3307 0 D
+P
 PSL_clip N
 4 W
 {1 A} FS
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V
-V MU 0 0 M 167 F12 (a) FP 167 F0 ( = 240\312) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 167 F12 (a) FP 167 F0 ( = 240\217) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 25 def
 /PSL_dy 25 def
 94 94 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
 94 94 M 167 F12 (a) Z
-167 F0 ( = 240\312) Z
+167 F0 ( = 240\217) Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -820,7 +831,7 @@ O0
 0 4724 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-0.7/0.7/-0.7/0.7 -JX7c -Skplane_c/5c -O -N -W2p,red -Gred -Bag0.5 -BWSne q4.txt -K -Y10c
+%@GMT: gmt psxy -R-0.7/0.7/-0.7/0.7 -JX7c -Sk/Users/pwessel/GMTdev/gmt-dev/test/psxy/plane_c/5c -O -N -W2p,red -Gred -Bag0.5 -BWSne q4.txt -K -Y10c
 %@PROJ: xy -0.70000000 0.70000000 -0.70000000 0.70000000 -0.700 0.700 -0.700 0.700 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -831,19 +842,19 @@ O0
 V
 {1 0 0 C} FS
 O1
-/PSL_symbol_plane_c_setfont_0 { PSL_font_encode 2 get 0 eq {Standard+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if 472 F2 } def
-/PSL_symbol_plane_c_setfont_1 { 472 F2 } def
-/PSL_symbol_plane_c_setfont_2 { 472 F2 } def
-/PSL_symbol_plane_c_setfont_3 { 472 F2 } def
+/PSL_symbol_plane_c_setfont_0 { PSL_font_encode 2 get 0 eq {Standard+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if F2 } def
+/PSL_symbol_plane_c_setfont_1 { F2 } def
+/PSL_symbol_plane_c_setfont_2 { F2 } def
+/PSL_symbol_plane_c_setfont_3 { F2 } def
 V 1654 1654 T
 0 A
 1 0 0 C
-PSL_symbol_plane_c_setfont_0
+472 PSL_symbol_plane_c_setfont_0
 1181 1181 M 472 F2
-(30\312) mc Z
-120 R
-1181 0 0 S-
-295 0 -295 Sy
+(30\217) mc Z
+-330 R
+1181 0 0 Sy
+295 295 0 S-
 U
 U
 25 W
@@ -880,13 +891,13 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 /PSL_AH0 0
 /MM {neg exch M} def
 200 F0
-(-0.5) sw mx
+(”0.5) sw mx
 (0.0) sw mx
 (0.5) sw mx
 def
 /PSL_A0_y PSL_A0_y 83 add def
 472 PSL_A0_y MM
-(-0.5) mr Z
+(”0.5) mr Z
 1654 PSL_A0_y MM
 (0.0) mr Z
 2835 PSL_A0_y MM
@@ -914,13 +925,13 @@ N 1654 0 M 0 -83 D S
 N 2835 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-0.5) sh mx
+(”0.5) sh mx
 (0.0) sh mx
 (0.5) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 472 PSL_A0_y MM
-(-0.5) bc Z
+(”0.5) bc Z
 1654 PSL_A0_y MM
 (0.0) bc Z
 2835 PSL_A0_y MM
@@ -945,7 +956,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R-0.7/0.7/-0.7/0.7 -JX7c -O -K -F+f10p+cBL -Gwhite -Dj0.2c
+%@GMT: gmt pstext -R-0.7/0.7/-0.7/0.7 -JX7c -O -K -F+f10p+cBL -Gwhite -Dj0.2c
 %@PROJ: xy -0.70000000 0.70000000 -0.70000000 0.70000000 -0.700 0.700 -0.700 0.700 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -956,19 +967,20 @@ clipsave
 3307 0 D
 0 3307 D
 -3307 0 D
+P
 PSL_clip N
 4 W
 {1 A} FS
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V
-V MU 0 0 M 167 F12 (a) FP 167 F0 ( = 330\312) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 167 F12 (a) FP 167 F0 ( = 330\217) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 25 def
 /PSL_dy 25 def
 94 94 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
 94 94 M 167 F12 (a) Z
-167 F0 ( = 330\312) Z
+167 F0 ( = 330\217) Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -977,7 +989,7 @@ O0
 4252 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-0.7/0.7/-0.7/0.7 -JX7c -Skplane_c/5c -O -N -W2p,red -Gred -Bag0.5 -BWSne q1.txt -K -X9c
+%@GMT: gmt psxy -R-0.7/0.7/-0.7/0.7 -JX7c -Sk/Users/pwessel/GMTdev/gmt-dev/test/psxy/plane_c/5c -O -N -W2p,red -Gred -Bag0.5 -BWSne q1.txt -K -X9c
 %@PROJ: xy -0.70000000 0.70000000 -0.70000000 0.70000000 -0.700 0.700 -0.700 0.700 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
@@ -988,19 +1000,19 @@ O0
 V
 {1 0 0 C} FS
 O1
-/PSL_symbol_plane_c_setfont_0 { PSL_font_encode 2 get 0 eq {Standard+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if 472 F2 } def
-/PSL_symbol_plane_c_setfont_1 { 472 F2 } def
-/PSL_symbol_plane_c_setfont_2 { 472 F2 } def
-/PSL_symbol_plane_c_setfont_3 { 472 F2 } def
+/PSL_symbol_plane_c_setfont_0 { PSL_font_encode 2 get 0 eq {Standard+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if F2 } def
+/PSL_symbol_plane_c_setfont_1 { F2 } def
+/PSL_symbol_plane_c_setfont_2 { F2 } def
+/PSL_symbol_plane_c_setfont_3 { F2 } def
 V 1654 1654 T
 0 A
 1 0 0 C
-PSL_symbol_plane_c_setfont_0
+472 PSL_symbol_plane_c_setfont_0
 1181 -1181 M 472 F2
-(30\312) mc Z
-30 R
-1181 0 0 S-
-295 0 -295 Sy
+(30\217) mc Z
+-60 R
+1181 0 0 Sy
+295 295 0 S-
 U
 U
 25 W
@@ -1037,13 +1049,13 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 /PSL_AH0 0
 /MM {neg exch M} def
 200 F0
-(-0.5) sw mx
+(”0.5) sw mx
 (0.0) sw mx
 (0.5) sw mx
 def
 /PSL_A0_y PSL_A0_y 83 add def
 472 PSL_A0_y MM
-(-0.5) mr Z
+(”0.5) mr Z
 1654 PSL_A0_y MM
 (0.0) mr Z
 2835 PSL_A0_y MM
@@ -1071,13 +1083,13 @@ N 1654 0 M 0 -83 D S
 N 2835 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-0.5) sh mx
+(”0.5) sh mx
 (0.0) sh mx
 (0.5) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 472 PSL_A0_y MM
-(-0.5) bc Z
+(”0.5) bc Z
 1654 PSL_A0_y MM
 (0.0) bc Z
 2835 PSL_A0_y MM
@@ -1102,7 +1114,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R-0.7/0.7/-0.7/0.7 -JX7c -O -K -F+f10p+cBL -Gwhite -Dj0.2c
+%@GMT: gmt pstext -R-0.7/0.7/-0.7/0.7 -JX7c -O -K -F+f10p+cBL -Gwhite -Dj0.2c
 %@PROJ: xy -0.70000000 0.70000000 -0.70000000 0.70000000 -0.700 0.700 -0.700 0.700 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
@@ -1113,19 +1125,20 @@ clipsave
 3307 0 D
 0 3307 D
 -3307 0 D
+P
 PSL_clip N
 4 W
 {1 A} FS
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V
-V MU 0 0 M 167 F12 (a) FP 167 F0 ( = 60\312) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 167 F12 (a) FP 167 F0 ( = 60\217) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 25 def
 /PSL_dy 25 def
 94 94 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
 94 94 M 167 F12 (a) Z
-167 F0 ( = 60\312) Z
+167 F0 ( = 60\217) Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1134,7 +1147,7 @@ O0
 0 -4724 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-0.7/0.7/-0.7/0.7 -JX7c -Skplane_c/5c -O -N -W2p,red -Gred -Bag0.5 -BWSne q2.txt -K -Y-10c
+%@GMT: gmt psxy -R-0.7/0.7/-0.7/0.7 -JX7c -Sk/Users/pwessel/GMTdev/gmt-dev/test/psxy/plane_c/5c -O -N -W2p,red -Gred -Bag0.5 -BWSne q2.txt -K -Y-10c
 %@PROJ: xy -0.70000000 0.70000000 -0.70000000 0.70000000 -0.700 0.700 -0.700 0.700 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
@@ -1145,19 +1158,19 @@ O0
 V
 {1 0 0 C} FS
 O1
-/PSL_symbol_plane_c_setfont_0 { PSL_font_encode 2 get 0 eq {Standard+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if 472 F2 } def
-/PSL_symbol_plane_c_setfont_1 { 472 F2 } def
-/PSL_symbol_plane_c_setfont_2 { 472 F2 } def
-/PSL_symbol_plane_c_setfont_3 { 472 F2 } def
+/PSL_symbol_plane_c_setfont_0 { PSL_font_encode 2 get 0 eq {Standard+_Encoding /Helvetica-Oblique /Helvetica-Oblique PSL_reencode PSL_font_encode 2 1 put} if F2 } def
+/PSL_symbol_plane_c_setfont_1 { F2 } def
+/PSL_symbol_plane_c_setfont_2 { F2 } def
+/PSL_symbol_plane_c_setfont_3 { F2 } def
 V 1654 1654 T
 0 A
 1 0 0 C
-PSL_symbol_plane_c_setfont_0
+472 PSL_symbol_plane_c_setfont_0
 -1181 -1181 M 472 F2
-(30\312) mc Z
-300 R
-1181 0 0 S-
-295 0 -295 Sy
+(30\217) mc Z
+-150 R
+1181 0 0 Sy
+295 295 0 S-
 U
 U
 25 W
@@ -1194,13 +1207,13 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 /PSL_AH0 0
 /MM {neg exch M} def
 200 F0
-(-0.5) sw mx
+(”0.5) sw mx
 (0.0) sw mx
 (0.5) sw mx
 def
 /PSL_A0_y PSL_A0_y 83 add def
 472 PSL_A0_y MM
-(-0.5) mr Z
+(”0.5) mr Z
 1654 PSL_A0_y MM
 (0.0) mr Z
 2835 PSL_A0_y MM
@@ -1228,13 +1241,13 @@ N 1654 0 M 0 -83 D S
 N 2835 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-0.5) sh mx
+(”0.5) sh mx
 (0.0) sh mx
 (0.5) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 472 PSL_A0_y MM
-(-0.5) bc Z
+(”0.5) bc Z
 1654 PSL_A0_y MM
 (0.0) bc Z
 2835 PSL_A0_y MM
@@ -1259,7 +1272,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R-0.7/0.7/-0.7/0.7 -JX7c -O -K -F+f10p+cBL -Gwhite -Dj0.2c
+%@GMT: gmt pstext -R-0.7/0.7/-0.7/0.7 -JX7c -O -K -F+f10p+cBL -Gwhite -Dj0.2c
 %@PROJ: xy -0.70000000 0.70000000 -0.70000000 0.70000000 -0.700 0.700 -0.700 0.700 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
@@ -1270,19 +1283,20 @@ clipsave
 3307 0 D
 0 3307 D
 -3307 0 D
+P
 PSL_clip N
 4 W
 {1 A} FS
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V
-V MU 0 0 M 167 F12 (a) FP 167 F0 ( = 150\312) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
+V MU 0 0 M 167 F12 (a) FP 167 F0 ( = 150\217) FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef /PSL_dim_w PSL_dim_x1 PSL_dim_x0 add def U
 /PSL_dx 25 def
 /PSL_dy 25 def
 94 94 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb
 U
 94 94 M 167 F12 (a) Z
-167 F0 ( = 150\312) Z
+167 F0 ( = 150\217) Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1291,13 +1305,17 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-0.7/0.7/-0.7/0.7 -JX7c -O -T
+%@GMT: gmt psxy -R-0.7/0.7/-0.7/0.7 -JX7c -O -T
 %@PROJ: xy -0.70000000 0.70000000 -0.70000000 0.70000000 -0.700 0.700 -0.700 0.700 +xy
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

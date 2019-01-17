@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing vertical psscale panel sizing if -+e +n and reverse scale.
 ps=versclpanel.ps
 gmt set FONT_ANNOT_PRIMARY 9p,Helvetica,black

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=stairs.ps
 # Original x-y curve
 gmt psxy -R1990T/2017T/-50/100 -JX6iT/2.75i -P -Bxa5Yf1Y -Byafg1000 -BWsNe -W1p @stairs.txt -K -X1.25i -Y7i > $ps

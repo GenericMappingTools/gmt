@@ -29,7 +29,7 @@ PostScript code is written to stdout.
 #define THIS_MODULE_PURPOSE	"Plot focal mechanisms on maps"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehit" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehipt" GMT_OPT("c")
 
 #define DEFAULT_FONTSIZE	9.0	/* In points */
 #define DEFAULT_OFFSET		3.0	/* In points */
@@ -48,7 +48,7 @@ PostScript code is written to stdout.
 /* Control structure for psmeca */
 
 struct PSMECA_CTRL {
-	struct C {	/* -C[<pen>][P<pointsize>] */
+	struct C {	/* -C[<pen>][+s<pointsize>] */
 		bool active;
 		double size;
 		struct GMT_PEN pen;
@@ -174,11 +174,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]] [%s]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<pen>][P<pointsize>]] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] %s[-L<pen>] [-M]\n", GMT_K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<pen>][+s<pointsize>]] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] %s[-L<pen>] [-M]\n", GMT_K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fa[<size>[/<Psymbol>[<Tsymbol>]]] [-Fe<fill>] [-Fg<fill>] [-Fo] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] [-Fz[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] %s%s[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>]\n", GMT_O_OPT, GMT_P_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<cpt>]\n", GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t[%s]\n\t[%s] [%s] [%s]\n\n", GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -188,7 +188,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Offset focal mechanisms to the latitude and longitude specified in the last two columns of the input file before label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default pen attributes are set by -W.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A line is plotted between both positions.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   A small circle is plotted at the initial location. Add P<pointsize> to change the size of the circle.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   A small circle is plotted at the initial location. Append +s<pointsize> to change the size of the circle.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Plot events between <depmin> and <depmax> deep.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set color used for extensive parts [default is white].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets various attributes of symbols depending on <mode>:\n");
@@ -246,7 +246,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use CPT to assign colors based on depth-value in 3rd column.\n");
-	GMT_Option (API, "X,di,e,h,i,t,:,.");
+	GMT_Option (API, "X,di,e,h,i,p,t,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -278,8 +278,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 				Ctrl->C.active = true;
 				if (!opt->arg[0]) break;
 				strncpy (txt, opt->arg, GMT_LEN256-1);
-				if ((p = strchr (txt, 'P')) != NULL) Ctrl->C.size = gmt_M_to_inch (GMT, (p+1));
-				if (txt[0] != 'P') {	/* Have a pen up front */
+				if ((p = strstr (txt, "+s")) != NULL) Ctrl->C.size = gmt_M_to_inch (GMT, (p+2));
+				else if ((p = strchr (txt, 'P')) != NULL) Ctrl->C.size = gmt_M_to_inch (GMT, (p+1));
+				if (txt[0] != 'P' && strncmp (txt, "+s", 2U)) {	/* Have a pen up front */
 					if (p) p[0] = '\0';
 					if (gmt_getpen (GMT, txt, &Ctrl->C.pen)) {
 						gmt_pen_syntax (GMT, 'C', " ", 0);
@@ -554,6 +555,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
@@ -570,11 +572,11 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		last = 13;
 	else if (Ctrl->S.readmode == READ_TENSOR)
 		last = 10;
-		
+
 	if (Ctrl->O2.active) Ctrl->S.n_cols--;	/* No depth */
 
 	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);
-	
+
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
 	}
@@ -833,6 +835,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 	PSL_setdash (PSL, NULL, 0);
 	gmt_map_basemap (GMT);
+	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 
 	Return (GMT_NOERROR);

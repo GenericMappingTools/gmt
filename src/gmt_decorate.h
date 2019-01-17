@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
  * \brief Structures and variables needed for decorating lines.
  */
 
-#ifndef _GMT_DECORATE_H
-#define _GMT_DECORATE_H
+#ifndef GMT_DECORATE_H
+#define GMT_DECORATE_H
 
 /*! Various settings for symbol placements along lines */
 enum GMT_enum_decorate {
@@ -77,4 +77,4 @@ struct GMT_DECORATE {
 	struct GMT_XOVER XC;		/* Structure with resulting crossovers */
 };
 
-#endif /* _GMT_DECORATE_H */
+#endif /* GMT_DECORATE_H */

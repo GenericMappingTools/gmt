@@ -16,9 +16,9 @@ Synopsis
 **gmt convert** [ *table* ] [ |-A| ] [ |-C|\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]]
 [ |-D|\ [*template*\ [**+o**\ *orig*]] ]
 [ |-E|\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **M**\ *stride*] ] [ |-L| ]
-[ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][*refpoint*] ]
+[ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][**a**\ \|\ **f**\ \|\ **s**\ \|\ **r**\ \|\ *refpoint*] ]
 [ |-I|\ [**tsr**] ]
-[ |-N|\ [**-** \|\ **+**\ ]\ *col* ]
+[ |-N|\ *col*\ [**+a** \|\ **d**\ ] ]
 [ |-Q|\ [**~**]\ *selection*]
 [ |-S|\ [**~**]\ *"search string"* \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
 [ |-T|\ [**h**\ \|\ **d**\ ] ]
@@ -115,7 +115,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][*refpoint*]
+**-F**\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][**a**\ \|\ **f**\ \|\ **s**\ \|\ **r**\ \|\ *refpoint*]
     Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
     Append one of four line connection schemes:
     **c**\ : Form continuous line segments for each group [Default].
@@ -153,10 +153,10 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**-** \|\ **+**\ ]\ *col*
+**-N**\ *col*\ [**+a** \|\ **d**\ ]
     Numerically sort each segment based on values in column *col*.
     The data records will be sorted such that the chosen column will
-    fall into ascending order [Default].  Give a negative column number
+    fall into ascending order [**+a**\ , which is Default].  Append **+d**
     to sort into descending order instead.  The **-N** option can be
     combined with any other ordering scheme except **-F** (segmentation)
     and is applied at the end.

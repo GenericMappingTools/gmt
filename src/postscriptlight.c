@@ -604,6 +604,88 @@ static void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, si
 	return (tmp);
 }
 
+/* Things to do with UTF8 */
+
+/* Try to convert UTF-8 accented characters to PostScriptLight octal codes.
+ * This depends on which character set we have.  We will limit this to just
+ * Standard, Standard+, ISOILatin1, and ISOLatin1+. Of these, Standard will
+ * only work for some of the encoded letters while the three others should
+ * all be fine. We also handle the differences bewteen hyphens and minus symbol.
+ * In ISOLatin1 the hyphen key on the keyboard results in a minus sign while
+ * in Standard it gives a hyphen.  In GMT we want minus signs in annotations
+ * contours and other numerical negative values.  We assume that if a string
+ * begins with a hyphen then a minus sign is implied.  Likewise, if a hyphen
+ * is found later on in the string we assume it is a hyphen and under ISOLatin1
+ * we must insert the octal code for the hyphen (0255). */
+
+
+static unsigned int psl_ut8_code_to_ISOLatin (char code) {
+	/* This is called when the previous character in a string has octal 0303 */
+	unsigned int kode = (unsigned char)code;
+
+	return (kode >= 0200 && kode <= 0277) ? kode += 64 : 0;
+}
+
+static void psl_fix_utf8 (struct PSL_CTRL *PSL, char *in_string) {
+	/* Given in_string check if UTF8 characters are present and if so replace with PSL octal codes.  Assumes ISOLatin1+ */
+	unsigned int k, kout, use, utf8_codes = 0;
+	char *out_string = NULL;
+
+	if (!strncmp (PSL->init.encoding, "Standard+", 9U)) {	/* For Standard+ encoding we need to swap leading minus values encoded as hyphen with the actual minus symbol */
+		if (in_string[0] == 0055)	/* Found leading hyphen which we interpret to be a minus sign */
+			in_string[0] = 0224;	/* Minus is octal 224 in Standard+ but not present in just Standard */
+	}
+	if (strncmp (PSL->init.encoding, "ISOLatin1", 9U)) return;	/* Do nothing unless ISOLatin[+] */
+
+	for (k = 0; in_string[k]; k++) {
+		if ((unsigned char)(in_string[k]) == 0303 || (unsigned char)(in_string[k]) == 0305)
+			utf8_codes++;	/* Count them up */
+		else if (in_string[k] == 0055 && k && in_string[k-1] != '@')	/* A hyphen needs something before it (k > 0) unlike a negative number (but watch out for @- for subscript) */
+			in_string[k] = 0255;	/* Hyphen is octal 255 in ISOLatin1 */
+	}
+	if (utf8_codes == 0) return;	/* Nothing to do */
+
+	out_string = PSL_memory (PSL, NULL, strlen(in_string), char);	/* Get a new string of same length */
+	
+	for (k = kout = 0; in_string[k]; k++) {
+		if ((unsigned char)(in_string[k]) == 0303) {    /* Found octal 303 */
+			k++;	/* Skip the control code */
+			if ((use = psl_ut8_code_to_ISOLatin (in_string[k])))       /* Found a 2-char utf8 combo, replace with single octal code from our table */
+				out_string[kout++] = use;
+			else {    /* Not a recognized code - just output both as they were given */
+				out_string[kout++] = in_string[k-1];
+				out_string[kout++] = in_string[k];
+			}
+		}
+		else if ((unsigned char)(in_string[k]) == 0305) {    /* Found Ydieresis, ae, AE, L&l-slash and the S,Z,s,z carons */
+			k++;	/* Skip the control code */
+			switch ((unsigned char)in_string[k]) {	/* These 9 chars are placed all over the table so must have individual cases */
+				case 0201: use = 0203; break;	/* Lslash */
+				case 0202: use = 0213; break;	/* lslash */
+				case 0222: use = 0200; break;	/* ae */
+				case 0223: use = 0210; break;	/* AE */
+				case 0240: use = 0206; break;	/* Scaron */
+				case 0241: use = 0177; break;	/* scaron */
+				case 0270: use = 0211; break;	/* Ydieresis */
+				case 0275: use = 0212; break;	/* Zcaron */
+				case 0276: use = 0037; break;	/* zcaron */
+				default:   use = 0;    break;	/* Not one of the recognized ones in our table */
+			}
+			if (use)	/* Found a 2-char utf8 combo */
+				out_string[kout++] = use;
+			else  {    /* Not a recognized code - just output both as they were given */
+				out_string[kout++] = in_string[k-1];
+				out_string[kout++] = in_string[k];
+			}
+		}
+		else    /* Just output char as was given */
+			out_string[kout++] = in_string[k];
+	}
+	memset (in_string, 0, strlen (in_string));		/* Set old in_string to NULL */
+	strncpy (in_string, out_string, strlen (out_string));	/* Overwrite old string with possibly adjusted string */
+	PSL_free (out_string);
+}
+
 /* This one is NOT static since needed in psimage, at least for now */
 
 unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, size_t *nbytes, unsigned char *input) {
@@ -775,8 +857,12 @@ void psl_set_int_array (struct PSL_CTRL *PSL, const char *prefix, int *array, in
 
 void psl_set_txt_array (struct PSL_CTRL *PSL, const char *prefix, char *array[], int n) {
 	int i;
+	char *outtext = NULL;
 	PSL_command (PSL, "/PSL_%s [\n", prefix);
-	for (i = 0; i < n; i++) PSL_command (PSL, "\t(%s)\n", array[i]);
+	for (i = 0; i < n; i++) {
+		outtext = psl_prepare_text (PSL, array[i]);	/* Expand escape codes and fix utf-8 characters */
+		PSL_command (PSL, "\t(%s)\n", outtext);
+	}
 	PSL_command (PSL, "] def\n", n);
 }
 
@@ -1352,13 +1438,13 @@ static int psl_encodefont (struct PSL_CTRL *PSL, int font_no) {
 	return (PSL_NO_ERROR);
 }
 
-static char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
+char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 
 /*	Adds escapes for misc parenthesis, brackets etc.
 	Will also translate to some European characters such as the @a, @e
 	etc escape sequences. Calling function must REMEMBER to free memory
 	allocated by string */
-	const char *psl_scandcodes[15][5] = {	/* Short-hand conversion for some European characters in both Undefined [0], Standard [1], Standard+ [2], ISOLatin1 [3], and ISOLatin1+ [4] encoding */
+	const char *psl_scandcodes[16][5] = {	/* Short-hand conversion for some European characters in both Undefined [0], Standard [1], Standard+ [2], ISOLatin1 [3], and ISOLatin1+ [4] encoding */
 		{ "AA", "AA"   , "\\375", "\\305", "\\305"},	/* Aring */
 		{ "AE", "\\341", "\\341", "\\306", "\\306"},	/* AE */
 		{ "OE", "\\351", "\\351", "\\330", "\\330"},	/* Oslash */
@@ -1373,10 +1459,11 @@ static char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 		{ "ss", "\\373", "\\373", "\\337", "\\337"},	/* germandbls */
 		{ "u" , "ue"   , "\\370", "\\374", "\\374"},	/* udieresis */
 		{ "i" , "i"    , "\\354", "\\355", "\\355"},	/* iaccute */
-		{ "@" , "\\100", "\\100", "\\100", "\\100"}	/* atsign */
+		{ "@" , "\\100", "\\100", "\\100", "\\100"},	/* atsign */
+		{ "*" , "\\312", "\\217", "\\260", "\\260"}	/* degree */
 	};
 	char *string = NULL;
-	int i=0, j=0, font;
+	int i = 0, j = 0, font;
 	int he = 0;		/* PSL Historical Encoding (if any) */
 
 	if (!text) return NULL;
@@ -1457,6 +1544,10 @@ static char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 					strcat (string, psl_scandcodes[14][he]);
 					j += (int)strlen(psl_scandcodes[14][he]); i++;
 					break;
+				case '.':
+					strcat (string, psl_scandcodes[15][he]);
+					j += (int)strlen(psl_scandcodes[15][he]); i++;
+					break;
 				case '%':	/* Font switcher */
 					if (isdigit ((int)text[i+1])) {	/* Got a font */
 						font = atoi (&text[i+1]);
@@ -1497,6 +1588,9 @@ static char *psl_prepare_text (struct PSL_CTRL *PSL, char *text) {
 			}
 		}
 	}
+	
+	psl_fix_utf8 (PSL, string);
+	
 	return (string);
 }
 
@@ -2606,32 +2700,32 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				PSL_command (PSL, "U\n");
 				break;
 			case PSL_VEC_TAIL:
-				xx[0] = xp - tailwidth - off[PSL_BEGIN]; yy[0] = -yshift[PSL_END];	n = 1;	/* Vector tip */
+				xx[0] = xp - tailwidth - off[PSL_END]; yy[0] = -yshift[PSL_END];	n = 1;	/* Vector tip */
 				if (asymmetry[PSL_END] != +1) {	/* Need left side */
-					xx[n] = xp - tailwidth + FIN_SLANT_COS * headwidth - off[PSL_BEGIN]; yy[n++] = -FIN_HEIGHT_SCALE * headwidth;
+					xx[n] = xp - tailwidth + FIN_SLANT_COS * headwidth - off[PSL_END]; yy[n++] = -FIN_HEIGHT_SCALE * headwidth;
 					xx[n] = xx[n-1] + FIN_LENGTH_SCALE * headlength; yy[n++] = -FIN_HEIGHT_SCALE * headwidth;
 				}
-				xx[n] = xp - tailwidth + FIN_LENGTH_SCALE * headlength - off[PSL_BEGIN]; yy[n++] = -yshift[PSL_END];
+				xx[n] = xp - tailwidth + FIN_LENGTH_SCALE * headlength - off[PSL_END]; yy[n++] = -yshift[PSL_END];
 				if (asymmetry[PSL_END] != -1) {	/* Need right side */
-					xx[n] = xp - tailwidth + FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - off[PSL_BEGIN]; yy[n++] = FIN_HEIGHT_SCALE * headwidth;
+					xx[n] = xp - tailwidth + FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - off[PSL_END]; yy[n++] = FIN_HEIGHT_SCALE * headwidth;
 					xx[n] = xx[n-1] - FIN_LENGTH_SCALE * headlength; yy[n++] = FIN_HEIGHT_SCALE * headwidth;
 				}
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
 				PSL_command (PSL, "P clip %s %s ", dump[fill], line[outline]);
 				if (asymmetry[PSL_END] == 0) {	/* Draw feather center */
 					PSL_command (PSL, "V 0 W ");
-					xx[1] = xp - tailwidth + headlength - off[PSL_BEGIN]; yy[1] = -yshift[PSL_END];
+					xx[1] = xp - tailwidth + headlength - off[PSL_END]; yy[1] = -yshift[PSL_END];
 					PSL_plotsegment (PSL, xx[0], yy[0], xx[1], yy[1]);				/* Draw vector line body */
 					PSL_command (PSL, "U\n");
 				}
 				break;
 			case PSL_VEC_TAIL_PLAIN:
 				n = 0;
-				if (asymmetry[PSL_BEGIN] != +1) {	/* Need left side */
+				if (asymmetry[PSL_END] != +1) {	/* Need left side */
 					xx[n] = xp + headlength; yy[n++] = -headwidth;
 				}
-				xx[n] = xp; yy[n++] = -yshift[PSL_BEGIN];	/* Vector tip */
-				if (asymmetry[PSL_BEGIN] != -1) {	/* Need right side */
+				xx[n] = xp; yy[n++] = -yshift[PSL_END];	/* Vector tip */
+				if (asymmetry[PSL_END] != -1) {	/* Need right side */
 					xx[n] = xp + headlength; yy[n++] = headwidth;
 				}
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Set up path */

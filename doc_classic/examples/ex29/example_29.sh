@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 29
 #
 # Purpose:	Illustrates spherical surface gridding with Green's function of splines

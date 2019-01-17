@@ -1,8 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #
 # Seung-Sep Kim, Chungnam National University, Daejeon, South Korea [seungsep@cnu.kr]
-# $Revision$    $Date$
 
 # This is a template script showing the steps for DiM-based
 # regional-residual separation.

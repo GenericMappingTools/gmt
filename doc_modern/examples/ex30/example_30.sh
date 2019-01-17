@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 30
 #
 # Purpose:	Show graph mode and math angles
@@ -8,7 +8,7 @@
 # Draw generic x-y axes with arrows
 ps=example_30.ps
 
-gmt psbasemap -R0/360/-1.25/1.75 -JX8i/6i -Bx90f30+u"\\312" -By1g10 -BWS+t"Two Trigonometric Functions" \
+gmt psbasemap -R0/360/-1.25/1.75 -JX8i/6i -Bx90f30+u@. -By1g10 -BWS+t"Two Trigonometric Functions" \
 	-K --MAP_FRAME_TYPE=graph --MAP_VECTOR_SHAPE=0.5 > $ps
 
 # Draw sine an cosine curves
@@ -25,7 +25,7 @@ EOF
 gmt pstext -R -J -O -K -Dj0.2c -N -F+f+j << EOF >> $ps
 360 1 18p,Times-Roman RB x = cos(@%12%a@%%)
 360 0 18p,Times-Roman RB y = sin(@%12%a@%%)
-120 -1.25 14p,Times-Roman LB 120\\312
+120 -1.25 14p,Times-Roman LB 120@.
 370 -1.35 24p,Symbol LT a
 -5 1.85 24p,Times-Roman RT x,y
 EOF
@@ -58,7 +58,7 @@ gmt pstext -R -J -O -K -Dj0.05i -F+f+a+j << EOF >> $ps
 -0.16666 0 12p,Times-Roman 0 CT x
 -0.3333 0.2888675 12p,Times-Roman 0 RM y
 0.22 0.27 12p,Symbol -30 CB a
--0.33333 0.6 12p,Times-Roman 30 LB 120\\312
+-0.33333 0.6 12p,Times-Roman 30 LB 120@.
 EOF
 
 echo 0 0 0.5 0 120 | gmt psxy -R -J -O -Sm0.15i+e -W1p -Gblack --PROJ_LENGTH_UNIT=inch >> $ps

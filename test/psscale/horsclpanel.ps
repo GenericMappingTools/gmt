@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v5.4.2_r18423M [64-bit] Document from psxy
-%%Creator: GMT5
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
+%%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Jun 21 13:20:20 2017
+%%CreationDate: Thu Dec  6 10:52:59 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -657,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R0/20/0/30 -Jx1c -P -K -Y0
+%@GMT: gmt psxy -R0/20/0/30 -Jx1c -P -K -Y0
 %@PROJ: xy 0.00000000 20.00000000 0.00000000 30.00000000 0.000 20.000 0.000 30.000 +xy
+%GMTBoundingBox: 72 0 566.929 850.394
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -680,7 +690,7 @@ O0
 0 1181 TM
 
 % PostScript produced by:
-%@GMT: psscale -O -K -Ct.cpt -Dx8c/22c -Bxaf -By+lkm -F+gwhite+p+i+s -Y2.5c
+%@GMT: gmt psscale -O -K -Ct.cpt -Dx8c/22c+w12c/0.5c+jTC+e+h+n -Bxaf -By+lkm -F+gwhite+p+i+s -Y2.5c
 %@PROJ: xy -200.00000000 1000.00000000 0.00000000 0.19685039 -200.000 1000.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -751,7 +761,7 @@ N 4724 0 M 0 -83 D S
 N 5669 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-200) sh mx
+(”200) sh mx
 (0) sh mx
 (200) sh mx
 (400) sh mx
@@ -761,7 +771,7 @@ N 5669 0 M 0 -83 D S
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-200) bc Z
+(”200) bc Z
 945 PSL_A0_y MM
 (0) bc Z
 1890 PSL_A0_y MM
@@ -791,7 +801,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -O -K -Ct.cpt -Dx8c/19c -Bxaf -By+lkm -F+gwhite+p+i+s
+%@GMT: gmt psscale -O -K -Ct.cpt -Dx8c/19c+w-12c/0.5c+jTC+e+h+n -Bxaf -By+lkm -F+gwhite+p+i+s
 %@PROJ: xy -200.00000000 1000.00000000 0.00000000 0.19685039 1000.000 -200.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -862,7 +872,7 @@ N 945 0 M 0 -83 D S
 N 0 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-200) sh mx
+(”200) sh mx
 (0) sh mx
 (200) sh mx
 (400) sh mx
@@ -872,7 +882,7 @@ N 0 0 M 0 -83 D S
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 5669 PSL_A0_y MM
-(-200) bc Z
+(”200) bc Z
 4724 PSL_A0_y MM
 (0) bc Z
 3780 PSL_A0_y MM
@@ -902,7 +912,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -O -K -Ct.cpt -Dx8c/16c -Bxaf -By+lkm -F+gwhite+p+i+s
+%@GMT: gmt psscale -O -K -Ct.cpt -Dx8c/16c+w-12c/0.5c+jTC+ebf+h -Bxaf -By+lkm -F+gwhite+p+i+s
 %@PROJ: xy -200.00000000 1000.00000000 0.00000000 0.19685039 1000.000 -200.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -968,7 +978,7 @@ N 0 0 M 0 -83 D S
 /MM {neg M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 150 F0
-(-200) sh mx
+(”200) sh mx
 (0) sh mx
 (200) sh mx
 (400) sh mx
@@ -978,7 +988,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 5669 PSL_A0_y MM
-(-200) bc Z
+(”200) bc Z
 4724 PSL_A0_y MM
 (0) bc Z
 3780 PSL_A0_y MM
@@ -1008,7 +1018,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -O -K -Ct.cpt -Dx8c/13c -Bxaf -By+lkm -F+gwhite+p+i+s
+%@GMT: gmt psscale -O -K -Ct.cpt -Dx8c/13c+w12c/0.5c+jTC+ebf+h -Bxaf -By+lkm -F+gwhite+p+i+s
 %@PROJ: xy -200.00000000 1000.00000000 0.00000000 0.19685039 -200.000 1000.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
@@ -1074,7 +1084,7 @@ N 5669 0 M 0 -83 D S
 /MM {neg M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 150 F0
-(-200) sh mx
+(”200) sh mx
 (0) sh mx
 (200) sh mx
 (400) sh mx
@@ -1084,7 +1094,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-200) bc Z
+(”200) bc Z
 945 PSL_A0_y MM
 (0) bc Z
 1890 PSL_A0_y MM
@@ -1114,7 +1124,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -O -K -Ct.cpt -Dx8c/10c -Bxaf -By+lkm -F+gwhite+p+i+s
+%@GMT: gmt psscale -O -K -Ct.cpt -Dx8c/10c+w-12c/0.5c+jTC+eb+h+n -Bxaf -By+lkm -F+gwhite+p+i+s
 %@PROJ: xy -200.00000000 1000.00000000 0.00000000 0.19685039 1000.000 -200.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
@@ -1177,7 +1187,7 @@ N 945 0 M 0 -83 D S
 N 0 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-200) sh mx
+(”200) sh mx
 (0) sh mx
 (200) sh mx
 (400) sh mx
@@ -1187,7 +1197,7 @@ N 0 0 M 0 -83 D S
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 5669 PSL_A0_y MM
-(-200) bc Z
+(”200) bc Z
 4724 PSL_A0_y MM
 (0) bc Z
 3780 PSL_A0_y MM
@@ -1217,7 +1227,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -O -K -Ct.cpt -Dx8c/7c -Bxaf -By+lkm -F+gwhite+p+i+s
+%@GMT: gmt psscale -O -K -Ct.cpt -Dx8c/7c+w-12c/0.5c+jTC+ef+h+n -Bxaf -By+lkm -F+gwhite+p+i+s
 %@PROJ: xy -200.00000000 1000.00000000 0.00000000 0.19685039 1000.000 -200.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
@@ -1281,7 +1291,7 @@ N 945 0 M 0 -83 D S
 N 0 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-200) sh mx
+(”200) sh mx
 (0) sh mx
 (200) sh mx
 (400) sh mx
@@ -1291,7 +1301,7 @@ N 0 0 M 0 -83 D S
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 5669 PSL_A0_y MM
-(-200) bc Z
+(”200) bc Z
 4724 PSL_A0_y MM
 (0) bc Z
 3780 PSL_A0_y MM
@@ -1321,7 +1331,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -O -K -Ct.cpt -Dx8c/4c -Bxaf -By+lkm -F+gwhite+p+i+s
+%@GMT: gmt psscale -O -K -Ct.cpt -Dx8c/4c+w12c/0.5c+jTC+eb+h+n -Bxaf -By+lkm -F+gwhite+p+i+s
 %@PROJ: xy -200.00000000 1000.00000000 0.00000000 0.19685039 -200.000 1000.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
@@ -1385,7 +1395,7 @@ N 4724 0 M 0 -83 D S
 N 5669 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-200) sh mx
+(”200) sh mx
 (0) sh mx
 (200) sh mx
 (400) sh mx
@@ -1395,7 +1405,7 @@ N 5669 0 M 0 -83 D S
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-200) bc Z
+(”200) bc Z
 945 PSL_A0_y MM
 (0) bc Z
 1890 PSL_A0_y MM
@@ -1425,7 +1435,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psscale -O -Ct.cpt -Dx8c/1c -Bxaf -By+lkm -F+gwhite+p+i+s
+%@GMT: gmt psscale -O -Ct.cpt -Dx8c/1c+w12c/0.5c+jTC+ef+h+n -Bxaf -By+lkm -F+gwhite+p+i+s
 %@PROJ: xy -200.00000000 1000.00000000 0.00000000 0.19685039 -200.000 1000.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_9
 0 setlinecap
@@ -1488,7 +1498,7 @@ N 4724 0 M 0 -83 D S
 N 5669 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-200) sh mx
+(”200) sh mx
 (0) sh mx
 (200) sh mx
 (400) sh mx
@@ -1498,7 +1508,7 @@ N 5669 0 M 0 -83 D S
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-200) bc Z
+(”200) bc Z
 945 PSL_A0_y MM
 (0) bc Z
 1890 PSL_A0_y MM
@@ -1522,6 +1532,10 @@ N 5197 0 M 0 -42 D S
 0 setlinecap
 -945 -236 T
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

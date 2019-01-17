@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ * Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
  */
 
 #pragma once
-#ifndef _COMMON_MATH_H
-#define _COMMON_MATH_H
+#ifndef COMMON_MATH_H
+#define COMMON_MATH_H
 
 #ifdef __cplusplus      /* Basic C++ support */
 extern "C" {
@@ -104,4 +104,4 @@ extern "C" {
 }
 #endif
 
-#endif /* !_COMMON_MATH_H */
+#endif /* !COMMON_MATH_H */

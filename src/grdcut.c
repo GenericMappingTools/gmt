@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -49,14 +49,14 @@ struct GRDCUT_CTRL {
 		bool active;
 		gmt_grdfloat value;
 	} N;
-	struct GRDCUT_S {	/* -S[n]<lon>/<lat>/[-|=|+]<radius>[d|e|f|k|m|M|n] */
+	struct GRDCUT_S {	/* -S<lon>/<lat>/[-|=|+]<radius>[d|e|f|k|m|M|n][+n] */
 		bool active;
 		bool set_nan;
 		int mode;	/* Could be negative */
 		char unit;
 		double lon, lat, radius;
 	} S;
-	struct GRDCUT_Z {	/* -Z[min/max] */
+	struct GRDCUT_Z {	/* -Z[min/max][+n|N|r] */
 		bool active;
 		unsigned int mode;	/* 0-2, see below */
 		double min, max;
@@ -91,7 +91,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Deal
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> %s [%s] [-N[<nodata>]]\n\t[%s] [-S[n]<lon>/<lat>/<radius>] [-Z[n|N|r][<min>/<max>]] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> %s [%s] [-N[<nodata>]]\n\t[%s] [-S<lon>/<lat>/<radius>[+n]] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n\n",
 		name, GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -110,12 +110,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	gmt_dist_syntax (API->GMT, 'S', "Specify an origin and radius to find the corresponding rectangular area.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   All nodes on or inside the radius are contained in the subset grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Sn to set all nodes in the subset outside the circle to NaN.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to set all nodes in the subset outside the circle to NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify an optional range and determine the corresponding rectangular region\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   so that all nodes outside this region are outside the range [-inf/+inf].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zn to consider NaNs to be outside the range. The resulting grid will be NaN-free.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -ZN to strip off outside rows and cols that are all populated with NaNs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zr to consider NaNs to be within the range [Default just ignores NaNs in decision].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to consider NaNs to be outside the range. The resulting grid will be NaN-free.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +N to strip off outside rows and cols that are all populated with NaNs.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to consider NaNs to be within the range [Default just ignores NaNs in decision].\n");
 	GMT_Option (API, "f,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -129,7 +129,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 	 */
 
 	unsigned int n_errors = 0, k, n_files = 0;
-	char za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""};
+	char za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -159,7 +159,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
  			case 'S':	/* Origin and radius */
 				Ctrl->S.active = true;
 				k = 0;
-				if (opt->arg[k] == 'n') {
+				if ((c = strstr (opt->arg, "+n"))) {
+					Ctrl->S.set_nan = true;
+					c[0] = '\0';	/* Chop off modifier */
+				}
+				else if (opt->arg[k] == 'n' && gmt_M_compat_check (GMT, 5)) {
 					Ctrl->S.set_nan = true;
 					k = 1;
 				}
@@ -168,21 +172,31 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 					n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf_arg (GMT, zb, GMT_IS_LAT, false, &Ctrl->S.lat), zb);
 					Ctrl->S.mode = gmt_get_distance (GMT, zc, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				}
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
-			case 'Z':	/* Detect region via z-range */
+			case 'Z':	/* Detect region via z-range -Z[<min>/<max>][+n|N|r]*/
 				Ctrl->Z.active = true;
 				k = 0;
-				if (opt->arg[k] == 'n') {
+				if ((c = strstr (opt->arg, "+n")))
 					Ctrl->Z.mode = NAN_IS_SKIPPED;
-					k = 1;
-				}
-				if (opt->arg[k] == 'N') {
+				else if ((c = strstr (opt->arg, "+N")))
 					Ctrl->Z.mode = NAN_IS_FRAME;
-					k = 1;
-				}
-				else if (opt->arg[k] == 'r') {
+				else if ((c = strstr (opt->arg, "+r")))
 					Ctrl->Z.mode = NAN_IS_INRANGE;
-					k = 1;
+				if (c) c[0] = '\0';	/* Chop off modifier */
+				if (c == NULL && gmt_M_compat_check (GMT, 5)) {	/* Oldstyle -Zn|N|r[<min>/<max>] */
+					if (opt->arg[k] == 'n') {
+						Ctrl->Z.mode = NAN_IS_SKIPPED;
+						k = 1;
+					}
+					else if (opt->arg[k] == 'N') {
+						Ctrl->Z.mode = NAN_IS_FRAME;
+						k = 1;
+					}
+					else if (opt->arg[k] == 'r') {
+						Ctrl->Z.mode = NAN_IS_INRANGE;
+						k = 1;
+					}
 				}
 				if (sscanf (&opt->arg[k], "%[^/]/%s", za, zb) == 2) {
 					if (!(za[0] == '-' && za[1] == '\0'))
@@ -190,6 +204,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 					if (!(zb[0] == '-' && zb[1] == '\0'))
 						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, zb, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.max), zb);
 				}
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 
 			default:	/* Report bad options */
@@ -361,7 +376,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_SKIPPED, &side, &all);
 			}
 			if (col0 == col1 || row0 == row1) {
-				GMT_Report (API, GMT_MSG_NORMAL, "The sub-region implied by -Zn is empty!\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "The sub-region implied by -Z+n is empty!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
@@ -387,7 +402,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 				sum = count_NaNs (GMT, G, row0, row1, col0, col1, count, NAN_IS_FRAME, &side, &all);
 			}
 			if (col0 == col1 || row0 == row1) {
-				GMT_Report (API, GMT_MSG_NORMAL, "The sub-region implied by -ZN is empty!\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "The sub-region implied by -Z+N is empty!\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,10 +25,10 @@
  * \brief List of gs formats for modern mode.
  */
 
-#ifndef _GMT_GSFORMATS_H
-#define _GMT_GSFORMATS_H
+#ifndef GMT_GSFORMATS_H
+#define GMT_GSFORMATS_H
 
 /* List ps at end since it causes a renaming of ps- to ps only.  Also allow jpeg and tiff spellings */
 static char *gmt_session_format[] = {"pdf", "jpg", "jpeg", "png", "PNG", "ppm", "tif", "tiff", "bmp", "eps", "ps", NULL};
 
-#endif  /* _GMT_GSFORMATS_H */
+#endif  /* GMT_GSFORMATS_H */

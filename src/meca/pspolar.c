@@ -134,8 +134,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -D<lon>/<lat>\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t-M<size>[i/c] -S<symbol><size>[i/c] [-A] [%s]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<lon>/<lat>[W<pen>][P<pointsize>]] [-E<fill>] [-F<fill>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M<size>[c|i|p] -S<symbol><size>[c|i|p] [-A] [%s]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<lon>/<lat>[+p<pen>][+s<pointsize>]] [-E<fill>] [-F<fill>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] %s[-N] %s%s[-Qe[<pen>]] [-Qf[<pen>]] [-Qg[<pen>]]\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Qh] [-Qs<half-size>[+v<size>[+<specs>]] [-Qt<pen>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<labelinfo>]] [%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
@@ -153,7 +153,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   (p)oint, (s)quare, (t)riangle, and (x)cross.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Set new_longitude/new_latitude[W<pen>][P<pointsize>].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Set new_longitude/new_latitude[+p<pen>][+s<pointsize>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A line will be plotted between both positions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is current pen and pointsize = 0.015i.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify color symbol for station in extensive part.\n");
@@ -262,11 +262,29 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 			case 'C':	/* New coordinates */
 				Ctrl->C.active = true;
 				sscanf(opt->arg, "%lf/%lf", &Ctrl->C.lon, &Ctrl->C.lat);
-				if ((p = strchr (opt->arg, 'W')) && gmt_getpen (GMT, &p[1], &Ctrl->C.pen)) {
+				if ((p = strstr (opt->arg, "+p"))) {
+					char *q = strstr (p, "+s");
+					if (q) q[0] = '\0';	/* Chop off the +s modifier */
+					if (gmt_getpen (GMT, &p[2], &Ctrl->C.pen)) {
+						gmt_pen_syntax (GMT, 'C', "Line connecting new and old point [Default current pen]", 0);
+						n_errors++;
+					}
+					if (q) q[0] = '+';	/* Restore the +s modifier */
+				}
+				else if ((p = strchr (opt->arg, 'W')) && gmt_getpen (GMT, &p[1], &Ctrl->C.pen)) {	/* Old syntax */
 					gmt_pen_syntax (GMT, 'C', "Line connecting new and old point [Default current pen]", 0);
 					n_errors++;
 				}
-				if ((p = strchr (opt->arg, 'P')) && sscanf (&p[1], "%lf", &Ctrl->C.size)) {
+				if ((p = strstr (opt->arg, "+s"))) {	/* Found +s<size>[unit] */
+					char *q = strstr (p, "+p");
+					if (q) q[0] = '\0';	/* Chop off the +p modifier */
+					if ((Ctrl->C.size = gmt_M_to_inch (GMT, &p[2]))) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Could not decode pointsize %s\n", &p[1]);
+						n_errors++;
+					}
+					if (q) q[0] = '+';	/* Restore the +p modifier */
+				}
+				else if ((p = strchr (opt->arg, 'P')) && sscanf (&p[1], "%lf", &Ctrl->C.size)) {	/* Old syntax */
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Could not decode pointsize %s\n", &p[1]);
 					n_errors++;
 				}

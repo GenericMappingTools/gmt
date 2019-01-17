@@ -23,7 +23,7 @@ Synopsis
 [ |-Q|\ *args*\ [**+m**] ]
 [ |SYN_OPT-Rz| ]
 [ |-S|\ *smooth* ]
-[ |-T|\ [**s**][\ **o**\ [*pen*]] ]
+[ |-T|\ [\ **+o**\ [*pen*]][**+s**] ]
 [ |SYN_OPT-U| ]
 [ |-W|\ **c|m|f**\ *pen* ]
 [ |SYN_OPT-X| ]
@@ -147,12 +147,12 @@ Optional Arguments
 
 .. _-t:
 
-**-T**\ [**s**\ ][\ **o**\ [*pen*]]
+**-T**\ [\ **+o**\ [*pen*]][**+s**]
     Plot image without any interpolation. This involves converting each
     node-centered bin into a polygon which is then painted separately.
-    Append **s** to skip nodes with z = NaN. This option is useful for
+    Append **+s** to skip nodes with z = NaN. This option is useful for
     categorical data where interpolating between values is meaningless.
-    Optionally, append **o** to draw the tile outlines, and specify a
+    Optionally, append **+o** to draw the tile outlines, and specify a
     custom pen if the default pen is not to your liking. As this option
     produces a flat surface it cannot be combined with **-JZ** or **-Jz**. 
 

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v5.3.0_r16965 [64-bit] Document from pscoast
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_662b625-dirty [64-bit] Document from pscoast
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri Aug 19 12:41:30 2016
+%%CreationDate: Thu Dec  6 18:03:54 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -657,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: pscoast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -P -Slightgray
-%@PROJ: stere -53.61890126 70.10000000 58.90000000 81.04632007 -2033155.386 1754319.048 -2903646.812 -1012856.574 +proj=stere +lat_0=90 +lon_0=10 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pscoast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -P -Slightgray
+%@PROJ: stere -53.61890126 70.10000000 58.90000000 81.04632007 -2033155.386 1754319.048 -2903646.812 -1012856.574 +proj=stere +lat_0=90 +lon_0=10 +k=0.9996 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 72 72 311.811 155.663
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -683,13 +693,39 @@ P
 FO
 3021 2466 M
 -1 1 D
--39 -7 D
--19 -2 D
+-7 -2 D
+-7 -1 D
+-6 -1 D
+-6 -1 D
+-7 -1 D
+-6 -1 D
+-7 0 D
+-6 -1 D
+-6 -1 D
 -6 9 D
 -4 -10 D
--73 -6 D
--67 -2 D
--22 -1 D
+-7 -1 D
+-7 0 D
+-8 -1 D
+-7 -1 D
+-7 0 D
+-8 -1 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-7 0 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-7 0 D
+-7 -1 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-7 0 D
+-8 -1 D
+-7 0 D
 0 146 D
 245 0 D
 11 -61 D
@@ -703,6 +739,7 @@ FO
 17 -14 D
 16 6 D
 0 -7 D
+-3 -1 D
 P
 FO
 {0.471 0.235 0.118 C} FS
@@ -774,7 +811,17 @@ S
 -11 61 D
 261 0 D
 19 -53 D
--71 -24 D
+-6 -2 D
+-7 -3 D
+-6 -2 D
+-7 -2 D
+-6 -2 D
+-7 -2 D
+-6 -3 D
+-7 -2 D
+-6 -2 D
+-7 -2 D
+-6 -2 D
 P
 FO
 {0.471 0.235 0.118 C} FS
@@ -844,8 +891,23 @@ S
 S
 {0.827 A} FS
 3443 2594 M
--99 -42 D
--29 -11 D
+-8 -3 D
+-14 -7 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -2 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
+-7 -2 D
+-7 -3 D
 -19 53 D
 P
 FO
@@ -874,10 +936,15 @@ FO
 P
 FO
 2790 890 M
--93 1 D
--115 6 D
--85 7 D
--100 11 D
+-8 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 0 D
+-8 0 D
+-115 4 D
+-123 9 D
+-108 12 D
 -99 14 D
 -46 8 D
 271 1535 D
@@ -893,10 +960,70 @@ FO
 -2 0 D
 -11 13 D
 -11 -17 D
--134 -18 D
--135 -12 D
--128 -6 D
--83 -1 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-8 -1 D
+-7 -1 D
+-8 -1 D
+-7 0 D
+-8 -1 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-8 -1 D
+-7 0 D
+-8 -1 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-8 -1 D
+-7 0 D
+-8 -1 D
+-7 0 D
+-8 0 D
+-7 -1 D
+-8 0 D
+-7 0 D
+-8 -1 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 -1 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-8 -1 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
+-8 0 D
+-7 0 D
 0 1558 D
 96 3 D
 66 6 D
@@ -1012,6 +1139,8 @@ FO
 -13 27 D
 13 5 D
 234 -1325 D
+-6 -1 D
+-6 -1 D
 P
 FO
 3019 2466 M
@@ -1056,7 +1185,9 @@ FO
 -11 3 D
 -6 -12 D
 -10 17 D
--10 -1 D
+-3 0 D
+-4 -1 D
+-3 0 D
 -3 -7 D
 7 -14 D
 -12 1 D
@@ -1179,6 +1310,10 @@ FO
 22 -27 D
 33 12 D
 -7 38 D
+-6 -1 D
+-6 -1 D
+-5 -1 D
+-6 -1 D
 P
 FO
 -16 10 -7 44 -21 15 -10 37 39 -48 5 2820 2221 SP
@@ -1361,11 +1496,19 @@ S
 -13 -17 D
 16 2 D
 1 -5 D
--32 -6 D
+-8 -1 D
+-8 -2 D
+-8 -2 D
+-8 -1 D
 -3 2 D
 -10 -3 D
 1 -2 D
--66 -12 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
 -234 1325 D
 16 5 D
 5 13 D
@@ -1468,6 +1611,7 @@ S
 14 -12 D
 -12 -9 D
 18 -10 D
+-7 -1 D
 P
 FO
 -1 6 -1 6 -1 6 -33 4 22 -17 -28 -9 -2 -19 45 17 8 3063 2434 SP
@@ -1618,7 +1762,15 @@ FO
 3116 2483 M
 1 -4 D
 -2 4 D
--59 -11 D
+-7 -1 D
+-6 -2 D
+-7 -1 D
+-6 -1 D
+-7 -1 D
+-6 -2 D
+-7 -1 D
+-6 -1 D
+-7 -1 D
 7 -38 D
 45 17 D
 -2 -19 D
@@ -1638,7 +1790,22 @@ FO
 -9 28 D
 23 45 D
 -8 20 D
--99 -27 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-8 -2 D
+-7 -2 D
+-7 -1 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-8 -1 D
+-7 -2 D
 P
 FO
 2 -14 3 -14 2 -14 -48 16 -3 12 2 13 19 -3 5 13 16 5 9 3093 2262 SP
@@ -1919,13 +2086,58 @@ S
 57 25 D
 149 0 D
 745 -1289 D
--81 -46 D
--96 -49 D
--91 -43 D
--127 -55 D
--22 -8 D
--21 -9 D
--51 -18 D
+-14 -8 D
+-13 -8 D
+-13 -7 D
+-14 -8 D
+-13 -7 D
+-14 -8 D
+-14 -7 D
+-13 -7 D
+-14 -7 D
+-14 -7 D
+-13 -7 D
+-14 -7 D
+-14 -7 D
+-14 -7 D
+-14 -7 D
+-7 -3 D
+-14 -7 D
+-7 -3 D
+-7 -3 D
+-14 -7 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-14 -7 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-8 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-8 -2 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-7 -3 D
+-8 -2 D
+-7 -3 D
+-7 -3 D
+-7 -2 D
+-8 -3 D
+-7 -3 D
+-7 -2 D
 P
 FO
 {0.471 0.235 0.118 C} FS
@@ -1945,15 +2157,31 @@ S
 {0.827 A} FS
 3956 2594 M
 823 -980 D
--90 -73 D
--43 -33 D
+-36 -30 D
+-30 -24 D
+-31 -24 D
+-24 -18 D
+-12 -10 D
 -19 -13 D
 -12 -10 D
 -19 -13 D
--95 -66 D
--46 -29 D
+-19 -14 D
 -19 -13 D
--99 -59 D
+-19 -13 D
+-19 -13 D
+-19 -13 D
+-20 -13 D
+-13 -8 D
+-19 -13 D
+-13 -8 D
+-13 -8 D
+-13 -8 D
+-13 -8 D
+-14 -8 D
+-13 -8 D
+-13 -8 D
+-14 -8 D
+-6 -3 D
 -745 1289 D
 P
 FO
@@ -2059,8 +2287,8 @@ FO
 -88 -83 D
 -12 -10 D
 -5 -6 D
--57 -50 D
--23 -19 D
+-46 -40 D
+-34 -29 D
 -823 980 D
 P
 FO
@@ -5019,6 +5247,7 @@ S
 32 4 D
 -39 -25 D
 19 -9 D
+-12 -10 D
 P S
 3395 469 M
 -32 10 D
@@ -5286,25 +5515,72 @@ FO
 -3 0 D
 0 10 D
 -1 0 D
--20 -26 D
+0 1 D
+-20 -27 D
 2 39 D
 -20 -9 D
 10 20 D
 -12 0 D
--127 -41 D
--121 -35 D
--65 -16 D
+-7 -2 D
+-7 -2 D
+-7 -3 D
+-7 -2 D
+-7 -3 D
+-7 -2 D
+-7 -2 D
+-7 -3 D
+-7 -2 D
+-8 -2 D
+-7 -3 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -3 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -3 D
+-7 -2 D
+-7 -2 D
+-8 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-8 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -1 D
+-8 -2 D
+-7 -2 D
+-7 -2 D
+-7 -2 D
+-7 -1 D
+-7 -2 D
+-8 -2 D
+-7 -2 D
 4 -2 D
 -22 -14 D
 5 9 D
 -2 4 D
--55 -13 D
+-11 -3 D
+-11 -2 D
+-11 -3 D
+-11 -2 D
+-11 -3 D
 0 -10 D
 -4 8 D
 -5 -10 D
 20 -28 D
 -43 34 D
--12 -3 D
+-6 -1 D
+-6 -2 D
 7 -13 D
 -7 -18 D
 1 12 D
@@ -7378,7 +7654,8 @@ S
 -9 13 D
 -11 20 D
 -20 33 D
--110 -64 D
+-55 -32 D
+-55 -32 D
 P
 FO
 {0.827 A} FS
@@ -8911,19 +9188,6 @@ N 5090 0 M 0 -83 D S
 N 3592 2594 M 0 84 D S
 N 4446 2594 M 0 84 D S
 N 0 202 M -83 0 D S
-1133 2761 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(-40š) bc Z
-489 -167 M (-20š) tc Z
-1987 2761 M (-20š) bc Z
-2087 -167 M (0š) tc Z
-2545 2761 M (0š) bc Z
-3492 -167 M (20š) tc Z
-3035 2761 M (20š) bc Z
-5090 -167 M (40š) tc Z
-3592 2761 M (40š) bc Z
-4446 2761 M (60š) bc Z
--167 202 M (60š) mr Z
 25 W
 2 setlinecap
 N 0 0 M 0 2594 D S
@@ -8931,7 +9195,24 @@ N 5197 0 M 0 2594 D S
 N 0 0 M 5197 0 D S
 N 0 2594 M 5197 0 D S
 0 setlinecap
+1133 2761 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(-40°) bc Z
+489 -167 M (-20°) tc Z
+1987 2761 M (-20°) bc Z
+2087 -167 M (0°) tc Z
+2545 2761 M (0°) bc Z
+3492 -167 M (20°) tc Z
+3035 2761 M (20°) bc Z
+5090 -167 M (40°) tc Z
+3592 2761 M (40°) bc Z
+4446 2761 M (60°) bc Z
+-167 202 M (60°) mr Z
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

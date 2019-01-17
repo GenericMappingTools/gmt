@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -81,10 +81,16 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* D
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psbasemap synopsis and optionally full usage information */
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	bool classic = (API->GMT->current.setting.run_mode == GMT_CLASSIC);
+	
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s] |\n\t[-D%s] [%s]\n", GMT_INSET_A, GMT_INSET_B, GMT_Jz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s\n", GMT_PANEL, GMT_K_OPT);
+	if (classic) {
+		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s] |\n\t[-D%s] [%s]\n", GMT_INSET_A, GMT_INSET_B, GMT_Jz_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s\n", GMT_PANEL, GMT_K_OPT);
+	}
+	else
+		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [%s] %s\n", GMT_Jz_OPT, GMT_K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L%s]\n", GMT_SCALE);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Td%s]\n", GMT_O_OPT, GMT_P_OPT, GMT_TROSE_DIR);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Tm%s]\n", GMT_TROSE_MAG);
@@ -100,9 +106,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   in projected coordinates is controlled by GMT default MAP_LINE_STEP [%gp].\n",
 		API->GMT->session.u2u[GMT_INCH][GMT_PT] * API->GMT->current.setting.map_line_step);
 	GMT_Option (API, "B");
-	gmt_mapinset_syntax (API->GMT, 'D', "Draw a simple map inset box as specified below:");
-	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map inset, scale or rose.", 3);
-	GMT_Message (API, GMT_TIME_NONE, "\t   For separate panel attributes, use -Fd, -Fl, -Ft.\n");
+	if (classic) {
+		gmt_mapinset_syntax (API->GMT, 'D', "Draw a simple map inset box as specified below:");
+		gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map inset, scale or rose.", 3);
+		GMT_Message (API, GMT_TIME_NONE, "\t   For separate panel attributes, use -Fd, -Fl, -Ft.\n");
+	}
 	GMT_Option (API, "K");
 	gmt_mapscale_syntax (API->GMT, 'L', "Draw a map scale at specified reference point.");
 	GMT_Option (API, "O,P");
@@ -124,7 +132,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	char *kind[3] = {"Specify a rectanglar panel for the map inset", "Specify a rectanglar panel behind the map scale", "Specify a rectanglar panel behind the map rose"};
-	bool get_panel[3] = {false, false, false};
+	bool get_panel[3] = {false, false, false}, classic;
+	
+	classic = (GMT->current.setting.run_mode == GMT_CLASSIC);
 	
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -137,8 +147,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Draw map inset */
-				Ctrl->D.active = true;
-				n_errors += gmt_getinset (GMT, 'D', opt->arg, &Ctrl->D.inset);
+				if (classic) {
+					Ctrl->D.active = true;
+					n_errors += gmt_getinset (GMT, 'D', opt->arg, &Ctrl->D.inset);
+				}
+				else {
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -D is not available in modern mode - see inset instead\n");
+					n_errors++;
+				}
 				break;
 			case 'F':
 				Ctrl->F.active = true;
@@ -146,10 +162,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 					case 'd': get_panel[0] = true; break;
 					case 'l': get_panel[1] = true; break;
 					case 't': get_panel[2] = true; break;
-					default : get_panel[0] = get_panel[1] = get_panel[2] = true; k = 0; break;
+					default : get_panel[1] = get_panel[2] = true; k = 0;
+						get_panel[0] = classic; break;
 				}
-				if (get_panel[0] && gmt_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->D.inset.panel))) {
+				if (get_panel[0] && classic && gmt_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->D.inset.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', kind[0], 3);
+					n_errors++;
+				}
+				else if (!classic && get_panel[0]) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -Fd is not available in modern mode - see inset instead\n");
 					n_errors++;
 				}
 				if (get_panel[1] && gmt_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->L.scale.panel))) {

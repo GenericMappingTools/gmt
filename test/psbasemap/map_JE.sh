@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Check gridlines for non-global -JE map
 ps=map_JE.ps
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 06
 #
 # Purpose:	Make standard and polar histograms

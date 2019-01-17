@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test all structural geology symbols from Jose
 ps=struct_geo.ps
 reg=-R0/10/0/10

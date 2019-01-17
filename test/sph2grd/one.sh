@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Evaluate a single (C_l,m, S_l,m) coefficient
 

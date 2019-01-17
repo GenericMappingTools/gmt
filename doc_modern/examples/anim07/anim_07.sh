@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT ANIMATION 07
 #
 # Purpose:      Make a Plate Tectonics movie of crustal ages

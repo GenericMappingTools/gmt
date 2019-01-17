@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing map directional roses
 ps=rose_dir.ps
 gmt set FONT_LABEL 10p FONT_TITLE 14p MAP_ANNOT_OBLIQUE 34 MAP_TITLE_OFFSET 7p MAP_FRAME_WIDTH 3p

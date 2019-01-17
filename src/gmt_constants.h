@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,8 @@
  * \brief Definitions of constants used through GMT.
  */
 
-#ifndef _GMT_CONSTANTS_H
-#define _GMT_CONSTANTS_H
+#ifndef GMT_CONSTANTS_H
+#define GMT_CONSTANTS_H
 
 /*=====================================================================================
  *	GMT API CONSTANTS DEFINITIONS
@@ -81,8 +81,8 @@
 #define GMT_CONTROLLER	0	/* func_level of controlling process (gmt.c or external API) */
 #define GMT_TOP_MODULE	1	/* func_level of top-level module being called */
 
-#define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode */
-#define GMT_PAPER_MARGIN	5	/* Default paper margin in inches under modern mode */
+#define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode, in points (~11.6 meters) */
+#define GMT_PAPER_MARGIN	5	/* Default paper margin under modern mode, in inches (~1 meter) */
 
 /*! whether to ignore/read/write history file gmt.history */
 enum GMT_enum_history {
@@ -137,7 +137,8 @@ enum GMT_enum_array {
 	GMT_ARRAY_DIST  = 4,
 	GMT_ARRAY_NOINC = 8,
 	GMT_ARRAY_SCALAR = 16,
-	GMT_ARRAY_NOMINMAX = 32};
+	GMT_ARRAY_NOMINMAX = 32,
+	GMT_ARRAY_ROUND = 64};
 
 /*! Handling of swap/no swap in i/o */
 enum GMT_swap_direction {
@@ -466,4 +467,4 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 
 #define GMT_DEFAULT_CPT "rainbow"				/* When no CPT is given we choose this one */
 
-#endif  /* _GMT_CONSTANTS_H */
+#endif  /* GMT_CONSTANTS_H */

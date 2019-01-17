@@ -24,3 +24,7 @@ geospatial distance unit from the list
 **d**\ egree (arc), **m**\ inute (arc), **s**\ econd (arc), m\ **e**\ ter, **f**\ oot, **k**\ ilometer,
 **M**\ iles (statute), **n**\ autical miles, or s\ **u**\ rvey foot.  For Cartesian distances, you must
 use the special unit **c**.
+
+Finally, if you are only providing an increment and obtain *min* and *max* from the data, then it is
+possible (*max* - *min*)/*inc* is not an integer, as required.  If so then *inc* will be adjusted to accordingly.
+Alternatively, append **+e** to keep *inc* exact and adjust *max* instead.

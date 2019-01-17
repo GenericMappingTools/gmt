@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 09
 #
 # Purpose:	Make wiggle plot along track from geoid deflections

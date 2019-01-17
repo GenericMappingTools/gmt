@@ -1,5 +1,4 @@
-#!/bin/bash
-#	$Id: meca_3.sh 12114 2013-09-03 19:19:00Z fwobbe $
+#!/usr/bin/env bash
 # Testing large isotropic component case by Jeremy Pesicek
 # as indicated by email:
 #----- Original Message ----

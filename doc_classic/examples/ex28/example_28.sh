@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 28
 #
 # Purpose:	Illustrates how to mix UTM data and UTM gmt projection
@@ -10,7 +10,7 @@ ps=example_28.ps
 # Set up a color table
 gmt makecpt -Ccopper -T0/1500 > Kilauea.cpt
 # Lay down the UTM topo grid using a 1:16,000 scale
-gmt grdimage @Kilauea.utm.nc -I+a45+nt1 -CKilauea.cpt -Jx1:160000 -P -K \
+gmt grdimage @Kilauea.utm.nc -I+d -CKilauea.cpt -Jx1:160000 -P -K \
 	--FONT_ANNOT_PRIMARY=9p > $ps
 # Overlay geographic data and coregister by using correct region and gmt projection with the same scale
 gmt pscoast -R@Kilauea.utm.nc -Ju5Q/1:160000 -O -K -Df+ -Slightblue -W0.5p -B5mg5m -BNE \

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v6.0.0_r18848 [64-bit] Document from grdimage
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Sep  3 16:20:52 2017
+%%CreationDate: Thu Dec  6 10:52:12 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -658,14 +663,18 @@ V 0.06 0.06 scale
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
 /PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 -3600 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
 
 % PostScript produced by:
-%@GMT: grdimage t.nc -JQ6i -nn -K -Ct.cpt -Xc -t75 -P
-%@PROJ: eqc 9.00000000 11.00000000 36.00000000 38.00000000 -111195.052 111195.052 4003021.871 4225411.975 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=10 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@GMT: gmt grdimage t.nc -JQ6i -nn -K -Ct.cpt -Xc -t75 -P
+%@PROJ: eqc 9.00000000 11.00000000 36.00000000 38.00000000 -111195.052 111195.052 4003021.871 4225411.975 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=10 +x_0=0 +y_0=0 +units=m +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%GMTBoundingBox: -216 72 432 432
 %%BeginObject PSL_Layer_1
 0.25 /Normal PSL_transp
 0 setlinecap
@@ -699,8 +708,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pscoast -R9/11/36/38 -JQ6i -Di -Wthin -O -Bafg1m -BWSne --MAP_GRID_PEN=faint
-%@PROJ: eqc 9.00000000 11.00000000 36.00000000 38.00000000 -111195.052 111195.052 4003021.871 4225411.975 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=10 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@GMT: gmt pscoast -R9/11/36/38 -JQ6i -Di -Wthin -O -Bafg1m -BWSne --MAP_GRID_PEN=faint
+%@PROJ: eqc 9.00000000 11.00000000 36.00000000 38.00000000 -111195.052 111195.052 4003021.871 4225411.975 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=10 +x_0=0 +y_0=0 +units=m +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -1647,17 +1656,21 @@ N 0 7283 M 0 -7366 D S
 N -83 7283 M 0 -7366 D S
 0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(9 00©) tc Z
-1800 -167 M (9 30©) tc Z
-3600 -167 M (10 00©) tc Z
-5400 -167 M (10 30©) tc Z
-7200 -167 M (11 00©) tc Z
--167 0 M (36 00©) mr Z
--167 1800 M (36 30©) mr Z
--167 3600 M (37 00©) mr Z
--167 5400 M (37 30©) mr Z
--167 7200 M (38 00©) mr Z
+(9è00©) tc Z
+1800 -167 M (9è30©) tc Z
+3600 -167 M (10è00©) tc Z
+5400 -167 M (10è30©) tc Z
+7200 -167 M (11è00©) tc Z
+-167 0 M (36è00©) mr Z
+-167 1800 M (36è30©) mr Z
+-167 3600 M (37è00©) mr Z
+-167 5400 M (37è30©) mr Z
+-167 7200 M (38è00©) mr Z
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

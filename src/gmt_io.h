@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,8 +32,8 @@
  * \brief  
  */
 
-#ifndef _GMT_IO_H
-#define _GMT_IO_H
+#ifndef GMT_IO_H
+#define GMT_IO_H
 
 #ifdef HAVE_SETLOCALE
 #	include <locale.h>
@@ -340,4 +340,4 @@ struct GMT_PLOT_CALCLOCK {
 
 /* For the GMT_GRID container, see gmt_grdio.h */
 
-#endif /* _GMT_IO_H */
+#endif /* GMT_IO_H */

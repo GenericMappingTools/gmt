@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -350,7 +350,7 @@ GMT_LOCAL inline GMT_getfunction api_select_get_function (struct GMTAPI_CTRL *AP
 GMT_LOCAL bool valid_input_family (unsigned int family) {
 	/* Return true for the main input types */
 	return (family == GMT_IS_DATASET || family == GMT_IS_GRID \
-	       || family == GMT_IS_IMAGE || family == GMT_IS_PALETTE);
+	       || family == GMT_IS_IMAGE || family == GMT_IS_PALETTE || family == GMT_IS_POSTSCRIPT);
 }
 
 GMT_LOCAL bool valid_output_family (unsigned int family) {
@@ -6005,14 +6005,17 @@ int GMT_Destroy_Session (void *V_API) {
 	 * Returns false if all is well and true if there were errors. */
 
 	unsigned int i;
+	char *module = NULL;
 	struct GMTAPI_CTRL *API = api_get_api_ptr (V_API);
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	API->error = GMT_NOERROR;
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Entering GMT_Destroy_Session\n");
+	module = strdup (API->GMT->init.module_name);	/* Need a copy as the pointer to static memory in library will close soon */
 	gmtapi_garbage_collection (API, GMT_NOTSET);	/* Free any remaining memory from data registration during the session */
 	api_free_sharedlibs (API);			/* Close shared libraries and free list */
+	API->GMT->init.module_name = module;		/* So GMT_Report will function after supplemental.so shut down */
 
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o) */
 	for (i = 0; i < API->n_objects; i++) gmtapi_unregister_io (API, (int)API->object[i]->ID, (unsigned int)GMT_NOTSET);
@@ -6026,6 +6029,7 @@ int GMT_Destroy_Session (void *V_API) {
 	gmt_M_str_free (API->message);
 	gmt_M_memset (API, 1U, struct GMTAPI_CTRL);	/* Wipe it clean first */
  	gmt_M_str_free (API);	/* Not gmt_M_free since this item was allocated before GMT was initialized */
+ 	gmt_M_str_free (module);
 
 	return (GMT_NOERROR);
 }
@@ -10404,6 +10408,21 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 		}
 		deactivate_output = true;	/* Turn off implicit table output since only secondary -G -G -G is in effect */
 	}
+	/* 1l. Check if this is makecpt using -E or -S with no args */
+	else if (!strncmp (module, "makecpt", 7U) && ((opt = GMT_Find_Option (API, 'E', *head)) || (opt = GMT_Find_Option (API, 'S', *head)))) {
+		if (opt->arg[0] == '\0') {	/* Found the -E or -S option without arguments */
+			gmt_M_str_free (opt->arg);
+			if (opt->option == 'E')	/* Gave -E but we need to pass -E0 */
+				opt->arg = strdup ("0");
+			else	/* Replace -S with -Sr */
+				opt->arg = strdup ("r");
+		}
+		/* Then add implicit ? if no input file found */
+		if ((opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head)) == NULL) {	/* Must assume implicit input file is available */
+			new_ptr = GMT_Make_Option (API, GMT_OPT_INFILE, "?");
+			*head = GMT_Append_Option (API, new_ptr, *head);
+		}
+	}
 
 	gmt_M_str_free (module);
 
@@ -12528,4 +12547,14 @@ float GMT_Get_Version (void *API, unsigned int *major, unsigned int *minor, unsi
 	if (minor) *minor = (unsigned int)minor_loc;
 	if (patch) *patch = (unsigned int)patch_loc;
 	return major_loc + (float)minor_loc / 10;
+}
+
+void *GMT_Get_Ctrl (void *V_API) {
+	/* For external enviroments that need to get the GMT pointer for calling
+	 * lower-level GMT library functions that expects the GMT pointer */
+	struct GMTAPI_CTRL *API = NULL;
+	
+	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
+	API = api_get_api_ptr (V_API);
+	return API->GMT;	/* Pass back the GMT ctrl pointer as void pointer */
 }

@@ -1,7 +1,7 @@
 
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,6 +40,7 @@
  *	gmt_map_basemap 	 : Generic basemap function
  *	gmt_map_clip_off 	 : Deactivate map region clip path
  *	gmt_map_clip_on 	 : Activate map region clip path
+ *	gmt_BB_clip_on		 : Activate Bounding Box clip path
  *	gmt_plane_perspective	 : Adds PS matrix to simulate perspective plotting
  *	gmt_plot_line 		 : Plots path (in projected coordinates), takes care of boundary crossings
  *	gmt_vertical_axis 	 : Draw 3-D vertical axes
@@ -47,7 +48,7 @@
  *	gmt_linearx_grid 	 : Draw linear x grid lines
  *	gmt_setfill              :
  *	gmt_setfont              :
- *	gmt_draw_map_inset      :
+ *	gmt_draw_map_inset       :
  *	gmt_setpen               :
  *	gmt_draw_custom_symbol   :
  *	gmt_add_label_record     :
@@ -316,7 +317,6 @@ GMT_LOCAL void plot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *
 	y_length = GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO];
 
 	if (GMT->current.map.frame.draw) {
-
 		/* Temporarily change to square cap so rectangular frames have neat corners */
 		PSL_setlinecap (PSL, PSL_SQUARE_CAP);
 
@@ -1848,7 +1848,12 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.map.frame.side[N_SIDE] & GMT_AXIS_ANNOT) {
 			PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
 			PSL_command (PSL, "/PSL_H_y %d ", PSL_IZ (PSL, GMT->current.setting.map_tick_length[GMT_PRIMARY] + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + GMT->current.setting.map_title_offset));
-			PSL_deftextdim (PSL, "-h", GMT->current.setting.font_annot[GMT_PRIMARY].size, "100\\312");
+			if (GMT->current.setting.map_degree_symbol == gmt_none)
+				PSL_deftextdim (PSL, "-h", GMT->current.setting.font_annot[GMT_PRIMARY].size, "100");
+			else {
+				snprintf (label, GMT_LEN16, "100%c",  (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);
+				PSL_deftextdim (PSL, "-h", GMT->current.setting.font_annot[GMT_PRIMARY].size, label);
+			}
 			PSL_command (PSL, "add def\n");
 		}
 		else
@@ -2558,15 +2563,15 @@ GMT_LOCAL bool plot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CU
 
 	for (k = 0; k < 3; k++) {	/* Load up the left and 1-2 right operands */
 		switch (s->var[k]) {
-			case -3:	/* Symbol size */
+			case GMT_VAR_SIZE:	/* Symbol size */
 				arg[k] = size[0];	break;
-			case -2:	/* User y-coordinate */
+			case GMT_VAR_IS_Y:	/* User y-coordinate */
 				arg[k] = GMT->current.io.curr_rec[GMT_Y];	break;
-			case -1:	/* User x-coordinate */
+			case GMT_VAR_IS_X:	/* User x-coordinate */
 				arg[k] = GMT->current.io.curr_rec[GMT_X];	break;
-			case 0:		/* A constant */
+			case GMT_CONST_VAR:	/* A numeric constant */
 				arg[k] = s->const_val[k];	break;
-			default:	/* One of the variables 1-* */
+			default:		/* One of the variables 1-n */
 				arg[k] = size[s->var[k]];	break;
 		}
 	}
@@ -4211,6 +4216,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	unsigned int primary;		/* Axis item number of annotation with largest interval/unit */
 	unsigned int axis = A->id;	/* Axis id (GMT_X, GMT_Y, GMT_Z) */
 	unsigned int justify;
+	unsigned int lx_just = PSL_BC, ly_just = PSL_BC;
 	bool horizontal;		/* true if axis is horizontal */
 	bool annotate = ((side & GMT_AXIS_ANNOT) > 0);
 	bool neg = below;		/* true if annotations are to the left of or below the axis */
@@ -4223,8 +4229,12 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	bool ortho = false;		/* true if annotations are orthogonal to axes */
 	bool flip = false;		/* true if annotations are inside axes */
 	bool MM_set = false;		/* true after we define the MM PS macro for label offsets */
+	bool angled = false;		/* True if user used +angle to select a slanted annotation */
+	bool skip = false;
+	bool save_pi = GMT->current.plot.substitute_pi;
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
-	double x, t_use, text_angle;		/* Misc. variables */
+	double x, t_use, text_angle, cos_a = 0.0;	/* Misc. variables */
+	double x_angle_add = 0.0, y_angle_add = 0.0;	/* Used when dealing with perspectives */
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;	/* Pointer to the current axis item */
 	char string[GMT_LEN256] = {""};	/* Annotation string */
@@ -4236,15 +4246,41 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 	/* Initialize parameters for this axis */
 
+	if (GMT->current.proj.three_D && axis != GMT_Z) {
+		/* Because perspective is now done in PostScript we must sometimes reverse the label orientations
+		 * so they dont appear upside down when viewed from certaint quadrants */
+		switch (GMT->current.proj.z_project.quadrant) {
+			case 1: x_angle_add = 180.0; lx_just = PSL_TC; break;
+			case 3: y_angle_add = 180.0; ly_just = PSL_TC; break;
+			case 4: x_angle_add = y_angle_add = 180.0; lx_just = ly_just = PSL_TC; break;
+			default: x_angle_add = y_angle_add = 0.0; break;
+		}
+	}
 	horizontal = (axis == GMT_X);	/* This is a horizontal axis */
 	xyz_fwd = ((axis == GMT_X) ? &gmt_x_to_xx : (axis == GMT_Y) ? &gmt_y_to_yy : &gmt_z_to_zz);
 	primary = plot_get_primary_annot (A);			/* Find primary axis items */
-	if (strchr (GMT->current.setting.map_annot_ortho, axis_chr[axis][below])) ortho = true;	/* Annotations are orthogonal */
+	if (A->use_angle) {	/* Must honor the +a modifier */
+		if (axis == GMT_Y && doubleAlmostEqualZero (A->angle, 90.0)) ortho = false;	/* Y-Annotations are parallel */
+		else if (axis == GMT_Y && doubleAlmostEqualZero (A->angle, 0.0)) ortho = true;	/* Y-Annotations are normal */
+		if (axis == GMT_X && doubleAlmostEqualZero (A->angle, 0.0)) skip = true;	/* X-Annotations are parallel so do nothing */
+	}
+	else if (strchr (GMT->current.setting.map_annot_ortho, axis_chr[axis][below]))
+		ortho = true;	/* Annotations are orthogonal for this axis */
 	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) neg = !neg;	/* Annotations go either below or above the axis */
 	faro = (neg == (horizontal && !ortho));			/* Current point is at the far side of the tickmark? */
-	if (A->type != GMT_TIME) gmt_get_format (GMT, gmtlib_get_map_interval (GMT, &A->item[GMT_ANNOT_UPPER]), A->unit, A->prefix, format);	/* Set the annotation format template */
+	if (A->type != GMT_TIME)						/* Set the annotation format template */
+		gmt_get_format (GMT, gmtlib_get_map_interval (GMT, &A->item[GMT_ANNOT_UPPER]), A->unit, A->prefix, format);
 	text_angle = (ortho == horizontal) ? 90.0 : 0.0;
 	justify = (ortho) ? PSL_MR : PSL_BC;
+	if (axis == GMT_X && A->use_angle && !skip) {	/* User override annotation angle */
+		text_angle = A->angle;
+		angled = true;
+		if (text_angle > 0.0)
+			justify = (below) ? PSL_MR : PSL_ML;
+		else
+			justify = (below) ? PSL_ML : PSL_MR;
+		cos_a = 0.5 * cosd (text_angle);	/* Half-height of text at an angle */
+	}
 	flip = (GMT->current.setting.map_frame_type & GMT_IS_INSIDE);	/* Inside annotation */
 	if (axis != GMT_Z && GMT->current.proj.three_D && GMT->current.proj.z_project.cos_az > 0) {	/* Rotate x/y-annotations when seen "from North" */
 		if (!flip) justify = gmt_flip_justify (GMT, justify);
@@ -4304,6 +4340,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		return;
 	}
 
+	GMT->current.plot.substitute_pi = A->substitute_pi;
 	np = gmtlib_coordinate_array (GMT, val0, val1, &A->item[primary], &knots_p, NULL);	/* Get all the primary tick annotation knots */
 
 	/* Axis items are in order: GMT_ANNOT_UPPER, GMT_ANNOT_LOWER, GMT_TICK_UPPER, GMT_TICK_LOWER, GMT_GRID_UPPER, GMT_GRID_LOWER */
@@ -4380,6 +4417,12 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				x = (*xyz_fwd) (GMT, t_use);	/* Convert to inches on the page */
 				/* Move to new anchor point */
 				PSL_command (PSL, "%d PSL_A%d_y MM\n", PSL_IZ (PSL, x), annot_pos);
+				if (angled) {	/* Must compensate for rotated textbox sticking too close to axis */
+					if (below) /* S axis */
+						PSL_command (PSL, "0 PSL_AH%d 1 %g sub mul G\n", annot_pos, cos_a);
+					else /* N axis */
+						PSL_command (PSL, "0 PSL_AH%d %g mul G\n", annot_pos, cos_a);
+				}
 				if (label_c && label_c[i] && label_c[i][0])
 					strncpy (string, label_c[i], GMT_LEN256-1);
 				else
@@ -4412,10 +4455,13 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		PSL_command (PSL, "%d PSL_L_y MM\n", PSL_IZ (PSL, 0.5 * length));
 		if (axis == GMT_Y && A->label_mode) {
 			i = (below) ? PSL_MR : PSL_ML;
-			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, this_label, 0.0, i, form);
+			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, this_label, 0.0 + y_angle_add, i, form);
 		}
-		else
-			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, this_label, horizontal ? 0.0 : 90.0, PSL_BC, form);
+		else {
+			double angle_add = (axis == GMT_X) ? x_angle_add : y_angle_add;
+			unsigned int l_just = (axis == GMT_X) ? lx_just : ly_just;
+			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, this_label, (horizontal ? 0.0 : 90.0) + angle_add, l_just, form);
+		}
 	}
 	else
 		PSL_command (PSL, "/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def\n");
@@ -4426,6 +4472,8 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	else
 		PSL_comment (PSL, below ? "End of front z-axis\n" : "End of back z-axis\n");
 	PSL_setorigin (PSL, -x0, -y0, 0.0, PSL_INV);
+
+	GMT->current.plot.substitute_pi = save_pi;
 }
 
 void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pen, uint64_t n, unsigned int mode) {
@@ -4626,7 +4674,8 @@ void gmt_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode) {
 	double nesw[4], old_level, xx, yy, az;
 	struct PSL_CTRL *PSL= GMT->PSL;
 
-	if (!GMT->current.proj.three_D || !GMT->current.map.frame.axis[GMT_Z].item[GMT_ANNOT_UPPER].active) return;
+	if (!GMT->current.proj.three_D) return;
+	if (!GMT->current.map.frame.drawz) return;
 
 	nesw[0] = GMT->current.proj.rect[YHI], nesw[1] = GMT->current.proj.rect[XHI], nesw[2] = GMT->current.proj.rect[YLO], nesw[3] = GMT->current.proj.rect[XLO];
 
@@ -4694,7 +4743,7 @@ void gmt_map_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag) {
 	 * must have been called first.  If r >= 0, the map area will
 	 * first be painted in the r,g,b colors specified.  flag can
 	 * be 0-3, as described in PSL_beginclipping():
-	 * flag : 0 = continue adding pieces to the curent clipping path
+	 * flag : 0 = continue adding pieces to the current clipping path
 	 *        1 = start new clipping path (more must follows)
 	 *        2 = end clipping path (this is the last segment added)
 	 *        3 = this is the complete clipping path (start to end)
@@ -4725,6 +4774,31 @@ void gmt_map_clip_off (struct GMT_CTRL *GMT) {
 
 	PSL_comment (GMT->PSL, "Deactivate Map clip path\n");
 	PSL_endclipping (GMT->PSL, 1);		/* Reduce polygon clipping by one level */
+}
+
+void gmt_BB_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag) {
+	/* This function sets up a clip path so that only plotting
+	 * inside the bounding box rectangular area will be drawn on paper. map_setup
+	 * must have been called first.  If r >= 0, the map area will
+	 * first be painted in the r,g,b colors specified.  flag can
+	 * be 0-3, as described in PSL_beginclipping():
+	 * flag : 0 = continue adding pieces to the current clipping path
+	 *        1 = start new clipping path (more must follows)
+	 *        2 = end clipping path (this is the last segment added)
+	 *        3 = this is the complete clipping path (start to end)
+	 * 	  Add 4 to select even-odd clipping [nonzero-winding rule].
+	 */
+
+	double work_x[5], work_y[5];
+	struct PSL_CTRL *PSL= GMT->PSL;
+
+	work_x[0] = work_x[3] = work_x[4] = GMT->current.proj.rect[XLO];
+	work_x[1] = work_x[2] = GMT->current.proj.rect[XHI];
+	work_y[0] = work_y[1] = work_y[4] = GMT->current.proj.rect[YLO];
+	work_y[2] = work_y[3] = GMT->current.proj.rect[YHI];
+	
+	PSL_comment (PSL, "Activate BoundingBox Map clip path\n");
+	PSL_beginclipping (PSL, work_x, work_y, 5, rgb, flag);
 }
 
 void gmt_setfill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, int outline) {
@@ -5238,7 +5312,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	bool flush = false, this_outline = false, skip[GMT_N_COND_LEVELS+1], done[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
-	double x, y, lon, lat, az, angle1, angle2, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
+	double x, y, lon, lat, az, angle1, angle2, p_width, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
 	char user_text[GMT_LEN256] = {""};
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
 	struct GMT_FILL f, *current_fill = fill;
@@ -5348,6 +5422,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 		dim[1] = s->p[1] * size[0];
 		dim[2] = s->p[2] * size[0];
 		if (s->pen) {	/* This action has a pen setting */
+			p_width = s->pen->width;	/* Remember what it was before messing with it below */
 			if (s->pen->width < 0.0)	/* Convert the normalized pen width to points given current size */
 				s->pen->width = fabs (s->pen->width * size[0] * GMT->session.u2u[GMT_INCH][GMT_PT]);
 			else if (s->var_pen > 0)	/* Convert the specified variable to points */
@@ -5525,6 +5600,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				GMT_exit (GMT, GMT_PARSE_ERROR); return GMT_PARSE_ERROR;
 				break;
 		}
+		if (s->pen) s->pen->width = p_width;	/* Reset to what it was before scaling */
 		s = s->next;
 	}
 	if (flush) plot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
@@ -6316,21 +6392,21 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		/* Determine paper size */
 		wants_PS = gmtlib_fig_is_ps (GMT);	/* True if we have requested a PostScript output format */
 		if (wants_PS && media_size[GMT_X] > (GMT_PAPER_DIM-0.1)) {	/* Cannot use "auto" if requesting a PostScript file */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Must specify a paper size when requesting a PostScript file\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Must specify a paper size when requesting a PostScript file\n");
 			if (GMT->current.setting.proj_length_unit == GMT_INCH) {	/* Use US settings */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Changing paper size to US Letter, but we cannot know if this is adequate for your plot; use PS_MEDIA.\n");
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Changing paper size to US Letter, but we cannot know if this is adequate for your plot; use PS_MEDIA.\n");
 				media_size[GMT_X] = 612.0; media_size[GMT_Y] = 792.0;
 			}
 			else {	/* Use SI settings */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Changing paper size to A4, but we cannot know if this is adequate for your plot.\n");
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Changing paper size to A4, but we cannot know if this is adequate for your plot.\n");
 				media_size[GMT_X] = 595.0; media_size[GMT_Y] = 842.0;
 			}
 			if ((((GMT->current.map.width + GMT->current.setting.map_origin[GMT_X]) * 72) > media_size[GMT_X]) && GMT->current.setting.ps_orientation == PSL_PORTRAIT) {
 				GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Also changing to landscape orientation based on plot dimensions but again not sure.\n");
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Also changing to landscape orientation based on plot dimensions but again not sure.\n");
 			}
 		}
-		if (!wants_PS && !O_active) {	/* Not desiring PS output so we can add safety margin of 5 inch for initial layer */
+		if (!wants_PS && !O_active) {	/* Not desiring PS output so we can add safety margin of GMT_PAPER_MARGIN inches for initial layer */
 			if (!(GMT->common.X.active || GMT->common.Y.active))
 				GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = GMT_PAPER_MARGIN;
 		}
@@ -6491,7 +6567,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	}
 	/* If requested, place the timestamp */
 
-	if (GMT->current.ps.map_logo_label[0] == 'c' && GMT->current.ps.map_logo_label[1] == 0) {
+	if (GMT->current.ps.logo_cmd) {
 		char txt[4] = {' ', '-', 'X', 0};
 		struct GMT_OPTION *opt = NULL;
 		size_t len = strlen (GMT->init.module_name);
@@ -6504,6 +6580,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			len += 3;
 			strncat (GMT->current.ps.map_logo_label, opt->arg, GMT_LEN256-len);
 		}
+		GMT->current.ps.logo_cmd = false;	/* Mission accomplished */
 	}
 	if (GMT->current.setting.map_logo)
 		plot_timestamp (GMT, PSL, GMT->current.setting.map_logo_pos[GMT_X], GMT->current.setting.map_logo_pos[GMT_Y], GMT->current.setting.map_logo_justify, GMT->current.ps.map_logo_label);

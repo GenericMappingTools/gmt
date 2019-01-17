@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -100,7 +100,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> [-B<args> or -Ba<args> -Bb<args> -Bc<args>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-G<fill>] [-JX<width>] %s[-L<a/b/c> ] [-M] [-N] %s%s\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t [-S[<symbol>][<size>[unit]]] [-R<amin/amax/bmin/bmax/cmin/cmax>] [%s] [%s] [-W[<pen>][<attr>]]\n", GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [-R<amin/amax/bmin/bmax/cmin/cmax>] [%s] [%s] [-W[<pen>][<attr>]]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -166,7 +166,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct G
 				gmt_M_str_free (Ctrl->G.string);
 				Ctrl->G.string = strdup (opt->arg);
 				break;
-			case 'L':	/* get the three labels seaprated by slashes */
+			case 'L':	/* Get the three labels seaprated by slashes */
 				Ctrl->L.active = true;
 				sscanf (opt->arg, "%[^/]/%[^/]/%s", Ctrl->L.vlabel[GMT_X], Ctrl->L.vlabel[GMT_Y], Ctrl->L.vlabel[GMT_Z]);
 				break;
@@ -198,6 +198,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct G
 		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 		n_errors += gmt_M_check_condition (GMT, !(Ctrl->S.active || Ctrl->Q.active), "Syntax error: Must specify either -S or -Q\n");
 	}
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->S.string[0], "Syntax error: Must specify a symbol when using -S\n");
 
 	n_errors += gmt_check_binary_io (GMT, 2);
 
@@ -395,7 +396,7 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 		}
 	}
 	gmt_adjust_dataset (GMT, D, D->n_columns-1);	/* Remove all traces of the extra column */
-	gmt_set_dataset_minmax (GMT, D);				/* Update column stats */
+	gmt_set_dataset_minmax (GMT, D);		/* Update column stats */
 	
 	if (Ctrl->M.active) {	/* Just print the converted data and exit */
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, 0, NULL, NULL, D) != GMT_NOERROR) {

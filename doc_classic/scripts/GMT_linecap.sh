@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 ps=GMT_linecap.ps
 cat << EOF > lines.txt

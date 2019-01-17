@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *
  *
- *  Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo,
+ *  Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo,
  *  F. Wobbe, and J. Luis
  *  See LICENSE.TXT file for copying and redistribution conditions.
  *

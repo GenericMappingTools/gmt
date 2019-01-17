@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -4060,9 +4060,9 @@ GMT_LOCAL void free_sort_list (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info) 
 }
 
 GMT_LOCAL int table_SORT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: SORT 3 1 Sort stack based on column A in direction of B (-1 descending |+1 ascending).  */
+/*OPERATOR: SORT 3 1 Sort all columns in stack based on column A in direction of B (-1 descending |+1 ascending).  */
 {
-	uint64_t s, seg, row, k = 0;
+	uint64_t s, seg, row, k0 = 0, k = 0;
 	unsigned int scol;
 	unsigned int prev1 = last - 1, prev2 = last - 2;
 	int dir;
@@ -4082,7 +4082,7 @@ GMT_LOCAL int table_SORT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		info->Q = gmt_M_memory (GMT, NULL, (info->local) ? info->T->n_segments : 1, struct GMT_ORDER *);
 		if (!info->local) Z = info->Q[0] = gmt_M_memory (GMT, NULL, info->T->n_records, struct GMT_ORDER);
 		for (s = k = 0; s < info->T->n_segments; s++) {
-			if (info->local) {	/* SOrt each segment independently */
+			if (info->local) {	/* Sort each segment independently */
 				Z = info->Q[s] = gmt_M_memory (GMT, NULL, info->T->segment[s]->n_rows, struct GMT_ORDER);
 				seg = s;
 				k = 0;	/* Reset for new segment */
@@ -4101,19 +4101,23 @@ GMT_LOCAL int table_SORT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	}
 	
 	/* OK now we can deal with shuffling of rows based on how the selected column was sorted */
-	if (!info->local) gmt_prep_tmp_arrays (GMT, GMT_IN, info->T->n_records, 1);	/* Init or reallocate tmp vectors */
-	for (s = k = 0; s < info->T->n_segments; s++) {
+	if (!info->local) gmt_prep_tmp_arrays (GMT, GMT_IN, info->T->n_records, 1);	/* Init or reallocate tmp vectors once if the entire table */
+	for (s = k0 = 0; s < info->T->n_segments; s++) {
 		if (info->local) {	/* Do the shuffle on a segment-by-segment basis */
 			seg = s;
-			k = 0;	/* Reset for new segment */
+			k0 = 0;	/* Reset for new segment */
 		}
-		else	/* Just do everything at once */
+		else	/* Just do everything at once, so k0 increases by n_rows after each segment */
 			seg = 0;
 		Z = info->Q[seg];	/* Pointer to this segment's (or all) order scheme */
-		if (info->local) gmt_prep_tmp_arrays (GMT, GMT_IN, info->T->segment[s]->n_rows, 1);	/* Init or reallocate tmp vectors */
-		for (row = 0; row < info->T->segment[s]->n_rows; row++, k++) /* Do the shuffle via a temp vector */
-			GMT->hidden.mem_coord[GMT_X][row] = T_prev2->segment[s]->data[col][Z[k].order];
-		gmt_M_memcpy (T_prev2->segment[s]->data[col], GMT->hidden.mem_coord[GMT_X], info->T->segment[s]->n_rows, double);
+		if (info->local) gmt_prep_tmp_arrays (GMT, GMT_IN, info->T->segment[s]->n_rows, 1);	/* Init or reallocate tmp vectors if a segment is longer */
+		for (col = 0; col < info->n_col; col++) {
+			k = k0;	/* Reset for each column */
+			for (row = 0; row < info->T->segment[s]->n_rows; row++, k++) /* Do the shuffle via a temp vector */
+				GMT->hidden.mem_coord[GMT_X][row] = T_prev2->segment[s]->data[col][Z[k].order];
+			gmt_M_memcpy (T_prev2->segment[s]->data[col], GMT->hidden.mem_coord[GMT_X], info->T->segment[s]->n_rows, double);
+		}
+		k0 += info->T->segment[s]->n_rows;	/* May be reset above if local */
 	}
 	return 0;
 }
@@ -5458,15 +5462,18 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			solve_SVDFIT (GMT, &info, stack[nstack-1], n_columns, Ctrl->C.cols, Ctrl->E.eigen, Ctrl->Out.file, options, A_in);
 			Return (GMT_NOERROR);
 		}
-
-		for (j = 0; j < n_columns; j++) {
-			if (Ctrl->C.cols[j]) continue;
-			status = (*call_operator[op]) (GMT, &info, stack, nstack - 1, j);	/* Do it */
-			if (status == -1) {	/* Serious problem, need to bail */
-				GMT_exit (GMT, GMT_RUNTIME_ERROR); Return (GMT_RUNTIME_ERROR);
+		else if (!strcmp (operator[op], "SORT")) {	/* Special case, sort all columns inside operator */
+			status = (*call_operator[op]) (GMT, &info, stack, nstack - 1, 0);	/* Do it for all columns, the col = 0 is not used inside function */
+		}
+		else {
+			for (j = 0; j < n_columns; j++) {
+				if (Ctrl->C.cols[j]) continue;
+				status = (*call_operator[op]) (GMT, &info, stack, nstack - 1, j);	/* Do it */
+				if (status == -1) {	/* Serious problem, need to bail */
+					GMT_exit (GMT, GMT_RUNTIME_ERROR); Return (GMT_RUNTIME_ERROR);
+				}
 			}
 		}
-		
 		free_sort_list (GMT, &info);	/* Frees helper array if SORT was called */
 		
 		nstack = new_stack;

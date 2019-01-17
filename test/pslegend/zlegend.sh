@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Testing gmt pslegend capabilities with symbol color lookup
 

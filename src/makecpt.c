@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 #define THIS_MODULE_NAME	"makecpt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make GMT color palette tables"
-#define THIS_MODULE_KEYS	">C},ED(,SD(,TD("
+#define THIS_MODULE_KEYS	">C},ED(,SD(,TD(,<D("
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->Vbdhi"
 
@@ -136,7 +136,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-A<transparency>[+a]] [-C<cpt>|colors] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c][+c]] [-G<zlo>/<zhi>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "	[-I[c][z]] [-M] [-N] [-Q] [-S[<mode>]] [-T<min>/<max>[/<inc>[+b|l|n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "	[-I[c][z]] [-M] [-N] [-Q] [-S<mode>] [-T<min>/<max>[/<inc>[+b|l|n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -169,7 +169,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sp<scl> Make symmetric range around mode and +/- <scl> * LMS_scale.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sq<low>/<high> Set range from <low> quartile to <high> quartile.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -S<inc>[+d] Read data and round range to nearest <inc>; append +d for discrete CPT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -S	Read data and use min/max as range.\n");	
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sr	Read data and use min/max as range.\n");	
 	GMT_Message (API, GMT_TIME_NONE, "\t   Last data column is used in the calculation; see -i to arrange columns.\n");	
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced color boundaries from <min> to <max> in steps of <inc>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +b for log2 spacing in integer <inc> or +l for log10 spacing via <inc> = 1,2,3.\n");
@@ -287,6 +287,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 						gmt_scanf_float (GMT, txt_a, &Ctrl->S.q[0]);
 						gmt_scanf_float (GMT, txt_b, &Ctrl->S.q[1]);
 						break;
+					case 'r':
 					case '\0':
 						Ctrl->S.mode = DO_RANGE;	break;
 					default:
@@ -386,6 +387,44 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the makecpt main code ----------------------------*/
 
+	if (Ctrl->C.active) {
+		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
+	}
+	else {	/* No table specified; set default rainbow table */
+		Ctrl->C.active = true;
+		Ctrl->C.file = strdup (GMT_DEFAULT_CPT);
+	}
+
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Prepare CPT via the master file %s\n", Ctrl->C.file);
+
+	/* OK, we can now do the resampling */
+
+	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN is determined by parameters */
+	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
+	if (Ctrl->Z.active) cpt_flags |= GMT_CPT_CONTINUOUS;	/* Controls if final CPT should be continuous in case input is a list of colors */
+
+	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
+		Return (API->error);
+	}
+	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
+		gmt_scale_cpt (GMT, Pin, -1.0);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);
+	if (Ctrl->G.active) {	/* Attempt truncation */
+		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
+		if (Ptrunc == NULL)
+			Return (API->error);
+		Pin = Ptrunc;
+	}
+
+	if (Pin->categorical) Ctrl->W.active = true;	/* Do not want to sample a categorical table */
+	if (Ctrl->E.active) {
+		if (Ctrl->E.levels == 0)
+			Ctrl->E.levels = Pin->n_colors + 1;	/* Default number of levels */
+		else
+			Ctrl->T.interpolate = true;
+	}
+	if (Ctrl->W.wrap) Pin->is_wrapping = true;	/* A cyclic CPT has been requested */
+
 	if (Ctrl->S.active || Ctrl->E.active) {	/* Must read a data set and do statistics first, and then set -T values accordingly */
 		unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0;
 		uint64_t n = 0, zcol, tbl, seg;
@@ -463,39 +502,6 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input data and -S implies -T%g/%g\n", Ctrl->T.T.min, Ctrl->T.T.max);
 	}
 		
-	if (Ctrl->C.active) {
-		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
-	}
-	else {	/* No table specified; set default rainbow table */
-		Ctrl->C.active = true;
-		Ctrl->C.file = strdup (GMT_DEFAULT_CPT);
-	}
-
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Prepare CPT via the master file %s\n", Ctrl->C.file);
-
-	/* OK, we can now do the resampling */
-
-	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN is determined by parameters */
-	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
-	if (Ctrl->Z.active) cpt_flags |= GMT_CPT_CONTINUOUS;	/* Controls if final CPT should be continuous in case input is a list of colors */
-
-	if ((Pin = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
-		Return (API->error);
-	}
-	if (Ctrl->I.mode & GMT_CPT_Z_REVERSE)	/* Must reverse the z-values before anything else */
-		gmt_scale_cpt (GMT, Pin, -1.0);
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "CPT is %s\n", kind[Pin->is_continuous]);
-	if (Ctrl->G.active) {	/* Attempt truncation */
-		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
-		if (Ptrunc == NULL)
-			Return (API->error);
-		Pin = Ptrunc;
-	}
-
-	if (Pin->categorical) Ctrl->W.active = true;	/* Do not want to sample a categorical table */
-	if (Ctrl->E.active && Ctrl->E.levels == 0) Ctrl->E.levels = Pin->n_colors + 1;	/* Default number of levels */
-	if (Ctrl->W.wrap) Pin->is_wrapping = true;	/* A cyclic CPT has been requested */
-
 	/* Set up arrays */
 
 	if (Ctrl->T.active && gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) Return (GMT_RUNTIME_ERROR);

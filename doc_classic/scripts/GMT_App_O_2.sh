@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #	Makes Fig 2 for Appendix O (labeled lines)
 #

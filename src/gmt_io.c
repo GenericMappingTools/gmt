@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -4869,7 +4869,7 @@ char *gmt_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 
 	/* First look in the current working directory */
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 0. Will try to fine subdir=%s stem = %s suffix=%s\n", subdir, stem, suffix);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 0. Will try to find subdir=%s stem = %s suffix=%s\n", subdir, stem, suffix);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT: 1. gmt_getsharepath trying current dir\n");
 	sprintf (path, "%s%s", stem, suffix);
 	if (!access (path, mode)) return (path);	/* Yes, found it in current directory */
@@ -6360,7 +6360,7 @@ void gmtlib_plot_C_format (struct GMT_CTRL *GMT) {
 
 	if (S->decimal) {	/* Plain decimal degrees */
 		int len;
-		 /* here we depend on FORMAT_FLOAT_OUT begin set.  This will not be true when FORMAT_GEO_MAP is parsed but will be
+		 /* Here we depend on FORMAT_FLOAT_OUT being set.  This will not be true when FORMAT_GEO_MAP is parsed but will be
 		  * handled at the end of gmt_begin.  For gmtset and --PAR later we will be OK as well. */
 		if (!GMT->current.setting.format_float_out[0]) return; /* Quietly return and deal with this later in gmt_begin */
 

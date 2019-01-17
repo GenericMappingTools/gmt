@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 41
 #
 # Purpose:      Illustrate typesetting of legend with table

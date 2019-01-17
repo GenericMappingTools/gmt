@@ -90,6 +90,17 @@ are produced then we do not need to give any further arguments:
 Should we give such a command and still produce a plot then it will automatically
 be called gmtsession.pdf.
 
+Note on PostScript
+------------------
+
+If the user selects **ps** as one of the formats, then please be aware that
+it is recommended you first set the desired paper size.  GMT needs to
+work with a fixed paper size since, unlike the **eps** format, there will be
+no cropping to BoundingBox.  If no paper size is specified via :ref:`PS_MEDIA <PS_MEDIA>`
+then GMT will default to A4 and issue a warning; GMT is unable to determine if that
+size is adequate for your plot but if the plot width exceeds A4 paper width we will
+switch page orientation to landscape.
+
 See Also
 --------
 
@@ -97,5 +108,6 @@ See Also
 :doc:`docs`,
 :doc:`end`,
 :doc:`figure`,
+:doc:`inset`,
 :doc:`subplot`,
 :doc:`gmt`

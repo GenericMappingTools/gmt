@@ -1,5 +1,4 @@
-#!/bin/bash
-#	$Id: GMT_App_F_iso+.sh 11490 2013-05-16 06:26:21Z pwessel $
+#!/usr/bin/env bash
 #
 #	Function that makes the octal code charts in Appendix F
 #	but writes to stdout

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 31
 #
 # Purpose:	Illustrate usage of non-default fonts in PostScript
@@ -50,7 +50,7 @@ gmt psxy -R -J -Sc0.15c -W1.25p -O -K >> $ps
 
 # label big EU cities
 $AWK 'BEGIN {FS=","} $4 > 1000000 {print $1, $2, $3}' $capitals | \
-gmt pstext -R -J -F+f7p,LinBiolinumOI+jBL -Dj0.1c -Gwhite -C5% -Qu -TO -O -K >> $ps
+gmt pstext -R -J -F+f7p,LinBiolinumOI+jBL -Dj0.1c -Gwhite -C5%+tO -Qu -O -K >> $ps
 
 # construct legend
 cat << EOF > legend.txt

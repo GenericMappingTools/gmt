@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin GMT_pstext_justify ps
 B=0.2
 M=0.38

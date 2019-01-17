@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 03
 #
 # Purpose:	Resample track data, do spectral analysis, and plot
@@ -40,7 +40,7 @@ gmt project @ship_03.txt -C$cpos -T$ppos -S -Fpz -Q > ship.pg
 # to use to plot the .pg data. 
 #
 R=`gmt info -I100/25 sat.pg ship.pg`
-gmt psxy $R -UL/-1.75i/-1.25i/"Example 3a in Cookbook" -BWeSn \
+gmt psxy $R -U"Example 3a in Cookbook"+o-1.75i/-1.25i -BWeSn \
 	-Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" \
 	-JX8i/5i -X2i -Y1.5i -K -Wthick sat.pg > example_03a.ps
 gmt psxy -R -JX -O -Sp0.03i ship.pg >> example_03a.ps
@@ -55,7 +55,7 @@ gmt psxy -R -JX -O -Sp0.03i ship.pg >> example_03a.ps
 # "gmt pshistogram".
 #
 gmt math ship.pg -T -i0 DIFF = | gmt pshistogram  -W0.1 -Gblack \
-	-JX3i -K -X2i -Y1.5i -B0 -B+t"Ship" -UL/-1.75i/-1.25i/"Example 3b in Cookbook" \
+	-JX3i -K -X2i -Y1.5i -B0 -B+t"Ship" -U"Example 3b in Cookbook"+o-1.75i/-1.25i \
 	> example_03b.ps
 gmt math sat.pg -T -i0 DIFF = | gmt pshistogram  -W0.1 -Gblack \
 	-JX3i -O -X5i -B0 -B+t"Sat" >> example_03b.ps
@@ -90,7 +90,7 @@ gmt filter1d ship.pg -Fm1 -T$bounds/1 -E | gmt sample1d -Nsamp.x > samp_ship.pg
 #
 gmt psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick samp_sat.pg \
 	-Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" \
-	-BWeSn -UL/-1.75i/-1.25i/"Example 3c in Cookbook" > example_03c.ps
+	-BWeSn -U"Example 3c in Cookbook"+o-1.75i/-1.25i > example_03c.ps
 gmt psxy -R -JX -O -Sp0.03i samp_ship.pg >> example_03c.ps
 #
 # Now to do the cross-spectra, assuming that the ship is the input and the sat is the output 
@@ -128,7 +128,7 @@ EOF
 gmt trend1d -Fxw -Np1+r samp_ship.pg > samp_ship.xw
 gmt psxy $R -JX8i/4i -X2i -Y1.5i -K -Sp0.03i \
 	-Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" \
-	-BWeSn -UL/-1.75i/-1.25i/"Example 3d in Cookbook" samp_ship.pg > example_03d.ps
+	-BWeSn -U"Example 3d in Cookbook"+o-1.75i/-1.25i samp_ship.pg > example_03d.ps
 R=`gmt info samp_ship.xw -I100/1.1`
 gmt psxy $R -JX8i/1.1i -O -Y4.25i -Bxf100 -Bya0.5f0.1+l"Weight" -BWesn -Sp0.03i \
 	samp_ship.xw >> example_03d.ps
@@ -146,7 +146,7 @@ gmt trend1d -Fxrw -Np1+r samp_sat.pg  | gmt select -Z0/0.6 -o0,1 -Iz \
 R=`gmt info -I100/25 samp2_sat.pg samp2_ship.pg`
 gmt psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick \
 	-Bxa500f100+l"Distance along great circle" -Bya50f25+l"Gravity anomaly (mGal)" \
-	-BWeSn -UL/-1.75i/-1.25i/"Example 3e in Cookbook" samp2_sat.pg > example_03e.ps
+	-BWeSn -U"Example 3e in Cookbook"+o-1.75i/-1.25i samp2_sat.pg > example_03e.ps
 gmt psxy -R -JX -O -Sp0.03i samp2_ship.pg >> example_03e.ps
 #
 # Now we do the cross-spectral analysis again.  Comparing this plot (example_03e.ps) with
@@ -156,7 +156,7 @@ gmt psxy -R -JX -O -Sp0.03i samp2_ship.pg >> example_03e.ps
 gmt convert -A samp2_ship.pg samp2_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -T
 # 
 gmt psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn \
-	-JX-4il/3.75i -R1/1000/0/1 -UL/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i \
+	-JX-4il/3.75i -R1/1000/0/1 -U"Example 3f in Cookbook"+o-2.25i/-1.25i -P -K -X2.5i \
 	-Sc0.07i -Gblack -Ey+p0.5p -Y1.5i > example_03f.ps
 echo "Coherency@+2@+" | gmt pstext -R -J -F+cTR+f18p,Helvetica-Bold -Dj0.1i \
 	-O -K -Wthicker -C0.1i >> example_03f.ps

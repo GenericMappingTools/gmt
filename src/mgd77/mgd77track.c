@@ -164,7 +164,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		strcpy (dist_marker_size, "0.06i");
 	}
 	
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s cruise(s) %s %s\n\t[-A[c][<size>]][,<inc><unit>] [%s] ", name, GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s cruise(s) %s %s\n\t[-A[c][<size>]][+i<inc><unit>] [%s] ", name, GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "[-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-F]\n\t[-Gt|d|n<gap>] [-I<code>] %s[-L<trackticks>] [-N] %s%s[-Sa<startdist>[<unit>]]\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s]\n\t[%s] [-W<pen>] [%s] [%s]\n",
 	             GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
@@ -177,7 +177,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Annotate legs when they enter the grid. Append c for cruise ID [Default is file prefix];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <size> is optional text size in points [9].  The font used is controlled by FONT_LABEL.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append ,<inc>[unit] to place label every <inc> units apart; <unit> may be\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +i<inc>[unit] to place label every <inc> units apart; <unit> may be\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   k (km) or n (nautical miles), or d (days), h (hours).\n");
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Select procedure for along-track distance calculations:\n");
@@ -317,13 +317,26 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 			case 'A':
 				Ctrl->A.active = true;
 				Ctrl->A.mode = 1;
+				if ((t = strstr (opt->arg, "+i"))) t[0] = '\0';	/* Chop off modifier */
 				j = 0;
 				if (opt->arg[0] == 'c') j++, Ctrl->A.mode = 2;
 				if (opt->arg[j] && opt->arg[j] != ',')
 					Ctrl->A.size = atof (&opt->arg[j]) * GMT->session.u2u[GMT_PT][GMT_INCH];
-				if ((t = strchr (opt->arg, ','))) {	/* Want label at regular spacing */
-					if (get_annotinfo (&t[1], &Ctrl->A.info)) n_errors++;
+				if (t) {
+					if (get_annotinfo (&t[2], &Ctrl->A.info)) n_errors++;
 					Ctrl->A.mode = -Ctrl->A.mode;	/* Flag to tell machinery not to annot at entry */
+					t[0] = '+';	/* Restore modifier */
+				}
+				else if ((t = strchr (opt->arg, ','))) {	/* Want label at regular spacing */
+					if (gmt_M_compat_check (GMT, 5)) {
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning -A: ,<inc> is deprecated, use +i<inc> instead\n");
+						if (get_annotinfo (&t[1], &Ctrl->A.info)) n_errors++;
+						Ctrl->A.mode = -Ctrl->A.mode;	/* Flag to tell machinery not to annot at entry */
+					}
+					else {
+						GMT_Report (API, GMT_MSG_NORMAL, "Error -A: Unexpected string %s\n", t);
+						n_errors++;
+					}
 				}
 				break;
 
@@ -601,12 +614,12 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = gmt_report_usage (API, options, 0, usage)) != GMT_NOERROR) bailout (error);	/* Give usage if requested */
 
 	/* Parse the command-line arguments */
 
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the mgd77track main code ----------------------------*/

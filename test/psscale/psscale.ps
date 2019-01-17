@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14627M [64-bit] Document from psscale
-%%Creator: GMT5
-%%For: remko
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psscale
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Jul 28 18:14:52 2015
+%%CreationDate: Thu Dec  6 10:52:54 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -337,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -523,7 +524,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +549,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -595,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -638,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -660,14 +662,19 @@ V 612 0 T 90 R 0.06 0.06 scale
 
 /PSL_page_xsize 13200 def
 /PSL_page_ysize 10200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 945 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -K -D00/04+w8/0.5+e+jML -Y2
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -K -D00/04+w8/0.5+e+jML -Y2
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
+%GMTBoundingBox: 72 56.6929 226.772 14.1732
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -676,19 +683,19 @@ O0
 236 0 T
 90 R
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -729,12 +736,12 @@ N 3465 0 M 0 -83 D S
 N 3780 0 M 0 -83 D S
 0 -347 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-V -90 R (-6) mr Z U
-315 -347 M V -90 R (-5) mr Z U
-630 -347 M V -90 R (-4) mr Z U
-945 -347 M V -90 R (-3) mr Z U
-1260 -347 M V -90 R (-2) mr Z U
-1575 -347 M V -90 R (-1) mr Z U
+V -90 R (”6) mr Z U
+315 -347 M V -90 R (”5) mr Z U
+630 -347 M V -90 R (”4) mr Z U
+945 -347 M V -90 R (”3) mr Z U
+1260 -347 M V -90 R (”2) mr Z U
+1575 -347 M V -90 R (”1) mr Z U
 1890 -347 M V -90 R (0) mr Z U
 2205 -347 M V -90 R (1) mr Z U
 2520 -347 M V -90 R (2) mr Z U
@@ -756,8 +763,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D04/04+w8/0.5+e+jML+ma
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D04/04+w8/0.5+e+jML+ma
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -767,19 +774,19 @@ O0
 236 0 T
 90 R
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -820,12 +827,12 @@ N 3465 236 M 0 84 D S
 N 3780 236 M 0 84 D S
 0 403 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-V -90 R (-6) mr Z U
-315 403 M V -90 R (-5) mr Z U
-630 403 M V -90 R (-4) mr Z U
-945 403 M V -90 R (-3) mr Z U
-1260 403 M V -90 R (-2) mr Z U
-1575 403 M V -90 R (-1) mr Z U
+V -90 R (”6) mr Z U
+315 403 M V -90 R (”5) mr Z U
+630 403 M V -90 R (”4) mr Z U
+945 403 M V -90 R (”3) mr Z U
+1260 403 M V -90 R (”2) mr Z U
+1575 403 M V -90 R (”1) mr Z U
 1890 403 M V -90 R (0) mr Z U
 2205 403 M V -90 R (1) mr Z U
 2520 403 M V -90 R (2) mr Z U
@@ -848,8 +855,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D07/04+w8/0.5+e+jML+ml
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D07/04+w8/0.5+e+jML+ml
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -859,19 +866,19 @@ O0
 236 0 T
 90 R
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -912,12 +919,12 @@ N 3465 0 M 0 -83 D S
 N 3780 0 M 0 -83 D S
 0 -347 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-V -90 R (-6) mr Z U
-315 -347 M V -90 R (-5) mr Z U
-630 -347 M V -90 R (-4) mr Z U
-945 -347 M V -90 R (-3) mr Z U
-1260 -347 M V -90 R (-2) mr Z U
-1575 -347 M V -90 R (-1) mr Z U
+V -90 R (”6) mr Z U
+315 -347 M V -90 R (”5) mr Z U
+630 -347 M V -90 R (”4) mr Z U
+945 -347 M V -90 R (”3) mr Z U
+1260 -347 M V -90 R (”2) mr Z U
+1575 -347 M V -90 R (”1) mr Z U
 1890 -347 M V -90 R (0) mr Z U
 2205 -347 M V -90 R (1) mr Z U
 2520 -347 M V -90 R (2) mr Z U
@@ -940,8 +947,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D11/04+w8/0.5+e+jML+m
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D11/04+w8/0.5+e+jML+m
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -951,19 +958,19 @@ O0
 236 0 T
 90 R
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -1004,12 +1011,12 @@ N 3465 236 M 0 84 D S
 N 3780 236 M 0 84 D S
 0 403 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-V -90 R (-6) mr Z U
-315 403 M V -90 R (-5) mr Z U
-630 403 M V -90 R (-4) mr Z U
-945 403 M V -90 R (-3) mr Z U
-1260 403 M V -90 R (-2) mr Z U
-1575 403 M V -90 R (-1) mr Z U
+V -90 R (”6) mr Z U
+315 403 M V -90 R (”5) mr Z U
+630 403 M V -90 R (”4) mr Z U
+945 403 M V -90 R (”3) mr Z U
+1260 403 M V -90 R (”2) mr Z U
+1575 403 M V -90 R (”1) mr Z U
 1890 403 M V -90 R (0) mr Z U
 2205 403 M V -90 R (1) mr Z U
 2520 403 M V -90 R (2) mr Z U
@@ -1032,8 +1039,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D18/00+w8/0.5+e+jTC+h+m
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D18/00+w8/0.5+e+jTC+h+m
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -1041,19 +1048,19 @@ O0
 6614 -236 T
 25 W
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -1094,12 +1101,12 @@ N 3465 236 M 0 84 D S
 N 3780 236 M 0 84 D S
 0 403 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-(-6) bc Z
-315 403 M (-5) bc Z
-630 403 M (-4) bc Z
-945 403 M (-3) bc Z
-1260 403 M (-2) bc Z
-1575 403 M (-1) bc Z
+(”6) bc Z
+315 403 M (”5) bc Z
+630 403 M (”4) bc Z
+945 403 M (”3) bc Z
+1260 403 M (”2) bc Z
+1575 403 M (”1) bc Z
 1890 403 M (0) bc Z
 2205 403 M (1) bc Z
 2520 403 M (2) bc Z
@@ -1120,8 +1127,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D18/03+w8/0.5+e+jTC+h+ml
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D18/03+w8/0.5+e+jTC+h+ml
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -1129,19 +1136,19 @@ O0
 6614 1181 T
 25 W
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -1182,12 +1189,12 @@ N 3465 0 M 0 -83 D S
 N 3780 0 M 0 -83 D S
 0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-(-6) tc Z
-315 -167 M (-5) tc Z
-630 -167 M (-4) tc Z
-945 -167 M (-3) tc Z
-1260 -167 M (-2) tc Z
-1575 -167 M (-1) tc Z
+(”6) tc Z
+315 -167 M (”5) tc Z
+630 -167 M (”4) tc Z
+945 -167 M (”3) tc Z
+1260 -167 M (”2) tc Z
+1575 -167 M (”1) tc Z
 1890 -167 M (0) tc Z
 2205 -167 M (1) tc Z
 2520 -167 M (2) tc Z
@@ -1208,8 +1215,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D18/05+w8/0.5+e+jTC+h+ma
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D18/05+w8/0.5+e+jTC+h+ma
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -1217,19 +1224,19 @@ O0
 6614 2126 T
 25 W
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -1270,12 +1277,12 @@ N 3465 236 M 0 84 D S
 N 3780 236 M 0 84 D S
 0 403 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-(-6) bc Z
-315 403 M (-5) bc Z
-630 403 M (-4) bc Z
-945 403 M (-3) bc Z
-1260 403 M (-2) bc Z
-1575 403 M (-1) bc Z
+(”6) bc Z
+315 403 M (”5) bc Z
+630 403 M (”4) bc Z
+945 403 M (”3) bc Z
+1260 403 M (”2) bc Z
+1575 403 M (”1) bc Z
 1890 403 M (0) bc Z
 2205 403 M (1) bc Z
 2520 403 M (2) bc Z
@@ -1296,8 +1303,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D18/08+w8/0.5+e+jTC+h
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D18/08+w8/0.5+e+jTC+h
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
@@ -1305,19 +1312,19 @@ O0
 6614 3543 T
 25 W
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -1358,12 +1365,12 @@ N 3465 0 M 0 -83 D S
 N 3780 0 M 0 -83 D S
 0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-(-6) tc Z
-315 -167 M (-5) tc Z
-630 -167 M (-4) tc Z
-945 -167 M (-3) tc Z
-1260 -167 M (-2) tc Z
-1575 -167 M (-1) tc Z
+(”6) tc Z
+315 -167 M (”5) tc Z
+630 -167 M (”4) tc Z
+945 -167 M (”3) tc Z
+1260 -167 M (”2) tc Z
+1575 -167 M (”1) tc Z
 1890 -167 M (0) tc Z
 2205 -167 M (1) tc Z
 2520 -167 M (2) tc Z
@@ -1384,8 +1391,8 @@ O0
 0 4252 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D00/04+w8/0.5+e+jML+mc -Y9
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D00/04+w8/0.5+e+jML+mc -Y9
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
@@ -1394,19 +1401,19 @@ O0
 236 0 T
 90 R
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -1447,12 +1454,12 @@ N 3465 0 M 0 -83 D S
 N 3780 0 M 0 -83 D S
 0 -347 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-V -90 R (-6) mr Z U
-315 -347 M V -90 R (-5) mr Z U
-630 -347 M V -90 R (-4) mr Z U
-945 -347 M V -90 R (-3) mr Z U
-1260 -347 M V -90 R (-2) mr Z U
-1575 -347 M V -90 R (-1) mr Z U
+V -90 R (”6) mr Z U
+315 -347 M V -90 R (”5) mr Z U
+630 -347 M V -90 R (”4) mr Z U
+945 -347 M V -90 R (”3) mr Z U
+1260 -347 M V -90 R (”2) mr Z U
+1575 -347 M V -90 R (”1) mr Z U
 1890 -347 M V -90 R (0) mr Z U
 2205 -347 M V -90 R (1) mr Z U
 2520 -347 M V -90 R (2) mr Z U
@@ -1478,8 +1485,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D04/04+w8/0.5+e+jML+mac
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D04/04+w8/0.5+e+jML+mac
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
@@ -1489,19 +1496,19 @@ O0
 236 0 T
 90 R
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -1542,12 +1549,12 @@ N 3465 236 M 0 84 D S
 N 3780 236 M 0 84 D S
 0 403 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-V -90 R (-6) mr Z U
-315 403 M V -90 R (-5) mr Z U
-630 403 M V -90 R (-4) mr Z U
-945 403 M V -90 R (-3) mr Z U
-1260 403 M V -90 R (-2) mr Z U
-1575 403 M V -90 R (-1) mr Z U
+V -90 R (”6) mr Z U
+315 403 M V -90 R (”5) mr Z U
+630 403 M V -90 R (”4) mr Z U
+945 403 M V -90 R (”3) mr Z U
+1260 403 M V -90 R (”2) mr Z U
+1575 403 M V -90 R (”1) mr Z U
 1890 403 M V -90 R (0) mr Z U
 2205 403 M V -90 R (1) mr Z U
 2520 403 M V -90 R (2) mr Z U
@@ -1574,8 +1581,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D07/04+w8/0.5+e+jML+mlc
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D07/04+w8/0.5+e+jML+mlc
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
@@ -1585,19 +1592,19 @@ O0
 236 0 T
 90 R
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -1638,12 +1645,12 @@ N 3465 0 M 0 -83 D S
 N 3780 0 M 0 -83 D S
 0 -347 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-V -90 R (-6) mr Z U
-315 -347 M V -90 R (-5) mr Z U
-630 -347 M V -90 R (-4) mr Z U
-945 -347 M V -90 R (-3) mr Z U
-1260 -347 M V -90 R (-2) mr Z U
-1575 -347 M V -90 R (-1) mr Z U
+V -90 R (”6) mr Z U
+315 -347 M V -90 R (”5) mr Z U
+630 -347 M V -90 R (”4) mr Z U
+945 -347 M V -90 R (”3) mr Z U
+1260 -347 M V -90 R (”2) mr Z U
+1575 -347 M V -90 R (”1) mr Z U
 1890 -347 M V -90 R (0) mr Z U
 2205 -347 M V -90 R (1) mr Z U
 2520 -347 M V -90 R (2) mr Z U
@@ -1670,8 +1677,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D11/04+w8/0.5+e+jML+malc
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D11/04+w8/0.5+e+jML+malc
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
@@ -1681,19 +1688,19 @@ O0
 236 0 T
 90 R
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -1734,12 +1741,12 @@ N 3465 236 M 0 84 D S
 N 3780 236 M 0 84 D S
 0 403 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-V -90 R (-6) mr Z U
-315 403 M V -90 R (-5) mr Z U
-630 403 M V -90 R (-4) mr Z U
-945 403 M V -90 R (-3) mr Z U
-1260 403 M V -90 R (-2) mr Z U
-1575 403 M V -90 R (-1) mr Z U
+V -90 R (”6) mr Z U
+315 403 M V -90 R (”5) mr Z U
+630 403 M V -90 R (”4) mr Z U
+945 403 M V -90 R (”3) mr Z U
+1260 403 M V -90 R (”2) mr Z U
+1575 403 M V -90 R (”1) mr Z U
 1890 403 M V -90 R (0) mr Z U
 2205 403 M V -90 R (1) mr Z U
 2520 403 M V -90 R (2) mr Z U
@@ -1766,8 +1773,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D18/00+w8/0.5+e+jTC+h+malc
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D18/00+w8/0.5+e+jTC+h+malc
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
@@ -1775,19 +1782,19 @@ O0
 6614 -236 T
 25 W
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -1828,12 +1835,12 @@ N 3465 236 M 0 84 D S
 N 3780 236 M 0 84 D S
 0 403 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-(-6) bc Z
-315 403 M (-5) bc Z
-630 403 M (-4) bc Z
-945 403 M (-3) bc Z
-1260 403 M (-2) bc Z
-1575 403 M (-1) bc Z
+(”6) bc Z
+315 403 M (”5) bc Z
+630 403 M (”4) bc Z
+945 403 M (”3) bc Z
+1260 403 M (”2) bc Z
+1575 403 M (”1) bc Z
 1890 403 M (0) bc Z
 2205 403 M (1) bc Z
 2520 403 M (2) bc Z
@@ -1854,8 +1861,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D18/03+w8/0.5+e+jTC+h+ml
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D18/03+w8/0.5+e+jTC+h+ml
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_14
 0 setlinecap
 0 setlinejoin
@@ -1863,19 +1870,19 @@ O0
 6614 1181 T
 25 W
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -1916,12 +1923,12 @@ N 3465 0 M 0 -83 D S
 N 3780 0 M 0 -83 D S
 0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-(-6) tc Z
-315 -167 M (-5) tc Z
-630 -167 M (-4) tc Z
-945 -167 M (-3) tc Z
-1260 -167 M (-2) tc Z
-1575 -167 M (-1) tc Z
+(”6) tc Z
+315 -167 M (”5) tc Z
+630 -167 M (”4) tc Z
+945 -167 M (”3) tc Z
+1260 -167 M (”2) tc Z
+1575 -167 M (”1) tc Z
 1890 -167 M (0) tc Z
 2205 -167 M (1) tc Z
 2520 -167 M (2) tc Z
@@ -1942,8 +1949,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D18/05+w8/0.5+e+jTC+h+ma
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -K -D18/05+w8/0.5+e+jTC+h+ma
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_15
 0 setlinecap
 0 setlinejoin
@@ -1951,19 +1958,19 @@ O0
 6614 2126 T
 25 W
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -2004,12 +2011,12 @@ N 3465 236 M 0 84 D S
 N 3780 236 M 0 84 D S
 0 403 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-(-6) bc Z
-315 403 M (-5) bc Z
-630 403 M (-4) bc Z
-945 403 M (-3) bc Z
-1260 403 M (-2) bc Z
-1575 403 M (-1) bc Z
+(”6) bc Z
+315 403 M (”5) bc Z
+630 403 M (”4) bc Z
+945 403 M (”3) bc Z
+1260 403 M (”2) bc Z
+1575 403 M (”1) bc Z
 1890 403 M (0) bc Z
 2205 403 M (1) bc Z
 2520 403 M (2) bc Z
@@ -2030,8 +2037,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ctmp.cpt -Bx+lRange -By+lm -O -D18/08+w8/0.5+e+jTC+h+mc
-%%PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ctmp.cpt -Bx+lRange -By+lm -O -D18/08+w8/0.5+e+jTC+h+mc
+%@PROJ: xy -6.00000000 6.00000000 0.00000000 0.19685039 -6.000 6.000 0.000 0.197 +xy
 %%BeginObject PSL_Layer_16
 0 setlinecap
 0 setlinejoin
@@ -2039,19 +2046,19 @@ O0
 6614 3543 T
 25 W
 V N 0 0 T 3780 236 scale [/Indexed /DeviceRGB 10 <
-CA0000FF0A00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC810063ED001EE0>] setcolorspace
+CA0000FF0B00FF4A00FF8A00FFCA00FFFF0098FF1338F93C00DC800064ED001EE0>] setcolorspace
 << /ImageType 1 /Decode [0 15] /Width 12 /Height 1 /BitsPerComponent 4
    /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
 !@($6Ga\~>
 U
-{0.791 0 0 C} FS
+{0.792 0 0 C} FS
 121 -122 -121 -122 2 -4 240 SP
 -4 240 M
 -121 -122 D
 121 -122 D
 S
-{0 0.117 0.877 C} FS
+{0 0.118 0.877 C} FS
 -122 -122 122 -122 2 3783 240 SP
 3783 240 M
 122 -122 D
@@ -2092,12 +2099,12 @@ N 3465 0 M 0 -83 D S
 N 3780 0 M 0 -83 D S
 0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
-(-6) tc Z
-315 -167 M (-5) tc Z
-630 -167 M (-4) tc Z
-945 -167 M (-3) tc Z
-1260 -167 M (-2) tc Z
-1575 -167 M (-1) tc Z
+(”6) tc Z
+315 -167 M (”5) tc Z
+630 -167 M (”4) tc Z
+945 -167 M (”3) tc Z
+1260 -167 M (”2) tc Z
+1575 -167 M (”1) tc Z
 1890 -167 M (0) tc Z
 2205 -167 M (1) tc Z
 2520 -167 M (2) tc Z
@@ -2112,6 +2119,10 @@ N 3780 0 M 0 -83 D S
 0 setlinecap
 -6614 -3543 T
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

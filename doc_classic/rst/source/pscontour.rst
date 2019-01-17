@@ -28,7 +28,7 @@ Synopsis
 [ |-P| ]
 [ |-Q|\ [*cut*\ [*unit*]][\ **+z**] ]
 [ |-S|\ [\ *p*\ \|\ *t*] ]
-[ |-T|\ [**+\|-**][**+a**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
+[ |-T|\ [**h**\ \|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*type*]\ *pen* ][**+c**\ [**l**\ \|\ **f**]]
@@ -203,13 +203,13 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [**+\|-**][**+a**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]]
+**-T**\ [**h**\ \|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]]
     Will draw tick marks pointing in the downward direction every *gap*
     along the innermost closed contours only; append **+a** to tick all closed
     contours. Append **+d**\ *gap* and optionally tick
     mark *length* (append units as **c**, **i**, or **p**) or use defaults
     [15\ **p**/3\ **p**]. User may choose to tick only local highs or local
-    lows by specifying **-T+** or **-T-**, respectively. Append
+    lows by specifying **-Th** or **-Tl**, respectively. Append
     **+l**\ *labels* to annotate the centers of closed innermost contours
     (i.e., the local lows and highs). If no *labels* is appended we use -
     and + as the labels. Appending exactly two characters, e.g., **+l**\ *LH*,

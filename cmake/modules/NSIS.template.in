@@ -222,7 +222,7 @@ Function AddToPath
   StrLen $2 $1
   IntCmp $2 0 CheckPathLength_ShowPathWarning CheckPathLength_Done CheckPathLength_Done
     CheckPathLength_ShowPathWarning:
-    Messagebox MB_OK|MB_ICONEXCLAMATION "Warning! PATH too long installer unable to modify PATH!"
+    Messagebox MB_OK|MB_ICONEXCLAMATION "Warning! Failed to add GMT to PATH. Please add the GMT bin path to PATH manually."
     Goto AddToPath_done
   CheckPathLength_Done:
   Push "$1;"

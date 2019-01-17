@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Check clipping of quoted lines
 ps=ortho.ps
 # station lat,long

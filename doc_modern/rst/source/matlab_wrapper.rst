@@ -34,7 +34,7 @@ Windows
 The Windows installers come already with the gmtmex.mexw64|32 and gmt.m files necessary run the MEX.
 Only make sure that the GMT binary dir is either in the Windows path (the installer does that for you)
 and in the MATLAB path (you have to do it yourself).
-If you want to (re)build the MEX file yourself, see the *compile_mex.bat* in the source SVN repository.
+If you want to (re)build the MEX file yourself, see the *compile_mex.bat* in the source GitHub repository.
 
 OS X
 ----
@@ -48,7 +48,7 @@ kinks.  The following works:
    the GMT 5.3 installation into /opt/gmt and re-baptize all the shared libraries.
 #. Use gmtswitch to make /opt/gmt the current active GMT version
 #. Checkout the gmt-mex project via subversion into some directory, i.e.,
-   svn checkout svn://gmtserver.soest.hawaii.edu/gmt-mex gmt-mex
+   git clone https://github.com/GenericMappingTools/gmtmex.git
 #. In gmt-mex/trunk, run autoconf then configure --enable-matlab (and maybe --enable-debug) is you
    can help debug things.
 #. Run make which builds the gmtmex.mexmaci64.  This executable is accessed by the gmt.m script.

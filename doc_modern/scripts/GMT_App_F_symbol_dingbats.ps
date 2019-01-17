@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14058 [64-bit] Document from psxy
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_82686b5 [64-bit] Document from psxy
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Feb 12 08:48:38 2015
+%%CreationDate: Sun Oct 28 14:51:24 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -150,7 +150,7 @@
 /eth		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide
 /oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -190,7 +190,6 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
-/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -273,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -338,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -524,7 +524,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -550,7 +549,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -596,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -661,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 3096 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/9/3/16 -Jx0.345i/-0.21i -BN+tSymbol -P -K -Glightgreen -Y2.58i
-%%PROJ: xy 0.00000000 9.00000000 3.00000000 16.00000000 0.000 9.000 16.000 3.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psxy -R0/9/3/16 -Jx0.345i/-0.21i -BN+tSymbol -P -K -Glightgreen -Y2.58i
+%@PROJ: xy 0.00000000 9.00000000 3.00000000 16.00000000 0.000 9.000 16.000 3.000 +xy
+%GMTBoundingBox: 72 185.76 223.56 196.56
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -680,7 +686,15 @@ O0
 /FO {fs os}!
 FO
 17 W
-/PSL_H_y 233 def
+2 setlinecap
+0 3276 T
+N 0 0 M 3726 0 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 -3276 T
+0 setlinecap
+/PSL_H_y PSL_L_y PSL_LH add 233 add def
 1863 3276 PSL_H_y add M
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 233 F0
@@ -692,8 +706,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext tt.d -R0/9/3/16 -Jx0.345i/-0.21i -O -K -F+f
-%%PROJ: xy 0.00000000 9.00000000 3.00000000 16.00000000 0.000 9.000 16.000 3.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt pstext tt.d -R0/9/3/16 -Jx0.345i/-0.21i -O -K -F+f
+%@PROJ: xy 0.00000000 9.00000000 3.00000000 16.00000000 0.000 9.000 16.000 3.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -703,9 +717,10 @@ clipsave
 3726 0 D
 0 3276 D
 -3726 0 D
+P
 PSL_clip N
-207 3150 M PSL_font_encode 4 get 0 eq {ISOLatin1+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
-167 F4
+PSL_font_encode 4 get 0 eq {ISOLatin1+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
+207 3150 M 167 F4
 (octal) mc Z
 621 3150 M (0) mc Z
 1035 3150 M (1) mc Z
@@ -853,8 +868,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/9/3/16 -Jx0.345i/-0.21i -O -K -Bg1 -Wthick
-%%PROJ: xy 0.00000000 9.00000000 3.00000000 16.00000000 0.000 9.000 16.000 3.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psxy -R0/9/3/16 -Jx0.345i/-0.21i -O -K -Bg1 -Wthick
+%@PROJ: xy 0.00000000 9.00000000 3.00000000 16.00000000 0.000 9.000 16.000 3.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -969,8 +984,8 @@ O0
 0 -3096 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/9/20/32 -Jx0.345i/-0.21i -O -K -Glightgreen -Y-2.58i
-%%PROJ: xy 0.00000000 9.00000000 20.00000000 32.00000000 0.000 9.000 32.000 20.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psxy -R0/9/20/32 -Jx0.345i/-0.21i -O -K -Glightgreen -Y-2.58i
+%@PROJ: xy 0.00000000 9.00000000 20.00000000 32.00000000 0.000 9.000 32.000 20.000 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -988,8 +1003,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext tt.d -R0/9/20/32 -Jx0.345i/-0.21i -O -K -F+f
-%%PROJ: xy 0.00000000 9.00000000 20.00000000 32.00000000 0.000 9.000 32.000 20.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt pstext tt.d -R0/9/20/32 -Jx0.345i/-0.21i -O -K -F+f
+%@PROJ: xy 0.00000000 9.00000000 20.00000000 32.00000000 0.000 9.000 32.000 20.000 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -999,9 +1014,10 @@ clipsave
 3726 0 D
 0 3024 D
 -3726 0 D
+P
 PSL_clip N
-207 2898 M PSL_font_encode 4 get 0 eq {ISOLatin1+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
-167 F4
+PSL_font_encode 4 get 0 eq {ISOLatin1+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
+207 2898 M 167 F4
 (\\24x) mc Z
 621 2898 M 167 F12
 (\240) mc Z
@@ -1140,8 +1156,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/9/20/32 -Jx0.345i/-0.21i -O -K -Bg1 -Wthick
-%%PROJ: xy 0.00000000 9.00000000 20.00000000 32.00000000 0.000 9.000 32.000 20.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psxy -R0/9/20/32 -Jx0.345i/-0.21i -O -K -Bg1 -Wthick
+%@PROJ: xy 0.00000000 9.00000000 20.00000000 32.00000000 0.000 9.000 32.000 20.000 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -1250,8 +1266,8 @@ O0
 3840 3096 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/9/3/16 -Jx0.345i/-0.21i -BN+tZapfDingbats -O -K -Glightgreen -X3.2i -Y2.58i
-%%PROJ: xy 0.00000000 9.00000000 3.00000000 16.00000000 0.000 9.000 16.000 3.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psxy -R0/9/3/16 -Jx0.345i/-0.21i -BN+tZapfDingbats -O -K -Glightgreen -X3.2i -Y2.58i
+%@PROJ: xy 0.00000000 9.00000000 3.00000000 16.00000000 0.000 9.000 16.000 3.000 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -1263,7 +1279,15 @@ O0
 /FO {fs os}!
 FO
 17 W
-/PSL_H_y 233 def
+2 setlinecap
+0 3276 T
+N 0 0 M 3726 0 D S
+/PSL_A0_y 0 def
+/PSL_A1_y 0 def
+/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
+0 -3276 T
+0 setlinecap
+/PSL_H_y PSL_L_y PSL_LH add 233 add def
 1863 3276 PSL_H_y add M
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 233 F0
@@ -1275,8 +1299,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext tt.d -R0/9/3/16 -Jx0.345i/-0.21i -O -K -F+f
-%%PROJ: xy 0.00000000 9.00000000 3.00000000 16.00000000 0.000 9.000 16.000 3.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt pstext tt.d -R0/9/3/16 -Jx0.345i/-0.21i -O -K -F+f
+%@PROJ: xy 0.00000000 9.00000000 3.00000000 16.00000000 0.000 9.000 16.000 3.000 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
@@ -1286,9 +1310,10 @@ clipsave
 3726 0 D
 0 3276 D
 -3726 0 D
+P
 PSL_clip N
-207 3150 M PSL_font_encode 4 get 0 eq {ISOLatin1+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
-167 F4
+PSL_font_encode 4 get 0 eq {ISOLatin1+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
+207 3150 M 167 F4
 (octal) mc Z
 621 3150 M (0) mc Z
 1035 3150 M (1) mc Z
@@ -1436,8 +1461,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/9/3/16 -Jx0.345i/-0.21i -O -Bg1 -K -Wthick
-%%PROJ: xy 0.00000000 9.00000000 3.00000000 16.00000000 0.000 9.000 16.000 3.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psxy -R0/9/3/16 -Jx0.345i/-0.21i -O -Bg1 -K -Wthick
+%@PROJ: xy 0.00000000 9.00000000 3.00000000 16.00000000 0.000 9.000 16.000 3.000 +xy
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
@@ -1552,8 +1577,8 @@ O0
 0 -3096 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/9/20/32 -Jx0.345i/-0.21i -O -K -Glightgreen -Y-2.58i
-%%PROJ: xy 0.00000000 9.00000000 20.00000000 32.00000000 0.000 9.000 32.000 20.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psxy -R0/9/20/32 -Jx0.345i/-0.21i -O -K -Glightgreen -Y-2.58i
+%@PROJ: xy 0.00000000 9.00000000 20.00000000 32.00000000 0.000 9.000 32.000 20.000 +xy
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
@@ -1575,8 +1600,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext tt.d -R0/9/20/32 -Jx0.345i/-0.21i -O -K -F+f
-%%PROJ: xy 0.00000000 9.00000000 20.00000000 32.00000000 0.000 9.000 32.000 20.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt pstext tt.d -R0/9/20/32 -Jx0.345i/-0.21i -O -K -F+f
+%@PROJ: xy 0.00000000 9.00000000 20.00000000 32.00000000 0.000 9.000 32.000 20.000 +xy
 %%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
@@ -1586,9 +1611,10 @@ clipsave
 3726 0 D
 0 3024 D
 -3726 0 D
+P
 PSL_clip N
-207 2898 M PSL_font_encode 4 get 0 eq {ISOLatin1+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
-167 F4
+PSL_font_encode 4 get 0 eq {ISOLatin1+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
+207 2898 M 167 F4
 (\\24x) mc Z
 1035 2898 M 167 F34
 (\241) mc Z
@@ -1726,8 +1752,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/9/20/32 -Jx0.345i/-0.21i -O -Bg1 -Wthick
-%%PROJ: xy 0.00000000 9.00000000 20.00000000 32.00000000 0.000 9.000 32.000 20.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psxy -R0/9/20/32 -Jx0.345i/-0.21i -O -Bg1 -Wthick
+%@PROJ: xy 0.00000000 9.00000000 20.00000000 32.00000000 0.000 9.000 32.000 20.000 +xy
 %%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
@@ -1830,6 +1856,10 @@ N 0 0 M 3726 0 D S
 0 -3024 T
 0 setlinecap
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

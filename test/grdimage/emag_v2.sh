@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test script for issue # msg6788 with flipped CDF order
 # Orig plotted with -R is OK, region cut with grdcut fails
 ps=emag_v2.ps

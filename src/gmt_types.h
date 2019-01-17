@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,8 @@
  * \brief Definitions of special types used by GMT.
  */
 
-#ifndef _GMT_TYPES_H
-#define _GMT_TYPES_H
+#ifndef GMT_TYPES_H
+#define GMT_TYPES_H
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -42,6 +42,14 @@ struct GMT_MATH_MACRO {
 	char *name;	/* The macro name */
 	char **arg;	/* List of those commands */
 };
+
+#ifdef USE_GMT_KWD
+/*! Definition of GMT_KW_DICT used to expand keyword-value pairs to GMT options */
+struct GMT_KW_DICT {	/* Used for keyword-value lookup */
+	char code;	/* Single character GMT option code */
+	char name[31];	/* Name of corresponding keyword */
+};
+#endif
 
 /*! Definition of structure use for finding optimal n_columns/n_rows for surface */
 struct GMT_SURFACE_SUGGESTION {	/* Used to find top ten list of faster grid dimensions  */
@@ -90,6 +98,8 @@ struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays
 	bool count;	/* true if we got number of items rather than increment */
 	bool add;	/* true if we are asked to add a computed spatial distance column to output */
 	bool reverse;	/* true if we want to reverse the array to give high to low on output */
+	bool round;	/* true if we want to adjust increment to ensure min/max range is a multiple of inc */
+	bool exact_inc;	/* true if we want the increment to be exact and to adjust min/max intstead */
 	bool logarithmic;	/* true if inc = 1,2,3 and we want logarithmic scale */
 	bool logarithmic2;	/* true if inc = integer and we want log2 scale */
 	bool delay[2];	/* true if min and/or max shall be set from data set extremes after read [false] */
@@ -429,4 +439,4 @@ static inline void GMT_exit (struct GMT_CTRL *GMT, int code) {
 		exit (code);
 }
 
-#endif  /* _GMT_TYPES_H */
+#endif  /* GMT_TYPES_H */

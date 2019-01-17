@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,8 +31,8 @@
  * \brief Miscellaneous definitions and structures related to symbols 
  */
 
-#ifndef _GMT_SYMBOLS_H
-#define _GMT_SYMBOLS_H
+#ifndef GMT_SYMBOLS_H
+#define GMT_SYMBOLS_H
 
 /* VECTOR attributes are used by psxy, psxyz, psrose, grdvector */
 #define VECTOR_LINE_WIDTH	2.0	/* Default vector attributes in points */
@@ -65,11 +65,17 @@ struct GMT_REFPOINT {	/* Used to hold items relevant for a reference point */
 #define CUSTOM_SYMBOL_MAXVAR	3	/* So we can check in the code if we exceed this */
 
 enum gmt_enum_custsymb {
-	GMT_BEGIN_SINGLE_IF	= 1,	/* We have a single, 1-liner if condition, with no end if */
-	GMT_BEGIN_BLOCK_IF	= 2,	/* Starting a new if branch */
-	GMT_END_IF		= 4,	/* Ending an if branch */
-	GMT_END_IF_ELSE		= 6,	/* Ending an if-branch and start the else branch */
-	GMT_BEGIN_ELSEIF	= 8	/* Ending the if-branch and start another if branch */
+	GMT_CONST_STRING	= -5,	/* We have a constant string in a conditional test */
+	GMT_VAR_STRING		= -4,	/* We have a variable string (the trailing text) in a conditional test */
+	GMT_VAR_SIZE		= -3,	/* We have the symbol size $s in a conditional test */
+	GMT_VAR_IS_Y		= -2,	/* We have y or latitude in a conditional test */
+	GMT_VAR_IS_X		= -1,	/* We have x or longitude in a conditional test */
+	GMT_CONST_VAR		=  0,	/* We have a constant factor in a conditional test */
+	GMT_BEGIN_SINGLE_IF	=  1,	/* We have a single, 1-liner if condition, with no end if */
+	GMT_BEGIN_BLOCK_IF	=  2,	/* Starting a new if branch */
+	GMT_END_IF		=  4,	/* Ending an if branch */
+	GMT_END_IF_ELSE		=  6,	/* Ending an if-branch and start the else branch */
+	GMT_BEGIN_ELSEIF	=  8	/* Ending the if-branch and start another if branch */
 };
 
 struct GMT_CUSTOM_SYMBOL_ITEM {
@@ -171,4 +177,4 @@ struct GMT_MAP_ROSE {
 	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
 };
 
-#endif	/* _GMT_SYMBOLS_H */
+#endif	/* GMT_SYMBOLS_H */

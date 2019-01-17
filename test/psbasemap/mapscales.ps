@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14400M [64-bit] Document from psbasemap
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psbasemap
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 25 22:35:52 2015
+%%CreationDate: Thu Dec  6 10:52:42 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -337,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -523,7 +524,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +549,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -595,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -638,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -660,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 -3543 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R-10/10/-15/15 -JM15c -Bafg90 -BWSne+gazure1 -Lg0/14+c14+f+w1000k+l+jr -F+gcornsilk1+p0.5p,black -P -K -Xc
-%%PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psbasemap -R-10/10/-15/15 -JM15c -Bafg90 -BWSne+gazure1 -Lg0/14+c14+f+w1000k+l+ar+jTC -F+gcornsilk1+p0.5p,black -P -K -Xc
+%@PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: -212.598 72 425.197 640.987
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -707,20 +714,6 @@ N 0 8879 M -83 0 D S
 N 7087 8879 M 83 0 D S
 N 0 10683 M -83 0 D S
 N 7087 10683 M 83 0 D S
-0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(-10 ) tc Z
-1772 -167 M (-5 ) tc Z
-3543 -167 M (0 ) tc Z
-5315 -167 M (5 ) tc Z
-7087 -167 M (10 ) tc Z
--167 0 M (-15 ) mr Z
--167 1804 M (-10 ) mr Z
--167 3579 M (-5 ) mr Z
--167 5342 M (0 ) mr Z
--167 7104 M (5 ) mr Z
--167 8879 M (10 ) mr Z
--167 10683 M (15 ) mr Z
 83 W
 1 A
 N -42 0 M 0 364 D S
@@ -881,6 +874,20 @@ N 7170 10683 M -7253 0 D S
 N 7170 10766 M -7253 0 D S
 N 0 10766 M 0 -10849 D S
 N -83 10766 M 0 -10849 D S
+0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(î10è) tc Z
+1772 -167 M (î5è) tc Z
+3543 -167 M (0è) tc Z
+5315 -167 M (5è) tc Z
+7087 -167 M (10è) tc Z
+-167 0 M (î15è) mr Z
+-167 1804 M (î10è) mr Z
+-167 3579 M (î5è) mr Z
+-167 5342 M (0è) mr Z
+-167 7104 M (5è) mr Z
+-167 8879 M (10è) mr Z
+-167 10683 M (15è) mr Z
 {1 0.973 0.863 C} FS
 O1
 536 4041 3640 10229 Sr
@@ -905,7 +912,7 @@ N 1902 10236 M 0 83 D S
 N 5185 10236 M 0 83 D S
 5185 10174 M (1000) tc Z
 5247 10236 M 267 F0
-(km) Z
+(km) bl Z
 %%EndObject
 0 A
 FQ
@@ -913,8 +920,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R-10/10/-15/15 -JM15c -Lg0/11+c11+w1000k+f+l+jl -F+gcornsilk1+p0.5p,black -O -K
-%%PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psbasemap -R-10/10/-15/15 -JM15c -Lg0/11+c11+w1000k+f+l+al+jTC -F+gcornsilk1+p0.5p,black -O -K
+%@PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -954,8 +961,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R-10/10/-15/15 -JM15c -Lg0/8+c8+w1000k+f+l+jt -F+gcornsilk1+p0.5p,black -O -K
-%%PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psbasemap -R-10/10/-15/15 -JM15c -Lg0/8+c8+w1000k+f+l+at+jTC -F+gcornsilk1+p0.5p,black -O -K
+%@PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -995,8 +1002,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R-10/10/-15/15 -JM15c '-Lg0/4+c4+w1.5e6e+f+lMy own map label+jt+u' -F+gcornsilk1+p0.5p,black -O -K
-%%PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psbasemap -R-10/10/-15/15 -JM15c '-Lg0/4+c4+w1.5e6e+f+lMy own map label+at+u+jTC' -F+gcornsilk1+p0.5p,black -O -K
+%@PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -1035,13 +1042,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R-10/10/-15/15 -JM15c -Lg4/0+c0+w400n+f+l+jl -F+gcornsilk1+p0.5p,black+s -O -K --FONT_LABEL=32p --FONT_ANNOT_PRIMARY=24p
-%%PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psbasemap -R-10/10/-15/15 -JM15c -Lg4/0+c0+w400n+f+l+al+jTC -F+gcornsilk1+p0.5p,black+s -O -K --FONT_LABEL=32p --FONT_ANNOT_PRIMARY=24p
+%@PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-{0.5 A} FS
+{0.498 A} FS
 875 6099 3549 5209 Sr
 8 W
 {1 0.973 0.863 C} FS
@@ -1077,8 +1084,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R-10/10/-15/15 -JM15c -Lg0/-4+c-4+w500M+f+l+jl -F+gcornsilk1+p0.5p,black+i+r -O -K --FONT_LABEL=32p --FONT_ANNOT_PRIMARY=24p
-%%PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psbasemap -R-10/10/-15/15 -JM15c -Lg0/-4+c-4+w500M+f+l+al+jTC -F+gcornsilk1+p0.5p,black+i+r -O -K --FONT_LABEL=32p --FONT_ANNOT_PRIMARY=24p
+%@PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -1122,13 +1129,13 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R-10/10/-15/15 -JM15c -L0/-7+c-7+w500M -F+gcornsilk1+p0.5p,black+s -O -K --FONT_LABEL=32p --FONT_ANNOT_PRIMARY=24p
-%%PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psbasemap -R-10/10/-15/15 -JM15c -L0/-7+c-7+w500M+jTC -F+gcornsilk1+p0.5p,black+s -O -K --FONT_LABEL=32p --FONT_ANNOT_PRIMARY=24p
+%@PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-{0.5 A} FS
+{0.498 A} FS
 570 2883 3610 2586 Sr
 8 W
 {1 0.973 0.863 C} FS
@@ -1149,8 +1156,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R-10/10/-15/15 -JM15c -L0/-10+c-10+w500n+u -F+gcornsilk1+p0.5p,black -O -K --FONT_LABEL=32p --FONT_ANNOT_PRIMARY=24p
-%%PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psbasemap -R-10/10/-15/15 -JM15c -L0/-10+c-10+w500n+u+jTC -F+gcornsilk1+p0.5p,black -O -K --FONT_LABEL=32p --FONT_ANNOT_PRIMARY=24p
+%@PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
@@ -1174,8 +1181,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R-10/10/-15/15 -JM15c -L0/-12.5+c-12.5+w3e6f -F+gcornsilk1+p0.5p,black -O -K --FONT_LABEL=32p --FONT_ANNOT_PRIMARY=24p --FORMAT_FLOAT_MAP=%'.10g
-%%PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psbasemap -R-10/10/-15/15 -JM15c -L0/-12.5+c-12.5+w3e6f+jTC -F+gcornsilk1+p0.5p,black -O -K --FONT_LABEL=32p --FONT_ANNOT_PRIMARY=24p --FORMAT_FLOAT_MAP=%'.10g
+%@PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
@@ -1199,8 +1206,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-10/10/-15/15 -JM15c -O -Sx0.2i -W0.5p,red
-%%PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psxy -R-10/10/-15/15 -JM15c -O -Sx0.2i -W0.5p,red
+%@PROJ: merc -10.00000000 10.00000000 -15.00000000 15.00000000 -1113194.908 1113194.908 -1678147.516 1678147.516 +proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
@@ -1210,6 +1217,7 @@ clipsave
 7087 0 D
 0 10683 D
 -7087 0 D
+P
 PSL_clip N
 8 W
 1 0 0 C
@@ -1227,6 +1235,10 @@ O1
 U
 PSL_cliprestore
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

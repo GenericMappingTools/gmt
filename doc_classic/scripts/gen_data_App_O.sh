@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Makes the data for GMT_App_O_[1-9].sh
 #

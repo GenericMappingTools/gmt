@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.1_r12614 [64-bit] Document from psbasemap
-%%Creator: GMT5
-%%For: remko
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_7b301d7 [64-bit] Document from psbasemap
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Dec  8 16:26:19 2013
+%%CreationDate: Sat Jan 12 19:08:16 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -193,6 +193,7 @@
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
+    /ydepth exch def
     /textheight exch def
     /just exch def
     /offset exch def
@@ -200,7 +201,7 @@
     /pathdist 0 def
     /setdist offset def
     /charcount 0 def
-    /justy just 4 idiv textheight mul 2 div neg def
+    /justy just 4 idiv textheight mul 2 div neg ydepth sub def
     V flattenpath
 	{movetoproc} {linetoproc}
 	{curvetoproc} {closepathproc}
@@ -259,24 +260,54 @@ PSL_pathtextdict begin
     U /setdist setdist charwidth add def
   } def
 end
-/PSL_curved_text_labels
-{ /bits exch def
-  /PSL_clippath bits 1 and 1 eq def
-  /PSL_placetext bits 2 and 0 eq def
-  /PSL_strokeline bits 4 and 4 eq def
-  /PSL_firstcall bits 32 and 32 eq def
-  /PSL_lastcall bits 64 and 64 eq def
-  /PSL_fillbox bits 128 and 128 eq def
-  /PSL_drawbox bits 256 and 256 eq def
+/PSL_set_label_heights
+{
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
+  /PSL_heights PSL_n_labels array def
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    /psl_label PSL_label_str psl_k get def
+    PSL_label_font psl_k get cvx exec
+    psl_label sH /PSL_height edef
+    PSL_heights psl_k PSL_height put
+  } for
+} def
+/PSL_curved_path_labels
+{ /psl_bits exch def
+  /PSL_placetext psl_bits 2 and 2 eq def
+  /PSL_clippath psl_bits 4 and 4 eq def
+  /PSL_strokeline false def
+  /PSL_fillbox psl_bits 128 and 128 eq def
+  /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_n_paths1 PSL_n_paths 1 sub def
+  /PSL_usebox PSL_fillbox PSL_drawbox or def
+  PSL_clippath {clipsave N clippath} if
+  /psl_k 0 def
+  /psl_p 0 def
+  0 1 PSL_n_paths1
+  { /psl_kk exch def
+    /PSL_n PSL_path_n  psl_kk get def
+    /PSL_m PSL_label_n psl_kk get def
+    /PSL_x PSL_path_x psl_k PSL_n getinterval def
+    /PSL_y PSL_path_y psl_k PSL_n getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
+    PSL_curved_path_label
+    /psl_k psl_k PSL_n add def
+    /psl_p psl_p PSL_m add def
+  } for
+  PSL_clippath {PSL_eoclip} if N
+} def
+/PSL_curved_path_label
+{
   /PSL_n1 PSL_n 1 sub def
   /PSL_m1 PSL_m 1 sub def
-  /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
+  PSL_CT_excludelabels
   PSL_CT_addcutpoints
-  PSL_clippath PSL_firstcall and
-  {clipsave N clippath} if
-  PSL_setlinepen
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
   /k 0 def
@@ -303,23 +334,22 @@ end
     } if
   } for
   n 0 eq {PSL_CT_drawline} if
-  PSL_lastcall
-  {PSL_clippath
-    {PSL_clip} if N
-  } if
 } def
 /PSL_CT_textline
-{PSL_placetext
-  {PSL_clippath
-    {PSL_CT_clippath} {PSL_CT_placelabel} ifelse
-  } if
-  /n 0 def /k k 1 add def PSL_setlinepen
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
+  /PSL_height PSL_heights k get def
+  PSL_placetext	{PSL_CT_placelabel} if
+  PSL_clippath {PSL_CT_clippath} if
+  /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
-{ /PSL_width PSL_m array def
+{ /PSL_width_tmp PSL_m array def
   0 1 PSL_m1
   { /i exch def
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
   } for
 } def
 /PSL_CT_calclinedist
@@ -339,6 +369,33 @@ end
     /dist dist dx dx mul dy dy mul add sqrt add def
     PSL_dist i dist put
   } for
+} def
+/PSL_CT_excludelabels
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def
+  /PSL_m1 PSL_m 1 sub def
 } def
 /PSL_CT_addcutpoints
 { /k 0 def
@@ -403,14 +460,18 @@ end
 } def
 /PSL_CT_placelabel
 {
+  /PSL_just PSL_label_justify k get def
+  /PSL_height PSL_heights k get def
+  /psl_label PSL_str k get def
+  /psl_depth psl_label sd def
   PSL_usebox
   {PSL_CT_clippath
     PSL_fillbox
     {V PSL_setboxrgb fill U} if
     PSL_drawbox
-    {PSL_setboxpen S} if N
+    {V PSL_setboxpen S U} if N
   } if
-  PSL_settxtrgb PSL_CT_placeline PSL_str k get PSL_gap_x PSL_just PSL_height PSL_pathtext
+  PSL_CT_placeline psl_label PSL_gap_x PSL_just PSL_height psl_depth PSL_pathtext
 } def
 /PSL_CT_clippath
 {
@@ -434,7 +495,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if
     /sina angle sin def
     /cosa angle cos def
@@ -455,7 +516,7 @@ end
 {
   /str 20 string def
   PSL_strokeline
-  {PSL_CT_placeline PSL_setlinepen S} if
+  {PSL_CT_placeline S} if
   /PSL_seg PSL_seg 1 add def
   /n 1 def
 } def
@@ -463,93 +524,124 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-/PSL_straight_text_labels
+/PSL_draw_path_lines
 {
-  /bits exch def
-  /PSL_clippath bits 1 and 0 eq def
-  /PSL_rounded bits 16 and 16 eq def
-  /PSL_fillbox bits 128 and 128 eq def
-  /PSL_drawbox bits 256 and 256 eq def
-  /PSL_m1 PSL_m 1 sub def
-  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
-  /PSL_justy PSL_just 4 idiv PSL_height mul 2 div neg def
+  /PSL_n_paths1 PSL_n_paths 1 sub def
+  V
+  /psl_start 0 def
+  0 1 PSL_n_paths1
+  { /psl_k exch def
+    /PSL_n PSL_path_n psl_k get def
+    /PSL_n1 PSL_n 1 sub def
+    PSL_path_pen psl_k get cvx exec
+    N
+    PSL_path_x psl_start get PSL_path_y psl_start get M
+    1 1 PSL_n1
+    { /psl_i exch def
+      /psl_kk psl_i psl_start add def
+      PSL_path_x psl_kk get PSL_path_y psl_kk get L
+    } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if
+    S
+    /psl_start psl_start PSL_n add def
+  } for
+  U
+} def
+/PSL_straight_path_labels
+{
+  /psl_bits exch def
+  /PSL_placetext psl_bits 2 and 2 eq def
+  /PSL_rounded psl_bits 32 and 32 eq def
+  /PSL_fillbox psl_bits 128 and 128 eq def
+  /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
-  PSL_clippath
-  {PSL_ST_clippath}
-  {PSL_usebox {PSL_ST_clippath} if
-    PSL_ST_placelabel
-  } ifelse
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    PSL_ST_prepare_text
+    PSL_usebox
+    {  PSL_rounded
+        {PSL_ST_textbox_round}
+        {PSL_ST_textbox_rect}
+      ifelse
+      PSL_fillbox {V PSL_setboxrgb fill U} if
+      PSL_drawbox {V PSL_setboxpen S U} if
+      N
+    } if
+    PSL_placetext {PSL_ST_place_label} if
+  } for
 } def
-/PSL_ST_placelabel
-{PSL_settxtrgb
-  0 1 PSL_m1
-  { /k exch def
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def
-    V PSL_txt_x k get PSL_txt_y k get T
-    PSL_angle k get R
-    /BoxW PSL_str k get stringwidth pop def
-    BoxW PSL_justx mul PSL_justy M
-    PSL_str k get show
+/PSL_straight_path_clip
+{
+  /psl_bits exch def
+  /PSL_rounded psl_bits 32 and 32 eq def
+  /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
+  N clipsave clippath
+  0 1 PSL_n_labels_minus_1
+  { /psl_k exch def
+    PSL_ST_prepare_text
+    PSL_rounded
+      {PSL_ST_textbox_round}
+      {PSL_ST_textbox_rect}
+    ifelse
+  } for
+  PSL_eoclip N
+} def
+/PSL_ST_prepare_text
+{
+  /psl_xp PSL_txt_x psl_k get def
+  /psl_yp PSL_txt_y psl_k get def
+  /psl_label PSL_label_str psl_k get def
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  /PSL_height PSL_heights psl_k get def
+  /psl_boxH PSL_height PSL_gap_y 2 mul add def
+  /PSL_just PSL_label_justify psl_k get def
+  /PSL_justx PSL_just 4 mod 1 sub 2 div neg def
+  /PSL_justy PSL_just 4 idiv 2 div neg def
+  /psl_SW psl_label stringwidth pop def
+  /psl_boxW psl_SW PSL_gap_x 2 mul add def
+  /psl_x0 psl_SW PSL_justx mul def
+  /psl_y0 PSL_justy PSL_height mul def
+  /psl_angle PSL_label_angle psl_k get def
+} def
+/PSL_ST_textbox_rect
+{
+  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T
+  PSL_gap_x neg PSL_gap_y neg M
+  0 psl_boxH D psl_boxW 0 D 0 psl_boxH neg D P
+  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T
+} def
+/PSL_ST_textbox_round
+{
+  /psl_BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
+  /psl_xd PSL_gap_x psl_BoxR sub def
+  /psl_yd PSL_gap_y psl_BoxR sub def
+  /psl_xL PSL_gap_x neg def
+  /psl_yB PSL_gap_y neg def
+  /psl_yT psl_boxH psl_yB add def
+  /psl_H2 PSL_height psl_yd 2 mul add def
+  /psl_W2 psl_SW psl_xd 2 mul add def
+  /psl_xR psl_xL psl_boxW add def
+  /psl_x0 psl_SW PSL_justx mul def
+  psl_xp psl_yp T psl_angle R psl_x0 psl_y0 T
+  psl_xL psl_yd M
+  psl_xL psl_yT psl_xR psl_yT psl_BoxR arct psl_W2 0 D
+  psl_xR psl_yT psl_xR psl_yB psl_BoxR arct 0 psl_H2 neg D
+  psl_xR psl_yB psl_xL psl_yB psl_BoxR arct psl_W2 neg 0 D
+  psl_xL psl_yB psl_xL psl_yd psl_BoxR arct P
+  psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T
+} def
+/PSL_ST_place_label
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
-  } for
-} def
-/PSL_ST_clippath
-{N
-  PSL_usebox not {clipsave clippath} if
-  PSL_rounded {PSL_ST_clippath_round} {PSL_ST_clippath_rect} ifelse
-  PSL_usebox
-  {PSL_fillbox
-    {V PSL_setboxrgb fill U} if
-    PSL_drawbox
-    {PSL_setboxpen S} if N
-  }
-  {PSL_clip
-  } ifelse
-  N
-} def
-/PSL_ST_clippath_rect
-{
-  /BoxH PSL_height PSL_gap_y 2 mul add def
-  /DelY BoxH BoxH 0 3 array astore def
-  0 1 PSL_m1
-  { /k exch def
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def
-    /MAT PSL_angle k get matrix R def
-    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def
-    /x0 0 BoxW PSL_justx mul add def
-    /y0 0 PSL_justy add PSL_gap_y sub def
-    /DelX 0 BoxW BoxW 3 array astore def
-    x0 y0 MAT transform
-    /dy exch def /dx exch def
-    xp dx add yp dy add M
-    0 1 2
-    {
-      /ii exch def
-      x0 DelX ii get add y0 DelY ii get add MAT transform
-      /dy exch def /dx exch def
-      xp dx add yp dy add L
-    } for P
-  } for
-} def
-/PSL_ST_clippath_round
-{
-  /PSL_justy2 PSL_just 4 idiv 2 div neg def
-  /BoxR PSL_gap_x PSL_gap_y lt {PSL_gap_x} {PSL_gap_y} ifelse def
-  /BoxH PSL_height PSL_gap_y 2 mul add def
-  /y0 PSL_height PSL_gap_y 2 mul add PSL_justy2 mul def
-  0 1 PSL_m1
-  { /k exch def
-    /xp PSL_txt_x k get def
-    /yp PSL_txt_y k get def
-    /BoxW PSL_str k get stringwidth pop PSL_gap_x 2 mul add def
-    /x0 BoxW PSL_justx mul def
-    xp yp T PSL_angle k get R x0 y0 T
-    BoxR 0 M
-    BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct P
-    x0 neg y0 neg T PSL_angle k get neg R xp neg yp neg T
-  } for
 } def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
@@ -570,20 +662,26 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 8976 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -R0/1/0/1 -JX7c -Y19c -B+glightblue+tno option -K -P
-%%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psbasemap -R0/1/0/1 -JX7c -Y19c '-B+glightblue+tno option' -K -P
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy
+%GMTBoundingBox: 72 538.583 198.425 198.425
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 {0.678 0.847 0.902 C} FS
 -3307 0 0 3307 3307 0 3 0 0 SP
+25 W
 /PSL_H_y 233 def
 1654 3307 PSL_H_y add M
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
@@ -596,45 +694,40 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psimage /Users/remko/gmt5/trunk/test/psimage/warning.gif -C0.5c/0.5c/BL -W6c -O -K
-%%PROJ: xy 0.00000000 2.55905512 0.00000000 2.56777174 0.000 2.559 0.000 2.568 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psimage @warning.png -Dx0.5c/0.5c+jBL+w6c -O -K
+%@PROJ: xy 0.00000000 2.55905512 0.00000000 2.56777174 0.000 2.559 0.000 2.568 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 V N 236 236 T 2835 2845 scale [/Indexed /DeviceRGB 3 <
-00FFFFFF0000FFFFFF000000>] setcolorspace
+000001FF0000FFFFFF000000>] setcolorspace
 << /ImageType 4 /MaskColor[0] /Decode [0 3] /Width 271 /Height 272 /BitsPerComponent 2
-   /ImageMatrix [271 0 0 -272 0 272] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
+   /ImageMatrix [271 0 0 -272 0 272] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-J,g]g3$]7K#64csU^0@H*=mro?q!tm;C*-<7USIuTiO#mO?qi&87[HL*t$%\&p\"s3`VHgAl/;N>%]dH7jG?S`:O'kMGGVKG
-o[*E4efo/o8-0/QT(ehWUhTu_P]/UeZ/2_ba,^]TLg[)CCMc6+L9%hnbPt;f,;$JXmp_>9'6hufrji`b]`^m[)F]g$k+co%_
-18tngj,Y(BqIj-91cQ2^O]@AZo6nrbBuRK]f]R/516#R)nO!H0^bp$VnuO9$(5=K4VEVkUr^./SB3/2/d(&HsP9&_Neaa-"T
-uOZU2R_93g6>A#-,)?[.q7BreMmb$03"XiA8:=n2&9f_Vd-Z-KN4q0kNPB.&2pq!Ym(]pHD%]WYNDm_4`\*4rjZUYt+8mq_.
-P50Q+O#Ht>Bm]=!=URo<:0;JZc57Rf;j1GcSr=Qk_<(upG"^1hQ3tV<@[Abg!<*u9\qlp5mCHNU'7jn,_#X$;!Wsltpb[C:V
-/)2iF(%M\/n$g_c?OY(3bbjqp/"BBSa>)2T##!>X_'$d;MWY,dn]Tf!c#I:K0hI;/f,r:W"KJrJF3N)[X_TJ)*).+E<3r^2b
-l&/#n`m"-]Q>FT2n#bjqZ"r_9L,r4oSgZ`7&p+3qGL7f`oO4:NCcpZ1P3?o<HKfA1+RI#4]t=@6FOVU<*ZCpf5iaQ;SuGeVb
-u#%SFnMeoBh<6<O5T$7)ARB'`G(O-'M8/ng]sc>.0-O5Ul<DDe30q4hiMcG-hWRWH*F)>ZQ!tig8+14h5IUar8G8f@NYSInj
-&$!DPB84P>?p%]Z.ThcL%X"/iUd,Ci&)g2Ub7nO97IhH-8qCY/sc4,.1S.XNi0=53CX.2X[7&]=ClWL78$*-e7<futN?5Dbs
-lT4F982g/RFG!0Faq*&F'_RVOXQJtc$?)Hd'-/Y(:=8jMBBm$.^Yf>:3`N\+=Chp';)MT6+Bc9amRU-;:O1&qFHp6-LgQ'O)
-B3)lfORMudd/ba:p8P(LR%hErnU+sC7kL6b[it:'2?o@S)/h70i>>0_E,5%U5H;!!Z8J?Hr+-=[EVrjA-1R?m.#_>uXKs3qg
-hq_'0"9%ph8T?\-dAJ-Zg$ImSBfuT0>2Rtj%d7-1[+@l:O1ti8Nd7/HX8@bTHsK]X75quYFiu2:k-mX@3$GSqL/@?lAYL&"N
-0m%T=S:Y?ZZ*jNucae_HtntPP'<>IFZ'a!g$dLTRi/1#<t`_!8=t$AWNDj]gMqjbQIHgcp@c3`t8NK":oit;2gYBf'd!F``#
-]aLVifY#p:2WGpIN=_8pU#)I[`>Y`9I5BI<hSj2Qg,EX\'X#nNa]$Y<0qHpjnp$QiUsMQjrJ_^Mg!+\Eu$d$7kL@N,cIlsl!
-67GL.Q#,J"=<`-'[2a'R7QK'4N,7WJo,a]eE@@VFr0tioAArK,$'QJ>qIL6\=Kd*0.#*G]Z84`tB,f6XJOq@hP2<ct:j-^Nr
-P(#B`(N)NK7&5[!VDH7q<<o7gXWt%o=1mc-6Y#0Z8hQ\taheWB?D:VdWbMTs8J6j9eAI+'k$t(YG:t*j9d&qBhPhq&nYVEQF
-0<)i8Qclu*@/Hn;H?@[M-W*<'Te$SFk/Oj_]C%]`.kN\1sS*51<:EsSHJk97iATthomC;nnJ]!8Xb:q*8YIc<\V*eUG#g`"a
-fd&DTo(H@jaB^82ERFa:](KU[*H&e1?/I(s+gLe6f#Y2;KN,8Bj[nm?Y%1,IH`K(+<HHVXacbXf?RT@poM0FT'fN+pg5D,cd
-$np8#lH,?$(-&pDb[=k+@>a_B:+ALe\#eY_u;C%YeIY%Yr,3lKEGePN4tB[7@7ALm(TXA<oc;E>`WAr,8bN0W,/f5_`d-H1D
-;7^//Dd*lCh7>WeN(<'D1*/;]iO0Vd,M]/'4A^%CpZPIGjKgT3[/HAbU2M03X9.aj/h57RqY1?e)?5.7!X0re`dKCM'Be94l
-Yr6pa)TZRl$A^sV2R;5c$Zo?"@8!tN%UtWS$Zeu>7Pn_?Lm-?*O@P#R#PVLXO2EA1`W,u=GB3*gqo<kFIH8!#qX'@@]KpHR#
-e`0Cp>2Tc:N&ik^#T[qh@^9F^]jDF`:j:>EX-dVf`])-(@kaH\UUgj3PlUSpL,$.Kh8u<]9d&Z?W%;mDl+<mpi)YYS$.Z%Xp
-Mj%HP7YE-[m]q-qlSs%:NL!G],T8_3g8j?_R^\YYIF#"V2X6/8'[B*W4#=3t^LX+b=P(h7rb:S72O'L57/b!#\=Zhu\[gYos
-=fK**`6XJq%Rc=+o+D_gCTJkb^ZC<Y=;2rBdZIW9gX`j];9i*q,*Li.COUH^5A%0)ad;#e10?UAD]'N"Aj#g4).J*@seSb,B
-Q^t?+hBrrJNo6CJeGgq1Vh&!!ZL7o`9:G(Q89rg-C"ACae<aO24X7Q%ie(Ir+B8po2$-&+H\gpfkI=J+IhS[k<6O@RW+cuCu
-2o:(IB5.kgOEOq-`L0Y,C`T3qp6KL=qhH#&r:cuUQ;cRcVaKa-f;iu<^X"1K4C8L+RWhU5gm`WZDf*m_2\?;P"T'lkiW[-h2
-PK(4iu7E(>F`)[%k-[t;.+1K`%sUcb-tk\nSSAtp_P$fQX:_PmP1q"mij+r0R.:q09l9%&^FOS!V7pO62>t:_Yg<qo8Zhjmo
-MX/>3?665&#Xp[gjOnkDAgPP!O.Pr@3#Sp[p)VbjUBefR*e&RQLaqa?D+-j9,~>
+G[AX_9ldR"&;G1%XBFdM0K8d(b0%R[)",9RZ3XUo#k8Ad*a*(QQ#$/R=p"YEX!OI>ah*B=h2e\I><aH/'2^-tf^0qUH0%@P
+?)3]i%&`O8(qCbYilUu7"Yl1*(ai%kr")?l6Q"f10i%FtXMl$eW2M?!)!=!b`jl8KPNN1G)5dfdjEX+-0VggJlD5h;j<A;\
+5D10gj$\O@RZ-eAfunE1\6WC[aMh$i'c71M\1j5F`J"=S?KPFMd_Z9TI!\$&R"-o3dC=_3!2HbP@)qi8rg&rZV7gS4R3@<i
+aDsY@Zr7.JZ7L(-+i5p>b7.=-QRCgqHn`u&ZloSnZBrNa$4HsT[-XY*(t'F`f2>!0d[i-mChYO\,MuIG0T$75dV^rf].b%j
+0a!*PnR[uo\1eDfYV<k;k.e+7c!YQd<UI&Vj`=^o_DP=1`k&<[Kkm\tgpWoXgL.f.0$0=,N/o@H^H)cWFl]hJmA557\sZ`S
+;,Wd0k%dFX@=6'm^^s_mMo>Z`\26_(BB5[O/d,\F&hSYT[t'T>(_JIm$_n?alJXL=$jdg)-O>.3?#7NNBh4"5?8E&<Vd"q=
+];>oMI`!#EK96EaGGBcZ$"Kc3f.)]tR,R>OAV6#r@PdXgQY=Gp>AV;`Q6FfkaC=4u.LnOVL,O_.#)U5-KJ@N39&d(mAn7GT
+,gOKr<#%FtN#YdjUPI0_.kia0ZArC)m/AgD"uC:M`bc6QOhSq.Oo^<5'NYIpBLY<s/i4eupNKBA(aG_.:0B^!S7npY0N*+4
+`@tjh)8%+J_FX';'kPO>1I_RgM(oWmQ+<aa)0:racHHe9C!R=LN&3m9@kS5+?j>(K)/21A@dIY4(j!i-6kU_N?&%m<@Yft!
+hGObj(rk&[K(.JNA0`#?@>ljtO^O!WMBRo]6NkG#0LX_]g([u"`t31^d#?j?K0=s253!kqYf@<Z@u<&($4LemK%j<-_Vfl@
+"cRYY!J@(>[86'E,JI([AO.4(SZ2l]W1+I<LmqS#!B9CbPVKKQ].>odH43[FCeJb;oR*%ILn3r2`KXoW'c<&\45QRT0h.,\
+mFO0>Ea[1'TS!j2%At`[,LWR%%'2g,11MX?8S?DnOLd0C1D!KI(8D^W@?;7'caDTBdUnF=")/:'5o'Z9I'2lT7Va=f!b6VV
+kLtKc_C1.C>%MG^.6V0;`cEg>K)BnmY"iY"W4;t^=GG=*0%]<h!WriK4TsK9ZrFEi+Ps:D:,BmTgQ\"5p^QdY0[Sg:m97l6
+cO'1X!Z#7++W1!E1C`=ue@!C/IE1M7^A27hi;s86YE5u]Rm4aa7+]m^#fH]8UI?tNQ/F>!cIg]Hgf1)Zl:T\M*+Q>ei@u9>
+1W&.+7q<1OY`#!s#R^a#:-i9@1&DA^aKQ$SN%g@]O.\1+=^hfse;e"bo-N&TW3XeAFp[k'U#&O8+DE:@^]LKXC^GR2:j,51
+$tF&AX<:+&af^T]T$!]W':7e%I>gHC@[qsgjiS4dC`B)c\Rk<&lP))o6Y%(P2PdF]Mt8p9Qn]\;PdSQkr$/SQ4WID>p*/<j
+rTT*?3FrN&[1%\me3'r\(ee),fq=HgHL0bVoh1Y5+!rTe_`4E,'o(X5=BujuK%K\47I[m[[mOI*(W!-VUPAd1!YSIbnJ<"'
+TGm2p_!hlC@hs]C+tgAn/L!??&^(AIk0(j-)I9X)&-7@ZcYcunlBbU=hcq/#@5W@MTpXDXe#o"HGXUrjg\2SE@K3@p*nih3
+*@"u1lJir^jaFn2`>FW.@J;C<TnDcm_VO21i%a561%'NMn<Mqsl7q;sd9BJ#q8@aZX7+i=kt4-Lb@q]l>ud(6[&Ef?46$?H
+m6I;lU&j<MiBnr%95iFq/h24mAiu:YgM?bYEZ(ub2pJjF14#F`C\1n`YrW;2b,Ui@rMD/V\8T0HJ+FKfqou/(:H:e-=FH>2
+*2@]pD%T-0\<DlKPd,Z:Dk6ASjL]ri6:X;XehRC;BMb8HSn6]HD.)NE_qLVmoT/U&rGp@hQY?'3`f8B9@5MU7&CU^@gK^o&
+B^Bl%:hsOc0imn?PgQQNU)66X@uKmqVR9;=K.?2XA.6Qg[HA;]XF7(8d8jX3.&5$soG&2P`b>)FkkY%[8L#:"_I-clq)^'I
+lpsl:28E&6WTT;jU&G&Omr40~>
 U
 %%EndObject
 0 A
@@ -643,19 +736,20 @@ O0
 0 -4252 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -Y-9c -R0/1/0/1 -JX7c -B+glightblue+t-Gtblack -O -K
-%%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psbasemap -Y-9c -R0/1/0/1 -JX7c -B+glightblue+t-Gblack\053t -O -K
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 {0.678 0.847 0.902 C} FS
 -3307 0 0 3307 3307 0 3 0 0 SP
+25 W
 /PSL_H_y 233 def
 1654 3307 PSL_H_y add M
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 400 F0
-(-Gtblack) bc Z
+(”Gblack\053t) bc Z
 %%EndObject
 0 A
 FQ
@@ -663,8 +757,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psimage /Users/remko/gmt5/trunk/test/psimage/warning.gif -Gtblack -C0.5c/0.5c/BL -W6c -O -K
-%%PROJ: xy 0.00000000 2.55905512 0.00000000 2.56777174 0.000 2.559 0.000 2.568 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psimage @warning.png -Gblack+t -Dx0.5c/0.5c+jBL+w6c -O -K
+%@PROJ: xy 0.00000000 2.55905512 0.00000000 2.56777174 0.000 2.559 0.000 2.568 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -672,34 +766,30 @@ O0
 V N 236 236 T 2835 2845 scale [/Indexed /DeviceRGB 2 <
 000000FFFFFFFF0000>] setcolorspace
 << /ImageType 4 /MaskColor[0] /Decode [0 3] /Width 271 /Height 272 /BitsPerComponent 2
-   /ImageMatrix [271 0 0 -272 0 272] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
+   /ImageMatrix [271 0 0 -272 0 272] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-J/)Hg3$]7K#:c%)8Q\A=*=mro?qR7nVBm%;7USYuU8g'mO?qi&87[HL+#QPfZ?]ti3i\IgAl/;N>%]dH7jG?S`:U)kMGGVKG
-o[*E4efo/o8-0/QT(ehWUhTu_P]/UeZ/2_ba,^]TLg[)CCMc6+L9%hnbPt;f,;$JXmp_>9'6hufrji`b]`^m[)F]g$k+co%_
-18tngj,Y(BqIj-91cQ2^O]@AZo6nrbBuRK]f]R/516#R)nO!H0^bp$VnuO<Adqq5@nua>u\8gc$%j>`U5=g4FLfnA_Q)/ZF`
-kAQP6O`2uO&4!rooa?$SBB`fg4`g-G$gCVLboIH"T/n2p)Vhdt9nEIBeea2r,`Gd"l/5DBHN]doSrb,[3'hZC,<)q>'H%f62
-"+O@D9kb,+!-C:B7TE#&*0OjIGVh+mK!'A;M%'dRaX@<0kXQjQ8Wi:q7&]94%*:h%h&>9hh/u&9W_3*MC*f@#!po2+3X@3lA
-Y,^q9a`/:mPsaiZ#:RNQF'uJl1;hc]Y&R.K-HGU<_'MNjb<l\$n5RFc[84_(2n3XMFXt]ieBY>6F2XH*`q/7?1f*Z5*36WVo
-V@&`lPec7:%Nu'XgV2^o0#[fr>L5b0EhV"d8O$Rc)PjP6NTm&h%N_[Mp.3N\Hjc38M]SDlUt']";IcJQ"/-GWG_*C7FeaSK0
-@\J]o,2/ntfo/5.*/<%p.9"SS?P2*CVX7$1c5keoN,aU"ecg__"Q^47d;4(,C;\g9t8GUW#0%)/Q6p"d<3+p7ctb?Zm\FI9%
-0g$%Z(m)K@%UpZ6l_.!LC*Gu3d[;fc+J/T.1e\$bZVVmn&aD;Vk;6Vq80FfgOtY?k.\@5Y2(An/nD[;TU.DIA&nl0ZZ5@lPN
-DQJ8p@9;86P!ZQ4>pk!+R`;(;n="0P,?]m^b1//VMH4De*V]+-^LG1e"Xds5FN``Z%H8`+9Ut+n:(9ne[AVjVqU)UD<REj3n
-+foNeMr[tK=GT:8AmM&uEN[CT-+MY>+\%CQ$B.NsG:<uq3P&A;TtK8']'m`=gk,/hQ)'N6kTjf`o=GV]=J=Q#3/H"pO(9a6h
-&d`eUE#F-hY)A4l*g96:OIq?B\,M(pmkKKl"S4/UY+H0f.MW#r'tq!D?r24L[fiF_Lh]8#!e.+SqiTTBab6E%/oD(n`'DZ\*
-Aff?4Z&d>\P$uKP@7p#L`(ua`r4%U&DYnk56",[=PJa"h_o+r?)L[I;h0s^?@?NT%`RY0Bs(_a,Jm4S/?DP>ueb^J3hXWJ::
-=k#f#p<$sth-L9PNtZa(^Ni)Df^#mhdl#X[;(lk4L1Z6QVDU<jok08*.aVlV:+i7`QV+Rs06^mH[a9"ZulAY&:lA)+a@da<k
-JU,Bis'bt/`4H:]Gqm0ta5nVm-J'a.-28V&/b629DdIIf+QtHP17"gA0Y!"a8k5.]$;0d1C2TD]3,[i,>MSqDIOTa,F?mK!=
-E`@Z_nj<@JbY94#RC5Y^VTaj\X<[2"2bO2s/=eUUH1Joq27RJoAG!P\13Ku:W?go-<!+?9*^INME^h%ENJ5]ti=Ql4=!;t',
-4Y_t]P30iA':Ki&u_MB#$2JgZ_s+CSI7=N>bW3kmZQh&DU%eL]9qi(E@N_(Ul"*?,CK,o'<Zm=RL!*NUouJl*4VCrl<;^.if
-*4lef^s5>:?JPTFiKh;49UNW'&P(oSg[Z#Ur=o6<#P2>*RIh>"[$k/uDTmMc1O,:!D!#2)O<a2@=e,c![M.o`CbCRVbnNiNo
-Ku/=k8$R8`C)1DJA/UfBIT:aosWVtCP%;G)XE9_B&iVOFYeb/FnVdh\oo/u-hhYY<7mDatK5ld#''RUjO)9,6G_(cMrlX2?D
->BP@r:])rS#3_QZZn[,'uHX?&!4`bc>E0+iTaQu$D,W7q]=Kni;m"L!<[N3%,\FbTYI@6HjcG2cRUFAG3WO5SSR9461C@(kK
-[aRk&fQS=$)l'T,W6H+16C2A&r2aq)0$BK+OJlDF;7W"2V7>,aBku]X[g;9a'R@3If$[H_(NRh8,\JCX1*Zk0NniJh>*,pV\
-ZYuKp0?$oHlW[&]<UA6'#]KB&f%O<Qh&B6FG/e>Q$WQKm"+)8LOG\];Qpujl/5H6KHChb9,M.6'RVn@0&eD!Q\,P$bVGK%(*
-gT()\YKTe;l=b(*kk*pYnUI!HF,@^M_caX@rSRE@aP_ehK$e9S%W\hF"f9XVPGo-'E&`7(X8E'B?0JP]Bqg8%CUL?Yl!RXL9
-_(3Bn_L)mp`lNP*5fM_erM;4+\5A;43L(#[m*iUTH_K*2QChFM'l$,,N@g%.I?94<3>4P.LfC$"=OqG#Oq,Xbfp(?irT#P==
-9_9h(+P</GXE7UIjH;<X*&.>@WUKH$5QIROW;U@6iM7.`B0^>c$9_FifH$J"8CE1r:Fk0Q&)YfN]h1I.mop*+s"X7cZ+XGF^
-=163%BUUj"[Bk=I/)a<TJ,~>
+G[AX`99Ot<%RnK*cJO<RYQP/t!DCdgkT+2(Uf[@)ImCFgbJ/k943@Wj?si^SLf,^t6_CpD7FM#_23G7]Xedq=NZ[;G)@;!;
+j!-DoU^&V8:#5gTj7ji-pe-Rkq4U;5:8q5oq_1L3Vj>`>JK27N0TOPG(sr59N*p>TD<a<JECqg.*Ii_CT$]8YoLMIK"M*"0
+OkaFtj-88<JcUf8d@;%aBldab*FBZ&BMFEprZ(lqdkX[t2(^`mb@jS.[A3&Xg>2@Ic7.(Y;sfh';nB[/Agm+bP9Jj%8%Tr&
+T>%cFjr&_]1sD'[$.Q)3TJ?jX%7/15\WT8%[FnN(4E-7*;mDBhN">bjT9pWT^d@T(WIbJf0ei^(0ep</rAM@Xm9'dRFMEJ\
+e)Ua4b5fkUVJ0r';o(VAq_?qk]2DHNhtcrcG`?-6;bnhld%/m_V3e/+(bLTT=2&1O,UR-%"pXi6cN"J-Q];sV<QNH>:*C,5
+8OLRt8IQl'qS_U0k96V?OH`UJ6(j"iN+[BH3XE`&BaAI'1MZY`eF/c%4;^dHC(DfDm?gb>>s&oE"sC3&4=;4?h7!s.2BKkE
+AI)V;&#7ELGjN3SB*]T7"mC4\j(.2Si3<A?W[\9K1TG%:IN2hHR!P)?QS8LG0Ile%K4@lNr]C:e;cs,BFhfCiA2MI8MUnk\
+L'47o0g!]055g-!Q=:OR-9U6S"r*L5)+Nl4%DeD\L2;[k0M5u)fNjY[;K56SN`#RP(8a!%5`m5+b"ijch[f::1.1c>ZSY#d
+b`QJ$S_Sti(`tQ,A2$iuaCeR^*$p@'4C^$!6st7<cSuC`R\hO/^lWg,2N0Y1O>S;4:IuB,L4I2j0I6("aq2aXj:jA.GM4<P
+C9m*,#t$72+RUVnJ,p'm+%gDa%-a$,@;H(aG*XpA4kM2QrhN046AgmiWCAQaEJn;e9c_&@4%V3U7j4:IJ`.k!>DAsJ84L$O
+/7dgV]6H,3*!6C!11,4uoN$ul`g?-u@2EWIVI6Q;OFo8gKdic7R@.7%TOnILK4+aq83)=[L58--)2,!-']U$H@YcIF^2&L:
+-#-$tL6s#%K1ucr=Ji<WE<:jq'Os#X[1dP:!=HM;QLZP\AGcXq1q[?.TeE$PF&F]B_/)L2<CZ%[WasJiB#pK9lSo!ogQ*VQ
+)!!O8"]Y*nJ3bNK*8n54k2b5Bnr-uooU;P!/7t>go\-2RJ!+RTe2b6VUf7:1`^9*kQO!f%Lj0-"!Q:g-f7$>]8j&@%g*MSq
+U+>$]`\UKp\QVd<i.u\K3dO>CAsHdibg;=XS/<8RE8p%NOr1W"b:mC(fqO.,0?J:g17hd\.N(H=@sc-tatTcKgchTu#BP'!
+"b?^-2\K/"A_4p-X0Ts-5Xs^FN6DZ$:)_jmD%+47!9.#B^kO[$!^h&K!uo[S>3-XAOCe\ZL9sYcFdr5)c-mmkeT@eG;YTfR
+=6TTM;A/AmQoZtMc@e96OHs^ie]F'tGPYm!gaN17g?%s8SLW68#QpkLU;#a?Z2,6s:=?W/%f]n[>oLNrTmrmC"WG5@=XRN#
+VFL_5/o8i`#.J#m'^3Jg(G^$Y<giW$9!M]LFT`j\-okXZ*Mo<oXI/jt5g/6-(="r=9''nVP1gS\r[2ol?n?M'\%Co$]C_%M
+A=1ENgs>f1=N+C67a(1)-,VU/Q,1`=iY"!:H1C=;(&mJY7?%0B=Ac-<5LFlXFEck`\5CJ[@Q)-X-8S4#VPrtRc$8(E?@6H=
+RA(#Jp[G#BEJ8>[SJMr&<ARt$JEs]1;_96hGjH8g-"Fn&Q_X9T`Y:,&-#;5YplDP:&cQ3%q-P0&L&[OqqIsT0'Ut,aI>g$k
+CeY>Ei&VaUQ#ZKsm/h`k]Gh]WSImd<RPG<\4$d/ff#sH226_PL19#02qW__KQ^'n(GcfiBMkPG6Wg@/KCmOVbQNo8[hWG_m
+^.f\Znip:qC2sm'=P=WoX-hkD<XE7jBq8DH;Tph-DDMBc9?iE4!(2m-XcBXr?mpo+meN"@aGo9m0-%3@fMd94ji`\D!)e^q
+8tT.`S5-Hi*sg-F9`~>
 U
 %%EndObject
 0 A
@@ -708,19 +798,20 @@ O0
 3780 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -X8c -R0/1/0/1 -JX7c -B+glightblue+t-Gtwhite -O -K
-%%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psbasemap -X8c -R0/1/0/1 -JX7c -B+glightblue+t-Gwhite\053t -O -K
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 {0.678 0.847 0.902 C} FS
 -3307 0 0 3307 3307 0 3 0 0 SP
+25 W
 /PSL_H_y 233 def
 1654 3307 PSL_H_y add M
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 400 F0
-(-Gtwhite) bc Z
+(”Gwhite\053t) bc Z
 %%EndObject
 0 A
 FQ
@@ -728,8 +819,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psimage /Users/remko/gmt5/trunk/test/psimage/warning.gif -Gtwhite -C0.5c/0.5c/BL -W6c -O -K
-%%PROJ: xy 0.00000000 2.55905512 0.00000000 2.56777174 0.000 2.559 0.000 2.568 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psimage @warning.png -Gwhite+t -Dx0.5c/0.5c+jBL+w6c -O -K
+%@PROJ: xy 0.00000000 2.55905512 0.00000000 2.56777174 0.000 2.559 0.000 2.568 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -737,34 +828,30 @@ O0
 V N 236 236 T 2835 2845 scale [/Indexed /DeviceRGB 2 <
 FFFFFFFF0000000000>] setcolorspace
 << /ImageType 4 /MaskColor[0] /Decode [0 3] /Width 271 /Height 272 /BitsPerComponent 2
-   /ImageMatrix [271 0 0 -272 0 272] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
+   /ImageMatrix [271 0 0 -272 0 272] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-J,g]g3$]7K#64csU^0@H*=mro?q!tm;C*-<7USIuTiO#mO?qi&87[HL*t$%\&p\"s3`VHgAl/;N>%]dH7jG?S`:O'kMGGVKG
-o[*E4efo/o8-0/QT(ehWUhTu_P]/UeZ/2_ba,^]TLg[)CCMc6+L9%hnbPt;f,;$JXmp_>9'6hufrji`b]`^m[)F]g$k+co%_
-18tngj,Y(BqIj-91cQ2^O]@AZo6nrbBuRK]f]R/516#R)nO!H0^bp$VnuO8sNQq5@nua>tPmgc$%j>`U5=g4FLfnA_Q)/ZF`
-kAQP6O`2uO&4!rooa?$SBB`fg4`g-G$gCVLboIH"T/n2p)Vhdt9nEIBeea2r,`Gd"l/5DBHN]doSrb,[3'hZC,<)q>'H%f62
-"+O@D9kb,+!-C:B5&QDRg0OjIGVh%]E<BJ<M%'dR_"@cB&%-hTBWi:q7&]9,%*:h%h&/>qF%\im7_3*MC*e4X!po2+1"@X'C
-Y,^q9a`/:mPsaiZ#:RNQF'uJl1;hc]Y&R.K-HGU<_'MNjb<l\$n5RFc[84_(2n3XMFXt]ieBY>6F2XH*`q/7?1f*Z5*36WVo
-V@&`lPec7:%Nu'XgV2^o0#[fr>L5b0EhV"d8O$Rc)PjP6NTm&h%N_[Mp.3N\Hjc38M]SDlUt']";IcJQ"/-GWG_*C7FeaSK0
-@\J]o,2/ntfo/5.*/<%p.9"SS?P2*CVX7$1c5keoN,aU"ecg__"Q^47d;4(,C;\g9t8GUW#0%)/Q6p"d<3+p7ctb?Zm\FI9%
-0g$%Z(m)K@%UpZ6l_.!LC*Gu3d[;fc+J/T.1e\$bZVVmn&aD;Vk;6Vq80FfgOtY?k.\@5Y2(An/nD[;TU.DIA&nl0ZZ5@lPN
-DQJ8p@9;86P!ZQ4>pk!+R`;(;n="0P,?]m^b1//VMH4De*V]+-^LG1e"Xds5FN``Z%H8`+9Ut+n:(9ne[AVjVqU)UD<REj3n
-+foNeMr[tK=GT:8AmM&uEN[CT-+MY>+\%CQ$B.NsG:<uq3P&A;TtK8']'m`=gk,/hQ)'N6kTjf`o=GV]=J=Q#3/H"pO(866h
-&d`eUE#F-hY)A4l*g96:OIq?B\,M(pmkKKl"S4/UY+H0f.MW#r'tq!D?r24L[fiF_Lh]8#!e.+SqiTTBab6E%/oD(n`'DZ\*
-Aff?4Z&d>\P$uKP@7p#L`(ua`r4%U&DYnk56",[=PJa"h_o+r?)L[I;h0s^?@?NT%`RY0Bs(_a,Jm4S/?DP>ueb^J3hXWJ::
-=k#f#p<$sth-L9PNtZa(^Ni)Df^#mhdl#X[;(lk4L1Z6QVDU<jok08*.aVlV:+i7`QV+Rs06^mH[a9"ZulAY&:lA)+a@da<k
-JU,Bis'bt/`4H:]Gqm0ta5nVm-J'a.-28V&/b629DdIIf+QtHP17"gA0Y!"a8k5.]$;0d1C2TD]3,[i,>MSqDIOTa,F?mK!=
-E`@Z_nj<@JbY94#RC5Y^VTaj\X<[2"2bO2s/=eUUH1Joq27RJoAG!P\13Ku:W?go-<!+?9*^INME^h%ENJ5]ti=Ql4=!;t',
-4Y_t]P30iA':Ki&u_MB#$2JgZ_s+CSI7=N>bW3kmZQh&DU%eL]9qi(E@N_(Ul"*?,CK,o'<Zm=RL!*NUouJl*4VCrl<;^.if
-*4lef^s5>:?JPTFiKh;49UNW'&P(oSg[Z#Ur=o6<#P1#*dQi>"[$k/uDTmMc1O,:!D!#2)O<a2@=e,c!XL.o`Cb>8o7ESiNo
-Ku/=k8$R8`C)1C?!/UfBIT:aosWVtCP%;G)XE9_B&iVOFYeb/FnVdh\oo/u-hhYY<7mDatK5ld#''RUjO)9,6G_(cMrlX2?D
->BP@r:])rS#3_QZZn[,'uHX?&!4`bc>E0+iTaQu$D,W7q]=Khg;m"L!<[N3%,\FbTYI@6HjcG2cRUFAW3WO5SSR9461C@(kK
-[aRk&fQS=$)l'T,W6H+16C2A&r2aq)0$BK+OJlDF;7W"2V7>,aBku]X[g;9a'R@3If$[H_(NRh8,\JCX1*[>HNniJh>*,pV\
-ZZ'dp0?$oHlW[&]<UA6'#]KB&f%O<Qh&B6FG/e>Q$X*Em"+)8LOG\];Qpujl/5H6KHChb9,M.6'RVn@0&eD!Q\,P$bVGK%(*
-gT()\YKTe;l=b(*kk*pYnUI-o$`'^M_caX@rSRE@aP_ehK$e9S%W\hF"f9XVPGo-'E&`7(X8E'B?0JP]Bqg8%CUL?Yl!RXL9
-_(3Bn_L)mp`lNP*5fM_erM;4+\5A;43L(#[m*iUTH_K*2QChFM'l$,,N@g%.I?94<3>4P.LfC$"=OqG#Oq,Xbfp(?irT#P==
-9_9h(+P</GXE7UIjH;<X*&OE:9UKH$5QIROW;U@6iM7.`B0^>c$9_FifH$J"8CE1r:Fk0Q&)YfN]h1I.mop*+s"X7cZ+XGF^
-=163%BUUj"[Bk=I/7\k~>
+G[AX`9<PA-%Yb&u*Vu?1UYsFjN`;DWm5#*<,t</&0:]u+>Is.hlrmeH,erpPD'9NqjIWqg,UpL=OIRXHAM,=-j_!kiTT%f@
+Hu_Lja[(k\;l;js=T/R.rXtuII)o0D4VsC51lTiFWFkcS+H,UTN+$fC#%YIl,8a=%RlZO>m(#Ynb9(/CATS=l3KhcR5[7GQ
+MS"gYm($4n0S&[;RL=a!D(^dUisVV!XbG0ET;A0bCW;s(VI_f^)3'?tG'*+MPBhW'5%PUDW9q-?9$YUtL9TMm)$6,/Zl9)?
+ku2qAhB$?"_[)[e7+l;\3^uE9+_[<$T4H;jD)N,8%h,5i<:"*2j+Dg4(M:Mmd#`?=/FS8I=;[+H=I@4=I_JRd4Qhk/\X0Pf
+\nl"o).4?6FWHHW.[UIe2rh9qbp<P!NF-VDD[]"&]'$@]\^K?#5,O?JZkUO)I)BVH9ZRbS%'V1H!>\ik))CJQ+VVcG1O3)@
+)14nJ@3B%/(Il!%qhuF\@Rg"s!^5$fhX6YC+W*kK+Xl2%C=cG7mZ:<$)+cMs2_*>DOAT1e4;M6-+ECe59YQIsD]s@C]Sri4
+&3NHi7\-OJg4:-]&3^U4d.:_dcK8QOCBnHNSKK3&W#DZ1EJRJ%W]PMh_@.9sW*%4YN`!(Yo*iE0,mCg1*i"+HOY"C3ZmOl<
+&r_FZ9K](pp\.Fl'Vh<TrXSBQT[6Y/0M6P,nG5g5nqP3gUNEm?bp=5hQ%q2m(klm>IVD.R'H,oTr.n5Dr?0?51M$%q9/A>o
+=d"`LSQdgTj$O$8F9[U>l0;jt98OfIc'V*3aY9fqH^KR&%+CS@?q@eL/&i/),Rk(;;^+\^+cp1J(_S_`An6rGd4V43B,m'g
+2-P+RLljiT5hJh`!<X1LFXXgq0QO?r&S!.)]!7d)n]"<YdQ:IA(K-4a:,RV(O]rMED<_BrgdmS?571!<o*cuaa^[khO(9N^
+LP:]:fe-N'"il,oN5V'R.DD'Vm,;N"bASTL80"!I).[BE<IW&'7Ui1E18kdOggCu7)H+l=QQ`)e8HrTQ0uQ$U>8Uh*WUJR?
+?AV"*_@XV;A$CY1);F8F@>o_F!6&'jGO7q+@=U\jPbn;:+W5K:U;0:Q&Gkr=LQd;j$t^BOY;.:,;^I'62+-N%U;I<@Da-5_
+`?9pb0;-2^%h,bRA-\_5F%"V$Oa@MST][<.@PPcBVWU.Vq3,'35WuuB8i$+$@;P"NqM8N5PDEj:S3U>*oW4stWPh/\VEN'V
+G'&FBgiu;)+EuD[0lTTF,OR]_/^m<G+CrP_"tkiC0,X6>,:X+K8kUj);qXME5@:/JZH%35hMS93&G5?)CFR/o!kEGI6kAGH
+8.%H]P&DVIr0(D*_`sD4?3Co35@YsF85bW'7VH932?XSp645]IOl70%gDJS)[aGN+:kge_i&.<IGR.sI7l1_ecW&GjE_F[+
+?TkCV7nupiO^QIkJL2`"0J[32Ao$ehdDM56YE.r0s"\RCI9<Dioc:o">Y%oQEpHhU$Yl$W\).\m^R2ViJh]Ulj8oZFK$cAM
+X@<VZ#"EjAh5_CJJdJtU,::*cOil6Iba1JZCGf+)&CQ5prIrj$g5&Dfbf-j@/h?YRSC2gbShHmE4JCs<jK95Vbr'WeU$I-k
+m7EV;*qqHT%sP:9Z+WGmo<+6bJe"JnLVC8%N-&@,qkq5:4g0BU-4%K!s$U_tM<jc:\T9%FPsWKS1Fq%(WBkR%o,hfmj6-Dg
+nY<L&Ldm@#iEIVg8Y7Y;(R9DK1OdJskI5/(/]7I1C`#YgA&XC,1X6#[b@BV1XGT%-+)]K)A,(OiMXYO)j+mZEbku0fW"Q.c
+XF6&XA'@XU2;pS6U6Y8Us"k%k+_Lmeeg!L/gkHdX%-?M\''<N?+eF_e1U]qu1Y,nt_d+#Z?/i7q)]sgu@>J6ENgVcb[$M"Q
+"CC7.br2G[ES2G9$um/@@VkFj-RrZZTiJt^<*9`tYn](ET%hK9_q^3U7`IQ@+WLP>juULCJ0?=qE8r25OW2IdIQ1atc&_Vs
+SWrB`=e%`ldp;4eHK"h*8H/_G*Qb;~>
 U
 %%EndObject
 0 A
@@ -773,19 +860,20 @@ O0
 -3780 -4252 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -X-8c -Y-9c -R0/1/0/1 -JX7c -B+glightblue+t-Gtred -O -K
-%%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psbasemap -X-8c -Y-9c -R0/1/0/1 -JX7c -B+glightblue+t-Gred\053t -O -K
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 {0.678 0.847 0.902 C} FS
 -3307 0 0 3307 3307 0 3 0 0 SP
+25 W
 /PSL_H_y 233 def
 1654 3307 PSL_H_y add M
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 400 F0
-(-Gtred) bc Z
+(”Gred\053t) bc Z
 %%EndObject
 0 A
 FQ
@@ -793,8 +881,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psimage /Users/remko/gmt5/trunk/test/psimage/warning.gif -Gtred -C0.5c/0.5c/BL -W6c -O -K
-%%PROJ: xy 0.00000000 2.55905512 0.00000000 2.56777174 0.000 2.559 0.000 2.568 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psimage @warning.png -Gred+t -Dx0.5c/0.5c+jBL+w6c -O -K
+%@PROJ: xy 0.00000000 2.55905512 0.00000000 2.56777174 0.000 2.559 0.000 2.568 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
@@ -802,34 +890,30 @@ O0
 V N 236 236 T 2835 2845 scale [/Indexed /DeviceRGB 2 <
 FF0000FFFFFF000000>] setcolorspace
 << /ImageType 4 /MaskColor[0] /Decode [0 3] /Width 271 /Height 272 /BitsPerComponent 2
-   /ImageMatrix [271 0 0 -272 0 272] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
+   /ImageMatrix [271 0 0 -272 0 272] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-J/)Hg3$]7K#:br<!E_`J*=mro?pF\l"sk(E7USYUTE6tmO?qi&87[HL+!='=Z?]ti3WPGgAl/;N>%]dH7jG?S`:U)kMGGVKG
-o[*E4efo/o8-0/QT(ehWUhTu_P]/UeZ/2_ba,^]TLg[)CCMc6+L9%hnbPt;f,;$JXmp_>9'6hufrji`b]`^m[)F]g$k+co%_
-18tngj,Y(BqIj-91cQ2^O]@AZo6nrbBuRK]f]R/516#R)nO!H0^bp$VnuO5W)^\5@nua>sPjSc$%j>`U5=g4FLfnA_Q)/ZF`
-kAQP6O`2uO&4!rooa?$SBB`fg4`g-G$gCVLboIH"T/n2p)Vhdt9nEIBeea2r,`Gd"l/5DBHN]doSrb,[3'hZC,<)q>'H%f62
-"+O@D9kb,+!-C:B7YuFW50OjIGVh7iG<BJ<M%'dRaX@?2&XQjQ8Wi:q7&]94%*:h%h&@E7</u&9W_3*MC*f@#!po2+3X@3lA
-Y,^q9a`/:mPsaiZ#:RNQF'uJl1;hc]Y&R.K-HGU<_'MNjb<l\$n5RFc[84_(2n3XMFXt]ieBY>6F2XH*`q/7?1f*Z5*36WVo
-V@&`lPec7:%Nu'XgV2^o0#[fr>L5b0EhV"d8O$Rc)PjP6NTm&h%N_[Mp.3N\Hjc38M]SDlUt']";IcJQ"/-GWG_*C7FeaSK0
-@\J]o,2/ntfo/5.*/<%p.9"SS?P2*CVX7$1c5keoN,aU"ecg__"Q^47d;4(,C;\g9t8GUW#0%)/Q6p"d<3+p7ctb?Zm\FI9%
-0g$%Z(m)K@%UpZ6l_.!LC*Gu3d[;fc+J/T.1e\$bZVVmn&aD;Vk;6Vq80FfgOtY?k.\@5Y2(An/nD[;TU.DIA&nl0ZZ5@lPN
-DQJ8p@9;86P!ZQ4>pk!+R`;(;n="0P,?]m^b1//VMH4De*V]+-^LG1e"Xds5FN``Z%H8`+9Ut+n:(9ne[AVjVqU)UD<REj3n
-+foNeMr[tK=GT:8AmM&uEN[CT-+MY>+\%CQ$B.NsG:<uq3P&A;TtK8']'m`=gk,/hQ)'N6kTjf`o=GV]=J=Q#3/H"pO(9a6h
-&d`eUE#F-hY)A4l*g96:OIq?B\,M(pmkKKl"S4/UY+H0f.MW#r'tq!D?r24L[fiF_Lh]8#!e.+SqiTTBab6E%/oD(n`'DZ\*
-Aff?4Z&d>\P$uKP@7p#L`(ua`r4%U&DYnk56",[=PJa"h_o+r?)L[I;h0s^?@?NT%`RY0Bs(_a,Jm4S/?DP>ueb^J3hXWJ::
-=k#f#p<$sth-L9PNtZa(^Ni)Df^#mhdl#X[;(lk4L1Z6QVDU<jok08*.aVlV:+i7`QV+Rs06^mH[a9"ZulAY&:lA)+a@da<k
-JU,Bis'bt/`4H:]Gqm0ta5nVm-J'a.-28V&/b629DdIIf+QtHP17"gA0Y!"a8k5.]$;0d1C2TD]3,[i,>MSqDIOTa,F?mK!=
-E`@Z_nj<@JbY94#RC5Y^VTaj\X<[2"2bO2s/=eUUH1Joq27RJoAG!P\13Ku:W?go-<!+?9*^INME^h%ENJ5]ti=Ql4=!;t',
-4Y_t]P30iA':Ki&u_MB#$2JgZ_s+CSI7=N>bW3kmZQh&DU%eL]9qi(E@N_(Ul"*?,CK,o'<Zm=RL!*NUouJl*4VCrl<;^.if
-*4lef^s5>:?JPTFiKh;49UNW'&P(oSg[Z#Ur=o6<#P0;O#V`>"[$k/uDTmMc1O,:!D!#2)O<a2@=e,c!UQ0o`Cb9)Jr>#iNo
-Ku/=k8$R8`C)1B<\0UfBIT:aosWVtCP%;G)XE9_B&iVOFYeb/FnVdh\oo/u-hhYY<7mDatK5ld#''RUjO)9,6G_(cMrlX2?D
->BP@r:])rS#3_QZZn[,'uHX?&!4`bc>E0+iTaQu$D,W7q]=Kni;m"L!<[N3%,\FbTYI@6HjcG2cRUFAW3WO5SSR9461C@(kK
-[aRk&fQS=$)l'T,W6H+16C2A&r2aq)0$BK+OJlDF;7W"2V7>,aBku]X[g;9a'R@3If$[H_(NRh8,\JCX1*[F@NniJh>*,pV\
-ZZ(#p0?$oHlW[&]<UA6'#]KB&f%O<Qh&B6FG/e>Q$X0Gm"+)8LOG\];Qpujl/5H6KHChb9,M.6'RVn@0&eD!Q\,P$bVGK%(*
-gT()\YKTe;l=b(*kk*pYnUI.<1@h^M_caX@rSRE@aP_ehK$e9S%W\hF"f9XVPGo-'E&`7(X8E'B?0JP]Bqg8%CUL?Yl!RXL9
-_(3Bn_L)mp`lNP*5fM_erM;4+\5A;43L(#[m*iUTH_K*2QChFM'l$,,N@g%.I?94<3>4P.LfC$"=OqG#Oq,Xbfp(?irT#P==
-9_9h(+P</GXE7UIjH;<X*&PK!CUKH$5QIROW;U@6iM7.`B0^>c$9_FifH$J"8CE1r:Fk0Q&)YfN]h1I.mop*+s"X7cZ+XGF^
-=163%BUUj"[Bk=I/)a<TJ,~>
+G[AX`99Ot<%Rlp#SND)_7n[6?)6a8;_kcHU864E#59S^Dj^5s,43@Wj?si^SLse>Z=\ZH]78iCs23G6oV5-#4jr\)r)@;!;
+j"3,$U]rP79jR`(A,[\]pe-Rkq4U84-E1!Gb:lDXVj>`>J]t-D0TOPG(f:0cN*n'aD<`m>0hEsBc$tBIT$]8Ye4<(+"M*"0
+Okb45A!5PdJcUf8d@;%aBldab*A88KBMFEpIa@tOaYG3B2(^`mb@jS.[A3&X>28^rc7.(Y;f.]O;nB[/An^XMP9Jj%F1WUR
+T>%ZCjr&_]1sD'C#un$]TJ?jX%7/15\WT8%[FnN(4E-7*;mDBhN&UT=T9od<^d@T(WIbJf0ei^(0enUTrH`q\m9'dRFMELr
+kNN4Mb5fjJcgti*;o(VAr@pK"]2DHNhtcZ[pl8cb;^X"Dd%/m_V3e/+(bLTT=2&1O,UR-e"pXi6cN"J-Q\l[R<QN$2-6Wlb
+8OLRt8IQl'qS]>Ek96V?OH`UJ6(j"iN+[BHRL-u=BaAI'1MZY`eF/c%4;^L@C(DfDm?gb>>s&oE"sC3&4=;4?h7!s.2BKk9
+AI)V;&#7ELGjN3SB*]T7"mC4\@q+K&i3<A?W[\9C1TG%:IN2hHR!P)?QS8LG0Ile%R:B3dr]C:e;cs,BFhfCiA/*2mMUnk\
+L'47o0al;U55g-!Q=:OR-9U6S"r*L5)+Nl4%DeD\L2;[g0M5u)fNjXp;/o-"N`#RP(8a!%5`m5+b"ijch[f::1..A3ZSY#d
+ba`7/S_Sti(`tQ,A2$iuaCeR^bU&"B4C]fp6st7<V`5/8R\hO/^lWg,2N/kpO>S;4:IuB,L4I2j0I6("aq2aXj:jA.:YI((
+C9m)A#t$72+RUVnJ,p'm+%gDa%-a$,@B9ULG*XpA4kM2QrhN046AgmiWCAQaEJn;e9c_&@4%V3U7j4:IJ`.k!>DAsJ84L$O
+/7dgV]6H-^*!6C!11,3joN$u,`L$$t@2EWIVI6Q;OFo8gKdic7R@.7%TOnILK4+aq83)=[L58--)2,!-']U$H@YcIF^2&L:
+-#-$tL6s#%K1ucrf[$dVE<:jq'OrrV[1dP:!=HM<QLZP\AGcXq1q[?.TeB2UF&F]B_/)L2<CZ%[WasJiB#pK9lSo!ogQ*VQ
+)!!O8"]Y*n"+s9"3P]FH*6GT]j;GihkVYm!=NiU-l*X;/rZp)2W(26_8>Z;?N1Ja"0+eV)&b-9#",KU:Y5OSCQ$=_)[7_-B
+6<C\ANG#$kEj_LW^_-6uFS([ebUUM\R%YE93&)nsi5Es&,Va,#Q=7_/Z:,)7?BXKWAN[SBFY\E%`qG4rP[RAt\U@.!&*E6"
+$3C=8D^;F$b-$^9<b7[8JW.Il(mu2'S.rCDg),>L!Q;%cN"'K3"GWj5"u`8/[G!Eq+jCF?$u)1PqDS#KS#8baWp*ElV=*T/
+Y0d'$Ua4Yc1Nd0&KaDr3+YDA\X,/>ime"\K]2AQ'BU@2;FfJ]M+UjI$LjG=ja6HZd4%ZW)48aR_GA.1iK`7)P'PIWEB:X:,
+QlZ]q\?MO((u0iP;P4[:?HC2V>@lC/,fP']eIdHcU#^U[24&LGZsr=p!pum%><(g</!\^"8SV&bqOcQFK!F3=?14ZFn'X!)
+O^T=*F[(ra@MNC&)XY"XPml:.cj"^HMgNC`kJb(5dJ0d*)):^R@mdAAs$ZJSe(m$iiC5Q^MHLC(4j>6$R%h=82rf8bHh!r7
+A;V^mho#1\`YH4ZG@!u8=j?^["0UOa:UQ/>j0<)6Q&H/.>`LuM(h^XGQE4eAi'5dN7ehc3jPN#<(]SKdp!_2?.5i4"qA<GP
+=IU.>_0%MT/*#pp`s)ALq(sd+4!SRW2.[[CG(R;U[?kmsCLI+"rRBY^mG#ss05HP"n_1X8(IRpNF>(P?=Y8[o0+VT,][&<9
+I@EF?l$p&qo][KQZ*uNl<\_KfXV/WkdX&-V]pN6Rgh$aOQ^SfX!/;g<CE6n(^sEc_ht&)aOW2Ie^,TNpYc%KGb*O-f!Mjm#
+PWiq^3LsjZ%r/*goD~>
 U
 %%EndObject
 0 A
@@ -838,19 +922,20 @@ O0
 3780 0 TM
 
 % PostScript produced by:
-%%GMT: psbasemap -X8c -R0/1/0/1 -JX7c -B+glightblue+t-Gtblue -O -K
-%%PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psbasemap -X8c -R0/1/0/1 -JX7c -B+glightblue+t-Gblue\053t -O -K
+%@PROJ: xy 0.00000000 1.00000000 0.00000000 1.00000000 0.000 1.000 0.000 1.000 +xy
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 {0.678 0.847 0.902 C} FS
 -3307 0 0 3307 3307 0 3 0 0 SP
+25 W
 /PSL_H_y 233 def
 1654 3307 PSL_H_y add M
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 400 F0
-(-Gtblue) bc Z
+(”Gblue\053t) bc Z
 %%EndObject
 0 A
 FQ
@@ -858,8 +943,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psimage /Users/remko/gmt5/trunk/test/psimage/warning.gif -Gtblue -C0.5c/0.5c/BL -W6c -O
-%%PROJ: xy 0.00000000 2.55905512 0.00000000 2.56777174 0.000 2.559 0.000 2.568 +xy +a=6378137.000 +b=6356752.314245
+%@GMT: gmt psimage @warning.png -Gblue+t -Dx0.5c/0.5c+jBL+w6c -O
+%@PROJ: xy 0.00000000 2.55905512 0.00000000 2.56777174 0.000 2.559 0.000 2.568 +xy
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
@@ -867,36 +952,36 @@ O0
 V N 236 236 T 2835 2845 scale [/Indexed /DeviceRGB 3 <
 0000FFFFFFFFFF0000000000>] setcolorspace
 << /ImageType 4 /MaskColor[0] /Decode [0 3] /Width 271 /Height 272 /BitsPerComponent 2
-   /ImageMatrix [271 0 0 -272 0 272] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
+   /ImageMatrix [271 0 0 -272 0 272] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-J/)Hg3$]7K#:c%)8Q\A=*=mro?qR7nVBm%;7USYuU8g'mO?qi&87[HL+#QPfZ?]ti3i\IgAl/;N>%]dH7jG?S`:U)kMGGVKG
-o[*E4efo/o8-0/QT(ehWUhTu_P]/UeZ/2_ba,^]TLg[)CCMc6+L9%hnbPt;f,;$JXmp_>9'6hufrji`b]`^m[)F]g$k+co%_
-18tngj,Y(BqIj-91cQ2^O]@AZo6nrbBuRK]f]R/516#R)nO!H0^bp$VnuO<Adqq5@nua>u\8gc$%j>`U5=g4FLfnA_Q)/ZF`
-kAQP6O`2uO&4!rooa?$SBB`fg4`g-G$gCVLboIH"T/n2p)Vhdt9nEIBeea2r,`Gd"l/5DBHN]doSrb,[3'hZC,<)q>'H%f62
-"+O@D9kb,+!-C:B7\c-oe0OjIGVh=gEJ%NgM%'dRaX@@].XQjQ8Wi:q7&]94%*:h%h&AJsPY+kj-_3*MC*f@#!po2+3X@3lA
-Y,^q9a`/:mPsaiZ#:RNQF'uJl1;hc]Y&R.K-HGU<_'MNjb<l\$n5RFc[84_(2n3XMFXt]ieBY>6F2XH*`q/7?1f*Z5*36WVo
-V@&`lPec7:%Nu'XgV2^o0#[fr>L5b0EhV"d8O$Rc)PjP6NTm&h%N_[Mp.3N\Hjc38M]SDlUt']";IcJQ"/-GWG_*C7FeaSK0
-@\J]o,2/ntfo/5.*/<%p.9"SS?P2*CVX7$1c5keoN,aU"ecg__"Q^47d;4(,C;\g9t8GUW#0%)/Q6p"d<3+p7ctb?Zm\FI9%
-0g$%Z(m)K@%UpZ6l_.!LC*Gu3d[;fc+J/T.1e\$bZVVmn&aD;Vk;6Vq80FfgOtY?k.\@5Y2(An/nD[;TU.DIA&nl0ZZ5@lPN
-DQJ8p@9;86P!ZQ4>pk!+R`;(;n="0P,?]m^b1//VMH4De*V]+-^LG1e"Xds5FN``Z%H8`+9Ut+n:(9ne[AVjVqU)UD<REj3n
-+foNeMr[tK=GT:8AmM&uEN[CT-+MY>+\%CQ$B.NsG:<uq3P&A;TtK8']'m`=gk,/hQ)'N6kTjf`o=GV]=J=Q#3/H"pO(9a6h
-&d`eUE#F-hY)A4l*g96:OIq?B\,M(pmkKKl"S4/UY+H0f.MW#r'tq!D?r24L[fiF_Lh]8#!e.+SqiTTBab6E%/oD(n`'DZ\*
-Aff?4Z&d>\P$uKP@7p#L`(ua`r4%U&DYnk56",[=PJa"h_o+r?)L[I;h0s^?@?NT%`RY0Bs(_a,Jm4S/?DP>ueb^J3hXWJ::
-=k#f#p<$sth-L9PNtZa(^Ni)Df^#mhdl#X[;(lk4L1Z6QVDU<jok08*.aVlV:+i7`QV+Rs06^mH[a9"ZulAY&:lA)+a@da<k
-JU,Bis'bt/`4H:]Gqm0ta5nVm-J'a.-28V&/b629DdIIf+QtHP17"gA0Y!"a8k5.]$;0d1C2TD]3,[i,>MSqDIOTa,F?mK!=
-E`@Z_nj<@JbY94#RC5Y^VTaj\X<[2"2bO2s/=eUUH1Joq27RJoAG!P\13Ku:W?go-<!+?9*^INME^h%ENJ5]ti=Ql4=!;t',
-4Y_t]P30iA':Ki&u_MB#$2JgZ_s+CSI7=N>bW3kmZQh&DU%eL]9qi(E@N_(Ul"*?,CK,o'<Zm=RL!*NUouJl*4VCrl<;^.if
-*4lef^s5>:?JPTFiKh;49UNW'&P(oSg[Z#Ur=o6<#P2>*RIh>"[$k/uDTmMc1O,:!D!#2)O<a2@=e,c![M.o`CbCRVbnNiNo
-Ku/=k8$R8`C)1DJA/UfBIT:aosWVtCP%;G)XE9_B&iVOFYeb/FnVdh\oo/u-hhYY<7mDatK5ld#''RUjO)9,6G_(cMrlX2?D
->BP@r:])rS#3_QZZn[,'uHX?&!4`bc>E0+iTaQu$D,W7q]=Kni;m"L!<[N3%,\FbTYI@6HjcG2cRUFA_3WO5SSR9461C@(kK
-[aRk&fQS=$)l'T,W6H+16C2A&r2aq)0$BK+OJlDF;7W"2V7>,aBku]X[g;9a'R@3If$[H_(NRh8,\JCX1*[^HNniJh>*,pV\
-ZZ+dp0?$oHlW[&]<UA6'#]KB&f%O<Qh&B6FG/e>Q$XJEm"+)8LOG\];Qpujl/5H6KHChb9,M.6'RVn@0&eD!Q\,P$bVGK%(*
-gT()\YKTe;l=b(*kk*pYnUI4`QK'^M_caX@rSRE@aP_ehK$e9S%W\hF"f9XVPGo-'E&`7(X8E'B?0JP]Bqg8%CUL?Yl!RXL9
-_(3Bn_L)mp`lNP*5fM_erM;4+\5A;43L(#[m*iUTH_K*2QChFM'l$,,N@g%.I?94<3>4P.LfC$"=OqG#Oq,Xbfp(?irT#P==
-9_9h(+P</GXE7UIjH;<X*&aQ<9UKH$5QIROW;U@6iM7.`B0^>c$9_FifH$J"8CE1r:Fk0Q&)YfN]h1I.mop*+s"X7cZ+XGF^
-=163%BUUj"[Bk=I/)a<TJ,~>
+G[AX`9<P*N%#-^o!Jq,(Dh:tc4#ehJm"]SaK&I:NH/U#lhGW0Z;WiZ1Oo3K4<'hk;a?=[X85fHJ6?8NjPe!0OQCG/BJhhqI
+n]:rG,R6%b9q?_>A,.DZpe?^mnKCCWp0:QpdkF7`Vjc#BJ1S"@1PX:W(m+]NN*o30D<`s@Z0*<V/\cr>QI.EPj@Dc;!-)T7
+../jVZ0,RV_#VK5BJ'_![(.mENZT+WBJ#0<r[e#,>r21Z1bI/_c"JYe[\IW1R`tAMp*n0=6Z(/g;fZ2f1PGG0aUk\8V;2]e
+:S6?&oCbF*)Fhg?-H]@VcnPl2%7/I=q':TiCU:#0H=.T_VICXZ(a&C^^+^44J;0jU@X0?^`kltZ`kkEXp%*=;jZ/YAaM!7D
+f4@$Bb5f_qY3Tb+;o(S@^)<iNDD!B"D>\]9^1/#6e30/[ad)S.oJ(IkUSTY^jr6c_@7#]^@":tV%'\*!acKAL$CMaNT#nlr
+bMY0k$3Lm8^+e!Cgh5+R&i6O`&EogJnTM*0$c,pp%70NE;7i^"G))%9c:EOa]2>86LQ'[Hij%u.!0QliA+F3\I1*l4j(1na
+L>Y)g1?qPef+-"YL@BIjJ=[Q5FuBj=?99j9l3&8E7b(&KO$ejE;r,j]&SAfY7`AQ>E/]\1T4\.I.Oi0Hp))n\N+<g_Tf"8P
+OC/b:B&X]I]>&R$V&0AinTT5M!JRC;Jl0+#K@aanOZ,ZT(o="`D_B/aWB?t*`@-*ao1L#XTZ@[_k!tB9mg!PrR3@dO=IPB:
+b`ZM$mG*Th)BU`-Ubbic867af=@s!aBuX+]8;:PIh8;@N@$nrm!^ji$>;;-d+DFCASe<ab%"TCn^lYdo0dD#RM0:&]39-*R
+WR7HP7Z?[g"N#<p$lHe$X[CKQJrtDVMAS.cd#I-\NAl$<Ol!(s]oZ^!GH)5`Ltn^ABi@MUi^T)ipeaTISnC%)801.XHR'h]
+4tL6?c?A/U.Q@V@?mNJQ9_#5!@h16)>CI6"7cM3gaWN[?XR]"R1D1q?Q9gKAiWd:#erXnV^C1^F9JQlPM'9knfYS1e9RYOd
+pIZ,l'S[GG*.ogOak/6G$tBDK"";0h^2$6u$3LugVC^hA%*?"@'*USJL<u:]31LZk?nfb8I?bC)QmrtqWu3Z?'cg<tGl,Sh
+-jD\*Gl\ZZ(Dp\&aUUKJk(p0',52q/6-hQ;`F=Sd9[A-5o-_*FJ9lkbQ"95'_q<''oF\oI-5"RS3.\U3kZL\q;i-8B9m`+7
+m-"ec\FGO15jk_?A)N;l7bi?H>,IQm5ff%H$sXVe?81BZ7oU?!Pa5^1VQtsiI_J4rAWQBJ]G4<D+m@Z2el%5g"`iprL`Xdn
+OVE$E,i;-pq'Wd4L4:[G]EfeDJ&Y$lOJF/,NR5ZFC^;.iKbeJq,Ju<*[P>!0D5@u5TaYXI^hZKqn.<mpO(]RUSuJ_]jd)@5
+^Nrf6O.;q\,Jfl`"&2J#@:[NDbgtLYUPC@L?6@Y>5FK$G5-.]EqAI/#>Y%m[jjp^5.B$NI5Q,cXs2Eci&W@=u2]#;`&WE<,
+@PqV>1bce!m9[ci(/2dq)DUK1N)[5d@_V3>>cXhbK9.FEln?#;dRIJFB.f4pG$2'TkEPD0npDVBiX%dJ-[2\#Cp'bD$XN3o
+DbmYIosh4$H+8c4N9q).S9L5,'6FM647pKD@&3*th*2)Bl?NPl1I2Str?l?d:L'NAc(-)IXqWX_S6<,Z9+@%?Sc<@2).3-q
+M]]&I6Sr9-&)SiS:\oIL\u=trRdjA^4MOU[C)PmKA&C8U)(T=#RW/gF>TP+KAQ?s*s)<lc*Q.ne;hY29(gm3]A`ccM6^:b2
+AF3m.*b0(sW!V(t&?UnhrMN5s%65@EZQ9]>iATb1?mm*MP;)_d%e4YBT<V[rS$@G>)=FdAkRt)LgA!?i%n#tEFNgg(VnG3S
++n.P5BXTXDN6D36AVeMp'Otok4Ad9>%]pA`VTO4hN3/J@p=s87*p.'n2)=:p%,hbb1"S/2!=V7KKGu"iO5*hAn\kghBn!_X
+n"`WqcJet)S*in@edLqj-2QeS9q]R)~>
 U
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

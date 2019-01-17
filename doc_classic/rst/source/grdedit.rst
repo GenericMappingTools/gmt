@@ -18,6 +18,7 @@ Synopsis
 [ |-E|\ [**a**\ \|\ **h**\ \|\ **l**\ \|\ **r**\ \|\ **t**\ \|\ **v**] ]
 [ |-G|\ *outgrid* ]
 [ |-J|\ *parameters* ]
+[ |-L|\ [**+n**\ \|\ **+p**\ ] ]
 [ |-N|\ *table* ]
 [ |SYN_OPT-R| ]
 [ |-S| ] [ |-T| ]
@@ -94,6 +95,14 @@ Optional Arguments
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant
     metadata in netCDF grids. This metadata will be recognized by GDAL.
 .. include:: explain_-J.rst_
+
+.. _-L:
+
+**-L**\ [**+n**\ \|\ **+p**\ ]
+    Adjust the longitude values in the grid (only applies to geographic grids).  By default we will
+    try to adjust *west* and *east* so that *west* >= -180 or *east* <= +180, but this depends on
+    the range of the longitudes. Append **+n** to force negative longitude values and **+p** to
+    force positive longitude values.
 
 .. _-N:
 
@@ -189,6 +198,12 @@ the rotated grid to a new file, run
    ::
 
     gmt grdedit oblique.nc -El -Goblique_rot.nc
+
+To ensure that the grid depths.nc only has positive longitude values, run
+
+   ::
+
+    gmt grdedit depths.nc -L+p
 
 See Also
 --------

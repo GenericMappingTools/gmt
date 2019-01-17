@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Testing absolute gravity crossovers from c2308 near Oahu.
 

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r13938M [64-bit] Document from psscale
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psscale
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Jan 14 15:33:56 2015
+%%CreationDate: Thu Dec  6 10:52:50 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -337,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -523,7 +524,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +549,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -595,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -638,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -660,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 -3600 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ct.cpt -Dx3i/0i/6i/0.2ih -Bxaf -P -F+p1p+glightgray -Xc -K
-%%PROJ: xy -200.00000000 1000.00000000 0.00000000 0.20000000 -200.000 1000.000 0.000 0.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ct.cpt -Dx3i/0i+w6i/0.2i+jTC+h -Bxaf -P -F+p1p+glightgray -Xc -K
+%@PROJ: xy -200.00000000 1000.00000000 0.00000000 0.20000000 -200.000 1000.000 0.000 0.200 +xy
+%GMTBoundingBox: -216 72 432 14.4
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -703,7 +710,7 @@ N 7200 0 M 0 -83 D S
 /MM {neg M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-200) sh mx
+(”200) sh mx
 (0) sh mx
 (200) sh mx
 (400) sh mx
@@ -713,7 +720,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-200) bc Z
+(”200) bc Z
 1200 PSL_A0_y MM
 (0) bc Z
 2400 PSL_A0_y MM
@@ -742,8 +749,8 @@ O0
 0 1320 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ct.cpt -Dx3i/0i/6i/0.2ih -Bxaf+ltopography -By+lkm -F+p1p+i -O -K -Y1.1i
-%%PROJ: xy -200.00000000 1000.00000000 0.00000000 0.20000000 -200.000 1000.000 0.000 0.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ct.cpt -Dx3i/0i+w6i/0.2i+jTC+h -Bxaf+ltopography -By+lkm -F+p1p+i -O -K -Y1.1i
+%@PROJ: xy -200.00000000 1000.00000000 0.00000000 0.20000000 -200.000 1000.000 0.000 0.200 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -780,7 +787,7 @@ N 7200 0 M 0 -83 D S
 /MM {neg M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-200) sh mx
+(”200) sh mx
 (0) sh mx
 (200) sh mx
 (400) sh mx
@@ -790,7 +797,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-200) bc Z
+(”200) bc Z
 1200 PSL_A0_y MM
 (0) bc Z
 2400 PSL_A0_y MM
@@ -823,8 +830,8 @@ O0
 0 1440 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ct.cpt -Dx3i/0i/6i/0.2ih -Bxaf+ltopography -By+lkm -F+p1p -O -K -Y1.2i
-%%PROJ: xy -200.00000000 1000.00000000 0.00000000 0.20000000 -200.000 1000.000 0.000 0.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ct.cpt -Dx3i/0i+w6i/0.2i+jTC+h -Bxaf+ltopography -By+lkm -F+p1p -O -K -Y1.2i
+%@PROJ: xy -200.00000000 1000.00000000 0.00000000 0.20000000 -200.000 1000.000 0.000 0.200 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -859,7 +866,7 @@ N 7200 0 M 0 -83 D S
 /MM {neg M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-200) sh mx
+(”200) sh mx
 (0) sh mx
 (200) sh mx
 (400) sh mx
@@ -869,7 +876,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-200) bc Z
+(”200) bc Z
 1200 PSL_A0_y MM
 (0) bc Z
 2400 PSL_A0_y MM
@@ -902,8 +909,8 @@ O0
 0 600 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ct.cpt -Dx3i/0i/6i/0.2ih -Bxaf+ltopography -By+lkm -F+p1p -A -O -K -Y0.5i
-%%PROJ: xy -200.00000000 1000.00000000 0.00000000 0.20000000 -200.000 1000.000 0.000 0.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ct.cpt -Dx3i/0i+w6i/0.2i+jTC+h+m -Bxaf+ltopography -By+lkm -F+p1p -O -K -Y0.5i
+%@PROJ: xy -200.00000000 1000.00000000 0.00000000 0.20000000 -200.000 1000.000 0.000 0.200 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -939,7 +946,7 @@ N 7200 0 M 0 83 D S
 /MM {M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-200) sh mx
+(”200) sh mx
 (0) sh mx
 (200) sh mx
 (400) sh mx
@@ -949,7 +956,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 def
 /PSL_A0_y PSL_A0_y 83 add def
 0 PSL_A0_y MM
-(-200) bc Z
+(”200) bc Z
 1200 PSL_A0_y MM
 (0) bc Z
 2400 PSL_A0_y MM
@@ -984,8 +991,8 @@ O0
 0 1680 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ct.cpt -Dx3i/0i/6i/0.2ih -Bxaf+ltopography -By+lkm -F+p1p -Aa -O -K -Y1.4i
-%%PROJ: xy -200.00000000 1000.00000000 0.00000000 0.20000000 -200.000 1000.000 0.000 0.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ct.cpt -Dx3i/0i+w6i/0.2i+jTC+h+ma -Bxaf+ltopography -By+lkm -F+p1p -O -K -Y1.4i
+%@PROJ: xy -200.00000000 1000.00000000 0.00000000 0.20000000 -200.000 1000.000 0.000 0.200 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -1021,7 +1028,7 @@ N 7200 0 M 0 83 D S
 /MM {M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-200) sh mx
+(”200) sh mx
 (0) sh mx
 (200) sh mx
 (400) sh mx
@@ -1031,7 +1038,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 def
 /PSL_A0_y PSL_A0_y 83 add def
 0 PSL_A0_y MM
-(-200) bc Z
+(”200) bc Z
 1200 PSL_A0_y MM
 (0) bc Z
 2400 PSL_A0_y MM
@@ -1066,8 +1073,8 @@ O0
 0 1200 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ct.cpt -Dx3i/0i/6i/0.2ih -Bxaf+ltopography -By+lkm -F+p1p -Al -O -K -Y1.0i
-%%PROJ: xy -200.00000000 1000.00000000 0.00000000 0.20000000 -200.000 1000.000 0.000 0.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ct.cpt -Dx3i/0i+w6i/0.2i+jTC+h+ml -Bxaf+ltopography -By+lkm -F+p1p -O -K -Y1.0i
+%@PROJ: xy -200.00000000 1000.00000000 0.00000000 0.20000000 -200.000 1000.000 0.000 0.200 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -1102,7 +1109,7 @@ N 7200 0 M 0 -83 D S
 /MM {neg M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-200) sh mx
+(”200) sh mx
 (0) sh mx
 (200) sh mx
 (400) sh mx
@@ -1112,7 +1119,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-200) bc Z
+(”200) bc Z
 1200 PSL_A0_y MM
 (0) bc Z
 2400 PSL_A0_y MM
@@ -1145,8 +1152,8 @@ O0
 0 1440 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ct.cpt -Dx3i/0i/6i/0.2ih -Bxaf+ltopography -By+lkm -F+p1p+r -Al -O -K -Y1.2i
-%%PROJ: xy -20.00000000 10.00000000 0.00000000 0.20000000 -20.000 10.000 0.000 0.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ct.cpt -Dx3i/0i+w6i/0.2i+jTC+h+ml -Bxaf+ltopography -By+lkm -F+p1p+r -O -K -Y1.2i
+%@PROJ: xy -20.00000000 10.00000000 0.00000000 0.20000000 -20.000 10.000 0.000 0.200 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -1181,23 +1188,23 @@ N 7200 0 M 0 -83 D S
 /MM {neg M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(-20) sh mx
-(-15) sh mx
-(-10) sh mx
-(-5) sh mx
+(”20) sh mx
+(”15) sh mx
+(”10) sh mx
+(”5) sh mx
 (0) sh mx
 (5) sh mx
 (10) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-20) bc Z
+(”20) bc Z
 1200 PSL_A0_y MM
-(-15) bc Z
+(”15) bc Z
 2400 PSL_A0_y MM
-(-10) bc Z
+(”10) bc Z
 3600 PSL_A0_y MM
-(-5) bc Z
+(”5) bc Z
 4800 PSL_A0_y MM
 (0) bc Z
 6000 PSL_A0_y MM
@@ -1242,8 +1249,8 @@ O0
 0 1440 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ct.cpt -Dx3i/0i/6i/0.2ih -Bxaf+ltopography -By+lmiles -F+p1p+r -Al -O -K -Y1.2i
-%%PROJ: xy -20.00000000 10.00000000 0.00000000 0.20000000 -20.000 10.000 0.000 0.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ct.cpt -Dx3i/0i+w6i/0.2i+jTC+h+ml -Bxaf+ltopography -By+lmiles -F+p1p+r -O -K -Y1.2i
+%@PROJ: xy -20.00000000 10.00000000 0.00000000 0.20000000 -20.000 10.000 0.000 0.200 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
@@ -1275,16 +1282,16 @@ N 7200 0 M 0 -83 D S
 /MM {neg M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 267 F0
-(-20) sh mx
-(-10) sh mx
+(”20) sh mx
+(”10) sh mx
 (0) sh mx
 (10) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-20) bc Z
+(”20) bc Z
 2400 PSL_A0_y MM
-(-10) bc Z
+(”10) bc Z
 4800 PSL_A0_y MM
 (0) bc Z
 7200 PSL_A0_y MM
@@ -1315,8 +1322,8 @@ O0
 0 1440 TM
 
 % PostScript produced by:
-%%GMT: psscale -Ct.cpt -Dx3i/0i/6i/0.2ih -Bxaf+ltopography -F+p1p+glightgray+s -Al -O -Y1.2i
-%%PROJ: xy -20.00000000 10.00000000 0.00000000 0.20000000 -20.000 10.000 0.000 0.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psscale -Ct.cpt -Dx3i/0i+w6i/0.2i+jTC+h+ml -Bxaf+ltopography -F+p1p+glightgray+s -O -Y1.2i
+%@PROJ: xy -20.00000000 10.00000000 0.00000000 0.20000000 -20.000 10.000 0.000 0.200 +xy
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
@@ -1351,16 +1358,16 @@ N 7200 0 M 0 -83 D S
 /MM {neg M} def
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 267 F0
-(-20) sh mx
-(-10) sh mx
+(”20) sh mx
+(”10) sh mx
 (0) sh mx
 (10) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-20) bc Z
+(”20) bc Z
 2400 PSL_A0_y MM
-(-10) bc Z
+(”10) bc Z
 4800 PSL_A0_y MM
 (0) bc Z
 7200 PSL_A0_y MM
@@ -1383,6 +1390,10 @@ N 6720 0 M 0 -42 D S
 0 setlinecap
 0 240 T
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

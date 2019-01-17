@@ -37,7 +37,7 @@
 
 #define THIS_MODULE_NAME	"rotsmoother"
 #define THIS_MODULE_LIB		"spotter"
-#define THIS_MODULE_PURPOSE	"Get mean rotations and covarience matrices from set of finate rotations"
+#define THIS_MODULE_PURPOSE	"Get mean rotations and covariance matrices from set of finite rotations"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>Vbdefghios" GMT_OPT("HMm")

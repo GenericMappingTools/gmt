@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grd2cpt** *grid* [ |-A|\ [**+**\ ]\ *transparency* ]
+**grd2cpt** *grid* [ |-A|\ *transparency*\ [**+a**\ ] ]
 [ |-C|\ *cpt* ] [ |-D|\ [**i**] ]
 [ |-E|\ [*nlevels*] ]
 [ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ][**+c**\ ]]
@@ -22,8 +22,8 @@ Synopsis
 [ |-M| ] [ |-N| ]
 [ |-Q|\ [**i**\ \|\ **o**] ]
 [ |SYN_OPT-R| ]
-[ |-S|\ *zstart/zstop/zinc* ]
-[ |-T|\ **-**\ \|\ **+**\ \|\ **\_**\ \|\ **=** ]
+[ |-S|\ **l**\ \|\ **u**\ \|\ **m**\ \|\ **h** ]
+[ |-T|\ *start/stop/inc* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**] ]
 [ |-Z| ]
@@ -79,9 +79,9 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+**\ ]\ *transparency*
+**-A**\ *transparency*\ [**+a**\ ]
     Sets a constant level of transparency (0-100) for all color slices.
-    Prepend **+** to also affect the fore-, back-, and nan-colors
+    Append **+a** to also affect the fore-, back-, and nan-colors
     [Default is no transparency, i.e., 0 (opaque)].
 
 .. _-C:
@@ -137,7 +137,7 @@ Optional Arguments
     specified by the parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>` and
     :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`.
     Append **z** to reverse the sign of z-values in the color table.  Note that
-    this change of *z*-direction happens before **-G** and **-T** values are used
+    this change of *z*-direction happens before **-G** and **-S** values are used
     so the latter much be compatible with the changed *z*-range. See also :ref:`manipulating_CPTs`
 
 .. _-L:
@@ -177,20 +177,20 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *zstart/zstop/zinc* or **-S**\ *n*
-    Set steps in CPT. Calculate entries in CPT from *zstart*
-    to *zstop* in steps of (*zinc*). Default chooses arbitrary values by
-    a crazy scheme based on equidistant values for a Gaussian CDF.
-    Use **-S**\ *n* to select *n* points from such a
-    cumulative normal distribution [11].
+**-S**\ **l**\ \|\ **u**\ \|\ **m**\ \|\ **h**
+    Force the color table to be symmetric about zero (from -R to +R).
+    Append flag to set the range R: **l** for R =\|zmin\|, **u** for R =
+    \|zmax\|, **m** for R = min(\|zmin\|, \|zmax\|), or **h** for R =
+    max(\|zmin\|, \|zmax\|).
 
 .. _-T:
 
-**-T**\ **-**\ \|\ **+**\ \|\ **\_**\ \|\ **=**
-    Force the color table to be symmetric about zero (from -R to +R).
-    Append flag to set the range R: **-** for R =\|zmin\|, **+** for R =
-    \|zmax\|, **\_** for R = min(\|zmin\|, \|zmax\|), or **=** for R =
-    max(\|zmin\|, \|zmax\|).
+**-T**\ *start/stop/inc* or **-T**\ *n*
+    Set steps in CPT. Calculate entries in CPT from *start*
+    to *stop* in steps of (*inc*). Default chooses arbitrary values by
+    a crazy scheme based on equidistant values for a Gaussian CDF.
+    Use **-T**\ *n* to select *n* points from such a
+    cumulative normal distribution [11].
 
 .. _-V:
 
@@ -245,7 +245,7 @@ file relief, run
 
    ::
 
-    gmt grd2cpt mydata.nc -Crelief -L0/10000 -S0/200/20 > mydata.cpt
+    gmt grd2cpt mydata.nc -Crelief -L0/10000 -T0/200/20 > mydata.cpt
 
 
 See Also

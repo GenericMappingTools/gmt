@@ -38,7 +38,7 @@
 #define GPLATES_PLATES    "Global_EarthByte_Plate_ID_Table"		/* .txt */
 #define GPLATES_ROTATIONS "Matthews_etal_GPC_2016_410-0Ma_GK07"		/* .rot */
 
-#define SPOTTER_E_OPT "-E[+]<rottable>|[+]<ID1>-<ID2>|<plon>/<plat>/<prot>"
+#define SPOTTER_E_OPT "-E<rottable>[+i]|<ID1>-<ID2>[+i]|<plon>/<plat>/<prot>"
 
 /*! Structure with info on each Euler (stage) pole */
 struct EULER {

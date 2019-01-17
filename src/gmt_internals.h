@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,8 @@
 
 */
 
-#ifndef _GMT_INTERNALS_H
-#define _GMT_INTERNALS_H
+#ifndef GMT_INTERNALS_H
+#define GMT_INTERNALS_H
 
 #ifdef HAVE_FFTW3F
 /* FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
@@ -63,7 +63,7 @@ EXTERN_MSC char *gmtlib_get_srtmlist  (struct GMTAPI_CTRL *API, double wesn[], u
 EXTERN_MSC struct GMT_GRID * gmtlib_assemble_srtm (struct GMTAPI_CTRL *API, double *region, char *file);
 EXTERN_MSC bool gmtlib_fig_is_ps (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmtlib_refpoint_to_panel_xy (struct GMT_CTRL *GMT, int refpoint, struct GMT_SUBPLOT *P, double *x, double *y);
-EXTERN_MSC unsigned int gmtlib_count_slashes (struct GMT_CTRL *GMT, char *txt);
+EXTERN_MSC unsigned int gmtlib_count_char (struct GMT_CTRL *GMT, char *txt, char it);
 EXTERN_MSC int gmtlib_read_figures (struct GMT_CTRL *API, unsigned int mode, struct GMT_FIGURE **figs);
 EXTERN_MSC bool gmtlib_file_is_downloadable (struct GMT_CTRL *GMT, const char *file, unsigned int *kind);
 EXTERN_MSC unsigned int gmtlib_get_pos_of_filename (const char *url);
@@ -258,4 +258,4 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 #define gmt_M_pole_is_point(C) ((C->current.proj.projection == GMT_OBLIQUE_MERC || C->current.proj.projection == GMT_OBLIQUE_MERC_POLE) || (C->current.proj.projection >= GMT_LAMBERT && C->current.proj.projection <= GMT_VANGRINTEN && C->current.proj.projection != GMT_POLAR))
 #define gmt_M_is_grdmapproject(C) (!strncmp (C->init.module_name, "grdproject", 10U) || !strncmp (C->init.module_name, "mapproject", 10U))
 
-#endif /* _GMT_INTERNALS_H */
+#endif /* GMT_INTERNALS_H */

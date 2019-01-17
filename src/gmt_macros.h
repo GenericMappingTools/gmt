@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,8 @@
  * \brief Definitions of macros used through GMT.
  */
 
-#ifndef _GMT_MACROS_H
-#define _GMT_MACROS_H
+#ifndef GMT_MACROS_H
+#define GMT_MACROS_H
 
 /*--------------------------------------------------------------------
  *			GMT MACROS DEFINITIONS
@@ -196,4 +196,4 @@
 /*! Set the correct column mode (trailing vs no trailing text) based on the given string is NULL or not */
 #define gmt_M_colmode(text) ((text == NULL) ? GMT_COL_FIX_NO_TEXT : GMT_COL_FIX)
 
-#endif  /* _GMT_MACROS_H */
+#endif  /* GMT_MACROS_H */

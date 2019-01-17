@@ -15,7 +15,7 @@ sphinterpolate
 
 **gmt sphinterpolate** [ *table* ] |-G|\ *grdfile*
 [ |SYN_OPT-I| ]
-[ |-Q|\ *mode*\ [/*options*] ]
+[ |-Q|\ *mode*\ [*options*] ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
@@ -61,26 +61,28 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ *mode*\ [/*options*]
+**-Q**\ *mode*\ [*options*]
     Specify one of four ways to calculate tension factors to preserve
     local shape properties or satisfy arc constraints [Default is no
     tension].
-**-Q**\ 0
-    Piecewise linear interpolation; no tension is applied.
-**-Q**\ 1
-    Smooth interpolation with local gradient estimates.
-**-Q**\ 2
-    Smooth interpolation with global gradient estimates. You may
-    optionally append /*N*/*M*/*U*, where *N* is the number of
+**-Qp**
+    Use **p**\ iecewise linear interpolation; no tension is applied.
+**-Ql**
+    Smooth interpolation with **l**\ ocal gradient estimates.
+**-Qg**
+    Smooth interpolation with **g**\ lobal gradient estimates. You may
+    optionally append *N*/*M*/*U*, where *N* is the number of
     iterations used to converge at solutions for gradients when variable
     tensions are selected (e.g., **-T** only) [3], *M* is the number of
     Gauss-Seidel iterations used when determining the global gradients
     [10], and *U* is the maximum change in a gradient at the last
     iteration [0.01].
-**-Q**\ 3
-    Smoothing. Optionally append */E/U* [/0/0], where *E* is Expected
+**-Qs**
+    Use **s**\ moothing. Optionally append *E*/*U*/*N* [/0/0/3], where *E* is Expected
     squared error in a typical (scaled) data value, and *U* is Upper
-    bound on weighted sum of squares of deviations from data.
+    bound on weighted sum of squares of deviations from data. Here, *N* is the number of
+    iterations used to converge at solutions for gradients when variable
+    tensions are selected (e.g., **-T** only) [3]
 
 .. _-R:
 
@@ -129,6 +131,8 @@ Examples
 
 To interpolate the points in the file testdata.txt on a global 1x1
 degree grid with no tension, use
+
+  ::
 
     sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
 

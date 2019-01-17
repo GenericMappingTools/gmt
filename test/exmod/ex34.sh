@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 34
 #
 # Purpose:      Illustrate coast with DCW country polygons

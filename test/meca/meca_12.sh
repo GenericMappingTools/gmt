@@ -1,6 +1,5 @@
-#!/bin/bash
-#	$Id: meca_4.sh 13487 2014-08-31 00:57:08Z pwessel $
-#
+#!/usr/bin/env bash
+
 ps=meca_12.ps
 
 #     The  following  should  make  big  green arrows  with blue

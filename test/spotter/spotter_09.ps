@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v6.0.0_r19370 [64-bit] Document from psxy
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Nov 22 09:45:14 2017
+%%CreationDate: Thu Dec  6 10:50:00 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -658,14 +663,18 @@ V 0.06 0.06 scale
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
 /PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: psxy -Rg -JQ0/7i -Baf '-BWSne+tGreat circles from FZ and AH' -Wfaint,red g_FZ.txt -P -K
-%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@GMT: gmt psxy -Rg -JQ0/7i -Baf '-BWSne+tGreat circles from FZ and AH' -Wfaint,red g_FZ.txt -P -K
+%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%GMTBoundingBox: 72 72 504 252
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -11355,21 +11364,21 @@ N 0 4283 M 0 -4366 D S
 N -83 4283 M 0 -4366 D S
 /PSL_H_y 400 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(100\312) sh add def
+(100è) sh add def
 4200 4200 PSL_H_y add M
 400 F0
 (Great circles from FZ and AH) bc Z
 0 -167 M 200 F0
-(-180 ) tc Z
-1400 -167 M (-120 ) tc Z
-2800 -167 M (-60 ) tc Z
-4200 -167 M (0 ) tc Z
-5600 -167 M (60 ) tc Z
-7000 -167 M (120 ) tc Z
-8400 -167 M (180 ) tc Z
--167 700 M (-60 ) mr Z
--167 2100 M (0 ) mr Z
--167 3500 M (60 ) mr Z
+(î180è) tc Z
+1400 -167 M (î120è) tc Z
+2800 -167 M (î60è) tc Z
+4200 -167 M (0è) tc Z
+5600 -167 M (60è) tc Z
+7000 -167 M (120è) tc Z
+8400 -167 M (180è) tc Z
+-167 700 M (î60è) mr Z
+-167 2100 M (0è) mr Z
+-167 3500 M (60è) mr Z
 %%EndObject
 0 A
 FQ
@@ -11377,8 +11386,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -Rg -JQ0/7i -O -K -Wfaint,blue g_AH.txt
-%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@GMT: gmt psxy -Rg -JQ0/7i -O -K -Wfaint,blue g_AH.txt
+%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -28866,8 +28875,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -Rg -JQ0/7i -O -K -W2p,red FZ.txt
-%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@GMT: gmt psxy -Rg -JQ0/7i -O -K -W2p,red FZ.txt
+%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -28896,8 +28905,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -Rg -JQ0/7i -O -K -W1p,blue AH.txt
-%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@GMT: gmt psxy -Rg -JQ0/7i -O -K -W1p,blue AH.txt
+%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -29129,8 +29138,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -Rg -JQ0/7i -O -K -Sc0.01c -Ca.cpt -i0,1,4 xings.txt
-%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@GMT: gmt psxy -Rg -JQ0/7i -O -K -Sc0.01c -Ca.cpt -i0,1,4 xings.txt
+%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -278344,8 +278353,8 @@ O0
 0 6000 TM
 
 % PostScript produced by:
-%@GMT: grdimage poles.nc '-BWSne+tLine density' -JQ0/7i -Ct.cpt -O -Baf -Y5i
-%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@GMT: gmt grdimage poles.nc '-BWSne+tLine density' -JQ0/7i -Ct.cpt -O -Baf -Y5i
+%@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -10007554.678 10007554.678 +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6371007.181 +b=6371007.180918 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -278564,22 +278573,26 @@ N 0 4283 M 0 -4366 D S
 N -83 4283 M 0 -4366 D S
 /PSL_H_y 400 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
-(100\312) sh add def
+(100è) sh add def
 4200 4200 PSL_H_y add M
 400 F0
 (Line density) bc Z
 0 -167 M 200 F0
-(-180 ) tc Z
-1400 -167 M (-120 ) tc Z
-2800 -167 M (-60 ) tc Z
-4200 -167 M (0 ) tc Z
-5600 -167 M (60 ) tc Z
-7000 -167 M (120 ) tc Z
-8400 -167 M (180 ) tc Z
--167 700 M (-60 ) mr Z
--167 2100 M (0 ) mr Z
--167 3500 M (60 ) mr Z
+(î180è) tc Z
+1400 -167 M (î120è) tc Z
+2800 -167 M (î60è) tc Z
+4200 -167 M (0è) tc Z
+5600 -167 M (60è) tc Z
+7000 -167 M (120è) tc Z
+8400 -167 M (180è) tc Z
+-167 700 M (î60è) mr Z
+-167 2100 M (0è) mr Z
+-167 3500 M (60è) mr Z
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

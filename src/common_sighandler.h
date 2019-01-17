@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,11 +28,11 @@
  */
 
 #pragma once
-#ifndef _COMMON_SIGHANDLER_H
-#define _COMMON_SIGHANDLER_H
+#ifndef COMMON_SIGHANDLER_H
+#define COMMON_SIGHANDLER_H
 
 #if !(defined WIN32 || defined NO_SIGHANDLER)
 void sig_handler(int sig_num, siginfo_t *info, void *ucontext);
 #endif /* !(defined WIN32 || defined NO_SIGHANDLER) */
 
-#endif /* !_COMMON_SIGHANDLER_H */
+#endif /* !COMMON_SIGHANDLER_H */

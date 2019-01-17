@@ -59,7 +59,7 @@ Required Arguments
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Use **+l**\ *spacing* to change the line-spacing factor in units of the current
     font size [1.1].
-    Finally, add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
+    Finally, add **+o** to offset the legend by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
 
 Optional Arguments

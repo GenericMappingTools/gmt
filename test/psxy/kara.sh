@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Follows from http://gmt.soest.hawaii.edu/boards/1/topics/3091
 # from Kara.  Another case where their *.gmt file causes trouble at S pole. 
 ps=kara.ps

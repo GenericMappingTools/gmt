@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r13683 [64-bit] Document from pscoast
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from pscoast
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Nov 12 06:51:12 2014
+%%CreationDate: Thu Dec  6 10:51:50 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -337,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -523,7 +524,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +549,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -595,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -638,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -660,14 +662,19 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P
-%%PROJ: merc 50.00000000 160.00000000 -15.00000000 15.00000000 -6122571.994 6122571.994 -1678147.516 1678147.516 +proj=merc +lon_0=105 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500
+%@PROJ: merc 50.00000000 160.00000000 -15.00000000 15.00000000 -6122571.994 6122571.994 -1678147.516 1678147.516 +proj=merc +lon_0=105 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 72 72 381.6 104.593
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -2120,8 +2127,8 @@ FO
 579 0 0 294 -579 0 3 5204 1449 SP
 578 0 0 294 -578 0 3 5782 1449 SP
 {0.871 0.722 0.529 C} FS
--6 -10 -5 3 10 10 3 11 6 -12 5 5471 1651 SP
--6 -10 -5 3 10 10 3 11 6 -12 5 5471 1651 SP
+1 4 15 16 3 -11 -8 -2 -6 -10 5 5485 1663 SP
+1 4 15 16 3 -11 -8 -2 -6 -10 5 5485 1663 SP
 {0.941 1 1 C} FS
 578 0 0 294 -578 0 3 6360 1449 SP
 -578 0 0 -577 527 0 3 34 10 12 2 9 12 12 17 38 7 7 9 0 1337 SP
@@ -2526,7 +2533,8 @@ FO
 7 -16 8 -8 16 -4 -6 13 -3 1 -1 -5 -5 -1 -12 14 6 4 11 -10 -8 15 -18 -3 12 2841 1009 SP
 3156 872 M
 -2 1 D
--43 -1 D
+-3 -1 D
+-40 0 D
 -5 16 D
 -6 4 D
 -1 -4 D
@@ -2894,7 +2902,8 @@ FO
 {0.941 1 1 C} FS
 4029 872 M
 -1 1 D
--125 -1 D
+-2 -1 D
+-123 0 D
 -2 5 D
 5 19 D
 3 0 D
@@ -4668,7 +4677,8 @@ FO
 -1 -6 D
 -4 -1 D
 -5 7 D
--4 -1 D
+-3 0 D
+-1 -1 D
 5 -7 D
 7 0 D
 -3 -21 D
@@ -6972,7 +6982,8 @@ FO
 -1 0 D
 -6 7 D
 5 -7 D
--11 0 D
+-7 0 D
+-4 0 D
 0 2 D
 -2 -2 D
 -9 0 D
@@ -7055,7 +7066,8 @@ FO
 6 0 D
 0 2 D
 5 -2 D
--23 0 D
+-1 0 D
+-22 0 D
 0 1 D
 -4 0 D
 0 -1 D
@@ -7126,7 +7138,8 @@ FO
 -1 0 D
 -6 7 D
 5 -7 D
--11 0 D
+-7 0 D
+-4 0 D
 0 2 D
 -2 -2 D
 -9 0 D
@@ -7209,7 +7222,8 @@ FO
 6 0 D
 0 2 D
 5 -2 D
--23 0 D
+-1 0 D
+-22 0 D
 0 1 D
 -4 0 D
 0 -1 D
@@ -7390,7 +7404,8 @@ FO
 -1 -14 D
 12 -13 D
 -5 2 D
--14 -11 D
+-13 -11 D
+-1 0 D
 0 207 D
 579 0 D
 0 -294 D
@@ -7643,7 +7658,8 @@ FO
 -1 -14 D
 12 -13 D
 -5 2 D
--14 -11 D
+-13 -11 D
+-1 0 D
 0 -87 D
 P
 FO
@@ -8000,8 +8016,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: grdcontour geoid.nc -JM5.3i -O -K -B20f10 -BWSne -C10 -A20+d+f8p -Gl50/10S/160/10S -S10 -T:-+
-%%PROJ: merc 50.00000000 160.00000000 -15.00000000 15.00000000 -6122571.994 6122571.994 -1678147.516 1678147.516 +proj=merc +lon_0=105 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt grdcontour @App_O_geoid.nc -B20f10 -BWSne -C10 -A20+d+f8p -Gl50/10S/160/10S -S10 -T+l -R50/160/-15/15 -JM5.3i
+%@PROJ: merc 50.00000000 160.00000000 -15.00000000 15.00000000 -6122571.994 6122571.994 -1678147.516 1678147.516 +proj=merc +lon_0=105 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -8011,6 +8027,7 @@ clipsave
 6360 0 D
 0 1743 D
 -6360 0 D
+P
 PSL_clip N
 12 W
 N 1503 1370 M 23 -45 D S
@@ -8032,11 +8049,9 @@ N 5372 223 M -24 -44 D S
 N 5167 377 M -35 -35 D S
 N 5001 579 M -41 -29 D S
 N 4879 802 M -47 -17 D S
-12 W
 1575 1101 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (-) mc Z
-4 W
 5438 588 M (+) mc Z
 0 294 M
 6360 0 D
@@ -8044,32 +8059,32 @@ S
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
-	(12 W 0 A [] 0 B)
-	(4 W 0 A [] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
+	(12 W 0 A \[\] 0 B)
+	(4 W 0 A \[\] 0 B)
 ] def
 /PSL_label_justify [ 6 6 6 6 6 6 6 6 6 ] def
 /PSL_label_font [
@@ -8132,16 +8147,29 @@ PSL_path_pen 0 get cvx exec
 -21 -25 D
 -10 -9 D
 -3 -4 D
--19 -13 D
--4 -2 D
+-15 -11 D
+-8 -4 D
 0 -1 D
--29 -11 D
--29 -8 D
--43 2 D
--32 5 D
--21 9 D
--32 20 D
--30 23 D
+-4 -1 D
+-8 -4 D
+-5 -2 D
+-4 -1 D
+-4 -2 D
+-4 -1 D
+-5 -1 D
+-4 -2 D
+-5 -1 D
+-4 -1 D
+-4 -2 D
+-5 -1 D
+-2 0 D
+-2 0 D
+-5 0 D
+-4 0 D
+-55 5 D
+-22 7 D
+-36 21 D
+-34 26 D
 -9 7 D
 -7 6 D
 -26 32 D
@@ -8193,16 +8221,46 @@ PSL_path_pen 1 get cvx exec
 -22 -30 D
 -17 -21 D
 -28 -24 D
--30 -20 D
+-11 -7 D
+-8 -6 D
+-11 -7 D
 -8 -5 D
 -4 -1 D
 0 -1 D
--38 -15 D
--45 -10 D
--32 -2 D
--50 1 D
--36 6 D
--18 3 D
+-8 -4 D
+-5 -1 D
+-8 -4 D
+-4 -1 D
+-5 -2 D
+-4 -1 D
+-4 -2 D
+-5 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 -1 D
+-5 -1 D
+-5 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-5 0 D
+-4 -1 D
+-5 0 D
+-4 -1 D
+-5 0 D
+-4 0 D
+-5 0 D
+-4 0 D
+-5 0 D
+-4 0 D
+-5 0 D
+-5 0 D
+-4 0 D
+-5 0 D
+-4 0 D
+-41 5 D
+-27 5 D
 -9 3 D
 -39 11 D
 -30 12 D
@@ -8270,14 +8328,54 @@ PSL_path_pen 2 get cvx exec
 -19 -26 D
 -27 -31 D
 -17 -16 D
--34 -24 D
--37 -20 D
--49 -16 D
--45 -9 D
--46 -3 D
--51 1 D
--42 5 D
--36 6 D
+-15 -11 D
+-4 -3 D
+-12 -8 D
+-11 -7 D
+-8 -4 D
+-9 -5 D
+-8 -4 D
+-4 -2 D
+-5 -1 D
+-8 -4 D
+-5 -1 D
+-4 -2 D
+-4 -1 D
+-5 -2 D
+-4 -1 D
+-4 -1 D
+-5 -2 D
+-5 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-5 -1 D
+-4 0 D
+-5 -1 D
+-3 0 D
+-2 0 D
+-4 -1 D
+-5 0 D
+-5 -1 D
+-4 0 D
+-5 0 D
+-4 -1 D
+-5 0 D
+-5 0 D
+-4 0 D
+-5 0 D
+-5 0 D
+-4 0 D
+-5 0 D
+-4 0 D
+-5 0 D
+-5 0 D
+-46 4 D
+-50 8 D
 -63 16 D
 -53 18 D
 -28 12 D
@@ -8357,14 +8455,62 @@ PSL_path_pen 3 get cvx exec
 -14 -13 D
 -3 -1 D
 -1 -2 D
--23 -16 D
--42 -23 D
--35 -13 D
--55 -13 D
--61 -6 D
--76 1 D
--65 8 D
--56 10 D
+-12 -8 D
+-11 -8 D
+-8 -5 D
+-9 -5 D
+-8 -4 D
+-8 -5 D
+-5 -2 D
+-4 -2 D
+-4 -1 D
+-5 -2 D
+-8 -4 D
+-5 -1 D
+-4 -2 D
+-5 -1 D
+-4 -2 D
+-5 -1 D
+-4 -1 D
+-5 -2 D
+-5 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-5 -1 D
+-5 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-5 0 D
+-5 -1 D
+-4 -1 D
+-3 0 D
+-2 0 D
+-5 -1 D
+-4 0 D
+-5 -1 D
+-5 0 D
+-5 -1 D
+-4 0 D
+-5 0 D
+-5 -1 D
+-4 0 D
+-5 0 D
+-5 0 D
+-4 0 D
+-1 0 D
+-4 0 D
+-5 0 D
+-5 0 D
+-4 0 D
+-5 0 D
+-5 0 D
+-4 0 D
+-5 0 D
+-43 3 D
+-51 7 D
+-51 9 D
 -78 20 D
 -76 26 D
 -48 19 D
@@ -8439,16 +8585,67 @@ PSL_path_pen 4 get cvx exec
 -3 -4 D
 -4 -3 D
 -3 -4 D
--25 -20 D
--30 -18 D
--40 -17 D
--27 -8 D
--33 -8 D
--52 -6 D
--95 -1 D
--80 8 D
--62 10 D
--56 11 D
+-19 -15 D
+-6 -5 D
+-9 -6 D
+-8 -5 D
+-9 -5 D
+-4 -2 D
+-3 -1 D
+-6 -3 D
+-8 -4 D
+-5 -2 D
+-9 -4 D
+-4 -1 D
+-5 -2 D
+-4 -1 D
+-5 -2 D
+-4 -1 D
+-5 -2 D
+-3 -1 D
+-6 -1 D
+-5 -1 D
+-4 -2 D
+-5 -1 D
+-5 -1 D
+-4 -1 D
+-5 -1 D
+-5 -1 D
+-4 0 D
+-5 -1 D
+-5 -1 D
+-4 0 D
+-5 -1 D
+-5 -1 D
+-5 0 D
+-4 -1 D
+-5 0 D
+-5 -1 D
+-5 0 D
+-4 0 D
+-5 -1 D
+-5 0 D
+-5 0 D
+-4 0 D
+-1 0 D
+-4 0 D
+-5 0 D
+-5 0 D
+-4 0 D
+-5 0 D
+-5 0 D
+-5 0 D
+-4 0 D
+-5 0 D
+-5 0 D
+-5 0 D
+-5 0 D
+-1 0 D
+-3 0 D
+-5 0 D
+-43 3 D
+-71 9 D
+-89 17 D
 -18 5 D
 -42 10 D
 -18 5 D
@@ -9550,13 +9747,55 @@ PSL_path_pen 25 get cvx exec
 -18 -32 D
 -17 -22 D
 -23 -21 D
--26 -19 D
--23 -14 D
--25 -11 D
--34 -11 D
--35 -9 D
--40 -5 D
--52 -2 D
+-4 -3 D
+-14 -11 D
+-8 -5 D
+-11 -7 D
+-6 -4 D
+-6 -3 D
+-8 -4 D
+-4 -2 D
+-4 -1 D
+-5 -2 D
+-4 -2 D
+-4 -1 D
+-4 -2 D
+-5 -1 D
+-4 -2 D
+-4 -1 D
+-4 -2 D
+-5 -1 D
+-4 -1 D
+-4 -1 D
+-5 -2 D
+-2 0 D
+-7 -2 D
+-4 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-5 0 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 0 D
+-5 -1 D
+-4 0 D
+-3 0 D
+-2 -1 D
+-4 0 D
+-5 0 D
+-4 -1 D
+-5 0 D
+-4 0 D
+-5 0 D
+-4 -1 D
+-5 0 D
+-4 0 D
+-5 0 D
+-4 0 D
+-5 0 D
+-2 0 D
 -52 4 D
 -58 11 D
 -48 12 D
@@ -9595,6 +9834,7 @@ PSL_path_pen 25 get cvx exec
 P S
 PSL_cliprestore
 U
+[] 0 B
 PSL_cliprestore
 25 W
 8 W
@@ -9612,14 +9852,6 @@ N 6360 0 M 0 -83 D S
 N 6360 1743 M 0 84 D S
 N 0 872 M -83 0 D S
 N 6360 872 M 83 0 D S
-578 -167 M 200 F0
-(60š) tc Z
-1735 -167 M (80š) tc Z
-2891 -167 M (100š) tc Z
-4047 -167 M (120š) tc Z
-5204 -167 M (140š) tc Z
-6360 -167 M (160š) tc Z
--167 872 M (0š) mr Z
 83 W
 N -42 0 M 0 294 D S
 N 6402 0 M 0 294 D S
@@ -9674,6 +9906,14 @@ N 6443 1743 M -6526 0 D S
 N 6443 1827 M -6526 0 D S
 N 0 1827 M 0 -1910 D S
 N -83 1827 M 0 -1910 D S
+578 -167 M 200 F0
+(60°) tc Z
+1735 -167 M (80°) tc Z
+2891 -167 M (100°) tc Z
+4047 -167 M (120°) tc Z
+5204 -167 M (140°) tc Z
+6360 -167 M (160°) tc Z
+-167 872 M (0°) mr Z
 %%EndObject
 0 A
 FQ
@@ -9681,17 +9921,17 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R50/160/-15/15 -JM5.3i -O -SqD1000k:+g+LD+an+p -Wthick transect.txt
-%%PROJ: merc 50.00000000 160.00000000 -15.00000000 15.00000000 -6122571.994 6122571.994 -1678147.516 1678147.516 +proj=merc +lon_0=105 +k=1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: gmt psxy -SqD1000k:+g+LD+an+p -Wthick @App_O_transect.txt -R50/160/-15/15 -JM5.3i
+%@PROJ: merc 50.00000000 160.00000000 -15.00000000 15.00000000 -6122571.994 6122571.994 -1678147.516 1678147.516 +proj=merc +lon_0=105 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
-	(17 W 0 A [] 0 B)
+PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+	(17 W 0 A \[\] 0 B)
 ] def
 /PSL_label_justify [ 6 6 6 6 6 6 6 ] def
 /PSL_label_font [
@@ -9736,7 +9976,12 @@ PSL_path_pen 0 get cvx exec
 32 -4 D
 S
 386 PSL_straight_path_labels
+[] 0 B
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

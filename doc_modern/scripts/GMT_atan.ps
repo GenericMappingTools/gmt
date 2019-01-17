@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_r19998M [64-bit] Document from pshistogram
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from pshistogram
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Apr  5 10:52:53 2018
+%%CreationDate: Thu Dec  6 10:50:37 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -638,7 +640,7 @@ end
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
     psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath fs S} ifelse
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -670,7 +672,7 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: pshistogram tt.d -R-0.75/0.75/0/20 -JX1.5i/1i -Bx0.5 -By5f5 -BWSne -W0.01 -P -K -Gblack -Z1
+%@GMT: gmt pshistogram tt.d -R-0.75/0.75/0/20 -JX1.5i/1i -Bx0.5 -By5f5 -BWSne -W0.01 -Gblack -Z1
 %@PROJ: xy -0.75000000 0.75000000 0.00000000 20.00000000 -0.750 0.750 0.000 20.000 +xy
 %GMTBoundingBox: 72 72 108 72
 %%BeginObject PSL_Layer_1
@@ -919,7 +921,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R-0.75/0.75/0/20 -JX1.5i/1i -O -K -F+f9p+jLB
+%@GMT: gmt pstext -F+f9p+jLB -R-0.75/0.75/0/20 -JX1.5i/1i
 %@PROJ: xy -0.75000000 0.75000000 0.00000000 20.00000000 -0.750 0.750 0.000 20.000 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -944,7 +946,7 @@ O0
 2220 0 TM
 
 % PostScript produced by:
-%@GMT: psxy tt.d -R-5/5/-1/1 -JX1.5i/1i -Bx2f1g1 -By1f0.5g0.25 -BWSne -O -K -Wthick -X1.85i
+%@GMT: gmt psxy tt.d -R-5/5/-1/1 -Bx2f1g1 -By1f0.5g0.25 -BWSne -Wthick -X1.85i -JX1.5i/1i
 %@PROJ: xy -5.00000000 5.00000000 -1.00000000 1.00000000 -5.000 5.000 -1.000 1.000 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -1183,7 +1185,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-5/5/-1/1 -JX1.5i/1i -O -K -Sv5p+e -Gblack -W0.5p
+%@GMT: gmt psxy -Sv5p+e -Gblack -W0.5p -R-5/5/-1/1 -JX1.5i/1i
 %@PROJ: xy -5.00000000 5.00000000 -1.00000000 1.00000000 -5.000 5.000 -1.000 1.000 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -1230,7 +1232,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R-5/5/-1/1 -JX1.5i/1i -O -K -Wthinnest
+%@GMT: gmt psxy -Wthinnest -R-5/5/-1/1 -JX1.5i/1i
 %@PROJ: xy -5.00000000 5.00000000 -1.00000000 1.00000000 -5.000 5.000 -1.000 1.000 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
@@ -1250,7 +1252,7 @@ O0
 2220 0 TM
 
 % PostScript produced by:
-%@GMT: pshistogram tt.d -R-0.75/0.75/0/5 -JX1.5i/1i -Bx0.5 -By2f1 -BWSne -W0.01 -O -K -Gblack -X1.85i -Z1
+%@GMT: gmt pshistogram tt.d -R-0.75/0.75/0/5 -Bx0.5 -By2f1 -BWSne -W0.01 -Gblack -X1.85i -Z1 -JX1.5i/1i
 %@PROJ: xy -0.75000000 0.75000000 0.00000000 5.00000000 -0.750 0.750 0.000 5.000 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
@@ -1499,7 +1501,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R-0.75/0.75/0/5 -JX1.5i/1i -O -F+f9p+jLB
+%@GMT: gmt pstext -F+f9p+jLB -R-0.75/0.75/0/5 -JX1.5i/1i
 %@PROJ: xy -0.75000000 0.75000000 0.00000000 5.00000000 -0.750 0.750 0.000 5.000 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
@@ -1515,7 +1517,7 @@ PSL_clip N
 60 1032 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 150 F0
 (tan) Z
-0 52 G 105 F0 (-1) Z
+0 52 G 105 F0 (­1) Z
 0 -52 G 60 888 M 150 F0
 (transformed) bl Z
 PSL_cliprestore

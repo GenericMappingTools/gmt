@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -625,6 +625,8 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {
 			if (gmt_grd_is_global(GMT, G->header) || (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] <= 0.0))
+				GMT->current.io.geo.range = GMT_IS_GIVEN_RANGE;
+			else if ((G->header->wesn[XHI] - G->header->wesn[XLO]) > 180.0)
 				GMT->current.io.geo.range = GMT_IS_GIVEN_RANGE;
 			else if (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] >= 0.0)
 				GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;

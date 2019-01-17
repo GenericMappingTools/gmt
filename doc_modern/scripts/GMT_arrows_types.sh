@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Demonstrate how arrows heads can look like (just doing Cartesian arrows here)
 gmt begin GMT_arrows_types ps

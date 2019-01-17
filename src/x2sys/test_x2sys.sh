@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Test script that exercise the various options in x2sys.
 # We generate a grid and some fake tracks and sample the

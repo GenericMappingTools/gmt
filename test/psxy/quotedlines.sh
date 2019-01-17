@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Place 3 lines with text along them
 ps=quotedlines.ps
 echo "> -L\"The first curve\"" > data.txt

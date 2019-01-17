@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psrose** [ *table* ] [ |-A|\ [**r**]\ *sector_width* ]
+**psrose** [ *table* ] [ |-A|\ *sector_width*\ [**+r**] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ **m**\ \|\ [**+w**\ ]\ *mode_file* ]
 [ |-D| ]
@@ -71,9 +71,9 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**r**]\ *sector_width*
+**-A**\ *sector_width*\ [**+r**]
     Gives the sector width in degrees for sector and rose diagram.
-    [Default 0 means windrose diagram]. Use **-Ar** to draw rose
+    [Default 0 means windrose diagram]. Append **+r** to draw rose
     diagram instead of sector diagram. 
 
 .. _-B:
@@ -257,7 +257,7 @@ azimuth, and shown in Portrait orientation, use:
    ::
 
     gmt psrose fault_segments.az_r -R0/150/-90/90 -Bx50g25+l"Fault length"
-               -Byg30 -B+t"Rose diagram" -JX6i -Ar10 -Glightblue
+               -Byg30 -B+t"Rose diagram" -JX6i -A10+r -Glightblue
                -W0.75p,red -Z0.001 -Cm -P -T -: > half_rose.ps
 
 To plot a full circle wind rose diagram of the data in the file
@@ -268,14 +268,14 @@ orientation with UNIX timestamp and command line plotted, use:
 
    ::
 
-    gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -Uc | lpr
+    gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -U+c | lpr
 
 Redo the same plot but this time add orange vector heads to each direction (with nominal head size
 0.5 cm but this will be reduced linearly for lengths less than 1 cm) and save the plot, use:
 
    ::
 
-    gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -Uc > rose.ps
+    gmt psrose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -U+c > rose.ps
 
 Bugs
 ----

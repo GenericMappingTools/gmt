@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 #
 # Compute the gravity anomaly of the Flemish Cap Guyot
 

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v6.0.0_r19011 [64-bit] Document from psmeca
+%%HiResBoundingBox: 0 0 612.0000 792.0000             
+%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psmeca
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Oct  5 13:26:42 2017
+%%CreationDate: Thu Dec  6 10:51:30 2018
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,7 +336,9 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ PSL_fnt k get cvx exec
+{ /psl_fnt PSL_fnt k get def
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  psl_fnt cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -592,7 +594,9 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  PSL_label_font psl_k get cvx exec
+  /psl_fnt PSL_label_font psl_k get def
+  psl_fnt cvx exec
+  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -635,7 +639,8 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G show
+    psl_label dup sd neg 0 exch G
+    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
     U
 } def
 /PSL_nclip 0 def
@@ -658,14 +663,18 @@ V 0.06 0.06 scale
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
 /PSL_completion {} def
+/PSL_movie_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1181 10200 TM
 
 % PostScript produced by:
-%@GMT: psmeca -R128/130/10/11.1 -JX2id -Fa0.1i/cc -Sc0.4i -B1 -Y8.5i -P -K
+%@GMT: gmt psmeca -R128/130/10/11.1 -JX2id -Fa0.1i/cc -Sc0.4i -B1 -Y8.5i -P -K
 %@PROJ: latlong 128.00000000 130.00000000 10.00000000 11.10000000 -1.000 1.000 10.000 11.100 +proj=latlong +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: 70.8661 612 144 144
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -740,8 +749,10 @@ O1
 -15 -26 D
 -23 -29 D
 -23 -22 D
--19 -14 D
--21 -12 D
+-15 -11 D
+-12 -8 D
+-9 -5 D
+-4 -2 D
 -25 15 D
 -15 11 D
 -26 25 D
@@ -805,16 +816,16 @@ N 2520 2520 M -2640 0 D S
 N 0 2520 M 0 -2640 D S
 N -120 2520 M 0 -2640 D S
 0 -203 M 200 F0
-(128 ) tc Z
-0 2603 M (128 ) bc Z
-1200 -203 M (129 ) tc Z
-1200 2603 M (129 ) bc Z
-2400 -203 M (130 ) tc Z
-2400 2603 M (130 ) bc Z
--203 0 M (10 ) mr Z
-2603 0 M (10 ) ml Z
--203 2182 M (11 ) mr Z
-2603 2182 M (11 ) ml Z
+(128è) tc Z
+0 2603 M (128è) bc Z
+1200 -203 M (129è) tc Z
+1200 2603 M (129è) bc Z
+2400 -203 M (130è) tc Z
+2400 2603 M (130è) bc Z
+-203 0 M (10è) mr Z
+2603 0 M (10è) ml Z
+-203 2182 M (11è) mr Z
+2603 2182 M (11è) ml Z
 %%EndObject
 0 A
 FQ
@@ -822,7 +833,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: psxy -R128/130/10/11.1 -JX2id -K -O -W0.25p,red
+%@GMT: gmt psxy -R128/130/10/11.1 -JX2id -K -O -W0.25p,red
 %@PROJ: latlong 128.00000000 130.00000000 10.00000000 11.10000000 -1.000 1.000 10.000 11.100 +proj=latlong +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
@@ -842,7 +853,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R128/130/10/11.1 -JX2id -N -F+f14p,Helvetica-Bold+j -K -O
+%@GMT: gmt pstext -R128/130/10/11.1 -JX2id -N -F+f14p,Helvetica-Bold+j -K -O
 %@PROJ: latlong 128.00000000 130.00000000 10.00000000 11.10000000 -1.000 1.000 10.000 11.100 +proj=latlong +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -859,7 +870,7 @@ O0
 0 -3000 TM
 
 % PostScript produced by:
-%@GMT: pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/10/60/0/100f -Ggrey -Fa0.1i/cc -Y-2.5i -X0i -O -K
+%@GMT: gmt pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/10/60/0/100f -Ggrey -Fa0.1i/cc -Y-2.5i -X0i -O -K
 %@PROJ: xy 0.00000000 218.35805987 0.00000000 100.00000000 0.000 218.358 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -897,11 +908,15 @@ O1
 -20 9 D
 -43 13 D
 -39 5 D
+-4 0 D
+-5 0 D
 P
 FO
 1349 524 M
 1 221 D
--82 3 D
+-1 0 D
+-1 0 D
+-80 3 D
 -70 7 D
 -46 8 D
 -39 10 D
@@ -938,7 +953,12 @@ O1
 18 6 D
 -22 3 D
 -35 1 D
--26 -3 D
+-4 -1 D
+-5 0 D
+-4 0 D
+-5 -1 D
+-4 0 D
+-4 -1 D
 FO
 491 440 M
 22 19 D
@@ -961,9 +981,10 @@ FO
 -24 23 D
 -22 16 D
 -8 5 D
--23 -15 D
--13 -11 D
--21 -20 D
+-8 -5 D
+-8 -5 D
+-14 -10 D
+-27 -26 D
 -16 -20 D
 -16 -22 D
 -19 -37 D
@@ -1124,7 +1145,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
+%@GMT: gmt pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
 %@PROJ: xy 0.00000000 200.00000000 0.00000000 100.00000000 0.000 200.000 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
@@ -1148,7 +1169,7 @@ O0
 3000 0 TM
 
 % PostScript produced by:
-%@GMT: pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/20/60/0/100f -Ggrey -Fa0.1i/cc -Y0i -X2.5i -O -K
+%@GMT: gmt pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/20/60/0/100f -Ggrey -Fa0.1i/cc -Y0i -X2.5i -O -K
 %@PROJ: xy 0.00000000 218.35805987 0.00000000 100.00000000 0.000 218.358 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
@@ -1193,9 +1214,33 @@ P
 FO
 1349 539 M
 1 191 D
--47 1 D
--45 5 D
--41 8 D
+-1 0 D
+-1 0 D
+-1 0 D
+-1 0 D
+-1 0 D
+-1 0 D
+-2 0 D
+-1 0 D
+-1 0 D
+-1 0 D
+-1 0 D
+-1 0 D
+-1 0 D
+-1 0 D
+-1 0 D
+-2 0 D
+-1 0 D
+-1 0 D
+-1 0 D
+-1 0 D
+-2 0 D
+-1 0 D
+-1 0 D
+-1 0 D
+-2 0 D
+-58 5 D
+-46 9 D
 -35 9 D
 -45 16 D
 -26 14 D
@@ -1237,9 +1282,21 @@ O1
 -26 8 D
 -35 5 D
 -35 1 D
--31 -4 D
--17 -3 D
--17 -5 D
+-4 -1 D
+-5 0 D
+-4 0 D
+-5 -1 D
+-4 0 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 0 D
+-5 -1 D
+-4 -1 D
+-4 -2 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
 FO
 529 374 M
 13 15 D
@@ -1263,8 +1320,9 @@ FO
 -5 6 D
 -25 20 D
 -4 2 D
--17 -12 D
--18 -15 D
+-11 -7 D
+-21 -18 D
+-3 -2 D
 -2 -3 D
 -6 -5 D
 -2 -3 D
@@ -1429,7 +1487,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
+%@GMT: gmt pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
 %@PROJ: xy 0.00000000 200.00000000 0.00000000 100.00000000 0.000 200.000 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_7
 0 setlinecap
@@ -1453,7 +1511,7 @@ O0
 3000 0 TM
 
 % PostScript produced by:
-%@GMT: pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/30/60/0/100f -Ggrey -Fa0.1i/cc -Y0i -X2.5i -O -K
+%@GMT: gmt pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/30/60/0/100f -Ggrey -Fa0.1i/cc -Y0i -X2.5i -O -K
 %@PROJ: xy 0.00000000 218.35805987 0.00000000 100.00000000 0.000 218.358 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
@@ -1493,13 +1551,25 @@ O1
 -43 23 D
 -42 13 D
 -40 5 D
+-4 0 D
+-5 0 D
 P
 FO
 1349 585 M
 1 160 D
--35 1 D
--33 4 D
--35 7 D
+-2 0 D
+-1 0 D
+-2 0 D
+-1 0 D
+-2 0 D
+-2 0 D
+-1 0 D
+-2 0 D
+-2 0 D
+-1 0 D
+-2 0 D
+-44 4 D
+-41 8 D
 -51 15 D
 -33 15 D
 -36 23 D
@@ -1544,8 +1614,26 @@ O1
 -38 11 D
 -30 4 D
 -36 1 D
--34 -5 D
--35 -9 D
+-4 -1 D
+-4 0 D
+-5 -1 D
+-4 0 D
+-4 -1 D
+-5 0 D
+-4 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 -1 D
+-4 -2 D
+-5 -1 D
+-4 -2 D
+-4 -1 D
+-8 -4 D
+-4 -1 D
 P
 FO
 561 347 M
@@ -1563,8 +1651,8 @@ FO
 -11 9 D
 -2 3 D
 -13 10 D
--23 -19 D
--7 -6 D
+-15 -12 D
+-15 -13 D
 -2 -3 D
 -7 -6 D
 -15 -17 D
@@ -1731,7 +1819,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
+%@GMT: gmt pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
 %@PROJ: xy 0.00000000 200.00000000 0.00000000 100.00000000 0.000 200.000 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_9
 0 setlinecap
@@ -1755,7 +1843,7 @@ O0
 -6000 -3000 TM
 
 % PostScript produced by:
-%@GMT: pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/40/60/0/100f -Ggrey -Fa0.1i/cc -Y-2.5i -X-5i -O -K
+%@GMT: gmt pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/40/60/0/100f -Ggrey -Fa0.1i/cc -Y-2.5i -X-5i -O -K
 %@PROJ: xy 0.00000000 218.35805987 0.00000000 100.00000000 0.000 218.358 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_10
 0 setlinecap
@@ -1798,12 +1886,17 @@ O1
 -36 17 D
 -39 11 D
 -39 4 D
+-4 0 D
 P
 FO
 1349 660 M
 1 130 D
--39 2 D
--35 6 D
+-2 0 D
+-2 0 D
+-2 0 D
+-2 0 D
+-38 3 D
+-28 5 D
 -41 11 D
 -34 14 D
 -34 19 D
@@ -1854,10 +1947,36 @@ O1
 -28 13 D
 -38 11 D
 -39 5 D
--40 -1 D
--35 -6 D
--37 -13 D
--36 -19 D
+-5 0 D
+-4 0 D
+-5 0 D
+-4 0 D
+-4 0 D
+-5 0 D
+-4 0 D
+-5 -1 D
+-4 0 D
+-4 -1 D
+-5 0 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 0 D
+-5 -1 D
+-4 -1 D
+-4 -2 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 -2 D
+-4 -1 D
+-4 -2 D
+-4 -1 D
+-8 -4 D
+-8 -4 D
+-8 -4 D
+-8 -4 D
+-8 -5 D
 FO
 584 358 M
 8 26 D
@@ -2041,7 +2160,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
+%@GMT: gmt pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
 %@PROJ: xy 0.00000000 200.00000000 0.00000000 100.00000000 0.000 200.000 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_11
 0 setlinecap
@@ -2065,7 +2184,7 @@ O0
 3000 0 TM
 
 % PostScript produced by:
-%@GMT: pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/50/60/0/100f -Ggrey -Fa0.1i/cc -Y0i -X2.5i -O -K
+%@GMT: gmt pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/50/60/0/100f -Ggrey -Fa0.1i/cc -Y0i -X2.5i -O -K
 %@PROJ: xy 0.00000000 218.35805987 0.00000000 100.00000000 0.000 218.358 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_12
 0 setlinecap
@@ -2107,6 +2226,8 @@ O1
 -32 15 D
 -34 10 D
 -39 5 D
+-5 0 D
+-4 0 D
 P
 FO
 1350 762 M
@@ -2165,11 +2286,35 @@ O1
 -36 17 D
 -38 11 D
 -44 5 D
--31 -1 D
--39 -7 D
--17 -5 D
--25 -10 D
--31 -17 D
+-5 0 D
+-4 0 D
+-4 0 D
+-5 0 D
+-4 -1 D
+-5 0 D
+-4 0 D
+-4 -1 D
+-5 0 D
+-4 -1 D
+-5 -1 D
+-4 0 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 -1 D
+-4 -1 D
+-5 -1 D
+-4 -2 D
+-4 -1 D
+-4 -2 D
+-4 -1 D
+-4 -2 D
+-5 -1 D
+-8 -4 D
+-8 -4 D
+-7 -4 D
+-8 -4 D
+-8 -5 D
 -11 -7 D
 -3 -3 D
 FO
@@ -2195,8 +2340,8 @@ FO
 -2 1 D
 -1 2 D
 -19 17 D
--22 -20 D
--4 -5 D
+-16 -14 D
+-10 -11 D
 -6 -5 D
 -1 -2 D
 -3 -2 D
@@ -2362,7 +2507,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
+%@GMT: gmt pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
 %@PROJ: xy 0.00000000 200.00000000 0.00000000 100.00000000 0.000 200.000 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_13
 0 setlinecap
@@ -2386,7 +2531,7 @@ O0
 3000 0 TM
 
 % PostScript produced by:
-%@GMT: pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/60/60/0/100f -Ggrey -Fa0.1i/cc -Y0i -X2.5i -O -K
+%@GMT: gmt pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/60/60/0/100f -Ggrey -Fa0.1i/cc -Y0i -X2.5i -O -K
 %@PROJ: xy 0.00000000 218.35805987 0.00000000 100.00000000 0.000 218.358 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_14
 0 setlinecap
@@ -2427,13 +2572,19 @@ O1
 -32 15 D
 -25 8 D
 -39 8 D
--26 1 D
+-4 0 D
+-22 1 D
 FO
 1350 888 M
 0 74 D
--31 1 D
--41 8 D
--41 14 D
+-3 0 D
+-3 0 D
+-3 0 D
+-3 0 D
+-3 0 D
+-29 3 D
+-31 7 D
+-38 13 D
 -40 22 D
 -27 21 D
 -6 5 D
@@ -2489,11 +2640,34 @@ O1
 -25 9 D
 -39 8 D
 -40 2 D
--39 -5 D
--34 -9 D
--25 -10 D
--23 -12 D
--33 -23 D
+-4 -1 D
+-5 0 D
+-4 0 D
+-5 -1 D
+-4 0 D
+-4 -1 D
+-5 0 D
+-4 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 -1 D
+-4 -2 D
+-4 -1 D
+-5 -2 D
+-4 -1 D
+-4 -2 D
+-4 -1 D
+-8 -4 D
+-8 -4 D
+-8 -4 D
+-11 -7 D
+-11 -7 D
+-14 -11 D
+-4 -2 D
 FO
 613 485 M
 -2 22 D
@@ -2688,7 +2862,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
+%@GMT: gmt pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
 %@PROJ: xy 0.00000000 200.00000000 0.00000000 100.00000000 0.000 200.000 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_15
 0 setlinecap
@@ -2712,7 +2886,7 @@ O0
 -6000 -3000 TM
 
 % PostScript produced by:
-%@GMT: pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/70/60/0/100f -Ggrey -Fa0.1i/cc -N -Y-2.5i -X-5i -O -K
+%@GMT: gmt pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/70/60/0/100f -Ggrey -Fa0.1i/cc -N -Y-2.5i -X-5i -O -K
 %@PROJ: xy 0.00000000 218.35805987 0.00000000 100.00000000 0.000 218.358 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_16
 0 setlinecap
@@ -2755,14 +2929,16 @@ O1
 FO
 1350 1034 M
 0 47 D
--32 2 D
--39 8 D
--24 8 D
--24 11 D
--23 13 D
--25 18 D
--26 25 D
--13 15 D
+-3 0 D
+-4 0 D
+-32 3 D
+-39 9 D
+-38 15 D
+-6 4 D
+-7 3 D
+-32 21 D
+-23 21 D
+-22 24 D
 -20 32 D
 -13 27 D
 -8 25 D
@@ -2823,12 +2999,34 @@ O1
 -30 9 D
 -30 6 D
 -40 2 D
--35 -4 D
--21 -4 D
--34 -12 D
--27 -13 D
--12 -7 D
--35 -27 D
+-4 0 D
+-4 -1 D
+-5 0 D
+-4 0 D
+-5 -1 D
+-4 0 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 0 D
+-5 -1 D
+-4 -1 D
+-4 -1 D
+-5 -2 D
+-4 -1 D
+-4 -1 D
+-4 -2 D
+-4 -1 D
+-4 -1 D
+-5 -2 D
+-8 -4 D
+-4 -1 D
+-8 -4 D
+-8 -4 D
+-11 -7 D
+-11 -7 D
+-18 -14 D
+-10 -8 D
 FO
 621 597 M
 -10 28 D
@@ -3075,7 +3273,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
+%@GMT: gmt pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
 %@PROJ: xy 0.00000000 200.00000000 0.00000000 100.00000000 0.000 200.000 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_17
 0 setlinecap
@@ -3099,7 +3297,7 @@ O0
 3000 0 TM
 
 % PostScript produced by:
-%@GMT: pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/80/60/0/100f -Ggrey -Fa0.1i/cc -N -Y0i -X2.5i -O -K
+%@GMT: gmt pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/80/60/0/100f -Ggrey -Fa0.1i/cc -N -Y0i -X2.5i -O -K
 %@PROJ: xy 0.00000000 218.35805987 0.00000000 100.00000000 0.000 218.358 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_18
 0 setlinecap
@@ -3136,14 +3334,17 @@ O1
 -32 15 D
 -38 11 D
 -35 5 D
--17 1 D
+-4 0 D
+-13 1 D
 FO
 1350 1195 M
 0 23 D
--32 2 D
--31 6 D
--24 7 D
--33 15 D
+-4 0 D
+-4 0 D
+-36 4 D
+-31 7 D
+-30 12 D
+-15 7 D
 -28 17 D
 -9 8 D
 -7 5 D
@@ -3214,12 +3415,35 @@ O1
 -38 11 D
 -31 4 D
 -31 1 D
--39 -5 D
--34 -9 D
--32 -14 D
--27 -16 D
--14 -11 D
--20 -17 D
+-4 -1 D
+-4 0 D
+-5 0 D
+-4 -1 D
+-5 0 D
+-4 -1 D
+-4 0 D
+-5 -1 D
+-4 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 -1 D
+-4 -1 D
+-5 -2 D
+-4 -1 D
+-4 -1 D
+-8 -4 D
+-4 -1 D
+-8 -4 D
+-4 -2 D
+-4 -1 D
+-8 -5 D
+-8 -4 D
+-11 -7 D
+-11 -7 D
+-10 -9 D
+-7 -5 D
+-10 -9 D
 FO
 625 737 M
 -9 16 D
@@ -3491,7 +3715,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
+%@GMT: gmt pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
 %@PROJ: xy 0.00000000 200.00000000 0.00000000 100.00000000 0.000 200.000 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_19
 0 setlinecap
@@ -3515,7 +3739,7 @@ O0
 3000 0 TM
 
 % PostScript produced by:
-%@GMT: pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/90/60/0/100f -Ggrey -Fa0.1i/cc -N -Y0i -X2.5i -O -K
+%@GMT: gmt pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN -Q -L -Sc0.4 -Aa128/11/130/11/90/60/0/100f -Ggrey -Fa0.1i/cc -N -Y0i -X2.5i -O -K
 %@PROJ: xy 0.00000000 218.35805987 0.00000000 100.00000000 0.000 218.358 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_20
 0 setlinecap
@@ -3555,8 +3779,9 @@ O1
 P
 FO
 1350 1367 M
--39 3 D
--43 11 D
+-4 0 D
+-40 4 D
+-38 10 D
 -25 10 D
 -27 15 D
 -25 18 D
@@ -3580,15 +3805,38 @@ FO
 25 9 D
 39 8 D
 31 2 D
--39 -3 D
--47 -12 D
--33 -15 D
--29 -18 D
--21 -17 D
--13 -12 D
--25 -31 D
--16 -26 D
--13 -28 D
+-4 0 D
+-5 0 D
+-4 -1 D
+-5 0 D
+-4 0 D
+-4 -1 D
+-5 0 D
+-4 -1 D
+-4 0 D
+-5 -1 D
+-4 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 -2 D
+-4 -1 D
+-4 -1 D
+-9 -4 D
+-4 -1 D
+-8 -4 D
+-8 -4 D
+-7 -4 D
+-8 -4 D
+-8 -5 D
+-14 -10 D
+-24 -20 D
+-18 -20 D
+-23 -32 D
+-19 -39 D
 -9 -30 D
 -6 -30 D
 -2 -40 D
@@ -3639,10 +3887,34 @@ O1
 -17 6 D
 -42 11 D
 -44 3 D
--40 -4 D
--42 -11 D
--37 -17 D
--26 -16 D
+-5 0 D
+-4 -1 D
+-5 0 D
+-4 0 D
+-4 -1 D
+-5 0 D
+-4 -1 D
+-4 0 D
+-5 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 -1 D
+-4 -1 D
+-5 -1 D
+-4 -1 D
+-4 -2 D
+-4 -1 D
+-4 -1 D
+-5 -2 D
+-4 -2 D
+-4 -1 D
+-8 -4 D
+-8 -4 D
+-8 -4 D
+-11 -7 D
+-11 -7 D
+-11 -8 D
 P
 FO
 627 901 M
@@ -3810,7 +4082,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
+%@GMT: gmt pstext -R0/200/0/100 -JX1.5i/-1.5i -F+f18p,Helvetica-Bold+jBL -O -K
 %@PROJ: xy 0.00000000 200.00000000 0.00000000 100.00000000 0.000 200.000 100.000 -0.000 +xy
 %%BeginObject PSL_Layer_21
 0 setlinecap
@@ -3834,7 +4106,7 @@ O0
 -6000 0 TM
 
 % PostScript produced by:
-%@GMT: pstext -X-5i -R0/10/0/15 -Jx1i -F+jBL+fHelvetica-Bold+f -O
+%@GMT: gmt pstext -X-5i -R0/10/0/15 -Jx1i -F+jBL+fHelvetica-Bold+f -O
 %@PROJ: xy 0.00000000 10.00000000 0.00000000 15.00000000 0.000 10.000 0.000 15.000 +xy
 %%BeginObject PSL_Layer_22
 0 setlinecap
@@ -3854,6 +4126,10 @@ PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold P
 (W-E cross-section) bl Z
 PSL_cliprestore
 %%EndObject
+
+grestore
+PSL_movie_completion /PSL_movie_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage

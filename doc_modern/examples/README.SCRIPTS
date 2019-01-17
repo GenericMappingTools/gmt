@@ -1,15 +1,9 @@
-	$Id: README.SCRIPTS 12822 2014-01-31 23:39:56Z remko $
-
 	README file for GMT Examples directory
 
 There are born-again shell (bash) and DOS (bat)
 versions of all example scripts.  To run all bash scripts,
 you can execute "make examples".
 To run all bat scripts, run do_examples.bat instead.
-
-Examples 2 and 17 show usage of grdraster.  However, because
-the user may not have these databases the grdraster calls are
-commented out and the extracted grdfiles supplied instead.
 
 Example 27 shows usage of img2grd.  Again, since the user may
 not have the img data installed the img2grd call is commented

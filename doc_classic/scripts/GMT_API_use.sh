@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=GMT_API_use.ps
 gmt psxy -R-4.5/4.5/-2/2 -Jx0.8i -P -K -W2p+ve0.2i+gblack+h0.5 -Xc << EOF > $ps
 >

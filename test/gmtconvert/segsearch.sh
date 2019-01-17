@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test the gmtconvert -Q search option for all possibilities
 
 cat << EOF > data.txt

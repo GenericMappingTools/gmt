@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
  */
 
 #pragma once
-#ifndef _COMMON_BYTESWAP_H
-#define _COMMON_BYTESWAP_H
+#ifndef COMMON_BYTESWAP_H
+#define COMMON_BYTESWAP_H
 
 #include "gmt_config.h"
 #include <stdint.h>
@@ -131,4 +131,4 @@ static inline uint64_t inline_bswap64 (uint64_t x) {
 #	define bswap64 inline_bswap64
 #endif /* HAVE___BUILTIN_BSWAP64 */
 
-#endif /* !_COMMON_BYTESWAP_H */
+#endif /* !COMMON_BYTESWAP_H */

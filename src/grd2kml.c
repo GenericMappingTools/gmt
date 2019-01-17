@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -461,7 +461,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 	gmtlib_geo_C_format (GMT);	/* Update the format settings */
 	dim = dpi * 0.0001 * Ctrl->L.size;	/* Constant tile map size in inches for a fixed dpi of 100 yields PNGS of the requested dimension in -L */
 
-	GMT->current.io.geo.range = (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] > 0.0) ? GMT_IS_M180_TO_P180_RANGE : GMT_IS_0_TO_P360_RANGE;
+	GMT->current.io.geo.range = (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] > 0.0) ? ((G->header->wesn[XHI] > 180.0) ? GMT_IS_GIVEN_RANGE : GMT_IS_M180_TO_P180_RANGE) : GMT_IS_0_TO_P360_RANGE;
 
 	/* Create the container quadtree directory first */
 	if (gmt_mkdir (Ctrl->N.prefix))
@@ -591,7 +591,7 @@ int GMT_grd2kml (void *V_API, int mode, void *args) {
 				/* Must make sure we have a proper formatting of these longitudes so handle any east > 360 */
 				west = wesn[XLO];	east = wesn[XHI];
 				if (east > 360.0) west -= 360.0, east -= 360.0;	/* Keep within -180 to 180 range */
-				GMT->current.io.geo.range = (west < 0.0 && east > 0.0) ? GMT_IS_M180_TO_P180_RANGE : GMT_IS_0_TO_P360_RANGE;
+				GMT->current.io.geo.range = (west < 0.0 && east > 0.0) ? ((east > 180.0) ? GMT_IS_GIVEN_RANGE : GMT_IS_M180_TO_P180_RANGE) : GMT_IS_0_TO_P360_RANGE;
 				gmt_ascii_format_one (GMT, W, west, GMT_IS_LON);
 				gmt_ascii_format_one (GMT, E, east, GMT_IS_LON);
 				/* Now we have the current tile region */

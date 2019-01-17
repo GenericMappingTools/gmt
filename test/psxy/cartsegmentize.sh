@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test segmentizing option -F in psxy with Cartesian data
 ps=cartsegmentize.ps
 

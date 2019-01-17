@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test the generation of illumination for variable azimuth
 
 ps=illum_var.ps

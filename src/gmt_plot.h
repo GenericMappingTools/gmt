@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
  * \brief 
  */
 
-#ifndef _GMT_PLOT_H
-#define _GMT_PLOT_H
+#ifndef GMT_PLOT_H
+#define GMT_PLOT_H
 
 /*! Identifier for gmt_plane_perspective. The others come from GMT_io.h */
 
@@ -161,4 +161,4 @@ struct GMT_SYMBOL {
 	struct GMT_DECORATE D;	/* For decorated lines */
 };
 
-#endif /* _GMT_PLOT_H */
+#endif /* GMT_PLOT_H */

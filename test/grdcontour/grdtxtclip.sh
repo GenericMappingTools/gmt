@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=grdtxtclip.ps
 gmt grdcontour @txtclip.nc -R-74.25/-63.75/-44.0/-39.5 \
        -JB-69/-41.75/-40.625/-42.875/6i -Ba1 \

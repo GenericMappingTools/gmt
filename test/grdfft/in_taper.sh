@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing gmt grdfft -N+n with 10% and 25 % tapering
 
 ps=in_taper.ps

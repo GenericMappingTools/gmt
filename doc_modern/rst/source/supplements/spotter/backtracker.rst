@@ -71,7 +71,7 @@ Required Arguments
     which shows **C** made up of three row vectors. If the degrees of
     freedom (*df*) in fitting the rotation is 0 or not given it is set
     to 10000. Blank lines and records whose first column contains # will
-    be ignored. You may prepend a leading + to the filename to indicate
+    be ignored. You may append **+i** to the filename to indicate
     you wish to invert the rotations.
     Alternative 1: Give the filename composed of two plate IDs
     separated by a hyphen (e.g., PAC-MBL) and we will instead extract

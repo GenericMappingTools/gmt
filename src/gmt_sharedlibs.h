@@ -1,5 +1,5 @@
 /*
- *	Copyright (c) 2012-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 2012-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
@@ -10,8 +10,8 @@
  */
 
 #pragma once
-#ifndef _GMT_SHAREDLIBS_H
-#define _GMT_SHAREDLIBS_H
+#ifndef GMT_SHAREDLIBS_H
+#define GMT_SHAREDLIBS_H
 
 #ifdef __cplusplus /* Basic C++ support */
 extern "C" {
@@ -43,4 +43,4 @@ struct Gmt_libinfo {
 }
 #endif
 
-#endif /* !_GMT_SHAREDLIBS_H */
+#endif /* !GMT_SHAREDLIBS_H */

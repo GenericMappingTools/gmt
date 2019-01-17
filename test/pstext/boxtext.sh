@@ -1,13 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Compare the size and alignment of identical text plotted in different ways:
 # (lower): Plain text with box and margin
 # (upper): Plain text with textbox clip path, then red paint
 ps=boxtext.ps
 gmt set PS_COMMENTS true
-gmt pstext -R0/6/0/4 -Jx1i -Ba1 -P -Dj0.5i/0.5i -F+f32p+jLB -Gyellow -W0.25p,green -TO -K -C1c << EOF > $ps
+gmt pstext -R0/6/0/4 -Jx1i -Ba1 -P -Dj0.5i/0.5i -F+f32p+jLB -Gyellow -W0.25p,green -K -C1c+tO << EOF > $ps
 2	2	TEXT
 EOF
-gmt pstext -R -J -O -K -Dj0.5i/0.5i -F+f32p+jLB -Gc -C1c -TO -Y5i << EOF >> $ps
+gmt pstext -R -J -O -K -Dj0.5i/0.5i -F+f32p+jLB -Gc -C1c+tO -Y5i << EOF >> $ps
 2	2	TEXT
 EOF
 gmt psxy -R -J -O -K -Sri -Gred << EOF >> $ps

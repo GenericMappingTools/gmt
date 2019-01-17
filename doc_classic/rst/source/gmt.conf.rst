@@ -698,9 +698,10 @@ fonts can be found in the :doc:`gmt` man page.
 .. _MAP_ANNOT_ORTHO:
 
 **MAP_ANNOT_ORTHO**
-    Determines which axes will get their annotations (for linear
+    Determines which axes will get their annotations (for Cartesian
     projections) plotted orthogonally to the axes. Combine any **w**,
     **e**, **s**, **n**, **z** (uppercase allowed as well). [we] (if nothing specified).
+    Note that this setting can be overridden via the **+a** modifier in **-B**.
 
 .. _MAP_DEFAULT_PEN:
 
@@ -812,7 +813,7 @@ fonts can be found in the :doc:`gmt` man page.
 **MAP_LOGO_POS**
     (**-U**) Sets the justification and the position of the
     logo/timestamp box relative to the current plots lower left corner
-    of the plot [BL/-54p/-54p].
+    of the plot [+jBL+o-54p/-54p].
 
 .. _MAP_ORIGIN_X:
 
@@ -1057,7 +1058,7 @@ fonts can be found in the :doc:`gmt` man page.
     (static) Names the eight bit character set being used for text in
     files and in command line parameters. This allows GMT to ensure
     that the PostScript output generates the correct characters on the
-    plot.. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
+    plot. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
     ISO-8859-x (where x is in the ranges [1,10] or [13,15]). See
     Appendix F for details [ISOLatin1+ (or Standard+)].
 

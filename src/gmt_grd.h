@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,8 +31,8 @@
  * \brief Definition for a GMT-SYSTEM Version >= 2 grd file 
  */
 
-#ifndef _GMT_GRID_H
-#define _GMT_GRID_H
+#ifndef GMT_GRID_H
+#define GMT_GRID_H
 
 /* netcdf convention */
 #define GMT_NC_CONVENTION "CF-1.7"
@@ -189,4 +189,4 @@ enum gmt_enum_wesnids {
 /*! gmt_M_grd_duplicate_column is true for geographical global grid where first and last data columns are identical */
 #define gmt_M_grd_duplicate_column(C,h,way) (C->current.io.col_type[way][GMT_X] == GMT_IS_LON && gmt_M_360_range (h->wesn[XHI], h->wesn[XLO]) && h->registration == GMT_GRID_NODE_REG)
 
-#endif /* _GMT_GRID_H */
+#endif /* GMT_GRID_H */

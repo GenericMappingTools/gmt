@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * 	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ * 	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1082,6 +1082,7 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 		fmjd = (int)(round(fmjd * 86400)) / 86400.0;		/* force 1 sec. granularity */
 		GMT_Put_Record (GMT->parent, GMT_WRITE_DATA, Out);	/* Write this to output */
 	}
+	gmt_M_free (GMT, Out);
 }
 
 /* ----------------------------------------------------------------------- */
@@ -1435,6 +1436,7 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		cal_start.hour = timeinfo->tm_hour;
 		cal_start.min  = timeinfo->tm_min;
 		cal_start.sec  = timeinfo->tm_sec;
+		Ctrl->T.T.min = Ctrl->T.T.max = gmt_rdc2dt (GMT, GMT->current.time.today_rata_die, (cal_start.hour * 60 + cal_start.min) * 60 + cal_start.sec);
 	}
 	else
 		gmt_gcal_from_dt (GMT, Ctrl->T.T.min, &cal_start);

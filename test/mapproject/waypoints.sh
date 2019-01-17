@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test mapproject's distance and time calculations
 ps=waypoints.ps
 data=`gmt which -G @waypoints.txt`
@@ -18,6 +18,6 @@ L 16 0 C Distance
 L 16 0 C Time
 D 0 0.5p
 EOF
-awk '{if (NR > 1) printf "L 16 0 C P-%d\nL 16 0 R %s\\312\nL 16 0 R %s nm\nL 16 0 R %s hr\n", int($1), $2, $3, $4}' tmp >> legend
+awk '{if (NR > 1) printf "L 16 0 C P-%d\nL 16 0 R %s@.\nL 16 0 R %s nm\nL 16 0 R %s hr\n", int($1), $2, $3, $4}' tmp >> legend
 echo "V 0 0.25p" >> legend
 gmt pslegend -R -J -O -DjTL+w3.75i+o0.1i -F+p1p+gwhite+s legend >> $ps

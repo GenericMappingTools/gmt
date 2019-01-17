@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,8 @@
  * \brief Definitions of structures for pens, fills, and fonts.
  */
 
-#ifndef _GMT_TEXTURE_H
-#define _GMT_TEXTURE_H
+#ifndef GMT_TEXTURE_H
+#define GMT_TEXTURE_H
 
 /*--------------------------------------------------------------------
  *			GMT TEXTURE STRUCTURE DEFINITIONS
@@ -95,4 +95,4 @@ struct GMT_MEDIA {
 	double height;		/* Height in points */
 };
 
-#endif  /* _GMT_TEXTURE_H */
+#endif  /* GMT_TEXTURE_H */

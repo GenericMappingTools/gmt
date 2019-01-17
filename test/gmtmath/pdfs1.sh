@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Testing gmt math for BPDF PPDF ZPDF TPDF FPDF
 # Red dots are output from MATLAB for comparison

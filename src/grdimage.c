@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -70,10 +70,9 @@ struct GRDIMAGE_CTRL {
 		bool device_dpi;
 		unsigned int dpi;
 	} E;
-	struct GRDIMG_G {	/* -G[f|b]<rgb> */
+	struct GRDIMG_G {	/* -G<rgb>[+b|+f] */
 		bool active;
-		double f_rgb[4];
-		double b_rgb[4];
+		double rgb[2][4];
 	} G;
 	struct GRDIMG_I {	/* -I[<intensfile>|<value>|<modifiers>] */
 		bool active;
@@ -98,6 +97,9 @@ struct GRDIMAGE_CTRL {
 	} W;
 };
 
+#define GRDIMAGE_BGD	0
+#define GRDIMAGE_FGD	1
+
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDIMAGE_CTRL *C;
 
@@ -105,7 +107,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
-	C->G.b_rgb[0] = C->G.b_rgb[1] = C->G.b_rgb[2] = 1.0;
+	C->G.rgb[GRDIMAGE_BGD][0] = C->G.rgb[GRDIMAGE_BGD][1] = C->G.rgb[GRDIMAGE_BGD][2] = 1.0;	/* White background pixel, black foreground defaults  */
 	C->I.azimuth = strdup ("-45.0");		/* Default azimuth for shading when -I is used */
 	C->I.method  = strdup ("t1");	/* Default normalization for shading when -I is used */
 
@@ -130,17 +132,17 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	if (API->external) {	/* External interface */
 		GMT_Message (API, GMT_TIME_NONE, "usage: %s <grd_z>|<img>|<grd_r> <grd_g> <grd_b> %s [%s] [-A] [-C<cpt>]\n", name, GMT_J_OPT, GMT_B_OPT); 
-		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers>]] %s [-M] [-N] %s%s[-Q]\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G<rgb>[+b|+f]] [-I[<intensgrid>|<value>|<modifiers>]] %s[-M] [-N] %s%s[-Q]\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
 	}
 	else {
 #ifdef HAVE_GDAL
 		GMT_Message (API, GMT_TIME_NONE, "usage: %s <grd_z>|<img>|<grd_r> <grd_g> <grd_b> %s [%s] [-A<out_img>[=<driver>]] [-C<cpt>]\n",
 		             name, GMT_J_OPT, GMT_B_OPT); 
-		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers]] %s [-M] [-N] %s%s[-Q]\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G<rgb>[+b|+f]] [-I[<intensgrid>|<value>|<modifiers]] %s[-M] [-N] %s%s[-Q]\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
 #else
 		GMT_Message (API, GMT_TIME_NONE, "usage: %s <grd_z>|<img>|<grd_r> <grd_g> <grd_b> %s [%s] [-C<cpt>] [-Ei[|<dpi>]]\n",
 		             name, GMT_J_OPT, GMT_B_OPT);
-		GMT_Message (API, GMT_TIME_NONE, "\t[-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers]] %s [-M] [-N] %s%s[-Q]\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers]] %s[-M] [-N] %s%s[-Q]\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
 #endif
 	}
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT);
@@ -188,10 +190,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   if -Jx or -Jm is not selected [Default gives same size as input grid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give i to do the interpolation in PostScript at device resolution (invalid with -Q).\n");
 	gmt_rgb_syntax (API->GMT, 'G', "Set transparency color for images that otherwise would result in 1-bit images.\n\t  ");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +b to set background or +f to set foreground color [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply directional illumination. Append name of intensity grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity (i.e., change the ambient light), append a value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grd_z> instead, append +a<azim> [-45] and +n<method> [t1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -I+ to accept the default values (see grdgradient for details).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grd_z> instead, append +a<azim> [-45] and +n<method> [t1]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or use -I+d to accept the default values (see grdgradient for details).\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Force monochrome image.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not clip image at the map boundary.\n");
@@ -214,7 +217,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0, ind, off, k;
 	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -315,40 +318,35 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 				else
 					Ctrl->E.dpi = atoi (opt->arg);
 				break;
-			case 'G':	/* 1-bit fore or background color for transparent masks */
+			case 'G':	/* -G<color>[+b|f] 1-bit fore- or background color for transparent masks (was -G[f|b]<color>) */
 				Ctrl->G.active = true;
-				switch (opt->arg[0]) {
-					case 'F':
-					case 'f':
-						if (gmt_getrgb (GMT, &opt->arg[1], Ctrl->G.f_rgb)) {
-							gmt_rgb_syntax (GMT, 'G', " ");
-							n_errors++;
-						}
-						else
-							Ctrl->G.b_rgb[0] = -1;
-						break;
-					case 'B':
-					case 'b':
-						if (gmt_getrgb (GMT, &opt->arg[1], Ctrl->G.b_rgb)) {
-							gmt_rgb_syntax (GMT, 'G', " ");
-							n_errors++;
-						}
-						else
-							Ctrl->G.f_rgb[0] = -1;
-						break;
-					default:	/* Same as -Gf */
-						if (gmt_getrgb (GMT, opt->arg, Ctrl->G.f_rgb)) {
-							gmt_rgb_syntax (GMT, 'G', " ");
-							n_errors++;
-						}
-						else
-							Ctrl->G.b_rgb[0] = -1;
-						break;
+				if ((c = strstr (opt->arg, "+b"))) {	/* Background color */
+					ind = GRDIMAGE_BGD;	off = GRDIMAGE_FGD;	k = 0;	c[0] = '\0';
 				}
+				else if ((c = strstr (opt->arg, "+f"))) {	/* Foreground color */
+					ind = GRDIMAGE_FGD;	off = GRDIMAGE_BGD;	k = 0;	c[0] = '\0';
+				}
+				else if (gmt_M_compat_check (GMT, 5) && strchr ("bf", opt->arg[0])) {	/* No modifier given so heck if first character is f or b */
+					k = 1;
+					if (opt->arg[0] == 'b') ind = GRDIMAGE_BGD, off = GRDIMAGE_FGD;
+					else ind = GRDIMAGE_FGD, off = GRDIMAGE_BGD;
+				}
+				else {	/* Modern syntax where missing modifier means +f and just color is given */
+					ind = GRDIMAGE_FGD;	off = GRDIMAGE_BGD;	k = 0;
+				}
+				if (opt->arg[k] && gmt_getrgb (GMT, &opt->arg[k], Ctrl->G.rgb[ind])) {
+					gmt_rgb_syntax (GMT, 'G', " ");
+					n_errors++;
+				}
+				else
+					Ctrl->G.rgb[off][0] = -1;
+				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'I':	/* Use intensity from grid or constant or auto-compute it */
 				Ctrl->I.active = true;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "an"))) {	/* Want to control how grdgradient is run */
+				if (!strcmp (opt->arg, "+d"))	/* Gave +d only, so derive intensities from input grid using default settings */
+					Ctrl->I.derive = true;
+				else if ((c = gmt_first_modifier (GMT, opt->arg, "an"))) {	/* Want to control how grdgradient is run */
 					unsigned int pos = 0;
 					char p[GMT_BUFSIZ] = {""};
 					Ctrl->I.derive = true;
@@ -429,7 +427,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 	                                   "Syntax error -I option: Cannot derive intensities when an image is given as data\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !Ctrl->E.device_dpi && Ctrl->E.dpi <= 0, 
 	                                   "Syntax error -E option: dpi must be positive\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0, 
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.rgb[GRDIMAGE_FGD][0] < 0 && Ctrl->G.rgb[GRDIMAGE_BGD][0] < 0, 
 	                                   "Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->Q.active,
 	                                   "Syntax error -Q option: Cannot use -M when doing colormasking\n");
@@ -510,6 +508,7 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	unsigned int i, k;
 	bool all_lats = false, all_lons = false;
 	double x, y;
+	gmt_M_unused (mixed);
 
 	r->n_columns = g->n_columns;	r->n_rows = g->n_rows;
 	r->registration = g->registration;
@@ -1287,7 +1286,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 
 		x_side = nx_pixels * dx;	/* Since the image may be 1-7 bits wider than what we need we must enlarge it a tiny amount */
-		PSL_plotbitimage (PSL, x0, y0, x_side, y_side, PSL_BL, bit, nx_pixels, n_rows, Ctrl->G.f_rgb, Ctrl->G.b_rgb);
+		PSL_plotbitimage (PSL, x0, y0, x_side, y_side, PSL_BL, bit, nx_pixels, n_rows, Ctrl->G.rgb[GRDIMAGE_FGD], Ctrl->G.rgb[GRDIMAGE_BGD]);
 		gmt_M_free (GMT, bit);	/* Done with the B/W buffer */
 	}
 	else if ((P && gray_only) || Ctrl->M.active) {	/* Here we have a 1-layer 8 bit grayscale image */

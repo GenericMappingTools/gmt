@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
  * \brief Holds current selections for the family of common GMT options
  */
 
-#ifndef _GMT_COMMON_H
-#define _GMT_COMMON_H
+#ifndef GMT_COMMON_H
+#define GMT_COMMON_H
 
 /*! Constants related to detecting data gaps which should be treated as segment boundaries */
 enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current column value exceeds <gap> */
@@ -224,4 +224,4 @@ struct GMT_COMMON {
 	} colon;
 };
 
-#endif /* _GMT_COMMON_H */
+#endif /* GMT_COMMON_H */

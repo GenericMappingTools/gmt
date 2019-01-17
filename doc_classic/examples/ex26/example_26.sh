@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 26
 #
 # Purpose:	Demonstrate general vertical perspective projection

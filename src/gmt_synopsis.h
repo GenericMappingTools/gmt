@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,8 +42,8 @@
 
 /* Use b, f, h, when applies to both i and o, else use only the bi, bo, fi, fo variants */
 
-#define GMT_bi_OPT	"-bi[<ncol>][t][w][+L|B]"
-#define GMT_bo_OPT	"-bo[<ncol>][t][w][+L|B]"
+#define GMT_bi_OPT	"-bi[<ncol>][t][w][+l|b]"
+#define GMT_bo_OPT	"-bo[<ncol>][t][w][+l|b]"
 #define GMT_di_OPT	"-di<nodata>"
 #define GMT_do_OPT	"-do<nodata>"
 #define GMT_fi_OPT	"-f<info>"
@@ -98,12 +98,12 @@
 #define GMT_J_OPT	"-J<args>"
 #define GMT_R2_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[+u<unit>][+r]"
 #define GMT_R3_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][+u<unit>][+r]"
-#define GMT_U_OPT	"-U[[<just>]/<dx>/<dy>/][c|<label>]"
+#define GMT_U_OPT	"-U[<label>][+c][+j<just>][+o<dx>/<dy>]"
 #define GMT_V_OPT	"-V[<level>]"
-#define GMT_X_OPT	"-X[a|c|r]<xshift>[<unit>]"
-#define GMT_Y_OPT	"-Y[a|c|r]<yshift>[<unit>]"
+#define GMT_X_OPT	"-X[a|c|f|r]<xshift>[<unit>]"
+#define GMT_Y_OPT	"-Y[a|c|f|r]<yshift>[<unit>]"
 #define GMT_a_OPT	"-a<col>=<name>[,...]"
-#define GMT_b_OPT	"-b[i|o][<ncol>][t][w][+L|B]"
+#define GMT_b_OPT	"-b[i|o][<ncol>][t][w][+l|b]"
 #define GMT_d_OPT	"-d[i|o]<nodata>"
 #define GMT_e_OPT	"-e[~]<pattern>"
 #define GMT_f_OPT	"-f[i|o]<info>"
@@ -114,7 +114,7 @@
 #define GMT_o_OPT	"-o<cols>[,...]"
 #define GMT_p_OPT	"-p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>]"
 #define GMT_r_OPT	"-r"
-#define GMT_s_OPT	"-s[<cols>][a|r]"
+#define GMT_s_OPT	"-s[<cols>][+a|r]"
 #define GMT_t_OPT	"-t<transp>"
 #define GMT_colon_OPT	"-:[i|o]"
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing gmt spatial nearest neighbor options
 #
 # Input was made this way.

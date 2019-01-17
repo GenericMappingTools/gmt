@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 # share CMakeLists.txt
 #
 
-set (_gmt_share_dirs cpt custom dbase localization mgd77 mgg
+set (_gmt_share_dirs cpt custom localization mgd77 mgg
 	spotter x2sys)
 
 # install target for data

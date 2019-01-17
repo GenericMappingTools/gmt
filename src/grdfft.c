@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
  */
 
 #include "gmt_dev.h"
-EXTERN_MSC unsigned int gmtlib_count_slashes (struct GMT_CTRL *GMT, char *txt);
+EXTERN_MSC unsigned int gmtlib_count_char (struct GMT_CTRL *GMT, char *txt, char it);
 
 #define THIS_MODULE_NAME	"grdfft"
 #define THIS_MODULE_LIB		"core"
@@ -724,7 +724,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 			case 'F':	/* Filter */
 				Ctrl->F.active = true;
 				if (!(f_info->set_already)) {
-					filter_type = gmtlib_count_slashes (GMT, opt->arg);
+					filter_type = gmtlib_count_char (GMT, opt->arg, '/');
 					f_info->kind = GRDFFT_FILTER_EXP + (filter_type - 1);
 					f_info->set_already = true;
 					add_operation (GMT, Ctrl, f_info->kind, 0, NULL);

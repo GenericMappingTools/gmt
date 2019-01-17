@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing that map scales with various labels have reasonable panels behind them
 ps=mapscales.ps
 gmt psbasemap -R-10/10/-15/15 -JM15c -Bafg90 -BWSne+gazure1 -Lg0/14+c14+f+w1000k+l+ar+jTC -F+gcornsilk1+p0.5p,black -P -K -Xc > $ps

@@ -18,7 +18,7 @@
  * Brief synopsis: pssac will plot seismograms in SAC format on maps
  */
 
-/* 
+/*
 The SAC I/O functions are initially written by Prof. Lupei Zhu,
 and modified by Dongdong Tian.
 
@@ -38,7 +38,7 @@ that copyright notice and this permission notice appear in supporting documentat
 #define THIS_MODULE_PURPOSE	"Plot seismograms in SAC format on maps"
 #define THIS_MODULE_KEYS	">X},RG-"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYht" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYhpt" GMT_OPT("c")
 
 /* Control structure for pssac */
 
@@ -97,6 +97,7 @@ struct PSSAC_CTRL {
 		double shift;
 	} T;
 	struct PSSAC_W {	/* -W<pen> */
+		bool active;
 		struct GMT_PEN pen;
 	} W;
 };
@@ -138,7 +139,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G[p|n][+g<fill>][+t<t0>/<t1>][+z<zero>]] %s[-M<size>[<unit>]/<alpha>] %s%s[-Q]\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[i]<scale>[<unit>]] [-T[+t<tmark>][+r<reduce_vel>][+s<shift>]] \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_h_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s]\n\t[%s]\n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_h_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\n");
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -198,7 +199,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   +s<shift> shift all traces by <shift> seconds.\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 0);
-	GMT_Option (API, "X,h,t");
+	GMT_Option (API, "X,h,p,t");
 	GMT_Option (API, ".");
 
 	return (EXIT_FAILURE);
@@ -304,7 +305,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 				else if (j == 2) {
 					if (strcmp(txt_b, "s") == 0 ) {   /* -Msize/s */
 						// TODO
-					} 
+					}
 					else if (strcmp(txt_b, "b") == 0) {  /* -Msize/b */
 						// TODO
 					}
@@ -383,6 +384,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 			case 'W':		/* Set line attributes */
+				Ctrl->W.active = true;
 				if (opt->arg[0] && gmt_getpen (GMT, &opt->arg[0], &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 3);
 					n_errors++;
@@ -596,7 +598,7 @@ int GMT_sac (void *V_API, int mode, void *args) {
 }
 
 int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that implements the pssac task */
-	bool old_is_world, free_plot_pen = false, read_from_ascii;
+	bool old_is_world, free_plot_pen = false, read_from_ascii, draw_line;
 	unsigned int n_files, *plot_pen = NULL;
 	int error = GMT_NOERROR, n, i, npts;
 	double yscale = 1.0, y0 = 0.0, x0, tref, dt, *x = NULL, *y = NULL, *xp = NULL, *yp = NULL;
@@ -662,7 +664,7 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 
 	for (n = 0; n < (int)n_files; n++) {  /* Loop over all SAC files */
  		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Plotting SAC file %d: %s\n", n, L[n].file);
-		
+
 		/* -T: determine the reference time for all times in pssac */
 		tref = 0.0;
 		if (Ctrl->T.active) {
@@ -857,33 +859,6 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "=> %s: after scaling and shifting : xmin=%g xmax=%g ymin=%g ymax=%g\n",
 		                                       L[n].file, x[0], x[hd.npts-1], hd.depmin, hd.depmax);
 
-		if (gmt_M_is_linear(GMT)) {
-			GMT->current.plot.n = gmt_geo_to_xy_line (GMT, x, y, hd.npts);
-			xp = GMT->current.plot.x;
-			yp = GMT->current.plot.y;
-			npts = (int)GMT->current.plot.n;
-			plot_pen = GMT->current.plot.pen;
-		}
-		else {
-			xp = x;
-			yp = y;
-			npts = hd.npts;
-			plot_pen = gmt_M_memory (GMT, NULL, npts, unsigned int);
-			plot_pen[0] = PSL_MOVE;
-			free_plot_pen = true;
-		}
-
-		/* plot trace */
-		if (L[n].custom_pen) {
-			current_pen = L[n].pen;
-			gmt_setpen (GMT, &L[n].pen);
-		}
-		gmt_plot_line (GMT, xp, yp, plot_pen, npts, current_pen.mode);
-		if (L[n].custom_pen) {
-			current_pen = Ctrl->W.pen;
-			gmt_setpen (GMT, &current_pen);
-		}
-
 		/* paint trace */
 		for (i = 0; i <= 1; i++) { /* 0=positive; 1=negative */
 			if (Ctrl->G.active[i]) {
@@ -916,6 +891,37 @@ int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level function that 
 				paint_phase(GMT, Ctrl, PSL, x, y, hd.npts, zero, Ctrl->G.t0[i], Ctrl->G.t1[i], i);
 			}
 		}
+
+		/* don't draw line if -G is used while -W isn't */
+		draw_line = Ctrl->W.active || !(Ctrl->G.active[0] || Ctrl->G.active[1]);
+		/* draw line */
+		if (draw_line) {
+			if (gmt_M_is_linear(GMT)) {
+				GMT->current.plot.n = gmt_geo_to_xy_line (GMT, x, y, hd.npts);
+				xp = GMT->current.plot.x;
+				yp = GMT->current.plot.y;
+				npts = (int)GMT->current.plot.n;
+				plot_pen = GMT->current.plot.pen;
+			}
+			else {
+				xp = x;
+				yp = y;
+				npts = hd.npts;
+				plot_pen = gmt_M_memory (GMT, NULL, npts, unsigned int);
+				plot_pen[0] = PSL_MOVE;
+				free_plot_pen = true;
+			}
+			if (L[n].custom_pen) {
+				current_pen = L[n].pen;
+				gmt_setpen (GMT, &L[n].pen);
+			}
+			gmt_plot_line (GMT, xp, yp, plot_pen, npts, current_pen.mode);
+			if (L[n].custom_pen) {
+				current_pen = Ctrl->W.pen;
+				gmt_setpen (GMT, &current_pen);
+			}
+		}
+
 		gmt_M_free(GMT, x);
 		gmt_M_free(GMT, y);
 		if (free_plot_pen) gmt_M_free(GMT, plot_pen);

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Drape a texture image on top of 3-D topo relief
 ps=texture.ps
 gmt grdcut @earth_relief_01m -R0/10/0/10 -Gtopo.nc

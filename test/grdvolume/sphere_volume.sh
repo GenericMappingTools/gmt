@@ -1,6 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
-#	$Id: grdvolume.sh 15178 2015-11-06 10:45:03Z fwobbe $
 # Make a sphere of radius 10 using two half grids and compute volumnes
 # Addressing issue #895
 ps=sphere_volume.ps

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -267,7 +267,7 @@ GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path)
 				return (path);
 			}
 			else
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Found %s but cannot read it due to wrong permissions\n", path);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "1. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
 		}
 		else {
 			/* remove reference to invalid GMT->session.GSHHGDIR but don't free
@@ -278,16 +278,16 @@ GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path)
 		}
 	}
 
-	/* 2. First check for coastline.conf */
+	/* 2. Next, check for coastline.conf */
 
 	if (gmt_getsharepath (GMT, "conf", "coastline", ".conf", path, F_OK) || gmt_getsharepath (GMT, "coast", "coastline", ".conf", path, F_OK)) {
 
 		/* We get here if coastline.conf exists - search among its directories for the named file */
 
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: coastline.conf found at %s\n", path);
-		if (access (path, R_OK) == 0) {					/* File can be read */
+		if (access (path, R_OK) == 0) {				/* coastline.conf can be read */
 			if ((fp = fopen (path, "r")) == NULL) {		/* but Coverity still complains if we don't test if it's NULL */
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to open %s\n", path);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "2. GSHHG: Failed to open %s\n", path);
 				return (NULL);
 			}
 			while (fgets (dir, GMT_BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
@@ -313,13 +313,13 @@ L1:
 					sprintf(path, "%s/%s%s", dir, stem, ".cdf");
 					if (access(path, R_OK) == 0)	/* Yes, old .cdf version found */
 						goto L1;
-					GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Found %s but cannot read it due to wrong permissions\n", path);
+					GMT_Report(GMT->parent, GMT_MSG_NORMAL, "2. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
 				}
 			}
 			fclose (fp);
 		}
 		else
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Found %s but cannot read it due to wrong permissions\n", path);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "2. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
 	}
 
 	/* 3. Then check for the named file itself */
@@ -340,8 +340,10 @@ L1:
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. GSHHG: Failure, could not access %s\n", path);
 		}
 		else
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Found %s but cannot read it due to wrong permissions\n", path);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "3. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
 	}
+
+	/* 4. No success, just break down and cry */
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "4. GSHHG: Failure, could not access any GSHHG files\n");
 	if (warn_once) {
@@ -635,7 +637,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
 		return (err);
 	}
-	if (c->min_area > 0.0) {	/* Want to exclude small polygons so we need info about the node polygons */
+	if (c->min_area > 0.0 || (info->flag & GSHHS_NO_RIVERLAKES) || (info->flag & GSHHS_NO_LAKES)) {	/* Want to exclude small polygons so we need info about the node polygons, or need info about lakes */
 	        if ((err = nc_get_var1_int (c->cdfid, c->n_node_id, start, &c->n_nodes))) {
 			gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
 			return (err);

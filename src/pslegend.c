@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -726,7 +726,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	row_base_y = Ctrl->D.refpoint->y + Ctrl->D.dim[GMT_Y] - Ctrl->C.off[GMT_Y];	/* Top justification edge of items inside legend box accounting for clearance  */
 	column_number = 0;	/* Start at first column in multi-column setup */
 	n_columns = 1;		/* Reset to default number of columns */
-	txtcolor[0] = '0';	/* Reset to black text color */
+	/* Reset to annotation font text color */
+	sprintf (txtcolor, "%s", gmt_putcolor (GMT, GMT->current.setting.font_annot[GMT_PRIMARY].fill.rgb));
 	x_off_col[0] = 0.0;	/* The x-coordinate of left side of first column */
 	x_off_col[n_columns] = Ctrl->D.dim[GMT_X];	/* Holds width of a row */
 
@@ -1213,7 +1214,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							S[SYM]->data[GMT_X][0] = x_off + off_ss;
 							S[SYM]->data[GMT_Y][0] = row_base_y;
 							S[SYM]->n_rows = 1;
-							sprintf (sub, "%s", symbol);
+							sprintf (sub, "%c", symbol[0]);
 							if (symbol[0] == 'E' || symbol[0] == 'e') {	/* Ellipse */
 								if (strchr (size, ',')) {	/* We got dir,major,minor instead of just size; parse and use */
 									sscanf (size, "%[^,],%[^,],%s", A, B, C);
@@ -1503,7 +1504,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, D[SYM], string) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s --GMT_HISTORY=false", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
+		/* Because the sizes internally are in inches we must tell psxy that inch is the current length unit */
+		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s --PROJ_LENGTH_UNIT=inch --GMT_HISTORY=false", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
 		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: SYM: gmt psxy %s\n", buffer);
 		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the symbols */
 			Return (API->error);

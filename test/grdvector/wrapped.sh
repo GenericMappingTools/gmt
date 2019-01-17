@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test wrapping of geovector's head across periodic boundary
 ps=wrapped.ps
 L=6000

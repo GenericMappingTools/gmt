@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2018 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1663,7 +1663,7 @@ GMT_LOCAL uint64_t map_wesn_clip_old (struct GMT_CTRL *GMT, double *lon, double 
 }
 
 /*! . */
-GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n_orig, double **x, double **y, uint64_t *total_nx) {
+uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n_orig, double **x, double **y, uint64_t *total_nx) {
 	char *x_type = NULL;
 	size_t n_alloc = 0, n_x_alloc = 0, n_t_alloc = 0;
 	uint64_t new_n, i, n_get, n, m, n_cross = 0, *x_index = NULL;

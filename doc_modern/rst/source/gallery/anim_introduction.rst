@@ -5,7 +5,7 @@ Here we will explore what is
 involved in creating animations (i.e., movies). Of course, an animation
 is nothing more than a series of individual images played back in an
 orderly fashion. Here, these images will have been created with GMT.
-A GMT movie is made with the :doc:`movie` module that takes care of all the
+A GMT movie is made with the :doc:`movie </movie>` module that takes care of all the
 book-keeping of making a movie (advancing frame counters, converting each
 plot to a raster image, assembling the images into a movie).  The user
 is left to focus on the creation of a main frame script (that will have access
