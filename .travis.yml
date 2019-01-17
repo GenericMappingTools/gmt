@@ -65,7 +65,7 @@ matrix:
           if: type != cron
         - name: "Linux (cron)"
           os: linux
-          #if: type = cron
+          if: type = cron
           env:
             - TEST="true"
         - name: "Mac (compile only)"
@@ -73,13 +73,13 @@ matrix:
           if: type != cron
         - name: "Mac (cron)"
           os: osx
-          #if: type = cron
+          if: type = cron
           env:
             - TEST="true"
         # Only build the docs on Linux cron jobs
         - name: "Linux (cron - build docs)"
           os: linux
-          #if: type = cron
+          if: type = cron
           env:
             - BUILD_DOCS=true
 
