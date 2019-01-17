@@ -65,11 +65,17 @@ struct GMT_REFPOINT {	/* Used to hold items relevant for a reference point */
 #define CUSTOM_SYMBOL_MAXVAR	3	/* So we can check in the code if we exceed this */
 
 enum gmt_enum_custsymb {
-	GMT_BEGIN_SINGLE_IF	= 1,	/* We have a single, 1-liner if condition, with no end if */
-	GMT_BEGIN_BLOCK_IF	= 2,	/* Starting a new if branch */
-	GMT_END_IF		= 4,	/* Ending an if branch */
-	GMT_END_IF_ELSE		= 6,	/* Ending an if-branch and start the else branch */
-	GMT_BEGIN_ELSEIF	= 8	/* Ending the if-branch and start another if branch */
+	GMT_CONST_STRING	= -5,	/* We have a constant string in a conditional test */
+	GMT_VAR_STRING		= -4,	/* We have a variable string (the trailing text) in a conditional test */
+	GMT_VAR_SIZE		= -3,	/* We have the symbol size $s in a conditional test */
+	GMT_VAR_IS_Y		= -2,	/* We have y or latitude in a conditional test */
+	GMT_VAR_IS_X		= -1,	/* We have x or longitude in a conditional test */
+	GMT_CONST_VAR		=  0,	/* We have a constant factor in a conditional test */
+	GMT_BEGIN_SINGLE_IF	=  1,	/* We have a single, 1-liner if condition, with no end if */
+	GMT_BEGIN_BLOCK_IF	=  2,	/* Starting a new if branch */
+	GMT_END_IF		=  4,	/* Ending an if branch */
+	GMT_END_IF_ELSE		=  6,	/* Ending an if-branch and start the else branch */
+	GMT_BEGIN_ELSEIF	=  8	/* Ending the if-branch and start another if branch */
 };
 
 struct GMT_CUSTOM_SYMBOL_ITEM {
