@@ -16,7 +16,7 @@ N: 2
 if \$1 <= 70 then T -Gred
 if \$1 [> 70:300 then {
 	T -Ggreen
-	0 0 1 s -W1,cyan -G-
+	0 0 1 s -W1p,cyan -G-
 }
 if \$1 >= 300 then T -Gblue
 # Then draw a circle width diameter based on magnitude ranges
