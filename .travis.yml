@@ -61,26 +61,26 @@ env:
 # Create the build matrix with different jobs for each platform and cron jobs
 matrix:
     include:
-        - name: "Linux"
+        - name: "Linux (compile only)"
           os: linux
           if: type != cron
-        - name: "Linux"
+        - name: "Linux (cron)"
           os: linux
-          #if: type = cron
+          if: type = cron
           env:
             - TEST="all"
-        - name: "Mac"
+        - name: "Mac (compile only)"
           os: osx
           if: type != cron
-        - name: "Max"
+        - name: "Mac (cron)"
           os: osx
-          #if: type = cron
+          if: type = cron
           env:
             - TEST="all"
         # Only build the docs on Linux cron jobs
-        - name: "Linux - Build docs"
+        - name: "Linux (cron - build docs)"
           os: linux
-          #if: type = cron
+          if: type = cron
           env:
             - BUILD_DOCS=true
 
@@ -107,16 +107,18 @@ script:
     - if [ "$TEST" == "all" ]; then
         make -j check;
       fi
+    # Upload test coverage even if build fails. Keep separate to make sure this task
+    # fails if the tests fail.
+    - if [ "$TEST" == "all" ]; then
+        bash <(curl -s https://codecov.io/bash);
+      fi
     - if [ "$BUILD_DOCS" == "true" ]; then
         make -j docs_html;
       fi
     - cd ..
 
 # Things to do if the build is successful
-after_success:
-    - if [ "$TEST" == "all" ]; then
-        bash <(curl -s https://codecov.io/bash);
-      fi
+#after_success:
 
 notifications:
     email: false
