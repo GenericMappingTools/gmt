@@ -59,6 +59,8 @@ env:
         - BUILD_DOCS=false
         - DEPLOY_DOCS=false
         - TEST=false
+        # Encrypted Github token (GH_TOKEN)
+        - secure: "cwHlTNa+b2lPiCbN5Ja9alj6EkKwJsuR5QcNPORrp3uCOQF9+cJUFEyMIGVGzrzZQnpjn05XYDr6eGFUYkbaR1QVUQdNH+2rCiScFHe94fRPJlJabxXexCfvZCNV8VRi6NSyFPuZKkCVs10bQ7Lk5dPS/V4Dalz1xyURcvI8H8XQFTmDYb/7QFw73l0WzNf+Y1rzNpRZEQ4ERhmnir489njCv1w7oJ0C+BrRvPqTmNmfXbrY6Bcana6BJvvumSY1xRaw60f/UNKYTlTVlYTVSWK1kq9mTfkhiJhe5oNoWchKloiOg3fA2XtAuucuXSdCjqo9aWHMxKJy+jQ7/BeId9hacvB9pVclYoOLARBcPoWDb21eKJZ8A70yKlUM3ryhVXM4drHzM4ITitPA1sEJWNJ2BQO8Cils0FfcOLvBR3NdbLi8RdHZItmU/Oe8o1srUTnnkdPRiEWbmAEs4pVrsHY9sD0660PXTFBSQ7sDXeyTl2etG/YSQKvE3ysOnZwhEuTXqf8cpo+tSbjindvWSyyN0HSuJ0bd7Ei+qWUQ3nJNEtHpiq8Ms6KUPHjPpWO2BEl+FQHWFpmRtwBg/REk36VWIl1UHSKuKkqxUT4qiZeL5zlrHGso+7QGhVjkYj5un3XoVObopFNVUB8y56xeW21gI51HK48cPd5rMnX95KE="
 
 # Create the build matrix with different jobs for each platform and cron jobs
 matrix:
