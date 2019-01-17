@@ -34,5 +34,19 @@ cmake ..
 make -j
 make install
 
+# We are fixing the paths to dynamic library files inside library and binary
+# files because something in 'make install' is doubling up the path to the
+# library files. This only happens on OSX. Anyone who knows how to solve that
+# problem is free to contact the maintainers.
+if [[ "$TRAVIS_OS_NAME" == "osx" ]];then
+    install_name_tool -id $INSTALLDIR/lib/libgmt.6.dylib $INSTALLDIR/lib/libgmt.6.dylib
+    install_name_tool -id $INSTALLDIR/lib/libpostscriptlight.6.dylib $INSTALLDIR/lib/libpostscriptlight.6.dylib
+    install_name_tool -change $INSTALLDIR/$INSTALLDIR/lib/libgmt.6.dylib $INSTALLDIR/lib/libgmt.6.dylib $INSTALLDIR/lib/gmt/plugins/supplements.so
+    install_name_tool -change $INSTALLDIR/$INSTALLDIR/lib/libpostscriptlight.6.dylib $INSTALLDIR/lib/libpostscriptlight.6.dylib $INSTALLDIR/lib/gmt/plugins/supplements.so
+    install_name_tool -change $INSTALLDIR/$INSTALLDIR/lib/libgmt.6.dylib $INSTALLDIR/lib/libgmt.6.dylib $INSTALLDIR/bin/gmt
+    install_name_tool -change $INSTALLDIR/$INSTALLDIR/lib/libpostscriptlight.6.dylib $INSTALLDIR/lib/libpostscriptlight.6.dylib $INSTALLDIR/bin/gmt
+    install_name_tool -change $INSTALLDIR/$INSTALLDIR/lib/libpostscriptlight.6.dylib $INSTALLDIR/lib/libpostscriptlight.6.dylib $INSTALLDIR/lib/libgmt.6.dylib
+fi
+
 # Turn off exit on failure.
 set +e
