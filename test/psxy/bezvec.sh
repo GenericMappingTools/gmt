@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Because of issue #1225
 ps=bezvec.ps
 echo "168 53

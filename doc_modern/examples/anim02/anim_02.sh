@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT ANIMATION 02
 #
 # Purpose:      Make simple animated GIF of an illuminated DEM grid

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test the kml2gmt application
 
 ps=kml2gmt.ps

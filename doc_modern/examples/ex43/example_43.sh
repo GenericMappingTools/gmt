@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 43
 #
 # Purpose:      Illustrate regression and outlier detection

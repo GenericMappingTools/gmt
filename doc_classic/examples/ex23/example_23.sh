@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 23
 #
 # Purpose:	Plot distances from Rome and draw shortest paths

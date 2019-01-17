@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 18
 #
 # Purpose:	Illustrates volumes of grids inside contours and spatial
@@ -15,7 +15,7 @@ gmt begin ex18 ps
   gmt makecpt -Crainbow -T-60/60 > grav.cpt
   gmt subplot begin 2x1 -A+JTL+o0.2i -Fs6i/3.5i -M0.2i/0.35i -R@AK_gulf_grav.nc -JM5.5i -B -BWSne
     gmt subplot 1,1
-    gmt grdimage @AK_gulf_grav.nc -I+a45+nt1 -Cgrav.cpt
+    gmt grdimage @AK_gulf_grav.nc -I+d -Cgrav.cpt
     gmt coast -Di -Ggray -Wthinnest
     gmt colorbar -DJCB+o0/0.35i -Cgrav.cpt -Bxaf -By+l"mGal"
     gmt text pratt.txt -D0.1i/0.1i -F+f12p,Helvetica-Bold+jLB+tPratt

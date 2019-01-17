@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Makes a plot of the global UTM zone grid including the exceptions near Norway/Spitsbergen
 #

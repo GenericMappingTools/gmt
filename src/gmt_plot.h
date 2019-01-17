@@ -20,8 +20,8 @@
  * \brief 
  */
 
-#ifndef _GMT_PLOT_H
-#define _GMT_PLOT_H
+#ifndef GMT_PLOT_H
+#define GMT_PLOT_H
 
 /*! Identifier for gmt_plane_perspective. The others come from GMT_io.h */
 
@@ -161,4 +161,4 @@ struct GMT_SYMBOL {
 	struct GMT_DECORATE D;	/* For decorated lines */
 };
 
-#endif /* _GMT_PLOT_H */
+#endif /* GMT_PLOT_H */

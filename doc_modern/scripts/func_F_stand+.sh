@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #	Subfunction that makes the octal code charts in Appendix F
 #	but writes to stdout

@@ -31,6 +31,7 @@ Synopsis
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-h| ]
+[ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
@@ -199,7 +200,12 @@ Optional Arguments
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
+
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
+.. include:: explain_perspective.rst_
+
 .. include:: ../../explain_-t.rst_
+
 .. include:: ../../explain_help.rst_
 
 

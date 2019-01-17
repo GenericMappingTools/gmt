@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test pstext paragraph mode
 ps=book.ps
 gmt pstext -R0/6/0/9 -Jx1i -P -B0 -F+f+jCM -K << EOF > book.ps

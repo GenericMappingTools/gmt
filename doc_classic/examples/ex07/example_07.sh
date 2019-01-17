@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 07
 #
 # Purpose:	Make a basemap with earthquakes and isochrons etc

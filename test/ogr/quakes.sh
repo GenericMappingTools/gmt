@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Test gmt psxy for proper handling of -a [OGR].  We read an OGR file
 # with depth and magnitude among the aspatial values and we wish to

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin GMT_CPTscale ps
 gmt plot -R0/6/0/6 -Jx1i -W0.25p << EOF
 > Normal scaling of whole CPT

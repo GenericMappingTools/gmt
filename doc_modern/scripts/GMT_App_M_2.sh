@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin GMT_App_M_2 ps
 gmt set FONT_ANNOT_PRIMARY 10p PROJ_LENGTH_UNIT cm PS_MEDIA 11ix8.5i
 

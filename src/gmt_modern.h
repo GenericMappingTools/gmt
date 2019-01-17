@@ -25,8 +25,8 @@
  * \brief Definitions of constants used through GMT for modern mode.
  */
 
-#ifndef _GMT_MODERN_H
-#define _GMT_MODERN_H
+#ifndef GMT_MODERN_H
+#define GMT_MODERN_H
 
 #define GMT_HISTORY_FILE	"gmt.history"
 #define GMT_SESSION_FILE	"gmt.session"
@@ -72,4 +72,4 @@ EXTERN_MSC int GMT_segy (void *API, int mode, void *args);
 
 EXTERN_MSC const char *gmt_current_name (const char *module, char modname[]);
 
-#endif  /* _GMT_MODERN_H */
+#endif  /* GMT_MODERN_H */

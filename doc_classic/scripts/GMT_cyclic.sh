@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 ps=GMT_cyclic.ps
 gmt makecpt -T0/100 -Cjet -Ww > t.cpt

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 44
 #
 # Purpose:      Illustrate use of map insets

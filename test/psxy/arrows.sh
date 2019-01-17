@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=arrows.ps
 xr=`gmt math -Q 1 15 COSD MUL 1.5 ADD =`
 xri=`gmt math -Q 1 15 COSD MUL 1.5 SUB =`

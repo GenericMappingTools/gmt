@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Check that gmt grd2cpt estimates correct upper/lower bounds <= z_min && >= z_max
 

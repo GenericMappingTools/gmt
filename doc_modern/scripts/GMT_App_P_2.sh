@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT Appendix P, example 2
 #
 # Purpose:	Illustrates the use of isolation mode

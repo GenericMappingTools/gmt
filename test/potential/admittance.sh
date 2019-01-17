@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Compute admittance for synthetic model and data.
 ps=admittance.ps

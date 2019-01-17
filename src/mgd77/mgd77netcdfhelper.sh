@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #   Author:     P. Wessel
 #   Date:       2005-OCT-14

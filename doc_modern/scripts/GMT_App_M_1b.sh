@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #	Makes the insets for Appendix M(cpt)
 #	[skip srtm which is just a special verison of dem2]

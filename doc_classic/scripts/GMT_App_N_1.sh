@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #	Makes the inset for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex

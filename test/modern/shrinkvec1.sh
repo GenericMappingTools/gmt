@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test shrinking vector heads, part 1
 # Fill and pen etc. set on command line
 gmt begin shrinkvec1 ps

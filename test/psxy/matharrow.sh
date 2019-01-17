@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test proper drawing of math angles
 ps=matharrow.ps
 r=1.75c

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 gmt begin GMT_panel ps
 gmt basemap -R0/2/0/1 -JX5i/2i -B0 
 gmt inset begin -DjTL+o0.2i+w1.75i/0.75i -F+glightgreen+r

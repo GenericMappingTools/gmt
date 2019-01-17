@@ -29,8 +29,8 @@
  * \brief Include file for programs that use the map-projections functions.
  */
 
-#ifndef _GMT_PROJECT_H
-#define _GMT_PROJECT_H
+#ifndef GMT_PROJECT_H
+#define GMT_PROJECT_H
 
 #define HALF_DBL_MAX (DBL_MAX/2.0)
 
@@ -432,7 +432,7 @@ enum GMT_enum_frame {GMT_IS_PLAIN = 0,	/* Plain baseframe */
 enum GMT_enum_tick {GMT_ANNOT_UPPER = 0,	/* Tick annotations closest to the axis */
 	GMT_ANNOT_LOWER,	/* Tick annotations farthest from the axis*/
 	GMT_TICK_UPPER,		/* Frame tick marks closest to the axis */
-	GMT_TICK_LOWER,		/* Frame tick marks closest to the axis */
+	GMT_TICK_LOWER,		/* Frame tick marks farthest to the axis */
 	GMT_GRID_UPPER,		/* Gridline spacing */
 	GMT_GRID_LOWER};	/* Gridline spacing */
 
@@ -477,12 +477,14 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	unsigned int special;		/* See gmt_enum_annot values */
 	unsigned int label_mode;	/* 0 = parallel to all axes, 1 = always horizontal on map */
 	bool substitute_pi;		/* True if we need to plot fractions of pi on this axis */
-	struct GMT_PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
+	bool use_angle;			/* True if we got +a<angle>|n|p for this axis */
+	struct GMT_PLOT_AXIS_ITEM item[8];	/* see above defines for which is which */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
-	char label[GMT_LEN256];	/* Label of the axis */
+	double angle;			/* Annotations angle set by user */
+	char label[GMT_LEN256];		/* Label of the axis */
 	char secondary_label[GMT_LEN256];	/* Optionally use this label when axis is right or top */
-	char unit[GMT_LEN64];	/* Axis unit appended to annotations */
-	char prefix[GMT_LEN64];	/* Axis prefix starting all annotations */
+	char unit[GMT_LEN64];		/* Axis unit appended to annotations */
+	char prefix[GMT_LEN64];		/* Axis prefix starting all annotations */
 	char *file_custom;		/* File with custom annotations */
 };
 
@@ -494,6 +496,7 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	bool init;			/* true if -B was used at all */
 	bool set;			/* true if -B was used to set any increments */
 	bool draw;			/* true if -B<int> was used, even -B0, as sign to draw axes */
+	bool drawz;			/* true if -B<int> was used, even -Bz0, as sign to draw z axes */
 	bool paint;			/* true if -B +g<fill> was used */
 	bool draw_box;			/* true if a 3-D Z-box is desired */
 	bool no_frame;			/* true if we just want gridlines but no frame, i.e +n was used */
@@ -507,4 +510,4 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	unsigned int z_axis[4];		/* Which axes to use for the 3-D z-axis [auto] */
 };
 
-#endif /* _GMT_PROJECT_H */
+#endif /* GMT_PROJECT_H */

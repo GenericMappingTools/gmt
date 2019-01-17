@@ -27,8 +27,8 @@
  * \brief Definition of the structure with default settings.
  */
 
-#ifndef _GMT_DEFAULTS_H
-#define _GMT_DEFAULTS_H
+#ifndef GMT_DEFAULTS_H
+#define GMT_DEFAULTS_H
 
 /*--------------------------------------------------------------------
  *			GMT DEFAULTS STRUCTURE DEFINITION
@@ -185,4 +185,4 @@ struct GMT_DEFAULTS {
 	char given_unit[GMT_N_KEYS];		/* Unit given or implied for each setting */
 };
 
-#endif  /* _GMT_DEFAULTS_H */
+#endif  /* GMT_DEFAULTS_H */

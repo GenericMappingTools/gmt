@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Demonstrate issue #536 with labeling of periodic contours
 # Turns out non-issue due to different contour lengths and -Gd
 # Using -Gl shows annotation machinery works fine.

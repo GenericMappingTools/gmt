@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test the variable widths and heights options for subplots
 # This test uses a fixed figure size and fractional dims
 gmt begin varfracs ps

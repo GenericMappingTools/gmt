@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 echo "0 0" | gmt psxy -R-0.5/0.5/-0.5/0.5 -JX2i -P -Ba0.25g0.05 -BWSne -Wthick -Skvolcano/2i -K > GMT_volcano.ps
 cat <<END > bullseye.def

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 48
 #
 # Purpose:      Illustrate use of trimmed lines with vectors, networks, and local spiderwebs

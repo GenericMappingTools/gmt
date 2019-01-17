@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 04
 #
 # Purpose:	3-D mesh and color plot of Hawaiian topography and geoid

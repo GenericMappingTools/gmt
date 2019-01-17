@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=cbars.ps
 # Use CPT's low/high colors
 gmt makecpt -Ccool -Ic -T-6000/0/100 -Z -N > 1.cpt

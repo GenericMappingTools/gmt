@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test a 2-color binary pie chart custom symbol
 ps=binarypie.ps
 cat << EOF > pie.def

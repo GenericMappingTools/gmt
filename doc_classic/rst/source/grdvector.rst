@@ -71,12 +71,12 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*cpt* \|\ *master*\ [**+i**\ *zinc*] \|\ *color1,color2*\ [,*color3*,...]]
+**-C**\ [*cpt* \|\ *master*\ [**+i**\ *zinc*] \|\ *color1,color2*\ [,\ *color3*,...]]
     Use *cpt* to assign colors based on vector length. Alternatively,
     supply the name of a GMT color master dynamic CPT [rainbow] to
     automatically determine a continuous CPT from
     the grid's z-range; you may round up/down the z-range by adding **+i**\ *zinc*..
-    Yet another option is to specify -Ccolor1,color2[,color3,...]
+    Yet another option is to specify **-C**\ *color1,color2*\ [,\ *color3*,...]
     to build a linear continuous cpt from those colors automatically.  
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).

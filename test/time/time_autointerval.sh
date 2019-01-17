@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test various time ranges for auto-annotations
 ps=time_autointerval.ps
 gmt psbasemap -Vl -R2008T/2016T/0/1 -JX6iT/1i -Baf -BlStr -P -K -Xc -Y0.75i > $ps

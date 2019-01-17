@@ -29,7 +29,7 @@
 /* Include glib header and define mutex calls that are no-op when not linking against glib
    These are used only GLIB based multi-threading */
 
-#ifndef _GMT_GLIB_H
+#ifndef GMT_GLIB_H
 
 #ifdef HAVE_GLIB_GTHREAD
 #include <glib.h>

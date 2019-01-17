@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Testing grdfill with constant infill of NaN areas
 ps=constfill.ps
 # Get topo for Hawaiian Islands and set data on land to NaN

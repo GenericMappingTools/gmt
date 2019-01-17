@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Plot data reusing a columm
 ps=japquakes.ps
 

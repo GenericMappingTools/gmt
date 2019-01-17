@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 11
 #
 # Purpose:	Create a 3-D RGB Cube

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Test the C API for i/o involving complex grids.  We generate
 # two grids (real and imag) and read them in in different ways,

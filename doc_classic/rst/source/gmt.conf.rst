@@ -698,9 +698,10 @@ fonts can be found in the :doc:`gmt` man page.
 .. _MAP_ANNOT_ORTHO:
 
 **MAP_ANNOT_ORTHO**
-    Determines which axes will get their annotations (for linear
+    Determines which axes will get their annotations (for Cartesian
     projections) plotted orthogonally to the axes. Combine any **w**,
     **e**, **s**, **n**, **z** (uppercase allowed as well). [we] (if nothing specified).
+    Note that this setting can be overridden via the **+a** modifier in **-B**.
 
 .. _MAP_DEFAULT_PEN:
 

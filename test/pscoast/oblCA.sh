@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # This is an oblique Mercator map of CA.  The user Meridith Kraner (mkraner@nevada.unr.edu)
 # wants this plot to be aligned so CA long-axis is approximately N-S.  This would mean specifying
 # the LL and UR using the red dots.  However, this gives junk.  Selecting the opposite

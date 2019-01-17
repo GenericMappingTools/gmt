@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test various input date formats
 cat << EOF > tt9.answer
 3.54653855683

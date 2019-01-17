@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test a categorical CPT with text keys on a shapefile using
 # the aspatial field NAME via the CPT to yield pen color 
 ps=categorical.ps

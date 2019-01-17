@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ps=distributions.ps
 # LL: Histogram in counts with 3 normal distribution curves based on L2, L1, and LMS statistsics
 gmt pshistogram -Baf -BWSne+glightblue @v3206_06.txt -R-6000/0/0/1300 -JX3i/2.0i -Gorange -L1p -Z0 -W200 -P -K -N0+p1p,red -N1+p1p,green -N2+p1p,blue -Y0.75i  > $ps

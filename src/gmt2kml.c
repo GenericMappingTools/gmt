@@ -95,7 +95,7 @@ struct GMT2KML_CTRL {
 		unsigned int mode;
 		unsigned int geometry;
 	} F;
-	struct G {	/* -G<fill> */
+	struct G {	/* -G<fill>+f|n */
 		bool active[2];
 		struct GMT_FILL fill[2];
 	} G;
@@ -200,7 +200,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Fe|s|t|l|p|w] [-Gf|n[-|<fill>] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Fe|s|t|l|p|w] [-G[<color>]+f|n] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N<col>|t|<template>|<name>] [-O] [-Q[a|i]<az>] [-Qs<scale>[unit]] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<title>[/<foldername>] [%s] [-W[<pen>][<attr>]] [-Z<opts>] [%s]\n", GMT_V_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -223,11 +223,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Event requires a timestamp in the next column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Timespan requires begin and end ISO timestamps in the next two columns\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (use NaN for unlimited begin and/or end times).\n");
-	gmt_rgb_syntax (API->GMT, 'G', "Set color for symbol/polygon fill (-Gf<color>) or label (-Gn<color>).");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default polygon fill is lightorange with 75%% transparency.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default text label color is white.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Gf- to turn off polygon fill.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Gn- to turn off labels.\n");
+	gmt_rgb_syntax (API->GMT, 'G', "Set color for symbol/polygon fill (-G<color>+f) or label font (-G<color>+n).");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default polygon fill is lightorange with 75%% transparency; use -G+f for no fill.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default text label font color is white; use -G+n to turn off labels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I URL to an alternative icon used for the symbol [Google circle].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If URL starts with + we will prepend http://maps.google.com/mapfiles/kml/.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give -I- to not place any icons.\n");
@@ -287,7 +285,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, pos = 0, k, n_files = 0;
+	unsigned int n_errors = 0, pos = 0, k, n_files = 0, ind;
 	size_t n_alloc = 0;
 	char buffer[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, T[4][GMT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -381,29 +379,36 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'G':	/* Set fill for symbols or polygon */
-				switch (opt->arg[0]) {
-					case 'f':	/* Symbol/polygon color fill */
-						if (opt->arg[1] == '-')
-				 			Ctrl->G.active[F_ID] = true;
-						else if (!opt->arg[1] || gmt_getfill (GMT, &opt->arg[1], &Ctrl->G.fill[F_ID])) {
-							gmt_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
-							n_errors++;
-						}
-						break;
-					case 'n':	/* Label name color */
-		 				Ctrl->G.active[N_ID] = true;
-						if (opt->arg[1] == '-')
-							Ctrl->t_transp = 0.0;
-						else if (!opt->arg[1] || gmt_getfill (GMT, &opt->arg[1], &Ctrl->G.fill[N_ID])) {
-							gmt_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
-							n_errors++;
-						}
-						break;
-					default:
-						gmt_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
+				if ((c = strstr (opt->arg, "+f"))) 	/* Polygon fill */
+					ind = F_ID, k = 0, c[0] = '\0';
+				else if ((c = strstr (opt->arg, "+n")))	/* Label color */
+					ind = N_ID, k = 0, c[0] = '\0';
+				else if (gmt_M_compat_check (GMT, 5)) {	/* Old style -Gf or -Gn OK */
+					GMT_Report (API, GMT_MSG_COMPAT, "-Gf or -Gn is deprecated, use -G[<fill>]+f|n instead\n");
+					if (opt->arg[0] == 'f')	/* Polygon fill */
+						ind = F_ID, k = 1;
+					else if (opt->arg[0] == 'n')	/* Label color */
+						ind = N_ID, k = 1;
+					else {
+						GMT_Report (API, GMT_MSG_NORMAL, "Old syntax is -Gf or -Gn.\n");
 						n_errors++;
-						break;
+					}
 				}
+				else {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax is -G[<fill>]+f|n.\n");
+					n_errors++;
+				}
+				if (opt->arg[0] == '\0')	/* Transparency selected */
+		 			Ctrl->G.active[ind] = true;
+				else if (opt->arg[1] == '-' && gmt_M_compat_check (GMT, 5)) {
+		 			Ctrl->G.active[ind] = true;
+					GMT_Report (API, GMT_MSG_COMPAT, "Using - for no fill is deprecated, use -G+f|n instead\n");
+				}
+				else if (gmt_getfill (GMT, &opt->arg[k], &Ctrl->G.fill[ind])) {
+					gmt_fill_syntax (GMT, 'G', "(-G[<fill>]+f|n)");
+					n_errors++;
+				}
+				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'I':	/* Custom icon */
 	 			Ctrl->I.active = true;

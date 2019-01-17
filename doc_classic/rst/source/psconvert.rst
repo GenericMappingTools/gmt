@@ -23,7 +23,7 @@ Synopsis
 [ |-I| ]
 [ |-L|\ *listfile* ]
 [ |-P| ]
-[ |-Q|\ [**g**\ \|\ **t**][1\|2\|4] ]
+[ |-Q|\ [**g**\ \|\ **p**\ \|\ **t**][1\|2\|4] ]
 [ |-S| ]
 [ |-T|\ **b**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s**\ \|\ **t** ]
 [ |SYN_OPT-V| ]
@@ -156,10 +156,13 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [**g**\ \|\ **t**][1\|2\|4]
+**-Q**\ [**g**\ \|\ **p**\ \|\ **t**][1\|2\|4]
     Set the anti-aliasing options for **g**\ raphics or **t**\ ext.
-    Append the size of the subsample box (1, 2, or 4) [4]. Default is no
-    anti-aliasing (same as *bits* = 1).
+    Append the size of the subsample box (1, 2, or 4) [4]. For vector
+    formats the default is no anti-aliasing (same as *bits* = 1).
+    For any raster format the default setting is **-Qt4**, while transparent
+    PNG also adds **-Qg2**.  These defaults may be overruled manually.
+    Optionally, select **-Qp** to turn on generation of Geo PDFs (requires **-Tf** as well).
 
 .. _-S:
 
@@ -329,6 +332,10 @@ by first converting to PDF and then install and use the package **pdf2svg**.
 See :ref:`include-gmt-graphics` of the **GMT Technical Reference and Cookbook** for more
 information on how **psconvert** is used to produce graphics that can be
 inserted into other documents (articles, presentations, posters, etc.).
+
+The conversion to Geo PDFs have proven unstable and could create PDF files that could
+not be opened.  We have therefore made this an optional setting that now requires
+the **-Qp** option to activate, since most users are unaware of GeoPDFs anyway.
 
 Examples
 --------

@@ -1782,6 +1782,12 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 
 #endif
 
+/* Some local macros to make the test below possible to understand */
+#define is_plus(item,k)  (item[k-1] == '+')	/* Previous char is a plus, so maybe start of modifier */
+#define is_label(item,k) (item[k] == 'c' && (item[k+1] == '+' || item[k+1] == '\0'))	/* Modifier c followed by another modifier or end of string */
+#define is_just(item,k)  (item[k] == 'j' && (strchr ("LCRBMT", item[k+1]) && strchr ("LCRBMT", item[k+2])))	/* Is +j<just> */
+#define is_off(item,k)   (item[k] == 'o' && strchr ("-+.0123456789", item[k+1]))	/* Looks like +onumber> */
+
 /*! Parse the -U option.  Full syntax: -U[<label>][+c][+j<just>][+o]<dx>/<dy>]  Old syntax was -U[[<just>]/<dx>/<dy>/][c|<label>] */
 GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 	int just = 1, error = 0;
@@ -1794,9 +1800,7 @@ GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 		int k = 1, len = (int)strlen (item);
 		char word[GMT_LEN256] = {""}, *c = NULL;
 		/* Find the first +c|j|o that looks like it may be a modifier and not random text */
-		while (k < len && !((item[k-1] == '+' && (item[k] == 'c' && (item[k+1] == '+' || item[k+1] == '\0'))) || \
-			(item[k] == 'j' && (strchr ("LCRBMT", item[k+1]) && strchr ("LCRBMT", item[k+2]))) || \
-			(item[k] == 'o' && strchr ("-+.0123456789", item[k+1])))) k++;
+		while (k < len && !(is_plus(item,k) && (is_label(item,k) || is_just(item,k) || is_off(item,k)))) k++;
 		c = &item[k-1];	/* Start of the modifier */
 		c[0] = '\0';	/* Chop off the + so we can parse the label, if any */
 		if (item[0]) strncpy (GMT->current.ps.map_logo_label, item, GMT_LEN256-1);	/* Got a label */
@@ -2223,7 +2227,7 @@ GMT_LOCAL int gmtinit_decode4_wesnz (struct GMT_CTRL *GMT, const char *in, unsig
 
 	GMT->current.map.frame.set_frame[part]++;
 	if (GMT->current.map.frame.set_frame[GMT_PRIMARY] > 1 || GMT->current.map.frame.set_frame[GMT_SECONDARY] > 1) {
-		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESN-framesettings> given more than once!\n");
+		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESNZ-framesettings> given more than once!\n");
 		return (1);
 	}
 	i = (int)strlen (in);
@@ -3179,6 +3183,7 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 	}
 
 	GMT->current.map.frame.draw = true;
+	if (axis == 'z') GMT->current.map.frame.drawz = true;
 
 	return (GMT_NOERROR);
 }
@@ -3206,6 +3211,7 @@ GMT_LOCAL int gmtinit_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, c
 			}
 			if (n_int[1]) A->item[GMT_ANNOT_UPPER+!GMT->current.map.frame.primary].special = true;
 			GMT->current.map.frame.draw = true;
+			if (axis == GMT_Z) GMT->current.map.frame.drawz = true;
 		}
 		else
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot access custom file in -B string %c-component %s\n", str[axis], &in[1]);
@@ -3334,6 +3340,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 		if (!info[i][0]) continue;	 /* Skip empty format string */
 		if (info[i][0] == '0' && !info[i][1]) {	 /* Skip format '0' */
 			GMT->current.map.frame.draw = true;
+			if (i == GMT_Z) GMT->current.map.frame.drawz = true;
 			continue;
 		}
 
@@ -3447,7 +3454,7 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 	if (check) {	/* true if coming via -B, false if parsing gmt.conf */
 		GMT->current.map.frame.set_frame[GMT_PRIMARY]++, GMT->current.map.frame.set_frame[GMT_SECONDARY]++;
 		if (GMT->current.map.frame.set_frame[GMT_PRIMARY] > 1 || GMT->current.map.frame.set_frame[GMT_SECONDARY] > 1) {
-			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESN-framesettings> given more than once!\n");
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESNZ-framesettings> given more than once!\n");
 			return (1);
 		}
 	}
@@ -3498,6 +3505,7 @@ GMT_LOCAL int gmtinit_decode5_wesnz (struct GMT_CTRL *GMT, const char *in, bool 
 		gmt_M_memcpy (GMT->current.map.frame.side, f_side, 5, unsigned int);	/* Overwrite the GMT defaults */
 		GMT->current.map.frame.no_frame = false;
 		GMT->current.map.frame.draw = true;
+		if (check && f_side[Z_SIDE]) GMT->current.map.frame.drawz = true;
 	}
 	if (GMT->current.map.frame.no_frame) gmt_M_memset (GMT->current.map.frame.side, 5, unsigned int);	/* Set all to nothing */
 	if (z_axis[0] || z_axis[1] || z_axis[2] || z_axis[3]) gmt_M_memcpy (GMT->current.map.frame.z_axis, z_axis, 4, unsigned int);	/* Overwrite the GMT defaults */
@@ -3612,8 +3620,9 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	 * Axis settings:
 	 * 	-B[p|s][x|y|z]<info>
 	 *   where <info> is of the format
-	 * 	<intervals>[+L|l<label>][+S|s<altlabel>][+p<prefix>][+u<unit>]
+	 * 	<intervals>[+a<angle>|n|p][+L|l<label>][+S|s<altlabel>][+p<prefix>][+u<unit>]
 	 *   and each <intervals> is a concatenation of one or more [t][value][<unit>]
+	 *    		+a<angle> sets a fixed annotation angle with respect to axis (Cartesian only), n or p for normal or parallel
 	 *    		+l<label> as labels for the respective axes [none]. Use +L for only horizontal labels
 	 *    		+s<altlabel> as alternate label for the far axis [same as <label>]. Use +S for only horizontal labels
 	 *    		+u<unit> as as annotation suffix unit [none].
@@ -3634,11 +3643,11 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	 *	-Bs must be in addition to -B[p].
 	 */
 
-	char string[GMT_BUFSIZ] = {""}, orig_string[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, *mod = NULL;
+	char string[GMT_BUFSIZ] = {""}, orig_string[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, *mod = NULL, *the_axes = "xyz";
 	struct GMT_PLOT_AXIS *A = NULL;
 	unsigned int no;
 	int k, error = 0;
-	bool side[3] = {false, false, false};
+	bool side[3] = {false, false, false}, implicit = false;
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 
@@ -3665,7 +3674,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		strncpy (GMT->common.B.string[no], in, GMT_LEN256-1);	/* Keep a copy of the actual option(s) */
 
 	/* Set which axes this option applies to */
-	while (in[k] && strchr ("xyz", in[k])) {	/* As long as there are leading x,y,z axes specifiers */
+	while (in[k] && strchr (the_axes, in[k])) {	/* As long as there are leading x,y,z axes specifiers */
 		switch (in[k]) {	/* We specified a named axis */
 			case 'x': side[GMT_X] = true; break;
 			case 'y': side[GMT_Y] = true; break;
@@ -3673,21 +3682,22 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		}
 		k++;
 	}
-	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) GMT->current.map.frame.set_both = side[GMT_X] = side[GMT_Y] = true;	/* If no axis were named we default to both x and y */
+	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) GMT->current.map.frame.set_both = side[GMT_X] = side[GMT_Y] = implicit = true;	/* If no axis were named we default to both x and y */
 
 	strncpy (text, &in[k], GMT_BUFSIZ-1);	/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
-	gmt_handle5_plussign (GMT, text, "LlpsSu", 0);	/* Temporarily change any +<letter> except +L|l, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
+	gmt_handle5_plussign (GMT, text, "aLlpsSu", 0);	/* Temporarily change any +<letter> except +L|l, +p, +S|s, +u to ASCII 1 to avoid interference with +modifiers */
 	k = 0;					/* Start at beginning of text and look for first occurrence of +L|l, +p, +S|s or +u */
-	while (text[k] && !(text[k] == '+' && strchr ("LlpSsu", text[k+1]))) k++;
+	while (text[k] && !(text[k] == '+' && strchr ("aLlpSsu", text[k+1]))) k++;
 	gmt_M_memset (orig_string, GMT_BUFSIZ, char);
 	strncpy (orig_string, text, k);		/* orig_string now has the interval information */
 	gmt_handle5_plussign (GMT, orig_string, NULL, 1);	/* Recover any non-modifier plus signs */
 	if (text[k]) mod = &text[k];		/* mod points to the start of the modifier information in text*/
 	for (no = 0; no < 3; no++) {		/* Process each axis separately */
 		if (!side[no]) continue;	/* Except we did not specify this axis */
+		if (no == GMT_Z) GMT->current.map.frame.drawz = true;
 		if (!text[0]) continue;	 	/* Skip any empty format string */
 		if (text[0] == '0' && !text[1]) {	 /* Understand format '0' to mean "no annotation, ticks, or gridlines" */
-			GMT->current.map.frame.draw = true;	/* But we do wish to draw the frame */
+			GMT->current.map.frame.draw = GMT->current.map.frame.drawz = true;	/* But we do wish to draw the frame */
 			continue;
 		}
 
@@ -3696,6 +3706,41 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 			char p[GMT_BUFSIZ];
 			while ((gmt_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
 				switch (p[0]) {
+					case 'a':	/* Set annotation angle */
+						if (gmt_M_is_geographic (GMT, GMT_IN)) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Cannot use +a for geographic basemaps\n");
+							error++;
+						}
+						else if (no == 0) {	/* Variable angles are only allowed for the x-axis */
+							if (p[1] == 'n')	/* +an is short for +a90 or normal to x-axis */
+								GMT->current.map.frame.axis[no].angle = 90.0;
+							else if (p[1] == 'p')	/* +ap is short for +a0 or parallel to x-axis */
+								GMT->current.map.frame.axis[no].angle = 0.0;
+							else	/* Assume a variable angle */
+								GMT->current.map.frame.axis[no].angle = atof (&p[1]);
+							if (GMT->current.map.frame.axis[no].angle < -90.0 || GMT->current.map.frame.axis[no].angle > 90.0) {
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: +a<angle> must be in the -90 to +90 range\n");
+								error++;
+							}
+							else
+								GMT->current.map.frame.axis[no].use_angle = true;
+						}
+						else if (no == 1) {	/* Only +an|p is allowed for y-axis */
+							GMT->current.map.frame.axis[no].use_angle = true;
+							if (p[1] == 'n')	/* +an is code for normal to y-axis;*/
+								GMT->current.map.frame.axis[no].angle = 0.0;
+							else if (p[1] == 'p')	/* +ap is code for normal to y-axis; this triggers ortho=false later */
+								GMT->current.map.frame.axis[no].angle = 90.0;
+							else if (!implicit) {	/* Means user gave -By...+a<angle> which is no good */
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Only modifiers +an|p is allowed for the y-axis\n");
+								error++;
+							}
+							else	/* Probably did -Baf+a30 and only meant that to apply to the x-axis */
+								GMT->current.map.frame.axis[no].use_angle = false;
+						}
+						else if (!implicit)
+							GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-B option: The +a modifier only applies to the x and y axes; selection for %c-axis ignored\n", the_axes[no]);
+						break;
 					case 'L':	/* Force horizontal axis label */
 						GMT->current.map.frame.axis[no].label_mode = 1;
 						/* Fall through on purpose */
@@ -5853,9 +5898,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     Append +t<title> to place a title over the map frame [no title].\n");
 			gmt_message (GMT, "\t   2. Axes settings control the annotation, tick, and grid intervals and labels.\n");
 			gmt_message (GMT, "\t     The full axes specification is\n");
-			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]\n");
+			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]\n");
 			gmt_message (GMT, "\t     Alternatively, you may break this syntax into two separate -B options:\n");
-			gmt_message (GMT, "\t       -B[p|s][x|y|z][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]\n");
+			gmt_message (GMT, "\t       -B[p|s][x|y|z][+a<angle>|n|p][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]\n");
 			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>\n");
 			gmt_message (GMT, "\t     There are two levels of annotations: Primary and secondary (most situations only require primary).\n");
 			gmt_message (GMT, "\t     The -B[p] selects (p)rimary annotations while -Bs specifies (s)econdary annotations.\n");
@@ -5864,6 +5909,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t     each dimension., i.e., provide separate -B[p|s]x, -B[p|s]y, and -B[p|s]z settings.\n");
 			gmt_message (GMT, "\t     To prepend a prefix to each annotation (e.g., $ 10, $ 20 ...), add +p<prefix>.\n");
 			gmt_message (GMT, "\t     To append a unit to each annotation (e.g., 5 km, 10 km ...), add +u<unit>.\n");
+			gmt_message (GMT, "\t     Cartesian x-axis takes optional +a<angle> for slanted or +an for orthogonal annotations [+ap].\n");
+			gmt_message (GMT, "\t     Cartesian y-axis takes optional +ap for parallel annotations [+an].\n");
 			gmt_message (GMT, "\t     To label an axis, add +l<label>.  Use +L to enforce horizontal labels for y-axes.\n");
 			gmt_message (GMT, "\t     For another axis label on the opposite axis, use +s|S as well.\n");
 			gmt_message (GMT, "\t     Use quotes if any of the <label>, <prefix> or <unit> have spaces.\n");
@@ -5903,7 +5950,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t       m: minute - plot as 2-digit integer (0-59).\n");
 			gmt_message (GMT, "\t       S: second - format annotation according to FORMAT_CLOCK_MAP.\n");
 			gmt_message (GMT, "\t       s: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).\n");
-			gmt_message (GMT, "\t     Cartesian axes takes no units.\n");
+			gmt_message (GMT, "\t     Cartesian intervals take no units.\n");
 			gmt_message (GMT, "\t     When <stride> is omitted, a reasonable value will be determined automatically, e.g., -Bafg.\n");
 			gmt_message (GMT, "\t     Log10 axis: Append l to annotate log10 (value) or p for 10^(log10(value)) [Default annotates value].\n");
 			gmt_message (GMT, "\t     Power axis: Append p to annotate value at equidistant pow increments [Default is nonlinear].\n");
@@ -5916,7 +5963,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   (1) Frame settings are modified via an optional single invocation of\n");
 			gmt_message (GMT, "\t     -B[<axes>][+g<fill>][+n][+o<lon>/<lat>][+t<title>]\n");
 			gmt_message (GMT, "\t   (2) Axes parameters are specified via one or more invocations of\n");
-			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+l<label>][+p<prefix>][+u<unit>]\n");
+			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+a<angle>][+l<label>][+p<prefix>][+u<unit>]\n");
 			gmt_message (GMT, "\t   <intervals> is composed of concatenated [<type>]<stride>[<unit>][l|p] sub-strings\n");
 			gmt_message (GMT, "\t   See psbasemap man page for more details and examples of all settings.\n");
 			break;
@@ -6626,7 +6673,7 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned i
 	gmt_message (GMT, "\t             (3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1,\n");
 	gmt_message (GMT, "\t             (4) any valid color name.\n");
 	gmt_message (GMT, "\t   <style> = (1) pattern of dashes (-) and dots (.), scaled by <width>.\n");
-	gmt_message (GMT, "\t             (2) \"dashed\", \"dotted\", \"dashdot\", or \"solid\".\n");
+	gmt_message (GMT, "\t             (2) \"dashed\", \"dotted\", \"dashdot\", \"dotdash\", or \"solid\".\n");
 	gmt_message (GMT, "\t             (3) <pattern>:<offset>; <pattern> holds lengths (default unit points)\n");
 	gmt_message (GMT, "\t                 of any number of lines and gaps separated by underscores.\n");
 	gmt_message (GMT, "\t                 <offset> shifts elements from start of the line [0].\n");
@@ -6887,7 +6934,7 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 	switch (option) {
 
 		case 'B':	/* Tickmark option */
-			gmt_message (GMT, "\t-B[p|s][x|y|z]<intervals>[+l<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>] OR\n");
+			gmt_message (GMT, "\t-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+l|L<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>] OR\n");
 			gmt_message (GMT, "\t-B[p|s][x|y|z][a|f|g]<tick>[m][l|p] -B[p|s][x|y|z][+l<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>]\n");
 			break;
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #               GMT EXAMPLE 36
 #
 # Purpose:      Illustrate sphinterpolate with Mars radii data

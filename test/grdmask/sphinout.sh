@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Test gmt grdmask for proper handling of inside/outside for spherical polygons
 

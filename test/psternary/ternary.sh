@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test ternary diagram plotting a dataset from Matlab exchange
 ps=ternary.ps
 gmt makecpt -T0/70 -Cjet > t.cpt

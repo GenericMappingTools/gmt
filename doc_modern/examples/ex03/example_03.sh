@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #		GMT EXAMPLE 03
 #
 # Purpose:	Resample track data, do spectral analysis, and plot

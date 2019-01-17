@@ -43,8 +43,8 @@
  */
 
 #pragma once
-#ifndef _GMT_DEV_H
-#define _GMT_DEV_H
+#ifndef GMT_DEV_H
+#define GMT_DEV_H
 
 #ifdef __cplusplus	/* Basic C++ support */
 extern "C" {
@@ -176,4 +176,4 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 }
 #endif
 
-#endif  /* !_GMT_DEV_H */
+#endif  /* !GMT_DEV_H */
