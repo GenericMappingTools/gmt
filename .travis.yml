@@ -66,7 +66,7 @@ matrix:
           if: type != cron
         - name: "Linux"
           os: linux
-          if: type = cron
+          #if: type = cron
           env:
             - TEST="all"
         - name: "Mac"
@@ -74,13 +74,13 @@ matrix:
           if: type != cron
         - name: "Max"
           os: osx
-          if: type = cron
+          #if: type = cron
           env:
             - TEST="all"
         # Only build the docs on Linux cron jobs
         - name: "Linux - Build docs"
           os: linux
-          if: type = cron
+          #if: type = cron
           env:
             - BUILD_DOCS=true
 
