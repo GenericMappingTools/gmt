@@ -11,8 +11,6 @@ branches:
     only:
         - master
         - 5.4
-        # REMOVE
-        - deploy-docs
         # Regex to build tagged commits with version numbers
         - /\d+\.\d+(\.\d+)?(\S*)?$/
 
@@ -84,7 +82,7 @@ matrix:
         # Only build the docs on Linux cron jobs
         - name: "Linux (cron - build docs)"
           os: linux
-          #if: type = cron
+          if: type = cron
           env:
             - BUILD_DOCS=true
             - DEPLOY_DOCS=true
@@ -136,7 +134,7 @@ deploy:
       script: continuous-integration/travis/deploy-gh-pages.sh
       skip_cleanup: true
       on:
-        branch: deploy-docs
+        branch: master
         condition: '"$DEPLOY_DOCS" == "true"'
 
 notifications:
