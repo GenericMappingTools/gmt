@@ -9,22 +9,24 @@ set (CMAKE_INSTALL_PREFIX "$ENV{INSTALLDIR}")
 set (GMT_LIBDIR "$ENV{INSTALLDIR}/lib")
 set (DCW_ROOT "$ENV{COASTLINEDIR}")
 set (GSHHG_ROOT "$ENV{COASTLINEDIR}")
+EOF
 
+if [ "$TEST" == "true" ]; then
+    cat >> cmake/ConfigUser.cmake << 'EOF'
 set (CMAKE_BUILD_TYPE Debug)
 enable_testing()
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_ANIMATIONS TRUE)
 set (N_TEST_JOBS 2)
-EOF
-
-if [ "$COVERAGE" == "true" ]; then
-    cat >> cmake/ConfigUser.cmake << 'EOF'
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement -coverage -O0")
 EOF
 fi
 
+echo ""
+echo "Using the following cmake configuration:"
 cat cmake/ConfigUser.cmake
+echo ""
 
 mkdir build && cd build
 

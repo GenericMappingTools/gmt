@@ -54,7 +54,6 @@ env:
         - COASTLINEDIR="$HOME/gmt-install-dir/coast"
         - PATH="$INSTALLDIR/bin:$PATH"
         - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
-        - COVERAGE=true
         - BUILD_DOCS=false
         - TEST=false
 
@@ -66,21 +65,21 @@ matrix:
           if: type != cron
         - name: "Linux (cron)"
           os: linux
-          if: type = cron
+          #if: type = cron
           env:
-            - TEST="all"
+            - TEST="true"
         - name: "Mac (compile only)"
           os: osx
           if: type != cron
         - name: "Mac (cron)"
           os: osx
-          if: type = cron
+          #if: type = cron
           env:
-            - TEST="all"
+            - TEST="true"
         # Only build the docs on Linux cron jobs
         - name: "Linux (cron - build docs)"
           os: linux
-          if: type = cron
+          #if: type = cron
           env:
             - BUILD_DOCS=true
 
@@ -104,12 +103,12 @@ script:
     - cd build
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-    - if [ "$TEST" == "all" ]; then
+    - if [ "$TEST" == "true" ]; then
         make -j check;
       fi
     # Upload test coverage even if build fails. Keep separate to make sure this task
     # fails if the tests fail.
-    - if [ "$TEST" == "all" ]; then
+    - if [ "$TEST" == "true" ]; then
         bash <(curl -s https://codecov.io/bash);
       fi
     - if [ "$BUILD_DOCS" == "true" ]; then
