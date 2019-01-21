@@ -20,24 +20,6 @@
 
 include (ManageString)
 
-# Fonts.i
-#macro (gen_ps_font_info)
-#	file2list (_fonts_file ${GMT_SRC}/share/pslib/PS_font_info.d)
-#	list_regex_replace (
-#		"^([^# \t]+).*"
-#		"\\\\1"
-#		_fonts_list ${_fonts_file}
-#		MATCHES_ONLY)
-#	set (_fonts_man)
-#	set (_fontnum 0)
-#	foreach (_font ${_fonts_list})
-#		list (APPEND _fonts_man "${_fontnum}\t${_font}")
-#		math (EXPR _fontnum "${_fontnum} + 1")
-#	endforeach (_font ${_fonts_list})
-#	string (REPLACE ";" "\n.br\n" _fonts_man "${_fonts_man}")
-#	file (WRITE Fonts.i ".br\n${_fonts_man}\n")
-#endmacro (gen_ps_font_info)
-
 macro (gen_gmt_keywords_h)
 	# gmt_keycases.h
 	file2list (_gmtkeywords_file
@@ -98,14 +80,12 @@ macro (gen_gmt_dimensions_h)
 endmacro (gen_gmt_dimensions_h)
 
 # Get something done
-if (GENERATE_COMMAND STREQUAL gen_ps_font_info)
-	gen_ps_font_info ()
-elseif (GENERATE_COMMAND STREQUAL gen_gmt_keywords_h)
+if (GENERATE_COMMAND STREQUAL gen_gmt_keywords_h)
 	gen_gmt_keywords_h ()
 elseif (GENERATE_COMMAND STREQUAL gen_gmt_dimensions_h)
 	gen_gmt_dimensions_h ()
 elseif (DEFINED GENERATE_COMMAND)
 	message (SEND_ERROR "Unknown command: ${GENERATE_COMMAND}")
-endif (GENERATE_COMMAND STREQUAL gen_ps_font_info)
+endif (GENERATE_COMMAND STREQUAL gen_gmt_keywords_h)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
