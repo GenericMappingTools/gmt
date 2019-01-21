@@ -20,36 +20,6 @@
 
 include (ManageString)
 
-macro (gen_gmt_colors_h)
-	# gmt_colornames.h
-	file2list (_color_file ${GMT_SRC}/src/Colors.txt)
-	list_regex_replace (
-		"^[0-9 \t]+([a-z]+[0-9]*).*"
-		"\"\\\\1\""
-		_color_names ${_color_file}
-		MATCHES_ONLY)
-	string (REPLACE ";" ",\n" _color_names "${_color_names}")
-	file (WRITE gmt_colornames.h "${_color_names}\n")
-
-	# gmt_color_rgb.h
-	list_regex_replace (
-		"^[ ]*([0-9]+)[ \t]+([0-9]+)[ \t]+([0-9]+).*"
-		"{\\\\1, \\\\2, \\\\3}"
-		_colors_rgb ${_color_file}
-		MATCHES_ONLY)
-	string (REPLACE ";" ",\n" _colors_rgb "${_colors_rgb}")
-	file (WRITE gmt_color_rgb.h "${_colors_rgb}\n")
-
-#	# Colors.i
-#	list_regex_replace (
-#		"^([0-9]+)[ \t]+([0-9]+)[ \t]+([0-9]+)[ \t]+([a-z]+[0-9]*).*"
-#		"\\\\1\t\\\\2\t\\\\3\t\\\\4"
-#		_colors_man ${_color_file}
-#		MATCHES_ONLY)
-#	string (REPLACE ";" "\n.br\n" _colors_man "${_colors_man}")
-#	file (WRITE Colors.i ".br\n${_colors_man}\n")
-endmacro (gen_gmt_colors_h)
-
 # Fonts.i
 #macro (gen_ps_font_info)
 #	file2list (_fonts_file ${GMT_SRC}/share/pslib/PS_font_info.d)
@@ -113,13 +83,13 @@ macro (gen_gmt_dimensions_h)
 	list (LENGTH _file_lines GMT_N_ELLIPSOIDS)
 	file2list (_file_lines ${GMT_SRC}/src/gmt_datums.h)
 	list (LENGTH _file_lines GMT_N_DATUMS)
+	file2list (_file_lines ${GMT_SRC}/src/gmt_colornames.h)
+	list (LENGTH _file_lines GMT_N_COLOR_NAMES)
 	file2list (_file_lines ${GMT_SRC}/src/gmt_cpt_masters.h)
 	list (REMOVE_DUPLICATES _file_lines)
 	list (LENGTH _file_lines GMT_N_CPT_MASTERS)
 
 	# count lines in generated headers
-	file2list (_file_lines gmt_colornames.h)
-	list (LENGTH _file_lines GMT_N_COLOR_NAMES)
 	file2list (_file_lines gmt_keycases.h)
 	list (LENGTH _file_lines GMT_N_KEYS)
 
@@ -278,9 +248,7 @@ macro (gen_grd_math_h)
 endmacro (gen_grd_math_h)
 
 # Get something done
-if (GENERATE_COMMAND STREQUAL gen_gmt_colors_h)
-	gen_gmt_colors_h ()
-elseif (GENERATE_COMMAND STREQUAL gen_ps_font_info)
+if (GENERATE_COMMAND STREQUAL gen_ps_font_info)
 	gen_ps_font_info ()
 elseif (GENERATE_COMMAND STREQUAL gen_gmt_keywords_h)
 	gen_gmt_keywords_h ()
@@ -292,6 +260,6 @@ elseif (GENERATE_COMMAND STREQUAL gen_grd_math_h)
 	gen_grd_math_h ()
 elseif (DEFINED GENERATE_COMMAND)
 	message (SEND_ERROR "Unknown command: ${GENERATE_COMMAND}")
-endif (GENERATE_COMMAND STREQUAL gen_gmt_colors_h)
+endif (GENERATE_COMMAND STREQUAL gen_ps_font_info)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
