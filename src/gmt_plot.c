@@ -2554,24 +2554,72 @@ enum plot_operand {
 	RIGHT_OPERAND2 = 2
 };
 
-GMT_LOCAL bool plot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[]) {
+GMT_LOCAL bool plot_custum_failed_bool_test_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], char *text) {
+	unsigned int k;
+	bool result;
+	char *arg[2];
+	gmt_M_unused (size);	/* Numerical values not used here */
+	for (k = 0; k < 2; k++) {	/* Load up the left and right operands */
+		switch (s->var[k]) {
+			case GMT_VAR_STRING:	/* training text comparison */
+				arg[k] = text;		break;
+			case GMT_CONST_STRING:	/* Constant text comparison */
+				arg[k] = s->string;	break;
+			default:	/* Should not get here */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized text variable type (%d) passed to plot_custum_failed_bool_test_string\n", s->var[k]);
+				return true;		break;
+		}
+	}
+	switch (s->operator) {
+		case '<':	/* < */
+			result = (strcmp (arg[LEFT_OPERAND], arg[RIGHT_OPERAND1]) < 0);
+			break;
+		case 'L':	/* <= */
+			result = (strcmp (arg[LEFT_OPERAND], arg[RIGHT_OPERAND1]) <= 0);
+			break;
+		case '=':	/* == */
+			result = (strcmp (arg[LEFT_OPERAND], arg[RIGHT_OPERAND1]) == 0);
+			break;
+		case 'G':	/* >= */
+			result = (strcmp (arg[LEFT_OPERAND], arg[RIGHT_OPERAND1]) >= 0);
+			break;
+		case '>':	/* > */
+			result = (strcmp (arg[LEFT_OPERAND], arg[RIGHT_OPERAND1]) > 0);
+			break;
+		default:
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized symbol macro text operator (%d = '%c') passed to gmt_draw_custom_symbol\n", s->operator, (char)s->operator);
+			GMT_exit (GMT, GMT_PARSE_ERROR); return false;
+			break;
+	}
+	if (s->negate) result = !result;	/* Negate the test since we used a ! operator , e.g., != */
+	return (!result);			/* Return the opposite of the test result */
+}
+
+GMT_LOCAL bool plot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], char *text) {
 	unsigned int k;
 	bool result;
 	double arg[3];
 
+	/* Determine if we have text comparisions to deal with, if so, call the string version of this function */
+	
+	for (k = 0; k < 2; k++)
+		if (s->var[k] == GMT_VAR_STRING) return (plot_custum_failed_bool_test_string (GMT, s, size, text));
+	
+	/* Here we have numerical comparisons only */
+	
 	/* Perform the boolean comparison and return false if test is true */
 
 	for (k = 0; k < 3; k++) {	/* Load up the left and 1-2 right operands */
 		switch (s->var[k]) {
-			case -3:	/* Symbol size */
+			case GMT_VAR_SIZE:	/* Symbol size */
 				arg[k] = size[0];	break;
-			case -2:	/* User y-coordinate */
+			case GMT_VAR_IS_Y:	/* User y-coordinate */
 				arg[k] = GMT->current.io.curr_rec[GMT_Y];	break;
-			case -1:	/* User x-coordinate */
+			case GMT_VAR_IS_X:	/* User x-coordinate */
 				arg[k] = GMT->current.io.curr_rec[GMT_X];	break;
-			case 0:		/* A constant */
+			case GMT_CONST_VAR:	/* A numeric constant */
 				arg[k] = s->const_val[k];	break;
-			default:	/* One of the variables 1-* */
+			default:		/* One of the variables 1-n */
 				arg[k] = size[s->var[k]];	break;
 		}
 	}
@@ -2610,7 +2658,7 @@ GMT_LOCAL bool plot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CU
 			result = gmt_M_is_dnan (arg[LEFT_OPERAND]);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized symbol macro operator (%d = '%c') passed to gmt_draw_custom_symbol\n", s->operator, (char)s->operator);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized symbol macro numerical operator (%d = '%c') passed to gmt_draw_custom_symbol\n", s->operator, (char)s->operator);
 			GMT_exit (GMT, GMT_PARSE_ERROR); return false;
 			break;
 
@@ -5306,7 +5354,7 @@ GMT_LOCAL void get_the_fill (struct GMT_FILL *f, struct GMT_CUSTOM_SYMBOL_ITEM *
 	if (f->rgb[0] >= 0.0 && s->var_pen < 0 && (abs(s->var_pen) & GMT_USE_PEN_RGB) && cp) gmt_M_rgb_copy (f->rgb, cp->rgb);
 }
 
-int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline) {
+int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], char *tr_text, struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline) {
 	int action, ifs;
 	unsigned int na, i, id = 0, level;
 	bool flush = false, this_outline = false, skip[GMT_N_COND_LEVELS+1], done[GMT_N_COND_LEVELS+1];
@@ -5387,7 +5435,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			 * a series if if,elseif,else at the same level then we consult the done[level] array.  This is set to true if we pass a test and actually
 			 * draw something and once that is done none of the other tests at the same level can pass. */
 			if (s->conditional == GMT_BEGIN_BLOCK_IF) {	/* Beginning of a new if branch. If we are inside an earlier branch whose test was false then all inside shall be false */
-				skip[level+1] = (level > 0 && skip[level]) ? true : plot_custum_failed_bool_test (GMT, s, size), level++;
+				skip[level+1] = (level > 0 && skip[level]) ? true : plot_custum_failed_bool_test (GMT, s, size, tr_text), level++;
 				if (level == GMT_N_COND_LEVELS) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Symbol macro (%s) logical nesting too deep [> %d]\n", symbol->name, GMT_N_COND_LEVELS);
 					GMT_exit (GMT, GMT_DIM_TOO_LARGE); return GMT_DIM_TOO_LARGE;
@@ -5399,7 +5447,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			else if (s->conditional == GMT_END_IF_ELSE)	/* else branch */
 				skip[level] = (!done[level] && skip[level] && !skip[level-1]) ? false : true;
 			else if (s->conditional == GMT_BEGIN_ELSEIF)	/* Skip if prior if/elseif was true, otherwise evaluate test at this level */
-				skip[level] = (!done[level] && skip[level] && !skip[level-1]) ? plot_custum_failed_bool_test (GMT, s, size) : true;
+				skip[level] = (!done[level] && skip[level] && !skip[level-1]) ? plot_custum_failed_bool_test (GMT, s, size, tr_text) : true;
 			s = s->next;
 			continue;
 		}
@@ -5408,7 +5456,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			continue;
 		}
 		/* Finally, check for 1-line if tests */
-		if (s->conditional == GMT_BEGIN_SINGLE_IF && plot_custum_failed_bool_test (GMT, s, size)) {	/* Done here, move to next item */
+		if (s->conditional == GMT_BEGIN_SINGLE_IF && plot_custum_failed_bool_test (GMT, s, size, tr_text)) {	/* Done here, move to next item */
 			s = s->next;
 			continue;
 		}

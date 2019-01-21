@@ -1,7 +1,12 @@
+# Configuration file for TravisCI
+
+# Use the container builds so we don't need sudo priviledges
+sudo: false
+
 language: c
 
-sudo: required
-
+# Only build pushes to select branches and tags. This avoids the double
+# builds than happen when working on a branch instead of a fork.
 branches:
     only:
         - master
@@ -9,44 +14,130 @@ branches:
         # Regex to build tagged commits with version numbers
         - /\d+\.\d+(\.\d+)?(\S*)?$/
 
-os:
-    - linux
-    #- osx
+# Set the Ubuntu version for the Linux builds
+dist: xenial
 
+# Dependencies for the Linux and OSX builds
+addons:
+    apt:
+        packages:
+            - cmake
+            - build-essential
+            - libcurl4-gnutls-dev
+            - libnetcdf-dev
+            - libgdal1-dev
+            - libfftw3-dev
+            - libpcre3-dev
+            - liblapack-dev
+            - ghostscript
+            - curl
+            - graphicsmagick
+            - python
+            - python-pip
+    homebrew:
+        packages:
+            - cmake
+            - curl
+            - netcdf
+            - gdal
+            - fftw
+            - pcre2
+            - ghostscript
+            - curl
+            - graphicsmagick
+            - python
+
+# Define environment variables and set build actions
 env:
     global:
         - INSTALLDIR="$HOME/gmt-install-dir"
         - COASTLINEDIR="$HOME/gmt-install-dir/coast"
         - PATH="$INSTALLDIR/bin:$PATH"
         - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
-        - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
-            export PYTHON=3.6
-            export CONDA_INSTALL_EXTRA="sphinx"
-            export COVERAGE=true
-          fi
+        - BUILD_DOCS=false
+        - DEPLOY_DOCS=false
+        - TEST=false
+        # Encrypted Github token (GH_TOKEN)
+        - secure: "cwHlTNa+b2lPiCbN5Ja9alj6EkKwJsuR5QcNPORrp3uCOQF9+cJUFEyMIGVGzrzZQnpjn05XYDr6eGFUYkbaR1QVUQdNH+2rCiScFHe94fRPJlJabxXexCfvZCNV8VRi6NSyFPuZKkCVs10bQ7Lk5dPS/V4Dalz1xyURcvI8H8XQFTmDYb/7QFw73l0WzNf+Y1rzNpRZEQ4ERhmnir489njCv1w7oJ0C+BrRvPqTmNmfXbrY6Bcana6BJvvumSY1xRaw60f/UNKYTlTVlYTVSWK1kq9mTfkhiJhe5oNoWchKloiOg3fA2XtAuucuXSdCjqo9aWHMxKJy+jQ7/BeId9hacvB9pVclYoOLARBcPoWDb21eKJZ8A70yKlUM3ryhVXM4drHzM4ITitPA1sEJWNJ2BQO8Cils0FfcOLvBR3NdbLi8RdHZItmU/Oe8o1srUTnnkdPRiEWbmAEs4pVrsHY9sD0660PXTFBSQ7sDXeyTl2etG/YSQKvE3ysOnZwhEuTXqf8cpo+tSbjindvWSyyN0HSuJ0bd7Ei+qWUQ3nJNEtHpiq8Ms6KUPHjPpWO2BEl+FQHWFpmRtwBg/REk36VWIl1UHSKuKkqxUT4qiZeL5zlrHGso+7QGhVjkYj5un3XoVObopFNVUB8y56xeW21gI51HK48cPd5rMnX95KE="
+        # Encrypted codecov token (CODECOV_TOKEN)
+        - secure: "LYeFC3IeHdb8ff5+AfnACUUMIc9KRNIDlbQnRIIx+VPT4AT5XGiwN8PT9VhIFWsU1pJOw8DUdtggQ2kbkal3voF6RDhbYOCn5xzTjJ6D5UOC2JeIBkhx+Cb8lx9qZtVAippVOVsEPxCIGGxhCMy5+Dczib+4pA/zyKuU3l9DqSdsBlgZWJ2o+qyAltSa6JX3kvMCDl7ahR/d/IZqDxKvsyljuYq/WqhflTa1JjTfNYXyvE2w/Ml74ui6RdqX1ign3wWzO3P4nmdE+i3m6x9jlG6KIqTRd3pK2871zERNpeSTRXoQL7GpDbF9LWXPig3vLwWbeW09CEt4ZaoaP/J0JbXHN/mC5668RrVphZdVQmwQ+RCjGBXK/0zQ5/hpF4XmcCcef4sQGIm03v58KqQ0MDNhBwr+PkA1OGKTM82xEL5dzdo5+sPxm9W/rPwWnB8/FwKcheBfacGbhJ2Vv75XlqrZdIdslS4hLGHFy5jBddSMWCokDDd8KtJyWBlI/FKVjAjk7X/YFGFzyQCw3e/p6A511Yk5QF0sm5qnbhVB6b5BoW1R2D5FhLdIXZuCOJD5sfQ2BLcq7UpXRIW/KkV0XUQjv8YoM/K6Kljh2uDBT9CRfWf4Nko5ClhD0pk+uMTZ9S/tS8blL9BZJrH3Atolq+oeoEMI2eJuWepav9GcqYk="
 
+# Create the build matrix with different jobs for each platform and cron jobs
+matrix:
+    include:
+        - name: "Linux (compile only)"
+          os: linux
+          if: type != cron
+        - name: "Linux (cron)"
+          os: linux
+          if: type = cron
+          env:
+            - TEST="true"
+        - name: "Mac (compile only)"
+          os: osx
+          if: type != cron
+        - name: "Mac (cron)"
+          os: osx
+          if: type = cron
+          env:
+            - TEST="true"
+        # Only build the docs on Linux cron jobs
+        - name: "Linux (cron - build docs)"
+          os: linux
+          if: type = cron
+          env:
+            - BUILD_DOCS=true
+            - DEPLOY_DOCS=true
+            - HTML_BUILDDIR="build/doc_modern/rst/html"
+
+# Setup the build environment
 before_install:
-    # Install GMT dependencies
-    - bash ci/travis-setup.sh
+    - mkdir "$INSTALLDIR"
+    - mkdir "$COASTLINEDIR"
+    - bash ci/download-coastlines.sh
     # Install GMT documentation dependencies
-    - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
-        git clone https://github.com/fatiando/continuous-integration.git;
-        source continuous-integration/travis/setup-miniconda.sh;
+    - if [ "$BUILD_DOCS" == "true" ]; then
+        pip install --user sphinx;
       fi
 
+# Install the package that we want to test
 install:
     # Build and install GMT
-    - bash ci/travis-build.sh;
+    - bash ci/build-gmt.sh;
 
+# Run the actual tests and checks
 script:
+    - cd build
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-    # Build documentations, tests and coverage reports
-    - if [ "$TRAVIS_EVENT_TYPE" == "cron" ]; then
-        cd build; make -j docs_html; cd ..;
-        cd build; make -j check; cd ..;
+    - if [ "$TEST" == "true" ]; then
+        make -j check;
+      fi
+    # Upload test coverage even if build fails. Keep separate to make sure this task
+    # fails if the tests fail.
+    - if [ "$TEST" == "true" ]; then
         bash <(curl -s https://codecov.io/bash);
       fi
+    - if [ "$BUILD_DOCS" == "true" ]; then
+        make -j docs_html;
+      fi
+    - cd ..
+
+# Things to do if the build is successful
+after_success:
+    - if [ "$DEPLOY_DOCS" == "true" ]; then
+        git clone https://github.com/fatiando/continuous-integration.git;
+      fi
+
+# Deploy build artifacts to external services
+deploy:
+    # Push the built HTML to the gh-pages branch
+    - provider: script
+      script: continuous-integration/travis/deploy-gh-pages.sh
+      skip_cleanup: true
+      on:
+        branch: master
+        condition: '"$DEPLOY_DOCS" == "true"'
 
 notifications:
     email: false

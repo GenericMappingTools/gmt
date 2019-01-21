@@ -1979,7 +1979,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		/* Do the math on the BoundingBox and translation coordinates */
 
-		if (Ctrl->P.active && landscape)
+		if ((Ctrl->P.active && landscape) || (landscape && Ctrl->A.crop))
 			xt = -x1, yt = -y0, w = y1-y0, h = x1-x0, r = -90;
 		else
 			xt = -x0, yt = -y0, w = x1-x0, h = y1-y0, r = 0;
@@ -2237,6 +2237,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 							v0 = gmtBB_y0 + yt_bak;
 							x1 = h0 / w;	x2 = (h0 + gmtBB_width) / w;
 							y1 = v0 / h;	y2 = (v0 + gmtBB_height) / h;
+							if (landscape_orig) {		/* Uggly hack but so far have no better solution */
+								x2 = gmtBB_width / w;		x1 = 1 - x2;	
+								y2 = gmtBB_height / h;		y1 = 1 - y2;	
+							}
 							fprintf (fpo, "\t\t\t/LPTS[%f %f %f %f %f %f %f %f]\n", x1,y1, x1,y2, x2,y2, x2,y1);
 						}
 						fprintf (fpo, "\t\t\t/GCS <<\n");

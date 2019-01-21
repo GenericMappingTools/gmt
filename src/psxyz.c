@@ -1149,6 +1149,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				case GMT_SYMBOL_CUSTOM:
 					data[n].custom = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
 					gmt_M_memcpy (data[n].custom, S.custom, 1, struct GMT_CUSTOM_SYMBOL);
+					if (In->text) data[n].string = strdup (In->text);
 					break;
 			}
 			if (S.user_unit[GMT_X]) data[n].flag |= 4;
@@ -1380,8 +1381,9 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							if (S.custom->type[j] == GMT_IS_ANGLE && dim[j+1] < 0.0) dim[j+1] += 360.0;
 						}
 						if (!S.custom->start) S.custom->start = (get_rgb) ? 4 : 3;
-						gmt_draw_custom_symbol (GMT, xpos[item], data[i].y, dim, data[i].custom, &data[i].p, &data[i].f, data[i].outline);
+						gmt_draw_custom_symbol (GMT, xpos[item], data[i].y, dim, data[i].string, data[i].custom, &data[i].p, &data[i].f, data[i].outline);
 						gmt_M_free (GMT, data[i].custom);
+						if (data[i].string) gmt_M_str_free (data[i].string);
 						break;
 				}
 			}

@@ -1423,9 +1423,16 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 		f_lat_b = fabs (lat[i]);
 
 		gmt_geo_to_cart (GMT, lat[i], lon[i], b, true);	/* End point of current arc */
-		if (boostable && MIN(f_lat_a, f_lat_b) > 75.0)	/* Enforce closer sampling close to poles */
-			boost = 1.0 + 10.0 * (MAX(f_lat_a, f_lat_b) - 75.0);	/* Crude way to get a boost from 1 at 75 to ~151 at the pole */
-		else
+		if (boostable) {	/* Enforce closer sampling close to poles or for near anti-meridian separation of points */
+			gmt_M_set_delta_lon (lon[i-1], lon[i], dlon);	/* Beware of jumps due to sign differences */
+			if (MIN (f_lat_a, f_lat_b) > 75.0)	/* Enforce closer sampling close to poles */
+				boost = 1.0 + 10.0 * (MAX(f_lat_a, f_lat_b) - 75.0);	/* Crude way to get a boost from 1 at 75 to ~151 at the pole */
+			else if ((c = fabs (fabs (dlon)-180.0)) < 5.0)	/* Enforce closer sampling if points are ~180 degrees apart in longitude */
+				boost = 1.0 + 10.0 * c;	/* Crude way to get a boost when we are close to points along antimeridian */
+			else
+				boost = 1.0;
+		}
+		else	/* No boost needed */
 			boost = 1.0;
 
 		if (mode == GMT_STAIRS_Y) {	/* First follow meridian, then parallel */
@@ -1475,7 +1482,6 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			}
 			k = 0;
 		}
-
 		/* Follow great circle */
 		else if ((theta = d_acosd (gmt_dot3v (GMT, a, b))) == 180.0) {	/* trouble, no unique great circle */
 			if (gmt_M_is_spherical (GMT) || ((lat[i] + lat[i-1]) == 0.0)) {
@@ -1488,7 +1494,48 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			}
 			return 0;
 		}
-
+		else if (doubleAlmostEqual (fabs (fmod (lon[i-1] - lon[i], 360)), 180.0)) {
+			/* Must march along the two meridians through the nearest pole */
+			double sL = lat[i-1] + lat[i], dy;
+			double Narc = 180.0 - sL, Sarc = 180.0 + sL;	/* Compute the arc lengths of the two pole passes */
+			if (Narc < Sarc) {	/* Shortest path is to connect through N pole */
+				n_step = lrint ((90.0 - lat[i-1]) / step);	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
+				dy = (90.0 - lat[i-1]) / n_step;	/* Ensure we land exactly on N pole */
+				for (j = 1; j <= n_step; j++) {	/* Start at 1 since 0 is lon[i-1] and end exactly at pole */
+					gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+					GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1];	/* Keep longitude constant */
+					GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i-1] + j * dy;	/* March towards N pole */
+					n_new++;
+				}
+				n_step = lrint ((90.0 - lat[i]) / step);	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
+				dy = (90.0 - lat[i]) / n_step;	/* Ensure we start exactly on N pole */
+				for (j = 0; j < n_step; j++) {	/* Start at 0 to pick up N pole */
+					gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+					GMT->hidden.mem_coord[GMT_X][n_new] = lon[1];
+					GMT->hidden.mem_coord[GMT_Y][n_new] = 90.0 - j * dy;
+					n_new++;
+				}
+			}
+			else {	/* Must connect via S pole */
+				n_step = lrint ((lat[i-1] + 90.0) / step);	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
+				dy = (lat[i-1] + 90.0) / n_step;	/* Ensure we land exactly on S pole */
+				for (j = 1; j <= n_step; j++) {	/* Start at 1 since 0 is lon[i-1] and end exactly at pole */
+					gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+					GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1];
+					GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i-1] - j * dy;
+					n_new++;
+				}
+				n_step = lrint ((lat[i] + 90.0) / step);	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
+				dy = (lat[i] + 90.0) / n_step;	/* Ensure we start exactly on S pole */
+				for (j = 0; j < n_step; j++) {	/* Start at 0 to pick up S pole */
+					gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+					GMT->hidden.mem_coord[GMT_X][n_new] = lon[1];
+					GMT->hidden.mem_coord[GMT_Y][n_new] = j * dy - 90.0;
+					n_new++;
+				}
+			}
+			/* Next point is now point i */
+		}
 		else if ((n_step = lrint (boost * theta / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			fraction = 1.0 / (double)n_step;
 			minlon = MIN (lon[i-1], lon[i]);

@@ -1877,7 +1877,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 									}
 								}
 								if (!S.custom->start) S.custom->start = (get_rgb) ? 3 : 2;
-								gmt_draw_custom_symbol (GMT, xpos[item], plot_y, dim, S.custom, &current_pen, &current_fill, outline_active);
+								gmt_draw_custom_symbol (GMT, xpos[item], plot_y, dim, In->text, S.custom, &current_pen, &current_fill, outline_active);
 								break;
 						} /* End of switch */
 					} /* End of item loop */
