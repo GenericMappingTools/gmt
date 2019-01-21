@@ -3,52 +3,53 @@
 [![TravisCI](http://img.shields.io/travis/GenericMappingTools/gmt/master.svg?label=TravisCI)](https://travis-ci.org/GenericMappingTools/gmt)
 [![CodeCov](https://img.shields.io/codecov/c/github/GenericMappingTools/gmt.svg)](https://codecov.io/gh/GenericMappingTools/gmt/)
 [![Coverity](https://scan.coverity.com/projects/7153/badge.svg)](https://scan.coverity.com/projects/gmt)
+[![Documentation (development version)](https://img.shields.io/badge/docs-development-green.svg)](https://genericmappingtools.github.io/gmt/dev/)
 
 ## What is GMT?
 
-GMT is an open source collection of about 80 command-line tools for manipulating 
-geographic and Cartesian data sets (including filtering, trend fitting, gridding, 
-projecting, etc.) and producing PostScript illustrations ranging from simple x–y 
-plots via contour maps to artificially illuminated surfaces and 3D perspective 
-views. The GMT supplements add another 40 more specialized and discipline-specific 
-tools. GMT supports over 30 map projections and transformations and requires 
-support data such as [GSHHG](http://www.soest.hawaii.edu/pwessel/gshhg/) 
-coastlines, rivers, and political boundaries and optionally 
-[DCW](http://www.soest.hawaii.edu/pwessel/dcw) country polygons. 
+GMT is an open source collection of about 80 command-line tools for manipulating
+geographic and Cartesian data sets (including filtering, trend fitting, gridding,
+projecting, etc.) and producing PostScript illustrations ranging from simple x–y
+plots via contour maps to artificially illuminated surfaces and 3D perspective
+views. The GMT supplements add another 40 more specialized and discipline-specific
+tools. GMT supports over 30 map projections and transformations and requires
+support data such as [GSHHG](http://www.soest.hawaii.edu/pwessel/gshhg/)
+coastlines, rivers, and political boundaries and optionally
+[DCW](http://www.soest.hawaii.edu/pwessel/dcw) country polygons.
 
-GMT is developed and maintained by Paul Wessel, Walter H. F. Smith, Remko Scharroo, 
-Joaquim Luis and Florian Wobbe, with help from a global set of 
-[contributors](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Volunteers) and 
-support by the [National Science Foundation](http://www.nsf.gov/). 
-It is released under the 
-[GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html) 
+GMT is developed and maintained by Paul Wessel, Walter H. F. Smith, Remko Scharroo,
+Joaquim Luis and Florian Wobbe, with help from a global set of
+[contributors](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Volunteers) and
+support by the [National Science Foundation](http://www.nsf.gov/).
+It is released under the
+[GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
 version 3 or any later version.
 
 ## The GMT World Domination
 
-Considering its flexibility at no charge, people worldwide are using GMT in their 
-work and at home. Most users of GMT are Earth, ocean or planetary scientists, but 
-there are apparently no limits to the kind of applications that may benefit from 
-GMT. We know GMT is used in medical research, engineering, physics, mathematics, 
-social and biological sciences, and by geographers, fisheries institutes, oil 
-companies, a wide range of government agencies, and last but not least innumerable 
+Considering its flexibility at no charge, people worldwide are using GMT in their
+work and at home. Most users of GMT are Earth, ocean or planetary scientists, but
+there are apparently no limits to the kind of applications that may benefit from
+GMT. We know GMT is used in medical research, engineering, physics, mathematics,
+social and biological sciences, and by geographers, fisheries institutes, oil
+companies, a wide range of government agencies, and last but not least innumerable
 hobbyists.
 
 ![Map of GMT downloads](http://gmt.soest.hawaii.edu/gmt/map_geoip_all.png)
 
-The map above illustrates the spreading of the current GMT release around the world 
-based on web traffic. Each colored circle in the map above represents a 15x15 arc 
-minute block with one or more users who downloaded GMT. Download geolocation is based 
+The map above illustrates the spreading of the current GMT release around the world
+based on web traffic. Each colored circle in the map above represents a 15x15 arc
+minute block with one or more users who downloaded GMT. Download geolocation is based
 on [MaxMind's](http://www.maxmind.com/) freely available GeoLite data.
 
 ## A reminder
 
 If you think it is appropriate, you may consider paying us back by including
-our latest EOS article in the reference list of your future publications that 
+our latest EOS article in the reference list of your future publications that
 will benefit from the availability of GMT:
 
-> Wessel, P., W. H. F. Smith, R. Scharroo, J. F. Luis, and F. Wobbe (2013), 
-> Generic Mapping Tools: Improved version released, Eos Trans. AGU, 94(45), 
+> Wessel, P., W. H. F. Smith, R. Scharroo, J. F. Luis, and F. Wobbe (2013),
+> Generic Mapping Tools: Improved version released, Eos Trans. AGU, 94(45),
 > 409-410, doi:[10.1002/2013EO450001](https://doi.org/10.1002/2013EO450001)
 
 ## Introduction
@@ -151,7 +152,7 @@ you to minimize transmission times:
 | GDS, Vienna U. of Technology, AUSTRIA                       | gd.tuwien.ac.at         |
 | TENET, Tertiary Education & Research Networks, SOUTH AFRICA | gmt.mirror.ac.za        |
 
-The development sources are available from GitHub at 
+The development sources are available from GitHub at
 https://github.com/GenericMappingTools/gmt.
 
 Extract the files and put them in a separate directory (need not be
