@@ -20,20 +20,6 @@
 
 include (ManageString)
 
-# gmt_datums.h
-macro (gen_gmt_datums_h)
-	file2list (_datums_file ${GMT_SRC}/src/Datums.txt)
-	list_regex_replace (
-		"^([^#\t]+)[\t]+([^\t]+)[\t]+([^\t]+)[\t]+([^\t]+)[\t]+([^\t]+)[\t]+(.+)"
-		"\t\t{\"\\\\1\", \"\\\\2\", \"\\\\6\", {\\\\3, \\\\4, \\\\5}}"
-		_datums ${_datums_file}
-		MATCHES_ONLY)
-	list (REMOVE_DUPLICATES _datums)
-	string (REPLACE ";" ",\n" _datums "${_datums}")
-	string_unescape (_datums "${_datums}" NOESCAPE_SEMICOLON)
-	file (WRITE gmt_datums.h "${_datums}\n")
-endmacro (gen_gmt_datums_h)
-
 macro (gen_gmt_colors_h)
 	# gmt_colornames.h
 	file2list (_color_file ${GMT_SRC}/src/Colors.txt)
@@ -82,30 +68,6 @@ endmacro (gen_gmt_colors_h)
 #	file (WRITE Fonts.i ".br\n${_fonts_man}\n")
 #endmacro (gen_ps_font_info)
 
-macro (gen_gmt_ellipsoids)
-	# gmt_ellipsoids.h
-	file2list (_ellipsnames_file ${GMT_SRC}/src/Ellipsoids.txt)
-	list_regex_replace (
-		"^([^#\t]+)[ \t]+([0-9]+)[ \t]+([0-9.]+)[ \t]+([0-9.]+)[ \t]+:.*"
-		"\t\t{\"\\\\1\", \\\\2, \\\\3, 1.0/\\\\4}"
-		_ellipsnames ${_ellipsnames_file}
-		MATCHES_ONLY)
-	list (REMOVE_DUPLICATES _ellipsnames)
-	string (REPLACE "1.0/0}" "0}" _ellipsnames "${_ellipsnames}")
-	string (REPLACE ";" ",\n" _ellipsnames "${_ellipsnames}")
-	file (WRITE gmt_ellipsoids.h "${_ellipsnames}\n")
-
-#	# Ellipsoids.i
-#	list_regex_replace (
-#		"^([^#\t]+)[ \t]+([0-9]+)[ \t]+[0-9.]+[ \t]+[0-9.]+[ \t]+:[ \t]+(.*)"
-#		"\\\\1: \\\\3 (\\\\2)"
-#		_ellipsnames ${_ellipsnames_file}
-#		MATCHES_ONLY)
-#	list (REMOVE_DUPLICATES _ellipsnames)
-#	string (REPLACE ";" "\n.br\n" _ellipsnames "${_ellipsnames}")
-#	file (WRITE Ellipsoids.i "${_ellipsnames}\n")
-endmacro (gen_gmt_ellipsoids)
-
 macro (gen_gmt_keywords_h)
 	# gmt_keycases.h
 	file2list (_gmtkeywords_file
@@ -147,15 +109,15 @@ macro (gen_gmt_dimensions_h)
 	file2list (_file_lines ${GMT_SRC}/src/gmt_unique.h)
 	list (REMOVE_DUPLICATES _file_lines)
 	list (LENGTH _file_lines GMT_N_UNIQUE)
+	file2list (_file_lines ${GMT_SRC}/src/gmt_ellipsoids.h)
+	list (LENGTH _file_lines GMT_N_ELLIPSOIDS)
+	file2list (_file_lines ${GMT_SRC}/src/gmt_datums.h)
+	list (LENGTH _file_lines GMT_N_DATUMS)
 	file2list (_file_lines ${GMT_SRC}/src/gmt_cpt_masters.h)
 	list (REMOVE_DUPLICATES _file_lines)
 	list (LENGTH _file_lines GMT_N_CPT_MASTERS)
 
-	# count lines in generated heders
-	file2list (_file_lines gmt_datums.h)
-	list (LENGTH _file_lines GMT_N_DATUMS)
-	file2list (_file_lines gmt_ellipsoids.h)
-	list (LENGTH _file_lines GMT_N_ELLIPSOIDS)
+	# count lines in generated headers
 	file2list (_file_lines gmt_colornames.h)
 	list (LENGTH _file_lines GMT_N_COLOR_NAMES)
 	file2list (_file_lines gmt_keycases.h)
@@ -316,14 +278,10 @@ macro (gen_grd_math_h)
 endmacro (gen_grd_math_h)
 
 # Get something done
-if (GENERATE_COMMAND STREQUAL gen_gmt_datums_h)
-	gen_gmt_datums_h ()
-elseif (GENERATE_COMMAND STREQUAL gen_gmt_colors_h)
+if (GENERATE_COMMAND STREQUAL gen_gmt_colors_h)
 	gen_gmt_colors_h ()
 elseif (GENERATE_COMMAND STREQUAL gen_ps_font_info)
 	gen_ps_font_info ()
-elseif (GENERATE_COMMAND STREQUAL gen_gmt_ellipsoids)
-	gen_gmt_ellipsoids ()
 elseif (GENERATE_COMMAND STREQUAL gen_gmt_keywords_h)
 	gen_gmt_keywords_h ()
 elseif (GENERATE_COMMAND STREQUAL gen_gmt_dimensions_h)
@@ -334,6 +292,6 @@ elseif (GENERATE_COMMAND STREQUAL gen_grd_math_h)
 	gen_grd_math_h ()
 elseif (DEFINED GENERATE_COMMAND)
 	message (SEND_ERROR "Unknown command: ${GENERATE_COMMAND}")
-endif (GENERATE_COMMAND STREQUAL gen_gmt_datums_h)
+endif (GENERATE_COMMAND STREQUAL gen_gmt_colors_h)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
