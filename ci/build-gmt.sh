@@ -28,7 +28,7 @@ echo "Using the following cmake configuration:"
 cat cmake/ConfigUser.cmake
 echo ""
 
-mkdir build && cd build
+mkdir -p build && cd build
 
 cmake ..
 
