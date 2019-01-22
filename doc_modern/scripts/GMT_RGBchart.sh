@@ -43,7 +43,8 @@ fontsize=`gmt math -Q $HEIGHT $ROW DIV $rectheight MUL 0.6 MUL 72 MUL =`
 fontsizeL=`gmt math -Q $HEIGHT $ROW DIV $textheight MUL 0.7 MUL 72 MUL =`
 
 # Produce $allinfo from color and name files
-egrep -v "^#|grey" "${GMT_SOURCE_DIR}"/src/Colors.txt | $AWK -v COL=$COL -v ROW=$ROW \
+paste ${GMT_SOURCE_DIR}/src/gmt_color_rgb.h ${GMT_SOURCE_DIR}/src/gmt_colornames.h | tr '{,}"' ' ' > Colors.txt
+egrep -v "^#|grey" Colors.txt | $AWK -v COL=$COL -v ROW=$ROW \
 	'BEGIN{col=0;row=0}{if(col==0&&row<2){col++};if ($1 == $2 && $2 == $3) {printf "%s", $1} else {printf "%s/%s/%s", $1, $2,
 	$3};printf " %g %s %g %g\n",0.299*$1+0.587*$2+0.114*$3,$4,col,row;col++;if(col==COL){col=0;row++}}' > $allinfo
 

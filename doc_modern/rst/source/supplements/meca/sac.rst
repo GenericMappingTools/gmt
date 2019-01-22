@@ -202,7 +202,7 @@ Optional Arguments
 .. include:: ../../explain_-h.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
-.. include:: explain_perspective.rst_
+.. include:: ../../explain_perspective.rst_
 
 .. include:: ../../explain_-t.rst_
 
