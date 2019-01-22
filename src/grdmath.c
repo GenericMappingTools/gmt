@@ -175,7 +175,216 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"\tThe operators and number of input and output arguments are:\n\n"
 		"\tName       #args   Returns\n"
 		"\t--------------------------\n");
-#include "grdmath_explain.h"
+	GMT_Message (API, GMT_TIME_NONE, 
+		"	ABS        1  1    abs (A)\n"
+		"	ACOS       1  1    acos (A)\n"
+		"	ACOSH      1  1    acosh (A)\n"
+		"	ACOT       1  1    acot (A)\n"
+		"	ACOTH      1  1    acoth (A)\n"
+		"	ACSC       1  1    acsc (A)\n"
+		"	ACSCH      1  1    acsch (A)\n"
+		"	ADD        2  1    A + B\n"
+		"	AND        2  1    B if A == NaN, else A\n"
+		"	ARC        2  1    arc(A, B) = pi - |pi - |a-b|| for A, B in radians\n"
+		"	AREA       0  1    Area of each gridnode cell (spherical calculation in km^2 if geographic)\n"
+		"	ASEC       1  1    asec (A)\n"
+		"	ASECH      1  1    asech (A)\n"
+		"	ASIN       1  1    asin (A)\n"
+		"	ASINH      1  1    asinh (A)\n"
+		"	ATAN       1  1    atan (A)\n"
+		"	ATAN2      2  1    atan2 (A, B)\n"
+		"	ATANH      1  1    atanh (A)\n"
+		"	BCDF       3  1    Binomial cumulative distribution function for p = A, n = B and x = C\n"
+		"	BPDF       3  1    Binomial probability density function for p = A, n = B and x = C\n"
+		"	BEI        1  1    bei (A)\n"
+		"	BER        1  1    ber (A)\n"
+		"	BITAND     2  1    A & B (bitwise AND operator)\n"
+		"	BITLEFT    2  1    A << B (bitwise left-shift operator)\n"
+		"	BITNOT     1  1    ~A (bitwise NOT operator, i.e., return two's complement)\n"
+		"	BITOR      2  1    A | B (bitwise OR operator)\n"
+		"	BITRIGHT   2  1    A >> B (bitwise right-shift operator)\n"
+		"	BITTEST    2  1    1 if bit B of A is set, else 0 (bitwise TEST operator)\n"
+		"	BITXOR     2  1    A ^ B (bitwise XOR operator)\n"
+		"	CAZ        2  1    Cartesian azimuth from grid nodes to stack x,y\n"
+		"	CBAZ       2  1    Cartesian back-azimuth from grid nodes to stack x,y\n"
+		"	CDIST      2  1    Cartesian distance between grid nodes and stack x,y\n"
+		"	CDIST2     2  1    As CDIST but only to nodes that are != 0\n"
+		"	CEIL       1  1    ceil (A) (smallest integer >= A)\n"
+		"	CHI2CRIT   2  1    Chi-squared distribution critical value for alpha = A and nu = B\n"
+		"	CHI2CDF    2  1    Chi-squared cumulative distribution function for chi2 = A and nu = B\n"
+		"	CHI2PDF    2  1    Chi-squared probability density function for chi = A and nu = B\n"
+		"	COMB       2  1    Combinations n_C_r, with n = A and r = B\n"
+		"	CORRCOEFF  2  1    Correlation coefficient r(A, B)\n"
+		"	COS        1  1    cos (A) (A in radians)\n"
+		"	COSD       1  1    cos (A) (A in degrees)\n"
+		"	COSH       1  1    cosh (A)\n"
+		"	COT        1  1    cot (A) (A in radians)\n"
+		"	COTD       1  1    cot (A) (A in degrees)\n"
+		"	COTH       1  1    coth (A)\n"
+		"	PCDF       2  1    Poisson cumulative distribution function x = A and lambda = B\n"
+		"	PPDF       2  1    Poisson probability density function for x = A and lambda = B\n"
+		"	CSC        1  1    csc (A) (A in radians)\n"
+		"	CSCD       1  1    csc (A) (A in degrees)\n"
+		"	CSCH       1  1    csch (A)\n"
+		"	CURV       1  1    Curvature of A (Laplacian)\n"
+		"	D2DX2      1  1    d^2(A)/dx^2 2nd derivative\n"
+		"	D2DY2      1  1    d^2(A)/dy^2 2nd derivative\n"
+		"	D2DXY      1  1    d^2(A)/dxdy 2nd derivative\n"
+		"	D2R        1  1    Converts Degrees to Radians\n"
+		"	DDX        1  1    d(A)/dx Central 1st derivative\n"
+		"	DDY        1  1    d(A)/dy Central 1st derivative\n"
+		"	DEG2KM     1  1    Converts Spherical Degrees to Kilometers\n"
+		"	DENAN      2  1    Replace NaNs in A with values from B\n"
+		"	DILOG      1  1    dilog (A)\n"
+		"	DIV        2  1    A / B\n"
+		"	DUP        1  2    Places duplicate of A on the stack\n"
+		"	ECDF       2  1    Exponential cumulative distribution function for x = A and lambda = B\n"
+		"	ECRIT      2  1    Exponential distribution critical value for alpha = A and lambda = B\n"
+		"	EPDF       2  1    Exponential probability density function for x = A and lambda = B\n"
+		"	ERF        1  1    Error function erf (A)\n"
+		"	ERFC       1  1    Complementary Error function erfc (A)\n"
+		"	EQ         2  1    1 if A == B, else 0\n"
+		"	ERFINV     1  1    Inverse error function of A\n"
+		"	EXCH       2  2    Exchanges A and B on the stack\n"
+		"	EXP        1  1    exp (A)\n"
+		"	FACT       1  1    A! (A factorial)\n"
+		"	EXTREMA    1  1    Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere\n"
+		"	FCRIT      3  1    F distribution critical value for alpha = A, nu1 = B, and nu2 = C\n"
+		"	FCDF       3  1    F cumulative distribution function for F = A, nu1 = B, and nu2 = C\n"
+		"	FLIPLR     1  1    Reverse order of values in each row\n"
+		"	FLIPUD     1  1    Reverse order of values in each column\n"
+		"	FLOOR      1  1    floor (A) (greatest integer <= A)\n"
+		"	FMOD       2  1    A % B (remainder after truncated division)\n"
+		"	FPDF       3  1    F probability density function for F = A, nu1 = B and nu2 = C\n"
+		"	GE         2  1    1 if A >= B, else 0\n"
+		"	GT         2  1    1 if A > B, else 0\n"
+		"	HYPOT      2  1    hypot (A, B) = sqrt (A*A + B*B)\n"
+		"	I0         1  1    Modified Bessel function of A (1st kind, order 0)\n"
+		"	I1         1  1    Modified Bessel function of A (1st kind, order 1)\n"
+		"	IFELSE     3  1    B if A != 0, else C\n"
+		"	IN         2  1    Modified Bessel function of A (1st kind, order B)\n"
+		"	INRANGE    3  1    1 if B <= A <= C, else 0\n"
+		"	INSIDE     1  1    1 when inside or on polygon(s) in A, else 0\n"
+		"	INV        1  1    1 / A\n"
+		"	ISFINITE   1  1    1 if A is finite, else 0\n"
+		"	ISNAN      1  1    1 if A == NaN, else 0\n"
+		"	J0         1  1    Bessel function of A (1st kind, order 0)\n"
+		"	J1         1  1    Bessel function of A (1st kind, order 1)\n"
+		"	JN         2  1    Bessel function of A (1st kind, order B)\n"
+		"	K0         1  1    Modified Kelvin function of A (2nd kind, order 0)\n"
+		"	K1         1  1    Modified Bessel function of A (2nd kind, order 1)\n"
+		"	KEI        1  1    kei (A)\n"
+		"	KER        1  1    ker (A)\n"
+		"	KM2DEG     1  1    Converts Kilometers to Spherical Degrees\n"
+		"	KN         2  1    Modified Bessel function of A (2nd kind, order B)\n"
+		"	KURT       1  1    Kurtosis of A\n"
+		"	LCDF       1  1    Laplace cumulative distribution function for z = A\n"
+		"	LCRIT      1  1    Laplace distribution critical value for alpha = A\n"
+		"	LDIST      1  1    Compute minimum distance (in km if -fg) from lines in multi-segment ASCII file A\n"
+		"	LDISTG     0  1    As LDIST, but operates on the GSHHG dataset (see -A, -D for options)\n"
+		"	LDIST2     2  1    As LDIST, from lines in ASCII file B but only to nodes where A != 0\n"
+		"	LE         2  1    1 if A <= B, else 0\n"
+		"	LOG        1  1    log (A) (natural log)\n"
+		"	LOG10      1  1    log10 (A) (base 10)\n"
+		"	LOG1P      1  1    log (1+A) (accurate for small A)\n"
+		"	LOG2       1  1    log2 (A) (base 2)\n"
+		"	LMSSCL     1  1    LMS scale estimate (LMS STD) of A\n"
+		"	LMSSCLW    1  1    Weighted LMS scale estimate (LMS STD) of A for weights in B\n"
+		"	LOWER      1  1    The lowest (minimum) value of A\n"
+		"	LPDF       1  1    Laplace probability density function for z = A\n"
+		"	LRAND      2  1    Laplace random noise with mean A and std. deviation B\n"
+		"	LT         2  1    1 if A < B, else 0\n"
+		"	MAD        1  1    Median Absolute Deviation (L1 STD) of A\n"
+		"	MADW       2  1    Weighted Median Absolute Deviation (L1 STD) of A for weights in B\n"
+		"	MAX        2  1    Maximum of A and B\n"
+		"	MEAN       1  1    Mean value of A\n"
+		"	MEANW      2  1    Weighted mean value of A for weights in B\n"
+		"	MEDIAN     1  1    Median value of A\n"
+		"	MEDIANW    2  1    Weighted median value of A for weights in B\n"
+		"	MIN        2  1    Minimum of A and B\n"
+		"	MOD        2  1    A mod B (remainder after floored division)\n"
+		"	MODE       1  1    Mode value (Least Median of Squares) of A\n"
+		"	MODEW      2  1    Weighted mode value of A for weights in B\n"
+		"	MUL        2  1    A * B\n"
+		"	NAN        2  1    NaN if A == B, else A\n"
+		"	NEG        1  1    -A\n"
+		"	NEQ        2  1    1 if A != B, else 0\n"
+		"	NORM       1  1    Normalize (A) so max(A)-min(A) = 1\n"
+		"	NOT        1  1    NaN if A == NaN, 1 if A == 0, else 0\n"
+		"	NRAND      2  1    Normal, random values with mean A and std. deviation B\n"
+		"	OR         2  1    NaN if B == NaN, else A\n"
+		"	PDIST      1  1    Compute minimum distance (in km if -fg) from points in ASCII file A\n"
+		"	PDIST2     2  1    As PDIST, from points in ASCII file B but only to nodes where A != 0\n"
+		"	PERM       2  1    Permutations n_P_r, with n = A and r = B\n"
+		"	POP        1  0    Delete top element from the stack\n"
+		"	PLM        3  1    Associated Legendre polynomial P(A) degree B order C\n"
+		"	PLMg       3  1    Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention)\n"
+		"	POINT      1  2    Return mean_x mean_y of points in ASCII file A\n"
+		"	POW        2  1    A ^ B\n"
+		"	PQUANT     2  1    The B'th Quantile (0-100%) of A\n"
+		"	PQUANTW    3  1    The C'th Quantile (0-100%) of A for weights in B\n"
+		"	PSI        1  1    Psi (or Digamma) of A\n"
+		"	PV         3  1    Legendre function Pv(A) of degree v = real(B) + imag(C)\n"
+		"	QV         3  1    Legendre function Qv(A) of degree v = real(B) + imag(C)\n"
+		"	R2         2  1    R2 = A^2 + B^2\n"
+		"	R2D        1  1    Convert Radians to Degrees\n"
+		"	RAND       2  1    Uniform random values between A and B\n"
+		"	RCDF       1  1    Rayleigh cumulative distribution function for z = A\n"
+		"	RCRIT      1  1    Rayleigh distribution critical value for alpha = A\n"
+		"	RINT       1  1    rint (A) (round to integral value nearest to A)\n"
+		"	RMS        1  1    Root-mean-square of A\n"
+		"	RMSW       2  1    Weighted Root-mean-square of A for weights in B\n"
+		"	RPDF       1  1    Rayleigh probability density function for z = A\n"
+		"	ROLL       2  0    Cyclicly shifts the top A stack items by an amount B\n"
+		"	ROTX       2  1    Rotate A by the (constant) shift B in x-direction\n"
+		"	ROTY       2  1    Rotate A by the (constant) shift B in y-direction\n"
+		"	SDIST      2  1    Spherical distance (in km) between grid nodes and stack lon,lat (A, B)\n"
+		"	SDIST2     2  1    As SDIST but only to nodes that are != 0\n"
+		"	SAZ        2  1    Spherical azimuth from grid nodes to stack x,y\n"
+		"	SBAZ       2  1    Spherical back-azimuth from grid nodes to stack x,y\n"
+		"	SEC        1  1    sec (A) (A in radians)\n"
+		"	SECD       1  1    sec (A) (A in degrees)\n"
+		"	SECH       1  1    sech (A)\n"
+		"	SIGN       1  1    sign (+1 or -1) of A\n"
+		"	SIN        1  1    sin (A) (A in radians)\n"
+		"	SINC       1  1    sinc (A) (sin (pi*A)/(pi*A))\n"
+		"	SIND       1  1    sin (A) (A in degrees)\n"
+		"	SINH       1  1    sinh (A)\n"
+		"	SKEW       1  1    Skewness of A\n"
+		"	SQR        1  1    A^2\n"
+		"	SQRT       1  1    sqrt (A)\n"
+		"	STD        1  1    Standard deviation of A\n"
+		"	STDW       2  1    Weighted standard deviation of A for weights in B\n"
+		"	STEP       1  1    Heaviside step function: H(A)\n"
+		"	STEPX      1  1    Heaviside step function in x: H(x-A)\n"
+		"	STEPY      1  1    Heaviside step function in y: H(y-A)\n"
+		"	SUB        2  1    A - B\n"
+		"	SUM        1  1    Sum of all values in A\n"
+		"	TAN        1  1    tan (A) (A in radians)\n"
+		"	TAND       1  1    tan (A) (A in degrees)\n"
+		"	TANH       1  1    tanh (A)\n"
+		"	TAPER      2  1    Unit weights cosine-tapered to zero within A and B of x and y grid margins\n"
+		"	TN         2  1    Chebyshev polynomial Tn(-1<t<+1,n), with t = A, and n = B\n"
+		"	TCRIT      2  1    Student's t-distribution critical value for alpha = A and nu = B\n"
+		"	TCDF       2  1    Student's t cumulative distribution function for t = A, and nu = B\n"
+		"	TPDF       2  1    Student's t probability density function for t = A and nu = B\n"
+		"	TRIM       3  1    Alpha-trimming for %%-left = A, %%-right = B, and grid = C\n"
+		"	UPPER      1  1    The highest (maximum) value of A\n"
+		"	VAR        1  1    Variance of A\n"
+		"	VARW       2  1    Weighted variance of A for weights in B\n"
+		"	WCDF       3  1    Weibull cumulative distribution function for x = A, scale = B, and shape = C\n"
+		"	WCRIT      3  1    Weibull distribution critical value for alpha = A, scale = B, and shape = C\n"
+		"	WPDF       3  1    Weibull probability density function for x = A, scale = B and shape = C\n"
+		"	WRAP       1  1    wrap (A). (A in radians)\n"
+		"	XOR        2  1    0 if A == NaN and B == NaN, NaN if B == NaN, else A\n"
+		"	Y0         1  1    Bessel function of A (2nd kind, order 0)\n"
+		"	Y1         1  1    Bessel function of A (2nd kind, order 1)\n"
+		"	YLM        2  2    Re and Im orthonormalized spherical harmonics degree A order B\n"
+		"	YLMg       2  2    Cos and Sin normalized spherical harmonics degree A order B (geophysical convention)\n"
+		"	YN         2  1    Bessel function of A (2nd kind, order B)\n"
+		"	ZCRIT      1  1    Normal distribution critical value for alpha = A\n"
+		"	ZCDF       1  1    Normal cumulative distribution function for z = A\n"
+		"	ZPDF       1  1    Normal probability density function for z = A\n");
 	GMT_Message (API, GMT_TIME_NONE,
 		"\n\tThe special symbols are:\n\n"
 		"\tPI                     = 3.1415926...\n"
@@ -4736,7 +4945,222 @@ GMT_LOCAL void grd_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 
 /* ---------------------- end operator functions --------------------- */
 
-#include "grdmath.h"
+#define GRDMATH_N_OPERATORS 209
+
+static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
+{
+	/* Operator function	# of operands	# of outputs */
+
+	ops[0] = grd_ABS;	n_args[0] = 1;	n_out[0] = 1;
+	ops[1] = grd_ACOS;	n_args[1] = 1;	n_out[1] = 1;
+	ops[2] = grd_ACOSH;	n_args[2] = 1;	n_out[2] = 1;
+	ops[3] = grd_ACOT;	n_args[3] = 1;	n_out[3] = 1;
+	ops[4] = grd_ACOTH;	n_args[4] = 1;	n_out[4] = 1;
+	ops[5] = grd_ACSC;	n_args[5] = 1;	n_out[5] = 1;
+	ops[6] = grd_ACSCH;	n_args[6] = 1;	n_out[6] = 1;
+	ops[7] = grd_ADD;	n_args[7] = 2;	n_out[7] = 1;
+	ops[8] = grd_AND;	n_args[8] = 2;	n_out[8] = 1;
+	ops[9] = grd_ARC;	n_args[9] = 2;	n_out[9] = 1;
+	ops[10] = grd_AREA;	n_args[10] = 0;	n_out[10] = 1;
+	ops[11] = grd_ASEC;	n_args[11] = 1;	n_out[11] = 1;
+	ops[12] = grd_ASECH;	n_args[12] = 1;	n_out[12] = 1;
+	ops[13] = grd_ASIN;	n_args[13] = 1;	n_out[13] = 1;
+	ops[14] = grd_ASINH;	n_args[14] = 1;	n_out[14] = 1;
+	ops[15] = grd_ATAN;	n_args[15] = 1;	n_out[15] = 1;
+	ops[16] = grd_ATAN2;	n_args[16] = 2;	n_out[16] = 1;
+	ops[17] = grd_ATANH;	n_args[17] = 1;	n_out[17] = 1;
+	ops[18] = grd_BCDF;	n_args[18] = 3;	n_out[18] = 1;
+	ops[19] = grd_BPDF;	n_args[19] = 3;	n_out[19] = 1;
+	ops[20] = grd_BEI;	n_args[20] = 1;	n_out[20] = 1;
+	ops[21] = grd_BER;	n_args[21] = 1;	n_out[21] = 1;
+	ops[22] = grd_BITAND;	n_args[22] = 2;	n_out[22] = 1;
+	ops[23] = grd_BITLEFT;	n_args[23] = 2;	n_out[23] = 1;
+	ops[24] = grd_BITNOT;	n_args[24] = 1;	n_out[24] = 1;
+	ops[25] = grd_BITOR;	n_args[25] = 2;	n_out[25] = 1;
+	ops[26] = grd_BITRIGHT;	n_args[26] = 2;	n_out[26] = 1;
+	ops[27] = grd_BITTEST;	n_args[27] = 2;	n_out[27] = 1;
+	ops[28] = grd_BITXOR;	n_args[28] = 2;	n_out[28] = 1;
+	ops[29] = grd_CAZ;	n_args[29] = 2;	n_out[29] = 1;
+	ops[30] = grd_CBAZ;	n_args[30] = 2;	n_out[30] = 1;
+	ops[31] = grd_CDIST;	n_args[31] = 2;	n_out[31] = 1;
+	ops[32] = grd_CDIST2;	n_args[32] = 2;	n_out[32] = 1;
+	ops[33] = grd_CEIL;	n_args[33] = 1;	n_out[33] = 1;
+	ops[34] = grd_CHI2CRIT;	n_args[34] = 2;	n_out[34] = 1;
+	ops[35] = grd_CHI2CDF;	n_args[35] = 2;	n_out[35] = 1;
+	ops[36] = grd_CHI2PDF;	n_args[36] = 2;	n_out[36] = 1;
+	ops[37] = grd_COMB;	n_args[37] = 2;	n_out[37] = 1;
+	ops[38] = grd_CORRCOEFF;	n_args[38] = 2;	n_out[38] = 1;
+	ops[39] = grd_COS;	n_args[39] = 1;	n_out[39] = 1;
+	ops[40] = grd_COSD;	n_args[40] = 1;	n_out[40] = 1;
+	ops[41] = grd_COSH;	n_args[41] = 1;	n_out[41] = 1;
+	ops[42] = grd_COT;	n_args[42] = 1;	n_out[42] = 1;
+	ops[43] = grd_COTD;	n_args[43] = 1;	n_out[43] = 1;
+	ops[44] = grd_COTH;	n_args[44] = 1;	n_out[44] = 1;
+	ops[45] = grd_PCDF;	n_args[45] = 2;	n_out[45] = 1;
+	ops[46] = grd_PPDF;	n_args[46] = 2;	n_out[46] = 1;
+	ops[47] = grd_CSC;	n_args[47] = 1;	n_out[47] = 1;
+	ops[48] = grd_CSCD;	n_args[48] = 1;	n_out[48] = 1;
+	ops[49] = grd_CSCH;	n_args[49] = 1;	n_out[49] = 1;
+	ops[50] = grd_CURV;	n_args[50] = 1;	n_out[50] = 1;
+	ops[51] = grd_D2DX2;	n_args[51] = 1;	n_out[51] = 1;
+	ops[52] = grd_D2DY2;	n_args[52] = 1;	n_out[52] = 1;
+	ops[53] = grd_D2DXY;	n_args[53] = 1;	n_out[53] = 1;
+	ops[54] = grd_D2R;	n_args[54] = 1;	n_out[54] = 1;
+	ops[55] = grd_DDX;	n_args[55] = 1;	n_out[55] = 1;
+	ops[56] = grd_DDY;	n_args[56] = 1;	n_out[56] = 1;
+	ops[57] = grd_DEG2KM;	n_args[57] = 1;	n_out[57] = 1;
+	ops[58] = grd_DENAN;	n_args[58] = 2;	n_out[58] = 1;
+	ops[59] = grd_DILOG;	n_args[59] = 1;	n_out[59] = 1;
+	ops[60] = grd_DIV;	n_args[60] = 2;	n_out[60] = 1;
+	ops[61] = grd_DUP;	n_args[61] = 1;	n_out[61] = 2;
+	ops[62] = grd_ECDF;	n_args[62] = 2;	n_out[62] = 1;
+	ops[63] = grd_ECRIT;	n_args[63] = 2;	n_out[63] = 1;
+	ops[64] = grd_EPDF;	n_args[64] = 2;	n_out[64] = 1;
+	ops[65] = grd_ERF;	n_args[65] = 1;	n_out[65] = 1;
+	ops[66] = grd_ERFC;	n_args[66] = 1;	n_out[66] = 1;
+	ops[67] = grd_EQ;	n_args[67] = 2;	n_out[67] = 1;
+	ops[68] = grd_ERFINV;	n_args[68] = 1;	n_out[68] = 1;
+	ops[69] = grd_EXCH;	n_args[69] = 2;	n_out[69] = 2;
+	ops[70] = grd_EXP;	n_args[70] = 1;	n_out[70] = 1;
+	ops[71] = grd_FACT;	n_args[71] = 1;	n_out[71] = 1;
+	ops[72] = grd_EXTREMA;	n_args[72] = 1;	n_out[72] = 1;
+	ops[73] = grd_FCRIT;	n_args[73] = 3;	n_out[73] = 1;
+	ops[74] = grd_FCDF;	n_args[74] = 3;	n_out[74] = 1;
+	ops[75] = grd_FLIPLR;	n_args[75] = 1;	n_out[75] = 1;
+	ops[76] = grd_FLIPUD;	n_args[76] = 1;	n_out[76] = 1;
+	ops[77] = grd_FLOOR;	n_args[77] = 1;	n_out[77] = 1;
+	ops[78] = grd_FMOD;	n_args[78] = 2;	n_out[78] = 1;
+	ops[79] = grd_FPDF;	n_args[79] = 3;	n_out[79] = 1;
+	ops[80] = grd_GE;	n_args[80] = 2;	n_out[80] = 1;
+	ops[81] = grd_GT;	n_args[81] = 2;	n_out[81] = 1;
+	ops[82] = grd_HYPOT;	n_args[82] = 2;	n_out[82] = 1;
+	ops[83] = grd_I0;	n_args[83] = 1;	n_out[83] = 1;
+	ops[84] = grd_I1;	n_args[84] = 1;	n_out[84] = 1;
+	ops[85] = grd_IFELSE;	n_args[85] = 3;	n_out[85] = 1;
+	ops[86] = grd_IN;	n_args[86] = 2;	n_out[86] = 1;
+	ops[87] = grd_INRANGE;	n_args[87] = 3;	n_out[87] = 1;
+	ops[88] = grd_INSIDE;	n_args[88] = 1;	n_out[88] = 1;
+	ops[89] = grd_INV;	n_args[89] = 1;	n_out[89] = 1;
+	ops[90] = grd_ISFINITE;	n_args[90] = 1;	n_out[90] = 1;
+	ops[91] = grd_ISNAN;	n_args[91] = 1;	n_out[91] = 1;
+	ops[92] = grd_J0;	n_args[92] = 1;	n_out[92] = 1;
+	ops[93] = grd_J1;	n_args[93] = 1;	n_out[93] = 1;
+	ops[94] = grd_JN;	n_args[94] = 2;	n_out[94] = 1;
+	ops[95] = grd_K0;	n_args[95] = 1;	n_out[95] = 1;
+	ops[96] = grd_K1;	n_args[96] = 1;	n_out[96] = 1;
+	ops[97] = grd_KEI;	n_args[97] = 1;	n_out[97] = 1;
+	ops[98] = grd_KER;	n_args[98] = 1;	n_out[98] = 1;
+	ops[99] = grd_KM2DEG;	n_args[99] = 1;	n_out[99] = 1;
+	ops[100] = grd_KN;	n_args[100] = 2;	n_out[100] = 1;
+	ops[101] = grd_KURT;	n_args[101] = 1;	n_out[101] = 1;
+	ops[102] = grd_LCDF;	n_args[102] = 1;	n_out[102] = 1;
+	ops[103] = grd_LCRIT;	n_args[103] = 1;	n_out[103] = 1;
+	ops[104] = grd_LDIST;	n_args[104] = 1;	n_out[104] = 1;
+	ops[105] = grd_LDISTG;	n_args[105] = 0;	n_out[105] = 1;
+	ops[106] = grd_LDIST2;	n_args[106] = 2;	n_out[106] = 1;
+	ops[107] = grd_LE;	n_args[107] = 2;	n_out[107] = 1;
+	ops[108] = grd_LOG;	n_args[108] = 1;	n_out[108] = 1;
+	ops[109] = grd_LOG10;	n_args[109] = 1;	n_out[109] = 1;
+	ops[110] = grd_LOG1P;	n_args[110] = 1;	n_out[110] = 1;
+	ops[111] = grd_LOG2;	n_args[111] = 1;	n_out[111] = 1;
+	ops[112] = grd_LMSSCL;	n_args[112] = 1;	n_out[112] = 1;
+	ops[113] = grd_LMSSCLW;	n_args[113] = 1;	n_out[113] = 1;
+	ops[114] = grd_LOWER;	n_args[114] = 1;	n_out[114] = 1;
+	ops[115] = grd_LPDF;	n_args[115] = 1;	n_out[115] = 1;
+	ops[116] = grd_LRAND;	n_args[116] = 2;	n_out[116] = 1;
+	ops[117] = grd_LT;	n_args[117] = 2;	n_out[117] = 1;
+	ops[118] = grd_MAD;	n_args[118] = 1;	n_out[118] = 1;
+	ops[119] = grd_MADW;	n_args[119] = 2;	n_out[119] = 1;
+	ops[120] = grd_MAX;	n_args[120] = 2;	n_out[120] = 1;
+	ops[121] = grd_MEAN;	n_args[121] = 1;	n_out[121] = 1;
+	ops[122] = grd_MEANW;	n_args[122] = 2;	n_out[122] = 1;
+	ops[123] = grd_MEDIAN;	n_args[123] = 1;	n_out[123] = 1;
+	ops[124] = grd_MEDIANW;	n_args[124] = 2;	n_out[124] = 1;
+	ops[125] = grd_MIN;	n_args[125] = 2;	n_out[125] = 1;
+	ops[126] = grd_MOD;	n_args[126] = 2;	n_out[126] = 1;
+	ops[127] = grd_MODE;	n_args[127] = 1;	n_out[127] = 1;
+	ops[128] = grd_MODEW;	n_args[128] = 2;	n_out[128] = 1;
+	ops[129] = grd_MUL;	n_args[129] = 2;	n_out[129] = 1;
+	ops[130] = grd_NAN;	n_args[130] = 2;	n_out[130] = 1;
+	ops[131] = grd_NEG;	n_args[131] = 1;	n_out[131] = 1;
+	ops[132] = grd_NEQ;	n_args[132] = 2;	n_out[132] = 1;
+	ops[133] = grd_NORM;	n_args[133] = 1;	n_out[133] = 1;
+	ops[134] = grd_NOT;	n_args[134] = 1;	n_out[134] = 1;
+	ops[135] = grd_NRAND;	n_args[135] = 2;	n_out[135] = 1;
+	ops[136] = grd_OR;	n_args[136] = 2;	n_out[136] = 1;
+	ops[137] = grd_PDIST;	n_args[137] = 1;	n_out[137] = 1;
+	ops[138] = grd_PDIST2;	n_args[138] = 2;	n_out[138] = 1;
+	ops[139] = grd_PERM;	n_args[139] = 2;	n_out[139] = 1;
+	ops[140] = grd_POP;	n_args[140] = 1;	n_out[140] = 0;
+	ops[141] = grd_PLM;	n_args[141] = 3;	n_out[141] = 1;
+	ops[142] = grd_PLMg;	n_args[142] = 3;	n_out[142] = 1;
+	ops[143] = grd_POINT;	n_args[143] = 1;	n_out[143] = 2;
+	ops[144] = grd_POW;	n_args[144] = 2;	n_out[144] = 1;
+	ops[145] = grd_PQUANT;	n_args[145] = 2;	n_out[145] = 1;
+	ops[146] = grd_PQUANTW;	n_args[146] = 3;	n_out[146] = 1;
+	ops[147] = grd_PSI;	n_args[147] = 1;	n_out[147] = 1;
+	ops[148] = grd_PV;	n_args[148] = 3;	n_out[148] = 1;
+	ops[149] = grd_QV;	n_args[149] = 3;	n_out[149] = 1;
+	ops[150] = grd_R2;	n_args[150] = 2;	n_out[150] = 1;
+	ops[151] = grd_R2D;	n_args[151] = 1;	n_out[151] = 1;
+	ops[152] = grd_RAND;	n_args[152] = 2;	n_out[152] = 1;
+	ops[153] = grd_RCDF;	n_args[153] = 1;	n_out[153] = 1;
+	ops[154] = grd_RCRIT;	n_args[154] = 1;	n_out[154] = 1;
+	ops[155] = grd_RINT;	n_args[155] = 1;	n_out[155] = 1;
+	ops[156] = grd_RMS;	n_args[156] = 1;	n_out[156] = 1;
+	ops[157] = grd_RMSW;	n_args[157] = 2;	n_out[157] = 1;
+	ops[158] = grd_RPDF;	n_args[158] = 1;	n_out[158] = 1;
+	ops[159] = grd_ROLL;	n_args[159] = 2;	n_out[159] = 0;
+	ops[160] = grd_ROTX;	n_args[160] = 2;	n_out[160] = 1;
+	ops[161] = grd_ROTY;	n_args[161] = 2;	n_out[161] = 1;
+	ops[162] = grd_SDIST;	n_args[162] = 2;	n_out[162] = 1;
+	ops[163] = grd_SDIST2;	n_args[163] = 2;	n_out[163] = 1;
+	ops[164] = grd_SAZ;	n_args[164] = 2;	n_out[164] = 1;
+	ops[165] = grd_SBAZ;	n_args[165] = 2;	n_out[165] = 1;
+	ops[166] = grd_SEC;	n_args[166] = 1;	n_out[166] = 1;
+	ops[167] = grd_SECD;	n_args[167] = 1;	n_out[167] = 1;
+	ops[168] = grd_SECH;	n_args[168] = 1;	n_out[168] = 1;
+	ops[169] = grd_SIGN;	n_args[169] = 1;	n_out[169] = 1;
+	ops[170] = grd_SIN;	n_args[170] = 1;	n_out[170] = 1;
+	ops[171] = grd_SINC;	n_args[171] = 1;	n_out[171] = 1;
+	ops[172] = grd_SIND;	n_args[172] = 1;	n_out[172] = 1;
+	ops[173] = grd_SINH;	n_args[173] = 1;	n_out[173] = 1;
+	ops[174] = grd_SKEW;	n_args[174] = 1;	n_out[174] = 1;
+	ops[175] = grd_SQR;	n_args[175] = 1;	n_out[175] = 1;
+	ops[176] = grd_SQRT;	n_args[176] = 1;	n_out[176] = 1;
+	ops[177] = grd_STD;	n_args[177] = 1;	n_out[177] = 1;
+	ops[178] = grd_STDW;	n_args[178] = 2;	n_out[178] = 1;
+	ops[179] = grd_STEP;	n_args[179] = 1;	n_out[179] = 1;
+	ops[180] = grd_STEPX;	n_args[180] = 1;	n_out[180] = 1;
+	ops[181] = grd_STEPY;	n_args[181] = 1;	n_out[181] = 1;
+	ops[182] = grd_SUB;	n_args[182] = 2;	n_out[182] = 1;
+	ops[183] = grd_SUM;	n_args[183] = 1;	n_out[183] = 1;
+	ops[184] = grd_TAN;	n_args[184] = 1;	n_out[184] = 1;
+	ops[185] = grd_TAND;	n_args[185] = 1;	n_out[185] = 1;
+	ops[186] = grd_TANH;	n_args[186] = 1;	n_out[186] = 1;
+	ops[187] = grd_TAPER;	n_args[187] = 2;	n_out[187] = 1;
+	ops[188] = grd_TN;	n_args[188] = 2;	n_out[188] = 1;
+	ops[189] = grd_TCRIT;	n_args[189] = 2;	n_out[189] = 1;
+	ops[190] = grd_TCDF;	n_args[190] = 2;	n_out[190] = 1;
+	ops[191] = grd_TPDF;	n_args[191] = 2;	n_out[191] = 1;
+	ops[192] = grd_TRIM;	n_args[192] = 3;	n_out[192] = 1;
+	ops[193] = grd_UPPER;	n_args[193] = 1;	n_out[193] = 1;
+	ops[194] = grd_VAR;	n_args[194] = 1;	n_out[194] = 1;
+	ops[195] = grd_VARW;	n_args[195] = 2;	n_out[195] = 1;
+	ops[196] = grd_WCDF;	n_args[196] = 3;	n_out[196] = 1;
+	ops[197] = grd_WCRIT;	n_args[197] = 3;	n_out[197] = 1;
+	ops[198] = grd_WPDF;	n_args[198] = 3;	n_out[198] = 1;
+	ops[199] = grd_WRAP;	n_args[199] = 1;	n_out[199] = 1;
+	ops[200] = grd_XOR;	n_args[200] = 2;	n_out[200] = 1;
+	ops[201] = grd_Y0;	n_args[201] = 1;	n_out[201] = 1;
+	ops[202] = grd_Y1;	n_args[202] = 1;	n_out[202] = 1;
+	ops[203] = grd_YLM;	n_args[203] = 2;	n_out[203] = 2;
+	ops[204] = grd_YLMg;	n_args[204] = 2;	n_out[204] = 2;
+	ops[205] = grd_YN;	n_args[205] = 2;	n_out[205] = 1;
+	ops[206] = grd_ZCRIT;	n_args[206] = 1;	n_out[206] = 1;
+	ops[207] = grd_ZCDF;	n_args[207] = 1;	n_out[207] = 1;
+	ops[208] = grd_ZPDF;	n_args[208] = 1;	n_out[208] = 1;
+}
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return1(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
@@ -4923,7 +5347,220 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	double value, x_noise, y_noise, off, scale;
 	double wesn[4], special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_NY+1];
 
-#include "grdmath_op.h"
+	/* Declare operator array */
+
+	static char *operator[GRDMATH_N_OPERATORS + 1] = {
+		"ABS",	/* id = 0 */
+		"ACOS",	/* id = 1 */
+		"ACOSH",	/* id = 2 */
+		"ACOT",	/* id = 3 */
+		"ACOTH",	/* id = 4 */
+		"ACSC",	/* id = 5 */
+		"ACSCH",	/* id = 6 */
+		"ADD",	/* id = 7 */
+		"AND",	/* id = 8 */
+		"ARC",	/* id = 9 */
+		"AREA",	/* id = 10 */
+		"ASEC",	/* id = 11 */
+		"ASECH",	/* id = 12 */
+		"ASIN",	/* id = 13 */
+		"ASINH",	/* id = 14 */
+		"ATAN",	/* id = 15 */
+		"ATAN2",	/* id = 16 */
+		"ATANH",	/* id = 17 */
+		"BCDF",	/* id = 18 */
+		"BPDF",	/* id = 19 */
+		"BEI",	/* id = 20 */
+		"BER",	/* id = 21 */
+		"BITAND",	/* id = 22 */
+		"BITLEFT",	/* id = 23 */
+		"BITNOT",	/* id = 24 */
+		"BITOR",	/* id = 25 */
+		"BITRIGHT",	/* id = 26 */
+		"BITTEST",	/* id = 27 */
+		"BITXOR",	/* id = 28 */
+		"CAZ",	/* id = 29 */
+		"CBAZ",	/* id = 30 */
+		"CDIST",	/* id = 31 */
+		"CDIST2",	/* id = 32 */
+		"CEIL",	/* id = 33 */
+		"CHI2CRIT",	/* id = 34 */
+		"CHI2CDF",	/* id = 35 */
+		"CHI2PDF",	/* id = 36 */
+		"COMB",	/* id = 37 */
+		"CORRCOEFF",	/* id = 38 */
+		"COS",	/* id = 39 */
+		"COSD",	/* id = 40 */
+		"COSH",	/* id = 41 */
+		"COT",	/* id = 42 */
+		"COTD",	/* id = 43 */
+		"COTH",	/* id = 44 */
+		"PCDF",	/* id = 45 */
+		"PPDF",	/* id = 46 */
+		"CSC",	/* id = 47 */
+		"CSCD",	/* id = 48 */
+		"CSCH",	/* id = 49 */
+		"CURV",	/* id = 50 */
+		"D2DX2",	/* id = 51 */
+		"D2DY2",	/* id = 52 */
+		"D2DXY",	/* id = 53 */
+		"D2R",	/* id = 54 */
+		"DDX",	/* id = 55 */
+		"DDY",	/* id = 56 */
+		"DEG2KM",	/* id = 57 */
+		"DENAN",	/* id = 58 */
+		"DILOG",	/* id = 59 */
+		"DIV",	/* id = 60 */
+		"DUP",	/* id = 61 */
+		"ECDF",	/* id = 62 */
+		"ECRIT",	/* id = 63 */
+		"EPDF",	/* id = 64 */
+		"ERF",	/* id = 65 */
+		"ERFC",	/* id = 66 */
+		"EQ",	/* id = 67 */
+		"ERFINV",	/* id = 68 */
+		"EXCH",	/* id = 69 */
+		"EXP",	/* id = 70 */
+		"FACT",	/* id = 71 */
+		"EXTREMA",	/* id = 72 */
+		"FCRIT",	/* id = 73 */
+		"FCDF",	/* id = 74 */
+		"FLIPLR",	/* id = 75 */
+		"FLIPUD",	/* id = 76 */
+		"FLOOR",	/* id = 77 */
+		"FMOD",	/* id = 78 */
+		"FPDF",	/* id = 79 */
+		"GE",	/* id = 80 */
+		"GT",	/* id = 81 */
+		"HYPOT",	/* id = 82 */
+		"I0",	/* id = 83 */
+		"I1",	/* id = 84 */
+		"IFELSE",	/* id = 85 */
+		"IN",	/* id = 86 */
+		"INRANGE",	/* id = 87 */
+		"INSIDE",	/* id = 88 */
+		"INV",	/* id = 89 */
+		"ISFINITE",	/* id = 90 */
+		"ISNAN",	/* id = 91 */
+		"J0",	/* id = 92 */
+		"J1",	/* id = 93 */
+		"JN",	/* id = 94 */
+		"K0",	/* id = 95 */
+		"K1",	/* id = 96 */
+		"KEI",	/* id = 97 */
+		"KER",	/* id = 98 */
+		"KM2DEG",	/* id = 99 */
+		"KN",	/* id = 100 */
+		"KURT",	/* id = 101 */
+		"LCDF",	/* id = 102 */
+		"LCRIT",	/* id = 103 */
+		"LDIST",	/* id = 104 */
+		"LDISTG",	/* id = 105 */
+		"LDIST2",	/* id = 106 */
+		"LE",	/* id = 107 */
+		"LOG",	/* id = 108 */
+		"LOG10",	/* id = 109 */
+		"LOG1P",	/* id = 110 */
+		"LOG2",	/* id = 111 */
+		"LMSSCL",	/* id = 112 */
+		"LMSSCLW",	/* id = 113 */
+		"LOWER",	/* id = 114 */
+		"LPDF",	/* id = 115 */
+		"LRAND",	/* id = 116 */
+		"LT",	/* id = 117 */
+		"MAD",	/* id = 118 */
+		"MADW",	/* id = 119 */
+		"MAX",	/* id = 120 */
+		"MEAN",	/* id = 121 */
+		"MEANW",	/* id = 122 */
+		"MEDIAN",	/* id = 123 */
+		"MEDIANW",	/* id = 124 */
+		"MIN",	/* id = 125 */
+		"MOD",	/* id = 126 */
+		"MODE",	/* id = 127 */
+		"MODEW",	/* id = 128 */
+		"MUL",	/* id = 129 */
+		"NAN",	/* id = 130 */
+		"NEG",	/* id = 131 */
+		"NEQ",	/* id = 132 */
+		"NORM",	/* id = 133 */
+		"NOT",	/* id = 134 */
+		"NRAND",	/* id = 135 */
+		"OR",	/* id = 136 */
+		"PDIST",	/* id = 137 */
+		"PDIST2",	/* id = 138 */
+		"PERM",	/* id = 139 */
+		"POP",	/* id = 140 */
+		"PLM",	/* id = 141 */
+		"PLMg",	/* id = 142 */
+		"POINT",	/* id = 143 */
+		"POW",	/* id = 144 */
+		"PQUANT",	/* id = 145 */
+		"PQUANTW",	/* id = 146 */
+		"PSI",	/* id = 147 */
+		"PV",	/* id = 148 */
+		"QV",	/* id = 149 */
+		"R2",	/* id = 150 */
+		"R2D",	/* id = 151 */
+		"RAND",	/* id = 152 */
+		"RCDF",	/* id = 153 */
+		"RCRIT",	/* id = 154 */
+		"RINT",	/* id = 155 */
+		"RMS",	/* id = 156 */
+		"RMSW",	/* id = 157 */
+		"RPDF",	/* id = 158 */
+		"ROLL",	/* id = 159 */
+		"ROTX",	/* id = 160 */
+		"ROTY",	/* id = 161 */
+		"SDIST",	/* id = 162 */
+		"SDIST2",	/* id = 163 */
+		"SAZ",	/* id = 164 */
+		"SBAZ",	/* id = 165 */
+		"SEC",	/* id = 166 */
+		"SECD",	/* id = 167 */
+		"SECH",	/* id = 168 */
+		"SIGN",	/* id = 169 */
+		"SIN",	/* id = 170 */
+		"SINC",	/* id = 171 */
+		"SIND",	/* id = 172 */
+		"SINH",	/* id = 173 */
+		"SKEW",	/* id = 174 */
+		"SQR",	/* id = 175 */
+		"SQRT",	/* id = 176 */
+		"STD",	/* id = 177 */
+		"STDW",	/* id = 178 */
+		"STEP",	/* id = 179 */
+		"STEPX",	/* id = 180 */
+		"STEPY",	/* id = 181 */
+		"SUB",	/* id = 182 */
+		"SUM",	/* id = 183 */
+		"TAN",	/* id = 184 */
+		"TAND",	/* id = 185 */
+		"TANH",	/* id = 186 */
+		"TAPER",	/* id = 187 */
+		"TN",	/* id = 188 */
+		"TCRIT",	/* id = 189 */
+		"TCDF",	/* id = 190 */
+		"TPDF",	/* id = 191 */
+		"TRIM",	/* id = 192 */
+		"UPPER",	/* id = 193 */
+		"VAR",	/* id = 194 */
+		"VARW",	/* id = 195 */
+		"WCDF",	/* id = 196 */
+		"WCRIT",	/* id = 197 */
+		"WPDF",	/* id = 198 */
+		"WRAP",	/* id = 199 */
+		"XOR",	/* id = 200 */
+		"Y0",	/* id = 201 */
+		"Y1",	/* id = 202 */
+		"YLM",	/* id = 203 */
+		"YLMg",	/* id = 204 */
+		"YN",	/* id = 205 */
+		"ZCRIT",	/* id = 206 */
+		"ZCDF",	/* id = 207 */
+		"ZPDF",	/* id = 208 */
+		"" /* last element is intentionally left blank */
+	};
 
 	void (*call_operator[GRDMATH_N_OPERATORS]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int);
 

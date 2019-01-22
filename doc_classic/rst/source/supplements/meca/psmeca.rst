@@ -380,7 +380,7 @@ Optional Arguments
 
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
-.. include:: explain_perspective.rst_
+.. include:: ../../explain_perspective.rst_
 
 .. include:: ../../explain_-t.rst_
 .. include:: ../../explain_colon.rst_
