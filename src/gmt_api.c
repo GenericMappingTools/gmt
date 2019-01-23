@@ -641,15 +641,34 @@ int winppid (int pidin) {
 }
 #endif
 
+/* Safety valve to remove non-alphanumeric characters =*/
+GMT_LOCAL char * api_alnum_only (struct GMTAPI_CTRL *API, char *string) {
+	unsigned int k = 0, n_changed = 0;
+	while (string[k]) {
+		if (!isalnum (string[k])) {
+			n_changed++;
+			string[k] = '#';
+		}
+		k++;
+	}
+	if (n_changed)
+		GMT_Report (API, GMT_MSG_DEBUG, "Cleaned GMT_SESSION_NAME to %s\n", string);
+	return (string);
+}
+
 /*! . */
-GMT_LOCAL int api_get_ppid (struct GMTAPI_CTRL *API) {
+GMT_LOCAL char * api_get_ppid (struct GMTAPI_CTRL *API) {
 	/* Return the parent process ID [i.e., shell for command line use or gmt app for API] */
 	int ppid = -1;
 	unsigned int k = 0;
-	static char *source[4] = {"GMT_PPID", "parent", "app", "hardwired choice"};
-	char *str = NULL;
-	if ((str = getenv ("GMT_PPID")) != NULL)	/* GMT_PPID was set in the environment */
-		ppid = atoi (str);
+	static char *source[4] = {"GMT_SESSION_NAME", "parent", "app", "hardwired choice"};
+	char *str = NULL, string[8];
+	if ((str = getenv ("GMT_SESSION_NAME")) != NULL) {	/* GMT_SESSION_NAME was set in the environment */
+		char *tmp = strdup (str);	/* Duplicate the given string */
+		GMT_Report (API, GMT_MSG_DEBUG, "Obtained GMT_SESSION_NAME from the environment: %s\n", str);
+		return (api_alnum_only (API, tmp)); /* Replace any non-alphanumeric characters with # */
+	}
+	/* Here we just need to get the PPID and format to string */
 #ifdef DEBUG_MODERN	/* To simplify debugging we set it to 1 */
 	if (ppid == -1) ppid = 1, k = 3;
 #elif defined(WIN32)
@@ -657,10 +676,10 @@ GMT_LOCAL int api_get_ppid (struct GMTAPI_CTRL *API) {
 	   api_get_ppid returns different values for each call, and this completely breaks the idea
 	   of using the constant PPID (parent PID) to create unique file names for each session.
 	   So, given that we didn't yet find a way to make this work from within MSYS (and likely Cygwin)
-	   we are forcing PPID = 0 in all Windows variants unless set via GMT_PPID. A corollary of this
-	   is that Windows users running many bash windows concurrently should use GMT_PPID in their scripts
+	   we are forcing PPID = 0 in all Windows variants unless set via GMT_SESSION_NAME. A corollary of this
+	   is that Windows users running many bash windows concurrently should use GMT_SESSION_NAME in their scripts
 	   to give unique values to different scripts.  */
-	if ((str = getenv ("SHELL")) != NULL) {	/* GMT_PPID was set in the environment */
+	if ((str = getenv ("SHELL")) != NULL) {	/* GMT_SESSION_NAME was set in the environment */
 		//if (ppid == -1) ppid = 0, k = 3;
 		ppid = winppid(0);		/* First time get PPID of current process */
 		ppid = winppid(ppid);	/* Second time get PPPID of current process */
@@ -676,7 +695,8 @@ GMT_LOCAL int api_get_ppid (struct GMTAPI_CTRL *API) {
 		ppid = getppid(), k = 1; /* parent process id */
 #endif
 	GMT_Report (API, GMT_MSG_DEBUG, "Obtained the ppid from %s: %d\n", source[k], ppid);
-	return (ppid);
+	sprintf (string, "%d", ppid);
+	return (strdup (string));
 }
 
 /*! . */
@@ -5944,7 +5964,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 		API->tmp_dir = strdup ("/tmp");
 #endif
 	if ((len = strlen (API->tmp_dir)) > 2 && API->tmp_dir[len-1] == '/') API->tmp_dir[len-1] = '\0';	/* Chop off trailing slash */
-	API->PPID = api_get_ppid (API);		/* Save PPID for the rest of the session */
+	API->session_name = api_get_ppid (API);		/* Save session name for the rest of the session */
 
 	/* gmt_begin initializes, among other things, the settings in the user's (or the system's) gmt.conf file */
 	if (gmt_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */
@@ -6024,6 +6044,7 @@ int GMT_Destroy_Session (void *V_API) {
 		fclose (API->GMT->session.std[GMT_ERR]);
 	gmt_end (API->GMT);	/* Terminate GMT machinery */
 	gmt_M_str_free (API->session_tag);
+	gmt_M_str_free (API->session_name);
 	gmt_M_str_free (API->tmp_dir);
 	gmt_M_str_free (API->session_dir);
 	gmt_M_str_free (API->message);

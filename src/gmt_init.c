@@ -15175,7 +15175,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	int err = 0, fig, error = GMT_NOERROR;
 	struct stat S;
 
-	sprintf (dir, "%s/gmt%d.%d", API->session_dir, GMT_MAJOR_VERSION, API->PPID);
+	sprintf (dir, "%s/gmt%d.%s", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
 	API->gwf_dir = strdup (dir);
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
 
@@ -15216,7 +15216,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode */
 			API->GMT->current.setting.history_orig = API->GMT->current.setting.history;	/* Temporarily turn off history so nothing is copied into the workflow dir */
 			API->GMT->current.setting.history = GMT_HISTORY_OFF;	/* Turn off so that no history is copied into the workflow directory */
-			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  PPID = %d. Directory %s %s.\n", smode[mode], API->PPID, API->gwf_dir, fstatus[2]);
+			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session Name = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[2]);
 			break;
 		case GMT_USE_WORKFLOW:
 			/* We always get here except when gmt begin | end are called. */
@@ -15230,7 +15230,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 			if (!access (file, R_OK))	/* subplot end was never called */
 				GMT_Report (API, GMT_MSG_NORMAL, "subplot was never completed - plot items in last panel may be missing\n");
-			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  PPID = %d. Directory %s %s.\n", smode[mode], API->PPID, API->gwf_dir, fstatus[3]);
+			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session Name = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[3]);
 			if ((error = process_figures (API)))
 				GMT_Report (API, GMT_MSG_NORMAL, "process_figures returned error %d\n", error);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Destroying the current workflow directory %s\n", API->gwf_dir);
@@ -15243,7 +15243,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			break;
 	}
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {
-		GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode [PPID = %d]\n", type[API->GMT->current.setting.run_mode], API->PPID);
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode [Session Name = %s]\n", type[API->GMT->current.setting.run_mode], API->session_name);
 		API->GMT->current.setting.use_modern_name = true;
 	}
 	return error;
@@ -15357,7 +15357,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Determined colorbar side = %c and axis = %c\n", side, axis);
 
-	sprintf (file, "%s/gmt%d.%d/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->PPID);
+	sprintf (file, "%s/gmt%d.%s/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->session_name);
 	if ((fp = fopen (file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No file %s with frame information - no adjustments made\n", file);
 		return;
