@@ -39,7 +39,7 @@ hobbyists.
 
 The map above illustrates the spreading of the current GMT release around the world
 based on web traffic. Each colored circle in the map above represents a 15x15 arc
-minute block with one or more users who downloaded GMT. Download geolocation is based
+minute block with one or more users who downloaded GMT since the last release. Download geolocation is based
 on [MaxMind's](http://www.maxmind.com/) freely available GeoLite data.
 
 ## A reminder
