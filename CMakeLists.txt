@@ -102,30 +102,51 @@ endif (EXISTS ${GMT_SOURCE_DIR}/test/)
 add_subdirectory (cmake/dist) # make distribution bundles (always last)
 
 # Source release target
-if (GIT AND HAVE_SVN_VERSION)
-	if (GZIP AND XZ)
+if (GIT AND HAVE_GIT_VERSION)
+	# Export git working tree
+	add_custom_target (git_export_release
+		COMMAND ${GIT} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/)
+	# Remove the test dir, so that it is not included in the final release tarball
+	add_custom_target (git_prune_dirs
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.git
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.github
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/ci
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/test)
+	add_custom_target (git_prune_files
+		COMMAND ${CMAKE_COMMAND} -E remove
+			${GMT_RELEASE_PREFIX}/.gitattributes
+			${GMT_RELEASE_PREFIX}/.gitignore
+			${GMT_RELEASE_PREFIX}/.travis.yml)
+	add_depend_to_target (git_prune_dirs git_export_release)
+	add_depend_to_target (gmt_release git_prune_dirs)
+	add_depend_to_target (git_prune_files git_export_release)
+	add_depend_to_target (gmt_release git_prune_files)
+	find_program (GNUTAR NAMES gnutar gtar tar)
+	find_program (XZ NAMES xz)
+	if (GNUTAR AND GZIP AND XZ)
 		# Targets for creating tarballs
 		string (REGEX REPLACE ".*/" "" _release_dirname "${GMT_RELEASE_PREFIX}")
 		add_custom_command (OUTPUT ${_release_dirname}-src.tar
-			COMMAND ${GIT} archive --prefix=gmt-${GMT_PACKAGE_VERSION}/ -o ${GMT_RELEASE_PREFIX}-src.tar master
-			WORKING_DIRECTORY ..
+			COMMAND ${GNUTAR} -c --owner 0 --group 0 --mode a=rX,u=rwX
+			-f ${GMT_BINARY_DIR}/${_release_dirname}-src.tar ${_release_dirname}
+			DEPENDS ${GMT_RELEASE_PREFIX}
+			WORKING_DIRECTORY ${GMT_RELEASE_PREFIX}/..
 			VERBATIM)
 		add_custom_command (OUTPUT ${_release_dirname}-src.tar.gz
 			COMMAND ${GZIP} -9 --keep --force ${GMT_BINARY_DIR}/${_release_dirname}-src.tar
-			DEPENDS ${_release_dirname}-src.tar
+			DEPENDS ${GMT_RELEASE_PREFIX} ${_release_dirname}-src.tar
 			WORKING_DIRECTORY ${GMT_RELEASE_PREFIX}/..
 			VERBATIM)
 		add_custom_command (OUTPUT ${_release_dirname}-src.tar.xz
-			COMMAND ${XZ} -9 --keep --force ${GMT_BINARY_DIR}/${_release_dirname}-src.tar
-			DEPENDS ${_release_dirname}-src.tar
+			COMMAND ${XZ} -9 -T 0 --keep --force ${GMT_BINARY_DIR}/${_release_dirname}-src.tar
+			DEPENDS ${GMT_RELEASE_PREFIX} ${_release_dirname}-src.tar
 			WORKING_DIRECTORY ${GMT_RELEASE_PREFIX}/..
 			VERBATIM)
 		add_custom_target (gmt_release_tar
-			DEPENDS ${_release_dirname}-src.tar
+			DEPENDS ${GMT_RELEASE_PREFIX}
 			${_release_dirname}-src.tar.gz ${_release_dirname}-src.tar.xz)
-		add_depend_to_target (gmt_release gmt_release_tar)
-	endif (GZIP AND XZ)
-endif (GIT AND HAVE_SVN_VERSION)
+	endif (GNUTAR AND GZIP AND XZ)
+endif (GIT AND HAVE_GIT_VERSION)
 
 get_target_property (_location gmtlib LOCATION)
 get_filename_component (GMT_CORE_LIB_NAME ${_location} NAME)
