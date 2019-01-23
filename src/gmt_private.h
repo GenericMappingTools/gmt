@@ -152,6 +152,7 @@ struct GMTAPI_CTRL {
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	char *session_tag;			/* Name tag for this session (or NULL) */
+	char *session_name;			/* Unique name for modern mode session (NULL for classic) */
 	char *tmp_dir;				/* System tmp_dir (NULL if not found) */
 	char *session_dir;			/* GMT Session dir (NULL if not running in modern mode) */
 	char *gwf_dir;				/* GMT WorkFlow dir (NULL if not running in modern mode) */

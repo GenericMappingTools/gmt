@@ -1064,11 +1064,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		set_script (fp, Ctrl->In.mode);				/* Write 1st line of a script */
 		set_comment (fp, Ctrl->In.mode, "Preflight script");
-		fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Hardwire a PPID since subshells may mess things up */
-		if (Ctrl->In.mode == DOS_MODE)	/* Set PPID under Windows to 1 since we run this separately first */
-			fprintf (fp, "set GMT_PPID=1\n");
-		else	/* On UNIX we may use the calling terminal or script's PID as the PPID */
-			set_tvalue (fp, Ctrl->In.mode, "GMT_PPID", "$$");
+		fprintf (fp, "%s", export[Ctrl->In.mode]);		/* Hardwire a Session Name since subshells may mess things up */
+		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately first */
+			fprintf (fp, "set GMT_SESSION_NAME=1\n");
+		else	/* On UNIX we may use the calling terminal or script's PID as the GMT_SESSION_NAME */
+			set_tvalue (fp, Ctrl->In.mode, "GMT_SESSION_NAME", "$$");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_PREFLIGHT].fp)) {	/* Read the background script and copy to preflight script with some exceptions */
 			if ((is_classic && rec == 0) || strstr (line, "gmt begin")) {	/* Need to insert gmt figure after this line (or as first line) in case a background plot will be made */
@@ -1153,11 +1153,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 		set_comment (fp, Ctrl->In.mode, "Postflight script");
-		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a PPID since subshells may mess things up */
-		if (Ctrl->In.mode == DOS_MODE)	/* Set PPID under Windows to 1 since we run this separately */
-			fprintf (fp, "set GMT_PPID=1\n");
-		else	/* On UNIX we may use the script's PID as PPID */
-			set_tvalue (fp, Ctrl->In.mode, "GMT_PPID", "$$");
+		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a SESSION_NAME since subshells may mess things up */
+		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately */
+			fprintf (fp, "set GMT_SESSION_NAME=1\n");
+		else	/* On UNIX we may use the script's PID as GMT_SESSION_NAME */
+			set_tvalue (fp, Ctrl->In.mode, "GMT_SESSION_NAME", "$$");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[MOVIE_POSTFLIGHT].fp)) {	/* Read the foreground script and copy to postflight script with some exceptions */
 			if (strstr (line, "gmt begin")) {	/* Need to insert gmt figure after this line */
@@ -1376,11 +1376,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 		set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 		set_comment (fp, Ctrl->In.mode, "Master frame loop script");
-		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a PPID since subshells may mess things up */
-		if (Ctrl->In.mode == DOS_MODE)	/* Set PPID under Windows to be the frame number */
-			fprintf (fp, "set GMT_PPID=%c1\n", var_token[Ctrl->In.mode]);
-		else	/* On UNIX we use the script's PID as PPID */
-			set_tvalue (fp, Ctrl->In.mode, "GMT_PPID", "$$");
+		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since subshells may mess things up */
+		if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the frame number */
+			fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
+		else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
+			set_tvalue (fp, Ctrl->In.mode, "GMT_SESSION_NAME", "$$");
 		set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 		fprintf (fp, "%s movie_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the frame parameters */
@@ -1490,11 +1490,11 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 	set_comment (fp, Ctrl->In.mode, "Main frame loop script");
-	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a PPID since subshells may mess things up */
-	if (Ctrl->In.mode == DOS_MODE)	/* Set PPID under Windows to be the frame number */
-		fprintf (fp, "set GMT_PPID=%c1\n", var_token[Ctrl->In.mode]);
-	else	/* On UNIX we use the script's PID as PPID */
-		set_tvalue (fp, Ctrl->In.mode, "GMT_PPID", "$$");
+	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since subshells may mess things up */
+	if (Ctrl->In.mode == DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to be the frame number */
+		fprintf (fp, "set GMT_SESSION_NAME=%c1\n", var_token[Ctrl->In.mode]);
+	else	/* On UNIX we use the script's PID as GMT_SESSION_NAME */
+		set_tvalue (fp, Ctrl->In.mode, "GMT_SESSION_NAME", "$$");
 	set_comment (fp, Ctrl->In.mode, "Include static and frame-specific parameters");
 	fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
 	fprintf (fp, "%s movie_params_%c1.%s\n", load[Ctrl->In.mode], var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Include the frame parameters */
