@@ -42,11 +42,11 @@ endif (NOT CMAKE_BUILD_TYPE)
 set (GMT_PACKAGE_VERSION_WITH_SVN_REVISION ${GMT_PACKAGE_VERSION})
 # Add the Subversion version number to the package filename if this is a non-public release.
 # A non-public release has an empty 'GMT_SOURCE_CODE_CONTROL_VERSION_STRING' variable in 'ConfigDefault.cmake'.
-set (HAVE_SVN_VERSION)
+set (HAVE_GIT_VERSION)
 if (NOT GMT_SOURCE_CODE_CONTROL_VERSION_STRING)
 	# Get the location, inside the staging area location, to copy the application bundle to.
 	execute_process (
-		COMMAND git describe --abbrev=7 --always --dirty
+		COMMAND ${GIT} describe --abbrev=7 --always --dirty
         WORKING_DIRECTORY  ${GMT_SOURCE_DIR}
 		RESULT_VARIABLE SVN_VERSION_RESULT
 		OUTPUT_VARIABLE SVN_VERSION_OUTPUT
@@ -65,7 +65,7 @@ if (NOT GMT_SOURCE_CODE_CONTROL_VERSION_STRING)
 			if (NOT SVN_VERSION STREQUAL exported)
 				# Set the updated package version.
 				set (GMT_PACKAGE_VERSION_WITH_SVN_REVISION "${GMT_PACKAGE_VERSION}_${SVN_VERSION}")
-				set (HAVE_SVN_VERSION TRUE)
+				set (HAVE_GIT_VERSION TRUE)
 			endif (NOT SVN_VERSION STREQUAL exported)
 		endif (SVN_VERSION_OUTPUT MATCHES "Unversioned")
 	endif (SVN_VERSION_RESULT)
