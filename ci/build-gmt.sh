@@ -30,10 +30,10 @@ echo ""
 
 mkdir -p build && cd build
 
-cmake ..
+cmake -G Ninja ..
 
-make -j
-make install
+cmake --build .
+cmake --build . --target install
 
 # We are fixing the paths to dynamic library files inside library and binary
 # files because something in 'make install' is doubling up the path to the

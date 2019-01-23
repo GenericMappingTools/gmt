@@ -5,6 +5,12 @@ sudo: false
 
 language: c
 
+cache:
+    apt: true
+    directories:
+        - $HOME/.cache/pip
+        - $HOME/pkg-gshhg-dcw
+
 # Only build pushes to select branches and tags. This avoids the double
 # builds than happen when working on a branch instead of a fork.
 branches:
@@ -22,7 +28,7 @@ addons:
     apt:
         packages:
             - cmake
-            - build-essential
+            - ninja-build
             - libcurl4-gnutls-dev
             - libnetcdf-dev
             - libgdal1-dev
@@ -32,11 +38,14 @@ addons:
             - ghostscript
             - curl
             - graphicsmagick
+            - ffmpeg
             - python
             - python-pip
+            - texlive-latex-extra
     homebrew:
         packages:
             - cmake
+            - ninja
             - curl
             - netcdf
             - gdal
@@ -119,7 +128,9 @@ script:
         bash <(curl -s https://codecov.io/bash);
       fi
     - if [ "$BUILD_DOCS" == "true" ]; then
-        make -j docs_html;
+        cmake --build . --target docs_depends;
+        cmake --build . --target animation;
+        cmake --build . --target docs_html;
       fi
     - cd ..
 

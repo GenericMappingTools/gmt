@@ -4,6 +4,10 @@
 # To return a failure if any commands inside fail
 set -e
 
+# gshhg and dcw tarballs are cached here:
+test -d $HOME/pkg-gshhg-dcw || mkdir $HOME/pkg-gshhg-dcw
+cd $HOME/pkg-gshhg-dcw
+
 # Get the coastlines and country polygons
 EXT="tar.gz"
 GSHHG="gshhg-gmt-2.3.7"
@@ -13,7 +17,7 @@ DCW="dcw-gmt-1.1.4"
 echo ""
 echo "Downloading and unpacking GSHHG"
 echo "================================================================================"
-curl "http://www.soest.hawaii.edu/pwessel/gshhg/$GSHHG.$EXT" > $GSHHG.$EXT
+curl -L -O -C - "http://www.soest.hawaii.edu/pwessel/gshhg/$GSHHG.$EXT"
 tar xzf $GSHHG.$EXT
 cp $GSHHG/* $COASTLINEDIR/
 
@@ -21,7 +25,7 @@ cp $GSHHG/* $COASTLINEDIR/
 echo ""
 echo "Downloading and unpacking DCW"
 echo "================================================================================"
-curl "http://www.soest.hawaii.edu/pwessel/dcw/$DCW.$EXT" > $DCW.$EXT
+curl -L -O -C "http://www.soest.hawaii.edu/pwessel/dcw/$DCW.$EXT"
 tar xzf $DCW.$EXT
 cp $DCW/* $COASTLINEDIR
 
