@@ -179,11 +179,10 @@ cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
 make -j
 ```
-
-Adding an argument to *-jx* where _x_ is the number of threads you want to use 
-and depends on the number of cores in your CPU and if hyperthreading is 
-available or not. By using *-j* without any argument, *make* will not limit the
-number of jobs that can run simultaneously.
+You can add an argument *x* to *-j* (e.g. *-j4*) which means make will use *x* 
+cores in the build; this depends on the number of cores in your CPU and if 
+hyperthreading is available or not. By using *-j* without any argument, *make* 
+will not limit the number of jobs that can run simultaneously.
 cmake will build out-of-source in the the directory _build_. 'CMAKE_BUILD_TYPE'
 can be one of: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 
