@@ -35,7 +35,7 @@ mkdir -p build && cd build
 cmake -G Ninja ..
 
 # Show CMakeCache.txt, strip comments
-grep -Ev "^(//.+|)$" CMakeCache.txt
+grep -Ev "^(//|$)" CMakeCache.txt
 
 # Build and install
 cmake --build .

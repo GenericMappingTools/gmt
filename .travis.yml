@@ -32,8 +32,6 @@ cache:
         - $HOME/Library/Caches/Homebrew
 
 before_cache:
-    - find $HOME -type d
-    - find $HOME/.ccache $HOME/pkg-gshhg-dcw
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         brew cleanup;
       fi
@@ -155,6 +153,7 @@ script:
         cmake --build . --target docs_depends;
         cmake --build . --target animation;
         cmake --build . --target docs_html;
+        cmake --build . --target docs_pdf;
       fi
     - set +e
     - cd ..

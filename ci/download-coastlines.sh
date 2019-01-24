@@ -38,6 +38,7 @@ check_md5 $MD5_GSHHG $GSHHG.$EXT || curl -L -O --retry 10 "https://mirrors.ustc.
 check_md5 $MD5_GSHHG $GSHHG.$EXT
 tar xzf $GSHHG.$EXT
 mv $GSHHG/* $COASTLINEDIR/
+rmdir $GSHHG
 
 # DCW (country polygons):
 echo ""
@@ -48,6 +49,7 @@ check_md5 $MD5_DCW $DCW.$EXT || curl -L -O --retry 10 "https://mirrors.ustc.edu.
 check_md5 $MD5_DCW $DCW.$EXT
 tar xzf $DCW.$EXT
 mv $DCW/* $COASTLINEDIR/
+rmdir $DCW
 
 ls $COASTLINEDIR
 
