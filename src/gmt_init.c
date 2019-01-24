@@ -6584,7 +6584,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'F':	/* -r Pixel registration option  */
 
-			gmt_message (GMT, "\t-r Set pixel registration [Default is grid registration].\n");
+			gmt_message (GMT, "\t-r Set (g)ridline- or (p)ixel-registration [Default].\n");
+			gmt_message (GMT, "\t   If not given we default to gridline registration\n");
 			break;
 
 		case 't':	/* -t layer transparency option  */
