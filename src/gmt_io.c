@@ -8532,11 +8532,50 @@ void gmt_set_column (struct GMT_CTRL *GMT, unsigned int direction, unsigned int 
 	}
 }
 
-int gmt_mkdir (char *file) {
-	/* Simplify coding due to differences between Unix and Windows */
+int gmt_mkdir (const char *path)
+{	/* Simulates mkdir -p behavior in a function for Unix and Windows */
+	/* Adapted from http://stackoverflow.com/a/2336245/119527 */
+	const size_t len = strlen (path);
+	char _path[PATH_MAX], sep;
+	char *p = NULL; 
+
+	errno = 0;	/* Global var: No error so far */
+
+	if (len >= PATH_MAX) {	/* Make sure we don't exceed limits */
+		errno = ENAMETOOLONG;
+		return -1; 
+	}   
+	strcpy (_path, path);	/* Copy string so its mutable */
+
+	/* Iterate the string */
+	for (p = _path + 1; *p; p++) {	/* Create intermediate directoreis if not already present */
+		if (*p == '/' || *p == '\\') {	/* Found start of next directory */
+			sep = *p;	/* What separator did we use? */
+			*p = '\0';	/* Temporarily truncate */
+
 #ifndef _WIN32
-	return (mkdir (file, (mode_t)0777));
+			if (mkdir (_path, S_IRWXU) != 0)
 #else
-	return (mkdir (file));
+			if (mkdir (_path) != 0)
 #endif
+			{
+				if (errno != EEXIST)	/* Failed to make or visit intermediate directory */
+					return -1; 
+			}
+			*p = sep;	/* Reset the separator */
+		}
+	}   
+
+	/* Finally create the last directory name in the path */
+#ifndef _WIN32
+	if (mkdir (_path, S_IRWXU) != 0)
+#else
+	if (mkdir (_path) != 0)
+#endif
+	{
+		if (errno != EEXIST)
+			return -1; 
+	}   
+
+	return 0;
 }

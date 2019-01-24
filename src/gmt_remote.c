@@ -178,20 +178,16 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	from = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Determine source directory on cache server */
 	to = (mode == GMT_LOCAL_DIR) ? GMT_LOCAL_DIR : from;
 	sprintf (serverdir, "%s/server", user_dir[GMT_DATA_DIR]);
-	if ((is_data || is_srtm) && access (serverdir, R_OK)) {
-		if (gmt_mkdir (serverdir))
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", serverdir);
-	}
+	if ((is_data || is_srtm) && access (serverdir, R_OK) && gmt_mkdir (serverdir))
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", serverdir);
 	if (gmt_file_is_srtmtile (GMT->parent, file, &res)) {	/* Select the right sub-dir on the server and cache locally */
 		from = (res == 1) ? 2 : 3;
 		to = GMT_CACHE_DIR;
 		is_srtm = true;
 		sprintf (srtmdir, "%s/srtm%d", serverdir, res);
 		/* Check if srtm1|3 subdir exist - if not create it */
-		if (access (srtmdir, R_OK)) {
-			if (gmt_mkdir (srtmdir))
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", srtmdir);
-		}
+		if (access (srtmdir, R_OK) && gmt_mkdir (srtmdir))
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", srtmdir);
 	}
 	if (mode == GMT_LOCAL_DIR || user_dir[to] == NULL) {
 		if (mode != GMT_LOCAL_DIR)
@@ -250,10 +246,17 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 			if (!strncmp (&local_path[len-GMT_SRTM_EXTENSION_LOCAL_LEN-1U], ".nc", GMT_SRTM_EXTENSION_LOCAL_LEN+1U))
 				strncpy (&local_path[len-GMT_SRTM_EXTENSION_LOCAL_LEN], GMT_SRTM_EXTENSION_REMOTE, GMT_SRTM_EXTENSION_REMOTE_LEN);	/* Switch extension for download */
 		}
-		else if (is_data)
+		else if (is_data) {
+			sprintf (local_path, "%s/server", user_dir[GMT_DATA_DIR]);
+			if (access (local_path, R_OK) && gmt_mkdir (local_path))
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", local_path);
 			sprintf (local_path, "%s/server/%s", user_dir[GMT_DATA_DIR], &file[pos]);
-		else	/* Goes to cache */
+		}
+		else {	/* Goes to cache */
+			if (access (user_dir[to], R_OK) && gmt_mkdir (user_dir[to]))
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT data directory : %s\n", user_dir[to]);
 			sprintf (local_path, "%s/%s", user_dir[to], &file[pos]);
+		}
 	}
 	if (kind == GMT_DATA_FILE && !strstr (local_path, ".grd")) strcat (local_path, ".grd");	/* Must supply the .grd */
 	if (kind == GMT_URL_QUERY) {	/* Cannot have ?para=value etc in filename */
