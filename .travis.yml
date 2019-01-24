@@ -114,9 +114,9 @@ matrix:
 
 # Setup the build environment
 before_install:
+    # Update homebrew and add ccache to PATH:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         brew update
-        # Add ccache to PATH:
         export PATH="/usr/local/opt/ccache/libexec:$PATH"
       fi
     - mkdir "$INSTALLDIR"
