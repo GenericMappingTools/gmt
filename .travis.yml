@@ -6,7 +6,6 @@ env:
         - INSTALLDIR="$HOME/gmt-install-dir"
         - COASTLINEDIR="$HOME/gmt-install-dir/coast"
         - PATH="$INSTALLDIR/bin:$PATH"
-        # LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
         - BUILD_DOCS=false
         - DEPLOY_DOCS=false
         - TEST=false
