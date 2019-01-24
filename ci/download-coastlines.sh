@@ -26,8 +26,8 @@ set -e
 test -d $COASTLINEDIR
 
 # GSHHG and DCW tarballs are cached here:
-test -d $HOME/pkg-gshhg-dcw || mkdir $HOME/pkg-gshhg-dcw
-cd $HOME/pkg-gshhg-dcw
+test -d $HOME/cache-gshhg-dcw || mkdir $HOME/cache-gshhg-dcw
+cd $HOME/cache-gshhg-dcw
 
 # GSHHG (coastlines, rivers, and political boundaries):
 echo ""
