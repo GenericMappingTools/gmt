@@ -34,7 +34,7 @@ cache:
 before_cache:
     - find $HOME -type f
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        brew cleanup
+        brew cleanup;
       fi
     - rm -rf $HOME/.cache/pip/log
 
@@ -116,15 +116,15 @@ matrix:
 before_install:
     # Update homebrew and add ccache to PATH:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        brew update
-        export PATH="/usr/local/opt/ccache/libexec:$PATH"
+        export PATH="/usr/local/opt/ccache/libexec:$PATH";
+        brew update;
       fi
     - mkdir "$INSTALLDIR"
     - mkdir "$COASTLINEDIR"
     - bash ci/download-coastlines.sh
     # Install GMT documentation dependencies
     - if [ "$BUILD_DOCS" == "true" ]; then
-        pip install --user sphinx
+        pip install --user sphinx;
       fi
 
 # Install the package that we want to test
@@ -140,18 +140,22 @@ script:
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
     - if [ "$TEST" == "true" ]; then
-        cmake --build . --target check
+        cmake --build . --target check;
       fi
     # Upload test coverage even if build fails. Keep separate to make sure this task
     # fails if the tests fail.
     - if [ "$TEST" == "true" ]; then
-        bash <(curl -s https://codecov.io/bash)
+        bash <(curl -s https://codecov.io/bash);
       fi
+    # Use set -e so that the build fails when a command fails.
+    # The default action for Travis-CI is to continue running even if a command fails.
+    - set -e
     - if [ "$BUILD_DOCS" == "true" ]; then
-        cmake --build . --target docs_depends
-        cmake --build . --target animation
-        cmake --build . --target docs_html
+        cmake --build . --target docs_depends;
+        cmake --build . --target animation;
+        cmake --build . --target docs_html;
       fi
+    - set +e
     - cd ..
 
 # Things to do if the build is successful
