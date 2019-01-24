@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 # Download and install the coastlines and boundaries datasets
 
+check_md5 ()
+{
+  md5_ref=$1
+  file=$2
+
+  test -f "$file" || return 1
+  md5=$(openssl dgst -md5 $file | cut -d ' ' -f 2)
+  test "$md5" = "$md5_ref"
+}
+
 # To return a failure if any commands inside fail
 #set -e
 set -x
@@ -20,9 +30,9 @@ MD5_DCW=4f30857a8b12af0f910222fceb591538
 echo ""
 echo "Downloading and unpacking GSHHG"
 echo "================================================================================"
-curl -L -O -C - --retry 10 "https://mirrors.ustc.edu.cn/gmt/$GSHHG.$EXT" || true
-md5=$(openssl dgst -md5 $GSHHG.$EXT | cut -d ' ' -f 2)
-test "$md5" = "$MD5_GSHHG"
+# download when md5sums don't match:
+check_md5 $MD5_GSHHG $GSHHG.$EXT || curl -L -O --retry 10 "https://mirrors.ustc.edu.cn/gmt/$GSHHG.$EXT"
+check_md5 $MD5_GSHHG $GSHHG.$EXT
 tar xzf $GSHHG.$EXT
 mv $GSHHG/* $COASTLINEDIR/
 
@@ -30,9 +40,9 @@ mv $GSHHG/* $COASTLINEDIR/
 echo ""
 echo "Downloading and unpacking DCW"
 echo "================================================================================"
-curl -L -O -C - --retry 10 "https://mirrors.ustc.edu.cn/gmt/$DCW.$EXT" || true
-md5=$(openssl dgst -md5 $DCW.$EXT | cut -d ' ' -f 2)
-test "$md5" = "$MD5_DCW"
+# download when md5sums don't match:
+check_md5 $MD5_DCW $DCW.$EXT || curl -L -O --retry 10 "https://mirrors.ustc.edu.cn/gmt/$DCW.$EXT"
+check_md5 $MD5_DCW $DCW.$EXT
 tar xzf $DCW.$EXT
 mv $DCW/* $COASTLINEDIR
 
