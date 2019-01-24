@@ -132,7 +132,7 @@ install:
     # Build and install GMT
     - ci/build-gmt.sh
     # Print ccache status
-    - ccache -s/--show-stats
+    - ccache --show-stats
 
 # Run the actual tests and checks
 script:
