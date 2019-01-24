@@ -32,7 +32,8 @@ cache:
         - $HOME/Library/Caches/Homebrew
 
 before_cache:
-    - find $HOME -type f
+    - find $HOME -type d
+    - find $HOME/.ccache $HOME/pkg-gshhg-dcw
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         brew cleanup;
       fi

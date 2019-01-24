@@ -6,9 +6,10 @@ set -e
 
 cat > cmake/ConfigUser.cmake << 'EOF'
 set (CMAKE_INSTALL_PREFIX "$ENV{INSTALLDIR}")
-set (GMT_LIBDIR "$ENV{INSTALLDIR}/lib")
+#set (GMT_LIBDIR "$ENV{INSTALLDIR}/lib")
 set (DCW_ROOT "$ENV{COASTLINEDIR}")
 set (GSHHG_ROOT "$ENV{COASTLINEDIR}")
+set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
 EOF
 
 if [ "$TEST" == "true" ]; then
@@ -19,7 +20,7 @@ set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_ANIMATIONS TRUE)
 set (N_TEST_JOBS 2)
-set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement -coverage -O0")
+set (CMAKE_C_FLAGS "-Wextra -coverage -O0 ${CMAKE_C_FLAGS}")
 EOF
 fi
 
@@ -30,8 +31,13 @@ echo ""
 
 mkdir -p build && cd build
 
+# Configure
 cmake -G Ninja ..
 
+# Show CMakeCache.txt, strip comments
+grep -Ev "^(//.+|)$" CMakeCache.txt
+
+# Build and install
 cmake --build .
 cmake --build . --target install
 

@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 # Download and install the coastlines and boundaries datasets
 
+# General settings:
+EXT="tar.gz"
+GSHHG="gshhg-gmt-2.3.7"
+DCW="dcw-gmt-1.1.4"
+MD5_GSHHG=8ee2653f9daf84d49fefbf990bbfa1e7
+MD5_DCW=4f30857a8b12af0f910222fceb591538
+
+# Used for checking the downloaded files:
 check_md5 ()
 {
   md5_ref=$1
@@ -12,19 +20,14 @@ check_md5 ()
 }
 
 # To return a failure if any commands inside fail
-#set -e
-set -x
+set -e
 
-# gshhg and dcw tarballs are cached here:
+# Test if target directory exists, else fail
+test -d $COASTLINEDIR
+
+# GSHHG and DCW tarballs are cached here:
 test -d $HOME/pkg-gshhg-dcw || mkdir $HOME/pkg-gshhg-dcw
 cd $HOME/pkg-gshhg-dcw
-
-# Get the coastlines and country polygons
-EXT="tar.gz"
-GSHHG="gshhg-gmt-2.3.7"
-DCW="dcw-gmt-1.1.4"
-MD5_GSHHG=8ee2653f9daf84d49fefbf990bbfa1e7
-MD5_DCW=4f30857a8b12af0f910222fceb591538
 
 # GSHHG (coastlines, rivers, and political boundaries):
 echo ""
@@ -44,7 +47,7 @@ echo "==========================================================================
 check_md5 $MD5_DCW $DCW.$EXT || curl -L -O --retry 10 "https://mirrors.ustc.edu.cn/gmt/$DCW.$EXT"
 check_md5 $MD5_DCW $DCW.$EXT
 tar xzf $DCW.$EXT
-mv $DCW/* $COASTLINEDIR
+mv $DCW/* $COASTLINEDIR/
 
 ls $COASTLINEDIR
 
