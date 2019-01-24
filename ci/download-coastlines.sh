@@ -21,7 +21,7 @@ echo ""
 echo "Downloading and unpacking GSHHG"
 echo "================================================================================"
 curl -L -O -C - --retry 10 "https://mirrors.ustc.edu.cn/gmt/$GSHHG.$EXT" || true
-md5=$(md5sum $GSHHG.$EXT | cut -d ' ' -f 1)
+md5=$(openssl dgst -md5 $GSHHG.$EXT | cut -d ' ' -f 2)
 test "$md5" = "$MD5_GSHHG"
 tar xzf $GSHHG.$EXT
 mv $GSHHG/* $COASTLINEDIR/
@@ -31,7 +31,7 @@ echo ""
 echo "Downloading and unpacking DCW"
 echo "================================================================================"
 curl -L -O -C - --retry 10 "https://mirrors.ustc.edu.cn/gmt/$DCW.$EXT" || true
-md5=$(md5sum $DCW.$EXT | cut -d ' ' -f 1)
+md5=$(openssl dgst -md5 $DCW.$EXT | cut -d ' ' -f 2)
 test "$md5" = "$MD5_DCW"
 tar xzf $DCW.$EXT
 mv $DCW/* $COASTLINEDIR
