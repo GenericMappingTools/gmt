@@ -25,7 +25,7 @@ cp $GSHHG/* $COASTLINEDIR/
 echo ""
 echo "Downloading and unpacking DCW"
 echo "================================================================================"
-curl -L -O -C "http://www.soest.hawaii.edu/pwessel/dcw/$DCW.$EXT"
+curl -L -O -C - "http://www.soest.hawaii.edu/pwessel/dcw/$DCW.$EXT"
 tar xzf $DCW.$EXT
 cp $DCW/* $COASTLINEDIR
 
