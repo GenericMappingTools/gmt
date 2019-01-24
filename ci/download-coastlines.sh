@@ -2,7 +2,8 @@
 # Download and install the coastlines and boundaries datasets
 
 # To return a failure if any commands inside fail
-set -e
+#set -e
+set -x
 
 # gshhg and dcw tarballs are cached here:
 test -d $HOME/pkg-gshhg-dcw || mkdir $HOME/pkg-gshhg-dcw
