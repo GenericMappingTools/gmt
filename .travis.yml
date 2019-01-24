@@ -121,7 +121,7 @@ before_install:
       fi
     - mkdir "$INSTALLDIR"
     - mkdir "$COASTLINEDIR"
-    - bash ci/download-coastlines.sh
+    - ci/download-coastlines.sh
     # Install GMT documentation dependencies
     - if [ "$BUILD_DOCS" == "true" ]; then
         pip install --user sphinx;
@@ -130,7 +130,7 @@ before_install:
 # Install the package that we want to test
 install:
     # Build and install GMT
-    - bash ci/build-gmt.sh
+    - ci/build-gmt.sh
     # Print ccache status
     - ccache -s/--show-stats
 
