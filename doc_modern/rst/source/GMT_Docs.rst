@@ -890,7 +890,7 @@ importance (some are used a lot more than others).
 +----------+--------------------------------------------------------------------+
 | **-p**   | Control perspective views for plots                                |
 +----------+--------------------------------------------------------------------+
-| **-r**   | Set the grid registration to pixel [Default is gridline]           |
+| **-r**   | Set grid registration [Default is gridline]                        |
 +----------+--------------------------------------------------------------------+
 | **-s**   | Control output of records containing one or more NaNs              |
 +----------+--------------------------------------------------------------------+
@@ -1987,7 +1987,7 @@ Grid registration: The **-r** option
 All 2-D grids in GMT have their nodes
 organized in one of two ways, known as *gridline*- and *pixel*-
 registration. The GMT default is gridline registration; programs that
-allow for the creation of grids can use the **-r** option to select
+allow for the creation of grids can use the **-r** option (or **-rp**) to select
 pixel registration instead.  Most observed data tend to be in gridline
 registration while processed data sometime may be distributed in
 pixel registration.  While you may convert between the two registrations

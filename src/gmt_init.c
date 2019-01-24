@@ -6457,7 +6457,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'F':	/* -r Pixel registration option  */
 
-			gmt_message (GMT, "\t-r Set pixel registration [Default is grid registration].\n");
+			gmt_message (GMT, "\t-r Set (g)ridline- or (p)ixel-registration [Default].\n");
+			gmt_message (GMT, "\t   If not given we default to gridline registration\n");
 			break;
 
 		case 't':	/* -t layer transparency option  */
@@ -14192,7 +14193,18 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 		case 'r':
 			error += GMT_more_than_once (GMT, GMT->common.R.active[GSET]);
 			GMT->common.R.active[GSET] = true;
-			GMT->common.R.registration = GMT_GRID_PIXEL_REG;
+			if (item[0]) {	/* Gave argument for specific registration */
+				switch (item[0]) {
+					case 'p': GMT->common.R.registration = GMT_GRID_PIXEL_REG; break;
+					case 'g': GMT->common.R.registration = GMT_GRID_NODE_REG; break;
+					default:
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -r: Syntax is -r[g|p]\n");
+						error++;
+						break;
+				}
+			}
+			else	/* By default, -r means pixel registration */
+				GMT->common.R.registration = GMT_GRID_PIXEL_REG;
 			break;
 
 		case 's':
