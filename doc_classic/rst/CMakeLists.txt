@@ -116,13 +116,13 @@ if (SPHINX_FOUND)
 	endif (GZIP)
 
 	# Install targets for realease documentation
-	if (SVN AND HAVE_SVN_VERSION)
+	if (GIT AND HAVE_GIT_VERSION)
 		# HTML
 		add_custom_target (_html_release
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_CURRENT_BINARY_DIR}/html/
 			${GMT_RELEASE_PREFIX}/doc_release/html
-			DEPENDS docs_html svn_export_release)
+			DEPENDS docs_html git_export_release)
 		add_depend_to_target (gmt_release _html_release)
 		# PDF
 		add_custom_target (_pdf_release
@@ -138,16 +138,16 @@ if (SPHINX_FOUND)
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Manpages.pdf
 			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Manpages.pdf
-			DEPENDS docs_pdf_shrink svn_export_release)
+			DEPENDS docs_pdf_shrink git_export_release)
 		#add_depend_to_target (gmt_release _pdf_release)
 		# Manpages
 		add_custom_target (_man_release
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			${CMAKE_CURRENT_BINARY_DIR}/man/
 			${GMT_RELEASE_PREFIX}/man_release
-			DEPENDS docs_man svn_export_release)
+			DEPENDS docs_man git_export_release)
 		add_depend_to_target (gmt_release _man_release)
-	endif (SVN AND HAVE_SVN_VERSION)
+	endif (GIT AND HAVE_GIT_VERSION)
 endif (SPHINX_FOUND)
 
 # Install targets

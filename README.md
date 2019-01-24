@@ -39,7 +39,7 @@ hobbyists.
 
 The map above illustrates the spreading of the current GMT release around the world
 based on web traffic. Each colored circle in the map above represents a 15x15 arc
-minute block with one or more users who downloaded GMT. Download geolocation is based
+minute block with one or more users who downloaded GMT since the last release. Download geolocation is based
 on [MaxMind's](http://www.maxmind.com/) freely available GeoLite data.
 
 ## A reminder
@@ -85,7 +85,7 @@ http://gmt.soest.hawaii.edu/projects/gmt/wiki/PackagingGMT
 
 - Software:
   You need Ghostscript, CMake (>=2.8.5), netCDF (>=4.0, netCDF-4/HDF5
-  support mandatory).  Optionally install Sphinx, PCRE1 or PCRE2, GDAL, LAPACK,
+  support mandatory) and Curl.  Optionally install Sphinx, PCRE1 or PCRE2, GDAL, LAPACK,
   BLAS and FFTW (single precision version).
 - Data:
   You need gshhg (>=2.2.2); optionally install dcw-gmt (>=1.0.5)

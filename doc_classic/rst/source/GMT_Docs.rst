@@ -494,6 +494,11 @@ We will discuss these two commands later.  Finally, there are some new features 
 are only accessible under modern mode, such as subplots, new ways to specify the map domain and to
 get multiple output formats from the same plot.
 
+The modern mode relies on know what session is being run. If your script is explicitly or
+inadvertently creating sub-shells under UNIX then the script could fail.  If this is the
+case then you will need to add
+export GMT_SESSION_NAME=<some unique string>
+before gmt begin starts the script.
 
 GMT Overview and Quick Reference
 ================================

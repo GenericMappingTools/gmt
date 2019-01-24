@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Testing gmt pslegend absolute offsets in modern mode
-export GMT_PPID=$$
+export GMT_SESSION_NAME=$$
 cat << EOF > legend.txt
 S 0.1i T 0.07i red  - 0.3i Ship
 S 0.1i c 0.07i blue - 0.3i Satellite

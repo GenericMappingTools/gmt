@@ -120,7 +120,7 @@ GMT_LOCAL int clear_sessions (struct GMTAPI_CTRL *API) {
 		perror (API->session_dir);
 		return GMT_RUNTIME_ERROR;
 	}
-	if ((n_dirs = (unsigned int)gmtlib_glob_list (API->GMT, "gmt*", &dirlist))) {	/* Find the gmt.<PPID> directories */
+	if ((n_dirs = (unsigned int)gmtlib_glob_list (API->GMT, "gmt*", &dirlist))) {	/* Find the gmt.<session_name> directories */
 		for (k = 0; k < n_dirs; k++) {
 			if (gmt_remove_dir (API, dirlist[k], false))
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove directory %s [permissions?]\n", dirlist[k]);

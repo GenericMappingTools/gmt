@@ -280,33 +280,6 @@ struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle hea
 
 /* Local functions */
 
-#if 0
-/* This code has not been used. See gmt_api.c instead for api_get_ppid */
-GMT_LOCAL int gmt_get_ppid (struct GMT_CTRL *GMT) {
-	/* Return the parent process ID [i.e., shell for command line use or gmt app for API] */
-	int ppid = -1;
-	if (GMT->parent->external) return (getpid());	/* Return ID of the gmt application */
-	/* Here we are probably running from the command line and want the shell's PID */
-#ifdef _WIN32
-	int pid = GetCurrentProcessId ();
-	HANDLE h = CreateToolhelp32Snapshot (TH32CS_SNAPPROCESS, 0);
-	PROCESSENTRY32 pe = { 0 };
-	pe.dwSize = sizeof (PROCESSENTRY32);
-
-	if (Process32First(h, &pe)) {
-		do {
-			if (pe.th32ProcessID == pid)
-				ppid = pe.th32ParentProcessID;
-		} while (ppid == -1 && Process32Next(h, &pe));
-	}
-	CloseHandle (h);
-#else
-	ppid = getppid(); /* parent process id */
-#endif
-	return ppid;
-}
-#endif
-
 /*	GMT_LINEAR PROJECTION MAP BOUNDARY	*/
 
 GMT_LOCAL void plot_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {

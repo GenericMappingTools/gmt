@@ -87,8 +87,8 @@ if [ "X$script_mode" = "XM" ]; then
 	if [ $classic -eq 0 ]; then
 		echo "Modernizing $script to $local_script before testing"
 		gmtmodernize "$script" > ./${local_script}
-		export GMT_PPID=$$
-		echo "Set GMT_PPID = $GMT_PPID"
+		export GMT_SESSION_NAME=$$
+		echo "Set GMT_SESSION_NAME = $GMT_SESSION_NAME"
 		. "${local_script}" animate
 	else
 		echo "Cannot modernize classic GMT script ${script}. Run in classic mode" >&2

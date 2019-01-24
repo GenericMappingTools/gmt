@@ -130,39 +130,20 @@ if (UNIX AND DO_ANIMATIONS)
 	foreach (_num 04 06 07)
 		add_custom_command (
 			OUTPUT
-			${RST_BINARY_DIR}/_images/anim_${_num}.mp4
-			${RST_BINARY_DIR}/_images/anim_${_num}.webm
+			${RST_BINARY_DIR}/_static/anim_${_num}.mp4
+			${RST_BINARY_DIR}/_static/anim_${_num}.webm
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.mp4
-			${RST_BINARY_DIR}/_images/anim_${_num}.mp4
+			${RST_BINARY_DIR}/_static/anim_${_num}.mp4
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.webm
-			${RST_BINARY_DIR}/_images/anim_${_num}.webm
+			${RST_BINARY_DIR}/_static/anim_${_num}.webm
 			DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.gif)
 		list (APPEND _animations
-			${RST_BINARY_DIR}/_images/anim_${_num}.mp4
-			${RST_BINARY_DIR}/_images/anim_${_num}.webm)
-	endforeach ()
-	add_custom_target (animation DEPENDS ${_animations})
-
-	# Install video files from anim 04, 06, 07
-	foreach (_num 04 06 07)
-		add_custom_command (
-			OUTPUT
-			${RST_BINARY_DIR}/_static/anim_${_num}.mp4
-			${RST_BINARY_DIR}/_static/anim_${_num}.webm
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.mp4
-			${RST_BINARY_DIR}/_static/anim_${_num}.mp4
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.webm
-			${RST_BINARY_DIR}/_static/anim_${_num}.webm
-			DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.gif)
-		list (APPEND _install_animations
 			${RST_BINARY_DIR}/_static/anim_${_num}.mp4
 			${RST_BINARY_DIR}/_static/anim_${_num}.webm)
 	endforeach ()
-	add_custom_target (install_animation DEPENDS ${_install_animations})
+	add_custom_target (animation DEPENDS ${_animations})
 
 	# clean target
 	foreach (_num 01 02 03 04 05 06 07)

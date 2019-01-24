@@ -245,8 +245,8 @@ export HAVE_GLIB_GTHREAD="@HAVE_GLIB_GTHREAD@"
 gmt set -Du
 # Modern mode needs a stable PPID but ctest messes that up when pipes are used
 if [ "X$script_mode" = "XM" ] || [ "X$script_mode" = "Xm" ]; then
-	export GMT_PPID=\$\$
-	echo "Set GMT_PPID = \$GMT_PPID"
+	export GMT_SESSION_NAME=\$\$
+	echo "Set GMT_SESSION_NAME = \$GMT_SESSION_NAME"
 	script_mode=M
 fi
 # Now run the script
