@@ -61,7 +61,7 @@ Either **-G**, **-S** or **-L**
 
 **-T**\ [\ *min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\ \|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc*. Append +n to indicate *inc* is the number of t-values
-    to produce over the range instead. Append a valid time unit (h|m|s) to the increment. If only *min* is given then
+    to produce over the range instead. Append a valid time unit (d|h|m|s) to the increment. If only *min* is given then
     we use that date and time for the calculations.  If no **-T** is provided get
     current time in UTC from the computer clock. If no **-G** or **-S** are provided then **-T** is interpreted to mean compute
     a time-series at the location specified by **-L**, thus then **-L** becomes mandatory.
