@@ -150,7 +150,7 @@ script:
     - set -e
     - if [[ "$BUILD_DOCS" == "true" ]]; then
         cmake --build . --target docs_depends;
-        (while sleep 300; do echo . ; done);
+        (while sleep 300; do echo . ; done)&
         cmake --build . --target animation;
         kill %1;
         cmake --build . --target docs_html;
