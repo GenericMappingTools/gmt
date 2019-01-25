@@ -13,13 +13,12 @@ EOF
 
 if [ "$TEST" == "true" ]; then
     cat >> cmake/ConfigUser.cmake << 'EOF'
-set (CMAKE_BUILD_TYPE Debug)
 enable_testing()
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_ANIMATIONS TRUE)
 set (N_TEST_JOBS 2)
-set (CMAKE_C_FLAGS "-Wextra -coverage -O0 ${CMAKE_C_FLAGS}")
+set (CMAKE_C_FLAGS "-Wextra -coverage ${CMAKE_C_FLAGS}")
 EOF
 fi
 
