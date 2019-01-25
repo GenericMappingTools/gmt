@@ -100,7 +100,7 @@ before_install:
         # Download dependencies if not cached (https://stackoverflow.com/a/52446551)
         DEB_CACHE=$HOME/cache-deb
         DEB_PACKAGES="cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev ghostscript curl"
-        if [ "$BUILD_DOCS" == "true" ]; then
+        if [[ "$TEST" == "true" || "$BUILD_DOCS" == "true" ]]; then
           DEB_PACKAGES="$DEB_PACKAGES graphicsmagick ffmpeg python python-pip texlive-latex-extra"
         fi
         test -d $DEB_CACHE || mkdir $DEB_CACHE
@@ -121,7 +121,7 @@ before_install:
     - mkdir "$COASTLINEDIR"
     - ci/download-coastlines.sh
     # Install GMT documentation dependencies
-    - if [ "$BUILD_DOCS" == "true" ]; then
+    - if [[ "$BUILD_DOCS" == "true" ]]; then
         pip install --user sphinx;
       fi
 
@@ -137,18 +137,18 @@ script:
     - cd build
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-    - if [ "$TEST" == "true" ]; then
+    - if [[ "$TEST" == "true" ]]; then
         cmake --build . --target check;
       fi
     # Upload test coverage even if build fails. Keep separate to make sure this task
     # fails if the tests fail.
-    - if [ "$TEST" == "true" ]; then
+    - if [[ "$TEST" == "true" ]]; then
         bash <(curl -s https://codecov.io/bash);
       fi
     # Use set -e so that the build fails when a command fails.
     # The default action for Travis-CI is to continue running even if a command fails.
     - set -e
-    - if [ "$BUILD_DOCS" == "true" ]; then
+    - if [[ "$BUILD_DOCS" == "true" ]]; then
         cmake --build . --target docs_depends;
         cmake --build . --target animation;
         cmake --build . --target docs_html;
