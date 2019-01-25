@@ -150,7 +150,9 @@ script:
     - set -e
     - if [[ "$BUILD_DOCS" == "true" ]]; then
         cmake --build . --target docs_depends;
-        travis_wait cmake --build . --target animation;
+        (while sleep 300; do echo . ; done);
+        cmake --build . --target animation;
+        kill %1;
         cmake --build . --target docs_html;
         cmake --build . --target docs_pdf;
       fi
