@@ -1062,6 +1062,9 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 		tdel2 = 1.0 / (24 * 3600);	/* 1 seconds steps (????) */
 	else if (T.unit == 'h') 
 		tdel2 = 1.0 / 24;		/* 1 hour steps */
+	else if (T.unit == 'd') 
+		tdel2 = 1.0;		/* 1 day steps */
+		tdel2 = tdel2 * T.inc;
 
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
 	hour = (int)Cal->hour;	min = (int)Cal->min;
@@ -1200,6 +1203,9 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 		tdel2 = 1.0 / (24 * 3600);	/* 1 secons steps (????) */
 	else if (T.unit == 'h') 
 		tdel2 = 1.0 / 24;			/* 1 hour steps */
+	else if (T.unit == 'd') 
+		tdel2 = 1.0;		/* 1 day steps */
+		tdel2 = tdel2 * T.inc;
 
 	/* here comes the sun  (and the moon)  (go, tide!) */
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
