@@ -138,7 +138,7 @@ script:
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
     - if [[ "$TEST" == "true" ]]; then
-        ctest --force-new-ctest-process -j4
+        ctest --force-new-ctest-process -j4;
       fi
     # Upload test coverage even if build fails. Keep separate to make sure this task
     # fails if the tests fail.
