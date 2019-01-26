@@ -1,6 +1,6 @@
-########
-CookBook
-########
+###########
+Modern Mode
+###########
 
 .. toctree::
    :maxdepth: 1
