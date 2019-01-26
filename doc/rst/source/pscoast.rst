@@ -57,15 +57,14 @@ scale 0.1 inch/degree, use
 
    ::
 
-    gmt pscoast -R-30/30/-40/40 -Jm0.1i -B5 -I1/1p,blue -N1/0.25p,- \
-                -I2/0.25p,blue -W0.25p,white -Ggreen -Sblue -P > africa.ps
+    gmt pscoast -R-30/30/-40/40 -Jm0.1i -B5 -I1/1p,blue -N1/0.25p,- -I2/0.25p,blue -W0.25p,white -Ggreen -Sblue -P > africa.ps
 
 To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a
 Mercator map at scale 1 cm/degree, run
 
    ::
 
-    gmt pscoast -R-30/-10/60/65 -Jm1c -B5 -Gp28+r100 > iceland.ps
+    gmt pscoast -R-30/-10/60/65 -Jm1c -B5 -Gp28+r100 -P > iceland.ps
 
 To initiate a clip path for Africa so that the subsequent colorimage of
 gridded topography is only seen over land, using a Mercator map at scale
@@ -83,14 +82,14 @@ domain form the extents of these countries, use
 
    ::
 
-    gmt pscoast -JM6i -P -Baf -EGB,IT,FR+gblue+p0.25p,red -EES,PT,GR+gyellow > map.ps
+    gmt pscoast -JM6i -Baf -EGB,IT,FR+gblue+p0.25p,red -EES,PT,GR+gyellow -P > map.ps
 
 To extract a high-resolution coastline data table for Iceland to be used
 in your analysis, try
 
    ::
 
-    gmt pscoast -R-26/-12/62/68 -Dh -W -M > iceland.txt
+    gmt pscoast -R-26/-12/62/68 -Dh -W -M -P > iceland.txt
 
 **pscoast** will first look for coastline files in directory
 **$GMT_SHAREDIR**/coast If the desired file is not found, it will look
