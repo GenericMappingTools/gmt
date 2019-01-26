@@ -1495,6 +1495,11 @@ int GMT_earthtide (void *V_API, int mode, void *args) {
 		if (gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) /* Get the array built or read */
 			Return (GMT_RUNTIME_ERROR);
 		
+		if (!Ctrl->T.T.count && (strchr("dhms", Ctrl->T.T.unit) == NULL)){
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Must specify valid interval unit (d|h|m|s)\n"); 
+			return GMT_PARSE_ERROR;
+		}
+
 		if (Ctrl->T.one_time)
 			Ctrl->T.T.n = 1;
 
