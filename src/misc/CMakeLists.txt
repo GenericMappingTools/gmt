@@ -26,7 +26,6 @@ set (LIB_SRCS ${SUPPL_PROGS_SRCS})
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.misc)
-set (SUPPL_EXAMPLE_PROGS dim.template.sh)
 
 # create build targets
 string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
@@ -35,9 +34,6 @@ install_module_symlink (${_gmt_modules})
 # install example data
 if (UNIX)
 	install (FILES ${SUPPL_EXAMPLE_FILES}
-		DESTINATION ${GMT_DOCDIR}/supplements/misc
-		COMPONENT Documentation)
-	install (PROGRAMS ${SUPPL_EXAMPLE_PROGS}
 		DESTINATION ${GMT_DOCDIR}/supplements/misc
 		COMPONENT Documentation)
 endif (UNIX)
