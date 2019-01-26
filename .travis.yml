@@ -135,8 +135,10 @@ install:
 # Run the actual tests and checks
 script:
     - cd build
+    # Run a few commands to make sure they don't crash
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
+    - gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
     - if [[ "$TEST" == "true" ]]; then
         ctest --force-new-ctest-process -j4;
       fi
