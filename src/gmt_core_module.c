@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2018
+ * Copyright (c) 2012-2019
  * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
@@ -313,7 +313,7 @@ const char *gmt_core_module_group (void *API, char *candidate) {
 	/* Return Module keys or NULL */
 	return (g_core_module[module_id].component);
 }
-	
+
 #ifndef BUILD_SHARED_LIBS
 /* Lookup static module id by name, return function pointer */
 void *gmt_core_module_lookup (void *API, const char *candidate) {

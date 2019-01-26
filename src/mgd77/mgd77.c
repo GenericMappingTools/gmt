@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------
  *
- *  Copyright (c) 2005-2018 by P. Wessel
+ *  Copyright (c) 2005-2019 by P. Wessel
  *  See README file for copying and redistribution conditions.
  *
  *  File:       mgd77.c
