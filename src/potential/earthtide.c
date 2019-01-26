@@ -1056,16 +1056,21 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 	gmt_set_column (GMT, GMT_OUT, 4, GMT_IS_LON);
 	gmt_set_column (GMT, GMT_OUT, 5, GMT_IS_LAT);
 
-	if (T.unit == 'm')
-		tdel2 = 1.0 / (24 * 60);	/* 1 minute steps */
-	else if (T.unit == 's') 
-		tdel2 = 1.0 / (24 * 3600);	/* 1 seconds steps (????) */
-	else if (T.unit == 'h') 
-		tdel2 = 1.0 / 24;		/* 1 hour steps */
-	else if (T.unit == 'd') 
-		tdel2 = 1.0;		/* 1 day steps */
+	if(T.count){
+		tdel2 = (T.max-T.min) / ((T.inc - 1) * 24 * 3600);
+	}
+	else {
+		if (T.unit == 'm')
+			tdel2 = 1.0 / (24 * 60);	/* 1 minute steps */
+		else if (T.unit == 's') 
+			tdel2 = 1.0 / (24 * 3600);	/* 1 seconds steps (????) */
+		else if (T.unit == 'h') 
+			tdel2 = 1.0 / 24;			/* 1 hour steps */
+		else if (T.unit == 'd') 
+			tdel2 = 1.0;		/* 1 day steps */
 
-	tdel2 = tdel2 * T.inc;
+		tdel2 = tdel2 * T.inc;
+	}
 
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
 	hour = (int)Cal->hour;	min = (int)Cal->min;
@@ -1198,16 +1203,21 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 
 	Out = gmt_new_record (GMT, out, NULL);	/* Since we only need to worry about numerics in this module */
 
-	if (T.unit == 'm')
-		tdel2 = 1.0 / (24 * 60);	/* 1 minute steps */
-	else if (T.unit == 's') 
-		tdel2 = 1.0 / (24 * 3600);	/* 1 secons steps (????) */
-	else if (T.unit == 'h') 
-		tdel2 = 1.0 / 24;			/* 1 hour steps */
-	else if (T.unit == 'd') 
-		tdel2 = 1.0;		/* 1 day steps */
+	if(T.count){
+		tdel2 = (T.max-T.min) / ((T.inc - 1) * 24 * 3600);
+	}
+	else {
+		if (T.unit == 'm')
+			tdel2 = 1.0 / (24 * 60);	/* 1 minute steps */
+		else if (T.unit == 's') 
+			tdel2 = 1.0 / (24 * 3600);	/* 1 seconds steps (????) */
+		else if (T.unit == 'h') 
+			tdel2 = 1.0 / 24;			/* 1 hour steps */
+		else if (T.unit == 'd') 
+			tdel2 = 1.0;		/* 1 day steps */
 
-	tdel2 = tdel2 * T.inc;
+		tdel2 = tdel2 * T.inc;
+	}
 
 	/* here comes the sun  (and the moon)  (go, tide!) */
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
