@@ -52,7 +52,7 @@ To plot a horizontal color scale (12 cm long; 0.5 cm wide) at the reference poin
    ::
 
     gmt makecpt -T-200/1000/100 -Crainbow > t.cpt
-    gmt psscale -Ct.cpt -Dx8c/1c+w12c/0.5c+jTC+h -Bxaf+l"topography" -By+lkm > map.ps
+    gmt psscale -Ct.cpt -Dx8c/1c+w12c/0.5c+jTC+h -Bxaf+l"topography" -By+lkm -P > map.ps
 
 
 To append a vertical color scale (7.5 cm long; 1.25 cm wide) to the
