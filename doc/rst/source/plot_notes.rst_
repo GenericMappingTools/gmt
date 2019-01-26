@@ -1,0 +1,68 @@
+Segment Header Parsing
+----------------------
+
+Segment header records may contain one of more of the following options:
+
+**-G**\ *fill*
+    Use the new *fill* and turn filling on
+**-G-**
+    Turn filling off
+**-G**
+    Revert to default fill (none if not set on command line)
+**-W**\ *pen*
+    Use the new *pen* and turn outline on
+**-W**
+    Revert to default pen :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`
+    (if not set on command line)
+**-W-**
+    Turn outline off
+**-Z**\ *zval*
+    Obtain fill via cpt lookup using z-value *zval*
+**-Z**\ *NaN*
+    Get the NaN color from the CPT
+
+Custom Symbols
+--------------
+
+GMT allows users to define and plot their own custom symbols. This
+is done by encoding the symbol using our custom symbol macro code
+described in Appendix N. Put all the macro codes for your new symbol in
+a file whose extension must be .def; you may then address the symbol
+without giving the extension (e.g., the symbol file tsunami.def is used
+by specifying **-Sk**\ *tsunami/size*. The definition file can contain
+any number of plot code records, as well as blank lines and comment
+lines (starting with #). The module will look for the definition files in
+(1) the current directory, (2) the ~/.gmt directory, and
+(3) the **$GMT_SHAREDIR**/custom directory, in that order.
+Freeform polygons (made up of straight line segments and arcs of
+circles) can be designed - these polygons can be painted and filled with
+a pattern. Other standard geometric symbols can also be used. See Appendix
+:ref:`App-custom_symbols` for macro definitions.
+
+GMT4 Vector
+-----------
+
+Note: The old-style, single-polygon vector available in GMT4 and earlier versions
+has been added to GMT5 for backwards compatibility with old scripts.
+For reference, the old vector syntax is listed here:
+The *size*, if present, will be interpreted as *arrowwidth/headlength/headwidth*.
+By default, arrow attributes remain invariant to the length
+of the arrow.  To have the size of the vector scale down with decreasing length,
+append **n**\ *norm*, so that vectors shorter than *norm* will have their
+dimensions scaled by the vector length divided by *norm*.
+To center the vector on the balance (mid) point, use **-Svb**; to align point with the vector head,
+use **-Svh**; to align point with the vector tail, use **-Svt** [Default].
+If the input has the head point's coordinates instead of direction and length, use **-Svs**.
+Upper case **B**, **H**, **T**, or **S** will draw a double-headed vector [Default is single head].
+
+Polar Caps
+----------
+
+We will automatically determine if a closed polygon is containing
+a geographic pole, i.e., being a polar cap.  Such polygons requires special
+treatment under the hood to ensure proper filling.  Many tools such
+as GIS packages are unable to handle polygons covering a pole and some
+cannot handle polygons crossing the Dateline.  They work around this
+problem by splitting polygons into a west and east polygon or inserting
+artificial helper lines that makes a cut into the pole and back.  Such
+doctored polygons may be misrepresented in GMT.

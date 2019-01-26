@@ -1,0 +1,29 @@
+Windows Remarks
+---------------
+
+Note that under Windows, the percent sign (%) is a variable indicator
+(like $ under Unix). To indicate a plain percentage sign in a batch
+script you need to repeat it (%%); hence the font switching mechanism
+(@%\ *font*\ % and @%%) may require twice the number of percent signs.
+This only applies to text inside a script or that otherwise is processed
+by DOS. Data files that are opened and read by the module do not need
+such duplication.
+
+Limitations
+-----------
+
+In paragraph mode, the presence of composite characters and other escape
+sequences may lead to unfortunate word splitting. Also, if a font is
+requested with an outline pen it will not be used in paragraph mode.
+Note if any single word is wider than your chosen paragraph width then
+the paragraph width is automatically enlarged to fit the widest word.
+
+Use from external interface
+---------------------------
+
+When the module is called from external interfaces then we impose the following
+condition on the **-F** setting: We require that **+a** (read angle from
+input), if specified, must appear before either of **+f** (read font from input) and **+j**
+(read justification from input), if these are present.  This is necessary because the
+angle is a numerical column while font and justification must be encoded as part of the
+trailing text.

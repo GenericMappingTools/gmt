@@ -1,0 +1,7 @@
+Notes
+-----
+
+Be aware that using **-I** may lead to aliasing unless
+your grid is smoothly varying over the new length increments.
+It is generally better to filter your grids and resample at a
+larger grid increment and use these grids instead of the originals.
