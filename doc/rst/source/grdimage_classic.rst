@@ -49,7 +49,7 @@ the maximum map dimension limited to be 6 inches, try
 
    ::
 
-    gmt grdimage stuff.nc -JX6i+ -I+d > quick.ps
+    gmt grdimage stuff.nc -JX6i+ -I+d -P > quick.ps
 
 To gray-shade the file hawaii_grav.nc with shades given in shades.cpt
 on a Lambert map at 1.5 cm/degree along the standard parallels 18 and
@@ -57,7 +57,7 @@ on a Lambert map at 1.5 cm/degree along the standard parallels 18 and
 
    ::
 
-    gmt grdimage hawaii_grav.nc -Jl18/24/1.5c -Cshades.cpt -B1 > hawaii_grav_image.ps
+    gmt grdimage hawaii_grav.nc -Jl18/24/1.5c -Cshades.cpt -B1 -P > hawaii_grav_image.ps
 
 To create an illuminated color PostScript plot of the gridded data set
 image.nc, using the intensities provided by the file intens.nc, and
@@ -66,7 +66,7 @@ inch/x-unit, tickmarks every 5 units:
 
    ::
 
-    gmt grdimage image.nc -Jx10i -Ccolors.cpt -Iintens.nc -B5 > image.ps
+    gmt grdimage image.nc -Jx10i -Ccolors.cpt -Iintens.nc -B5 -P > image.ps
 
 To create an false color PostScript plot from the three grid files
 red.nc, green.nc, and blue.nc, with linear scaling at 10 inch/x-unit,
@@ -74,16 +74,14 @@ tickmarks every 5 units:
 
    ::
 
-    gmt grdimage red.nc green.nc blue.nc -Jx10i -B5 > rgbimage.ps
+    gmt grdimage red.nc green.nc blue.nc -Jx10i -B5 -P > rgbimage.ps
 
 When GDAL support is built in: To create a sinusoidal projection of a
 remotely located Jessica Rabbit
 
    ::
 
-    gmt grdimage -JI15c -Rd \
-        http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg \
-        -P > jess.ps
+    gmt grdimage -JI15c -Rd http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -P > jess.ps
 
 See Also
 --------
