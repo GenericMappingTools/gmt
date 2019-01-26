@@ -91,7 +91,7 @@ matrix:
           env:
             - BUILD_DOCS=true
             - DEPLOY_DOCS=true
-            - HTML_BUILDDIR="build/doc_modern/rst/html"
+            - HTML_BUILDDIR="build/doc/rst/html"
 
 # Setup the build environment
 before_install:

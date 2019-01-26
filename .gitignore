@@ -1,9 +1,6 @@
 build
-dbuild
-rbuild
-xbuild
-dbuild-mp
-rbuild-mp
+?build
+?build-mp
 .*~
 cmake/ConfigUser.cmake
 share/coast

@@ -2642,8 +2642,10 @@ GMT_LOCAL void gmtinit_free_plot_array (struct GMT_CTRL *GMT) {
 }
 
 GMT_LOCAL void trim_off_any_slash_at_end (char *dir) {
-	size_t L = strlen (dir);
-	if (L && (dir[L-1] == '/' || dir[L-1] == '\\')) dir[L-1] = '\0';
+	size_t L = strlen (dir);	/* Get length of dir */
+	if (L && (dir[L-1] == '/' || dir[L-1] == '\\')) dir[L-1] = '\0', L--;	/* Remove a trailing slash */
+	if (L) L--;	/* L is now at last character in dir */
+	while (L && dir[L] == ' ') dir[L] = '\0', L--;	/* Remove trailing spaces in directory names */
 }
 
 /*! . */
@@ -2651,6 +2653,9 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 	char *this_c = NULL, path[PATH_MAX+1];
 	static char *how[2] = {"detected", "created"};
 	unsigned int u = 0, c = 0;
+	int err;
+	struct GMTAPI_CTRL *API = GMT->parent;
+	struct stat S;
 
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 	/* If SUPPORT_EXEC_IN_BINARY_DIR is defined we try to set the share dir to
@@ -2682,7 +2687,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 
 	gmt_dos_path_fix (GMT->session.SHAREDIR);
 	trim_off_any_slash_at_end (GMT->session.SHAREDIR);
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.SHAREDIR = %s\n", GMT->session.SHAREDIR);
+	GMT_Report (API, GMT_MSG_DEBUG, "GMT->session.SHAREDIR = %s\n", GMT->session.SHAREDIR);
 
 	/* Determine HOMEDIR (user home directory) */
 
@@ -2698,13 +2703,13 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		/* If HOME not set: use root directory instead (http://gmt.soest.hawaii.edu/issues/710) */
 		GMT->session.HOMEDIR = strdup ("/"); /* Note: Windows will use the current drive if drive letter unspecified. */
 #ifdef DEBUG
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "HOME environment not set. Using root directory instead.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "HOME environment not set. Using root directory instead.\n");
 #endif
 	}
 	if (GMT->session.HOMEDIR) {	/* Mostly to keep Coverity happy */
 		gmt_dos_path_fix (GMT->session.HOMEDIR);
 		trim_off_any_slash_at_end (GMT->session.HOMEDIR);
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.HOMEDIR = %s\n", GMT->session.HOMEDIR);
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT->session.HOMEDIR = %s\n", GMT->session.HOMEDIR);
 	}
 
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
@@ -2720,11 +2725,11 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		gmt_dos_path_fix (GMT->session.USERDIR);
 		trim_off_any_slash_at_end (GMT->session.USERDIR);
 	}
-	if (GMT->session.USERDIR != NULL && access (GMT->session.USERDIR, R_OK)) {
-		/* If we cannot access this dir then we create it first */
-		if (gmt_mkdir (GMT->session.USERDIR)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT User directory : %s\n", GMT->session.USERDIR);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Auto-downloading of @earth_relief_##m|s.grd files has been disabled.\n");
+	if (GMT->session.USERDIR != NULL) {
+		err = stat (GMT->session.USERDIR, &S);	/* Stat the userdir path (which may not exist) */
+		if (err == ENOENT && gmt_mkdir (GMT->session.USERDIR)) { /* Path does not exist so we create that dir */
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create GMT User directory : %s\n", GMT->session.USERDIR);
+			GMT_Report (API, GMT_MSG_NORMAL, "Auto-downloading of @earth_relief_##m|s.grd files has been disabled.\n");
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			gmt_M_str_free (GMT->session.USERDIR);
 		}
@@ -2740,47 +2745,53 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		gmt_dos_path_fix (GMT->session.CACHEDIR);
 		trim_off_any_slash_at_end (GMT->session.CACHEDIR);
 	}
-	if (GMT->session.CACHEDIR != NULL && access (GMT->session.CACHEDIR, R_OK)) {
-		/* If we cannot access this dir then we create it first */
-		if (gmt_mkdir (GMT->session.CACHEDIR)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT User cache directory : %s\n", GMT->session.CACHEDIR);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Auto-downloading of cache data has been disabled.\n");
+	if (GMT->session.CACHEDIR != NULL) {
+		err = stat (GMT->session.CACHEDIR, &S);	/* Stat the cachedir path (which may not exist) */
+		if (err == ENOENT && gmt_mkdir (GMT->session.CACHEDIR)) {	/* Path does not exist so we create that dir */
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create GMT User cache directory : %s\n", GMT->session.CACHEDIR);
+			GMT_Report (API, GMT_MSG_NORMAL, "Auto-downloading of cache data has been disabled.\n");
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			gmt_M_str_free (GMT->session.CACHEDIR);
 		}
 	}
 
 	if ((this_c = getenv ("GMT_SESSIONDIR")) != NULL)		/* GMT_SESSIONDIR was set */
-		GMT->parent->session_dir = strdup (this_c);
-	else if (GMT->session.USERDIR != NULL) {	/* Use default path for GMT_SESSIONDIR as GMT_USERDIR/sessions */
+		API->session_dir = strdup (this_c);
+	else if (GMT->session.USERDIR != NULL) {	/* Use GMT_USERDIR/sessions as default path for GMT_SESSIONDIR */
 		sprintf (path, "%s/%s", GMT->session.USERDIR, "sessions");
-		GMT->parent->session_dir = strdup (path);
+		API->session_dir = strdup (path);
 	}
-	else {
-		GMT->parent->session_dir = strdup (GMT->parent->tmp_dir);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No GMT User directory set, GMT session dir selected: %s\n", GMT->parent->session_dir);
+	else {	/* Use the temp dir as the session dir */
+		API->session_dir = strdup (API->tmp_dir);
+		GMT_Report (API, GMT_MSG_NORMAL, "No GMT User directory set, GMT session dir selected: %s\n", API->session_dir);
 	}
-	if (GMT->parent->session_dir) {
-		gmt_dos_path_fix (GMT->parent->session_dir);
-		trim_off_any_slash_at_end (GMT->parent->session_dir);
+	if (API->session_dir) {
+		gmt_dos_path_fix (API->session_dir);
+		trim_off_any_slash_at_end (API->session_dir);
 	}
-	if (GMT->parent->session_dir != NULL && access (GMT->parent->session_dir, R_OK)) {
-		/* If we cannot access this dir then we create it first */
-		if (gmt_mkdir (GMT->parent->session_dir)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT User sessions directory : %s\n", GMT->parent->session_dir);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Modern mode will fail.\n");
+	if (API->session_dir != NULL) {
+		err = stat (API->session_dir, &S);	/* Stat the session path (which may not exist) */
+		if (err == ENOENT && gmt_mkdir (API->session_dir)) { /* Path does not exist so we create that dir */
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create GMT User sessions directory : %s\n", API->session_dir);
+			GMT_Report (API, GMT_MSG_NORMAL, "Modern mode will fail.\n");
+		}
+		else if (err == 0) {	/* Path already exists, check why */
+			if (!S_ISDIR (S.st_mode))	/* Path already exists, but it is not a directory */
+				GMT_Report (API, GMT_MSG_NORMAL, "A file named %s already exist and prevents us creating a session directory by that name\n", API->session_dir);
+			else if (S_ISDIR (S.st_mode) && (S.st_mode & S_IWUSR) == 0)	/* Directory already exists but is not writeable */
+				GMT_Report (API, GMT_MSG_NORMAL, "Session directory %s already exist but is not writeable\n", API->session_dir);
 		}
 	}
-	if (GMT->session.USERDIR)  GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.USERDIR = %s [%s]\n",  GMT->session.USERDIR,  how[u]);
-	if (GMT->session.CACHEDIR) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT->session.CACHEDIR = %s [%s]\n", GMT->session.CACHEDIR, how[c]);
+	if (GMT->session.USERDIR)  GMT_Report (API, GMT_MSG_DEBUG, "GMT->session.USERDIR = %s [%s]\n",  GMT->session.USERDIR,  how[u]);
+	if (GMT->session.CACHEDIR) GMT_Report (API, GMT_MSG_DEBUG, "GMT->session.CACHEDIR = %s [%s]\n", GMT->session.CACHEDIR, how[c]);
 
 	if (gmt_M_compat_check (GMT, 4)) {
 		/* Check if obsolete GMT_CPTDIR was specified */
 
 		if ((this_c = getenv ("GMT_CPTDIR")) != NULL) {		/* GMT_CPTDIR was set */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Environment variable GMT_CPTDIR was set but is no longer used by GMT.\n");
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "System-wide color tables are in %s/cpt.\n", GMT->session.SHAREDIR);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", GMT->session.USERDIR);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Environment variable GMT_CPTDIR was set but is no longer used by GMT.\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "System-wide color tables are in %s/cpt.\n", GMT->session.SHAREDIR);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", GMT->session.USERDIR);
 		}
 	}
 
@@ -2811,8 +2822,8 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 
 	if ((this_c = getenv ("GMT_TMPDIR")) != NULL) {		/* GMT_TMPDIR was set */
 		if (access (this_c, R_OK|W_OK|X_OK)) {
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this_c);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this_c);
+			GMT_Report (API, GMT_MSG_VERBOSE, "GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
 			GMT->session.TMPDIR = NULL;
 		}
 		else {
@@ -6446,7 +6457,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'F':	/* -r Pixel registration option  */
 
-			gmt_message (GMT, "\t-r Set pixel registration [Default is grid registration].\n");
+			gmt_message (GMT, "\t-r Set (g)ridline- or (p)ixel-registration [Default].\n");
+			gmt_message (GMT, "\t   If not given we default to gridline registration\n");
 			break;
 
 		case 't':	/* -t layer transparency option  */
@@ -14181,7 +14193,18 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 		case 'r':
 			error += GMT_more_than_once (GMT, GMT->common.R.active[GSET]);
 			GMT->common.R.active[GSET] = true;
-			GMT->common.R.registration = GMT_GRID_PIXEL_REG;
+			if (item[0]) {	/* Gave argument for specific registration */
+				switch (item[0]) {
+					case 'p': GMT->common.R.registration = GMT_GRID_PIXEL_REG; break;
+					case 'g': GMT->common.R.registration = GMT_GRID_NODE_REG; break;
+					default:
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -r: Syntax is -r[g|p]\n");
+						error++;
+						break;
+				}
+			}
+			else	/* By default, -r means pixel registration */
+				GMT->common.R.registration = GMT_GRID_PIXEL_REG;
 			break;
 
 		case 's':
@@ -15175,7 +15198,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 	int err = 0, fig, error = GMT_NOERROR;
 	struct stat S;
 
-	sprintf (dir, "%s/gmt%d.%d", API->session_dir, GMT_MAJOR_VERSION, API->PPID);
+	sprintf (dir, "%s/gmt%d.%s", API->session_dir, GMT_MAJOR_VERSION, API->session_name);
 	API->gwf_dir = strdup (dir);
 	err = stat (API->gwf_dir, &S);	/* Stat the gwf_dir path (which may not exist) */
 
@@ -15216,7 +15239,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode */
 			API->GMT->current.setting.history_orig = API->GMT->current.setting.history;	/* Temporarily turn off history so nothing is copied into the workflow dir */
 			API->GMT->current.setting.history = GMT_HISTORY_OFF;	/* Turn off so that no history is copied into the workflow directory */
-			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  PPID = %d. Directory %s %s.\n", smode[mode], API->PPID, API->gwf_dir, fstatus[2]);
+			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session Name = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[2]);
 			break;
 		case GMT_USE_WORKFLOW:
 			/* We always get here except when gmt begin | end are called. */
@@ -15230,7 +15253,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			sprintf (file, "%s/gmt.subplot.%d", API->gwf_dir, fig);
 			if (!access (file, R_OK))	/* subplot end was never called */
 				GMT_Report (API, GMT_MSG_NORMAL, "subplot was never completed - plot items in last panel may be missing\n");
-			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  PPID = %d. Directory %s %s.\n", smode[mode], API->PPID, API->gwf_dir, fstatus[3]);
+			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session Name = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[3]);
 			if ((error = process_figures (API)))
 				GMT_Report (API, GMT_MSG_NORMAL, "process_figures returned error %d\n", error);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Destroying the current workflow directory %s\n", API->gwf_dir);
@@ -15243,7 +15266,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			break;
 	}
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {
-		GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode [PPID = %d]\n", type[API->GMT->current.setting.run_mode], API->PPID);
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT now running in %s mode [Session Name = %s]\n", type[API->GMT->current.setting.run_mode], API->session_name);
 		API->GMT->current.setting.use_modern_name = true;
 	}
 	return error;
@@ -15357,7 +15380,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Determined colorbar side = %c and axis = %c\n", side, axis);
 
-	sprintf (file, "%s/gmt%d.%d/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->PPID);
+	sprintf (file, "%s/gmt%d.%s/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->session_name);
 	if ((fp = fopen (file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No file %s with frame information - no adjustments made\n", file);
 		return;

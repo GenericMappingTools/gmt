@@ -272,7 +272,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 	if (GMT->current.setting.run_mode == GMT_MODERN && n_B && strncmp (GMT->init.module_name, "psscale", 7U)) {	/* Write gmt.frame file unless module is psscale, overwriting any previous file */
 		char file[PATH_MAX] = {""};
 		FILE *fp = NULL;
-		sprintf (file, "%s/gmt%d.%d/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->PPID);
+		sprintf (file, "%s/gmt%d.%s/gmt.frame", GMT->parent->session_dir, GMT_MAJOR_VERSION, GMT->parent->session_name);
 		if ((fp = fopen (file, "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to create file %s\n", file);
 			return (-1);
