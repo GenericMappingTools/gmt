@@ -6,21 +6,27 @@ set -e
 
 cat > cmake/ConfigUser.cmake << 'EOF'
 set (CMAKE_INSTALL_PREFIX "$ENV{INSTALLDIR}")
-set (GMT_LIBDIR "$ENV{INSTALLDIR}/lib")
 set (DCW_ROOT "$ENV{COASTLINEDIR}")
 set (GSHHG_ROOT "$ENV{COASTLINEDIR}")
+set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
 EOF
 
-if [ "$TEST" == "true" ]; then
+if [[ "$TEST" == "true" ]]; then
     cat >> cmake/ConfigUser.cmake << 'EOF'
-set (CMAKE_BUILD_TYPE Debug)
 enable_testing()
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
-set (DO_ANIMATIONS TRUE)
 set (N_TEST_JOBS 2)
-set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement -coverage -O0")
+set (CMAKE_C_FLAGS "-Wextra -coverage ${CMAKE_C_FLAGS}")
 EOF
+fi
+
+if [[ "$BUILD_DOCS" == "true" ]]; then
+    cat >> cmake/ConfigUser.cmake << 'EOF'
+set (DO_ANIMATIONS TRUE)
+#set (CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
+EOF
+EXTRA_CMAKE_OPTS="-DCMAKE_VERBOSE_MAKEFILE=ON"
 fi
 
 echo ""
@@ -30,24 +36,15 @@ echo ""
 
 mkdir -p build && cd build
 
-cmake ..
+# Configure
+cmake ${EXTRA_CMAKE_OPTS} -G Ninja ..
 
-make -j
-make install
+# Show CMakeCache.txt, strip comments
+grep -Ev "^(//|$)" CMakeCache.txt
 
-# We are fixing the paths to dynamic library files inside library and binary
-# files because something in 'make install' is doubling up the path to the
-# library files. This only happens on OSX. Anyone who knows how to solve that
-# problem is free to contact the maintainers.
-if [[ "$TRAVIS_OS_NAME" == "osx" ]];then
-    install_name_tool -id $INSTALLDIR/lib/libgmt.6.dylib $INSTALLDIR/lib/libgmt.6.dylib
-    install_name_tool -id $INSTALLDIR/lib/libpostscriptlight.6.dylib $INSTALLDIR/lib/libpostscriptlight.6.dylib
-    install_name_tool -change $INSTALLDIR/$INSTALLDIR/lib/libgmt.6.dylib $INSTALLDIR/lib/libgmt.6.dylib $INSTALLDIR/lib/gmt/plugins/supplements.so
-    install_name_tool -change $INSTALLDIR/$INSTALLDIR/lib/libpostscriptlight.6.dylib $INSTALLDIR/lib/libpostscriptlight.6.dylib $INSTALLDIR/lib/gmt/plugins/supplements.so
-    install_name_tool -change $INSTALLDIR/$INSTALLDIR/lib/libgmt.6.dylib $INSTALLDIR/lib/libgmt.6.dylib $INSTALLDIR/bin/gmt
-    install_name_tool -change $INSTALLDIR/$INSTALLDIR/lib/libpostscriptlight.6.dylib $INSTALLDIR/lib/libpostscriptlight.6.dylib $INSTALLDIR/bin/gmt
-    install_name_tool -change $INSTALLDIR/$INSTALLDIR/lib/libpostscriptlight.6.dylib $INSTALLDIR/lib/libpostscriptlight.6.dylib $INSTALLDIR/lib/libgmt.6.dylib
-fi
+# Build and install
+cmake --build .
+cmake --build . --target install
 
 # Turn off exit on failure.
 set +e
