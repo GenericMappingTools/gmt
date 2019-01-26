@@ -1,9 +1,40 @@
 # Configuration file for TravisCI
 
-# Use the container builds so we don't need sudo priviledges
-sudo: false
+# Define environment variables and set build actions
+env:
+    global:
+        - INSTALLDIR="$HOME/gmt-install-dir"
+        - COASTLINEDIR="$HOME/gmt-install-dir/coast"
+        - PATH="$INSTALLDIR/bin:$PATH"
+        - BUILD_DOCS=false
+        - DEPLOY_DOCS=false
+        - TEST=false
+        - CCACHE_MAXSIZE=200M
+        - CCACHE_COMPRESS=true
+        # Encrypted Github token (GH_TOKEN)
+        - secure: "cwHlTNa+b2lPiCbN5Ja9alj6EkKwJsuR5QcNPORrp3uCOQF9+cJUFEyMIGVGzrzZQnpjn05XYDr6eGFUYkbaR1QVUQdNH+2rCiScFHe94fRPJlJabxXexCfvZCNV8VRi6NSyFPuZKkCVs10bQ7Lk5dPS/V4Dalz1xyURcvI8H8XQFTmDYb/7QFw73l0WzNf+Y1rzNpRZEQ4ERhmnir489njCv1w7oJ0C+BrRvPqTmNmfXbrY6Bcana6BJvvumSY1xRaw60f/UNKYTlTVlYTVSWK1kq9mTfkhiJhe5oNoWchKloiOg3fA2XtAuucuXSdCjqo9aWHMxKJy+jQ7/BeId9hacvB9pVclYoOLARBcPoWDb21eKJZ8A70yKlUM3ryhVXM4drHzM4ITitPA1sEJWNJ2BQO8Cils0FfcOLvBR3NdbLi8RdHZItmU/Oe8o1srUTnnkdPRiEWbmAEs4pVrsHY9sD0660PXTFBSQ7sDXeyTl2etG/YSQKvE3ysOnZwhEuTXqf8cpo+tSbjindvWSyyN0HSuJ0bd7Ei+qWUQ3nJNEtHpiq8Ms6KUPHjPpWO2BEl+FQHWFpmRtwBg/REk36VWIl1UHSKuKkqxUT4qiZeL5zlrHGso+7QGhVjkYj5un3XoVObopFNVUB8y56xeW21gI51HK48cPd5rMnX95KE="
+        # Encrypted codecov token (CODECOV_TOKEN)
+        - secure: "LYeFC3IeHdb8ff5+AfnACUUMIc9KRNIDlbQnRIIx+VPT4AT5XGiwN8PT9VhIFWsU1pJOw8DUdtggQ2kbkal3voF6RDhbYOCn5xzTjJ6D5UOC2JeIBkhx+Cb8lx9qZtVAippVOVsEPxCIGGxhCMy5+Dczib+4pA/zyKuU3l9DqSdsBlgZWJ2o+qyAltSa6JX3kvMCDl7ahR/d/IZqDxKvsyljuYq/WqhflTa1JjTfNYXyvE2w/Ml74ui6RdqX1ign3wWzO3P4nmdE+i3m6x9jlG6KIqTRd3pK2871zERNpeSTRXoQL7GpDbF9LWXPig3vLwWbeW09CEt4ZaoaP/J0JbXHN/mC5668RrVphZdVQmwQ+RCjGBXK/0zQ5/hpF4XmcCcef4sQGIm03v58KqQ0MDNhBwr+PkA1OGKTM82xEL5dzdo5+sPxm9W/rPwWnB8/FwKcheBfacGbhJ2Vv75XlqrZdIdslS4hLGHFy5jBddSMWCokDDd8KtJyWBlI/FKVjAjk7X/YFGFzyQCw3e/p6A511Yk5QF0sm5qnbhVB6b5BoW1R2D5FhLdIXZuCOJD5sfQ2BLcq7UpXRIW/KkV0XUQjv8YoM/K6Kljh2uDBT9CRfWf4Nko5ClhD0pk+uMTZ9S/tS8blL9BZJrH3Atolq+oeoEMI2eJuWepav9GcqYk="
+
+# We need sudo privileges for copying cached deb packages
+sudo: required
 
 language: c
+
+cache:
+    pip: true
+    ccache: true
+    directories:
+        - $HOME/.ccache
+        - $HOME/cache-gshhg-dcw
+        - $HOME/cache-deb
+        - $HOME/Library/Caches/Homebrew
+
+before_cache:
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        brew cleanup;
+      fi
+    - rm -rf $HOME/.cache/pip/log
 
 # Only build pushes to select branches and tags. This avoids the double
 # builds than happen when working on a branch instead of a fork.
@@ -19,24 +50,11 @@ dist: xenial
 
 # Dependencies for the Linux and OSX builds
 addons:
-    apt:
-        packages:
-            - cmake
-            - build-essential
-            - libcurl4-gnutls-dev
-            - libnetcdf-dev
-            - libgdal1-dev
-            - libfftw3-dev
-            - libpcre3-dev
-            - liblapack-dev
-            - ghostscript
-            - curl
-            - graphicsmagick
-            - python
-            - python-pip
     homebrew:
         packages:
+            - ccache
             - cmake
+            - ninja
             - curl
             - netcdf
             - gdal
@@ -46,21 +64,6 @@ addons:
             - curl
             - graphicsmagick
             - python
-
-# Define environment variables and set build actions
-env:
-    global:
-        - INSTALLDIR="$HOME/gmt-install-dir"
-        - COASTLINEDIR="$HOME/gmt-install-dir/coast"
-        - PATH="$INSTALLDIR/bin:$PATH"
-        - LD_LIBRARY_PATH="$INSTALLDIR/lib:$LD_LIBRARY_PATH"
-        - BUILD_DOCS=false
-        - DEPLOY_DOCS=false
-        - TEST=false
-        # Encrypted Github token (GH_TOKEN)
-        - secure: "cwHlTNa+b2lPiCbN5Ja9alj6EkKwJsuR5QcNPORrp3uCOQF9+cJUFEyMIGVGzrzZQnpjn05XYDr6eGFUYkbaR1QVUQdNH+2rCiScFHe94fRPJlJabxXexCfvZCNV8VRi6NSyFPuZKkCVs10bQ7Lk5dPS/V4Dalz1xyURcvI8H8XQFTmDYb/7QFw73l0WzNf+Y1rzNpRZEQ4ERhmnir489njCv1w7oJ0C+BrRvPqTmNmfXbrY6Bcana6BJvvumSY1xRaw60f/UNKYTlTVlYTVSWK1kq9mTfkhiJhe5oNoWchKloiOg3fA2XtAuucuXSdCjqo9aWHMxKJy+jQ7/BeId9hacvB9pVclYoOLARBcPoWDb21eKJZ8A70yKlUM3ryhVXM4drHzM4ITitPA1sEJWNJ2BQO8Cils0FfcOLvBR3NdbLi8RdHZItmU/Oe8o1srUTnnkdPRiEWbmAEs4pVrsHY9sD0660PXTFBSQ7sDXeyTl2etG/YSQKvE3ysOnZwhEuTXqf8cpo+tSbjindvWSyyN0HSuJ0bd7Ei+qWUQ3nJNEtHpiq8Ms6KUPHjPpWO2BEl+FQHWFpmRtwBg/REk36VWIl1UHSKuKkqxUT4qiZeL5zlrHGso+7QGhVjkYj5un3XoVObopFNVUB8y56xeW21gI51HK48cPd5rMnX95KE="
-        # Encrypted codecov token (CODECOV_TOKEN)
-        - secure: "LYeFC3IeHdb8ff5+AfnACUUMIc9KRNIDlbQnRIIx+VPT4AT5XGiwN8PT9VhIFWsU1pJOw8DUdtggQ2kbkal3voF6RDhbYOCn5xzTjJ6D5UOC2JeIBkhx+Cb8lx9qZtVAippVOVsEPxCIGGxhCMy5+Dczib+4pA/zyKuU3l9DqSdsBlgZWJ2o+qyAltSa6JX3kvMCDl7ahR/d/IZqDxKvsyljuYq/WqhflTa1JjTfNYXyvE2w/Ml74ui6RdqX1ign3wWzO3P4nmdE+i3m6x9jlG6KIqTRd3pK2871zERNpeSTRXoQL7GpDbF9LWXPig3vLwWbeW09CEt4ZaoaP/J0JbXHN/mC5668RrVphZdVQmwQ+RCjGBXK/0zQ5/hpF4XmcCcef4sQGIm03v58KqQ0MDNhBwr+PkA1OGKTM82xEL5dzdo5+sPxm9W/rPwWnB8/FwKcheBfacGbhJ2Vv75XlqrZdIdslS4hLGHFy5jBddSMWCokDDd8KtJyWBlI/FKVjAjk7X/YFGFzyQCw3e/p6A511Yk5QF0sm5qnbhVB6b5BoW1R2D5FhLdIXZuCOJD5sfQ2BLcq7UpXRIW/KkV0XUQjv8YoM/K6Kljh2uDBT9CRfWf4Nko5ClhD0pk+uMTZ9S/tS8blL9BZJrH3Atolq+oeoEMI2eJuWepav9GcqYk="
 
 # Create the build matrix with different jobs for each platform and cron jobs
 matrix:
@@ -92,35 +95,68 @@ matrix:
 
 # Setup the build environment
 before_install:
+    - |-
+      if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        # Download dependencies if not cached (https://stackoverflow.com/a/52446551)
+        DEB_CACHE=$HOME/cache-deb
+        DEB_PACKAGES="cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev ghostscript curl"
+        if [[ "$TEST" == "true" || "$BUILD_DOCS" == "true" ]]; then
+          DEB_PACKAGES="$DEB_PACKAGES graphicsmagick ffmpeg python python-pip texlive-latex-extra"
+        fi
+        test -d $DEB_CACHE || mkdir $DEB_CACHE
+        echo "Copy cached deb packages"
+        sudo rsync -av ${DEB_CACHE}/ /var/cache/apt/archives/
+        echo "Start to install software"
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends --no-install-suggests $DEB_PACKAGES
+        echo "Update the cache"
+        rsync -av /var/cache/apt/archives/*.deb ${DEB_CACHE}/
+      fi
+    - |-
+    # On OSX add ccache to PATH:
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        export PATH="/usr/local/opt/ccache/libexec:$PATH";
+      fi
     - mkdir "$INSTALLDIR"
     - mkdir "$COASTLINEDIR"
-    - bash ci/download-coastlines.sh
+    - ci/download-coastlines.sh
     # Install GMT documentation dependencies
-    - if [ "$BUILD_DOCS" == "true" ]; then
+    - if [[ "$BUILD_DOCS" == "true" ]]; then
         pip install --user sphinx;
       fi
 
 # Install the package that we want to test
 install:
     # Build and install GMT
-    - bash ci/build-gmt.sh;
+    - ci/build-gmt.sh
+    # Print ccache status
+    - ccache --show-stats
 
 # Run the actual tests and checks
 script:
     - cd build
     - gmt defaults -Vd
     - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
-    - if [ "$TEST" == "true" ]; then
-        make -j check;
+    - if [[ "$TEST" == "true" ]]; then
+        ctest --force-new-ctest-process -j4;
       fi
     # Upload test coverage even if build fails. Keep separate to make sure this task
     # fails if the tests fail.
-    - if [ "$TEST" == "true" ]; then
+    - if [[ "$TEST" == "true" ]]; then
         bash <(curl -s https://codecov.io/bash);
       fi
-    - if [ "$BUILD_DOCS" == "true" ]; then
-        make -j docs_html;
+    # Use set -e so that the build fails when a command fails.
+    # The default action for Travis-CI is to continue running even if a command fails.
+    - set -e
+    - if [[ "$BUILD_DOCS" == "true" ]]; then
+        cmake --build . --target docs_depends;
+        (while sleep 300; do echo . ; done)&
+        cmake --build . --target animation;
+        kill %1;
+        cmake --build . --target docs_html;
+        cmake --build . --target docs_pdf;
       fi
+    - set +e
     - cd ..
 
 # Things to do if the build is successful
