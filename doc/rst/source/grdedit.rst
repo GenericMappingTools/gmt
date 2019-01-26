@@ -205,6 +205,15 @@ To ensure that the grid depths.nc only has positive longitude values, run
 
     gmt grdedit depths.nc -L+p
 
+Notes:
+------
+
+This module is not a general editor for netCDF files.  If your netCDF file
+contains more than one 2-D (or higher dimension) data layer, then only the
+selected layer will be written out if changes are requested.  Likewise,
+if you have additional netCDF attributes then those will also be lost in
+any revised output.
+
 See Also
 --------
 
