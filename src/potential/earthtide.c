@@ -1072,6 +1072,11 @@ GMT_LOCAL void sun_moon_track(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, struct
 		tdel2 = tdel2 * T.inc;
 	}
 
+	if (tdel2 < (0.5 / 86400) && T.n > 1){
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Tme interval too low, must be at least 0.5 s\n"); 
+		return GMT_PARSE_ERROR;
+	}
+
 	year = (int)Cal->year;	month = (int)Cal->month;	day = (int)Cal->day_m;	/* Screw the unsigned ints */
 	hour = (int)Cal->hour;	min = (int)Cal->min;
 	civmjd(year, month, day, hour, min, Cal->sec, &mjd, &fmjd);
@@ -1217,6 +1222,11 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 			tdel2 = 1.0;		/* 1 day steps */
 
 		tdel2 = tdel2 * T.inc;
+	}
+
+	if (tdel2 < (0.5 / 86400) && T.n > 1){
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Tme interval too low, must be at least 0.5 s\n"); 
+		return GMT_PARSE_ERROR;
 	}
 
 	/* here comes the sun  (and the moon)  (go, tide!) */
