@@ -66,6 +66,9 @@ struct DIMFILTER_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct L {	/* -L */
+		bool active;
+	} L;
 	struct N {	/* -N */
 		bool active;
 		unsigned int n_sectors;
@@ -102,12 +105,124 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *C) {	/* D
 	gmt_M_free (GMT, C);
 }
 
+static char *dimtemplate = 
+	"#!/usr/bin/env bash\n"
+	"#\n"
+	"#\n"
+	"# Seung-Sep Kim, Chungnam National University, Daejeon, South Korea [seungsep@cnu.kr]\n"
+	"\n"
+	"# This is a template script showing the steps for DiM-based\n"
+	"# regional-residual separation.\n"
+	"#\n"
+	"# For details, see Kim, S.-S., and Wessel, P. (2008), \"Directional Median Filtering\n"
+	"# for Regional-Residual Separation of Bathymetry\", Geochem. Geophys. Geosyst.,\n"
+	"# 9(Q03005), doi:10.1029/2007GC001850.\n"
+	"\n"
+	"# 0. System defaults (Change if you know what you are doing):\n"
+	"dim_dist=2		# How we compute distances on the grid [Flat Earth approximation]\n"
+	"dim_sectors=8		# Number of sectors to use [8]\n"
+	"dim_filter=m		# Primary filter [m for median]\n"
+	"dim_quantity=l		# Secondary filter [l for lower]\n"
+	"dim_smooth_type=m	# Smoothing filter type [m for median]\n"
+	"dim_smooth_width=50	# Smoothing filter width, in km [50]\n"
+	"\n"
+	"# 1. Setting up the region:\n"
+	"#    To prevent edge effects, the input grid domain must be\n"
+	"#    larger than the area of interest.  Make sure the input\n"
+	"#    grid exceeds the area of interest by > 1/2 max filter width.\n"
+	"box=-R	# Area of interest, a subset of data domain\n"
+	"\n"
+	"# 2. Specify names for input and output files\n"
+	"bathy=	# Input bathymetry grid file for the entire data domain\n"
+	"ors=	# Intermediate Optimal Robust Separator analysis results (table)\n"
+	"orsout=	# ORS output work folder\n"
+	"dim=	# Final output DiM-based regional grid\n"
+	"err= 	# Final output DiM-based MAD uncertainty grid\n"
+	"\n"
+	"gmt set ELLIPSOID Sphere\n"
+	"\n"
+	"# A) ORS analysis first\n"
+	"# if ORS does not give you the reasonable range of filter widths,\n"
+	"# use the length scale of the largest feature in your domain as the\n"
+	"# standard to choose the filter widths\n"
+	"\n"
+	"if [ ! -f $ors ]; then\n"
+	"\n"
+	"	mkdir -p $orsout\n"
+	"\n"
+	"	gmt grdcut $bathy $box -G/tmp/$$.t.nc  # the area of interest\n"
+	"\n"
+	"	# A.1. Set filter parameters for an equidistant set of filters:\n"
+	"	minW= 	# Minimum filter width candidate for ORS  (e.g., 60) in km\n"
+	"	maxW= 	# Maximum filter width candidate for ORS  (e.g., 600) in km\n"
+	"	intW= 	# Filter width step (e.g., 20) in km\n"
+	"	level=  # Base contour used to compute the volume and area of the residual (e.g., 300m)\n"
+	"	#------stop A.1. editing here--------------------------------------\n"
+	"\n"
+	"	STEP=`gmt math -T$minW/$maxW/$intW -N1/0 =`\n"
+	"\n"
+	"	for width in $STEP\n"
+	"	do\n"
+	"		echo \"W = $width km\"\n"
+	"		gmt dimfilter $bathy $box -G/tmp/$$.dim.nc -F${dim_filter}${width} -D${dim_dist} -N${dim_quantity}${dim_sectors} # DiM filter\n"
+	"		gmt grdfilter /tmp/$$.dim.nc -G$orsout/dim.${width}.nc -F${dim_smooth_type}${dim_smooth_width} -D${dim_dist} # smoothing\n"
+	"\n"
+	"		gmt grdmath /tmp/$$.t.nc $orsout/dim.${width}.nc SUB = /tmp/$$.sd.nc # residual from DiM\n"
+	"		gmt grdvolume /tmp/$$.sd.nc -Sk -C$level -Vl | awk \'{print r,$2,$3,$4}\' r=${width} >> $ors  # ORS from DiM\n"
+	"	done\n"
+	"\n"
+	"fi\n"
+	"\n"
+	"# B) Compute DiM-based regional\n"
+	"\n"
+	"if [ ! -f $dim ]; then\n"
+	"\n"
+	"	# B.1. Set filter parameters for an equidistant set of filters:\n"
+	"	minW=  	# Minimum optimal filter width (e.g., 200) in km\n"
+	"	maxW= 	# Maximum optimal filter width (e.g., 240) in km\n"
+	"	intW= 	# Filter width step (e.g., 5) in km\n"
+	"	alldepth= 	# for MAD analysis\n"
+	"	#------stop B.1. editing here--------------------------------------\n"
+	"	width=`gmt math -N1/0 -T$minW/$maxW/$intW =`\n"
+	"	let n_widths=0\n"
+	"	for i in $width\n"
+	"	do\n"
+	"		if [ ! -f $orsout/dim.${i}.nc ]; then\n"
+	"			echo \"filtering W = ${i} km\"\n"
+	"			gmt dimfilter $bathy $box -G/tmp/$$.dim.nc -F${dim_filter}${i} -D${dim_dist} -N${dim_quantity}${dim_sectors}	# DiM filter\n"
+	"			gmt grdfilter /tmp/$$.dim.nc -G$orsout/dim.${i}.nc -F${dim_smooth_type}${dim_smooth_width} -D${dim_dist} 	# smoothing\n"
+	"		fi\n"
+	"\n"
+	"		if [ ! -f $alldepth ]; then\n"
+	"			gmt grd2xyz -Z $orsout/dim.${i}.nc > /tmp/$$.${i}.depth\n"
+	"		fi\n"
+	"		let n_widths=n_widths+1\n"
+	"	done\n"
+	"\n"
+	"	if [ ! -f $alldepth ]; then\n"
+	"		paste /tmp/$$.*.depth > /tmp/$$.t.depth\n"
+	"		# the number of columns can be different for each case\n"
+	"		awk \'{print $1,\" \",$2,\" \",$3,\" \",$4,\" \",$5,\" \",$6,\" \",$7,\" \",$8,\" \",$9}\' /tmp/$$.t.depth > $alldepth\n"
+	"		awk \'{for (k = 1; k <= \'\"$n_widths\"\', k++) print $1,\" \",$2,\" \",$3,\" \",$4,\" \",$5,\" \",$6,\" \",$7,\" \",$8,\" \",$9}\' /tmp/$$.t.depth > $alldepth\n"
+	"		gmt grd2xyz $bathy $box -V > $bathy.xyz\n"
+	"	fi\n"
+	"\n"
+	"	gmt dimfilter $alldepth -Q > /tmp/$$.out\n"
+	"	wc -l /tmp/$$.out $bathy.xyz\n"
+	"\n"
+	"	paste $bathy.xyz /tmp/$$.out | awk \'{print $1,$2,$4}\' > /tmp/$$.dim.xyz\n"
+	"	paste $bathy.xyz /tmp/$$.out | awk \'{print $1,$2,$5}\' > /tmp/$$.err.xyz\n"
+	"\n"
+	"	gmt xyz2grd /tmp/$$.dim.xyz -G$dim -I1m $box -V -r\n"
+	"	gmt xyz2grd /tmp/$$.err.xyz -G$err -I1m $box -V -r\n"
+	"\n"
+	"fi\n";
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -D<distance_flag> -F<type><filter_width> -G<outgrid> -N<type><n_sectors>\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Q]\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-L] [-Q]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -134,6 +249,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Sets new Increment of output grid; enter xinc, optionally xinc/yinc.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is yinc = xinc.  Append an m [or s] to xinc or yinc to indicate minutes [or seconds];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Write dim.template.sh to stdout and stop; no other options allowed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Select error analysis mode; see documentation for how to prepare for using this option.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R Sets new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 #ifdef OBSOLETE
@@ -155,7 +271,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0, set = 0;
 	int k;
 	struct GMT_OPTION *opt = NULL;
 #ifdef OBSOLETE
@@ -171,22 +287,26 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
+				set++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':
 				Ctrl->C.active = true;
+				set++;
 				break;
 			case 'D':
 				Ctrl->D.active = true;
 				k = atoi (opt->arg);
 				n_errors += gmt_M_check_condition (GMT, k < 0 || k > 4, "Syntax error -D option: Choose from the range 0-4\n");
 				Ctrl->D.mode = k;
+				set++;
 				break;
 #ifdef OBSOLETE
 			case 'E':
 				Ctrl->E.active = true;
+				set++;
 				break;
 #endif
 			case 'F':
@@ -212,15 +332,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 						break;
 				}
 				Ctrl->F.width = atof (&opt->arg[1]);
+				set++;
 				break;
 			case 'G':
 				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
+				set++;
 				break;
 			case 'I':
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
+				set++;
+				break;
+			case 'L':	/* Write shell template to stdout */
+				Ctrl->L.active = true;
 				break;
 			case 'N':	/* Scan: Option to set the number of sections and how to reduce the sector results to a single value */
 				Ctrl->N.active = true;
@@ -247,18 +373,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 				k = atoi (&opt->arg[1]);	/* Number of sections to split filter into */
 				n_errors += gmt_M_check_condition (GMT, k <= 0, "Syntax error -N option: Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
 				Ctrl->N.n_sectors = k;	/* Number of sections to split filter into */
+				set++;
 				break;
 			case 'Q':	/* entering the MAD error analysis mode */
 				Ctrl->Q.active = true;
+				set++;
 				break;
 #ifdef OBSOLETE
 			case 'S':
 				Ctrl->S.active = true;
 				Ctrl->S.file = strdup (opt->arg);
+				set++;
 				break;
 #endif
 			case 'T':	/* Toggle registration */
 				Ctrl->T.active = true;
+				set++;
 				break;
 
 			default:	/* Report bad options */
@@ -267,8 +397,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	if (!Ctrl->Q.active) {
+	if (Ctrl->L.active)
+		n_errors += gmt_M_check_condition (GMT, set, "Syntax error: -L can only be used by itself.\n");
+	else if (!Ctrl->Q.active) {
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.width <= 0.0, "Syntax error -F option: Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
@@ -279,6 +411,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 #endif
 	}
 	else {
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active, "Syntax error: Must use -Q to specify total # of columns in the input file.\n");
 	}
 
@@ -411,6 +544,10 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the dimfilter main code ----------------------------*/
 
+	if (Ctrl->L.active) {
+		printf ("%s", dimtemplate);
+		Return (GMT_NOERROR);
+	}
 	gmt_M_memset (&F, 1, struct DIMFILTER_INFO);
 	F.deg2km = GMT->current.proj.DIST_KM_PR_DEG;
 
