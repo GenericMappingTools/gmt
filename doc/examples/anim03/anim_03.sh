@@ -2,7 +2,7 @@
 #               GMT ANIMATION 03
 #
 # Purpose:      Make web page with simple animated GIF of Iceland topo
-# GMT modules:  grdclip, grdgradient, makecpt, grdview, psxy, movie
+# GMT modules:  grdclip, grdgradient, makecpt, grdview, movie
 # Unix progs:   echo, cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 
