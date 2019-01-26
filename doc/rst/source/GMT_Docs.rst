@@ -4470,10 +4470,10 @@ general, the options provided with **-JX** will prevail.
 
    ::
 
-    gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_CLOCK_MAP=-hham \
+    gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_CLOCK_MAP=-hham
             FORMAT_TIME_PRIMARY_MAP full
-    gmt basemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX4i/-2i -Bxa1Kf1kg1d \
-                  -Bya1Hg1h -BWsNe+glightyellow -P > GMT_linear_cal.ps
+    gmt basemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX4i/-2i -Bxa1Kf1kg1d
+                -Bya1Hg1h -BWsNe+glightyellow -P > GMT_linear_cal.ps
 
 Cartesian logarithmic projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4496,7 +4496,7 @@ transformation <GMT_log>`)
 
    ::
 
-    gmt plot -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque \
+    gmt plot -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque
              -Wthick,blue,- -P -K -h sqrt.txt > GMT_log.ps
     gmt plot -R -J -Ss0.1i -N -Gred -W -O -h sqrt10.txt >> GMT_log.ps
 
@@ -4529,7 +4529,7 @@ transformation <GMT_pow>`)
 
    ::
 
-    gmt plot -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory \
+    gmt plot -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory
              -Wthick -P -K sqrt.txt > GMT_pow.ps
     gmt plot -R -J -Sc0.075i -Ggreen -W -O sqrt10.txt >> GMT_pow.ps
 
@@ -4677,8 +4677,8 @@ therefore given by:
    ::
 
     gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0
-    gmt coast -R110/140/20/35 -JB125/20/25/45/5i -Bag -Dl -Ggreen -Wthinnest \
-                -A250 -P > GMT_albers.ps
+    gmt coast -R110/140/20/35 -JB125/20/25/45/5i -Bag -Dl -Ggreen -Wthinnest
+              -A250 -P > GMT_albers.ps
 
 .. figure:: /_images/GMT_albers.*
    :width: 500 px
@@ -4709,8 +4709,8 @@ small countries. As an example, we generate a map of Cuba:
    ::
 
     gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
-    gmt coast -R-88/-70/18/24 -JD-79/21/19/23/4.5i -Bag -Di -N1/thick,red \
-                -Glightgreen -Wthinnest -P > GMT_equidistant_conic.ps
+    gmt coast -R-88/-70/18/24 -JD-79/21/19/23/4.5i -Bag -Di -N1/thick,red
+              -Glightgreen -Wthinnest -P > GMT_equidistant_conic.ps
 
 .. figure:: /_images/GMT_equidistant_conic.*
    :width: 500 px
@@ -4749,8 +4749,8 @@ use degrees west for longitudes. The generating commands used were
    ::
 
     gmt set MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
-    gmt coast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red \
-                -N2/thinner -A500 -Gtan -Wthinnest,white -Sblue -P > GMT_lambert_conic.ps
+    gmt coast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red
+              -N2/thinner -A500 -Gtan -Wthinnest,white -Sblue -P > GMT_lambert_conic.ps
 
 .. figure:: /_images/GMT_lambert_conic.*
    :width: 500 px
@@ -4790,8 +4790,8 @@ every 10 and annotations only every 30º in longitude:
 
    ::
 
-    gmt coast -R-180/-20/0/90 -JPoly/4i -Bx30g10 -By10g10 -Dc -A1000 -Glightgray \
-                -Wthinnest -P > GMT_polyconic.ps
+    gmt coast -R-180/-20/0/90 -JPoly/4i -Bx30g10 -By10g10 -Dc -A1000 -Glightgray
+              -Wthinnest -P > GMT_polyconic.ps
 
 .. figure:: /_images/GMT_polyconic.*
    :width: 500 px
@@ -4841,8 +4841,8 @@ rectangular by defining the corners of a rectangular map boundary. Using
    ::
 
     gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0
-    gmt coast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10 \
-                -Wthinnest -P > GMT_lambert_az_rect.ps
+    gmt coast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10
+              -Wthinnest -P > GMT_lambert_az_rect.ps
 
 .. figure:: /_images/GMT_lambert_az_rect.*
    :width: 500 px
@@ -4923,8 +4923,8 @@ An example is given by
 
    ::
 
-    gmt coast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue \
-                -Sseashell -P > GMT_stereographic_polar.ps
+    gmt coast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue
+              -Sseashell -P > GMT_stereographic_polar.ps
 
 .. figure:: /_images/GMT_stereographic_polar.*
    :width: 500 px
@@ -4946,8 +4946,8 @@ Figure :ref:`Polar stereographic <GMT_stereographic_rect>`:
    ::
 
     gmt set MAP_ANNOT_OBLIQUE 30
-    gmt coast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest \
-                -Slightgray -P > GMT_stereographic_rect.ps
+    gmt coast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest
+              -Slightgray -P > GMT_stereographic_rect.ps
 
 .. _GMT_stereographic_rect:
 
@@ -4969,8 +4969,8 @@ hemispheric maps. Our example shows Australia using a projection pole at
    ::
 
     gmt set MAP_ANNOT_OBLIQUE 0
-    gmt coast -R100/-42/160/-8r -JS130/-30/4i -Bag -Dl -A500 -Ggreen -Slightblue \
-                -Wthinnest -P > GMT_stereographic_general.ps
+    gmt coast -R100/-42/160/-8r -JS130/-30/4i -Bag -Dl -A500 -Ggreen -Slightblue
+              -Wthinnest -P > GMT_stereographic_general.ps
 
 .. figure:: /_images/GMT_stereographic_general.*
    :width: 500 px
@@ -5024,8 +5024,8 @@ looking due east is thus accomplished by the following
 
    ::
 
-    gmt coast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown \
-                -Wthinnest -P -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i > GMT_perspective.ps
+    gmt coast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown 
+              -Wthinnest -P -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i > GMT_perspective.ps
 
 .. _GMT_perspective:
 
@@ -5104,7 +5104,7 @@ in this projection this point plots as the entire map perimeter:
 
    ::
 
-    gmt coast -Rg -JE-100/40/4.5i -Bg -Dc -A10000 -Glightgray -Wthinnest -P \
+    gmt coast -Rg -JE-100/40/4.5i -Bg -Dc -A10000 -Glightgray -Wthinnest -P
                 > GMT_az_equidistant.ps
 
 .. figure:: /_images/GMT_az_equidistant.*
@@ -5143,7 +5143,7 @@ Using a horizon of 60, our example of this projection centered on
 
    ::
 
-    gmt coast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest \
+    gmt coast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest
                 -P > GMT_gnomonic.ps
 
 .. figure:: /_images/GMT_gnomonic.*
@@ -5207,8 +5207,7 @@ which will give a map 4.32 inch wide. It was created with the command:
 
    ::
 
-    gmt set MAP_FRAME_TYPE fancy
-    gmt coast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred \
+    gmt coast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred
                 -P > GMT_mercator.ps
 
 .. figure:: /_images/GMT_mercator.*
@@ -5248,7 +5247,7 @@ central meridian:
 
    ::
 
-    gmt coast -R20/30/50/45r -Jt35/0.18i -Bag -Dl -A250 -Glightbrown -Wthinnest \
+    gmt coast -R20/30/50/45r -Jt35/0.18i -Bag -Dl -A250 -Glightbrown -Wthinnest
                 -P -Sseashell > GMT_transverse_merc.ps
 
 .. figure:: /_images/GMT_transverse_merc.*
@@ -5263,7 +5262,7 @@ equivalent of the 360º Mercator map. Using the command
 
    ::
 
-    gmt coast -R0/360/-80/80 -JT330/-45/3.5i -Ba30g -BWSne -Dc -A2000 \
+    gmt coast -R0/360/-80/80 -JT330/-45/3.5i -Ba30g -BWSne -Dc -A2000
                 -Slightblue -G0 -P > GMT_TM.ps
 
 we made the map illustrated in Figure :ref:`Global transverse Mercator
@@ -5369,8 +5368,8 @@ poles to their antipodes in the north hemisphere].  Our example was produced by 
 
    ::
 
-    gmt coast -R270/20/305/25r -JOc280/25.5/22/69/4.8i -Bag -Di -A250 -Gburlywood \
-                -Wthinnest -P -TdjTR+w0.4i+f2+l+o0.15i -Sazure --FONT_TITLE=8p \
+    gmt coast -R270/20/305/25r -JOc280/25.5/22/69/4.8i -Bag -Di -A250 -Gburlywood
+                -Wthinnest -P -TdjTR+w0.4i+f2+l+o0.15i -Sazure --FONT_TITLE=8p
                 --MAP_TITLE_OFFSET=0.05i > GMT_obl_merc.ps
 
 .. figure:: /_images/GMT_obl_merc.*
@@ -5435,7 +5434,7 @@ using the Cassini projection can be obtained by running the command:
 
    ::
 
-    gmt coast -R7:30/38:30/10:30/41:30r -JC8.75/40/2.5i -Bafg -LjBR+c40+w100+f+o0.15i/0.2i -Gspringgreen \
+    gmt coast -R7:30/38:30/10:30/41:30r -JC8.75/40/2.5i -Bafg -LjBR+c40+w100+f+o0.15i/0.2i -Gspringgreen
                 -Dh -Sazure -Wthinnest -Ia/thinner -P --FONT_LABEL=12p > GMT_cassini.ps
 
 .. figure:: /_images/GMT_cassini.*
@@ -5545,7 +5544,7 @@ can be obtained by running the command:
 
    ::
 
-    gmt coast -R-145/215/-90/90 -JY35/30/4.5i -B45g45 -Dc -A10000 -Sdodgerblue \
+    gmt coast -R-145/215/-90/90 -JY35/30/4.5i -B45g45 -Dc -A10000 -Sdodgerblue
                 -Wthinnest -P > GMT_general_cyl.ps
 
 .. _GMT_general_cyl:
@@ -5582,7 +5581,7 @@ follows:
 
    ::
 
-    gmt coast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 \
+    gmt coast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000
                 -Gkhaki -Wthinnest -P -Sazure > GMT_miller.ps
 
 .. _GMT_miller:
@@ -5641,7 +5640,7 @@ is obtained as follows:
    ::
 
     gmt set FORMAT_GEO_MAP dddA
-    gmt coast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Bxa60f30g30 -Bya30g30 -Dc -A5000 \
+    gmt coast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Bxa60f30g30 -Bya30g30 -Dc -A5000
                 -Wblack -Gseashell4 -Santiquewhite1 -P > GMT_gall_stereo.ps
 
 .. _GMT_gall_stereo:
@@ -5874,11 +5873,11 @@ widths (140\ :math:`\cdot`\ 0.014 and 80\ :math:`\cdot`\ 0.014):
 
    ::
 
-     gmt coast -R200/340/-90/90 -Ji0.014i -Bxg30 -Byg15 -A10000 -Dc \
+     gmt coast -R200/340/-90/90 -Ji0.014i -Bxg30 -Byg15 -A10000 -Dc
                  -Gblack -K -P > GMT_sinus_int.ps
-     gmt coast -R-20/60/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 \
+     gmt coast -R-20/60/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000
                  -Gblack -X1.96i -O -K >> GMT_sinus_int.ps
-     gmt coast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 \
+     gmt coast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000
                  -Gblack -X1.12i -O >> GMT_sinus_int.ps
 
 .. figure:: /_images/GMT_sinus_int.*
@@ -5909,8 +5908,8 @@ Centered on the Dateline, the example below was created by this command:
 
     ::
 
-      gmt coast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -A10000 \
-                  -Wthinnest -P > GMT_grinten.ps
+      gmt coast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -A10000
+                -Wthinnest -P > GMT_grinten.ps
 
 .. figure:: /_images/GMT_grinten.*
    :width: 400 px
