@@ -109,16 +109,6 @@ The CookBook
 |    cookbook     |
 +-----------------+
 
-GMT Data Sets
-=============
-
-+--------------------+
-| .. toctree::       |
-|    :maxdepth: 2    |
-|                    |
-|    datasets        |
-+--------------------+
-
 The Tutorial
 ============
 
@@ -127,6 +117,16 @@ The Tutorial
 |    :maxdepth: 2    |
 |                    |
 |    tutorial        |
++--------------------+
+
+GMT Data Sets
+=============
+
++--------------------+
+| .. toctree::       |
+|    :maxdepth: 2    |
+|                    |
+|    datasets        |
 +--------------------+
 
 The Software

@@ -1,6 +1,6 @@
-############
-GMT_Tutorial
-############
+###########
+Modern Mode
+###########
 
 .. toctree::
    :maxdepth: 1
