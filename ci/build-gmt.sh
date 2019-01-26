@@ -21,9 +21,11 @@ set (CMAKE_C_FLAGS "-Wextra -coverage ${CMAKE_C_FLAGS}")
 EOF
 fi
 
-if [[ "$TEST" == "true" || "$BUILD_DOCS" == "true" ]]; then
+if [[ "$BUILD_DOCS" == "true" ]]; then
     cat >> cmake/ConfigUser.cmake << 'EOF'
 set (DO_ANIMATIONS TRUE)
+set (CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
+
 EOF
 fi
 
