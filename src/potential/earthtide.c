@@ -1244,7 +1244,7 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<outgrid> -T[<min>/<max>/][-|+]<inc>[<unit>][+n] [-C<comp>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-G<outgrid>] [-T[<min>/<max>/][-|+]<inc>[<unit>][+n]] [-C<comp>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-L<lon>/<lat>]\n\t[%s] [-S]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_bo_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
@@ -1398,8 +1398,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct G
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (GMT->common.R.inc[GMT_X] <= 0 || GMT->common.R.inc[GMT_Y] <= 0),
 	                                   "Syntax error -I option: Absent or no positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active && !Ctrl->G.active && !Ctrl->S.active,
-	                                   "Syntax error: Must specify -S, -G or -T options\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !Ctrl->G.active && !Ctrl->S.active,
+	                                   "Syntax error: Must specify -S, -G or -L options\n");
 	if (!GMT->parent->external)
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->L.active && !Ctrl->S.active && !Ctrl->G.active,
 		                                   "Syntax error: -T option requires one of -G, -L, or -S.\n");
