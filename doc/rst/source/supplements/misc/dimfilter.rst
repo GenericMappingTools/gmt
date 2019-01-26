@@ -13,9 +13,13 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt dimfilter** *input_file.nc* |-D|\ *distance_flag*
-|-F|\ **x**\ *width*\ [*mode*] |-G|\ *output_file.nc*
-|-N|\ **x**\ *sectors* [ |-Q| ]
+**gmt dimfilter** *input_file.nc*
+|-D|\ *distance_flag*
+|-F|\ **x**\ *width*\ [*mode*]
+|-G|\ *output_file.nc*
+|-N|\ **x**\ *sectors*
+[ |-L| ]
+[ |-Q| ]
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
 [ |-T| ]
@@ -128,6 +132,12 @@ Optional Arguments
     input data), filtering will be considerably slower. [Default: Same
     as input.]
 
+.. _-L:
+
+**-L**
+    This option is used by itself to write the dim.template.sh bash script
+    to standard output.  No other options can be used in combination.
+
 .. _-R:
 
 **-R**
@@ -225,7 +235,8 @@ Script Template
 ---------------
 
 The dim.template.sh is a skeleton shell script that can be used to set
-up a complete DiM analysis, including the MAD analysis.
+up a complete DiM analysis, including the MAD analysis.  It is obtained
+via the **-L** option.
 
 Reference
 ---------

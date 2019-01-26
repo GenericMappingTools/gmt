@@ -9,9 +9,9 @@ that may come in handy for some users.
 	   assisting in calculation of MAD error envelope
 
 dimfilter derives from grdfilter but allows for directional filtering
-of grids (*).  The dim.template.sh is a skeleton shell script that can
-be used to set up a complete DiM analysis, including the MAD analysis.
-[S-S Kim and P Wessel]
+of grids (*).  The dim.template.sh obtained via -L is a skeleton shell
+script that can be used to set up a complete DiM analysis, including
+the MAD analysis.
 
 (*) For details about the method, see:
 
