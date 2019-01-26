@@ -1,0 +1,24 @@
+References
+----------
+
+Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
+
+Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.
+
+F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998,
+p.167. Definition of scalar moment.
+
+Cliff Frohlich, Cliff's Nodes Concerning Plotting Nodal Lines for P, Sh and Sv
+
+Seismological Research Letters, Volume 67, Number 1, January-February, 1996
+
+Thorne Lay, Terry C. Wallace, Modern Global Seismology, Academic Press, 1995, p.384.
+
+W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery, Numerical
+Recipes in C, Cambridge University press (routine jacobi)
+
+Author
+------
+
+Genevieve Patau, `Laboratory of Seismogenesis <http://www.ipgp.fr/rech/sismogenese/>`,
+Institut de Physique du Globe de Paris, Departement de Sismologie, Paris, France
