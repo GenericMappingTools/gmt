@@ -92,6 +92,8 @@ pygments_style = 'sphinx'
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
 
+# Set smartquotes_action to 'qe' to disable Smart Quotes transform of -- and ---
+smartquotes_action = 'qe'
 
 # -- Options for HTML output ---------------------------------------------------
 
