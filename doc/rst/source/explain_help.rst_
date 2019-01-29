@@ -6,4 +6,4 @@
 **-?** or no arguments
     Print a complete usage (help) message, including the explanation of all options, then exits.
 **--PAR**\ =\ *value*
-    Temporarily override a GMT default setting; repeatable.  See gmt.conf for parameters.
+    Temporarily override a GMT default setting; repeatable. See :doc:`gmt.conf` for parameters.
