@@ -66,7 +66,7 @@ gray wedges to represent the 2-sigma uncertainties.
    ::
 
     gmt velo << END -Sw0.4/1.e7 -W0.75p -Gdarkgray -Elightgray -h1 -D2 -Jm2.2i
-        -R240./243./32.5/34.75 -Baf -BWeSn -pdf test.ps
+        -R240./243./32.5/34.75 -Baf -BWeSn -pdf test
     #lon lat spin(rad/yr) spin_sigma (rad/yr)
     241.4806 34.2073 5.65E-08 1.17E-08
     241.6024 34.4468 -4.85E-08 1.85E-08
