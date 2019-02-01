@@ -632,11 +632,13 @@ static void psl_fix_utf8 (struct PSL_CTRL *PSL, char *in_string) {
 	char *out_string = NULL;
 
 	if (!strncmp (PSL->init.encoding, "Standard+", 9U)) {	/* For Standard+ encoding we need to swap leading minus values encoded as hyphen with the actual minus symbol */
-		if (in_string[0] == 0055)	/* Found leading hyphen which we interpret to be a minus sign */
+		if (in_string[0] == 0055 && (strchr ("0123456789.", in_string[1]) || !strncmp (&in_string[1], "pi", 2U)))	/* Found leading hyphen interpreted to be a minus sign */
 			in_string[0] = 0224;	/* Minus is octal 224 in Standard+ but not present in just Standard */
 	}
 	if (strncmp (PSL->init.encoding, "ISOLatin1", 9U)) return;	/* Do nothing unless ISOLatin[+] */
 
+	if (in_string[0] == 0055 && !(strchr ("0123456789.", in_string[1]) || !strncmp (&in_string[1], "pi", 2U)))	/* Found leading minus interpreted to be a hyphen */
+		in_string[0] = 0255;	/* Hyphen is octal 255 in ISOLatin1 */
 	for (k = 0; in_string[k]; k++) {
 		if ((unsigned char)(in_string[k]) == 0303 || (unsigned char)(in_string[k]) == 0305)
 			utf8_codes++;	/* Count them up */
