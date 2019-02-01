@@ -4923,6 +4923,13 @@ void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B) {
 	/* Determine panel dimensions */
 
 	dim[GMT_X] = rect[XHI] - rect[XLO];	dim[GMT_Y] = rect[YHI] - rect[YLO];
+	if (B->refpoint == NULL) {	/* Need to set the BL refpoint since needed in inset to set the temporary origin */
+		char fake[GMT_LEN64] = {""};
+		sprintf (fake, "x%.16lgi/%.16lgi+jBL", rect[XLO], rect[YLO]);
+		if ((B->refpoint = gmt_get_refpoint (GMT, fake, 'D')) == NULL)
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to parse arg %s\n", fake);
+	}
+	
 	/* Report position and dimensions */
 	s = GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Map inset lower left corner and dimensions (in %s): %g %g %g %g\n",
