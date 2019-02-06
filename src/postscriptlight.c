@@ -640,7 +640,7 @@ static void psl_fix_utf8 (struct PSL_CTRL *PSL, char *in_string) {
 	for (k = 0; in_string[k]; k++) {
 		if ((unsigned char)(in_string[k]) == 0303 || (unsigned char)(in_string[k]) == 0305)
 			utf8_codes++;	/* Count them up */
-		else if (in_string[k] == 0055 && k && in_string[k-1] != '@')	/* A hyphen needs something before it (k > 0) unlike a negative number (but watch out for @- for subscript) */
+		else if (in_string[k] == 0055 && k && !(in_string[k-1] == '@' || in_string[k-1] == ' '))	/* A hyphen needs a non-blank before it (k > 0) unlike a negative number (but watch out for @- for subscript) */
 			in_string[k] = 0255;	/* Hyphen is octal 255 in ISOLatin1 */
 	}
 	if (utf8_codes == 0) return;	/* Nothing to do */
