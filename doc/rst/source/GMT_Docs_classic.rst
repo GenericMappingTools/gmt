@@ -706,7 +706,7 @@ modify the appearance of plots or affect the manipulation of data. When
 a program is run, it initializes all parameters to the
 GMT\ defaults [9]_, then tries to open the file ``gmt.conf`` in the current
 directory [10]_. If not found, it will look for that file in a
-sub-directory ``/.gmt`` of your home directory, and finally in your home directory
+sub-directory ``~/.gmt`` of your home directory, and finally in your home directory
 itself. If successful, the program will read the contents and set the
 default values to those provided in the file. By editing this file you
 can affect features such as pen thicknesses used for maps, fonts and
