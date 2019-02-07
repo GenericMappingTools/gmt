@@ -73,7 +73,6 @@ Supplements (Modern Mode)
 |    SUP_GSHHS    |    SUP_POTENTIAL|    SUP_SEGY     |
 |    SUP_IMGSRC   |    SUP_SPOTTER  |    SUP_X2SYS    |
 |    SUP_MECA     |                 |                 |
-|    SUP_MISC     |                 |                 |
 |    SUP_MGD77    |                 |                 |
 +-----------------+-----------------+-----------------+
 

@@ -11,7 +11,7 @@ dimfilter
 Synopsis
 --------
 
-.. include:: ../../common_SYN_OPTs.rst_
+.. include:: common_SYN_OPTs.rst_
 
 **gmt dimfilter** *input_file.nc*
 |-D|\ *distance_flag*
@@ -46,7 +46,7 @@ mode and expects the input file to contains the filtered depths. Finally, one sh
 **dimfilter** will not produce a smooth output as other spatial filters
 do because it returns a minimum median out of *N* medians of *N*
 sectors. The output can be rough unless the input data is noise-free.
-Thus, an additional filtering (e.g., Gaussian via :doc:`grdfilter </grdfilter>`) of the
+Thus, an additional filtering (e.g., Gaussian via :doc:`grdfilter`) of the
 DiM-filtered data is generally recommended.
 
 Required Arguments
@@ -164,19 +164,19 @@ Optional Arguments
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. include:: explain_-V.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-f.rst_
+.. include:: explain_-f.rst_
 
-.. include:: ../../explain_help.rst_
-.. include:: ../../explain_grd_inout_short.rst_
-.. include:: ../../explain_grd_coord.rst_
+.. include:: explain_help.rst_
+.. include:: explain_grd_inout_short.rst_
+.. include:: explain_grd_coord.rst_
 
 Examples
 --------
 
-Suppose that north\_pacific\_dbdb5.nc is a file of 5 minute bathymetry
+Suppose that north_pacific_dbdb5.nc is a file of 5 minute bathymetry
 from 140E to 260E and 0N to 50N, and you want to find the medians of
 values within a 300km radius (600km full width) of the output points,
 which you choose to be from 150E to 250E and 10N to 40N, and you want
@@ -248,4 +248,4 @@ Geosyst.*, **9**, Q03005, doi:10.1029/2007GC001850.
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`grdfilter </grdfilter>`
+:doc:`gmt`, :doc:`grdfilter`
