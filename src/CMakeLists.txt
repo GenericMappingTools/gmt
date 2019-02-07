@@ -284,7 +284,7 @@ else (NOT LICENSE_RESTRICTED) # on
 endif (NOT LICENSE_RESTRICTED)
 
 # Note: Developers can set EXTRA_MODULES in ConfigUser.cmake to test new modules
-set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c filter1d.c grd2kml.c
+set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c dimfilter.c filter1d.c grd2kml.c
 	fitcircle.c gmt2kml.c gmtconvert.c gmtlogo.c gmtmath.c gmtselect.c gmtsimplify.c
 	gmtspatial.c gmtconnect.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c
 	grd2xyz.c grdblend.c grdclip.c grdcut.c grdedit.c grdfft.c grdfill.c grdfilter.c
@@ -423,7 +423,7 @@ if (BUILD_SUPPLEMENTS)
 	# supplement directories (only those, which are to be included in gmtlib)
 	# EXTRA_BUILD_DIRS are for testing new supplements that are not yet in
 	# subversion. See cmake/ConfigUserTemplate.cmake for setting this parameter.
-	set (GMT_SUPPL_DIRS gshhg img meca mgd77 misc potential segy
+	set (GMT_SUPPL_DIRS gshhg img meca mgd77 potential segy
 		spotter x2sys ${EXTRA_BUILD_DIRS})
 endif (BUILD_SUPPLEMENTS)
 

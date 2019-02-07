@@ -1,6 +1,19 @@
 /*
+ *	Copyright (c) 1991-2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- * dimfilter.c  reads a grdfile and creates filtered grd file
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU Lesser General Public License as published by
+ *	the Free Software Foundation; version 3 or any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU Lesser General Public License for more details.
+ *
+ *	Contact info: gmt.soest.hawaii.edu
+ *--------------------------------------------------------------------*/
+/* dimfilter.c  reads a grdfile and creates filtered grd file
  *
  * user selects primary filter radius, number of sectors, and the secondary filter.
  * The Primary filter determines how we want to filter the raw data. However, instead
@@ -12,25 +25,25 @@
  *
  * Author: 	Paul Wessel with help from Caleb Fassett & Seung-Sep Kim
  * Date: 	25-OCT-2015
- * Version:	GMT 5
+ * Version:	GMT 6
  *
  * For details, see Kim, S.-S., and Wessel, P. 2008, "Directional Median Filtering
- * for Regional-Residual Separation of Bathymetry, Geochem. Geophys. Geosyst.,
- * 9(Q03005), doi:10.1029/2007GC001850.
+ *   for Regional-Residual Separation of Bathymetry, Geochem. Geophys. Geosyst.,
+ *   9(Q03005), doi:10.1029/2007GC001850.
  */
 
 #include "gmt_dev.h"
 
 #define THIS_MODULE_NAME	"dimfilter"
-#define THIS_MODULE_LIB		"misc"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Directional filtering of grids in the space domain"
 #define THIS_MODULE_KEYS	"<G{,GG},>DQ"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVfh"
+#define THIS_MODULE_OPTIONS	"-:RVfh"
 
 struct DIMFILTER_INFO {
-	int n_columns;			/* The max number of filter weights in x-direction */
-	int n_rows;			/* The max number of filter weights in y-direction */
+	int n_columns;		/* The max number of filter weights in x-direction */
+	int n_rows;		/* The max number of filter weights in y-direction */
 	int x_half_width;	/* Number of filter nodes to either side needed at this latitude */
 	int y_half_width;	/* Number of filter nodes above/below this point (ny_f/2) */
 	int d_flag;
