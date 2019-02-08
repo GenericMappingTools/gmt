@@ -7390,6 +7390,10 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 	poly = (((*geometry & GMT_IS_POLY) || *geometry == GMT_IS_MULTIPOLYGON) && (*geometry & GMT_IS_LINE) == 0);	/* To enable polar cap assessment in i/o */
 
 	if (GMT->current.io.ogr == GMT_OGR_TRUE) {	/* Reading an OGR file so we can set the geometry, and possibly poly */
+		if (GMT->current.io.OGR == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "OGR parsing incomplete (is file missing OGR statements?) - abort\n");
+			GMT_exit (GMT, GMT_DATA_READ_ERROR); return (NULL);
+		}
 		poly = (GMT->current.io.OGR->geometry == GMT_IS_POLYGON || GMT->current.io.OGR->geometry == GMT_IS_MULTIPOLYGON);
 		*geometry = GMT->current.io.OGR->geometry;
 		if (*geometry > GMT_IS_MULTI)
