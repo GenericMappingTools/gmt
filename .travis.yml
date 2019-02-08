@@ -99,7 +99,7 @@ before_install:
       if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
         # Download dependencies if not cached (https://stackoverflow.com/a/52446551)
         DEB_CACHE=$HOME/cache-deb
-        DEB_PACKAGES="cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev ghostscript curl"
+        DEB_PACKAGES="cmake ninja-build libcurl4-gnutls-dev libnetcdf-dev libgdal-dev libfftw3-dev libpcre3-dev liblapack-dev ghostscript curl"
         if [[ "$TEST" == "true" || "$BUILD_DOCS" == "true" ]]; then
           DEB_PACKAGES="$DEB_PACKAGES graphicsmagick ffmpeg python python-pip texlive-latex-extra"
         fi
