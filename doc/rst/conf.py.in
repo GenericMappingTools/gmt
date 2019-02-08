@@ -92,6 +92,8 @@ pygments_style = 'sphinx'
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
 
+# Set smartquotes_action to 'qe' to disable Smart Quotes transform of -- and ---
+smartquotes_action = 'qe'
 
 # -- Options for HTML output ---------------------------------------------------
 
@@ -238,6 +240,8 @@ man_pages = [
 ('blockmedian', 'blockmedian', 'Block average (x, y, z) data tables by L1 norm', '', 1),
 ('blockmode', 'blockmode', 'Block average (x, y, z) data tables by mode estimation', '', 1),
 ('clear', 'clear', 'Delete current history, conf, cpt, or the cache directory', '', 1),
+('dimfilter', 'dimfilter', 'Directional filtering of 2-D gridded files in the space (or time) domain', '', 1),
+('docs', 'docs', 'Show the HTML documentation of the specified module', '', 1),
 ('end', 'end', 'Terminate GMT modern mode session and produce optional graphics', '', 1),
 ('figure', 'figure', 'Set attributes for the current figure', '', 1),
 ('filter1d', 'filter1d', 'Do time domain filtering of 1-D data tables', '', 1),

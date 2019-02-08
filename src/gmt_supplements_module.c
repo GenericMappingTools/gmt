@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2018
+ * Copyright (c) 2012-2019
  * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
@@ -84,7 +84,7 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"rotconverter", "spotter", "Manipulate total reconstruction and stage rotations", ">D}"},
 	{"rotsmoother", "spotter", "Get mean rotations and covariance matrices from set of finite rotations", "<D{,>D}"},
 	{"x2sys_binlist", "x2sys", "Create bin index listing from track data files", ">D}"},
-	{"x2sys_cross", "x2sys", "Calculate crossovers between track data files", ">D}"},
+	{"x2sys_cross", "x2sys", "Calculate crossovers between track data files", "<D{,>D}"},
 	{"x2sys_datalist", "x2sys", "Extract content of track data files", ">D}"},
 	{"x2sys_get", "x2sys", "Get track listing from track index database", ">D}"},
 	{"x2sys_init", "x2sys", "Initialize a new x2sys track database", ""},

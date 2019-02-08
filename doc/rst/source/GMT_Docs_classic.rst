@@ -107,7 +107,7 @@ published separately, such as
 -  Kim, S.-S., and P. Wessel, Directional median filtering for
    regional-residual separation of bathymetry, *Geochem. Geophys.
    Geosyst.*, 9, Q03005, 2008. `doi:10.1029/2007GC001850 <http://dx.doi.org/10.1029/2007GC001850>`_.
-   [:doc:`dimfilter <supplements/misc/dimfilter>`, **misc** supplement]
+   [:doc:`dimfilter`]
 
 -  Luis, J. F. and J. M. Miranda, Reevaluation of magnetic chrons in the
    North Atlantic between 35ºN and 47ºN: Implications for the formation of the
@@ -156,7 +156,7 @@ such decisions by supporting the GMT project.
 Copyright and Caveat Emptor!
 ============================
 
-Copyright ©1991--2017 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
+Copyright ©1991--2019 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
 Luis and F. Wobbe
 
 The Generic Mapping Tools (GMT) is free software; you can
@@ -6023,14 +6023,6 @@ This package currently holds the programs
 extract information or data values from or plot marine geophysical data
 files in the ASCII MGD77 or netCDF MGD77+ formats [24]_). This package
 has replaced the old **mgg** package. The package is maintained by Paul Wessel and Mike Chandler.
-
-misc: Miscellaneous tools
--------------------------
-
-At the moment, this package contains the program
-:doc:`dimfilter <supplements/misc/dimfilter>`, which is an extension of
-:doc:`grdfilter` in that it allows for spatial directional filtering.
-The package is maintained by Paul Wessel.
 
 potential: Geopotential tools
 -----------------------------

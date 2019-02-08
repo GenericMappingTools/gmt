@@ -205,7 +205,7 @@ like /usr/local/bin.  You should now be able to run GMT programs.
 
 GMT users elsewhere have developed programs that utilize the GMT libraries and
 produce PostScript code compatible with the rest of GMT or simply perform data
-manipulation.  In addition, misc.  code developed by us depend on GMT
+manipulation.  In addition, misc. code developed by us depend on GMT
 libraries.  Currently, the supplemental archive include the directories:
 
   gshhg     - Data extractor for GSHHG shoreline polygons and rivers, borders.
@@ -213,7 +213,6 @@ libraries.  Currently, the supplemental archive include the directories:
   meca      - Plotting of focal mechanisms, velocity arrows,
               and error ellipses on maps.
   mgd77     - Programs for handling of native MGD77 files.
-  misc      - dimfilter
   potential - geopotential manipulations
   segyprogs - Plotting SEGY seismic data sets.
   spotter   - Plate tectonic & kinematics applications.

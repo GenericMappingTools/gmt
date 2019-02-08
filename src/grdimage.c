@@ -304,7 +304,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 				break;
 #ifdef HAVE_GDAL
 			case 'D':	/* Get an image via GDAL */
-				GMT_Report (API, GMT_MSG_COMPAT, "Option -D is deprecated; images are detected automatically\n");
+				if (!API->external)			/* For externals we actually still need the -D */
+					GMT_Report (API, GMT_MSG_COMPAT,
+					            "Option -D is deprecated; images are detected automatically\n");
 				Ctrl->D.active = true;
 				Ctrl->D.mode = (opt->arg[0] == 'r');
 				break;

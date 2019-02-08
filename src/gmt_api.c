@@ -2666,6 +2666,14 @@ GMT_LOCAL int api_export_palette (struct GMTAPI_CTRL *API, int object_ID, unsign
 
 	/* Passed sanity and allowed to write */
 
+	/* If need to assign non-default BFN do it now sow external interfaces can access that too */
+	if (mode & GMT_CPT_EXTEND_BNF) {	/* Use low and high colors as back and foreground */
+		gmt_M_rgb_copy (P_obj->bfn[GMT_BGD].rgb, P_obj->data[0].rgb_low);
+		gmt_M_rgb_copy (P_obj->bfn[GMT_FGD].rgb, P_obj->data[P_obj->n_colors-1].rgb_high);
+		gmt_M_rgb_copy (P_obj->bfn[GMT_BGD].hsv, P_obj->data[0].hsv_low);
+		gmt_M_rgb_copy (P_obj->bfn[GMT_FGD].hsv, P_obj->data[P_obj->n_colors-1].hsv_high);
+	}
+	
 	switch (S_obj->method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:
 			/* gmtlib_write_cpt will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
