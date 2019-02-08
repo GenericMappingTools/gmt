@@ -13067,6 +13067,8 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 						}
 					}
 				}
+				else if (gmt_M_is_dnan(del_yb)) {}	/* Just do nothing and prevent call to doubleAlmostEqual() which would assert fail with NaNs */
+
 				else {	/* General case */
 
 					i_del_xa = 1.0 / del_xa;
