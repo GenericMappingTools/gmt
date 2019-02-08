@@ -156,7 +156,6 @@ script:
         cmake --build . --target animation;
         kill %1;
         cmake --build . --target docs_html;
-        cmake --build . --target docs_pdf;
       fi
     - set +e
     - cd ..
