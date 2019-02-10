@@ -325,7 +325,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[PSL_MAX_DIMS];
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0, *in = NULL;
 	double direction = 0, small_axis = 0, great_axis = 0, sigma_x, sigma_y, corr_xy;
-	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize;
+	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize, headpen_width;
 
 	char *station_name = NULL;
 
@@ -380,6 +380,18 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 
 	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
 
+	if (Ctrl->S.symbol == CINE || Ctrl->S.symbol == CROSS) {
+		if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head outline pen specified separately */
+			PSL_defpen (PSL, "PSL_vecheadpen", Ctrl->A.S.v.pen.width, Ctrl->A.S.v.pen.style, Ctrl->A.S.v.pen.offset, Ctrl->A.S.v.pen.rgb);
+			headpen_width = 0.5*Ctrl->A.S.v.pen.width;
+		}
+		else {	/* Reset to default pen */
+			if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
+				PSL_defpen (PSL, "PSL_vecheadpen", Ctrl->W.pen.width, Ctrl->W.pen.style, Ctrl->W.pen.offset, Ctrl->W.pen.rgb);
+				headpen_width = 0.5 * Ctrl->W.pen.width;
+			}
+		}
+	}
 	do {	/* Keep returning records until we reach EOF */
 		if ((In = GMT_Get_Record (API, GMT_READ_MIXED, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
@@ -493,6 +505,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 					else {
 						dim[6] = (double)Ctrl->A.S.v.status;
 						dim[7] = (double)Ctrl->A.S.v.v_kind[0];	dim[8] = (double)Ctrl->A.S.v.v_kind[1];
+						dim[11] = headpen_width;
 						if (Ctrl->A.S.v.status & PSL_VEC_FILL2)
 							gmt_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->L.active);
 						else if (Ctrl->G.active)

@@ -792,6 +792,14 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	}
 
 	gmt_setpen (GMT, &Ctrl->W.pen[0]);
+	if (Ctrl->M.S.v.status & PSL_VEC_OUTLINE2) {	/* Gave specific head outline pen */
+		PSL_defpen (GMT->PSL, "PSL_vecheadpen", Ctrl->M.S.v.pen.width, Ctrl->M.S.v.pen.style, Ctrl->M.S.v.pen.offset, Ctrl->M.S.v.pen.rgb);
+		dim[11] = Ctrl->M.S.v.pen.width;
+	}
+	else if (Ctrl->M.active) {
+		PSL_defpen (GMT->PSL, "PSL_vecheadpen", 0.5 * Ctrl->W.pen[1].width, Ctrl->W.pen[1].style, Ctrl->W.pen[1].offset, Ctrl->W.pen[1].rgb);
+		dim[11] = 0.5 * Ctrl->W.pen[1].width;
+	}
 	if (windrose) {	/* Here we draw individual vectors */
 		if (Ctrl->M.active) { /* Initialize vector head settings */
 			gmt_init_vector_param (GMT, &Ctrl->M.S, false, false, NULL, false, NULL);
@@ -983,6 +991,16 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			else
 				this_rgb = GMT->session.no_rgb;
 			if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen[1]);
+		}
+		else {
+			if (Ctrl->M.S.v.status & PSL_VEC_OUTLINE2) {	/* Gave specific head outline pen */
+				PSL_defpen (GMT->PSL, "PSL_vecheadpen", Ctrl->M.S.v.pen.width, Ctrl->M.S.v.pen.style, Ctrl->M.S.v.pen.offset, Ctrl->M.S.v.pen.rgb);
+				dim[11] = Ctrl->M.S.v.pen.width;
+			}
+			else if (Ctrl->M.active) {
+				PSL_defpen (GMT->PSL, "PSL_vecheadpen", 0.5 * Ctrl->W.pen[1].width, Ctrl->W.pen[1].style, Ctrl->W.pen[1].offset, Ctrl->W.pen[1].rgb);
+				dim[11] = 0.5 * Ctrl->W.pen[1].width;
+			}
 		}
 		for (this_mode = 0; this_mode < n_modes; this_mode++) {
 			if (Ctrl->N.active) mode_length[this_mode] = sqrt (mode_length[this_mode]);

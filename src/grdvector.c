@@ -336,11 +336,12 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	
 	uint64_t ij;
 
-	double tmp, x, y, plot_x, plot_y, x_off, y_off, f;
+	double tmp, x, y, plot_x, plot_y, x_off, y_off, f, headpen_width;
 	double x2, y2, wesn[4], value, vec_length, vec_azim, scaled_vec_length, c, s, dim[PSL_MAX_DIMS];
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL};
 	struct GMT_PALETTE *P = NULL;
+	struct GMT_PEN last_headpen;
 	struct GRDVECTOR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -543,6 +544,16 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	dim[6] = (double)Ctrl->Q.S.v.status;
 	dim[7] = (double)Ctrl->Q.S.v.v_kind[0];	dim[8] = (double)Ctrl->Q.S.v.v_kind[1];
 	
+	if (Ctrl->Q.S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head outline pen specified separately */
+		PSL_defpen (PSL, "PSL_vecheadpen", Ctrl->Q.S.v.pen.width, Ctrl->Q.S.v.pen.style, Ctrl->Q.S.v.pen.offset, Ctrl->Q.S.v.pen.rgb);
+		headpen_width = Ctrl->Q.S.v.pen.width;
+	}
+	else {	/* Reset to default pen */
+		if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
+			PSL_defpen (PSL, "PSL_vecheadpen", Ctrl->W.pen.width, Ctrl->W.pen.style, Ctrl->W.pen.offset, Ctrl->W.pen.rgb);
+			headpen_width = 0.5 * Ctrl->W.pen.width;
+		}
+	}
 	if (Ctrl->W.cpt_effect) {	/* Should color apply to pen, fill, or both [fill] */
 		if ((Ctrl->W.pen.cptmode & 2) == 0 && !Ctrl->G.active)	/* Turn off CPT fill */
 			gmt_M_rgb_copy (Ctrl->G.fill.rgb, GMT->session.no_rgb);
@@ -632,9 +643,15 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			if (Ctrl->C.active) {	/* Get color based on the vector length */
 				gmt_get_fill_from_z (GMT, P, value, &Ctrl->G.fill);
 			}
+			
 			if (Ctrl->W.cpt_effect) {	/* Should color apply to pen, fill, or both [fill] */
-				if (Ctrl->W.pen.cptmode & 1)	/* Change pen color via CPT */
+				if (Ctrl->W.pen.cptmode & 1) {	/* Change pen color via CPT */
 					gmt_M_rgb_copy (Ctrl->W.pen.rgb, Ctrl->G.fill.rgb);
+					if (!gmt_M_same_pen (Ctrl->W.pen, last_headpen)) {	/* Since color may have changed */
+						PSL_defpen (PSL, "PSL_vecheadpen", Ctrl->W.pen.width, Ctrl->W.pen.style, Ctrl->W.pen.offset, Ctrl->W.pen.rgb);
+						last_headpen = Ctrl->W.pen;
+					}
+				}
 			}
 			if (Ctrl->C.active) {	/* Update pen and fill color settings */
 				if (!Ctrl->Q.active)	/* Must update stick pen */
@@ -680,9 +697,11 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 				/* Must plot a vector head */
 				dim[0] = x2; dim[1] = y2;
 				dim[2] = Ctrl->Q.S.v.v_width;	dim[3] = Ctrl->Q.S.v.h_length;	dim[4] = Ctrl->Q.S.v.h_width;
+				dim[11] = headpen_width;	/* Possibly shrunk head pen width */
 				if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Scale arrow attributes down with length */
 					f = scaled_vec_length / Ctrl->Q.S.v.v_norm;
 					for (k = 2; k <= 4; k++) dim[k] *= f;
+					dim[11] *= f;
 				}
 				if (Ctrl->Q.S.symbol == GMT_SYMBOL_VECTOR_V4) {	/* Do the deprecated GMT4 vector polygon instead */
 					int v4_outline = Ctrl->W.active;

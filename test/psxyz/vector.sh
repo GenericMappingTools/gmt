@@ -11,7 +11,7 @@ gmt psxyz -R -J -O -K -W1p -Gred -S -p155/35 << EOF >> $ps
 0.5	0.5	0	30	1i	v0.2i+jc
 1.5	0.5	0	30	1i	v0.2i+jc+b
 2.5	0.5	0	30	1i	v0.2i+jc+e+p-
-3.5	0.5	0	30	1i	v0.2i+jc+b+e+p1p,blue
+3.5	0.5	0	30	1i	v0.2i+jc+b+e+p0.5p,blue
 4.5	0.5	0	30	1i	v0.2i+jc+bl
 5.5	0.5	0	30	1i	v0.2i+jc+er
 EOF
@@ -41,7 +41,7 @@ gmt psxyz -R -J -O -K -W1p -Gred -S -p155/35 << EOF >> $ps
 0.5	0.5	0	60	1i	V0.2i+jc
 1.5	0.5	0	60	1i	V0.2i+jc+b
 2.5	0.5	0	60	1i	V0.2i+jc+e+p-
-3.5	0.5	0	60	1i	V0.2i+jc+b+e+p1p,blue
+3.5	0.5	0	60	1i	V0.2i+jc+b+e+p0.5p,blue
 4.5	0.5	0	60	1i	V0.2i+jc+bl
 5.5	0.5	0	60	1i	V0.2i+jc+er
 EOF
