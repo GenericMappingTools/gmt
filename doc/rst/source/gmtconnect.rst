@@ -103,7 +103,7 @@ Optional Arguments
 
 **-T**\ [*cutoff*\ [*unit*][/\ *nn\_dist*]]
     Specifies the separation tolerance in the data coordinate units [0];
-    append distance unit (see UNITS). If two lines has end-points that
+    append distance unit (see :ref:`Unit_attributes`). If two lines has end-points that
     are closer than this cutoff they will be joined. Optionally, append
     /*nn_dist* which adds the requirement that a link will only be made
     if the second closest connection exceeds the *nn_dist*. The latter

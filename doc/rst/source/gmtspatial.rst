@@ -89,7 +89,7 @@ Optional Arguments
     distance between nearest points of two features is less than a
     threshold). We also consider that some features may have been
     reversed. Features are considered approximate matches if their
-    minimum distance is less than *dmax* [0] (see UNITS) and their
+    minimum distance is less than *dmax* [0] (see :ref:`Unit_attributes`) and their
     closeness (defined as the ratio between the average distance between
     the features divided by their average length) is less than *cmax*
     [0.01]. For each duplicate found, the output record begins with the
@@ -152,7 +152,7 @@ Optional Arguments
     simply writes the area to stdout]. For polygons we also compute the
     centroid location while for line data we compute the mid-point
     (half-length) position. Append a distance unit to select the unit
-    used (see UNITS). Note that the area will depend on the current
+    used (see :ref:`Unit_attributes`). Note that the area will depend on the current
     setting of :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`; this should be a
     recent ellipsoid to get accurate results. The centroid is computed
     using the mean of the 3-D Cartesian vectors making up the polygon

@@ -37,7 +37,7 @@
         Nudges the placement of labels by the specified amount (append
         **c**\ \|\ **i**\ \|\ **p** to specify the units). Increments
         are considered in the coordinate system defined by the
-        orientation of the contour (contour is *x*, normal to contour is *y);
+        orientation of the contour (contour is *x*, normal to contour is *y*);
         use **+N** to force increments in the overall
         plot x/y coordinates system [no nudging]. Not allowed with **+v**.
 

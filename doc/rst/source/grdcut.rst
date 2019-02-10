@@ -72,7 +72,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *lon/lat/radius*\ [*unit*]\ [**+n**]
-    Specify an origin and radius; append a distance unit (see UNITS) and
+    Specify an origin and radius; append a distance unit (see :ref:`Unit_attributes`) and
     we determine the corresponding rectangular region so that all grid
     nodes on or inside the circle are contained in the subset. If
     **+n** is appended we set all nodes outside the circle to NaN. 

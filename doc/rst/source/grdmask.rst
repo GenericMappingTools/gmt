@@ -107,7 +107,7 @@ Optional Arguments
     Set nodes to inside, on edge, or outside depending on their distance
     to the nearest data point. Nodes within *radius* [0] from the
     nearest data point are considered inside; append a distance unit
-    (see UNITS). If *radius* is given as **z** then we instead read
+    (see :ref:`Unit_attributes`). If *radius* is given as **z** then we instead read
     individual radii from the 3rd input column.  Unless Cartesian data,
     specify the unit of these radii by appending it after **-Sz**.
     If **-S** is not set then we consider the input data to define

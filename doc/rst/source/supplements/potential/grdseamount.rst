@@ -85,7 +85,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *unit*
-    Append the unit used for horizontal distances in the input file (see UNITS).
+    Append the unit used for horizontal distances in the input file (see :ref:`Unit_attributes`).
     Does not apply for geographic data (|SYN_OPT-f|) which we convert to km.
 
 .. _-E:
