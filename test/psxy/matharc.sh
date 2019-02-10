@@ -12,7 +12,7 @@ gmt psxy -R -J -O -K -W1p -Gred -S << EOF >> $ps
 1	0	1i	30	80	m0.2i+b
 2	0	1i	30	80	m0.2i+e+p-
 3	0	1i	30	80	m0.2i+b+e+gorange
-4	0	1i	30	80	m0.2i+b+l+p1p,blue
+4	0	1i	30	80	m0.2i+b+l+p0.5p,blue
 5	0	1i	30	80	m0.2i+e+r
 EOF
 # Right angles

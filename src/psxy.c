@@ -358,8 +358,15 @@ GMT_LOCAL void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uin
 		dim[6] = (double)P->end[k].V->v.status;
 		dim[7] = (double)P->end[k].V->v.v_kind[0];	dim[8]  = (double)P->end[k].V->v.v_kind[1];
 		dim[9] = (double)P->end[k].V->v.v_trim[0];	dim[10] = (double)P->end[k].V->v.v_trim[1];
+		if (P->end[k].V->v.status & PSL_VEC_OUTLINE2) {	/* Gave specific head outline pen */
+			PSL_defpen (GMT->PSL, "PSL_vecheadpen", P->end[k].V->v.pen.width, P->end[k].V->v.pen.style, P->end[k].V->v.pen.offset, P->end[k].V->v.pen.rgb);
+			dim[11] = P->end[k].V->v.pen.width;
+		}
+		else {	/* Set default based on line pen */
+			PSL_defpen (GMT->PSL, "PSL_vecheadpen", 0.5 * P->width, P->style, P->offset, P->rgb);
+			dim[11] = 0.5 * P->width;
+		}
 		gmt_setfill (GMT, &P->end[k].V->v.fill, (P->end[k].V->v.status & PSL_VEC_OUTLINE2) == PSL_VEC_OUTLINE2);
-		if (P->end[k].V->v.status & PSL_VEC_OUTLINE2) gmt_setpen (GMT, &P->end[k].V->v.pen);
 		PSL_plotsymbol (GMT->PSL, x[current[k]], y[current[k]], dim, PSL_VECTOR);
 	}
 	GMT->PSL->current.linewidth = -1.0;	/* Will be changed by next PSL_setlinewidth */
@@ -811,7 +818,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psxy task */
 	bool polygon, penset_OK = true, not_line, old_is_world, rgb_from_z = false;
 	bool get_rgb = false, clip_set = false, fill_active, may_intrude_inside = false;
-	bool error_x = false, error_y = false, def_err_xy = false;
+	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true;
 	bool default_outline, outline_active, geovector = false, save_W, save_G;
 	unsigned int n_needed, n_cols_start = 2, justify, tbl;
 	unsigned int n_total_read = 0, j, geometry;
@@ -822,9 +829,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	char s_args[GMT_BUFSIZ] = {""};
 
 	double direction, length, dx, dy, d, *in = NULL;
-	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;
+	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2, headpen_width = 0.25;
 
-	struct GMT_PEN current_pen, default_pen, save_pen;
+	struct GMT_PEN current_pen, default_pen, save_pen, last_headpen;
 	struct GMT_FILL current_fill, default_fill, black, no_fill, save_fill;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
@@ -1004,7 +1011,30 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC ) {	/* One of the vector symbols */
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
 		if ((S.v.status & PSL_VEC_FILL) == 0 && !S.v.parsed_v4) Ctrl->G.active = false;	/* Want no fill so override -G */
-		if (S.v.status & PSL_VEC_FILL) S.v.fill = current_fill;		/* Override -G<fill> (if set) with specified head fill */
+		if (S.v.status & PSL_VEC_FILL2) {	/* Gave +g<fill> to set head fill; odd, but overrides -G (and sets -G true) */
+			current_fill = S.v.fill;	/* Override any -G<fill> with specified head fill */
+			if (S.v.status & PSL_VEC_FILL) Ctrl->G.active = true;
+		}
+		else if (S.v.status & PSL_VEC_FILL) {
+			current_fill = default_fill, Ctrl->G.active = true;	/* Return to default fill */
+		}
+		if (S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head outline pen specified separately */
+			PSL_defpen (PSL, "PSL_vecheadpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
+			headpen_width = S.v.pen.width;
+			last_headpen = S.v.pen;
+		}
+		else {	/* Reset to default pen */
+			current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
+			if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
+				PSL_defpen (PSL, "PSL_vecheadpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
+				headpen_width = 0.5 * current_pen.width;
+				last_headpen = current_pen;
+			}
+		}
+		if (Ctrl->C.active) {	/* Head fill and/or pen will be set via CPT lookup */
+			if (!Ctrl->W.cpt_effect || (Ctrl->W.cpt_effect && (Ctrl->W.pen.cptmode & 2)))
+				Ctrl->G.active = false;	/* Must turn off -G so that color is not reset to Ctrl->G.fill after the -C effect */
+		}
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
 	if (S.symbol == GMT_SYMBOL_BARX && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_X));
@@ -1055,7 +1085,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {		/* Enables data input and sets access mode */
 			Return (API->error);
 		}
-		PSL_command (GMT->PSL, "V\n");
+		PSL_command (GMT->PSL, "V\n");	/* Place all symbols under a gsave/grestore clause */
 		
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
 			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
@@ -1108,11 +1138,22 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 				if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC) {	/* One of the vector symbols */
 					save_pen = current_pen; save_fill = current_fill; save_W = Ctrl->W.active; save_G = Ctrl->G.active;	/* Save status before change */
-					if (S.v.status & PSL_VEC_OUTLINE2) {
-						current_pen = S.v.pen, Ctrl->W.active = true;	/* Override -W (if set) with specified pen */
+					can_update_headpen = true;
+					if (S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head ouline pen specified separately */
+						if (!gmt_M_same_pen (S.v.pen, last_headpen)) {
+							PSL_defpen (PSL, "PSL_vecheadpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
+							headpen_width = S.v.pen.width;
+							last_headpen = S.v.pen;
+						}
+						can_update_headpen = false;
 					}
-					else {	/* Reset to default pen */
+					else {	/* Reset to default pen (or possibly not used) */
 						current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
+						if (Ctrl->W.active && !gmt_M_same_pen (current_pen, last_headpen)) {	/* Vector head outline pen default is half that of stem pen */
+							PSL_defpen (PSL, "PSL_vecheadpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
+							headpen_width = 0.5 * current_pen.width;
+							last_headpen = current_pen;
+						}
 					}
 					if (S.v.status & PSL_VEC_FILL2) {
 						current_fill = S.v.fill;	/* Override -G<fill> with specified head fill */
@@ -1188,6 +1229,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				if (Ctrl->W.pen.cptmode & 1) {	/* Change pen color via CPT */
 					gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
 					current_pen = Ctrl->W.pen;
+					if (can_update_headpen && !gmt_M_same_pen (current_pen, last_headpen)) {	/* Since color may have changed */
+						PSL_defpen (PSL, "PSL_vecheadpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
+						last_headpen = current_pen;
+					}
 				}
 				if ((Ctrl->W.pen.cptmode & 2) == 0 && !Ctrl->G.active)	/* Turn off CPT fill */
 					gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
@@ -1441,6 +1486,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							dim[6] = (double)S.v.status;
 							dim[7] = (double)S.v.v_kind[0];	dim[8] = (double)S.v.v_kind[1];
 							dim[9] = (double)S.v.v_trim[0];	dim[10] = (double)S.v.v_trim[1];
+							dim[11] = s * headpen_width;	/* Possibly shrunk head pen width */
 							PSL_plotsymbol (PSL, xpos[item], plot_y, dim, PSL_VECTOR);
 						}
 						break;
@@ -1478,6 +1524,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						dim[7] = (double)S.v.status;
 						dim[8] = (double)S.v.v_kind[0];	dim[9] = (double)S.v.v_kind[1];
 						dim[10] = (double)S.v.v_trim[0];	dim[11] = (double)S.v.v_trim[1];
+						dim[12] = s * headpen_width;	/* Possibly shrunk head pen width */
 						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 						break;
 					case PSL_WEDGE:

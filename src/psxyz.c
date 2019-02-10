@@ -104,7 +104,7 @@ struct PSXYZ_DATA {
 	double x, y, z, dim[PSL_MAX_DIMS], dist[2];
 	double *zz;	/* For column symbol if +z<n> in effect */
 	struct GMT_FILL f;
-	struct GMT_PEN p;
+	struct GMT_PEN p, h;
 	struct GMT_VECT_ATTR v;
 	char *string;
 	struct GMT_CUSTOM_SYMBOL *custom;
@@ -528,7 +528,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psxyz task */
 	bool polygon, penset_OK = true, not_line, old_is_world;
 	bool get_rgb = false, read_symbol, clip_set = false, fill_active, rgb_from_z = false;
-	bool default_outline, outline_active, save_u = false, geovector = false;
+	bool default_outline, outline_active, save_u = false, geovector = false, can_update_headpen = true;
 	unsigned int k, j, geometry, tbl, pos2x, pos2y;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
 	unsigned int col, bcol, ex1, ex2, ex3, change, n_needed, n_z = 0;
@@ -543,7 +543,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL;
 	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, zz, length, base;
 
-	struct GMT_PEN default_pen, current_pen;
+	struct GMT_PEN default_pen, current_pen, last_headpen;
 	struct GMT_FILL default_fill, current_fill, black, no_fill;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
@@ -705,9 +705,28 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	if (S.symbol == PSL_VECTOR && S.v.status & PSL_VEC_COMPONENTS)
 		gmt_set_column (GMT, GMT_IN, pos2y, GMT_IS_FLOAT);	/* Just the users dy component, not length */
 	if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC ) {	/* One of the vector symbols */
-		if ((S.v.status & PSL_VEC_FILL) == 0) Ctrl->G.active = false;	/* Want to fill so override -G*/
-		if (S.v.status & PSL_VEC_FILL2) current_fill = S.v.fill;	/* Override -G<fill> (if set) with specified head fill */
 		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
+		if (S.v.status & PSL_VEC_FILL2) {	/* Gave +g<fill> to set head fill; odd, but overrides -G (and sets -G true) */
+			current_fill = S.v.fill;	/* Override any -G<fill> with specified head fill */
+			if (S.v.status & PSL_VEC_FILL) Ctrl->G.active = true;
+		}
+		else if (S.v.status & PSL_VEC_FILL) {
+			current_fill = default_fill, Ctrl->G.active = true;	/* Return to default fill */
+		}
+		if (S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head outline pen specified separately */
+			last_headpen = S.v.pen;
+		}
+		else {	/* Reset to default pen */
+			current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
+			if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
+				last_headpen = current_pen;
+				last_headpen.width *= 0.5;
+			}
+		}
+		if (Ctrl->C.active) {	/* Head fill and/or pen will be set via CPT lookup */
+			if (!Ctrl->W.cpt_effect || (Ctrl->W.cpt_effect && (Ctrl->W.pen.cptmode & 2)))
+				Ctrl->G.active = false;	/* Must turn off -G so that color is not reset to Ctrl->G.fill after the -C effect */
+		}
 	}
 	bcol = (S.read_size) ? ex2 : ex1;
 	if (S.symbol == GMT_SYMBOL_BARX && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
@@ -830,11 +849,18 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				}
 
 				if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC) {	/* One of the vector symbols */
-					if (S.v.status & PSL_VEC_OUTLINE2) {
-						current_pen = S.v.pen, Ctrl->W.active = true;	/* Override -W (if set) with specified pen */
+					if (S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head ouline pen specified separately */
+						if (!gmt_M_same_pen (S.v.pen, last_headpen)) {
+							last_headpen = S.v.pen;
+						}
+						can_update_headpen = false;
 					}
-					else {
+					else {	/* Reset to default pen (or possibly not used) */
 						current_pen = default_pen, Ctrl->W.active = true;	/* Return to default pen */
+						if (Ctrl->W.active && !gmt_M_same_pen (current_pen, last_headpen)) {	/* Vector head outline pen default is half that of stem pen */
+							last_headpen = current_pen;
+							last_headpen.width *= 0.5;
+						}
 					}
 					if (S.v.status & PSL_VEC_FILL2) {
 						current_fill = S.v.fill;	/* Override -G<fill> with specified head fill */
@@ -924,6 +950,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				if (Ctrl->W.pen.cptmode & 1) {	/* Change pen color via CPT */
 					gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
 					current_pen = Ctrl->W.pen;
+					if (can_update_headpen && !gmt_M_same_pen (current_pen, last_headpen))	/* Since color may have changed */
+						last_headpen = current_pen;
 				}
 				if ((Ctrl->W.pen.cptmode & 2) == 0 && !Ctrl->G.active)	/* Turn off CPT fill */
 					gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
@@ -936,6 +964,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			data[n].symbol = S.symbol;
 			data[n].f = current_fill;
 			data[n].p = current_pen;
+			data[n].h = last_headpen;
 			data[n].outline = outline_active;
 			data[n].string = NULL;
 			/* Next two are for sorting:
@@ -1081,6 +1110,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						data[n].dim[6] = (double)S.v.status;
 						data[n].dim[7] = (double)S.v.v_kind[0];	data[n].dim[8] = (double)S.v.v_kind[1];
 						data[n].dim[9] = (double)S.v.v_trim[0];	data[n].dim[10] = (double)S.v.v_trim[1];
+						data[n].dim[11] = s * data[n].h.width;	/* Possibly shrunk head pen width */
 					}
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
@@ -1122,6 +1152,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					data[n].dim[7] = (double)S.v.status;	/* Vector tributes */
 					data[n].dim[8] = (double)S.v.v_kind[0];	data[n].dim[9] = (double)S.v.v_kind[1];
 					data[n].dim[10] = (double)S.v.v_trim[0];	data[n].dim[11] = (double)S.v.v_trim[1];
+					data[n].dim[12] = s * data[n].h.width;	/* Possibly shrunk head pen width */
 					break;
 				case PSL_WEDGE:
 					if (gmt_M_is_dnan (in[ex1+S.read_size])) {
@@ -1314,6 +1345,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						gmt_M_str_free (data[i].string);
 						break;
 					case PSL_VECTOR:
+						PSL_defpen (PSL, "PSL_vecheadpen", data[i].h.width, data[i].h.style, data[i].h.offset, data[i].h.rgb);
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_VECTOR);
 						break;
@@ -1338,6 +1370,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						n_warn[warn]++;
 						break;
 					case PSL_MARC:
+						PSL_defpen (PSL, "PSL_vecheadpen", data[i].h.width, data[i].h.style, data[i].h.offset, data[i].h.rgb);
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_MARC);
 						break;

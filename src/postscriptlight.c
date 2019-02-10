@@ -833,6 +833,16 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 	return (k);
 }
 
+static int psl_forcelinewidth (struct PSL_CTRL *PSL, double linewidth) {
+	if (linewidth < 0.0) {
+		PSL_message (PSL, PSL_MSG_NORMAL, "Warning: Selected linewidth is negative (%g), ignored\n", linewidth);
+		return (PSL_BAD_WIDTH);
+	}
+	PSL_command (PSL, "%d W\n", psl_ip (PSL, linewidth));
+	PSL->current.linewidth = linewidth;
+	return (PSL_NO_ERROR);
+}
+
 static void psl_set_real_array (struct PSL_CTRL *PSL, const char *prefix, double *array, int n) {
 	/* These are raw and not scaled */
 	int i;
@@ -2205,6 +2215,7 @@ static int psl_mathrightangle (struct PSL_CTRL *PSL, double x, double y, double 
 	/* Called from psl_matharc for the special case of right angle only; no heads involved */
 	double size, xx[3], yy[3];
 
+	PSL_comment (PSL, "Start of Math right angle\n");
 	PSL_command (PSL, "V %d %d T %lg R\n", psl_ix (PSL, x), psl_iy (PSL, y), param[1]);
 	size = param[0] / M_SQRT2;
 
@@ -2212,6 +2223,7 @@ static int psl_mathrightangle (struct PSL_CTRL *PSL, double x, double y, double 
 	yy[0] = 0.0;	yy[1] = yy[2] = size;
 	PSL_plotline (PSL, xx, yy, 3, PSL_MOVE + PSL_STROKE);
 	PSL_command (PSL, "U \n");
+	PSL_comment (PSL, "End of Math right angle\n");
 	return (PSL_NO_ERROR);
 }
 
@@ -2227,19 +2239,21 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
  	 * param[6] = vector-shape (0-1), param[7] = status bit flags
 	 * param[8] = begin head type;	param[9] = end head type)
 	 * param[10] = begin trim (degrees);	param[11] = end trim (degrees)
+	 * param[12] = head penwidth
 	 * add 4 to param[6] if you want to use a straight angle
 	 * symbol if the opening is 90.  */
 
 	int i, side[2], heads, outline, fill, sign[2] = {+1, -1};
 	unsigned int status, kind[2];
-	double head_arc_length, head_half_width, arc_width, da, da_c, xt, yt, sa, ca, sb, cb, r, r2, xr, yr, xl, yl, xo, yo, shape;
+	double head_arc_length, head_half_width, arc_width, da, da_c, xt, yt, sa, ca, sb, cb, r, r2, xr, yr, xl, yl, xo, yo, shape, h_penwidth;
 	double angle[2], tangle[2], off[2], A, B, bo1, bo2, xi, yi, bi1, bi2, xv, yv, rshift[2] = {0.0, 0.0}, circ_r, xx[2], yy[2], trim[2];
-	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
+	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"}, *end[2] = {"start", "end"};
 
 	status = (unsigned int)lrint (param[7]);
 	if (status & PSL_VEC_MARC90 && fabs (90.0 - fabs (param[2]-param[1])) < 1.0e-8) {	/* Right angle */
 		return (psl_mathrightangle (PSL, x, y, param));
 	}
+	PSL_comment (PSL, "Start of Math arc\n");
 	/* Make any adjustments caused by trim */
 	trim[PSL_BEGIN] = (status & PSL_VEC_OFF_BEGIN) ? param[10] : 0.0;
 	trim[PSL_END]   = (status & PSL_VEC_OFF_END)   ? param[11] : 0.0;
@@ -2252,6 +2266,7 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 	head_half_width = 0.5 * param[4];	  /* Head half-width in inch */
 	arc_width = param[5];			  /* Arc width in inch */
 	shape = param[6];			  /* Vector head shape (0-1) */
+	h_penwidth = param[12];
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
 	fill = ((status & PSL_VEC_FILL) > 0);
@@ -2289,10 +2304,13 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 	}
 	if (heads) {	/* Will draw at least one head */
 		PSL_setfill (PSL, PSL->current.rgb[PSL_IS_FILL], true);	/* Set fill for head(s) */
+		PSL_command (PSL, "PSL_vecheadpen\n");	/* Switch to vector head pen */
+		psl_forcelinewidth (PSL, 2.0 * h_penwidth);	/* Force pen width update; double width due to clipping below */
 	}
 
 	for (i = 0; i < 2; i++) {	/* For both ends */
 		if ((heads & (i+1)) == 0) continue;	/* No arrow head at this angle */
+		PSL_comment (PSL, "Mathangle head at %s\n", end[i]);
 		A = D2R * angle[i];	sa = sin (A);	ca = cos (A);
 		r2 = r + sign[i] * rshift[i];
 		xt = r2 * ca;	yt = r2 * sa;	/* Tip coordinates */
@@ -2359,6 +2377,7 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 	}
 
 	PSL_command (PSL, "U \n");
+	PSL_comment (PSL, "End of Math arc\n");
 	return (PSL_NO_ERROR);
 }
 
@@ -2471,16 +2490,17 @@ void psl_vector_v4 (struct PSL_CTRL *PSL, double x, double y, double param[], do
 
 static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[]) {
 	/* Will make sure that arrow has a finite width in PS coordinates.
-	 * param must hold up to 11 values:
+	 * param must hold up to 12 values:
 	 * param[0] = xtip;		param[1] = ytip;
 	 * param[2] = tailwidth;	param[3] = headlength;	param[4] = headwidth;
 	 * param[5] = headshape;	param[6] = status bit flags
 	 * param[7] = begin head type;	param[8] = end head type
 	 * param[9] = begin trim value;	param[10] = end trim value.
+	 * param[11] = head penwidth
 	 */
 
 	double angle, xtip, ytip, r, s, tailwidth, headlength, headwidth, headshape, length_inch;
-	double xx[6], yy[6], xc[3], yc[3], off[2], yshift[2], trim[2], xp = 0.0;
+	double xx[6], yy[6], xc[3], yc[3], off[2], yshift[2], trim[2], xp = 0.0, h_penwidth;
 	int length, asymmetry[2], n, heads, outline, fill, status;
 	unsigned int kind[2];
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
@@ -2491,6 +2511,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	if (length == 0) return (PSL_NO_ERROR);					/* NULL vector */
 	angle = atan2 (ytip-y, xtip-x) * R2D;					/* Angle vector makes with horizontal, in degrees */
 	status = lrint (param[6]);
+	h_penwidth = param[11];
 	/* Make any adjustments caused by trim */
 	trim[PSL_BEGIN] = (status & PSL_VEC_OFF_BEGIN) ? param[9]  : 0.0;
 	trim[PSL_END]   = (status & PSL_VEC_OFF_END)   ? param[10] : 0.0;
@@ -2517,13 +2538,14 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	if (kind[PSL_END] == PSL_VEC_ARROW_PLAIN) off[PSL_END] = 0.5 * tailwidth *  headlength / headwidth;
 	else if (kind[PSL_END] == PSL_VEC_TAIL) off[PSL_END] = FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - tailwidth;
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
-	PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
+	PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);	/* Inherits color from current pen */
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
 	fill = ((status & PSL_VEC_FILL) > 0);
 	asymmetry[PSL_BEGIN] = -PSL_vec_side (status, 0);	  /* -1 = left-only, +1 = right-only, 0 = normal head at beginning */
 	asymmetry[PSL_END] = PSL_vec_side (status, 1);		  /* -1 = left-only, +1 = right-only, 0 = normal head at beginning */
 	r = sqrt (headlength * headwidth / M_PI);	/* Same circle area as vector head */
 	s = sqrt (headlength * headwidth)/2;		/* Same square 	area as vector head */
+	PSL_comment (PSL, "Start of Cartesian vector\n");
 	PSL_command (PSL, "V %d %d T ", psl_ix (PSL, x), psl_iy (PSL, y));	/* Temporarily set tail point the local origin (0, 0) */
 	if (angle != 0.0) PSL_command (PSL, "%g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
 	/* Make any adjustments caused by trim */
@@ -2543,6 +2565,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	}
 	if (heads == 0) {	/* No heads requested */
 		PSL_command (PSL, "U\n");
+		PSL_comment (PSL, "End of Cartesian vector\n");
 		return (PSL_NO_ERROR);
 	}
 
@@ -2551,6 +2574,10 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	yshift[PSL_END] = 0.5 * asymmetry[PSL_END] * tailwidth;
 
 	if (heads & 1) {	/* Need head at beginning, pointing backwards */
+		double f = (kind[PSL_BEGIN] == PSL_VEC_ARROW_PLAIN) ? 4.0 : 2.0;
+		PSL_comment (PSL, "Cartesian vector head at start\n");
+		PSL_command (PSL, "PSL_vecheadpen\n");		/* Switch to vector head pen */
+		psl_forcelinewidth (PSL, f * h_penwidth);	/* Force pen width update */
 		switch (kind[PSL_BEGIN]) {
 			case PSL_VEC_ARROW:
 				xx[0] = xp; yy[0] = -yshift[PSL_BEGIN];	n = 1;	/* Vector tip */
@@ -2581,11 +2608,10 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				}
 				xc[2] = xp + headlength; yc[2] = headwidth;
 				PSL_command (PSL, "V "); /* Place under gsave/grestore since changing pen */
-				PSL_setlinewidth (PSL, 2.0*tailwidth * PSL_POINTS_PER_INCH);
 				PSL_plotline (PSL, xc, yc, 3, PSL_MOVE);	/* Set up clip path */
 				PSL_command (PSL, "P clip N ");
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Plot arrow head */
-				PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
+				//PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
 				PSL_command (PSL, "U\n");
 				break;
 			case PSL_VEC_TAIL:
@@ -2658,12 +2684,15 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Set up path */
 				break;
 		}
-
 	}
 	PSL_command (PSL, "U\n");
 	if (heads & 2) {	/* Need head at end, pointing forwards */
+		double f = (kind[PSL_END] == PSL_VEC_ARROW_PLAIN) ? 4.0 : 2.0;
+		PSL_comment (PSL, "Cartesian vector head at end\n");
 		PSL_command (PSL, "V %d %d T ", psl_ix (PSL, xtip), psl_iy (PSL, ytip));	/* Temporarily set head point the local origin (0, 0) */
 		if (angle != 0.0) PSL_command (PSL, "%g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
+		PSL_command (PSL, "PSL_vecheadpen\n");		/* Switch to vector head pen */
+		psl_forcelinewidth (PSL, f * h_penwidth);	/* Force pen width update */
 		switch (kind[PSL_END]) {
 			case PSL_VEC_ARROW:
 				xx[0] = xp; yy[0] = yshift[PSL_END];	n = 1;	/* Vector tip */
@@ -2692,11 +2721,10 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				}
 				xc[2] = xp - headlength; yc[2] = headwidth;
 				PSL_command (PSL, "V "); /* Place under gsave/grestore since changing pen */
-				PSL_setlinewidth (PSL, 2.0*tailwidth * PSL_POINTS_PER_INCH);
 				PSL_plotline (PSL, xc, yc, 3, PSL_MOVE);	/* Set up clip path */
 				PSL_command (PSL, "P clip N ");
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Plot arrow head */
-				PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
+				//PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
 				PSL_command (PSL, "U\n");
 				break;
 			case PSL_VEC_TAIL:
@@ -2771,6 +2799,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 		}
 		PSL_command (PSL, "U\n");
 	}
+	PSL_comment (PSL, "End of Cartesian vector\n");
 	return (PSL_NO_ERROR);
 }
 

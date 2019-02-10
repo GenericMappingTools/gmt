@@ -135,7 +135,8 @@
     **-Sm**
         **m**\ ath angle arc, optionally with one or two arrow heads [Default is
         no arrow heads]. The *size* is the length of the vector head. Arc width
-        is set by **-W**. The radius of the arc and its start and stop
+        is set by **-W**, with vector head outlines defaulting to half of arc width.
+        The radius of the arc and its start and stop
         directions (in degrees counter-clockwise from horizontal) must be given
         in columns 3-5. See :ref:`Vec_attributes` for specifying other attributes.
 
@@ -336,8 +337,9 @@
         **v**\ ector. Direction (in degrees counter-clockwise from
         horizontal) and length must be found in columns 3 and 4, and *size*,
         if not specified on the command-line, should be  present in column 5.
-        The *size* is the length of the vector head. Vector width is set by **-W**.
-        See :ref:`Vec_attributes` for specifying other attributes. But also be aware
+        The *size* is the length of the vector head. Vector stem width is set by **-W**,
+	with head outline pen width defaulting to half of stem pen width.
+        See :ref:`Vec_attributes` for specifying this and other attributes. But also be aware
         that using color via a CPT implies a shift of columns 3 and on to accommodate
         the color fill determined by the z-value in new 3rd column (See **-C** option).
 
