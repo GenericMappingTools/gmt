@@ -239,14 +239,15 @@ GMT_LOCAL void shore_prepare_sides (struct GMT_CTRL *GMT, struct GMT_SHORE *c, i
 	}
 }
 
-GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
+GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path, bool reset) {
 	/* Prepends the appropriate directory to the file name
 	 * and returns path if file is readable, NULL otherwise */
 
 	FILE *fp = NULL;
 	char dir[GMT_BUFSIZ];
 	static struct GSHHG_VERSION version = GSHHG_MIN_REQUIRED_VERSION;
-	static int warn_once = true;
+	static bool warn_once = true;
+	bool found = false;
 
 	/* This is the order of checking:
 	 * 1. Check in GMT->session.GSHHGDIR
@@ -274,7 +275,7 @@ GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path)
 			/* remove reference to invalid GMT->session.GSHHGDIR but don't free
 			 * the pointer. this is no leak because the reference still exists
 			 * in the previous copy of the current GMT_CTRL struct. */
-			GMT->session.GSHHGDIR = NULL;
+			if (reset) GMT->session.GSHHGDIR = NULL;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "1. GSHHG: Failure, could not access %s\n", path);
 		}
 	}
@@ -296,6 +297,7 @@ GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path)
 				gmt_chop (dir);		/* Chop off LF or CR/LF */
 				sprintf (path, "%s/%s%s", dir, stem, ".nc");
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: Trying %s\n", path);
+				found = (access (path, F_OK) == 0);	/* File was found */
 				if (access (path, R_OK) == 0) {	/* File can be read */
 L1:
 					if (gshhg_require_min_version (path, version)) {
@@ -310,11 +312,14 @@ L1:
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: Failure, could not access %s\n", path);
 				}
 				else {
-					/* Before giving up, try the old .cdf file names */
-					sprintf(path, "%s/%s%s", dir, stem, ".cdf");
-					if (access(path, R_OK) == 0)	/* Yes, old .cdf version found */
-						goto L1;
-					GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Found %s but cannot read it due to wrong permissions\n", path);
+					if (found)
+						GMT_Report(GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: Found %s but cannot read it due to wrong permissions\n", path);
+					else {	/* Before giving up, try the old .cdf file names */
+						sprintf(path, "%s/%s%s", dir, stem, ".cdf");
+						if (access(path, R_OK) == 0)	/* Yes, old .cdf version found */
+							goto L1;
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "2. GSHHG: Did not find %s nor ithe older *.cdf version\n", path);
+					}
 				}
 			}
 			fclose (fp);
@@ -345,7 +350,7 @@ L1:
 	}
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "4. GSHHG: Failure, could not access any GSHHG files\n");
-	if (warn_once) {
+	if (warn_once && reset) {
 		warn_once = false;
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GSHHG version %d.%d.%d or newer is "
 								"needed to use coastlines with GMT.\n\tGet and install GSHHG from "
@@ -368,7 +373,7 @@ GMT_LOCAL void shore_check (struct GMT_CTRL *GMT, bool ok[5]) {
 		for (j = n_found = 0; j < 3; j++) {
 			/* For each data type... */
 			snprintf (stem, GMT_LEN64, "binned_%s_%c", kind[j], res[i]);
-			if (!shore_getpathname (GMT, stem, path))
+			if (!shore_getpathname (GMT, stem, path, false))
 				/* Failed to find file */
 				continue;
 			n_found++; /* Increment how many found so far for this resolution */
@@ -508,7 +513,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 
 	snprintf (stem, GMT_LEN64, "binned_GSHHS_%c", res);
 
-	if (!shore_getpathname (GMT, stem, path))
+	if (!shore_getpathname (GMT, stem, path, true))
 		return (GMT_GRDIO_FILE_NOT_FOUND); /* Failed to find file */
 
 		/* zap structure (nc_get_att_text does not null-terminate strings!) */
@@ -899,7 +904,7 @@ int gmt_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 	else
 		snprintf (stem, GMT_LEN64, "binned_border_%c", res);
 
-	if (!shore_getpathname (GMT, stem, path))
+	if (!shore_getpathname (GMT, stem, path, true))
 		return (GMT_GRDIO_FILE_NOT_FOUND); /* Failed to find file */
 
 	gmt_M_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));
