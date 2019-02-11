@@ -160,7 +160,7 @@ Synopsis (set mode)
 **gmt subplot set** *row,col* [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
 
 Before you start plotting you must first select the active subplot panel.
-Note: Any **-J** option passed when plotting subplots must not give the width or scale
+Note: Any **-J** option passed when plotting subplots must give ? as scale of width
 since the dimensions of the map are completely determined by the subplot size and your region.
 Specifying map width will result in an error.  For Cartesian plots: If you want the scale
 to apply *equally* to both dimensions then you must specify **-Jx** [The default **-JX** will
