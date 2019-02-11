@@ -134,7 +134,7 @@ Optional Arguments
 **-F**\ [*unit*\ ]
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
     actual projected meters. To specify other units, append the desired
-    unit (see UNITS). Without **-F**, the output (or input, see **-I**)
+    unit (see :ref:`Unit_attributes`). Without **-F**, the output (or input, see **-I**)
     are in the units specified by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` (but see
     **-D**).
 
@@ -142,7 +142,7 @@ Optional Arguments
 
 **-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ [**+**\ \|\ **-**]\ *unit*][**+v**]
     Calculate distances along track *or* to the optional *fixed* point set
-    with **-G**\ *lon0*/*lat0*. Append the distance unit with **+u** (see UNITS for available
+    with **-G**\ *lon0*/*lat0*. Append the distance unit with **+u** (see :ref:`Unit_attributes` for available
     units and how distances are computed), including
     **c** (Cartesian distance using input coordinates) or **C**
     (Cartesian distance using projected coordinates). The **C** unit
@@ -164,7 +164,7 @@ Optional Arguments
     Determine the shortest distance from the input data points to the
     line(s) given in the ASCII multisegment file *line.xy*. The distance
     and the coordinates of the nearest point will be appended to the
-    output as three new columns. Append the distance unit (see UNITS
+    output as three new columns. Append the distance unit (see :ref:`Unit_attributes`
     for available units and how distances are computed),
     including **c** (Cartesian distance using input coordinates) or
     **C** (Cartesian distance using projected coordinates). The **C**

@@ -88,7 +88,7 @@ Optional Arguments
     via plot unit scaling will plot as straight vectors and their lengths are not
     affected by map projection and coordinate locations.
     For geographic data you may alternatively give *scale* in data units per
-    map distance unit (see UNITS). Then, your user units are scaled to map distances in the given unit
+    map distance unit (see :ref:`Unit_attributes`). Then, your user units are scaled to map distances in the given unit
     which are projected to plot dimensions.  These are geo-vectors that follow
     great circle paths and their lengths are affected by the map projection and their
     coordinates.  Finally, use **-Si** if it is simpler to give the reciprocal scale in
