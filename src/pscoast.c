@@ -929,7 +929,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_setfill (GMT, &Ctrl->S.fill, false);
 		if (donut) {
 			/* If donut, then the path consists of two path of np points */
-			PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE + PSL_CLOSE);
+			PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE|PSL_CLOSE);
 			PSL_plotpolygon (PSL, &xtmp[n], &ytmp[n], n);
 		}
 		else
@@ -1060,7 +1060,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 						n = (int)gmt_map_clip_path (GMT, &xtmp, &ytmp, &donut);
 						GMT_Report (API, GMT_MSG_DEBUG, "Doing donut filling for bin %d\n", bin);
 						gmt_setfill (GMT, &fill[p[k].fid], false);
-						PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE + PSL_CLOSE);
+						PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE|PSL_CLOSE);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
 						gmt_M_free (GMT, xtmp);
 						gmt_M_free (GMT, ytmp);

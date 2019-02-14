@@ -160,7 +160,8 @@ enum PSL_enum_move {PSL_DRAW	= 0,
 	PSL_MOVE		= 1,
 	PSL_STROKE		= 2,
 	PSL_REL			= 4,
-	PSL_CLOSE		= 8};
+	PSL_CLOSE		= 8,
+	PSL_CLIP		= 16};
 
 /* PSL codes for text and paragraph justification */
 

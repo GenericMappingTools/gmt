@@ -1615,7 +1615,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						for (i = 0; i < n; i++) gmt_geoz_to_xy (GMT, L->data[GMT_X][i], L->data[GMT_Y][i], L->data[GMT_Z][i], &xp[i], &yp[i]);
 					}
 					if (draw_line) {
-						PSL_plotline (PSL, xp, yp, (int)n, PSL_MOVE + PSL_STROKE);
+						PSL_plotline (PSL, xp, yp, (int)n, PSL_MOVE|PSL_STROKE);
 					}
 				}
 				if (S.symbol == GMT_SYMBOL_FRONT) { /* Must draw fault crossbars */

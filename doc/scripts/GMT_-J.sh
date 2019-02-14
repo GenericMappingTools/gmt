@@ -47,8 +47,8 @@ gmt text -F+f8p+jBL << EOF
 4	0.9	Time
 4	0.75	Polar
 #
-0.05	2.75	C = Conformal
-0.05	2.6	E = Equal Area
+0.075	2.75	C = Conformal
+0.075	2.6	E = Equal Area
 EOF
 
 gmt plot -Wthinner << EOF 
@@ -86,10 +86,10 @@ gmt plot -Wthinner << EOF
 4.2	1.7
 4.2	1.5
 >
-0	2.55
-0.85	2.55
-0.85	2.87
-0	2.87
-0	2.55
+0.025	2.55
+0.875	2.55
+0.875	2.87
+0.025	2.87
+0.025	2.55
 EOF
 gmt end

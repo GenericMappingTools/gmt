@@ -7543,7 +7543,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 
 	np = 0;
 	gmt_geo_to_xy (GMT, lon[0], lat[0], &last_x, &last_y);
-	if (!gmt_map_outside (GMT, lon[0], lat[0])) {
+	if (!gmt_map_outside (GMT, lon[0], lat[0])) {	/* First point is inside the region */
 		GMT->current.plot.x[0] = last_x;	GMT->current.plot.y[0] = last_y;
 		GMT->current.plot.pen[np++] = PSL_MOVE;
 		/* last_inside = true; */
@@ -7562,9 +7562,9 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		if ((nx = map_crossing (GMT, lon[j-1], lat[j-1], lon[j], lat[j], xlon, xlat, xx, yy, sides))) { /* Do nothing if we get crossings*/ }
 		else if (GMT->current.map.is_world)	/* Check global wrapping if 360 range */
 			nx = (*GMT->current.map.wrap_around_check) (GMT, dummy, last_x, last_y, this_x, this_y, xx, yy, sides);
-		if (nx == 1) {	/* inside-outside or outside-inside */
+		if (nx == 1) {	/* inside-outside or outside-inside; set move&clip vs draw flags */
 			GMT->current.plot.x[np] = xx[0];	GMT->current.plot.y[np] = yy[0];
-			GMT->current.plot.pen[np++] = (this_inside) ? PSL_MOVE : PSL_DRAW;
+			GMT->current.plot.pen[np++] = (this_inside) ? PSL_MOVE|PSL_CLIP : PSL_DRAW|PSL_CLIP;
 			if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 		}
 		else if (nx == 2) {	/* outside-inside-outside or (with wrapping) inside-outside-inside */
@@ -7573,10 +7573,10 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 			if (jump) {
 			//if ((this_inside && last_inside) || cartesian || dy > 0.1) {	/* outside-inside-outside or (with wrapping) inside-outside-inside */
 				GMT->current.plot.x[np] = xx[0];	GMT->current.plot.y[np] = yy[0];
-				GMT->current.plot.pen[np++] = (this_inside) ? PSL_DRAW : PSL_MOVE;
+				GMT->current.plot.pen[np++] = (this_inside) ? PSL_DRAW|PSL_CLIP : PSL_MOVE|PSL_CLIP;
 				if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 				GMT->current.plot.x[np] = xx[1];	GMT->current.plot.y[np] = yy[1];
-				GMT->current.plot.pen[np++] = (this_inside) ? PSL_MOVE : PSL_DRAW;
+				GMT->current.plot.pen[np++] = (this_inside) ? PSL_MOVE|PSL_CLIP : PSL_DRAW|PSL_CLIP;
 				if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 			}
 		}
@@ -7592,13 +7592,13 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		}
 		last_x = this_x;	last_y = this_y;	/* last_inside = this_inside; */
 	}
-	if (np) GMT->current.plot.pen[0] = PSL_MOVE;	/* Sanity override: Gotta start off with new start point */
+	if (np) GMT->current.plot.pen[0] |= PSL_MOVE;	/* Sanity override: Gotta start off with new start point */
 
 	/* When a line that starts and ends inside the domain exits and reenters, we end up with two pieces.
 	 * When these are plotted separately the sections are not joined properly and ugly gaps can appear, especially if
 	 * the pen width is large.  Here we try to fix this case since it happens fairly frequently */
 
-	for (j = n_sections = k = 0; j < np; j++) if (GMT->current.plot.pen[j] == PSL_MOVE) {
+	for (j = n_sections = k = 0; j < np; j++) if (GMT->current.plot.pen[j] & PSL_MOVE) {
 		n_sections++;
 		if (n_sections == 2) k = j;	/* Start of 2nd section */
 	}

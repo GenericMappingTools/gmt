@@ -1132,44 +1132,44 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			if (GMT->common.R.oblique) {
 				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[0], GMT->current.proj.z_project.corner_y[0], Ctrl->N.level, &xx[0], &yy[0]);
 				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[1], GMT->current.proj.z_project.corner_y[1], Ctrl->N.level, &xx[1], &yy[1]);
-				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 			else {
 				for (col = 0; col < Z->header->n_columns; col++) gmt_geoz_to_xy (GMT, gmt_M_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[col], &yy[col]);
-				PSL_plotline (PSL, xx, yy, Z->header->n_columns, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+				PSL_plotline (PSL, xx, yy, Z->header->n_columns, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 		}
 		if (!GMT->current.proj.z_project.draw[2]) {	/* Northern side */
 			if (GMT->common.R.oblique) {
 				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[3], GMT->current.proj.z_project.corner_y[3], Ctrl->N.level, &xx[0], &yy[0]);
 				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[2], GMT->current.proj.z_project.corner_y[2], Ctrl->N.level, &xx[1], &yy[1]);
-				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 			else {
 				for (col = 0; col < Z->header->n_columns; col++) gmt_geoz_to_xy (GMT, gmt_M_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[col], &yy[col]);
-				PSL_plotline (PSL, xx, yy, Z->header->n_columns, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+				PSL_plotline (PSL, xx, yy, Z->header->n_columns, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 		}
 		if (!GMT->current.proj.z_project.draw[3]) {	/* Western side */
 			if (GMT->common.R.oblique) {
 				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[0], GMT->current.proj.z_project.corner_y[0], Ctrl->N.level, &xx[0], &yy[0]);
 				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[3], GMT->current.proj.z_project.corner_y[3], Ctrl->N.level, &xx[1], &yy[1]);
-				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 			else {
 				for (row = 0; row < Z->header->n_rows; row++) gmt_geoz_to_xy (GMT, Z->header->wesn[XLO], gmt_M_grd_row_to_y (GMT, row, Z->header), Ctrl->N.level, &xx[row], &yy[row]);
-				PSL_plotline (PSL, xx, yy, Z->header->n_rows, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+				PSL_plotline (PSL, xx, yy, Z->header->n_rows, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 		}
 		if (!GMT->current.proj.z_project.draw[1]) {	/* Eastern side */
 			if (GMT->common.R.oblique) {
 				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[1], GMT->current.proj.z_project.corner_y[1], Ctrl->N.level, &xx[0], &yy[0]);
 				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[2], GMT->current.proj.z_project.corner_y[2], Ctrl->N.level, &xx[1], &yy[1]);
-				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 			else {
 				for (row = 0; row < Z->header->n_rows; row++) gmt_geoz_to_xy (GMT, Z->header->wesn[XHI], gmt_M_grd_row_to_y (GMT, row, Z->header), Ctrl->N.level, &xx[row], &yy[row]);
-				PSL_plotline (PSL, xx, yy, Z->header->n_rows, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+				PSL_plotline (PSL, xx, yy, Z->header->n_rows, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 			}
 		}
 
@@ -1579,7 +1579,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 							gmt_setpen (GMT, &Ctrl->W.pen[0]);
 							pen_set = true;
 						}
-						PSL_plotline (PSL, xx, yy, k, PSL_MOVE + PSL_STROKE);
+						PSL_plotline (PSL, xx, yy, k, PSL_MOVE|PSL_STROKE);
 					}
 					if (pen_set) gmt_setpen (GMT, &Ctrl->W.pen[1]);
 				}
@@ -1919,7 +1919,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 							gmt_setpen (GMT, &Ctrl->W.pen[0]);
 							pen_set = true;
 						}
-						PSL_plotline (PSL, xx, yy, k, PSL_MOVE + PSL_STROKE);
+						PSL_plotline (PSL, xx, yy, k, PSL_MOVE|PSL_STROKE);
 					}
 					if (pen_set) gmt_setpen (GMT, &Ctrl->W.pen[1]);
 					if (Ctrl->Q.outline) {

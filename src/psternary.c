@@ -446,22 +446,22 @@ int GMT_psternary (void *V_API, int mode, void *args) {
 			PSL_plotpolygon (PSL, tri_x, tri_y, 4);
 		else if (n_sides == 2) {	/* Must find the open jaw */
 			if (GMT->current.map.frame.side[S_SIDE] == GMT_AXIS_NONE)
-				PSL_plotline (PSL, &tri_x[1], &tri_y[1], 3, PSL_MOVE + PSL_STROKE);
+				PSL_plotline (PSL, &tri_x[1], &tri_y[1], 3, PSL_MOVE|PSL_STROKE);
 			else if (GMT->current.map.frame.side[W_SIDE] == GMT_AXIS_NONE)
-				PSL_plotline (PSL, tri_x, tri_y, 3, PSL_MOVE + PSL_STROKE);
+				PSL_plotline (PSL, tri_x, tri_y, 3, PSL_MOVE|PSL_STROKE);
 			else {	/* Must order the coordinates for this one */
 				double xx[3], yy[3];
 				xx[0] = tri_x[2]; xx[1] = tri_x[0]; xx[2] = tri_x[1];
 				yy[0] = tri_y[2]; yy[1] = tri_y[0]; yy[2] = tri_y[1];
-				PSL_plotline (PSL, xx, yy, 3, PSL_MOVE + PSL_STROKE);
+				PSL_plotline (PSL, xx, yy, 3, PSL_MOVE|PSL_STROKE);
 			}
 		}
 		else if (GMT->current.map.frame.side[S_SIDE] & GMT_AXIS_DRAW)
-			PSL_plotline (PSL, &tri_x[0], &tri_y[0], 2, PSL_MOVE + PSL_STROKE);
+			PSL_plotline (PSL, &tri_x[0], &tri_y[0], 2, PSL_MOVE|PSL_STROKE);
 		else if (GMT->current.map.frame.side[E_SIDE] & GMT_AXIS_DRAW)
-			PSL_plotline (PSL, &tri_x[1], &tri_y[1], 2, PSL_MOVE + PSL_STROKE);
+			PSL_plotline (PSL, &tri_x[1], &tri_y[1], 2, PSL_MOVE|PSL_STROKE);
 		else if (GMT->current.map.frame.side[W_SIDE] & GMT_AXIS_DRAW)
-			PSL_plotline (PSL, &tri_x[2], &tri_y[2], 2, PSL_MOVE + PSL_STROKE);
+			PSL_plotline (PSL, &tri_x[2], &tri_y[2], 2, PSL_MOVE|PSL_STROKE);
 	}
 
 	L_off = 3.0 * GMT->current.setting.map_label_offset;	T_off = 2.0 * GMT->current.setting.map_title_offset;

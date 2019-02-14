@@ -1223,7 +1223,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			xx[1] = x[ind[k]];	yy[1] = y[ind[k++]];
 			xx[2] = x[ind[k]];	yy[2] = y[ind[k++]];
 
-			PSL_plotline (PSL, xx, yy, 3, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+			PSL_plotline (PSL, xx, yy, 3, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
 		}
 	}
 
