@@ -736,6 +736,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET_HIDDEN *DH = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
+	struct GMT_GRID_HEADER *h = NULL;
 	struct GMT_RECORD *In = NULL, *Out = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -1109,12 +1111,14 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 
 		if (Ctrl->T.active) {	/* Want to find nearest non-NaN if the node we find is NaN */
+			h = GC[0].G->header;
 			Ctrl->T.S = gmt_M_memory (GMT, NULL, 1, struct GMT_ZSEARCH);
 			Ctrl->T.S->C = &GC[0];	/* Since we know there is only one grid */
 			gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST);
-			Ctrl->T.S->x = gmt_grd_coord (GMT, GC[0].G->header, GMT_X);
-			Ctrl->T.S->y = gmt_grd_coord (GMT, GC[0].G->header, GMT_Y);
+			Ctrl->T.S->x = gmt_grd_coord (GMT, h, GMT_X);
+			Ctrl->T.S->y = gmt_grd_coord (GMT, h, GMT_Y);
 			Ctrl->T.S->max_radius = (Ctrl->T.radius == 0.0) ? DBL_MAX : Ctrl->T.radius;
+			HH = GC[0].HH;	/* Since we only need one */
 		}
 
 		do {	/* Keep returning records until we reach EOF */
@@ -1152,14 +1156,26 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				some_outside = true;
 				if (!Ctrl->N.active) continue;
 			}
-			else if (Ctrl->T.active && status == 0) {	/* Found a NaN; need to search for nearest non-NaN node */
-				if (gmt_grdspiral_search (GMT, Ctrl->T.S, in[GMT_X], in[GMT_Y])) {	/* Did find a valid node */
-					uint64_t ij = gmt_M_ijp (GC[0].G->header, Ctrl->T.S->row, Ctrl->T.S->col);
-					value[0] = GC[0].G->data[ij];
+			else if (Ctrl->T.active) {
+				if (status == 0) {	/* Found a NaN; need to search for nearest non-NaN node */
+					if (gmt_grdspiral_search (GMT, Ctrl->T.S, in[GMT_X], in[GMT_Y])) {	/* Did find a valid node */
+						uint64_t ij = gmt_M_ijp (GC[0].G->header, Ctrl->T.S->row, Ctrl->T.S->col);
+						value[0] = GC[0].G->data[ij];
+						if (Ctrl->T.mode == 1) {	/* Replace input coordinate with node coordinate */
+							in[ix] = Ctrl->T.S->x[Ctrl->T.S->col];
+							in[iy] = Ctrl->T.S->y[Ctrl->T.S->row];
+						}
+					}
+				}
+				else if (Ctrl->T.mode) {	/* No NaN, but need to change coordinates or get distance to nearest node */
+					Ctrl->T.S->col = irint ((in[ix] - h->wesn[XLO]) * HH->r_inc[GMT_X] - h->xy_off);
+					Ctrl->T.S->row = irint ((h->wesn[YHI] - in[iy]) * HH->r_inc[GMT_Y] - h->xy_off);
 					if (Ctrl->T.mode == 1) {	/* Replace input coordinate with node coordinate */
 						in[ix] = Ctrl->T.S->x[Ctrl->T.S->col];
 						in[iy] = Ctrl->T.S->y[Ctrl->T.S->row];
 					}
+					else	/* Get distance from original input location to nearest node */
+						Ctrl->T.S->radius = gmt_distance (GMT, in[ix], in[iy], Ctrl->T.S->x[Ctrl->T.S->col], Ctrl->T.S->y[Ctrl->T.S->row]);
 				}
 			}
 
