@@ -142,10 +142,6 @@ _gmt()
                 modopts=( -A -C -D -E -F -G -I -L -M -N -Q -R -S -T -V -Z -h )
                 fileopts=( -C )
                 ;;
-            grd2rgb)
-                modopts=( -C -G -I -L -R -V -W -h -r )
-                fileopts=( -C )
-                ;;
             grd2xyz)
                 modopts=( -: -C -N -R -V -W -Z -b -f -h -o -s )
                 ;;
