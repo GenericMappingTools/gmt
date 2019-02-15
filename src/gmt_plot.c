@@ -4570,6 +4570,8 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 	int way;
 	bool close, stop;
 	double x_cross[2], y_cross[2];
+	double x_ext, y_ext;	/* Coordinates of the external helper point */
+	unsigned int start_pen = PSL_MOVE, end_pen = PSL_STROKE;	/* Default pen code of given line endings */
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	if (n < 2) return;
@@ -4609,8 +4611,6 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 			if (!rect || !stop)	/* No troubled clip points or it is not a rectangular border */
 				PSL_plotline (PSL, &x[i], &y[i], (int)(n - i), PSL_MOVE + PSL_STROKE + close * PSL_CLOSE);
 			else {	/* At least one clip point on a rectangular border will need a line extension  */
-				double x_ext, y_ext;	/* Coordinates of the external helper point */
-				unsigned int start_pen = PSL_MOVE, end_pen = PSL_STROKE;	/* Default pen code of given line endings */
 				if (pen[i] & PSL_CLIP) { 	/* Must add extra point before the first point */
 					get_outside_point_extension (GMT, x[i], y[i], x[i+1], y[i+1], &x_ext, &y_ext);
 					start_pen = PSL_DRAW;	/* Cannot have a move when drawing line after this point */
@@ -4629,9 +4629,14 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 	}
 
 	/* Here we must check for jumps, pen changes etc */
-	/* PW: PS! This section has not yet been adopted to deal with finite pen thickness as the above code (e.g., using get_outside_point_extension) */
 
-	PSL_plotpoint (PSL, x[i], y[i], pen[i]);
+	start_pen = pen[i];
+	if (pen[i] & PSL_CLIP) { 	/* Must add extra extension point before the first point */
+		get_outside_point_extension (GMT, x[i], y[i], x[i+1], y[i+1], &x_ext, &y_ext);
+		start_pen = PSL_DRAW;	/* Cannot have a move when drawing line after this point */
+		PSL_plotpoint (PSL, x_ext, y_ext, PSL_MOVE);	/* Lay down new start point */
+	}
+	PSL_plotpoint (PSL, x[i], y[i], start_pen);
 
 	i++;
 	while (i < n) {
@@ -4652,15 +4657,36 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 			(*GMT->current.map.get_crossings) (GMT, x_cross, y_cross, x[im1], y[im1], x[i], y[i]);
 			if (way == -1) {	/* Add left border point */
 				PSL_plotpoint (PSL, x_cross[0], y_cross[0], PSL_DRAW);	/* Draw to left boundary... */
-				PSL_plotpoint (PSL, x_cross[1], y_cross[1], PSL_MOVE);	/* ...then jump to the right boundary */
+				get_outside_point_extension (GMT, x[im1], y[im1], x_cross[0], y_cross[0], &x_ext, &y_ext);	/* And extend further to get proper clipping */
+				PSL_plotpoint (PSL, x_ext, y_ext, PSL_DRAW);	/* Draw to outside point */
+				get_outside_point_extension (GMT, x_cross[1], y_cross[1], x[i], y[i], &x_ext, &y_ext);	/* Find outside point on the right */
+				PSL_plotpoint (PSL, x_ext, y_ext, PSL_MOVE);	/* Lay down new outside point */
+				PSL_plotpoint (PSL, x_cross[1], y_cross[1], PSL_DRAW);	/* ...then jump to the right boundary */
 			}
 			else {
 				PSL_plotpoint (PSL, x_cross[1], y_cross[1], PSL_DRAW);	/* Draw to right boundary... */
-				PSL_plotpoint (PSL, x_cross[0], y_cross[0], PSL_MOVE);	/* ...then jump to the left boundary */
+				get_outside_point_extension (GMT, x[im1], y[im1], x_cross[1], y_cross[1], &x_ext, &y_ext);	/* And extend further to get proper clipping */
+				PSL_plotpoint (PSL, x_ext, y_ext, PSL_DRAW);	/* Draw to outside point */
+				get_outside_point_extension (GMT, x[i], y[i], x_cross[0], y_cross[0], &x_ext, &y_ext);	/* Find outside point on the left */
+				PSL_plotpoint (PSL, x_ext, y_ext, PSL_MOVE);	/* Lay down new outside point */
+				PSL_plotpoint (PSL, x_cross[0], y_cross[0], PSL_DRAW);	/* ...then jump to the left boundary */
 			}
 			close = false;
 		}
-		PSL_plotpoint (PSL, x[i], y[i], pen[i]);
+		if (pen[i] & PSL_CLIP) { 	/* Must add extra point before/after the next point */
+			if (pen[i] & PSL_MOVE) {	/* Start of new line, so find external point and lay down before clipped point */
+				get_outside_point_extension (GMT, x[i], y[i], x[i+1], y[i+1], &x_ext, &y_ext);
+				PSL_plotpoint (PSL, x_ext, y_ext, PSL_MOVE);	/* Lay down new start point */
+				PSL_plotpoint (PSL, x[i], y[i], PSL_DRAW);
+			}
+			else {	/* End of a line, add extension after placing the last point of the line  */
+				PSL_plotpoint (PSL, x[i], y[i], PSL_DRAW);
+				get_outside_point_extension (GMT, x[i], y[i], x[i-1], y[i-1], &x_ext, &y_ext);
+				PSL_plotpoint (PSL, x_ext, y_ext, PSL_DRAW);	/* Lay down new start point */
+			}
+		}
+		else	/* Just another point in the middle of the line */
+			PSL_plotpoint (PSL, x[i], y[i], pen[i]);
 		i++;
 	}
 	PSL_command (PSL, close ? "P S\n" : "S\n");
