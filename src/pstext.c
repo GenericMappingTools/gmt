@@ -681,7 +681,7 @@ int GMT_text (void *V_API, int mode, void *args) {
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
-		struct GMT_OPTION *options = options = GMT_Create_Options (API, mode, args);
+		struct GMT_OPTION *options = GMT_Create_Options (API, mode, args);
 		bool list_fonts = false;
 		if (API->error) return (API->error);	/* Set or get option list */
 		list_fonts = (GMT_Find_Option (API, 'L', options) != NULL);
