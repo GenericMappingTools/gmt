@@ -2685,7 +2685,7 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
 		trail = orig;
 		while (col < s->var[0] && (word = strsep (&trail, " \t")) != NULL)
 			col++;	/* Advance to the right word */
-		if (*word != '\0')	/* Skip empty strings */
+		if (word && *word != '\0')	/* Skip empty strings */
 			strcpy (text, word);
 		else
 			strcpy (text, GMT->current.io.curr_trailing_text);
