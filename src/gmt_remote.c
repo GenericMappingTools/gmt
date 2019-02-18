@@ -471,7 +471,7 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 				return NULL;
 			}
 			/* Create dataset to hold the perimeter coordinates. Compute how many there are */
-			dim[GMT_ROW] = 2 * (G->header->n_rows + (G->header->n_columns - 2));
+			dim[GMT_ROW] = 2 * ((uint64_t)G->header->n_rows + (G->header->n_columns - 2));
 			if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to create input dataset used for holding perimeter input.\n");
 				return NULL;
