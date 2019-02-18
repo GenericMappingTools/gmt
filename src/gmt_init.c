@@ -11400,7 +11400,7 @@ int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int row, u
 /*! Return information about current panel */
 struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 	/* Only called under modern mode */
-	char file[PATH_MAX] = {""}, line[BUFSIZ] = {""}, tmp[GMT_LEN16] = {""}, *c = NULL;
+	char file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, tmp[GMT_LEN16] = {""}, *c = NULL;
 	bool found = false;
 	unsigned int row, col, first, k;
 	int n;
