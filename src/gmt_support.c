@@ -14927,7 +14927,10 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 			strncpy (the_rest, &arg[n], GMT_LEN256-1);
 		}
 		else {	/* Old syntax with things separated by slashes */
-			if ((n = sscanf (&arg[k], "%[^/]/%s", txt_x, the_rest)) < 1) return NULL;	/* Not so good */
+			if ((n = sscanf (&arg[k], "%[^/]/%s", txt_x, the_rest)) < 1) {
+				gmt_M_str_free (arg);
+				return NULL;	/* Not so good */
+			}
 		}
 		justify = gmt_just_decode (GMT, txt_x, PSL_MC);
 	}
@@ -14949,7 +14952,10 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 			}
 		}
 		else { /* No such modifiers given, so just slashes or nothing follows */
-			if ((n = sscanf (&arg[k], "%[^/]/%[^/]/%s", txt_x, txt_y, the_rest)) < 2) return NULL;	/* Not so good */
+			if ((n = sscanf (&arg[k], "%[^/]/%[^/]/%s", txt_x, txt_y, the_rest)) < 2) {
+				gmt_M_str_free (arg);
+				return NULL;	/* Not so good */
+			}
 		}
 	}
 
