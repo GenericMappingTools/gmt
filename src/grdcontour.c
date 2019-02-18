@@ -994,7 +994,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 
 		if (gmt_M_file_is_memory (optN->arg))	/* Got cpt via a memory object */
-			strncpy (cptfile, optN->argm PATH_MAX-1);
+			strncpy (cptfile, optN->arg, PATH_MAX-1);
 		else if ((L = strlen (optN->arg)) >= 4 && !strncmp (&optN->arg[L-4], ".cpt", 4U)) {	/* Gave a cpt argument, check that it is valid */
 			if (!gmt_M_file_is_cache (optN->arg) && gmt_access (API->GMT, optN->arg, R_OK)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: CPT file %s not found\n", optN->arg);
