@@ -3,7 +3,7 @@
 Description
 -----------
 
-**plot** reads (*x*,\ *y*) pairs from *files* [or standard input] and
+Reads (*x*,\ *y*) pairs from *files* [or standard input] and
 will plot lines, polygons, or symbols
 at those locations on a map. If a symbol is selected and no symbol size
 given, then **plot** will interpret the third column of the input data
@@ -125,7 +125,7 @@ Optional Arguments
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Select color or pattern for filling of symbols or polygons [Default is no fill].
-    Note that **plot** will search for **-G** and **-W** strings in all the
+    Note that this module will search for **-G** and **-W** strings in all the
     segment headers and let any values thus found over-ride the command line settings.
 
 .. _-I:
