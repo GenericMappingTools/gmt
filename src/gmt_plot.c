@@ -4516,17 +4516,44 @@ GMT_LOCAL unsigned int the_side_we_cut (struct GMT_CTRL *GMT, double x, double y
 	return 2;	/* OK, so it was north */
 }
 
+GMT_LOCAL double get_border_angle (struct GMT_CTRL *GMT, double xc, double yc, unsigned int side) {
+	/* Return the angle of the tangent to the map border at the point x, y */
+	double lon, lat, lon0, lat0, lon1, lat1, del, angle, x0, y0, x1, y1;
+	gmt_xy_to_geo (GMT, &lon, &lat, xc, yc);
+	switch (side) {
+		case 0:	case 2:	/* Pick two points along the parallel */
+			if (GMT->common.R.oblique) return (0.0);
+			del = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / 360.0;
+			if (del > 0.1) del = 0.1;
+			lon0 = lon - del;	lon1 = lon + del;	lat0 = lat1 = lat;
+			break;
+		default:	/* Pick two points along the meridian */
+			if (GMT->common.R.oblique) return (90.0);
+			del = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / 180.0;
+			if (del > 0.1) del = 0.1;
+			lat0 = lat - del;	lat1 = lat + del;	lon0 = lon1 = lon;
+			break;
+	}
+	gmt_geo_to_xy (GMT, lon0, lat0, &x0, &y0);
+	gmt_geo_to_xy (GMT, lon1, lat1, &x1, &y1);
+	angle = atan2 (y1 - y0, x1 - x0) * R2D;				/* Get angle of line in direction from "on" point to "in" point */
+	
+	return angle;
+}
+
 GMT_LOCAL void get_outside_point_extension (struct GMT_CTRL *GMT, double x_on, double y_on, double x_in, double y_in, double *x_off, double *y_off) {
 	/* The point (x_on, y_on) is known to sit on a rectangular map border, and the point (x_in, y_in) is either inside or is on another border point.
 	 * A line will be drawn between the two points, but given the finite pen width we must adjust the starting and|or end point so that
 	 * the pen is not clipped, resulting in a gap between the end and the border. */
 	double W = 0.5 * GMT->current.setting.ps_penwidth * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Half the current pen width in inches */
-	double L, angle, dx, dy, tan_angle;
+	double L, angle, dx, dy, tan_angle, border_angle;
 	static char side[] = "SENW";
 	unsigned int k = the_side_we_cut (GMT, x_on, y_on);	/* Which border side is this point on? */
 	dx = x_in - x_on;	dy = y_in - y_on;		/* Get coordinate increments from the "on" point to the "in" point */
 	angle = atan2 (dy, dx) * R2D;				/* Get angle of line in direction from "on" point to "in" point */
 	tan_angle = tand (angle);				/* Compute the tangent of that line direction (-180 to +180)  */
+	border_angle = get_border_angle (GMT, x_on, y_on, k);
+	/* Need to modify the stuff below which assumes border_angle = 0|90 */
 	if (k%2 == 0) {	/* Cutting the S or N border */
 		if (doubleAlmostEqualZero (dx, 0.0))		/* Line is almost vertical; no need to extend it when at a horizontal border */
 			L = 0.0;
@@ -4546,7 +4573,7 @@ GMT_LOCAL void get_outside_point_extension (struct GMT_CTRL *GMT, double x_on, d
 	/* Compute the coordinates of the point at a distance L away from clip point in the direction of angle */
 	*x_off = x_on - L * cosd (angle);
 	*y_off = y_on - L * sind (angle);
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Extend from (%g, %g) to (%g, %g) in direction %g by %g\" on %c side\n", *x_off, *y_off, x_on, y_on, angle, L, side[k]);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Extend from (%g, %g) to (%g, %g) in direction %g by %g\" on %c side with border angle %g\n", *x_off, *y_off, x_on, y_on, angle, L, side[k], border_angle);
 }
 
 GMT_LOCAL bool these_are_duplicates (double x0, double y0, double x1, double y1) {
