@@ -4503,56 +4503,76 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 }
 
 GMT_LOCAL unsigned int the_side_we_cut (struct GMT_CTRL *GMT, double x, double y) {
-	/* We know the (x,y) sits on the map boundary.  We first check if the x value
-	 * equal either the left or right x-coordinate on the border for this y.  If
-	 * that fails then we know it sits on the south or north border and we can
-	 * just pick the closest one. */
-	double width = gmt_half_map_width (GMT, y);	/* Width of map at current latitude (not all projections have straight w/e boundaries */
-	double xx = GMT->current.map.half_width - width;	/* x-coordinate on west boundary for this y */
-	if (doubleAlmostEqualZero (x, xx)) return 3;
-	xx = GMT->current.map.half_width + width;		/* x-coordinate on east boundary for this y */
-	if (doubleAlmostEqualZero (x, xx)) return 1;
-	if (y < GMT->current.map.half_height) return 0;		/* Sits on south border */
-	return 2;	/* OK, so it was north */
+	/* We know the (x,y) sits on the map boundary.  Depending on what map scheme
+	 * we have we use different strategies to find which side the cut is on. */
+	if (gmt_M_is_azimuthal (GMT) && !GMT->current.proj.polar) {	/* Not implemented yet */
+		/* Here the map boundaries are things like circles and there is no "side" */
+		return 9;
+	}
+	else if (GMT->common.R.oblique) {	/* Rectangular box, work with plot units */
+		/* We first check if the x value equal either the left or right x-coordinate
+		 * on the border for this y.  If that fails then we know it sits on the south
+		 * or north border and we can just pick the closest one. */
+		double width = gmt_half_map_width (GMT, y);	/* Width of map at current latitude (not all projections have straight w/e boundaries */
+		double xx = GMT->current.map.half_width - width;	/* x-coordinate on west boundary for this y */
+		if (doubleAlmostEqualZero (x, xx)) return 3;
+		xx = GMT->current.map.half_width + width;		/* x-coordinate on east boundary for this y */
+		if (doubleAlmostEqualZero (x, xx)) return 1;
+		if (y < GMT->current.map.half_height) return 0;		/* Sits on south border */
+		return 2;	/* OK, so it was north */
+	}
+	else {	/* Boundaries are meridians and parallels so just detect which extrema */
+		double lon, lat;
+		gmt_xy_to_geo (GMT, &lon, &lat, x, y);
+		if (doubleAlmostEqualZero (lon, GMT->common.R.wesn[XHI])) return 1;
+		else if (doubleAlmostEqualZero (lon, GMT->common.R.wesn[XLO])) return 3;
+		else if (doubleAlmostEqualZero (lat, GMT->common.R.wesn[YHI])) return 2;
+		else if (doubleAlmostEqualZero (lat, GMT->common.R.wesn[YLO])) return 0;
+		else return 9;	/* SHould not happen but if it does a 9 means "do not extend" */
+	}
 }
 
 GMT_LOCAL double get_border_angle (struct GMT_CTRL *GMT, double xc, double yc, unsigned int side) {
-	/* Return the angle of the tangent to the map border at the point x, y */
+	/* Return the angle of the tangent to the map border at the point x, y.  This does
+	 * not work for circular boundaries yet */
 	double lon, lat, lon0, lat0, lon1, lat1, del, angle, x0, y0, x1, y1;
 	gmt_xy_to_geo (GMT, &lon, &lat, xc, yc);
 	switch (side) {
 		case 0:	case 2:	/* Pick two points along the parallel */
-			if (GMT->common.R.oblique) return (0.0);
+			if (GMT->common.R.oblique) return (0.0);	/* We know it is horizontal */
 			del = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / 360.0;
-			if (del > 0.1) del = 0.1;
+			//if (del > 0.1) del = 0.1;
 			lon0 = lon - del;	lon1 = lon + del;	lat0 = lat1 = lat;
 			break;
 		default:	/* Pick two points along the meridian */
-			if (GMT->common.R.oblique) return (90.0);
+			if (GMT->common.R.oblique) return (90.0);	/* We know it is vertical */
 			del = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / 180.0;
-			if (del > 0.1) del = 0.1;
-			lat0 = lat - del;	lat1 = lat + del;	lon0 = lon1 = lon;
+			//if (del > 0.1) del = 0.1;
+			/* Make sure lats do not exceed the limits */
+			lat0 = MAX (-90.0, lat - del);
+			lat1 = MIN (+90.0, lat + del);	lon0 = lon1 = lon;
 			break;
 	}
 	gmt_geo_to_xy (GMT, lon0, lat0, &x0, &y0);
 	gmt_geo_to_xy (GMT, lon1, lat1, &x1, &y1);
-	angle = atan2 (y1 - y0, x1 - x0) * R2D;				/* Get angle of line in direction from "on" point to "in" point */
+	angle = atan2 (y1 - y0, x1 - x0) * R2D;	/* Get angle of line in direction from "on" point to "in" point */
 	
 	return angle;
 }
 
-GMT_LOCAL void get_outside_point_extension (struct GMT_CTRL *GMT, double x_on, double y_on, double x_in, double y_in, double *x_off, double *y_off) {
+#if 0
+/* Saving this for now in case something blows */
+GMT_LOCAL void get_outside_point_extension_orig (struct GMT_CTRL *GMT, double x_on, double y_on, double x_in, double y_in, double *x_off, double *y_off) {
 	/* The point (x_on, y_on) is known to sit on a rectangular map border, and the point (x_in, y_in) is either inside or is on another border point.
 	 * A line will be drawn between the two points, but given the finite pen width we must adjust the starting and|or end point so that
 	 * the pen is not clipped, resulting in a gap between the end and the border. */
 	double W = 0.5 * GMT->current.setting.ps_penwidth * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Half the current pen width in inches */
-	double L, angle, dx, dy, tan_angle, border_angle;
+	double L, angle, dx, dy, tan_angle;
 	static char side[] = "SENW";
 	unsigned int k = the_side_we_cut (GMT, x_on, y_on);	/* Which border side is this point on? */
 	dx = x_in - x_on;	dy = y_in - y_on;		/* Get coordinate increments from the "on" point to the "in" point */
 	angle = atan2 (dy, dx) * R2D;				/* Get angle of line in direction from "on" point to "in" point */
 	tan_angle = tand (angle);				/* Compute the tangent of that line direction (-180 to +180)  */
-	border_angle = get_border_angle (GMT, x_on, y_on, k);
 	/* Need to modify the stuff below which assumes border_angle = 0|90 */
 	if (k%2 == 0) {	/* Cutting the S or N border */
 		if (doubleAlmostEqualZero (dx, 0.0))		/* Line is almost vertical; no need to extend it when at a horizontal border */
@@ -4573,7 +4593,39 @@ GMT_LOCAL void get_outside_point_extension (struct GMT_CTRL *GMT, double x_on, d
 	/* Compute the coordinates of the point at a distance L away from clip point in the direction of angle */
 	*x_off = x_on - L * cosd (angle);
 	*y_off = y_on - L * sind (angle);
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Extend from (%g, %g) to (%g, %g) in direction %g by %g\" on %c side with border angle %g\n", *x_off, *y_off, x_on, y_on, angle, L, side[k], border_angle);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Extend from (%g, %g) to (%g, %g) in direction %g by %g\" on %c side\n", *x_off, *y_off, x_on, y_on, angle, L, side[k]);
+}
+#endif
+
+GMT_LOCAL void get_outside_point_extension (struct GMT_CTRL *GMT, double x_on, double y_on, double x_in, double y_in, double *x_off, double *y_off) {
+	/* The point (x_on, y_on) is known to sit on a rectangular map border, and the point (x_in, y_in) is either inside or is on another border point.
+	 * A line will be drawn between the two points, but given the finite pen width we must adjust the starting and|or end point so that
+	 * the pen is not clipped, resulting in a gap between the end and the border. */
+	double W = 0.5 * GMT->current.setting.ps_penwidth * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Half the current pen width in inches */
+	double L, angle, dx, dy, tan_angle, border_angle, d_angle;
+	static char side[] = "SENW";
+	unsigned int k = the_side_we_cut (GMT, x_on, y_on);	/* Which border side is this point on? */
+	if (k == 9) {	/* No can do yet */
+		*x_off = x_on; *y_off = y_on; return;
+	}
+	dx = x_in - x_on;	dy = y_in - y_on;		/* Get coordinate increments from the "on" point to the "in" point */
+	angle = atan2 (dy, dx) * R2D;				/* Get angle of line in direction from "on" point to "in" point */
+	tan_angle = tand (angle);				/* Compute the tangent of that line direction (-180 to +180)  */
+	border_angle = get_border_angle (GMT, x_on, y_on, k);
+	d_angle = angle - border_angle;		/* Compute the tangent of that line direction (-180 to +180)  */
+	tan_angle = tand (d_angle);		/* Compute the tangent of that line direction (-180 to +180)  */
+	/* The is_dnan catches bad cases yielding a NaN angle */
+	if (gmt_M_is_dnan (d_angle) || doubleAlmostEqualZero (fabs (d_angle), 90.0))		/* Line is orthogonal to border; no need to extend it when at a horizontal border */
+		L = 0.0;
+	else if (doubleAlmostEqualZero (d_angle, 0.0))	/* Line is parallel to border; would get infinity so truncate to width of map */
+		//L = GMT->current.map.width; /* What we want but still picking up stray horizontal lines, hence L = 0 for now */
+		L = 0.0;
+	else	/* Safe to get width (but still truncate to width of map) */
+		L = MIN (fabs (W / tan_angle), GMT->current.map.half_width);	/* L is positive */
+	/* Compute the coordinates of the point at a distance L away from clip point in the direction of angle */
+	*x_off = x_on - L * cosd (angle);
+	*y_off = y_on - L * sind (angle);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Extend from (%g, %g) to crossing point (%g, %g) in direction %g by %g\" on %c side with border angle %g and delta angle %g\n", *x_off, *y_off, x_on, y_on, angle, L, side[k], border_angle, d_angle);
 }
 
 GMT_LOCAL bool these_are_duplicates (double x0, double y0, double x1, double y1) {
@@ -4633,9 +4685,11 @@ void gmt_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 		if (mode == PSL_BEZIER)
 			PSL_plotcurve (PSL, &x[i], &y[i], (int)(n - i), PSL_MOVE + PSL_STROKE + close * PSL_CLOSE);
 		else {	/* Pay more attention here since exiting lines of finite thickness may need some corrections */
-			bool rect = gmt_M_is_rect_graticule (GMT) || GMT->common.R.oblique;	/* We have a rectangular map boundary */
+			//bool rect = gmt_M_is_rect_graticule (GMT) || GMT->common.R.oblique;	/* We have a rectangular map boundary */
+			bool rect = !(gmt_M_is_azimuthal (GMT) && !GMT->current.proj.polar);
 			for (j = i + 1, stop = false; !stop && j < n; j++) stop = (pen[j] & PSL_CLIP);	/* Look for clipped end points */
 			if (!rect || !stop)	/* No troubled clip points or it is not a rectangular border */
+			//if (!stop)	/* No troubled clip points or it is not a rectangular border */
 				PSL_plotline (PSL, &x[i], &y[i], (int)(n - i), PSL_MOVE + PSL_STROKE + close * PSL_CLOSE);
 			else {	/* At least one clip point on a rectangular border will need a line extension  */
 				if (pen[i] & PSL_CLIP) { 	/* Must add extra point before the first point */

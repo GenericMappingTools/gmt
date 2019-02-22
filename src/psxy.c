@@ -1598,12 +1598,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	else {	/* Line/polygon part */
 		uint64_t seg, seg_out = 0, n_new, n_cols = 2;
 		bool duplicate, resampled;
-		bool rect = gmt_M_is_rect_graticule (GMT) || GMT->common.R.oblique;	/* We have a rectangular map boundary */
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 		struct GMT_DATASET_HIDDEN *DH = NULL;
 		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
-		if (rect) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
+		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 		if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols = 3;
 		else if (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) n_cols = 4;
@@ -1952,7 +1951,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
-		if (rect) gmt_map_clip_off (GMT);
+		gmt_map_clip_off (GMT);
 	}
 
 	if (S.u_set) GMT->current.setting.proj_length_unit = save_u;	/* Reset unit */
