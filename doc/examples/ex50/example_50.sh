@@ -23,7 +23,7 @@ gmt math -T-4/4/0.1 T 3 TPDF = p.txt
 gmt psxy -R -J -O -K p.txt -L+yb -Glightgreen -W1p >> $ps
 # Plot F distribution
 gmt math -T0/6/0.02 T 20 12 FPDF = p.txt
-gmt psxy -R0/6/0/1 -J -O -K p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y0.9i >> $ps
+gmt psxy -R0/6/0/1.02 -J -O -K p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y0.9i >> $ps
 # Plot Laplace distribution
 gmt math -T-4/4/0.1 T LPDF = p.txt
 gmt psxy -R-4/4/0/0.5 -J -O -K p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -Y0.9i >> $ps
@@ -42,35 +42,35 @@ gmt psxy -R0/12/0/0.20 -J -O -K p.txt -L+yb -Glightgreen -W1p -BWS -Bxa1 -Byaf -
 # Right column has all the CDF
 # Plot binomial cumulative distribution
 gmt math -T0/8/1 0.25 8 T BCDF = p.txt
-gmt psxy -R-0.6/8.6/0/1 -J -O -K -Glightred p.txt -Sb0.8u -W0.5p -BES -Bxa1 -Byaf -X3.5i -Y-8.1i >> $ps
+gmt psxy -R-0.6/8.6/0/1.02 -J -O -K -Glightred p.txt -Sb0.8u -W0.5p -BES -Bxa1 -Byaf -X3.5i -Y-8.1i >> $ps
 # Plot Poisson cumulative distribution
 gmt math -T0/8/1 T 2 PCDF = p.txt
-gmt psxy -R-0.6/8.6/0/1 -J -O -K -Glightred p.txt -Sb0.8u -W0.5p -BES -Bxa1 -Byaf -Y0.9i >> $ps
+gmt psxy -R-0.6/8.6/0/1.02 -J -O -K -Glightred p.txt -Sb0.8u -W0.5p -BES -Bxa1 -Byaf -Y0.9i >> $ps
 # Plot normal cumulative distribution
 gmt math -T-4/4/0.1 T ZCDF = p.txt
-gmt psxy -R-4/4/0/1 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
+gmt psxy -R-4/4/0/1.02 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
 # Plot t cumulative distribution
-gmt psxy -R-4/4/0/1 -J -O -K p.txt -W1p,lightgray -BES -Bxa1 -Byaf -Y0.9i >> $ps
+gmt psxy -R-4/4/0/1.02 -J -O -K p.txt -W1p,lightgray -BES -Bxa1 -Byaf -Y0.9i >> $ps
 gmt math -T-4/4/0.1 T 3 TCDF = p.txt
 gmt psxy -R -J -O -K p.txt -L+yb -Glightred -W1p >> $ps
 # Plot F cumulative distribution
 gmt math -T0/6/0.02 T 20 12 FCDF = p.txt
-gmt psxy -R0/6/0/1 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
+gmt psxy -R0/6/0/1.02 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
 # Plot Laplace cumulative distribution
 gmt math -T-4/4/0.1 T LCDF = p.txt
-gmt psxy -R-4/4/0/1  -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
+gmt psxy -R-4/4/0/1.02  -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
 # Plot Exponential cumulative distribution
 gmt math -T0/4/0.1 T 2 ECDF = p.txt
-gmt psxy -R0/4/0/1 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
+gmt psxy -R0/4/0/1.02 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
 # Plot Rayleigh cumulative distribution
 gmt math -T0/6/0.1 T RCDF = p.txt
-gmt psxy -R0/6/0/1 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
+gmt psxy -R0/6/0/1.02 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
 # Plot Weibull cumulative distribution
 gmt math -T0/6/0.1 T 1 1.5 WCDF = p.txt
-gmt psxy -R0/6/0/1 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
+gmt psxy -R0/6/0/1.02 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
 # Plot Chi-squared cumulative distribution
 gmt math -T0/12/0.1 T 4 CHI2CDF = p.txt
-gmt psxy -R0/12/0/1 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
+gmt psxy -R0/12/0/1.02 -J -O -K p.txt -L+yb -Glightred -W1p -BES -Bxa1 -Byaf -Y0.9i >> $ps
 echo "Probability @;lightgreen;Density@;; and @;lightred;Cumulative@;; Distribution Functions" | gmt pstext -R0/6.5/0/1.25 -Jx1i -N -X-3.5i -O -K -F+f18p+cTC >> $ps
 gmt pstext -R0/6.5/0/10 -J -O -F+f14p,Times-Italic+jTC -Dj0.35i -N -Y-8.1i << EOF >> $ps
 3.25 0.9 Binomial P@-8,0.25@-

@@ -10,7 +10,7 @@ cat << EOF > t.txt
 10	20
 EOF
 # Centered symbols using fixed interval, then same with just 1 centered symbol
-gmt psxy -R-2/12/-2/22 -JM1i -O -K -W1p -Gred -Sf0.4i/0.1i+b t.txt -X0.25i -Y0.4i >> $ps
+gmt psxy -R-2/12/-3/23 -JM1i -O -K -W1p -Gred -Sf0.4i/0.1i+b t.txt -X0.25i -Y0.4i >> $ps
 gmt psxy -R -J -O -K -W1p -Gred -Sf0.4i/0.1i+c -X0.5i t.txt >> $ps
 gmt psxy -R -J -O -K -W1p -Gred -Sf0.4i/0.1i+f -X0.5i t.txt >> $ps
 gmt psxy -R -J -O -K -W1p -Sf0.6i/0.3i+S+r -X0.5i t.txt >> $ps
