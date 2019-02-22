@@ -48,7 +48,7 @@ To plot a horizontal color scale (12 cm long; 0.5 cm wide) at the reference poin
    ::
 
     gmt makecpt -T-200/1000/100 -Crainbow > t.cpt
-    gmt colorbar -Ct.cpt -Dx8c/1c+w12c/0.5c+jTC+h -Bxaf+l"topography" -By+lkm > map.ps
+    gmt colorbar -Ct.cpt -Dx8c/1c+w12c/0.5c+jTC+h -Bxaf+l"topography" -By+lkm -pdf map
 
 
 To append a vertical color scale (7.5 cm long; 1.25 cm wide) to the
@@ -58,14 +58,14 @@ provide the reference point and select the left-mid anchor point via
 
    ::
 
-    gmt colorbar -Dx6.5i+jLM/2i+w7.5c/1.25c+e -O -Ccolors.cpt -I -Bx5+lBATHYMETRY -By+lm >> map.ps
+    gmt colorbar -Dx6.5i+jLM/2i+w7.5c/1.25c+e -Ccolors.cpt -I -Bx5+lBATHYMETRY -By+lm
 
 To overlay a horizontal color scale (4 inches long and default width) above a
 Mercator map produced by a previous call, ensuring a 2 cm offset from the map frame, use
 
    ::
 
-    gmt colorbar -DjCT+w4i+o0/2c+h -O -Ccolors.cpt -Baf -R -J >> map.ps
+    gmt colorbar -DjCT+w4i+o0/2c+h -Ccolors.cpt -Baf
 
 .. include:: colorbar_notes.rst_
 
