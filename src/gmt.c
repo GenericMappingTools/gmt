@@ -153,7 +153,7 @@ int main (int argc, char *argv[]) {
 
 			/* Print version and exit */
 			else if (!strncmp (argv[arg_n], "--version", 5U)) {
-				fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
+				fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_GIT_REVISION);
 				status = GMT_NOERROR;
 			}
 
