@@ -131,9 +131,11 @@ EXTERN_MSC OGRCoordinateTransformationH gmt_OGRCoordinateTransformation (struct 
 EXTERN_MSC int gmt_ogrproj (struct GMT_CTRL *GMT, char *pszSrcSRS, char *pszDstSRS, int n_pts,
                             double *xi, double *yi, double *zi, bool insitu, double *xo, double *yo, double *zo);
 EXTERN_MSC void gmt_ogrproj_one_pt (OGRCoordinateTransformationH hCT, double *xi, double *yi, double *zi);
-EXTERN_MSC struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename);
 void gmt_proj4_fwd (struct GMT_CTRL *GMT, double xi, double yi, double *xo, double *yo);
 void gmt_proj4_inv (struct GMT_CTRL *GMT, double *xi, double *yi, double xo, double yo);
+#	if (GDAL_VERSION_NUM >= 2000)
+		EXTERN_MSC struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename);
+#	endif
 #endif
 
 /* gmt_fft.c: */
