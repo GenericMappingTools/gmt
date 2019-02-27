@@ -69,14 +69,14 @@ project (GMT C)
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/"
 	CACHE INTERNAL "Location of our custom CMake modules." FORCE)
 
-# Include configuration options (default options and options overridden by user).
-include (ConfigCMake)
-
 # Find UNIX commands
 include (FindUnixCommands)
 find_program (GIT git)
 find_program (GS gs gswin64)
 find_program (XZ NAMES xz)
+
+# Include configuration options (default options and options overridden by user).
+include (ConfigCMake)
 
 # Global test target
 add_custom_target (check
