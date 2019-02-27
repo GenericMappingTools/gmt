@@ -178,6 +178,7 @@
 #		pragma warning( disable : 4127 )	/* conditional expression is constant */
 #		pragma warning( disable : 4706 )	/* assignment within conditional expression */
 #		pragma warning( disable : 4204 )	/* nonstandard extension used : non-constant aggregate initializer */
+#		pragma warning( disable : 6334 )	/* sizeof operator applied to an expression with an operator might ... */
 		/* Issue warning 4244 (conversion of int64_t to int32_t) only once */
 /*#		pragma warning( once : 4244 4267 ) */
 #	 	if (_MSC_VER <= 1600)

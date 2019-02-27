@@ -24,8 +24,8 @@
  *	"s" is a 2D or 3D structure array with fields:
  *
  *	Name:		A string holding the layer name.
- *	SRSWkt:		A string describing the reference system in the Well Known Format.
- *	SRSProj4:	A string describing the reference system as a Proj4 string
+ *	wkt:		A string describing the reference system in the Well Known Format.
+ *	proj4:		A string describing the reference system as a Proj4 string
  *	BoundingBox:	The 2D dataset BoundingBox as a 2x2 matrix with Xmin/Xmax in first column and Y in second
  *	Type:		Geometry type. E.g. Point, Polygon or LineString
  *	X:		Column vector of doubles with the vector x-coordinates		
@@ -33,7 +33,7 @@
  *	Z:		Same for z when vector is 3D, otherwise empty
  *	Islands:	2 columns matrix with start and ending indexes of the main Ring and its islands (if any).
  *			This only applies to Polygon geometries that have interior rings (islands).
- *	BB_geom:	Not currently assigned (would be the BoundingBox of each individual geometry)
+ *	BBgeom:		Not currently assigned (would be the BoundingBox of each individual geometry)
  *	Att_number:	Number of attributes of a Feature
  *	Att_names:	Names of the attributes of a Feature
  *	Att_values:	Values of the attributes of a Feature as strings
@@ -50,8 +50,8 @@
  * organized as in the following example:
  *
  *	F1 [G11 G12 ...   G1N]
- *	F2 |G21 G22 [] ... []|
- *	F3 |G31 [] ....... []|
+ *	F2 [G21 G22 [] ... []]
+ *	F3 [G31 [] ....... []]
  *	FM [.................]
  *
  * Each Gij element of the matrix is a "s" structure as describe above. The F1 .. FM are the features collection
@@ -78,26 +78,13 @@
 
 #include "gmt_gdalread.h"
 
-struct OGR_FEATURES {
-	int   att_number;
-	char *name, *SRSWkt, *SRSProj4; 
-	char *type;		    /* Geometry type. E.g. Point, Polygon or LineString */
-	const char **att_names;	/* Names of the attributes of a Feature */
-	const char **att_values;	/* Values of the attributes of a Feature as strings */
-	int  *att_types;
-	int  *islands;
-	double BoundingBox[4];
-	double *BB_geom;    /* Not currently assigned (would be the BoundingBox of each individual geometry) */
-	double *x, *y, *z;
-};
-
 GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatureH hFeature,
                        OGRFeatureDefnH hFeatureDefn, OGRGeometryH hGeom, int iLayer, int nFeature, int nLayers,
 					   int nAttribs, int nMaxGeoms, int recursionLevel) {
 
 	int	is3D, i, j, jj, k, np = 0, nPtsBase, nRings = 0, indStruct, nGeoms, do_recursion;
-	int *ptr_i = NULL;
-	double	*x = NULL, *y = NULL, *z = NULL;
+	int   *ptr_i = NULL;
+	double *x = NULL, *y = NULL, *z = NULL;
 	double nan = NAN;
 	OGRwkbGeometryType eType;
 	OGRGeometryH hRing = NULL, hRingIsland = NULL;
@@ -125,9 +112,9 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 			np += (nRings - 1);			/* To account for NaNs separating islands from outer ring */
 		}
 
-		x = malloc(np * sizeof(double));
-		y = malloc(np * sizeof(double));
-		if (is3D) z = malloc(np * sizeof(double));
+		x = gmt_M_memory (GMT, NULL, np, double);
+		y = gmt_M_memory (GMT, NULL, np, double);
+		if (is3D) z = gmt_M_memory (GMT, NULL, np, double);
 	}
 
 	nGeoms = OGR_G_GetGeometryCount(hGeom);
@@ -137,7 +124,7 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 		nGeoms = 1;
 	else if (nGeoms == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Screammm: No Geometries in this Feature\n");
-		return(-1);
+		return -1;
 	}
 
 	for (j = 0; j < nGeoms; j++) {		/* Loop over the number of geometries in this feature */
@@ -146,7 +133,7 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 		indStruct = (jj + nFeature * nMaxGeoms) * nLayers;
 
 		if (eType == wkbPoint || eType == wkbLineString) {
-			for (i = 0; i < np; i++) {
+			for (i = 0; i < np; i++) {	/* Allocation taken care in !do_recursion */
 				x[i] = OGR_G_GetX(hGeom, i);
 				y[i] = OGR_G_GetY(hGeom, i);
 			}
@@ -158,7 +145,8 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 				out[indStruct].type = strdup("Point");
 			else
 				out[indStruct].type = strdup("LineString");
-	
+
+			out[indStruct].np = np;
 		}
 		else if (eType == wkbPolygon) {
 			nPtsBase = OGR_G_GetPointCount(hRing);	/* Need to ask it again because prev value may have eventual islands*/
@@ -172,11 +160,19 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 			}
 
 			if (nRings > 1) {		/* Deal with the Islands */
-				int	c, cz, nPtsRing, *pi;
-				c = nPtsBase;
-				pi = malloc(nRings * 2 * sizeof(int));
+				int	cz, nPtsRing, *pi, nExtra = nRings, c = nPtsBase;
+
+				for (k = 1; k < nRings; k++) {			/* Loop over islands to count extra points needed in realloc */
+					hRingIsland = OGR_G_GetGeometryRef(hGeom, k);
+					nExtra += OGR_G_GetPointCount(hRingIsland);
+				}
+				x = gmt_M_memory (GMT, x, np+nExtra, double);
+				y = gmt_M_memory (GMT, y, np+nExtra, double);
+				if (is3D) z = gmt_M_memory (GMT, z, np+nExtra, double);
+
+				pi = gmt_M_memory(GMT, NULL, nRings * 2, int);
 				pi[0] = 0;
-				for (k = 1; k < nRings; k++) {			/* Loop over islands (interior rings) */
+				for (k = 1; k < nRings; k++) {				/* Loop over islands (interior rings) */
 					hRingIsland = OGR_G_GetGeometryRef(hGeom, k);
 					nPtsRing = OGR_G_GetPointCount(hRingIsland);
 					x[c] = y[c] = nan;
@@ -196,9 +192,13 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 				for (k = 0; k < nRings - 1; k++)
 					pi[nRings + k] = pi[k+1] - 2;
 
-				pi[2*nRings - 1] = c - 1;		/* Last element was not assigned in the loop above */
+				pi[2*nRings - 1] = c - 1;			/* Last element was not assigned in the loop above */
 				out[indStruct].islands = pi;
+				out[indStruct].np = np+nExtra;
 			}
+			else
+				out[indStruct].np = nPtsBase;
+
 			out[indStruct].type = strdup("Polygon");
 		}
 		else if (do_recursion) {
@@ -209,14 +209,14 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 			int	r;
 	
 			hRing = OGR_G_GetGeometryRef(hGeom, j);
-			r = get_data(out, hFeature, hFeatureDefn, hRing, iLayer, nFeature, nLayers, nAttribs, nMaxGeoms, j);
+			r = get_data(GMT, out, hFeature, hFeatureDefn, hRing, iLayer, nFeature, nLayers, nAttribs, nMaxGeoms, j);
 			if (r)
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get data from element of a Multi<something>\n");
 			continue;	/* We are done here */
 		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unforeseen case -> unknown geometry type\n");
-			return(-1);
+			return -1;
 		}
 
 		out[indStruct].x = x;
@@ -227,9 +227,9 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 			/* Only first column element is set with number of attributes (also called fields by ogr) */
 			out[indStruct].att_number = nAttribs;
 
-			out[indStruct].att_names  = (const char **)calloc((size_t)nAttribs, sizeof(char *));
-			out[indStruct].att_values = (const char **)calloc((size_t)nAttribs, sizeof(char *));
-			ptr_i = malloc(nAttribs * sizeof(int));
+			out[indStruct].att_names  = gmt_M_memory(GMT, NULL, nAttribs, char *);
+			out[indStruct].att_values = gmt_M_memory(GMT, NULL, nAttribs, char *);
+			ptr_i = gmt_M_memory(GMT, NULL, nAttribs, int);
 			for (i = 0; i < nAttribs; i++) {
 				hField  = OGR_FD_GetFieldDefn(hFeatureDefn, i);
 				out[indStruct].att_names[i]  = strdup(OGR_Fld_GetNameRef(hField));
@@ -240,16 +240,17 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 		}
 		else
 			out[indStruct].att_number = 0;
+
+		out[0].n_filled++;				/* Incement the filled nodes counter */
 	}
 
-	return(0);
+	return 0;
 }
 
 struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 
-	int	i, j, ind, iLayer, nEmptyLayers, nEmptyGeoms, nAttribs = 0;
+	int	i, ind, iLayer, nEmptyGeoms, nAttribs = 0;
 	int	region = 0, verbose = 1;
-	int	*layers;		/* Array with layer numbers*/
 	int	nLayers;		/* number of layers in dataset */
 	double	x_min, y_min, x_max, y_max;
 
@@ -269,15 +270,18 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 
 	GDALAllRegister();
 
-	hDS = GDALOpenEx(ogr_filename, GDAL_OF_VECTOR, NULL, NULL, NULL );
+	hDS = GDALOpenEx(ogr_filename, GDAL_OF_VECTOR, NULL, NULL, NULL);
 	if (hDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open data source <%s>\n", ogr_filename);
+		GDALDestroyDriverManager();
 		return NULL;
 	}
 
 	nLayers = OGR_DS_GetLayerCount(hDS);	/* Get available layers */
 	if (nLayers < 1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No OGR layers available\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No OGR layers available. Bye.\n");
+		GDALClose(hDS);
+		GDALDestroyDriverManager();
 		return NULL;
 	}
 
@@ -292,38 +296,37 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 		OGR_G_AddGeometryDirectly(poSpatialFilter, hPolygon);
 	}
 
-	layers = (int *)malloc(nLayers * sizeof(int));
-
 	/* Get MAX number of features of all layers */
-	for (i = j = nEmptyLayers = 0, nMaxFeatures = nMaxGeoms = 1; i < nLayers; i++) {
-		hLayer = OGR_DS_GetLayer(hDS, i);
+	nMaxFeatures = nMaxGeoms = 1;
+	for (i = 0; i < nLayers; i++) {
+		hLayer = GDALDatasetGetLayer(hDS, i);
 
 		if (region) OGR_L_SetSpatialFilter(hLayer, poSpatialFilter);
 
 		nMaxFeatures = MAX((int)OGR_L_GetFeatureCount(hLayer, 1), nMaxFeatures);
 		OGR_L_ResetReading(hLayer);
-		hFeature = OGR_L_GetNextFeature(hLayer);
-		if (hFeature == NULL) {		/* Yes, this can happen. Probably on crapy files */
-			nEmptyLayers++;
-			continue;
+
+		while ((hFeature = OGR_L_GetNextFeature(hLayer)) != NULL) { 
+			hGeom = OGR_F_GetGeometryRef(hFeature);
+			eType = wkbFlatten(OGR_G_GetGeometryType(hGeom));
+			if (eType != wkbPolygon)	/* For simple polygons, next would return only the number of interior rings */
+				nMaxGeoms = MAX(OGR_G_GetGeometryCount(hGeom), nMaxGeoms);
+
+			OGR_F_Destroy(hFeature);
 		}
-		layers[j++] = i;		/* Store indices of non-empty layers */
-		hGeom = OGR_F_GetGeometryRef(hFeature);
-		hFeatureDefn = OGR_L_GetLayerDefn(hLayer);
-		eType = wkbFlatten(OGR_G_GetGeometryType(hGeom));
-		if (eType != wkbPolygon)	/* For simple polygons, next would return only the number of interior rings */
-			nMaxGeoms = MAX(OGR_G_GetGeometryCount(hGeom), nMaxGeoms);
-
-		OGR_F_Destroy(hFeature);
 	}
-	if (nEmptyLayers) nLayers -= nEmptyLayers;
 
-	out = gmt_M_memory (GMT, NULL, (size_t)nMaxGeoms * nMaxFeatures * nLayers, struct OGR_FEATURES *); 
+	out = gmt_M_memory (GMT, NULL, (size_t)nMaxGeoms * nMaxFeatures * nLayers, struct OGR_FEATURES);
+
+	/* Store the array dims only in first array element */
+	out[0].n_rows   = nMaxFeatures;
+	out[0].n_cols   = nMaxGeoms;
+	out[0].n_layers = nLayers;
 
 	for (iLayer = nFeature = nEmptyGeoms = 0; iLayer < nLayers; iLayer++) {
 
-		ind = nMaxGeoms * nMaxFeatures * iLayer;	/* n_columns * n_rows * n_layers */
-		hLayer = OGR_DS_GetLayer(hDS, layers[iLayer]);
+		ind = nMaxGeoms * nMaxFeatures * iLayer;	/* n_columns * n_rows * iLayer */
+		hLayer = GDALDatasetGetLayer(hDS, iLayer);
 		OGR_L_ResetReading(hLayer);
 		hFeatureDefn = OGR_L_GetLayerDefn(hLayer);
 
@@ -332,9 +335,9 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 		if (hSRS) {				/* Get Layer's SRS. */
 			char *pszWKT = NULL, *pszProj4 = NULL;
 			if (OSRExportToProj4(hSRS, &pszProj4) == OGRERR_NONE)
-				out[ind].SRSProj4 = strdup(pszProj4);
+				out[ind].proj4 = strdup(pszProj4);
 			if (OSRExportToPrettyWkt(hSRS, &pszWKT, 1) == OGRERR_NONE)
-				out[ind].SRSWkt = strdup(pszWKT);
+				out[ind].wkt = strdup(pszWKT);
 		}
 
 		/* Get this layer BoundingBox as two column vectors of X and Y respectively. */
@@ -352,9 +355,8 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Importing %lld features from layer <%s>\n",
 		            OGR_L_GetFeatureCount(hLayer, 1), out[ind].name);
 
-		while ((hFeature = OGR_L_GetNextFeature(hLayer)) != NULL) {
+		while ((hFeature = OGR_L_GetNextFeature(hLayer)) != NULL) {		/* Loop over number of features of this layer */
 			hGeom = OGR_F_GetGeometryRef(hFeature);
-			eType = wkbFlatten(OGR_G_GetGeometryType(hGeom));
 			if (hGeom != NULL)
 				get_data(GMT, out, hFeature, hFeatureDefn, hGeom, iLayer, nFeature, nLayers, nAttribs, nMaxGeoms, 0);
 			else
@@ -363,12 +365,9 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 
 			OGR_F_Destroy(hFeature);
 		}
-
-		if (nEmptyGeoms > 0)
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "There were %d empty geometries in this layer\n", nEmptyGeoms);
 	}
 
-	free(layers);
 	GDALClose(hDS);
+	GDALDestroyDriverManager();
 	return out;
 }

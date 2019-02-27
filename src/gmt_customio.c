@@ -1723,6 +1723,7 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 #include "gmt_gdalread.c"
 #include "gmt_gdalwrite.c"
 #include "gmt_ogrproj.c"		/* For coordinate conversions but can "enter" here too */
+#include "gmt_ogrread.c"
 /* GDAL support */
 /*-----------------------------------------------------------
  * Format :	gd
