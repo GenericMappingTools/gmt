@@ -21,7 +21,7 @@
 #   1) "ConfigDefault.cmake" - is version controlled and used to add new default
 #      variables and set defaults for everyone.
 #   2) "ConfigUser.cmake" - is not version controlled (currently listed in
-#      svn:ignore property) and used to override defaults on a per-user basis.
+#      .gitignore) and used to override defaults on a per-user basis.
 #
 # NOTE: If you want to change CMake behaviour just for yourself then copy
 #      "ConfigUserTemplate.cmake" to "ConfigUser.cmake" and then edit

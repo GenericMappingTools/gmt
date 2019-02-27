@@ -6,7 +6,7 @@
 #   1) "ConfigDefault.cmake" - is version controlled and used to add new default
 #      variables and set defaults for everyone.
 #   2) "ConfigUser.cmake" in the source tree - is not version controlled
-#      (currently listed in svn:ignore property) and used to override defaults on
+#      (currently listed in .gitignore) and used to override defaults on
 #      a per-user basis.
 #   3) "ConfigUser.cmake" in the build tree - is used to override
 #      "ConfigUser.cmake" in the source tree.
