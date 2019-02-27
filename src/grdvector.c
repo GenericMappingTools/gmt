@@ -341,7 +341,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL};
 	struct GMT_PALETTE *P = NULL;
-	struct GMT_PEN last_headpen;
+	struct GMT_PEN last_headpen = NULL;
 	struct GRDVECTOR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
