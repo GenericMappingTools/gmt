@@ -3,4 +3,4 @@
 # files.  In case of a version mismatch the directory will silently be
 # ignored.
 #
-@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@
+@GMT_PACKAGE_VERSION_WITH_GIT_REVISION@
