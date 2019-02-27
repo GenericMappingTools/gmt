@@ -77,6 +77,7 @@
  */
 
 #include "gmt_gdalread.h"
+#include <ogr_api.h>
 
 GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatureH hFeature,
                        OGRFeatureDefnH hFeatureDefn, OGRGeometryH hGeom, int iLayer, int nFeature, int nLayers,
