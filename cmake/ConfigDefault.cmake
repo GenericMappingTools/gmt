@@ -114,12 +114,6 @@ if (NOT DEFINED GMT_RELEASE_PREFIX)
 	set (GMT_RELEASE_PREFIX ${GMT_BINARY_DIR}/gmt-${GMT_PACKAGE_VERSION})
 endif (NOT DEFINED GMT_RELEASE_PREFIX)
 
-# Default location of optional third-party files used by test suite
-# available from svn://gmtserver.soest.hawaii.edu/gmt-data
-if (NOT DEFINED GMT_TEST_DATA)
-	set (GMT_TEST_DATA ${GMT_SOURCE_DIR}/test/data)
-endif (NOT DEFINED GMT_TEST_DATA)
-
 # Default location of remote data server
 if (NOT DEFINED GMT_DATA_URL)
 	set (GMT_DATA_URL "http://www.soest.hawaii.edu/gmt/data")
