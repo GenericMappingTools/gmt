@@ -68,6 +68,8 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.mc_rip)
 # elif defined( __arm__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.arm_pc)
+# elif defined(__ppc__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.mc_srr0)
 # else
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.mc_eip)
 # endif

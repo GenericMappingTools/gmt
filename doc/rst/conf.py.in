@@ -52,7 +52,7 @@ copyright = u' '.join(['@GMT_VERSION_YEAR@,', gmt_team])
 # The short X.Y version.
 version = '@GMT_PACKAGE_VERSION@'
 # The full version, including alpha/beta/rc tags.
-release = '@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@'
+release = '@GMT_PACKAGE_VERSION_WITH_GIT_REVISION@'
 if tags.has('tex'):
   release = release.replace("_", "\\_")
 

@@ -199,4 +199,21 @@ struct GMT_GDALREAD_OUT_CTRL {
 	struct GDAL_BAND_FNAMES *band_field_names;
 };
 
+struct OGR_FEATURES {
+	int     n_rows, n_cols, n_layers;	/* n_rows, n_column, n_layers of the struct array */
+	int     n_filled;   /* Number of actually filled elements in the matrix */
+	int     is3D;       /* True when geometries have a z component */
+	unsigned int np;    /* Number of data points in this feature */
+	int     att_number; /* Feature's number of attributes */
+	char   *name, *wkt, *proj4; 
+	char   *type;	    /* Geometry type. E.g. Point, Polygon or LineString */
+	char  **att_names;	/* Names of the attributes of a Feature */
+	char  **att_values;	/* Values of the attributes of a Feature as strings */
+	int    *att_types;
+	int    *islands;
+	double  BoundingBox[6];
+	double *BBgeom;     /* Not currently assigned (would be the BoundingBox of each individual geometry) */
+	double *x, *y, *z;
+};
+
 #endif  /* GMT_GDALREAD_H */

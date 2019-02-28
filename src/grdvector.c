@@ -365,6 +365,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	
 	/*---------------------------- This is the grdvector main code ----------------------------*/
 
+	gmt_M_memset (&last_headpen, 1, struct GMT_PEN);		/* Initilaize members to zero */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grids\n");
 	d_col = d_row = 1;
 	col_0 = row_0 = 0;

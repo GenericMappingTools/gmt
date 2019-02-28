@@ -21,7 +21,7 @@
 #   1) "ConfigDefault.cmake" - is version controlled and used to add new default
 #      variables and set defaults for everyone.
 #   2) "ConfigUser.cmake" - is not version controlled (currently listed in
-#      svn:ignore property) and used to override defaults on a per-user basis.
+#      .gitignore) and used to override defaults on a per-user basis.
 #
 # NOTE: If you want to change CMake behaviour just for yourself then copy
 #      "ConfigUserTemplate.cmake" to "ConfigUser.cmake" and then edit
@@ -43,10 +43,10 @@ set (GMT_PACKAGE_VERSION_MAJOR 6)
 set (GMT_PACKAGE_VERSION_MINOR 0)
 set (GMT_PACKAGE_VERSION_PATCH 0)
 
-# The subversion revision of the GMT source code.
+# The git commit hash of the GMT source code.
 # This is manually set when making GMT *public* releases.
 # However, when making internal releases or just an ordinary developer build, leave it
-# empty; if it is empty, the revision number is automatically populated for you on build.
+# empty; if it is empty, the commit hash is automatically populated for you on build.
 #set (GMT_SOURCE_CODE_CONTROL_VERSION_STRING "18461")
 set (GMT_SOURCE_CODE_CONTROL_VERSION_STRING "")
 
@@ -113,12 +113,6 @@ endif (NOT DEFINED GMT_INSTALL_EXTERNAL_MAN)
 if (NOT DEFINED GMT_RELEASE_PREFIX)
 	set (GMT_RELEASE_PREFIX ${GMT_BINARY_DIR}/gmt-${GMT_PACKAGE_VERSION})
 endif (NOT DEFINED GMT_RELEASE_PREFIX)
-
-# Default location of optional third-party files used by test suite
-# available from svn://gmtserver.soest.hawaii.edu/gmt-data
-if (NOT DEFINED GMT_TEST_DATA)
-	set (GMT_TEST_DATA ${GMT_SOURCE_DIR}/test/data)
-endif (NOT DEFINED GMT_TEST_DATA)
 
 # Default location of remote data server
 if (NOT DEFINED GMT_DATA_URL)
