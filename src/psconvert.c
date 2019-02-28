@@ -2012,7 +2012,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				continue;
 			}
 			else if (!found_proj && !strncmp (&line[2], "PROJ", 4)) {	/* Search for the PROJ tag in the ps file */
-				char *ptmp = NULL, xx1[64], xx2[64], yy1[64], yy2[64];
+				char *ptmp = NULL, xx1[128], xx2[128], yy1[128], yy2[128];
 				sscanf (&line[8], "%s %s %s %s %s %s %s %s %s",proj4_name,xx1,xx2,yy1,yy2,c1,c2,c3,c4);
 				west = atof (c1);		east = atof (c2);
 				south = atof (c3);		north = atof (c4);
