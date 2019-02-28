@@ -7925,7 +7925,8 @@ Figure :ref:`Custom symbols <Custom_symbols>`)
 
 You may find it convenient to examine some of these and use them as a
 starting point for your own design; they can be found in GMT's
-share/custom directory.
+share/custom directory.  In addition to the ones listed in Figure :ref:`Custom symbols <Custom_symbols>`
+you can use the symbol QR to place the GMT QR Code that links to www.generic-mapping-tools.org.
 
 The macro language
 ------------------
