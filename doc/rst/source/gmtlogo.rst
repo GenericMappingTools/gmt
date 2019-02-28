@@ -45,9 +45,14 @@ scaled up to be 3 inches wide and offset by 0.1 inches from the border, try
 
     gmt logo -O -K -R -J -DjTR+o0.1i/0.1i+w3i >> bigmap.ps
 
+Notes
+-----
+
+To instead plot the GMT QR code that links to www.generic-mapping-tools.org, just plot the
+custom symbol QR in :doc:`psxy`.
 
 See Also
 --------
 
 :doc:`gmt`, :doc:`pslegend`,
-:doc:`psimage`, :doc:`psscale`
+:doc:`psimage`, :doc:`psscale`, :doc:`psxy`
