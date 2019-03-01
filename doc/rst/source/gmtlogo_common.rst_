@@ -55,6 +55,14 @@ Optional Arguments
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
+.. _-S:
+
+**-S**\ [\ **l**\ \|\ **n**\ \|\ **u**\ ]
+    Control what is written beneath the map portion of the logo.
+    Append **l** (or skip **-S** entirely) to plot the text label "The Generic Mapping Tools"
+    beneath the logo.  Append **n** to skip the label placement, and append
+    **u** to place the URL to the GMT site instead [plot the label].
+
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
