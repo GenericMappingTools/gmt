@@ -207,9 +207,8 @@ The success of GMT is to a large degree due to the input of the user
 community. In fact, most of the capabilities and options in the
 GMT modules originated as user requests. We would like to hear from
 you should you have any suggestions for future enhancements and
-modification. Please send your comments to the GMT help list or create
-an issue in the bug tracker
-(see `<http://gmt.soest.hawaii.edu/projects/gmt/issues/>`_).
+modification. Please submit a bug report or a feature request
+on GitHub (see `<https://github.com/GenericMappingTools/gmt/issues>`_).
 
 .. _command-line-completion:
 
@@ -2301,7 +2300,7 @@ progress of the operation you are running. Verbose reports things such
 as counts of points read, names of data files processed, convergence of
 iterative solutions, and the like. Since these messages are written to
 *stderr*, the verbose talk remains separate from your data output. You
-may optionally choose among five models of *verbosity*; each mode adds
+may optionally choose among six models of *verbosity*; each mode adds
 more messages with an increasing level of details. The modes are
 
   **q** Complete silence, not even fatal error messages.
@@ -2433,7 +2432,7 @@ A pen in GMT has three attributes: *width*, *color*, and
 *style*. Most programs will accept pen attributes in the form of an
 option argument, with commas separating the given attributes, e.g.,
 
-**-W**\ [*width*\ [**c\ \|\ i\ \|\ p**]],[*color*],[\ *style*\ [**c\ \|\ i\ \|\ p\ \|**]]
+**-W**\ [*width*\ [**c\ \|\ i\ \|\ p**]],[*color*],[\ *style*\ [**c\ \|\ i\ \|\ p**]]
 
     *Width* is by default measured in points (1/72 of an inch). Append
     **c**, **i**, or **p** to specify pen width in cm, inch, or points,
@@ -2624,7 +2623,7 @@ symbols. The fill specification may take two forms:
 
 **-G**\ *fill*
 
-**-Gp**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**+r**\ *dpi*]
+**-GP|p**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**+r**\ *dpi*]
 
 fill:
     In the first case we may specify a *gray* shade (0--255), RGB color
@@ -2706,12 +2705,15 @@ optional. The *size* is the font size (usually in points) but **c**,
 **i** or **p** can be added to indicate a specific unit. The *fonttype*
 is the name (case sensitive!) of the font or its equivalent numerical ID
 (e.g., Helvetica-Bold or 1). *fill* specifies the gray shade, color or
-pattern of the text (see section `Specifying area fill attributes`_ above). Optionally, you may
-append **=**\ *pen* to the *fill* value in order to draw the text
-outline with the specified *pen*; if used you may optionally skip the
-filling of the text by setting *fill* to **-**. If any of the attributes
-is omitted their default or previous setting will be retained. See
-Chapter `PostScript fonts used by GMT`_ for a list of all fonts recognized by GMT.
+pattern of the text (see section `Specifying area fill attributes`_ above).
+Optionally, you may append **=**\ *pen* to the *fill* value in order to draw a text
+outline. If you want to avoid that the outline partially obscures the text, append
+append **=~**\ *pen* instead; in that case only half the linewidth is plotted
+on the outside of the font only.  If an outline is requested, you may optionally
+skip the text *fill* by setting it to **-**, in which case the full pen width
+is always used. If any of the font attributes is omitted their default or
+previous setting will be retained. See Chapter `PostScript fonts used by GMT`_
+for a list of all fonts recognized by GMT.
 
 Stroke, Fill and Font Transparency
 ----------------------------------
@@ -7146,7 +7148,7 @@ green, and blue. For example, you can use ``#79ff00`` for chartreuse,
    :width: 700 px
    :align: center
 
-   The 555 unique color names that can be used in GMT. Lower, upper, or mixed cases, as well as
+   The 663 unique color names that can be used in GMT. Lower, upper, or mixed cases, as well as
    the british spelling of grey are allowed. A4, Letter, and Tabloid sized versions of this RGB chart can be
    found in the GMT documentation directory.
 
