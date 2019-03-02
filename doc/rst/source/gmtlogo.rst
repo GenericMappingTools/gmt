@@ -18,6 +18,7 @@ Synopsis
 [ |-J|\ *parameters* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ]
 [ |-O| ] [ |-P| ]
 [ |SYN_OPT-Rz| ]
+[ |-S|\ [\ **l**\ \|\ **n**\ \|\ **u**\ ] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
