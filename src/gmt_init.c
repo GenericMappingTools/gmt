@@ -1346,7 +1346,7 @@ GMT_LOCAL int gmtinit_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 
 	/* print version and exit */
 	if (strcmp (text, "version") == 0) {
-		snprintf (message, GMT_LEN128, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
+		snprintf (message, GMT_LEN128, "%s\n", GMT_PACKAGE_VERSION_WITH_GIT_REVISION);
 		GMT->parent->print_func (stdout, message);
 		/* cannot call gmt_M_free_options() from here, so we are leaking on exit.
 		 * struct GMTAPI_CTRL *G = GMT->parent;
@@ -11527,7 +11527,7 @@ int gmt_set_current_panel (struct GMTAPI_CTRL *API, int fig, unsigned int row, u
 /*! Return information about current panel */
 struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 	/* Only called under modern mode */
-	char file[PATH_MAX] = {""}, line[BUFSIZ] = {""}, tmp[GMT_LEN16] = {""}, *c = NULL;
+	char file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, tmp[GMT_LEN16] = {""}, *c = NULL;
 	bool found = false;
 	unsigned int row, col, first, k;
 	int n;
@@ -12376,12 +12376,19 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if ((opt = GMT_Make_Option (API, 'Y', arg)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				if (opt_J && !(strchr ("xX", opt_J->arg[0]) && (strchr (opt_J->arg, 'l') || strchr (opt_J->arg, 'p') || strchr (opt_J->arg, '/')))) {
+					char *c = NULL;
 					/* Gave -J that passed the log/power/special check, must append /1 as dummy scale/width */
 					if (P->dir[GMT_X] == -1 || P->dir[GMT_Y] == -1)	/* Nonstandard Cartesian directions */
 						sprintf (scl, "%gi/%gi",  P->dir[GMT_X]*P->w, P->dir[GMT_Y]*P->h);
 					else	/* Just append dummy width */
 						sprintf (scl, "%gi",  P->w);
-					if (strlen (opt_J->arg) == 1  || !strchr (opt_J->arg, '/'))
+					if ((c = strchr (opt_J->arg, '?'))) {	/* Scale or width was marked with ? */
+						c[0] = '\0';
+						sprintf (arg, "%s%s", opt_J->arg, scl);	/* Replace the ? with actual width */
+						strcat (arg, &c[1]);	/* Append the rest of the arguments */
+						c[0] = '?';
+					}
+					else if (strlen (opt_J->arg) == 1  || !strchr (opt_J->arg, '/'))	/* No markings, assume we just append */
 						sprintf (arg, "%s%s", opt_J->arg, scl);	/* Append the dummy width as only argument */
 					else
 						sprintf (arg, "%s/%s", opt_J->arg, scl);	/* Append the dummy width to other arguments */

@@ -611,6 +611,7 @@ void plot_cycle (struct GMT_CTRL *GMT, double x, double y, double width) {
 	vdim[9] = (double)PSL_VEC_ARROW;
 	gmt_setfill (GMT, &black, false);
 	gmt_setpen (GMT, &pen);
+	PSL_defpen (GMT->PSL, "PSL_vecheadpen", 0.0, "", 0, black.rgb);
 	PSL_plotsymbol (GMT->PSL, x, y, vdim, PSL_MARC);
 	vdim[1] = 230.0;	vdim[2] = 390.0;
 	PSL_plotsymbol (GMT->PSL, x, y, vdim, PSL_MARC);

@@ -6,7 +6,7 @@
 #   1) "ConfigDefault.cmake" - is version controlled and used to add new default
 #      variables and set defaults for everyone.
 #   2) "ConfigUser.cmake" in the source tree - is not version controlled
-#      (currently listed in svn:ignore property) and used to override defaults on
+#      (currently listed in .gitignore) and used to override defaults on
 #      a per-user basis.
 #   3) "ConfigUser.cmake" in the build tree - is used to override
 #      "ConfigUser.cmake" in the source tree.
@@ -37,44 +37,35 @@ if (NOT CMAKE_BUILD_TYPE)
 	set (CMAKE_BUILD_TYPE Release)
 endif (NOT CMAKE_BUILD_TYPE)
 
-# Here we change it to add the SVN revision number for non-public releases - see Package.cmake for
-# why this has to be done here.
-set (GMT_PACKAGE_VERSION_WITH_SVN_REVISION ${GMT_PACKAGE_VERSION})
-# Add the Subversion version number to the package filename if this is a non-public release.
+# Here we change it to add the git commit hash for non-public releases
+set (GMT_PACKAGE_VERSION_WITH_GIT_REVISION ${GMT_PACKAGE_VERSION})
+# Add the git commit hash to the package version if this is a non-public release.
 # A non-public release has an empty 'GMT_SOURCE_CODE_CONTROL_VERSION_STRING' variable in 'ConfigDefault.cmake'.
 #set (HAVE_GIT_VERSION)
 if (NOT GMT_SOURCE_CODE_CONTROL_VERSION_STRING)
 	# Get the location, inside the staging area location, to copy the application bundle to.
 	execute_process (
 		COMMAND ${GIT} describe --abbrev=7 --always --dirty
-        WORKING_DIRECTORY  ${GMT_SOURCE_DIR}
-		RESULT_VARIABLE SVN_VERSION_RESULT
-		OUTPUT_VARIABLE SVN_VERSION_OUTPUT
+		WORKING_DIRECTORY ${GMT_SOURCE_DIR}
+		RESULT_VARIABLE GIT_RETURN_CODE
+		OUTPUT_VARIABLE GIT_COMMIT_HASH
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	if (SVN_VERSION_RESULT)
-		message (STATUS "Unable to determine svn version number for non-public release - ignoring.")
-	else (SVN_VERSION_RESULT)
-		if (SVN_VERSION_OUTPUT MATCHES "Unversioned")
-			message (STATUS "Unversioned source tree, non-public release.")
-		else (SVN_VERSION_OUTPUT MATCHES "Unversioned")
-			# The 'svnversion' command can output a range of revisions with a colon
-			# separator - but this causes problems with filenames so we'll remove the
-			# colon and the end revision after it.
-			string (REGEX REPLACE ":.*$" "" SVN_VERSION ${SVN_VERSION_OUTPUT})
-			if (NOT SVN_VERSION STREQUAL exported)
+		if (GIT_RETURN_CODE)
+			message (STATUS "Unable to determine git commit hash for non-public release - ignoring.")
+		else (GIT_RETURN_CODE)
+			if (GIT_COMMIT_HASH)
 				# Set the updated package version.
-				set (GMT_PACKAGE_VERSION_WITH_SVN_REVISION "${GMT_PACKAGE_VERSION}_${SVN_VERSION}")
+				set (GMT_PACKAGE_VERSION_WITH_GIT_REVISION "${GMT_PACKAGE_VERSION}_${GIT_COMMIT_HASH}")
 				set (HAVE_GIT_VERSION TRUE)
-			endif (NOT SVN_VERSION STREQUAL exported)
-		endif (SVN_VERSION_OUTPUT MATCHES "Unversioned")
-	endif (SVN_VERSION_RESULT)
+			endif (GIT_COMMIT_HASH)
+		endif (GIT_RETURN_CODE)
 endif (NOT GMT_SOURCE_CODE_CONTROL_VERSION_STRING)
 
 # The current GMT version.
-set (GMT_VERSION_STRING "${GMT_PACKAGE_NAME} ${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
+set (GMT_VERSION_STRING "${GMT_PACKAGE_NAME} ${GMT_PACKAGE_VERSION_WITH_GIT_REVISION}")
 
-set (GMT_LONG_VERSION_STRING "${GMT_PACKAGE_NAME} - ${GMT_PACKAGE_DESCRIPTION_SUMMARY}, Version ${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}")
+set (GMT_LONG_VERSION_STRING "${GMT_PACKAGE_NAME} - ${GMT_PACKAGE_DESCRIPTION_SUMMARY}, Version ${GMT_PACKAGE_VERSION_WITH_GIT_REVISION}")
 
 # Get date
 if(DEFINED ENV{SOURCE_DATE_EPOCH})

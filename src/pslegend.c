@@ -1214,7 +1214,10 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							S[SYM]->data[GMT_X][0] = x_off + off_ss;
 							S[SYM]->data[GMT_Y][0] = row_base_y;
 							S[SYM]->n_rows = 1;
-							sprintf (sub, "%c", symbol[0]);
+							if (symbol[0] == 'k' || symbol[0] == 'K')	/* Custom symbols need the full name after k */
+								sprintf (sub, "%s", symbol);
+							else	/* Just the symbol code is needed */
+								sprintf (sub, "%c", symbol[0]);
 							if (symbol[0] == 'E' || symbol[0] == 'e') {	/* Ellipse */
 								if (strchr (size, ',')) {	/* We got dir,major,minor instead of just size; parse and use */
 									sscanf (size, "%[^,],%[^,],%s", A, B, C);
@@ -1278,7 +1281,12 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								if (txt_c[0] == '-') strcat (sub, "+g-");
 								else { strcat (sub, "+g"); strcat (sub, txt_c);}
 								if (txt_d[0] == '-') strcat (sub, "+p-");
-								else { strcat (sub, "+p"); strcat (sub, txt_d);}
+								else {
+									struct GMT_PEN pen;
+									gmt_getpen (GMT, txt_d, &pen);
+									pen.width *= 0.5;
+									strcat (sub, "+p"); strcat (sub, gmt_putpen (API->GMT, &pen));
+								}
 								S[SYM]->data[2][0] = az1;
 								S[SYM]->data[3][0] = x;
 							}

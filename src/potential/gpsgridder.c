@@ -707,10 +707,16 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %" PRIu64 " (u,v) pairs, yielding a %" PRIu64 " by %" PRIu64 " set of linear equations\n", n_uv, n_params, n_params);
 
 	if (Ctrl->T.file) {	/* Existing grid that will have zeros and NaNs, only */
-		if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->T.file, NULL)) == NULL) {	/* Get header only */
+		if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL,
+		                           Ctrl->T.file, NULL)) == NULL) {	/* Get header only */
+			for (p = 0; p < n_uv; p++) gmt_M_free (GMT, X[p]);
+			gmt_M_free (GMT, X);	gmt_M_free (GMT, u);	gmt_M_free (GMT, v);
 			Return (API->error);
 		}
-		if (! (Grid->header->wesn[XLO] == GMT->common.R.wesn[XLO] && Grid->header->wesn[XHI] == GMT->common.R.wesn[XHI] && Grid->header->wesn[YLO] == GMT->common.R.wesn[YLO] && Grid->header->wesn[YHI] == GMT->common.R.wesn[YHI])) {
+		if (!(Grid->header->wesn[XLO] == GMT->common.R.wesn[XLO] &&
+		      Grid->header->wesn[XHI] == GMT->common.R.wesn[XHI] &&
+			  Grid->header->wesn[YLO] == GMT->common.R.wesn[YLO] &&
+			  Grid->header->wesn[YHI] == GMT->common.R.wesn[YHI])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The mask grid does not match your specified region\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -735,7 +741,10 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->N.active) {	/* Read output locations from file */
 		gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -C,-F,-L files */
-		if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
+		if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL,
+		                          Ctrl->N.file, NULL)) == NULL) {
+			for (p = 0; p < n_uv; p++) gmt_M_free (GMT, X[p]);
+			gmt_M_free (GMT, X);	gmt_M_free (GMT, u);	gmt_M_free (GMT, v);
 			Return (API->error);
 		}
 		if (Nin->n_columns < 2) {
@@ -748,8 +757,12 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	else {	/* Fill in an equidistant output table or grid */
 		/* Need a full-fledged Grid creation since we are writing it to who knows where */
 		for (k = 0; k < 2; k++) {
-			if ((Out[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
-				GMT->common.R.registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+			if ((Out[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL,
+			                               NULL, GMT->common.R.registration, GMT_NOTSET, NULL)) == NULL) {
+					for (p = 0; p < n_uv; p++) gmt_M_free (GMT, X[p]);
+					gmt_M_free (GMT, X);	gmt_M_free (GMT, u);	gmt_M_free (GMT, v);
+					Return (API->error);
+			}
 		}
 		n_ok = Out[GMT_X]->header->nm;
 	}

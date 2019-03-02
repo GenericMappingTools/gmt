@@ -48,7 +48,7 @@ end point of a segment:
     pole is appended then we default to the north pole.
 
     **+p**\ [-][*pen*] sets the vector pen attributes. If *pen* has a
-    leading - then the head outline is not drawn. [Default pen is used, and
+    leading - then the head outline is not drawn. [Default pen is half the width of stem pen, and
     head outline is drawn]
 
     **+q** means the input *angle*, *length* data instead represent the *start* and *stop*

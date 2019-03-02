@@ -157,6 +157,9 @@
 #define gmt_M_eq(a,b) (fabs((a)-(b)) < GMT_CONV4_LIMIT)
 #define gmt_M_same_rgb(a,b) (gmt_M_eq(a[0],b[0]) && gmt_M_eq(a[1],b[1]) && gmt_M_eq(a[2],b[2]) && gmt_M_eq(a[3],b[3]))
 
+/*! To compare is two pens are ~ the same */
+#define gmt_M_same_pen(a,b) (gmt_M_eq(a.width,b.width) && gmt_M_eq(a.offset,b.offset) && gmt_M_same_rgb(a.rgb,b.rgb) && !strcmp (a.style, b.style))
+
 /*! Macros for conversion of RGB in 0-1 range to 0-255 range */
 #define gmt_M_s255(s) ((s) * 255.0)
 #define gmt_M_t255(t) gmt_M_q(gmt_M_s255(t[0])),gmt_M_q(gmt_M_s255(t[1])),gmt_M_q(gmt_M_s255(t[2]))

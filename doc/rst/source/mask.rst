@@ -52,7 +52,7 @@ contour map where there is no control data using clip polygons, use:
 
    ::
 
-    gmt mask africa_grav.xyg -R20/40/20/40 -I5m -JM10i > mask.ps
+    gmt mask africa_grav.xyg -R20/40/20/40 -I5m -JM10i -pdf mask
 
 We do it again, but this time we wish to save the clipping polygons to
 file all_pols.txt:
@@ -65,7 +65,7 @@ A repeat of the first example but this time we use white tiling:
 
    ::
 
-    gmt mask africa_grav.xyg -R20/40/20/40 -I5m -JM10i -T -Gwhite > mask.ps
+    gmt mask africa_grav.xyg -R20/40/20/40 -I5m -JM10i -T -Gwhite -pdf mask
 
 See Also
 --------

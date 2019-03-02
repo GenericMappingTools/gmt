@@ -60,7 +60,7 @@ Set up a clip path overlay based on the day/night terminator:
 
    ::
 
-    gmt solar -R -J -Gc -Tc -O -K >> someplot.ps
+    gmt solar -Gc -Tc
 
 
 .. include:: solar_notes.rst_

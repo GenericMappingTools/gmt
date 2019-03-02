@@ -2378,6 +2378,8 @@ GMT_LOCAL void plot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 	}
 
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
+	dim[11] = 0.5 * GMT->current.setting.map_default_pen.width;
+	PSL_defpen (PSL, "PSL_vecheadpen", GMT->current.setting.map_default_pen.width, GMT->current.setting.map_default_pen.style, GMT->current.setting.map_default_pen.offset, GMT->current.setting.map_default_pen.rgb);
 	if (mr->kind == 2) {	/* Compass needle and label */
 		char tmpstring[GMT_LEN64] = {""};
 		PSL_comment (PSL, "Draw magnetic rose declination arrow and optional label\n");
@@ -2413,6 +2415,7 @@ GMT_LOCAL void plot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 		dim[2] = F_VW * mr->size, dim[3] = F_HL * mr->size, dim[4] = F_HW * mr->size;
 		dim[5] = GMT->current.setting.map_vector_shape, dim[6] = PSL_VEC_END | PSL_VEC_FILL;
 		gmt_setfill (GMT, &f, true);
+		PSL_defpen (PSL, "PSL_vecheadpen", GMT->current.setting.map_frame_pen.width, "", 0, f.rgb);
 		PSL_plotsymbol (PSL, xp[0], yp[0], dim, PSL_VECTOR);
 		s = 0.25 * mr->size;
 		gmt_init_fill (GMT, &f, -1.0, -1.0, -1.0);
@@ -2495,6 +2498,7 @@ GMT_LOCAL void plot_draw_dir_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 		x[2] = F_VW * mr->size, x[3] = F_HL * mr->size, x[4] = F_HW * mr->size;
 		x[5] = GMT->current.setting.map_vector_shape, x[6] = PSL_VEC_END | PSL_VEC_FILL;
 		gmt_setfill (GMT, &f, true);
+		PSL_defpen (PSL, "PSL_vecheadpen", GMT->current.setting.map_frame_pen.width, "", 0, f.rgb);
 		PSL_plotsymbol (PSL, xp[0], yp[0], x, PSL_VECTOR);
 		s = 0.25 * mr->size;
 		gmt_init_fill (GMT, &f, -1.0, -1.0, -1.0);
@@ -2681,7 +2685,7 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
 		trail = orig;
 		while (col < s->var[0] && (word = strsep (&trail, " \t")) != NULL)
 			col++;	/* Advance to the right word */
-		if (*word != '\0')	/* Skip empty strings */
+		if (word && *word != '\0')	/* Skip empty strings */
 			strcpy (text, word);
 		else
 			strcpy (text, GMT->current.io.curr_trailing_text);
@@ -4334,6 +4338,8 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		vector_width = rint (PSL_DOTS_PER_INCH * GMT->current.setting.map_frame_pen.width / PSL_POINTS_PER_INCH) / PSL_DOTS_PER_INCH;	/* Round off vector width same way as pen width */
 		dim[2] = vector_width; dim[3] = 10.0 * vector_width; dim[4] = 5.0 * vector_width;
 		dim[5] = GMT->current.setting.map_vector_shape; dim[6] = PSL_VEC_END | PSL_VEC_FILL;
+		dim[11] = 0.5 * GMT->current.setting.map_frame_pen.width;
+		PSL_defpen (PSL, "PSL_vecheadpen", GMT->current.setting.map_frame_pen.width, GMT->current.setting.map_frame_pen.style, GMT->current.setting.map_frame_pen.offset, GMT->current.setting.map_frame_pen.rgb);
 		if (horizontal) {
 			double x = 0.0;
 			if (GMT->current.proj.xyz_pos[axis]) {
@@ -4923,6 +4929,13 @@ void gmt_draw_map_inset (struct GMT_CTRL *GMT, struct GMT_MAP_INSET *B) {
 	/* Determine panel dimensions */
 
 	dim[GMT_X] = rect[XHI] - rect[XLO];	dim[GMT_Y] = rect[YHI] - rect[YLO];
+	if (B->refpoint == NULL) {	/* Need to set the BL refpoint since needed in inset to set the temporary origin */
+		char fake[GMT_LEN64] = {""};
+		sprintf (fake, "x%.16lgi/%.16lgi+jBL", rect[XLO], rect[YLO]);
+		if ((B->refpoint = gmt_get_refpoint (GMT, fake, 'D')) == NULL)
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to parse arg %s\n", fake);
+	}
+	
 	/* Report position and dimensions */
 	s = GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Map inset lower left corner and dimensions (in %s): %g %g %g %g\n",

@@ -2,24 +2,24 @@
 #               GMT ANIMATION 07
 #
 # Purpose:      Make a Plate Tectonics movie of crustal ages
-# GMT modules:  gmtmath, gmtset, grdgradient, grdmath, grdimage, makecpt, movie, pscoast
+# GMT modules:  math, set, grdgradient, grdmath, grdimage, makecpt, movie, coast
 # Unix progs:   cat
 # Note:         Run with any argument to build movie; otherwise one frame is plotted only.
 
-if [ $# -eq 0 ]; then   # Just make master PostScript frame 30
-        opt="-M30,ps -Fnone"
+if [ $# -eq 0 ]; then   # Just make master PostScript frame 10
+        opt="-M10,ps -Fnone"
 	ps=anim_07.ps
-else    # Make both movie formats and a thumbnail animated GIF using every 20th frame
-        opt="-Fmp4 -Fwebm -A+l+s10"
+else    # Make both movie formats and a thumbnail animated GIF using every 4th frame
+        opt="-Fmp4 -Fwebm -A+l+s5"
 fi
 # 1. Create background plot and data files needed in the loop
 cat << EOF > pre.sh
 # Set view and sun longitudes
-gmt math -T0/360/1 -I T 5 SUB = longitudes.txt
+gmt math -T0/360/5 -I T 5 SUB = longitudes.txt
 # Exctact a topography CPT
 gmt makecpt -Cdem2 -T0/6000 > movie_dem.cpt
 # Get gradients of the relief from N45E
-gmt grdgradient @earth_relief_10m -Nt1.25 -A45 -Gintens.nc
+gmt grdgradient @earth_relief_20m -Nt1.25 -A45 -Gintens.nc
 EOF
 # 2. Set up main script
 cat << EOF > main.sh
@@ -29,15 +29,15 @@ gmt begin
 	# Fake simulation of sun illumination from east combined with relief slopes
 	gmt grdmath intens.nc X \${MOVIE_COL2} SUB DUP -180 LE 360 MUL ADD 90 DIV ERF ADD 0.25 SUB = s.nc
 	# Plot age grid first using age cpt
-	gmt grdimage @age.3.10.nc -Is.nc -C@crustal_age.cpt -JG\${MOVIE_COL1}/0/6i -X0 -Y0
+	gmt grdimage @age.3.20.nc -Is.nc -C@crustal_age.cpt -JG\${MOVIE_COL1}/0/6i -X0 -Y0
 	# Clip to expose land areas only
-	gmt pscoast -Gc
+	gmt coast -Gc
 	# Overlay relief over land only using dem cpt
-	gmt grdimage @earth_relief_10m -Is.nc -Cmovie_dem.cpt
+	gmt grdimage @earth_relief_20m -Is.nc -Cmovie_dem.cpt
 	# Undo clipping and overlay gridlines
-	gmt pscoast -Q -B30g30
+	gmt coast -Q -B30g30
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Sbpre.sh -C6ix6ix100 -Tlongitudes.txt -Nanim_07 -H4 -Z $opt
+gmt movie main.sh -Sbpre.sh -C6ix6ix100 -Tlongitudes.txt -Nanim_07 -H2 -Z $opt
 rm -rf main.sh pre.sh

@@ -41,7 +41,7 @@ _gmt()
     opts=( --help --show-datadir --show-bindir --version )
 
     # strip off any leading "gmt" in module names:
-    progs=`gmt --show-modules | sed -e 's/^gmt//g'`
+    progs=(`gmt --show-modules | sed -e 's/^gmt//g'`)
 
     # complete first arg
     if [[ ${COMP_CWORD} -eq 1 ]]; then
@@ -140,10 +140,6 @@ _gmt()
                 ;;
             grd2cpt)
                 modopts=( -A -C -D -E -F -G -I -L -M -N -Q -R -S -T -V -Z -h )
-                fileopts=( -C )
-                ;;
-            grd2rgb)
-                modopts=( -C -G -I -L -R -V -W -h -r )
                 fileopts=( -C )
                 ;;
             grd2xyz)

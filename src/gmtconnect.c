@@ -316,7 +316,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			if (!Ctrl->Q.file) Ctrl->Q.file = strdup ("gmtconnect_list.txt");	/* Default -Q list name if none was given */
 			dim_tscr[GMT_TBL] = n_qfiles = (strstr (Ctrl->Q.file, "%c")) ? 2 : 1;	/* Build one or two tables (closed and open) */
 			/* Allocate one or two tables with 1 segment each */
-			if ((Q = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_TEXT, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
+			if ((Q = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_TEXT, GMT_WITH_STRINGS, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for segment lists\n");
 				gmt_M_free (GMT, buffer);
 				Return (API->error);
@@ -620,7 +620,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtconnect_link.txt");	/* Use default output filename since none was provided */
 		dim_tscr[GMT_TBL] = 1;	dim_tscr[GMT_SEG] = 1;	dim_tscr[GMT_ROW] = ns;	dim_tscr[GMT_COL] = 0;	/* Dimensions of single output table with single segment of ns rows */
-		if ((LNK = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_TEXT, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((LNK = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_WITH_STRINGS, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for link lists\n");
 			gmt_M_free (GMT, buffer);
 			Return (API->error);

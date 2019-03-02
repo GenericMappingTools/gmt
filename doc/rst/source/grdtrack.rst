@@ -114,7 +114,7 @@ Optional Arguments
     profiles are output.  Choose to only output the left or right halves
     of the profiles by appending **+l** or **+r**, respectively.  Append suitable units
     to *length*; it sets the unit used for *ds* [and *spacing*] (See
-    UNITS below). The default unit for geographic grids is meter while
+    :ref:`Unit_attributes` below). The default unit for geographic grids is meter while
     Cartesian grids implies the user unit.  The output columns will be
     *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ..., *zn* (The *zi* are
     the sampled values for each of the *n* grids)
@@ -204,8 +204,10 @@ Optional Arguments
    the nearest non-NaN node and report that value instead.  Optionally specify
    a search radius which limits the consideration to points within this distance
    from the input point.  To report the location of the nearest node and its
-   distance from the input point, append **+e**. To instead replace the input
-   point with the coordinates of the nearest node, append **+p**.
+   distance from the input point, append **+e**. The default unit for geographic
+   grid distances is spherical degrees.  Use *radius*\ [**u**] to change the unit
+   and give *radius* = 0 if you do not want to limit the radius search.
+   To instead replace the input point with the coordinates of the nearest node, append **+p**.
 
 .. _-V:
 

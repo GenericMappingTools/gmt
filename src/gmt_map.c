@@ -2184,7 +2184,7 @@ GMT_LOCAL void map_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, double
 		w = GMT->current.proj.rect[XHI];	h = GMT->current.proj.rect[YHI];
 		adjust_panel_for_gaps (GMT, P);	/* Deal with any gaps: shrink w/h and adjust origin */
 		fw = w / P->w;	fh = h / P->h;
-		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.proj.gave_map_width == 0) {	/* Giving -Jx will end up here with map projections */
+		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.proj.projection == GMT_POLAR || GMT->current.proj.gave_map_width == 0) {	/* Giving -Jx will end up here with map projections */
 			if (fw > fh) {	/* Wider than taller given panel dims; adjust width to fit exactly */
 				fx = fy = 1.0 / fw;	P->dx = 0.0;	P->dy = 0.5 * (P->h - h * fy);
 			}

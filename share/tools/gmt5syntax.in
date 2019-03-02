@@ -21,7 +21,7 @@ my @modulenames = qw( backtracker blockmean blockmedian blockmode dimfilter
 filter1d fitcircle gmt2kml gmtconnect gmtconvert gmtdefaults gmtflexure \
 gmtget gmtgravmag3d gmtinfo gmtlogo gmtregress
 gmtmath gmtselect gmtset gmtsimplify gmtspatial gmtstitch gmtvector gmtwhich
-gravfft grd2cpt grd2rgb grd2xyz grdblend grdclip grdcontour grdcut grdedit
+gravfft grd2cpt grd2xyz grdblend grdclip grdcontour grdcut grdedit
 grdfft grdfilter grdflexure grdgradient grdgravmag3d grdhisteq grdimage grdinfo
 grdlandmask grdmask grdmath grdpaste grdpmodeler grdproject grdredpol
 grdconvert grdrotater grdsample grdseamount grdspotter grdtrack grdtrend

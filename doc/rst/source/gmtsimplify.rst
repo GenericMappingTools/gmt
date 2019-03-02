@@ -46,7 +46,7 @@ Required Arguments
 
 **-T**\ *tolerance*\ [*unit*]
     Specifies the maximum mismatch tolerance in the user units. If the
-    data is not Cartesian then append the distance unit (see UNITS).
+    data is not Cartesian then append the distance unit (see :ref:`Unit_attributes`).
 
 Optional Arguments
 ------------------

@@ -790,6 +790,12 @@ per node of all the grids matching the name model_*.grd using
 
     gmt grdmath model_*.grd -S STD = std_of_models.grd
 
+To create a geotiff with resolution 0.5x0.5 degrees with distances in km from the coast line, use
+
+   ::
+
+    grdmath -RNO,IS -Dc -I.5 LDISTG = distance.tif=gd:GTIFF
+
 References
 ----------
 

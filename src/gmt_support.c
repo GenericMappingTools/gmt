@@ -8229,13 +8229,6 @@ int gmtlib_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, 
 		return (GMT_NOERROR);
 	}
 
-	if (cpt_flags & GMT_CPT_EXTEND_BNF) {	/* Use low and high colors as back and foreground */
-		gmt_M_rgb_copy (P->bfn[GMT_BGD].rgb, P->data[0].rgb_low);
-		gmt_M_rgb_copy (P->bfn[GMT_FGD].rgb, P->data[P->n_colors-1].rgb_high);
-		gmt_M_rgb_copy (P->bfn[GMT_BGD].hsv, P->data[0].hsv_low);
-		gmt_M_rgb_copy (P->bfn[GMT_FGD].hsv, P->data[P->n_colors-1].hsv_high);
-	}
-
 	for (i = 0; i < 3; i++) {
 		if (P->bfn[i].skip)
 			fprintf (fp, "%c\t-\n", code[i]);
@@ -13074,6 +13067,8 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 						}
 					}
 				}
+				else if (gmt_M_is_dnan(del_yb)) {}	/* Just do nothing and prevent call to doubleAlmostEqual() which would assert fail with NaNs */
+
 				else {	/* General case */
 
 					i_del_xa = 1.0 / del_xa;
@@ -14932,7 +14927,10 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 			strncpy (the_rest, &arg[n], GMT_LEN256-1);
 		}
 		else {	/* Old syntax with things separated by slashes */
-			if ((n = sscanf (&arg[k], "%[^/]/%s", txt_x, the_rest)) < 1) return NULL;	/* Not so good */
+			if ((n = sscanf (&arg[k], "%[^/]/%s", txt_x, the_rest)) < 1) {
+				gmt_M_str_free (arg);
+				return NULL;	/* Not so good */
+			}
 		}
 		justify = gmt_just_decode (GMT, txt_x, PSL_MC);
 	}
@@ -14954,7 +14952,10 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg_in, char
 			}
 		}
 		else { /* No such modifiers given, so just slashes or nothing follows */
-			if ((n = sscanf (&arg[k], "%[^/]/%[^/]/%s", txt_x, txt_y, the_rest)) < 2) return NULL;	/* Not so good */
+			if ((n = sscanf (&arg[k], "%[^/]/%[^/]/%s", txt_x, txt_y, the_rest)) < 2) {
+				gmt_M_str_free (arg);
+				return NULL;	/* Not so good */
+			}
 		}
 	}
 

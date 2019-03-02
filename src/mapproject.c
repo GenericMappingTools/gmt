@@ -260,6 +260,7 @@ GMT_LOCAL char set_unit_and_mode (char *arg, unsigned int *mode) {
 	switch (arg[0]) {
 		case '-': *mode = GMT_FLATEARTH;	k = 1; break;
 		case '+': *mode = GMT_GEODESIC;		k = 1; break;
+		case '*': *mode = GMT_GEODESIC;		k = 1; break;
 	}
 	return (arg[k]);
 }
@@ -349,7 +350,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 	int n;
 	bool geodetic_calc = false, will_need_RJ = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, from[GMT_LEN256] = {""}, to[GMT_LEN256] = {""};
-	char c, *p = NULL;
+	char c, *p = NULL, *q = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -436,7 +437,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				if (n_slash == 2 || !(strstr (opt->arg, "+a") || strstr (opt->arg, "+i") || strstr (opt->arg, "+u") || strstr (opt->arg, "+v")))
 					n_errors += old_G_parse (GMT, opt->arg, Ctrl);		/* -G[<lon0/lat0>][/[+|-]unit][+|-] */
 				else {	/* -G[<lon0/lat0>][+i][+a][+u[+|-]<unit>][+v] */
-					if (gmt_validate_modifiers (GMT, opt->arg, 'G', "aiuvk")) n_errors++;	/* Added k because of +u+k ellipsoidal work */
+					/* Watch out for +u+<unit> where the + in front of unit indicates ellipsoidal calculations.  This unfortunate syntax
+					 * is easily seen as another modifer, e.g., +e, which will fail.  We temporarily replace that + sign by the * sign
+					 * to avoid parsing problems. */
+					if ((q = strstr (opt->arg, "+u")) && q[2] == '+') q[2] = '*';
+					if (gmt_validate_modifiers (GMT, opt->arg, 'G', "aiuv")) n_errors++;
 					if ((p = gmt_first_modifier (GMT, opt->arg, "aiuv")) == NULL) {	/* This cannot happen given the strstr checks, but Coverity prefers it */
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G: No modifiers?\n");
 						n_errors++;
@@ -448,18 +453,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 							case 'a': Ctrl->G.mode |= GMT_MP_CUMUL_DIST;	break;	/* Cumulative distance */
 							case 'i': Ctrl->G.mode |= GMT_MP_INCR_DIST;	break;	/* Incremental distance */
 							case 'v': Ctrl->G.mode |= GMT_MP_PAIR_DIST;	break;	/* Variable coordinates */
-							case 'u':	/* Must check if followed by a leading + to indicate ellipsoidal distance since
-									   that will interfere with the modifier parsing.  E.g., +u+k will just return
-									   +u with no unit and then fail on the unrecognized +k "modifier".  We cheat by
-									   advancing past this problem when it occurs. */
-								if (txt_a[1] == '\0' && p[pos] == '+') {	/* Gave a leading + before the unit.  Must correct txt_a and pos */
-									txt_a[1] = p[pos++];	txt_a[2] = p[pos++]; txt_a[3] = '\0';
-								}
-								Ctrl->G.unit = set_unit_and_mode (&txt_a[1], &Ctrl->G.sph);	/* Unit specification */
+							case 'u': Ctrl->G.unit = set_unit_and_mode (&txt_a[1], &Ctrl->G.sph);	/* Unit specification */
 								break;
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
+					if (q) q[2] = '+';
 					p[0] = '\0';	/* Chop off all modifiers */
 					/* Here, opt->arg is -G[<lon0/lat0>] */
 					if (n_slash == 1) {	/* Got -G<lon0/lat0> so we were given a fixed point */
