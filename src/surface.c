@@ -1821,9 +1821,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value < 1, "Syntax error -N option: Max iterations must be nonzero\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.value < 0.0 || Ctrl->Z.value > 2.0,
 	                                   "Syntax error -Z option: Relaxation value must be 1 <= z <= 2\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error option -G: Must specify output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->Q.active, "Syntax error option -G: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.mode && gmt_M_is_cartesian (GMT, GMT_IN),
-	                                   "Syntax error option -G: Must specify output file\n");
+	                                   "Syntax error option -Am: Requires geographic input data\n");
 	n_errors += gmt_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
