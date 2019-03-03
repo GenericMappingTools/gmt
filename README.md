@@ -1,6 +1,7 @@
 # Generic Mapping Tools
 
 [![TravisCI](http://img.shields.io/travis/GenericMappingTools/gmt/master.svg?label=TravisCI)](https://travis-ci.org/GenericMappingTools/gmt)
+[![AppVeyor](https://ci.appveyor.com/api/projects/status/github/GenericMappingTools/gmt?svg=true)](https://ci.appveyor.com/project/seisman/gmt)
 [![CodeCov](https://img.shields.io/codecov/c/github/GenericMappingTools/gmt.svg)](https://codecov.io/gh/GenericMappingTools/gmt/)
 [![Coverity](https://scan.coverity.com/projects/7153/badge.svg)](https://scan.coverity.com/projects/gmt)
 [![Documentation (development version)](https://img.shields.io/badge/docs-development-green.svg)](https://genericmappingtools.github.io/gmt/dev/)
