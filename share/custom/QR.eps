@@ -1,10 +1,12 @@
 %!PS-Adobe-3.0 EPSF-3.0
 %%BoundingBox: 0 0 200 200
 % Made by Kristof Koch, February 28, 2019
+% psxy will define both QR_outline [false], QR_pen [undefined], and QR_fill [black]
 /QR {M 0 -6 D 6 0 D 0 6 D P F} bind def
 1 A
 0 200 M 0 -200 D 200 0 D 0 200 D P F
-0 A
+QR_outline {0 200 M 0 -200 D 200 0 D 0 200 D P V F U QR_pen S} {0 200 M 0 -200 D 200 0 D 0 200 D P F} ifelse
+QR_fill
 13 187 QR
 19 187 QR
 25 187 QR
