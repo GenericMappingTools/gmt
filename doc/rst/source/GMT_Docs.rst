@@ -6936,14 +6936,14 @@ Using non-default fonts with GMT
 --------------------------------
 
 To add additional fonts that you may have purchased or that are
-available freely in the internet or at your institution, see the
-instructions in the ``PSL_custom_fonts.txt`` under the ``share/postscriptlight`` directory and continue reading. GMT does
-not read or process any font files and thus does not know anything about
+available freely in the internet or at your institution, you will need
+to tell GMT some basic information about such fonts. GMT does
+not actually read or process any font files and thus does not know anything about
 installed fonts and their metrics. In order to use extra fonts in
 GMT you need to specify the PostScript name of the relevant fonts in
-the file ``PSL_custom_fonts.txt``. You can either edit the existing file distributed with
-GMT to make the changes global or you can create a new file in the
-current working directory, e.g.,
+the file ``PSL_custom_fonts.txt``. We recommend you place this file in
+your GMT user directory (~/.gmt) as GMT will look there as well as in your
+home directory.  Below is an example of a typical entry for two separate fonts:
 
    ::
 
@@ -6951,13 +6951,14 @@ current working directory, e.g.,
     LinLibertineOB    0.700    0
 
 The format is a space delimited list of the PostScript font name, the
-font height-point size-ratio, and a boolean variable that tells GMT to
+font's height-point size-ratio, and a boolean variable that tells GMT to
 re-encode the font (if set to zero). The latter has to be set to zero as
 additional fonts will most likely not come in standard
 PostScript encoding. GMT determines how tall typical annotations
 might be from the font size ratio so that the vertical position of
-labels and titles can be adjusted to a more uniform typesetting. Now,
-you can set the GMT font parameters to your non-standard fonts:
+labels and titles can be adjusted to a more uniform typesetting. This
+ratio can be estimated from the height of the letter A for a unit font size.
+Now, you can set the GMT font parameters to your non-standard fonts:
 
    ::
 
