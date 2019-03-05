@@ -302,6 +302,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\t------------------------------------\n");
 		for (i = 0; i < API->GMT->session.n_fonts; i++)
 			GMT_Message (API, GMT_TIME_NONE, "\t%3ld\t%s\n", i, API->GMT->session.font[i].name);
+		GMT_Message (API, GMT_TIME_NONE, "For additional fonts, see \"Using non-default fonts with GMT\" in the documentation.\n");
 	}
 
 	if (show_fonts) return (GMT_NOERROR);

@@ -27,3 +27,8 @@ input), if specified, must appear before either of **+f** (read font from input)
 (read justification from input), if these are present.  This is necessary because the
 angle is a numerical column while font and justification must be encoded as part of the
 trailing text.
+
+Adding more fonts
+-----------------
+
+To add custom fonts, please see :ref:`General Features <non-default-fonts>`.

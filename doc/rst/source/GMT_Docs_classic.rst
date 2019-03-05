@@ -6991,9 +6991,6 @@ plotting of text-strings, see the man page for :doc:`pstext`.
 Using non-default fonts with GMT
 --------------------------------
 
-Using non-default fonts with GMT
---------------------------------
-
 To add additional fonts that you may have purchased or that are
 available freely in the internet or at your institution, you will need
 to tell GMT some basic information about such fonts. GMT does
