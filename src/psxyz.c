@@ -1335,7 +1335,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					case PSL_ELLIPSE:
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						if (data[i].flag & 2)
-							gmt_geo_ellipse (GMT, xpos[item], data[i].y, data[i].dim[1], data[i].dim[2], data[i].dim[0]);
+							gmt_plot_geo_ellipse (GMT, xpos[item], data[i].y, data[i].dim[1], data[i].dim[2], data[i].dim[0]);
 						else
 							PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_ELLIPSE);
 						break;
