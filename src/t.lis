@@ -1,5 +1,0 @@
-./gmt_plot.c
-./gmt_prototypes.h
-./psxy.c
-./psxy_new.c
-./psxyz.c
