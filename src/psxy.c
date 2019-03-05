@@ -1384,13 +1384,13 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						else if (S.symbol == PSL_ELLIPSE) {	/* Got axis in km */
 							if (may_intrude_inside) {	/* Must plot fill and outline separately */
 								gmt_setfill (GMT, &current_fill, 0);
-								gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 								gmt_setpen (GMT, &current_pen);
 								PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
-								gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 							}
 							else
-								gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 						}
 						else {
 							if (may_intrude_inside) {	/* Must plot fill and outline separately */
