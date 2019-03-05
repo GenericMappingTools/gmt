@@ -9459,7 +9459,7 @@ GMT_LOCAL void ellipse_point (struct GMT_CTRL *GMT, double lon, double lat, doub
 
 #define GMT_ELLIPSE_APPROX 72
 
-struct GMT_DATASEGMENT * gmt_get_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major, double minor, double azimuth, uint64_t m) {
+struct GMT_DATASEGMENT * gmt_get_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major_km, double minor_km, double azimuth, uint64_t m) {
 	/* gmt_get_geo_ellipse takes the location, axes (in km), and azimuth of the ellipse's major axis
 	   and computes coordinates for an approximate ellipse using N-sided polygon.
 	   If m > 0 then we l\set N = m and use that many points.  Otherwise (m == 0), we will
@@ -9468,11 +9468,11 @@ struct GMT_DATASEGMENT * gmt_get_geo_ellipse (struct GMT_CTRL *GMT, double lon, 
 
 	uint64_t i, N;
 	double delta_azimuth, sin_azimuth, cos_azimuth, sinp, cosp, ax, ay, axx, ayy, bx, by, bxx, byy, L;
-	double center, *px = NULL, *py = NULL;
+	double major, minor, center, *px = NULL, *py = NULL;
 	char header[GMT_LEN256] = {""};
 	struct GMT_DATASEGMENT *S = NULL;
 
-	major *= 500.0, minor *= 500.0;	/* Convert to meters (x1000) of semi-major (/2) and semi-minor axes */
+	major = major_km * 500.0, minor = minor_km * 500.0;	/* Convert to meters (x1000) of semi-major (/2) and semi-minor axes */
 	/* Set up local azimuthal equidistant projection */
 	sincosd (90.0 - azimuth, &sin_azimuth, &cos_azimuth);
 	sincosd (lat, &sinp, &cosp);
@@ -9503,7 +9503,7 @@ struct GMT_DATASEGMENT * gmt_get_geo_ellipse (struct GMT_CTRL *GMT, double lon, 
 
 	/* Explicitly close the polygon */
 	px[N] = px[0], py[N] = py[0];
-	sprintf (header, "Ellipse around %g/%g with major/minor axes %g/%g km and azimuth %g approximate by %" PRIu64 "points", lon, lat, major, minor, azimuth, N);
+	sprintf (header, "Ellipse around %g/%g with major/minor axes %g/%g km and major axis azimuth %g approximated by %" PRIu64 " points", lon, lat, major_km, minor_km, azimuth, N);
 	S->header = strdup (header);
 	return (S);
 }

@@ -56,7 +56,7 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 	} F;
 	struct G {	/* -G<inc>[/<colat>][+h] */
 		bool active;
-		unsigned int header;
+		bool header;
 		unsigned int mode;
 		double inc;
 		double colat;
@@ -83,6 +83,11 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		double min, max;
 	} W;
+	struct Z {	/* -Z<major/minor/azimuth>[+e] */
+		bool active;
+		bool exact;
+		double major, minor, azimuth;
+	} Z;
 };
 
 struct PROJECT_DATA {
@@ -313,7 +318,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+h]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L[w|<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L[w|<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>] [-Z<major>/<minor>/<azimuth>[+e]]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -365,6 +370,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Check the width across the projected track and use only certain points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This will use only those points whose q is [w_min <= q <= w_max].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in <azimuth> direction.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z With -G and -C, generate an geo ellipse of given major and minor axes (in km) and azimuth of major axis\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +e for adjusting increment to fix perimeter exactly [use increment as given in -G].\n");
 	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,s,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -379,7 +386,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 
 	unsigned int n_errors = 0, j, k;
 	size_t len;
-	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""};
+	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, *ce = NULL, *ch = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -449,14 +456,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'G':
 				Ctrl->G.active = true;
-				len = strlen (opt->arg) - 1;
-				if (len > 1 && opt->arg[len-1] == '+' && opt->arg[len] == 'h') {
-					Ctrl->G.header = (int)len-1;	/* Wish to place a segment header on output via +h */
-					opt->arg[len-1] = 0;	/* Temporarily remove the trailing + sign */
+				if ((ch = strstr (opt->arg, "+h"))) {
+					Ctrl->G.header = true;
+					ch[0] = '\0';	/* Chop off +h */
 				}
-				else if (len > 0 && opt->arg[len] == '+') {
+				len = strlen (opt->arg) - 1;
+				if (len > 0 && opt->arg[len] == '+') {	/* Obsolete way to say +h */
 					Ctrl->G.header = true;	/* Wish to place a segment header on output */
 					opt->arg[len] = 0;	/* Temporarily remove the trailing + sign */
+					ch = &opt->arg[len];
 				}
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) == 2) {	/* Got dist/colat */
 					Ctrl->G.mode = 1;
@@ -465,7 +473,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 				}
 				else
 					Ctrl->G.inc = atof (opt->arg);
-				if (Ctrl->G.header) opt->arg[Ctrl->G.header] = '+';	/* Restore the plus-sign */
+				if (ch) ch[0] = '+';	/* Restore the plus-sign */
 				break;
 			case 'L':
 				Ctrl->L.active = true;
@@ -477,6 +485,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'N': /* Handled above but still in argv */
 				Ctrl->N.active = true;
+				n_errors += gmt_M_check_condition (GMT, sscanf(opt->arg, "%lf/%lf", &Ctrl->L.min, &Ctrl->L.max) != 2, "Syntax error: Expected -L[w | <min>/<max>]\n");
 				break;
 			case 'Q':
 				Ctrl->Q.active = true;
@@ -501,7 +510,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 				n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->W.min, &Ctrl->W.max) != 2,
 				                                 "Syntax error: Expected -W<min>/<max>\n");
 				break;
-
+			case 'Z': /* Parameters of ellipse */
+				Ctrl->Z.active = true;
+				if ((ce = strstr (opt->arg, "+e"))) {
+					Ctrl->Z.exact = true;
+					ce[0] = '\0';	/* Chop off +e */
+				}
+				n_errors += gmt_M_check_condition (GMT, sscanf(opt->arg, "%lf/%lf/%lf", &Ctrl->Z.major, &Ctrl->Z.minor, &Ctrl->Z.azimuth) != 3, "Syntax error: Expected -Z<major/minor/azimuth>\n");
+				if (ce) ce[0] = '+';	/* Restore the plus-sign */
+				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -521,7 +538,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 	                                 "Syntax error: Specify only one of -A, -E, and -T\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (Ctrl->C.x == Ctrl->E.x) && (Ctrl->C.y == Ctrl->E.y),
 	                                 "Syntax error -E option: Second point must differ from origin!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->L.min == Ctrl->L.max && !Ctrl->E.active,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->L.min == Ctrl->L.max && !(Ctrl->E.active || Ctrl->Z.active),
 	                                 "Syntax error -G option: Must also specify -Lmin/max or use -E instead\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->F.active,
 	                                 "Syntax error -G option: -F not allowed [Defaults to rsp]\n");
@@ -533,6 +550,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 	                                 "Syntax error -N option: Cannot be used with -fg\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->G.mode,
 	                                 "Syntax error -N option: Cannot be used with -G<dist>/<colat>\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Z.active,
+	                                 "Syntax error -N option: Cannot be used with -Z<major>/<minor>/<azimuth>\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -804,9 +823,19 @@ int GMT_project (void *V_API, int mode, void *args) {
 	if (Ctrl->G.active) {	/* No input data expected, just generate x,y,d track from arguments given */
 		double out[3];
 		struct GMT_RECORD *Out = gmt_new_record (GMT, out, NULL);
+		char *z_header = NULL;
 		P.output_choice[0] = 4;
 		P.output_choice[1] = 5;
 		P.output_choice[2] = 2;
+		if (Ctrl->Z.active) {	/* Do the full ellipse */
+			double h = pow (Ctrl->Z.major - Ctrl->Z.minor, 2.0) / pow (Ctrl->Z.major + Ctrl->Z.minor, 2.0);
+			Ctrl->L.min = 0.0;
+			Ctrl->L.max = M_PI * (Ctrl->Z.major + Ctrl->Z.minor) * (1.0 + (3.0 * h)/(10.0 + sqrt (4.0 - 3.0 * h)));	/* Ramanujan approximation of ellipse circumference */
+			if (Ctrl->Z.exact) {	/* Adjust inc to fit the ellise perimeter exactly */
+				double f = rint (Ctrl->L.max / Ctrl->G.inc);
+				Ctrl->G.inc = Ctrl->L.max / f;
+			}
+		}
 
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Generate table data\n");
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Go from min dist = %g to max dist = %g\n", Ctrl->L.min, Ctrl->L.max);
@@ -831,7 +860,17 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 		/* We need to find r,s  */
 
-		if (Ctrl->N.active) {
+		if (Ctrl->Z.active) {
+			uint64_t ne = urint (Ctrl->L.max / Ctrl->G.inc);
+			struct GMT_DATASEGMENT *S = gmt_get_geo_ellipse (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->Z.major, Ctrl->Z.minor, Ctrl->Z.azimuth, ne);
+			for (rec = 0; rec < P.n_used; rec++) {
+				p_data[rec].a[4] = S->coord[GMT_X][rec];
+				p_data[rec].a[5] = S->coord[GMT_Y][rec];
+			}
+			z_header = strdup (S->header);
+			gmt_free_segment (GMT, &S);
+		}
+		else if (Ctrl->N.active) {
 			sincosd (90.0 + theta, &sin_theta, &cos_theta);
 			for (rec = 0; rec < P.n_used; rec++) {
 				p_data[rec].a[4] = Ctrl->C.x + p_data[rec].a[2] * cos_theta;
@@ -892,9 +931,13 @@ int GMT_project (void *V_API, int mode, void *args) {
 			int kind = (doubleAlmostEqualZero (Ctrl->G.colat, 90.0)) ? 0 : 1;
 			char *type[2] = {"Great", "Small"};
 			gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-			sprintf (GMT->current.io.segment_header, "%s-circle Pole at %g %g", type[kind], P.plon, P.plat);
+			if (Ctrl->Z.active)
+				sprintf (GMT->current.io.segment_header, "%s", z_header);
+			else
+				sprintf (GMT->current.io.segment_header, "%s-circle Pole at %g %g", type[kind], P.plon, P.plat);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
 		}
+		if (Ctrl->Z.active) gmt_M_str_free (z_header);
 		for (rec = 0; rec < P.n_used; rec++) {
 			for (col = 0; col < P.n_outputs; col++) out[col] = p_data[rec].a[P.output_choice[col]];
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);

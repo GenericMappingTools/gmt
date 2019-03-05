@@ -21,6 +21,7 @@ Synopsis
 [ |-T|\ *px*/*py* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *w\_min*/*w\_max* ]
+[ |-Z|\ *major*/*minor*/*azimuth*\ [**+e**\ ] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -198,6 +199,15 @@ Optional Arguments
     Width controls. Project only those points whose *q* coordinate is
     within *w\_min* < *q* < *w\_max*. 
 
+**-Z**\  *major*/*minor*/*azimuth*\ [**+e**\ ] ]
+    Used in conjunction with **-C** (sets its center) and **-G** (sets the
+    distance increment) to create the coordinates of a geographic ellipse
+    with *major* and *minor* axes given in km and the *azimuth* of the
+    major axis in degrees.  Append **+e** to adjust the increment set via
+    **-G** so that the the ellipse has equal distance increments [Default
+    uses the given increment and closes the ellipse].
+
+
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_
 
@@ -260,6 +270,13 @@ defined by the great circle from the pole to a point 15E,15N, try
    ::
 
     gmt project -C15/15 -T40/85 -G1/80 -L-45/45 > some_circle.xyp
+
+To generate points approximately every 10km along a an ellipse centered on (30W,70N) with
+major axis of 1500 km with azimuth of 30 degree and a minor axis of 600 km, try
+
+   ::
+
+    gmt project -C-30/70 -G10 -Z1500/600/30+e > ellipse.xyp
 
 To project the shiptrack gravity, magnetics, and bathymetry in
 c2610.xygmb along a great circle through an origin at 30S, 30W, the
