@@ -15,7 +15,7 @@
 # Note: gmt_<TAG>_module.[ch] are in GitHub.  Only rerun this
 # script when there are changes in the code, e.g. a new module.
 #
-SUPP_DIRS="gshhg|img|meca|mgd77|misc|potential|segy|spotter|x2sys"	# Edit this is new supplements are added
+SUPP_DIRS="gshhg|img|meca|mgd77|potential|segy|spotter|x2sys"	# Edit this is new supplements are added
 if [ $# -ne 1 ]; then
 cat << EOF
 usage: gmt_make_module_src.sh [tag]
@@ -356,7 +356,7 @@ EOF
 
 if [ "$U_TAG" = "CORE" ]; then
 	cat << EOF >> ${FILE_GMT_MODULE_C}
-	
+
 #ifndef BUILD_SHARED_LIBS
 /* Lookup static module id by name, return function pointer */
 void *gmt_${L_TAG}_module_lookup (void *API, const char *candidate) {
