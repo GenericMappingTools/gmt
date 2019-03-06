@@ -179,9 +179,9 @@ cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
 make -j
 ```
-You can add an argument *x* to *-j* (e.g. *-j4*) which means make will use *x* 
-cores in the build; this depends on the number of cores in your CPU and if 
-hyperthreading is available or not. By using *-j* without any argument, *make* 
+You can add an argument *x* to *-j* (e.g. *-j4*) which means make will use *x*
+cores in the build; this depends on the number of cores in your CPU and if
+hyperthreading is available or not. By using *-j* without any argument, *make*
 will not limit the number of jobs that can run simultaneously.
 cmake will build out-of-source in the the directory _build_. 'CMAKE_BUILD_TYPE'
 can be one of: empty, Debug, Release, RelWithDebInfo or MinSizeRel
@@ -205,8 +205,7 @@ like /usr/local/bin.  You should now be able to run GMT programs.
 
 GMT users elsewhere have developed programs that utilize the GMT libraries and
 produce PostScript code compatible with the rest of GMT or simply perform data
-manipulation.  In addition, misc. code developed by us depend on GMT
-libraries.  Currently, the supplemental archive include the directories:
+manipulation. Currently, the supplemental archive include the directories:
 
   gshhg     - Data extractor for GSHHG shoreline polygons and rivers, borders.
   img       - Data extractor for Smith/Sandwell altimetry grids.
