@@ -31,7 +31,7 @@ gmt_modules="blockmean blockmedian blockmode filter1d fitcircle
 	pscoupe psmeca pspolar pssac psvelo 
 	mgd77convert mgd77header mgd77info mgd77list mgd77magref 
 	mgd77manage mgd77path mgd77sniffer mgd77track dimfilter 
-	grdppa earthtide gmtflexure gmtgravmag3d gpsgridder 
+	earthtide gmtflexure gmtgravmag3d gpsgridder 
 	gravfft grdflexure grdgravmag3d grdredpol grdseamount 
 	talwani2d talwani3d pssegyz pssegy segy2grd 
 	backtracker gmtpmodeler grdpmodeler grdrotater grdspotter 
