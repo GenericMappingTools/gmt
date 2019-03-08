@@ -20,4 +20,4 @@ example requires us to compute the dimensions of the inset first, via
    :width: 500 px
    :align: center
 
-   Map Inserts.
+   Map Insets.
