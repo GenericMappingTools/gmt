@@ -1091,6 +1091,18 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
 			delayed_unit_scaling = (S.u_set && S.u != GMT_INCH);
 		}
+		if (S.symbol == GMT_SYMBOL_CUSTOM && !strcmp (S.custom->name, "QR")) {
+			if (Ctrl->G.active)	/* Change color of QR code */
+				PSL_command (PSL, "/QR_fill {%s} def\n", PSL_makecolor (PSL, Ctrl->G.fill.rgb));
+			else	/* Default to black */
+				PSL_command (PSL, "/QR_fill {0 A} def\n");
+			if (Ctrl->W.active) {	/* Draw outline of QR code */
+				PSL_command (PSL, "/QR_outline true def\n");
+				PSL_command (PSL, "/QR_pen {%s} def\n",  PSL_makepen (PSL, Ctrl->W.pen.width, Ctrl->W.pen.rgb, Ctrl->W.pen.style, Ctrl->W.pen.offset));
+			}
+			else
+				PSL_command (PSL, "/QR_outline false def\n");
+		}
 		
 		do {	/* Keep returning records until we reach EOF */
 			if ((In = GMT_Get_Record (API, GMT_READ_DATA, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -1372,13 +1384,13 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						else if (S.symbol == PSL_ELLIPSE) {	/* Got axis in km */
 							if (may_intrude_inside) {	/* Must plot fill and outline separately */
 								gmt_setfill (GMT, &current_fill, 0);
-								gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 								gmt_setpen (GMT, &current_pen);
 								PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
-								gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 							}
 							else
-								gmt_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
 						}
 						else {
 							if (may_intrude_inside) {	/* Must plot fill and outline separately */

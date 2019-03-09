@@ -349,7 +349,6 @@ man_pages = [
 ('supplements/mgd77/mgd77path', 'mgd77path', 'Return paths to MGD77 cruises and directories', '', 1),
 ('supplements/mgd77/mgd77sniffer', 'mgd77sniffer', 'Along-track quality control of MGD77 cruises', '', 1),
 ('supplements/mgd77/mgd77track', 'mgd77track', 'Plot track-line map of MGD77 cruises', '', 1),
-('supplements/misc/dimfilter', 'dimfilter', 'Directional filtering of 2-D gridded files in the space (or time) domain', '', 1),
 ('supplements/potential/gmtflexure', 'gmtflexure', 'Compute flexural deformation of 2-D loads, forces, bending and moments', '', 1),
 ('supplements/potential/gmtgravmag3d', 'gmtgravmag3d', 'Compute the gravity/magnetic effect of a body by the method of Okabe', '', 1),
 ('supplements/potential/gpsgridder', 'gpsgridder', 'Interpolate GPS strain vectors using Green\'s functions for elastic deformation', '', 1),

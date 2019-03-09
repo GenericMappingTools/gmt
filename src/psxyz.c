@@ -787,6 +787,18 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				gmt_set_column (GMT, GMT_IN, ex3, GMT_IS_GEODIMENSION);
 			}
 		}
+		else if (S.symbol == GMT_SYMBOL_CUSTOM && !strcmp (S.custom->name, "QR")) {
+			if (Ctrl->G.active)	/* Change color of QR code */
+				PSL_command (PSL, "/QR_fill {%s} def\n", PSL_makecolor (PSL, Ctrl->G.fill.rgb));
+			else	/* Default to black */
+				PSL_command (PSL, "/QR_fill {0 A} def\n");
+			if (Ctrl->W.active) {	/* Draw outline of QR code */
+				PSL_command (PSL, "/QR_outline true def\n");
+				PSL_command (PSL, "/QR_pen {%s} def\n",  PSL_makepen (PSL, Ctrl->W.pen.width, Ctrl->W.pen.rgb, Ctrl->W.pen.style, Ctrl->W.pen.offset));
+			}
+			else
+				PSL_command (PSL, "/QR_outline false def\n");
+		}
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
 			gmt_set_column (GMT, GMT_IN, ex1, GMT_IS_FLOAT);
 			delayed_unit_scaling[GMT_X] = (S.u_set && S.u != GMT_INCH);
@@ -1323,7 +1335,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					case PSL_ELLIPSE:
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						if (data[i].flag & 2)
-							gmt_geo_ellipse (GMT, xpos[item], data[i].y, data[i].dim[1], data[i].dim[2], data[i].dim[0]);
+							gmt_plot_geo_ellipse (GMT, xpos[item], data[i].y, data[i].dim[1], data[i].dim[2], data[i].dim[0]);
 						else
 							PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_ELLIPSE);
 						break;
