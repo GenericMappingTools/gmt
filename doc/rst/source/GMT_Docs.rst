@@ -5199,7 +5199,7 @@ which will give a map 4.32 inch wide. It was created with the command:
 
    ::
 
-    gmt coast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred > GMT_mercator.ps
+    gmt coast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred --MAP_FRAME_TYPE=fancy+ > GMT_mercator.ps
 
 .. figure:: /_images/GMT_mercator.*
    :width: 500 px

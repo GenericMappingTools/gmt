@@ -1613,8 +1613,8 @@ static int psl_pattern_cleanup (struct PSL_CTRL *PSL) {
 	PSL_comment (PSL, "Undefine patterns and images\n");
 	for (image_no = 0; image_no < PSL_N_PATTERNS * 2; image_no++) {
 		if (PSL->internal.pattern[image_no].status) {
-			PSL_command (PSL, "currentdict /image%d undef\n", image_no);
-			PSL_command (PSL, "currentdict /pattern%d undef\n", image_no);
+			PSL_command (PSL, "currentdict /image%d undef\n", image_no+1);
+			PSL_command (PSL, "currentdict /pattern%d undef\n", image_no+1);
 		}
 	}
 	return (PSL_NO_ERROR);
