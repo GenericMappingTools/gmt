@@ -5835,7 +5835,7 @@ A simple world map using the sinusoidal projection is therefore obtained by
 
    ::
 
-     gmt coast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Ggray > GMT_sinusoidal.ps
+     gmt coast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Gcoral4 -Sazure3 > GMT_sinusoidal.ps
 
 .. figure:: /_images/GMT_sinusoidal.*
    :width: 500 px
@@ -5857,9 +5857,9 @@ widths (140\ :math:`\cdot`\ 0.014 and 80\ :math:`\cdot`\ 0.014):
    ::
 
      gmt begin GMT_sinus_int ps
-     gmt coast -R200/340/-90/90 -Ji0.014i -Bxg30 -Byg15 -A10000 -Dc -Gblack
-     gmt coast -R-20/60/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gblack -X1.96i
-     gmt coast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gblack -X1.12i
+     gmt coast -R200/340/-90/90 -Ji0.014i -Bxg30 -Byg15 -A10000 -Dc -Gdarkred -Sazure
+     gmt coast -R-20/60/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gdarkgreen -Sazure -X1.96i
+     gmt coast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gdarkblue -Sazure -X1.12i
      gmt end
 
 .. figure:: /_images/GMT_sinus_int.*
@@ -5890,7 +5890,7 @@ Centered on the Dateline, the example below was created by this command:
 
     ::
 
-      gmt coast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -A10000 -Wthinnest > GMT_grinten.ps
+      gmt coast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -Scornsilk -A10000 -Wthinnest > GMT_grinten.ps
 
 .. figure:: /_images/GMT_grinten.*
    :width: 400 px
