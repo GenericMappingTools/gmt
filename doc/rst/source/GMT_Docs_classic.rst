@@ -5898,7 +5898,7 @@ A simple world map using the sinusoidal projection is therefore obtained by
 
    ::
 
-     gmt pscoast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Ggray -P > GMT_sinusoidal.ps
+     gmt pscoast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Gcoral4 -Sazure3 -P > GMT_sinusoidal.ps
 
 .. figure:: /_images/GMT_sinusoidal.*
    :width: 500 px
@@ -5951,7 +5951,7 @@ Centered on the Dateline, the example below was created by this command:
 
     ::
 
-      gmt pscoast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -A10000 -Wthinnest -P > GMT_grinten.ps
+      gmt pscoast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -Scornsilk -A10000 -Wthinnest -P > GMT_grinten.ps
 
 .. figure:: /_images/GMT_grinten.*
    :width: 400 px
