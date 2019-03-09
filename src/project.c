@@ -705,11 +705,12 @@ int GMT_project (void *V_API, int mode, void *args) {
 		P.n_outputs++;
 	}
 
-	if (P.n_outputs == 0 && !Ctrl->G.active) {	/* Generate default -F setting (all) */
+	if (P.n_outputs == 0 && !Ctrl->G.active) {	/* Generate default -F setting (xyzpqrs) */
 		P.n_outputs = PROJECT_N_FARGS;
-		for (col = 0; col < 2; col++) P.output_choice[col] = (int)col;
-		P.output_choice[2] = -1;
-		for (col = 3; col < P.n_outputs; col++) P.output_choice[col] = (int)col - 1;
+		for (col = 0; col < 2; col++) P.output_choice[col] = (int)col;	/* Do xy */
+		P.output_choice[2] = -1;	/* Do z as col 2 */
+		P.want_z_output = true;
+		for (col = 3; col < P.n_outputs; col++) P.output_choice[col] = (int)col - 1;	/* Do pqrs */
 		P.find_new_point = true;
 	}
 	if (Ctrl->G.active) {	/* Hardwire 3 output columns and set their types */
