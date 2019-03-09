@@ -7562,6 +7562,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 			nx = (*GMT->current.map.wrap_around_check) (GMT, dummy, last_x, last_y, this_x, this_y, xx, yy, sides);
 		if (nx == 1) {	/* inside-outside or outside-inside; set move&clip vs draw flags */
 			GMT->current.plot.x[np] = xx[0];	GMT->current.plot.y[np] = yy[0];
+			/* If next point is inside then we want to move to the crossing, otherwise we want to draw to the crossing */
 			GMT->current.plot.pen[np++] = (this_inside) ? PSL_MOVE|PSL_CLIP : PSL_DRAW|PSL_CLIP;
 			if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 		}
