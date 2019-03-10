@@ -223,8 +223,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 					Ctrl->S.mode = GRDMASK_N_CART_MASK;
 				}
 				else {		/* Gave -S[-|=|+]<radius>[d|e|f|k|m|M|n|c] which means radius is fixed or 0 */ 
-					if (opt->arg[strlen(opt->arg)-1] == 'c') 	/* A n of cells request for radius. The problem is that */
-						S_copy = strdup (opt->arg);				/* we can't process it yet because we need -I. So, delay it */
+					if (opt->arg[strlen(opt->arg)-1] == 'c') { 	/* A n of cells request for radius. The problem is that */
+						if (S_copy) free (S_copy);
+						S_copy = strdup (opt->arg);		/* we can't process it yet because we need -I. So, delay it */
+					}
 					else
 						Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				}

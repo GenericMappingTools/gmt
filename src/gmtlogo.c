@@ -284,9 +284,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 				break;
 		}
 	}
-	if (!Ctrl->D.active) {
-		Ctrl->D.refpoint = gmt_get_refpoint (GMT, "x0/0+w2i", 'D');	/* Default if no -D given */
-		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string))	/* Get logo width */
+	if (!Ctrl->D.active) {	/* Default to -Dx0/0+w2i if no -D given */
+		if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, "x0/0+w2i", 'D')) == NULL)	/* Cannot happen but Coverity thinks so */
+			n_errors++;
+		else if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string))	/* Get logo width */
 			Ctrl->D.width = gmt_M_to_inch (GMT, string);
 		Ctrl->D.active = true;
 	}

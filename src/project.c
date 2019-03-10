@@ -622,7 +622,7 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 
 int GMT_project (void *V_API, int mode, void *args) {
 	uint64_t rec, n_total_read, col, n_total_used = 0;
-	bool skip, z_first = true;
+	bool skip, z_first = true, z_set_auto = false;
 	int error = 0;
 
 	size_t n_alloc = GMT_CHUNK;
@@ -705,11 +705,12 @@ int GMT_project (void *V_API, int mode, void *args) {
 		P.n_outputs++;
 	}
 
-	if (P.n_outputs == 0 && !Ctrl->G.active) {	/* Generate default -F setting (all) */
+	if (P.n_outputs == 0 && !Ctrl->G.active) {	/* Generate default -F setting (xyzpqrs) */
 		P.n_outputs = PROJECT_N_FARGS;
-		for (col = 0; col < 2; col++) P.output_choice[col] = (int)col;
-		P.output_choice[2] = -1;
-		for (col = 3; col < P.n_outputs; col++) P.output_choice[col] = (int)col - 1;
+		for (col = 0; col < 2; col++) P.output_choice[col] = (int)col;	/* Do xy */
+		P.output_choice[2] = -1;	/* Do z as col 2 */
+		P.want_z_output = z_set_auto = true;
+		for (col = 3; col < P.n_outputs; col++) P.output_choice[col] = (int)col - 1;	/* Do pqrs */
 		P.find_new_point = true;
 	}
 	if (Ctrl->G.active) {	/* Hardwire 3 output columns and set their types */
@@ -997,11 +998,43 @@ int GMT_project (void *V_API, int mode, void *args) {
 			if (z_first) {
 				uint64_t n_cols = gmt_get_cols (GMT, GMT_IN), n_tot_cols;
 				if (n_cols == 2 && P.want_z_output && In->text == NULL) {
-					GMT_Report (API, GMT_MSG_NORMAL, "No data columns or trailing text after leading coordinates, cannot use z flag in -F\n");
+					if (z_set_auto) {	/* Implicitly set -Fxyzpqrs earlier but input file has no z values so roll back to -Fxypqrs */
+						P.want_z_output = z_set_auto = false;
+						for (col = 3; col < P.n_outputs; col++) P.output_choice[col-1] = P.output_choice[col];	/* Shuffle pqrs to the left */
+						P.n_outputs--;
+						for (col = 0; col < P.n_outputs; col++) {
+							switch (P.output_choice[col]) {
+								case 0: case 4: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LON);	break;
+								case 1: case 5: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LAT);	break;
+								default: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_FLOAT);	break;
+							}
+						}
+					}
+					else {
+						GMT_Report (API, GMT_MSG_NORMAL, "No data columns or trailing text after leading coordinates, cannot use z flag in -F\n");
+						Return (GMT_RUNTIME_ERROR);
+					}
+				}
+				else if (n_cols < 2) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Input file must at least have x,y or lon,lat columns\n");
+					gmt_M_free (GMT, p_data);
 					Return (GMT_RUNTIME_ERROR);
 				}
-				else
+				else {	/* Must update col types since # of z values will need to be considered */
+					unsigned int k, kk;
 					P.n_z = n_cols - 2;
+					for (col = kk = 0; col < P.n_outputs; col++, kk++) {
+						switch (P.output_choice[col]) {
+							case -1: /* Need to set float type for all the nz columns based on what the input z column types are */
+								for (k = 0; k < P.n_z; k++, kk++) gmt_set_column (GMT, GMT_OUT, kk, GMT->current.io.col_type[GMT_IN][k+GMT_Z]);
+								kk--;	/* Since we also do this at end of loop */
+								break;
+							case 0: case 4: gmt_set_column (GMT, GMT_OUT, kk, GMT_IS_LON);		break;
+							case 1: case 5: gmt_set_column (GMT, GMT_OUT, kk, GMT_IS_LAT);		break;
+							default: 	gmt_set_column (GMT, GMT_OUT, kk, GMT_IS_FLOAT);	break;
+						}
+					}
+				}
 				z_first = false;
 				n_tot_cols = (P.want_z_output) ? P.n_outputs - 1 + P.n_z : P.n_outputs;
 				if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_tot_cols, gmt_M_colmode (In->text))) != GMT_NOERROR) {
