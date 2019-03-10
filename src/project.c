@@ -282,9 +282,9 @@ GMT_LOCAL void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double a
 }
 
 GMT_LOCAL void flat_project_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, bool two_pts, bool pole_set) {
-	/* Sets up stuff for rotation of cartesian 2-vectors, analogous
+	/* Sets up stuff for rotation of Cartesian 2-vectors, analogous
 	   to the spherical three vector stuff above.
-	   Output is the negative cartesian azimuth in degrees.
+	   Output is the negative Cartesian azimuth in degrees.
 	   Latitudes and longitudes are in degrees. */
 
 	if (two_pts)
@@ -334,7 +334,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   of the (p,q) system (line q = 0) passes through -C and makes an angle\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <azimuth> with North (case 1), or passes through -E (case 2), or is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   determined by the pole -T (case 3).  In (3), point -C need not be on equator.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   In a cartesian [-N option] projection, p = q = 0 at -O in all cases;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   In a Cartesian [-N option] projection, p = q = 0 at -O in all cases;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (1) and (2) orient the p axis, while (3) orients the q axis.\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the location of the center to be <ox>/<oy>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -360,7 +360,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Lw will use only those points Within the span from C to E (Must have set -E).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -L<l_min>/<l_max> will only use points whose p is [l_min <= p <= l_max].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default uses all points.  Note p = 0 at C and increases toward E in <azimuth> direction.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Flat Earth mode; a cartesian projection is made.  Default is spherical.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Flat Earth mode; a Cartesian projection is made.  Default is spherical.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Convert to Map units, so x,y,r,s are degrees,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   while p,q,dist,l_min,l_max,w_min,w_max are km.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If not set, then p,q,dist,l_min,l_max,w_min,w_max are assumed to be in same units as x,y,r,s.\n");
@@ -370,7 +370,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Check the width across the projected track and use only certain points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This will use only those points whose q is [w_min <= q <= w_max].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in <azimuth> direction.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z With -G and -C, generate an geo ellipse of given major and minor axes (in km) and azimuth of major axis\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z With -G and -C, generate an ellipse of given major and minor axes (in km if geographic) and azimuth of major axis\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +e for adjusting increment to fix perimeter exactly [use increment as given in -G].\n");
 	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,s,:,.");
 
@@ -485,7 +485,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'N': /* Handled above but still in argv */
 				Ctrl->N.active = true;
-				n_errors += gmt_M_check_condition (GMT, sscanf(opt->arg, "%lf/%lf", &Ctrl->L.min, &Ctrl->L.max) != 2, "Syntax error: Expected -L[w | <min>/<max>]\n");
 				break;
 			case 'Q':
 				Ctrl->Q.active = true;
@@ -550,8 +549,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 	                                 "Syntax error -N option: Cannot be used with -fg\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->G.mode,
 	                                 "Syntax error -N option: Cannot be used with -G<dist>/<colat>\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Z.active,
-	                                 "Syntax error -N option: Cannot be used with -Z<major>/<minor>/<azimuth>\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -737,7 +734,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) {	/* Flat Earth mode */
 		theta = Ctrl->A.azimuth;
 		flat_project_setup (Ctrl->C.y, Ctrl->C.x, Ctrl->E.y, Ctrl->E.x, Ctrl->T.y, Ctrl->T.x, &theta, e, Ctrl->E.active, Ctrl->T.active);
-		/* Azimuth (theta) is now cartesian in degrees */
+		/* Azimuth (theta) is now Cartesian in degrees */
 		if (Ctrl->L.constrain) {
 			Ctrl->L.min = 0.0;
 			xx = Ctrl->E.x - Ctrl->C.x;
@@ -832,7 +829,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 			double h = pow (Ctrl->Z.major - Ctrl->Z.minor, 2.0) / pow (Ctrl->Z.major + Ctrl->Z.minor, 2.0);
 			Ctrl->L.min = 0.0;
 			Ctrl->L.max = M_PI * (Ctrl->Z.major + Ctrl->Z.minor) * (1.0 + (3.0 * h)/(10.0 + sqrt (4.0 - 3.0 * h)));	/* Ramanujan approximation of ellipse circumference */
-			if (Ctrl->Z.exact) {	/* Adjust inc to fit the ellise perimeter exactly */
+			if (Ctrl->Z.exact) {	/* Adjust inc to fit the ellipse perimeter exactly */
 				double f = rint (Ctrl->L.max / Ctrl->G.inc);
 				Ctrl->G.inc = Ctrl->L.max / f;
 			}
@@ -863,13 +860,31 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 		if (Ctrl->Z.active) {
 			uint64_t ne = urint (Ctrl->L.max / Ctrl->G.inc);
-			struct GMT_DATASEGMENT *S = gmt_get_geo_ellipse (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->Z.major, Ctrl->Z.minor, Ctrl->Z.azimuth, ne);
-			for (rec = 0; rec < P.n_used; rec++) {
-				p_data[rec].a[4] = S->coord[GMT_X][rec];
-				p_data[rec].a[5] = S->coord[GMT_Y][rec];
+			if (Ctrl->N.active) {	/* Cartesian ellipse */
+				double r, ca, sa, d_azim = TWO_PI / ne, e2 = 1.0 - pow (Ctrl->Z.minor/Ctrl->Z.major, 2.0);
+				sincosd (Ctrl->Z.azimuth - 90.0, &sin_theta, &cos_theta);
+				e[0] = e[3] = cos_theta;
+				e[1] = sin_theta;
+				e[2] = -e[1];
+				for (rec = 0; rec < P.n_used; rec++) {
+					sincos (d_azim*rec, &sa, &ca);
+					r = Ctrl->Z.minor / sqrt (1.0 - e2 * pow (ca, 2.0));
+					x[0] = r * ca;	x[1] = r * sa;
+					matrix_2v (e, x, xt);
+					p_data[rec].a[4] = Ctrl->C.x + xt[GMT_X];
+					p_data[rec].a[5] = Ctrl->C.y + xt[GMT_Y];
+				}
+				z_header = strdup ("Testing Cartesian ellipse");
 			}
-			z_header = strdup (S->header);
-			gmt_free_segment (GMT, &S);
+			else {	/* Geographic ellipse */
+				struct GMT_DATASEGMENT *S = gmt_get_geo_ellipse (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->Z.major, Ctrl->Z.minor, Ctrl->Z.azimuth, ne);
+				for (rec = 0; rec < P.n_used; rec++) {
+					p_data[rec].a[4] = S->coord[GMT_X][rec];
+					p_data[rec].a[5] = S->coord[GMT_Y][rec];
+				}
+				z_header = strdup (S->header);
+				gmt_free_segment (GMT, &S);
+			}
 		}
 		else if (Ctrl->N.active) {
 			sincosd (90.0 + theta, &sin_theta, &cos_theta);
