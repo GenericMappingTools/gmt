@@ -622,7 +622,7 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 
 int GMT_project (void *V_API, int mode, void *args) {
 	uint64_t rec, n_total_read, col, n_total_used = 0;
-	bool skip, z_first = true;
+	bool skip, z_first = true, z_set_auto = false;
 	int error = 0;
 
 	size_t n_alloc = GMT_CHUNK;
@@ -709,7 +709,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 		P.n_outputs = PROJECT_N_FARGS;
 		for (col = 0; col < 2; col++) P.output_choice[col] = (int)col;	/* Do xy */
 		P.output_choice[2] = -1;	/* Do z as col 2 */
-		P.want_z_output = true;
+		P.want_z_output = z_set_auto = true;
 		for (col = 3; col < P.n_outputs; col++) P.output_choice[col] = (int)col - 1;	/* Do pqrs */
 		P.find_new_point = true;
 	}
@@ -998,7 +998,17 @@ int GMT_project (void *V_API, int mode, void *args) {
 			if (z_first) {
 				uint64_t n_cols = gmt_get_cols (GMT, GMT_IN), n_tot_cols;
 				if (n_cols == 2 && P.want_z_output && In->text == NULL) {
-					GMT_Report (API, GMT_MSG_NORMAL, "No data columns or trailing text after leading coordinates, cannot use z flag in -F\n");
+					if (z_set_auto) {	/* Implicitly set all output options earlier but input file has no z values... */
+						P.want_z_output = z_set_auto = false;
+					}
+					else {
+						GMT_Report (API, GMT_MSG_NORMAL, "No data columns or trailing text after leading coordinates, cannot use z flag in -F\n");
+						Return (GMT_RUNTIME_ERROR);
+					}
+				}
+				else if (n_cols < 2) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Input file must at least have x,y or lon,lat columns\n");
+					gmt_M_free (GMT, p_data);
 					Return (GMT_RUNTIME_ERROR);
 				}
 				else
