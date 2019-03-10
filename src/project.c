@@ -998,8 +998,10 @@ int GMT_project (void *V_API, int mode, void *args) {
 			if (z_first) {
 				uint64_t n_cols = gmt_get_cols (GMT, GMT_IN), n_tot_cols;
 				if (n_cols == 2 && P.want_z_output && In->text == NULL) {
-					if (z_set_auto) {	/* Implicitly set all output options earlier but input file has no z values... */
+					if (z_set_auto) {	/* Implicitly set -Fxyzpqrs earlier but input file has no z values so roll back to -Fxypqrs */
 						P.want_z_output = z_set_auto = false;
+						for (col = 3; col < P.n_outputs; col++) P.output_choice[col-1] = P.output_choice[col];	/* Shuffle pqrs to the left */
+						P.n_outputs--;
 					}
 					else {
 						GMT_Report (API, GMT_MSG_NORMAL, "No data columns or trailing text after leading coordinates, cannot use z flag in -F\n");

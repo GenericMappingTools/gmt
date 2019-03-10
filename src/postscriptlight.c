@@ -872,6 +872,7 @@ void psl_set_txt_array (struct PSL_CTRL *PSL, const char *prefix, char *array[],
 	for (i = 0; i < n; i++) {
 		outtext = psl_prepare_text (PSL, array[i]);	/* Expand escape codes and fix utf-8 characters */
 		PSL_command (PSL, "\t(%s)\n", outtext);
+		PSL_free (outtext);
 	}
 	PSL_command (PSL, "] def\n", n);
 }
