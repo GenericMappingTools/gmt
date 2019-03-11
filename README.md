@@ -160,8 +160,7 @@ where you eventually want to install GMT).
 
 ## Building GMT (quick start)
 
-This is just a quick start description. For a more thorough description read more on [Building GMT with
-CMake](Building_GMT_with_CMake.md)
+This is just a quick start description. For a more thorough description read more on [Building GMT](BUIDING.md)
 
 Checkout GMT from its GitHub repository:
 
