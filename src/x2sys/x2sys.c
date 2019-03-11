@@ -1197,11 +1197,11 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 	}
 	x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 
-	if (B->time_gap < 0.0) {
+	if (B->time_gap <= 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -Wt: maximum gap must be > 0!\n");
 		return (X2SYS_BAD_ARG);
 	}
-	if (B->dist_gap < 0.0) {
+	if (B->dist_gap <= 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -Wd: maximum gap must be > 0!\n");
 		return (X2SYS_BAD_ARG);
 	}
