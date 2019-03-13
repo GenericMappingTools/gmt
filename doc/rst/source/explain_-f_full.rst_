@@ -6,7 +6,7 @@
     to input or output [Default applies to both]. Give one or more
     columns (or column ranges) separated by commas, or use **-f**
     multiple times (column ranges must be given
-    in the format *start*\ [:*inc* \]:*stop*, where *inc* defaults to 1 if
+    in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if
     not specified).  Append **T** (absolute calendar time), **t**
     (relative time in chosen :ref:`TIME_UNIT <TIME_UNIT>` since :ref:`TIME_EPOCH <TIME_EPOCH>`),
     **x** (longitude), **y** (latitude), **p**\ [*unit*] (projected

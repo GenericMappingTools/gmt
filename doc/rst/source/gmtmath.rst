@@ -701,7 +701,7 @@ assign it to a variable, try
 
    ::
 
-    gmt set mode_age = `gmt math -S -T ages.txt MODE =`
+    mode_age=`gmt math -S -T ages.txt MODE =`
 
 To evaluate the dilog(x) function for coordinates given in the file t.txt:
 
