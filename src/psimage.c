@@ -117,7 +117,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "J-Z,K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Force color -> monochrome image using gmt_M_yiq-transformation.\n");
 	GMT_Option (API, "O,P,R,U,V,X,p");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (Requires -R and -J for proper functioning).\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   (Requires -R and -J for proper functioning).\n");
 	GMT_Option (API, "t,.");
 
 	return (GMT_MODULE_USAGE);

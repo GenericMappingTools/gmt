@@ -140,7 +140,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default format is scanline orientation in ASCII representation: -ZTLa].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This option assumes all nodes have data values.\n");
 	GMT_Option (API, "bi3,di");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Also sets value for nodes without input xyz triplet [Default is NaN].\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Also sets value for nodes without input xyz triplet [Default is NaN].\n");
 	GMT_Option (API, "e,f,h,i,r,s,:,.");
 
 	return (GMT_MODULE_USAGE);

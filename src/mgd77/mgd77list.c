@@ -350,7 +350,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set weight for these data [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Append n to report bathymetry and msd as negative depths [Default is positive -Zp].\n");
 	GMT_Option (API, "bo,do");
-	GMT_Message (API, GMT_TIME_NONE, "\t-h Write header record with column information [Default is no header].\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t-h Write header record with column information [Default is no header].\n");
 	GMT_Option (API, ":,.");
 	
 	return (GMT_MODULE_USAGE);
