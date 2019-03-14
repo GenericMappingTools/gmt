@@ -425,7 +425,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Select -S after you have placed all items of interest on the stack.\n");
 	GMT_Option (API, "V");
 	GMT_Option (API, "bi2,di,e,f,g,h,i");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (Only applies to the input files for operators LDIST, PDIST, POINT and INSIDE).\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   (Only applies to the input files for operators LDIST, PDIST, POINT and INSIDE).\n");
 	GMT_Option (API, "n,r,s,x,.");
 
 	return (GMT_MODULE_USAGE);

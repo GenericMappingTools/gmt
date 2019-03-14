@@ -206,7 +206,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., z = 0-100 gives twice the width as z = 100-150.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Multiply all z-values in the CPT by <scale> [no change].\n");
 	GMT_Option (API, "p");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (Requires -R and -J for proper functioning).\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   (Requires -R and -J for proper functioning).\n");
 	GMT_Option (API, "t,.");
 
 	return (GMT_MODULE_USAGE);
