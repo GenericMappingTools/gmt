@@ -27,7 +27,7 @@ Synopsis
 [ |-S| ]
 [ |-T|\ [**h**\ ]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**w**\ \|\ **h**] ]
+[ |-W|\ [**g**\ \|\ **h**\ \|\ **j**\ \|\ **n**\ \|\ **w**\ \|\ **x**] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -216,10 +216,15 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**w**\ \|\ **h**]
+**-W**\ [**g**\ \|\ **h**\ \|\ **j**\ \|\ **n**\ \|\ **w**\ \|\ **x**]
     Prints map width and height on standard output.  No input files are read.
     To only output the width or the height, append **w** or **h**, respectively.
-    The units of the dimensions may be changed via **-D**.
+    To output the plot coordinates of a map point, give **g**\ *lon*\*lat*.
+    The units of reported plot dimensions may be changed via **-D**.
+    To output the map coordinates of a reference point, select **j**\ *code* (with
+    standard two-character justification codes), **n**\ *rx*/*ry*, where the reference
+    point is given as normalized positions in the 0-1 range, or **x**\ *px*/*py*,
+    where a plot point is given directly [Default returns the width and height of the map]
 
 .. _-Z:
 
@@ -334,6 +339,14 @@ where :ref:`TIME_UNIT <TIME_UNIT>` is set to hour so that the speed is
 measured in nm (set by **-G**) per hour (set by :ref:`TIME_UNIT <TIME_UNIT>`).
 Elapsed times will be reported in hours (unless **+f** is added to **-Z**
 for ISO elapsed time).
+
+To determine the geographic coordinates of the mid-point of this transverse Mercator map, try
+
+   ::
+
+    gmt mapproject -R-80/-70/20/40 -Jt-75/1:500000 -WjCM > mid_point.txt
+
+where :ref:`TIME_UNIT <TIME_UNIT>` is set to hour so that the speed is
 
 Restrictions
 ------------

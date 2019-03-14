@@ -58,6 +58,13 @@ enum GMT_mp_Lcodes {	/* Support for -L parsing */
 	GMT_MP_GIVE_FRAC = 3	/* Return the fractional line/point number of the nearest point on the line */
 };
 
+enum GMT_mp_Wcodes {	/* Support for -W parsing */
+	GMT_MP_M_WH      = 0,	/* Return width and height */
+	GMT_MP_M_WIDTH   = 1,	/* Return width */
+	GMT_MP_M_HEIGHT  = 2,	/* Return height */
+	GMT_MP_M_POINT   = 3,	/* Return user coordinates of point given in plot coordinates */
+};
+
 enum GMT_mp_Zcodes {	/* Support for -Z parsing */
 	GMT_MP_Z_DELT  = 1,	/* Return delta t */
 	GMT_MP_Z_CUMT  = 2,	/* Return elapsed t */
@@ -140,9 +147,10 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 		struct GMT_DATUM from;	/* Contains a, f, xyz[3] */
 		struct GMT_DATUM to;	/* Contains a, f, xyz[3] */
 	} T;
-	struct MAPPRJ_W {	/* -W[w|h] */
+	struct MAPPRJ_W {	/* -W[w|h|j<code>|n<rx/ry>|g<lon/lat>|x<x/y>] */
 		bool active;
-		unsigned int mode;	/* 0 = print width & height, 1 print width, 2 print height */
+		unsigned int mode;	/* See GMT_mp_Wcodes above */
+		struct GMT_REFPOINT *refpoint;
 	} W;
 	struct MAPPRJ_Z {	/* -Z[<speed>][+c][+f][+i][+t<epoch>] */
 		bool active;
@@ -181,7 +189,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> %s %s [-C[<dx></dy>]]\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]] [-D%s] [-E[<datum>]] [-F[<unit>]]\n\t[-G[<lon0>/<lat0>][+a][+i][+u[-|+]<unit>][+v]]", GMT_DIM_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, " [-I] [-L<table>[+u[+|-]<unit>][+p] [-N[a|c|g|m]]\n\t[-Q[e|d]] [-S] [-T[h]<from>[/<to>] [%s] [-W[w|h]] [-Z[<speed>][+a][+i][+f][+t<epoch>]]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, " [-I] [-L<table>[+u[+|-]<unit>][+p] [-N[a|c|g|m]]\n\t[-Q[e|d]] [-S] [-T[h]<from>[/<to>] [%s] [-W[g|h|j|n|w|x]] [-Z[<speed>][+a][+i][+f][+t<epoch>]]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_p_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -237,8 +245,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   <from> = - means WGS-84.  If /<to> is not given we assume WGS-84.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The -T option can be used as pre- or post- (-I) processing for -J -R.\n");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t -W prints map width and height. No input files are read. See -D for units.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Append w or h to just print width or height, respectively.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t -W prints map width and/or height or reference point. No input files are read. See -D for plot units.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    Append w or h to just print width or height, respectively [Default prints both].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    Append g<gx/gy> to return plot coordinates of reference point in map coordinates.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    Append j<just>  to return map coordinates of reference point with 2-char justification code (BL, MC, etc.).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    Append n<rx/ry> to return map coordinates of reference point with normalized coordinates in 0-1 range.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    Append x<px/py> to return map coordinates of reference point in plot coordinates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t -Z Compute travel times along track using specified speed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    Requires -G for setting distance calculations.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    Append speed in distance units per TIME_UNIT [m/s]. If the speed is not\n");
@@ -557,8 +569,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				break;
 			case 'W':
 				Ctrl->W.active = true;
-				if (opt->arg[0] == 'w') Ctrl->W.mode = 1;
-				else if (opt->arg[0] == 'h') Ctrl->W.mode = 2;
+				switch (opt->arg[0]) {
+					case '\0': Ctrl->W.mode = GMT_MP_M_WH; break;
+					case 'w': Ctrl->W.mode = GMT_MP_M_WIDTH; break;
+					case 'h': Ctrl->W.mode = GMT_MP_M_HEIGHT; break;
+					case 'j': case 'n': case 'g': case 'x':
+						if ((Ctrl->W.refpoint = gmt_get_refpoint (GMT, opt->arg, 'W')) == NULL) {
+							n_errors++;
+						}
+						Ctrl->W.mode = GMT_MP_M_POINT;
+						break;
+					default:
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expected -W[w|h|j|g|n|x]\n");
+						n_errors++;
+						break;
+				}
 				will_need_RJ = true;	/* Since knowing the dimensions means region and projection */
 				break;
 
@@ -830,15 +855,50 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	Out = gmt_new_record (GMT, NULL, NULL);
 	
-	if (Ctrl->W.active) {	/* Print map dimensions and exit */
-		double w_out[2] = {0.0, 0.0};
+	if (Ctrl->W.active) {	/* Print map dimensions or reference point and exit */
+		double w_out[2] = {0.0, 0.0}, x_orig, y_orig;
+		unsigned int wmode = 0;
+		char key[3] = {""};
 		switch (Ctrl->W.mode) {
-			case 1:
+			case GMT_MP_M_WIDTH:
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reporting map width in %s\n", unit_name);
 				w_out[GMT_X] = GMT->current.proj.rect[XHI] * inch_to_unit;	n_output = 1;	break;
-			case 2:
+			case GMT_MP_M_HEIGHT:
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reporting map height in %s\n", unit_name);
 				w_out[GMT_X] = GMT->current.proj.rect[YHI] * inch_to_unit;	n_output = 1;	break;
+			case GMT_MP_M_POINT:
+				wmode = Ctrl->W.refpoint->mode;
+				x_orig = Ctrl->W.refpoint->x;	y_orig = Ctrl->W.refpoint->y;
+				gmt_set_refpoint (GMT, Ctrl->W.refpoint);	/* Finalize reference point plot coordinates, if needed */
+				switch (wmode) {
+					case GMT_REFPOINT_NORM:
+						gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
+						GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reporting coordinates of normalized point (%g/%g)\n", x_orig, y_orig);
+						gmt_xy_to_geo (GMT, &w_out[GMT_X], &w_out[GMT_Y], Ctrl->W.refpoint->x, Ctrl->W.refpoint->y);
+						break;
+					case GMT_REFPOINT_PLOT:
+						GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reporting coordinates of plot point (%g/%g)\n", x_orig, y_orig);
+						gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
+						gmt_xy_to_geo (GMT, &w_out[GMT_X], &w_out[GMT_Y], Ctrl->W.refpoint->x, Ctrl->W.refpoint->y);
+						break;
+					case GMT_REFPOINT_JUST:
+					case GMT_REFPOINT_JUST_FLIP:	/* Ignored and treated like j */
+						gmt_just_to_code (GMT, Ctrl->W.refpoint->justify, key);
+						GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reporting coordinates of justification point (%s)\n", key);
+						gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
+						gmt_xy_to_geo (GMT, &w_out[GMT_X], &w_out[GMT_Y], Ctrl->W.refpoint->x, Ctrl->W.refpoint->y);
+						break;
+					case GMT_REFPOINT_MAP:
+						GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reporting plot coordinates of user point (%g/%g)\n", x_orig, y_orig);
+						w_out[GMT_X] = Ctrl->W.refpoint->x * inch_to_unit; w_out[GMT_Y] = Ctrl->W.refpoint->y * inch_to_unit;
+						break;
+					case GMT_REFPOINT_NOTSET:
+						GMT_Report (API, GMT_MSG_LONG_VERBOSE, "No reference point set!\n");
+						Return (GMT_RUNTIME_ERROR);
+						break;
+				}
+				gmt_free_refpoint (GMT, &Ctrl->W.refpoint);
+				n_output = 2;	break;
 			default:
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reporting map width and height in %s\n", unit_name);
 				w_out[GMT_X] = GMT->current.proj.rect[XHI] * inch_to_unit;
