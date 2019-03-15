@@ -73,7 +73,7 @@
  *
  * Author:	Joaquim Luis
  * Date:	15-may-2018
- * Revision: 1		Based on ogrread.c MEX from Mirone
+ * Revision: 1		Based on ogrread.c MEX from Mirone 
  */
 
 #include "gmt_gdalread.h"
@@ -161,14 +161,14 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 			}
 
 			if (nRings > 1) {		/* Deal with the Islands */
-				int	cz, nPtsRing, *pi, nExtra = nRings, c = nPtsBase;
+				int	cz, nPtsRing, *pi, nExtra = nRings - 1, c = nPtsBase;
 
 				for (k = 1; k < nRings; k++) {			/* Loop over islands to count extra points needed in realloc */
 					hRingIsland = OGR_G_GetGeometryRef(hGeom, k);
 					nExtra += OGR_G_GetPointCount(hRingIsland);
 				}
-				x = gmt_M_memory (GMT, x, np+nExtra, double);
-				y = gmt_M_memory (GMT, y, np+nExtra, double);
+				x = gmt_M_memory (GMT, x, nPtsBase+nExtra, double);
+				y = gmt_M_memory (GMT, y, nPtsBase+nExtra, double);
 				if (is3D) z = gmt_M_memory (GMT, z, np+nExtra, double);
 
 				pi = gmt_M_memory(GMT, NULL, nRings * 2, int);
@@ -195,7 +195,7 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 
 				pi[2*nRings - 1] = c - 1;			/* Last element was not assigned in the loop above */
 				out[indStruct].islands = pi;
-				out[indStruct].np = np+nExtra;
+				out[indStruct].np = nPtsBase+nExtra;
 			}
 			else
 				out[indStruct].np = nPtsBase;
@@ -242,7 +242,7 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 		else
 			out[indStruct].att_number = 0;
 
-		out[0].n_filled++;				/* Incement the filled nodes counter */
+		out[0].n_filled++;				/* Increment the filled nodes counter */
 	}
 
 	return 0;
@@ -308,11 +308,11 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 		OGR_L_ResetReading(hLayer);
 
 		while ((hFeature = OGR_L_GetNextFeature(hLayer)) != NULL) {
-			hGeom = OGR_F_GetGeometryRef(hFeature);
-			eType = wkbFlatten(OGR_G_GetGeometryType(hGeom));
-			if (eType != wkbPolygon)	/* For simple polygons, next would return only the number of interior rings */
-				nMaxGeoms = MAX(OGR_G_GetGeometryCount(hGeom), nMaxGeoms);
-
+			if ((hGeom = OGR_F_GetGeometryRef(hFeature)) != NULL) {
+				eType = wkbFlatten(OGR_G_GetGeometryType(hGeom));
+				if (eType != wkbPolygon)	/* For simple polygons, next would return only the number of interior rings */
+					nMaxGeoms = MAX(OGR_G_GetGeometryCount(hGeom), nMaxGeoms);
+			}
 			OGR_F_Destroy(hFeature);
 		}
 	}
