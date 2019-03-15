@@ -9124,7 +9124,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 
 	/* Store possible unit.  For most cases these are irrelevant as no unit is expected */
 	if (case_val >= 0) {
-		if (len) GMT->current.setting.given_unit[case_val] = value[len-1];
+		if (len && strchr (GMT_DIM_UNITS, value[len-1])) GMT->current.setting.given_unit[case_val] = value[len-1];
 
 		if (error)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
