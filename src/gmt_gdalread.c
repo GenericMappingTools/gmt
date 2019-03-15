@@ -738,7 +738,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		for (n = 0; prhs->B.bands[n]; n++)
 			if (prhs->B.bands[n] == '-') n_dash = (int)n;
 		if ((n_commas + n_dash) == 0)
-			nn = atoi(prhs->B.bands);
+			nn = 1;
 		else {
 			/* This part of the algorithm only works well for three bands. When more, it's very wrong MUST FIX */
 			nn = MAX(n_commas+1, n_dash);
