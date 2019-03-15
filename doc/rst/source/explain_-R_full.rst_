@@ -4,7 +4,7 @@
     *xmin*, *xmax*, *ymin*, and *ymax* specify the region of interest.
     For geographic regions, these limits correspond to *west*, *east*,
     *south*, and *north* and you may specify them in decimal degrees or
-    in [+\ \|\ -]\ *dd*\ **:**\ *mm*\ [**:**\ *ss.xxx*\ ][**W**\ \|\ **E**\ \|\ **S**\ \|\ **N**\ ]
+    in [±]\ *dd*\ **:**\ *mm*\ [**:**\ *ss.xxx*\ ][**W**\ \|\ **E**\ \|\ **S**\ \|\ **N**\ ]
     format. Append **+r** if lower left
     and upper right map coordinates are given instead of *west*/*east*/*south*/*north*. The
     two shorthands **-Rg** and **-Rd** stand for global domain (0/360
@@ -51,5 +51,5 @@
     coordinates for the lower left and upper right corners. This form is
     convenient when you want to specify a region directly in the
     projected units (e.g., UTM meters).  For Cartesian data in radians you
-    can also use [+\ \|\ -][*s*\ ]\ **pi**\ [*f*\ ], for optional integer
+    can also use [±][*s*\ ]\ **pi**\ [*f*\ ], for optional integer
     scales *s* and fractions *f*.
