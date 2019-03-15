@@ -493,7 +493,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 			case GDT_UInt32:
 			case GDT_Int32:
 				if (rint(prhs->nan_value) == prhs->nan_value)
-					/* Only set NoData if nan_value contains an intger value */
+					/* Only set NoData if nan_value contains an integer value */
 					GDALSetRasterNoDataValue(hBand, prhs->nan_value);
 				if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, data, n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);
