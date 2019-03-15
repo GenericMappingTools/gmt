@@ -169,8 +169,9 @@ int GMT_docs (void *V_API, int mode, void *args) {
 
 	sprintf (cmd, "%s %s", can_opener[k], URL);
 	if ((error = system (cmd))) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s in the default browser via %s failed with error %d\n", URL, can_opener[k], error);
-		perror ("docs");
+		GMT_Message (API, GMT_TIME_NONE, "\t Error running the \"%s\" program. This may indicate that you are working"
+		             " in a\n\t server environnement. Try open this URL in a web browser on your local machine.\n\t %s\n",
+		             can_opener[k], URL);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
