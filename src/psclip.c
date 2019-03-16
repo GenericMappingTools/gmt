@@ -275,7 +275,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 				Return (API->error);	/* Register data input */
 			}
 			if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-				/* We dont want trailing text because we may need to resample lines below */
+				/* We don't want trailing text because we may need to resample lines below */
 				Return (API->error);
 			}
 			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {

@@ -44,7 +44,7 @@
  *	2. Draw FROM a seamount TO a hotspot (and beyond): Use spotter_forthtrack
  *
  * All coordinates herein are assumed to be GEOCENTRIC.  The main programs are
- * respondible for coverting to/from geodetic data coordinates.  Rotation pole
+ * respondible for converting to/from geodetic data coordinates.  Rotation pole
  * latitudes are usually implied to be geocentric.
  */
 
@@ -1563,7 +1563,7 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 	 * we simply always go with the positive root for all angles.  (2) If origin is outside P'(u,v) then there will
 	 * be angles for which the radius vector does not intersect the curve (and we get two complex roots to ignore),
 	 * otherwise the real roots come in pairs of the same sign.  Since the negative pairs repeat the information
-	 * of hte positive pairs (except they are 180 degrees shifted) we only keep the positive pairs.  These two
+	 * of the positive pairs (except they are 180 degrees shifted) we only keep the positive pairs.  These two
 	 * roots represents two different angles 180 degrees apart so therefore we store both and do the stitching
 	 * further down.
 	*/

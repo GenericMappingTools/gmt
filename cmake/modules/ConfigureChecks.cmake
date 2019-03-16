@@ -178,7 +178,7 @@ if (WIN32)
 endif (WIN32)
 
 # Check if these functions are declared (might not be the case although they
-# are build-in)
+# are built-in)
 check_symbol_exists (strdup    string.h DECLARED_STRDUP)
 check_symbol_exists (strsep    string.h DECLARED_STRSEP)
 

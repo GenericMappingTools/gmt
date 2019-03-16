@@ -42,8 +42,8 @@ EXTERN_MSC void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, u
 #define PSTEXT_SHOW_FONTS	128
 
 #define GET_REC_TEXT	0	/* Free-form text as trailing text in the record */
-#define GET_SEG_LABEL	1	/* Use the curent segment label (-L<label>) as the text */
-#define GET_SEG_HEADER	2	/* Use the curent segment header as the text */
+#define GET_SEG_LABEL	1	/* Use the current segment label (-L<label>) as the text */
+#define GET_SEG_HEADER	2	/* Use the current segment header as the text */
 #define GET_CMD_TEXT	3	/* Use the given +t<text> as the text */
 #define GET_CMD_FORMAT	4	/* Format z-column using given format (or FORMAT_FLOAT_OUT) */
 #define GET_REC_NUMBER	5	/* Use record number (relative to given offset) as text */

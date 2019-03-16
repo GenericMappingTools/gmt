@@ -610,7 +610,7 @@ static void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, si
  * This depends on which character set we have.  We will limit this to just
  * Standard, Standard+, ISOILatin1, and ISOLatin1+. Of these, Standard will
  * only work for some of the encoded letters while the three others should
- * all be fine. We also handle the differences bewteen hyphens and minus symbol.
+ * all be fine. We also handle the differences between hyphens and minus symbol.
  * In ISOLatin1 the hyphen key on the keyboard results in a minus sign while
  * in Standard it gives a hyphen.  In GMT we want minus signs in annotations
  * contours and other numerical negative values.  We assume that if a string
@@ -2318,7 +2318,7 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 		switch (kind[i]) {
 			case PSL_VEC_ARROW:
 				B = D2R * (angle[i] + sign[i] * da);	sb = sin (B);	cb = cos (B);
-				PSL_command (PSL, "V\n");	/* Do this inside gsave/resore since we are clipping */
+				PSL_command (PSL, "V\n");	/* Do this inside gsave/restore since we are clipping */
 				if (side[i] != +sign[i]) {	/* Need right side of arrow head */
 					xr = (r2 + head_half_width) * cb;	yr = (r2 + head_half_width) * sb;	/* Outer flank coordinates */
 					psl_get_origin (xt, yt, xr, yr, r2, &xo, &yo, &bo1, &bo2);

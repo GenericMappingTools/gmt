@@ -282,7 +282,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	struct GMT_PEN pen;
-	char *string = NULL, *kind[2] = {"Specify a rectanglar panel behind the map scale", "Specify a rectanglar panel behind the map rose"};
+	char *string = NULL, *kind[2] = {"Specify a rectangular panel behind the map scale", "Specify a rectangular panel behind the map rose"};
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -515,7 +515,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 		char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
 		struct GMT_RECORD *Rec = gmt_new_record (GMT, NULL, record);
 		size_t i, j;
-		GMT->current.io.geo.range = GMT_IGNORE_RANGE;	/* wesn is set correctly so dont mess with it during formatting */
+		GMT->current.io.geo.range = GMT_IGNORE_RANGE;	/* wesn is set correctly so don't mess with it during formatting */
 		gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
 		gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
 		gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");

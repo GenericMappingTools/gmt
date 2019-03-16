@@ -524,7 +524,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	no_data_f = (GMT->common.d.active[GMT_IN]) ? (gmt_grdfloat)GMT->common.d.nan_proxy[GMT_IN] : GMT->session.f_NaN;
 
-	/* Set up and allocate output grid [note: zero padding specificied since no BCs required] */
+	/* Set up and allocate output grid [note: zero padding specified since no BCs required] */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);
 

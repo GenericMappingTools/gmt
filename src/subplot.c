@@ -24,7 +24,7 @@
  *	1) Initialize a new figure with subplots, which determines dimensions and sets parameters:
  *	   gmt subplot begin <nrows>x<ncols> -F[f|s][<W/H>[+f<wfracs/hfracs>]] [-A<labels>]
  *		[-SC<layout>] [-SR<layout>] [-M<margins>] [-T<title>] [-R<region>] [-J<proj>] [-V]
- *	2) Select the curent subplot window for plotting, usually so we can use -A or -C (since -crow,col is faster):
+ *	2) Select the current subplot window for plotting, usually so we can use -A or -C (since -crow,col is faster):
  *	   gmt subplot [set] <row>,<col> [-A<fixlabel>] [-C<side><clearance>[u]] [-V]
  *	3) Finalize the figure:
  *	   gmt subplot end [-V]

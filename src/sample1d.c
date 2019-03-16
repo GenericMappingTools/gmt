@@ -216,7 +216,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				break;
 			case 'I':	/* Deprecated, but keep pointer to the arguments so we can build -T argument */
 				i_arg = opt->arg;
-				if (i_arg[0] == '+') i_arg++;	/* Skip posible geodesic mode */
+				if (i_arg[0] == '+') i_arg++;	/* Skip possible geodesic mode */
 				break;
 			case 'N':
 				if (!gmt_access (GMT, opt->arg, F_OK)) {

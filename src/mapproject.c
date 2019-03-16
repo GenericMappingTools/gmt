@@ -78,7 +78,7 @@ enum GMT_mp_cols {	/* Index into the extra and ecol_type arrays */
 	MP_COL_CS,		/* Cumulative distance since start of segment */
 	MP_COL_XN,		/* Longitude of nearest point in -L check */
 	MP_COL_YN,		/* Latitude of nearest point in -L check */
-	MP_COL_DT,		/* Incremental time bewteen two points */
+	MP_COL_DT,		/* Incremental time between two points */
 	MP_COL_CT,		/* Cumulative time since start of segment */
 	MP_COL_AT,		/* Absolute time at present record */
 	MP_COL_N		/* How many extra items there are to choose from */

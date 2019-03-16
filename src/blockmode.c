@@ -230,7 +230,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 
 	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
 		if (!Ctrl->E.active && (Ctrl->A.selected[1] || Ctrl->A.selected[2] || Ctrl->A.selected[3])) {
-			/* -E is required if -A specifices l or h */
+			/* -E is required if -A specifies l or h */
 			Ctrl->E.active = true;			/* Extended report with standard deviation, min, and max in cols 4-6 */
 			Ctrl->E.mode = BLK_DO_EXTEND3;	/* Report LMSscale, low, high in cols 4-6 */
 		}
@@ -254,11 +254,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 			Ctrl->A.selected[0] = true, Ctrl->A.n_selected = 1;
 		else {	/* Make sure -A choices are valid and that -E is set if extended fields are selected */
 			if (!Ctrl->E.active && (Ctrl->A.selected[1] || Ctrl->A.selected[2] || Ctrl->A.selected[3])) {
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifices s, l, or h.  -E was added.\n");
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifies s, l, or h.  -E was added.\n");
 				Ctrl->E.active = true; 
 			}
 			if (Ctrl->A.selected[4] && !Ctrl->W.weighted[GMT_OUT]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A specifices w.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A specifies w.\n");
 				n_errors++; 
 			}
 		}
@@ -355,7 +355,7 @@ GMT_LOCAL double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n,
 			case BLOCKMODE_AVE:		/* Get the average of the modes */
 				value += ((bin + B->min) + B->o_offset) * B->width;
 				break;
-			case BLOCKMODE_HIGH:	/* Update highest mode so far, when loop exits we have the hightest mode */
+			case BLOCKMODE_HIGH:	/* Update highest mode so far, when loop exits we have the highest mode */
 			 	value = ((bin + B->min) + B->o_offset) * B->width;
 				break;
 		}
@@ -649,7 +649,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		data = gmt_M_malloc (GMT, data, 0, &n_alloc, struct BLK_DATA);
 	}
 	w_col = gmt_get_cols (GMT, GMT_OUT) - 1;	/* Weights always reported in last output column */
-	fcol[4] = (unsigned int)w_col;				/* Since we dont know what it is until parsed */
+	fcol[4] = (unsigned int)w_col;				/* Since we don't know what it is until parsed */
 
 	/* Ready to go. */
 

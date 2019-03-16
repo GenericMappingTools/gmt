@@ -225,7 +225,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qn<N> artificially extends the width of the outer rim of cells to have a fake\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   width of N * dx[/dy].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Q<pad_dist> extend the region by west-pad, east+pad, etc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Q<region> Same sintax as -R.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Q<region> Same syntax as -R.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the same region as the input grid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets search radius in km (but only in the two grids mode) [Default = 30 km].\n");

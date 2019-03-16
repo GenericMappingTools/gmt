@@ -633,7 +633,7 @@ GMT_LOCAL void find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INF
 	 			 * possibly clip the value if constraining surfaces were given.  Note that
 	 			 * dx, dy is in -1/1 range normalized by (current_x|y_inc) so to recover the
 	 			 * corresponding dx,dy in units of current grid fractions we must scale both
-				 * dx and dy by current_stride; this is equivalant to scaling the trend.
+				 * dx and dy by current_stride; this is equivalent to scaling the trend.
 				 * This trend then is normalized by dividing by the z rms.*/
 	 			
 	 			z_at_node = C->data[k].z + (gmt_grdfloat) (C->r_z_rms * C->current_stride * evaluate_trend (C, dx, dy));
@@ -728,7 +728,7 @@ GMT_LOCAL void find_mean_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *
  			 * possibly clip the value if constraining surfaces were given.  Note that
  			 * dx, dy is in -1/1 range normalized by (current_x|y_inc) so to recover the
  			 * corresponding dx,dy in units of final grid fractions we must scale both
-			 * dx and dy by current_stride; this is equivalant of scaling the trend.
+			 * dx and dy by current_stride; this is equivalent of scaling the trend.
 			 * This trend then is normalized by dividing by the z rms.*/
 			
  			mean_z += (gmt_grdfloat) (C->r_z_rms * C->current_stride * evaluate_trend (C, dx, dy));

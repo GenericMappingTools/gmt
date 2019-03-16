@@ -453,7 +453,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				if (opt->arg[0]) {
 					size_t last = strlen (opt->arg) - 1;
 					Ctrl->Q.active = true;
-					if (strchr (GMT_LEN_UNITS, opt->arg[last]))	/* Gave a mininum length in data units */
+					if (strchr (GMT_LEN_UNITS, opt->arg[last]))	/* Gave a minimum length in data units */
 						Ctrl->Q.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->Q.length), &(Ctrl->Q.unit));
 					else if (opt->arg[last] == 'C') {	/* Projected units */
 						Ctrl->Q.length = atof (opt->arg);
@@ -987,7 +987,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		bool got_cpt = (optN->arg[0]), is_continuous, got_C_cpt = false;
 		size_t L;
 		
-		/* Make sure we dont pass options not compatible with -N */
+		/* Make sure we don't pass options not compatible with -N */
 		if ((opt = GMT_Find_Option (API, 'D', options))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot use -D with -N\n");
 			bailout (GMT_PARSE_ERROR);
@@ -1230,7 +1230,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		Ctrl->C.interval = x;
 		Ctrl->A.interval = 2.0 * x;
 		Ctrl->C.active  = Ctrl->A.active = Ctrl->contour.annot = true;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Auto-determined contour inverval = %g and annotation interval = %g\n", Ctrl->C.interval, Ctrl->A.interval);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Auto-determined contour interval = %g and annotation interval = %g\n", Ctrl->C.interval, Ctrl->A.interval);
 	}
 	
 	if (!strcmp (Ctrl->contour.unit, "z")) strncpy (Ctrl->contour.unit, G->header->z_units, GMT_LEN64-1);
@@ -1528,7 +1528,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 				}
 				else	/* Just based on the point count */
 					use_contour = (n >= Ctrl->Q.min);
-				if (!use_contour) {	/* Dont want this guy */
+				if (!use_contour) {	/* Don't want this guy */
 					gmt_M_free (GMT, x);
 					gmt_M_free (GMT, y);
 					GMT_Report (API, GMT_MSG_DEBUG, "Skipping a %g contour due to count/length limit (%g, %d)\n", cval, c_length, n);

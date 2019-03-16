@@ -516,7 +516,7 @@ GMT_LOCAL int grdmath_find_stored_item (struct GMT_CTRL *GMT, struct GRDMATH_STO
 	return (k == n_stored ? GMT_NOTSET : k);
 }
 
-/* Stack collapsing operators taht work on same nodes across all stack items */
+/* Stack collapsing operators that work on same nodes across all stack items */
 
 GMT_LOCAL double stack_collapse_add (struct GMT_CTRL *GMT, double *array, uint64_t n) {
 	uint64_t k;
@@ -666,7 +666,7 @@ GMT_LOCAL int collapse_stack (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 	 * You may have 7 grids on the stack and you want to return the mean value per node
 	 * for all 7 grids, to be replaced by a single grid with those means.  You would do
 	 * gmt grdmath *.grd -S MEAN = means.grd
-	 * where the -S option turns on the collapsable stack operators.
+	 * where the -S option turns on the collapsible stack operators.
 	 */
 	
 	uint64_t node, s;
@@ -3481,7 +3481,7 @@ GMT_LOCAL void grd_POP (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 GMT_LOCAL void grd_PLM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: PLM 3 1 Associated Legendre polynomial P(A) degree B order C.  */
 {
-	int64_t node;	/* Bcause of Win OpenMP */
+	int64_t node;	/* Because of Win OpenMP */
 	unsigned int prev = last - 1, first = last - 2;
 	int L, M;
 	double a = 0.0;
@@ -3512,7 +3512,7 @@ GMT_LOCAL void grd_PLM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 GMT_LOCAL void grd_PLMg (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: PLMg 3 1 Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention).  */
 {
-	int64_t node;	/* Bcause of Win OpenMP */
+	int64_t node;	/* Because of Win OpenMP */
 	unsigned int prev = last - 1, first = last - 2;
 	int L, M;
 	double a = 0.0;

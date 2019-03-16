@@ -4377,7 +4377,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 #else
 			fclose (fp);
 			if (gmt_remove_file (GMT, ".tmpdir"))
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to remoce the .tmpdir file.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to remove the .tmpdir file.\n");
 #endif /* HAVE_DIRENT_H_ */
 		}
 		all = false;	/* all is only true once (or never) inside this loop */

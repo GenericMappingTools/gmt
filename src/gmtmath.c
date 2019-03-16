@@ -6104,7 +6104,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)R->n_columns, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) Return (error);	/* Since -bo might have been used */
 		if (Ctrl->S.active) {	/* Only get one record per segment */
 			uint64_t row, c;
-			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 1, 0};	/* One table, 1 row per table, need to set segments and columsn below */
+			uint64_t dim[GMT_DIM_SIZE] = {1, 0, 1, 0};	/* One table, 1 row per table, need to set segments and columns below */
 			struct GMT_DATASET *N = NULL;
 			dim[GMT_SEG] = R->table[0]->n_segments;
 			dim[GMT_COL] = n_columns;

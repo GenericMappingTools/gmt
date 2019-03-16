@@ -99,7 +99,7 @@ struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays
 	bool add;	/* true if we are asked to add a computed spatial distance column to output */
 	bool reverse;	/* true if we want to reverse the array to give high to low on output */
 	bool round;	/* true if we want to adjust increment to ensure min/max range is a multiple of inc */
-	bool exact_inc;	/* true if we want the increment to be exact and to adjust min/max intstead */
+	bool exact_inc;	/* true if we want the increment to be exact and to adjust min/max instead */
 	bool logarithmic;	/* true if inc = 1,2,3 and we want logarithmic scale */
 	bool logarithmic2;	/* true if inc = integer and we want log2 scale */
 	bool delay[2];	/* true if min and/or max shall be set from data set extremes after read [false] */
@@ -347,7 +347,7 @@ struct GMT_INTERNAL {
 	 * many GMT functions.  These may change during execution but are not
 	 * modified directly by user interaction. */
 	unsigned int func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  GMT_CONTROLLER (0) is initiating process (e.g. gmt.c) */
-	bool mem_set;			/* true when we hvae initialized the tmp memory already */
+	bool mem_set;			/* true when we have initialized the tmp memory already */
 	size_t mem_cols;		/* Current number of allocated columns for temp memory */
 	size_t mem_rows;		/* Current number of allocated rows for temp memory */
 	size_t mem_txt_alloc;

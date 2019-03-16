@@ -605,7 +605,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				if (opt->arg[0]) {
 					size_t last = strlen (opt->arg) - 1;
 					Ctrl->Q.active = true;
-					if (strchr (GMT_LEN_UNITS, opt->arg[last]))	/* Gave a mininum length in data units */
+					if (strchr (GMT_LEN_UNITS, opt->arg[last]))	/* Gave a minimum length in data units */
 						Ctrl->Q.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->Q.length), &(Ctrl->Q.unit));
 					else if (opt->arg[last] == 'C') {	/* Projected units */
 						Ctrl->Q.length = atof (opt->arg);
@@ -1125,7 +1125,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			Ctrl->C.interval = x;
 			Ctrl->A.interval = 2.0 * x;
 			Ctrl->C.active  = Ctrl->A.active = Ctrl->contour.annot = true;
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Auto-determined contour inverval = %g and annotation interval = %g\n", Ctrl->C.interval, Ctrl->A.interval);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Auto-determined contour interval = %g and annotation interval = %g\n", Ctrl->C.interval, Ctrl->A.interval);
 		}
 		noise = GMT_CONV4_LIMIT * Ctrl->C.interval;
 		min = floor (xyz[0][GMT_Z] / Ctrl->C.interval) * Ctrl->C.interval; if (min < xyz[0][GMT_Z]) min += Ctrl->C.interval;
