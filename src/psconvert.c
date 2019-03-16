@@ -310,7 +310,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 		}
 	}
 	if (trim_j >= 0) arg[trim_j] = '+';	/* Restore the chopped off section */
-	/* Here we are doing the NEW syntax parsin */
+	/* Here we are doing the NEW syntax parsing */
 	strncpy (txt, arg, GMT_LEN128-1);
 	while (!error && (gmt_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
@@ -1391,7 +1391,7 @@ GMT_LOCAL int wrap_the_sandwich (struct GMT_CTRL *GMT, char *main, char *bfile, 
 		if (ffile) {	/* There is also a foreground PS layer that should go last */
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Append %s as main content in %s\n", main, newfile);
 			gmt_ps_append (GMT, main,  0, fp);	/* Append main file first but exclude both header and trailer */
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Append %s as forground in %s\n", ffile, newfile);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Append %s as foreground in %s\n", ffile, newfile);
 			gmt_ps_append (GMT, ffile, 2, fp);	/* Append foreground file but exclude header */
 		}
 		else {	/* No foreground, append main and its trailer */
@@ -1402,7 +1402,7 @@ GMT_LOCAL int wrap_the_sandwich (struct GMT_CTRL *GMT, char *main, char *bfile, 
 	else {	/* Just a foreground layer to append */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Prepend %s as main in %s\n", main, newfile);
 		gmt_ps_append (GMT, main,  1, fp);	/* Begin with main file but exclude trailer */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Append %s as forground in %s\n", ffile, newfile);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Append %s as foreground in %s\n", ffile, newfile);
 		gmt_ps_append (GMT, ffile, 2, fp);	/* Append foreground file but exclude header */
 	}
 	fclose (fp);	/* Completed */
@@ -2135,7 +2135,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 						old_scale_x = 1;		old_scale_y = 1;	/* Assume this */
 						/* Receed two lines to position us again in a comment line (hopefully %%EndPageSetup) */
 						fseek (fp, -(off_t)(strlen(line_)+strlen(t3)+2U), SEEK_CUR);
-						/* But because the line termination issue we must test if we seeked back long enough */
+						/* But because the line termination issue we must test if we sought back long enough */
 						c = fgetc (fp);
 						if (c == '%')
 							fseek (fp, -(off_t)(1U), SEEK_CUR);		/* Just receed the read character (file is unix terminate) */
@@ -2668,7 +2668,7 @@ GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 	   Add to this that the installed GS version may be 32 or 64 bits, so we have to check for the
 	   four GS_32|64 + GMT_32|64 combinations.
 
-		 Adapted from snipets at http://www.daniweb.com/software-development/c/code/217174
+		 Adapted from snippets at http://www.daniweb.com/software-development/c/code/217174
 	   and http://juknull.wordpress.com/tag/regenumkeyex-example */
 
 	HKEY hkey;              /* Handle to registry key */

@@ -1088,7 +1088,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 #ifdef READ_BY_BLOCKS
 		for (k = 0; k < nBlocks; k++) {
-			nYOff = yOrigin + k * nRowsPerBlock;	/* Move data Y origin to the begining of next block to be read */
+			nYOff = yOrigin + k * nRowsPerBlock;	/* Move data Y origin to the beginning of next block to be read */
 			row_i = k * nRowsPerBlock;
 			row_e = (k + 1) * nRowsPerBlock;
 			buffy = nRowsPerBlock;

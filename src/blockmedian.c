@@ -217,18 +217,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 				n_errors++; 
 			}
 			else {	/* Plain -E is added */
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifices s, l, or h.  -E was added.\n");
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifies s, l, or h.  -E was added.\n");
 				Ctrl->E.active = true;
 				Ctrl->E.mode = BLK_DO_EXTEND3;		/* Report L1scale, low, high in cols 4-6 */
 			}
 		}
 		else if (Ctrl->A.selected[3] || Ctrl->A.selected[4]) {	/* Need q25 or q75 and s not set, so add -Eb */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-Eb is required if -A specifices q25 or q75.  -Eb was added.\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-Eb is required if -A specifies q25 or q75.  -Eb was added.\n");
 			Ctrl->E.active = true;
 			Ctrl->E.mode = BLK_DO_EXTEND4;		/* Report low, 25%, 75% and high in cols 4-7 */
 		}
 		else if (Ctrl->A.selected[2] || Ctrl->A.selected[5]) {	/* Plain -E is added */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifices s, l, or h.  -E was added.\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifies s, l, or h.  -E was added.\n");
 			Ctrl->E.active = true;
 			Ctrl->E.mode = BLK_DO_EXTEND3;		/* Report L1scale, low, high in cols 4-6 */
 		}
@@ -254,7 +254,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 			Ctrl->A.selected[0] = true, Ctrl->A.n_selected = 1;
 		else {	/* Make sure -A choices are valid and that -E is set if extended fields are selected */
 			if (Ctrl->A.selected[6] && !Ctrl->W.weighted[GMT_OUT]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A specifices w.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A specifies w.\n");
 				n_errors++; 
 			}
 		}
@@ -521,7 +521,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 		data = gmt_M_malloc (GMT, data, 0, &n_alloc, struct BLK_DATA);
 	}
 	w_col = gmt_get_cols (GMT, GMT_OUT) - 1;	/* Weights always reported in last output column */
-	fcol[6] = (unsigned int)w_col;				/* Since we dont know what it is until parsed */
+	fcol[6] = (unsigned int)w_col;				/* Since we don't know what it is until parsed */
 
 	/* Ready to go. */
 

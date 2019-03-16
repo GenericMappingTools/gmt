@@ -225,7 +225,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 	}
 	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
 		if (!Ctrl->E.active && (Ctrl->A.selected[1] || Ctrl->A.selected[2] || Ctrl->A.selected[3])) {
-			/* -E is required if -A specifices l or h */
+			/* -E is required if -A specifies l or h */
 			Ctrl->E.active = true;			/* Extended report with standard deviation, min, and max in cols 4-6 */
 		}
 		if (GMT->parent->external && !Ctrl->A.active) {		/* From externals let -G equals -Az */
@@ -247,11 +247,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 			Ctrl->A.selected[0] = true, Ctrl->A.n_selected = 1;
 		else {	/* Make sure -A choices are valid and that -E is set if extended fields are selected */
 			if (!Ctrl->E.active && (Ctrl->A.selected[1] || Ctrl->A.selected[2] || Ctrl->A.selected[3])) {
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifices s, l, or h.  -E was added.\n");
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifies s, l, or h.  -E was added.\n");
 				Ctrl->E.active = true; 
 			}
 			if (Ctrl->A.selected[4] && !Ctrl->W.weighted[GMT_OUT]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A specifices w.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A specifies w.\n");
 				n_errors++; 
 			}
 		}
@@ -452,7 +452,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 	w_col = gmt_get_cols (GMT, GMT_OUT) - 1;	/* Index of weight column (the last output column) */
 	n_cells_filled = 0;				/* Number of blocks with values */
-	fcol[4] = (unsigned int)w_col;				/* Since we dont know what it is until parsed */
+	fcol[4] = (unsigned int)w_col;				/* Since we don't know what it is until parsed */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculating block means\n");
 
 	if (Ctrl->G.active) {	/* Create the grid(s) */

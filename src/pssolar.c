@@ -220,7 +220,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 						gmt_gcal_from_dt (GMT, t, &Ctrl->T.calendar);	/* Convert t to a complete calendar structure */
 						gmt_M_str_free (date);
 					}
-					pch[0] = '\0';	/* Chop off date settting */
+					pch[0] = '\0';	/* Chop off date setting */
 				}
 				if (opt->arg[0]) {
 					for (j = 0; j < (int)strlen(opt->arg); j++) {

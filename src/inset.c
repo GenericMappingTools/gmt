@@ -135,7 +135,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_O
 			case 'F':
 				Ctrl->F.active = true;
 				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->D.inset.panel))) {
-					gmt_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel for the map inset", 3);
+					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel for the map inset", 3);
 					n_errors++;
 				}
 				break;

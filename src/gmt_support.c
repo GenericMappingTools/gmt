@@ -2680,7 +2680,7 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 				if ((new_label->dist - last_dist) >= G->min_dist) {	/* OK to accept this label */
 					this_dist = dist;
 					if (support_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, 0, G)) {
-						size_t extra = (G->crossect) ? strlen (G->crossect_tag[i]) + 1 : 0;	/* Need to increase alloced space */
+						size_t extra = (G->crossect) ? strlen (G->crossect_tag[i]) + 1 : 0;	/* Need to increase allocated space */
 						support_place_label (GMT, new_label, this_label, G, !(G->label_type == GMT_LABEL_IS_NONE), extra);
 						if (G->crossect) {	/* Special crossection mode */
 							if (!strcmp (new_label->label, "N/A"))	/* Override the N/A lack of label identifier */
@@ -3727,7 +3727,7 @@ GMT_LOCAL struct GMT_DATASET * support_voronoi_shewchuk (struct GMT_CTRL *GMT, d
 
 	gmt_set_dataset_minmax (GMT, P);	/* Determine min/max for each column */
 
-	/* Free the triangulate arrays that were all allocated internaly */
+	/* Free the triangulate arrays that were all allocated internally */
 	gmt_M_str_free (Out.pointlist);
 	gmt_M_str_free (Out.trianglelist);
 	gmt_M_str_free (vorOut.pointattributelist);
@@ -4200,7 +4200,7 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 		error += bad;
 		text[options] = '+';	/* Restore original string */
 		if (ms->old_style && gmt_getpanel (GMT, 'F', oldshit, &(ms->panel))) {
-			gmt_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
+			gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the scale", 3);
 			error++;
 		}
 	}
@@ -4388,7 +4388,7 @@ GMT_LOCAL bool support_x_overlap (double *xa, double *xb, uint64_t *xa_start, ui
 		del_x = xb[*xb_stop] - xb[*xb_start];		/* Check if line B has a longitude jump */
 		if (del_x > 180.0) {xb[*xb_start] += 360.0; gmt_M_uint64_swap(*xb_start, *xb_stop);}	/* Deal with 360 and swap start and stop indices */
 		/* Here we have fixed any 360 jumps in A and B and reassign what is start and stop. We must now look for overlaps
-		 * betwen the segments by considering that A may be off by -360, 0, or +360 degrees in longitude relative to B. */
+		 * between the segments by considering that A may be off by -360, 0, or +360 degrees in longitude relative to B. */
 
 		for (k = -1; k <= 1; k++) {	/* Try offsets of k * 360. If we find overlap then *dx returns the shift we must add to the xa coordinates later */
 			*dx = k * 360.0;
@@ -7834,7 +7834,7 @@ void gmt_invert_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 		if (i < j) gmt_M_fill_swap (P->data[i].fill, P->data[j].fill);
 
 	}
-	for (i = 0; i < P->n_colors; i++) {	/* Update the difference arrrays */
+	for (i = 0; i < P->n_colors; i++) {	/* Update the difference arrays */
 		for (k = 0; k < 4; k++) {
 			P->data[i].rgb_diff[k] = P->data[i].rgb_high[k] - P->data[i].rgb_low[k];
 			P->data[i].hsv_diff[k] = P->data[i].hsv_high[k] - P->data[i].hsv_low[k];
@@ -9725,7 +9725,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		G->f_xy[GMT_Y] = gmt_M_memory (GMT, NULL, T->n_records, double);
 		if (T->type == GMT_READ_MIXED) G->f_label = gmt_M_memory (GMT, NULL, T->n_records, char *);
 		for (seg = rec = k = 0; seg < T->table[0]->n_segments; seg++) {
-			S = T->table[0]->segment[seg];	/* Curent segment */
+			S = T->table[0]->segment[seg];	/* Current segment */
 			for (row = 0; row < S->n_rows; row++, rec++) {
 				xy[GMT_X] = S->data[GMT_X][row];	xy[GMT_Y] = S->data[GMT_Y][row];
 				gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
@@ -10233,7 +10233,7 @@ void gmt_set_inside_mode (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned 
 		GMT->current.proj.sph_inside = true;
 	else if (mode == GMT_IOO_CARTESIAN)	/* Force Cartesian */
 		GMT->current.proj.sph_inside = false;
-	else if (gmt_M_is_cartesian (GMT, GMT_IN))	/* If data is Cartesian then we do taht */
+	else if (gmt_M_is_cartesian (GMT, GMT_IN))	/* If data is Cartesian then we do that */
 		GMT->current.proj.sph_inside = false;
 	else if (GMT->current.map.is_world)	/* Here we are dealing with geographic data that has 360 degree range */
 		GMT->current.proj.sph_inside = true;
@@ -11838,7 +11838,7 @@ int gmt_getinset (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_M
 
 	B->plot = true;
 	if (oldshit[0] && gmt_getpanel (GMT, 'F', oldshit, &(B->panel))) {
-		gmt_mappanel_syntax (GMT, 'F', "Specify the rectanglar panel attributes for map inset", 3);
+		gmt_mappanel_syntax (GMT, 'F', "Specify the rectangular panel attributes for map inset", 3);
 		error++;
 	}
 	return (error);
@@ -14441,7 +14441,7 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 		L[seg] = GMT_Alloc_Segment (GMT->parent, smode, length, S->n_columns, S->header, NULL);	/* Allocate array space for coordinates */
 		LH = gmt_get_DS_hidden (L[seg]);
 		for (col = 0; col < S->n_columns; col++) gmt_M_memcpy (L[seg]->data[col], &(Sx->data[col][start]), length, double);	/* Copy coordinates */
-		LH->range = (L[seg]->data[GMT_X][length/2] > 180.0) ? GMT_IS_M180_TO_P180 : GMT_IS_M180_TO_P180_RANGE;	/* Formatting ID to enable special -180 and +180 formatting on outout */
+		LH->range = (L[seg]->data[GMT_X][length/2] > 180.0) ? GMT_IS_M180_TO_P180 : GMT_IS_M180_TO_P180_RANGE;	/* Formatting ID to enable special -180 and +180 formatting on output */
 		/* Modify label to part number */
 		sprintf (label, "%s part %" PRIu64, txt, seg);
 		L[seg]->label = strdup (label);
@@ -15808,7 +15808,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 }
 
 void gmt_free_array (struct GMT_CTRL *GMT, struct GMT_ARRAY *T) {
-	/* Free anyting that was allocated during parsing and creating a 1D array */
+	/* Free anything that was allocated during parsing and creating a 1D array */
 	gmt_M_str_free (T->file);
 	gmt_M_str_free (T->list);
 	if (T->array) gmt_M_free (GMT, T->array);

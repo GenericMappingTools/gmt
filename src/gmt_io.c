@@ -3107,7 +3107,7 @@ bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt, bool *no_T) {
 	}
 	if (((n_dash + n_slash) == 2) && (n_dash == 2 || n_slash == 2)) {	/* Time */
 		*no_T = true;
-		return true;	/* Might be yyyy/mm/dd or yyyy-mm-dd with mising trailing T */
+		return true;	/* Might be yyyy/mm/dd or yyyy-mm-dd with missing trailing T */
 	}
 	return false;
 }
@@ -3192,7 +3192,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 			else
 				type[col++] = got = GMT_IS_FLOAT;
 		}
-		else	/* A succesful numerical parsing */
+		else	/* A successful numerical parsing */
 				type[col++] = got;
 		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) && col <= 50) {	/* Tell user how we interpreted their first record, but not for excessively long records */
 			k = gmtio_get_type_name_index (got);

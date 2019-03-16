@@ -1892,7 +1892,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		Out = Grid;	/* Just point since we created Grid */
 	}
 
-	switch (Ctrl->S.mode) {	/* Assing pointers to Green's functions and the gradient and set up required parameters */
+	switch (Ctrl->S.mode) {	/* Assign pointers to Green's functions and the gradient and set up required parameters */
 		case LINEAR_1D:
 		case LINEAR_2D:
 			G = &spline1d_linear;

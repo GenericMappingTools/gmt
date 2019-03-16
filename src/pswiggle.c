@@ -318,7 +318,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 			case 'F':
 				Ctrl->F.active = true;
 				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->D.scale.panel))) {
-					gmt_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
+					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the scale", 3);
 					n_errors++;
 				}
 				break;

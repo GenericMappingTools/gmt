@@ -6,7 +6,7 @@ log=reformat_af.log
 
 gmt grdmath -R-10/10/-10/10 -I1 X = lixo.nc
 
-# First conver to int
+# First convert to int
 gmt grdconvert lixo.nc lixo.af=af
 gmt grdmath lixo.nc lixo.af=af SUB = lixo_dif.nc
 gmt grd2xyz lixo_dif.nc -ZTLa > $log

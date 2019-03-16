@@ -568,7 +568,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 #ifdef HAVE_GLIB_GTHREAD
 			case 'z':
 				Ctrl->z.active = true;
-				if (opt->arg && opt->arg[0] == 'a')		/* Use all processors abvailable */
+				if (opt->arg && opt->arg[0] == 'a')		/* Use all processors available */
 					Ctrl->z.n_threads = g_get_num_processors();
 				else if (opt->arg)
 					Ctrl->z.n_threads = atoi(opt->arg);

@@ -1621,7 +1621,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if ((error = GMT_Set_Columns (API, GMT_IN, (unsigned int)n_cols, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-			/* We dont want trailing text because we may need to resample lines below */
+			/* We don't want trailing text because we may need to resample lines below */
 			Return (API->error);
 		}
 		if ((S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_DECORATED_LINE) && S.G.segmentize) {	/* Special quoted/decorated line where each point-pair should be considered a line segment */

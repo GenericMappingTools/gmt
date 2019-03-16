@@ -179,7 +179,7 @@ GMT_LOCAL int write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, 
 	int error = 0, i, j;
 	float *t = (float *)data;
 	uint64_t k, n, nm = (uint64_t)n_rows * n_cols;
-	/* In gmt_gdal_write_grd we made the pointer to point to the begining of the non-padded zone, so to make it
+	/* In gmt_gdal_write_grd we made the pointer to point to the beginning of the non-padded zone, so to make it
 	   coherent we retriet pad[0]. However, nothing of this is taking into account a -R subregion so all of this
 	   (and not only this case) will probably fail for that case.
 	*/
@@ -414,7 +414,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		}
 	}
 
-	/* Use defaul compression with GeoTiff driver, unless co_options were passed. Than the above should have taken care of it. */
+	/* Use default compression with GeoTiff driver, unless co_options were passed. Than the above should have taken care of it. */
 	if (!strcasecmp(pszFormat,"GTiff") && !prhs->co_options) {
 		papszOptions = CSLAddString(papszOptions, "COMPRESS=DEFLATE");
 		/* tiles are less efficient in small grids (padding) and are not

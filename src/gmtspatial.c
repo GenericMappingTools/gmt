@@ -47,7 +47,7 @@
 #define PW_TESTING
 #define MIN_AREA_DIFF		0.01;	/* If two polygons have areas that differ more than 1 % of each other then they are not the same feature */
 #define MIN_SEPARATION		0	/* If the two closest points for two features are > 0 units apart then they are not the same feature */
-#define MIN_CLOSENESS		0.01	/* If two close segments has an mean separation exceeding 1% of segment legnth, then they are not the same feature */
+#define MIN_CLOSENESS		0.01	/* If two close segments has an mean separation exceeding 1% of segment length, then they are not the same feature */
 #define MIN_SUBSET		2.0	/* If two close segments deemed approximate fits has lengths that differ by this factor then they are sub/super sets of each other */
 
 struct DUP {	/* Holds information on which single segment is closest to the current test segment */
@@ -1994,7 +1994,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		for (tbl1 = k1 = 0; tbl1 < D->n_tables; tbl1++) {
 			T1 = D->table[tbl1];
 			for (seg1 = 0; seg1 < T1->n_segments; seg1++, k1++) {
-				K[k1].tbl = tbl1;	K[k1].seg = seg1;	/* Fill out the K loopup array */
+				K[k1].tbl = tbl1;	K[k1].seg = seg1;	/* Fill out the K lookup array */
 				S1 = D->table[tbl1]->segment[seg1];	/* Current input segment */
 				if (S1->n_rows == 0) continue;	/* Just skip empty segments */
 				if (S1->header && !strcmp (S1->header, "-Ph")) continue;	/* Marked as a hole already */
