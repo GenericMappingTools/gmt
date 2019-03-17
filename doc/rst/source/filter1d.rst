@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt filter1d** [ *table* ] |-F|\ *type<width>*\ [*modifiers*]
+**gmt filter1d** [ *table* ] |-F|\ *type<width>*\ [*modifier*]
 [ |-D|\ *increment* ] [ |-E| ]
 [ |-L|\ *lack\_width* ] [ |-N|\ *t\_col* ] [ |-Q|\ *q\_factor* ]
 [ |-S|\ *symmetry\_factor* ]
@@ -49,12 +49,12 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ **type**\ *width*\ [*modifiers*]
+**-F**\ **type**\ *width*\ [*modifier*]
     Sets the filter **type**. Choose among convolution and non-convolution
     filters. Append the filter code followed by the full filter
     *width* in same units as time column. By default we
     perform low-pass filtering; append **+h** to select high-pass filtering.
-    Some filters allow for optional arguments and modifiers. Available convolution
+    Some filters allow for optional arguments and a modifier. Available convolution
     filter types are:
 
     (**b**) Boxcar: All weights are equal.

@@ -15,9 +15,9 @@ Synopsis
 
 **gmt dimfilter** *input_file.nc*
 |-D|\ *distance_flag*
-|-F|\ **x**\ *width*\ [*mode*]
+|-F|\ **x**\ *width*\ [*modifier*]
 |-G|\ *output_file.nc*
-|-N|\ **x**\ *sectors*
+|-N|\ **x**\ *sectors*\ [*modifier*]
 [ |-L| ]
 [ |-Q| ]
 [ |SYN_OPT-I| ]
@@ -77,7 +77,7 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ **x**\ *width*\ [*mode*]
+**-F**\ **x**\ *width*\ [*modifier*]
     Sets the primary filter type. Choose among convolution and
     non-convolution filters. Append the filter code **x** followed by the full
     diameter *width*. Available convolution filters are:
@@ -94,16 +94,16 @@ Required Arguments
 
     (**p**) Maximum likelihood probability (a mode estimator): Return
     modal value. If more than one mode is found we return their average
-    value. Append - or + to the filter width if you rather want to
-    return the smallest or largest of the modal values.
+    value. Append **+l** or **+h** to the filter width if you rather want to
+    return the smallest or largest of each sector's modal values.
 
 .. _-N:
 
-**-N**\ **x**\ *sectors*
+**-N**\ **x**\ *sectors*\ [*modifier*]
     Sets the secondary filter type **x** and the number of bow-tie sectors.
     *sectors* must be integer and larger than 0. When *sectors* is
     set to 1, the secondary filter is not effective. Available secondary
-    filters are:
+    filters **x** are:
 
     (**l**) Lower: Return the minimum of all filtered values.
 
@@ -113,12 +113,15 @@ Required Arguments
 
     (**m**) Median: Return the median of all filtered values.
 
-    (**p**) Mode: Return the mode of all filtered values.
+    (**p**) Mode: Return the mode of all filtered values:
+    If more than one mode is found we return their average
+    value. Append **+l** or **+h** to the sectors if you rather want to
+    return the smallest or largest of the modal values.
 
 .. _-G:
 
-**-G**\ *output\_file.nc*
-    *output\_file.nc* is the output of the filter.
+**-G**\ *output_file.nc*
+    *output_file.nc* is the output of the filter.
 
 Optional Arguments
 ------------------
@@ -126,9 +129,9 @@ Optional Arguments
 .. _-I:
 
 **-I**
-    *x\_inc* [and optionally *y\_inc*] is the output Increment. Append
+    *x_inc* [and optionally *y_inc*] is the output Increment. Append
     **m** to indicate minutes, or **c** to indicate seconds. If the new
-    *x\_inc*, *y\_inc* are NOT integer multiples of the old ones (in the
+    *x_inc*, *y_inc* are NOT integer multiples of the old ones (in the
     input data), filtering will be considerably slower. [Default: Same
     as input.]
 

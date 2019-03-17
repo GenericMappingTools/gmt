@@ -77,7 +77,7 @@ Optional Arguments
 .. _-I:
 
 **-I**\ *intens*
-    Use the supplied *intens* value (nominally in the -1 to + 1 range) to
+    Use the supplied *intens* value (nominally in the -1 to +1 range) to
     modulate the fill color by simulating illumination [none]. 
 
 .. _-L:

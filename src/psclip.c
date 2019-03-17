@@ -79,7 +79,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Undo existing clip-paths; no file is needed.  -R, -J are not required (unless -B is used).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Undo existing clip-paths; no file is needed and -R, -J are not required (unless -B is used).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Terminates all clipping; optionally append how many clip levels to restore [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more polygon files.  If none, standard input is read.\n");
 	GMT_Option (API, "J-Z,R");

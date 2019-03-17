@@ -59,9 +59,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s\n", name, GMT_I_OPT, GMT_Rgeo_OPT);
 	if (API->external)
-		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[-]] [-Q]\n", GMT_V_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[+l|h]] [-Q]\n", GMT_V_OPT);
 	else
-		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[-]] [-G<grdfile>] [-Q]\n", GMT_V_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[+l|h]] [-G<grdfile>] [-Q]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[i][o][+s]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -86,7 +86,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Er to report record number of the modal value per block,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or -Es to report an unsigned integer source id (sid) taken from the x,y,z[,w],sid input.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For ties, report record number (or sid) of largest value; append - for smallest.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For ties, report record number (or sid) of highest value (+h) or append +l for lowest [highest].\n");
 	if (!API->external) {
 		GMT_Message (API, GMT_TIME_NONE, "\t-G Specify output grid file name; no table results will be written to stdout.\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   If more than one field is set via -A then <grdfile> must contain  %%s to format field code.\n");
@@ -173,14 +173,31 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct G
 				break;
 			case 'E':
 				Ctrl->E.active = true;		/* Extended report with standard deviation, min, and max in cols 4-6 */
-				if (opt->arg[0] == 'r' || opt->arg[0] == 's') {
-					Ctrl->E.mode = (opt->arg[1] == '-') ? BLK_DO_INDEX_LO : BLK_DO_INDEX_HI;	/* Report row number or sid of median */
-					if (opt->arg[0] == 's') /* report sid */
+				if (opt->arg[0] == 'r' || opt->arg[0] == 's') {	/* Report row number or sid of median */
+					switch (opt->arg[1]) {	/* Look for modifiers */
+						case '+':	/* New syntax with +h or +l to parse */
+							if (opt->arg[2] == 'l')
+								Ctrl->E.mode = BLK_DO_INDEX_LO;
+							else if (opt->arg[2] == 'h')
+								Ctrl->E.mode = BLK_DO_INDEX_HI;
+							else {	/* Neither +l or +h is bad */
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized modifier %s for -E%c!\n", opt->arg[0]);
+								n_errors++;
+							}
+							break;
+						case '-':	/* Old syntax -Er- or -Es- for reporting index/source of lower value */
+							Ctrl->E.mode = BLK_DO_INDEX_LO;
+							break;
+						default:	/* Default reports index/source of higher value */
+							Ctrl->E.mode = BLK_DO_INDEX_HI;
+							break;
+					}
+					if (opt->arg[0] == 's') /* report sid, add in flag */
 						Ctrl->E.mode |= BLK_DO_SRC_ID;
 				}
-				else if (opt->arg[0] == '\0')
-					Ctrl->E.mode = BLK_DO_EXTEND3;		/* Report LMSscale, low, high in cols 4-6 */
-				else
+				else if (opt->arg[0] == '\0')	/* Plain -E : Report LMSscale, low, high in cols 4-6 */
+					Ctrl->E.mode = BLK_DO_EXTEND3;
+				else	/* WTF? */
 					n_errors++;
 				break;
 			case 'G':	/* Write output grid(s) */

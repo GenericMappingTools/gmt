@@ -15,7 +15,7 @@ Synopsis
 
 **gmt grdmath**
 [ |-A|\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+ag**\ \|\ **i**\ \|\ **s** \|\ **S**][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
-[ |-D|\ *resolution*\ [**+**] ]
+[ |-D|\ *resolution*\ [**+f**] ]
 [ |SYN_OPT-I| ]
 [ |-M| ] [ |-N| ]
 [ |SYN_OPT-R| ]
@@ -73,11 +73,11 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *resolution*\ [**+**]
+**-D**\ *resolution*\ [**+f**]
     Selects the resolution of the data set to use with the operator LDISTG
     ((**f**)ull, (**h**)igh, (**i**)ntermediate, (**l**)ow, and (**c**)rude). The
     resolution drops off by 80% between data sets [Default is **l**].
-    Append **+** to automatically select a lower resolution should the one
+    Append **+f** to automatically select a lower resolution should the one
     requested not be available [abort if not found].
 
 .. _-I:
