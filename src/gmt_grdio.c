@@ -1311,7 +1311,7 @@ GMT_LOCAL void doctor_geo_increments (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 		if (slop > 0 && slop < GMT_CONV4_LIMIT) {
 			inc = header->inc[side];
 			header->inc[side] = round_inc / scale;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Round-off patrol changed geographic grid increment for %s from %.16g to %.16g\n",
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Round-off patrol changed geographic grid increment for %s from %.18g to %.18g\n",
 				type[side], inc, header->inc[side]);
 		}
 	}
