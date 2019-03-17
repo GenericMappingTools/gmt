@@ -80,11 +80,11 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**+**\ \|\ **-**]\ *nodegrid*
+**-L**\ *nodegrid*\ [**+i**\ \|\ **o**\ ]
     Save the internal grid with ones (data constraint) and zeros (no data) to
-    the named *nodegrid* [no grid saved].  Use **L+** to convert the no data
-    flags to NaNs before writing the grid, while **L-** will instead convert
-    the data flags to NaNs.
+    the named *nodegrid* [no grid saved].  Append **+o** to convert the outside (no data)
+    nodes to NaNs before writing the grid, while appending **+i** will instead convert
+    the inside (data) flags to NaNs.
 
 .. _-N:
 
