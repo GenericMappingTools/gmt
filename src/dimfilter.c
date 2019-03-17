@@ -41,6 +41,12 @@
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS	"-:RVfh"
 
+enum Dimfilter_mode {
+	DIMFILTER_MODE_KIND_LOW  = -1,
+	DIMFILTER_MODE_KIND_AVE  = 0,
+	DIMFILTER_MODE_KIND_HIGH = +1
+};
+
 struct DIMFILTER_INFO {
 	int n_columns;		/* The max number of filter weights in x-direction */
 	int n_rows;		/* The max number of filter weights in y-direction */
@@ -74,6 +80,7 @@ struct DIMFILTER_CTRL {
 		bool active;
 		int filter;	/* Id for the filter */
 		double width;
+		int mode;
 	} F;
 	struct G {	/* -G<file> */
 		bool active;
@@ -86,6 +93,7 @@ struct DIMFILTER_CTRL {
 		bool active;
 		unsigned int n_sectors;
 		int filter;	/* Id for the filter */
+		int mode;
 	} N;
 	struct Q {	/* -Q */
 		bool active;
@@ -106,6 +114,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.filter = C->N.filter = C->D.mode = -1;
+	C->F.mode = DIMFILTER_MODE_KIND_AVE;
 	C->N.n_sectors = 1;
 	return (C);
 }
@@ -234,7 +243,7 @@ static char *dimtemplate =
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -D<distance_flag> -F<type><filter_width> -G<outgrid> -N<type><n_sectors>\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -D<distance_flag> -F<type><filter_width>[<modifier>] -G<outgrid> -N<type><n_sectors>[<modifier>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-L] [-Q]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
@@ -251,10 +260,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -D4 grid x,y in degrees, <filter_width> in km, spherical Distances.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets the primary filter type and full (6 sigma) filter-width  Choose between\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (b)oxcar, (c)osine arch, (g)aussian, (m)edian filters\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or p(maximum likelihood Probability estimator -- a mode estimator).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or p(maximum likelihood Probability estimator -- a mode estimator):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Append +l to return the lowest mode if multiple modes are found [return average].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Append +u to return the uppermost mode if multiple modes are found [return average].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets output name for filtered grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Sets the secondary filter type and the number of sectors.  Choose between\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (l)ower, (u)pper, (a)verage, (m)edian, and (p) the mode estimator).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (l)ower, (u)pper, (a)verage, (m)edian, and (p) the mode estimator). If using p:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Append +l to return the lowest mode if multiple modes are found [return average].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Append +u to return the uppermost mode if multiple modes are found [return average].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 #ifdef OBSOLETE
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Remove local planar trend from data, apply filter, then add back trend at filtered value.\n");
@@ -339,6 +352,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 						break;
 					case 'p':
 						Ctrl->F.filter = 4;
+						if (strstr (opt->arg, "+l") || opt->arg[strlen(opt->arg)-1] == '-') Ctrl->F.mode = DIMFILTER_MODE_KIND_LOW;
+						else if (strstr (opt->arg, "+u")) Ctrl->F.mode = DIMFILTER_MODE_KIND_HIGH;
 						break;
 					default:
 						n_errors++;
@@ -378,13 +393,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 						break;
 					case 'p':	/* Mode */
 						Ctrl->N.filter = 4;
+						if (strstr (opt->arg, "+l") || opt->arg[strlen(opt->arg)-1] == '-') Ctrl->N.mode = DIMFILTER_MODE_KIND_LOW;
+						else if (strstr (opt->arg, "+u")) Ctrl->N.mode = DIMFILTER_MODE_KIND_HIGH;
 						break;
 					default:
 						n_errors++;
 						break;
 				}
 				k = atoi (&opt->arg[1]);	/* Number of sections to split filter into */
-				n_errors += gmt_M_check_condition (GMT, k <= 0, "Syntax error -N option: Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
+				n_errors += gmt_M_check_condition (GMT, k <= 0, "Syntax error -N option: Correct syntax: -Nx<nsectors>[<modifier>], with x one of l|u|a|m|p, <nsectors> is number of sectors\n");
 				Ctrl->N.n_sectors = k;	/* Number of sections to split filter into */
 				set++;
 				break;
@@ -506,7 +523,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 	unsigned short int **sector = NULL;
 
 	unsigned int *n_in_median, wsize = 0, one_or_zero = 1, effort_level, n_sectors_2 = 0, col_in, row_in;
-	unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0, col_out, row_out, i, j, k, s;
+	unsigned int GMT_n_multiples = 0, col_out, row_out, i, j, k, s;
 	bool full_360, shift = false, slow, slow2, fast_way;
 	int j_origin, *i_origin = NULL, ii, jj, scol, srow, error = 0;
 
@@ -953,7 +970,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 								last_median = this_median;
 							}
 							else
-								gmt_mode (GMT, work_array[s], n_in_median[s], n_in_median[s]/2, true, gmt_mode_selection, &GMT_n_multiples, &this_median);
+								gmt_mode (GMT, work_array[s], n_in_median[s], n_in_median[s]/2, true, Ctrl->F.mode, &GMT_n_multiples, &this_median);
 							value[k] = this_median;
 #ifdef OBSOLETE
 							if (Ctrl->E.active) value[k] += intercept;	/* I.e., intercept + x * slope_x + y * slope_y, but x == y == 0 at node */
@@ -990,7 +1007,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 						last_median2 = this_median2;
 					}
 					else
-						gmt_mode (GMT, value, k, k/2, true, gmt_mode_selection, &GMT_n_multiples, &this_median2);
+						gmt_mode (GMT, value, k, k/2, true, Ctrl->N.mode, &GMT_n_multiples, &this_median2);
 					z = this_median2;
 				}
 				else {	/* Get min, max, or mean */

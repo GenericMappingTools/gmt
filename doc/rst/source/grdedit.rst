@@ -18,7 +18,7 @@ Synopsis
 [ |-E|\ [**a**\ \|\ **h**\ \|\ **l**\ \|\ **r**\ \|\ **t**\ \|\ **v**] ]
 [ |-G|\ *outgrid* ]
 [ |-J|\ *parameters* ]
-[ |-L|\ [**+n**\ \|\ **+p**\ ] ]
+[ |-L|\ [**+n**\ \|\ **p**\ ] ]
 [ |-N|\ *table* ]
 [ |SYN_OPT-R| ]
 [ |-S| ] [ |-T| ]
@@ -98,7 +98,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**+n**\ \|\ **+p**\ ]
+**-L**\ [**+n**\ \|\ **p**\ ]
     Adjust the longitude values in the grid (only applies to geographic grids).  By default we will
     try to adjust *west* and *east* so that *west* >= -180 or *east* <= +180, but this depends on
     the range of the longitudes. Append **+n** to force negative longitude values and **+p** to

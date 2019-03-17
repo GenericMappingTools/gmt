@@ -48,10 +48,10 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;
-	struct GRDLNDM_D {	/* -D<resolution> */
+	struct GRDLNDM_D {	/* -D<resolution>[+f] */
 		bool active;
 		bool force;	/* if true, select next highest level if current set is not available */
-		char set;	/* One of f, h, i, l, c */
+		char set;	/* One of f, h, i, l, c, or a for auto */
 	} D;
 	struct GRDLNDM_E {	/* -E[<border> | <cborder>/<lborder>/<iborder>/<pborder>] */
 		bool active;
@@ -107,7 +107,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<outgrid> %s %s\n", name, GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<resolution>][+] [-E[<bordervalues>]]\n\t[-N<maskvalues>] [%s] [%s]%s [%s]\n\n", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<resolution>][+f] [-E[<bordervalues>]]\n\t[-N<maskvalues>] [%s] [%s]%s [%s]\n\n", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -122,7 +122,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     i - intermediate resolution.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     l - low resolution [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c - crude resolution, for tasks that need crude continent outlines only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f to use a lower resolution should the chosen one not be available [abort].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Indicate that nodes exactly on a polygon boundary are outside [inside].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append <border> or <cborder>/<lborder>/<iborder>/<pborder>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   We will then trace lines through the grid and reset the cells crossed by\n");
@@ -166,7 +166,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 			case 'D':	/* Set GSHHS resolution */
 				Ctrl->D.active = true;
 				Ctrl->D.set = opt->arg[0];
-				Ctrl->D.force = (opt->arg[1] == '+');
+				Ctrl->D.force = (opt->arg[1] == '+' && (opt->arg[2] == 'f' || opt->arg[2] == '\0'));
 				break;
 			case 'E':	/* On-boundary setting */
 				Ctrl->E.active = true;

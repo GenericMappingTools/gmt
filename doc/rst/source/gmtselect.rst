@@ -16,7 +16,7 @@ Synopsis
 **gmt select** [ *table* ]
 [ |-A|\ *min_area*\ [/*min_level*/*max_level*][\ **+ag**\ \|\ **i**\ \|\ **s**\ \|\ **S**][**+r**\ \|\ **l**][**p**\ *percent*] ]
 [ |-C|\ *pointfile*\ **+d**\ *dist*\ [*unit*] ]
-[ |-D|\ *resolution*\ [**+**] ]
+[ |-D|\ *resolution*\ [**+f**] ]
 [ |-E|\ [**fn**] ]
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *gridmask* ]
@@ -84,11 +84,11 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *resolution*\ [**+**]
+**-D**\ *resolution*\ [**+f**]
     Ignored unless **-N** is set. Selects the resolution of the
     coastline data set to use ((**f**)ull, (**h**)igh,
     (**i**)ntermediate, (**l**)ow, or (**c**)rude). The resolution drops
-    off by ~80% between data sets. [Default is **l**]. Append (+) to
+    off by ~80% between data sets. [Default is **l**]. Append (**+f**) to
     automatically select a lower resolution should the one requested not
     be available [abort if not found]. Note that because the coastlines
     differ in details it is not guaranteed that a point will remain
@@ -99,8 +99,8 @@ Optional Arguments
 **-E**\ [**fn**]
     Specify how points exactly on a polygon boundary should be
     considered. By default, such points are considered to be inside the
-    polygon. Append **n** and/or **f** to change this behavior for the
-    **-F** and **-N** options, respectively, so that boundary points are
+    polygon. Append **f** and/or **n** to change this behavior for the
+    **-F** and/or **-N** options, respectively, so that boundary points are
     considered to be outside.
 
 .. _-F:
@@ -127,7 +127,7 @@ Optional Arguments
 
     **f** select records NOT inside any of the polygons.
 
-    **g** will pass records inside the cells with z equal zero of the grid mask in -G.
+    **g** will pass records inside the cells with z equal zero of the grid mask in **-G**.
 
     **l** select records NOT within the specified distance of any line.
 

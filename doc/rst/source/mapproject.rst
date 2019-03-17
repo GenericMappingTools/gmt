@@ -19,9 +19,9 @@ Synopsis
 [ |-C|\ [*dx*/*dy*] ]
 [ |-D|\ **c**\ \|\ **i**\ \|\ **p** ]
 [ |-E|\ [*datum*\ ] ] [ |-F|\ [*unit*\ ] ]
-[ |-G|\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ [**+**\ \|\ **-**]\ *unit*][**+v**] ]
+[ |-G|\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ [±]\ *unit*][**+v**] ]
 [ |-I| ]
-[ |-L|\ *line.xy*\ [**+u**\ [**+**\ \|\ **-**]\ *unit*][**+p**] ]
+[ |-L|\ *line.xy*\ [**+u**\ [±]\ *unit*][**+p**] ]
 [ |-N|\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**] ]
 [ |-Q|\ [**d**\ \|\ **e** ]
 [ |-S| ]
@@ -140,7 +140,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ [**+**\ \|\ **-**]\ *unit*][**+v**]
+**-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ [±]\ *unit*][**+v**]
     Calculate distances along track *or* to the optional *fixed* point set
     with **-G**\ *lon0*/*lat0*. Append the distance unit with **+u** (see :ref:`Unit_attributes` for available
     units and how distances are computed), including
@@ -160,7 +160,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *line.xy*\ [**+u**\ [**+**\ \|\ **-**]\ *unit*][**+p**]
+**-L**\ *line.xy*\ [**+u**\ [±]\ *unit*][**+p**]
     Determine the shortest distance from the input data points to the
     line(s) given in the ASCII multisegment file *line.xy*. The distance
     and the coordinates of the nearest point will be appended to the

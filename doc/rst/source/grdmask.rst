@@ -115,9 +115,9 @@ Optional Arguments
     different units you can instead append *xlim*\ /*ylim* which will
     perform a rectangular search where all nodes within ±\ *xlim* and
     ±\ *ylim* of a data point will be considered inside.
-    One can also achieve the rectangular selection effect by using the **-S**\ *<n_cells>c* form.
-    Here *n_cells* means the number of cells around each data point. As an example, **-S0c** means
-    that only the cell where point lies is masked, **-S1c** masks one cell beyond that
+    One can also achieve the rectangular selection effect by using the **-S**\ *n_cells*\ **c** form.
+    Here *n_cells* means the number of cells around each data point. As an example, **-S**\ 0**c** means
+    that only the cell where point lies is masked, **-S**\ 1**c** masks one cell beyond that
     (i.e. makes a 3x3 neighborhood), and so on.
 
 .. _-V:

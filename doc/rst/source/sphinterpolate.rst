@@ -69,7 +69,7 @@ Optional Arguments
     Use **p**\ iecewise linear interpolation; no tension is applied.
 **-Ql**
     Smooth interpolation with **l**\ ocal gradient estimates.
-**-Qg**
+**-Qg**\ [*N*/*M*/*U*]
     Smooth interpolation with **g**\ lobal gradient estimates. You may
     optionally append *N*/*M*/*U*, where *N* is the number of
     iterations used to converge at solutions for gradients when variable
@@ -77,7 +77,7 @@ Optional Arguments
     Gauss-Seidel iterations used when determining the global gradients
     [10], and *U* is the maximum change in a gradient at the last
     iteration [0.01].
-**-Qs**
+**-Qs**\ [*E*/*U*/*N*]
     Use **s**\ moothing. Optionally append *E*/*U*/*N* [/0/0/3], where *E* is Expected
     squared error in a typical (scaled) data value, and *U* is Upper
     bound on weighted sum of squares of deviations from data. Here, *N* is the number of

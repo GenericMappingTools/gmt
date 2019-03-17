@@ -15,7 +15,7 @@ Synopsis
 
 **gmt connect** [ *table* ] [ |-C|\ [*closed*] ]
 [ |-D|\ [*template*] ] [ |-L|\ [*linkfile*] ]
-[ |-Q|\ [*template*] ] [ |-T|\ [*cutoff*\ [*unit*][/\ *nn\_dist*]] ]
+[ |-Q|\ [*template*] ] [ |-T|\ [*cutoff*\ [*unit*][**+s**\ *sdist*]] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -101,15 +101,15 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*cutoff*\ [*unit*][/\ *nn\_dist*]]
-    Specifies the separation tolerance in the data coordinate units [0];
-    append distance unit (see :ref:`Unit_attributes`). If two lines has end-points that
-    are closer than this cutoff they will be joined. Optionally, append
-    /*nn_dist* which adds the requirement that a link will only be made
-    if the second closest connection exceeds the *nn_dist*. The latter
+**-T**\ [*cutoff*\ [*unit*][**+s**\ *sdist*]]
+    Specifies the separation tolerance in the data coordinate units [0]; for geographic data
+    append distance unit (see :ref:`Unit_attributes`). If two lines have end-points that
+    are closer than the *cutoff* they will be joined. Optionally, append
+    /*sdist* which adds the extra requirement that a link will only be made
+    if the *second* closest connection exceeds the *sdist* distance. The latter
     distance must be given in the same units as *cutoff*.  However, if
     no arguments are given then we close every polygon regardless of
-    the gap between first and last point.
+    the gap distance between the first and last point.
 
 .. _-V:
 
@@ -152,13 +152,13 @@ Optional Arguments
 Examples
 --------
 
-To combine the digitized segment lines segment\_\*.txt (whose
+To combine the digitized segment lines segment\_\*.txt (whose Cartesian
 coordinates are in cm) into as few complete lines as possible, assuming
 the end points slop could be up to 0.1 mm, run
 
    ::
 
-    gmt connect segment_*.txt -Tf0.1 > new_segments.txt
+    gmt connect segment_*.txt -T0.1 > new_segments.txt
 
 To combine the digitized segments in the multisegment file my_lines.txt
 (whose coordinates are in lon,lat) into as few complete lines as

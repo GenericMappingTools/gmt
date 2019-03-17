@@ -18,7 +18,7 @@ Synopsis
 [ |-A|\ *area* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ [**l**\ \|\ **r**/]\ *fill* ]
-[ |-D|\ *resolution*\ [**+**] ]
+[ |-D|\ *resolution*\ [**+f**] ]
 [ |-E|\ *dcw* ]
 [ |-F|\ *box* ]
 [ |-G|\ *fill*\ \|\ **c** ]

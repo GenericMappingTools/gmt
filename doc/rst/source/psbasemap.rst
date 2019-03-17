@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
 [ |-A|\ [*file*] ]
-[ |-D|\ *inset box* ]
+[ |-D|\ *insetbox* ]
 [ |-F|\ *box* ]
 [ |-K| ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
