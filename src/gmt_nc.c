@@ -177,6 +177,7 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 	size_t start[5] = {0,0,0,0,0}, count[5] = {1,1,1,1,1};
 	size_t n_contiguous_chunk_rows = 0;  /* that are processed at once, 0 = all */
 	ptrdiff_t imap[5] = {1,1,1,1,1}; /* mapping between dims of netCDF and in-memory grid */
+	const ptrdiff_t onestride[5] = {1,1,1,1,1};	/* Passing this instead of NULL bypasses netCDF bug in 4.6.2 */
 
 	/* catch illegal io_mode in debug */
 	assert (io_mode == k_put_netcdf || io_mode == k_get_netcdf);
@@ -223,7 +224,7 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 #endif
 			/* get/put chunked rows */
 			if (stride)
-				status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, grid, io_mode);
+				status = io_nc_varm_float (header->ncid, header->z_id, start, count, onestride, imap, grid, io_mode);
 			else
 				status = io_nc_vara_float (header->ncid, header->z_id, start, count, grid, io_mode);
 
@@ -244,7 +245,7 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 					++row_num, start[yx_dim[0]], count[yx_dim[0]]);
 #endif
 			if (stride)
-				status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, grid, io_mode);
+				status = io_nc_varm_float (header->ncid, header->z_id, start, count, onestride, imap, grid, io_mode);
 			else
 				status = io_nc_vara_float (header->ncid, header->z_id, start, count, grid, io_mode);
 		}
@@ -254,7 +255,7 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 		count[yx_dim[0]] = height_t;
 		count[yx_dim[1]] = width_t;
 		if (stride)
-			status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, grid, io_mode);
+			status = io_nc_varm_float (header->ncid, header->z_id, start, count, onestride, imap, grid, io_mode);
 		else
 			status = io_nc_vara_float (header->ncid, header->z_id, start, count, grid, io_mode);
 	}
