@@ -47,6 +47,22 @@ enum Dimfilter_mode {
 	DIMFILTER_MODE_KIND_HIGH = +1
 };
 
+enum Dimfilter_filter {
+	DIMFILTER_BOXCAR   = 0,
+	DIMFILTER_COSINE   = 1,
+	DIMFILTER_GAUSSIAN = 2,
+	DIMFILTER_MEDIAN   = 3,
+	DIMFILTER_MODE     = 4
+};
+
+enum Dimfilter_sector {
+	DIMSECTOR_MIN    = 0,
+	DIMSECTOR_MAX    = 1,
+	DIMSECTOR_MEAN   = 2,
+	DIMSECTOR_MEDIAN = 3,
+	DIMSECTOR_MODE   = 4
+};
+
 struct DIMFILTER_INFO {
 	int n_columns;		/* The max number of filter weights in x-direction */
 	int n_rows;		/* The max number of filter weights in y-direction */
@@ -339,19 +355,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'b':
-						Ctrl->F.filter = 0;
+						Ctrl->F.filter = DIMFILTER_BOXCAR;
 						break;
 					case 'c':
-						Ctrl->F.filter = 1;
+						Ctrl->F.filter = DIMFILTER_COSINE;
 						break;
 					case 'g':
-						Ctrl->F.filter = 2;
+						Ctrl->F.filter = DIMFILTER_GAUSSIAN;
 						break;
 					case 'm':
-						Ctrl->F.filter = 3;
+						Ctrl->F.filter = DIMFILTER_MEDIAN;
 						break;
 					case 'p':
-						Ctrl->F.filter = 4;
+						Ctrl->F.filter = DIMFILTER_MODE;
 						if (strstr (opt->arg, "+l") || opt->arg[strlen(opt->arg)-1] == '-') Ctrl->F.mode = DIMFILTER_MODE_KIND_LOW;
 						else if (strstr (opt->arg, "+u")) Ctrl->F.mode = DIMFILTER_MODE_KIND_HIGH;
 						break;
@@ -380,19 +396,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 				Ctrl->N.active = true;
 				switch (opt->arg[0]) {
 					case 'l':	/* Lower bound (min) */
-						Ctrl->N.filter = 0;
+						Ctrl->N.filter = DIMSECTOR_MIN;
 						break;
 					case 'u':	/* Upper bound (max) */
-						Ctrl->N.filter = 1;
+						Ctrl->N.filter = DIMSECTOR_MAX;
 						break;
 					case 'a':	/* Average (mean) */
-						Ctrl->N.filter = 2;
+						Ctrl->N.filter = DIMSECTOR_MEAN;
 						break;
 					case 'm':	/* Median */
-						Ctrl->N.filter = 3;
+						Ctrl->N.filter = DIMSECTOR_MEDIAN;
 						break;
 					case 'p':	/* Mode */
-						Ctrl->N.filter = 4;
+						Ctrl->N.filter = DIMSECTOR_MODE;
 						if (strstr (opt->arg, "+l") || opt->arg[strlen(opt->arg)-1] == '-') Ctrl->N.mode = DIMFILTER_MODE_KIND_LOW;
 						else if (strstr (opt->arg, "+u")) Ctrl->N.mode = DIMFILTER_MODE_KIND_HIGH;
 						break;
@@ -436,7 +452,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct G
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.width <= 0.0, "Syntax error -F option: Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->N.n_sectors == 0, "Syntax error -N option: Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
 #ifdef OBSOLETE
-		slow = (Ctrl->F.filter == 3 || Ctrl->F.filter == 4);		/* Will require sorting etc */
+		slow = (Ctrl->F.filter == DIMFILTER_MEDIAN || Ctrl->F.filter == DIMFILTER_MODE);		/* Will require sorting etc */
 		n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !slow, "Syntax error -E option: Only valid for robust filters -Fm|p.\n");
 #endif
 	}
@@ -588,8 +604,8 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		}
 		gmt_grd_init (GMT, Gin->header, options, true);	/* Update command history only */
 
-		slow  = (Ctrl->F.filter == 3 || Ctrl->F.filter == 4);	/* Will require sorting etc */
-		slow2 = (Ctrl->N.filter == 3 || Ctrl->N.filter == 4);	/* SCAN: Will also require sorting etc */
+		slow  = (Ctrl->F.filter == DIMFILTER_MEDIAN || Ctrl->F.filter == DIMFILTER_MODE);	/* Will require sorting etc */
+		slow2 = (Ctrl->N.filter == DIMSECTOR_MEDIAN || Ctrl->N.filter == DIMSECTOR_MODE);	/* SCAN: Will also require sorting etc */
 
 		if (Ctrl->T.active)	/* Make output grid of the opposite registration */
 			one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 1 : 0;
@@ -965,7 +981,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 								if (first_time) last_median = 0.5 * (z_min + z_max), first_time = false;
 							}
 #endif
-							if (Ctrl->F.filter == 3) {
+							if (Ctrl->F.filter == DIMFILTER_MEDIAN) {
 								gmt_median (GMT, work_array[s], n_in_median[s], z_min, z_max, last_median, &this_median);
 								last_median = this_median;
 							}
@@ -1002,7 +1018,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 				}
 
 				if (slow2) {	/* Get median (or mode) of all the medians (or modes) */
-					if (Ctrl->F.filter == 3) {
+					if (Ctrl->F.filter == DIMFILTER_MEDIAN) {
 						gmt_median (GMT, value, k, z2_min, z2_max, last_median2, &this_median2);
 						last_median2 = this_median2;
 					}
@@ -1012,13 +1028,13 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 				}
 				else {	/* Get min, max, or mean */
 					switch (Ctrl->N.filter) {	/* Initialize z, the final output value */
-						case 0:	/* Lower bound */
+						case DIMSECTOR_MIN:	/* Lower bound */
 							z = DBL_MAX;
 							break;
-						case 1:	/* Upper bound */
+						case DIMSECTOR_MAX:	/* Upper bound */
 							z = -DBL_MAX;
 							break;
-						case 2:	/* Average (mean) */
+						case DIMSECTOR_MEAN:	/* Average (mean) */
 							z = 0.0;
 							break;
 						default:
@@ -1026,20 +1042,20 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 					}
 					for (s = 0; s < k; s++) {	/* Apply the min, max, or mean update */
 						switch (Ctrl->N.filter) {
-							case 0:	/* Lower bound */
+							case DIMSECTOR_MIN:	/* Lower bound */
 								if (value[s] < z) z = value[s];
 								break;
-							case 1:	/* Upper bound */
+							case DIMSECTOR_MAX:	/* Upper bound */
 								if (value[s] > z) z = value[s];
 								break;
-							case 2:	/* Average (mean) */
+							case DIMSECTOR_MEAN:	/* Average (mean) */
 								z += value[s];
 								break;
 							default:
 								break;
 						}
 					}
-					if (Ctrl->N.filter == 2) z /= (double)k;	/* Mean requires a final normalization */
+					if (Ctrl->N.filter == DIMSECTOR_MEAN) z /= (double)k;	/* Mean requires a final normalization */
 				}
 				Gout->data[ij_out] = (gmt_grdfloat)z;
 #ifdef OBSOLETE
