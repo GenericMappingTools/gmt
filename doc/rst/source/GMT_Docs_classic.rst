@@ -8045,7 +8045,8 @@ out parameters for pre-processing. The available types are
   Use octal \\040 to include spaces to ensure the text string remains a single word.
 
 To use the extra parameters in your macro you address them as $1, $2, etc.  There
-is no limit on how many parameters your symbol may use.
+is no limit on how many parameters your symbol may use. To access the trailing text in
+the input file you use $t.
 
 Macro commands
 ~~~~~~~~~~~~~~
@@ -8269,6 +8270,9 @@ Using a comparison between variables is similarly straightforward:
     ::
 
      if $2 > $3 then 0.2 0.3 0.4 c -Ggreen
+
+If you are comparing text strings then $t can be on either side of the operator and
+the other side would be a string constant (in quotes if containing spaces).
 
 Complete conditional test
 ^^^^^^^^^^^^^^^^^^^^^^^^^

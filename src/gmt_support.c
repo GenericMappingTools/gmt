@@ -4745,9 +4745,13 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 					size_t len = strlen (arg[k]) - 1;
 					s->is_var[k] = false;
 					if (gmt_not_numeric (GMT, arg[k])) {	/* Got a text item for string comparison */
+						size_t len = strlen (arg[k]);
 						s->var[k] = GMT_CONST_STRING;
-						s->string = gmt_M_memory (GMT, NULL, strlen (arg[k]) + 1, char);
-						strcpy (s->string, arg[k]);
+						s->string = gmt_M_memory (GMT, NULL, len + 1, char);
+						if ((arg[k][0] == '\"' && arg[k][len-1] == '\"') || (arg[k][0] == '\'' && arg[k][len-1] == '\''))	/* Get rid of quotes */
+							strncpy (s->string, &arg[k][1], len-2);
+						else
+							strcpy (s->string, arg[k]);
 					}
 					else {	/* Numerical value */
 						s->var[k] = GMT_CONST_VAR;
