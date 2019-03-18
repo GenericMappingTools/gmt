@@ -200,22 +200,6 @@ Make sure users set their PATH to include the directory containing
 the GMT executables (BINDIR) if this is not a standard directory
 like /usr/local/bin.  You should now be able to run GMT programs.
 
-## GMT supplemental Code
-
-GMT users elsewhere have developed programs that utilize the GMT libraries and
-produce PostScript code compatible with the rest of GMT or simply perform data
-manipulation. Currently, the supplemental archive include the directories:
-
-  gshhg     - Data extractor for GSHHG shoreline polygons and rivers, borders.
-  img       - Data extractor for Smith/Sandwell altimetry grids.
-  meca      - Plotting of focal mechanisms, velocity arrows,
-              and error ellipses on maps.
-  mgd77     - Programs for handling of native MGD77 files.
-  potential - geopotential manipulations
-  segyprogs - Plotting SEGY seismic data sets.
-  spotter   - Plate tectonic & kinematics applications.
-  x2sys     - Track intersection (crossover) tools.
-
 ## Misc
 
 Before running programs, there are a few things you should do/know:
