@@ -44,6 +44,12 @@
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehiprstxy" GMT_OPT("Ec")
 
+enum Mask_Modes {
+	PSMASK_INSIDE  = -1,	/* Set inside nodes to NaN */
+	PSMASK_DEFAULT =  0,	/* Leave nodes as they are */
+	PSMASK_OUTSIDE = +1	/* Set outside nodes to NaN */
+};
+
 struct PSMASK_CTRL {
 	struct C {	/* -C */
 		bool active;
@@ -426,7 +432,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> %s %s\n", name, GMT_I_OPT, GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [%s] [-C] [-D<template>] [-G<fill>]\n\t[%s] %s[-L<grid>[+i|o]] [-N] %s%s[-Q<min>] [-S%s] [-T]\n", GMT_Rgeoz_OPT, GMT_B_OPT, GMT_Jz_OPT, GMT_K_OPT, GMT_O_OPT, GMT_P_OPT, GMT_RADIUS_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [%s] [-C] [-D<template>] [-F[l|r]] [-G<fill>]\n\t[%s] %s[-L<grid>[+i|o]] [-N] %s%s[-Q<min>] [-S%s] [-T]\n", GMT_Rgeoz_OPT, GMT_B_OPT, GMT_Jz_OPT, GMT_K_OPT, GMT_O_OPT, GMT_P_OPT, GMT_RADIUS_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_Y_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_r_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -444,6 +450,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If an integer format (e.g., %%06d) is found we substitute a running segment count\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and write all polygons to individual files; see manual page for more examples.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -T; see -Q to eliminate small polygons.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Force clip contours to be oriented so that the higher z-values\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   are to the left (-Fl [Default]) or right (-Fr) as we move along\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the contour lines [Default is not oriented].\n");
 	gmt_fill_syntax (API->GMT, 'G', "Select fill color/pattern [Default is no fill].");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Save internal on/off node grid to <grid> for testing [no grid saved].\n");
@@ -535,23 +544,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 				break;
 			case 'L':
 				Ctrl->L.active = true;
-				if ((c = strchr (opt->arg, '+'))) {	/* Gave a modifier +i or +o */
-					k = 0;
+				k = 0;
+				if (opt->arg[0] == '-')	/* Old style leading -<name> */
+					Ctrl->L.mode = PSMASK_INSIDE, k = 1;
+				else if (opt->arg[0] == '+')	/* Old style leading +<name> */
+					Ctrl->L.mode = PSMASK_OUTSIDE, k = 1;
+				else if ((c = strstr (opt->arg, "+i"))) {	/* Appended modifier +i */
 					c[0] = '\0';	/* Temporarily chop off modifier */
-					if (c[1] == 'i') Ctrl->L.mode = -1;
-					else if (c[1] == 'o') Ctrl->L.mode = +1;
-					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Expected -L<grdfile>[+i|o]\n");
-						n_errors++;
-					}
+					Ctrl->L.mode = PSMASK_INSIDE;
 				}
-				else {	/* Perhaps old style leading ± */
-					switch (opt->arg[0]) {
-						k = 1;
-						case '-': Ctrl->L.mode = -1;	break;
-						case '+': Ctrl->L.mode = +1;	break;
-						default: k = 0;	break;
-					}
+				else if ((c = strstr (opt->arg, "+o"))) {	/* Appended modifier +o */
+					c[0] = '\0';	/* Temporarily chop off modifier */
+					Ctrl->L.mode = PSMASK_OUTSIDE;
 				}
 				if (opt->arg[k]) Ctrl->L.file = strdup (&opt->arg[k]);
 				if (c) c[0] = '+';	/* Restore modifier */
