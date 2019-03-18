@@ -1,9 +1,13 @@
 # Installing GMT
 
 GMT is available on Windows, macOS and Linux.
-Its source code can be downloaded through tarballs or
-[the git repository](https://github.com/GenericMappingTools/gmt/).
-Source and binary packages are provided for the current version.
+Source and binary packages are provided for the latest release version,
+and can be downloaded from the [Downloads page](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Download)
+or [the GitHub repository](https://github.com/GenericMappingTools/gmt/).
+
+This file provides instructions about how to install GMT binary packages in
+different operating systems. Please refer to [Building Instructions](BUILDING.md)
+for compling GMT source package (either stable release or development version).
 
 ## Linux
 
@@ -111,12 +115,3 @@ We provide 32 and 64 bit standalone installers (e.g., gmt-5.x.x-win32.exe)
 in the [downloads section](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Download).
 If you need the newest development version refer to the instructions for
 [building GMT from source](BUILDING.md).
-
-### Source
-
-Download the latest stable source release from the [downloads page](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Download)
-or get the latest development version from Github:
-
-    git clone https://github.com/GenericMappingTools/gmt.git
-
-and refer to the included documentation or the online instructions for building GMT from source.
