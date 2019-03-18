@@ -48,30 +48,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
-
-	/* This parses the options provided to grdcut and sets parameters in CTRL.
-	 * Any GMT common options will override values set previously by other commands.
-	 * It also replaces any file names specified as input or output with the data ID
-	 * returned when registering these sources/destinations with the API.
-	 */
-
-	struct GMT_OPTION *opt = NULL;
-
-	if ((opt = options) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Required module name not specified\n");
-		return GMT_PARSE_ERROR;
-	}
-	return GMT_NOERROR;
-}
-
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC const char * api_get_module_group (void *V_API, char *module);
 
 int GMT_docs (void *V_API, int mode, void *args) {
-	bool other_file = false;
+	bool other_file = false, dry_run = false;
 	int error = 0, k;
 	char cmd[PATH_MAX] = {""}, URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t = NULL;
 	const char *group = NULL, *docname = NULL;
@@ -95,6 +78,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the docs main code ----------------------------*/
 
+	if (options->option == 'Q') dry_run = true;
 	opt = GMT_Find_Option (API, GMT_OPT_INFILE, options);	/* action target will appear as file name */
 	if (!opt) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot use an option (-%c) without a module name\n", options->option);
@@ -166,14 +150,18 @@ int GMT_docs (void *V_API, int mode, void *args) {
 #else
 	k = 2;
 #endif
-
-	sprintf (cmd, "%s %s", can_opener[k], URL);
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opening %s in the default browser via %s\n", URL, can_opener[k]);
-	if ((error = system (cmd))) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s in the default browser via %s failed with error %d\n", URL, can_opener[k], error);
-		perror ("docs");
-		Return (GMT_RUNTIME_ERROR);
+	if (dry_run) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting URL %s to stdout\n", URL);
+		printf ("%s\n", URL);
 	}
-
+	else {
+		sprintf (cmd, "%s %s", can_opener[k], URL);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opening %s in the default browser via %s\n", URL, can_opener[k]);
+		if ((error = system (cmd))) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s in the default browser via %s failed with error %d\n", URL, can_opener[k], error);
+			perror ("docs");
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
 	Return (error);
 }
