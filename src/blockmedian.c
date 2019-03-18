@@ -156,10 +156,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct
 						case '+':	/* New syntax with +h or +l to parse */
 							if (opt->arg[2] == 'l')
 								Ctrl->E.mode = BLK_DO_INDEX_LO;
-							else if (opt->arg[2] == 'h')
+							else if (opt->arg[2] == 'h' || opt->arg[2] == '\0')	/* E.g., let Er+ be thought of as -Er+h */
 								Ctrl->E.mode = BLK_DO_INDEX_HI;
-							else {	/* Neither +l or +h is bad */
-								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized modifier %s for -E%c!\n", opt->arg[0]);
+							else {	/* Neither +l, +h, or just + is bad */
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized argument -E%s!\n", opt->arg);
 								n_errors++;
 							}
 							break;
