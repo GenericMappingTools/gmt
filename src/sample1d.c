@@ -120,7 +120,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of t-values to produce over the range instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time resampling, append a valid time unit (%s) to the increment and add +t.\n", GMT_TIME_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For spatial resampling with distance computed from the first two columns, specify increment as\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [-|+][<unit>]<inc>, with - for fast (Flat Earth) or + for slow (ellipsoidal) calculations [great circle].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [-|+]<inc>[<unit>], with - for fast (Flat Earth) or + for slow (ellipsoidal) calculations [great circle].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a geospatial distance unit (%s) or c (for Cartesian distances).\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   See -A to control how the spatial resampling is done.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +a to add such internal distances as a final output column [no distances added].\n");
