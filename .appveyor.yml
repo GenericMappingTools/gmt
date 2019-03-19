@@ -28,6 +28,9 @@ environment:
     #  CONDA_INSTALL_DIR: "C:\\Miniconda3-x64"
     #  CMAKE_PREFIX_PATH: "%CONDA_INSTALL_DIR%\\Library"
 
+cache:
+  - "%APPVEYOR_BUILD_FOLDER%\\build" -> appveyor.yml
+
 install:
   # install netcdf, curl, gdal, pcre via conda
   - call %CONDA_INSTALL_DIR%\Scripts\activate.bat
