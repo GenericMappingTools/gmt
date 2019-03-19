@@ -144,7 +144,7 @@ bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, char *module) {
 	else if (!strncmp (module, "contour",    9U)) is_modern = true;
 	else if (!strncmp (module, "ternary",    9U)) is_modern = true;
 	else if (!strncmp (module, "histogram", 11U)) is_modern = true;
-	if (is_modern || API->GMT->current.setting.run_mode == GMT_MODERN)	/* These dont exist in modern mode */
+	if (is_modern || API->GMT->current.setting.run_mode == GMT_MODERN)	/* These don't exist in modern mode */
 		GMT_K_OPT = GMT_O_OPT = GMT_P_OPT = "";
 
 	return is_modern;

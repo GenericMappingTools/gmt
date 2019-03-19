@@ -131,7 +131,7 @@ Optional Arguments
     than *max_radius* away from a data constraint is set to NaN [no masking].
     Append a distance unit (see UNITS) if needed.
     One can also select the nodes to mask by using the **-M**\ *<n_cells>c* form.
-    Here *n_cells* means the number of cells arround the node controled by a data point. As an example
+    Here *n_cells* means the number of cells around the node controlled by a data point. As an example
     **-M0c** means that only the cell where point lies is filled, **-M1c** keeps one cell
     beyond that (i.e. makes a 3x3 neighborhood), and so on.
 
@@ -237,8 +237,8 @@ hawaii_grd.nc, and monitoring each iteration, try:
 
     gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vl
 
-Notes
------
+Gridding Geographic Data: Boundary Conditions
+---------------------------------------------
 
 The surface finite difference algorithm is Cartesian at heart, hence the *ad hoc*
 option to change the aspect ratio for a suitable mean latitude (**-A**). When
@@ -252,6 +252,29 @@ interfere and detect inconsistencies at the pole points and replace all values a
 a pole with their mean value.  This will introduce further distortion into the
 grid near the poles.  We recommend you instead consider spherical gridding for global
 data sets; see :doc:`greenspline` (for modest data sets) or :doc:`sphinterpolate`.
+
+Gridding Geographic Data: Setting Increments
+--------------------------------------------
+
+Specifying grid increments in distance units (meters, km, etc.) for geographic (lon, lat)
+grids triggers a conversion from the given increment to the equivalent increment in degrees.
+This is done differently for longitude and latitude and also depends on chosen ellipsoid,
+but ultimately is a great-circle approximation. For latitude we divide your *y*-increment
+with the number of you chosen unit per degree latitude, while for longitude we divide your
+*x*-increment by the number of such units per degree along the mid-parallel in your region. The
+resulting degree increments may therefore not exactly match the increments you entered explicitly.
+Hence, there may be rounding off in ways you don't want and cannot easily control, resulting in prime grid
+dimensions. You can handle the situation via **-Q** but with the never-ending decimals in some
+increments that is still a challenge.  Another approach is to *not* grid geographic data
+using length units as increments, due to the above conversion. It may be cleaner to specify
+grid intervals in spherical degrees, minutes or seconds. That way you can control the grid
+dimensions directly and avoid the round-off. Alternatively, if your region is far from Equator
+and your are concerned about the difference in longitude and latitude increments in degrees
+you could project all data to a local projection (e.g., UTM) to yield units of meters, and then
+grid the projected data using meters as the final grid increment. Either approach avoids
+"ugly" increments like 0.161697s and will let you specify intervals that are easily divisible
+into the range. If increment choice is dictated by a need for a desired increment in meters
+then the projection route will yield better results.
 
 Bugs
 ----

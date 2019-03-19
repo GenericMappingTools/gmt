@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt sphtriangulate** [ *table* ] [ |-A| ] [ |-C| ] [ |-D| ]
-[ |-L|\ *unit* ] [ |-N|\ *nfile* ] [ |-Q|\ **d**\ \|\ **v** ]
+[ |-L|\ *unit* ] [ |-N|\ *file* ] [ |-Q|\ **d**\ \|\ **v** ]
 [ |-T| ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -85,7 +85,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *nfile*
+**-N**\ *file*
     Write the information pertaining to each polygon. For Delaunay: the
     three node number and the triangle area (if **-A** was set); for
     Voronoi the unique node lon, lat and polygon area (if **-A** was

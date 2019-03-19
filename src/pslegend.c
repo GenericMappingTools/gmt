@@ -574,9 +574,9 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
 						if ((txt_d[0] == 'f' || txt_d[0] == 'p') && gmt_get_modifier (txt_c, 'j', string))	/* Specified alternate justification old-style */
 							just = string[0];
-						else if (gmt_get_modifier (txt_c, 'a', string))	/* Specified alternate aligment */
+						else if (gmt_get_modifier (txt_c, 'a', string))	/* Specified alternate alignment */
 							just = string[0];
-						if (gmt_get_modifier (txt_c, 'u', string))	/* Specified alternate aligment */
+						if (gmt_get_modifier (txt_c, 'u', string))	/* Specified alternate alignment */
 							gave_label = false;	/* Not sure why I do this, will find out */
 						if (gave_label && (just == 't' || just == 'b')) height += d_off;
 						height += GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
@@ -988,9 +988,9 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
 						if ((txt_d[0] == 'f' || txt_d[0] == 'p') && gmt_get_modifier (txt_c, 'j', string))	/* Specified alternate justification old-style */
 							just = string[0];
-						else if (gmt_get_modifier (txt_c, 'a', string))	/* Specified alternate aligment */
+						else if (gmt_get_modifier (txt_c, 'a', string))	/* Specified alternate alignment */
 							just = string[0];
-						if (gmt_get_modifier (txt_c, 'u', string))	/* Specified alternate aligment */
+						if (gmt_get_modifier (txt_c, 'u', string))	/* Specified alternate alignment */
 							gave_label = false;	/* Not sure why I do this, will find out */
 						h = row_height;
 						if (gave_label && (just == 't' || just == 'b')) h += d_off;

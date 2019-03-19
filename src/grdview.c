@@ -1308,7 +1308,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		/* Get a sensible zero distance adjustment for Shepard weights in blending colors for pixels inside a tile.
 		 * each pixel will get color contribution from the 4 nodes making up the tile, and we base it on the distance
 		 * from the current pixel to each of the 4 nodes.  We weigh the contributions using w = 1/(d_off+dist) so
-		 * that we dont blow up at a node.  We choose d_off as 10% of typical pixels per tile. This filters the values
+		 * that we don't blow up at a node.  We choose d_off as 10% of typical pixels per tile. This filters the values
 		 * a little bit.
 		 * PW Feb-24-2018: Commented out for now.  What we had is not that bad but suffers from aliasing when the dpi
 		 * is low.  Perhaps a scheme that sets d_off to tiny when dpi passes some threshold.  */

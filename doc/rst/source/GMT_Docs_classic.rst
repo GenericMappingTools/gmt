@@ -1522,7 +1522,7 @@ The upper uses Gregorian weeks (which start at the day chosen by
     gmt set FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character \
            FORMAT_TIME_SECONDARY_MAP full FONT_ANNOT_PRIMARY +9p
     gmt psbasemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1U -BS -P -K > GMT_-B_time5.ps
-    gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Chararacter
+    gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Character
     gmt psbasemap -R -J -Bpa3Kf1k -Bsa1r -BS -O -Y0.65i >> GMT_-B_time5.ps
 
 .. _cartesian_axis5:
@@ -8045,7 +8045,8 @@ out parameters for pre-processing. The available types are
   Use octal \\040 to include spaces to ensure the text string remains a single word.
 
 To use the extra parameters in your macro you address them as $1, $2, etc.  There
-is no limit on how many parameters your symbol may use.
+is no limit on how many parameters your symbol may use. To access the trailing text in
+the input file you use $t.
 
 Macro commands
 ~~~~~~~~~~~~~~
@@ -8269,6 +8270,9 @@ Using a comparison between variables is similarly straightforward:
     ::
 
      if $2 > $3 then 0.2 0.3 0.4 c -Ggreen
+
+If you are comparing text strings then $t can be on either side of the operator and
+the other side would be a string constant (in quotes if containing spaces).
 
 Complete conditional test
 ^^^^^^^^^^^^^^^^^^^^^^^^^

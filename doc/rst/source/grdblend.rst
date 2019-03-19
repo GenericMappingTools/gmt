@@ -16,7 +16,7 @@ Synopsis
 **gmt grdblend** [ *blendfile* \| *grid1* *grid2* ... ] |-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-C|\ **f**\ \|\ **l**\ \|\ **o**\ \|\ **u** ][±] [ |-N|\ *nodata* ]
+[ |-C|\ **f**\ \|\ **l**\ \|\ **o**\ \|\ **u**\ ][**+n**\ \|\ **p**\ ] [ |-N|\ *nodata* ]
 [ |-Q| ] [ |-Z|\ *scale* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**z**] ]
@@ -90,7 +90,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ **f**\ \|\ **l**\ \|\ **o**\ \|\ **u** ][±]
+**-C**\ **f**\ \|\ **l**\ \|\ **o**\ \|\ **u**\ ][**+n**\ \|\ **p**\ ]
     Clobber mode: Instead of blending, simply pick the value of one of
     the grids that covers a node. Select from the following modes: **f**
     for the first grid to visit a node; **o** for the last grid to visit
@@ -98,7 +98,7 @@ Optional Arguments
     grid with the uppermost value. For modes **f** and **o** the
     ordering of grids in the *blendfile* will dictate which grid
     contributes to the final result. Weights and cosine tapering are not
-    considered when clobber mode is active. Optionally, append + or -.
+    considered when clobber mode is active. Optionally, append **+p++ or **+n**.
     Then, we always initialize output to equal the first grid but then
     for subsequent grids we only consider them in the decision if the
     values are >= 0 or <= 0, respectively.

@@ -17,7 +17,7 @@ Synopsis
 [ |-A|\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ]
 [ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ] [ |-E| ]
 [ |-F|\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p**\ \|\ **w** ]
-[ |-G|\ [*color*\ ]**+f**\ \|\ **+n** ]
+[ |-G|\ [*color*\ ]\ [**+f**\ \|\ **+n**\ ] ]
 [ |-I|\ *icon* ] [ **-K**]
 [ |-L|\ *col1:name1*,\ *col2:name2*,... ]
 [ |-N|\ [**t**\ \|\ *col* \ \|\ *name\_template*\ \|\ *name*] ]
@@ -132,8 +132,8 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [*color*\ ]**+f**\ \|\ **+n**
-    Sets *color* for fill (modifier **+f**) or label font (modifier **+n**).
+**-G**\ [*color*\ ]\ [**+f**\ \|\ **+n**\ ]
+    Sets *color* for fill (modifier **+f** [Default]) or label font (modifier **+n**).
     Fill sets infill color for symbols, extrusions, polygons and positive anomaly
     wiggles [Default is light orange at 75% transparency].  Alternatively,
     use **-G+f** to turn off such infill.

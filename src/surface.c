@@ -581,7 +581,7 @@ GMT_LOCAL void find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INF
 	 			 * possibly clip the value if constraining surfaces were given.  Note that
 	 			 * dx, dy is in -1/1 range normalized by (current_x|y_inc) so to recover the
 	 			 * corresponding dx,dy in units of current grid fractions we must scale both
-				 * dx and dy by current_stride; this is equivalant to scaling the trend.
+				 * dx and dy by current_stride; this is equivalent to scaling the trend.
 				 * This trend then is normalized by dividing by the z rms.*/
 	 			
 	 			z_at_node = C->data[k].z + (gmt_grdfloat) (C->r_z_rms * C->current_stride * evaluate_trend (C, dx, dy));
@@ -1639,7 +1639,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian grids with different x and y units you may append <xlim>/<ylim>;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   this fills all nodes within the rectangular area of the given half-widths.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   One can also achieve the rectangular selection effect by using the -M<n_cells>c\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   form. Here n_cells means the number of cells arround the data point. As an example,");
+	GMT_Message (API, GMT_TIME_NONE, "\t   form. Here n_cells means the number of cells around the data point. As an example,");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -M0c means that only the cell where point lies is retained, -M1c keeps one cell\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   beyond that (i.e. makes a 3x3 neighborhood), and so on.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set max <n_iterations> in the final cycle; default = %d.\n", SURFACE_MAX_ITERATIONS);

@@ -68,7 +68,7 @@
  *	map_ilinearxy :			Inverse linear projection\n
  *	map_init_three_D :		Initializes parameters needed for 3-D plots\n
  *	map_crossing :		Generic function finds crossings between line and map boundary\n
- *	gmtlib_latpath :			Return path between 2 points of equal latitide\n
+ *	gmtlib_latpath :			Return path between 2 points of equal latitude\n
  *	gmtlib_lonpath :			Return path between 2 points of equal longitude\n
  *	map_radial_crossing :		Determine map crossing in the Lambert azimuthal equal area projection\n
  *	gmtmap_left_boundary :		Return left boundary in x-inches\n
@@ -1107,7 +1107,7 @@ GMT_LOCAL int map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1,
 	/* true if x-distance between points exceeds 1/2 map width at this y value */
 	double dx, map_half_size, half_lon_range;
 
-	if (!(gmt_M_is_cylindrical (GMT) || gmt_M_is_perspective (GMT) || gmt_M_is_misc (GMT))) return (0);	/* Only projections with peroidic boundaries may apply */
+	if (!(gmt_M_is_cylindrical (GMT) || gmt_M_is_perspective (GMT) || gmt_M_is_misc (GMT))) return (0);	/* Only projections with periodic boundaries may apply */
 
 	if (gmt_M_is_cartesian (GMT, GMT_IN) || fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) < 90.0) return (0);
 
@@ -7121,7 +7121,7 @@ int gmtlib_small_circle_intersection (struct GMT_CTRL *GMT, double Ax, double Ay
 int gmtlib_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist) {
 	/* A, B, C are 3-D Cartesian unit vectors, i.e., points on the sphere.
 	 * Let points A and B define a great circle, and consider a
-	 * third point C.  A second great cirle goes through C and
+	 * third point C.  A second great circle goes through C and
 	 * is orthogonal to the first great circle.  Their intersection
 	 * X is the point on (A,B) closest to C.  We must test if X is
 	 * between A,B or outside.

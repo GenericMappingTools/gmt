@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt math** [ |-A|\ *t_f(t)*\ [**+e**]\ [**+s**\ \|\ **w**] ]
+**gmt math** [ |-A|\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\ \|\ **w**] ]
 [ |-C|\ *cols* ]
 [ |-E|\ *eigen* ] [ |-I| ]
 [ |-N|\ *n\_col*\ [/*t_col*] ]

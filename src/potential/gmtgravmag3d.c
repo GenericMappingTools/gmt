@@ -1130,7 +1130,7 @@ GMT_LOCAL void set_center (unsigned int n_triang) {
 
 #if 0
 GMT_LOCAL void triang_norm (int n_triang) {
-	/* Computes the unit normal to trianglular facet */
+	/* Computes the unit normal to triangular facet */
 	int i;
 	double v1[3], v2[3], v3[3], mod, n[3];
 

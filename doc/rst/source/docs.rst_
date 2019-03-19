@@ -9,7 +9,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt docs** *<module-name>* [*-option*]
+**gmt docs** [ **-Q** ] *<module-name>* [*-option*]
 
 |No-spaces|
 
@@ -27,6 +27,14 @@ web link addresses.
 Optional Arguments
 ------------------
 
+**-Q**
+    This option means we are doing a "dry-run" and simply want the final URL to be
+    printed to standard output.  No browser command will take place.
+
+
+Optional Module Arguments
+-------------------------
+
 *-option*
     Where *-option* is the one-letter option of the module in question (e.g, **-R**).
     It then displays the documentation positioned at that specific option.
@@ -39,6 +47,12 @@ To see the documentation of *grdimage*
    ::
 
     gmt docs grdimage
+
+To see the link to the documentation of *grdimage*
+
+   ::
+
+    gmt docs -Q grdimage
 
 To see the documentation of the **-B** option in *pscoast*
 

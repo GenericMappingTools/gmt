@@ -94,7 +94,7 @@ Optional Arguments
     will be constrained to lie on the great circle connecting the pole
     of the best-fit great circle and the mean location of the data.
     Optionally append the desired fixed latitude of the small circle
-    [Default will determine the latitude].
+    [Default will determine the optimal latitude].
 
 .. _-V:
 

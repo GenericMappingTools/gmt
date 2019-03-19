@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+ag**\ \|\ **i**\ \|\ **s** \|\ **S**][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
-[ |-D|\ *resolution*\ [**+**] ]
+[ |-D|\ *resolution*\ [**+f**] ]
 [ |-E|\ [*bordervalues*] ]
 [ |-N|\ *maskvalues* ]
 [ |-V|\ [*level*] ] [ |SYN_OPT-r| ]
@@ -64,11 +64,11 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *resolution*\ [**+**]
+**-D**\ *resolution*\ [**+f**]
     Selects the resolution of the data set to use ((**f**)ull,
     (**h**)igh, (**i**)ntermediate, (**l**)ow, or (**c**)rude). The
     resolution drops off by ~80% between data sets. [Default is **l**].
-    Append **+** to automatically select a lower resolution should the
+    Append **+f** to automatically select a lower resolution should the
     one requested not be available [abort if not found].
     Alternatively, choose (**a**)uto to automatically select the best
     resolution given the chosen region.  Note that

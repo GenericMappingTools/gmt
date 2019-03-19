@@ -10,9 +10,7 @@ more frequently than the frame spacing. We place a bright red circle at
 the leading edge of the curve, and as we move forward in time (here,
 angles) we dim the older circles to a dark red color. We add a label
 that indicates the current angle value. Once the 18 frames are completed
-we convert them to a single animated GIF file and write a plain HTML
-wrapper with a simple legend. Opening the HTML page in ``anim01.html``
-the browser will display the animation.
+we convert them to a single animated GIF file.
 
 .. literalinclude:: /_verbatim/anim_01.txt
    :language: bash

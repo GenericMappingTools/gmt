@@ -18,7 +18,7 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *fields* ]
 [ |-C| ]
-[ |-E|\ [**b**] ] [ |-E|\ **r**\ \|\ **s**\ [**-**] ]
+[ |-E|\ [**b**] ] [ |-E|\ **r**\ \|\ **s**\ [**+l**\ \|\ **h**\ ] ]
 [ |-G|\ [*grdfile*] ]
 [ |-Q| ]
 [ |-T|\ *quantile* ]
@@ -102,12 +102,13 @@ Optional Arguments
     *x*,\ *y*,\ *z*,\ *l*,\ *q25*,\ *q75*,\ *h*\ [,\ *w*], where *q25* and
     *q75* are the 25% and 75% quantiles, respectively. See **-W** for
     *w* output.
-**-E**\ **r**\ \|\ **s**\ [**-**\ ]
+**-E**\ **r**\ \|\ **s**\ [**+l**\ \|\ **h**\ ]
     Provide source id **s** or record number **r** output, i.e., append
     the source id or record number associated with the median value. If
-    tied then report the record number of the higher of the two values;
-    append **-** to instead report the record number of the lower value.
-    Note that both **-E**\ [**b**\ ] and **-E**\ **r**\ [**-**\ ] may be
+    tied then report the record number of the higher of the two values (i.e., **+h** is the default);
+    append **+l** to instead report the record number of the lower value.
+    Note that **-E** may be repeated so that both **-E**\ [**b**\ ] and
+    **-E**\ **r**\ [**+l**\ \|\ **h**\ ] can be
     specified. For **-E**\ **s** we expect input records of the form
     *x*,\ *y*,\ *z*\ [,\ *w*],\ *sid*, where *sid* is an unsigned integer
     source id.

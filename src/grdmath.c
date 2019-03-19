@@ -102,10 +102,10 @@ struct GRDMATH_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;
-	struct D {	/* -D<resolution> */
+	struct D {	/* -D<resolution>[+f] */
 		bool active;
 		bool force;	/* if true, select next highest level if current set is not available */
-		char set;	/* One of f, h, i, l, c */
+		char set;	/* One of f, h, i, l, c, or auto */
 	} D;
 	struct M {	/* -M */
 		bool active;
@@ -160,7 +160,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s]\n\t[%s]\n\t[-D<resolution>][+] [%s]\n\t[-M] [-N] [-S] [%s] [%s] [%s] [%s]\n\t[%s]"
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s]\n\t[%s]\n\t[-D<resolution>][+f] [%s]\n\t[-M] [-N] [-S] [%s] [%s] [%s] [%s]\n\t[%s]"
 		" [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t%s [%s]", name, GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT,
 		GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, " A B op C op D op ... = <outgrd>\n\n");
@@ -410,7 +410,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   i - intermediate resolution.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   l - low resolution [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c - crude resolution, for busy plots that need crude continent outlines only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f to use a lower resolution should the chosen one not be available [abort].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (-A and -D apply only to operator LDISTG)\n");
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Handle map units in derivatives.  In this case, dx,dy of grid\n"
@@ -516,7 +516,7 @@ GMT_LOCAL int grdmath_find_stored_item (struct GMT_CTRL *GMT, struct GRDMATH_STO
 	return (k == n_stored ? GMT_NOTSET : k);
 }
 
-/* Stack collapsing operators taht work on same nodes across all stack items */
+/* Stack collapsing operators that work on same nodes across all stack items */
 
 GMT_LOCAL double stack_collapse_add (struct GMT_CTRL *GMT, double *array, uint64_t n) {
 	uint64_t k;
@@ -666,7 +666,7 @@ GMT_LOCAL int collapse_stack (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 	 * You may have 7 grids on the stack and you want to return the mean value per node
 	 * for all 7 grids, to be replaced by a single grid with those means.  You would do
 	 * gmt grdmath *.grd -S MEAN = means.grd
-	 * where the -S option turns on the collapsable stack operators.
+	 * where the -S option turns on the collapsible stack operators.
 	 */
 	
 	uint64_t node, s;
@@ -3481,7 +3481,7 @@ GMT_LOCAL void grd_POP (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 GMT_LOCAL void grd_PLM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: PLM 3 1 Associated Legendre polynomial P(A) degree B order C.  */
 {
-	int64_t node;	/* Bcause of Win OpenMP */
+	int64_t node;	/* Because of Win OpenMP */
 	unsigned int prev = last - 1, first = last - 2;
 	int L, M;
 	double a = 0.0;
@@ -3512,7 +3512,7 @@ GMT_LOCAL void grd_PLM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 GMT_LOCAL void grd_PLMg (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: PLMg 3 1 Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention).  */
 {
-	int64_t node;	/* Bcause of Win OpenMP */
+	int64_t node;	/* Because of Win OpenMP */
 	unsigned int prev = last - 1, first = last - 2;
 	int L, M;
 	double a = 0.0;

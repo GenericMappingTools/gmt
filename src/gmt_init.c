@@ -847,7 +847,7 @@ GMT_LOCAL int gmtinit_parse_a_option (struct GMT_CTRL *GMT, char *arg) {
 	unsigned int pos = 0;
 	int col, a_col = GMT_Z, t;
 	char p[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""}, A[GMT_LEN64] = {""}, *s = NULL, *c = NULL;
-	if (!arg) return (GMT_PARSE_ERROR);	/* -a requires a non-NULL argment */
+	if (!arg) return (GMT_PARSE_ERROR);	/* -a requires a non-NULL argument */
 	//if (!arg[0]) return (GMT_PARSE_ERROR);	/* -a requires an argument */
 	strncpy (GMT->common.a.string, arg, GMT_LEN256-1);	/* Verbatim copy */
 
@@ -2344,8 +2344,10 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 			continue;
 		}
 		case_val = gmt_hash_lookup (GMT, GMT5_keywords[k].name, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
-		if (case_val >= 0 && !GMT_keywords_updated[case_val])	/* If equal to default, skip it */
-				{k++; continue;}
+		if (case_val >= 0 && !GMT_keywords_updated[case_val])
+			{k++; continue;}	/* If equal to default, skip it */
+		if ((case_val == GMTCASE_PS_MEDIA || case_val == GMTCASE_PAPER_MEDIA) && GMT->current.setting.run_mode == GMT_MODERN && GMT->current.ps.crop_to_fit)
+			{k++; continue;}	/* Unless ps format is requested we do not honor PS_MEDIA requests */
 		if (!header) {
 			fprintf (fpo, "#\n# %s\n#\n", GMT5_keywords[current_group].name);
 			header = true;
@@ -6201,19 +6203,19 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			break;
 
 		case 'K':	/* Append-more-PostScript-later */
-			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -K dont exist in modern mode */
+			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -K don't exist in modern mode */
 				gmt_message (GMT, "\t-K Allow for more plot code to be appended later [CLASSIC MODE ONLY].\n");
 			break;
 
 		case 'O':	/* Overlay plot */
 
-			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -O dont exist in modern mode */
+			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -O don't exist in modern mode */
 				gmt_message (GMT, "\t-O Set Overlay plot mode, i.e., append to an existing plot [CLASSIC MODE ONLY].\n");
 			break;
 
 		case 'P':	/* Portrait or landscape */
 
-			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -P dont exist in modern mode */
+			if (GMT->current.setting.run_mode == GMT_CLASSIC)	/* -P don't exist in modern mode */
 				gmt_message (GMT, "\t-P Set Portrait page orientation [%s]; [CLASSIC MODE ONLY].\n", GMT_choice[GMT->current.setting.ps_orientation]);
 			break;
 
@@ -7572,7 +7574,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 					if (!(gmt_M_type (GMT, GMT_IN, icol) & GMT_IS_RATIME)) gmt_set_column (GMT, GMT_IN, icol, got), done[icol] = true;	/* Only set if not already set to a time flavor */
 					GMT->current.proj.xyz_projection[icol] = GMT_TIME;
 				}
-				else if (got == GMT_IS_FLOAT) {	/* Dont want to set col type prematurely ince -R0/13:30E/... would first find Cartesian and then fail on 13:30E */
+				else if (got == GMT_IS_FLOAT) {	/* Don't want to set col type prematurely ince -R0/13:30E/... would first find Cartesian and then fail on 13:30E */
 					if (done[icol] && gmt_M_type (GMT, GMT_IN, icol) == GMT_IS_UNKNOWN)	/* 2nd time for this column and still not set, then FLOAT is OK */
 						gmt_set_column (GMT, GMT_IN, icol, got);
 				}
@@ -11800,7 +11802,7 @@ GMT_LOCAL unsigned int strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, struct G
 	/* Separate out any region-specific parts from one or more -E arguments and
 	 * pass those separately to a new -R instead (if -R not given).
 	 * Return code is bitflags:
-	 *	0 : No _r|R or +l|L given, most likely just setting contries and implicitly -R
+	 *	0 : No _r|R or +l|L given, most likely just setting countries and implicitly -R
 	 * 	1 : Found a region-modifying modifier +r or +R
 	 * 	2 : Found a list-request +l or +L.  Not plotting or region desired.
 	 */
@@ -13969,7 +13971,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 				if (!strncmp(item, "+EPSG", 5) || !strncmp(item, "+epsg", 5) || (item[0] == '+' && isdigit(item[1])))
 					item++;
 
-				/* Destinguish between the +to key extension and the +towgs84 key */
+				/* Distinguish between the +to key extension and the +towgs84 key */
 				if ((pch = strstr(item, "+to")) != NULL) {
 					if (pch[3] == ' ' || pch[3] == '\t' || pch[3] == '+' || pch[3] == 'E' || pch[3] == 'e' || isdigit(pch[3]))
 						two = true;
@@ -15155,7 +15157,7 @@ int gmt_truncate_file (struct GMTAPI_CTRL *API, char *file, size_t size) {
 }
 
 int gmt_legend_file (struct GMTAPI_CTRL *API, char *file) {
-	/* Under modern mode, determines the name for the legend file for the curent plot,
+	/* Under modern mode, determines the name for the legend file for the current plot,
 	 * then returns 0 if file does not already exist and 1 if it does.
 	 * Returns -1 if under classic mode. */
 	unsigned int fig;
@@ -15241,9 +15243,9 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			gmtinit_conf (API->GMT);			/* Get the original system defaults */
 			gmt_getdefaults (API->GMT, NULL);		/* Overload user defaults */
 			sprintf (dir, "%s/gmt.conf", API->gwf_dir);	/* Reuse dir string for saving gmt.conf to this dir */
-			gmt_putdefaults (API->GMT, dir);
-			error = put_session_name (API, text);			/* Store session name */
-			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode */
+			API->GMT->current.setting.run_mode = GMT_MODERN;	/* Enable modern mode here so putdefaults can skip writing PS_MEDIA if not PostScript output */
+			gmt_putdefaults (API->GMT, dir);		/* Write current GMT defaults to this sessions gmt.conf file in the workflow directory */
+			error = put_session_name (API, text);		/* Store session name */
 			API->GMT->current.setting.history_orig = API->GMT->current.setting.history;	/* Temporarily turn off history so nothing is copied into the workflow dir */
 			API->GMT->current.setting.history = GMT_HISTORY_OFF;	/* Turn off so that no history is copied into the workflow directory */
 			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session Name = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[2]);

@@ -179,7 +179,7 @@ GMT_LOCAL int write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, 
 	int error = 0, i, j;
 	float *t = (float *)data;
 	uint64_t k, n, nm = (uint64_t)n_rows * n_cols;
-	/* In gmt_gdal_write_grd we made the pointer to point to the begining of the non-padded zone, so to make it
+	/* In gmt_gdal_write_grd we made the pointer to point to the beginning of the non-padded zone, so to make it
 	   coherent we retriet pad[0]. However, nothing of this is taking into account a -R subregion so all of this
 	   (and not only this case) will probably fail for that case.
 	*/
@@ -414,7 +414,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		}
 	}
 
-	/* Use defaul compression with GeoTiff driver, unless co_options were passed. Than the above should have taken care of it. */
+	/* Use default compression with GeoTiff driver, unless co_options were passed. Than the above should have taken care of it. */
 	if (!strcasecmp(pszFormat,"GTiff") && !prhs->co_options) {
 		papszOptions = CSLAddString(papszOptions, "COMPRESS=DEFLATE");
 		/* tiles are less efficient in small grids (padding) and are not
@@ -493,7 +493,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 			case GDT_UInt32:
 			case GDT_Int32:
 				if (rint(prhs->nan_value) == prhs->nan_value)
-					/* Only set NoData if nan_value contains an intger value */
+					/* Only set NoData if nan_value contains an integer value */
 					GDALSetRasterNoDataValue(hBand, prhs->nan_value);
 				if ((gdal_err = GDALRasterIO(hBand, GF_Write, 0, 0, n_cols, n_rows, data, n_cols, n_rows, typeCLASS, 0, 0)) != CE_None)
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d [err = %d]\n", i, gdal_err);

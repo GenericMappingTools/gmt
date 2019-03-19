@@ -29,7 +29,7 @@
 #define RADIAN2KM (R2D * GMT->current.proj.DIST_KM_PR_DEG)
 
 struct POLESPOTTER_CTRL {	/* All control options for this program (except common args) */
-	/* active is true if the option has been activaed */
+	/* active is true if the option has been activated */
 	struct A {	/* -A<abyssalhilefile> */
 		bool active;
 		char *file;
