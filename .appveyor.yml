@@ -66,6 +66,7 @@ build_script:
   - cmake --build . --config Release --target install
 
 after_build:
+  - which gmt
   - gmt --version
   - gmt defaults -Vd
   - gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
