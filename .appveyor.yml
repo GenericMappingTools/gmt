@@ -29,7 +29,7 @@ environment:
     #  CMAKE_PREFIX_PATH: "%CONDA_INSTALL_DIR%\\Library"
 
 cache:
-  - "%APPVEYOR_BUILD_FOLDER%\\build" -> .appveyor.yml
+  - "%APPVEYOR_BUILD_FOLDER%\\build"
 
 install:
   # install netcdf, curl, gdal, pcre via conda
