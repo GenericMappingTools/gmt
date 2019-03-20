@@ -58,7 +58,7 @@ struct GRDGRADIENT_CTRL {
 		bool active;
 		unsigned int mode;
 	} D;
-	struct E {	/* -E[s|p]<azim>/<elev[ambient/diffuse/specular/shine]> */
+	struct E {	/* -E[s|p]<azim>/<elev[+aambient][+ddiffuse][+pspecular][+shine] */
 		bool active;
 		unsigned int mode;
 		double azimuth, elevation;
@@ -68,8 +68,9 @@ struct GRDGRADIENT_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N[t_or_e][<amp>[/<sigma>[/<offset>]]] */
+	struct N {	/* -N[t_or_e][<amp>][+o<offset>][+s<sigma>] */
 		bool active;
+		bool set[3];	/* True if values are specified for amp, offset and sigma */
 		unsigned int mode;	/* 1 = atan, 2 = exp */
 		double norm, sigma, offset;
 	} N;
@@ -174,7 +175,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 	 */
 
 	unsigned int n_errors = 0, n_files = 0, j, entry, pos;
-	int n_opt_args = 0;
 	char p[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -192,13 +192,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* Set azimuth */
+			case 'A':	/* Set azimuth(s) */
 				Ctrl->A.active = true;
-				if (!gmt_access (GMT, opt->arg, F_OK)) {	/* file exists */
+				if (!gmt_access (GMT, opt->arg, F_OK)) {	/* file with variable azimuths exists */
 					Ctrl->A.file = strdup (opt->arg);
 					Ctrl->A.mode = GRDGRADIENT_VAR;
 				}
-				else {
+				else {	/* Get one or two fixed azimuths */
 					j = sscanf (opt->arg, "%lf/%lf", &Ctrl->A.azimuth[0], &Ctrl->A.azimuth[1]);
 					Ctrl->A.two = (j == 2);
 					Ctrl->A.mode = GRDGRADIENT_FIX;
@@ -233,7 +233,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 						break;
 					case 'm':	/* Nice algorithm from an old program called manipRaster by Tierry Souriot */
 						Ctrl->E.mode = 4;
-						j = sscanf(&opt->arg[1], "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation);
+						j = sscanf (&opt->arg[1], "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation);
 						if (j == 0) {				/* Use default values */
 							Ctrl->E.azimuth = 360 - 45;
 							Ctrl->E.elevation = 45;
@@ -277,11 +277,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 								}
 								entry++;
 							}
+							GMT_Report (API, GMT_MSG_DEBUG, "Settings are %g/%g+a%g+d%g+p%g+s%g\n",
+								Ctrl->E.azimuth, Ctrl->E.elevation, Ctrl->E.ambient, Ctrl->E.diffuse, Ctrl->E.specular, Ctrl->E.shine);
 						}
 						break;
 				}
-				GMT_Report (API, GMT_MSG_DEBUG, "Settings are %g/%g+a%g+d%g+p%g+s%g\n",
-					Ctrl->E.azimuth, Ctrl->E.elevation, Ctrl->E.ambient, Ctrl->E.diffuse, Ctrl->E.specular, Ctrl->E.shine);
 				break;
 			case 'G':	/* Output grid */
 				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
@@ -291,7 +291,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 				break;
 			case 'L':	/* GMT4 BCs */
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -L is deprecated; -n+b%s was set instead, use this common GMT option in the future.\n", opt->arg);
 					gmt_strncpy (GMT->common.n.BC, opt->arg, 4U);
 					/* We turn on geographic coordinates if -Lg is given by faking -fg */
 					/* But since GMT_parse_f_option is private to gmt_init and all it does */
@@ -307,7 +307,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 
 			case 'M':	/* Geographic data */
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Option -M is deprecated; -fg was set instead, use this in the future.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -M is deprecated; -fg was set instead, use this common GMT option in the future.\n");
 					if (gmt_M_is_cartesian (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
@@ -315,7 +315,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 				break;
 			case 'N':	/* Normalization */
 				Ctrl->N.active = true;	j = 0;
-				if (opt->arg[0] && strchr ("et", opt->arg[0])) {
+				if (opt->arg[0] && strchr ("et", opt->arg[0])) {	/* Got -Ne or -Nt, possibly with arguments */
 					Ctrl->N.mode = (opt->arg[0] == 't') ? 1 : 2;
 					j = 1;
 				}
@@ -323,18 +323,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'N', c, "os", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
-							case 'o': Ctrl->N.offset = atof (&p[1]); break;
-							case 's': Ctrl->N.sigma  = atof (&p[1]); break;
+							case 'o': Ctrl->N.set[1] = true; Ctrl->N.offset = atof (&p[1]); break;
+							case 's': Ctrl->N.set[2] = true; Ctrl->N.sigma  = atof (&p[1]); break;
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
-					c[0] = '\0';	/* Chop off all modifiers so range can be determined */
-					if (opt->arg[j]) Ctrl->N.norm = atof (&opt->arg[j]);
+					c[0] = '\0';	/* Chop off all modifiers so amplitude can be determined (if given) */
+					if (opt->arg[j]) {
+						Ctrl->N.set[0] = true;
+						Ctrl->N.norm = atof (&opt->arg[j]);
+					}
+					c[0] = '+';	/* Restore modifiers */
 				}
-				else if (opt->arg[j])	/* Old-style args */
-					n_opt_args = sscanf (&opt->arg[j], "%lf/%lf/%lf", &Ctrl->N.norm, &Ctrl->N.sigma, &Ctrl->N.offset);
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Settings are %g+o%g+s%g\n",
-					Ctrl->N.norm, Ctrl->N.offset, Ctrl->N.sigma);
+				else if (opt->arg[j]) {	/* Old-style args */
+					int n_opt_args = sscanf (&opt->arg[j], "%lf/%lf/%lf", &Ctrl->N.norm, &Ctrl->N.sigma, &Ctrl->N.offset);
+					Ctrl->N.set[0] = (n_opt_args >= 1);	/* Had to set the first two to set the sigma */
+					Ctrl->N.set[2] = (n_opt_args >= 2);	/* Had to set the first two to set the sigma */
+					Ctrl->N.set[1] = (n_opt_args == 3);	/* Had to set all three to set the offset */
+				}
 				break;
 			case 'S':	/* Slope grid */
 				if ((Ctrl->S.active = gmt_check_filearg (GMT, 'S', opt->arg, GMT_OUT, GMT_IS_GRID)))
@@ -353,8 +359,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->S.file, "Syntax error -S option: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->S.active, "Syntax error -G option: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (n_opt_args && Ctrl->N.norm <= 0.0), "Syntax error -N option: Normalization amplitude must be > 0\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (n_opt_args > 1 && Ctrl->N.sigma <= 0.0) , "Syntax error -N option: Sigma must be > 0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (Ctrl->N.set[0] && Ctrl->N.norm <= 0.0), "Syntax error -N option: Normalization amplitude must be > 0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (Ctrl->N.set[2] && Ctrl->N.sigma <= 0.0) , "Syntax error -N option: Sigma must be > 0\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode > 1 && (Ctrl->E.elevation < 0.0 || Ctrl->E.elevation > 90.0), "Syntax error -E option: Use 0-90 degree range for elevation\n");
 	if (Ctrl->E.active && (Ctrl->A.active || Ctrl->D.active || Ctrl->S.active)) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "-E option overrides -A, -D or -S\n");
@@ -368,7 +374,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdgradient (void *V_API, int mode, void *args) {
-	bool sigma_set = false, offset_set = false, bad, new_grid = false, separate = false;
+	bool bad, new_grid = false, separate = false;
 	int p[4], mx, error = 0;
 	unsigned int row, col, n;
 	uint64_t ij, ij0, index, n_used = 0;
@@ -409,11 +415,9 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	gmt_M_memset (wesn, 4, double);
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	
-	if (Ctrl->N.active) {
-		char *answer = "NT";
-		if (Ctrl->N.sigma  != 0.0) sigma_set  = true;
-		if (Ctrl->N.offset != 0.0) offset_set = true;
-		GMT_Report (API, GMT_MSG_DEBUG, "sigma_set = %c  offset_set = %c\n", answer[sigma_set], answer[offset_set]);
+	if (Ctrl->N.active) {	/* Report what was set if debug */
+		char *answer = "NY";
+		GMT_Report (API, GMT_MSG_DEBUG, "amplitude_set = %c offset_set = %c sigma_set = %c\n", answer[Ctrl->N.set[0]], answer[Ctrl->N.set[1]], answer[Ctrl->N.set[2]]);
 	}
 
 	if (Ctrl->A.active) {	/* Get azimuth in 0-360 range */
@@ -656,7 +660,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (offset_set)
+	if (Ctrl->N.set[1])
 		ave_gradient = Ctrl->N.offset;
 	else
 		ave_gradient /= n_used;
@@ -665,7 +669,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 
 		if (Ctrl->N.active) {	/* Chose normalization */
 			if (Ctrl->N.mode == 1) {	/* atan transformation */
-				if (sigma_set)
+				if (Ctrl->N.set[2])
 					denom = 1.0 / Ctrl->N.sigma;
 				else {
 					denom = 0.0;
@@ -683,7 +687,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 				Out->header->z_min = rpi * atan ((min_gradient - ave_gradient) * denom);
 			}
 			else if (Ctrl->N.mode == 2) {	/* Exp transformation */
-				if (!sigma_set) {
+				if (!Ctrl->N.set[2]) {
 					Ctrl->N.sigma = 0.0;
 					gmt_M_grd_loop (GMT, Out, row, col, ij) {
 #ifdef DOUBLE_PRECISION_GRID
