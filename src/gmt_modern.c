@@ -79,6 +79,7 @@ const char *gmt_current_name (const char *module, char modname[]) {
 	else if (!strncmp (module, "psrose",       6U)) { strcpy (modname, module); return "rose";      }
 	else if (!strncmp (module, "psmask",       6U)) { strcpy (modname, module); return "mask";      }
 	else if (!strncmp (module, "psclip",       6U)) { strcpy (modname, module); return "clip";      }
+	else if (!strncmp (module, "pssac",        5U)) { strcpy (modname, module); return "sac";       }
 	else if (!strncmp (module, "psxyz",        5U)) { strcpy (modname, module); return "plot3d";    }
 	else if (!strncmp (module, "psxy",         4U)) { strcpy (modname, module); return "plot";      }
 	strcpy (modname, module);
@@ -111,6 +112,7 @@ const char *gmtlib_get_active_name (struct GMTAPI_CTRL *API, const char *module)
 	else if (!strncmp (module, "psrose",       6U)) return "rose";
 	else if (!strncmp (module, "psmask",       6U)) return "mask";
 	else if (!strncmp (module, "psclip",       6U)) return "clip";
+	else if (!strncmp (module, "pssac",        5U)) return "sac";
 	else if (!strncmp (module, "psxyz",        5U)) return "plot3d";
 	else if (!strncmp (module, "psxy",         4U)) return "plot";
 	return module;
