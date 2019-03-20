@@ -58,7 +58,7 @@ struct GRDGRADIENT_CTRL {
 		bool active;
 		unsigned int mode;
 	} D;
-	struct E {	/* -E[s|p]<azim>/<elev[+aambient][+ddiffuse][+pspecular][+shine] */
+	struct E {	/* -E[s|p]<azim>/<elev[+a<ambient>][+d<diffuse>][+p<specular>][+<shine>] */
 		bool active;
 		unsigned int mode;
 		double azimuth, elevation;
@@ -70,10 +70,15 @@ struct GRDGRADIENT_CTRL {
 	} G;
 	struct N {	/* -N[t_or_e][<amp>][+o<offset>][+s<sigma>] */
 		bool active;
-		bool set[3];	/* True if values are specified for amp, offset and sigma */
+		unsigned int set[3];	/* 1 if values are specified for amp, offset and sigma, 2 means we want last-run values */
 		unsigned int mode;	/* 1 = atan, 2 = exp */
 		double norm, sigma, offset;
 	} N;
+	struct Q {	/* -Qc|r|R */
+		/* Note: If -Qc is set with -N then -G is not required. GMT_Encode_Options turns off the primary output */
+		bool active;
+		unsigned int mode;
+	} Q;
 	struct S {	/* -S<slopefile> */
 		bool active;
 		char *file;
@@ -126,7 +131,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][c][o][n]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E[s|p|m]<azim>/<elev>[+a<ambient>][+d<diffuse>][+p<specular>][+s<shine>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N[t|e][<amp>][+s<sigma>][+o<offset>]] [%s]\n\t[-S<slopegrid>] [%s] [-fg] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N[t|e][<amp>][+s<sigma>][+o<offset>]] [-Qc|r|R] [%s]\n\t[-S<slopegrid>] [%s] [-fg] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -156,7 +161,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Nt will make atan transform, then scale to <amp> [1.0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Ne will make exp  transform, then scale to <amp> [1.0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    For -Nt|e, optionally append +s<sigma> and/or +o<offset> to set\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    sigma and offset for transform [Default estimates from the data].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    sigma and offset for the transform [Default estimates from the data].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    See -Q to use the same offset, sigma for multiple grid calculations.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Control handling of -N arguments from previous calculations. Append code:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c: Create stat file and write the offset and sigma of this run.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     r: Read offset and sigma of the previous run from stat file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     R: Remove & read.  As r but also removes the stat file after use.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The values obtained are used if +o and/or +s modifiers in -N are given no argument.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Output file for |grad z|; requires -D.\n");
 	GMT_Option (API, "V");
@@ -323,8 +334,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'N', c, "os", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
-							case 'o': Ctrl->N.set[1] = true; Ctrl->N.offset = atof (&p[1]); break;
-							case 's': Ctrl->N.set[2] = true; Ctrl->N.sigma  = atof (&p[1]); break;
+							case 'o': Ctrl->N.set[1] = 1; if (p[1]) Ctrl->N.offset = atof (&p[1]); else Ctrl->N.set[1] = 2; break;
+							case 's': Ctrl->N.set[2] = 1; if (p[1]) Ctrl->N.sigma  = atof (&p[1]); else Ctrl->N.set[2] = 2; break;
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
@@ -337,9 +348,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 				}
 				else if (opt->arg[j]) {	/* Old-style args */
 					int n_opt_args = sscanf (&opt->arg[j], "%lf/%lf/%lf", &Ctrl->N.norm, &Ctrl->N.sigma, &Ctrl->N.offset);
-					Ctrl->N.set[0] = (n_opt_args >= 1);	/* Had to set the first two to set the sigma */
+					Ctrl->N.set[0] = (n_opt_args >= 1);	/* Had to set the first two to set the amplitude */
 					Ctrl->N.set[2] = (n_opt_args >= 2);	/* Had to set the first two to set the sigma */
 					Ctrl->N.set[1] = (n_opt_args == 3);	/* Had to set all three to set the offset */
+				}
+				break;
+			case 'Q':	/* Read/write normalization values */
+				Ctrl->Q.active = true;
+				switch (opt->arg[0]) {
+					case 'r': Ctrl->Q.mode = 1; break;
+					case 'c': Ctrl->Q.mode = 2; break;
+					case 'R': Ctrl->Q.mode = 3; break;
+					default:
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: Unrecognized directive %s\n", opt->arg);
+						n_errors++;
+						break;
 				}
 				break;
 			case 'S':	/* Slope grid */
@@ -357,11 +380,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->A.active || Ctrl->D.active || Ctrl->E.active), "Syntax error: Must specify -A, -D, or -E\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->S.file, "Syntax error -S option: Must specify output file\n");
-	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->S.active, "Syntax error -G option: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->N.active && Ctrl->Q.mode == 2) && !Ctrl->G.file && !Ctrl->S.active, "Syntax error -G option: Must specify output file\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (Ctrl->N.set[0] && Ctrl->N.norm <= 0.0), "Syntax error -N option: Normalization amplitude must be > 0\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (Ctrl->N.set[2] && Ctrl->N.sigma <= 0.0) , "Syntax error -N option: Sigma must be > 0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (Ctrl->N.set[2] == 1 && Ctrl->N.sigma <= 0.0) , "Syntax error -N option: Sigma must be > 0\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode > 1 && (Ctrl->E.elevation < 0.0 || Ctrl->E.elevation > 90.0), "Syntax error -E option: Use 0-90 degree range for elevation\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !Ctrl->N.active, "Syntax error -Q option: Requires -N\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.set[1] == 2 && !(Ctrl->Q.mode & 1), "Syntax error: Must specify -Q if -N+o is given no value\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.set[2] == 2 && !(Ctrl->Q.mode & 1), "Syntax error: Must specify -Q if -N+s is given no value\n");
 	if (Ctrl->E.active && (Ctrl->A.active || Ctrl->D.active || Ctrl->S.active)) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "-E option overrides -A, -D or -S\n");
 		Ctrl->A.active = Ctrl->D.active = Ctrl->S.active = false;
@@ -386,6 +412,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	double x_factor2 = 0.0, x_factor2_set = 0.0, y_factor2 = 0.0, dzdx2 = 0.0, dzdy2 = 0.0, dzds1, dzds2;
 	double p0 = 0.0, q0 = 0.0, p0q0_cte = 1.0, norm_z, mag, s[3], lim_x, lim_y, lim_z;
 	double k_ads = 0.0, diffuse, spec, r_min = DBL_MAX, r_max = -DBL_MAX, scale, sin_Az[2] = {0.0, 0.0};
+	double def_offset = 0.0, def_sigma = 0.0;
 	
 	struct GMT_GRID *Surf = NULL, *Slope = NULL, *Out = NULL, *A = NULL;
 	struct GRDGRADIENT_CTRL *Ctrl = NULL;
@@ -410,16 +437,51 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdgradient main code ----------------------------*/
 
+	if (Ctrl->Q.mode & 1) {	/* Read in previous statistics */
+		char sfile[PATH_MAX] = {""};
+		FILE *fp = NULL;
+		GMT_Report (API, GMT_MSG_DEBUG, "Read statistics file [%s] with offset and sigma\n", sfile);
+		if (GMT->session.TMPDIR)
+			sprintf (sfile, "%s/grdgradient.stat", GMT->session.TMPDIR);
+		else if (API->tmp_dir)
+			sprintf (sfile, "%s/grdgradient.stat", API->tmp_dir);
+		else
+			sprintf (sfile, "grdgradient.stat");
+		if (access (sfile, F_OK)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to find statistics file from last run [%s]!\n", sfile);
+			Return (GMT_FILE_NOT_FOUND);
+		}
+		if ((fp = fopen (sfile, "r")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open statistics file from last run [%s]!\n", sfile);
+			Return (GMT_ERROR_ON_FOPEN);
+		}
+		if (fscanf (fp, "%lg %lg", &def_offset, &def_sigma) != 2) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read record from statistics file from last run [%s]!\n", sfile);
+			fclose (fp);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		fclose (fp);
+		if (Ctrl->Q.mode == 3) {	/* Gave -FR to delete after we have read the file */
+			GMT_Report (API, GMT_MSG_DEBUG, "Remove statistics file [%s]\n", sfile);
+			if (Ctrl->Q.mode == 3 && gmt_remove_file (GMT, sfile)) {	/* Gave -FR to read and delete */
+				GMT_Report (API, GMT_MSG_NORMAL, "Cannot remove statistics file from last run [%s]!\n", sfile);
+				Return (GMT_RUNTIME_ERROR);
+			}
+		}
+	}
+	
+	if (Ctrl->N.active) {	/* Report what was set if debug is enabled */
+		char *answer = "NY";
+		if (Ctrl->N.set[1] == 2) Ctrl->N.offset = def_offset, Ctrl->N.set[1] = 1;
+		if (Ctrl->N.set[2] == 2) Ctrl->N.sigma  = def_sigma,  Ctrl->N.set[2] = 1;
+		GMT_Report (API, GMT_MSG_DEBUG, "amplitude_set = %c offset_set = %c sigma_set = %c\n", answer[Ctrl->N.set[0]], answer[Ctrl->N.set[1]], answer[Ctrl->N.set[2]]);
+	}
+
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input grid\n");
 	gmt_M_memset (s, 3, double);
 	gmt_M_memset (wesn, 4, double);
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	
-	if (Ctrl->N.active) {	/* Report what was set if debug */
-		char *answer = "NY";
-		GMT_Report (API, GMT_MSG_DEBUG, "amplitude_set = %c offset_set = %c sigma_set = %c\n", answer[Ctrl->N.set[0]], answer[Ctrl->N.set[1]], answer[Ctrl->N.set[2]]);
-	}
-
 	if (Ctrl->A.active) {	/* Get azimuth in 0-360 range */
 		if (Ctrl->A.mode == GRDGRADIENT_VAR) {	/* Got variable azimuth(s) */
 			if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->A.file, NULL)) == NULL) {
@@ -729,37 +791,62 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 
 	/* Now we write out: */
 
-	if (Ctrl->A.active) {
-		if (Ctrl->N.active)
-			strcpy (buffer, "Normalized directional derivative(s)");
-		else
-			strcpy (buffer, "Directional derivative(s)");
-		sprintf (format, "\t%s\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Min Mean Max sigma intensities:");
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, min_gradient, ave_gradient, max_gradient, Ctrl->N.sigma);
-	}
-	else {
-		if (Ctrl->E.mode > 1)
-			strcpy (buffer, "Lambertian radiance");
-		else if (Ctrl->E.mode == 1)
-			strcpy (buffer, "Peucker piecewise linear radiance");
-		else
-			strcpy (buffer, "Directions of grad (z) [uphill direction]");
-	}
+	if (!(Ctrl->Q.mode == 2 && !Ctrl->G.active)) {	/* Not the special case when we don't really need a grid out */
+		if (Ctrl->A.active) {
+			if (Ctrl->N.active)
+				strcpy (buffer, "Normalized directional derivative(s)");
+			else
+				strcpy (buffer, "Directional derivative(s)");
+			sprintf (format, "\t%s\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Min Mean Max sigma intensities:");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, min_gradient, ave_gradient, max_gradient, Ctrl->N.sigma);
+		}
+		else {
+			if (Ctrl->E.mode > 1)
+				strcpy (buffer, "Lambertian radiance");
+			else if (Ctrl->E.mode == 1)
+				strcpy (buffer, "Peucker piecewise linear radiance");
+			else
+				strcpy (buffer, "Directions of grad (z) [uphill direction]");
+		}
 
-	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) Return (API->error);
-	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, buffer, Out)) Return (API->error);
-	if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Out) != GMT_NOERROR) {
-		Return (API->error);
-	}
-
-	if (Ctrl->S.active) {
-		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Slope)) Return (API->error);
-		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "Magnitude of grad (z)", Slope)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->S.file, Slope) != GMT_NOERROR) {
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) Return (API->error);
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, buffer, Out)) Return (API->error);
+		if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, Out) != GMT_NOERROR) {
 			Return (API->error);
 		}
+
+		if (Ctrl->S.active) {
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Slope)) Return (API->error);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "Magnitude of grad (z)", Slope)) Return (API->error);
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->S.file, Slope) != GMT_NOERROR) {
+				Return (API->error);
+			}
+		}
 	}
+
+	if (Ctrl->Q.mode == 2) {	/* Write the new statistics */
+		char sfile[PATH_MAX] = {""};
+		FILE *fp = NULL;
+		GMT_Report (API, GMT_MSG_DEBUG, "Create statistics file [%s] with offset and sigma\n", sfile);
+		if (GMT->session.TMPDIR)
+			sprintf (sfile, "%s/grdgradient.stat", GMT->session.TMPDIR);
+		else if (API->tmp_dir)
+			sprintf (sfile, "%s/grdgradient.stat", API->tmp_dir);
+		else
+			sprintf (sfile, "grdgradient.stat");
+		if ((fp = fopen (sfile, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot create statistics file from this run [%s]!\n", sfile);
+			Return (GMT_ERROR_ON_FOPEN);
+		}
+		if (fprintf (fp, "%.16lg %.16lg\n", ave_gradient, Ctrl->N.sigma) < 0) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to write record to statistics file from this run [%s]!\n", sfile);
+			fclose (fp);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		fclose (fp);
+	}
+	
 
 	Return (GMT_NOERROR);
 }
