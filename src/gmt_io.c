@@ -4542,7 +4542,7 @@ FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) 
 				char *ext = gmt_get_ext (c);	/* Get pointer to extension (or NULL if no extension) */
 				if (ext && mode[0] == 'r' && !strncmp (ext, "shp", 3U)) {	/* Got a shapefile for reading */
 					/* We will do a system call to ogr2ogr in order to read the shapefile */
-					char cmd[GMT_LEN256] = {""};
+					char cmd[GMT_BUFSIZ+GMT_LEN256] = {""};
 					int error = 0;
 					if (GMT->parent->tmp_dir)	/* Make unique file in temp dir */
 						sprintf (GMT->current.io.tempfile, "%s/gmt_ogr_%d.gmt", GMT->parent->tmp_dir, (int)getpid());

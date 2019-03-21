@@ -642,7 +642,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 		uint64_t seg;
 		double x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
 		double *px = NULL, *py = NULL, y_heading, fluff[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, GMT_LETTER_HEIGHT = 0.736;
-		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, Bopt[GMT_LEN64] = {""};
+		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, Bopt[GMT_LEN256] = {""};
 		char vfile[GMT_STR16] = {""}, xymode = 'r', report[GMT_LEN256] = {""}, txt[GMT_LEN32] = {""};
 		bool add_annot;
 		FILE *fp = NULL;

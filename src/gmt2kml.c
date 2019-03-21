@@ -380,6 +380,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				break;
 			case 'G':	/* Set fill for symbols or polygon */
 				ind = F_ID;	/* Default is fill if not overridden below */
+				k = 0;
 				if ((c = strstr (opt->arg, "+f"))) 	/* Polygon fill */
 					ind = F_ID, k = 0, c[0] = '\0';
 				else if ((c = strstr (opt->arg, "+n")))	/* Label color */

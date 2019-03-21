@@ -407,7 +407,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				n_errors += gmt_getscale (GMT, 'L', opt->arg, GMT_SCALE_MAP, &Ctrl->L.scale);
 				break;
 			case 'm':
-				if (gmt_M_compat_check (GMT, 4))	/* Warn and fall through */
+				if (gmt_M_compat_check (GMT, 4))	/* Warn and fall through on purpose */
 					GMT_Report (API, GMT_MSG_COMPAT, "-m option is deprecated and reverted back to -M.\n");
 				else {
 					n_errors += gmt_default_error (GMT, opt->option);

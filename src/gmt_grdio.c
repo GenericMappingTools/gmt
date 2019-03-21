@@ -1528,6 +1528,7 @@ size_t gmt_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, gmt_grdfloa
 			break;
 		case 'i':
 			if (isnan (*nan_value)) *nan_value = INT_MIN;
+			/* Fall through on purpose */
 		case 'm':
 			return (sizeof (int32_t));
 			break;
@@ -2200,7 +2201,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 
 	bool global, error = false;
 	double val, dx, small;
-	char format[GMT_LEN64] = {""};
+	char format[GMT_LEN256] = {""};
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	switch (gmt_minmaxinc_verify (GMT, wesn[XLO], wesn[XHI], header->inc[GMT_X], GMT_CONV4_LIMIT)) {	/* Check if range is compatible with x_inc */
@@ -2252,7 +2253,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		if (dx > small) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
 			            "(w - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
-			snprintf (format, GMT_LEN64, "w reset from %s to %s\n",
+			snprintf (format, GMT_LEN256, "w reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, format, wesn[XLO], val);
 			wesn[XLO] = val;
@@ -2264,7 +2265,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		if (dx > small) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
 			            "(e - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
-			snprintf (format, GMT_LEN64, "e reset from %s to %s\n",
+			snprintf (format, GMT_LEN256, "e reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, format, wesn[XHI], val);
 			wesn[XHI] = val;
@@ -2278,7 +2279,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 	if (fabs (wesn[YLO] - val) > small) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "(s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
 		            GMT_CONV4_LIMIT);
-		snprintf (format, GMT_LEN64, "s reset from %s to %s\n",
+		snprintf (format, GMT_LEN256, "s reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, format, wesn[YLO], val);
 		wesn[YLO] = val;
@@ -2288,7 +2289,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 	if (fabs (wesn[YHI] - val) > small) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "(n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
 		            GMT_CONV4_LIMIT);
-		snprintf (format, GMT_LEN64, "n reset from %s to %s\n",
+		snprintf (format, GMT_LEN256, "n reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, format, wesn[YHI], val);
 		wesn[YHI] = val;

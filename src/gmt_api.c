@@ -10455,7 +10455,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	/* 1m. Check if this is the grdgradient module, where primary dataset output should be turned off if -Qc and no -G is set */
 	else if (!strncmp (module, "grdgradient", 11U) && (opt = GMT_Find_Option (API, 'G', *head)) == NULL) {
 		/* Found no -G<grid> option; determine if -Qc is set */
-		if ((opt = GMT_Find_Option (API, 'Q', *head)) && opt->arg == 'c')
+		if ((opt = GMT_Find_Option (API, 'Q', *head)) && opt->arg[0] == 'c')
 			deactivate_output = true;	/* Turn off implicit output since none is in effect */
 	}
 

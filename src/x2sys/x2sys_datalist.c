@@ -316,6 +316,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		case 'm':
 			if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
 				GMT_Report (API, GMT_MSG_COMPAT, "Unit m for miles is deprecated; use unit M instead\n");
+				/* Fall through on purpose to 'M' */
 			else {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);
@@ -352,6 +353,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		case 'm':
 			if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
 				GMT_Report (API, GMT_MSG_COMPAT, "Unit m for miles is deprecated; use unit M instead\n");
+				/* Fall through on purpose to 'M' */
 			else {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unit m for miles is not recognized\n");
 				x2sys_end (GMT, s);

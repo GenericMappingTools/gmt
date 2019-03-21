@@ -676,7 +676,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 					flag[ij]++;
 					break;
 				case 'S': 	/* Add up squares and means to compute standard deviation */
-					data[ij] += (gmt_grdfloat)in[zcol];	/* This adds up the means; we fall through to next case to also add up squares */
+					data[ij] += (gmt_grdfloat)in[zcol];	/* This adds up the means; we fall through to next case on purpose to also add up squares */
 				case 'r': 	/* Add up squares in case we must rms */
 					Grid->data[ij] += (gmt_grdfloat)in[zcol] * (gmt_grdfloat)in[zcol];
 					flag[ij]++;
@@ -738,12 +738,14 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 							break;
 						case 'd':	/* Keep the lowest in 'data' */
 							if (data[ij_east] < data[ij_west]) data[ij_west] = data[ij_east];
+							/* Fall through on purpose since range also needs the highsets */
 						case 'u':	/* Keep the highest */
 							if (Grid->data[ij_east] > Grid->data[ij_west]) Grid->data[ij_west] = Grid->data[ij_east];
 							flag[ij_west] += flag[ij_east];
 							break;
 						case 'S':	/* Sum up the sums in 'data' */
 							data[ij_west] += data[ij_east];
+							/* Fall through on purpose */
 						default:	/* Add up in case we must sum, rms, mean, or standard deviation */
 							Grid->data[ij_west] += Grid->data[ij_east];
 							flag[ij_west] += flag[ij_east];

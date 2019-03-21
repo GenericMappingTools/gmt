@@ -271,8 +271,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 	 * Old : -A[-][u][<margins>][+g<fill>][+p<pen>][+r][+s|S[m]<width>[u][/<height>[u]]]
 	 */
 
-	bool error = false;
-	unsigned int pos = 0;
+	unsigned int pos = 0, error = 0;
 	int j, k = 0, trim_j = -1;
 	char txt[GMT_LEN128] = {""}, p[GMT_LEN128] = {""};
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
@@ -996,7 +995,7 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 /* ---------------------------------------------------------------------------------------------- */
 GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB, double margin, double *w, double *h) {
 	/* Do what we do in the main code for the -A (if used here) option but on a in-memory PS 'file' */
-	char      cmd[GMT_LEN256] = {""}, buf[GMT_LEN128] = {""}, t[32] = {""}, *pch, c;
+	char      cmd[GMT_LEN512] = {""}, buf[GMT_LEN128] = {""}, t[32] = {""}, *pch, c;
 	int       fh, r, c_begin = 0;
 	size_t    n;
 	bool      landscape = false;

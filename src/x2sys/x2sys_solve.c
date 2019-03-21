@@ -289,7 +289,7 @@ GMT_LOCAL uint64_t next_unused_track (uint64_t *cluster, uint64_t n) {
 }
 
 int GMT_x2sys_solve (void *V_API, int mode, void *args) {
-	char **trk_list = NULL, text[GMT_BUFSIZ] = {""}, frmt_name[8] = {""};
+	char **trk_list = NULL, text[GMT_BUFSIZ] = {""}, frmt_name[16] = {""};
 	char trk[2][GMT_LEN64], line[GMT_BUFSIZ] = {""};
 	char file_TAG[GMT_LEN64] = {""}, file_column[GMT_LEN64] = {""};
 	bool grow_list = false, normalize = false, first = true, active_col[N_COE_PARS];
