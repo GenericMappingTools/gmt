@@ -16,7 +16,6 @@ Synopsis
 **gmt grdgradient** *in_grdfile* |-G|\ *out_grdfile*
 [ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
 [ |-E|\ [**m**\ \|\ **s**\ \|\ **p**\ ]\ *azim/elev*\ [**+a**\ *ambient*\ ][**+d**\ *diffuse*\ ][**+p**\ *specular*\ ][**+s**\ *shine*\ ] ] 
-[ |-L|\ *flag* ] 
 [ |-N|\ [**e**\ \|\ **t**][*amp*][**+s**\ *sigma*\ ][**+o**\ *offset*\ ] ]
 [ |-Q|\ **c**\ \|\ **r**\ \|\ **R**
 [ |SYN_OPT-R| ] [ |-S|\ *slopefile* ]
@@ -34,7 +33,7 @@ given direction (**-A**), or to find the direction (**-S**) [and the magnitude
 (**-D**)] of the vector gradient of the data.
 
 Estimated values in the first/last row/column of output depend on
-boundary conditions (see **-L**). 
+boundary conditions (see **-n**). 
 
 Required Arguments
 ------------------
@@ -102,15 +101,6 @@ Optional Arguments
     and 45 degrees. This means that even if you provide other values
     they will be ignored.)
 
-.. _-L:
-
-**-L**\ *flag*
-    Boundary condition *flag* may be *x* or *y* or *xy* indicating data
-    is periodic in range of x or y or both, or *flag* may be *g*
-    indicating geographical conditions (x and y are lon and lat).
-    [Default uses "natural" conditions (second partial derivative normal
-    to edge is zero).]
-
 .. _-N:
 
 **-N**\ [**e**\ \|\ **t**][*amp*][**+s**\ *sigma*\ ][**+o**\ *offset*\ ]
@@ -132,7 +122,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**c**\ \|\ **r**\ \|\ **R**
+**-Qc**\ \|\ **r**\ \|\ **R**
     Controls how normalization via **-N** is carried out.  When multiple grids
     should be normalized the same way (i.e., with the same *offset* and/or *sigma*),
     we must pass these values via **-N**.  However, this is inconvenient if we
