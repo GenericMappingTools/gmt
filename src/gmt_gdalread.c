@@ -788,36 +788,34 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	if (prhs->R.active) {
 		double wesn[4];
 		got_R = true;
-		wesn[XLO] = GMT->common.R.wesn[XLO];		wesn[XHI] = GMT->common.R.wesn[XHI];
-		wesn[YLO] = GMT->common.R.wesn[YLO];		wesn[YHI] = GMT->common.R.wesn[YHI];
-		GMT->common.R.active[RSET] = false;	/* Reset because -R was already parsed when reading header info */
-		error += gmt_parse_common_options (GMT, "R", 'R', prhs->R.region);
+		error += (GMT_Get_Values (GMT->parent, prhs->R.region, wesn, 4) < 4);
+		
 		if (!error) {
 			double dx = 0, dy = 0;
 			if (!prhs->registration.val) {	/* Subregion coords are grid-reg. Need to convert to pix-reg */
 				dx = prhs->registration.x_inc / 2;
 				dy = prhs->registration.y_inc / 2;
 			}
-			dfULX = GMT->common.R.wesn[XLO] - dx;
-			dfLRX = GMT->common.R.wesn[XHI] + dx;
-			dfLRY = GMT->common.R.wesn[YLO] - dy;
-			dfULY = GMT->common.R.wesn[YHI] + dy;
+			dfULX = wesn[XLO] - dx;
+			dfLRX = wesn[XHI] + dx;
+			dfLRY = wesn[YLO] - dy;
+			dfULY = wesn[YHI] + dy;
 			if (pad) {
-				pad_w = (int)((wesn[XLO] - GMT->common.R.wesn[XLO]) / prhs->registration.x_inc + 0.5);
-				pad_e = (int)((GMT->common.R.wesn[XHI] - wesn[XHI]) / prhs->registration.x_inc + 0.5);
-				pad_s = (int)((wesn[YLO] - GMT->common.R.wesn[YLO]) / prhs->registration.y_inc + 0.5);
-				pad_n = (int)((GMT->common.R.wesn[YHI] - wesn[YHI]) / prhs->registration.y_inc + 0.5);
+				pad_w = (int)((GMT->common.R.wesn[XLO] - wesn[XLO]) / prhs->registration.x_inc + 0.5);
+				pad_e = (int)((wesn[XHI] - GMT->common.R.wesn[XHI]) / prhs->registration.x_inc + 0.5);
+				pad_s = (int)((GMT->common.R.wesn[YLO] - wesn[YLO]) / prhs->registration.y_inc + 0.5);
+				pad_n = (int)((wesn[YHI] - GMT->common.R.wesn[YHI]) / prhs->registration.y_inc + 0.5);
 			}
 		}
 	}
 
 	if (prhs->r.active) { 		/* Region is given in pixels */
+		double wesn[4];
 		got_r = true;
-		GMT->common.R.active[RSET] = false;
-		error += gmt_parse_common_options (GMT, "R", 'R', prhs->r.region);
+		error += (GMT_Get_Values (GMT->parent, prhs->R.region, wesn, 4) < 4);
 		if (!error) {
-			dfULX = GMT->common.R.wesn[XLO];	dfLRX = GMT->common.R.wesn[XHI];
-			dfLRY = GMT->common.R.wesn[YLO];	dfULY = GMT->common.R.wesn[YHI];
+			dfULX = wesn[XLO];	dfLRX = wesn[XHI];
+			dfLRY = wesn[YLO];	dfULY = wesn[YHI];
 		}
 	}
 
