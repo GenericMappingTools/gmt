@@ -1213,16 +1213,19 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
 			case 'F':	/* Full name, upper case */
 				upper_case = true;
+				/* fall through on purpose to 'f' */
 			case 'f':	/* Full name, lower case */
 				flavor = 0;
 				break;
 			case 'A':	/* Abbreviated name, upper case */
 				upper_case = true;
+				/* fall through on purpose to 'a' */
 			case 'a':	/* Abbreviated name, lower case */
 				flavor = 1;
 				break;
 			case 'C':	/* 1-char name, upper case */
 				upper_case = true;
+				/* fall through on purpose to 'c' */
 			case 'c':	/* 1-char name, lower case */
 				flavor = 2;
 				break;

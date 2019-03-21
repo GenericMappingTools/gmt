@@ -1008,6 +1008,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						continue;
 					}
 					data[n].dim[2] = in[ex3];	/* radius */
+					/* Now fall through to do the rest under regular rectangle */
 				case PSL_RECT:
 					if (gmt_M_is_dnan (in[ex1])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle width = NaN near line %d\n", n_total_read);
@@ -1590,7 +1591,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Z], L->data[GMT_Z], end, double);
 							/* Now add 2 anchor points and explicitly close by repeating 1st point */
 							switch (Ctrl->L.mode) {
-								case XHI:	off = 1;	/* To select the x max entry */
+								case XHI:	off = 1;	/* To select the x max entry, then call through */
 								case XLO:
 								case ZLO:
 									value = (Ctrl->L.mode == ZLO) ? Ctrl->L.value : GMT->common.R.wesn[XLO+off];
@@ -1599,7 +1600,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 									GMT->hidden.mem_coord[GMT_Y][end] = L->data[GMT_Y][end-1];
 									GMT->hidden.mem_coord[GMT_Y][end+1] = L->data[GMT_Y][0];
 									break;
-								case YHI:	off = 1;	/* To select the y max entry */
+								case YHI:	off = 1;	/* To select the y max entry, then fall through */
 								case YLO:
 								case ZHI:
 									value = (Ctrl->L.mode == ZHI) ? Ctrl->L.value : GMT->common.R.wesn[YLO+off];

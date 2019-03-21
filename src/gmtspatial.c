@@ -849,6 +849,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 							break;
 						case 'C':	/* Gave a new +C<cmax> value */
 							Ctrl->D.I.mode = 1;	/* Median instead of mean */
+							/* Fall through on purpose */
 						case 'c':	/* Gave a new +c<cmax> value */
 							if (p[1]) Ctrl->D.I.c_threshold = atof (&p[1]);	/* This allows +C by itself just to change to median */
 							break;
@@ -1319,7 +1320,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->Q.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
 		double out[3];
-		static char *type[2] = {"length", "area"}, upper[GMT_LEN16] = {"infinity"};
+		static char *type[2] = {"length", "area"}, upper[GMT_LEN32] = {"infinity"};
 		bool new_data = (Ctrl->Q.header || Ctrl->Q.sort || Ctrl->E.active);
 		uint64_t seg, row_f, row_l, tbl, col, n_seg = 0, n_alloc_seg = 0;
 		unsigned int handedness = 0;

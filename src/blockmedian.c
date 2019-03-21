@@ -374,7 +374,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	unsigned int row, col, emode = 0, n_input, n_output, n_quantiles = 1, go_quickly = 0;
 	unsigned int k, NF = 0, fcol[BLK_N_FIELDS] = {2,3,4,5,6,7,0,0}, field[BLK_N_FIELDS];
 	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, half_dx, *in = NULL, *z_tmp = NULL;
-	char format[GMT_LEN256] = {""}, *old_format = NULL, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "q25", "q75", "h", "w", ""}, *code[BLK_N_FIELDS];
+	char format[GMT_LEN512] = {""}, *old_format = NULL, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "q25", "q75", "h", "w", ""}, *code[BLK_N_FIELDS];
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL, *G = NULL, *GridOut[BLK_N_FIELDS];
@@ -438,7 +438,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	if (!(Ctrl->E.mode & BLK_DO_EXTEND4)) quantile[0] = Ctrl->T.quantile;	/* Just get the single quantile [median] */
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
-		snprintf (format, GMT_LEN256, "W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		snprintf (format, GMT_LEN512, "W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->n_columns, Grid->header->n_rows);
 	}
 

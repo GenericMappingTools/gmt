@@ -2133,7 +2133,7 @@ GMT_LOCAL void plot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	 */
 
 	time_t right_now;
-	char label[GMT_LEN256] = {""}, text[GMT_LEN256] = {""};
+	char label[GMT_LEN512] = {""}, text[GMT_LEN256] = {""};
 	double dim[3] = {0.365, 0.15, 0.032};	/* Predefined dimensions in inches */
 	double unset_rgb[4] = {-1.0, -1.0, -1.0, 0.0};
 
@@ -2179,7 +2179,7 @@ GMT_LOCAL void plot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	/* Optionally, add additional label to the right of the box */
 
 	if (U_label && U_label[0]) {
-		snprintf (label, GMT_LEN256, "   %s", U_label);
+		snprintf (label, GMT_LEN512, "   %s", U_label);
 		PSL_plottext (PSL, 0.0, 0.0, -7.0, label, 0.0, PSL_BL, 0);
 	}
 
@@ -5157,7 +5157,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 void gmt_draw_vertical_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	/* Draws a basic vertical scale bar at given refpoint and labels it as specified , */
 	double half_scale_length, scale, x0, y0, xx[4], yy[4], off, dim[2], sign = 1.0;
-	char txt[GMT_LEN64] = {""};
+	char txt[GMT_LEN256] = {""};
 	int form, just = PSL_ML;
 
 	if (ms->label[0]) /* Append data unit to the scale length */
@@ -5344,7 +5344,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	bool flush = false, this_outline = false, skip[GMT_N_COND_LEVELS+1], done[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
-	double x, y, lon, lat, az, angle1, angle2, p_width, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
+	double x, y, lon, lat, az, angle1, angle2, p_width = 0.0, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
 	char user_text[GMT_LEN256] = {""};
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
 	struct GMT_FILL f, *current_fill = fill;
@@ -5530,7 +5530,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				break;
 
 			case (int)'C':
-				if (gmt_M_compat_check (GMT, 4)) {	/* Warn and fall through */
+				if (gmt_M_compat_check (GMT, 4)) {	/* Warn and purposefully fall through to assign the rest of the statements */
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Circle macro symbol C is deprecated; use c instead\n");
 					action = s->action = PSL_CIRCLE;	/* Backwards compatibility, circles are now 'c' */
 				}

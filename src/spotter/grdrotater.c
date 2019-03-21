@@ -205,7 +205,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 				Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'e':
-				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and will be removed in 5.2.x. Use -E instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and was removed in 5.3. Use -E instead.\n");
 				/* Fall-through on purpose */
 			case 'E':	/* File with stage poles or a single rotation pole */
 				Ctrl->E.active = true;

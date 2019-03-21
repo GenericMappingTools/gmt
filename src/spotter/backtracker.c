@@ -267,7 +267,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 				break;
 
 			case 'e':
-				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and will be removed in 5.2.x. Use -E instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and was removed in 5.3. Use -E instead.\n");
 				/* Fall-through on purpose */
 			case 'E':	/* File with stage poles or a single rotation pole */
 				Ctrl->E.active = true;
@@ -286,11 +286,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct
 				switch (opt->arg[0]) {
 					case 'F':	/* Calculate flowlines */
 						Ctrl->L.stage_id = true;
+						/* Fall through on purpose tp 'f' */
 					case 'f':
 						Ctrl->L.mode = SPOTTER_FLOWLINE;
 						break;
 					case 'B':	/* Calculate hotspot tracks */
 						Ctrl->L.stage_id = true;
+						/* Fall through on purpose tp 'b' */
 					case 'b':
 						Ctrl->L.mode = SPOTTER_TRAILLINE;
 						break;

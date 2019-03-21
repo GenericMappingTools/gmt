@@ -819,7 +819,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	bool polygon, penset_OK = true, not_line, old_is_world, rgb_from_z = false;
 	bool get_rgb = false, clip_set = false, fill_active, may_intrude_inside = false;
 	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true;
-	bool default_outline, outline_active, geovector = false, save_W, save_G, QR_symbol = false;
+	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
 	unsigned int n_needed, n_cols_start = 2, justify, tbl;
 	unsigned int n_total_read = 0, j, geometry;
 	unsigned int bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
@@ -1345,6 +1345,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle corner radius = NaN near line %d\n", n_total_read);
 							continue;
 						}
+						/* Fall through on purpose to pick up the other parameters */
 					case PSL_RECT:
 						dim[0] = in[ex1];
 						if (gmt_M_is_dnan (dim[0])) {
@@ -1915,7 +1916,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Y], L->data[GMT_Y], end, double);
 							/* Now add 2 anchor points and explicitly close by repeating 1st point */
 							switch (Ctrl->L.mode) {
-								case XHI:	off = 1;	/* To select the x max entry */
+								case XHI:	off = 1;	/* To select the x max entry then fall through */
 								case XLO:
 								case ZLO:
 									value = (Ctrl->L.mode == ZLO) ? Ctrl->L.value : GMT->common.R.wesn[XLO+off];
@@ -1923,7 +1924,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 									GMT->hidden.mem_coord[GMT_Y][end] = L->data[GMT_Y][end-1];
 									GMT->hidden.mem_coord[GMT_Y][end+1] = L->data[GMT_Y][0];
 									break;
-								case YHI:	off = 1;	/* To select the y max entry */
+								case YHI:	off = 1;	/* To select the y max entry then fall through */
 								case YLO:
 								case ZHI:
 									value = (Ctrl->L.mode == ZHI) ? Ctrl->L.value : GMT->common.R.wesn[YLO+off];

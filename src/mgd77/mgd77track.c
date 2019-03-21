@@ -76,7 +76,6 @@ struct MGD77TRACK_CTRL {	/* All control options for this program (except common 
 	} C;
 	struct D {	/* -D */
 		bool active;
-		bool mode;	/* true to skip recs with time == NaN */
 		double start;	/* Start time */
 		double stop;	/* Stop time */
 	} D;
@@ -353,8 +352,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 			case 'D':		/* Assign start/stop times for sub-section */
 				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
-				 	case 'A':		/* Start date, skip records with time = NaN */
-						Ctrl->D.mode = true;
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
 						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
@@ -362,8 +359,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 							n_errors++;
 						}
 						break;
-					case 'B':		/* Stop date, skip records with time = NaN */
-						Ctrl->D.mode = true;
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
 						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {

@@ -982,7 +982,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		/* If -N[<cpt>] is given then we split the call into a grdview + grdcontour sequence.
 	 	 * We DO NOT parse any options here or initialize GMT, and just bail after running the two modules */
 	
-		char cmd1[GMT_LEN512] = {""}, cmd2[GMT_LEN512] = {""}, string[GMT_LEN128] = {""}, cptfile[PATH_MAX] = {""};
+		char cmd1[GMT_LEN512] = {""}, cmd2[GMT_LEN512] = {""}, string[GMT_LEN128] = {""}, cptfile[PATH_MAX] = {""}, *ptr = NULL;
 		struct GMT_OPTION *opt = NULL;
 		bool got_cpt = (optN->arg[0]), is_continuous, got_C_cpt = false;
 		size_t L;
@@ -1077,7 +1077,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 		is_continuous = P->is_continuous;
 		/* Free the P object unless it was an input memory object */
-		if (!gmt_M_file_is_memory (cptfile) && GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
+		ptr = cptfile;	/* To avoid warning message from gmt_M_file_is_memory */
+		if (!gmt_M_file_is_memory (ptr) && GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		if (is_continuous) {	/* More bad news */

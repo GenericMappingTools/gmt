@@ -285,7 +285,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	int error;
 	bool use_xy, use_weight, duplicate_col;
 	double weight, weight_s2 = 0, weight_pos, weighted_z, iw, half_dx, wesn[4], out[7], *in = NULL;
-	char format[GMT_LEN256] = {""}, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "h", "w", "", "", ""}, *code[BLK_N_FIELDS];
+	char format[GMT_LEN512] = {""}, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "h", "w", "", "", ""}, *code[BLK_N_FIELDS];
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL, *G = NULL, *GridOut[BLK_N_FIELDS];
@@ -347,7 +347,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* wesn may include some padding if gridline-registered */
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
-		snprintf (format, GMT_LEN256, "W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d\n",
+		snprintf (format, GMT_LEN512, "W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 				  GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI],

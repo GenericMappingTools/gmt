@@ -599,7 +599,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						break;
 
 					case '>':	/* Paragraph text header */
-						if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
+						if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through on purpose */
 							GMT_Report (API, GMT_MSG_COMPAT, "Paragraph text header flag > is deprecated; use P instead\n");
 						else {
 							GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized record (%s)\n", line);
@@ -1055,7 +1055,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						break;
 
 					case '>':	/* Paragraph text header */
-						if (gmt_M_compat_check (GMT, 4)) {	/* Warn and fall through */
+						if (gmt_M_compat_check (GMT, 4)) {	/* Warn and fall through on purpose */
 							GMT_Report (API, GMT_MSG_COMPAT, "Paragraph text header flag > is deprecated; use P instead\n");
 							n = sscanf (&line[1], "%s %s %s %s %s %s %s %s %s", xx, yy, size, angle, font, key, lspace, tw, jj);
 							if (n < 0) n = 0;	/* Since -1 is returned if no arguments */

@@ -3178,16 +3178,19 @@ GMT_LOCAL int gmtinit_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, 
 	switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
 		case 'F':	/* Full name, upper case */
 			I->upper_case = true;
+			/* Fall through on purpose to 'f' */
 		case 'f':	/* Full name, lower case */
 			I->flavor = 0;
 			break;
 		case 'A':	/* Abbreviated name, upper case */
 			I->upper_case = true;
+			/* Fall through on purpose to 'a' */
 		case 'a':	/* Abbreviated name, lower case */
 			I->flavor = 1;
 			break;
 		case 'C':	/* 1-char name, upper case */
 			I->upper_case = true;
+			/* Fall through on purpose to 'c' */
 		case 'c':	/* 1-char name, lower case */
 			I->flavor = 2;
 			break;
@@ -3756,7 +3759,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 						break;
 					case 'L':	/* Force horizontal axis label */
 						GMT->current.map.frame.axis[no].label_mode = 1;
-						/* Fall through on purpose */
+						/* Fall through on purpose to 'l' */
 					case 'l':	/* Axis label */
 						if (p[1] == 0) {
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: No axis label given after +l|L\n");
@@ -7327,7 +7330,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	int got, col_type[2], expect_to_read;
 	size_t length;
 	bool inv_project = false, scale_coord = false, got_r, got_country, no_T = false, done[3] = {false, false, false};
-	char text[GMT_BUFSIZ] = {""}, item[GMT_BUFSIZ] = {""}, string[GMT_BUFSIZ] = {""}, r_unit = 0, *c = NULL, *d = NULL;
+	char text[GMT_BUFSIZ] = {""}, item[GMT_BUFSIZ] = {""}, string[GMT_BUFSIZ] = {""}, r_unit = 0, *c = NULL, *d = NULL, *ptr = NULL;
 	double p[6];
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* Got nothing */
@@ -7422,7 +7425,8 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		gmt_set_geographic (GMT, GMT_IN);
 		return (GMT_NOERROR);
 	}
-	if (!gmt_M_file_is_memory (item) && item[0] == '@') {	/* Must be a cache file */
+	ptr = item;	/* To avoid compiler warning that item cannot be NULL */
+	if (!gmt_M_file_is_memory (ptr) && ptr[0] == '@') {	/* Must be a cache file */
 		first = gmt_download_file_if_not_found (GMT, item, 0);
 	}
 	if (!gmt_access (GMT, &item[first], R_OK)) {	/* Gave a readable file, presumably a grid */
@@ -9063,8 +9067,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 					GMT->current.setting.ps_page_size[0] = gmt_convert_units (GMT, txt_a, GMT_PT, GMT_PT);
 				if (gmt_strtok (lower_value, "x", &pos, txt_b))	/* Returns height and update pos */
 					GMT->current.setting.ps_page_size[1] = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
-				if (GMT->current.setting.ps_page_size[0] <= 0.0) error++;
-				if (GMT->current.setting.ps_page_size[1] <= 0.0) error++;
+				if (GMT->current.setting.ps_page_size[0] <= 0.0) error = true;
+				if (GMT->current.setting.ps_page_size[1] <= 0.0) error = true;
 				GMT->current.setting.ps_media = -USER_MEDIA_OFFSET;
 			}
 			if (!error && manual) GMT->current.setting.ps_page_size[0] = -GMT->current.setting.ps_page_size[0];
@@ -10889,7 +10893,7 @@ void gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file) {
  */
 char *gmtlib_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F) {
 
-	static char text[GMT_LEN256] = {""};
+	static char text[GMT_BUFSIZ+GMT_LEN256] = {""};
 	int i;
 
 	if (F->use_pattern) {
@@ -10901,11 +10905,11 @@ char *gmtlib_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F) {
 	else if (F->rgb[0] < -0.5)
 		sprintf (text, "-");
 	else if ((i = gmtlib_getrgb_index (GMT, F->rgb)) >= 0)
-		snprintf (text, GMT_LEN256, "%s", gmt_M_color_name[i]);
+		snprintf (text, GMT_BUFSIZ+GMT_LEN256, "%s", gmt_M_color_name[i]);
 	else if (gmt_M_is_gray (F->rgb))
-		snprintf (text, GMT_LEN256, "%.5g", gmt_M_q(gmt_M_s255(F->rgb[0])));
+		snprintf (text, GMT_BUFSIZ+GMT_LEN256, "%.5g", gmt_M_q(gmt_M_s255(F->rgb[0])));
 	else
-		snprintf (text, GMT_LEN256, "%.5g/%.5g/%.5g", gmt_M_t255(F->rgb));
+		snprintf (text, GMT_BUFSIZ+GMT_LEN256, "%.5g/%.5g/%.5g", gmt_M_t255(F->rgb));
 	gmtinit_append_trans (text, F->rgb[3]);
 	return (text);
 }
@@ -11830,7 +11834,7 @@ GMT_LOCAL unsigned int strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, struct G
 						break;
 					case 'w': break;	/* Do nothing with defunct +w that was never documented anyway */
 					case 'l': case 'L':
-						answer |= 2;	/* Set this flag then fall through on purpose */
+						answer |= 2;	/* Set this flag then fall through on purpose to default: */
 					default: strcat (e_code, "+"); strcat (e_code, p); break;	/* Append as is */
 				}
 			}
@@ -13099,6 +13103,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'A':
 			p->factor = 1.67289326141;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
+			/* Fall through on purpose to 'a' */
 		case 'a':
 			p->symbol = PSL_STAR;
 			break;
@@ -13138,6 +13143,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'D':
 			p->factor = 1.25331413732;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
+			/* Fall through on purpose to 'd' */
 		case 'd':
 			p->symbol = PSL_DIAMOND;
 			break;
@@ -13256,18 +13262,21 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'G':
 			p->factor = 1.05390736526;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
+			/* Fall through on purpose to 'g' */
 		case 'g':
 			p->symbol = PSL_OCTAGON;
 			break;
 		case 'H':
 			p->factor = 1.09963611079;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
+			/* Fall through on purpose to 'h' */
 		case 'h':
 			p->symbol = PSL_HEXAGON;
 			break;
 		case 'I':
 			p->factor = 1.55512030156;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
+			/* Fall through on purpose to 'i' */
 		case 'i':
 			p->symbol = PSL_INVTRIANGLE;
 			break;
@@ -13316,11 +13325,13 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'N':
 			p->factor = 1.14948092619;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
+			/* Fall through on purpose to 'n' */
 		case 'n':
 			p->symbol = PSL_PENTAGON;
 			break;
 		case 'o':	/*3-D symbol */
 			p->shade3D = true;
+			/* Fall through on purpose to 'O' */
 		case 'O':	/* Same but now enabling shading */
 			p->symbol = GMT_SYMBOL_COLUMN;
 			if (n_z) {
@@ -13383,17 +13394,20 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'S':
 			p->factor = 1.25331413732;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
+			/* Fall through on purpose to 's' */
 		case 's':
 			p->symbol = PSL_SQUARE;
 			break;
 		case 'T':
 			p->factor = 1.55512030156;	/* To equal area of circle with same diameter */
 			p->size_x *= p->factor;
+			/* Fall through on purpose to 't' */
 		case 't':
 			p->symbol = PSL_TRIANGLE;
 			break;
 		case 'u':	/*3-D symbol */
 			p->shade3D = true;
+			/* Fall through on purpose to 'U' */
 		case 'U':	/* Same but disable shading */
 			p->symbol = GMT_SYMBOL_CUBE;
 			if (mode == 0) {
@@ -13403,6 +13417,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'V':
 			p->convert_angles = 1;
+			/* Fall through on purpose to 'v' */
 		case 'v':
 			p->symbol = PSL_VECTOR;
 			if (!gmt_M_compat_check (GMT, 4) || (strchr (text, '+') || !p->v.parsed_v4)) {	/* Check if new syntax before decoding */
@@ -13418,23 +13433,27 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				switch (text[1]) {	/* Check if s(egment), h(ead), b(alance center), or t(ail) have been specified */
 					case 'S':	/* Input (x,y) refers to vector head (the tip), double heads */
 						p->v.status |= PSL_VEC_BEGIN;
+						/* Fall through on purpose to 's' */
 					case 's':	/* Input (x,y) refers to vector head (the tip), head  at end */
 						p->v.status |= (PSL_VEC_JUST_S + PSL_VEC_END);
 						break;
 					case 'H':	/* Input (x,y) refers to vector head (the tip), double heads */
 						p->v.status |= PSL_VEC_BEGIN;
+						/* Fall through on purpose to 'sh' */
 					case 'h':	/* Input (x,y) refers to vector head (the tip), single head */
 						p->v.status |= (PSL_VEC_JUST_E + PSL_VEC_END);
 						p->nondim_col[p->n_nondim++] = 2 + mode;
 						break;
 					case 'B':	/* Input (x,y) refers to balance point of vector, double heads */
 						p->v.status |= PSL_VEC_BEGIN;
+						/* Fall through on purpose to 'b' */
 					case 'b':	/* Input (x,y) refers to balance point of vector, single head */
 						p->v.status |= (PSL_VEC_JUST_C + PSL_VEC_END);
 						p->nondim_col[p->n_nondim++] = 2 + mode;
 						break;
 					case 'T':	/* Input (x,y) refers to tail of vector, double heads */
 						p->v.status |= PSL_VEC_BEGIN;
+						/* Fall through on purpose to 't' */
 					case 't':	/* Input (x,y) refers to tail of vector [Default], single head */
 						p->v.status |= (PSL_VEC_JUST_B + PSL_VEC_END);
 						p->nondim_col[p->n_nondim++] = 2 + mode;
@@ -13486,6 +13505,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'W':
 			p->convert_angles = 1;
+			/* Fall through on purpose to 'w' */
 		case 'w':
 			p->symbol = PSL_WEDGE;
 			p->n_required = 2;
@@ -13508,6 +13528,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'K':
 			if (cmd) p->read_symbol_cmd = 2;	/* Kustom symbol given as -SK implies we must read text data records */
 			if (cmd) p->read_size_cmd = true;
+			/* Fall through on purpose to 'k' */
 		case 'k':
 			p->custom = gmtlib_get_custom_symbol (GMT, text_cp);
 			if (!p->custom) {
