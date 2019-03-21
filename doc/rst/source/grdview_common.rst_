@@ -74,7 +74,7 @@ Optional Arguments
 
 **-N**\ *level*\ [**+g**\ *fill*]
     Draws a plane at this z-level. If the optional *color* is provided
-    via the **+g** modifier,
+    via the **+g** modifier, and the projection is not oblique,
     the frontal facade between the plane and the data perimeter is
     colored. See **-Wf** for setting the pen used for the outline. 
 
