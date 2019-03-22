@@ -6417,7 +6417,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'A':	/* -j option for spherical distance calculation mode */
 
-			gmt_message (GMT, "\t-j Sets spherical distance calculation mode for modules that offers that flexibility.\n");
+			gmt_message (GMT, "\t-j Sets spherical distance calculation mode for modules that offer that flexibility.\n");
 			gmt_message (GMT, "\t   Append f for Flat Earth, g for Great Circle [Default], and e for Ellipsoidal mode.\n");
 			break;
 
