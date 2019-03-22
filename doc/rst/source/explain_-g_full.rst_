@@ -1,6 +1,6 @@
 .. _-g_full:
 
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [±]\ *gap*\ [**u**\ ]
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ *gap*\ [**u**\ ][**+n**\ \|\ **p**\ ]
     Examine the spacing between consecutive data points in order to
     impose breaks in the line. Append **x**\ \|\ **X** or
     **y**\ \|\ **Y** to define a gap when there is a large enough change
@@ -8,10 +8,10 @@
     distance gaps; use upper case to calculate gaps from projected
     coordinates. For gap-testing on other columns use [*col*\ ]\ **z**;
     if *col* is not prepended the it defaults to 2 (i.e., 3rd column).
-    Append [±]\ *gap* and optionally a unit **u**. Regarding optional
-    signs: negative means previous minus current column value must exceed
-    *gap* to be a gap, positive means current minus previous column value
-    must exceed *gap*, and no sign means the absolute value of the
+    Append *gap* and optionally a unit **u** and modifiers **+n** or **+p**.
+    Here, **+n** means previous minus current column value must exceed
+    *gap* to be a gap and **+p** means current minus previous column value
+    must exceed *gap*. Otherwise the *absolute value* of the
     difference must exceed *gap*. For geographic data
     (**x**\ \|\ **y**\ \|\ **d**), the unit **u** may be arc
     **d**\ egree, **m**\ inute, or **s**\ econd, or m\ **e**\ ter
