@@ -842,7 +842,7 @@ Standardized command line options
 ---------------------------------
 
 Most of the programs take many of the same arguments such as those related
-to setting the data region, the map projection, etc. The 26 switches in
+to setting the data region, the map projection, etc. The 27 switches in
 Table :ref:`switches <tbl-switches>` have the same meaning in all the programs (although
 some programs may not use all of them). These options will be described
 here as well as in the manual pages, as is vital that you understand how
@@ -888,6 +888,8 @@ importance (some are used a lot more than others).
 | **-h**   | Specify that input/output tables have header record(s)             |
 +----------+--------------------------------------------------------------------+
 | **-i**   | Specify which input columns to read                                |
++----------+--------------------------------------------------------------------+
+| **-j**   | Specify how spherical distances should be computed                 |
 +----------+--------------------------------------------------------------------+
 | **-n**   | Specify grid interpolation settings                                |
 +----------+--------------------------------------------------------------------+
@@ -1897,7 +1899,7 @@ records are considered bad and simply skipped. If you wish such records
 to indicate a segment boundary then set this parameter to *pass*.
 Finally, you may wish to indicate gaps based on the data values
 themselves. The **-g** option is used to detect gaps based on one or
-more criteria (use **-g+** if *all* the criteria must be met; otherwise
+more criteria (use **-ga** if *all* the criteria must be met; otherwise
 only one of the specified criteria needs to be met to signify a data
 gap). Gaps can be based on excessive jumps in the *x*- or
 *y*-coordinates (**-gx** or **-gy**), or on the distance between points
@@ -1911,6 +1913,10 @@ upper-case **-gX**, **-gY** or **-gD**). In that case, choose from
 **c**\ entimeter, **i**\ nch or **p**\ oint [Default unit is controlled
 by **PROJ_LENGTH_UNIT**]. Note: For **-gx** or **-gy** with time data
 the unit is instead controlled by :ref:`TIME_UNIT <TIME_UNIT>`.
+Normally, a gap is computed as the absolute value of the
+specified distance measure (see above).  Append **+n** to compute the gap
+as previous minus current column value and **+p** for current minus previous
+column value.
 
 Header data records: The **-h** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
