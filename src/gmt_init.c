@@ -6383,8 +6383,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t-g Use data point separations to determine if there are data gaps.\n");
 			gmt_message (GMT, "\t   Append x|X or y|Y to identify data gaps in x or y coordinates,\n");
-			gmt_message (GMT, "\t   respectively, and append d|D for distance gaps.  Upper case X|Y|D\n");
-			gmt_message (GMT, "\t   means we first project the points (requires -J).  Append [+|-]<gap>[unit].\n");
+			gmt_message (GMT, "\t   respectively, and append d|D for distance gaps.  Upper case X|Y|D means\n");
+			gmt_message (GMT, "\t   we first project the points (requires -J).  Append <gap>[unit][+n|p]; +n uses\n");
+			gmt_message (GMT, "\t   d=prev-curr, +p uses d=curr-prev [d=|curr-prev|]; d must exceed <gap> to detect a gap.\n");
 			gmt_message (GMT, "\t   For geographic data: choose from %s [Default is meter (%c)].\n", GMT_LEN_UNITS2_DISPLAY, GMT_MAP_DIST_UNIT);
 			gmt_message (GMT, "\t   For gaps based on mapped coordinates: choose unit from %s [%s].\n",
 			             GMT_DIM_UNITS_DISPLAY, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
@@ -7979,9 +7980,10 @@ int gmt_check_binary_io (struct GMT_CTRL *GMT, uint64_t n_req) {
 
 /*! . */
 int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
-	int i, k = 0, c;
-	/* Process the GMT gap detection option for parameters */
-	/* Syntax, e.g., -g[x|X|y|Y|d|D|[<col>]z][+|-]<gap>[d|m|s|e|f|k|M|n|c|i|p] or -ga */
+	int i, kk, k = 0, c, gap = 0;
+	char *t = NULL;
+	/* Process the GMT gap detection option for parameters (leading [+|-] for gap is deprecated) */
+	/* Syntax, e.g., -g[x|X|y|Y|d|D|[<col>]z]<gap>[d|m|s|e|f|k|M|n|c|i|p][+n|p] or -ga */
 
 	if (!txt || !txt[0]) return (GMT_PARSE_ERROR);	/* -g requires an argument */
 	if ((i = GMT->common.g.n_methods) == GMT_N_GAP_METHODS) {
@@ -7997,21 +7999,45 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 		GMT->common.g.match_all = true;
 		if (!txt[k]) return (1);	/* Just a single -ga */
 	}
+	
+	if ((t = strstr (txt, "+n"))) {	/* Gave modifier +n for negative gap check */
+		gap = -1;
+		t[0] = '\0';	/* Chop off modifier */
+	}
+	else if ((t = strstr (txt, "+p"))) {	/* Gave modifier +p for positive gap check */
+		gap = +1;
+		t[0] = '\0';	/* Chop off modifier */
+	}
+	
+	/* Check if we have deprecated syntax and if that is allowed by the compatibility setting */
+	kk = k;
+	while (txt[kk] && isdigit ((int)txt[kk])) kk++;	/* Skip past until we find z */
+	if (strchr ("xXyYdDz", txt[kk]) && strchr ("-+", txt[kk+1])) {	/* Deprecated way of setting the gap */
+		if (gmt_M_compat_check (GMT, 6))
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Leading sign for gaps in -g is deprecated; use modifiers +n or +p instead\n");
+		else if (txt[kk+1] == '-') {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gap value is negative; see -g syntax\n");
+			if (t) t[0] = '+';	/* Restore modifiers */
+			return (1);
+		}
+		if (gap == 0) gap = (txt[kk+1] == '-') ? -1 : +1;	/* Use the gap variable in the tests below */
+	}
+	
 	switch (txt[k]) {	/* Determine method used for gap detection */
 		case 'x':	/* Difference in user's x-coordinates used for test */
-			GMT->common.g.method[i] = (txt[k+1] == '-') ? GMT_NEGGAP_IN_COL : ((txt[k+1] == '+') ? GMT_POSGAP_IN_COL : GMT_ABSGAP_IN_COL);
+			GMT->common.g.method[i] = (gap == -1) ? GMT_NEGGAP_IN_COL : ((gap == +1) ? GMT_POSGAP_IN_COL : GMT_ABSGAP_IN_COL);
 			GMT->common.g.col[i] = GMT_X;
 			break;
 		case 'X':	/* Difference in user's mapped x-coordinates used for test */
-			GMT->common.g.method[i] = (txt[k+1] == '-') ? GMT_NEGGAP_IN_MAP_COL : ((txt[k+1] == '+') ? GMT_POSGAP_IN_MAP_COL : GMT_ABSGAP_IN_MAP_COL);
+			GMT->common.g.method[i] = (gap == -1) ? GMT_NEGGAP_IN_MAP_COL : ((gap == +1) ? GMT_POSGAP_IN_MAP_COL : GMT_ABSGAP_IN_MAP_COL);
 			GMT->common.g.col[i] = GMT_X;
 			break;
 		case 'y':	/* Difference in user's y-coordinates used for test */
-			GMT->common.g.method[i] = (txt[k+1] == '-') ? GMT_NEGGAP_IN_COL : ((txt[k+1] == '+') ? GMT_POSGAP_IN_COL : GMT_ABSGAP_IN_COL);
+			GMT->common.g.method[i] = (gap == -1) ? GMT_NEGGAP_IN_COL : ((gap == +1) ? GMT_POSGAP_IN_COL : GMT_ABSGAP_IN_COL);
 			GMT->common.g.col[i] = GMT_Y;
 			break;
 		case 'Y':	/* Difference in user's mapped y-coordinates used for test */
-			GMT->common.g.method[i] = (txt[k+1] == '-') ? GMT_NEGGAP_IN_MAP_COL : ((txt[k+1] == '+') ? GMT_POSGAP_IN_MAP_COL : GMT_ABSGAP_IN_MAP_COL);
+			GMT->common.g.method[i] = (gap == -1) ? GMT_NEGGAP_IN_MAP_COL : ((gap == +1) ? GMT_POSGAP_IN_MAP_COL : GMT_ABSGAP_IN_MAP_COL);
 			GMT->common.g.col[i] = GMT_Y;
 			break;
 		case 'd':	/* Great circle (if geographic data) or Cartesian distance used for test */
@@ -8023,7 +8049,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 			GMT->common.g.col[i] = -1;
 			break;
 		case 'z':	/* Difference in user's z-coordinates used for test */
-			GMT->common.g.method[i] = (txt[k+1] == '-') ? GMT_NEGGAP_IN_COL : ((txt[k+1] == '+') ? GMT_POSGAP_IN_COL : GMT_ABSGAP_IN_COL);
+			GMT->common.g.method[i] = (gap == -1) ? GMT_NEGGAP_IN_COL : ((gap == +1) ? GMT_POSGAP_IN_COL : GMT_ABSGAP_IN_COL);
 			GMT->common.g.col[i] = 2;
 			break;
 		case '1':	/* Difference in a specified column's coordinates used for test */
@@ -8040,13 +8066,15 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 			while (txt[k] && isdigit ((int)txt[k])) k++;	/* Skip past until we find z */
 			if (txt[k] != 'z') {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad gap selector (%c).  Choose from x|y|d|X|Y|D|[<col>]z\n", txt[k]);
+				if (t) t[0] = '+';	/* Restore modifiers */
 				return (1);
 			}
-			GMT->common.g.method[i] = (txt[k+1] == '-') ? GMT_NEGGAP_IN_COL : ((txt[k+1] == '+') ? GMT_POSGAP_IN_COL : GMT_ABSGAP_IN_COL);
+			GMT->common.g.method[i] = (gap == -1) ? GMT_NEGGAP_IN_COL : ((gap == +1) ? GMT_POSGAP_IN_COL : GMT_ABSGAP_IN_COL);
 			GMT->common.g.col[i] = atoi (&txt[c]);
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad gap selector (%c).  Choose from x|y|d|X|Y|D|[<col>]z\n", txt[0]);
+			if (t) t[0] = '+';	/* Restore modifiers */
 			return (1);
 			break;
 	}
@@ -8085,6 +8113,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 	if (txt[k] == '-' || txt[k] == '+') k++;	/* Skip sign */
 	if ((GMT->common.g.gap[i] = atof (&txt[k])) == 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Gap value must be non-zero\n");
+		if (t) t[0] = '+';	/* Restore modifiers */
 		return (1);
 	}
 	if (GMT->common.g.method[i] == GMT_GAP_IN_GDIST) {	/* Convert any gap given to meters */
@@ -8136,6 +8165,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 	}
 	if ((uint64_t)(GMT->common.g.col[i] + 1) > GMT->common.g.n_col) GMT->common.g.n_col = (uint64_t)(GMT->common.g.col[i] + 1);	/* Needed when checking since it may otherwise not be read */
 	GMT->common.g.n_methods++;
+	if (t) t[0] = '+';	/* Restore modifiers */
 	return (GMT_NOERROR);
 }
 
