@@ -115,6 +115,10 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 			if ((c = strstr(fname, "=gd")))		/* Check if we have not a stray =gd in name*/
 				c[0] = '\0';					/* Yes, remove it too */
 		}
+		else if ((c = strchr (fname, '='))) {    /* Gave file=<format> so pass that along */
+			to_GDALW->driver = strdup(&c[1]);
+			c[0] = '\0';
+		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unupported image format. Supported formats are:\nBMP,GIF,JPG,PNG & TIF\n");
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Alternatively, append :<driver> for a valid GDAL driver\n");
