@@ -51,7 +51,7 @@ struct PSIMAGE_CTRL {
 		bool active;
 		struct GMT_MAP_PANEL *panel;
 	} F;
-	struct PSIMG_G {	/* -G[f|b|t]<rgb> */
+	struct PSIMG_G {	/* -G<rgb>[+b|+f|+t] */
 		bool active;
 		double rgb[3][4];
 	} G;
