@@ -15547,7 +15547,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		m[0] = '\0';	/* Chop off the modifiers */
 	}
 	else if (gmt_M_compat_check (GMT, 5) && argument[strlen(argument)-1] == '+') {	/* Old-style + instead of +n */
-		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-%cmin/max/inc+ is deprecated; use -%c[<min>/<max>/]<int>[-|+][<unit>][+a|n] instead.\n", option, option);
+		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-%cmin/max/inc+ is deprecated; use -%c[<min>/<max>/]<int>[<unit>][+a|n] instead.\n", option, option);
 		m = strrchr (argument, '+');	/* Position of last + */
 		m[0] = '\0';	/* Chop off the plus */
 		T->count = true;

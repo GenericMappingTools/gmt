@@ -622,11 +622,10 @@ planet, :math:`\theta` is latitude, and the difference in longitudes,
 jumps that might occur across Greenwich or the Dateline. As written, the
 geographic coordinates are given in radians. This approach is suitable
 when the points you use to compute :math:`d_f` do not greatly differ in
-latitude and computation speed is paramount. You can specify this mode
-of computation by using the **-** prefix to the specified distance (or
-to the unit itself in cases where no distance is required and only a
-unit is expected). For instance, a search radius of 50 statute miles
-using this mode of computation might be specified via **-S-**\ 50\ **M**.
+latitude and computation speed is paramount. You can select this mode
+of computation by specifying the common GMT option **-j** and appending the directive
+**f** (for Flat Earth).  For instance, a search radius of 50 statute miles
+using this mode of computation might be specified via **-S**\ 50\ **M** **-jf**.
 
 Great circle distances
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -667,10 +666,10 @@ Geodesic distances
 For the most accurate calculations we use a full ellipsoidal
 formulation. Currently, we are using Vincenty's [1975] formula [7]_
 which is accurate to 0.5 mm. You
-select this mode of computation by using the **+** prefix to the
-specified distance (or to the unit itself in cases where no distance is
-required). For instance, a search radius of 20 km using this mode of
-computation would be set by **-S+**\ 20\ **k**.  You may use the
+select this mode of computation by using the common GMT option **-j**
+and appending the directive **e** (for ellipsoidal).
+For instance, a search radius of 20 km using this mode of
+computation would be set by **-S**\ 20\ **k** **-je**.  You may use the
 setting :ref:`PROJ_GEODESIC <PROJ_GEODESIC>` which defaults to
 *Vincenty* but may also be set to *Rudoe* for old GMT4-style calculations
 or *Andoyer* for an approximate geodesic (within a few tens of meters)

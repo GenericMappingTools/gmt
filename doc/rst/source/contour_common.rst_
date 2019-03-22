@@ -137,7 +137,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [\ *p*\ \|\ *t*]
+**-S**\ [\ **p**\ \|\ **t**]
     Skip all input *xyz* points that fall outside the region [Default
     uses all the data in the triangulation].  Alternatively, use **-St**
     to skip triangles whose three vertices are all outside the region.

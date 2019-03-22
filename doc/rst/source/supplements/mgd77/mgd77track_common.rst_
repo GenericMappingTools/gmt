@@ -40,14 +40,6 @@ Optional Arguments
 
 .. include:: ../../explain_-B.rst_
 
-.. _-C:
-
-**-C**\ **f**\ \|\ **g**\ \|\ **e**
-    Select procedure for along-track distance calculation:
-        **f** Flat Earth distances.
-        **g** Great circle distances [Default].
-        **e** Geodesic distances on current GMT ellipsoid.
-
 .. _-D:
 
 **-Da**\ *startdate*
@@ -119,10 +111,7 @@ Optional Arguments
 
 **-W**\ [**-**\ \|\ **+**][*pen*]
     Append *pen* used for the trackline. [Defaults:
-    width = default, color = black, style = solid]. A leading **+** will
-    use the lookup color (via **-C**) for both symbol fill and outline
-    pen color, while a leading **-** will set outline pen color and turn
-    off symbol fill. 
+    width = default, color = black, style = solid].
 
 .. _-X:
 

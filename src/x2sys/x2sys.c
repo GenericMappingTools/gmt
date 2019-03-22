@@ -1088,7 +1088,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 	while (fgets (line, GMT_BUFSIZ, fp) && line[0] == '#');	/* Skip comment records */
 	gmt_chop (line);	/* Remove trailing CR or LF */
 
-	while ((gmt_strtok (line, " \t", &pos, p))) {	/* Process the -C -D -G -I -N -m -R -W arguments from the header */
+	while ((gmt_strtok (line, " \t", &pos, p))) {	/* Process the -C (now -j) -D -G -I -N -m -R -W arguments from the header */
 		if (p[0] == '-') {
 			switch (p[1]) {
 				/* Common parameters */
@@ -1119,7 +1119,8 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 					break;
 				/* Supplemental parameters */
 
-				case 'C':	/* Distance calculation flag */
+				case 'C':	/* Distance calculation flag (deprecated)*/
+				case 'j':	/* Distance calculation flag */
 					if (p[2] == 'c') dist_flag = 0;
 					if (p[2] == 'f') dist_flag = 1;
 					if (p[2] == 'g') dist_flag = 2;
@@ -1243,7 +1244,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 			n_errors++;
 		}
 		if (c_given && dist_flag == 0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your -C and -G settings are contradicting each other!\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your -j and -G settings are contradicting each other!\n");
 			n_errors++;
 		}
 		if (n_given[X2SYS_DIST_SELECTION] && unit[X2SYS_DIST_SELECTION][0] == 'c') {

@@ -20,7 +20,7 @@ Synopsis
 [ |-F|\ [**l**] ]
 [ |-I|\ [**e**\ \|\ **i**] ]
 [ |-N|\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
-[ |-Q|\ [[±]\ *unit*\ ][**+c**\ *min*\ [/*max*]][**+h**\ ][**+l**\ ][**+p**\ ][**+s**\ [**a**\ \|\ **d**]] ]
+[ |-Q|\ [*unit*\ ][**+c**\ *min*\ [/*max*]][**+h**\ ][**+l**\ ][**+p**\ ][**+s**\ [**a**\ \|\ **d**]] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ **h**\ \|\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j** ]
 [ |-T|\ [*clippolygon*] ]
@@ -32,6 +32,7 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -146,7 +147,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [[±]\ *unit*\ ][**+c**\ *min*\ [/*max*]][**+h**\ ][**+l**\ ][**+p**\ ][**+s**\ [**a**\ \|\ **d**]]
+**-Q**\ [*unit*\ ][**+c**\ *min*\ [/*max*]][**+h**\ ][**+l**\ ][**+p**\ ][**+s**\ [**a**\ \|\ **d**]]
     Measure the area of all polygons or length of line segments. Use
     **-Q+h** to append the area to each polygons segment header [Default
     simply writes the area to stdout]. For polygons we also compute the
@@ -157,9 +158,7 @@ Optional Arguments
     recent ellipsoid to get accurate results. The centroid is computed
     using the mean of the 3-D Cartesian vectors making up the polygon
     vertices, while the area is obtained via an equal-area projection.
-    For line lengths you may prepend ± to the unit and
-    the calculation will use Flat Earth or Geodesic algorithms, respectively
-    [Default is great circle distances].  Normally, all input segments
+    Normally, all input segments
     will be be reflected on output.  Use **c** to restrict processing to
     those whose length (or area for polygons) fall inside the specified
     range set by *min* and *max*.  If *max* is not set it defaults to infinity.
@@ -223,6 +222,8 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. include:: explain_distcalc.rst_
 
 .. include:: explain_-ocols.rst_
 

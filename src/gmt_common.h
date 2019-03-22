@@ -183,6 +183,7 @@ struct GMT_COMMON {
 	struct j {	/* -je|f|g [g] */
 		bool active;
 		enum GMT_enum_mdist mode;	/* Defaults to GMT_GREATCIRCLE */
+		char string[GMT_LEN8];
 	} j;
 	struct l {	/* -l<label> */
 		bool active;

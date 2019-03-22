@@ -27,6 +27,7 @@ Synopsis
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -89,9 +90,7 @@ Optional Arguments
 **-L**\ *unit*
     Specify the unit used for distance calculations. Choose among **d**
     (spherical degree), **e** (m), **f** (feet), **k** (km), **M**
-    (mile), **n** (nautical mile) or **u** survey foot. A spherical
-    approximation is used unless :ref:`PROJ_ELLIPSOID <Projection Parameters>` is set to an actual
-    ellipsoid.
+    (mile), **n** (nautical mile) or **u** survey foot.
 
 .. _-N:
 
@@ -135,6 +134,8 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. include:: explain_distcalc.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_

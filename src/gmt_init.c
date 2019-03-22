@@ -6415,6 +6415,12 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   Append list of columns; t = trailing text. Use -in for just numerical input.\n");
 			break;
 
+		case 'A':	/* -j option for spherical distance calculation mode */
+
+			gmt_message (GMT, "\t-j Sets spherical distance calculation mode for modules that offers that flexibility.\n");
+			gmt_message (GMT, "\t   Append f for Flat Earth, g for Great Circle [Default], and e for Ellipsoidal mode.\n");
+			break;
+
 		case 'n':	/* -n option for grid resampling parameters in BCR */
 
 			gmt_message (GMT, "\t-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] Specify the grid interpolation mode.\n");
@@ -6865,8 +6871,8 @@ void gmt_dist_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	gmt_message (GMT, "\t-%c %s\n", option, string);
 	gmt_message (GMT, "\t   Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot)\n");
 	gmt_message (GMT, "\t   d (arc degree), m (arc minute), or s (arc second) [%c].\n", GMT_MAP_DIST_UNIT);
-	gmt_message (GMT, "\t   Prepend - for (fast) flat Earth or + for (slow) geodesic calculations.\n");
-	gmt_message (GMT, "\t   [Default is spherical great-circle calculations].\n");
+	gmt_message (GMT, "\t   Spherical distances are based on great-circle calculations;\n");
+	gmt_message (GMT, "\t   see -j<mode> for other modes of measurements.\n");
 }
 
 /*! Use mode to control which options are displayed */
@@ -7820,6 +7826,7 @@ int gmt_parse_j_option (struct GMT_CTRL *GMT, char *arg) {
 	int err = GMT_NOERROR;
 	if (arg == NULL) return GMT_PARSE_ERROR;	/* Must supply the arg */
 	switch (arg[0]) {
+		case 'c': GMT->common.j.mode = GMT_NO_MODE; break;
 		case 'e': GMT->common.j.mode = GMT_GEODESIC; break;
 		case 'f': GMT->common.j.mode = GMT_FLATEARTH; break;
 		case 'g': case '\0': GMT->common.j.mode = GMT_GREATCIRCLE; break;
@@ -7828,6 +7835,7 @@ int gmt_parse_j_option (struct GMT_CTRL *GMT, char *arg) {
 			err = GMT_PARSE_ERROR;
 			break;
 	}
+	strncpy (GMT->common.j.string, arg, GMT_LEN8-1);
 	return (err);
 }
 

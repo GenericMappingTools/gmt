@@ -163,7 +163,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Gives names of xyz (-Tp<fname>[+m]) and vertex (-Tv<fname>) files defining a close surface.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The [+m] in -Tp tells the program that file has 4 columns and fourth holds a variable mangetization.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The [+m] in -Tp tells the program that file has 4 columns and fourth holds a variable magnetization.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The file formats correspond to the output of the triangulate program.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively use -Tr<file> for file in raw triangle format (x1 y1 z1 x2 ... z3).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or -Ts<file> for file in STL format.\n");
