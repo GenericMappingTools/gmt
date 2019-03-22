@@ -38,7 +38,7 @@ The output can be either in the form of a grid or as a table printed to stdout. 
 Required Arguments
 ------------------
 
-Either **-G**, **-S** or **-L**
+Specify either **-G**, **-S** or **-L**.
 
 .. _-G:
 
@@ -54,14 +54,15 @@ Either **-G**, **-S** or **-L**
 
 **-S**
     Output position of Sun and Moon in geographical coordinates plus distance
-    in meters. Output is a Mx7 matrix where M is the number of times (set by -T)
-    and columns are time, sun_lon, sun_lat, sun_dist moon_lon, moon_lat, moon_dist
+    in meters. Output is a Mx7 matrix where M is the number of times (set by **-T**)
+    and columns are *time, sun_lon, sun_lat, sun_dist moon_lon, moon_lat, moon_dist*.
 
 .. _-T:
 
 **-T**\ [\ *min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\ \|\ *list*
-    Make evenly spaced time-steps from *min* to *max* by *inc*. Append +n to indicate *inc* is the number of t-values
-    to produce over the range instead. Append a valid time unit (d|h|m|s) to the increment. If only *min* is given then
+    Make evenly spaced time-steps from *min* to *max* by *inc*. Append **+n** to indicate *inc* is
+    the number of *t*-values to produce over the range instead. Append a valid time unit
+    (**d**\ \|\ **h**\ \|\ **|m**\ \|\ **|s**) to the increment. If only *min* is given then
     we use that date and time for the calculations.  If no **-T** is provided get
     current time in UTC from the computer clock. If no **-G** or **-S** are provided then **-T** is interpreted to mean compute
     a time-series at the location specified by **-L**, thus then **-L** becomes mandatory.
@@ -124,14 +125,14 @@ To compute a global grid of the vertical component with a grid step of 30m at no
 
     gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
 
-To obtain a one day long time-series, starting at same date, at the -7 *W*, 37 *N* and 1 minute interval, try
+To obtain a one day long time-series, starting at same date, at the -7W, 37N and 1 minute interval, try
 
 ::
 
     gmt earthtide -T2018-06-18T/2018-06-19T/1m -L-7/37 > solid_tide.dat
 
 
-The get the Sun and Moon position in geographical coordinates at the *now* time
+To get the Sun and Moon position in geographical coordinates at the *current* time
 
 ::
 

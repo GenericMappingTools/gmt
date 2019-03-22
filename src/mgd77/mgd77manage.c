@@ -26,7 +26,7 @@
 #define THIS_MODULE_PURPOSE	"Manage the content of MGD77+ files"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-RVbn"
+#define THIS_MODULE_OPTIONS "-RVbjn"
 
 #define N_PAR		7
 #define COL_SCALE	0
@@ -73,10 +73,6 @@ struct MGD77MANAGE_CTRL {	/* All control options for this program (except common
 		char *file;
 		double parameters[N_PAR];
 	} A;
-	struct MGD77MANAGE_C {	/* -C */
-		bool active;
-		unsigned int mode;
-	} C;
 	struct MGD77MANAGE_D {	/* -D */
 		bool active;
 		char *file;
@@ -112,7 +108,6 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->A.kind = GMT_IS_FLOAT;
 	C->A.parameters[COL_SCALE] = 1.0;	/* Output column scaling */
 	C->A.parameters[IMG_SCALE] = 1.0;	/* IMG data scaling */
-	C->C.mode = 2;
 	C->E.value = '9';
 	C->N.code[0] = 'k';			/* km is default distance unit */
  	return (C);
@@ -128,10 +123,10 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *C) {	/*
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> [-A[+]a|c|d|D|e|E|g|i|n|t|T<info>] [-Cf|g|e] [-D<name1>,<name2>,...]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> [-A[+]a|c|d|D|e|E|g|i|n|t|T<info>] [-D<name1>,<name2>,...]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<no_char>] [-F] [-I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\"]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s[+|-]] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
-	             GMT_LEN_UNITS2_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_n_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	             GMT_LEN_UNITS2_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_j_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -176,10 +171,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      with dateTclock strings in first column and data values in 2nd.  Only one cruise can be set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      If filename is - we read from stdin.  Only records with matching times will have data assigned.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   T: Same as t but we interpolate between the time, data pairs to fill in all data records.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Append code for distance calculation procedure (when -Ad|D is set):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     f Flat Earth.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     g Great circle [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     e Ellipsoidal (geodesic) using current GMT ellipsoid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete the columns listed from all the cruise data files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The columns are removed before any data are added.  It is not a substitute for -A+.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   However, sometimes the shape of new data demands the old to be deleted first (you will be told).\n");
@@ -197,8 +188,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note for text: Interpolation is not allowed, and \"not-a-string\" is created from -E.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Append your choice for distance unit (if -Ad|D are set). Choose among:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m(e)ter, (f)oot, (k)m, (M)ile, (n)autical mile, or s(u)rvey foot [Default is -Nk].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    See -C for selecting distance calculation procedure.\n");
-	GMT_Option (API, "Rg,V,bi,di,n,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t    See -j for selecting distance calculation procedure.\n");
+	GMT_Option (API, "Rg,V,bi,di,j,n,.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -421,12 +412,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 				break;
 
 			case 'C':	/* Distance calculation method */
-				Ctrl->C.active = true;
-				if (opt->arg[0] == 'f') Ctrl->C.mode = 1;
-				if (opt->arg[0] == 'g') Ctrl->C.mode = 2;
-				if (opt->arg[0] == 'e') Ctrl->C.mode = 3;
-				if (Ctrl->C.mode < 1 || Ctrl->C.mode > 3) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error -C: Flag must be f, g, or e\n");
+				if (gmt_M_compat_check (API->GMT, 6)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "The -C option is deprecated; use -j<mode> instead\n");
+					GMT->common.j.active = true;
+					if (opt->arg[0] == 'f') GMT->common.j.mode = GMT_FLATEARTH;
+					if (opt->arg[0] == 'g') GMT->common.j.mode = GMT_GREATCIRCLE;
+					if (opt->arg[0] == 'e') GMT->common.j.mode = GMT_GEODESIC;
+					if (GMT->common.j.mode < 1 || GMT->common.j.mode > 3) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Error -C: Flag must be f, g, or e\n");
+						n_errors++;
+					}
+				}
+				else {
+					GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized option -C\n");
 					n_errors++;
 				}
 				break;
@@ -1025,7 +1023,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 				x = D->values[ix];
 				y = D->values[iy];
-				if ((d = gmt_dist_array_2 (GMT, x, y, D->H.n_records, dist_scale, Ctrl->C.mode)) == NULL)
+				if ((d = gmt_dist_array_2 (GMT, x, y, D->H.n_records, dist_scale, GMT->common.h.mode)) == NULL)
 					gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 				x = d;
 			}

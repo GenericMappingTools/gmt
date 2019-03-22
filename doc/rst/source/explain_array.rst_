@@ -18,12 +18,11 @@ to the given increment; add **+t** to ensure time column (or use **-f**) Note: T
 unit is still controlled independently by :ref:`TIME_UNIT <TIME_UNIT>`.
 
 Likewise, if the module allows you to set up a spatial distance series (with distance computed
-from the first two data columns), specify the increment as [±][*unit*]\ *inc*, where - means fast
-(Flat Earth) and + means slow (ellipsoidal) distance calculations [great circle], and append a
+from the first two data columns), specify the increment as *inc*\ [*unit*] with a
 geospatial distance unit from the list
 **d**\ egree (arc), **m**\ inute (arc), **s**\ econd (arc), m\ **e**\ ter, **f**\ oot, **k**\ ilometer,
-**M**\ iles (statute), **n**\ autical miles, or s\ **u**\ rvey foot.  For Cartesian distances, you must
-use the special unit **c**.
+**M**\ iles (statute), **n**\ autical miles, or s\ **u**\ rvey foot; see **-j** for calculation mode.
+For Cartesian distances, you must use the special unit **c**.
 
 Finally, if you are only providing an increment and obtain *min* and *max* from the data, then it is
 possible (*max* - *min*)/*inc* is not an integer, as required.  If so then *inc* will be adjusted to accordingly.

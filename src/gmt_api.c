@@ -9147,7 +9147,7 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, const c
 	else
 		GMT_Message (V_API, GMT_TIME_NONE, "\t-%c Choose or inquire about suitable %s %s for %u-D FFT, and set modifiers.\n", option, data_type[d1], dim_ref[d1], dim);
 	GMT_Message (V_API, GMT_TIME_NONE, "\t   Setting the FFT %s:\n", dim_ref[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Na will select %s promising the most accurage results.\n", dim_ref[d1]);
+	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Na will select %s promising the most accurate results.\n", dim_ref[d1]);
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Nf will force the FFT to use the %s of the %s.\n", dim_ref[d1], data_type[d1]);
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Nm will select %s using the least work storage.\n", dim_ref[d1]);
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Nr will select %s promising the most rapid calculation.\n", dim_ref[d1]);
@@ -10877,7 +10877,8 @@ int GMT_Set_Default_ (char *keyword, char *value, int len1, int len2) {
 
 /*! . */
 int GMT_Option (void *V_API, const char *options) {
-	/* Take comma-separated GMT options and print the corresponding usage message(s). */
+	/* Take comma-separated GMT options and print the corresponding usage message(s).
+	 * Taken: jbSGzCDkFyA */
 	unsigned int pos = 0, k = 0, n = 0;
 	char p[GMT_LEN64] = {""}, arg[GMT_LEN64] = {""};
 	struct GMTAPI_CTRL *API = NULL;
@@ -10916,6 +10917,9 @@ int GMT_Option (void *V_API, const char *options) {
 				if (p[1] == 'i') arg[k++] = 'k';
 				else if (p[1] == 'o') arg[k++] = 'l';
 				else arg[k++] = 'd';
+				break;
+			case 'j':	/* Spherical distance calculation mode */
+				arg[k++] = 'A';
 				break;
 			case 'r':	/* Pixel registration */
 				arg[k++] = 'F';

@@ -21,6 +21,7 @@ Synopsis
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -78,8 +79,8 @@ Optional Arguments
     Specify the unit used for distance and area calculations. Choose
     among **e** (m), **f** (foot), **k** (km), **m** (mile), **n**
     (nautical mile), **u** (survey foot), or **d** (spherical degree). A
-    spherical approximation is used unless :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` is set to
-    an actual ellipsoid, in which case we convert latitudes to authalic
+    spherical approximation is used unless **-je** is set,
+    in which case we convert latitudes to authalic
     latitudes before calculating areas. When degree is selected the
     areas are given in steradians.
 
@@ -125,6 +126,8 @@ Optional Arguments
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
+
+.. include:: explain_distcalc.rst_
 
 .. include:: explain_colon.rst_
 

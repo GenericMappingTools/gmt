@@ -430,7 +430,9 @@ enum GMT_enum_cdist {GMT_CARTESIAN_DIST	 = 0,	/* Cartesian 2-D x,y data, r = hyp
 	GMT_CARTESIAN_DIST_PROJ,	/* Project lon,lat to Cartesian 2-D x,y data, then get distance */
 	GMT_CARTESIAN_DIST_PROJ2,	/* Same as --"-- but return r^2 to avoid hypot */
 	GMT_CARTESIAN_DIST_PROJ_INV};	/* Project Cartesian 2-D x,y data to lon,lat, then get distance */
-enum GMT_enum_mdist {GMT_FLATEARTH = 1,	/* Compute Flat Earth distances */
+enum GMT_enum_mdist {
+	GMT_NO_MODE = 0,
+	GMT_FLATEARTH,		/* Compute Flat Earth distances */
 	GMT_GREATCIRCLE,	/* Compute great circle distances */
 	GMT_GEODESIC,		/* Compute geodesic distances */
 	GMT_LOXODROME};		/* Compute loxodrome distances (otherwise same as great circle machinery) */

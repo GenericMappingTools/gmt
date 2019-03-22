@@ -9282,7 +9282,9 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 	 *  1) d|e|f|k|m|M|n|s
 	 *  2) GMT (Cartesian distance after projecting with -J) | X (Cartesian)
 	 *  3) S (cosine distance) | P (cosine after first inverse projecting with -J)
-	 * distance-calculation modifier mode: 0 (Cartesian), 1 (flat Earth), 2 (great-circle), 3 (geodesic), 4 (loxodrome)
+	 * distance-calculation modifier mode flags are:
+	 *   0 (Cartesian), 1 (flat Earth), 2 (great-circle [Default]), 3 (geodesic), 4 (loxodrome)
+	 *   However, if -j<mode> is set it takes precedence.
 	 * type: 0 = map distances, 1 = contour distances, 2 = contour annotation distances
 	 * We set distance and azimuth functions and scales for this type.
 	 * At the moment there is only one azimuth function pointer for all.
@@ -9297,6 +9299,15 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Your distance unit (%c) implies geographic data; -fg has been set.\n", unit);
 	}
 
+	/* Determine if -j selected a particular mode */
+	if (gmt_M_is_geographic (GMT, GMT_IN) && GMT->common.j.active) {	/* User specified a -j setting */
+		static char *kind[5] = {"Cartesian", "Flat Earth", "Great Circle", "Geodesic", "Loxodrome"};
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Spherical distance calculation mode: %s.\n", kind[GMT->common.j.active]);
+		if (mode != GMT_GREATCIRCLE)	/* We override a selection due to deprecated leading -|+ signs before increment or radius */
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your distance mode (%s) differs from your -j option (%s) which takes precedence.\n", kind[mode], kind[GMT->common.j.active]);
+		mode = GMT->common.j.mode;	/* Override with what -j said */
+	}
+	
 	switch (unit) {
 			/* First the three arc angular distance units */
 

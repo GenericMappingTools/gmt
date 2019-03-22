@@ -15,7 +15,6 @@ Synopsis
 
 **gmt mgd77manage** *NGDC-ids*
 [ |-A|\ [**+**]\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo* ] 
-[ |-C|\ **f**\ \|\ **g**\ \|\ **e** ]
 [ |-D|\ *abbrev1*,\ *abbrev2*,...) ]
 [ |-E|\ *empty* ]
 [ |-F| ]
@@ -25,6 +24,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT--| ]
 
@@ -87,7 +87,7 @@ Optional Arguments
     matching distances in the MGD77+ file will be assigned the new
     values; at other distances we set them to NaN. Alternatively, give
     upper case **D** instead and we will interpolate the column at all
-    record distances. See **-N** for choosing distance units and **-C**
+    record distances. See **-N** for choosing distance units and **-j**
     for choosing how distances are calculated.
 
     **e** Expects to find an e77 error/correction log from
@@ -147,19 +147,6 @@ Optional Arguments
     values; at other times we set them to NaN. Alternatively, give upper
     case **T** instead and we will interpolate the column at all record
     times.
-
-.. _-C:
-
-**-C**\ **f**\ \|\ **g**\ \|\ **e**
-    Append a one-letter code to select the procedure for along-track
-    distance calculation when using **-Ad**\ \|\ **D** (see **-N** for
-    selecting distance units):
-
-    **f** Flat Earth distances.
-
-    **g** Great circle distances [Default].
-
-    **e** Geodesic distances on current GMT ellipsoid.
 
 .. _-D:
 
@@ -228,6 +215,8 @@ Optional Arguments
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_
+
+.. include:: ../../explain_distcalc.rst_
 
 .. include:: ../../explain_-n.rst_
 

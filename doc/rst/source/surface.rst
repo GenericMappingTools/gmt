@@ -19,7 +19,7 @@ Synopsis
 [ |-A|\ *aspect_ratio*\ \|\ **m** ]
 [ |-C|\ *convergence_limit*\ [%] ]
 [ |-L|\ **l**\ *lower* ] [ **-Lu**\ *upper* ]
-[ |-M|\ *max_radius* ]
+[ |-M|\ *max_radius*\ [**u**] ]
 [ |-N|\ *max_iterations* ]
 [ |-Q| ]
 [ |-S|\ *search_radius*\ [**m**\ \|\ **s**] ]
@@ -126,11 +126,11 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ *max_radius*
+**-M**\ *max_radius*\ [**u**]
     After solving for the surface, apply a mask so that nodes farther
     than *max_radius* away from a data constraint is set to NaN [no masking].
     Append a distance unit (see UNITS) if needed.
-    One can also select the nodes to mask by using the **-M**\ *<n_cells>c* form.
+    One can also select the nodes to mask by using the **-M**\ *n_cells*\ **c** form.
     Here *n_cells* means the number of cells around the node controlled by a data point. As an example
     **-M0c** means that only the cell where point lies is filled, **-M1c** keeps one cell
     beyond that (i.e. makes a 3x3 neighborhood), and so on.

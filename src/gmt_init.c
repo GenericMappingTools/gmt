@@ -6415,6 +6415,12 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t   Append list of columns; t = trailing text. Use -in for just numerical input.\n");
 			break;
 
+		case 'A':	/* -j option for spherical distance calculation mode */
+
+			gmt_message (GMT, "\t-j Sets spherical distance calculation mode for modules that offers that flexibility.\n");
+			gmt_message (GMT, "\t   Append f for Flat Earth, g for Great Circle [Default], and e for Ellipsoidal mode.\n");
+			break;
+
 		case 'n':	/* -n option for grid resampling parameters in BCR */
 
 			gmt_message (GMT, "\t-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] Specify the grid interpolation mode.\n");
@@ -6865,8 +6871,8 @@ void gmt_dist_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	gmt_message (GMT, "\t-%c %s\n", option, string);
 	gmt_message (GMT, "\t   Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot)\n");
 	gmt_message (GMT, "\t   d (arc degree), m (arc minute), or s (arc second) [%c].\n", GMT_MAP_DIST_UNIT);
-	gmt_message (GMT, "\t   Prepend - for (fast) flat Earth or + for (slow) geodesic calculations.\n");
-	gmt_message (GMT, "\t   [Default is spherical great-circle calculations].\n");
+	gmt_message (GMT, "\t   Spherical distances are based on great-circle calculations;\n");
+	gmt_message (GMT, "\t   see -j<mode> for other modes of measurements.\n");
 }
 
 /*! Use mode to control which options are displayed */
@@ -7286,6 +7292,7 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 			break;
 		case 'h': error += GMT->common.h.active == false; break;
 		case 'i': error += GMT->common.i.active == false; break;
+		case 'j': error += GMT->common.j.active == false; break;
 		case 'n': error += GMT->common.n.active == false; break;
 		case 'o': error += GMT->common.o.active == false; break;
 		case 'Z':
@@ -7813,6 +7820,23 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 	}
 #endif
 	return (GMT_NOERROR);
+}
+
+int gmt_parse_j_option (struct GMT_CTRL *GMT, char *arg) {
+	int err = GMT_NOERROR;
+	if (arg == NULL) return GMT_PARSE_ERROR;	/* Must supply the arg */
+	switch (arg[0]) {
+		case 'c': GMT->common.j.mode = GMT_NO_MODE; break;
+		case 'e': GMT->common.j.mode = GMT_GEODESIC; break;
+		case 'f': GMT->common.j.mode = GMT_FLATEARTH; break;
+		case 'g': case '\0': GMT->common.j.mode = GMT_GREATCIRCLE; break;
+		default:
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-j argument %s is not one of the valid modes e|f|g\n", arg);
+			err = GMT_PARSE_ERROR;
+			break;
+	}
+	strncpy (GMT->common.j.string, arg, GMT_LEN8-1);
+	return (err);
 }
 
 int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
@@ -13958,7 +13982,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 }
 
 /*! gmt_parse_common_options interprets the command line for the common, unique options
- * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -n, -o, -p, -r, -s, -t, -:, -- and -^.
+ * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -j, -n, -o, -p, -r, -s, -t, -:, -- and -^.
  * The list passes all of these that we should consider.
  * The API will also consider -I for grid increments.
  */
@@ -14217,6 +14241,11 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 		case 'i':
 			error += (GMT_more_than_once (GMT, GMT->common.i.active) || gmt_parse_i_option (GMT, item));
 			GMT->common.i.active = true;
+			break;
+
+		case 'j':
+			error += (GMT_more_than_once (GMT, GMT->common.j.active) || gmt_parse_j_option (GMT, item));
+			GMT->common.j.active = true;
 			break;
 
 		case 'l':
