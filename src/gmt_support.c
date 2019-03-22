@@ -6837,14 +6837,14 @@ int gmt_get_distance (struct GMT_CTRL *GMT, char *line, double *dist, char *unit
 	int last, d_flag = 1, start = 1, way;
 	char copy[GMT_LEN64] = {""};
 
-	/* Syntax:  -S[-|+]<dist>[d|e|f|k|m|M|n|s|u]  */
+	/* Syntax:  -S<dist>[d|e|f|k|m|M|n|s|u]  */
 
 	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to gmt_get_distance\n"); return (-1); }
 
 	strncpy (copy, line, GMT_LEN64-1);
 	*dist = GMT->session.d_NaN;
 
-	switch (copy[0]) {	/* Look for modifiers -/+ to set how spherical distances are computed */
+	switch (copy[0]) {	/* Look for obsolete modifiers -/+ to set how spherical distances are computed */
 		case '-':	/* Want flat Earth calculations */
 			way = 0;
 			break;
@@ -6855,6 +6855,14 @@ int gmt_get_distance (struct GMT_CTRL *GMT, char *line, double *dist, char *unit
 			way = 1;
 			start = 0;
 			break;
+	}
+	if (way != 1) {
+		if (gmt_M_compat_check (GMT, 6))
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Leading +|- to set distance mode is deprecated; use common option -j instead\n");
+		else if (way == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Negative distance given\n");
+			return (-1);
+		}
 	}
 
 	/* Extract the distance unit, if any */

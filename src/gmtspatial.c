@@ -30,7 +30,7 @@
 #define THIS_MODULE_PURPOSE	"Geospatial operations on points, lines and polygons"
 #define THIS_MODULE_KEYS	"<D{,DD(=f,ND(=,TD(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:RVabdefghios" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:RVabdefghijos" GMT_OPT("HMm")
 
 #define POL_IS_CW	1
 #define POL_IS_CCW	0

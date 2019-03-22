@@ -180,6 +180,10 @@ struct GMT_COMMON {
 		uint64_t n_actual_cols;
 		char string[GMT_LEN64];
 	} i;
+	struct j {	/* -je|f|g [g] */
+		bool active;
+		enum GMT_enum_mdist mode;	/* Defaults to GMT_GREATCIRCLE */
+	} j;
 	struct l {	/* -l<label> */
 		bool active;
 		char label[GMT_LEN128];

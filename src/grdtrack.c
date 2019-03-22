@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Sample grids at specified (x,y) locations"
 #define THIS_MODULE_KEYS	"<D{,DD),E-<,GG(,>D},SD)=s"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>RVabdefghinos" GMT_OPT("HMmQ")
+#define THIS_MODULE_OPTIONS "-:>RVabdefghijnos" GMT_OPT("HMmQ")
 
 #define MAX_GRIDS GMT_BUFSIZ	/* Change and recompile if we need to sample more than GMT_BUFSIZ grids */
 

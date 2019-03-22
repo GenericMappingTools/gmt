@@ -7285,6 +7285,7 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 			break;
 		case 'h': error += GMT->common.h.active == false; break;
 		case 'i': error += GMT->common.i.active == false; break;
+		case 'j': error += GMT->common.j.active == false; break;
 		case 'n': error += GMT->common.n.active == false; break;
 		case 'o': error += GMT->common.o.active == false; break;
 		case 'Z':
@@ -7812,6 +7813,21 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 	}
 #endif
 	return (GMT_NOERROR);
+}
+
+int gmt_parse_j_option (struct GMT_CTRL *GMT, char *arg) {
+	int err = GMT_NOERROR;
+	if (arg == NULL) return GMT_PARSE_ERROR;	/* Must supply the arg */
+	switch (arg[0]) {
+		case 'e': GMT->common.j.mode = GMT_GEODESIC; break;
+		case 'f': GMT->common.j.mode = GMT_FLATEARTH; break;
+		case 'g': case '\0': GMT->common.j.mode = GMT_GREATCIRCLE; break;
+		default:
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-j argument %s is not one of the valid modes e|f|g\n", arg);
+			err = GMT_PARSE_ERROR;
+			break;
+	}
+	return (err);
 }
 
 int gmt_parse_l_option (struct GMT_CTRL *GMT, char *arg) {
@@ -13928,7 +13944,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 }
 
 /*! gmt_parse_common_options interprets the command line for the common, unique options
- * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -n, -o, -p, -r, -s, -t, -:, -- and -^.
+ * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -j, -n, -o, -p, -r, -s, -t, -:, -- and -^.
  * The list passes all of these that we should consider.
  * The API will also consider -I for grid increments.
  */
@@ -14187,6 +14203,11 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 		case 'i':
 			error += (GMT_more_than_once (GMT, GMT->common.i.active) || gmt_parse_i_option (GMT, item));
 			GMT->common.i.active = true;
+			break;
+
+		case 'j':
+			error += (GMT_more_than_once (GMT, GMT->common.j.active) || gmt_parse_j_option (GMT, item));
+			GMT->common.j.active = true;
 			break;
 
 		case 'l':
