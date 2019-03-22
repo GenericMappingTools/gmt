@@ -103,6 +103,8 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	for (k = 0; to_GDALW->driver == NULL && k < N_GDAL_EXTENSIONS; k++) {
 		if (k == 0 && (!strcasecmp(ext, "tif") || !strcasecmp(ext, "tiff")))	/* Tiffs happen to have a different extension<->driver naming */
 			to_GDALW->driver = strdup(gdal_drv[k]);
+		else if (!strcasecmp(ext, "jpg"))
+			to_GDALW->driver = strdup("JPEG");	/* Jpegs too */
 		else if (!strcasecmp (ext, gdal_drv[k]))
 			to_GDALW->driver = strdup(gdal_drv[k]);
 	}
