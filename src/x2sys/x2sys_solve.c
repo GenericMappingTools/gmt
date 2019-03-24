@@ -412,7 +412,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	bin_expect = n_in + 2;
 	w_col = n_in - 1;
-	id_col = w_col;
+	id_col = w_col;		/* For binary files, ID columns start at end of record */
 	min_ID = INT_MAX;	max_ID = -INT_MAX;
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < bin_expect) {
@@ -439,8 +439,8 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, trk_list);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if (gmt_M_rec_is_table_header (GMT)) {
-				if (first) {
+			else if (gmt_M_rec_is_table_header (GMT)) {
+				if (first) {	/* Must parse the first header to see if content matches tag and selected column */
 					sscanf (&GMT->current.io.curr_text[6], "%s %s", file_TAG, file_column);
 					if (strcmp (Ctrl->T.TAG, file_TAG) && strcmp (Ctrl->C.col, file_column)) {
 						GMT_Report (API, GMT_MSG_NORMAL,
@@ -450,10 +450,10 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 					}
 					first = false;
 				}
-				continue;
 			}
-			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
+			else if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
+			continue;
 		}
 		in = In->data;
 		if (In->text) {

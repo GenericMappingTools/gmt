@@ -58,33 +58,31 @@ Required Arguments
     The correction type you wish to model. Choose among the following
     functions f(*p*) , where *p* are the *m*
     parameters per track that we will fit simultaneously using a least
-    squares approach:
+    squares approach.  Each type implies a certain input data record
+    format:
 
     **c** will fit f(*p*) = *a* (a constant offset);
-    records must contain track ID1, ID2, COE.
+    records must contain track COE, ID1, ID2.
 
     **d** will fit f(*p*) = *a* + *b* \* *d* (linear
-    drift; *d* is distance; records must contain track ID1, ID2, d1,
-    d2, COE.
+    drift; *d* is distance; records must contain track d1, d2, COE, ID1, ID2.
 
     **g** will fit f(*p*) = *a* + *b* sin(y)^2
-    (1980-1930 gravity correction); records must contain track ID1,
-    ID2, latitude y, COE.
+    (1980-1930 gravity correction); records must contain track latitude y, COE, ID1, ID2.
 
     **h** will fit f(*p*) = *a* + *b* cos(H) + *c*
     cos(2H) + *d* sin(H) + *e* sin(2H)
-    (magnetic heading correction); records must contain track ID1, ID2,
-    heading H, COE.
+    (magnetic heading correction); records must contain track heading H, COE, ID1, ID2.
 
     **s** will fit f(*p*) = *a* \* z (a unit scale
-    correction); records must contain track ID1, ID2, z1, z2.
+    correction); records must contain track z1, z2, ID1, ID2.
 
     **t** will fit f(*p*) = *a* + *b* \* (*t - t0*)
     (linear drift; *t0* is the start time of the track); records must
-    contain track ID1, ID2, t1-t0, t2-t0, COE.
+    contain track It1-t0, t2-t0, COE, D1, ID2.
 
     **z** will fit f(*p*) = *a* + *b* \* z (an offset plus a unit scale
-    correction); records must contain track ID1, ID2, z1, z2.
+    correction); records must contain track z1, z2, ID1, ID2.
 
 
 Optional Arguments
@@ -98,8 +96,8 @@ Optional Arguments
 .. _-W:
 
 **-W**
-    Means that each input records has an extra column with the composite
-    weight for each crossover record. These are used to obtain a
+    Means that each input records has an extra column just before the ID columns
+    with the composite weight for each crossover record. These are used to obtain a
     weighted least squares solution [no weights]. Append **u** to report
     unweighted mean/std [Default, report weighted stats].
 
@@ -128,6 +126,15 @@ determine the number of clusters and automatically add the required
 constraint equations.  If you need a particular reference track to have
 a particular offset (e.g., 0) then you can subtract the offset you
 found from every track correction and add in the desired offset.
+
+Input Format
+------------
+
+In moving to a more robust data record definition in GMT 6, all text
+items are now placed after the numerical columns.  For **x2sys_solve**, this
+means that whereas the *ID1, ID2* track ids used to be expected in the first two
+columns, they are now expected at the end.  Thus, you cannot use this module with
+crossover tables produced by an earlier GMT version without reformatting.
 
 Examples
 --------
