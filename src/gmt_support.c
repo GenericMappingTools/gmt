@@ -13432,7 +13432,7 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	uint64_t row;
 	bool text, found, save_trailing;
  	unsigned int k = 0, n_annot = 0, n_int = 0;
-	double *x = NULL;
+	double *x = NULL, limit[2] = {-DBL_MAX, +DBL_MAX};
 	char **L = NULL, type[GMT_LEN8] = {""}, txt[GMT_BUFSIZ] = {""};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -13444,6 +13444,8 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	GMT->current.io.col_type[GMT_IN][GMT_X] = gmt_M_type (GMT, GMT_IN, A->id);
 	GMT->current.io.trailing_text[GMT_IN] = true;	/* Since we definitively have that here */
 	text = ((item == 'a' || item == 'i') && labels);
+	if (!GMT->common.R.oblique)	/* Eliminate items outside rectangular w/e/s/n/z0/z1 bounds */
+		limit[0] = GMT->common.R.wesn[2*A->id], limit[1] = GMT->common.R.wesn[2*A->id+1];
 
 	gmt_disable_bhi_opts (GMT);	/* Do not want any -b -h -i to affect the reading from -F files */
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
@@ -13464,6 +13466,7 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 		nc = sscanf (S->text[row], "%s %[^\n]", type, txt);
 		found = ((item == 'a' && (strchr (type, 'a') || strchr (type, 'i'))) || (strchr (type, item) != NULL));
 		if (!found) continue;	/* Not the type we were requesting */
+		if (S->coord[GMT_X][row] < limit[0] || S->coord[GMT_X][row] > limit[1]) continue;
 		if (strchr (type, 'i')) n_int++;
 		if (strchr (type, 'a')) n_annot++;
 		x[k] = S->coord[GMT_X][row];
