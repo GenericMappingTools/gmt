@@ -235,7 +235,7 @@ speeds given in knots, we may run
 
    ::
 
-    gmt x2sys_init LINE -V -G -Dline -Rg -je -Ndk -NsN -I1/1 -Etrk
+    gmt x2sys_init LINE -V -G -Dline -Rg -je -Ndk -Nsn -I1/1 -Etrk
 
 where we have selected LINE to be our x2sys tag. When x2sys tools try to
 read your line data files they will first look in the current directory

@@ -123,7 +123,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *C) {	/*
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> [-A[+]a|c|d|D|e|E|g|i|n|t|T<info>] [-D<name1>,<name2>,...]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> [-Aa|c|d|D|e|E|g|i|n|t|T<info>[+f]] [-D<name1>,<name2>,...]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<no_char>] [-F] [-I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\"]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 	             GMT_LEN_UNITS2_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_j_OPT, GMT_n_OPT, GMT_PAR_OPT);
@@ -132,9 +132,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Append a new data column to the given files.  The code letters are:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +: Optional.  Will overwrite an existing column with same name with new data.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will refuse if an existing column has the same abbreviation as the new data].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Append a new data column to the given files.  Append +f to overwrite an\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   existing column with same name with new data [Default will refuse if an\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   existing column has the same abbreviation as the new data].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The code letters are:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a: Give filename with a new column to add.  We expect a single-column file\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      with the same number of records as the MGD77 file.  Only one cruise can be set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      If filename is - we read from stdin.\n");
@@ -172,7 +173,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      If filename is - we read from stdin.  Only records with matching times will have data assigned.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   T: Same as t but we interpolate between the time, data pairs to fill in all data records.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete the columns listed from all the cruise data files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The columns are removed before any data are added.  It is not a substitute for -A+.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The columns are removed before any data are added.  It is not a substitute for -A...+f.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   However, sometimes the shape of new data demands the old to be deleted first (you will be told).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Give character used to fill empty/missing string columns [9]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Force mode.  This allows you to even replace the standard MGD77 columns [only extended columns can be changed].\n");
@@ -198,16 +199,19 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 GMT_LOCAL int decode_A_options (int mode, char *line, char *file, double parameters[]) {
 	int error = 0, n;
+	char *c = strstr (line, "+f");
 	
+	if (c) c[0] = '\0';	/* Chop off modifier */
 	if (mode == 1) {	/* For *.img files since we need to know data scale and grid mode */
-		/* -A[+]i<filename>,<scale>/<mode>[/<lat>] */
+		/* -Ai<filename>,<scale>/<mode>[/<lat>][+f] */
 		n = sscanf (line, "%[^,],%lf,%lf,%lf", file, &parameters[IMG_SCALE], &parameters[IMG_MODE], &parameters[IMG_LAT]);
 		if (n < 3) error = 1;
 	}
 	else {	/* GMT grid or table: No data scale and mode to worry about */
-		/* -A[+]a|c|d|D|e|g|n|t|T<filename> */
+		/* -Aa|c|d|D|e|g|n|t|T<filename>[+f] */
 		strcpy (file, line);
 	}
+	if (c) c[0] = '+';	/* Chop off modifier */
 	
 	return (error);
 }
@@ -317,7 +321,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 	unsigned int n_errors = 0, k, n_cruises = 0;
 	bool got_table, got_grid, strings;
 	nc_type c_nc_type;
-	char file[GMT_BUFSIZ] = {""};
+	char file[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	
@@ -334,9 +338,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 			case 'A':	/* Adding a new column */
 				Ctrl->A.active = true;
 				k = 0;
-				if (opt->arg[k] == '+') {
+				if (opt->arg[k] == '+') {	/* Deprecated way of doing _f */
 					Ctrl->A.replace = true;
 					k++;
+				}
+				else if ((c = strstr (opt->arg, "+f"))) {
+					Ctrl->A.replace = true;
+					c[0] = '\0';	/* Chop off modifier */
 				}
 				switch (opt->arg[k]) {
 					case 'a':	/* Plain column data file of exact same # of records */
@@ -409,6 +417,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 						break;
 				}
 				if (strlen (file)) Ctrl->A.file = strdup (file);
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 
 			case 'C':	/* Distance calculation method */

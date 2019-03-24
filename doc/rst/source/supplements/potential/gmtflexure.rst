@@ -14,7 +14,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt flexure** |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
-[ |-A|\ [**l**\|\ **r**][/*args*] ]
+[ |-A|\ [**l**\|\ **r**]\ *bc*\ [/*args*] ]
 [ |-C|\ **p**\ *Poisson* ] [ |-C|\ **y**\ *Young* ]
 [ |-F|\ *force* ] [ |-L| ]
 [ |-Q|\ *args*\ ] [ |-S| ] [ |-T|\ *wfile*\ ]
