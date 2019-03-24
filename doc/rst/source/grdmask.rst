@@ -26,6 +26,7 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-x| ]
@@ -144,6 +145,8 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. include:: explain_distcalc.rst_
 
 **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
    Append **+b**\ *BC* to set any boundary conditions to be used,
