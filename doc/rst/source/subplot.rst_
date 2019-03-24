@@ -157,7 +157,7 @@ Optional Arguments
 Synopsis (set mode)
 -------------------
 
-**gmt subplot set** *row,col* [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
+**gmt subplot set** [ *row,col* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ /*clearance*\ [**u**\ ] ] [ |SYN_OPT-V| ]
 
 Before you start plotting you must first select the active subplot panel.
 Note: Any **-J** option passed when plotting subplots must give ? as scale of width
@@ -166,16 +166,14 @@ Specifying map width will result in an error.  For Cartesian plots: If you want 
 to apply *equally* to both dimensions then you must specify **-Jx** [The default **-JX** will
 fill the subplot using unequal scales].
 
-Required Arguments
+Optional Arguments
 ------------------
 
 *row,col*
-    Sets the current subplot until further notice.  As an alternative, you may bypass the **set** mode and
-    instead supply the common option **-c**\ *row,col* to the first plot command you issue in that subplot.
+    Sets the current subplot until further notice.  If not given we go to the next panel by order
+    specified via **-A**.  As an alternative, you may bypass the **set** mode and
+    instead supply the common option **-c**\ [*row,col*] to the first plot command you issue in that subplot.
     GMT maintains information about the current figure and subplot.
-
-Optional Arguments
-------------------
 
 .. _subplot_set-A:
 
@@ -236,10 +234,10 @@ To make a minimalistic 2x2 basemap layout called panels.pdf, try
 
     gmt begin panels pdf
       gmt subplot begin 2x2 -Fs3i -M5p -A -SCb -SRl -Bwstr
-        gmt basemap -R0/80/0/10 -c1,1
-        gmt basemap -c1,2
-        gmt basemap -c2,1
-        gmt basemap -c2,2
+        gmt basemap -R0/80/0/10 -c
+        gmt basemap -c
+        gmt basemap -c
+        gmt basemap -c
       gmt subplot end
     gmt end
 
