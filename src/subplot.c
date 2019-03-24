@@ -1008,7 +1008,7 @@ int GMT_subplot (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot create file %s\n", file);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		fprintf (fp, "%d %d %d\n", Ctrl->N.dim[GMT_Y], Ctrl->N.dim[GMT_Y], Ctrl->A.way);
+		fprintf (fp, "%d %d %d\n", Ctrl->N.dim[GMT_Y], Ctrl->N.dim[GMT_X], Ctrl->A.way);
 		fclose (fp);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Wrote panel order to information file %s\n", file);
 		
