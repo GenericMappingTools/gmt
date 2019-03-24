@@ -17,10 +17,10 @@ Synopsis
 [ |-E|\ *thick* ]
 [ |-F|\ *xy_file* ]
 [ |-G|\ *outgrid* ]
-[ |-H|\ *<...>* ]
+[ |-H|\ *args* ]
 [ |SYN_OPT-I| ]
 [ |-L|\ *z_obs* ]
-[ |-Q|\ [\ **n**\ *n_pad*]\ \|\ [*pad_dist*]\ \|\ [<w/e/s/n>] ]
+[ |-Q|\ [\ **n**\ *n_pad*]\ \|\ [*pad_dist*]\ \|\ [*region*] ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *radius* ]
 [ |SYN_OPT-V| ]
@@ -72,30 +72,30 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H**\ *+m<magfile>*  **-H**\ *x|y|z|h|t* **-H**\ *+i|+g|+r|+f|+n*  
+**-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H+m**\ *magfile*  **-Hx**\ \|\ **y**\ \|\ **z**\ \|\ **h**\ \|\ **t* **-H+i**\ \|\ **g**\ \|\ **r**\ \|\ **f**\ \|\ **n**  
     Sets parameters for computation of magnetic anomaly (Can be used multiple times).
 
-      f_dec/f_dip -> geomagnetic declination/inclination
+      *f_dec/f_dip* -> geomagnetic declination/inclination
 
-      m_int/m_dec/m_dip -> body magnetic intensity/declination/inclination
+      *m_int/m_dec/m_dip* -> body magnetic intensity/declination/inclination
 
     OR for a grid mode
 
-      +m<magfile> where 'magfile' is the name of the magnetic intensity file. 
+      **+m**\ *magfile*, where *magfile* is the name of the magnetic intensity file. 
 
     To compute a component, specify any of:
 
-      x|X|e|E  to compute the E-W component.
+      **x**\ \|\ **X**\ \|\ **e**\ \|\ **E**  to compute the E-W component.
 
-      y|Y|n|N  to compute the N-S component.
+      **y**\ \|\ **Y**\ \|\ **n**\ \|\ **N**  to compute the N-S component.
 
-      z|Z      to compute the Vertical component.
+      **z**\ \|\ **Z**      to compute the Vertical component.
 
-      h|H      to compute the Horizontal component.
+      **h**\ \|\ **H**      to compute the Horizontal component.
 
-      t|T|f|F  to compute the total field.
+      **t**\ \|\ **T**\ \|\ **f**v**F**  to compute the total field.
 
-      For a variable inclination and declination use IGRF. Set any of **-H**\ *+i|+g|+r|+f|+n* to do that 
+      For a variable inclination and declination use IGRF. Set any of **-H+i**\ \|\ **g**\ \|\ **r**\ \|\ **f**\ \|\ **n** to do that 
 
 .. _-I:
 
@@ -109,7 +109,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [\ **n**\ *n_pad*]\ \|\ [\ *pad_dist*]\ \|\ [<w/e/s/n>]
+**-Q**\ [\ **n**\ *n_pad*]\ \|\ [\ *pad_dist*]\ \|\ [*region*]
     Extend the domain of computation with respect to output **-R** region. 
       **-Qn**\ *n_pad* artificially extends the width of the outer rim of
       cells to have a fake width of *n_pad* * dx[/dy].
