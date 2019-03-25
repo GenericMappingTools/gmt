@@ -23,6 +23,7 @@ jobs:
     vmImage: 'macOS-10.13'
 
   variables:
+    HOME: "$BUILD_SOURCESDIRECTORY"
     INSTALLDIR: "$HOME/gmt-install-dir"
     COASTLINEDIR: "$HOME/gmt-install-dir/coast"
     #PATH: "$INSTALLDIR/bin:$PATH"
