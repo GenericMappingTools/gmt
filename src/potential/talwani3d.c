@@ -71,9 +71,10 @@ struct TALWANI3D_CTRL {
 		bool active;
 		double rho;
 	} D;
-	struct F {	/* -F[f|n|v] */
-		bool active;
+	struct F {	/* -F[f|n[<lat>]|v] */
+		bool active, lset;
 		unsigned int mode;
+		double lat;
 	} F;
 	struct G {	/* Output file */
 		bool active;
@@ -125,6 +126,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 
+	C->F.lat = 45.0;	/* So we compute normal gravity at 45 */
+
 	return (C);
 }
 
@@ -158,7 +161,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'v': Ctrl->F.mode = TALWANI3D_VGG; 	break;
-					case 'n': Ctrl->F.mode = TALWANI3D_GEOID;	break;
+					case 'n': Ctrl->F.mode = TALWANI3D_GEOID;
+						if (opt->arg[1]) Ctrl->F.lat = atof (&opt->arg[1]), Ctrl->F.lset = true;
+						break;
 					case 'g':  Ctrl->F.mode = TALWANI3D_FAA; 	break;
 					default:  
 						GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Syntax error -F: Unrecognized field %c\n", opt->arg[0]);
@@ -226,7 +231,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <modelfile> [-A] [-D<rho>] [-Ff|n|v] [-G<outfile>] [%s]\n", name, GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <modelfile> [-A] [-D<rho>] [-Ff|n[<lat>]|v] [-G<outfile>] [%s]\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M[hz]] [-N<trktable>] [%s] [-Z<level>]  [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]%s [%s]\n\n", GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
@@ -238,7 +243,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set a fixed density contrast that overrides settings in model file (in kg/m^3).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify desired geopotential field component:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f = Free-air anomalies (mGal) [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n = Geoid anomalies (meter).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n = Geoid anomalies (meter).  Optionally append <lat> for evaluation of normal gravity\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       [Default lat is mid-grid for grid output or mid-latitue if -N is used].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   v = Vertical Gravity Gradient anomalies (VGG; 1 Eovtos = 0.1 mGal/km).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Output data. Give name of output file.\n");
 	GMT_Option (API, "I");
@@ -769,7 +775,6 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	}
 	
 	if (Ctrl->A.active) Ctrl->Z.level = -Ctrl->Z.level;
-	G0 = g_normal (lat);
 	
 	/* Read polygon information from multiple segment file */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "All x/y-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI3D_HOR]]);
@@ -909,6 +914,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Start calculating %s\n", kind[Ctrl->F.mode]);
 
+	G0 = (Ctrl->F.lset) ? g_normal (Ctrl->F.lat) : g_normal (lat);
 	/* Set up depths array needed by get_one_output3D */
 	depths = gmt_M_memory (GMT, NULL, ndepths, double);
 	for (k = 0; k < ndepths; k++) depths[k] = cake[k].depth;	/* Used by the parabolic integrator */

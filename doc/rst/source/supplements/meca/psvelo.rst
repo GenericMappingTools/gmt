@@ -81,8 +81,6 @@ gray wedges to represent the 2-sigma uncertainties.
     241.1084 34.2565 2.17E-08 3.53E-08
     END
 
-.. include:: meca_common.rst_
-
 `Kurt L. Feigl <http://www.geology.wisc.edu/~feigl/>`_, Department of Geology and
 Geophysics at University of Wisconsin-Madison, Madison, Wisconsin, USA
 

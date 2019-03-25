@@ -91,7 +91,7 @@ Optional Arguments
 
 .. _-A:
 
-[ **-A**\ *region* ]
+**-A**\ *region*
     Specify directly the region of the rotated grid.  By default, the
     output grid has a region that exactly matches the extent of the rotated
     domain, but **-A** can be used to crop or extend this region to that
@@ -135,7 +135,8 @@ Optional Arguments
 **-T**\ *ages*
     Sets the desired reconstruction times.  For a single time append
     the desired time.  For an equidistant range of reconstruction times
-    give **-T**\ *start*\ /\ *stop*\ /\ *inc* or **-T**\ *start*\ /\ *stop*\ /\ *npoints*\ **+**.
+    give **-T**\ *start*\ /\ *stop*\ /\ *inc*. Append **+n** if *inc* should
+    be interpreted to mean *npoints* instead.
     For an non-equidistant set of reconstruction times please pass them
     via the first column in a file, e.g., **-T**\ *agefile*.  If no **-T**
     option is given and **-E** specified a rotation file then we equate

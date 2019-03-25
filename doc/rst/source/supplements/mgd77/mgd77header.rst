@@ -49,7 +49,7 @@ Optional Arguments
 
 .. _-M:
 
-**-Mf**\ [*item*]\|\ **r**\ \|\ **r**
+**-Mf**\ [*item*]\|\ **r**\ \|\ **t**
     List the meta-data (header) for
     each cruise. Append **f** for a formatted display. This will list
     individual parameters and their values, one entry per output line,

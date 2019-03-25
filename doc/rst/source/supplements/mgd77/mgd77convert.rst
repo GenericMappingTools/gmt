@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt mgd77convert** *NGDC-ids* |-F|\ **a**\ \|\ **c**\ \|\ **m** \|\ **t**
+**gmt mgd77convert** *NGDC-ids* |-F|\ **a**\ \|\ **c**\ \|\ **m**\ \|\ **t**
 |-T|\ **a**\ \|\ **c**\ \|\ **m**\ \|\ **t**\ [**+f**]
 [ |-C| ]
 [ |-D| ]
@@ -37,7 +37,7 @@ Required Arguments
 
 .. _-F:
 
-**-Fa**\ \|\ **c**\ \|\ **m** \|\ **t**
+**-Fa**\ \|\ **c**\ \|\ **m**\ \|\ **t**
     Specifies the format of the input (From) files. Choose from **a**
     for standard MGD77 ASCII table (with extension .mgd77), **c** for
     the new MGD77+ netCDF format (with extension .nc), **m** for the

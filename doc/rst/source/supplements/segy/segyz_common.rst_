@@ -109,7 +109,7 @@ Optional Arguments
 
        **-Qi**\ *dpi* sets the dots-per-inch resolution of the image [300].
 
-       **-Qu**\ *redvel* to apply reduction velocity (-ve removes reduction already present).
+       **-Qu**\ *redvel* to apply reduction velocity (negative removes reduction already present).
 
        **-Qx**\ *mult* to multiply trace locations by *mult*.
 
@@ -119,7 +119,7 @@ Optional Arguments
 
 **-S**\ *header_x*/*header_y*
     Read trace locations from trace headers: headers is either **c** for CDP,
-    **o** for offset, **b** \*num* to read a long starting at byte *num* in the
+    **o** for offset, **b**\ *num* to read a long starting at byte *num* in the
     header (first byte corresponds to num=0), or a number to fix the
     location. First parameter for x, second for y. Default has X and Y
     given by trace number.

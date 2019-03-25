@@ -109,7 +109,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**-**\ \|\ **+**][*pen*]
+**-W**\ [*pen*]
     Append *pen* used for the trackline. [Defaults:
     width = default, color = black, style = solid].
 
