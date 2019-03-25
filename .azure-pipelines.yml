@@ -1,0 +1,81 @@
+# Configuration for Azure Pipelines
+########################################################################################
+
+# Only build the master branch, tags, and PRs (on by default) to avoid building random
+# branches in the repository until a PR is opened.
+trigger:
+  branches:
+    include:
+    - master
+    - 5.4
+    - refs/tags/*
+
+
+jobs:
+
+# Mac
+########################################################################################
+- job:
+  displayName: 'Mac'
+
+  pool:
+    vmImage: 'macOS-10.13'
+
+  variables:
+    INSTALLDIR: "$HOME/gmt-install-dir"
+    COASTLINEDIR: "$HOME/gmt-install-dir/coast"
+    PATH: "$INSTALLDIR/bin:$PATH"
+    BUILD_DOCS: false
+
+  strategy:
+    matrix:
+      CompileOnly:
+        TEST: false
+      Test:
+        TEST: true
+
+  steps:
+
+  - bash: |
+      set -x -e
+      brew install ccache cmake ninja curl netcdf gdal fftw pcre2 ghostscript curl graphicsmagick python
+    displayName: Install dependencies
+
+  - bash: |
+      set -x -e
+      mkdir "$INSTALLDIR"
+      mkdir "$COASTLINEDIR"
+    displayName: Create install directories
+
+  - bash: ci/download-coastlines.sh
+    displayName: Download coastlines
+
+  - bash: ci/build-gmt.sh
+    displayName: Compile GMT
+
+  - bash: |
+      set -x -e
+      gmt defaults -Vd
+      gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
+      gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
+    displayName: Check a few simple commands
+
+  # Run the full tests only if this is a scheduled build
+  - bash: |
+      set -x -e
+      cd build
+      ctest --force-new-ctest-process -j4
+    condition: eq(variables['TEST'], 'true')
+    #condition: and(eq(variables['Build.Reason'], 'Schedule'), eq(variables['TEST'], 'true'))
+    displayName: Full tests
+
+  # Upload test coverage even if build fails. Keep separate to make sure this task fails
+  # if the tests fail.
+  - bash: |
+      set -x -e
+      bash <(curl -s https://codecov.io/bash)
+    env:
+      CODECOV_TOKEN: $(codecov.token)
+    condition: and(succeededOrFailed(), eq(variables['TEST'], 'true'))
+    #condition: and(eq(variables['Build.Reason'], 'Schedule'), eq(variables['TEST'], 'true'))
+    displayName: Upload test coverage
