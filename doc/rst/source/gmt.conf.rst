@@ -848,7 +848,7 @@ fonts can be found in the :doc:`gmt` man page.
     Sinusoidal and van der Grinten). Specify either none (in which case there
     is no special handling) or *pc_lat*/*pc_dlon*. In that case, normal
     gridlines are only drawn between the latitudes
-    -*pc_lat*/+*pc_lat*, and above those latitudes the gridlines are
+    -*pc_lat*/+\ *pc_lat*, and above those latitudes the gridlines are
     spaced at the (presumably coarser) *pc_dlon* interval; the two
     domains are separated by a small circle drawn at the *pc_lat*
     latitude [85/90]. Note for r-theta (polar) projection where r = 0 is
@@ -1266,9 +1266,9 @@ fonts can be found in the :doc:`gmt` man page.
 
 **TIME_REPORT**
     Controls if a time-stamp should be issued at start of all progress
-    reports.  Choose among **TIMER_CLOCK** (absolute time stamp),
-    **TIMER_ELAPSED** (time since start of session), or **TIMER_NONE**
-    [Default].
+    reports.  Choose among **clock** (absolute time stamp),
+    **elapsed** (time since start of session), or **none**
+    [none].
 
 .. _TIME_SYSTEM:
 
