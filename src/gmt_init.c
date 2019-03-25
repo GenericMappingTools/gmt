@@ -3436,11 +3436,14 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 /*! . */
 void gmt_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *mods, unsigned way) {
 	/* Way = 0: replace any +<letter> with <letter> NOT in <mods> with ASCII 1<letter>
+	 *	    We only skip +<letter> the first time it is found (if in <mods>).
 	 * Way = 1: Replace ASCII 1 with + */
 	gmt_M_unused(GMT);
 	if (in == NULL || in[0] == '\0') return;	/* No string to check */
 	if (way == 0) {	/* Replace any +<letter> with <letter> NOT in <mods> with ASCII 1<letter> */
-		char *c = in;
+		size_t n = strlen (mods);
+		char *c = in, *p = NULL;
+		unsigned int *used = gmt_M_memory (GMT, NULL, n, unsigned int);
 		for ( ;; ) { /* Replace super-script escape sequence @+ with @1 */
 			c = strstr (c, "@+");
 			if (c == NULL) break;
@@ -3451,10 +3454,17 @@ void gmt_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *mods, unsigned 
 		for ( ;; ) { /* Now look for +<letter> */
 			c = strchr (c, '+');	/* Find next '+' */
 			if (c == NULL) break;	/* No more + found */
-			if (!strchr (mods, c[1])) /* Not one of the +<mods> cases so we can replace the + by 1 */
+			p = NULL;
+			if (c[1] && (p = strchr (mods, c[1]))) {	/* Any of ours */
+				unsigned int k = (p - mods);
+				if (used[k]) p = NULL;
+				else used[k]++;
+			}
+			if (!p) /* Not one of the +<mods> cases (or already fixed) so we can replace the + by 1 */
 				*c = 1;
 			++c;
 		}
+		gmt_M_free (GMT, used);
 	}
 	else /* way != 0: Replace single ASCII 1 with + */
 		gmt_strrepc (in, 1, '+');
