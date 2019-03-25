@@ -39,7 +39,7 @@ jobs:
 
   - bash: |
       set -x -e
-      brew install ccache cmake ninja curl netcdf gdal fftw pcre2 ghostscript curl graphicsmagick python
+      brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript curl graphicsmagick
     displayName: Install dependencies
 
   - bash: |
@@ -47,6 +47,9 @@ jobs:
       mkdir "$INSTALLDIR"
       mkdir "$COASTLINEDIR"
     displayName: Create install directories
+
+  - bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
+    displayName: Add GMT to PATH
 
   - bash: ci/download-coastlines.sh
     displayName: Download coastlines
