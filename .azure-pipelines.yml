@@ -24,7 +24,7 @@ jobs:
   variables:
     INSTALLDIR: "$HOME/gmt-install-dir"
     COASTLINEDIR: "$HOME/gmt-install-dir/coast"
-    PATH: "$INSTALLDIR/bin:$PATH"
+    #PATH: "$INSTALLDIR/bin:$PATH"
     BUILD_DOCS: false
 
   strategy:
