@@ -29,7 +29,7 @@ Synopsis
 [ |-T|\ **T**\ \|\ **t**\ \|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**-**\ \|\ **+**][*pen*] ]
+[ |-W|\ [*pen*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-p| ]

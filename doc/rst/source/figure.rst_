@@ -19,21 +19,22 @@ Description
 -----------
 
 A GMT modern session can make any number of illustrations (including none).
-In situations when many illustrations will be made during the session,
-the **figure** module specifies the name and format(s) to use for the current plot.
-It must be issued before you start plotting to the current figure, and each
+In situations when many illustrations will be made during a single session,
+the **figure** module is used to specify the name and format(s) to use for the next plot.
+It must be issued before you start plotting to the intended figure, and each
 new **figure** call changes plotting focus to the next figure.  You may go back and forth between
-different figure but the optional arguments (*formats* and *options*) can only
+different figures but the optional arguments (*formats* and *options*) can only
 be given the first time you specify a new figure.
 In addition to *prefix* and *formats*, you can supply a comma-separated series of
 :doc:`psconvert` options that will override the default settings provided via
-:ref:`PS_CONVERT <PS_CONVERT>`. The only other available option controls verbosity.
+:ref:`PS_CONVERT <PS_CONVERT>` [**A**]. The only other available options control verbosity
+and default parameter settings.
 
 Required Arguments
 ------------------
 
 *prefix*
-    Name stem used to construct final figure names,  The extension is appended
+    Name stem used to construct the figure name.  The extension(s) are appended
     automatically from your *formats* selection(s).
 
 Optional Arguments
@@ -48,8 +49,8 @@ Optional Arguments
 .. _figure-options:
 
 *options*
-    Sets one or more comma-separated options arguments that
-    can be passed to :doc:`psconvert` when preparing this figure [A].
+    Sets one or more comma-separated options (and possibly arguments) that
+    can be passed to :doc:`psconvert` when preparing this figure [**A**].
     The valid subset of options are
     **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,\ **M**\ *args*,\ **Q**\ *args*,\ **S**.
     See the :doc:`psconvert` documentation for details on these options.
@@ -60,6 +61,8 @@ Optional Arguments
 .. include:: explain_-V.rst_
 
 .. include:: explain_help.rst_
+
+.. include:: explain_postscript.rst_
 
 Examples
 --------

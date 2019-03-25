@@ -5730,7 +5730,7 @@ GMT_LOCAL bool api_file_with_netcdf_directive (struct GMTAPI_CTRL *API, const ch
 }
 
 /* Several lower-level API function are needed in a few other gmt_*.c library codes and are thus NOT local.
- * They are listed here and declared via MSC_EXTERN where they occur:
+ * They are listed here and declared via EXTERN_MSC where they occur:
  *   gmtapi_report_error
  *   gmtapi_validate_id
  *   gmtapi_unregister_io

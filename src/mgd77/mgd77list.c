@@ -40,7 +40,7 @@
 #define THIS_MODULE_PURPOSE	"Extract data from MGD77 files"
 #define THIS_MODULE_KEYS	">D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:RVbdh"
+#define THIS_MODULE_OPTIONS "-:RVbdhj"
 
 #define MGD77_FMT  "drt,id,tz,year,month,day,hour,dmin,lat,lon,ptc,twt,depth,bcc,btc,mtf1,mtf2,mag,msens,diur,msd,gobs,eot,faa,nqc,sln,sspn"
 #define MGD77_ALL  "drt,id,time,lat,lon,ptc,twt,depth,bcc,btc,mtf1,mtf2,mag,msens,diur,msd,gobs,eot,faa,nqc,sln,sspn"
@@ -98,10 +98,6 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 		double sound_speed;
 		double sensor_offset;
 	} A;
-	struct MGD77LIST_C {	/* -C */
-		bool active;
-		unsigned int mode;
-	} C;
 	struct MGD77LIST_D {	/* -D */
 		bool active;
 		bool mode;	/* true to skip recs with time == NaN */
@@ -165,7 +161,6 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	C->A.GF_version = MGD77_NOT_SET;
-	C->C.mode = 2;
 	C->D.stop = C->S.stop = DBL_MAX;	/* No upper limit on time and distance */
 	C->G.stop = UINTMAX_MAX;		/* No limit on stop record */
 	C->N.unit[N_D][0] = 'k';	/* Default is -Ndk */
@@ -188,9 +183,9 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *C) {	/* D
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> -F<dataflags>[,<tests>] [-Ac|d|f|m|t[<code>][+f]] [-Cf|g|e]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> -F<dataflags>[,<tests>] [-Ac|d|f|m|t[<code>][+f]]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Da<startdate>] [-Db<stopdate>] [-E] [-Ga<startrec>] [-Gb<stoprec>] [-I<code>]\n\t[-L[<corrtable.txt>]] [-N[s|p][<unit>]]] [-Qa|v<min>/<max>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]]\n\t[-T[m|e]] [%s] [-W<Weight>] [-Z[n|p] [%s] [%s] [-h] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]]\n\t[-T[m|e]] [%s] [-W<Weight>] [-Z[n|p] [%s] [%s] [-h] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_j_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -218,7 +213,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     ngdcid:  NGDC ID [TEXTSTRING].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     recno:   Record number.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   >Derived navigational information:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     dist:    Along-track distances (see -C for method and -N for units).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     dist:    Along-track distances (see -j for method and -N for units).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     azim:    Track azimuth (Degrees east from north).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     cc:      Course change, i.e., change in azimuth (Degrees east from north).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     vel:     Ship velocity (m/s).\n");
@@ -311,10 +306,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   t will compute fake times for cruises with known duration but lacking record times.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f to force selected anomalies to be recalculated even when the original\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   anomaly is NaN [Default honors NaNs in existing anomalies].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Select procedure for along-track distance and azimuth calculations:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f Flat Earth.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   g Great circle [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   e Ellipsoidal (geodesic) using current ellipsoid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D List from a<date> (given as yyyy-mm-ddT[hh:mm:ss]) [Start of cruise]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   up to b<date> (given as yyyy-mm-ddT[hh:mm:ss]) [End of cruise].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If A|B is used instead or a|b then records with no time are excluded from output.\n");
@@ -351,10 +342,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Append n to report bathymetry and msd as negative depths [Default is positive -Zp].\n");
 	GMT_Option (API, "bo,do");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t-h Write header record with column information [Default is no header].\n");
-	GMT_Option (API, ":,.");
+	GMT_Option (API, "j,:,.");
 	
 	return (GMT_MODULE_USAGE);
 }
+
+EXTERN_MSC int gmt_parse_j_option (struct GMT_CTRL *GMT, char *arg);
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to mgd77list and sets parameters in CTRL.
@@ -467,12 +460,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 				break;
 
 			case 'C':	/* Distance calculation flag */
-				Ctrl->C.active = true;
-				if (opt->arg[0] == 'f') Ctrl->C.mode = 1;
-				if (opt->arg[0] == 'g') Ctrl->C.mode = 2;
-				if (opt->arg[0] == 'e') Ctrl->C.mode = 3;
-				if (Ctrl->C.mode < 1 || Ctrl->C.mode > 3) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: Flag must be f, g, or e\n");
+				if (gmt_M_compat_check (API->GMT, 6)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "The -C option is deprecated; use the GMT common option -j<mode> instead\n");
+					if (!strchr ("cefg", (int)opt->arg[0])) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: Flag must be c, f, g, or e\n");
+						n_errors++;
+					}
+					else
+						gmt_parse_j_option (GMT, opt->arg);
+				}
+				else {
+					GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized option -C\n");
 					n_errors++;
 				}
 				break;
@@ -1026,7 +1024,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			break;
 	}
 
-	gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, Ctrl->C.mode, GMT_MAP_DIST);
+	gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT->common.j.mode, GMT_MAP_DIST);
 
 	Ctrl->S.start *= dist_scale;	Ctrl->S.stop *= dist_scale;	/* Convert the meters to the same units used for cumulative distances */
 	if (Ctrl->A.cable_adjust) Ctrl->A.sensor_offset *= dist_scale;

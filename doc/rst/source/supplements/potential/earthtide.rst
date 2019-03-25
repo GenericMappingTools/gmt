@@ -16,7 +16,7 @@ Synopsis
 **gmt earthtide**
 |-T|\ [\ *min/max*\ /]\ *inc*\ [**+n**] \|\ |-T|\ *file*\ \|\ *list*
 |-G|\ *grdfile*
-[ |-C|\ *x|e,y|n,z|v* ]
+[ |-C|\ *components* ]
 [ |SYN_OPT-I| ]
 [ |-L|\ *lon/lat* ] 
 [ |SYN_OPT-R| ]
@@ -46,7 +46,7 @@ Specify either **-G**, **-S** or **-L**.
     Write one or more tide component directly to grids; no table data are written to standard output.
     If more than one component are specified via **-C** then *grdfile* must contain the format flag %s
     so that we can embed the component code in the file names (*n* for north; *e* for east and *v* for vertical).
-    If only one component is selected with **-C** than no code is appended to grid name (an no need to 
+    If only one component is selected with **-C** then no code is appended to grid name (and no need to 
     set the format flag %s). The grid(s) are computed at the time set by **-T**, if that option is used, or
     at the *now* time calculated in UTC from the computer clock.
 
@@ -73,16 +73,16 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *x|e,y|n,z|v*
+**-C**\ *components*
     Select which component to write to individual grids. Requires **-G**.
-    Append comma-separated codes for available components: **x** or **e** for the east component;
-    **y** or **n** for the north component; and **z** or **v** for the vertical component.
-    For example, **-C**\ *e,v*, will write 2 grids. One with east and other with the vertical components.
-    If **-G** is set but not **-C** then the default is to write the vertical component.
+    Append comma-separated codes for available components: **x** or **e** for the east component,
+    **y** or **n** for the north component, and **z** or **v** for the vertical component.
+    For example, **-Ce**\ ,**v**, will write two grids: one with east and the other with the vertical components.
+    If **-G** is set but not **-C** then the default is to write the vertical component only.
 
 .. _-I:
 
-.. |Add_-I| replace:: Used only with **-G**. If not set, defaults to **-I30m**
+.. |Add_-I| replace:: Used only with **-G**. If not set, defaults to **-I**\ 30**m**
 .. include:: ../../explain_-I.rst_
 
 .. _-L:

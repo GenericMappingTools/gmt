@@ -100,7 +100,7 @@ Optional Arguments
 **-Q**\ *<mode><value>*
     Can be used to change two different settings depending on *mode*:
        **-Qx**\ *x-scale* applies scalar *x-scale* to coordinates in trace
-       header to match the coordinates specified in -R.
+       header to match the coordinates specified in **-R**.
 
        **-Qy**\ *s_int* specifies sample interval as *s_int* if incorrect in the SEGY file.
 
