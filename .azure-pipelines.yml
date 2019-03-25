@@ -39,7 +39,7 @@ jobs:
 
   - bash: |
       set -x -e
-      brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript curl graphicsmagick glibtool
+      brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript curl graphicsmagick libtool
     displayName: Install dependencies
 
   - bash: |
