@@ -7,58 +7,53 @@ trigger:
   branches:
     include:
     - master
-    - azure
     - 5.4
     - refs/tags/*
 
-
 jobs:
 
-# Mac
+# Mac - Compile only
 ########################################################################################
 - job:
-  displayName: 'Mac'
+  displayName: 'Mac | Compile only'
+  condition: not(eq(variables['Build.Reason'], 'Schedule'))
 
   pool:
     vmImage: 'macOS-10.13'
 
   variables:
     BUILD_DOCS: false
-
-  strategy:
-    matrix:
-      CompileOnly:
-        TEST: false
-      Test:
-        TEST: true
+    TEST: false
 
   steps:
 
-  - bash: |
-      set -x -e
-      brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript curl graphicsmagick || true
-    displayName: Install dependencies
-
-  - bash: echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
-    displayName: Set install location
-
-  - bash: echo "##vso[task.setvariable variable=COASTLINEDIR]$INSTALLDIR/coast"
-    displayName: Set coastline location
-
-  - bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
-    displayName: Set PATH
+  # Setup and compile GMT
+  - template: ci/azure-pipelines-mac.yml
 
   - bash: |
       set -x -e
-      mkdir -p "$INSTALLDIR"
-      mkdir -p "$COASTLINEDIR"
-    displayName: Create install directories
+      gmt defaults -Vd
+      gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
+      gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
+    displayName: Check a few simple commands
 
-  - bash: ci/download-coastlines.sh
-    displayName: Download coastlines
+# Mac - Test
+########################################################################################
+- job:
+  displayName: 'Mac | Test'
+  #condition: eq(variables['Build.Reason'], 'Schedule')
 
-  - bash: ci/build-gmt.sh
-    displayName: Compile GMT
+  pool:
+    vmImage: 'macOS-10.13'
+
+  variables:
+    BUILD_DOCS: false
+    TEST: true
+
+  steps:
+
+  # Setup and compile GMT
+  - template: ci/azure-pipelines-mac.yml
 
   - bash: |
       set -x -e
@@ -72,8 +67,6 @@ jobs:
       set -x -e
       cd build
       ctest --force-new-ctest-process -j4
-    condition: eq(variables['TEST'], 'true')
-    #condition: and(eq(variables['Build.Reason'], 'Schedule'), eq(variables['TEST'], 'true'))
     displayName: Full tests
 
   # Upload test coverage even if build fails. Keep separate to make sure this task fails
@@ -83,6 +76,5 @@ jobs:
       bash <(curl -s https://codecov.io/bash)
     env:
       CODECOV_TOKEN: $(codecov.token)
-    condition: and(succeededOrFailed(), eq(variables['TEST'], 'true'))
-    #condition: and(eq(variables['Build.Reason'], 'Schedule'), eq(variables['TEST'], 'true'))
+    condition: succeededOrFailed()
     displayName: Upload test coverage
