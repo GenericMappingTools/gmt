@@ -39,12 +39,14 @@ jobs:
       brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript curl graphicsmagick || true
     displayName: Install dependencies
 
-  - bash: |
-      set -x -e
-      echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
-      echo "##vso[task.setvariable variable=COASTLINEDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir/coast"
-      echo "##vso[task.prependpath]$BUILD_SOURCESDIRECTORY/gmt-install-dir/bin"
-    displayName: Set environment variables
+  - bash: echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
+    displayName: Set install location
+
+  - bash: echo "##vso[task.setvariable variable=COASTLINEDIR]$INSTALLDIR/coast"
+    displayName: Set coastline location
+
+  - bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
+    displayName: Set PATH
 
   - bash: |
       set -x -e
