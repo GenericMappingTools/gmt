@@ -732,7 +732,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	if (S.symbol == GMT_SYMBOL_BARX && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	if (S.symbol == GMT_SYMBOL_BARY && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
-	QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && !strcmp (S.custom->name, "QR"));
+	QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;
 	if (not_line && !outline_active && !fill_active && !get_rgb && !QR_symbol) outline_active = true;	/* If no fill nor outline for symbols then turn outline on */
@@ -848,6 +848,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							continue;
 						}
 					}
+					QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 				}
 				/* Since we only now know if some of the input columns should NOT be considered dimensions we
 				 * must visit such columns and if the current length unit is NOT inch then we must undo the scaling */
@@ -1236,6 +1237,17 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				gmt_setfill (GMT, &data[i].f, data[i].outline);
 				gmt_setpen (GMT, &data[i].p);
 			}
+			if (QR_symbol) {
+				if (Ctrl->G.active)	/* Change color of QR code */
+					PSL_command (PSL, "/QR_fill {%s} def\n", PSL_makecolor (PSL, data[i].f.rgb));
+				if (data[i].outline) {	/* Draw outline of QR code */
+					PSL_command (PSL, "/QR_outline true def\n");
+					PSL_command (PSL, "/QR_pen {%s} def\n",  PSL_makepen (PSL, (1.0/6.0) * data[i].p.width, data[i].p.rgb, data[i].p.style, data[i].p.offset));
+				}
+				else
+					PSL_command (PSL, "/QR_outline false def\n");
+			}
+
 
 			/* For global periodic maps, symbols plotted close to a periodic boundary may be clipped and should appear
 			 * at the other periodic boundary.  We try to handle this below */

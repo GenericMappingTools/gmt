@@ -1052,7 +1052,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
 
-	QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && !strcmp (S.custom->name, "QR"));
+	QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;
 	if (not_line && !outline_active && !fill_active && !get_rgb && !QR_symbol) outline_active = true;	/* If no fill nor outline for symbols then turn outline on */
@@ -1137,6 +1137,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					Return (GMT_RUNTIME_ERROR);
 				}
 				if (S.read_symbol_cmd == 1) gmt_parse_symbol_option (GMT, In->text, &S, 0, false);
+				QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 				/* Since we only now know if some of the input columns should NOT be considered dimensions we
 				 * must visit such columns and if the current length unit is NOT inch then we must undo the scaling */
 				if (S.n_nondim && GMT->current.setting.proj_length_unit != GMT_INCH) {	/* Since these are not dimensions but angles or other quantities */
