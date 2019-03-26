@@ -41,15 +41,15 @@ jobs:
 
   - bash: |
       set -x -e
-      echo "##vso[task.setvariable variable=INSTALLDIR]gmt-install-dir"
-      echo "##vso[task.setvariable variable=COASTLINEDIR]gmt-install-dir/coast"
+      echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
+      echo "##vso[task.setvariable variable=COASTLINEDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir/coast"
       echo "##vso[task.prependpath]$BUILD_SOURCESDIRECTORY/gmt-install-dir/bin"
     displayName: Set environment variables
 
   - bash: |
       set -x -e
-      mkdir "$INSTALLDIR"
-      mkdir "$COASTLINEDIR"
+      mkdir -p "$INSTALLDIR"
+      mkdir -p "$COASTLINEDIR"
     displayName: Create install directories
 
   - bash: ci/download-coastlines.sh
