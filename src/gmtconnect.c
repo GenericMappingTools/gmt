@@ -272,7 +272,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	bool save_type = false, first, wrap_up = false, done, closed, *skip = NULL;
 
 	unsigned int nearest_end[2][2], j, n_qfiles = 0, end_order, smode = GMT_NO_STRINGS;
-	unsigned int io_mode = GMT_WRITE_SET, q_mode = GMT_WRITE_SET, d_mode = 0, ii, end;
+	unsigned int io_mode = GMT_WRITE_SET, q_mode = GMT_WRITE_SET, d_mode = 0, ii, end, first_end_order;
 
 	size_t n_seg_alloc[2] = {0, 0}, n_alloc_pts, b_alloc = GMT_BUFSIZ, b_len = 0, len;
 
@@ -695,7 +695,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		id = start_id;	/* This is the first line segment in a new chain */
 		sprintf (buffer, "%" PRIu64, segment[id].orig_id);
 		b_len = strlen (buffer);
-		end_order = 0;	/* Start at the start point of the segment */
+		/* Select the endpoint that has the closest buddy */
+		end_order = first_end_order = (segment[id].buddy[0].dist < segment[id].buddy[1].dist) ? 0 : 1;		/* Exceeds minimum gap */
+		
 		closed = false;
 		n_steps_pass_1 = 0;		/* Nothing appended yet to this single line segment */
 		n_alloc_pts = segment[id].n;	/* Number of points needed so far is just those from this first (start_id) segment */
@@ -728,7 +730,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 		if (!closed) {	/* Now search backwards from the stating line to see what should be hooked on in that direction */
 			id = start_id;	/* This is the first line segment in a new chain */
-			end_order = 1;	/* Now start at the end point of segment */
+			end_order = (first_end_order + 1) % 2;	/* Go the other way */
 			while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
 				id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
 				snprintf (text, GMT_LEN64, "%" PRIu64 " <- ", segment[id2].orig_id);
@@ -845,7 +847,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			n_steps_pass_2++;	/* Count of number of pieces being connected into this single line segment */
 		} while (!done);
 		if (n_steps_pass_2 != n_steps_pass_1) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Trouble: Pass 1 found %" PRIu64 " while pass 2 found %" PRIu64 " connections!\n", n_steps_pass_1, n_steps_pass_2);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Trouble: Pass 1 found %" PRIu64 " while pass 2 found %" PRIu64 " connections!\n", n_steps_pass_1, n_steps_pass_2);
 		}
 		if (n_seg_length < n_alloc_pts) T[OPEN][out_seg] = GMT_Alloc_Segment (GMT->parent, smode, n_seg_length, n_columns, NULL, T[OPEN][out_seg]);	/* Trim memory allocation */
 
