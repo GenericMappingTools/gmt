@@ -7925,8 +7925,7 @@ Figure :ref:`Custom symbols <Custom_symbols>`)
    :width: 500 px
    :align: center
 
-   Custom plot symbols supported by GMT. Note that we only show
-   the symbol outline and not any fill. These are all single-parameter symbols.
+   Custom plot symbols supported by GMT. These are all single-parameter symbols.
    Be aware that some symbols may have a hardwired fill or no-fill component,
    while others duplicate what is already available as standard built-in symbols.
 
@@ -7934,7 +7933,8 @@ Figure :ref:`Custom symbols <Custom_symbols>`)
 You may find it convenient to examine some of these and use them as a
 starting point for your own design; they can be found in GMT's
 share/custom directory.  In addition to the ones listed in Figure :ref:`Custom symbols <Custom_symbols>`
-you can use the symbol QR to place the GMT QR Code that links to www.generic-mapping-tools.org.
+you can use the symbol **QR** to place the GMT QR Code that links to www.generic-mapping-tools.org;
+alternatively use **QR_transparent** to *not* plot the background opaque white square.
 
 The macro language
 ------------------

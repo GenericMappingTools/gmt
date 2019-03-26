@@ -13,8 +13,8 @@ n=`cat tt.lis | wc -l`
 
 width=0.85
 n_cols=6
-n_rows=6
-n_rows_p1=6
+n_rows=7
+n_rows_p1=7
 fs=9
 dy=0.15
 
@@ -73,10 +73,11 @@ EOF
 		done
 	done
 	gmt begin GMT_App_N_$p ps
-	gmt plot -R0/$n_cols/0/$H -Jx${width}i tt.lines -Wthick -B0 
-	gmt plot -S${width}i -Wthinnest tt.symbols 
+	gmt plot -R0/$n_cols/0/$H -Jx${width}i tt.lines -Wthick -B0
+	gmt plot -S${width}i -W0.5p tt.symbols  -Ggray
 	gmt plot -Sri -Gblack tt.bars 
-	gmt text tt.text -F+f${fs}p,white
+	# Shorten the spelling of QR_TRANSPARENT to QR_TRANSP to fit the figure
+	sed -e 's/TRANSPARENT/TRANSP/' < tt.text | gmt text -F+f${fs}p,white
 	gmt end
 done
 
