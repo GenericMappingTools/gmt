@@ -259,7 +259,7 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 		}
 		sprintf (url, "%s/gmt_md5_server.txt", GMT->session.DATAURL);	/* Set remote path to new MD5 file */
 		if (gmtmd5_get_url (GMT, url, md5path)) {	/* Get the new MD5 file from server */
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to downlaod %s - Internet troubles?\n", md5path);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to download %s - Internet troubles?\n", md5path);
 			return;	/* Unable to update the file (no Internet?) - skip the tests */
 		}
 		if ((N = md5_load (GMT, md5path, &nN)) == 0) {	/* Read in the new array of MD5 structs */
@@ -270,14 +270,14 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 		O = md5_load (GMT, old_md5path, &nO);	/* Read in the old array of MD5 structs */
 		for (o = 0; o < nO; o++) {	/* Loop over items in old file */
 			if (gmt_getdatapath (GMT, O[o].name, url, R_OK) == NULL) continue;	/* Don't have this file downloaded yet */
+			/* Here the file was found locally and the full path is in the url */
 			found = false;	/* Not found this file in the new list yet */
 			for (n = 0; !found && n < nN; n++) {	/* Loop over items in new file */
-				if (gmt_access (GMT, O[o].name, F_OK)) continue;	/* File exists locally */
 				if (!strcmp (N[n].name, O[o].name)) {	/* File is in the hash table */
+					found = true;	/* We will exit this loop regardless of what happens next below */
 					if (strcmp (N[n].md5, O[o].md5)) {	/* New MD5 differs from entry in MD5 old file */
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Server and cached versions of %s have different MD5 hash codes - must download new copy\n", N[n].name);
 						gmt_remove_file (GMT, url);	/* Need to re-download so be gone with it */
-						found = true;	/* So we can exit this loop */
 					}
 					else {	/* Do size check */
 						struct stat buf;
@@ -286,14 +286,15 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 							continue;
 						}
 						if (N[n].size != (size_t)buf.st_size) {	/* Downloaded file size differ - need to re-download */
-							GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Server and cached versions of %s have different byte sizes (%" PRIuS " versus %" PRIuS ") - must download new copy\n", N[n].name, N[n].size != (size_t)buf.st_size);
+							GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Server and cached versions of %s have different byte sizes (%" PRIuS " versus %" PRIuS ") - must download new copy\n", N[n].name, N[n].size, (size_t)buf.st_size);
 							gmt_remove_file (GMT, url);	/* Need to re-download so be gone with it */
-							found = true;	/* So we can exit this loop */
 						}
+						else
+							GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Server and cached versions of %s are identical - no need to download\n", N[n].name);
 					}
 				}
 			}
-			if (!found) {	/* This file is present locally but is no longer part of files on the server and should be removed */
+			if (!found) {	/* This file was present locally but is no longer part of files on the server and should be removed */
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s no longer supported on server - delete local copy\n", O[o].name);
 				gmt_remove_file (GMT, url);
 			}
