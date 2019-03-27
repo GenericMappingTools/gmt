@@ -1431,7 +1431,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 				if (ftlat[row] < slati || ftlat[row] > slatf) continue;		/* Current point outside WOI */
 				gmt_M_col_loop (GMT, Gout,row,col,ij) {
 					if (ftlon[col] < sloni || ftlon[col] > slonf) continue;	/* Current point outside WOI */
-					/* Compute dec and dip at corrent point */
+					/* Compute dec and dip at current point */
 					if (!Ctrl->C.const_f) {		/* It means we need to get F (& M) vector parameters */
 						igrf10syn(GMT, 0, Ctrl->T.year, 1, 0, ftlon[col], ftlat[row], out_igrf); 
 						Ctrl->C.dec = out_igrf[5] * D2R;

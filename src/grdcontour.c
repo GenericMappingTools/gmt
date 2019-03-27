@@ -169,9 +169,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A[-|[+]<annot_int>][<labelinfo>] [%s]\n", name, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C[+]<cont_int>|<cpt>] [%s] [-D<template>] [-F[l|r]] [%s] [%s] %s\n", GMT_J_OPT, GMT_Jz_OPT, GMT_CONTG, GMT_K_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<low>/<high>|n|N|P|p] [-N[<cpt>]] %s%s[-Q[<cut>[<unit>]][+z]] [%s]\n", GMT_O_OPT, GMT_P_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A[-|[+]<annot_int>][<labelinfo>] [%s] [-C[+]<cont_int>|<cpt>] [%s]\n", name, GMT_B_OPT, GMT_J_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<template>] [-F[l|r]] [%s] [%s] %s [-L<low>/<high>|n|N|P|p]\n", GMT_Jz_OPT, GMT_CONTG, GMT_K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N[<cpt>]] %s%s[-Q[<cut>[<unit>]][+z]] [%s]\n", GMT_O_OPT, GMT_P_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[a|c]<pen>[+c[l|f]]]\n\t[%s] [%s] [-Z[+s<fact>][+o<shift>][+p]\n",
 	                                 GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
@@ -453,7 +453,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				if (opt->arg[0]) {
 					size_t last = strlen (opt->arg) - 1;
 					Ctrl->Q.active = true;
-					if (strchr (GMT_LEN_UNITS, opt->arg[last]))	/* Gave a mininum length in data units */
+					if (strchr (GMT_LEN_UNITS, opt->arg[last]))	/* Gave a minimum length in data units */
 						Ctrl->Q.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->Q.length), &(Ctrl->Q.unit));
 					else if (opt->arg[last] == 'C') {	/* Projected units */
 						Ctrl->Q.length = atof (opt->arg);
@@ -982,12 +982,12 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		/* If -N[<cpt>] is given then we split the call into a grdview + grdcontour sequence.
 	 	 * We DO NOT parse any options here or initialize GMT, and just bail after running the two modules */
 	
-		char cmd1[GMT_LEN512] = {""}, cmd2[GMT_LEN512] = {""}, string[GMT_LEN128] = {""}, cptfile[PATH_MAX] = {""};
+		char cmd1[GMT_LEN512] = {""}, cmd2[GMT_LEN512] = {""}, string[GMT_LEN128] = {""}, cptfile[PATH_MAX] = {""}, *ptr = NULL;
 		struct GMT_OPTION *opt = NULL;
 		bool got_cpt = (optN->arg[0]), is_continuous, got_C_cpt = false;
 		size_t L;
 		
-		/* Make sure we dont pass options not compatible with -N */
+		/* Make sure we don't pass options not compatible with -N */
 		if ((opt = GMT_Find_Option (API, 'D', options))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot use -D with -N\n");
 			bailout (GMT_PARSE_ERROR);
@@ -1077,7 +1077,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 		is_continuous = P->is_continuous;
 		/* Free the P object unless it was an input memory object */
-		if (!gmt_M_file_is_memory (cptfile) && GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
+		ptr = cptfile;	/* To avoid warning message from gmt_M_file_is_memory */
+		if (!gmt_M_file_is_memory (ptr) && GMT_Destroy_Data (API, &P) != GMT_NOERROR) {
 			Return (API->error);
 		}
 		if (is_continuous) {	/* More bad news */
@@ -1230,7 +1231,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		Ctrl->C.interval = x;
 		Ctrl->A.interval = 2.0 * x;
 		Ctrl->C.active  = Ctrl->A.active = Ctrl->contour.annot = true;
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Auto-determined contour inverval = %g and annotation interval = %g\n", Ctrl->C.interval, Ctrl->A.interval);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Auto-determined contour interval = %g and annotation interval = %g\n", Ctrl->C.interval, Ctrl->A.interval);
 	}
 	
 	if (!strcmp (Ctrl->contour.unit, "z")) strncpy (Ctrl->contour.unit, G->header->z_units, GMT_LEN64-1);
@@ -1528,7 +1529,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 				}
 				else	/* Just based on the point count */
 					use_contour = (n >= Ctrl->Q.min);
-				if (!use_contour) {	/* Dont want this guy */
+				if (!use_contour) {	/* Don't want this guy */
 					gmt_M_free (GMT, x);
 					gmt_M_free (GMT, y);
 					GMT_Report (API, GMT_MSG_DEBUG, "Skipping a %g contour due to count/length limit (%g, %d)\n", cval, c_length, n);

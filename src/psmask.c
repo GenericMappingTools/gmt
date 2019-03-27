@@ -44,6 +44,12 @@
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehiprstxy" GMT_OPT("Ec")
 
+enum Mask_Modes {
+	PSMASK_INSIDE  = -1,	/* Set inside nodes to NaN */
+	PSMASK_DEFAULT =  0,	/* Leave nodes as they are */
+	PSMASK_OUTSIDE = +1	/* Set outside nodes to NaN */
+};
+
 struct PSMASK_CTRL {
 	struct C {	/* -C */
 		bool active;
@@ -60,9 +66,9 @@ struct PSMASK_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct L {	/* -L[+|-]<file> */
+	struct L {	/* -L<file>[+i|o] */
 		bool active;
-		int mode;	/* -1 = set inside node to NaN, 0 as is, +1 set outside node to NaN */
+		int mode;	/* -1 = set inside node to NaN (+i), 0 as is, +1 set outside node to NaN (+o) */
 		char *file;
 	} L;
 	struct N {	/* -N */
@@ -426,7 +432,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> %s %s\n", name, GMT_I_OPT, GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [%s] [-C] [-D<template>] [-G<fill>]\n\t[%s] %s[-L<grid>] [-N] %s%s[-Q<min>] [-S%s] [-T]\n", GMT_Rgeoz_OPT, GMT_B_OPT, GMT_Jz_OPT, GMT_K_OPT, GMT_O_OPT, GMT_P_OPT, GMT_RADIUS_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [%s] [-C] [-D<template>] [-F[l|r]] [-G<fill>]\n\t[%s] %s[-L<grid>[+i|o]] [-N] %s%s[-Q<min>] [-S%s] [-T]\n", GMT_Rgeoz_OPT, GMT_B_OPT, GMT_Jz_OPT, GMT_K_OPT, GMT_O_OPT, GMT_P_OPT, GMT_RADIUS_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_Y_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_r_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -444,10 +450,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If an integer format (e.g., %%06d) is found we substitute a running segment count\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and write all polygons to individual files; see manual page for more examples.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -T; see -Q to eliminate small polygons.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Force clip contours to be oriented so that the higher z-values\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   are to the left (-Fl [Default]) or right (-Fr) as we move along\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the contour lines [Default is not oriented].\n");
 	gmt_fill_syntax (API->GMT, 'G', "Select fill color/pattern [Default is no fill].");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Save internal on/off node grid to <grid> for testing [no grid saved].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -L+ to change inside nodes to NaNs or -L- to change outside nodes to NaNs.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i to change inside nodes to NaNs or +o to change outside nodes to NaNs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Invert the sense of the clipping [or tiling].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not dump contours with less than <cut> points [Dump all contours].\n");
@@ -475,6 +484,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
+	char *c = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -534,13 +544,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 				break;
 			case 'L':
 				Ctrl->L.active = true;
-				k = 1;
-				switch (opt->arg[0]) {
-					case '-': Ctrl->L.mode = -1;	break;
-					case '+': Ctrl->L.mode = +1;	break;
-					default: k = 0;	break;
+				k = 0;
+				if (opt->arg[0] == '-')	/* Old style leading -<name> */
+					Ctrl->L.mode = PSMASK_INSIDE, k = 1;
+				else if (opt->arg[0] == '+')	/* Old style leading +<name> */
+					Ctrl->L.mode = PSMASK_OUTSIDE, k = 1;
+				else if ((c = strstr (opt->arg, "+i"))) {	/* Appended modifier +i */
+					c[0] = '\0';	/* Temporarily chop off modifier */
+					Ctrl->L.mode = PSMASK_INSIDE;
+				}
+				else if ((c = strstr (opt->arg, "+o"))) {	/* Appended modifier +o */
+					c[0] = '\0';	/* Temporarily chop off modifier */
+					Ctrl->L.mode = PSMASK_OUTSIDE;
 				}
 				if (opt->arg[k]) Ctrl->L.file = strdup (&opt->arg[k]);
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'N':
 				Ctrl->N.active = true;

@@ -448,7 +448,7 @@ struct MGD77_HEADER_LOOKUP MGD77_Header_Lookup[MGD77_N_HEADER_PARAMS] = {
 };
 
 void MGD77_Init_Ptr (struct GMT_CTRL *C, struct MGD77_HEADER_LOOKUP *H, struct MGD77_HEADER_PARAMS **P) {
-	/* Assigns array of pointers to each idividual parameter */
+	/* Assigns array of pointers to each individual parameter */
 	int i;
 
 	gmt_M_unused(C);

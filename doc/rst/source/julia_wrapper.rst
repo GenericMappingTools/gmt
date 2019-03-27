@@ -253,7 +253,7 @@ Definition of the *daset type*.
         comment::Array{Any,1}   # Cell array with any comments
     end
 
-Definition of the *cpt type* that holds a CPT paltette.
+Definition of the *cpt type* that holds a CPT palette.
 
 .. _ps-type:
 

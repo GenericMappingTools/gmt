@@ -133,13 +133,21 @@ GMT_LOCAL int parse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 				else if (k < last && in[k+1] == 'o') {mod = 'o'; ignore5 = false; gmt5++;}	/* oblique pole settings */
 				else if (k < last && in[k+1] == 'p') {mod = 'p'; ignore5 = true;  gmt5++;}	/* prefix settings */
 				else if (k < last && in[k+1] == 'l') {mod = 'l'; ignore5 = true;  gmt5++;}	/* Label */
+				else if (k < last && in[k+1] == 'L') {mod = 'L'; ignore5 = true;  gmt5++;}	/* Forced horizontal Label */
+				else if (k < last && in[k+1] == 's') {mod = 's'; ignore5 = true;  gmt5++;}	/* Secondary label */
+				else if (k < last && in[k+1] == 'S') {mod = 'S'; ignore5 = true;  gmt5++;}	/* Forced horizontal Secondary lLabel */
 				else if (k < last && in[k+1] == 't') {mod = 't'; ignore5 = true;  gmt5++;}	/* title */
+				else if (k < last && in[k+1] == 'n') {mod = 'n'; ignore5 = true;  gmt5++;}	/* Turn off frames and annotations */
 				else if (k && (in[k-1] == 'Z' || in[k-1] == 'z')) {ignore5 = false; gmt4++;}	/* Z-axis with 3-D box */
 				break;
 			case 'c':	/* If following a number this is unit c for seconds in GMT4 */
 				if (!custom && k && (in[k-1] == '.' || isdigit (in[k-1]))) gmt4++;	/* Old-style second unit */
-			case 'W': case 'E': case 'S': case 'N': case 'Z': case 'w': case 'e': case 'n': case 'z':	/* Not checking s as confusion with seconds */
+				break;
+			case 'W': case 'E': case 'S': case 'N': case 'Z': case 'w': case 'e': case 'z':	/* Not checking s as confusion with seconds and n because of +n */
 				if (k > 1) wesn_at_end++;	/* GMT5 has -B<WESNwesn> up front while GMT4 usually has them at the end */
+				break;
+			case 'n':	/* Tell this apart from +n */
+				if (!(k && in[k-1] == '+') && k > 1) wesn_at_end++;	/* GMT5 has -B<WESNwesn> up front while GMT4 usually has them at the end */
 				break;
 		}
 	}

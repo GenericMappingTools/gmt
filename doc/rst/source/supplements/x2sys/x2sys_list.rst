@@ -99,7 +99,10 @@ Optional Arguments
     specified track only (except for **n**,\ **N** which then refers to
     the other track). The sign convention for **c**,\ **i** is track one
     minus track two (lexically sorted). Time intervals will be returned
-    according to the **TIME_UNIT** GMT defaults setting.
+    according to the **TIME_UNIT** GMT defaults setting.  The output order
+    of the columns follows the order they were given in *flags* with the
+    exception that **n**, if chosen, will always be placed after all
+    numeric columns (it becomes part of the trailing text).
 
 .. _-i:
 
@@ -160,6 +163,14 @@ Optional Arguments
 .. include:: ../../explain_-bo.rst_
 
 .. include:: ../../explain_help.rst_
+
+Input Format
+------------
+
+In moving to a more robust data record definition in GMT 6, all text
+items are now placed after all numerical items.  For **x2sys_list**, this
+means that whereas the *ID1, ID2* track ids used to be written to the first two
+columns, they are now placed at the end as part of the trailing text.
 
 Examples
 --------

@@ -12,7 +12,7 @@
  *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *	GNU Lesser General Public License for more details.
  *
- *	Contact info: gmSRTMt.soest.hawaii.edu
+ *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
  * grdblend reads any number of grid files that may partly overlap and
@@ -61,7 +61,7 @@ struct GRDBLEND_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct GRDBLEND_C {	/* -C */
+	struct GRDBLEND_C {	/* -Cf|l|o|u[+n|p] */
 		bool active;
 		unsigned int mode;
 		int sign;
@@ -583,7 +583,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<blendfile> | <grid1> <grid2> ...] -G<outgrid>\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s %s [-Cf|l|o|u][-|+]\n\t[-N<nodata>] [-Q] [%s] [-W[z]] [-Z<scale>] [%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t%s %s [-Cf|l|o|u][+n|p]\n\t[-N<nodata>] [-Q] [%s] [-W[z]] [-Z<scale>] [%s] [%s] [%s] [%s]\n\n",
 		GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -609,17 +609,17 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     l: The lowest input grid value determines the final value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     o: The last input grid overrides any previous value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     u: The highest input grid value determines the final value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append - (only consider clobbering if grid value is <= 0) or\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   + (only consider clobbering if grid value is >= 0.0) [consider any value].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +n (only consider clobbering if grid value is <= 0) or\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +p (only consider clobbering if grid value is >= 0.0) [consider any value].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set value for nodes without constraints [Default is NaN].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Grdraster-compatible output without leading grid header [Default writes GMT grid file].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Raster output without a leading grid header [Default writes GMT grid file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Output grid must be in one of the native binary formats.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Write out weight-sum only [make blend grid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append z to write weight-sum w times z instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Multiply z-values by this scale before writing to file [1].\n");
 	GMT_Option (API, "f,n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (-n is passed to grdsample if grids are not co-registered).\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   (-n is passed to grdsample if grids are not co-registered).\n");
 	GMT_Option (API, "r,.");
 	
 	return (GMT_MODULE_USAGE);
@@ -655,23 +655,29 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GM
 			case 'C':	/* Clobber mode */
 				Ctrl->C.active = true;
 				switch (opt->arg[0]) {
-					case 'u': Ctrl->C.mode = BLEND_UPPER; break;
-					case 'l': Ctrl->C.mode = BLEND_LOWER; break;
 					case 'f': Ctrl->C.mode = BLEND_FIRST; break;
-					case 'o': Ctrl->C.mode = BLEND_LAST; break;
+					case 'l': Ctrl->C.mode = BLEND_LOWER; break;
+					case 'o': Ctrl->C.mode = BLEND_LAST;  break;
+					case 'u': Ctrl->C.mode = BLEND_UPPER; break;
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Modifiers are f|l|o|u only\n");
 						n_errors++;
 						break;
 				}
-				switch (opt->arg[1]) {	/* Any restriction due to sign */
-					case '-':  Ctrl->C.sign = -1; break;
-					case '+':  Ctrl->C.sign = +1; break;
-					case '\0': Ctrl->C.sign =  0; break;
-					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C%c option: Sign modifiers are -|+ only\n", opt->arg[0]);
-						n_errors++;
-						break;
+				if (strstr (opt->arg, "+p"))		/* Only use nodes >= 0 in the updates */
+					Ctrl->C.sign = +1;
+				else if (strstr (opt->arg, "+n"))	/* Only use nodes <= 0 in the updates */
+					Ctrl->C.sign = -1;
+				else {	/* May be nothing of old-style trailing - or + */
+					switch (opt->arg[1]) {	/* Any restriction due to sign */
+						case '-':  Ctrl->C.sign = -1; break;
+						case '+':  Ctrl->C.sign = +1; break;
+						case '\0': Ctrl->C.sign =  0; break;
+						default:
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C%c option: Sign modifiers are +n|p\n", opt->arg[0]);
+							n_errors++;
+							break;
+					}
 				}
 				break;
 			case 'G':	/* Output filename */

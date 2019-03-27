@@ -5,10 +5,8 @@ gmt basemap -R2001-9-11T/2001-9-13T/0.01/100 -JX2.25iT/2.25il -Bpxa6Hf1hg6h+l"x-
 	-X2i -Bsxa1D -U"Dazed and Confused"+o-0.75i/-0.85i --GMT_LANGUAGE=pt \
 	--FORMAT_TIME_STAMP="2011 Jun 13 22:10:02" 
 gmt text -R0/2.25/0/2.25 -Jx1i -N -F+f7p,Helvetica-Bold,blue+j << EOF 
-0.6    2.4 RB X_AXIS_LENGTH
 -0.4   2.1 RM MAP_ANNOT_ORTHO
 -0.4   1.9 RM MAP_FRAME_AXES
--0.4  0.25 RM Y_AXIS_LENGTH
 -0.9  -0.3 LB MAP_LOGO_POS
 -0.7 -0.45 LB MAP_LOGO
 0.0   -0.6 CB FORMAT_TIME_STAMP
@@ -19,10 +17,8 @@ gmt text -R0/2.25/0/2.25 -Jx1i -N -F+f7p,Helvetica-Bold,blue+j << EOF
 2.4   -0.27 LM FONT_ANNOT_SECONDARY
 EOF
 gmt plot -Sv0.06i+s+e -N -W0.5p,blue -Gblue << EOF 
-0.65 2.4 0.9 2.3
 -0.35 2.1 -0.05 2.1
 -0.35 1.9 -0.05 1.9
--0.35 0.25 -0.05 0.25
 -0.9 -0.3 -0.75 -0.85
 -0.7 -0.47 -0.6 -0.66
 0.0 -0.62 0.2 -0.75

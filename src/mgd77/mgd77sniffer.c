@@ -573,7 +573,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	double thisLon, thisLat, lastLon, lastLat, *MaxDiff = NULL, **diff = NULL, *decimated_orig, wrapsum, tcrit, se,  n_days;
 	double *offsetLength, *decimated_new, recommended_scale, *new_anom = NULL, *old_anom = NULL, IGRF[8], lastCorr = 0.0;
 
-	char timeStr[32] = {""}, placeStr[128] = {""}, errorStr[128] = {""}, outfile[32] = {""}, abbrev[8] = {""}, fstats[MGD77_N_STATS][GMT_LEN64], text[GMT_LEN64] = {""};
+	char timeStr[32] = {""}, placeStr[128] = {""}, errorStr[128] = {""}, outfile[128] = {""}, abbrev[8] = {""}, fstats[MGD77_N_STATS][GMT_LEN64], text[GMT_LEN64] = {""};
 
 	bool *prevOffsetSign, prevFlag, prevType, decimated = false;
 	bool gotTime, landcruise, *offsetSign, newScale = false, mtf1, nav_error;

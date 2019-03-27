@@ -234,9 +234,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   z  Anisotropic part of seismic moment tensor (Harvard CMT, with zero trace):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Fo option for old (psvelomeca) format (no depth in third column).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add /fontsize[/offset][u] [Default values are /%g/%fp]\n", DEFAULT_FONTSIZE, DEFAULT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add /fontsize[/offset][+u] [Default values are /%g/%fp]\n", DEFAULT_FONTSIZE, DEFAULT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written; offset is from the limit of the beach ball.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   By default label is above the beach ball. Add u to plot it under.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   By default label is above the beach ball. Add +u to plot it under.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Tn[/<pen>] Draw nodal planes and circumference only to provide a transparent\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   beach ball using the default pen (see -W) or sets pen attribute. \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n = 1 the only first nodal plane is plotted.\n");
@@ -388,7 +388,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 				break;
 			case 'S':	/* Get symbol [and size] */
 				Ctrl->S.active = true;
-				if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
+				if ((p = strstr (opt->arg, "+u"))) {
+					Ctrl->S.justify = PSL_TC;
+					p[0] = '\0';	/* Chop off modifier */
+				}
+				else if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
 				txt[0] = txt_b[0] = txt_c[0] = '\0';
 				sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
 				if (txt[0]) Ctrl->S.scale = gmt_M_to_inch (GMT, txt);
@@ -432,6 +436,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 						n_errors++;
 						break;
 				}
+				if (p) p[0] = '+';	/* Restore modifier */
 				break;
 			case 'T':
 				Ctrl->T.active = true;

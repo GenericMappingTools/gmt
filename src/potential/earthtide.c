@@ -134,11 +134,11 @@ GMT_LOCAL double getutcmtai(double tsec, bool *leapflag) {
 	/*  test upper table limit (upper limit set by bulletin C memos) */
 	if (mjd0t > 58664) {
 		*leapflag = true;		/* true means flag *IS* raised */
-		return -37;				/* return the upper table valu */
+		return -37;				/* return the upper table value */
 	}
 	else if (mjd0t < 41317) {	/*  test lower table limit */
 		*leapflag = true;		/* true means flag *IS* raised */
-		return -10;				/* return the lower table valu */
+		return -10;				/* return the lower table value */
 	}
 
 	/*  http://maia.usno.navy.mil/ser7/tai-utc.dat */
@@ -452,7 +452,7 @@ GMT_LOCAL void step2diu(double *xsta, double fhr, double t, double *xcorsta) {
 		0.,0.,1.,0.,0.,.01,0.,0. };
 
 	int i, j;
-	double h, t2, t3, t4, cosphi2, sinphi2, sin_tf, cos_tf;
+	double h, t2, t3, cosphi2, sinphi2, sin_tf, cos_tf;
 	double p, s, de, dn, dr, pr, ps, zla, tau, zns, rsta, cosla, sinla, thetaf, cosphi, sinphi;
 
 	/* ** note, following table is derived from dehanttideinelMJD.f (2000oct30 16:10) */
@@ -493,7 +493,6 @@ GMT_LOCAL void step2diu(double *xsta, double fhr, double t, double *xcorsta) {
 	/* *** v.dehant 2 */
 	t2 = t * t;
 	t3 = t * t2;
-	t4 = t2 * t2;
 	s = 218.31664563 + 481267.88194 * t - .0014663889 * t2 + 1.85139e-6 * t3;
 	tau = fhr * 15. + 280.4606184 + t * 36000.7700536 + t * 3.8793e-4 * t - t3 * 2.58e-8 - s;
 	pr = t * 1.396971278f + t * 3.08889e-4f * t + t3 * 2.1e-8f + t2 * 7e-9f;
@@ -738,7 +737,7 @@ GMT_LOCAL void detide(double *xsta, int mjd, double fmjd, double *xsun, double *
 	 * of the IAG (1983).  This resolution has not been implemented by
 	 * the space geodesy community in general (c.f. IERS Conventions 2003).
 	 * -----------------------------------------------------------------------
-	 * ** uncorrect for the permanent tide  (only if you want mean tide system)
+	 * ** incorrect for the permanent tide  (only if you want mean tide system)
 	 * **   pi=3.141592654
 	 * **   sinphi=xsta(3)/rsta
 	 * **   cosphi=dsqrt(xsta(1)**2+xsta(2)**2)/rsta
@@ -991,7 +990,7 @@ GMT_LOCAL void setjd0(int iyr, int imo, int idy) {
 GMT_LOCAL void civmjd(int iyr, int imo, int idy, int ihr, int imn, double sec, int *mjd, double *fmjd) {
 	/* convert civil date to modified julian date */
 	/* imo in range 1-12, idy in range 1-31 */
-	/* only valid in range mar-1900 thru feb-2100     (leap year protocols) */
+	/* only valid in range mar-1900 through feb-2100     (leap year protocols) */
 	/* ref: hofmann-wellenhof, 2nd ed., pg 34-35 */
 	/* operation confirmed against table 3.3 values on pg.34 */
 	int m, y, it1, it2;
@@ -1013,7 +1012,7 @@ GMT_LOCAL void civmjd(int iyr, int imo, int idy, int ihr, int imn, double sec, i
 GMT_LOCAL void mjdciv(int mjd, double fmjd, int *iyr, int *imo, int *idy, int *ihr, int *imn, double *sec) {
 	/* convert modified julian date to civil date */
 	/* imo in range 1-12, idy in range 1-31 */
-	/* only valid in range mar-1900 thru feb-2100 */
+	/* only valid in range mar-1900 through feb-2100 */
 	/* ref: hofmann-wellenhof, 2nd ed., pg 34-35 */
 	/* operation confirmed for leap years (incl. year 2000) */
 	static int ia, ib, ic, id, ie, it1, it2, it3;
@@ -1244,7 +1243,7 @@ GMT_LOCAL void solid_ts(struct GMT_CTRL *GMT, struct GMT_GCAL *Cal, double lon, 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<outgrid> -T[<min>/<max>/][-|+]<inc>[<unit>][+n] [-C<comp>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<outgrid> -T[<min>/<max>/]<inc>[<unit>][+n] [-C<comp>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-L<lon>/<lat>]\n\t[%s] [-S]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_bo_OPT, GMT_o_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 

@@ -14,8 +14,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt mgd77manage** *NGDC-ids*
-[ |-A|\ [**+**]\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo* ] 
-[ |-C|\ **f**\ \|\ **g**\ \|\ **e** ]
+[ |-A|\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo*\ [**+f**]\ ] 
 [ |-D|\ *abbrev1*,\ *abbrev2*,...) ]
 [ |-E|\ *empty* ]
 [ |-F| ]
@@ -25,6 +24,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT--| ]
 
@@ -56,10 +56,10 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+**\ ]\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo*
+**-A**\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo*\ [**+f**\ ]
     Add a new data column. If an existing column with the same
     abbreviation already exists in the file we will cowardly refuse to
-    update the file. Specifying **-A+** overcomes this reluctance
+    update the file. Append **+f** to overcome this reluctance
     (However, sometimes an existing column cannot be upgraded without
     first deleting it; if so you will be warned). Select a column source
     code among **a**, **c**, **d**, **D**, **e**, **g**, **i**, **n**,
@@ -87,7 +87,7 @@ Optional Arguments
     matching distances in the MGD77+ file will be assigned the new
     values; at other distances we set them to NaN. Alternatively, give
     upper case **D** instead and we will interpolate the column at all
-    record distances. See **-N** for choosing distance units and **-C**
+    record distances. See **-N** for choosing distance units and **-j**
     for choosing how distances are calculated.
 
     **e** Expects to find an e77 error/correction log from
@@ -114,7 +114,7 @@ Optional Arguments
     header corrections, **f** will ignore all fixed systematic trend
     corrections, **n**, **v**, and **s** will ignore bitflags pertaining
     to navigation, data values, and data slopes, respectively. Use
-    **-A+e** to replace any existing E77 corrections in the file with
+    **-Ae+f** to replace any existing E77 corrections in the file with
     the new values. Finally, e77 corrections will not be applied if the
     E77 file has not been verified. Use **-AE** to ignore the
     verification status.
@@ -148,25 +148,12 @@ Optional Arguments
     case **T** instead and we will interpolate the column at all record
     times.
 
-.. _-C:
-
-**-C**\ **f**\ \|\ **g**\ \|\ **e**
-    Append a one-letter code to select the procedure for along-track
-    distance calculation when using **-Ad**\ \|\ **D** (see **-N** for
-    selecting distance units):
-
-    **f** Flat Earth distances.
-
-    **g** Great circle distances [Default].
-
-    **e** Geodesic distances on current GMT ellipsoid.
-
 .. _-D:
 
 **-D**\ *abbrev1*,\ *abbrev2*,...)
     Give a comma-separated list of column abbreviations that you want to
     delete from the MGD77+ files. Do NOT use this option to remove
-    columns that you are replacing with new data (use **-A+** instead).
+    columns that you are replacing with new data (use **-A...+f** instead).
     Because we cannot remove variables from netCDF files we must create
     a new file without the columns to be deleted. Once the file is
     successfully created we temporarily rename the old file, change the
@@ -228,6 +215,8 @@ Optional Arguments
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_
+
+.. include:: ../../explain_distcalc.rst_
 
 .. include:: ../../explain_-n.rst_
 
@@ -304,7 +293,7 @@ Convert the ASCII MGD77 files to the new netCDF MGD77+ format using
 :doc:`mgd77convert`. Typically, you will make a list of all the cruises to
 be converted (with or without extension), and you then run
 
-    mgd77convert =cruises.lis -Fa -Tc -V -Lwe+ > log.txt
+    mgd77convert =cruises.lis -Fa -Tc -V -Lwe+l > log.txt
 
 The verbose settings will ensure that all problems found during
 conversion will be reported. The new \*.nc files may also be placed in

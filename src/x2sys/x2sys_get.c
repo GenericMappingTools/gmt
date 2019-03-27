@@ -107,7 +107,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i to include internal pairs in the list [external only].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Comma-separated list of column field names that ALL must be missing.\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);

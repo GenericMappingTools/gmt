@@ -102,7 +102,7 @@ struct GRD2CPT_CTRL {
 		double low, high, inc;
 		char *file;
 	} T;
-	struct S {	/* -T<kind> */
+	struct S {	/* -S<kind> */
 		bool active;
 		int kind; /* -1 symmetric +-zmin, +1 +-zmax, -2 = +-Minx(|zmin|,|zmax|), +2 = +-Max(|zmin|,|zmax|), 0 = min to max [Default] */
 	} S;
@@ -137,7 +137,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A<transparency>[+a]] [-C<cpt>] [-D[i]] [-E[<nlevels>]] [-F[R|r|h|c][+c]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]]\n\t[%s] [-T<start>/<stop>/<inc> or -T<n>]\n\t[-S<-|+|=|_>] [%s] [-W[w]] [-Z] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T<start>/<stop>/<inc> or -T<n>]\n\t[-Sh|l|m|u] [%s] [-W[w]] [-Z] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -172,7 +173,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   m (min)   for values symmetric about zero -+min(|zmin|,|zmax|).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   h (high)  for values symmetric about zero -+max(|zmin|,|zmax|).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T CDF sample points should range from <start> to <stop> by <inc>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -S<n> to select <n> points from a cumulative normal distribution [%d].\n", GRD2CPT_N_LEVELS);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -T<n> to select <n> points from a cumulative normal distribution [%d].\n", GRD2CPT_N_LEVELS);
 	GMT_Message (API, GMT_TIME_NONE, "\t   <start> maps to data min and <stop> maps to data max (but see -L).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses equidistant steps for a Gaussian CDF].\n");
 	GMT_Option (API, "V");

@@ -622,11 +622,10 @@ planet, :math:`\theta` is latitude, and the difference in longitudes,
 jumps that might occur across Greenwich or the Dateline. As written, the
 geographic coordinates are given in radians. This approach is suitable
 when the points you use to compute :math:`d_f` do not greatly differ in
-latitude and computation speed is paramount. You can specify this mode
-of computation by using the **-** prefix to the specified distance (or
-to the unit itself in cases where no distance is required and only a
-unit is expected). For instance, a search radius of 50 statute miles
-using this mode of computation might be specified via **-S-**\ 50\ **M**.
+latitude and computation speed is paramount. You can select this mode
+of computation by specifying the common GMT option **-j** and appending the directive
+**f** (for Flat Earth).  For instance, a search radius of 50 statute miles
+using this mode of computation might be specified via **-S**\ 50\ **M** **-jf**.
 
 Great circle distances
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -667,10 +666,10 @@ Geodesic distances
 For the most accurate calculations we use a full ellipsoidal
 formulation. Currently, we are using Vincenty's [1975] formula [7]_
 which is accurate to 0.5 mm. You
-select this mode of computation by using the **+** prefix to the
-specified distance (or to the unit itself in cases where no distance is
-required). For instance, a search radius of 20 km using this mode of
-computation would be set by **-S+**\ 20\ **k**.  You may use the
+select this mode of computation by using the common GMT option **-j**
+and appending the directive **e** (for ellipsoidal).
+For instance, a search radius of 20 km using this mode of
+computation would be set by **-S**\ 20\ **k** **-je**.  You may use the
 setting :ref:`PROJ_GEODESIC <PROJ_GEODESIC>` which defaults to
 *Vincenty* but may also be set to *Rudoe* for old GMT4-style calculations
 or *Andoyer* for an approximate geodesic (within a few tens of meters)
@@ -842,7 +841,7 @@ Standardized command line options
 ---------------------------------
 
 Most of the programs take many of the same arguments such as those related
-to setting the data region, the map projection, etc. The 26 switches in
+to setting the data region, the map projection, etc. The 27 switches in
 Table :ref:`switches <tbl-switches>` have the same meaning in all the programs (although
 some programs may not use all of them). These options will be described
 here as well as in the manual pages, as is vital that you understand how
@@ -888,6 +887,8 @@ importance (some are used a lot more than others).
 | **-h**   | Specify that input/output tables have header record(s)             |
 +----------+--------------------------------------------------------------------+
 | **-i**   | Specify which input columns to read                                |
++----------+--------------------------------------------------------------------+
+| **-j**   | Specify how spherical distances should be computed                 |
 +----------+--------------------------------------------------------------------+
 | **-n**   | Specify grid interpolation settings                                |
 +----------+--------------------------------------------------------------------+
@@ -1522,7 +1523,7 @@ The upper uses Gregorian weeks (which start at the day chosen by
     gmt set FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character \
            FORMAT_TIME_SECONDARY_MAP full FONT_ANNOT_PRIMARY +9p
     gmt psbasemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1U -BS -P -K > GMT_-B_time5.ps
-    gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Chararacter
+    gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Character
     gmt psbasemap -R -J -Bpa3Kf1k -Bsa1r -BS -O -Y0.65i >> GMT_-B_time5.ps
 
 .. _cartesian_axis5:
@@ -1897,7 +1898,7 @@ records are considered bad and simply skipped. If you wish such records
 to indicate a segment boundary then set this parameter to *pass*.
 Finally, you may wish to indicate gaps based on the data values
 themselves. The **-g** option is used to detect gaps based on one or
-more criteria (use **-g+** if *all* the criteria must be met; otherwise
+more criteria (use **-ga** if *all* the criteria must be met; otherwise
 only one of the specified criteria needs to be met to signify a data
 gap). Gaps can be based on excessive jumps in the *x*- or
 *y*-coordinates (**-gx** or **-gy**), or on the distance between points
@@ -1911,6 +1912,10 @@ upper-case **-gX**, **-gY** or **-gD**). In that case, choose from
 **c**\ entimeter, **i**\ nch or **p**\ oint [Default unit is controlled
 by **PROJ_LENGTH_UNIT**]. Note: For **-gx** or **-gy** with time data
 the unit is instead controlled by :ref:`TIME_UNIT <TIME_UNIT>`.
+Normally, a gap is computed as the absolute value of the
+specified distance measure (see above).  Append **+n** to compute the gap
+as previous minus current column value and **+p** for current minus previous
+column value.
 
 Header data records: The **-h** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5898,7 +5903,7 @@ A simple world map using the sinusoidal projection is therefore obtained by
 
    ::
 
-     gmt pscoast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Ggray -P > GMT_sinusoidal.ps
+     gmt pscoast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Gcoral4 -Sazure3 -P > GMT_sinusoidal.ps
 
 .. figure:: /_images/GMT_sinusoidal.*
    :width: 500 px
@@ -5951,7 +5956,7 @@ Centered on the Dateline, the example below was created by this command:
 
     ::
 
-      gmt pscoast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -A10000 -Wthinnest -P > GMT_grinten.ps
+      gmt pscoast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -Scornsilk -A10000 -Wthinnest -P > GMT_grinten.ps
 
 .. figure:: /_images/GMT_grinten.*
    :width: 400 px
@@ -7976,15 +7981,16 @@ Figure :ref:`Custom symbols <Custom_symbols>`)
    :width: 500 px
    :align: center
 
-   Custom plot symbols supported by GMT. Note that we only show
-   the symbol outline and not any fill. These are all single-parameter symbols.
+   Custom plot symbols supported by GMT. These are all single-parameter symbols.
    Be aware that some symbols may have a hardwired fill or no-fill component,
    while others duplicate what is already available as standard built-in symbols.
 
 
 You may find it convenient to examine some of these and use them as a
 starting point for your own design; they can be found in GMT's
-share/custom directory.
+share/custom directory.  In addition to the ones listed in Figure :ref:`Custom symbols <Custom_symbols>`
+you can use the symbol **QR** to place the GMT QR Code that links to www.generic-mapping-tools.org;
+alternatively use **QR_transparent** to *not* plot the background opaque white square.
 
 The macro language
 ------------------
@@ -8045,7 +8051,8 @@ out parameters for pre-processing. The available types are
   Use octal \\040 to include spaces to ensure the text string remains a single word.
 
 To use the extra parameters in your macro you address them as $1, $2, etc.  There
-is no limit on how many parameters your symbol may use.
+is no limit on how many parameters your symbol may use. To access the trailing text in
+the input file you use $t.
 
 Macro commands
 ~~~~~~~~~~~~~~
@@ -8269,6 +8276,9 @@ Using a comparison between variables is similarly straightforward:
     ::
 
      if $2 > $3 then 0.2 0.3 0.4 c -Ggreen
+
+If you are comparing text strings then $t can be on either side of the operator and
+the other side would be a string constant (in quotes if containing spaces).
 
 Complete conditional test
 ^^^^^^^^^^^^^^^^^^^^^^^^^

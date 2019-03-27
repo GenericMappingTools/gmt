@@ -61,8 +61,8 @@
 
 /* For options needing a length or radius */
 
-#define GMT_DIST_OPT	"[-|+]<dist>[<unit>]"
-#define GMT_RADIUS_OPT	"[-|+]<radius>[<unit>]"
+#define GMT_DIST_OPT	"<dist>[<unit>]"
+#define GMT_RADIUS_OPT	"<radius>[<unit>]"
 
 /* Options for map rose, scale and insert, used in pscoast and psbasemap */
 
@@ -82,7 +82,7 @@
 /* Argument to *contour programs */
 
 #define GMT_CONTG	"-G[d|f|n|l|L|x|X]<args>"
-#define GMT_CONTT	"-T[+|-][+a][+d<gap>[c|i|p][/<length>[c|i|p]]][+l[<labels>]]"
+#define GMT_CONTT	"-T[h|l][+a][+d<gap>[c|i|p][/<length>[c|i|p]]][+l[<labels>]]"
 
 /* Options for coastline extraction  */
 #define GMT_A_OPT       "-A<min_area>[/<min_level>/<max_level>][+ag|i|s|S][+r|l][+p<percent>]"
@@ -107,9 +107,10 @@
 #define GMT_d_OPT	"-d[i|o]<nodata>"
 #define GMT_e_OPT	"-e[~]<pattern>"
 #define GMT_f_OPT	"-f[i|o]<info>"
-#define GMT_g_OPT	"-g[a]x|y|d|X|Y|D|[<col>]z[-|+]<gap>[<unit>]"
+#define GMT_g_OPT	"-g[a]x|y|d|X|Y|D|[<col>]z<gap>[<unit>][+n|p]"
 #define GMT_h_OPT	"-h[i|o][<nrecs>][+c][+d][+r<remark>][+t<title>]"
 #define GMT_i_OPT	"-i<cols>[+l][+s<scale>][+o<offset>][,...]"
+#define GMT_j_OPT	"-je|f|g"
 #define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>]"
 #define GMT_o_OPT	"-o<cols>[,...]"
 #define GMT_p_OPT	"-p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>]"

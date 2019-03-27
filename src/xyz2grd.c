@@ -140,7 +140,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default format is scanline orientation in ASCII representation: -ZTLa].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This option assumes all nodes have data values.\n");
 	GMT_Option (API, "bi3,di");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Also sets value for nodes without input xyz triplet [Default is NaN].\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Also sets value for nodes without input xyz triplet [Default is NaN].\n");
 	GMT_Option (API, "e,f,h,i,r,s,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -524,7 +524,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	no_data_f = (GMT->common.d.active[GMT_IN]) ? (gmt_grdfloat)GMT->common.d.nan_proxy[GMT_IN] : GMT->session.f_NaN;
 
-	/* Set up and allocate output grid [note: zero padding specificied since no BCs required] */
+	/* Set up and allocate output grid [note: zero padding specified since no BCs required] */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL, \
 		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);
 
@@ -676,7 +676,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 					flag[ij]++;
 					break;
 				case 'S': 	/* Add up squares and means to compute standard deviation */
-					data[ij] += (gmt_grdfloat)in[zcol];	/* This adds up the means; we fall through to next case to also add up squares */
+					data[ij] += (gmt_grdfloat)in[zcol];	/* This adds up the means; we fall through to next case on purpose to also add up squares */
 				case 'r': 	/* Add up squares in case we must rms */
 					Grid->data[ij] += (gmt_grdfloat)in[zcol] * (gmt_grdfloat)in[zcol];
 					flag[ij]++;
@@ -738,12 +738,14 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 							break;
 						case 'd':	/* Keep the lowest in 'data' */
 							if (data[ij_east] < data[ij_west]) data[ij_west] = data[ij_east];
+							/* Fall through on purpose since range also needs the highsets */
 						case 'u':	/* Keep the highest */
 							if (Grid->data[ij_east] > Grid->data[ij_west]) Grid->data[ij_west] = Grid->data[ij_east];
 							flag[ij_west] += flag[ij_east];
 							break;
 						case 'S':	/* Sum up the sums in 'data' */
 							data[ij_west] += data[ij_east];
+							/* Fall through on purpose */
 						default:	/* Add up in case we must sum, rms, mean, or standard deviation */
 							Grid->data[ij_west] += Grid->data[ij_east];
 							flag[ij_west] += flag[ij_east];

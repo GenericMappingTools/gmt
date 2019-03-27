@@ -6,9 +6,9 @@
 
 .. |SYN_OPT-Rz| replace:: |-R|\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**+r**]
 
-.. |SYN_OPT-X| replace:: |-X|\ *x_offset*
+.. |SYN_OPT-X| replace:: |-X|\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *xshift*\ [**u**\ ]]
 
-.. |SYN_OPT-Y| replace:: |-Y|\ *y_offset*
+.. |SYN_OPT-Y| replace:: |-Y|\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *yshift*\ [**u**\ ]]
 
 .. |SYN_OPT-U| replace:: |-U|\ [*stamp*]
 
@@ -39,6 +39,8 @@
 .. |SYN_OPT-h| replace:: **-h**\ :ref:`headers <-h_full>`
 
 .. |SYN_OPT-i| replace:: **-i**\ :ref:`flags <-icols_full>`
+
+.. |SYN_OPT-j| replace:: **-j**\ :ref:`flags <-j_full>`
 
 .. |SYN_OPT-n| replace:: **-n**\ :ref:`flags <-n_full>`
 

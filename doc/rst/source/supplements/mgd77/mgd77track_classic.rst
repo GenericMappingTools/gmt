@@ -18,7 +18,7 @@ Synopsis
 |-J|\ *parameters*
 [ |-A|\ [**c**][*size*][**+i**\ *spacing*] ]
 [ |SYN_OPT-B| ]
-[ |-C|\ **f**\ \|\ **g**\ \|\ **e** ] [ **-Da**\ *startdate* ] 
+[ **-Da**\ *startdate* ] 
 [ |-D|\ **b**\ *stopdate* ]
 [ |-F| ]
 [ |-G|\ **d**\ \|\ **t**\ \|\ **n**\ *gap* ]
@@ -32,7 +32,7 @@ Synopsis
 [ |-T|\ **T**\ \|\ **t**\ \|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**-**\ \|\ **+**][*pen*] ]
+[ |-W|\ [*pen*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-p| ]

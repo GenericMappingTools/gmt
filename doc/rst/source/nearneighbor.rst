@@ -66,8 +66,8 @@ Required Arguments
     sectors. Average values will only be computed if there is at least
     one value inside each of at least *min_sectors* of the sectors for a given
     node. Nodes that fail this test are assigned the value NaN (but see
-    **-E**). If *min_sectors* is omitted it is set to be at least 50%
-    of *sectors* (i.e., rounded up to next integer).  [Default is a quadrant
+    **-E**). If **+m** is omitted then *min_sectors* is set to be at least 50%
+    of *sectors* (i.e., rounded up to next integer) [Default is a quadrant
     search with 100% coverage, i.e., *sectors* = *min_sectors* = 4]. Note
     that only the nearest value per sector enters into the averaging; the
     more distant points are ignored. 

@@ -46,7 +46,7 @@ Required Arguments
 
 **-T**\ *tolerance*\ [*unit*]
     Specifies the maximum mismatch tolerance in the user units. If the
-    data is not Cartesian then append the distance unit (see :ref:`Unit_attributes`).
+    data are not Cartesian then append a suitable distance unit (see :ref:`Unit_attributes`).
 
 Optional Arguments
 ------------------
@@ -111,7 +111,7 @@ write the reduced lines to file new_xylines.txt, run
 Notes
 -----
 
-There is a slight difference in how **gmtsimplify** processes lines versus
+There is a slight difference in how **simplify** processes lines versus
 closed polygons.  Segments that are explicitly closed will be considered
 polygons, otherwise we treat them as line segments.  Hence, segments
 recognized as polygons may reduce to a 3-point polygon with no area;
@@ -125,7 +125,7 @@ Specifically, it cannot be guaranteed that the reduced line does not
 cross itself. Depending on how many lines you are considering it is also
 possible that reduced lines may intersect other reduced lines. Finally,
 the current implementation only does Flat Earth calculations even if you
-specify spherical; **gmtsimplify** will issue a warning and reset the
+specify spherical; **simplify** will issue a warning and reset the
 calculation mode to Flat Earth.
 
 References

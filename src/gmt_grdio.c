@@ -192,7 +192,7 @@ GMT_LOCAL void grdio_grd_xy_scale (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER 
 	/* Apply the scaling of wesn,inc as given by the header's xy_* settings.
 	 * After reading a grid it will have wesn/inc in meters.
 	 * Before writing a grid, it may have units changed back to original units
-	 * or scaled to anoter set of units */
+	 * or scaled to another set of units */
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	if (direction == GMT_IN) {
@@ -1311,7 +1311,7 @@ GMT_LOCAL void doctor_geo_increments (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 		if (slop > 0 && slop < GMT_CONV4_LIMIT) {
 			inc = header->inc[side];
 			header->inc[side] = round_inc / scale;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Round-off patrol changed geographic grid increment for %s from %.16g to %.16g\n",
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Round-off patrol changed geographic grid increment for %s from %.18g to %.18g\n",
 				type[side], inc, header->inc[side]);
 		}
 	}
@@ -1320,7 +1320,7 @@ GMT_LOCAL void doctor_geo_increments (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 GMT_LOCAL void grdio_round_off_patrol (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* This function is called after the read info functions return.  We use it to make
 	 * sure there are no tiny inconsistencies between grid increments and limits, and
-	 * also check that geographic latitudes are withing bounds. For geographic data we
+	 * also check that geographic latitudes are within bounds. For geographic data we
 	 * also examine if the increment * 60 or 3600 is very close (< 1e-4) to an integer,
 	 * in which case we reset it to the exact reciprocal value. */
 	unsigned int k;
@@ -1528,6 +1528,7 @@ size_t gmt_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, gmt_grdfloa
 			break;
 		case 'i':
 			if (isnan (*nan_value)) *nan_value = INT_MIN;
+			/* Fall through on purpose */
 		case 'm':
 			return (sizeof (int32_t));
 			break;
@@ -2200,7 +2201,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 
 	bool global, error = false;
 	double val, dx, small;
-	char format[GMT_LEN64] = {""};
+	char format[GMT_LEN256] = {""};
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	switch (gmt_minmaxinc_verify (GMT, wesn[XLO], wesn[XHI], header->inc[GMT_X], GMT_CONV4_LIMIT)) {	/* Check if range is compatible with x_inc */
@@ -2252,7 +2253,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		if (dx > small) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
 			            "(w - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
-			snprintf (format, GMT_LEN64, "w reset from %s to %s\n",
+			snprintf (format, GMT_LEN256, "w reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, format, wesn[XLO], val);
 			wesn[XLO] = val;
@@ -2264,7 +2265,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		if (dx > small) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE,
 			            "(e - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
-			snprintf (format, GMT_LEN64, "e reset from %s to %s\n",
+			snprintf (format, GMT_LEN256, "e reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, format, wesn[XHI], val);
 			wesn[XHI] = val;
@@ -2278,7 +2279,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 	if (fabs (wesn[YLO] - val) > small) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "(s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
 		            GMT_CONV4_LIMIT);
-		snprintf (format, GMT_LEN64, "s reset from %s to %s\n",
+		snprintf (format, GMT_LEN256, "s reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, format, wesn[YLO], val);
 		wesn[YLO] = val;
@@ -2288,7 +2289,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 	if (fabs (wesn[YHI] - val) > small) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "(n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
 		            GMT_CONV4_LIMIT);
-		snprintf (format, GMT_LEN64, "n reset from %s to %s\n",
+		snprintf (format, GMT_LEN256, "n reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, format, wesn[YHI], val);
 		wesn[YHI] = val;
@@ -2718,7 +2719,7 @@ int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, bool separate, struct GMT
 
 int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options,
                              uint64_t dim[], double wesn[], double inc[], unsigned int registration, unsigned int mode) {
-	/* Convenient way of setting a header struct wesn, inc, and registartion, then compute dimensions, etc. */
+	/* Convenient way of setting a header struct wesn, inc, and registration, then compute dimensions, etc. */
 	double wesn_dup[4] = {0.0, 0.0, 0.0, 0.0}, inc_dup[2] = {0.0, 0.0};
 	unsigned int n_layers = 1;
 	char *regtype[2] = {"gridline", "pixel"};
@@ -2859,7 +2860,7 @@ void gmt_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 	 * mode = 3 (GMT_FFT_REMOVE_TREND): Remove the best-fitting plane by least squares (returned via a[0-2])
 	 *
 	 * Note: The grid may be complex and contain real, imag, or both components.  The data should
-	 * be in serial layout so we may loop over the compoents and do our thing.  Only the real
+	 * be in serial layout so we may loop over the components and do our thing.  Only the real
 	 * components coefficients are returned.
 	 */
 
@@ -3134,7 +3135,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	 *	The image types that fall into this category are
 	 *	GIF, JPG, RAS, PNG, BMP, WEBP, PBM, RGB.
 	 *	These are all detected by looking for magic bytes.
-	 * GMT_IS_GRID: In this context, this means file has an extesion
+	 * GMT_IS_GRID: In this context, this means file has an extension
 	 *	that could be used by images or images with geospatial
 	 *	data and even floating point values, such as geotiff.
 	 *	THus the list of types in this category are
@@ -3406,7 +3407,7 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
-	if (to_gdalread->O.mem_layout[0]) 	/* If a different mem_layout request was applyied in gmt_gdalread than we must update */
+	if (to_gdalread->O.mem_layout[0]) 	/* If a different mem_layout request was applied in gmt_gdalread than we must update */
 		gmt_strncpy(I->header->mem_layout, to_gdalread->O.mem_layout, 4);
 
 	if (to_gdalread->B.active) gmt_M_str_free (HH->pocket);		/* It was allocated by strdup. Free it for an eventual reuse. */

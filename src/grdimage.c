@@ -521,6 +521,7 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	gmt_M_memcpy (r->wesn, GMT->current.proj.rect, 4, double);
 	
 	if (GMT->current.proj.projection_GMT == GMT_GENPER && GMT->current.proj.g_width != 0.0) return;
+	if (gmt_M_is_azimuthal (GMT) && !GMT->current.proj.polar) return;
 
 	/* This fails when -R is not the entire grid region and projected is false. */
 	if (projected && gmt_M_is_geographic (GMT, GMT_IN)) {

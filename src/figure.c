@@ -80,6 +80,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	char p[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 
+	GMT->current.ps.crop_to_fit = true;	/* Default is to make a tight PDF plot */
 	if ((opt = options) == NULL) {	/* Gave no arguments */
 		if (GMT->parent->external) return GMT_NOERROR;
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Required figure name not specified!\n");
@@ -102,6 +103,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized graphics format %s\n", p);
 					n_errors++;
 				}
+				else if (!strcmp (p, "ps"))	/* Need to honor PS_MEDIA setting */
+					GMT->current.ps.crop_to_fit = false;
 			}
 			else {	/* Check if valid psconvert options */
 				if (!strchr ("ACDEHMQS", p[0])) {

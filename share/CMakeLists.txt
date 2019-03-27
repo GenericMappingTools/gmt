@@ -25,7 +25,6 @@ set (_gmt_share_dirs cpt custom localization mgd77 mgg
 install (DIRECTORY ${_gmt_share_dirs}
 	DESTINATION ${GMT_DATADIR}
 	COMPONENT Runtime
-	PATTERN ".svn" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
 	REGEX "[.](cmake|in)$" EXCLUDE)
 

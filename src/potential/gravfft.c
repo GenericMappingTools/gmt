@@ -230,7 +230,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 			case 'D':
 				if (!opt->arg) {
 					GMT_Report (API, GMT_MSG_NORMAL,
-					            "Syntax error -D option: must give constant density contrast or grid with density constrasts\n");
+					            "Syntax error -D option: must give constant density contrast or grid with density contrasts\n");
 					n_errors++;
 				}
 				else {

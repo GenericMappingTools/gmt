@@ -58,7 +58,7 @@ struct GMTCONNECT_CTRL {
 		bool active;
 		char *file;
 	} Q;
-	struct T {	/* -T[<cutoff[unit][/<nn_dist>]] */
+	struct T {	/* -T[<cutoff[unit][+s<sdist>]] */
 		bool active[2];
 		int mode;
 		double dist[2];
@@ -117,7 +117,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-C<closedfile>] [-D[<template>]] [-L[<linkfile>]] [-Q<listfile>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t-T[%s[/<nn_dist>]] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t-T[%s[+s<sdist>]] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_DIST_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -136,8 +136,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	gmt_dist_syntax (API->GMT, 'T', "Set cutoff distance to determine if a segment is closed.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If two lines has endpoints closer than this cutoff they will be joined.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append <nn_dist> which adds the requirement that the second closest\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   match must exceed <nn_dist> (must be in the same units as <cutoff>).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +s<sdist> which adds the requirement that the second closest\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   match must exceed <sdist> (must be in the same units as <cutoff>).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no arguments are given the we close all polygons regardless of the gaps.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Used with -D to write names of files to a list.  Optionally give listfile name [gmtconnect_list.txt].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Embed %%c in the list name to write two separate lists: one for C(losed) and one for O(pen).\n");
@@ -195,15 +195,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct 
 				break;
 			case 'T':	/* Set threshold distance */
 				Ctrl->T.active[0] = true;
-				if (opt->arg[0]) {
-					n = sscanf (opt->arg, "%[^/]/%s", A, B);
-					Ctrl->T.mode = gmt_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
-					if (n == 2) {
-						Ctrl->T.dist[1] = atof (B);
+				if (opt->arg[0]) {	/* Specified a distance */
+					char *c = NULL;
+					if ((c = strstr (opt->arg, "+s"))) {	/* Gave second distance via +s<dist> */
+						c[0] = '\0';	/* Temporarily chop off modifier */
+						Ctrl->T.mode = gmt_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
+						Ctrl->T.dist[1] = atof (&c[2]);
 						Ctrl->T.active[1] = true;
+						c[0] = '+';	/* Restore modifier */
+					}
+					else {	/* Only one distance but possibly old-style /dist */
+						n = sscanf (opt->arg, "%[^/]/%s", A, B);
+						Ctrl->T.mode = gmt_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
+						if (n == 2) {	/* Gave second distance via /<dist> */
+							Ctrl->T.dist[1] = atof (B);
+							Ctrl->T.active[1] = true;
+						}
 					}
 				}
-				else
+				else	/* Do distance, connect segments regardless of separation */
 					Ctrl->T.dist[0] = DBL_MAX;
 				break;
 			default:	/* Report bad options */
@@ -215,6 +225,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode == -1, "Syntax error -T: Unrecognized unit\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode == -2, "Syntax error -T: Unable to decode distance\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode == -3, "Syntax error -T: Distance is negative\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active[1] && Ctrl->T.dist[1] < 0.0, "Syntax error -T: Secondary distance is negative\n");
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Syntax error: Binary input data (-bi) must have at least 2 columns\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Syntax error: Option -C cannot be used with -D!\n");
@@ -224,13 +235,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
-GMT_LOCAL int found_a_near_segment (struct LINK *S, uint64_t id, int order, double cutoff, bool nn_check, double nn_dist) {
+GMT_LOCAL int found_a_near_segment (struct LINK *S, uint64_t id, int order, double cutoff, bool nn_check, double sdist) {
 	/* Checks if OK to connect this segment to its nearest neighbor and returns true if OK */
 
 	if (S[S[id].buddy[order].id].used) return (false);		/* Segment has been used already */
 	if (S[id].buddy[order].dist > cutoff) return (false);		/* Exceeds minimum gap */
 	if (!nn_check) return (true);					/* No other requirement specified, so done */
-	if (S[id].buddy[order].next_dist > nn_dist) return (true);	/* Next nearest neighboor is far enough away */
+	if (S[id].buddy[order].next_dist > sdist) return (true);	/* Next nearest neighboor is far enough away */
 	return (false);							/* Failed all tests */
 }
 
@@ -261,7 +272,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	bool save_type = false, first, wrap_up = false, done, closed, *skip = NULL;
 
 	unsigned int nearest_end[2][2], j, n_qfiles = 0, end_order, smode = GMT_NO_STRINGS;
-	unsigned int io_mode = GMT_WRITE_SET, q_mode = GMT_WRITE_SET, d_mode = 0, ii, end;
+	unsigned int io_mode = GMT_WRITE_SET, q_mode = GMT_WRITE_SET, d_mode = 0, ii, end, first_end_order;
 
 	size_t n_seg_alloc[2] = {0, 0}, n_alloc_pts, b_alloc = GMT_BUFSIZ, b_len = 0, len;
 
@@ -556,9 +567,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Try to connect %" PRIu64 " open segments\n", ns);
 
 	if (Ctrl->T.unit == 'X')
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculate and rank end point separations [cutoff = %g nn_dist = %g]\n", Ctrl->T.dist[0], Ctrl->T.dist[1]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculate and rank end point separations [cutoff = %g sdist = %g]\n", Ctrl->T.dist[0], Ctrl->T.dist[1]);
 	else
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculate and rank end point separations [cutoff = %g%c nn_dist = %g%c]\n", Ctrl->T.dist[0], Ctrl->T.unit, Ctrl->T.dist[1], Ctrl->T.unit);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculate and rank end point separations [cutoff = %g%c sdist = %g%c]\n", Ctrl->T.dist[0], Ctrl->T.unit, Ctrl->T.dist[1], Ctrl->T.unit);
 
 	/* We determine the distance from each segment's two endpoints to the two endpoints on every other
 	 * segment; this yields four distances per segment.  We then assign the nearest endpoint to each end
@@ -684,7 +695,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		id = start_id;	/* This is the first line segment in a new chain */
 		sprintf (buffer, "%" PRIu64, segment[id].orig_id);
 		b_len = strlen (buffer);
-		end_order = 0;	/* Start at the start point of the segment */
+		/* Select the endpoint that has the closest buddy */
+		end_order = first_end_order = (segment[id].buddy[0].dist < segment[id].buddy[1].dist) ? 0 : 1;		/* Exceeds minimum gap */
+		
 		closed = false;
 		n_steps_pass_1 = 0;		/* Nothing appended yet to this single line segment */
 		n_alloc_pts = segment[id].n;	/* Number of points needed so far is just those from this first (start_id) segment */
@@ -717,7 +730,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 		if (!closed) {	/* Now search backwards from the stating line to see what should be hooked on in that direction */
 			id = start_id;	/* This is the first line segment in a new chain */
-			end_order = 1;	/* Now start at the end point of segment */
+			end_order = (first_end_order + 1) % 2;	/* Go the other way */
 			while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
 				id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
 				snprintf (text, GMT_LEN64, "%" PRIu64 " <- ", segment[id2].orig_id);
@@ -834,7 +847,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			n_steps_pass_2++;	/* Count of number of pieces being connected into this single line segment */
 		} while (!done);
 		if (n_steps_pass_2 != n_steps_pass_1) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Trouble: Pass 1 found %" PRIu64 " while pass 2 found %" PRIu64 " connections!\n", n_steps_pass_1, n_steps_pass_2);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Trouble: Pass 1 found %" PRIu64 " while pass 2 found %" PRIu64 " connections!\n", n_steps_pass_1, n_steps_pass_2);
 		}
 		if (n_seg_length < n_alloc_pts) T[OPEN][out_seg] = GMT_Alloc_Segment (GMT->parent, smode, n_seg_length, n_columns, NULL, T[OPEN][out_seg]);	/* Trim memory allocation */
 

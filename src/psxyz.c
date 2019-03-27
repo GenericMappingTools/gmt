@@ -527,7 +527,7 @@ int GMT_plot3d (void *V_API, int mode, void *args) {
 int GMT_psxyz (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psxyz task */
 	bool polygon, penset_OK = true, not_line, old_is_world;
-	bool get_rgb = false, read_symbol, clip_set = false, fill_active, rgb_from_z = false;
+	bool get_rgb = false, read_symbol, clip_set = false, fill_active, rgb_from_z = false, QR_symbol = false;
 	bool default_outline, outline_active, save_u = false, geovector = false, can_update_headpen = true;
 	unsigned int k, j, geometry, tbl, pos2x, pos2y;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
@@ -732,9 +732,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	if (S.symbol == GMT_SYMBOL_BARX && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	if (S.symbol == GMT_SYMBOL_BARY && S.base_set & 2) gmt_set_column (GMT, GMT_IN, bcol, gmt_M_type (GMT, GMT_IN, GMT_Y));
 	if (penset_OK) gmt_setpen (GMT, &current_pen);
+	QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
 	outline_active =  Ctrl->W.active;
-	if (not_line && !outline_active && !fill_active && !get_rgb) outline_active = true;	/* If no fill nor outline for symbols then turn outline on */
+	if (not_line && !outline_active && !fill_active && !get_rgb && !QR_symbol) outline_active = true;	/* If no fill nor outline for symbols then turn outline on */
 
 	if (Ctrl->D.active) {
 		/* Shift the plot a bit. This is a bit frustrating, since the only way to do this
@@ -787,16 +788,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				gmt_set_column (GMT, GMT_IN, ex3, GMT_IS_GEODIMENSION);
 			}
 		}
-		else if (S.symbol == GMT_SYMBOL_CUSTOM && !strcmp (S.custom->name, "QR")) {
-			if (Ctrl->G.active)	/* Change color of QR code */
-				PSL_command (PSL, "/QR_fill {%s} def\n", PSL_makecolor (PSL, Ctrl->G.fill.rgb));
-			else	/* Default to black */
+		else if (QR_symbol) {
+			if (!Ctrl->G.active)	/* Default to black */
 				PSL_command (PSL, "/QR_fill {0 A} def\n");
-			if (Ctrl->W.active) {	/* Draw outline of QR code */
-				PSL_command (PSL, "/QR_outline true def\n");
-				PSL_command (PSL, "/QR_pen {%s} def\n",  PSL_makepen (PSL, Ctrl->W.pen.width, Ctrl->W.pen.rgb, Ctrl->W.pen.style, Ctrl->W.pen.offset));
-			}
-			else
+			if (!Ctrl->W.active)	/* No outline of QR code */
 				PSL_command (PSL, "/QR_outline false def\n");
 		}
 		if (S.read_size && GMT->current.io.col[GMT_IN][ex1].convert) {	/* Doing math on the size column, must delay unit conversion unless inch */
@@ -853,6 +848,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							continue;
 						}
 					}
+					QR_symbol = (S.symbol == GMT_SYMBOL_CUSTOM && (!strcmp (S.custom->name, "QR") || !strcmp (S.custom->name, "QR_transparent")));
 				}
 				/* Since we only now know if some of the input columns should NOT be considered dimensions we
 				 * must visit such columns and if the current length unit is NOT inch then we must undo the scaling */
@@ -907,6 +903,17 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					gmt_get_fill_from_z (GMT, P, in[3], &current_fill);
 				if (PH->skip) continue;	/* Chosen CPT indicates skip for this t */
 				if (Ctrl->I.active) gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+			}
+
+			if (QR_symbol) {
+				if (Ctrl->G.active)	/* Change color of QR code */
+					PSL_command (PSL, "/QR_fill {%s} def\n", PSL_makecolor (PSL, current_fill.rgb));
+				if (outline_active) {	/* Draw outline of QR code */
+					PSL_command (PSL, "/QR_outline true def\n");
+					PSL_command (PSL, "/QR_pen {%s} def\n",  PSL_makepen (PSL, (1.0/6.0) * Ctrl->W.pen.width, Ctrl->W.pen.rgb, Ctrl->W.pen.style, Ctrl->W.pen.offset));
+				}
+				else
+					PSL_command (PSL, "/QR_outline false def\n");
 			}
 
 			if (n == n_alloc) data = gmt_M_malloc (GMT, data, n, &n_alloc, struct PSXYZ_DATA);
@@ -1002,6 +1009,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						continue;
 					}
 					data[n].dim[2] = in[ex3];	/* radius */
+					/* Now fall through to do the rest under regular rectangle */
 				case PSL_RECT:
 					if (gmt_M_is_dnan (in[ex1])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Rounded rectangle width = NaN near line %d\n", n_total_read);
@@ -1229,6 +1237,17 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				gmt_setfill (GMT, &data[i].f, data[i].outline);
 				gmt_setpen (GMT, &data[i].p);
 			}
+			if (QR_symbol) {
+				if (Ctrl->G.active)	/* Change color of QR code */
+					PSL_command (PSL, "/QR_fill {%s} def\n", PSL_makecolor (PSL, data[i].f.rgb));
+				if (data[i].outline) {	/* Draw outline of QR code */
+					PSL_command (PSL, "/QR_outline true def\n");
+					PSL_command (PSL, "/QR_pen {%s} def\n",  PSL_makepen (PSL, (1.0/6.0) * data[i].p.width, data[i].p.rgb, data[i].p.style, data[i].p.offset));
+				}
+				else
+					PSL_command (PSL, "/QR_outline false def\n");
+			}
+
 
 			/* For global periodic maps, symbols plotted close to a periodic boundary may be clipped and should appear
 			 * at the other periodic boundary.  We try to handle this below */
@@ -1584,7 +1603,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Z], L->data[GMT_Z], end, double);
 							/* Now add 2 anchor points and explicitly close by repeating 1st point */
 							switch (Ctrl->L.mode) {
-								case XHI:	off = 1;	/* To select the x max entry */
+								case XHI:	off = 1;	/* To select the x max entry, then call through */
 								case XLO:
 								case ZLO:
 									value = (Ctrl->L.mode == ZLO) ? Ctrl->L.value : GMT->common.R.wesn[XLO+off];
@@ -1593,7 +1612,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 									GMT->hidden.mem_coord[GMT_Y][end] = L->data[GMT_Y][end-1];
 									GMT->hidden.mem_coord[GMT_Y][end+1] = L->data[GMT_Y][0];
 									break;
-								case YHI:	off = 1;	/* To select the y max entry */
+								case YHI:	off = 1;	/* To select the y max entry, then fall through */
 								case YLO:
 								case ZHI:
 									value = (Ctrl->L.mode == ZHI) ? Ctrl->L.value : GMT->common.R.wesn[YLO+off];

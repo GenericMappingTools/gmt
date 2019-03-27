@@ -16,9 +16,9 @@ Synopsis
 
 **pscontour** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
-[ |-A|\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
+[ |-A|\ [**-**\ \|\ [**+**\ ]\ *annot\_int*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
-[ |-C|\ [+]\ *cont_int* ]
+[ |-C|\ [**+**\ ]\ *cont_int* ]
 [ |-D|\ [*template*] ] [ |-E|\ *indexfile* ]
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
 [ |-I| ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
@@ -27,7 +27,7 @@ Synopsis
 [ |-O| ]
 [ |-P| ]
 [ |-Q|\ [*cut*\ [*unit*]][\ **+z**] ]
-[ |-S|\ [\ *p*\ \|\ *t*] ]
+[ |-S|\ [\ **p**\ \|\ **t**] ]
 [ |-T|\ [**h**\ \|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]

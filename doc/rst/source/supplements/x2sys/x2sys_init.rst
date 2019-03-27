@@ -14,7 +14,6 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt x2sys_init** *TAG* |-D|\ *fmtfile*
-[ |-C|\ **c**\ \|\ **f**\ \|\ **g**\ \|\ **e** ]
 [ |-E|\ *suffix* ]
 [ |-F| ]
 [ |-G|\ **d**\ \|\ **g** ]
@@ -23,6 +22,7 @@ Synopsis
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ **t**\ \|\ **d**\ *gap* ]
+[ |SYN_OPT-j| ] 
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -67,19 +67,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-.. _-C:
-
-**-Cc**\ \|\ **f**\ \|\ **g**\ \|\ **e**
-    Select procedure for along-track distance calculation when needed by other programs:
-
-    **c** Cartesian distances [Default, unless **-G** is set].
-
-    **f** Flat Earth distances.
-
-    **g** Great circle distances [Default if **-G** is set].
-
-    **e** Geodesic distances on current GMT ellipsoid.
 
 .. _-E:
 
@@ -139,6 +126,8 @@ Optional Arguments
     (for units, see |-N|) gap [Infinity]) allowed between the two data
     points immediately on either side of a crossover. If these limits
     are exceeded then a data gap is assumed and no COE will be determined.
+
+.. include:: ../../explain_distcalc.rst_
 
 .. include:: ../../explain_help.rst_
 
@@ -246,7 +235,7 @@ speeds given in knots, we may run
 
    ::
 
-    gmt x2sys_init LINE -V -G -Dline -Rg -Ce -Ndk -NsN -I1/1 -Etrk
+    gmt x2sys_init LINE -V -G -Dline -Rg -je -Ndk -Nsn -I1/1 -Etrk
 
 where we have selected LINE to be our x2sys tag. When x2sys tools try to
 read your line data files they will first look in the current directory
@@ -297,7 +286,7 @@ to find it.
 **MGD77[+] or GMT:**
     Format definition files already exist for MGD77 files (both standard ASCII
     and enhanced netCDF-based MGD77+ files) and the old \*.gmt files
-    manipulated by the mgg supplements; for these data sets the **-C**
+    manipulated by the mgg supplements; for these data sets the **-j**
     and **-N** will default to great circle distance calculation in km
     and speed in m/s. There are also format definition files for plain x,y[,z]
     and lon,lat[,z] tracks. To initiate new track databases to be used

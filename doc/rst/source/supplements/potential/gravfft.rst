@@ -105,7 +105,7 @@ Optional Arguments
 **-F**\ [**f**\ [**+s**]\ \|\ **b**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**]
     Specify desired geopotential field: compute geoid rather than gravity
 
-       **f** = Free-air anomalies (mGal) [Default].  Append **+** to add
+       **f** = Free-air anomalies (mGal) [Default].  Append **+s** to add
        in the slab implied when removing the mean value from the topography.
        This requires zero topography to mean no mass anomaly.
 

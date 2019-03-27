@@ -131,7 +131,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 	unsigned int n_errors = 0, k = 1;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-	char *kind[3] = {"Specify a rectanglar panel for the map inset", "Specify a rectanglar panel behind the map scale", "Specify a rectanglar panel behind the map rose"};
+	char *kind[3] = {"Specify a rectangular panel for the map inset", "Specify a rectangular panel behind the map scale", "Specify a rectangular panel behind the map rose"};
 	bool get_panel[3] = {false, false, false}, classic;
 	
 	classic = (GMT->current.setting.run_mode == GMT_CLASSIC);

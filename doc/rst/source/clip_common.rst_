@@ -22,7 +22,7 @@ Required Arguments
 
 .. _-C:
 
-**-C**\ [\|\ *n*]
+**-C**\ [\ *n*]
     Mark end of existing clip path(s). No input file will be processed.
     No projection information is needed unless **-B** has been selected
     as well. With no arguments we terminate all active clipping paths.

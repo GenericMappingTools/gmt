@@ -282,9 +282,9 @@ GMT_LOCAL void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double a
 }
 
 GMT_LOCAL void flat_project_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, bool two_pts, bool pole_set) {
-	/* Sets up stuff for rotation of cartesian 2-vectors, analogous
+	/* Sets up stuff for rotation of Cartesian 2-vectors, analogous
 	   to the spherical three vector stuff above.
-	   Output is the negative cartesian azimuth in degrees.
+	   Output is the negative Cartesian azimuth in degrees.
 	   Latitudes and longitudes are in degrees. */
 
 	if (two_pts)
@@ -334,7 +334,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   of the (p,q) system (line q = 0) passes through -C and makes an angle\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <azimuth> with North (case 1), or passes through -E (case 2), or is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   determined by the pole -T (case 3).  In (3), point -C need not be on equator.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   In a cartesian [-N option] projection, p = q = 0 at -O in all cases;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   In a Cartesian [-N option] projection, p = q = 0 at -O in all cases;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (1) and (2) orient the p axis, while (3) orients the q axis.\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the location of the center to be <ox>/<oy>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -360,7 +360,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Lw will use only those points Within the span from C to E (Must have set -E).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -L<l_min>/<l_max> will only use points whose p is [l_min <= p <= l_max].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default uses all points.  Note p = 0 at C and increases toward E in <azimuth> direction.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Flat Earth mode; a cartesian projection is made.  Default is spherical.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Flat Earth mode; a Cartesian projection is made.  Default is spherical.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Convert to Map units, so x,y,r,s are degrees,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   while p,q,dist,l_min,l_max,w_min,w_max are km.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If not set, then p,q,dist,l_min,l_max,w_min,w_max are assumed to be in same units as x,y,r,s.\n");
@@ -370,8 +370,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Check the width across the projected track and use only certain points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This will use only those points whose q is [w_min <= q <= w_max].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in <azimuth> direction.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z With -G and -C, generate an geo ellipse of given major and minor axes (in km) and azimuth of major axis\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +e for adjusting increment to fix perimeter exactly [use increment as given in -G].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z With -G and -C, generate an ellipse of given major and minor axes (in km if geographic) and azimuth\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   of major axis. Append +e for adjusting increment to fix perimeter exactly [use increment as given in -G].\n");
 	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,s,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -485,7 +485,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'N': /* Handled above but still in argv */
 				Ctrl->N.active = true;
-				n_errors += gmt_M_check_condition (GMT, sscanf(opt->arg, "%lf/%lf", &Ctrl->L.min, &Ctrl->L.max) != 2, "Syntax error: Expected -L[w | <min>/<max>]\n");
 				break;
 			case 'Q':
 				Ctrl->Q.active = true;
@@ -550,8 +549,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 	                                 "Syntax error -N option: Cannot be used with -fg\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->G.mode,
 	                                 "Syntax error -N option: Cannot be used with -G<dist>/<colat>\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->Z.active,
-	                                 "Syntax error -N option: Cannot be used with -Z<major>/<minor>/<azimuth>\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -622,7 +619,7 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 
 int GMT_project (void *V_API, int mode, void *args) {
 	uint64_t rec, n_total_read, col, n_total_used = 0;
-	bool skip, z_first = true;
+	bool skip, z_first = true, z_set_auto = false;
 	int error = 0;
 
 	size_t n_alloc = GMT_CHUNK;
@@ -705,11 +702,12 @@ int GMT_project (void *V_API, int mode, void *args) {
 		P.n_outputs++;
 	}
 
-	if (P.n_outputs == 0 && !Ctrl->G.active) {	/* Generate default -F setting (all) */
+	if (P.n_outputs == 0 && !Ctrl->G.active) {	/* Generate default -F setting (xyzpqrs) */
 		P.n_outputs = PROJECT_N_FARGS;
-		for (col = 0; col < 2; col++) P.output_choice[col] = (int)col;
-		P.output_choice[2] = -1;
-		for (col = 3; col < P.n_outputs; col++) P.output_choice[col] = (int)col - 1;
+		for (col = 0; col < 2; col++) P.output_choice[col] = (int)col;	/* Do xy */
+		P.output_choice[2] = -1;	/* Do z as col 2 */
+		P.want_z_output = z_set_auto = true;
+		for (col = 3; col < P.n_outputs; col++) P.output_choice[col] = (int)col - 1;	/* Do pqrs */
 		P.find_new_point = true;
 	}
 	if (Ctrl->G.active) {	/* Hardwire 3 output columns and set their types */
@@ -736,7 +734,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) {	/* Flat Earth mode */
 		theta = Ctrl->A.azimuth;
 		flat_project_setup (Ctrl->C.y, Ctrl->C.x, Ctrl->E.y, Ctrl->E.x, Ctrl->T.y, Ctrl->T.x, &theta, e, Ctrl->E.active, Ctrl->T.active);
-		/* Azimuth (theta) is now cartesian in degrees */
+		/* Azimuth (theta) is now Cartesian in degrees */
 		if (Ctrl->L.constrain) {
 			Ctrl->L.min = 0.0;
 			xx = Ctrl->E.x - Ctrl->C.x;
@@ -831,7 +829,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 			double h = pow (Ctrl->Z.major - Ctrl->Z.minor, 2.0) / pow (Ctrl->Z.major + Ctrl->Z.minor, 2.0);
 			Ctrl->L.min = 0.0;
 			Ctrl->L.max = M_PI * (Ctrl->Z.major + Ctrl->Z.minor) * (1.0 + (3.0 * h)/(10.0 + sqrt (4.0 - 3.0 * h)));	/* Ramanujan approximation of ellipse circumference */
-			if (Ctrl->Z.exact) {	/* Adjust inc to fit the ellise perimeter exactly */
+			if (Ctrl->Z.exact) {	/* Adjust inc to fit the ellipse perimeter exactly */
 				double f = rint (Ctrl->L.max / Ctrl->G.inc);
 				Ctrl->G.inc = Ctrl->L.max / f;
 			}
@@ -862,13 +860,31 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 		if (Ctrl->Z.active) {
 			uint64_t ne = urint (Ctrl->L.max / Ctrl->G.inc);
-			struct GMT_DATASEGMENT *S = gmt_get_geo_ellipse (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->Z.major, Ctrl->Z.minor, Ctrl->Z.azimuth, ne);
-			for (rec = 0; rec < P.n_used; rec++) {
-				p_data[rec].a[4] = S->coord[GMT_X][rec];
-				p_data[rec].a[5] = S->coord[GMT_Y][rec];
+			if (Ctrl->N.active) {	/* Cartesian ellipse */
+				double r, ca, sa, d_azim = TWO_PI / ne, e2 = 1.0 - pow (Ctrl->Z.minor/Ctrl->Z.major, 2.0);
+				sincosd (Ctrl->Z.azimuth - 90.0, &sin_theta, &cos_theta);
+				e[0] = e[3] = cos_theta;
+				e[1] = sin_theta;
+				e[2] = -e[1];
+				for (rec = 0; rec < P.n_used; rec++) {
+					sincos (d_azim*rec, &sa, &ca);
+					r = Ctrl->Z.minor / sqrt (1.0 - e2 * pow (ca, 2.0));
+					x[0] = r * ca;	x[1] = r * sa;
+					matrix_2v (e, x, xt);
+					p_data[rec].a[4] = Ctrl->C.x + xt[GMT_X];
+					p_data[rec].a[5] = Ctrl->C.y + xt[GMT_Y];
+				}
+				z_header = strdup ("Testing Cartesian ellipse");
 			}
-			z_header = strdup (S->header);
-			gmt_free_segment (GMT, &S);
+			else {	/* Geographic ellipse */
+				struct GMT_DATASEGMENT *S = gmt_get_geo_ellipse (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->Z.major, Ctrl->Z.minor, Ctrl->Z.azimuth, ne);
+				for (rec = 0; rec < P.n_used; rec++) {
+					p_data[rec].a[4] = S->coord[GMT_X][rec];
+					p_data[rec].a[5] = S->coord[GMT_Y][rec];
+				}
+				z_header = strdup (S->header);
+				gmt_free_segment (GMT, &S);
+			}
 		}
 		else if (Ctrl->N.active) {
 			sincosd (90.0 + theta, &sin_theta, &cos_theta);
@@ -997,11 +1013,43 @@ int GMT_project (void *V_API, int mode, void *args) {
 			if (z_first) {
 				uint64_t n_cols = gmt_get_cols (GMT, GMT_IN), n_tot_cols;
 				if (n_cols == 2 && P.want_z_output && In->text == NULL) {
-					GMT_Report (API, GMT_MSG_NORMAL, "No data columns or trailing text after leading coordinates, cannot use z flag in -F\n");
+					if (z_set_auto) {	/* Implicitly set -Fxyzpqrs earlier but input file has no z values so roll back to -Fxypqrs */
+						P.want_z_output = z_set_auto = false;
+						for (col = 3; col < P.n_outputs; col++) P.output_choice[col-1] = P.output_choice[col];	/* Shuffle pqrs to the left */
+						P.n_outputs--;
+						for (col = 0; col < P.n_outputs; col++) {
+							switch (P.output_choice[col]) {
+								case 0: case 4: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LON);	break;
+								case 1: case 5: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LAT);	break;
+								default: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_FLOAT);	break;
+							}
+						}
+					}
+					else {
+						GMT_Report (API, GMT_MSG_NORMAL, "No data columns or trailing text after leading coordinates, cannot use z flag in -F\n");
+						Return (GMT_RUNTIME_ERROR);
+					}
+				}
+				else if (n_cols < 2) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Input file must at least have x,y or lon,lat columns\n");
+					gmt_M_free (GMT, p_data);
 					Return (GMT_RUNTIME_ERROR);
 				}
-				else
+				else {	/* Must update col types since # of z values will need to be considered */
+					unsigned int k, kk;
 					P.n_z = n_cols - 2;
+					for (col = kk = 0; col < P.n_outputs; col++, kk++) {
+						switch (P.output_choice[col]) {
+							case -1: /* Need to set float type for all the nz columns based on what the input z column types are */
+								for (k = 0; k < P.n_z; k++, kk++) gmt_set_column (GMT, GMT_OUT, kk, GMT->current.io.col_type[GMT_IN][k+GMT_Z]);
+								kk--;	/* Since we also do this at end of loop */
+								break;
+							case 0: case 4: gmt_set_column (GMT, GMT_OUT, kk, GMT_IS_LON);		break;
+							case 1: case 5: gmt_set_column (GMT, GMT_OUT, kk, GMT_IS_LAT);		break;
+							default: 	gmt_set_column (GMT, GMT_OUT, kk, GMT_IS_FLOAT);	break;
+						}
+					}
+				}
 				z_first = false;
 				n_tot_cols = (P.want_z_output) ? P.n_outputs - 1 + P.n_z : P.n_outputs;
 				if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_tot_cols, gmt_M_colmode (In->text))) != GMT_NOERROR) {

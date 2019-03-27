@@ -60,7 +60,6 @@ install (DIRECTORY examples
 	COMPONENT Documentation
 	USE_SOURCE_PERMISSIONS
 	PATTERN "${_exclude_bat}" EXCLUDE
-	PATTERN ".svn" EXCLUDE
 	PATTERN "CMakeLists.txt" EXCLUDE
 	REGEX "[.](cmake|in|ps)$" EXCLUDE)
 

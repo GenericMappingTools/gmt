@@ -128,17 +128,17 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Specify <norm> as -L1 or -L2; or use -L or -L3 to give both.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F We normally write a mixed numerical/text report.  Use -F to return just data.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F We normally write a mixed numerical/text report.  Use -F to return just data columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append the output columns you want as one or more of fmnsc in any order:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     f: Flat Earth mean location\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     m: Fisher (L1) or Eigenvalue (L2) mean location\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     n: North hemisphere pole location\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     s: South hemisphere pole location\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c: Small-circle pole location and colatitude\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Default is fmnsc.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     f: Flat Earth mean location.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     m: Fisher (L1) or Eigenvalue (L2) mean location.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     n: North hemisphere pole location.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     s: South hemisphere pole location.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c: Small-circle pole location and colatitude.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is fmnsc].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -L3 is used we repeat the output for m|n|s|c (if selected).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Attempt to fit a small circle rather than a great circle.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append the latitude <lat> of the small circle you want to fit.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append the oblique latitude <lat> of the small circle you want to fit.\n");
 	GMT_Option (API, "V,a,bi,di,e,f,g,h,i,o,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -166,15 +166,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct G
 
 			case 'F':	/* Select outputs for data */
 				Ctrl->F.active = true;
-				s_length = strlen(opt->arg); 
+				s_length = strlen (opt->arg); 
 				for (k = 0; k < s_length; k++) {
 					switch (opt->arg[k]) {
-						case 'f': Ctrl->F.mode |= 1;	break;
-						case 'm': Ctrl->F.mode |= 2;	break;
-						case 'n': Ctrl->F.mode |= 4;	break;
-						case 's': Ctrl->F.mode |= 8;	break;
+						case 'f': Ctrl->F.mode |=  1;	break;
+						case 'm': Ctrl->F.mode |=  2;	break;
+						case 'n': Ctrl->F.mode |=  4;	break;
+						case 's': Ctrl->F.mode |=  8;	break;
 						case 'c': Ctrl->F.mode |= 16;	break;
-						default: break;
+						default:
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -F option: Bad arg %s. Select any combination from fmnsc\n", opt->arg);
+							n_errors++;
+							break;
 					}
 				}
 				break;
@@ -199,6 +202,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct G
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode & 16 && !Ctrl->S.active, "Syntax error -F option: Cannot select c without setting -S\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.norm < 1 || Ctrl->L.norm > 3, "Syntax error -L option: Choose between 1, 2, or 3\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == 1 && fabs (Ctrl->S.lat) > 90.0, "Syntax error -S option: Fixed latitude cannot exceed +|- 90\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

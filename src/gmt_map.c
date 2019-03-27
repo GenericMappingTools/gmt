@@ -68,7 +68,7 @@
  *	map_ilinearxy :			Inverse linear projection\n
  *	map_init_three_D :		Initializes parameters needed for 3-D plots\n
  *	map_crossing :		Generic function finds crossings between line and map boundary\n
- *	gmtlib_latpath :			Return path between 2 points of equal latitide\n
+ *	gmtlib_latpath :			Return path between 2 points of equal latitude\n
  *	gmtlib_lonpath :			Return path between 2 points of equal longitude\n
  *	map_radial_crossing :		Determine map crossing in the Lambert azimuthal equal area projection\n
  *	gmtmap_left_boundary :		Return left boundary in x-inches\n
@@ -1107,7 +1107,7 @@ GMT_LOCAL int map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1,
 	/* true if x-distance between points exceeds 1/2 map width at this y value */
 	double dx, map_half_size, half_lon_range;
 
-	if (!(gmt_M_is_cylindrical (GMT) || gmt_M_is_perspective (GMT) || gmt_M_is_misc (GMT))) return (0);	/* Only projections with peroidic boundaries may apply */
+	if (!(gmt_M_is_cylindrical (GMT) || gmt_M_is_perspective (GMT) || gmt_M_is_misc (GMT))) return (0);	/* Only projections with periodic boundaries may apply */
 
 	if (gmt_M_is_cartesian (GMT, GMT_IN) || fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) < 90.0) return (0);
 
@@ -7121,7 +7121,7 @@ int gmtlib_small_circle_intersection (struct GMT_CTRL *GMT, double Ax, double Ay
 int gmtlib_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist) {
 	/* A, B, C are 3-D Cartesian unit vectors, i.e., points on the sphere.
 	 * Let points A and B define a great circle, and consider a
-	 * third point C.  A second great cirle goes through C and
+	 * third point C.  A second great circle goes through C and
 	 * is orthogonal to the first great circle.  Their intersection
 	 * X is the point on (A,B) closest to C.  We must test if X is
 	 * between A,B or outside.
@@ -9282,7 +9282,9 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 	 *  1) d|e|f|k|m|M|n|s
 	 *  2) GMT (Cartesian distance after projecting with -J) | X (Cartesian)
 	 *  3) S (cosine distance) | P (cosine after first inverse projecting with -J)
-	 * distance-calculation modifier mode: 0 (Cartesian), 1 (flat Earth), 2 (great-circle), 3 (geodesic), 4 (loxodrome)
+	 * distance-calculation modifier mode flags are:
+	 *   0 (Cartesian), 1 (flat Earth), 2 (great-circle [Default]), 3 (geodesic), 4 (loxodrome)
+	 *   However, if -j<mode> is set it takes precedence.
 	 * type: 0 = map distances, 1 = contour distances, 2 = contour annotation distances
 	 * We set distance and azimuth functions and scales for this type.
 	 * At the moment there is only one azimuth function pointer for all.
@@ -9297,6 +9299,15 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Your distance unit (%c) implies geographic data; -fg has been set.\n", unit);
 	}
 
+	/* Determine if -j selected a particular mode */
+	if (gmt_M_is_geographic (GMT, GMT_IN) && GMT->common.j.active) {	/* User specified a -j setting */
+		static char *kind[5] = {"Cartesian", "Flat Earth", "Great Circle", "Geodesic", "Loxodrome"};
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Spherical distance calculation mode: %s.\n", kind[GMT->common.j.active]);
+		if (mode != GMT_GREATCIRCLE)	/* We override a selection due to deprecated leading -|+ signs before increment or radius */
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your distance mode (%s) differs from your -j option (%s) which takes precedence.\n", kind[mode], kind[GMT->common.j.active]);
+		mode = GMT->common.j.mode;	/* Override with what -j said */
+	}
+	
 	switch (unit) {
 			/* First the three arc angular distance units */
 

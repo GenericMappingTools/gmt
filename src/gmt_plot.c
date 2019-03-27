@@ -922,7 +922,7 @@ GMT_LOCAL void plot_fancy_frame_curved_outline (struct GMT_CTRL *GMT, struct PSL
 	radius = hypot (x1 - GMT->current.proj.c_x0, y1 - GMT->current.proj.c_y0);
 	s = ((GMT->current.proj.north_pole && side == 2) || (!GMT->current.proj.north_pole && side == 0)) ? -1.0 : +1.0;	/* North: needs shorter radius.  South: Needs longer radius (opposite in S hemi) */
 	r_inc = s*scale[0] * width;
-	if (gmt_M_is_azimuthal(GMT) && gmt_M_360_range (lonA, lonB)) {	/* Full 360-degree cirle */
+	if (gmt_M_is_azimuthal(GMT) && gmt_M_360_range (lonA, lonB)) {	/* Full 360-degree circle */
 		PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius, 0.0, 360.0, PSL_MOVE + PSL_STROKE);
 		PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius + r_inc, 0.0, 360.0, PSL_MOVE + PSL_STROKE);
 		if (secondary_too) PSL_plotarc (PSL, GMT->current.proj.c_x0, GMT->current.proj.c_y0, radius + 2.0 * r_inc, 0.0, 360.0, PSL_MOVE + PSL_STROKE);
@@ -1277,7 +1277,7 @@ GMT_LOCAL void plot_ellipse_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL 
 		plot_rect_map_boundary (GMT, PSL, 0.0, 0.0, GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI]);
 		return;
 	}
-	plot_wesn_map_boundary (GMT, PSL, w, e, s, n);	/* Draw outline first, then turn off non-existant sides */
+	plot_wesn_map_boundary (GMT, PSL, w, e, s, n);	/* Draw outline first, then turn off non-existent sides */
 	if (gmt_M_is_Spole (GMT->common.R.wesn[YLO])) /* Cannot have southern boundary */
 		GMT->current.map.frame.side[S_SIDE] = GMT_AXIS_NONE;
 	if (gmt_M_is_Npole (GMT->common.R.wesn[YHI])) /* Cannot have northern boundary */
@@ -2133,7 +2133,7 @@ GMT_LOCAL void plot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	 */
 
 	time_t right_now;
-	char label[GMT_LEN256] = {""}, text[GMT_LEN256] = {""};
+	char label[GMT_LEN512] = {""}, text[GMT_LEN256] = {""};
 	double dim[3] = {0.365, 0.15, 0.032};	/* Predefined dimensions in inches */
 	double unset_rgb[4] = {-1.0, -1.0, -1.0, 0.0};
 
@@ -2179,7 +2179,7 @@ GMT_LOCAL void plot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	/* Optionally, add additional label to the right of the box */
 
 	if (U_label && U_label[0]) {
-		snprintf (label, GMT_LEN256, "   %s", U_label);
+		snprintf (label, GMT_LEN512, "   %s", U_label);
 		PSL_plottext (PSL, 0.0, 0.0, -7.0, label, 0.0, PSL_BL, 0);
 	}
 
@@ -2575,7 +2575,7 @@ GMT_LOCAL bool plot_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CU
 	bool result;
 	double arg[3];
 
-	/* Determine if we have text comparisions to deal with, if so, call the string version of this function */
+	/* Determine if we have text comparisons to deal with, if so, call the string version of this function */
 	
 	for (k = 0; k < 2; k++)
 		if (s->var[k] == GMT_VAR_STRING) return (plot_custum_failed_bool_test_string (GMT, s, size, text));
@@ -3343,7 +3343,7 @@ GMT_LOCAL uint64_t plot_geo_polarcap_segment_orig (struct GMT_CTRL *GMT, struct 
 		plon[m] = S->data[GMT_X][k];
 		plat[m] = S->data[GMT_Y][k];
 	}
-	/* Then add the opposite path to the pole, swithing the longitude to stop_lon */
+	/* Then add the opposite path to the pole, switching the longitude to stop_lon */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Add path from %g/%g to %g/%g [%d points]\n", stop_lon, yc, stop_lon, pole_lat, perim_n);
 	for (k = perim_n-1; k > 0; k--, m++) {
 		plon[m] = stop_lon;
@@ -4271,7 +4271,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 	if (GMT->current.proj.three_D && axis != GMT_Z) {
 		/* Because perspective is now done in PostScript we must sometimes reverse the label orientations
-		 * so they dont appear upside down when viewed from certaint quadrants */
+		 * so they don't appear upside down when viewed from certaint quadrants */
 		switch (GMT->current.proj.z_project.quadrant) {
 			case 1: x_angle_add = 180.0; lx_just = PSL_TC; break;
 			case 3: y_angle_add = 180.0; ly_just = PSL_TC; break;
@@ -5157,7 +5157,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 void gmt_draw_vertical_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	/* Draws a basic vertical scale bar at given refpoint and labels it as specified , */
 	double half_scale_length, scale, x0, y0, xx[4], yy[4], off, dim[2], sign = 1.0;
-	char txt[GMT_LEN64] = {""};
+	char txt[GMT_LEN256] = {""};
 	int form, just = PSL_ML;
 
 	if (ms->label[0]) /* Append data unit to the scale length */
@@ -5344,7 +5344,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	bool flush = false, this_outline = false, skip[GMT_N_COND_LEVELS+1], done[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
-	double x, y, lon, lat, az, angle1, angle2, p_width, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
+	double x, y, lon, lat, az, angle1, angle2, p_width = 0.0, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[PSL_MAX_DIMS];
 	char user_text[GMT_LEN256] = {""};
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
 	struct GMT_FILL f, *current_fill = fill;
@@ -5414,7 +5414,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	while (s) {
 		if (s->conditional > GMT_BEGIN_SINGLE_IF) {	/* Process if/elseif/else and endif by updating level and skip array, then go to next item */
 			/* We keep track of all the nested levels of tests via the skip array.  If a higher level test fails, then we will skip anything inside
-			 * it (e.g., lower-level nested test) since those tests dont matter since the upper test failed.  Hence skip is set to true for all deeper
+			 * it (e.g., lower-level nested test) since those tests don't matter since the upper test failed.  Hence skip is set to true for all deeper
 			 * tests (regardless of their actual test result) since we will not get there anyway if the earlier test failed. Finally, when we have
 			 * a series if if,elseif,else at the same level then we consult the done[level] array.  This is set to true if we pass a test and actually
 			 * draw something and once that is done none of the other tests at the same level can pass. */
@@ -5530,7 +5530,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				break;
 
 			case (int)'C':
-				if (gmt_M_compat_check (GMT, 4)) {	/* Warn and fall through */
+				if (gmt_M_compat_check (GMT, 4)) {	/* Warn and purposefully fall through to assign the rest of the statements */
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Circle macro symbol C is deprecated; use c instead\n");
 					action = s->action = PSL_CIRCLE;	/* Backwards compatibility, circles are now 'c' */
 				}
@@ -6968,7 +6968,7 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 		plon[m] = S->data[GMT_X][k];
 		plat[m] = S->data[GMT_Y][k];
 	}
-	/* Then add the opposite path to the pole, swithing the longitude to stop_lon */
+	/* Then add the opposite path to the pole, switching the longitude to stop_lon */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Add path from %g/%g to %g/%g [%d points]\n", stop_lon, yc, stop_lon, pole_lat, perim_n);
 	if (perim_n) {
 		for (k = perim_n-1; k > 0; k--, m++) {

@@ -15,7 +15,6 @@ Synopsis
 
 **gmt mgd77list** *NGDC-ids* |-F|\ *columns*\ [,\ *logic*][:\ *bittests*]
 [ |-A|\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code*\ [**+f**\ ] ]
-[ |-C|\ **f**\ \|\ **g**\ \|\ **e** ]
 [ |-D|\ **A**\ \|\ **a**\ *startdate* ]
 [ |-D|\ **B**\ \|\ **b**\ *stopdate* ]
 [ |-E| ]
@@ -34,6 +33,7 @@ Synopsis
 [ |-Z|\ **n**\ \|\ **p** ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-h| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -158,7 +158,7 @@ Required Arguments
         The decimal seconds of each record.
     **dist**
         Along-track distance from start of leg. For method of calculation,
-        see **-C** [spherical great circle distances], and for distance
+        see **-j** [spherical great circle distances], and for distance
         units, see **-N** [km].
     **az**
         Ship azimuth (heading) measured clockwise from north (in degrees).
@@ -346,18 +346,6 @@ Optional Arguments
     for feet, **k** for km, **M** for miles, **n** for nautical miles,
     or **u** for survey feet [Default is **e** (meters)].
 
-.. _-C:
-
-**-C**\ **f**\ \|\ **g**\ \|\ **e**
-    Append a one-letter code to select the procedure for along-track
-    distance calculation (see **-N** for selecting units):
-
-    **f** Flat Earth distances.
-
-    **g** Great circle distances [Default].
-
-    **e** Geodesic distances on current GMT ellipsoid.
-
 .. _-D:
 
 **-Da**\ *startdate*
@@ -490,6 +478,8 @@ Optional Arguments
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_distcalc.rst_
 
 .. include:: ../../explain_help.rst_
 

@@ -301,7 +301,7 @@ GMT_LOCAL double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, stru
 			case GRDFILTER_MODE_KIND_AVE:		/* Get the average of the modes */
 				value += ((ubin + B->min) + B->o_offset) * B->width;
 				break;
-			case GRDFILTER_MODE_KIND_HIGH:	/* Update highest mode so far, when loop exits we have the hightest mode */
+			case GRDFILTER_MODE_KIND_HIGH:	/* Update highest mode so far, when loop exits we have the highest mode */
 			 	value = ((ubin + B->min) + B->o_offset) * B->width;
 				break;
 		}
@@ -351,7 +351,7 @@ GMT_LOCAL double GMT_histmode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVA
 			case GRDFILTER_MODE_KIND_AVE:		/* Get the average of the modes */
 				value += ((ubin + B->min) + B->o_offset) * B->width;
 				break;
-			case GRDFILTER_MODE_KIND_HIGH:	/* Update highest mode so far, when loop exits we have the hightest mode */
+			case GRDFILTER_MODE_KIND_HIGH:	/* Update highest mode so far, when loop exits we have the highest mode */
 			 	value = ((ubin + B->min) + B->o_offset) * B->width;
 				break;
 		}

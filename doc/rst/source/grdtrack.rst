@@ -28,6 +28,7 @@ Synopsis
 [ |SYN_OPT-g| ] 
 [ |SYN_OPT-h| ] 
 [ |SYN_OPT-i| ] 
+[ |SYN_OPT-j| ] 
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-s| ]
@@ -246,6 +247,8 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
+.. include:: explain_distcalc.rst_
+
 .. include:: explain_-n.rst_
 
 .. include:: explain_-ocols.rst_
@@ -304,12 +307,12 @@ erecting cross-profiles every 25 km and sampling the grid every 3 km, try
     grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.txt
 
 To sample the grid data.nc along a line from the lower left to the upper
-right corner, using a grid spacing of 1 km, and output distances as well,
+right corner, using a grid spacing of 1 km on the geodesic, and output distances as well,
 try
 
    ::
 
-    grdtrack -ELB/RT+i1k+d -Gdata.nc > profiles.txt
+    grdtrack -ELB/RT+i1k+d -Gdata.nc -je > profiles.txt
 
 See Also
 --------

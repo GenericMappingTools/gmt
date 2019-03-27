@@ -121,7 +121,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "Rg");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Do NOT rotate the grid - just produce the rotated outlines (requires -D).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set the time(s) of reconstruction.  Append a single time (-T<time>),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   an equidistant range of times (-T<min>/<max>/<inc> or -T<min>/<max>/<npoints>+),\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   an equidistant range of times (-T<min>/<max>/<inc> or -T<min>/<max>/<npoints>+n),\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or the name of a file with a list of times (-T<tfile>).  If no -T is set\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   then the reconstruction times equal the rotation times given in -E.\n");
 	GMT_Option (API, "V,bi2,bo,d,g,h,n,:,.");
@@ -205,7 +205,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 				Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'e':
-				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and will be removed in 5.2.x. Use -E instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and was removed in 5.3. Use -E instead.\n");
 				/* Fall-through on purpose */
 			case 'E':	/* File with stage poles or a single rotation pole */
 				Ctrl->E.active = true;
@@ -254,7 +254,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 				}
 				/* Not a file */
 				k = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-				if (k == 3) {	/* Gave -Ttstart/tstop/tinc or possibly ancient -Tlon/lat/angle */
+				if (k == 3) {	/* Gave -Ttstart/tstop/tinc[+n] or possibly ancient -Tlon/lat/angle */
 					if (gmt_M_compat_check (GMT, 4) && !gave_e) {	/* No -E|e so likely ancient syntax */
 						GMT_Report (API, GMT_MSG_COMPAT, "-T<lon>/<lat>/<angle> is deprecated; use -E<lon>/<lat>/<angle> instead.\n");
 						Ctrl->E.rot.single = Ctrl->E.active = true;
@@ -267,7 +267,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 					else {	/* Must be Ttstart/tstop/tinc */
 						double min, max, inc;
 						min = atof (txt_a);	max = atof (txt_b);	inc = atof (txt_c);
-						if (opt->arg[strlen(opt->arg)-1] == '+')	/* Gave number of points instead; calculate inc */
+						if (strstr(opt->arg, "+n") || opt->arg[strlen(opt->arg)-1] == '+')	/* Gave number of points instead; calculate inc */
 							inc = (max - min) / (inc - 1.0);
 						if (inc <= 0.0) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Age increment must be positive\n");

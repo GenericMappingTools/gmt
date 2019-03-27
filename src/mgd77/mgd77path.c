@@ -97,6 +97,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct G
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "-P is deprecated; use -A instead mext time.\n");
 					Ctrl->A.active = true;
+					/* Purposfully falling through to catch 'A' instead */
 				}
 				else {
 					n_errors += gmt_default_error (GMT, opt->option);

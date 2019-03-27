@@ -3107,7 +3107,7 @@ bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt, bool *no_T) {
 	}
 	if (((n_dash + n_slash) == 2) && (n_dash == 2 || n_slash == 2)) {	/* Time */
 		*no_T = true;
-		return true;	/* Might be yyyy/mm/dd or yyyy-mm-dd with mising trailing T */
+		return true;	/* Might be yyyy/mm/dd or yyyy-mm-dd with missing trailing T */
 	}
 	return false;
 }
@@ -3192,7 +3192,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 			else
 				type[col++] = got = GMT_IS_FLOAT;
 		}
-		else	/* A succesful numerical parsing */
+		else	/* A successful numerical parsing */
 				type[col++] = got;
 		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) && col <= 50) {	/* Tell user how we interpreted their first record, but not for excessively long records */
 			k = gmtio_get_type_name_index (got);
@@ -4542,7 +4542,7 @@ FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) 
 				char *ext = gmt_get_ext (c);	/* Get pointer to extension (or NULL if no extension) */
 				if (ext && mode[0] == 'r' && !strncmp (ext, "shp", 3U)) {	/* Got a shapefile for reading */
 					/* We will do a system call to ogr2ogr in order to read the shapefile */
-					char cmd[GMT_LEN256] = {""};
+					char cmd[GMT_BUFSIZ+GMT_LEN256] = {""};
 					int error = 0;
 					if (GMT->parent->tmp_dir)	/* Make unique file in temp dir */
 						sprintf (GMT->current.io.tempfile, "%s/gmt_ogr_%d.gmt", GMT->parent->tmp_dir, (int)getpid());

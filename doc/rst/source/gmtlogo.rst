@@ -50,7 +50,7 @@ Notes
 -----
 
 To instead plot the GMT QR code that links to www.generic-mapping-tools.org, just plot the
-custom symbol QR in :doc:`psxy`.
+custom symbols **QR** or **QR_transparent** in :doc:`psxy`.
 
 See Also
 --------
