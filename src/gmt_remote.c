@@ -227,9 +227,10 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 	}
 	
 	/* Here we have the existing MD5 file and its path is in md5path */
+
 	stat (md5path, &buf);	/*  Get its modification (creation) time */
 #ifdef __APPLE__
-	mod_time = buf.st_mtimespec.tv_sec;
+	mod_time = buf.st_mtimespec.tv_sec;	/* Apple even has tv_nsec for nan-seconds... */
 #else
 	mod_time = buf.st_mtime;
 #endif
