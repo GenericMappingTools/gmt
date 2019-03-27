@@ -185,6 +185,7 @@ struct GMT_MD5 * md5_load (struct GMT_CTRL *GMT, char *file, int *n) {
 	struct GMT_MD5 *L = NULL;
 	char line[GMT_LEN128] = {""};
 	
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Load contents from %s\n", file);
 	*n = 0;
 	if ((fp = fopen (file, "r")) == NULL) return NULL;
 	fgets (line, BUFSIZ, fp);	/* First record */
@@ -197,6 +198,8 @@ struct GMT_MD5 * md5_load (struct GMT_CTRL *GMT, char *file, int *n) {
 	fclose (fp);
 	if (k != *n) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "File %s said it has %d records but only found %d - download error???\n", file, *n, k);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "File %s will be deleted.  Please try again\n", file);
+		*n = 0;	/* Flag that excrement hit the fan */
 	}
 	return (L);	
 };
@@ -224,6 +227,7 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 
 	if (access (md5path, R_OK)) {    /* Not found locally so need to download the first time */
 		sprintf (url, "%s/gmt_md5_server.txt", GMT->session.DATAURL);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
 		if (gmtmd5_get_url (GMT, url, md5path))
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to get remote file %s\n", url);
 		return;
@@ -243,13 +247,25 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 		int nO, nN, n, o;
 		struct GMT_MD5 *O = NULL, *N = NULL;
 
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s older than 1 day, must refresh\n", md5path);
 		strcpy (old_md5path, md5path);	/* Dulicate path name */
 		strcat (old_md5path, ".old");	/* Append .old to the copied path */
-		if (gmt_rename_file (GMT, md5path, old_md5path, GMT_RENAME_FILE)) return;	/* Rename existing file to .old */
+		if (gmt_rename_file (GMT, md5path, old_md5path, GMT_RENAME_FILE)) {	/* Rename existing file to .old */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s to %s\n", md5path, old_md5path);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to rename %s to %s\n", md5path, old_md5path);
+			return;
+		}
 		sprintf (url, "%s/gmt_md5_server.txt", GMT->session.DATAURL);	/* Set remote path to new MD5 file */
-		gmtmd5_get_url (GMT, url, md5path);	/* Get the new MD5 file from server */
+		if (gmtmd5_get_url (GMT, url, md5path)) {	/* Get the new MD5 file from server */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to downlaod %s - Internet troubles?\n", md5path);
+			return;	/* Unable to update the file (no Internet?) - skip the tests */
+		}
+		if ((N = md5_load (GMT, md5path, &nN)) == 0) {	/* Read in the new array of MD5 structs */
+			gmt_remove_file (GMT, md5path);		/* Remove corrupted MD5 file */
+			return;
+		}
+			
 		O = md5_load (GMT, old_md5path, &nO);	/* Read in the old array of MD5 structs */
-		N = md5_load (GMT, md5path, &nN);	/* Read in the new array of MD5 structs */
 		for (o = 0; o < nO; o++) {	/* Loop over items in old file */
 			if (gmt_getdatapath (GMT, O[o].name, url, R_OK) == NULL) continue;	/* Don't have this file downloaded yet */
 			found = false;	/* Not found this file in the new list yet */
@@ -257,6 +273,7 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 				if (gmt_access (GMT, O[o].name, F_OK)) continue;	/* File exists locally */
 				if (!strcmp (N[n].name, O[o].name)) {	/* File is in the hash table */
 					if (strcmp (N[n].md5, O[o].md5)) {	/* New MD5 differs from entry in MD5 old file */
+						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Server and cached versions of %s have different MD5 hash codes - must download new copy\n", N[n].name);
 						gmt_remove_file (GMT, url);	/* Need to re-download so be gone with it */
 						found = true;	/* So we can exit this loop */
 					}
@@ -267,15 +284,19 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 							continue;
 						}
 						if (N[n].size != (size_t)buf.st_size) {	/* Downloaded file size differ - need to re-download */
+							GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Server and cached versions of %s have different byte sizes (%" PRIuS " versus %" PRIuS ") - must download new copy\n", N[n].name, N[n].size != (size_t)buf.st_size);
 							gmt_remove_file (GMT, url);	/* Need to re-download so be gone with it */
 							found = true;	/* So we can exit this loop */
 						}
 					}
 				}
 			}
-			if (!found)	/* This file is present locally but is no longer part of files on the server and should be removed */
+			if (!found) {	/* This file is present locally but is no longer part of files on the server and should be removed */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s no longer supported on server - delete local copy\n", O[o].name);
 				gmt_remove_file (GMT, url);
+			}
 		}
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Remove outdated file %s\n", old_md5path);
 		gmt_remove_file (GMT, old_md5path);	/* Finally remove the outdated MD5 file */
 		gmt_M_free (GMT, O);	/* Free old md5 table structures */
 		gmt_M_free (GMT, N);	/* Free new md5 table structures */
