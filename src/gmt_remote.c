@@ -232,6 +232,8 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to get remote file %s\n", url);
 		return;
 	}
+	else
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Local file %s found\n", md5path);
 	
 	/* Here we have the existing MD5 file and its path is in md5path */
 
@@ -302,6 +304,8 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 		gmt_M_free (GMT, N);	/* Free new md5 table structures */
 		/* We now have an updated MD5 file and any out-of-date file has been removed so it can be downloaded again */
 	}
+	else
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s less than 1 day old, refresh aborted\n", md5path);
 }
 
 unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* file_name, unsigned int mode) {
