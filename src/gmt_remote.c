@@ -214,21 +214,27 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 	 * so that they can be re-downloaded again to get the new versions.
 	 */
 	struct stat buf;
-	time_t right_now = time (NULL);	/* Unix time right now */
+	time_t mod_time, right_now = time (NULL);	/* Unix time right now */
 	char md5path[PATH_MAX] = {""}, old_md5path[PATH_MAX] = {""}, url[PATH_MAX] = {""};
 	
-	sprintf (md5path, "%s/server/gmt_m5d_server.txt", GMT->session.USERDIR);
+	sprintf (md5path, "%s/server/gmt_md5_server.txt", GMT->session.USERDIR);
 
 	if (access (md5path, R_OK)) {    /* Not found locally so need to download the first time */
-		sprintf (url, "%sgmt_m5d_server.txt", GMT->session.DATAURL);
-		if (gmtmd5_get_url (GMT, url, "gmt_m5d_server.txt"))
+		sprintf (url, "%s/gmt_md5_server.txt", GMT->session.DATAURL);
+		if (gmtmd5_get_url (GMT, url, md5path))
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to get remote file %s\n", url);
 		return;
 	}
 	
 	/* Here we have the existing MD5 file and its path is in md5path */
 	stat (md5path, &buf);	/*  Get its modification (creation) time */
-	if ((right_now - buf.st_mtime) > GMT_DAY2SEC_I) {	/* Older than 1 day; Time to get a new MD5 file */
+#ifdef __APPLE__
+	mod_time = buf.st_mtimespec.tv_sec;
+#else
+	mod_time = buf.st_mtime;
+#endif
+
+	if ((right_now - mod_time) > GMT_DAY2SEC_I) {	/* Older than 1 day; Time to get a new MD5 file */
 		bool found;
 		int nO, nN, n, o;
 		struct GMT_MD5 *O = NULL, *N = NULL;
@@ -236,7 +242,7 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 		strcpy (old_md5path, md5path);	/* Dulicate path name */
 		strcat (old_md5path, ".old");	/* Append .old to the copied path */
 		if (gmt_rename_file (GMT, md5path, old_md5path, GMT_RENAME_FILE)) return;	/* Rename existing file to .old */
-		sprintf (url, "%sgmt_m5d_server.txt", GMT->session.DATAURL);	/* Set remote path to new MD5 file */
+		sprintf (url, "%s/gmt_md5_server.txt", GMT->session.DATAURL);	/* Set remote path to new MD5 file */
 		gmtmd5_get_url (GMT, url, md5path);	/* Get the new MD5 file from server */
 		O = md5_load (GMT, old_md5path, &nO);	/* Read in the old array of MD5 structs */
 		N = md5_load (GMT, md5path, &nN);	/* Read in the new array of MD5 structs */
