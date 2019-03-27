@@ -175,8 +175,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   The resulting ASCII coordinates and interpolation are written to file given in -G\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or stdout if no file specified (see -bo for binary output).\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Requires -I for specifying equidistant increments.  A gridfile may be given;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   this then also sets -I (and perhaps -r); use those options to override the grid settings.\n");
+	if (gmt_M_showusage (API)) {
+		GMT_Message (API, GMT_TIME_NONE, "\t   Requires -I for specifying equidistant increments.  A gridfile may be given;\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   this then also sets -I (and perhaps -r); use those options to override the grid settings.\n");
+	}
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Give effective 2-D Poisson's ratio [0.5]. (Note: 1.0 is incompressible in a 2-D formulation)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Expects two extra input columns with data errors sigma_x, sigma_y).\n");

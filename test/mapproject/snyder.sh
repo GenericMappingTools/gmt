@@ -5,7 +5,7 @@
 #
 #	usage:  snyder.sh
 #
-#	scipt will report trouble if we do not match Snyder (+- 360 degrees for longitudes)
+#	script will report trouble if we do not match Snyder (+- 360 degrees for longitudes)
 #	Slop is 0.11 m for gmt projected values
 
 blabber () {

@@ -396,7 +396,7 @@ double meca_computed_mw (struct MOMENT moment, double ms) {
 /*********************************************************************/
 static double computed_strike1 (struct nodal_plane NP1) {
 	/*
-	   Compute the strike of the decond nodal plane when are given
+	   Compute the strike of the second nodal plane when are given
 	   strike, dip and rake for the first nodal plane with AKI & RICHARD's
 	   convention.  Angles are in degrees.
 	   Genevieve Patau

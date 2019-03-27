@@ -40,10 +40,17 @@
 #include "block_subs.h"
 
 enum Block_Modes {
-	BLK_MODE_NOTSET = 0,	/* No -E+p|P (or -Ep) set */
+	BLK_MODE_NOTSET   = 0,	/* No -E+p|P (or -Ep) set */
 	BLK_MODE_OBSOLETE = 1,	/* Old -Ep for backwards compabitibility; assumes input weights are already set to 1/s^ */
 	BLK_MODE_WEIGHTED = 2,	/* -E+p computes weighted z means and error propagation on weighted z mean, using input s and w = 1/s^2 */
-	BLK_MODE_SIMPLE = 3	/* -E+P computes simple z means and error propagation on simple z mean, using input s and w = 1/s^2 */
+	BLK_MODE_SIMPLE   = 3	/* -E+P computes simple z means and error propagation on simple z mean, using input s and w = 1/s^2 */
+};
+
+enum S_Modes {
+	BLK_OUT_MEAN  = 0,	/* -Sm for mean value [Default] */
+	BLK_OUT_ZSUM  = 1,	/* -Ss for data sum */
+	BLK_OUT_WSUM  = 2,	/* -Sw for weight sum */
+	BLK_OUT_COUNT = 3	/* -Sn for count */
 };
 
 /* Note: For external calls to block* we do not allow explicit -G options; these should be added by examining -A which
@@ -174,19 +181,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 					case '\0': case 'z':	/* GMT4 LEVEL: Report data sums */
 						if (gmt_M_compat_check (GMT, 4)) {
 							GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-S and -Sz options are deprecated; use -Ss instead.\n");
-							Ctrl->S.mode = 1;
+							Ctrl->S.mode = BLK_OUT_ZSUM;
 						}
 						else /* Not allowing backwards compatibility */
 							n_errors++;
 						break;
 					case 's':	/* Report data sums */
-						Ctrl->S.mode = 1; break;
+						Ctrl->S.mode = BLK_OUT_ZSUM; break;
 					case 'w': 	/* Report weight sums */
-						Ctrl->S.mode = 2; break;
+						Ctrl->S.mode = BLK_OUT_WSUM; break;
 					case 'm':		/* Report means */
-						Ctrl->S.mode = 0; break;
+						Ctrl->S.mode = BLK_OUT_MEAN; break;
 					case 'n': 	/* Report number of points (i.e., weight sum with all weights == 1) */
-						Ctrl->S.mode = 3; break;
+						Ctrl->S.mode = BLK_OUT_COUNT; break;
 					default:
 						n_errors++; break;
 				}
@@ -225,7 +232,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 	}
 	if (Ctrl->G.active) {	/* Make sure -A sets valid fields, some require -E */
 		if (!Ctrl->E.active && (Ctrl->A.selected[1] || Ctrl->A.selected[2] || Ctrl->A.selected[3])) {
-			/* -E is required if -A specifices l or h */
+			/* -E is required if -A specifies l or h */
 			Ctrl->E.active = true;			/* Extended report with standard deviation, min, and max in cols 4-6 */
 		}
 		if (GMT->parent->external && !Ctrl->A.active) {		/* From externals let -G equals -Az */
@@ -247,11 +254,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct G
 			Ctrl->A.selected[0] = true, Ctrl->A.n_selected = 1;
 		else {	/* Make sure -A choices are valid and that -E is set if extended fields are selected */
 			if (!Ctrl->E.active && (Ctrl->A.selected[1] || Ctrl->A.selected[2] || Ctrl->A.selected[3])) {
-				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifices s, l, or h.  -E was added.\n");
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-E is required if -A specifies s, l, or h.  -E was added.\n");
 				Ctrl->E.active = true; 
 			}
 			if (Ctrl->A.selected[4] && !Ctrl->W.weighted[GMT_OUT]) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A specifices w.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-W or -Wo is required if -A specifies w.\n");
 				n_errors++; 
 			}
 		}
@@ -278,7 +285,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	int error;
 	bool use_xy, use_weight, duplicate_col;
 	double weight, weight_s2 = 0, weight_pos, weighted_z, iw, half_dx, wesn[4], out[7], *in = NULL;
-	char format[GMT_LEN256] = {""}, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "h", "w", "", "", ""}, *code[BLK_N_FIELDS];
+	char format[GMT_LEN512] = {""}, *fcode[BLK_N_FIELDS] = {"z", "s", "l", "h", "w", "", "", ""}, *code[BLK_N_FIELDS];
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL, *G = NULL, *GridOut[BLK_N_FIELDS];
@@ -322,7 +329,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	if (Ctrl->W.weighted[GMT_IN] && ((Ctrl->W.sigma[GMT_IN] && use_xy) || Ctrl->E.active)) np = gmt_M_memory (GMT, NULL, Grid->header->size, uint64_t);
 
 	/* Specify input and output expected columns */
-	n_input = (Ctrl->S.mode == 3) ? 2 : 3;
+	n_input = (Ctrl->S.mode == BLK_OUT_COUNT) ? 2 : 3;
 	if ((error = GMT_Set_Columns (API, GMT_IN, n_input + Ctrl->W.weighted[GMT_IN], GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
 		Return (error);
 	}
@@ -340,7 +347,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* wesn may include some padding if gridline-registered */
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {
-		snprintf (format, GMT_LEN256, "W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d\n",
+		snprintf (format, GMT_LEN512, "W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 				  GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI],
@@ -363,7 +370,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 	n_read = n_pitched = 0;	/* Initialize counters */
 	weight = weight_pos = 1.0;		/* Set the default point weight for position and z value */
-	use_weight = (Ctrl->W.weighted[GMT_IN] && Ctrl->S.mode != 3);	/* Do not use weights if -Sn was set */
+	use_weight = (Ctrl->W.weighted[GMT_IN] && Ctrl->S.mode != BLK_OUT_COUNT);	/* Do not use weights if -Sn was set */
 
 	GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */ 
 	
@@ -452,7 +459,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 	w_col = gmt_get_cols (GMT, GMT_OUT) - 1;	/* Index of weight column (the last output column) */
 	n_cells_filled = 0;				/* Number of blocks with values */
-	fcol[4] = (unsigned int)w_col;				/* Since we dont know what it is until parsed */
+	fcol[4] = (unsigned int)w_col;				/* Since we don't know what it is until parsed */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Calculating block means\n");
 
 	if (Ctrl->G.active) {	/* Create the grid(s) */
@@ -516,7 +523,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 			out[GMT_Y] = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 		}
 		if (Ctrl->S.mode)	/* Report block sums or weights */
-			out[GMT_Z] = (Ctrl->S.mode >= 2) ? zw[node].a[BLK_W] : zw[node].a[BLK_Z];
+			out[GMT_Z] = (Ctrl->S.mode >= BLK_OUT_WSUM) ? zw[node].a[BLK_W] : zw[node].a[BLK_Z];
 		else			/* Report block means */
 			out[GMT_Z] = zw[node].a[BLK_Z] * iw;
 		if (Ctrl->E.active) {	/* Compute and report extended attributes */

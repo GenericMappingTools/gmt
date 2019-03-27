@@ -48,7 +48,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     eps:	Encapsulated PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     jpg:	Joint Photographic Experts Group format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     pdf:	Portable Document Format [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     png:	Portable Network Graphics.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     png:	Portable Network Graphics (opaque).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     PNG:	Portable Network Graphics (transparent).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     ppm:	Portable Pixel Map.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     ps:	PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     tif:	Tagged Image Format File.\n");
@@ -65,6 +66,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	char p[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 
+	GMT->current.ps.crop_to_fit = true;	/* Default is to make a tight PDF plot */
 	if ((opt = options))	/* Gave a replacement session name */
 		opt = opt->next;
 	if (opt) {	/* Also gave replacement primary format(s) */
@@ -74,6 +76,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized graphics format %s\n", p);
 				n_errors++;
 			}
+			else if (!strcmp (p, "ps"))	/* Need to honor PS_MEDIA setting */
+				GMT->current.ps.crop_to_fit = false;
 		}
 	}
 	
@@ -112,7 +116,7 @@ int GMT_begin (void *V_API, int mode, void *args) {
 	if (options) arg = GMT_Create_Cmd (API, options);
 	if (gmt_manage_workflow (API, GMT_BEGIN_WORKFLOW, arg))
 		error = GMT_RUNTIME_ERROR;
-		
+
 	if (options) GMT_Destroy_Cmd (API, &arg);
 	Return (error);
 }

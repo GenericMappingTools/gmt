@@ -272,9 +272,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   or stdout if no file specified (see -bo for binary output).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Calculate the directional derivative in the <az> direction and return it instead of surface elevation.\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-R Specify a regular set of output locations.  Give min and max coordinates for each dimension.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Requires -I for specifying equidistant increments.  For 2D-gridding a gridfile may be given;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   this then also sets -I (and perhaps -r); use those options to override the grid settings.\n");
+	if (gmt_M_showusage (API)) {
+		GMT_Message (API, GMT_TIME_NONE, "\t-R Specify a regular set of output locations.  Give min and max coordinates for each dimension.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   Requires -I for specifying equidistant increments.  For 2D-gridding a gridfile may be given;\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   this then also sets -I (and perhaps -r); use those options to override the grid settings.\n");
+	}
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify which spline to use; except for c|p, append normalized <tension> between 0 and 1:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sc is minimum curvature spline (Sandwell, 1987) [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sl is a linear (1-D) or bilinear (2-D) spline.\n");
@@ -1890,7 +1892,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		Out = Grid;	/* Just point since we created Grid */
 	}
 
-	switch (Ctrl->S.mode) {	/* Assing pointers to Green's functions and the gradient and set up required parameters */
+	switch (Ctrl->S.mode) {	/* Assign pointers to Green's functions and the gradient and set up required parameters */
 		case LINEAR_1D:
 		case LINEAR_2D:
 			G = &spline1d_linear;

@@ -32,7 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Create mask grid from polygons or point coverage"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVabdefghinrs" GMT_ADD_x_OPT GMT_OPT("FHMm")
+#define THIS_MODULE_OPTIONS "-:RVabdefghijnrs" GMT_ADD_x_OPT GMT_OPT("FHMm")
 
 #define GRDMASK_N_CLASSES	3	/* outside, on edge, and inside */
 #define GRDMASK_N_CART_MASK	9
@@ -83,9 +83,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[m|p|x|y]] [-N[z|Z|p|P][<values>]]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S%s | <xlim>/<ylim>] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]%s[%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S%s | <xlim>/<ylim>] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]%s[%s] [%s]\n\n",
 		GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
-		GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -114,11 +114,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian grids with different x and y units you may append <xlim>/<ylim>;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   this sets all nodes within the rectangular area of the given half-widths to inside.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   One can also achieve the rectangular selection effect by using the -S<n_cells>c\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   form. Here n_cells means the number of cells arround each data point. As an example,");
+	GMT_Message (API, GMT_TIME_NONE, "\t   form. Here n_cells means the number of cells around each data point. As an example,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -S0c means that only the cell where point lies is masked, -S1c masks one cell\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   beyond that (i.e. makes a 3x3 neighborhood), and so on.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is to assume <table> contains polygons and use inside/outside searching].\n");
-	GMT_Option (API, "V,a,bi2,di,e,f,g,h,i");
+	GMT_Option (API, "V,a,bi2,di,e,f,g,h,i,j");
 	if (gmt_M_showusage (API)) {
 		GMT_Message (API, GMT_TIME_NONE, "\t-n+b<BC> Set boundary conditions.  <BC> can be either:\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   g for geographic, p for periodic, and n for natural boundary conditions.\n");
@@ -223,8 +223,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 					Ctrl->S.mode = GRDMASK_N_CART_MASK;
 				}
 				else {		/* Gave -S[-|=|+]<radius>[d|e|f|k|m|M|n|c] which means radius is fixed or 0 */ 
-					if (opt->arg[strlen(opt->arg)-1] == 'c') 	/* A n of cells request for radius. The problem is that */
-						S_copy = strdup (opt->arg);				/* we can't process it yet because we need -I. So, delay it */
+					if (opt->arg[strlen(opt->arg)-1] == 'c') { 	/* A n of cells request for radius. The problem is that */
+						if (S_copy) free (S_copy);
+						S_copy = strdup (opt->arg);		/* we can't process it yet because we need -I. So, delay it */
+					}
 					else
 						Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				}
@@ -389,7 +391,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	if (GMT_Init_IO (API, GMT_IS_DATASET, gmode, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR)	/* Registers default input sources, unless already set */
 		error = API->error;
 	if (!Ctrl->S.active && (error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
-		/* We dont want trailing text because we may need to resample lines below */
+		/* We don't want trailing text because we may need to resample lines below */
 		Return (API->error);
 	}
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL)

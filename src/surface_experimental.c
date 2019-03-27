@@ -633,7 +633,7 @@ GMT_LOCAL void find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INF
 	 			 * possibly clip the value if constraining surfaces were given.  Note that
 	 			 * dx, dy is in -1/1 range normalized by (current_x|y_inc) so to recover the
 	 			 * corresponding dx,dy in units of current grid fractions we must scale both
-				 * dx and dy by current_stride; this is equivalant to scaling the trend.
+				 * dx and dy by current_stride; this is equivalent to scaling the trend.
 				 * This trend then is normalized by dividing by the z rms.*/
 	 			
 	 			z_at_node = C->data[k].z + (gmt_grdfloat) (C->r_z_rms * C->current_stride * evaluate_trend (C, dx, dy));
@@ -728,7 +728,7 @@ GMT_LOCAL void find_mean_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *
  			 * possibly clip the value if constraining surfaces were given.  Note that
  			 * dx, dy is in -1/1 range normalized by (current_x|y_inc) so to recover the
  			 * corresponding dx,dy in units of final grid fractions we must scale both
-			 * dx and dy by current_stride; this is equivalant of scaling the trend.
+			 * dx and dy by current_stride; this is equivalent of scaling the trend.
 			 * This trend then is normalized by dividing by the z rms.*/
 			
  			mean_z += (gmt_grdfloat) (C->r_z_rms * C->current_stride * evaluate_trend (C, dx, dy));
@@ -1918,7 +1918,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<aspect_ratio>|m] [-C<convergence_limit>]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>] [-Ll<limit>] [-Lu<limit>] [-M[-|+]<radius>[<unit>]] [-N<n_iterations>] [-Q] [-S<search_radius>[m|s]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>] [-Ll<limit>] [-Lu<limit>] [-M<radius>[<unit>]] [-N<n_iterations>] [-Q] [-S<search_radius>[m|s]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[i|b]<tension>] [%s] [-W[<logfile>]] [-Z<over_relaxation_parameter>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]%s[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 

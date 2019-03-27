@@ -426,7 +426,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert grid values to colors. Optionally, name a master cpt\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [rainbow]; if so,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -Ccolor1,color2[,color3,...] to build a\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify how to color the 3-D surface defined by <topogrid>:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   1. Provide a grid (<drapegrid>) and colors will be determined from it and the cpt.\n");
@@ -439,8 +439,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grd_z> instead, append +a<azim> [-45] and +n<method> [t1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -I+ to accept the default values (see grdgradient for details).\n");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw a horizontal plane at z = <level>. Append +g<fill> to paint\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the facade between the plane and the data perimeter.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw a horizontal plane at z = <level>. For rectangular projections, append +g<fill>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to paint the facade between the plane and the data perimeter.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Set plot request. Choose one of the following:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qm for Mesh plot [Default]. Append <color> for mesh paint [%s].\n",
@@ -625,7 +625,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						break;
 					case 't':	/* Image without color interpolation */
 						Ctrl->Q.special = true;
-						/* Deliberate fall-through */
+						/* Deliberate fall-through to 'i' */
 					case 'i':	/* Image with clipmask */
 						Ctrl->Q.mode = GRDVIEW_IMAGE;
 						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
@@ -729,7 +729,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 		if (Ctrl->G.n == 3)
 			Ctrl->G.image = true;
 	}
-	
+	if (Ctrl->N.facade && GMT->common.R.oblique) {	/* Cannot yet do facade with oblique grid */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Cannot paint facade for oblique projection\n");
+		Ctrl->N.facade = false;
+	}
+		
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="),
 	                                   "Error: Piping of topofile not supported!\n");
@@ -764,9 +768,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdview (void *V_API, int mode, void *args) {
-	bool get_contours, bad, good, pen_set, begin, saddle, drape_resample = false;
+	bool get_contours, bad, pen_set, begin, saddle, drape_resample = false;
 	bool nothing_inside = false, use_intensity_grid, do_G_reading = true;
-	unsigned int c, nk, n4, row, col, n_edges, d_reg[3], i_reg = 0, id[2];
+	unsigned int c, nk, n4, row, col, n_edges, d_reg[3], i_reg = 0, id[2], good;
 	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, way, bin_inc[4], ij_inc[4], error = 0;
 	int start[2], stop[2], inc[2];
@@ -1308,7 +1312,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		/* Get a sensible zero distance adjustment for Shepard weights in blending colors for pixels inside a tile.
 		 * each pixel will get color contribution from the 4 nodes making up the tile, and we base it on the distance
 		 * from the current pixel to each of the 4 nodes.  We weigh the contributions using w = 1/(d_off+dist) so
-		 * that we dont blow up at a node.  We choose d_off as 10% of typical pixels per tile. This filters the values
+		 * that we don't blow up at a node.  We choose d_off as 10% of typical pixels per tile. This filters the values
 		 * a little bit.
 		 * PW Feb-24-2018: Commented out for now.  What we had is not that bad but suffers from aliasing when the dpi
 		 * is low.  Perhaps a scheme that sets d_off to tiny when dpi passes some threshold.  */

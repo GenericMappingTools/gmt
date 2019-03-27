@@ -22,7 +22,7 @@ Synopsis
 [ |-D|\ *dumpfile* ]
 [ |-F|\ [**l**\ \|\ **r**] ]
 [ |-G|\ *fill* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
-[ |-L|\ [**+**\ \|\ **-**]\ *nodegrid* ]
+[ |-L|\ *nodegrid*\ [**+i**\ \|\ **o**\ ] ]
 [ |-N| ]
 [ |-Q|\ *cut* ]
 [ |-S|\ *search\_radius*\ [*unit*] ]
@@ -42,7 +42,7 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: image_common.rst_
+.. include:: mask_common.rst_
 
 Examples
 --------

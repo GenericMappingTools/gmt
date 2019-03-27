@@ -15,7 +15,7 @@ Synopsis
 
 **gmt sample1d** [ *table* ]
 [ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
-[ |-F|\ **l**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **+2**] ]
+[ |-F|\ **l**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **2**] ]
 [ |-N|\ *col* ]
 [ |-T|\ [\ *min/max*\ /]\ *inc*\ [**+a**\ \|\ **n**] \|\ |-T|\ *file*\ \|\ *list* ]
 [ |SYN_OPT-V| ]
@@ -26,6 +26,7 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -76,13 +77,13 @@ Optional Arguments
 
 .. _-F:
 
-**-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **+2**]
+**-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **2**]
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
     is **-Fa**]. You may change the default interpolant; see
     :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in your :doc:`gmt.conf` file.
     You may optionally evaluate the first or second derivative of the spline
-    by appending **1** or **2**, respectively.
+    by appending **+1** or **+2**, respectively.
 
 .. _-N:
 
@@ -123,6 +124,8 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. include:: explain_distcalc.rst_
 
 .. include:: explain_-ocols.rst_
 

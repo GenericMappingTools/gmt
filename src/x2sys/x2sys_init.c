@@ -35,7 +35,7 @@
 #define THIS_MODULE_PURPOSE	"Initialize a new x2sys track database"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "->RV"
+#define THIS_MODULE_OPTIONS "->RVj"
 
 EXTERN_MSC void x2sys_set_home (struct GMT_CTRL *GMT);
 
@@ -44,7 +44,7 @@ struct X2SYS_INIT_CTRL {
 		bool active;
 		char *TAG;
 	} In;
-	struct C {	/* -C */
+	struct C {	/* -C [Deprecated, now use -j] */
 		bool active;
 		char *string;
 	} C;
@@ -114,19 +114,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #endif
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <TAG> [-Cc|f|g|e] [-D<deffile>] [-E<suffix>] [-F] [-G[d|g]] [-I[<binsize>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N[d|s][c|e|f|k|M|n]]] [%s] [%s] [-Wt|d|n<gap>]\n\t[-m] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <TAG> [-D<deffile>] [-E<suffix>] [-F] [-G[d|g]] [-I[<binsize>]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N[d|s][c|e|f|k|M|n]]] [%s] [%s] [-Wt|d|n<gap>]\n\t[-m] [%s]] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_j_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t<TAG> is the unique system identifier.  Files created will be placed in the directory %s/<TAG>.\n", par);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: The environmental parameter %s must be defined.\n\n", par);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Select procedure for along-track distance and azimuth calculations:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c Plain Cartesian.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f Flat Earth.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   g Great circle [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   e Ellipsoidal (geodesic) using current ellipsoid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Definition file for the track data set [<TAG>.%s].\n", X2SYS_FMT_EXT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Note: deprecated extension .%s will work but consider renaming the file)\n", X2SYS_FMT_EXT_OLD);
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Extension (suffix) for these data files\n");
@@ -143,14 +138,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   M British/US units II (miles, miles/hr).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n Nautical units (nautical miles, knots).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   u Old US units (survey feet, survey feet/s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   See -j for distance calculation modes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is -Ndk -Nse].\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is 0/360/-90/90].\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is 0/360/-90/90].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set maximum gaps allowed at crossover.  Option may be repeated.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Wt sets maximum time gap (in user units) [Default is infinite].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Wd sets maximum distance gap (in user units) [Default is infinite].\n");
-	GMT_Option (API, "m,.");
+	GMT_Option (API, "j,m,.");
 	
 	return (GMT_MODULE_USAGE);
 }
@@ -182,12 +178,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 			/* Processes program-specific parameters */
 			
 			case 'C':	/* Distance calculation flag */
-				Ctrl->C.active = true;
-				if (!strchr ("cefg", (int)opt->arg[0])) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: Flag must be c, f, g, or e\n");
+				if (gmt_M_compat_check (API->GMT, 6)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "The -C option is deprecated; use the GMT common option -j<mode> instead\n");
+					Ctrl->C.active = true;
+					if (!strchr ("cefg", (int)opt->arg[0])) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: Flag must be c, f, g, or e\n");
+						n_errors++;
+					}
+					if (!n_errors) Ctrl->C.string = strdup (opt->arg);
+				}
+				else {
+					GMT_Report (API, GMT_MSG_NORMAL, "Unrecognized option -C\n");
 					n_errors++;
 				}
-				if (!n_errors) Ctrl->C.string = strdup (opt->arg);
 				break;
 			case 'D':
 				Ctrl->D.active = true;
@@ -435,7 +438,8 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	fprintf (fp, "#\n# Initialized on: %s", ctime (&right_now));
 	fprintf (fp, "# Initialized by: %s\n#\n", gmt_putusername(GMT));
 	fprintf (fp, "-D%s", &Ctrl->D.file[d_start]);	/* Now a local *.def file in the TAG directory */
-	if (Ctrl->C.active) fprintf (fp, " -C%s", Ctrl->C.string);
+	if (GMT->common.j.active) fprintf (fp, " -j%s", GMT->common.j.string);
+	else if (Ctrl->C.active) fprintf (fp, " -j%s", Ctrl->C.string);
 	if (Ctrl->E.active) fprintf (fp, " -E%s", Ctrl->E.string);
 	if (Ctrl->G.active) fprintf (fp, " -G%s", Ctrl->G.string);
 	if (Ctrl->m.active) fprintf (fp, " -m%s", Ctrl->m.string);

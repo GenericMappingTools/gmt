@@ -30,7 +30,7 @@ PostScript code is written to stdout.
 #define THIS_MODULE_PURPOSE	"Plot cross-sections of focal mechanisms"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehit" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehipt" GMT_OPT("c")
 
 #define DEFAULT_FONTSIZE	9.0	/* In points */
 #define DEFAULT_OFFSET		3.0	/* In points */
@@ -434,16 +434,16 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] \n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<cpt>]\n", GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t[%s]\n\t[%s] [%s] [%s]\n\n", GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify cross-section parameters. Choose between\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Aa<lon1/lat1/lon2/lat2/dip/p_width/dmin/dmax>[f]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ab<lon1/lat1/strike/p_length/dip/p_width/dmin/dmax>[f]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ac<x1/y1/x2/y2/dip/p_width/dmin/dmax>[f]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ad<x1/y1/strike/p_length/dip/p_width/dmin/max>[f]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Add f to get the frame from the cross-section parameters.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Aa<lon1/lat1/lon2/lat2/dip/p_width/dmin/dmax>[+f]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ab<lon1/lat1/strike/p_length/dip/p_width/dmin/dmax>[+f]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ac<x1/y1/x2/y2/dip/p_width/dmin/dmax>[+f]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ad<x1/y1/strike/p_length/dip/p_width/dmin/max>[+f]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Add +f to get the frame from the cross-section parameters.\n");
 	GMT_Option (API, "J-,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
@@ -490,9 +490,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        P_value P_azim P_plunge exp newX newY [event_title]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   z  Anisotropic part of seismic moment tensor (Harvard CMT, with zero trace):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        X Y depth mrr mtt mff mrt mrf mtf exp [event_title]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add /fontsize[/offset][u] [Default values are /%g/%f].\n", DEFAULT_FONTSIZE, DEFAULT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add /fontsize[/offset][+u] [Default values are /%g/%f].\n", DEFAULT_FONTSIZE, DEFAULT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written; offset is from the limit of the beach ball.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   By default label is above the beach ball. Add u to plot it under.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   By default label is above the beach ball. Append +u to plot it under.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Tn[/<pen>] draw nodal planes and circumference only to provide a transparent beach ball\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   using the current pen (see -W) or sets pen attribute.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n = 1 the only first nodal plane is plotted.\n");
@@ -503,7 +503,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s]\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use CPT to assign colors based on depth-value in 3rd column.\n");
 
-	GMT_Option (API, "X,di,e,h,i,t,:,.");
+	GMT_Option (API, "X,di,e,h,p,i,t,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -534,7 +534,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 			case 'A':	/* Cross-section definition */
 				Ctrl->A.active = true;
 				Ctrl->A.proj_type = opt->arg[0];
-				if (opt->arg[strlen(opt->arg)-1] == 'f') Ctrl->A.frame = true;
+				if ((p = strstr (opt->arg, "+f"))) {	/* Get the frame from the cross-section parameters */
+					Ctrl->A.frame = true;
+					p[0] = '\0';	/* Chop off modifier */
+				}
+				else if (opt->arg[strlen(opt->arg)-1] == 'f') Ctrl->A.frame = true;
 				if (Ctrl->A.proj_type == 'a' || Ctrl->A.proj_type == 'c') {
 					sscanf (&opt->arg[1], "%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf",
 						&lon1, &lat1, &lon2, &lat2, &Ctrl->A.PREF.dip, &Ctrl->A.p_width, &Ctrl->A.dmin, &Ctrl->A.dmax);
@@ -561,6 +565,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 					Ctrl->A.ylatref = lat1;
 				}
 				Ctrl->A.polygon = true;
+				if (p) p[0] = '+';	/* Restore modifier */
 				break;
 
 			case 'E':	/* Set color for extensive parts  */
@@ -622,7 +627,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 					case 's':	/* Only points : get symbol [and size] */
 						Ctrl->S.active = true;
 						Ctrl->S.symbol = opt->arg[1];
-						if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
+						if ((p = strstr (opt->arg, "+u"))) {	/* Plot label under symbol [over] */
+							Ctrl->S.justify = PSL_TC;
+							p[0] = '\0';	/* Chop off modifier */
+						}
+						else if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
 						txt[0] = txt_b[0] = txt_c[0] = '\0';
 						sscanf (&opt->arg[2], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
 						if (txt[0]) Ctrl->S.scale = gmt_M_to_inch (GMT, txt);
@@ -633,6 +642,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 								Ctrl->S.n_cols = 4;
 							else
 								Ctrl->S.n_cols = 3;
+						if (p) p[0] = '+';	/* Restore modifier */
 						break;
 					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
 						Ctrl->T2.active = true;
@@ -669,7 +679,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 				break;
 			case 'S':	/* Mechanisms : get format [and size] */
 				Ctrl->S.active = true;
-				if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
+				if ((p = strstr (opt->arg, "+u"))) {	/* Plot label under symbol [over] */
+					Ctrl->S.justify = PSL_TC;
+					p[0] = '\0';	/* Chop off modifier */
+				}
+				else if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
 				txt[0] = txt_b[0] = txt_c[0] = '\0';
 				sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
 				if (txt[0]) Ctrl->S.scale = gmt_M_to_inch (GMT, txt);
@@ -721,6 +735,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 						n_errors++;
 						break;
 				}
+				if (p) p[0] = '+';	/* Restore modifier */
 				break;
 
 			case 'T':
@@ -844,6 +859,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
@@ -1119,6 +1135,7 @@ Definition of scalar moment.
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 	PSL_setdash (PSL, NULL, 0);
 	gmt_map_basemap (GMT);
+	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 
 	Return (GMT_NOERROR);

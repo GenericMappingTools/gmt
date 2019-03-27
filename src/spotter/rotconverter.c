@@ -124,8 +124,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *C) {	/
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D] [-F<out>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G] [-M[<factor>]] [-N] [-S] [-T] [%s] [-W]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_h_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F<out>] [-G] [-M[<factor>]] [-N] [-S] [-T] [%s] [-W]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_h_OPT, GMT_PAR_OPT);
 	
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -202,6 +202,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 					case 'f':
 						if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
 							GMT_Report (API, GMT_MSG_COMPAT, "-Ff is deprecated; use -Ft instead.\n");
+							/* Fall through on purpose to 't' */
 						else {
 							GMT_Report (API, GMT_MSG_NORMAL, "Must specify t|s\n");
 							n_errors++;

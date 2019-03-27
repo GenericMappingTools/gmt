@@ -32,7 +32,7 @@ the same file to plot cross-sections, depth is in third column.
 Nevertheless, it is possible to use "old style" **psvelomeca** input
 files without depth in third column using the **-o** option.
 
-**-Sa**\ *scale[/fontsize[/offset*\ [**u**\ ]]]
+**-Sa**\ *scale[/fontsize[/offset*\ [**+u**\ ]]]
 
 Focal mechanisms in Aki and Richards convention. *scale* adjusts the
 scaling of the radius of the "beach ball", which will be proportional to
@@ -41,7 +41,7 @@ the magnitude. Scale is the size for magnitude = 5 in inch (unless
 render the beach ball transparent by drawing only the nodal planes and
 the circumference. The color or shade of the compressive quadrants can
 be specified with the **-G** option. The color or shade of the extensive
-quadrants can be specified with the **-E** option. Append **u** to have
+quadrants can be specified with the **-E** option. Append **+u** to have
 the text appear below the beach ball (default is above). Parameters are
 expected to be in the following columns:
 
@@ -62,7 +62,7 @@ expected to be in the following columns:
     **10**:
     Text string to appear above or below the beach ball (optional).
 
-**-Sc**\ *scale[/fontsize[/offset*\ [**u**\ ]]]
+**-Sc**\ *scale[/fontsize[/offset*\ [**+u**\ ]]]
 
 Focal mechanisms in Harvard CMT convention. *scale* adjusts the scaling
 of the radius of the "beach ball", which will be proportional to the
@@ -72,7 +72,7 @@ Use the **-T** option to render the beach ball transparent by drawing
 only the nodal planes and the circumference. The color or shade of the
 compressive quadrants can be specified with the **-G** option. The color
 or shade of the extensive quadrants can be specified with the **-E**
-option. Append **u** to have the text appear below the beach ball
+option. Append **+u** to have the text appear below the beach ball
 (default is above). Parameters are expected to be in the following
 columns:
 
@@ -95,7 +95,7 @@ columns:
     **14**:
     Text string to appear above or below the beach ball (optional).
 
-**-Sm\|d\|z**\ *scale[/fontsize[/offset*\ [**u**\ ]]]
+**-Sm\|d\|z**\ *scale[/fontsize[/offset*\ [**+u**\ ]]]
 
 Seismic moment tensor (Harvard CMT, with zero trace). *scale* adjusts
 the scaling of the radius of the "beach ball", which will be
@@ -108,7 +108,7 @@ double couple part of moment tensor. Use **-Sz** to plot the anisotropic
 part of moment tensor (zero trace). The color or shade of the
 compressive quadrants can be specified with the **-G** option. The color
 or shade of the extensive quadrants can be specified with the **-E**
-option. Append **u** to have the text appear below the beach ball
+option. Append **+u** to have the text appear below the beach ball
 (default is above). Parameters are expected to be in the following
 columns:
 
@@ -129,7 +129,7 @@ columns:
     **13**:
     Text string to appear above or below the beach ball (optional).
 
-**-Sp**\ *scale[/fontsize[/offset*\ [**u**\ ]]]
+**-Sp**\ *scale[/fontsize[/offset*\ [**+u**\ ]]]
 
 Focal mechanisms given with partial data on both planes. *scale* adjusts
 the scaling of the radius of the "beach ball", which will be
@@ -137,7 +137,7 @@ proportional to the magnitude. Scale is the size for magnitude = 5 in
 inch (unless **c**, **i**, or **p** is appended). The color or
 shade of the compressive quadrants can be specified with the **-G**
 option. The color or shade of the extensive quadrants can be specified
-with the **-E** option. Append **u** to have the text appear below the
+with the **-E** option. Append **+u** to have the text appear below the
 beach ball (default is above). Parameters are expected to be in the
 following columns:
 
@@ -162,7 +162,7 @@ following columns:
     **11**:
     Text string to appear above or below the beach ball (optional).
 
-**-Sx\|y\|t**\ *scale[/fontsize[/offset*\ [**u**\ ]]]
+**-Sx\|y\|t**\ *scale[/fontsize[/offset*\ [**+u**\ ]]]
 
 Principal axis. *scale* adjusts the scaling of the radius of the "beach
 ball", which will be proportional to the magnitude. Scale is the size
@@ -173,7 +173,7 @@ standard Harvard CMT. Use **-Sy** to plot only the double couple part of
 moment tensor. Use **-St** to plot zero trace moment tensor. The color
 or shade of the compressive quadrants can be specified with the **-G**
 option. The color or shade of the extensive quadrants can be specified
-with the **-E** option. Append **u** to have the text appear below the
+with the **-E** option. Append **+u** to have the text appear below the
 beach ball (default is above). Parameters are expected to be in the
 following columns:
 

@@ -15,10 +15,10 @@ Synopsis
 
 **gmt img2grd** *imgfile* |-G|\ *grdfile*
 |SYN_OPT-R|
-|-T|\ *type*
 [ |-C| ]
 [ |-D|\ [*minlat/maxlat*] ] [ |-E| ] [ |-I|\ *inc* ]
 [ |-M| ] [ |-N|\ *navg* ] [ |-S|\ [*scale*] ]
+[ |-T|\ *type* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *maxlon* ]
 [ |SYN_OPT-n| ]

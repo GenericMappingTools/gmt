@@ -16,8 +16,8 @@ Synopsis
 **gmt grdgradient** *in_grdfile* |-G|\ *out_grdfile*
 [ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
 [ |-E|\ [**m**\ \|\ **s**\ \|\ **p**\ ]\ *azim/elev*\ [**+a**\ *ambient*\ ][**+d**\ *diffuse*\ ][**+p**\ *specular*\ ][**+s**\ *shine*\ ] ] 
-[ |-L|\ *flag* ] 
 [ |-N|\ [**e**\ \|\ **t**][*amp*][**+s**\ *sigma*\ ][**+o**\ *offset*\ ] ]
+[ |-Q|\ **c**\ \|\ **r**\ \|\ **R**
 [ |SYN_OPT-R| ] [ |-S|\ *slopefile* ]
 [ |SYN_OPT-V| ] [ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
@@ -33,7 +33,7 @@ given direction (**-A**), or to find the direction (**-S**) [and the magnitude
 (**-D**)] of the vector gradient of the data.
 
 Estimated values in the first/last row/column of output depend on
-boundary conditions (see **-L**). 
+boundary conditions (see **-n**). 
 
 Required Arguments
 ------------------
@@ -101,15 +101,6 @@ Optional Arguments
     and 45 degrees. This means that even if you provide other values
     they will be ignored.)
 
-.. _-L:
-
-**-L**\ *flag*
-    Boundary condition *flag* may be *x* or *y* or *xy* indicating data
-    is periodic in range of x or y or both, or *flag* may be *g*
-    indicating geographical conditions (x and y are lon and lat).
-    [Default uses "natural" conditions (second partial derivative normal
-    to edge is zero).]
-
 .. _-N:
 
 **-N**\ [**e**\ \|\ **t**][*amp*][**+s**\ *sigma*\ ][**+o**\ *offset*\ ]
@@ -125,7 +116,21 @@ Optional Arguments
     not given. **-Nt** normalizes using a cumulative Cauchy distribution
     yielding *gn* = (2 \* *amp* / PI) \* atan( (*g* - *offset*)/
     *sigma*) where *sigma* is estimated using the L2 norm of (*g* -
-    *offset*) if it is not given. 
+    *offset*) if it is not given. To use *offset* and/or *sigma* from a
+    previous calculation, leave out the argument to the modifier(s) and
+    see **-Q** for usage.
+
+.. _-Q:
+
+**-Qc**\ \|\ **r**\ \|\ **R**
+    Controls how normalization via **-N** is carried out.  When multiple grids
+    should be normalized the same way (i.e., with the same *offset* and/or *sigma*),
+    we must pass these values via **-N**.  However, this is inconvenient if we
+    compute these values from a grid.  Use **-Qc** to save the results of
+    *offset* and *sigma* to a statistics file; if grid output is not needed
+    for this run then do not specify **-G**. For subsequent runs, just use
+    **-Qr** to read these values.  Using **-QR** will read then delete the
+    statistics file. See TILES for more information.
 
 .. _-R:
 
@@ -180,6 +185,24 @@ If you simply need the *x*- or *y*-derivatives of the grid, use :doc:`grdmath`.
 
 .. include:: explain_grd_inout_short.rst_
 
+Tiles
+-----
+
+For very large datasets (or very large plots) you may need to break the job into multiple
+tiles. It is then important that the normalization of the intensities are handled the
+same way for each tile.  By default, *offset* and *sigma* are recalculated for each tile.
+Hence, different tiles of the same large grid will compute different *offset* and *sigma* values.
+Thus, the intensity for the same directional slope will be different across the final map.
+This inconsistency can lead to visible changes in image appearance across tile seams.
+The way to ensure compatible results is to specify the same *offset* and *sigma* via
+the modifiers to **-N**.  However, if these need to be estimated from the large grid then
+the **-Q** option can help: Run **grdgradient** on the full grid (or as large portion of
+the grid that your computer can handle) and specify **-Qc** to create a statistics file
+with the resulting *offset* and *sigma*.  Then, for each of your grid tile calculations, give
+**+o** and/or **+s** without arguments to **-N** and specify **-Qr**.  This option will read
+the values from the hidden statistics file and use them in the normalization.
+If you use **-QR** for the final tile then the statistics file is removed after use.
+
 Examples
 --------
 
@@ -196,6 +219,21 @@ To find the azimuth orientations of seafloor fabric in the file topo.nc:
    ::
 
     gmt grdgradient topo.nc -Dno -Gazimuths.nc -V
+
+To determine the offset and sigma suitable for normalizing the intensities from topo.nc, do
+
+   ::
+
+    gmt grdgradient topo.nc -A30 -Nt0.6 -Qc -V
+
+Without **-G**, only the hidden statistics file is created and no output grid is written.
+
+To use the previously determined offset and sigma to normalize the intensities in tile_3.nc, do
+
+   ::
+
+    gmt grdgradient tile_3.nc -A30 -Nt0.6+o+s -Qr -V -Gtile_3_int.nc
+
 
 References
 ----------

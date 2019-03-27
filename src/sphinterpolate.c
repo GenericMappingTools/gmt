@@ -115,7 +115,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      <U> = Upper bound on  weighted sum of squares of deviations from data [npoints],\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      <N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3].\n");
 	GMT_Option (API, "Rg");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no region is specified we default to the entire world [-Rg].\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   If no region is specified we default to the entire world [-Rg].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Use variable tension (ignored for -Qp) [constant].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Scale data by 1/(max-min) prior to gridding [no scaling].\n");

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Global pixel grids offset by half a grid increment fails
-# The smae for gridline-registered grids work.
+# The same for gridline-registered grids work.
 # Here, q0.nc is fine but q.nc is shifted by 1/2 dx.
 ps=oneincshift.ps
 gmt grdmath -Rg -I1 -r Y COSD 20 MUL X SIND MUL = q0.nc

@@ -28,8 +28,8 @@
  *	proj4:		A string describing the reference system as a Proj4 string
  *	BoundingBox:	The 2D dataset BoundingBox as a 2x2 matrix with Xmin/Xmax in first column and Y in second
  *	Type:		Geometry type. E.g. Point, Polygon or LineString
- *	X:		Column vector of doubles with the vector x-coordinates		
- *	Y:		Column vector of doubles with the vector y-coordinates		
+ *	X:		Column vector of doubles with the vector x-coordinates
+ *	Y:		Column vector of doubles with the vector y-coordinates
  *	Z:		Same for z when vector is 3D, otherwise empty
  *	Islands:	2 columns matrix with start and ending indexes of the main Ring and its islands (if any).
  *			This only applies to Polygon geometries that have interior rings (islands).
@@ -38,7 +38,7 @@
  *	Att_names:	Names of the attributes of a Feature
  *	Att_values:	Values of the attributes of a Feature as strings
  *	Att_types:	Because "Att_values" came as strings, this is a vector with the codes allowing
- *			the conversion into their original data types as returned by OGR_Fld_GetType(hField). 
+ *			the conversion into their original data types as returned by OGR_Fld_GetType(hField).
  *			Thus if the code of element n is 2 (OFTReal) Att_values[n] can be converted to double with
  *			atof. See ogr_core.h for the list of codes and their meanings.
  *
@@ -67,7 +67,7 @@
  * rings (islands) of a polygon, each one of those interior polygons is appended to the main polygon but separated
  * with one row of NaNs (2 or 3 NaNs depending if vector is 2d or 3D). The "Islands" element contains thus a Nx2
  * matrix with the indexes of the starting and ending positions of the N polygons that were once the Polygon and
- * its interior rings in the OGR model. For Polygons with no islands, "Islands" is an empty ([]) variable. 
+ * its interior rings in the OGR model. For Polygons with no islands, "Islands" is an empty ([]) variable.
  *
  * --------------------------------------------------------------------------------------------------------------
  *
@@ -161,14 +161,14 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 			}
 
 			if (nRings > 1) {		/* Deal with the Islands */
-				int	cz, nPtsRing, *pi, nExtra = nRings, c = nPtsBase;
+				int	cz, nPtsRing, *pi, nExtra = nRings - 1, c = nPtsBase;
 
 				for (k = 1; k < nRings; k++) {			/* Loop over islands to count extra points needed in realloc */
 					hRingIsland = OGR_G_GetGeometryRef(hGeom, k);
 					nExtra += OGR_G_GetPointCount(hRingIsland);
 				}
-				x = gmt_M_memory (GMT, x, np+nExtra, double);
-				y = gmt_M_memory (GMT, y, np+nExtra, double);
+				x = gmt_M_memory (GMT, x, nPtsBase+nExtra, double);
+				y = gmt_M_memory (GMT, y, nPtsBase+nExtra, double);
 				if (is3D) z = gmt_M_memory (GMT, z, np+nExtra, double);
 
 				pi = gmt_M_memory(GMT, NULL, nRings * 2, int);
@@ -195,7 +195,7 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 
 				pi[2*nRings - 1] = c - 1;			/* Last element was not assigned in the loop above */
 				out[indStruct].islands = pi;
-				out[indStruct].np = np+nExtra;
+				out[indStruct].np = nPtsBase+nExtra;
 			}
 			else
 				out[indStruct].np = nPtsBase;
@@ -208,7 +208,7 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 			 * Polygon and call this function recursively until all basic geometries, controlled by
 			 * the main for loop above [for (j = 0; j < nGeoms; j++)], are processed. */
 			int	r;
-	
+
 			hRing = OGR_G_GetGeometryRef(hGeom, j);
 			r = get_data(GMT, out, hFeature, hFeatureDefn, hRing, iLayer, nFeature, nLayers, nAttribs, nMaxGeoms, j);
 			if (r)
@@ -242,7 +242,7 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 		else
 			out[indStruct].att_number = 0;
 
-		out[0].n_filled++;				/* Incement the filled nodes counter */
+		out[0].n_filled++;				/* Increment the filled nodes counter */
 	}
 
 	return 0;
@@ -251,7 +251,7 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 
 	int	i, ind, iLayer, nEmptyGeoms, nAttribs = 0;
-	int	region = 0, verbose = 1;
+	int	region = 0;
 	int	nLayers;		/* number of layers in dataset */
 	double	x_min, y_min, x_max, y_max;
 
@@ -307,12 +307,12 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename) {
 		nMaxFeatures = MAX((int)OGR_L_GetFeatureCount(hLayer, 1), nMaxFeatures);
 		OGR_L_ResetReading(hLayer);
 
-		while ((hFeature = OGR_L_GetNextFeature(hLayer)) != NULL) { 
-			hGeom = OGR_F_GetGeometryRef(hFeature);
-			eType = wkbFlatten(OGR_G_GetGeometryType(hGeom));
-			if (eType != wkbPolygon)	/* For simple polygons, next would return only the number of interior rings */
-				nMaxGeoms = MAX(OGR_G_GetGeometryCount(hGeom), nMaxGeoms);
-
+		while ((hFeature = OGR_L_GetNextFeature(hLayer)) != NULL) {
+			if ((hGeom = OGR_F_GetGeometryRef(hFeature)) != NULL) {
+				eType = wkbFlatten(OGR_G_GetGeometryType(hGeom));
+				if (eType != wkbPolygon)	/* For simple polygons, next would return only the number of interior rings */
+					nMaxGeoms = MAX(OGR_G_GetGeometryCount(hGeom), nMaxGeoms);
+			}
 			OGR_F_Destroy(hFeature);
 		}
 	}

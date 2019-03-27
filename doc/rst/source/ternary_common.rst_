@@ -20,11 +20,11 @@ Optional Arguments
 .. _-B:
 
 **-B**\ [**a**\ \|\ **b**\ \|\ **c**\ ]\ *args*
-    For ternary diagrams the three sides are referred to as a, b, and c.  Thus,
+    For ternary diagrams the three sides are referred to as **a**, **b**, and **c**.  Thus,
     to give specific settings for one of these axis you must include the
     axis letter before the arguments.  If all axes have the same arguments
     then only give one option without the axis letter.  For more details,
-    see the -B discussion in basemap.
+    see the **-B** discussion in basemap.
 
 .. _-C:
 
@@ -53,9 +53,9 @@ Optional Arguments
 .. _-L:
 
 **-L**\ *a*\ /*b*\ /*c*
-    Set the labels for the three diagram vertices [none].
-    These are placed a distance of 3 times the MAP_LABEL_OFFSET setting from
-    their respective corners.
+    Set the labels for the three diagram vertices [none].  These are placed a
+    distance of 3 times the MAP_LABEL_OFFSET :ref:`MAP_LABEL_OFFSET <MAP_LABEL_OFFSET>`
+    setting from their respective corners.
 
 .. _-M:
 

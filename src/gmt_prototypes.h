@@ -41,6 +41,7 @@ EXTERN_MSC char *gmt_strdup (struct GMT_CTRL *GMT, const char *s);
 
 /* gmt_init.c: */
 
+EXTERN_MSC int gmt_get_next_panel (struct GMTAPI_CTRL *API, int fig, unsigned int *row, unsigned int *col);
 EXTERN_MSC int gmt_report_usage (struct GMTAPI_CTRL *API, struct GMT_OPTION *options, unsigned int special, int (*usage)(struct GMTAPI_CTRL *, int));
 EXTERN_MSC bool gmt_option_set (struct GMT_CTRL *GMT, bool *active, unsigned int *errors);
 EXTERN_MSC void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int justify);
@@ -119,6 +120,7 @@ EXTERN_MSC void gmt_setmode (struct GMT_CTRL *GMT, int direction);
 /* gmt_bcr.c: */
 EXTERN_MSC double gmt_bcr_get_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, double yy);		/* Compute z(x,y) from bcr structure and grid */
 EXTERN_MSC double gmt_bcr_get_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, double yy);		/* Same but without region and nan checks */
+EXTERN_MSC int gmt_parse_j_option (struct GMT_CTRL *GMT, char *arg);
 
 /* gmt_customio.c: */
 

@@ -388,8 +388,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> %s %s\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[-|[+]<annot_int>][<labelinfo>]\n\t[%s] [-C[+]<cont_int>|<cpt>] [-D<template>] ", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "[-E<indextable>] [%s] [-I] [%s] %s[-L<pen>] [-N]\n", GMT_CONTG, GMT_Jz_OPT, GMT_K_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A[-|[+]<annot_int>][<labelinfo>] [%s] [-C[+]<cont_int>|<cpt>] [-D<template>]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E<indextable>] [%s] [-I] [%s] %s[-L<pen>] [-N]\n", GMT_CONTG, GMT_Jz_OPT, GMT_K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q[<cut>[<unit>]][+z]] [-S[p|t]] [%s]\n", GMT_O_OPT, GMT_P_OPT, GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[a|c]<pen>[+c[l|f]]] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
@@ -605,7 +605,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				if (opt->arg[0]) {
 					size_t last = strlen (opt->arg) - 1;
 					Ctrl->Q.active = true;
-					if (strchr (GMT_LEN_UNITS, opt->arg[last]))	/* Gave a mininum length in data units */
+					if (strchr (GMT_LEN_UNITS, opt->arg[last]))	/* Gave a minimum length in data units */
 						Ctrl->Q.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->Q.length), &(Ctrl->Q.unit));
 					else if (opt->arg[last] == 'C') {	/* Projected units */
 						Ctrl->Q.length = atof (opt->arg);
@@ -1125,7 +1125,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			Ctrl->C.interval = x;
 			Ctrl->A.interval = 2.0 * x;
 			Ctrl->C.active  = Ctrl->A.active = Ctrl->contour.annot = true;
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Auto-determined contour inverval = %g and annotation interval = %g\n", Ctrl->C.interval, Ctrl->A.interval);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Auto-determined contour interval = %g and annotation interval = %g\n", Ctrl->C.interval, Ctrl->A.interval);
 		}
 		noise = GMT_CONV4_LIMIT * Ctrl->C.interval;
 		min = floor (xyz[0][GMT_Z] / Ctrl->C.interval) * Ctrl->C.interval; if (min < xyz[0][GMT_Z]) min += Ctrl->C.interval;

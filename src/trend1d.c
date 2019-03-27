@@ -97,7 +97,7 @@ enum trend1d_enums {
 struct TREND1D_CTRL {
 	unsigned int n_outputs;
 	bool weighted_output;
-	unsigned int model_parameters;	/* 0 = no output, 1 = polynomial output (users), 2 = polynomial outout (normalized), 3 = Chebyshev (normalized) */
+	unsigned int model_parameters;	/* 0 = no output, 1 = polynomial output (users), 2 = polynomial output (normalized), 3 = Chebyshev (normalized) */
 	struct C {	/* -C<condition_#> */
 		bool active;
 		double value;

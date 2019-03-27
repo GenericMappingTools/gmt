@@ -8,3 +8,4 @@ G
    gmtget
    gmt
    gmt2kml
+   gmt.conf

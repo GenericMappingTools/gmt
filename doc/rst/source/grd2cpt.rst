@@ -16,13 +16,13 @@ Synopsis
 **gmt grd2cpt** *grid* [ |-A|\ *transparency*\ [**+a**\ ] ]
 [ |-C|\ *cpt* ] [ |-D|\ [**i**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ][**+c**\ ]]
+[ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**\ ][**+c**\ ]]
 [ |-G|\ *zlo*\ /\ *zhi* ] [ |-I|\ [**c**][**z**] ]
 [ |-L|\ *minlimit/maxlimit* ]
 [ |-M| ] [ |-N| ]
 [ |-Q|\ [**i**\ \|\ **o**] ]
 [ |SYN_OPT-R| ]
-[ |-S|\ **l**\ \|\ **u**\ \|\ **m**\ \|\ **h** ]
+[ |-S|\ **h**\ \|\ **l**\ \|\ **m**\ \|\ **u** ]
 [ |-T|\ *start/stop/inc* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**] ]
@@ -177,10 +177,10 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ **l**\ \|\ **u**\ \|\ **m**\ \|\ **h**
-    Force the color table to be symmetric about zero (from -R to +R).
-    Append flag to set the range R: **l** for R =\|zmin\|, **u** for R =
-    \|zmax\|, **m** for R = min(\|zmin\|, \|zmax\|), or **h** for R =
+**-S**\ **h**\ \|\ **l**\ \|\ **m**\ \|\ **u**
+    Force the color table to be symmetric about zero (from -*R* to +*R*).
+    Append flag to set the range *R*: **l** for *R* =\|zmin\|, **u** for *R* =
+    \|zmax\|, **m** for *R* = min(\|zmin\|, \|zmax\|), or **h** for *R* =
     max(\|zmin\|, \|zmax\|).
 
 .. _-T:

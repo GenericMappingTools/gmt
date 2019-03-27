@@ -4,11 +4,11 @@
 
     Manage figure inset setup and completion
 
-The **inset** module is used to carve out a sub-region of the current plot and
-limit further plotting to that section of the canvas.  The inset setup is started with the **begin**
-mode that defines the placement and size of the inset.  Subsequent plot commands will be directed
-to that window.  The inset is completed via the **end** mode, which reverts operations to the full
-canvas and restores the plot region and projection that was in effect prior to the setup of the inset.
+The **inset** module is used to carve out a sub-region of the current plot canvas and
+restrict further plotting to that section of the canvas.  The inset setup is started with the **begin**
+directive that defines the placement and size of the inset.  Subsequent plot commands will be directed
+to that window.  The inset is completed via the **end** directive, which reverts operations to the full
+canvas and restores the plot region and map projection that was in effect prior to the setup of the inset.
 
 Synopsis (begin mode)
 ---------------------
@@ -27,8 +27,8 @@ Synopsis (begin mode)
 Description
 -----------
 
-The **begin** mode of inset defines the dimension and placement of the inset canvas.  It
-makes a note of the current region and projection so that we may return to the initial
+The **begin** directive of **inset** defines the dimension and placement of the inset canvas.  It
+records the current region and projection so that we may return to the initial
 plot environment when  the inset is completed.
 
 Required Arguments
@@ -98,8 +98,8 @@ Synopsis (end mode)
 
 **gmt inset end** [ |SYN_OPT-V| ]
 
-This command finalizes the current inset, which returns the plotting environment to
-the state prior to the start of the inset.  The previous region and projection will be
+The **end** directive finalizes the current inset, which returns the plotting environment to
+the state prior to the start of the inset.  The previous region and map projection will be
 in effect going forward.
 
 Optional Arguments
@@ -114,7 +114,7 @@ Optional Arguments
 Examples
 --------
 
-To make a simple basemap layout with an inset called inset.pdf, try
+To make a simple basemap plot called inset.pdf that demonstrates the inset module, try
 
    ::
 

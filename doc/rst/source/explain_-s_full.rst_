@@ -7,5 +7,5 @@
     only output the records whose *z*-value equals NaN. Alternatively,
     indicate a comma-separated list of all columns or column ranges to
     consider for this NaN test (Column ranges must be given
-    in the format *start*\ [:*inc* \]:*stop*, where *inc* defaults to 1 if
+    in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if
     not specified).

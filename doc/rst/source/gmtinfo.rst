@@ -16,7 +16,7 @@ Synopsis
 **gmt info** [ *table* ] [ |-A|\ **a**\ \|\ **f**\ \|\ **s** ]
 [ |-C| ]
 [ |-D|\ [*dx*\ [/*dy*\ ]] ]
-[ |-E|\ **L**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col* ]
+[ |-E|\ **L**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ [*col*] ]
 [ |-F|\ [**i**\ \|\ **d**\ \|\ **t**\ ] ]
 [ |-I|\ [**b**\ \|\ **e**\ \|\ **f**\ \|\ **p**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...] ]
 [ |-L| ]
@@ -88,7 +88,7 @@ Optional Arguments
 
 .. _-E:
 
-**-EL**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col*
+**-EL**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ [*col*]
     Returns the record whose column *col* contains the minimum
     (**l**) or maximum (**h**) value. Upper case
     (**L\|H**) works on absolute value of the data. In case of multiple
@@ -97,12 +97,12 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**i**\ \|\ **d**\ \|\ **t**\ ] ]
+**-F**\ [**i**\ \|\ **d**\ \|\ **t**\ ]
     Returns the counts of various records depending on the appended mode:
     **i** returns a single record with the total number of tables, segments,
     data records, header records, and overall records.  In contrast, **d** returns
     information for each segment in the virtual data set: *tbl_number, seg_number,
-    n_rows, start_rec, stop_rec*. **t** does the same but honors the input
+    n_rows, start_rec, stop_rec*. Mode **t** does the same but honors the input
     table organization and thus resets *seg_number, start_rec, stop_rec* at the
     start of each new table.
 

@@ -23,7 +23,7 @@ Synopsis
 [ |-F|\ [**l**\ \|\ **r**] ]
 [ |-G|\ *fill* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-K| ]
-[ |-L|\ [**+**\ \|\ **-**]\ *nodegrid* ]
+[ |-L|\ *nodegrid*\ [**+i**\ \|\ **o**\ ] ]
 [ |-N| ] [ |-O| ]
 [ |-P| ] [ |-Q|\ *cut* ]
 [ |-S|\ *search\_radius*\ [*unit*] ]
@@ -45,7 +45,7 @@ Synopsis
 
 **psmask** **-C** [ **-K** ] [ **-O** ]
 
-.. include:: image_common.rst_
+.. include:: mask_common.rst_
 
 .. include:: common_classic.rst_
 

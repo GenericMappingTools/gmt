@@ -260,7 +260,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -J is no longer needed or used in x2sys_cross, ignored\n");
 					break;
 				}
-				/* If not compat mode we fall down here and fail I think */
+				/* If not compat mode we fall down here on purpose and fail I think */
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
@@ -358,7 +358,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	uint64_t add_chunk;
 	int scol;
 	int error = 0;				/* nonzero for invalid arguments */
-	int iplat;				/* Sign of pole for reprojections */
+	int iplat = 0;				/* Sign of pole for reprojections */
 	unsigned int *ok = NULL;
 
 	bool xover_locations_only = false;	/* true if only x,y (and possible indices) to be output */
@@ -392,8 +392,8 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	double dist_scale;			/* Scale to give selected distance units */
 	double vel_scale;			/* Scale to give selected velocity units */
 	double t_scale;				/* Scale to give time in seconds */
-	double plat[2];				/* Pole latitude for polar reprojections */
-	double ymin[2], ymax[2];		/* Latitude range of each file */
+	double plat[2] = {0.0, 0.0};		/* Pole latitude for polar reprojections */
+	double ymin[2] = {0.0, 0.0}, ymax[2] = {0.0, 0.0};	/* Latitude range of each file */
 
 	clock_t tic = 0, toc = 0;
 

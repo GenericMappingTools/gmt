@@ -68,7 +68,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**S**\ \|\ **N**\ ] ]
+**-D**\ [**S**\ \|\ **N**\ ]
     Control how geographic coordinates are handled (Cartesian data are unaffected).
     By default, we determine if the data are closer to one pole than the other, and
     then we use a cylindrical polar conversion to avoid problems with longitude jumps.

@@ -23,7 +23,7 @@ gmt grdgravmag3d bot_half.grd -C$rho -Zt -Gbot_g.grd
 gmt grdmath bot_g.grd top_g.grd ADD = sphere_g.grd
 
 
-# Compute the effect of the two hemi-spheres alog XX axis and add them
+# Compute the effect of the two hemi-spheres along XX axis and add them
 gmt grdgravmag3d top_half.grd -C$rho -Zb -Fli1.dat > tt.dat 
 gmt grdgravmag3d bot_half.grd -C$rho -Zt -Fli1.dat > tb.dat 
 gmt math tt.dat tb.dat ADD = t.dat

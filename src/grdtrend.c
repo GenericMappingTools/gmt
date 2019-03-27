@@ -491,9 +491,9 @@ GMT_LOCAL void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, doubl
 int GMT_grdtrend (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdcontour task */
 
-	bool trivial, weighted,iterations, set_ones = true;
+	bool trivial, weighted, set_ones = true;
 	int error = 0;
-	unsigned int row, col;
+	unsigned int row, col, iterations;
 
 	uint64_t ij;
 

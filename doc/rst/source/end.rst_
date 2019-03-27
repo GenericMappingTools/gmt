@@ -18,8 +18,9 @@ Synopsis
 Description
 -----------
 
-This **end** module terminates the modern mode and finalizes the processing of all registered
-figures.  The final graphics will be placed in the current directory.
+This **end** module terminates the modern mode session created with **begin** and finalizes the processing of all registered
+figures.  The final graphics will be placed in the current directory and the hidden sessions directory
+will be removed.
 
 Optional Arguments
 ------------------

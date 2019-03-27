@@ -19,15 +19,15 @@ Synopsis
 [ |-C|\ [*dx*/*dy*] ]
 [ |-D|\ **c**\ \|\ **i**\ \|\ **p** ]
 [ |-E|\ [*datum*\ ] ] [ |-F|\ [*unit*\ ] ]
-[ |-G|\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ [**+**\ \|\ **-**]\ *unit*][**+v**] ]
+[ |-G|\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ *unit*][**+v**] ]
 [ |-I| ]
-[ |-L|\ *line.xy*\ [**+u**\ [**+**\ \|\ **-**]\ *unit*][**+p**] ]
+[ |-L|\ *line.xy*\ [**+u**\ *unit*][**+p**] ]
 [ |-N|\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**] ]
 [ |-Q|\ [**d**\ \|\ **e** ]
 [ |-S| ]
 [ |-T|\ [**h**\ ]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**w**\ \|\ **h**] ]
+[ |-W|\ [**g**\ \|\ **h**\ \|\ **j**\ \|\ **n**\ \|\ **w**\ \|\ **x**] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -36,6 +36,7 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-s| ]
@@ -140,7 +141,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ [**+**\ \|\ **-**]\ *unit*][**+v**]
+**-G**\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ *unit*][**+v**]
     Calculate distances along track *or* to the optional *fixed* point set
     with **-G**\ *lon0*/*lat0*. Append the distance unit with **+u** (see :ref:`Unit_attributes` for available
     units and how distances are computed), including
@@ -160,7 +161,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *line.xy*\ [**+u**\ [**+**\ \|\ **-**]\ *unit*][**+p**]
+**-L**\ *line.xy*\ [**+u**\ *unit*][**+p**]
     Determine the shortest distance from the input data points to the
     line(s) given in the ASCII multisegment file *line.xy*. The distance
     and the coordinates of the nearest point will be appended to the
@@ -216,10 +217,15 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**w**\ \|\ **h**]
+**-W**\ [**g**\ \|\ **h**\ \|\ **j**\ \|\ **n**\ \|\ **w**\ \|\ **x**]
     Prints map width and height on standard output.  No input files are read.
     To only output the width or the height, append **w** or **h**, respectively.
-    The units of the dimensions may be changed via **-D**.
+    To output the plot coordinates of a map point, give **g**\ *lon*/*lat*.
+    The units of reported plot dimensions may be changed via **-D**.
+    To output the map coordinates of a reference point, select **j**\ *code* (with
+    standard two-character justification codes), **n**\ *rx*/*ry*, where the reference
+    point is given as normalized positions in the 0-1 range, or **x**\ *px*/*py*,
+    where a plot point is given directly [Default returns the width and height of the map].
 
 .. _-Z:
 
@@ -262,6 +268,8 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. include:: explain_distcalc.rst_
 
 .. include:: explain_-ocols.rst_
 
@@ -334,6 +342,14 @@ where :ref:`TIME_UNIT <TIME_UNIT>` is set to hour so that the speed is
 measured in nm (set by **-G**) per hour (set by :ref:`TIME_UNIT <TIME_UNIT>`).
 Elapsed times will be reported in hours (unless **+f** is added to **-Z**
 for ISO elapsed time).
+
+To determine the geographic coordinates of the mid-point of this transverse Mercator map, try
+
+   ::
+
+    gmt mapproject -R-80/-70/20/40 -Jt-75/1:500000 -WjCM > mid_point.txt
+
+where :ref:`TIME_UNIT <TIME_UNIT>` is set to hour so that the speed is
 
 Restrictions
 ------------

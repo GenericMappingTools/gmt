@@ -211,6 +211,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct G
 						break;
 					case 'D':	/* Angle between vectors */
 						Ctrl->T.degree = true;
+						/* Fall through on purpose to 'd' */
 					case 'd':	/* dot-product of two vectors */
 						Ctrl->T.mode = DO_DOT;
 						break;

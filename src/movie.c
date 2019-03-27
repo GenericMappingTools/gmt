@@ -343,8 +343,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<n_frames>|<timefile>[+p<width>][+s<first>][+w]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-F<format>[+o<opts>]] [-G<fill>] [-H<factor>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-L<labelinfo>] [-M[<frame>,][<format>]] [-Q[s]] [-Sb<script>] [-Sf<script>] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-W<workdir>] [-Z] [-x[[-]<n>]] [%s]\n\n", GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-L<labelinfo>] [-M[<frame>,][<format>]] [-Q[s]] [-Sb<script>] [-Sf<script>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<workdir>] [-Z] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -394,8 +394,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Include script file to be inserted into the movie_init.sh script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constant variables needed by all movie scripts.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Automatic labeling of frames.  Repeatable.  Places chosen label at the frame perimeter:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     e selectes elapsed time as the label. Use +s<scl> to set time in sec per frame [1/<framerate>].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     f selectes the running frame number as the label.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     e selects elapsed time as the label. Use +s<scl> to set time in sec per frame [1/<framerate>].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     f selects the running frame number as the label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     c<col> uses the value in column <col> of <timefile> (first column is 1).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     t<col> uses word number <col> from the trailing text in <timefile> (requires -T...+w).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between label and surrounding box.  Only\n");
@@ -409,7 +409,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +t to provide a format statement to be used with the item selected [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Create a master frame plot as well; append comma-separated frame number [0] and format [pdf].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Master plot will be named <prefix>.<format> and placed in the current directory.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Debugging: Leave all intermediate files and directores behind for inspection.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Debugging: Leave all intermediate files and directories behind for inspection.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to only create the work scripts but none will be executed (except background script).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the optional background and foreground GMT scripts [none]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sb Append the name of a background script that may pre-compute\n");
@@ -564,7 +564,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_O
 				else
 					s = NULL;	/* No encoding options given */
 				strncpy (arg, opt->arg, GMT_LEN64-1);	/* Get a copy of the args (minus encoding options)... */
-				gmt_str_tolower (arg);	/* ..so we can convert it to lower case for comparisions */
+				gmt_str_tolower (arg);	/* ..so we can convert it to lower case for comparisons */
 				if (c) c[0] = '+';	/* Now we can restore the optional text we chopped off */
 				if (!strcmp (opt->arg, "none")) {	/* Do not make those PNGs at all, just a master plot */
 					Ctrl->M.exit = true;
@@ -1213,16 +1213,19 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
 			case 'F':	/* Full name, upper case */
 				upper_case = true;
+				/* fall through on purpose to 'f' */
 			case 'f':	/* Full name, lower case */
 				flavor = 0;
 				break;
 			case 'A':	/* Abbreviated name, upper case */
 				upper_case = true;
+				/* fall through on purpose to 'a' */
 			case 'a':	/* Abbreviated name, lower case */
 				flavor = 1;
 				break;
 			case 'C':	/* 1-char name, upper case */
 				upper_case = true;
+				/* fall through on purpose to 'c' */
 			case 'c':	/* 1-char name, lower case */
 				flavor = 2;
 				break;

@@ -449,7 +449,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	double global_xmin, global_xmax, global_ymin, global_ymax, global_zmin, global_zmax;
 	double z_mean = 0.0, z_median = 0.0, z_mode = 0.0, z_stdev = 0.0, z_scale = 0.0, z_lmsscl = 0.0, z_rms = 0.0, out[22];
 
-	char format[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""}, grdfile[GMT_LEN256] = {""};
+	char format[GMT_BUFSIZ] = {""}, text[GMT_LEN512] = {""}, record[GMT_BUFSIZ] = {""}, grdfile[GMT_LEN256] = {""};
 	char *type[2] = { "Gridline", "Pixel"}, *sep = NULL, *projStr = NULL, *answer[2] = {"", " no"};
 
 	struct GRDINFO_CTRL *Ctrl = NULL;
@@ -506,7 +506,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if (Ctrl->C.mode == GRDINFO_NUMERICAL) cmode = GMT_COL_FIX_NO_TEXT;
 		geometry = GMT_IS_NONE;
 		if (Ctrl->C.mode == GRDINFO_TRADITIONAL) geometry = GMT_IS_TEXT;
-		if (geometry == GMT_IS_TEXT) n_cols = 0;	/* A single string, unfortunatelly */
+		if (geometry == GMT_IS_TEXT) n_cols = 0;	/* A single string, unfortunately */
 	}
 	else if (Ctrl->I.status == GRDINFO_GIVE_BOUNDBOX) {
 		n_cols = 2;

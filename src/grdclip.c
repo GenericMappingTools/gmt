@@ -189,6 +189,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 					break;
 				case 'i':
 					n_to_expect = 3;	/* Since only two for -Sr */
+					/* Fall through on purpose to 'r' */
 				case 'r':
 					Ctrl->S.mode |= GRDCLIP_BETWEEN;
 					if (n_class == Ctrl->S.n_class) {	/* Need more memory */

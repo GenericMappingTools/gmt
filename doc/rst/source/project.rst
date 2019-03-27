@@ -201,8 +201,8 @@ Optional Arguments
 
 **-Z**\  *major*/*minor*/*azimuth*\ [**+e**\ ] ]
     Used in conjunction with **-C** (sets its center) and **-G** (sets the
-    distance increment) to create the coordinates of a geographic ellipse
-    with *major* and *minor* axes given in km and the *azimuth* of the
+    distance increment) to create the coordinates of an ellipse
+    with *major* and *minor* axes given in km (unless **-N** is given) and the *azimuth* of the
     major axis in degrees.  Append **+e** to adjust the increment set via
     **-G** so that the the ellipse has equal distance increments [Default
     uses the given increment and closes the ellipse].

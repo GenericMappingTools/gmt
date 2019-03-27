@@ -16,7 +16,7 @@ Synopsis
 **gmt grdredpol** *anom_grd* |-G|\ *rtp_grd* [|-C|\ *dec/dip*]
 [ |-E|\ **i**\ *inc_grd*]
 [ |-E|\ **d**\ *dec_grd*]
-[ |-F|\ *<m/n>*]
+[ |-F|\ *m/n*]
 [ |-M|\ *m\|r*]
 [ |-N| ]
 [ |-W|\ *win_width*]

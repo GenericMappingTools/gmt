@@ -51,7 +51,7 @@ struct PSIMAGE_CTRL {
 		bool active;
 		struct GMT_MAP_PANEL *panel;
 	} F;
-	struct PSIMG_G {	/* -G[f|b|t]<rgb> */
+	struct PSIMG_G {	/* -G<rgb>[+b|+f|+t] */
 		bool active;
 		double rgb[3][4];
 	} G;
@@ -115,9 +115,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +t to indicate the given <color> should be made transparent [no transparency].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Invert 1-bit images (does not affect 8 or 24-bit images).\n");
 	GMT_Option (API, "J-Z,K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Force color -> monochrome image using gmt_M_yiq-transformation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Force color -> monochrome image using YIQ-transformation.\n");
 	GMT_Option (API, "O,P,R,U,V,X,p");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (Requires -R and -J for proper functioning).\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   (Requires -R and -J for proper functioning).\n");
 	GMT_Option (API, "t,.");
 
 	return (GMT_MODULE_USAGE);
@@ -131,7 +131,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, ind, k = 0;
+	unsigned int n_errors = 0, n_files = 0, ind = PSIMG_FGD, k = 0;
 	int n;
 	bool p_fail = false;
 	char string[GMT_LEN256] = {""}, *p = NULL;

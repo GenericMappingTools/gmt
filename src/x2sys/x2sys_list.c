@@ -132,7 +132,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   asymmetry = (n_right - n_left)/(n_right + n_left) [1, i.e., use all tracks].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Enhanced ASCII output: Add segment header with track names and number of crossovers [no segment headers].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify any combination of %s in the order of desired output:\n", LETTERS);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note: n, if chosen, will always be trailing text at the end of the output record\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Exception: n, if chosen, will always be placed at the end of the output record.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a Angle (<= 90) between the two tracks at the crossover.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c Crossover error in chosen observable (see -C).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   d Distance along tracks at the crossover.\n");
@@ -155,7 +155,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Output results for tracks with more than <nx_min> crossovers only [Use all tracks].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append e or i for external or internal crossovers [Default is both].\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Return only crossovers involving this track [Use all tracks].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +b to make it print info relative to both tracks [Default is selected track].\n");
 	GMT_Option (API, "V");

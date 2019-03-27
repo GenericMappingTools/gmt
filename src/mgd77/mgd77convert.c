@@ -82,7 +82,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
              
 	MGD77_Cruise_Explain (API->GMT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[Files are read from data repositories and written to current directory]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Files are read from data repositories and written to current directory]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Convert from a file that is either (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -FC to recover the original MGD77 setting from the MGD77+ file [Default applies E77 corrections].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Convert to a file that is either (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table.\n");
@@ -136,7 +136,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struc
 						break;
 					case 'C':		/* Enhanced MGD77+ netCDF file */
 						Ctrl->F.mode = true;	/* Overlook revisions */
-					case 'c':
+					case 'c':	/* Falling through from 'C' to 'c' on purpose */
 						Ctrl->F.format = MGD77_FORMAT_CDF;
 						break;
 					case 'm':		/* New ASCII MGD77T file */

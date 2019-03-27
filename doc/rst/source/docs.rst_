@@ -9,7 +9,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt docs** *<module-name>* [*-option*]
+**gmt docs** [ **-Q** ] *module-name* [*-option*]
 
 |No-spaces|
 
@@ -18,18 +18,27 @@ Description
 
 **docs** tells GMT to display the HTML version of a module's documentation using the default browser.
 For the time being, only modern mode module names are displayed. That is, if user asks for
-*gmt docs psxy* she will see the *plot* documentation. Besides the modules names, the special
+*gmt docs psxy* she will see the (near-equivalent) *plot* documentation. Besides the modules names, the special
 forms *cookbook*, *gallery*, *gmt.conf*, *api* and *tutorial* are also accepted.
 
-However, **docs** can also be used to open local files such as PDF or image files or
+However, **docs** can also be used to open local files such as PDF or image files or even
 web link addresses.
 
 Optional Arguments
 ------------------
 
+**-Q**
+    This option means we are doing a "dry-run" and simply want the final URL to be
+    printed to standard output.  No browser command will take place. This is useful
+    if you are working remotely on a server and do not wish to launch a GUI browser.
+
+
+Optional Module Arguments
+-------------------------
+
 *-option*
     Where *-option* is the one-letter option of the module in question (e.g, **-R**).
-    It then displays the documentation positioned at that specific option.
+    We then display the *module* documentation positioned at that specific option.
 
 Examples
 --------
@@ -39,6 +48,12 @@ To see the documentation of *grdimage*
    ::
 
     gmt docs grdimage
+
+To see the link to the documentation of *grdimage*
+
+   ::
+
+    gmt docs -Q grdimage
 
 To see the documentation of the **-B** option in *pscoast*
 
@@ -59,6 +74,12 @@ To see the beautiful figure that I just created with GMT.
    ::
 
     gmt docs my_beautiful_figure.pdf
+
+To display the URL to the surface man page,.run
+
+   ::
+
+    gmt docs -Q surface
 
 See Also
 --------

@@ -19,7 +19,7 @@ Description
 -----------
 
 The clear command allows users to delete their current history, conf,
-or cpt file, remove the entire user cache, data, or sessions directory, or all of the above.
+or cpt files, remove the entire user cache, data, or sessions directory, or all of the above.
 
 Optional Arguments
 ------------------
@@ -32,7 +32,7 @@ Optional Arguments
 .. _clear-conf:
 
 *conf*
-    Delete the current gmt.conf file used for the modern session.
+    Delete the current gmt.conf file used for the current modern session.
 
 .. _clear-cpt:
 
@@ -42,12 +42,12 @@ Optional Arguments
 .. _clear-cache:
 
 *cache*
-    Delete the user's cache directory and its contents.
+    Delete the user's cache directory and all of its contents.
 
 .. _clear-data:
 
 *data*
-    Delete the user's data download directory and its contents.
+    Delete the user's data download directory and all of its contents.
 
 .. _clear-history:
 
