@@ -195,6 +195,9 @@ struct GMT_MD5 * md5_load (struct GMT_CTRL *GMT, char *file, int *n) {
 		sscanf (line, "%s %s %" PRIuS, L[k].name, L[k].md5, &L[k].size);
 	}
 	fclose (fp);
+	if (k != *n) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "File %s said it has %d records but only found %d - download error???\n", file, *n, k);
+	}
 	return (L);	
 };
 
@@ -274,6 +277,8 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 				gmt_remove_file (GMT, url);
 		}
 		gmt_remove_file (GMT, old_md5path);	/* Finally remove the outdated MD5 file */
+		gmt_M_free (GMT, O);	/* Free old md5 table structures */
+		gmt_M_free (GMT, N);	/* Free new md5 table structures */
 		/* We now have an updated MD5 file and any out-of-date file has been removed so it can be downloaded again */
 	}
 }
