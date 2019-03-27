@@ -924,7 +924,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 			case 'Q':	/* Measure area/length and handedness of polygons */
 				Ctrl->Q.active = true;
 				s = opt->arg;
-				if (strchr ("-+", s[0]) && strchr (GMT_LEN_UNITS, s[1])) {	/* Since [-|+] is deprecated as of GMT 6 */
+				if (s[0] && strchr ("-+", s[0]) && strchr (GMT_LEN_UNITS, s[1])) {	/* Since [-|+] is deprecated as of GMT 6 */
 					if (gmt_M_compat_check (GMT, 6))
 						GMT_Report (API, GMT_MSG_COMPAT, "Leading -|+ with unit to set flat Earth or ellipsoidal mode is deprecated; use -j<mode> instead\n");
 					else {
