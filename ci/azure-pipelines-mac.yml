@@ -4,7 +4,7 @@ steps:
 
 - bash: |
     set -x -e
-    brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript curl graphicsmagick || true
+    brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript graphicsmagick || true
   displayName: Install dependencies
 
 - bash: echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
@@ -12,9 +12,6 @@ steps:
 
 - bash: echo "##vso[task.setvariable variable=COASTLINEDIR]$INSTALLDIR/coast"
   displayName: Set coastline location
-
-- bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
-  displayName: Set PATH
 
 - bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
   displayName: Set PATH
