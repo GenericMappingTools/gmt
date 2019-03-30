@@ -223,7 +223,7 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 	time_t mod_time, right_now = time (NULL);	/* Unix time right now */
 	char md5path[PATH_MAX] = {""}, old_md5path[PATH_MAX] = {""}, url[PATH_MAX] = {""};
 	
-	if (GMT->current.io.dm5_refreshed) return;	/* Already been here */
+	if (GMT->current.io.md5_refreshed) return;	/* Already been here */
 	
 	sprintf (md5path, "%s/server/gmt_md5_server.txt", GMT->session.USERDIR);
 
@@ -232,13 +232,13 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
 		if (gmtmd5_get_url (GMT, url, md5path))
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to get remote file %s\n", url);
-		GMT->current.io.dm5_refreshed = true;	/* Done our job */
+		GMT->current.io.md5_refreshed = true;	/* Done our job */
 		return;
 	}
 	else
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Local file %s found\n", md5path);
 		
-	GMT->current.io.dm5_refreshed = true;	/* Done our job */
+	GMT->current.io.md5_refreshed = true;	/* Done our job */
 
 	/* Here we have the existing MD5 file and its path is in md5path */
 
