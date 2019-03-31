@@ -13,7 +13,7 @@ gmt pslegend -R -J -DjMC+w4i+jMC+l1.25 -C0.1i/0.1i -F+p+i+gwhite -O >> $ps <<EOF
 # Legend test for gmt pslegend
 # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line,
 #
-H 18p Times-Roman Intensity of Coffee Stains
+H 18p,Times-Roman Intensity of Coffee Stains
 A a.cpt
 D 0.2i 1p
 S 0.1i c 0.15i z=0 0.25p 0.3i Symbol color given via z=0 and CPT look-up
@@ -29,9 +29,9 @@ S 0.1i c 0.15i z=9 0.25p 0.3i Symbol color given via z=9 and CPT look-up
 S 0.1i c 0.15i z=10 0.25p 0.3i Symbol color given via z=10 and CPT look-up
 D 0.2i 1p
 G 0.05i
-L 9 4 R The CPT file was made via gmt makecpt -Ccopper -T0/10/1
+L 9p,Times-Roman R The CPT file was made via gmt makecpt -Ccopper -T0/10/1
 D 0 2p
-H 18p Times-Roman Intensity of Political Partisanship
+H 18p,Times-Roman Intensity of Political Partisanship
 D 0.2i 1p
 A b.cpt
 S 0.1i s 0.15i z=-5 0.25p 0.3i Symbol color given via z=-5 and CPT look-up
@@ -47,5 +47,5 @@ S 0.1i s 0.15i z=4 0.25p 0.3i Symbol color given via z=4 and CPT look-up
 S 0.1i s 0.15i z=5 0.25p 0.3i Symbol color given via z=5 and CPT look-up
 D 0.2i 1p
 G 0.05i
-L 9 4 R The CPT file was made via gmt makecpt -Cpolar  -T-5/5/1
+L 9p,Times-Roman R The CPT file was made via gmt makecpt -Cpolar  -T-5/5/1
 EOF

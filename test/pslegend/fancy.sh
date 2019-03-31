@@ -12,7 +12,7 @@ cat << EOF > tt.txt
 # H is ps=fancy.ps
 #
 G -0.1i
-H 24 Times-Roman Map Legend
+H 24p,Times-Roman Map Legend
 D 0.2i 1p
 V 0 1p
 S 0.1i c 0.15i p300/12 0.25p 0.3i This circle is hachured

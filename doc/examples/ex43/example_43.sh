@@ -27,7 +27,7 @@ gmt psxy -R -J -O -K -Sc0.15i -Ct.cpt -Wfaint -i0,1,6 model.txt >> $ps
 gmt pstext A.txt -R -J -O -K -F+f8p+jCM+r1 -B0 >> $ps
 # Build legend
 cat << EOF > legend.txt
-H 18 Times-Roman Index of Animals
+H 18p,Times-Roman Index of Animals
 D 1p
 N 7 43 7 43
 EOF
