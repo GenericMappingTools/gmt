@@ -1590,6 +1590,7 @@ GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned
 
 	if (n_sug) {	/* We did find some suggestions, report them (up to the first 10 suggestions) */
 		char region[GMT_LEN128] = {""}, buffer[GMT_LEN128] = {""};
+		bool lat_bad = false;
 		unsigned int m, save_range = GMT->current.io.geo.range;
 		double w, e, s, n;
 		GMT->current.io.geo.range = GMT_IS_GIVEN_RANGE;		/* Override this setting explicitly */
@@ -1601,6 +1602,8 @@ GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned
 			m = sug[k].n_rows - (G->header->n_rows - 1);	/* Additional nodes needed in y to give more factors */
 			s = G->header->wesn[YLO] - (m/2)*G->header->inc[GMT_Y];	/* Potential revised s/n extent */
 			n = G->header->wesn[YHI] + (m/2)*G->header->inc[GMT_Y];
+			if (!lat_bad && gmt_M_is_geographic (GMT, GMT_IN) && (s < -90.0 || n > 90.0))
+				lat_bad = true;
 			if (m%2) n += G->header->inc[GMT_Y];
 			if (pixel) {	/* Since we already added 1/2 pixel we need to undo that here so the report matches original phase */
 				w -= G->header->inc[GMT_X] / 2.0;	e -= G->header->inc[GMT_X] / 2.0;
@@ -1614,15 +1617,19 @@ GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned
 			strcat (region, buffer);	strcat (region, "/");
 			gmt_ascii_format_col (GMT, buffer, n, GMT_OUT, GMT_Y);
 			strcat (region, buffer);
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Hint: Choosing %s [n_columns = %d, n_rows = %d] might cut run time by a factor of %.8g\n",
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Hint: Choosing %s [n_columns = %d, n_rows = %d] might cut run time by a factor of %.8g\n",
 				region, sug[k].n_columns, sug[k].n_rows, sug[k].factor);
 		}
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Hint: After completion you can recover the desired region via gmt grdcut\n");
+		if (lat_bad) {
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Note: One or more of the suggested south/north bounds exceed the allowable range [-90/90]\n");
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "A workaround is to use -fx to only consider x as geographic longitudes\n");
+		}
 		gmt_M_free (GMT, sug);
 		GMT->current.io.geo.range = save_range;
 	}
 	else
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot suggest any n_columns,n_rows better than your current -R -I settings.\n");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Cannot suggest any n_columns,n_rows better than your current -R -I settings.\n");
 	return;
 }
 
@@ -2179,6 +2186,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 
 int GMT_surface_mt (void *V_API, int mode, void *args) {
 	int error = 0, key, one = 1, end;
+	unsigned int old_verbose;
 	char *limit[2] = {"lower", "upper"};
 	double wesn[4];
 	
@@ -2205,6 +2213,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	
 	/*---------------------------- This is the surface main code ----------------------------*/
 
+	old_verbose = GMT->current.setting.verbose;
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	/* Some initializations and defaults setting */
 	gmt_M_memset (&C, 1, struct SURFACE_INFO);
@@ -2241,14 +2250,19 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	/* Determine the initial and intermediate grid dimensions */
 	C.current_stride = gmt_gcd_euclid (C.n_columns-1, C.n_rows-1);
 
+	if (Ctrl->Q.active && old_verbose < GMT_MSG_LONG_VERBOSE)	/* Temporarily escalate verbosity to INFORMATION */
+		GMT->current.setting.verbose = GMT_MSG_LONG_VERBOSE;
 	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE) || Ctrl->Q.active) {
 		sprintf (C.format, "Grid domain: W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d [", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		(GMT->common.R.active[GSET]) ? strcat (C.format, "pixel registration]\n") : strcat (C.format, "gridline registration]\n");
-		GMT_Report (API, GMT_MSG_NORMAL, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.n_columns-one, C.n_rows-one);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.n_columns-one, C.n_rows-one);
 	}
 	if (C.current_stride == 1) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
 	if ((C.current_stride == 1 && gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.n_columns-1, C.n_rows-1, GMT->common.R.active[GSET]);
-	if (Ctrl->Q.active) Return (GMT_NOERROR);
+	if (Ctrl->Q.active) {	/* Reset verbosity and bail */
+		GMT->current.setting.verbose = old_verbose;
+		Return (GMT_NOERROR);
+	}
 
 	/* Set current_stride = 1, read data, setting indices.  Then throw
 	   away data that can't be used in the end game, limiting the
