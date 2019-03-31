@@ -20,7 +20,7 @@ gmt psscale -Cz.cpt -DJRM+w2.5i/0.2i+o0.5i/0+mc -R -J -O -K -F+p+i -Bxa1000+lELE
 gmt pscoast -R -J -Di -Glightblue -Sroyalblue2 -O -K -X2i -Y4.75i >> $ps
 gmt pscoast -R -J -Di -Glightbrown -O -K -A+ag -Bafg >> $ps
 gmt pslegend -DjLM+w1.7i+jRM+o0.5i/0 -R -J -O -K -F+p+i << EOF >> $ps
-H 18 Times-Roman Legend
+H 18p,Times-Roman Legend
 D 0.1i 1p
 S 0.15i s 0.2i blue  0.25p 0.3i Ocean
 S 0.15i s 0.2i lightblue  0.25p 0.3i Ice front

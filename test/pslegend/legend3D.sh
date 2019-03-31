@@ -13,7 +13,7 @@ gmt pslegend -R0/10/0/9 -JM6i -Dx0.5i/0.5i+w5i+jBL+l1.2 -C0.1i/0.1i -F+p+gazure1
 # H is ps=legend.ps
 #
 G -0.1i
-H 24 Times-Roman My Map Legend
+H 24p,Times-Roman My Map Legend
 D 0.2i 1p
 N 2
 V 0 1p
@@ -33,7 +33,7 @@ I @SOEST_block4.png 3i CT
 G 0.05i
 B tt.cpt 0.2i 0.2i -B0
 G 0.05i
-L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
+L 9p,Times-Roman R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
 G 0.1i
 T Let us just try some simple text that can go on a few lines.
 T There is no easy way to predetermine how many lines may be required
