@@ -1914,7 +1914,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 		(GMT->common.R.active[GSET]) ? strcat (C.format, "pixel registration]\n") : strcat (C.format, "gridline registration]\n");
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.n_columns-one, C.n_rows-one);
 	}
-	if (C.current_stride == 1) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
+	if (C.current_stride == 1) GMT_Report (API, GMT_MSG_VERBOSE, "Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
 	if ((C.current_stride == 1 && gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.n_columns-1, C.n_rows-1, GMT->common.R.active[GSET]);
 	if (Ctrl->Q.active) {	/* Reset verbosity and bail */
 		GMT->current.setting.verbose = old_verbose;
