@@ -359,6 +359,23 @@ GMT_LOCAL double get_image_aspect (struct GMTAPI_CTRL *API, char *file) {
 	return aspect;
 }
 
+GMT_LOCAL bool new_fontsyntax (struct GMT_CTRL *GMT, char *word1, char *word2) {
+	/* Old syntax expect fontsize and font to be given as two items, while new (GMT5)
+	 * syntax expects fontsize,fontname,fontcolor to be a single item with optional,
+	 * comma-separated parts.  This function determines what we were given... */
+	bool new;
+	if (!strcmp (word1, "-") && !strcmp (word2, "-")) new = false;	/* Gave - for both size and font defaults means old syntax */
+	else if (strchr (word1, ',')) new = true;			/* Got a comma-separated list of font attributes */
+	else if (!strcmp (word1, "-")) new = (gmt_getfonttype (GMT, word2) == -1);	/* Detect old syntax if word1 is - and word2 is a font name or integer */
+	else if (!gmt_not_numeric (GMT, word1) && !strcmp (word2, "-")) new = false;	/* Detect old syntax if word1 is a size and word2 - for default font */
+	else if (!gmt_not_numeric (GMT, word1) && gmt_getfonttype (GMT, word2) >= 0) new = false;	/* Detect old syntax if word1 is a size and word2 is a font name or integer */
+	else if (gmt_not_numeric (GMT, word2)) new = true;		/* Must be start of the main text */
+	else new = true;	/* Must assume current syntax */
+	if (!new && gmt_M_compat_check (GMT, 4))
+		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Your GMT4 font specification [%s %s] is deprecated; use [<size>][,<name>][,<fill>][=<pen>] in the future.\n", word1, word2);
+	return new;
+}
+
 /* Define the fraction of the height of the font to the font size */
 #define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height)
 #define FONT_HEIGHT(font_id) (GMT->session.font[font_id].height)
@@ -391,7 +408,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	unsigned int tbl, pos, first = 0;
 	int i, justify = 0, n = 0, n_columns = 1, n_col, col, error = 0, column_number = 0, id, n_scan, status = 0;
 	bool flush_paragraph = false, v_line_draw_now = false, gave_label, gave_mapscale_options, did_old = false;
-	bool drawn = false, b_cpt = false;
+	bool drawn = false, b_cpt = false, C_is_active = false;
 	uint64_t seg, row, n_fronts = 0, n_quoted_lines = 0, n_symbols = 0, n_par_lines = 0, n_par_total = 0, krow[N_DAT];
 	int64_t n_para = -1;
 	size_t n_char = 0;
@@ -402,7 +419,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	char font[GMT_LEN256] = {""}, lspace[GMT_LEN256] = {""}, tw[GMT_LEN256] = {""}, jj[GMT_LEN256] = {""};
 	char bar_cpt[GMT_LEN256] = {""}, bar_gap[GMT_LEN256] = {""}, bar_height[GMT_LEN256] = {""}, bar_modifiers[GMT_LEN256] = {""};
 	char module_options[GMT_LEN256] = {""}, r_options[GMT_LEN256] = {""}, xy_mode[3] = {""};
-	char txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""}, legend_file[GMT_LEN256] = {""};
+	char txtcolor[GMT_LEN256] = {""}, def_txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""}, legend_file[GMT_LEN256] = {""};
 	char path[GMT_BUFSIZ] = {""}, B[GMT_LEN32] = {""}, C[GMT_LEN32] = {""}, p[GMT_LEN256] = {""};
 	char *line = NULL, string[GMT_STR16] = {""}, *c = NULL, *fill[PSLEGEND_MAX_COLS];
 #ifdef DEBUG
@@ -410,7 +427,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 #endif
 
 	double x_orig, y_orig, x_off, x, y, r, col_left_x, row_base_y, dx, d_line_half_width, d_line_hor_offset, off_ss, off_tt;
-	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl, aspect, xy_offset[2];
+	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl, aspect, xy_offset[2], C_rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, v_line_y_start = 0.0, d_off, def_size = 0.0;
 	double sum_width, h, gap, d_line_after_gap = 0.0, d_line_last_y0 = 0.0, col_width[PSLEGEND_MAX_COLS], x_off_col[PSLEGEND_MAX_COLS];
 
@@ -527,9 +544,18 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 					case 'H':	/* Header record */
 						sscanf (&line[2], "%s %s %[^\n]", size, font, text);
-						if (size[0] == '-') size[0] = 0;
-						if (font[0] == '-') font[0] = 0;
-						sprintf (tmp, "%s,%s,%s", size, font, txtcolor);	/* Put size, font and color together for parsing by gmt_getfont */
+						if (new_fontsyntax (GMT, size, font)) {	/* GMT5 font specification */
+							sscanf (&line[2], "%s %[^\n]", font, text);
+							if (font[0] == '-')
+								sprintf (tmp, "%s", gmt_putfont (GMT, &GMT->current.setting.font_title));
+							else
+								strcpy (tmp, font);	/* Gave a font specification */
+						}
+						else {	/* Old GMT4 syntax for fontsize and font */
+							if (size[0] == '-') size[0] = 0;
+							if (font[0] == '-') font[0] = 0;
+							sprintf (tmp, "%s,%s", size, font);	/* Put size, font together for parsing by gmt_getfont */
+						}
 						ifont = GMT->current.setting.font_title;	/* Set default font */
 						gmt_getfont (GMT, tmp, &ifont);
 						height += Ctrl->D.spacing * ifont.size / PSL_POINTS_PER_INCH;
@@ -553,9 +579,18 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 					case 'L':	/* Label record */
 						sscanf (&line[2], "%s %s %s %[^\n]", size, font, key, text);
-						if (size[0] == '-') size[0] = 0;
-						if (font[0] == '-') font[0] = 0;
-						sprintf (tmp, "%s,%s,%s", size, font, txtcolor);		/* Put size, font and color together for parsing by gmt_getfont */
+						if (new_fontsyntax (GMT, size, font)) {	/* GMT5 font specification */
+							sscanf (&line[2], "%s %s %[^\n]", font, key, text);
+							if (font[0] == '-')	/* Want default font */
+								sprintf (tmp, "%s", gmt_putfont (GMT, &GMT->current.setting.font_label));
+							else
+								strcpy (tmp, font);	/* Gave a font specification */
+						}
+						else {	/* Old GMT4 syntax for fontsize and font */
+							if (size[0] == '-') size[0] = 0;
+							if (font[0] == '-') font[0] = 0;
+							sprintf (tmp, "%s,%s", size, font);	/* Put size, font together for parsing by gmt_getfont */
+						}
 						ifont = GMT->current.setting.font_label;	/* Set default font */
 						gmt_getfont (GMT, tmp, &ifont);
 						if (column_number%n_columns == 0) {
@@ -727,6 +762,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	column_number = 0;	/* Start at first column in multi-column setup */
 	n_columns = 1;		/* Reset to default number of columns */
 	/* Reset to annotation font text color */
+	sprintf (def_txtcolor, "%s", gmt_putcolor (GMT, GMT->current.setting.font_annot[GMT_PRIMARY].fill.rgb));
 	sprintf (txtcolor, "%s", gmt_putcolor (GMT, GMT->current.setting.font_annot[GMT_PRIMARY].fill.rgb));
 	x_off_col[0] = 0.0;	/* The x-coordinate of left side of first column */
 	x_off_col[n_columns] = Ctrl->D.dim[GMT_X];	/* Holds width of a row */
@@ -785,8 +821,16 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						break;
 
 					case 'C':	/* Font color change: C textcolor */
+						C_is_active = true;
 						sscanf (&line[2], "%[^\n]", txtcolor);
-						if ((API->error = gmt_get_rgbtxt_from_z (GMT, P, txtcolor)) != 0) Return (GMT_RUNTIME_ERROR);	/* If given z=value then we look up colors */
+						if (!strcmp (txtcolor, "-"))	/* Reset to default color */
+							strcpy (txtcolor, def_txtcolor);
+						else if ((API->error = gmt_get_rgbtxt_from_z (GMT, P, txtcolor)) != 0)
+							Return (GMT_RUNTIME_ERROR);	/* If given z=value then we look up colors */
+						if (gmt_getrgb (GMT, txtcolor, C_rgb)) {
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Text color %s not recognized!\n", txtcolor);
+							Return (GMT_RUNTIME_ERROR);
+						}
 						break;
 
 					case 'D':	/* Delimiter record: D [offset] <pen>|- [-|=|+] */
@@ -862,11 +906,22 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 					case 'H':	/* Header record: H fontsize|- font|- header */
 						sscanf (&line[2], "%s %s %[^\n]", size, font, text);
-						if (size[0] == '-') size[0] = 0;
-						if (font[0] == '-') font[0] = 0;
-						sprintf (tmp, "%s,%s,%s", size, font, txtcolor);		/* Put size, font and color together for parsing by gmt_getfont */
+						if (new_fontsyntax (GMT, size, font)) {	/* GMT5 font specification */
+							sscanf (&line[2], "%s %[^\n]", font, text);
+							if (size[0] == '-')	/* Want the default title font */
+								sprintf (tmp, "%s", gmt_putfont (GMT, &GMT->current.setting.font_title));
+							else
+								strcpy (tmp, font);	/* Gave a font specification */
+						}
+						else {	/* Old GMT4 syntax for fontsize and font and must manually add color (e.g., via -C) */
+							if (size[0] == '-') size[0] = 0;
+							if (font[0] == '-') font[0] = 0;
+							sprintf (tmp, "%s,%s,%s", size, font, txtcolor);		/* Put size, font and color together for parsing by gmt_getfont */
+						}
 						ifont = GMT->current.setting.font_title;	/* Set default font */
 						gmt_getfont (GMT, tmp, &ifont);
+						if (C_is_active) gmt_M_rgb_copy (ifont.fill.rgb, C_rgb);	/* Must update text color */
+						
 						sprintf (buffer, "%s BC %s", gmt_putfont (GMT, &ifont), text);
 						d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT (ifont.id)) * ifont.size / PSL_POINTS_PER_INCH;	/* To center the text */
 						row_height = Ctrl->D.spacing * ifont.size / PSL_POINTS_PER_INCH;
@@ -914,14 +969,24 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						drawn = true;
 						break;
 
-					case 'L':	/* Label record: L fontsize|- font|- justification label */
+					case 'L':	/* Label record: L font|- justification label */
 						text[0] = '\0';
 						sscanf (&line[2], "%s %s %s %[^\n]", size, font, key, text);
-						if (size[0] == '-') size[0] = 0;
-						if (font[0] == '-') font[0] = 0;
-						sprintf (tmp, "%s,%s,%s", size, font, txtcolor);		/* Put size, font and color together for parsing by gmt_getfont */
+						if (new_fontsyntax (GMT, size, font)) {	/* GMT5 font specification */
+							sscanf (&line[2], "%s %s %[^\n]", font, key, text);
+							if (font[0] == '-')	/* Want the default label font */
+								sprintf (tmp, "%s", gmt_putfont (GMT, &GMT->current.setting.font_label));
+							else
+								strcpy (tmp, font);	/* Gave a font specification */
+						}
+						else {	/* Old GMT4 syntax for fontsize and font and must manually add color (e.g., via -C) */
+							if (size[0] == '-') size[0] = 0;
+							if (font[0] == '-') font[0] = 0;
+							sprintf (tmp, "%s,%s,%s", size, font, txtcolor);	/* Put size, font and color together for parsing by gmt_getfont */
+						}
 						ifont = GMT->current.setting.font_label;	/* Set default font */
 						gmt_getfont (GMT, tmp, &ifont);
+						if (C_is_active) gmt_M_rgb_copy (ifont.fill.rgb, C_rgb);	/* Must update text color */
 						d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT (ifont.id)) * ifont.size / PSL_POINTS_PER_INCH;	/* To center the text */
 						if (column_number%n_columns == 0) {	/* Label in first column, also fill row if requested */
 							row_height = Ctrl->D.spacing * ifont.size / PSL_POINTS_PER_INCH;
@@ -1283,6 +1348,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								if (txt_d[0] == '-') strcat (sub, "+p-");
 								else {
 									struct GMT_PEN pen;
+									gmt_M_memset (&pen, 1, struct GMT_PEN);	/* Wipe the pen */
 									gmt_getpen (GMT, txt_d, &pen);
 									pen.width *= 0.5;
 									strcat (sub, "+p"); strcat (sub, gmt_putpen (API->GMT, &pen));

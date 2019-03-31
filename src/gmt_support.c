@@ -944,7 +944,7 @@ bool gmtlib_is_color (struct GMT_CTRL *GMT, char *word) {
 }
 
 /*! . */
-GMT_LOCAL int support_getfonttype (struct GMT_CTRL *GMT, char *name) {
+int gmt_getfonttype (struct GMT_CTRL *GMT, char *name) {
 	unsigned int i;
 
 	if (!name[0]) return (-1);
@@ -6331,7 +6331,7 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 	/* Processes font settings given as [size][,name][,fill][=pen] */
 
 	F->form = 1;	/* Default is to fill the text with a solid color */
-    F->set = 0;     /* Start from no settings */
+	F->set = 0;     /* Start from no settings */
 	if ((s = strchr (line, '='))) {	/* Specified an outline pen */
 		s[0] = 0, i = 1;	/* Chop of this modifier */
 		if (s[1] == '~') F->form |= 8, i = 2;	/* Want to have an outline that does not obscure the text */
@@ -6389,7 +6389,7 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 	else
 		F->size = pointsize;
 	if (!name[0] || name[0] == '-') { /* Skip */ }
-	else if ((k = support_getfonttype (GMT, name)) >= 0)
+	else if ((k = gmt_getfonttype (GMT, name)) >= 0)
 		F->id = k;
 	else
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Representation of font type not recognized. Using default.\n");
@@ -6437,6 +6437,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	char width[GMT_LEN256] = {""}, color[GMT_LEN256] = {""}, style[GMT_LEN256] = {""}, line[GMT_BUFSIZ] = {""}, *c = NULL;
 
 	if (!buffer || !buffer[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
+	if (!P) return (false);		/* Nothing given: return silently, leaving P in tact */
 
 	strncpy (line, buffer, GMT_BUFSIZ-1);	/* Work on a copy of the arguments */
 	gmt_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */

@@ -55,14 +55,14 @@ gmt pstext -R -J -F+f7p,LinBiolinumOI+jBL -Dj0.1c -Gwhite -C5%+tO -Qu -O -K >> $
 # construct legend
 cat << EOF > legend.txt
 G -0.1c
-H 10 LinBiolinumOB Population of the European Union capital cities
+H 10p,LinBiolinumOB Population of the European Union capital cities
 G 0.15c
 N 2
 S 0.15c c 0.15c 196/80/80 0.25p 0.5c < 1 Million inhabitants
 S 0.15c c 0.15c 196/80/80 1.25p 0.5c > 1 Million inhabitants
 N 1
 G 0.15c
-L 8 LinBiolinumOB L Population in Millions 
+L 8p,LinBiolinumOB L Population in Millions 
 N 6
 EOF
 

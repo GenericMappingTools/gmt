@@ -9,7 +9,7 @@
 ps=legcpt.ps
 gmt makecpt -Cabyss > col.cpt
 cat << EOF > leg
-H 16 1 10 events during Monday to Friday
+H 16p,Helvetica-Bold 10 events during Monday to Friday
 D 0 1p
 B col.cpt 1c 1c -Ba1000f100g500+lm
 G 0.7c
