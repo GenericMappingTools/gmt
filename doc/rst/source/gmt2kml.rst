@@ -15,7 +15,8 @@ Synopsis
 
 **gmt 2kml** [ *table* ]
 [ |-A|\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ]
-[ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ] [ |-E| ]
+[ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ]
+[ |-E|\ [**+e**\ ][**+s**\ ] ]
 [ |-F|\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p**\ \|\ **w** ]
 [ |-G|\ [*color*\ ]\ [**+f**\ \|\ **+n**\ ] ]
 [ |-I|\ *icon* ] [ **-K**]
@@ -108,8 +109,11 @@ Optional Arguments
 
 .. _-E:
 
-**-E**
-    Extrude feature down to ground level [no extrusion].
+**-E**\ [**+e**\ ][**+s**\ ]
+    Control how lines and polygons are rendered in Google Earth.
+    Append **+e** to extrude the feature down to ground level [no extrusion].
+    Append **+s** to connect points with straight lines (which may intersect
+    the Earth's surface and be invisible) [tesselate onto surface].
 
 .. _-F:
 
