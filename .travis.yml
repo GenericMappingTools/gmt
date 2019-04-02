@@ -28,12 +28,8 @@ cache:
         - $HOME/.ccache
         - $HOME/cache-gshhg-dcw
         - $HOME/cache-deb
-        - $HOME/Library/Caches/Homebrew
 
 before_cache:
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        brew cleanup;
-      fi
     - rm -rf $HOME/.cache/pip/log
 
 # Only build pushes to select branches and tags. This avoids the double
@@ -48,23 +44,6 @@ branches:
 # Set the Ubuntu version for the Linux builds
 dist: xenial
 
-# Dependencies for the Linux and OSX builds
-addons:
-    homebrew:
-        packages:
-            - ccache
-            - cmake
-            - ninja
-            - curl
-            - netcdf
-            - gdal
-            - fftw
-            - pcre2
-            - ghostscript
-            - curl
-            - graphicsmagick
-            - python
-
 # Create the build matrix with different jobs for each platform and cron jobs
 matrix:
     include:
@@ -73,14 +52,6 @@ matrix:
           if: type != cron
         - name: "Linux (cron)"
           os: linux
-          if: type = cron
-          env:
-            - TEST="true"
-        - name: "Mac (compile only)"
-          os: osx
-          if: type != cron
-        - name: "Mac (cron)"
-          os: osx
           if: type = cron
           env:
             - TEST="true"
@@ -113,10 +84,6 @@ before_install:
         rsync -av /var/cache/apt/archives/*.deb ${DEB_CACHE}/
       fi
     - |-
-    # On OSX add ccache to PATH:
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        export PATH="/usr/local/opt/ccache/libexec:$PATH";
-      fi
     - mkdir "$INSTALLDIR"
     - mkdir "$COASTLINEDIR"
     - ci/download-coastlines.sh

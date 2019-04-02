@@ -19,7 +19,7 @@ Synopsis
 [ |-F|\ *flags* ]
 [ |-I|\ [*list*] ]
 [ |-L|\ [*corrtable*] ]
-[ |-N|\ *nx_min* ]
+[ |-N|\ *nx_min*\ [**+p**\ ] ]
 [ |-Q|\ **e**\ \|\ **i** ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *track*\ [**+b**\ ] ]
@@ -121,9 +121,11 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ *nx_min*
-    Only report data from pairs that generated at least *nx_min*
-    crossovers between them [use all pairs].
+**-N**\ *nx_min*\ [**+p**\ ]
+    Suppress all crossovers involving tracks that did not generate
+    at least a total of *nx_min* crossings with all other tracks.
+    Alternatively, append **+p** to instead suppress data from pairs that
+    generated less than *nx_min* crossovers between them [use all pairs].
 
 .. _-Q:
 
