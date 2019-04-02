@@ -295,7 +295,7 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 				fclose (ftpfile.fp);
 				ftpfile.fp = NULL;
 			}
-			if (gmt_remove_file (GMT, local_path))
+			if (!access (local_path, F_OK) && gmt_remove_file (GMT, local_path))	/* Failed to clean up as well */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not even remove file %s\n", local_path);
 		}
 	}
