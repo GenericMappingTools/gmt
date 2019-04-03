@@ -163,14 +163,13 @@ GMT_LOCAL int gmtmd5_get_url (struct GMT_CTRL *GMT, char *url, char *file) {
 	}
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Downloading file %s ...\n", url);
 	if ((curl_err = curl_easy_perform (Curl))) {	/* Failed, give error message */
-		if (curl_err == CURLE_REMOTE_FILE_NOT_FOUND || curl_err == CURLE_HTTP_RETURNED_ERROR) {	/* Unexpected failure - want to bitch about it */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
-			if (ftpfile.fp != NULL) {
-				fclose (ftpfile.fp);
-				ftpfile.fp = NULL;
-			}
-			return 1;
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to down file %s\n", url);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Libcurl Error: %s\n", curl_easy_strerror (curl_err));
+		if (ftpfile.fp != NULL) {
+			fclose (ftpfile.fp);
+			ftpfile.fp = NULL;
 		}
+		return 1;
 	}
 	curl_easy_cleanup (Curl);
 	if (ftpfile.fp) /* close the local file */
@@ -236,8 +235,10 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 		}
 		sprintf (url, "%s/gmt_md5_server.txt", GMT->session.DATAURL);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
-		if (gmtmd5_get_url (GMT, url, md5path))
+		if (gmtmd5_get_url (GMT, url, md5path)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to get remote file %s\n", url);
+			if (!access (md5path, F_OK)) gmt_remove_file (GMT, md5path);		/* Remove MD5 file just in case it got corrupted or zero size */
+		}
 		GMT->current.io.md5_refreshed = true;	/* Done our job */
 		return;
 	}
@@ -271,7 +272,7 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 		sprintf (url, "%s/gmt_md5_server.txt", GMT->session.DATAURL);	/* Set remote path to new MD5 file */
 		if (gmtmd5_get_url (GMT, url, md5path)) {	/* Get the new MD5 file from server */
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Failed to download %s - Internet troubles?\n", md5path);
-			gmt_remove_file (GMT, md5path);		/* Remove MD5 file just in case it got corrupted or zero size */
+			if (!access (md5path, F_OK)) gmt_remove_file (GMT, md5path);		/* Remove MD5 file just in case it got corrupted or zero size */
 			return;	/* Unable to update the file (no Internet?) - skip the tests */
 		}
 		if ((N = md5_load (GMT, md5path, &nN)) == 0) {	/* Read in the new array of MD5 structs, will return 0 if mismatch of entries */
