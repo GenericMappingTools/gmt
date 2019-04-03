@@ -237,7 +237,8 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
 		if (gmtmd5_get_url (GMT, url, md5path)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to get remote file %s\n", url);
-			if (!access (md5path, F_OK)) gmt_remove_file (GMT, md5path);		/* Remove MD5 file just in case it got corrupted or zero size */
+			if (!access (md5path, F_OK)) gmt_remove_file (GMT, md5path);	/* Remove MD5 file just in case it got corrupted or zero size */
+			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;		/* Temporarily turn off auto download in this session only */
 		}
 		GMT->current.io.md5_refreshed = true;	/* Done our job */
 		return;
@@ -342,6 +343,8 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	struct FtpFile ftpfile = {NULL, NULL};
 
 	if (!file_name || !file_name[0]) return 0;   /* Got nutin' */
+	
+	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) return 0;   /* Not allowed to use remote copying */
 
 	md5_refresh (GMT);	/* Watch out for changes on the server once a day */
 
