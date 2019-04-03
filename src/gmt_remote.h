@@ -32,6 +32,12 @@ struct GMT_DATA_INFO {
 	char remark[GMT_LEN128];	/* What it is */
 };
 
+struct GMT_MD5 {
+	char name[GMT_LEN64];	/* File name */
+	char md5[GMT_LEN64];	/* The MD5 hash */
+	size_t size;		/* File size in bytes */
+};
+
 #define GMT_N_DATA_INFO_ITEMS 15
 
 GMT_LOCAL struct GMT_DATA_INFO gmt_data_info[GMT_N_DATA_INFO_ITEMS] = {
