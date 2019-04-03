@@ -7773,7 +7773,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	if (!P->has_hinge || z_low >= P->hinge || z_high <= P->hinge || (ks = support_find_cpt_hinge (GMT, P)) == GMT_NOTSET) {	/* No hinge, or output range excludes hinge, same scale for all of CPT */
 		scale = (z_high - z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
 		P->has_hinge = 0;
-		ks = (unsigned int)GMT_NOTSET;
+		ks = GMT_NOTSET;
 	}
 	else	/* Separate scale on either side of hinge, start with scale for section below the hinge */
 		scale = (P->hinge - z_low) / (P->hinge - P->data[0].z_low);
