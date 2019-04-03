@@ -401,8 +401,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				}
 				else if (opt->arg[0] == '+' && (isdigit(opt->arg[1]) || strchr ("-+.", opt->arg[1])))
 					Ctrl->C.single_cont = atof (&opt->arg[1]);
-				else if (opt->arg[0] != '-')
+				else if (opt->arg[0] != '-') {
 					Ctrl->C.interval = atof (opt->arg);
+					if (gmt_M_is_zero (Ctrl->C.interval)) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: Contour interval cannot be zero\n");
+						n_errors++;
+					}
+				}
 				else {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: Contour interval cannot be negative (%s)\n", opt->arg);
 					n_errors++;
@@ -1216,6 +1221,14 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "No contours within specified -L range\n");
 		if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 			Return (API->error);
+		}
+		if (make_plot) {
+			if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+			gmt_map_basemap (GMT);
+			gmt_plane_perspective (GMT, -1, 0.0);
+			gmt_plotend (GMT);
 		}
 		Return (GMT_NOERROR);
 	}

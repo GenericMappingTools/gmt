@@ -559,8 +559,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				}
 				else if (opt->arg[0] == '+' && (isdigit(opt->arg[1]) || strchr ("-+.", opt->arg[1])))
 					Ctrl->C.single_cont = atof (&opt->arg[1]);
-				else if (opt->arg[0] != '-')
+				else if (opt->arg[0] != '-') {
 					Ctrl->C.interval = atof (opt->arg);
+					if (gmt_M_is_zero (Ctrl->C.interval)) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: Contour interval cannot be zero\n");
+						n_errors++;
+					}
+				}
 				else {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: Contour interval cannot be negative (%s)\n", opt->arg);
 					n_errors++;
