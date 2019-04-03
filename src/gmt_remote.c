@@ -228,6 +228,12 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 	sprintf (md5path, "%s/server/gmt_md5_server.txt", GMT->session.USERDIR);
 
 	if (access (md5path, R_OK)) {    /* Not found locally so need to download the first time */
+		char serverdir[PATH_MAX] = {""};
+		sprintf (serverdir, "%s/server", GMT->session.USERDIR);
+		if (access (serverdir, R_OK) && gmt_mkdir (serverdir)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create GMT server directory : %s\n", serverdir);
+			return;
+		}
 		sprintf (url, "%s/gmt_md5_server.txt", GMT->session.DATAURL);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
 		if (gmtmd5_get_url (GMT, url, md5path))
