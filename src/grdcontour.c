@@ -1610,12 +1610,12 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					gmt_hold_contour (GMT, &xp, &yp, nn, cval, cont_label, cont_type[c], cont_angle[c], closed == cont_is_closed, true, &Ctrl->contour);
 					gmt_M_free (GMT, xp);
 					gmt_M_free (GMT, yp);
+					n_cont_attempts++;
 				}
 			}
 			gmt_M_free (GMT, x);
 			gmt_M_free (GMT, y);
 		}
-		n_cont_attempts++;
 	}
 
 	if (n_cont_attempts == 0) GMT_Report (API, GMT_MSG_VERBOSE, "No contours drawn, check your -A, -C, -L settings?\n");
