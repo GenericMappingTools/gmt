@@ -165,7 +165,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	C->A.mode = KML_GROUND;
 	C->A.scale = 1.0;
-	C->E.tesselate = true;	/* This is the default, use -E+s to turn that off */
+	C->E.tesselate = true;	/* This is the default, use -E+s to turn that off (turned off for symbols later) */
 	C->F.mode = POINT;
 	C->F.geometry = GMT_IS_POINT;
 	gmt_init_fill (GMT, &C->G.fill[F_ID], 1.0, 192.0 / 255.0, 128.0 / 255.0);	/* Default fill color */
@@ -218,6 +218,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     s Altitude relative to seafloor or ground.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append fixed <altitude>, or x<scale> [g0: Clamped to sea surface or ground].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Append color palette name to color symbols by third column z-value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or via -Z<value> lookup for lines and polygons.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D File with HTML snippets to use for data description [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Control parameters of lines and polygons:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +e to extend feature down to the ground [no extrusion].\n");
@@ -869,7 +870,9 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	n_coord = (Ctrl->F.mode < LINE) ? Ctrl->F.mode + 2 : 2;		/* This is a cryptic way to determine if there are 2,3 or 4 columns... */
 	if (Ctrl->F.mode == WIGGLE) n_coord = 3;	/* But here we need exactly 3 */
 	get_z = (Ctrl->C.active || Ctrl->A.get_alt);
-	if (get_z) n_coord++;
+	if (get_z && Ctrl->F.mode < LINE) n_coord++;
+	if (Ctrl->F.mode < LINE) Ctrl->E.tesselate = false;	/* No tesselation for symbols */
+	
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
 		Return (API->error);
