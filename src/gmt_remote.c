@@ -346,8 +346,6 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 	
 	if (GMT->current.setting.auto_download == GMT_NO_DOWNLOAD) return 0;   /* Not allowed to use remote copying */
 
-	md5_refresh (GMT);	/* Watch out for changes on the server once a day */
-
 	be_fussy = ((mode & 4) == 0);	if (be_fussy == 0) mode -= 4;	/* Handle the optional 4 value */
 	
 	file = gmt_M_memory (GMT, NULL, strlen (file_name)+2, char);	/* One extra in case need to change nc to jp2 for download of SRTM */
@@ -379,6 +377,9 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		gmt_M_free (GMT, file);
 		return (pos);
 	}
+
+	md5_refresh (GMT);	/* Watch out for changes on the server once a day */
+
 	from = (kind == GMT_DATA_FILE) ? GMT_DATA_DIR : GMT_CACHE_DIR;	/* Determine source directory on cache server */
 	to = (mode == GMT_LOCAL_DIR) ? GMT_LOCAL_DIR : from;
 	sprintf (serverdir, "%s/server", user_dir[GMT_DATA_DIR]);
