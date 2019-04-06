@@ -2377,7 +2377,7 @@ A pen in GMT has three attributes: *width*, *color*, and
 *style*. Most programs will accept pen attributes in the form of an
 option argument, with commas separating the given attributes, e.g.,
 
-**-W**\ [*width*\ [**c\ \|\ i\ \|\ p**]],[*color*],[\ *style*\ [**c\ \|\ i\ \|\ p**]]
+**-W**\ [*width*\ [**c**\ \|\ **i**\ \|\ **p**]],[*color*],[\ *style*\ [**c**\ \|\ **i**\ \|\ **p**]]
 
     *Width* is by default measured in points (1/72 of an inch). Append
     **c**, **i**, or **p** to specify pen width in cm, inch, or points,
@@ -8299,7 +8299,7 @@ a line to be labeled. The codes are:
 
 **d**:
     Full syntax is
-    **d**\ *dist*\ [**c\ \|\ i\ \|\ p**][/\ *frac*].
+    **d**\ *dist*\ [**c**\ \|\ **i**\ \|\ **p**][/\ *frac*].
     Place labels according to the distance measured along the projected
     line on the map. Append the unit you want to measure distances in
     [Default is taken from :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`]. Starting at the
@@ -8324,7 +8324,7 @@ a line to be labeled. The codes are:
 
 **f**:
     Full syntax is
-    **f**\ *fix.txt*\ [/*slop*\ [**c\ \|\ i\ \|\ p**]].
+    **f**\ *fix.txt*\ [/*slop*\ [**c**\ \|\ **i**\ \|\ **p**]].
     Here, an ASCII file *fix.txt* is given which must contain records
     whose first two columns hold the coordinates of points along the
     lines at which locations the labels should be placed. Labels will
@@ -8361,7 +8361,7 @@ a line to be labeled. The codes are:
 
 **n**:
     Full syntax is
-    **n**\ *number*\ [/*minlength*\ [**c\ \|\ i\ \|\ p**]].
+    **n**\ *number*\ [/*minlength*\ [**c**\ \|\ **i**\ \|\ **p**]].
     Place *number* of labels along each line regardless of total line
     length. The line is divided into *number* segments and the labels
     are placed at the centers of these segments. Optionally, you may
@@ -8370,7 +8370,7 @@ a line to be labeled. The codes are:
 
 **N**:
     Full syntax is
-    **N**\ *number*\ [/*minlength*\ [**c\ \|\ i\ \|\ p**]].
+    **N**\ *number*\ [/*minlength*\ [**c**\ \|\ **i**\ \|\ **p**]].
     Similar to code **n** but here labels are placed at the ends of each
     segment (for *number* >= 2). A special case arises for
     *number = 1* when a single label will be placed according to
@@ -8477,7 +8477,7 @@ universally. These codes are:
 **+r**:
     Do *not* place labels at points along the line whose local radius of
     curvature falls below the given threshold value. Append the radius
-    unit of your choice (**c\ \|\ i\ \|\ p**) [Default is 0].
+    unit of your choice (**c**\ \|\ **i**\ \|\ **p**) [Default is 0].
 
 **+u**:
     Append the chosen *unit* to the label. Normally a space will
@@ -8524,7 +8524,7 @@ modified by **+u** or **+=**). However, for quoted lines other options apply:
 
     **+Ld**:
         Take the Cartesian plot distances along the line as the label;
-        append **c\ \|\ i\ \|\ p** as the unit [Default is
+        append **c**\ \|\ **i**\ \|\ **p** as the unit [Default is
         :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`]. The label will be formatted according
         to the :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` string, *unless* label placement
         was determined from map distances along the segment lines, in
