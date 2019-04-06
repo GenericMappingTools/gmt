@@ -43,7 +43,7 @@ gmt psxy -R -J -O -K -Cneis.cpt -Sci -Wfaint -hi1 -i2,1,3,4+s0.015 $file >> $ps
 # Create legend input file for NEIS quake plot
 
 cat > neis.legend << END
-H 16 1 $n events during $first to $last
+H 16p,Helvetica-Bold $n events during $first to $last
 D 0 1p
 N 3
 V 0 1p
@@ -80,7 +80,7 @@ G 0.4i
 # Add USGS logo
 I @USGS.png 1i RT
 G -0.3i
-L 12 6 LB $me
+L 12p,Times-Italic LB $me
 END
 
 # OK, now we can actually run gmt pslegend.  We center the legend below the map.

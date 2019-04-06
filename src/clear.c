@@ -75,7 +75,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 }
 
 GMT_LOCAL int clear_cache (struct GMTAPI_CTRL *API) {
-	if (gmt_remove_dir (API, API->GMT->session.CACHEDIR, true))
+	if (gmt_remove_dir (API, API->GMT->session.CACHEDIR, false))
 		return GMT_RUNTIME_ERROR;
 	return GMT_NOERROR;
 }

@@ -120,8 +120,9 @@ Legend Codes
     See :doc:`colorbar` for details on all modifiers and options.
 **C** *textcolor*
     The **C** record specifies the color with which the remaining text
-    is to be printed. *textcolor* can be in the form *r/g/b*, *c/m/y/k*,
-    a named color, or an indirect color via z=\ *value* (requires a prior **A** code as well).
+    is to be printed via z=\ *value* (requires a prior **A** code as well).
+    When **C** is used in a legend then your font specifications cannot also
+    contain a color specification since we will append ,*textcolor* to the font.
     Use **-** to reset to default color.
 **D** [*offset*] *pen* [**-**\ \|\ **+**\ \|\ **=**]
     The **D** record results in a horizontal line with specified *pen*
@@ -145,16 +146,16 @@ Legend Codes
     The **G** record specifies a vertical gap of the given length. In
     addition to the standard units (**i**, **c**, **p**) you may use
     **l** for lines. A negative *gap* will move the current line upwards (thus closing a gap).
-**H** *fontsize*\ \|\ **-** *font*\ \|\ **-** *header*
+**H** *font*\ \|\ **-** *header*
     The **H** record plots a centered text string using the specified
-    font parameters. Use **-** to default to size and type of **FONT\_TITLE**.
+    font parameters. Use **-** to default to size and fonttype of **FONT\_TITLE**.
 **I** *imagefile width justification*
     Place an EPS or raster image in the legend justified relative to
     the current point. The image *width* determines the size of the image on the page.
-**L** *fontsize*\ \|\ **-** *font*\ \|\ **-** *justification label*
+**L** *font*\ \|\ **-** *justification label*
     The **L** record plots a (L)eft, (C)entered, or (R)ight-justified
     text string within a column using the specified font parameters. Use
-    **-** to default to the size and type of **FONT\_LABEL**.
+    **-** to default to the size and font type of **FONT\_LABEL**.
 **M** *slon*\ \|\ **-** *slat length* [**+f**\ ][**+l**\ [*label*]][**+u**\ ] [**-F**\ *param*] [ **-R**\ *w/e/s/n* **-J**\ *param* ]
     Place a map scale in the legend. Specify *slon slat*, the point on
     the map where the scale applies (*slon* is only meaningful for
