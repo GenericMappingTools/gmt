@@ -1,0 +1,80 @@
+# Configuration for Azure Pipelines
+########################################################################################
+
+# Only build the master branch, tags, and PRs (on by default) to avoid building random
+# branches in the repository until a PR is opened.
+trigger:
+  branches:
+    include:
+    - master
+    - 5.4
+    - refs/tags/*
+
+jobs:
+
+# Mac - Compile only
+########################################################################################
+- job:
+  displayName: 'Mac | Compile only'
+  condition: not(eq(variables['Build.Reason'], 'Schedule'))
+
+  pool:
+    vmImage: 'macOS-10.13'
+
+  variables:
+    BUILD_DOCS: false
+    TEST: false
+
+  steps:
+
+  # Setup and compile GMT
+  - template: ci/azure-pipelines-mac.yml
+
+  - bash: |
+      set -x -e
+      gmt defaults -Vd
+      gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
+      gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
+    displayName: Check a few simple commands
+
+# Mac - Test
+########################################################################################
+- job:
+  displayName: 'Mac | Test'
+  condition: eq(variables['Build.Reason'], 'Schedule')
+
+  pool:
+    vmImage: 'macOS-10.13'
+
+  variables:
+    BUILD_DOCS: false
+    TEST: true
+
+  steps:
+
+  # Setup and compile GMT
+  - template: ci/azure-pipelines-mac.yml
+
+  - bash: |
+      set -x -e
+      gmt defaults -Vd
+      gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -P -Vd > test.ps
+      gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -Vd && gmt end
+    displayName: Check a few simple commands
+
+  # Run the full tests only if this is a scheduled build
+  - bash: |
+      set -x -e
+      cd build
+      ctest --force-new-ctest-process -j4
+    displayName: Full tests
+
+  # Upload test coverage even if build fails. Keep separate to make sure this task fails
+  # if the tests fail.
+  - bash: |
+      set -x -e
+      bash <(curl -s https://codecov.io/bash)
+    env:
+      CODECOV_TOKEN: $(codecov.token)
+    condition: succeededOrFailed()
+    displayName: Upload test coverage

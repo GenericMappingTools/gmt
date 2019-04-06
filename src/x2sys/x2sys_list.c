@@ -67,9 +67,10 @@ struct X2SYS_LIST_CTRL {
 		bool active;
 		char *file;
 	} L;
-	struct X2SYS_LIST_N {	/* -N */
+	struct X2SYS_LIST_N {	/* -N<cutoff>[+p] */
 		bool active;
 		unsigned int min;
+		unsigned int mode;
 	} N;
 	struct X2SYS_LIST_Q {	/* -Q */
 		bool active;
@@ -118,7 +119,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -C<column> -T<TAG> [<COEdbase>] [-A<asymm_max] [-E] [-F<flags>] [-I<ignorelist>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<corrtable.txt>]] [-N<nx_min>] [-Qe|i] [-S<track>[+b]]\n\t[%s] [%s] [-W<weight>] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<corrtable.txt>]] [-N<nx_min>[+p]] [-Qe|i] [-S<track>[+b]]\n\t[%s] [%s] [-W<weight>] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -152,7 +153,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-I List of tracks to ignore [Use all tracks].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Output results for tracks with more than <nx_min> crossovers only [Use all tracks].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Suppress results involving tracks with less than a total of <nx_min> crossovers [Use all tracks].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append +p to suppress pairs with less than <nx_min> crossovers [Use all pairs].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append e or i for external or internal crossovers [Default is both].\n");
 	GMT_Option (API, "R");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
@@ -226,7 +228,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 				break;
 			case 'N':
 				Ctrl->N.active = true;
+				if ((c = strstr (opt->arg, "+p"))) {
+					c[0] = '\0';	/* Chop off modifier */
+					Ctrl->N.mode = 1;
+				}
 				Ctrl->N.min = atoi (opt->arg);
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'Q':	/* Specify internal or external only */
 				Ctrl->Q.active = true;
@@ -604,7 +611,14 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	record[0] = '\0';
 	
 	for (p = 0; p < np; p++) {	/* For each pair of tracks that generated crossovers */
-		if (Ctrl->N.active && (trk_nx[P[p].id[0]] < Ctrl->N.min || trk_nx[P[p].id[1]] < Ctrl->N.min)) continue;			/* Not enough COEs */
+		if (Ctrl->N.active) {	/* Not enough COEs check */
+			if (Ctrl->N.mode) {	/* Checking this pair only*/
+				if (P[p].nx < Ctrl->N.min)
+					continue;	/* Not enough COEs in this pair */
+			}
+			else if ((trk_nx[P[p].id[0]] < Ctrl->N.min || trk_nx[P[p].id[1]] < Ctrl->N.min))
+				continue;	/* Not enough total COEs by either track */
+		}
 		if (Ctrl->A.active && (fabs (trk_symm[P[p].id[0]]) > Ctrl->A.value || fabs (trk_symm[P[p].id[1]]) > Ctrl->A.value)) continue;	/* COEs not distributed symmatrically */
 		np_use++;
 		nx_use += P[p].nx;

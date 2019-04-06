@@ -49,7 +49,7 @@ specifications, use
      # H is header, L is label, S is symbol, T is paragraph text, M is map scale.
      #
      G -0.1i
-     H 24 Times-Roman My Map Legend
+     H 24p,Times-Roman My Map Legend
      D 0.2i 1p
      N 2
      V 0 1p
@@ -68,7 +68,8 @@ specifications, use
      I SOEST_logo.ras 3i CT
      G 0.05i
      B colors.cpt 0.2i 0.2i
-     G 0.05i L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
+     G 0.05i
+     L 9p,Times-Roman R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
      G 0.1i
      P
      T Let us just try some simple text that can go on a few lines.

@@ -66,8 +66,8 @@ gmt logo -R -J -O -K -Dg0.5/1+jMC+w$W >> $ps
 
 height=`gmt math -Q $HEIGHT $ROW DIV =`
 gmt pslegend -O -R -J -DjBR+w$WIDTH >> $ps <<END
-L $fontsizeL 1 R Values are R/G/B. Names are case-insensitive.
-L $fontsizeL 1 R Optionally, use GREY instead of GRAY.
+L ${fontsizeL}p,Helvetica-Bold R Values are R/G/B. Names are case-insensitive.
+L ${fontsizeL}p,Helvetica-Bold R Optionally, use GREY instead of GRAY.
 END
 
 gmt_remove_tmpdir

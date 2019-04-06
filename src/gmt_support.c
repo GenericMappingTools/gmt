@@ -944,7 +944,7 @@ bool gmtlib_is_color (struct GMT_CTRL *GMT, char *word) {
 }
 
 /*! . */
-GMT_LOCAL int support_getfonttype (struct GMT_CTRL *GMT, char *name) {
+int gmt_getfonttype (struct GMT_CTRL *GMT, char *name) {
 	unsigned int i;
 
 	if (!name[0]) return (-1);
@@ -6331,7 +6331,7 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 	/* Processes font settings given as [size][,name][,fill][=pen] */
 
 	F->form = 1;	/* Default is to fill the text with a solid color */
-    F->set = 0;     /* Start from no settings */
+	F->set = 0;     /* Start from no settings */
 	if ((s = strchr (line, '='))) {	/* Specified an outline pen */
 		s[0] = 0, i = 1;	/* Chop of this modifier */
 		if (s[1] == '~') F->form |= 8, i = 2;	/* Want to have an outline that does not obscure the text */
@@ -6389,7 +6389,7 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 	else
 		F->size = pointsize;
 	if (!name[0] || name[0] == '-') { /* Skip */ }
-	else if ((k = support_getfonttype (GMT, name)) >= 0)
+	else if ((k = gmt_getfonttype (GMT, name)) >= 0)
 		F->id = k;
 	else
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Representation of font type not recognized. Using default.\n");
@@ -6437,6 +6437,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	char width[GMT_LEN256] = {""}, color[GMT_LEN256] = {""}, style[GMT_LEN256] = {""}, line[GMT_BUFSIZ] = {""}, *c = NULL;
 
 	if (!buffer || !buffer[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
+	if (!P) return (false);		/* Nothing given: return silently, leaving P in tact */
 
 	strncpy (line, buffer, GMT_BUFSIZ-1);	/* Work on a copy of the arguments */
 	gmt_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
@@ -7675,12 +7676,6 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 		char *master = NULL, *current_cpt = NULL;
 		double noise;
 
-		if (file == NULL && (current_cpt = gmt_get_current_cpt (GMT))) {	/* There is a current CPT in modern mode */
-			P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, current_cpt, NULL);
-			gmt_M_str_free (current_cpt);
-			return (P);
-		}
-
 		if (gmt_M_is_dnan (zmin) || gmt_M_is_dnan (zmax)) {	/* Safety valve 1 */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Passing zmax or zmin == NaN prevents automatic CPT generation!\n");
 			return (NULL);
@@ -7689,6 +7684,13 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Passing max <= zmin prevents automatic CPT generation!\n");
 			return (NULL);
 		}
+
+		if (file == NULL && (current_cpt = gmt_get_current_cpt (GMT))) {	/* There is a current CPT in modern mode */
+			P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, current_cpt, NULL);
+			gmt_M_str_free (current_cpt);
+			return (P);
+		}
+
 		master = (file && file[0]) ? file : GMT_DEFAULT_CPT;	/* Set master CPT prefix */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|GMT_CPT_CONTINUOUS, NULL, master, NULL);
 		if (!P) return (P);		/* Error reading file. Return right away to avoid a segv in next line */
@@ -7772,7 +7774,7 @@ void gmt_stretch_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low,
 	if (!P->has_hinge || z_low >= P->hinge || z_high <= P->hinge || (ks = support_find_cpt_hinge (GMT, P)) == GMT_NOTSET) {	/* No hinge, or output range excludes hinge, same scale for all of CPT */
 		scale = (z_high - z_low) / (P->data[P->n_colors-1].z_high - P->data[0].z_low);
 		P->has_hinge = 0;
-		ks = (unsigned int)GMT_NOTSET;
+		ks = GMT_NOTSET;
 	}
 	else	/* Separate scale on either side of hinge, start with scale for section below the hinge */
 		scale = (P->hinge - z_low) / (P->hinge - P->data[0].z_low);

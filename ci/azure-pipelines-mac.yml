@@ -1,0 +1,29 @@
+# Template for the basic Mac steps in Azure Pipelines
+
+steps:
+
+- bash: |
+    set -x -e
+    brew install cmake ninja curl netcdf gdal fftw pcre2 ghostscript graphicsmagick || true
+  displayName: Install dependencies
+
+- bash: echo "##vso[task.setvariable variable=INSTALLDIR]$BUILD_SOURCESDIRECTORY/gmt-install-dir"
+  displayName: Set install location
+
+- bash: echo "##vso[task.setvariable variable=COASTLINEDIR]$INSTALLDIR/coast"
+  displayName: Set coastline location
+
+- bash: echo "##vso[task.prependpath]$INSTALLDIR/bin"
+  displayName: Set PATH
+
+- bash: |
+    set -x -e
+    mkdir -p "$INSTALLDIR"
+    mkdir -p "$COASTLINEDIR"
+  displayName: Create install directories
+
+- bash: ci/download-coastlines.sh
+  displayName: Download coastlines
+
+- bash: ci/build-gmt.sh
+  displayName: Compile GMT
