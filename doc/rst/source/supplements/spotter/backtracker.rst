@@ -216,7 +216,7 @@ To project flowlines forward from the (x,y,t) points stored in several
 
    ::
 
-    gmt backtracker points.\* -Df -EDC85.txt -Lf25 -bo -bi3 > lines.b
+    gmt backtracker points.* -Df -EDC85.txt -Lf25 -bo -bi3 > lines.b
 
 This file can then be plotted with :doc:`plot </plot>`.
 To compute the predicted Hawaiian hotspot track from 0 to 80 Ma every 1
