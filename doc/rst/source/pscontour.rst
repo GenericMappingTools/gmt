@@ -16,9 +16,9 @@ Synopsis
 
 **pscontour** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
-[ |-A|\ [**-**\ \|\ [**+**\ ]\ *annot\_int*][*labelinfo*] ]
+[ |-A|\ [**-**\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
-[ |-C|\ [**+**\ ]\ *cont_int* ]
+[ |-C|\ *contours* ]
 [ |-D|\ [*template*] ] [ |-E|\ *indexfile* ]
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
 [ |-I| ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
@@ -58,6 +58,13 @@ map at 0.5 inch/degree along the standard parallels 18 and 24, use
    ::
 
     gmt pscontour topo.xyz -R320/330/20/30 -Jl18/24/0.5i -Ctopo.cpt -W0.5p > topo.ps
+
+
+To use the same data but only contour the values 250 and 700, use
+
+   ::
+
+    gmt pscontour topo.xyz -R320/330/20/30 -Jl18/24/0.5i -C250,700 -W0.5p > topo.ps
 
 To create a color plot of the numerical temperature
 solution obtained on a triangular mesh whose node coordinates and
