@@ -232,7 +232,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to get line segment id and fractional point number instead of lon/lat.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Convert from geodetic to auxiliary latitudes; use -I for inverse conversion.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a(uthalic), c(onformal), g(eocentric), or m(eridional) to select a conversion [geocentric].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q List projection parameters and stop.  For subsets [Default is all] use\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q List all projection parameters and stop [Default].  For subsets, use\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qe shows ellipsoid parameters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qd shows datum parameters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Suppress points outside region.\n");

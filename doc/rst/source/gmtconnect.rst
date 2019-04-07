@@ -1,4 +1,4 @@
-.. index:: ! gmtconnect
+.. index:: ! gmt connect
 
 *******
 connect
@@ -58,7 +58,7 @@ Optional Arguments
 .. _-C:
 
 **-C**\ [*closed*]
-    Write all the closed polygons to *closed* [gmtconnect_closed.txt]
+    Write all the closed polygons to *closed* [gmt connect_closed.txt]
     and all other segments as they are to stdout. No connection takes
     place. Use **-T**\ *cutoff* to set a minimum separation [0], and if
     *cutoff* is > 0 then we also explicitly close the polygons on output.
@@ -74,7 +74,7 @@ Optional Arguments
     which gives leading zeros, etc. Optionally, it may also contain the
     format %c *before* the integer; this will then be replaced by C
     (closed) or O (open) to indicate segment type. [Default is
-    gmtconnect_segment_%d.txt]. Note that segment headers will be
+    gmt connect_segment_%d.txt]. Note that segment headers will be
     written in either case. For composite segments, a generic segment
     header will be written and the segment headers of individual pieces
     will be written out as comments to make it possible to identify
@@ -84,7 +84,7 @@ Optional Arguments
 
 **-L**\ [*linkfile*]
     Writes the link information to the specified file
-    [gmtconnect_link.txt]. For each segment we write the original
+    [gmt connect_link.txt]. For each segment we write the original
     segment id, and for the beginning and end point of the segment we
     report the id of the closest segment, whether it is the beginning
     (B) or end (E) point that is closest, and the distance between those
@@ -97,7 +97,7 @@ Optional Arguments
     output files. Optionally, append a filename template for the
     individual file names; this template **may** contain a C format
     specifier that can format an character (C or O for closed or open,
-    respectively). [Default is gmtconnect_list.txt].
+    respectively). [Default is gmt connect_list.txt].
 
 .. _-T:
 
@@ -174,8 +174,8 @@ Bugs
 ----
 
 The line connection does not work if a line only has a single point.
-However, **gmtconnect** will correctly add the point to the nearest segment.
-Running **gmtconnect** again on the new set of lines will eventually connect
+However, **gmt connect** will correctly add the point to the nearest segment.
+Running **gmt connect** again on the new set of lines will eventually connect
 all close lines.
 
 See Also

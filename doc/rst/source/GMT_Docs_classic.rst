@@ -2631,10 +2631,6 @@ Many plotting programs will allow the user to draw filled polygons or
 symbols. The fill specification may take two forms:
 
 **-G**\ *fill*
-
-**-GP|p**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**+r**\ *dpi*]
-
-fill:
     In the first case we may specify a *gray* shade (0--255), RGB color
     (*r*/*g*/*b* all in the 0--255 range or in hexadecimal *#rrggbb*),
     HSV color (*hue*-*saturation*-*value* in the 0--360, 0--1, 0--1 range),
@@ -2643,7 +2639,7 @@ fill:
     specifying the pen color settings (see pen color discussion under
     Section `Specifying pen attributes`_).
 
-pattern:
+**-GP**\ \|\ **p**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**+r**\ *dpi*]
     The second form allows us to use a predefined bit-image pattern.
     *pattern* can either be a number in the range 1--90 or the name of a
     1-, 8-, or 24-bit image raster file. The former will result in one of
@@ -2871,7 +2867,7 @@ consecutive. The format is
 For usage with points, lines, and polygons, the keys may be text (single words),
 and then GMT will use strings to find the corresponding *Fill* value. Strings
 may be supplied as trailing text in data files (for points) or via the **-Z**\ *category*
-option in multiple segment headers (or set via **-a**\ *Z*\ =*aspatialname*).
+option in multiple segment headers (or set via **-a**\ *Z*\ =\ *aspatialname*).
 If any of your keys are called B, F, or N you must escape them with a leading backslash
 to avoid confusion with the flags for background, foreground and NaN colors.
 The *Fill* information follows the format given in Section `Specifying area fill attributes`_.
