@@ -2217,10 +2217,14 @@ Three classes of files are given special treatment in GMT.
    can override that selection by setting the environmental parameter **$GMT_DATA_URL** or
    the default setting for **GMT_DATA_URL**.  Alternatively, configure the CMake
    parameter GMT_DATA_URL at compile time.
+#. If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
+   set the size of the largest datafile to download via **GMT_DATA_URL_LIMIT** to be 0.
 
 The user cache (**DIR_CACHE**) and all its contents can be cleared any time
 via the command **gmt clear cache**, while the server directory with downloaded data
-can be cleared via the command **gmt clear data**.
+can be cleared via the command **gmt clear data**.  Finally, when a remote file is requested
+we also check if that file has changed at the server and re-download the updated file;
+this check is only performed no more often than once a day.
 
 .. figure:: /_images/GMT_SRTM.*
    :width: 700 px
@@ -6079,7 +6083,7 @@ by modifying the :ref:`IO_HEADER_MARKER <IO_HEADER_MARKER>` default setting.
 Fields within a record must be separated by
 spaces, tabs, commas, or semi-colons. Each field can be an integer or floating-point
 number or a geographic coordinate string using the
-[±]dd[:mm[:ss]][W:\ \|\ S\ \|\ N\ \|\ E\ \|\ w\ \|\ s\ \|\ n\ \|\ e]
+[±]*dd*\ [:*mm*\ [:*ss*\ [.*xx...*\ ]]][**W**\ \|\ **E**\ \|\ **S**\ \|\ **N**\ \|\ **w**\ \|\ **e**\ \|\ **s**\ \|\ **n**\ ]
 format. Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid
 input strings. GMT is expected to handle most CVS (Comma-Separated Values)
 files, including numbers given in double quotes.  On output, fields will be separated by the character
@@ -8312,7 +8316,7 @@ a line to be labeled. The codes are:
 
 **D**:
     Full syntax is
-    **D**\ *dist*\ [**d\ \|\ m\ \|\ s\ \|\ e\ \|\ f\ \|\ k\ \|\ M\ \|\ n**][/\ *frac*].
+    **D**\ *dist*\ [**d**\ \|\ **m**\ \|\ **s**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**][/\ *frac*].
     This option is similar to **d** except the original data must be
     referred to geographic coordinates (and a map projection must have
     been chosen) and actual Earth [36]_ surface distances along the
@@ -8343,7 +8347,7 @@ a line to be labeled. The codes are:
     slash), or they can be two-character codes that refer to
     predetermined points relative to the map region. These codes are
     taken from the :doc:`text` justification keys
-    [**L\ \|\ C\ \|\ R**][**B\ \|\ M\ \|\ T**]
+    [**L**\ \|\ **C**\ \|\ **R**][**B**\ \|\ **M**\ \|\ **T**]
     so that the first character determines the *x*-coordinate and
     the second determines the *y*-coordinate. In
     :doc:`grdcontour`, you can also use
@@ -8459,7 +8463,7 @@ universally. These codes are:
     (**CM** in :doc:`text` justification
     parlance) and this is indeed the default setting. Override by using
     this option and append another justification key code from
-    [**L\ \|\ C\ \|\ R**\ ][**B\ \|\ M\ \|\ T**\ ].
+    [**L**\ \|\ **C**\ \|\ **R**\ ][**B**\ \|\ **M**\ \|\ **T**\ ].
     Note for curved text (**+v**) only vertical justification will be
     affected.
 
@@ -8534,7 +8538,7 @@ modified by **+u** or **+=**). However, for quoted lines other options apply:
     **+LD**:
         Calculate actual Earth surface distances and use the distance at
         the label placement point as the label; append
-        **d\ \|\ e\ \|\ f\ \|\ k\ \|\ m\ \|\ M\ \|\ n\ \|\ s**
+        **d**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **m**\ \|\ **M**\ \|\ **n**\ \|\ **s**
         to specify the unit [If not given we default to **d**\ egrees,
         *unless* label placement was determined from map distances along
         the segment lines, in which case we use the same unit specified
