@@ -6139,7 +6139,7 @@ records that do *not* start with '#' then you must make sure to use the
 **-h**\ *nrecs* directly). Fields within a record must be separated by
 spaces, tabs, commas, or semi-colons. Each field can be an integer or floating-point
 number or a geographic coordinate string using the
-[±]*dd*\ [:*mm*\ [:*ss*\ [.*xx...*\ ]]][**W**\ \|\ **E**\ \|\ **S**\ \|\ **N**\ \|\ **w**\ \|\ **e**\ \|\ **s**\ \|\ **n**\ ]
+[±]\ *dd*\ [:*mm*\ [:*ss*\ [.\ *xx...*\ ]]][**W**\ \|\ **E**\ \|\ **S**\ \|\ **N**\ \|\ **w**\ \|\ **e**\ \|\ **s**\ \|\ **n**\ ]
 format. Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid
 input strings. GMT is expected to handle most CVS (Comma-Separated Values)
 files, including numbers given in double quotes.  On output, fields will be separated by the character
