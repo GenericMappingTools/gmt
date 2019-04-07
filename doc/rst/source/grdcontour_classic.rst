@@ -14,9 +14,10 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdcontour** *grid*
-|-J|\ *parameters* [ |-A|\ [**-**\ \|\ [+]\ *annot_int*][*labelinfo*] ]
+|-J|\ *parameters*
+[ |-A|\ [**-**\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
-[ |-C|\ [+]\ *cont_int*\ \|\ *cpt* ]
+[ |-C|\ *contours* ]
 [ |-D|\ *template* ]
 [ |-F|\ [**l**\ \|\ **r**] ]
 [ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ]
@@ -59,6 +60,12 @@ degree tickmarks, and draw 30 minute gridlines:
    ::
 
     gmt grdcontour hawaii_grav.nc -Jm0.5i -C25 -A50+f10p -B1g30m > hawaii_grav.ps
+
+To do the same map but only draw the 50 and 150 and annotate the 100 contour:
+
+   ::
+
+    gmt grdcontour hawaii_grav.nc -Jm0.5i -C50.150 -A100,+f10p -B1g30m > hawaii_grav.ps
 
 To contour the file image.nc using the levels in the file cont.txt on a
 linear projection at 0.1 cm/x-unit and 50 cm/y-unit, using 20 (x) and
