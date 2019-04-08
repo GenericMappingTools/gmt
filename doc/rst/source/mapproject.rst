@@ -101,7 +101,7 @@ Optional Arguments
     is given then we compute the azimuth (or back-azimuth) from the
     previous point.  Alternatively, append **+v** to obtain a
     *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
-    See :ref:`Output Order` for how **-A** affects the output record.
+    See `Output Order`_ for how **-A** affects the output record.
 
 .. _-C:
 
@@ -154,7 +154,7 @@ Optional Arguments
     distances between successive points, or append both modifiers to get
     both distance measurements. Alternatively, append **+v** to obtain a
     *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
-    See :ref:`Output Order` for how **-G** affects the output record.
+    See `Output Order`_ for how **-G** affects the output record.
 
 .. _-I:
 
@@ -174,7 +174,7 @@ Optional Arguments
     unit requires **-R** and **-J** to be set. Finally, append **+p** to
     report the line segment id and the fractional point number instead
     of lon/lat of the nearest point.
-    See :ref:`Output Order` for how **-L** affects the output record.
+    See `Output Order`_ for how **-L** affects the output record.
 
 .. _-N:
 
@@ -245,10 +245,10 @@ Optional Arguments
     As for the number of decimals used to represent seconds we
     consult the :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>`
     setting. Finally, append **+t**\ *epoch* to report absolute
-    times (ETA) for successive points.  Finally, because of the
+    times (ETA) for successive points. Finally, because of the
     need for incremental distances the **-G** option with the
     **+i** modifier is required.
-    See :ref:`Output Order` for how **-Z** affects the output record.
+    See `Output Order`_ for how **-Z** affects the output record.
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_
