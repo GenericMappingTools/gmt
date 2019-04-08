@@ -93,7 +93,7 @@ Optional Arguments
 
       **h**\ \|\ **H**      to compute the Horizontal component.
 
-      **t**\ \|\ **T**\ \|\ **f**v**F**  to compute the total field.
+      **t**\ \|\ **T**\ \|\ **f**\ \|\ **F**  to compute the total field.
 
       For a variable inclination and declination use IGRF. Set any of **-H+i**\ \|\ **g**\ \|\ **r**\ \|\ **f**\ \|\ **n** to do that 
 
