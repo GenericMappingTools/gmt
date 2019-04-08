@@ -192,7 +192,7 @@
                 file that matches locations along the quoted lines. Inexact matches
                 and points outside the region are skipped.
 
-            **l\|L**\ *line1*\ [,*line2*,...]
+            **l**\ \|\ **L**\ *line1*\ [,\ *line2*,...]
                 Give *start* and *stop* coordinates for one or more comma-separated
                 straight line segments. Labels will be placed where these lines
                 intersect the quoted lines. The format of each *line* specification

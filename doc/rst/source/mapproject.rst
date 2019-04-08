@@ -23,7 +23,7 @@ Synopsis
 [ |-I| ]
 [ |-L|\ *line.xy*\ [**+u**\ *unit*][**+p**] ]
 [ |-N|\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**] ]
-[ |-Q|\ [**d**\ \|\ **e** ]
+[ |-Q|\ [**d**\ \|\ **e**] ]
 [ |-S| ]
 [ |-T|\ [**h**\ ]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
@@ -188,7 +188,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [**d**\ \|\ **e**
+**-Q**\ [**d**\ \|\ **e**]
     List all projection parameters. To only list datums, use **-Qd**. To
     only list ellipsoids, use **-Qe**.
 

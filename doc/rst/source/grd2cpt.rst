@@ -178,7 +178,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ **h**\ \|\ **l**\ \|\ **m**\ \|\ **u**
-    Force the color table to be symmetric about zero (from -*R* to +*R*).
+    Force the color table to be symmetric about zero (from -*R* to +\ *R*).
     Append flag to set the range *R*: **l** for *R* =\|zmin\|, **u** for *R* =
     \|zmax\|, **m** for *R* = min(\|zmin\|, \|zmax\|), or **h** for *R* =
     max(\|zmin\|, \|zmax\|).

@@ -18,7 +18,7 @@ Synopsis
 [ |-C|\ *condition\_number* ]
 [ |-I|\ [*confidence\_level*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**+s**] ] [
+[ |-W|\ [**+s**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]

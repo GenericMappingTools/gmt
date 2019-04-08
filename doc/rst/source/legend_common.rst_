@@ -122,7 +122,7 @@ Legend Codes
     The **C** record specifies the color with which the remaining text
     is to be printed via z=\ *value* (requires a prior **A** code as well).
     When **C** is used in a legend then your font specifications cannot also
-    contain a color specification since we will append ,*textcolor* to the font.
+    contain a color specification since we will append ,\ *textcolor* to the font.
     Use **-** to reset to default color.
 **D** [*offset*] *pen* [**-**\ \|\ **+**\ \|\ **=**]
     The **D** record results in a horizontal line with specified *pen*

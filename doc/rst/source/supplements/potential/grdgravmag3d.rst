@@ -72,7 +72,7 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H+m**\ *magfile*  **-Hx**\ \|\ **y**\ \|\ **z**\ \|\ **h**\ \|\ **t* **-H+i**\ \|\ **g**\ \|\ **r**\ \|\ **f**\ \|\ **n**  
+**-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H+m**\ *magfile*  **-Hx**\ \|\ **y**\ \|\ **z**\ \|\ **h**\ \|\ **t** **-H+i**\ \|\ **g**\ \|\ **r**\ \|\ **f**\ \|\ **n**  
     Sets parameters for computation of magnetic anomaly (Can be used multiple times).
 
       *f_dec/f_dip* -> geomagnetic declination/inclination
