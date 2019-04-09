@@ -385,7 +385,9 @@ fonts can be found in the :doc:`gmt` man page.
 .. _GMT_DATA_URL_LIMIT:
 
 **GMT_DATA_URL_LIMIT**
-    Upper limit on the size of remote file to download [unlimited].
+    Upper limit on the size of remote file to download [unlimited].  Give
+    the maximum file size in bytes, or append k, m, or g for kilo-, mega-,
+    or giga-bytes.
 
 .. _GMT_COMPATIBILITY:
 
@@ -400,7 +402,7 @@ fonts can be found in the :doc:`gmt` man page.
 **GMT_EXPORT_TYPE**
     This setting is only used by external interfaces and controls the
     data type used for table entries.  Choose from double,
-    single, [u]long, [u]int, [u]short, and [u]char [double].
+    single, [u]long, [u]int, [u]short, and [u]char [Default is double].
 
 .. _GMT_EXTRAPOLATE_VAL:
 
@@ -1201,7 +1203,7 @@ fonts can be found in the :doc:`gmt` man page.
 
 **PS_PAGE_ORIENTATION**
     (**\* -P**) Sets the orientation of the page. Choose portrait or
-    landscape [landscape].
+    landscape [landscape].  Only available in GMT classic mode.
 
 .. _PS_SCALE_X:
 
@@ -1300,9 +1302,9 @@ fonts can be found in the :doc:`gmt` man page.
 
 **TIME_UNIT**
     Specifies the units of relative time data since epoch (see
-    **TIME_EPOCH**). Choose y (year - assumes all years are 365.2425
-    days), o (month - assumes all months are of equal length y/12), d
-    (day), h (hour), m (minute), or s (second) [s].
+    **TIME_EPOCH**). Choose **y** (year - assumes all years are 365.2425
+    days), **o** (month - assumes all months are of equal length y/12), **d**
+    (day), **h** (hour), **m** (minute), or **s** (second) [**s**].
 
 .. _TIME_WEEK_START:
 
