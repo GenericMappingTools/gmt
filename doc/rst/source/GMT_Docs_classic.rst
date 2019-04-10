@@ -2558,6 +2558,23 @@ fashion. See the :doc:`gmt.conf` man page for more information.
 
    Line appearance can be varied by using :ref:`PS_LINE_CAP <PS_LINE_CAP>`
 
+Experience has shown that the rendering of lines that are short relative to the pen thickness
+can sometimes appear wrong or downright ugly.  This is a feature of PostScript interpreters, such as
+GhostScript.  By default, lines are rendered using a fast algorithm which is susceptible to
+errors for thick lines.  The solution is to select a more accurate algorithm to render the lines
+exactly as intended.  This can be accomplished by using the GMT Defaults :ref:`PS_LINE_CAP <PS_LINE_CAP>`
+and :ref:`PS_LINE_JOIN <PS_LINE_JOIN>` by setting both to *round*.  Figure :ref:`Line appearance <Line_badrender>`
+displays the difference in results.
+
+.. _Line_badrender:
+
+.. figure:: /_images/GMT_fatline.*
+   :width: 500 px
+   :align: center
+
+   Very thick line appearance using the default (left) and round line cap and join (right).  The
+   red line (1p width) illustrates the extent of the input coordinates.
+
 Specifying line attributes
 --------------------------
 
