@@ -47,7 +47,7 @@ Synopsis
     and meridians; append **r** if the coordinates instead are the lower left and
     upper right corners of the desired rectangle. (b) Give **u**\ *xmin/xmax/ymin/ymax*
     of bounding rectangle in projected coordinates (here, **u** is the coordinate unit).
-    (c) Give the reference point on the map for the insert using one of four coordinate systems:
+    (c) Give the reference point on the map for the inset using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
@@ -63,7 +63,7 @@ Synopsis
     its dimensions in the current map unit, use **+s**\ *file* to write this information
     to *file*.  Alternatively, you may append **+t** to translate the plot origin to
     the lower left corner of the map inset.
-    Specify insert box attributes via the **-F** option [outline only].
+    Specify inset box attributes via the **-F** option [outline only].
 
 Examples
 --------
