@@ -86,7 +86,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
+**-F**\ [**l**\ \|\ **t**][\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
     Without further options, draws a rectangular border around the map scale or rose using
     :ref:`MAP_FRAME_PEN <MAP_FRAME_PEN>`; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the logo box [no fill].
@@ -101,8 +101,10 @@ Optional Arguments
     **+s** to draw an offset background shaded region. Here, *dx*/*dy*
     indicates the shift relative to the foreground frame
     [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
-    Requires **-L** or **-T**.  If both **-L** or **-T**, you may repeat **-F**
-    after each of these.
+    Requires **-L** or **-T**.  To specify separate parameters if both **-L** are **-T**
+    are selected, append  **l**\ \|\ **t** to **-F**
+    to specify panel parameters for just that panel [Default uses the same panel
+    parameters for all selected map features].
 
 .. _-G:
 
