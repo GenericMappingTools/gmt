@@ -42,7 +42,7 @@ Synopsis
 .. _-D:
 
 **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*][**+t**] \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*][**+t**]
-    Draw a simple map insert box on the map.  Requires **-F**.  Specify the box in one of three ways:
+    Draw a simple map inset box on the map.  Requires **-F**.  Specify the box in one of three ways:
     (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **r** if the coordinates instead are the lower left and
     upper right corners of the desired rectangle. (b) Give **u**\ *xmin/xmax/ymin/ymax*
@@ -59,16 +59,16 @@ Synopsis
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Add **+o** to offset the inset fig by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
-    If you need access to the placement of the lower left corner of the map insert and
+    If you need access to the placement of the lower left corner of the map inset and
     its dimensions in the current map unit, use **+s**\ *file* to write this information
     to *file*.  Alternatively, you may append **+t** to translate the plot origin to
-    the lower left corner of the map insert.
+    the lower left corner of the map inset.
     Specify insert box attributes via the **-F** option [outline only].
 
 .. _-F:
 
 **-F**\ [**d**\ \|\ **l**\ \|\ **t**][\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
-    Without further options, draws a rectangular border around any map insert (**-D**),
+    Without further options, draws a rectangular border around any map inset (**-D**),
     map scale (**-L**) or map rose (**-T**) using
     :ref:`MAP_FRAME_PEN <MAP_FRAME_PEN>`; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the logo box [no fill].
