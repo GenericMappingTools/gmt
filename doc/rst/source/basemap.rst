@@ -17,6 +17,7 @@ Synopsis
 |SYN_OPT-Rz|
 [ |-A|\ [*file*] ]
 [ |SYN_OPT-B| ]
+[ |-F|\ *box* ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-L|\ *scalebar* ]
 [ |SYN_OPT-U| ]

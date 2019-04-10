@@ -77,7 +77,7 @@
 
 /* Options for background panel, used in gmtlogo, psimage, pslegend and psscale */
 
-#define GMT_PANEL	"-F[+c<clearance(s)>][+g<fill>][+i[[<gap>/]<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]"
+#define GMT_PANEL	"[+c<clearance(s)>][+g<fill>][+i[[<gap>/]<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]"
 
 /* Argument to *contour programs */
 
