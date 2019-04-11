@@ -849,6 +849,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	aux_dvalue[MGD77_AUX_RT] = 5.0;					/* Default record type */
 	if (!Ctrl->F.active) Ctrl->F.flags = strdup (MGD77_ALL);	/* Default is a full MGD77 record */
 	negative_msd = negative_depth = Ctrl->Z.mode;			/* Follow the -Z option to start with */
+	if (!GMT->common.j.active) GMT->common.j.mode = GMT_GREATCIRCLE;
 
 	if (Ctrl->T.active) {	/* Turn off automatic corrections */
 		if (Ctrl->T.mode == MGD77_NOT_SET)	/* Both sets */
