@@ -24,9 +24,9 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**-**\ \|\*contours*][*labelinfo*]
+**-A**\ [**-**]\ \|\ [*contours*][*labelinfo*]
     *contours* is annotation interval in data units; it is ignored if
-    contour levels are given in a file viua **-C**. [Default is no annotations]. Prepend
+    contour levels are given in a file via **-C**. [Default is no annotations]. Prepend
     **-** to disable all annotations implied by **-C**. To just select a few specific
     contours give them as a comma-separated string; if only a single contour please add
     a trailing comma so it is seen as a list and not a contour interval. The optional
