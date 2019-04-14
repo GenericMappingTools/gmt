@@ -2217,10 +2217,14 @@ Three classes of files are given special treatment in GMT.
    can override that selection by setting the environmental parameter **$GMT_DATA_URL** or
    the default setting for **GMT_DATA_URL**.  Alternatively, configure the CMake
    parameter GMT_DATA_URL at compile time.
+#. If your Internet connection is slow or nonexistent (e.g., on a plane) you can also
+   set the size of the largest datafile to download via **GMT_DATA_URL_LIMIT** to be 0.
 
 The user cache (**DIR_CACHE**) and all its contents can be cleared any time
 via the command **gmt clear cache**, while the server directory with downloaded data
-can be cleared via the command **gmt clear data**.
+can be cleared via the command **gmt clear data**.  Finally, when a remote file is requested
+we also check if that file has changed at the server and re-download the updated file;
+this check is only performed no more often than once a day.
 
 .. figure:: /_images/GMT_SRTM.*
    :width: 700 px
@@ -2377,7 +2381,7 @@ A pen in GMT has three attributes: *width*, *color*, and
 *style*. Most programs will accept pen attributes in the form of an
 option argument, with commas separating the given attributes, e.g.,
 
-**-W**\ [*width*\ [**c\ \|\ i\ \|\ p**]],[*color*],[\ *style*\ [**c\ \|\ i\ \|\ p**]]
+**-W**\ [*width*\ [**c**\ \|\ **i**\ \|\ **p**]],[*color*],[\ *style*\ [**c**\ \|\ **i**\ \|\ **p**]]
 
     *Width* is by default measured in points (1/72 of an inch). Append
     **c**, **i**, or **p** to specify pen width in cm, inch, or points,
@@ -2494,6 +2498,23 @@ fashion. See the :doc:`gmt.conf` man page for more information.
 
    Line appearance can be varied by using :ref:`PS_LINE_CAP <PS_LINE_CAP>`
 
+Experience has shown that the rendering of lines that are short relative to the pen thickness
+can sometimes appear wrong or downright ugly.  This is a feature of PostScript interpreters, such as
+GhostScript.  By default, lines are rendered using a fast algorithm which is susceptible to
+errors for thick lines.  The solution is to select a more accurate algorithm to render the lines
+exactly as intended.  This can be accomplished by using the GMT Defaults :ref:`PS_LINE_CAP <PS_LINE_CAP>`
+and :ref:`PS_LINE_JOIN <PS_LINE_JOIN>` by setting both to *round*.  Figure :ref:`Line appearance <Line_badrender>`
+displays the difference in results.
+
+.. _Line_badrender:
+
+.. figure:: /_images/GMT_fatline.*
+   :width: 500 px
+   :align: center
+
+   Very thick line appearance using the default (left) and round line cap and join (right).  The
+   red line (1p width) illustrates the extent of the input coordinates.
+
 Specifying line attributes
 --------------------------
 
@@ -2567,10 +2588,6 @@ Many plotting programs will allow the user to draw filled polygons or
 symbols. The fill specification may take two forms:
 
 **-G**\ *fill*
-
-**-GP|p**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**+r**\ *dpi*]
-
-fill:
     In the first case we may specify a *gray* shade (0--255), RGB color
     (*r*/*g*/*b* all in the 0--255 range or in hexadecimal *#rrggbb*),
     HSV color (*hue*-*saturation*-*value* in the 0--360, 0--1, 0--1 range),
@@ -2579,7 +2596,7 @@ fill:
     specifying the pen color settings (see pen color discussion under
     Section `Specifying pen attributes`_).
 
-pattern:
+**-GP**\ \|\ **p**\ *pattern*\ [**+b**\ *color*][**+f**\ *color*][**+r**\ *dpi*]
     The second form allows us to use a predefined bit-image pattern.
     *pattern* can either be a number in the range 1--90 or the name of a
     1-, 8-, or 24-bit image raster file. The former will result in one of
@@ -2807,7 +2824,7 @@ consecutive. The format is
 For usage with points, lines, and polygons, the keys may be text (single words),
 and then GMT will use strings to find the corresponding *Fill* value. Strings
 may be supplied as trailing text in data files (for points) or via the **-Z**\ *category*
-option in multiple segment headers (or set via **-a**\ *Z*\ =*aspatialname*).
+option in multiple segment headers (or set via **-a**\ *Z*\ =\ *aspatialname*).
 If any of your keys are called B, F, or N you must escape them with a leading backslash
 to avoid confusion with the flags for background, foreground and NaN colors.
 The *Fill* information follows the format given in Section `Specifying area fill attributes`_.
@@ -6079,7 +6096,7 @@ by modifying the :ref:`IO_HEADER_MARKER <IO_HEADER_MARKER>` default setting.
 Fields within a record must be separated by
 spaces, tabs, commas, or semi-colons. Each field can be an integer or floating-point
 number or a geographic coordinate string using the
-[±]dd[:mm[:ss]][W:\ \|\ S\ \|\ N\ \|\ E\ \|\ w\ \|\ s\ \|\ n\ \|\ e]
+[±]\ *dd*\ [:*mm*\ [:*ss*\ [.\ *xx...*\ ]]][**W**\ \|\ **E**\ \|\ **S**\ \|\ **N**\ \|\ **w**\ \|\ **e**\ \|\ **s**\ \|\ **n**\ ]
 format. Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid
 input strings. GMT is expected to handle most CVS (Comma-Separated Values)
 files, including numbers given in double quotes.  On output, fields will be separated by the character
@@ -8299,7 +8316,7 @@ a line to be labeled. The codes are:
 
 **d**:
     Full syntax is
-    **d**\ *dist*\ [**c\ \|\ i\ \|\ p**][/\ *frac*].
+    **d**\ *dist*\ [**c**\ \|\ **i**\ \|\ **p**][/\ *frac*].
     Place labels according to the distance measured along the projected
     line on the map. Append the unit you want to measure distances in
     [Default is taken from :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`]. Starting at the
@@ -8312,7 +8329,7 @@ a line to be labeled. The codes are:
 
 **D**:
     Full syntax is
-    **D**\ *dist*\ [**d\ \|\ m\ \|\ s\ \|\ e\ \|\ f\ \|\ k\ \|\ M\ \|\ n**][/\ *frac*].
+    **D**\ *dist*\ [**d**\ \|\ **m**\ \|\ **s**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**][/\ *frac*].
     This option is similar to **d** except the original data must be
     referred to geographic coordinates (and a map projection must have
     been chosen) and actual Earth [36]_ surface distances along the
@@ -8324,7 +8341,7 @@ a line to be labeled. The codes are:
 
 **f**:
     Full syntax is
-    **f**\ *fix.txt*\ [/*slop*\ [**c\ \|\ i\ \|\ p**]].
+    **f**\ *fix.txt*\ [/*slop*\ [**c**\ \|\ **i**\ \|\ **p**]].
     Here, an ASCII file *fix.txt* is given which must contain records
     whose first two columns hold the coordinates of points along the
     lines at which locations the labels should be placed. Labels will
@@ -8343,7 +8360,7 @@ a line to be labeled. The codes are:
     slash), or they can be two-character codes that refer to
     predetermined points relative to the map region. These codes are
     taken from the :doc:`text` justification keys
-    [**L\ \|\ C\ \|\ R**][**B\ \|\ M\ \|\ T**]
+    [**L**\ \|\ **C**\ \|\ **R**][**B**\ \|\ **M**\ \|\ **T**]
     so that the first character determines the *x*-coordinate and
     the second determines the *y*-coordinate. In
     :doc:`grdcontour`, you can also use
@@ -8361,7 +8378,7 @@ a line to be labeled. The codes are:
 
 **n**:
     Full syntax is
-    **n**\ *number*\ [/*minlength*\ [**c\ \|\ i\ \|\ p**]].
+    **n**\ *number*\ [/*minlength*\ [**c**\ \|\ **i**\ \|\ **p**]].
     Place *number* of labels along each line regardless of total line
     length. The line is divided into *number* segments and the labels
     are placed at the centers of these segments. Optionally, you may
@@ -8370,7 +8387,7 @@ a line to be labeled. The codes are:
 
 **N**:
     Full syntax is
-    **N**\ *number*\ [/*minlength*\ [**c\ \|\ i\ \|\ p**]].
+    **N**\ *number*\ [/*minlength*\ [**c**\ \|\ **i**\ \|\ **p**]].
     Similar to code **n** but here labels are placed at the ends of each
     segment (for *number* >= 2). A special case arises for
     *number = 1* when a single label will be placed according to
@@ -8459,7 +8476,7 @@ universally. These codes are:
     (**CM** in :doc:`text` justification
     parlance) and this is indeed the default setting. Override by using
     this option and append another justification key code from
-    [**L\ \|\ C\ \|\ R**\ ][**B\ \|\ M\ \|\ T**\ ].
+    [**L**\ \|\ **C**\ \|\ **R**\ ][**B**\ \|\ **M**\ \|\ **T**\ ].
     Note for curved text (**+v**) only vertical justification will be
     affected.
 
@@ -8477,7 +8494,7 @@ universally. These codes are:
 **+r**:
     Do *not* place labels at points along the line whose local radius of
     curvature falls below the given threshold value. Append the radius
-    unit of your choice (**c\ \|\ i\ \|\ p**) [Default is 0].
+    unit of your choice (**c**\ \|\ **i**\ \|\ **p**) [Default is 0].
 
 **+u**:
     Append the chosen *unit* to the label. Normally a space will
@@ -8524,7 +8541,7 @@ modified by **+u** or **+=**). However, for quoted lines other options apply:
 
     **+Ld**:
         Take the Cartesian plot distances along the line as the label;
-        append **c\ \|\ i\ \|\ p** as the unit [Default is
+        append **c**\ \|\ **i**\ \|\ **p** as the unit [Default is
         :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`]. The label will be formatted according
         to the :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` string, *unless* label placement
         was determined from map distances along the segment lines, in
@@ -8534,7 +8551,7 @@ modified by **+u** or **+=**). However, for quoted lines other options apply:
     **+LD**:
         Calculate actual Earth surface distances and use the distance at
         the label placement point as the label; append
-        **d\ \|\ e\ \|\ f\ \|\ k\ \|\ m\ \|\ M\ \|\ n\ \|\ s**
+        **d**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **m**\ \|\ **M**\ \|\ **n**\ \|\ **s**
         to specify the unit [If not given we default to **d**\ egrees,
         *unless* label placement was determined from map distances along
         the segment lines, in which case we use the same unit specified

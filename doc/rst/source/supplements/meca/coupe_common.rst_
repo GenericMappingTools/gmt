@@ -187,7 +187,7 @@ Required Arguments
      size for magnitude = 5 (that is seismic scalar moment = 4\*10e+23
      dynes-cm) in **PROJ\_LENGTH\_UNIT** (unless **c**, **i**, or
      **p** is appended to indicate that the size information is in units of
-     cm, inches, meters, or points, respectively). (**-T**0 option overlays
+     cm, inches, meters, or points, respectively). (\ **-T**\ 0 option overlays
      best double couple transparently.)
   **-Sy**\ *scale[/fontsize[/offset*\ [**+u**]]]
      to plot the only double couple part of moment tensor.

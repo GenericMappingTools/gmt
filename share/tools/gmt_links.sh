@@ -35,10 +35,10 @@ compat_modules="minmax gmt2rgb gmtstitch gmtdp grdreformat ps2raster"
 cd $bin
 for module in ${gmt_modules} ${compat_modules}; do
 	if [ $mode -eq 1 ]; then	# Delete links
-		echo "rm -f $module"
+		rm -f $module
 	elif [ $mode -eq 2 ]; then	# Create new links (remove old if present)
-		echo "ln -sf gmt $module"
-	else				# List what we find	
+		ln -sf gmt $module
+	else				# List what we find
 		if [ -h $module ]; then
 			printf "Link for module %16s: %s\n" $module "Present"
 		else

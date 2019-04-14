@@ -15412,6 +15412,34 @@ char *gmt_arabic2roman (unsigned int number, char string[], size_t size, bool lo
 	return string;
 }
 
+double *gmt_list_to_array (struct GMT_CTRL *GMT, char *list, unsigned int type, uint64_t *n) {
+	/* Given a comma-separated string of values of type, parse and return array and its length */
+	size_t k;
+	unsigned int pos = 0;
+	char p[GMT_LEN64] = {""};
+	double *array = NULL;
+	if (list == NULL || list[0] == '\0') {	/* Got nothing, return nothing; likely an error */
+		*n = 0;
+		return NULL;
+	}
+	/* Count the commas but not a trailing comma with nothing after it */
+	for (k = 0, *n = 1; k < strlen (list); k++) {
+		if (list[k] == ',' && list[k+1])
+			(*n)++;
+	}
+	array = gmt_M_memory (GMT, NULL, *n, double);	/* Allocate exact length of array */
+	k = 0;
+	while ((gmt_strtok (list, ",", &pos, p))) {	/* March along and convert each string to double */
+		if (gmt_verify_expectations (GMT, type, gmt_scanf_arg (GMT, p, type, false, &(array[k])), p)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unable to parse value %s from list %s\n", p, list);
+			gmt_M_free (GMT, array);
+			return NULL;
+		}
+		k++;
+	}
+	return array;
+}
+
 GMT_LOCAL uint64_t make_equidistant_array (struct GMT_CTRL *GMT, double min, double max, double inc, double **array) {
 	/* Just makes an equidistant array given vetted input parameters */
 	uint64_t k, n = lrint ((max - min) / fabs (inc)) + 1;
@@ -15742,22 +15770,8 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 	}
 
 	if (T->list) {	/* Got a list, parse and make array */
-		uint64_t k;
-		unsigned int pos = 0;
-		char p[GMT_LEN64] = {""};
-		for (k = 0, T->n = 1; k < strlen (T->list); k++) {
-			if (T->list[k] == ',' && T->list[k+1])
-				T->n++;	/* Count the commas */
-		}
-		T->array = gmt_M_memory (GMT, NULL, T->n, double);
-		k = 0;
-		while ((gmt_strtok (T->list, ",", &pos, p))) {
-			if (gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, T->col), gmt_scanf_arg (GMT, p, gmt_M_type (GMT, GMT_IN, T->col), false, &(T->array[k])), p)) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c: Unable to parse value from %s\n", option, p);
-				return GMT_PARSE_ERROR;
-			}
-			k++;
-		}
+		if ((T->array = gmt_list_to_array (GMT, T->list, gmt_M_type (GMT, GMT_IN, T->col), &(T->n))) == NULL)
+			return GMT_PARSE_ERROR;
 		return GMT_NOERROR;
 	}
 

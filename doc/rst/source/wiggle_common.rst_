@@ -68,7 +68,7 @@ Optional Arguments
     a 2-char justification code that refers to the (invisible) map domain rectangle,
     (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
     (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
-    Append **+w** followed by the *length* or the scale bar in data (*z) units.
+    Append **+w** followed by the *length* or the scale bar in data (*z*) units.
     By default, the anchor point on the scale is assumed to be the middle left corner (ML), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,

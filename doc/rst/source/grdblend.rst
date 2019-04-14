@@ -98,7 +98,7 @@ Optional Arguments
     grid with the uppermost value. For modes **f** and **o** the
     ordering of grids in the *blendfile* will dictate which grid
     contributes to the final result. Weights and cosine tapering are not
-    considered when clobber mode is active. Optionally, append **+p++ or **+n**.
+    considered when clobber mode is active. Optionally, append **+p** or **+n**.
     Then, we always initialize output to equal the first grid but then
     for subsequent grids we only consider them in the decision if the
     values are >= 0 or <= 0, respectively.

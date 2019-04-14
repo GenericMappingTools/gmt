@@ -52,7 +52,7 @@ Required Arguments
     a single panel.
 
 **-Ff**
-    Specify the final **f**igure dimensions.  The subplot dimensions are then calculated from the figure
+    Specify the final **f**\ igure dimensions.  The subplot dimensions are then calculated from the figure
     dimensions after accounting for the space that optional tick marks, annotations, labels, and margins occupy between panels.
     The annotations, ticks, and labels along the outside perimeter are not counted as part of the figure dimensions.
     To specify different subplot dimensions for each row (or column), append **+f** followed by a comma-separated list of width
@@ -61,7 +61,7 @@ Required Arguments
     A single number means constant widths (or heights) [Default].
 
 **-Fs**
-    Specify the dimensions of each **s**ubplot directly.  Then, the figure dimensions are computed from the
+    Specify the dimensions of each **s**\ ubplot directly.  Then, the figure dimensions are computed from the
     subplot dimensions after adding the space that optional tick marks, annotations, labels, and margins occupy between panels.
     The annotations, ticks, and labels along the outside perimeter are not counted as part of the figure dimensions.
     To specify different subplot dimensions for each row (or column),  append a colon followed by a comma-separated list of widths,
@@ -121,9 +121,8 @@ Optional Arguments
 
 .. _-R:
 
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| unicode:: This is useful when all subplots share a common plot domain.
 .. include:: explain_-R.rst_
-    This is useful when all subplots share a common plot domain.
 
 .. _subplot_begin-S:
 
