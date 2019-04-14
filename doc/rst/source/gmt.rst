@@ -141,6 +141,7 @@ The Common GMT Options
 |SYN_OPT-g|
 |SYN_OPT-h|
 |SYN_OPT-i|
+|SYN_OPT-j|
 |SYN_OPT-n|
 |SYN_OPT-o|
 |SYN_OPT-p|
@@ -206,6 +207,9 @@ programs. No space between the option flag and the associated arguments.
 .. include:: explain_-h_full.rst_
 
 .. include:: explain_-icols_full.rst_
+
+.. |Add_-j| unicode:: 0x20 .. just an invisible code
+.. include:: explain_distcalc_full.rst_
 
 .. include:: explain_-n_full.rst_
 

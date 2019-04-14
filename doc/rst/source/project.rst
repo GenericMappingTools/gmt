@@ -101,7 +101,7 @@ back-azimuths or azimuths are better done using :doc:`mapproject`.
 
 **project** is CASE SENSITIVE. Use UPPER CASE for all one-letter
 designators which begin optional arguments. Use lower case for the
-xyzpqrs letters in **-flags**. 
+xyzpqrs letters in **F**\ *flags*. 
 
 Required Arguments
 ------------------

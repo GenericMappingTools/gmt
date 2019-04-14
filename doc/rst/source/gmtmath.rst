@@ -647,7 +647,7 @@ is required that the optional comment flag (:) must be followed by a space.
 As another example, we show a macro **GPSWEEK** which determines which GPS week
 a timestamp belongs to:
 
-**GPSWEEK** = 1980-01-06T00:00:00 SUB 86400 DIV 7 DIV FLOOR : GPS week without rollover
+**GPSWEEK** = **1980-01-06T00:00:00 SUB 86400 DIV 7 DIV FLOOR** : *usage: GPS week without rollover*
 
 Active Column Selection
 -----------------------

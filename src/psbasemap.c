@@ -87,10 +87,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	if (classic) {
 		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s] |\n\t[-D%s] [%s]\n", GMT_INSET_A, GMT_INSET_B, GMT_Jz_OPT);
-		GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s\n", GMT_PANEL, GMT_K_OPT);
+		GMT_Message (API, GMT_TIME_NONE, "\t[-F[d|l|t]%s] %s\n", GMT_PANEL, GMT_K_OPT);
 	}
-	else
-		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [%s] %s\n", GMT_Jz_OPT, GMT_K_OPT);
+	else {
+		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-F[l|t]%s]\n", GMT_PANEL);
+		GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s\n", GMT_Jz_OPT, GMT_K_OPT);
+	}
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L%s]\n", GMT_SCALE);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Td%s]\n", GMT_O_OPT, GMT_P_OPT, GMT_TROSE_DIR);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Tm%s]\n", GMT_TROSE_MAG);
@@ -110,6 +112,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		gmt_mapinset_syntax (API->GMT, 'D', "Draw a simple map inset box as specified below:");
 		gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map inset, scale or rose.", 3);
 		GMT_Message (API, GMT_TIME_NONE, "\t   For separate panel attributes, use -Fd, -Fl, -Ft.\n");
+	}
+	else {
+		gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map scale or rose.", 3);
+		GMT_Message (API, GMT_TIME_NONE, "\t   For separate panel attributes, use -Fl, -Ft.\n");
 	}
 	GMT_Option (API, "K");
 	gmt_mapscale_syntax (API->GMT, 'L', "Draw a map scale at specified reference point.");

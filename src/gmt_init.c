@@ -9207,12 +9207,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT_COMPAT_TRANSLATE ("PS_PAGE_ORIENTATION");
 			break;
 		case GMTCASE_PS_PAGE_ORIENTATION:
-			if (!strcmp (lower_value, "landscape"))
-				GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
-			else if (!strcmp (lower_value, "portrait"))
-				GMT->current.setting.ps_orientation = PSL_PORTRAIT;
-			else
-				error = true;
+			if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Ignore under modern mode */
+				if (!strcmp (lower_value, "landscape"))
+					GMT->current.setting.ps_orientation = PSL_LANDSCAPE;
+				else if (!strcmp (lower_value, "portrait"))
+					GMT->current.setting.ps_orientation = PSL_PORTRAIT;
+				else
+					error = true;
+			}
 			break;
 		case GMTCASE_PAPER_MEDIA:
 			GMT_COMPAT_TRANSLATE ("PS_MEDIA");
