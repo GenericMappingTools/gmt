@@ -957,8 +957,14 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			do_G_reading = false;	/* For instance, we are not going to read in drape data since all done with that */
 		}
 		else {	/* Read the single (or triple) drape grids */
-			for (k = 0; k < Ctrl->G.n; k++) if ((Drape[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->G.file[k], NULL)) == NULL) {	/* Get header only */
-				Return (API->error);
+			if (Ctrl->G.n == 3 && Ctrl->C.active) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Cannot specify both a CPT and the three r,g,b grids\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+			for (k = 0; k < Ctrl->G.n; k++) {
+				if ((Drape[k] = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->G.file[k], NULL)) == NULL) {	/* Get header only */
+					Return(API->error);
+				}
 			}
 		}
 		
