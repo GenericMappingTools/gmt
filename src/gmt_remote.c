@@ -707,26 +707,25 @@ char *gmtlib_get_srtmlist (struct GMTAPI_CTRL *API, double wesn[], unsigned int 
 			/* Call gmt select and return coordinates on land */
 			sprintf (cmd, "-Ns/k -Df %s ->%s", input, output);
 			if (GMT_Call_Module (API, "select", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Failure */
-				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: gntselect command for perimeter failed.\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: gmtselect command for perimeter failed.\n");
 				return NULL;
 			}
-			if ((Dout = GMT_Read_VirtualFile (API, output)) == NULL) {	/* Access the output data table */
-				return NULL;
-			}
-			if (Din->n_records == Dout->n_records) {	/* All perimeter nodes on land; no need to read the ocean layer */
-				ocean = false;
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "gmtlib_get_srtmlist: Perimeter on land - no need to get @earth_relief_15s.\n");
-			}
-			else
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "gmtlib_get_srtmlist: Perimeter partly in ocean - must get @earth_relief_15s.\n");
-			/* Free structures used to hold the perimeter data tables */
-			if (GMT_Destroy_Data (API, &Din) != GMT_NOERROR) {
-				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy data table used for perimeter input.\n");
-				return NULL;
-			}
-			if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
-				GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy data table used for perimeter output.\n");
-				return NULL;
+			if ((Dout = GMT_Read_VirtualFile (API, output)) != NULL) {	/* Access the output data table */
+				if (Din->n_records == Dout->n_records) {	/* All perimeter nodes on land; no need to read the ocean layer */
+					ocean = false;
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "gmtlib_get_srtmlist: Perimeter on land - no need to get @earth_relief_15s.\n");
+				}
+				else
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "gmtlib_get_srtmlist: Perimeter partly in ocean - must get @earth_relief_15s.\n");
+				/* Free structures used to hold the perimeter data tables */
+				if (GMT_Destroy_Data (API, &Din) != GMT_NOERROR) {
+					GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy data table used for perimeter input.\n");
+					return NULL;
+				}
+				if (GMT_Destroy_Data (API, &Dout) != GMT_NOERROR) {
+					GMT_Report (API, GMT_MSG_NORMAL, "gmtlib_get_srtmlist: Unable to destroy data table used for perimeter output.\n");
+					return NULL;
+				}
 			}
 			/* So here, ocean may have changed from true to false if we found no ocean... */
 		}

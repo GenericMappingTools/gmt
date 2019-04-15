@@ -738,7 +738,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 		return (GMT->parent->error);
 
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
-		"Region selection -R%s is replaced by the equivalent geographic region -R%.12g/%.12g/%.12g/%.12gr\n",
+		"Region selection -R%s is replaced by the equivalent geographic region -R%.12g/%.12g/%.12g/%.12g+r\n",
 		GMT->common.R.string, out_wesn[XLO], out_wesn[YLO], out_wesn[XHI], out_wesn[YHI]);
 
 
