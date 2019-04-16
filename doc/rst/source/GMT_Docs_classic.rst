@@ -8261,6 +8261,7 @@ latitude (or *y*) values, respectively.  Note that any tests involving $x will n
 the periodicity of longitudes.  Finally, $s can be used to access the current symbol size.
 Note that symbol size internally is converted to inches so any test you write that compares
 the size to a constant should use a constant with the appropriate unit appended (e.g., 2c).
+For text comparison note that case will be considered, so "A" does not equal "a".
 
 Simple conditional test
 ^^^^^^^^^^^^^^^^^^^^^^^
