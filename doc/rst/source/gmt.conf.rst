@@ -1202,7 +1202,7 @@ fonts can be found in the :doc:`gmt` man page.
 .. _PS_PAGE_ORIENTATION:
 
 **PS_PAGE_ORIENTATION**
-    (**\* -P**) Sets the orientation of the page. Choose portrait or
+    (**-P**) Sets the orientation of the page. Choose portrait or
     landscape [landscape].  Only available in GMT classic mode.
 
 .. _PS_SCALE_X:
