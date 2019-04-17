@@ -2666,10 +2666,10 @@ attribute list of *size*, *fonttype* and *fill*, each of which is
 optional. The *size* is the font size (usually in points) but **c**,
 **i** or **p** can be added to indicate a specific unit. The *fonttype*
 is the name (case sensitive!) of the font or its equivalent numerical ID
-(e.g., Helvetica-Bold or 1). *fill* specifies the gray shade, color or
+(e.g., Helvetica-Bold or 1). The *fill* specifies the gray shade, color or
 pattern of the text (see section `Specifying area fill attributes`_ above).
 Optionally, you may append **=**\ *pen* to the *fill* value in order to draw a text
-outline. If you want to avoid that the outline partially obscures the text, append
+outline. If you want to avoid that the outline partially obscures the text,
 append **=~**\ *pen* instead; in that case only half the linewidth is plotted
 on the outside of the font only.  If an outline is requested, you may optionally
 skip the text *fill* by setting it to **-**, in which case the full pen width
