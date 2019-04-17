@@ -6381,7 +6381,11 @@ GMT_LOCAL int api_end_io_dataset (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET_HIDDEN *DH = NULL;
 	struct GMT_DATATABLE_HIDDEN *TH = NULL;
-	if (D == NULL || D->table == NULL || D->table[0] == NULL) return GMT_NOERROR;	/* Nothing to work on */
+	if (D == NULL) {	/* No output records produced by module; just return an empty dataset with no rows instead of NULL */
+		unsigned int smode = (API->GMT->current.io.record_type[GMT_OUT] & GMT_WRITE_TEXT) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
+		D = gmtlib_create_dataset (API->GMT, 1, 1, 0, 0, S->geometry, smode, true);	/* 1 table, 1 segment; no cols or rows yet */
+		S->resource = D;
+	}
 
 	T = D->table[0];	/* Shorthand to the only table */
 	DH = gmt_get_DD_hidden (D);
