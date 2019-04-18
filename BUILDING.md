@@ -79,7 +79,7 @@ You then can install the GMT's dependencies with:
 For homebrew users, you can install the dependencies with:
 
     # Install necessary dependencies
-    brew install cmake curl netcdf ghotstscript
+    brew install cmake curl netcdf ghostscript
 
     # Install optional dependencies
     brew install gdal pcre fftw
