@@ -194,11 +194,13 @@ UNIX manpages, and HTML and PDF documentation.
 A complete set of the example scripts used to create all the example plots,
 including all necessary data files, are provided by the installation.
 To enable testing, you need following lines in your `ConfigUser.cmake`:
-````
+
+```
 enable_testing()
 set (DO_EXAMPLES TRUE)
 set (DO_TESTS TRUE)
 set (DO_ANIMATIONS TRUE)
+```
 
 Then run:
 
