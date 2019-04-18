@@ -3543,7 +3543,7 @@ first, then supply suitable required and optional modifiers:
 #. Give legend dimensions.  You must specify the required legend width, while legend height is optional
    and if not given is computed based on the contents of the legend.  The syntax is therefore
    **+w**\ *width*\ [/*height*] in your desired plot units.  Thus, **+w**\ 12c sets the legend width
-   as 12 cm but the hight will become whatever is needed to contain the information.
+   as 12 cm but the height will become whatever is needed to contain the information.
 
 #. Set line-spacing.  You may optionally specify the line-spacing used for the setting of the legend.  The legend will
    typically consist of several lines that may or may not contain text, but the spacing between

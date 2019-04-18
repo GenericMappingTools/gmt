@@ -204,7 +204,7 @@ struct GMT_MD5 * md5_load (struct GMT_CTRL *GMT, char *file, int *n) {
 };
 
 GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
-	/* This function is called everytime we are about to access a @remotefile.
+	/* This function is called every time we are about to access a @remotefile.
 	 * First we check that we have gmt_md5_server.txt in the server directory.
 	 * If we don't then we download it and return since no old file to compare to.
 	 * If we do find the MD5 file then we get its creation time [st_mtime] as
@@ -263,7 +263,7 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 		struct GMT_MD5 *O = NULL, *N = NULL;
 
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s older than 24 hours, get latest from server.\n", md5path);
-		strcpy (old_md5path, md5path);	/* Dulicate path name */
+		strcpy (old_md5path, md5path);	/* Duplicate path name */
 		strcat (old_md5path, ".old");	/* Append .old to the copied path */
 		if (gmt_rename_file (GMT, md5path, old_md5path, GMT_RENAME_FILE)) {	/* Rename existing file to .old */
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rename %s to %s\n", md5path, old_md5path);
@@ -287,7 +287,7 @@ GMT_LOCAL void md5_refresh (struct GMT_CTRL *GMT) {
 			/* Here the file was found locally and the full path is in the url */
 			found = false;	/* Not found this file in the new list yet */
 			for (n = 0; !found && n < nN; n++) {	/* Loop over items in new file */
-				if (!strcmp (N[n].name, O[o].name)) {	/* File is in the curent hash table */
+				if (!strcmp (N[n].name, O[o].name)) {	/* File is in the current hash table */
 					found = true;	/* We will exit this loop regardless of what happens next below */
 					if (strcmp (N[n].md5, O[o].md5)) {	/* New MD5 differs from entry in MD5 old file */
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Server and cache versions of %s have different MD5 hash codes - must download new copy.\n", N[n].name);

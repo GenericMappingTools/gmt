@@ -3,7 +3,7 @@
 # There are three troubles here:
 # 1) The gap, which is seen in the output of this script (no orig present to ensure test will fail)
 # 2) For -JP, the "pole" 90 is at the horizon, not the center, so the problem with start/stop/inc that
-#    I recently fixed for Victor fails for -JP.  We probalby need to flip something in set_loop_order for that to work
+#    I recently fixed for Victor fails for -JP.  We probably need to flip something in set_loop_order for that to work
 # 3) The y-placement is wrong so I need to compensate with -Y-3i for the first layer
 #
 # The script below shows both problems by plotting -JA (only problem 1) and -JP (both problems)

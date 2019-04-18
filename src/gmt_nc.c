@@ -1650,7 +1650,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_
 #ifndef DOUBLE_PRECISION_GRID
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Precision loss! GMT's internal grid representation is 32-bit float.\n");
 #endif
-			/* Intentially no break here! */
+			/* Intentionally no break here! */
 		default: /* don't round float */
 			do_round = false;
 	}

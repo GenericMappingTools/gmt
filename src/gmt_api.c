@@ -1314,7 +1314,7 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 					/* Full syntax: XYZ+abc...-def...: We do the substitution of output type to Y only if
 					 * 1. -Z is given
 					 * 2. -Z contains ALL the modifiers +a, +b, +c, ...
-					 * 3. -Z contains AT LEAST ONE of the modifers +d, +e, +f.
+					 * 3. -Z contains AT LEAST ONE of the modifiers +d, +e, +f.
 					 */
 					unsigned int kase = 0, count[2] = {0, 0}, given[2] = {0, 0};
 					change_type = false;
@@ -10281,7 +10281,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	 *   XYZ+abc...-def...: We do the substitution of output type to Y only if
 	 *      1. -Z is given
 	 *      2. -Z contains ALL the modifiers +a, +b, +c, ...
-	 *      3. -Z contains AT LEAST ONE of the modifers +d, +e, +f.
+	 *      3. -Z contains AT LEAST ONE of the modifiers +d, +e, +f.
 	 *   The Z magic is a bit confusing so here are several examples:
 	 *   1. grdcontour normally writes PostScript but grdcontour -D will instead export data to std (or a file set by -D), so its key
 	 *      contains the entry "DDD": When -D is active then the PostScript key ">X}" morphs into "DD}" and

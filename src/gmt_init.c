@@ -936,7 +936,7 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 	char *p = NULL, c;
 
 	if (!text) return (GMT_PARSE_ERROR);	/* -B requires an argument even if it is blank */
-	/* First determine if there is an endian modifer supplied */
+	/* First determine if there is an endian modifier supplied */
 	if ((p = strchr (text, '+'))) {	/* Yes */
 		*p = '\0';	/* Temporarily chop off the modifier */
 		switch (p[1]) {
