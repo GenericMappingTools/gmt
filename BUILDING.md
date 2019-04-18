@@ -17,7 +17,7 @@ Optionally install for more capabilities within GMT:
 - LAPACK (Fast matrix inversion [not needed under macOS])
 - BLAS (Fast matrix multiplications [not needed underr macOS])
 
-Optinally install for building GMT documentations and running tests:
+Optionally install for building GMT documentations and running tests:
 
 - [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the manpage, HTML and PDF documentation)
 - TeXLive (for building the PDF documentation)
@@ -184,7 +184,7 @@ and/or LaTeX are not available. Set *GMT_INSTALL_EXTERNAL_DOC* in
 make -j install
 ```
 
-will install gmt executable, library, development headers and build-in data 
+will install gmt executable, library, development headers and built-in data 
 to the specified GMT install location. 
 Optionally it will also install the GSHHG shorelines (if found), DCW (if found), 
 UNIX manpages, and HTML and PDF documentation.
@@ -216,7 +216,7 @@ You can also select individual tests using regexp with ctest, e.g.:
 ctest -R ex2[3-6]
 ```
 
-## Updating the developement source codes
+## Updating the development source codes
 
 Assuming you did not delete the build directory, this is just as simple as
 

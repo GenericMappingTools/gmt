@@ -915,7 +915,7 @@ struct behavior {
 /*  org:  Origin          dest:  Destination          apex:  Apex            */
 /*  org(abc) -> a         dest(abc) -> b              apex(abc) -> c         */
 /*                                                                           */
-/*  bond:  Bond two triangles together at the resepective handles.           */
+/*  bond:  Bond two triangles together at the respective handles.            */
 /*  bond(abc, bad)                                                           */
 /*                                                                           */
 /*                                                                           */

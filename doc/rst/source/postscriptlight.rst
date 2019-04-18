@@ -275,7 +275,7 @@ One function provide the functionality for memory output.
     ensure that the object retrieved is duplicated or written or otherwise
     processed before the next call to **PSL_beginplot** or **PSL_endsession**
     either of which will destroy the memory pointed to.
- 
+
 `Changing Settings <#toc6>`_
 ----------------------------
 
@@ -828,7 +828,7 @@ and others and issue calculations with **PSL_setcommand**.
     not considered for text placement [If no line drawing is desired
     then these two arrays may be NULL].  We will describe the action
     taken for each bit value.  Multiple values may be passed at the
-    same time and we processes from low to hight bit.
+    same time and we processes from low to high bit.
     PSL_TXT_INIT: When mode contains this bit (1) we will initialize
     all the required variables and store them in the PostScript file.
     PSL_TXT_SHOW: We wish to see the text strings (otherwise they may

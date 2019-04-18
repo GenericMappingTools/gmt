@@ -178,7 +178,7 @@ GMT_LOCAL void shore_done_sides (struct GMT_CTRL *GMT, struct GMT_SHORE *c) {
 }
 
 GMT_LOCAL void shore_path_shift (double *lon, unsigned int n, double edge) {
-	/* Shift all longitudes >= edige by 360 westwards */
+	/* Shift all longitudes >= edge by 360 westwards */
 	unsigned int i;
 
 	for (i = 0; i < n; i++) if (lon[i] >= edge) lon[i] -= 360.0;
