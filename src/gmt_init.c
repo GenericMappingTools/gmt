@@ -12148,6 +12148,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	bool is_PS;
 	unsigned int srtm_res = 0;
+	int id;
 	struct GMT_OPTION *E = NULL, *opt = NULL, *opt_R = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
 	API->error = GMT_NOERROR;
@@ -12166,7 +12167,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		unsigned int E_flags;
 		E_flags = strip_R_from_E_in_pscoast (GMT, *options, r_code);
 		if (GMT->current.setting.run_mode == GMT_MODERN && !(E_flags & 1)) {	/* Just country codes and plot settings, no region specs */
-			int id = gmtlib_get_option_id (0, "R");		/* The -RP history item */
+			id = gmtlib_get_option_id (0, "R");		/* The -RP history item */
 			if (!GMT->init.history[id]) id++;		/* No history for -RP, increment to -RG as fallback */
 			if (GMT->init.history[id]) add_R = false;	/* There is history for -R so -R will be added below */
 		}
@@ -12211,9 +12212,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			return NULL;
 	}
 
+	opt_R = GMT_Find_Option (API, 'R', *options);
+
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
 		unsigned int n_errors = 0;
-		int id, fig;
+		int fig;
 		bool got_R = false, got_J = false, exceptionb, exceptionp;
 		char arg[GMT_LEN256] = {""}, scl[GMT_LEN64] = {""};
 		struct GMT_OPTION *opt_J = NULL;
@@ -12226,7 +12229,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		GMT->current.ps.initialize = false;	/* Start from scratch */
 		GMT->current.ps.active = is_PS;	/* true if module will produce PS */
 
-		opt_R = GMT_Find_Option (API, 'R', *options);
 		opt_J = gmt_find_J_option (API, *options);
 		if (GMT->hidden.func_level == GMT_CONTROLLER) {	/* The -R -J -O -K prohibition only applies to top-level module call */
 			/* 1. No -O allowed */
@@ -12452,6 +12454,26 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if ((opt = GMT_Make_Option (API, 'J', scl)) == NULL) return NULL;	/* Failure to make option */
 				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
 				GMT_Report (API, GMT_MSG_DEBUG, "Modern: Adding -J%s to options since there is no history available.\n", scl);
+			}
+		}
+	}
+	else {		/* Classic mode can also use (to store in gmt.conf) the -R read from data */
+		if (!opt_R && (strchr (required, 'R') || strchr (required, 'g') || strchr (required, 'd'))) {	/* Need a region but no -R was set */
+			/* First consult the history */
+			id = gmtlib_get_option_id (0, "R");	/* The -RP history item */
+			if (GMT->current.ps.active || !strncmp (mod_name, "pscoast", 7U)) {	/* A plotting module (or pscoast which may run -M); first check -RP history */
+				if (!GMT->init.history[id]) id++;	/* No history for -RP, increment to -RG as fallback */
+			}
+			else		/* Only examine -RG history if not a plotter */
+				id++;
+			if (GMT->init.history[id]) {	/* There is history for -R */
+				if ((opt = GMT_Make_Option (API, 'R', "")) == NULL) return NULL;	/* Failure to make option */
+				if ((*options = GMT_Append_Option (API, opt, *options)) == NULL) return NULL;	/* Failure to append option */
+				GMT_Report (API, GMT_MSG_DEBUG, "Added -R to options since history is available.\n");
+			}
+			else if (strchr (required, 'g') || strchr (required, 'd')) {	/* No history but can examine input data sets */
+				if (gmtinit_determine_R_option_from_data (API, required, true, options))
+					GMT_Report (API, GMT_MSG_DEBUG, "Error determining the region from input data.\n");
 			}
 		}
 	}
