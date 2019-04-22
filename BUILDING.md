@@ -1,5 +1,23 @@
 # Building GMT
 
+## Contents
+
+- [Build and runtime dependencies](#build-and-runtime-dependencies)
+- [Install dependencies](#install-dependencies)
+  * [Ubuntu/Debian](#ubuntudebian)
+  * [RHEL/CentOS/Fedora](#rhelcentosfedora)
+  * [macOS with homebrew](#macos-with-homebrew)
+- [Get GMT source codes](#get-gmt-source-codes)
+- [Configuring](#configuring)
+- [Building GMT source codes](#building-gmt-source-codes)
+- [Building documentation](#building-documentation)
+- [Install](#install)
+- [Set path](#set-path)
+- [Tests](#tests)
+- [Updating the development source codes](#updating-the-development-source-codes)
+- [Packaging](#packaging)
+- [Creating a source package](#creating-a-source-package)
+
 ## Build and runtime dependencies
 
 To build GMT, you must install:
@@ -13,7 +31,7 @@ Optionally install for more capabilities within GMT:
 
 - [GDAL](https://www.gdal.org/) (Ability to read and write numerous grid and image formats)
 - [PCRE](https://www.pcre.org/) or PCRE2 (Regular expression support)
-- [FFTW](http://www.fftw.org/) single-precision (Fast FFTs [not needed under macOS])
+- [FFTW](http://www.fftw.org/) single-precision (Fast FFTs, >=3.3 [not needed under macOS])
 - LAPACK (Fast matrix inversion [not needed under macOS])
 - BLAS (Fast matrix multiplications [not needed underr macOS])
 
@@ -32,7 +50,7 @@ You also need download support data:
 
 ### Ubuntu/Debian
 
-For Ubuntu/Debian, there are prepackaged development binaries available. 
+For Ubuntu/Debian, there are prepackaged development binaries available.
 Install the GMT dependencies with:
 
     # Install required dependencies
@@ -40,13 +58,13 @@ Install the GMT dependencies with:
 
     # Install optional dependencies
     sudo apt-get install libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
-    
+
     # to enable testing
     sudo apt-get install graphicsmagick
-    
+
     # to build the documentation
     sudo apt-get install python-sphinx
-    
+
     # to build the documentation in PDF format
     sudo apt-get install texlive texlive-latex-extra
 
@@ -113,7 +131,7 @@ If you want to build/use the latest developing/unstable GMT, you can get the sou
 
 ## Configuring
 
-GMT can be build on any platform supported by CMake. CMake is a cross-platform, open-source system for managing the build process. The building process is
+GMT can be built on any platform supported by CMake. CMake is a cross-platform, open-source system for managing the build process. The building process is
 controlled by two configuration files in the `cmake` directory:
 
 - "ConfigDefault.cmake": is version controlled and used to add new default
@@ -154,11 +172,11 @@ make -j
 
 which will compile all the programs.
 
-You can add an argument *x* to *-j* (e.g. *-j4*) which means make will 
-use *x* cores in the build; this depends on the number of cores in your CPU 
-and if hyperthreading is available or not. By using *-j* without any argument, 
-make will not limit the number of jobs that can run simultaneously. 
-cmake will build out-of-source in the the directory build. 
+You can add an argument *x* to *-j* (e.g. *-j4*) which means make will
+use *x* cores in the build; this depends on the number of cores in your CPU
+and if hyperthreading is available or not. By using *-j* without any argument,
+make will not limit the number of jobs that can run simultaneously.
+cmake will build out-of-source in the the directory build.
 
 ## Building documentation
 
@@ -184,10 +202,16 @@ and/or LaTeX are not available. Set *GMT_INSTALL_EXTERNAL_DOC* in
 make -j install
 ```
 
-will install gmt executable, library, development headers and built-in data 
-to the specified GMT install location. 
-Optionally it will also install the GSHHG shorelines (if found), DCW (if found), 
+will install gmt executable, library, development headers and built-in data
+to the specified GMT install location.
+Optionally it will also install the GSHHG shorelines (if found), DCW (if found),
 UNIX manpages, and HTML and PDF documentation.
+
+## Set path
+
+Make sure you set the PATH to include the directory containing the GMT executables (BINDIR)
+if this is not a standard directory like /usr/local/bin. Then, you should now be able to
+run GMT programs.
 
 ## Tests
 
