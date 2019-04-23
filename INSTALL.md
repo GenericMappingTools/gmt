@@ -16,8 +16,8 @@ for compling GMT source package (either stable release or development version).
 ## Contents
 
 - [Linux](#linux)
-  * [Ubuntu/Debian](#ubuntu-debian)
-  * [RHEL/CentOS/Fedora](#rhel-centos-fedora)
+  * [Ubuntu/Debian](#ubuntudebian)
+  * [RHEL/CentOS/Fedora](#rhelcentosfedora)
   * [Install via conda](#install-via-conda)
 - [macOS](#macos)
   * [Standalone Installer](#standalone-installer)
