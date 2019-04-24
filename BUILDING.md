@@ -43,7 +43,7 @@ Optionally install for building GMT documentations and running tests:
 
 You also need download support data:
 
-- gshhg: A Global Self-consistent, Hierarchical, High-resolution Geography Database (>=2.2.2)
+- gshhg: A Global Self-consistent, Hierarchical, High-resolution Geography Database (>=2.2.0)
 - dcw-gmt: The Digital Chart of the World (optional, >=1.0.5)
 
 ## Install dependencies
