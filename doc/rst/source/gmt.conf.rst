@@ -596,9 +596,11 @@ fonts can be found in the :doc:`gmt` man page.
 
 **IO_NAN_RECORDS**
     Determines what happens when input records containing NaNs for *x*
-    or *y* (and in some cases *z*) are read. Choose between **skip**,
-    which will simply report how many bad records were skipped, and
-    **pass** [Default], which will pass these records on to the calling
+    or *y* (and in some cases *z*) are read. This may happen, for instance,
+    when there is text or other junk present instead of data coordinates, and
+    the conversion to a data value fails and yields a NaN.  Choose between **skip**,
+    which will report how many bad records were skipped, and **pass** [Default],
+    which will quietly pass these records on to the calling
     programs. For most programs this will result in output records with
     NaNs as well, but some will interpret these NaN records to indicate
     gaps in a series; programs may then use that information to detect
