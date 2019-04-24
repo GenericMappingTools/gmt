@@ -20,10 +20,13 @@ find_path (GSHHG_PATH
 	HINTS ${GSHHG_ROOT} $ENV{GSHHG_ROOT} $ENV{GSHHGDIR}
 	PATH_SUFFIXES
 	gmt-gshhg
+	gshhg
+	gshhg-gmt
 	gshhg-gmt-nc4
 	share/gmt/gshhg
 	share/gmt-gshhg
 	share/gshhg
+	share/gshhg-gmt
 	share/gshhg-gmt-nc4
 	PATHS
 	${CMAKE_SOURCE_DIR}
