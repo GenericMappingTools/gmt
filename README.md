@@ -71,19 +71,18 @@ You can obtain GMT and support data from http://gmt.soest.hawaii.edu/.
 Alternatively you may get GMT from any of the following FTP sites.
 Try the site that is closest to you to minimize transmission times:
 
-| Site                                                        | FTP address             |
-|:------------------------------------------------------------|:------------------------|
-| SOEST, U. of Hawaii                                         | ftp.soest.hawaii.edu    |
-| Lab for Satellite Altimetry, NOAA                           | ibis.grdl.noaa.gov      |
-| IRIS, Washington, US                                        | ftp.iris.washington.edu |
-| IAG-USP, U. of Sao Paulo, BRAZIL                            | ftp.iag.usp.br          |
-| ISV, Hokkaido U, Sapporo, JAPAN                             | ftp.eos.hokudai.ac.jp   |
-| GDS, Vienna U. of Technology, AUSTRIA                       | gd.tuwien.ac.at         |
-| TENET, Tertiary Education & Research Networks, SOUTH AFRICA | gmt.mirror.ac.za        |
-| University of Science and Technology of China, Hefei, China | mirrors.ustc.edu.cn/gmt |
+| Site                                                        | FTP address                                         |
+|:------------------------------------------------------------|:----------------------------------------------------|
+| SOEST, U. of Hawaii                                         | ftp://ftp.soest.hawaii.edu/gmt                      |
+| Lab for Satellite Altimetry, NOAA                           | ftp://ftp.star.nesdis.noaa.gov/pub/sod/lsa/gmt      |
+| IRIS, Washington, US                                        | ftp://ftp.iris.washington.edu/pub/gmt               |
+| IAG-USP, U. of Sao Paulo, BRAZIL                            | ftp://ftp.iag.usp.br/pub/gmt                        |
+| TENET, Tertiary Education & Research Networks, SOUTH AFRICA | ftp://gmt.mirror.ac.za/gmt/                         |
+| Tokai U, Shimizu, JAPAN                                     | ftp://ftp.scc.u-tokai.ac.jp/pub/gmt                 |
+| University of Science and Technology of China, Hefei, CHINA | http://mirrors.ustc.edu.cn/gmt                      |
 
 
-Refere to the [install instructions](INSTALL.md) to install GMT,
+Refer to the [install instructions](INSTALL.md) to install GMT,
 and [build instructions](BUILDING.md) to build GMT from the sources.
 
 ## GMT supplemental Code
