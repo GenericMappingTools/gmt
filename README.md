@@ -80,6 +80,7 @@ Try the site that is closest to you to minimize transmission times:
 | ISV, Hokkaido U, Sapporo, JAPAN                             | ftp.eos.hokudai.ac.jp   |
 | GDS, Vienna U. of Technology, AUSTRIA                       | gd.tuwien.ac.at         |
 | TENET, Tertiary Education & Research Networks, SOUTH AFRICA | gmt.mirror.ac.za        |
+| University of Science and Technology of China, Hefei, China | mirrors.ustc.edu.cn/gmt |
 
 
 Refere to the [install instructions](INSTALL.md) to install GMT,
