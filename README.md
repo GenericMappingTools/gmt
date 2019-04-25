@@ -82,7 +82,7 @@ Try the site that is closest to you to minimize transmission times:
 | University of Science and Technology of China, Hefei, CHINA | http://mirrors.ustc.edu.cn/gmt                      |
 
 
-Refere to the [install instructions](INSTALL.md) to install GMT,
+Refer to the [install instructions](INSTALL.md) to install GMT,
 and [build instructions](BUILDING.md) to build GMT from the sources.
 
 ## GMT supplemental Code
