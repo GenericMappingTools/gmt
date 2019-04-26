@@ -676,8 +676,9 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active) {	/* Main input is a single image and not a grid */
 
 		if (use_intensity_grid && GMT->common.R.active[RSET]) {
-			if (GMT->common.R.wesn[XLO] < Intens_orig->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Intens_orig->header->wesn[XHI] || 
-			    GMT->common.R.wesn[YLO] < Intens_orig->header->wesn[YLO] || GMT->common.R.wesn[YHI] > Intens_orig->header->wesn[YHI]) {
+            double xnoise = Intens_orig->header->inc[GMT_X]*GMT_CONV4_LIMIT, ynoise = Intens_orig->header->inc[GMT_Y]*GMT_CONV4_LIMIT;
+			if (GMT->common.R.wesn[XLO] < (Intens_orig->header->wesn[XLO]-xnoise) || GMT->common.R.wesn[XHI] > (Intens_orig->header->wesn[XHI]+xnoise) ||
+			    GMT->common.R.wesn[YLO] < (Intens_orig->header->wesn[YLO]-ynoise) || GMT->common.R.wesn[YHI] > (Intens_orig->header->wesn[YHI]+ynoise)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Requested region exceeds illumination extent\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
