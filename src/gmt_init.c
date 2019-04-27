@@ -11728,7 +11728,8 @@ GMT_LOCAL int gmtlib_get_region_from_data (struct GMTAPI_CTRL *API, int family, 
 			if (gmt_access (API->GMT, opt->arg, R_OK)) return GMT_FILE_NOT_FOUND;	/* No such file found */
 			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, opt->arg, NULL)) == NULL)
 				return API->error;	/* Failure to read grid header */
-			gmt_M_memcpy (wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
+			gmt_set_R_from_grd (API->GMT, G->header);	/* Handle the odd near-global grids that actually are global */
+			gmt_M_memcpy (wesn, API->GMT->common.R.wesn, 4, double);	/* Copy over the grid region */
 			HH = gmt_get_H_hidden (G->header);
 			if (!exact) gmtinit_round_wesn (wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
 			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
