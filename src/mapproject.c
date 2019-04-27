@@ -486,7 +486,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				else {	/* -G[<lon0/lat0>][+i][+a][+u[+|-]<unit>][+v] */
 					/* Note [+|-] is now deprecated in GMT 6; use -je instead */
 					/* Watch out for +u+<unit> where the + in front of unit indicates ellipsoidal calculations.  This unfortunate syntax
-					 * is easily seen as another modifer, e.g., +e, which will fail.  We temporarily replace that + sign by the * sign
+					 * is easily seen as another modifier, e.g., +e, which will fail.  We temporarily replace that + sign by the * sign
 					 * to avoid parsing problems. */
 					if ((q = strstr (opt->arg, "+u")) && q[2] == '+') q[2] = '*';
 					if (gmt_validate_modifiers (GMT, opt->arg, 'G', "aiuv")) n_errors++;

@@ -1396,7 +1396,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	lon = *a_lon;	lat = *a_lat;	/* Input arrays */
 
 	if (gmt_M_is_dnan (lon[0]) || gmt_M_is_dnan (lat[0])) {	/* If user manages to pass NaN NaN records then we check on the first record and bail */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your data contains NaNs - no resampling taken place!\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your data array row 0 contains NaNs - no resampling taken place!\n");
 		return n;
 	}
 	
@@ -1420,6 +1420,10 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	boostable = !(gmt_M_is_linear (GMT) || gmt_M_pole_is_point (GMT));	/* Only boost for projections where poles are lines */
 	f_lat_a = fabs (lat[0]);
 	for (i = 1; i < n; i++) {
+		if (gmt_M_is_dnan (lon[i]) || gmt_M_is_dnan (lat[i])) {	/* If user manages to pass NaN NaN records then we check on the first record and bail */
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Your data array row %" PRIu64 " contains NaNs - no resampling taken place!\n", i);
+			return n;
+		}
 		f_lat_b = fabs (lat[i]);
 
 		gmt_geo_to_cart (GMT, lat[i], lon[i], b, true);	/* End point of current arc */

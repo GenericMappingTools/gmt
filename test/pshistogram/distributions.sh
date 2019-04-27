@@ -9,13 +9,13 @@ echo "0 20 Percent" | gmt pstext -R -J -O -K -Dj0.1i -F+jTR+f12p >> $ps
 # ML: Same, but in log 1+counts
 gmt pshistogram -Baf -BWSne+glightblue @v3206_06.txt -R-6000/0/0/8 -JX3i/2.0i -Gorange -L1p -Z2 -W200 -O -K -N0+p1p,red -N1+p1p,green -N2+p1p,blue -X-3.75i -Y2.5i >> $ps
 echo "0 8 log1p(counts)" | gmt pstext -R -J -O -K -Dj0.1i -F+jTR+f12p >> $ps
-# MR: Same, but in log 1+precent
+# MR: Same, but in log 1+percent
 gmt pshistogram -Baf -BWSne+glightblue @v3206_06.txt -R-6000/0/0/3.5 -JX3i/2.0i -Gorange -L1p -Z3 -W200 -O -K -N0+p1p,red -N1+p1p,green -N2+p1p,blue -X3.75i >> $ps
 echo "0 3.5 log1p(percent)" | gmt pstext -R -J -O -K -Dj0.1i -F+jTR+f12p >> $ps
 # TL: Same, but in log10 1+counts
 gmt pshistogram -Baf -BWSne+glightblue @v3206_06.txt -R-6000/0/0/3.5 -JX3i/2.0i -Gorange -L1p -Z4 -W200 -O -K -N0+p1p,red -N1+p1p,green -N2+p1p,blue -X-3.75i -Y2.5i >> $ps
 echo "0 3.5 log101p(counts)" | gmt pstext -R -J -O -K -Dj0.1i -F+jTR+f12p >> $ps
-# TR: Same, but in log10 1+precent
+# TR: Same, but in log10 1+percent
 gmt pshistogram -Baf -BWSne+glightblue @v3206_06.txt -R-6000/0/0/1.5 -JX3i/2.0i -Gorange -L1p -Z5 -W200 -O -K -N0+p1p,red -N1+p1p,green -N2+p1p,blue -X3.75i >> $ps
 echo "0 1.5 log101p(percent)" | gmt pstext -R -J -O -K -Dj0.1i -F+jTR+f12p >> $ps
 # L: Cumulative histogram

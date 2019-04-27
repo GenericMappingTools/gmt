@@ -1314,7 +1314,7 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 					/* Full syntax: XYZ+abc...-def...: We do the substitution of output type to Y only if
 					 * 1. -Z is given
 					 * 2. -Z contains ALL the modifiers +a, +b, +c, ...
-					 * 3. -Z contains AT LEAST ONE of the modifers +d, +e, +f.
+					 * 3. -Z contains AT LEAST ONE of the modifiers +d, +e, +f.
 					 */
 					unsigned int kase = 0, count[2] = {0, 0}, given[2] = {0, 0};
 					change_type = false;
@@ -6381,7 +6381,11 @@ GMT_LOCAL int api_end_io_dataset (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET_HIDDEN *DH = NULL;
 	struct GMT_DATATABLE_HIDDEN *TH = NULL;
-	if (D == NULL || D->table == NULL || D->table[0] == NULL) return GMT_NOERROR;	/* Nothing to work on */
+	if (D == NULL) {	/* No output records produced by module; just return an empty dataset with no rows instead of NULL */
+		unsigned int smode = (API->GMT->current.io.record_type[GMT_OUT] & GMT_WRITE_TEXT) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
+		D = gmtlib_create_dataset (API->GMT, 1, 1, 0, 0, S->geometry, smode, true);	/* 1 table, 1 segment; no cols or rows yet */
+		S->resource = D;
+	}
 
 	T = D->table[0];	/* Shorthand to the only table */
 	DH = gmt_get_DD_hidden (D);
@@ -10281,7 +10285,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	 *   XYZ+abc...-def...: We do the substitution of output type to Y only if
 	 *      1. -Z is given
 	 *      2. -Z contains ALL the modifiers +a, +b, +c, ...
-	 *      3. -Z contains AT LEAST ONE of the modifers +d, +e, +f.
+	 *      3. -Z contains AT LEAST ONE of the modifiers +d, +e, +f.
 	 *   The Z magic is a bit confusing so here are several examples:
 	 *   1. grdcontour normally writes PostScript but grdcontour -D will instead export data to std (or a file set by -D), so its key
 	 *      contains the entry "DDD": When -D is active then the PostScript key ">X}" morphs into "DD}" and

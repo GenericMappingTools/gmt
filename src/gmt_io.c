@@ -3005,7 +3005,7 @@ GMT_LOCAL uint64_t gmtio_row_ij (struct GMT_Z_IO *r, struct GMT_GRID *G, uint64_
 /*! . */
 GMT_LOCAL void * gmtio_bin_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *retval) {
 	/* General binary read function which calls function pointed to by GMT->current.io.read_binary to handle
-	   actual reading (and possbily swabbing) */
+	   actual reading (and possibly swabbing) */
 	unsigned int status;
 	uint64_t n_use, n_read;
 

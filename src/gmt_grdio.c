@@ -1364,7 +1364,7 @@ int gmtlib_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEAD
 	gmt_grdfloat invalid;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 
-	gmt_M_err_trap (gmt_grd_get_format (GMT, file, header, true));	/* Get format and also parse any +s<scl> +o<offset> +n<nan> modifers */
+	gmt_M_err_trap (gmt_grd_get_format (GMT, file, header, true));	/* Get format and also parse any +s<scl> +o<offset> +n<nan> modifiers */
 	HH = gmt_get_H_hidden (header);
 
 	/* remember scale, offset, and invalid: */

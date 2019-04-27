@@ -14,6 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt kml2gmt** [ *kmlfiles* ]
+[ |-E| ]
 [ |-F|\ **s**\ \|\ **l**\ \|\ **p** ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
@@ -47,6 +48,13 @@ Optional Arguments
 *kmlfiles*
     Name of one or more KML files to work on. If not are given, then
     standard input is read.
+
+.. _-E:
+
+**-E**
+    Get the altitude from the *ExtendData* property; *z* coordinates are then ignored. KML provides
+    more than one mechanism to store information via *ExtendData* but here we only implemented the
+    *<SimpleData name="string">* variation. Implicitly sets **-Z**
 
 .. _-F:
 
