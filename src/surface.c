@@ -232,7 +232,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	bool periodic;			/* true if geographic grid and west-east == 360 */
 	bool constrained;		/* true if set_limit[LO] or set_limit[HI] is true */
 	bool logging;			/* true if -W was specified */
-	double limit[2];		/* Low and hight constrains on range of solution */
+	double limit[2];		/* Low and high constrains on range of solution */
 	double inc[2];			/* Size of each grid cell for current grid factor */
 	double r_inc[2];		/* Reciprocal grid spacings  */
 	double converge_limit;		/* Convergence limit */

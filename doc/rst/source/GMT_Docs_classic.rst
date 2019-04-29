@@ -2465,7 +2465,7 @@ option argument, with commas separating the given attributes, e.g.,
     +------------+---------+------------+--------+
     | thinner    | 0.50p   | fatter     | 6p     |
     +------------+---------+------------+--------+
-    | thin       | 0.75p   | fattest    | 12p    |
+    | thin       | 0.75p   | fattest    | 10p    |
     +------------+---------+------------+--------+
     | thick      | 1.0p    | obese      | 18p    |
     +------------+---------+------------+--------+
@@ -2726,10 +2726,10 @@ attribute list of *size*, *fonttype* and *fill*, each of which is
 optional. The *size* is the font size (usually in points) but **c**,
 **i** or **p** can be added to indicate a specific unit. The *fonttype*
 is the name (case sensitive!) of the font or its equivalent numerical ID
-(e.g., Helvetica-Bold or 1). *fill* specifies the gray shade, color or
+(e.g., Helvetica-Bold or 1). The *fill* specifies the gray shade, color or
 pattern of the text (see section `Specifying area fill attributes`_ above).
 Optionally, you may append **=**\ *pen* to the *fill* value in order to draw a text
-outline. If you want to avoid that the outline partially obscures the text, append
+outline. If you want to avoid that the outline partially obscures the text,
 append **=~**\ *pen* instead; in that case only half the linewidth is plotted
 on the outside of the font only.  If an outline is requested, you may optionally
 skip the text *fill* by setting it to **-**, in which case the full pen width
@@ -3603,7 +3603,7 @@ first, then supply suitable required and optional modifiers:
 #. Give legend dimensions.  You must specify the required legend width, while legend height is optional
    and if not given is computed based on the contents of the legend.  The syntax is therefore
    **+w**\ *width*\ [/*height*] in your desired plot units.  Thus, **+w**\ 12c sets the legend width
-   as 12 cm but the hight will become whatever is needed to contain the information.
+   as 12 cm but the height will become whatever is needed to contain the information.
 
 #. Set line-spacing.  You may optionally specify the line-spacing used for the setting of the legend.  The legend will
    typically consist of several lines that may or may not contain text, but the spacing between
@@ -6094,7 +6094,7 @@ grids using a finite rotation,
 grids based on seamount locations and a set of absolute plate motion
 stage poles (:doc:`grdspotter <supplements/spotter/grdspotter>` does the
 same using a bathymetry grid instead of seamount locations),
-:doc:`originator <supplements/spotter/originator>`, which associates
+:doc:`originater <supplements/spotter/originater>`, which associates
 seamounts with the most likely hotspot origins,
 :doc:`polespotter <supplements/spotter/polespotter>`, which determines
 likely stage pole locations from seafloor fabric, and
@@ -8261,6 +8261,7 @@ latitude (or *y*) values, respectively.  Note that any tests involving $x will n
 the periodicity of longitudes.  Finally, $s can be used to access the current symbol size.
 Note that symbol size internally is converted to inches so any test you write that compares
 the size to a constant should use a constant with the appropriate unit appended (e.g., 2c).
+For text comparison note that case will be considered, so "A" does not equal "a".
 
 Simple conditional test
 ^^^^^^^^^^^^^^^^^^^^^^^

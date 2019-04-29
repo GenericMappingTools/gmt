@@ -316,7 +316,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		}
 		pol = D->table[0];	/* Since it is a single file */
 		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Restrict evaluation to within polygons in file %s\n", Ctrl->F.file);
 	}
 
 	if (Ctrl->E.rot.single) {	/* Got a single rotation, no time, create a rotation table with one entry */

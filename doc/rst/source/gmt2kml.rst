@@ -113,7 +113,7 @@ Optional Arguments
     Control how lines and polygons are rendered in Google Earth.
     Append **+e** to extrude the feature down to ground level [no extrusion].
     Append **+s** to connect points with straight lines (which may intersect
-    the Earth's surface and be invisible) [tesselate onto surface].
+    the Earth's surface and be invisible) [tessellate onto surface].
 
 .. _-F:
 

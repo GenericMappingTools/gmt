@@ -1095,15 +1095,18 @@ GMT_LOCAL char * api_tictoc_string (struct GMTAPI_CTRL *API, unsigned int mode) 
 /*! . */
 GMT_LOCAL unsigned int api_add_existing (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int geometry, unsigned int direction, int *first_ID) {
 	/* In this mode, we find all registrered resources of matching family,geometry,direction that are unused and turn variable selected to true. */
-	unsigned int i, n;
+	unsigned int i, n, this_geo;
 
 	*first_ID = GMT_NOTSET;	/* Not found yet */
 	for (i = n = 0; i < API->n_objects; i++) {
 		if (!API->object[i]) continue;	/* A freed object, skip */
 		if (API->object[i]->direction != (enum GMT_enum_std)direction) continue; /* Wrong direction */
-		if (API->object[i]->geometry  != (enum GMT_enum_geometry)geometry) continue;  /* Wrong geometry */
 		if (API->object[i]->status    != GMT_IS_UNUSED) continue;  /* Already used */
 		if (family != API->object[i]->family) continue;		   /* Wrong data type */
+		//if (API->object[i]->geometry  != (enum GMT_enum_geometry)geometry) continue;  /* Wrong geometry */
+		/* More careful check for geometry that allows the PLP (1+2+4) be match by any of those using logical and */
+		this_geo = (unsigned int)API->object[i]->geometry;
+		if (!(this_geo & geometry)) continue;  /* Wrong geometry */
 		n++;	/* Found one that satisfied requirements */
 		if (*first_ID == GMT_NOTSET) *first_ID = API->object[i]->ID;	/* Get the ID of the first that passed the test */
 		API->object[i]->selected = true;	/* Make this an active object for the coming i/o operation */
@@ -1314,7 +1317,7 @@ GMT_LOCAL char **api_process_keys (void *V_API, const char *string, char type, s
 					/* Full syntax: XYZ+abc...-def...: We do the substitution of output type to Y only if
 					 * 1. -Z is given
 					 * 2. -Z contains ALL the modifiers +a, +b, +c, ...
-					 * 3. -Z contains AT LEAST ONE of the modifers +d, +e, +f.
+					 * 3. -Z contains AT LEAST ONE of the modifiers +d, +e, +f.
 					 */
 					unsigned int kase = 0, count[2] = {0, 0}, given[2] = {0, 0};
 					change_type = false;
@@ -6381,7 +6384,11 @@ GMT_LOCAL int api_end_io_dataset (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET_HIDDEN *DH = NULL;
 	struct GMT_DATATABLE_HIDDEN *TH = NULL;
-	if (D == NULL || D->table == NULL || D->table[0] == NULL) return GMT_NOERROR;	/* Nothing to work on */
+	if (D == NULL) {	/* No output records produced by module; just return an empty dataset with no rows instead of NULL */
+		unsigned int smode = (API->GMT->current.io.record_type[GMT_OUT] & GMT_WRITE_TEXT) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
+		D = gmtlib_create_dataset (API->GMT, 1, 1, 0, 0, S->geometry, smode, true);	/* 1 table, 1 segment; no cols or rows yet */
+		S->resource = D;
+	}
 
 	T = D->table[0];	/* Shorthand to the only table */
 	DH = gmt_get_DD_hidden (D);
@@ -10281,7 +10288,7 @@ struct GMT_RESOURCE *GMT_Encode_Options (void *V_API, const char *module_name, i
 	 *   XYZ+abc...-def...: We do the substitution of output type to Y only if
 	 *      1. -Z is given
 	 *      2. -Z contains ALL the modifiers +a, +b, +c, ...
-	 *      3. -Z contains AT LEAST ONE of the modifers +d, +e, +f.
+	 *      3. -Z contains AT LEAST ONE of the modifiers +d, +e, +f.
 	 *   The Z magic is a bit confusing so here are several examples:
 	 *   1. grdcontour normally writes PostScript but grdcontour -D will instead export data to std (or a file set by -D), so its key
 	 *      contains the entry "DDD": When -D is active then the PostScript key ">X}" morphs into "DD}" and
