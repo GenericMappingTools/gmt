@@ -11,7 +11,7 @@ or [the GitHub repository](https://github.com/GenericMappingTools/gmt/).
 
 This file provides instructions about how to install GMT binary packages in
 different operating systems. Please refer to [Building Instructions](BUILDING.md)
-for compling GMT source package (either stable release or development version).
+for compiling GMT source package (either stable release or development version).
 
 ## Contents
 
@@ -47,7 +47,7 @@ include the supplements. If you need them you will need to
 
 ### RHEL/CentOS/Fedora
 
-GMT binary pacakges are available from Extra Packages for Enterprise Linux.
+GMT binary packages are available from Extra Packages for Enterprise Linux.
 For RHEL and CentOS you can add this repository by telling yum:
 
     sudo yum install epel-release
