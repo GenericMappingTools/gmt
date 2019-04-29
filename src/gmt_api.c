@@ -1095,15 +1095,18 @@ GMT_LOCAL char * api_tictoc_string (struct GMTAPI_CTRL *API, unsigned int mode) 
 /*! . */
 GMT_LOCAL unsigned int api_add_existing (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int geometry, unsigned int direction, int *first_ID) {
 	/* In this mode, we find all registrered resources of matching family,geometry,direction that are unused and turn variable selected to true. */
-	unsigned int i, n;
+	unsigned int i, n, this_geo;
 
 	*first_ID = GMT_NOTSET;	/* Not found yet */
 	for (i = n = 0; i < API->n_objects; i++) {
 		if (!API->object[i]) continue;	/* A freed object, skip */
 		if (API->object[i]->direction != (enum GMT_enum_std)direction) continue; /* Wrong direction */
-		if (API->object[i]->geometry  != (enum GMT_enum_geometry)geometry) continue;  /* Wrong geometry */
 		if (API->object[i]->status    != GMT_IS_UNUSED) continue;  /* Already used */
 		if (family != API->object[i]->family) continue;		   /* Wrong data type */
+		//if (API->object[i]->geometry  != (enum GMT_enum_geometry)geometry) continue;  /* Wrong geometry */
+		/* More careful check for geometry that allows the PLP (1+2+4) be match by any of those using logical and */
+		this_geo = (unsigned int)API->object[i]->geometry;
+		if (!(this_geo & geometry)) continue;  /* Wrong geometry */
 		n++;	/* Found one that satisfied requirements */
 		if (*first_ID == GMT_NOTSET) *first_ID = API->object[i]->ID;	/* Get the ID of the first that passed the test */
 		API->object[i]->selected = true;	/* Make this an active object for the coming i/o operation */
