@@ -2465,7 +2465,7 @@ option argument, with commas separating the given attributes, e.g.,
     +------------+---------+------------+--------+
     | thinner    | 0.50p   | fatter     | 6p     |
     +------------+---------+------------+--------+
-    | thin       | 0.75p   | fattest    | 12p    |
+    | thin       | 0.75p   | fattest    | 10p    |
     +------------+---------+------------+--------+
     | thick      | 1.0p    | obese      | 18p    |
     +------------+---------+------------+--------+
@@ -6094,7 +6094,7 @@ grids using a finite rotation,
 grids based on seamount locations and a set of absolute plate motion
 stage poles (:doc:`grdspotter <supplements/spotter/grdspotter>` does the
 same using a bathymetry grid instead of seamount locations),
-:doc:`originator <supplements/spotter/originator>`, which associates
+:doc:`originater <supplements/spotter/originater>`, which associates
 seamounts with the most likely hotspot origins,
 :doc:`polespotter <supplements/spotter/polespotter>`, which determines
 likely stage pole locations from seafloor fabric, and
