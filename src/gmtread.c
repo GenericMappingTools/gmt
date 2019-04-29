@@ -30,7 +30,7 @@
 #define THIS_MODULE_PURPOSE	"Read GMT objects into external API"
 #define THIS_MODULE_KEYS	"-T-,<?{,>?}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "->RVbfi"
+#define THIS_MODULE_OPTIONS "->RVbfih"
 
 /* Control structure for read */
 

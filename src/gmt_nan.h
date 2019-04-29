@@ -18,7 +18,7 @@
  * Machine-dependent macros for generation and testing of NaNs.
  *
  * These routines use the IEEE definition of Silent NaNs to set NaNs and
- * use the avialable isnan* routines to test NaNs whenever available.
+ * use the available isnan* routines to test NaNs whenever available.
  *
  * Notes:
  *    If your system has no IEEE support, add -DNO_IEEE to CFLAGS

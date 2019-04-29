@@ -271,7 +271,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		}
 		gmt_reenable_bhi_opts (GMT);	/* Recover settings provided by user (if -b -h -i were used at all) */
 		pol = D->table[0];	/* Since it is a single file */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Restrict evaluation to within polygons in file %s\n", Ctrl->F.file);
 		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
 	}
 

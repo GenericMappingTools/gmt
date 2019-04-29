@@ -90,7 +90,7 @@ struct GMT2KML_CTRL {
 	struct E {	/* -E[+e][+s] */
 		bool active;
 		bool extrude;
-		bool tesselate;
+		bool tessellate;
 	} E;
 	struct F {	/* -F */
 		bool active;
@@ -165,7 +165,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	C->A.mode = KML_GROUND;
 	C->A.scale = 1.0;
-	C->E.tesselate = true;	/* This is the default, use -E+s to turn that off (turned off for symbols later) */
+	C->E.tessellate = true;	/* This is the default, use -E+s to turn that off (turned off for symbols later) */
 	C->F.mode = POINT;
 	C->F.geometry = GMT_IS_POINT;
 	gmt_init_fill (GMT, &C->G.fill[F_ID], 1.0, 192.0 / 255.0, 128.0 / 255.0);	/* Default fill color */
@@ -222,7 +222,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-D File with HTML snippets to use for data description [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Control parameters of lines and polygons:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +e to extend feature down to the ground [no extrusion].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to connect points with straight lines [tesselate onto surface].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to connect points with straight lines [tessellate onto surface].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Feature type; choose from (e)vent, (s)ymbol, (t)imespan, (l)ine, (p)olygon, or (w)iggle [s].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   All features expect lon, lat in the first two columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Value or altitude is given in the third column (see -A and -C).\n");
@@ -353,9 +353,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				break;
 			case 'E':	/* Extrude feature down to the ground */
 			 	Ctrl->E.active = true;
-				if (strstr (opt->arg, "+s"))	/* Straight lines, turn off tesselation */
-				 	Ctrl->E.tesselate = false;
-				if (strstr (opt->arg, "+e"))	/* Straight lines, turn off tesselation */
+				if (strstr (opt->arg, "+s"))	/* Straight lines, turn off tessellation */
+				 	Ctrl->E.tessellate = false;
+				if (strstr (opt->arg, "+e"))	/* Straight lines, turn off tessellation */
 				 	Ctrl->E.extrude = true;
 				else if (opt->arg[0] == '\0')	/* Old syntax -E means -E+e */
 				 	Ctrl->E.extrude = true;
@@ -871,7 +871,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	if (Ctrl->F.mode == WIGGLE) n_coord = 3;	/* But here we need exactly 3 */
 	get_z = (Ctrl->C.active || Ctrl->A.get_alt);
 	if (get_z && Ctrl->F.mode < LINE) n_coord++;
-	if (Ctrl->F.mode < LINE) Ctrl->E.tesselate = false;	/* No tesselation for symbols */
+	if (Ctrl->F.mode < LINE) Ctrl->E.tessellate = false;	/* No tessellation for symbols */
 	
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, Ctrl->F.geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
@@ -1115,7 +1115,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					kml_print (API, Out, N, "<description>%s</description>", description);
 				kml_print (API, Out, N, "<styleUrl>#st-%d-%d</styleUrl>", process_id, index + 4); /* +4 to make style ID  >= 0 */
 				kml_print (API, Out, N++, "<%s>", feature[Ctrl->F.mode]);
-				print_altmode (API, Out, Ctrl->E.extrude, Ctrl->E.tesselate, Ctrl->A.mode, N);
+				print_altmode (API, Out, Ctrl->E.extrude, Ctrl->E.tessellate, Ctrl->A.mode, N);
 				if (Ctrl->F.mode == POLYGON) {
 					kml_print (API, Out, N++, "<outerBoundaryIs>");
 					kml_print (API, Out, N++, "<LinearRing>");
@@ -1260,7 +1260,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						}
 						kml_print (API, Out, N, "<styleUrl>#st-%d-%d</styleUrl>", process_id, index + 4); /* +4 to make index a positive integer */
 						kml_print (API, Out, N++, "<%s>", feature[Ctrl->F.mode]);
-						print_altmode (API, Out, Ctrl->E.extrude, Ctrl->E.tesselate, Ctrl->A.mode, N);
+						print_altmode (API, Out, Ctrl->E.extrude, Ctrl->E.tessellate, Ctrl->A.mode, N);
 						kml_print (API, Out, N, "<coordinates>");
 						ascii_output_three (API, Out, out, N);
 						kml_print (API, Out, N, "</coordinates>");

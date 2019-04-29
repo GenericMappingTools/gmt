@@ -156,7 +156,7 @@ Optional Arguments
     (i.e., the local lows and highs). If no *labels* is appended we use -
     and + as the labels. Appending exactly two characters, e.g., **+l**\ *LH*,
     will plot the two characters (here, L and H) as labels. For more elaborate
-    labels, separate the low and hight label strings with a comma (e.g.,
+    labels, separate the low and high label strings with a comma (e.g.,
     **+l**\ *lo*,\ *hi*). If a file is given by **-C** and **-T** is set,
     then only contours marked with upper case C or A will have tick marks
     [and annotations].

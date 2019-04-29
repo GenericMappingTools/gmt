@@ -241,7 +241,7 @@ GMT_LOCAL int found_a_near_segment (struct LINK *S, uint64_t id, int order, doub
 	if (S[S[id].buddy[order].id].used) return (false);		/* Segment has been used already */
 	if (S[id].buddy[order].dist > cutoff) return (false);		/* Exceeds minimum gap */
 	if (!nn_check) return (true);					/* No other requirement specified, so done */
-	if (S[id].buddy[order].next_dist > sdist) return (true);	/* Next nearest neighboor is far enough away */
+	if (S[id].buddy[order].next_dist > sdist) return (true);	/* Next nearest neighbour is far enough away */
 	return (false);							/* Failed all tests */
 }
 

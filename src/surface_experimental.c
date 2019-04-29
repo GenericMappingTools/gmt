@@ -276,7 +276,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 #ifdef PARALLEL_MODE
 	gmt_grdfloat *alternate_grid;		/* Used in iterate when we cannot write to the same grid across all threads */
 #endif
-	double limit[2];		/* Low and hight constrains on range of solution */
+	double limit[2];		/* Low and high constrains on range of solution */
 	double inc[2];			/* Size of each grid cell for current grid factor */
 	double r_inc[2];		/* Reciprocal grid spacings  */
 	double converge_limit;		/* Convergence limit */
