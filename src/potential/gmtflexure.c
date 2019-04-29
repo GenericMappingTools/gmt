@@ -975,7 +975,7 @@ GMT_LOCAL int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, d
  *	d2/dr2 (Dr * d2/dr2 w(r)) + k * w(r) = p (r)
  * BC's at r = Inf are w(r) = w'(r) = 0
  *
- * Finite difference equation taken from J. Bodine's Techincal Report.
+ * Finite difference equation taken from J. Bodine's Technical Report.
  * The deflections are solved by forward/backward substitution to solve
  * the 5-diagonal matrix problem A*w = p using a LU-transformation (lu_solver)
  * The parameters passed are:

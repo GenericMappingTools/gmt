@@ -2936,7 +2936,7 @@ static int psl_bitimage_cmap (struct PSL_CTRL *PSL, double f_rgb[], double b_rgb
 
 	PSL_command (PSL, " [/Indexed /Device");
 	if (b_rgb[0] < 0.0) {
-		/* Backgound is transparent */
+		/* Background is transparent */
 		polarity = 0;
 		if (PSL_is_gray (f_rgb))
 			PSL_command (PSL, "Gray 0 <%02X>", PSL_u255(f_rgb[0]));
