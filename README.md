@@ -36,13 +36,6 @@ social and biological sciences, and by geographers, fisheries institutes, oil
 companies, a wide range of government agencies, and last but not least innumerable
 hobbyists.
 
-![Map of GMT downloads](http://gmt.soest.hawaii.edu/gmt/map_geoip_all.png)
-
-The map above illustrates the spreading of the current GMT release around the world
-based on web traffic. Each colored circle in the map above represents a 15x15 arc
-minute block with one or more users who downloaded GMT since the last release. Download geolocation is based
-on [MaxMind's](http://www.maxmind.com/) freely available GeoLite data.
-
 ## A reminder
 
 If you think it is appropriate, you may consider paying us back by including
