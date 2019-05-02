@@ -108,6 +108,8 @@ Optional Arguments
 
 **-E**\ *resolution*
     Set raster resolution in dpi [default = 720 for PDF, 300 for others].
+    Note: GhostScript limits the final width and height pixel dimensions
+    of a raster to be less than or equal to 65536.
 
 .. _-F:
 
