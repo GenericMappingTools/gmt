@@ -134,7 +134,16 @@ You can use the [conda package manager](https://conda.io/) that comes with the
 
 ## Windows
 
+### Standalone Installer
+
 We provide 32 and 64 bit standalone installers (e.g., gmt-5.x.x-win32.exe)
 in the [downloads section](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Download).
 If you need the newest development version refer to the instructions for
 [building GMT from source](BUILDING.md).
+
+### Install via conda
+
+You can use the [conda package manager](https://conda.io/) that comes with the
+[Anaconda Python Distribution](https://www.anaconda.com/distribution/) to install GMT:
+
+    conda install gmt --channel conda-forge
