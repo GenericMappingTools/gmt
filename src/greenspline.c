@@ -1564,7 +1564,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			else if (in[GMT_X] > Ctrl->R3.range[XHI] && (in[GMT_X] - 360.0) > Ctrl->R3.range[XLO]) in[GMT_X] -= 360.0;
 		}
 
-		X[n] = gmt_M_memory (GMT, NULL, n_cols, double);	/* Allocate space for this constraint */
+		if (X[n] == NULL) X[n] = gmt_M_memory (GMT, NULL, n_cols, double);	/* Allocate space for this constraint */
 		for (k = 0; k < dimension; k++) X[n][k] = in[k];	/* Get coordinates + optional weights (if -W) */
 		/* Check for duplicates */
 		skip = false;
@@ -1572,7 +1572,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			r = get_radius (GMT, X[i], X[n], dimension);
 			if (gmt_M_is_zero (r)) {	/* Duplicates will give zero point separation */
 				if (doubleAlmostEqualZero (in[dimension], obs[i])) {
-					GMT_Report (API, GMT_MSG_NORMAL,
+					GMT_Report (API, GMT_MSG_VERBOSE,
 					            "Data constraint %" PRIu64 " is identical to %" PRIu64 " and will be skipped\n", n_read, i);
 					skip = true;
 					n_skip++;
@@ -1755,7 +1755,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 							n_skip++;
 						}
 						else {
-							GMT_Report (API, GMT_MSG_VERBOSE, "Slope constraint %" PRIu64 " and %" PRIu64
+							GMT_Report (API, GMT_MSG_NORMAL, "Slope constraint %" PRIu64 " and %" PRIu64
 							            " occupy the same location but differ in observation (%.12g vs %.12g)\n", n_read, i-n, obs[p], obs[i]);
 							n_duplicates++;
 						}
