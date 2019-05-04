@@ -26,6 +26,8 @@ for compiling GMT source package (either stable release or development version).
   * [Install via Homebrew](#install-via-homebrew)
   * [Install via conda](#install-via-conda-1)
 - [Windows](#windows)
+  * [Standalone Installer](#standalone-installer-1)
+  * [Install via conda](#install-via-conda-2)
 
 ## Linux
 
