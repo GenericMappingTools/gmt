@@ -152,6 +152,7 @@ EXTERN_MSC bool gmt_file_is_srtmtile (struct GMTAPI_CTRL *API, const char *file,
 
 /* gmt_grdio.c: */
 
+EXTERN_MSC int gmt_img_sanitycheck (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
 EXTERN_MSC void gmt_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size);
 EXTERN_MSC int gmt_raster_type (struct GMT_CTRL *GMT, char *file);
 EXTERN_MSC void gmt_copy_gridheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *to, struct GMT_GRID_HEADER *from);
