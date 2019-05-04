@@ -724,7 +724,7 @@ static int psl_ip (struct PSL_CTRL *PSL, double p) {
 	return ((int)lrint (p * PSL->internal.dpp));
 }
 
-static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
+static int psl_shorten_path_new (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
 	/* Simplifies the (x,y) array by converting it to pixel coordinates (ix,iy)
 	 * and eliminating repeating points and intermediate points along straight
 	 * line segments.  The result is the fewest points needed to draw the path
@@ -732,13 +732,7 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 	 * no shortening. */
 
 	int i, k, dx, dy;
-#ifdef OLD_shorten_path
-	int old_dir = 0, new_dir;
-	double old_slope = -DBL_MAX, new_slope;
-	/* These seeds for old_slope and old_dir make sure that first point gets saved */
-#else
 	int d, db, bx, by, j, ij;
-#endif
 
 	if (n < 2) return (n);	/* Not a path to start with */
 
@@ -748,36 +742,6 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 	}
 	if (mode == 1) return (n);
 
-#ifdef OLD_shorten_path
-	/* The only truly unique point is the starting point; all else must show increments
-	 * relative to the previous point */
-
-	/* First point is the anchor. We will find at least one point, unless all points are the same */
-	for (i = k = 0; i < n - 1; i++) {
-		dx = ix[i+1] - ix[i];
-		dy = iy[i+1] - iy[i];
-		if (dx == 0 && dy == 0) continue;	/* Skip duplicates */
-		new_slope = (dx == 0) ? copysign (DBL_MAX, (double)dy) : ((double)dy) / ((double)dx);
-		new_dir = (dx >= 0) ? 1 : -1;
-		if (new_slope != old_slope || new_dir != old_dir) {
-			ix[k] = ix[i];
-			iy[k] = iy[i];
-			k++;
-			old_slope = new_slope;
-			old_dir = new_dir;
-		}
-	}
-
-	/* If all points are the same, we get here with k = 0, so we can exit here now with 1 point */
-	if (k < 1) return (1);
-
-	/* Last point (k cannot be < 1 so k-1 >= 0) */
-	if (ix[k-1] != ix[n-1] || iy[k-1] != iy[n-1]) {	/* Do not do slope check on last point since we must end there */
-		ix[k] = ix[n-1];
-		iy[k] = iy[n-1];
-		k++;
-	}
-#else
 	/* Skip intermediate points that are "close" to the line between point i and point j, where
 	   "close" is defined as less than 1 "dot" (the PostScript resolution) in either direction.
 	   A point is always close when it coincides with one of the end points (i or j).
@@ -828,9 +792,68 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 		iy[k] = iy[n-1];
 	}
 	k++;
-#endif
 
 	return (k);
+}
+
+static int psl_shorten_path_old (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
+	/* Simplifies the (x,y) array by converting it to pixel coordinates (ix,iy)
+	 * and eliminating repeating points and intermediate points along straight
+	 * line segments.  The result is the fewest points needed to draw the path
+	 * and still look exactly like the original path.  However, if mode == 1 we do
+	 * no shortening. */
+
+	int i, k, dx, dy;
+	int old_dir = 0, new_dir;
+	double old_slope = -DBL_MAX, new_slope;
+	/* These seeds for old_slope and old_dir make sure that first point gets saved */
+
+	if (n < 2) return (n);	/* Not a path to start with */
+
+	for (i = 0; i < n; i++) {	/* Convert all coordinates to integers at current scale */
+		ix[i] = psl_ix (PSL, x[i]);
+		iy[i] = psl_iy (PSL, y[i]);
+	}
+	if (mode == 1) return (n);
+
+	/* The only truly unique point is the starting point; all else must show increments
+	 * relative to the previous point */
+
+	/* First point is the anchor. We will find at least one point, unless all points are the same */
+	for (i = k = 0; i < n - 1; i++) {
+		dx = ix[i+1] - ix[i];
+		dy = iy[i+1] - iy[i];
+		if (dx == 0 && dy == 0) continue;	/* Skip duplicates */
+		new_slope = (dx == 0) ? copysign (DBL_MAX, (double)dy) : ((double)dy) / ((double)dx);
+		new_dir = (dx >= 0) ? 1 : -1;
+		if (new_slope != old_slope || new_dir != old_dir) {
+			ix[k] = ix[i];
+			iy[k] = iy[i];
+			k++;
+			old_slope = new_slope;
+			old_dir = new_dir;
+		}
+	}
+
+	/* If all points are the same, we get here with k = 0, so we can exit here now with 1 point */
+	if (k < 1) return (1);
+
+	/* Last point (k cannot be < 1 so k-1 >= 0) */
+	if (ix[k-1] != ix[n-1] || iy[k-1] != iy[n-1]) {	/* Do not do slope check on last point since we must end there */
+		ix[k] = ix[n-1];
+		iy[k] = iy[n-1];
+		k++;
+	}
+
+	return (k);
+}
+
+#define N_LENGTH_THRESHOLD 100000000
+static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
+	if (n > N_LENGTH_THRESHOLD)
+		return psl_shorten_path_old (PSL, x, y, n, ix, iy, mode);
+	else
+		return psl_shorten_path_new (PSL, x, y, n, ix, iy, mode);
 }
 
 static int psl_forcelinewidth (struct PSL_CTRL *PSL, double linewidth) {
