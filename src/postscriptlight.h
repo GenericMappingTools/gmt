@@ -417,6 +417,7 @@ EXTERN_MSC int PSL_setmiterlimit (struct PSL_CTRL *PSL, int limit);
 EXTERN_MSC int PSL_setorigin (struct PSL_CTRL *PSL, double x, double y, double angle, int mode);
 EXTERN_MSC int PSL_setparagraph (struct PSL_CTRL *PSL, double line_space, double par_width, int par_just);
 EXTERN_MSC int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int image_dpi, double f_rgb[], double b_rgb[]);
+EXTERN_MSC int PSL_settransparency (struct PSL_CTRL *PSL, double transparency);
 EXTERN_MSC int PSL_settransparencymode (struct PSL_CTRL *PSL, const char *mode);
 EXTERN_MSC int PSL_definteger (struct PSL_CTRL *PSL, const char *param, int value);
 EXTERN_MSC int PSL_defpen (struct PSL_CTRL *PSL, const char *param, double width, char *style, double offset, double rgb[]);

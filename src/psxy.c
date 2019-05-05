@@ -387,7 +387,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	else
 		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, \
-		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -827,7 +827,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true;
 	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
 	unsigned int n_needed, n_cols_start = 2, justify, tbl;
-	unsigned int n_total_read = 0, j, geometry, icol;
+	unsigned int n_total_read = 0, j, geometry, icol, tcol;
 	unsigned int bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR;
@@ -961,6 +961,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	if (Ctrl->I.mode) {
 		n_needed++;	/* Read intensity from data file */
 		icol = n_needed - 1;
+		gmt_set_column (GMT, GMT_IN, icol, GMT_IS_FLOAT);
+	}
+	if (GMT->common.t.variable) {
+		n_needed++;	/* Read transparency from data file */
+		tcol = n_needed - 1;
+		gmt_set_column (GMT, GMT_IN, tcol, GMT_IS_FLOAT);
 	}
 	if (gmt_check_binary_io (GMT, n_needed))
 		Return (GMT_RUNTIME_ERROR);
@@ -1202,8 +1208,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						gmt_illuminate (GMT, in[icol], current_fill.rgb);
 				}
 			}
-			else if (Ctrl->I.mode == 1)
+			else if (Ctrl->I.mode == 1) {	/* Must reset current file and then apply illumination */ 
+				current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 				gmt_illuminate (GMT, in[icol], current_fill.rgb);
+			}
 
 			if (!Ctrl->N.active && S.symbol != GMT_SYMBOL_BARX && S.symbol != GMT_SYMBOL_BARY) {
 				/* Skip points outside map */
@@ -1216,6 +1224,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						continue;
 				}
 			}
+				
 			if (QR_symbol) {
 				if (Ctrl->G.active)	/* Change color of QR code */
 					PSL_command (PSL, "/QR_fill {%s} def\n", PSL_makecolor (PSL, current_fill.rgb));
@@ -1241,6 +1250,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Data point with y = NaN near line %d\n", n_total_read);
 				continue;
 			}
+			if (GMT->common.t.variable)	/* Update the transparency for current symbol (or -t was given) */
+				PSL_settransparency (PSL, 0.01 * in[tcol]);
 
 			if (Ctrl->E.active) {
 				if (Ctrl->E.mode) gmt_M_rgb_copy (Ctrl->E.pen.rgb, current_fill.rgb);

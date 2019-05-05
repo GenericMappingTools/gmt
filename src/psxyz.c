@@ -102,7 +102,7 @@ enum Psxyz_cliptype {
 struct PSXYZ_DATA {
 	int symbol, outline;
 	unsigned int flag;	/* 1 = convert azimuth, 2 = use geo-functions, 4 = x-base in units, 8 y-base in units */
-	double x, y, z, dim[PSL_MAX_DIMS], dist[2];
+	double x, y, z, dim[PSL_MAX_DIMS], dist[2], transparency;
 	double *zz;	/* For column symbol if +z<n> in effect */
 	struct GMT_FILL f;
 	struct GMT_PEN p, h;
@@ -146,7 +146,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	else
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>[<unit>]][/size_y]]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", GMT_P_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -534,7 +534,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	bool polygon, penset_OK = true, not_line, old_is_world;
 	bool get_rgb = false, read_symbol, clip_set = false, fill_active, rgb_from_z = false, QR_symbol = false;
 	bool default_outline, outline_active, save_u = false, geovector = false, can_update_headpen = true;
-	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol;
+	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol, tcol;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
 	unsigned int col, bcol, ex1, ex2, ex3, change, n_needed, n_z = 0;
 	int error = GMT_NOERROR;
@@ -641,18 +641,24 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	}
 	else
 		n_needed = n_cols_start + S.n_required;
+	if (not_line) {
+		for (j = n_cols_start; j < 7; j++) gmt_set_column (GMT, GMT_IN, j, GMT_IS_DIMENSION);	/* Since these may have units appended */
+		for (j = 0; j < S.n_nondim; j++) gmt_set_column (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles or km, not dimensions */
+	}
 	if (Ctrl->I.mode) {
 		n_needed++;	/* Read intensity from data file */
 		icol = n_needed - 1;
+		gmt_set_column (GMT, GMT_IN, icol, GMT_IS_FLOAT);
+	}
+	if (GMT->common.t.variable) {
+		n_needed++;	/* Read transparency from data file */
+		tcol = n_needed - 1;
+		gmt_set_column (GMT, GMT_IN, tcol, GMT_IS_FLOAT);
 	}
 	
 	if (gmt_check_binary_io (GMT, n_needed))
 		Return (GMT_RUNTIME_ERROR);
 
-	if (not_line) {
-		for (j = n_cols_start; j < 7; j++) gmt_set_column (GMT, GMT_IN, j, GMT_IS_DIMENSION);	/* Since these may have units appended */
-		for (j = 0; j < S.n_nondim; j++) gmt_set_column (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles or km, not dimensions */
-	}
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (gmt_contlabel_prep (GMT, &S.G, NULL))
 			Return (GMT_RUNTIME_ERROR);
@@ -918,8 +924,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						gmt_illuminate (GMT, in[icol], current_fill.rgb);
 				}
 			}
-			else if (Ctrl->I.mode == 1)
+			else if (Ctrl->I.mode == 1) {	/* Must reset current file and then apply illumination */ 
+				current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 				gmt_illuminate (GMT, in[icol], current_fill.rgb);
+			}
 
 			if (QR_symbol) {
 				if (Ctrl->G.active)	/* Change color of QR code */
@@ -1001,6 +1009,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			data[n].p = current_pen;
 			data[n].h = last_headpen;
 			data[n].outline = outline_active;
+			if (GMT->common.t.variable) data[n].transparency = 0.01 * in[tcol];	/* Specific transparency for current symbol if -t was given */
 			data[n].string = NULL;
 			/* Next two are for sorting:
 			   dist[0] is layer "height": objects closer to the viewer have higher numbers
@@ -1263,7 +1272,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				else
 					PSL_command (PSL, "/QR_outline false def\n");
 			}
-
+			if (GMT->common.t.variable)	/* Update the transparency for current symbol */
+				PSL_settransparency (PSL, data[i].transparency);
 
 			/* For global periodic maps, symbols plotted close to a periodic boundary may be clipped and should appear
 			 * at the other periodic boundary.  We try to handle this below */
