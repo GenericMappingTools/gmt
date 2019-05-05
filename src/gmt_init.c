@@ -6486,6 +6486,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 't':	/* -t layer transparency option  */
 
 			gmt_message (GMT, "\t-t Set the layer PDF transparency from 0-100 [Default is 0; opaque].\n");
+			gmt_message (GMT, "\t   For plotting symbols with variable transparency, give no value.\n");
 			break;
 
 		case ':':	/* lon/lat [x/y] or lat/lon [y/x] */
@@ -14390,6 +14391,9 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					error++;
 				}
 				GMT->common.t.active = true;
+			}
+			else if (!strncmp (GMT->init.module_name, "psxy", 4U)) {	/* Both psxy or psxyz can do variable transparency */
+				GMT->common.t.active = GMT->common.t.variable = true;
 			}
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -t was not given any value (please add transparency in (0-100]0%% range)!\n");

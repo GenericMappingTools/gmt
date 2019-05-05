@@ -40,56 +40,58 @@
  * List of API functions:
  *
  * PSL_beginaxes
- * PSL_beginclipping	: Clips plot outside the specified polygon
- * PSL_beginlayer	: Place begin object group DSC comment.
- * PSL_beginplot	: Initialize parameters for a new plot.
- * PSL_beginsession	: Creates a new PSL session
- * PSL_copy		: Writes the given string as is to the PS output
- * PSL_endaxes		: Turns off mapping of user coordinates to PS units
- * PSL_endclipping	: Restores previous clipping path
- * PSL_endlayer		: Place end object group DSC comment.
- * PSL_endplot		: Close plotfile
- * PSL_endsession	: Terminates the PSL session
- * PSL_getplot		: Return string with entire PS code
- * PSL_plotarc		: Plots a circular arc
- * PSL_plotaxis		: Plots an axis with tickmarks and annotation/label
- * PSL_plotbitimage	: Plots a 1-bit image or imagemask
- * PSL_plotcolorimage	: Plots a 24-bit 2-D image using the colorimage operator
- * PSL_plotepsimage	: Inserts EPS image
- * PSL_plotline		: Plots a line
- * PSL_plotparagraph	: Plots a text paragraph
- * PSL_plotparagraphbox	: Plots a box beneath a text paragraph
- * PSL_plotpoint	: Absolute or relative move to new position (pen up or down)
- * PSL_plotpolygon	: Creates a polygon and optionally fills it
- * PSL_plotsegment	: Plots a 2-point straight line segment
- * PSL_plotsymbol	: Plots a geometric symbol and [optionally] fills it
- * PSL_plottext		: Plots textstring
- * PSL_plottextbox	: Draw a filled box around a textstring
- * PSL_plottextline	: Place labels along paths (straight or curved), set clip path, draw line
- * PSL_loadeps		: Read EPS file into string
- * PSL_command		: Writes a given PostScript statement to the plot file
- * PSL_comment		: Writes a comment statement to the plot file
- * PSL_makecolor	: Returns string with PostScript command to set a new color
- * PSL_makepen		: Returns string with PostScript command to set a new pen
- * PSL_setcolor		: Sets the pen color or pattern
- * PSL_setdefaults	: Change several PSL session default values
- * PSL_setdash		: Specify pattern for dashed line
- * PSL_setfill		: Sets the fill color or pattern
- * PSL_setfont		: Changes current font and possibly reencodes it to current encoding
- * PSL_setformat	: Changes # of decimals used in color and gray specs [3]
- * PSL_setlinecap	: Changes the line cap setting
- * PSL_setlinejoin	: Changes the line join setting
- * PSL_setlinewidth	: Sets a new linewidth
- * PSL_setmiterlimit	: Changes the miter limit setting for joins
- * PSL_setimage		: Sets up a image pattern fill in PS
- * PSL_setorigin	: Translates/rotates the coordinate system
- * PSL_setparagraph	: Sets parameters used to typeset text paragraphs
- * PSL_defpen		: Encodes a pen with attributes by name in the PS output
- * PSL_definteger	: Encodes an integer by name in the PS output
- * PSL_defpoints	: Encodes a pointsize by name in the PS output
- * PSL_defcolor		: Encodes a rgb color by name in the PS output
- * PSL_deftextdim	: Sets variables for text height and width in the PS output
- * PSL_defunits:	: Encodes a dimension by name in the PS output
+ * PSL_beginclipping	   : Clips plot outside the specified polygon
+ * PSL_beginlayer	   : Place begin object group DSC comment.
+ * PSL_beginplot	   : Initialize parameters for a new plot.
+ * PSL_beginsession	   : Creates a new PSL session
+ * PSL_copy		   : Writes the given string as is to the PS output
+ * PSL_endaxes		   : Turns off mapping of user coordinates to PS units
+ * PSL_endclipping	   : Restores previous clipping path
+ * PSL_endlayer		   : Place end object group DSC comment.
+ * PSL_endplot		   : Close plotfile
+ * PSL_endsession	   : Terminates the PSL session
+ * PSL_getplot		   : Return string with entire PS code
+ * PSL_plotarc		   : Plots a circular arc
+ * PSL_plotaxis		   : Plots an axis with tickmarks and annotation/label
+ * PSL_plotbitimage	   : Plots a 1-bit image or imagemask
+ * PSL_plotcolorimage	   : Plots a 24-bit 2-D image using the colorimage operator
+ * PSL_plotepsimage	   : Inserts EPS image
+ * PSL_plotline		   : Plots a line
+ * PSL_plotparagraph	   : Plots a text paragraph
+ * PSL_plotparagraphbox	   : Plots a box beneath a text paragraph
+ * PSL_plotpoint	   : Absolute or relative move to new position (pen up or down)
+ * PSL_plotpolygon	   : Creates a polygon and optionally fills it
+ * PSL_plotsegment	   : Plots a 2-point straight line segment
+ * PSL_plotsymbol	   : Plots a geometric symbol and [optionally] fills it
+ * PSL_plottext		   : Plots textstring
+ * PSL_plottextbox	   : Draw a filled box around a textstring
+ * PSL_plottextline	   : Place labels along paths (straight or curved), set clip path, draw line
+ * PSL_loadeps		   : Read EPS file into string
+ * PSL_command		   : Writes a given PostScript statement to the plot file
+ * PSL_comment		   : Writes a comment statement to the plot file
+ * PSL_makecolor	   : Returns string with PostScript command to set a new color
+ * PSL_makepen		   : Returns string with PostScript command to set a new pen
+ * PSL_setcolor		   : Sets the pen color or pattern
+ * PSL_setdefaults	   : Change several PSL session default values
+ * PSL_setdash		   : Specify pattern for dashed line
+ * PSL_setfill		   : Sets the fill color or pattern
+ * PSL_setfont		   : Changes current font and possibly reencodes it to current encoding
+ * PSL_setformat	   : Changes # of decimals used in color and gray specs [3]
+ * PSL_setlinecap	   : Changes the line cap setting
+ * PSL_setlinejoin	   : Changes the line join setting
+ * PSL_setlinewidth	   : Sets a new linewidth
+ * PSL_setmiterlimit	   : Changes the miter limit setting for joins
+ * PSL_setimage		   : Sets up a image pattern fill in PS
+ * PSL_setorigin	   : Translates/rotates the coordinate system
+ * PSL_setparagraph	   : Sets parameters used to typeset text paragraphs
+ * PSL_settransparencymode : Set a new mode for how transparency is understoody
+ * PSL_settransparency     : Set a new transparency
+ * PSL_defpen		   : Encodes a pen with attributes by name in the PS output
+ * PSL_definteger	   : Encodes an integer by name in the PS output
+ * PSL_defpoints	   : Encodes a pointsize by name in the PS output
+ * PSL_defcolor		   : Encodes a rgb color by name in the PS output
+ * PSL_deftextdim	   : Sets variables for text height and width in the PS output
+ * PSL_defunits:	   : Encodes a dimension by name in the PS output
  *
  * For information about usage, syntax etc, see the postscriptlight documentation
  *
@@ -3783,6 +3785,15 @@ int PSL_plotsegment (struct PSL_CTRL *PSL, double x0, double y0, double x1, doub
 	PSL->internal.ix = psl_ix (PSL, x1);
 	PSL->internal.iy = psl_iy (PSL, y1);
 	PSL_command (PSL, "N %d %d M %d %d D S\n", ix, iy, PSL->internal.ix - ix, PSL->internal.iy - iy);
+	return (PSL_NO_ERROR);
+}
+
+int PSL_settransparency (struct PSL_CTRL *PSL, double transparency) {
+	/* Updates the current PDF transparency only */
+	if (transparency < 0.0 || transparency > 1.0)
+		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Bad transparency value [%g] - ignored\n", transparency);
+	else
+		PSL_command (PSL, "%g /%s PSL_transp\n", 1.0 - transparency, PSL->current.transparency_mode);
 	return (PSL_NO_ERROR);
 }
 

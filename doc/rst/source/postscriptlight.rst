@@ -439,6 +439,11 @@ affect the current state of parameters such as line and fill attributes.
     are interpreted as the cutoff acute angle (in degrees) when mitering
     becomes active.
 
+**long PSL_settransparency** (**struct PSL_CTRL** *\*P*, **double**
+*\*transparency*)
+
+    Changes the current PDF transparency value.
+
 **long PSL_settransparencymode** (**struct PSL_CTRL** *\*P*, **char**
 *\*mode*)
 
