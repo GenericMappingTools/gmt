@@ -63,8 +63,9 @@ struct PSXY_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct PSXY_I {	/* -I<intensity> */
+	struct PSXY_I {	/* -I[<intensity>] */
 		bool active;
+		unsigned int mode;	/* 0 if constant, 1 if read from file (symbols only) */
 		double value;
 	} I;
 	struct PSXY_L {	/* -L[+xl|r|x0][+yb|t|y0][+e|E][+p<pen>] */
@@ -380,7 +381,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A[m|p|x|y]]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][+a][+c[l|f]][+n][+p<pen>][+w<width>]] [-F<arg>] [-G<fill>]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intens>] %s[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s%s\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I[<intens>]] %s[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s%s\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>[unit]]] [-T] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	else
@@ -418,6 +419,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_fill_syntax (API->GMT, 'G', "Specify color or pattern [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -G option can be present in all segment headers (not with -S).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no intensity is given we expect it to follow symbol size in the data record.\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Force closed polygons.  Alternatively, append modifiers to build polygon from a line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to build symmetrical envelope around y(x) using deviations dy(x) from col 3.\n");
@@ -703,8 +705,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'I':	/* Adjust symbol color via intensity */
-				Ctrl->I.value = atof (opt->arg);
 				Ctrl->I.active = true;
+				if (opt->arg[0])
+					Ctrl->I.value = atof (opt->arg);
+				else
+					Ctrl->I.mode = 1;
 				break;
 			case 'L':		/* Close line segments */
 				Ctrl->L.active = true;
@@ -797,6 +802,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.cptmode && !Ctrl->C.active, "Syntax error: -W modifier +c requires the -C option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (Ctrl->W.pen.cptmode + Ctrl->E.mode) == 3, "Syntax error: Conflicting -E and -W options regarding -C option application\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.anchor && !Ctrl->G.active && !Ctrl->L.outline, "Syntax error: -L<modifiers> must include +p<pen> if -G not given\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.mode == 1 && !Ctrl->S.active, "Syntax error: -I with no argument is only applicable for symbols\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -821,7 +827,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true;
 	bool default_outline, outline_active, geovector = false, save_W = false, save_G = false, QR_symbol = false;
 	unsigned int n_needed, n_cols_start = 2, justify, tbl;
-	unsigned int n_total_read = 0, j, geometry;
+	unsigned int n_total_read = 0, j, geometry, icol;
 	unsigned int bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR;
@@ -898,7 +904,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	current_pen = default_pen = Ctrl->W.pen;
 	current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 	default_outline = Ctrl->W.active;
-	if (Ctrl->I.active) {
+	if (Ctrl->I.active && Ctrl->I.mode == 0) {
 		gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 		gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 	}
@@ -952,6 +958,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	for (j = 0; j < S.n_nondim; j++) gmt_set_column (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles, not dimensions */
 
 	n_needed = n_cols_start + S.n_required;
+	if (Ctrl->I.mode) {
+		n_needed++;	/* Read intensity from data file */
+		icol = n_needed - 1;
+	}
 	if (gmt_check_binary_io (GMT, n_needed))
 		Return (GMT_RUNTIME_ERROR);
 	GMT_Report (API, GMT_MSG_DEBUG, "Operation will require %d input columns [n_cols_start = %d]\n", n_needed, n_cols_start);
@@ -1109,7 +1119,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				else if (gmt_M_rec_is_segment_header (GMT)) {			/* Parse segment headers */
 					PSL_comment (PSL, "Segment header: %s\n", GMT->current.io.segment_header);
 					(void)gmt_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, NULL);
-					if (Ctrl->I.active) {
+					if (Ctrl->I.active && Ctrl->I.mode == 0) {
 						gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 						gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 					}
@@ -1185,8 +1195,15 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				else
 					gmt_get_fill_from_z (GMT, P, in[GMT_Z], &current_fill);
 				if (PH->skip) continue;	/* Chosen CPT indicates skip for this z */
-				if (Ctrl->I.active) gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+				if (Ctrl->I.active) {
+					if (Ctrl->I.mode == 0)
+						gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+					else
+						gmt_illuminate (GMT, in[icol], current_fill.rgb);
+				}
 			}
+			else if (Ctrl->I.mode == 1)
+				gmt_illuminate (GMT, in[icol], current_fill.rgb);
 
 			if (!Ctrl->N.active && S.symbol != GMT_SYMBOL_BARX && S.symbol != GMT_SYMBOL_BARY) {
 				/* Skip points outside map */

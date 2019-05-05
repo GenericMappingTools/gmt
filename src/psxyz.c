@@ -51,8 +51,9 @@ struct PSXYZ_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct I {	/* -I<intensity> */
+	struct I {	/* -I[<intensity>] */
 		bool active;
+		unsigned int mode;	/* 0 if constant, 1 if read from file (symbols only) */
 		double value;
 	} I;
 	struct L {	/* -L[+xl|r|x0][+yb|t|y0][+e|E][+p<pen>] */
@@ -139,7 +140,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I<intens>] %s\n\t[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s\n", GMT_Jz_OPT, GMT_K_OPT, GMT_O_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I[<intens>]] %s\n\t[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s\n", GMT_Jz_OPT, GMT_K_OPT, GMT_O_OPT);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>[<unit>]][/size_y]] [-T]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", GMT_P_OPT, GMT_U_OPT, GMT_V_OPT);
 	else
@@ -161,6 +162,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_fill_syntax (API->GMT, 'G', "Specify color or pattern [Default is no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -G is specified but not -S, then psxyz draws a filled polygon.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no intensity is given we expect it to follow symbol size in the data record.\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Force closed polygons.  Alternatively, append modifiers to build constant-z polygon from a line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to build symmetrical envelope around y(x) using deviations dy(x) from col 4.\n");
@@ -350,8 +352,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 			case 'I':	/* Adjust symbol color via intensity */
-				Ctrl->I.value = atof (opt->arg);
 				Ctrl->I.active = true;
+				if (opt->arg[0])
+					Ctrl->I.value = atof (opt->arg);
+				else
+					Ctrl->I.mode = 1;
 				break;
 			case 'L':		/* Force closed polygons */
 				Ctrl->L.active = true;
@@ -529,7 +534,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	bool polygon, penset_OK = true, not_line, old_is_world;
 	bool get_rgb = false, read_symbol, clip_set = false, fill_active, rgb_from_z = false, QR_symbol = false;
 	bool default_outline, outline_active, save_u = false, geovector = false, can_update_headpen = true;
-	unsigned int k, j, geometry, tbl, pos2x, pos2y;
+	unsigned int k, j, geometry, tbl, pos2x, pos2y, icol;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0;
 	unsigned int col, bcol, ex1, ex2, ex3, change, n_needed, n_z = 0;
 	int error = GMT_NOERROR;
@@ -602,7 +607,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	default_pen = current_pen = Ctrl->W.pen;
 	current_fill = default_fill = (S.symbol == PSL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 	default_outline = Ctrl->W.active;
-	if (Ctrl->I.active) {
+	if (Ctrl->I.active && Ctrl->I.mode == 0) {
 		gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 		gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 	}
@@ -636,6 +641,10 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	}
 	else
 		n_needed = n_cols_start + S.n_required;
+	if (Ctrl->I.mode) {
+		n_needed++;	/* Read intensity from data file */
+		icol = n_needed - 1;
+	}
 	
 	if (gmt_check_binary_io (GMT, n_needed))
 		Return (GMT_RUNTIME_ERROR);
@@ -817,7 +826,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				else if (gmt_M_rec_is_segment_header (GMT)) {			/* Parse segment headers */
 					PSL_comment (PSL, "Segment header: %s\n", GMT->current.io.segment_header);
 					(void)gmt_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, NULL);
-					if (Ctrl->I.active) {
+					if (Ctrl->I.active && Ctrl->I.mode == 0) {
 						gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 						gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 					}
@@ -902,8 +911,15 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				else
 					gmt_get_fill_from_z (GMT, P, in[3], &current_fill);
 				if (PH->skip) continue;	/* Chosen CPT indicates skip for this t */
-				if (Ctrl->I.active) gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+				if (Ctrl->I.active) {
+					if (Ctrl->I.mode == 0)
+						gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+					else
+						gmt_illuminate (GMT, in[icol], current_fill.rgb);
+				}
 			}
+			else if (Ctrl->I.mode == 1)
+				gmt_illuminate (GMT, in[icol], current_fill.rgb);
 
 			if (QR_symbol) {
 				if (Ctrl->G.active)	/* Change color of QR code */
