@@ -109,35 +109,39 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->C.cpt);	
+	gmt_M_str_free (C->G.color);	
 	gmt_M_str_free (C->S.string);	
+	gmt_M_str_free (C->W.pen);	
 	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [%s] [%s] -T<now> [-A<magnify>[+c<magnify2]] [-C<cpt>] [-E[+r<dt>][+p<dt>][+d<dt>][+f<dt>]]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D[i|<duration>][+t]] [-F[+c<transparency2]] [-G<color>] [-I<instensity>[+c<intensity2]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<file>] [-S<symbol>[/<size>]] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -T<now>\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A<magnify>[+c<magnify2]] [-C<cpt>] [-E[+r<dt>][+p<dt>][+d<dt>][+f<dt>]]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D[t|<duration>]] [-F[+c<transparency2]] [-G<color>] [-I<instensity>[+c<intensity2]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<file>] [-S<symbol>[<size>[u]]] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,  GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "J-Z,R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify the current time.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify the current time. Add -f0T if absolute calendar time.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Record format: time lon lat [z] [size] [duration|time2]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set size magnification for event announcement phase.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to set a separate terminal magnification for the coda [no coda].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Give <cpt> and obtain color with z-value in 4th column\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Give <cpt> and obtain color via z-value in 4th column\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set rise, plateau, decay, and fade intervals, if needed:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +r<dt> sets the rise-time before the event zero time [no rise time].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +p<dt> sets the length of the plateau after event happens [no plateau].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +d<dt> sets the decay-time after the plateau [no decay].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +f<dt> sets the fade-time after the event ends [no fade time].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set duration of event, otherwise we assume it is infinite.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no arg we read duration from file; give t for reading end time intead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no arg we read duration from file; give t for reading end time instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set transparency to fade out symbol during fade phase.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to change terminal transparency for the coda [no coda].\n");
 	gmt_fill_syntax (API->GMT, 'G', "Specify symbol color [no fill].");
@@ -145,7 +149,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to set a separate terminal intensity for the coda [no coda].\n");
 	GMT_Option (API, "K,O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q To save the intermediate events file, supply a file name [temporary file deleted].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Append symbol code and /size[u].  If no size we read it from the data file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Append symbol code and optionally <size>[u].  If no size we read it from the data file.\n");
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 0);
 	GMT_Option (API, "V,bi2,di,e,f,h,i,p,:,.");
 	
@@ -249,14 +253,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 				Ctrl->Q.file = strdup (opt->arg);
 				break;
 
-			case 'S':	/* Set symbol type and size*/
+			case 'S':	/* Set symbol type and size */
 				Ctrl->S.active = true;
 				Ctrl->S.string = strdup (opt->arg);
 				Ctrl->S.symbol = opt->arg[0];
-				if ((c = strchr (opt->arg, '/')))
-					Ctrl->S.size = gmt_M_to_inch (GMT, &c[2]);
+				if (opt->arg[1])
+					Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);
 				else
 					Ctrl->S.mode = 1;	/* Must read symbol size */
+				break;
+
+			case 'T':	/* Get time */
+				Ctrl->T.active = true;
+				n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X),
+					gmt_scanf_arg (GMT, opt->arg, gmt_M_type (GMT, GMT_IN, GMT_X), false,
+					&Ctrl->T.now), opt->arg);
 				break;
 
 			case 'W':	/* Set symbol pen */
@@ -274,6 +285,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 4, "Syntax error: Binary input data (-bi) must have at least 4 columns.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Syntax error: Cannot specify both -C and -G.\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active && !Ctrl->G.active && !Ctrl->W.active, "Syntax error: Must specify at least one of -C, -G, -W to plot symbols.\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -290,7 +303,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 	
 	int error;
 	
-	unsigned int n_needed = 4, s_in = 3, d_in = 3, s_out = 2, i_out = 3, t_out = 4;
+	unsigned int n_needed = 3, s_in = 3, d_in = 3, s_out = 2, i_out = 3, t_out = 4;
 	
 	uint64_t n_total_read = 0, n_total_used = 0;
 	
@@ -326,10 +339,15 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	
+	if (GMT->current.proj.projection != GMT_LINEAR) {	/* Here, lon, lat are in cols 1 and 2, while 0 has time */
+		gmt_set_column (GMT, GMT_IO, GMT_Y, GMT_IS_LON);
+		gmt_set_column (GMT, GMT_IO, GMT_Z, GMT_IS_LAT);
+	}
 	/* Now we are ready to take on some input values */
 	
 	/* We read as points. */
 	if (Ctrl->S.mode) n_needed++;	/* Must allow for size in input */
+	if (Ctrl->D.mode == PSEVENTS_VAR_DURATION || Ctrl->D.mode == PSEVENTS_VAR_ENDTIME) n_needed++;	/* Must allow for duration/time in input */
 	GMT_Set_Columns (API, GMT_IN, n_needed, GMT_COL_FIX);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
@@ -363,14 +381,14 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 		
 		t_event = in[0];
 		t_rise = t_event - Ctrl->E.dt[PSEVENTS_RISE];
-		if (t_rise < Ctrl->T.now) continue;	/* Event is in the future */
+		if (Ctrl->T.now < t_rise) continue;	/* Event is in the future */
 		if (Ctrl->D.mode == PSEVENTS_FIXED_DURATION)
 			t_end = in[0] + Ctrl->D.duration;
 		else if (Ctrl->D.mode == PSEVENTS_VAR_DURATION)
 			t_end = in[0] + in[d_in];
 		else if (Ctrl->D.mode == PSEVENTS_VAR_ENDTIME)
 			t_end = in[d_in];
-		if (!do_coda && (t_end + Ctrl->E.dt[PSEVENTS_FADE]) > Ctrl->T.now) continue;	/* Event is in the past */
+		if (!do_coda && Ctrl->T.now > (t_end + Ctrl->E.dt[PSEVENTS_FADE])) continue;	/* Event is in the past */
 		
 		/* Here we must plot a phase of this event */
 		
@@ -433,6 +451,11 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Points in: %" PRIu64 " Points used: %" PRIu64 "\n", n_total_read, n_total_used);
+	if (fp == NULL) { /* No events survived, just return */
+		Return (GMT_NOERROR);
+	}
+	else
+		fclose (fp);
 
 #if 0	
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
@@ -445,19 +468,14 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 	gmt_map_basemap (GMT);	/* Plot basemap if requested */
 
 #endif
-	if (fp == NULL) { /* No events survived, just return */
-		Return (GMT_NOERROR);
-	}
-	else
-		fclose (fp);
 	
 	/* Here we have something to plot as overlay via psxy */
 	
-	sprintf (cmd, "%s -R -J -O -K -S%s -I -t --GMT_HISTORY=false", tmp_file, Ctrl->S.string);
-	if (Ctrl->C.active) {strcat (cmd, " "); strcat (cmd, Ctrl->C.cpt);}
-	if (Ctrl->G.active) {strcat (cmd, " "); strcat (cmd, Ctrl->G.color);}
-	if (Ctrl->W.pen) {strcat (cmd, " "); strcat (cmd, Ctrl->W.pen);}
-	fprintf (stderr, "cmd: %s\n", cmd);
+	sprintf (cmd, "%s -R -J -O -K -I -t --GMT_HISTORY=false -S%s", tmp_file, Ctrl->S.string);
+	if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.cpt);}
+	if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.color);}
+	if (Ctrl->W.pen) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.pen);}
+	fprintf (stderr, "cmd: gmt psevents %s\n", cmd);
 #if 0	
 	if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Plot the symbols */
 		Return (API->error);
