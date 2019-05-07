@@ -767,7 +767,11 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->T.active) ncol = Ctrl->T.col + 1;
 			if (give_r_string) ncol = 2;	/* Since we only will concern ourselves with lon/lat or x/y */
-
+			if (ncol == 0) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Something went wrong, ncol is still = 0. Maybe a call from an external program? Have to abort here.\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
+			
 			/* Now we know number of columns, so allocate memory */
 
 			Q = gmt_quad_init (GMT, ncol);
