@@ -14864,7 +14864,7 @@ void gmt_just_to_xy (struct GMT_CTRL *GMT, int justify,double *x, double *y) {
 	/* See gmt_just_decode for how text code becomes the justify integer.
  	 * If an oblique projection is in effect OR the spacing between graticules is
  	 * nonlinear AND we are requesting a justification centered in y, then we must
-	 * use the projectioned coordinates directly and return x,y in plot coordintaes. */
+	 * use the projected coordinates directly and return x,y in plot coordinates. */
 	int i, j;
 
 	i = justify % 4;	/* Split the 2-D justify code into x just 1-3 */
