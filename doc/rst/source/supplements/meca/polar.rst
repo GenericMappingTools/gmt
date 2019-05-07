@@ -15,10 +15,10 @@ Synopsis
 
 **gmt polar** [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
 |SYN_OPT-R|
-|-M|\ *size*
+|-M|\ *size*\ [**+m**\ *mag*]
 |-S|\ *<symbol><size>*
 [ |SYN_OPT-B| ]
-[ |-C|\ *lon*/*lat*\ [**+p**\ *pen*\ ][**+s**\ /*pointsize*] ]
+[ |-C|\ *lon*/*lat*\ [**+p**\ *pen*\ ][**+s**\ *pointsize*] ]
 [ |-E|\ *color* ]
 [ |-F|\ *color* ]
 [ |-G|\ *color* ]

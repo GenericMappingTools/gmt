@@ -43,9 +43,11 @@ Required Arguments
 
 .. _-M:
 
-**-M**\ *size*
-    Sets the size of the beach ball to plot polarities in. *Size* is in
+**-M**\ *size*\ [**+m**\ *mag*]
+    Sets the size of the beach ball to plot polarities in. *size* is in
     default units (unless **c**, **i**, or **p** is appended).
+    Optionally append **+m**\ *mag* to specify its magnitude,
+    then beachball size is *mag* / 5.0 * *size*.
 
 .. _-S:
 
@@ -64,7 +66,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *lon*/*lat*\ [**+p**\ *pen*\ ][**+s**\ /*pointsize*]
+**-C**\ *lon*/*lat*\ [**+p**\ *pen*\ ][**+s**\ *pointsize*]
     Offsets focal mechanisms to the latitude and longitude specified in
     the last two columns of the input file.  Optionally set the pen and
     symbol point size.
