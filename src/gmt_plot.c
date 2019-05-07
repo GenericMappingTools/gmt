@@ -5797,6 +5797,9 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		bool found = false;
 		char buffer [GMT_LEN256] = {""};
 		int EPSGID;
+		char *pszResult = NULL;
+		OGRSpatialReferenceH  hSRS;
+		OGRErr eErr = OGRERR_NONE;
 		FILE *fp = NULL;
 
 		if (szProj4[0] == '+')		/* Let it both work: -J+epsg or -Jepsg */
@@ -5804,6 +5807,21 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		else
 			EPSGID = atoi(szProj4);
 
+		/* Rely on GDAL to tell us the proj4 string of this EPSG code */
+		hSRS = OSRNewSpatialReference(NULL);
+		if ((eErr = OSRImportFromEPSG(hSRS, EPSGID)) != OGRERR_NONE) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Did not get the SRS from input EPSG  %d\n", EPSGID);
+			return (pStrOut);
+		}
+		if ((eErr = OSRExportToProj4(hSRS, &pszResult)) != OGRERR_NONE) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to convert the SRS to proj4 syntax\n");
+			return (pStrOut);
+		}
+		snprintf(szProj4, GMT_LEN256-1, "%s", pszResult);
+		CPLFree(pszResult);
+		OSRDestroySpatialReference(hSRS);
+
+#if 0
 		gmt_getsharepath (GMT, "", "epsg", ".txt", buffer, R_OK);
 		if ((fp = fopen (buffer, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s file\n", buffer);
@@ -5812,8 +5830,9 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		while (fgets (buffer, GMT_LEN256, fp)) {
 			if (buffer[0] == '#') continue;
 			if ((pch = strstr(buffer, "+proj")) != NULL) {
-				pch[0] = '\0';		/* Break the line before the +proj=... */
+				pch[0] = '\0';			/* Break the line before the +proj=... */
 				if (EPSGID == atoi(buffer)) {
+					pch[0] = '+';		/* Undo previous break */
 					snprintf(szProj4, GMT_LEN256-1, "%s", pch);
 					found = true;
 					break;
@@ -5825,6 +5844,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not find the EPGS code %d in database\n", EPSGID);
 			return (pStrOut);
 		}
+#endif
 	}
 
 	if (gmt_strtok(szProj4, " \t+", &pos, token)) {
