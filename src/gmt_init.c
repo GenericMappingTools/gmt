@@ -13944,6 +13944,9 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 	else
 		item_t1 = item;
 
+	/* Don't remember anymore if we still need to call gmt_importproj4(). We don't for simple
+	   mapproject usage but maybe we still need for mapping purposes. To-be-rediscovered.
+	*/
 	item_t2 = gmt_importproj4 (GMT, item_t1, &scale_pos);		/* This is GMT -J proj string */
 	if (item_t2) {
 		char *pch2;
@@ -13985,7 +13988,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		sprintf (dest, "%s", item_t1);
 
 	/* For the proj.4 string detect if this projection is supported by GDAL. If not will append a +wktext later */
-	if (!strncmp(item, "+proj=", 6)) {
+	if (!strncmp(item, "+proj=", 6) && GDAL_VERSION_NUM < 2050000) {	/* Almost for sure GDAL 2.5 doesn't need this */
 		char prjcode[8] = {""};
 		k = 6;
 		while (item[k] && (item[k] != '+' && item[k] != ' ' && item[k] != '\t' && item[k] != '/')) k++;
