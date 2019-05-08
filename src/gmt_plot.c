@@ -5794,13 +5794,15 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 		sprintf(scale_c, "1:1");	/* Good for map|grdproject but will blow in user hands for the others */
 
 	if (isdigit(szProj4[1])) {		/* A EPSG code. By looking at 2nd char instead of 1st both +epsg and epsg work */
-		bool found = false;
-		char buffer [GMT_LEN256] = {""};
 		int EPSGID;
 		char *pszResult = NULL;
 		OGRSpatialReferenceH  hSRS;
 		OGRErr eErr = OGRERR_NONE;
+#if 0
+		bool found = false;
+		char buffer [GMT_LEN256] = {""};
 		FILE *fp = NULL;
+#endif
 
 		if (szProj4[0] == '+')		/* Let it both work: -J+epsg or -Jepsg */
 			EPSGID = atoi(&szProj4[1]);
