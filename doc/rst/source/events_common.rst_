@@ -3,7 +3,7 @@
 Description
 -----------
 
-Reads (*time*, x*,\ *y*\ [,\ *z*][, \*duration*]) data from files [or standard
+Reads (*time*, *x*, *y*\ [, *z*][, \*duration*]) data from files [or standard
 input] and plots how the event symbol should look for the specified *now* time.
 
 Required Arguments
@@ -25,13 +25,13 @@ Required Arguments
 .. _-S:
 
 **-S**\ *symbol*\ [*size*\ [*units*]]
-    Specify the symbol to use for the event.  Optionally, append symbol size with units from (c\|i\|p).
-    If no size is given then we read the size from the data file.
+    Specify the symbol to use for the event.  Optionally, append symbol size with units from
+    (**c**\ \|\ **i**\ \|\ **p**\ ).  If no size is given then we read the size from the data file.
 
 .. _-T:
 
 **-T**\ *now*
-    Sets the current plot time.  If absolute times are used you must also use -fT 
+    Sets the current plot time.  If absolute times are used you must also use **-fT**.
 
 Optional Arguments
 ------------------
@@ -56,7 +56,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [*duration*]\ \|\ **t**\ ]
+**-D**\ [*duration*\ \|\ **t**\ ]
     Specify the duration of the event.  Append a *duration* if all events have the same duration,
     append **t** if end-times instead of durations are given in the file, or leave blank if durations
     can be read from the input file.
@@ -69,7 +69,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *color* ref:`(more ...) <-Gfill_attrib>`
+**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Set constant shade or color for all symbols.
 
 .. _-I:
@@ -80,7 +80,7 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
-. _-Q:
+.. _-Q:
 
 **-Q**\ *file*
     Save the intermediate events format *file* instead of removing when done.

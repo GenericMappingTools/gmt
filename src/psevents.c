@@ -28,11 +28,11 @@
 #define THIS_MODULE_NAME	"psevents"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Construct event symbols for making movies"
-#define THIS_MODULE_KEYS	"<D{,>X}"
+#define THIS_MODULE_KEYS	"<D{,CC(,>X}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"-:>BJKOPRUVXYabdefhip"
 
-enum Psevent {
+enum Psevent {	/* Misc. named array indices */
 	PSEVENTS_RISE = 0,
 	PSEVENTS_PLATEAU = 1,
 	PSEVENTS_DECAY = 2,
@@ -65,7 +65,7 @@ struct PSEVENTS_CTRL {
 		unsigned int mode;
 		double duration;
 	} D;
-	struct F {	/* 	-F[+c<transparency2] */
+	struct F {	/* 	-F[<transparency>][+c<transparency2] */
 		bool active;
 		double transparency[2];
 	} F;
@@ -73,7 +73,7 @@ struct PSEVENTS_CTRL {
 		bool active;
 		char *color;
 	} G;
-	struct I {	/* 	-I<instensity>[+c<intensity2] */
+	struct I {	/* 	-I[<instensity>][+c<intensity2] */
 		bool active;
 		double intensity[2];
 	} I;
@@ -87,7 +87,7 @@ struct PSEVENTS_CTRL {
 		char symbol;
 		double size;
 	} S;
-	struct T {	/* 	-T<time> */
+	struct T {	/* 	-T<nowtime> */
 		bool active;
 		double now;
 	} T;
@@ -109,6 +109,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *C) {	/* De
 	if (!C) return;
 	gmt_M_str_free (C->C.cpt);	
 	gmt_M_str_free (C->G.color);	
+	gmt_M_str_free (C->Q.file);	
 	gmt_M_str_free (C->W.pen);	
 	gmt_M_free (GMT, C);	
 }
@@ -119,7 +120,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -S<symbol>[<size>[u]]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T<now> [-A<magnify>[+c<magnify2]] [-C<cpt>] [-E[+r<dt>][+p<dt>][+d<dt>][+f<dt>]]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D[t|<duration>]] [-F[<transparency>][+c<transparency2]] [-G<color>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I[<instensity>][+c<intensity2]] [-Q<file>][-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I[<intensity>][+c<intensity2]] [-Q<file>][-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,  GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -298,11 +299,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 int GMT_psevents (void *V_API, int mode, void *args) {
 	char tmp_file[PATH_MAX] = {""}, cmd[BUFSIZ] = {""};
 	
-	bool do_coda = false;
+	bool do_coda = false, save_xy = false;
 	
 	int error;
 	
-	unsigned int n_needed = 3, s_in = 3, d_in = 3, s_out = 2, i_out = 3, t_out = 4;
+	unsigned int n_needed = 3, x_col = 1, y_col = 2, s_in = 3, d_in = 3, s_out = 2, i_out = 3, t_out = 4;
 	
 	uint64_t n_total_read = 0, n_total_used = 0;
 	
@@ -337,10 +338,16 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input table data\n");
 	
-	if (GMT->current.proj.projection != GMT_LINEAR) {	/* Here, lon, lat are in cols 1 and 2, while 0 has time */
-		gmt_set_column (GMT, GMT_IO, GMT_Y, GMT_IS_LON);
-		gmt_set_column (GMT, GMT_IO, GMT_Z, GMT_IS_LAT);
+	if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* Must do special handling since lat, lon is in col 1, 2 and not 0, 1 */
+		x_col = 2;	y_col = 1;
+		save_xy = true;
+		GMT->current.setting.io_lonlat_toggle[GMT_IN] = false;
 	}
+	if (GMT->current.proj.projection != GMT_LINEAR) {	/* Here, lon, lat are in cols 1 and 2, while 0 has time */
+		gmt_set_column (GMT, GMT_IO, x_col, GMT_IS_LON);
+		gmt_set_column (GMT, GMT_IO, y_col, GMT_IS_LAT);
+	}
+	
 	/* Now we are ready to take on some input values */
 	
 	/* We read as points. */
@@ -400,7 +407,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
-		out[GMT_X] = in[1];	out[GMT_Y] = in[2];
+		out[GMT_X] = in[x_col];	out[GMT_Y] = in[y_col];
 		if (Ctrl->C.active) out[GMT_Z] = in[3];
 		
 		t_plateau = t_event + Ctrl->E.dt[PSEVENTS_PLATEAU];
@@ -480,6 +487,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove file %s\n", tmp_file);
 		Return (GMT_RUNTIME_ERROR);
 	}
+	GMT->current.setting.io_lonlat_toggle[GMT_IN] = save_xy;	/* Restore whatever it was */
 
 	Return (GMT_NOERROR);
 }

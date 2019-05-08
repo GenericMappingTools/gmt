@@ -17,7 +17,7 @@ Synopsis
 [ |-A|\ *magnify*\ [**+c**\ *magnify2*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
-[ |-D|\ *duration*\ \|\ **t** ]
+[ |-D|\ [*duration*\ \|\ **t**\ ] ]
 [ |-E|\ [**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*] ]
 [ |-F|\ [*transparency*]\ [**+c**\ *transparency2*] ]
 [ |-G|\ *color* ]
@@ -41,7 +41,7 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: wiggle_common.rst_
+.. include:: events_common.rst_
 
 .. include:: common_classic.rst_
 
@@ -52,8 +52,8 @@ To be added, such as
 
    ::
 
-    gmt psevents track.xym -R-20/10/-80/-60 -JS0/90/15c -Z500 -B5 \
-                 -C32000 -P -Gred -T0.25p,blue -DjRM+w1000+lnT -V > track_xym.ps
+    gmt psevents quakes.txt -R-20/10/-80/-60 -JS0/90/15c -A5 -B5 \
+                 -Cseis.cpt -P -E+r0.1+d0.1+f5 -T44.5 -V > event_layer.ps
 
 See Also
 --------
