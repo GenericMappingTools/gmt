@@ -17,7 +17,7 @@
 #
 include ("${CMAKE_SOURCE_DIR}/cmake/ConfigDefault.cmake")
 
-# If "ConfigUser.cmake" doesn't exist then create one for convenience.
+# A "ConfigUser.cmake" in the soruce tree overrides the defaults.
 if (EXISTS "${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake")
 	include ("${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake")
 endif (EXISTS "${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake")

@@ -14,7 +14,9 @@
 #	Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 #
-# To modify the cmake process: Edit your cmake/ConfigUser.cmake file
+# To configure the cmake process, first copy the configuration template
+# 'cmake/ConfigUserTemplate.cmake' to 'cmake/ConfigUser.cmake',
+# then edit 'cmake/ConfigUser.cmake'.
 #
 # To build out-of-source do (example):
 #
@@ -23,9 +25,6 @@
 #	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
 #
 # CMAKE_BUILD_TYPE can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel
-#
-# cmake creates a new file cmake/ConfigUser.cmake if it does not already
-# exist. You can configure additional options there.
 #
 
 # Make sure the user doesn't play dirty with symlinks
@@ -94,7 +93,7 @@ endif (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 #set(_manfiles_ps "" CACHE INTERNAL "Global list of PS manpages")
 add_subdirectory (src)
 add_subdirectory (share)      # share must be processed *after* src (GSHHG_PATH)
-add_subdirectory (doc)        # share must be processed *after* src (PDF manpages)
+add_subdirectory (doc)        # doc must be processed *after* src (PDF manpages)
 if (EXISTS ${GMT_SOURCE_DIR}/test/)
 	add_subdirectory (test)
 endif (EXISTS ${GMT_SOURCE_DIR}/test/)
