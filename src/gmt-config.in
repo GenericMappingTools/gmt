@@ -85,6 +85,7 @@ Usage: gmt-config [OPTIONS]
 Available values for OPTIONS include:
 
   --help        display this help message and exit
+  --all         display all options
   --bits        whether library is build 32-bit or 64-bit
   --cflags      pre-processor and compiler flags
   --datadir     GMT's data directories
@@ -105,10 +106,39 @@ EOF
   exit $1
 }
 
+all()
+{
+  cat <<EOF
+This GMT $CONFIG_VERSION has been built with the following features:
+
+  --bits        -> $CONFIG_BITS
+  --cflags      -> $CONFIG_CFLAGS
+  --datadir     -> $CONFIG_DATA
+  --dcw         -> $CONFIG_DCW
+  --dep-libs    -> ${CONFIG_DEP_LIBS//;/ }
+  --gshhg       -> $CONFIG_GSHHG
+  --has-fftw    -> $CONFIG_FFTW_ENABLED
+  --has-gdal    -> $CONFIG_GDAL_ENABLED
+  --has-pcre    -> $CONFIG_PCRE_ENABLED
+  --has-lapack  -> $CONFIG_LAPACK_ENABLED
+  --has-openmp  -> $CONFIG_OPENMP_ENABLED
+  --includedir  -> $CONFIG_INCLUDEDIR
+  --libs        -> $CONFIG_LIBS
+  --plugindir   -> $CONFIG_PLUGINDIR
+  --prefix      -> $CONFIG_PREFIX
+  --version     -> $CONFIG_VERSION
+
+EOF
+}
+
 [ -z "$1" ] && usage 1 1>&2
 
 for arg in "$@"; do
   case $arg in
+    --all)
+    all
+    ;;
+
     --bits)
     echo $CONFIG_BITS
     ;;
