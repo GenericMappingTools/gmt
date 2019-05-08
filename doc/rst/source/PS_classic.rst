@@ -8,6 +8,7 @@ Classic Mode Mapping
    psbasemap
    psclip
    pscoast
+   psevents
    psscale
    pscontour
    grdimage_classic

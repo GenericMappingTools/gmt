@@ -40,6 +40,7 @@ const char *gmt_current_name (const char *module, char modname[]) {
 	else if (!strncmp (module, "ternary",      7U)) { strcpy (modname, "psternary");   return module; }
 	else if (!strncmp (module, "contour",      7U)) { strcpy (modname, "pscontour");   return module; }
 	else if (!strncmp (module, "basemap",      7U)) { strcpy (modname, "psbasemap");   return module; }
+	else if (!strncmp (module, "events",       6U)) { strcpy (modname, "psevents");    return module; }
 	else if (!strncmp (module, "wiggle",       6U)) { strcpy (modname, "pswiggle");    return module; }
 	else if (!strncmp (module, "legend",       6U)) { strcpy (modname, "pslegend");    return module; }
 	else if (!strncmp (module, "plot3d",       6U)) { strcpy (modname, "psxyz");       return module; }
@@ -63,6 +64,7 @@ const char *gmt_current_name (const char *module, char modname[]) {
 	else if (!strncmp (module, "psternary",    9U)) { strcpy (modname, module); return "ternary";   }
 	else if (!strncmp (module, "pscontour",    9U)) { strcpy (modname, module); return "contour";   }
 	else if (!strncmp (module, "psbasemap",    9U)) { strcpy (modname, module); return "basemap";   }
+	else if (!strncmp (module, "psevents",     8U)) { strcpy (modname, module); return "events";    }
 	else if (!strncmp (module, "pswiggle",     8U)) { strcpy (modname, module); return "wiggle";    }
 	else if (!strncmp (module, "pslegend",     8U)) { strcpy (modname, module); return "legend";    }
 	else if (!strncmp (module, "pssegyz",      7U)) { strcpy (modname, module); return "segyz";     }
@@ -96,6 +98,7 @@ const char *gmtlib_get_active_name (struct GMTAPI_CTRL *API, const char *module)
 	else if (!strncmp (module, "psternary",    9U)) return "ternary";
 	else if (!strncmp (module, "pscontour",    9U)) return "contour";
 	else if (!strncmp (module, "psbasemap",    9U)) return "basemap";
+	else if (!strncmp (module, "psevents",     8U)) return "events";
 	else if (!strncmp (module, "pswiggle",     8U)) return "wiggle";
 	else if (!strncmp (module, "pslegend",     8U)) return "legend";
 	else if (!strncmp (module, "pssegyz",      7U)) return "segyz";
@@ -128,6 +131,7 @@ bool gmtlib_is_modern_name (struct GMTAPI_CTRL *API, char *module) {
 	else if (!strncmp (module, "ternary",    9U)) is_modern = true;
 	else if (!strncmp (module, "contour",    9U)) is_modern = true;
 	else if (!strncmp (module, "basemap",    9U)) is_modern = true;
+	else if (!strncmp (module, "events",     8U)) is_modern = true;
 	else if (!strncmp (module, "wiggle",     8U)) is_modern = true;
 	else if (!strncmp (module, "legend",     8U)) is_modern = true;
 	else if (!strncmp (module, "segyz",      7U)) is_modern = true;

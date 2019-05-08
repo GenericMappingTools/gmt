@@ -1,0 +1,124 @@
+|No-spaces|
+
+Description
+-----------
+
+Reads (*time*, x*,\ *y*\ [,\ *z*][, \*duration*]) data from files [or standard
+input] and plots how the event symbol should look for the specified *now* time.
+
+Required Arguments
+------------------
+
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-J.rst_
+
+.. _-R:
+
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-R.rst_
+
+.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-Rz.rst_
+
+.. _-S:
+
+**-S**\ *symbol*\ [*size*\ [*units*]]
+    Specify the symbol to use for the event.  Optionally, append symbol size with units from (c\|i\|p).
+    If no size is given then we read the size from the data file.
+
+.. _-T:
+
+**-T**\ *now*
+    Sets the current plot time.  If absolute times are used you must also use -fT 
+
+Optional Arguments
+------------------
+
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
+
+.. _-A:
+
+**-A**\ *magnify*\ [**+c**\ *magnify2*] 
+    Sets the magnification of the symbol during the *rise* interval, if  selected.
+    Optionally, use **+c** to set the magnification during the coda [no size].
+
+.. _-B:
+
+.. include:: explain_-B.rst_
+
+.. _-C:
+
+**-C**\ *cpt*
+    Use the *cpt* to convert *x* values given in optional column 3 to assign symbol colors.
+
+.. _-D:
+
+**-D**\ [*duration*]\ \|\ **t**\ ]
+    Specify the duration of the event.  Append a *duration* if all events have the same duration,
+    append **t** if end-times instead of durations are given in the file, or leave blank if durations
+    can be read from the input file.
+
+.. _-F:
+
+**-F**\ [*transparency*]\ [**+c**\ *transparency2*]
+    Sets the initial transparency of the symbol during the *rise* interval, if  selected [100].
+    Optionally, use **+c** to set the terminal transparency during the coda [100].
+
+.. _-G:
+
+**-G**\ *color* ref:`(more ...) <-Gfill_attrib>`
+    Set constant shade or color for all symbols.
+
+.. _-I:
+
+**-I**\ [*intensity*]\ [**+c**\ *intensity2*]
+    Sets the max intensity of the symbol during the *rise* interval, if  selected [1].
+    Optionally, use **+c** to set the terminal intensity during the coda [0].
+
+.. include:: explain_-Jz.rst_
+
+. _-Q:
+
+**-Q**\ *file*
+    Save the intermediate events format *file* instead of removing when done.
+
+.. _-U:
+
+.. include:: explain_-U.rst_
+
+.. _-:
+
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-V.rst_
+
+.. _-W:
+
+**-W**\ *pen*
+    Specify symbol outline pen attributes [Default is no outline].
+
+.. |Add_-bi| replace:: [Default is 3 input columns]. 
+.. include:: explain_-bi.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
+
+.. |Add_-e| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-e.rst_
+
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
+
+.. include:: explain_-icols.rst_
+
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
+.. include:: explain_perspective.rst_
+
+.. include:: explain_colon.rst_
+
+.. include:: explain_help.rst_
