@@ -45,7 +45,7 @@ set (GMT_PACKAGE_VERSION_WITH_GIT_REVISION ${GMT_PACKAGE_VERSION})
 if (NOT GMT_SOURCE_CODE_CONTROL_VERSION_STRING)
 	# Get the location, inside the staging area location, to copy the application bundle to.
 	execute_process (
-		COMMAND ${GIT} describe --abbrev=7 --always --dirty
+		COMMAND ${GIT_EXECUTABLE} describe --abbrev=7 --always --dirty
 		WORKING_DIRECTORY ${GMT_SOURCE_DIR}
 		RESULT_VARIABLE GIT_RETURN_CODE
 		OUTPUT_VARIABLE GIT_COMMIT_HASH
@@ -57,7 +57,7 @@ if (NOT GMT_SOURCE_CODE_CONTROL_VERSION_STRING)
 			if (GIT_COMMIT_HASH)				# Set the updated package version.
 				# get commit date
 				execute_process (
-					COMMAND ${GIT} log -1 --date=short --pretty=format:%cd
+					COMMAND ${GIT_EXECUTABLE} log -1 --date=short --pretty=format:%cd
 					WORKING_DIRECTORY ${GMT_SOURCE_DIR}
 					RESULT_VARIABLE GIT_DATE_RETURN_CODE
 					OUTPUT_VARIABLE GIT_COMMIT_DATE

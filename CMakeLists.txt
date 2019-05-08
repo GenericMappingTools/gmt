@@ -71,7 +71,7 @@ set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/"
 
 # Find UNIX commands
 include (FindUnixCommands)
-find_program (GIT git)
+find_package (Git)
 find_program (GS gs gswin64)
 find_program (XZ NAMES xz)
 
@@ -101,10 +101,10 @@ endif (EXISTS ${GMT_SOURCE_DIR}/test/)
 add_subdirectory (cmake/dist) # make distribution bundles (always last)
 
 # Source release target
-if (GIT AND HAVE_GIT_VERSION)
+if (GIT_FOUND AND HAVE_GIT_VERSION)
 	# Export git working tree
 	add_custom_target (git_export_release
-		COMMAND ${GIT} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/)
+		COMMAND ${GIT_EXECUTABLE} -C ${GMT_SOURCE_DIR} checkout-index -a -f --prefix=${GMT_RELEASE_PREFIX}/)
 	# Remove the test dir, so that it is not included in the final release tarball
 	add_custom_target (git_prune_dirs
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/.git
@@ -144,7 +144,7 @@ if (GIT AND HAVE_GIT_VERSION)
 			DEPENDS ${GMT_RELEASE_PREFIX}
 			${_release_dirname}-src.tar.gz ${_release_dirname}-src.tar.xz)
 	endif (GNUTAR AND GZIP AND XZ)
-endif (GIT AND HAVE_GIT_VERSION)
+endif (GIT_FOUND AND HAVE_GIT_VERSION)
 
 get_target_property (_location gmtlib LOCATION)
 get_filename_component (GMT_CORE_LIB_NAME ${_location} NAME)

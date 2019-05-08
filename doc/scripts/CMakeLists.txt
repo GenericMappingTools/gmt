@@ -193,7 +193,7 @@ if (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 endif (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
 # Install target for release documentation
-if (GIT AND HAVE_GIT_VERSION)
+if (GIT_FOUND AND HAVE_GIT_VERSION)
 	foreach (_fig ${_install_pdf})
 		add_custom_target (_${_fig}_release
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -202,6 +202,6 @@ if (GIT AND HAVE_GIT_VERSION)
 			DEPENDS ${RST_BINARY_DIR}/_images/${_fig} git_export_release)
 		add_depend_to_target (gmt_release _${_fig}_release)
 	endforeach (_fig ${_install_pdf})
-endif (GIT AND HAVE_GIT_VERSION)
+endif (GIT_FOUND AND HAVE_GIT_VERSION)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
