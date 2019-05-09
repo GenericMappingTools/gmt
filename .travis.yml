@@ -123,6 +123,9 @@ script:
         cmake --build . --target animation;
         kill %1;
         cmake --build . --target docs_html;
+        cmake --build . --target docs_man;
+        cmake --build . --target docs_pdf;
+        cmake --build . --target docs_pdf_shrink;
       fi
     - set +e
     - cd ..
