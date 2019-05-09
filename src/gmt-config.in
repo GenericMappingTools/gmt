@@ -27,12 +27,14 @@ CONFIG_INCLUDEDIR="$GMT_TOP/@GMT_INCLUDEDIR@"
 # the cflags and lib settings off its parent, else stick with config.
 if [ -d $CONFIG_INCLUDEDIR ]; then
   CONFIG_CFLAGS="-I$CONFIG_INCLUDEDIR"
-  CONFIG_LIBS="-L$GMT_TOP/@GMT_LIBDIR@ -lgmt"
+  CONFIG_LIBDIR="$GMT_TOP/@GMT_LIBDIR@"
 else
   CONFIG_CFLAGS="-I@CMAKE_INSTALL_PREFIX@/@GMT_INCLUDEDIR@"
   CONFIG_INCLUDEDIR="@CMAKE_INSTALL_PREFIX@/@GMT_INCLUDEDIR@"
-  CONFIG_LIBS="-L@CMAKE_INSTALL_PREFIX@/@GMT_LIBDIR@ -lgmt"
+  CONFIG_LIBDIR="@CMAKE_INSTALL_PREFIX@/@GMT_LIBDIR@"
 fi
+CONFIG_LIBS="-L$CONFIG_LIBDIR -lgmt"
+CONFIG_CC="@CMAKE_C_COMPILER@"
 CONFIG_DATA=$($GMT_EXEDIR/gmt --show-datadir)
 CONFIG_PLUGINDIR=$($GMT_EXEDIR/gmt --show-plugindir)
 CONFIG_DEP_LIBS="@NETCDF_LIBRARIES@ @GMT_OPTIONAL_LIBRARIES@"
@@ -87,6 +89,7 @@ Available values for OPTIONS include:
   --help        display this help message and exit
   --all         display all options
   --bits        whether library is build 32-bit or 64-bit
+  --cc          C compiler
   --cflags      pre-processor and compiler flags
   --datadir     GMT's data directories
   --dcw         location of used DCW
@@ -98,6 +101,7 @@ Available values for OPTIONS include:
   --has-lapack  whether LAPACK is used in build
   --has-openmp  whether GMT was built with OpenMP support
   --includedir  include directory
+  --libdir      library directory
   --libs        library linking information
   --plugindir   GMT's plugin directory
   --prefix      install prefix
@@ -109,10 +113,14 @@ EOF
 all()
 {
   cat <<EOF
+
 This GMT $CONFIG_VERSION has been built with the following features:
 
-  --bits        -> $CONFIG_BITS
+  --cc          -> $CONFIG_CC
   --cflags      -> $CONFIG_CFLAGS
+  --libs        -> $CONFIG_LIBS
+
+  --bits        -> $CONFIG_BITS
   --datadir     -> $CONFIG_DATA
   --dcw         -> $CONFIG_DCW
   --dep-libs    -> ${CONFIG_DEP_LIBS//;/ }
@@ -122,10 +130,11 @@ This GMT $CONFIG_VERSION has been built with the following features:
   --has-pcre    -> $CONFIG_PCRE_ENABLED
   --has-lapack  -> $CONFIG_LAPACK_ENABLED
   --has-openmp  -> $CONFIG_OPENMP_ENABLED
-  --includedir  -> $CONFIG_INCLUDEDIR
-  --libs        -> $CONFIG_LIBS
-  --plugindir   -> $CONFIG_PLUGINDIR
+
   --prefix      -> $CONFIG_PREFIX
+  --includedir  -> $CONFIG_INCLUDEDIR
+  --libdir      -> $CONFIG_LIBDIR
+  --plugindir   -> $CONFIG_PLUGINDIR
   --version     -> $CONFIG_VERSION
 
 EOF
@@ -141,6 +150,10 @@ for arg in "$@"; do
 
     --bits)
     echo $CONFIG_BITS
+    ;;
+
+    --cc)
+    echo $CONFIG_CC
     ;;
 
     --cflags)
@@ -185,6 +198,10 @@ for arg in "$@"; do
 
     --includedir)
     echo $CONFIG_INCLUDEDIR
+    ;;
+
+    --libdir)
+    echo $CONFIG_LIBDIR
     ;;
 
     --libs)
