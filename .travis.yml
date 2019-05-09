@@ -130,7 +130,7 @@ script:
 # Things to do if the build is successful
 after_success:
     - if [ "$DEPLOY_DOCS" == "true" ]; then
-        git clone --branch=1.0.0 --depth=1 https://github.com/fatiando/continuous-integration.git;
+        git clone --branch=1.1.1 --depth=1 https://github.com/fatiando/continuous-integration.git;
       fi
 
 # Deploy build artifacts to external services
