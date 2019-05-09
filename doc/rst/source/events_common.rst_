@@ -3,8 +3,14 @@
 Description
 -----------
 
-Reads (*time*, *x*, *y*\ [, *z*][, \*duration*]) data from files [or standard
-input] and plots how the event symbol should look for the specified *now* time.
+Reads (*time*, *x*, *y*\ [, *z*][, *duration*]) data from files [or standard
+input] and plots how the symbol for each event should look for the specified *now* time.
+The reason they may differ is that events may have different duration and we may
+wish to accentuate the symbol attributes in ways to draw attention to an event when
+it first happens and perhaps tone it down after a while to reduce clutter and focus
+on more recent events. This module is typically used in conjunction with movie scripts
+where the implicit loop over time is used to call **event** over a time-sequence and
+thus plot symbols as events unfold.
 
 Required Arguments
 ------------------
@@ -122,3 +128,65 @@ Optional Arguments
 .. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
+
+The three time-functions
+------------------------
+
+Events typically have either a finite duration, e.g., the temporal extent of
+the reign of a particular monarch, or infinite.  Here, infinite simply means
+its duration exceeds the temporal extent of the time we are plotting.  In a movie,
+a basic representation of these events as a point on a map would be to start plotting
+the symbol when the event starts and then keep the symbol on all frames until the
+events end (or never stop plotting them as in the infinite case).  However, to draw
+attention to the arrival of a new event we can temporarily change three aspects of
+the symbol: Its size, color intensity, and transparency.  You can think of these three
+attributes as functions of time.  For some option settings, Figure :ref:`Symbol size function <psevents_size>`
+illustrates how the symbol size may vary through the timespan of the movie.
+
+.. _psevents_size:
+
+.. figure:: /_images/psevents_size.*
+   :width: 400 px
+   :align: center
+
+   Implied evolution of one symbol's size-variation as a function of time
+   given the time-knots from **-E** and the magnifications from **-A**.
+   Here we temporarily magnify the symbol size five times before decaying
+   to the intended size and eventually shrink it further down to a small
+   size during the coda phase.
+
+Similarly, to draw attention to the new arrival you may want to whiten the color
+temporarily; this can be done via the **-I** option and Figure :ref:`Symbol intensity function <psevents_intensity>`
+illustrates how intensity may vary accordingly.
+
+.. _psevents_intensity:
+
+.. figure:: /_images/psevents_intensity.*
+   :width: 400 px
+   :align: center
+
+   Implied evolution of one symbol's color intensity as a function of time
+   given the time-knots from **-E** and the intensities from **-I**.  Here we
+   seek to whiten the symbol during the event arrival, as well as darken it
+   during a permanent code phase.
+
+Finally, for finite events you may wish to either fade them out completely or
+simply fade them to a constant but still visible transparency; this future stage
+is referred to as the coda and can be specified via the **-F** option .
+Figure :ref:`Symbol transparency function <psevents_transparency>`
+illustrates how transparency may vary.
+
+.. _psevents_transparency:
+
+.. figure:: /_images/psevents_transparency.*
+   :width: 400 px
+   :align: center
+
+   Here we show how a symbol may go from being invisible to reach full opaqueness
+   at the event begin time, then finally fade to a near-invisible stage after reaching
+   its duration.
+
+While shown in these examples, the rise, plateau, fade, and coda periods are all optional
+and can be selected or ignored as you wish via **-E**.  You can choose to specify any or none
+of the three time histories.  By default the symbol size is constant, there is no intensity
+variation, and all symbols are opaque.
