@@ -6,7 +6,7 @@ events
 
 .. only:: not man
 
-    Construct event symbols for making movies
+    Plot event symbols and labels for a moment in time
 
 Synopsis
 --------
@@ -14,15 +14,15 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt events** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-S|\ *symbol*\ [*size*\ [*units*]]
-[ |-A|\ *magnify*\ [**+c**\ *magnify2*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
-[ |-D|\ [*duration*\ \|\ **t**\ ] ]
-[ |-E|\ [**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*] ]
-[ |-F|\ [*transparency*]\ [**+c**\ *transparency2*] ]
+[ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*]] ]
+[ |-E|\ **s**\ \|\ **t**\ [**+o**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*] ]
+[ |-F|\ [**+a**\ *angle*][\ **+f**\ *font*][\ **+j**\ *justify*][\ **+r**\ [*first*]\ \|\ **+z**\ [*format*]] ] 
 [ |-G|\ *color* ]
-[ |-I|\ [*intensity*]\ [**+c**\ *intensity2*] ]
-[ |-Q|\ *file* ]
+[ |-L|\ [*length*\ \|\ **t**\ ] ]
+[ |-M|\ **i**\ \|\ **s**\ \|\ **t**\ [*val1*]\ [**+c**\ *val2*] ]
+[ |-Q|\ *prefix* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
 [ |SYN_OPT-U| ]
@@ -48,8 +48,8 @@ To be added, such as
 
    ::
 
-    gmt events quakes.txt -R-20/10/-80/-60 -JS0/90/15c -A5 -B5 \
-                 -Cseis.cpt -E+r0.1+d0.1+f5 -T44.5 -V
+    gmt events quakes.txt -R-20/10/-80/-60 -JS0/90/15c -Ms5 -B5 \
+                 -Cseis.cpt -Es+r0.1+d0.1+f5 -T44.5 -V
 
 See Also
 --------

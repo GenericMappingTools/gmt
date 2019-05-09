@@ -17,14 +17,15 @@ Synopsis
 [ |-A|\ *magnify*\ [**+c**\ *magnify2*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
-[ |-D|\ [*duration*\ \|\ **t**\ ] ]
-[ |-E|\ [**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*] ]
-[ |-F|\ [*transparency*]\ [**+c**\ *transparency2*] ]
+[ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*]] ]
+[ |-E|\ **s**\ \|\ **t**\ [**+o**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*] ]
+[ |-F|\ [**+a**\ *angle*][\ **+f**\ *font*][\ **+j**\ *justify*][\ **+r**\ [*first*]\ \|\ **+z**\ [*format*]] ] 
 [ |-G|\ *color* ]
-[ |-I|\ [*intensity*]\ [**+c**\ *intensity2*] ]
 [ |-K| ]
+[ |-L|\ [*length*\ \|\ **t**\ ] ]
+[ |-M|\ **i**\ \|\ **s**\ \|\ **t**\ [*val1*]\ [**+c**\ *val2*] ]
 [ |-O| ] [ **-P** ]
-[ |-Q|\ *file* ]
+[ |-Q|\ *prefix* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
 [ |SYN_OPT-U| ]
@@ -52,8 +53,8 @@ To be added, such as
 
    ::
 
-    gmt psevents quakes.txt -R-20/10/-80/-60 -JS0/90/15c -A5 -B5 \
-                 -Cseis.cpt -P -E+r0.1+d0.1+f5 -T44.5 -V > event_layer.ps
+    gmt psevents quakes.txt -R-20/10/-80/-60 -JS0/90/15c -Ms5 -B5 \
+                 -Cseis.cpt -P -Es+r0.1+d0.1+f5 -T44.5 -V > event_layer.ps
 
 See Also
 --------

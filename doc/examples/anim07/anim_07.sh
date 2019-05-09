@@ -16,7 +16,7 @@ fi
 cat << EOF > pre.sh
 # Set view and sun longitudes
 gmt math -T0/360/5 -I T 5 SUB = longitudes.txt
-# Exctact a topography CPT
+# Extract a topography CPT
 gmt makecpt -Cdem2 -T0/6000 > movie_dem.cpt
 # Get gradients of the relief from N45E
 gmt grdgradient @earth_relief_20m -Nt1.25 -A45 -Gintens.nc
