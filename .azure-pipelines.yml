@@ -66,7 +66,7 @@ jobs:
   - bash: |
       set -x -e
       cd build
-      ctest --force-new-ctest-process -j4
+      cmake --build . --target check
     displayName: Full tests
 
   # Upload test coverage even if build fails. Keep separate to make sure this task fails
