@@ -3506,8 +3506,8 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 	GMT->current.io.status = (GMT->current.io.variable_in_columns || n_ok == n_use || *n == GMT_MAX_COLUMNS) ? 0 : GMT_IO_MISMATCH;	/* Hopefully set status to 0 (OK) */
 	if (*n == GMT_MAX_COLUMNS) *n = n_ok;							/* Update the number of expected fields */
 	if (gmt_M_rec_is_error (GMT))
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 "\n",
-		            col_no, *n, GMT->current.io.rec_no);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 " in file %s\n",
+		            col_no, *n, GMT->current.io.rec_no, GMT->current.io.filename[GMT_IN]);
 
 	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && col_no >= 2) {
 		gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
@@ -7481,8 +7481,8 @@ struct GMT_DATATABLE * gmtlib_read_table (struct GMT_CTRL *GMT, void *source, un
 
 		while (! (GMT->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_GAP | GMT_IO_EOF))) {	/* Keep going until false or find a new segment header */
 			if (GMT->current.io.status & GMT_IO_MISMATCH) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 "\n",
-				            status, n_expected_fields, n_read);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 " in file %s\n",
+				            status, n_expected_fields, n_read, file);
 				if (!use_GMT_io) GMT->current.io.input = psave;	/* Restore previous setting */
 				return (NULL);
 			}
