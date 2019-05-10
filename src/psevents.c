@@ -332,7 +332,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 	
 	int error;
 	
-	unsigned int n_needed = 3, s_in = 2, t_in = 2, d_in = 4, s_out = 2, i_out = 3, t_out = 4;
+	unsigned int n_needed = 3, s_in = 2, t_in = 2, d_in = 3, s_out = 2, i_out = 3, t_out = 4;
 	
 	uint64_t n_total_read = 0, n_symbols_plotted = 0, n_labels_plotted = 0;
 	
@@ -489,7 +489,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 		
 			/* Here we must plot one phase of this event */
 		
-			if (n_symbols_plotted == 0) {	/* Open output events file the first time */
+			if (n_labels_plotted == 0) {	/* Open output events file the first time */
 				if (Ctrl->Q.active)	/* We want a persistent file to survive this process */
 					sprintf (tmp_file_labels, "%s_labels.txt", Ctrl->Q.file);
 				else	/* Temporariy file to be deleted after use */
@@ -527,9 +527,8 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 				out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2];
 			}
 			fprintf (fpl, "%.16g\t%.16g\t%g\t%s\n", out[GMT_X], out[GMT_Y], out[GMT_Z], In->text);
-			n_symbols_plotted++;	/* Count output records */
+			n_labels_plotted++;	/* Count output records */
 		}
-		n_labels_plotted++;	/* Count output records */
 	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
