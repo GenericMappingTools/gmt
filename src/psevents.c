@@ -370,6 +370,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 	/* Now we are ready to take on some input values */
 	
 	/* We read as points. */
+	if (Ctrl->C.active) n_needed++;	/* Must allow for z in input */
 	if (Ctrl->S.mode) n_needed++;	/* Must allow for size in input */
 	if (Ctrl->L.mode == PSEVENTS_VAR_DURATION || Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) n_needed++;	/* Must allow for length/time in input */
 	GMT_Set_Columns (API, GMT_IN, n_needed, GMT_COL_FIX);
@@ -407,7 +408,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 		if (Ctrl->E.active[PSEVENTS_SYMBOL]) {	/* Plot event symbols */
 			t_event = in[t_in] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_OFFSET];	/* Nominal (or offset) start of this event */
 			t_rise = t_event - Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_RISE];	/* Earliest time to plot anything at all for this event */
-			if (Ctrl->T.now < t_rise) break;	/* This event is still in the future */
+			if (Ctrl->T.now < t_rise) goto Do_text;	/* This event is still in the future */
 			/* Compute the last time we need to plot the event [infinity] */
 			if (Ctrl->L.mode == PSEVENTS_FIXED_DURATION)
 				t_end = t_event + Ctrl->L.length;
@@ -415,7 +416,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 				t_end = t_event + in[d_in];
 			else if (Ctrl->L.mode == PSEVENTS_VAR_ENDTIME)
 				t_end = in[d_in];
-			if (!do_coda && Ctrl->T.now > (t_end + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE])) continue;	/* Event is in the past and there is no coda */
+			if (!do_coda && Ctrl->T.now > (t_end + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE])) goto Do_text;	/* Event is in the past and there is no coda */
 		
 			/* Here we must plot one phase of this event */
 		
@@ -474,10 +475,10 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 				fprintf (fps, "%.16g\t%.16g\t%g\t%g\t%g\n", out[GMT_X], out[GMT_Y], out[s_out], out[i_out], out[t_out]);
 			n_symbols_plotted++;	/* Count output records */
 		}
-		if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing text strings */
+Do_text:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing text strings */
 			t_event = in[t_in] + Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_OFFSET];	/* Nominal (or offset) start of this event */
 			t_rise = t_event - Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_RISE];	/* Earliest time to plot anything at all for this event */
-			if (Ctrl->T.now < t_rise) break;	/* This event is still in the future */
+			if (Ctrl->T.now < t_rise) continue;	/* This event is still in the future */
 			/* Compute the last time we need to plot the event [infinity] */
 			if (Ctrl->L.mode == PSEVENTS_FIXED_DURATION)
 				t_end = t_event + Ctrl->L.length;
@@ -546,7 +547,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 	if (fps) { /* Here we have event symbols to plot as an overlay via a call to psxy */
 		fclose (fps);	/* First close the file so symbol output is flushed */
 		/* Build psxy command with fixed options and those that depend on -C -G -W */
-		sprintf (cmd, "%s -R -J -O -K -I -t --GMT_HISTORY=false -S%c", tmp_file_symbols, Ctrl->S.symbol);
+		sprintf (cmd, "%s -R -J -O -K -I -t --GMT_HISTORY=false -S%ci", tmp_file_symbols, Ctrl->S.symbol);
 		if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.cpt);}
 		if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.color);}
 		if (Ctrl->W.pen) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.pen);}
@@ -561,7 +562,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 		}
 	}
 	if (fpl) { /* Here we have event labels to plot as an overlay via a call to pstext */
-		fclose (fps);	/* First close the file so label output is flushed */
+		fclose (fpl);	/* First close the file so label output is flushed */
 		/* Build pstext command with fixed options and those that depend on -D -F */
 		sprintf (cmd, "%s -R -J -O -K -t --GMT_HISTORY=false", tmp_file_labels);
 		if (Ctrl->D.active) {strcat (cmd, " -D"); strcat (cmd, Ctrl->D.string);}
