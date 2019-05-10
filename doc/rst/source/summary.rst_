@@ -13,7 +13,7 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`end`            | Terminate GMT modern mode session and produce optional graphics     |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`events`         | Construct event symbols for making movies                           |
+| :doc:`events`         | Plot event symbols and labels for a moment in time                  |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`figure`         | Set attributes for the current figure                               |
 +-----------------------+---------------------------------------------------------------------+

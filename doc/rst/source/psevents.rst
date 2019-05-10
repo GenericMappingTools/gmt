@@ -6,7 +6,7 @@ psevents
 
 .. only:: not man
 
-    Construct event symbols for making movies
+    Plot event symbols and labels for a moment in time
 
 Synopsis
 --------
