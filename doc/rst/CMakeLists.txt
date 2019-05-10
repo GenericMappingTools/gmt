@@ -73,14 +73,12 @@ if (SPHINX_FOUND)
 	find_program(MAKE NAMES make gmake gnumake)
 	if (MAKE)
 		add_custom_target (docs_pdf
-			COMMAND ${SPHINX_EXECUTABLE} -b latex -t tex
+			COMMAND ${SPHINX_EXECUTABLE} -b latexpdf -t tex
 			-c "${CMAKE_CURRENT_BINARY_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
 			-w "${CMAKE_CURRENT_BINARY_DIR}/latex.log"
 			${CMAKE_CURRENT_BINARY_DIR}/_source
 			${CMAKE_CURRENT_BINARY_DIR}/latex
-			COMMAND ${MAKE} -C ${CMAKE_CURRENT_BINARY_DIR}/latex
-			all-pdf LATEXOPTS=-interaction=batchmode
 			COMMENT "Building CookBook PDF...")
 		add_dependencies (docs_pdf docs_depends)
 
