@@ -73,7 +73,7 @@ if (SPHINX_FOUND)
 	find_program(MAKE NAMES make gmake gnumake)
 	if (MAKE)
 		add_custom_target (docs_pdf
-			COMMAND ${SPHINX_EXECUTABLE} -q -b latex -t tex
+			COMMAND ${SPHINX_EXECUTABLE} -b latex -t tex
 			-c "${CMAKE_CURRENT_BINARY_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
 			-w "${CMAKE_CURRENT_BINARY_DIR}/latex.log"
