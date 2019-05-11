@@ -9,7 +9,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt clear** [*all* \|\ *cache* \|\ *conf* \|\ *cpt* \|\ *data* \|\ *history* \|\ *sessions* ]
+**gmt clear** [ **all** \| **cache** \| **conf** \| **cpt** \| **data** \| **history** \| **sessions** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
 
@@ -26,37 +26,37 @@ Optional Arguments
 
 .. _clear-all:
 
-*all*
+**all**
     Deletes all the items under the control of the individual targets.
 
 .. _clear-conf:
 
-*conf*
+**conf**
     Delete the current gmt.conf file used for the current modern session.
 
 .. _clear-cpt:
 
-*cpt*
+**cpt**
     Delete the current (and hidden) cpt in effect (if any) for the modern session.
 
 .. _clear-cache:
 
-*cache*
+**cache**
     Delete the user's cache directory and all of its contents.
 
 .. _clear-data:
 
-*data*
+**data**
     Delete the user's data download directory and all of its contents.
 
 .. _clear-history:
 
-*history*
+**history**
     Deletes the current gmt.history file for the modern session.
 
 .. _clear-sessions:
 
-*sessions*
+**sessions**
     Delete the user's sessions directory.
 
 .. _clear-V:
