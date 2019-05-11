@@ -51,6 +51,8 @@ enum Psevent {	/* Misc. named array indices */
 	PSEVENTS_VAR_ENDTIME = 3
 };
 
+#define PSEVENTS_MODS "dfoOpr"
+
 /* Control structure for psevents */
 
 struct PSEVENTS_CTRL {
@@ -62,8 +64,9 @@ struct PSEVENTS_CTRL {
 		bool active;
 		char *string;
 	} D;
-	struct PSEVENTS_E {	/* 	-E[s|t][+o<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>] */
+	struct PSEVENTS_E {	/* 	-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>] */
 		bool active[2];
+		bool trim[2];
 		double dt[2][5];
 	} E;
 	struct PSEVENTS_F {	/* -F[+f<fontinfo>+a<angle>+j<justification>+r|z] */
@@ -126,7 +129,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -S<symbol>[<size>[u]]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t-T<now> [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]] [-E[s|t][o<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T<now> [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]] [-E[s|t][o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a<angle>][+f<font>][r[<first>]|z[<fmt>]][+j<justify>]] [-G<color>] [-L[t|<length>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Mi|s|t<val1>[+c<val2]] [-Q<prefix>] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
@@ -146,7 +149,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Upper case -DJ will shorten diagonal shifts at corners by sqrt(2).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +v[<pen>] to draw line from text to original point.  If <add_y> is not given it equals <add_x>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set rise, plateau, decay, and fade intervals, for symbols (-Es [Default]) or text (-Et):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +o<dt> offsets event start time by <dt> [no offset].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +o<dt> offsets event start and end time by <dt> [no offset].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Use +O<dt> to only offset event start time and leave end time alone.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +r<dt> sets the rise-time before the event zero time [no rise time].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +p<dt> sets the length of the plateau after event happens [no plateau].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +d<dt> sets the decay-time after the plateau [no decay].\n");
@@ -212,19 +216,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 					default:	id = 0;	k = 0;	break;
 				}
 				Ctrl->E.active[id] = true;
-				if (gmt_validate_modifiers (GMT, &opt->arg[k], 'C', "dfopr")) n_errors++;
-				if ((c = gmt_first_modifier (GMT, &opt->arg[k], "dfopr")) == NULL) {	/* This should not happen given the above check, but Coverity prefers it */
+				if (gmt_validate_modifiers (GMT, &opt->arg[k], 'C', PSEVENTS_MODS)) n_errors++;
+				if ((c = gmt_first_modifier (GMT, &opt->arg[k], PSEVENTS_MODS)) == NULL) {	/* This should not happen given the above check, but Coverity prefers it */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -E: No modifiers given?\n");
 					n_errors++;
 					break;
 				}
 				pos = 0;	txt[0] = 0;
-				while (gmt_getmodopt (GMT, 'C', c, "dfopr", &pos, txt, &n_errors) && n_errors == 0) {
+				while (gmt_getmodopt (GMT, 'C', c, PSEVENTS_MODS, &pos, txt, &n_errors) && n_errors == 0) {
 					switch (txt[0]) {
 						case 'd': Ctrl->E.dt[id][PSEVENTS_DECAY]   = atof (&txt[1]);	break;	/* Decay duration */
 						case 'f': Ctrl->E.dt[id][PSEVENTS_FADE]    = atof (&txt[1]);	break;	/* Fade duration */
 						case 'p': Ctrl->E.dt[id][PSEVENTS_PLATEAU] = atof (&txt[1]);	break;	/* Plateau duration */
 						case 'r': Ctrl->E.dt[id][PSEVENTS_RISE]    = atof (&txt[1]);	break;	/* Rise duration */
+						case 'O': Ctrl->E.trim[id] = true;	/* Offset start but not end.  Fall through to case 'o' */
 						case 'o': Ctrl->E.dt[id][PSEVENTS_OFFSET]   = atof (&txt[1]);	break;	/* Event time offset */
 						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
@@ -416,6 +421,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 				t_end = t_event + in[d_in];
 			else if (Ctrl->L.mode == PSEVENTS_VAR_ENDTIME)
 				t_end = in[d_in];
+			if (t_end < DBL_MAX && Ctrl->E.trim[PSEVENTS_SYMBOL]) t_end -= Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_OFFSET];	/* No offset applied to t_end */
 			if (!do_coda && Ctrl->T.now > (t_end + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE])) goto Do_text;	/* Event is in the past and there is no coda */
 		
 			/* Here we must plot one phase of this event */
@@ -486,6 +492,7 @@ Do_text:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing 
 				t_end = t_event + in[d_in];
 			else if (Ctrl->L.mode == PSEVENTS_VAR_ENDTIME)
 				t_end = in[d_in];
+			if (t_end < DBL_MAX && Ctrl->E.trim[PSEVENTS_TEXT]) t_end -= Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_OFFSET];	/* No offset applied to t_end */
 			if (!do_coda && Ctrl->T.now > (t_end + Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_FADE])) continue;	/* Event is in the past and there is no coda */
 		
 			/* Here we must plot one phase of this event */

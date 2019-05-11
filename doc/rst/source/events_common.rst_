@@ -5,11 +5,11 @@ Description
 
 Reads (*x*, *y*\ [, *z*] [, *size*], *time* [, *length*]) data from files [or standard
 input] and plots how the symbol for each event should look for the specified *now* time.
-The reason they may differ is that events may have different length and we may
+The reason they may differ is that events may have different lengths and we may
 wish to accentuate the symbol attributes in ways to draw attention to an event when
 it first happens and perhaps tone it down after a while to reduce clutter and focus
 on more recent events. This module is typically used in conjunction with movie scripts
-where the implicit loop over time is used to call **event** over a time-sequence and
+where the implicit loop over time is used to call it over a time-sequence and
 thus plot symbols as events unfold.
 
 Required Arguments
@@ -53,7 +53,7 @@ Optional Arguments
 .. _-C:
 
 **-C**\ *cpt*
-    Use the *cpt* to convert *z* values given in optional third column to assign symbol colors.
+    Use the *cpt* to convert *z* values given in the optional third column to assign symbol colors.
 
 .. _-D:
 
@@ -69,9 +69,11 @@ Optional Arguments
 
 .. _-E:
 
-**Es**\ \|\ **t**\ [**+o**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*]
+**Es**\ \|\ **t**\ [**+o**\ \|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*]
     Sets the time knots for the **s**\ ymbol or **t**\ ext time-functions.  Append
-    **+o** to shift the event start time by a constant offset, **+r** to indicate the
+    **+o** to shift the event start and end times by a constant offset (basically shifting
+    the event in time by *dt*\ ; or use **O** to only shift the start time, effectively shortening
+    the duration of the event), **+r** to indicate the
     duration of the rise phase, **+p** to set the duration of the plateau phase, **+d**
     tp specify the duration of the decay phase, and **+f** to set the duration of the
     fade phase.  These are all optional, and can be set separately for symbols and texts.
