@@ -291,7 +291,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 			case 'S':	/* Set symbol type and size (append units) */
 				Ctrl->S.active = true;
 				Ctrl->S.symbol = opt->arg[0];
-				if (opt->arg[1])
+				if (opt->arg[1] && !strchr (GMT_DIM_UNITS, opt->arg[1]))
 					Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);
 				else	/* Must read individual event symbol sizes for file */
 					Ctrl->S.mode = 1;
