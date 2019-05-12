@@ -1158,6 +1158,9 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
+	if ((API->error = gmt_img_sanitycheck (GMT, G->header))) {	/* Used map projection on a Mercator (cartesian) grid */
+		Return (API->error);
+	}
 
 	make_plot = !Ctrl->D.active;	/* Turn off plotting if -D was used */
 	need_proj = !Ctrl->D.active || Ctrl->contour.save_labels;	/* Turn off mapping if -D was used, unless +t was set */

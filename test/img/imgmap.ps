@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdimage
+%%Title: GMT v6.0.0_9b442a2-dirty_2019.04.29 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:17 2018
+%%CreationDate: Wed May  1 11:04:41 2019
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -336,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -594,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -672,7 +667,7 @@ O0
 -3000 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
 
 % PostScript produced by:
-%@GMT: gmt grdimage img.nc -Jx0.25i -Ct.cpt -P -K -Xc
+%@GMT: gmt grdimage img_m.nc -Jx0.25i -Ct.cpt -P -K -Xc
 %@PROJ: xy -0.00000000 20.00000000 0.00000000 10.06666667 -0.000 20.000 0.000 10.067 +xy
 %GMTBoundingBox: -180 72 360 181.2
 %%BeginObject PSL_Layer_1
@@ -3498,8 +3493,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psbasemap -R180/200/-5/5 -Jm0.25i -Ba -BWSne -O -K
-%@PROJ: merc 180.00000000 200.00000000 -5.00000000 5.00000000 -1113194.908 1113194.908 -553583.847 553583.847 +proj=merc +lon_0=190 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psbasemap -R180/200/-5.026871827601192/5.026871827601204 -Jm0.25i -Ba -BWSne -O -K --PROJ_ELLIPSOID=sphere
+%@PROJ: merc 180.00000000 200.00000000 -5.02687183 5.02687183 -1111950.797 1111950.797 -559681.901 559681.901 +proj=merc +lon_0=190 +k=1 +x_0=0 +y_0=0 +units=m +a=6371008.771 +b=6371008.771400 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -3507,49 +3502,55 @@ O0
 25 W
 8 W
 N 0 0 M 0 -83 D S
-N 0 2984 M 0 83 D S
+N 0 3020 M 0 83 D S
 N 1500 0 M 0 -83 D S
-N 1500 2984 M 0 83 D S
+N 1500 3020 M 0 83 D S
 N 3000 0 M 0 -83 D S
-N 3000 2984 M 0 83 D S
+N 3000 3020 M 0 83 D S
 N 4500 0 M 0 -83 D S
-N 4500 2984 M 0 83 D S
+N 4500 3020 M 0 83 D S
 N 6000 0 M 0 -83 D S
-N 6000 2984 M 0 83 D S
-N 0 0 M -83 0 D S
-N 6000 0 M 83 0 D S
-N 0 1492 M -83 0 D S
-N 6000 1492 M 83 0 D S
-N 0 2984 M -83 0 D S
-N 6000 2984 M 83 0 D S
+N 6000 3020 M 0 83 D S
+N 0 8 M -83 0 D S
+N 6000 8 M 83 0 D S
+N 0 1510 M -83 0 D S
+N 6000 1510 M 83 0 D S
+N 0 3012 M -83 0 D S
+N 6000 3012 M 83 0 D S
 83 W
+N -42 0 M 0 8 D S
+N 6042 0 M 0 8 D S
 1 A
-N -42 0 M 0 1492 D S
-N 6042 0 M 0 1492 D S
+N -42 8 M 0 1502 D S
+N 6042 8 M 0 1502 D S
 0 A
-N -42 1492 M 0 1492 D S
-N 6042 1492 M 0 1492 D S
+N -42 1510 M 0 1502 D S
+N 6042 1510 M 0 1502 D S
+1 A
+N -42 3012 M 0 8 D S
+N 6042 3012 M 0 8 D S
+0 A
 N 0 -42 M 1500 0 D S
-N 0 3025 M 1500 0 D S
+N 0 3062 M 1500 0 D S
 1 A
 N 1500 -42 M 1500 0 D S
-N 1500 3025 M 1500 0 D S
+N 1500 3062 M 1500 0 D S
 0 A
 N 3000 -42 M 1500 0 D S
-N 3000 3025 M 1500 0 D S
+N 3000 3062 M 1500 0 D S
 1 A
 N 4500 -42 M 1500 0 D S
-N 4500 3025 M 1500 0 D S
+N 4500 3062 M 1500 0 D S
 0 A
 8 W
 N -83 0 M 6166 0 D S
 N -83 -83 M 6166 0 D S
-N 6000 -83 M 0 3150 D S
-N 6083 -83 M 0 3150 D S
-N 6083 2984 M -6166 0 D S
-N 6083 3067 M -6166 0 D S
-N 0 3067 M 0 -3150 D S
-N -83 3067 M 0 -3150 D S
+N 6000 -83 M 0 3186 D S
+N 6083 -83 M 0 3186 D S
+N 6083 3020 M -6166 0 D S
+N 6083 3103 M -6166 0 D S
+N 0 3103 M 0 -3186 D S
+N -83 3103 M 0 -3186 D S
 0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (180è) tc Z
@@ -3557,9 +3558,9 @@ N -83 3067 M 0 -3150 D S
 3000 -167 M (î170è) tc Z
 4500 -167 M (î165è) tc Z
 6000 -167 M (î160è) tc Z
--167 0 M (î5è) mr Z
--167 1492 M (0è) mr Z
--167 2984 M (5è) mr Z
+-167 8 M (î5è) mr Z
+-167 1510 M (0è) mr Z
+-167 3012 M (5è) mr Z
 %%EndObject
 0 A
 FQ
@@ -3567,7 +3568,7 @@ O0
 0 3900 TM
 
 % PostScript produced by:
-%@GMT: gmt grdimage img.nc -Jm0.25i -Ct.cpt -O -K -Ba -BWSne -Y3.25i
+%@GMT: gmt grdimage img_g1.nc -Jm0.25i -Ct.cpt -O -K -Ba -BWSne -Y3.25i
 %@PROJ: merc 180.00000000 200.00000000 -5.02687000 5.02687000 -1113194.908 1113194.908 -556566.541 556566.541 +proj=merc +lon_0=190 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -6456,7 +6457,7 @@ O0
 0 3900 TM
 
 % PostScript produced by:
-%@GMT: gmt grdimage img.nc -Jm0.25i -Ct.cpt -O -K -Ba -BWSne -Y3.25i
+%@GMT: gmt grdimage img_g2.nc -Jm0.25i -Ct.cpt -O -K -Ba -BWSne -Y3.25i
 %@PROJ: merc 180.00000000 200.00000000 -5.00000000 5.00000000 -1113194.908 1113194.908 -553583.847 553583.847 +proj=merc +lon_0=190 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap

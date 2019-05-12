@@ -821,6 +821,9 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	if ((Topo = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
+	if ((API->error = gmt_img_sanitycheck (GMT, Topo->header))) {	/* Used map projection on a Mercator (cartesian) grid */
+		Return (API->error);
+	}
 
 	if (use_intensity_grid && !Ctrl->I.derive) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read intensity grid header from file %s\n", Ctrl->I.file);

@@ -40,56 +40,58 @@
  * List of API functions:
  *
  * PSL_beginaxes
- * PSL_beginclipping	: Clips plot outside the specified polygon
- * PSL_beginlayer	: Place begin object group DSC comment.
- * PSL_beginplot	: Initialize parameters for a new plot.
- * PSL_beginsession	: Creates a new PSL session
- * PSL_copy		: Writes the given string as is to the PS output
- * PSL_endaxes		: Turns off mapping of user coordinates to PS units
- * PSL_endclipping	: Restores previous clipping path
- * PSL_endlayer		: Place end object group DSC comment.
- * PSL_endplot		: Close plotfile
- * PSL_endsession	: Terminates the PSL session
- * PSL_getplot		: Return string with entire PS code
- * PSL_plotarc		: Plots a circular arc
- * PSL_plotaxis		: Plots an axis with tickmarks and annotation/label
- * PSL_plotbitimage	: Plots a 1-bit image or imagemask
- * PSL_plotcolorimage	: Plots a 24-bit 2-D image using the colorimage operator
- * PSL_plotepsimage	: Inserts EPS image
- * PSL_plotline		: Plots a line
- * PSL_plotparagraph	: Plots a text paragraph
- * PSL_plotparagraphbox	: Plots a box beneath a text paragraph
- * PSL_plotpoint	: Absolute or relative move to new position (pen up or down)
- * PSL_plotpolygon	: Creates a polygon and optionally fills it
- * PSL_plotsegment	: Plots a 2-point straight line segment
- * PSL_plotsymbol	: Plots a geometric symbol and [optionally] fills it
- * PSL_plottext		: Plots textstring
- * PSL_plottextbox	: Draw a filled box around a textstring
- * PSL_plottextline	: Place labels along paths (straight or curved), set clip path, draw line
- * PSL_loadeps		: Read EPS file into string
- * PSL_command		: Writes a given PostScript statement to the plot file
- * PSL_comment		: Writes a comment statement to the plot file
- * PSL_makecolor	: Returns string with PostScript command to set a new color
- * PSL_makepen		: Returns string with PostScript command to set a new pen
- * PSL_setcolor		: Sets the pen color or pattern
- * PSL_setdefaults	: Change several PSL session default values
- * PSL_setdash		: Specify pattern for dashed line
- * PSL_setfill		: Sets the fill color or pattern
- * PSL_setfont		: Changes current font and possibly reencodes it to current encoding
- * PSL_setformat	: Changes # of decimals used in color and gray specs [3]
- * PSL_setlinecap	: Changes the line cap setting
- * PSL_setlinejoin	: Changes the line join setting
- * PSL_setlinewidth	: Sets a new linewidth
- * PSL_setmiterlimit	: Changes the miter limit setting for joins
- * PSL_setimage		: Sets up a image pattern fill in PS
- * PSL_setorigin	: Translates/rotates the coordinate system
- * PSL_setparagraph	: Sets parameters used to typeset text paragraphs
- * PSL_defpen		: Encodes a pen with attributes by name in the PS output
- * PSL_definteger	: Encodes an integer by name in the PS output
- * PSL_defpoints	: Encodes a pointsize by name in the PS output
- * PSL_defcolor		: Encodes a rgb color by name in the PS output
- * PSL_deftextdim	: Sets variables for text height and width in the PS output
- * PSL_defunits:	: Encodes a dimension by name in the PS output
+ * PSL_beginclipping	   : Clips plot outside the specified polygon
+ * PSL_beginlayer	   : Place begin object group DSC comment.
+ * PSL_beginplot	   : Initialize parameters for a new plot.
+ * PSL_beginsession	   : Creates a new PSL session
+ * PSL_copy		   : Writes the given string as is to the PS output
+ * PSL_endaxes		   : Turns off mapping of user coordinates to PS units
+ * PSL_endclipping	   : Restores previous clipping path
+ * PSL_endlayer		   : Place end object group DSC comment.
+ * PSL_endplot		   : Close plotfile
+ * PSL_endsession	   : Terminates the PSL session
+ * PSL_getplot		   : Return string with entire PS code
+ * PSL_plotarc		   : Plots a circular arc
+ * PSL_plotaxis		   : Plots an axis with tickmarks and annotation/label
+ * PSL_plotbitimage	   : Plots a 1-bit image or imagemask
+ * PSL_plotcolorimage	   : Plots a 24-bit 2-D image using the colorimage operator
+ * PSL_plotepsimage	   : Inserts EPS image
+ * PSL_plotline		   : Plots a line
+ * PSL_plotparagraph	   : Plots a text paragraph
+ * PSL_plotparagraphbox	   : Plots a box beneath a text paragraph
+ * PSL_plotpoint	   : Absolute or relative move to new position (pen up or down)
+ * PSL_plotpolygon	   : Creates a polygon and optionally fills it
+ * PSL_plotsegment	   : Plots a 2-point straight line segment
+ * PSL_plotsymbol	   : Plots a geometric symbol and [optionally] fills it
+ * PSL_plottext		   : Plots textstring
+ * PSL_plottextbox	   : Draw a filled box around a textstring
+ * PSL_plottextline	   : Place labels along paths (straight or curved), set clip path, draw line
+ * PSL_loadeps		   : Read EPS file into string
+ * PSL_command		   : Writes a given PostScript statement to the plot file
+ * PSL_comment		   : Writes a comment statement to the plot file
+ * PSL_makecolor	   : Returns string with PostScript command to set a new color
+ * PSL_makepen		   : Returns string with PostScript command to set a new pen
+ * PSL_setcolor		   : Sets the pen color or pattern
+ * PSL_setdefaults	   : Change several PSL session default values
+ * PSL_setdash		   : Specify pattern for dashed line
+ * PSL_setfill		   : Sets the fill color or pattern
+ * PSL_setfont		   : Changes current font and possibly reencodes it to current encoding
+ * PSL_setformat	   : Changes # of decimals used in color and gray specs [3]
+ * PSL_setlinecap	   : Changes the line cap setting
+ * PSL_setlinejoin	   : Changes the line join setting
+ * PSL_setlinewidth	   : Sets a new linewidth
+ * PSL_setmiterlimit	   : Changes the miter limit setting for joins
+ * PSL_setimage		   : Sets up a image pattern fill in PS
+ * PSL_setorigin	   : Translates/rotates the coordinate system
+ * PSL_setparagraph	   : Sets parameters used to typeset text paragraphs
+ * PSL_settransparencymode : Set a new mode for how transparency is understoody
+ * PSL_settransparency     : Set a new transparency
+ * PSL_defpen		   : Encodes a pen with attributes by name in the PS output
+ * PSL_definteger	   : Encodes an integer by name in the PS output
+ * PSL_defpoints	   : Encodes a pointsize by name in the PS output
+ * PSL_defcolor		   : Encodes a rgb color by name in the PS output
+ * PSL_deftextdim	   : Sets variables for text height and width in the PS output
+ * PSL_defunits:	   : Encodes a dimension by name in the PS output
  *
  * For information about usage, syntax etc, see the postscriptlight documentation
  *
@@ -724,7 +726,7 @@ static int psl_ip (struct PSL_CTRL *PSL, double p) {
 	return ((int)lrint (p * PSL->internal.dpp));
 }
 
-static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
+static int psl_shorten_path_new (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
 	/* Simplifies the (x,y) array by converting it to pixel coordinates (ix,iy)
 	 * and eliminating repeating points and intermediate points along straight
 	 * line segments.  The result is the fewest points needed to draw the path
@@ -732,13 +734,7 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 	 * no shortening. */
 
 	int i, k, dx, dy;
-#ifdef OLD_shorten_path
-	int old_dir = 0, new_dir;
-	double old_slope = -DBL_MAX, new_slope;
-	/* These seeds for old_slope and old_dir make sure that first point gets saved */
-#else
 	int d, db, bx, by, j, ij;
-#endif
 
 	if (n < 2) return (n);	/* Not a path to start with */
 
@@ -748,36 +744,6 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 	}
 	if (mode == 1) return (n);
 
-#ifdef OLD_shorten_path
-	/* The only truly unique point is the starting point; all else must show increments
-	 * relative to the previous point */
-
-	/* First point is the anchor. We will find at least one point, unless all points are the same */
-	for (i = k = 0; i < n - 1; i++) {
-		dx = ix[i+1] - ix[i];
-		dy = iy[i+1] - iy[i];
-		if (dx == 0 && dy == 0) continue;	/* Skip duplicates */
-		new_slope = (dx == 0) ? copysign (DBL_MAX, (double)dy) : ((double)dy) / ((double)dx);
-		new_dir = (dx >= 0) ? 1 : -1;
-		if (new_slope != old_slope || new_dir != old_dir) {
-			ix[k] = ix[i];
-			iy[k] = iy[i];
-			k++;
-			old_slope = new_slope;
-			old_dir = new_dir;
-		}
-	}
-
-	/* If all points are the same, we get here with k = 0, so we can exit here now with 1 point */
-	if (k < 1) return (1);
-
-	/* Last point (k cannot be < 1 so k-1 >= 0) */
-	if (ix[k-1] != ix[n-1] || iy[k-1] != iy[n-1]) {	/* Do not do slope check on last point since we must end there */
-		ix[k] = ix[n-1];
-		iy[k] = iy[n-1];
-		k++;
-	}
-#else
 	/* Skip intermediate points that are "close" to the line between point i and point j, where
 	   "close" is defined as less than 1 "dot" (the PostScript resolution) in either direction.
 	   A point is always close when it coincides with one of the end points (i or j).
@@ -828,9 +794,68 @@ static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, 
 		iy[k] = iy[n-1];
 	}
 	k++;
-#endif
 
 	return (k);
+}
+
+static int psl_shorten_path_old (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
+	/* Simplifies the (x,y) array by converting it to pixel coordinates (ix,iy)
+	 * and eliminating repeating points and intermediate points along straight
+	 * line segments.  The result is the fewest points needed to draw the path
+	 * and still look exactly like the original path.  However, if mode == 1 we do
+	 * no shortening. */
+
+	int i, k, dx, dy;
+	int old_dir = 0, new_dir;
+	double old_slope = -DBL_MAX, new_slope;
+	/* These seeds for old_slope and old_dir make sure that first point gets saved */
+
+	if (n < 2) return (n);	/* Not a path to start with */
+
+	for (i = 0; i < n; i++) {	/* Convert all coordinates to integers at current scale */
+		ix[i] = psl_ix (PSL, x[i]);
+		iy[i] = psl_iy (PSL, y[i]);
+	}
+	if (mode == 1) return (n);
+
+	/* The only truly unique point is the starting point; all else must show increments
+	 * relative to the previous point */
+
+	/* First point is the anchor. We will find at least one point, unless all points are the same */
+	for (i = k = 0; i < n - 1; i++) {
+		dx = ix[i+1] - ix[i];
+		dy = iy[i+1] - iy[i];
+		if (dx == 0 && dy == 0) continue;	/* Skip duplicates */
+		new_slope = (dx == 0) ? copysign (DBL_MAX, (double)dy) : ((double)dy) / ((double)dx);
+		new_dir = (dx >= 0) ? 1 : -1;
+		if (new_slope != old_slope || new_dir != old_dir) {
+			ix[k] = ix[i];
+			iy[k] = iy[i];
+			k++;
+			old_slope = new_slope;
+			old_dir = new_dir;
+		}
+	}
+
+	/* If all points are the same, we get here with k = 0, so we can exit here now with 1 point */
+	if (k < 1) return (1);
+
+	/* Last point (k cannot be < 1 so k-1 >= 0) */
+	if (ix[k-1] != ix[n-1] || iy[k-1] != iy[n-1]) {	/* Do not do slope check on last point since we must end there */
+		ix[k] = ix[n-1];
+		iy[k] = iy[n-1];
+		k++;
+	}
+
+	return (k);
+}
+
+#define N_LENGTH_THRESHOLD 100000000
+static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
+	if (n > N_LENGTH_THRESHOLD)
+		return psl_shorten_path_old (PSL, x, y, n, ix, iy, mode);
+	else
+		return psl_shorten_path_new (PSL, x, y, n, ix, iy, mode);
 }
 
 static int psl_forcelinewidth (struct PSL_CTRL *PSL, double linewidth) {
@@ -2936,7 +2961,7 @@ static int psl_bitimage_cmap (struct PSL_CTRL *PSL, double f_rgb[], double b_rgb
 
 	PSL_command (PSL, " [/Indexed /Device");
 	if (b_rgb[0] < 0.0) {
-		/* Backgound is transparent */
+		/* Background is transparent */
 		polarity = 0;
 		if (PSL_is_gray (f_rgb))
 			PSL_command (PSL, "Gray 0 <%02X>", PSL_u255(f_rgb[0]));
@@ -3760,6 +3785,15 @@ int PSL_plotsegment (struct PSL_CTRL *PSL, double x0, double y0, double x1, doub
 	PSL->internal.ix = psl_ix (PSL, x1);
 	PSL->internal.iy = psl_iy (PSL, y1);
 	PSL_command (PSL, "N %d %d M %d %d D S\n", ix, iy, PSL->internal.ix - ix, PSL->internal.iy - iy);
+	return (PSL_NO_ERROR);
+}
+
+int PSL_settransparency (struct PSL_CTRL *PSL, double transparency) {
+	/* Updates the current PDF transparency only */
+	if (transparency < 0.0 || transparency > 1.0)
+		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Bad transparency value [%g] - ignored\n", transparency);
+	else
+		PSL_command (PSL, "%g /%s PSL_transp\n", 1.0 - transparency, PSL->current.transparency_mode);
 	return (PSL_NO_ERROR);
 }
 

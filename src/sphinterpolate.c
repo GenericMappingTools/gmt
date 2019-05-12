@@ -208,9 +208,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, str
 int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	unsigned int row, col;
 	int error = 0;
+	
+	bool skip;
 
 	size_t n_alloc = 0;
-	uint64_t i, n = 0, ij, ij_f;
+	uint64_t i, n = 0, ij, ij_f, n_read = 0, n_skip = 0, n_duplicates = 0;
 	
 	double w_min, w_max, sf = 1.0, X[3];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *ww = NULL, *surfd = NULL, *in = NULL;
@@ -279,16 +281,45 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 
 		gmt_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);	/* Get unit vector */
 		xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];	ww[n] = in[GMT_Z];
+		/* Check for duplicates */
+		skip = false;
+		for (i = 0; !skip && i < n; i++) {
+			double c = xx[i] * xx[n] + yy[i] * yy[n] + zz[i] * zz[n];
+			if (doubleAlmostEqual (c, 1.0)) {	/* Duplicates will give a dot product of 1 */
+				if (doubleAlmostEqualZero (ww[n], ww[i])) {
+					GMT_Report (API, GMT_MSG_VERBOSE,
+					            "Data constraint %" PRIu64 " is identical to %" PRIu64 " and will be skipped\n", n_read, i);
+					skip = true;
+					n_skip++;
+				}
+				else {
+					GMT_Report (API, GMT_MSG_NORMAL,
+					            "Data constraint %" PRIu64 " and %" PRIu64 " occupy the same location but differ"
+					            " in observation (%.12g vs %.12g)\n", n_read, i, ww[n], ww[i]);
+					n_duplicates++;
+				}
+			}
+		}
+		n_read++;
+		if (skip) continue;	/* Current point was a duplicate of a previous point */
+		
 		if (Ctrl->Z.active) {
 			if (ww[n] < w_min) w_min = ww[n];
 			if (ww[n] > w_max) w_max = ww[n];
 		}
 		if (++n == n_alloc) gmt_M_malloc4 (GMT, xx, yy, zz, ww, n, &n_alloc, double);
 	} while (true);
+	if (n_skip) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " data constraints as duplicates\n", n_skip);
 	
-	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
+	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR || n_duplicates) {	/* Disables further data input */
 		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 		gmt_M_free (GMT, zz);	gmt_M_free (GMT, ww);
+		if (n_duplicates) {
+			GMT_Report (API, GMT_MSG_NORMAL,
+			            "Found %" PRIu64 " data constraint duplicates with different observation values\n", n_duplicates);
+			GMT_Report (API, GMT_MSG_NORMAL,
+			            "You must reconcile duplicates before running sphinterpolate\n");
+		}
 		Return (API->error);
 	}
 

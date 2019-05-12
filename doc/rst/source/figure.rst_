@@ -19,14 +19,15 @@ Description
 -----------
 
 A GMT modern session can make any number of illustrations (including none).
-In situations when many illustrations will be made during a single session,
+In situations when multiple illustrations will be made during a single session or when you need
+specific control over the conversion from PostScript to the output format,
 the **figure** module is used to specify the name and format(s) to use for the next plot.
 It must be issued before you start plotting to the intended figure, and each
 new **figure** call changes plotting focus to the next figure.  You may go back and forth between
 different figures but the optional arguments (*formats* and *options*) can only
 be given the first time you specify a new figure.
 In addition to *prefix* and *formats*, you can supply a comma-separated series of
-:doc:`psconvert` options that will override the default settings provided via
+:doc:`psconvert` *options* that will override the default settings provided via
 :ref:`PS_CONVERT <PS_CONVERT>` [**A**]. The only other available options control verbosity
 and default parameter settings.
 

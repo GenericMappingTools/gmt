@@ -78,7 +78,9 @@ Optional Arguments
 
 **-I**\ *intens*
     Use the supplied *intens* value (nominally in the -1 to +1 range) to
-    modulate the fill color by simulating illumination [none]. 
+    modulate the fill color by simulating illumination [none]. If no intensity
+    is provided we will instead read *intens* from the first data column after
+    the symbol parameters (if given).
 
 .. _-L:
 
@@ -162,6 +164,7 @@ Optional Arguments
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_
+If no transparency is appended then we will read it from the last column per data record instead.
 
 .. include:: explain_colon.rst_
 

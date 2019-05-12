@@ -214,8 +214,9 @@ struct GMT_COMMON {
 		bool active;
 		char string[GMT_LEN64];
 	} s;
-	struct t {	/* -t<transparency> */
+	struct t {	/* -t[<transparency>] */
 		bool active;
+		bool variable;
 		double value;
 	} t;
 	struct x {	/* -x[[-]<n>] */
