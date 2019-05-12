@@ -93,7 +93,7 @@ struct PSEVENTS_CTRL {
 	struct PSEVENTS_S {	/* 	-S<symbol>[<size>[u]] */
 		bool active;
 		unsigned int mode;
-		char symbol;
+		char *symbol;
 		double size;
 	} S;
 	struct PSEVENTS_T {	/* 	-T<nowtime> */
@@ -121,6 +121,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *C) {	/* De
 	gmt_M_str_free (C->F.string);	
 	gmt_M_str_free (C->G.color);	
 	gmt_M_str_free (C->Q.file);	
+	gmt_M_str_free (C->S.symbol);	
 	gmt_M_str_free (C->W.pen);	
 	gmt_M_free (GMT, C);	
 }
@@ -187,7 +188,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 	 */
 
 	unsigned int n_errors = 0, pos, n_col = 3, k, id;
-	char *c = NULL, txt[GMT_LEN64] = {""};
+	char *c = NULL, txt[GMT_LEN128] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -290,11 +291,39 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 
 			case 'S':	/* Set symbol type and size (append units) */
 				Ctrl->S.active = true;
-				Ctrl->S.symbol = opt->arg[0];
-				if (opt->arg[1] && !strchr (GMT_DIM_UNITS, opt->arg[1]))
-					Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);
-				else	/* Must read individual event symbol sizes for file */
-					Ctrl->S.mode = 1;
+				if (strchr ("kK", opt->arg[0])) {	/* Custom symbol may have a slash before size */
+					if ((c = strrchr (opt->arg, '/'))) {	/* Gave size */
+						Ctrl->S.size = gmt_M_to_inch (GMT, &c[1]);
+						c[0] = '0';
+						Ctrl->S.symbol = strdup (opt->arg);
+						c[0] = '/';
+					}
+					else {	/* Gave no size so get the whole thing and read size from file */
+						Ctrl->S.symbol = strdup (opt->arg);
+						Ctrl->S.mode = 1;
+					}
+				}
+				else if (strchr ("-+aAcCdDgGhHiInNsStTxy", opt->arg[0])) {	/* Regular symbols of form <code>[<size>], where <code> is 1-char */
+					if (opt->arg[1] && !strchr (GMT_DIM_UNITS, opt->arg[1])) {	/* Gave a fixed size */
+						Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);	/* Now in inches */
+						sprintf (txt, "%c", opt->arg[0]);	/* Just the symbol code */
+						Ctrl->S.symbol = strdup (txt);
+					}
+					else if (strchr (GMT_DIM_UNITS, opt->arg[1])) {	/* Must read symbol size in this unit from file */
+						Ctrl->S.mode = 1;
+						gmt_set_measure_unit (GMT, opt->arg[1]);
+						sprintf (txt, "%c", opt->arg[0]);	/* Just the symbol code */
+						Ctrl->S.symbol = strdup (txt);
+					}
+					else {	/* Must read individual event symbol sizes for file using prevailing length-unit setting*/
+						Ctrl->S.mode = 1;
+						Ctrl->S.symbol = strdup (opt->arg);
+					}
+				}
+				else {	/* Odd symbols not yet possible in this module */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S: Cannot (yet) handle symbol code %c\n", opt->arg[0]);
+					n_errors++;
+				}
 				break;
 
 			case 'T':	/* Get time (-fT needed if these are absolute times and not dummy times or frames) */
@@ -553,8 +582,9 @@ Do_text:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing 
 	
 	if (fps) { /* Here we have event symbols to plot as an overlay via a call to psxy */
 		fclose (fps);	/* First close the file so symbol output is flushed */
-		/* Build psxy command with fixed options and those that depend on -C -G -W */
-		sprintf (cmd, "%s -R -J -O -K -I -t --GMT_HISTORY=false -S%ci", tmp_file_symbols, Ctrl->S.symbol);
+		/* Build psxy command with fixed options and those that depend on -C -G -W.
+		 * We must set symbol unit as inch since we are passing sizes in inches directly.  */
+		sprintf (cmd, "%s -R -J -O -K -I -t -S%s --GMT_HISTORY=false --PROJ_LENGTH_UNIT=inch", tmp_file_symbols, Ctrl->S.symbol);
 		if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.cpt);}
 		if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.color);}
 		if (Ctrl->W.pen) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.pen);}
