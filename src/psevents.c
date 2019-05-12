@@ -188,7 +188,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 	 */
 
 	unsigned int n_errors = 0, pos, n_col = 3, k, id;
-	char *c = NULL, txt[GMT_LEN128] = {""};
+	char *c = NULL, txt[GMT_LEN128] = {""}, *t_string = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -303,6 +303,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 						Ctrl->S.mode = 1;
 					}
 				}
+				else if (opt->arg[0] == 'E' && opt->arg[1] == '-') {
+					if (opt->arg[2])	/* Gave a fixed size */
+						Ctrl->S.size = atof (&opt->arg[2]);
+					else	/* Must read individual event symbol sizes for file using prevailing length-unit setting*/
+						Ctrl->S.mode = 1;
+					Ctrl->S.symbol = strdup ("E-");
+				}
 				else if (strchr ("-+aAcCdDgGhHiInNsStTxy", opt->arg[0])) {	/* Regular symbols of form <code>[<size>], where <code> is 1-char */
 					if (opt->arg[1] && !strchr (GMT_DIM_UNITS, opt->arg[1])) {	/* Gave a fixed size */
 						Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);	/* Now in inches */
@@ -328,9 +335,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 
 			case 'T':	/* Get time (-fT needed if these are absolute times and not dummy times or frames) */
 				Ctrl->T.active = true;
-				n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X),
-					gmt_scanf_arg (GMT, opt->arg, gmt_M_type (GMT, GMT_IN, GMT_X), false,
-					&Ctrl->T.now), opt->arg);
+				t_string = opt->arg;
 				break;
 
 			case 'W':	/* Set symbol outline pen */
@@ -344,6 +349,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 		}
 	}
 	if (Ctrl->C.active) n_col++;	/* Need to read one more column for z */
+	if (Ctrl->S.mode) n_col++;	/* Must allow for size in input before time and length */
+	if (t_string) {
+		n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, n_col-1),
+			gmt_scanf_arg (GMT, t_string, gmt_M_type (GMT, GMT_IN, n_col-1), false,
+			&Ctrl->T.now), t_string);
+	}
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: -T<now> is a required option\n");
+		n_errors++;
+	}
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_col;
 	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_col, "Syntax error: Binary input data (-bi) must have at least %u columns.\n", n_col);
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Syntax error: Cannot specify both -C and -G.\n");
