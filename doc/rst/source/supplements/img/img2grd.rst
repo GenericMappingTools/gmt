@@ -15,8 +15,8 @@ Synopsis
 
 **gmt img2grd** *imgfile* |-G|\ *grdfile*
 |SYN_OPT-R|
-[ |-C| ]
 [ |-D|\ [*minlat/maxlat*] ] [ |-E| ] [ |-I|\ *inc* ]
+[ |-F| ]
 [ |-M| ] [ |-N|\ *navg* ] [ |-S|\ [*scale*] ]
 [ |-T|\ *type* ]
 [ |SYN_OPT-V| ]
@@ -58,12 +58,6 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. _-C:
-
-**-C**
-    Set the x and y Mercator coordinates relative to projection center
-    [Default is relative to lower left corner of grid]. Requires **-M**.
-
 .. _-D:
 
 **-D**\ [*minlat/maxlat*\ ]
@@ -86,6 +80,12 @@ Optional Arguments
     this case the region set by **-R** must be given in multiples of the
     increment (.e.g, **-R**\ 0/45/45/72).
 
+.. _-F:
+
+**-F**
+    Translate the x and y Mercator coordinates so that they are relative
+    to the lower left corner, which then is (0,0). Requires **-M**.
+
 .. _-I:
 
 **-I**
@@ -102,13 +102,14 @@ Optional Arguments
     preserved, so that the region **-R** set by the user is modified
     slightly; the modified region corresponds to the edges of pixels [or
     groups of *navg* pixels]. The grid file header is set so that the x
-    and y axis lengths represent distance from the west and south edges
+    and y axis lengths represent distance relative to projection center
+    using a **-Jm**\ 1 projection.  See **-F** to set coordinates to
+    instead be distances from the west and south edges
     of the image, measured in user default units, with **-Jm**\ 1 and
     the adjusted **-R**. By setting the default **PROJ_ ELLIPSOID** =
     Sphere, the user can make overlays with the adjusted **-R** so that
     they match. See **EXAMPLES** below. The adjusted **-R** is also
-    written in the grid header remark, so it can be found later. See
-    **-C** to set coordinates relative to projection center.
+    written in the grid header remark, so it can be found later.
 
 .. _-N:
 
