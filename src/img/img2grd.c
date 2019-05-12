@@ -48,7 +48,8 @@
  **  PW 18 Oct 1999 Use WORDS_BIGENDIAN macro set by configure.
  *   PW 12 Apr 2006 Replaced -x -y with -W -D
  *   PW 28 Nov 2006 Added -C for setting origin to main img origin (0,0)
- *   PW 13 APr 2018 Get ready for grids with < 1min spacing
+ *   PW 13 Apr 2018 Get ready for grids with < 1min spacing
+ *   PW 12 May 2019 Make -C the default, add backwards option -F for old default
  *
  */
 
@@ -110,9 +111,6 @@ struct IMG2GRD_CTRL {
 		bool active;
 		char *file;	/* Input file name */
 	} In;
-	struct C {	/* -C */
-		bool active;
-	} C;
 	struct D {	/* -D[<minlat>/<maxlat>] */
 		bool active;
 		double min, max;
@@ -120,6 +118,9 @@ struct IMG2GRD_CTRL {
 	struct E {	/* -E */
 		bool active;
 	} E;
+	struct F {	/* -F */
+		bool active;
+	} F;
 	struct G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
@@ -175,8 +176,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *C) {	/* Dea
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <world_image_filename> %s -G<outgrid> -T<type> [-C]\n", name, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<minlat>/<maxlat>]] [-E] [-I<min>[m|s]] [-M] [-N<navg>] [-S[<scale>]] [%s]\n\t[-W<maxlon>] [%s] [%s]\n\n", GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <world_image_filename> %s -G<outgrid> -T<type>\n", name, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<minlat>/<maxlat>]] [-E] [-F] [-I<min>[m|s]] [-M] [-N<navg>] [-S[<scale>]] [%s]\n\t[-W<maxlon>] [%s] [%s]\n\n", GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -184,13 +185,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set filename for the output grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R Specify the region in decimal degrees or degrees:minutes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Refer Mercator coordinates to img source origin and requires -M\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default sets lower left to 0,0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set input img file bottom and top latitudes [%.3f/%.3f].\n", GMT_IMG_MINLAT, GMT_IMG_MAXLAT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no latitudes are given it is taken to mean %.3f/%.3f.\n", GMT_IMG_MINLAT_80, GMT_IMG_MAXLAT_80);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Without -D we automatically determine the extent from the file size.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Resample geographic grid to the specified -R.  Cannot be used with -M .\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Default gives the exact -R of the Mercator grid).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Translate Mercator coordinates so lower left is (0,0); requires -M\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Set input img pixels to be <min> minutes of longitude wide [2.0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Without -I we automatically determine the pixel size from the file size.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Write a Mercator grid [Default writes a geographic grid].\n");
@@ -237,8 +237,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 
 			/* Processes program-specific parameters */
 
-			case 'C':
-				Ctrl->C.active = true;
+			case 'F':	/* Backwards helper for old non-C behavior */
+				Ctrl->F.active = true;
 				break;
 			case 'D':
 				Ctrl->D.active = true;
@@ -326,7 +326,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.value < 0 || Ctrl->T.value > 3, "Syntax error: Must specify output type in the range 0-3 with -T.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.value < 360.0, "Syntax error: Requires a maximum longitude >= 360.0 with -W.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.value <= 0.0, "Syntax error: Requires a positive value with -I.\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->M.active, "Syntax error: -C requires -M.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->M.active, "Syntax error: -F requires -M.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->M.active, "Syntax error: -E cannot be used with -M.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.value < 1, "Syntax error: -N requires an integer > 1.\n");
 
@@ -592,10 +592,17 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	navgsq = navg * navg;
 	rnavgsq = 1.0 / navgsq;
 
-	/* Set up header with Mercatorized dimensions assuming -Jm1  */
-	if (Ctrl->C.active) {
-		int equator;
-		equator = irint (img_lat_to_ypix (0.0, &imgcoord));
+	/* Set up header with Mercatorized dimensions assuming -Jm1i  */
+	if (Ctrl->F.active) {	/* Backwards support for old behavior */
+		wesn[XLO] = 0.0;
+		wesn[XHI] = n_columns * inc[GMT_X];
+		wesn[YLO] = 0.0;
+		wesn[YHI] = n_rows * inc[GMT_Y];
+		left = wesn[XLO];
+		bottom = wesn[YLO];
+	}
+	else {
+		int equator = irint (img_lat_to_ypix (0.0, &imgcoord));
 		wesn[XLO] = iinstart * inc[GMT_X];
 		wesn[XHI] = wesn[XLO] + n_columns * inc[GMT_X];
 		wesn[YHI] = (imgcoord.nyrow - (int)jinstart - equator) * inc[GMT_Y];
@@ -605,18 +612,10 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 			wesn[XHI] -= 360.0;
 			wesn[XLO] -= 360.0;
 		}
-		else if (west < 0.0 && east < 0.0 && west >= -180.0 && wesn[XLO] > 0.0) {	/* Gave reasonable negative region, honor that for -C */
+		else if (west < 0.0 && east < 0.0 && west >= -180.0 && wesn[XLO] > 0.0) {	/* Gave reasonable negative region, honor it */
 			wesn[XHI] -= 360.0;
 			wesn[XLO] -= 360.0;
 		}
-	}
-	else {
-		wesn[XLO] = 0.0;
-		wesn[XHI] = n_columns * inc[GMT_X];
-		wesn[YLO] = 0.0;
-		wesn[YHI] = n_rows * inc[GMT_Y];
-		left = wesn[XLO];
-		bottom = wesn[YLO];
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "Allocate Grid container for Mercator data\n");
 	if ((Merc = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, wesn, inc, \
