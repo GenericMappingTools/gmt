@@ -388,7 +388,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the makecpt main code ----------------------------*/
 
 	if (Ctrl->C.active) {
-		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
+		if (Ctrl->C.file[0] != '@' && (l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
 	}
 	else {	/* No table specified; set default rainbow table */
 		Ctrl->C.active = true;

@@ -55,6 +55,8 @@
 #include "gmt_dev.h"
 #include "common_byteswap.h"
 
+EXTERN_MSC int gmtlib_get_option_id (int start, char *this_option);
+
 #define THIS_MODULE_NAME	"img2grd"
 #define THIS_MODULE_LIB		"img"
 #define THIS_MODULE_PURPOSE	"Extract a subset from an img file in Mercator or Geographic format"
@@ -406,7 +408,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	uint16_t *u2 = NULL;
 
 	char infile[GMT_BUFSIZ] = {""}, cmd[GMT_BUFSIZ] = {""}, input[GMT_STR16] = {""}, output[GMT_LEN256] = {""};
-	char z_units[GMT_GRID_UNIT_LEN80] = {""};
+	char z_units[GMT_GRID_UNIT_LEN80] = {""}, exact_R[GMT_LEN256] = {""};
 
 	FILE *fp = NULL;
 
@@ -579,7 +581,8 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	wesn[XHI] = iinstop  * dx;
 	n_columns = (int)(iinstop - iinstart) / navg;
 
-	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "To fit [averaged] input, your %s is adjusted to -R%.12g/%.12g/%.12g/%.12g.\n", Ctrl->In.file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+	sprintf (exact_R, "%.16g/%.16g/%.16g/%.16g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "To fit [averaged] input, your %s is adjusted to the exact region -R%s.\n", Ctrl->In.file, exact_R);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "The output grid size will be %d by %d pixels.\n", n_columns, n_rows);
 
 	/* Set iinstart so that it is non-negative, for use to index pixels.  */
@@ -738,6 +741,18 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, ix);
 	gmt_M_free (GMT, row);
 
+	if (!Ctrl->E.active) {	/* Update R history with exact region found above */
+		/* Because the Mercator grid's equidistant y-nodes are not equidistant when converted back to geogrpaohic coordinates,
+		 * the corresponding south and north coordinates for the outside of the pixels will generally not match the given
+		 * south and north boundaries in the specified -R setting.  Because this is only an issue in this program we replace
+		 * the given -R with the exact -R in the gmt.history file so that any subsequent module call using -R shorthand will
+		 * get the actual (exect) region and not the requested (initial, approximate) region. */
+		int id = gmtlib_get_option_id (0, "R");			/* The -R[P] item in the history array */
+		if (GMT->current.setting.run_mode == GMT_MODERN) id++;	/* Instead pick the -RG item under modern mode since this is not a plotting tool */
+		gmt_M_str_free (GMT->init.history[id]);			/* Free the previous history string set during parsing */
+		GMT->init.history[id] = strdup (exact_R);		/* Replace it with the exact region */
+	}
+	
 	/* We now have the Mercator grid in Grid. */
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Created %d by %d Mercatorized grid file.  Min, Max values are %.8g  %.8g\n", Merc->header->n_columns, Merc->header->n_rows, Merc->header->z_min, Merc->header->z_max);

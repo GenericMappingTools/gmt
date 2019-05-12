@@ -379,6 +379,9 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 		if ((Grid[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
+		if ((API->error = gmt_img_sanitycheck (GMT, Grid[k]->header))) {	/* Used map projection on a Mercator (cartesian) grid */
+			Return (API->error);
+		}
 		gmt_grd_init (GMT, Grid[k]->header, options, true);
 	}
 

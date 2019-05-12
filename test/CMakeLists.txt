@@ -22,7 +22,7 @@ if (DO_TESTS)
 	else (MODERNIZE_TESTS)
 		set (SCRIPT_MODE "C")
 	endif (MODERNIZE_TESTS)
-	
+
 	# list of test dirs {Note: You must add new test sub-directories here}
 	set (GMT_TEST_DIRS api byteswap blockmean blockmedian blockmode filter1d fitcircle gdal
 		genper gmt_core gmtconvert gmtlogo gmtinfo gmtmath gmtregress gmtselect gmtsimplify
@@ -68,7 +68,7 @@ if (DO_TESTS)
 				COMMAND ${BASH} gmtest ${_test} ${SCRIPT_MODE})
 		endforeach (_test ${_test_scripts})
 	endforeach (_test_dir ${GMT_TEST_DIRS})
-	# add classic tests
+	# add modern tests
 	foreach (_test_dir ${GMT_TEST_DIRS_MODERN})
 		# find files RELATIVE so that test NAMEs are not absolute paths
 		file (GLOB _test_scripts RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}

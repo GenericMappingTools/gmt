@@ -3267,6 +3267,16 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	return code;
 }
 
+int gmt_img_sanitycheck (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
+	/* Make sure that img Mercator grids are not used with map projections for plotting */
+	
+	if (strncmp (h->remark, "Spherical Mercator Projected with -Jm1 -R", 41U)) return GMT_NOERROR;	/* Not a Mercator img grid since missing the critical remark format */
+	if (h->registration == GMT_GRID_NODE_REG) return GMT_NOERROR;		/* Cannot be a Mercator img grid since they are pixel registered */
+	if (GMT->current.proj.projection == GMT_LINEAR) return GMT_NOERROR;	/* Only linear projection is allowed with this projected grid */
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot use a map projection with an already projected grid (spherical Mercator img grid).  Use -Jx or -JX.\n");
+	return GMT_PROJECTION_ERROR;
+}
+
 #ifdef HAVE_GDAL
 GMT_LOCAL void gdal_free_from (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread) {
 	int i;

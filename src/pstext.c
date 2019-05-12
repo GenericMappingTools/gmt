@@ -632,7 +632,7 @@ GMT_LOCAL int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL 
 	/* Paragraph mode: Parse x,y [and z], check for validity, and return the rest of the text in buffer */
 	int ix, iy, nscan = 0;
 	unsigned int pos = 0;
-	char txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""}, txt_z[GMT_LEN256] = {""};
+	char txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""}, txt_z[GMT_LEN256] = {""}, txt_t[GMT_LEN256] = {""};
 
 	ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 	buffer[0] = '\0';	/* Initialize buffer to NULL */
@@ -641,10 +641,15 @@ GMT_LOCAL int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL 
 		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
 		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
 		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_z)) nscan++;	/* Returns zcol and update pos */
+		if (GMT->common.t.variable && gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_t)) nscan++;	/* Returns tcol and update pos */
 		strcpy (buffer, &record[pos]);
 		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
 		if ((gmt_scanf (GMT, txt_z, gmt_M_type (GMT, GMT_IN, GMT_Z), &GMT->current.io.curr_rec[GMT_Z]) == GMT_IS_NAN)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad z coordinate, skipped)\n", rec_no);
+			return (-1);
+		}
+		if ((gmt_scanf (GMT, txt_t, GMT_IS_FLOAT, &GMT->current.io.curr_rec[3]) == GMT_IS_NAN)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad transparency, skipped)\n", rec_no);
 			return (-1);
 		}
 	}
@@ -657,8 +662,13 @@ GMT_LOCAL int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL 
 	else {
 		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
 		if (gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
+		if (GMT->common.t.variable && gmt_strtok (record, GMT->current.io.scan_separators, &pos, txt_t)) nscan++;	/* Returns tcol and update pos */
 		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
+		if ((gmt_scanf (GMT, txt_t, GMT_IS_FLOAT, &GMT->current.io.curr_rec[2]) == GMT_IS_NAN)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad transparency, skipped)\n", rec_no);
+			return (-1);
+		}
 	}
 
 	if (!Ctrl->F.R_justify) {
@@ -703,7 +713,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	
 	bool master_record = false, skip_text_records = false, old_is_world, clip_set = false, no_in_text, check_if_outside;
 
-	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col, rec_mode, a_col = 0;
+	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col, rec_mode, a_col = 0, tcol;
 	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols, z_col = GMT_Z;
 
 	size_t n_alloc = 0;
@@ -747,8 +757,9 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processing input text table data\n");
 	load_parameters_pstext (GMT, &T, Ctrl);	/* Pass info from Ctrl to T */
+	tcol = 2 + Ctrl->Z.active;
 
-	n_expected_cols = 2 + Ctrl->Z.active + Ctrl->F.nread;	/* Normal number of columns to read, plus any text. This includes x,y */
+	n_expected_cols = 2 + Ctrl->Z.active + Ctrl->F.nread + GMT->common.t.variable;	/* Normal number of columns to read, plus any text. This includes x,y */
 	if (Ctrl->M.active) n_expected_cols += 3;
 	no_in_text = (Ctrl->F.get_text > 1);	/* No text in the input record */
 	add = !(T.x_offset == 0.0 && T.y_offset == 0.0);
@@ -811,11 +822,13 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			rec_mode = (ncol) ? GMT_READ_MIXED : GMT_READ_TEXT;
 			geometry = (ncol) ? GMT_IS_NONE : GMT_IS_TEXT;
 		}
+		if (a_col) a_col = ncol - 1;	/* Now refers to numerical column with the angle */
+		if (GMT->common.t.variable) ncol++;	/* Will have transparency as well */
+		tcol = ncol - 1;	/* If there is transparency then this is the column to use */
 		GMT_Report (API, GMT_MSG_DEBUG, "Expects a %s record with %d leading numerical columns, followed by %d text parameters and %s trailing text\n",
 			rtype[rec_mode], ncol, Ctrl->F.nread - a_col, cmode_type[code]);
 		GMT_Set_Columns (API, GMT_IN, ncol, cmode);
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;	/* In case there are 3-D going on */
-		if (a_col) a_col = ncol - 1;	/* Now refers to numerical column with the angle */
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
@@ -1120,6 +1133,8 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			}
 			n_paragraphs++;
 
+			if (GMT->common.t.variable)	/* Update the transparency for current symbol (or -t was given) */
+				PSL_settransparency (PSL, 0.01 * in[tcol]);
 			PSL_setfont (PSL, T.font.id);
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, in[GMT_Z]);
 			if (T.boxflag & 32) {	/* Draw line from original point to shifted location */
@@ -1170,6 +1185,9 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	if (GMT->common.t.variable)	/* Reset the transparency */
+		PSL_settransparency (PSL, 0.0);
+		
 	if (Ctrl->M.active) {
 		if (n_processed) {	/* Must output the last paragraph */
 			output_words (GMT, PSL, plot_x, plot_y, paragraph, &T);

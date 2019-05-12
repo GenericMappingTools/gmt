@@ -6613,6 +6613,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 't':	/* -t layer transparency option  */
 
 			gmt_message (GMT, "\t-t Set the layer PDF transparency from 0-100 [Default is 0; opaque].\n");
+			gmt_message (GMT, "\t   For plotting symbols or text with variable transparency, give no value.\n");
 			break;
 
 		case ':':	/* lon/lat [x/y] or lat/lon [y/x] */
@@ -14038,6 +14039,7 @@ unsigned int gmt_parse_inc_option (struct GMT_CTRL *GMT, char option, char *item
 	return GMT_NOERROR;
 }
 
+#ifdef HAVE_GDAL
 GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 	/* Deal with proj.4 or EPSGs passed in -J option */
 	char  *item_t1 = NULL, *item_t2 = NULL, wktext[32] = {""}, *pch;
@@ -14069,6 +14071,9 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 	else
 		item_t1 = item;
 
+	/* Don't remember anymore if we still need to call gmt_importproj4(). We don't for simple
+	   mapproject usage but maybe we still need for mapping purposes. To-be-rediscovered.
+	*/
 	item_t2 = gmt_importproj4 (GMT, item_t1, &scale_pos);		/* This is GMT -J proj string */
 	if (item_t2) {
 		char *pch2;
@@ -14110,7 +14115,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		sprintf (dest, "%s", item_t1);
 
 	/* For the proj.4 string detect if this projection is supported by GDAL. If not will append a +wktext later */
-	if (!strncmp(item, "+proj=", 6)) {
+	if (!strncmp(item, "+proj=", 6) && GDAL_VERSION_NUM < 2050000) {	/* Almost for sure GDAL 2.5 doesn't need this */
 		char prjcode[8] = {""};
 		k = 6;
 		while (item[k] && (item[k] != '+' && item[k] != ' ' && item[k] != '\t' && item[k] != '/')) k++;
@@ -14120,55 +14125,55 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 		if (strcmp(prjcode, "longlat") &&
 			strcmp(prjcode, "latlong") &&
 			strcmp(prjcode, "geocent") &&
-		    strcmp(prjcode, "bonne") &&
-		    strcmp(prjcode, "cass") &&
-		    strcmp(prjcode, "nzmg") &&
-		    strcmp(prjcode, "cea") &&
-		    strcmp(prjcode, "tmerc") &&
-		    strcmp(prjcode, "etmerc") &&
-		    strcmp(prjcode, "utm") &&
-		    strcmp(prjcode, "merc") &&
-		    strcmp(prjcode, "stere") &&
-		    strcmp(prjcode, "sterea") &&
-		    strcmp(prjcode, "eqc") &&
-		    strcmp(prjcode, "gstmerc") &&
-		    strcmp(prjcode, "gnom") &&
-		    strcmp(prjcode, "ortho") &&
-		    strcmp(prjcode, "laea") &&
-		    strcmp(prjcode, "aeqd") &&
-		    strcmp(prjcode, "eqdc") &&
-		    strcmp(prjcode, "mill") &&
-		    strcmp(prjcode, "moll") &&
-		    strcmp(prjcode, "eck1") &&
-		    strcmp(prjcode, "eck2") &&
-		    strcmp(prjcode, "eck3") &&
-		    strcmp(prjcode, "eck4") &&
-		    strcmp(prjcode, "eck5") &&
-		    strcmp(prjcode, "eck6") &&
-		    strcmp(prjcode, "poly") &&
-		    strcmp(prjcode, "aea") &&
-		    strcmp(prjcode, "robin") &&
-		    strcmp(prjcode, "vandg") &&
-		    strcmp(prjcode, "sinu") &&
-		    strcmp(prjcode, "gall") &&
-		    strcmp(prjcode, "goode") &&
-		    strcmp(prjcode, "igh") &&
-		    strcmp(prjcode, "geos") &&
-		    strcmp(prjcode, "lcc") &&
-		    strcmp(prjcode, "omerc") &&
-		    strcmp(prjcode, "somerc") &&
-		    strcmp(prjcode, "krovak") &&
-		    strcmp(prjcode, "iwm_p") &&
-		    strcmp(prjcode, "wag1") &&
-		    strcmp(prjcode, "wag2") &&
-		    strcmp(prjcode, "wag3") &&
-		    strcmp(prjcode, "wag4") &&
-		    strcmp(prjcode, "wag5") &&
-		    strcmp(prjcode, "wag6") &&
-		    strcmp(prjcode, "wag7") &&
-		    strcmp(prjcode, "qsc") &&
-		    strcmp(prjcode, "sch") &&
-		    strcmp(prjcode, "tpeqd")) {
+			strcmp(prjcode, "bonne") &&
+			strcmp(prjcode, "cass") &&
+			strcmp(prjcode, "nzmg") &&
+			strcmp(prjcode, "cea") &&
+			strcmp(prjcode, "tmerc") &&
+			strcmp(prjcode, "etmerc") &&
+			strcmp(prjcode, "utm") &&
+			strcmp(prjcode, "merc") &&
+			strcmp(prjcode, "stere") &&
+			strcmp(prjcode, "sterea") &&
+			strcmp(prjcode, "eqc") &&
+			strcmp(prjcode, "gstmerc") &&
+			strcmp(prjcode, "gnom") &&
+			strcmp(prjcode, "ortho") &&
+			strcmp(prjcode, "laea") &&
+			strcmp(prjcode, "aeqd") &&
+			strcmp(prjcode, "eqdc") &&
+			strcmp(prjcode, "mill") &&
+			strcmp(prjcode, "moll") &&
+			strcmp(prjcode, "eck1") &&
+			strcmp(prjcode, "eck2") &&
+			strcmp(prjcode, "eck3") &&
+			strcmp(prjcode, "eck4") &&
+			strcmp(prjcode, "eck5") &&
+			strcmp(prjcode, "eck6") &&
+			strcmp(prjcode, "poly") &&
+			strcmp(prjcode, "aea") &&
+			strcmp(prjcode, "robin") &&
+			strcmp(prjcode, "vandg") &&
+			strcmp(prjcode, "sinu") &&
+			strcmp(prjcode, "gall") &&
+			strcmp(prjcode, "goode") &&
+			strcmp(prjcode, "igh") &&
+			strcmp(prjcode, "geos") &&
+			strcmp(prjcode, "lcc") &&
+			strcmp(prjcode, "omerc") &&
+			strcmp(prjcode, "somerc") &&
+			strcmp(prjcode, "krovak") &&
+			strcmp(prjcode, "iwm_p") &&
+			strcmp(prjcode, "wag1") &&
+			strcmp(prjcode, "wag2") &&
+			strcmp(prjcode, "wag3") &&
+			strcmp(prjcode, "wag4") &&
+			strcmp(prjcode, "wag5") &&
+			strcmp(prjcode, "wag6") &&
+			strcmp(prjcode, "wag7") &&
+			strcmp(prjcode, "qsc") &&
+			strcmp(prjcode, "sch") &&
+			strcmp(prjcode, "tpeqd")) {
 
 			sprintf(wktext, " +wktext");	/* Projection NOT internally supported by GDAL */
 			if (!strstr(item, "+ellps") && !strstr(item, "+a=") && !strstr(item, "+R="))
@@ -14185,6 +14190,7 @@ GMT_LOCAL int parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest) {
 
 	return error;
 }
+#endif
 
 /*! gmt_parse_common_options interprets the command line for the common, unique options
  * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -j, -n, -o, -p, -r, -s, -t, -:, -- and -^.
@@ -14516,6 +14522,9 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 					error++;
 				}
 				GMT->common.t.active = true;
+			}
+			else if (!strncmp (GMT->init.module_name, "psxy", 4U) || !strncmp (GMT->init.module_name, "pstext", 6U)) {	/* Modules psxy, psxyz, and pstext can do variable transparency */
+				GMT->common.t.active = GMT->common.t.variable = true;
 			}
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Option -t was not given any value (please add transparency in (0-100]0%% range)!\n");

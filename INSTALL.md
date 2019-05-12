@@ -11,7 +11,7 @@ or [the GitHub repository](https://github.com/GenericMappingTools/gmt/).
 
 This file provides instructions about how to install GMT binary packages in
 different operating systems. Please refer to [Building Instructions](BUILDING.md)
-for compling GMT source package (either stable release or development version).
+for compiling GMT source package (either stable release or development version).
 
 ## Contents
 
@@ -26,6 +26,8 @@ for compling GMT source package (either stable release or development version).
   * [Install via Homebrew](#install-via-homebrew)
   * [Install via conda](#install-via-conda-1)
 - [Windows](#windows)
+  * [Standalone Installer](#standalone-installer-1)
+  * [Install via conda](#install-via-conda-2)
 
 ## Linux
 
@@ -47,7 +49,7 @@ include the supplements. If you need them you will need to
 
 ### RHEL/CentOS/Fedora
 
-GMT binary pacakges are available from Extra Packages for Enterprise Linux.
+GMT binary packages are available from Extra Packages for Enterprise Linux.
 For RHEL and CentOS you can add this repository by telling yum:
 
     sudo yum install epel-release
@@ -134,7 +136,16 @@ You can use the [conda package manager](https://conda.io/) that comes with the
 
 ## Windows
 
+### Standalone Installer
+
 We provide 32 and 64 bit standalone installers (e.g., gmt-5.x.x-win32.exe)
 in the [downloads section](http://gmt.soest.hawaii.edu/projects/gmt/wiki/Download).
 If you need the newest development version refer to the instructions for
 [building GMT from source](BUILDING.md).
+
+### Install via conda
+
+You can use the [conda package manager](https://conda.io/) that comes with the
+[Anaconda Python Distribution](https://www.anaconda.com/distribution/) to install GMT:
+
+    conda install gmt --channel conda-forge

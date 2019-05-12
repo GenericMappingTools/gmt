@@ -69,48 +69,48 @@ enum enum_label {MOVIE_LABEL_IS_FRAME = 1,
 
 struct MOVIE_CTRL {
 	bool animate;	/* True if we are making any animated product (GIF, movies) */
-	struct In {	/* mainscript (Bourne, Bourne Again, csh, or DOS (bat) script) */
+	struct MOVIE_In {	/* mainscript (Bourne, Bourne Again, csh, or DOS (bat) script) */
 		bool active;
 		enum enum_script mode;
 		char *file;
 		FILE *fp;
 	} In;
-	struct A {	/* -A[+l[<nloops>]][+s<stride>]  */
+	struct MOVIE_A {	/* -A[+l[<nloops>]][+s<stride>]  */
 		bool active;
 		bool loop;
 		bool skip;
 		unsigned int loops;
 		unsigned int stride;
 	} A;
-	struct C {	/* -C<namedcanvas>|<canvas_and_dpu> */
+	struct MOVIE_C {	/* -C<namedcanvas>|<canvas_and_dpu> */
 		bool active;
 		double dim[3];
 		char unit;
 		char *string;
 	} C;
-	struct D {	/* -D<displayrate> */
+	struct MOVIE_D {	/* -D<displayrate> */
 		bool active;
 		double framerate;
 	} D;
-	struct F {	/* -F<videoformat>[+o<options>] */
+	struct MOVIE_F {	/* -F<videoformat>[+o<options>] */
 		bool active[MOVIE_N_FORMATS];
 		char *format[MOVIE_N_FORMATS];
 		char *options[MOVIE_N_FORMATS];
 	} F;
-	struct G {	/* -G<canvasfill> */
+	struct MOVIE_G {	/* -G<canvasfill> */
 		bool active;
 		char *fill;
 	} G;
-	struct H {	/* -H<factor> */
+	struct MOVIE_H {	/* -H<factor> */
 		bool active;
 		int factor;
 	} H;
-	struct I {	/* -I<includefile> */
+	struct MOVIE_I {	/* -I<includefile> */
 		bool active;
 		char *file;
 		FILE *fp;
 	} I;
-	struct L {	/* Repeatable: -L[e|f|c#|t#][+c<clearance>][+f<font>][+g<fill>][+j<justify>][+o<offset>][+p<pen>][+t<fmt>][+s<scl>] */
+	struct MOVIE_L {	/* Repeatable: -L[e|f|c#|t#][+c<clearance>][+f<font>][+g<fill>][+j<justify>][+o<offset>][+p<pen>][+t<fmt>][+s<scl>] */
 		bool active;
 		unsigned int n_tags;
 		struct MOVIE_TAG {
@@ -128,26 +128,26 @@ struct MOVIE_CTRL {
 			double clearance[2];
 		} tag[GMT_LEN16];
 	} L;
-	struct M {	/* -M[<frame>][,format] */
+	struct MOVIE_M {	/* -M[<frame>][,format] */
 		bool active;
 		bool exit;
 		unsigned int frame;
 		char *format;
 	} M;
-	struct N {	/* -N<movieprefix> */
+	struct MOVIE_N {	/* -N<movieprefix> */
 		bool active;
 		char *prefix;
 	} N;
-	struct Q {	/* -Q[s] */
+	struct MOVIE_Q {	/* -Q[s] */
 		bool active;
 		bool scripts;
 	} Q;
-	struct S {	/* -Sb|f<script> */
+	struct MOVIE_S {	/* -Sb|f<script> */
 		bool active;
 		char *file;
 		FILE *fp;
 	} S[2];
-	struct T {	/* -T<n_frames>|<timefile>[+p<precision>][+s<frame>][+w] */
+	struct MOVIE_T {	/* -T<n_frames>|<timefile>[+p<precision>][+s<frame>][+w] */
 		bool active;
 		bool split;
 		unsigned int n_frames;
@@ -155,11 +155,11 @@ struct MOVIE_CTRL {
 		unsigned int precision;
 		char *file;
 	} T;
-	struct W {	/* -W<dir> */
+	struct MOVIE_W {	/* -W<dir> */
 		bool active;
 		char *dir;
 	} W;
-	struct Z {	/* -Z */
+	struct MOVIE_Z {	/* -Z */
 		bool active;
 	} Z;
 };
@@ -1097,7 +1097,10 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 #endif
 		/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as a background plot */
-		sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], pre_file);
+		if (Ctrl->In.mode == DOS_MODE)	/* Needs to be "cmd /K" and not "start /B" to let it have time to finish */
+			sprintf (cmd, "cmd /C %s", pre_file);
+		else
+			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], pre_file);
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running preflight script %s returned error %d - exiting.\n", pre_file, error);
 			fclose (Ctrl->In.fp);
@@ -1181,14 +1184,16 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		}
 #endif
 		/* Run post-flight now before dealing with the loop so the overlay exists */
-		sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], post_file);
+		if (Ctrl->In.mode == DOS_MODE)	/* Needs to be "cmd /K" and not "start /B" to let it have time to finish */
+			sprintf (cmd, "cmd /C %s", post_file);
+		else
+			sprintf (cmd, "%s %s", sc_call[Ctrl->In.mode], post_file);
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
 			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-	
 
 	if (Ctrl->L.active) {	/* Set elapse time label format if chosen */
 		char *format = NULL;

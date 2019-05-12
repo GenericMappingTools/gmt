@@ -85,7 +85,7 @@
 #define THIS_MODULE_NAME	"grdtrend"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Fit trend surface to grids and compute residuals"
-#define THIS_MODULE_KEYS	"<G{,DG),TG),WG)"
+#define THIS_MODULE_KEYS	"<G{,DG),TG),WG(,WG)"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-RV"
 
@@ -94,24 +94,24 @@
 #endif
 
 struct GRDTREND_CTRL {	/* All control options for this program (except common args) */
-	struct In {
+	struct GRDTREND_In {
 		bool active;
 		char *file;
 	} In;
-	struct D {	/* -D<diffgrid> */
+	struct GRDTREND_D {	/* -D<diffgrid> */
 		bool active;
 		char *file;
 	} D;
-	struct N {	/* -N[r]<n_model> */
+	struct GRDTREND_N {	/* -N[r]<n_model> */
 		bool active;
 		bool robust;
 		unsigned int value;
 	} N;
-	struct T {	/* -T<trend.grd> */
+	struct GRDTREND_T {	/* -T<trend.grd> */
 		bool active;
 		char *file;
 	} T;
-	struct W {	/* -W<weight.grd>[+s] */
+	struct GRDTREND_W {	/* -W<weight.grd>[+s] */
 		bool active;
 		unsigned int mode;
 		char *file;
@@ -575,6 +575,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 					error = API->error;
 					goto END;
 				}
+				gmt_M_str_free (Ctrl->W.file);	/* Prevent that the weights grid is overwriten later down */
 				if (Ctrl->W.mode == 2) {	/* Convert sigmas to weights */
 					gmt_M_grd_loop (GMT, W, row, col, ij) {
 						W->data[ij] = (gmt_grdfloat)(1.0 / (W->data[ij] * W->data[ij]));

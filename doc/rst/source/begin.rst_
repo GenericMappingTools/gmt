@@ -20,8 +20,9 @@ Description
 
 The **begin** module instructs GMT to begin a new modern session.  If your script only makes
 a single plot then this is the most opportune time to specify the name
-and format(s) of your plot.  However, if multiple illustrations will be made
-then you will instead use :doc:`figure` for each figure you wish to make.  The session
+and format(s) of your plot.  However, if you want to create multiple illustrations within this
+session or need more control over the conversion from the internal PostScript to the output format,
+you will instead use :doc:`figure` for the figure(s) you wish to make.  The session
 keeps track of all default and history settings and isolates them from any other session
 that may run concurrently.  Thus unlike in classic mode you can run multiple modern sessions
 simultaneously without having destructive interference in updating the history of common
@@ -63,9 +64,9 @@ Optional Arguments
     +--------+-----------------------------------------+
     |  pdf   | Portable Document Format [Default]      |
     +--------+-----------------------------------------+
-    |  png   | Portable Network Graphics (opaque)      | 
+    |  png   | Portable Network Graphics (opaque)      |
     +--------+-----------------------------------------+
-    |  PNG   | Portable Network Graphics (transparent) | 
+    |  PNG   | Portable Network Graphics (transparent) |
     +--------+-----------------------------------------+
     |  ppm   | Portable Pixel Map                      |
     +--------+-----------------------------------------+

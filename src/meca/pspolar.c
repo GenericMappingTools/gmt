@@ -59,7 +59,7 @@ struct PSPOLAR_CTRL {
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} G;
-	struct M {	/* -M */
+	struct M {	/* -M<scale>[+m<magnitude>] */
 		bool active;
 		double ech;
 	} M;
@@ -134,7 +134,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -D<lon>/<lat>\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t-M<size>[c|i|p] -S<symbol><size>[c|i|p] [-A] [%s]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t-M<size>[c|i|p][+m<mag>] -S<symbol><size>[c|i|p] [-A] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<lon>/<lat>[+p<pen>][+s<pointsize>]] [-E<fill>] [-F<fill>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] %s[-N] %s%s[-Qe[<pen>]] [-Qf[<pen>]] [-Qg[<pen>]]\n", GMT_K_OPT, GMT_O_OPT, GMT_P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Qh] [-Qs<half-size>[+v<size>[+<specs>]] [-Qt<pen>]\n");
@@ -145,7 +145,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Option (API, "J-,R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set longitude/latitude.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Set size of beach ball in %s.\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Set size of beachball in %s. Append +m<mag> to specify its magnitude, and beachball size is <mag> / 5.0 * <size>.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and symbol size (in %s).  Choose between:\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
@@ -209,7 +209,7 @@ GMT_LOCAL unsigned int old_Q_parser (struct GMT_CTRL *GMT, char *arg, struct PSP
 		Ctrl->S2.scolor = true;
 		c[0] = '\0';	/* Chop off G */
 	}
-	
+
 	if ((c = strchr (text, 'V'))) {	/* Got the Vector specs */
 		Ctrl->S2.vector = true;
 		if (c[1] == '\0') {	/* Provided no size information - set defaults */
@@ -233,7 +233,7 @@ GMT_LOCAL unsigned int old_Q_parser (struct GMT_CTRL *GMT, char *arg, struct PSP
 	}
 	gmt_M_str_free (text);
 	return (n_errors);
-	
+
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -377,9 +377,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 						break;
 				}
 				break;
-			case 'M':	/* Focal sphere size */
+			case 'M':	/* Focal sphere size -M<scale>+m<magnitude>*/
 				Ctrl->M.active = true;
-				Ctrl->M.ech = gmt_M_to_inch (GMT, opt->arg);
+				sscanf(opt->arg, "%[^+]%s", txt_a, txt_b);
+				Ctrl->M.ech = gmt_M_to_inch (GMT, txt_a);
+				if ((p = strstr (txt_b, "+m")) != NULL && p[2]) {
+					/* if +m<mag> is used, the focal sphere size is <mag>/5.0 * <size> */
+					double magnitude;
+					sscanf ((p+2), "%lf", &magnitude);
+					Ctrl->M.ech *= (magnitude / 5.0);
+				}
 				break;
 			case 'N':	/* Do not skip points outside border */
 				Ctrl->N.active = true;
