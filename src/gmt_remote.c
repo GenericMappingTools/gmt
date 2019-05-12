@@ -366,8 +366,9 @@ unsigned int gmt_download_file_if_not_found (struct GMT_CTRL *GMT, const char* f
 		pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
 		if ((c = strchr (file, '?')) && !strchr (file, '='))	/* Must be a netCDF sliced URL file so chop off the layer/variable specifications */
 			c[0] = '\0';
-		else if ((c = strchr (file, '=')))	/* Grid attributes */
+		else if (c && c[0] != '?' && (c = strchr (file, '=')))	/* If no ? then = means grid attributes */
 			c[0] = '\0';
+		/* else we have both ? and = which is an URL query */
 	}
 	else if ((c = strchr (file, '?')))	/* Netcdf directive since URLs and caches were handled above */
 		c[0] = '\0';	/* and pos = 0 */

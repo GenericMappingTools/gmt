@@ -363,9 +363,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: 8k can be used for 4320p, UHD and 4k for 2160p and HD for 1080p.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Recognized 4:3-ratio formats:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      name:	pixel size:   canvas size (SI):	 canvas size (US):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      UXGA: 1600 x 1200	24 x 18 cm	 9.6 x 7.2 inch\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     SXGA+: 1400 x 1050	24 x 18 cm	 9.6 x 7.2 inch\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       XGA: 1024 x  768	24 x 18 cm	 9.6 x 7.2 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      UXGA:	1600 x 1200	24 x 18 cm	 9.6 x 7.2 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     SXGA+:	1400 x 1050	24 x 18 cm	 9.6 x 7.2 inch\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       XGA:	1024 x  768	24 x 18 cm	 9.6 x 7.2 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      SVGA:	 800 x  600	24 x 18 cm	 9.6 x 7.2 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       DVD:	 640 x  480	24 x 18 cm	 9.6 x 7.2 inch\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Current PROJ_LENGTH_UNIT determines if you get SI or US canvas dimensions.\n");
