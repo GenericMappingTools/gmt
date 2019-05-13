@@ -40,9 +40,9 @@
 #define THIS_MODULE_NAME	"movie"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create animation sequences and movies"
-#define THIS_MODULE_KEYS	""
+#define THIS_MODULE_KEYS	"<T("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"-Vx"
+#define THIS_MODULE_OPTIONS	"-Vfx"
 
 #define MOVIE_PREFLIGHT		0
 #define MOVIE_POSTFLIGHT	1
@@ -228,8 +228,21 @@ GMT_LOCAL int gmt_sleep (unsigned int microsec) {
 #endif
 }
 
+GMT_LOCAL void set_value (struct GMT_CTRL *GMT, FILE *fp, int mode, int col, char *name, double value) {
+	/* Assigns a single named data floating point variable given the script mode
+	 * Here, col indicates which input column in case special formatting is implied via -f */
+	char string[GMT_LEN64] = {""};
+	gmt_ascii_format_one (GMT, string, value, gmt_M_type (GMT, GMT_IN, col));
+	switch (mode) {
+		case BASH_MODE: fprintf (fp, "%s=%s", name, string);       break;
+		case CSH_MODE:  fprintf (fp, "set %s = %s", name, string); break;
+		case DOS_MODE:  fprintf (fp, "set %s=%s", name, string);   break;
+	}
+	fprintf (fp, "\n");
+}
+
 GMT_LOCAL void set_dvalue (FILE *fp, int mode, char *name, double value, char unit) {
-	/* Assigns a single named floating point variable given the script mode */
+	/* Assigns a single named Cartesian floating point variable given the script mode */
 	switch (mode) {
 		case BASH_MODE: fprintf (fp, "%s=%g", name, value);       break;
 		case CSH_MODE:  fprintf (fp, "set %s = %g", name, value); break;
@@ -1261,7 +1274,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		set_tvalue (fp, Ctrl->In.mode, "MOVIE_NAME", state_prefix);	/* Current frame name prefix */
 		for (col = 0; col < n_values; col++) {	/* Derive frame variables from <timefile> in each parameter file */
 			sprintf (string, "MOVIE_COL%u", col+1);
-			set_dvalue (fp, Ctrl->In.mode, string, D->table[0]->segment[0]->data[col][frame], 0);
+			set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][frame]);
 		}
 		if (has_text) {	/* Also place any string parameter as a single string variable */
 			set_tvalue (fp, Ctrl->In.mode, "MOVIE_TEXT", D->table[0]->segment[0]->text[frame]);
