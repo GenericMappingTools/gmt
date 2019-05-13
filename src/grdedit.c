@@ -243,7 +243,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 
 int GMT_grdedit (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdedit task */
-	bool grid_was_read = false;
+	bool grid_was_read = false, do_J = false;
 	
 	unsigned int row, col;
 	int error;
@@ -252,7 +252,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	double shift_amount = 0.0;
 
-	char *registration[2] = {"gridline", "pixel"}, *out_file = NULL;
+	char *registration[2] = {"gridline", "pixel"}, *out_file = NULL, *projstring = NULL;
 
 	struct GRDEDIT_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL;
@@ -278,6 +278,22 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdedit main code ----------------------------*/
 
+	if ((do_J = GMT->common.J.active)) {	/* Only gave -J to set the proj4 flag, so grid is already projected (i.e., Cartesian) */
+		EXTERN_MSC int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item);
+		projstring = gmt_export2proj4 (GMT);	/* Convert the GMT -J<...> into a proj4 string */
+ 		if (strstr (projstring, "+proj=longlat") || strstr (projstring, "+proj=latlong")) {	/* These means we have a geographic grid */
+			gmt_set_geographic (GMT, GMT_IN);	/* Force Geographic */
+			gmt_set_geographic (GMT, GMT_OUT);
+		}
+		else {
+			gmt_set_cartesian (GMT, GMT_IN);	/* Force Cartesian since processing -J changed that */
+			gmt_set_cartesian (GMT, GMT_OUT);
+			gmt_parse_R_option (GMT, GMT->common.R.string);	/* Since parsing under -J would have imposed checks. */
+		}
+		GMT->current.proj.projection = GMT->current.proj.projection_GMT = GMT_NO_PROJ;
+		GMT->common.J.active = false;	/* Leave no trace of this, except in the history... */
+	}
+
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, Ctrl->G.active ? GMT_CONTAINER_AND_DATA : GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
@@ -301,8 +317,8 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	/* Decode grd information given, if any */
 
-	if (GMT->common.J.active)		/* Convert the GMT -J<...> into a proj4 string and save it in the header */
-		G->header->ProjRefPROJ4 = gmt_export2proj4 (GMT);
+	if (do_J)	/* Save proj4 string in the header */
+		G->header->ProjRefPROJ4 = projstring;
 
 	if (Ctrl->D.active) {
 		double scale_factor, add_offset;
