@@ -635,7 +635,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pstext task */
 
 	int  error = 0, k, fmode, nscan, *c_just = NULL;
-	bool master_record = false, skip_text_records = false, old_is_world, clip_set = false;
+	bool master_record = false, skip_text_records = false, old_is_world, clip_set = false, check_if_outside;
 
 	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
 	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;
@@ -711,6 +711,8 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 	old_is_world = GMT->current.map.is_world;
 	GMT->current.map.is_world = true;
+
+	check_if_outside = !(Ctrl->N.active || Ctrl->F.R_justify);
 
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 		Return (API->error);
@@ -811,7 +813,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					continue;
 				}
 				gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
-				if (!Ctrl->N.active) {
+				if (check_if_outside) {
 					skip_text_records = true;	/* If this record should be skipped we must skip the whole paragraph */
 					gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
 					if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
@@ -963,7 +965,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			n_read++;
 			gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 			xx[0] = plot_x;	yy[0] = plot_y;
-			if (!Ctrl->N.active) {
+			if (check_if_outside) {
 				gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 			}
