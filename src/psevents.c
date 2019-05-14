@@ -350,10 +350,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 	}
 	if (Ctrl->C.active) n_col++;	/* Need to read one more column for z */
 	if (Ctrl->S.mode) n_col++;	/* Must allow for size in input before time and length */
-	if (t_string) {
-		n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, n_col-1),
-			gmt_scanf_arg (GMT, t_string, gmt_M_type (GMT, GMT_IN, n_col-1), false,
-			&Ctrl->T.now), t_string);
+	if (t_string) {	/* Do a special check for absolute time since auto-detection based on input file has not happened yet */
+		enum gmt_col_enum type = (strchr (t_string, 'T')) ? GMT_IS_ABSTIME : gmt_M_type (GMT, GMT_IN, n_col-1);
+		n_errors += gmt_verify_expectations (GMT, type, gmt_scanf_arg (GMT, t_string, type, false, &Ctrl->T.now), t_string);
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: -T<now> is a required option\n");
@@ -374,6 +373,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GM
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+int GMT_events (void *V_API, int mode, void *args) {
+	/* This is the GMT6 modern mode name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: events\n");
+		return (GMT_NOT_A_VALID_MODULE);
+	}
+	return GMT_psevents (V_API, mode, args);
+}
+
 int GMT_psevents (void *V_API, int mode, void *args) {
 	char tmp_file_symbols[PATH_MAX] = {""}, tmp_file_labels[PATH_MAX] = {""}, cmd[BUFSIZ] = {""};
 	
@@ -385,7 +394,7 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 	
 	uint64_t n_total_read = 0, n_symbols_plotted = 0, n_labels_plotted = 0;
 	
-	double out[5] = {0, 0, 0, 0, 0}, t_end = DBL_MAX, *in = NULL;
+	double out[6] = {0, 0, 0, 0, 0, 0}, t_end = DBL_MAX, *in = NULL;
 	double t_event, t_rise, t_plateau, t_decay, t_fade, x, size;
 	
 	FILE *fps = NULL, *fpl = NULL;
@@ -504,18 +513,18 @@ int GMT_psevents (void *V_API, int mode, void *args) {
 				out[i_out] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;	/* Quadratic reduction of intensity down to 0 */
 				out[t_out] = 0.0;
 			}
-			else if (Ctrl->T.now < t_end) {	/* We are in the normal display phase with nominal symbol size */
+			else if (!do_coda && Ctrl->T.now < t_end) {	/* We are in the normal display phase with nominal symbol size */
 				out[s_out] = size;
 				out[i_out] = out[t_out] = 0.0;
 			}
-			else if (Ctrl->T.now < t_fade) {	/* We are in the fade phase */
+			else if (!do_coda && Ctrl->T.now < t_fade) {	/* We are in the fade phase */
 				x = pow ((t_fade - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE], 2.0);	/* From 1 to 0 */
 				out[s_out] = size * x + (1.0 - x) * Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];	/* Quadratic reduction of size down to coda size */
 				out[i_out] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2] * (1.0 - x);		/* Quadratic reduction of intensity down to coda intensity */
 				out[t_out] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] * (1.0 - x);		/* Quadratic increase of transparency up to code transparency */
 			}
 			else if (do_coda) {	/* If there is a coda then the symbol is visible given those final attributes */
-				out[s_out] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];
+				out[s_out] = size * Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];
 				out[i_out] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2];
 				out[t_out] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2];
 			}
@@ -568,10 +577,10 @@ Do_text:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing 
 				x = pow ((t_decay - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_DECAY], 2.0);	/* 1 to 0 */
 				out[GMT_Z] = 0.0;
 			}
-			else if (Ctrl->T.now < t_end) {	/* We are in the normal display phase with nominal symbol size */
+			else if (!do_coda && Ctrl->T.now < t_end) {	/* We are in the normal display phase with nominal symbol size */
 				out[GMT_Z] = 0.0;
 			}
-			else if (Ctrl->T.now < t_fade) {	/* We are in the fade phase */
+			else if (!do_coda && Ctrl->T.now < t_fade) {	/* We are in the fade phase */
 				x = pow ((t_fade - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_FADE], 2.0);	/* From 1 to 0 */
 				out[GMT_Z] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] * (1.0 - x);		/* Quadratic increase of transparency up to code transparency */
 			}

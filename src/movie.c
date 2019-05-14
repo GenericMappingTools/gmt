@@ -1041,6 +1041,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	/* Create the initialization file with settings common to all frames */
 	
 	sprintf (init_file, "movie_init.%s", extension[Ctrl->In.mode]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create parameter initiation script %s\n", init_file);
 	if ((fp = fopen (init_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create file %s - exiting\n", init_file);
 		close_files (Ctrl);
@@ -1070,6 +1071,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		unsigned int rec = 0;
 		is_classic = script_is_classic (GMT, Ctrl->S[MOVIE_PREFLIGHT].fp);
 		sprintf (pre_file, "movie_preflight.%s", extension[Ctrl->In.mode]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create preflight script %s and execute it\n", pre_file);
 		if ((fp = fopen (pre_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create preflight script %s - exiting\n", pre_file);
 			fclose (Ctrl->In.fp);
@@ -1162,6 +1164,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		sprintf (post_file, "movie_postflight.%s", extension[Ctrl->In.mode]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create postflight script %s\n", post_file);
 		if ((fp = fopen (post_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create postflight file %s - exiting\n", post_file);
 			fclose (Ctrl->In.fp);
@@ -1254,6 +1257,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Create parameter include files, one for each frame */
 	
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create individual parameter include files per frame for %d frames\n", n_frames);
 	for (i_frame = 0; i_frame < n_frames; i_frame++) {
 		frame = i_frame + Ctrl->T.start_frame;	/* Actual frame number */
 		if (one_frame && frame != Ctrl->M.frame) continue;	/* Just doing a single frame for debugging */
@@ -1330,7 +1334,12 @@ int GMT_movie (void *V_API, int mode, void *args) {
 					if ((type = gmt_M_type (GMT, GMT_IN, Ctrl->L.tag[T].col)) == GMT_IS_ABSTIME) {	/* Time formatting */
 						char date[GMT_LEN16] = {""}, clock[GMT_LEN16] = {""};
 						gmt_format_calendar (GMT, date, clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, upper_case, flavor, L_col);
-						sprintf (string, "%s %s", date, clock);
+						if (GMT->current.plot.calclock.clock.skip)
+							sprintf (string, "%s", date);
+						else if (GMT->current.plot.calclock.date.skip)
+							sprintf (string, "%s", clock);
+						else
+							sprintf (string, "%s %s", date, clock);
 					}
 					else {	/* Regular floating point (or latitude, etc.) */
 						if (Ctrl->L.tag[T].format[0] && strchr (Ctrl->L.tag[T].format, 'd'))	/* Set as an integer */
@@ -1368,6 +1377,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		char master_file[GMT_LEN128] = {""};
 		/* Because format may differ and name will differ we just make a special script for this job */
 		sprintf (master_file, "movie_master.%s", extension[Ctrl->In.mode]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create master frame script %s\n", master_file);
 		if ((fp = fopen (master_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create loop frame script file %s - exiting\n", master_file);
 			fclose (Ctrl->In.fp);
@@ -1478,6 +1488,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active) strcat (frame_products, MOVIE_DEBUG_FORMAT);	/* Want to save original PS file for debug */
 	
 	sprintf (main_file, "movie_frame.%s", extension[Ctrl->In.mode]);
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Create main movie frame script %s\n", main_file);
 	if ((fp = fopen (main_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create loop frame script file %s - exiting\n", main_file);
 		fclose (Ctrl->In.fp);
@@ -1565,6 +1576,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 	status = gmt_M_memory (GMT, NULL, n_frames, struct MOVIE_STATUS);	/* Used to keep track of frame status */
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Build frames using %u cores\n", n_cores_unused);
 	/* START PARALLEL EXECUTION OF FRAME SCRIPTS */
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Execute movie frame scripts in parallel\n");
 	while (!done) {	/* Keep running jobs until all frames have completed */
 		while (n_frames_not_started && n_cores_unused) {	/* Launch new jobs if possible */
 			sprintf (cmd, "%s %s %*.*d &", sc_call[Ctrl->In.mode], main_file, precision, precision, frame);

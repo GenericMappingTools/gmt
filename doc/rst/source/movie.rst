@@ -163,7 +163,10 @@ Optional Arguments
     in seconds of each frame [Default is 1/*framerate*],
     **f** selects the running frame number as the label, **c**\ *col* uses the value in column
     number *col* of *timefile* as label (first column is 1), while **t**\ *col* uses word number
-    *col* from the trailing text in *timefile* (requires **-T**\ ...\ **+w**).
+    *col* from the trailing text in *timefile* (requires **-T**\ ...\ **+w**).  Note: If you use **-Lc**
+    with an absolute time column, then the format of the timestamp will depend on the two default settings
+    :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` and :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`.  By default,
+    both *date* and *time* are displayed (with a space between); set one of the settings to "-" to skip that component.
     The label font is controlled via :ref:`FONT_TAG <FONT_TAG>`.
     Append **+c**\ *dx*\ [/*dy*] for the clearance between label and bounding box; only
     used if **+g** or **+p** are set.  Append units **c**\ \|\ **i**\ \|\ **p** or % of the font size [15%].
