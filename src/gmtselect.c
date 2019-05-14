@@ -319,6 +319,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 	unsigned int n_errors = 0, pos, j, col, n_z_alloc = 0, z_col = GMT_Z;
 	bool invert = false;
 	char buffer[GMT_BUFSIZ] = {""}, za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *c = NULL;
+	enum gmt_col_enum ctype;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -473,13 +474,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				Ctrl->Z.limit[Ctrl->Z.n_tests].min = -DBL_MAX;
 				Ctrl->Z.limit[Ctrl->Z.n_tests].max = +DBL_MAX;
 				Ctrl->Z.limit[Ctrl->Z.n_tests].invert = invert;
-				if (!(za[0] == '-' && za[1] == '\0')) n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z),
-					gmt_scanf_arg (GMT, za, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.limit[Ctrl->Z.n_tests].min), za);
+				if (!(za[0] == '-' && za[1] == '\0')) {
+					ctype = (strchr (za, 'T')) ? GMT_IS_ABSTIME : gmt_M_type (GMT, GMT_IN, col);
+					n_errors += gmt_verify_expectations (GMT, ctype, gmt_scanf_arg (GMT, za, ctype, false, &Ctrl->Z.limit[Ctrl->Z.n_tests].min), za);
+				}
 				if (j == 1)
 					Ctrl->Z.limit[Ctrl->Z.n_tests].equal = true;
 				else {
-					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z),
-						gmt_scanf_arg (GMT, zb, gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
+					if (!(zb[0] == '-' && zb[1] == '\0')) {
+						ctype = (strchr (zb, 'T')) ? GMT_IS_ABSTIME : gmt_M_type (GMT, GMT_IN, col);
+						n_errors += gmt_verify_expectations (GMT, ctype, gmt_scanf_arg (GMT, zb, ctype, false, &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
+					}
 				}
 				n_errors += gmt_M_check_condition (GMT, Ctrl->Z.limit[Ctrl->Z.n_tests].max <= Ctrl->Z.limit[Ctrl->Z.n_tests].min, "Syntax error: -Z must have zmax > zmin!\n");
 				Ctrl->Z.limit[Ctrl->Z.n_tests].col = col;
