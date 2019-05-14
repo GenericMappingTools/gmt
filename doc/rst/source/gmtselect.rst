@@ -195,7 +195,7 @@ Optional Arguments
     time then remember to supply **-f**\ 2T. To specify another column, append
     **+c**\ *col*, and to specify several tests just repeat the **Z** option as
     many times has you have columns to test. Note: when more than one **Z** option
-    is given then the **Iz** option cannot be used.  In the case of multiple tests
+    is given then the **-Iz** option cannot be used.  In the case of multiple tests
     you may use these modifiers as well: **a** passes any record that passes at least
     one of your *z* tests [all tests must pass], and **i** reverses the tests to pass
     record with *z* value NOT in the given range.  Finally, if **+c** is not used

@@ -409,8 +409,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Automatic labeling of frames.  Repeatable.  Places chosen label at the frame perimeter:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     e selects elapsed time as the label. Use +s<scl> to set time in sec per frame [1/<framerate>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f selects the running frame number as the label.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c<col> uses the value in column <col> of <timefile> (first column is 1).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     t<col> uses word number <col> from the trailing text in <timefile> (requires -T...+w).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c<col> uses the value in column <col> of <timefile> (first column is 0).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     t<col> uses word number <col> (first is 0) from the trailing text in <timefile> (requires -T...+w).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between label and surrounding box.  Only\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     used if +g or +p are set.  Append units {%s} or %% of fontsize [%d%%].\n", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f[<fontinfo>] to set the size, font, and optionally the label color [%s].\n",
@@ -1277,7 +1277,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 		set_tvalue (fp, Ctrl->In.mode, "MOVIE_TAG", state_tag);		/* Current frame tag (formatted frame number) */
 		set_tvalue (fp, Ctrl->In.mode, "MOVIE_NAME", state_prefix);	/* Current frame name prefix */
 		for (col = 0; col < n_values; col++) {	/* Derive frame variables from <timefile> in each parameter file */
-			sprintf (string, "MOVIE_COL%u", col+1);
+			sprintf (string, "MOVIE_COL%u", col);
 			set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][frame]);
 		}
 		if (has_text) {	/* Also place any string parameter as a single string variable */
@@ -1288,7 +1288,7 @@ int GMT_movie (void *V_API, int mode, void *args) {
 				trail = orig;
 				while ((word = strsep (&trail, " \t")) != NULL) {
 					if (*word != '\0') {	/* Skip empty strings */
-						sprintf (string, "MOVIE_WORD%u", ++col);
+						sprintf (string, "MOVIE_WORD%u", col++);
 						set_tvalue (fp, Ctrl->In.mode, string, word);
 					}
 				}
