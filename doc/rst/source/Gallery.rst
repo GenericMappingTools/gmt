@@ -309,9 +309,9 @@ Animations
 |                  |                |
 | |anim05|         | |anim06|       |
 +------------------+----------------+
-|:ref:`anim_07`    |                |
+|:ref:`anim_07`    |:ref:`anim_08`  |
 |                  |                |
-| |anim07|         |                |
+| |anim07|         | |anim08|       |
 +------------------+----------------+
 
 .. |anim01| image:: /_images/anim_01.*
@@ -335,6 +335,9 @@ Animations
 .. |anim07| image:: /_images/anim_07.*
    :width: 150 px
 
+.. |anim08| image:: /_images/anim_08.*
+   :width: 150 px
+
 .. toctree::
    :hidden:
 
@@ -345,4 +348,4 @@ Animations
    gallery/anim05.rst
    gallery/anim06.rst
    gallery/anim07.rst
-
+   gallery/anim08.rst

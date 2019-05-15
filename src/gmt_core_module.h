@@ -91,6 +91,7 @@ EXTERN_MSC int GMT_psclip (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pscoast (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pscontour (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psconvert (void *API, int mode, void *args);
+EXTERN_MSC int GMT_psevents (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pshistogram (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psimage (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pslegend (void *API, int mode, void *args);
