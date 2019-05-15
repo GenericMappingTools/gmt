@@ -44,12 +44,20 @@ Synopsis
 Examples
 --------
 
-To be added, such as
+To show the display of events visible for May 1, 2018 given the catalog of
+large (>5) magnitude earthquakes that year, using a 2-day rise time during
+which we boost symbol size by a factor of 5 and wash out the color, followed
+by a decay over 6 days and then a final shrinking to half size and darken the
+color, we may try
 
    ::
 
-    gmt events quakes.txt -R-20/10/-80/-60 -JS0/90/15c -Ms5 -B5 \
-                 -Cseis.cpt -Es+r0.1+d0.1+f5 -T44.5 -V
+    gmt begin layer
+      gmt convert "https://earthquake.usgs.gov/fdsnws/event/1/query.csv?starttime=2018-01-01%2000:00:00&endtime=2018-12-31%2000:00:00&minmagnitude=5&orderby=time-asc" \
+         -i2,1,3,4+s50,0 -hi1 > q.txt
+      gmt makecpt -Cred,green,blue -T0,70,300,10000 > q.cpt
+      gmt events -Rg -JG200/5/6i -Baf q.txt -SE- -Cq.cpt --TIME_UNIT=d -T2018-05-01T -Es+r2+d6 -Ms5+c0.5 -Mi1+c-0.6 -Mt+c0
+    gmt end
 
 See Also
 --------
