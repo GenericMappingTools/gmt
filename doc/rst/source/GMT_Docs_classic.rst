@@ -2128,9 +2128,12 @@ While the PostScript language does not support transparency, PDF does,
 and via PostScript extensions one can manipulate the transparency
 levels of objects. The **-t** option allows you to change the
 transparency level for the current overlay by appending a percentage in
-the 0--100 range; the default is 0, or opaque. Transparency may also be
+the 0-100 range; the default is 0, or opaque. Transparency may also be
 controlled on a feature by feature basis when setting color or fill (see
-section `Specifying area fill attributes`_).
+section `Specifying area fill attributes`_).  Finally, the modules
+:doc:`psxy`, :doc:`psxyz`, and :doc:`pstext` can all change transparency
+on a record-by-record basis if **-t** is given without argument and the
+input file supplies variable transparencies as the last numerical column value.
 
 Latitude/Longitude or Longitude/Latitude?: The **-:** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
