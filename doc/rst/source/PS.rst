@@ -10,6 +10,7 @@ Modern Mode Mapping
    coast
    colorbar
    contour
+   events
    grdimage
    grdcontour
    grdvector

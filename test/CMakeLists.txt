@@ -30,9 +30,9 @@ if (DO_TESTS)
 		grdedit grdfft grdfill grdfilter grdgradient grdhisteq grdimage grdinfo grdlandmask
 		grdmask grdmath grdpaste grdproject grdconvert grdsample grdtrack grdtrend
 		grdvector grdview grdvolume greenspline gshhg kml makecpt mapproject nearneighbor
-		ogr postscriptlight project psbasemap psclip pscoast pscontour pshistogram psimage
-		pslegend psmask psrose pssac psscale pssolar psternary pstext pswiggle psxy psxyz
-		sample1d segy spectrum1d sph sph2grd splitxyz surface time trend1d trend2d
+		ogr postscriptlight project psbasemap psclip pscoast pscontour psevents pshistogram
+		psimage pslegend psmask psrose pssac psscale pssolar psternary pstext pswiggle psxy
+		psxyz sample1d segy spectrum1d sph sph2grd splitxyz surface time trend1d trend2d
 		triangulate img meca mgd77 potential spotter x2sys)
 
 	set (GMT_TEST_DIRS_MODERN modern exmod)

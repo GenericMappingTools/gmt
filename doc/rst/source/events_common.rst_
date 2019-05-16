@@ -1,0 +1,223 @@
+|No-spaces|
+
+Description
+-----------
+
+Reads (*x*, *y*\ [, *z*] [, *size*], *time* [, *length*]) data from files [or standard
+input] and plots how the symbol for each event should look for the specified *now* time.
+The reason they may differ is that events may have different lengths and we may
+wish to accentuate the symbol attributes in ways to draw attention to an event when
+it first happens and perhaps tone it down after a while to reduce clutter and focus
+on more recent events. This module is typically used in conjunction with movie scripts
+where the implicit loop over time is used to call it over a time-sequence and
+thus plot symbols as events unfold.
+
+Required Arguments
+------------------
+
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-J.rst_
+
+.. _-R:
+
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-R.rst_
+
+.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-Rz.rst_
+
+.. _-S:
+
+**-S**\ *symbol*\ [*size*\ [*units*]]
+    Specify the symbol to use for the event.  Optionally, append symbol *size* with units from
+    (**c**\ \|\ **i**\ \|\ **p**\ ).  If no *size* is given then we read an event-specific size
+    from the data file's third column (fourth if **-C** is used). Note: Not all the symbols that
+    are available in :doc:`psxy` can be used here.  At the moment we only support the basic
+    symbols and custom symbols; bars, vectors, ellipses, fronts, decorated and quoted lines cannot
+    be specified.
+
+.. _-T:
+
+**-T**\ *now*
+    Sets the current plot time.  If absolute times are used you must also use **-fT**.
+
+Optional Arguments
+------------------
+
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
+
+.. _-B:
+
+.. include:: explain_-B.rst_
+
+.. _-C:
+
+**-C**\ *cpt*
+    Use the *cpt* to convert *z* values given in the optional third column to assign symbol colors.
+
+.. _-D:
+
+**-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **+v**\ [*pen*\ ]]
+    Offsets the text from the projected (*x*,\ *y*) point by *dx*,\ *dy*
+    [0/0]. If *dy* is not specified then it is set equal to *dx*. Use
+    **-Dj** to offset the text away from the point instead (i.e., the
+    text justification will determine the direction of the shift). Using
+    **-DJ** will shorten diagonal offsets at corners by
+    sqrt(2). Optionally, append **+v** which will draw
+    a line from the original point to the shifted point; append a *pen*
+    to change the attributes for this line.
+
+.. _-E:
+
+**Es**\ \|\ **t**\ [**+o**\ \|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*]
+    Sets the time knots for the **s**\ ymbol or **t**\ ext time-functions.  Append
+    **+o** to shift the event start and end times by a constant offset (basically shifting
+    the event in time by *dt*\ ; or use **O** to only shift the start time, effectively shortening
+    the duration of the event), **+r** to indicate the
+    duration of the rise phase, **+p** to set the duration of the plateau phase, **+d**
+    tp specify the duration of the decay phase, and **+f** to set the duration of the
+    fade phase.  These are all optional, and can be set separately for symbols and texts.
+    if neither **s** or **t** is given then we set the time knots for both features.
+
+.. _-F:
+
+**-F**\ [**+a**\ *angle*][\ **+f**\ *font*][\ **+j**\ *justify*][\ **+r**\ [*first*] \|\ **+z**\ [*format*]]
+    By default, event label text will be placed horizontally, using the primary
+    annotation font attributes (:ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`), and centered
+    on the data point. Use this option to override these defaults by specifying up to three
+    text attributes (font, angle, and justification) directly on the command line. Use **+f**
+    to set the font (size,fontname,color), **+a** to set the angle, and **+j** to set the justification.
+    Normally, the text to be plotted is the trailing text.  Instead, use **+r** to use the
+    record number (counting up from *first* [0]) or **+z** to format incoming *z* values (requires **-C**)
+    to a string using the supplied *format* [use FORMAT_FLOAT_MAP].
+
+.. _-G:
+
+**-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
+    Set constant shade or color for all symbols.
+
+.. include:: explain_-Jz.rst_
+
+.. _-L:
+
+**-L**\ [*length*\ \|\ **t**\ ]
+    Specify the length of the event.  Append a *length* if all events have the same length,
+    append **t** if end-times instead of lengths are given in the file after the *time* column,
+    or leave blank if lengths can be read from the input file after the *time* column.
+
+.. _-M:
+
+**-M**\ **i**\ \|\ **s**\ \|\ **t**\ [*val1*]\ [**+c**\ *val2*]
+    Sets the initial **i**\ ntensity, **s**\ ize magnification, or **t**\ ransparency of the symbol during
+    the *rise* interval [1, 1, and 100, respectively].
+    Optionally, use **+c** to set the corresponding terminal value during the coda [100].
+
+.. _-Q:
+
+**-Q**\ *prefix*
+    Save the intermediate event symbols and labels to permanent files instead of removing when done.
+    Files will be called *prefix*\ _symbols.txt and *prefix*\ _labels.txt.
+
+.. _-U:
+
+.. include:: explain_-U.rst_
+
+.. _-:
+
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-V.rst_
+
+.. _-W:
+
+**-W**\ *pen*
+    Specify symbol outline pen attributes [Default is no outline].
+
+.. |Add_-bi| replace:: [Default is 3 input columns]. 
+.. include:: explain_-bi.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
+
+.. |Add_-e| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-e.rst_
+
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
+
+.. include:: explain_-icols.rst_
+
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
+.. include:: explain_perspective.rst_
+
+.. include:: explain_colon.rst_
+
+.. include:: explain_help.rst_
+
+The three time-functions
+------------------------
+
+Events typically have either a finite length, e.g., the temporal extent of
+the reign of a particular monarch, or are infinite.  Here, infinite simply means
+its length exceeds the temporal extent of the time we are plotting.  In a movie,
+a basic representation of these events as points on a map would be to start plotting
+the symbol when the event starts and then keep the symbol visible on all frames until the
+event ends (or never stop plotting them in the infinite length case).  However, to draw
+attention to the arrival of a new event we can temporarily change three aspects of
+the symbol: Its size, color intensity, and transparency.  You can think of these three
+attributes as functions of time.  For some option settings, Figure :ref:`Symbol size function <psevents_size>`
+illustrates how the symbol size may vary through the timespan of the movie.
+
+.. _psevents_size:
+
+.. figure:: /_images/psevents_size.*
+   :width: 400 px
+   :align: center
+
+   Implied evolution of one symbol's size-variation as a function of time
+   given the time-knots from **-Es** and the magnifications from **-Ms**.
+   Here we temporarily magnify the symbol size five times before decaying
+   to the intended size and eventually shrink it further down to a small
+   size during the fade and coda phases.
+
+Similarly, to draw attention to the newly arrived event you may want to whiten the color
+temporarily; this can be done via the **-I** option and Figure :ref:`Symbol intensity function <psevents_intensity>`
+illustrates how intensity may vary accordingly.
+
+.. _psevents_intensity:
+
+.. figure:: /_images/psevents_intensity.*
+   :width: 400 px
+   :align: center
+
+   Implied evolution of one symbol's color intensity as a function of time
+   given the time-knots from **-Es** and the intensities from **-Mi**.  Here we
+   seek to whiten the symbol during the event arrival, as well as darken it
+   during a permanent code phase.
+
+Finally, for finite events you may wish to either fade them out completely or
+simply fade them to a constant but still visible transparency; this future stage
+is referred to as the coda and levels can be specified via the **-Mt** option.
+Figure :ref:`Symbol transparency function <psevents_transparency>`
+illustrates how transparency may vary through time.
+
+.. _psevents_transparency:
+
+.. figure:: /_images/psevents_transparency.*
+   :width: 400 px
+   :align: center
+
+   Here we show how a symbol may go from being invisible to reach full opaqueness
+   at the event begin time, then finally fade to a near-invisible stage after reaching
+   its length.
+
+While shown in these examples, the rise, plateau, fade, and coda periods are all optional
+and can be selected or ignored as you wish via **-E**.  You can choose to specify any or none
+of the three time histories.  By default the symbol size is constant, there is no intensity
+variation, and all symbols are opaque.  If trailing text is plotted (requires **-Et**) then
+only a transparency time-function is used.

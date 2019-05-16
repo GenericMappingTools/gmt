@@ -6613,7 +6613,6 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 't':	/* -t layer transparency option  */
 
 			gmt_message (GMT, "\t-t Set the layer PDF transparency from 0-100 [Default is 0; opaque].\n");
-			gmt_message (GMT, "\t   For plotting symbols or text with variable transparency, give no value.\n");
 			break;
 
 		case ':':	/* lon/lat [x/y] or lat/lon [y/x] */
@@ -7671,7 +7670,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		if (n_rect_read == 4 && (fabs (rect[XLO]) > 360.0 || fabs (rect[XHI]) > 360.0 || fabs (rect[YLO]) > 90.0 || fabs (rect[YHI]) > 90.0)) {	/* Oh, yeah... */
 			inv_project = true;
 			r_unit = 'e';	/* Must specify the "missing" leading e for meter */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "For a UTM or TM projection, your region %s is too large to be in degrees and thus assumed to be in meters", string);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "For a UTM or TM projection, your region %s is too large to be in degrees and thus assumed to be in meters\n", string);
 		}
 	}
 	else	/* Plain old -Rw/e/s/n */
