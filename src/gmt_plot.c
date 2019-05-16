@@ -5976,6 +5976,7 @@ GMT_LOCAL void wipe_substr(char *str1, char *str2) {
 }
 #endif
 
+#ifdef HAVE_GDAL
 char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 	/* Take a PROJ.4 projection string or EPSG code and try to find the equivalent -J syntax
 	   scale_pos is position on the return string where starts the scale sub-string.
@@ -6446,6 +6447,7 @@ char *gmt_importproj4 (struct GMT_CTRL *GMT, char *pStr, int *scale_pos) {
 	pStrOut = strdup(opt_J);
 	return pStrOut;
 }
+#endif
 
 char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 	char *pStrOut = NULL;

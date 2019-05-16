@@ -295,7 +295,7 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c docs.c dimfilter.c fil
 	sph2grd.c sphdistance.c sphinterpolate.c sphtriangulate.c splitxyz.c
 	surface.c trend1d.c trend2d.c triangulate.c xyz2grd.c gmtdefaults.c gmtget.c
 	gmtset.c grdcontour.c grdimage.c grdvector.c grdview.c psbasemap.c psclip.c
-	pscoast.c pscontour.c pshistogram.c psimage.c psmask.c psrose.c psscale.c
+	pscoast.c pscontour.c psevents.c pshistogram.c psimage.c psmask.c psrose.c psscale.c
 	pssolar.c psternary.c pstext.c pswiggle.c psxy.c psxyz.c pslegend.c ${EXTRA_MODULES})
 
 # Legacy modules for which to install compatibility links via

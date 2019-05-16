@@ -280,6 +280,7 @@ struct PSL_CTRL {
 		double linewidth;		/* Current pen thickness			*/
 		double rgb[3][4];		/* Current stroke, fill, and fs fill rgb	*/
 		double offset;			/* Current setdash offset			*/
+		double transparency;		/* Current transparency				*/
 		double fontsize;		/* Current font size				*/
 		double subsupsize;		/* Fractional size of super/sub-scripts		*/
 		double scapssize;		/* Fractional size of small caps		*/

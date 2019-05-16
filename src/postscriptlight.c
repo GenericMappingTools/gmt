@@ -3790,10 +3790,14 @@ int PSL_plotsegment (struct PSL_CTRL *PSL, double x0, double y0, double x1, doub
 
 int PSL_settransparency (struct PSL_CTRL *PSL, double transparency) {
 	/* Updates the current PDF transparency only */
-	if (transparency < 0.0 || transparency > 1.0)
+	if (transparency < 0.0 || transparency > 1.0) {
 		PSL_message (PSL, PSL_MSG_NORMAL, "Error: Bad transparency value [%g] - ignored\n", transparency);
-	else
-		PSL_command (PSL, "%g /%s PSL_transp\n", 1.0 - transparency, PSL->current.transparency_mode);
+		return (PSL_BAD_RANGE);
+	}
+	if (transparency == PSL->current.transparency) return (PSL_NO_ERROR);	/* Quietly return if same as before */
+	
+	PSL_command (PSL, "%g /%s PSL_transp\n", 1.0 - transparency, PSL->current.transparency_mode);
+	PSL->current.transparency = transparency;	/* Remember current setting */
 	return (PSL_NO_ERROR);
 }
 
