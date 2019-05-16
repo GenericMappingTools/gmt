@@ -6486,7 +6486,6 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 't':	/* -t layer transparency option  */
 
 			gmt_message (GMT, "\t-t Set the layer PDF transparency from 0-100 [Default is 0; opaque].\n");
-			gmt_message (GMT, "\t   For plotting symbols or text with variable transparency, give no value.\n");
 			break;
 
 		case ':':	/* lon/lat [x/y] or lat/lon [y/x] */
