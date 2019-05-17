@@ -7031,8 +7031,8 @@ GMT_LOCAL void gmtio_finalize_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGM
 	if (S->n_rows < SH->n_alloc) {
 		uint64_t col;
 		for (col = 0; col < S->n_columns; col++)
-			S->data[col] = gmt_M_memory (GMT, S->data[col], S->n_rows, sizeof (double));
-		if (S->text) S->text = gmt_M_memory (GMT, S->text, S->n_rows, sizeof (char *));
+			S->data[col] = gmt_M_memory (GMT, S->data[col], S->n_rows, double);
+		if (S->text) S->text = gmt_M_memory (GMT, S->text, S->n_rows, char *);
 		SH->n_alloc = S->n_rows;
 	}
 }	
@@ -7048,7 +7048,7 @@ GMT_LOCAL void gmtio_finalize_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE 
 	if (T->n_segments < TH->n_alloc) {
 		for (seg = T->n_segments; seg < TH->n_alloc; seg++)
 			gmt_free_segment (GMT, &(T->segment[seg]));
-		T->segment = gmt_M_memory (GMT, T->segment, T->n_segments, sizeof (struct GMT_DATASEGMENT *));
+		T->segment = gmt_M_memory (GMT, T->segment, T->n_segments, struct GMT_DATASEGMENT *);
 		TH->n_alloc = T->n_segments;
 	}
 	for (seg = 0; seg < T->n_segments; seg++) gmtio_finalize_segment (GMT, T->segment[seg]);
@@ -7063,7 +7063,7 @@ void gmtlib_finalize_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		return;
 	}
 	if (D->n_tables < DH->n_alloc) {
-		D->table = gmt_M_memory (GMT, D->table, D->n_tables, sizeof (struct GMT_DATATABLE *));
+		D->table = gmt_M_memory (GMT, D->table, D->n_tables, struct GMT_DATATABLE *);
 		DH->n_alloc = D->n_tables;
 	}
 	for (tbl = 0; tbl < D->n_tables; tbl++) gmtio_finalize_table (GMT, D->table[tbl]);
