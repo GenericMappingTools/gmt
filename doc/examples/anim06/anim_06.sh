@@ -9,9 +9,9 @@
 if [ $# -eq 0 ]; then   # Just make master PostScript frame 300
         opt="-M300,ps -Fnone"
 	ps=anim_06.ps
-else    # Make both movie formats and a thumbnail animated GIF using every 5th frame
-        opt="-Fmp4 -Fwebm -A+l+s5"
-fi      
+else	# Make movie in MP4 format and a thumbnail animated GIF using every 10th frame
+        opt="-Fmp4 -A+l+s5"
+fi
 rate=6			# Frames per seconds
 frames=`gmt math -Q 60 $rate MUL =`
 # 0. Initial parameters
