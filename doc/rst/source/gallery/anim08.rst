@@ -6,8 +6,8 @@
 Here we wish to focus on how to plot events, i.e., symbols
 that should be visible for a finite (or infinite) timespan
 depending on what they represent.  We obtain one year (2018)
-of magnitude 5 or higher seismicity and make a daily movie,
-highlighting new quakes as they appear and let them shrink and
+of magnitude 5 or higher seismicity and make a movie with a new frame every two days,
+highlighting new quakes as they appear and letting them shrink and
 darken a few days after the event.
 
 .. literalinclude:: /_verbatim/anim_08.txt
