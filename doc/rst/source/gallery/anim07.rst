@@ -24,7 +24,6 @@ grids from EarthByte.
    <div class="figure align-center">
      <video width="720" height="480" poster="../_images/anim_07.png" controls>
        <source src="../_static/anim_07.mp4" type="video/mp4">
-       <source src="../_static/anim_07.webm" type="video/webm">
        Your browser does not support the video tag.
      </video>
      <p class="caption">Spinning Earth showing crustal ages.</p>

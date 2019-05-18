@@ -25,7 +25,6 @@ Nyquist frequency it breaks down badly.
    <div class="figure align-center">
      <video width="720" height="480" poster="../_images/anim_06.png" controls>
        <source src="../_static/anim_06.mp4" type="video/mp4">
-       <source src="../_static/anim_06.webm" type="video/webm">
        Your browser does not support the video tag.
      </video>
      <p class="caption">Demonstrate aliasing by sampling a chirp.</p>
