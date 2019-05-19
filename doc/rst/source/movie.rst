@@ -68,7 +68,7 @@ Required Arguments
     (with pixel dimensions given in parenthesis):
     **4320p** (7680 x 4320), **2160p** (3840 x 2160), **1080p** (1920 x 1080), **720p** (1280 x 720),
     **540p** (960 x 540), **480p** (854 x 480), **360p** (640 x 360), and **240p** (426 x 240).
-    We also accept **8k** to mean **4320p**, **4k** or **uhd** to mean **2160p** and **hd** to mean **1080p**.
+    We also accept **8k** pr **uhd-2** to mean **4320p**, **4k** or **uhd** to mean **2160p**, and **hd** to mean **1080p**.
     The recognized 4:3 ratio formats have a canvas dimension of 24 x 18 cm *or* 9.6 x 7.2 inch
     and are (with pixel dimensions given in parenthesis):
     **uxga** (1600 x 1200), **sxga+** (1400 x 1050), **xga** (1024 x 768),
@@ -87,7 +87,7 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *frames*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
+**-T**\ *nframes*\ \|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**]
     Either specify how many image frames to make or supply a file with a set of parameters,
     one record per frame (i.e., row).  The values in the columns will be available to the
     *mainscript* as named variables **MOVIE_COL0**, **MOVIE_COL1**, etc., while any trailing text
