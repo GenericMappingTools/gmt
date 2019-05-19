@@ -575,7 +575,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 					error = API->error;
 					goto END;
 				}
-				gmt_M_str_free (Ctrl->W.file);	/* Prevent that the weights grid is overwriten later down */
+				gmt_M_str_free (Ctrl->W.file);	/* Prevent that the weights grid is overwritten later down */
 				if (Ctrl->W.mode == 2) {	/* Convert sigmas to weights */
 					gmt_M_grd_loop (GMT, W, row, col, ij) {
 						W->data[ij] = (gmt_grdfloat)(1.0 / (W->data[ij] * W->data[ij]));
