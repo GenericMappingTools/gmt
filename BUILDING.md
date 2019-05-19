@@ -117,7 +117,7 @@ For homebrew users, you can install the dependencies with:
     brew install gdal pcre fftw
 
     # to enable movie-making
-    sudo apt-get install graphicsmagick ffmpeg
+    brew install graphicsmagick ffmpeg
 
     # to enable testing
     brew install graphicsmagick
