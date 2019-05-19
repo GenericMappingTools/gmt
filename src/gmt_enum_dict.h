@@ -16,7 +16,7 @@
  *--------------------------------------------------------------------*/
 
 /*
- * Include file for getting GMT API enum codes programmatically via GMT_API_enum ()
+ * Include file for getting GMT API enum codes programmatically via GMT_API_enum ().
  * Rerun gmt_make_enum_dicts.sh after adding or changing enums.
  *
  * Author:      Paul Wessel
@@ -25,7 +25,7 @@
  */
 
 struct GMT_API_DICT {
-	char name[32];
+	char name[GMT_LEN32];
 	int value;
 };
 

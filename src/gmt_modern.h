@@ -38,7 +38,7 @@
 #define GMT_SESSION_CONVERT	"A"		/* Default psconvert options in gmt figure */
 
 /* Declarations of modern mode module names.  These functions will
- * call the classicly-named modules (e.g., plot will call psxy) but
+ * call the classically-named modules (e.g., plot will call psxy) but
  * only if modern mode is in effect. */
 
 /* Modern names: core */
@@ -47,6 +47,7 @@ EXTERN_MSC int GMT_basemap (void *API, int mode, void *args);
 EXTERN_MSC int GMT_clip (void *API, int mode, void *args);
 EXTERN_MSC int GMT_coast (void *API, int mode, void *args);
 EXTERN_MSC int GMT_contour (void *API, int mode, void *args);
+EXTERN_MSC int GMT_events (void *API, int mode, void *args);
 EXTERN_MSC int GMT_histogram (void *API, int mode, void *args);
 EXTERN_MSC int GMT_image (void *API, int mode, void *args);
 EXTERN_MSC int GMT_legend (void *API, int mode, void *args);

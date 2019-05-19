@@ -33,7 +33,7 @@
 
 /* Grid i/o error codes */
 
-/* external array with error descriptions */
+/* External array with error descriptions */
 EXTERN_MSC const char* gmt_error_string[];
 
 enum Gmt_error_code {
@@ -110,16 +110,16 @@ EXTERN_MSC const char * GMT_strerror (int err);
 #define __SOURCE_LINE __FILE__ ":" TOSTRING(__LINE__)
 static inline char* __source_line_func (const char* src_line, const char* func) {
 	/* This function is not thread-safe */
-	static char str[256];
+	static char str[GMT_LEN256];
 	const char *c = src_line;
 	size_t len;
-  *str = '\0';
+	*str = '\0';
 	while ((c = strpbrk (c, "/\\")) != NULL) /* get basename of src_line */
 		src_line = ++c;
-	strncat (str, src_line, 255);
+	strncat (str, src_line, GMT_LEN256-1);
 	len = strlen (src_line);
-	strncat (str, "(", 255 - 1 - len);
-	strncat (str, func, 255 - 2 - len);
+	strncat (str, "(", GMT_LEN256 - 2 - len);
+	strncat (str, func, GMT_LEN256 - 3 - len);
 	strcat (str, ")");
 	return str;
 }

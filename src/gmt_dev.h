@@ -77,6 +77,7 @@ extern "C" {
 #endif
 #endif
 
+/* Avoid some annoying warnings from MS Visual Studio */
 #ifdef _MSC_VER
 #	pragma warning( disable : 4091 )	/* 'static ': ignored on left of 'XXX' when no variable is declared */
 #	pragma warning( disable : 4244 )	/* conversion from 'uint64_t' to '::size_t', possible loss of data */
