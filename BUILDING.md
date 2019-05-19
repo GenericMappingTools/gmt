@@ -64,6 +64,9 @@ Install the GMT dependencies with:
     # Install optional dependencies
     sudo apt-get install libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
 
+    # to enable movie-making
+    sudo apt-get install graphicsmagick ffmpeg
+
     # to enable testing
     sudo apt-get install graphicsmagick
 
@@ -88,6 +91,12 @@ You then can install the GMT's dependencies with:
     # Install optional dependencies
     sudo yum install gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
 
+    # to enable movie-making
+    Fedora: sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    CentOS/RHEL: sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-7.noarch.rpm
+
+    sudo apt-get install GraphicsMagick ffmpeg
+
     # to enable testing
     sudo yum install GraphicsMagick
 
@@ -106,6 +115,9 @@ For homebrew users, you can install the dependencies with:
 
     # Install optional dependencies
     brew install gdal pcre fftw
+
+    # to enable movie-making
+    sudo apt-get install graphicsmagick ffmpeg
 
     # to enable testing
     brew install graphicsmagick
