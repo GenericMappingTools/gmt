@@ -33,7 +33,12 @@ Optionally install for more capabilities within GMT:
 - [PCRE](https://www.pcre.org/) or PCRE2 (Regular expression support)
 - [FFTW](http://www.fftw.org/) single-precision (Fast FFTs, >=3.3 [not needed under macOS])
 - LAPACK (Fast matrix inversion [not needed under macOS])
-- BLAS (Fast matrix multiplications [not needed underr macOS])
+- BLAS (Fast matrix multiplications [not needed under macOS])
+
+For movie-making capabilities these executables are needed:
+
+- [GraphicsMagick](http://www.graphicsmagick.org/) (Convert images to animated GIFs)
+- [Ffmpeg](http://www.ffmpeg.org/) (Convert images to videos)
 
 Optionally install for building GMT documentations and running tests:
 
