@@ -1613,7 +1613,7 @@ GMT_LOCAL void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 
 	/* If grid does not have BC rows/cols assigned we apply reasonable conditions:
 	 * If -fg we assume geographic grid and use geographic BCs, else we use natural BCs. If the grid
-	 * as a BC == GMT_BC_IS_DATA then the pad already constains observations. */
+	 * as a BC == GMT_BC_IS_DATA then the pad already constrains observations. */
 
 	gmt_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
 	gmt_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
@@ -1732,7 +1732,7 @@ GMT_LOCAL void grd_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 
 	/* If grid does not have BC rows/cols assigned we apply reasonable conditions:
 	 * If -fg we assume geographic grid and use geographic BCs, else we use natural BCs. If the grid
-	 * as a BC == GMT_BC_IS_DATA then the pad already constains observations. */
+	 * as a BC == GMT_BC_IS_DATA then the pad already constrains observations. */
 
 	gmt_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
 	gmt_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
@@ -2096,7 +2096,7 @@ GMT_LOCAL void grd_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 
 	/* If grid does not have BC rows/cols assigned we apply reasonable conditions:
 	 * If -fg we assume geographic grid and use geographic BCs, else we use natural BCs. If the grid
-	 * as a BC == GMT_BC_IS_DATA then the pad already constains observations. */
+	 * as a BC == GMT_BC_IS_DATA then the pad already constrains observations. */
 
 	gmt_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
 	gmt_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */

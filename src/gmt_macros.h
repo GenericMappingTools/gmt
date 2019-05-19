@@ -42,7 +42,7 @@
 #ifndef MAX
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #endif
-#ifndef MOD			/* Knuth-style modulo function (remainder after floored division) */
+#ifndef MOD	/* Knuth-style modulo function (remainder after floored division) */
 #define MOD(x, y) (x - y * floor((double)(x)/(double)(y)))
 #endif
 

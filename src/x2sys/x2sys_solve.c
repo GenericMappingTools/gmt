@@ -477,7 +477,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			
 		}
 		else {	/* Binary file with integer IDs */
-			for (i = 0; i < 2; i++) {	/* Get IDs and keept track of min/max values */
+			for (i = 0; i < 2; i++) {	/* Get IDs and keep track of min/max values */
 				ID[i][n_COE] = irint (in[i+id_col]);
 				if (ID[i][n_COE] < min_ID) min_ID = ID[i][n_COE];
 				if (ID[i][n_COE] > max_ID) max_ID = ID[i][n_COE];

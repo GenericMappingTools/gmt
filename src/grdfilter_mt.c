@@ -424,7 +424,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 #ifdef DEBUG
 	GMT_Message (API, GMT_TIME_NONE, "\t-A DEBUG: Use -A<mode><lon/<lat> to instead save filter specifics at that point. Choose:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   mode as a (area weights), c (composite weight), r (radii), or w (filter weight).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A DEBUG: Save area weigths to <file> with -As<file> [no save]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A DEBUG: Save area weights to <file> with -As<file> [no save]\n");
 #endif
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");

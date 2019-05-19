@@ -33,7 +33,12 @@ Optionally install for more capabilities within GMT:
 - [PCRE](https://www.pcre.org/) or PCRE2 (Regular expression support)
 - [FFTW](http://www.fftw.org/) single-precision (Fast FFTs, >=3.3 [not needed under macOS])
 - LAPACK (Fast matrix inversion [not needed under macOS])
-- BLAS (Fast matrix multiplications [not needed underr macOS])
+- BLAS (Fast matrix multiplications [not needed under macOS])
+
+For movie-making capabilities these executables are needed:
+
+- [GraphicsMagick](http://www.graphicsmagick.org/) (Convert images to animated GIFs)
+- [FFmpeg](http://www.ffmpeg.org/) (Convert images to videos)
 
 Optionally install for building GMT documentations and running tests:
 
@@ -59,6 +64,9 @@ Install the GMT dependencies with:
     # Install optional dependencies
     sudo apt-get install libgdal1-dev libfftw3-dev libpcre3-dev liblapack-dev libblas-dev
 
+    # to enable movie-making
+    sudo apt-get install graphicsmagick ffmpeg
+
     # to enable testing
     sudo apt-get install graphicsmagick
 
@@ -83,6 +91,12 @@ You then can install the GMT's dependencies with:
     # Install optional dependencies
     sudo yum install gdal-devel pcre-devel fftw3-devel lapack-devel openblas-devel
 
+    # to enable movie-making
+    # Fedora:       sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    # CentOS/RHEL:  sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+
+    sudo apt-get install GraphicsMagick ffmpeg
+
     # to enable testing
     sudo yum install GraphicsMagick
 
@@ -101,6 +115,9 @@ For homebrew users, you can install the dependencies with:
 
     # Install optional dependencies
     brew install gdal pcre fftw
+
+    # to enable movie-making
+    brew install graphicsmagick ffmpeg
 
     # to enable testing
     brew install graphicsmagick

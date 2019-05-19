@@ -2012,7 +2012,7 @@ GMT_LOCAL void api_update_txt_item (struct GMTAPI_CTRL *API, unsigned int mode, 
 
 /*! . */
 GMT_LOCAL void api_GI_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_GRID_HEADER *H) {
-	/* Replace or Append either command or remark field with text or commmand-line options */
+	/* Replace or Append either command or remark field with text or command-line options */
 	if (mode & GMT_COMMENT_IS_REMARK) 	api_update_txt_item (API, mode, arg, GMT_GRID_REMARK_LEN160,  H->remark);
 	else if (mode & GMT_COMMENT_IS_COMMAND) api_update_txt_item (API, mode, arg, GMT_GRID_COMMAND_LEN320, H->command);
 	else if (mode & GMT_COMMENT_IS_TITLE)   api_update_txt_item (API, mode, arg, GMT_GRID_TITLE_LEN80,    H->title);
@@ -2021,23 +2021,23 @@ GMT_LOCAL void api_GI_comment (struct GMTAPI_CTRL *API, unsigned int mode, void 
 	else if (mode & GMT_COMMENT_IS_NAME_Z)  api_update_txt_item (API, mode, arg, GMT_GRID_UNIT_LEN80,     H->z_units);
 }
 
-/*! Replace or Append either command or remark field with text or commmand-line options */
+/*! Replace or Append either command or remark field with text or command-line options */
 GMT_LOCAL void api_grid_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_GRID *G) {
 	api_GI_comment (API, mode, arg, G->header);
 }
 
-/*! Update either command or remark field with text or commmand-line options */
+/*! Update either command or remark field with text or command-line options */
 GMT_LOCAL void api_image_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_IMAGE *I) {
 	api_GI_comment (API, mode, arg, I->header);
 }
 
-/*! Update either command or remark field with text or commmand-line options */
+/*! Update either command or remark field with text or command-line options */
 GMT_LOCAL void api_vector_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_VECTOR *V) {
 	if (mode & GMT_COMMENT_IS_REMARK)  api_update_txt_item (API, mode, arg, GMT_GRID_REMARK_LEN160,  V->remark);
 	if (mode & GMT_COMMENT_IS_COMMAND) api_update_txt_item (API, mode, arg, GMT_GRID_COMMAND_LEN320, V->command);
 }
 
-/*! Update either command or remark field with text or commmand-line options */
+/*! Update either command or remark field with text or command-line options */
 GMT_LOCAL void api_matrix_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_MATRIX *M) {
 	if (mode & GMT_COMMENT_IS_REMARK)  api_update_txt_item (API, mode, arg, GMT_GRID_REMARK_LEN160,  M->remark);
 	if (mode & GMT_COMMENT_IS_COMMAND) api_update_txt_item (API, mode, arg, GMT_GRID_COMMAND_LEN320, M->command);
@@ -2054,7 +2054,7 @@ GMT_LOCAL int api_add_comment (struct GMTAPI_CTRL *API, unsigned int mode, char 
 	return (k);	/* 1 if we did any of the three above; 0 otherwise */
 }
 
-/*! Append or replace data table headers with given text or commmand-line options */
+/*! Append or replace data table headers with given text or command-line options */
 GMT_LOCAL void api_dataset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_DATASET *D) {
 	unsigned int tbl, k;
 	struct GMT_DATATABLE *T = NULL;
@@ -2079,7 +2079,7 @@ GMT_LOCAL void api_dataset_comment (struct GMTAPI_CTRL *API, unsigned int mode, 
 	}
 }
 
-/*! Append or replace CPT headers with given text or commmand-line options */
+/*! Append or replace CPT headers with given text or command-line options */
 GMT_LOCAL void api_cpt_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_PALETTE *P) {
 	unsigned int k;
 	char *txt = gmtapi_create_header_item (API, mode, arg);
@@ -2095,7 +2095,7 @@ GMT_LOCAL void api_cpt_comment (struct GMTAPI_CTRL *API, unsigned int mode, void
 	P->header[P->n_headers++] = strdup (txt);
 }
 
-/*! Append or replace Postscript container headers with given text or commmand-line options */
+/*! Append or replace Postscript container headers with given text or command-line options */
 GMT_LOCAL void api_ps_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_POSTSCRIPT *P) {
 	unsigned int k;
 	char *txt = gmtapi_create_header_item (API, mode, arg);
@@ -12068,7 +12068,7 @@ int GMT_Change_Layout (void *V_API, unsigned int family, char *code, unsigned in
 	/* Reorder the memory layout of a grid or image given the new desired layout in code.
 	 * If out == NULL then we allocate space to hold the new grid|image and replace obj->data with this new array.
 	 *   For grids we preserve any padding in effect for the object but for out we have no padding.
-	 * Otherwise we assume out points to allcoated memory and we simply fill it out, assuming no pad.
+	 * Otherwise we assume out points to allocated memory and we simply fill it out, assuming no pad.
 	 * mode is presently unused.
 	 * alpha is only considered for images and may be used to return a modified transparency array.
 	 */

@@ -278,7 +278,7 @@ GMT_LOCAL void tfpoeq(double *w, int m, int n, double *greel, double *gim,
 /*          - M/N => NUMBER OF LINES/COLUMN OF THE FILTER */
 
 /*     OUTPUT ARGUMENTS DESCRIPTION: */
-/*          - W => AN ARRAY WHICH CONTAINS THE FILTER COEFICIENTS STORED */
+/*          - W => AN ARRAY WHICH CONTAINS THE FILTER COEFFICIENTS STORED */
 /*               COLUMNWISE */
 
 /*     REMARKS: */

@@ -106,12 +106,12 @@ struct GMT_COMMON {
 	struct X {	/* -X */
 		bool active;
 		double off;
-		char mode;	/* r, a, or c */
+		char mode;	/* a, c, f, or r */
 	} X;
 	struct Y {	/* -Y */
 		bool active;
 		double off;
-		char mode;	/* r, a, or c */
+		char mode;	/* a, c, f, or r */
 	} Y;
 	struct a {	/* -a<col>=<name>[:<type>][,col>=<name>[:<type>], etc][+g<geometry>] */
 		bool active;
@@ -191,10 +191,10 @@ struct GMT_COMMON {
 	} l;
 	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] */
 		bool active;
-		bool antialias;	/* Defaults to true, if supported */
-		bool truncate;	/* Defaults to false */
+		bool antialias;		/* Defaults to true, if supported */
+		bool truncate;		/* Defaults to false */
 		unsigned int interpolant;	/* Defaults to BCR_BICUBIC */
-		bool bc_set;	/* true if +b was parsed */
+		bool bc_set;		/* true if +b was parsed */
 		bool periodic[2];	/* For periodic non-geographic grids */
 		char BC[4];		/* For BC settings via +bg|n[x|y]|p[x|y] */
 		double threshold;	/* Defaults to 0.5 */

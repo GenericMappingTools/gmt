@@ -47,6 +47,7 @@ cmake_minimum_required (VERSION 2.8.5)
 # Use NEW behavior with newer CMake releases
 foreach(p
 		CMP0025 # CMake 3.0: Compiler id for Apple Clang is now AppleClang
+		CMP0074	# CMake 3.12: find_package uses PackageName_ROOT variables
 		)
 	if(POLICY ${p})
 		cmake_policy(SET ${p} NEW)
@@ -72,7 +73,6 @@ set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/"
 # Find UNIX commands
 include (FindUnixCommands)
 find_package (Git)
-find_program (GS gs gswin64)
 find_program (XZ NAMES xz)
 
 # Include configuration options (default options and options overridden by user).
@@ -213,6 +213,12 @@ message(
 	"*  Build GMT supplements      : ${SUPPL}\n"
 	"*  Build GMT for developers   : ${DEVEL}\n"
 	"*  Build proto supplements    : ${PROTO}\n"
+	"*  Found GhostScript          : ${GMT_CONFIG_GS_MESSAGE}\n"
+	"*  Found GraphicsMagick       : ${GMT_CONFIG_GM_MESSAGE}\n"
+	"*  Found ffmpeg               : ${GMT_CONFIG_FFMPEG_MESSAGE}\n"
+	"*  Found open                 : ${GMT_CONFIG_OPEN_MESSAGE}\n"
+	"*  Found ogr2ogr              : ${GMT_CONFIG_OGR2OGR_MESSAGE}\n"
+	"*  Found gdal_translate       : ${GMT_CONFIG_GDAL_TRANSLATE_MESSAGE}\n"
 	"*\n"
 	"*  Locations:\n"
 	"*  Installing GMT in          : ${CMAKE_INSTALL_PREFIX}\n"

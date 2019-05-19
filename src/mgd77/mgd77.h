@@ -519,7 +519,7 @@ EXTERN_MSC void MGD77_Apply_Bitflags (struct GMT_CTRL *GMT, struct MGD77_CONTROL
 EXTERN_MSC void MGD77_Set_Unit (struct GMT_CTRL *GMT, char *dist, double *scale, int way);							/* Convert appended distance unit to a numerical scale to give meters */
 EXTERN_MSC int MGD77_nc_status (struct GMT_CTRL *GMT, int status);										/* Checks for netCDF errors and aborts with error message */
 EXTERN_MSC int MGD77_Process_Ignore (struct GMT_CTRL *GMT, char code, char *format);								/* Process the ignre-format option */
-EXTERN_MSC void MGD77_Ignore_Format (struct GMT_CTRL *GMT, int format);										/* Dissallow some formats for consideration */
+EXTERN_MSC void MGD77_Ignore_Format (struct GMT_CTRL *GMT, int format);										/* Disallow some formats for consideration */
 EXTERN_MSC int MGD77_Select_Format (struct GMT_CTRL *GMT, int format);										/* Only select a specific format for consideration */
 EXTERN_MSC struct MGD77_DATASET *MGD77_Create_Dataset (struct GMT_CTRL *GMT);									/* Create an empty data set structure */
 EXTERN_MSC int MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Prepare header before we write */

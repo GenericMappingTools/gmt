@@ -54,8 +54,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 EXTERN_MSC const char * api_get_module_group (void *V_API, char *module);
 
 int GMT_docs (void *V_API, int mode, void *args) {
-	bool other_file = false, dry_run = false;
-	int error = 0, k;
+	bool other_file = false, print_url = false;
+	int error = 0, os;
 	char cmd[PATH_MAX] = {""}, URL[PATH_MAX] = {""}, module[GMT_LEN64] = {""}, name[PATH_MAX] = {""}, *t = NULL;
 	const char *group = NULL, *docname = NULL;
 	static const char *known_group[2] = {"core", "other"}, *known_doc[5] = {"cookbook", "api", "tutorial", "Gallery", "gmt.conf"};
@@ -78,8 +78,8 @@ int GMT_docs (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the docs main code ----------------------------*/
 
-	if (options->option == 'Q') dry_run = true;
-	opt = GMT_Find_Option (API, GMT_OPT_INFILE, options);	/* action target will appear as file name */
+	if (options->option == 'Q') print_url = true;
+	opt = GMT_Find_Option (API, GMT_OPT_INFILE, options);	/* Action target will appear as file name */
 	if (!opt) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot use an option (-%c) without a module name\n", options->option);
 		Return (GMT_RUNTIME_ERROR);
@@ -95,19 +95,19 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	t = strdup (docname);	/* Make a copy because gmt_str_tolower changes the input that may be a const char */
 	gmt_str_tolower (t);
 	if (!strcmp (t, "cookbook")) {
-		docname = known_doc[0];	group   = known_group[0];		/* Pretend it is */
+		docname = known_doc[0];	group   = known_group[0];	/* Pretend it is in the core */
 	}
 	else if (!strcmp (t, "api")) {
-		docname = known_doc[1];		group   = known_group[0];		/* Pretend it is */
+		docname = known_doc[1]; group   = known_group[0];	/* Pretend it is in the core */
 	}
 	else if (!strcmp (t, "tutorial")) {
-		docname = known_doc[2];	group   = known_group[0];		/* Pretend it is */
+		docname = known_doc[2];	group   = known_group[0];	/* Pretend it is in the core */
 	}
 	else if (!strcmp (t, "gallery")) {
-		docname = known_doc[3];	group   = known_group[0];		/* Pretend it is */
+		docname = known_doc[3];	group   = known_group[0];	/* Pretend it is in the core */
 	}
 	else if (!strcmp (t, "gmt.conf")) {
-		docname = known_doc[4];	group   = known_group[0];		/* Pretend it is */
+		docname = known_doc[4];	group   = known_group[0];	/* Pretend it is in the core */
 	}
 	else if (gmt_get_ext (docname)) {
 		group = known_group[1];
@@ -121,7 +121,7 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	gmt_M_str_free (t);
 	if (!strcmp (group, "core"))	/* Core module */
 		sprintf (module, "%s.html", docname);
-	else if (!other_file)			/* A supplemental module */
+	else if (!other_file)		/* A supplemental module */
 		sprintf (module, "supplements/%s/%s.html", group, docname);
 
 	/* Get the local URL (which may not exist) */
@@ -144,21 +144,22 @@ int GMT_docs (void *V_API, int mode, void *args) {
 	}
 
 #ifdef WIN32
-	k = 0;
+	os = 0;
 #elif defined(__APPLE__)
-	k = 1;
+	os = 1;
 #else
-	k = 2;
+	os = 2;
 #endif
-	if (dry_run) {
+	if (print_url) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reporting URL %s to stdout\n", URL);
 		printf ("%s\n", URL);
 	}
 	else {
-		sprintf (cmd, "%s %s", can_opener[k], URL);
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opening %s in the default browser via %s\n", URL, can_opener[k]);
+		sprintf (cmd, "%s %s", can_opener[os], URL);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Opening %s in the default browser via %s\n", URL, can_opener[os]);
 		if ((error = system (cmd))) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s in the default browser via %s failed with error %d\n", URL, can_opener[k], error);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Opening %s in the default browser via %s failed with error %d\n",
+				URL, can_opener[os], error);
 			perror ("docs");
 			Return (GMT_RUNTIME_ERROR);
 		}

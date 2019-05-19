@@ -1456,7 +1456,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				if (old_flags) {	/* Flag variable exists already - simply replace existing flags with the new ones */
 					if (D->flags[0])	/* Was allocated and read */
 						gmt_M_memcpy (D->flags[0], flags, D->H.n_records, int);
-					else	/* Was not allcoated */
+					else	/* Was not allocated */
 						D->flags[0] = flags;
 				}
 				else {	/* We need to define the flags for the first time */
