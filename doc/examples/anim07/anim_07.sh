@@ -9,8 +9,8 @@
 if [ $# -eq 0 ]; then   # Just make master PostScript frame 10
         opt="-M10,ps -Fnone"
 	ps=anim_07.ps
-else    # Make both movie formats and a thumbnail animated GIF using every 4th frame
-        opt="-Fmp4 -Fwebm -A+l+s5"
+else	# Make movie in MP4 format and a thumbnail animated GIF using every 10th frame
+        opt="-Fmp4 -A+l+s5"
 fi
 # 1. Create background plot and data files needed in the loop
 cat << EOF > pre.sh

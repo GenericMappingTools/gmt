@@ -131,17 +131,11 @@ if (UNIX AND DO_ANIMATIONS)
 		add_custom_command (
 			OUTPUT
 			${RST_BINARY_DIR}/_static/anim_${_num}.mp4
-			${RST_BINARY_DIR}/_static/anim_${_num}.webm
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.mp4
 			${RST_BINARY_DIR}/_static/anim_${_num}.mp4
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.webm
-			${RST_BINARY_DIR}/_static/anim_${_num}.webm
 			DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim_${_num}.gif)
-		list (APPEND _animations
-			${RST_BINARY_DIR}/_static/anim_${_num}.mp4
-			${RST_BINARY_DIR}/_static/anim_${_num}.webm)
+		list (APPEND _animations ${RST_BINARY_DIR}/_static/anim_${_num}.mp4)
 	endforeach ()
 	add_custom_target (animation DEPENDS ${_animations})
 

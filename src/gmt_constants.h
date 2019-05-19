@@ -188,8 +188,8 @@ enum GMT_swap_direction {
 #define GMT_DEC_WIDTH	0.54	/* Width of a decimal number compared to point size */
 #define GMT_PER_WIDTH	0.30	/* Width of a decimal point compared to point size */
 
-#define GMT_PEN_LEN	128
-#define GMT_PENWIDTH	0.25	/* Default pen width in points */
+#define GMT_PEN_LEN		128
+#define GMT_PENWIDTH		0.25	/* Default pen width in points */
 #define GMT_TEXT_CLEARANCE	15	/* Clearance around text in textboxes, in percent */
 #define GMT_TEXT_OFFSET		20	/* Offset of text from refpoint, in percent */
 
@@ -236,7 +236,7 @@ enum GMT_enum_refpoint {
 	GMT_REFPOINT_NOTSET = -1,	/* -D */
 	GMT_REFPOINT_MAP,		/* -Dg */
 	GMT_REFPOINT_JUST,		/* -Dj */
-	GMT_REFPOINT_JUST_FLIP,	/* -DJ */
+	GMT_REFPOINT_JUST_FLIP,		/* -DJ */
 	GMT_REFPOINT_NORM,		/* -Dn */
 	GMT_REFPOINT_PLOT};		/* -Dx */
 
@@ -250,18 +250,15 @@ enum GMT_enum_rose {
 
 /*! Various types of trend model */
 enum GMT_enum_model {
-	GMT_POLYNOMIAL = 0, GMT_CHEBYSHEV, GMT_COSINE, GMT_SINE, GMT_FOURIER
-	};
+	GMT_POLYNOMIAL = 0, GMT_CHEBYSHEV, GMT_COSINE, GMT_SINE, GMT_FOURIER};
 
 /*! Various array indices of fonts and pens */
 enum GMT_enum_index {
-	GMT_PRIMARY = 0, GMT_SECONDARY = 1
-	};
+	GMT_PRIMARY = 0, GMT_SECONDARY = 1};
 
 /*! Various mode for auto-download */
 enum GMT_enum_download {
-	GMT_NO_DOWNLOAD = 0, GMT_YES_DOWNLOAD = 1
-	};
+	GMT_NO_DOWNLOAD = 0, GMT_YES_DOWNLOAD = 1};
 
 /*! Various mode for axes */
 enum GMT_enum_axes {
@@ -395,14 +392,14 @@ enum GMT_enum_latswap {GMT_LATSWAP_NONE = -1,	/* Deactivate latswapping */
 enum GMT_enum_geodesic {	/* Various geodesic algorithms */
 	GMT_GEODESIC_VINCENTY = 0,	/* Best possible, currently Vincenty */
 	GMT_GEODESIC_ANDOYER,		/* Faster approximation, currently Andoyer */
-	GMT_GEODESIC_RUDOE};		/* For legacy calculations */
+	GMT_GEODESIC_RUDOE};		/* For legacy GMT4 calculations */
 
 #define METERS_IN_A_FOOT		0.3048			/* 2.54 * 12 / 100 */
 #define METERS_IN_A_SURVEY_FOOT		(1200.0/3937.0)		/* ~0.3048006096 m */
 #define METERS_IN_A_KM			1000.0
-#define METERS_IN_A_MILE		1609.433	/* meters in statute mile */
-#define METERS_IN_A_NAUTICAL_MILE	1852.0
-#define GMT_MAP_DIST_UNIT		'e'		/* Default distance is the meter */
+#define METERS_IN_A_MILE		1609.433		/* meters in statute mile */
+#define METERS_IN_A_NAUTICAL_MILE	1852.0			/* meters in a nautical mile */
+#define GMT_MAP_DIST_UNIT		'e'			/* Default distance is the meter */
 
 enum GMT_enum_coord {GMT_GEOGRAPHIC = 0,	/* Means coordinates are lon,lat : compute spherical distances */
 	GMT_CARTESIAN,	/* Means coordinates are Cartesian x,y : compute Cartesian distances */
@@ -428,7 +425,7 @@ enum GMT_enum_cdist {GMT_CARTESIAN_DIST	 = 0,	/* Cartesian 2-D x,y data, r = hyp
 	GMT_CARTESIAN_DIST_PERIODIC,		/* Cartesian 2-D x,y data,but with periodic BCs */
 	GMT_CARTESIAN_DIST2,		/* Cartesian 2-D x,y data, return r^2 to avoid hypot */
 	GMT_CARTESIAN_DIST_PROJ,	/* Project lon,lat to Cartesian 2-D x,y data, then get distance */
-	GMT_CARTESIAN_DIST_PROJ2,	/* Same as --"-- but return r^2 to avoid hypot */
+	GMT_CARTESIAN_DIST_PROJ2,	/* Same as --"-- but return r^2 to avoid hypot calls */
 	GMT_CARTESIAN_DIST_PROJ_INV};	/* Project Cartesian 2-D x,y data to lon,lat, then get distance */
 enum GMT_enum_mdist {
 	GMT_NO_MODE = 0,
