@@ -39,7 +39,15 @@ endif (WIN32)
 # Include CREATE_DEBUG_SYM macro and set DEBUG_BUILD
 include (CreateDebugSym)
 
-# Find executable needed by psconvert
+# Find executable needed by gmt
+find_program (OGR2OGR ogr2ogr)
+if (NOT OGR2OGR)
+	message (WARNING "Cannot find program ogr2ogr - gmt will be unable convert Shapefiles to GMT/OGR format")
+	set (GMT_CONFIG_OGR2OGR_MESSAGE "no" CACHE INTERNAL "OGR2OGR config message")
+else (NOT OGR2OGR)
+	set (GMT_CONFIG_OGR2OGR_MESSAGE "yes" CACHE INTERNAL "OGR2OGR config message")
+endif (NOT OGR2OGR)
+# Find executables needed by psconvert
 find_program (GS NAMES gs gswin64c gswin32c)
 if (NOT GS)
 	message (WARNING "Cannot find program ghostscript - gmt psconvert will be unable convert PostScript to other formats")
@@ -47,6 +55,13 @@ if (NOT GS)
 else (NOT GS)
 	set (GMT_CONFIG_GS_MESSAGE "yes" CACHE INTERNAL "GS config message")
 endif (NOT GS)
+find_program (GDAL_TRANSLATE gdal_translate)
+if (NOT GDAL_TRANSLATE)
+	message (WARNING "Cannot find program gdal_translate - psconvert will be unable convert TIFF to GeoTIFF")
+	set (GMT_CONFIG_GDAL_TRANSLATE_MESSAGE "no" CACHE INTERNAL "GDAL_TRANSLATE config message")
+else (NOT GDAL_TRANSLATE)
+	set (GMT_CONFIG_GDAL_TRANSLATE_MESSAGE "yes" CACHE INTERNAL "GDAL_TRANSLATE config message")
+endif (NOT GDAL_TRANSLATE)
 # Find executables needed by movie
 find_program (GM gm)
 if (NOT GM)
@@ -55,7 +70,6 @@ if (NOT GM)
 else (NOT GM)
 	set (GMT_CONFIG_GM_MESSAGE "yes" CACHE INTERNAL "GM config message")
 endif (NOT GM)
-# Find executables needed by movie
 find_program (FFMPEG ffmpeg)
 if (NOT FFMPEG)
 	message (WARNING "Cannot find ffmpeg - gmt movie will be unable to make movies from frames")

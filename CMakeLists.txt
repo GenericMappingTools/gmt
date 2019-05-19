@@ -216,6 +216,8 @@ message(
 	"*  Found GraphicsMagick       : ${GMT_CONFIG_GM_MESSAGE}\n"
 	"*  Found ffmpeg               : ${GMT_CONFIG_FFMPEG_MESSAGE}\n"
 	"*  Found open                 : ${GMT_CONFIG_OPEN_MESSAGE}\n"
+	"*  Found ogr2ogr              : ${GMT_CONFIG_OGR2OGR_MESSAGE}\n"
+	"*  Found gdal_translate       : ${GMT_CONFIG_GDAL_TRANSLATE_MESSAGE}\n"
 	"*\n"
 	"*  Locations:\n"
 	"*  Installing GMT in          : ${CMAKE_INSTALL_PREFIX}\n"
