@@ -66,7 +66,7 @@ struct GMT_LABEL {	/* Contains information on contour/lineation labels */
 	double angle;		/* Angle of text unless curved text */
 	double line_angle;	/* Angle of line at label unless curved text */
 	double dist;
-	double rgb[4];		/* Font rgb */
+	double rgb[4];		/* Font rgb and alpha */
 	uint64_t node;		/* Node of label on the line */
 	int end;		/* If N is used then -1 is start, +1 is end label */
 	char *label;
@@ -77,7 +77,7 @@ struct GMT_CONTOUR_LINE {
 	unsigned int n_labels;		/* Number of labels; if 0 we just have a line segment */
 	bool annot;			/* true if we want labels */
 	double z;			/* Datum of this contour (z-value) */
-	double rgb[4];			/* Box rgb */
+	double rgb[4];			/* Box rgb and alpha */
 	double *x, *y;			/* Coordinates of the contour */
 	struct GMT_PEN pen;		/* Pen for drawing contour */
 	struct GMT_LABEL *L;		/* Pointer to array of structures with labels */
@@ -96,16 +96,16 @@ struct GMT_CONTOUR {
 	double label_angle;		/* For fixed-angle labels only */
 	double clearance[2];		/* Spacing between text and textbox */
 	double nudge[2];		/* Shift between calculated and desired text placement */
-	double rgb[4];			/* Opaque box fill */
-	unsigned int line_type;	/* Kind of line: contour (1) or line (0) */
-	unsigned int dist_kind;	/* What kind of distance [0 = xy, 1 = map ] */
-	unsigned int dist_unit;	/* Units for labelled distances along tracks [cip] */
+	double rgb[4];			/* Box fill and alpha */
+	unsigned int line_type;		/* Kind of line: contour (1) or line (0) */
+	unsigned int dist_kind;		/* What kind of distance [0 = xy, 1 = map ] */
+	unsigned int dist_unit;		/* Units for labelled distances along tracks [cip] */
 	unsigned int half_width;	/* Number of points to use in smoothing the angle [10/2] */
 	unsigned int n_cont;		/* Number of labels per segment */
 	enum GMT_enum_contline crossing;	/* 1 for crossing simple lines, 2 for file with crossing lines */
 	enum GMT_enum_label label_type;	/* 0-7; see above for enums */
 	unsigned int nx;		/* Number of crossovers at any time */
-	unsigned int f_n;			/* Number of such points */
+	unsigned int f_n;		/* Number of such points */
 	unsigned int clearance_flag;	/* 1 if spacing given in % of labelfont size, 0 otherwise */
 	unsigned int nudge_flag;	/* 0 if off, 1 if nudging relative to x/y axis, 2 if following local line coordinate system */
 	unsigned int box;		/* Textbox bits [1 = outline, 2 = rect box shape, 4 = rounded rect shape] */
@@ -113,22 +113,22 @@ struct GMT_CONTOUR {
 	unsigned int just;		/* Label justification */
 	unsigned int end_just[2];	/* Justification for end of lines */
 	unsigned int angle_type;	/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */
-	unsigned int n_segments;		/* The number of segments */
+	unsigned int n_segments;	/* The number of segments */
 	unsigned int save_labels;	/* 1 if we wish to save label locations to a text file, 2 if we wish to include label angles [1 = no angles] */
-	int number_placement;	/* How the n_cont labels are distributed [-1/0/+1]*/
-	int hill_label;		/* -1/+1 = make label readable when looking down/up gradient, 0 = no special treatment  */
+	int number_placement;		/* How the n_cont labels are distributed [-1/0/+1]*/
+	int hill_label;			/* -1/+1 = make label readable when looking down/up gradient, 0 = no special treatment  */
 	bool annot;			/* true if we want labels */
-	bool isolate;		/* true if we have a limit on how close labels may appear (see below) */
-	bool segmentize;	/* true if we should segmentize input lines before plotting */
-	bool spacing;		/* true if we have spacing constraints to apply */
+	bool isolate;			/* true if we have a limit on how close labels may appear (see below) */
+	bool segmentize;		/* true if we should segmentize input lines before plotting */
+	bool spacing;			/* true if we have spacing constraints to apply */
 	bool number;			/* true if we have constraints on the number of labels to apply */
 	bool do_interpolate;		/* true if we must resample the crossing lines */
 	bool fixed;			/* true if we chose fixed positions */
 	bool fillbox;			/* true for filling the textbox, false for none */
 	bool must_clip;			/* true for transparent textbox, false for opaque */
 	bool curved_text;		/* true for text to follow curved lines */
-	bool no_gap;		/* Clip contour or not depends on label placement */
-	bool data_col;		/* true if there is data in the zz arrays passed, false if they are NULL */
+	bool no_gap;			/* Clip contour or not depends on label placement */
+	bool data_col;			/* true if there is data in the zz arrays passed, false if they are NULL */
 	bool draw;			/* true of we want to draw the text lines [true] */
 	bool debug;			/* true of we want to draw helper lines/points */
 	bool delay;			/* true of we want to delay the actual annotation plotting until later */
@@ -138,8 +138,8 @@ struct GMT_CONTOUR {
 	char option[GMT_BUFSIZ];	/* Copy of the option string */
 	char label[GMT_BUFSIZ];		/* Fixed label */
 	char label_file[GMT_BUFSIZ];	/* Output files for text dump of label locations */
-	char unit[GMT_LEN64];	/* Unit for labels */
-	char prefix[GMT_LEN64];	/* prefix for labels */
+	char unit[GMT_LEN64];		/* Unit for labels */
+	char prefix[GMT_LEN64];		/* prefix for labels */
 	char crossect_tag[2][GMT_LEN64];	/* suffix for crossection beginning and end labels */
 	char line_name[16];		/* Name of line: contour or line */
 	char flag;			/* Char for the option key */
