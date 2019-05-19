@@ -38,7 +38,7 @@ Optionally install for more capabilities within GMT:
 For movie-making capabilities these executables are needed:
 
 - [GraphicsMagick](http://www.graphicsmagick.org/) (Convert images to animated GIFs)
-- [Ffmpeg](http://www.ffmpeg.org/) (Convert images to videos)
+- [FFmpeg](http://www.ffmpeg.org/) (Convert images to videos)
 
 Optionally install for building GMT documentations and running tests:
 
