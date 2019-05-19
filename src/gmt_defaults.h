@@ -53,7 +53,7 @@ struct DATUM {
 
 struct GMT_ENCODING {
 	char name[GMT_LEN64];
-	int code[8]; /* Codes for 7 symbols we plot but whose code depends on character set (ring, degree, colon, squote, dquote, minus, hyphen). */
+	int code[GMT_LEN8]; /* Codes for 7 symbols we plot but whose code depends on character set (ring, degree, colon, squote, dquote, minus, hyphen). */
 };
 
 /*! Holds all variables directly controlled by GMT Default parameters */

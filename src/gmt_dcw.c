@@ -629,7 +629,7 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 				if (t[0] == '\0' || t[0] == '+') { /* The modifier could be +r<dpi> or +r<inc>, assume dpi */
 					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Ambiguous modifier +r<val>; could be dpi of the pattern or (a deprecated) region increment - choosing dpi.\n", option);
 					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "If you meant the region modifier then place it before the +g pattern specification.\n", option);
-					r[0] = '%';	/* Change +r<dpi> to %r<dpi> to pass strtok splitting */
+					r[0] = GMT_ASCII_US;	/* Change +r<dpi> to ASCII31<dpi> to pass strtok splitting */
 				}
 				/* Else it is taken to be a deprecated region increment */
 			}
@@ -674,7 +674,7 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					F->mode |= GMT_DCW_PLOT;
 					break;
 				case 'g':
-					if ((q = strchr (p, '%'))) q[0] = '+';	/* Restore +r<dpi> */
+					if ((q = strchr (p, GMT_ASCII_US))) q[0] = '+';	/* Restore +r<dpi> */
 					if (gmt_getfill (GMT, &p[1], &(this_item->fill))) {
 						gmt_fill_syntax (GMT, option, " ");
 						n_errors++;
