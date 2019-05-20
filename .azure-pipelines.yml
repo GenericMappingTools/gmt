@@ -79,11 +79,11 @@ jobs:
     condition: succeededOrFailed()
     displayName: Upload test coverage
 
-# Windows - Compile only
+# Windows - Compile + Package
 ########################################################################################
 - job:
   displayName: 'Windows | Compile + Package'
-  condition: ne(variables['Build.Reason'], 'Schedule')
+  condition: eq(variables['Build.Reason'], 'Schedule')
   timeoutInMinutes: 120
 
   pool:
